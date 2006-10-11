@@ -10,8 +10,8 @@ function __autoload($class_name) {
     require_once 'system/classes/' . $class_name . '.php';
 }
 
-if(file_exists(dirname(__FILE__)) . 'config.php') {
-	require_once 'config.php';
+if(file_exists(dirname(__FILE__)) . '../config.php') {
+	require_once '../config.php';
 }
 else {
 	die('There are no database connection details.  Please copy default.init.php to my.init.php and edit the settings.');	
