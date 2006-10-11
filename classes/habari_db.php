@@ -14,7 +14,7 @@
 class habari_db
 {
 	private $dbh;  // Database handle
-	private $recordset;  // PDOStatement handle
+	private $pdostatement;  // PDOStatement handle
 	private $errors = array(); // Array of SQL errors 
 
 	/**
@@ -41,10 +41,10 @@ class habari_db
 		$args = func_get_args();
 		$query = array_shift($args);
 
-		$this->recordset = $this->dbh->prepare($query);
-		if($this->recordset) {
-			$this->recordset->setFetchMode(PDO::FETCH_OBJ);
-			if($this->recordset->execute($args)) {
+		$this->pdostatement = $this->dbh->prepare($query);
+		if($this->pdostatement) {
+			$this->pdostatement->setFetchMode(PDO::FETCH_OBJ);
+			if($this->pdostatement->execute($args)) {
 				return true;
 			}
 		}
@@ -70,8 +70,10 @@ class habari_db
 	public function get_results()
 	{
 		$args = func_get_args();
-		call_user_func_array(array(&$this, query), $args);
-		return $this->recordset->fetchAll();
+		if(call_user_func_array(array(&$this, query), $args))
+			return $this->pdostatement->fetchAll();
+		else
+			return false;
 	}
 	
 	/**
@@ -103,6 +105,8 @@ public function install_habari() {
  * function install_habari
  * Installs base tables and starter data.
  */
+ 	global $db;
+ 
 	// Create the table
 	if ( $db->query("CREATE TABLE habari__posts 
 		(slug VARCHAR(255) NOT NULL PRIMARY KEY, 
