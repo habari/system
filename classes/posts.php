@@ -19,7 +19,7 @@ class posts {
 	
 	function create() {
 		global $db;
-		// insert posts!
+		// do stuff
 	}
 }
 ?>
