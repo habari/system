@@ -6,15 +6,15 @@
  * @package Habari
  */
 
-function __autoload($class_name) {   
-    require_once 'system/classes/' . $class_name . '.php';
+function __autoload($class_name) {
+    require_once HABARI_PATH . '/system/classes/' . $class_name . '.php';
 }
 
-if(file_exists(dirname(__FILE__)) . 'config.php') {
-	require_once 'config.php';
+if(file_exists(HABARI_PATH . '/config.php')) {
+	require_once HABARI_PATH . '/config.php';
 }
 else {
-	die('There are no database connection details.  Please copy default.init.php to my.init.php and edit the settings.');	
+	die('There are no database connection details.  Please rename config-sample.php to config.php and edit the settings therein.');	
 }
 
 $db = new habari_db( $db_connection['connection_string'], $db_connection['username'], $db_connection['password'] );
