@@ -7,7 +7,10 @@
  */
 
 function __autoload($class_name) {
-    require_once HABARI_PATH . '/system/classes/' . $class_name . '.php';
+	if(file_exists(HABARI_PATH . '/user/classes/' . strtolower($class_name) . '.php'))
+		require_once HABARI_PATH . '/user/classes/' . strtolower($class_name) . '.php';
+	else
+		require_once HABARI_PATH . '/system/classes/' . strtolower($class_name) . '.php';
 }
 
 if(file_exists(HABARI_PATH . '/config.php')) {
