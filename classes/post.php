@@ -85,7 +85,7 @@ class Post extends QueryRecord
 	}
 	
 	/**
-	 * function update
+	 * function publish
 	 * Updates an existing post to published status
 	 */	 	 	 	 	
 	public function publish()
