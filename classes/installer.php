@@ -33,7 +33,7 @@ class Installer
 			$db->query($query);
 		}
 		
-		// Insert records
+		// Insert a few post records
 		
 		$post = new Post(array(
 			'title'=>'First Post',
@@ -58,9 +58,18 @@ class Installer
 			'guid'=>'tag:localhost/third-post/4981704',
 			'content'=>'This is my third post',
 			'author'=>'owen',
-			'pubdate'=>'2006-10-04 17:19:00',
+			'pubdate'=>'2006-10-04 17:19:00'
 		));
 		$post->publish();
+
+		// insert a default admin user
+		$password = sha1('password');
+		$admin = new User(array (
+			'username'=>'admin',
+			'email'=>'admin@localhost',
+			'password'=>$password
+		));
+		$admin->insert();
 		
 		$options->installed = true;
 		
@@ -94,6 +103,11 @@ class Installer
 			  name   varchar(50) PRIMARY KEY NOT NULL UNIQUE,
 			  type   integer DEFAULT 0,
 			  value  blob
+			);',
+			'CREATE TABLE habari__users (
+			  username	varchar(20) PRIMARY KEY NOT NULL UNIQUE,
+			  email		varchar(30) NOT NULL,
+			  password	varchar(40) NOT NULL
 			);'
 		);
 		return $queries;
