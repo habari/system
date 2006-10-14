@@ -20,12 +20,46 @@ class Post extends QueryRecord
 				'author' => '', 
 				'status' => 'draft', 
 				'pubdate' => date('Y-m-d H:i:s'), 
-				'updated' => ''
+				'updated' => date('Y-m-d H:i:s')
 			),
 			$this->fields
 		);
 		parent::__construct($paramarray);
 	}
+	
+	private function setslug()
+	{
+		global $db;
+		if($this->fields['slug'] != '' && $this->fields['slug'] == $this->newfields['slug']) {
+			$value = $this->fields['slug'];
+		}
+		elseif($this->newfields['slug'] != '') {
+			$value = $this->newfields['slug'];
+		}
+		elseif(($this->fields['slug'] != '')) {
+			$value = $this->fields['slug'];
+		}
+		elseif ($this->newfields['title'] != '') {
+			$value = $this->newfields['title'];
+		}
+		elseif ($this->fields['title'] != '') {
+			$value = $this->fields['title'];
+		}
+		else {
+			$value = 'Post';
+		}
+		
+		$slug = strtolower(preg_replace('/[^a-z]+/i', '-', $value));
+		$postfix = '';
+		$postfixcount = 0;
+		do {
+			$slugcount = $db->get_row("SELECT count(slug) AS ct FROM habari__posts WHERE slug = ?;", array("{$slug}{$postfix}"));
+			if($slugcount->ct != 0) $postfix = "-" . (++$postfixcount);
+		} while ($slugcount->ct != 0);
+		$this->newfields['slug'] = $slug . $postfix;
+		return $this->newfields['slug'];
+	}
+
 
 	/**
 	 * function insert
@@ -34,6 +68,7 @@ class Post extends QueryRecord
 	public function insert()
 	{
 		$this->newfields['updated'] = date('Y-m-d h:i:s');
+		$this->setslug();
 		parent::insert( 'habari__posts' );
 	}
 
@@ -43,8 +78,9 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		$this->newfields['updated'] = date('Y-m-d h:i:s');
-		unset($this->newfields['guid']);
+		$this->updated = date('Y-m-d h:i:s');
+		if(isset($this->fields['guid'])) unset($this->newfields['guid']);
+		$this->setslug();
 		parent::update( 'habari__posts', array('slug') );
 	}
 	
@@ -54,8 +90,8 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	public function publish()
 	{
-		$this->newfields['status'] = 'publish';
-		$this->newfields['updated'] = date('Y-m-d h:i:s');
+		$this->status = 'publish';
+		$this->updated = date('Y-m-d h:i:s');
 		$this->update();
 	}
 

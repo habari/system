@@ -8,7 +8,7 @@
 
 /**
  * class habari_db
- * The database class.
+ * The database class - singleton
  * Connects to the database and provides access to data 
  */  
 class habari_db
@@ -18,6 +18,7 @@ class habari_db
 	private $errors = array(); // Array of SQL errors 
 	public $queryok; // Boolean on last query success 
 	private $queries = array(); // Array of executed queries
+	private $errormarker = 0; // Last cleared error index
 
 	/**
 	 * function __construct
@@ -28,7 +29,7 @@ class habari_db
 	 */	 	 	
 	public function __construct($connection_string, $user, $pass) 
 	{
-			$this->dbh = new PDO($connection_string, $user, $pass);
+		$this->dbh = new PDO($connection_string, $user, $pass);
 	}
 
 	/**
@@ -42,21 +43,16 @@ class habari_db
 	{
 		$this->pdostatement = $this->dbh->prepare($query);
 		if($this->pdostatement) {
-			if($c_name == '') {
-				$this->pdostatement->setFetchMode(PDO::FETCH_CLASS, 'QueryRecord', array());
-			}
-			else {
-				$this->pdostatement->setFetchMode(PDO::FETCH_CLASS, $c_name, array());
-			}
+			if($c_name == '') $c_name = 'QueryRecord';
+			$this->pdostatement->setFetchMode(PDO::FETCH_CLASS, $c_name, array());
 			if($this->pdostatement->execute($args)) {
-				$this->queries[] = array($query, $args, true);
+				$this->queries[] = array($query, $args);
 				$this->queryok = true;
 				return true;
 			}
 		}
 		$this->queryok = false;
-		$this->errors[] = $this->dbh->errorInfo();
-		$this->queries[] = array($query, $args, $this->dbh->errorInfo());
+		$this->errors[] = array_merge($this->dbh->errorInfo(), array($query, $args));
 		return false;
 	}
 	
@@ -67,6 +63,16 @@ class habari_db
 	public function get_errors()
 	{
 		return $this->errors;
+	}
+	
+	public function has_errors()
+	{
+		return count($this->errors) > $this->errormarker;
+	}
+	
+	public function clear_errors()
+	{
+		$this->errormarker = count($this->errors); 
 	}
 
 	/**
@@ -87,9 +93,19 @@ class habari_db
 	 */	 	 	 	 
 	public function get_results($query, $args = array(), $classname = '')
 	{
-		call_user_func_array(array(&$this, 'query'), array($query, $args, $classname));
+		$this->query($query, $args, $classname);
 		if($this->queryok) {
 			return $this->pdostatement->fetchAll();
+		}
+		else
+			return false;
+	}
+	
+	public function get_row($query, $args = array(), $classname = '')
+	{
+		$this->query($query, $args, $classname);
+		if($this->queryok) {
+			return $this->pdostatement->fetch();
 		}
 		else
 			return false;
@@ -115,52 +131,62 @@ class habari_db
 		}
 		$query .= ') VALUES (' . trim(str_repeat('?,', count($fieldvalues)), ',') . ');';
 
-		return call_user_func_array(array(&$this, query), array($query, $values));
-	}	 	 	 	 	
-
-	public function install_habari() {
-	/**
-	 * function install_habari
-	 * Installs base tables and starter data.
-	 */
-	 global $db;
-	 
-		// Create the table
-		if ( $this->query("CREATE TABLE habari__posts 
-			(slug VARCHAR(255) NOT NULL PRIMARY KEY, 
-			title VARCHAR(255), 
-			guid VARCHAR(255) NOT NULL, 
-			content LONGTEXT, 
-			author VARCHAR(255) NOT NULL, 
-			status VARCHAR(50) NOT NULL, 
-			pubdate TIMESTAMP, 
-			updated TIMESTAMP);")) {
-				echo "Created Table<br />";
-		} else {
-			print_r( $db->get_last_error() );
-		}
-		
-		// Insert records
-	
-		if($this->query("INSERT INTO habari__posts (slug, title, guid, content, author, status, pubdate, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-			array('first-post', 'First Post', 'tag:localhost/first-post/1935076', 'This is my first post', 'owen', 'publish', '2006-10-04 17:17:00', '2006-10-04 17:17:00'))) echo "Inserted Record 1<br/>";
-	
-		if($this->query("INSERT INTO habari__posts (slug, title, guid, content, author, status, pubdate, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-			array('second-post', 'Second Post', 'tag:localhost/second-post/5987120', 'This is my second post', 'owen', 'publish', '2006-10-04 17:18:00', '2006-10-04 17:18:00'))) echo "Inserted Record 2<br/>";
-	
-		if($this->insert('habari__posts', array (
-			'slug'=>'third-post',
-			'title'=>'Third Post',
-			'guid'=>'tag:localhost/third-post/4981704',
-			'content'=>'This is my third post',
-			'author'=>'owen',
-			'status'=>'publish',
-			'pubdate'=>'2006-10-04 17:19:00',
-			'updated'=>'2006-10-04 17:18:00'
-		))) echo "Inserted Record 3<br/>";
-	
-		// Output any errors
-		echo "Errors:<pre>" . print_r($this->get_errors(), 1) . "</pre>";
+		return $this->query($query, $values);
 	}
+	
+	public function exists($table, $keyfieldvalues)
+	{
+		ksort($keyfieldvalues);
+		reset($keyfieldvalues);
+		if(is_numeric(key($keyfieldvalues))) {
+			$qry = "SELECT " . current($keyfieldvalues) . " FROM {$table} WHERE 1 ";
+		}
+		else {
+			$qry = "SELECT " . key($keyfieldvalues) . " FROM {$table} WHERE 1 ";
+		}
+		foreach($keyfieldvalues as $keyfield => $keyvalue) {
+			$qry .= " AND {$keyfield} = ? ";
+			$values[] = $keyvalue;
+		}
+		$result = $this->query($qry, $values);
+		return is_array($result) && (count(result) > 0);
+	}
+	
+	public function update($table, $fieldvalues, $keyfields)
+	{
+		ksort($fieldvalues);
+		ksort($keyfields);
+		
+		foreach($keyfields as $keyfield => $keyvalue) {
+			if(is_numeric($keyfield)) {
+				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];
+			}
+			else {
+				$keyfieldvalues[$keyfield] = $keyvalue;
+			}
+		}
+		if($this->exists($table, $keyfieldvalues)) {
+
+			$qry = "UPDATE {$table} SET";
+			$values = array();
+			$comma = '';
+			foreach($fieldvalues as $fieldname => $fieldvalue) {
+				$qry .= $comma . " {$fieldname} = ?";
+				$values[] = $fieldvalue;
+				$comma = ' ,';
+			} 
+			$qry .= ' WHERE 1 ';
+			
+			foreach($keyfields as $keyfield) {
+				$qry .= "AND {$keyfield} = ? ";
+				$values[] = $this->fields[$keyfield];
+			}
+			return $this->query($qry, $values);
+		}
+		else {
+			return $this->insert($table, $fieldvalues);
+		}
+	}
+
 }
 ?>
