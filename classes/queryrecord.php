@@ -37,33 +37,21 @@ class QueryRecord
 		else {
 			$this->fields[$name] = $value;
 		}
+		return $this->__get($name);
 	}
 	
 	public function insert($table)
 	{
 		global $db;
 
-		$db->insert($table, $this->fields);
+		$db->insert($table, array_merge($this->fields, $this->newfields));
 	}
 	
 	public function update($table, $updatekeyfields)
 	{
 		global $db;
-
-		$qry = "UPDATE {$table} SET";
-		$values = array();
-		$comma = '';
-		foreach($this->fields as $fieldname => $fieldvalue) {
-			$qry .= $comma . " {$fieldname} = ?";
-			$values[] = isset($this->newfields[$fieldname]) ? $this->newfields[$fieldname] : $fieldvalue;
-			$comma = ' ,';
-		} 
-		$qry .= ' WHERE 1 ';
-		foreach($updatekeyfields as $keyfield) {
-			$qry .= "AND {$keyfield} = ? ";
-			$values[] = $this->fields[$keyfield];
-		}
-		$db->query($qry, $values);
+		
+		$db->update($table, array_merge($this->fields, $this->newfields), $updatekeyfields);
 	}
 
 }
