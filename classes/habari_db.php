@@ -17,6 +17,7 @@ class habari_db
 	private $pdostatement;  // PDOStatement handle
 	private $errors = array(); // Array of SQL errors 
 	public $queryok; // Boolean on last query success 
+	private $queries = array(); // Array of executed queries
 
 	/**
 	 * function __construct
@@ -34,24 +35,28 @@ class habari_db
 	 * function query
 	 * Executes a query and returns success
 	 * @param string The query to execute
-	 * @params mixed Arguments to pass for prepared statements
+	 * @param array Arguments to pass for prepared statements
+	 * @param string Optional class name for row result objects	 
 	 */	 	 	 	 	
-	public function query()
+	public function query($query, $args = array(), $c_name = '')
 	{
-		// Grab query from first parameter
-		$args = func_get_args();
-		$query = array_shift($args);
-
 		$this->pdostatement = $this->dbh->prepare($query);
 		if($this->pdostatement) {
-			$this->pdostatement->setFetchMode(PDO::FETCH_OBJ);
+			if($c_name == '') {
+				$this->pdostatement->setFetchMode(PDO::FETCH_CLASS, 'QueryRecord', array());
+			}
+			else {
+				$this->pdostatement->setFetchMode(PDO::FETCH_CLASS, $c_name, array());
+			}
 			if($this->pdostatement->execute($args)) {
+				$this->queries[] = array($query, $args, true);
 				$this->queryok = true;
 				return true;
 			}
 		}
 		$this->queryok = false;
 		$this->errors[] = $this->dbh->errorInfo();
+		$this->queries[] = array($query, $args, $this->dbh->errorInfo());
 		return false;
 	}
 	
@@ -77,12 +82,12 @@ class habari_db
 	 * function get_results
 	 * Execute a query and return the results as an array of objects
 	 * @param string The query to execute
-	 * @params mixed Arguments to pass for prepared statements
+	 * @param array Arguments to pass for prepared statements
+	 * @param string Optional class name for row result objects	 
 	 */	 	 	 	 
-	public function get_results()
+	public function get_results($query, $args = array(), $classname = '')
 	{
-		$args = func_get_args();
-		if(count($args) != 0) call_user_func_array(array(&$this, 'query'), $args);
+		call_user_func_array(array(&$this, 'query'), array($query, $args, $classname));
 		if($this->queryok) {
 			return $this->pdostatement->fetchAll();
 		}
@@ -110,8 +115,7 @@ class habari_db
 		}
 		$query .= ') VALUES (' . trim(str_repeat('?,', count($fieldvalues)), ',') . ');';
 
-		array_unshift($values, $query);
-		return call_user_func_array(array(&$this, query), $values);
+		return call_user_func_array(array(&$this, query), array($query, $values));
 	}	 	 	 	 	
 
 	public function install_habari() {
@@ -119,6 +123,7 @@ class habari_db
 	 * function install_habari
 	 * Installs base tables and starter data.
 	 */
+	 global $db;
 	 
 		// Create the table
 		if ( $this->query("CREATE TABLE habari__posts 
@@ -138,10 +143,10 @@ class habari_db
 		// Insert records
 	
 		if($this->query("INSERT INTO habari__posts (slug, title, guid, content, author, status, pubdate, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-			'first-post', 'First Post', 'tag:localhost/first-post/1935076', 'This is my first post', 'owen', 'publish', '2006-10-04 17:17:00', '2006-10-04 17:17:00')) echo "Inserted Record 1<br/>";
+			array('first-post', 'First Post', 'tag:localhost/first-post/1935076', 'This is my first post', 'owen', 'publish', '2006-10-04 17:17:00', '2006-10-04 17:17:00'))) echo "Inserted Record 1<br/>";
 	
 		if($this->query("INSERT INTO habari__posts (slug, title, guid, content, author, status, pubdate, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-			'second-post', 'Second Post', 'tag:localhost/second-post/5987120', 'This is my second post', 'owen', 'publish', '2006-10-04 17:18:00', '2006-10-04 17:18:00')) echo "Inserted Record 2<br/>";
+			array('second-post', 'Second Post', 'tag:localhost/second-post/5987120', 'This is my second post', 'owen', 'publish', '2006-10-04 17:18:00', '2006-10-04 17:18:00'))) echo "Inserted Record 2<br/>";
 	
 		if($this->insert('habari__posts', array (
 			'slug'=>'third-post',

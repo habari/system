@@ -22,4 +22,9 @@ if(file_exists(HABARI_PATH . '/config.php')) {
 $db = new habari_db( $db_connection['connection_string'], $db_connection['username'], $db_connection['password'] );
 unset($db_connection);
 //$db->install_habari();  // Only need to do this once, and here's convenient for now.
+/*
+$mypost = new Post(array('slug'=>'my-new-post', 'title'=>'My New Post', 'content'=>'This is my new content')); 
+$mypost->insert();
+$mypost->publish();
+*/
 ?>
