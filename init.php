@@ -31,7 +31,7 @@ try {
 	$db = new habari_db( $db_connection['connection_string'], $db_connection['username'], $db_connection['password'] );
 }
 catch( Exception $e) {
-	die( 'Could not connect to database using the supplied credentials.  Please check config.php for the correct values.' );		
+	die( 'Could not connect to database using the supplied credentials.  Please check config.php for the correct values. Further information follows: ' .  $e->getMessage() );		
 }
 unset($db_connection);
 
