@@ -91,7 +91,6 @@ class Post extends QueryRecord
 	public function publish()
 	{
 		$this->status = 'publish';
-		$this->updated = date('Y-m-d h:i:s');
 		$this->update();
 	}
 
