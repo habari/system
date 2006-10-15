@@ -35,32 +35,32 @@ class Installer
 		
 		// Insert a few post records
 		
-		$post = new Post(array(
+		Posts::create(array(
 			'title'=>'First Post',
 			'guid'=>'tag:localhost/first-post/4981704',
 			'content'=>'This is my first post',
 			'author'=>'owen',
-			'pubdate'=>'2006-10-04 17:17:00'
+			'pubdate'=>'2006-10-04 17:17:00',
+			'status'=>'publish',
 		));
-		$post->publish();
 
-		$post = new Post(array(
+		Posts::create(array(
 			'title'=>'Second Post',
 			'guid'=>'tag:localhost/second-post/7407395',
 			'content'=>'This is my second post',
 			'author'=>'owen',
-			'pubdate'=>'2006-10-04 17:18:00'
+			'pubdate'=>'2006-10-04 17:18:00',
+			'status'=>'publish',
 		));
-		$post->publish();
 			
-		$post = new Post(array (
+		Posts::create(array (
 			'title'=>'Third Post',
 			'guid'=>'tag:localhost/third-post/4981704',
 			'content'=>'This is my third post',
 			'author'=>'owen',
-			'pubdate'=>'2006-10-04 17:19:00'
+			'pubdate'=>'2006-10-04 17:19:00',
+			'status'=>'publish',
 		));
-		$post->publish();
 
 		// insert a default admin user
 		$password = sha1('password');

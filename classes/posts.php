@@ -11,10 +11,10 @@ class Posts // Should extend something?
 
 	/**
 	 * static function retrieve
-	 * Returns a Posts object using a specific query.
+	 * Returns requested posts.
 	 * THIS CLASS SHOULD CACHE QUERY RESULTS!	 
 	 * @param array An associated array of parameters, or a querystring
-	 * @return Posts A Posts object with the results of the query.
+	 * @return array An array of Post objects, one for each query result
 	 **/	 	 	 	 	
 	static function retrieve($paramarray = array()) 
 	{
@@ -51,12 +51,15 @@ class Posts // Should extend something?
 	
 	/**
 	 * static function create
-	 * Creates a post
+	 * Creates a post and saves it
+	 * @param array An associative array of post fields
+	 * $return Post The post object that was created	 
 	 **/	 	 	
-	static function create() 
+	static function create($paramarray) 
 	{
-		global $db;
-		// do stuff
+		$post = new Post($paramarray);
+		$post->insert();
+		return $post;
 	}
 
 }
