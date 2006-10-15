@@ -81,7 +81,7 @@ class Post extends QueryRecord
 		$this->updated = date('Y-m-d h:i:s');
 		if(isset($this->fields['guid'])) unset($this->newfields['guid']);
 		$this->setslug();
-		parent::update( 'habari__posts', array('slug') );
+		parent::update( 'habari__posts', array('slug'=>$this->slug) );
 	}
 	
 	/**

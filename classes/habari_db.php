@@ -14,7 +14,7 @@
 class habari_db
 {
 	private $dbh;  // Database handle
-	private $pdostatement;  // PDOStatement handle
+	private $pdostatement = false;  // PDOStatement handle
 	private $errors = array(); // Array of SQL errors 
 	public $queryok; // Boolean on last query success 
 	private $queries = array(); // Array of executed queries
@@ -41,6 +41,7 @@ class habari_db
 	 */	 	 	 	 	
 	public function query($query, $args = array(), $c_name = '')
 	{
+		if($this->pdostatement) $this->pdostatement->closeCursor();
 		$this->pdostatement = $this->dbh->prepare($query);
 		if($this->pdostatement) {
 			if($c_name == '') $c_name = 'QueryRecord';
@@ -138,18 +139,13 @@ class habari_db
 	{
 		ksort($keyfieldvalues);
 		reset($keyfieldvalues);
-		if(is_numeric(key($keyfieldvalues))) {
-			$qry = "SELECT " . current($keyfieldvalues) . " FROM {$table} WHERE 1 ";
-		}
-		else {
-			$qry = "SELECT " . key($keyfieldvalues) . " FROM {$table} WHERE 1 ";
-		}
+		$qry = "SELECT " . key($keyfieldvalues) . " FROM {$table} WHERE 1 ";
 		foreach($keyfieldvalues as $keyfield => $keyvalue) {
 			$qry .= " AND {$keyfield} = ? ";
 			$values[] = $keyvalue;
 		}
-		$result = $this->query($qry, $values);
-		return is_array($result) && (count(result) > 0);
+		$result = $this->get_results($qry, $values);
+		return is_array($result) && (count($result) > 0);
 	}
 	
 	public function update($table, $fieldvalues, $keyfields)
@@ -166,7 +162,6 @@ class habari_db
 			}
 		}
 		if($this->exists($table, $keyfieldvalues)) {
-
 			$qry = "UPDATE {$table} SET";
 			$values = array();
 			$comma = '';
@@ -177,9 +172,9 @@ class habari_db
 			} 
 			$qry .= ' WHERE 1 ';
 			
-			foreach($keyfields as $keyfield) {
+			foreach($keyfields as $keyfield => $keyvalue) {
 				$qry .= "AND {$keyfield} = ? ";
-				$values[] = $this->fields[$keyfield];
+				$values[] = $keyvalue;
 			}
 			return $this->query($qry, $values);
 		}

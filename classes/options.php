@@ -40,12 +40,11 @@ class Options
 		$this->options[$name] = $value;
 		
 		if(is_array($value) || is_object($value)) {
-			$db->update( Options::table, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name') ); 
+			$db->update( Options::table, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name'=>$name) ); 
 		}
 		else {
-			$db->update( Options::table, array('name'=>$name, 'value'=>$value, 'type'=>0), array('name') ); 
+			$db->update( Options::table, array('name'=>$name, 'value'=>$value, 'type'=>0), array('name'=>$name) ); 
 		}
-	
 	}
 
 }
