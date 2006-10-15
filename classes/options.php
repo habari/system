@@ -12,11 +12,20 @@ class Options
 	
 	private $options = array();
 
+	/**
+	 * constructor __construct
+	 **/	 	
 	public function __construct() 
 	{
 		// Preload some options here?
 	}
 	
+	/**
+	 * function __get
+	 * Allows retrieval of option values
+	 * @param string Name of the option to get
+	 * @return mixed Stored value for specified option
+	 **/	 	 	
 	public function __get($name)
 	{
 		global $db;
@@ -34,6 +43,12 @@ class Options
 		return $this->options[$name];
 	}
 	
+	/**
+	 * function __set
+	 * Applies the option value to the options table
+	 * @param string Name of the option to set
+	 * @param mixed Value to set
+	 **/	 	 
 	public function __set($name, $value) {
 		global $db;
 		
