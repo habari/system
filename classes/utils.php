@@ -21,6 +21,7 @@ class Utils
 	 * Returns an associative array of parameters, whether the input value is 
 	 * a querystring or an associative array.
 	 * @param mixed An associative array or querystring parameter list
+	 * @return array An associative array of parameters
 	 **/	 	 	 	 	
 	static function get_params( $params )
 	{
