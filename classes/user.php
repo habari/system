@@ -39,6 +39,23 @@ class User extends QueryRecord
 	{
 		parent::update( 'habari__users' );
 	}
+
+	/**
+	* function remember
+	* sets a cookie on the client machine for future logins
+	*/
+	public function remember()
+	{
+		// set the cookie
+	}
+
+	/** function forget
+	* delete a cookie from the client machine
+	*/
+	public function forget()
+	{
+		// delete the cookie
+	}
 	
 }
 
