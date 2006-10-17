@@ -35,7 +35,7 @@ class Installer
 		
 		// Insert a few post records
 		
-		Posts::create(array(
+		Post::create(array(
 			'title'=>'First Post',
 			'guid'=>'tag:localhost/first-post/4981704',
 			'content'=>'This is my first post',
@@ -44,7 +44,7 @@ class Installer
 			'status'=>'publish',
 		));
 
-		Posts::create(array(
+		Post::create(array(
 			'title'=>'Second Post',
 			'guid'=>'tag:localhost/second-post/7407395',
 			'content'=>'This is my second post',
@@ -53,7 +53,7 @@ class Installer
 			'status'=>'publish',
 		));
 			
-		Posts::create(array (
+		Post::create(array (
 			'title'=>'Third Post',
 			'guid'=>'tag:localhost/third-post/4981704',
 			'content'=>'This is my third post',

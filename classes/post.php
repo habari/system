@@ -31,6 +31,68 @@ class Post extends QueryRecord
 		);
 		parent::__construct( $paramarray );
 	}
+
+	/**
+	 * static function retrieve
+	 * Returns requested posts.
+	 * THIS CLASS SHOULD CACHE QUERY RESULTS!	 
+	 * @param array An associated array of parameters, or a querystring
+	 * @param boolean If true, returns only the first result	 
+	 * @return array An array of Post objects, one for each query result
+	 **/	 	 	 	 	
+	static function get_posts($paramarray = array(), $one_row_only = false) 
+	{
+		global $db;
+	
+		// Defaults
+		$orderby = 'pubdate DESC';
+		$status = "status = 'publish'";
+	
+		// Overwrite defaults with incoming parameter array/querystring
+		extract(Utils::get_params($paramarray));
+		
+		$where = array(1);
+		$where[] = $status;
+		
+		$query = "
+		SELECT 
+			slug, title, guid, content, author, status, pubdate, updated 
+		FROM 
+			habari__posts 
+		WHERE 
+			" . implode( ' AND ', $where ) . "
+		ORDER BY 
+			{$orderby}";
+			
+		$fetch_fn = ($one_row_only) ? 'get_row' : 'get_results';
+		
+		$results = $db->$fetch_fn( $query, array(), 'Post' );
+		if ( is_array( $results ) ) {
+			return $results;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	static function get_post($paramarray = array())
+	{
+		return self::get_posts($paramarray, true);
+	}
+	
+	/**
+	 * static function create
+	 * Creates a post and saves it
+	 * @param array An associative array of post fields
+	 * $return Post The post object that was created	 
+	 **/	 	 	
+	static function create($paramarray) 
+	{
+		$post = new Post($paramarray);
+		$post->insert();
+		return $post;
+	}
+
 	
 	/**
 	 * function setslug
