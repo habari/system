@@ -38,6 +38,7 @@ class habari_db
 	 * @param string The query to execute
 	 * @param array Arguments to pass for prepared statements
 	 * @param string Optional class name for row result objects	 
+	 * @return boolean True on success, false if not	 
 	 */	 	 	 	 	
 	public function query($query, $args = array(), $c_name = '')
 	{
@@ -51,6 +52,11 @@ class habari_db
 				$this->queryok = true;
 				return true;
 			}
+			else {
+				$this->queryok = false;
+				$this->errors[] = array_merge($this->pdostatement->errorInfo(), array($query, $args));
+				return false;
+			}
 		}
 		$this->queryok = false;
 		$this->errors[] = array_merge($this->dbh->errorInfo(), array($query, $args));
@@ -60,17 +66,27 @@ class habari_db
 	/**
 	 * function get_errors
 	 * Returns error data gathered from database connection
+	 * @return array An array of error data	 
 	 */	  	 	
 	public function get_errors()
 	{
 		return $this->errors;
 	}
 	
+	/**
+	 * function has_errors
+	 * Determines if there have been errors since the last clear_errors() call
+	 * @return boolean True if there were errors, false if not
+	 **/	 	 	 	
 	public function has_errors()
 	{
 		return count($this->errors) > $this->errormarker;
 	}
 	
+	/**
+	 * function clear_errors
+	 * Updates the last error pointer to simulate resetting the error array
+	 **/	 	 	
 	public function clear_errors()
 	{
 		$this->errormarker = count($this->errors); 
@@ -79,7 +95,8 @@ class habari_db
 	/**
 	 * function get_last_error
 	 * Returns only the last error info
-	 */	  	 	
+	 * @return array Data for the last error	 
+	 **/
 	public function get_last_error()
 	{
 		return end($this->errors);
@@ -91,7 +108,9 @@ class habari_db
 	 * @param string The query to execute
 	 * @param array Arguments to pass for prepared statements
 	 * @param string Optional class name for row result objects	 
-	 */	 	 	 	 
+	 * @return array An array of QueryRecord or the named class each containing the row data
+	 * <code>$ary = $db->get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
+	 **/	 	 	 	 
 	public function get_results($query, $args = array(), $classname = '')
 	{
 		$this->query($query, $args, $classname);
@@ -102,6 +121,15 @@ class habari_db
 			return false;
 	}
 	
+	/**
+	 * function get_row
+	 * Returns a single row (the first in a multi-result set) object for a query
+	 * @param string The query to execute
+	 * @param array Arguments to pass for prepared statements
+	 * @param string Optional class name for row result object
+	 * @return object A QueryRecord or an instance of the named class containing the row data	 
+	 * <code>$obj = $db->get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>	 
+	 **/	 	 
 	public function get_row($query, $args = array(), $classname = '')
 	{
 		$this->query($query, $args, $classname);
@@ -117,7 +145,9 @@ class habari_db
 	 * Inserts into the specified table values associated to the key fields
 	 * @param string The table name
 	 * @param array An associative array of fields and values to insert
-	 */
+	 * @return boolean True on success, false if not	  	 
+	 * <code>$db->insert( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
+	 **/
 	public function insert($table, $fieldvalues)
 	{
 		ksort($fieldvalues);
@@ -135,6 +165,15 @@ class habari_db
 		return $this->query($query, $values);
 	}
 	
+	/**
+	 * function exists
+	 * Checks for a record that matches the specific criteria
+	 * A new row is inserted if no existing record matches the criteria	 
+	 * @param string Table to check
+	 * @param array Associative array of field values to match
+	 * @return boolean True if any matching record exists, false if not
+	 * <code>$db->exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
+	 **/	 
 	public function exists($table, $keyfieldvalues)
 	{
 		ksort($keyfieldvalues);
@@ -148,6 +187,15 @@ class habari_db
 		return is_array($result) && (count($result) > 0);
 	}
 	
+	/**
+	 * function update
+	 * Updates any record that matches the specific criteria
+	 * @param string Table to update
+	 * @param array Associative array of field values to set	 
+	 * @param array Associative array of field values to match
+	 * @return boolean True on success, false if not
+	 * <code>$db->update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>	 
+	 **/	 
 	public function update($table, $fieldvalues, $keyfields)
 	{
 		ksort($fieldvalues);
@@ -181,6 +229,27 @@ class habari_db
 		else {
 			return $this->insert($table, $fieldvalues);
 		}
+	}
+
+	/**
+	 * function delete
+	 * Deletes any record that matches the specific criteria
+	 * @param string Table to delete from
+	 * @param array Associative array of field values to match
+	 * @return boolean True on success, false if not
+	 * <code>$db->delete( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
+	 **/	 
+	public function delete( $table, $keyfields )
+	{
+		ksort( $keyfields );
+		
+		$qry = "DELETE FROM {$table} WHERE 1 ";
+		foreach ( $keyfields as $keyfield => $keyvalue ) {
+			$qry .= "AND {$keyfield} = ? ";
+			$values[] = $keyvalue;
+		}
+		
+		return $this->query( $qry, $values );
 	}
 
 }

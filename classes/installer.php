@@ -13,7 +13,7 @@ class Installer
 	{
 		global $db;
 		
-		$db->get_row("SELECT * FROM habari__options WHERE name = 'some unused value'");
+		$db->get_row("SELECT * FROM habari__options LIMIT 1;");
 		$db->clear_errors();
 		return $db->queryok;
 	}
