@@ -21,6 +21,36 @@ class User extends QueryRecord
 		);
 		parent::__construct($paramarray);
 	}
+
+	/**
+	* function me
+	* checks for the existence of a cookie, and returns a user object of the user, if successful
+	* @return user object, or false if no valid cookie exists
+	public static function me()
+	{
+		if ( self::$fields['username'] == null ) {
+			// see if there's a cookie
+			if ( ! isset($_COOKIE['habari']) ) {
+				// no cookie, so stop processing
+				return false;
+			} else {
+				$username = substr($_COOKIE['habari'], 40);
+				$cookiepass = substr($_COOKIE['habari'], 0, 40);
+				// now try to load this user from the database
+				$dbuser = $db->get_results("SELECT * FROM habari__users WHERE username = ?", $username);
+				if ( sha1($dbuser->pass) == $cookiepass ) {
+					$user = new User (
+						"username" => $dbuser->username,
+						"password" => $dbuser->password,
+						"email" => $dbuser->email
+						);
+					return $user;
+				} else {
+					return false;
+				}
+			}
+		}
+	}
 	
 	/**
 	 * function insert
@@ -33,7 +63,7 @@ class User extends QueryRecord
 
 	/**
 	 * function update
-	 * Updates an existing post in the posts table
+	 * Updates an existing user in the users table
 	 */	 	 	 	 	
 	public function update()
 	{
@@ -56,7 +86,18 @@ class User extends QueryRecord
 	{
 		// delete the cookie
 	}
-	
+
+	/** function authenticate
+	* checks a user's credentials to see if they are legit
+	* -- calls all auth plugins BEFORE checking local database
+	*/
+	public function authenticate()
+	{
+		/*
+		   execute auth plugins here
+		*/
+	}
+
 }
 
 
