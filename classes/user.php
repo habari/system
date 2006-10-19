@@ -8,6 +8,8 @@
 
 class User extends QueryRecord
 {
+	private static $me = null;  // Static storage for the currently logged-in User record
+
 	public function __construct($paramarray = array())
 	{
 		// Defaults
@@ -26,9 +28,11 @@ class User extends QueryRecord
 	* function me
 	* checks for the existence of a cookie, and returns a user object of the user, if successful
 	* @return user object, or false if no valid cookie exists
+	**/	
 	public static function me()
 	{
-		if ( self::$fields['username'] == null ) {
+		// Is the logged-in user not cached already?
+		if ( self::$me == null ) {
 			// see if there's a cookie
 			if ( ! isset($_COOKIE['habari']) ) {
 				// no cookie, so stop processing
@@ -39,16 +43,22 @@ class User extends QueryRecord
 				// now try to load this user from the database
 				$dbuser = $db->get_results("SELECT * FROM habari__users WHERE username = ?", $username);
 				if ( sha1($dbuser->pass) == $cookiepass ) {
-					$user = new User (
-						"username" => $dbuser->username,
-						"password" => $dbuser->password,
-						"email" => $dbuser->email
-						);
-					return $user;
+					// Cache the user in the static variable
+					self::$me = new User ( 
+						array(
+							"username" => $dbuser->username,
+							"password" => $dbuser->password,
+							"email" => $dbuser->email,
+						)
+					);
+					return self::$me;
 				} else {
 					return false;
 				}
 			}
+		}
+		else {
+			return self::$me;
 		}
 	}
 	
