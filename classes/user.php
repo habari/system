@@ -38,8 +38,9 @@ class User extends QueryRecord
 				// no cookie, so stop processing
 				return false;
 			} else {
-				$username = substr($_COOKIE['habari'], 40);
-				$cookiepass = substr($_COOKIE['habari'], 0, 40);
+				$cookie = "habari_" . $options->GUID;
+				$username = substr($_COOKIE[$cookie], 40);
+				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
 				$dbuser = $db->get_results("SELECT * FROM habari__users WHERE username = ?", $username);
 				if ( sha1($dbuser->pass) == $cookiepass ) {

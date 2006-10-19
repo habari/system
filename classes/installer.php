@@ -79,6 +79,16 @@ class Installer
 		$base_url = $_SERVER['REQUEST_URI'];
 		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
 		$options->base_url = $base_url;
+
+		// generate a random-ish number to use as the salt for
+		// a SHA1 hash that will serve as the unique identifier for
+		// this installation.  Also for use in cookies
+		$salt = '';
+		for ($i = 1; $i <= 10; $i++) {
+		       $salt .= substr('0123456789abcdef', rand(0,15), 1);
+		}
+		$hash = sha1($base_url . $salt);
+		$options->GUID = $hash;
 			
 		// Output any errors
 		if($db->has_errors()) {
