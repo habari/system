@@ -175,7 +175,37 @@ class Post extends QueryRecord
 		$this->status = 'publish';
 		return $this->update();
 	}
-
+	
+	/**
+	 * function __get
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value	 
+	 **/	 	 
+	public function __get( $name )
+	{
+		switch($name) {
+		case 'permalink':
+			return $this->get_permalink();
+		default:
+			return parent::__get( $name );
+		}
+	}
+	
+	/**
+	 * function get_permalink
+	 * Returns a permalink for the ->permalink property of this class.
+	 * @return string A link to this post.	 
+	 **/	 	 	
+	private function get_permalink()
+	{
+		global $urlparser;
+		
+		return $urlparser->get_url(
+			'single',
+			$this->fields
+		);
+	}
 
 }
 
