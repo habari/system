@@ -101,12 +101,40 @@ class User extends QueryRecord
 	/** function authenticate
 	* checks a user's credentials to see if they are legit
 	* -- calls all auth plugins BEFORE checking local database
+	* @param string A username or email address
+	* @param string A password
+	* @return a User object, or false
 	*/
-	public function authenticate()
+	public static function authenticate($who = '', $pw = '')
 	{
+		if ( (! $who ) || (! $pw ) ) {
+			return false;
+		}
+		$what = "username";
+
 		/*
-		   execute auth plugins here
+			execute auth plugins here
 		*/
+
+		// were we given an email address, rather than a username?
+		// this is a rough-shod approach, assuming that the @ character
+		// won't appear in a username
+		if ( strstr($who, '@') ) {
+			// yes?  see if this email address has a username
+			$what = "email";
+		}
+		$user = $db->get_results( "SELECT * FROM habari__users WHERE ? = ?", array($what, $who), 'User' );
+		if ( ! $user ) {
+			return false;
+		}
+		if (sha1($pw) == $user->password) {
+			// valid credentials were supplied
+			// set the cookie
+			$user->remember();
+			return $user;
+		} else {
+			return false;
+		}
 	}
 
 }
