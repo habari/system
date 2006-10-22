@@ -158,7 +158,7 @@ class URLParser
 				}
 			} 
 			if ( !$fail ) {
-				return $options->base_url . trim($output, '/');
+				return $options->base_url . '/' . trim($output, '/');
 			}
 		}
 		return '#unknown';
