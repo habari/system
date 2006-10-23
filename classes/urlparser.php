@@ -17,7 +17,9 @@ class URLParser
 	private $stub;  // Keep a persistent stub in this object
 	private $using_rule = false;  // Flag for whether a rule was used to set settings
 	private $rule_results = array();  // The match ratings of each rule
-	public $pagetype;  // The type of page that was requested
+	public $handlerclass;  // The handler class of page that was requested
+	public $handleraction;  // The action to pass to the handler that was requested
+	private static $instance;  // Holds the singleton instance of this class
 	
 	/**
 	 * constructor __construct
@@ -26,8 +28,8 @@ class URLParser
 	 **/	 	 	 	 	
 	public function __construct( $url )
 	{
-		global $options; 
-
+		global $options;
+		 
 		// Remove the front of the URL path, which isn't determinant for this class
 		// Keep the "stub"		
 		$base = parse_url( $options->base_url );
@@ -100,7 +102,8 @@ class URLParser
 				}
 			}
 			if ( !$fail ) {
-				$this->pagetype = $rule[1];
+				$this->handlerclass = $rule[1];
+				$this->handleraction = $rule[2];
 				break;
 			}
 		}
@@ -119,7 +122,22 @@ class URLParser
 
 		$this->settings = $setvars;
 	}
-
+	
+	/**
+	 * function handle_request
+	 * Act upon discovered results
+	 **/
+	public function handle_request()
+	{
+		if(isset($this->handlerclass)) {
+			new $this->handlerclass($this->handleraction, $this->settings);
+		}
+		else {
+			// 404!
+			echo 'The thing you were looking for was not found.  We should probably display some kind of intelligent error here.';
+		}
+	}	  	 	
+	
 	/**
 	 * function get_url
 	 * Returns a url for the specified resource.
@@ -136,7 +154,7 @@ class URLParser
 	
 		$params = Utils::get_params($paramarray);
 		
-		$fn = create_function( '$a', 'return $a[1] == "' . $pagetype . '";' );
+		$fn = create_function( '$a', 'return $a[2] == "' . $pagetype . '";' );
 		$rules = array_filter( $this->rules, $fn );
 		foreach ( $rules as $rule ) {
 			$parts = explode( '/', $rule[0] );
@@ -187,22 +205,22 @@ class URLParser
 		 *  	Likewise, put 'foo/"bar"/baz' before 'foo/qux'.
 		 *  year, month, and day are all special captures that will capture only their respective types. ie /[0-9]{4}/ and /[0-9]{2}/
 		 **/
-		$this->rules[] = array('year/month/day', 'date');
-		$this->rules[] = array('year/month', 'month');
-		$this->rules[] = array('year', 'year');
-		$this->rules[] = array('"tag"/tag', 'tag');
-		$this->rules[] = array('"author"/author', 'author');
-		$this->rules[] = array('"feed"', 'site_feed');
-		$this->rules[] = array('"feed"/feedtype', 'site_feed');
-		$this->rules[] = array('"comments"', 'comments_feed');
-		$this->rules[] = array('"comments"/feedtype', 'comments_feed');
-		$this->rules[] = array('slug', 'post');
-		$this->rules[] = array('slug/"feed"', 'post_feed');
-		$this->rules[] = array('slug/"feed"/feedtype', 'post_feed');
-		$this->rules[] = array('slug/"trackback"', 'trackback');
-		$this->rules[] = array('"pingback"', 'pingback');
-		$this->rules[] = array('', 'home');
-		$this->rules[] = array('"ajax"/action', 'ajax');
+		$this->rules[] = array('year/month/day', 'ThemeHandler', 'date');
+		$this->rules[] = array('year/month', 'ThemeHandler', 'month');
+		$this->rules[] = array('year', 'ThemeHandler', 'year');
+		$this->rules[] = array('"tag"/tag', 'ThemeHandler', 'tag');
+		$this->rules[] = array('"author"/author', 'ActionHandler', 'author');
+		$this->rules[] = array('"feed"', 'ActionHandler', 'site_feed');
+		$this->rules[] = array('"feed"/feedtype', 'ActionHandler', 'site_feed');
+		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
+		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
+		$this->rules[] = array('slug', 'ThemeHandler', 'post');
+		$this->rules[] = array('slug/"feed"', 'ActionHandler', 'post_feed');
+		$this->rules[] = array('slug/"feed"/feedtype', 'ActionHandler', 'post_feed');
+		$this->rules[] = array('slug/"trackback"', 'ActionHandler', 'trackback');
+		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
+		$this->rules[] = array('', 'ThemeHandler', 'home');
+		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
 	}
 
 }
