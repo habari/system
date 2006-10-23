@@ -88,6 +88,9 @@ class User extends QueryRecord
 	public function remember()
 	{
 		// set the cookie
+		$cookie = "habari_" . $options->GUID;
+		$content = sha1($this->password) . $this->username;
+		setcookie($cookie, $content, time() + 604,800, $options->siteurl);
 	}
 
 	/** function forget
@@ -96,6 +99,8 @@ class User extends QueryRecord
 	public function forget()
 	{
 		// delete the cookie
+		$cookie = "habari_" . $options->GUID;
+		setcookie($cookie, ' ', time() - 86400, $options->siteurl);
 	}
 
 	/** function authenticate
