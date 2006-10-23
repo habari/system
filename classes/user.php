@@ -42,7 +42,7 @@ class User extends QueryRecord
 				$username = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$dbuser = $db->get_results("SELECT * FROM habari__users WHERE username = ?", $username);
+				$dbuser = $db->get_results("SELECT * FROM habari__users WHERE username = ?", array($username));
 				if ( sha1($dbuser->pass) == $cookiepass ) {
 					// Cache the user in the static variable
 					self::$me = new User ( 
