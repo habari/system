@@ -128,7 +128,7 @@ class User extends QueryRecord
 			// yes?  see if this email address has a username
 			$what = "email";
 		}
-		$user = $db->get_results( "SELECT * FROM habari__users WHERE ? = ?", array($what, $who), 'User' );
+		$user = $db->get_results( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
 			return false;
 		}
