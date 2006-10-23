@@ -42,17 +42,46 @@ class Post extends QueryRecord
 	 **/	 	 	 	 	
 	static function get_posts($paramarray = array(), $one_row_only = false) 
 	{
+		global $urlparser;
+
+		// Defaults
+		$defaults = array (
+			'orderby' => 'pubdate DESC',
+			'status' => "status = 'publish'",
+			'stub' => '',
+		);
+
+		$paramarray = array_merge( $urlparser->settings, $defaults, Utils::get_params($paramarray) ); 
+
+		return self::do_query($paramarray);
+	}
+
+	
+	static function get_post($paramarray = array())
+	{
+		global $urlparser;
+		
+		// Defaults
+		$defaults = array (
+			'orderby' => 'pubdate DESC',
+			'status' => "status = 'publish'",
+		);
+
+		$paramarray = array_merge( $urlparser->settings, $defaults, Utils::get_params($paramarray) ); 
+		return self::do_query($paramarray, true);
+	}
+		
+	static function do_query($paramarray, $one_row_only = false)
+	{
 		global $db;
 	
-		// Defaults
-		$orderby = 'pubdate DESC';
-		$status = "status = 'publish'";
-	
-		// Overwrite defaults with incoming parameter array/querystring
+		// Put incoming parameters into the local scope
 		extract(Utils::get_params($paramarray));
-		
 		$where = array(1);
 		$where[] = $status;
+		if(isset($slug)) {
+			$where[] = "slug = '{$slug}'";
+		}
 		
 		$query = "
 		SELECT 
@@ -65,19 +94,14 @@ class Post extends QueryRecord
 			{$orderby}";
 			
 		$fetch_fn = ($one_row_only) ? 'get_row' : 'get_results';
-		
 		$results = $db->$fetch_fn( $query, array(), 'Post' );
-		if ( is_array( $results ) ) {
+
+		if ( is_array( $results ) || $one_row_only) {
 			return $results;
 		}
 		else {
 			return false;
 		}
-	}
-	
-	static function get_post($paramarray = array())
-	{
-		return self::get_posts($paramarray, true);
 	}
 	
 	/**
