@@ -29,6 +29,17 @@ class Utils
 		parse_str($params, $paramarray);
 		return $paramarray;
 	}
+
+	/**
+	 * function end_in_slash
+	 * Forces a string to end in a single slash
+	 * @param string A string, usually a path
+	 * @return string The string with the slash added or extra slashes removed, but with one slash only
+	 **/
+	static function end_in_slash( $value )
+	{
+		return rtrim($value, '/') . '/';
+	}
 	
 	/**
 	 * function debug_reveal

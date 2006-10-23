@@ -202,7 +202,7 @@ class Post extends QueryRecord
 		global $urlparser;
 		
 		return $urlparser->get_url(
-			'single',
+			'post',
 			$this->fields
 		);
 	}

@@ -158,7 +158,7 @@ class URLParser
 				}
 			} 
 			if ( !$fail ) {
-				return $options->base_url . '/' . trim($output, '/');
+				return Utils::end_in_slash($options->base_url) . trim($output, '/');
 			}
 		}
 		return '#unknown';
@@ -181,14 +181,26 @@ class URLParser
 		 *    and field names that will be replaced with data from the post or calling procedure		 
 		 *  The second element is the pagetype
 		 *  There can be more than one entry per pagetype
-		 *  The earliest entry that has available matching fields is the one that is used.		 		 
-		 **/		 
+		 *  The earliest entry that has available matching fields is the one that is used.
+		 *  Put literal text matches at any level before capture matches.  For example...
+		 *  	Put '"feed"' before 'slug' or else it will always match http://example.com/feed as a slug of "feed".
+		 *  	Likewise, put 'foo/"bar"/baz' before 'foo/qux'.
+		 *  year, month, and day are all special captures that will capture only their respective types. ie /[0-9]{4}/ and /[0-9]{2}/
+		 **/
 		$this->rules[] = array('year/month/day', 'date');
 		$this->rules[] = array('year/month', 'month');
 		$this->rules[] = array('year', 'year');
 		$this->rules[] = array('"tag"/tag', 'tag');
 		$this->rules[] = array('"author"/author', 'author');
-		$this->rules[] = array('slug', 'single');
+		$this->rules[] = array('"feed"', 'site_feed');
+		$this->rules[] = array('"feed"/feedtype', 'site_feed');
+		$this->rules[] = array('"comments"', 'comments_feed');
+		$this->rules[] = array('"comments"/feedtype', 'comments_feed');
+		$this->rules[] = array('slug', 'post');
+		$this->rules[] = array('slug/"feed"', 'post_feed');
+		$this->rules[] = array('slug/"feed"/feedtype', 'post_feed');
+		$this->rules[] = array('slug/"trackback"', 'trackback');
+		$this->rules[] = array('"pingback"', 'pingback');
 		$this->rules[] = array('', 'home');
 		$this->rules[] = array('"ajax"/action', 'ajax');
 	}
