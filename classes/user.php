@@ -25,34 +25,34 @@ class User extends QueryRecord
 	}
 
 	/**
-	* function me
+	* function identify
 	* checks for the existence of a cookie, and returns a user object of the user, if successful
 	* @return user object, or false if no valid cookie exists
 	**/	
-	public static function me()
+	public static function identify()
 	{
+		global $db;
+
 		// Is the logged-in user not cached already?
 		if ( self::$me == null ) {
 			// see if there's a cookie
-			if ( ! isset($_COOKIE['habari']) ) {
+			$cookie = "habari_" . $options->GUID;
+			if ( ! isset($_COOKIE[$cookie]) ) {
 				// no cookie, so stop processing
 				return false;
 			} else {
-				$cookie = "habari_" . $options->GUID;
 				$username = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$dbuser = $db->get_results("SELECT * FROM habari__users WHERE username = ?", array($username));
-				if ( sha1($dbuser->pass) == $cookiepass ) {
+				$results = $db->get_results("SELECT * FROM habari__users WHERE username = ?", array($username), User);
+				if (! $results) {
+					return false;
+				}
+				$dbuser = $results[0];
+				if ( sha1($dbuser->password) == $cookiepass ) {
 					// Cache the user in the static variable
-					self::$me = new User ( 
-						array(
-							"username" => $dbuser->username,
-							"password" => $dbuser->password,
-							"email" => $dbuser->email,
-						)
-					);
-					return self::$me;
+					self::$me = $dbuser;
+					return $dbuser;
 				} else {
 					return false;
 				}
@@ -90,7 +90,7 @@ class User extends QueryRecord
 		// set the cookie
 		$cookie = "habari_" . $options->GUID;
 		$content = sha1($this->password) . $this->username;
-		setcookie($cookie, $content, time() + 604,800, $options->siteurl);
+		setcookie($cookie, $content, time() + 604800, $options->siteurl);
 	}
 
 	/** function forget
@@ -112,6 +112,8 @@ class User extends QueryRecord
 	*/
 	public static function authenticate($who = '', $pw = '')
 	{
+		global $db;
+
 		if ( (! $who ) || (! $pw ) ) {
 			return false;
 		}
@@ -128,10 +130,11 @@ class User extends QueryRecord
 			// yes?  see if this email address has a username
 			$what = "email";
 		}
-		$user = $db->get_results( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
-		if ( ! $user ) {
+		$results = $db->get_results( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
+		if ( ! $results ) {
 			return false;
 		}
+		$user = $results[0];
 		if (sha1($pw) == $user->password) {
 			// valid credentials were supplied
 			// set the cookie
