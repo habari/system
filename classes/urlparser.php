@@ -39,7 +39,12 @@ class URLParser
 		}
 		if ( substr( $stub, -1, 1 ) == '/' ) {
 			$stub = substr( $stub, 0, -1 );
-		} 
+		}
+		
+		// Remove the querystring
+		if ( strpos($stub, '?') ) {
+			list($stub, $querystring) = explode('?', $stub, 2);
+		}
 		
 		// Record the stub for future use
 		$this->stub = $stub;
@@ -82,6 +87,16 @@ class URLParser
 				// Check for year part (four numbers)
 				case ( $rule_parts[ $z ] == 'year' ) :
 					if ( strlen( $parts[ $z ] ) == 4 && is_numeric( $parts[ $z ] ) ) {
+						$setvars[ $rule_parts[ $z ] ] = $parts[ $z ];
+					}
+					else {
+						$fail = true;
+						break 2;
+					}
+					break 1;
+				// Check for year part (four numbers)
+				case ( $rule_parts[ $z ] == 'index' ) :
+					if ( is_numeric( $parts[ $z ] ) ) {
 						$setvars[ $rule_parts[ $z ] ] = $parts[ $z ];
 					}
 					else {
@@ -215,6 +230,7 @@ class URLParser
 		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('slug', 'ThemeHandler', 'post');
+		$this->rules[] = array('slug/"page"/index', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"feed"', 'ActionHandler', 'post_feed');
 		$this->rules[] = array('slug/"feed"/feedtype', 'ActionHandler', 'post_feed');
 		$this->rules[] = array('slug/"trackback"', 'ActionHandler', 'trackback');
