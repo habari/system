@@ -44,11 +44,10 @@ class User extends QueryRecord
 				$username = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$results = $db->get_results("SELECT * FROM habari__users WHERE username = ?", array($username), User);
-				if (! $results) {
+				$user = $db->get_row("SELECT * FROM habari__users WHERE username = ?", array($username), User);
+				if ( ! $user ) {
 					return false;
 				}
-				$dbuser = $results[0];
 				if ( sha1($dbuser->password) == $cookiepass ) {
 					// Cache the user in the static variable
 					self::$me = $dbuser;
@@ -130,11 +129,10 @@ class User extends QueryRecord
 			// yes?  see if this email address has a username
 			$what = "email";
 		}
-		$results = $db->get_results( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
-		if ( ! $results ) {
+		$user = $db->get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
+		if ( ! $user ) {
 			return false;
 		}
-		$user = $results[0];
 		if (sha1($pw) == $user->password) {
 			// valid credentials were supplied
 			// set the cookie
