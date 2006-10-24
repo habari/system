@@ -7,7 +7,8 @@
  * @package Habari
  */
 
-
+// TODO: Make this not use a specific theme
+define('THEME_DIR', HABARI_PATH . '/themes/k2/');
 
 class ThemeHandler extends ActionHandler
 {
@@ -21,16 +22,23 @@ class ThemeHandler extends ActionHandler
 	 * @param array Settings passed in from the URL
 	 **/	 	 
 	public function __call($action, $settings) {
-		global $options, $urlparser;
+		global $options, $urlparser, $theme;
 	
 		// What this handler handles and how
 		$handle = array(
 			'post'=>'post.php', 
 			'home'=>'index.php',
+			'login'=>'login.php',
+			'logout'=>'login.php',
 		);
+		
+		$theme = new ThemeEngine();
 	
 		if(isset($handle[$action])) {
-			include( HABARI_PATH . '/themes/k2/' . $handle[$action] );
+			$potential_template = THEME_DIR . $handle[$action];
+			if(file_exists($potential_template)) {
+				include $potential_template;
+			}
 		}
 		else {
 			throw new Exception("ThemeHandler does not handle the action {$action}.");
