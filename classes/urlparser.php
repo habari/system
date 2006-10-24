@@ -16,7 +16,7 @@ class URLParser
 	public $settings = array();  // The settings found based on the rules
 	private $stub;  // Keep a persistent stub in this object
 	private $using_rule = false;  // Flag for whether a rule was used to set settings
-	private $rule_results = array();  // The match ratings of each rule
+	private $rule_results;  // The matched rule
 	public $handlerclass;  // The handler class of page that was requested
 	public $handleraction;  // The action to pass to the handler that was requested
 	private static $instance;  // Holds the singleton instance of this class
@@ -119,6 +119,7 @@ class URLParser
 			if ( !$fail ) {
 				$this->handlerclass = $rule[1];
 				$this->handleraction = $rule[2];
+				$this->rule_results = $rule;
 				break;
 			}
 		}
@@ -127,10 +128,10 @@ class URLParser
 		foreach ( $this->rules as $rule ) {
 		
 			$parts = explode( '/', $rule[0] );
-			foreach ( $parts as $var ) {
-				if ( $var{0} == '"' ) continue;
-				if ( isset( $_GET[$varname] ) ) {
-					$setvars[ $varname ] = $_GET[ $varname ];
+			foreach ( $parts as $varname ) {
+				if ( $varname{0} == '"' ) continue;
+				if ( isset( $_REQUEST[$varname] ) ) {
+					$setvars[ $varname ] = $_REQUEST[ $varname ];
 				}
 			}
 		}
@@ -163,7 +164,7 @@ class URLParser
 	 * echo $urlparser->get_url( 'tag', 'tag=my-tag' );
 	 * echo $urlparser->get_url( 'tag', array( 'tag' => 'my-tag' ) );	  	 
 	 **/	 	 	 	  	 	 		
-	public function get_url( $pagetype, $paramarray )
+	public function get_url( $pagetype, $paramarray = array())
 	{
 		global $options;
 	
@@ -172,16 +173,22 @@ class URLParser
 		$fn = create_function( '$a', 'return $a[2] == "' . $pagetype . '";' );
 		$rules = array_filter( $this->rules, $fn );
 		foreach ( $rules as $rule ) {
+			$output = '';
 			$parts = explode( '/', $rule[0] );
 			$fail = false;
+			$used = array();
 			foreach ( $parts as $part ) {
 				switch( true ) {
 				case ( $part{0} == '"' ) :
 					$output .= '/' . substr( $part, 1, -1 );
 					break 1;
 				default :
-					if ( isset( $params[ $part ] ) ) {
+					if( $part == '') {
+						// Do nothing.
+					}
+					elseif ( isset( $params[ $part ] ) ) {
 						$output .= '/' . $params[ $part ];
+						$used[] = $part;
 						break 1;
 					}
 					else {
@@ -189,9 +196,16 @@ class URLParser
 						break 2;
 					}
 				}
-			} 
+			}
 			if ( !$fail ) {
-				return Utils::end_in_slash($options->base_url) . trim($output, '/');
+				foreach ( $params as $key=>$param ) {
+					if ( !in_array( $key, $used ) ) {
+						$unused[$key] = $array;
+					}
+				}
+				$querystring = http_build_query((array)$unused);
+				$querystring = ($querystring == '' ? '' : '?') . $querystring;
+				return Utils::end_in_slash($options->base_url) . trim($output, '/') . $querystring;
 			}
 		}
 		return '#unknown';
@@ -207,13 +221,15 @@ class URLParser
 		/**
 		 *  To make a rule:
 		 *  Add a new entry to the $this->rules array.
-		 *  Each entry is a two-element array.
+		 *  Each entry is a three-element array.
 		 *  The first element is the URL structure.
 		 *  The URL structure consists of
 		 *    quoted literal values (that will appear in the output URL literally
-		 *    and field names that will be replaced with data from the post or calling procedure		 
-		 *  The second element is the pagetype
-		 *  There can be more than one entry per pagetype
+		 *    and field names that will be replaced with data from the post or calling procedure
+		 *  The second element is the handler class name.
+		 *  The handler class name should be a descendant of ActionHandler		 		 		 
+		 *  The third element is the action
+		 *  There can be more than one entry per action
 		 *  The earliest entry that has available matching fields is the one that is used.
 		 *  Put literal text matches at any level before capture matches.  For example...
 		 *  	Put '"feed"' before 'slug' or else it will always match http://example.com/feed as a slug of "feed".
@@ -229,6 +245,9 @@ class URLParser
 		$this->rules[] = array('"feed"/feedtype', 'ActionHandler', 'site_feed');
 		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
+		$this->rules[] = array('"login"/action', 'UserHandler', 'login');
+		$this->rules[] = array('"login"', 'UserHandler', 'login');
+		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
 		$this->rules[] = array('slug', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"page"/index', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"feed"', 'ActionHandler', 'post_feed');
@@ -237,8 +256,6 @@ class URLParser
 		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
 		$this->rules[] = array('', 'ThemeHandler', 'home');
 		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
-		$this->rules[] = array('"login"', 'UserHandler', 'login');
-		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
 	}
 
 }

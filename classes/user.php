@@ -8,7 +8,7 @@
 
 class User extends QueryRecord
 {
-	private static $me = null;  // Static storage for the currently logged-in User record
+	private static $identity = null;  // Static storage for the currently logged-in User record
 
 	public function __construct($paramarray = array())
 	{
@@ -31,10 +31,9 @@ class User extends QueryRecord
 	**/	
 	public static function identify()
 	{
-		global $db;
-
+		global $db, $options;
 		// Is the logged-in user not cached already?
-		if ( self::$me == null ) {
+		if ( self::$identity == null ) {
 			// see if there's a cookie
 			$cookie = "habari_" . $options->GUID;
 			if ( ! isset($_COOKIE[$cookie]) ) {
@@ -48,17 +47,17 @@ class User extends QueryRecord
 				if ( ! $user ) {
 					return false;
 				}
-				if ( sha1($dbuser->password) == $cookiepass ) {
+				if ( sha1($user->password) == $cookiepass ) {
 					// Cache the user in the static variable
-					self::$me = $dbuser;
-					return $dbuser;
+					self::$identity = $user;
+					return $user;
 				} else {
 					return false;
 				}
 			}
 		}
 		else {
-			return self::$me;
+			return self::$identity;
 		}
 	}
 	
@@ -86,6 +85,7 @@ class User extends QueryRecord
 	*/
 	public function remember()
 	{
+		global $options;
 		// set the cookie
 		$cookie = "habari_" . $options->GUID;
 		$content = sha1($this->password) . $this->username;
@@ -97,9 +97,11 @@ class User extends QueryRecord
 	*/
 	public function forget()
 	{
+		global $options;
 		// delete the cookie
 		$cookie = "habari_" . $options->GUID;
 		setcookie($cookie, ' ', time() - 86400, $options->siteurl);
+		die('ok');
 	}
 
 	/** function authenticate
@@ -112,6 +114,7 @@ class User extends QueryRecord
 	public static function authenticate($who = '', $pw = '')
 	{
 		global $db;
+Utils::debug('authenticate');
 
 		if ( (! $who ) || (! $pw ) ) {
 			return false;
@@ -131,14 +134,18 @@ class User extends QueryRecord
 		}
 		$user = $db->get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
+			self::$identity = null;
 			return false;
 		}
 		if (sha1($pw) == $user->password) {
 			// valid credentials were supplied
 			// set the cookie
 			$user->remember();
-			return $user;
+			self::$identity = $user;
+Utils::debug('authed');
+			return self::$identity;
 		} else {
+			self::$identity = null;
 			return false;
 		}
 	}

@@ -42,6 +42,16 @@ class Utils
 	}
 	
 	/**
+	 * function redirect
+	 * Redirects the request to a new URL
+	 * @param string The URL to redirect to
+	 **/	 
+	static function redirect( $url )
+	{
+		header('Location: ' . $url, true, 302);
+	}
+	
+	/**
 	 * function debug_reveal
 	 * Helper function used by debug()
 	 * Not for external use.	 
