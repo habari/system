@@ -237,6 +237,8 @@ class URLParser
 		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
 		$this->rules[] = array('', 'ThemeHandler', 'home');
 		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
+		$this->rules[] = array('"login"', 'UserHandler', 'login');
+		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
 	}
 
 }
