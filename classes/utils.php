@@ -25,8 +25,8 @@ class Utils
 	 **/	 	 	 	 	
 	static function get_params( $params )
 	{
-		if(is_array($params)) return $params;
-		parse_str($params, $paramarray);
+		if( is_array( $params ) ) return $params;
+		parse_str( $params, $paramarray );
 		return $paramarray;
 	}
 

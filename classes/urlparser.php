@@ -125,8 +125,8 @@ class URLParser
 		}
 
 		// See if any variables were set on the querystring and override what was found in the URL
+		/*
 		foreach ( $this->rules as $rule ) {
-		
 			$parts = explode( '/', $rule[0] );
 			foreach ( $parts as $varname ) {
 				if ( $varname{0} == '"' ) continue;
@@ -135,6 +135,17 @@ class URLParser
 				}
 			}
 		}
+		*/
+		/**
+		 * The above code block scans every rule looking for settable parameters.
+		 * It then looks for those parameters on the querystring and absorbs them	
+		 * into $setvars, which is then stored in $this->settings.
+		 * 
+		 * The below code simply merges any posted variables or querystring arguments
+		 * into $setvars directly.
+		 **/		 		 		 		 		 	 
+		// Let's see how deadly this is:
+		$setvars = array_merge($setvars, $_GET, $_POST);  // Should do magic_quotes_gpc removal here.
 
 		$this->settings = $setvars;
 	}
@@ -152,7 +163,21 @@ class URLParser
 			// 404!
 			echo 'The thing you were looking for was not found.  We should probably display some kind of intelligent error here.';
 		}
-	}	  	 	
+	}
+	
+	/**
+	 * function __get
+	 * Returns property values gathered from the URL.
+	 * Shortcut for $urlparser->settings['name'] => $urlparser->name
+	 * @param string Value of $settings to retrieve
+	 **/
+	public function __get($name) 
+	{
+		if ( isset( $this->settings[$name] ) ) {
+			return $this->settings[$name];
+		}
+		return false;
+	}	 	 	 	
 	
 	/**
 	 * function get_url
@@ -186,7 +211,7 @@ class URLParser
 					if( $part == '') {
 						// Do nothing.
 					}
-					elseif ( isset( $params[ $part ] ) ) {
+					elseif ( isset( $params[$part] ) && $params[$part] != '' ) {
 						$output .= '/' . $params[ $part ];
 						$used[] = $part;
 						break 1;
@@ -199,8 +224,8 @@ class URLParser
 			}
 			if ( !$fail ) {
 				foreach ( $params as $key=>$param ) {
-					if ( !in_array( $key, $used ) ) {
-						$unused[$key] = $array;
+					if ( !in_array( $key, $used ) && $param != '' ) {
+						$unused[$key] = $param;
 					}
 				}
 				$querystring = http_build_query((array)$unused);

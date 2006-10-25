@@ -21,7 +21,17 @@ class UserHandler extends ActionHandler
 	public function login($settings) {
 		global $urlparser;
 		if ( $settings['action'] == 'login' ) {
-			$user = user::authenticate($_POST['name'], $_POST['pass']);
+			if( !($user = user::authenticate( $_POST['name'], $_POST['pass'] ) )  ) {
+				Utils::redirect(
+					$urlparser->get_url( 
+						'login', 
+						array( 
+							'action' => '', 
+							'error' => 'badlogin' 
+						) 
+					) 
+				); 
+			}
 		}
 		new ThemeHandler( 'login', $settings );
 	}
