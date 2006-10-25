@@ -33,14 +33,12 @@ class Post extends QueryRecord
 	}
 
 	/**
-	 * static function retrieve
+	 * static function get_posts
 	 * Returns requested posts.
-	 * THIS CLASS SHOULD CACHE QUERY RESULTS!	 
 	 * @param array An associated array of parameters, or a querystring
-	 * @param boolean If true, returns only the first result	 
 	 * @return array An array of Post objects, one for each query result
 	 **/	 	 	 	 	
-	static function get_posts($paramarray = array(), $one_row_only = false) 
+	static function get_posts($paramarray = array()) 
 	{
 		global $urlparser;
 
@@ -53,10 +51,16 @@ class Post extends QueryRecord
 
 		$paramarray = array_merge( $urlparser->settings, $defaults, Utils::get_params($paramarray) ); 
 
-		return self::do_query($paramarray);
+		return self::do_query($paramarray, false);
 	}
 
 	
+	/**
+	 * static function get_posts
+	 * Returns a single requested post
+	 * @param array An associated array of parameters, or a querystring
+	 * @return array A single Post object, the first if multiple results match
+	 **/	 	 	 	 	
 	static function get_post($paramarray = array())
 	{
 		global $urlparser;
@@ -71,7 +75,15 @@ class Post extends QueryRecord
 		return self::do_query($paramarray, true);
 	}
 		
-	static function do_query($paramarray, $one_row_only = false)
+	/**
+	 * static function do_query
+	 * Returns a post or posts based on supplied parameters
+	 * THIS CLASS SHOULD CACHE QUERY RESULTS!	 
+	 * @param array An associated array of parameters, or a querystring
+	 * @param boolean If true, returns only the first result	 
+	 * @return array An array of Post objects, or a single post object, depending on request
+	 **/	 	 	 	 	
+	private function do_query($paramarray, $one_row_only)
 	{
 		global $db;
 	
