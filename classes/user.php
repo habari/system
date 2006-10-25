@@ -15,6 +15,7 @@ class User extends QueryRecord
 		// Defaults
 		$this->fields = array_merge(
 			array(
+				'id' => '',
 				'username' => '', 
 				'email' => '', 
 				'password' => ''
@@ -40,14 +41,14 @@ class User extends QueryRecord
 				// no cookie, so stop processing
 				return false;
 			} else {
-				$username = substr($_COOKIE[$cookie], 40);
+				$userid = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$user = $db->get_row("SELECT * FROM habari__users WHERE username = ?", array($username), User);
+				$user = $db->get_row("SELECT * FROM habari__users WHERE id = ?", array($userid), User);
 				if ( ! $user ) {
 					return false;
 				}
-				if ( sha1($user->password) == $cookiepass ) {
+				if ( sha1($user->password . $userid) == $cookiepass ) {
 					// Cache the user in the static variable
 					self::$identity = $user;
 					return $user;
@@ -88,7 +89,7 @@ class User extends QueryRecord
 		global $options;
 		// set the cookie
 		$cookie = "habari_" . $options->GUID;
-		$content = sha1($this->password) . $this->username;
+		$content = sha1($this->password . $this->id) . $this->id;
 		setcookie($cookie, $content, time() + 604800, $options->siteurl);
 	}
 
@@ -114,7 +115,8 @@ class User extends QueryRecord
 	public static function authenticate($who = '', $pw = '')
 	{
 		global $db;
-Utils::debug('authenticate');
+		/* DEBUG */
+		#Utils::debug('authenticate');
 
 		if ( (! $who ) || (! $pw ) ) {
 			return false;
@@ -142,7 +144,8 @@ Utils::debug('authenticate');
 			// set the cookie
 			$user->remember();
 			self::$identity = $user;
-Utils::debug('authed');
+			/* DEBUG */
+			#Utils::debug('authed');
 			return self::$identity;
 		} else {
 			self::$identity = null;
@@ -151,6 +154,5 @@ Utils::debug('authed');
 	}
 
 }
-
 
 ?>
