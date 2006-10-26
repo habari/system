@@ -37,7 +37,7 @@ class Installer
 		
 		Post::create(array(
 			'title'=>'First Post',
-			'guid'=>'tag:localhost/first-post/4981704',
+			'guid'=>'tag:localhost,2006:first-post/4981704',
 			'content'=>'This is my first post',
 			'author'=>'owen',
 			'pubdate'=>'2006-10-04 17:17:00',
@@ -46,7 +46,7 @@ class Installer
 
 		Post::create(array(
 			'title'=>'Second Post',
-			'guid'=>'tag:localhost/second-post/7407395',
+			'guid'=>'tag:localhost,2006:second-post/7407395',
 			'content'=>'This is my second post',
 			'author'=>'owen',
 			'pubdate'=>'2006-10-04 17:18:00',
@@ -55,7 +55,7 @@ class Installer
 			
 		Post::create(array (
 			'title'=>'Third Post',
-			'guid'=>'tag:localhost/third-post/4981704',
+			'guid'=>'tag:localhost,2006:third-post/4981704',
 			'content'=>'This is my third post',
 			'author'=>'owen',
 			'pubdate'=>'2006-10-04 17:19:00',

@@ -52,6 +52,20 @@ class Utils
 	}
 	
 	/**
+	 * function atomtime
+	 * Returns RFC-3339 time from a time string or integer timestamp
+	 * @param mixed A string of time or integer timestamp
+	 * @return string An FRC-3339 formatted time	 	 
+	 **/
+	static function atomtime($t)
+	{
+		if ( ! is_numeric( $t ) ) {
+			$t = strtotime( $t );
+		}
+		return date( DATE_ATOM, $t );
+	}	 	 	
+	
+	/**
 	 * function debug_reveal
 	 * Helper function used by debug()
 	 * Not for external use.	 

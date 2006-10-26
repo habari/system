@@ -24,11 +24,14 @@ class ActionHandler
 	public function __construct($action, $settings)
 	{
 		try {
-			$this->$action($settings);
+			call_user_func(array($this, $action), $settings);
+			//$this->$action($settings);
 		}
 		catch ( Exception $e ) {
 			$classname = get_class($this);
-			echo "{$classname}->{$action}() does not exist.";
+			echo "\n{$classname}->{$action}() does not exist.\n";
+			$methods = get_class_methods($classname);
+			foreach($methods as $method) echo "{$method}\n";
 			Utils::debug($settings);
 		}
 	}

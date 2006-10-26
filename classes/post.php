@@ -210,7 +210,10 @@ class Post extends QueryRecord
 	{
 		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
 		$this->setslug();
-		return parent::insert( 'habari__posts' );
+		$result = parent::insert( 'habari__posts' );
+		$this->fields = array_merge($this->fields, $this->newfields);
+		$this->newfields = array();
+		return $result;
 	}
 
 	/**
@@ -221,8 +224,11 @@ class Post extends QueryRecord
 	{
 		$this->updated = date('Y-m-d h:i:s');
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
-		$this->setslug();
-		return parent::update( 'habari__posts', array('slug'=>$this->slug) );
+		//$this->setslug();  // setslug() for an update?  Hmm.  No?
+		$result = parent::update( 'habari__posts', array('slug'=>$this->slug) );
+		$this->fields = array_merge($this->fields, $this->newfields);
+		$this->newfields = array();
+		return $result;
 	}
 	
 	/**
@@ -261,6 +267,22 @@ class Post extends QueryRecord
 		default:
 			return parent::__get( $name );
 		}
+	}
+
+	/**
+	 * function __set
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value	 
+	 **/	 	 
+	public function __set( $name, $value )
+	{
+		switch($name) {
+		case 'pubdate':
+			$value = date('Y-m-d H:i:s', strtotime($value));
+			break;
+		}
+		return parent::__set( $name, $value );
 	}
 	
 	/**
