@@ -271,7 +271,7 @@ class URLParser
 		$this->rules[] = array('year', 'ThemeHandler', 'year');
 		$this->rules[] = array('"tag"/tag', 'ThemeHandler', 'tag');
 		$this->rules[] = array('"author"/author', 'ActionHandler', 'author');
-		$this->rules[] = array('"feed"', 'ActionHandler', 'site_feed');
+		$this->rules[] = array('"atom"', 'AtomHandler', 'collection');
 		$this->rules[] = array('"feed"/feedtype', 'ActionHandler', 'site_feed');
 		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
@@ -280,7 +280,7 @@ class URLParser
 		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
 		$this->rules[] = array('slug', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"page"/index', 'ThemeHandler', 'post');
-		$this->rules[] = array('slug/"feed"', 'ActionHandler', 'post_feed');
+		$this->rules[] = array('slug/"atom"', 'AtomHandler', 'entry');
 		$this->rules[] = array('slug/"feed"/feedtype', 'ActionHandler', 'post_feed');
 		$this->rules[] = array('slug/"trackback"', 'ActionHandler', 'trackback');
 		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
