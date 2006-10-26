@@ -8,6 +8,8 @@
 
 class Post extends QueryRecord
 {
+	private $tags = null;
+
 	/**
 	 * constructor __construct
 	 * Constructor for the Post class.
@@ -45,7 +47,7 @@ class Post extends QueryRecord
 		// Defaults
 		$defaults = array (
 			'orderby' => 'pubdate DESC',
-			'status' => "status = 'publish'",
+			'status' => 'publish',
 			'stub' => '',
 		);
 
@@ -68,7 +70,7 @@ class Post extends QueryRecord
 		// Defaults
 		$defaults = array (
 			'orderby' => 'pubdate DESC',
-			'status' => "status = 'publish'",
+			'status' => 'publish',
 		);
 
 		$paramarray = array_merge( $urlparser->settings, $defaults, Utils::get_params($paramarray) ); 
@@ -87,26 +89,57 @@ class Post extends QueryRecord
 	{
 		global $db;
 	
+		$params = array();
+		$selects = array(
+			'habari__posts' => array (
+				'slug',
+				'title',
+				'guid',
+				'content',
+				'author',
+				'status',
+				'pubdate',
+				'updated',
+			),
+		);
+	
 		// Put incoming parameters into the local scope
 		extract(Utils::get_params($paramarray));
 		$where = array(1);
-		$where[] = $status;
-		if(isset($slug)) {
-			$where[] = "slug = '{$slug}'";
+		$join = '';
+		if ( isset( $status ) ) {
+			$where[] = "status = ?";
+			$params[] = $status;
+		}
+		if ( isset( $slug ) ) {
+			$where[] = "slug = ?";
+			$params[] = $slug;
+		}
+		if ( isset( $tag ) ) {
+			$join .= ' JOIN habari__tags ON habari__posts.slug = habari__tags.slug';
+			// Need tag expression parser here.			
+			$where[] = 'tag = ?';
+			$params[] = $tag;
+		}
+		
+		
+		foreach($selects as $table=>$fields) {
+			$select .= "{$table}." . implode( ", {$table}.", $fields );
 		}
 		
 		$query = "
 		SELECT 
-			slug, title, guid, content, author, status, pubdate, updated 
+		" . $select . "
 		FROM 
 			habari__posts 
+		" . $join . "
 		WHERE 
 			" . implode( ' AND ', $where ) . "
 		ORDER BY 
 			{$orderby}";
 			
 		$fetch_fn = ($one_row_only) ? 'get_row' : 'get_results';
-		$results = $db->$fetch_fn( $query, array(), 'Post' );
+		$results = $db->$fetch_fn( $query, $params, 'Post' );
 
 		if ( is_array( $results ) || $one_row_only) {
 			return $results;
@@ -223,6 +256,8 @@ class Post extends QueryRecord
 		switch($name) {
 		case 'permalink':
 			return $this->get_permalink();
+		case 'tags':
+			return $this->get_tags();
 		default:
 			return parent::__get( $name );
 		}
@@ -239,8 +274,24 @@ class Post extends QueryRecord
 		
 		return $urlparser->get_url(
 			'post',
-			$this->fields
+			$this->fields,
+			false
 		);
+	}
+	
+	/**
+	 * function get_tags
+	 * Gets the tags for the post
+	 * @return &array A reference to the tags array for this post
+	 **/	 	 	 	
+	private function &get_tags()
+	{
+		global $db;
+		
+		if ( empty( $this->tags ) ) {
+			$this->tags = $db->get_column( 'SELECT tag FROM habari__tags WHERE slug = ? ', array( $this->fields['slug'] ) );
+		}
+		return $this->tags;
 	}
 
 }

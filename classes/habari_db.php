@@ -141,6 +141,24 @@ class habari_db
 	}
 	
 	/**
+	 * function get_column
+	 * Returns all values for a column for a query
+	 * @param string The query to execute
+	 * @param array Arguments to pass for prepared statements
+	 * @return array An array containing the column data	 
+	 * <code>$ary = $db->get_column( 'SELECT col1 FROM tablename WHERE foo = ?', array('fieldvalue') );</code>	 
+	 **/	 	 
+	public function get_column($query, $args = array())
+	{
+		$this->query($query, $args);
+		if($this->queryok) {
+			return $this->pdostatement->fetchAll(PDO::FETCH_COLUMN);
+		}
+		else
+			return false;
+	}
+	
+	/**
 	 * function insert
 	 * Inserts into the specified table values associated to the key fields
 	 * @param string The table name

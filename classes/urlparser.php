@@ -189,7 +189,7 @@ class URLParser
 	 * echo $urlparser->get_url( 'tag', 'tag=my-tag' );
 	 * echo $urlparser->get_url( 'tag', array( 'tag' => 'my-tag' ) );	  	 
 	 **/	 	 	 	  	 	 		
-	public function get_url( $pagetype, $paramarray = array())
+	public function get_url( $pagetype, $paramarray = array(), $useall = true)
 	{
 		global $options;
 	
@@ -223,13 +223,18 @@ class URLParser
 				}
 			}
 			if ( !$fail ) {
-				foreach ( $params as $key=>$param ) {
-					if ( !in_array( $key, $used ) && $param != '' ) {
-						$unused[$key] = $param;
+				if ( $useall ) {
+					foreach ( $params as $key=>$param ) {
+						if ( !in_array( $key, $used ) && $param != '' ) {
+							$unused[$key] = $param;
+						}
 					}
+					$querystring = http_build_query((array)$unused);
+					$querystring = ($querystring == '' ? '' : '?') . $querystring;
 				}
-				$querystring = http_build_query((array)$unused);
-				$querystring = ($querystring == '' ? '' : '?') . $querystring;
+				else {
+					$querystring = '';
+				}
 				return Utils::end_in_slash($options->base_url) . trim($output, '/') . $querystring;
 			}
 		}
