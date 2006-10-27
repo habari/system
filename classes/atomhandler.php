@@ -70,7 +70,7 @@ class AtomHandler extends ActionHandler
 		$xml->addChild('updated', $post->updated);
 		$xml->addChild('content', $post->content);
 		
-		//header('Content-Type: application/atom+xml');
+		header('Content-Type: application/atom+xml');
 		echo $xml->asXML();
 	}
 	
@@ -164,6 +164,7 @@ class AtomHandler extends ActionHandler
 		global $options, $urlparser;
 		
 		$xml = new SimpleXMLElement($this->xml_header() . '<feed xmlns="http://www.w3.org/2005/Atom"></feed>');
+	
 		$xml->addChild( 'title', $options->blog_title );
 		$xml->addChild( 'subtitle', $options->tag_line );
 		$link = $xml->addChild( 'link' );
@@ -173,6 +174,11 @@ class AtomHandler extends ActionHandler
 		$link = $xml->addChild( 'link' );
 		$link->addAttribute( 'rel', 'self' ); 
 		$link->addAttribute( 'href', $urlparser->get_url( 'collection' ) );
+		$link = $xml->addChild( 'link' );
+		$link->addAttribute( 'rel', 'service.post' );
+		$link->addAttribute( 'type', 'application/x.atom+xml' ); 
+		$link->addAttribute( 'href', $urlparser->get_url( 'collection' ) );
+		$link->addAttribute( 'title', $options->blog_title );
 		$xml->addChild( 'updated', Utils::atomtime(time()) ); // TODO: This value should be cached
 		$xml->addChild( 'rights', 'Copyright ' . date('Y') ); // TODO: This value should be corrected
 		$generator = $xml->addChild( 'generator', 'Habari' );
@@ -187,6 +193,10 @@ class AtomHandler extends ActionHandler
 			$link->addAttribute( 'rel', 'alternate' );
 			$link->addAttribute( 'type', 'text/html' );
 			$link->addAttribute( 'href', $post->permalink );
+			$link = $entry->addChild( 'link' );
+			$link->addAttribute( 'rel', 'edit' );
+			$link->addAttribute( 'type', 'application/x.atom+xml' );
+			$link->addAttribute( 'href', $urlparser->get_url('entry', "slug={$post->slug}") );
 			$author = $entry->addChild( 'author' );
 			$author->addChild( 'name', 'owen' );  // TODO: Link posts to User table
 			$entry->addChild( 'id', $post->guid );
@@ -198,6 +208,7 @@ class AtomHandler extends ActionHandler
 			$summary = $entry->addChild( 'summary', $post->content );
 		}
 		
+		header('Content-Type: application/x.atom+xml');
 		echo $xml->asXML();		
 	}	
 
@@ -228,9 +239,22 @@ class AtomHandler extends ActionHandler
 			catch ( Exception $e ) {
 				echo $e->message;
 			}
-			Utils::debug($xml);
 			echo $post->permalink;
 		}
+	}
+
+	function introspection($settings)
+	{
+		global $options, $urlparser;
+		
+		$xml = new SimpleXMLElement($this->xml_header() . '
+		<service xmlns="http://purl.org/atom/app#">
+			<workspace title="' . $options->blog_title . '">
+			  <collection title="Blog Entries" href="' . $urlparser->get_url( 'collection' ) . '" />
+			</workspace>
+		</service>
+		');
+		echo $xml->asXML();		
 	}
 
 }
