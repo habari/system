@@ -113,7 +113,7 @@ class Installer
 			'CREATE TABLE habari__options (
 			  name varchar(50) PRIMARY KEY NOT NULL UNIQUE,
 			  type integer DEFAULT 0,
-			  value blob
+			  value text
 			);',
 			'CREATE TABLE habari__users (
 			  id smallint AUTO_INCREMENT NOT NULL UNIQUE,
