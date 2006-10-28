@@ -186,7 +186,6 @@ class habari_db
 	/**
 	 * function exists
 	 * Checks for a record that matches the specific criteria
-	 * A new row is inserted if no existing record matches the criteria	 
 	 * @param string Table to check
 	 * @param array Associative array of field values to match
 	 * @return boolean True if any matching record exists, false if not
@@ -196,10 +195,9 @@ class habari_db
 	{
 		ksort($keyfieldvalues);
 		reset($keyfieldvalues);
-		$qry = "SELECT count(*) as c FROM {$table} WHERE 1 ";
-        echo $qry;
+		$qry = "SELECT 1 as c FROM {$table} WHERE 1 ";
 
-        $values = array();
+		$values = array();
 		foreach($keyfieldvalues as $keyfield => $keyvalue) {
 			$qry .= " AND {$keyfield} = ? ";
 			$values[] = $keyvalue;
@@ -211,6 +209,7 @@ class habari_db
 	/**
 	 * function update
 	 * Updates any record that matches the specific criteria
+	 * A new row is inserted if no existing record matches the criteria	 
 	 * @param string Table to update
 	 * @param array Associative array of field values to set	 
 	 * @param array Associative array of field values to match
