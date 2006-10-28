@@ -20,6 +20,7 @@ class Post extends QueryRecord
 		// Defaults
 		$this->fields = array_merge(
 			array(
+				'id' => '',
 				'slug' => '', 
 				'title' => '', 
 				'guid' => '', 
@@ -92,6 +93,7 @@ class Post extends QueryRecord
 		$params = array();
 		$selects = array(
 			'habari__posts' => array (
+				'id',
 				'slug',
 				'title',
 				'guid',

@@ -101,6 +101,7 @@ class Installer
 	{
 		$queries = array (
 			'CREATE TABLE habari__posts ( 
+				id smallint AUTO_INCREMENT NOT NULL UNIQUE,
 				slug VARCHAR(255) NOT NULL PRIMARY KEY, 
 				title VARCHAR(255), 
 				guid VARCHAR(255) NOT NULL, 
