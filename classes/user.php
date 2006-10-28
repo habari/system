@@ -68,7 +68,7 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		parent::insert( 'habari__users' );
+		return parent::insert( 'habari__users' );
 	}
 
 	/**
@@ -77,7 +77,7 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		parent::update( 'habari__users' );
+		return parent::update( 'habari__users' );
 	}
 
 	/**
