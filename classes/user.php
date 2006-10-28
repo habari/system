@@ -153,6 +153,29 @@ class User extends QueryRecord
 		}
 	}
 
+	/**
+	* function get
+	* fetches a user from the database by name, ID, or email address
+	public static function get($who = '')
+	{
+		if ('' === $who) {
+			return false;
+		}
+		$what = 'username';
+		// was a user ID given to us?
+		if ( is_int($who) ) {
+			$what = 'ID';
+		} elseif ( strstr($who, '@') ) {
+			// was an email address given?
+			$what = 'email';
+		}
+		$user = $db->get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
+		if ( ! $user ) {
+			return false;
+		} else {
+			return $user;
+		}
+	}
 }
 
 ?>
