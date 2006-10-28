@@ -124,7 +124,7 @@ class Post extends QueryRecord
 			$params[] = $tag;
 		}
 		
-		
+	 	$select = '';	
 		foreach($selects as $table=>$fields) {
 			$select .= "{$table}." . implode( ", {$table}.", $fields );
 		}
