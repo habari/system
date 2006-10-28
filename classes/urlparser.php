@@ -224,12 +224,13 @@ class URLParser
 			}
 			if ( !$fail ) {
 				if ( $useall ) {
+                    $unused = array();
 					foreach ( $params as $key=>$param ) {
 						if ( !in_array( $key, $used ) && $param != '' ) {
 							$unused[$key] = $param;
 						}
 					}
-					$querystring = http_build_query((array)$unused);
+					$querystring = http_build_query($unused);
 					$querystring = ($querystring == '' ? '' : '?') . $querystring;
 				}
 				else {
@@ -279,14 +280,14 @@ class URLParser
 		$this->rules[] = array('"login"/action', 'UserHandler', 'login');
 		$this->rules[] = array('"login"', 'UserHandler', 'login');
 		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
+		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
+		$this->rules[] = array('', 'ThemeHandler', 'home');
+		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
 		$this->rules[] = array('slug', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"page"/index', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"atom"', 'AtomHandler', 'entry');
 		$this->rules[] = array('slug/"feed"/feedtype', 'ActionHandler', 'post_feed');
 		$this->rules[] = array('slug/"trackback"', 'ActionHandler', 'trackback');
-		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
-		$this->rules[] = array('', 'ThemeHandler', 'home');
-		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
 	}
 
 }
