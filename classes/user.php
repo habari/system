@@ -156,6 +156,8 @@ class User extends QueryRecord
 	/**
 	* function get
 	* fetches a user from the database by name, ID, or email address
+	*/
+	
 	public static function get($who = '')
 	{
 		if ('' === $who) {
