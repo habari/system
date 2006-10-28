@@ -196,7 +196,8 @@ class habari_db
 	{
 		ksort($keyfieldvalues);
 		reset($keyfieldvalues);
-		$qry = "SELECT " . key($keyfieldvalues) . " FROM {$table} WHERE 1 ";
+		$qry = "SELECT count(*) as c FROM {$table} WHERE 1 ";
+        echo $qry;
 
         $values = array();
 		foreach($keyfieldvalues as $keyfield => $keyvalue) {
