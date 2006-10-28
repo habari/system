@@ -160,6 +160,8 @@ class User extends QueryRecord
 	
 	public static function get($who = '')
 	{
+		global $db;
+
 		if ('' === $who) {
 			return false;
 		}
