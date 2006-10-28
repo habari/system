@@ -180,6 +180,16 @@ class User extends QueryRecord
 			return $user;
 		}
 	}
+	
+	public static function get_all()
+	{
+		global $db;
+		$list_users = $db->get_results( "SELECT * FROM habari__users ORDER BY ID DESC" );
+			if ( is_array( $list_users ) ) {
+				return $list_users;
+			} else {
+				return false;
+			}
+	}
 }
-
 ?>
