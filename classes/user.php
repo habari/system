@@ -44,7 +44,7 @@ class User extends QueryRecord
 				$userid = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$user = $db->get_row("SELECT * FROM habari__users WHERE id = ?", array($userid), User);
+				$user = $db->get_row("SELECT * FROM habari__users WHERE id = ?", array($userid), 'User');
 				if ( ! $user ) {
 					return false;
 				}

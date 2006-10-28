@@ -197,6 +197,8 @@ class habari_db
 		ksort($keyfieldvalues);
 		reset($keyfieldvalues);
 		$qry = "SELECT " . key($keyfieldvalues) . " FROM {$table} WHERE 1 ";
+
+        $values = array();
 		foreach($keyfieldvalues as $keyfield => $keyvalue) {
 			$qry .= " AND {$keyfield} = ? ";
 			$values[] = $keyvalue;
@@ -218,7 +220,8 @@ class habari_db
 	{
 		ksort($fieldvalues);
 		ksort($keyfields);
-		
+
+        $keyfieldvalues = array();
 		foreach($keyfields as $keyfield => $keyvalue) {
 			if(is_numeric($keyfield)) {
 				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];

@@ -78,7 +78,7 @@ class QueryRecord
 	 * @param array An associative array of field data to match	 	 	 		
 	 * @return boolean True on success, false if not 
 	 **/	 
-	public function update($table, $updatekeyfields)
+	public function update($table, $updatekeyfields = array() )
 	{
 		global $db;
 		
