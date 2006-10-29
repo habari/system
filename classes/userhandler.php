@@ -61,7 +61,12 @@ class UserHandler extends ActionHandler
 	* @param string the Action that was in the URLParser rule
 	* @param array An associative array of settings found in the URL by the URLParser
 	*/
-	public function changepass($settings = null) {
+	public function changepass( $settings ) {
+
+		if ( isset( $settings['password'] ) && $user = user::identify() ) {
+			$user->password = sha1($settings['password']);
+			$user->update();
+		}
 	}
 
 	/**
