@@ -221,7 +221,7 @@ class habari_db
 		ksort($fieldvalues);
 		ksort($keyfields);
 
-        $keyfieldvalues = array();
+	        $keyfieldvalues = array();
 		foreach($keyfields as $keyfield => $keyvalue) {
 			if(is_numeric($keyfield)) {
 				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];
