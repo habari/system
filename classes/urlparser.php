@@ -267,6 +267,16 @@ class URLParser
 		 *  	Likewise, put 'foo/"bar"/baz' before 'foo/qux'.
 		 *  year, month, and day are all special captures that will capture only their respective types. ie /[0-9]{4}/ and /[0-9]{2}/
 		 **/
+		// admin rules
+		$this->rules[] = array('"admin"', 'AdminHandler', 'dashboard');
+		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
+		$this->rules[] = array('"admin/process"/action', 'AdminHandler', 'posthandler');
+		$this->rules[] = array('"admin"/"ajax"/action', 'AjaxHandler', 'ajaxhandler');
+		// user rules
+		$this->rules[] = array('"login"/action', 'UserHandler', 'login');
+		$this->rules[] = array('"login"', 'UserHandler', 'login');
+		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
+		// post rules
 		$this->rules[] = array('year/month/day', 'ThemeHandler', 'date');
 		$this->rules[] = array('year/month', 'ThemeHandler', 'month');
 		$this->rules[] = array('year', 'ThemeHandler', 'year');
@@ -277,9 +287,6 @@ class URLParser
 		$this->rules[] = array('"feed"/feedtype', 'ActionHandler', 'site_feed');
 		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
-		$this->rules[] = array('"login"/action', 'UserHandler', 'login');
-		$this->rules[] = array('"login"', 'UserHandler', 'login');
-		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
 		$this->rules[] = array('"changepass"', 'UserHandler', 'changepass');
 		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
 		$this->rules[] = array('', 'ThemeHandler', 'home');
