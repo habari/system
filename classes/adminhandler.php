@@ -6,8 +6,11 @@
  * @package Habari
  */
 
+define('ADMIN_DIR', HABARI_PATH . '/system/admin/');
+
 class AdminHandler extends ActionHandler
 {
+
 	/**
 	* constructor __construct
 	* verify that the page is being accessed by an admin
@@ -16,21 +19,25 @@ class AdminHandler extends ActionHandler
 	*/
 	public function __construct( $action, $settings )
 	{
-		if (! user::identify() ) {
-			die ("Tricksey, eh?");
-		}
 		parent::__construct( $action, $settings );
 	}
 
 	/**
-	 * Description
-	 *
-	 * @param array Settings array from the URLParser
-	 **/
-	public function wooga( $settings )
+	* function header
+	* display the admin header
+	*/
+	public function header()
 	{
-		echo 'Woooga!<br />';
-		var_dump($settings);
+		include ADMIN_DIR . 'header.php';
+	}
+
+	/**
+	* function footer
+	* display the amdin footer
+	*/
+	public function footer()
+	{
+		include ADMIN_DIR . 'footer.php';
 	}
 
 	/**
@@ -39,7 +46,9 @@ class AdminHandler extends ActionHandler
 	*/
 	public function dashboard()
 	{
+		$this->header();
 		echo "Hiya! Welcome to your dashboard.";
+		$this->footer();
 	}
 
 	/**
@@ -48,13 +57,40 @@ class AdminHandler extends ActionHandler
 	*/
 	public function admin( $settings = null)
 	{
-		// the selected page is stored in $settings['page']
-		if (method_exists( $this, $settings['page'] ))
+		// check that the user is logged in, and redirect
+		// to the login page, if not
+		if (! user::identify() )
 		{
-			call_user_func( array($this, $settings['page']), $settings );
-		} else {
-			echo "No such page!";
-			die;
+		}
+		$files = glob(ADMIN_DIR . '*.php');
+		$files = array_map(
+		  create_function(
+		    '$a',
+		    'return $a;'
+		  ),
+		  $files
+		);
+		$filekeys = array_map(
+		  create_function(
+		    '$a',
+		    'return basename($a, ".php");'
+		  ),
+		  $files
+		);
+		$map = array_combine($filekeys, $files);
+		// Allow plugins to modify or add to $map here,
+		// since plugins will not be installed to /system/admin
+		if ( isset( $map[$settings['page']] ) ) {
+			$this->header();
+			include $map[$settings['page']];
+			$this->footer();
+		}
+		else
+		{
+		  // The requested console page doesn't exist
+			$this->header();
+			echo "Whooops!";
+			$this->footer();
 		}
 	}
 
