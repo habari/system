@@ -1,0 +1,86 @@
+/*
+** Name: Habari admin Stylesheet
+** Author: Habari Team
+** License: Apache License, version 2
+** Date: October 29th, 2006
+*/
+
+/*=== @a ===*/
+a { text-decoration: none; }
+a:hover {}
+
+/*=== @b ===*/
+body
+{
+	background-color: #eee;
+	font-family: Trebuchet MS, San-serif;
+	font-size: 1.0em;
+	color: #000;
+	margin: 0 auto;
+}
+
+/*=== @c ===*/
+#content-area
+{
+	text-align: left;
+}
+
+/*=== @h ===*/
+#header
+{
+	background-color: #333;
+	width: 100%;
+	border-top: 5px solid #999;
+	border-bottom: 3px solid #fff;
+	margin-top: 0.0em;
+	padding: 0.5em;
+}
+
+#header h1
+{
+	text-align: left;
+	margin-top: 0.2em;
+	margin-bottom: 0.0em;
+	font-size: 1.0em;
+	color: #fff;
+}
+
+#header h1 a
+{
+	color: #fff; 
+	background-color: #222; 
+	padding: 0.2em 0.4em;
+}
+
+#header h1 a:hover
+{
+	background-color: #c60;
+}
+
+/*=== @m ===*/
+#menu
+{
+	float: left;
+	display: inline;
+	width: 100%;
+	background-color: #f93;
+	text-align: left;
+	height: 2.0em;
+}
+
+#menu ul
+{
+	margin-top: 0.5em;
+}
+
+#menu ul li
+{
+	display: inline;
+	list-style: none;
+}
+
+/*=== @p ===*/
+#page
+{
+	text-align: center;	
+}
