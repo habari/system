@@ -32,12 +32,16 @@ class Options
 		
 		if(!isset($this->options[$name])) {
 			$result = $db->get_row("SELECT value, type FROM habari__options WHERE name = ?", array($name));
-			
-			if($result->type == 1) {
-				$this->options[$name] = unserialize($result->value);
-			}
-			else {
-				$this->options[$name] = $result->value;
+		
+			if ( is_object( $result) ) {
+				if($result->type == 1) {
+					$this->options[$name] = unserialize($result->value);
+				}
+				else {
+					$this->options[$name] = $result->value;
+				}
+			} else {
+				return null;
 			}
 		}
 		return $this->options[$name];
