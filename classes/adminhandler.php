@@ -27,16 +27,37 @@ class AdminHandler extends ActionHandler
 	 *
 	 * @param array Settings array from the URLParser
 	 **/
-	public function wooga( $settings ) {
+	public function wooga( $settings )
+	{
+		echo 'Woooga!<br />';
+		var_dump($settings);
 	}
 
 	/**
 	* function dashboard
 	* display an overview of current blog stats
 	*/
-	public function dashboard() {
+	public function dashboard()
+	{
 		echo "Hiya! Welcome to your dashboard.";
 	}
+
+	/**
+	* function admin
+	* figures out what admin page to show, and displays it to the user
+	*/
+	public function admin( $settings = null)
+	{
+		// the selected page is stored in $settings['page']
+		if (method_exists( $this, $settings['page'] ))
+		{
+			call_user_func( array($this, $settings['page']), $settings );
+		} else {
+			echo "No such page!";
+			die;
+		}
+	}
+
 }
 
 ?>
