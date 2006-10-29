@@ -22,7 +22,7 @@ class ThemeHandler extends ActionHandler
 	 * @param array Settings passed in from the URL
 	 **/	 	 
 	public function __call($action, $settings) {
-		global $options, $urlparser, $theme;
+		global $urlparser, $theme;
 	
 		// What this handler handles and how
 		$handle = array(

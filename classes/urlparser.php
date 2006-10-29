@@ -28,11 +28,9 @@ class URLParser
 	 **/	 	 	 	 	
 	public function __construct( $url )
 	{
-		global $options;
-		 
 		// Remove the front of the URL path, which isn't determinant for this class
 		// Keep the "stub"		
-		$base = parse_url( $options->base_url );
+		$base = parse_url( Options::o()->base_url );
 		$stub = $url;
 		if ( $base[ 'path' ] != '' ) {
 			$stub = substr( $stub, strpos( $url, $base[ 'path' ] ) + strlen( $base[ 'path' ] ) );
@@ -191,8 +189,6 @@ class URLParser
 	 **/	 	 	 	  	 	 		
 	public function get_url( $pagetype, $paramarray = array(), $useall = true)
 	{
-		global $options;
-	
 		$params = Utils::get_params($paramarray);
 		
 		$fn = create_function( '$a', 'return $a[2] == "' . $pagetype . '";' );
@@ -236,7 +232,7 @@ class URLParser
 				else {
 					$querystring = '';
 				}
-				return Utils::end_in_slash($options->base_url) . trim($output, '/') . $querystring;
+				return Utils::end_in_slash(Options::o()->base_url) . trim($output, '/') . $querystring;
 			}
 		}
 		return '#unknown';

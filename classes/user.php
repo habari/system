@@ -32,11 +32,11 @@ class User extends QueryRecord
 	**/	
 	public static function identify()
 	{
-		global $db, $options;
+		global $db;
 		// Is the logged-in user not cached already?
 		if ( self::$identity == null ) {
 			// see if there's a cookie
-			$cookie = "habari_" . $options->GUID;
+			$cookie = "habari_" . Options::o()->GUID;
 			if ( ! isset($_COOKIE[$cookie]) ) {
 				// no cookie, so stop processing
 				return false;
@@ -86,11 +86,10 @@ class User extends QueryRecord
 	*/
 	public function remember()
 	{
-		global $options;
 		// set the cookie
-		$cookie = "habari_" . $options->GUID;
+		$cookie = "habari_" . Options::o()->GUID;
 		$content = sha1($this->password . $this->id) . $this->id;
-		setcookie($cookie, $content, time() + 604800, $options->siteurl);
+		setcookie($cookie, $content, time() + 604800, Options::o()->siteurl);
 	}
 
 	/** function forget
@@ -98,10 +97,9 @@ class User extends QueryRecord
 	*/
 	public function forget()
 	{
-		global $options;
 		// delete the cookie
-		$cookie = "habari_" . $options->GUID;
-		setcookie($cookie, ' ', time() - 86400, $options->siteurl);
+		$cookie = "habari_" . Options::o()->GUID;
+		setcookie($cookie, ' ', time() - 86400, Options::o()->siteurl);
 		die('ok');
 	}
 

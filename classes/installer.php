@@ -24,7 +24,7 @@ class Installer
 	 */
 	static function install()
 	{
-		global $db, $options;
+		global $db;
 		
 		if(self::is_installed()) return true;
 		
@@ -71,15 +71,15 @@ class Installer
 		));
 		$admin->insert();
 		
-		$options->installed = true;
+		Options::o()->installed = true;
 		
-		$options->blog_title = "Habari Whitespace";
-		$options->tag_line = "Spread the News";
-		$options->about = "This is a test install of Habari";
+		Options::o()->blog_title = "Habari Whitespace";
+		Options::o()->tag_line = "Spread the News";
+		Options::o()->about = "This is a test install of Habari";
 		$base_url = $_SERVER['REQUEST_URI'];
 		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
-		$options->base_url = $base_url;
-		$options->theme_dir = "k2";
+		Options::o()->base_url = $base_url;
+		Options::o()->theme_dir = "k2";
 
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
@@ -89,7 +89,7 @@ class Installer
 		       $salt .= substr('0123456789abcdef', rand(0,15), 1);
 		}
 		$hash = sha1($base_url . $salt);
-		$options->GUID = $hash;
+		Options::o()->GUID = $hash;
 			
 		// Output any errors
 		if($db->has_errors()) {

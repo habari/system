@@ -8,17 +8,25 @@
  
 class Options
 {
-	const table = 'habari__options';
+ 	const table = 'habari__options';
+    static $options;
 	
-	private $options = array();
-
 	/**
 	 * constructor __construct
 	 **/	 	
 	public function __construct() 
 	{
-		// Preload some options here?
 	}
+
+	public static function o()
+    {
+       if (!isset(self::$options)) {
+           $c = __CLASS__;
+           self::$options = new $c;
+       }
+
+       return self::$options;
+    }
 	
 	/**
 	 * function __get
@@ -30,21 +38,21 @@ class Options
 	{
 		global $db;
 		
-		if(!isset($this->options[$name])) {
+		if(!isset($options[$name])) {
 			$result = $db->get_row("SELECT value, type FROM habari__options WHERE name = ?", array($name));
 		
 			if ( is_object( $result) ) {
 				if($result->type == 1) {
-					$this->options[$name] = unserialize($result->value);
+					$options[$name] = unserialize($result->value);
 				}
 				else {
-					$this->options[$name] = $result->value;
+					$options[$name] = $result->value;
 				}
 			} else {
 				return null;
 			}
 		}
-		return $this->options[$name];
+		return $options[$name];
 	}
 	
 	/**
@@ -56,7 +64,7 @@ class Options
 	public function __set($name, $value) {
 		global $db;
 		
-		$this->options[$name] = $value;
+		self::$options[$name] = $value;
 		
 		if(is_array($value) || is_object($value)) {
 			$db->update( Options::table, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name'=>$name) ); 
