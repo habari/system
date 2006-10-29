@@ -17,7 +17,7 @@ class ThemeEngine
 
 	public function __call($fn, $args)
 	{
-		global $options, $urlparser, $theme;
+		global $urlparser, $theme;
 		
 		$potential_template = THEME_DIR . $fn . '.php';
 		if(file_exists($potential_template)) {
