@@ -19,15 +19,21 @@ class Options
 	}
 
 	public static function o()
-    {
-       if (!isset(self::$options)) {
-           $c = __CLASS__;
-           self::$options = new $c;
-       }
+	{
+		if (!isset(self::$options))
+		{
+			$c = __CLASS__;
+			self::$options = new $c;
+		}
 
-       return self::$options;
-    }
-	
+		return self::$options;
+	}
+
+	public static function e( $option = null )
+	{
+		echo self::o()->$option;
+	}
+
 	/**
 	 * function __get
 	 * Allows retrieval of option values
