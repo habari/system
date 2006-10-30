@@ -165,12 +165,12 @@ class AtomHandler extends ActionHandler
 		
 		$xml = new SimpleXMLElement($this->xml_header() . '<feed xmlns="http://www.w3.org/2005/Atom"></feed>');
 	
-		$xml->addChild( 'title', Options::o()->blog_title );
-		$xml->addChild( 'subtitle', Options::o()->tag_line );
+		$xml->addChild( 'title', Options::get('blog_title') );
+		$xml->addChild( 'subtitle', Options::get('tag_line') );
 		$link = $xml->addChild( 'link' );
 		$link->addAttribute( 'rel', 'alternate' ); 
 		$link->addAttribute( 'type', 'text/html' ); 
-		$link->addAttribute( 'href', Options::o()->base_url );
+		$link->addAttribute( 'href', Options::get('base_url') );
 		$link = $xml->addChild( 'link' );
 		$link->addAttribute( 'rel', 'self' ); 
 		$link->addAttribute( 'href', $urlparser->get_url( 'collection' ) );
@@ -178,13 +178,13 @@ class AtomHandler extends ActionHandler
 		$link->addAttribute( 'rel', 'service.post' );
 		$link->addAttribute( 'type', 'application/x.atom+xml' ); 
 		$link->addAttribute( 'href', $urlparser->get_url( 'collection' ) );
-		$link->addAttribute( 'title', Options::o()->blog_title );
+		$link->addAttribute( 'title', Options::get('blog_title') );
 		$xml->addChild( 'updated', Utils::atomtime(time()) ); // TODO: This value should be cached
 		$xml->addChild( 'rights', 'Copyright ' . date('Y') ); // TODO: This value should be corrected
 		$generator = $xml->addChild( 'generator', 'Habari' );
 		$generator->addAttribute( 'uri', 'http://code.google.com/p/habari/' );
 		$generator->addAttribute( 'version', '0.1' );
-		$xml->addChild( 'id', Options::o()->base_url );
+		$xml->addChild( 'id', Options::get('base_url') );
 	
 		foreach(Post::get_posts() as $post) {
 			$entry = $xml->addChild( 'entry' );
@@ -249,7 +249,7 @@ class AtomHandler extends ActionHandler
 		
 		$xml = new SimpleXMLElement($this->xml_header() . '
 		<service xmlns="http://purl.org/atom/app#">
-			<workspace title="' . Options::o()->blog_title . '">
+			<workspace title="' . Options::get('blog_title') . '">
 			  <collection title="Blog Entries" href="' . $urlparser->get_url( 'collection' ) . '" />
 			</workspace>
 		</service>
