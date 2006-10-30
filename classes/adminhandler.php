@@ -63,13 +63,6 @@ class AdminHandler extends ActionHandler
 		{
 		}
 		$files = glob(ADMIN_DIR . '*.php');
-		$files = array_map(
-		  create_function(
-		    '$a',
-		    'return $a;'
-		  ),
-		  $files
-		);
 		$filekeys = array_map(
 		  create_function(
 		    '$a',
