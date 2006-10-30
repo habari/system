@@ -87,6 +87,29 @@ class AdminHandler extends ActionHandler
 		}
 	}
 
+	public function posthandler ($settings = null)
+	{
+		var_dump($settings); die;
+		// is this request from a valid, logged-in user?
+		if ( ! User::identify() )
+		{
+			// nope?  redirect to a login page, of some sort
+			echo "Please log in.";
+			die;
+		}
+		// now see if a method is registered to handle the POSTed action
+		if ( method_exist ( $this, $settings['action'] ) )
+		{
+			call_user_func( array($this, $settings['action']), $settings );
+		}
+		else
+		{
+			// redirect to some useful error page
+			echo "No such function.";
+			die;
+		}
+	}
+
 }
 
 ?>
