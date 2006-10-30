@@ -54,6 +54,7 @@ class AdminHandler extends ActionHandler
 	/**
 	* function admin
 	* figures out what admin page to show, and displays it to the user
+	* @param array An associative array of settings found in the URL by the URLParser
 	*/
 	public function admin( $settings = null)
 	{
@@ -87,6 +88,11 @@ class AdminHandler extends ActionHandler
 		}
 	}
 
+	/**
+	* function posthandler
+	* called from URLParser for /admin/post/foo URLS.  Ensures a user is logged in, and executes the method "foo" if it exists.
+	* @param array An associative array of settings found in the URL by the URLParser 
+	*/
 	public function posthandler ($settings = null)
 	{
 		var_dump($settings); die;
