@@ -9,22 +9,26 @@
 class Options
 {
  	const table = 'habari__options';
-    static $options;
+	private $options;
+	static $instance;
 	
 	/**
 	 * constructor __construct
+	 * This is private so that you can't construct it from outside this class.
+	 * We might consider pre-loading a few options here to reduce single 
+	 * database hits for options that are used on every page load.	 	 	 
 	 **/	 	
-	public function __construct() 
+	private function __construct() 
 	{
 	}
 
 	/**
-	* function o
+	* function instance
 	* returns a singleton instance of the Options class. Use this to
 	* retrieve values of options, like this:
 	*
 	* <code>
-	* $foo = Options::o()->foo;
+	* $foo = Options::instance()->foo;
 	* </code>
 	*
 	* @param string an option name
@@ -35,20 +39,50 @@ class Options
 		if (!isset(self::$options))
 		{
 			$c = __CLASS__;
-			self::$options = new $c;
+			self::$instance = new $c;
 		}
 
-		return self::$options;
+		return self::$instance;
 	}
-
+	
 	/**
-	* function e
-	* echoes the value of an option
-	* @param string the name of an option
-	*/
-	public static function e( $option = null )
+	 * function get
+	 * Shortcut to return the value of an option
+	 * 
+	 * <code>$foo = Options::get('foo');</code>
+	 * 	 	 	 
+	 * @param	string Name of the option to retrieve
+	 **/	 
+	public static function get( $option )
+	{
+		return self::o()->$option;
+	}
+	
+	/**
+	 * function out
+	 * Shortcut to output the value of an option
+	 * 
+	 * <code>Options::out('foo');</code>
+	 * 	 	 	 
+	 * @param	string Name of the option to output
+	 **/	 
+	public static function out( $option )
 	{
 		echo self::o()->$option;
+	}
+	
+	/**
+	 * function set
+	 * Shortcut to set the value of an option
+	 * 
+	 * <code>Options::set('foo', 'newvalue');</code>
+	 * 	 	 	 
+	 * @param	string Name of the option to set
+	 * @param mixed New value of the option to store
+	 **/	 
+	public static function set( $option, $value )
+	{
+		self::o()->$option = $value;
 	}
 
 	/**

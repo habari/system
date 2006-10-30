@@ -63,7 +63,16 @@ class Utils
 			$t = strtotime( $t );
 		}
 		return date( DATE_ATOM, $t );
-	}	 	 	
+	}
+	
+	/**
+	 * function nonce
+	 * Returns a random 12-digit hex number
+	 **/
+	static function nonce()
+	{
+		return sprintf('%06x', rand(0, 16776960)) . sprintf('%06x', rand(0, 16776960));
+	}	 
 	
 	/**
 	 * function debug_reveal

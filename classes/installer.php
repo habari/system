@@ -71,26 +71,23 @@ class Installer
 		));
 		$admin->insert();
 		
-		Options::o()->installed = true;
+		$options = Options::instance();
 		
-		Options::o()->blog_title = "Habari Whitespace";
-		Options::o()->tag_line = "Spread the News";
-		Options::o()->about = "This is a test install of Habari";
+		$options->installed = true;
+		
+		$options->blog_title = "Habari Whitespace";
+		$options->tag_line = "Spread the News";
+		$options->about = "This is a test install of Habari";
 		$base_url = $_SERVER['REQUEST_URI'];
 		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
-		Options::o()->base_url = $base_url;
-		Options::o()->theme_dir = "k2";
+		$options->base_url = $base_url;
+		$options->theme_dir = "k2";
 		$options->version = "0.1alpha";
 
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
-		$salt = '';
-		for ($i = 1; $i <= 10; $i++) {
-		       $salt .= substr('0123456789abcdef', rand(0,15), 1);
-		}
-		$hash = sha1($base_url . $salt);
-		Options::o()->GUID = $hash;
+		$options->GUID = sha1($base_url . Utils::nonce());
 			
 		// Output any errors
 		if($db->has_errors()) {

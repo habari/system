@@ -30,7 +30,7 @@ class URLParser
 	{
 		// Remove the front of the URL path, which isn't determinant for this class
 		// Keep the "stub"		
-		$base = parse_url( Options::o()->base_url );
+		$base = parse_url( Options::get('base_url') );
 		$stub = $url;
 		if ( $base[ 'path' ] != '' ) {
 			$stub = substr( $stub, strpos( $url, $base[ 'path' ] ) + strlen( $base[ 'path' ] ) );
@@ -232,7 +232,7 @@ class URLParser
 				else {
 					$querystring = '';
 				}
-				return Utils::end_in_slash(Options::o()->base_url) . trim($output, '/') . $querystring;
+				return Utils::end_in_slash(Options::get('base_url')) . trim($output, '/') . $querystring;
 			}
 		}
 		return '#unknown';
@@ -265,9 +265,9 @@ class URLParser
 		 **/
 		// admin rules
 		$this->rules[] = array('"admin"', 'AdminHandler', 'dashboard');
-		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
 		$this->rules[] = array('"admin"/"post"/action', 'AdminHandler', 'posthandler');
 		$this->rules[] = array('"admin"/"ajax"/action', 'AjaxHandler', 'ajaxhandler');
+		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
 		// user rules
 		$this->rules[] = array('"login"/action', 'UserHandler', 'login');
 		$this->rules[] = array('"login"', 'UserHandler', 'login');

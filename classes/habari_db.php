@@ -202,8 +202,8 @@ class habari_db
 			$qry .= " AND {$keyfield} = ? ";
 			$values[] = $keyvalue;
 		}
-		$result = $this->get_results($qry, $values);
-		return is_array($result) && (count($result) > 0);
+		$result = $this->get_row($qry, $values);
+		return ($result !== false);
 	}
 	
 	/**

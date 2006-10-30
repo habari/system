@@ -36,7 +36,7 @@ class User extends QueryRecord
 		// Is the logged-in user not cached already?
 		if ( self::$identity == null ) {
 			// see if there's a cookie
-			$cookie = "habari_" . Options::o()->GUID;
+			$cookie = "habari_" . Options::get('GUID');
 			if ( ! isset($_COOKIE[$cookie]) ) {
 				// no cookie, so stop processing
 				return false;
@@ -87,9 +87,9 @@ class User extends QueryRecord
 	public function remember()
 	{
 		// set the cookie
-		$cookie = "habari_" . Options::o()->GUID;
+		$cookie = "habari_" . Options::get('GUID');
 		$content = sha1($this->password . $this->id) . $this->id;
-		setcookie($cookie, $content, time() + 604800, Options::o()->siteurl);
+		setcookie($cookie, $content, time() + 604800, Options::get('siteurl'));
 	}
 
 	/** function forget
@@ -98,8 +98,8 @@ class User extends QueryRecord
 	public function forget()
 	{
 		// delete the cookie
-		$cookie = "habari_" . Options::o()->GUID;
-		setcookie($cookie, ' ', time() - 86400, Options::o()->siteurl);
+		$cookie = "habari_" . Options::get('GUID');
+		setcookie($cookie, ' ', time() - 86400, Options::get('siteurl'));
 		die('ok');
 	}
 
