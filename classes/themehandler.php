@@ -9,7 +9,7 @@
 
 // TODO: Make this not use a specific theme
 define('THEME_DIR', HABARI_PATH . '/themes/k2/');
-
+//define('THEME_DIR', HABARI_PATH . '/themes/so-fresh/');
 class ThemeHandler extends ActionHandler
 {
 
