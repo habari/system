@@ -90,7 +90,7 @@ class Options
 	 * Allows retrieval of option values
 	 * @param string Name of the option to get
 	 * @return mixed Stored value for specified option
-	 **/	 	 	
+	 **/
 	public function __get($name)
 	{
 		global $db;
@@ -100,16 +100,16 @@ class Options
 		
 			if ( is_object( $result) ) {
 				if($result->type == 1) {
-					$options[$name] = unserialize($result->value);
+					$this->options[$name] = unserialize($result->value);
 				}
 				else {
-					$options[$name] = $result->value;
+					$this->options[$name] = $result->value;
 				}
 			} else {
 				return null;
 			}
 		}
-		return $options[$name];
+		return $this->options[$name];
 	}
 	
 	/**
@@ -121,7 +121,7 @@ class Options
 	public function __set($name, $value) {
 		global $db;
 		
-		self::$options[$name] = $value;
+		$this->options[$name] = $value;
 		
 		if(is_array($value) || is_object($value)) {
 			$db->update( Options::table, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name'=>$name) ); 

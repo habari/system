@@ -71,7 +71,7 @@ class Installer
 		));
 		$admin->insert();
 		
-		$options = Options::instance();
+		$options = Options::o();
 		
 		$options->installed = true;
 		
