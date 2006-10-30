@@ -163,53 +163,49 @@ class AtomHandler extends ActionHandler
 	{
 		global $urlparser;
 		
-		$xml = new SimpleXMLElement($this->xml_header() . '<feed xmlns="http://www.w3.org/2005/Atom"></feed>');
-	
-		$xml->addChild( 'title', Options::get('blog_title') );
-		$xml->addChild( 'subtitle', Options::get('tag_line') );
-		$link = $xml->addChild( 'link' );
-		$link->addAttribute( 'rel', 'alternate' ); 
-		$link->addAttribute( 'type', 'text/html' ); 
-		$link->addAttribute( 'href', Options::get('base_url') );
-		$link = $xml->addChild( 'link' );
-		$link->addAttribute( 'rel', 'self' ); 
-		$link->addAttribute( 'href', $urlparser->get_url( 'collection' ) );
-		$link = $xml->addChild( 'link' );
-		$link->addAttribute( 'rel', 'service.post' );
-		$link->addAttribute( 'type', 'application/x.atom+xml' ); 
-		$link->addAttribute( 'href', $urlparser->get_url( 'collection' ) );
-		$link->addAttribute( 'title', Options::get('blog_title') );
-		$xml->addChild( 'updated', Utils::atomtime(time()) ); // TODO: This value should be cached
-		$xml->addChild( 'rights', 'Copyright ' . date('Y') ); // TODO: This value should be corrected
-		$generator = $xml->addChild( 'generator', 'Habari' );
-		$generator->addAttribute( 'uri', 'http://code.google.com/p/habari/' );
-		$generator->addAttribute( 'version', '0.1' );
-		$xml->addChild( 'id', Options::get('base_url') );
-	
-		foreach(Post::get_posts() as $post) {
-			$entry = $xml->addChild( 'entry' );
-			$entry->addChild( 'title', $post->title );
-			$link = $entry->addChild( 'link' );
-			$link->addAttribute( 'rel', 'alternate' );
-			$link->addAttribute( 'type', 'text/html' );
-			$link->addAttribute( 'href', $post->permalink );
-			$link = $entry->addChild( 'link' );
-			$link->addAttribute( 'rel', 'edit' );
-			$link->addAttribute( 'type', 'application/x.atom+xml' );
-			$link->addAttribute( 'href', $urlparser->get_url('entry', "slug={$post->slug}") );
-			$author = $entry->addChild( 'author' );
-			$author->addChild( 'name', 'owen' );  // TODO: Link posts to User table
-			$entry->addChild( 'id', $post->guid );
-			$entry->addChild( 'updated', Utils::atomtime( $post->updated ) );
-			$content = $entry->addChild( 'content', $post->content );
-			$content->addAttribute( 'type', 'XHTML' );
-			$content->addAttribute( 'mode', 'escaped' );
-			$content->addAttribute( 'base', $post->permalink, 'xml' );
-			$summary = $entry->addChild( 'summary', $post->content );
-		}
+		$options = Options::o();
+		$local['collectionurl'] = 'http://' . $_SERVER["HTTP_HOST"] . $urlparser->get_url( 'collection' );
+		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
+		$local['copyright'] = date('Y'); // TODO: This value should be corrected
 		
-		header('Content-Type: application/x.atom+xml');
-		echo $xml->asXML();		
+		$xmltext = $this->xml_header();
+		$xmltext .= <<< feedpreamble
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>{$options->blog_title}</title>
+	<subtitle>{$options->tag_line}</subtitle>
+	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->base_url}" />
+	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->blog_title}" />
+	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
+	<updated>{$local['feedupdated']}</updated>
+	<rights>{$local['copyright']}</rights>
+	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
+	<id>http://{$_SERVER["HTTP_HOST"]}{$options->base_url}</id>
+
+feedpreamble;
+
+		foreach(Post::get_posts() as $post) {
+			$entryurl = $urlparser->get_url( 'entry', "slug={$post->slug}" );
+			$entryupdated = Utils::atomtime( $post->updated );
+			$xmltext .= <<< postentry
+	<entry>
+		<title>{$post->title}</title>
+		<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$post->permalink}" />
+		<link rel="edit" type="application/atom+xml" href="http://{$_SERVER["HTTP_HOST"]}{$entryurl}" />
+		<author>
+			<name>Owen</name><!-- TODO: Link posts to User table with id -->
+		</author>
+		<id>{$post->guid}</id>
+		<updated>{$entryupdated}</updated>
+		<content type="text/xhtml" xml:base="http://{$_SERVER["HTTP_HOST"]}{$post->permalink}">{$post->content}</content>
+		<summary>{$post->content}</summary>
+	</entry>
+
+postentry;
+		}
+		$xmltext .= '</feed>';
+
+		header('Content-Type: application/atom+xml');
+		echo $xmltext;		
 	}	
 
 	/**
@@ -245,16 +241,17 @@ class AtomHandler extends ActionHandler
 
 	function introspection($settings)
 	{
-		global Options::o(), $urlparser;
+		global $urlparser;
 		
-		$xml = new SimpleXMLElement($this->xml_header() . '
+		$xmltext = $this->xml_header() . '
 		<service xmlns="http://purl.org/atom/app#">
 			<workspace title="' . Options::get('blog_title') . '">
 			  <collection title="Blog Entries" href="' . $urlparser->get_url( 'collection' ) . '" />
 			</workspace>
 		</service>
-		');
-		echo $xml->asXML();		
+		';
+		header('Content-Type: application/atom+xml');
+		echo $xmltext;		
 	}
 
 }

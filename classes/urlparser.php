@@ -278,8 +278,8 @@ class URLParser
 		$this->rules[] = array('year', 'ThemeHandler', 'year');
 		$this->rules[] = array('"tag"/tag', 'ThemeHandler', 'tag');
 		$this->rules[] = array('"author"/author', 'ActionHandler', 'author');
-		$this->rules[] = array('"atom"', 'AtomHandler', 'collection');
-		$this->rules[] = array('"atom"/"introspection"', 'AtomHandler', 'introspection');
+		$this->rules[] = array('"atom"/index', 'AtomHandler', 'collection');
+		$this->rules[] = array('"atom"', 'AtomHandler', 'introspection');
 		$this->rules[] = array('"feed"/feedtype', 'ActionHandler', 'site_feed');
 		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
