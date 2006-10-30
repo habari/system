@@ -18,6 +18,12 @@ class Options
 	{
 	}
 
+	/**
+	* function o
+	* returns the value of an option
+	* @param string an option name
+	* @return mixed the value of the named option
+	*/
 	public static function o()
 	{
 		if (!isset(self::$options))
@@ -29,6 +35,11 @@ class Options
 		return self::$options;
 	}
 
+	/**
+	* function e
+	* echoes the value of an option
+	* @param string the name of an option
+	*/
 	public static function e( $option = null )
 	{
 		echo self::o()->$option;
