@@ -16,7 +16,8 @@ class User extends QueryRecord
 		$this->fields = array_merge(
 			array(
 				'id' => '',
-				'username' => '', 
+				'username' => '',
+				'nickname' => '', 
 				'email' => '', 
 				'password' => ''
 			),
@@ -178,6 +179,12 @@ class User extends QueryRecord
 			return $user;
 		}
 	}
+	
+	/**
+	* function get_all()
+	* fetchces all the users from the DB.
+	* still need some checks for only authors.
+	*/
 	
 	public static function get_all()
 	{

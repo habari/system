@@ -117,6 +117,7 @@ class Installer
 			'CREATE TABLE habari__users (
 			  id smallint AUTO_INCREMENT NOT NULL UNIQUE,
 			  username varchar(20) PRIMARY KEY NOT NULL UNIQUE,
+			  nickname varchar(30) NOT NULL,
 			  email varchar(30) NOT NULL,
 			  password varchar(40) NOT NULL
 			);',

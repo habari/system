@@ -16,7 +16,7 @@ body
 	font-family: Trebuchet MS, San-serif;
 	font-size: 1.0em;
 	color: #000;
-	margin: 0 auto;
+	margin: 0;
 }
 
 /*=== @c ===*/
@@ -25,15 +25,27 @@ body
 	text-align: left;
 }
 
+#current-item
+{
+	background-color: #c60;
+	font-size: 0.9em;
+	padding: 0.2em 0.0em;
+}
+
 /*=== @h ===*/
 #header
 {
 	background-color: #333;
+	position: relative;
 	width: 100%;
+	float: left;
+	display: inline;
+	margin: 0.0em;
+	clear: both;
+	text-indent: 0.5em;
 	border-top: 5px solid #999;
-	border-bottom: 3px solid #fff;
-	margin-top: 0.0em;
-	padding: 0.5em;
+	border-bottom: 1px solid #666;
+	padding: 0.5em 0.0em 0.5em 0.0em;
 }
 
 #header h1
@@ -41,7 +53,7 @@ body
 	text-align: left;
 	margin-top: 0.2em;
 	margin-bottom: 0.0em;
-	font-size: 1.0em;
+	font-size: 0.8em;
 	color: #fff;
 }
 
@@ -62,21 +74,36 @@ body
 {
 	float: left;
 	display: inline;
+	margin: 0.0em;
 	width: 100%;
+	clear: both;
 	background-color: #f93;
 	text-align: left;
-	height: 2.0em;
+	height: 1.5em;
+	border-bottom: 2px solid #c60;
 }
 
 #menu ul
 {
-	margin-top: 0.5em;
+	margin-top: 0.2em;
 }
 
 #menu ul li
 {
 	display: inline;
 	list-style: none;
+	font-size: 0.9em;
+}
+
+#menu-items a
+{
+	color: #fff;
+	padding: 0.2em 0.4em;
+}
+
+#menu-items a:hover
+{
+	background-color: #c60;
 }
 
 /*=== @p ===*/
