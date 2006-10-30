@@ -80,6 +80,7 @@ class Installer
 		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
 		Options::o()->base_url = $base_url;
 		Options::o()->theme_dir = "k2";
+		$options->version = "0.1alpha";
 
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
