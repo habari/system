@@ -1,7 +1,7 @@
 <div id="content-area">
 	<h3>Habari Options</h3>
 	<p>Below are the options currently set on your site. You can also create new options if you need them with the second form.</p>
-	<form name="update-options" id="update=options" action="/admin/post/update-options">
+	<form name="update-options" id="update=options" action="<?php Options::e('base_url'); ?>admin/post/update-options">
 		<p><label>Base URL:</label></p>
 		<p><input type="text" value="<?php echo Options::o()->base_url; ?>"/></p>
 		<p><label>Blog Title:</label></p>
