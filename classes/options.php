@@ -20,9 +20,15 @@ class Options
 
 	/**
 	* function o
-	* returns the value of an option
+	* returns a singleton instance of the Options class. Use this to
+	* retrieve values of options, like this:
+	*
+	* <code>
+	* $foo = Options::o()->foo;
+	* </code>
+	*
 	* @param string an option name
-	* @return mixed the value of the named option
+	* @return object Singleton Options object
 	*/
 	public static function o()
 	{
