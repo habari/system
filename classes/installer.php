@@ -24,16 +24,43 @@ class Installer
 	 */
 	static function install()
 	{
-		global $db;
-		
 		if(self::is_installed()) return true;
-		
-		// Create the tables
-		foreach(self::get_schema() as $query) {
+		// are we processing the POST?
+		if ('install' == $_POST['action'])
+		{
+			self::installhandler();
+			return true;
+		}
+
+		// if we got here, we need to interact with the user
+		echo "<p>Welcome to <strong>Habari</strong>!  Answer the questions below to get started.</p>";
+		echo "<form method='post'><input type='hidden' name='action' value='install' />";
+		 echo "<input type='text' size='40' name='title' value='Blog Title' /><br />";
+		 echo "<input type='text' size='40' name='tagline' value='Tagline' /><br />";
+		 echo "<input type='text' size='40' name='about' value='About this blog' /><br />";
+		echo "<input type='text' size='40' name='username' value='Username' /><br />";
+		echo "<input type='text' size='40' name='email' value='user@email.com' /><br />";
+		echo "<input type='text' size='40' name='password' value='Password' /><br />";
+		echo "<input type='submit' value='GO!' />";
+		die;
+
+	}
+
+	static function installhandler()
+	{
+		global $db, $db_connection;
+
+		// determine the database type
+		list($dbtype,$other) = explode( ':', $db_connection['connection_string'], 2 );
+		// load the proper schema
+		require_once HABARI_PATH . '/system/schema/schema.' . $dbtype . '.php';
+		// create the tables
+		foreach ($queries as $query)
+		{
 			$db->query($query);
 		}
-		
-		// Insert a few post records
+
+		// Insert a post record
 		
 		Post::create(array(
 			'title'=>'First Post',
@@ -44,29 +71,11 @@ class Installer
 			'status'=>'publish',
 		));
 
-		Post::create(array(
-			'title'=>'Second Post',
-			'guid'=>'tag:localhost,2006:second-post/7407395',
-			'content'=>'This is my second post',
-			'author'=>'owen',
-			'pubdate'=>'2006-10-04 17:18:00',
-			'status'=>'publish',
-		));
-			
-		Post::create(array (
-			'title'=>'Third Post',
-			'guid'=>'tag:localhost,2006:third-post/4981704',
-			'content'=>'This is my third post',
-			'author'=>'owen',
-			'pubdate'=>'2006-10-04 17:19:00',
-			'status'=>'publish',
-		));
-
 		// insert a default admin user
-		$password = sha1('password');
+		$password = sha1($_POST['password']);
 		$admin = new User(array (
-			'username'=>'admin',
-			'email'=>'admin@localhost',
+			'username'=>$_POST['username'],
+			'email'=>$_POST['email'],
 			'password'=>$password
 		));
 		$admin->insert();
@@ -75,9 +84,9 @@ class Installer
 		
 		$options->installed = true;
 		
-		$options->blog_title = "Habari Whitespace";
-		$options->tag_line = "Spread the News";
-		$options->about = "This is a test install of Habari";
+		$options->blog_title = $_POST['title'];
+		$options->tag_line = $_POST['tagline'];
+		$options->about = $_POST['about'];
 		$base_url = $_SERVER['REQUEST_URI'];
 		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
 		$options->base_url = $base_url;
@@ -93,42 +102,17 @@ class Installer
 		if($db->has_errors()) {
 			Utils::debug('Errors:', $db->get_errors());
 		}
+		echo "Congratulations, Habari is now installed!<br />";
+		echo "Click <a href='$base_url'>here</a> to continue.";
+		die;
 	}
 	
 	static function get_schema()
 	{
-		$queries = array (
-			'CREATE TABLE habari__posts ( 
-				id smallint AUTO_INCREMENT NOT NULL UNIQUE,
-				slug VARCHAR(255) NOT NULL PRIMARY KEY, 
-				title VARCHAR(255), 
-				guid VARCHAR(255) NOT NULL, 
-				content LONGTEXT, 
-				author VARCHAR(255) NOT NULL, 
-				status VARCHAR(50) NOT NULL, 
-				pubdate TIMESTAMP, 
-				updated TIMESTAMP
-			);',
-			'CREATE TABLE habari__options (
-			  name varchar(50) PRIMARY KEY NOT NULL UNIQUE,
-			  type integer DEFAULT 0,
-			  value text
-			);',
-			'CREATE TABLE habari__users (
-			  id smallint AUTO_INCREMENT NOT NULL UNIQUE,
-			  username varchar(20) PRIMARY KEY NOT NULL UNIQUE,
-			  nickname varchar(30) NOT NULL,
-			  email varchar(30) NOT NULL,
-			  password varchar(40) NOT NULL
-			);',
-			'CREATE TABLE habari__tags (
-			  slug varchar(255) PRIMARY KEY NOT NULL,
-			  tag varchar(30) NOT NULL,
-			  KEY tag (tag)
-			);',
-			
-		);
-		return $queries;
+		global $db_connection;
+		list($dbtype,$other) = explode( ':', $db_connection['connection_string'], 2 );
+		$schema = file_get_contents(HABARI_PATH . '/system/schema/schema.' . $dbtype);
+		return $schema;
 	}
 
 }
