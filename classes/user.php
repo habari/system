@@ -101,7 +101,9 @@ class User extends QueryRecord
 		// delete the cookie
 		$cookie = "habari_" . Options::get('GUID');
 		setcookie($cookie, ' ', time() - 86400, Options::get('siteurl'));
-		die('ok');
+		$home = Options::get('base_url');
+		header( "Location: " . $home );
+		exit;
 	}
 
 	/** function authenticate
