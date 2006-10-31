@@ -61,6 +61,11 @@ class Post extends QueryRecord
 	/**
 	 * static function get_post
 	 * Returns a single requested post
+	 *
+	 * <code>
+	 * $post = Posts::get_post( array( 'slug' => 'wooga' ) );
+	 * </code>
+	 *
 	 * @param array An associated array of parameters, or a querystring
 	 * @return array A single Post object, the first if multiple results match
 	 **/	 	 	 	 	
