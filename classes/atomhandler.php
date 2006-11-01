@@ -14,7 +14,7 @@ class AtomHandler extends ActionHandler
 	/**
 	 * function entry
 	 * Responds to Atom requests for a single entry (post)
-	 * @param array Settings array from the URLParser
+	 * @param array Settings array from the URL
 	 **/	 	 	 	
 	public function entry($settings) 
 	{
@@ -161,10 +161,10 @@ class AtomHandler extends ActionHandler
 	 **/	 	 		
 	function get_collection()
 	{
-		global $urlparser;
+		global $url;
 		
 		$options = Options::o();
-		$local['collectionurl'] = 'http://' . $_SERVER["HTTP_HOST"] . $urlparser->get_url( 'collection' );
+		$local['collectionurl'] = 'http://' . $_SERVER["HTTP_HOST"] . $url->get_url( 'collection' );
 		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
 		$local['copyright'] = date('Y'); // TODO: This value should be corrected
 		
@@ -184,7 +184,7 @@ class AtomHandler extends ActionHandler
 feedpreamble;
 
 		foreach(Post::get_posts() as $post) {
-			$entryurl = $urlparser->get_url( 'entry', "slug={$post->slug}" );
+			$entryurl = $url->get_url( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
 			$xmltext .= <<< postentry
 	<entry>
@@ -241,12 +241,12 @@ postentry;
 
 	function introspection($settings)
 	{
-		global $urlparser;
+		global $url;
 		
 		$xmltext = $this->xml_header() . '
 		<service xmlns="http://purl.org/atom/app#">
 			<workspace title="' . Options::get('blog_title') . '">
-			  <collection title="Blog Entries" href="' . $urlparser->get_url( 'collection' ) . '" />
+			  <collection title="Blog Entries" href="' . $url->get_url( 'collection' ) . '" />
 			</workspace>
 		</service>
 		';

@@ -84,7 +84,7 @@ class Installer
 		
 		$options->installed = true;
 		
-		$options->blog_title = $_POST['title'];
+		$options->title = $_POST['title'];
 		$options->tag_line = $_POST['tagline'];
 		$options->about = $_POST['about'];
 		$base_url = $_SERVER['REQUEST_URI'];
