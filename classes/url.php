@@ -181,21 +181,38 @@ class URL
 	}
 	
 	/**
-	 * function get_url
+	 * function get
 	 * Returns a url for the specified resource.
-	 * @param string The type of page the resource is (see the rules)
-	 * @param mixed An associative array or querystring of parameters used to fill the URL structure
-	 * @return string A URL
+	 * May be called on an object, or statically if the $url global is set:
 	 * 
-	 * echo $url->get_url( 'tag', 'tag=my-tag' );
-	 * echo $url->get_url( 'tag', array( 'tag' => 'my-tag' ) );	  	 
+	 * <code>
+	 * $foo = $url->get( 'tag', 'tag=my-tag' );
+	 * $foo = $url->get( 'tag', array( 'tag' => 'my-tag' ) );	  	 
+	 * $foo = URL::get( 'admin' );
+	 * $foo = URL::get( 'admin', array( 'page' => 'options' )  );
+	 * </code>
+	 * 	 
+	 * @param string The type of page the resource is (see the rules)
+	 * @param mixed Optional. An associative array or querystring of parameters used to fill the URL structure
+	 * @param boolean Optional. If true, any elements from $paramarray that are not used in the URL itself are added as a querystring
+	 * @return string A URL
 	 **/	 	 	 	  	 	 		
-	public function get_url( $pagetype, $paramarray = array(), $useall = true)
+	public function get( $pagetype, $paramarray = array(), $useall = true)
 	{
+		global $url;
+		if (  $this instanceof __CLASS__ ) {
+			// get() was called on an instance
+			$rules = $this->rules;
+		}
+		else {
+			// get() was called statically
+			$rules = $url->rules;
+		}
+
 		$params = Utils::get_params($paramarray);
 		
 		$fn = create_function( '$a', 'return $a[2] == "' . $pagetype . '";' );
-		$rules = array_filter( $this->rules, $fn );
+		$rules = array_filter( $rules, $fn );
 		foreach ( $rules as $rule ) {
 			$output = '';
 			$parts = explode( '/', $rule[0] );
@@ -223,7 +240,7 @@ class URL
 			}
 			if ( !$fail ) {
 				if ( $useall ) {
-                    $unused = array();
+					$unused = array();
 					foreach ( $params as $key=>$param ) {
 						if ( !in_array( $key, $used ) && $param != '' ) {
 							$unused[$key] = $param;
@@ -240,7 +257,81 @@ class URL
 		}
 		return '#unknown';
 	}
-
+	
+	/**
+	 * function get_url
+	 * Alias for get()
+	 * Deprecate?  Use get() convention for objects that get things.
+	 * May be called on an object, or statically if the $url global is set:
+	 * 
+	 * <code>
+	 * $foo = $url->get_url('admin');
+	 * $foo = URL::get_url('admin');
+	 * </code>
+	 * 	 
+	 **/
+	public function get_url( $pagetype, $paramarray = array(), $useall = true )
+	{
+		global $url;
+		if ( $this instanceof __CLASS__ ) {
+			// get_url() was called on an instance
+			$out = $this->get( $pagetype, $paramarray, $useall );
+		}
+		else {
+			// get_url() was called statically
+			$out = $url->get( $pagetype, $paramarray, $useall );
+		}
+		return $out;
+	}
+	
+	/**
+	 * function out
+	 * Shortcut to echo the result of $this->get()
+	 * May be called on an object, or statically if the $url global is set:
+	 * 
+	 * <code>
+	 * $url->out('admin');
+	 * URL::out('admin');
+	 * </code>
+	 * 	 	 
+	 * @param string The type of page the resource is (see the rules)
+	 * @param mixed An associative array or querystring of parameters used to fill the URL structure
+	 **/
+	public function out( $pagetype, $paramarray = array(), $useall = true )
+	{
+		global $url;
+		if ( $this instanceof __CLASS__ ) {
+			// out() was called on an instance
+			$out = $this->get( $pagetype, $paramarray, $useall );
+		}
+		else {
+			// out() was called statically
+			$out = $url->get( $pagetype, $paramarray, $useall );
+		}
+		echo $out;
+	}
+	
+	/**
+	 * function o
+	 * Returns the global $url object instance, whether set or not.
+	 * Instead of declaring $url as global everywhere, you can call it like
+	 * this for shorthand:	 
+	 * 
+	 * <code>
+	 * URL::o()->get('admin')	 
+	 * </code>
+	 * 
+	 * URL::o() will return whatever the global $url is set to, even null if
+	 * $url is not set.	 	 	 
+	 * 	 	 
+	 * @return mixed The value of the global $url
+	 **/	 	 
+	public static function o()
+	{
+		global $url;
+		return $url;
+	}
+	
 	/**
 	 * function init_rules()
 	 * Sets the basic rules for URL structures.  Will probably not remain in this format.
@@ -267,10 +358,10 @@ class URL
 		 *  year, month, and day are all special captures that will capture only their respective types. ie /[0-9]{4}/ and /[0-9]{2}/
 		 **/
 		// admin rules
-		$this->rules[] = array('"admin"', 'AdminHandler', 'dashboard');
+		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
+		$this->rules[] = array('"admin"', 'AdminHandler', 'admin');
 		$this->rules[] = array('"admin"/"post"/action', 'AdminHandler', 'posthandler');
 		$this->rules[] = array('"admin"/"ajax"/action', 'AjaxHandler', 'ajaxhandler');
-		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
 		// user rules
 		$this->rules[] = array('"login"/action', 'UserHandler', 'login');
 		$this->rules[] = array('"login"', 'UserHandler', 'login');
