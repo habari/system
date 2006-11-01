@@ -95,7 +95,6 @@ class AdminHandler extends ActionHandler
 	*/
 	public function posthandler ($settings = null)
 	{
-		var_dump($settings); die;
 		// is this request from a valid, logged-in user?
 		if ( ! User::identify() )
 		{
@@ -104,7 +103,7 @@ class AdminHandler extends ActionHandler
 			die;
 		}
 		// now see if a method is registered to handle the POSTed action
-		if ( method_exist ( $this, $settings['action'] ) )
+		if ( method_exists ( $this, $settings['action'] ) )
 		{
 			call_user_func( array($this, $settings['action']), $settings );
 		}
@@ -114,6 +113,18 @@ class AdminHandler extends ActionHandler
 			echo "No such function.";
 			die;
 		}
+	}
+
+	public function options()
+	{
+		foreach ($_POST as $option => $value)
+		{
+			if ( Options::get($option) != $value )
+			{
+				Options::set($option, $value);
+			}
+		}
+		header("Location: " . Options::get('base_url') . "admin/options/");
 	}
 
 }
