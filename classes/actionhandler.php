@@ -7,7 +7,7 @@
  * @package Habari
  * 
  * A base class to derive Handlers from.
- * Handlers are used by the URLParser to dispatch actions found in the request URL   
+ * Handlers are used by the URL to dispatch actions found in the request URL   
  */
 
 class ActionHandler
@@ -18,8 +18,8 @@ class ActionHandler
 	 * Constructor for ActionHandler and derived classes
 	 * Attempts to find a method in the object that matches the requested action,
 	 * and call it with the settings that are provided.
-	 * @param string The action that was in the URLParser rule
-	 * @param array An associative array of settings found in the URL by the URLParser
+	 * @param string The action that was in the URL rule
+	 * @param array An associative array of settings found in the URL by the URL
 	 **/	 	 	 	 
 	public function __construct($action, $settings)
 	{

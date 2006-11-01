@@ -15,15 +15,15 @@ class UserHandler extends ActionHandler
 	/**
 	* function login
 	* checks a user's credentials, and creates a session for them
-	* @param string the Action that was in the URLParser rule
-	* @param array An associative array of settings found in the URL by the URLParser
+	* @param string the Action that was in the URL rule
+	* @param array An associative array of settings found in the URL by the URL
 	*/
 	public function login($settings) {
-		global $urlparser;
+		global $url;
 		if ( $settings['action'] == 'login' ) {
 			if( !($user = user::authenticate( $_POST['name'], $_POST['pass'] ) )  ) {
 				// set an error.
-				$urlparser->error = "badlogin";
+				$url->error = "badlogin";
 			}
 		}
 		new ThemeHandler( 'login', $settings );
@@ -32,11 +32,11 @@ class UserHandler extends ActionHandler
 	/**
 	* function logout
 	* terminates a user's session, and deletes the Habari cookie
-	* @param string the Action that was in the URLParser rule
-	* @param array An associative array of settings found in the URL by the URLParser
+	* @param string the Action that was in the URL rule
+	* @param array An associative array of settings found in the URL by the URL
 	*/
 	public function logout($settings) {
-		global $urlparser;
+		global $url;
 		
 		// get the user from their cookie
 		if ( $user = user::identify() )
@@ -51,8 +51,8 @@ class UserHandler extends ActionHandler
 	/**
 	* function changepass
 	* changes a user's password
-	* @param string the Action that was in the URLParser rule
-	* @param array An associative array of settings found in the URL by the URLParser
+	* @param string the Action that was in the URL rule
+	* @param array An associative array of settings found in the URL by the URL
 	*/
 	public function changepass( $settings ) {
 
@@ -65,10 +65,10 @@ class UserHandler extends ActionHandler
 	/**
 	* function newuser
 	* adds a new user
-	* @param array An associative array of settings found in the URL by the URLParser
+	* @param array An associative array of settings found in the URL by the URL
 	*/
 	public function newuser($settings = null) {
-		global $db, $urlparser;
+		global $db, $url;
 		$user = User::identify();
 		if ( ! $user ) {
 			die ('Naughty Naughty!');
@@ -96,7 +96,7 @@ class UserHandler extends ActionHandler
 						);
 				if ( $user->insert() ) {
 					echo "User " . $settings['username'] . " created!<br />";
-					echo "Click <a href='" . $urlparser->get_url('home') . "'>here</a> to return to the home page.";
+					echo "Click <a href='" . $url->get_url('home') . "'>here</a> to return to the home page.";
 					die();
 				} else {
 					$dberror = $db->get_last_error();

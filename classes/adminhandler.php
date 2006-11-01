@@ -14,8 +14,8 @@ class AdminHandler extends ActionHandler
 	/**
 	* constructor __construct
 	* verify that the page is being accessed by an admin
-	* @param string The action that was in the URLParser rule
-	* @param array An associative array of settings found in the URL by the URLParser
+	* @param string The action that was in the URL rule
+	* @param array An associative array of settings found in the URL by the URL
 	*/
 	public function __construct( $action, $settings )
 	{
@@ -54,7 +54,7 @@ class AdminHandler extends ActionHandler
 	/**
 	* function admin
 	* figures out what admin page to show, and displays it to the user
-	* @param array An associative array of settings found in the URL by the URLParser
+	* @param array An associative array of settings found in the URL by the URL
 	*/
 	public function admin( $settings = null)
 	{
@@ -90,8 +90,8 @@ class AdminHandler extends ActionHandler
 
 	/**
 	* function posthandler
-	* called from URLParser for /admin/post/foo URLS.  Ensures a user is logged in, and executes the method "foo" if it exists.
-	* @param array An associative array of settings found in the URL by the URLParser 
+	* called from URL for /admin/post/foo URLS.  Ensures a user is logged in, and executes the method "foo" if it exists.
+	* @param array An associative array of settings found in the URL by the URL 
 	*/
 	public function posthandler ($settings = null)
 	{

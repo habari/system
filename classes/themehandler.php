@@ -16,13 +16,13 @@ class ThemeHandler extends ActionHandler
 	/**
 	 * function __call
 	 * Handles all calls to this class for methods that don't exist.
-	 * In this class, method names correlated with action names set in the URLParser rules.
+	 * In this class, method names correlated with action names set in the URL rules.
 	 * Throws an execption if the requested action isn't valid.
 	 * @param string The action that was called.
 	 * @param array Settings passed in from the URL
 	 **/	 	 
 	public function __call($action, $settings) {
-		global $urlparser, $theme;
+		global $url, $theme;
 	
 		// What this handler handles and how
 		$handle = array(

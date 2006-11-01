@@ -34,44 +34,21 @@ class Post extends QueryRecord
 		);
 		parent::__construct( $paramarray );
 	}
-
-	/**
-	 * static function get_posts
-	 * Returns requested posts.
-	 * @param array An associated array of parameters, or a querystring
-	 * @return array An array of Post objects, one for each query result
-	 **/	 	 	 	 	
-	static function get_posts($paramarray = array()) 
-	{
-		global $urlparser;
-
-		// Defaults
-		$defaults = array (
-			'orderby' => 'pubdate DESC',
-			'status' => 'publish',
-			'stub' => '',
-		);
-
-		$paramarray = array_merge( $urlparser->settings, $defaults, Utils::get_params($paramarray) ); 
-
-		return self::do_query($paramarray, false);
-	}
-
 	
 	/**
-	 * static function get_post
+	 * static function get
 	 * Returns a single requested post
 	 *
 	 * <code>
-	 * $post = Posts::get_post( array( 'slug' => 'wooga' ) );
+	 * $post = Post::get( array( 'slug' => 'wooga' ) );
 	 * </code>
 	 *
 	 * @param array An associated array of parameters, or a querystring
 	 * @return array A single Post object, the first if multiple results match
 	 **/	 	 	 	 	
-	static function get_post($paramarray = array())
+	static function get($paramarray = array())
 	{
-		global $urlparser;
+		global $url;
 		
 		// Defaults
 		$defaults = array (
@@ -79,81 +56,8 @@ class Post extends QueryRecord
 			'status' => 'publish',
 		);
 
-		$paramarray = array_merge( $urlparser->settings, $defaults, Utils::get_params($paramarray) ); 
-		return self::do_query($paramarray, true);
-	}
-		
-	/**
-	 * static function do_query
-	 * Returns a post or posts based on supplied parameters
-	 * THIS CLASS SHOULD CACHE QUERY RESULTS!	 
-	 * @param array An associated array of parameters, or a querystring
-	 * @param boolean If true, returns only the first result	 
-	 * @return array An array of Post objects, or a single post object, depending on request
-	 **/	 	 	 	 	
-	private function do_query($paramarray, $one_row_only)
-	{
-		global $db;
-	
-		$params = array();
-		$selects = array(
-			'habari__posts' => array (
-				'id',
-				'slug',
-				'title',
-				'guid',
-				'content',
-				'author',
-				'status',
-				'pubdate',
-				'updated',
-			),
-		);
-	
-		// Put incoming parameters into the local scope
-		extract(Utils::get_params($paramarray));
-		$where = array(1);
-		$join = '';
-		if ( isset( $status ) ) {
-			$where[] = "status = ?";
-			$params[] = $status;
-		}
-		if ( isset( $slug ) ) {
-			$where[] = "slug = ?";
-			$params[] = $slug;
-		}
-		if ( isset( $tag ) ) {
-			$join .= ' JOIN habari__tags ON habari__posts.slug = habari__tags.slug';
-			// Need tag expression parser here.			
-			$where[] = 'tag = ?';
-			$params[] = $tag;
-		}
-		
-	 	$select = '';	
-		foreach($selects as $table=>$fields) {
-			$select .= "{$table}." . implode( ", {$table}.", $fields );
-		}
-		
-		$query = "
-		SELECT 
-		" . $select . "
-		FROM 
-			habari__posts 
-		" . $join . "
-		WHERE 
-			" . implode( ' AND ', $where ) . "
-		ORDER BY 
-			{$orderby}";
-			
-		$fetch_fn = ($one_row_only) ? 'get_row' : 'get_results';
-		$results = $db->$fetch_fn( $query, $params, 'Post' );
-
-		if ( is_array( $results ) || $one_row_only) {
-			return $results;
-		}
-		else {
-			return false;
-		}
+		$paramarray = array_merge( $url->settings, $defaults, Utils::get_params($paramarray) ); 
+		return Posts::do_query($paramarray, true);
 	}
 	
 	/**
@@ -299,9 +203,9 @@ class Post extends QueryRecord
 	 **/	 	 	
 	private function get_permalink()
 	{
-		global $urlparser;
+		global $url;
 		
-		return $urlparser->get_url(
+		return $url->get_url(
 			'post',
 			$this->fields,
 			false
