@@ -23,7 +23,7 @@ class UserHandler extends ActionHandler
 		if ( $settings['action'] == 'login' ) {
 			if( !($user = user::authenticate( $_POST['name'], $_POST['pass'] ) )  ) {
 				// set an error.
-				$url->error = "badlogin";
+				$url->settings['error'] = "badlogin";
 			}
 		}
 		new ThemeHandler( 'login', $settings );

@@ -41,17 +41,6 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	* function dashboard
-	* display an overview of current blog stats
-	*/
-	public function dashboard()
-	{
-		$this->header();
-		echo "Hiya! Welcome to your dashboard.";
-		$this->footer();
-	}
-
-	/**
 	* function admin
 	* figures out what admin page to show, and displays it to the user
 	* @param array An associative array of settings found in the URL by the URL
@@ -60,8 +49,10 @@ class AdminHandler extends ActionHandler
 	{
 		// check that the user is logged in, and redirect
 		// to the login page, if not
-		if (! user::identify() )
+		if (! User::identify() )
 		{
+			new ThemeHandler( 'login', $settings );
+			exit;
 		}
 		$files = glob(ADMIN_DIR . '*.php');
 		$filekeys = array_map(
@@ -74,6 +65,7 @@ class AdminHandler extends ActionHandler
 		$map = array_combine($filekeys, $files);
 		// Allow plugins to modify or add to $map here,
 		// since plugins will not be installed to /system/admin
+		$settings['page'] = ($settings['page'] == '') ? 'dashboard' : $settings['page'];
 		if ( isset( $map[$settings['page']] ) ) {
 			$this->header();
 			include $map[$settings['page']];
