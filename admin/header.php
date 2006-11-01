@@ -1,3 +1,10 @@
+<?php $user = User::identify(); 
+	if ( '' == $user ) {
+		$login = Options::get('base_url') . 'login';
+		header( "Location: " . $login );
+		exit;
+	} else { 
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://gmpg.org/xfn/11">
@@ -18,3 +25,4 @@
 			<li><a href="<?php Options::out('base_url'); ?>admin/plugins" title="edit your sites plugins">Plugins</a></li>
 		</ul>
 	</div>
+<?php } ?>
