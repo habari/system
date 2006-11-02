@@ -178,6 +178,8 @@ class Post extends QueryRecord
 			return $this->get_tags();
 		case 'comments':
 			return $this->get_comments();
+		case 'comment_count':
+			return $this->comments_count();
 		default:
 			return parent::__get( $name );
 		}
@@ -242,6 +244,20 @@ class Post extends QueryRecord
 			$this->comments = Comments::by_slug( $this->slug );
 		}
 		return $this->comments;
+	}
+	
+	/**
+	* function comments_count
+	* Counts the comments for the post
+	* @return integer
+	**/
+	private function &comments_count()
+	{
+		if ( ! $this->comments )
+		{
+			$count = count( $this->get_comments() );
+			return $count;
+		}
 	}
 }
 ?>
