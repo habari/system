@@ -1,6 +1,6 @@
 <?php
 /**
- * Habari Comment Class
+ * Habari Comments Class
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
@@ -8,21 +8,6 @@
 
 class Comments extends ArrayObject
 {
-
-	static function default_fields()
-	{
-		return  array(
-				'id' => '',
-				'post_slug' => '',
-				'name' => '',
-				'email' => '',
-				'url' => '',
-				'ip' => '',
-				'content' => '',
-				'status' => '',
-				'date' => ''
-				);
-	}
 
 	/**
 	 * function get
@@ -50,12 +35,11 @@ class Comments extends ArrayObject
 			}
 			// only accept those keys that correspond to
 			// table columns
-			if ( ! array_key_exists ( $key, self::default_fields() ) )
+			if ( array_key_exists ( $key, Comment::default_fields() ) )
 			{
-				continue;
+				$where[] = "$key = ?";
+				$params[] = $value;
 			}
-			$where[] = "$key = ?";
-			$params[] = $value;
 		}
 
 		$sql = "SELECT * from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY $orderby";
@@ -147,11 +131,20 @@ class Comments extends ArrayObject
 	* function by_status
 	* select all comments of a given status
 	* @param int a status value
-	* @return array array an array of Comment objects with the same status
-	*/
+	* @return array an array of Comment objects with the same status
+	**/
 	public function by_status ( $status = 0 )
 	{
 		return self::get( array( "status" => $status ) );
+	}
+
+	/**
+	* function trackbacks
+	* returns all of the comments from the current Comments object that are of type "trackback"
+	* @ return array an array of Comment objects that are trackbacks
+	**/
+	public function trackbacks()
+	{
 	}
 
 }
