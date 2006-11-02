@@ -200,7 +200,8 @@ class URL
 	public function get( $pagetype, $paramarray = array(), $useall = true)
 	{
 		global $url;
-		if (  $this instanceof __CLASS__ ) {
+		$c = __CLASS__;
+		if (  $this instanceof $c ) {
 			// get() was called on an instance
 			$rules = $this->rules;
 		}
@@ -273,7 +274,8 @@ class URL
 	public function get_url( $pagetype, $paramarray = array(), $useall = true )
 	{
 		global $url;
-		if ( $this instanceof __CLASS__ ) {
+		$c = __CLASS__;
+		if ( $this instanceof $c ) {
 			// get_url() was called on an instance
 			$out = $this->get( $pagetype, $paramarray, $useall );
 		}
@@ -300,7 +302,8 @@ class URL
 	public function out( $pagetype, $paramarray = array(), $useall = true )
 	{
 		global $url;
-		if ( $this instanceof __CLASS__ ) {
+		$c = __CLASS__;
+		if ( $this instanceof $c ) {
 			// out() was called on an instance
 			$out = $this->get( $pagetype, $paramarray, $useall );
 		}
