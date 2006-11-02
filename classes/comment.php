@@ -10,6 +10,25 @@ class Comment extends QueryRecord
 {
 
 	/**
+	* static function default_fields
+	* Returns the defined database columns for a comment
+	**/
+	public static function default_fields()
+	{
+		return array(
+			'id' => '',
+			'post_slug' => '',
+			'name' => '',
+			'email' => '',
+			'url' => '',
+			'ip' => '',
+			'content' => '',
+			'status' => '',
+			'date' => ''
+		);
+	}
+
+	/**
 	 * constructor __construct
 	 * Constructor for the Post class.
 	 * @param array an associative array of initial Post field values.
@@ -18,7 +37,7 @@ class Comment extends QueryRecord
 	{
 		// Defaults
 		$this->fields = array_merge(
-			Comments::default_fields(),
+			self::default_fields(),
 			$this->fields );
 		parent::__construct( $paramarray );
 	}

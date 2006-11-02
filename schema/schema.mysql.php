@@ -30,14 +30,15 @@ $queries = array(
 );',
 'CREATE TABLE habari__comments (
 	id int AUTO_INCREMENT NOT NULL UNIQUE,
-	post_slug varchar(255) NOT NULL UNIQUE,
+	post_slug varchar(255) NOT NULL,
 	name varchar(255),
 	email varchar(255),
 	url varchar(255),
 	ip varchar(255),
-	content varchar(255),
+	content text,
 	status int,
-	date TIMESTAMP
+	date TIMESTAMP,
+	type int
 );'
 );
 ?>
