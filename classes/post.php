@@ -237,9 +237,9 @@ class Post extends QueryRecord
 	**/
 	private function &get_comments()
 	{
-		if ( empty( $this->comments ) )
+		if ( ! $this->comments )
 		{
-			$this->comments = Comments::by_slug($this->slug);
+			$this->comments = Comments::by_slug( $this->slug );
 		}
 		return $this->comments;
 	}

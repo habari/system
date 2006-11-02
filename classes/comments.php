@@ -6,7 +6,7 @@
  * @package Habari
  */
 
-class Comments extends QueryRecord
+class Comments extends ArrayObject
 {
 
 	static function default_fields()
@@ -25,46 +25,18 @@ class Comments extends QueryRecord
 	}
 
 	/**
-	* constructor __construct
-	* Constructor for the Comments class
-	* @param array an associative array of initial Comment field values
-	**/
-	public function __construct( $paramarray = array() )
-	{
-		// Defaults
-		$this->fields = array_merge( self::default_fields(), $this->fields );
-		parent::__construct( $paramarray );
-	}
-
-	/* static function get
-	* Returns a single comment
-	* @param int a comment's ID
-	* @return a Comment object
-	*/
-	static function get( $ID = 0 )
-	{
-		if ( ! $ID )
-		{
-			return false;
-		}
-		global $db;
-		$comment = $db->get_row("SELECT * FROM habari__posts WHERE id = ?", array( $ID ) );
-		return $comment;
-	}
-
-	/**
-	 * function do_query
+	 * function get
 	 * Returns requested comments
 	 * @param array An associated array of parameters, or a querystring
 	 * @return array An array of Comment objects, one for each query result
 	 *
 	 * <code>
-	 * $comments = comments::do_query( array ("author" => "skippy" ) );
-	 * $comments = comments::do_query( array ("slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
+	 * $comments = comments::get( array ("author" => "skippy" ) );
+	 * $comments = comments::get( array ("slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
 	 * </code>
 	 *
 	 **/	 	  
-	static function do_query( $paramarray )
+	static function get( $paramarray )
 	{
 		global $db;
 
@@ -87,19 +59,15 @@ class Comments extends QueryRecord
 		}
 
 		$sql = "SELECT * from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY $orderby";
-		$query = $db->get_results($sql, $params);
+		$query = $db->get_results( $sql, $params, 'Comment' );
 		if ( is_array( $query ) ) {
-			return $query;
+			$c = __CLASS__;
+			return new $c ( $query );
 		} else {
 			return array();
 		}
 	}
 	
-	static function create() {
-		global $db;
-		// insert posts!
-	}
-
 	/**
 	* function by_email
 	* selects all comments from a given email address
@@ -112,7 +80,7 @@ class Comments extends QueryRecord
 		{
 			return array();
 		}
-		return self::do_query( array ( "email" => $email ) );
+		return self::get( array ( "email" => $email ) );
 	}
 
 	/**
@@ -127,7 +95,7 @@ class Comments extends QueryRecord
 		{
 			return array();
 		}
-		return self::do_query( array ( "name" => $name ) );
+		return self::get( array ( "name" => $name ) );
 	}
 
 	/**
@@ -142,7 +110,7 @@ class Comments extends QueryRecord
 		{
 			return false;
 		}
-		return self::do_query( array ( "ip" => $ip ) );
+		return self::get( array ( "ip" => $ip ) );
 	}
 
 	/**
@@ -157,7 +125,7 @@ class Comments extends QueryRecord
 		{
 			return false;
 		}
-		return self::do_query( array( "url" => $url ) );
+		return self::get( array( "url" => $url ) );
 	}
 
 	/**
@@ -172,7 +140,7 @@ class Comments extends QueryRecord
 		{
 			return false;
 		}
-		return self::do_query( array( "post_slug" => $slug ) );
+		return self::get( array( "post_slug" => $slug ) );
 	}
 
 	/**
@@ -183,7 +151,7 @@ class Comments extends QueryRecord
 	*/
 	public function by_status ( $status = 0 )
 	{
-		return self::do_query( array( "status" => $status ) );
+		return self::get( array( "status" => $status ) );
 	}
 
 }
