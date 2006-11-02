@@ -9,6 +9,7 @@
 class Post extends QueryRecord
 {
 	private $tags = null;
+	private $comments = null;
 
 	/**
 	 * constructor __construct
@@ -175,6 +176,8 @@ class Post extends QueryRecord
 			return $this->get_permalink();
 		case 'tags':
 			return $this->get_tags();
+		case 'comments':
+			return $this->get_comments();
 		default:
 			return parent::__get( $name );
 		}
@@ -227,7 +230,18 @@ class Post extends QueryRecord
 		return $this->tags;
 	}
 
+	/**
+	* function get_comments
+	* Gets the comments for the post
+	* @return &array A reference to the comments array for this post
+	**/
+	private function &get_comments()
+	{
+		if ( empty( $this->comments ) )
+		{
+			$this->comments = Comments::by_slug($this->slug);
+		}
+		return $this->comments;
+	}
 }
-
-
 ?>

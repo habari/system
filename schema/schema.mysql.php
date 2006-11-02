@@ -28,5 +28,16 @@ $queries = array(
 	tag varchar(30) NOT NULL,
 	KEY tag (tag)
 );',
+'CREATE TABLE habari__comments (
+	id int AUTO_INCREMENT NOT NULL UNIQUE,
+	post_slug varchar(255) NOT NULL UNIQUE,
+	name varchar(255),
+	email varchar(255),
+	url varchar(255),
+	ip varchar(255),
+	content varchar(255),
+	status int,
+	date TIMESTAMP
+);'
 );
 ?>
