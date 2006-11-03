@@ -62,7 +62,7 @@ class Utils
 		if ( ! is_numeric( $t ) ) {
 			$t = strtotime( $t );
 		}
-		return date( DATE_ATOM, $t );
+		return date( 'Y-m-d\TH:i:sP', $t );
 	}
 	
 	/**
