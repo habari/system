@@ -72,7 +72,34 @@ class Utils
 	static function nonce()
 	{
 		return sprintf('%06x', rand(0, 16776960)) . sprintf('%06x', rand(0, 16776960));
-	}	 
+	}
+
+	/**
+	 * function stripslashes
+	 * Removes slashes from escaped strings, including strings in arrays
+	 **/
+	static function stripslashes($value)
+	{
+		if ( is_array($value) ) {
+			$value = array_map( array('Utils', 'stripslashes') , $value );
+		}	elseif ( !empty($value) && is_string($value) ) {
+			$value = stripslashes($value);
+		}
+		return $value;
+	}	 	 	
+	
+	/**
+	 * function revert_magic_quotes_gpc
+	 * Reverts magicquotes_gpc behavior
+	 **/
+	static function revert_magic_quotes_gpc()
+	{
+		if ( get_magic_quotes_gpc() ) {
+			$_GET = self::stripslashes($_GET);
+			$_POST = self::stripslashes($_POST);
+			$_COOKIE = self::stripslashes($_COOKIE);
+		}
+	}	  	 	
 	
 	/**
 	 * function debug_reveal
