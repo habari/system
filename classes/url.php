@@ -59,6 +59,7 @@ class URL
 		$rules = array_filter( $this->rules, $fn );
 
 		// See if any rules match
+		$setvars = array();
 		foreach ( $rules as $rule ) {
 			$setvars = array();
 			$rule_parts = explode( '/', $rule[0] );

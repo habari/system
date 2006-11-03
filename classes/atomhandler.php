@@ -172,7 +172,7 @@ entrysnippet;
 		global $url;
 		
 		$options = Options::o();
-		$local['collectionurl'] = 'http://' . $_SERVER["HTTP_HOST"] . $url->get_url( 'collection' );
+		$local['collectionurl'] = 'http://' . $_SERVER["HTTP_HOST"] . $url->get_url( 'collection', 'index=1' );
 		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
 		$local['copyright'] = date('Y'); // TODO: This value should be corrected
 		
@@ -213,7 +213,7 @@ postentry;
 		$xmltext .= '</feed>';
 
 		header('Content-Type: application/atom+xml');
-		echo $xmltext;		
+		echo $xmltext;
 	}	
 
 	/**
@@ -230,20 +230,26 @@ postentry;
 		  fclose($s);
 
 			try {  // Exception handling!  Yay!
+				$bxml = str_replace("xmlns=", "a=", $bxml);  // Rearrange namespaces
 				$xml = new SimpleXMLElement($bxml);
+				
+				$content = $xml->xpath("//content/*[@a='http://www.w3.org/1999/xhtml']");				
 				
 				$post = new Post();
 				if( (string) $xml->title != '') $post->title = (string) $xml->title;
-				if( (string) $xml->content != '') $post->content = (string) $xml->content;
-				if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
+				if( (string) $content[0]->asXML() != '') $post->content = (string) $content[0]->asXML();
 				if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
 				$post->status = 'publish';  // TODO: Use a namespaced element to set this.
 				$post->insert();
 			}
 			catch ( Exception $e ) {
 				echo $e->message;
+				exit;
 			}
-			echo $post->permalink;
+			header('HTTP/1.1 201 Created');
+			header('Status: 201 Created');
+
+			$this->get_entry($post->slug);
 		}
 	}
 
@@ -251,13 +257,17 @@ postentry;
 	{
 		global $url;
 		
-		$xmltext = $this->xml_header() . '
+		$options = Options::o();
+		
+		$xmltext = $this->xml_header();
+		$xmltext .= '
 		<service xmlns="http://purl.org/atom/app#">
-			<workspace title="' . Options::get('blog_title') . '">
-			  <collection title="Blog Entries" href="' . $url->get_url( 'collection' ) . '" />
+			<workspace title="' . Options::get('title') . '">
+			  <collection title="Blog Entries" rel="entries" href="http://' . $_SERVER['HTTP_HOST'] . $url->get_url( 'collection', 'index=1' ) . '" />
 			</workspace>
 		</service>
 		';
+		
 		header('Content-Type: application/atom+xml');
 		echo $xmltext;		
 	}
