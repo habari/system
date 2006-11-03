@@ -63,14 +63,23 @@ class AtomHandler extends ActionHandler
 	private function get_entry($slug)
 	{
 		$post = Post::get($slug);
-		$xml = new SimpleXMLElement($this->xml_header() . '<entry xmlns="http://www.w3.org/2005/Atom"></entry>');
-		echo '<title>' . $post->title . '</title>';
-		echo '<link rel="alternate" type="text/html" href="http://' . $_SERVER["HTTP_HOST"] . $post->permalink . '" />';
-		echo '<id>' . $post->guid . '</id>';
-		echo '<updated>' . Utils::atomtime( $post->updated ) . '</updated>';
-		echo '<content type="text/xhtml" xml:base="http://' . $_SERVER["HTTP_HOST"] . $post->permalink . '">' . $post->content . '</content>';
+		
+		$updated = Utils::atomtime( $post->updated );
+		$permalink = 'http://' . $_SERVER["HTTP_HOST"] . $post->permalink;
+		
+		$xmltext = $this->xml_header();
+		$xmltext .= <<< entrysnippet
+<entry xmlns="http://www.w3.org/2005/Atom">
+	<title>{$post->title}</title>
+	<link rel="alternate" type="text/html" href="{$permalink}" />
+	<id>{$post->guid}</id>
+	<updated>{$updated}</updated>
+	<content type="text/xhtml" xml:base="{$permalink}">{$post->content}</content>
+</entry>
+
+entrysnippet;
 		header('Content-Type: application/atom+xml');
-		echo $xml->asXML();
+		echo $xmltext;
 	}
 	
 	/**
