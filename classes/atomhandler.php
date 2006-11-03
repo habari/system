@@ -62,14 +62,13 @@ class AtomHandler extends ActionHandler
 	 **/	 	 	 	
 	private function get_entry($slug)
 	{
-		$post = Post::get_post($slug);
+		$post = Post::get($slug);
 		$xml = new SimpleXMLElement($this->xml_header() . '<entry xmlns="http://www.w3.org/2005/Atom"></entry>');
-		$xml->addChild('title', $post->title);
-		$xml->addChild('link', $post->permalink);
-		$xml->addChild('id', $post->guid);
-		$xml->addChild('updated', $post->updated);
-		$xml->addChild('content', $post->content);
-		
+		echo '<title>' . $post->title . '</title>';
+		echo '<link rel="alternate" type="text/html" href="http://' . $_SERVER["HTTP_HOST"] . $post->permalink . '" />';
+		echo '<id>' . $post->guid . '</id>';
+		echo '<updated>' . Utils::atomtime( $post->updated ) . '</updated>';
+		echo '<content type="text/xhtml" xml:base="http://' . $_SERVER["HTTP_HOST"] . $post->permalink . '">' . $post->content . '</content>';
 		header('Content-Type: application/atom+xml');
 		echo $xml->asXML();
 	}
