@@ -191,7 +191,7 @@ entrysnippet;
 
 feedpreamble;
 
-		foreach(Post::get_posts() as $post) {
+		foreach(Post::get() as $post) {
 			$entryurl = $url->get_url( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
 			$xmltext .= <<< postentry
