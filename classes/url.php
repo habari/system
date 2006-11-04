@@ -364,7 +364,6 @@ class URL
 		// admin rules
 		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
 		$this->rules[] = array('"admin"', 'AdminHandler', 'admin');
-		$this->rules[] = array('"admin"/"post"/action', 'AdminHandler', 'posthandler');
 		$this->rules[] = array('"admin"/"process"/action', 'ContentHandler', 'processhandler');
 		$this->rules[] = array('"admin"/"ajax"/action', 'AjaxHandler', 'ajaxhandler');
 		// user rules

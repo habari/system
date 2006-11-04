@@ -17,9 +17,18 @@ class AdminHandler extends ActionHandler
 	* @param string The action that was in the URL rule
 	* @param array An associative array of settings found in the URL by the URL
 	*/
-	public function __construct( $action, $settings )
+	public function __construct($action, $settings)
 	{
-		parent::__construct( $action, $settings );
+		// check that the user is logged in, and redirect
+		// to the login page, if not
+		if (! User::identify() )
+		{
+			$settings['redirect'] = URL::get($action, $settings);
+			Utils::redirect( URL::get( 'login', $settings ) );
+			exit;
+		}
+		
+		parent::__construct($action, $settings);
 	}
 
 	/**
@@ -42,72 +51,64 @@ class AdminHandler extends ActionHandler
 
 	/**
 	* function admin
-	* figures out what admin page to show, and displays it to the user
+	* Figures out what admin page to show, and displays it to the user.
+	* Calls post_{page}() function for post requests to the specific page.	
 	* @param array An associative array of settings found in the URL by the URL
 	*/
 	public function admin( $settings = null)
 	{
-		// check that the user is logged in, and redirect
-		// to the login page, if not
-		if (! User::identify() )
-		{
-			new ThemeHandler( 'login', $settings );
-			exit;
-		}
-		$files = glob(ADMIN_DIR . '*.php');
-		$filekeys = array_map(
-		  create_function(
-		    '$a',
-		    'return basename($a, ".php");'
-		  ),
-		  $files
-		);
-		$map = array_combine($filekeys, $files);
-		// Allow plugins to modify or add to $map here,
-		// since plugins will not be installed to /system/admin
-		$settings['page'] = ($settings['page'] == '') ? 'dashboard' : $settings['page'];
-		if ( isset( $map[$settings['page']] ) ) {
-			$this->header();
-			include $map[$settings['page']];
-			$this->footer();
-		}
-		else
-		{
-		  // The requested console page doesn't exist
-			$this->header();
-			echo "Whooops!";
-			$this->footer();
+		switch( $_SERVER['REQUEST_METHOD'] ) {
+		case 'POST':
+			// Handle POSTs to the admin pages
+			$page = $settings['page'];
+			$page = ( $page == '' ) ? 'dashboard' : $page;
+			$fn = 'post_' . $page;
+			if ( method_exists( $this, $fn ) ) { 
+				$this->$fn( $settings );
+				//call_user_func( array(&$this, $fn), $settings);
+			}
+			else {
+				$classname = get_class($this);
+				echo sprintf( __( "\n%s->%s() does not exist.\n" ), $classname, $fn );
+				exit;
+			}
+			break;
+		default:
+			// Handle GETs of the admin pages
+			$files = glob(ADMIN_DIR . '*.php');
+			$filekeys = array_map(
+			  create_function(
+			    '$a',
+			    'return basename($a, ".php");'
+			  ),
+			  $files
+			);
+			$map = array_combine($filekeys, $files);
+			// Allow plugins to modify or add to $map here,
+			// since plugins will not be installed to /system/admin
+			$settings['page'] = ($settings['page'] == '') ? 'dashboard' : $settings['page'];
+			if ( isset( $map[$settings['page']] ) ) {
+				$this->header();
+				include $map[$settings['page']];
+				$this->footer();
+			}
+			else
+			{
+			  // The requested console page doesn't exist
+				$this->header();
+				echo "Whooops!";
+				$this->footer();
+			}
 		}
 	}
 
 	/**
-	* function posthandler
-	* called from URL for /admin/post/foo URLS.  Ensures a user is logged in, and executes the method "foo" if it exists.
-	* @param array An associative array of settings found in the URL by the URL 
-	*/
-	public function posthandler ($settings = null)
-	{
-		// is this request from a valid, logged-in user?
-		if ( ! User::identify() )
-		{
-			// nope?  redirect to a login page, of some sort
-			echo "Please log in.";
-			die;
-		}
-		// now see if a method is registered to handle the POSTed action
-		if ( method_exists ( $this, $settings['action'] ) )
-		{
-			call_user_func( array($this, $settings['action']), $settings );
-		}
-		else
-		{
-			// redirect to some useful error page
-			echo "No such function.";
-			die;
-		}
-	}
-
-	public function options()
+	 * function post_options
+	 * Handles post requests from the options admin page.
+	 * Sets all of the set options.
+	 * @param array An associative array of content found in the url, $_POST array, and $_GET array 
+	 **/	 	 	 	
+	public function post_options($settings)
 	{
 		foreach ($_POST as $option => $value)
 		{
@@ -116,7 +117,35 @@ class AdminHandler extends ActionHandler
 				Options::set($option, $value);
 			}
 		}
-		header("Location: " . Options::get('base_url') . "admin/options/");
+		Utils::redirect( URL::get('admin', 'page=options&result=success') );
+	}
+	
+	/**
+	* function post_dashboard
+	* Handles post requests from the dashboard.
+	* Adds a post to the site, if the post content is not NULL.
+	* @param array An associative array of content found in the url, $_POST array, and $_GET array 
+	*/
+	public function post_dashboard($settings)
+	{
+		if( $_POST['content'] != '' )
+		{
+			$postdata = array(
+								'title'		=>	$_POST['title'],
+								'content'	=>	$_POST['content'],
+								'author'	=>	User::identify()->username,
+								'pubdate'	=>	date( 'Y-m-d H:i:s' ),
+								'status'	=>	'publish'
+							 );		
+
+			Post::create( $postdata );
+			Utils::redirect( URL::get( 'admin', 'result=success' ) );
+		} 
+		else 
+		{
+			// do something intelligent here
+			_e('Danger Wil Robinson!  Danger!');
+		}
 	}
 
 }

@@ -1,6 +1,13 @@
 <div id="content-area">
 <h1>Create Content</h1>
-<form name="create-content" id="create-content" method="post" action="<?php Options::out('base_url'); ?>admin/process/add_post">
+<?php 
+switch( URL::o()->settings['result'] ) {
+case 'success':
+	_e('<p>Your post has been saved.</p>');
+	break;
+}
+?>
+<form name="create-content" id="create-content" method="post" action="<?php URL::out('admin'); ?>">
 	<p><label>Title</label></p>
 	<p><input type="text" name="title" id="title" size="35" /></p>
 	<p><label>Tags</label></p>
