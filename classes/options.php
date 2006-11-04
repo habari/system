@@ -20,6 +20,8 @@ class Options
 	 **/	 	
 	private function __construct() 
 	{
+		// Set some universal, un-editable defaults
+		$this->options['hostname'] = $_SERVER['SERVER_NAME'];
 	}
 
 	/**

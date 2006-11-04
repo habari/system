@@ -60,26 +60,7 @@ class Installer
 			$db->query($query);
 		}
 
-		// Insert a post record
-		
-		Post::create(array(
-			'title'=>'First Post',
-			'guid'=>'tag:localhost,2006:first-post/4981704',
-			'content'=>'This is my first post',
-			'author'=>'owen',
-			'pubdate'=>'2006-10-04 17:17:00',
-			'status'=>'publish',
-		));
-
-		// insert a default admin user
-		$password = sha1($_POST['password']);
-		$admin = new User(array (
-			'username'=>$_POST['username'],
-			'email'=>$_POST['email'],
-			'password'=>$password
-		));
-		$admin->insert();
-		
+		// Create the default options
 		$options = Options::o();
 		
 		$options->installed = true;
@@ -90,10 +71,27 @@ class Installer
 		$base_url = $_SERVER['REQUEST_URI'];
 		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
 		$options->base_url = $base_url;
-		$options->hostname = $_SERVER['SERVER_NAME'];
 		$options->theme_dir = "k2";
 		$options->version = "0.1alpha";
 
+		// insert a default admin user
+		$password = sha1($_POST['password']);
+		$admin = new User(array (
+			'username'=>$_POST['username'],
+			'nickname'->'admin',
+			'email'=>$_POST['email'],
+			'password'=>$password
+		));
+		$admin->insert();
+
+		// Insert a post record
+		Post::create(array(
+			'title'=>'First Post',
+			'content'=>'This is my first post',
+			'author'=>$admin->username,
+			'status'=>'publish',
+		));
+		
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
