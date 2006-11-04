@@ -78,7 +78,7 @@ class Installer
 		$password = sha1($_POST['password']);
 		$admin = new User(array (
 			'username'=>$_POST['username'],
-			'nickname'->'admin',
+			'nickname'=>'admin',
 			'email'=>$_POST['email'],
 			'password'=>$password
 		));
