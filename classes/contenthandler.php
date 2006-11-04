@@ -67,31 +67,5 @@ class ContentHandler extends ActionHandler
 		echo 'You forgot to add some content to your comment, please <a href="' . URL::get( 'post', "slug={$_POST['post_slug']}" ) . '" title="go back and try again!">go back and try again</a>.';
 		}
 	}
-	
-	/**
-	* function add_post
-	* adds a post to the site, if the comment content is not NULL
-	* @param array An associative array of content found in the $_POST array 
-	*/
-	public function add_post()
-	{
-		if( $_POST['content'] != '' )
-		{			
-			$settings = array(
-								'title'		=>	$_POST['title'],
-								'content'	=>	$_POST['content'],
-								'author'	=>	User::identify()->username,
-								'pubdate'	=>	date( 'Y-m-d H:i:s' ),
-								'status'	=>	'publish'
-							 );		
-			Post::create( $settings );			
-			header("Location: " . URL::get( 'admin', "dashboard" ) );
-		} 
-		else 
-		{
-			// do something intelligent here
-			echo 'Danger Wil Robinson!  Danger!';
-		}
-	}
 }
 ?>
