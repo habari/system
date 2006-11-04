@@ -23,9 +23,9 @@ class Post extends QueryRecord
 			array(
 				'id' => '',
 				'slug' => '', 
-				'title' => '', 
+				'title' => '',
 				'guid' => '', 
-				'content' => '', 
+				'content' => '',
 				'author' => '', 
 				'status' => 'draft', 
 				'pubdate' => date( 'Y-m-d H:i:s' ), 
@@ -113,6 +113,28 @@ class Post extends QueryRecord
 		return $this->newfields[ 'slug' ];
 	}
 
+	/**
+	 * function setguid
+	 * Creates the GUID for the new post
+	 */	 	 	 	 	
+	private function setguid()
+	{
+		$result = 'tag:' . Options::get('hostname') . ',' 
+						 . date('Y') . ':' . $this->setslug() . '/' . time();
+		$this->newfields['guid'] = $result;
+		return $this->newfields['guid'];
+	}
+	
+	 /*
+	private function settags()
+	{
+		$tags = split( '[, ]+', $this->newfields['tags'] );
+			foreach( $tags as $tag )
+			{
+				$db->insert( 'habari__tags', array( 'slug' => '', 'tag'	=>	$tag ) );
+			}
+	}
+	*/
 
 	/**
 	 * function insert
@@ -122,6 +144,7 @@ class Post extends QueryRecord
 	{
 		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
 		$this->setslug();
+		$this->setguid();
 		$result = parent::insert( 'habari__posts' );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();

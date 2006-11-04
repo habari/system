@@ -1,5 +1,12 @@
 <div id="content-area">
-	<h3>Habari Options</h3>
+	<h1>Habari Options</h1>
+	<?php 
+	if ( $url->settings['success'] ):
+	?>
+	<p>Your options have been updated.</p>
+	<?php
+	endif;
+	?>
 	<p>Below are the options currently set on your site.</p>
 	<form name="update-options" id="update-options" action="<?php Options::out('base_url'); ?>admin/post/options" method="post">
 		<p><label>Blog Title:</label></p>
