@@ -24,6 +24,7 @@ class Post extends QueryRecord
 				'id' => '',
 				'slug' => '', 
 				'title' => '',
+				'tags'	=>	'',
 				'guid' => '', 
 				'content' => '',
 				'author' => '', 
@@ -33,7 +34,10 @@ class Post extends QueryRecord
 			),
 			$this->fields
 		);
+		
 		parent::__construct( $paramarray );
+		$this->tags = $this->parsetags($this->fields['tags']);
+		unset( $this->fields['tags'] );
 	}
 	
 	/**
@@ -125,17 +129,30 @@ class Post extends QueryRecord
 		return $this->newfields['guid'];
 	}
 	
-	 /*
-	private function settags()
+	private function parsetags($tags)
 	{
-		$tags = split( '[, ]+', $this->newfields['tags'] );
-			foreach( $tags as $tag )
-			{
-				$db->insert( 'habari__tags', array( 'slug' => '', 'tag'	=>	$tag ) );
+		if( is_string( $tags ) )
+		{
+			preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $tags, $matches);
+			return $matches[0];
+		}
+		elseif( is_array( $tags ) )
+		{
+			return $tags;
+		}
+	}
+
+	private function savetags()
+	{
+		global $db;
+		$db->query( "DELETE FROM habari__tags WHERE slug = ?", array( $this->fields['slug'] ) );
+			foreach( $this->tags as $tag ) 
+			{ 
+				$db->query( "INSERT INTO habari__tags (slug, tag) VALUES (?,?)", 
+							array( $this->fields['slug'], $tag ) ); 
 			}
 	}
-	*/
-
+	
 	/**
 	 * function insert
 	 * Saves a new post to the posts table
@@ -148,6 +165,7 @@ class Post extends QueryRecord
 		$result = parent::insert( 'habari__posts' );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+		$this->savetags();
 		return $result;
 	}
 
@@ -163,6 +181,7 @@ class Post extends QueryRecord
 		$result = parent::update( 'habari__posts', array('slug'=>$this->slug) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+		$this->savetags();
 		return $result;
 	}
 	

@@ -132,12 +132,12 @@ class AdminHandler extends ActionHandler
 		{
 			$postdata = array(
 								'title'		=>	$_POST['title'],
+								'tags'		=>	$_POST['tags'],
 								'content'	=>	$_POST['content'],
 								'author'	=>	User::identify()->username,
 								'pubdate'	=>	date( 'Y-m-d H:i:s' ),
 								'status'	=>	'publish'
-							 );		
-
+							 );
 			Post::create( $postdata );
 			Utils::redirect( URL::get( 'admin', 'result=success' ) );
 		} 
