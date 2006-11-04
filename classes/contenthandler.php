@@ -7,48 +7,16 @@
 
 class ContentHandler extends ActionHandler
 {
-
-	/**
-	* constructor __construct
-	* verify that the page is being accessed by an admin
-	* @param string The action that was in the URL rule
-	* @param array An associative array of settings found in the URL by the URL
-	*/
-	public function __construct( $action, $settings )
-	{
-		parent::__construct( $action, $settings );
-	}
-	
-	/**
-	* function processhandler
-	* called as admin/process/foo.  Eexecutes the method "foo" if it exists.
-	* @param array An associative array of settings found in the URL by the URL 
-	*/
-	public function processhandler ($settings = null)
-	{
-		// now see if a method is registered to handle the POSTed action
-		if ( method_exists ( $this, $settings['action'] ) )
-		{
-			call_user_func( array($this, $settings['action']), $settings );
-		}
-		else
-		{
-			// redirect to some useful error page
-			echo "No such function.";
-			die;
-		}
-	}	
-
 	/**
 	* function add_comment
 	* adds a comment to a post, if the comment content is not NULL
 	* @param array An associative array of content found in the $_POST array 
 	*/
-	public function add_comment()
+	public function add_comment( $settings )
 	{
 		if( $_POST['content'] != '') 
 		{
-			$settings = array( 
+			$commentdata = array( 
 								'post_slug'	=>	$_POST['post_slug'],
 								'name'		=>	$_POST['name'],
 								'email'		=>	$_POST['email'],
@@ -58,8 +26,8 @@ class ContentHandler extends ActionHandler
 								'status'	=>	'0',
 								'date'		=>	gmdate('Y-m-d H:i:s')
 						 	);
-		Comment::create( $settings );
-		header("Location: " . URL::get( 'post', "slug={$_POST['post_slug']}" ) );
+		Comment::create( $commentdata );
+		Utils::redirect( URL::get( 'post', "slug={$_POST['post_slug']}" ) );
 		} 
 		else
 		{
