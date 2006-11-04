@@ -90,6 +90,7 @@ class Installer
 		$base_url = $_SERVER['REQUEST_URI'];
 		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
 		$options->base_url = $base_url;
+		$options->hostname = $_SERVER['SERVER_NAME'];
 		$options->theme_dir = "k2";
 		$options->version = "0.1alpha";
 
@@ -102,8 +103,8 @@ class Installer
 		if($db->has_errors()) {
 			Utils::debug('Errors:', $db->get_errors());
 		}
-		echo "Congratulations, Habari is now installed!<br />";
-		echo "Click <a href='$base_url'>here</a> to continue.";
+		echo "<p>Congratulations, Habari is now installed!</p>";
+		echo "<p>Click <a href='$base_url'>here</a> to continue.</p>";
 		die;
 	}
 	
