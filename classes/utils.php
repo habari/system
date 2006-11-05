@@ -86,7 +86,26 @@ class Utils
 			$value = stripslashes($value);
 		}
 		return $value;
-	}	 	 	
+	}
+	
+	/**
+	 * function tag_and_list
+	 * Formatting function (should be in Format class?)
+	 * Turns an array of tag names into an HTML-linked list with command and an "and".
+	 * @param array An array of tag names
+	 * @param string Text to put between each element
+	 * @param string Text to put between the next to last element and the last element
+	 * @return string HTML links with specified separators.
+	 **/	 	 	 	 	  
+	static function tag_and_list($array, $between = ', ', $between_last = ' and ')
+	{
+		$fn = create_function('$a', 'return "<a href=\\"" . URL::get( "tag", array( "tag" => $a) ) . "\\">" . $a . "</a>";');
+		$array = array_map($fn, $array);
+		$last = array_pop($array);
+		$out = implode($between, $array);
+		$out .= ($out == '') ? $last : $between_last . $last;
+		return $out;
+	}
 	
 	/**
 	 * function revert_magic_quotes_gpc

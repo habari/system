@@ -147,5 +147,19 @@ class Comments extends ArrayObject
 	{
 	}
 
+	/**
+	 * function __get
+	 * Implements custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value	 
+	 **/	 	 
+	public function __get($name)
+	{
+		switch($name) {
+		case 'count':
+			return count($this);
+		}
+	}
+
 }
 ?>

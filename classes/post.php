@@ -146,11 +146,11 @@ class Post extends QueryRecord
 	{
 		global $db;
 		$db->query( "DELETE FROM habari__tags WHERE slug = ?", array( $this->fields['slug'] ) );
-			foreach( $this->tags as $tag ) 
-			{ 
-				$db->query( "INSERT INTO habari__tags (slug, tag) VALUES (?,?)", 
-							array( $this->fields['slug'], $tag ) ); 
-			}
+		foreach( $this->tags as $tag ) { 
+			$db->query( "INSERT INTO habari__tags (slug, tag) VALUES (?,?)", 
+				array( $this->fields['slug'], $tag ) 
+			); 
+		}
 	}
 	
 	/**
@@ -221,7 +221,7 @@ class Post extends QueryRecord
 		case 'comments':
 			return $this->get_comments();
 		case 'comment_count':
-			return $this->comments_count();
+			return $this->get_comments()->count();
 		default:
 			return parent::__get( $name );
 		}
@@ -271,17 +271,7 @@ class Post extends QueryRecord
 		if ( empty( $this->tags ) ) {
 			$this->tags = $db->get_column( 'SELECT tag FROM habari__tags WHERE slug = ? ', array( $this->fields['slug'] ) );
 		}
-		$num = count( $this->tags );
-		foreach ( $this->tags as $tag ) {
-			echo '<a href="/tags/' . $tag . '">' . $tag . '</a>';
-			$i++;
-			if ( $i == $num ) {
-				} elseif ( $i == $num -1 ) {
-					echo ' and ';
-				} else {
-					echo ', ';
-				}
-			}
+		return $this->tags;
 	}
 
 	/**
@@ -296,20 +286,6 @@ class Post extends QueryRecord
 			$this->comments = Comments::by_slug( $this->slug );
 		}
 		return $this->comments;
-	}
-	
-	/**
-	* function comments_count
-	* Counts the comments for the post
-	* @return integer
-	**/
-	private function &comments_count()
-	{
-		if ( ! $this->comments )
-		{
-			$count = count( $this->get_comments() );
-			return $count;
-		}
 	}
 }
 ?>

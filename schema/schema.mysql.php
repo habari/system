@@ -24,8 +24,9 @@ $queries = array(
 	password varchar(40) NOT NULL
 	);',
 'CREATE TABLE habari__tags (
-	slug varchar(255) PRIMARY KEY NOT NULL,
+	slug varchar(255) NOT NULL,
 	tag varchar(30) NOT NULL,
+	KEY slug (slug),
 	KEY tag (tag)
 );',
 'CREATE TABLE habari__comments (
