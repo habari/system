@@ -148,6 +148,49 @@ class AdminHandler extends ActionHandler
 		}
 	}
 
+	/**
+	 * function post_user
+	 * Handles post requests from the user profile page
+	 * @param array An associative array of content found in the url, $_POST array, and $_GET array
+	*/
+	function post_user ( $settings )
+	{
+		// keep track of whether we actually need to update any fields
+		$update = 0;
+		$results = '';
+		$user = User::identify();
+		foreach ( array ('nickname', 'email' ) as $field )
+		{
+			// for each of the other fields in the user table,
+			// see if it needs to be updated
+			if ( $user->$field != $settings[$field] )
+			{
+				$user->$field = $settings[$field];
+				$update = 1;
+			}
+		}
+		// see if the user is changing their password
+		if ( '' != $settings['pass1'] )
+		{
+			if ( $settings['pass1'] == $settings['pass2'])
+			{
+				$user->password = sha1($settings['pass1']);
+				$user->remember();
+				$update = 1;
+			}
+			else
+			{
+				$results = '&error=pass';
+			}
+		}
+		if ( $update )
+		{
+			$user->update();
+			$results .= "&results=success";
+		}
+		Utils::redirect( URL::get( 'admin', "page=user$results" ) );
+	}
+
 }
 
 ?>
