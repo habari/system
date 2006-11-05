@@ -10,19 +10,32 @@ class User extends QueryRecord
 {
 	private static $identity = null;  // Static storage for the currently logged-in User record
 
-	public function __construct($paramarray = array())
+	/**
+	* static function default_fields
+	* @return array an array of the fields used in the User table
+	*/
+	public static function default_fields()
+	{
+		return array(
+			'id' => '',
+			'username' => '',
+			'nickname' => '',
+			'email' => '',
+			'password' => ''
+		);
+	}
+
+	/**
+	* constructor  __construct
+	* Constructor for the User class
+	* @param array an associative array of initial User fields
+	*/
+	public function __construct( $paramarray = array() )
 	{
 		// Defaults
 		$this->fields = array_merge(
-			array(
-				'id' => '',
-				'username' => '',
-				'nickname' => '', 
-				'email' => '', 
-				'password' => ''
-			),
-			$this->fields
-		);
+			self::default_fields(),
+			$this->fields );
 		parent::__construct($paramarray);
 	}
 
