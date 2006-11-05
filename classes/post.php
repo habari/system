@@ -267,11 +267,21 @@ class Post extends QueryRecord
 	private function &get_tags()
 	{
 		global $db;
-		
+		$i = 0;
 		if ( empty( $this->tags ) ) {
 			$this->tags = $db->get_column( 'SELECT tag FROM habari__tags WHERE slug = ? ', array( $this->fields['slug'] ) );
 		}
-		return $this->tags;
+		$num = count( $this->tags );
+		foreach ( $this->tags as $tag ) {
+			echo '<a href="/tags/' . $tag . '">' . $tag . '</a>';
+			$i++;
+			if ( $i == $num ) {
+				} elseif ( $i == $num -1 ) {
+					echo ' and ';
+				} else {
+					echo ', ';
+				}
+			}
 	}
 
 	/**
