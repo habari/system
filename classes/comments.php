@@ -9,6 +9,8 @@
 class Comments extends ArrayObject
 {
 
+	private $sort;
+
 	/**
 	 * function get
 	 * Returns requested comments
@@ -21,7 +23,7 @@ class Comments extends ArrayObject
 	 * </code>
 	 *
 	 **/	 	  
-	static function get( $paramarray = array() )
+	public static function get( $paramarray = array() )
 	{
 		global $db;
 
@@ -140,12 +142,54 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	* function trackbacks
-	* returns all of the comments from the current Comments object that are of type "trackback"
-	* @ return array an array of Comment objects that are trackbacks
+	 * private function sort_comments
+	 * sorts all the comments in this set into several container buckets
+	 * so that you can then call $comments->trackbacks() to receive an
+	 * array of all trackbacks, for example
 	**/
-	public function trackbacks()
+	private function sort_comments()
 	{
+		foreach ( $this as $c )
+		{
+			// first, divvy up approved and unapproved comments
+			if ( Comment::COMMENT_APPROVED == $c->status )
+			{
+				$this->sort['approved'][] = $c;
+			}
+			else
+			{
+				$this->sort['unapproved'][] = $c;
+			}
+
+			// now sort by comment type
+			if ( Comment::COMMENT == $c->type )
+			{
+				$this->sort['comments'][] = $c;
+			}
+			elseif ( Comment::PINGBACK == $c->type )
+			{
+				$this->sort['pingbacks'][] = $c;
+			}
+			elseif ( Comment::TRACKBACK == $c->type )
+			{
+				$this->sort['trackbacks'][] = $c;
+			}
+		}
+	}
+
+	/**
+	 * function only
+	 * returns all of the comments from the current Comments object of the specified type
+	 * <code>$tb = $comments->only('trackbacks')</code>
+	 * @return array an array of Comment objects of the specified type
+	**/
+	public function only( $what = 'approved' )
+	{
+		if ( ! $this->sort[$what] )
+		{
+			$this->sort_comments();
+		}
+		return $this->sort[$what];
 	}
 
 	/**
@@ -153,12 +197,18 @@ class Comments extends ArrayObject
 	 * Implements custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value	 
-	 **/	 	 
+	*/	 	 
 	public function __get($name)
 	{
 		switch($name) {
 		case 'count':
 			return count($this);
+		case 'approved':
+		case 'unapproved':
+		case 'comments':
+		case 'pingbacks':
+		case 'trackbacks':
+			return $this->only($name);
 		}
 	}
 

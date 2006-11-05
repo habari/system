@@ -9,6 +9,14 @@
 class Comment extends QueryRecord
 {
 
+// our definitions for comment types and statuses
+const COMMENT_APPROVED = 1;
+
+const COMMENT = 0;
+const PINGBACK =1;
+const TRACKBACK = 2;
+
+
 	/**
 	* static function default_fields
 	* Returns the defined database columns for a comment
@@ -24,7 +32,8 @@ class Comment extends QueryRecord
 			'ip' => '',
 			'content' => '',
 			'status' => '',
-			'date' => ''
+			'date' => '',
+			'type' => COMMENT
 		);
 	}
 
