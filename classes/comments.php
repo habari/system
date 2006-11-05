@@ -21,11 +21,12 @@ class Comments extends ArrayObject
 	 * </code>
 	 *
 	 **/	 	  
-	static function get( $paramarray )
+	static function get( $paramarray = array() )
 	{
 		global $db;
 
 		$orderby = "date ASC";
+		$where = array(1);
 		foreach ($paramarray as $key => $value)
 		{
 			if ('orderby' == $key)
