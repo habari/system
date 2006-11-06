@@ -8,8 +8,29 @@
 
 class Post extends QueryRecord
 {
+
 	private $tags = null;
 	private $comments = null;
+
+	/**
+	 * function default_fields
+	 * Returns the defined database columns for a Post
+	 * @return array Array of columns in the Post table
+	**/
+	public static function default_fields()
+	{
+		return array(
+			'id' => '',
+			'slug' => '',
+			'title' => '',
+			'guid' => '',
+			'content' => '',
+			'author' => '',
+			'status' => 'draft',
+			'pubdate' => date( 'Y-m-d H:i:s' ),
+			'updated' => ( 'Y-m-d H:i:s' ),
+		);
+	}
 
 	/**
 	 * constructor __construct
@@ -20,20 +41,8 @@ class Post extends QueryRecord
 	{
 		// Defaults
 		$this->fields = array_merge(
-			array(
-				'id' => '',
-				'slug' => '', 
-				'title' => '',
-				'tags'	=>	'',
-				'guid' => '', 
-				'content' => '',
-				'author' => '', 
-				'status' => 'draft', 
-				'pubdate' => date( 'Y-m-d H:i:s' ), 
-				'updated' => date( 'Y-m-d H:i:s' )
-			),
-			$this->fields
-		);
+			self::default_fields(),
+			$this->fields );
 		
 		parent::__construct( $paramarray );
 		$this->tags = $this->parsetags($this->fields['tags']);
