@@ -179,10 +179,10 @@ entrysnippet;
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
-	<title>{$options->blog_title}</title>
+	<title>{$options->title}</title>
 	<subtitle>{$options->tag_line}</subtitle>
 	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->base_url}" />
-	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->blog_title}" />
+	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->title}" />
 	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
 	<updated>{$local['feedupdated']}</updated>
 	<rights>{$local['copyright']}</rights>
@@ -239,7 +239,14 @@ postentry;
 				if( (string) $xml->title != '') $post->title = (string) $xml->title;
 				if( (string) $content[0]->asXML() != '') $post->content = (string) $content[0]->asXML();
 				if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
-				$post->status = 'publish';  // TODO: Use a namespaced element to set this.
+				switch ( (string) $xml->draft ) {
+				'false':				
+					$post->status = 'publish';
+					break;
+				'true':
+					$post->status = 'draft';
+					break;
+				}
 				$post->insert();
 			}
 			catch ( Exception $e ) {
