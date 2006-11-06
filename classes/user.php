@@ -129,8 +129,6 @@ class User extends QueryRecord
 	public static function authenticate($who = '', $pw = '')
 	{
 		global $db;
-		/* DEBUG */
-		#Utils::debug('authenticate');
 
 		if ( (! $who ) || (! $pw ) ) {
 			return false;
@@ -158,8 +156,6 @@ class User extends QueryRecord
 			// set the cookie
 			$user->remember();
 			self::$identity = $user;
-			/* DEBUG */
-			#Utils::debug('authed');
 			return self::$identity;
 		} else {
 			self::$identity = null;

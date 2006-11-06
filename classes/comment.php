@@ -59,7 +59,7 @@ const TRACKBACK = 2;
 	 * $post = Post::get( 10 );
 	 * </code>
 	 *
-	 * @param array An ID
+	 * @param int An ID
 	 * @return array A single Comment object
 	 **/	 	 	 	 	
 	static function get( $ID = 0 )
