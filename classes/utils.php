@@ -62,7 +62,12 @@ class Utils
 		if ( ! is_numeric( $t ) ) {
 			$t = strtotime( $t );
 		}
-		return date( 'Y-m-d\TH:i:sP', $t );
+		$vdate = date( DATE_ATOM, $t );
+		// If the date format used for timezone was O instead of P... 
+		if ( substr( $vdate, -3, 1 ) != ':' ) {
+			$vdate = substr( $vdate, 0, -2) . ':' . substr( $vdate, -2, 2 );
+		}
+		return $vdate;
 	}
 	
 	/**
