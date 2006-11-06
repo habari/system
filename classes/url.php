@@ -384,6 +384,7 @@ class URL
 		$this->rules[] = array('"changepass"', 'UserHandler', 'changepass');
 		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
 		$this->rules[] = array('', 'ThemeHandler', 'home');
+		$this->rules[] = array('"index.php"', 'ThemeHandler', 'home');
 		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
 		$this->rules[] = array('slug', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"page"/index', 'ThemeHandler', 'post');
