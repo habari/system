@@ -30,12 +30,33 @@ class ThemeHandler extends ActionHandler
 			'home'=>'index.php',
 			'login'=>'login.php',
 			'logout'=>'login.php',
+			'error'=>'error.php',
 		);
 		
 		$theme = new ThemeEngine();
-	
+
 		if(isset($handle[$action])) {
 			$potential_template = THEME_DIR . $handle[$action];
+			// is this a request for a single post?
+			if ( 'post' == $action )
+			{
+				// let's see if that post actually exists
+				if ( $post = Post::get() )
+				{
+					$potential_template = THEME_DIR . $post->slug . '.php';
+					if ( ! file_exists($potential_template) )
+					{
+						// no specific file, so use default
+						$potential_template = THEME_DIR . $handle[$action];
+					}
+				}
+				else
+				{
+					// no such post -- display the error page
+					$action = 'error';
+					$potential_template = THEME_DIR . $handle[$action];
+				}
+			}
 			if(file_exists($potential_template)) {
 				include $potential_template;
 			}
