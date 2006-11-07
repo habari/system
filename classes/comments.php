@@ -51,7 +51,7 @@ class Comments extends ArrayObject
 			$c = __CLASS__;
 			return new $c ( $query );
 		} else {
-			return array();
+			return false;
 		}
 	}
 	
