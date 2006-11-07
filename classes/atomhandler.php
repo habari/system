@@ -240,10 +240,10 @@ postentry;
 				if( (string) $content[0]->asXML() != '') $post->content = (string) $content[0]->asXML();
 				if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
 				switch ( (string) $xml->draft ) {
-				'false':				
+				case 'false':				
 					$post->status = 'publish';
 					break;
-				'true':
+				case 'true':
 					$post->status = 'draft';
 					break;
 				}
