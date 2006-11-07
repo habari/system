@@ -189,6 +189,9 @@ class Comments extends ArrayObject
 		{
 			$this->sort_comments();
 		}
+		if ( ! is_array( $this->sort[$what] ) ) {
+			$this->sort[$what] = array();
+		}
 		return $this->sort[$what];
 	}
 
@@ -208,7 +211,7 @@ class Comments extends ArrayObject
 		case 'comments':
 		case 'pingbacks':
 		case 'trackbacks':
-			return $this->only($name);
+			return new Comments($this->only($name));
 		}
 	}
 
