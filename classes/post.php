@@ -155,7 +155,7 @@ class Post extends QueryRecord
 	{
 		global $db;
 		$db->query( "DELETE FROM habari__tags WHERE slug = ?", array( $this->fields['slug'] ) );
-		foreach( $this->tags as $tag ) { 
+		foreach( (array)$this->tags as $tag ) { 
 			$db->query( "INSERT INTO habari__tags (slug, tag) VALUES (?,?)", 
 				array( $this->fields['slug'], $tag ) 
 			); 

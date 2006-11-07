@@ -97,7 +97,7 @@ class Options
 	{
 		global $db;
 		
-		if(!isset($options[$name])) {
+		if(!isset($this->options[$name])) {
 			$result = $db->get_row("SELECT value, type FROM habari__options WHERE name = ?", array($name));
 		
 			if ( is_object( $result) ) {
