@@ -1,10 +1,13 @@
 <div id="content-area">
 <h1>Create Content</h1>
 <?php 
-switch( URL::o()->settings['result'] ) {
-case 'success':
-	_e('<p>Your post has been saved.</p>');
-	break;
+if ( isset( $settings['result'] ) )
+{
+	switch( URL::o()->settings['result'] ) {
+	case 'success':
+		_e('<p>Your post has been saved.</p>');
+		break;
+	}
 }
 ?>
 <form name="create-content" id="create-content" method="post" action="<?php URL::out('admin'); ?>">

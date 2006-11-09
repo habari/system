@@ -1,10 +1,13 @@
 <div id="content-area">
 	<h1>Habari Options</h1>
 	<?php 
-	switch( URL::o()->settings['result'] ) {
-	case 'success':
-		_e('<p>Your options have been updated.</p>');
-		break;
+	if ( isset( $settings['result'] ) )
+	{
+		switch( URL::o()->settings['result'] ) {
+		case 'success':
+			_e('<p>Your options have been updated.</p>');
+			break;
+		}
 	}
 	?>
 	<p>Below are the options currently set on your site.</p>
