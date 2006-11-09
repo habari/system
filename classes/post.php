@@ -45,7 +45,8 @@ class Post extends QueryRecord
 			$this->fields );
 		
 		parent::__construct( $paramarray );
-		$this->tags = $this->parsetags($this->fields['tags']);
+		$this->tags = isset( $this->fields['tags'] ) ?
+            $this->parsetags($this->fields['tags'])  : '';
 		unset( $this->fields['tags'] );
 	}
 	
