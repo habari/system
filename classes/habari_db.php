@@ -157,6 +157,28 @@ class habari_db
 		else
 			return false;
 	}
+
+	/**
+	 *
+	 * function get_value
+	 * Return a single value from the database
+	 * @param string the query to execute
+	 * @param array Arguments to pass for prepared statements
+	 * @return mixed a single value (int, string)
+	**/
+	public function get_value( $query, $args = array() )
+	{
+		$this->query($query, $args);
+		if ( $this->queryok )
+		{
+			$result = $this->pdostatement->fetch(PDO::FETCH_NUM);
+			return $result[0];
+		}
+		else
+		{
+			return false;
+		}
+	}
 	
 	/**
 	 * function insert

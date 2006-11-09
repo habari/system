@@ -88,7 +88,7 @@ class Posts extends ArrayObject
 		if ( isset( $count ) )
 		{
 			$select = "COUNT($count)";
-			$fetch_fn = 'get_row';
+			$fetch_fn = 'get_value';
 		}
 		if ( isset( $limit ) && ( 1 == $limit ) )
 		{
@@ -122,6 +122,40 @@ class Posts extends ArrayObject
 		{
 			return false;
 		}
+	}
+
+	/*
+	 * static count_by_author
+	 * return a count of the number of posts by the specified author
+	 * @param int an author ID
+	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed (default: Post::STATUS_PUBLISHED)
+	 * @return int the number of posts by the specified author
+	**/
+	public static function count_by_author( $author = '', $status = Post::STATUS_PUBLISHED )
+	{
+		$params = array( 'author' => $author, 'count' => 'id');
+		if ( FALSE !== $status )
+		{
+			$params['status'] = $status;
+		}
+		return self::get( $params );
+	}
+
+	/**
+	 * static count_by_tag
+	 * return a count of the number of posts with the assigned tag
+	 * @param string A tag
+	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed (default: Post::STATUS_PUBLISHED)
+	 * @return int the number of posts with the specified tag
+	**/
+	public static function count_by_tag( $tag = '', $status = Post::STATUS_PUBLISHED )
+	{
+		$params = array( 'tag' => $tag, 'count' => 'slug');
+		if ( FALSE !== $status )
+		{
+			$params['status'] = $status;
+		}
+		return self::get( $params );
 	}
 
 }
