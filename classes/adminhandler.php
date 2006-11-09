@@ -86,7 +86,10 @@ class AdminHandler extends ActionHandler
 			$map = array_combine($filekeys, $files);
 			// Allow plugins to modify or add to $map here,
 			// since plugins will not be installed to /system/admin
-			$settings['page'] = ($settings['page'] == '') ? 'dashboard' : $settings['page'];
+			if ( ! isset( $settings['page'] ) )
+			{
+				$settings['page'] = 'dashboard';
+			}
 			if ( isset( $map[$settings['page']] ) ) {
 				$this->header();
 				include $map[$settings['page']];

@@ -1,10 +1,13 @@
 <div id="content-area">
 	<h1>Habari Content</h1>
 	<?php 
-	switch( URL::o()->settings['result'] ) {
-	case 'success':
-		_e('<p>Your options have been updated.</p>');
-		break;
+	if ( isset( $settings['result'] ) )
+	{
+		switch( URL::o()->settings['result'] ) {
+		case 'success':
+			_e('<p>Your options have been updated.</p>');
+			break;
+		}
 	}
 	?>
 <div style="width: 45%; float: left; border-right: 1px solid #000;">

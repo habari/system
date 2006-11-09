@@ -35,6 +35,7 @@ class Comments extends ArrayObject
 		$orderby = "date ASC";
 		// safety mechanism to prevent an empty query
 		$where = array(1);
+		$params = array();
 		// loop over each element of the $paramarray
 		foreach ($paramarray as $key => $value)
 		{
