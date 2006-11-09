@@ -69,7 +69,10 @@ class Installer
 		$options->tag_line = $_POST['tagline'];
 		$options->about = $_POST['about'];
 		$base_url = $_SERVER['REQUEST_URI'];
-		if(substr($base_url, -1, 1) != '/') $base_url = dirname($base_url) . '/';
+
+		if(substr($base_url, -1, 1) != '/') {
+            $base_url = (dirname($base_url) == '/') ? '/' : dirname($base_url) . '/';
+        }
 		$options->base_url = $base_url;
 		$options->theme_dir = "k2";
 		$options->version = "0.1alpha";
