@@ -48,7 +48,7 @@ class Comments extends ArrayObject
 				// we want a count of results, rather than the contents of the results
 				$select = "COUNT($value)";
 				// set the $db method to get_row
-				$fetch_fn = 'get_results';
+				$fetch_fn = 'get_value';
 				continue;
 			}
 			// check whether we should filter by status
@@ -72,9 +72,6 @@ class Comments extends ArrayObject
 		$query = $db->$fetch_fn( $sql, $params, 'Comment' );
 		if ( '*' != $select )
 		{
-			echo $sql; var_dump($params); var_dump($query); 
-			echo "<br /><br />"; echo (int) $query;
-			die;
 			return $query;
 		}
 		elseif ( is_array( $query ) )
@@ -246,6 +243,90 @@ class Comments extends ArrayObject
 		case 'trackbacks':
 			return new Comments($this->only($name));
 		}
+	}
+
+	/**
+	 * static count_by_name
+	 * returns the number of comments attributed to the specified name
+	 * @param string a commenter's name
+	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments from the specified name
+	**/
+	public static function count_by_name( $name = '', $status = Comment::STATUS_APPROVED )
+	{
+		$params = array ('name' => $name, 'count' => 'name');
+		if ( FALSE !== $status )
+		{
+			$params['status'] = $status;
+		}
+		return self::get( $params );
+	}
+
+	/**
+	 * static count_by_email
+	 * returns the number of comments attributed ot the specified email
+	 * @param string an email address
+	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments from the specified email
+	**/
+	public static function count_by_email( $email = '', $status = Comment::STATUS_APPROVED )
+	{
+		$params = array( 'email' => $email, 'count' => 'email');
+		if ( FALSE !== $status )
+		{
+			$params['status'] = $status;
+		}
+		return self::get( $params );
+	}
+
+	/**
+	 * static count_by_url
+	 * returns the number of comments attributed to the specified URL
+	 * @param string a URL
+	 * @param mixed a comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED) 
+	 * @return int a count of the comments from the specified URL
+	**/
+	public static function count_by_url( $url = '', $status = Comment::STATUS_APPROVED )
+	{
+		$params = array( 'url' => $url, 'count' => 'url');
+		if ( FALSE !== $status )
+		{
+			$params['status'] = $status;
+		}
+		return self::get( $params );
+	}
+
+	/** static count_by_ip
+	 * returns the number of comments from the specified IP address
+	 * @param string an IP address
+	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments from the specified IP address
+	**/
+	public static function count_by_ip( $ip = '', $status = Comment::STATUS_APPROVED )
+	{
+		$params = array( 'ip' => $ip, 'count' => 'ip');
+		if ( FALSE !== $status )
+		{
+			$params['status'] = $status;
+		}
+		return self::get( $params );
+	}
+
+	/**
+	 * static count_by_slug
+	 * returns the number of comments attached to the specified post
+	 * @param string a post slug
+	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments attached to the specified post
+	**/
+	public static function count_by_slug( $slug = '', $status = Comment::STATUS_APPROVED )
+	{
+		$params = array( 'post_slug' => $slug, 'count' => 'id');
+		if ( FALSE !== $status )
+		{
+			$params['status'] = $status;
+		}
+		return self::get( $params );
 	}
 
 }

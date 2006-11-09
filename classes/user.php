@@ -208,5 +208,15 @@ class User extends QueryRecord
 			}
 	}
 
+	/**
+	 * function count_posts()
+	 * returns the number of posts written by this user
+	 * @param mixed A status on which to filter posts (approved, unapproved).  If FALSE, no filtering will be performed.  Default: Post::STATUS_APPROVED
+	 * @return int The number of posts written by this user
+	**/
+	public function count_posts( $status = Post::STATUS_APPROVED )
+	{
+		return Posts::count_by_author( $this->id, $status );
+	}
 }
 ?>
