@@ -49,8 +49,11 @@ class Post extends QueryRecord
 			$this->fields );
 		
 		parent::__construct( $paramarray );
-		$this->tags = $this->parsetags($this->fields['tags']);
-		unset( $this->fields['tags'] );
+		if ( isset( $this->fields['tags'] ) )
+		{
+			$this->tags = $this->parsetags($this->fields['tags']);
+			unset( $this->fields['tags'] );
+		}
 	}
 	
 	/**
@@ -288,9 +291,9 @@ class Post extends QueryRecord
 	}
 
 	/**
-	* function get_comments
-	* Gets the comments for the post
-	* @return &array A reference to the comments array for this post
+	 * function get_comments
+	 * Gets the comments for the post
+	 * @return &array A reference to the comments array for this post
 	**/
 	private function &get_comments()
 	{

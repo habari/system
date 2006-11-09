@@ -86,11 +86,11 @@ class Comments extends ArrayObject
 	}
 	
 	/**
-	* function by_email
-	* selects all comments from a given email address
-	* @param string an email address
-	* @return array an array of Comment objects written by that email address
-	*/
+	 * function by_email
+	 * selects all comments from a given email address
+	 * @param string an email address
+	 * @return array an array of Comment objects written by that email address
+	**/
 	public function by_email($email = '')
 	{
 		if ( ! $email )
@@ -101,11 +101,11 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	* function by_name
-	* selects all comments from a given name
-	* @param string a name
-	* @return array an array of Comment objects written by the given name
-	*/
+	 * function by_name
+	 * selects all comments from a given name
+	 * @param string a name
+	 * @return array an array of Comment objects written by the given name
+	**/
 	public function by_name ($name = '')
 	{
 		if ( ! $name )
@@ -116,11 +116,11 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	* function by_ip
-	* selects all comments from a given IP address
-	* @param string an IP address
-	* @return array an array of Comment objects written from the given IP
-	*/
+	 * function by_ip
+	 * selects all comments from a given IP address
+	 * @param string an IP address
+	 * @return array an array of Comment objects written from the given IP
+	**/
 	public function by_ip ( $ip = '' )
 	{
 		if ( ! $ip ) 
@@ -131,11 +131,11 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	* function by_url
-	* select all comments from an author's URL
-	* @param string a URL
-	* @return array array an array of Comment objects with the same URL
-	*/
+	 * function by_url
+	 * select all comments from an author's URL
+	 * @param string a URL
+	 * @return array array an array of Comment objects with the same URL
+	**/
 	public function by_url ( $url = '' )
 	{
 		if ( ! $url )
@@ -146,11 +146,11 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	* function by_slug
-	* select all comments for a given post slug
-	* @param string a post slug
-	* @return array array an array of Comment objects for the given post
-	*/
+	 * function by_slug
+	 * select all comments for a given post slug
+	 * @param string a post slug
+	 * @return array array an array of Comment objects for the given post
+	**/
 	public function by_slug ( $slug = '' )
 	{
 		if ( ! $slug )
@@ -161,10 +161,10 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	* function by_status
-	* select all comments of a given status
-	* @param int a status value
-	* @return array an array of Comment objects with the same status
+	 * function by_status
+	 * select all comments of a given status
+	 * @param int a status value
+	 * @return array an array of Comment objects with the same status
 	**/
 	public function by_status ( $status = 0 )
 	{
