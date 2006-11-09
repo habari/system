@@ -9,13 +9,13 @@
 class Comment extends QueryRecord
 {
 
-// our definitions for comment types and statuses
-const COMMENT_APPROVED = 1;
+	// our definitions for comment types and statuses
+	const STATUS_UNAPPROVED = 0;
+	const STATUS_APPROVED = 1;
 
-const COMMENT = 0;
-const PINGBACK =1;
-const TRACKBACK = 2;
-
+	const COMMENT = 0;
+	const PINGBACK =1;
+	const TRACKBACK = 2;
 
 	/**
 	* static function default_fields
@@ -33,7 +33,7 @@ const TRACKBACK = 2;
 			'content' => '',
 			'status' => '',
 			'date' => '',
-			'type' => Comment::COMMENT
+			'type' => self::COMMENT
 		);
 	}
 

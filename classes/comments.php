@@ -27,14 +27,37 @@ class Comments extends ArrayObject
 	{
 		global $db;
 
+		// the default $db method to use to fetch results
+		$fetch_fn = 'get_results';
+		// by default, return results rather than a count
+		$select = '*';
+		// default sort order
 		$orderby = "date ASC";
+		// safety mechanism to prevent an empty query
 		$where = array(1);
+		// loop over each element of the $paramarray
 		foreach ($paramarray as $key => $value)
 		{
-			if ('orderby' == $key)
+			if ( 'orderby' == $key )
 			{
 				$orderby = $value;
 				continue;
+			}
+			if ( 'count' == $key )
+			{
+				// we want a count of results, rather than the contents of the results
+				$select = "COUNT($value)";
+				// set the $db method to get_row
+				$fetch_fn = 'get_results';
+				continue;
+			}
+			// check whether we should filter by status
+			// a value of FALSE means don't filter
+			if ( ( 'status' == $key ) && ( FALSE === $value ) )
+			{
+				continue;
+				// if the status is not FALSE, processing will
+				// continue to the next if block
 			}
 			// only accept those keys that correspond to
 			// table columns
@@ -45,12 +68,22 @@ class Comments extends ArrayObject
 			}
 		}
 
-		$sql = "SELECT * from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY $orderby";
-		$query = $db->get_results( $sql, $params, 'Comment' );
-		if ( is_array( $query ) ) {
+		$sql = "SELECT $select from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY $orderby";
+		$query = $db->$fetch_fn( $sql, $params, 'Comment' );
+		if ( '*' != $select )
+		{
+			echo $sql; var_dump($params); var_dump($query); 
+			echo "<br /><br />"; echo (int) $query;
+			die;
+			return $query;
+		}
+		elseif ( is_array( $query ) )
+		{
 			$c = __CLASS__;
 			return new $c ( $query );
-		} else {
+		}
+		else
+		{
 			return false;
 		}
 	}
@@ -152,7 +185,7 @@ class Comments extends ArrayObject
 		foreach ( $this as $c )
 		{
 			// first, divvy up approved and unapproved comments
-			if ( Comment::COMMENT_APPROVED == $c->status )
+			if ( Comment::STATUS_APPROVED == $c->status )
 			{
 				$this->sort['approved'][] = $c;
 			}

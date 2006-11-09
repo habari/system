@@ -92,7 +92,7 @@ class Installer
 			'title'=>'First Post',
 			'content'=>'This is my first post',
 			'author'=>$admin->username,
-			'status'=>'publish',
+			'status'=>1,
 		));
 		
 		// generate a random-ish number to use as the salt for

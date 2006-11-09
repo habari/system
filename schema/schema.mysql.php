@@ -6,8 +6,8 @@ $queries = array(
 	title VARCHAR(255), 
 	guid VARCHAR(255) NOT NULL, 
 	content LONGTEXT, 
-	author VARCHAR(255) NOT NULL, 
-	status VARCHAR(50) NOT NULL, 
+	author smallint, 
+	status smallint,
 	pubdate TIMESTAMP, 
 	updated TIMESTAMP
 	);',
