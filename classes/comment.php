@@ -33,7 +33,7 @@ const TRACKBACK = 2;
 			'content' => '',
 			'status' => '',
 			'date' => '',
-			'type' => COMMENT
+			'type' => Comment::COMMENT
 		);
 	}
 
