@@ -91,7 +91,7 @@ class Installer
 		Post::create(array(
 			'title'=>'First Post',
 			'content'=>'This is my first post',
-			'author'=>$admin->username,
+			'author'=>1,
 			'status'=>1,
 		));
 		

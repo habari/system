@@ -54,6 +54,7 @@ class Posts extends ArrayObject
 		global $db;
 	
 		$params = array();
+		$select = '';
 		// what to select -- by default, everything
 		foreach ( Post::default_fields() as $field => $value )
 		{
