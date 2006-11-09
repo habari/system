@@ -8,6 +8,10 @@
 
 class Post extends QueryRecord
 {
+	// public constants
+	const STATUS_DRAFT = 0;
+	const STATUS_PUBLISHED = 1;
+	const STATUS_PRIVATE = 2;
 
 	private $tags = null;
 	private $comments = null;
@@ -45,8 +49,7 @@ class Post extends QueryRecord
 			$this->fields );
 		
 		parent::__construct( $paramarray );
-		$this->tags = isset( $this->fields['tags'] ) ?
-            $this->parsetags($this->fields['tags'])  : '';
+		$this->tags = $this->parsetags($this->fields['tags']);
 		unset( $this->fields['tags'] );
 	}
 	
@@ -67,12 +70,12 @@ class Post extends QueryRecord
 		
 		// Defaults
 		$defaults = array (
-			'orderby' => 'pubdate DESC',
-			'status' => 'publish',
+			'status' => 1,
+			'limit' => 1,
 		);
 
 		$paramarray = array_merge( $url->settings, $defaults, Utils::get_params($paramarray) ); 
-		return Posts::do_query($paramarray, true);
+		return Posts::get( $paramarray );
 	}
 	
 	/**

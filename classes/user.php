@@ -193,7 +193,7 @@ class User extends QueryRecord
 	
 	/**
 	* function get_all()
-	* fetchces all the users from the DB.
+	* fetches all the users from the DB.
 	* still need some checks for only authors.
 	*/
 	
@@ -207,5 +207,6 @@ class User extends QueryRecord
 				return false;
 			}
 	}
+
 }
 ?>
