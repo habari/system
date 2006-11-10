@@ -8,7 +8,7 @@
 <div id="content-area">
 	<h3>Your Profile</h3>
 	<?php
-	if ( 'success' == $settings['results'] )
+	if ( isset( $settings['results'] ) &&  'success' == $settings['results'] )
 	{
 		echo "<p><strong>Your profile has been updated!</strong></p>";
 	}
@@ -24,7 +24,7 @@
 		<p><input type="text" name="email" value="<?php echo $user->email; ?>"/></p>
 		<p><label>New Password:</label></p>
 		<?php
-		if ( 'pass' == $settings['error'] )
+		if ( isset( $settings['error'] ) && 'pass' == $settings['error'] )
 		{
 			echo "<p><strong>The passwords you typed did not match.  Please try again!</strong></p>";
 		}
