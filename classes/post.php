@@ -15,6 +15,7 @@ class Post extends QueryRecord
 
 	private $tags = null;
 	private $comments = null;
+	private $author_object = null;
 
 	/**
 	 * function default_fields
@@ -29,8 +30,8 @@ class Post extends QueryRecord
 			'title' => '',
 			'guid' => '',
 			'content' => '',
-			'author' => '',
-			'status' => 'draft',
+			'user_id' => '',
+			'status' => self::STATUS_DRAFT,
 			'pubdate' => date( 'Y-m-d H:i:s' ),
 			'updated' => ( 'Y-m-d H:i:s' ),
 		);
@@ -238,6 +239,8 @@ class Post extends QueryRecord
 			return $this->get_comments();
 		case 'comment_count':
 			return $this->get_comments()->count();
+		case 'author':
+			return $this->get_author();
 		default:
 			return parent::__get( $name );
 		}
@@ -302,6 +305,20 @@ class Post extends QueryRecord
 			$this->comments = Comments::by_slug( $this->slug );
 		}
 		return $this->comments;
+	}
+
+	/**
+	 * private function get_author()
+	 * returns a User object for the author of this post
+	 * @return User a User object for the author of the current post
+	**/
+	private function get_author()
+	{
+		if ( ! isset( $this->author_object ) )
+		{
+			$this->author_object = User::get( $this->user_id );
+		}
+		return $this->author_object;
 	}
 }
 ?>
