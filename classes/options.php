@@ -98,7 +98,7 @@ class Options
 		global $db;
 		
 		if(!isset($this->options[$name])) {
-			$result = $db->get_row("SELECT value, type FROM habari__options WHERE name = ?", array($name));
+			$result = DB::get_row("SELECT value, type FROM habari__options WHERE name = ?", array($name));
 		
 			if ( is_object( $result) ) {
 				if($result->type == 1) {
@@ -126,10 +126,10 @@ class Options
 		$this->options[$name] = $value;
 		
 		if(is_array($value) || is_object($value)) {
-			$db->update( Options::table, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name'=>$name) ); 
+			DB::update( Options::table, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name'=>$name) ); 
 		}
 		else {
-			$db->update( Options::table, array('name'=>$name, 'value'=>$value, 'type'=>0), array('name'=>$name) ); 
+			DB::update( Options::table, array('name'=>$name, 'value'=>$value, 'type'=>0), array('name'=>$name) ); 
 		}
 	}
 

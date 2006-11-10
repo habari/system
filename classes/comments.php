@@ -79,7 +79,7 @@ class Comments extends ArrayObject
 		}
 
 		$sql = "SELECT {$select} from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY {$orderby}{$limit}";
-		$query = $db->$fetch_fn( $sql, $params, 'Comment' );
+		$query = DB::$fetch_fn( $sql, $params, 'Comment' );
 		if ( 'get_value' == $fetch_fn )
 		{
 			return $query;

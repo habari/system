@@ -99,7 +99,7 @@ class UserHandler extends ActionHandler
 					echo "Click <a href='" . $url->get_url('home') . "'>here</a> to return to the home page.";
 					die();
 				} else {
-					$dberror = $db->get_last_error();
+					$dberror = DB::get_last_error();
 					$error .= $dberror[2];
 				}
 			}

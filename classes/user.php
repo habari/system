@@ -58,7 +58,7 @@ class User extends QueryRecord
 				$userid = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$user = $db->get_row("SELECT * FROM habari__users WHERE id = ?", array($userid), 'User');
+				$user = DB::get_row("SELECT * FROM habari__users WHERE id = ?", array($userid), 'User');
 				if ( ! $user ) {
 					return false;
 				}
@@ -146,7 +146,7 @@ class User extends QueryRecord
 			// yes?  see if this email address has a username
 			$what = "email";
 		}
-		$user = $db->get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
+		$user = DB::get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
 			self::$identity = null;
 			return false;
@@ -183,7 +183,7 @@ class User extends QueryRecord
 			// was an email address given?
 			$what = 'email';
 		}
-		$user = $db->get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
+		$user = DB::get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
 			return false;
 		} else {
@@ -200,7 +200,7 @@ class User extends QueryRecord
 	public static function get_all()
 	{
 		global $db;
-		$list_users = $db->get_results( "SELECT * FROM habari__users ORDER BY ID DESC" );
+		$list_users = DB::get_results( "SELECT * FROM habari__users ORDER BY ID DESC" );
 			if ( is_array( $list_users ) ) {
 				return $list_users;
 			} else {

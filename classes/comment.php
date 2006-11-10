@@ -70,7 +70,7 @@ class Comment extends QueryRecord
 		}
 		global $db;
 		
-		return $db->get_row( "SELECT * FROM habari__comments WHERE id = ?", $ID, 'Comment' );
+		return DB::get_row( "SELECT * FROM habari__comments WHERE id = ?", $ID, 'Comment' );
 	}
 	
 	/**
