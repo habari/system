@@ -18,7 +18,7 @@
 	{
 		echo '<li>';
 		echo '<a href="' . $post->permalink . '">' . $post->title . '</a><br />';
-		echo 'By ' . $post->author . ' on ' . $post->pubdate;
+		echo 'By ' . $post->author->username . ' on ' . $post->pubdate;
 		if ($post->updated > $post->pubdate)
 		{
 			echo ' (updated: ' . $post->updated . ')';

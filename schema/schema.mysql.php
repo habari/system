@@ -6,7 +6,7 @@ $queries = array(
 	title VARCHAR(255), 
 	guid VARCHAR(255) NOT NULL, 
 	content LONGTEXT, 
-	author smallint, 
+	user_id smallint, 
 	status smallint,
 	pubdate TIMESTAMP, 
 	updated TIMESTAMP

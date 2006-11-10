@@ -177,7 +177,7 @@ class User extends QueryRecord
 		}
 		$what = 'username';
 		// was a user ID given to us?
-		if ( is_int($who) ) {
+		if ( is_numeric($who) ) {
 			$what = 'id';
 		} elseif ( strstr($who, '@') ) {
 			// was an email address given?
