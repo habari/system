@@ -137,7 +137,7 @@ class AdminHandler extends ActionHandler
 								'title'		=>	$_POST['title'],
 								'tags'		=>	$_POST['tags'],
 								'content'	=>	$_POST['content'],
-								'author'	=>	User::identify()->username,
+								'user_id'	=>	User::identify()->id,
 								'pubdate'	=>	date( 'Y-m-d H:i:s' ),
 								'status'	=>	'publish'
 							 );
