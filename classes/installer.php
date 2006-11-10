@@ -74,8 +74,9 @@ class Installer
             $base_url = (dirname($base_url) == '/') ? '/' : dirname($base_url) . '/';
         }
 		$options->base_url = $base_url;
-		$options->theme_dir = "k2";
-		$options->version = "0.1alpha";
+		$options->theme_dir = 'k2';
+		$options->version = '0.1alpha';
+		$options->pagination = '5';
 
 		// insert a default admin user
 		$password = sha1($_POST['password']);

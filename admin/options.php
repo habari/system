@@ -18,6 +18,8 @@
 		<p><input type="text" name="tagline" value="<?php Options::out('tagline'); ?>"/></p>
 		<p><label>About</label></p>
 		<p><textarea id="about" name="about"><?php Options::out('about'); ?></textarea></p>
+		<p>Number of items per page:</p>
+		<p><input type="text" name="pagination" value="<?php Options::out('pagination'); ?>" /></p>
 		<p><input type="submit" value="Update Options!" /></p>
 	</form>
 </div>

@@ -74,7 +74,7 @@ class Post extends QueryRecord
 		// Defaults
 		$defaults = array (
 			'status' => 1,
-			'limit' => 1,
+			'fetch_fn' => 'get_row',
 		);
 
 		$paramarray = array_merge( $url->settings, $defaults, Utils::get_params($paramarray) ); 
@@ -106,13 +106,13 @@ class Post extends QueryRecord
 		if ( $this->fields[ 'slug' ] != '' && $this->fields[ 'slug' ] == $this->newfields[ 'slug' ]) {
 			$value = $this->fields[ 'slug' ];
 		}
-		elseif ( $this->newfields[ 'slug' ] != '' ) {
+		elseif ( isset( $this->newfields['slug']) && $this->newfields[ 'slug' ] != '' ) {
 			$value = $this->newfields[ 'slug' ];
 		}
 		elseif ( ( $this->fields[ 'slug' ] != '' ) ) {
 			$value = $this->fields[ 'slug' ];
 		}
-		elseif ( $this->newfields[ 'title' ] != '' ) {
+		elseif ( isset( $this->newfields['title'] ) && $this->newfields[ 'title' ] != '' ) {
 			$value = $this->newfields[ 'title' ];
 		}
 		elseif ( $this->fields[ 'title' ] != '' ) {
