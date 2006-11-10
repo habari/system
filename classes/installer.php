@@ -92,7 +92,7 @@ class Installer
 		Post::create(array(
 			'title'=>'First Post',
 			'content'=>'This is my first post',
-			'author'=>1,
+			'user_id'=>1,
 			'status'=>1,
 		));
 		
