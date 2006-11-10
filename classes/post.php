@@ -127,7 +127,7 @@ class Post extends QueryRecord
 		$postfix = '';
 		$postfixcount = 0;
 		do {
-			$slugcount = $db->get_row( "SELECT count(slug) AS ct FROM habari__posts WHERE slug = ?;", array( "{$slug}{$postfix}" ) );
+			$slugcount = DB::get_row( "SELECT count(slug) AS ct FROM habari__posts WHERE slug = ?;", array( "{$slug}{$postfix}" ) );
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
 		} while ($slugcount->ct != 0);
 		$this->newfields[ 'slug' ] = $slug . $postfix;
@@ -162,9 +162,9 @@ class Post extends QueryRecord
 	private function savetags()
 	{
 		global $db;
-		$db->query( "DELETE FROM habari__tags WHERE slug = ?", array( $this->fields['slug'] ) );
+		DB::query( "DELETE FROM habari__tags WHERE slug = ?", array( $this->fields['slug'] ) );
 		foreach( (array)$this->tags as $tag ) { 
-			$db->query( "INSERT INTO habari__tags (slug, tag) VALUES (?,?)", 
+			DB::query( "INSERT INTO habari__tags (slug, tag) VALUES (?,?)", 
 				array( $this->fields['slug'], $tag ) 
 			); 
 		}
@@ -288,7 +288,7 @@ class Post extends QueryRecord
 		global $db;
 		$i = 0;
 		if ( empty( $this->tags ) ) {
-			$this->tags = $db->get_column( 'SELECT tag FROM habari__tags WHERE slug = ? ', array( $this->fields['slug'] ) );
+			$this->tags = DB::get_column( 'SELECT tag FROM habari__tags WHERE slug = ? ', array( $this->fields['slug'] ) );
 		}
 		return $this->tags;
 	}

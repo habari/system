@@ -123,7 +123,7 @@ class Posts extends ArrayObject
 		ORDER BY 
 			{$orderby}{$limit}";
 			
-		$results = $db->$fetch_fn( $query, $params, 'Post' );
+		$results = DB::$fetch_fn( $query, $params, 'Post' );
 	
 		if ( 'get_results' != $fetch_fn )
 		{

@@ -68,7 +68,7 @@ class QueryRecord
 	{
 		global $db;
 
-		return $db->insert($table, array_merge($this->fields, $this->newfields));
+		return DB::insert($table, array_merge($this->fields, $this->newfields));
 	}
 
 	/**
@@ -82,7 +82,7 @@ class QueryRecord
 	{
 		global $db;
 		
-		return $db->update($table, array_merge($this->fields, $this->newfields), $updatekeyfields);
+		return DB::update($table, array_merge($this->fields, $this->newfields), $updatekeyfields);
 	}
 	
 	/**
@@ -96,7 +96,7 @@ class QueryRecord
 	{
 		global $db;
 		
-		return $db->delete($table, $updatekeyfields);
+		return DB::delete($table, $updatekeyfields);
 	}
 
 }

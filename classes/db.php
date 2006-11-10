@@ -7,11 +7,11 @@
  */
 
 /**
- * class habari_db
+ * class db
  * The database class - singleton
  * Connects to the database and provides access to data 
  */  
-class habari_db
+class DB
 {
 	private $dbh;  // Database handle
 	private $pdostatement = false;  // PDOStatement handle
@@ -19,6 +19,7 @@ class habari_db
 	public $queryok; // Boolean on last query success 
 	private $queries = array(); // Array of executed queries
 	private $errormarker = 0; // Last cleared error index
+	static $instance = null;  // A static instance of this class  
 
 	/**
 	 * function __construct
@@ -31,6 +32,36 @@ class habari_db
 	{
 		$this->dbh = new PDO($connection_string, $user, $pass);
 	}
+	
+	/**
+	 * function o
+	 * Gets the static instance if the function was called statically,
+	 * or $this if the function was called dynamically.
+	 * @return DB The database instance
+	 **/	 	 	 	 	
+	public function &o()
+	{
+		if ( isset ($this) && get_class($this) == ((string)__CLASS__)) {
+			return $this;
+		}
+		return DB::$instance;
+	}
+	
+	/**
+	 * function create
+	 * Connects the static instance to a PDO database.	 
+	 * @param string A PDO connection string
+	 * @param string The database username
+	 * @param string The database password
+	 */	 	 	
+	static function create($connection_string, $user, $pass)
+	{
+		if ( empty( self::$instance ) ) {
+			$c = __CLASS__;
+			self::$instance = new $c( $connection_string, $user, $pass );
+		}
+		return self::$instance;
+	}
 
 	/**
 	 * function query
@@ -42,24 +73,25 @@ class habari_db
 	 */	 	 	 	 	
 	public function query($query, $args = array(), $c_name = '')
 	{
-		if($this->pdostatement) $this->pdostatement->closeCursor();
-		$this->pdostatement = $this->dbh->prepare($query);
-		if($this->pdostatement) {
+		$o =& DB::o();
+		if($o->pdostatement) $o->pdostatement->closeCursor();
+		$o->pdostatement = $o->dbh->prepare($query);
+		if($o->pdostatement) {
 			if($c_name == '') $c_name = 'QueryRecord';
-			$this->pdostatement->setFetchMode(PDO::FETCH_CLASS, $c_name, array());
-			if($this->pdostatement->execute($args)) {
-				$this->queries[] = array($query, $args);
-				$this->queryok = true;
+			$o->pdostatement->setFetchMode(PDO::FETCH_CLASS, $c_name, array());
+			if($o->pdostatement->execute($args)) {
+				$o->queries[] = array($query, $args);
+				$o->queryok = true;
 				return true;
 			}
 			else {
-				$this->queryok = false;
-				$this->errors[] = array_merge($this->pdostatement->errorInfo(), array($query, $args));
+				$o->queryok = false;
+				$o->errors[] = array_merge($o->pdostatement->errorInfo(), array($query, $args));
 				return false;
 			}
 		}
-		$this->queryok = false;
-		$this->errors[] = array_merge($this->dbh->errorInfo(), array($query, $args));
+		$o->queryok = false;
+		$o->errors[] = array_merge($o->dbh->errorInfo(), array($query, $args));
 		return false;
 	}
 	
@@ -70,7 +102,8 @@ class habari_db
 	 */	  	 	
 	public function get_errors()
 	{
-		return $this->errors;
+		$o =& DB::o();
+		return $o->errors;
 	}
 	
 	/**
@@ -80,7 +113,8 @@ class habari_db
 	 **/	 	 	 	
 	public function has_errors()
 	{
-		return count($this->errors) > $this->errormarker;
+		$o =& DB::o();
+		return count($o->errors) > $o->errormarker;
 	}
 	
 	/**
@@ -89,7 +123,8 @@ class habari_db
 	 **/	 	 	
 	public function clear_errors()
 	{
-		$this->errormarker = count($this->errors); 
+		$o =& DB::o();
+		$o->errormarker = count($o->errors); 
 	}
 
 	/**
@@ -99,7 +134,8 @@ class habari_db
 	 **/
 	public function get_last_error()
 	{
-		return end($this->errors);
+		$o =& DB::o();
+		return end($o->errors);
 	}
 
 	/**
@@ -109,13 +145,14 @@ class habari_db
 	 * @param array Arguments to pass for prepared statements
 	 * @param string Optional class name for row result objects	 
 	 * @return array An array of QueryRecord or the named class each containing the row data
-	 * <code>$ary = $db->get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
+	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/	 	 	 	 
 	public function get_results($query, $args = array(), $classname = '')
 	{
-		$this->query($query, $args, $classname);
-		if($this->queryok) {
-			return $this->pdostatement->fetchAll();
+		$o =& DB::o();
+		$o->query($query, $args, $classname);
+		if($o->queryok) {
+			return $o->pdostatement->fetchAll();
 		}
 		else
 			return false;
@@ -128,13 +165,14 @@ class habari_db
 	 * @param array Arguments to pass for prepared statements
 	 * @param string Optional class name for row result object
 	 * @return object A QueryRecord or an instance of the named class containing the row data	 
-	 * <code>$obj = $db->get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>	 
+	 * <code>$obj = DB::get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>	 
 	 **/	 	 
 	public function get_row($query, $args = array(), $classname = '')
 	{
-		$this->query($query, $args, $classname);
-		if($this->queryok) {
-			return $this->pdostatement->fetch();
+		$o =& DB::o();
+		$o->query($query, $args, $classname);
+		if($o->queryok) {
+			return $o->pdostatement->fetch();
 		}
 		else
 			return false;
@@ -146,13 +184,14 @@ class habari_db
 	 * @param string The query to execute
 	 * @param array Arguments to pass for prepared statements
 	 * @return array An array containing the column data	 
-	 * <code>$ary = $db->get_column( 'SELECT col1 FROM tablename WHERE foo = ?', array('fieldvalue') );</code>	 
+	 * <code>$ary = DB::get_column( 'SELECT col1 FROM tablename WHERE foo = ?', array('fieldvalue') );</code>	 
 	 **/	 	 
 	public function get_column($query, $args = array())
 	{
-		$this->query($query, $args);
-		if($this->queryok) {
-			return $this->pdostatement->fetchAll(PDO::FETCH_COLUMN);
+		$o =& DB::o();
+		$o->query($query, $args);
+		if($o->queryok) {
+			return $o->pdostatement->fetchAll(PDO::FETCH_COLUMN);
 		}
 		else
 			return false;
@@ -168,10 +207,11 @@ class habari_db
 	**/
 	public function get_value( $query, $args = array() )
 	{
-		$this->query($query, $args);
-		if ( $this->queryok )
+		$o =& DB::o();
+		$o->query($query, $args);
+		if ( $o->queryok )
 		{
-			$result = $this->pdostatement->fetch(PDO::FETCH_NUM);
+			$result = $o->pdostatement->fetch(PDO::FETCH_NUM);
 			return $result[0];
 		}
 		else
@@ -186,10 +226,11 @@ class habari_db
 	 * @param string The table name
 	 * @param array An associative array of fields and values to insert
 	 * @return boolean True on success, false if not	  	 
-	 * <code>$db->insert( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
+	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/
 	public function insert($table, $fieldvalues)
 	{
+		$o =& DB::o();
 		ksort($fieldvalues);
 
 		$query = "INSERT INTO {$table} (";
@@ -202,7 +243,7 @@ class habari_db
 		}
 		$query .= ') VALUES (' . trim(str_repeat('?,', count($fieldvalues)), ',') . ');';
 
-		return $this->query($query, $values);
+		return $o->query($query, $values);
 	}
 	
 	/**
@@ -211,10 +252,11 @@ class habari_db
 	 * @param string Table to check
 	 * @param array Associative array of field values to match
 	 * @return boolean True if any matching record exists, false if not
-	 * <code>$db->exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
+	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
 	public function exists($table, $keyfieldvalues)
 	{
+		$o =& DB::o();
 		ksort($keyfieldvalues);
 		reset($keyfieldvalues);
 		$qry = "SELECT 1 as c FROM {$table} WHERE 1 ";
@@ -224,7 +266,7 @@ class habari_db
 			$qry .= " AND {$keyfield} = ? ";
 			$values[] = $keyvalue;
 		}
-		$result = $this->get_row($qry, $values);
+		$result = $o->get_row($qry, $values);
 		return ($result !== false);
 	}
 	
@@ -236,14 +278,15 @@ class habari_db
 	 * @param array Associative array of field values to set	 
 	 * @param array Associative array of field values to match
 	 * @return boolean True on success, false if not
-	 * <code>$db->update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>	 
+	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
 	public function update($table, $fieldvalues, $keyfields)
 	{
+		$o =& DB::o();
 		ksort($fieldvalues);
 		ksort($keyfields);
 
-	        $keyfieldvalues = array();
+		$keyfieldvalues = array();
 		foreach($keyfields as $keyfield => $keyvalue) {
 			if(is_numeric($keyfield)) {
 				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];
@@ -252,7 +295,7 @@ class habari_db
 				$keyfieldvalues[$keyfield] = $keyvalue;
 			}
 		}
-		if($this->exists($table, $keyfieldvalues)) {
+		if($o->exists($table, $keyfieldvalues)) {
 			$qry = "UPDATE {$table} SET";
 			$values = array();
 			$comma = '';
@@ -267,10 +310,10 @@ class habari_db
 				$qry .= "AND {$keyfield} = ? ";
 				$values[] = $keyvalue;
 			}
-			return $this->query($qry, $values);
+			return $o->query($qry, $values);
 		}
 		else {
-			return $this->insert($table, $fieldvalues);
+			return $o->insert($table, $fieldvalues);
 		}
 	}
 
@@ -280,10 +323,11 @@ class habari_db
 	 * @param string Table to delete from
 	 * @param array Associative array of field values to match
 	 * @return boolean True on success, false if not
-	 * <code>$db->delete( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
+	 * <code>DB::delete( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
 	public function delete( $table, $keyfields )
 	{
+		$o =& DB::o();
 		ksort( $keyfields );
 		
 		$qry = "DELETE FROM {$table} WHERE 1 ";
@@ -292,7 +336,7 @@ class habari_db
 			$values[] = $keyvalue;
 		}
 		
-		return $this->query( $qry, $values );
+		return $o->query( $qry, $values );
 	}
 
 }

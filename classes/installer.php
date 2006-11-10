@@ -13,9 +13,9 @@ class Installer
 	{
 		global $db;
 		
-		$db->get_row("SELECT * FROM habari__options LIMIT 1;");
-		$db->clear_errors();
-		return $db->queryok;
+		DB::get_row("SELECT * FROM habari__options LIMIT 1;");
+		DB::clear_errors();
+		return DB::o()->queryok;
 	}
 	
 	/**
@@ -35,9 +35,9 @@ class Installer
 		// if we got here, we need to interact with the user
 		echo "<p>Welcome to <strong>Habari</strong>!  Answer the questions below to get started.</p>";
 		echo "<form method='post'><input type='hidden' name='action' value='install' />";
-		 echo "<input type='text' size='40' name='title' value='Blog Title' /><br />";
-		 echo "<input type='text' size='40' name='tagline' value='Tagline' /><br />";
-		 echo "<input type='text' size='40' name='about' value='About this blog' /><br />";
+		echo "<input type='text' size='40' name='title' value='Blog Title' /><br />";
+		echo "<input type='text' size='40' name='tagline' value='Tagline' /><br />";
+		echo "<input type='text' size='40' name='about' value='About this blog' /><br />";
 		echo "<input type='text' size='40' name='username' value='Username' /><br />";
 		echo "<input type='text' size='40' name='email' value='user@email.com' /><br />";
 		echo "<input type='text' size='40' name='password' value='Password' /><br />";
@@ -57,7 +57,7 @@ class Installer
 		// create the tables
 		foreach ($queries as $query)
 		{
-			$db->query($query);
+			DB::query($query);
 		}
 
 		// Create the default options
@@ -66,14 +66,9 @@ class Installer
 		$options->installed = true;
 		
 		$options->title = $_POST['title'];
-		$options->tag_line = $_POST['tagline'];
+		$options->tagline = $_POST['tagline'];
 		$options->about = $_POST['about'];
-		$base_url = $_SERVER['REQUEST_URI'];
-
-		if(substr($base_url, -1, 1) != '/') {
-            $base_url = (dirname($base_url) == '/') ? '/' : dirname($base_url) . '/';
-        }
-		$options->base_url = $base_url;
+		$options->base_url = substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1);
 		$options->theme_dir = 'k2';
 		$options->version = '0.1alpha';
 		$options->pagination = '5';
@@ -102,8 +97,8 @@ class Installer
 		$options->GUID = sha1($base_url . Utils::nonce());
 			
 		// Output any errors
-		if($db->has_errors()) {
-			Utils::debug('Errors:', $db->get_errors());
+		if(DB::has_errors()) {
+			Utils::debug('Errors:', DB::get_errors());
 		}
 		echo "<p>Congratulations, Habari is now installed!</p>";
 		echo "<p>Click <a href='$base_url'>here</a> to continue.</p>";
