@@ -60,7 +60,7 @@ class AdminHandler extends ActionHandler
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 		case 'POST':
 			// Handle POSTs to the admin pages
-			$page = $settings['page'];
+			$page = ( isset( $settings['page'] ) ) ? $page = $settings['page'] : $page = 'dashboard';
 			$page = ( $page == '' ) ? 'dashboard' : $page;
 			$fn = 'post_' . $page;
 			if ( method_exists( $this, $fn ) ) { 

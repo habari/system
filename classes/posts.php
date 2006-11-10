@@ -54,6 +54,9 @@ class Posts extends ArrayObject
 		global $db;
 	
 		$params = array();
+		$fns = array('get_results',
+					'get_row',
+					'get_value');
 		$select = '';
 		// what to select -- by default, everything
 		foreach ( Post::default_fields() as $field => $value )
@@ -63,14 +66,24 @@ class Posts extends ArrayObject
 		// defaults
 		$status = Post::STATUS_PUBLISHED;
 		$orderby = 'pubdate DESC';
-	
+		$limit = is_numeric(Options::get('pagination')) ? Options::get('pagination') : 10;
+
 		// Put incoming parameters into the local scope
 		extract(Utils::get_params($paramarray));
-		// default $db query method
-		$fetch_fn = 'get_results';
 		// safety mechanism to prevent empty queries
 		$where = array(1);
 		$join = '';
+		if ( isset( $fetch_fn ) )
+		{
+			if ( ! in_array( $fetch_fn, $fns ) )
+			{
+				$fetch_fn = $fns[0];
+			}
+		}
+		else
+		{
+			$fetch_fn = $fns[0];
+		}
 		if ( isset( $status ) ) {
 			$where[] = "status = ?";
 			$params[] = $status;
@@ -91,9 +104,13 @@ class Posts extends ArrayObject
 			$select = "COUNT($count)";
 			$fetch_fn = 'get_value';
 		}
-		if ( isset( $limit ) && ( 1 == $limit ) )
+		if ( isset( $limit ) )
 		{
-			$fetch_fn = 'get_row';
+			$limit = " LIMIT $limit";
+			if ( isset( $offset ) )
+			{
+				$limit .= " OFFSET $offset";
+			}
 		}
 		$query = "
 		SELECT 
@@ -104,24 +121,19 @@ class Posts extends ArrayObject
 		WHERE 
 			" . implode( ' AND ', $where ) . "
 		ORDER BY 
-			{$orderby}";
+			{$orderby}{$limit}";
 			
 		$results = $db->$fetch_fn( $query, $params, 'Post' );
-
-		if ( isset($count) || isset($limit) )
+	
+		if ( 'get_results' != $fetch_fn )
 		{
 			// return the results
-			// it's either an int, or a single Post object
 			return $results;
 		}
 		elseif ( is_array( $results ) )
 		{
 			$c = __CLASS__;
 			return new $c( $results );
-		}
-		else
-		{
-			return false;
 		}
 	}
 

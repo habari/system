@@ -14,7 +14,7 @@
 <strong>Posts</strong>
 <ul>
 <?php
-	foreach (Posts::get() as $post)
+	foreach (Posts::get( array('limit' => '10') ) as $post)
 	{
 		echo '<li>';
 		echo '<a href="' . $post->permalink . '">' . $post->title . '</a><br />';

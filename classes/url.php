@@ -202,7 +202,7 @@ class URL
 	{
 		global $url;
 		$c = __CLASS__;
-		if (  $this instanceof $c ) {
+		if ( isset( $this ) && $this instanceof $c ) {
 			// get() was called on an instance
 			$rules = $this->rules;
 		}

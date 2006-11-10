@@ -27,15 +27,16 @@ class Comments extends ArrayObject
 	{
 		global $db;
 
-		// the default $db method to use to fetch results
+		// defaults
 		$fetch_fn = 'get_results';
-		// by default, return results rather than a count
 		$select = '*';
-		// default sort order
 		$orderby = "date ASC";
+		$limit = '';
+
 		// safety mechanism to prevent an empty query
 		$where = array(1);
 		$params = array();
+
 		// loop over each element of the $paramarray
 		foreach ($paramarray as $key => $value)
 		{
@@ -51,6 +52,14 @@ class Comments extends ArrayObject
 				// set the $db method to get_row
 				$fetch_fn = 'get_value';
 				continue;
+			}
+			if ( 'limit' == $key )
+			{
+				$limit = " LIMIT $key" . $limit;
+			}
+			if ( 'offset' == $key )
+			{
+				$limit .= " OFFSET $value";
 			}
 			// check whether we should filter by status
 			// a value of FALSE means don't filter
@@ -69,9 +78,9 @@ class Comments extends ArrayObject
 			}
 		}
 
-		$sql = "SELECT $select from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY $orderby";
+		$sql = "SELECT {$select} from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY {$orderby}{$limit}";
 		$query = $db->$fetch_fn( $sql, $params, 'Comment' );
-		if ( '*' != $select )
+		if ( 'get_value' == $fetch_fn )
 		{
 			return $query;
 		}
@@ -79,10 +88,6 @@ class Comments extends ArrayObject
 		{
 			$c = __CLASS__;
 			return new $c ( $query );
-		}
-		else
-		{
-			return false;
 		}
 	}
 	
