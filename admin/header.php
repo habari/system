@@ -11,10 +11,11 @@
 	</div>
 	<div id="menu">
 		<ul id="menu-items">
-			<li <?php echo empty(URL::o()->settings['page']) ? 'id="current-item"' : ''; ?>><a href="<?php Options::out('base_url'); ?>admin/" title="Overview of your site">Overview</a></li>
-			<li <?php echo (URL::o()->settings['page'] == 'content') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=content'); ?>" title="Edit the content of your site">Content</a></li>
-			<li <?php echo (URL::o()->settings['page'] == 'options') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Options</a></li>
-			<li <?php echo (URL::o()->settings['page'] == 'themes') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=themes'); ?>" title="manage your sites themes">Themes</a></li>
-			<li <?php echo (URL::o()->settings['page'] == 'plugins') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=plugins'); ?>" title="edit your sites plugins">Plugins</a></li>
+			<?php $page = empty(URL::o()->settings['page']) ? 'overview' : URL::o()->settings['page']; ?>
+			<li <?php echo ($page == 'overview') ? 'id="current-item"' : ''; ?>><a href="<?php Options::out('base_url'); ?>admin/" title="Overview of your site">Overview</a></li>
+			<li <?php echo ($page == 'content') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=content'); ?>" title="Edit the content of your site">Content</a></li>
+			<li <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Options</a></li>
+			<li <?php echo ($page == 'themes') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=themes'); ?>" title="manage your sites themes">Themes</a></li>
+			<li <?php echo ($page == 'plugins') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=plugins'); ?>" title="edit your sites plugins">Plugins</a></li>
 		</ul>
 	</div>
