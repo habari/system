@@ -92,6 +92,11 @@ class Posts extends ArrayObject
 			$where[] = "slug = ?";
 			$params[] = $slug;
 		}
+		if ( isset( $user_id ) )
+		{
+			$where[] = "user_id = ?";
+			$params[] = $user_id;
+		}
 		if ( isset( $tag ) ) {
 			$join .= ' JOIN habari__tags ON habari__posts.slug = habari__tags.slug';
 			// Need tag expression parser here.			
@@ -144,9 +149,9 @@ class Posts extends ArrayObject
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed (default: Post::STATUS_PUBLISHED)
 	 * @return int the number of posts by the specified author
 	**/
-	public static function count_by_author( $author = '', $status = Post::STATUS_PUBLISHED )
+	public static function count_by_author( $user_id = '', $status = Post::STATUS_PUBLISHED )
 	{
-		$params = array( 'author' => $author, 'count' => 'id');
+		$params = array( 'user_id' => $user_id, 'count' => 'id');
 		if ( FALSE !== $status )
 		{
 			$params['status'] = $status;

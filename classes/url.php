@@ -363,6 +363,7 @@ class URL
 		 **/
 		// admin rules
 		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
+		$this->rules[] = array('"admin"/page/option', 'AdminHandler', 'admin');
 		$this->rules[] = array('"admin"', 'AdminHandler', 'admin');
 		$this->rules[] = array('"feedback"', 'ContentHandler', 'add_comment');
 		$this->rules[] = array('"admin"/"ajax"/action', 'AjaxHandler', 'ajaxhandler');
