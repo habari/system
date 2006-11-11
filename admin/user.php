@@ -1,25 +1,52 @@
 <?php
-	$user = User::identify();
-	if ( ! $user )
+	$currentuser = User::identify();
+	if ( ! $currentuser )
 	{
 		die;
 	}
-?>
-<div id="content-area">
-	<h3>Your Profile</h3>
-	<?php
-	if ( isset( $settings['results'] ) &&  'success' == $settings['results'] )
+	// are we looking at the current user's profile, or someone else's?
+	// $settings['option'] will contain the username specified on the URL
+	// http://example.com/admin/user/skippy
+	if ( isset( $settings['option'] ) && ( $settings['option'] != $currentuser->username ) )
 	{
-		echo "<p><strong>Your profile has been updated!</strong></p>";
+		$user = User::get( $settings['option'] );
+		if ( ! $user )
+		{
+			echo "No such user!";
+			die;
+		}
+		$who = $user->username;
+		$possessive = $user->username . "'s";
 	}
 	else
 	{
-		echo "<p>Below are the data that Habari knows about you.</p>";
+		$user = $currentuser;
+		$who = "You";
+		$possessive = "Your";
+	}
+if ( isset( $settings['result']) && 'deleted' == $settings['results'] )
+{
+	echo "The user has been deleted.";
+}
+else
+{
+?>
+<div style="width: 45%; float: left; border-right: 1px solid #000; text-align: left;">
+	<h3><?php echo $possessive; ?> Profile</h3>
+	<?php
+	if ( isset( $settings['results'] ) && 'success' == $settings['results'] )
+	{
+		echo "<p><strong>" . $possessive . " profile has been updated!</strong></p>";
+	}
+	else
+	{
+		echo "<p>Below are the data that Habari knows about " . $who . ".</p>";
 	}
 	?>
 	<form name="update-profile" id="update-profile" action="<?php Options::out('base_url'); ?>admin/user" method="post">
-		<p><label>Nickname:</label></p>
-		<p><input type="text" name="nickname" value="<?php echo $user->nickname; ?>" /></p>
+		<input type="hidden" name="user_id" value="<?php echo $user->id; ?>" />
+		<p><label>Username:</label></p>
+		<p><input type="text" name="username" value="<?php echo $user->username; ?>" /></p>
 		<p><label>Email address:</label></p>
 		<p><input type="text" name="email" value="<?php echo $user->email; ?>"/></p>
 		<p><label>New Password:</label></p>
@@ -34,3 +61,50 @@
 		<p><input type="submit" value="Update Profile!" /></p>
 	</form>
 </div>
+<div style="width: 45%; float: left; margin-left: 2px;">
+<?php
+if ( Posts::count_by_author( $user->id, Post::STATUS_PUBLISHED ) )
+{
+	echo $possessive ." five most recent published posts:<br />\n";
+	echo "<ul>\n";
+	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
+						'limit' => 5,
+						'status' => Post::STATUS_PUBLISHED,
+					) ) as $post )
+	{
+		echo '<li><a href="' . $post->permalink . '">' . $post->title ."</a></li>\n";
+	}
+	echo "</ul>\n";
+}
+else
+{
+	echo "<p>No published posts.</p>\n";
+}
+if ( $user == $currentuser )
+{
+	echo $possessive . 'five most recent draft posts:<br /><ul>';
+	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
+						'limit' => 5,
+						'status' => Post::STATUS_DRAFT,
+					) ) as $post )
+	{
+		echo '<li><a href="' . $post->permalink . '">' . $post->title . "</a></li>\n";
+	}
+	echo "</ul>\n";
+}
+echo "<p></p>\n";
+if ( $user != $currentuser )
+{
+	echo "<form method='post'>";
+	echo "<div style='width: 100%, background: red;'>\n";
+	echo "<input type='hidden' name='delete' value='user' />\n";
+	echo "<input type='hidden' name='user_id' value='" . $user->id . "' />\n";
+	echo "<input type='submit' value='DELETE USER' />\n";
+	echo "</form>\n";
+}
+?>
+</div>
+<div style="clear: both;"></div>
+<?php
+}
+?>

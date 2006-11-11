@@ -161,24 +161,48 @@ class AdminHandler extends ActionHandler
 		// keep track of whether we actually need to update any fields
 		$update = 0;
 		$results = '';
-		$user = User::identify();
-		foreach ( array ('nickname', 'email' ) as $field )
+		$currentuser = User::identify();
+		$user = $currentuser;
+		if ( $currentuser->id != $settings['user_id'] )
 		{
-			// for each of the other fields in the user table,
-			// see if it needs to be updated
-			if ( $user->$field != $settings[$field] )
+			// user is editing someone else's profile
+			// load that user account
+			$user = User::get( $settings['user_id'] );
+			$results = '/' . $user->username;
+		}
+		// are we deleting a user?
+		if ( isset( $settings['delete'] ) && ( 'user' == $settings['delete'] ) )
+		{
+			// extra safety check here
+			if ( isset( $settings['user_id'] ) && ( $currentuser->id != $settings['user_id'] ) )
 			{
-				$user->$field = $settings[$field];
-				$update = 1;
+				$username = $user->username;
+				$user->delete();
+				$results = 'deleted';
 			}
 		}
-		// see if the user is changing their password
-		if ( '' != $settings['pass1'] )
+		if ( isset( $settings['username'] ) && ( $user->username != $settings['username'] ) )
 		{
-			if ( $settings['pass1'] == $settings['pass2'])
+			$user->username = $settings['username'];
+			$update = 1;
+			$results = '/' . $settings['username'];
+		}
+		if ( isset( $settings['email'] ) && ( $user->email != $settings['email'] ) )
+		{
+			$user->email = $settings['email'];
+			$update = 1;
+		}
+		// see if a password change is being attempted
+		if ( isset( $settings['pass1'] ) && ( '' != $settings['pass1'] ) )
+		{
+			if ( isset( $settings['pass2'] ) && ( $settings['pass1'] == $settings['pass2'] ) )
 			{
 				$user->password = sha1($settings['pass1']);
-				$user->remember();
+				if ( $user == $currentuser )
+				{
+					// update the cookie for the current user
+					$user->remember();
+				}
 				$update = 1;
 			}
 			else
@@ -193,6 +217,64 @@ class AdminHandler extends ActionHandler
 		}
 		Utils::redirect( URL::get( 'admin', "page=user$results" ) );
 	}
+
+	/**
+	 * public function post_users
+	 * Handles post requests from the Users listing (ie: creating a new user)
+	 * @param array An associative array of content found in the url, $_POST array, and $_GET array
+	**/
+	public function post_users( $settings )
+	{
+		$user = User::identify();
+		if ( ! $user )
+		{
+			die ('Naughty naughty!');
+		}
+		$error = '';
+		if ( isset( $settings['action'] ) && ( 'newuser' == $settings['action'] ) )
+		{
+			// basic safety checks
+			if ( ! isset( $settings['username'] ) || '' == $settings['username'] )
+			{
+				$error .= 'Please supply a user name!<br />';
+			}
+			if ( ! isset( $settings['email'] ) || 
+				( '' == $settings['username'] ) ||
+				( ! strstr($settings['email'], '@') ) )
+			{
+				$error .= 'Please supply a valid email address!<br />';
+			}
+			if ( ( ! isset( $settings['pass1'] ) ) ||
+				( ! isset( $settings['pass2'] ) ) ||
+				( '' == $settings['pass1'] ) ||
+				( '' == $settings['pass2'] ) )
+			{
+				$error .= 'Password mis-match!<br />';
+			}
+			if ( ! $error )
+			{
+				$user = new User ( array(
+					'username' => $settings['username'],
+					'email' => $settings['email'],
+					'password' => sha1($settings['pass1']),
+					) );
+				if ( $user->insert() )
+				{
+					$settings['message'] = 'User ' . $settings['username'] . ' created!<br />';
+					// clear out the other variables
+					$settings['username'] = '';
+					$settings['email'] = '';
+					$settings['pass1'] = '';
+					$settings['pass2'] = '';
+				}
+				else
+				{
+					$dberror = DB::get_last_error();
+					$error .= $dberror[2];
+				}
+			}
+		}
+	}	
 
 }
 

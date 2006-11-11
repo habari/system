@@ -19,7 +19,6 @@ class User extends QueryRecord
 		return array(
 			'id' => '',
 			'username' => '',
-			'nickname' => '',
 			'email' => '',
 			'password' => ''
 		);
@@ -91,7 +90,16 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		return parent::update( 'habari__users' );
+		return parent::update( 'habari__users', array( 'id' => $this->id ) );
+	}
+
+	/**
+	 * function delete
+	 * delete a user account
+	**/
+	public function delete()
+	{
+		return parent::delete( 'habari__users', array( 'id' => $this->id ) );
 	}
 
 	/**
