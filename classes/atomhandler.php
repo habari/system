@@ -82,24 +82,37 @@ class AtomHandler extends ActionHandler
 	 **/	 	 	 	
 	private function get_entry($slug)
 	{
-		$post = Post::get($slug);
+		$params = array('slug'=>$slug);
+		if ( $this->is_auth() ) {
+			$params['status'] = '%';
+		}
 		
-		$updated = Utils::atomtime( $post->updated );
-		$permalink = $post->permalink;
+		if ( $post = Post::get($params) ) {
 		
-		$xmltext = $this->xml_header();
-		$xmltext .= <<< entrysnippet
+			$updated = Utils::atomtime( $post->updated );
+			$permalink = $post->permalink;
+			$title = htmlspecialchars($post->title);
+			$entryurl = URL::get( 'entry', array( 'slug' => $slug) );
+			
+			$xmltext = $this->xml_header();
+			$xmltext .= <<< entrysnippet
 <entry xmlns="http://www.w3.org/2005/Atom">
-	<title>{$post->title}</title>
+	<title>{$title}</title>
 	<link rel="alternate" type="text/html" href="{$permalink}" />
+	<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
 	<id>{$post->guid}</id>
 	<updated>{$updated}</updated>
 	<content type="text/xhtml" xml:base="{$permalink}">{$post->content}</content>
 </entry>
 
 entrysnippet;
-		header('Content-Type: application/atom+xml');
-		echo $xmltext;
+			header('Content-Type: application/atom+xml');
+			echo $xmltext;
+		}
+		else {
+			header('HTTP/1.1 404 Not Found');
+			header('Status: 404 Not Found');
+		}
 	}
 	
 	/**
@@ -112,7 +125,7 @@ entrysnippet;
 		global $db;
 		
 		if ( $user = $this->force_auth() ) {
-			$post = Post::get_post($slug);
+			$post = Post::get( array( 'slug' => $slug, 'status' => '%') );
 			
 			//$bxml = file_get_contents('php://input');
 		  $s = fopen("php://input", "r");
@@ -129,7 +142,7 @@ entrysnippet;
 			if($post->update()) {
 				header('HTTP/1.1 200 OK');
 				header('Status: 200 OK');
-				echo $post->permalink;
+				$this->get_entry($slug);
 			}
 			else {
 				header('HTTP/1.1 404 Not Found');
@@ -148,17 +161,41 @@ entrysnippet;
 		global $db;
 
 		if ( $user = $this->force_auth() ) {
-			if ( ( $post = Post::get_post( $slug ) ) && $post->delete() ) {
-				header('HTTP/1.1 200 OK');
-				header('Status: 200 OK');
-				echo $post->permalink;
+			if ( $post = Post::get( array( 'slug' => $slug, 'status'=>'%') ) ) {
+				if ( $post->delete() ) {
+					header('HTTP/1.1 200 OK');
+					header('Status: 200 OK');
+					echo $post->permalink;
+				}
+				else {
+					echo "Couldn't delete.";
+				}
 			}
 			else {
 				// This is probably not the right error code for this, but you get the idea.
 				header('HTTP/1.1 404 Not Found');
 				header('Status: 404 Not Found');
+				Utils::debug($post, $slug);
 			}
 		}
+	}
+	
+	/**
+	 * function is_auth
+	 * Check if a user is authenticated for Atom editing
+	 * TODO: This entire funciton should be put into the User class somehow.
+	 * TODO: X-WSSE	 	 
+	 * @return User The logged-in user
+	 **/
+	function is_auth()
+	{
+		if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
+			User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ); 
+		}
+		
+		$user = User::identify();
+
+		return $user;
 	}
 
 	/**
@@ -211,12 +248,18 @@ entrysnippet;
 
 feedpreamble;
 
-		foreach(Posts::get() as $post) {
+		$params = array();
+		if ( $this->is_auth() ) {
+			$params['status'] = '%';
+		}
+
+		foreach(Posts::get( $params ) as $post) {
 			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
+			$title = htmlspecialchars($post->title);
 			$xmltext .= <<< postentry
 	<entry>
-		<title>{$post->title}</title>
+		<title>{$title}</title>
 		<link rel="alternate" type="text/html" href="{$post->permalink}" />
 		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
 		<author>
@@ -275,6 +318,7 @@ postentry;
 			}
 			header('HTTP/1.1 201 Created');
 			header('Status: 201 Created');
+			header('Location: ' . URL::get( 'entry', array( 'slug' => $post->slug ) ) );
 
 			$this->get_entry($post->slug);
 		}
