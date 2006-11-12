@@ -32,6 +32,11 @@ class AtomHandler extends ActionHandler
 		}
 	}
 	
+	/**
+	 * function entry
+	 * Responds to Atom requests for a post entry collections
+	 * @param array Settings array from the URL
+	 **/	 	 	 	
 	public function collection($settings)
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
@@ -41,6 +46,21 @@ class AtomHandler extends ActionHandler
 			break;
 		case 'post':
 			$this->post_collection();
+			break;
+		}
+	} 
+	
+	/**
+	 * function comments
+	 * Responds to Atom requests for a post's comment collection
+	 * @param array Settings array from the URL
+	 **/	 	 	 	
+	public function comments($settings)
+	{
+		switch(strtolower($_SERVER['REQUEST_METHOD']))
+		{
+		case 'get':
+			$this->get_comments($settings['slug']);
 			break;
 		}
 	} 
@@ -65,7 +85,7 @@ class AtomHandler extends ActionHandler
 		$post = Post::get($slug);
 		
 		$updated = Utils::atomtime( $post->updated );
-		$permalink = 'http://' . $_SERVER["HTTP_HOST"] . $post->permalink;
+		$permalink = $post->permalink;
 		
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< entrysnippet
@@ -169,10 +189,9 @@ entrysnippet;
 	 **/	 	 		
 	function get_collection()
 	{
-		global $url;
-		
 		$options = Options::o();
-		$local['collectionurl'] = 'http://' . $_SERVER["HTTP_HOST"] . $url->get_url( 'collection', 'index=1' );
+		$local['collectionurl'] = URL::get_url( 'collection', 'index=1' );
+		$local['commentscollectionurl'] = URL::get_url( 'comments' );
 		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
 		$local['copyright'] = date('Y'); // TODO: This value should be corrected
 		
@@ -184,6 +203,7 @@ entrysnippet;
 	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->base_url}" />
 	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->title}" />
 	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
+	<link rel="comments" type="application/atom+xml" href="{$local['commentscollectionurl']}" />
 	<updated>{$local['feedupdated']}</updated>
 	<rights>{$local['copyright']}</rights>
 	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
@@ -192,19 +212,19 @@ entrysnippet;
 feedpreamble;
 
 		foreach(Posts::get() as $post) {
-			$entryurl = $url->get_url( 'entry', "slug={$post->slug}" );
+			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
 			$xmltext .= <<< postentry
 	<entry>
 		<title>{$post->title}</title>
-		<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$post->permalink}" />
-		<link rel="edit" type="application/atom+xml" href="http://{$_SERVER["HTTP_HOST"]}{$entryurl}" />
+		<link rel="alternate" type="text/html" href="{$post->permalink}" />
+		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
 		<author>
 			<name>Owen</name><!-- TODO: Link posts to User table with id -->
 		</author>
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="text/xhtml" xml:base="http://{$_SERVER["HTTP_HOST"]}{$post->permalink}">{$post->content}</content>
+		<content type="text/xhtml" xml:base="{$post->permalink}">{$post->content}</content>
 		<summary>{$post->content}</summary>
 	</entry>
 
@@ -260,22 +280,93 @@ postentry;
 		}
 	}
 
+	/**
+	 * function get_comments
+	 * Responds to an Atom GET request for post comments
+	 **/
+	function get_comments($slug)
+	{
+		$options = Options::o();
+		
+		$post = Post::get( array( 'slug' => $slug ) );
+		
+		$local['collectionurl'] = URL::get_url( 'comments' );
+		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
+		$local['copyright'] = date('Y'); // TODO: This value should be corrected
+		
+		$xmltext = $this->xml_header();
+		$xmltext .= <<< feedpreamble
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>Comments for {$post->title}</title>
+	<link rel="alternate" type="text/html" href="{$post->permalink}" />
+	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->title}" />
+	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
+	<updated>{$local['feedupdated']}</updated>
+	<rights>{$local['copyright']}</rights>
+	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
+	<id>http://{$_SERVER["HTTP_HOST"]}{$options->base_url}</id>
+
+feedpreamble;
+
+		foreach($post->comments->comments->approved as $comment) {
+			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" ) . "#comment-{$comment->id}";
+			$entryupdated = Utils::atomtime( $comment->date );
+			$xmltext .= <<< postentry
+	<entry>
+		<title>{$post->title}</title>
+		<link rel="alternate" type="text/html" href="{$post->permalink}#comment-{$comment->id}" />
+		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
+		<author>
+			<name>{$comment->name}</name>
+		</author>
+		<id>{$post->guid}:#{$comment->id}</id>
+		<updated>{$entryupdated}</updated>
+		<content type="text/xhtml" xml:base="{$post->permalink}">{$comment->content}</content>
+	</entry>
+
+postentry;
+		}
+		$xmltext .= '</feed>';
+
+		//header('Content-Type: application/atom+xml');
+		echo $xmltext;
+	}
+	
+	function rsd($settings)
+	{
+		$local['homepage'] = URL::get_url( 'home' ); 
+		$local['collectionurl'] = URL::get_url( 'collection', 'index=1' );
+
+		$xmltext = <<< rsdcontent
+<rsd xmlns="http://archipelago.phrasewise.com/rsd" version="1.0">
+  <service xmlns="">
+    <engineName>Habari</engineName>
+    <engineLink>http://code.google.com/p/habari/</engineLink>
+    <homePageLink>{$local['homepage']}</homePageLink>
+    <apis>
+      <api name="Blogger" preferred="true" apiLink="{$local['collectionurl']}" />
+    </apis>
+  </service>
+</rsd>
+rsdcontent;
+		header('Content-Type: application/rsd+xml');
+		echo $xmltext;
+	}	 	  
+
 	function introspection($settings)
 	{
-		global $url;
-		
 		$options = Options::o();
 		
 		$xmltext = $this->xml_header();
 		$xmltext .= '
 		<service xmlns="http://purl.org/atom/app#">
 			<workspace title="' . Options::get('title') . '">
-			  <collection title="Blog Entries" rel="entries" href="http://' . $_SERVER['HTTP_HOST'] . $url->get_url( 'collection', 'index=1' ) . '" />
+			  <collection title="Blog Entries" rel="entries" href="' . URL::get_url( 'collection', 'index=1' ) . '" />
 			</workspace>
 		</service>
 		';
 		
-		header('Content-Type: application/atom+xml');
+		header('Content-Type: application/atomserv+xml');
 		echo $xmltext;		
 	}
 
