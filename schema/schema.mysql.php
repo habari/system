@@ -39,6 +39,13 @@ $queries = array(
 	status int,
 	date TIMESTAMP,
 	type int
+);',
+'CREATE TABLE habari__metadata (
+	id int AUTO_INCREMENT NOT NULL UNIQUE,
+	object_type int,
+	object_id int,
+	key varchar(255),
+	value varchar(255)
 );'
 );
 ?>
