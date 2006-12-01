@@ -1,0 +1,43 @@
+<?php
+/**
+ * Habari Plugin Class
+ *
+ * Template plugin object which specific plugin objects should extend
+ * This object provides the basic constructor used to ensure that
+ * plugin actions are registered against the appropriate dispatcher
+ *
+ * @package Habari
+ */
+
+class Plugin
+{
+	/**
+	 * function __construct
+	 * Plugin class constructor. 
+	 * Registers all of this plugins action_ and filter_ functions with the Plugins dispatcher
+	 **/	 	 	
+	private function __construct()
+	{
+		// get the specific priority values for functions, as needed
+		if ( method_exists ( $self, 'set_priorities' ) )
+		{
+			$priorities = $self::set_priorities();
+		}
+		// loop over all the methods in this class
+		foreach ( get_class_methods( __CLASS__ ) as $fn )
+		{
+			// make sure the method name is of the form
+			// action_foo or filter_foo
+			if ( ( 0 !== strpos( $fn, 'action_' ) ) ||
+				( 0 !== strpos( $fn, 'filter_' ) ) )
+			{
+				continue;
+			}	
+			$priority = isset($priorities[$fn]) ? $priorities[$fn] : 8;
+			Plugins::register( &$this, $fn, $priority );
+		}
+	}
+	
+}
+
+?>

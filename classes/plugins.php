@@ -10,6 +10,8 @@ class Plugins
 {
 	private $instance = null;
 	private $hooks;
+	private $action;
+	private $filter;
 
 	/**
 	 * function __construct
@@ -18,9 +20,11 @@ class Plugins
 	private function __construct()
 	{
 		$this->hooks = array(
-			'do'=>array(),
+			'action'=>array(),
 			'filter'=>array(),
 		);
+		$action = array();
+		$filter = array();
 	}
 	
 	/**
@@ -34,6 +38,27 @@ class Plugins
 			self::$instance = new $c(); 
 		}
 	}
+
+	/**
+	 * function register
+	 * Registers a plugin action for possible execution
+	 * @param object A reference to the plugin object containing the function to register
+	 * @param string The plugin function to register
+	 * @param hex An optional execution priority, in hex.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
+	**/
+	public function register( $object, $fn, $priority = 8 )
+	{
+		// basic safety check to ensure that the supplied
+		// function name is action_foo or filter_foo
+		if ( ( 0 !== strpos( $fn, 'action_' ) ) ||
+			( 0 !== strpos( $fn, 'filter_' ) ) )
+		{
+			return false;
+		}
+		// find out what type of function we're registering
+		$type = substr( $fn, 0, strpos( $fn, '_' ) );
+		$this->$type[$fn][$priority][] = array( $object, $fn );
+	}
 	
 	/**
 	 * function do
@@ -44,8 +69,18 @@ class Plugins
 		self::instantiate();
 		$args = func_get_args();
 		$hookname = array_shift($args);
-		foreach((array)self::$instance->hooks['do'][$hookname] as $hookfn) {
-			
+		if ( ! isset( $this->action[$hookname] ) )
+		{
+			return false;
+		}
+		foreach ( $this->action[$hookname] as $priority )
+		{
+			foreach ( $priority as $action )
+			{
+				// $action is an array of object reference
+				// and method name
+				call_user_func_array( $action, $args );
+			}
 		}
 	}
 
@@ -56,6 +91,22 @@ class Plugins
 	static public function filter()
 	{
 		self::instantiate();
+		$args = func_get_args();
+		$hookname = array_shift( $args );
+		$return = '';
+		if ( ! isset( $this->filter[$hookname] ) )
+		{
+			return $args;
+		}
+		foreach ( $this->filter[$hookname] as $priority )
+		{
+			foreach ( $priority as $filter )
+			{
+			// $filter is an array of object reference
+			// and method name
+			$result = call_user_func_array( $filter, $args );	
+			}
+		}
 	}
 
 }
