@@ -63,6 +63,8 @@ class Plugins
 	/**
 	 * function do
 	 * Call to execute a plugin action
+	 * @param string The name of the action to execute
+	 * @param mixed Optional arguments needed for action
 	 **/	 	 	
 	static public function do()
 	{
@@ -87,16 +89,16 @@ class Plugins
 	/**
 	 * function filter
 	 * Call to execute a plugin filter
+	 * @param string The name of the filter to execute
+	 * @param mixed The value to filter.
 	 **/	 
 	static public function filter()
 	{
 		self::instantiate();
-		$args = func_get_args();
-		$hookname = array_shift( $args );
-		$return = '';
+		list( $hookname, $return ) = func_get_args();
 		if ( ! isset( $this->filter[$hookname] ) )
 		{
-			return $args;
+			return $return;
 		}
 		foreach ( $this->filter[$hookname] as $priority )
 		{
@@ -104,7 +106,11 @@ class Plugins
 			{
 			// $filter is an array of object reference
 			// and method name
-			$result = call_user_func_array( $filter, $args );	
+			if ( ! is_array( $return )
+			{
+				$return = array( $return );
+			}
+			$return = call_user_func_array( $filter, $return );	
 			}
 		}
 	}
