@@ -21,7 +21,7 @@ class Plugin
 		// get the specific priority values for functions, as needed
 		if ( method_exists ( $self, 'set_priorities' ) )
 		{
-			$priorities = $self::set_priorities();
+			$priorities = self::set_priorities();
 		}
 		// loop over all the methods in this class
 		foreach ( get_class_methods( __CLASS__ ) as $fn )
