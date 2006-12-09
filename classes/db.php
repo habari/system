@@ -13,13 +13,15 @@
  */  
 class DB
 {
+	static $instance = null;  // A static instance of this class
 	private $dbh;  // Database handle
 	private $pdostatement = false;  // PDOStatement handle
 	private $errors = array(); // Array of SQL errors 
-	public $queryok; // Boolean on last query success 
 	private $queries = array(); // Array of executed queries
 	private $errormarker = 0; // Last cleared error index
-	static $instance = null;  // A static instance of this class  
+	private $tables; // an array of table names that Habari knows
+	public $queryok; // Boolean on last query success
+	public $prefix; // the database prefix for all tables
 
 	/**
 	 * function __construct
@@ -28,9 +30,29 @@ class DB
 	 * @param string The database username
 	 * @param string The database password
 	 */	 	 	
-	public function __construct($connection_string, $user, $pass) 
+	public function __construct($connection_string, $user, $pass, $prefix) 
 	{
 		$this->dbh = new PDO($connection_string, $user, $pass);
+		$this->prefix = $prefix;
+		foreach ('posts', 'options', 'users', 'tags', 'comments' as $table)
+		{
+			$this->tables[$table] = $this->prefix . $table;
+		}
+	}
+
+	/**
+	 * function __get
+	 * Returns a $db property if defined, or false
+	 * @param string Name of a property to return
+	 * @return mixed The requested field value
+	**/
+	public function __get( $name )
+	{
+		if ( isset( $this->tables[$name] ) )
+		{
+			return $this->tables[$name];
+		}
+		return false;
 	}
 	
 	/**
@@ -54,13 +76,27 @@ class DB
 	 * @param string The database username
 	 * @param string The database password
 	 */	 	 	
-	static function create($connection_string, $user, $pass)
+	static function create($connection_string, $user, $pass, $prefix)
 	{
 		if ( empty( self::$instance ) ) {
 			$c = __CLASS__;
-			self::$instance = new $c( $connection_string, $user, $pass );
+			self::$instance = new $c( $connection_string, $user, $pass, $prefix );
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * function register_table
+	 * Adds a table to the list of tables known to Habari.
+	 * @param string A table name
+	 * @oaram string A prefix for the table name.  Can be null.
+	**/
+	public function register_table( $name, $prefix )
+	{
+		if ( $name )
+		{
+			$this->tables[$name] = $prefix . $name;
+		}
 	}
 
 	/**

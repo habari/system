@@ -45,7 +45,6 @@ class User extends QueryRecord
 	**/	
 	public static function identify()
 	{
-		global $db;
 		// Is the logged-in user not cached already?
 		if ( self::$identity == null ) {
 			// see if there's a cookie
@@ -57,7 +56,7 @@ class User extends QueryRecord
 				$userid = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$user = DB::get_row("SELECT * FROM habari__users WHERE id = ?", array($userid), 'User');
+				$user = DB::get_row('SELECT * FROM ' . DB::o()->users . ' WHERE id = ?', array($userid), 'User');
 				if ( ! $user ) {
 					return false;
 				}
@@ -81,7 +80,7 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		return parent::insert( 'habari__users' );
+		return parent::insert( DB::o()->users );
 	}
 
 	/**
@@ -90,7 +89,7 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		return parent::update( 'habari__users', array( 'id' => $this->id ) );
+		return parent::update( DB::o()->users, array( 'id' => $this->id ) );
 	}
 
 	/**
@@ -99,7 +98,7 @@ class User extends QueryRecord
 	**/
 	public function delete()
 	{
-		return parent::delete( 'habari__users', array( 'id' => $this->id ) );
+		return parent::delete( DB::o()->users, array( 'id' => $this->id ) );
 	}
 
 	/**
@@ -136,8 +135,6 @@ class User extends QueryRecord
 	*/
 	public static function authenticate($who = '', $pw = '')
 	{
-		global $db;
-
 		if ( (! $who ) || (! $pw ) ) {
 			return false;
 		}
@@ -154,7 +151,7 @@ class User extends QueryRecord
 			// yes?  see if this email address has a username
 			$what = "email";
 		}
-		$user = DB::get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
+		$user = DB::get_row( 'SELECT * FROM ' . DB::o()->users . " WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
 			self::$identity = null;
 			return false;
@@ -178,8 +175,6 @@ class User extends QueryRecord
 	
 	public static function get($who = '')
 	{
-		global $db;
-
 		if ('' === $who) {
 			return false;
 		}
@@ -191,7 +186,7 @@ class User extends QueryRecord
 			// was an email address given?
 			$what = 'email';
 		}
-		$user = DB::get_row( "SELECT * FROM habari__users WHERE {$what} = ?", array( $who ), 'User' );
+		$user = DB::get_row( 'SELECT * FROM ' . DB::o()->users . " WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
 			return false;
 		} else {
@@ -207,8 +202,7 @@ class User extends QueryRecord
 	
 	public static function get_all()
 	{
-		global $db;
-		$list_users = DB::get_results( "SELECT * FROM habari__users ORDER BY ID DESC" );
+		$list_users = DB::get_results( 'SELECT * FROM ' . DB::o()->users . ' ORDER BY ID DESC' );
 			if ( is_array( $list_users ) ) {
 				return $list_users;
 			} else {

@@ -8,7 +8,6 @@
  
 class Options
 {
- 	const table = 'habari__options';
 	private $options;
 	static $instance;
 	
@@ -95,10 +94,8 @@ class Options
 	 **/
 	public function __get($name)
 	{
-		global $db;
-		
 		if(!isset($this->options[$name])) {
-			$result = DB::get_row("SELECT value, type FROM habari__options WHERE name = ?", array($name));
+			$result = DB::get_row('SELECT value, type FROM ' . DB::o()->options . ' WHERE name = ?', array($name));
 		
 			if ( is_object( $result) ) {
 				if($result->type == 1) {
@@ -121,15 +118,13 @@ class Options
 	 * @param mixed Value to set
 	 **/	 	 
 	public function __set($name, $value) {
-		global $db;
-		
 		$this->options[$name] = $value;
 		
 		if(is_array($value) || is_object($value)) {
-			DB::update( Options::table, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name'=>$name) ); 
+			DB::update( DB::o()->options, array('name'=>$name, 'value'=>serialize($value), 'type'=>1), array('name'=>$name) ); 
 		}
 		else {
-			DB::update( Options::table, array('name'=>$name, 'value'=>$value, 'type'=>0), array('name'=>$name) ); 
+			DB::update( DB::o()->options, array('name'=>$name, 'value'=>$value, 'type'=>0), array('name'=>$name) ); 
 		}
 	}
 

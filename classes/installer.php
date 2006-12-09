@@ -11,9 +11,7 @@ class Installer
 
 	static function is_installed()
 	{
-		global $db;
-		
-		DB::get_row("SELECT * FROM habari__options LIMIT 1;");
+		DB::get_row('SELECT * FROM ' . DB::o()->options . ' LIMIT 1;');
 		DB::clear_errors();
 		return DB::o()->queryok;
 	}
@@ -48,7 +46,7 @@ class Installer
 
 	static function installhandler()
 	{
-		global $db, $db_connection;
+		global $db_connection;
 
 		// determine the database type
 		list($dbtype,$other) = explode( ':', $db_connection['connection_string'], 2 );

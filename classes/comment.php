@@ -68,9 +68,7 @@ class Comment extends QueryRecord
 		{
 			return false;
 		}
-		global $db;
-		
-		return DB::get_row( "SELECT * FROM habari__comments WHERE id = ?", $ID, 'Comment' );
+		return DB::get_row( 'SELECT * FROM ' . DB::o()->comments . ' WHERE id = ?', $ID, 'Comment' );
 	}
 	
 	/**
@@ -92,7 +90,7 @@ class Comment extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		$result = parent::insert( 'habari__comments' );
+		$result = parent::insert( DB::o()->comments );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		return $result;
@@ -104,7 +102,7 @@ class Comment extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		$result = parent::update( 'habari__comments', array('id'=>$this->id) );
+		$result = parent::update( DB::o()->comments, array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		return $result;
@@ -116,7 +114,7 @@ class Comment extends QueryRecord
 	 */	 	 	 	 	
 	public function delete()
 	{
-		return parent::delete( 'habari__comments', array('id'=>$this->id) );
+		return parent::delete( DB::o()->comments, array('id'=>$this->id) );
 	}
 	
 	/**
