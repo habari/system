@@ -25,8 +25,6 @@ class Comments extends ArrayObject
 	 **/	 	  
 	public static function get( $paramarray = array() )
 	{
-		global $db;
-
 		// defaults
 		$fetch_fn = 'get_results';
 		$select = '*';
@@ -49,7 +47,7 @@ class Comments extends ArrayObject
 			{
 				// we want a count of results, rather than the contents of the results
 				$select = "COUNT($value)";
-				// set the $db method to get_row
+				// set the db method to get_row
 				$fetch_fn = 'get_value';
 				continue;
 			}
@@ -78,7 +76,7 @@ class Comments extends ArrayObject
 			}
 		}
 
-		$sql = "SELECT {$select} from habari__comments WHERE " . implode( ' AND ', $where ) . " ORDER BY {$orderby}{$limit}";
+		$sql = "SELECT {$select} from " . DB::o()->comments . ' WHERE ' . implode( ' AND ', $where ) . " ORDER BY {$orderby}{$limit}";
 		$query = DB::$fetch_fn( $sql, $params, 'Comment' );
 		if ( 'get_value' == $fetch_fn )
 		{

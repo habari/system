@@ -103,7 +103,6 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	private function setslug()
 	{
-		global $db;
 		if ( $this->fields[ 'slug' ] != '' && $this->fields[ 'slug' ] == $this->newfields[ 'slug' ]) {
 			$value = $this->fields[ 'slug' ];
 		}
@@ -127,7 +126,7 @@ class Post extends QueryRecord
 		$postfix = '';
 		$postfixcount = 0;
 		do {
-			$slugcount = DB::get_row( "SELECT count(slug) AS ct FROM habari__posts WHERE slug = ?;", array( "{$slug}{$postfix}" ) );
+			$slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::o->posts . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) );
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
 		} while ($slugcount->ct != 0);
 		$this->newfields[ 'slug' ] = $slug . $postfix;
@@ -161,10 +160,9 @@ class Post extends QueryRecord
 
 	private function savetags()
 	{
-		global $db;
-		DB::query( "DELETE FROM habari__tags WHERE slug = ?", array( $this->fields['slug'] ) );
+		DB::query( 'DELETE FROM ' . DB::o->tags . ' WHERE slug = ?', array( $this->fields['slug'] ) );
 		foreach( (array)$this->tags as $tag ) { 
-			DB::query( "INSERT INTO habari__tags (slug, tag) VALUES (?,?)", 
+			DB::query( 'INSERT INTO ' . DB::o->tags . ' (slug, tag) VALUES (?,?)', 
 				array( $this->fields['slug'], $tag ) 
 			); 
 		}
@@ -179,7 +177,7 @@ class Post extends QueryRecord
 		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
 		$this->setslug();
 		$this->setguid();
-		$result = parent::insert( 'habari__posts' );
+		$result = parent::insert( DB::o()->posts );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
@@ -195,7 +193,7 @@ class Post extends QueryRecord
 		$this->updated = date('Y-m-d h:i:s');
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
 		//$this->setslug();  // setslug() for an update?  Hmm.  No?
-		$result = parent::update( 'habari__posts', array('slug'=>$this->slug) );
+		$result = parent::update( DB::o()->posts, array('slug'=>$this->slug) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
@@ -208,7 +206,7 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	public function delete()
 	{
-		return parent::delete( 'habari__posts', array('slug'=>$this->slug) );
+		return parent::delete( DB::o()->posts, array('slug'=>$this->slug) );
 	}
 	
 	/**
@@ -285,10 +283,9 @@ class Post extends QueryRecord
 	 **/	 	 	 	
 	private function &get_tags()
 	{
-		global $db;
 		$i = 0;
 		if ( empty( $this->tags ) ) {
-			$this->tags = DB::get_column( 'SELECT tag FROM habari__tags WHERE slug = ? ', array( $this->fields['slug'] ) );
+			$this->tags = DB::get_column( 'SELECT tag FROM ' . DB::o()->tags . ' WHERE slug = ? ', array( $this->fields['slug'] ) );
 		}
 		return $this->tags;
 	}

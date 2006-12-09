@@ -51,8 +51,6 @@ class Posts extends ArrayObject
 	 **/	 	 	 	 	
 	static function get( $paramarray = array() )
 	{
-		global $db;
-	
 		$params = array();
 		$fns = array('get_results',
 					'get_row',
@@ -61,7 +59,7 @@ class Posts extends ArrayObject
 		// what to select -- by default, everything
 		foreach ( Post::default_fields() as $field => $value )
 		{
-			$select .= ('' == $select) ? 'habari__posts.' . $field : ', habari__posts.' . $field;
+			$select .= ('' == $select) ? DB::o()->posts . ".$field" : ', ' . DB::o()->posts . ".$field";
 		}
 		// defaults
 		$status = Post::STATUS_PUBLISHED;
@@ -98,7 +96,7 @@ class Posts extends ArrayObject
 			$params[] = $user_id;
 		}
 		if ( isset( $tag ) ) {
-			$join .= ' JOIN habari__tags ON habari__posts.slug = habari__tags.slug';
+			$join .= ' JOIN ' . DB::o()->tags . ' ON ' . DB::o()->posts . '.slug = ' . DB::o()->tags . '.slug';
 			// Need tag expression parser here.			
 			$where[] = 'tag = ?';
 			$params[] = $tag;
@@ -117,14 +115,14 @@ class Posts extends ArrayObject
 				$limit .= " OFFSET $offset";
 			}
 		}
-		$query = "
+		$query = '
 		SELECT 
-		" . $select . "
+		' . $select . '
 		FROM 
-			habari__posts 
-		" . $join . "
+		' . DB::o()->posts .
+		' ' . $join . '
 		WHERE 
-			" . implode( ' AND ', $where ) . "
+			' . implode( ' AND ', $where ) . "
 		ORDER BY 
 			{$orderby}{$limit}";
 			
