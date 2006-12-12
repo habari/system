@@ -126,7 +126,7 @@ class Post extends QueryRecord
 		$postfix = '';
 		$postfixcount = 0;
 		do {
-			$slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::o->posts . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) );
+			$slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::o()->posts . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) );
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
 		} while ($slugcount->ct != 0);
 		$this->newfields[ 'slug' ] = $slug . $postfix;
@@ -160,9 +160,9 @@ class Post extends QueryRecord
 
 	private function savetags()
 	{
-		DB::query( 'DELETE FROM ' . DB::o->tags . ' WHERE slug = ?', array( $this->fields['slug'] ) );
+		DB::query( 'DELETE FROM ' . DB::o()->tags . ' WHERE slug = ?', array( $this->fields['slug'] ) );
 		foreach( (array)$this->tags as $tag ) { 
-			DB::query( 'INSERT INTO ' . DB::o->tags . ' (slug, tag) VALUES (?,?)', 
+			DB::query( 'INSERT INTO ' . DB::o()->tags . ' (slug, tag) VALUES (?,?)', 
 				array( $this->fields['slug'], $tag ) 
 			); 
 		}

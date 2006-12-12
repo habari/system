@@ -34,8 +34,7 @@ class DB
 	{
 		$this->dbh = new PDO($connection_string, $user, $pass);
 		$this->prefix = $prefix;
-		foreach ('posts', 'options', 'users', 'tags', 'comments' as $table)
-		{
+		foreach (array('posts', 'options', 'users', 'tags', 'comments') as $table) {
 			$this->tables[$table] = $this->prefix . $table;
 		}
 	}
@@ -48,8 +47,7 @@ class DB
 	**/
 	public function __get( $name )
 	{
-		if ( isset( $this->tables[$name] ) )
-		{
+		if ( isset( $this->tables[$name] ) ) {
 			return $this->tables[$name];
 		}
 		return false;
