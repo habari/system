@@ -6,17 +6,17 @@
 </head>
 <body>
 <div id="page">
-	<div id="header">
-		<h1>Welcome back <?php echo User::identify()->username; ?> &raquo; <a href="<?php Options::out('base_url'); ?>" title="View <?php Options::out('title'); ?>">view site</a> + <a href="<?php echo URL::out('admin', 'page=user'); ?>" title="<?php URL::out('admin', 'page=profile'); ?>">edit your profile</a> + <a href="<?php URL::out('logout'); ?>" title="logout of Habari">logout</a></h1>
-	</div>
 	<div id="menu">
+		<div id="site-name">
+			<a href="<?php Options::out('base_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
+		</div>
+		<div id="logout">
+			<a href="<?php URL::out('logout'); ?>" title="logout of Habari"><img src="/system/admin/images/logout.png" alt="Logout of Habari" /></a>
+		</div>
 		<ul id="menu-items">
 			<?php $page = empty(URL::o()->settings['page']) ? 'overview' : URL::o()->settings['page']; ?>
-			<li <?php echo ($page == 'overview') ? 'id="current-item"' : ''; ?>><a href="<?php Options::out('base_url'); ?>admin/" title="Overview of your site">Overview</a></li>
-			<li <?php echo ($page == 'content') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=content'); ?>" title="Edit the content of your site">Content</a></li>
-			<li <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Options</a></li>
-			<li <?php echo ($page == 'users') ? 'id="current-item" ' : ''; ?>><a href="<?php URL::out('admin', 'page=users'); ?>" title="manage users">Users</a></li>
-			<li <?php echo ($page == 'themes') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=themes'); ?>" title="manage your sites themes">Themes</a></li>
-			<li <?php echo ($page == 'plugins') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=plugins'); ?>" title="edit your sites plugins">Plugins</a></li>
+			<li <?php echo ($page == 'overview') ? 'id="current-item"' : ''; ?>><a href="<?php Options::out('base_url'); ?>admin/" title="Overview of your site">Admin</a></li>
+			<li <?php echo ($page == 'publish') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=publish'); ?>" title="Edit the content of your site">Publish</a></li>
+			<li <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Manage</a></li>
 		</ul>
 	</div>

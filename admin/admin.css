@@ -6,109 +6,230 @@
 */
 
 /*=== @a ===*/
-a { text-decoration: none; }
-a:hover {}
+a { text-decoration: none; color: #000; }
 
 /*=== @b ===*/
 body
 {
-	background-color: #eee;
-	font-family: Trebuchet MS, San-serif;
+	background-color: #fff;
+	font-family: Arial, Helvetica San-Serif;
 	font-size: 1.0em;
 	color: #000;
-	margin: 0;
+	margin: 0.0em auto;
 }
 
 /*=== @c ===*/
 #content-area
 {
 	text-align: left;
-	margin: -1.35em 2.0em;
+	min-width: 800px;
 }
 
 #content-area h1
 {
-	padding-top: 1.0em;
+	padding-top: auto;
+	margin-bottom: 0.0em;
+	font-size: 1.3em;
 }
 
 #current-item
 {
 	background-color: #c60;
 	font-size: 0.9em;
-	padding: 0.2em 0.0em;
+	padding: 0.25em 0.0em;
+}
+
+/*=== @d ===*/
+.drafts
+{
+	float: left;
+	display: inline;
+	width: 17.0em;
+	margin: 0 0px 1.6em 0;
+}
+
+.drafts h4
+{
+	background: transparent url(images/page_edit.png) no-repeat left top;
+	text-indent: 1.5em;
+}
+
+/*=== @e ===*/
+.even
+{
+	background: #eee;
+}
+
+/*=== @f ===*/
+#footer
+{
+	float: left;
+	display: inline;
+	text-align: left;
+	width: 100%;
+}
+
+#footer p
+{
+	background: transparent url(images/habari-logo.png) no-repeat left center;
+	color: #6A6A6A;
+	height: 48px;
+	text-indent: 2.0em;
+	padding-top: 1.0em;
+	font-size: 1.5em;
+	margin: 0.0em 0px 1.6em 16px;
+}
+
+form p
+{
+	margin-bottom: -1.0em;
+}
+
+/*=== @i ===*/
+input[type=text]
+{
+	margin-top: 1.0em;
+	margin-bottom: 1.0em;
+	width: 99%;
 }
 
 /*=== @h ===*/
-#header
+h4
 {
-	background-color: #333;
-	position: relative;
-	width: 100%;
-	float: left;
+	border-bottom: 1px solid #ccc;
+	font-weight: normal;
+	margin-bottom: -0.5em;
+	padding-bottom: 0.2em;
+	font-size: 0.9em;
+}
+
+/*=== @i ===*/
+img
+{
+	border: none;
+}
+
+/*=== @l ===*/
+#left-column
+{
+	float:left;
 	display: inline;
-	margin: 0.0em;
-	clear: both;
-	text-indent: 0.5em;
-	border-bottom: 1px solid #666;
-	padding: 0.5em 0.0em 0.5em 0.0em;
+	width: 42.0em;
+	margin: 0.0em 0.0em 0.0em 1.0em;
 }
 
-#header h1
+#left-column h1
 {
-	text-align: left;
-	margin-top: 0.2em;
-	margin-bottom: 0.0em;
+	margin-top: 0.0em;
+	font-size: 1.3em;
+}
+
+#left-column p
+{
 	font-size: 0.8em;
-	color: #fff;
+	color: #333;
+	line-height: 1.5em;
+	margin-bottom: 0.0em;
 }
 
-#header h1 a
+#logout
 {
-	color: #fff; 
-	background-color: #222; 
-	padding: 0.2em 0.4em;
+	float: right;
+	display: inline;
 }
 
-#header h1 a:hover
+#logout img
 {
-	background-color: #c60;
+	border: none;
 }
 
 /*=== @m ===*/
 #menu
 {
 	float: left;
+	background: transparent url(images/bar-back.png) repeat-x;
 	display: inline;
-	margin: 0.0em 0.0em 1.0em 0.0em;
+	margin: 0.0em 0.0em 0.5em 0.0em;
 	width: 100%;
 	clear: both;
-	background-color: #f93;
 	text-align: left;
-	height: 1.5em;
-	border-bottom: 2px solid #c60;
+	height: 22px;
 }
 
 #menu ul
 {
-	margin-top: 0.2em;
+	margin-top: 0.0em;
+	float: right;
+	display: inline;
 }
 
 #menu ul li
 {
 	display: inline;
 	list-style: none;
-	font-size: 0.9em;
+	font-size: 0.8em;
+	font-weight: bold;
+	margin: 0.0em 0.5em;
 }
 
-#menu-items a
+#menu-items a, #site-name a
 {
 	color: #fff;
+	padding: 0.25em 1.0em;
+}
+
+#menu-items a:hover, #site-name a:hover
+{
+	background-color: #c60;
+}
+
+/*=== @o ===*/
+.odd
+{
+	background: #fff;
+}
+
+.options, .metadata
+{
+	float: right;
+	display: inline;
+	width: 16.0em;
+	margin-right: 1.0em;
+}
+
+.options label
+{
+	font-size: 1.0em;
+	display: block;
+	border-bottom: 1px solid #ccc;
+}
+
+.options ul
+{
+	margin: 0.0em auto;
+	padding-left: 0.0em;
+}
+
+.options ul li
+{
+	border-bottom: 1px solid #ccc;
+	display: block;
+	width: 100%;
+	list-style: none;
+	font-size: 0.9em;
 	padding: 0.2em 0.4em;
 }
 
-#menu-items a:hover
+.options ul li small a:link,
+.options ul li small a:visited:link
 {
-	background-color: #c60;
+	color: #28a1dc;
+}
+
+.options ul li small a:hover,
+.options ul li small a:visited:hover
+{
+	text-decoration: underline;
 }
 
 /*=== @p ===*/
@@ -116,4 +237,135 @@ body
 {
 	text-align: center;
 	margin: 0.0em;
+}
+
+/*=== @r ===*/
+.recent-comments, .content
+{
+	float: left;
+	width: 42.0em;
+	margin: -1.5em 16px 1.6em 0;	
+}
+
+.recent-comments h4
+{
+	background: transparent url(images/comments.png) no-repeat left center;
+	text-indent: 1.5em;
+}
+
+.recent-comments table
+{
+	font-size: 0.9em;
+	color: #6A6A6A;
+	margin-top: 1.0em;
+}
+
+.recent-comments table td
+{
+	font-size: 0.9em;
+	color: #6A6A6A;
+	padding: 0.2em 0.0em 0.2em 0.2em;
+}
+
+.recent-comments table th
+{
+	font-weight: normal;
+}
+
+.right
+{
+	float: right;
+	display: inline;
+	padding-top: 0.0em;
+}
+
+/*=== @s ===*/
+#site-name
+{
+	float: left;
+	display: inline;
+	background: transparent url(images/home.png) no-repeat;
+	background-position: 0.4em 0.0em;
+	text-indent: 2.2em;
+	font-size: 0.8em;
+	font-weight: bold;
+	padding-top: 0.1em;
+	line-height: 1.5em;
+}
+
+.stats
+{
+	float: left;
+	width: 22.5em;
+	margin: 0 40px 1.6em 0;
+}
+
+.stats h4
+{
+	background: transparent url(images/chart_bar.png) no-repeat left top;
+	text-indent: 1.5em;
+}
+
+.stats ul, .drafts ul,
+.system-info ul
+{
+	margin-left: 0.0em;
+	padding-left: 0.0em;
+}
+
+.stats ul li, .drafts ul li
+{
+	list-style: none;
+	font-size: 0.9em;
+	color: #6A6A6A;
+	padding: 0.2em 0.0em 0.2em 0.2em;
+	width: 99%;
+}
+
+.stats a:link, .drafts a:link,
+.stats a:visited:link, .drafts a:visited:link,
+.recent-comments a:link, .recent-comments a:visited:link,
+.system-info a:link, .system-info a:visited:link
+{
+	color: #28a1dc;
+}
+
+.stats a:hover, .drafts a:hover,
+.stats a:visited:hover, .drafts a:visited:hover,
+.recent-comments a:hover, .recent-comments a:visited:hover,
+.system-info a:hover, .system-info a:visited:hover
+{
+	text-decoration: underline;
+}
+
+.system-info
+{
+	float: right;
+	display: inline;
+	width: 16.5em;
+	margin-right: 0.5em;
+	margin-top: 1.0em;
+}
+
+.system-info h4
+{
+	background: transparent url(images/brick.png) no-repeat left top;
+	text-indent: 1.5em;
+}
+
+.system-info ul li
+{
+	list-style: none;
+	font-size: 0.9em;
+	color: #6A6A6A;
+	width: 100%;
+	padding-bottom: 0.5em;
+}
+
+/*=== @t ===*/
+textarea
+{
+	margin-top: 1.0em;
+	margin-bottom: 3.0em;
+	width: 99%;
 }

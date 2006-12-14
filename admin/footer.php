@@ -1,6 +1,6 @@
 <div id="footer">
 	<p>
-		powered by <a href="http://code.google.com/p/habari/" title="Habari">Habari</a> <?php Options::out('version'); ?>.
+		Powered by <a href="http://code.google.com/p/habari/" title="Habari">Habari</a>
 	</p>
 </div>
 </body>
