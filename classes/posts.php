@@ -82,7 +82,7 @@ class Posts extends ArrayObject
 		{
 			$fetch_fn = $fns[0];
 		}
-		if ( isset( $status ) ) {
+		if ( isset( $status ) && ( $status != Post::STATUS_ANY ) ) {
 			$where[] = "status = ?";
 			$params[] = $status;
 		}
@@ -125,7 +125,7 @@ class Posts extends ArrayObject
 			' . implode( ' AND ', $where ) . "
 		ORDER BY 
 			{$orderby}{$limit}";
-			
+
 		$results = DB::$fetch_fn( $query, $params, 'Post' );
 	
 		if ( 'get_results' != $fetch_fn )

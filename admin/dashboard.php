@@ -24,7 +24,7 @@
 						<a href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">
 							<img src="/system/admin/images/view.png" alt="View this draft" />
 						</a>
-						<a href="<?php URL::get('admin', 'page=publish&post=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
+						<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
 							<img src="/system/admin/images/edit.png" alt="Edit this draft" />
 						</a>
 					</span>
