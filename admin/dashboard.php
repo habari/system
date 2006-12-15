@@ -5,89 +5,68 @@
 		<div class="stats">
 			<h4>Site Statistics</h4>
 			<ul id="site-stats">
-				<li class="even"><span class="right">567</span> Visits Today</li>
-				<li class="odd"><span class="right">10067</span> Visits Past Week</li>
-				<li class="even"><span class="right">667</span> Number of Posts</li>
-				<li class="odd"><span class="right">3000</span> Number of Comments</li>			
+				<li><span class="right">567</span> Visits Today</li>
+				<li><span class="right">10067</span> Visits Past Week</li>
+				<li><span class="right"><?php echo Posts::count_total(); ?></span> Total Posts</li>
+				<li><span class="right"><?php echo Posts::count_by_author( User::identify()->id ); ?></span> Number of Your Posts</li>
+				<li><span class="right"><?php echo Comments::count_total(); ?></span> Number of Comments</li>			
 			</ul>
 		</div>
 		<div class="drafts">
 			<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
 			<ul id="site-drafts">
-				<li class="even">
+			<?php 
+				if( Posts::count_total( Post::STATUS_DRAFT ) ) {
+					foreach( Posts::by_status( Post::STATUS_DRAFT ) as $draft ) {
+			?>
+				<li>
 					<span class="right">
-						<img src="/system/admin/images/view.png" alt="View this draft" />
-						<img src="/system/admin/images/edit.png" alt="Edit this draft" />
+						<a href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">
+							<img src="/system/admin/images/view.png" alt="View this draft" />
+						</a>
+						<a href="<?php URL::get('admin', 'page=publish&post=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
+							<img src="/system/admin/images/edit.png" alt="Edit this draft" />
+						</a>
 					</span>
-					Draft One
+					<?php echo $draft->title; ?>
 				</li>
-				<li class="odd">
-					<span class="right">
-						<img src="/system/admin/images/view.png" alt="View this draft" />
-						<img src="/system/admin/images/edit.png" alt="Edit this draft" />
-					</span>
-					Draft Two
-				</li>
-				<li class="even">
-					<span class="right">
-						<img src="/system/admin/images/view.png" alt="View this draft" />
-						<img src="/system/admin/images/edit.png" alt="Edit this draft" />
-					</span>
-					Draft Three
-				</li>
-				<li class="odd">
-					<span class="right">
-						<img src="/system/admin/images/view.png" alt="View this draft" />
-						<img src="/system/admin/images/edit.png" alt="Edit this draft" />
-					</span>
-					Draft Four
-				</li>
-				<li class="even">
-					<span class="right">
-						<img src="/system/admin/images/view.png" alt="View this draft" />
-						<img src="/system/admin/images/edit.png" alt="Edit this draft" />
-					</span>
-					Draft Five 
-				</li>
+			<?php } ?>
 			</ul>
+			<?php } else {
+				_e('<p>There are currently no drafts in process</p>');
+			} ?>
 		</div>
 		<div class="recent-comments">
-		<h4>Recent Comments (<a href="manage/comments" title="View Comments Awaiting Moderation ">5 comments awaiting moderation</a> &raquo;)</h4>
+		<h4>Recent Comments 
+			<?php if( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) { ?>
+			(<a href="manage/comments" title="View Comments Awaiting Moderation "><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?> comments awaiting moderation</a> &raquo;)
+			<?php } ?>
+		</h4>
+		<?php
+		if( Comments::count_total( Comment::STATUS_APPROVED ) ) {
+		?>
 			<table name="comment-data" width="100%" cellspacing="0">
-				<tr>
+				<thead>
 					<th colspan="1" align="left">Post</th>
 					<th colspan="1" align="left">Name</th>
 					<th colspan="1" align="left">URL</th>
 					<th colspan="1" align="center">Action</th>
-				</tr>
-				<tr class="even">
-					<td>Welcome to Habari!</td>
-					<td>Chris J. Davis</td>
-					<td>http://www.chrisjdavis.org</td>
+				</thead>
+				<?php foreach( Comments::by_status( 1 ) as $recent ) { ?>
+				<tr>
+					<td><?php echo $recent->post_slug; ?></td>
+					<td><?php echo $recent->name; ?></td>
+					<td><?php echo $recent->url; ?></td>
 					<td align="center">
-						<img src="/system/admin/images/view.png" alt="View this comment" />
+						<a href="<?php Options::out('base_url'); ?><?php echo $recent->post_slug; ?>" title="View this post"><img src="/system/admin/images/view.png" alt="View this comment" /></a>
 						<img src="/system/admin/images/edit.png" alt="Edit this comment" />
 					</td>
 				</tr>
-				<tr class="odd">
-					<td>Welcome to Habari!</td>
-					<td>Chris J. Davis</td>
-					<td>http://www.chrisjdavis.org</td>
-					<td align="center">
-						<img src="/system/admin/images/view.png" alt="View this comment" />
-						<img src="/system/admin/images/edit.png" alt="Edit this comment" />
-					</td>
-				</tr>
-				<tr class="even">
-					<td>Welcome to Habari!</td>
-					<td>Chris J. Davis</td>
-					<td>http://www.chrisjdavis.org</td>
-					<td align="center">
-						<img src="/system/admin/images/view.png" alt="View this comment" />
-						<img src="/system/admin/images/edit.png" alt="Edit this comment" />
-					</td>
-				</tr>
+				<?php } ?>
 			</table>
+			<?php } else {
+				_e('<p>There are no comments to display</p>');
+			}?>
 		</div>
 	</div>
 	<div class="options">
