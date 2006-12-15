@@ -125,7 +125,7 @@ class Posts extends ArrayObject
 			' . implode( ' AND ', $where ) . "
 		ORDER BY 
 			{$orderby}{$limit}";
-
+//Utils::debug($fetch_fn, $query, $params);			
 		$results = DB::$fetch_fn( $query, $params, 'Post' );
 	
 		if ( 'get_results' != $fetch_fn )
