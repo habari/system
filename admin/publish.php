@@ -1,4 +1,3 @@
-<?php var_dump( $settings ); ?>
 <div id="content-area">
 	<div id="left-column">
 		<br />
@@ -12,7 +11,7 @@
 		}
 		?>
 		<form name="create-content" id="create-content" method="post" action="<?php URL::out('admin'); ?>">
-			<?php $post = Post::get( $settings['slug'] ); ?>
+			<?php $post = Posts::by_slug( $settings->slug ); ?>
 			<div class="content">
 				<h4>Title</h4>
 				<input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>" />
