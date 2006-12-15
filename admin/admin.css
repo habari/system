@@ -34,7 +34,7 @@ body
 
 #current-item
 {
-	background-color: #c60;
+	background: #c60;
 	font-size: 0.9em;
 	padding: 0.25em 0.0em;
 }
@@ -156,14 +156,14 @@ img
 	height: 22px;
 }
 
-#menu ul
+#menu ol
 {
 	margin-top: 0.0em;
 	float: right;
 	display: inline;
 }
 
-#menu ul li
+#menu ol li
 {
 	display: inline;
 	list-style: none;
@@ -214,6 +214,7 @@ img
 {
 	border-bottom: 1px solid #ccc;
 	display: block;
+	background: transparent;
 	width: 100%;
 	list-style: none;
 	font-size: 0.9em;
@@ -356,6 +357,7 @@ img
 .system-info ul li
 {
 	list-style: none;
+	background: transparent;
 	font-size: 0.9em;
 	color: #6A6A6A;
 	width: 100%;
@@ -368,4 +370,18 @@ textarea
 	margin-top: 1.0em;
 	margin-bottom: 3.0em;
 	width: 99%;
+}
+
+/*=== @u ===*/
+.update
+{
+	background: #DC9752;
+	width: 100%;
+	margin: -1.5em auto 1.0em auto;
+}
+
+.update p
+{
+	font-color: #fff;
+	padding: 0.5em;
 }

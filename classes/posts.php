@@ -140,6 +140,41 @@ class Posts extends ArrayObject
 		}
 	}
 
+	/**
+	 * function by_status
+	 * select all posts of a given status
+	 * @param int a status value
+	 * @return array an array of Comment objects with the same status
+	**/
+	public function by_status ( $status = 0 )
+	{
+		return self::get( array( "status" => $status ) );
+	}
+	
+	
+	/**
+	 * function by_slug
+	 * select all post content by slug
+	 * @param string a post slug
+	 * @return array an array of post content
+	**/
+	public function by_slug ( $slug = '' )
+	{
+		return self::get( array( "slug" => $slug ) );
+	}
+
+	/*
+	 * static count_total
+	 * return a count for the total number of posts
+	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed (default: Post::STATUS_PUBLISHED)
+	 * @return int the number of posts of specified type ( published or draft )
+	**/
+	public static function count_total( $status = Post::STATUS_PUBLISHED )
+	{
+		$params = array( 'count' => 1, 'status' => $status );
+		return self::get( $params );
+	}
+	
 	/*
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
