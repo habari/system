@@ -126,23 +126,44 @@ class AdminHandler extends ActionHandler
 	/**
 	* function post_dashboard
 	* Handles post requests from the dashboard.
-	* Adds a post to the site, if the post content is not NULL.
 	* @param array An associative array of content found in the url, $_POST array, and $_GET array 
 	*/
 	public function post_dashboard($settings)
 	{
+		// do something intelligent here
+		_e('Nothing sends POST requests to the dashboard. Yet.');
+	}
+
+	/**
+	* function post_publish
+	* Handles post requests from the publish page.
+	* Adds a post to the site, if the post content is not NULL.
+	* @param array An associative array of content found in the url, $_POST array, and $_GET array 
+	*/
+	public function post_publish($settings)
+	{
 		if( $_POST['content'] != '' )
 		{
-			$postdata = array(
-								'title'		=>	$_POST['title'],
-								'tags'		=>	$_POST['tags'],
-								'content'	=>	$_POST['content'],
-								'user_id'	=>	User::identify()->id,
-								'pubdate'	=>	date( 'Y-m-d H:i:s' ),
-								'status'	=>	'publish'
-							 );
-			Post::create( $postdata );
-			Utils::redirect( URL::get( 'admin', 'result=success' ) );
+			if( isset( $_POST['slug'] ) ) {
+				$post = Post::get( array( 'slug' => $_POST['slug'], 'status' => Post::STATUS_ANY ) );
+				$post->title = $_POST['title'];
+				$post->tags = $_POST['tags'];
+				$post->content = $_POST['content'];
+				$post->status = $_POST['status'];
+				$post->update();
+			}
+			else {
+				$postdata = array(
+									'title'		=>	$_POST['title'],
+									'tags'		=>	$_POST['tags'],
+									'content'	=>	$_POST['content'],
+									'user_id'	=>	User::identify()->id,
+									'pubdate'	=>	date( 'Y-m-d H:i:s' ),
+									'status'	=>	$_POST['status']
+								 );
+				$post = Post::create( $postdata );
+			}
+			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) ) );
 		} 
 		else 
 		{

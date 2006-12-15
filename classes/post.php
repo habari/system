@@ -256,8 +256,11 @@ class Post extends QueryRecord
 	{
 		switch($name) {
 		case 'pubdate':
-			$value = date('Y-m-d H:i:s', strtotime($value));
+			$value = date( 'Y-m-d H:i:s', strtotime( $value ) );
 			break;
+		case 'tags':
+			$this->tags = $this->parsetags( $value );
+			return $this->get_tags();
 		}
 		return parent::__set( $name, $value );
 	}

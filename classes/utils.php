@@ -94,6 +94,36 @@ class Utils
 	}
 	
 	/**
+	 * function de_amp
+	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
+	 * @param string A URL, maybe with a querystring	 
+	 **/
+	static function de_amp($value)
+	{
+		$url = parse_url( $value );
+		$url['query'] = str_replace('&amp;', '&', $url['query']);
+		return Utils::glue_url($url);
+	}
+
+	/**
+	 * function glue_url
+	 * Restores a URL separated by a parse_url() call.
+	 * $params array The results of a parse_url() call
+	 **/	 	 	 
+	function glue_url($parsed)
+	{
+		if (! is_array($parsed)) return false;
+		$uri = isset($parsed['scheme']) ? $parsed['scheme'].':'.((strtolower($parsed['scheme']) == 'mailto') ? '':'//'): '';
+		$uri .= isset($parsed['user']) ? $parsed['user'].($parsed['pass']? ':'.$parsed['pass']:'').'@':'';
+		$uri .= isset($parsed['host']) ? $parsed['host'] : '';
+		$uri .= isset($parsed['port']) ? ':'.$parsed['port'] : '';
+		$uri .= isset($parsed['path']) ? $parsed['path'] : '';
+		$uri .= isset($parsed['query']) ? '?'.$parsed['query'] : '';
+		$uri .= isset($parsed['fragment']) ? '#'.$parsed['fragment'] : '';
+		return $uri;
+	}	
+	
+	/**
 	 * function tag_and_list
 	 * Formatting function (should be in Format class?)
 	 * Turns an array of tag names into an HTML-linked list with command and an "and".
