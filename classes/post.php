@@ -12,6 +12,8 @@ class Post extends QueryRecord
 	const STATUS_DRAFT = 0;
 	const STATUS_PUBLISHED = 1;
 	const STATUS_PRIVATE = 2;
+	
+	const STATUS_ANY = -1;  // For querying only, not for use as a stored value.
 
 	private $tags = null;
 	private $comments = null;
