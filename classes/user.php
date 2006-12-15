@@ -220,5 +220,104 @@ class User extends QueryRecord
 	{
 		return Posts::count_by_author( $this->id, $status );
 	}
+/**
+ * Returns the karma of this person, relative to the object passed in.
+ * The object can be any object
+ * You will usually not actually call this yourself, but will instead
+ * call one of the functions following - is_admin(), is_drafter(), or
+ * is_publisher().
+ * 
+ * @param mixed $obj An object, or an ACL object, or an ACL name
+ * @return int $karma
+ */
+function karma( $obj = '' ) {
+    // What was the argument?
+
+    // It was a string, such as 'everything'.
+    if ( is_string( $obj ) ) {
+        $acl = new acl( $obj );
+        return $acl->karma( $this );
+
+    // It was an object  ....
+    } elseif ( is_object( $obj ) ) {
+        // What kind of object is it?
+        $type = get_class( $obj );
+
+        // Special case - acl object
+        if ( $type == 'acl' ) {
+            // It's already an ACL ...
+            return $obj->karma( $user );
+        } else {
+            // It's some other object
+            $acl = new acl( $obj );
+            return $acl->karma( $user );
+        }
+    } else {
+        // Run screaming from the room
+        error_log("Weirdness passed to karma()");
+        return 0;
+    }
+
+    // Special case - no argument
+    if ($type == '') {
+        // What's this users greatest karma, anywhere?
+        $karma = DB::get_row( "SELECT max(karma) as k
+            FROM  acl
+            WHERE userid = ? ",
+            array( $this->id ) );
+        return $karma ? $karma->k : 0;
+    } else {
+        // Um ... how did we get here?
+        error_log( "Not sure how we got here" );
+    }
+}
+
+/**
+ * Returns 1 or 0 (true or false) indicating whether the person in
+ * question is an admin with respect to the object passed in. The
+ * argument can be an actual object (such as a page or cms object), or
+ * it can be the name of a module (such as 'registrar' or 'everything').
+ * In the event that no argument is passed, the return value will be the
+ * highest karma of this user with respect to anything. The implied
+ * meaning is "is this user an admin anywhere?"
+ * 
+ * @param mixed $obj
+ * @return boolean $return
+ */
+function is_admin( $obj = '' ) {
+    return ( $this->karma($obj) == 10 or 
+        ( $obj != 'everything' and $this->karma('everything') == 10 ) )
+        ? 1 : 0 ;
+}
+
+/**
+ * Returns 1 or 0 (true or false) indicating whether the person in
+ * question is a publisher with respect to the object passed
+ * in. The meaning is the same as with the is_admin() function
+ * 
+ * @param object $obj
+ * @return boolean $return
+ */
+function is_publisher( $obj = '' ) {
+    return ( $this->karma( $obj) >= 8 or 
+        ( $obj != 'everything' and $this->is_publisher('everything') ) )
+        ? 1 : 0 ;
+}
+
+/**
+ * Returns 1 or 0 (true or false) indicating whether the person in
+ * question is a drafter with respect to the object passed
+ * in. The meaning is the same as with the is_admin() function.
+ * 
+ * @param object $obj
+ * @return boolean $return
+ */
+function is_drafter( $obj = '' ) {
+    return ( $this->karma( $obj) >= 5 or 
+        ( $obj != 'everything' and $this->is_drafter('everything') ) )
+        ? 1 : 0 ;
+}
+
+
 }
 ?>
