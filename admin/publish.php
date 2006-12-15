@@ -1,3 +1,4 @@
+<?php var_dump( $settings ); ?>
 <div id="content-area">
 	<div id="left-column">
 		<br />
@@ -11,9 +12,10 @@
 		}
 		?>
 		<form name="create-content" id="create-content" method="post" action="<?php URL::out('admin'); ?>">
+			<?php $post = Post::get( $settings['slug'] ); ?>
 			<div class="content">
 				<h4>Title</h4>
-				<input type="text" name="title" id="title" size="100%" />
+				<input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>" />
 				<h4>Content</h4>
 				<textarea name="content" id="content" rows="10"></textarea>
 				<p class="right"><input type="submit" name="submit" id="submit" value="Save!" /></p>

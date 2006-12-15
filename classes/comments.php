@@ -248,6 +248,19 @@ class Comments extends ArrayObject
 			return new Comments($this->only($name));
 		}
 	}
+	
+	/**
+	 * static count_by_name
+	 * returns the number of comments attributed to the specified name
+	 * @param string a commenter's name
+	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments from the specified name
+	**/
+	public static function count_total( $status = Comment::STATUS_APPROVED )
+	{
+		$params = array( 'count' => 1, 'status' => $status );
+		return self::get( $params );
+	}
 
 	/**
 	 * static count_by_name
