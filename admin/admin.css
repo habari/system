@@ -22,7 +22,8 @@ body
 #content-area
 {
 	text-align: left;
-	min-width: 800px;
+	min-width: 1000px;
+	width: 100%;
 }
 
 #content-area h1
@@ -34,18 +35,18 @@ body
 
 #current-item
 {
-	background: #c60;
+	background: #9FA600;
 	font-size: 0.9em;
-	padding: 0.25em 0.0em;
+	padding: 0.4em 0.0em;
 }
 
 /*=== @d ===*/
 .drafts
 {
 	float: left;
-	display: inline;
-	width: 17.0em;
-	margin: 0 0px 1.6em 0;
+	/*width: 22.5em;*/
+	width: 50%;
+	margin: 0 40px 1.0em 0;
 }
 
 .drafts h4
@@ -57,7 +58,7 @@ body
 /*=== @e ===*/
 .even
 {
-	background: #eee;
+	background: #EFF0D6;
 }
 
 /*=== @f ===*/
@@ -86,6 +87,11 @@ form p
 }
 
 /*=== @i ===*/
+img
+{
+	border: none;
+}
+
 input[type=text]
 {
 	margin-top: 1.0em;
@@ -93,20 +99,45 @@ input[type=text]
 	width: 99%;
 }
 
+.incoming
+{
+	float: left;
+	display: inline;
+	/*width: 17.0em;*/
+	width: 40%;
+	margin: 0 0px 1.6em 0;
+}
+
+.incoming h4
+{
+	background: transparent url(images/technorati.png) no-repeat left top;
+	text-indent: 1.5em;
+}
+
+.incoming ul li img
+{
+	border: none;
+	width: 16px;
+	height: 16px;
+	padding-right: 0.2em;
+}
+
 /*=== @h ===*/
 h4
 {
 	border-bottom: 1px solid #ccc;
-	font-weight: normal;
+	font-weight: bold;
 	margin-bottom: -0.5em;
 	padding-bottom: 0.2em;
 	font-size: 0.9em;
 }
 
-/*=== @i ===*/
-img
+.help-menu
 {
-	border: none;
+	float: left;
+	display: inline;
+	width: 10.0em;
+	margin: 0 0px 1.6em 0;
 }
 
 /*=== @l ===*/
@@ -114,7 +145,9 @@ img
 {
 	float:left;
 	display: inline;
-	width: 42.0em;
+	min-width: 42.0em;
+	_width: 42.00em;
+	width: 70%;
 	margin: 0.0em 0.0em 0.0em 1.0em;
 }
 
@@ -130,12 +163,14 @@ img
 	color: #333;
 	line-height: 1.5em;
 	margin-bottom: 0.0em;
+	margin-right: 1.0em;
 }
 
 #logout
 {
 	float: right;
 	display: inline;
+	padding-right: 0.5em;
 }
 
 #logout img
@@ -151,9 +186,10 @@ img
 	display: inline;
 	margin: 0.0em 0.0em 0.5em 0.0em;
 	width: 100%;
+	min-width: 1000px;
 	clear: both;
 	text-align: left;
-	height: 22px;
+	height: 36px;
 }
 
 #menu ol
@@ -168,19 +204,20 @@ img
 	display: inline;
 	list-style: none;
 	font-size: 0.8em;
-	font-weight: bold;
-	margin: 0.0em 0.5em;
+	font-weight: normal;
+	margin: 0.2em 0.5em;
+	line-height: 1.8em;
 }
 
 #menu-items a, #site-name a
 {
 	color: #fff;
-	padding: 0.25em 1.0em;
+	padding: 0.4em 1.0em;
 }
 
-#menu-items a:hover, #site-name a:hover
+#menu-items a:hover
 {
-	background-color: #c60;
+	background-color: #9FA600;
 }
 
 /*=== @o ===*/
@@ -191,10 +228,10 @@ img
 
 .options, .metadata
 {
-	float: right;
+	float: left;
 	display: inline;
 	width: 16.0em;
-	margin-right: 1.0em;
+	margin-right: 1.5em;
 }
 
 .options label
@@ -224,7 +261,7 @@ img
 .options ul li small a:link,
 .options ul li small a:visited:link
 {
-	color: #28a1dc;
+	color: #9FA600;
 }
 
 .options ul li small a:hover,
@@ -244,8 +281,9 @@ img
 .recent-comments, .content
 {
 	float: left;
-	width: 42.0em;
-	margin: -1.5em 16px 1.6em 0;	
+	/*width: 42.0em;*/
+	width: 96%;
+	margin: 0 0px 1.6em 0;
 }
 
 .recent-comments h4
@@ -280,25 +318,32 @@ img
 	padding-top: 0.0em;
 }
 
+#right-column
+{
+	float: right;
+	display: inline;
+	margin: 0 0px 1.0em 0px;
+}
+
 /*=== @s ===*/
 #site-name
 {
 	float: left;
 	display: inline;
 	background: transparent url(images/home.png) no-repeat;
-	background-position: 0.4em 0.0em;
+	background-position: 1.0em 0.0em;
 	text-indent: 2.2em;
 	font-size: 0.8em;
-	font-weight: bold;
 	padding-top: 0.1em;
-	line-height: 1.5em;
+	line-height: 1.7em;
 }
 
 .stats
 {
 	float: left;
-	width: 22.5em;
-	margin: 0 40px 1.6em 0;
+	/*width: 22.5em;*/
+	width: 50%;
+	margin: 0 40px 1.0em 0;
 }
 
 .stats h4
@@ -308,13 +353,15 @@ img
 }
 
 .stats ul, .drafts ul,
-.system-info ul
+.system-info ul, .incoming ul,
+.help-menu ul
 {
 	margin-left: 0.0em;
 	padding-left: 0.0em;
 }
 
-.stats ul li, .drafts ul li
+.stats ul li, .drafts ul li, 
+.incoming ul li, .help-menu ul li
 {
 	list-style: none;
 	font-size: 0.9em;
@@ -328,7 +375,7 @@ img
 .recent-comments a:link, .recent-comments a:visited:link,
 .system-info a:link, .system-info a:visited:link
 {
-	color: #28a1dc;
+	color: #9FA600;
 }
 
 .stats a:hover, .drafts a:hover,
@@ -341,11 +388,11 @@ img
 
 .system-info
 {
-	float: right;
+	float: left;
 	display: inline;
-	width: 16.5em;
-	margin-right: 0.5em;
-	margin-top: 1.0em;
+	/*width: 17.0em;*/
+	width: 40%;
+	margin: 0 0px 1.6em 0;
 }
 
 .system-info h4
