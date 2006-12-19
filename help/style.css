@@ -114,6 +114,19 @@ body
 }
 
 /*=== @s ===*/
+#search_help
+{
+	color: #fff;
+	font-weight: bold;	
+}
+
+#search_help input[type=text]
+{
+	margin-right: 0.3em;
+	height: 1.1em;
+	font-size: 0.8em;
+}
+
 #site-name
 {
 	float: left;
