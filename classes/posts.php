@@ -46,7 +46,6 @@ class Posts extends ArrayObject
 	 * Returns a post or posts based on supplied parameters
 	 * THIS CLASS SHOULD CACHE QUERY RESULTS!	 
 	 * @param array An associated array of parameters, or a querystring
-	 * @param boolean If true, returns only the first result	 
 	 * @return array An array of Post objects, or a single post object, depending on request
 	 **/	 	 	 	 	
 	static function get( $paramarray = array() )
@@ -62,45 +61,68 @@ class Posts extends ArrayObject
 			$select .= ('' == $select) ? DB::o()->posts . ".$field" : ', ' . DB::o()->posts . ".$field";
 		}
 		// defaults
-		$status = Post::STATUS_PUBLISHED;
+		//$status = Post::STATUS_PUBLISHED;  // Default (unset) is now the same as Post::STATUS_ANY
 		$orderby = 'pubdate DESC';
 		$limit = is_numeric(Options::get('pagination')) ? Options::get('pagination') : 10;
 
 		// Put incoming parameters into the local scope
-		extract(Utils::get_params($paramarray));
-		// safety mechanism to prevent empty queries
-		$where = array(1);
+		$paramarray = Utils::get_params($paramarray);
+		
+		// Transact on possible multiple sets of where information that is to be OR'ed
+		if(isset($paramarray['where']) && is_array($paramarray['where'])) {
+			$wheresets = $paramarray['where'];
+		}
+		else {
+			$wheresets = array(array());
+		}
+
+		$wheres = array();
 		$join = '';
-		if ( isset( $fetch_fn ) )
-		{
-			if ( ! in_array( $fetch_fn, $fns ) )
-			{
+		if(isset($paramarray['where']) && is_string($paramarray['where'])) {
+			$wheres[] = $paramarray['where'];
+		}
+		else {
+			foreach($wheresets as $paramset) {
+				// safety mechanism to prevent empty queries
+				$where = array(1);
+				$paramset = array_merge($paramarray, $paramset);
+				
+				if ( isset( $paramset['status'] ) && ( $paramset['status'] != Post::STATUS_ANY ) ) {
+					$where[] = "status = ?";
+					$params[] = $paramset['status'];
+				}
+				if ( isset( $paramset['slug'] ) ) {
+					$where[] = "slug = ?";
+					$params[] = $paramset['slug'];
+				}
+				if ( isset( $paramset['user_id'] ) ) {
+					$where[] = "user_id = ?";
+					$params[] = $paramset['user_id'];
+				}
+				if ( isset( $paramset['tag'] ) ) {
+					$join .= ' JOIN ' . DB::o()->tags . ' ON ' . DB::o()->posts . '.slug = ' . DB::o()->tags . '.slug';
+					// Need tag expression parser here.			
+					$where[] = 'tag = ?';
+					$params[] = $paramset['tag'];
+				}
+				
+				$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
+			}
+		}
+		
+		// Get any full-query parameters
+		extract($paramarray);
+
+
+		if ( isset( $fetch_fn ) ) {
+			if ( ! in_array( $fetch_fn, $fns ) ) {
 				$fetch_fn = $fns[0];
 			}
 		}
-		else
-		{
+		else {
 			$fetch_fn = $fns[0];
 		}
-		if ( isset( $status ) && ( $status != Post::STATUS_ANY ) ) {
-			$where[] = "status = ?";
-			$params[] = $status;
-		}
-		if ( isset( $slug ) ) {
-			$where[] = "slug = ?";
-			$params[] = $slug;
-		}
-		if ( isset( $user_id ) )
-		{
-			$where[] = "user_id = ?";
-			$params[] = $user_id;
-		}
-		if ( isset( $tag ) ) {
-			$join .= ' JOIN ' . DB::o()->tags . ' ON ' . DB::o()->posts . '.slug = ' . DB::o()->tags . '.slug';
-			// Need tag expression parser here.			
-			$where[] = 'tag = ?';
-			$params[] = $tag;
-		}
+		
 		// is a count being request?
 		if ( isset( $count ) )
 		{
@@ -122,7 +144,7 @@ class Posts extends ArrayObject
 		' . DB::o()->posts .
 		' ' . $join . '
 		WHERE 
-			' . implode( ' AND ', $where ) . "
+			' . implode( " \nOR\n ", $wheres ) . "
 		ORDER BY 
 			{$orderby}{$limit}";
 //Utils::debug($fetch_fn, $query, $params);			

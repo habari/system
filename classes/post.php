@@ -76,9 +76,18 @@ class Post extends QueryRecord
 		
 		// Defaults
 		$defaults = array (
-			'status' => 1,
+			'where' => array(
+				array(
+					'status' => Post::STATUS_PUBLISHED,
+				),
+			),
 			'fetch_fn' => 'get_row',
 		);
+		if( $user = User::identify() ) {
+			$defaults['where'][] = array(
+				'user_id' => $user->id,
+			);
+		}
 
 		$paramarray = array_merge( $url->settings, $defaults, Utils::get_params($paramarray) ); 
 		return Posts::get( $paramarray );
