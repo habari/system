@@ -8,35 +8,15 @@
 
 class Plugins
 {
-	private $instance = null;
-	private $hooks;
-	private $action;
-	private $filter;
-
-	/**
-	 * function __construct
-	 * Plugins class constructor.  Singleton
-	 **/	 	 	
-	private function __construct()
-	{
-		$this->hooks = array(
-			'action'=>array(),
-			'filter'=>array(),
-		);
-		$action = array();
-		$filter = array();
-	}
+	private static $hooks = array();
 	
 	/**
-	 * function instantiate
-	 * Creates the private instance.  Do not call directly, called by do() and filter()
+	 * function __construct
+	 * A private constructor method to prevent this class from being instantiated.
+	 * Don't ever create this class as an object for any reason.  It is not a singleton.	 
 	 **/	 
-	static private function instantiate()
+	private function __construct()
 	{
-		if(self::$instance == null) {
-			$c = __CLASS__;
-			self::$instance = new $c(); 
-		}
 	}
 
 	/**
@@ -46,39 +26,40 @@ class Plugins
 	 * @param string The plugin function to register
 	 * @param hex An optional execution priority, in hex.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
 	**/
-	public function register( $object, $fn, $priority = 8 )
+	public function register( $object, $fn, $type, $hook, $priority = 8 )
 	{
-		// basic safety check to ensure that the supplied
-		// function name is action_foo or filter_foo
-		if ( ( 0 !== strpos( $fn, 'action_' ) ) ||
-			( 0 !== strpos( $fn, 'filter_' ) ) )
-		{
-			return false;
+		// add the plugin function to the appropriate array
+		$index = array($type, $hook, $priority);	
+		
+		$nested =& self::$hooks;
+		$ref =& $nested;
+		
+		foreach( $index as $bit ) {
+		    if(!isset($ref["{$bit}"])) {
+		    	$ref["{$bit}"] = array();
+		    }
+		    $ref =& $ref["{$bit}"];
 		}
-		// find out what type of function we're registering
-		$type = substr( $fn, 0, strpos( $fn, '_' ) );
-		$this->$type[$fn][$priority][] = array( $object, $fn );
+		 
+		$ref[] = array( $object, $fn );
+		ksort(self::$hooks[$type][$hook]);
 	}
 	
 	/**
-	 * function do
+	 * function act
 	 * Call to execute a plugin action
 	 * @param string The name of the action to execute
 	 * @param mixed Optional arguments needed for action
 	 **/	 	 	
-	static public function do()
+	static public function act()
 	{
-		self::instantiate();
 		$args = func_get_args();
 		$hookname = array_shift($args);
-		if ( ! isset( $this->action[$hookname] ) )
-		{
+		if ( ! isset( self::$instance->action[$hookname] ) ) {
 			return false;
 		}
-		foreach ( $this->action[$hookname] as $priority )
-		{
-			foreach ( $priority as $action )
-			{
+		foreach ( self::$hooks['action'][$hookname] as $priority ) {
+			foreach ( $priority as $action ) {
 				// $action is an array of object reference
 				// and method name
 				call_user_func_array( $action, $args );
@@ -94,25 +75,22 @@ class Plugins
 	 **/	 
 	static public function filter()
 	{
-		self::instantiate();
 		list( $hookname, $return ) = func_get_args();
-		if ( ! isset( $this->filter[$hookname] ) )
-		{
+		if ( ! isset( self::$hooks['filter'][$hookname] ) ) {
 			return $return;
 		}
-		foreach ( $this->filter[$hookname] as $priority )
-		{
-			foreach ( $priority as $filter )
-			{
-			// $filter is an array of object reference
-			// and method name
-			if ( ! is_array( $return )
-			{
-				$return = array( $return );
-			}
-			$return = call_user_func_array( $filter, $return );	
+
+		foreach ( self::$hooks['filter'][$hookname] as $priority ) {
+			foreach ( $priority as $filter ) {
+				// $filter is an array of object reference
+				// and method name
+				if ( ! is_array( $return ) ) {
+					$return = array( $return );
+				}
+				$return = call_user_func_array( $filter, $return );	
 			}
 		}
+		return $return;
 	}
 
 }
