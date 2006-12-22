@@ -133,7 +133,7 @@ class Post extends QueryRecord
 			$value = 'Post';
 		}
 		
-		$slug = strtolower( preg_replace( '/[^a-z]+/i', '-', $value ) );
+		$slug = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) );
 		$postfix = '';
 		$postfixcount = 0;
 		do {

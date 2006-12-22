@@ -11,6 +11,7 @@ class QueryRecord
 {
 	protected $fields = array();  // Holds field values from db
 	protected $newfields = array(); // Holds updated field values to commit to db
+	protected $unsetfields = array(); // Holds field names to remove when committing to the db
 	private $loaded = false;  // Set to true after the constructor executes, is false when PDO fills data fields
 	
 	/**
@@ -70,6 +71,16 @@ class QueryRecord
 
 		return DB::insert($table, array_merge($this->fields, $this->newfields));
 	}
+	
+	/**
+	 * function to_array
+	 * Returns an array with the current field settings
+	 * @return array The field settings as they would be saved
+	 **/
+	public function to_array()
+	{
+		return array_merge($this->fields, $this->newfields);
+	}	 
 
 	/**
 	 * function update

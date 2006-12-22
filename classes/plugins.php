@@ -31,8 +31,7 @@ class Plugins
 		// add the plugin function to the appropriate array
 		$index = array($type, $hook, $priority);	
 		
-		$nested =& self::$hooks;
-		$ref =& $nested;
+		$ref =& self::$hooks;
 		
 		foreach( $index as $bit ) {
 		    if(!isset($ref["{$bit}"])) {
