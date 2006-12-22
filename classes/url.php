@@ -205,13 +205,18 @@ class URL
 		if ( isset( $this ) && $this instanceof $c ) {
 			// get() was called on an instance
 			$rules = $this->rules;
+			$gsettings = $this->settings;
 		}
 		else {
 			// get() was called statically
 			$rules = $url->rules;
+			$gsettings = $url->settings;
 		}
 
 		$params = Utils::get_params($paramarray);
+		
+		// Experimental:
+		$params = array_merge($gsettings, $params);
 		
 		$fn = create_function( '$a', 'return $a[2] == "' . $pagetype . '";' );
 		$rules = array_filter( $rules, $fn );
@@ -365,7 +370,6 @@ class URL
 		$this->rules[] = array('"admin"/page', 'AdminHandler', 'admin');
 		$this->rules[] = array('"admin"/page/option', 'AdminHandler', 'admin');
 		$this->rules[] = array('"admin"', 'AdminHandler', 'admin');
-		$this->rules[] = array('"feedback"', 'ContentHandler', 'add_comment');
 		$this->rules[] = array('"admin"/"ajax"/action', 'AjaxHandler', 'ajaxhandler');
 		// user rules
 		$this->rules[] = array('"login"/action', 'UserHandler', 'login');
@@ -395,6 +399,7 @@ class URL
 		$this->rules[] = array('slug/"comments"', 'AtomHandler', 'comments');
 		$this->rules[] = array('slug/"comments"/index', 'AtomHandler', 'comments');
 		$this->rules[] = array('slug/"trackback"', 'ActionHandler', 'trackback');
+		$this->rules[] = array('slug/"feedback"', 'ContentHandler', 'add_comment');
 	}
 
 }

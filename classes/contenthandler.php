@@ -23,16 +23,21 @@ class ContentHandler extends ActionHandler
 								'url'		=>	$_POST['url'],
 								'ip'		=>	preg_replace( '/[^0-9., ]/', '',$_SERVER['REMOTE_ADDR'] ),
 								'content'	=>	$_POST['content'],
-								'status'	=>	'0',
-								'date'		=>	gmdate('Y-m-d H:i:s')
+								'status'	=>	Comment::STATUS_APPROVED,
+								'date'		=>	gmdate('Y-m-d H:i:s'),
+								'type' => Comment::COMMENT
 						 	);
-		Comment::create( $commentdata );
-		Utils::redirect( URL::get( 'post', "slug={$_POST['post_slug']}" ) );
+			// Comment::create( $commentdata );  // This creates and saves, let's filter first
+			$comment = new Comment( $commentdata );
+			$comment = Plugins::filter('add_comment', $comment);
+			$comment->insert();
+			
+			Utils::redirect( URL::get( 'post', "slug={$_POST['post_slug']}", false ) );
 		} 
 		else
 		{
-		// do something intelligent here
-		echo 'You forgot to add some content to your comment, please <a href="' . URL::get( 'post', "slug={$_POST['post_slug']}" ) . '" title="go back and try again!">go back and try again</a>.';
+			// do something more intelligent here
+			echo 'You forgot to add some content to your comment, please <a href="' . URL::get( 'post', "slug={$_POST['post_slug']}" ) . '" title="go back and try again!">go back and try again</a>.';
 		}
 	}
 }

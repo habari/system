@@ -12,6 +12,7 @@ class Comment extends QueryRecord
 	// our definitions for comment types and statuses
 	const STATUS_UNAPPROVED = 0;
 	const STATUS_APPROVED = 1;
+	const STATUS_SPAM = 2;
 
 	const COMMENT = 0;
 	const PINGBACK =1;
