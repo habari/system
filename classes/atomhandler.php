@@ -256,6 +256,7 @@ feedpreamble;
 		foreach(Posts::get( $params ) as $post) {
 			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
+			$user = User::get( $post->user_id );
 			$title = htmlspecialchars($post->title);
 			$xmltext .= <<< postentry
 	<entry>
@@ -263,7 +264,7 @@ feedpreamble;
 		<link rel="alternate" type="text/html" href="{$post->permalink}" />
 		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
 		<author>
-			<name>Owen</name><!-- TODO: Link posts to User table with id -->
+			<name>{$user->username}</name>
 		</author>
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
