@@ -3,10 +3,10 @@
 
 <?php
 $db_connection = array(
-'connection_string' => 'mysql:host=localhost;dbname=asymptomatic',  // MySQL Connection string
-'username' => 'root',  // MySQL username
-'password' => '',  // MySQL password
-'prefix'	=>	'wp_', // Prefix for your WP tables
+'connection_string' => 'mysql:host=mysql.chrisjdavis.org;dbname=chrispress',  // MySQL Connection string
+'username' => 'chrisjdavis',  // MySQL username
+'password' => 'walker',  // MySQL password
+'prefix'	=>	'b2', // Prefix for your WP tables
 );
 
 // Connect to the database or fail informatively
@@ -42,10 +42,9 @@ foreach( $posts as $post ) {
 		ON ({$db_connection['prefix']}categories.cat_ID = {$db_connection['prefix']}post2cat.category_id)
 		WHERE post_id = {$post->id}" 
 	);
-	$post->tags = $tags;
 
 	$p = new Post( $post->to_array() );
-	
+	$p->tags = $tags;
 	$p->insert();
 
 }
