@@ -400,6 +400,8 @@ class URL
 		$this->rules[] = array('slug/"comments"/index', 'AtomHandler', 'comments');
 		$this->rules[] = array('slug/"trackback"', 'ActionHandler', 'trackback');
 		$this->rules[] = array('slug/"feedback"', 'ContentHandler', 'add_comment');
+		
+		$this->rules = Plugins::filter('url_rules', $this->rules);
 	}
 
 }
