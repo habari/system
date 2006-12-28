@@ -53,7 +53,7 @@ class Comments extends ArrayObject
 			}
 			if ( 'limit' == $key )
 			{
-				$limit = " LIMIT $key" . $limit;
+				$limit = " LIMIT " . $value;
 			}
 			if ( 'offset' == $key )
 			{
