@@ -9,14 +9,32 @@
  * @package Habari
  */
 
-class Plugin
+abstract class Plugin
 {
 	/**
-	 * function __construct
-	 * Plugin class constructor. 
+	 * function get_file
+	 * Gets the filename that contains the plugin
+	 * @return string The filename of the file that contains the plugin class.	 
+	 **/
+	final public function get_file()
+	{
+		$class = new ReflectionClass( get_class( $this ) );
+		return $class->getFileName();
+	}	 	 	
+
+	/**
+	 * abstract function info
+	 * Returns information about this plugin
+	 * @return array An associative array of information about this plugin
+	 **/
+	abstract public function info();
+
+	/**
+	 * function load
+	 * Called when a plugin is loaded to register its actions and filters.	 
 	 * Registers all of this plugins action_ and filter_ functions with the Plugins dispatcher
-	 **/	 	 	
-	public function __construct()
+	 **/	 	 	 		
+	public function load()
 	{
 		// get the specific priority values for functions, as needed
 		if ( method_exists ( $this, 'set_priorities' ) ) {
@@ -35,7 +53,6 @@ class Plugin
 			Plugins::register( $this, $fn, $type, $hook, $priority );
 		}
 	}
-	
 }
 
 ?>
