@@ -81,7 +81,7 @@
 						<th colspan="1" align="left">URL</th>
 						<th colspan="1" align="center">Action</th>
 					</thead>
-					<?php foreach( Comments::by_status( 1 ) as $recent ) { ?>
+					<?php foreach( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'date DESC' ) ) as $recent ) { ?>
 					<tr>
 						<td><?php echo $recent->post_slug; ?></td>
 						<td><?php echo $recent->name; ?></td>
