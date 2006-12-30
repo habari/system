@@ -389,6 +389,27 @@ class AdminHandler extends ActionHandler
 		
 		// Redirect back to a URL with a notice?
 	}
-}
-
+	
+	/**
+	 * function post_delete
+	 * Handles the submission of the comment moderation form.
+	 * @param array An array of information found in the post array
+	 **/
+	function post_moderate( $settings )
+	{
+		if( isset( $_POST['mass_delete'] ) ) {
+			Comment::mass_delete();
+		}
+		elseif( is_array( $_POST['delete'] ) ) {
+			foreach( $_POST['delete'] as $destroy ) {
+				Comment::delete( $destroy );
+			}
+		} elseif( is_array( isset( $_POST['approve'] ) ) ) {
+			foreach( $_POST['approve'] as $promote ) {
+				Comment::publish( $promote );
+			}
+		}
+			Utils::redirect( URL::get( 'admin', 'page=moderate&result=success' ) );
+		}
+	}
 ?>
