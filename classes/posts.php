@@ -230,6 +230,32 @@ class Posts extends ArrayObject
 		}
 		return self::get( $params );
 	}
+	
+	/**
+	 * function search
+	 * Returns a Posts containing posts that match the search criteria
+	 * @param string criteria	 
+	 **/	 	 	
+	public static function search( $criteria )
+	{
+		preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $criteria, $matches);
+		$words = $matches[0];
+		
+		$where = 'status = ?';
+		$params = array(Post::STATUS_PUBLISHED);
+		foreach($words as $word) {
+			$where .= " AND (title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
+			$params[] = $word;
+			$params[] = $word;  // Not a typo
+		}
+
+		return self::get( 
+			array(
+				'where'=>$where,
+				'params'=>$params,
+			) 
+		);
+	}
 
 }
 ?>

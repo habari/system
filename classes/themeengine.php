@@ -14,13 +14,29 @@
 
 class ThemeEngine
 {
+	/**
+	 * function __construct
+	 * Constructor for theme engine
+	 * This class should really be a base class for different rendering engines,
+	 * as defined by the loaded theme.
+	 **/	 	 	 	 	
+	public function __construct( ) {
+		$this->themedir = HABARI_PATH . '/themes/' . Options::get('theme_dir') . '/';
+	}
 
+	/**
+	 * function __call
+	 * An interesting way to handle included files that are part of a theme.
+	 **/	 	 	
 	public function __call($fn, $args)
 	{
-		global $url, $theme;
+		global $url, $theme, $post;
 		
-		$potential_template = THEME_DIR . $fn . '.php';
+		$potential_template = $this->themedir . $fn . '.php';
 		if(file_exists($potential_template)) {
+			if( is_array($args[0]) ) {
+				extract($args[0]);
+			}
 			include $potential_template;
 		}
 	}

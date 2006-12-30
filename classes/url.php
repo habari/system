@@ -201,6 +201,9 @@ class URL
 	public function get( $pagetype, $paramarray = array(), $useall = true)
 	{
 		global $url;
+		if ( $paramarray === false ) {
+			$useall = false;
+		}
 		$c = __CLASS__;
 		if ( isset( $this ) && $this instanceof $c ) {
 			// get() was called on an instance
@@ -280,6 +283,9 @@ class URL
 	public function get_url( $pagetype, $paramarray = array(), $useall = true )
 	{
 		global $url;
+		if ( $paramarray === false ) {
+			$useall = false;
+		}
 		$c = __CLASS__;
 		if ( $this instanceof $c ) {
 			// get_url() was called on an instance
@@ -308,6 +314,9 @@ class URL
 	public function out( $pagetype, $paramarray = array(), $useall = true )
 	{
 		global $url;
+		if ( $paramarray === false ) {
+			$useall = false;
+		}
 		$c = __CLASS__;
 		if ( $this instanceof $c ) {
 			// out() was called on an instance
@@ -385,6 +394,7 @@ class URL
 		$this->rules[] = array('"atom"/"1"', 'AtomHandler', 'collection');
 		$this->rules[] = array('"atom"', 'AtomHandler', 'introspection');
 		$this->rules[] = array('"rsd"', 'AtomHandler', 'rsd');
+		$this->rules[] = array('"search"', 'ThemeHandler', 'search');
 		$this->rules[] = array('"feed"/feedtype', 'ActionHandler', 'site_feed');
 		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
@@ -393,6 +403,7 @@ class URL
 		$this->rules[] = array('', 'ThemeHandler', 'home');
 		$this->rules[] = array('"index.php"', 'ThemeHandler', 'home');
 		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
+		$this->rules[] = array('"page"/index', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"page"/index', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"atom"', 'AtomHandler', 'entry');
