@@ -24,7 +24,7 @@ class Installer
 	{
 		if(self::is_installed()) return true;
 		// are we processing the POST?
-		if ('install' == $_POST['action'])
+		if ( isset($_POST['action']) && ( 'install' == $_POST['action'] ) )
 		{
 			self::installhandler();
 			return true;
@@ -91,14 +91,14 @@ class Installer
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
-		$options->GUID = sha1($base_url . Utils::nonce());
+		$options->GUID = sha1($options->base_url . Utils::nonce());
 			
 		// Output any errors
 		if(DB::has_errors()) {
 			Utils::debug('Errors:', DB::get_errors());
 		}
 		echo "<p>Congratulations, Habari is now installed!</p>";
-		echo "<p>Click <a href='$base_url'>here</a> to continue.</p>";
+		echo "<p>Click <a href='{$options->base_url}'>here</a> to continue.</p>";
 		die;
 	}
 	
