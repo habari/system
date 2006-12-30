@@ -107,6 +107,7 @@ class DB
 	 */	 	 	 	 	
 	public function query($query, $args = array(), $c_name = '')
 	{
+		$t = microtime();
 		$o =& DB::o();
 		if($o->pdostatement) $o->pdostatement->closeCursor();
 		$o->pdostatement = $o->dbh->prepare($query);
@@ -114,7 +115,7 @@ class DB
 			if($c_name == '') $c_name = 'QueryRecord';
 			$o->pdostatement->setFetchMode(PDO::FETCH_CLASS, $c_name, array());
 			if($o->pdostatement->execute($args)) {
-				$o->queries[] = array($query, $args);
+				$o->queries[] = array($query, $args, $t, microtime());
 				$o->queryok = true;
 				return true;
 			}
