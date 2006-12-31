@@ -76,10 +76,12 @@
 			?>
 				<table name="comment-data" width="100%" cellspacing="0">
 					<thead>
-						<th colspan="1" align="left">Post</th>
-						<th colspan="1" align="left">Name</th>
-						<th colspan="1" align="left">URL</th>
-						<th colspan="1" align="center">Action</th>
+						<tr>
+							<th colspan="1" align="left">Post</th>
+							<th colspan="1" align="left">Name</th>
+							<th colspan="1" align="left">URL</th>
+							<th colspan="1" align="center">Action</th>
+						</tr>
 					</thead>
 					<?php foreach( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'date DESC' ) ) as $recent ) { ?>
 					<tr>

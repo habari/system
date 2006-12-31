@@ -150,9 +150,16 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	private function setguid()
 	{
-		$result = 'tag:' . Options::get('hostname') . ',' 
-						 . date('Y') . ':' . $this->setslug() . '/' . time();
-		$this->newfields['guid'] = $result;
+		if( 
+			!isset( $this->newfields['guid'] ) 
+			|| ($this->newfields['guid'] == '')  // GUID is empty 
+			|| ($this->newfields['guid'] == '//?p=') // GUID created by WP was erroneous (as is too common)
+		) 
+		{
+			$result = 'tag:' . Options::get('hostname') . ',' 
+							 . date('Y') . ':' . $this->setslug() . '/' . time();
+			$this->newfields['guid'] = $result;
+		}
 		return $this->newfields['guid'];
 	}
 	

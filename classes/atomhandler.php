@@ -33,8 +33,8 @@ class AtomHandler extends ActionHandler
 	}
 	
 	/**
-	 * function entry
-	 * Responds to Atom requests for a post entry collections
+	 * function collection
+	 * Responds to Atom requests for a post entry collection
 	 * @param array Settings array from the URL
 	 **/	 	 	 	
 	public function collection($settings)
@@ -50,6 +50,21 @@ class AtomHandler extends ActionHandler
 		}
 	} 
 	
+	/**
+	 * function tag_collection
+	 * Responds to Atom requests for a tag's post entry collection
+	 * @param array Settings array from the URL
+	 **/	 	 	 	
+	public function tag_collection($settings)
+	{
+		switch(strtolower($_SERVER['REQUEST_METHOD']))
+		{
+		case 'get':
+			$this->get_tag_collection( $settings['tag'] );
+			break;
+		}
+	} 
+		
 	/**
 	 * function comments
 	 * Responds to Atom requests for a post's comment collection
@@ -84,7 +99,10 @@ class AtomHandler extends ActionHandler
 	{
 		$params = array('slug'=>$slug);
 		if ( $this->is_auth() ) {
-			$params['status'] = '%';
+			// Get any post, don't set status to anything.
+		}
+		else {
+			$params['status'] = Post::STATUS_PUBLISHED;
 		}
 		
 		if ( $post = Post::get($params) ) {
@@ -236,7 +254,7 @@ entrysnippet;
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{$options->title}</title>
-	<subtitle>{$options->tag_line}</subtitle>
+	<subtitle>{$options->tagline}</subtitle>
 	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->base_url}" />
 	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->title}" />
 	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
@@ -250,7 +268,10 @@ feedpreamble;
 
 		$params = array();
 		if ( $this->is_auth() ) {
-			$params['status'] = '%';
+			// Get all posts, don't set status to anything.
+		}
+		else {
+			$params['status'] = Post::STATUS_PUBLISHED;
 		}
 
 		foreach(Posts::get( $params ) as $post) {
@@ -268,8 +289,8 @@ feedpreamble;
 		</author>
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="text/xhtml" xml:base="{$post->permalink}">{$post->content}</content>
-		<summary>{$post->content}</summary>
+		<content type="text/xhtml" xml:base="{$post->permalink}"><![CDATA[{$post->content}]]></content>
+		<summary><![CDATA[{$post->content}]]></summary>
 	</entry>
 
 postentry;
@@ -279,6 +300,67 @@ postentry;
 		header('Content-Type: application/atom+xml');
 		echo $xmltext;
 	}	
+	
+	/**
+	 * function get_tag_collection
+	 * Outputs a collection of post entries for a specific tag
+	 **/
+	function get_tag_collection( $tag )
+	{
+		$options = Options::o();
+		$local['collectionurl'] = URL::get_url( 'tag_collection', 'index=1' );
+		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
+		$local['copyright'] = date('Y'); // TODO: This value should be corrected
+		$local['tagurl'] = URL::get_url( 'tag', 'tag=' . $tag, false );
+		
+		$xmltext = $this->xml_header();
+		$xmltext .= <<< feedpreamble
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>{$options->title}</title>
+	<subtitle>{$options->tagline}</subtitle>
+	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->base_url}{$local['tagurl']}" />
+	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
+	<updated>{$local['feedupdated']}</updated>
+	<rights>{$local['copyright']}</rights>
+	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
+	<id>http://{$_SERVER["HTTP_HOST"]}{$options->base_url}</id>
+
+feedpreamble;
+
+		$params = array('tag'=>$tag);
+		if ( $this->is_auth() ) {
+			// Get all posts, don't set status to anything.
+		}
+		else {
+			$params['status'] = Post::STATUS_PUBLISHED;
+		}
+
+		foreach(Posts::get( $params ) as $post) {
+			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" );
+			$entryupdated = Utils::atomtime( $post->updated );
+			$user = User::get( $post->user_id );
+			$title = htmlspecialchars($post->title);
+			$xmltext .= <<< postentry
+	<entry>
+		<title>{$title}</title>
+		<link rel="alternate" type="text/html" href="{$post->permalink}" />
+		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
+		<author>
+			<name>{$user->username}</name>
+		</author>
+		<id>{$post->guid}</id>
+		<updated>{$entryupdated}</updated>
+		<content type="text/xhtml" xml:base="{$post->permalink}"><![CDATA[{$post->content}]]></content>
+		<summary><![CDATA[{$post->content}]]></summary>
+	</entry>
+
+postentry;
+		}
+		$xmltext .= '</feed>';
+
+		header('Content-Type: application/atom+xml');
+		echo $xmltext;
+	} 	 	
 
 	/**
 	 * function post_collection

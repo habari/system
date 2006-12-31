@@ -252,7 +252,7 @@ class URL
 				if ( $useall ) {
 					$unused = array();
 					foreach ( $params as $key=>$param ) {
-						if ( !in_array( $key, $used ) && $param != '' ) {
+						if ( !in_array( $key, $used ) && $param != '' && !in_array( $key, array_keys( $_GET ) ) ) {
 							$unused[$key] = $param;
 						}
 					}
@@ -389,6 +389,8 @@ class URL
 		$this->rules[] = array('year/month', 'ThemeHandler', 'month');
 		$this->rules[] = array('year', 'ThemeHandler', 'year');
 		$this->rules[] = array('"tag"/tag', 'ThemeHandler', 'tag');
+		$this->rules[] = array('"tag"/tag/"atom"/index', 'AtomHandler', 'tag_collection');
+		$this->rules[] = array('"tag"/tag/"atom"', 'AtomHandler', 'tag_collection');
 		$this->rules[] = array('"author"/author', 'ActionHandler', 'author');
 		$this->rules[] = array('"atom"/index', 'AtomHandler', 'collection');
 		$this->rules[] = array('"atom"/"1"', 'AtomHandler', 'collection');

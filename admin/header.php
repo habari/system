@@ -6,7 +6,7 @@
 	<script src="<?php Options::out('base_url'); ?>scripts/jquery.js"></script>
 	<script>
 	window.onload = function() {
-	    $("tr:nth-child(even)").addClass("even");
+	    $("tbody/tr:nth-child(even)").addClass("even");
 	    $("ul>li:nth-child(even)").addClass("even");
 	};
 	</script>
