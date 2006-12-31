@@ -110,6 +110,16 @@ class Plugins
 		}
 		return $res;
 	}
+
+	/**
+	 * function get_active
+	 * Returns the internally stored references to all loaded plugins
+	 * @return array An array of plugin objects
+	 **/	 	  	 		
+	static public function get_active()
+	{
+		return self::$plugins;
+	}
 	
 	/**
 	 * function list_all

@@ -353,6 +353,7 @@ class AdminHandler extends ActionHandler
 			);
 		
 			$p = new Post( $post->to_array() );
+			$p->guid = $p->guid; // Looks fishy, but actually causes the guid to be set.
 			$p->tags = $tags;
 			$p->insert();
 		
