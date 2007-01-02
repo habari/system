@@ -36,6 +36,7 @@ class Format
 				else {
 					Plugins::register( array($formatobj, $format), 'filter', $onwhat);
 				}
+				break;
 			}
 		}
 	}
@@ -63,8 +64,9 @@ class Format
 				self::$formatters[] = new $class();
 			}
 		}
+		self::$formatters = array_reverse(self::$formatters, true);
 	}
-	
+
 	/** DEFAULT FORMAT FUNCTIONS **/
 	
 	/**
@@ -106,7 +108,7 @@ class Format
 	 **/	 	 	 	 	  
 	public function tag_and_list($array, $between = ', ', $between_last = ' and ')
 	{
-		$fn = create_function('$a', 'return "<a href=\\"" . URL::get( "tag", array( "tag" => $a) ) . "\\">" . $a . "</a>";');
+		$fn = create_function('$a', 'return "<a href=\\"" . URL::get( "tag", array( "tag" => $a), false ) . "\\">" . $a . "</a>";');
 		$array = array_map($fn, $array);
 		$last = array_pop($array);
 		$out = implode($between, $array);
