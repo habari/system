@@ -23,11 +23,12 @@ class Plugins
 	/**
 	 * function register
 	 * Registers a plugin action for possible execution
-	 * @param object A reference to the plugin object containing the function to register
-	 * @param string The plugin function to register
+	 * @param mixed A reference to the function to register by string or array(object, string)
+	 * @param string Usually either 'filter' or 'action' depending on the hook type.	 
+	 * @param string The plugin hook to register
 	 * @param hex An optional execution priority, in hex.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
 	**/
-	public function register( $object, $fn, $type, $hook, $priority = 8 )
+	public function register( $fn, $type, $hook, $priority = 8 )
 	{
 		// add the plugin function to the appropriate array
 		$index = array($type, $hook, $priority);	
@@ -41,7 +42,7 @@ class Plugins
 		    $ref =& $ref["{$bit}"];
 		}
 		 
-		$ref[] = array( $object, $fn );
+		$ref[] = $fn;
 		ksort(self::$hooks[$type][$hook]);
 	}
 	

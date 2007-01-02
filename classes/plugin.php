@@ -50,7 +50,7 @@ abstract class Plugin
 			$priority = isset($priorities[$fn]) ? $priorities[$fn] : 8;
 			$type = substr( $fn, 0, strpos( $fn, '_' ) );
 			$hook = substr( $fn, strpos( $fn, '_' ) + 1 );
-			Plugins::register( $this, $fn, $type, $hook, $priority );
+			Plugins::register( array($this, $fn), $type, $hook, $priority );
 		}
 	}
 }

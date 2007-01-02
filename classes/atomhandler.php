@@ -289,8 +289,8 @@ feedpreamble;
 		</author>
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="text/xhtml" xml:base="{$post->permalink}"><![CDATA[{$post->content}]]></content>
-		<summary><![CDATA[{$post->content}]]></summary>
+		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></content>
+		<summary><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></summary>
 	</entry>
 
 postentry;
@@ -350,8 +350,8 @@ feedpreamble;
 		</author>
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="text/xhtml" xml:base="{$post->permalink}"><![CDATA[{$post->content}]]></content>
-		<summary><![CDATA[{$post->content}]]></summary>
+		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></content>
+		<summary><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></summary>
 	</entry>
 
 postentry;
@@ -448,7 +448,7 @@ feedpreamble;
 		</author>
 		<id>{$post->guid}:#{$comment->id}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="text/xhtml" xml:base="{$post->permalink}">{$comment->content}</content>
+		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$comment->content}</div></content>
 	</entry>
 
 postentry;
