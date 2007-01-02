@@ -22,6 +22,9 @@ class ThemeEngine
 	 **/	 	 	 	 	
 	public function __construct( ) {
 		$this->themedir = HABARI_PATH . '/themes/' . Options::get('theme_dir') . '/';
+		if( file_exists($this->themedir . 'theme_vars.php') ) {
+			include($this->themedir . 'theme_vars.php');
+		}
 	}
 
 	/**
