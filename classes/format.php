@@ -104,7 +104,7 @@ class Format
 	 * @param string Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 **/	 	 	 	 	  
-	static function tag_and_list($array, $between = ', ', $between_last = ' and ')
+	public function tag_and_list($array, $between = ', ', $between_last = ' and ')
 	{
 		$fn = create_function('$a', 'return "<a href=\\"" . URL::get( "tag", array( "tag" => $a) ) . "\\">" . $a . "</a>";');
 		$array = array_map($fn, $array);
@@ -113,7 +113,32 @@ class Format
 		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
 	}
-}
+
+	/**
+	 * function nice_date
+	 * Formats a date using a date format string
+	 * @param mixed A date as a string or a timestamp
+	 * @param string A date format string
+	 * @returns string The date formatted as a string
+	 **/	 	 	 	 	 		
+	public function nice_date($date, $dateformat = 'F j, Y')
+	{
+		if ( is_numeric($date) ) return date($dateformat, $date);
+		return date($dateformat, strtotime($date));
+	}
+
+	/**
+	 * function nice_date
+	 * Formats a time using a date format string
+	 * @param mixed A date as a string or a timestamp
+	 * @param string A date format string
+	 * @returns string The time formatted as a string
+	 **/	 	 	 	 	 		
+	public function nice_time($date, $dateformat = 'H:i:s')
+	{
+		if ( is_numeric($date) ) return date($dateformat, $date);
+		return date($dateformat, strtotime($date));
+	}}
  
  
 ?>
