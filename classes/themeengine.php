@@ -34,7 +34,7 @@ class ThemeEngine
 		
 		$potential_template = $this->themedir . $fn . '.php';
 		if(file_exists($potential_template)) {
-			if( is_array($args[0]) ) {
+			if( isset($args[0]) && is_array($args[0]) ) {
 				extract($args[0]);
 			}
 			include $potential_template;

@@ -20,10 +20,12 @@ class UserHandler extends ActionHandler
 	*/
 	public function login($settings) {
 		global $url;
-		if ( $settings['action'] == 'login' ) {
+		if ( isset($settings['action']) && ( 'login' == $settings['action'] ) ) {
 			if( !($user = user::authenticate( $_POST['name'], $_POST['pass'] ) )  ) {
 				// set an error.
 				$url->settings['error'] = "badlogin";
+				// unset the password the use tried
+				$_POST['pass'] = '';
 			}
 		}
 		new ThemeHandler( 'login', $settings );

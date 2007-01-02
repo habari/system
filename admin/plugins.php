@@ -7,7 +7,7 @@
 					<tr>
 						<th align="left">Plugin Name</th>
 						<th align="left">Author Name</th>
-						<th align="left">Copyright</th>
+						<th align="left">License</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -17,7 +17,7 @@
 					<tr>
 						<td><?php echo $plugininfo['name']; ?></td>
 						<td><a href="<?php echo $plugininfo['link']; ?>" title="Visit <?php echo $plugininfo['name']; ?>"><?php echo $plugininfo['author']; ?></a></td>
-						<td><?php echo $plugininfo['copyright']; ?></td>
+						<td><?php echo $plugininfo['license']; ?></td>
 						<td><a href="" title="">Enable</a></td>
 					</tr>
 				<?php endforeach; ?>
