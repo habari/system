@@ -31,7 +31,13 @@ class ContentHandler extends ActionHandler
 			$comment = new Comment( $commentdata );
 			$comment = Plugins::filter('add_comment', $comment);
 			$comment->insert();
-			
+			// if no cookie exists, we should set one
+			$cookie = 'comment_' . Options::get('GUID');
+			if ( ( ! User::identify() ) && ( ! isset( $_COOKIE[$cookie] ) ) )
+			{
+				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
+				setcookie( $cookie, $cookie_content, time() + 31536000, Options::get('siteurl') );
+			}
 			Utils::redirect( URL::get( 'post', "slug={$_POST['post_slug']}", false ) );
 		} 
 		else
