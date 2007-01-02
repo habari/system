@@ -203,6 +203,7 @@ class Utils
 		}
 		echo "<pre>";
 		foreach( $fooargs as $arg1 ) {
+			echo '<em>' . gettype($arg1) . '</em> ';
 			echo htmlentities( print_r( $arg1, 1 ) ) . "<br/>";
 		}
 		echo "</pre></div>";

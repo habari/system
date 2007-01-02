@@ -246,20 +246,38 @@ class Post extends QueryRecord
 	 **/	 	 
 	public function __get( $name )
 	{
+		if( !isset($this->fields[$name]) && strpos( $name, '_' ) !== false ) {
+			list( $filter, $name ) = explode( '_', $name, 2 );
+		}
+		else {
+			$filter = false;
+		}
+
 		switch($name) {
 		case 'permalink':
-			return $this->get_permalink();
+			$out = $this->get_permalink();
+			break;
 		case 'tags':
-			return $this->get_tags();
+			$out = $this->get_tags();
+			break;
 		case 'comments':
-			return $this->get_comments();
+			$out = $this->get_comments();
+			break;
 		case 'comment_count':
-			return $this->get_comments()->count();
+			$out = $this->get_comments()->count();
+			break;
 		case 'author':
-			return $this->get_author();
+			$out = $this->get_author();
+			break;
 		default:
-			return parent::__get( $name );
+			$out = parent::__get( $name );
+			break;
 		}
+		$out = Plugins::filter( "post_{$name}", $out );
+		if( $filter ) {
+			$out = Plugins::filter( "{$filter}_{$name}", $out );
+		}
+		return $out;
 	}
 
 	/**
