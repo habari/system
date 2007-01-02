@@ -275,7 +275,7 @@ class Post extends QueryRecord
 		}
 		$out = Plugins::filter( "post_{$name}", $out );
 		if( $filter ) {
-			$out = Plugins::filter( "{$filter}_{$name}", $out );
+			$out = Plugins::filter( "{$filter}_post_{$name}", $out );
 		}
 		return $out;
 	}
