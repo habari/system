@@ -115,7 +115,7 @@ class Posts extends ArrayObject
 		// Get any full-query parameters
 		extract($paramarray);
 
-		if ( isset( $page ) ) {
+		if ( isset( $page ) && is_numeric($page) ) {
 			$offset = (intval($page) - 1) * intval($limit);
 		}
 
