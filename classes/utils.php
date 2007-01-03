@@ -153,7 +153,56 @@ class Utils
 			$_POST = self::stripslashes($_POST);
 			$_COOKIE = self::stripslashes($_COOKIE);
 		}
-	}	  	 	
+	}
+	
+	/**
+	 * function archive_pages
+	 * Returns the number of pages in an archive using the number of items per page set in options
+	 * @param integer Number of items in the archive
+	 * @returns integer Number of pages based on pagination option.	
+	 **/	  	 	 	
+	static function archive_pages($item_total)
+	{
+		return ceil($item_total / Options::get('pagination'));
+	}
+	
+	/**
+	 * function page_selector
+	 * Returns a simple linked page selector
+	 * @param	integer Current page
+	 * @param integer Total pages
+	 * @param string The URL token for producing a link	 
+	 * @param array Settings for the URLs output	 
+	 **/
+	static function page_selector($current, $total, $token, $settings = array())
+	{
+		$p[0] = 1;
+		if(1 != $total) {
+			$p[4] = $total;
+		}
+		if($current != 1 && $current != $total) {
+			$p[2] = $current;
+		}
+		if($current - 1 > 1) $p[1] = $current - 1;
+		if($current + 1 < $total) $p[3] = $current + 1;
+		$lastpage = 0;
+		$out = '';
+		for($z = 0; $z <= 4; $z++) {
+			if( $p[$z] == null ) {
+				continue;
+			}
+			if( ($p[$z] - $lastpage) > 1 ) $out .= '&hellip;'; 
+			if(isset($p[$z])) {
+				$caption = ($p[$z]==$current) ? '[' . $current . ']' : $p[$z];
+				$url = URL::get($token, array_merge($settings, array('index'=>$p[$z])), false);
+				$out .= '<a href="' . $url . '" ' . (($p[$z]==$current) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
+			}
+			$lastpage = $p[$z];
+		}
+		return trim($out);
+		
+	}
+	 	 	 
 	
 	/**
 	 * function debug_reveal

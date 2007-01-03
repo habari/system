@@ -35,6 +35,7 @@ class ThemeHandler extends ActionHandler
 			'logout'=>'login.php',
 			'error'=>'error.php',
 			'search'=>'search.php',
+			'tag'=>'tag.php',
 		);
 		
 		$theme = new ThemeEngine();

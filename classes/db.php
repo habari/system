@@ -107,7 +107,7 @@ class DB
 	 */	 	 	 	 	
 	public function query($query, $args = array(), $c_name = '')
 	{
-		$t = microtime();
+		$t = microtime(true);
 		$o =& DB::o();
 		if($o->pdostatement) $o->pdostatement->closeCursor();
 		$o->pdostatement = $o->dbh->prepare($query);
@@ -115,7 +115,7 @@ class DB
 			if($c_name == '') $c_name = 'QueryRecord';
 			$o->pdostatement->setFetchMode(PDO::FETCH_CLASS, $c_name, array());
 			if($o->pdostatement->execute($args)) {
-				$o->queries[] = array($query, $args, $t, microtime());
+				$o->queries[] = array($query, $args, array($t, microtime(true)));
 				$o->queryok = true;
 				return true;
 			}
@@ -129,6 +129,56 @@ class DB
 		$o->errors[] = array_merge($o->dbh->errorInfo(), array($query, $args));
 		return false;
 	}
+	
+	/**
+	 * function record_time
+	 * Add a start and stop time to the query record to help determine execution time
+	 * @param float Microtime of start
+	 * @param float Microtime of stop
+	 **/	 	 	 	 	
+	public function record_time($start, $stop)
+	{
+		if(is_string($start)) {
+			$start = (double)substr( $start, 11 ) + (double)substr( $start, 0, 8 );
+		}
+		if(is_string($stop)) {
+			$stop = (double)substr( $stop, 11 ) + (double)substr( $stop, 0, 8 );
+		}
+		$o =& DB::o();
+		$qrec &= end($o->queries);
+		$qrec[] = array($start, $stop);
+	}
+	
+	/**
+	 * function calc_time
+	 * Calculates query execution time using a query record
+	 * @param array A query record from DB::o()->queries
+	 * @returns float Seconds of execution
+	 **/
+	public function calc_time($queryrecord)
+	{
+		$times = array_slice($queryrecord, 2);
+		$total = 0;
+		foreach($times as $time) {
+			$total += $time[1] - $time[0];
+		}
+		return $total;
+	}
+	
+	/**
+	 * function calc_query_time
+	 * Calculates the execution time of all executed queries
+	 * @returns array Seconds of execution for each query
+	 **/
+	public function calc_query_time()
+	{
+		$o =& DB::o();
+		$times = array();
+		foreach($o->queries as $query) {
+			$times[] = DB::calc_time($query);
+		}
+		return $times;
+	}	 	 	 	 	
 	
 	/**
 	 * function get_errors

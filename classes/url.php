@@ -196,9 +196,10 @@ class URL
 	 * @param string The type of page the resource is (see the rules)
 	 * @param mixed Optional. An associative array or querystring of parameters used to fill the URL structure
 	 * @param boolean Optional. If true, any elements from $paramarray that are not used in the URL itself are added as a querystring
+	 * @param boolean Optional.  If true, only the value of $paramarray is used to determine the URL.	 
 	 * @return string A URL
 	 **/	 	 	 	  	 	 		
-	public function get( $pagetype, $paramarray = array(), $useall = true)
+	public function get( $pagetype, $paramarray = array(), $useall = true, $explicit = false )
 	{
 		global $url;
 		if ( $paramarray === false ) {
@@ -219,7 +220,9 @@ class URL
 		$params = Utils::get_params($paramarray);
 		
 		// Experimental:
-		$params = array_merge($gsettings, $params);
+		if(!$explicit) {
+			$params = array_merge($gsettings, $params);
+		}
 		
 		$fn = create_function( '$a', 'return $a[2] == "' . $pagetype . '";' );
 		$rules = array_filter( $rules, $fn );
@@ -280,7 +283,7 @@ class URL
 	 * </code>
 	 * 	 
 	 **/
-	public function get_url( $pagetype, $paramarray = array(), $useall = true )
+	public function get_url( $pagetype, $paramarray = array(), $useall = true, $explicit = false )
 	{
 		global $url;
 		if ( $paramarray === false ) {
@@ -289,11 +292,11 @@ class URL
 		$c = __CLASS__;
 		if ( $this instanceof $c ) {
 			// get_url() was called on an instance
-			$out = $this->get( $pagetype, $paramarray, $useall );
+			$out = $this->get( $pagetype, $paramarray, $useall, $explicit );
 		}
 		else {
 			// get_url() was called statically
-			$out = $url->get( $pagetype, $paramarray, $useall );
+			$out = $url->get( $pagetype, $paramarray, $useall, $explicit );
 		}
 		return $out;
 	}
@@ -311,7 +314,7 @@ class URL
 	 * @param string The type of page the resource is (see the rules)
 	 * @param mixed An associative array or querystring of parameters used to fill the URL structure
 	 **/
-	public function out( $pagetype, $paramarray = array(), $useall = true )
+	public function out( $pagetype, $paramarray = array(), $useall = true, $explicit = false )
 	{
 		global $url;
 		if ( $paramarray === false ) {
@@ -320,11 +323,11 @@ class URL
 		$c = __CLASS__;
 		if ( $this instanceof $c ) {
 			// out() was called on an instance
-			$out = $this->get( $pagetype, $paramarray, $useall );
+			$out = $this->get( $pagetype, $paramarray, $useall, $explicit );
 		}
 		else {
 			// out() was called statically
-			$out = $url->get( $pagetype, $paramarray, $useall );
+			$out = $url->get( $pagetype, $paramarray, $useall, $explicit );
 		}
 		echo $out;
 	}
@@ -388,6 +391,7 @@ class URL
 		$this->rules[] = array('year/month/day', 'ThemeHandler', 'date');
 		$this->rules[] = array('year/month', 'ThemeHandler', 'month');
 		$this->rules[] = array('year', 'ThemeHandler', 'year');
+		$this->rules[] = array('"tag"/tag/index', 'ThemeHandler', 'tag');
 		$this->rules[] = array('"tag"/tag', 'ThemeHandler', 'tag');
 		$this->rules[] = array('"tag"/tag/"atom"/index', 'AtomHandler', 'tag_collection');
 		$this->rules[] = array('"tag"/tag/"atom"', 'AtomHandler', 'tag_collection');
@@ -396,16 +400,17 @@ class URL
 		$this->rules[] = array('"atom"/"1"', 'AtomHandler', 'collection');
 		$this->rules[] = array('"atom"', 'AtomHandler', 'introspection');
 		$this->rules[] = array('"rsd"', 'AtomHandler', 'rsd');
+		$this->rules[] = array('"search"/criteria/"page"/index', 'ThemeHandler', 'search');
 		$this->rules[] = array('"search"', 'ThemeHandler', 'search');
 		$this->rules[] = array('"feed"/feedtype', 'ActionHandler', 'site_feed');
 		$this->rules[] = array('"comments"', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"comments"/feedtype', 'ActionHandler', 'comments_feed');
 		$this->rules[] = array('"changepass"', 'UserHandler', 'changepass');
 		$this->rules[] = array('"pingback"', 'ActionHandler', 'pingback');
+		$this->rules[] = array('"page"/index', 'ThemeHandler', 'home');
 		$this->rules[] = array('', 'ThemeHandler', 'home');
 		$this->rules[] = array('"index.php"', 'ThemeHandler', 'home');
 		$this->rules[] = array('"ajax"/action', 'ActionHandler', 'ajax');
-		$this->rules[] = array('"page"/index', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"page"/index', 'ThemeHandler', 'post');
 		$this->rules[] = array('slug/"atom"', 'AtomHandler', 'entry');
