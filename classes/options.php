@@ -105,6 +105,10 @@ class Options
 					$this->options[$name] = $result->value;
 				}
 			} else {
+				// Return some default values here
+				switch($name) {
+				case 'pagination': return 10;
+				}
 				return null;
 			}
 		}

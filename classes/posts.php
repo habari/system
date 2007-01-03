@@ -20,6 +20,8 @@
  **/      
 class Posts extends ArrayObject
 {
+	static private $get_param_cache; // Stores info about the last set of data fetched that was not a single value
+
 	/**
 	 * function __get
 	 * Returns properties of a Posts object.
@@ -63,7 +65,7 @@ class Posts extends ArrayObject
 		// defaults
 		//$status = Post::STATUS_PUBLISHED;  // Default (unset) is now the same as Post::STATUS_ANY
 		$orderby = 'pubdate DESC';
-		$limit = is_numeric(Options::get('pagination')) ? Options::get('pagination') : 10;
+		$limit = Options::get('pagination');
 
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params($paramarray);
@@ -86,7 +88,7 @@ class Posts extends ArrayObject
 				// safety mechanism to prevent empty queries
 				$where = array(1);
 				$paramset = array_merge($paramarray, $paramset);
-				
+
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != Post::STATUS_ANY ) ) {
 					$where[] = "status = ?";
 					$params[] = $paramset['status'];
@@ -113,6 +115,9 @@ class Posts extends ArrayObject
 		// Get any full-query parameters
 		extract($paramarray);
 
+		if ( isset( $page ) ) {
+			$offset = (intval($page) - 1) * intval($limit);
+		}
 
 		if ( isset( $fetch_fn ) ) {
 			if ( ! in_array( $fetch_fn, $fns ) ) {
@@ -124,19 +129,20 @@ class Posts extends ArrayObject
 		}
 		
 		// is a count being request?
-		if ( isset( $count ) )
-		{
+		if ( isset( $count ) ) {
 			$select = "COUNT($count)";
 			$fetch_fn = 'get_value';
 		}
-		if ( isset( $limit ) )
-		{
+		if ( isset( $limit ) ) {
 			$limit = " LIMIT $limit";
-			if ( isset( $offset ) )
-			{
+			if ( isset( $offset ) ) {
 				$limit .= " OFFSET $offset";
 			}
 		}
+		if ( isset( $nolimit ) ) {
+			$limit = '';
+		}
+		
 		$query = '
 		SELECT 
 		' . $select . '
@@ -157,6 +163,7 @@ class Posts extends ArrayObject
 		}
 		elseif ( is_array( $results ) )
 		{
+			self::$get_param_cache = $paramarray;
 			$c = __CLASS__;
 			return new $c( $results );
 		}
@@ -196,7 +203,18 @@ class Posts extends ArrayObject
 		$params = array( 'count' => 1, 'status' => $status );
 		return self::get( $params );
 	}
-	
+
+	/*
+	 * static count_last
+	 * return a count for the number of posts last queried
+	 * @return int the number of posts of specified type ( published or draft )
+	**/
+	public static function count_last()
+	{
+		$params = array_merge(self::$get_param_cache, array( 'count' => 'id', 'nolimit' => 1));
+		return self::get( $params );
+	}
+		
 	/*
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
@@ -236,7 +254,7 @@ class Posts extends ArrayObject
 	 * Returns a Posts containing posts that match the search criteria
 	 * @param string criteria	 
 	 **/	 	 	
-	public static function search( $criteria )
+	public static function search( $criteria, $page = 1 )
 	{
 		preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $criteria, $matches);
 		$words = $matches[0];
@@ -253,6 +271,7 @@ class Posts extends ArrayObject
 			array(
 				'where'=>$where,
 				'params'=>$params,
+				'page'=>$page,
 			) 
 		);
 	}
