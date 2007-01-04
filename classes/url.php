@@ -1,14 +1,10 @@
 <?php
 /**
- * Habari URL Class
- *
- * Requires PHP 5.0.4 or later
- * @package Habari
- */
-
-/**
  * class URL
+ *  
  * Examines the URL based on rules and returns data about what response might best fit the request
+ *  
+ * @package Habari
  **/  
 class URL
 {
@@ -23,7 +19,9 @@ class URL
 	
 	/**
 	 * constructor __construct
+	 * 	 
 	 * Builds the query info for the requested url, sets internal structures with found data
+	 * 	 
 	 * @param string A URL to process
 	 **/	 	 	 	 	
 	public function __construct( $url )
@@ -151,7 +149,8 @@ class URL
 	
 	/**
 	 * function handle_request
-	 * Act upon discovered results
+	 * 	 
+	 * Act upon discovered results, or display a 404.
 	 **/
 	public function handle_request()
 	{
@@ -166,10 +165,12 @@ class URL
 	
 	/**
 	 * function __get
+	 * 	 
 	 * Returns property values gathered from the URL.
 	 * This is the function that returns information about the set of posts that
 	 * was requested.  This function should offer property names that are identical
 	 * to properties of instances of the Posts class.
+	 * 	 
 	 * @param string Value of $settings to retrieve
 	 **/
 	public function __get($name)
@@ -183,9 +184,9 @@ class URL
 	
 	/**
 	 * function get
+	 * 	 
 	 * Returns a url for the specified resource.
 	 * May be called on an object, or statically if the $url global is set:
-	 * 
 	 * <code>
 	 * $foo = $url->get( 'tag', 'tag=my-tag' );
 	 * $foo = $url->get( 'tag', array( 'tag' => 'my-tag' ) );	  	 
@@ -273,15 +274,14 @@ class URL
 	
 	/**
 	 * function get_url
+	 * 	 
 	 * Alias for get()
 	 * Deprecate?  Use get() convention for objects that get things.
 	 * May be called on an object, or statically if the $url global is set:
-	 * 
 	 * <code>
 	 * $foo = $url->get_url('admin');
 	 * $foo = URL::get_url('admin');
 	 * </code>
-	 * 	 
 	 **/
 	public function get_url( $pagetype, $paramarray = array(), $useall = true, $explicit = false )
 	{
@@ -303,9 +303,9 @@ class URL
 	
 	/**
 	 * function out
+	 * 	 
 	 * Shortcut to echo the result of $this->get()
 	 * May be called on an object, or statically if the $url global is set:
-	 * 
 	 * <code>
 	 * $url->out('admin');
 	 * URL::out('admin');
@@ -334,10 +334,10 @@ class URL
 	
 	/**
 	 * function o
+	 * 	 
 	 * Returns the global $url object instance, whether set or not.
 	 * Instead of declaring $url as global everywhere, you can call it like
 	 * this for shorthand:	 
-	 * 
 	 * <code>
 	 * URL::o()->get('admin')	 
 	 * </code>
@@ -355,8 +355,11 @@ class URL
 	
 	/**
 	 * function init_rules()
+	 * 	 
 	 * Sets the basic rules for URL structures.  Will probably not remain in this format.
-	 * Called internally only from constructor.	 
+	 * Called internally only from constructor.
+	 * 	 
+	 * @todo Build sorting algorithm.	 	 
 	 **/	 	 	
 	protected function init_rules()
 	{

@@ -12,6 +12,7 @@
  * $list = $acl->members();
  * </code>
  *
+ * @package Habari
  */
 class acl {
 
