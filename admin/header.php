@@ -18,7 +18,7 @@
 			<a href="<?php Options::out('base_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
 		<div id="logout">
-			<a href="<?php URL::out('logout'); ?>" title="logout of Habari"><img src="/system/admin/images/logout.png" alt="Logout of Habari" /></a>
+			<a href="<?php URL::out('logout'); ?>" title="logout of Habari"><img src="<?php Options::out('base_url'); ?>system/admin/images/logout.png" alt="Logout of Habari" /></a>
 		</div>
 		<ol id="menu-items">
 			<?php $page = empty(URL::o()->settings['page']) ? 'overview' : URL::o()->settings['page']; ?>

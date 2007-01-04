@@ -46,7 +46,7 @@
 				} ?>
 		</div>
 		<div class="incoming">
-			<h4>Incoming Links (<a href="http://technorati.com/search/myintarweb.com" title="More incoming links">more</a> &raquo;)</h4>
+			<h4>Incoming Links (<a href="http://technorati.com/search/<?php Options::out('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
 			<ul id="incoming-links">
 				<li>
 					<img src="http://drbacchus.com/journal/favicon.ico" alt="favicon" /> <a href="http://wooga.drbacchus.com/journal" title="Dr Bacchus' Journal">Dr Bacchus' Journal</a>

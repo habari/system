@@ -20,7 +20,7 @@ class Locale
 	public static function set($locale)
 	{
 		self::$locale = $locale;
-		self::load_domain('habari');
+		//self::load_domain('habari');
 	}
 	
 	/**
