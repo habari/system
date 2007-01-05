@@ -108,6 +108,10 @@ class Format
 	 **/	 	 	 	 	  
 	public function tag_and_list($array, $between = ', ', $between_last = ' and ')
 	{
+		if ( ! is_array( $array ) )
+		{
+			$array = array ( $array );
+		}
 		$fn = create_function('$a', 'return "<a href=\\"" . URL::get( "tag", array( "tag" => $a), false, true ) . "\\">" . $a . "</a>";');
 		$array = array_map($fn, $array);
 		$last = array_pop($array);
