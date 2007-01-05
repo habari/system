@@ -117,9 +117,8 @@ class QueryRecord
 	 **/	 
 	public function update($table, $updatekeyfields = array() )
 	{
-		global $db;
-		
-		return DB::update($table, array_merge($this->fields, $this->newfields), $updatekeyfields);
+		$merge = array_merge($this->fields, $this->newfields);
+		return DB::update($table, array_diff_key($merge, $this->unsetfields), $updatekeyfields);
 	}
 	
 	/**
