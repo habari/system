@@ -58,6 +58,33 @@ class QueryRecord
 		}
 		return $this->__get($name);
 	}
+
+	/**
+	* function exclude_fields
+	* Registers a (list of) fields(s) as being managed exclusively by the database.
+	* @param mixed A database field name (string) or an array of field names
+	*/
+	public function exclude_fields( $fields )
+	{
+		if(is_array($fields)) 
+		{
+			$this->unsetfields = array_flip($fields);
+		}
+		else
+		{
+			$this->unsetfields[$fields] = $fields;
+		}
+	}
+
+	/**
+	* public function list_excluded_fields
+	* returns an array of fields that should not be included in any database insert operation
+	* @return array an array of field names
+	*/
+	public function list_excluded_fields()
+	{
+		return $this->unsetfields;
+	}
 	
 	/**
 	 * function insert
@@ -67,9 +94,8 @@ class QueryRecord
 	 **/	 
 	public function insert($table)
 	{
-		global $db;
-
-		return DB::insert($table, array_merge($this->fields, $this->newfields));
+		$merge =  array_merge($this->fields, $this->newfields);
+		return DB::insert($table, array_diff_key($merge, $this->unsetfields));
 	}
 	
 	/**

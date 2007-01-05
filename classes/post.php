@@ -57,6 +57,7 @@ class Post extends QueryRecord
 			$this->tags = $this->parsetags($this->fields['tags']);
 			unset( $this->fields['tags'] );
 		}
+		$this->exclude_fields('id');
 	}
 	
 	/**

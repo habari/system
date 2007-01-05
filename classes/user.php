@@ -36,6 +36,7 @@ class User extends QueryRecord
 			self::default_fields(),
 			$this->fields );
 		parent::__construct($paramarray);
+		$this->exclude_fields('id');
 	}
 
 	/**
