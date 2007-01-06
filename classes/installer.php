@@ -50,8 +50,19 @@ class Installer
 
 		// determine the database type
 		list($dbtype,$other) = explode( ':', $db_connection['connection_string'], 2 );
-		// load the proper schema
-		require_once HABARI_PATH . '/system/schema/schema.' . $dbtype . '.php';
+		// assign schema file to variable
+		$schema_file = HABARI_PATH . '/system/schema/schema.' . $dbtype . '.php';
+		// load the proper schema if it exists
+		if ( file_exists($schema_file) )
+		{
+			require_once( $schema_file );
+		} else
+		{
+			$error = "<p><strong>ERROR!  There is no schema file!</strong><br /><br />";
+			$error .= "You have selected " . $dbtype . " as the database engine for use with Habari, but the installer cannot find the schema file that describes the database.<br />\nThe file should be:<br />\n";
+			$error .= "&nbsp;&nbsp;&nbsp;<code>" . $schema_file . "</code></p>";
+			die( $error ); // FixMe: we need proper error messaging class
+		}
 		// create the tables
 		foreach ($queries as $query)
 		{
