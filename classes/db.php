@@ -35,7 +35,7 @@ class DB
 		try {
 			$this->dbh = new PDO($connection_string, $user, $pass);
 			$this->prefix = $prefix;
-			foreach (array('posts', 'options', 'users', 'tags', 'comments') as $table) {
+			foreach (array('posts', 'postinfo', 'poststatus', 'posttype', 'options', 'users', 'userinfo', 'tags', 'comments', 'commentinfo') as $table) {
 				$this->tables[$table] = $this->prefix . $table;
 			}
 		}
@@ -342,7 +342,7 @@ class DB
 			$values[] = $keyvalue;
 		}
 		$result = $o->get_row($qry, $values);
-		return ( !Error::is_error($result) );
+		return ( $result );
 	}
 	
 	/**
@@ -360,7 +360,6 @@ class DB
 		$o =& DB::o();
 		ksort($fieldvalues);
 		ksort($keyfields);
-
 		$keyfieldvalues = array();
 		foreach($keyfields as $keyfield => $keyvalue) {
 			if(is_numeric($keyfield)) {
@@ -370,7 +369,7 @@ class DB
 				$keyfieldvalues[$keyfield] = $keyvalue;
 			}
 		}
-		if($o->exists($table, $keyfieldvalues)) {
+		if( $o->exists($table, $keyfieldvalues) ) {
 			$qry = "UPDATE {$table} SET";
 			$values = array();
 			$comma = '';
