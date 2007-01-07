@@ -307,6 +307,25 @@ class Post extends QueryRecord
 		case 'tags':
 			$this->tags = $this->parsetags( $value );
 			return $this->get_tags();
+		case 'author':
+			if ( is_int( $value ) )
+			{
+				// a user ID was passed, so use it directly
+				$this->user_id = $value;
+				unset ( $this->author_object );
+			}
+			elseif ( is_string( $value ) )
+			{
+				// get the user ID of the user with this name
+				$this->author_object = User::get( $value );
+				$this->user_id = $this->author_object->id;
+			}
+			elseif ( if_object ( $value ) )
+			{
+				// a User object was passed, so just use the ID
+				$this->user_id = $value->id;
+				$this->author_object = $value;
+			}
 		}
 		return parent::__set( $name, $value );
 	}
@@ -358,11 +377,12 @@ class Post extends QueryRecord
 	/**
 	 * private function get_author()
 	 * returns a User object for the author of this post
+	 * @param bool Whether to use the cached version or not.  Default to true
 	 * @return User a User object for the author of the current post
 	**/
-	private function get_author()
+	private function get_author( $use_cache = TRUE )
 	{
-		if ( ! isset( $this->author_object ) )
+		if ( ! isset( $this->author_object ) || ( ! $use_cache)  )
 		{
 			$this->author_object = User::get( $this->user_id );
 		}
