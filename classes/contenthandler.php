@@ -23,13 +23,16 @@ class ContentHandler extends ActionHandler
 								'url'		=>	$_POST['url'],
 								'ip'		=>	preg_replace( '/[^0-9., ]/', '',$_SERVER['REMOTE_ADDR'] ),
 								'content'	=>	$_POST['content'],
-								'status'	=>	Comment::STATUS_APPROVED,
+								'status'	=>	Comment::STATUS_UNAPPROVED,
 								'date'		=>	gmdate('Y-m-d H:i:s'),
 								'type' => Comment::COMMENT
 						 	);
 			// Comment::create( $commentdata );  // This creates and saves, let's filter first
 			$comment = new Comment( $commentdata );
 			$comment = Plugins::filter('add_comment', $comment);
+			if( $comment->email == User::identify()->email ) {
+				$comment->status = Comment::STATUS_APPROVED;
+			}
 			$comment->insert();
 			// if no cookie exists, we should set one
 			$cookie = 'comment_' . Options::get('GUID');
