@@ -23,17 +23,15 @@ $queries = array(
 	name VARCHAR(255) NOT NULL PRIMARY KEY,
 	type smallint DEFAULT 0
 	);',
-'INSERT INTO ' . DB::o()->posttype . ' VALUES
-		(\'entry\', 0),
-		(\'page\', 1);',
+'INSERT INTO ' . DB::o()->posttype . ' VALUES (\'entry\', 0);',
+'INSERT INTO ' . DB::o()->posttype . ' VALUES (\'page\', 1);',
 'CREATE TABLE ' . DB::o()->poststatus . ' ( 
 	name VARCHAR(255) NOT NULL PRIMARY KEY,
 	type smallint DEFAULT 0
 	);',
-'INSERT INTO ' . DB::o()->poststatus . ' VALUES
-		(\'draft\', 0),
-		(\'published\', 1), 
-		(\'private\', 1);',
+'INSERT INTO ' . DB::o()->poststatus . ' VALUES (\'draft\', 0);',
+'INSERT INTO ' . DB::o()->poststatus . ' VALUES (\'published\', 1);',
+'INSERT INTO ' . DB::o()->poststatus . ' VALUES (\'private\', 1);',
 'CREATE TABLE ' . DB::o()->options . ' (
 	name varchar(50) PRIMARY KEY NOT NULL UNIQUE,
 	type integer DEFAULT 0,
