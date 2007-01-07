@@ -14,10 +14,17 @@ class Post extends QueryRecord
 	const STATUS_PRIVATE = 2;
 	
 	const STATUS_ANY = -1;  // For querying only, not for use as a stored value.
+	
+	const TYPE_POST = 0;
+	const TYPE_ENTRY = 0;
+	const TYPE_PAGE = 1;
+
+	const TYPE_ANY = -1;  // For querying only, not for use as a stored value.
 
 	private $tags = null;
 	private $comments = null;
 	private $author_object = null;
+	private $info_object = null;
 
 	/**
 	 * function default_fields
@@ -29,6 +36,7 @@ class Post extends QueryRecord
 		return array(
 			'id' => '',
 			'slug' => '',
+			'content_type' => self::TYPE_POST,
 			'title' => '',
 			'guid' => '',
 			'content' => '',
@@ -270,6 +278,9 @@ class Post extends QueryRecord
 		case 'author':
 			$out = $this->get_author();
 			break;
+		case 'info':
+			$out = $this->get_info();
+			break;
 		default:
 			$out = parent::__get( $name );
 			break;
@@ -356,6 +367,22 @@ class Post extends QueryRecord
 			$this->author_object = User::get( $this->user_id );
 		}
 		return $this->author_object;
+	}
+
+	/**
+	 * function get_info
+	 * 
+	 * Returns the post info array that is available for this post
+	 * @return array Post info for this post
+	 * @todo Create an info class to use instead of the array so that data written to the info "array" gets added to the database.	 	 
+	 **/
+	private function get_info()
+	{
+		if ( ! isset( $this->info_object ) ) {
+			// See @todo^^^
+			$this->info_object = DB::get_results('SELECT name, type, value FROM ' . DB::o()->postinfo . ' WHERE slug = ?', $this->slug);
+		}
+		return $this->info_object;
 	}
 }
 ?>

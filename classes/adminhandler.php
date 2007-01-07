@@ -338,7 +338,8 @@ class AdminHandler extends ActionHandler
 				guid as guid,
 				post_date as pubdate,
 				post_modified as updated,
-				(post_status = 'publish') as status 
+				(post_status = 'publish') as status,
+				(post_type = 'page') as content_type
 			FROM {$db_connection['prefix']}posts 
 			", array(), 'Post');
 		
