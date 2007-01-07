@@ -40,6 +40,31 @@ class DB
 			}
 		}
 		catch( Exception $e) {
+
+			// SQLite safety check
+			// determine the database type
+			list($dbtype,$dbfile) = explode( ':', $connection_string, 2 );
+			if ('sqlite' == $dbtype)
+			{
+				if ( ! file_exists($dbfile) )
+				{
+					// the SQLite data file does not exist
+					if ( ! is_writable( dirname($dbfile) ) )
+					{
+						// we cannot create the datafile
+						Error::raise( sprintf('The directory specified for the SQLite database is not writable by the web server.  Please adjust the permissions on: %s', dirname($dbfile) ) );
+					}
+				}
+				else
+				{
+					// the datafile exists
+					// can we access it?
+					if ( ! is_readable($dbfile) )
+					{
+						Error::raise( sprintf('The SQLite database file exists, but is not accessible.  Please check the permissions on %s', $dbfile) );
+					}
+				}
+			}
 			Error::raise( sprintf('Could not connect to database using the supplied credentials.  Please check config.php for the correct values. Further information follows: %s', $e->getMessage()) );		
 		}
 	}
