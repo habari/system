@@ -155,6 +155,10 @@ class Posts extends ArrayObject
 			{$orderby}{$limit}";
 //Utils::debug($fetch_fn, $query, $params);			
 		$results = DB::$fetch_fn( $query, $params, 'Post' );
+		if( Error::is_error( $results ) ) {
+			$results->out();
+			return array();
+		}
 	
 		if ( 'get_results' != $fetch_fn )
 		{

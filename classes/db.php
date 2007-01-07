@@ -32,25 +32,30 @@ class DB
 	 */	 	 	
 	public function __construct($connection_string, $user, $pass, $prefix) 
 	{
-		$this->dbh = new PDO($connection_string, $user, $pass);
-		$this->prefix = $prefix;
-		foreach (array('posts', 'options', 'users', 'tags', 'comments') as $table) {
-			$this->tables[$table] = $this->prefix . $table;
+		try {
+			$this->dbh = new PDO($connection_string, $user, $pass);
+			$this->prefix = $prefix;
+			foreach (array('posts', 'options', 'users', 'tags', 'comments') as $table) {
+				$this->tables[$table] = $this->prefix . $table;
+			}
+		}
+		catch( Exception $e) {
+			Error::raise( sprintf('Could not connect to database using the supplied credentials.  Please check config.php for the correct values. Further information follows: %s', $e->getMessage()) );		
 		}
 	}
 
 	/**
 	 * function __get
-	 * Returns a $db property if defined, or false
-	 * @param string Name of a property to return
-	 * @return mixed The requested field value
+	 * Returns a table name if defined, or an error
+	 * @param string Name of a table to return
+	 * @return string The table name
 	**/
 	public function __get( $name )
 	{
 		if ( isset( $this->tables[$name] ) ) {
 			return $this->tables[$name];
 		}
-		return false;
+		return Error::raise(sprintf('No table exists with the name %s', $name));
 	}
 	
 	/**
@@ -122,12 +127,12 @@ class DB
 			else {
 				$o->queryok = false;
 				$o->errors[] = array_merge($o->pdostatement->errorInfo(), array($query, $args));
-				return false;
+				return Error::raise( $o->pdostatement->errorInfo(), E_USER_WARNING );
 			}
 		}
 		$o->queryok = false;
 		$o->errors[] = array_merge($o->dbh->errorInfo(), array($query, $args));
-		return false;
+		return Error::raise( $o->dbh->errorInfo(), E_USER_WARNING );
 	}
 	
 	/**
@@ -235,12 +240,9 @@ class DB
 	public function get_results($query, $args = array(), $classname = '')
 	{
 		$o =& DB::o();
-		$o->query($query, $args, $classname);
-		if($o->queryok) {
-			return $o->pdostatement->fetchAll();
-		}
-		else
-			return false;
+		$prep = $o->query($query, $args, $classname);
+		if( Error::is_error($prep) ) return $prep;
+		return $o->pdostatement->fetchAll();
 	}
 	
 	/**
@@ -255,12 +257,9 @@ class DB
 	public function get_row($query, $args = array(), $classname = '')
 	{
 		$o =& DB::o();
-		$o->query($query, $args, $classname);
-		if($o->queryok) {
-			return $o->pdostatement->fetch();
-		}
-		else
-			return false;
+		$prep = $o->query($query, $args, $classname);
+		if( Error::is_error($prep) ) return $prep;
+		return $o->pdostatement->fetch();
 	}
 	
 	/**
@@ -274,12 +273,9 @@ class DB
 	public function get_column($query, $args = array())
 	{
 		$o =& DB::o();
-		$o->query($query, $args);
-		if($o->queryok) {
-			return $o->pdostatement->fetchAll(PDO::FETCH_COLUMN);
-		}
-		else
-			return false;
+		$prep = $o->query($query, $args);
+		if( Error::is_error($prep) ) return $prep;
+		return $o->pdostatement->fetchAll(PDO::FETCH_COLUMN);
 	}
 
 	/**
@@ -293,16 +289,10 @@ class DB
 	public function get_value( $query, $args = array() )
 	{
 		$o =& DB::o();
-		$o->query($query, $args);
-		if ( $o->queryok )
-		{
-			$result = $o->pdostatement->fetch(PDO::FETCH_NUM);
-			return $result[0];
-		}
-		else
-		{
-			return false;
-		}
+		$prep = $o->query($query, $args);
+		if( Error::is_error($prep) ) return $prep;
+		$result = $o->pdostatement->fetch(PDO::FETCH_NUM);
+		return $result[0];
 	}
 	
 	/**
@@ -352,7 +342,7 @@ class DB
 			$values[] = $keyvalue;
 		}
 		$result = $o->get_row($qry, $values);
-		return ($result !== false);
+		return ( !Error::is_error($result) );
 	}
 	
 	/**
