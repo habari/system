@@ -32,6 +32,8 @@ class ContentHandler extends ActionHandler
 			$comment = Plugins::filter('add_comment', $comment);
 			if( $comment->email == User::identify()->email ) {
 				$comment->status = Comment::STATUS_APPROVED;
+			} elseif( Comments::by_email( $comment->email )->count ) {
+				$comment->status = Comment::STATUS_APPROVED;
 			}
 			$comment->insert();
 			// if no cookie exists, we should set one
