@@ -32,7 +32,7 @@ class ContentHandler extends ActionHandler
 			$comment = Plugins::filter('add_comment', $comment);
 			if( $comment->email == User::identify()->email ) {
 				$comment->status = Comment::STATUS_APPROVED;
-			} elseif( Comments::by_email( $comment->email )->count ) {
+			} elseif( Comments::get( array( 'email' => $comment->email, 'status' => 1 ) )->count ) {
 				$comment->status = Comment::STATUS_APPROVED;
 			}
 			$comment->insert();
