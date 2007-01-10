@@ -32,55 +32,25 @@ class DB
 	 */	 	 	
 	public function __construct($connection_string, $user, $pass, $prefix) 
 	{
-		try {
-			$this->dbh = new PDO($connection_string, $user, $pass);
-			$this->prefix = $prefix;
-			foreach (array('posts', 'postinfo', 'poststatus', 'posttype', 'options', 'users', 'userinfo', 'tags', 'comments', 'commentinfo') as $table) {
-				$this->tables[$table] = $this->prefix . $table;
-			}
-		}
-		catch( Exception $e) {
-
-			// SQLite safety check
-			// determine the database type
-			list($dbtype,$dbfile) = explode( ':', $connection_string, 2 );
-			if ('sqlite' == $dbtype)
-			{
-				if ( ! file_exists($dbfile) )
-				{
-					// the SQLite data file does not exist
-					if ( ! is_writable( dirname($dbfile) ) )
-					{
-						// we cannot create the datafile
-						Error::raise( sprintf('The directory specified for the SQLite database is not writable by the web server.  Please adjust the permissions on: %s', dirname($dbfile) ) );
-					}
-				}
-				else
-				{
-					// the datafile exists
-					// can we access it?
-					if ( ! is_readable($dbfile) )
-					{
-						Error::raise( sprintf('The SQLite database file exists, but is not accessible.  Please check the permissions on %s', $dbfile) );
-					}
-				}
-			}
-			Error::raise( sprintf('Could not connect to database using the supplied credentials.  Please check config.php for the correct values. Further information follows: %s', $e->getMessage()) );		
+		$this->dbh = new PDO($connection_string, $user, $pass);
+		$this->prefix = $prefix;
+		foreach (array('posts', 'postinfo', 'posttype','poststatus','options', 'users','userinfo', 'tags', 'comments','commentinfo','tag2post','themes') as $table) {
+			$this->tables[$table] = $this->prefix . $table;
 		}
 	}
 
 	/**
 	 * function __get
-	 * Returns a table name if defined, or an error
-	 * @param string Name of a table to return
-	 * @return string The table name
+	 * Returns a $db property if defined, or false
+	 * @param string Name of a property to return
+	 * @return mixed The requested field value
 	**/
 	public function __get( $name )
 	{
 		if ( isset( $this->tables[$name] ) ) {
 			return $this->tables[$name];
 		}
-		return Error::raise(sprintf('No table exists with the name %s', $name));
+		return false;
 	}
 	
 	/**
@@ -152,12 +122,12 @@ class DB
 			else {
 				$o->queryok = false;
 				$o->errors[] = array_merge($o->pdostatement->errorInfo(), array($query, $args));
-				return Error::raise( $o->pdostatement->errorInfo(), E_USER_WARNING );
+				return false;
 			}
 		}
 		$o->queryok = false;
 		$o->errors[] = array_merge($o->dbh->errorInfo(), array($query, $args));
-		return Error::raise( $o->dbh->errorInfo(), E_USER_WARNING );
+		return false;
 	}
 	
 	/**
@@ -265,9 +235,12 @@ class DB
 	public function get_results($query, $args = array(), $classname = '')
 	{
 		$o =& DB::o();
-		$prep = $o->query($query, $args, $classname);
-		if( Error::is_error($prep) ) return $prep;
-		return $o->pdostatement->fetchAll();
+		$o->query($query, $args, $classname);
+		if($o->queryok) {
+			return $o->pdostatement->fetchAll();
+		}
+		else
+			return false;
 	}
 	
 	/**
@@ -282,9 +255,12 @@ class DB
 	public function get_row($query, $args = array(), $classname = '')
 	{
 		$o =& DB::o();
-		$prep = $o->query($query, $args, $classname);
-		if( Error::is_error($prep) ) return $prep;
-		return $o->pdostatement->fetch();
+		$o->query($query, $args, $classname);
+		if($o->queryok) {
+			return $o->pdostatement->fetch();
+		}
+		else
+			return false;
 	}
 	
 	/**
@@ -298,9 +274,12 @@ class DB
 	public function get_column($query, $args = array())
 	{
 		$o =& DB::o();
-		$prep = $o->query($query, $args);
-		if( Error::is_error($prep) ) return $prep;
-		return $o->pdostatement->fetchAll(PDO::FETCH_COLUMN);
+		$o->query($query, $args);
+		if($o->queryok) {
+			return $o->pdostatement->fetchAll(PDO::FETCH_COLUMN);
+		}
+		else
+			return false;
 	}
 
 	/**
@@ -314,10 +293,16 @@ class DB
 	public function get_value( $query, $args = array() )
 	{
 		$o =& DB::o();
-		$prep = $o->query($query, $args);
-		if( Error::is_error($prep) ) return $prep;
-		$result = $o->pdostatement->fetch(PDO::FETCH_NUM);
-		return $result[0];
+		$o->query($query, $args);
+		if ( $o->queryok )
+		{
+			$result = $o->pdostatement->fetch(PDO::FETCH_NUM);
+			return $result[0];
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	/**
@@ -367,7 +352,7 @@ class DB
 			$values[] = $keyvalue;
 		}
 		$result = $o->get_row($qry, $values);
-		return ( $result );
+		return ($result !== false);
 	}
 	
 	/**
@@ -385,6 +370,7 @@ class DB
 		$o =& DB::o();
 		ksort($fieldvalues);
 		ksort($keyfields);
+
 		$keyfieldvalues = array();
 		foreach($keyfields as $keyfield => $keyvalue) {
 			if(is_numeric($keyfield)) {
@@ -394,7 +380,7 @@ class DB
 				$keyfieldvalues[$keyfield] = $keyvalue;
 			}
 		}
-		if( $o->exists($table, $keyfieldvalues) ) {
+		if($o->exists($table, $keyfieldvalues)) {
 			$qry = "UPDATE {$table} SET";
 			$values = array();
 			$comma = '';
