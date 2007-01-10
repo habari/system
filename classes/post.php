@@ -14,17 +14,10 @@ class Post extends QueryRecord
 	const STATUS_PRIVATE = 2;
 	
 	const STATUS_ANY = -1;  // For querying only, not for use as a stored value.
-	
-	const TYPE_POST = 0;
-	const TYPE_ENTRY = 0;
-	const TYPE_PAGE = 1;
-
-	const TYPE_ANY = -1;  // For querying only, not for use as a stored value.
 
 	private $tags = null;
 	private $comments = null;
 	private $author_object = null;
-	private $info_object = null;
 
 	/**
 	 * function default_fields
@@ -36,7 +29,6 @@ class Post extends QueryRecord
 		return array(
 			'id' => '',
 			'slug' => '',
-			'content_type' => self::TYPE_POST,
 			'title' => '',
 			'guid' => '',
 			'content' => '',
@@ -44,6 +36,7 @@ class Post extends QueryRecord
 			'status' => self::STATUS_DRAFT,
 			'pubdate' => date( 'Y-m-d H:i:s' ),
 			'updated' => ( 'Y-m-d H:i:s' ),
+      'content_type' => 0
 		);
 	}
 
@@ -65,7 +58,6 @@ class Post extends QueryRecord
 			$this->tags = $this->parsetags($this->fields['tags']);
 			unset( $this->fields['tags'] );
 		}
-		$this->exclude_fields('id');
 	}
 	
 	/**
@@ -81,7 +73,7 @@ class Post extends QueryRecord
 	 **/	 	 	 	 	
 	static function get($paramarray = array())
 	{
-		global $url;
+		global $controller;
 		
 		// Defaults
 		$defaults = array (
@@ -97,8 +89,8 @@ class Post extends QueryRecord
 				'user_id' => $user->id,
 			);
 		}
-
-		$paramarray = array_merge( $url->settings, $defaults, Utils::get_params($paramarray) ); 
+    //print_r($controller);
+		$paramarray = array_merge( $controller->action->settings, $defaults, Utils::get_params($paramarray) ); 
 		return Posts::get( $paramarray );
 	}
 	
@@ -187,9 +179,10 @@ class Post extends QueryRecord
 
 	private function savetags()
 	{
-		DB::query( 'DELETE FROM ' . DB::o()->tags . ' WHERE slug = ?', array( $this->fields['slug'] ) );
+    if ( count($this->tags) == 0) {return;}
+		DB::query( 'DELETE FROM ' . DB::o()->tag2post . ' WHERE  = ?', array( $this->fields['slug'] ) );
 		foreach( (array)$this->tags as $tag ) { 
-			DB::query( 'INSERT INTO ' . DB::o()->tags . ' (slug, tag) VALUES (?,?)', 
+			DB::query( 'INSERT INTO ' . DB::o()->tag2post . ' (slug, tag) VALUES (?,?)', 
 				array( $this->fields['slug'], $tag ) 
 			); 
 		}
@@ -278,9 +271,6 @@ class Post extends QueryRecord
 		case 'author':
 			$out = $this->get_author();
 			break;
-		case 'info':
-			$out = $this->get_info();
-			break;
 		default:
 			$out = parent::__get( $name );
 			break;
@@ -307,25 +297,6 @@ class Post extends QueryRecord
 		case 'tags':
 			$this->tags = $this->parsetags( $value );
 			return $this->get_tags();
-		case 'author':
-			if ( is_int( $value ) )
-			{
-				// a user ID was passed, so use it directly
-				$this->user_id = $value;
-				unset ( $this->author_object );
-			}
-			elseif ( is_string( $value ) )
-			{
-				// get the user ID of the user with this name
-				$this->author_object = User::get( $value );
-				$this->user_id = $this->author_object->id;
-			}
-			elseif ( if_object ( $value ) )
-			{
-				// a User object was passed, so just use the ID
-				$this->user_id = $value->id;
-				$this->author_object = $value;
-			}
 		}
 		return parent::__set( $name, $value );
 	}
@@ -377,32 +348,15 @@ class Post extends QueryRecord
 	/**
 	 * private function get_author()
 	 * returns a User object for the author of this post
-	 * @param bool Whether to use the cached version or not.  Default to true
 	 * @return User a User object for the author of the current post
 	**/
-	private function get_author( $use_cache = TRUE )
+	private function get_author()
 	{
-		if ( ! isset( $this->author_object ) || ( ! $use_cache)  )
+		if ( ! isset( $this->author_object ) )
 		{
 			$this->author_object = User::get( $this->user_id );
 		}
 		return $this->author_object;
-	}
-
-	/**
-	 * function get_info
-	 * 
-	 * Returns the post info array that is available for this post
-	 * @return array Post info for this post
-	 * @todo Create an info class to use instead of the array so that data written to the info "array" gets added to the database.	 	 
-	 **/
-	private function get_info()
-	{
-		if ( ! isset( $this->info_object ) ) {
-			// See @todo^^^
-			$this->info_object = DB::get_results('SELECT name, type, value FROM ' . DB::o()->postinfo . ' WHERE slug = ?', $this->slug);
-		}
-		return $this->info_object;
 	}
 }
 ?>
