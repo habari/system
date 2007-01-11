@@ -23,6 +23,11 @@ class Bitmask {
    * @param on    on or off?
    */
   public function __set($bit, $on) {
+    if ($bit == 'value') {
+      // To set the actual value of the bitmask (i.e. from the DB)
+      $this->value= $on;
+      return true;
+    }
     if (!is_bool($on)) 
       return false;
     if ($on)
