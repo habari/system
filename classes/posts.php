@@ -87,11 +87,15 @@ class Posts extends ArrayObject
 			foreach($wheresets as $paramset) {
 				// safety mechanism to prevent empty queries
 				$where = array(1);
-				$paramset = array_merge((array) $paramarray, (array) $paramset);
+				$paramset = array_merge($paramarray, $paramset);
 
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != Post::STATUS_ANY ) ) {
 					$where[] = "status = ?";
 					$params[] = $paramset['status'];
+				}
+				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != Post::TYPE_ANY ) ) {
+					$where[] = "content_type = ?";
+					$params[] = $paramset['content_type'];
 				}
 				if ( isset( $paramset['slug'] ) ) {
 					$where[] = "slug = ?";
@@ -102,7 +106,7 @@ class Posts extends ArrayObject
 					$params[] = $paramset['user_id'];
 				}
 				if ( isset( $paramset['tag'] ) ) {
-					$join .= ' JOIN ' . DB::o()->tag2post . ' ON ' . DB::o()->posts . '.id = ' . DB::o()->tag2post . '.post_id';
+					$join .= ' JOIN ' . DB::o()->tags . ' ON ' . DB::o()->posts . '.slug = ' . DB::o()->tags . '.slug';
 					// Need tag expression parser here.			
 					$where[] = 'tag = ?';
 					$params[] = $paramset['tag'];
@@ -155,6 +159,10 @@ class Posts extends ArrayObject
 			{$orderby}{$limit}";
 //Utils::debug($fetch_fn, $query, $params);			
 		$results = DB::$fetch_fn( $query, $params, 'Post' );
+		if( Error::is_error( $results ) ) {
+			$results->out();
+			return array();
+		}
 	
 		if ( 'get_results' != $fetch_fn )
 		{
@@ -211,7 +219,7 @@ class Posts extends ArrayObject
 	**/
 	public static function count_last()
 	{
-		$params = array_merge((array) self::$get_param_cache, array( 'count' => 'id', 'nolimit' => 1));
+		$params = array_merge(self::$get_param_cache, array( 'count' => 'id', 'nolimit' => 1));
 		return self::get( $params );
 	}
 		
