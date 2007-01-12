@@ -111,6 +111,7 @@ class Options
 				// Return some default values here
 				switch($name) {
 				case 'pagination': return 10;
+				case 'host_url': return "http://" . $this->hostname . $this->base_url;
 				}
 				return null;
 			}
