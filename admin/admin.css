@@ -401,6 +401,24 @@ ul.menu-list li a:hover
 	margin: 0.0em;
 }
 
+.publish h4 
+{
+	border:0px;
+}
+
+.publish input, .publish textarea
+{
+	border: 1px solid #CACACA;
+}
+
+.publish #tagbox p {
+}
+
+.publish #tagbox #tags {
+	width: 50%;
+	float:right;
+}
+
 /*=== @r ===*/
 
 #recent-comments h4
