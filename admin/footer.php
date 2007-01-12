@@ -5,5 +5,6 @@
 		</ul>
 		<p><a href="http://code.google.com/p/habari/" title="Habari">Habari</a><small> - Spread the News</small></p>
 	</div>
+</div>
 </body>
 </html>

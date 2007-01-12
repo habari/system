@@ -65,10 +65,10 @@
 					<?php echo $draft->title; ?>
 				</li>
 			<?php } ?>
-			</ul>
 			<?php } else {
-				_e('<p>There are currently no drafts in process</p>');
+				_e('<li>There are currently no drafts in process</li>');
 			} ?>
+			</ul>
 	</div>
 	<div class="dashbox c3" id="recent-comments">
 		<h4>Recent Comments 
