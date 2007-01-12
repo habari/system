@@ -3,27 +3,64 @@
 <head profile="http://gmpg.org/xfn/11">
 	<title>Habari Administration</title>
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Options::out('base_url'); ?>system/admin/admin.css" />
-	<script src="<?php Options::out('base_url'); ?>scripts/jquery.js"></script>
-	<script>
-	window.onload = function() {
-	    $("tbody/tr:nth-child(even)").addClass("even");
-	    $("ul>li:nth-child(even)").addClass("even");
-	};
+	<script src="<?php Options::out('host_url'); ?>scripts/jquery.js" type="text/javascript"></script>
+	<script src="<?php Options::out('host_url'); ?>scripts/support.js" type="text/javascript"></script>
+	<script type="text/javascript">
+  $(document).ready(function(){
+    $("tbody/tr:nth-child(even)").addClass("even");
+    $(".dashbox ul>li:nth-child(even)").addClass("even");
+    $("#stats td+td").addClass('value');
+		$("#menu .menu-item").hover(
+			function(){ $("ul", this).fadeIn("fast"); }, 
+			function() { } 
+		);
+  	if (document.all) {
+			$("#menu .menu-item").hoverClass("sfHover");
+		}
+  });
+	$.fn.hoverClass = function(c) {
+		return this.each(function(){
+			$(this).hover( 
+				function() { $(this).addClass(c);  },
+				function() { $(this).removeClass(c); }
+			);
+		});
+	};  
 	</script>
 </head>
 <body>
 <div id="page">
-	<div id="menu">
+	<div id="menubar">
 		<div id="site-name">
-			<a href="<?php Options::out('base_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
+			<a href="<?php Options::out('host_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
-		<div id="logout">
-			<a href="<?php URL::out('logout'); ?>" title="logout of Habari"><img src="<?php Options::out('base_url'); ?>system/admin/images/logout.png" alt="Logout of Habari" /></a>
-		</div>
-		<ol id="menu-items">
+		<ol id="menu">
 			<?php $page = empty(URL::o()->settings['page']) ? 'overview' : URL::o()->settings['page']; ?>
-			<li <?php echo ($page == 'overview') ? 'id="current-item"' : ''; ?>><a href="<?php Options::out('base_url'); ?>admin/" title="Overview of your site">Admin</a></li>
-			<li <?php echo ($page == 'publish') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=publish'); ?>" title="Edit the content of your site">Publish</a></li>
-			<li <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>><a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Manage</a></li>
+			<li class="menu-item" <?php echo ($page == 'overview') ? 'id="current-item"' : ''; ?>>
+				<a href="<?php Options::out('base_url'); ?>admin/" title="Overview of your site">Admin</a>
+				<ul class="menu-list">
+					<li><a href="<?php URL::out('admin', 'page=options'); ?>">Options</a></li>
+					<li><a href="<?php URL::out('admin', 'page=plugins'); ?>">Plugins</a></li>
+					<li><a href="<?php URL::out('admin', 'page=themes'); ?>">Themes</a></li>
+					<li><a href="<?php URL::out('admin', 'page=users'); ?>">Users</a></li>
+					<li><a href="<?php URL::out('admin', 'page=import'); ?>">Import</a></li>
+				</ul>
+			</li>
+			<li class="menu-item" <?php echo ($page == 'publish') ? 'id="current-item"' : ''; ?>>
+				<a href="<?php URL::out('admin', 'page=publish'); ?>" title="Edit the content of your site">Publish</a>
+				<ul class="menu-list">
+					<li><a href="<?php URL::out('admin', 'page=post'); ?>">Post Entry</a></li>
+					<li><a href="<?php URL::out('admin', 'page=post&type=page'); ?>">Page</a></li>
+				</ul>
+			</li>
+			<li class="menu-item" <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>>
+				<a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Manage</a>
+				<ul class="menu-list">
+					<li><a href="<?php URL::out('admin', 'page=moderate'); ?>">Comments</a></li>
+				</ul>
+			</li>
+			<li class="menu-item" id="logout">
+				<a href="<?php URL::out('logout'); ?>" title="logout of Habari">Logout</a>
+			</li>
 		</ol>
 	</div>

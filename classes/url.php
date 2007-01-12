@@ -178,6 +178,8 @@ class URL
 		switch($name) {
 		case 'onepost':
 			return ($this->handleraction == 'post');
+		case 'stub':
+			return $this->stub;
 		}
 		return false;
 	}

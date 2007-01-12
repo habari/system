@@ -109,7 +109,7 @@ class Installer
 			Utils::debug('Errors:', DB::get_errors());
 		}
 		echo "<p>Congratulations, Habari is now installed!</p>";
-		echo "<p>Click <a href='{$options->base_url}'>here</a> to continue.</p>";
+		echo "<p>Click <a href='{$options->host_url}'>here</a> to continue.</p>";
 		die;
 	}
 	

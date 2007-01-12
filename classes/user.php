@@ -122,7 +122,7 @@ class User extends QueryRecord
 		// delete the cookie
 		$cookie = "habari_" . Options::get('GUID');
 		setcookie($cookie, ' ', time() - 86400, Options::get('siteurl'));
-		$home = Options::get('base_url');
+		$home = Options::get('host_url');
 		header( "Location: " . $home );
 		exit;
 	}

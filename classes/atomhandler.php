@@ -255,14 +255,14 @@ entrysnippet;
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{$options->title}</title>
 	<subtitle>{$options->tagline}</subtitle>
-	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->base_url}" />
+	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->host_url}" />
 	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->title}" />
 	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
 	<link rel="comments" type="application/atom+xml" href="{$local['commentscollectionurl']}" />
 	<updated>{$local['feedupdated']}</updated>
 	<rights>{$local['copyright']}</rights>
 	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
-	<id>http://{$_SERVER["HTTP_HOST"]}{$options->base_url}</id>
+	<id>{$options->host_url}</id>
 
 feedpreamble;
 
@@ -318,12 +318,12 @@ postentry;
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>{$options->title}</title>
 	<subtitle>{$options->tagline}</subtitle>
-	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->base_url}{$local['tagurl']}" />
+	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->host_url}{$local['tagurl']}" />
 	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
 	<updated>{$local['feedupdated']}</updated>
 	<rights>{$local['copyright']}</rights>
 	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
-	<id>http://{$_SERVER["HTTP_HOST"]}{$options->base_url}</id>
+	<id>{$options->host_url}</id>
 
 feedpreamble;
 
@@ -431,7 +431,7 @@ postentry;
 	<updated>{$local['feedupdated']}</updated>
 	<rights>{$local['copyright']}</rights>
 	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
-	<id>http://{$_SERVER["HTTP_HOST"]}{$options->base_url}</id>
+	<id>{$options->host_url}</id>
 
 feedpreamble;
 

@@ -6,7 +6,14 @@
 */
 
 /*=== @a ===*/
-a { text-decoration: none; color: #000; }
+a { 
+	text-decoration: none; 
+	color: #344d61;
+}
+
+a:visited {
+	color: #5aa6ae;
+}
 
 /*=== @b ===*/
 body
@@ -33,52 +40,137 @@ body
 	font-size: 1.3em;
 }
 
-#current-item
+/*#menubar #current-item a
 {
-	background: #9FA600;
+	background: #5095A0 url(images/bar-back-active.png) repeat scroll 0px 0px;
 	font-size: 0.9em;
 	padding: 0.4em 0.0em;
-}
+}*/
 
 /*=== @d ===*/
-.drafts
-{
+
+.dashbox {
 	float: left;
-	/*width: 22.5em;*/
-	width: 50%;
-	margin: 0 40px 1.0em 0;
+	margin: 0px 1.5%;
+	width: 30%;
+	_width: 28%;
 }
 
-.drafts h4
+.dashbox.r {
+	float:right;
+}
+
+.c2 {
+	width: 63%;
+	_width: 59%
+}
+
+.c3 {
+	clear: both;
+	width: 97%;
+	_width: 91%
+}
+
+.dashbox a:hover
+{
+	text-decoration: underline;
+}
+
+.dashbox table
+{
+	width: 100%;
+	font-size: 0.9em;
+	color: #6A6A6A;
+	margin-top: 1.0em;
+}
+
+.dashbox table td
+{
+	font-size: 0.9em;
+	color: #6A6A6A;
+	padding: 0.2em 0.0em 0.2em 0.2em;
+}
+
+.dashbox table th
+{
+	font-weight: normal;
+}
+
+.dashbox table .value
+{
+	text-align: right;
+}
+
+.dashbox table th
+{
+	font-weight: bold;
+}
+
+.dashbox ul
+{
+	margin-left: 0.0em;
+	padding-left: 0.0em;
+}
+
+.dashbox ul li
+{
+	list-style: none;
+	font-size: 0.9em;
+	color: #6A6A6A;
+	padding: 0.2em 0.0em 0.2em 0.2em;
+	width: 99%;
+}
+
+/*
+.dashbox a:link, .dashbox a:visited:link
+{
+	color: #7fbac0;
+}
+*/
+
+#drafts h4
 {
 	background: transparent url(images/page_edit.png) no-repeat left top;
-	text-indent: 1.5em;
+	text-indent: 20px;
 }
 
 /*=== @e ===*/
 .even
 {
-	background: #EFF0D6;
+	background: #E7F2F4;
 }
 
 /*=== @f ===*/
 #footer
 {
-	float: left;
-	display: inline;
+	clear: both;
 	text-align: left;
-	width: 100%;
+	padding:10px 0px 0px 60px;
+	background: transparent url(images/habari-logo.png) no-repeat left center;
 }
 
 #footer p
 {
-	background: transparent url(images/habari-logo.png) no-repeat left center;
-	color: #6A6A6A;
-	height: 48px;
-	text-indent: 2.0em;
-	padding-top: 1.0em;
-	font-size: 1.5em;
-	margin: 0.0em 0px 1.6em 16px;
+	padding: 10px 0px 10px 0px;
+	margin: 0px;
+	clear:both;
+	border-top: 1px solid #CACACA;
+}
+
+#footer ul
+{
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#footer li
+{
+	display: inline;
+	float: left;
+	margin: 0px;
+	padding: 0px 10px 0px 0px;
+	font-size: xx-small;
 }
 
 form p
@@ -99,22 +191,13 @@ input[type=text]
 	width: 99%;
 }
 
-.incoming
-{
-	float: left;
-	display: inline;
-	/*width: 17.0em;*/
-	width: 40%;
-	margin: 0 0px 1.6em 0;
-}
-
-.incoming h4
+#incoming h4
 {
 	background: transparent url(images/technorati.png) no-repeat left top;
-	text-indent: 1.5em;
+	text-indent: 20px;
 }
 
-.incoming ul li img
+#incoming ul li img
 {
 	border: none;
 	width: 16px;
@@ -141,45 +224,9 @@ h4
 }
 
 /*=== @l ===*/
-#left-column
-{
-	float:left;
-	display: inline;
-	min-width: 42.0em;
-	_width: 42.00em;
-	width: 70%;
-	margin: 0.0em 0.0em 0.0em 1.0em;
-}
-
-#left-column h1
-{
-	margin-top: 0.0em;
-	font-size: 1.3em;
-}
-
-#left-column p
-{
-	font-size: 0.8em;
-	color: #333;
-	line-height: 1.5em;
-	margin-bottom: 0.0em;
-	margin-right: 1.0em;
-}
-
-#logout
-{
-	float: right;
-	display: inline;
-	padding-right: 0.5em;
-}
-
-#logout img
-{
-	border: none;
-}
 
 /*=== @m ===*/
-#menu
+#menubar
 {
 	float: left;
 	background: transparent url(images/bar-back.png) repeat-x;
@@ -190,34 +237,111 @@ h4
 	clear: both;
 	text-align: left;
 	height: 36px;
+	/* Locks up my IE: */
+	/* width:expression(document.body.clientWidth < 1000 ? "1000px" : "auto" ); */ 
 }
 
-#menu ol
+#menu
 {
 	margin-top: 0.0em;
 	float: right;
 	display: inline;
+	list-style: none;
 }
 
-#menu ol li
+.menu-item
 {
-	display: inline;
-	list-style: none;
+	background: url(images/bar-back-button.png);
+	display: block;
+	float:left;
 	font-size: 0.8em;
 	font-weight: normal;
-	margin: 0.2em 0.5em;
+	margin: 0px;
 	line-height: 1.8em;
 }
 
-#menu-items a, #site-name a
+#menubar a
 {
 	color: #fff;
-	padding: 0.4em 1.0em;
+	padding: 0px 0.8em;
 }
 
-#menu-items a:hover
+#menubar .menu-item a {
+	padding: 0px 32px 0px 10px;
+	display: block;
+	height: 25px;
+	_width: 10px;
+	background: url(images/bar-back-drop.png) no-repeat right top;
+}
+#menubar #menu .menu-item .menu-list a {
+	width: auto;
+}
+
+#menu li.menu-item:hover {
+	background: url(images/bar-back-active.png) no-repeat left top;
+}
+#menu li.menu-item:hover a {
+	background: url(images/bar-back-active-drop.png) no-repeat right top;
+}
+
+#menu li.menu-item:hover .menu-list a,
+#menu li.sfHover .menu-list a {
+	background: #326074;
+}
+
+#menu li.menu-item:hover .menu-list a:hover,
+#menu li.sfHover .menu-list a:hover {
+	background: #5AA6AE;
+}
+
+
+#menu-item a:hover
 {
-	background-color: #9FA600;
+	background: #5aa6ae;
+}
+
+#menubar .menu-item .menu-list a {
+	background: #335c71;
+}
+
+#menu li.menu-item:hover ul,
+#menu li.sfHover ul
+{
+	top: 22px;
+}
+
+#menubar #logout.menu-item a
+{
+	background: #da9f6e url(images/logout.png);
+	padding: 0px;
+	text-indent: -9999px;
+	width: 65px;
+}
+
+
+
+ul.menu-list 
+{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	top: -999em;
+	right: 63px;
+	width: 252px;
+}
+
+ul.menu-list li a 
+{
+	background: #334d61;
+	display:block;
+	width: 100%;
+	padding: 3px;
+}
+
+ul.menu-list li a:hover 
+{
+	background: #5aa6ae;
 }
 
 /*=== @o ===*/
@@ -261,7 +385,7 @@ h4
 .options ul li small a:link,
 .options ul li small a:visited:link
 {
-	color: #9FA600;
+	color: #7fbac0;
 }
 
 .options ul li small a:hover,
@@ -278,37 +402,11 @@ h4
 }
 
 /*=== @r ===*/
-.recent-comments, .content
-{
-	float: left;
-	/*width: 42.0em;*/
-	width: 96%;
-	margin: 0 0px 1.6em 0;
-}
 
-.recent-comments h4
+#recent-comments h4
 {
 	background: transparent url(images/comments.png) no-repeat left center;
 	text-indent: 1.5em;
-}
-
-.recent-comments table
-{
-	font-size: 0.9em;
-	color: #6A6A6A;
-	margin-top: 1.0em;
-}
-
-.recent-comments table td
-{
-	font-size: 0.9em;
-	color: #6A6A6A;
-	padding: 0.2em 0.0em 0.2em 0.2em;
-}
-
-.recent-comments table th
-{
-	font-weight: normal;
 }
 
 .right
@@ -338,70 +436,25 @@ h4
 	line-height: 1.7em;
 }
 
-.stats
-{
-	float: left;
-	/*width: 22.5em;*/
-	width: 50%;
-	margin: 0 40px 1.0em 0;
-}
-
-.stats h4
+#stats h4
 {
 	background: transparent url(images/chart_bar.png) no-repeat left top;
-	text-indent: 1.5em;
+	text-indent: 20px;
 }
 
-.stats ul, .drafts ul,
-.system-info ul, .incoming ul,
-.help-menu ul
+#support 
 {
-	margin-left: 0.0em;
-	padding-left: 0.0em;
+	clear:both;
+	margin: 20px 0px 0px;
 }
 
-.stats ul li, .drafts ul li, 
-.incoming ul li, .help-menu ul li
-{
-	list-style: none;
-	font-size: 0.9em;
-	color: #6A6A6A;
-	padding: 0.2em 0.0em 0.2em 0.2em;
-	width: 99%;
-}
-
-.stats a:link, .drafts a:link,
-.stats a:visited:link, .drafts a:visited:link,
-.recent-comments a:link, .recent-comments a:visited:link,
-.system-info a:link, .system-info a:visited:link
-{
-	color: #9FA600;
-}
-
-.stats a:hover, .drafts a:hover,
-.stats a:visited:hover, .drafts a:visited:hover,
-.recent-comments a:hover, .recent-comments a:visited:hover,
-.system-info a:hover, .system-info a:visited:hover
-{
-	text-decoration: underline;
-}
-
-.system-info
-{
-	float: left;
-	display: inline;
-	/*width: 17.0em;*/
-	width: 40%;
-	margin: 0 0px 1.6em 0;
-}
-
-.system-info h4
+#system-info h4
 {
 	background: transparent url(images/brick.png) no-repeat left top;
 	text-indent: 1.5em;
 }
 
-.system-info ul li
+#system-info ul li
 {
 	list-style: none;
 	background: transparent;
@@ -432,3 +485,34 @@ textarea
 	font-color: #fff;
 	padding: 0.5em;
 }
+
+/*=== @w ===*/
+
+#welcome
+{
+	margin-bottom: 10px;
+}
+
+#welcome h1
+{
+	margin-top: 0.0em;
+	font-size: 1.3em;
+}
+
+#welcome p
+{
+	font-size: 0.8em;
+	color: #333;
+	line-height: 1.5em;
+	margin-bottom: 0px;
+	margin-right: 1.0em;
+	width: 60%
+}
+
+
+/*=== unalphabetized ===*/
+
+.options-list {
+/*	display: none;*/
+}
+
