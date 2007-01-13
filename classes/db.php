@@ -438,5 +438,25 @@ class DB
 		return $o->query( $qry, $values );
 	}
 
+	/**
+	 * Helper function to return the last inserted sequence or
+	 * auto_increment field.  Useful when doing multiple inserts
+	 * within a single transaction -- for example, adding dependent
+	 * related rows.
+	 *
+	 * @return  mixed The last sequence value (RDBMS-dependent!)
+	 * @see     http://us2.php.net/manual/en/function.pdo-lastinsertid.php
+	*/
+	public function last_insert_id() {
+		if ( func_num_args() == 1 )
+		{
+			return $this->dbh->lastInsertId( func_get_arg( 0 ) );
+		}
+		else
+		{
+			return $this->dbh->lastInsertId();
+		}
+	}
 }
+
 ?>
