@@ -38,7 +38,7 @@ if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 	echo "<p><strong>" . $settings['error'] . "</strong></p>";
 }
 ?>
-<form method="post">
+<form method="post" action="">
 <strong>Add a new user</strong><br />
 Username:<br />
 <input type="text" size="40" name="username" value="<?php echo ( isset( $settings['username'] ) ) ? $settings['username'] : ''; ?>" /><br />
