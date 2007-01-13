@@ -6,26 +6,26 @@
 	<script src="<?php Options::out('host_url'); ?>scripts/jquery.js" type="text/javascript"></script>
 	<script src="<?php Options::out('host_url'); ?>scripts/support.js" type="text/javascript"></script>
 	<script type="text/javascript">
-  $(document).ready(function(){
-    $("tbody/tr:nth-child(even)").addClass("even");
-    $(".dashbox ul>li:nth-child(even)").addClass("even");
-    $("#stats td+td").addClass('value');
-		$("#menu .menu-item").hover(
-			function(){ $("ul", this).fadeIn("fast"); }, 
-			function() { } 
-		);
-  	if (document.all) {
-			$("#menu .menu-item").hoverClass("sfHover");
-		}
-  });
-	$.fn.hoverClass = function(c) {
-		return this.each(function(){
-			$(this).hover( 
-				function() { $(this).addClass(c);  },
-				function() { $(this).removeClass(c); }
-			);
-		});
-	};  
+  		$(document).ready(function(){
+		    $("tbody/tr:nth-child(even)").addClass("even");
+		    $(".dashbox ul>li:nth-child(even)").addClass("even");
+		    $("#stats td+td").addClass('value');
+				$("#menu .menu-item").hover(
+					function(){ $("ul", this).fadeIn("fast"); }, 
+					function() { } 
+				);
+		  	if (document.all) {
+					$("#menu .menu-item").hoverClass("sfHover");
+				}
+		  });
+			$.fn.hoverClass = function(c) {
+				return this.each(function(){
+					$(this).hover( 
+						function() { $(this).addClass(c);  },
+						function() { $(this).removeClass(c); }
+					);
+				});
+			};  
 	</script>
 </head>
 <body>
@@ -56,7 +56,9 @@
 			<li class="menu-item" <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>>
 				<a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Manage</a>
 				<ul class="menu-list">
+					<li><a href="<?php URL::out('admin', 'page=content'); ?>">Content</a></li>
 					<li><a href="<?php URL::out('admin', 'page=moderate'); ?>">Comments</a></li>
+					<li><a href="<?php URL::out('admin', 'page=spam'); ?>">Spam</a></li>
 				</ul>
 			</li>
 			<li class="menu-item" id="logout">

@@ -1,12 +1,12 @@
 <div id="content-area">
-<div class="dashbox c3" id="welcome">
+	<div class="dashbox c3" id="welcome">
 		<h1>Unapproved Comments</h1>
-		<?php if( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) { ?>
+		<?php if( Comments::count_total( Comment::STATUS_SPAM ) ) { ?>
 		<p>Below you will find comments awaiting moderation.</p>
 	<form method="post" name="moderation">
 	<p class="submit"><input type="submit" name="moderate" value="Moderate!" /> <input type="checkbox" name="mass_delete" id="mass_delete" value="mass_delete">Delete 'em all</p>
 	<ul id="waiting">
-		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_UNAPPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ){ ?>
+		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ){ ?>
 		<li>
 			Comment by <?php echo $comment->name;?> on <a href="<?php URL::get( 'post', array( 'slug' => $comment->post_slug ) ); ?>"><?php echo $comment->post_slug; ?></a>
 			<br /><small>(Commented created on <?php echo $comment->date; ?>)</small>
