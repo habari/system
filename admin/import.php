@@ -1,6 +1,7 @@
 <div id="content-area">
-	<div id="left-column">
-
+	<div class="dashbox c3" id="welcome">
+		<h1>Import your old blog content</h1>
+		<p>With this form you can migrate all your post, page, comment and user content to Habari.</p>
 		<form method="post">
 			<dl>
 				<dt>Connection String<dt>

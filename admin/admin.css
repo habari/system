@@ -145,8 +145,10 @@ body
 {
 	clear: both;
 	text-align: left;
-	padding:10px 0px 0px 60px;
+	padding: 20px 0px 0px 40px;
+	margin: 0px 1.5%;
 	background: transparent url(images/habari-logo.png) no-repeat left center;
+	background-position: 0 15px;
 }
 
 #footer p
@@ -267,7 +269,7 @@ h4
 }
 
 #menubar .menu-item a {
-	padding: 0px 32px 0px 10px;
+	padding: 1px 32px 0px 10px;
 	display: block;
 	height: 25px;
 	_width: 10px;
@@ -318,17 +320,15 @@ h4
 	width: 65px;
 }
 
-
-
 ul.menu-list 
 {
 	list-style: none;
-	margin: 0;
+	margin: 2px 0 0 0;
 	padding: 0;
 	position: absolute;
 	top: -999em;
-	right: 63px;
-	width: 252px;
+	right: 64px;
+	width: 248px;
 }
 
 ul.menu-list li a 
@@ -447,10 +447,10 @@ ul.menu-list li a:hover
 	float: left;
 	display: inline;
 	background: transparent url(images/home.png) no-repeat;
-	background-position: 1.0em 0.0em;
+	background-position: 1.0em 0.1em;
 	text-indent: 2.2em;
 	font-size: 0.8em;
-	padding-top: 0.1em;
+	padding-top: 0.2em;
 	line-height: 1.7em;
 }
 

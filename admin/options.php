@@ -1,5 +1,5 @@
 <div id="content-area">
-	<div id="left-column">
+	<div class="dashbox c3" id="welcome">
 		<h1>Manage Options</h1>
 		<p>Below are the options currently set on your site.</p>
 	<?php 

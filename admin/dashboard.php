@@ -15,6 +15,7 @@
 			<tr><td>Total Posts</td><td><?php echo Posts::count_total(); ?></td></tr>
 			<tr><td>Your Post Count</td><td><?php echo Posts::count_by_author( User::identify()->id ); ?></td></tr>
 			<tr><td>Number of Comments</td><td><?php echo Comments::count_total(); ?></td></tr>
+			<tr><td>Number of Spam Comments (<a href="<?php Options::out('host_url'); ?>admin/spam" title="Manage Spam">manage &raquo;</a>)</td><td><?php echo Comments::count_total( Comment::STATUS_SPAM); ?></td></tr>
 		</table>
 	</div>
 	<div class="dashbox" id="system-info">
@@ -96,7 +97,7 @@
 					<a href="<?php echo $recent->url; ?>"><?php echo $recent->url; ?></a>
 					<?php endif; ?></td>
 					<td align="center">
-						<a href="<?php Options::out('base_url'); ?><?php echo $recent->post_slug; ?>" title="View this post"><img src="<?php Options::out('host_url'); ?>system/admin/images/view.png" alt="View this comment" /></a>
+						<a href="<?php Options::out('base_url'); ?><?php echo $recent->post_slug; ?>#comment-<?php echo $recent->id; ?>" title="View this post"><img src="<?php Options::out('host_url'); ?>system/admin/images/view.png" alt="View this comment" /></a>
 						<img src="<?php Options::out('host_url'); ?>system/admin/images/edit.png" alt="Edit this comment" />
 						<img src="<?php Options::out('host_url'); ?>system/admin/images/delete.png" alt="Delete this comment" />
 					</td>

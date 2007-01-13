@@ -1,7 +1,8 @@
 <div id="content-area">
-	<div id="left-column">
-		<div class="recent-comments">
-			<h4>Currently Available Plugins</h4>
+	<div class="dashbox c3" id="welcome">
+		<h1>Currently Available Plugins</h1>
+		<p>Activate, deactivate and remove plugins through this interface.</p>
+		<div class="dashbox c3">
 			<table cellspacing="0" width="100%">
 				<thead>
 					<tr>
