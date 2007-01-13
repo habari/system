@@ -94,13 +94,13 @@ class Locale
 	 * @param string The domain to search for the message	 
 	 * @return string The appropriately translated string
 	 **/       
-	public static function _n($singular, $plural, $count, $domain = 'habari')
+	public static function _n( $singular, $plural, $count, $domain= 'habari' )
 	{
-		if ( isset( self::$messages[$domain][$text] ) ) {
-			return ($count == 1) ? self::$messages[$domain][$text][1][0] : self::$messages[$domain][$text][1][1];
+		if ( isset( self::$messages[$domain][$singular] ) ) {
+			return ( $count == 1 ? self::$messages[$domain][$singular][1][0] : self::$messages[$domain][$singular][1][1] );
 		}
 		else {
-			return ($count == 1) ? $singular : $plural;
+			return ( count == 1 ? $singular : $plural );
 		}
 	}
 }
