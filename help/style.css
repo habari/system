@@ -1,5 +1,5 @@
 /*=== @a ===*/
-a { text-decoration: none; color: #9FA600; font-weight: bold; }
+a { text-decoration: none; color: #5aa6ae; font-weight: nromal; }
 a:hover { text-decoration: underline; }
 /*=== @b ===*/
 body
@@ -14,13 +14,25 @@ body
 /*=== @c ===*/
 #content
 {
-	float: right;
+	float: left;
 	display: inline;
 	min-height: 100%;
-	margin-top: 2.7em;
-	width: 27.0em;
+	margin: 2.7em 0px 0px 250px;
 	padding:  0.0em 1.0em;
 	border-left: 1px solid #ccc;
+}
+
+/*=== @f ===*/
+
+#search_help 
+{
+	float: right;
+	margin-top: 3px;
+}
+
+#search_help input 
+{
+	border: 1px solid #cacaca;
 }
 
 /*=== @m *===*/
@@ -37,14 +49,14 @@ body
 	height: 36px;
 }
 
-#menu ol
+#menu #menu-items
 {
 	margin-top: 0.0em;
 	float: right;
 	display: inline;
 }
 
-#menu ol li
+#menu #menu-items li
 {
 	display: inline;
 	list-style: none;
@@ -72,9 +84,11 @@ body
 	position: fixed;
 	float: left;
 	display: inline;
-	margin-top: 3.5em;
+	margin-top: 2.5em;
 	margin-left: -1.0em;
 	margin-right: 0.5em;
+	width: 250px;
+	padding: 0px 0px 0px 10px;
 }
 
 /*=== @p ===*/
@@ -98,19 +112,19 @@ body
 	text-align: justify;
 }
 
-#page ul
+#page ul, #page ol
 {
-	margin: -1.0em auto 0.0em auto;
+	margin: 0px;
 	padding-left: 1.0em;
 }
 
-#page ul li
+#page ul li, #page ol li
 {
 	display: block;
 	background: transparent;
 	list-style: none;
 	font-size: 0.9em;
-	padding: 0.2em 1.4em;
+	padding: 0.2em 0em 0.2em 0px;
 }
 
 /*=== @s ===*/

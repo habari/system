@@ -2,7 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://gmpg.org/xfn/11">
 	<title>Habari Help Center</title>
-		<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="search.js"></script>
 </head>
 <body>
 <div id="page">
@@ -10,20 +12,47 @@
 	<div id="site-name">
 		<a href="index.html" title="Back to home">Help Home</a>
 	</div>
-	<ol id="menu-items">
-		<li>
-			<form name="search_help" id="search_help" action="/" method="GET">
-				Search&nbsp; <input type="text" name="search" id="search" />
-			</form>
-		</li>
-	</ol>
+	<form name="search_help" id="search_help" action="/" method="get" style="display:none;">
+		Search&nbsp; <input type="text" name="search" id="search" />
+	</form>
 </div>
 <div id="nav-menu">
 <ul id="help-list">
-	<li>&raquo; <a href="create-content.html" title="Creating Content">Creating Content</a></li>
-	<li>&raquo; <a href="manage-content.html" title="Managing Content">Managing Content</a></li>
-	<li>&raquo; <a href="plugins.html" title="Working with Plugins">Working with Plugins</a></li>
-	<li>&raquo; <a href="themes.html" title="Working with Themes">Working with Themes</a></li>
+<li><a href="#">Getting Started Guide</a>
+	<ul>
+		<li><a href="#">Dive Into Habari</a>
+			<ol>
+				<li><a href="#">Requirements Outline</a></li>
+				<li><a href="#">Moving from another CMS or Blogging Platform</a></li>
+				<li><a href="#">How to Install Habari</a></li>
+				<li><a href="#">Configuring Habari</a></li>
+				<li><a href="#">Creating Content</a></li>
+				<li><a href="#">Managing Content</a></li>
+				<li><a href="#">Customizing Habari</a></li>
+			</ol>
+		</li>
+		<li><a href="#">Dive Into Blogging</a>
+			<ol>
+				<li><a href="#">Introduction to Blogging</a></li>
+				<li><a href="#">Suggested Reading</a></li>
+			</ol>
+		</li>
+	</ul>
+</li>
+<li><a href="#">About Habari</a>
+	<ol>
+		<li><a href="#">Introduction to Habari</a></li>
+		<li><a href="#">Goals, Aims, Purposes (Mission Statement)</a></li>
+		<li><a href="#">What does Habari do?</a></li>
+		<li><a href="#">The Habari Community</a>
+			<ul>
+				<li><a href="#">Who is Habari?</a></li>
+				<li><a href="#">Support Community</a></li>
+			</ul>
+		</li>
+		<li><a href="#">Licensing</a></li>
+	</ol>
+</li>
 </ul>
 </div>
 <div id="content">
