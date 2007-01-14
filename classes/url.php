@@ -222,6 +222,7 @@ class URL
 		}
 
 		$params = Utils::get_params($paramarray);
+		$params = str_replace(' ', '+', $params);
 		
 		// Experimental:
 		if(!$explicit) {
