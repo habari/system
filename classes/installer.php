@@ -64,9 +64,14 @@ class Installer
 			die( $error ); // FixMe: we need proper error messaging class
 		}
 		// create the tables
+		DB::clear_errors();
 		foreach ($queries as $query)
 		{
 			DB::query($query);
+			if ( DB::has_errors() )
+			{
+				Error::raise('There was an error creating the Habari database tables. Installation halted.');
+			}
 		}
 
 		// Create the default options
