@@ -20,6 +20,8 @@
 		<p><textarea id="about" name="about"><?php Options::out('about'); ?></textarea></p>
 		<p>Number of items per page:</p>
 		<p><input type="text" name="pagination" value="<?php Options::out('pagination'); ?>" /></p>
+		<p><label>Theme</label></p>
+		<p><input type="text" name="theme_dir" value="<?php Options::out('theme_dir'); ?>" /></p>
 		<p><input type="submit" value="Update Options!" /></p>
 	</form>
 </div>
