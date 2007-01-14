@@ -176,12 +176,14 @@ class Post extends QueryRecord
 	{
 		if( is_string( $tags ) )
 		{
-			preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $tags, $matches);
-			return $matches[0];
+			preg_match_all('/(?<=")([\\S][^"]*)(?=")|([#-~]+)/', $tags, $matches);
+			// we want to suppress duplicate tags
+			return array_unique($matches[0]);
 		}
 		elseif( is_array( $tags ) )
 		{
-			return $tags;
+			// we want to suppress duplicate tags
+			return array_unique($tags);
 		}
 	}
 
