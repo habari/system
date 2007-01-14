@@ -154,6 +154,30 @@ class Utils
 			$_COOKIE = self::stripslashes($_COOKIE);
 		}
 	}
+
+	/**
+	 * function quote_spaced
+	 * Adds quotes around values that have spaces in them
+	 * @param string A string value that might have spaces
+	 * @return string The string value, quoted if it has spaces
+	 */
+	static function quote_spaced( $value )
+	{
+		return (strpos($value, ' ') === false) ? $value : '"' . $value . '"';
+	}	 	 	 	 	
+	
+	/**
+	 * function implode_quoted
+	 * Behaves like the implode() function, except it quotes values that contain spaces
+	 * @param string A separator between each value
+	 * @param	array An array of values to separate
+	 * @return string The concatenated string
+	 */	 	 
+	static function implode_quoted( $separator, $values )
+	{
+		$values = array_map(array('Utils', 'quote_spaced'), $values);
+		return implode( $separator, $values );
+	}
 	
 	/**
 	 * function archive_pages

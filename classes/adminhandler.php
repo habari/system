@@ -163,7 +163,7 @@ class AdminHandler extends ActionHandler
 								 );
 				$post = Post::create( $postdata );
 			}
-			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) ) );
+			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug, true, false ) ) );
 		} 
 		else 
 		{
