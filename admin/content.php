@@ -13,9 +13,9 @@
 	}
 	?>
 	</div>
-	<div class="dashbox c3" id="content">
+	<div class="dashbox c3" id="content-published">
 		<h4>Published Entries</h4>
-			<table id="post-data" width="100%" cellspacing="0">
+			<table id="post-data-published" width="100%" cellspacing="0">
 				<thead>
 					<tr>
 						<th align="left">Title</th>
@@ -42,9 +42,9 @@
 				<?php } ?>
 			</table>
 	</div>
-	<div class="dashbox c3" id="content">
+	<div class="dashbox c3" id="content-draft">
 		<h4>Entries Currently in Draft</h4>
-			<table id="post-data" width="100%" cellspacing="0">
+			<table id="post-data-draft" width="100%" cellspacing="0">
 				<thead>
 					<tr>
 						<th align="left">Title</th>
