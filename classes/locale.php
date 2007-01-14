@@ -100,7 +100,7 @@ class Locale
 			return ( $count == 1 ? self::$messages[$domain][$singular][1][0] : self::$messages[$domain][$singular][1][1] );
 		}
 		else {
-			return ( count == 1 ? $singular : $plural );
+			return ( $count == 1 ? $singular : $plural );
 		}
 	}
 }
