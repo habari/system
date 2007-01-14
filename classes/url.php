@@ -51,6 +51,7 @@ class URL
 		// Break apart the stub
 		$parts = explode( '/', $this->stub );
 		if( $parts[0] == '' ) $parts = array();
+		$parts = array_map('urldecode', $rule_parts);
 
 		// Skip rules that don't have the same path part count 
 		$fn = create_function('$a', 'return ($a[0] != "" && count(explode("/",$a[0])) == ' . count($parts) . ') || ($a[0] == "" && ' . count($parts) . ' == 0);');
