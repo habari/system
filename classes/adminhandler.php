@@ -422,7 +422,7 @@ class AdminHandler extends ActionHandler
 		function post_spam( $settings )
 		{
 			if( isset( $_POST['mass_spam_delete'] ) ) {
-				Comment::mass_delete();
+				Comment::mass_delete( STATUS_SPAM );
 			}
 			elseif( is_array( $_POST['spam_delete'] ) ) {
 				foreach( $_POST['spam_delete'] as $destroy ) {

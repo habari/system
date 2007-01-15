@@ -114,7 +114,7 @@ class Comment extends QueryRecord
 	 * function delete
 	 * Deletes an existing comment
 	 */	 	 	 	 	
-	public function delete($id)
+	public function delete( $id )
 	{
 		return parent::delete( DB::o()->comments, array('id'=>$id) );
 	}
@@ -123,9 +123,9 @@ class Comment extends QueryRecord
 	* function massdelete
 	* Burninates all the comments currently awaiting moderation
 	*/
-	public function mass_delete()
+	public function mass_delete( $status = STATUS_UNAPPROVED )
 	{
-		return parent::delete( DB::o()->comments, array( 'status' => STATUS_UNAPPROVED ) );
+		return parent::delete( DB::o()->comments, array( 'status' => $status ) );
 	}
 	
 	/**
