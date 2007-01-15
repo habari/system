@@ -393,7 +393,7 @@ class AdminHandler extends ActionHandler
 	}
 	
 	/**
-	 * function post_delete
+	 * function post_moderate
 	 * Handles the submission of the comment moderation form.
 	 * @param array An array of information found in the post array
 	 **/
@@ -413,5 +413,27 @@ class AdminHandler extends ActionHandler
 		}
 			Utils::redirect( URL::get( 'admin', 'page=moderate&result=success' ) );
 		}
+		
+		/**
+		 * function post_spam
+		 * Handles the submission of the spam moderation form.
+		 * @param array An array of information found in the post array
+		 **/
+		function post_spam( $settings )
+		{
+			if( isset( $_POST['mass_spam_delete'] ) ) {
+				Comment::mass_delete();
+			}
+			elseif( is_array( $_POST['spam_delete'] ) ) {
+				foreach( $_POST['spam_delete'] as $destroy ) {
+					Comment::delete( $destroy );
+				}
+			} elseif( is_array( isset( $_POST['spam_approve'] ) ) ) {
+				foreach( $_POST['spam_approve'] as $promote ) {
+					Comment::publish( $promote );
+				}
+			}
+				Utils::redirect( URL::get( 'admin', 'page=spam&result=success' ) );
+			}		
 	}
 ?>
