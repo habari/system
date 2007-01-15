@@ -24,7 +24,7 @@ class UserHandler extends ActionHandler
 			if( !($user = user::authenticate( $_POST['name'], $_POST['pass'] ) )  ) {
 				// set an error.
 				$url->settings['error'] = "badlogin";
-				// unset the password the use tried
+				// unset the password the user tried
 				$_POST['pass'] = '';
 			}
 		}
