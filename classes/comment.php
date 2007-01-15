@@ -45,16 +45,6 @@ class Comment extends QueryRecord
 	 **/	 	 	 	
 	public function __construct( $paramarray = array() )
 	{
-		// these are the fields for which the explicit value
-		// NULL should be inserted into the database
-		$nulls= array('name', 'email', 'url');
-		foreach ( $nulls as $check_null )
-		{
-			if ( '' == $paramarray[$check_null] )
-			{
-				$paramarray[$check_null]= NULL;
-			}
-		}
 		// Defaults
 		$this->fields = array_merge(
 			self::default_fields(),
@@ -157,7 +147,7 @@ class Comment extends QueryRecord
 	 **/	 	 
 	public function __get( $name )
 	{
-		if ( ( 'name' == $name ) && ( NULL == parent::__get( $name ) ) )
+		if ( ( 'name' == $name ) && ( '' == parent::__get( $name ) ) )
 		{
 			return __('Anonymous');
 		}
