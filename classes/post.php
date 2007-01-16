@@ -142,14 +142,14 @@ class Post extends QueryRecord
 			$value = 'Post';
 		}
 		
-		$slug = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) );
+		$slug= trim( strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) ), '-' );
 		$postfix = '';
 		$postfixcount = 0;
 		do {
 			$slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::o()->posts . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) );
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
-		} while ($slugcount->ct != 0);
-		$this->newfields[ 'slug' ] = $slug . $postfix;
+		} while ( $slugcount->ct != 0 );
+		$this->newfields[ 'slug' ]= $slug . $postfix;
 		return $this->newfields[ 'slug' ];
 	}
 
