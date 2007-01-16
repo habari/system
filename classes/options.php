@@ -110,8 +110,20 @@ class Options
 			} else {
 				// Return some default values here
 				switch($name) {
-				case 'pagination': return 10;
-				case 'host_url': return "http://" . $this->hostname . $this->base_url;
+					case 'pagination': return 10;
+					case 'host_url': {
+						// If we're running on a port other than 80, add the port number
+						// to the value returned from host_url
+						$port= 80; // Default in case not set.
+						if ( isset($_SERVER['SERVER_PORT']) ) {
+							$port= $_SERVER['SERVER_PORT'];
+						}
+						$portpart = "";
+						if ( $port != 80 ) {
+							$portpart= ":$port";
+						}
+						return "http://" . $this->hostname . $portpart . $this->base_url;
+					}
 				}
 				return null;
 			}
