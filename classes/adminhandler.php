@@ -113,10 +113,14 @@ class AdminHandler extends ActionHandler
 	 **/	 	 	 	
 	public function post_options($settings)
 	{
-		foreach ($_POST as $option => $value)
-		{
-			if ( Options::get($option) != $value )
-			{
+		// I feel unclean
+		$option_init= array(
+			'pingback_send' => FALSE,
+			'comments_require_id' => FALSE,
+		);
+		
+		foreach ( array_merge( $option_init, $_POST ) as $option => $value ) {
+			if ( Options::get( $option ) != $value ) {
 				Options::set($option, $value);
 			}
 		}
@@ -309,7 +313,11 @@ class AdminHandler extends ActionHandler
 		 * This function needs to validate the import form fields,
 		 * and then forward the import information on to an import function
 		 * rather than doing the import right here.
-		 **/		  
+		 **/
+		// TODO this function ought to be instantiating an Importer class instead of doing all the work here
+		
+		// bandaid
+		$pingback_send= Options::get( 'pingback_send' );		  
 	
 		$db_connection= array(
 			'connection_string' => $settings['connection'],  // MySQL Connection string
@@ -395,6 +403,9 @@ class AdminHandler extends ActionHandler
 			$c->insert();
 		}
 		
+		// bandaid
+		Options::set( 'pingback_send', $pingback_send );
+				  
 		echo '<p>All done, your content has been imported.</p>';
 		
 		// Redirect back to a URL with a notice?
