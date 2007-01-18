@@ -206,10 +206,13 @@ class Post extends QueryRecord
 		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
 		$this->setslug();
 		$this->setguid();
-		$result = parent::insert( DB::o()->posts );
+		$result= parent::insert( DB::o()->posts );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
+		// XXX TODO this should be a hook
+		if ($this->status == 'publish')
+			Pingback::pingback_all_links($this->fields['content'], $this->get_permalink());
 		return $result;
 	}
 
@@ -226,6 +229,9 @@ class Post extends QueryRecord
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
+		// XXX TODO this should be a hook
+		if ($this->status == 'publish')
+			Pingback::pingback_all_links($this->fields['content'], $this->get_permalink());
 		return $result;
 	}
 	
