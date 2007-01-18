@@ -211,7 +211,7 @@ class Post extends QueryRecord
 		$this->newfields = array();
 		$this->savetags();
 		// XXX TODO this should be a hook
-		if ($this->status == 'publish')
+		if ($this->status == 1) // why isn't this 'publish' here?
 			Pingback::pingback_all_links($this->fields['content'], $this->get_permalink());
 		return $result;
 	}
@@ -230,7 +230,7 @@ class Post extends QueryRecord
 		$this->newfields = array();
 		$this->savetags();
 		// XXX TODO this should be a hook
-		if ($this->status == 'publish')
+		if ($this->status == 1)
 			Pingback::pingback_all_links($this->fields['content'], $this->get_permalink());
 		return $result;
 	}
