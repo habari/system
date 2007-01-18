@@ -17,6 +17,9 @@ class RPCClient {
 	 */
 	function __construct( $url, $method, $params )
 	{
+		if ( ! function_exists( 'xmlrpc_encode_request' ) ) {
+			return Error::raise( 'xmlrpc extension not found' );
+		}
 		$this->url= $url;
 		$this->method= $method;
 		$this->params= $params;
