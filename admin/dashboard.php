@@ -22,9 +22,9 @@
 		<h4>System Health</h4>
 		<ul>
 			<li>&raquo; You are running Habari <?php Options::out('version'); ?>.</li>
-			<li>&raquo; A Habari <a href="http://habariblog.org/download" title="A habari Update is available">Update is Available</a>.</li>
-			<li>&raquo; <a href="plugins" title="Updates Ready">3 plugins</a> have updates ready.</li>
-			<li>&raquo; An <a href="http://www.chrisjdavis.org/download/believe2.zip" title="An Update is Available">Update is Available</a> for your Theme.</li>
+			<li>&raquo; An <a href="#" title="Go to the release notes">Update for Habari</a> is available.</li>
+			<li>&raquo; There are <a href="plugins" title="Plugin updates">3 Updates for Plugins</a> available.</li>
+			<li>&raquo; An <a href="#" title="Download the updated theme">Update for your Theme</a> is available</li>
 		</ul>
 	</div>
 	<div class="dashbox" id="incoming">
