@@ -109,10 +109,10 @@ class RemoteRequest
 		$this->url= $this->merge_query_params( $this->url, $this->params );
 		
 		if ( $this->method === 'POST' ) {
-			$this->headers['Content-Length']= strlen( $this->body );
+			$this->add_header( array( 'Content-Length' => strlen( $this->body ) ) );
 			if ( ! isset( $this->headers['Content-Type'] ) ) {
 				// TODO should raise a warning
-				$this->headers['Content-Type']= 'application/x-www-form-urlencoded';
+				$this->add_header( array( 'Content-Type' => 'application/x-www-form-urlencoded' ) );
 			}
 		}
 	}
@@ -127,8 +127,8 @@ class RemoteRequest
 		$this->prepare();
 		$result= $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
 		if ( $result ) {
-			$this->response_body= $this->processor->get_response_body();
 			$this->response_headers= $this->processor->get_response_headers();
+			$this->response_body= $this->processor->get_response_body();
 			$this->executed= TRUE;
 			
 			return TRUE;

@@ -18,10 +18,10 @@ class SocketRequestProcessor implements RequestProcessor
 	
 	public function execute( $method, $url, $headers, $body, $timeout )
 	{
-		list( $headers, $body )= $this->_request( $method, $url, $headers, $body, $timeout );
+		list( $response_headers, $response_body )= $this->_request( $method, $url, $headers, $body, $timeout );
 		
-		$this->response_headers= $headers;
-		$this->response_body= $body;
+		$this->response_headers= $response_headers;
+		$this->response_body= $response_body;
 		$this->executed=TRUE;
 		
 		return TRUE;
@@ -45,15 +45,16 @@ class SocketRequestProcessor implements RequestProcessor
 		
 		$fp= fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
-		// timeout to fsockopen() only applies for connecting
-		stream_set_timeout( $fp, $timeout );
-		
 		if ( !$fp ) {
 			return Error::raise( sprintf( 'Could not connect to %s:%d. Aborting.', $urlbits['host'], $urlbits['port'] ) );
 		}
 		
-		// fix host
+		// timeout to fsockopen() only applies for connecting
+		stream_set_timeout( $fp, $timeout );
+		
+		// fix headers
 		$headers['Host']= $urlbits['host'];
+		$headers['Connection']= 'close';
 		
 		// merge headers into a list
 		$merged_headers= array();
@@ -73,7 +74,11 @@ class SocketRequestProcessor implements RequestProcessor
 			$request[]= $body;
 		}
 		
-		if ( ! fwrite( $fp, implode( "\r\n", $request ) ) ) {
+		$request[]= '';
+		
+		$out= implode( "\r\n", $request );
+				
+		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
 			return Error::raise( 'Error writing to socket.' );
 		}
 		
@@ -82,6 +87,8 @@ class SocketRequestProcessor implements RequestProcessor
 		while ( ! feof( $fp ) ) {
 			$in.= fgets( $fp, 1024 );
 		}
+		
+		fclose( $fp );
 		
 		list( $header, $body )= explode( "\r\n\r\n", $in );
 		
