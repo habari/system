@@ -18,7 +18,7 @@ class SocketRequestProcessor implements RequestProcessor
 	
 	public function execute( $method, $url, $headers, $body, $timeout )
 	{
-		list( $headers, $body )= _request( $method, $url, $headers, $body, $timeout );
+		list( $headers, $body )= $this->_request( $method, $url, $headers, $body, $timeout );
 		
 		$this->response_headers= $headers;
 		$this->response_body= $body;
@@ -35,7 +35,7 @@ class SocketRequestProcessor implements RequestProcessor
 			$urlbits['port']= 80;
 		}
 		
-		return _work( $method, $urlbits, $headers, $body, $timeout );
+		return $this->_work( $method, $urlbits, $headers, $body, $timeout );
 	}
 	
 	private function _work( $method, $urlbits, $headers, $body, $timeout )
