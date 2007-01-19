@@ -19,6 +19,7 @@ class Error
 	public function __construct( $error_message, $severity = E_USER_ERROR)
 	{
 		$this->message = $error_message;
+		//$this->out();
 		if( $severity == E_USER_ERROR ) {
 			$this->out();
 			die();
@@ -43,7 +44,7 @@ class Error
 	static public function error_handler( $errno, $errstr, $errfile, $errline, $errcontext )
 	{
 		if( $errno != 0 ) {
-			$error = new Error( $errstr, $errno );
+			$error = new Error( sprintf('%s:%d: %s', $errfile, $errline, $errstr), $errno );
 		}
 	}
 	
@@ -54,7 +55,12 @@ class Error
 	 */
 	public function out()
 	{
-		echo $this->message;
+		if (is_scalar($this->message)) {
+			echo $this->message . "<br />\n";
+		}
+		else {
+			echo var_export($this->message, TRUE) . "<br />\n";
+		}
 	}
 	
 	/**
