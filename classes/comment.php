@@ -13,6 +13,8 @@ class Comment extends QueryRecord
 	const STATUS_UNAPPROVED = 0;
 	const STATUS_APPROVED = 1;
 	const STATUS_SPAM = 2;
+	
+	const STATUS_DELETED = 3;  // These will eventually need to be deleted!
 
 	const COMMENT = 0;
 	const PINGBACK =1;

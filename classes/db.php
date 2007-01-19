@@ -40,7 +40,6 @@ class DB
 			}
 		}
 		catch( Exception $e) {
-
 			// SQLite safety check
 			// determine the database type
 			list($dbtype,$dbfile) = explode( ':', $connection_string, 2 );
@@ -363,8 +362,16 @@ class DB
 
 		$values = array();
 		foreach($keyfieldvalues as $keyfield => $keyvalue) {
-			$qry .= " AND {$keyfield} = ? ";
-			$values[] = $keyvalue;
+			if ( is_array( $keyvalue ) )
+			{
+				$inlist = implode(',', $o->escape_array($keyvalue));
+				$qry .= " AND {$keyfield} IN ({$inlist}) ";
+			}
+			else
+			{
+				$qry .= " AND {$keyfield} = ? ";
+				$values[] = $keyvalue;
+			}
 		}
 		$result = $o->get_row($qry, $values);
 		return ( $result );
@@ -406,8 +413,14 @@ class DB
 			$qry .= ' WHERE 1 ';
 			
 			foreach($keyfields as $keyfield => $keyvalue) {
-				$qry .= "AND {$keyfield} = ? ";
-				$values[] = $keyvalue;
+				if ( is_array( $keyvalue ) ) {
+					$inlist = implode(',', $o->escape_array($keyvalue));
+					$qry .= " AND {$keyfield} IN ({$inlist}) ";
+				}
+				else {
+					$qry .= "AND {$keyfield} = ? ";
+					$values[] = $keyvalue;
+				}
 			}
 			return $o->query($qry, $values);
 		}
@@ -457,6 +470,19 @@ class DB
 			return $this->dbh->lastInsertId();
 		}
 	}
+	
+	/**
+	 * Helper function to escape an array of values.
+	 * 
+	 *@param array An array of values
+	 *@param PDO::type_constant Optional. The type of the values that are being escaped 	 
+	 *@return array The array of values, escaped
+	 */
+	public function escape_array($array, $type = PDO::PARAM_STR)
+	{
+		$types= array_fill(0, count($array), $type);
+		return array_map(array($this->dbh, 'quote'), $array, $types);
+	}	 
 }
 
 ?>
