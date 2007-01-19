@@ -88,6 +88,43 @@ class Comments extends ArrayObject
 			return new $c ( $query );
 		}
 	}
+
+	/**
+	 * function delete
+	 * deletes comments from the database
+	 * @param mixed Comment IDs to delete.  May be a single ID, or an array of IDs
+	**/
+	public function delete( $comments )
+	{
+		if ( ! is_array($comments) )
+		{
+			$comments = array( 'id' => $comments);
+		}
+		else
+		{
+			$comments = array_flip( array_fill_keys( $comments, 'id' ) );
+		}
+		if( count($comments) == 0 ) {
+			return;
+		}
+		return DB::delete( DB::o()->comments, $comments );
+	}
+
+	/**
+	 * function moderate
+	 * changes the status of comments
+	 * @param mixed Comment IDs to moderate.  May be a single ID, or an array of IDs
+	**/
+	public function moderate( $comments, $status = Comment::STATUS_UNAPPROVED )
+	{
+		if ( ! is_array( $comments ) ) {
+			$comments = array( $comments );
+		}
+		if( count($comments) == 0 ) {
+			return;
+		}
+		$result= DB::update(DB::o()->comments, array('status' => $status), array('id' => $comments ) );
+	}
 	
 	/**
 	 * function by_email
