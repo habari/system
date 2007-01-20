@@ -48,6 +48,14 @@ class RemoteRequest
 	}
 	
 	/**
+	 * DO NOT USE THIS FUNCTION.
+	 */
+	public function __set_processor( $processor )
+	{
+		$this->processor= $processor;
+	}
+	
+	/**
 	 * Add a request header.
 	 * @param mixed $header The header to add, either as a string 'Name: Value' or an associative array 'name'=>'value'
 	 */
