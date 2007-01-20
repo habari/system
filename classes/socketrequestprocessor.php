@@ -121,7 +121,7 @@ class SocketRequestProcessor implements RequestProcessor
 			}
 		}
 		
-		if ( preg_match( '|^Transfer-Encoding:.*chunked$|mi', $header ) ) {
+		if ( preg_match( '|^Transfer-Encoding:.*chunked.*|mi', $header ) ) {
 			$body= $this->_unchunk( $body );
 		}
 		
