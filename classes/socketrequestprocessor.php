@@ -31,10 +31,6 @@ class SocketRequestProcessor implements RequestProcessor
 	{
 		$urlbits= parse_url( $url );
 		
-		if ( !isset( $urlbits['port'] ) ) {
-			$urlbits['port']= 80;
-		}
-		
 		return $this->_work( $method, $urlbits, $headers, $body, $timeout );
 	}
 	
@@ -42,6 +38,10 @@ class SocketRequestProcessor implements RequestProcessor
 	{
 		$_errno= 0;
 		$_errstr= '';
+		
+		if ( !isset( $urlbits['port'] ) ) {
+			$urlbits['port']= 80;
+		}
 		
 		$fp= fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
@@ -77,7 +77,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$request[]= '';
 		
 		$out= implode( "\r\n", $request );
-				
+		
 		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
 			return Error::raise( 'Error writing to socket.' );
 		}
@@ -92,10 +92,14 @@ class SocketRequestProcessor implements RequestProcessor
 		
 		list( $header, $body )= explode( "\r\n\r\n", $in );
 		
-		preg_match( '|^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)|', $header[0], $status_matches );
+		// to make the following REs match $ correctly
+		// and thus not break parse_url
+		$header= str_replace( "\r\n", "\n", $header );
+		
+		preg_match( '|^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)|', $header, $status_matches );
 		
 		if ( $status_matches[1] == '301' || $status_matches[1] == '302' ) {
-			if ( preg_match( '|^Location: (.+)$|si', $header, $location_matches ) ) {
+			if ( preg_match( '|^Location: (.+)$|mi', $header, $location_matches ) ) {
 				$redirect_url= $location_matches[1];
 				
 				$redirect_urlbits= parse_url( $redirect_url );
@@ -110,16 +114,41 @@ class SocketRequestProcessor implements RequestProcessor
 					return Error::raise( 'Maximum number of redirections exceeded.' );
 				}
 				
-				return $this->_work( $method, $urlbits, $headers, $body, $timeout );
+				return $this->_work( $method, $redirect_urlbits, $headers, $body, $timeout );
 			}
 			else {
 				return Error::raise( 'Redirection response without Location: header.' );
 			}
 		}
 		
+		if ( preg_match( '|^Transfer-Encoding:.*chunked$|mi', $header ) ) {
+			$body= $this->_unchunk( $body );
+		}
+		
 		return array( $header, $body );
 	}
-
+	
+	private function _unchunk( $body )
+	{
+		/* see <http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html> */
+		$result= '';
+		$chunk_size= 0;
+		
+		do {
+			$chunk= explode( "\r\n", $body, 2 ); 
+			list( $chunk_size_str, )= explode( ';', $chunk[0], 2 ); 
+			$chunk_size= hexdec( $chunk_size_str );
+			
+			if ( $chunk_size > 0 ) {
+				$result.= substr( $chunk[1], 0, $chunk_size );
+				$body= substr( $chunk[1], $chunk_size+1 );
+			} 
+		}
+		while ( $chunk_size > 0 );
+		// this ignores trailing header fields
+		
+		return $result;
+	}
 	
 	public function get_response_body()
 	{

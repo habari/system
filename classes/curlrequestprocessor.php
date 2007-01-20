@@ -9,6 +9,16 @@ class CURLRequestProcessor implements RequestProcessor
 	private $response_headers= '';
 	private $executed= FALSE;
 	
+	/**
+	 * Maximum number of redirects to follow.
+	 */
+	private $max_redirs= 5;
+	
+	/**
+	 * Temporary buffer for headers.
+	 */
+	private $_headers= '';
+	
 	public function execute( $method, $url, $headers, $body, $timeout )
 	{
 		$merged_headers= array();
@@ -19,7 +29,9 @@ class CURLRequestProcessor implements RequestProcessor
 		$ch= curl_init();
 		
 		curl_setopt( $ch, CURLOPT_URL, $url ); // The URL.
-		curl_setopt( $ch, CURLOPT_HEADER, true ); // The header of the response.
+		curl_setopt( $ch, CURLOPT_HEADERFUNCTION, array(&$this, '_headerfunction' ) ); // The header of the response.
+		curl_setopt( $ch, CURLOPT_MAXREDIRS, $this->max_redirs ); // Maximum number of redirections to follow.
+		curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n.
 		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // Follow 302's and the like.
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); // Return the data from the stream.
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, $merged_headers ); // headers to send
@@ -29,7 +41,7 @@ class CURLRequestProcessor implements RequestProcessor
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, $body );
 		}
 		
-		$data= curl_exec( $ch );
+		$body= curl_exec( $ch );
 		
 		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
 			return Error::raise( sprintf( 'Bad return code (%1$d) for: %2$s', 
@@ -40,13 +52,18 @@ class CURLRequestProcessor implements RequestProcessor
 		
 		curl_close( $ch );
 		
-		list( $header, $body )= explode( "\r\n\r\n", $data, 2 );
-		
-		$this->response_headers= $header;
+		$this->response_headers= array_pop( explode("\r\n\r\n", substr( $this->_headers, 0, -4 ) ) );
 		$this->response_body= $body;
 		$this->executed= TRUE;
 		
 		return TRUE;
+	}
+	
+	public function _headerfunction( $ch, $str )
+	{
+		$this->_headers.= $str;
+		
+		return strlen( $str );
 	}
 	
 	public function get_response_body()
