@@ -395,6 +395,7 @@ class URL
 		$this->rules[] = array('"login"', 'UserHandler', 'login');
 		$this->rules[] = array('"logout"', 'UserHandler', 'logout');
 		// post rules
+		//$this->rules[] = array('year/mon/day/slug', 'ThemeHandler', 'post');
 		$this->rules[] = array('year/month/day', 'ThemeHandler', 'date');
 		$this->rules[] = array('year/month', 'ThemeHandler', 'month');
 		$this->rules[] = array('year', 'ThemeHandler', 'year');
