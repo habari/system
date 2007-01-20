@@ -207,12 +207,21 @@ class Post extends QueryRecord
 		$this->setslug();
 		$this->setguid();
 		$result= parent::insert( DB::o()->posts );
+		$status_changed = ( $this->fields['status'] != $this->newfields['status'] );
+		if($status_changed) {
+			$orig_status = $this->fields['status'];
+			$this->newfields['status'] = Plugins::filter('before_status_change', $this->newfields['status'], $this->fields['status'], $this);
+		} 
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
 		// XXX TODO this should be a hook
-		if (Options::get('pingback_send') && $this->status == 1) // why isn't this 'publish' here?
+		if (Options::get('pingback_send') && $this->status == 1) { // why isn't this 'publish' here?
 			Pingback::pingback_all_links($this->fields['content'], $this->get_permalink());
+		}
+		if($status_changed) {
+			Plugins::act('after_status_change', $this, $orig_status);
+		}
 		return $result;
 	}
 
@@ -345,11 +354,14 @@ class Post extends QueryRecord
 	 **/	 	 	
 	private function get_permalink()
 	{
-		global $url;
-		
-		return $url->get_url(
-			'post',
-			$this->fields,
+		$fields = array_merge(getdate(strtotime($this->pubdate)), $this->fields);
+		$fields['strmonth'] = $fields['month'];
+		$fields['month'] = $fields['mon'];
+		$fields['day'] = $fields['mday'];
+ 		
+		return URL::get(
+ 			'post',
+			$fields,
 			false
 		);
 	}
