@@ -245,7 +245,8 @@ class Utils
 	 **/	 	 	 	 	
 	static function debug()
 	{
-		$debugid = md5(microtime());
+		$debugid= md5(microtime());
+		$tracect= 0;
 
 		$fooargs = func_get_args();
 		echo "<div style=\"background-color:#ffeeee;border:1px solid red;text-align:left;\">";
