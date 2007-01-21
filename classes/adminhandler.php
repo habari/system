@@ -441,19 +441,20 @@ class AdminHandler extends ActionHandler
 	 **/
 	function post_spam( $settings )
 	{
+		$comments = $settings['moderate'];
+		
+		$deleted = array_keys( array_filter( $comments, create_function( '$a', 'return $a == Comment::STATUS_DELETED;' ) ) );
+		$nonspam = array_keys( array_filter( $comments, create_function( '$a', 'return $a == Comment::STATUS_APPROVED;' ) ) );
+		
 		if( isset( $_POST['mass_spam_delete'] ) ) {
-			Comment::mass_delete( STATUS_SPAM );
+			$comments = DB::get_column( 'SELECT id FROM ' . DB::o()->comments . ' WHERE status=' . Comment::STATUS_SPAM );
+				Comments::moderate( $comments, Comment::STATUS_DELETED );
 		}
-		elseif( is_array( $_POST['spam_delete'] ) ) {
-			foreach( $_POST['spam_delete'] as $destroy ) {
-				Comment::delete( $destroy );
-			}
-		} elseif( is_array( isset( $_POST['spam_approve'] ) ) ) {
-			foreach( $_POST['spam_approve'] as $promote ) {
-				Comment::publish( $promote );
-			}
+		else {
+			Comments::moderate( $deleted, Comment::STATUS_DELETED );
+			Comments::moderate( $approved, Comment::STATUS_APPROVED );
 		}
 		Utils::redirect( URL::get( 'admin', 'page=spam&result=success' ) );
-	}		
+	}
 }
 ?>
