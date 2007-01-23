@@ -107,7 +107,7 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['tag'] ) ) {
 					$join .= ' JOIN ' . DB::o()->tags . ' ON ' . DB::o()->posts . '.slug = ' . DB::o()->tags . '.slug';
-					// Need tag expression parser here.			
+					// TODO Need tag expression parser here.			
 					$where[] = 'tag = ?';
 					$params[] = $paramset['tag'];
 				}
