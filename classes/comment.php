@@ -78,8 +78,8 @@ class Comment extends QueryRecord
 	/**
 	 * static function create
 	 * Creates a comment and saves it
-	 * @param array An associative array of comment fields
-	 * $return Comment The comment object that was created	 
+	 * @param $paramarry array An associative array of comment fields
+	 * @return The comment object that was created	 
 	 **/	 	 	
 	static function create($paramarray) 
 	{

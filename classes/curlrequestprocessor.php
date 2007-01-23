@@ -52,7 +52,10 @@ class CURLRequestProcessor implements RequestProcessor
 		
 		curl_close( $ch );
 		
-		$this->response_headers= array_pop( explode("\r\n\r\n", substr( $this->_headers, 0, -4 ) ) );
+		// this fixes an E_NOTICE in the array_pop
+		$tmp_headers= explode("\r\n\r\n", substr( $this->_headers, 0, -4 ) );
+		
+		$this->response_headers= array_pop( $tmp_headers );
 		$this->response_body= $body;
 		$this->executed= TRUE;
 		
