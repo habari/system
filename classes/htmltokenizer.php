@@ -210,6 +210,7 @@ class HTMLTokenizer
 	            return self::$STATE_STATEMENT;
 	            break;
 	        case '?':
+	        	// mmmh, PI
 	            return self::$STATE_PI;
 	            break;
 	        case '/':
@@ -289,13 +290,23 @@ class HTMLTokenizer
             $this->inc( 2 );
         }
         else {
+        	// some other kind of statement
             $this->dec();
         }
         
         if ( $nodeType == self::NODE_TYPE_STATEMENT ) {
-	        // TODO declarations need to be handled better
-			// currently, internal subsets in DOCTYPE break
-			$data= $this->up_to_str( '>' );
+        	$data= '';
+			$nodeName= $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
+			if ( $this->peek() != '>' ) {
+				// there be data or something
+				$this->skip_whitespace();
+				$data.= $this->up_to_chr( '[>' );
+				if ( $this->peek() == '[' ) {
+					// internal subset
+					$data.= $this->get() . $this->up_to_str( ']' ) . $this->get();
+				}
+			}
+			$data.= $this->up_to_str( '>' );
 			// not like anyone uses them, eh?
         }
 
