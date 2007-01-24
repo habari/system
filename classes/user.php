@@ -4,11 +4,17 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
+ *
+ * includes the UserInfo object which is publicly accessible.
+ * $existing_user = new User(id=>1);
+ * $existing_user->info->nickname= "old salt";
+ *	print $existing_user->info->nickname;
  */
 
 class User extends QueryRecord
 {
 	private static $identity = null;  // Static storage for the currently logged-in User record
+	private $info= null;
 
 	/**
 	* static function default_fields
@@ -37,6 +43,8 @@ class User extends QueryRecord
 			$this->fields );
 		parent::__construct($paramarray);
 		$this->exclude_fields('id');
+		$this->info= new UserInfo ( $this->fields['id'] ); 
+		// $this->fields['id'] could be null. That's ok, provided $this->info::set_key is called before setting any options		
 	}
 
 	/**
@@ -81,6 +89,9 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
+		// if there is an insert called, it must be a new user, so find the user_id and set it. Now the $info object is safe to use
+		$this->info->set_key ( DB::o()->last_insert_id() );		
+		// $this->info->option_default= "saved";		
 		return parent::insert( DB::o()->users );
 	}
 
