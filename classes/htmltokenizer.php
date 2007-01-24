@@ -90,8 +90,8 @@ class HTMLTokenizer
 		$this->nodes[]= array(
 			'type' => $type,
 			'name' => $name,
-			'nodeValue' => $value,
-			'attributes' => $attrs,
+			'value' => $value,
+			'attrs' => $attrs,
 		);
 	}
 	
@@ -149,10 +149,10 @@ class HTMLTokenizer
     private function parse_start()
     {
         $data= $this->up_to_str( self::$CHR_TAG_BEGIN );
+        $this->inc();
         if ( $data != '' ) {
         	$this->node( self::NODE_TYPE_TEXT, '#text', $data, NULL );
         }
-        $this->inc();
         
         return self::$STATE_TAG;
     }
