@@ -24,7 +24,7 @@ class Post extends QueryRecord
 	private $tags = null;
 	private $comments = null;
 	private $author_object = null;
-	private $info_object = null;
+	private $info = null;	
 
 	/**
 	 * function default_fields
@@ -66,6 +66,9 @@ class Post extends QueryRecord
 			unset( $this->fields['tags'] );
 		}
 		$this->exclude_fields('id');
+
+		$this->info = new PostInfo ( $this->fields['id'] );
+		// $this->info->option3 = "blah"; 
 	}
 	
 	/**
@@ -214,6 +217,10 @@ class Post extends QueryRecord
 		} 
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+
+		$this->info->set_key ( DB::o()->last_insert_id() ); 
+		// $this->info->option_default= "saved";
+
 		$this->savetags();
 		// XXX TODO this should be a hook
 		if (Options::get('pingback_send') && $this->status == 1) { // why isn't this 'publish' here?
