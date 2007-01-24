@@ -8,7 +8,7 @@ class InputFilter
 	/**
 	 * Legal elements.
 	 */
-	private $whitelist_elements= array(
+	private static $whitelist_elements= array(
 		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.4
 		'div', 'span',
 		// http://www.w3.org/TR/html4/struct/links.html#h-12.2
@@ -38,7 +38,7 @@ class InputFilter
 	/**
 	 * Legal attributes for elements.
 	 */
-	private $whitelist_attributes= array(
+	private static $whitelist_attributes= array(
 		// attributes that are valid for ALL elements (a subset of coreattrs)
 		// elements that only take coreattrs don't need to be listed separately
 		'*' => array(
@@ -188,12 +188,125 @@ class InputFilter
 		return $str;
 	}
 	
+	private static function check_attr_value( $k, $v, $type )
+	{
+		if ( is_array( $type ) ) {
+			return in_array( $v, $type, TRUE );
+		}
+		else { 
+			switch ( $type ) {
+				case 'uri':
+					// RfC 2396 <http://www.ietf.org/rfc/rfc2396.txt>
+					$bits= parse_url( $v );
+					return TRUE; // TODO must check URI for valid syntax, procotol, etc.
+					break;
+				case 'language-code':
+					// RfC 1766 <http://www.ietf.org/rfc/rfc1766.txt>
+					//    Language-Tag = Primary-tag *( "-" Subtag )
+					//    Primary-tag = 1*8ALPHA
+					//    Subtag = 1*8ALPHA
+					return preg_match( '/^[a-zA-Z]{1,8}(?:-[a-zA-Z]{1,8})*$/i', $v );
+					break;
+				case 'text':
+					// XXX is this sufficient?
+					return is_string( $v ); 
+					break;
+				case 'datetime':
+					// <http://www.w3.org/TR/1998/NOTE-datetime-19980827>
+					// <http://www.w3.org/TR/html4/types.html#h-6.11>
+					//    YYYY-MM-DDThh:mm:ssTZD
+					return preg_match( '/^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:Z|[\+-][0-2][0-9]:[0-5][0-9])$/', $v );
+					break;
+				default:
+					Error::raise( sprintf( 'Unkown attribute type "%s" in %s', $type, __CLASS__ ) );
+					return FALSE;
+			}
+		}
+	}
+	
 	public static function filter_html_elements( $str )
 	{
-		/*
-		 * TODO: Implement a HTML tokenizer / parser.
-		 * It must make absolutely sure to catch anything a browser may accept as valid HTML.
-		 */
+		$tokenizer= new HTMLTokenizer( $str );
+		
+		// tokenize, baby
+		$tokens= $tokenizer->parse();
+		
+		// filter token stream
+		$filtered= array();
+		foreach ( $tokens as $node ) {
+			switch ( $node['type'] ) {
+				case HTMLTokenizer::NODE_TYPE_TEXT:
+					// XXX use blog charset setting
+					$node['value']= html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
+					break;
+				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
+					foreach ( $node['attrs'] as $k => $v ) {
+						$attr_ok=
+							( 
+								   in_array( $k, self::$whitelist_attributes['*'] )
+								|| ( array_key_exists( $node['name'], self::$whitelist_attributes ) &&
+								     array_key_exists( $k, self::$whitelist_attributes[$node['name']] )
+							)
+							&& self::check_attr_value( $k, $v, self::$whitelist_attributes[$node['name']][$k] )
+						);
+						if ( ! $attr_ok ) {
+							unset( $node['attrs'][$k] );
+						}
+					}
+				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
+					if ( ! in_array( $node['name'], self::$whitelist_elements ) ) {
+						$node= NULL;
+					} 
+					break;
+				case HTMLTokenizer::NODE_TYPE_PI:
+				case HTMLTokenizer::NODE_TYPE_COMMENT:
+				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
+				case HTMLTokenizer::NODE_TYPE_STATEMENT:
+					$node= NULL;
+					break;
+				default:
+			}
+			
+			if ( $node != NULL ) {
+				$filtered[]= $node;
+			}
+		}
+		
+		// rebuild our output string
+		$str= '';
+		foreach ( $filtered as $node ) {
+			switch ( $node['type'] ) {
+				case HTMLTokenizer::NODE_TYPE_TEXT:
+					$str.= $node['value'];
+					break;
+				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
+					$str.= '<';
+					$str.= $node['name'];
+					if ( $node['attrs'] ) {
+						foreach ( $node['attrs'] as $k => $v ) {
+							$str.= ' ';
+							$str.= $k;
+							$str.= '="';
+							$str.= htmlspecialchars( html_entity_decode( $v, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
+							$str.= '"';
+						}
+					}
+					$str.= '>';
+					break;
+				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
+					$str.= '</';
+					$str.= $node['name'];
+					$str.= '>';
+					break;
+				case HTMLTokenizer::NODE_TYPE_PI:
+				case HTMLTokenizer::NODE_TYPE_COMMENT:
+				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
+				case HTMLTokenizer::NODE_TYPE_STATEMENT:
+					Error::raise( sprintf( 'Undead token "%s" (%d) in %s', $node['name'], $node['type'], __CLASS__ ) ); 
+					break;
+				default:
+			}
+		}
 		
 		return $str;
 	}
