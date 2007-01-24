@@ -4,6 +4,11 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
+ *
+  * includes the CommentInfo object.
+ * $existing_comment = new Comment(id=>1);
+ * $existing_comment->info->browser_ua= "Netscape 2.0";
+ *	print $existing_comment->info->browser_ua;
  */
 
 class Comment extends QueryRecord
@@ -19,7 +24,8 @@ class Comment extends QueryRecord
 	const COMMENT = 0;
 	const PINGBACK =1;
 	const TRACKBACK = 2;
-
+	
+	private $info= null;
 	/**
 	* static function default_fields
 	* Returns the defined database columns for a comment
@@ -53,6 +59,8 @@ class Comment extends QueryRecord
 			$this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields('id');
+		$this->info = new CommentInfo ( $this->fields['id'] );
+		// $this->fields['id'] could be null. That's ok, provided $this->info::set_key is called before setting any info records		
 	}
 	
 	/**
@@ -97,6 +105,11 @@ class Comment extends QueryRecord
 		$result = parent::insert( DB::o()->comments );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+
+		// if there is an insert called, it must be a new user, so find the user_id and set it. 
+		// Now the $info object is safe to use for new comments
+		$this->info->set_key ( DB::o()->last_insert_id() ); 
+		// $this->info->option_default= "saved";
 		return $result;
 	}
 
