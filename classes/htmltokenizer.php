@@ -27,7 +27,7 @@ class HTMLTokenizer
 	private static $CHR_TAG_BEGIN= '<';
 	private static $CHR_TAG_END= '/>';
 	private static $CHR_ATTRNAME_END= '=';
-	private static $CHR_WHITESPACE= " \t\v\r\n"; // SP, TAB, vertical tab, CR, LF
+	private static $CHR_WHITESPACE= " \t\r\n"; // SP, TAB, CR, LF
 	
 	private $html;
 	private $pos;
@@ -116,7 +116,7 @@ class HTMLTokenizer
 	
 	private function peek()
 	{
-		return $this->html{ $this->pos + 1 };
+		return $this->html{ $this->pos };
 	}	
 
 	private function up_to_str( $str )
@@ -226,21 +226,19 @@ class HTMLTokenizer
     {
         $tag= $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
         if ( $tag != '' ) {
-            $this->attrs= array();
             $attr= $this->parse_attributes();
             $char= $this->get();
             if ( $char == '/' && $this->peek() == '>' ) {
-            	// skip peeked '>'
-                $this->inc();
+            	$this->inc(); // skip peeked '>'
                 // empty tag in collapsed form (<br />)
                 // XXX mark this somehow?
-                $this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
-                $this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL ); 
+				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
+				$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL );
             } else {
                 $this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
             }
         }
-        
+            
         return self::$STATE_START;
     }
 
