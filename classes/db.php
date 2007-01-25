@@ -103,7 +103,8 @@ class DB extends Singleton {
        *        statement API (server-side); therefore, we use prepared statement
        *        emulation in PDO to bypass this performance problem
        */
-      if (DB::instance()->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql')
+      if (DB::instance()->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql'
+        && version_compare(phpversion(), '5.1.3', '>='))
         DB::instance()->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
       DB::instance()->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
       DB::load_tables();
