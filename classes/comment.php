@@ -4,6 +4,19 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
+ *
+ * Includes an instance of the CommentInfo class; for holding inforecords about the comment
+ * If the Comment object describes an existing user; use the internal info object to get, set, unset and test for existence (isset) of 
+ * info records
+ * <code>
+ *	$this->info = new CommentInfo ( 1 );  // Info records of comment with id = 1
+ * $this->info->browser_ua= "Netscape 2.0"; // set info record with name "browser_ua" to value "Netscape 2.0"
+ * $info_value= $this->info->browser_ua; // get value of info record with name "browser_ua" into variable $info_value
+ * if ( isset ($this->info->browser_ua) )  // test for existence of "browser_ua"
+ * unset ( $this->info->browser_ua ); // delete "browser_ua" info record
+ * </code>
+ *
+
  */
 
 class Comment extends QueryRecord
@@ -17,6 +30,8 @@ class Comment extends QueryRecord
 	const COMMENT = 0;
 	const PINGBACK =1;
 	const TRACKBACK = 2;
+	
+	private $info= null;
 
 	/**
 	* static function default_fields
@@ -50,6 +65,8 @@ class Comment extends QueryRecord
 			$this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields('id');
+		$this->info= new CommentInfo ( $this->fields['id'] );
+		 /* $this->fields['id'] could be null in case of a new comment. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 	
 	/**
@@ -94,6 +111,9 @@ class Comment extends QueryRecord
 		$result = parent::insert( DB::table('comments') );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+		$this->info->set_key( DB::o()->last_insert_id() ); 
+		 /* If a new comment is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
+		// $this->info->option_default= "saved";
 		return $result;
 	}
 

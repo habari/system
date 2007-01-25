@@ -4,11 +4,24 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
+ *
+ * Includes an instance of the UserInfo class; for holding inforecords about the user
+ * If the User object describes an existing user; use the internal info object to get, set, unset and test for existence (isset) of 
+ * info records
+ * <code>
+ *	$this->info = new UserInfo ( 1 );  // Info records of user with id = 1
+ * $this->info->option1= "blah"; // set info record with name "option1" to value "blah"
+ * $info_value= $this->info->option1; // get value of info record with name "option1" into variable $info_value
+ * if ( isset ($this->info->option1) )  // test for existence of "option1"
+ * unset ( $this->info->option1 ); // delete "option1" info record
+ * </code>
+ *
  */
 
 class User extends QueryRecord
 {
 	private static $identity = null;  // Static storage for the currently logged-in User record
+	private $info= null;	// info record object
 
 	/**
 	* static function default_fields
@@ -37,6 +50,8 @@ class User extends QueryRecord
 			$this->fields );
 		parent::__construct($paramarray);
 		$this->exclude_fields('id');
+		$this->info= new UserInfo( $this->fields['id'] );
+		 /* $this->fields['id'] could be null in case of a new user. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 
 	/**
@@ -81,6 +96,10 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
+		 $this->info->set_key( DB::o()->last_insert_id() );
+		 /* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
+		// $this->info->option_default= "saved";	
+
 		return parent::insert( DB::table('users') );
 	}
 
