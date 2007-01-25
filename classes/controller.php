@@ -81,10 +81,14 @@ class Controller extends Singleton {
           : ''));
     
     /* Strip out the base URL from the requested URL */
-    $start_url= str_replace($controller->base_url, '', $start_url);
+    /* but only if the base URL isn't / */
+    if ( '/' != $controller->base_url)
+    {
+	$start_url= str_replace($controller->base_url, '', $start_url);
+    }
     
-    /* Trim off any trailing slashes */
-    $start_url= rtrim($start_url, '/');
+    /* Trim off any leading or trailing slashes */
+    $start_url= trim($start_url, '/');
 
     /* Remove the querystring from the URL */
     if ( strpos($start_url, '?') !== FALSE )
