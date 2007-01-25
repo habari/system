@@ -76,7 +76,8 @@ class URL extends Singleton {
           $url .= $key . '=' . $value . '&';
         $url= rtrim($url, '&');
       }
-      return Controller::get_base_url() . $url;
+      return 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 's' : '') . 
+        '://' . $_SERVER['HTTP_HOST'] . '/' . Controller::get_base_url() . $url;
     }   
   }
 
