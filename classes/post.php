@@ -73,7 +73,7 @@ class Post extends QueryRecord
 			$this->tags = $this->parsetags($this->fields['tags']);
 			unset( $this->fields['tags'] );
 		}
-
+		$this->exclude_fields('id');
 		$this->info = new PostInfo( $this->fields['id'] );
 	 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
  		// $this->info->option3 = "blah"; 
