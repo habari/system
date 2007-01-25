@@ -4,6 +4,19 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
+  *
+ * Includes an instance of the PostInfo class; for holding inforecords about a Post
+ * If the Post object describes an existing post; use the internal info object to get, set, unset and test for existence (isset) of 
+ * info records
+ * <code>
+ *	$this->info = new PostInfo ( 1 );  // Info records of post with id = 1
+ * $this->info->option1= "blah"; // set info record with name "option1" to value "blah"
+ * $info_value= $this->info->option1; // get value of info record with name "option1" into variable $info_value
+ * if ( isset ($this->info->option1) )  // test for existence of "option1"
+ * unset ( $this->info->option1 ); // delete "option1" info record
+ * </code>
+ *
+
  */
 define('SLUG_POSTFIX', '-');
 
@@ -19,6 +32,7 @@ class Post extends QueryRecord
 	private $tags = null;
 	private $comments = null;
 	private $author_object = null;
+	private $info = null;	
 
 	/**
 	 * function default_fields
@@ -59,6 +73,11 @@ class Post extends QueryRecord
 			$this->tags = $this->parsetags($this->fields['tags']);
 			unset( $this->fields['tags'] );
 		}
+
+		$this->info = new PostInfo( $this->fields['id'] );
+	 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
+ 		// $this->info->option3 = "blah"; 
+
 	}
 	
 	/**
@@ -251,6 +270,9 @@ class Post extends QueryRecord
 		$result = parent::insert( DB::table('posts') );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+		$this->info->set_key( DB::o()->last_insert_id() ); 
+		 /* If a new post is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
+		// $this->info->option_default= "saved";
 		$this->savetags();
 		return $result;
 	}
