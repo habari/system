@@ -31,8 +31,6 @@ class Comment extends QueryRecord
 	const PINGBACK =1;
 	const TRACKBACK = 2;
 	
-	private $info= null;
-
 	/**
 	* static function default_fields
 	* Returns the defined database columns for a comment
@@ -65,8 +63,6 @@ class Comment extends QueryRecord
 			$this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields('id');
-		$this->info= new CommentInfo ( $this->fields['id'] );
-		 /* $this->fields['id'] could be null in case of a new comment. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 	
 	/**
@@ -111,9 +107,6 @@ class Comment extends QueryRecord
 		$result = parent::insert( DB::table('comments') );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
-		$this->info->set_key( DB::o()->last_insert_id() ); 
-		 /* If a new comment is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
-		// $this->info->option_default= "saved";
 		return $result;
 	}
 

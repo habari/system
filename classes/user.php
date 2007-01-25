@@ -21,7 +21,6 @@
 class User extends QueryRecord
 {
 	private static $identity = null;  // Static storage for the currently logged-in User record
-	private $info= null;	// info record object
 
 	/**
 	* static function default_fields
@@ -50,8 +49,6 @@ class User extends QueryRecord
 			$this->fields );
 		parent::__construct($paramarray);
 		$this->exclude_fields('id');
-		$this->info= new UserInfo( $this->fields['id'] );
-		 /* $this->fields['id'] could be null in case of a new user. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 
 	/**
@@ -96,10 +93,6 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		 $this->info->set_key( DB::o()->last_insert_id() );
-		 /* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
-		// $this->info->option_default= "saved";	
-
 		return parent::insert( DB::table('users') );
 	}
 
