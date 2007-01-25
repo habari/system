@@ -6,5 +6,6 @@
 		<p><a href="http://code.google.com/p/habari/" title="Habari">Habari</a><small> - Spread the News</small></p>
 	</div>
 </div>
+<?php include ('db_profiling.php');?>
 </body>
 </html>

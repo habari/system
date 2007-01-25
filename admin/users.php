@@ -1,3 +1,4 @@
+<?php include('header.php');?>
 <?php
 $currentuser = User::identify();
 if ( ! $currentuser )
@@ -53,3 +54,4 @@ if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 </form>
 </div>
 
+<?php include('footer.php');?>

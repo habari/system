@@ -1,3 +1,4 @@
+<?php include('header.php');?>
 <div id="content-area">
 	<div class="dashbox c3" id="welcome">
 	<?php
@@ -44,3 +45,4 @@
 	</form>
 	</div>
 </div>
+<?php include('footer.php');?>

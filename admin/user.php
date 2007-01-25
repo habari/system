@@ -1,3 +1,4 @@
+<?php include('header.php');?>
 <?php
 	$currentuser = User::identify();
 	if ( ! $currentuser )
@@ -108,3 +109,4 @@ if ( $user != $currentuser )
 <?php
 }
 ?>
+<?php include('footer.php');?>

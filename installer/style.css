@@ -1,0 +1,152 @@
+/*
+ * One-column, non-tabled layout with 
+ * form fields and a simple header/footer
+ */
+
+body {
+	margin: 0 20px 2em 20px;
+	color: #333;
+	line-height: 140%;
+	background: #fff url("images/body_bg.gif") repeat-x;
+	font-size: 0.9em;
+  font-family: "Bitstream Vera Sans-serif", Tahoma;
+}
+
+/* 
+ * Container around entire content - centered,  
+ * no top margin, equidistant side margins 
+ */
+#container {
+	width: 100%;
+	margin: 0 auto;
+}
+
+/*
+ * Container around everything under header except
+ * footer container
+ */
+#page {
+	padding: 2em 0 0 0;
+}
+
+/*
+ * Container for all main content in #page container
+ */
+#content {
+	margin: 0 0; 
+	background: #ccc url(images/content_bg.gif) repeat-x top left;
+}
+
+/* Container for header block */
+#header {
+	clear: both;
+	position: relative;
+	margin: 10px 0 0 0;
+	height: 72px;
+  background: #fff url(images/header_bg.png) repeat-x top left;
+}
+
+
+form {
+	font-family: "Bitstream Vera Sans-serif", "Tahoma", "Verdana", sans-serif;
+	font-size: 85%;
+  margin: 0px;
+  padding: 10px;
+}
+
+form h2 {
+  clear: both;
+  border-bottom: solid 1px #ccc;
+  margin: 18px 0px;
+}
+
+.instructions {
+  color: #666;
+}
+
+p.instructions {
+  padding: 30px;
+  margin: 5px 30px;
+  border: solid 1px #ccc;
+  background-color: #fed8ed;
+}
+
+label {
+	font-weight: bold;
+}
+
+input {
+	font-size: 100%;
+	padding: 1px;
+	font-family: "Bitstream Vera Sans-serif", "Tahoma", "Verdana", sans-serif;
+}
+
+.row {
+  display: block;
+  line-height: 2.0em;
+  clear: both;
+  padding: 0px;
+  margin: 4px 0px;
+  background-color: #f7f7f7;
+}
+
+.alternate {
+  background-color: #ccc;
+}
+
+.row label {
+  width: 200px; 
+  clear: left;
+  float: left;
+  text-align: right;
+  margin-right: 6px;
+}
+
+.row input, .row textarea {
+  clear: none;
+  text-align: left;
+  position: absolute;
+  left: 240px;
+  border: solid 1px #ccc;
+}
+
+/* General anchors (hyperlinks) */
+a:link {
+  color: #03a;
+}
+a:visited {
+  color: #66a;
+}
+a:hover {
+  color: #333;
+}
+a:active {
+  color: #000;
+}
+
+.error {
+  clear: both;
+  padding-left: 20px;
+  font-size: 11px;
+  color: #f33;
+  text-align: left;
+  background: #fff url("images/warningsmall.png") no-repeat top left;
+}
+
+pre {
+  padding: 6px 20px;
+  background-color: #efefef;
+  color: #000;
+  font-weight: bold;
+  border: solid 1px #036;
+  margin: 4px 30px;
+}
+
+.note {
+  padding: 6px 10px;
+  color: #333;
+  border: solid 1px #666;
+  background-color: #eadb80;
+  margin: 4px 50px;
+}
+}

@@ -35,7 +35,7 @@
 			<a href="<?php Options::out('host_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
 		<ol id="menu">
-			<?php $page = empty(URL::o()->settings['page']) ? 'overview' : URL::o()->settings['page']; ?>
+			<?php $page = empty($page) ? 'overview' : $page; ?>
 			<li class="menu-item" <?php echo ($page == 'overview') ? 'id="current-item"' : ''; ?>>
 				<a href="<?php Options::out('base_url'); ?>admin/" title="Overview of your site">Admin</a>
 				<ul class="menu-list">

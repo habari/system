@@ -5,6 +5,7 @@
  * Requires PHP 5.0.4 or later
  * @package Habari
  */
+define('SLUG_POSTFIX', '-');
 
 class Post extends QueryRecord
 {
@@ -14,17 +15,10 @@ class Post extends QueryRecord
 	const STATUS_PRIVATE = 2;
 	
 	const STATUS_ANY = -1;  // For querying only, not for use as a stored value.
-	
-	const TYPE_POST = 0;
-	const TYPE_ENTRY = 0;
-	const TYPE_PAGE = 1;
-
-	const TYPE_ANY = -1;  // For querying only, not for use as a stored value.
 
 	private $tags = null;
 	private $comments = null;
 	private $author_object = null;
-	private $info = null;	
 
 	/**
 	 * function default_fields
@@ -36,14 +30,14 @@ class Post extends QueryRecord
 		return array(
 			'id' => '',
 			'slug' => '',
-			'content_type' => self::TYPE_POST,
 			'title' => '',
 			'guid' => '',
 			'content' => '',
 			'user_id' => '',
 			'status' => self::STATUS_DRAFT,
 			'pubdate' => date( 'Y-m-d H:i:s' ),
-			'updated' => ( 'Y-m-d H:i:s' ),
+			'updated' => date ( 'Y-m-d H:i:s' ),
+      'content_type' => 0
 		);
 	}
 
@@ -65,10 +59,6 @@ class Post extends QueryRecord
 			$this->tags = $this->parsetags($this->fields['tags']);
 			unset( $this->fields['tags'] );
 		}
-		$this->exclude_fields('id');
-
-		$this->info = new PostInfo ( $this->fields['id'] );
-		// $this->info->option3 = "blah"; 
 	}
 	
 	/**
@@ -84,7 +74,7 @@ class Post extends QueryRecord
 	 **/	 	 	 	 	
 	static function get($paramarray = array())
 	{
-		global $url;
+		global $controller;
 		
 		// Defaults
 		$defaults = array (
@@ -100,8 +90,8 @@ class Post extends QueryRecord
 				'user_id' => $user->id,
 			);
 		}
-
-		$paramarray = array_merge( $url->settings, $defaults, Utils::get_params($paramarray) ); 
+    //print_r($controller);
+		$paramarray = array_merge( $controller->handler->handler_vars, $defaults, Utils::get_params($paramarray) ); 
 		return Posts::get( $paramarray );
 	}
 	
@@ -118,9 +108,57 @@ class Post extends QueryRecord
 		return $post;
 	}
 
+  /**
+   * New slug setter.  Using different function name to test an alternate
+   * algorithm.
+   *
+   * The method both sets the internal slug and returns the 
+   * generated slug.
+   *
+   * @return  string  Generated slug
+   */
+  private function set_slug() {
+    /* 
+     * Do we already have a slug in for the post?
+     * If so, double check we haven't changed the slug
+     * manually by setting newfields['slug']
+     */
+    $old_slug= strtolower($this->fields['slug']);
+    $new_slug= strtolower((isset($this->newfields['slug']) ? $this->newfields['slug'] : ''));
+
+    if (! empty($old_slug)) {
+      if ($old_slug == $new_slug)
+        return $new_slug;
+    }
+  
+    /* 
+     * OK, we have a new slug or no slug at all
+     * For either case, we need to double check 
+     * that the slug doesn't already exist for another
+     * post in the DB.  But first, we must create
+     * a new slug if there isn't one set manually.
+     */
+    if (empty($new_slug)) {
+      /* Create a new slug from title */
+      $title= strtolower((isset($this->newfields['title']) ? $this->newfields['title'] : $this->fields['title']));
+      $new_slug= preg_replace('/[^a-z0-9]+/i', SLUG_POSTFIX, $title);
+      $new_slug= rtrim($new_slug, SLUG_POSTFIX);
+    }
+
+    /*
+     * Check for an existing post with the same slug.
+     * To do so, we cut off any postfixes from the new slug
+     * and check the DB for the slug without postfixes
+     */
+    $check_slug= rtrim($new_slug, SLUG_POSTFIX);
+    $sql= "SELECT COUNT(*) as slug_count FROM " . DB::table('posts') . " WHERE slug LIKE '" . $check_slug . "%';";
+    $num_posts= DB::get_value($sql);
+    $valid_slug= $check_slug . str_repeat(SLUG_POSTFIX, $num_posts);
+    $this->newfields['slug']= $valid_slug;
+    return $valid_slug;
+  }
 	
 	/**
-	 * function setslug
 	 * Attempts to generate the slug for a post that has none
 	 * @return The slug value	 
 	 */	 	 	 	 	
@@ -145,14 +183,16 @@ class Post extends QueryRecord
 			$value = 'Post';
 		}
 		
-		$slug= trim( strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) ), '-' );
+		$slug = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) );
 		$postfix = '';
 		$postfixcount = 0;
 		do {
-			$slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::o()->posts . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) );
+			if (! $slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::table('posts') . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) )) {
+        print_r(DB::instance());exit;
+      }
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
-		} while ( $slugcount->ct != 0 );
-		$this->newfields[ 'slug' ]= $slug . $postfix;
+		} while ($slugcount->ct != 0);
+		$this->newfields[ 'slug' ] = $slug . $postfix;
 		return $this->newfields[ 'slug' ];
 	}
 
@@ -179,22 +219,21 @@ class Post extends QueryRecord
 	{
 		if( is_string( $tags ) )
 		{
-			preg_match_all('/(?<=")([\\S][^"]*)(?=")|([#-~]+)/', $tags, $matches);
-			// we want to suppress duplicate tags
-			return array_unique($matches[0]);
+			preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $tags, $matches);
+			return $matches[0];
 		}
 		elseif( is_array( $tags ) )
 		{
-			// we want to suppress duplicate tags
-			return array_unique($tags);
+			return $tags;
 		}
 	}
 
 	private function savetags()
 	{
-		DB::query( 'DELETE FROM ' . DB::o()->tags . ' WHERE slug = ?', array( $this->fields['slug'] ) );
+    if ( count($this->tags) == 0) {return;}
+		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE  = ?', array( $this->fields['slug'] ) );
 		foreach( (array)$this->tags as $tag ) { 
-			DB::query( 'INSERT INTO ' . DB::o()->tags . ' (slug, tag) VALUES (?,?)', 
+			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (slug, tag) VALUES (?,?)', 
 				array( $this->fields['slug'], $tag ) 
 			); 
 		}
@@ -207,28 +246,12 @@ class Post extends QueryRecord
 	public function insert()
 	{
 		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
-		$this->setslug();
+		$this->set_slug();
 		$this->setguid();
-		$result= parent::insert( DB::o()->posts );
-		$status_changed = ( $this->fields['status'] != $this->newfields['status'] );
-		if($status_changed) {
-			$orig_status = $this->fields['status'];
-			$this->newfields['status'] = Plugins::filter('before_status_change', $this->newfields['status'], $this->fields['status'], $this);
-		} 
+		$result = parent::insert( DB::table('posts') );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
-
-		$this->info->set_key ( DB::o()->last_insert_id() ); 
-		// $this->info->option_default= "saved";
-
 		$this->savetags();
-		// XXX TODO this should be a hook
-		if (Options::get('pingback_send') && $this->status == 1) { // why isn't this 'publish' here?
-			Pingback::pingback_all_links($this->fields['content'], $this->get_permalink());
-		}
-		if($status_changed) {
-			Plugins::act('after_status_change', $this, $orig_status);
-		}
 		return $result;
 	}
 
@@ -241,13 +264,10 @@ class Post extends QueryRecord
 		$this->updated = date('Y-m-d h:i:s');
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
 		//$this->setslug();  // setslug() for an update?  Hmm.  No?
-		$result = parent::update( DB::o()->posts, array('slug'=>$this->slug) );
+		$result = parent::update( DB::table('posts'), array('slug'=>$this->slug) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
-		// XXX TODO this should be a hook
-		if (Options::get('pingback_send') && $this->status == 1)
-			Pingback::pingback_all_links($this->fields['content'], $this->get_permalink());
 		return $result;
 	}
 	
@@ -257,7 +277,7 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	public function delete()
 	{
-		return parent::delete( DB::o()->posts, array('slug'=>$this->slug) );
+		return parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
 	}
 	
 	/**
@@ -302,9 +322,6 @@ class Post extends QueryRecord
 		case 'author':
 			$out = $this->get_author();
 			break;
-		case 'info':
-			$out = $this->get_info();
-			break;
 		default:
 			$out = parent::__get( $name );
 			break;
@@ -331,25 +348,6 @@ class Post extends QueryRecord
 		case 'tags':
 			$this->tags = $this->parsetags( $value );
 			return $this->get_tags();
-		case 'author':
-			if ( is_int( $value ) )
-			{
-				// a user ID was passed, so use it directly
-				$this->user_id = $value;
-				unset ( $this->author_object );
-			}
-			elseif ( is_string( $value ) )
-			{
-				// get the user ID of the user with this name
-				$this->author_object = User::get( $value );
-				$this->user_id = $this->author_object->id;
-			}
-			elseif ( if_object ( $value ) )
-			{
-				// a User object was passed, so just use the ID
-				$this->user_id = $value->id;
-				$this->author_object = $value;
-			}
 		}
 		return parent::__set( $name, $value );
 	}
@@ -361,16 +359,16 @@ class Post extends QueryRecord
 	 **/	 	 	
 	private function get_permalink()
 	{
-		$fields = array_merge(getdate(strtotime($this->pubdate)), $this->fields);
-		$fields['strmonth'] = $fields['month'];
-		$fields['month'] = $fields['mon'];
-		$fields['day'] = $fields['mday'];
- 		
-		return URL::get(
- 			'post',
-			$fields,
+return URL::get('display_posts_by_slug', array('slug'=>$this->fields['slug'])); // @todo separate permalink rule?
+/* Commenting out for new URL system 
+		global $url;
+		
+		return $url->get_url(
+			'post',
+			$this->fields,
 			false
 		);
+*/
 	}
 	
 	/**
@@ -378,12 +376,17 @@ class Post extends QueryRecord
 	 * Gets the tags for the post
 	 * @return &array A reference to the tags array for this post
 	 **/	 	 	 	
-	private function &get_tags()
-	{
-		$i = 0;
-		if ( empty( $this->tags ) ) {
-			$this->tags = DB::get_column( 'SELECT tag FROM ' . DB::o()->tags . ' WHERE slug = ? ', array( $this->fields['slug'] ) );
-		}
+	private function get_tags() {
+		if (empty($this->tags)) {
+      $sql= "SELECT t.tag_text
+             FROM " . DB::table('tags') . " t
+             INNER JOIN " . DB::table('tag2post') . " t2p 
+             ON t.id = t2p.tag_id
+             WHERE t2p.post_id = ?";
+			$this->tags = DB::get_column($sql, array( $this->fields['id'] ) );
+    }	
+    if (count($this->tags) == 0)
+      return '';
 		return $this->tags;
 	}
 
@@ -396,7 +399,7 @@ class Post extends QueryRecord
 	{
 		if ( ! $this->comments )
 		{
-			$this->comments = Comments::by_slug( $this->slug );
+			$this->comments = Comments::by_post_id( $this->id );
 		}
 		return $this->comments;
 	}
@@ -404,32 +407,15 @@ class Post extends QueryRecord
 	/**
 	 * private function get_author()
 	 * returns a User object for the author of this post
-	 * @param bool Whether to use the cached version or not.  Default to true
 	 * @return User a User object for the author of the current post
 	**/
-	private function get_author( $use_cache = TRUE )
+	private function get_author()
 	{
-		if ( ! isset( $this->author_object ) || ( ! $use_cache)  )
+		if ( ! isset( $this->author_object ) )
 		{
 			$this->author_object = User::get( $this->user_id );
 		}
 		return $this->author_object;
-	}
-
-	/**
-	 * function get_info
-	 * 
-	 * Returns the post info array that is available for this post
-	 * @return array Post info for this post
-	 * @todo Create an info class to use instead of the array so that data written to the info "array" gets added to the database.	 	 
-	 **/
-	private function get_info()
-	{
-		if ( ! isset( $this->info_object ) ) {
-			// See @todo^^^
-			$this->info_object = DB::get_results('SELECT name, type, value FROM ' . DB::o()->postinfo . ' WHERE slug = ?', $this->slug);
-		}
-		return $this->info_object;
 	}
 }
 ?>

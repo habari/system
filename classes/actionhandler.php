@@ -1,44 +1,43 @@
 <?php
-
 /**
- * class ActionHandler
- *  
- * A base class dispatcher for URL-based actions.
- * The class name specified in a URL rule should be an extension of this class,
- * and should implement a function named the same as the action value of the
- * rule.
+ * A base class handler for URL-based actions.
  *  
  * @package Habari
- * @see URL::init_rules()
- * @version $Id$ 
  **/  
-class ActionHandler
-{
+class ActionHandler {
+  public $action= '';               // string name of action
+  public $handler_vars= array();    // internal array of handler variables (state info)
 
 	/**
-	 * function __construct
-	 * 	 
-	 * Constructor for ActionHandler and derived classes
-	 * Attempts to find a method in the object that matches the requested action,
-	 * and call it with the settings that are provided.
-	 * 	 
-	 * @param string The action that was in the URL rule
-	 * @param array An associative array of settings found in the URL by the URL
-	 **/	 	 	 	 
-	public function __construct($action, $settings)
-	{
-		try {
-			call_user_func(array($this, $action), $settings);
-			//$this->$action($settings);
-		}
-		catch ( Exception $e ) {
-			$classname = get_class($this);
-			echo "\n{$classname}->{$action}() does not exist.\n";
-			$methods = get_class_methods($classname);
-			foreach($methods as $method) echo "{$method}\n";
-			Utils::debug($settings);
-		}
+	 * All handlers must implement act() to conform to handler API.
+   * This is the default implementation of act(), which attempts
+   * to call a class member method of $this->act_$action().  Any
+   * subclass is welcome to override this default implementation.
+   *
+	 * @param   action  the action that was in the URL rule
+   * @return  bool    did the action succeed?
+	 */	 	 	 	 
+	public function act($action) {
+    $this->action= $action;
+    $action_method= 'act_' . $action;
+    $before_action_method= 'before_' . $action_method;
+    $after_action_method= 'after_' . $action_method;
+    if (method_exists($this, $action_method)) {
+      if (method_exists($this, $before_action_method))
+        $this->$before_action_method();
+      $this->$action_method();
+      if (method_exists($this, $after_action_method))
+        $this->$after_action_method();
+    }
 	}
 
+  /**
+   * Helper method to convert calls to $handler->my_action()
+   * to $handler->act('my_action');
+   */
+  public function __call($function, $args) {
+    $this->handler_vars= array_merge($this->handler_vars, $args);
+    $this->act($function);
+  }
 }
 ?>
