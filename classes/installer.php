@@ -6,14 +6,10 @@
  * @package Habari
  */
 
-class Installer
-{
+class Installer {
 
-	static function is_installed()
-	{
-		DB::get_row('SELECT * FROM ' . DB::o()->options . ' LIMIT 1;');
-		DB::clear_errors();
-		return DB::o()->queryok;
+	static function is_installed() {
+		return DB::query('SELECT * FROM ' . DB::table('options') . ' LIMIT 1;');
 	}
 	
 	/**
@@ -64,14 +60,9 @@ class Installer
 			die( $error ); // FixMe: we need proper error messaging class
 		}
 		// create the tables
-		DB::clear_errors();
 		foreach ($queries as $query)
 		{
 			DB::query($query);
-			if ( DB::has_errors() )
-			{
-				Error::raise('There was an error creating the Habari database tables. Installation halted.');
-			}
 		}
 
 		// Create the default options
@@ -114,7 +105,7 @@ class Installer
 			Utils::debug('Errors:', DB::get_errors());
 		}
 		echo "<p>Congratulations, Habari is now installed!</p>";
-		echo "<p>Click <a href='{$options->host_url}'>here</a> to continue.</p>";
+		echo "<p>Click <a href='{$options->base_url}'>here</a> to continue.</p>";
 		die;
 	}
 	

@@ -4,17 +4,11 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
- *
- * includes the UserInfo object which is publicly accessible.
- * $existing_user = new User(id=>1);
- * $existing_user->info->nickname= "old salt";
- *	print $existing_user->info->nickname;
  */
 
 class User extends QueryRecord
 {
 	private static $identity = null;  // Static storage for the currently logged-in User record
-	private $info= null;
 
 	/**
 	* static function default_fields
@@ -43,8 +37,6 @@ class User extends QueryRecord
 			$this->fields );
 		parent::__construct($paramarray);
 		$this->exclude_fields('id');
-		$this->info= new UserInfo ( $this->fields['id'] ); 
-		// $this->fields['id'] could be null. That's ok, provided $this->info::set_key is called before setting any options		
 	}
 
 	/**
@@ -65,7 +57,7 @@ class User extends QueryRecord
 				$userid = substr($_COOKIE[$cookie], 40);
 				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
 				// now try to load this user from the database
-				$user = DB::get_row('SELECT * FROM ' . DB::o()->users . ' WHERE id = ?', array($userid), 'User');
+				$user= DB::get_row('SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array($userid), 'User');
 				if ( ! $user ) {
 					return false;
 				}
@@ -89,10 +81,7 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		// if there is an insert called, it must be a new user, so find the user_id and set it. Now the $info object is safe to use
-		$this->info->set_key ( DB::o()->last_insert_id() );		
-		// $this->info->option_default= "saved";		
-		return parent::insert( DB::o()->users );
+		return parent::insert( DB::table('users') );
 	}
 
 	/**
@@ -101,7 +90,7 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		return parent::update( DB::o()->users, array( 'id' => $this->id ) );
+		return parent::update( DB::table('users'), array( 'id' => $this->id ) );
 	}
 
 	/**
@@ -110,7 +99,7 @@ class User extends QueryRecord
 	**/
 	public function delete()
 	{
-		return parent::delete( DB::o()->users, array( 'id' => $this->id ) );
+		return parent::delete( DB::table('users'), array( 'id' => $this->id ) );
 	}
 
 	/**
@@ -122,7 +111,11 @@ class User extends QueryRecord
 		// set the cookie
 		$cookie = "habari_" . Options::get('GUID');
 		$content = sha1($this->password . $this->id) . $this->id;
-		setcookie($cookie, $content, time() + 604800, Options::get('siteurl'));
+		$site_url= Options::get('siteurl');
+		if ( empty( $site_url ) ) {
+			$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
+		}
+		setcookie( $cookie, $content, time() + 604800, $site_url );
 	}
 
 	/** function forget
@@ -132,8 +125,12 @@ class User extends QueryRecord
 	{
 		// delete the cookie
 		$cookie = "habari_" . Options::get('GUID');
-		setcookie($cookie, ' ', time() - 86400, Options::get('siteurl'));
-		$home = Options::get('host_url');
+		$site_url= Options::get('siteurl');
+		if ( empty( $site_url ) ) {
+			$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
+		}
+		setcookie($cookie, ' ', time() - 86400, $site_url);
+		$home = Options::get('base_url');
 		header( "Location: " . $home );
 		exit;
 	}
@@ -163,7 +160,7 @@ class User extends QueryRecord
 			// yes?  see if this email address has a username
 			$what = "email";
 		}
-		$user = DB::get_row( 'SELECT * FROM ' . DB::o()->users . " WHERE {$what} = ?", array( $who ), 'User' );
+		$user = DB::get_row( 'SELECT * FROM ' . DB::table('users') . " WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
 			self::$identity = null;
 			return false;
@@ -198,7 +195,7 @@ class User extends QueryRecord
 			// was an email address given?
 			$what = 'email';
 		}
-		$user = DB::get_row( 'SELECT * FROM ' . DB::o()->users . " WHERE {$what} = ?", array( $who ), 'User' );
+		$user = DB::get_row( 'SELECT * FROM ' . DB::table('users') . " WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
 			return false;
 		} else {
@@ -214,11 +211,11 @@ class User extends QueryRecord
 	
 	public static function get_all()
 	{
-		$list_users = DB::get_results( 'SELECT * FROM ' . DB::o()->users . ' ORDER BY ID DESC' );
+		$list_users = DB::get_results( 'SELECT * FROM ' . DB::table('users') . ' ORDER BY id DESC', array(), 'User' );
 			if ( is_array( $list_users ) ) {
 				return $list_users;
 			} else {
-				return false;
+				return array();
 			}
 	}
 

@@ -1,71 +1,49 @@
 <?php
-
 /**
  * Habari AdminHandler Class
  *
  * @package Habari
  */
-
 define('ADMIN_DIR', HABARI_PATH . '/system/admin/');
 
-class AdminHandler extends ActionHandler
-{
+class AdminHandler extends ActionHandler {
+  
+  private $theme= null;
 
 	/**
-	* constructor __construct
-	* verify that the page is being accessed by an admin
-	* @param string The action that was in the URL rule
-	* @param array An associative array of settings found in the URL by the URL
-	*/
-	public function __construct($action, $settings)
-	{
+	 * Verify that the page is being accessed by an admin, then create
+   * a theme to handle admin display.
+	 */
+	public function __construct() {
 		// check that the user is logged in, and redirect
 		// to the login page, if not
-		if (! User::identify() )
-		{
-			$settings['redirect'] = URL::get($action, $settings);
-			Utils::redirect( URL::get( 'login', $settings ) );
+		$user= User::identify();
+    if ($user === FALSE) {
+//			$this->handler_vars['redirect']= URL::get($action, $this->handler_vars);
+			Utils::redirect(URL::get('user', array('page'=>'login')));
 			exit;
 		}
-		
-		parent::__construct($action, $settings);
-	}
-
-	/**
-	* function header
-	* display the admin header
-	*/
-	public function header()
-	{
-		include ADMIN_DIR . 'header.php';
-	}
-
-	/**
-	* function footer
-	* display the amdin footer
-	*/
-	public function footer()
-	{
-		include ADMIN_DIR . 'footer.php';
 	}
 
 	/**
 	* function admin
 	* Figures out what admin page to show, and displays it to the user.
 	* Calls post_{page}() function for post requests to the specific page.	
-	* @param array An associative array of settings found in the URL by the URL
+	* @param array An associative array of this->handler_vars found in the URL by the URL
 	*/
-	public function admin( $settings = null)
+	public function act_admin()
 	{
+		$page= isset( $this->handler_vars['page']) 
+            && ! empty($this->handler_vars['page']) 
+          ? $this->handler_vars['page'] 
+          : 'dashboard';
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 		case 'POST':
 			// Handle POSTs to the admin pages
-			$page = ( isset( $settings['page'] ) ) ? $page = $settings['page'] : $page = 'dashboard';
-			$page = ( $page == '' ) ? 'dashboard' : $page;
 			$fn = 'post_' . $page;
 			if ( method_exists( $this, $fn ) ) { 
-				$this->$fn( $settings );
-				//call_user_func( array(&$this, $fn), $settings);
+				$this->$fn();
+				//call_user_func( array(&$this, $fn), $this->handler_vars);
 			}
 			else {
 				$classname = get_class($this);
@@ -74,6 +52,8 @@ class AdminHandler extends ActionHandler
 			}
 			break;
 		default:
+      /* Create the Theme and template engine */
+      $this->theme= new Theme('admin', 'RawPHPEngine', ADMIN_DIR);
 			// Handle GETs of the admin pages
 			$files = glob(ADMIN_DIR . '*.php');
 			$filekeys = array_map(
@@ -86,15 +66,10 @@ class AdminHandler extends ActionHandler
 			$map = array_combine($filekeys, $files);
 			// Allow plugins to modify or add to $map here,
 			// since plugins will not be installed to /system/admin
-			if ( ! isset( $settings['page'] ) )
-			{
-				$settings['page'] = 'dashboard';
-			}
-			if ( isset( $map[$settings['page']] ) ) {
-				$this->header();
-				include $map[$settings['page']];
-				$this->footer();
-			}
+			if (empty($page))
+				$this->handler_vars['page'] = 'dashboard';
+			if (isset( $map[$page]))
+				$this->display($page);
 			else
 			{
 			  // The requested console page doesn't exist
@@ -111,16 +86,12 @@ class AdminHandler extends ActionHandler
 	 * Sets all of the set options.
 	 * @param array An associative array of content found in the url, $_POST array, and $_GET array 
 	 **/	 	 	 	
-	public function post_options($settings)
+	public function post_options()
 	{
-		// I feel unclean
-		$option_init= array(
-			'pingback_send' => FALSE,
-			'comments_require_id' => FALSE,
-		);
-		
-		foreach ( array_merge( $option_init, $_POST ) as $option => $value ) {
-			if ( Options::get( $option ) != $value ) {
+		foreach ($_POST as $option => $value)
+		{
+			if ( Options::get($option) != $value )
+			{
 				Options::set($option, $value);
 			}
 		}
@@ -132,7 +103,7 @@ class AdminHandler extends ActionHandler
 	* Handles post requests from the dashboard.
 	* @param array An associative array of content found in the url, $_POST array, and $_GET array 
 	*/
-	public function post_dashboard($settings)
+	public function post_dashboard()
 	{
 		// do something intelligent here
 		_e('Nothing sends POST requests to the dashboard. Yet.');
@@ -144,7 +115,7 @@ class AdminHandler extends ActionHandler
 	* Adds a post to the site, if the post content is not NULL.
 	* @param array An associative array of content found in the url, $_POST array, and $_GET array 
 	*/
-	public function post_publish($settings)
+	public function post_publish()
 	{
 		if( $_POST['content'] != '' )
 		{
@@ -167,7 +138,7 @@ class AdminHandler extends ActionHandler
 								 );
 				$post = Post::create( $postdata );
 			}
-			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug, true, false ) ) );
+			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) ) );
 		} 
 		else 
 		{
@@ -181,48 +152,48 @@ class AdminHandler extends ActionHandler
 	 * Handles post requests from the user profile page
 	 * @param array An associative array of content found in the url, $_POST array, and $_GET array
 	*/
-	function post_user ( $settings )
+	function post_user ( )
 	{
 		// keep track of whether we actually need to update any fields
 		$update = 0;
 		$results = '';
 		$currentuser = User::identify();
 		$user = $currentuser;
-		if ( $currentuser->id != $settings['user_id'] )
+		if ( $currentuser->id != $this->handler_vars['user_id'] )
 		{
 			// user is editing someone else's profile
 			// load that user account
-			$user = User::get( $settings['user_id'] );
+			$user = User::get( $this->handler_vars['user_id'] );
 			$results = '/' . $user->username;
 		}
 		// are we deleting a user?
-		if ( isset( $settings['delete'] ) && ( 'user' == $settings['delete'] ) )
+		if ( isset( $this->handler_vars['delete'] ) && ( 'user' == $this->handler_vars['delete'] ) )
 		{
 			// extra safety check here
-			if ( isset( $settings['user_id'] ) && ( $currentuser->id != $settings['user_id'] ) )
+			if ( isset( $this->handler_vars['user_id'] ) && ( $currentuser->id != $this->handler_vars['user_id'] ) )
 			{
 				$username = $user->username;
 				$user->delete();
 				$results = 'deleted';
 			}
 		}
-		if ( isset( $settings['username'] ) && ( $user->username != $settings['username'] ) )
+		if ( isset( $this->handler_vars['username'] ) && ( $user->username != $this->handler_vars['username'] ) )
 		{
-			$user->username = $settings['username'];
+			$user->username = $this->handler_vars['username'];
 			$update = 1;
-			$results = '/' . $settings['username'];
+			$results = '/' . $this->handler_vars['username'];
 		}
-		if ( isset( $settings['email'] ) && ( $user->email != $settings['email'] ) )
+		if ( isset( $this->handler_vars['email'] ) && ( $user->email != $this->handler_vars['email'] ) )
 		{
-			$user->email = $settings['email'];
+			$user->email = $this->handler_vars['email'];
 			$update = 1;
 		}
 		// see if a password change is being attempted
-		if ( isset( $settings['pass1'] ) && ( '' != $settings['pass1'] ) )
+		if ( isset( $this->handler_vars['pass1'] ) && ( '' != $this->handler_vars['pass1'] ) )
 		{
-			if ( isset( $settings['pass2'] ) && ( $settings['pass1'] == $settings['pass2'] ) )
+			if ( isset( $this->handler_vars['pass2'] ) && ( $this->handler_vars['pass1'] == $this->handler_vars['pass2'] ) )
 			{
-				$user->password = sha1($settings['pass1']);
+				$user->password = sha1($this->handler_vars['pass1']);
 				if ( $user == $currentuser )
 				{
 					// update the cookie for the current user
@@ -248,7 +219,7 @@ class AdminHandler extends ActionHandler
 	 * Handles post requests from the Users listing (ie: creating a new user)
 	 * @param array An associative array of content found in the url, $_POST array, and $_GET array
 	**/
-	public function post_users( $settings )
+	public function post_users( )
 	{
 		$user = User::identify();
 		if ( ! $user )
@@ -256,41 +227,41 @@ class AdminHandler extends ActionHandler
 			die ('Naughty naughty!');
 		}
 		$error = '';
-		if ( isset( $settings['action'] ) && ( 'newuser' == $settings['action'] ) )
+		if ( isset( $this->handler_vars['action'] ) && ( 'newuser' == $this->handler_vars['action'] ) )
 		{
 			// basic safety checks
-			if ( ! isset( $settings['username'] ) || '' == $settings['username'] )
+			if ( ! isset( $this->handler_vars['username'] ) || '' == $this->handler_vars['username'] )
 			{
 				$error .= 'Please supply a user name!<br />';
 			}
-			if ( ! isset( $settings['email'] ) || 
-				( '' == $settings['username'] ) ||
-				( ! strstr($settings['email'], '@') ) )
+			if ( ! isset( $this->handler_vars['email'] ) || 
+				( '' == $this->handler_vars['username'] ) ||
+				( ! strstr($this->handler_vars['email'], '@') ) )
 			{
 				$error .= 'Please supply a valid email address!<br />';
 			}
-			if ( ( ! isset( $settings['pass1'] ) ) ||
-				( ! isset( $settings['pass2'] ) ) ||
-				( '' == $settings['pass1'] ) ||
-				( '' == $settings['pass2'] ) )
+			if ( ( ! isset( $this->handler_vars['pass1'] ) ) ||
+				( ! isset( $this->handler_vars['pass2'] ) ) ||
+				( '' == $this->handler_vars['pass1'] ) ||
+				( '' == $this->handler_vars['pass2'] ) )
 			{
 				$error .= 'Password mis-match!<br />';
 			}
 			if ( ! $error )
 			{
 				$user = new User ( array(
-					'username' => $settings['username'],
-					'email' => $settings['email'],
-					'password' => sha1($settings['pass1']),
+					'username' => $this->handler_vars['username'],
+					'email' => $this->handler_vars['email'],
+					'password' => sha1($this->handler_vars['pass1']),
 					) );
 				if ( $user->insert() )
 				{
-					$settings['message'] = 'User ' . $settings['username'] . ' created!<br />';
+					$this->handler_vars['message'] = 'User ' . $this->handler_vars['username'] . ' created!<br />';
 					// clear out the other variables
-					$settings['username'] = '';
-					$settings['email'] = '';
-					$settings['pass1'] = '';
-					$settings['pass2'] = '';
+					$this->handler_vars['username'] = '';
+					$this->handler_vars['email'] = '';
+					$this->handler_vars['pass1'] = '';
+					$this->handler_vars['pass2'] = '';
 				}
 				else
 				{
@@ -305,39 +276,34 @@ class AdminHandler extends ActionHandler
 	 * function post_import
 	 * Handles the submission of the import form, importing data from a WordPress database.
 	 * This function should probably be broken into an importer class, since it is WordPress-specific.
-	 * @param array An array of settings information
+	 * @param array An array of this->handler_vars information
 	 **/
-	function post_import( $settings )
+	function post_import( )
 	{
 		/**
 		 * This function needs to validate the import form fields,
 		 * and then forward the import information on to an import function
 		 * rather than doing the import right here.
-		 **/
-		// TODO this function ought to be instantiating an Importer class instead of doing all the work here
-		
-		// bandaid
-		$pingback_send= Options::get( 'pingback_send' );		  
+		 **/		  
 	
-		$db_connection= array(
-			'connection_string' => $settings['connection'],  // MySQL Connection string
-			'username' => $settings['username'],  // MySQL username
-			'password' => $settings['password'],  // MySQL password
-			'prefix' =>	$settings['prefix'], // Prefix for your WP tables
+		$db_connection = array(
+		'connection_string' => $this->handler_vars['connection'],  // MySQL Connection string
+		'username' => $this->handler_vars['username'],  // MySQL username
+		'password' => $this->handler_vars['password'],  // MySQL password
+		'prefix'	=>	$this->handler_vars['prefix'], // Prefix for your WP tables
 		);
 		
 		// Connect to the database or fail informatively
 		try {
-			$wpdb= new DB( $db_connection['connection_string'], $db_connection['username'], $db_connection['password'], $db_connection['prefix'] );
+			$wpdb = new DB( $db_connection['connection_string'], $db_connection['username'], $db_connection['password'], $db_connection['prefix'] );
 		}
-		catch ( Exception $e ) {
-			die( 'Could not connect to database using the supplied credentials.  Please check config.php for the correct values. Further information follows: ' . $e->getMessage() );		
+		catch( Exception $e) {
+			die( 'Could not connect to database using the supplied credentials.  Please check config.php for the correct values. Further information follows: ' .  $e->getMessage() );		
 		}
 		
-		echo '<h1>Importing your content into ' . Options::get( 'title' ) . '</h1>';
-		flush();
+		echo '<h1>Import your content into ' . Options::get('title') . '</h1>';
 		
-		$posts= $wpdb->get_results( "
+		$posts = $wpdb->get_results("
 			SELECT
 				post_content as content,
 				ID as id,
@@ -350,111 +316,93 @@ class AdminHandler extends ActionHandler
 				(post_status = 'publish') as status,
 				(post_type = 'page') as content_type
 			FROM {$db_connection['prefix']}posts 
-			", array(), 'Post' );
+			", array(), 'Post');
 		
-		foreach ( $posts as $post ) {
+		foreach( $posts as $post ) {
 		
-			$tags= $wpdb->get_column( "
-				SELECT cat_name
+			$tags = $wpdb->get_column( 
+				"SELECT category_nicename
 				FROM {$db_connection['prefix']}post2cat
 				INNER JOIN {$db_connection['prefix']}categories 
 				ON ({$db_connection['prefix']}categories.cat_ID = {$db_connection['prefix']}post2cat.category_id)
-				WHERE post_id = {$post->id}
-			" );
+				WHERE post_id = {$post->id}" 
+			);
 		
-			$p= new Post( $post->to_array() );
-			$p->guid= $p->guid; // Looks fishy, but actually causes the guid to be set.
-			$p->tags= $tags;
+			$p = new Post( $post->to_array() );
+			$p->guid = $p->guid; // Looks fishy, but actually causes the guid to be set.
+			$p->tags = $tags;
 			$p->insert();
 		
 		}
 		
-		$comments= $wpdb->get_results( "
-			SELECT 
-				comment_content as content,
-				comment_author as name,
-				comment_author_email as email,
-				comment_author_url as url,
-				comment_author_IP as ip,
-				comment_approved as status,
-				comment_date as date,
-				comment_type as type,
-				post_name as post_slug 
-			FROM {$db_connection['prefix']}comments
-			INNER JOIN {$db_connection['prefix']}posts
-			ON ({$db_connection['prefix']}posts.ID = {$db_connection['prefix']}comments.comment_post_ID)
-			", 
-			array(), 'Comment' );
+		$comments = $wpdb->get_results("SELECT 
+										comment_content as content,
+										comment_author as name,
+										comment_author_email as email,
+										comment_author_url as url,
+										comment_author_IP as ip,
+									 	comment_approved as status,
+										comment_date as date,
+										comment_type as type,
+										post_name as post_slug 
+										FROM {$db_connection['prefix']}comments
+										INNER JOIN
+										{$db_connection['prefix']}posts on ({$db_connection['prefix']}posts.ID = {$db_connection['prefix']}comments.comment_post_ID)
+										", 
+										array(), 'Comment');
 		
-		foreach ( $comments as $comment ) {
-			switch ( $comment->type ) {
-				case 'pingback':
-					$comment->type= Comment::PINGBACK;
-					break;
-				case 'trackback':
-					$comment->type= Comment::TRACKBACK;
-					break;
-				default:
-					$comment->type= Comment::COMMENT;
-					break;
+		foreach( $comments as $comment ) {
+			switch( $comment->type ) {
+				case 'pingback': $comment->type = Comment::PINGBACK; break;
+				case 'trackback': $comment->type = Comment::TRACKBACK; break;
+				default: $comment->type = Comment::COMMENT;
 			}
-			
-			$c= new Comment( $comment->to_array() );
+				
+			$c = new Comment( $comment->to_array() );
+			//Utils::debug( $c );
 			$c->insert();
 		}
-		
-		// bandaid
-		Options::set( 'pingback_send', $pingback_send );
-				  
 		echo '<p>All done, your content has been imported.</p>';
 		
 		// Redirect back to a URL with a notice?
 	}
 	
 	/**
-	 * function post_moderate
+	 * function post_delete
 	 * Handles the submission of the comment moderation form.
 	 * @param array An array of information found in the post array
 	 **/
-	function post_moderate( $settings )
+	function post_moderate()
 	{
-		$comments = $settings['moderate'];
-		
-		$deleted = array_keys(array_filter($comments, create_function('$a', 'return $a == Comment::STATUS_DELETED;')));
-		$approved = array_keys(array_filter($comments, create_function('$a', 'return $a == Comment::STATUS_APPROVED;')));
-	
-		if ( isset( $_POST['mass_delete']) ) {
-			$comments = DB::get_column('SELECT id FROM ' . DB::o()->comments . ' WHERE status=' . Comment::STATUS_UNAPPROVED);
-			Comments::moderate( $comments, Comment::STATUS_DELETED );
+		if( isset( $_POST['mass_delete'] ) ) {
+			Comment::mass_delete();
 		}
-		else {
-			Comments::moderate( $deleted, Comment::STATUS_DELETED );
-			Comments::moderate( $approved, Comment::STATUS_APPROVED );
+		elseif( is_array( $_POST['delete'] ) ) {
+			foreach( $_POST['delete'] as $destroy ) {
+				Comment::delete( $destroy );
+			}
+		} elseif( is_array( isset( $_POST['approve'] ) ) ) {
+			foreach( $_POST['approve'] as $promote ) {
+				Comment::publish( $promote );
+			}
 		}
-		Utils::redirect( URL::get( 'admin', 'page=moderate&result=success', false, true ) );
+			Utils::redirect( URL::get( 'admin', 'page=moderate&result=success' ) );
 	}
-		
-	/**
-	 * function post_spam
-	 * Handles the submission of the spam moderation form.
-	 * @param array An array of information found in the post array
-	 **/
-	function post_spam( $settings )
-	{
-		$comments = $settings['moderate'];
-		
-		$deleted = array_keys( array_filter( $comments, create_function( '$a', 'return $a == Comment::STATUS_DELETED;' ) ) );
-		$nonspam = array_keys( array_filter( $comments, create_function( '$a', 'return $a == Comment::STATUS_APPROVED;' ) ) );
-		
-		if( isset( $_POST['mass_spam_delete'] ) ) {
-			$comments = DB::get_column( 'SELECT id FROM ' . DB::o()->comments . ' WHERE status=' . Comment::STATUS_SPAM );
-				Comments::moderate( $comments, Comment::STATUS_DELETED );
-		}
-		else {
-			Comments::moderate( $deleted, Comment::STATUS_DELETED );
-			Comments::moderate( $approved, Comment::STATUS_APPROVED );
-		}
-		Utils::redirect( URL::get( 'admin', 'page=spam&result=success' ) );
-	}
-}
-?>
+
+  /**
+   * Helper function which automatically assigns all handler_vars
+   * into the theme and displays a theme template
+   * 
+   * @param template_name Name of template to display (note: not the filename)
+   */
+  protected function display($template_name) {
+    /* 
+     * Assign internal variables into the theme (and therefore into the theme's template
+     * engine.  See Theme::assign().
+     */
+    foreach ($this->handler_vars as $key=>$value)
+      $this->theme->assign($key, $value);
+    $this->theme->display($template_name);
+  }
+}?>
+

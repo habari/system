@@ -76,7 +76,7 @@ class Comments extends ArrayObject
 			}
 		}
 
-		$sql = "SELECT {$select} from " . DB::o()->comments . ' WHERE ' . implode( ' AND ', $where ) . " ORDER BY {$orderby}{$limit}";
+		$sql = "SELECT {$select} from " . DB::table('comments') . ' WHERE ' . implode( ' AND ', $where ) . " ORDER BY {$orderby}{$limit}";
 		$query = DB::$fetch_fn( $sql, $params, 'Comment' );
 		if ( 'get_value' == $fetch_fn )
 		{
@@ -187,6 +187,15 @@ class Comments extends ArrayObject
 	}
 
 	/**
+	 * Returns all comments for a supplied post ID
+	 * @param post_id ID of the post
+	 * @return array  an array of Comment objects for the given post
+	**/
+	public function by_post_id($post_id) {
+		return self::get( array( "post_id" => $post_id ) );
+	}
+
+	/**
 	 * function by_slug
 	 * select all comments for a given post slug
 	 * @param string a post slug
@@ -256,11 +265,10 @@ class Comments extends ArrayObject
 	**/
 	public function only( $what = 'approved' )
 	{
-		if ( ! $this->sort[$what] )
-		{
+		if (! isset($this->sort[$what])) {
 			$this->sort_comments();
 		}
-		if ( ! is_array( $this->sort[$what] ) ) {
+		if (! isset($this->sort[$what]) || ! is_array( $this->sort[$what] ) ) {
 			$this->sort[$what] = array();
 		}
 		return $this->sort[$what];

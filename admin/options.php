@@ -1,3 +1,4 @@
+<?php include('header.php');?>
 <div id="content-area">
 	<div class="dashbox c3" id="welcome">
 		<h1>Manage Options</h1>
@@ -37,3 +38,4 @@
 	</form>
 </div>
 </div>
+<?php include('footer.php');?>

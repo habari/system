@@ -4,11 +4,6 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
- *
-  * includes the CommentInfo object.
- * $existing_comment = new Comment(id=>1);
- * $existing_comment->info->browser_ua= "Netscape 2.0";
- *	print $existing_comment->info->browser_ua;
  */
 
 class Comment extends QueryRecord
@@ -18,14 +13,11 @@ class Comment extends QueryRecord
 	const STATUS_UNAPPROVED = 0;
 	const STATUS_APPROVED = 1;
 	const STATUS_SPAM = 2;
-	
-	const STATUS_DELETED = 3;  // These will eventually need to be deleted!
 
 	const COMMENT = 0;
 	const PINGBACK =1;
 	const TRACKBACK = 2;
-	
-	private $info= null;
+
 	/**
 	* static function default_fields
 	* Returns the defined database columns for a comment
@@ -34,7 +26,6 @@ class Comment extends QueryRecord
 	{
 		return array(
 			'id' => '',
-			'post_slug' => '',
 			'name' => '',
 			'email' => '',
 			'url' => '',
@@ -59,8 +50,6 @@ class Comment extends QueryRecord
 			$this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields('id');
-		$this->info = new CommentInfo ( $this->fields['id'] );
-		// $this->fields['id'] could be null. That's ok, provided $this->info::set_key is called before setting any info records		
 	}
 	
 	/**
@@ -86,8 +75,8 @@ class Comment extends QueryRecord
 	/**
 	 * static function create
 	 * Creates a comment and saves it
-	 * @param $paramarry array An associative array of comment fields
-	 * @return The comment object that was created	 
+	 * @param array An associative array of comment fields
+	 * $return Comment The comment object that was created	 
 	 **/	 	 	
 	static function create($paramarray) 
 	{
@@ -102,14 +91,9 @@ class Comment extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		$result = parent::insert( DB::o()->comments );
+		$result = parent::insert( DB::table('comments') );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
-
-		// if there is an insert called, it must be a new user, so find the user_id and set it. 
-		// Now the $info object is safe to use for new comments
-		$this->info->set_key ( DB::o()->last_insert_id() ); 
-		// $this->info->option_default= "saved";
 		return $result;
 	}
 
@@ -119,7 +103,7 @@ class Comment extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		$result = parent::update( DB::o()->comments, array('id'=>$this->id) );
+		$result = parent::update( DB::table('comments'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		return $result;
@@ -129,18 +113,18 @@ class Comment extends QueryRecord
 	 * function delete
 	 * Deletes an existing comment
 	 */	 	 	 	 	
-	public function delete( $id )
+	public function delete($id)
 	{
-		return parent::delete( DB::o()->comments, array('id'=>$id) );
+		return parent::delete( DB::table('comments'), array('id'=>$id) );
 	}
 	
 	/**
 	* function massdelete
 	* Burninates all the comments currently awaiting moderation
 	*/
-	public function mass_delete( $status = STATUS_UNAPPROVED )
+	public function mass_delete()
 	{
-		return parent::delete( DB::o()->comments, array( 'status' => $status ) );
+		return parent::delete( DB::table('comments'), array( 'status' => STATUS_UNAPPROVED ) );
 	}
 	
 	/**
@@ -162,10 +146,6 @@ class Comment extends QueryRecord
 	 **/	 	 
 	public function __get( $name )
 	{
-		if ( ( 'name' == $name ) && ( '' == parent::__get( $name ) ) )
-		{
-			return __('Anonymous');
-		}
 		return parent::__get( $name );
 	}
 

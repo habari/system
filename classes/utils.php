@@ -181,6 +181,10 @@ class Utils
 	 */	 	 
 	static function implode_quoted( $separator, $values )
 	{
+		if ( ! is_array( $values ) )
+		{
+			$values = array();
+		}
 		$values = array_map(array('Utils', 'quote_spaced'), $values);
 		return implode( $separator, $values );
 	}
@@ -206,6 +210,7 @@ class Utils
 	 **/
 	static function page_selector($current, $total, $token, $settings = array())
 	{
+		$p= array(0,null,null,null,null);
 		$p[0] = 1;
 		if(1 != $total) {
 			$p[4] = $total;
