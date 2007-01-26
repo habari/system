@@ -1,3 +1,4 @@
+<?php include('header.php'); ?>
 <div id="content-area">
 	<div class="dashboard-block c3" id="welcome">
 		<h1>Import your old blog content</h1>
@@ -22,3 +23,4 @@
 // unset the $db_connection variable, since we don't need it any more
 unset( $db_connection );
 ?>
+<?php include('footer.php'); ?>

@@ -1,3 +1,4 @@
+<?php include('header.php'); ?>
 <div id="content-area">
 	<div class="dashboard-block c3" id="welcome">
 		<h1>Comments Marked as Spam</h1>
@@ -34,3 +35,4 @@
 	<?php } ?>
 	</div>
 </div>
+<?php include('footer.php'); ?>
