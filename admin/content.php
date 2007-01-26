@@ -4,12 +4,11 @@
 	<h1>Habari Content</h1>
 	<p>Post, pages, images and podcasts.&nbsp; Here you will find all the content you have created, ready to be tweaked, edited or removed.</p>
 	<?php 
-	if ( isset( $settings['result'] ) )
-	{
-		switch( URL::o()->settings['result'] ) {
-		case 'success':
-			_e('<p>Your options have been updated.</p>');
-			break;
+	if ( isset( $result ) ) {
+		switch( $result ) {
+			case 'success':
+				_e('<p class="update">Your options have been updated.</p>');
+				break;
 		}
 	}
 	?>
