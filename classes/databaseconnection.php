@@ -19,6 +19,7 @@ class DatabaseConnection {
   private $profiles= array();                     // an array of query profiles
 
   private $prefix= "";							// class private storage of the database table prefix, defaults to ""
+  private $current_table;
 
    /**
    * Loads a list of habari tables from the database
@@ -456,6 +457,9 @@ public function is_connected()
 			$values[] = $value;
 		}
 		$query .= ') VALUES (' . trim(str_repeat('?,', count($fieldvalues)), ',') . ');';
+		
+		// need to pass $table on to the $o singleton object;
+	    $this->current_table = $table;
 
 		return $this->query($query, $values);
 	}
@@ -468,7 +472,7 @@ public function is_connected()
 	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
 	public function exists($table, $keyfieldvalues) {
-		$qry= "SELECT 1 as c FROM {$table} WHERE 1 ";
+		$qry= "SELECT 1 as c FROM {$table} WHERE 1=1 ";
 
 		$values = array();
 		foreach($keyfieldvalues as $keyfield => $keyvalue) {
@@ -512,7 +516,7 @@ public function is_connected()
 				$values[] = $fieldvalue;
 				$comma = ' ,';
 			} 
-			$qry .= ' WHERE 1 ';
+			$qry .= ' WHERE 1=1 ';
 			
 			foreach($keyfields as $keyfield => $keyvalue) {
 				$qry .= "AND {$keyfield} = ? ";
@@ -534,7 +538,7 @@ public function is_connected()
 	 */	 
 	public function delete( $table, $keyfields )
 	{
-		$qry = "DELETE FROM {$table} WHERE 1 ";
+		$qry = "DELETE FROM {$table} WHERE 1=1 ";
 		foreach ( $keyfields as $keyfield => $keyvalue ) {
 			$qry .= "AND {$keyfield} = ? ";
 			$values[] = $keyvalue;
