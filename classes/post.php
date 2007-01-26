@@ -86,12 +86,10 @@ class Post extends QueryRecord
 	 * @param array An associated array of parameters, or a querystring
 	 * @return array A single Post object, the first if multiple results match
 	 **/	 	 	 	 	
-	static function get($paramarray = array())
+	static function get( $paramarray = array() )
 	{
-		global $controller;
-		
 		// Defaults
-		$defaults = array (
+		$defaults= array (
 			'where' => array(
 				array(
 					'status' => Post::STATUS_PUBLISHED,
@@ -99,13 +97,13 @@ class Post extends QueryRecord
 			),
 			'fetch_fn' => 'get_row',
 		);
-		if( $user = User::identify() ) {
-			$defaults['where'][] = array(
+		if ( $user = User::identify() ) {
+			$defaults['where'][]= array(
 				'user_id' => $user->id,
 			);
 		}
-		//print_r($controller);
-		$paramarray = array_merge( $controller->handler->handler_vars, $defaults, Utils::get_params($paramarray) ); 
+		$paramarray= array_merge( Controller::get_handler()->handler_vars, $defaults, Utils::get_params($paramarray) );
+		 
 		return Posts::get( $paramarray );
 	}
 	

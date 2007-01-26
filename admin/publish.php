@@ -1,24 +1,24 @@
-<?php include('header.php');?>
+<?php include('header.php'); ?>
 <div id="content-area">
 	<div class="dashboard-block c3" id="welcome">
 	<?php
-	if ( isset( $settings['result'] ) ) {
-		switch( $settings['result'] ) {
+	if ( isset( $result ) ) {
+		switch( $result ) {
 			case 'success':
-			_e('<p class="update">Your post has been saved.</p>');
-			break;
+				_e('<p class="update">Your post has been saved.</p>');
+				break;
 		}
 	}
-	if( isset( $settings['slug'] ) ) {
-		$post = Post::get( array( 'slug' => $settings['slug'], 'status' => Post::STATUS_ANY ) );
+	if ( isset( $slug ) ) {
+		$post= Post::get( array( 'slug' => $slug, 'status' => Post::STATUS_ANY ) );
 	}
 	else {
-		$post = new Post();
+		$post= new Post();
 	}
-	$tags = htmlspecialchars(Utils::implode_quoted( ' ', $post->tags ));
+	$tags= htmlspecialchars( Utils::implode_quoted( ' ', $post->tags ) );
 	
 	?>
-	<form name="create-content" id="create-content" method="post" action="<?php URL::out('admin', 'page=publish'); ?>">
+	<form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
 		<div class="dashboard-block c3 publish">
 			<h4>Title</h4>
 			<input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>" />
@@ -39,10 +39,10 @@
 			</ul>
 			<p class="right"><input type="submit" name="submit" id="submit" value="Save!" /></p>
 		</div>
-		<?php if($post->slug != '') : ?>
+		<?php if ( $post->slug != '' ) { ?>
 		<input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>" />
-		<?php endif; ?>
+		<?php } ?>
 	</form>
 	</div>
 </div>
-<?php include('footer.php');?>
+<?php include('footer.php'); ?>
