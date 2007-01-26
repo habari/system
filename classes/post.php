@@ -4,7 +4,7 @@
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
-  *
+	*
  * Includes an instance of the PostInfo class; for holding inforecords about a Post
  * If the Post object describes an existing post; use the internal info object to get, set, unset and test for existence (isset) of 
  * info records
@@ -41,16 +41,16 @@ class Post extends QueryRecord
 	public static function default_fields()
 	{
 		return array(
-			'id' => '',
+			'id' => 0,
 			'slug' => '',
 			'title' => '',
 			'guid' => '',
 			'content' => '',
-			'user_id' => '',
+			'user_id' => 0,
 			'status' => self::STATUS_DRAFT,
 			'pubdate' => date( 'Y-m-d H:i:s' ),
 			'updated' => date ( 'Y-m-d H:i:s' ),
-      'content_type' => 0
+			'content_type' => 0
 		);
 	}
 
@@ -104,7 +104,7 @@ class Post extends QueryRecord
 				'user_id' => $user->id,
 			);
 		}
-    //print_r($controller);
+		//print_r($controller);
 		$paramarray = array_merge( $controller->handler->handler_vars, $defaults, Utils::get_params($paramarray) ); 
 		return Posts::get( $paramarray );
 	}
@@ -122,55 +122,55 @@ class Post extends QueryRecord
 		return $post;
 	}
 
-  /**
-   * New slug setter.  Using different function name to test an alternate
-   * algorithm.
-   *
-   * The method both sets the internal slug and returns the 
-   * generated slug.
-   *
-   * @return  string  Generated slug
-   */
-  private function set_slug() {
-    /* 
-     * Do we already have a slug in for the post?
-     * If so, double check we haven't changed the slug
-     * manually by setting newfields['slug']
-     */
-    $old_slug= strtolower($this->fields['slug']);
-    $new_slug= strtolower((isset($this->newfields['slug']) ? $this->newfields['slug'] : ''));
+	/**
+	 * New slug setter.  Using different function name to test an alternate
+	 * algorithm.
+	 *
+	 * The method both sets the internal slug and returns the 
+	 * generated slug.
+	 *
+	 * @return  string  Generated slug
+	 */
+	private function set_slug() {
+		/* 
+		 * Do we already have a slug in for the post?
+		 * If so, double check we haven't changed the slug
+		 * manually by setting newfields['slug']
+		 */
+		$old_slug= strtolower($this->fields['slug']);
+		$new_slug= strtolower((isset($this->newfields['slug']) ? $this->newfields['slug'] : ''));
 
-    if (! empty($old_slug)) {
-      if ($old_slug == $new_slug)
-        return $new_slug;
-    }
-  
-    /* 
-     * OK, we have a new slug or no slug at all
-     * For either case, we need to double check 
-     * that the slug doesn't already exist for another
-     * post in the DB.  But first, we must create
-     * a new slug if there isn't one set manually.
-     */
-    if (empty($new_slug)) {
-      /* Create a new slug from title */
-      $title= strtolower((isset($this->newfields['title']) ? $this->newfields['title'] : $this->fields['title']));
-      $new_slug= preg_replace('/[^a-z0-9]+/i', SLUG_POSTFIX, $title);
-      $new_slug= rtrim($new_slug, SLUG_POSTFIX);
-    }
+		if (! empty($old_slug)) {
+			if ($old_slug == $new_slug)
+				return $new_slug;
+		}
+	
+		/* 
+		 * OK, we have a new slug or no slug at all
+		 * For either case, we need to double check 
+		 * that the slug doesn't already exist for another
+		 * post in the DB.  But first, we must create
+		 * a new slug if there isn't one set manually.
+		 */
+		if (empty($new_slug)) {
+			/* Create a new slug from title */
+			$title= strtolower((isset($this->newfields['title']) ? $this->newfields['title'] : $this->fields['title']));
+			$new_slug= preg_replace('/[^a-z0-9]+/i', SLUG_POSTFIX, $title);
+			$new_slug= rtrim($new_slug, SLUG_POSTFIX);
+		}
 
-    /*
-     * Check for an existing post with the same slug.
-     * To do so, we cut off any postfixes from the new slug
-     * and check the DB for the slug without postfixes
-     */
-    $check_slug= rtrim($new_slug, SLUG_POSTFIX);
-    $sql= "SELECT COUNT(*) as slug_count FROM " . DB::table('posts') . " WHERE slug LIKE '" . $check_slug . "%';";
-    $num_posts= DB::get_value($sql);
-    $valid_slug= $check_slug . str_repeat(SLUG_POSTFIX, $num_posts);
-    $this->newfields['slug']= $valid_slug;
-    return $valid_slug;
-  }
+		/*
+		 * Check for an existing post with the same slug.
+		 * To do so, we cut off any postfixes from the new slug
+		 * and check the DB for the slug without postfixes
+		 */
+		$check_slug= rtrim($new_slug, SLUG_POSTFIX);
+		$sql= "SELECT COUNT(*) as slug_count FROM " . DB::table('posts') . " WHERE slug LIKE '" . $check_slug . "%';";
+		$num_posts= DB::get_value($sql);
+		$valid_slug= $check_slug . str_repeat(SLUG_POSTFIX, $num_posts);
+		$this->newfields['slug']= $valid_slug;
+		return $valid_slug;
+	}
 	
 	/**
 	 * Attempts to generate the slug for a post that has none
@@ -202,8 +202,8 @@ class Post extends QueryRecord
 		$postfixcount = 0;
 		do {
 			if (! $slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::table('posts') . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) )) {
-        print_r(DB::instance());exit;
-      }
+				print_r(DB::instance());exit;
+			}
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
 		} while ($slugcount->ct != 0);
 		$this->newfields[ 'slug' ] = $slug . $postfix;
@@ -216,35 +216,30 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	private function setguid()
 	{
-		if( 
-			!isset( $this->newfields['guid'] ) 
+		if ( ! isset( $this->newfields['guid'] ) 
 			|| ($this->newfields['guid'] == '')  // GUID is empty 
 			|| ($this->newfields['guid'] == '//?p=') // GUID created by WP was erroneous (as is too common)
-		) 
-		{
-			$result = 'tag:' . Options::get('hostname') . ',' 
-							 . date('Y') . ':' . $this->setslug() . '/' . time();
-			$this->newfields['guid'] = $result;
+		) {
+			$result= 'tag:' . Options::get('hostname') . ',' . date('Y') . ':' . $this->setslug() . '/' . time();
+			$this->newfields['guid']= $result;
 		}
 		return $this->newfields['guid'];
 	}
 	
-	private function parsetags($tags)
+	private function parsetags( $tags )
 	{
-		if( is_string( $tags ) )
-		{
+		if ( is_string( $tags ) ) {
 			preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $tags, $matches);
 			return $matches[0];
 		}
-		elseif( is_array( $tags ) )
-		{
+		elseif ( is_array( $tags ) ) {
 			return $tags;
 		}
 	}
 
 	private function savetags()
 	{
-    if ( count($this->tags) == 0) {return;}
+		if ( count($this->tags) == 0) {return;}
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE  = ?', array( $this->fields['slug'] ) );
 		foreach( (array)$this->tags as $tag ) { 
 			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (slug, tag) VALUES (?,?)', 
@@ -373,16 +368,8 @@ class Post extends QueryRecord
 	 **/	 	 	
 	private function get_permalink()
 	{
-return URL::get('display_posts_by_slug', array('slug'=>$this->fields['slug'])); // @todo separate permalink rule?
-/* Commenting out for new URL system 
-		global $url;
-		
-		return $url->get_url(
-			'post',
-			$this->fields,
-			false
-		);
-*/
+		return URL::get( 'display_posts_by_slug', array( 'slug' => $this->fields['slug'] ) );
+		// @todo separate permalink rule?
 	}
 	
 	/**
@@ -391,16 +378,17 @@ return URL::get('display_posts_by_slug', array('slug'=>$this->fields['slug'])); 
 	 * @return &array A reference to the tags array for this post
 	 **/	 	 	 	
 	private function get_tags() {
-		if (empty($this->tags)) {
-      $sql= "SELECT t.tag_text
-             FROM " . DB::table('tags') . " t
-             INNER JOIN " . DB::table('tag2post') . " t2p 
-             ON t.id = t2p.tag_id
-             WHERE t2p.post_id = ?";
-			$this->tags = DB::get_column($sql, array( $this->fields['id'] ) );
-    }	
-    if (count($this->tags) == 0)
-      return '';
+		if ( empty( $this->tags ) ) {
+			$sql= "
+				SELECT t.tag_text
+				FROM " . DB::table('tags') . " t
+				INNER JOIN " . DB::table('tag2post') . " t2p 
+				ON t.id = t2p.tag_id
+				WHERE t2p.post_id = ?";
+			$this->tags= DB::get_column( $sql, array( $this->fields['id'] ) );
+		}	
+		if ( count( $this->tags ) == 0 )
+			return '';
 		return $this->tags;
 	}
 
@@ -411,9 +399,8 @@ return URL::get('display_posts_by_slug', array('slug'=>$this->fields['slug'])); 
 	**/
 	private function &get_comments()
 	{
-		if ( ! $this->comments )
-		{
-			$this->comments = Comments::by_post_id( $this->id );
+		if ( ! $this->comments ) {
+			$this->comments= Comments::by_post_id( $this->id );
 		}
 		return $this->comments;
 	}
@@ -425,9 +412,8 @@ return URL::get('display_posts_by_slug', array('slug'=>$this->fields['slug'])); 
 	**/
 	private function get_author()
 	{
-		if ( ! isset( $this->author_object ) )
-		{
-			$this->author_object = User::get( $this->user_id );
+		if ( ! isset( $this->author_object ) ) {
+			$this->author_object= User::get( $this->user_id );
 		}
 		return $this->author_object;
 	}
