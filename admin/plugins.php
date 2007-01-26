@@ -1,9 +1,9 @@
 <?php include('header.php');?>
 <div id="content-area">
-	<div class="dashbox c3" id="welcome">
+	<div class="dashboard-block c3" id="welcome">
 		<h1>Currently Available Plugins</h1>
 		<p>Activate, deactivate and remove plugins through this interface.</p>
-		<div class="dashbox c3">
+		<div class="dashboard-block c3">
 			<table cellspacing="0" width="100%">
 				<thead>
 					<tr>

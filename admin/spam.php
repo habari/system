@@ -1,5 +1,5 @@
 <div id="content-area">
-	<div class="dashbox c3" id="welcome">
+	<div class="dashboard-block c3" id="welcome">
 		<h1>Comments Marked as Spam</h1>
 		<?php if( Comments::count_total( Comment::STATUS_SPAM ) ) { ?>
 		<p>Below you will find comments awaiting moderation.</p>

@@ -1,6 +1,6 @@
 <?php include('header.php');?>
 <div id="content-area">
-	<div class="dashbox c3" id="welcome">
+	<div class="dashboard-block c3" id="welcome">
 	<?php
 	if ( isset( $settings['result'] ) ) {
 		switch( $settings['result'] ) {
@@ -19,7 +19,7 @@
 	
 	?>
 	<form name="create-content" id="create-content" method="post" action="<?php URL::out('admin', 'page=publish'); ?>">
-		<div class="dashbox c3 publish">
+		<div class="dashboard-block c3 publish">
 			<h4>Title</h4>
 			<input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>" />
 
