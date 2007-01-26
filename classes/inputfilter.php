@@ -6,7 +6,7 @@
 class InputFilter
 {
 	/**
-	 * Legal elements.
+	 * Allowed elements.
 	 */
 	private static $whitelist_elements= array(
 		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.4
@@ -36,14 +36,14 @@ class InputFilter
 	);
 	
 	/**
-	 * Legal attributes for elements.
+	 * Allowed attributes and values.
 	 */
 	private static $whitelist_attributes= array(
 		// attributes that are valid for ALL elements (a subset of coreattrs)
 		// elements that only take coreattrs don't need to be listed separately
 		'*' => array(
 			'lang' => 'language-code',
-			'xml:lang' => 'language-code', // this is our xhtml support
+			'xml:lang' => 'language-code', // this is our xhtml support... all of it
 			'dir' => array( 'ltr', 'rtl', ),
 			'title' => 'text',
 		),
@@ -67,8 +67,7 @@ class InputFilter
 	/**
 	 * List of all defined named character entities in HTML 4.01 and XHTML.
 	 */
-	// for some reason, this doesn't work?
-	static $character_entitites= array(
+	private static $character_entities= array(
 		'nbsp', 'iexcl', 'cent', 'pound', 'curren', 'yen', 'brvbar', 'sect', 'uml', 
 		'copy', 'ordf', 'laquo', 'not', 'shy', 'reg', 'macr', 'deg', 'plusmn', 
 		'sup2', 'sup3', 'acute', 'micro', 'para', 'middot', 'cedil', 'sup1', 'ordm', 
@@ -100,8 +99,7 @@ class InputFilter
 		'sbquo', 'ldquo', 'rdquo', 'bdquo', 'dagger', 'Dagger', 'permil', 'lsaquo', 
 		'rsaquo', 'euro',
 	);
-	// However, this *does* work.
-	static $character_entities_re= ';(nbsp|iexcl|cent|pound|curren|yen|brvbar|sect|uml|copy|ordf|laquo|not|shy|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|Agrave|Aacute|Acirc|Atilde|Auml|Aring|AElig|Ccedil|Egrave|Eacute|Ecirc|Euml|Igrave|Iacute|Icirc|Iuml|ETH|Ntilde|Ograve|Oacute|Ocirc|Otilde|Ouml|times|Oslash|Ugrave|Uacute|Ucirc|Uuml|Yacute|THORN|szlig|agrave|aacute|acirc|atilde|auml|aring|aelig|ccedil|egrave|eacute|ecirc|euml|igrave|iacute|icirc|iuml|eth|ntilde|ograve|oacute|ocirc|otilde|ouml|divide|oslash|ugrave|uacute|ucirc|uuml|yacute|thorn|yuml|fnof|Alpha|Beta|Gamma|Delta|Epsilon|Zeta|Eta|Theta|Iota|Kappa|Lambda|Mu|Nu|Xi|Omicron|Pi|Rho|Sigma|Tau|Upsilon|Phi|Chi|Psi|Omega|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|omicron|pi|rho|sigmaf|sigma|tau|upsilon|phi|chi|psi|omega|thetasym|upsih|piv|bull|hellip|prime|Prime|oline|frasl|weierp|image|real|trade|alefsym|larr|uarr|rarr|darr|harr|crarr|lArr|uArr|rArr|dArr|hArr|forall|part|exist|empty|nabla|isin|notin|ni|prod|sum|minus|lowast|radic|prop|infin|ang|and|or|cap|cup|int|there4|sim|cong|asymp|ne|equiv|le|ge|sub|sup|nsub|sube|supe|oplus|otimes|perp|sdot|lceil|rceil|lfloor|rfloor|lang|rang|loz|spades|clubs|hearts|diams|quot|amp|lt|gt|OElig|oelig|Scaron|scaron|Yuml|circ|tilde|ensp|emsp|thinsp|zwnj|zwj|lrm|rlm|ndash|mdash|lsquo|rsquo|sbquo|ldquo|rdquo|bdquo|dagger|Dagger|permil|lsaquo|rsaquo|euro);';
+	private static $character_entities_re= '';
 	
 	/**
 	 * Perform all filtering, return new string.
@@ -145,8 +143,6 @@ class InputFilter
 		}
 		
 		if ( $e{0} == '#' ) {
-			// numeric character references may only have values in the range 0-65535 (16 bit)
-			// we strip null, though, just for kicks
 			$e= strtolower( $e );
 			if ( $e{1} == 'x' ) {
 				$e= hexdec( substr( $e, 2 ) );
@@ -155,6 +151,8 @@ class InputFilter
 				$e= substr( $e, 1 );
 			}
 			
+			// numeric character references may only have values in the range 0-65535 (16 bit)
+			// we strip null, though, just for kicks
 			$is_valid= ( intval( $e ) > 0 && intval( $e ) <= 65535 );
 			
 			if ( $is_valid ) {
@@ -163,14 +161,14 @@ class InputFilter
 			}
 		}
 		else {
-			// named entities must be known
-			
-			//
 			if ( self::$character_entities_re == '' ) {
 				self::$character_entities_re= ';(' . implode( '|', self::$character_entities ) . ');';
 			}
 			
+			// named entities must be known
 			$is_valid= preg_match( self::$character_entities_re, $e, $matches );
+			
+			// XXX should we map named entities to their numeric equivalents?
 			
 			if ( $is_valid ) {
 				// normalize to name and nothing but the name... eh.
@@ -191,13 +189,15 @@ class InputFilter
 	private static function check_attr_value( $k, $v, $type )
 	{
 		if ( is_array( $type ) ) {
+			// array of allowed values, exact matches only
 			return in_array( $v, $type, TRUE );
 		}
-		else { 
+		else {
+			// data type 
 			switch ( $type ) {
 				case 'uri':
 					// RfC 2396 <http://www.ietf.org/rfc/rfc2396.txt>
-					$bits= parse_url( $v );
+					//$bits= parse_url( $v );
 					return TRUE; // TODO must check URI for valid syntax, procotol, etc.
 					break;
 				case 'language-code':
@@ -224,6 +224,9 @@ class InputFilter
 		}
 	}
 	
+	/**
+	 * @todo TODO must build DOM to really properly remove offending elements
+	 */
 	public static function filter_html_elements( $str )
 	{
 		$tokenizer= new HTMLTokenizer( $str );
@@ -233,29 +236,50 @@ class InputFilter
 		
 		// filter token stream
 		$filtered= array();
+		$stack= array();
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_TEXT:
-					// XXX use blog charset setting
-					$node['value']= html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
+					if ( count( $stack ) ) {
+						// skip node if filtered element is still open
+						// XXX this is not very robust
+						$node= NULL;
+					}
+					else {
+						// XXX use blog charset setting
+						$node['value']= html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
+					}
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
-					foreach ( $node['attrs'] as $k => $v ) {
-						$attr_ok=
-							( 
-								   in_array( $k, self::$whitelist_attributes['*'] )
-								|| ( array_key_exists( $node['name'], self::$whitelist_attributes ) &&
-								     array_key_exists( $k, self::$whitelist_attributes[$node['name']] )
-							)
-							&& self::check_attr_value( $k, $v, self::$whitelist_attributes[$node['name']][$k] )
-						);
-						if ( ! $attr_ok ) {
-							unset( $node['attrs'][$k] );
+					// is this element allowed at all?
+					if ( ! in_array( $node['name'], self::$whitelist_elements ) ) {
+						$node= NULL;
+						array_push( $stack, $node['name'] );
+					}
+					else {
+						// check attributes
+						foreach ( $node['attrs'] as $k => $v ) {
+							$attr_ok= (
+								( 
+									   in_array( $k, self::$whitelist_attributes['*'] )
+									|| ( array_key_exists( $node['name'], self::$whitelist_attributes ) &&
+									     array_key_exists( $k, self::$whitelist_attributes[$node['name']] ) )
+								)
+								&& self::check_attr_value( $k, $v, self::$whitelist_attributes[$node['name']][$k] )
+							);
+							if ( ! $attr_ok ) {
+								unset( $node['attrs'][$k] );
+							}
 						}
 					}
+					break; 
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
 					if ( ! in_array( $node['name'], self::$whitelist_elements ) ) {
 						$node= NULL;
+						if ( array_pop( $stack ) !== $node['name'] ) {
+							// something weird happened (Luke, use the DOM!)
+							array_push( $stack, $node['name'] );
+						}
 					} 
 					break;
 				case HTMLTokenizer::NODE_TYPE_PI:
@@ -307,6 +331,7 @@ class InputFilter
 				default:
 			}
 		}
+		// $document->toString() is so much easier :~
 		
 		return $str;
 	}
