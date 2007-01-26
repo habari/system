@@ -57,7 +57,7 @@
 				<?php 	foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::STATUS_DRAFT ) ) as $draft ) { ?>
 				<tr>
 					<td><?php echo $draft->title; ?></td>
-					<td><a href="<?php Options::out('base_url'); ?><?php echo $post->username; ?>"><?php echo $draft->username; ?></a></td>
+					<td><a href="<?php Options::out('base_url'); ?><?php echo $draft->author->username; ?>"><?php echo $draft->author->username; ?></a></td>
 					<td><?php echo $draft->pubdate; ?></td>
 					<td align="center">
 						<a href="<?php Options::out('base_url'); ?><?php echo $draft->post_slug; ?>" title="View this Entry">
