@@ -9,16 +9,8 @@ if (!defined('DEBUG'))
 	define('DEBUG', true);
 
 class DB extends Singleton {
-	private $fetch_mode= PDO::FETCH_CLASS;          // PDO Fetch mode
-	private $fetch_class_name= 'QueryRecord';       // The default class name for fetching classes
-	private $keep_profile= DEBUG;                    // keep profiling and timing information?
-	private $pdo= NULL;                             // handle to the PDO interface
-	private $pdo_statement= NULL;                   // handle for a PDOStatement
-	private $sql_tables= array();                   // an array of table names that Habari knows
-	private $errors= array();                       // an array of errors related to queries
-	private $profiles= array();                      // an array of query profiles
-	private $current_table = '';                    // the table for inserting statements
-
+	
+	private $connection= null;
 	/**
 	 * Enables singleton working properly
 	 * 
@@ -27,43 +19,7 @@ class DB extends Singleton {
 	static protected function instance() {
 		return parent::instance( get_class() );
 	}
-
-
-	/**
-	 * Loads a list of habari tables from the database
-	 *
-	 * @todo  Wish there were a cross platform method of 
-	 *        simply getting the tables from the DB.  Using
-	 *        the INFORMATION_SCHEMA interface, for instance,
-	 *        but I don't think that SQLite currently supports
-	 *        it.
-	 */
-	private function load_tables() {
-		/* Local variable caching */
-		$db= DB::instance();
-
-		if ($db->pdo == NULL) {
-			$db->connect();
-		}
-
-		$prefix= ( isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : '' );
-		$db->sql_tables['posts']= $prefix . 'posts';
-		$db->sql_tables['postinfo']= $prefix . 'postinfo';
-		$db->sql_tables['posttype']= $prefix . 'posttype';
-		$db->sql_tables['poststatus']= $prefix . 'poststatus';
-		$db->sql_tables['options']= $prefix . 'options';
-		$db->sql_tables['users']= $prefix . 'users';
-		$db->sql_tables['userinfo']= $prefix . 'userinfo';
-		$db->sql_tables['tags']= $prefix . 'tags';
-		$db->sql_tables['comments']= $prefix . 'comments';
-		$db->sql_tables['commentinfo']= $prefix . 'commentinfo';
-		$db->sql_tables['tag2post']= $prefix . 'tag2post';
-		$db->sql_tables['themes']= $prefix . 'themes';
-		$db->sql_tables['theme_vars']= $prefix . 'theme_vars';
-		$db->sql_tables['rewrite_rules']= $prefix . 'rewrite_rules';
-		$db->sql_tables['rewrite_rule_args']= $prefix . 'rewrite_rule_args';
-	} 
-
+	
 	/** 
 	 * Connects to the database server.  If no arguments are
 	 * supplied, then the connection is attempted for the 
@@ -75,13 +31,19 @@ class DB extends Singleton {
 	 * @return  bool
 	 */
 	public static function connect() {
-		/* 
-			Short-circuit out if we're already connected
-			and the caller hasn't supplied function args
+		/*
+			has private database connection instance been created yet? if not, do that first.
+			then check if we have a pre-existing connection. If yes, short circuit processing
+			if not; call the connect method on our private instance
 		*/
-		if (func_num_args() == 0 && DB::instance()->pdo != NULL)
-			return true;
+		if (NULL == DB::instance()->connection ) {
+			DB::instance()->connection= new DatabaseConnection();
+		}
 
+		if ( false != DB::instance()->connection->is_connected() ) {			
+			return true;
+		}
+		
 		if (func_num_args() > 0) {
 			$connect_string= func_get_arg(0);
 			$db_user= func_get_arg(1);
@@ -93,30 +55,8 @@ class DB extends Singleton {
 			$db_user= $GLOBALS['db_connection']['username'];
 			$db_pass= $GLOBALS['db_connection']['password'];
 		}
-		try {
-			if (! DB::instance()->pdo= new PDO($connect_string, $db_user, $db_pass)) {
-				/** @todo Use standard Error class */
-				print_r(DB::instance()->pdo->errorInfo());
-				exit;
-			}
-				
-			/**
-			 * @note  MySQL has issues caching queries that use the internal prepared
-			 *        statement API (server-side); therefore, we use prepared statement
-			 *        emulation in PDO to bypass this performance problem
-			 */
-			if (DB::instance()->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) == 'mysql'
-				&& version_compare(phpversion(), '5.1.3', '>='))
-				DB::instance()->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-			DB::instance()->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
-			DB::load_tables();
-			return true;
-		}
-		catch (PDOException $e) {
-			/** @todo TODO Use standard Error class */
-			echo $e->getMessage();
-			return false;
-		}
+		return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
+		
 	}
 
 	/**
@@ -125,12 +65,7 @@ class DB extends Singleton {
 	 * @param table name of the table
 	 */
 	public static function table($name) {
-		if (DB::instance()->pdo == NULL)
-			DB::instance()->load_tables();
-		if (isset(DB::instance()->sql_tables[$name]))
-			return DB::instance()->sql_tables[$name];
-		else
-			return false;
+		return DB::instance()->connection->table($name);
 	}
 
 	/**
@@ -140,9 +75,8 @@ class DB extends Singleton {
 	 *
 	 * @param name  the table name
 	**/
-	public static function register_table($name) {
-		$prefix= (isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : '');
-		DB::instance()->sql_tables[$name]= $prefix . $name;
+	public static function register_table($name) {		
+		DB::instance()->connection->register_table($name);
 	}
 
 	/**
@@ -151,7 +85,7 @@ class DB extends Singleton {
 	 * @param mode  One of the PDO::FETCH_MODE integers
 	 */
 	public static function set_fetch_mode($mode) {
-		DB::instance()->fetch_mode= $mode;
+		DB::instance()->connection->set_fetch_mode( $mode );
 	}
 
 	/**
@@ -160,7 +94,7 @@ class DB extends Singleton {
 	 * @param class_name  Name of class to create during fetch
 	 */
 	public static function set_fetch_class($class_name) {
-		DB::instance()->fetch_class_name= $class_name;
+		DB::instance()->connection->set_fetch_class( $class_name );
 	}
 
 	/**
@@ -171,62 +105,7 @@ class DB extends Singleton {
 	 * @return bool	 
 	 */	 	 	 	 	
 	public static function query($query, $args = array()) {
-		/* Local scope caching */
-		$db= DB::instance();
-		$pdo= $db->pdo;
-
-		/* Auto-connect */
-		if ($pdo == NULL)
-			if ($db->connect())
-				$pdo= $db->pdo;
-
-		if($db->pdo_statement != NULL) 
-			$db->pdo_statement->closeCursor();
-
-		if ($db->pdo_statement=  $pdo->prepare($query)) {
-			/**
-			 * This section of code is EXTREMELY important, for the reasons I laid
-			 * out on php.net: @see http://us2.php.net/manual/en/function.pdostatement-setfetchmode.php
-			 *
-			 * In summary, PDO will *core dump* if the fetch mode is PDO::FETCH_CLASS and the
-			 * class supplied for instantiation is either a) not included, or b) included, but all
-			 * related classes are not included.  This is very annoying behaviour, and something that
-			 * took many hours to diagnose, as the core dump happens with no explanation as to the
-			 * source of the segfault.
-			 */
-			if ($db->fetch_mode == PDO::FETCH_CLASS) {
-				/* Ensure that the class is actually available and included already, otherwise segfault happens */
-				if (class_exists(strtolower($db->fetch_class_name))) {
-					$db->pdo_statement->setFetchMode(PDO::FETCH_CLASS, $db->fetch_class_name, array());
-				}
-				else {
-					/* Die gracefully before the segfault occurs */
-					echo '<br /><br />Attempt to fetch in class mode with a non-included class<br /><br />';
-					return false;
-				}
-			}
-			else
-				$db->pdo_statement->setFetchMode($db->fetch_mode);
-
-			/* If we are profiling, then time the query */
-			if ($db->keep_profile) {
-				$profile= new QueryProfile($query);
-				$profile->start();
-			}
-			if (! $db->pdo_statement->execute($args)) {
-				$db->add_error(array('query'=>$query,'error'=>$db->pdo_statement->errorInfo()));
-				return false;
-			}
-			if ($db->keep_profile) {
-				$profile->stop();
-				$db->profiles[]= $profile;
-			}
-			return true;
-		}
-		else {
-			$db->add_error(array('query'=>$query,'error'=>$pdo->errorInfo()));
-			return false;
-		}
+		 return DB::instance()->connection->query( $query, $args);
 	}
 
 	/** 
@@ -239,64 +118,7 @@ class DB extends Singleton {
 	 * @todo  EVERYTHING... :)
 	 */
 	public static function execute_procedure($procedure, $args= array()) {
-		/* Local scope caching */
-		$pdo= DB::instance()->pdo;
-		$pdo_statement= DB::instance()->pdo_statement;
-
-		/* Auto-connect */
-		if ($pdo == NULL)
-			DB::connect();
-
-		if($pdo_statement != NULL) 
-			$pdo_statement->closeCursor();
-
-		/*
-		 * Since RDBMS handle the calling of procedures
-		 * differently, we need a simple abstraction
-		 * mechanism here to build the appropriate SQL
-		 * commands to call the procedure...
-		 */
-		$driver= $pdo->getAttribute( PDO::ATTR_DRIVER_NAME );
-		switch ( $driver ) {
-			case 'mysql':
-			case 'db2':
-				/*
-				 * These databases use ANSI-92 syntax for procedure calling:
-				 * CALL procname (param1, param2, ...);
-				 */
-				$query= 'CALL ' . $procedure . '(';
-				if (count($args) > 0) {
-					$query.= str_repeat('?,', count($args)); // Add the placeholders
-					$query= substr($query, 0, strlen($query) - 1); // Strip the last comma
-				}
-				$query.= ')';
-				break;
-			case 'pgsql':
-			case 'oracle':
-				die("not yet supported on $driver");
-				break;
-		}
-
-		if ( $pdo_statement= $pdo->prepare( $query ) ) {
-			/* If we are profiling, then time the query */
-			if ( DB::instance()->keep_profile ) {
-				$profile= new QueryProfile( $query );
-				$profile->start();
-			}
-			if ( ! $pdo_statement->execute( $args ) ) {
-				DB::add_error( array( 'query' => $query, 'error' => $pdo_statement->errorInfo() ) );
-				return false;
-			}
-			if ( DB::instance()->keep_profile ) {
-				$profile->stop();
-				DB::instance()->profiles[]= $profile;
-			}
-			return true;
-		}
-		else {
-			DB::add_error( array( 'query' => $query, 'error' => $pdo_statement->errorInfo() ) );
-			return false;
-		}
+		return DB::instance()->connection->execute_procedure( $procedure, $args );
 	}
 
 	/**
@@ -304,11 +126,7 @@ class DB extends Singleton {
 	 * statements in a safe ACID-compliant container
 	 */
 	public static function begin_transaction() {
-		$pdo= DB::instance()->pdo;
-		if ($pdo == NULL)
-			DB::connect();
-
-		$pdo->beginTransaction();
+		DB::instance()->connection->begin_transaction();
 	}
 
 	/**
@@ -317,22 +135,14 @@ class DB extends Singleton {
 	 * a savepoint was committed.
 	 */
 	public static function rollback() {
-		$pdo= DB::instance()->pdo;
-		if ($pdo == NULL)
-			DB::connect();
-
-		$pdo->rollBack();
+		DB::instance()->connection->rollback();
 	}
 
 	/**
 	 * Commit a currently running transaction
 	 */
 	public static function commit() {
-		$pdo= DB::instance()->pdo;
-		if ($pdo == NULL)
-			DB::connect();
-
-		$pdo->commit();
+		DB::instance()->connection->commit();
 	}
 
 	/**
@@ -341,7 +151,7 @@ class DB extends Singleton {
 	 * @return  array an array of query profiles
 	 */
 	public function get_profiles() {
-		return DB::instance()->profiles;
+		return DB::instance()->connection->get_profiles();
 	}
 
 	/**
@@ -350,7 +160,7 @@ class DB extends Singleton {
 	 * @param   error   array('query'=>query, 'error'=>errorInfo)
 	 */
 	private function add_error($error) {
-		DB::instance()->errors[]= $error;
+		DB::instance()->connection->add_error($error);
 	}
 	
 	/**
@@ -358,7 +168,7 @@ class DB extends Singleton {
 	 * @return array An array of error data	 
 	 */	  	 	
 	public function get_errors() {
-		return DB::instance()->errors;
+		return DB::instance()->connection->get_errors();
 	}
 	
 	/**
@@ -366,23 +176,22 @@ class DB extends Singleton {
 	 * @return boolean True if there were errors, false if not
 	 **/	 	 	 	
 	public function has_errors() {
-		return (count(DB::instance()->errors) > 0);
+		return DB::instance()->connection->has_errors();
 	}
 	
 	/**
 	 * Updates the last error pointer to simulate resetting the error array
 	 **/	 	 	
 	public function clear_errors() {
-		DB::instance()->errors= array(); 
+		DB::instance()->connection->clear_errors(); 
 	}
 
 	/**
 	 * Returns only the last error info
 	 * @return array Data for the last error	 
 	 **/
-	public function get_last_error() {
-		$error= end(DB::instance()->errors);
-		return (array('query'=>$error['query'], 'message'=>$error['error'][2]));
+	public function get_last_error() {		
+		return DB::instance()->connection->get_last_error();
 	}
 
 	/**
@@ -394,16 +203,7 @@ class DB extends Singleton {
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/	 	 	 	 
 	public function get_results($query, $args = array()) {
-		if (func_num_args() == 3) {
-			/* Called expecting specific class return type */
-			$class_name= func_get_arg(2);
-			DB::set_fetch_mode(PDO::FETCH_CLASS);
-			DB::set_fetch_class($class_name);
-		}
-		if (DB::instance()->query($query, $args))
-			return DB::instance()->pdo_statement->fetchAll();
-		else
-			return false;
+			return DB::instance()->connection->get_results( $query, $args );		
 	}
 	
 	/**
@@ -416,15 +216,12 @@ class DB extends Singleton {
 	 **/	 	 
 	public function get_row($query, $args = array()) {
 		if (func_num_args() == 3) {
-			/* Called expecting specific class return type */
 			$class_name= func_get_arg(2);
-			DB::set_fetch_mode(PDO::FETCH_CLASS);
-			DB::set_fetch_class($class_name);
+			return DB::instance()->connection->get_row( $query, $args, $class_name);
 		}
-		if (DB::instance()->query($query, $args))
-			return DB::instance()->pdo_statement->fetch();
-		else
-			return false;
+		else {
+			return DB::instance()->connection->get_row( $query, $args );
+		}
 	}
 	
 	/**
@@ -436,10 +233,7 @@ class DB extends Singleton {
 	 * <code>$ary = DB::get_column( 'SELECT col1 FROM tablename WHERE foo = ?', array('fieldvalue') );</code>	 
 	 **/	 	 
 	public function get_column($query, $args = array()) {
-		if (DB::instance()->query($query, $args)) 
-			return DB::instance()->pdo_statement->fetchAll(PDO::FETCH_COLUMN);
-		else
-			return false;
+		 return DB::instance()->connection->get_column ($query, $args);
 	}
 
 	/**
@@ -450,12 +244,7 @@ class DB extends Singleton {
 	 * @return mixed a single value (int, string)
 	**/
 	public function get_value( $query, $args = array() ) {
-		if (DB::instance()->query($query, $args)) {
-			$result= DB::instance()->pdo_statement->fetch(PDO::FETCH_NUM);
-			return $result[0];
-		}
-		else
-			return false;
+		return DB::instance()->connection->get_value( $query,  $args );
 	}
 	
 	/**
@@ -465,22 +254,9 @@ class DB extends Singleton {
 	 * @return boolean True on success, false if not	  	 
 	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/
-	public function insert($table, $fieldvalues) {
-		ksort($fieldvalues);
-
-		$query = "INSERT INTO {$table} (";
-		$comma = '';
-		
-		foreach($fieldvalues as $field => $value) {
-			$query .= $comma . $field;
-			$comma = ', ';
-			$values[] = $value;
-		}
-		$query .= ') VALUES (' . trim(str_repeat('?,', count($fieldvalues)), ',') . ');';
-
-		DB::instance()->current_table = $table;
-
-		return DB::instance()->query($query, $values);
+	public function insert($table, $fieldvalues) 
+	{
+		return DB::instance()->connection->insert($table, $fieldvalues);
 	}
 	
 	/**
@@ -490,16 +266,9 @@ class DB extends Singleton {
 	 * @return boolean True if any matching record exists, false if not
 	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
-	public function exists($table, $keyfieldvalues) {
-		$qry= "SELECT 1 as c FROM {$table} WHERE 1=1 ";
-
-		$values = array();
-		foreach($keyfieldvalues as $keyfield => $keyvalue) {
-			$qry .= " AND {$keyfield} = ? ";
-			$values[] = $keyvalue;
-		}
-		$result = DB::instance()->get_row($qry, $values);
-		return ($result !== false);
+	public function exists($table, $keyfieldvalues) 
+	{		
+		return DB::instance()->connection->exists( $table, $keyfieldvalues );
 	}
 	
 	/**
@@ -513,39 +282,8 @@ class DB extends Singleton {
 	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
 	public function update($table, $fieldvalues, $keyfields)
-	{
-		ksort($fieldvalues);
-		ksort($keyfields);
-
-		$keyfieldvalues = array();
-		foreach($keyfields as $keyfield => $keyvalue) {
-			if(is_numeric($keyfield)) {
-				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];
-			}
-			else {
-				$keyfieldvalues[$keyfield] = $keyvalue;
-			}
-		}
-		if(DB::instance()->exists($table, $keyfieldvalues)) {
-			$qry = "UPDATE {$table} SET";
-			$values = array();
-			$comma = '';
-			foreach($fieldvalues as $fieldname => $fieldvalue) {
-				$qry .= $comma . " {$fieldname} = ?";
-				$values[] = $fieldvalue;
-				$comma = ' ,';
-			} 
-			$qry .= ' WHERE 1=1 ';
-			
-			foreach($keyfields as $keyfield => $keyvalue) {
-				$qry .= "AND {$keyfield} = ? ";
-				$values[] = $keyvalue;
-			}
-			return DB::instance()->query($qry, $values);
-		}
-		else {
-			return DB::instance()->insert($table, $fieldvalues);
-		}
+	{			
+		 return DB::instance()->connection->update($table, $fieldvalues, $keyfields);		
 	}
 
 	/**
@@ -557,13 +295,7 @@ class DB extends Singleton {
 	 */	 
 	public function delete( $table, $keyfields )
 	{
-		$qry= "DELETE FROM {$table} WHERE 1=1 ";
-		foreach ( $keyfields as $keyfield => $keyvalue ) {
-			$qry.= "AND {$keyfield} = ? ";
-			$values[]= $keyvalue;
-		}
-		
-		return DB::instance()->query( $qry, $values );
+		return DB::instance()->connection->delete( $table, $keyfields );
 	}
 
 	/**
@@ -577,10 +309,7 @@ class DB extends Singleton {
 	 */
 	public function last_insert_id() 
 	{
-		if ( DB::instance()->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'pgsql' ) {
-			return DB::instance()->pdo->lastInsertId( DB::instance()->current_table. '_pkey_seq' );
-		}
-		return DB::instance()->pdo->lastInsertId( func_num_args() == 1 ? func_get_arg(0) : '' );
+		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg(0) : '' );
 	}
 }
 ?>
