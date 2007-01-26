@@ -557,7 +557,12 @@ public function is_connected()
    * @see     http://us2.php.net/manual/en/function.pdo-lastinsertid.php
    */
   public function last_insert_id() {
-    return $this->pdo->lastInsertId(func_num_args()==1 ? func_get_args(0) : '');
+	  if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'pgsql' ) {
+        return $this->pdo->lastInsertId( $this->current_table. '_pkey_seq' ) ;
+      }
+      else {
+        return $this->pdo->lastInsertId( func_num_args() == 1 ? func_get_arg(0) : '' );
+      }    
   }
 }
 ?>
