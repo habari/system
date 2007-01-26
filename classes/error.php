@@ -44,7 +44,7 @@ class Error
 	static public function error_handler( $errno, $errstr, $errfile, $errline, $errcontext )
 	{
 		if( $errno != 0 ) {
-			$error = new Error( sprintf('%s:%d: %s', $errfile, $errline, $errstr), $errno );
+			$error = new Error( sprintf('<p class="error"><b>%s:%d:</b> %s</p>', basename( $errfile ), $errline, $errstr), $errno );
 		}
 	}
 	
@@ -56,10 +56,10 @@ class Error
 	public function out()
 	{
 		if (is_scalar($this->message)) {
-			echo $this->message . "<br />\n";
+			echo $this->message . "\n";
 		}
 		else {
-			echo var_export($this->message, TRUE) . "<br />\n";
+			echo var_export($this->message, TRUE) . "\n";
 		}
 	}
 	
