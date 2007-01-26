@@ -192,7 +192,7 @@ img
 	border: none;
 }
 
-input[type=text]
+input[type=text], input[type=password]
 {
 	margin-top: 1.0em;
 	margin-bottom: 1.0em;
