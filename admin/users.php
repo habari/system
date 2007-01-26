@@ -11,7 +11,7 @@ if ( isset( $settings['message'] ) && ( '' != $settings['message'] ) )
 }
 ?>
 <div id="content-area">
-<div class="dashbox c3" id="welcome">
+<div class="dashboard-block c3" id="welcome">
 <h1>User Managment</h1>
 <p>Add, edit and remove users from your site from this interface.</p>
 <p><strong>Users</strong></p>
@@ -35,7 +35,7 @@ foreach ( User::get_all() as $user )
 ?>
 </ul>
 </div>
-<div class="dashbox c3" id="welcome">
+<div class="dashboard-block c3" id="welcome">
 <?php
 if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 {

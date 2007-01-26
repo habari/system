@@ -1,9 +1,9 @@
 /*
-** Name: Habari admin Stylesheet
-** Author: Habari Team
-** License: Apache License, version 2
-** Date: October 29th, 2006
-*/
+ * Name: Habari Admin Stylesheet
+ * Author: Habari Team
+ * License: Apache License 2.0
+ * Date: October 29th, 2006
+ */
 
 /*=== @a ===*/
 a { 
@@ -29,13 +29,14 @@ body
 #content-area
 {
 	text-align: left;
-	min-width: 1000px;
-	width: 100%;
+	min-width: 700px;
+	width: 90%;
+    margin: 0 auto;
 }
 
 #content-area h1
 {
-	padding-top: auto;
+	padding-top: inherit;
 	margin-bottom: 0.0em;
 	font-size: 1.3em;
 }
@@ -48,16 +49,15 @@ body
 }*/
 
 /*=== @d ===*/
-
-.dashbox {
+.dashboard-block {
 	float: left;
-	margin: 0px 1.5%;
-	width: 30%;
+    margin: 0px 1.5%;
+    width: 30%;
 	_width: 28%;
 }
 
-.dashbox.r {
-	float:right;
+.dashboard-block.r {
+	float: right;
 }
 
 .c2 {
@@ -71,12 +71,12 @@ body
 	_width: 91%
 }
 
-.dashbox a:hover
+.dashboard-block a:hover
 {
 	text-decoration: underline;
 }
 
-.dashbox table
+.dashboard-block table
 {
 	width: 100%;
 	font-size: 0.9em;
@@ -84,35 +84,35 @@ body
 	margin-top: 1.0em;
 }
 
-.dashbox table td
+.dashboard-block table td
 {
 	font-size: 0.9em;
 	color: #6A6A6A;
 	padding: 0.2em 0.0em 0.2em 0.2em;
 }
 
-.dashbox table th
+.dashboard-block table th
 {
 	font-weight: normal;
 }
 
-.dashbox table .value
+.dashboard-block table .value
 {
 	text-align: right;
 }
 
-.dashbox table th
+.dashboard-block table th
 {
 	font-weight: bold;
 }
 
-.dashbox ul
+.dashboard-block ul
 {
 	margin-left: 0.0em;
 	padding-left: 0.0em;
 }
 
-.dashbox ul li
+.dashboard-block ul li
 {
 	list-style: none;
 	font-size: 0.9em;
@@ -131,7 +131,7 @@ body
 #drafts h4
 {
 	background: transparent url(images/page_edit.png) no-repeat left top;
-	text-indent: 20px;
+	text-indent: 1.5em;
 }
 
 /*=== @e ===*/
@@ -180,6 +180,12 @@ form p
 	margin-bottom: -1.0em;
 }
 
+.favicon
+{
+    width: 16px;
+    height: 16px;
+}
+
 /*=== @i ===*/
 img
 {
@@ -196,7 +202,7 @@ input[type=text]
 #incoming h4
 {
 	background: transparent url(images/technorati.png) no-repeat left top;
-	text-indent: 20px;
+	text-indent: 1.5em;
 }
 
 #incoming ul li img
@@ -226,6 +232,8 @@ h4
 }
 
 /*=== @l ===*/
+#left-column {
+}
 
 /*=== @m ===*/
 #menubar
@@ -235,7 +243,7 @@ h4
 	display: inline;
 	margin: 0.0em 0.0em 0.5em 0.0em;
 	width: 100%;
-	min-width: 1000px;
+	min-width: 770px;
 	clear: both;
 	text-align: left;
 	height: 36px;
@@ -439,6 +447,7 @@ ul.menu-list li a:hover
 	float: right;
 	display: inline;
 	margin: 0 0px 1.0em 0px;
+    width: 100%;
 }
 
 /*=== @s ===*/
@@ -457,7 +466,7 @@ ul.menu-list li a:hover
 #stats h4
 {
 	background: transparent url(images/chart_bar.png) no-repeat left top;
-	text-indent: 20px;
+	text-indent: 1.5em;
 }
 
 #support 
@@ -500,7 +509,7 @@ textarea
 
 .update p
 {
-	font-color: #fff;
+	color: #fff;
 	padding: 0.5em;
 }
 
@@ -524,7 +533,7 @@ textarea
 	line-height: 1.5em;
 	margin-bottom: 0px;
 	margin-right: 1.0em;
-	width: 60%
+	width: 66%
 }
 
 

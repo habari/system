@@ -1,5 +1,5 @@
 <div id="content-area">
-	<div class="dashbox c3" id="welcome">
+	<div class="dashboard-block c3" id="welcome">
 		<h1>Import your old blog content</h1>
 		<p>With this form you can migrate all your post, page, comment and user content to Habari.</p>
 		<form method="post">
@@ -21,5 +21,4 @@
 <?php 
 // unset the $db_connection variable, since we don't need it any more
 unset( $db_connection );
-
 ?>

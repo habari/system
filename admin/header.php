@@ -3,8 +3,8 @@
 <head profile="http://gmpg.org/xfn/11">
 	<title>Habari Administration</title>
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Options::out('base_url'); ?>system/admin/admin.css" />
-	<script src="<?php Options::out('host_url'); ?>scripts/jquery.js" type="text/javascript"></script>
-	<script src="<?php Options::out('host_url'); ?>scripts/support.js" type="text/javascript"></script>
+	<script src="<?php Options::out('base_url'); ?>scripts/jquery.js" type="text/javascript"></script>
+	<script src="<?php Options::out('base_url'); ?>scripts/support.js" type="text/javascript"></script>
 	<script type="text/javascript">
   		$(document).ready(function(){
 		    $("tbody/tr:nth-child(even)").addClass("even");
@@ -32,7 +32,7 @@
 <div id="page">
 	<div id="menubar">
 		<div id="site-name">
-			<a href="<?php Options::out('host_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
+			<a href="<?php Options::out('base_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
 		<ol id="menu">
 			<?php $page = empty($page) ? 'overview' : $page; ?>
