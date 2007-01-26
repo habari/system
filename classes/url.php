@@ -32,6 +32,73 @@ class URL extends Singleton
 		URL::instance()->rules= RewriteRules::get_active();
 	}
 
+  /**
+   * A method which accepts a URL/URI and runs the string against
+   * rewrite rules stored in the DB.  This method is used by 
+   * the Controller class in parsing regular requests, as well
+   * as other classes, such as Pingback, which take a URL from the
+   * raw HTTP payload and determine slugs from that URL.
+   * 
+   * The function returns a RewriteRule object that is matched, or 
+   * FALSE otherwise
+   * 
+   * @param url URL string to parse
+   * @return  RewriteRule matched rule
+   */
+  public static function parse($from_url) {
+    $base_url= Options::get('base_url');
+    
+    /* 
+     * Strip out the base URL from the requested URL
+     * but only if the base URL isn't / 
+     */
+    if ( '/' != $base_url)
+	    $from_url= str_replace($base_url, '', $from_url);
+    
+    /* Trim off any leading or trailing slashes */
+    $from_url= trim($from_url, '/');
+
+    /* Remove the querystring from the URL */
+    if ( strpos($from_url, '?') !== FALSE )
+      list($from_url, )= explode('?', $from_url);
+  
+    $url= URL::instance();
+    $url->load_rules(); // Cached in singleton
+
+    /* 
+     * Run the stub through the regex matcher
+     */
+    $pattern_matches= array();
+    foreach ($url->rules as $rule) {
+      if ( 1 == preg_match(
+                $rule->parse_regex
+                , $from_url
+                , $pattern_matches) ) {
+        $submatches_count= count($pattern_matches);
+        $rule->entire_match= $pattern_matches[0]; // The entire matched string is returned at index 0
+        for ($j=1;$j<$submatches_count;++$j) {
+          $rule->named_arg_values[$rule->named_args[($j - 1)]]= $pattern_matches[$j];
+          /* 
+           * There are times when the action is replaced by a named args.  In these
+           * cases, the action is stored in the DB as "{$arg}", and the named argument
+           * found in the pattern match replaces the controller's action
+           * 
+           * For instance, if the regex is /^admin\/([^\/]+)[\/]{0,1}$/ and the named_args
+           * is array(0=>'page'), then the page match (after the admin/) is used as the 
+           * controller's action.
+           */
+          if ($rule->action == '{$' . $rule->named_args[($j - 1)] . '}') {
+            $rule->action= $pattern_matches[$j];
+          }
+        }
+        return $rule;
+        /* Stop processing at first matched rule... */
+        break;
+      }
+    }
+    return false;
+  }  
+
 	/** 
 	 * Builds the required pretty URL given a supplied
 	 * rule name and a set of placeholder replacement
@@ -59,13 +126,13 @@ class URL extends Singleton
 		if ( ! is_array( $args ) )
 			parse_str( $args, $args ); 
 		
-		$writer= URL::instance();
-		$writer->load_rules();
-		if ( isset( $writer->rules[$rule_name] ) ) {
-			$rule= $writer->rules[$rule_name];
-			$url= $rule->build_str;
+		$url= URL::instance();
+		$url->load_rules();
+		if ( isset( $url->rules[$rule_name] ) ) {
+			$rule= $url->rules[$rule_name];
+			$return_url= $rule->build_str;
 			foreach ( $rule->named_args as $replace ) {
-				$url= str_replace( '{$' . $replace . '}', $args[$replace], $url );
+				$return_url= str_replace( '{$' . $replace . '}', $args[$replace], $return_url );
 				/* 
 				 * Remove from the argument list so we can append 
 				 * any outlier args as query string args
@@ -77,17 +144,17 @@ class URL extends Singleton
 			 * as query string arguments
 			 */
 			if ( count( $args ) > 0 ) {
-				$url.= '?';
+				$return_url.= '?';
 				foreach ( $args as $key => $value ) {
-					$url.= $key . '=' . $value . '&';
+					$return_url.= $key . '=' . $value . '&';
 				}
-				$url= rtrim( $url, '&' );
+				$url= rtrim( $return_url, '&' );
 			}
 			
 			return
 				'http' . ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 's' : '' ) . 
 				'://' . $_SERVER['HTTP_HOST'] . '/' . ltrim( Controller::get_base_url(), '/' ) .
-				$url;
+				$return_url;
 		}
 	}
 
