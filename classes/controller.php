@@ -83,9 +83,7 @@ class Controller extends Singleton {
     /* Strip out the base URL from the requested URL */
     /* but only if the base URL isn't / */
     if ( '/' != $controller->base_url)
-    {
-	$start_url= str_replace($controller->base_url, '', $start_url);
-    }
+	    $start_url= str_replace($controller->base_url, '', $start_url);
     
     /* Trim off any leading or trailing slashes */
     $start_url= trim($start_url, '/');
@@ -97,45 +95,24 @@ class Controller extends Singleton {
     $controller->stub= $start_url;
 
     /* Grab the URL filtering rules from DB */
-    $rules= RewriteRules::get_active();
+    $matched_rule= URL::parse($controller->stub);
 
-    /* 
-     * Run the stub through the regex matcher
-     */
-    $pattern_matches= array();
-    foreach ($rules as $rule) {
-      if ( 1 == preg_match(
-                $rule->parse_regex
-                , $controller->stub
-                , $pattern_matches) ) {
+    if ($matched_rule !== FALSE) {
+      /* OK, we have a matching rule.  Set the action and create a handler */
+      $controller->action= $matched_rule->action;
+      $controller->handler= new $matched_rule->handler();
+      
+      /* Insert the regexed submatches as the named parameters */
+      $controller->handler->handler_vars['entire_match']= $matched_rule->entire_match; // The entire matched string is returned at index 0
+      foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value)
+        $controller->handler->handler_vars[$named_arg_key]= $named_arg_value;
 
-        /* OK, we have a matching rule.  Set the action and create a handler */
-        $controller->action= $rule->action;
-        $controller->handler= new $rule->handler();
-
-        /* Insert the regexed submatches as the named parameters */
-        $submatches_count= count($pattern_matches);
-        $controller->handler->handler_vars['entire_match']= $pattern_matches[0]; // The entire matched string is returned at index 0
-        for ($j=1;$j<$submatches_count;++$j) {
-          $controller->handler->handler_vars[$rule->named_args[($j - 1)]]= $pattern_matches[$j];
-          /* 
-           * There are times when the action is replaced by a named args.  In these
-           * cases, the action is stored in the DB as "{$arg}", and the named argument
-           * found in the pattern match replaces the controller's action
-           * 
-           * For instance, if the regex is /^admin\/([^\/]+)[\/]{0,1}$/ and the named_args
-           * is array(0=>'page'), then the page match (after the admin/) is used as the 
-           * controller's action.
-           */
-          if ($controller->action == '{$' . $rule->named_args[($j - 1)] . '}') {
-            $controller->action= $pattern_matches[$j];
-          }
-        }
-
-        /* Also, we musn't forget to add the GET and POST vars into the action's settings array */
-        $controller->handler->handler_vars= array_merge($controller->handler->handler_vars, $_GET, $_POST);
-        break;
-      }
+      /* Also, we musn't forget to add the GET and POST vars into the action's settings array */
+      $controller->handler->handler_vars= array_merge($controller->handler->handler_vars, $_GET, $_POST);
+      return true;
+    }
+    else {
+      die('Unmatched rule: ' . print_r(Controller::instance())); /** @todo Standard error handling */
     }
   }
 
@@ -152,12 +129,14 @@ class Controller extends Singleton {
  * Helper class to encapsulate rewrite rule data
  */
 class RewriteRule {
-  public $name;                 // name of the rule
-  public $parse_regex;          // regex expression for incoming matching
-  public $build_str;            // string with optional placeholders for outputting URL
-  public $handler;        // name of action handler class
-  public $action;               // name of action that handler should execute
-  public $named_args= array();  //
+  public $entire_match= '';           // exact matched string
+  public $name;                       // name of the rule
+  public $parse_regex;                // regex expression for incoming matching
+  public $build_str;                  // string with optional placeholders for outputting URL
+  public $handler;                    // name of action handler class
+  public $action;                     // name of action that handler should execute
+  public $named_args= array();        // named argument matches
+  public $named_arg_values= array();  // values of named arguments filled during URL::parse()
 }
 ?>
 
