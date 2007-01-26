@@ -62,7 +62,7 @@
 				</ul>
 			</li>
 			<li class="menu-item" id="logout">
-				<a href="<?php URL::out('logout'); ?>" title="logout of Habari">Logout</a>
+				<a href="<?php URL::out('user', 'page=logout'); ?>" title="logout of Habari">Logout</a>
 			</li>
 		</ol>
 	</div>
