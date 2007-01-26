@@ -4,11 +4,11 @@
 		<h1>Manage Options</h1>
 		<p>Below are the options currently set on your site.</p>
 	<?php 
-	if ( isset( $settings['result'] ) ) {
-		switch( URL::o()->settings['result'] ) {
-		case 'success':
-			_e('<p>Your options have been updated.</p>');
-			break;
+	if ( isset( $result ) ) {
+		switch( $result ) {
+			case 'success':
+				_e('<p class="update">Your options have been updated.</p>');
+				break;
 		}
 	}
 	?>
