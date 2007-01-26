@@ -26,64 +26,56 @@ class Comments extends ArrayObject
 	public static function get( $paramarray = array() )
 	{
 		// defaults
-		$fetch_fn = 'get_results';
-		$select = '*';
-		$orderby = "date ASC";
-		$limit = '';
+		$fetch_fn= 'get_results';
+		$select= '*';
+		$orderby= 'ORDER BY date ASC';
+		$limit= '';
 
 		// safety mechanism to prevent an empty query
-		$where = array(1);
-		$params = array();
+		$where= array('1=1');
+		$params= array();
 
 		// loop over each element of the $paramarray
-		foreach ($paramarray as $key => $value)
-		{
-			if ( 'orderby' == $key )
-			{
-				$orderby = $value;
+		foreach ( $paramarray as $key => $value ) {
+			if ( 'orderby' == $key ) {
+				$orderby= 'ORDER BY ' . $value;
 				continue;
 			}
-			if ( 'count' == $key )
-			{
+			if ( 'count' == $key ) {
 				// we want a count of results, rather than the contents of the results
-				$select = "COUNT($value)";
+				$select= "COUNT($value)";
 				// set the db method to get_row
-				$fetch_fn = 'get_value';
+				$fetch_fn= 'get_value';
+				$orderby= '';
 				continue;
 			}
-			if ( 'limit' == $key )
-			{
-				$limit = " LIMIT " . $value;
+			if ( 'limit' == $key ) {
+				$limit= " LIMIT " . $value;
 			}
-			if ( 'offset' == $key )
-			{
-				$limit .= " OFFSET $value";
+			if ( 'offset' == $key ) {
+				$limit.= " OFFSET $value";
 			}
 			// check whether we should filter by status
 			// a value of FALSE means don't filter
-			if ( ( 'status' == $key ) && ( FALSE === $value ) )
-			{
+			if ( ( 'status' == $key ) && ( FALSE === $value ) ) {
 				continue;
 				// if the status is not FALSE, processing will
 				// continue to the next if block
 			}
 			// only accept those keys that correspond to
 			// table columns
-			if ( array_key_exists ( $key, Comment::default_fields() ) )
-			{
-				$where[] = "$key = ?";
-				$params[] = $value;
+			if ( array_key_exists ( $key, Comment::default_fields() ) ) {
+				$where[]= "$key = ?";
+				$params[]= $value;
 			}
 		}
 
-		$sql = "SELECT {$select} from " . DB::table('comments') . ' WHERE ' . implode( ' AND ', $where ) . " ORDER BY {$orderby}{$limit}";
-		$query = DB::$fetch_fn( $sql, $params, 'Comment' );
-		if ( 'get_value' == $fetch_fn )
-		{
+		$sql= "SELECT {$select} from " . DB::table('comments') . ' WHERE ' . implode( ' AND ', $where ) . " {$orderby}{$limit}";
+		$query= DB::$fetch_fn( $sql, $params, 'Comment' );
+		if ( 'get_value' == $fetch_fn ) {
 			return $query;
 		}
-		elseif ( is_array( $query ) )
-		{
+		elseif ( is_array( $query ) ) {
 			$c = __CLASS__;
 			return new $c ( $query );
 		}
@@ -96,15 +88,13 @@ class Comments extends ArrayObject
 	**/
 	public function delete( $comments )
 	{
-		if ( ! is_array($comments) )
-		{
-			$comments = array( 'id' => $comments);
+		if ( ! is_array( $comments ) ) {
+			$comments = array( 'id' => $comments );
 		}
-		else
-		{
+		else {
 			$comments = array_flip( array_fill_keys( $comments, 'id' ) );
 		}
-		if( count($comments) == 0 ) {
+		if ( count( $comments ) == 0 ) {
 			return;
 		}
 		return DB::delete( DB::o()->comments, $comments );
@@ -120,7 +110,7 @@ class Comments extends ArrayObject
 		if ( ! is_array( $comments ) ) {
 			$comments = array( $comments );
 		}
-		if( count($comments) == 0 ) {
+		if( count( $comments ) == 0 ) {
 			return;
 		}
 		$result= DB::update(DB::o()->comments, array('status' => $status), array('id' => $comments ) );
@@ -265,10 +255,10 @@ class Comments extends ArrayObject
 	**/
 	public function only( $what = 'approved' )
 	{
-		if (! isset($this->sort[$what])) {
+		if ( ! isset( $this->sort[$what] ) ) {
 			$this->sort_comments();
 		}
-		if (! isset($this->sort[$what]) || ! is_array( $this->sort[$what] ) ) {
+		if ( ! isset($this->sort[$what]) || ! is_array( $this->sort[$what] ) ) {
 			$this->sort[$what] = array();
 		}
 		return $this->sort[$what];
@@ -280,17 +270,17 @@ class Comments extends ArrayObject
 	 * @param string Name of property to return
 	 * @return mixed The requested field value	 
 	*/	 	 
-	public function __get($name)
+	public function __get( $name )
 	{
-		switch($name) {
-		case 'count':
-			return count($this);
-		case 'approved':
-		case 'unapproved':
-		case 'comments':
-		case 'pingbacks':
-		case 'trackbacks':
-			return new Comments($this->only($name));
+		switch ( $name ) {
+			case 'count':
+				return count( $this );
+			case 'approved':
+			case 'unapproved':
+			case 'comments':
+			case 'pingbacks':
+			case 'trackbacks':
+				return new Comments( $this->only( $name ) );
 		}
 	}
 	
@@ -303,7 +293,7 @@ class Comments extends ArrayObject
 	**/
 	public static function count_total( $status = Comment::STATUS_APPROVED )
 	{
-		$params = array( 'count' => 1, 'status' => $status );
+		$params= array( 'count' => 1, 'status' => $status );
 		return self::get( $params );
 	}
 

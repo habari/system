@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Habari CommentRecord Class
  *
@@ -9,27 +10,25 @@
  * If the Comment object describes an existing user; use the internal info object to get, set, unset and test for existence (isset) of 
  * info records
  * <code>
- *	$this->info = new CommentInfo ( 1 );  // Info records of comment with id = 1
+ * $this->info = new CommentInfo ( 1 );  // Info records of comment with id = 1
  * $this->info->browser_ua= "Netscape 2.0"; // set info record with name "browser_ua" to value "Netscape 2.0"
  * $info_value= $this->info->browser_ua; // get value of info record with name "browser_ua" into variable $info_value
  * if ( isset ($this->info->browser_ua) )  // test for existence of "browser_ua"
  * unset ( $this->info->browser_ua ); // delete "browser_ua" info record
  * </code>
  *
-
  */
-
 class Comment extends QueryRecord
 {
 
 	// our definitions for comment types and statuses
-	const STATUS_UNAPPROVED = 0;
-	const STATUS_APPROVED = 1;
-	const STATUS_SPAM = 2;
+	const STATUS_UNAPPROVED= 0;
+	const STATUS_APPROVED= 1;
+	const STATUS_SPAM= 2;
 
-	const COMMENT = 0;
-	const PINGBACK =1;
-	const TRACKBACK = 2;
+	const COMMENT= 0;
+	const PINGBACK= 1;
+	const TRACKBACK= 2;
 	
 	/**
 	* static function default_fields
@@ -38,7 +37,8 @@ class Comment extends QueryRecord
 	public static function default_fields()
 	{
 		return array(
-			'id' => '',
+			'id' => 0,
+			'post_id' => 0,
 			'name' => '',
 			'email' => '',
 			'url' => '',
@@ -58,9 +58,7 @@ class Comment extends QueryRecord
 	public function __construct( $paramarray = array() )
 	{
 		// Defaults
-		$this->fields = array_merge(
-			self::default_fields(),
-			$this->fields );
+		$this->fields = array_merge( self::default_fields(), $this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields('id');
 	}
@@ -78,8 +76,7 @@ class Comment extends QueryRecord
 	 **/	 	 	 	 	
 	static function get( $ID = 0 )
 	{
-		if ( ! $ID )
-		{
+		if ( ! $ID ) {
 			return false;
 		}
 		return DB::get_row( 'SELECT * FROM ' . DB::o()->comments . ' WHERE id = ?', $ID, 'Comment' );
