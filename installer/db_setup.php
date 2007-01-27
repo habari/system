@@ -3,10 +3,27 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="en"/>
-    <meta name="robots" content="no index,no follow" />
+    <meta name="robots" content="noindex,nofollow" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" media="all" href="system/installer/style.css" />
     <title>Installing habari</title>
+    <script type="text/javascript">// <![CDATA[
+    
+    var updateElements= function() {
+    	var install_root= document.getElementById( 'install_root' ).checked;
+    	var entire= document.getElementById( 'entire-db' );
+    	
+    	entire.style.display= ( install_root ? 'block' : 'none' );
+    }
+    
+    var addInstallMethodListener= function() {
+    	document.getElementById( 'install_root' ).addEventListener( 'click', updateElements, true );
+    	document.getElementById( 'install_tables' ).addEventListener( 'click', updateElements, true );
+    }
+        
+    window.addEventListener( 'load', updateElements, true );
+    window.addEventListener( 'load', addInstallMethodListener, true );
+	// ]]></script>
   </head>
   <body>
     <div id="container">
@@ -23,13 +40,14 @@
           <em>Choose the method of installation</em>.
           </p>
           <div class="row">
-            <label for="install_root">Install Entire DB</label>
-            <input type="radio" id="install_root" name="install_method" value="root" checked="true" />
+            <label for="install_tables">Install Tables in Existing Database</label>
+            <input type="radio" id="install_tables" name="install_method" value="noroot" checked="true" />
           </div>
           <div class="row">
-            <label for="install_tables">Install Tables in Existing DB</label>
-            <input type="radio" id="install_tables" name="install_method" value="noroot" />
+            <label for="install_root">Install Entire Database</label>
+            <input type="radio" id="install_root" name="install_method" value="root" />
           </div>
+          <div id="entire-db">
           <h2>Install Entire Database</h2>
           <p class="instructions">
             In order to install the database properly, this installation script
@@ -47,6 +65,7 @@
             <label for="db_root_pass">Password for super user</label>
             <input type="password" name="db_root_pass" value="<?php echo isset($db_root_pass) ? $db_root_pass : '';?>" size="30" maxlength="50" />
             <?php $error_id= 'db_root_pass'; include "form.error.php";?>
+          </div>
           </div>
           <h2>Database Information</h2>
             <?php $error_id= 'db_general'; include "form.error.php";?>

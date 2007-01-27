@@ -1,22 +1,26 @@
 <?php
+
 /**
  * Habari DB Class
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
  */
+
 if (!defined('DEBUG'))
 	define('DEBUG', true);
 
-class DB extends Singleton {
-	
+class DB extends Singleton
+{
 	private $connection= null;
+	
 	/**
 	 * Enables singleton working properly
 	 * 
 	 * @see singleton.php
 	 */
-	static protected function instance() {
+	static protected function instance()
+	{
 		return parent::instance( get_class() );
 	}
 	
@@ -30,18 +34,19 @@ class DB extends Singleton {
 	 * @param (optional)  db_pass           the database user password
 	 * @return  bool
 	 */
-	public static function connect() {
+	public static function connect()
+	{
 		/*
 			has private database connection instance been created yet? if not, do that first.
 			then check if we have a pre-existing connection. If yes, short circuit processing
 			if not; call the connect method on our private instance
 		*/
-		if (NULL == DB::instance()->connection ) {
+		if ( NULL == DB::instance()->connection ) {
 			DB::instance()->connection= new DatabaseConnection();
 		}
 
-		if ( false != DB::instance()->connection->is_connected() ) {			
-			return true;
+		if ( FALSE != DB::instance()->connection->is_connected() ) {
+			return TRUE;
 		}
 		
 		if (func_num_args() > 0) {
@@ -56,7 +61,15 @@ class DB extends Singleton {
 			$db_pass= $GLOBALS['db_connection']['password'];
 		}
 		return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
+	}
+	
+	public static function disconnect()
+	{
+		if ( NULL == DB::instance()->connection ) {
+			return TRUE;
+		}
 		
+		return DB::instance()->connection->disconnect();
 	}
 
 	/**

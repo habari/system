@@ -143,6 +143,8 @@ class InstallHandler extends ActionHandler {
           }
         }
         DB::commit();
+        // disconnect so the connect with the new user works
+        DB::disconnect();
       }
     }
 
