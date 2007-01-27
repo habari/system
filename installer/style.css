@@ -95,7 +95,7 @@ input {
 }
 
 .row label {
-  width: 200px; 
+  width: 250px; 
   clear: left;
   float: left;
   text-align: right;
@@ -106,7 +106,7 @@ input {
   clear: none;
   text-align: left;
   position: absolute;
-  left: 240px;
+  left: 290px;
   border: solid 1px #ccc;
 }
 
@@ -148,5 +148,4 @@ pre {
   border: solid 1px #666;
   background-color: #eadb80;
   margin: 4px 50px;
-}
 }

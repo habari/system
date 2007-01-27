@@ -99,6 +99,13 @@ class DatabaseConnection
 			return false;
 		}
 	}
+	
+	public function disconnect()
+	{
+		$this->pdo= NULL; // this is the canonical way :o
+		
+		return TRUE; 
+	}
 
 	public function is_connected() 
 	{
@@ -182,14 +189,14 @@ class DatabaseConnection
 		if( $this->pdo_statement != NULL ) { 
 			$this->pdo_statement->closeCursor();
 		}
-
+		
 		if ( $this->pdo_statement=  $this->pdo->prepare( $query ) ) {
 			/**
 			 * This section of code is EXTREMELY important, for the reasons I laid
 			 * out on php.net: @see http://us2.php.net/manual/en/function.pdostatement-setfetchmode.php
 			 *
 			 * In summary, PDO will *core dump* if the fetch mode is PDO::FETCH_CLASS and the
-			 * class supplied for instantiation is either a ) not included, or b ) included, but all
+			 * class supplied for instantiation is either a) not included, or b) included, but all
 			 * related classes are not included.  This is very annoying behaviour, and something that
 			 * took many hours to diagnose, as the core dump happens with no explanation as to the
 			 * source of the segfault.
