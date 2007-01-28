@@ -53,7 +53,7 @@ class AdminHandler extends ActionHandler {
 			break;
 		default:
       /* Create the Theme and template engine */
-      $this->theme= new Theme('admin', 'RawPHPEngine', ADMIN_DIR);
+      $this->theme= Themes::create('admin', 'RawPHPEngine', ADMIN_DIR);
 			// Handle GETs of the admin pages
 			$files = glob(ADMIN_DIR . '*.php');
 			$filekeys = array_map(
