@@ -85,9 +85,14 @@ class DatabaseConnection
 			 *        statement API ( server-side ); therefore, we use prepared statement
 			 *        emulation in PDO to bypass this performance problem
 			 */
-			if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'mysql'
-				&& version_compare( phpversion(), '5.1.3', '>=' ) ) {
-				$this->pdo->setAttribute( PDO::ATTR_EMULATE_PREPARES, true );
+			if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'mysql' ) {
+				// this is the PHP way to check for class constants :/
+				if ( defined( 'PDO::ATTR_EMULATE_PREPARES' ) ) {
+					$this->pdo->setAttribute( PDO::ATTR_EMULATE_PREPARES, true );
+				}
+				else {
+					$this->pdo->setAttribute( PDO::MYSQL_ATTR_DIRECT_QUERY, true );
+				}
 			}
 			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
 			$this->load_tables();
