@@ -267,12 +267,12 @@ VALUES ('introspection','/^atom$/i','atom'
 
 INSERT INTO {$prefix}rewrite_rules
 (name, parse_regex, build_str, handler, action, priority, description)
-VALUES ('collection','/^atom\\/(.+)[\\/]{0,1}$/i','atom/{$action}'
+VALUES ('collection','/^atom\\/(.+)[\\/]{0,1}$/i','atom/{$index}'
 ,'AtomHandler','collection',1,'Atom collection');
 
 INSERT INTO {$prefix}rewrite_rule_args
 (rule_id, name, arg_index)
-VALUES (currval('{$prefix}rewrite_rules_pkey_seq'), 'action', 0);
+VALUES (currval('{$prefix}rewrite_rules_pkey_seq'), 'index', 0);
 
 INSERT INTO {$prefix}rewrite_rules
 (name, parse_regex, build_str, handler, action, priority, description)

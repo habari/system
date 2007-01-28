@@ -110,11 +110,30 @@ class Options
 			} else {
 				// Return some default values here
 				switch($name) {
-				case 'pagination': return 10;
+				case 'pagination':
+					return 10;
+				case 'host_url':
+					// If we're running on a port other than 80, add the port number
+					// to the value returned from host_url
+					$port= 80; // Default in case not set.
+					if ( isset( $_SERVER['SERVER_PORT'] ) ) {
+						$port= $_SERVER['SERVER_PORT'];
+					}
+					$portpart = "";
+					if ( $port != 80 ) {
+						$portpart= ":$port";
+					}
+					// use Utils::glue_url?
+					return "http://" . $this->hostname . $portpart . $this->base_url;
+				case 'comments_require_id':
+					return FALSE;
+				case 'pingback_send':
+					return FALSE;
 				}
-				return null;
+				return NULL;
 			}
 		}
+		
 		return $this->options[$name];
 	}
 	

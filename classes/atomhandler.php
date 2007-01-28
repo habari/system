@@ -16,18 +16,18 @@ class AtomHandler extends ActionHandler
 	 * Responds to Atom requests for a single entry (post)
 	 * @param array Settings array from the URL
 	 **/	 	 	 	
-	public function entry($settings) 
+	public function act_entry() 
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
 		{
 		case 'get':
-			$this->get_entry($settings['slug']);
+			$this->get_entry($this->handler_vars['slug']);
 			break;
 		case 'put':
-			$this->put_entry($settings['slug']);
+			$this->put_entry($this->handler_vars['slug']);
 			break;
 		case 'delete':
-			$this->delete_entry($settings['slug']);
+			$this->delete_entry($this->handler_vars['slug']);
 			break;			
 		}
 	}
@@ -37,7 +37,7 @@ class AtomHandler extends ActionHandler
 	 * Responds to Atom requests for a post entry collection
 	 * @param array Settings array from the URL
 	 **/	 	 	 	
-	public function collection($settings)
+	public function act_collection()
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
 		{
@@ -55,12 +55,12 @@ class AtomHandler extends ActionHandler
 	 * Responds to Atom requests for a tag's post entry collection
 	 * @param array Settings array from the URL
 	 **/	 	 	 	
-	public function tag_collection($settings)
+	public function tag_collection()
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
 		{
 		case 'get':
-			$this->get_tag_collection( $settings['tag'] );
+			$this->get_tag_collection( $this->handler_vars['tag'] );
 			break;
 		}
 	} 
@@ -70,12 +70,12 @@ class AtomHandler extends ActionHandler
 	 * Responds to Atom requests for a post's comment collection
 	 * @param array Settings array from the URL
 	 **/	 	 	 	
-	public function comments($settings)
+	public function comments()
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
 		{
 		case 'get':
-			$this->get_comments($settings['slug']);
+			$this->get_comments($this->handler_vars['slug']);
 			break;
 		}
 	} 
@@ -87,6 +87,7 @@ class AtomHandler extends ActionHandler
 	 **/	 	  	 	
 	private function xml_header()
 	{
+		ob_clean(); // The xml header must be the very first thing in the output
 		return '<'.'?xml version="1.0" encoding="utf-8"?'.'>';
 	}
 	
@@ -111,6 +112,7 @@ class AtomHandler extends ActionHandler
 			$permalink = $post->permalink;
 			$title = htmlspecialchars($post->title);
 			$entryurl = URL::get( 'entry', array( 'slug' => $slug) );
+			$content = html_entity_decode($post->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
 			
 			$xmltext = $this->xml_header();
 			$xmltext .= <<< entrysnippet
@@ -120,7 +122,7 @@ class AtomHandler extends ActionHandler
 	<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
 	<id>{$post->guid}</id>
 	<updated>{$updated}</updated>
-	<content type="text/xhtml" xml:base="{$permalink}">{$post->content}</content>
+	<content type="text/xhtml" xml:base="{$permalink}">{$content}</content>
 </entry>
 
 entrysnippet;
@@ -244,25 +246,41 @@ entrysnippet;
 	 **/	 	 		
 	function get_collection()
 	{
-		$options = Options::o();
-		$local['collectionurl'] = URL::get_url( 'collection', 'index=1' );
-		$local['commentscollectionurl'] = URL::get_url( 'comments' );
-		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
-		$local['copyright'] = date('Y'); // TODO: This value should be corrected
+		$collectionurl = URL::get( 'collection', 'index=' . $this->handler_vars['index'] );
+		$commentscollectionurl = URL::get( 'comments' );
+		$feedupdated = Utils::atomtime(time()); // TODO: This value should be cached
+		$copyright = date('Y'); // TODO: This value should be corrected
+		$title = Options::get('title');
+		$tagline = Options::get('tagline');
+		$home = URL::get('index_page');
+		$version = Options::get('version');
+		
+		$totalposts = Posts::count_last();
+		$relprevious = '';
+		$relnext = '';
+		if(intval($this->handler_vars['index']) * Options::get('paginate') < $totalposts) {
+			$relnext = '<link rel="next" type="application/atom+xml" href="' . URL::get( 'collection', 'index=' . (intval($this->handler_vars['index']) + 1) ) . '" title="Next Page" />';
+		}
+		if(intval($this->handler_vars['index']) > 1) {
+			$relprevious = '<link rel="previous" type="application/atom+xml" href="' . URL::get( 'collection', 'index=' . (intval($this->handler_vars['index']) - 1) ) . '" title="Previous Page" />';
+		}
+		$relfirst = '<link rel="first" type="application/atom+xml" href="' . URL::get( 'collection', 'index=1' ) . '" title="First Page" />';
+		$rellast = '<link rel="last" type="application/atom+xml" href="' . URL::get( 'collection', 'index=' . ceil($totalposts / Options::get('paginate') ) ) . '" title="Last Page" />';
 		
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
-	<title>{$options->title}</title>
-	<subtitle>{$options->tagline}</subtitle>
-	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->host_url}" />
-	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->title}" />
-	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
-	<link rel="comments" type="application/atom+xml" href="{$local['commentscollectionurl']}" />
-	<updated>{$local['feedupdated']}</updated>
-	<rights>{$local['copyright']}</rights>
-	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
-	<id>{$options->host_url}</id>
+	<title>{$title}</title>
+	<subtitle>{$tagline}</subtitle>
+	<link rel="alternate" type="text/html" href="{$home}" />
+	<link rel="service.post" type="application/atom+xml" href="{$collectionurl}" title="{$title}" />
+	<link rel="self" type="application/atom+xml" href="{$collectionurl}" />
+	<link rel="comments" type="application/atom+xml" href="{$commentscollectionurl}" />
+	{$relfirst}{$relprevious}{$relnext}{$rellast}
+	<updated>{$feedupdated}</updated>
+	<rights>{$copyright}</rights>
+	<generator uri="http://code.google.com/p/habari/" version="{$version}">Habari</generator>
+	<id>{$home}</id>
 
 feedpreamble;
 
@@ -275,10 +293,12 @@ feedpreamble;
 		}
 
 		foreach(Posts::get( $params ) as $post) {
-			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" );
+			$entryurl = URL::get( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
 			$user = User::get( $post->user_id );
 			$title = htmlspecialchars($post->title);
+			$content = html_entity_decode($post->atom_content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
+			$summary = html_entity_decode($post->atomsummary_content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
 			$xmltext .= <<< postentry
 	<entry>
 		<title>{$title}</title>
@@ -289,8 +309,8 @@ feedpreamble;
 		</author>
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></content>
-		<summary><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></summary>
+		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
+		<summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">{$summary}</div></summary>
 	</entry>
 
 postentry;
@@ -307,23 +327,26 @@ postentry;
 	 **/
 	function get_tag_collection( $tag )
 	{
-		$options = Options::o();
-		$local['collectionurl'] = URL::get_url( 'tag_collection', 'index=1' );
-		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
-		$local['copyright'] = date('Y'); // TODO: This value should be corrected
-		$local['tagurl'] = URL::get_url( 'tag', 'tag=' . $tag, false );
+		$collectionurl = URL::get_url( 'tag_collection', 'index=1' );
+		$feedupdated = Utils::atomtime(time()); // TODO: This value should be cached
+		$copyright = date('Y'); // TODO: This value should be corrected
+		$tagurl = URL::get( 'tag', 'tag=' . $tag, false );
+		$title = Options::get('title');
+		$tagline = Options::get('tagline');
+		$version = Options::get('version');
+		$home = URL::get('index_page');
 		
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
-	<title>{$options->title}</title>
-	<subtitle>{$options->tagline}</subtitle>
-	<link rel="alternate" type="text/html" href="http://{$_SERVER["HTTP_HOST"]}{$options->host_url}{$local['tagurl']}" />
-	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
+	<title>{$title}</title>
+	<subtitle>{$tagline}</subtitle>
+	<link rel="alternate" type="text/html" href="{$tagurl}" />
+	<link rel="self" type="application/atom+xml" href="{$collectionurl}" />
 	<updated>{$local['feedupdated']}</updated>
 	<rights>{$local['copyright']}</rights>
-	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
-	<id>{$options->host_url}</id>
+	<generator uri="http://code.google.com/p/habari/" version="{$version}">Habari</generator>
+	<id>{$home}</id>
 
 feedpreamble;
 
@@ -336,10 +359,11 @@ feedpreamble;
 		}
 
 		foreach(Posts::get( $params ) as $post) {
-			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" );
+			$entryurl = URL::get( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
 			$user = User::get( $post->user_id );
 			$title = htmlspecialchars($post->title);
+			$content = html_entity_decode($post->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
 			$xmltext .= <<< postentry
 	<entry>
 		<title>{$title}</title>
@@ -350,8 +374,8 @@ feedpreamble;
 		</author>
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></content>
-		<summary><div xmlns="http://www.w3.org/1999/xhtml">{$post->content}</div></summary>
+		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
+		<summary><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></summary>
 	</entry>
 
 postentry;
@@ -413,31 +437,33 @@ postentry;
 	 **/
 	function get_comments($slug)
 	{
-		$options = Options::o();
-		
 		$post = Post::get( array( 'slug' => $slug ) );
 		
-		$local['collectionurl'] = URL::get_url( 'comments' );
-		$local['feedupdated'] = Utils::atomtime(time()); // TODO: This value should be cached
-		$local['copyright'] = date('Y'); // TODO: This value should be corrected
+		$collectionurl = URL::get( 'comments' );
+		$feedupdated = Utils::atomtime(time()); // TODO: This value should be cached
+		$copyright = date('Y'); // TODO: This value should be corrected
+		$tagline = Options::get('tagline');
+		$version = Options::get('version');
+		$home = URL::get('index_page');
 		
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>Comments for {$post->title}</title>
 	<link rel="alternate" type="text/html" href="{$post->permalink}" />
-	<link rel="service.post" type="application/atom+xml" href="{$local['collectionurl']}" title="{$options->title}" />
-	<link rel="self" type="application/atom+xml" href="{$local['collectionurl']}" />
-	<updated>{$local['feedupdated']}</updated>
-	<rights>{$local['copyright']}</rights>
-	<generator uri="http://code.google.com/p/habari/" version="{$options->version}">Habari</generator>
-	<id>{$options->host_url}</id>
+	<link rel="service.post" type="application/atom+xml" href="{collectionurl}" title="{$title}" />
+	<link rel="self" type="application/atom+xml" href="{$collectionurl}" />
+	<updated>{$feedupdated}</updated>
+	<rights>{$copyright}</rights>
+	<generator uri="http://code.google.com/p/habari/" version="{$version}">Habari</generator>
+	<id>{$home}</id>
 
 feedpreamble;
 
 		foreach($post->comments->comments->approved as $comment) {
-			$entryurl = URL::get_url( 'entry', "slug={$post->slug}" ) . "#comment-{$comment->id}";
+			$entryurl = URL::get( 'entry', "slug={$post->slug}" ) . "#comment-{$comment->id}";
 			$entryupdated = Utils::atomtime( $comment->date );
+			$content = html_entity_decode($comment->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
 			$xmltext .= <<< postentry
 	<entry>
 		<title>{$post->title}</title>
@@ -448,7 +474,7 @@ feedpreamble;
 		</author>
 		<id>{$post->guid}:#{$comment->id}</id>
 		<updated>{$entryupdated}</updated>
-		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$comment->content}</div></content>
+		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
 	</entry>
 
 postentry;
@@ -459,10 +485,10 @@ postentry;
 		echo $xmltext;
 	}
 	
-	function rsd($settings)
+	function act_rsd()
 	{
-		$local['homepage'] = URL::get_url( 'home' ); 
-		$local['collectionurl'] = URL::get_url( 'collection', 'index=1' );
+		$local['homepage'] = URL::get( 'home' ); 
+		$local['collectionurl'] = URL::get( 'collection', 'index=1' );
 
 		$xmltext = <<< rsdcontent
 <rsd xmlns="http://archipelago.phrasewise.com/rsd" version="1.0">
@@ -480,15 +506,13 @@ rsdcontent;
 		echo $xmltext;
 	}	 	  
 
-	function introspection($settings)
+	function act_introspection()
 	{
-		$options = Options::o();
-		
 		$xmltext = $this->xml_header();
 		$xmltext .= '
 		<service xmlns="http://purl.org/atom/app#">
 			<workspace title="' . Options::get('title') . '">
-			  <collection title="Blog Entries" rel="entries" href="' . URL::get_url( 'collection', 'index=1' ) . '" />
+			  <collection title="Blog Entries" rel="entries" href="' . URL::get( 'collection', 'index=1' ) . '" />
 			</workspace>
 		</service>
 		';
