@@ -82,7 +82,7 @@ class DatabaseConnection
 			}        
 			/**
 			 * @note  MySQL has issues caching queries that use the internal prepared
-			 *        statement API ( server-side ); therefore, we use prepared statement
+			 *        statement API (server-side); therefore, we use prepared statement
 			 *        emulation in PDO to bypass this performance problem
 			 */
 			if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'mysql' ) {
@@ -90,8 +90,12 @@ class DatabaseConnection
 				if ( defined( 'PDO::ATTR_EMULATE_PREPARES' ) ) {
 					$this->pdo->setAttribute( PDO::ATTR_EMULATE_PREPARES, true );
 				}
-				else {
+				elseif ( defined( 'PDO::MYSQL_ATTR_DIRECT_QUERY' ) ) {
 					$this->pdo->setAttribute( PDO::MYSQL_ATTR_DIRECT_QUERY, true );
+				}
+				else {
+					// okay, now this is weird
+					// XXX throw error "Your PDO is too weird!"?
 				}
 			}
 			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
