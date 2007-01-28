@@ -116,7 +116,7 @@
           </div>
           <div class="row">
             <label for="admin_pass">Password for Administrator</label>
-            <input type="textbox" name="admin_pass" value="<?php echo isset($admin_pass) ? $admin_pass : '';?>" size="30" maxlength="50" />
+            <input type="password" name="admin_pass" value="<?php echo isset($admin_pass) ? $admin_pass : '';?>" size="30" maxlength="50" />
             <?php $error_id= 'admin_pass'; include "form.error.php";?>
           </div>
           <h2>Blog Information</h2>
