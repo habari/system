@@ -229,7 +229,7 @@ class Utils
 			if( ($p[$z] - $lastpage) > 1 ) $out .= '&hellip;'; 
 			if(isset($p[$z])) {
 				$caption = ($p[$z]==$current) ? '[' . $current . ']' : $p[$z];
-				$url = URL::get($token, array_merge($settings, array('index'=>$p[$z])), false);
+				$url = URL::get($token, array_merge($settings, array('page'=>$p[$z])), false);
 				$out .= '<a href="' . $url . '" ' . (($p[$z]==$current) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
 			}
 			$lastpage = $p[$z];
