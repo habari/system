@@ -78,8 +78,8 @@ class URL extends Singleton
 	      $rule->entire_match= array_shift( $pattern_matches ); // The entire matched string is returned at index 0
 	      if(count($rule->named_args) > 0) {
 	        $rule->named_arg_values= array_combine($rule->named_args, $pattern_matches);
-					if (preg_match("/^\{\$(\w)+\}$/", $rule->action, $matches)) {
-						  $rule->action= $rule->named_arg_values[$matches[1]]; 
+					if (preg_match('/^\\{\\$(\\w+)\\}$/', $rule->action, $matches)) {
+						$rule->action= $rule->named_arg_values[$matches[1]]; 
 					}
 				}
         

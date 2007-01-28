@@ -22,14 +22,14 @@ class UserHandler extends ActionHandler {
 			$this->handler_vars['pass']= '';
       $this->handler_vars['error']= 'Invalid login'; /** @todo Use real error handling */ 
       /* Since we failed, display the theme's login template */
-      $this->theme= new Theme();
+      $this->theme= Themes::create();
       $this->display('login');
       return true;     
 		}
     else {
       /* OK, so they authenticated.  What now?  Redirect to admin dashboard? */
       $this->handler_vars['user']= $user; // Assign into handler and theme
-      $this->theme= new Theme('admin', 'RawPHPEngine', HABARI_PATH . '/system/admin/');
+      $this->theme= Themes::create('admin', 'RawPHPEngine', HABARI_PATH . '/system/admin/');
       $this->display('dashboard');
       return true;
     }
