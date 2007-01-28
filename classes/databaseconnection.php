@@ -85,6 +85,8 @@ class DatabaseConnection
 			 *        statement API (server-side); therefore, we use prepared statement
 			 *        emulation in PDO to bypass this performance problem
 			 */
+			/*
+			 * for some reason, this completely breaks on some systems
 			if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'mysql' ) {
 				// this is the PHP way to check for class constants :/
 				if ( defined( 'PDO::ATTR_EMULATE_PREPARES' ) ) {
@@ -98,6 +100,7 @@ class DatabaseConnection
 					// XXX throw error "Your PDO is too weird!"?
 				}
 			}
+			*/
 			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
 			$this->load_tables();
 			return true;
@@ -241,7 +244,10 @@ class DatabaseConnection
 			return true;
 		}
 		else {
-			$this->add_error( array( 'query'=>$query,'error'=>$ths->pdo->errorInfo() ) );
+			$this->add_error( array(
+				'query' => $query,
+				'error' => $this->pdo->errorInfo(),
+			) );
 			return false;
 		}
 	}
