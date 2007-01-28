@@ -235,13 +235,18 @@ class Post extends QueryRecord
 		}
 	}
 
+	/**
+	 * Save the tags associated to this post into the tags and tags2post tables
+	 */	 	
 	private function savetags()
 	{
 		if ( count($this->tags) == 0) {return;}
-		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE  = ?', array( $this->fields['slug'] ) );
+		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
 		foreach( (array)$this->tags as $tag ) { 
-			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (slug, tag) VALUES (?,?)', 
-				array( $this->fields['slug'], $tag ) 
+			// @todo Make this multi-SQL safe!
+			DB::query( 'INSERT IGNORE INTO ' . DB::table('tags') . ' (tag_text) VALUES (?)', array( $tag ) );
+			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table('tags') . ' WHERE tag_text = ?', 
+				array( $this->fields['id'], $tag ) 
 			); 
 		}
 	}
@@ -256,6 +261,7 @@ class Post extends QueryRecord
 		$this->set_slug();
 		$this->setguid();
 		$result = parent::insert( DB::table('posts') );
+		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
