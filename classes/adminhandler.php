@@ -295,7 +295,8 @@ class AdminHandler extends ActionHandler {
 		
 		// Connect to the database or fail informatively
 		try {
-			$wpdb = new DB( $db_connection['connection_string'], $db_connection['username'], $db_connection['password'], $db_connection['prefix'] );
+			$wpdb = new DatabaseConnection();
+			$wpdb->connect( $db_connection['connection_string'], $db_connection['username'], $db_connection['password'], $db_connection['prefix'] );
 		}
 		catch( Exception $e) {
 			die( 'Could not connect to database using the supplied credentials.  Please check config.php for the correct values. Further information follows: ' .  $e->getMessage() );		
@@ -318,6 +319,7 @@ class AdminHandler extends ActionHandler {
 			FROM {$db_connection['prefix']}posts 
 			", array(), 'Post');
 		
+		$post_map = array();
 		foreach( $posts as $post ) {
 		
 			$tags = $wpdb->get_column( 
@@ -329,10 +331,11 @@ class AdminHandler extends ActionHandler {
 			);
 		
 			$p = new Post( $post->to_array() );
+			$p->slug = $post->slug;
 			$p->guid = $p->guid; // Looks fishy, but actually causes the guid to be set.
 			$p->tags = $tags;
 			$p->insert();
-		
+			$post_map[$p->slug] = $p->id;
 		}
 		
 		$comments = $wpdb->get_results("SELECT 
@@ -340,7 +343,7 @@ class AdminHandler extends ActionHandler {
 										comment_author as name,
 										comment_author_email as email,
 										comment_author_url as url,
-										comment_author_IP as ip,
+										INET_ATON(comment_author_IP) as ip,
 									 	comment_approved as status,
 										comment_date as date,
 										comment_type as type,
@@ -357,10 +360,33 @@ class AdminHandler extends ActionHandler {
 				case 'trackback': $comment->type = Comment::TRACKBACK; break;
 				default: $comment->type = Comment::COMMENT;
 			}
+			
+			$carray = $comment->to_array();
+			if($carray['ip'] == '') {
+				$carray['ip'] = 0;
+			}
+			switch( $carray['status'] ) {
+			case '0':
+				$carray['status'] = Comment::STATUS_UNAPPROVED;
+				break;
+			case '1':
+				$carray['status'] = Comment::STATUS_APPROVED;
+				break;
+			case 'spam':
+				$carray['status'] = Comment::STATUS_SPAM; 
+				break;
+			} 
+			if( !isset($post_map[$carray['post_slug']]) ) {
+				Utils::debug($carray);
+			}
+			else {
+			$carray['post_id'] = $post_map[$carray['post_slug']];
+			unset($carray['post_slug']);
 				
-			$c = new Comment( $comment->to_array() );
+			$c = new Comment( $carray );
 			//Utils::debug( $c );
 			$c->insert();
+		}
 		}
 		echo '<p>All done, your content has been imported.</p>';
 		

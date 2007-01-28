@@ -74,23 +74,15 @@ class URL extends Singleton
                 $rule->parse_regex
                 , $from_url
                 , $pattern_matches) ) {
-        $submatches_count= count($pattern_matches);
-        $rule->entire_match= $pattern_matches[0]; // The entire matched string is returned at index 0
-        for ($j=1;$j<$submatches_count;++$j) {
-          $rule->named_arg_values[$rule->named_args[($j - 1)]]= $pattern_matches[$j];
-          /* 
-           * There are times when the action is replaced by a named args.  In these
-           * cases, the action is stored in the DB as "{$arg}", and the named argument
-           * found in the pattern match replaces the controller's action
-           * 
-           * For instance, if the regex is /^admin\/([^\/]+)[\/]{0,1}$/ and the named_args
-           * is array(0=>'page'), then the page match (after the admin/) is used as the 
-           * controller's action.
-           */
-          if ($rule->action == '{$' . $rule->named_args[($j - 1)] . '}') {
-            $rule->action= $pattern_matches[$j];
-          }
-        }
+        
+	      $rule->entire_match= array_shift( $pattern_matches ); // The entire matched string is returned at index 0
+	      if(count($rule->named_args) > 0) {
+	        $rule->named_arg_values= array_combine($rule->named_args, $pattern_matches);
+					if (preg_match("/^\{\$(\w)+\}$/", $rule->action, $matches)) {
+						  $rule->action= $rule->named_arg_values[$matches[1]]; 
+					}
+				}
+        
         return $rule;
         /* Stop processing at first matched rule... */
         break;
@@ -132,12 +124,14 @@ class URL extends Singleton
 			$rule= $url->rules[$rule_name];
 			$return_url= $rule->build_str;
 			foreach ( $rule->named_args as $replace ) {
-				$return_url= str_replace( '{$' . $replace . '}', $args[$replace], $return_url );
-				/* 
-				 * Remove from the argument list so we can append 
-				 * any outlier args as query string args
-				 */
-				unset( $args[$replace] );
+				if( isset( $args[$replace] ) ) {
+					$return_url= str_replace( '{$' . $replace . '}', $args[$replace], $return_url );
+					/* 
+					 * Remove from the argument list so we can append 
+					 * any outlier args as query string args
+					 */
+					unset( $args[$replace] );
+				}
 			}
 			/*
 			 * OK, now append any outliers passed in to the function
