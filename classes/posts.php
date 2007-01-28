@@ -105,8 +105,9 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['tag'] ) ) {
 					$join .= ' JOIN ' . DB::table( 'tag2post' ) . ' ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
+					$join .= ' JOIN ' . DB::table( 'tags' ) . ' ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 					// Need tag expression parser here.			
-					$where[]= 'tag= ?';
+					$where[]= 'tag_text= ?';
 					$params[]= $paramset['tag'];
 				}
 				/* 
@@ -237,7 +238,7 @@ class Posts extends ArrayObject
 	**/
 	public static function count_last()
 	{
-		$params = array_merge((array) self::$get_param_cache, array( 'count' => 'id', 'nolimit' => 1));
+		$params = array_merge((array) self::$get_param_cache, array( 'count' => '*', 'nolimit' => 1));
 		return self::get( $params );
 	}
 		
