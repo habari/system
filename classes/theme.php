@@ -30,44 +30,14 @@ class Theme
 	 * @param template_engine ( optional ) specify a template engine
 	 * @param theme_dir       ( optional ) specify a theme directory
 	 */	 	 	 	 	
-	public function __construct()
-		{
-		if ( func_num_args() > 0 ) {
-			/* 
-			 * A theme name ( or more information ) was supplied.  This happens when we
-			 * want to use a pre-installed theme ( for instance, the
-			 * installer theme. )
-			 */
-			if ( func_num_args() >= 2 ) {
-				/* we load template engine from specified args, not DB */
-				$this->name= func_get_arg( 0 );
-				$template_engine= func_get_arg( 1 );
-				$directory= HABARI_PATH . '/system/themes/' . $this->name . '/';
-				$directory= ( func_num_args()==3 ? func_get_arg( 2 ) : $directory );
-				$this->template_engine= new $template_engine();
-				$this->template_engine->set_template_dir( $directory );
-				return;
-			}
-			else {
-				/* lookup in DB for template engine info. */
-				$theme= Themes::get_by_name( func_get_arg( 0 ) );
-			}
-		}
-		else {
-			// Grab the theme from the database
-			$theme= Themes::get_active();
-		}
-		
-		if ( empty( $theme ) )
-			die( 'Theme not installed.' );
-		
-		$this->name= $theme->name;
-		$this->version= $theme->version;
-		$this->theme_dir= HABARI_PATH . '/user/themes/' . $theme->theme_dir . '/';
-		//$this->config_vars= $theme['config_vars'];
+	public function __construct($themedata)
+	{
+		$this->name= $themedata->name;
+		$this->version= $themedata->version;
+		$this->theme_dir= $themedata->theme_dir;
 		// Set up the corresponding engine to handle the templating
-		$this->template_engine= new $theme->template_engine();
-		$this->template_engine->set_template_dir( $this->theme_dir );
+		$this->template_engine= new $themedata->template_engine();
+		$this->template_engine->set_template_dir( $themedata->theme_dir );
 	}
 
 	/**

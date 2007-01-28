@@ -49,7 +49,7 @@ class InstallHandler extends ActionHandler {
   public function act_begin_install() {
 
     /* Create a new theme to handle the display of the installer */
-    $this->theme= new Theme('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
+    $this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
     if (! $this->meets_all_requirements()) {
       $this->display('requirements');
     }

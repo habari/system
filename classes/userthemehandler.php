@@ -15,7 +15,7 @@ class UserThemeHandler extends ActionHandler
 	 */
 	public function __construct()
 	{
-		$this->theme= new Theme();
+		$this->theme= Themes::create();
 	}
 
 	/**
@@ -86,60 +86,11 @@ class UserThemeHandler extends ActionHandler
 			, 'month'
 			, 'year'
 			, 'day'
-			, 'pubdate'
 		);
 		$where_filters= array();
-		$handler_var_keys= array_keys( $this->handler_vars );
+		$where_filters = array_intersect_key( $this->handler_vars, array_flip( $valid_filters ) );
 
-		foreach ( $this->handler_vars as $var_key => $var_value ) {
-			if ( in_array( $var_key, $valid_filters ) ) {
-				switch ( $var_key ) {
-					case 'status':
-					case 'page':
-					case 'tag':
-					case 'slug':
-						$where_filters[$var_key]= array( $var_key => $var_value );
-						break;
-					case 'year':
-					case 'month':
-					case 'day':
-						/*
-						 * Short-circuit if we've already built the pubdate...
-						 */
-						if ( ! empty( $where_filters['pubdate'] ) )
-							break;
-
-						/* 
-						 * Build the pubdate 
-						 * If we've got the day, then get the date.
-						 * If we've got the month, but no date, get the month.
-						 * If we've only got the year, get the whole year.
-						 */
-						if ( in_array( 'day', $handler_var_keys ) ) {
-							/* Got the full date */
-							$sql_date= $this->handler_vars['year']
-								. '-' . $this->handler_vars['month']
-								. '-' . $this->handler_vars['day'];
-						}
-						elseif ( in_array( 'month', $handler_var_keys ) ) {
-							$sql_date= 'BETWEEN ' . $this->handler_vars['year']
-								. '-' . $this->handler_vars['month'] . '-01'  
-								. ' AND ' . $this->handler_vars['year'] 
-								. '-' . $this->handler_vars['month']  
-								. '-' . date( "t", mktime( 0,0,0,$this->handler_vars['month'], 0, $this->handler_vars['year'] ) );
-						}
-						else { 
-							$sql_date= 'BETWEEN ' . $this->handler_vars['year']
-								. '-01-01 AND ' . $this->handler_vars['year'] . '-12-31';
-						}
-
-						$where_filters['pubdate']= array( 'pubdate' => $sql_date );            
-						break;
-				}
-			}
-		}
-		
-		$posts= Posts::get( array( 'where' => $where_filters ) );
+		$posts= Posts::get( $where_filters );
 		if ( count( $posts ) == 1 && count( $where_filters ) > 0 ) {
 			$this->handler_vars['post']= $posts[0];
 			$template= 'post';

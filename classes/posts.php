@@ -109,6 +109,30 @@ class Posts extends ArrayObject
 					$where[]= 'tag= ?';
 					$params[]= $paramset['tag'];
 				}
+				/* 
+				 * Build the pubdate 
+				 * If we've got the day, then get the date.
+				 * If we've got the month, but no date, get the month.
+				 * If we've only got the year, get the whole year.
+				 * @todo Ensure that we've actually got all the needed parts when we query on them
+				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')				 				 
+				 */				
+				if ( isset( $paramset['day'] ) ) {
+					/* Got the full date */
+					$where[]= 'pubdate BETWEEN ? AND ?';
+					$params[]= "{$paramset['year']}-{$paramset['month']}-{$paramset['day']} 00:00:00";
+					$params[]= date('Y-m-d H:i:s', mktime( 12, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) ); 
+				}
+				elseif ( isset( $paramset['month'] ) ) {
+					$where[]= 'pubdate BETWEEN ? AND ?';
+					$params[]= "{$paramset['year']}-{$paramset['month']}-01 00:00:00";
+					$params[]= date('Y-m-d', mktime( 12, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) ); 
+				}
+				elseif ( isset( $paramset['year'] ) ) { 
+					$where[]= 'pubdate BETWEEN ? AND ?';
+					$params[]= "{$paramset['year']}-01-01 00:00:00";
+					$params[]= "{$paramset['year']}-12-31 12:59:59";
+				}
 				
 				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 			}
@@ -155,7 +179,7 @@ class Posts extends ArrayObject
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= $orderby . $limit;
-		//Utils::debug($fetch_fn, $query, $params);			
+		//Utils::debug($paramarray, $fetch_fn, $query, $params);			
 		DB::set_fetch_mode(PDO::FETCH_CLASS);
 		DB::set_fetch_class('Post');
 		$results= DB::$fetch_fn( $query, $params, 'Post' );
