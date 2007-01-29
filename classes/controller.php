@@ -4,7 +4,7 @@
  * MVC strategy for building the model and assigning to 
  * a view.
  * 
- * @package habari 
+ * @package Habari 
  */
 class Controller extends Singleton {
   public $base_url= '';        // base url for site
