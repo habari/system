@@ -25,26 +25,30 @@
 			</ul>
 		</div>
 		<div class="dashboard-block" id="incoming">
-			<h4>Incoming Links (<a href="http://technorati.com/search/<?php Options::out('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
+			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&num=10&q=link:<?php Options::out('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
+			<?php
+			// This should be fetched on a pseudo-cron and cached: 
+			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Options::get('hostname') );
+			$search->execute();
+			$xml = new SimpleXMLElement($search->get_response_body());
+			if(count($xml->entry) == 0) {
+				_e('<p>No incoming links were found to this site.</p>'); 
+			}
+			else {
+			?>
 			<ul id="incoming-links">
+				<?php foreach($xml->entry as $entry) { ?>
 				<li>
-					<img class="favicon" src="http://drbacchus.com/journal/favicon.ico" alt="favicon" /> <a href="http://wooga.drbacchus.com/journal" title="Dr Bacchus' Journal">Dr Bacchus' Journal</a>
+					<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / --> 
+					<a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
 				</li>
-				<li>
-					<img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" /> <a href="http://skippy.net" title="Skippy dot net">Skippy Dot Net</a>
-				</li>
-				<li>
-					<img class="favicon" src="http://brokenkode.com/favicon.ico" alt="favicon" /> <a href="http://brokenkode.com" title="Broken Kode">Broken Kode</a>
-				</li>
-				<li>
-					<img class="favicon" src="http://asymptomatic.net/favicon.ico" alt="favicon" /> <a href="http://asymptomatic.net/" title="Asymptomatic">Asymptomatic</a>
-				</li>
-				<li>
-					<img class="favicon" src="http://www.chrisjdavis.org/favicon.ico" alt="favicon" /> <a href="http://www.chrisjdavis.org" title="Sillyness Spelled Wrong Intentionally">Sillyness Spelled Wrong Intentionally</a>
-				</li>
+				<?php } ?>
 			</ul>
+			<?php
+			}
+			?>
 		</div>
-		<div class="dashboard-block" id="drafts">
+		<div class="dashboard-block c2" id="drafts">
 				<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
 				<ul id="site-drafts">
 				<?php 
@@ -73,7 +77,7 @@
 					}
 				?>
 		</div>
-		<div class="dashboard-block" id="recent-comments">
+		<div class="dashboard-block c2" id="recent-comments">
 			<h4>Recent Comments 
 				<?php
 					if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
@@ -104,7 +108,7 @@
 						<td><?php echo $recent->name; ?></td>
 						<td><?php echo $recent->url; ?></td>
 						<td align="center">
-							<a href="<?php Options::out('base_url'); ?><?php echo $post->post_slug; ?>" title="View this post"><img src="<?php Options::out('base_url'); ?>system/admin/images/view.png" alt="View this comment" /></a>
+							<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$post->slug) ); ?>" title="View this post"><img src="<?php Options::out('base_url'); ?>system/admin/images/view.png" alt="View this comment" /></a>
 							<img src="<?php Options::out('base_url'); ?>system/admin/images/edit.png" alt="Edit this comment" />
 						</td>
 					</tr>
@@ -116,47 +120,6 @@
 					_e('<p>There are no comments to display</p>');
 				}
 				?>
-		</div>
-	</div>
-	<div class="dashboard-column" id="right-column">
-		<div class="dashboard-block" id="options">
-			<ul id="options-list">
-				<li> 
-					<span class="right">
-						<small>(<a href="#" title="">help</a>)</small>
-					</span>
-					<a href="<?php URL::out('admin', 'page=options'); ?>" title="Options">Options</a>
-				</li>
-				<li> 
-					<span class="right">
-						<small>(<a href="#" title="">help</a>)</small>
-					</span>
-					<a href="<?php URL::out('admin', 'page=plugins'); ?>" title="Plugins">Plugins</a>
-				</li>
-				<li>
-					<span class="right">
-						<small>(<a href="#" title="">help</a>)</small>
-					</span>
-					<a href="<?php URL::out('admin', 'page=themes'); ?>" title="Themes">Themes</a> 
-				</li>
-				<li>
-					<span class="right">
-						<small>(<a href="#" title="">help</a>)</small>
-					</span>
-					<a href="<?php URL::out('admin', 'page=users'); ?>" title="Users">Users</a> 
-				</li>
-			</ul>
-			<p><small>Support &amp; Help</small></p>
-			<ul id="help-items">
-				<script type="text/javascript">
-				function popUp() {
-				 	window.open ("/system/help/index.html", "mywindow",
-								 "location=0,status=1,scrollbars=1, width=700,height=500");
-				}
-				</script>
-				<li>&raquo; <a href="javascript:popUp();" title="The Habari Help Center">The Help Center</a></li>
-				<li>&raquo; <a href="http://habariblog.org/support" title="Support Forums">Support Forums</a></li>
-			</ul>
 		</div>
 	</div>
 </div>
