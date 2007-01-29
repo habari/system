@@ -84,11 +84,11 @@ class RemoteRequest
 	/**
 	 * Set the request body.
 	 * Only used with POST requests, will raise a warning if used with GET.
-	 * @param string The request body.
+	 * @param string $body The request body.
 	 */
 	public function set_body( $body )
 	{
-		if ( $this->method !== 'POST')
+		if ( $this->method !== 'POST' )
 			return Error::raise( __('Trying to add a request body to a non-POST request'), E_USER_WARNING );
 		
 		$this->body= $body;
@@ -97,6 +97,7 @@ class RemoteRequest
 	/**
 	 * Set the request query parameters (i.e., the URI's query string).
 	 * Will be merged with existing query info from the URL.
+	 * @param array $params
 	 */
 	public function set_params( $params )
 	{
@@ -202,7 +203,7 @@ class RemoteRequest
 		if ( ! is_array( $params ) )
 			parse_str( $params, $params );
 		
-		$urlparts['query']= http_build_query( array_merge( Utils::get_params( $urlparts['query'] ), $params ) );
+		$urlparts['query']= http_build_query( array_merge( Utils::get_params( $urlparts['query'] ), $params ), '', '&' );
 		
 		return Utils::glue_url( $urlparts );
 	}
