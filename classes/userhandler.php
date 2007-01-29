@@ -36,47 +36,6 @@ class UserHandler extends ActionHandler {
 	}
 
 	/**
-	 * Adds a comment to a post, if the comment content is not NULL
-	 */
-	public function act_add_comment() {
-		if( $this->handler_vars['content'] != '')  {
-			$commentdata = array( 
-								'post_id'	=>	$this->handler_vars['post_id'],
-								'name'		=>	$this->handler_vars['name'],
-								'email'		=>	$this->handler_vars['email'],
-								'url'		=>	$this->handler_vars['url'],
-								'ip'		=>	preg_replace( '/[^0-9., ]/', '',$_SERVER['REMOTE_ADDR'] ),
-								'content'	=>	$this->handler_vars['content'],
-								'status'	=>	Comment::STATUS_UNAPPROVED,
-								'date'		=>	gmdate('Y-m-d H:i:s'),
-								'type' => Comment::COMMENT
-						 	);
-			// Comment::create( $commentdata );  // This creates and saves, let's filter first
-			$comment = new Comment( $commentdata );
-			$comment = Plugins::filter('add_comment', $comment);
-			if( $comment->email == User::identify()->email ) {
-				$comment->status = Comment::STATUS_APPROVED;
-			} elseif( Comments::get( array( 'email' => $comment->email, 'status' => 1 ) )->count ) {
-				$comment->status = Comment::STATUS_APPROVED;
-			}
-			$comment->insert();
-			// if no cookie exists, we should set one
-			$cookie = 'comment_' . Options::get('GUID');
-			if ( ( ! User::identify() ) && ( ! isset( $_COOKIE[$cookie] ) ) )
-			{
-				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
-				setcookie( $cookie, $cookie_content, time() + 31536000, Options::get('siteurl') );
-			}
-			Utils::redirect(URL::get('display_posts_by_slug', array('slug'=>$this->handler_vars['post_slug'])));
-		} 
-		else
-		{
-			// do something more intelligent here
-			echo 'You forgot to add some content to your comment, please <a href="' . URL::get( 'post', "slug={$this->handler_vars['post_slug']}" ) . '" title="go back and try again!">go back and try again</a>.';
-		}
-	}
-
-	/**
 	* function logout
 	* terminates a user's session, and deletes the Habari cookie
 	* @param string the Action that was in the URL rule
