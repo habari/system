@@ -46,7 +46,8 @@ class CURLRequestProcessor implements RequestProcessor
 		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
 			return Error::raise( sprintf( 'Bad return code (%1$d) for: %2$s', 
 				curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 
-				$url ) 
+				$url ),
+				E_USER_WARNING
 			);
 		}
 		
