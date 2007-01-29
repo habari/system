@@ -99,7 +99,7 @@ class Utils
 	/**
 	 * function de_amp
 	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
-	 * @param string A URL, maybe with a querystring	 
+	 * @param string $value A URL, maybe with a querystring	 
 	 **/
 	static function de_amp($value)
 	{
