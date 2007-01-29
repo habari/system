@@ -33,40 +33,6 @@
       <div id="page">
         <form action="" method="post" autocomplete="off">
           <h2>Installation Method</h2>
-          <p class="instructions">
-          You can either install the habari database yourself (if you have appropriate permissions to do so), or
-          you can alternately install the habari tables into a database that has already been installed for you
-          (for instance, if you are on a shared web host and do not have the ability to create databases yourself).  
-          <em>Choose the method of installation</em>.
-          </p>
-          <div class="row">
-            <label for="install_tables">Install Tables in Existing Database</label>
-            <input type="radio" id="install_tables" name="install_method" value="noroot" checked="true" />
-          </div>
-          <div class="row">
-            <label for="install_root">Install Entire Database</label>
-            <input type="radio" id="install_root" name="install_method" value="root" />
-          </div>
-          <div id="entire-db">
-          <h2>Install Entire Database</h2>
-          <p class="instructions">
-            In order to install the database properly, this installation script
-            needs to be able to log in to your database server as a user who
-            has permissions to create a new database and a new database user.
-            Typically, this "super" user is called "root", which is what is entered
-            in the field below by default.
-          </p>
-          <div class="row">
-            <label for="db_root_user">Username with SUPER privileges</label>
-            <input type="textbox" name="db_root_user" value="<?php echo isset($db_root_user) ? $db_root_user : 'root';?>" size="30" maxlength="50" />
-            <?php $error_id= 'db_root_user'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="db_root_pass">Password for super user</label>
-            <input type="password" name="db_root_pass" value="<?php echo isset($db_root_pass) ? $db_root_pass : '';?>" size="30" maxlength="50" />
-            <?php $error_id= 'db_root_pass'; include "form.error.php";?>
-          </div>
-          </div>
           <h2>Database Information</h2>
             <?php $error_id= 'db_general'; include "form.error.php";?>
            <div class="row">
@@ -124,16 +90,6 @@
             <label for="blog_title">Blog Title</label>
             <input type="textbox" name="blog_title" value="<?php echo isset($blog_title) ? $blog_title : 'My Blog';?>" size="50" maxlength="150" />
             <?php $error_id= 'blog_title'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="blog_tagline">Blog Tagline</label>
-            <input type="textbox" name="blog_tagline" value="<?php echo isset($blog_tagline) ? $blog_tagline : 'My Tagline';?>" size="30" maxlength="150" />
-            <?php $error_id= 'blog_tagline'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="blog_about">About</label>
-            <input type="textbox" name="blog_about" value="<?php echo isset($blog_about) ? $blog_about : 'About Me';?>" size="30" maxlength="150" />
-            <?php $error_id= 'blog_about'; include "form.error.php";?>
           </div>
         
           <div style="clear: both;">
