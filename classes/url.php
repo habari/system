@@ -70,23 +70,10 @@ class URL extends Singleton
      */
     $pattern_matches= array();
     foreach ($url->rules as $rule) {
-      if ( 1 == preg_match(
-                $rule->parse_regex
-                , $from_url
-                , $pattern_matches) ) {
-        
-	      $rule->entire_match= array_shift( $pattern_matches ); // The entire matched string is returned at index 0
-	      if(count($rule->named_args) > 0) {
-	        $rule->named_arg_values= array_combine($rule->named_args, $pattern_matches);
-					if (preg_match('/^\\{\\$(\\w+)\\}$/', $rule->action, $matches)) {
-						$rule->action= $rule->named_arg_values[$matches[1]]; 
-					}
-				}
-        
-        return $rule;
+    	if( $rule->match($from_url) ) {
         /* Stop processing at first matched rule... */
-        break;
-      }
+    		return $rule;
+    	}
     }
     return false;
   }  
@@ -108,39 +95,12 @@ class URL extends Singleton
 	 */
 	static public function get( $rule_name, $args= array() )
 	{
-		/*
-		 * This code is here for backwards compatibility with the old
-		 * URL API which allowed passing arguments as a querystring-style
-		 * long string or an array.  Would be nice to remove this and standardize
-		 * on one method or the other...
-		 * @todo TODO Standardize the argument input.
-		 */
-		if ( ! is_array( $args ) )
-			parse_str( $args, $args ); 
+		$args= Utils::get_params( $args ); 
 		
 		$url= URL::instance();
 		$url->load_rules();
-		if ( isset( $url->rules[$rule_name] ) ) {
-			$rule= $url->rules[$rule_name];
-			$return_url= $rule->build_str;
-			foreach ( $rule->named_args as $replace ) {
-				if( isset( $args[$replace] ) ) {
-					$return_url= str_replace( '{$' . $replace . '}', $args[$replace], $return_url );
-					/* 
-					 * Remove from the argument list so we can append 
-					 * any outlier args as query string args
-					 */
-					unset( $args[$replace] );
-				}
-			}
-			/*
-			 * OK, now append any outliers passed in to the function
-			 * as query string arguments
-			 */
-			if ( count( $args ) > 0 ) {
-				$return_url.= '?' . http_build_query($args);
-			}
-			
+		if( $rule= $url->rules->by_name($rule_name) ) {
+			$return_url = $rule->build( $args );
 			return
 				'http' . ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 's' : '' ) . 
 				'://' . $_SERVER['HTTP_HOST'] . '/' . ltrim( Controller::get_base_url(), '/' ) .

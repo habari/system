@@ -125,18 +125,5 @@ class Controller extends Singleton {
   }
 }
 
-/**
- * Helper class to encapsulate rewrite rule data
- */
-class RewriteRule {
-  public $entire_match= '';           // exact matched string
-  public $name;                       // name of the rule
-  public $parse_regex;                // regex expression for incoming matching
-  public $build_str;                  // string with optional placeholders for outputting URL
-  public $handler;                    // name of action handler class
-  public $action;                     // name of action that handler should execute
-  public $named_args= array();        // named argument matches
-  public $named_arg_values= array();  // values of named arguments filled during URL::parse()
-}
 ?>
 
