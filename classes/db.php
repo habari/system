@@ -49,10 +49,10 @@ class DB extends Singleton
 			return TRUE;
 		}
 		
-		if (func_num_args() > 0) {
-			$connect_string= func_get_arg(0);
-			$db_user= func_get_arg(1);
-			$db_pass= func_get_arg(2);
+		if ( func_num_args() > 0 ) {
+			$connect_string= func_get_arg( 0 );
+			$db_user= func_get_arg( 1 );
+			$db_pass= func_get_arg( 2 );
 		}
 		else {
 			/* We use the config.php variables */
@@ -77,8 +77,9 @@ class DB extends Singleton
 	 *
 	 * @param table name of the table
 	 */
-	public static function table($name) {
-		return DB::instance()->connection->table($name);
+	public static function table( $name )
+	{
+		return DB::instance()->connection->table( $name );
 	}
 
 	/**
@@ -88,8 +89,9 @@ class DB extends Singleton
 	 *
 	 * @param name  the table name
 	**/
-	public static function register_table($name) {		
-		DB::instance()->connection->register_table($name);
+	public static function register_table( $name )
+	{		
+		DB::instance()->connection->register_table( $name );
 	}
 
 	/**
@@ -97,7 +99,8 @@ class DB extends Singleton
 	 *
 	 * @param mode  One of the PDO::FETCH_MODE integers
 	 */
-	public static function set_fetch_mode($mode) {
+	public static function set_fetch_mode( $mode )
+	{
 		DB::instance()->connection->set_fetch_mode( $mode );
 	}
 
@@ -106,7 +109,8 @@ class DB extends Singleton
 	 *
 	 * @param class_name  Name of class to create during fetch
 	 */
-	public static function set_fetch_class($class_name) {
+	public static function set_fetch_class( $class_name )
+	{
 		DB::instance()->connection->set_fetch_class( $class_name );
 	}
 
@@ -117,8 +121,9 @@ class DB extends Singleton
 	 * @param class_name  (optional) name of class name to wrangle returned data to
 	 * @return bool	 
 	 */	 	 	 	 	
-	public static function query($query, $args = array()) {
-		 return DB::instance()->connection->query( $query, $args);
+	public static function query( $query, $args = array() )
+	{
+		 return DB::instance()->connection->query( $query, $args );
 	}
 
 	/** 
@@ -130,7 +135,8 @@ class DB extends Singleton
 	 * @experimental 
 	 * @todo  EVERYTHING... :)
 	 */
-	public static function execute_procedure($procedure, $args= array()) {
+	public static function execute_procedure( $procedure, $args= array() )
+	{
 		return DB::instance()->connection->execute_procedure( $procedure, $args );
 	}
 
@@ -138,7 +144,8 @@ class DB extends Singleton
 	 * Start a transaction against the RDBMS in order to wrap multiple
 	 * statements in a safe ACID-compliant container
 	 */
-	public static function begin_transaction() {
+	public static function begin_transaction()
+	{
 		DB::instance()->connection->begin_transaction();
 	}
 
@@ -147,7 +154,8 @@ class DB extends Singleton
 	 * prexisting state, or, if the RDBMS supports it, whenever
 	 * a savepoint was committed.
 	 */
-	public static function rollback() {
+	public static function rollback()
+	{
 		DB::instance()->connection->rollback();
 	}
 
@@ -163,7 +171,8 @@ class DB extends Singleton
 	 *
 	 * @return  array an array of query profiles
 	 */
-	public function get_profiles() {
+	public function get_profiles()
+	{
 		return DB::instance()->connection->get_profiles();
 	}
 
@@ -172,15 +181,17 @@ class DB extends Singleton
 	 *
 	 * @param   error   array('query'=>query, 'error'=>errorInfo)
 	 */
-	private function add_error($error) {
-		DB::instance()->connection->add_error($error);
+	private function add_error( $error )
+	{
+		DB::instance()->connection->add_error( $error );
 	}
 	
 	/**
 	 * Returns error data gathered from database connection
 	 * @return array An array of error data	 
 	 */	  	 	
-	public function get_errors() {
+	public function get_errors()
+	{
 		return DB::instance()->connection->get_errors();
 	}
 	
@@ -188,14 +199,16 @@ class DB extends Singleton
 	 * Determines if there have been errors since the last clear_errors() call
 	 * @return boolean True if there were errors, false if not
 	 **/	 	 	 	
-	public function has_errors() {
+	public function has_errors()
+	{
 		return DB::instance()->connection->has_errors();
 	}
 	
 	/**
 	 * Updates the last error pointer to simulate resetting the error array
 	 **/	 	 	
-	public function clear_errors() {
+	public function clear_errors()
+	{
 		DB::instance()->connection->clear_errors(); 
 	}
 
@@ -203,7 +216,8 @@ class DB extends Singleton
 	 * Returns only the last error info
 	 * @return array Data for the last error	 
 	 **/
-	public function get_last_error() {		
+	public function get_last_error()
+	{		
 		return DB::instance()->connection->get_last_error();
 	}
 
@@ -215,7 +229,8 @@ class DB extends Singleton
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/	 	 	 	 
-	public function get_results($query, $args = array()) {
+	public function get_results( $query, $args = array() )
+	{
 		if ( func_num_args() == 3 ) {
 			$class_name= func_get_arg( 2 );
 			return DB::instance()->connection->get_results( $query, $args, $class_name );
@@ -233,10 +248,11 @@ class DB extends Singleton
 	 * @return object A QueryRecord or an instance of the named class containing the row data	 
 	 * <code>$obj = DB::get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>	 
 	 **/	 	 
-	public function get_row($query, $args = array()) {
+	public function get_row( $query, $args = array() )
+	{
 		if ( func_num_args() == 3 ) {
 			$class_name= func_get_arg( 2 );
-			return DB::instance()->connection->get_row( $query, $args, $class_name);
+			return DB::instance()->connection->get_row( $query, $args, $class_name );
 		}
 		else {
 			return DB::instance()->connection->get_row( $query, $args );
@@ -251,8 +267,9 @@ class DB extends Singleton
 	 * @return array An array containing the column data	 
 	 * <code>$ary = DB::get_column( 'SELECT col1 FROM tablename WHERE foo = ?', array('fieldvalue') );</code>	 
 	 **/	 	 
-	public function get_column($query, $args = array()) {
-		 return DB::instance()->connection->get_column ($query, $args);
+	public function get_column( $query, $args = array() )
+	{
+		 return DB::instance()->connection->get_column( $query, $args );
 	}
 
 	/**
@@ -262,7 +279,8 @@ class DB extends Singleton
 	 * @param array Arguments to pass for prepared statements
 	 * @return mixed a single value (int, string)
 	**/
-	public function get_value( $query, $args = array() ) {
+	public function get_value( $query, $args = array() )
+	{
 		return DB::instance()->connection->get_value( $query,  $args );
 	}
 	
@@ -273,9 +291,9 @@ class DB extends Singleton
 	 * @return boolean True on success, false if not	  	 
 	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/
-	public function insert($table, $fieldvalues) 
+	public function insert( $table, $fieldvalues ) 
 	{
-		return DB::instance()->connection->insert($table, $fieldvalues);
+		return DB::instance()->connection->insert( $table, $fieldvalues );
 	}
 	
 	/**
@@ -285,7 +303,7 @@ class DB extends Singleton
 	 * @return boolean True if any matching record exists, false if not
 	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
-	public function exists($table, $keyfieldvalues) 
+	public function exists( $table, $keyfieldvalues ) 
 	{		
 		return DB::instance()->connection->exists( $table, $keyfieldvalues );
 	}
@@ -300,9 +318,9 @@ class DB extends Singleton
 	 * @return boolean True on success, false if not
 	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
-	public function update($table, $fieldvalues, $keyfields)
+	public function update( $table, $fieldvalues, $keyfields )
 	{			
-		 return DB::instance()->connection->update($table, $fieldvalues, $keyfields);		
+		 return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );		
 	}
 
 	/**
@@ -328,7 +346,8 @@ class DB extends Singleton
 	 */
 	public function last_insert_id() 
 	{
-		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg(0) : '' );
+		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
 	}
 }
+
 ?>
