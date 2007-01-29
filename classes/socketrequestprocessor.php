@@ -22,7 +22,7 @@ class SocketRequestProcessor implements RequestProcessor
 		
 		$this->response_headers= $response_headers;
 		$this->response_body= $response_body;
-		$this->executed=TRUE;
+		$this->executed= TRUE;
 		
 		return TRUE;
 	}
@@ -174,4 +174,3 @@ class SocketRequestProcessor implements RequestProcessor
 }
 
 ?>
-
