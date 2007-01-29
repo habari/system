@@ -31,12 +31,12 @@
 					<td><?php echo $post->pubdate ?></td>
 					<td align="center">
 						<a href="<?php echo $post->permalink ?>" title="View this Entry">
-							<img src="<?php Options::out('base_url'); ?>/system/admin/images/view.png" alt="View this entry" />
+							<img src="<?php Options::out('base_url'); ?>system/admin/images/view.png" alt="View this entry" />
 						</a>
 						<a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit this entry">
-							<img src="<?php Options::out('base_url'); ?>/system/admin/images/edit.png" alt="Edit this entry" />
+							<img src="<?php Options::out('base_url'); ?>system/admin/images/edit.png" alt="Edit this entry" />
 						</a>
-						<img src="<?php Options::out('base_url'); ?>/system/admin/images/delete.png" alt="Delete this comment" />
+						<img src="<?php Options::out('base_url'); ?>system/admin/images/delete.png" alt="Delete this comment" />
 					</td>
 				</tr>
 				<?php } ?>
