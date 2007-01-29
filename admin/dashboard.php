@@ -95,13 +95,16 @@
 							<th colspan="1" align="center">Action</th>
 						</tr>
 					</thead>
-					<?php foreach ( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'date DESC' ) ) as $recent ) { ?>
+					<?php
+						foreach ( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'date DESC' ) ) as $recent ) {
+							$post= Post::get( array( 'id' => $recent->post_id, ) );
+					?>
 					<tr>
-						<td><?php echo $recent->post_slug; ?></td>
+						<td><?php echo $post->title; ?></td>
 						<td><?php echo $recent->name; ?></td>
 						<td><?php echo $recent->url; ?></td>
 						<td align="center">
-							<a href="<?php Options::out('base_url'); ?><?php echo $recent->post_slug; ?>" title="View this post"><img src="/system/admin/images/view.png" alt="View this comment" /></a>
+							<a href="<?php Options::out('base_url'); ?><?php echo $post->post_slug; ?>" title="View this post"><img src="<?php Options::out('base_url'); ?>/system/admin/images/view.png" alt="View this comment" /></a>
 							<img src="<?php Options::out('base_url'); ?>/system/admin/images/edit.png" alt="Edit this comment" />
 						</td>
 					</tr>

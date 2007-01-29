@@ -142,7 +142,7 @@ class URL extends Singleton
 				foreach ( $args as $key => $value ) {
 					$return_url.= $key . '=' . $value . '&';
 				}
-				$url= rtrim( $return_url, '&' );
+				$return_url= rtrim( $return_url, '&' );
 			}
 			
 			return

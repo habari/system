@@ -1,16 +1,15 @@
 <?php include('header.php');?>
+<div id="content-area">
 <?php
 	$currentuser = User::identify();
-	if ( ! $currentuser )
-	{
+	if ( ! $currentuser ) {
 		die;
 	}
 	// are we looking at the current user's profile, or someone else's?
-	// $settings['option'] will contain the username specified on the URL
+	// $user will contain the username specified on the URL
 	// http://example.com/admin/user/skippy
-	if ( isset( $settings['option'] ) && ( $settings['option'] != $currentuser->username ) )
-	{
-		$user = User::get( $settings['option'] );
+	if ( isset( $user ) && ( $user != $currentuser->username ) ) {
+		$user = User::get( $user );
 		if ( ! $user )
 		{
 			echo "No such user!";
@@ -19,25 +18,22 @@
 		$who = $user->username;
 		$possessive = $user->username . "'s";
 	}
-	else
-	{
+	else {
 		$user = $currentuser;
 		$who = "You";
 		$possessive = "Your";
 	}
-if ( isset( $settings['result']) && 'deleted' == $settings['results'] )
-{
-	echo "The user has been deleted.";
-}
-else
-{
+	if ( isset( $result ) && 'deleted' == $result ) {
+		echo "The user has been deleted.";
+	}
+	else {
 ?>
 <div style="width: 45%; float: left; border-right: 1px solid #000; text-align: left;">
 	<h3><?php echo $possessive; ?> Profile</h3>
 	<?php
-	if ( isset( $settings['results'] ) && 'success' == $settings['results'] )
+	if ( isset( $result ) && 'success' == $result )
 	{
-		echo "<p><strong>" . $possessive . " profile has been updated!</strong></p>";
+		echo '<p class="update"><strong>' . $possessive . ' profile has been updated!</strong></p>';
 	}
 	else
 	{
@@ -109,4 +105,5 @@ if ( $user != $currentuser )
 <?php
 }
 ?>
+</div>
 <?php include('footer.php');?>
