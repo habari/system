@@ -216,7 +216,13 @@ class DB extends Singleton
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/	 	 	 	 
 	public function get_results($query, $args = array()) {
-			return DB::instance()->connection->get_results( $query, $args );		
+		if ( func_num_args() == 3 ) {
+			$class_name= func_get_arg( 2 );
+			return DB::instance()->connection->get_results( $query, $args, $class_name );
+		}
+		else {
+			return DB::instance()->connection->get_results( $query, $args );
+		}		
 	}
 	
 	/**
@@ -228,8 +234,8 @@ class DB extends Singleton
 	 * <code>$obj = DB::get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>	 
 	 **/	 	 
 	public function get_row($query, $args = array()) {
-		if (func_num_args() == 3) {
-			$class_name= func_get_arg(2);
+		if ( func_num_args() == 3 ) {
+			$class_name= func_get_arg( 2 );
 			return DB::instance()->connection->get_row( $query, $args, $class_name);
 		}
 		else {

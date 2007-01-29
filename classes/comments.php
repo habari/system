@@ -8,7 +8,6 @@
 
 class Comments extends ArrayObject
 {
-
 	private $sort;
 
 	/**
