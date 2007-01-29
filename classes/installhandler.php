@@ -253,6 +253,7 @@ class InstallHandler extends ActionHandler {
 			'content'=>'This is my first post',
 			'user_id'=>1,
 			'status'=>1,
+			'tags'=>'deleteme',
 		));
 		
 		// generate a random-ish number to use as the salt for

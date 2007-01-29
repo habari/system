@@ -138,11 +138,7 @@ class URL extends Singleton
 			 * as query string arguments
 			 */
 			if ( count( $args ) > 0 ) {
-				$return_url.= '?';
-				foreach ( $args as $key => $value ) {
-					$return_url.= $key . '=' . $value . '&';
-				}
-				$return_url= rtrim( $return_url, '&' );
+				$return_url.= '?' . http_build_query($args);
 			}
 			
 			return

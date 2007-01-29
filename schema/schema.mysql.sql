@@ -274,4 +274,13 @@ INSERT INTO {$prefix}rewrite_rules
 VALUES (NULL, 'search','/^search$/i','rsd'
 ,'AtomHandler','display_posts',8,'Searches posts');
 
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+VALUES (NULL, 'comment','/^([0-9]+)\\/feedback[\\/]{0,1}$/i','{$id}/feedback'
+,'FeedbackHandler','add_comment',8,'Adds a comment to a post');
+
+INSERT INTO {$prefix}rewrite_rule_args
+(rule_id, name, arg_index)
+VALUES (LAST_INSERT_ID(), 'id', 0);
+
 UPDATE {$prefix}rewrite_rules SET is_active=1;
