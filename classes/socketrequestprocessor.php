@@ -64,8 +64,12 @@ class SocketRequestProcessor implements RequestProcessor
 		
 		// build the request
 		$request= array();
+		$resource= $urlbits['path'];
+		if ( isset( $urlbits['query'] ) ) {
+			$resource.= '?' . $urlbits['query'];
+		} 
 		
-		$request[]= "{$method} {$urlbits['path']} HTTP/1.1";
+		$request[]= "{$method} {$resource} HTTP/1.1";
 		$request= array_merge( $request, $merged_headers );
 		
 		$request[]= '';
