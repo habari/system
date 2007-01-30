@@ -10,7 +10,7 @@
 class URL extends Singleton
 {
 	// static collection of rules ( pulled from RewriteController )
-	private $rules= null;
+	private $rules= NULL;
  
 	/**
 	 * Enables singleton working properly
@@ -34,17 +34,15 @@ class URL extends Singleton
 	}
 
 	/**
-	 * A method which accepts a URL/URI and runs the string against
-	 * rewrite rules stored in the DB.  This method is used by 
-	 * the Controller class in parsing regular requests, as well
-	 * as other classes, such as Pingback, which take a URL from the
-	 * raw HTTP payload and determine slugs from that URL.
+	 * Match a URL/URI against the rewrite rules stored in the DB.
+	 * This method is used by the Controller class for parsing
+	 * requests, and by other classes, such as Pingback, which
+	 * uses it to determine the post slug for a given URL.
 	 * 
-	 * The function returns a RewriteRule object that is matched, or 
-	 * FALSE otherwise
+	 * Returns the matched RewriteRule object, or FALSE.
 	 * 
-	 * @param url URL string to parse
-	 * @return  RewriteRule matched rule
+	 * @param string $from_url URL string to parse
+	 * @return RewriteRule matched rule, or FALSE
 	 */
 	public static function parse( $from_url )
 	{
@@ -96,8 +94,8 @@ class URL extends Singleton
 	 * 	) );
 	 * </code>
 	 * 
-	 * @param rule  string identifier for the rule which would build the URL
-	 * @param args  ( optional ) array of placeholder replacement values
+	 * @param string $rule_name name of the rule which would build the URL
+	 * @param array $args (optional) array of placeholder replacement values
 	 */
 	static public function get( $rule_name, $args= array() )
 	{
@@ -116,6 +114,8 @@ class URL extends Singleton
 
 	/**
 	 * Helper wrapper function.  Outputs the URL via echo.
+	 * @param string $rule_name name of the rule which would build the URL
+	 * @param array $args (optional) array of placeholder replacement values
 	 */
 	static public function out( $rule_name, $args= array() )
 	{
