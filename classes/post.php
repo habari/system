@@ -32,7 +32,10 @@ class Post extends QueryRecord
 	private $tags = null;
 	private $comments = null;
 	private $author_object = null;
-
+	
+	
+	private $info= null;
+ 
 	/**
 	 * function default_fields
 	 * Returns the defined database columns for a Post
@@ -73,6 +76,8 @@ class Post extends QueryRecord
 			unset( $this->fields['tags'] );
 		}
 		$this->exclude_fields('id');
+		$this->info= new PostInfo ( $this->fields['id'] );
+		 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 	
 	/**
@@ -264,6 +269,10 @@ class Post extends QueryRecord
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+		$this->info->set_key( DB::last_insert_id() ); 
+		 /* If a new post is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
+		// $this->info->option_default= "saved";
+
 		$this->savetags();
 		return $result;
 	}
