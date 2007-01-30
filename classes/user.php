@@ -101,11 +101,12 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
+	   $result= parent::insert( DB::table('users') );
   	   $this->info->set_key( DB::last_insert_id() );
 		 /* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
 		// $this->info->option_default= "saved";
 
-		return parent::insert( DB::table('users') );
+		return $result;
 	}
 
 	/**
