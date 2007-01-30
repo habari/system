@@ -84,7 +84,7 @@ class Comment extends QueryRecord
 		if ( ! $ID ) {
 			return false;
 		}
-		return DB::get_row( 'SELECT * FROM ' . DB::o()->comments . ' WHERE id = ?', $ID, 'Comment' );
+		return DB::get_row( 'SELECT * FROM ' . DB::o()->comments . ' WHERE id = ?', array( $ID ), 'Comment' );
 	}
 	
 	/**
