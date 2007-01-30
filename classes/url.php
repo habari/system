@@ -27,67 +27,73 @@ class URL extends Singleton
 	 */
 	private function load_rules()
 	{
-		if ( URL::instance()->rules != NULL )
+		if ( URL::instance()->rules != NULL ) {
 			return;
+		}
 		URL::instance()->rules= RewriteRules::get_active();
 	}
 
-  /**
-   * A method which accepts a URL/URI and runs the string against
-   * rewrite rules stored in the DB.  This method is used by 
-   * the Controller class in parsing regular requests, as well
-   * as other classes, such as Pingback, which take a URL from the
-   * raw HTTP payload and determine slugs from that URL.
-   * 
-   * The function returns a RewriteRule object that is matched, or 
-   * FALSE otherwise
-   * 
-   * @param url URL string to parse
-   * @return  RewriteRule matched rule
-   */
-  public static function parse($from_url) {
-    $base_url= Options::get('base_url');
-    
-    /* 
-     * Strip out the base URL from the requested URL
-     * but only if the base URL isn't / 
-     */
-    if ( '/' != $base_url)
-	    $from_url= str_replace($base_url, '', $from_url);
-    
-    /* Trim off any leading or trailing slashes */
-    $from_url= trim($from_url, '/');
-
-    /* Remove the querystring from the URL */
-    if ( strpos($from_url, '?') !== FALSE )
-      list($from_url, )= explode('?', $from_url);
-  
-    $url= URL::instance();
-    $url->load_rules(); // Cached in singleton
-
-    /* 
-     * Run the stub through the regex matcher
-     */
-    $pattern_matches= array();
-    foreach ($url->rules as $rule) {
-    	if( $rule->match($from_url) ) {
-        /* Stop processing at first matched rule... */
-    		return $rule;
-    	}
-    }
-    return false;
-  }  
-
+	/**
+	 * A method which accepts a URL/URI and runs the string against
+	 * rewrite rules stored in the DB.  This method is used by 
+	 * the Controller class in parsing regular requests, as well
+	 * as other classes, such as Pingback, which take a URL from the
+	 * raw HTTP payload and determine slugs from that URL.
+	 * 
+	 * The function returns a RewriteRule object that is matched, or 
+	 * FALSE otherwise
+	 * 
+	 * @param url URL string to parse
+	 * @return  RewriteRule matched rule
+	 */
+	public static function parse( $from_url )
+	{
+		$base_url= Options::get( 'base_url' );
+		
+		/* 
+		 * Strip out the base URL from the requested URL
+		 * but only if the base URL isn't / 
+		 */
+		if ( strpos( $from_url, $base_url ) === 0 ) {
+			$from_url= substr( $from_url, strlen( $base_url ) );
+		}
+		
+		/* Trim off any leading or trailing slashes */
+		$from_url= trim( $from_url, '/' );
+	
+		/* Remove the querystring from the URL */
+		if ( strpos( $from_url, '?' ) !== FALSE ) {
+			list($from_url, )= explode( '?', $from_url );
+		}
+	
+		$url= URL::instance();
+		$url->load_rules(); // Cached in singleton
+	
+		/* 
+		 * Run the stub through the regex matcher
+		 */
+		$pattern_matches= array();
+		foreach ( $url->rules as $rule ) {
+			if ( $rule->match( $from_url ) ) {
+				/* Stop processing at first matched rule... */
+				return $rule;
+			}
+		}
+		
+		return FALSE;
+	}
+	
 	/** 
 	 * Builds the required pretty URL given a supplied
 	 * rule name and a set of placeholder replacement
 	 * values and returns the built URL.
 	 * 
 	 * <code>
-	 * URL::get( 'display_posts_by_date', 
-	 *  array( 'year'=>'2000'
-	 *    , 'month'=>'05'
-	 *    , 'day'=>'01' );
+	 * 	URL::get( 'display_posts_by_date', array(
+	 * 		'year' => '2000',
+	 *    	'month' => '05',
+	 *    	'day' => '01',
+	 * 	) );
 	 * </code>
 	 * 
 	 * @param rule  string identifier for the rule which would build the URL
@@ -99,7 +105,7 @@ class URL extends Singleton
 		
 		$url= URL::instance();
 		$url->load_rules();
-		if( $rule= $url->rules->by_name($rule_name) ) {
+		if ( $rule= $url->rules->by_name( $rule_name ) ) {
 			$return_url = $rule->build( $args );
 			return
 				'http' . ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 's' : '' ) . 
