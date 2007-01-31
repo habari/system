@@ -248,7 +248,7 @@ class Post extends QueryRecord
 		if ( count($this->tags) == 0) {return;}
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
 		foreach( (array)$this->tags as $tag ) { 
-			// @todo Make this multi-SQL safe!
+			// @todo TODO Make this multi-SQL safe!
 			DB::query( 'INSERT IGNORE INTO ' . DB::table('tags') . ' (tag_text) VALUES (?)', array( $tag ) );
 			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table('tags') . ' WHERE tag_text = ?', 
 				array( $this->fields['id'], $tag ) 

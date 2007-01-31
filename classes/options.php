@@ -100,14 +100,15 @@ class Options
 				$result->out();
 				die();
 			}
-			else if ( is_object( $result ) ) {
+			elseif ( is_object( $result ) ) {
 				if($result->type == 1) {
 					$this->options[$name] = unserialize($result->value);
 				}
 				else {
 					$this->options[$name] = $result->value;
 				}
-			} else {
+			}
+			else {
 				// Return some default values here
 				switch($name) {
 				case 'pagination':
@@ -119,12 +120,12 @@ class Options
 					if ( isset( $_SERVER['SERVER_PORT'] ) ) {
 						$port= $_SERVER['SERVER_PORT'];
 					}
-					$portpart = "";
+					$portpart = '';
 					if ( $port != 80 ) {
-						$portpart= ":$port";
+						$portpart= ":{$port}";
 					}
 					// use Utils::glue_url?
-					return "http://" . $this->hostname . $portpart . $this->base_url;
+					return 'http://' . $this->hostname . $portpart . $this->base_url;
 				case 'comments_require_id':
 					return FALSE;
 				case 'pingback_send':

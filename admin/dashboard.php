@@ -2,8 +2,32 @@
 <div id="content-area">
 	<div class="dashboard-column" id="left-column">
 		<div class="dashboard-block c3" id="welcome">
-			<h1>Welcome back, <?php echo User::identify()->username; ?>!</h1>
-			<p>Good to see you round these parts again.&nbsp; Before you get back to creating your masterpiece of blogginess, you might want to take a moment to catch up on things around <?php Options::out('title'); ?>.</p>
+			<?php
+				$user= User::identify();
+				$user->info= new UserInfo( $user->id );
+				if ( ! isset( $user->info->experience_level ) ) {
+			?>
+					<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
+					<p>In the top left of the window you'll find &ldquo;Admin&rdquo;, &ldquo;Publish&rdquo;, and &ldquo;Manage&rdquo;, plus the logout button. (Use that if you're sharing this computer, or paranoid, or just like pushing buttons.)</p>
+					<p>Admin has 5 options. Clicking on &ldquo;Admin&rdquo; takes you back here. &ldquo;Options&rdquo; lets you make changes to the entire blog (Title, tagline, that sort of thing). &ldquo;Plugins&rdquo; is where you control, well, plugins. There are a few included, and there are dozens more <!-- a href='link to plugin site' -->plugins<!-- a/ --> available. &ldquo;Themes&rdquo; is where you can change how your blog looks to visitors. Again, a few are provided, but there are lots of <!-- a href='link to theme site' -->themes<!-- a/ --> out there. &ldquo;Users&rdquo; is where you control what the registered visitors, authors, and fellow admins can do on the site. Finally &ldquo;Import&rdquo; allows you to bring in your posts from another blogging platform. Just because you're using Habari doesn't mean you have to lose your old work.</p>
+					<p>Next is &ldquo;Publish&rdquo;. You can work on posts or pages. Posts are like journal entries and are filed chronologically. Pages are filed seperately and are great for things like telling about the authors on your site.</p>
+					<p>Finally, you have the &ldquo;Manage&rdquo; option which includes &ldquo;Content&rdquo; where you can edit and delete posts and pages. You can also choose &ldquo;Comments&rdquo; where you can edit and delete comments. The last option is &ldquo;Spam&rdquo;. Here you can quickly review and destroy the spam that we've trapped.</p>
+					<p>Below this message is your &ldquo;Dashboard&rdquo; where you can get a quick overview of what's been happening around <?php Options::out('title'); ?>.</p>
+					<p>If this hasn't covered everything you need to know, there is a <a href="<?php Options::out('base_url')?>system/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help Center</a> link at the bottom of every page in the admin area. The next time you visit, you'll get a more condensed version of this message.</p>
+			<?php
+					$user->info->experience_level= 'user';
+				}
+				elseif ( $user->info->experience_level == 'user' ) {
+			?>
+					<p>Good to see you again, <?php echo $user->username; ?>! This is a quick pointer to help you find things like <a href="<?php Options::out('base_url')?>system/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, themes, and plugins. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out('title'); ?>. When you've done that you can <a href="<?php Options::out('base_url')?>admin/publish?type=entry" title="Post an Entry">post an entry</a> or <a href="<?php Options::out('base_url')?>admin/moderate" title="Manage Comments">manage your comments</a>.</p>
+			<?php
+				}
+				else {
+			?>
+					<p>Welcome back, <?php echo $user->username; ?>! If you need <a href="<?php Options::out('base_url')?>system/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
+			<?php
+				 }
+			?>	
 		</div>
 		<div class="dashboard-block" id="stats">
 			<h4>Site Statistics</h4>
