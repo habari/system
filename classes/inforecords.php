@@ -10,11 +10,16 @@
  */
 abstract class InfoRecords extends ArrayObject
 {	
-	protected $__inforecord_array; // the info array
-	protected $_table_name;	// table which contains the info records
-	protected $_key_name;	// name of the primary key in the info record table
-	protected $_key_value;	// value of the primary key - the master record
-	protected $_loaded;	// set to TRUE only when the inforecords have been loaded
+	// the info array
+	protected $__inforecord_array;
+	// table which contains the info records
+	protected $_table_name;
+	// name of the primary key in the info record table
+	protected $_key_name;
+	// value of the primary key - the master record
+	protected $_key_value;
+	// set to TRUE only when the inforecords have been loaded
+	protected $_loaded= FALSE;
 
 	/**
 	 * Takes three parameters. The table of the options table, the name of the master key  and the record_id for which options are managed.
