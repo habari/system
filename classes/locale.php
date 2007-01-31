@@ -50,12 +50,8 @@ class Locale
 			
 				for ( $msgindex= 0; $msgindex < $header['msgcount']; $msgindex++ ) {
 					$msginfo= unpack( 'L1length/L1offset', substr( $data, $header['msgblock'] + $msgindex * 8, 8 ) );
-					// list( $msgid, $msgid2 )= explode( "\0", substr( $data, $msginfo['offset'], $msginfo['length'] ) );
-					// FIXME: temporary fix to stop the offset notice
 					$msgids= explode( "\0", substr( $data, $msginfo['offset'], $msginfo['length'] ) );
 					$transinfo= unpack( 'L1length/L1offset', substr( $data, $header['transblock'] + $msgindex * 8, 8 ) );
-					// list( $trans, $trans2 )= explode( "\0", substr( $data, $transinfo['offset'], $transinfo['length'] ) );
-					// FIXME: temporary fix to stop the offset notice
 					$transids= explode( "\0", substr( $data, $transinfo['offset'], $transinfo['length'] ) );
 					self::$messages[$domain][$msgids[0]]= array(
 						$msgids,
@@ -176,4 +172,13 @@ function _n( $singular, $plural, $count )
 {
 	return Locale::_n( $singular, $plural, $count );
 }
+
+/**
+ * @deprecated
+ */
+function __( $text )
+{
+	return "!!! $text !!!";
+}
+
 ?>
