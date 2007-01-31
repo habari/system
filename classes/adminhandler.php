@@ -47,7 +47,7 @@ class AdminHandler extends ActionHandler
 				}
 				else {
 					$classname= get_class($this);
-					echo sprintf( __( "\n%s->%s() does not exist.\n" ), $classname, $fn );
+					echo sprintf( _t( "\n%s->%s() does not exist.\n" ), $classname, $fn );
 					exit;
 				}
 				break;

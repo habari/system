@@ -165,7 +165,7 @@ class Comment extends QueryRecord
 	public function __get( $name )
 	{
 		if ( $name == 'name' && parent::__get( $name ) == '' ) {
-			return __('Anonymous');
+			return _t('Anonymous');
 		}
 		return parent::__get( $name );
 	}

@@ -1,80 +1,89 @@
 <?php
+
 /**
  * Habari Locale Class
  *
  * Provides translation services.
+ * 
  * @package Habari
  */
-
 class Locale
 {
-	static $uselocale = false;
-	static $messages = array();
-	static $locale;
+	private static $uselocale= FALSE;
+	private static $messages= array();
+	private static $locale;
 
 	/**
-	 * function set
-	 * Sets the locale for the whole system
-	 * @param string A locale string such as 'en' or 'en_US'
+	 * Sets the locale for Habari.
+	 * 
+	 * @param string $locale A language code like 'en' or 'en-us' or 'x-klingon', will be lowercased
 	 **/	 
-	public static function set($locale='en')
+	public static function set( $locale= NULL )
 	{
-		self::$locale = $locale;
-		//self::load_domain('habari');
+		if ( $locale == NULL ) {
+			return;
+		}
+		
+		self::$locale= strtolower( $locale );
+		self::$uselocale= self::load_domain( 'habari' );
 	}
 	
 	/**
-	 * function load_domain
-	 * Loads a translation domain from a locale .mo file into the Locale class.
-	 * This function reads a cryptic but common translation file format.  Its 
-	 * internal workings are not entirely meant to be understood.	 
-	 * @param string The domain string to load
+	 * Load translations for a given domain.
+	 * Translations are stored in gettext-style .mo files.
+	 * The internal workings of the file format are not entirely meant to be understood.
+	 * 	 
+	 * @param string $domain The domain to load
 	 **/	 	 	 	
-	private static function load_domain($domain)
+	private static function load_domain( $domain )
 	{
-		$file = HABARI_PATH . '/system/locale/' . self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
+		$file= HABARI_PATH . '/system/locale/' . self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
 		if ( file_exists( $file ) ) { 
-			$fp = fopen($file, 'rb');
-			$data = fread($fp, filesize($file));
-			fclose($fp);
+			$fp= fopen( $file, 'rb' );
+			$data= fread( $fp, filesize( $file ) );
+			fclose( $fp );
 			
-			if ( $data ) {
-				$header = substr( $data, 8, 12 );
-				$header = unpack( 'L1msgcount/L1msgblock/L1transblock', $header );
+			// @todo TODO check magic number
+			if ( $data && strlen( $data ) >= 20 ) {
+				$header= substr( $data, 8, 12 );
+				$header= unpack( 'L1msgcount/L1msgblock/L1transblock', $header );
 			
-				for ( $msgindex = 0; $msgindex < $header['msgcount']; $msgindex++ ) {
-					$msginfo = unpack( 'L1length/L1offset', substr( $data, $header['msgblock'] + $msgindex * 8, 8 ) );
-					list( $msgid, $msgid2 ) = explode( "\0", substr( $data, $msginfo['offset'], $msginfo['length'] ) );
-					$transinfo = unpack( 'L1length/L1offset', substr( $data, $header['transblock'] + $msgindex * 8, 8 ) );
-					list( $trans, $trans2 ) = explode( "\0", substr( $data, $transinfo['offset'], $transinfo['length'] ) );
-					self::$messages[$domain][$msgid] = array(
+				for ( $msgindex= 0; $msgindex < $header['msgcount']; $msgindex++ ) {
+					$msginfo= unpack( 'L1length/L1offset', substr( $data, $header['msgblock'] + $msgindex * 8, 8 ) );
+					list( $msgid, $msgid2 )= explode( "\0", substr( $data, $msginfo['offset'], $msginfo['length'] ) );
+					$transinfo= unpack( 'L1length/L1offset', substr( $data, $header['transblock'] + $msgindex * 8, 8 ) );
+					list( $trans, $trans2 )= explode( "\0", substr( $data, $transinfo['offset'], $transinfo['length'] ) );
+					self::$messages[$domain][$msgid]= array(
 						array( $msgid, $msgid2 ),
 						array( $trans, $trans2 )
 					);
 				}
 			}
+			// only use locale if we actually read something
+			return ( count( self::$messages ) > 0 );
 		}
+		
+		return FALSE;
 	}
 	
 	/**
-	 * function _e
 	 * Echo a version of the string translated into the current locale
-	 * @param string The text to echo translated
-	 * @param string The domain to search for the message	 
+	 * @param string $text The text to echo translated
+	 * @param string $domain (optional) The domain to search for the message	 
 	 **/	 	 	 	
-	public static function _e($text, $domain = 'habari')
+	public static function _e( $text, $domain= 'habari' )
 	{
-		echo self::__($text);
+		echo self::_t( $text );
 	}
 	
 	/**
-	 * function __
 	 * Return a version of the string translated into the current locale
-	 * @param string The text to translate
-	 * @param string The domain to search for the message	 
-	 * @return string The string, translated
+	 * 
+	 * @param string $text The text to echo translated
+	 * @param string $domain (optional) The domain to search for the message	 
+	 * @return string The translated string
 	 **/	 	 	 	 	 	
-	public static function __($text, $domain = 'habari')
+	public static function _t( $text, $domain= 'habari' )
 	{
 		if ( isset( self::$messages[$domain][$text] ) ) {
 			return self::$messages[$domain][$text][1][0];
@@ -85,62 +94,91 @@ class Locale
 	}
 	
 	/**
-	 * function _n
-	 * Return a singular or plural string translated into the current 
-	 * locale based on the count provided.
-	 * @param string The singular form
-	 * @param string The plural form
-	 * @param string The count
-	 * @param string The domain to search for the message	 
+	 * Echo singular or plural version of the string, translated into the current locale, based on the count provided
+	 * 
+	 * @param string $singular The singular form
+	 * @param string $plural The plural form
+	 * @param string $count The count
+	 * @param string $domain (optional) The domain to search for the message	 
+	 **/	 	 	 	
+	public static function _ne( $singular, $plural, $count, $domain= 'habari' )
+	{
+		echo self::_n( $singular, $plural, $count, $domain );
+	}
+	
+	/**
+	 * Return a singular or plural string translated into the current locale based on the count provided
+	 * 
+	 * @param string $singular The singular form
+	 * @param string $plural The plural form
+	 * @param string $count The count
+	 * @param string $domain (optional) The domain to search for the message	 
 	 * @return string The appropriately translated string
 	 **/       
-	public static function _n($singular, $plural, $count, $domain = 'habari')
+	public static function _n($singular, $plural, $count, $domain= 'habari')
 	{
-		if ( isset( self::$messages[$domain][$text] ) ) {
-			return ($count == 1) ? self::$messages[$domain][$text][1][0] : self::$messages[$domain][$text][1][1];
+		if ( isset( self::$messages[$domain][$singular] ) ) {
+			return ( $count == 1 ? self::$messages[$domain][$singular][1][0] : self::$messages[$domain][$singular][1][1] );
 		}
 		else {
-			return ($count == 1) ? $singular : $plural;
+			return ( $count == 1 ? $singular : $plural );
 		}
 	}
 }
 
 /**
- * function _e
- * Echo a version of the string translated into the current locale
- * Alias for Locale::_e() 
- * @param string The text to echo translated
+ * Echo a version of the string translated into the current locale, alias for Locale::_e() 
+ * 
+ * @param string $text The text to translate
  **/	 	 	 	
-function _e($text)
+function _e( $text )
 {
-	return Locale::_e($text);
+	return Locale::_e( $text );
 }
 
 /**
- * function __
- * Return a version of the string translated into the current locale
- * Alias for Locale::__() 
- * @param string The text to translate
- * @return string The string, translated
+ * function _ne
+ * Echo singular or plural version of the string, translated into the current locale, based on the count provided,
+ * alias for Locale::_ne()
+ * @param string $singular The singular form
+ * @param string $plural The plural form
+ * @param string $count The count
+ **/	 	
+function _ne( $singular, $plural, $count )
+{
+	return Locale::_ne( $singular, $plural, $count );
+}
+
+/**
+ * Return a version of the string translated into the current locale, alias for Locale::_t()
+ *  
+ * @param string $text The text to translate
+ * @return string The translated string
  **/	 	 	 	 	 	
-function __($text)
+function _t( $text )
 {
-	return Locale::__($text);
+	return Locale::_t( $text );
 }
 
 /**
- * function _n
- * Return a singular or plural string translated into the current 
- * locale based on the count provided.
- * @param string The singular form
- * @param string The plural form
- * @param string The count
+ * Return a singular or plural string translated into the current locale based on the count provided
+ * 
+ * @param string $singular The singular form
+ * @param string $plural The plural form
+ * @param string $count The count
  * @return string The appropriately translated string
  **/       
-function _n($singular, $plural, $count)
+function _n( $singular, $plural, $count )
 {
-	return Locale::_n($singular, $plural, $count);
+	return Locale::_n( $singular, $plural, $count );
 }
 
+/**
+ * @deprecated
+ */
+function _t( $text )
+{
+	return "!!! $text !!!";
+}
 
 ?>
