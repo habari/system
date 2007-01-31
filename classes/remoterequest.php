@@ -89,7 +89,7 @@ class RemoteRequest
 	public function set_body( $body )
 	{
 		if ( $this->method !== 'POST' )
-			return Error::raise( __('Trying to add a request body to a non-POST request'), E_USER_WARNING );
+			return Error::raise( _t('Trying to add a request body to a non-POST request'), E_USER_WARNING );
 		
 		$this->body= $body;
 	}
@@ -156,7 +156,7 @@ class RemoteRequest
 	public function get_response_headers()
 	{
 		if ( !$this->executed )
-			return Error::raise( __('Trying to fetch response headers for a pending request.'), E_USER_WARNING );
+			return Error::raise( _t('Trying to fetch response headers for a pending request.'), E_USER_WARNING );
 		
 		return $this->response_headers;
 	}
@@ -167,7 +167,7 @@ class RemoteRequest
 	public function get_response_body()
 	{
 		if ( !$this->executed )
-			return Error::raise( __('Trying to fetch response body for a pending request.'), E_USER_WARNING );
+			return Error::raise( _t('Trying to fetch response body for a pending request.'), E_USER_WARNING );
 		
 		return $this->response_body;
 	}
