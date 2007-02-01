@@ -3,8 +3,7 @@
 	<div class="dashboard-column" id="left-column">
 		<div class="dashboard-block c3" id="welcome">
 			<?php
-				$user= User::identify();
-				$user->info= new UserInfo( $user->id );
+				$user= User::identify();				
 				if ( ! isset( $user->info->experience_level ) ) {
 			?>
 					<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>

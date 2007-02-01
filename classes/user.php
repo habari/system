@@ -24,7 +24,6 @@ class User extends QueryRecord
 {
 	private static $identity= null;  // Static storage for the currently logged-in User record
 	
-	
 	private $info= null;
  
 	/**
@@ -352,6 +351,29 @@ class User extends QueryRecord
 					( $obj != 'everything' and $this->is_drafter('everything') ) )
 					? 1 : 0 ;
 	}
+
+	/**
+	 * Magic method __get implementation. Captures
+	 * requests for the info object so that it can be initialized properly when the constructor
+	 * is bypassed (see PDO::FETCH_CLASS pecularities). Passes all other requests to parent
+	 * @param string $name
+	 * @return mixed $return the requested field value
+	 */
+
+	public function __get( $name )
+	{
+		if( $name == 'info' ) {
+			if ( !isset( $this->info ) ) {
+				$this->info= new UserInfo( $this->fields['id'] );
+			}
+			else {				
+				$this->info->set_key( $this->fields['id'] );
+			}
+			return $this->info;			
+		}
+		return parent::__get( $name );
+	}
+
 
 }
 
