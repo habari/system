@@ -68,23 +68,33 @@ class User extends QueryRecord
 		// Is the logged-in user not cached already?
 		if ( self::$identity == null ) {
 			// see if there's a cookie
-			$cookie = "habari_" . Options::get('GUID');
+			$cookie= 'habari_' . Options::get('GUID');
 			if ( ! isset($_COOKIE[$cookie]) ) {
 				// no cookie, so stop processing
 				return false;
-			} else {
-				$userid = substr($_COOKIE[$cookie], 40);
-				$cookiepass = substr($_COOKIE[$cookie], 0, 40);
+			}
+			else {
+				$tmp= explode( '|', $_COOKIE[$cookie], 2 );
+				if ( count( $tmp ) == 2 ) {
+					list($userid, $cookiehash)= $tmp;
+				}
+				else {
+					// legacy cookies
+					//$userid= substr( $_COOKIE[$cookie], 40 );
+					//$cookiehash= substr( $_COOKIE[$cookie], 0, 40 );
+					return false;
+				}
 				// now try to load this user from the database
 				$user= DB::get_row('SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array($userid), 'User');
 				if ( ! $user ) {
 					return false;
 				}
-				if ( sha1($user->password . $userid) == $cookiepass ) {
+				if ( Utils::crypt($user->password . $userid, $cookiehash) ) {
 					// Cache the user in the static variable
 					self::$identity = $user;
 					return $user;
-				} else {
+				}
+				else {
 					return false;
 				}
 			}
@@ -134,7 +144,7 @@ class User extends QueryRecord
 	{
 		// set the cookie
 		$cookie = "habari_" . Options::get('GUID');
-		$content = sha1($this->password . $this->id) . $this->id;
+		$content = $this->id . '|' . Utils::crypt( $this->password . $this->id );
 		$site_url= Options::get('siteurl');
 		if ( empty( $site_url ) ) {
 			$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
@@ -159,11 +169,14 @@ class User extends QueryRecord
 		exit;
 	}
 
-	/** function authenticate
-	* checks a user's credentials to see if they are legit
-	* -- calls all auth plugins BEFORE checking local database
-	* @param string A username or email address
-	* @param string A password
+	/**
+	* Check a user's credentials to see if they are legit
+	* -- calls all auth plugins BEFORE checking local database.
+	* 
+	* @todo Actually call plugins
+	* 
+	* @param string $who A username or email address
+	* @param string $pw A password
 	* @return a User object, or false
 	*/
 	public static function authenticate($who = '', $pw = '')
@@ -171,7 +184,7 @@ class User extends QueryRecord
 		if ( (! $who ) || (! $pw ) ) {
 			return false;
 		}
-		$what = "username";
+		$what= 'username';
 
 		/*
 			execute auth plugins here
@@ -182,21 +195,22 @@ class User extends QueryRecord
 		// won't appear in a username
 		if ( strstr($who, '@') ) {
 			// yes?  see if this email address has a username
-			$what = "email";
+			$what= 'email';
 		}
 		$user = DB::get_row( 'SELECT * FROM ' . DB::table('users') . " WHERE {$what} = ?", array( $who ), 'User' );
 		if ( ! $user ) {
-			self::$identity = null;
+			self::$identity= null;
 			return false;
 		}
-		if (sha1($pw) == $user->password) {
+		if ( Utils::crypt( $pw, $user->password ) ) {
 			// valid credentials were supplied
 			// set the cookie
 			$user->remember();
-			self::$identity = $user;
+			self::$identity= $user;
 			return self::$identity;
-		} else {
-			self::$identity = null;
+		}
+		else {
+			self::$identity= null;
 			return false;
 		}
 	}
@@ -264,7 +278,7 @@ class User extends QueryRecord
 	 * @param mixed $obj An object, or an ACL object, or an ACL name
 	 * @return int $karma
 	 */
-	function karma( $obj = '' ) {
+	function karma( $obj= '' ) {
 			// What was the argument?
 	
 			// It was a string, such as 'everything'.

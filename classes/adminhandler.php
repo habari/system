@@ -187,7 +187,7 @@ class AdminHandler extends ActionHandler
 		// see if a password change is being attempted
 		if ( isset( $this->handler_vars['pass1'] ) && ( '' != $this->handler_vars['pass1'] ) ) {
 			if ( isset( $this->handler_vars['pass2'] ) && ( $this->handler_vars['pass1'] == $this->handler_vars['pass2'] ) ) {
-				$user->password= sha1( $this->handler_vars['pass1'] );
+				$user->password= Utils::crypt( $this->handler_vars['pass1'] );
 				if ( $user == $currentuser ) {
 					// update the cookie for the current user
 					$user->remember();
@@ -244,7 +244,7 @@ class AdminHandler extends ActionHandler
 				$user= new User ( array(
 					'username' => $this->handler_vars['username'],
 					'email' => $this->handler_vars['email'],
-					'password' => sha1($this->handler_vars['pass1']),
+					'password' => Utils::crypt($this->handler_vars['pass1']),
 					) );
 				if ( $user->insert() )
 				{

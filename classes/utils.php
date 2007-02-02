@@ -292,7 +292,7 @@ class Utils
 		echo "<pre>";
 		foreach( $fooargs as $arg1 ) {
 			echo '<em>' . gettype($arg1) . '</em> ';
-			echo htmlentities( print_r( $arg1, 1 ) ) . "<br/>";
+			echo htmlentities( var_export( $arg1, TRUE ) ) . "<br/>";
 		}
 		echo "</pre></div>";
 	}
@@ -350,6 +350,144 @@ class Utils
 			}
 		}
 		return self::$config_path;
+	}
+	
+	/**
+	 * Crypt a given password, or verify a given password against a given hash.
+	 * 
+	 * @todo Enable best algo selection after DB schema change.
+	 * 
+	 * @param string $password the password to crypt or verify
+	 * @param string $hash (optional) if given, verify $password against $hash
+	 * @return crypted password, or boolean for verification 
+	 */
+	public static function crypt( $password, $hash= NULL )
+	{
+		if ( $hash == NULL ) {
+			// encrypt
+			/*
+			if ( function_exists( 'hash' ) ) { // PHP >= 5.1.2
+				return self::ssha512( $password, $hash );
+			}
+			else {
+				return self::ssha( $password, $hash );
+			}
+			*/ // uncomment the above block after db schema changes
+			return self::ssha( $password, $hash );
+		}
+		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
+			// verify
+			if ( $hash{0} == '{' ) {
+				// new hash from the block
+				$algo= strtolower( substr( $hash, 1, strpos( $hash, '}', 1 ) - 1 ) );
+				switch ( $algo ) {
+					case 'sha1':
+					case 'ssha':
+					case 'ssha512':
+						return self::$algo( $password, $hash );
+					default:
+						Error::raise( 'Unsupported digest algorithm "' . $algo . '"' );
+						return FALSE;
+				}
+			}
+			else {
+				// legacy sha1
+				return ( sha1( $password ) == $hash );
+			}
+		}
+		else {
+			Error::raise( 'Invalid hash' );
+		}
+	}
+	
+	/**
+	 * Crypt or verify a given password using SHA.
+	 * 
+	 * @deprecated Use any of the salted methods instead.
+	 */
+	public static function sha1( $password, $hash= NULL ) {
+		$marker= '{SHA1}';
+		if ( $hash == NULL ) {
+			return $marker . sha1( $password );
+		}
+		else {
+			return ( sha1( $password ) == substr( $hash, strlen( $marker ) ) );
+		}
+	}
+	
+	/**
+	 * Crypt or verify a given password using SSHA.
+	 * Implements the {Seeded,Salted}-SHA algorithm as per RfC 2307.
+	 * 
+	 * @param string $password the password to crypt or verify
+	 * @param string $hash (optional) if given, verify $password against $hash
+	 * @return crypted password, or boolean for verification 
+	 */
+	public static function ssha( $password, $hash= NULL )
+	{
+		$marker= '{SSHA}';
+		if ( $hash == NULL ) { // encrypt
+			// create salt (4 byte)
+			$salt= '';
+			for ( $i= 0; $i < 4; $i++ ) {
+				$salt.= chr( mt_rand( 0, 255 ) );
+			}
+			// get digest
+			$digest= sha1( $password . $salt, TRUE );
+			// b64 for storage
+			return $marker . base64_encode( $digest . $salt );
+		}
+		else { // verify
+			// is this a SSHA hash?
+			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
+				Error::raise( 'Invalid hash' );
+				return FALSE;
+			}
+			// cut off {SSHA} marker
+			$hash= substr( $hash, strlen( $marker ) );
+			// b64 decode
+			$hash= base64_decode( $hash );
+			// split up
+			$digest= substr( $hash, 0, 20 );
+			$salt= substr( $hash, 20 );
+			// compare
+			return ( sha1( $password . $salt, TRUE ) == $digest );
+		}
+	}
+
+	/**
+	 * Crypt or verify a given password using SSHA512.
+	 * Implements a modified version of the {Seeded,Salted}-SHA algorithm
+	 * from RfC 2307, using SHA-512 instead of SHA-1.
+	 * 
+	 * Requires the new hash*() functions.
+	 * 
+	 * @param string $password the password to crypt or verify
+	 * @param string $hash (optional) if given, verify $password against $hash
+	 * @return crypted password, or boolean for verification
+	 */
+	public static function ssha512( $password, $hash= NULL )
+	{
+		$marker= '{SSHA512}';
+		if ( $hash == NULL ) { // encrypt
+			$salt= '';
+			for ( $i= 0; $i < 4; $i++ ) {
+				$salt.= chr( mt_rand( 0, 255 ) );
+			}
+			$digest= hash( 'sha512', $password . $salt, TRUE );
+			return $marker . base64_encode( $digest . $salt );
+		}
+		else { // verify
+			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
+				Error::raise( 'Invalid hash' );
+				return FALSE;
+			}
+			$hash= substr( $hash, strlen( $marker ) );
+			$hash= base64_decode( $hash );
+			$digest= substr( $hash, 0, 64 );
+			$salt= substr( $hash, 64 );
+			return ( hash( 'sha512', $password . $salt, TRUE ) == $digest );
+		}
 	}
 
 }
