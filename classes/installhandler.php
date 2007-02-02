@@ -233,7 +233,7 @@ class InstallHandler extends ActionHandler {
 		$admin_email= $this->handler_vars['admin_email'];
 		$admin_pass= $this->handler_vars['admin_pass'];
 
-		$password= sha1($admin_pass);
+		$password= Utils::crypt($admin_pass);
 		$admin= new User(array (
 			'username'=>$admin_username,
 			'email'=>$admin_email,
