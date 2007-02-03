@@ -32,8 +32,7 @@ class Post extends QueryRecord
 	private $tags = null;
 	private $comments = null;
 	private $author_object = null;
-	
-	
+		
 	private $info= null;
  
 	/**
@@ -232,8 +231,20 @@ class Post extends QueryRecord
 	private function parsetags( $tags )
 	{
 		if ( is_string( $tags ) ) {
-			preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $tags, $matches);
-			return $matches[0];
+			// dirrty ;)
+			$rez= array( '\\"'=>':__unlikely_quote__:', '\\\''=>':__unlikely_apos__:' );
+			$zer= array( ':__unlikely_quote__:'=>'"', ':__unlikely_apos__:'=>"'" );
+			// escape
+			$tagstr= str_replace( array_keys( $rez ), $rez, $tags );
+			// match-o-matic
+			preg_match_all( '/((("|((?<= )|^)\')\\S([^\\3]*?)\\3((?=[\\W])|$))|[^,])+/', $tagstr, $matches );
+			// cleanup
+			$tags= array_map( 'trim', $matches[0] );
+			$tags= preg_replace( array_fill( 0, count( $tags ), '/^(["\'])(((?!").)+)(\\1)$/'), '$2', $tags );
+			// unescape
+			$tags= str_replace( array_keys( $zer ), $zer, $tags );
+			// hooray
+			return $tags;
 		}
 		elseif ( is_array( $tags ) ) {
 			return $tags;

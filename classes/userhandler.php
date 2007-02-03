@@ -1,38 +1,43 @@
 <?php
+
 /**
  * Habari UserHandler Class
  *
  * Requires PHP 5.0.4 or later
  * @package Habari
  */
-class UserHandler extends ActionHandler {
-
-  private $theme= null;             // The active user theme
+class UserHandler extends ActionHandler
+{
+	// The active user theme
+	private $theme= null;
 
 	/**
 	 * Checks a user's credentials, and creates a session for them
 	 */
-	public function act_login() {
-    $name= isset($this->handler_vars['name']) ? $this->handler_vars['name'] : '';
-    $pass= isset($this->handler_vars['pass']) ? $this->handler_vars['pass'] : '';
-    $user= User::authenticate($name, $pass);
-    if ($user === FALSE) {
-      //$url->settings['error'] = "badlogin";
+	public function act_login()
+	{
+		$name= isset($this->handler_vars['name']) ? $this->handler_vars['name'] : '';
+		$pass= isset($this->handler_vars['pass']) ? $this->handler_vars['pass'] : '';
+		$user= User::authenticate($name, $pass);
+		
+		if ($user === FALSE) {
+			//$url->settings['error'] = "badlogin";
 			// unset the password the use tried
 			$this->handler_vars['pass']= '';
-      $this->handler_vars['error']= 'Invalid login'; /** @todo Use real error handling */ 
-      /* Since we failed, display the theme's login template */
-      $this->theme= Themes::create();
-      $this->display('login');
-      return true;     
+			$this->handler_vars['error']= 'Invalid login'; /** @todo Use real error handling */ 
+			/* Since we failed, display the theme's login template */
+			$this->theme= Themes::create();
+			$this->display('login');
+			return true;     
 		}
-    else {
-      /* OK, so they authenticated.  What now?  Redirect to admin dashboard? */
-      $this->handler_vars['user']= $user; // Assign into handler and theme
-      $this->theme= Themes::create('admin', 'RawPHPEngine', HABARI_PATH . '/system/admin/');
-      $this->display('dashboard');
-      return true;
-    }
+		else {
+			/* OK, so they authenticated.  What now?  Redirect to admin dashboard? */
+			$this->handler_vars['user']= $user; // Assign into handler and theme
+			$user->info->authenticate_time= time(); // keep track of last login time
+			$this->theme= Themes::create('admin', 'RawPHPEngine', HABARI_PATH . '/system/admin/');
+			$this->display('dashboard');
+			return true;
+		}
 	}
 
 	/**
