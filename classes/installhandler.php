@@ -64,7 +64,7 @@ class InstallHandler extends ActionHandler {
 		* OK, so requirements are met.
 		* Let's check the config.php file if no POST data was submitted
 		*/
-		if ( (! file_exists(Utils::get_config_dir() . '/config.php') ) && ( ! isset($_POST['db_user']) ) )
+		if ( (! file_exists(Site::get_config_dir() . '/config.php') ) && ( ! isset($_POST['db_user']) ) )
 		{
 			// no config.php exists, and no HTTP POST was submitted
 			// so let's display the form
@@ -105,14 +105,14 @@ class InstallHandler extends ActionHandler {
 		/* If there was nothing posted, check config.php */
 		if (! isset($this->handler_vars['db_user']))
 		{
-			if ( ! file_exists( Utils::get_config_dir() . '/config.php') )
+			if ( ! file_exists( Site::get_config_dir() . '/config.php') )
 			{
 				// config.php doesn't exist.  Prompt the user
 				return false;
 			}
 			else
 			{
-				include( Utils::get_config_dir() . '/config.php');
+				include( Site::get_config_dir() . '/config.php');
 				if ( ! isset($db_connection) )
 				{
 					// config.php exists, but is invalid
@@ -263,17 +263,16 @@ class InstallHandler extends ActionHandler {
 	private function create_default_options()
 	{
 		// Create the default options
-		$options = Options::o();
 		
-		$options->installed = true;
+		Options::set('installed', true);
 		
-		$options->title = $this->handler_vars['blog_title'];
-		$options->base_url = substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1);
-		$options->theme_dir = 'k2';
-		$options->version = '0.1alpha';
-		$options->pagination = '5';
+		Options::set('title', $this->handler_vars['blog_title']);
+		Options::set('base_url', substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1));
+		Options::set('theme_dir', 'k2');
+		Options::set('version', '0.1alpha');
+		Options::set('pagination', '5');
 
-		$options->GUID = sha1($options->base_url . Utils::nonce());
+		Options::set('GUID', sha1(Options::get('base_url') . Utils::nonce()));
 		return true;
 	}
 
@@ -345,9 +344,9 @@ class InstallHandler extends ActionHandler {
 		$db_pass= $this->handler_vars['db_pass'];
 		$table_prefix= $this->handler_vars['table_prefix'];
 
-		if ( file_exists( Utils::get_config_dir() . '/config.php') )
+		if ( file_exists( Site::get_config_dir() . '/config.php') )
 		{
-			include( Utils::get_config_dir() . '/config.php');
+			include( Site::get_config_dir() . '/config.php');
 			if ( isset($db_connection) && ( $db_connection['connection_string'] ==
 					"$db_type:host=$db_host;dbname=$db_schema" )
 				&& ( $db_connection['username'] ==
@@ -386,7 +385,7 @@ class InstallHandler extends ActionHandler {
 			return false;
 		}
 		$file_contents= str_replace($placeholders, $replacements, $file_contents);
-		if ($file= fopen(Utils::get_config_dir() . '/config.php', 'w'))
+		if ($file= fopen(Site::get_config_path() . '/config.php', 'w'))
 		{
 			if (fwrite($file, $file_contents, strlen($file_contents)))
 			{
@@ -394,7 +393,7 @@ class InstallHandler extends ActionHandler {
 			}
 			return true;      
 		}
-		$this->handler_vars['config_file']= Utils::get_config_dir() . '/config.php';
+		$this->handler_vars['config_file']= Site::get_config_dir() . '/config.php';
 		$this->handler_vars['file_contents']= $file_contents;
 		$this->display('config');
 		return false;

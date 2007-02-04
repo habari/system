@@ -30,7 +30,7 @@
 
 		public static function save_dbversion() 
 		{
-			Options::o()->db_version= Version::DB_VERSION;
+			Options::set('db_version', Version::DB_VERSION);
 		}
 
 		public static function requires_upgrade() 

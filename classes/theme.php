@@ -127,8 +127,10 @@ class Theme
 	 */
 	public function display( $template_name )
 	{
-		foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
-			$this->assign( $key, $value );
+		if( isset( Controller::get_handler()->handler_vars ) ) {
+			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
+				$this->assign( $key, $value );
+			}
 		}
 		$this->template_engine->display( $template_name );
 	}
