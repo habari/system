@@ -335,8 +335,10 @@ class Post extends QueryRecord
 	 **/	 	 
 	public function __get( $name )
 	{
-		if( !isset($this->fields[$name]) && strpos( $name, '_' ) !== false ) {
-			list( $filter, $name ) = explode( '_', $name, 2 );
+		$fieldnames = array_keys($this->fields) + array('permalink', 'tags', 'comments', 'comment_count', 'author');
+		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
+			list( $junk, $name, $filter ) = $matches;
 		}
 		else {
 			$filter = false;
@@ -364,7 +366,7 @@ class Post extends QueryRecord
 		}
 		$out = Plugins::filter( "post_{$name}", $out );
 		if( $filter ) {
-			$out = Plugins::filter( "{$filter}_post_{$name}", $out );
+			$out = Plugins::filter( "post_{$name}_{$filter}", $out );
 		}
 		return $out;
 	}
