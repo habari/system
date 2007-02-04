@@ -24,7 +24,7 @@
 						<th align="center">Action</th>
 					</tr>
 				</thead>
-				<?php 	foreach ( Posts::get( array( 'limit' => '10' ) ) as $post ) { ?>
+				<?php 	foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::STATUS_PUBLISHED ) ) as $post ) { ?>
 				<tr>
 					<td><?php echo '<a href="' . $post->permalink . '">' . $post->title ?></a></td>
 					<td><?php echo $post->author->username ?></td>
