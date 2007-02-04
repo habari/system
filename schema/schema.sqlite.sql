@@ -276,8 +276,8 @@ VALUES (currval('{$prefix}rewrite_rules_pkey_seq'), 'index', 0);
 
 INSERT INTO {$prefix}rewrite_rules
 (name, parse_regex, build_str, handler, action, priority, description)
-VALUES ('search','/^search$/i','rsd'
-,'AtomHandler','display_posts',8,'Searches posts');
+VALUES ('search','/^search$/i','search'
+,'UserThemeHandler','search',8,'Searches posts');
 
 INSERT INTO {$prefix}rewrite_rules
 (name, parse_regex, build_str, handler, action, priority, description)

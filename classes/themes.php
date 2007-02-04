@@ -41,23 +41,23 @@ class Themes
 	 * @param template_engine ( optional ) specify a template engine
 	 * @param theme_dir       ( optional ) specify a theme directory
 	 **/
-	public function create()
+	public function create( $name= '', $template_engine= '', $theme_dir= '' )
 	{
-		if ( func_num_args() > 0 ) {
+		if ( $name != '' ) {
 			/* 
 			 * A theme name ( or more information ) was supplied.  This happens when we
 			 * want to use a pre-installed theme ( for instance, the
 			 * installer theme. )
 			 */
-			if ( func_num_args() >= 2 ) {
+			if ( $template_engine != '' ) {
 				/* we load template engine from specified args, not DB */
 				$themedata = new QueryRecord();
 				$themedata->name= func_get_arg( 0 );
-				$themedata->template_engine= func_get_arg( 1 );
+				$themedata->template_engine= $template_engine;
 				$themedata->theme_dir = $themedata->name;
 				$themedata->version = 0;
-				if( func_num_args() == 3 ) {
-					$themedata->theme_dir= func_get_arg( 2 );
+				if( $theme_dir != '' ) {
+					$themedata->theme_dir= $theme_dir;
 				}
 				else {
 					$themedata->theme_dir= HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
@@ -65,7 +65,7 @@ class Themes
 			}
 			else {
 				/* lookup in DB for template engine info. */
-				$themedata= self::get_by_name( func_get_arg( 0 ) );
+				$themedata= self::get_by_name( $name );
 				if ( empty( $themedata ) ) {
 					die( 'Theme not installed.' );
 				}
@@ -81,18 +81,17 @@ class Themes
 			$themedata->theme_dir= HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
 		}
 		
-		$classname = 'Theme';
+		$classname= 'Theme';
 		/**
 		 * @todo Should we include_once a theme's theme.php file here?
 		 **/
-		/*		 		
 		if( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
 			include_once( $themedata->theme_dir . 'theme.php' );
+			if( defined('THEME_CLASS') ) {
+				$classname= THEME_CLASS; 
+			}
 		}
-		*/
-		/**
-		 * If a theme provides a descendant class, it should be used instead of Theme.		 
-		 **/		 		
+
 		return new $classname($themedata);
 		
 	}

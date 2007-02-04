@@ -271,8 +271,8 @@ VALUES (LAST_INSERT_ID(), 'index', 0);
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
-VALUES (NULL, 'search','/^search$/i','rsd'
-,'AtomHandler','display_posts',8,'Searches posts');
+VALUES (NULL, 'search','/^search$/i','search'
+,'UserThemeHandler','search',8,'Searches posts');
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)

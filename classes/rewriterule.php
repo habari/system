@@ -38,11 +38,22 @@ class RewriteRule extends QueryRecord
 		return false;
 	}
 	
+	/**
+	 * Wraps the passed-in value in {$ }
+	 * Used by an array_map privately in this class.
+	 * @param string $value A string value
+	 * @returns string The value wrapped in {$ }
+	 **/	 	 	  	 	 	
 	private static function wrap_replacement($value)
 	{
 		return '{$' . $value . '}';
 	}
 	
+	/**
+	 * Builds a URL using this rule based on the passed in data
+	 * @param array $args An associative array of arguments to use for replacement in the rule
+	 * @return string The URL created from the substituted arguments
+	 **/	 	 
 	public function build($args)
 	{
 		$searches= array_map(array('RewriteRule', 'wrap_replacement'), array_keys($args));
@@ -53,7 +64,13 @@ class RewriteRule extends QueryRecord
 		return $return_url;
 	}
 	
-	public function __get($name) {
+	/**
+	 * Magic property getter for this class
+	 * @param string $name The name of the class property to return
+	 * @returns mixed The value of that field in this object
+	 **/	 	 
+	public function __get($name) 
+	{
 		switch($name) {
 		case 'named_args':
 			if(empty($m_named_args)) {

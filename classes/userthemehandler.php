@@ -59,52 +59,6 @@ class UserThemeHandler extends ActionHandler
 	}
 
 	/**
-	 * Grabs post data and inserts that data into the internal
-	 * handler_vars array, which eventually gets extracted into 
-	 * the theme's ( and thereby the template_engine's ) local
-	 * symbol table for use in the theme's templates
-	 * 
-	 * This is the default, generic function to grab posts.  To 
-	 * "filter" the posts retrieved, simply pass any filters to 
-	 * the handler_vars variables associated with the post retrieval.
-	 * For instance, to filter by tag, ensure that handler_vars['tag']
-	 * contains the tag to filter by.  Simple as that.
-	 */
-	public function act_display_posts()
-	{
-		/* 
-		 * We build the Post filters by analyzing the handler_var
-		 * data which is assigned to the handler ( by the Controller and 
-		 * also, optionally, by the Theme )
-		 */
-		$valid_filters= array( 
-			  'contenttype'
-			, 'slug'
-			, 'status'
-			, 'page' // pagination
-			, 'tag'
-			, 'month'
-			, 'year'
-			, 'day'
-		);
-		$where_filters= array();
-		$where_filters = array_intersect_key( $this->handler_vars, array_flip( $valid_filters ) );
-
-		$posts= Posts::get( $where_filters );
-		if ( count( $posts ) == 1 && count( $where_filters ) > 0 ) {
-			$this->handler_vars['post']= $posts[0];
-			$template= 'post';
-		}
-		else {
-			// Automatically assigned to theme at display time.
-			$this->handler_vars['posts']= $posts;
-			$template= 'posts';
-		}
-		$this->display( $template );
-		return true;
-	}
-
-	/**
 	 * Helper function which automatically assigns all handler_vars
 	 * into the theme and displays a theme template
 	 * 
