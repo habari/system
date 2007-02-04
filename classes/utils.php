@@ -8,9 +8,6 @@
  
 class Utils
 {
-	// this variable holds the path to the config.php file
-	static $config_path;
-
 	/**
 	 * Utils constructor
 	 * This class should not be instantiated.
@@ -131,25 +128,6 @@ class Utils
 		
 		return $uri;
 	}	
-	
-	/**
-	 * function tag_and_list
-	 * Formatting function (should be in Format class?)
-	 * Turns an array of tag names into an HTML-linked list with command and an "and".
-	 * @param array An array of tag names
-	 * @param string Text to put between each element
-	 * @param string Text to put between the next to last element and the last element
-	 * @return string HTML links with specified separators.
-	 **/	 	 	 	 	  
-	static function tag_and_list($array, $between = ', ', $between_last = ' and ')
-	{
-		$fn = create_function('$a', 'return "<a href=\\"" . URL::get( "tag", array( "tag" => $a) ) . "\\">" . $a . "</a>";');
-		$array = array_map($fn, $array);
-		$last = array_pop($array);
-		$out = implode($between, $array);
-		$out .= ($out == '') ? $last : $between_last . $last;
-		return $out;
-	}
 	
 	/**
 	 * function revert_magic_quotes_gpc
@@ -292,64 +270,9 @@ class Utils
 		echo "<pre>";
 		foreach( $fooargs as $arg1 ) {
 			echo '<em>' . gettype($arg1) . '</em> ';
-			echo htmlentities( var_export( $arg1, TRUE ) ) . "<br/>";
+			echo htmlentities( var_export( $arg1 ) ) . "<br/>";
 		}
 		echo "</pre></div>";
-	}
-
-	/**
-	 * returns the filesystem path to the config file to use
-	 *
-	 * @return string the filesystem path to the config file
-	 *
-	**/
-	static function get_config_dir()
-	{
-		if ( self::$config_path )
-		{
-			// shortcut for subsequent calls
-			return self::$config_path;
-		}
-
-		// use this, by default
-		self::$config_path= HABARI_PATH;
-
-		// get an array of directories in /user/sites/ that
-		// contain a config.php file
-		$config_dirs = preg_replace('/^' . preg_quote(HABARI_PATH, '/') . '\/user\/sites\/(.*)\/config.php/', '$1', glob(HABARI_PATH . '/user/sites/*/config.php') );
-
-		if ( empty($config_dirs ) )
-		{
-			// no site-specific configurations exists
-			// use the default
-			return self::$config_path;
-		}
-
-	        $server= explode('.', $_SERVER['SERVER_NAME']);
-		if ( isset( $_SERVER['SERVER_PORT'] )
-			&& ( 80 != $_SERVER['SERVER_PORT'] )
-			&& ( 443 != $_SERVER['SERVER_PORT'] ) )
-		{
-			array_unshift($server, $_SERVER['SERVER_PORT'] . '.');
-		}
-		$request= explode('/', trim($_SERVER['REQUEST_URI'], '/') );
-		
-		// walk through the potential directories looking for a match
-		// step 1: walk the path
-		for ($x= count($request); $x > 0; $x--)
-		{
-			//step 2: walk the host
-			for ($y= count($server); $y > 0; $y--)
-			{
-				$match= implode('.', array_slice($server, -$y)) . '.' . implode('.', array_slice($request, 0, $x));
-				if (in_array(trim($match, '.'), $config_dirs) )
-				{
-					self::$config_path= HABARI_PATH . '/user/sites/' . $match;
-					break 2;
-				}
-			}
-		}
-		return self::$config_path;
 	}
 	
 	/**

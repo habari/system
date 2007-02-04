@@ -40,7 +40,7 @@
 		echo "<p>Below are the data that Habari knows about " . $who . ".</p>";
 	}
 	?>
-	<form name="update-profile" id="update-profile" action="<?php Options::out('base_url'); ?>admin/user" method="post">
+	<form name="update-profile" id="update-profile" action="<?php URL::out('admin', 'page=user'); ?>" method="post">
 		<input type="hidden" name="user_id" value="<?php echo $user->id; ?>" />
 		<p><label>Username:</label></p>
 		<p><input type="text" name="username" value="<?php echo $user->username; ?>" /></p>

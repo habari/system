@@ -6,57 +6,44 @@
  * @package Habari
  */
  
-class Options
+class Options extends Singleton
 {
-	private $options;
-	static $instance;
+	private $options = array();
 	
 	/**
-	 * constructor __construct
-	 * This is private so that you can't construct it from outside this class.
-	 * We might consider pre-loading a few options here to reduce single 
-	 * database hits for options that are used on every page load.	 	 	 
-	 **/	 	
-	private function __construct() 
+	 * Enables singleton working properly
+	 * 
+	 * @see singleton.php
+	 */
+	static protected function instance()
 	{
-		// Set some universal, un-editable defaults
-		$this->options['hostname'] = $_SERVER['SERVER_NAME'];
+		return parent::instance( get_class() );
 	}
-
-	/**
-	* function instance
-	* returns a singleton instance of the Options class. Use this to
-	* retrieve values of options, like this:
-	*
-	* <code>
-	* $foo = Options::instance()->foo;
-	* </code>
-	*
-	* @param string an option name
-	* @return object Singleton Options object
-	*/
-	public static function o()
-	{
-		if (!isset(self::$options))
-		{
-			$c = __CLASS__;
-			self::$instance = new $c;
-		}
-
-		return self::$instance;
-	}
-	
+ 
 	/**
 	 * function get
 	 * Shortcut to return the value of an option
 	 * 
-	 * <code>$foo = Options::get('foo');</code>
+	 * <code>
+	 * 	 $foo = Options::get('foo'); //or
+	 * 	 list($foo, $bar, $baz) = Options::get('foo1', 'bar2', 'baz3'); //or
+	 * 	 extract(Options::get('foo', 'bar', 'baz')); //or
+	 * </code>
 	 * 	 	 	 
-	 * @param	string Name of the option to retrieve
+	 * @param	string $option,... The string name(s) of the option(s) to retrieve
+	 * @return mixed The option requested or an array of requested options 	 
 	 **/	 
 	public static function get( $option )
 	{
-		return self::o()->$option;
+		if( func_num_args() > 1 ) {
+			$results = array();
+			$options = array_unshift( $option, func_get_args() );
+			foreach( $options as $optname ) {
+				$results[$optname] = self::$instance->$optname; 
+			}
+			return $results;
+		}
+		return self::instance()->$option;
 	}
 	
 	/**
@@ -69,7 +56,7 @@ class Options
 	 **/	 
 	public static function out( $option )
 	{
-		echo self::o()->$option;
+		echo self::instance()->get( $option );
 	}
 	
 	/**
@@ -81,9 +68,9 @@ class Options
 	 * @param	string Name of the option to set
 	 * @param mixed New value of the option to store
 	 **/	 
-	public static function set( $option, $value )
+	public static function set( $option, $value = '')
 	{
-		self::o()->$option = $value;
+		self::instance()->$option = $value;
 	}
 
 	/**
@@ -94,6 +81,15 @@ class Options
 	 **/
 	public function __get($name)
 	{
+		// Non-overrideable defaults:
+		switch($name) {
+		case 'hostname':
+			return $_SERVER['SERVER_NAME'];
+		case 'theme_url':
+			$theme = Themes::get_active();
+			return Site::get_user_url() . '/themes/' . $theme->theme_dir;
+		}
+		
 		if(!isset($this->options[$name])) {
 			$result = DB::get_row('SELECT value, type FROM ' . DB::table('options') . ' WHERE name = ?', array($name), 'QueryRecord');
 			if ( Error::is_error( $result ) ) {
@@ -113,19 +109,11 @@ class Options
 				switch($name) {
 				case 'pagination':
 					return 10;
-				case 'host_url':
-					// If we're running on a port other than 80, add the port number
-					// to the value returned from host_url
-					$port= 80; // Default in case not set.
-					if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-						$port= $_SERVER['SERVER_PORT'];
-					}
-					$portpart = '';
-					if ( $port != 80 ) {
-						$portpart= ":{$port}";
-					}
+				case 'habari_host':
+					return Site::get_host();
+				case 'habari_url':
 					// use Utils::glue_url?
-					return 'http://' . $this->hostname . $portpart . $this->base_url;
+					return $this->habari_host . Site::get_base_url();
 				case 'comments_require_id':
 					return FALSE;
 				case 'pingback_send':
