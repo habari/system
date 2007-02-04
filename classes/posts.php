@@ -71,7 +71,7 @@ class Posts extends ArrayObject
 
 		// Put incoming parameters into the local scope
 		$paramarray= Utils::get_params( $paramarray );
-		
+
 		// Transact on possible multiple sets of where information that is to be OR'ed
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
 			$wheresets= $paramarray['where'];
@@ -91,6 +91,10 @@ class Posts extends ArrayObject
 				$where= array('1=1');
 				$paramset= array_merge((array) $paramarray, (array) $paramset);
 
+				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
+					$where[]= "id= ?";
+					$params[]= $paramset['id'];
+				}
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != Post::STATUS_ANY ) ) {
 					$where[]= "status= ?";
 					$params[]= $paramset['status'];
@@ -180,7 +184,8 @@ class Posts extends ArrayObject
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= $orderby . $limit;
-		//Utils::debug($paramarray, $fetch_fn, $query, $params);			
+		//Utils::debug($paramarray, $fetch_fn, $query, $params);
+
 		DB::set_fetch_mode(PDO::FETCH_CLASS);
 		DB::set_fetch_class('Post');
 		$results= DB::$fetch_fn( $query, $params, 'Post' );
