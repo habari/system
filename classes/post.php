@@ -106,9 +106,12 @@ class Post extends QueryRecord
 				'user_id' => $user->id,
 			);
 		}
-		$paramarray= array_merge( Controller::get_handler()->handler_vars, $defaults, Utils::get_params($paramarray) );
+		foreach($defaults['where'] as $index => $where)
+		{
+			$defaults['where'][$index] = array_merge(Controller::get_handler()->handler_vars, $where, Utils::get_params($paramarray));
+		}
 		 
-		return Posts::get( $paramarray );
+		return Posts::get( $defaults );
 	}
 	
 	/**
