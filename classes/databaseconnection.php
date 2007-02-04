@@ -384,7 +384,7 @@ class DatabaseConnection
 	 */
 	private function add_error( $error )
 	{
-		$this->errors[]= $error;
+		$this->errors[]= array_merge($error, array('backtrace'=> debug_backtrace())) ;
 	}
 	
 	/**
