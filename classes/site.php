@@ -165,7 +165,7 @@ class Site
 		switch(self::get_config_type()) {
 		case Site::CONFIG_LOCAL:
 			return 'user';
-		case Site::CONFIG_SUBDIR:
+		default:
 			return 'user/sites/' . Site::get_config_dir();
 		}	
 	}

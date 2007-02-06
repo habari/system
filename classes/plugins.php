@@ -129,9 +129,24 @@ class Plugins
 	 **/	 
 	static public function list_all()
 	{
-		$plugindir = HABARI_PATH . '/user/plugins/';
-		$files = glob( $plugindir . '*.plugin.php' );
-		$dirs = glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK );
+		$plugindir= HABARI_PATH . '/user/plugins/';
+		$files= glob( $plugindir . '*.plugin.php' );
+		$dirs= glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK );
+		if ( Site::CONFIG_LOCAL != Site::get_config_type() )
+		{
+			// include any plugins that might exist in this
+			// site's /plugins/ directory
+			$site_files= glob( Site::get_config_dir() . '/plugins/*.plugin.php' );
+			if ( is_array( $site_files ) && ! empty( $site_files ) ) {
+				$files= array_merge( $files, $site_files );
+			}
+			// and include any plugins that might exist in any
+			// sub-directories of /plugins/
+			$site_dirs= glob( Site::get_config_dir() . '/plugins/*', GLOB_ONLYDIR | GLOB_MARK );
+			if ( is_array( $site_dirs ) && ! empty( $site_dirs ) ) {
+				$dirs= array_merge( $dirs, $site_dirs );
+			}
+		}
 		foreach( $dirs as $dir ) {
 			$dirfiles = glob( $dir . '*.plugin.php' );
 			$files = array_merge($dirfiles, $files);
@@ -143,7 +158,7 @@ class Plugins
 	 * function list_loaded
 	 * Returns an array of loaded plugin class objects
 	 * @return array An array of Plugin descendants
-	 **/	 
+	 **/
 	static public function list_loaded()
 	{
 		return self::$plugins;
