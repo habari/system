@@ -15,7 +15,7 @@
 	else {
 		$post= new Post();
 	}
-	$tags= htmlspecialchars( Utils::implode_quoted( ' ', $post->tags ) );
+	$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
 	
 	?>
 	<form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
