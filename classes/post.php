@@ -48,6 +48,7 @@ class Post extends QueryRecord
 			'title' => '',
 			'guid' => '',
 			'content' => '',
+			'cached_content' => '',
 			'user_id' => 0,
 			'status' => self::STATUS_DRAFT,
 			'pubdate' => date( 'Y-m-d H:i:s' ),
@@ -263,7 +264,9 @@ class Post extends QueryRecord
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
 		foreach( (array)$this->tags as $tag ) { 
 			// @todo TODO Make this multi-SQL safe!
-			DB::query( 'INSERT IGNORE INTO ' . DB::table('tags') . ' (tag_text) VALUES (?)', array( $tag ) );
+			if( DB::get_value( 'SELECT count(*) FROM ' . DB::table('tags') . ' WHERE tag_text = ?', array( $tag ) ) == 0 ) {
+				DB::query( 'INSERT INTO ' . DB::table('tags') . ' (tag_text, tag_slug) VALUES (?, ?)', array( $tag, $tag ) );
+			}
 			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table('tags') . ' WHERE tag_text = ?', 
 				array( $this->fields['id'], $tag ) 
 			); 
