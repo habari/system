@@ -85,7 +85,7 @@ class User extends QueryRecord
 					return false;
 				}
 				// now try to load this user from the database
-				$user= DB::get_row('SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array($userid), 'User');
+				$user= User::get_by_id( $userid );
 				if ( ! $user ) {
 					return false;
 				}
@@ -184,20 +184,19 @@ class User extends QueryRecord
 		if ( (! $who ) || (! $pw ) ) {
 			return false;
 		}
-		$what= 'username';
-
 		/*
 			execute auth plugins here
 		*/
 
-		// were we given an email address, rather than a username?
-		// this is a rough-shod approach, assuming that the @ character
-		// won't appear in a username
-		if ( strstr($who, '@') ) {
-			// yes?  see if this email address has a username
-			$what= 'email';
+		if ( strstr($who, '@') )
+		{
+			// we were given an email address
+			$user= User::get_by_email( $who );
 		}
-		$user = DB::get_row( 'SELECT * FROM ' . DB::table('users') . " WHERE {$what} = ?", array( $who ), 'User' );
+		else
+		{
+			$user= User::get_by_name( $who );
+		}
 		if ( ! $user ) {
 			self::$identity= null;
 			return false;
@@ -218,6 +217,8 @@ class User extends QueryRecord
 	/**
 	* function get
 	* fetches a user from the database by name, ID, or email address
+	* this is a wrapper function that will invoke the appropriate
+	* get_by_* method
 	*/
 	
 	public static function get($who = '')
@@ -227,20 +228,64 @@ class User extends QueryRecord
 		}
 		$what = 'username';
 		// was a user ID given to us?
-		if ( is_numeric($who) ) {
-			$what = 'id';
+		if ( is_int( $who ) ) {
+			$user= User::get_by_id( $who );
 		} elseif ( strstr($who, '@') ) {
 			// was an email address given?
-			$what = 'email';
-		}
-		$user = DB::get_row( 'SELECT * FROM ' . DB::table('users') . " WHERE {$what} = ?", array( $who ), 'User' );
-		if ( ! $user ) {
-			return false;
+			$user= User::get_by_email( $who );
 		} else {
-			return $user;
+			$user= User::get_by_name( $who );
 		}
+		// $user will be a user object, or false depending on the
+		// results of the get_by_* method called above
+		return $user;
 	}
-	
+
+	/**
+	 * function get_by_id
+	 * select a user from the database by their ID
+	 * @param int The user's ID
+	 * @return user object, or false
+	**/
+	public static function get_by_id ( $id = 0 )
+	{
+		if ( ! $id ) {
+			return false;
+		}
+		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array( $id ), 'User' );
+		return $user;
+	}
+
+	/**
+	 * function get_by_name
+	 * select a user from the database by their login name
+	 * @param string the user's name
+	 * @return user object, or false
+	**/
+	public static function get_by_name( $who = '' )
+	{
+		if ( '' === $who ) {
+			return false;
+		}
+		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE username = ?', array( $who ), 'User');
+		return $user;
+	}
+
+	/**
+	 * function get_by_email
+	 * select a user from the database by their email address
+	 * @param string the user's email address
+	 * @return user object, or false
+	**/
+	public static function get_by_email( $who = '' )
+	{
+		if ( ! $who ) {
+			return false;
+		}
+		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE email = ?', array( $who ), 'User');
+		return $user;
+	}
+
 	/**
 	* function get_all()
 	* fetches all the users from the DB.
