@@ -1,151 +1,179 @@
-/*
- * One-column, non-tabled layout with 
- * form fields and a simple header/footer
- */
-
-body {
-	margin: 0 20px 2em 20px;
-	color: #333;
-	line-height: 140%;
-	background: #fff url("images/body_bg.gif") repeat-x;
-	font-size: 0.9em;
-  font-family: "Bitstream Vera Sans-serif", Tahoma;
+#installer {
+	text-align: center;
+	min-width: 600px;
+	background: #f1f1f1;
+	font-family: Verdana;
 }
 
-/* 
- * Container around entire content - centered,  
- * no top margin, equidistant side margins 
- */
-#container {
-	width: 100%;
-	margin: 0 auto;
+a {
+	color: #999;
 }
 
-/*
- * Container around everything under header except
- * footer container
- */
-#page {
-	padding: 2em 0 0 0;
+#wrapper {
+width: 552px;
+margin-left: auto;
+margin-right: auto;
 }
 
-/*
- * Container for all main content in #page container
- */
-#content {
-	margin: 0 0; 
-	background: #ccc url(images/content_bg.gif) repeat-x top left;
+#masthead {
+	font-family: monospace;
+	margin-bottom: 20px;
 }
 
-/* Container for header block */
-#header {
-	clear: both;
+#masthead h1 {
+	margin-bottom: 0px;
+}
+
+#masthead p {
+	margin: 0px;
+}
+
+.installstep {
+	width: 552px;
+	background: url(images/install-step.png) scroll repeat-y 0px 47px;
+	margin-top: 20px;
+}
+
+.installstep.done {
+	background: url(images/install-step_done.png) scroll repeat-y 0px 47px;
+}
+
+.installstep h2 {
+	height: 36px;
+	background: url(images/install-step_h2.png) scroll no-repeat top left;
+	font-weight: normal;
+	padding: 10px 22px 0px;
+	margin: 0px;
+}
+
+.installstep.done h2 {
+	background: url(images/install-step_h2_done.png) scroll no-repeat top left;
+}
+
+.installstep h2 .help-me {
+	float: right;
 	position: relative;
-	margin: 10px 0 0 0;
-	height: 72px;
-  background: #fff url(images/header_bg.png) repeat-x top left;
+	top: -25px;
+	font-size: xx-small;
+	display:block;
+	height: 20px;
+	width: 20px;
+	text-indent: -3000px;
+	background: url(images/install-step_h2_help-me.png) scroll no-repeat top left;	
+	outline: none;
 }
 
-
-form {
-	font-family: "Bitstream Vera Sans-serif", "Tahoma", "Verdana", sans-serif;
-	font-size: 85%;
-  margin: 0px;
-  padding: 10px;
+.installstep h2 .help-me:hover {
+	background: url(images/install-step_h2_help-me_over.png) scroll no-repeat top left;	
 }
 
-form h2 {
-  clear: both;
-  border-bottom: solid 1px #ccc;
-  margin: 18px 0px;
+.options, .advanced-options {
+	text-align: left;
+	font-size: 0.76em;
+	padding: 0px 11px 0px 22px;
 }
 
-.instructions {
-  color: #666;
+.options {
+	background: url(images/options.png) scroll no-repeat 0px 0px;
 }
 
-p.instructions {
-  padding: 30px;
-  margin: 5px 30px;
-  border: solid 1px #ccc;
-  background-color: #fed8ed;
+.installstep.done .options {
+	background: url(images/options_done.png) scroll no-repeat 0px 0px;
 }
 
-label {
-	font-weight: bold;
+.installstep .options, .installstep .advanced-options, .installstep h2 .help-me {
+	display: none;
 }
 
-input {
-	font-size: 100%;
-	padding: 1px;
-	font-family: "Bitstream Vera Sans-serif", "Tahoma", "Verdana", sans-serif;
+.installstep.ready .options, .installstep.ready .advanced-options, .installstep.ready h2 .help-me {
+	display: block;
 }
 
-.row {
-  display: block;
-  line-height: 2.0em;
-  clear: both;
-  padding: 0px;
-  margin: 4px 0px;
-  background-color: #f7f7f7;
+.options .inputfield, .advanced-options .inputfield {
+	margin-bottom: 5px;
+	padding-top: 15px;
 }
 
-.alternate {
-  background-color: #ccc;
+.inputfield label {
+	display: block;
+	width: 122px;
+	padding: 0px 20px 0px 0px;
+	float: left;
 }
 
-.row label {
-  width: 250px; 
-  clear: left;
-  float: left;
-  text-align: right;
-  margin-right: 6px;
+.inputfield select {
+	width: 329px;
 }
 
-.row input, .row textarea {
-  clear: none;
-  text-align: left;
-  position: absolute;
-  left: 290px;
-  border: solid 1px #ccc;
+.inputfield input {
+	width: 329px;
 }
 
-/* General anchors (hyperlinks) */
-a:link {
-  color: #03a;
-}
-a:visited {
-  color: #66a;
-}
-a:hover {
-  color: #333;
-}
-a:active {
-  color: #000;
+.inputfield .status {
+	width: 34px;
+	height: 15px;
 }
 
-.error {
-  clear: both;
-  padding-left: 20px;
-  font-size: 11px;
-  color: #f33;
-  text-align: left;
-  background: #fff url("images/warningsmall.png") no-repeat top left;
+.valid .status {
+	background: url(images/ok.png);
 }
 
-pre {
-  padding: 6px 20px;
-  background-color: #efefef;
-  color: #000;
-  font-weight: bold;
-  border: solid 1px #036;
-  margin: 4px 30px;
+.invalid .status {
+	background: url(images/fail.png);
 }
 
-.note {
-  padding: 6px 10px;
-  color: #333;
-  border: solid 1px #666;
-  background-color: #eadb80;
-  margin: 4px 50px;
+.inputfield .warning {
+	display: none;
+	padding: 10px 30px 20px 30px;
+	line-height: 120%;
+	text-align: center;
+	color: #990000;
 }
+
+.inputfield .help {
+	/* display: none; */
+	padding: 10px 30px 20px 30px;
+	text-align: center;
+	line-height: 120%;
+}
+
+.inputfield .config {
+	width: 507px;
+	height: 150px;
+	margin: 10px 0px 0px
+}
+
+.installstep .bottom {
+	height: 10px;
+	background: url(images/options_bottom.png) scroll no-repeat left bottom;
+}
+
+.installstep.done .bottom {
+	height: 10px;
+	background: url(images/options_bottom_done.png) scroll no-repeat left bottom;
+}
+
+.next-section {
+	height: 14px;
+	width: 100%;
+	margin: 20px 0px 0px 0px;
+	background: url(images/next-section.png) scroll no-repeat center bottom;
+}
+
+.submit {
+	text-align: center;
+}
+
+.submit input {
+	width: 40%;
+	margin: 20px 0px 0px 0px;
+}
+
+.invalid input {
+	/*background-color: #ffeeee;*/
+}
+
+.valid input {
+	/*background-color: #eeffee;*/
+}
+

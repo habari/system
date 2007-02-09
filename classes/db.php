@@ -45,7 +45,7 @@ class DB extends Singleton
 			DB::instance()->connection= new DatabaseConnection();
 		}
 
-		if ( FALSE != DB::instance()->connection->is_connected() ) {
+		if ( (func_num_args() == 0) && FALSE != DB::instance()->connection->is_connected() ) {
 			return TRUE;
 		}
 		
