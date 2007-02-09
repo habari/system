@@ -208,7 +208,8 @@ class Post extends QueryRecord
 		$postfixcount = 0;
 		do {
 			if (! $slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::table('posts') . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) )) {
-				print_r(DB::instance());exit;
+				Utils::debug(DB::get_errors());
+				exit;
 			}
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
 		} while ($slugcount->ct != 0);

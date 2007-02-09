@@ -37,7 +37,7 @@ class DatabaseConnection
 	{
 		/* Local variable caching */
 		$db= $this;
-
+		
 		if ( $db->pdo == NULL ) 
 			$db->connect();
 
@@ -384,7 +384,12 @@ class DatabaseConnection
 	 */
 	private function add_error( $error )
 	{
-		$this->errors[]= array_merge($error, array('backtrace'=> debug_backtrace())) ;
+		$backtrace1 = debug_backtrace();
+		$backtrace = array();
+		foreach($backtrace1 as $trace) {
+			$backtrace[]= array_intersect_key( $trace, array('file'=>1, 'line'=>1, 'function'=>1, 'class'=>1) );
+		}
+		$this->errors[]= array_merge($error, array('backtrace'=> $backtrace)) ;
 	}
 	
 	/**

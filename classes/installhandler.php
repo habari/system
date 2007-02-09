@@ -68,6 +68,23 @@ class InstallHandler extends ActionHandler {
 		{
 			// no config.php exists, and no HTTP POST was submitted
 			// so let's display the form
+			
+			$formdefaults['db_host'] = 'localhost';
+			$formdefaults['db_user'] = '';
+			$formdefaults['db_pass'] = '';
+			$formdefaults['db_schema'] = 'habari';
+			$formdefaults['table_prefix'] = $GLOBALS['db_connection']['prefix'];
+			$formdefaults['admin_username'] = 'admin';
+			$formdefaults['admin_pass'] = '';
+			$formdefaults['blog_title'] = 'My Habari';
+			$formdefaults['admin_email'] = '';
+			
+			foreach( $formdefaults as $key => $value ) {
+				if ( !isset( $this->handler_vars[$key] ) ) {
+					$this->handler_vars[$key] = $value;
+				}
+			}
+			
 			$this->display('db_setup');
 		}
 		$this->handler_vars= array_merge($this->handler_vars, $_POST);
@@ -132,6 +149,7 @@ class InstallHandler extends ActionHandler {
 			// we need to know the details for the first user
 			return false;
 		}
+		
 		$db_host= $this->handler_vars['db_host'];
 		$db_type= $this->handler_vars['db_type'];
 		$db_schema= $this->handler_vars['db_schema'];
@@ -218,6 +236,9 @@ class InstallHandler extends ActionHandler {
 		/* Create a PDO connection string based on the database type */
 		$connect_string= $db_type . ':host=' . $db_host . ';dbname=' . $db_schema;
 
+		/* Reset the global table prefix */
+		$GLOBALS['db_connection']['prefix']= $this->handler_vars['table_prefix'];
+
 		/* Attempt to connect to the database host */
 		return DB::connect($connect_string, $db_user, $db_pass);
 	}
@@ -268,7 +289,6 @@ class InstallHandler extends ActionHandler {
 		
 		Options::set('title', $this->handler_vars['blog_title']);
 		Options::set('base_url', substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1));
-		Options::set('theme_dir', 'k2');
 		Options::set('version', '0.1alpha');
 		Options::set('pagination', '5');
 
@@ -380,21 +400,18 @@ class InstallHandler extends ActionHandler {
 			, $table_prefix
 		);
   
-		if (! ($file_contents= file_get_contents(HABARI_PATH . '/system/installer/config.php.tpl')))
-		{
+		if (! ($file_contents= file_get_contents(HABARI_PATH . '/system/installer/config.php.tpl'))) {
 			return false;
 		}
 		$file_contents= str_replace($placeholders, $replacements, $file_contents);
-		if ($file= fopen(Site::get_config_path() . '/config.php', 'w'))
-		{
-			if (fwrite($file, $file_contents, strlen($file_contents)))
-			{
+		if ($file= @fopen(Site::get_config_path() . '/config.php', 'w')) {
+			if (fwrite($file, $file_contents, strlen($file_contents))) {
 				fclose($file);
 			}
 			return true;      
 		}
-		$this->handler_vars['config_file']= Site::get_config_dir() . '/config.php';
-		$this->handler_vars['file_contents']= $file_contents;
+		$this->handler_vars['config_file']= HABARI_PATH . Site::get_config_dir() . '/config.php';
+		$this->handler_vars['file_contents']= htmlspecialchars($file_contents);
 		$this->display('config');
 		return false;
 	}

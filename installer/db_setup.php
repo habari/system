@@ -4,99 +4,241 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="en"/>
     <meta name="robots" content="noindex,nofollow" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="stylesheet" type="text/css" media="all" href="system/installer/style.css" />
-    <title>Installing habari</title>
-    <script type="text/javascript">// <![CDATA[
+    <link href="system/installer/style.css" rel="stylesheet" type="text/css" />
     
-    var updateElements= function() {
-    	var install_root= document.getElementById( 'install_root' ).checked;
-    	var entire= document.getElementById( 'entire-db' );
-    	
-    	entire.style.display= ( install_root ? 'block' : 'none' );
-    }
-    
-    var addInstallMethodListener= function() {
-    	document.getElementById( 'install_root' ).addEventListener( 'click', updateElements, true );
-    	document.getElementById( 'install_tables' ).addEventListener( 'click', updateElements, true );
-    }
-        
-    window.addEventListener( 'load', updateElements, true );
-    window.addEventListener( 'load', addInstallMethodListener, true );
-	// ]]></script>
+	  <title>Install Habari</title>
+		<script type="text/javascript" src="/scripts/jquery.js"></script>
+		<script type="text/javascript" src="/scripts/jquery.form.js"></script>
+	<script type="text/javascript">
+	
+	function setDatabaseType(el)
+	{
+		$('.forsqlite').hide();
+		$('.formysql').hide();
+
+		switch($(el).fieldValue()) {
+		case 'mysql':
+			$('.formysql').show();
+			break;
+		case 'mysql':
+			$('.forsqlite').show();
+			break;
+		}
+	}
+	
+	function checkField() 
+	{
+		if ($(this).val() == '') {
+			showwarning = false;
+			fieldclass = 'normal';
+		}
+		else {
+			showwarning = false;
+			fieldclass = 'valid';
+
+			// These checks should be done via an ajax call
+			switch($(this).attr('id')) {
+			case 'databasename':
+				if($(this).val() != 'habari') {
+					showwarning = true;
+					warningtext = 'Habari could not find a database with that name on the server. <br />Please specify the name of an existing database. <a href="#" taborder="0">Learn More...</a>';
+				}
+				break;
+			case 'databasehost':
+				if($(this).val() != 'localhost') {
+					showwarning = true;
+					warningtext = 'Habari could not find a MySQL server at the specified address. <br />Please provide a correct host name or address. <a href="#" taborder="0">Learn More...</a>';
+				}
+			}
+			fieldclass = showwarning ? 'invalid' : 'valid';
+		}
+
+
+		if(showwarning == false) {
+			$(this).parents('.inputfield').find('.warning:visible').fadeOut();
+		}
+		if(showwarning == true) {
+			$(this).parents('.inputfield').find('.warning:hidden').html(warningtext).fadeIn();
+		}
+		$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass(fieldclass);
+	}
+	
+	$(document).ready(function() {
+		$('.help-me').click(function(){$(this).parents('.installstep').find('.help').slideToggle();return false;})
+		$('.help').hide();
+		//$('.ready').removeClass('ready');
+		$('.installstep:first').addClass('ready');
+
+		$('#databasehost').blur(checkField);
+		$('#databasename').blur(checkField);
+		
+	});
+	</script>
   </head>
-  <body>
-    <div id="container">
-      <div id="header">
-        <h1>Install <em>habari</em></h1>
-      </div>
-      <div id="page">
-        <form action="" method="post" autocomplete="off">
-          <h2>Installation Method</h2>
-          <h2>Database Information</h2>
-            <?php $error_id= 'db_general'; include "form.error.php";?>
-           <div class="row">
-            <label for="db_type">Database Type</label>
-            <select name="db_type">
-             <option selected="true" value="mysql">MySQL</option>
-             <option value="sqlite">SQLite</option>
-             <option value="pgsql">PostgreSQL</option>
-            </select>
-            <?php $error_id= 'db_type'; include "form.error.php";?>
-           </div>
-           <div class="row">
-            <label for="db_host">Host (Server)</label>
-            <input type="textbox" name="db_host" value="<?php echo isset($db_host) ? $db_host : 'localhost';?>" size="30" maxlength="50" />
-            <?php $error_id= 'db_host'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="db_user">Database User</label>
-            <input type="textbox" name="db_user" value="<?php echo isset($db_user) ? $db_user : 'habari';?>" size="30" maxlength="50" />
-            <?php $error_id= 'db_user'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="db_pass">Database Password</label>
-            <input type="password" name="db_pass" value="<?php echo isset($db_pass) ? $db_pass : '';?>" size="30" maxlength="50" />
-            <?php $error_id= 'db_pass'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="db_schema">Name of Database</label>
-            <input type="textbox" name="db_schema" value="<?php echo isset($db_schema) ? $db_schema : 'habari';?>" size="30" maxlength="50" />
-            <?php $error_id= 'db_schema'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="table_prefix" class="optional">Prefix for Tables</label>
-            <input type="textbox" name="table_prefix" value="<?php echo isset($table_prefix) ? $table_prefix : '';?>" size="30" maxlength="50" />
-            <?php $error_id= 'table_prefix'; include "form.error.php";?>
-          </div>
-          <h2>Admin User Information</h2>
-          <div class="row">
-            <label for="admin_username">Username of Administrator</label>
-            <input type="textbox" name="admin_username" value="<?php echo isset($admin_username) ? $admin_username : 'Admin';?>" size="30" maxlength="50" />
-            <?php $error_id= 'admin_username'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="admin_email">Email of Administrator</label>
-            <input type="textbox" name="admin_email" value="<?php echo isset($admin_email) ? $admin_email : 'admin@mydomain.com';?>" size="30" maxlength="50" />
-            <?php $error_id= 'admin_email'; include "form.error.php";?>
-          </div>
-          <div class="row">
-            <label for="admin_pass">Password for Administrator</label>
-            <input type="password" name="admin_pass" value="<?php echo isset($admin_pass) ? $admin_pass : '';?>" size="30" maxlength="50" />
-            <?php $error_id= 'admin_pass'; include "form.error.php";?>
-          </div>
-          <h2>Blog Information</h2>
-          <div class="row">
-            <label for="blog_title">Blog Title</label>
-            <input type="textbox" name="blog_title" value="<?php echo isset($blog_title) ? $blog_title : 'My Blog';?>" size="50" maxlength="150" />
-            <?php $error_id= 'blog_title'; include "form.error.php";?>
-          </div>
-        
-          <div style="clear: both;">
-            <input type="submit" value="Install Habari" />
-          </div>
-        </form>
-      </div>
-    </div>
+  <body id="installer">
+
+<div id="wrapper">
+
+<div id="masthead">
+	<h1>Habari</h1>
+	<p>Developer Review</p>
+</div>
+<form action="" method="post" autocomplete="off">
+<div class="installstep ready">
+	<h2>Database Setup<a href="#" class="help-me">(help)</a></h2>
+	<div class="options">
+		<div class="inputfield">
+			<label for="databasetype">Database Type</label>
+			<select id="databasetype" name="db_type" onchange="setDatabaseType(this)">
+				<option value="mysql">MySQL</option>
+				<option value="sqlite">SQLite</option>
+				<!--  Not supported yet:  <option value="mysql">Postgres</option>  -->
+			</select>
+			<div class="help">
+				<strong>Database Type</strong> specifies the type of database to which 
+				Habari will connect.  Changing this setting may affect the other fields
+				that are available here. <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+		<div class="inputfield formysql">
+			<label for="databasehost">Database Host</label>
+			<input type="text" id="databasehost" name="db_host" value="<?php echo $db_host; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Database Host</strong> is the host (domain) name or server IP
+				address of the server that runs the MySQL database to 
+				which Habari will connect.  If MySQL is running on your web server,
+				and most of the time it is, "localhost" is usually a good value
+				for this field.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+		<div class="inputfield formysql">
+			<label for="databaseuser">Username</label>
+			<input type="text" id="databaseuser" name="db_user" value="<?php echo $db_user; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Database User</strong> is the username used to connect Habari 
+				to the MySQL database.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+		<div class="inputfield formysql">
+			<label for="databasepass">Password</label>
+			<input type="password" id="databasepass" name="db_pass" value="<?php echo $db_pass; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Database Password</strong> is the password used to connect
+				the specified user to the MySQL database.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+		<div class="inputfield formysql">
+			<label for="databasetype">Database Name</label>
+			<input type="text" id="databasename" name="db_schema" value="<?php echo $db_schema; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Database Name</strong> is the name of the MySQL database to 
+				which Habari will connect.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+	</div>
+	<div class="advanced-options">
+
+		<div class="inputfield">
+			<label for="databasetype">Table Prefix</label>
+			<input type="text" id="tableprefix" name="table_prefix" value="<?php echo $table_prefix; ?>" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Table Prefix</strong> is a prefix that will be appended to
+				each table that Habari creates in the database, making it easy to
+				distinguish thode tables in the database from those of other 
+				installations.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+
+	</div>
+	<div class="bottom"></div>
+</div>
+
+<div class="next-section"></div>
+
+<div class="installstep ready">
+	<h2>Site Configuration<a href="#" class="help-me">(help)</a></h2>
+	<div class="options">
+		
+		<div class="inputfield">
+			<label for="sitename">Site Name</label>
+			<input type="text" id="sitename" name="blog_title" value="<?php echo $blog_title; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Site Name</strong> is the name of your site as it will appear
+				to your visitors.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+		<div class="inputfield">
+			<label for="adminuser">Username</label>
+			<input type="text" id="adminuser" name="admin_username" value="<?php echo $admin_username; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Username</strong> is the username of the initial user in Habari.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+		<div class="inputfield">
+			<label for="adminpass">Password</label>
+			<input type="password" id="adminpass" name="admin_pass" value="<?php echo $admin_pass; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Password</strong> is the password of the initial user in Habari.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+		<div class="inputfield">
+			<label for="adminemail">Admin Email</label>
+			<input type="text" id="adminemail" name="admin_email" value="<?php echo $admin_email; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Admin Email</strong> is the email address of the first user
+				account.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+		
+	</div>
+	<div class="advanced-options">
+
+	</div>
+	<div class="bottom"></div>
+</div>
+
+<div class="next-section"></div>
+
+<div class="installstep ready">
+	<h2>Install</h2>
+	<div class="options">
+		
+		<div class="inputfield submit">
+			<div>Habari now has all of the information needed to install itself on your server.</div>
+			<input type="submit" name="submit" value="Install Habari" />
+		</div>
+		
+	</div>
+		
+	<div class="bottom"></div>
+</div>
+</form>
+</div>
+
   </body>
 </html>
