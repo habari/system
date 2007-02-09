@@ -73,7 +73,7 @@ class InstallHandler extends ActionHandler {
 			$formdefaults['db_user'] = '';
 			$formdefaults['db_pass'] = '';
 			$formdefaults['db_schema'] = 'habari';
-			$formdefaults['table_prefix'] = $GLOBALS['db_connection']['prefix'];
+			$formdefaults['table_prefix'] = isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : '';
 			$formdefaults['admin_username'] = 'admin';
 			$formdefaults['admin_pass'] = '';
 			$formdefaults['blog_title'] = 'My Habari';
