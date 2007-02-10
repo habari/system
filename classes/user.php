@@ -22,14 +22,17 @@
  */
 class User extends QueryRecord
 {
-	private static $identity= null;  // Static storage for the currently logged-in User record
+	/**
+	 * Static storage for the currently logged-in User record
+	 */
+	private static $identity= null;
 	
 	private $info= null;
  
 	/**
-	* static function default_fields
-	* @return array an array of the fields used in the User table
-	*/
+	 * Get default fields for this record.
+	 * @return array an array of the fields used in the User table
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -41,10 +44,9 @@ class User extends QueryRecord
 	}
 
 	/**
-	* constructor  __construct
-	* Constructor for the User class
-	* @param array an associative array of initial User fields
-	*/
+	 * Constructor for the User class
+	 * @param array $paramarray an associative array of initial User fields
+	 */
 	public function __construct( $paramarray = array() )
 	{
 		// Defaults
@@ -59,10 +61,9 @@ class User extends QueryRecord
 	}
 
 	/**
-	* function identify
-	* checks for the existence of a cookie, and returns a user object of the user, if successful
-	* @return user object, or false if no valid cookie exists
-	**/	
+	 * Check for the existence of a cookie, and return a user object of the user, if successful
+	 * @return object user object, or false if no valid cookie exists
+	 */	
 	public static function identify()
 	{
 		// Is the logged-in user not cached already?
@@ -105,41 +106,37 @@ class User extends QueryRecord
 	}
 	
 	/**
-	 * function insert
-	 * Saves a new user to the users table
+	 * Save a new user to the users table
 	 */	 	 	 	 	
 	public function insert()
 	{
-	   $result= parent::insert( DB::table('users') );
-  	   $this->info->set_key( DB::last_insert_id() );
-		 /* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
+		$result= parent::insert( DB::table('users') );
+		$this->info->set_key( DB::last_insert_id() );
+		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
 		// $this->info->option_default= "saved";
 
 		return $result;
 	}
 
 	/**
-	 * function update
 	 * Updates an existing user in the users table
 	 */	 	 	 	 	
 	public function update()
 	{
 		return parent::update( DB::table('users'), array( 'id' => $this->id ) );
 	}
-
+	
 	/**
-	 * function delete
-	 * delete a user account
-	**/
+	 * Delete a user account
+	 */
 	public function delete()
 	{
 		return parent::delete( DB::table('users'), array( 'id' => $this->id ) );
 	}
 
 	/**
-	* function remember
-	* sets a cookie on the client machine for future logins
-	*/
+	 * Set a cookie on the client machine for future logins
+	 */
 	public function remember()
 	{
 		// set the cookie
@@ -152,9 +149,9 @@ class User extends QueryRecord
 		setcookie( $cookie, $content, time() + 604800, $site_url );
 	}
 
-	/** function forget
-	* delete a cookie from the client machine
-	*/
+	/**
+	 * Delete a cookie from the client machine
+	 */
 	public function forget()
 	{
 		// delete the cookie
@@ -177,30 +174,30 @@ class User extends QueryRecord
 	* 
 	* @param string $who A username or email address
 	* @param string $pw A password
-	* @return a User object, or false
+	* @return object a User object, or false
 	*/
-	public static function authenticate($who = '', $pw = '')
+	public static function authenticate( $who, $pw )
 	{
-		if ( (! $who ) || (! $pw ) ) {
+		if ( '' === $who || '' === $pw ) {
 			return false;
 		}
-		/*
-			execute auth plugins here
-		*/
+		
+		/* TODO execute auth plugins here */
 
-		if ( strstr($who, '@') )
-		{
+		if ( strpos( $who, '@' ) !== FALSE ) {
 			// we were given an email address
 			$user= User::get_by_email( $who );
 		}
-		else
-		{
+		else {
 			$user= User::get_by_name( $who );
 		}
+		
 		if ( ! $user ) {
+			// No such user.
 			self::$identity= null;
 			return false;
 		}
+		
 		if ( Utils::crypt( $pw, $user->password ) ) {
 			// valid credentials were supplied
 			// set the cookie
@@ -209,31 +206,32 @@ class User extends QueryRecord
 			return self::$identity;
 		}
 		else {
+			// Wrong password.
 			self::$identity= null;
 			return false;
 		}
 	}
 
 	/**
-	* function get
-	* fetches a user from the database by name, ID, or email address
-	* this is a wrapper function that will invoke the appropriate
-	* get_by_* method
-	*/
-	
-	public static function get($who = '')
+	 * Fetch a user from the database by name, ID, or email address.
+	 * This is a wrapper function that will invoke the appropriate
+	 * get_by_* method.
+	 * 
+	 * @param mixed $who user ID, username, or e-mail address
+	 * @return object User object, or FALSE
+	 */
+	public static function get( $who )
 	{
-		if ('' === $who) {
-			return false;
-		}
-		$what = 'username';
-		// was a user ID given to us?
 		if ( is_int( $who ) ) {
+			// Got a User ID
 			$user= User::get_by_id( $who );
-		} elseif ( strstr($who, '@') ) {
-			// was an email address given?
+		}
+		elseif ( strpos( $who, '@' ) !== FALSE ) {
+			// Got an email address
 			$user= User::get_by_email( $who );
-		} else {
+		}
+		else {
+			// Got username
 			$user= User::get_by_name( $who );
 		}
 		// $user will be a user object, or false depending on the
@@ -242,14 +240,13 @@ class User extends QueryRecord
 	}
 
 	/**
-	 * function get_by_id
-	 * select a user from the database by their ID
-	 * @param int The user's ID
-	 * @return user object, or false
+	 * Select a user from the database by their ID
+	 * @param int $id The user's ID
+	 * @return object User object, or false
 	**/
-	public static function get_by_id ( $id = 0 )
+	public static function get_by_id ( $id )
 	{
-		if ( ! $id ) {
+		if ( 0 == $id ) {
 			return false;
 		}
 		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array( $id ), 'User' );
@@ -257,12 +254,11 @@ class User extends QueryRecord
 	}
 
 	/**
-	 * function get_by_name
-	 * select a user from the database by their login name
-	 * @param string the user's name
-	 * @return user object, or false
+	 * Select a user from the database by their login name
+	 * @param string $who the user's name
+	 * @return object User object, or false
 	**/
-	public static function get_by_name( $who = '' )
+	public static function get_by_name( $who )
 	{
 		if ( '' === $who ) {
 			return false;
@@ -272,14 +268,13 @@ class User extends QueryRecord
 	}
 
 	/**
-	 * function get_by_email
-	 * select a user from the database by their email address
-	 * @param string the user's email address
-	 * @return user object, or false
+	 * Select a user from the database by their email address
+	 * @param string $who the user's email address
+	 * @return object User object, or false
 	**/
-	public static function get_by_email( $who = '' )
+	public static function get_by_email( $who )
 	{
-		if ( ! $who ) {
+		if ( '' === $who ) {
 			return false;
 		}
 		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE email = ?', array( $who ), 'User');
@@ -287,24 +282,23 @@ class User extends QueryRecord
 	}
 
 	/**
-	* function get_all()
-	* fetches all the users from the DB.
-	* still need some checks for only authors.
+	* Fetches all the users from the DB.
+	* @todo TODO still need some checks for only authors.
+	* @return array
 	*/
-	
 	public static function get_all()
 	{
-		$list_users = DB::get_results( 'SELECT * FROM ' . DB::table('users') . ' ORDER BY username ASC', array(), 'User' );
-			if ( is_array( $list_users ) ) {
-				return $list_users;
-			} else {
-				return array();
-			}
+		$list_users= DB::get_results( 'SELECT * FROM ' . DB::table('users') . ' ORDER BY username ASC', array(), 'User' );
+		if ( is_array( $list_users ) ) {
+			return $list_users;
+		}
+		else {
+			return array();
+		}
 	}
 
 	/**
-	 * function count_posts()
-	 * returns the number of posts written by this user
+	 * Returns the number of posts written by this user
 	 * @param mixed A status on which to filter posts (approved, unapproved).  If FALSE, no filtering will be performed.  Default: Post::STATUS_APPROVED
 	 * @return int The number of posts written by this user
 	**/
@@ -320,53 +314,60 @@ class User extends QueryRecord
 	 * call one of the functions following - is_admin(), is_drafter(), or
 	 * is_publisher().
 	 * 
+	 * @todo Finish this.
+	 * 
 	 * @param mixed $obj An object, or an ACL object, or an ACL name
-	 * @return int $karma
+	 * @return int Karma
 	 */
-	function karma( $obj= '' ) {
-			// What was the argument?
-	
-			// It was a string, such as 'everything'.
-			if ( is_string( $obj ) ) {
-					$acl = new acl( $obj );
-					return $acl->karma( $this );
-	
-			// It was an object  ....
-			} elseif ( is_object( $obj ) ) {
-					// What kind of object is it?
-					$type = get_class( $obj );
-	
-					// Special case - acl object
-					if ( $type == 'acl' ) {
-							// It's already an ACL ...
-							return $obj->karma( $user );
-					} else {
-							// It's some other object
-							$acl = new acl( $obj );
-							return $acl->karma( $user );
-					}
-			} else {
-					// Run screaming from the room
-					error_log("Weirdness passed to karma()");
-					return 0;
+	function karma( $obj= '' )
+	{
+		// What was the argument?
+
+		// It was a string, such as 'everything'.
+		if ( is_string( $obj ) ) {
+			$acl = new acl( $obj );
+			return $acl->karma( $this );
+
+		}
+		// It was an object  ....
+		elseif ( is_object( $obj ) ) {
+			// What kind of object is it?
+			$type = get_class( $obj );
+
+			// Special case - acl object
+			if ( $type == 'acl' ) {
+				// It's already an ACL ...
+				return $obj->karma( $user );
 			}
-	
-			// Special case - no argument
-			if ($type == '') {
-					// What's this users greatest karma, anywhere?
-					$karma = DB::get_row( "SELECT max(karma) as k
-							FROM  acl
-							WHERE userid = ? ",
-							array( $this->id ) );
-					return $karma ? $karma->k : 0;
-			} else {
-					// Um ... how did we get here?
-					error_log( "Not sure how we got here" );
+			else {
+				// It's some other object
+				$acl = new acl( $obj );
+				return $acl->karma( $user );
 			}
+		}
+		else {
+			// Run screaming from the room
+			error_log("Weirdness passed to karma()");
+			return 0;
+		}
+		/*
+		// Special case - no argument
+		if ($type == '') {
+			// What's this users greatest karma, anywhere?
+			$karma = DB::get_row( "SELECT max(karma) as k
+					FROM  acl
+					WHERE userid = ? ",
+					array( $this->id ) );
+			return $karma ? $karma->k : 0;
+		} else {
+			// Um ... how did we get here?
+			error_log( "Not sure how we got here" );
+		}
+		*/
 	}
 	
 	/**
-	 * Returns 1 or 0 (true or false) indicating whether the person in
+	 * Return 1 or 0 (true or false) indicating whether the person in
 	 * question is an admin with respect to the object passed in. The
 	 * argument can be an actual object (such as a page or cms object), or
 	 * it can be the name of a module (such as 'registrar' or 'everything').
@@ -375,12 +376,12 @@ class User extends QueryRecord
 	 * meaning is "is this user an admin anywhere?"
 	 * 
 	 * @param mixed $obj
-	 * @return boolean $return
+	 * @return boolean
 	 */
 	function is_admin( $obj = '' ) {
-			return ( $this->karma($obj) == 10 or 
-					( $obj != 'everything' and $this->karma('everything') == 10 ) )
-					? 1 : 0 ;
+		return ( $this->karma($obj) == 10 or 
+			( $obj != 'everything' and $this->karma('everything') == 10 ) )
+			? 1 : 0 ;
 	}
 	
 	/**
@@ -389,12 +390,12 @@ class User extends QueryRecord
 	 * in. The meaning is the same as with the is_admin() function
 	 * 
 	 * @param object $obj
-	 * @return boolean $return
+	 * @return boolean
 	 */
 	function is_publisher( $obj = '' ) {
-			return ( $this->karma( $obj) >= 8 or 
-					( $obj != 'everything' and $this->is_publisher('everything') ) )
-					? 1 : 0 ;
+		return ( $this->karma( $obj) >= 8 or 
+			( $obj != 'everything' and $this->is_publisher('everything') ) )
+			? 1 : 0 ;
 	}
 	
 	/**
@@ -403,26 +404,26 @@ class User extends QueryRecord
 	 * in. The meaning is the same as with the is_admin() function.
 	 * 
 	 * @param object $obj
-	 * @return boolean $return
+	 * @return boolean
 	 */
 	function is_drafter( $obj = '' ) {
-			return ( $this->karma( $obj) >= 5 or 
-					( $obj != 'everything' and $this->is_drafter('everything') ) )
-					? 1 : 0 ;
+		return ( $this->karma( $obj) >= 5 or 
+			( $obj != 'everything' and $this->is_drafter('everything') ) )
+			? 1 : 0 ;
 	}
 
 	/**
-	 * Magic method __get implementation. Captures
-	 * requests for the info object so that it can be initialized properly when the constructor
-	 * is bypassed (see PDO::FETCH_CLASS pecularities). Passes all other requests to parent
-	 * @param string $name
-	 * @return mixed $return the requested field value
+	 * Capture requests for the info object so that it can be initialized properly when
+	 * the constructor is bypassed (see PDO::FETCH_CLASS pecularities). Passes all other
+	 * requests to parent.
+	 * 
+	 * @param string $name requested field name
+	 * @return mixed the requested field value
 	 */
-
 	public function __get( $name )
 	{
-		if( $name == 'info' ) {
-			if ( !isset( $this->info ) ) {
+		if ( $name == 'info' ) {
+			if ( ! isset( $this->info ) ) {
 				$this->info= new UserInfo( $this->fields['id'] );
 			}
 			else {				
