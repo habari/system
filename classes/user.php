@@ -294,7 +294,7 @@ class User extends QueryRecord
 	
 	public static function get_all()
 	{
-		$list_users = DB::get_results( 'SELECT * FROM ' . DB::table('users') . ' ORDER BY id DESC', array(), 'User' );
+		$list_users = DB::get_results( 'SELECT * FROM ' . DB::table('users') . ' ORDER BY username ASC', array(), 'User' );
 			if ( is_array( $list_users ) ) {
 				return $list_users;
 			} else {

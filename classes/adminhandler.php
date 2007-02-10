@@ -248,12 +248,7 @@ class AdminHandler extends ActionHandler
 					) );
 				if ( $user->insert() )
 				{
-					$this->handler_vars['message']= 'User ' . $this->handler_vars['username'] . ' created!<br />';
-					// clear out the other variables
-					$this->handler_vars['username']= '';
-					$this->handler_vars['email']= '';
-					$this->handler_vars['pass1']= '';
-					$this->handler_vars['pass2']= '';
+					Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=users&result=success&username=' . $this->handler_vars['username'] ) ) );
 				}
 				else
 				{
@@ -386,7 +381,7 @@ class AdminHandler extends ActionHandler
 	}
 	
 	/**
-	 * function post_delete
+	 * function post_moderate
 	 * Handles the submission of the comment moderation form.
 	 * @param array An array of information found in the post array
 	 **/

@@ -1,17 +1,22 @@
 <?php include('header.php');?>
+<div id="content-area">
+<div class="dashboard-block c3" id="welcome">
 <?php
 $currentuser = User::identify();
 if ( ! $currentuser )
 {
 	die;
 }
-if ( isset( $settings['message'] ) && ( '' != $settings['message'] ) )
-{
-	echo "<p><strong>" . $settings['message'] . "</strong></p>";
+if ( isset( $result ) ) {
+	switch( $result ) {
+		case 'success':
+			echo '<p class="update">' . $username;
+			_e(' has been created!');
+			echo '</p>';
+			break;
+	}
 }
 ?>
-<div id="content-area">
-<div class="dashboard-block c3" id="welcome">
 <h1>User Managment</h1>
 <p>Add, edit and remove users from your site from this interface.</p>
 <p><strong>Users</strong></p>

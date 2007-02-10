@@ -84,6 +84,15 @@ class Site
 		}
 		return self::$config_path;
 	}
+
+	/**
+	 * shortcut helper to return the complete path to config.php,
+	 * including the filename component at the end
+	*/
+	public static function get_config()
+	{
+		return self::get_config_path() . '/config.php';
+	}
 	
 	/**
 	 * Returns the path relative to HABARI_PATH to the config file to use

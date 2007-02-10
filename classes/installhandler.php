@@ -9,6 +9,43 @@ class InstallHandler extends ActionHandler {
 	private $theme= null;
 
 	/**
+	 * Helper function to remove code repetition
+	 *
+	 * @param template_name Name of template to use
+	 */
+	private function display($template_name)
+	{
+		foreach ($this->handler_vars as $key=>$value)
+		{
+			$this->theme->assign($key, $value);
+		}
+		$this->theme->display($template_name);
+		exit;
+	}
+
+	/*
+	 * sets default values for the form
+	 */
+	public function form_defaults() {
+		$formdefaults['db_type'] = 'mysql';
+		$formdefaults['db_host'] = 'localhost';
+		$formdefaults['db_user'] = '';
+		$formdefaults['db_pass'] = '';
+		$formdefaults['db_schema'] = 'habari';
+		$formdefaults['table_prefix'] = isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : '';
+		$formdefaults['admin_username'] = 'admin';
+		$formdefaults['admin_pass'] = '';
+		$formdefaults['blog_title'] = 'My Habari';
+		$formdefaults['admin_email'] = '';
+
+		foreach( $formdefaults as $key => $value ) {
+			if ( !isset( $this->handler_vars[$key] ) ) {
+				$this->handler_vars[$key] = $value;
+			}
+		}
+	}
+
+	/**
 	 * Gathers information about the system in order to make sure
 	 * requirements for install are met
 	 *
@@ -52,6 +89,8 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function act_begin_install()
 	{
+		// set the default values now, which will be overriden as we go
+		$this->form_defaults();
 
 		/* Create a new theme to handle the display of the installer */
 		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
@@ -64,50 +103,21 @@ class InstallHandler extends ActionHandler {
 		* OK, so requirements are met.
 		* Let's check the config.php file if no POST data was submitted
 		*/
-		if ( (! file_exists(Site::get_config_dir() . '/config.php') ) && ( ! isset($_POST['db_user']) ) )
+		if ( (! file_exists(Site::get_config()) ) && ( ! isset($_POST['db_user']) ) )
 		{
-			// no config.php exists, and no HTTP POST was submitted
-			// so let's display the form
-			
-			$formdefaults['db_host'] = 'localhost';
-			$formdefaults['db_user'] = '';
-			$formdefaults['db_pass'] = '';
-			$formdefaults['db_schema'] = 'habari';
-			$formdefaults['table_prefix'] = isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : '';
-			$formdefaults['admin_username'] = 'admin';
-			$formdefaults['admin_pass'] = '';
-			$formdefaults['blog_title'] = 'My Habari';
-			$formdefaults['admin_email'] = '';
-			
-			foreach( $formdefaults as $key => $value ) {
-				if ( !isset( $this->handler_vars[$key] ) ) {
-					$this->handler_vars[$key] = $value;
-				}
-			}
-			
+			// no config file, and no HTTP POST
 			$this->display('db_setup');
 		}
+
+		// we got here, so we either have a config file, or an HTTP POST
 		$this->handler_vars= array_merge($this->handler_vars, $_POST);
+
+		// try to install the database
 		if (! $this->install_db())
 		{
 			$this->display('db_setup');
 		}
 		return true;
-	}
-
-	/**
-	 * Helper function to remove code repetition
-	 *
-	 * @param template_name Name of template to use
-	 */
-	private function display($template_name)
-	{
-		foreach ($this->handler_vars as $key=>$value)
-		{
-			$this->theme->assign($key, $value);
-		}
-		$this->theme->display($template_name);
-		exit;
 	}
 
 	/**
@@ -120,16 +130,16 @@ class InstallHandler extends ActionHandler {
 	private function install_db()
 	{
 		/* If there was nothing posted, check config.php */
-		if (! isset($this->handler_vars['db_user']))
+		if ( '' == $this->handler_vars['db_user'] )
 		{
-			if ( ! file_exists( Site::get_config_dir() . '/config.php') )
+			if ( ! file_exists( Site::get_config() ) )
 			{
 				// config.php doesn't exist.  Prompt the user
 				return false;
 			}
 			else
 			{
-				include( Site::get_config_dir() . '/config.php');
+				include( Site::get_config() );
 				if ( ! isset($db_connection) )
 				{
 					// config.php exists, but is invalid
@@ -142,11 +152,24 @@ class InstallHandler extends ActionHandler {
 				$this->handler_vars['db_user']= $db_connection['username'];
 				$this->handler_vars['db_pass']= $db_connection['password'];
 				$this->handler_vars['table_prefix']= $db_connection['prefix'];
+
+				// the following are for pre-loading blog data
+				// from the config file
+				// ** this is completely optional **
+				if ( isset( $blog_data ) ) {
+					$this->handler_vars['blog_title']= $blog_data['blog_title'];
+					$this->handler_vars['admin_username']= $blog_data['admin_username'];
+					$this->handler_vars['admin_pass']= $blog_data['admin_pass'];
+					$this->handler_vars['admin_email']= $blog_data['admin_email'];
+				}
 			}
 		}
-		if (! isset($_POST['admin_username'] ) )
+
+		// we need details for the admin user to install
+		if ( ( '' == $this->handler_vars['admin_username'] ) 
+			|| ( '' == $this->handler_vars['admin_pass'] )
+			|| ( '' == $this->handler_vars['admin_email']) )
 		{
-			// we need to know the details for the first user
 			return false;
 		}
 		
@@ -254,7 +277,21 @@ class InstallHandler extends ActionHandler {
 		$admin_email= $this->handler_vars['admin_email'];
 		$admin_pass= $this->handler_vars['admin_pass'];
 
-		$password= Utils::crypt($admin_pass);
+		if ($admin_pass{0} == '{') {
+			// looks like we might have a crypted password
+			$password= $admin_pass;
+
+			// but let's double-check
+			$algo = strtolower( substr( $admin_pass, 1, 3) );
+			if ( ('ssh' != $algo) && ( 'sha' != $algo) ) {
+				// we do not have a crypted password
+				// so let's encrypt it
+				$password= Utils::crypt($admin_pass);
+			 }
+		} else {
+			$password= Utils::crypt($admin_pass);
+		}
+
 		$admin= new User(array (
 			'username'=>$admin_username,
 			'email'=>$admin_email,
@@ -364,9 +401,9 @@ class InstallHandler extends ActionHandler {
 		$db_pass= $this->handler_vars['db_pass'];
 		$table_prefix= $this->handler_vars['table_prefix'];
 
-		if ( file_exists( Site::get_config_dir() . '/config.php') )
+		if ( file_exists( Site::get_config() ) )
 		{
-			include( Site::get_config_dir() . '/config.php');
+			include( Site::get_config() );
 			if ( isset($db_connection) && ( $db_connection['connection_string'] ==
 					"$db_type:host=$db_host;dbname=$db_schema" )
 				&& ( $db_connection['username'] ==
@@ -404,7 +441,7 @@ class InstallHandler extends ActionHandler {
 			return false;
 		}
 		$file_contents= str_replace($placeholders, $replacements, $file_contents);
-		if ($file= @fopen(Site::get_config_path() . '/config.php', 'w')) {
+		if ($file= @fopen(Site::get_config(), 'w')) {
 			if (fwrite($file, $file_contents, strlen($file_contents))) {
 				fclose($file);
 			}
