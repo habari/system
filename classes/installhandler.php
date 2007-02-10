@@ -9,6 +9,100 @@ class InstallHandler extends ActionHandler {
 	private $theme= null;
 
 	/**
+	 * Entry point for installation.  The reason there is a begin_install
+	 * method to handle is that conceivably, the user can stop installation
+	 * mid-install and need an alternate entry point action at a later time.
+	 */
+	public function act_begin_install()
+	{
+		// set the default values now, which will be overriden as we go
+		$this->form_defaults();
+
+		// Create a new theme to handle the display of the installer
+		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
+		if (! $this->meets_all_requirements())
+		{
+			$this->display('requirements');
+		}
+
+		/*
+		 * OK, so requirements are met.
+		 * Let's check the config.php file if no POST data was submitted
+		*/
+		if ( (! file_exists(Site::get_config()) ) && ( ! isset($_POST['db_user']) ) )
+		{
+			// no config file, and no HTTP POST
+			$this->display('db_setup');
+		}
+
+		// we got here, so we either have a config file, or an HTTP POST
+
+		// try to load any values that might be defined in config.php
+		if ( file_exists( Site::get_config() ) ) {
+			include( Site::get_config() );
+			if ( isset( $db_connection ) ) {
+				list($this->handler_vars['db_type'],$remainder)= explode(':', $db_connection['connection_string']);
+				if ('sqlite' == $this->handler_vars['db_type'] ) {
+					// SQLite uses less info.
+					// we stick the path in db_host
+					$this->handler_vars['db_host']= $remainder;
+				} else {
+					list($host,$name)= explode(';', $remainder);
+					list($discard, $this->handler_vars['db_host'])=
+explode('=', $host);
+					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
+					$this->handler_vars['db_user']= $db_connection['username'];
+					$this->handler_vars['db_pass']= $db_connection['password'];
+					$this->handler_vars['table_prefix']= $db_connection['prefix'];
+				}
+			}
+			// if a $blog_data array exists in config.php, use it
+			// to pre-load values for the installer
+			// ** this is completely optional **
+			if ( isset( $blog_data ) ) {
+				foreach ( $blog_data as $blog_datum => $value ) {
+					$this->handler_vars[$blog_datum]= $value;
+				}
+			}
+		}
+
+		// now merge in any HTTP POST values that might have been sent
+		// these will override the defaults and the config.php values
+		$this->handler_vars= array_merge($this->handler_vars, $_POST);
+		
+		// quick hack to set the SQLite datafile value to $db_host
+		if ( isset( $this->handler_vars['db_file'] ) ) {
+			$this->handler_vars['db_host']= $this->handler_vars['db_file'];
+		}
+
+		// we need details for the admin user to install
+		if ( ( '' == $this->handler_vars['admin_username'] )
+			|| ( '' == $this->handler_vars['admin_pass'] )
+			|| ( '' == $this->handler_vars['admin_email']) )
+		{
+			// if none of the above are set, display the form
+			$this->display('db_setup');
+		}
+
+		// we got here, so we have all the info we need to install
+		// first, try to write the config file
+		if (! $this->write_config_file())
+		{
+			$this->theme->assign('form_errors', array('write_file'=>'Could not write config.php file...'));
+			$this->display('db_setup');
+		}
+
+		// try to install the database
+		if (! $this->install_db())
+		{
+			// the installation failed for some reason.
+			// re-display the form
+			$this->display('db_setup');
+		}
+		return true;
+	}
+
+	/**
 	 * Helper function to remove code repetition
 	 *
 	 * @param template_name Name of template to use
@@ -83,44 +177,6 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
-	 * Entry point for installation.  The reason there is a begin_install
-	 * method to handle is that conceivably, the user can stop installation
-	 * mid-install and need an alternate entry point action at a later time.
-	 */
-	public function act_begin_install()
-	{
-		// set the default values now, which will be overriden as we go
-		$this->form_defaults();
-
-		/* Create a new theme to handle the display of the installer */
-		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
-		if (! $this->meets_all_requirements())
-		{
-			$this->display('requirements');
-		}
-
-		/* 
-		* OK, so requirements are met.
-		* Let's check the config.php file if no POST data was submitted
-		*/
-		if ( (! file_exists(Site::get_config()) ) && ( ! isset($_POST['db_user']) ) )
-		{
-			// no config file, and no HTTP POST
-			$this->display('db_setup');
-		}
-
-		// we got here, so we either have a config file, or an HTTP POST
-		$this->handler_vars= array_merge($this->handler_vars, $_POST);
-
-		// try to install the database
-		if (! $this->install_db())
-		{
-			$this->display('db_setup');
-		}
-		return true;
-	}
-
-	/**
 	 * Attempts to install the database.  Returns the result of 
 	 * the installation, adding errors to the theme if any
 	 * occur
@@ -129,78 +185,36 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function install_db()
 	{
-		/* If there was nothing posted, check config.php */
-		if ( '' == $this->handler_vars['db_user'] )
-		{
-			if ( ! file_exists( Site::get_config() ) )
-			{
-				// config.php doesn't exist.  Prompt the user
-				return false;
-			}
-			else
-			{
-				include( Site::get_config() );
-				if ( ! isset($db_connection) )
-				{
-					// config.php exists, but is invalid
-					return false;
-				}
-				list($this->handler_vars['db_type'],$remainder)= explode(':', $db_connection['connection_string']);
-				list($host,$name)= explode(';', $remainder);
-				list($discard, $this->handler_vars['db_host'])= explode('=', $host);
-				list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
-				$this->handler_vars['db_user']= $db_connection['username'];
-				$this->handler_vars['db_pass']= $db_connection['password'];
-				$this->handler_vars['table_prefix']= $db_connection['prefix'];
-
-				// the following are for pre-loading blog data
-				// from the config file
-				// ** this is completely optional **
-				if ( isset( $blog_data ) ) {
-					$this->handler_vars['blog_title']= $blog_data['blog_title'];
-					$this->handler_vars['admin_username']= $blog_data['admin_username'];
-					$this->handler_vars['admin_pass']= $blog_data['admin_pass'];
-					$this->handler_vars['admin_email']= $blog_data['admin_email'];
-				}
-			}
-		}
-
-		// we need details for the admin user to install
-		if ( ( '' == $this->handler_vars['admin_username'] ) 
-			|| ( '' == $this->handler_vars['admin_pass'] )
-			|| ( '' == $this->handler_vars['admin_email']) )
-		{
-			return false;
-		}
-		
 		$db_host= $this->handler_vars['db_host'];
 		$db_type= $this->handler_vars['db_type'];
 		$db_schema= $this->handler_vars['db_schema'];
 		$db_user= $this->handler_vars['db_user'];
 		$db_pass= $this->handler_vars['db_pass'];
 
-		if (empty($db_user))
-		{
-			$this->theme->assign('form_errors', array('db_user'=>'User is required.'));
-			return false;
-		}
-		if (empty($db_schema))
-		{
-			$this->theme->assign('form_errors', array('db_schema'=>'Name for database is required.'));
-			return false;
-		}
-		if (empty($db_host))
-		{
-			$this->theme->assign('form_errors', array('db_host'=>'Host is required.'));
-			return false;
-		}
-
-		// okay, let's try to write the config file now
-		if (! $this->write_config_file())
-		{
-			$this->theme->assign('form_errors', array('write_file'=>'Could not write config.php file...'));
-			return false;
-		}
+		if ( 'sqlite' != $db_type ) {
+			// databases other than SQLite require specific connection information
+			if (empty($db_user))
+			{
+				$this->theme->assign('form_errors', array('db_user'=>'User is required.'));
+				return false;
+			}
+			if (empty($db_schema))
+			{
+				$this->theme->assign('form_errors', array('db_schema'=>'Name for database is required.'));
+				return false;
+			}
+			if (empty($db_host))
+			{
+				$this->theme->assign('form_errors', array('db_host'=>'Host is required.'));
+				return false;
+			}
+		} else {
+		// If this is a SQLite database, let's check that the file
+		// exists and that we can access it.
+			if ( ! $this->check_sqlite() ) {
+				return false;
+			}
+                }
 
 		if (! $this->connect_to_existing_db())
 		{
@@ -243,6 +257,35 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
+	 * Checks for the existance of a SQLite datafile
+	 * tries to create it if it does not exist
+	**/
+	private function check_sqlite() {
+		$db_file = $this->handler_vars['db_host'];
+		if ( file_exists( $db_file ) && is_writable( $db_file ) ) {
+			// the file exists, and it writable.  We're all set
+			return true;
+		}
+
+		// try to figure out what the problem is.
+		if ( file_exists( $db_file ) && ! is_writable( $db_file ) ) {
+			$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file is not writable.') );
+			return false;
+		}
+
+		if ( ! file_exists( $db_file ) ) {
+			// let's see if the directory is writable
+			// so that we could create the file
+			$dir= dirname( $db_file );
+			if ( ! is_writable( $dir ) ) {
+				$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file does not exist, and it cannot be created in the specified directory.') );
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Checks that there is a database matching the supplied 
 	 * arguments.
 	 *
@@ -257,7 +300,11 @@ class InstallHandler extends ActionHandler {
 		$db_schema= $this->handler_vars['db_schema'];
 
 		/* Create a PDO connection string based on the database type */
-		$connect_string= $db_type . ':host=' . $db_host . ';dbname=' . $db_schema;
+		if ( 'sqlite' == $db_type ) {
+			$connect_string= $db_type . ':' . $db_host;
+		} else {
+			$connect_string= $db_type . ':host=' . $db_host . ';dbname=' . $db_schema;
+		}
 
 		/* Reset the global table prefix */
 		$GLOBALS['db_connection']['prefix']= $this->handler_vars['table_prefix'];
@@ -401,11 +448,16 @@ class InstallHandler extends ActionHandler {
 		$db_pass= $this->handler_vars['db_pass'];
 		$table_prefix= $this->handler_vars['table_prefix'];
 
+		if ( 'sqlite' == $db_type ) {
+			$connection_string= "$db_type:$db_host";
+		} else {
+			$connection_string= "$db_type:host=$db_host;dbname=$db_schema";
+		}
 		if ( file_exists( Site::get_config() ) )
 		{
 			include( Site::get_config() );
 			if ( isset($db_connection) && ( $db_connection['connection_string'] ==
-					"$db_type:host=$db_host;dbname=$db_schema" )
+					$connection_string )
 				&& ( $db_connection['username'] ==
 					$db_user )
 				&& ( $db_connection['password'] ==

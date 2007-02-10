@@ -20,7 +20,7 @@
 		case 'mysql':
 			$('.formysql').show();
 			break;
-		case 'mysql':
+		case 'sqlite':
 			$('.forsqlite').show();
 			break;
 		}
@@ -112,6 +112,16 @@
 				which Habari will connect.  If MySQL is running on your web server,
 				and most of the time it is, "localhost" is usually a good value
 				for this field.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+
+		<div class="inputfield forsqlite">
+			<label for="databasehost">Data file</label>
+			<input type="text" id="databasehost" name="db_file" value="<?php echo $db_host; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the complete path to where your data file resides. <a href="#">Learn More...</a>
 			</div>
 		</div>
 		
