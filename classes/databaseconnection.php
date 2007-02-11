@@ -38,8 +38,8 @@ class DatabaseConnection
 		/* Local variable caching */
 		$db= $this;
 		
-		if ( $db->pdo == NULL ) 
-			$db->connect();
+		/*if ( $db->pdo == NULL ) 
+			$db->connect();*/
 
 		$prefix= ( isset( $GLOBALS['db_connection']['prefix'] )
 			? $GLOBALS['db_connection']['prefix']

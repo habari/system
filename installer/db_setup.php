@@ -7,8 +7,8 @@
     <link href="system/installer/style.css" rel="stylesheet" type="text/css" />
     
 	  <title>Install Habari</title>
-		<script type="text/javascript" src="/scripts/jquery.js"></script>
-		<script type="text/javascript" src="/scripts/jquery.form.js"></script>
+		<script type="text/javascript" src="<?php echo Site::get_base_url(); ?>scripts/jquery.js"></script>
+		<script type="text/javascript" src="<?php echo Site::get_base_url(); ?>scripts/jquery.form.js"></script>
 	<script type="text/javascript">
 	
 	function setDatabaseType(el)
@@ -68,6 +68,8 @@
 		$('.help').hide();
 		//$('.ready').removeClass('ready');
 		$('.installstep:first').addClass('ready');
+		setDatabaseType($('#databasetype'));
+		$('.javascript-disabled').hide();
 
 		$('#databasehost').blur(checkField);
 		$('#databasename').blur(checkField);
@@ -90,8 +92,8 @@
 		<div class="inputfield">
 			<label for="databasetype">Database Type</label>
 			<select id="databasetype" name="db_type" onchange="setDatabaseType(this)">
-				<option value="mysql">MySQL</option>
-				<option value="sqlite">SQLite</option>
+				<option value="mysql" <?php echo $db_type=='mysql' ? 'selected="selected"' : ''; ?>>MySQL</option>
+				<option value="sqlite" <?php echo $db_type=='sqlite' ? 'selected="selected"' : ''; ?>>SQLite</option>
 				<!--  Not supported yet:  <option value="mysql">Postgres</option>  -->
 			</select>
 			<div class="help">
@@ -100,6 +102,10 @@
 				that are available here. <a href="#">Learn More...</a>
 			</div>
 		</div>
+		
+		<h3 class="javascript-disabled">MySQL Settings</h3>
+		
+		<div class="javascript-disabled">Use the settings below only if you have selected MySQL as your database engine.</div>
 		
 		<div class="inputfield formysql">
 			<label for="databasehost">Database Host</label>
@@ -112,16 +118,6 @@
 				which Habari will connect.  If MySQL is running on your web server,
 				and most of the time it is, "localhost" is usually a good value
 				for this field.  <a href="#">Learn More...</a>
-			</div>
-		</div>
-
-		<div class="inputfield forsqlite">
-			<label for="databasehost">Data file</label>
-			<input type="text" id="databasehost" name="db_file" value="<?php echo $db_host; ?>" />
-			<img class="status" src="/system/installer/images/ready.png" />
-			<div class="warning"></div>
-			<div class="help">
-				<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the complete path to where your data file resides. <a href="#">Learn More...</a>
 			</div>
 		</div>
 		
@@ -155,6 +151,20 @@
 			<div class="help">
 				<strong>Database Name</strong> is the name of the MySQL database to 
 				which Habari will connect.  <a href="#">Learn More...</a>
+			</div>
+		</div>
+
+		<h3 class="javascript-disabled">SQLite Settings</h3>
+
+		<div class="javascript-disabled">Use the settings below only if you have selected SQLite as your database engine.</div>
+		
+		<div class="inputfield forsqlite">
+			<label for="databasefile">Data file</label>
+			<input type="text" id="databasefile" name="db_file" value="<?php echo $db_file; ?>" />
+			<img class="status" src="/system/installer/images/ready.png" />
+			<div class="warning"></div>
+			<div class="help">
+				<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the complete path to where your data file resides. <a href="#">Learn More...</a>
 			</div>
 		</div>
 		
