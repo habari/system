@@ -218,7 +218,22 @@ class Utils
 		return trim($out);
 		
 	}
-	 	 	 
+	
+	
+	/**
+	* Used with array_map to create an array of PHP stringvar-style search/replace strings using optional pre/postfixes
+	* <code>
+	* $mapped_values= array_map(array('Utils', 'map_array'), $values);
+	* </code>
+	* @param string $value The value to wrap
+	* @param string $prefix The prefix for the returned value
+	* @param string $postfix The postfix for the returned value
+	* @return string The wrapped value
+	*/
+	static function map_array($value, $prefix = '{$', $postfix = '}')
+	{
+		return $prefix . $value . $postfix;
+	}
 	
 	/**
 	 * function debug_reveal

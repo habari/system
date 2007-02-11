@@ -41,20 +41,22 @@ class InstallHandler extends ActionHandler {
 		if ( file_exists( Site::get_config() ) ) {
 			include( Site::get_config() );
 			if ( isset( $db_connection ) ) {
-				list($this->handler_vars['db_type'],$remainder)= explode(':', $db_connection['connection_string']);
-				if ('sqlite' == $this->handler_vars['db_type'] ) {
+				list( $this->handler_vars['db_type'], $remainder )= explode( ':', $db_connection['connection_string'] );
+				switch( $this->handler_vars['db_type'] ) {
+				case 'sqlite':
 					// SQLite uses less info.
 					// we stick the path in db_host
-					$this->handler_vars['db_host']= $remainder;
-				} else {
+					$this->handler_vars['db_file']= $remainder;
+					break;
+				case 'mysql':
 					list($host,$name)= explode(';', $remainder);
-					list($discard, $this->handler_vars['db_host'])=
-explode('=', $host);
+					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
 					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
-					$this->handler_vars['db_user']= $db_connection['username'];
-					$this->handler_vars['db_pass']= $db_connection['password'];
-					$this->handler_vars['table_prefix']= $db_connection['prefix'];
+					break;				
 				}
+				$this->handler_vars['db_user']= $db_connection['username'];
+				$this->handler_vars['db_pass']= $db_connection['password'];
+				$this->handler_vars['table_prefix']= $db_connection['prefix'];
 			}
 			// if a $blog_data array exists in config.php, use it
 			// to pre-load values for the installer
@@ -70,11 +72,6 @@ explode('=', $host);
 		// these will override the defaults and the config.php values
 		$this->handler_vars= array_merge($this->handler_vars, $_POST);
 		
-		// quick hack to set the SQLite datafile value to $db_host
-		if ( isset( $this->handler_vars['db_file'] ) ) {
-			$this->handler_vars['db_host']= $this->handler_vars['db_file'];
-		}
-
 		// we need details for the admin user to install
 		if ( ( '' == $this->handler_vars['admin_username'] )
 			|| ( '' == $this->handler_vars['admin_pass'] )
@@ -125,8 +122,9 @@ explode('=', $host);
 		$formdefaults['db_host'] = 'localhost';
 		$formdefaults['db_user'] = '';
 		$formdefaults['db_pass'] = '';
+		$formdefaults['db_file'] = 'habari.db';
 		$formdefaults['db_schema'] = 'habari';
-		$formdefaults['table_prefix'] = isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : '';
+		$formdefaults['table_prefix'] = isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : 'habari__';
 		$formdefaults['admin_username'] = 'admin';
 		$formdefaults['admin_pass'] = '';
 		$formdefaults['blog_title'] = 'My Habari';
@@ -191,33 +189,32 @@ explode('=', $host);
 		$db_user= $this->handler_vars['db_user'];
 		$db_pass= $this->handler_vars['db_pass'];
 
-		if ( 'sqlite' != $db_type ) {
-			// databases other than SQLite require specific connection information
-			if (empty($db_user))
-			{
+		switch($db_type) {
+		case 'mysql':
+			// MySQL requires specific connection information
+			if (empty($db_user)) {
 				$this->theme->assign('form_errors', array('db_user'=>'User is required.'));
 				return false;
 			}
-			if (empty($db_schema))
-			{
+			if (empty($db_schema)) {
 				$this->theme->assign('form_errors', array('db_schema'=>'Name for database is required.'));
 				return false;
 			}
-			if (empty($db_host))
-			{
+			if (empty($db_host)) {
 				$this->theme->assign('form_errors', array('db_host'=>'Host is required.'));
 				return false;
 			}
-		} else {
-		// If this is a SQLite database, let's check that the file
-		// exists and that we can access it.
+			break;
+		case 'sqlite':
+			// If this is a SQLite database, let's check that the file
+			// exists and that we can access it.
 			if ( ! $this->check_sqlite() ) {
 				return false;
 			}
-                }
+			break;
+		}
 
-		if (! $this->connect_to_existing_db())
-		{
+		if (! $this->connect_to_existing_db()) {
 			$this->theme->assign('form_errors', array('db_user'=>'Problem connecting to supplied database credentials'));
 			return false;
 		}
@@ -225,10 +222,8 @@ explode('=', $host);
 		DB::begin_transaction();
 		/* Let's install the DB tables now. */ 
 		$create_table_queries= $this->get_create_table_queries();
-		foreach ($create_table_queries as $query)
-		{
-			if (! DB::query($query))
-			{
+		foreach ($create_table_queries as $query) {
+			if (! DB::query($query)) {
 				$error= DB::get_last_error();
 				$this->theme->assign('form_errors', array('db_host'=>'Could not create schema tables...' . $error['message']));
 				DB::rollback();
@@ -237,16 +232,14 @@ explode('=', $host);
 		}
 
 		/* Cool.  DB installed.  Let's setup the admin user now. */
-		if (! $this->create_admin_user())
-		{
+		if (! $this->create_admin_user()) {
 			$this->theme->assign('form_errors', array('admin_user'=>'Problem creating admin user.'));
 			DB::rollback();
 			return false;
 		}
-  
+	
 		/* Create the default options */
-		if (! $this->create_default_options())
-		{
+		if (! $this->create_default_options()) {
 			$this->theme->assign('form_errors', array('options'=>'Problem creating default options'));
 			DB::rollback();
 			return false;
@@ -293,24 +286,17 @@ explode('=', $host);
 	 */
 	private function connect_to_existing_db()
 	{
-		$db_user= $this->handler_vars['db_user'];
-		$db_pass= $this->handler_vars['db_pass'];
-		$db_host= $this->handler_vars['db_host'];
-		$db_type= $this->handler_vars['db_type'];
-		$db_schema= $this->handler_vars['db_schema'];
+		global $db_connection;
+		if($config= $this->get_config_file()) {
+			$config = preg_replace('/<\\?php(.*)\\?'.'>/ims', '$1', $config);
+			// Update the $db_connection global from the config that is aobut to be written:
+			eval($config);  
 
-		/* Create a PDO connection string based on the database type */
-		if ( 'sqlite' == $db_type ) {
-			$connect_string= $db_type . ':' . $db_host;
-		} else {
-			$connect_string= $db_type . ':host=' . $db_host . ';dbname=' . $db_schema;
+			/* Attempt to connect to the database host */
+			return DB::connect();
 		}
-
-		/* Reset the global table prefix */
-		$GLOBALS['db_connection']['prefix']= $this->handler_vars['table_prefix'];
-
-		/* Attempt to connect to the database host */
-		return DB::connect($connect_string, $db_user, $db_pass);
+		// If we couldn't create the config from the template, return an error
+		return false;
 	}
 
 	/**
@@ -390,7 +376,7 @@ explode('=', $host);
 		$db_schema= $this->handler_vars['db_schema'];
 
 		/* Grab the queries from the RDBMS schema file */
-		$file_path= HABARI_PATH . '/system/schema/schema.' . $db_type . '.sql';
+		$file_path= HABARI_PATH . "/system/schema/{$db_type}/schema.sql";
 		$schema_sql= trim(file_get_contents($file_path), "\r\n ");
 		$schema_sql= str_replace('{$schema}',$db_schema, $schema_sql);
 		$schema_sql= str_replace('{$prefix}',$table_prefix, $schema_sql);
@@ -432,6 +418,25 @@ explode('=', $host);
 		}
 		return $queries;
 	}
+	
+	/**
+	* Gets the configuration template, inserts the variables into it, and returns it as a string
+	* 
+	* @return string The config.php template for the db_type schema
+	*/
+	private function get_config_file()
+	{
+		if (! ($file_contents= file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
+			return false;
+		}
+		$vars= array_map('addslashes', $this->handler_vars);
+		$file_contents= str_replace(
+			array_map(array('Utils', 'map_array'), array_keys($vars)), 
+			$vars,
+			$file_contents
+		);
+		return $file_contents;
+	}
 
 	/**
 	 * Writes the configuration file with the variables needed for 
@@ -441,68 +446,22 @@ explode('=', $host);
 	 */
 	private function write_config_file()
 	{
-		$db_host= $this->handler_vars['db_host'];
-		$db_type= $this->handler_vars['db_type'];
-		$db_schema= $this->handler_vars['db_schema'];
-		$db_user= $this->handler_vars['db_user'];
-		$db_pass= $this->handler_vars['db_pass'];
-		$table_prefix= $this->handler_vars['table_prefix'];
-
-		if ( 'sqlite' == $db_type ) {
-			$connection_string= "$db_type:$db_host";
-		} else {
-			$connection_string= "$db_type:host=$db_host;dbname=$db_schema";
-		}
-		if ( file_exists( Site::get_config() ) )
-		{
-			include( Site::get_config() );
-			if ( isset($db_connection) && ( $db_connection['connection_string'] ==
-					$connection_string )
-				&& ( $db_connection['username'] ==
-					$db_user )
-				&& ( $db_connection['password'] ==
-					$db_pass )
-				&& ( $db_connection['prefix'] ==
-					$table_prefix ) )
-			{
-				// don't bother writing anything, the supplied
-				// credentials are the same
-				return true;
-			}
-		}
-
-		$placeholders= array(
-			'{$db_host}'
-			, '{$db_type}'
-			, '{$db_schema}'
-			, '{$db_user}'
-			, '{$db_pass}'
-			, '{$table_prefix}'
-		);
-
-		$replacements= array(
-			$db_host
-			, $db_type
-			, $db_schema
-			, $db_user
-			, $db_pass
-			, $table_prefix
-		);
-  
-		if (! ($file_contents= file_get_contents(HABARI_PATH . '/system/installer/config.php.tpl'))) {
+		if (! ($file_contents= file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
 			return false;
 		}
-		$file_contents= str_replace($placeholders, $replacements, $file_contents);
-		if ($file= @fopen(Site::get_config(), 'w')) {
-			if (fwrite($file, $file_contents, strlen($file_contents))) {
-				fclose($file);
+		if($file_contents= $this->get_config_file()) {
+			if ($file= @fopen(Site::get_config(), 'w')) {
+				if (fwrite($file, $file_contents, strlen($file_contents))) {
+					fclose($file);
+					return true;
+				}
 			}
-			return true;      
+			$this->handler_vars['config_file']= HABARI_PATH . Site::get_config_dir() . '/config.php';
+			$this->handler_vars['file_contents']= htmlspecialchars($file_contents);
+			$this->display('config');
+			return false;
 		}
-		$this->handler_vars['config_file']= HABARI_PATH . Site::get_config_dir() . '/config.php';
-		$this->handler_vars['file_contents']= htmlspecialchars($file_contents);
-		$this->display('config');
-		return false;
+		return false;  // Only happens when config.php template does not exist.
 	}
 }
 ?>

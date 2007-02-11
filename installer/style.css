@@ -94,6 +94,16 @@ margin-right: auto;
 	padding-top: 15px;
 }
 
+div.javascript-disabled {
+	width: 440px;
+	color: #666666;
+	padding: 10px 15px;
+	margin: 0px 5px 0px 15px;
+	border: 1px solid #dedede;
+	background: #f1f1f1;
+	text-align: center;
+}
+
 .inputfield label {
 	display: block;
 	width: 122px;
