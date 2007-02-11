@@ -46,7 +46,7 @@ class Locale
 			// @todo TODO check magic number
 			if ( $data && strlen( $data ) >= 20 ) {
 				$header= substr( $data, 8, 12 );
-				$header= unpack( 'L1msgcount/L1msgblock/L1transblock', $header );
+				$header= unpack( 'V1msgcount/V1msgblock/V1transblock', $header );
 			
 				for ( $msgindex= 0; $msgindex < $header['msgcount']; $msgindex++ ) {
 					$msginfo= unpack( 'L1length/L1offset', substr( $data, $header['msgblock'] + $msgindex * 8, 8 ) );
