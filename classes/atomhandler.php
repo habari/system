@@ -295,7 +295,7 @@ feedpreamble;
 		foreach(Posts::get( $params ) as $post) {
 			$entryurl = URL::get( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
-			$user = User::get( $post->user_id );
+			$user = User::get_by_id( $post->user_id );
 			$title = htmlspecialchars($post->title);
 			$content = html_entity_decode($post->atom_content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
 			$summary = html_entity_decode($post->atomsummary_content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
@@ -361,7 +361,7 @@ feedpreamble;
 		foreach(Posts::get( $params ) as $post) {
 			$entryurl = URL::get( 'entry', "slug={$post->slug}" );
 			$entryupdated = Utils::atomtime( $post->updated );
-			$user = User::get( $post->user_id );
+			$user = User::get_by_id( $post->user_id );
 			$title = htmlspecialchars($post->title);
 			$content = html_entity_decode($post->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
 			$xmltext .= <<< postentry

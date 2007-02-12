@@ -161,7 +161,7 @@ class AdminHandler extends ActionHandler
 		if ( $currentuser->id != $this->handler_vars['user_id'] ) {
 			// user is editing someone else's profile
 			// load that user account
-			$user= User::get( $this->handler_vars['user_id'] );
+			$user= User::get_by_id( $this->handler_vars['user_id'] );
 			$results['user']= $user->username;
 		}
 		// are we deleting a user?
