@@ -52,12 +52,15 @@
 			<?php
 			// This should be fetched on a pseudo-cron and cached: 
 			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Options::get('hostname') );
-			$search->execute();
-			$xml = new SimpleXMLElement($search->get_response_body());
-			if(count($xml->entry) == 0) {
-				_e('<p>No incoming links were found to this site.</p>'); 
-			}
-			else {
+			$search->__set_processor( new SocketRequestProcessor );
+			$search->set_timeout( 5 );
+			$result= $search->execute();
+			if ( $search->executed() ) {
+				$xml = new SimpleXMLElement($search->get_response_body());
+				if(count($xml->entry) == 0) {
+					_e( '<p>No incoming links were found to this site.</p>' ); 
+				}
+				else {
 			?>
 			<ul id="incoming-links">
 				<?php foreach($xml->entry as $entry) { ?>
@@ -68,6 +71,10 @@
 				<?php } ?>
 			</ul>
 			<?php
+				}
+			}
+			else {
+				_e( '<p>Error fetching links.</p>' );
 			}
 			?>
 		</div>
