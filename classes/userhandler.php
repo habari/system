@@ -28,14 +28,15 @@ class UserHandler extends ActionHandler
 			/* Since we failed, display the theme's login template */
 			$this->theme= Themes::create();
 			$this->display('login');
-			return true;     
+			return true;
 		}
 		else {
-			/* OK, so they authenticated.  What now?  Redirect to admin dashboard? */
+			/* Successfully authenticated. */
 			$this->handler_vars['user']= $user; // Assign into handler and theme
 			$user->info->authenticate_time= time(); // keep track of last login time
-			$this->theme= Themes::create('admin', 'RawPHPEngine', HABARI_PATH . '/system/admin/');
-			$this->display('dashboard');
+			// Redirect to admin dashboard
+			// XXX do we want to redirect to the referring page? 
+			Utils::redirect( URL::get( 'admin', 'page=dashboard' ) );
 			return true;
 		}
 	}
