@@ -10,6 +10,7 @@
 class Locale
 {
 	private static $uselocale= FALSE;
+	private static $little_endian= TRUE;
 	private static $messages= array();
 	private static $locale;
 
@@ -32,38 +33,74 @@ class Locale
 	 * Load translations for a given domain.
 	 * Translations are stored in gettext-style .mo files.
 	 * The internal workings of the file format are not entirely meant to be understood.
+	 * 
+	 * @link http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html GNU Gettext Manual: Description of the MO file format
 	 * 	 
 	 * @param string $domain The domain to load
 	 **/	 	 	 	
 	private static function load_domain( $domain )
 	{
 		$file= HABARI_PATH . '/system/locale/' . self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
-		if ( file_exists( $file ) ) { 
-			$fp= fopen( $file, 'rb' );
-			$data= fread( $fp, filesize( $file ) );
-			fclose( $fp );
-			
-			// @todo TODO check magic number
-			if ( $data && strlen( $data ) >= 20 ) {
-				$header= substr( $data, 8, 12 );
-				$header= unpack( 'V1msgcount/V1msgblock/V1transblock', $header );
-			
-				for ( $msgindex= 0; $msgindex < $header['msgcount']; $msgindex++ ) {
-					$msginfo= unpack( 'L1length/L1offset', substr( $data, $header['msgblock'] + $msgindex * 8, 8 ) );
-					$msgids= explode( "\0", substr( $data, $msginfo['offset'], $msginfo['length'] ) );
-					$transinfo= unpack( 'L1length/L1offset', substr( $data, $header['transblock'] + $msgindex * 8, 8 ) );
-					$transids= explode( "\0", substr( $data, $transinfo['offset'], $transinfo['length'] ) );
-					self::$messages[$domain][$msgids[0]]= array(
-						$msgids,
-						$transids
-					);
-				}
-			}
-			// only use locale if we actually read something
-			return ( count( self::$messages ) > 0 );
+		if ( ! file_exists( $file ) ) {
+			Error::raise( sprintf( 'No translations found for locale %s, domain %s!', self::$locale, $domain ) );
+			return FALSE;
+		}
+		if ( filesize( $file ) < 24 ) {
+			Error::raise( sprintf( 'Invalid .MO file for locale %s, domain %s!', self::$locale, $domain ) );
+			return FALSE;
 		}
 		
-		return FALSE;
+		$fp= fopen( $file, 'rb' );
+		$data= fread( $fp, filesize( $file ) );
+		fclose( $fp );
+		
+		$magic= unpack( 'L1', substr( $data, 0, 4 ) );
+		$magic= $magic[1];
+		switch ( $magic ) {
+			case (int)0x950412de:
+				self::$little_endian= TRUE;
+				break;
+			case (int)0xde120495:
+				self::$little_endian= FALSE;
+				break;
+			default:
+				Error::raise( sprintf( 'Invalid magic number 0x%08x in %s!', $magic, $file ) );
+				return FALSE;
+		}
+		
+		$revision= substr( $data, 4, 4 );
+		if ( $revision != 0 ) {
+			Error::raise( sprintf( 'Unknown revision number %d in %s!', $revision, $file ) );
+			return FALSE;
+		}
+		
+		$l= self::$little_endian ? 'V' : 'N';
+		
+		if ( $data && strlen( $data ) >= 20 ) {
+			$header= substr( $data, 8, 12 );
+			$header= unpack( "{$l}1msgcount/{$l}1msgblock/{$l}1transblock", $header );
+			
+			if ( $header['msgblock'] + ($header['msgcount'] - 1 ) * 8 > filesize( $file ) ) {
+				Error::raise( sprintf( 'Message count (%d) out of bounds in %s!', $header['msgcount'], $file ) );
+				return FALSE;
+			}
+			
+			$lo= "{$l}1length/{$l}1offset";
+		
+			for ( $msgindex= 0; $msgindex < $header['msgcount']; $msgindex++ ) {
+				$msginfo= unpack( $lo, substr( $data, $header['msgblock'] + $msgindex * 8, 8 ) );
+				$msgids= explode( "\0", substr( $data, $msginfo['offset'], $msginfo['length'] ) );
+				$transinfo= unpack( $lo, substr( $data, $header['transblock'] + $msgindex * 8, 8 ) );
+				$transids= explode( "\0", substr( $data, $transinfo['offset'], $transinfo['length'] ) );
+				self::$messages[$domain][$msgids[0]]= array(
+					$msgids,
+					$transids,
+				);
+			}
+		}
+
+		// only use locale if we actually read something
+		return ( count( self::$messages ) > 0 );
 	}
 	
 	/**
