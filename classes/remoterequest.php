@@ -20,6 +20,7 @@ class RemoteRequest
 	private $body= '';
 	private $timeout= 180;
 	private $processor= NULL;
+	private $executed= FALSE;
 	
 	private $response_body= '';
 	private $response_headers= '';
@@ -35,8 +36,7 @@ class RemoteRequest
 	{
 		$this->method= strtoupper( $method );
 		$this->url= $url;
-		$this->timeout= $timeout;
-		
+		$this->set_timeout( $timeout );
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
 		
 		// can't use curl's followlocation in safe_mode with open_basedir, so
@@ -111,6 +111,16 @@ class RemoteRequest
 	}
 	
 	/**
+	 * Set the timeout.
+	 * @param int $timeout Timeout in seconds
+	 */
+	public function set_timeout( $timeout )
+	{
+		$this->timeout= $timeout;
+		return $this->timeout;
+	}
+	
+	/**
 	 * A little housekeeping.
 	 */
 	private function prepare()
@@ -138,7 +148,8 @@ class RemoteRequest
 	{
 		$this->prepare();
 		$result= $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
-		if ( $result ) {
+		
+		if ( $result && ! Error::is_error( $result ) ) { // XXX exceptions?
 			$this->response_headers= $this->processor->get_response_headers();
 			$this->response_body= $this->processor->get_response_body();
 			$this->executed= TRUE;
@@ -151,6 +162,10 @@ class RemoteRequest
 			
 			return $result;
 		}
+	}
+	
+	public function executed() {
+		return $this->executed;
 	}
 	
 	/**
