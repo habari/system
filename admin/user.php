@@ -9,19 +9,18 @@
 	// $user will contain the username specified on the URL
 	// http://example.com/admin/user/skippy
 	if ( isset( $user ) && ( $user != $currentuser->username ) ) {
-		$user = User::get( $user );
-		if ( ! $user )
-		{
+		$user = User::get_by_name( $user );
+		if ( ! $user ) {
 			echo "No such user!";
 			die;
 		}
-		$who = $user->username;
-		$possessive = $user->username . "'s";
+		$who= $user->username;
+		$possessive= $user->username . "'s";
 	}
 	else {
-		$user = $currentuser;
-		$who = "You";
-		$possessive = "Your";
+		$user= $currentuser;
+		$who= "You";
+		$possessive= "Your";
 	}
 	if ( isset( $result ) && 'deleted' == $result ) {
 		echo "The user has been deleted.";
@@ -31,12 +30,10 @@
 <div style="width: 45%; float: left; border-right: 1px solid #000; text-align: left;">
 	<h3><?php echo $possessive; ?> Profile</h3>
 	<?php
-	if ( isset( $result ) && 'success' == $result )
-	{
+	if ( isset( $result ) && 'success' == $result ) {
 		echo '<p class="update"><strong>' . $possessive . ' profile has been updated!</strong></p>';
 	}
-	else
-	{
+	else {
 		echo "<p>Below are the data that Habari knows about " . $who . ".</p>";
 	}
 	?>
@@ -60,8 +57,7 @@
 </div>
 <div style="width: 45%; float: left; margin-left: 2px;">
 <?php
-if ( Posts::count_by_author( $user->id, Post::STATUS_PUBLISHED ) )
-{
+if ( Posts::count_by_author( $user->id, Post::STATUS_PUBLISHED ) ) {
 	echo $possessive ." five most recent published posts:<br />\n";
 	echo "<ul>\n";
 	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
@@ -73,12 +69,10 @@ if ( Posts::count_by_author( $user->id, Post::STATUS_PUBLISHED ) )
 	}
 	echo "</ul>\n";
 }
-else
-{
+else {
 	echo "<p>No published posts.</p>\n";
 }
-if ( $user == $currentuser )
-{
+if ( $user == $currentuser ) {
 	echo $possessive . 'five most recent draft posts:<br /><ul>';
 	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
 						'limit' => 5,
@@ -90,8 +84,7 @@ if ( $user == $currentuser )
 	echo "</ul>\n";
 }
 echo "<p></p>\n";
-if ( $user != $currentuser )
-{
+if ( $user != $currentuser ) {
 	echo "<form method='post'>";
 	echo "<div style='width: 100%, background: red;'>\n";
 	echo "<input type='hidden' name='delete' value='user' />\n";
