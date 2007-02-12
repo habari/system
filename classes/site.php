@@ -32,8 +32,7 @@ class Site
 	**/
 	static function get_config_path()
 	{
-		if ( self::$config_path )
-		{
+		if ( self::$config_path ) {
 			// shortcut for subsequent calls
 			return self::$config_path;
 		}
@@ -43,45 +42,46 @@ class Site
 
 		// get an array of directories in /user/sites/ that
 		// contain a config.php file
-		$config_dirs = preg_replace('/^' . preg_quote(HABARI_PATH, '/') . '\/user\/sites\/(.*)\/config.php/', '$1', glob(HABARI_PATH . '/user/sites/*/config.php') );
+		$config_dirs= preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', glob( HABARI_PATH . '/user/sites/*/config.php' ) );
 
-		if ( empty($config_dirs ) )
-		{
+		if ( empty( $config_dirs ) ) {
 			// no site-specific configurations exists
 			// use the default
 			return self::$config_path;
 		}
+		
 		$server= explode('.', $_SERVER['SERVER_NAME']);
 		if ( isset( $_SERVER['SERVER_PORT'] )
 			&& ( 80 != $_SERVER['SERVER_PORT'] )
 			&& ( 443 != $_SERVER['SERVER_PORT'] ) )
 		{
-			array_unshift($server, $_SERVER['SERVER_PORT'] . '.');
+			array_unshift( $server, $_SERVER['SERVER_PORT'] . '.' );
 		}
-		$request= explode('/', trim($_SERVER['REQUEST_URI'], '/') );
+		$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
 		
 		// walk through the potential directories looking for a match
 		// step 1: walk the path
-		for ($x= count($request); $x >= 0; $x--)
+		for ( $x= count( $request ); $x >= 0; $x-- )
 		{
 			//step 2: walk the host
-			for ($y= count($server); $y > 0; $y--)
+			for ( $y= count( $server ); $y > 0; $y-- )
 			{
-				$match= trim(implode('.', array_slice($server, -$y)) . '.' . implode('.', array_slice($request, 0, $x)), '.');
-				if (in_array($match, $config_dirs) )
-				{
+				$match= trim( implode( '.', array_slice( $server, -$y ) ) . '.' . implode( '.', array_slice( $request, 0, $x ) ), '.' );
+				if ( in_array( $match, $config_dirs ) ) {
 					self::$config_dir= $match;
 					self::$config_path= HABARI_PATH . '/user/sites/' . self::$config_dir;
 					if ( $x > 0 ) {
-						self::$config_type = Site::CONFIG_SUBDIR;
+						self::$config_type= Site::CONFIG_SUBDIR;
 					}
 					else {
-						self::$config_type = Site::CONFIG_SUBDOMAIN;
+						self::$config_type= Site::CONFIG_SUBDOMAIN;
 					}
+					
 					break 2;
 				}
 			}
 		}
+		
 		return self::$config_path;
 	}
 
@@ -118,6 +118,8 @@ class Site
 	
 	/**
 	 * Returns the host used to answer the request
+	 * 
+	 * @todo Handle SSL
 	 *
 	 * @return string The protocol, hostname and port of the request 
 	**/
@@ -129,12 +131,12 @@ class Site
 		if ( isset( $_SERVER['SERVER_PORT'] ) ) {
 			$port= $_SERVER['SERVER_PORT'];
 		}
-		$portpart = '';
-		if ( $port != 80 ) {
-			$portpart= ":{$port}";
+		$portpart= '';
+		if ( $port != 80 ) { // XXX should handle SSL
+			$portpart= ':' . $port;
 		}
 
-		return Utils::end_in_slash('http://' . Options::get('hostname') . $portpart);
+		return 'http://' . Options::get('hostname') . $portpart;
 	}
 	
 	/**
@@ -144,8 +146,8 @@ class Site
 	**/
 	public static function get_user_url()
 	{
-		$host = Site::get_host();
-		$url = $host . Site::get_base_url() . '/' . Site::get_user_dir();
+		$host= Site::get_host();
+		$url= $host . Site::get_base_url() . '/' . Site::get_user_dir();
 		return $url; 
 	}
 	
@@ -157,8 +159,9 @@ class Site
 	**/
 	public static function get_base_url()
 	{
-		$dir = dirname($_SERVER["SCRIPT_NAME"]);
-		if( $dir == '\\' ) {
+		$dir= dirname( $_SERVER['SCRIPT_NAME'] );
+		
+		if ( $dir == '\\' ) {
 			$dir = '';
 		}
 		return $dir;

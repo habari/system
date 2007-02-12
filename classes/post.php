@@ -446,7 +446,8 @@ class Post extends QueryRecord
 	private function get_author()
 	{
 		if ( ! isset( $this->author_object ) ) {
-			$this->author_object= User::get( $this->user_id );
+			// XXX for some reason, user_id is a string sometimes?
+			$this->author_object= User::get_by_id( $this->user_id );
 		}
 		return $this->author_object;
 	}
