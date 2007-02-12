@@ -6,8 +6,6 @@
  * Requires PHP 5.0.4 or later
  * @package Habari
  */
-
-
 class AtomHandler extends ActionHandler
 {
 	
@@ -310,7 +308,7 @@ feedpreamble;
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
 		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
-		<summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">{$summary}</div></summary>
+		<summary type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$summary}</div></summary>
 	</entry>
 
 postentry;
@@ -375,7 +373,7 @@ feedpreamble;
 		<id>{$post->guid}</id>
 		<updated>{$entryupdated}</updated>
 		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
-		<summary><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></summary>
+		<summary type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></summary>
 	</entry>
 
 postentry;
