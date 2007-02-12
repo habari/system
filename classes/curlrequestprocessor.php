@@ -34,6 +34,8 @@ class CURLRequestProcessor implements RequestProcessor
 		curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n.
 		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // Follow 302's and the like.
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); // Return the data from the stream.
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, $merged_headers ); // headers to send
 		
 		if ( $method === 'POST' ) {
@@ -42,6 +44,11 @@ class CURLRequestProcessor implements RequestProcessor
 		}
 		
 		$body= curl_exec( $ch );
+		
+		if ( curl_errno( $ch ) !== 0 ) {
+			return Error::raise( sprintf( '%s: CURL Error %d: %s', __CLASS__, curl_errno( $ch ), curl_error( $ch ) ),
+				E_USER_WARNING );
+		}
 		
 		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
 			return Error::raise( sprintf( 'Bad return code (%1$d) for: %2$s', 

@@ -18,13 +18,19 @@ class SocketRequestProcessor implements RequestProcessor
 	
 	public function execute( $method, $url, $headers, $body, $timeout )
 	{
-		list( $response_headers, $response_body )= $this->_request( $method, $url, $headers, $body, $timeout );
+		$result= $this->_request( $method, $url, $headers, $body, $timeout );
 		
-		$this->response_headers= $response_headers;
-		$this->response_body= $response_body;
-		$this->executed= TRUE;
-		
-		return TRUE;
+		if ( $result && ! Error::is_error( $result ) ) {
+			list( $response_headers, $response_body )= $result;
+			$this->response_headers= $response_headers;
+			$this->response_body= $response_body;
+			$this->executed= TRUE;
+			
+			return TRUE;
+		}
+		else {
+			return $result;
+		}
 	}
 	
 	private function _request( $method, $url, $headers, $body, $timeout )
@@ -34,6 +40,9 @@ class SocketRequestProcessor implements RequestProcessor
 		return $this->_work( $method, $urlbits, $headers, $body, $timeout );
 	}
 	
+	/**
+	 * @todo Does not honor timeouts on the actual request, only on the connect() call.
+	 */
 	private function _work( $method, $urlbits, $headers, $body, $timeout )
 	{
 		$_errno= 0;
@@ -43,10 +52,11 @@ class SocketRequestProcessor implements RequestProcessor
 			$urlbits['port']= 80;
 		}
 		
-		$fp= fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
+		$fp= @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
-		if ( !$fp ) {
-			return Error::raise( sprintf( 'Could not connect to %s:%d. Aborting.', $urlbits['host'], $urlbits['port'] ) );
+		if ( $fp === FALSE ) {
+			return Error::raise( sprintf( '%s: Error %d: %s while connecting to %s:%d', __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
+				E_USER_WARNING );
 		}
 		
 		// timeout to fsockopen() only applies for connecting
