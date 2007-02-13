@@ -446,6 +446,42 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function write_config_file()
 	{
+		// first, check if a config.php file exists
+		if ( file_exists( Site::get_config() ) )
+		{
+			// set the defaults for comprison
+			$db_host= $this->handler_vars['db_host']; 
+			$db_type= $this->handler_vars['db_type']; 
+			$db_schema= $this->handler_vars['db_schema']; 
+			$db_user= $this->handler_vars['db_user']; 
+			$db_pass= $this->handler_vars['db_pass']; 
+			$table_prefix= $this->handler_vars['table_prefix']; 
+
+			// set the connection string
+			if ( 'sqlite' == $db_type ) { 
+				// remember, we're using $db_host to define
+				// the path to the SQLite data file
+				$connection_string= "$db_type:$db_host"; 
+			} else { 
+				$connection_string= "$db_type:host=$db_host;dbname=$db_schema"; 
+			} 
+
+			// load the config.php file
+			include( Site::get_config() );
+			
+			// and now we compare the values defined there to
+			// the values POSTed to the installer
+			if ( isset($db_connection) && 
+				( $db_connection['connection_string'] == $connection_string )
+				&& ( $db_connection['username'] == $db_user )
+				&& ( $db_connection['password'] == $db_pass )
+				&& ( $db_connection['prefix'] == $table_prefix ) )
+			{
+				// the values are the same, so don't bother
+				// trying to write to config.php
+				return true;
+			}
+		}
 		if (! ($file_contents= file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
 			return false;
 		}
