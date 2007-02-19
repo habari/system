@@ -41,11 +41,15 @@ class DatabaseConnection
 		/*if ( $db->pdo == NULL ) 
 			$db->connect();*/
 
-		$prefix= ( isset( $GLOBALS['db_connection']['prefix'] )
-			? $GLOBALS['db_connection']['prefix']
-			: $this->prefix );
+		if ( isset ( $GLOBALS['db_connection']['prefix'] ) ) {
+			$prefix= $GLOBALS['db_connection']['prefix'];
+		} else if ( isset( $_POST['table_prefix'] ) ) {
+			$prefix= $_POST['table_prefix'];
+		} else {
+			$prefix= $this->prefix;
+		}
 		
-		$db->sql_tables['posts']= $prefix . 'posts';
+        $db->sql_tables['posts']= $prefix . 'posts';
 		$db->sql_tables['postinfo']= $prefix . 'postinfo';
 		$db->sql_tables['posttype']= $prefix . 'posttype';
 		$db->sql_tables['poststatus']= $prefix . 'poststatus';
