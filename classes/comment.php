@@ -29,7 +29,8 @@ class Comment extends QueryRecord
 	const COMMENT= 0;
 	const PINGBACK= 1;
 	const TRACKBACK= 2;
-	
+
+	private $post_object = null;	
 	
 	private $info= null; 
 	/**
@@ -167,7 +168,16 @@ class Comment extends QueryRecord
 		if ( $name == 'name' && parent::__get( $name ) == '' ) {
 			return _t('Anonymous');
 		}
-		return parent::__get( $name );
+		switch($name)
+		{
+			case 'post':
+				$out = $this->get_post();
+				break;
+			default:
+				$out = parent::__get( $name );
+				break;
+		}
+		return $out;
 	}
 
 	/**
@@ -178,9 +188,48 @@ class Comment extends QueryRecord
 	 **/	 	 
 	public function __set( $name, $value )
 	{
+		switch($name) {
+		case 'post':
+			if ( is_int( $value ) )
+			{
+				// a post ID was passed
+				$p = Post::get(array('id'=>$value));
+				$this->post_id = $p->id;
+				$this->post_object = $p;
+			}
+			elseif ( is_string( $value ) )
+			{
+				// a post Slug was passed
+				$p = Post::get(array('slug'=>$value));
+				$this->post_id = $p->id;
+				$this->post_object = $p;
+			}
+			elseif ( is_object ( $value ) )
+			{
+				// a Post object was passed, so just use it directly
+				$this->post_id = $p->id;
+				$this->post_object = $value;
+			}
+			return $value;
+		}
 		return parent::__set( $name, $value );
 	}
 	
+	/**
+	 * private function get_post()
+	 * returns a Post object for the post of this comment
+	 * @param bool Whether to use the cached version or not.  Default to true
+	 * @return Post a Post object for the post of the current comment
+	**/
+	private function get_post( $use_cache = TRUE )
+	{
+		if ( ! isset( $this->post_object ) || ( ! $use_cache)  )
+		{
+			$this->post_object = Post::get( array('id' => $this->post_id) );
+		}
+		return $this->post_object;
+	}
+
 }
 
 ?>
