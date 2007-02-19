@@ -9,7 +9,7 @@
 	<ul id="waiting">
 		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ){ ?>
 		<li>
-			Comment by <?php echo $comment->name;?> on <a href="<?php URL::get( 'post', array( 'slug' => $comment->post_slug ) ); ?>"><?php echo $comment->post_slug; ?></a>
+			Comment by <?php echo $comment->name;?> on <a href="<?php URL::get( 'post', array( 'slug' => $comment->post->slug ) ); ?>"><?php echo $comment->post->slug; ?></a>
 			<br /><small>(Commented created on <?php echo $comment->date; ?>)</small>
 			<p><?php echo $comment->content; ?></p>
 			<span class="manage">
