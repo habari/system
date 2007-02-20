@@ -165,6 +165,27 @@ abstract class InfoRecords extends ArrayObject
         } 
         return false;        
     }	
+	
+	/**
+	 * Remove all info options. Primarily used when deleting the parent object. 
+	 * I.E. when deleting a user, the delete method would call this.
+	 * 
+	 * @return boolean TRUE if the options were successfully unset, FALSE otherwise
+	 **/	
+	public function delete_all()
+	{
+		$result= DB::query( '
+			DELETE FROM ' . $this->_table_name . '
+			WHERE ' . $this->_key_name . ' = ?',
+			array( $this->_key_value )
+		);
+		if ( Error::is_error( $result ) ) {
+			$result->out();
+			return false;
+		} 
+		$this->__inforecord_array = array();
+		return true;
+	}
 }
 
 ?>

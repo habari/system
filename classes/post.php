@@ -233,6 +233,35 @@ class Post extends QueryRecord
 		return $this->newfields['guid'];
 	}
 	
+	/**
+	 * function setstatus
+	 * @param mixed the status to set it to. String or integer.
+	 * @return integer the status of the post
+	 * Sets the status for a post, given a string or integer.
+	 */	 	 	 	 	
+	private function setstatus($value)
+	{
+		if(is_numeric($value))
+			$this->status = $value;
+		else
+		{
+			switch(strtolower($value))
+			{
+				case "published":
+				case "publish":
+					$this->status = self::STATUS_PUBLISHED;
+					break;
+				case "draft":
+					$this->status = self::STATUS_DRAFT;
+					break;
+				case "private":
+					$this->status = self::STATUS_PRIVATE;
+					break;
+			}
+		}
+		return $this->status;
+	}
+
 	private function parsetags( $tags )
 	{
 		if ( is_string( $tags ) ) {
@@ -390,6 +419,8 @@ class Post extends QueryRecord
 		case 'tags':
 			$this->tags = $this->parsetags( $value );
 			return $this->get_tags();
+		case 'status':
+			return $this->setstatus($value);
 		}
 		return parent::__set( $name, $value );
 	}

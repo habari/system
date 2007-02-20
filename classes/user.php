@@ -131,6 +131,8 @@ class User extends QueryRecord
 	 */
 	public function delete()
 	{
+		if(isset($this->info))
+			$this->info->delete_all();
 		return parent::delete( DB::table('users'), array( 'id' => $this->id ) );
 	}
 
