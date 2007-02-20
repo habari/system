@@ -108,7 +108,7 @@ class URL extends Singleton
 			return
 				'http' . ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 's' : '' ) . 
 				'://' . $_SERVER['HTTP_HOST'] . '/' . ltrim( Controller::get_base_url(), '/' ) .
-				$return_url;
+				htmlspecialchars($return_url);
 		}
 	}
 
