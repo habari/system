@@ -390,17 +390,22 @@ class AdminHandler extends ActionHandler
 		if ( isset( $_POST['mass_delete'] ) ) {
 			Comment::mass_delete();
 		}
-		// XXX I don't think this is right, should be else { if {} if {} }?
-		elseif ( is_array( $_POST['delete'] ) ) {
+		else if ( isset( $_POST['delete'] ) && is_array( $_POST['delete'] ) ) {
 			foreach( $_POST['delete'] as $destroy ) {
 				Comment::delete( $destroy );
 			}
 		}
-		elseif ( is_array( isset( $_POST['approve'] ) ) ) {
+		else if ( isset( $_POST['approve'] ) && is_array( $_POST['approve'] ) ) {
 			foreach( $_POST['approve'] as $promote ) {
-				Comment::publish( $promote );
+				$this->id = $promote;
+				$this->fields = array('id' => $promote);
+				$this->newfields = array('status' => 1);
+				$this->unsetfields = array();
+				Comment::update();
 			}
 		}
+		else { continue; }
+
 		Utils::redirect( URL::get( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ) );
 	}
 
