@@ -159,7 +159,7 @@ class Site
 	**/
 	public static function get_base_url()
 	{
-		$dir= dirname( $_SERVER['SCRIPT_NAME'] );
+		$dir = ltrim(dirname($_SERVER["SCRIPT_NAME"]).'/','/');
 		
 		if ( $dir == '\\' ) {
 			$dir = '';
