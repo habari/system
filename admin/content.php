@@ -63,7 +63,7 @@
 					<td><?php echo $draft->author->username; ?></td>
 					<td><?php echo $draft->pubdate; ?></td>
 					<td align="center">
-						<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$draft->post_slug)); ?>" title="View this Entry">
+						<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$draft->slug)); ?>" title="View this Entry">
 							<img src="<?php Options::out('habari_url'); ?>system/admin/images/view.png" alt="View this entry" />
 						</a>
 						<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit this entry">
