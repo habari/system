@@ -189,6 +189,8 @@ class Comment extends QueryRecord
 	public function __set( $name, $value )
 	{
 		switch($name) {
+        case 'status':
+            return $this->setstatus($value);
 		case 'post':
 			if ( is_int( $value ) )
 			{
@@ -229,6 +231,40 @@ class Comment extends QueryRecord
 		}
 		return $this->post_object;
 	}
+
+ 	/**
+ 	 * function setstatus
+ 	 * @param mixed the status to set it to. String or integer.
+ 	 * @return integer the status of the comment
+ 	 * Sets the status for a comment, given a string or integer.
+ 	 */	 	 	 	 	
+ 	private function setstatus($value)
+ 	{
+ 		if(is_numeric($value))
+ 			$this->status = $value;
+ 		else
+ 		{
+ 			switch(strtolower($value))
+ 			{
+ 				case "approved":
+ 				case "approve":
+ 				case "ham":
+ 					$this->status = self::STATUS_APPROVED;
+ 					break;
+ 				case "unapproved":
+ 				case "unapprove":
+ 					$this->status = self::STATUS_UNAPPROVED;
+ 					break;
+ 				case "spam":
+ 					$this->status = self::STATUS_SPAM;
+ 					break;
+ 				case "deleted":
+ 					$this->status = self::STATUS_DELETED;
+ 					break;
+ 			}
+ 		}
+ 		return $this->status;
+ 	}
 
 }
 
