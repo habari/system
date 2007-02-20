@@ -10,7 +10,7 @@
 		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_UNAPPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ){ ?>
 			<li>
 				Comment by <?php echo $comment->name;?>
-				<a href="<?php URL::get('post', array( 'post_id' => $comment->post_id ) ); ?>"><?php echo $comment->post->slug; </a>
+				<a href="<?php URL::get('post', array( 'post_id' => $comment->post_id ) ); ?>"><?php echo $comment->post->slug; ?></a>
 				<br /><small>(Commented created on <?php echo $comment->date; ?>)</small>
 				<p><?php echo $comment->content; ?></p>
 				<p class="manage">
