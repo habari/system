@@ -296,7 +296,9 @@ feedpreamble;
 			$user = User::get_by_id( $post->user_id );
 			$title = htmlspecialchars($post->title);
 			$content = html_entity_decode($post->content_atom, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
+            $content = preg_replace( '/\n/', '<br />', $content);
 			$summary = html_entity_decode($post->content_atomsummary, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
+            $summary = preg_replace( '/\n/', '<br />', $summary);
 			$xmltext .= <<< postentry
 	<entry>
 		<title>{$title}</title>
