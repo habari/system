@@ -1,6 +1,6 @@
 <?php include('header.php'); ?>
 <div id="content-area">
-	<div id="left-column">
+	<div class="dashboard-block c3" id="welcome">
 		<h1>Unapproved Comments</h1>
 		<?php if( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) { ?>
 		<p>Below you will find comments awaiting moderation.</p>
