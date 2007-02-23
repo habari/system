@@ -8,13 +8,38 @@
  */
 class AtomHandler extends ActionHandler
 {
-	
+
+	/**
+	 * Constructor for AtomHandler class.
+	 * Set some default formatting for Atom output.
+	 */
+	public function __construct()
+	{
+		Plugins::act('init_atom');
+		/**
+		* The following Format::apply calls should be moved into a plugin that is
+		* active by default.  They apply autop formatting to the Atom content
+		* that preserves line breaks in the feed output.
+		*
+		* These formatters should probably not be applied in the case of APP usage,
+		* since you'll want to edit the actual raw data, and not an autop'ed
+		* version of that data.
+		* Currently, we use the user login to determine if the Atom is being used
+		* for APP instead of a feed, but maybe there should be a separate
+		* feed URL?
+		*/
+		if ( !$this->is_auth() ) {
+			Format::apply('autop', 'post_content_atom');
+			Format::apply('autop', 'post_content_atomsummary');
+		}
+	}
+
 	/**
 	 * function entry
 	 * Responds to Atom requests for a single entry (post)
 	 * @param array Settings array from the URL
-	 **/	 	 	 	
-	public function act_entry() 
+	 **/
+	public function act_entry()
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
 		{
@@ -26,15 +51,15 @@ class AtomHandler extends ActionHandler
 			break;
 		case 'delete':
 			$this->delete_entry($this->handler_vars['slug']);
-			break;			
+			break;
 		}
 	}
-	
+
 	/**
 	 * function collection
 	 * Responds to Atom requests for a post entry collection
 	 * @param array Settings array from the URL
-	 **/	 	 	 	
+	 **/
 	public function act_collection()
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
@@ -46,13 +71,13 @@ class AtomHandler extends ActionHandler
 			$this->post_collection();
 			break;
 		}
-	} 
-	
+	}
+
 	/**
 	 * function tag_collection
 	 * Responds to Atom requests for a tag's post entry collection
 	 * @param array Settings array from the URL
-	 **/	 	 	 	
+	 **/
 	public function tag_collection()
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
@@ -61,13 +86,13 @@ class AtomHandler extends ActionHandler
 			$this->get_tag_collection( $this->handler_vars['tag'] );
 			break;
 		}
-	} 
-		
+	}
+
 	/**
 	 * function comments
 	 * Responds to Atom requests for a post's comment collection
 	 * @param array Settings array from the URL
-	 **/	 	 	 	
+	 **/
 	public function comments()
 	{
 		switch(strtolower($_SERVER['REQUEST_METHOD']))
@@ -76,24 +101,24 @@ class AtomHandler extends ActionHandler
 			$this->get_comments($this->handler_vars['slug']);
 			break;
 		}
-	} 
-	
+	}
+
 	/**
 	 * function xml_header
 	 * Produces a standard XML header
 	 * @return string The header
-	 **/	 	  	 	
+	 **/
 	private function xml_header()
 	{
 		ob_clean(); // The xml header must be the very first thing in the output
 		return '<'.'?xml version="1.0" encoding="utf-8"?'.'>';
 	}
-	
+
 	/**
 	 * function get_entry
 	 * Responds to an Atom GET request to retrieve a single post entry
 	 * @param string The post slug to look up
-	 **/	 	 	 	
+	 **/
 	private function get_entry($slug)
 	{
 		$params = array('slug'=>$slug);
@@ -103,15 +128,15 @@ class AtomHandler extends ActionHandler
 		else {
 			$params['status'] = Post::STATUS_PUBLISHED;
 		}
-		
+
 		if ( $post = Post::get($params) ) {
-		
+
 			$updated = Utils::atomtime( $post->updated );
 			$permalink = $post->permalink;
 			$title = htmlspecialchars($post->title);
 			$entryurl = URL::get( 'entry', array( 'slug' => $slug) );
 			$content = html_entity_decode($post->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-			
+
 			$xmltext = $this->xml_header();
 			$xmltext .= <<< entrysnippet
 <entry xmlns="http://www.w3.org/2005/Atom">
@@ -132,27 +157,27 @@ entrysnippet;
 			header('Status: 404 Not Found');
 		}
 	}
-	
+
 	/**
 	 * function put_entry
 	 * Responds to an AtomPUT request to update a single post entry
 	 * @param string The post slug of the post to update
-	 **/	 	 
+	 **/
 	private function put_entry($slug)
 	{
 		global $db;
-		
+
 		if ( $user = $this->force_auth() ) {
 			$post = Post::get( array( 'slug' => $slug, 'status' => '%') );
-			
+
 			//$bxml = file_get_contents('php://input');
 		  $s = fopen("php://input", "r");
-		  while($kb = fread($s, 1024)) { 
-				$bxml .= $kb; 
+		  while($kb = fread($s, 1024)) {
+				$bxml .= $kb;
 			}
 		  fclose($s);
 			$xml = new SimpleXMLElement($bxml);
-			
+
 			if( (string) $xml->title != '') $post->title = (string) $xml->title;
 			if( (string) $xml->content != '') $post->content = (string) $xml->content;
 			if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
@@ -173,7 +198,7 @@ entrysnippet;
 	 * function delete_entry
 	 * Responds to an Atom DELETE request to delete a single post entry
 	 * @param string The post slug of the post to delete
-	 **/	 	 
+	 **/
 	private function delete_entry($slug)
 	{
 		global $db;
@@ -197,20 +222,20 @@ entrysnippet;
 			}
 		}
 	}
-	
+
 	/**
 	 * function is_auth
 	 * Check if a user is authenticated for Atom editing
 	 * TODO: This entire funciton should be put into the User class somehow.
-	 * TODO: X-WSSE	 	 
+	 * TODO: X-WSSE
 	 * @return User The logged-in user
 	 **/
 	function is_auth()
 	{
 		if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
-			User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ); 
+			User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
 		}
-		
+
 		$user = User::identify();
 
 		return $user;
@@ -218,17 +243,17 @@ entrysnippet;
 
 	/**
 	 * function force_auth
-	 * Require authentication to continue.  
+	 * Require authentication to continue.
 	 * Display basic HTTP_AUTH if not authed.
 	 * TODO: This entire function should be put into the User class somehow.
-	 * @return User The logged-in user	 
-	 **/	   	  
+	 * @return User The logged-in user
+	 **/
 	function force_auth()
 	{
 		if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
-			User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ); 
+			User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
 		}
-		
+
 		if ( ! $user = User::identify() ) {
 			header('HTTP/1.1 401 Unauthorized');
 			header('Status: 401 Unauthorized');
@@ -241,7 +266,7 @@ entrysnippet;
 	/**
 	 * function get_collection
 	 * Return a collection of posts in Atom format
-	 **/	 	 		
+	 **/
 	function get_collection()
 	{
 		$collectionurl = URL::get( 'collection', 'index=' . $this->handler_vars['index'] );
@@ -252,7 +277,7 @@ entrysnippet;
 		$tagline = Options::get('tagline');
 		$home = URL::get('index_page');
 		$version = Options::get('version');
-		
+
 		$totalposts = Posts::count_last();
 		$relprevious = '';
 		$relnext = '';
@@ -264,7 +289,7 @@ entrysnippet;
 		}
 		$relfirst = '<link rel="first" type="application/atom+xml" href="' . URL::get( 'collection', 'index=1' ) . '" title="First Page" />';
 		$rellast = '<link rel="last" type="application/atom+xml" href="' . URL::get( 'collection', 'index=' . ceil($totalposts / Options::get('paginate') ) ) . '" title="Last Page" />';
-		
+
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -296,9 +321,7 @@ feedpreamble;
 			$user = User::get_by_id( $post->user_id );
 			$title = htmlspecialchars($post->title);
 			$content = html_entity_decode($post->content_atom, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-            $content = preg_replace( '/\n/', '<br />', $content);
 			$summary = html_entity_decode($post->content_atomsummary, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-            $summary = preg_replace( '/\n/', '<br />', $summary);
 			$xmltext .= <<< postentry
 	<entry>
 		<title>{$title}</title>
@@ -319,8 +342,8 @@ postentry;
 
 		header('Content-Type: application/atom+xml');
 		echo $xmltext;
-	}	
-	
+	}
+
 	/**
 	 * function get_tag_collection
 	 * Outputs a collection of post entries for a specific tag
@@ -335,7 +358,7 @@ postentry;
 		$tagline = Options::get('tagline');
 		$version = Options::get('version');
 		$home = URL::get('index_page');
-		
+
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -384,33 +407,33 @@ postentry;
 
 		header('Content-Type: application/atom+xml');
 		echo $xmltext;
-	} 	 	
+	}
 
 	/**
 	 * function post_collection
 	 * Responds to an Atom POST request to add a new post entry
-	 **/	 
+	 **/
 	function post_collection()
 	{
-		if ( $user = $this->force_auth() ) { 
+		if ( $user = $this->force_auth() ) {
 		  $s = fopen("php://input", "r");
-		  while($kb = fread($s, 1024)) { 
-				$bxml .= $kb; 
+		  while($kb = fread($s, 1024)) {
+				$bxml .= $kb;
 			}
 		  fclose($s);
 
 			try {  // Exception handling!  Yay!
 				$bxml = str_replace("xmlns=", "a=", $bxml);  // Rearrange namespaces
 				$xml = new SimpleXMLElement($bxml);
-				
-				$content = $xml->xpath("//content/*[@a='http://www.w3.org/1999/xhtml']");				
-				
+
+				$content = $xml->xpath("//content/*[@a='http://www.w3.org/1999/xhtml']");
+
 				$post = new Post();
 				if( (string) $xml->title != '') $post->title = (string) $xml->title;
 				if( (string) $content[0]->asXML() != '') $post->content = (string) $content[0]->asXML();
 				if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
 				switch ( (string) $xml->draft ) {
-				case 'false':				
+				case 'false':
 					$post->status = 'publish';
 					break;
 				case 'true':
@@ -438,14 +461,14 @@ postentry;
 	function get_comments($slug)
 	{
 		$post = Post::get( array( 'slug' => $slug ) );
-		
+
 		$collectionurl = URL::get( 'comments' );
 		$feedupdated = Utils::atomtime(time()); // TODO: This value should be cached
 		$copyright = date('Y'); // TODO: This value should be corrected
 		$tagline = Options::get('tagline');
 		$version = Options::get('version');
 		$home = URL::get('index_page');
-		
+
 		$xmltext = $this->xml_header();
 		$xmltext .= <<< feedpreamble
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -484,10 +507,10 @@ postentry;
 		//header('Content-Type: application/atom+xml');
 		echo $xmltext;
 	}
-	
+
 	function act_rsd()
 	{
-		$local['homepage'] = URL::get( 'home' ); 
+		$local['homepage'] = URL::get( 'home' );
 		$local['collectionurl'] = URL::get( 'collection', 'index=1' );
 
 		$xmltext = <<< rsdcontent
@@ -504,7 +527,7 @@ postentry;
 rsdcontent;
 		header('Content-Type: application/rsd+xml');
 		echo $xmltext;
-	}	 	  
+	}
 
 	function act_introspection()
 	{
@@ -516,9 +539,9 @@ rsdcontent;
 			</workspace>
 		</service>
 		';
-		
+
 		header('Content-Type: application/atomserv+xml');
-		echo $xmltext;		
+		echo $xmltext;
 	}
 
 }
