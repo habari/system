@@ -27,6 +27,15 @@ class InstallHandler extends ActionHandler {
 
 		/*
 		 * OK, so requirements are met.
+		 * now let's check .htaccess
+		*/
+		if ( ! $this->check_htaccess() )
+		{
+			$this->handler_vars['file_contents']= implode( "\n", $this->htaccess() );
+			$this->display('htaccess');
+		}
+
+		/*
 		 * Let's check the config.php file if no POST data was submitted
 		*/
 		if ( (! file_exists(Site::get_config()) ) && ( ! isset($_POST['db_user']) ) )
@@ -74,7 +83,8 @@ class InstallHandler extends ActionHandler {
 		
 		// we need details for the admin user to install
 		if ( ( '' == $this->handler_vars['admin_username'] )
-			|| ( '' == $this->handler_vars['admin_pass'] )
+			|| ( '' == $this->handler_vars['admin_pass1'] )
+			|| ( '' == $this->handler_vars['admin_pass2'] )
 			|| ( '' == $this->handler_vars['admin_email']) )
 		{
 			// if none of the above are set, display the form
@@ -82,7 +92,15 @@ class InstallHandler extends ActionHandler {
 		}
 
 		// we got here, so we have all the info we need to install
-		// first, try to write the config file
+
+		// make sure the admin password is correct
+		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] )
+		{
+			$this->theme->assign( 'form_errors', array('password_mismatch'=>'Password mismatch!') );
+			$this->display('db_setup');
+		}
+
+		// try to write the config file
 		if (! $this->write_config_file())
 		{
 			$this->theme->assign('form_errors', array('write_file'=>'Could not write config.php file...'));
@@ -126,7 +144,8 @@ class InstallHandler extends ActionHandler {
 		$formdefaults['db_schema'] = 'habari';
 		$formdefaults['table_prefix'] = isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : 'habari__';
 		$formdefaults['admin_username'] = 'admin';
-		$formdefaults['admin_pass'] = '';
+		$formdefaults['admin_pass1'] = '';
+		$formdefaults['admin_pass2'] = '';
 		$formdefaults['blog_title'] = 'My Habari';
 		$formdefaults['admin_email'] = '';
 
@@ -308,7 +327,7 @@ class InstallHandler extends ActionHandler {
 	{
 		$admin_username= $this->handler_vars['admin_username'];
 		$admin_email= $this->handler_vars['admin_email'];
-		$admin_pass= $this->handler_vars['admin_pass'];
+		$admin_pass= $this->handler_vars['admin_pass1'];
 
 		if ($admin_pass{0} == '{') {
 			// looks like we might have a crypted password
@@ -498,6 +517,110 @@ class InstallHandler extends ActionHandler {
 			return false;
 		}
 		return false;  // Only happens when config.php template does not exist.
+	}
+
+	/**
+	 * returns an array of .htaccess declarations used by Habari
+	**/
+	public function htaccess()
+	{
+		return array(
+			'open_block' => '### HABARI START',
+			'engine_on' => 'RewriteEngine On',
+			'rewrite_cond_f' => 'RewriteCond %{REQUEST_FILENAME} !-f',
+			'rewrite_cond_d' => 'RewriteCond %{REQUEST_FILENAME} !-d',
+			'rewrite_rule' => 'RewriteRule . index.php [PT]',
+			'close_block' => '### HABARI END',
+		);
+	}
+
+	/**
+	 * checks for the presence of an .htaccess file
+	 * invokes write_htaccess() as needed
+	**/
+	public function check_htaccess()
+	{
+		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) )
+		{
+			// .htaccess is only needed on Apache
+			// @TODO: add support for IIS and lighttpd rewrites
+			return true;
+		}
+		if ( ! file_exists( HABARI_PATH . '/.htaccess') )
+		{
+			// no .htaccess exists.  Try to create one
+			return $this->write_htaccess(FALSE);
+		}
+		$htaccess= file_get_contents( HABARI_PATH . '/.htaccess');
+		if ( FALSE === strpos( $htaccess, 'HABARI' ) )
+		{
+			// the Habari block does not exist in this file
+			// so try to create it
+			return $this->write_htaccess(TRUE);
+		}
+		else
+		{
+			// the Habari block exists, but we need to make sure
+			// it is correct.
+			// @TODO: FIXME!
+		}
+		return true;
+	}
+
+	/**
+	 * attempts to write the .htaccess file if none exists
+	 * or to write the Habari-specific portions to an existing .htaccess
+	 * @param bool whether an .htaccess file already exists or not
+	 * @param bool whether to remove and re-create any existing Habari block
+	**/
+	public function write_htaccess( $exists = FALSE, $update = FALSE )
+	{
+		$file_contents= "\n" . implode( "\n", $this->htaccess() ) . "\n";
+		if ( ! $exists )
+		{
+			if ( ! is_writable( HABARI_PATH ) )
+			{
+				// we can't create the file
+				return false;
+			}
+		}
+		else
+		{
+			if ( ! is_writable( HABARI_PATH . '/.htaccess' ) )
+			{
+				// we can't update the file
+				return false;
+			}
+		}
+		if ( ! $update )
+		{
+			// we're either creating a new .htaccess, or adding
+			// the Habari block to an existing .htaccess which
+			// previously lacked it.  As such, simply open the
+			// .htaccess file in append mode, and add the contents
+			if ( $fh= fopen( HABARI_PATH . '/.htaccess', 'a' ) )
+			{
+				if ( FALSE !== fwrite( $fh, $file_contents ) )
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			// we're updating an existing but incomplete .htaccess
+			// care must be take only to remove the Habari bits
+			// @TODO: FIXME!!
+		}
+		return true;
 	}
 }
 ?>
