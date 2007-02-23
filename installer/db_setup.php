@@ -216,7 +216,9 @@
 		
 		<div class="inputfield">
 			<label for="adminpass">Password</label>
-			<input type="password" id="adminpass" name="admin_pass" value="<?php echo $admin_pass; ?>" />
+			<input type="password" id="adminpass" name="admin_pass1" value="<?php echo $admin_pass; ?>" />
+			<label for="adminpass">Password (again) </label>
+			<input type="password" id="adminpass" name="admin_pass2" value="<?php echo $admin_pass; ?>" />
 			<img class="status" src="/system/installer/images/ready.png" />
 			<div class="warning"></div>
 			<div class="help">
