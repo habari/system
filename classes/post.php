@@ -242,24 +242,24 @@ class Post extends QueryRecord
 	private function setstatus($value)
 	{
 		if(is_numeric($value))
-			$this->status = $value;
+			$this->fields['status'] = $value;
 		else
 		{
 			switch(strtolower($value))
 			{
 				case "published":
 				case "publish":
-					$this->status = self::STATUS_PUBLISHED;
+					$this->fields['status'] = self::STATUS_PUBLISHED;
 					break;
 				case "draft":
-					$this->status = self::STATUS_DRAFT;
+					$this->fields['status'] = self::STATUS_DRAFT;
 					break;
 				case "private":
-					$this->status = self::STATUS_PRIVATE;
+					$this->fields['status'] = self::STATUS_PRIVATE;
 					break;
 			}
 		}
-		return $this->status;
+		return $this->fields['status'];
 	}
 
 	private function parsetags( $tags )
