@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://gmpg.org/xfn/11">
 	<title>Habari Administration</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php Options::out('habari_url'); ?>/system/admin/admin.css" />
-	<script src="<?php Options::out('habari_url'); ?>/scripts/jquery.js" type="text/javascript"></script>
-	<script src="<?php Options::out('habari_url'); ?>/scripts/support.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/admin.css" />
+	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/support.js" type="text/javascript"></script>
 	<script type="text/javascript">
   		$(document).ready(function(){
 		    $("tbody/tr:nth-child(even)").addClass("even");
@@ -32,7 +32,7 @@
 <div id="page">
 	<div id="menubar">
 		<div id="site-name">
-			<a href="<?php Options::out('base_url'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
+			<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
 		<ol id="menu">
 			<?php $page = empty($page) ? 'overview' : $page; ?>

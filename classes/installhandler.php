@@ -38,7 +38,7 @@ class InstallHandler extends ActionHandler {
 		/*
 		 * Let's check the config.php file if no POST data was submitted
 		*/
-		if ( (! file_exists(Site::get_config()) ) && ( ! isset($_POST['db_user']) ) )
+		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['db_user']) ) )
 		{
 			// no config file, and no HTTP POST
 			$this->display('db_setup');
@@ -47,8 +47,8 @@ class InstallHandler extends ActionHandler {
 		// we got here, so we either have a config file, or an HTTP POST
 
 		// try to load any values that might be defined in config.php
-		if ( file_exists( Site::get_config() ) ) {
-			include( Site::get_config() );
+		if ( file_exists( Site::get_dir('config_file') ) ) {
+			include( Site::get_dir('config_file') );
 			if ( isset( $db_connection ) ) {
 				list( $this->handler_vars['db_type'], $remainder )= explode( ':', $db_connection['connection_string'] );
 				switch( $this->handler_vars['db_type'] ) {
@@ -350,7 +350,7 @@ class InstallHandler extends ActionHandler {
 			'password'=>$password
 		));
 		$admin->insert();
-		/** @todo Why is the User an insert() call and Post a create() call? */
+
 		// Insert a post record
 		Post::create(array(
 			'title'=>'First Post',
@@ -466,7 +466,7 @@ class InstallHandler extends ActionHandler {
 	private function write_config_file()
 	{
 		// first, check if a config.php file exists
-		if ( file_exists( Site::get_config() ) )
+		if ( file_exists( Site::get_dir('config_file' ) ) )
 		{
 			// set the defaults for comprison
 			$db_host= $this->handler_vars['db_host']; 
@@ -486,7 +486,7 @@ class InstallHandler extends ActionHandler {
 			} 
 
 			// load the config.php file
-			include( Site::get_config() );
+			include( Site::get_dir('config_file') );
 			
 			// and now we compare the values defined there to
 			// the values POSTed to the installer
@@ -505,13 +505,13 @@ class InstallHandler extends ActionHandler {
 			return false;
 		}
 		if($file_contents= $this->get_config_file()) {
-			if ($file= @fopen(Site::get_config(), 'w')) {
+			if ($file= @fopen(Site::get_dir('config_file'), 'w')) {
 				if (fwrite($file, $file_contents, strlen($file_contents))) {
 					fclose($file);
 					return true;
 				}
 			}
-			$this->handler_vars['config_file']= HABARI_PATH . Site::get_config_dir() . '/config.php';
+			$this->handler_vars['config_file']= HABARI_PATH . Site::get_dir('config') . '/config.php';
 			$this->handler_vars['file_contents']= htmlspecialchars($file_contents);
 			$this->display('config');
 			return false;

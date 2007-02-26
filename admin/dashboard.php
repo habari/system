@@ -12,18 +12,18 @@
 					<p>Next is &ldquo;Publish&rdquo;. You can work on posts or pages. Posts are like journal entries and are filed chronologically. Pages are filed seperately and are great for things like telling about the authors on your site.</p>
 					<p>Finally, you have the &ldquo;Manage&rdquo; option which includes &ldquo;Content&rdquo; where you can edit and delete posts and pages. You can also choose &ldquo;Comments&rdquo; where you can edit and delete comments. The last option is &ldquo;Spam&rdquo;. Here you can quickly review and destroy the spam that we've trapped.</p>
 					<p>Below this message is your &ldquo;Dashboard&rdquo; where you can get a quick overview of what's been happening around <?php Options::out('title'); ?>.</p>
-					<p>If this hasn't covered everything you need to know, there is a <a href="<?php Options::out('habari_url')?>system/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help Center</a> link at the bottom of every page in the admin area. The next time you visit, you'll get a more condensed version of this message.</p>
+					<p>If this hasn't covered everything you need to know, there is a <a href="<?php Site::out_url('system'); ?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help Center</a> link at the bottom of every page in the admin area. The next time you visit, you'll get a more condensed version of this message.</p>
 			<?php
 					$user->info->experience_level= 'user';
 				}
 				elseif ( $user->info->experience_level == 'user' ) {
 			?>
-					<p>Good to see you again, <?php echo $user->username; ?>! This is a quick pointer to help you find things like <a href="<?php Options::out('habari_url')?>system/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, themes, and plugins. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out('title'); ?>. When you've done that you can <a href="<?php URL::out('admin', 'page=publish&type=entry'); ?>" title="Post an Entry">post an entry</a> or <a href="<?php Options::out('admin', 'page=moderate')?>" title="Manage Comments">manage your comments</a>.</p>
+					<p>Good to see you again, <?php echo $user->username; ?>! This is a quick pointer to help you find things like <a href="<?php Site::out_url('system'); ?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, themes, and plugins. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out('title'); ?>. When you've done that you can <a href="<?php URL::out('admin', 'page=publish&type=entry'); ?>" title="Post an Entry">post an entry</a> or <a href="<?php URL::out('admin', 'page=moderate')?>" title="Manage Comments">manage your comments</a>.</p>
 			<?php
 				}
 				else {
 			?>
-					<p>Welcome back, <?php echo $user->username; ?>! If you need <a href="<?php Options::out('habari_url')?>system/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
+					<p>Welcome back, <?php echo $user->username; ?>! If you need <a href="<?php Site::out_url('system')?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
 			<?php
 				 }
 			?>	
@@ -48,10 +48,10 @@
 			</ul>
 		</div>
 		<div class="dashboard-block" id="incoming">
-			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&num=10&q=link:<?php Options::out('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
+			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&num=10&q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
 			<?php
 			// This should be fetched on a pseudo-cron and cached: 
-			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Options::get('hostname') );
+			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url('hostname') );
 			$search->__set_processor( new SocketRequestProcessor );
 			$search->set_timeout( 5 );
 			$result= $search->execute();
@@ -88,10 +88,10 @@
 					<li>
 						<span class="right">
 							<a href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">
-								<img src="<?php Options::out('habari_url'); ?>/system/admin/images/view.png" alt="View this draft" />
+								<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this draft" />
 							</a>
 							<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
-								<img src="<?php Options::out('habari_url'); ?>/system/admin/images/edit.png" alt="Edit this draft" />
+								<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this draft" />
 							</a>
 						</span>
 						<?php echo $draft->title; ?>
@@ -138,8 +138,8 @@
 						<td><?php echo $recent->name; ?></td>
 						<td><?php echo $recent->url; ?></td>
 						<td align="center">
-							<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$post->slug) ); ?>" title="View this post"><img src="<?php Options::out('habari_url'); ?>/system/admin/images/view.png" alt="View this comment" /></a>
-							<img src="<?php Options::out('habari_url'); ?>/system/admin/images/edit.png" alt="Edit this comment" />
+							<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$post->slug) ); ?>" title="View this post"><img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this comment" /></a>
+							<img src="<?php Site::out_url('admin_theme'); ?>/system/admin/images/edit.png" alt="Edit this comment" />
 						</td>
 					</tr>
 					<?php } ?>
