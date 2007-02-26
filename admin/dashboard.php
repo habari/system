@@ -139,7 +139,7 @@
 						<td><?php echo $recent->url; ?></td>
 						<td align="center">
 							<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$post->slug) ); ?>" title="View this post"><img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this comment" /></a>
-							<img src="<?php Site::out_url('admin_theme'); ?>/system/admin/images/edit.png" alt="Edit this comment" />
+							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this comment" />
 						</td>
 					</tr>
 					<?php } ?>
