@@ -52,7 +52,16 @@ class FeedbackHandler extends ActionHandler
 				if ( ( ! User::identify() ) && ( ! isset( $_COOKIE[$cookie] ) ) )
 				{
 					$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
-					setcookie( $cookie, $cookie_content, time() + 31536000, Options::get('siteurl') );
+					$site_url= Site::get_path('base');
+					if ( empty( $site_url ) )
+					{
+						$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
+					}
+					else
+					{
+						$site_url= '/' . $site_url . '/';
+					}
+					setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );
 				}
 				
 				// Return the commenter to the original page.

@@ -66,8 +66,8 @@ class Controller extends Singleton {
     /* Local scope variable caching */
     $controller= Controller::instance();
 
-    /* Grab the base URL from the DB */
-    $controller->base_url= Options::get('base_url');
+    /* Grab the base URL from the Site class */
+    $controller->base_url= Site::get_path('base', true);
 
     /* Start with the entire URL coming from web server... */
     $start_url= ( isset($_SERVER['REQUEST_URI']) 

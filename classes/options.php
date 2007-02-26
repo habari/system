@@ -81,15 +81,6 @@ class Options extends Singleton
 	 **/
 	public function __get($name)
 	{
-		// Non-overrideable defaults:
-		switch($name) {
-		case 'hostname':
-			return $_SERVER['SERVER_NAME'];
-		case 'theme_url':
-			$theme = Themes::get_active();
-			return Site::get_user_url() . '/themes/' . $theme->theme_dir;
-		}
-		
 		if(!isset($this->options[$name])) {
 			$result = DB::get_row('SELECT value, type FROM ' . DB::table('options') . ' WHERE name = ?', array($name), 'QueryRecord');
 			if ( Error::is_error( $result ) ) {
@@ -109,11 +100,6 @@ class Options extends Singleton
 				switch($name) {
 				case 'pagination':
 					return 10;
-				case 'habari_host':
-					return Site::get_host();
-				case 'habari_url':
-					// use Utils::glue_url?
-					return $this->habari_host . Site::get_base_url();
 				case 'comments_require_id':
 					return FALSE;
 				case 'pingback_send':

@@ -4,11 +4,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="en"/>
     <meta name="robots" content="noindex,nofollow" />
-    <link href="system/installer/style.css" rel="stylesheet" type="text/css" />
+    <link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css" />
     
 	  <title>Install Habari</title>
-		<script type="text/javascript" src="<?php echo Site::get_base_url(); ?>scripts/jquery.js"></script>
-		<script type="text/javascript" src="<?php echo Site::get_base_url(); ?>scripts/jquery.form.js"></script>
+		<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.js"></script>
+		<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.form.js"></script>
 	<script type="text/javascript">
 	
 	function setDatabaseType(el)

@@ -20,7 +20,7 @@ class UserHandler extends ActionHandler
 		$pass= isset($this->handler_vars['pass']) ? $this->handler_vars['pass'] : '';
 		$user= User::authenticate($name, $pass);
 		
-		if ($user === FALSE) {
+		if ( FALSE === $user ) {
 			//$url->settings['error'] = "badlogin";
 			// unset the password the use tried
 			$this->handler_vars['pass']= '';
@@ -30,13 +30,14 @@ class UserHandler extends ActionHandler
 			$this->display('login');
 			return true;
 		}
-		else {
+		else
+		{
 			/* Successfully authenticated. */
 			$this->handler_vars['user']= $user; // Assign into handler and theme
 			$user->info->authenticate_time= time(); // keep track of last login time
 			// Redirect to admin dashboard
 			// XXX do we want to redirect to the referring page? 
-			Utils::redirect( URL::get( 'admin', 'page=dashboard' ) );
+			Utils::redirect( Site::get_url('admin') );
 			return true;
 		}
 	}

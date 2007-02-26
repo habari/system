@@ -46,7 +46,7 @@ class URL extends Singleton
 	 */
 	public static function parse( $from_url )
 	{
-		$base_url= Options::get( 'base_url' );
+		$base_url= Site::get_path( 'base', true );
 		
 		/* 
 		 * Strip out the base URL from the requested URL
@@ -105,10 +105,7 @@ class URL extends Singleton
 		$url->load_rules();
 		if ( $rule= $url->rules->by_name( $rule_name ) ) {
 			$return_url = $rule->build( $args );
-			return
-				'http' . ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 's' : '' ) . 
-				'://' . $_SERVER['HTTP_HOST'] . '/' . ltrim( Controller::get_base_url(), '/' ) .
-				htmlspecialchars($return_url);
+			return Site::get_url('habari', true) . htmlspecialchars($return_url);
 		}
 	}
 

@@ -7,180 +7,277 @@
  */
 class Site
 {
+	/**
+	 * Constants
+	 * CONFIG_LOCAL Local installation
+	 * CONFIG_SUBDIR Subdirectory or multisite installation
+	 * CONFIG_SUBDOMAIN Subdomain installation
+	 */
 	const CONFIG_LOCAL = 0;
 	const CONFIG_SUBDIR = 1;
 	const CONFIG_SUBDOMAIN = 2;
 
-	// this variable holds the path to the config.php file
+	/**
+	 * @staticvar $config_path Filesystem path to config.php
+	 * @staticvar $config_dir Multisite directory to config.php
+	 * @staticvar $config_type Installation type (local, subdir, subdomain)
+	 * @staticvar $scriptname the name of the currently executing script (index.php)
+	 */
 	static $config_path;
 	static $config_dir;	
 	static $config_type = Site::CONFIG_LOCAL;
+	static $scriptname;
 
 	/**
-	 * Site constructor
-	 * This class should not be instantiated.
-	 **/	 	 	
+	 * Constructor
+	 * This class should not be instantiated
+	 */
 	private function __construct()
 	{
 	}
 
-
 	/**
-	 * returns the full filesystem path to the config file to use
-	 *
-	 * @return string the filesystem path to the config file
+	 * script_name is a helper function to determine the name of the script
+	 * not all PHP installations return the same values for $_SERVER['SCRIPT_URL']
+	 * and $_SERVER['SCRIPT_NAME']
 	**/
-	static function get_config_path()
+	public static function script_name()
 	{
-		if ( self::$config_path ) {
-			// shortcut for subsequent calls
-			return self::$config_path;
-		}
-
-		// use this, by default
-		self::$config_path= HABARI_PATH;
-
-		// get an array of directories in /user/sites/ that
-		// contain a config.php file
-		$config_dirs= preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', glob( HABARI_PATH . '/user/sites/*/config.php' ) );
-
-		if ( empty( $config_dirs ) ) {
-			// no site-specific configurations exists
-			// use the default
-			return self::$config_path;
-		}
-		
-		$server= explode('.', $_SERVER['SERVER_NAME']);
-		if ( isset( $_SERVER['SERVER_PORT'] )
-			&& ( 80 != $_SERVER['SERVER_PORT'] )
-			&& ( 443 != $_SERVER['SERVER_PORT'] ) )
-		{
-			array_unshift( $server, $_SERVER['SERVER_PORT'] . '.' );
-		}
-		$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
-		
-		// walk through the potential directories looking for a match
-		// step 1: walk the path
-		for ( $x= count( $request ); $x >= 0; $x-- )
-		{
-			//step 2: walk the host
-			for ( $y= count( $server ); $y > 0; $y-- )
-			{
-				$match= trim( implode( '.', array_slice( $server, -$y ) ) . '.' . implode( '.', array_slice( $request, 0, $x ) ), '.' );
-				if ( in_array( $match, $config_dirs ) ) {
-					self::$config_dir= $match;
-					self::$config_path= HABARI_PATH . '/user/sites/' . self::$config_dir;
-					if ( $x > 0 ) {
-						self::$config_type= Site::CONFIG_SUBDIR;
-					}
-					else {
-						self::$config_type= Site::CONFIG_SUBDOMAIN;
-					}
-					
-					break 2;
-				}
-			}
-		}
-		
-		return self::$config_path;
-	}
-
-	/**
-	 * shortcut helper to return the complete path to config.php,
-	 * including the filename component at the end
-	*/
-	public static function get_config()
-	{
-		return self::get_config_path() . '/config.php';
-	}
-	
-	/**
-	 * Returns the path relative to HABARI_PATH to the config file to use
-	 *
-	 * @return string the relative path to the config file
-	**/
-	public static function get_config_dir()
-	{
-		self::get_config_path();
-		return self::$config_dir;
-	}
-	
-	/**
-	 * Returns the type of config that has been applied, local, subdirectory, or subdomain
-	 *
-	 * @return integer A Site::CONFIG_* constant representing the type of config applied.
-	**/
-	public static function get_config_type()
-	{
-		self::get_config_path();
-		return self::$config_type;
-	}
-	
-	/**
-	 * Returns the host used to answer the request
-	 * 
-	 * @todo Handle SSL
-	 *
-	 * @return string The protocol, hostname and port of the request 
-	**/
-	public static function get_host()
-	{
-		// If we're running on a port other than 80, add the port number
-		// to the value returned from host_url
-		$port= 80; // Default in case not set.
-		if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-			$port= $_SERVER['SERVER_PORT'];
-		}
-		$portpart= '';
-		if ( $port != 80 ) { // XXX should handle SSL
-			$portpart= ':' . $port;
-		}
-
-		return 'http://' . Options::get('hostname') . $portpart;
-	}
-	
-	/**
-	 * Returns the URL to the user directory based on the config
-	 *
-	 * @return string The URL to the user directory
-	**/
-	public static function get_user_url()
-	{
-		$host= Site::get_host();
-		$url= $host . Site::get_base_url() . '/' . Site::get_user_dir();
-		return $url; 
-	}
-	
-	
-	/**
-	 * Returns the URL relative to the site root to the directory containing the core index.php file
-	 *
-	 * @return string The URL path containing the core index.php file
-	**/
-	public static function get_base_url()
-	{
-		$dir = ltrim(dirname($_SERVER["SCRIPT_NAME"]).'/','/');
-		
-		if ( $dir == '\\' ) {
-			$dir = '';
-		}
-		return $dir;
-	}
-	
-	/**
-	 * Returns the path relative to HABARI_PATH to the user directory based on the config type
-	 *
-	 * @return string The path to the user directory
-	**/
-	public static function get_user_dir()
-	{
-		switch(self::get_config_type()) {
-		case Site::CONFIG_LOCAL:
-			return 'user';
+		switch ( true ) {
+		case isset ( $scriptname ):
+			break;
+		case isset( $_SERVER['SCRIPT_URL'] ):
+			$scriptname= $_SERVER['SCRIPT_URL'];
+			break;
+		case isset( $_SERVER['SCRIPT_NAME'] ):
+			$scriptname= $_SERVER['SCRIPT_NAME'];
+			break;
 		default:
-			return 'user/sites/' . Site::get_config_dir();
-		}	
+			Error::raise('Could not determine script name.');
+			die();
+		}
+		return $scriptname;
 	}
+
+	/**
+	 * get_url returns a fully-qualified URL
+	 *	'host' returns http://www.habariproject.org
+	 *	'habari' returns http://www.habariproject.org/habari, if you
+	 *		have Habari installed into a /habari/ sub-directory
+	 *	'user' returns one of the following:
+	 *		http://www.habariproject.org/user
+	 *		http://www.habariproject.org/user/sites/x.y.z
+	 *	'theme' returns one of the following:
+	 *		http://www.habariproject.org/user/themes/theme_name
+	 *		http://www.habariproject.org/user/sites/x.y.z/themes/theme_name
+	 *	'admin' returns http://www.habariproject.org/admin
+	 *	'admin_theme' returns http://www.habariproject.org/system/admin
+	 *	'system' returns http://www.habariproject.org/system
+	 *	'scripts' returns http://www.habariproject.org/scripts
+	 *	'hostname' returns www.habariproject.org
+	 * @param string the name of the URL to return
+	 * @param bool whether to include a trailing slash.  Default: No
+	 * @return string URL
+	 */
+	public static function get_url( $name, $trail = false )
+	{
+		$url= '';
+		
+		switch( strtolower( $name ) )
+		{
+			case 'host':
+				$protocol= 'http';
+				// If we're running on a port other than 80, i
+				// add the port number to the value returned 
+				// from host_url
+				$port= 80; // Default in case not set.
+				if ( isset( $_SERVER['SERVER_PORT'] ) )
+				{
+					$port= $_SERVER['SERVER_PORT'];
+				}
+				$portpart= '';
+				if ( ( $port != 80 ) && ( $port != 443 ) )
+				{
+					$portpart= ':' . $port;
+				}
+				if ( isset( $_SERVER['HTTPS'] ) )
+				{
+					$protocol= 'https';
+				}
+				$url= $protocol . '://' . $_SERVER['SERVER_NAME'] . $portpart;
+				break;
+			case 'habari':
+				$url= Site::get_url('host');
+				$path= trim(dirname($_SERVER["SCRIPT_NAME"]),'/\\');
+				if ( '' != $path )
+				{
+					$url.= '/' . $path;
+				}
+				break;
+			case 'user':
+				$url= Site::get_url('host', true) . Site::get_path('base', true) . Site::get_path('user');
+				break;
+			case 'theme':
+				$theme= Themes::get_active();
+				if ( file_exists( Site::get_dir('config') . '/themes/' . $theme->theme_dir ) )
+				{
+					$url= Site::get_url('user') .  '/themes/' . $theme->theme_dir;
+				}
+				else
+				{
+					$url= Site::get_url('habari') . '/user/themes/' . $theme->theme_dir;
+				}
+				break;
+			case 'admin':
+				$url= Site::get_url('habari') . '/admin';
+				break;
+			case 'admin_theme':
+				$url= Site::get_url('habari') . '/system/admin';
+				break;
+			case 'system':
+				$url= Site::get_url('habari') . '/system';
+				break;
+			case 'scripts':
+				$url= Site::get_url('habari') . '/scripts';
+				break;
+			case 'hostname':
+				$url= $_SERVER['SERVER_NAME'];
+				break;
+		}
+		$url.= ($trail) ? '/' : '';
+		$url= Plugins::filter( 'site_url_' . $name, $url );
+		return $url;
+	}
+
+	/**
+	 * get_path returns a relative URL path, without leading protocol or host
+	 *	'base' returns the URL sub-directory in which Habari is installed, if any.
+	 *	'user' returns one of the following:
+	 *		user
+	 *		user/sites/x.y.z
+	 *	'theme' returns one of the following:
+	 *		/user/themes/theme_name
+	 *		/user/sites/x.y.z/themes/theme_dir
+	 * @param string the name of the path to return
+	 * @param bool whether to include a trailing slash.  Default: No
+	**/
+	public static function get_path( $name, $tail = false )
+	{
+		$path= '';
+		switch ( strtolower( $name ) )
+		{
+			case 'base':
+				$path= trim(dirname($_SERVER["SCRIPT_NAME"]),'/\\');
+				break;
+			case 'user':
+				$path= (Site::$config_type == Site::CONFIG_LOCAL) ? 'user' : 'user/sites/' . Site::get_dir('config');
+				break;
+			case 'theme':
+				$theme= Themes::get_active();
+				$path= Site::get_path('user') . '/themes/' . $theme->theme_dir;
+				break;
+		}
+		$path.= ( $tail ) ? '/' : '';
+		$path= Plugins::filter( 'site_path_' . $name, $path );
+		return $path;
+	}
+	
+	/**
+	 * get_dir returns a complete filesystem path to the requested item
+	 *	'config_file' returns the complete path to the config.php file, including the filename
+	 *	'config' returns the path of the directory containing config.php
+	 * @param string the name of the path item to return
+	 * @param bool whether to include a trailing slash.  Default: No
+	 * @return string Path
+	 */
+	public static function get_dir( $name, $trail = false )
+	{
+		$path= '';
+		
+		switch ( strtolower( $name ) )
+		{
+			case 'config_file':
+				$path= Site::get_dir('config') . '/config.php';
+				break;
+			case 'config':
+				if ( self::$config_path ) {
+					return self::$config_path;
+				}
+				
+				self::$config_path= HABARI_PATH;
+				
+				$config_dirs= preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', glob( HABARI_PATH . '/user/sites/*/config.php' ) );
+				
+				if ( empty( $config_dirs ) ) {
+					return self::$config_path;
+				}
+				
+				$server= parse_url( Site::get_url('habari') ) ;
+				$server= ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
+				
+				$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
+				
+				for ( $x= count( $request ); $x >= 0; $x-- )
+				{
+					$match= trim( $server . implode( '.', array_slice( $request, 0, $x ) ), '.' );
+					if ( in_array( $match, $config_dirs ) ) {
+						self::$config_dir= $match;
+						self::$config_path= HABARI_PATH . '/user/sites/' . self::$config_dir;
+						self::$config_type= ($x > 0) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
+						break;
+					}
+				}
+				$path= self::$config_path;
+				break;
+		}
+		$path.= ($trail) ? '/' : '';
+		$path= Plugins::filter( 'site_dir_' . $name, $path );
+		return $path;
+	}
+
+	/**
+	 * out_url echos out a URL
+	 * @param string the URL to display
+	 * @param bool whether or not to include a trailing slash.  Default: No
+	**/
+	public function out_url( $url, $trail= false )
+	{
+		echo Site::get_url( $url, $trail );
+	}
+
+	/**
+	 * out_path echos a URL path
+	 * @param string the URL path to display
+	 * @param bool whether or not to include a trailing slash.  Default: No
+	**/
+	public function out_path( $path, $trail= false )
+	{
+		echo Site::get_path( $path, $trail );
+	}
+
+	/**
+	 * our_dir echos our a filesystem directory
+	 * @param string the filesystem directory to display
+	 * @param bool whether or not to include a trailing slash.  Default: No
+	**/
+	public function out_dir( $dir, $trail= false )
+	{
+		echo Site::get_dir( $dir, $trail );
+	}
+
+/*
+I'm unclear whether we need these.  If so, they likely belong in a new method, since they're neither URLs, paths, nor directories.
+
+			case 'config_type':
+				self::get_config_path();
+				$path= self::$config_type;
+				break;
+			case 'config_name':
+				self::get_dir('config');
+				$path= self::$config_dir;
+				break;
+*/
+
 }
 
 ?>
