@@ -1,43 +1,40 @@
 <?php
+
+define('SLUG_POSTFIX', '-');
+
 /**
- * Habari PostRecord Class
- *
- * Requires PHP 5.0.4 or later
  * @package Habari
-	*
+ *
  * Includes an instance of the PostInfo class; for holding inforecords about a Post
- * If the Post object describes an existing post; use the internal info object to get, set, unset and test for existence (isset) of 
- * info records
+ * If the Post object describes an existing post; use the internal info object to
+ * get, set, unset and test for existence (isset) of info records.
  * <code>
- *	$this->info = new PostInfo ( 1 );  // Info records of post with id = 1
+ * $this->info = new PostInfo ( 1 );  // Info records of post with id = 1
  * $this->info->option1= "blah"; // set info record with name "option1" to value "blah"
  * $info_value= $this->info->option1; // get value of info record with name "option1" into variable $info_value
  * if ( isset ($this->info->option1) )  // test for existence of "option1"
  * unset ( $this->info->option1 ); // delete "option1" info record
  * </code>
  *
-
  */
-define('SLUG_POSTFIX', '-');
-
 class Post extends QueryRecord
 {
 	// public constants
-	const STATUS_DRAFT = 0;
-	const STATUS_PUBLISHED = 1;
-	const STATUS_PRIVATE = 2;
+	const STATUS_DRAFT= 0;
+	const STATUS_PUBLISHED= 1;
+	const STATUS_PRIVATE= 2;
 	
-	const STATUS_ANY = -1;  // For querying only, not for use as a stored value.
+	// For querying only, not for use as a stored value.
+	const STATUS_ANY= -1;
 
-	private $tags = null;
-	private $comments = null;
-	private $author_object = null;
+	private $tags= null;
+	private $comments= null;
+	private $author_object= null;
 		
 	private $info= null;
  
 	/**
-	 * function default_fields
-	 * Returns the defined database columns for a Post
+	 * Return the defined database columns for a Post.
 	 * @return array Array of columns in the Post table
 	**/
 	public static function default_fields()
@@ -58,9 +55,8 @@ class Post extends QueryRecord
 	}
 
 	/**
-	 * constructor __construct
 	 * Constructor for the Post class.
-	 * @param array an associative array of initial Post field values.
+	 * @param array $paramarray an associative array of initial Post field values.
 	 **/	 	 	 	
 	public function __construct( $paramarray = array() )
 	{
