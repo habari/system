@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Input filtering functions
+ * Input filtering functions.
+ * 
+ * @package Habari
  */
 class InputFilter
 {
@@ -60,7 +62,7 @@ class InputFilter
 	/**
 	 * Protocols that are ok for use in URIs.
 	 */
-	private $whitelist_protocols= array(
+	private static $whitelist_protocols= array(
 		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto',
 	);
 	
@@ -103,7 +105,7 @@ class InputFilter
 	
 	/**
 	 * Perform all filtering, return new string.
-	 * @param $str string Input string.
+	 * @param string $str Input string.
 	 * @return string Filtered output string.
 	 */
 	public static function filter( $str )
@@ -124,7 +126,8 @@ class InputFilter
 
 	/**
 	 * Callback function for strip_illegal_entities, do not use.
-	 * @param $m array matches
+	 * @access private
+	 * @param array $m matches
 	 */	
 	public static function _validate_entity( $m )
 	{
@@ -186,6 +189,88 @@ class InputFilter
 		return $str;
 	}
 	
+	/**
+	 * This really doesn't belong here. It should also be done much better. This is a nasty, nasty kludge.
+	 */
+	public static function parse_url( $url )
+	{
+		// result array
+		$r= array(
+			'scheme' => '',
+			'host' => '',
+			'port' => '',
+			'user' => '',
+			'pass' => '',
+			'path' => '',
+			'query' => '',
+			'fragment' => '',
+			//
+			'is_relative' => FALSE,
+			'is_pseudo' => FALSE,
+			//
+			'pseudo_args' => '',
+		);
+		
+		// TODO normalize etc., make re tighter (ips, ports)
+		$re= '@^' // delimiter + anchor
+			// scheme, address, port are optional for relative urls ...
+			. '(?:'
+				// scheme
+				. '([a-zA-Z][^:]*):(?://)?'
+				// real protocols
+				. '((?:'
+					// optional userinfo
+					. '(?:'
+						// username
+						. '((?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;&=+$,])+)'
+						// password
+						. ':((?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;:&=+$,])+)?\@)?'
+					// address:
+					. '('
+					//   ip
+					  . '(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|'
+					//   or hostname
+					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*\.[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
+					. ')'
+					// optional port
+					. '(?::(\d{1,5}))?'
+				// pseudo-protocols
+				. ')|.+)'
+			// /optional for relative
+			. ')?'
+			// path
+			. '(/[^?#]+)?'
+			// querystring
+			. '(?:\?([^#]+))?'
+			// fragment (hash)
+			. '(?:#(.*))?'
+			// delimiter
+			. '@'
+			;
+		
+		$t= preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
+		if (!$t) return $r; // TODO error handling
+		
+		$matches= $matches[0];
+		
+		$r['is_relative']= empty( $matches[1] );
+		$r['is_pseudo']= count( $matches ) == 3;
+		
+		$matches= array_pad( $matches, 10, '' );
+		
+		$r['scheme']= $matches[1];
+		if ($r['is_pseudo']) $r['pseudo_args']= $matches[2];
+		$r['user']= $matches[3];
+		$r['pass']= $matches[4];
+		$r['host']= $matches[5];
+		$r['port']= $matches[6];
+		$r['path']= $matches[7];
+		$r['query']= $matches[8];
+		$r['fragment']= $matches[9];
+		
+		return $r;
+	}
+	
 	private static function check_attr_value( $k, $v, $type )
 	{
 		if ( is_array( $type ) ) {
@@ -197,8 +282,8 @@ class InputFilter
 			switch ( $type ) {
 				case 'uri':
 					// RfC 2396 <http://www.ietf.org/rfc/rfc2396.txt>
-					//$bits= parse_url( $v );
-					return TRUE; // TODO must check URI for valid syntax, procotol, etc.
+					$bits= self::parse_url( $v );
+					return $bits['is_relative'] || in_array( $bits['scheme'], self::$whitelist_protocols );
 					break;
 				case 'language-code':
 					// RfC 1766 <http://www.ietf.org/rfc/rfc1766.txt>
@@ -226,6 +311,7 @@ class InputFilter
 	
 	/**
 	 * @todo TODO must build DOM to really properly remove offending elements
+	 * @todo TODO properly filter URLs
 	 */
 	public static function filter_html_elements( $str )
 	{
