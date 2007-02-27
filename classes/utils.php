@@ -266,6 +266,7 @@ class Utils
 			$backtrace = array_reverse(debug_backtrace(), true);
 			foreach($backtrace as $trace) {
 				$file = $line = $class = $type = $function = '';
+				$args= array();
 				extract($trace);
 				if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
 				if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
