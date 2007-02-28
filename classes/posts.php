@@ -114,6 +114,21 @@ class Posts extends ArrayObject
 					$where[]= 'tag_text= ?';
 					$params[]= $paramset['tag'];
 				}
+				if ( isset( $paramset['not:tag'] ) ) {
+					$nottag = is_array($paramset['not:tag']) ? array_values($paramset['not:tag']) : array($paramset['not:tag']);
+					// This needs to be an escaped IN clause, not a series of OR comparisons:
+					$inwhere= implode( ' OR ', array_fill( 0, count($nottag), DB::table( 'tags' ) . '.tag_slug = ?' ));
+
+					$where[]= 'not exists (select 1
+						FROM ' . DB::table( 'tag2post' ) . '
+						INNER JOIN ' . DB::table( 'tags' ) . ' on ' . DB::table( 'tags' ) . '.id = ' . DB::table( 'tag2post' ) . '.tag_id
+						WHERE (' . $inwhere . ')
+						AND ' . DB::table( 'tag2post' ) . '.post_id = ' . DB::table( 'posts' ) . '.id)
+					';
+					foreach($nottag as $nt) {
+						$params[]= $nt;
+					}
+				}
 				/* 
 				 * Build the pubdate 
 				 * If we've got the day, then get the date.
