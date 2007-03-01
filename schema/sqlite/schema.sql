@@ -172,7 +172,7 @@ VALUES ('admin','/^admin[\/]*([^\/]*)[\/]{0,1}$/i','admin/{$page}'
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
-VALUES (NULL, 'userprofile', '/^admin\\/(user)\\/([^\\/]+)\\/?$/', 'admin/{$page}/{$user}', 'AdminHandler', 'admin', 4, 'The profile page for a specific user');
+VALUES (NULL, 'userprofile', '/^admin\\/(user)\\/([^\\/]+)\\/{0,1}$/i', 'admin/{$page}/{$user}', 'AdminHandler', 'admin', 4, 'The profile page for a specific user');
 
 INSERT INTO {$prefix}rewrite_rules
 (name, parse_regex, build_str, handler, action, priority, description)
