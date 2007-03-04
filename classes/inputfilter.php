@@ -207,11 +207,12 @@ class InputFilter
 			//
 			'is_relative' => FALSE,
 			'is_pseudo' => FALSE,
+			'is_error' => TRUE,
 			//
 			'pseudo_args' => '',
 		);
 		
-		// TODO normalize etc., make re tighter (ips, ports)
+		// TODO normalize etc., make re tighter (ips)
 		$re= '@^' // delimiter + anchor
 			// scheme, address, port are optional for relative urls ...
 			. '(?:'
@@ -232,8 +233,8 @@ class InputFilter
 					//   or hostname
 					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*\.[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
 					. ')'
-					// optional port
-					. '(?::(\d{1,5}))?'
+					// optional port (:0-65535)
+					. '(?::([0-5]?[0-9]{1,4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?'
 				// pseudo-protocols
 				. ')|.+)'
 			// /optional for relative
@@ -249,10 +250,11 @@ class InputFilter
 			;
 		
 		$t= preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
-		if (!$t) return $r; // TODO error handling
+		if (!$t) return $r; // TODO better error handling
 		
 		$matches= $matches[0];
 		
+		$r['is_error']= FALSE;
 		$r['is_relative']= empty( $matches[1] );
 		$r['is_pseudo']= count( $matches ) == 3;
 		
