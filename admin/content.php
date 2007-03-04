@@ -25,7 +25,7 @@
 					</tr>
 				</thead>
 				<?php
-				foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::STATUS_PUBLISHED ) ) as $post ) {
+				foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::status('published') ) ) as $post ) {
 				?>
 				<tr>
 					<td><?php echo '<a href="' . $post->permalink . '">' . $post->title ?></a></td>
@@ -57,7 +57,7 @@
 						<th align="center">Action</th>
 					</tr>
 				</thead>
-				<?php 	foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::STATUS_DRAFT ) ) as $draft ) { ?>
+				<?php 	foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::status('draft') ) ) as $draft ) { ?>
 				<tr>
 					<td><?php echo $draft->title; ?></td>
 					<td><?php echo $draft->author->username; ?></td>

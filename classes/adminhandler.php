@@ -119,7 +119,7 @@ class AdminHandler extends ActionHandler
 	{
 		if ( $_POST['content'] != '' ) {
 			if ( isset( $_POST['slug'] ) ) {
-				$post= Post::get( array( 'slug' => $_POST['slug'], 'status' => Post::STATUS_ANY ) );
+				$post= Post::get( array( 'slug' => $_POST['slug'], 'status' => Post::status('any') ) );
 				$post->title= $_POST['title'];
 				$post->tags= $_POST['tags'];
 				$post->content= $_POST['content'];

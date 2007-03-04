@@ -33,8 +33,8 @@
 				<ul id="site-stats">
 					<li><span class="right">567</span> Visits Today</li>
 					<li><span class="right">10067</span> Visits Past Week</li>
-					<li><span class="right"><?php echo Posts::count_total(); ?></span> Total Posts</li>
-					<li><span class="right"><?php echo Posts::count_by_author( User::identify()->id ); ?></span> Number of Your Posts</li>
+					<li><span class="right"><?php echo Posts::count_total( Post::status('all') ); ?></span> Total Posts</li>
+					<li><span class="right"><?php echo Posts::count_by_author( User::identify()->id, Post::status('all') ); ?></span> Number of Your Posts</li>
 					<li><span class="right"><?php echo Comments::count_total(); ?></span> Number of Comments</li>			
 				</ul>
 		</div>
@@ -82,8 +82,8 @@
 				<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
 				<ul id="site-drafts">
 				<?php 
-					if ( Posts::count_total( Post::STATUS_DRAFT ) ) {
-						foreach ( Posts::by_status( Post::STATUS_DRAFT ) as $draft ) {
+					if ( Posts::count_total( Post::status('draft') ) ) {
+						foreach ( Posts::by_status( Post::status('draft') ) as $draft ) {
 				?>
 					<li>
 						<span class="right">

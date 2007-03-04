@@ -22,23 +22,23 @@ CREATE TABLE {$prefix}postinfo  (
 );
 
 CREATE TABLE  {$prefix}posttype ( 
-	name VARCHAR(255) NOT NULL 
-,	type SMALLINT NOT NULL DEFAULT 0
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+,	name VARCHAR(255) NOT NULL 
 , PRIMARY KEY (name)
 );
 
-INSERT INTO  {$prefix}posttype VALUES('entry', 0);
-INSERT INTO  {$prefix}posttype VALUES('page', 1);
+INSERT INTO  {$prefix}posttype VALUES('entry');
+INSERT INTO  {$prefix}posttype VALUES('page');
 
 CREATE TABLE  {$prefix}poststatus ( 
-	name VARCHAR(255) NOT NULL 
-,	type SMALLINT NOT NULL DEFAULT 0
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+,	name VARCHAR(255) NOT NULL 
 , PRIMARY KEY (name)
 );
 
-INSERT INTO  {$prefix}poststatus VALUES ('draft', 0);
-INSERT INTO  {$prefix}poststatus VALUES ('published', 1); 
-INSERT INTO  {$prefix}poststatus VALUES ('private', 2);
+INSERT INTO  {$prefix}poststatus VALUES ('draft');
+INSERT INTO  {$prefix}poststatus VALUES ('published'); 
+INSERT INTO  {$prefix}poststatus VALUES ('private');
 
 CREATE TABLE  {$prefix}options (
 	name VARCHAR(255) NOT NULL
