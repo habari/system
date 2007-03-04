@@ -99,7 +99,7 @@ class Theme
 		);
 		$where_filters= array();
 		$where_filters = array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $valid_filters ) );
-		$where_filters['status'] = Post::STATUS_PUBLISHED;
+		$where_filters['status'] = Post::status('published');
 
 		$posts= Posts::get( $where_filters );
 		if ( count( $posts ) == 1 && count( $where_filters ) > 0 ) {

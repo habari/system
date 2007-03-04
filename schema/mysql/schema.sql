@@ -5,7 +5,7 @@ CREATE TABLE {$prefix}posts (
 ,	title VARCHAR(255) NOT NULL
 ,	guid VARCHAR(255) NOT NULL
 ,	content LONGTEXT NOT NULL
-, cached_content LONGTEXT NOT NULL
+,	cached_content LONGTEXT NOT NULL
 ,	user_id SMALLINT UNSIGNED NOT NULL
 ,	status SMALLINT UNSIGNED NOT NULL
 ,	pubdate DATETIME NOT NULL 
@@ -23,25 +23,23 @@ CREATE TABLE  {$prefix}postinfo  (
 );
 
 CREATE TABLE  {$prefix}posttype ( 
-	name VARCHAR(255) NOT NULL 
-,	type SMALLINT UNSIGNED NOT NULL DEFAULT 0
-, PRIMARY KEY (name)
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT
+,	name VARCHAR(255) NOT NULL 
+, PRIMARY KEY (id)
 );
 
-INSERT INTO  {$prefix}posttype VALUES
-("entry", 0),
-("page", 1);
+INSERT INTO  {$prefix}posttype (name) VALUES ("entry");
+INSERT INTO {$prefix}posttype (name) VALUES ("page");
 
 CREATE TABLE  {$prefix}poststatus ( 
-	name VARCHAR(255) NOT NULL 
-,	type SMALLINT UNSIGNED NOT NULL DEFAULT 0
-, PRIMARY KEY (name)
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT
+,	name VARCHAR(255) NOT NULL 
+, PRIMARY KEY (id)
 );
 
-INSERT INTO  {$prefix}poststatus VALUES
-("draft", 0),
-("published", 1), 
-("private", 1);
+INSERT INTO  {$prefix}poststatus (name) VALUES ("draft");
+INSERT INTO  {$prefix}poststatus (name) VALUES ("published");
+INSERT INTO  {$prefix}poststatus (name) VALUES ("private");
 
 CREATE TABLE  {$prefix}options (
 	name VARCHAR(255) NOT NULL

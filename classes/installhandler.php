@@ -356,7 +356,7 @@ class InstallHandler extends ActionHandler {
 			'title'=>'First Post',
 			'content'=>'This is my first post',
 			'user_id'=>1,
-			'status'=>1,
+			'status'=>Post::status('published'),
 			'tags'=>'deleteme',
 		));
 		

@@ -19,19 +19,87 @@ define('SLUG_POSTFIX', '-');
  */
 class Post extends QueryRecord
 {
-	// public constants
-	const STATUS_DRAFT= 0;
-	const STATUS_PUBLISHED= 1;
-	const STATUS_PRIVATE= 2;
-	
-	// For querying only, not for use as a stored value.
-	const STATUS_ANY= -1;
+	// static variables to hold post status and post type values
+	static $post_status_list= array();
+	static $post_type_list= array();
 
 	private $tags= null;
 	private $comments= null;
 	private $author_object= null;
 		
 	private $info= null;
+
+	/**
+	 * returns an associative array of post types
+	 * @param bool whether to force a refresh of the cached values
+	 * @return array An array of post type names => integer values
+	**/
+	public static function list_post_types( $refresh = false )
+	{
+		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list ) ) )
+		{
+			return self::$post_type_list;
+		}
+		$sql= "SELECT * FROM " . DB::table('posttype');
+		$results= DB::get_results( $sql );
+		foreach ($results as $result)
+		{
+			self::$post_type_list[$result->name]= $result->id;
+		}
+		self::$post_type_list['any']= 0;
+		return self::$post_type_list;
+	}
+
+	/**
+	 * returns an associative array of post statuses
+	 * @param bool whether to force a refresh of the cached values
+	 * @return array An array of post statuses names => interger values
+	**/
+	public static function list_post_statuses( $refresh= false )
+	{
+		if ( ( ! $refresh ) && ( ! empty( self::$post_status_list ) ) )
+		{
+			return self::$post_status_list;
+		}
+		$sql= "SELECT * FROM " . DB::table('poststatus');
+		$results= DB::get_results( $sql );
+		foreach ($results as $result)
+		{
+			self::$post_status_list[$result->name]= $result->id;
+		}
+		self::$post_status_list['any']= 0;
+		return self::$post_status_list;
+	}
+
+	/**
+	 * returns the interger value of the specified post status, or false
+	 * @param string a post status name
+	 * @return mixed an integer or boolean false
+	**/
+	public static function status( $name )
+	{
+		$statuses= Post::list_post_statuses();
+		if ( isset( $statuses[strtolower($name)] ) )
+		{
+			return $statuses[strtolower($name)];
+		}
+		return false;
+	}
+
+	/**
+	 * returns the integer value of the specified post type, or false
+	 * @param string a post type
+	 * @return mixed an integer or boolean false
+	**/
+	public static function type( $name )
+	{
+		$types= Post::list_post_types();
+		if ( in_array( strtolower($name), $types ) )
+		{
+			return $types[strtolower($name)];
+		}
+		return false;
+	}
  
 	/**
 	 * Return the defined database columns for a Post.
@@ -47,10 +115,10 @@ class Post extends QueryRecord
 			'content' => '',
 			'cached_content' => '',
 			'user_id' => 0,
-			'status' => self::STATUS_DRAFT,
+			'status' => Post::status('draft'),
 			'pubdate' => date( 'Y-m-d H:i:s' ),
 			'updated' => date ( 'Y-m-d H:i:s' ),
-			'content_type' => 0
+			'content_type' => Post::type('entry')
 		);
 	}
 
@@ -93,7 +161,7 @@ class Post extends QueryRecord
 		$defaults= array (
 			'where' => array(
 				array(
-					'status' => Post::STATUS_PUBLISHED,
+					'status' => Post::status('publish'),
 				),
 			),
 			'fetch_fn' => 'get_row',
@@ -245,13 +313,13 @@ class Post extends QueryRecord
 			{
 				case "published":
 				case "publish":
-					$this->newfields['status'] = self::STATUS_PUBLISHED;
+					$this->newfields['status'] = Post::status('publish');
 					break;
 				case "draft":
-					$this->newfields['status'] = self::STATUS_DRAFT;
+					$this->newfields['status'] = Post::status('draft');
 					break;
 				case "private":
-					$this->newfields['status'] = self::STATUS_PRIVATE;
+					$this->newfields['status'] = Post::status('private');
 					break;
 			}
 		}

@@ -10,7 +10,7 @@
 		}
 	}
 	if ( isset( $slug ) ) {
-		$post= Post::get( array( 'slug' => $slug, 'status' => Post::STATUS_ANY ) );
+		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status('any') ) );
 	}
 	else {
 		$post= new Post();
@@ -34,8 +34,8 @@
 
 			<h4>Page Settings</h4>
 			<ul>
-				<li><label><input type="radio" name="status" id="draft" value="<?php echo Post::STATUS_DRAFT; ?>" <?php echo ($post->status == Post::STATUS_DRAFT) ? 'checked="checked"' : ''; ?> >Draft</label></li>
-				<li><label><input type="radio" name="status" id="publish" value="<?php echo Post::STATUS_PUBLISHED; ?>" <?php echo ($post->status == Post::STATUS_PUBLISHED) ? 'checked="checked"' : ''; ?> >Published</label></li>
+				<li><label><input type="radio" name="status" id="draft" value="<?php echo Post::status('draft'); ?>" <?php echo ($post->status == Post::status('draft') ) ? 'checked="checked"' : ''; ?> >Draft</label></li>
+				<li><label><input type="radio" name="status" id="publish" value="<?php echo Post::status('published'); ?>" <?php echo ($post->status == Post::status('published') ) ? 'checked="checked"' : ''; ?> >Published</label></li>
 			</ul>
 			<p class="right"><input type="submit" name="submit" id="submit" value="Save!" /></p>
 		</div>

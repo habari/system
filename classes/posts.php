@@ -65,7 +65,6 @@ class Posts extends ArrayObject
 				: ', ' . DB::table( 'posts' ) . ".$field";
 		}
 		// defaults
-		//$status= Post::STATUS_PUBLISHED;  // Default (unset) is now the same as Post::STATUS_ANY
 		$orderby= 'ORDER BY pubdate DESC';
 		$limit= Options::get('pagination');
 
@@ -95,7 +94,7 @@ class Posts extends ArrayObject
 					$where[]= "id= ?";
 					$params[]= $paramset['id'];
 				}
-				if ( isset( $paramset['status'] ) && ( $paramset['status'] != Post::STATUS_ANY ) ) {
+				if ( isset( $paramset['status'] ) && ( $paramset['status'] != Post::status('any') ) ) {
 					$where[]= "status= ?";
 					$params[]= $paramset['status'];
 				}
@@ -222,7 +221,7 @@ class Posts extends ArrayObject
 	 * @param int a status value
 	 * @return array an array of Comment objects with the same status
 	**/
-	public function by_status ( $status = 0 )
+	public function by_status ( $status )
 	{
 		return self::get( array( "status" => $status ) );
 	}
@@ -242,10 +241,10 @@ class Posts extends ArrayObject
 	/*
 	 * static count_total
 	 * return a count for the total number of posts
-	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed (default: Post::STATUS_PUBLISHED)
+	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts of specified type ( published or draft )
 	**/
-	public static function count_total( $status = Post::STATUS_PUBLISHED )
+	public static function count_total( $status )
 	{
 		$params = array( 'count' => 1, 'status' => $status );
 		return self::get( $params );
@@ -266,10 +265,10 @@ class Posts extends ArrayObject
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
 	 * @param int an author ID
-	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed (default: Post::STATUS_PUBLISHED)
+	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts by the specified author
 	**/
-	public static function count_by_author( $user_id = '', $status = Post::STATUS_PUBLISHED )
+	public static function count_by_author( $user_id = '', $status )
 	{
 		$params= array( 'user_id' => $user_id, 'count' => 'id' );
 		if ( FALSE !== $status ) {
@@ -282,10 +281,10 @@ class Posts extends ArrayObject
 	 * static count_by_tag
 	 * return a count of the number of posts with the assigned tag
 	 * @param string A tag
-	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed (default: Post::STATUS_PUBLISHED)
+	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts with the specified tag
 	**/
-	public static function count_by_tag( $tag = '', $status = Post::STATUS_PUBLISHED )
+	public static function count_by_tag( $tag = '', $status )
 	{
 		$params = array( 'tag' => $tag, 'count' => 'slug');
 		if ( FALSE !== $status )
@@ -306,7 +305,7 @@ class Posts extends ArrayObject
 		$words = $matches[0];
 		
 		$where = 'status = ?';
-		$params = array(Post::STATUS_PUBLISHED);
+		$params = array(Post::status('published'));
 		foreach($words as $word) {
 			$where .= " AND (title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
 			$params[] = $word;
