@@ -60,6 +60,45 @@ class Site
 	}
 
 	/**
+	 * is() returns a boolean value for whether the current site is the
+	 * primary site, or a multi-site, as determined by the location of
+	 * the config.php that is in use for this request.
+	 * valid values are "main" and "primary" (synonymous) and "multi"
+	 * @examples:
+	 *	if ( Site::is('main') )
+	 *	if ( Site::is('multi') )
+	 * @param string The name of the boolean to test
+	 * @return bool the result of the check
+	**/
+	public static function is( $what )
+	{
+		switch ( strtolower( $what ) )
+		{
+		case 'main':
+		case 'primary':
+			if ( Site::$config_type == Site::CONFIG_LOCAL )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+			break;
+		case 'multi':
+			if ( Site::$config_type != Site::CONFIG_LOCAL )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+			break;
+		}
+	}
+
+	/**
 	 * get_url returns a fully-qualified URL
 	 *	'host' returns http://www.habariproject.org
 	 *	'habari' returns http://www.habariproject.org/habari, if you
@@ -229,6 +268,15 @@ class Site
 				}
 				$path= self::$config_path;
 				break;
+			case 'user':
+				if ( Site::get_dir('config') == HABARI_PATH )
+				{
+					$path= HABARI_PATH . '/user';
+				}
+				else
+				{
+					$path= Site::get_dir('config');
+				}
 		}
 		$path.= ($trail) ? '/' : '';
 		$path= Plugins::filter( 'site_dir_' . $name, $path );
