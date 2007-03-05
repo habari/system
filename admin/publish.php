@@ -34,8 +34,19 @@
 
 			<h4>Page Settings</h4>
 			<ul>
-				<li><label><input type="radio" name="status" id="draft" value="<?php echo Post::status('draft'); ?>" <?php echo ($post->status == Post::status('draft') ) ? 'checked="checked"' : ''; ?> >Draft</label></li>
-				<li><label><input type="radio" name="status" id="publish" value="<?php echo Post::status('published'); ?>" <?php echo ($post->status == Post::status('published') ) ? 'checked="checked"' : ''; ?> >Published</label></li>
+				<?php
+				$statuses= Post::list_post_statuses();
+				foreach ( $statuses as $name => $value )
+				{
+					if ('any' == $name)
+					{
+						continue;
+					}
+					?>
+					<li><label><input type="radio" name="status" id="<?php echo $name; ?>" value="<?php echo Post::status($name); ?>" <?php echo ($post->status == Post::status($name) ) ? 'checked="checked"' : ''; ?> ><?php echo $name; ?></label></li>
+				<?php
+				}
+				?>
 			</ul>
 			<p class="right"><input type="submit" name="submit" id="submit" value="Save!" /></p>
 		</div>
