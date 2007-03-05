@@ -173,7 +173,7 @@ class Post extends QueryRecord
 		}
 		foreach($defaults['where'] as $index => $where)
 		{
-			$defaults['where'][$index] = array_merge(Controller::get_handler()->handler_vars, $where, Utils::get_params($paramarray));
+			$defaults['where'][$index]= array_merge(Controller::get_handler()->handler_vars, $where, Utils::get_params($paramarray));
 		}
 		 
 		return Posts::get( $defaults );
@@ -249,27 +249,27 @@ class Post extends QueryRecord
 	private function setslug()
 	{
 		if ( $this->fields[ 'slug' ] != '' && $this->fields[ 'slug' ] == $this->newfields[ 'slug' ]) {
-			$value = $this->fields[ 'slug' ];
+			$value= $this->fields[ 'slug' ];
 		}
 		elseif ( isset( $this->newfields['slug']) && $this->newfields[ 'slug' ] != '' ) {
-			$value = $this->newfields[ 'slug' ];
+			$value= $this->newfields[ 'slug' ];
 		}
 		elseif ( ( $this->fields[ 'slug' ] != '' ) ) {
-			$value = $this->fields[ 'slug' ];
+			$value= $this->fields[ 'slug' ];
 		}
 		elseif ( isset( $this->newfields['title'] ) && $this->newfields[ 'title' ] != '' ) {
-			$value = $this->newfields[ 'title' ];
+			$value= $this->newfields[ 'title' ];
 		}
 		elseif ( $this->fields[ 'title' ] != '' ) {
-			$value = $this->fields[ 'title' ];
+			$value= $this->fields[ 'title' ];
 		}
 		else {
-			$value = 'Post';
+			$value= 'Post';
 		}
 		
-		$slug = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) );
-		$postfix = '';
-		$postfixcount = 0;
+		$slug= strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) );
+		$postfix= '';
+		$postfixcount= 0;
 		do {
 			if (! $slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::table('posts') . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) )) {
 				Utils::debug(DB::get_errors());
@@ -374,7 +374,7 @@ class Post extends QueryRecord
 	public function insert()
 	{
 		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
-		$this->set_slug();
+		$this->setslug();
 		$this->setguid();
 		$result = parent::insert( DB::table('posts') );
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
