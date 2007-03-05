@@ -40,13 +40,13 @@ class Post extends QueryRecord
 		{
 			return self::$post_type_list;
 		}
-		$sql= "SELECT * FROM " . DB::table('posttype');
+		self::$post_type_list['any']= 0;
+		$sql= 'SELECT * FROM ' . DB::table('posttype') . ' ORDER BY id ASC';
 		$results= DB::get_results( $sql );
 		foreach ($results as $result)
 		{
 			self::$post_type_list[$result->name]= $result->id;
 		}
-		self::$post_type_list['any']= 0;
 		return self::$post_type_list;
 	}
 
@@ -61,13 +61,13 @@ class Post extends QueryRecord
 		{
 			return self::$post_status_list;
 		}
-		$sql= "SELECT * FROM " . DB::table('poststatus');
+		self::$post_status_list['any']= 0;
+		$sql= 'SELECT * FROM ' . DB::table('poststatus') . ' ORDER BY id ASC';
 		$results= DB::get_results( $sql );
 		foreach ($results as $result)
 		{
 			self::$post_status_list[$result->name]= $result->id;
 		}
-		self::$post_status_list['any']= 0;
 		return self::$post_status_list;
 	}
 
