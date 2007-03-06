@@ -15,14 +15,14 @@
 				<p><?php echo $comment->content; ?></p>
 				<p class="manage">
 					Action: 
-					<label><input type="checkbox" name="approve[<?php echo $comment->id; ?>]" id="approve-<?php echo $comment->id; ?>" value="<?php echo $comment->id; ?>">Approve</label>
-					<label><input type="checkbox" name="delete[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="<?php echo $comment->id; ?>"> Delete</label>
-					<label><input type="checkbox" name="Ignore" id="spam-<?php echo $comment->id; ?>" value="" checked="checked"> Ignore</label>
+					<input type="checkbox" name="approve[<?php echo $comment->id; ?>]" id="approve-<?php echo $comment->id; ?>" value="<?php echo $comment->id; ?>"> <label>Approve</label>
+					<input type="checkbox" name="delete[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="<?php echo $comment->id; ?>"> <label>Delete</label>
+					<input type="checkbox" name="Ignore" id="spam-<?php echo $comment->id; ?>" value="" checked="checked"> <label>Ignore</label>
 				</p>
 			</li>
 		<?php }	?>
 		</ul>
-		<p class="submit"><input type="submit" name="moderate" value="Moderate!" /> <label><input type="checkbox" name="mass_delete" id="mass_delete" value="mass_delete" />Delete 'em all</label></p>
+		<p class="submit"><input type="submit" name="moderate" value="Moderate!" /> <input type="checkbox" name="mass_delete" id="mass_delete" value="mass_delete" />Delete 'em all</p>
 		</form>
 	<?php } else { ?>
 		<p>You currently have no comments to moderate</p>
