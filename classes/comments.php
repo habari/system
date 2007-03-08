@@ -21,7 +21,7 @@ class Comments extends ArrayObject
 	 * $comments = comments::get( array ("slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
 	 * </code>
 	 *
-	 **/	 	  
+	 **/
 	public static function get( $paramarray = array() )
 	{
 		// defaults
@@ -81,11 +81,10 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	 * function delete
-	 * deletes comments from the database
+	 * Deletes comments from the database
 	 * @param mixed Comment IDs to delete.  May be a single ID, or an array of IDs
 	**/
-	public function delete( $comments )
+	public static function delete_these( $comments )
 	{
 		if ( ! is_array( $comments ) ) {
 			$comments = array( 'id' => $comments );
@@ -96,15 +95,18 @@ class Comments extends ArrayObject
 		if ( count( $comments ) == 0 ) {
 			return;
 		}
-		return DB::delete( DB::o()->comments, $comments );
+		$result= true;
+		foreach($comments as $commentid) {
+			$result&= DB::delete(DB::table('comments'), array('id' => $commentid ) );
+		}
+		return $result;
 	}
 
 	/**
-	 * function moderate
-	 * changes the status of comments
+	 * Changes the status of comments
 	 * @param mixed Comment IDs to moderate.  May be a single ID, or an array of IDs
 	**/
-	public function moderate( $comments, $status = Comment::STATUS_UNAPPROVED )
+	public static function moderate_these( $comments, $status = Comment::STATUS_UNAPPROVED )
 	{
 		if ( ! is_array( $comments ) ) {
 			$comments = array( $comments );
@@ -112,16 +114,20 @@ class Comments extends ArrayObject
 		if( count( $comments ) == 0 ) {
 			return;
 		}
-		$result= DB::update(DB::o()->comments, array('status' => $status), array('id' => $comments ) );
+		$result= true;
+		foreach($comments as $commentid) {
+			$result&= DB::update(DB::table('comments'), array('status' => $status), array('id' => $commentid ) );
+		}
+		return $result;
 	}
-	
+
 	/**
 	 * function by_email
 	 * selects all comments from a given email address
 	 * @param string an email address
 	 * @return array an array of Comment objects written by that email address
 	**/
-	public function by_email($email = '')
+	public static function by_email($email = '')
 	{
 		if ( ! $email )
 		{
@@ -136,7 +142,7 @@ class Comments extends ArrayObject
 	 * @param string a name
 	 * @return array an array of Comment objects written by the given name
 	**/
-	public function by_name ($name = '')
+	public static function by_name ($name = '')
 	{
 		if ( ! $name )
 		{
@@ -151,9 +157,9 @@ class Comments extends ArrayObject
 	 * @param string an IP address
 	 * @return array an array of Comment objects written from the given IP
 	**/
-	public function by_ip ( $ip = '' )
+	public static function by_ip ( $ip = '' )
 	{
-		if ( ! $ip ) 
+		if ( ! $ip )
 		{
 			return false;
 		}
@@ -166,7 +172,7 @@ class Comments extends ArrayObject
 	 * @param string a URL
 	 * @return array array an array of Comment objects with the same URL
 	**/
-	public function by_url ( $url = '' )
+	public static function by_url ( $url = '' )
 	{
 		if ( ! $url )
 		{
@@ -180,7 +186,7 @@ class Comments extends ArrayObject
 	 * @param post_id ID of the post
 	 * @return array  an array of Comment objects for the given post
 	**/
-	public function by_post_id($post_id) {
+	public static function by_post_id($post_id) {
 		return self::get( array( "post_id" => $post_id ) );
 	}
 
@@ -190,7 +196,7 @@ class Comments extends ArrayObject
 	 * @param string a post slug
 	 * @return array array an array of Comment objects for the given post
 	**/
-	public function by_slug ( $slug = '' )
+	public static function by_slug ( $slug = '' )
 	{
 		if ( ! $slug )
 		{
@@ -205,7 +211,7 @@ class Comments extends ArrayObject
 	 * @param int a status value
 	 * @return array an array of Comment objects with the same status
 	**/
-	public function by_status ( $status = 0 )
+	public static function by_status ( $status = 0 )
 	{
 		return self::get( array( "status" => $status ) );
 	}
@@ -267,8 +273,8 @@ class Comments extends ArrayObject
 	 * function __get
 	 * Implements custom object properties
 	 * @param string Name of property to return
-	 * @return mixed The requested field value	 
-	*/	 	 
+	 * @return mixed The requested field value
+	*/
 	public function __get( $name )
 	{
 		switch ( $name ) {
@@ -282,7 +288,7 @@ class Comments extends ArrayObject
 				return new Comments( $this->only( $name ) );
 		}
 	}
-	
+
 	/**
 	 * static count_by_name
 	 * returns the number of comments attributed to the specified name
@@ -334,7 +340,7 @@ class Comments extends ArrayObject
 	 * static count_by_url
 	 * returns the number of comments attributed to the specified URL
 	 * @param string a URL
-	 * @param mixed a comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED) 
+	 * @param mixed a comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified URL
 	**/
 	public static function count_by_url( $url = '', $status = Comment::STATUS_APPROVED )
