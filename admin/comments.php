@@ -38,7 +38,7 @@ $('ul#waiting li').quicksearch({
 					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="unapprove" value="unapprove">Unapprove
 				</label>
 				<label>
-					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="deleted">Delete
+					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete">Delete
 				</label>
 				<label>
 					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam">Mark as Spam

@@ -405,12 +405,13 @@ class AdminHandler extends ActionHandler
 		}
 		else {
 			// Process each comment according to its setting in the form.
+			$deletes= array();
 			if( isset( $_POST['moderate'] ) ) {
 				foreach( $_POST['moderate'] as $commentid => $status ) {
 					switch ( $status ){
 					case 'delete':
 						// This comment was marked for deletion
-						Comments::delete($commentid);
+						$deletes[]= $commentid;
 						break;
 					case 'spam':
 						// This comment was marked as spam
@@ -431,6 +432,9 @@ class AdminHandler extends ActionHandler
 						$comment->update();
 						break;
 					}
+				}
+				if ( count($deletes) > 0 ) {
+					Comments::delete_these($deletes);
 				}
 			}
 		}
