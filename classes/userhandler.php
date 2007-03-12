@@ -16,14 +16,14 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
-		$name= isset($this->handler_vars['name']) ? $this->handler_vars['name'] : '';
-		$pass= isset($this->handler_vars['pass']) ? $this->handler_vars['pass'] : '';
+		$name= isset($this->handler_vars['habari_username']) ? $this->handler_vars['habari_username'] : '';
+		$pass= isset($this->handler_vars['habari_password']) ? $this->handler_vars['habari_password'] : '';
 		$user= User::authenticate($name, $pass);
 		
 		if ( FALSE === $user ) {
 			//$url->settings['error'] = "badlogin";
 			// unset the password the use tried
-			$this->handler_vars['pass']= '';
+			$this->handler_vars['habari_password']= '';
 			$this->handler_vars['error']= 'Invalid login'; /** @todo Use real error handling */ 
 			/* Since we failed, display the theme's login template */
 			$this->theme= Themes::create();
