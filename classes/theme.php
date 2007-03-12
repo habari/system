@@ -117,7 +117,11 @@ class Theme
 	
 	public function act_search()
 	{
-		$posts= Posts::search( Controller::get_handler()->handler_vars['criteria'] );
+		if ( ! isset( Controller::get_handler()->handler_vars['page'] ) )
+		{
+			Controller::get_handler()->handler_vars['page']= 1;
+		}
+		$posts= Posts::search( Controller::get_handler()->handler_vars['criteria'], Controller::get_handler()->handler_vars['page'] );
 		Controller::get_handler()->handler_vars['posts']= $posts;
 		$this->display( 'search' );
 	}
