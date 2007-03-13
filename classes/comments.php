@@ -61,6 +61,15 @@ class Comments extends ArrayObject
 				// if the status is not FALSE, processing will
 				// continue to the next if block
 			}
+			// Accept a list of IDs
+			// Do not use '?' in where clause, because you cannot bind
+			// multiple values to a single parameter.
+			if ( $key == 'id_list' ) {
+				// Clean up the id list - remove all non-numeric or comma information
+				$value = preg_replace("/[^0-9,]/","",$value);
+				// You're paranoid, ringmaster! :P
+				$where[]= 'id IN (' . addslashes($value) . ')';
+			}
 			// only accept those keys that correspond to
 			// table columns
 			if ( array_key_exists ( $key, Comment::default_fields() ) ) {
@@ -82,23 +91,45 @@ class Comments extends ArrayObject
 
 	/**
 	 * Deletes comments from the database
-	 * @param mixed Comment IDs to delete.  May be a single ID, or an array of IDs
+	 * @param mixed Comments to delete.  An array of or a single ID/Comment object
 	**/
 	public static function delete_these( $comments )
 	{
 		if ( ! is_array( $comments ) ) {
-			$comments = array( 'id' => $comments );
+			$comments= array( $comments );
+		}
+
+		if(count($comments) == 0)
+			return true;
+
+		if($comments[0] instanceOf Comment)	{
+			// We were passed an array of comment objects. Use them directly.
+			$result= true;
+			foreach($comments as $comment)
+				$result&= $comment->delete();
+		}
+		else if(is_numeric($comments[0])) {
+			// We were passed an array of ID's. Get their objects and delete them.
+
+			// Convert the array of comment ID's into a list, cleaning out
+			// any string information.
+			$id_list= '';
+			foreach($comments as $commentID)
+				$id_list.= (int)$commentID . ',';
+			$id_list= rtrim($id_list,',');
+
+			// Get all of the comments objects
+			$comments= self::get(array('id_list'=>$id_list));
+
+			$result= true;
+			foreach($comments as $comment)
+				$result&= $comment->delete();
 		}
 		else {
-			$comments = array_flip( array_fill_keys( $comments, 'id' ) );
+			// We were passed a type we could not understand.
+			return false;
 		}
-		if ( count( $comments ) == 0 ) {
-			return;
-		}
-		$result= true;
-		foreach($comments as $commentid) {
-			$result&= DB::delete(DB::table('comments'), array('id' => $commentid ) );
-		}
+
 		return $result;
 	}
 
@@ -289,6 +320,21 @@ class Comments extends ArrayObject
 		}
 	}
 
+	/**
+	 * function delete
+	 * Deletes all comments in this object
+	 */	 	 	 	 	
+	public function delete()
+	{
+		$result= true;
+		foreach($this as $c)
+			$result&= $c->delete();
+		// Clear ourselves.
+		$this->exchangeArray(array());
+		
+		return $result;
+	}
+	
 	/**
 	 * static count_by_name
 	 * returns the number of comments attributed to the specified name
