@@ -24,7 +24,7 @@ class Post extends QueryRecord
 	static $post_type_list= array();
 
 	private $tags= null;
-	private $comments= null;
+	private $comments_object= null;
 	private $author_object= null;
 		
 	private $info= null;
@@ -410,6 +410,9 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	public function delete()
 	{
+		// Delete all comments associated with this post
+		if(!empty($this->comments))
+			$this->comments->delete();
 		return parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
 	}
 	
@@ -527,10 +530,10 @@ class Post extends QueryRecord
 	**/
 	private function &get_comments()
 	{
-		if ( ! $this->comments ) {
-			$this->comments= Comments::by_post_id( $this->id );
+		if ( ! $this->comments_object ) {
+			$this->comments_object= Comments::by_post_id( $this->id );
 		}
-		return $this->comments;
+		return $this->comments_object;
 	}
 
 	/**
