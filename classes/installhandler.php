@@ -407,7 +407,7 @@ class InstallHandler extends ActionHandler {
 		 */
 		$schema_sql= preg_replace("/;\n{1}([^\n])/", ";\n\n$1", $schema_sql);
 		$schema_sql= preg_replace("/\n{3,}/","\n\n", $schema_sql);
-		$queries= explode("\n\n", $schema_sql);
+		$queries= preg_split('/(\\r\\n|\\r|\\n)\\1/', $schema_sql);
 		return $queries;
 	}
 
