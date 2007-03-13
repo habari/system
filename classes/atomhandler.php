@@ -126,7 +126,7 @@ class AtomHandler extends ActionHandler
 			// Get any post, don't set status to anything.
 		}
 		else {
-			$params['status'] = Post::STATUS_PUBLISHED;
+			$params['status'] = Post::status('published');
 		}
 
 		if ( $post = Post::get($params) ) {
@@ -312,7 +312,7 @@ feedpreamble;
 			// Get all posts, don't set status to anything.
 		}
 		else {
-			$params['status'] = Post::STATUS_PUBLISHED;
+			$params['status'] = Post::status('published');
 		}
 
 		foreach(Posts::get( $params ) as $post) {
@@ -378,7 +378,7 @@ feedpreamble;
 			// Get all posts, don't set status to anything.
 		}
 		else {
-			$params['status'] = Post::STATUS_PUBLISHED;
+			$params['status'] = Post::status('published');
 		}
 
 		foreach(Posts::get( $params ) as $post) {
