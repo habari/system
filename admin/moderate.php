@@ -5,7 +5,7 @@
 		<?php if( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) { ?>
 		<p>Below you will find comments awaiting moderation.</p>
 		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
-		<p class="submit"><input type="submit" name="moderate" value="Moderate!" /> <input type="checkbox" name="mass_delete" id="mass_delete" value="1">Delete 'em all</p>
+		<p class="submit"><input type="submit" name="moderate" value="Moderate!" /> <label><input type="checkbox" name="mass_delete" id="mass_delete" value="1">Delete 'em all</label></p>
 		<ul id="waiting">
 		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_UNAPPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ){ ?>
 			<li>
@@ -32,7 +32,7 @@
 			</li>
 		<?php }	?>
 		</ul>
-		<p class="submit"><input type="submit" name="submit" value="Moderate!" /> <input type="checkbox" name="mass_delete" id="mass_delete1" value="1" />Delete 'em all</p>
+		<p class="submit"><input type="submit" name="submit" value="Moderate!" /> <label><input type="checkbox" name="mass_delete" id="mass_delete1" value="1" />Delete 'em all</label></p>
 		</form>
 	<?php } else { ?>
 		<p>You currently have no comments to moderate</p>
