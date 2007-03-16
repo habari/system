@@ -605,6 +605,9 @@ class DatabaseConnection
 			return $this->query( $qry, $values );
 		}
 		else {
+			// We want the keyfieldvalues to be included in
+			// the insert, with fieldvalues taking precedence.
+			$fieldvalues = $fieldvalues + $keyfieldvalues;
 			return $this->insert( $table, $fieldvalues );
 		}
 	}
