@@ -34,7 +34,7 @@ foreach ( User::get_all() as $user )
 	}
 	echo '<li>';
 	echo '<a href="' . $url . '">' . $user->username . '</a><br />';
-	echo Posts::count_by_author( $user->id, Post::STATUS_PUBLISHED ) . ' published posts, ' . Posts::count_by_author( $user->id, Post::STATUS_DRAFT ) . ' pending drafts, and ' . Posts::count_by_author( $user->id, Post::STATUS_PRIVATE ) . ' private posts.';
+	echo Posts::count_by_author( $user->id, Post::status('published') ) . ' published posts, ' . Posts::count_by_author( $user->id, Post::status('draft') ) . ' pending drafts, and ' . Posts::count_by_author( $user->id, Post::status('private') ) . ' private posts.';
 	echo '</li>';
 }
 ?>

@@ -57,12 +57,12 @@
 </div>
 <div style="width: 45%; float: left; margin-left: 2px;">
 <?php
-if ( Posts::count_by_author( $user->id, Post::STATUS_PUBLISHED ) ) {
+if ( Posts::count_by_author( $user->id, Post::status('published') ) ) {
 	echo $possessive ." five most recent published posts:<br />\n";
 	echo "<ul>\n";
 	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
 						'limit' => 5,
-						'status' => Post::STATUS_PUBLISHED,
+						'status' => Post::status('published'),
 					) ) as $post )
 	{
 		echo '<li><a href="' . $post->permalink . '">' . $post->title ."</a></li>\n";
@@ -76,7 +76,7 @@ if ( $user == $currentuser ) {
 	echo $possessive . 'five most recent draft posts:<br /><ul>';
 	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
 						'limit' => 5,
-						'status' => Post::STATUS_DRAFT,
+						'status' => Post::status('draft'),
 					) ) as $post )
 	{
 		echo '<li><a href="' . $post->permalink . '">' . $post->title . "</a></li>\n";
