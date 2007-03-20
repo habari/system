@@ -460,6 +460,9 @@ class Post extends QueryRecord
 		case 'author':
 			$out = $this->get_author();
 			break;
+		case 'info':
+			$out = $this->get_info();
+			break;
 		default:
 			$out = parent::__get( $name );
 			break;
@@ -536,6 +539,20 @@ class Post extends QueryRecord
 		return $this->comments_object;
 	}
 
+	/**
+	 * function get_info
+	 * Gets the info object for this post, which contains data from the postinfo table
+	 * related to this post.
+	 * @return PostInfo object
+	**/
+	private function get_info()
+	{
+		if ( ! $this->info ) {
+			$this->info= new PostInfo( $this->id );
+		}
+		return $this->info;
+	}
+ 
 	/**
 	 * private function get_author()
 	 * returns a User object for the author of this post
