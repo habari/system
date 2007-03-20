@@ -24,21 +24,19 @@ CREATE TABLE {$prefix}postinfo  (
 CREATE TABLE  {$prefix}posttype ( 
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
 ,	name VARCHAR(255) NOT NULL 
-, PRIMARY KEY (name)
 );
 
-INSERT INTO  {$prefix}posttype VALUES('entry');
-INSERT INTO  {$prefix}posttype VALUES('page');
+INSERT INTO  {$prefix}posttype (name) VALUES('entry');
+INSERT INTO  {$prefix}posttype (name) VALUES('page');
 
 CREATE TABLE  {$prefix}poststatus ( 
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
 ,	name VARCHAR(255) NOT NULL 
-, PRIMARY KEY (name)
 );
 
-INSERT INTO  {$prefix}poststatus VALUES ('draft');
-INSERT INTO  {$prefix}poststatus VALUES ('published'); 
-INSERT INTO  {$prefix}poststatus VALUES ('private');
+INSERT INTO  {$prefix}poststatus (name) VALUES ('draft');
+INSERT INTO  {$prefix}poststatus (name) VALUES ('published'); 
+INSERT INTO  {$prefix}poststatus (name) VALUES ('private');
 
 CREATE TABLE  {$prefix}options (
 	name VARCHAR(255) NOT NULL
@@ -123,7 +121,7 @@ CREATE TABLE  {$prefix}commentinfo (
 );
 
 CREATE TABLE {$prefix}rewrite_rules (
-	rule_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL 
+  rule_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL 
 , name VARCHAR(255) NOT NULL
 , parse_regex VARCHAR(255) NOT NULL
 , build_str VARCHAR(255) NOT NULL
@@ -131,7 +129,7 @@ CREATE TABLE {$prefix}rewrite_rules (
 , action VARCHAR(255) NOT NULL
 , priority SMALLINT NOT NULL
 , is_active SMALLINT NOT NULL DEFAULT 0
-, is_system SMALLINT NOT NULL DEFAULT 0
+, rule_class SMALLINT UNSIGNED NOT NULL DEFAULT 0
 , description TEXT NULL
 );
 
@@ -172,7 +170,7 @@ VALUES ('admin','/^admin[\/]*([^\/]*)[\/]{0,1}$/i','admin/{$page}'
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
-VALUES (NULL, 'userprofile', '/^admin\\/(user)\\/([^\\/]+)\\/{0,1}$/i', 'admin/{$page}/{$user}', 'AdminHandler', 'admin', 4, 'The profile page for a specific user');
+VALUES (NULL, 'userprofile', '/^admin\/(user)\/([^\/]+)\/{0,1}$/i', 'admin/{$page}/{$user}', 'AdminHandler', 'admin', 4, 'The profile page for a specific user');
 
 INSERT INTO {$prefix}rewrite_rules
 (name, parse_regex, build_str, handler, action, priority, description)
