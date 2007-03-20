@@ -66,7 +66,10 @@ class Locale
 		$data= fread( $fp, filesize( $file ) );
 		fclose( $fp );
 		
-		$magic= unpack( 'L1', substr( $data, 0, 4 ) );
+		// determine endianness
+		$little_endian= TRUE;
+		
+		$magic= unpack( 'V1', substr( $data, 0, 4 ) );
 		$magic= $magic[1];
 		switch ( $magic ) {
 			case (int)0x950412de:
