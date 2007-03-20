@@ -10,8 +10,8 @@
 class Locale
 {
 	private static $uselocale= FALSE;
-	private static $little_endian= TRUE;
 	private static $messages= array();
+	private static $plural_function;
 	private static $locale;
 
 	/**
@@ -35,12 +35,24 @@ class Locale
 	 * The internal workings of the file format are not entirely meant to be understood.
 	 * 
 	 * @link http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html GNU Gettext Manual: Description of the MO file format
-	 * 	 
-	 * @param string $domain The domain to load
+	 * @param string $domain the domain to load
+	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
 	 **/	 	 	 	
 	private static function load_domain( $domain )
 	{
 		$file= HABARI_PATH . '/system/locale/' . self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
+		
+		return self::load_file( $domain, $file );
+	}
+	
+	/**
+	 * Load translations from a given file.
+	 * 
+	 * @param string $domain the domain to load the data into
+	 * @param string $file the file name
+	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
+	 */
+	private static function load_file( $domain, $file ) {
 		if ( ! file_exists( $file ) ) {
 			Error::raise( sprintf( 'No translations found for locale %s, domain %s!', self::$locale, $domain ) );
 			return FALSE;
@@ -58,10 +70,10 @@ class Locale
 		$magic= $magic[1];
 		switch ( $magic ) {
 			case (int)0x950412de:
-				self::$little_endian= TRUE;
+				$little_endian= TRUE;
 				break;
 			case (int)0xde120495:
-				self::$little_endian= FALSE;
+				$little_endian= FALSE;
 				break;
 			default:
 				Error::raise( sprintf( 'Invalid magic number 0x%08x in %s!', $magic, $file ) );
@@ -74,7 +86,7 @@ class Locale
 			return FALSE;
 		}
 		
-		$l= self::$little_endian ? 'V' : 'N';
+		$l= $little_endian ? 'V' : 'N';
 		
 		if ( $data && strlen( $data ) >= 20 ) {
 			$header= substr( $data, 8, 12 );
@@ -98,9 +110,79 @@ class Locale
 				);
 			}
 		}
+		
+		// setup plural functionality
+		self::$plural_function= self::get_plural_function( self::$messages[$domain][''][1][0] );
 
 		// only use locale if we actually read something
 		return ( count( self::$messages ) > 0 );
+	}
+	
+	private static function get_plural_function( $header )
+	{
+		if (preg_match('/plural-forms: (.*?)$/i', $header, $matches)) {
+			// sanitize
+			$plural_forms= preg_replace(
+				'@[^a-zA-Z0-9_:;\(\)\?\|\&=!<>+*/\%-]@',
+				'',
+				$matches[1]
+			);
+			$body= str_replace(
+				array('plural',  'n',  '$n$plurals', ),
+				array('$plural', '$n', '$nplurals', ),
+				$plural_forms
+			);
+			
+			// add parens
+			// important since PHP's ternary evaluates from left to right
+			$body.= ';';
+			$res= '';
+			$p= 0;
+			for ($i= 0; $i < strlen($body); $i++) {
+				$ch= $body[$i];
+				switch ($ch) {
+					case '?':
+						$res.= ' ? (';
+						$p++;
+						break;
+					case ':':
+						$res.= ') : (';
+						break;
+					case ';':
+						$res.= str_repeat( ')', $p) . ';';
+						$p= 0;
+						break;
+					default:
+						$res.= $ch;
+				}
+			}
+			
+			$body= $res . 'return ($plural>=$nplurals?$nplurals-1:$plural);';
+			$fn= create_function(
+				'$n',
+				$body
+			);
+		}
+		else {
+			// default: one plural form for all cases but n==1 (english)
+			$fn= create_function(
+				'$n',
+				'$nplurals=2;$plural=($n==1?0:1);return ($plural>=$nplurals?$nplurals-1:$plural);'
+			);
+		}
+		
+		return $fn;
+	}
+	
+	public static function run_plural_test( $header )
+	{
+		$fn= self::get_plural_function( $header );
+		$res= '';
+		for ($n= 0; $n < 200; $n++) {
+			$res.= $fn($n);
+		}
+		
+		return $res;
 	}
 	
 	/**
@@ -155,11 +237,15 @@ class Locale
 	public static function _n($singular, $plural, $count, $domain= 'habari')
 	{
 		if ( isset( self::$messages[$domain][$singular] ) ) {
-			return ( $count == 1 ? self::$messages[$domain][$singular][1][0] : self::$messages[$domain][$singular][1][1] );
+			// XXX workaround, but direct calling doesn't work
+			$fn= self::$plural_function;
+			$n= $fn($count);
+			if ( isset( self::$messages[$domain][$singular][1][$n] ) ) {
+				return self::$messages[$domain][$singular][1][$n];
+			}
 		}
-		else {
-			return ( $count == 1 ? $singular : $plural );
-		}
+		// fall-through else for both cases
+		return ( $count == 1 ? $singular : $plural );
 	}
 }
 
@@ -208,14 +294,6 @@ function _t( $text )
 function _n( $singular, $plural, $count )
 {
 	return Locale::_n( $singular, $plural, $count );
-}
-
-/**
- * @deprecated
- */
-function __( $text )
-{
-	return "!!! $text !!!";
 }
 
 ?>
