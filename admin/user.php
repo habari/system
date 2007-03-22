@@ -73,7 +73,7 @@ else {
 	echo "<p>No published posts.</p>\n";
 }
 if ( $user == $currentuser ) {
-	echo $possessive . 'five most recent draft posts:<br /><ul>';
+	echo $possessive . ' five most recent draft posts:<br /><ul>';
 	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
 						'limit' => 5,
 						'status' => Post::status('draft'),
