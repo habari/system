@@ -74,6 +74,10 @@ class Update extends Singleton
 			foreach($instance->update as $beacon) {
 				$beaconid = (string)$beacon['id'];
 				foreach($beacon->update as $update) {
+					// Do we have this beacon?  If not, don't process it.
+					if(empty($instance->beacons[$beaconid])) {
+						continue;
+					}
 					// If the remote update info version is newer...
 					if( version_compare($update['version'], $instance->beacons[$beaconid]['version']) > 0 ) {
 						// If this version is more recent than all other newer versions...
@@ -101,8 +105,7 @@ class Update extends Singleton
 				}
 			}
 		}
-		array_filter($instance->beacons, array('Update', 'filter_unchanged'));
-		return $instance->beacons;
+		return array_filter($instance->beacons, array('Update', 'filter_unchanged'));
 	}
 
 }
