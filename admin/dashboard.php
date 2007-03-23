@@ -3,7 +3,7 @@
 	<div class="dashboard-column" id="left-column">
 		<div class="dashboard-block c3" id="welcome">
 			<?php
-				$user= User::identify();				
+				$user= User::identify();
 				if ( ! isset( $user->info->experience_level ) ) {
 			?>
 					<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
@@ -26,7 +26,7 @@
 					<p>Welcome back, <?php echo $user->username; ?>! If you need <a href="<?php Site::out_url('system')?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
 			<?php
 				 }
-			?>	
+			?>
 		</div>
 		<div class="dashboard-block" id="stats">
 			<h4>Site Statistics</h4>
@@ -35,22 +35,44 @@
 					<li><span class="right">10067</span> Visits Past Week</li>
 					<li><span class="right"><?php echo Posts::count_total( Post::status('all') ); ?></span> Total Posts</li>
 					<li><span class="right"><?php echo Posts::count_by_author( User::identify()->id, Post::status('all') ); ?></span> Number of Your Posts</li>
-					<li><span class="right"><?php echo Comments::count_total(); ?></span> Number of Comments</li>			
+					<li><span class="right"><?php echo Comments::count_total(); ?></span> Number of Comments</li>
 				</ul>
 		</div>
 		<div class="dashboard-block" id="system-info">
 			<h4>System Health</h4>
 			<ul>
-				<li>&raquo; You are running Habari <?php Options::out('version'); ?>.</li>
-				<li>&raquo; An <a href="#" title="Go to the release notes">Update for Habari</a> is available.</li>
-				<li>&raquo; There are <a href="plugins" title="Plugin updates">3 Updates for Plugins</a> available.</li>
-				<li>&raquo; An <a href="#" title="Download the updated theme">Update for your Theme</a> is available</li>
+				<li>&raquo; You are running Habari <?php echo Version::get_habariversion() ?>.</li>
+			<?php
+			$updates = Update::check();
+			//Utils::debug($updates);  //Uncomment this line to see what Update:check() returns...
+			if(count($updates) > 0) :
+				foreach($updates as $update) {
+					$class = implode(' ', $update['severity']);
+					if(in_array('critical', $update['severity'])) {
+						$updatetext = _t('<a href="%1s">%2s %3s</a> is a critical update.');
+					}
+					elseif(count($update['severity']) > 1) {
+						$updatetext = _t('<a href="%1s">%2s %3s</a> contains bug fixes and additional features.');
+					}
+					elseif(in_array('bugfix', $update['severity'])) {
+						$updatetext = _t('<a href="%1s">%2s %3s</a> contains bug fixes.');
+					}
+					elseif(in_array('feature', $update['severity'])) {
+						$updatetext = _t('<a href="%1s">%2s %3s</a> contains additional features.');
+					}
+					$updatetext = sprintf($updatetext, $update['url'], $update['name'], $update['latest_version']);
+					echo "<li class=\"{$class}\">&raquo; {$updatetext}</li>";
+				}
+			else:
+				echo "<li>No updates were found.</li>";
+			endif;
+			?>
 			</ul>
 		</div>
 		<div class="dashboard-block" id="incoming">
 			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&num=10&q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
 			<?php
-			// This should be fetched on a pseudo-cron and cached: 
+			// This should be fetched on a pseudo-cron and cached:
 			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url('hostname') );
 			$search->__set_processor( new SocketRequestProcessor );
 			$search->set_timeout( 5 );
@@ -58,14 +80,14 @@
 			if ( $search->executed() ) {
 				$xml = new SimpleXMLElement($search->get_response_body());
 				if(count($xml->entry) == 0) {
-					_e( '<p>No incoming links were found to this site.</p>' ); 
+					_e( '<p>No incoming links were found to this site.</p>' );
 				}
 				else {
 			?>
 			<ul id="incoming-links">
 				<?php foreach($xml->entry as $entry) { ?>
 				<li>
-					<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / --> 
+					<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / -->
 					<a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
 				</li>
 				<?php } ?>
@@ -81,7 +103,7 @@
 		<div class="dashboard-block c2" id="drafts">
 				<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
 				<ul id="site-drafts">
-				<?php 
+				<?php
 					if ( Posts::count_total( Post::status('draft') ) ) {
 						foreach ( Posts::by_status( Post::status('draft') ) as $draft ) {
 				?>
@@ -108,7 +130,7 @@
 				?>
 		</div>
 		<div class="dashboard-block c2" id="recent-comments">
-			<h4>Recent Comments 
+			<h4>Recent Comments
 				<?php
 					if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
 				?>
