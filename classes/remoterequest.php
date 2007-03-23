@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Interface for Request Processors. RemoteRequest uses a RequestProcessor to
+ * do the actual work.
+ */
 interface RequestProcessor
 {
 	public function execute( $method, $url, $headers, $body, $timeout );
@@ -52,6 +56,7 @@ class RemoteRequest
 	
 	/**
 	 * DO NOT USE THIS FUNCTION.
+	 * This function is only to be used by the test case for RemoteRequest!
 	 */
 	public function __set_processor( $processor )
 	{
@@ -159,6 +164,7 @@ class RemoteRequest
 		else {
 			// actually, processor->execute should throw an Error which would bubble up
 			// we need a new Error class and error handler for that, though
+			$this->executed= FALSE;
 			
 			return $result;
 		}
@@ -215,11 +221,13 @@ class RemoteRequest
 	{
 		$urlparts= parse_url( $url );
 		
-		if ( ! isset( $urlparts['query'] ) )
+		if ( ! isset( $urlparts['query'] ) ) {
 			$urlparts['query']= '';
+		}
 		
-		if ( ! is_array( $params ) )
+		if ( ! is_array( $params ) ) {
 			parse_str( $params, $params );
+		}
 		
 		$urlparts['query']= http_build_query( array_merge( Utils::get_params( $urlparts['query'] ), $params ), '', '&' );
 		
