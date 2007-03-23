@@ -69,10 +69,9 @@ class Locale
 		// determine endianness
 		$little_endian= TRUE;
 		
-		$magic= unpack( 'V1', substr( $data, 0, 4 ) );
-		$magic= $magic[1];
-		switch ( $magic ) {
-			case (int)0x950412de:
+		list(,$magic)= unpack( 'V1', substr( $data, 0, 4 ) );
+		switch ( $magic & 0xFFFFFFFF ) {
+			case (int)0x950412de:	
 				$little_endian= TRUE;
 				break;
 			case (int)0xde120495:
@@ -177,7 +176,11 @@ class Locale
 		return $fn;
 	}
 	
-	public static function run_plural_test( $header )
+	/**
+	 * DO NOT USE THIS FUNCTION.
+	 * This function is only to be used by the test case for the Locale class!
+	 */
+	public static function __run_plural_test( $header )
 	{
 		$fn= self::get_plural_function( $header );
 		$res= '';
@@ -186,6 +189,15 @@ class Locale
 		}
 		
 		return $res;
+	}
+	
+	/**
+	 * DO NOT USE THIS FUNCTION.
+	 * This function is only to be used by the test case for the Locale class!
+	 */
+	public static function __run_loadfile_test( $filename )
+	{
+		return self::load_file( 'test', $filename );
 	}
 	
 	/**
