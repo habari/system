@@ -34,6 +34,7 @@ CREATE TABLE  {$prefix}poststatus (
 ,	name VARCHAR(255) NOT NULL 
 );
 
+INSERT INTO  {$prefix}poststatus (name) VALUES ('deleted');
 INSERT INTO  {$prefix}poststatus (name) VALUES ('draft');
 INSERT INTO  {$prefix}poststatus (name) VALUES ('published'); 
 INSERT INTO  {$prefix}poststatus (name) VALUES ('private');

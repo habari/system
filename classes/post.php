@@ -161,7 +161,7 @@ class Post extends QueryRecord
 		$defaults= array (
 			'where' => array(
 				array(
-					'status' => Post::status('publish'),
+					'status' => Post::status('published'),
 				),
 			),
 			'fetch_fn' => 'get_row',
@@ -305,23 +305,14 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	private function setstatus($value)
 	{
-		if(is_numeric($value))
-			$this->newfields['status'] = $value;
-		else
+		$statuses= Post::list_post_statuses();
+		if( is_numeric($value) && in_array($value, $statuses) )
 		{
-			switch(strtolower($value))
-			{
-				case "published":
-				case "publish":
-					$this->newfields['status'] = Post::status('publish');
-					break;
-				case "draft":
-					$this->newfields['status'] = Post::status('draft');
-					break;
-				case "private":
-					$this->newfields['status'] = Post::status('private');
-					break;
-			}
+			$this->newfields['status'] = $value;
+		}
+		elseif ( array_key_exists( $value, $statuses ) )
+		{
+			$this->newfields['status'] = Post::status('publish');
 		}
 		return $this->newfields['status'];
 	}
