@@ -55,6 +55,9 @@
 				?>
 			</table>
 	</div>
+	<?php
+	$drafts= Posts::get( array( 'limit' => '10', 'status'  => Post::status('draft') ) );
+	if ( count( $drafts ) > 0 ) : ?>
 	<div class="dashboard-block c3" id="content-draft">
 		<h4>Entries Currently in Draft</h4>
 			<table id="post-data-draft" width="100%" cellspacing="0">
@@ -66,7 +69,7 @@
 						<th align="center">Action</th>
 					</tr>
 				</thead>
-				<?php 	foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::status('draft') ) ) as $draft ) { ?>
+				<?php 	foreach ( $drafts as $draft ) { ?>
 				<tr>
 					<td><?php echo $draft->title; ?></td>
 					<td><?php echo $draft->author->username; ?></td>
@@ -78,11 +81,18 @@
 						<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit this entry">
 							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this entry" />
 						</a>
-						<img src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" alt="Delete this comment" />
+<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>">
+                                                        <input type="hidden" name="slug" value="<?php echo $draft->slug; ?>" />
+                                                        <input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>" />
+                                                        <input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>" />
+                                                        <input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>" />
+                                                        <input type="submit" name="delete" value="delete" />
+                                                </form>
 					</td>
 				</tr>
 				<?php } ?>
 			</table>
 	</div>
+	<?php endif; ?>
 </div>
 <?php include('footer.php');?>
