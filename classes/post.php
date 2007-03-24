@@ -387,7 +387,13 @@ class Post extends QueryRecord
 	{
 		$this->updated = date('Y-m-d h:i:s');
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
-		//$this->setslug();  // setslug() for an update?  Hmm.  No?
+		// invoke plugins for all fields which have been changed
+		// For example, a plugin action "update_post_status" would be
+		// triggered if the post has a new status value
+		foreach ( $this->newfields as $fieldname => $value )
+		{
+			Plugins::act('update_post_' . $fieldname, $this, $value );
+		}
 		$result = parent::update( DB::table('posts'), array('slug'=>$this->slug) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
@@ -398,9 +404,20 @@ class Post extends QueryRecord
 	/**
 	 * function delete
 	 * Deletes an existing post
+	 * @param Boolean whether to delete the post immediately, or set its status to "deleted"
 	 */	 	 	 	 	
-	public function delete()
+	public function delete( $delete_now = FALSE )
 	{
+		if ( ! $delete_now )
+		{
+			$this->status= Post::status('deleted');
+			$this->update();
+			return;
+		}
+
+		// invoke plugins
+		Plugins::act('post_delete', $this);
+
 		// Delete all comments associated with this post
 		if(!empty($this->comments))
 			$this->comments->delete();

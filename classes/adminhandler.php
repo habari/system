@@ -190,15 +190,7 @@ class AdminHandler extends ActionHandler
 			Utils::redirect( URL::get('admin', 'page=content') );
 		}
 		$post= Post::get( array( 'slug' => $slug ) );
-		if ( Post::status('deleted') == $post->status )
-		{
-			$post->delete();
-		}
-		else
-		{
-			$post->status= Post::status('deleted');
-			$post->update();
-		}
+		$post->delete();
 		Utils::redirect( URL::get('admin', 'page=content') );
 	}
 
