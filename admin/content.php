@@ -25,6 +25,9 @@
 					</tr>
 				</thead>
 				<?php
+				// we load the WSSE tokens here
+				// for use in the delete button below
+				$wsse= Utils::WSSE();
 				foreach ( Posts::get( array( 'limit' => '10', 'status'  => Post::status('published') ) ) as $post ) {
 				?>
 				<tr>
@@ -38,7 +41,13 @@
 						<a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit this entry">
 							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this entry" />
 						</a>
-						<img src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" alt="Delete this comment" />
+						<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>">
+							<input type="hidden" name="slug" value="<?php echo $post->slug; ?>" />
+							<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>" />
+							<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>" />
+							<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>" />
+							<input type="submit" name="delete" value="delete" />
+						</form>
 					</td>
 				</tr>
 				<?php

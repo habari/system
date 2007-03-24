@@ -80,6 +80,34 @@ class Utils
 	}
 
 	/**
+	 * function WSSE
+	 * returns an array of tokens used for WSSE authentication
+	 *    http://www.xml.com/pub/a/2003/12/17/dive.html
+	 *    http://www.sixapart.com/developers/atom/protocol/atom_authentication.html
+	 * @param String a nonce
+	 * @param String a timestamp
+	 * @return Array an array of WSSE authentication elements
+	**/
+	static function WSSE( $nonce = '', $timestamp = '' )
+	{
+		if ( '' === $nonce )
+		{
+			$nonce= Utils::crypt( Options::get('GUID') . Utils::nonce() );
+		}
+		if ( '' === $timestamp )
+		{
+			$timestamp= date('c');
+		}
+		$user= User::identify();
+		$wsse= array(
+			'nonce' => $nonce,
+			'timestamp' => $timestamp,
+			'digest' => base64_encode(pack('H*', sha1($nonce . $timestamp .  $user->password)))
+			);
+		return $wsse;
+	}
+
+	/**
 	 * function stripslashes
 	 * Removes slashes from escaped strings, including strings in arrays
 	 **/

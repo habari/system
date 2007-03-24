@@ -37,6 +37,7 @@ CREATE TABLE  {$prefix}poststatus (
 , PRIMARY KEY (id)
 );
 
+INSERT INTO  {$prefix}poststatus (name) VALUES ("deleted");
 INSERT INTO  {$prefix}poststatus (name) VALUES ("draft");
 INSERT INTO  {$prefix}poststatus (name) VALUES ("published");
 INSERT INTO  {$prefix}poststatus (name) VALUES ("private");

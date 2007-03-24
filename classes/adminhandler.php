@@ -144,6 +144,63 @@ class AdminHandler extends ActionHandler
 			_e('Danger, Will Robinson!  Danger!');
 		}
 	}
+	
+	/**
+	 * function post_delete_post
+	 * deletes a post from the database
+	**/
+	function post_delete_post()
+	{
+		$okay= true;
+		// first, get the POSTed values and check them for sanity
+		if ( isset($_POST['slug']) ) {
+			$slug= $_POST['slug'];
+		}
+		if ( isset( $_POST['username'] ) ) {
+			$username= $_POST['username'];
+		}
+		if ( isset( $_POST['nonce'] ) ) {
+			$nonce= $_POST['nonce'];
+		}
+		if ( isset( $_POST['timestamp'] ) ) {
+			$timestamp= $_POST['timestamp'];
+		}
+		if ( isset( $_POST['PasswordDigest'] ) ) {
+			$digest= $_POST['PasswordDigest'];
+		}
+
+		if ( empty($slug) || empty($username) || empty($nonce)
+			|| empty($timestamp) || empty($digest) )
+		{
+			$okay= false;
+		}
+		// ensure the request was submitted less than five minutes ago
+		if ( (time() - strtotime($timestamp) ) > 300 )
+		{
+			$okay= false;
+		}
+		$user= User::identify();
+		$wsse= Utils::WSSE( $nonce, $timestamp );
+		if ( $digest != $wsse['digest'] )
+		{
+			$okay= false;
+		}
+		if ( ! $okay )
+		{
+			Utils::redirect( URL::get('admin', 'page=content') );
+		}
+		$post= Post::get( array( 'slug' => $slug ) );
+		if ( Post::status('deleted') == $post->status )
+		{
+			$post->delete();
+		}
+		else
+		{
+			$post->status= Post::status('deleted');
+			$post->update();
+		}
+		Utils::redirect( URL::get('admin', 'page=content') );
+	}
 
 	/**
 	 * function post_user
