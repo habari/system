@@ -1,4 +1,4 @@
-CREATE TABLE {$prefix}posts ( 
+CREATE TABLE {$prefix}posts (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT
 ,	slug VARCHAR(255) NOT NULL
 ,	content_type SMALLINT UNSIGNED NOT NULL
@@ -8,13 +8,13 @@ CREATE TABLE {$prefix}posts (
 ,	cached_content LONGTEXT NOT NULL
 ,	user_id SMALLINT UNSIGNED NOT NULL
 ,	status SMALLINT UNSIGNED NOT NULL
-,	pubdate DATETIME NOT NULL 
+,	pubdate DATETIME NOT NULL
 ,	updated TIMESTAMP NOT NULL
 , PRIMARY KEY (id)
 , UNIQUE INDEX (slug(80))
 );
 
-CREATE TABLE  {$prefix}postinfo  ( 
+CREATE TABLE  {$prefix}postinfo  (
 	post_id INT UNSIGNED NOT NULL
 ,	name VARCHAR(255) NOT NULL
 ,	type SMALLINT UNSIGNED NOT NULL DEFAULT 0
@@ -22,18 +22,18 @@ CREATE TABLE  {$prefix}postinfo  (
 , PRIMARY KEY (post_id, name)
 );
 
-CREATE TABLE  {$prefix}posttype ( 
+CREATE TABLE  {$prefix}posttype (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT
-,	name VARCHAR(255) NOT NULL 
+,	name VARCHAR(255) NOT NULL
 , PRIMARY KEY (id)
 );
 
 INSERT INTO  {$prefix}posttype (name) VALUES ("entry");
 INSERT INTO {$prefix}posttype (name) VALUES ("page");
 
-CREATE TABLE  {$prefix}poststatus ( 
+CREATE TABLE  {$prefix}poststatus (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT
-,	name VARCHAR(255) NOT NULL 
+,	name VARCHAR(255) NOT NULL
 , PRIMARY KEY (id)
 );
 
@@ -58,7 +58,7 @@ CREATE TABLE  {$prefix}users (
 , UNIQUE INDEX (username)
 );
 
-CREATE TABLE  {$prefix}userinfo ( 
+CREATE TABLE  {$prefix}userinfo (
 	user_id SMALLINT UNSIGNED NOT NULL
 ,	name VARCHAR(255) NOT NULL
 ,	type SMALLINT UNSIGNED NOT NULL DEFAULT 0
@@ -71,7 +71,7 @@ CREATE TABLE  {$prefix}tags (
 , tag_text VARCHAR(255) NOT NULL
 , tag_slug VARCHAR(255) NOT NULL
 , PRIMARY KEY (id)
-, UNIQUE INDEX (tag_text)	
+, UNIQUE INDEX (tag_text)
 );
 
 CREATE TABLE  {$prefix}tag2post (
@@ -122,7 +122,7 @@ CREATE TABLE  {$prefix}comments (
 , INDEX (post_id)
 );
 
-CREATE TABLE  {$prefix}commentinfo ( 
+CREATE TABLE  {$prefix}commentinfo (
 	comment_id INT UNSIGNED NOT NULL
 ,	name VARCHAR(255) NOT NULL
 ,	type SMALLINT UNSIGNED NOT NULL DEFAULT 0
@@ -181,7 +181,8 @@ VALUES (NULL, 'admin','/^admin[\\/]*([^\\/]*)[\\/]{0,1}$/i','admin/{$page}'
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
-VALUES (NULL, 'userprofile', '/^admin\\/(user)\\/([^\\/]+)\\/{0,1}$/i', 'admin/{$page}/{$user}', 'AdminHandler', 'admin', 4, 'The profile page for a specific user');
+VALUES (NULL, 'userprofile', '/^admin\\/(user)\\/([^\\/]+)\\/{0,1}$/', 'admin/{$page}/{$user}',
+'AdminHandler', 'admin', 4, 'The profile page for a specific user');
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
@@ -222,5 +223,15 @@ INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
 VALUES (NULL, 'comment','/^([0-9]+)\\/feedback[\\/]{0,1}$/i','{$id}/feedback'
 ,'FeedbackHandler','add_comment',8,'Adds a comment to a post');
+
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+VALUES (NULL, 'ajax','/^ajax\\/([^\\/]+)[\\/]{0,1}$/i','ajax/{$context}'
+,'AjaxHandler','ajax',8,'Ajax handling');
+
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+VALUES (NULL, 'auth_ajax','/^auth_ajax\\/([^\\/]+)[\\/]{0,1}$/i','auth_ajax/{$context}'
+,'AjaxHandler','auth_ajax',8,'Authenticated ajax handling');
 
 UPDATE {$prefix}rewrite_rules SET is_active=1;
