@@ -152,12 +152,13 @@ class AdminHandler extends ActionHandler
 	function post_delete_post()
 	{
 		$okay= true;
+		$slug= '';
+		$nonce= '';
+		$timestamp= '';
+		$digest= '';
 		// first, get the POSTed values and check them for sanity
 		if ( isset($_POST['slug']) ) {
 			$slug= $_POST['slug'];
-		}
-		if ( isset( $_POST['username'] ) ) {
-			$username= $_POST['username'];
 		}
 		if ( isset( $_POST['nonce'] ) ) {
 			$nonce= $_POST['nonce'];
@@ -169,7 +170,7 @@ class AdminHandler extends ActionHandler
 			$digest= $_POST['PasswordDigest'];
 		}
 
-		if ( empty($slug) || empty($username) || empty($nonce)
+		if ( empty($slug) || empty($nonce)
 			|| empty($timestamp) || empty($digest) )
 		{
 			$okay= false;
