@@ -2,7 +2,7 @@
 /**
  * Habari Plugins Class
  *
- * Provides an interface for the code to access plugins 
+ * Provides an interface for the code to access plugins
  * @package Habari
  */
 
@@ -10,12 +10,12 @@ class Plugins
 {
 	private static $hooks = array();
 	private static $plugins = array();
-	
+
 	/**
 	 * function __construct
 	 * A private constructor method to prevent this class from being instantiated.
-	 * Don't ever create this class as an object for any reason.  It is not a singleton.	 
-	 **/	 
+	 * Don't ever create this class as an object for any reason.  It is not a singleton.
+	 **/
 	private function __construct()
 	{
 	}
@@ -24,34 +24,34 @@ class Plugins
 	 * function register
 	 * Registers a plugin action for possible execution
 	 * @param mixed A reference to the function to register by string or array(object, string)
-	 * @param string Usually either 'filter' or 'action' depending on the hook type.	 
+	 * @param string Usually either 'filter' or 'action' depending on the hook type.
 	 * @param string The plugin hook to register
 	 * @param hex An optional execution priority, in hex.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
 	**/
 	public function register( $fn, $type, $hook, $priority = 8 )
 	{
 		// add the plugin function to the appropriate array
-		$index = array($type, $hook, $priority);	
-		
+		$index = array($type, $hook, $priority);
+
 		$ref =& self::$hooks;
-		
+
 		foreach( $index as $bit ) {
 		    if(!isset($ref["{$bit}"])) {
 		    	$ref["{$bit}"] = array();
 		    }
 		    $ref =& $ref["{$bit}"];
 		}
-		 
+
 		$ref[] = $fn;
 		ksort(self::$hooks[$type][$hook]);
 	}
-	
+
 	/**
 	 * function act
 	 * Call to execute a plugin action
 	 * @param string The name of the action to execute
 	 * @param mixed Optional arguments needed for action
-	 **/	 	 	
+	 **/
 	static public function act()
 	{
 		$args = func_get_args();
@@ -73,7 +73,7 @@ class Plugins
 	 * Call to execute a plugin filter
 	 * @param string The name of the filter to execute
 	 * @param mixed The value to filter.
-	 **/	 
+	 **/
 	static public function filter()
 	{
 		list( $hookname, $return ) = func_get_args();
@@ -87,7 +87,7 @@ class Plugins
 				// $filter is an array of object reference and method name
 				$callargs = $filterargs;
 				array_unshift( $callargs, $return );
-				$return = call_user_func_array( $filter, $callargs );	
+				$return = call_user_func_array( $filter, $callargs );
 			}
 		}
 		return $return;
@@ -97,7 +97,7 @@ class Plugins
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
 	 * @return array An array of filenames
-	 **/	 
+	 **/
 	static public function list_active()
 	{
 		$res = array();
@@ -116,17 +116,27 @@ class Plugins
 	 * function get_active
 	 * Returns the internally stored references to all loaded plugins
 	 * @return array An array of plugin objects
-	 **/	 	  	 		
+	 **/
 	static public function get_active()
 	{
 		return self::$plugins;
 	}
-	
+
+	/**
+	* Get references to plugin objects that implement a specific interface
+	* @param string $interface The interface to check for
+	* @return array An array of matching plugins
+	*/
+	static public function get_by_interface($interface)
+	{
+		return array_filter(self::$plugins, create_function('$a', 'return $a instanceof ' . $interface . ';'));
+	}
+
 	/**
 	 * function list_all
 	 * Gets a list of all plugin filenames that are available
 	 * @return array An array of filenames
-	 **/	 
+	 **/
 	static public function list_all()
 	{
 		$plugindir= HABARI_PATH . '/user/plugins/';
@@ -163,7 +173,7 @@ class Plugins
 	{
 		return self::$plugins;
 	}
-	
+
 	/**
 	 * function load
 	 * Initialize all loaded plugins by calling their load() method
@@ -174,17 +184,17 @@ class Plugins
 		foreach( $classes as $class ) {
 			if( get_parent_class($class) == 'Plugin' ) {
 				self::$plugins[] = new $class();
-				$plugin = end(self::$plugins); 
+				$plugin = end(self::$plugins);
 				$info = $plugin->info(); // Compare minversion and maxversion to Habari svn rev?
 				$plugin->load();
 			}
 		}
 	}
-	
+
 	/**
 	 * function activate_plugin
 	 * Activates a plugin file
-	 **/	 	 	
+	 **/
 	static public function activate_plugin( $file )
 	{
 		$activated = Options::get( 'active_plugins' );
@@ -197,7 +207,7 @@ class Plugins
 	/**
 	 * function deactivate_plugin
 	 * Deactivates a plugin file
-	 **/	 	 	
+	 **/
 	static public function deactivate_plugin( $file )
 	{
 		$activated = Options::get( 'active_plugins' );

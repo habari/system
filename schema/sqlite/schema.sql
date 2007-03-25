@@ -1,4 +1,4 @@
-CREATE TABLE {$prefix}posts ( 
+CREATE TABLE {$prefix}posts (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
 ,	slug VARCHAR(255) NOT NULL
 ,	content_type SMALLINT NOT NULL
@@ -8,12 +8,12 @@ CREATE TABLE {$prefix}posts (
 ,	cached_content LONGTEXT NOT NULL
 ,	user_id SMALLINT NOT NULL
 ,	status SMALLINT NOT NULL
-,	pubdate TIMESTAMP NOT NULL 
+,	pubdate TIMESTAMP NOT NULL
 ,	updated TIMESTAMP NOT NULL
 );
 CREATE UNIQUE INDEX slug ON {$prefix}posts(slug);
 
-CREATE TABLE {$prefix}postinfo  ( 
+CREATE TABLE {$prefix}postinfo  (
 	post_id INTEGER NOT NULL
 ,	name VARCHAR(255) NOT NULL
 ,	type SMALLINT NOT NULL DEFAULT 0
@@ -21,22 +21,22 @@ CREATE TABLE {$prefix}postinfo  (
 , PRIMARY KEY (post_id, name)
 );
 
-CREATE TABLE  {$prefix}posttype ( 
+CREATE TABLE  {$prefix}posttype (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-,	name VARCHAR(255) NOT NULL 
+,	name VARCHAR(255) NOT NULL
 );
 
 INSERT INTO  {$prefix}posttype (name) VALUES('entry');
 INSERT INTO  {$prefix}posttype (name) VALUES('page');
 
-CREATE TABLE  {$prefix}poststatus ( 
+CREATE TABLE  {$prefix}poststatus (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-,	name VARCHAR(255) NOT NULL 
+,	name VARCHAR(255) NOT NULL
 );
 
 INSERT INTO  {$prefix}poststatus (name) VALUES ('deleted');
 INSERT INTO  {$prefix}poststatus (name) VALUES ('draft');
-INSERT INTO  {$prefix}poststatus (name) VALUES ('published'); 
+INSERT INTO  {$prefix}poststatus (name) VALUES ('published');
 INSERT INTO  {$prefix}poststatus (name) VALUES ('private');
 
 CREATE TABLE  {$prefix}options (
@@ -54,7 +54,7 @@ CREATE TABLE  {$prefix}users (
 );
 CREATE UNIQUE INDEX username ON {$prefix}users(username);
 
-CREATE TABLE  {$prefix}userinfo ( 
+CREATE TABLE  {$prefix}userinfo (
 	user_id INTEGER NOT NULL
 ,	name VARCHAR(255) NOT NULL
 ,	type SMALLINT NOT NULL DEFAULT 0
@@ -63,7 +63,7 @@ CREATE TABLE  {$prefix}userinfo (
 );
 
 CREATE TABLE  {$prefix}tags (
-	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL 
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
 ,	tag_text VARCHAR(255) NOT NULL
 , tag_slug VARCHAR(255) NOT NULL
 );
@@ -77,7 +77,7 @@ CREATE TABLE  {$prefix}tag2post (
 CREATE INDEX tag2post_post_id ON {$prefix}tag2post(post_id);
 
 CREATE TABLE  {$prefix}themes (
-	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL 
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
 , name VARCHAR(255) NOT NULL
 , version VARCHAR(255) NOT NULL
 , template_engine VARCHAR(255) NOT NULL
@@ -113,7 +113,7 @@ CREATE TABLE  {$prefix}comments (
 );
 CREATE INDEX comments_post_id ON {$prefix}comments(post_id);
 
-CREATE TABLE  {$prefix}commentinfo ( 
+CREATE TABLE  {$prefix}commentinfo (
 	comment_id INTEGER NOT NULL
 ,	name VARCHAR(255) NOT NULL
 ,	type SMALLINT NOT NULL DEFAULT 0
@@ -122,7 +122,7 @@ CREATE TABLE  {$prefix}commentinfo (
 );
 
 CREATE TABLE {$prefix}rewrite_rules (
-  rule_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL 
+  rule_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
 , name VARCHAR(255) NOT NULL
 , parse_regex VARCHAR(255) NOT NULL
 , build_str VARCHAR(255) NOT NULL
@@ -212,5 +212,15 @@ INSERT INTO {$prefix}rewrite_rules
 (name, parse_regex, build_str, handler, action, priority, description)
 VALUES ('comment','/^([0-9]+)\/feedback[\/]{0,1}$/i','{$id}/feedback'
 ,'FeedbackHandler','add_comment',8,'Adds a comment to a post');
+
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+VALUES (NULL, 'ajax','/^ajax\\/([^\\/]+)[\\/]{0,1}$/i','ajax/{$context}'
+,'AjaxHandler','ajax',8,'Ajax handling');
+
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+VALUES (NULL, 'auth_ajax','/^auth_ajax\\/([^\\/]+)[\\/]{0,1}$/i','auth_ajax/{$context}'
+,'AjaxHandler','auth_ajax',8,'Authenticated ajax handling');
 
 UPDATE {$prefix}rewrite_rules SET is_active=1;
