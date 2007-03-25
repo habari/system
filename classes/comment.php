@@ -158,6 +158,15 @@ class Comment extends QueryRecord
 	 **/
 	public function __get( $name )
 	{
+		$fieldnames = array_keys($this->fields) + array('permalink', 'tags', 'comments', 'comment_count', 'author');
+		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
+			list( $junk, $name, $filter ) = $matches;
+		}
+		else {
+			$filter = false;
+		}
+		
 		if ( $name == 'name' && parent::__get( $name ) == '' ) {
 			return _t('Anonymous');
 		}
@@ -169,6 +178,11 @@ class Comment extends QueryRecord
 			default:
 				$out = parent::__get( $name );
 				break;
+		}
+		//$out = parent::__get( $name );
+		$out = Plugins::filter( "comment_{$name}", $out );
+		if( $filter ) {
+			$out = Plugins::filter( "comment_{$name}_{$filter}", $out );
 		}
 		return $out;
 	}
