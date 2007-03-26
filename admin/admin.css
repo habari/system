@@ -25,6 +25,12 @@ body
 	margin: 0.0em auto;
 }
 
+.buttonform 
+{
+	display: inline;
+}
+
+
 /*=== @c ===*/
 #content-area
 {
