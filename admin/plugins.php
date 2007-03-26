@@ -9,18 +9,40 @@
 					<tr>
 						<th align="left">Plugin Name</th>
 						<th align="left">Author Name</th>
-						<th align="left">License</th>
+						<th align="left">Version</th>
 						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
-				<?php foreach( Plugins::get_active() as $plugin ) : ?>
-				<?php $plugininfo = $plugin->info(); ?>
+				<?php
+				$active_plugins= Plugins::get_active();
+				foreach ( Plugins::list_all() as $file ) :
+					$verb= 'Activate';
+					$class= Plugins::class_from_filename( $file );
+					if ( array_key_exists( $file, $active_plugins ) )
+					{
+						$verb= 'Deactivate';
+						$info= $active_plugins[$file]->info();
+					}
+					else
+					{
+						// instantiate this plugin
+						// in order to get its info()
+						include_once( $file );
+						$plugin= new $class;
+						$info= $plugin->info();
+					}
+				?>
 					<tr>
-						<td><?php echo $plugininfo['name']; ?></td>
-						<td><a href="<?php echo $plugininfo['link']; ?>" title="Visit <?php echo $plugininfo['name']; ?>"><?php echo $plugininfo['author']; ?></a></td>
-						<td><?php echo $plugininfo['license']; ?></td>
-						<td><a href="" title="">Enable</a></td>
+						<td><?php echo $info['name']; ?></td>
+						<td><a href='<?php echo $info['url']; ?>' title='Visit <?php echo $info['name']; ?>'><?php echo $info['author']; ?></a></td>
+						<td><?php echo $info['version']; ?></td>
+						<td>
+						<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
+						<input type='hidden' name='plugin' value='<?php echo $file; ?>' />
+						<input type='submit' name='submit' value='<?php echo $verb; ?>' />
+						</form>
+						</td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody>

@@ -310,6 +310,24 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * function post_plugin_toggle
+	 * activates or deactviates a plugin
+	 * @param string the full filename of a plugin to (de)activate
+	**/
+	function post_plugin_toggle()
+	{
+		if ( 'activate' == strtolower($this->handler_vars['submit']) )
+		{
+			Plugins::activate_plugin( $this->handler_vars['plugin'] );
+		}
+		else
+		{
+			Plugins::deactivate_plugin( $this->handler_vars['plugin'] );
+		}
+		Utils::redirect( URL::get('admin', 'page=plugins') );
+	}
+
+	/**
 	 * function post_import
 	 * Handles the submission of the import form, importing data from a WordPress database.
 	 * This function should probably be broken into an importer class, since it is WordPress-specific.
