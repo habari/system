@@ -8,8 +8,9 @@
 
 class Plugins
 {
-	private static $hooks = array();
-	private static $plugins = array();
+	private static $hooks= array();
+	private static $plugins= array();
+	private static $plugin_files= array();
 
 	/**
 	 * function __construct
@@ -96,20 +97,26 @@ class Plugins
 	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
+	 * @param boolean Whether to refresh the cached array.  Default FALSE
 	 * @return array An array of filenames
 	 **/
-	static public function list_active()
+	static public function list_active( $refresh= false )
 	{
-		$res = array();
+		if ( ! empty( self::$plugin_files ) && ! $refresh )
+		{
+			return self::$plugin_files;
+		}
 		$plugins = Options::get( 'active_plugins' );
 		if( is_array($plugins) ) {
 			foreach( $plugins as $plugin ) {
 				if( file_exists( $plugin ) ) {
-					$res[] = $plugin;
+					self::$plugin_files[] = $plugin;
 				}
 			}
 		}
-		return $res;
+		// make sure things work on Windows
+		self::$plugin_files= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), self::$plugin_files );
+		return self::$plugin_files;
 	}
 
 	/**
@@ -139,19 +146,13 @@ class Plugins
 	 **/
 	static public function list_all()
 	{
+		$plugins= array();
+		$files= array();
 		$plugindir= HABARI_PATH . '/user/plugins/';
-		$files= glob( $plugindir . '*.plugin.php' );
 		$dirs= glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK );
 		if ( Site::CONFIG_LOCAL != Site::$config_type )
 		{
-			// include any plugins that might exist in this
-			// site's /plugins/ directory
-			$site_files= glob( Site::get_dir('config') . '/plugins/*.plugin.php' );
-			if ( is_array( $site_files ) && ! empty( $site_files ) ) {
-				$files= array_merge( $files, $site_files );
-			}
-			// and include any plugins that might exist in any
-			// sub-directories of /plugins/
+			// include site-specific plugins
 			$site_dirs= glob( Site::get_dir('config') . '/plugins/*', GLOB_ONLYDIR | GLOB_MARK );
 			if ( is_array( $site_dirs ) && ! empty( $site_dirs ) ) {
 				$dirs= array_merge( $dirs, $site_dirs );
@@ -161,34 +162,33 @@ class Plugins
 			$dirfiles = glob( $dir . '*.plugin.php' );
 			$files = array_merge($dirfiles, $files);
 		}
-		return $files;
+		// return $files;
+		// massage the return value so that this works on Windows
+		return array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $files );
 	}
 
 	/**
-	 * function list_loaded
-	 * Returns an array of loaded plugin class objects
-	 * @return array An array of Plugin descendants
-	 **/
-	static public function list_loaded()
+	 * function class_from_filename
+	 * returns the class name from a plugin's filename
+	 * @param string the full path to a plugin file
+	 * @return string the class name
+	**/
+	static public function class_from_filename( $file )
 	{
-		return self::$plugins;
+		return str_replace( '.plugin.php', '',  substr( $file, ( strrpos( $file, '/') + 1 ) ) );
 	}
 
 	/**
 	 * function load
 	 * Initialize all loaded plugins by calling their load() method
+	 * @param string the class name to load
 	 **/
-	static public function load()
+	static public function load( $file )
 	{
-		$classes = get_declared_classes();
-		foreach( $classes as $class ) {
-			if( get_parent_class($class) == 'Plugin' ) {
-				self::$plugins[] = new $class();
-				$plugin = end(self::$plugins);
-				$info = $plugin->info(); // Compare minversion and maxversion to Habari svn rev?
-				$plugin->load();
-			}
-		}
+		$class= Plugins::class_from_filename( $file );
+		self::$plugins[$file]= new $class;
+		$plugin= self::$plugins[$file];
+		$plugin->load();
 	}
 
 	/**
@@ -211,7 +211,9 @@ class Plugins
 	static public function deactivate_plugin( $file )
 	{
 		$activated = Options::get( 'active_plugins' );
-		if( is_array( $activated ) && ($index = array_search( $file, $activated ) ) ) {
+		$index= array_search( $file, $activated );
+		if ( is_array( $activated ) && ( FALSE !== $index ) )
+		{
 			unset($activated[$index]);
 			Options::set( 'active_plugins', $activated );
 		}
