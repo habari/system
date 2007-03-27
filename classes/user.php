@@ -106,6 +106,18 @@ class User extends QueryRecord
 	}
 
 	/**
+	 * Creates a new user object and saves it to the database
+	 * @param array An associative array of user fields
+	 * @return User the User object that was created
+	**/
+	public static function create( $paramarray )
+	{
+		$user= new User( $paramarray );
+		$user->insert();
+		return $user;
+	}
+
+	/**
 	 * Save a new user to the users table
 	 */	 	 	 	 	
 	public function insert()

@@ -344,12 +344,12 @@ class InstallHandler extends ActionHandler {
 			$password= Utils::crypt($admin_pass);
 		}
 
-		$admin= new User(array (
+		// Insert the admin user
+		User::create(array (
 			'username'=>$admin_username,
 			'email'=>$admin_email,
 			'password'=>$password
 		));
-		$admin->insert();
 
 		// Insert a post record
 		Post::create(array(
