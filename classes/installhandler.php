@@ -380,7 +380,8 @@ class InstallHandler extends ActionHandler {
 		Options::set('base_url', substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1));
 		Options::set('version', '0.1alpha');
 		Options::set('pagination', '5');
-
+		Options::set( 'theme_name', 'k2' );
+		Options::set( 'theme_dir' , HABARI_PATH . '/user/themes/k2/' );
 		Options::set('GUID', sha1(Options::get('base_url') . Utils::nonce()));
 		return true;
 	}
