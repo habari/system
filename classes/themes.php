@@ -11,10 +11,16 @@ class Themes
 	 **/	 	 	 	 	
 	public static function get_all()
 	{
-		$query= '
-			SELECT id, name, version, template_engine, theme_dir, is_active
-			FROM ' . DB::table( 'themes' );
-		return DB::get_results( $query, array(), 'QueryRecord' );
+		$theme_dirs= glob( HABARI_PATH . '/user/themes/*', GLOB_ONLYDIR | GLOB_MARK );
+		if( Site::is('multi') )
+		{
+			$site_dirs= glob( Site::get_dir('config') . '/themes/*', GLOB_ONLYDIR | GLOB_MARK );
+			if ( is_array( $site_dirs ) && ! empty( $site_dirs ) )
+			{
+				$theme_dirs= array_merge( $theme_dirs, $site_dirs );
+			}
+		}
+		return $theme_dirs;
 	}
 	
 	/**
@@ -23,13 +29,27 @@ class Themes
 	 **/	 	 	 	 	
 	public static function get_active()
 	{
-		$query = '
-			SELECT id, name, version, template_engine, theme_dir 
-          	FROM ' . DB::table( 'themes' ) . '
-          	WHERE is_active=1';
-		return DB::get_row( $query, array(), 'QueryRecord' );
+		$theme= new QueryRecord();
+		$theme->theme_dir= Options::get('theme_dir');
+		$data= simplexml_load_file( $theme->theme_dir . '/theme.xml' );
+		foreach ( $data as $name=>$value)
+		{
+			$theme->$name= (string) $value;
+		}
+		return $theme;
 	}
-	
+
+	/**
+	 * functiona activate_theme
+	 * Updates the database with the name of the new theme to use
+	 * @param string the name of the theme
+	**/
+	public static function activate_theme( $theme_name, $theme_dir )
+	{
+		Options::set( 'theme_name', $theme_name );
+		Options::set( 'theme_dir', $theme_dir );
+	}
+
 	/**
 	 * Returns a named Theme descendant.
 	 * If no parameter is supplied, then 
@@ -78,7 +98,6 @@ class Themes
 			if ( empty( $themedata ) ) {
 				die( 'Theme not installed.' );
 			}
-			$themedata->theme_dir= HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
 		}
 		
 		$classname= 'Theme';

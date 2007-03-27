@@ -7,21 +7,35 @@
 			<table cellspacing="0" width="100%">
 				<thead>
 					<tr>
-						<th align="center">Active?</th>
-						<th align="left">Theme Name</th>
+						<th align="center">Action</th>
+						<th align="left">Name</th>
             <th align="left">Version</th>
-						<th align="left">Template Engine</th>
-						<th align="left">Theme Directory</th>
+						<th align="left">Engine</th>
+						<th align="left">Directory</th>
 					</tr>
 				</thead>
 				<tbody>
-				<?php foreach( Themes::get_all() as $theme ) : ?>
+				<?php 
+				$active_theme= Options::get('theme_dir');
+				foreach( Themes::get_all() as $theme_dir ) :
+					$info= simplexml_load_file( $theme_dir . '/theme.xml' ); ?>
 					<tr>
-						<td><?php echo (int) $theme->is_active == 1 ? 'Yes' : 'No'; ?></td>
-						<td><?php echo $theme->name; ?></td>
-						<td><?php echo $theme->version; ?></td>
-						<td><?php echo $theme->template_engine; ?></td>
-						<td><?php echo $theme->theme_dir; ?></td>
+						<td>
+						<?php
+							if ( $theme_dir != $active_theme )
+							{ ?>
+							<form method='post' action='<?php URL::out('admin', 'page=activate_theme'); ?>' />
+							<input type='hidden' name='theme_name' value='<?php echo $info->name; ?>' />
+							<input type='hidden' name='theme_dir' value='<?php echo $theme_dir; ?>' />
+							<input type='submit' name='submit' value='activate' />
+							</form>
+							<?php }
+						?>
+						</td>
+						<td><?php echo $info->name; ?></td>
+						<td><?php echo $info->version; ?></td>
+						<td><?php echo $info->template_engine; ?></td>
+						<td><?php echo $theme_dir; ?></td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody>

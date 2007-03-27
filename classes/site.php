@@ -154,17 +154,17 @@ class Site
 				}
 				break;
 			case 'user':
-				$url= Site::get_url('host', true) . Site::get_path('base', true) . Site::get_path('user');
+				$url= Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
 				break;
 			case 'theme':
-				$theme= Themes::get_active();
-				if ( file_exists( Site::get_dir('config') . '/themes/' . $theme->theme_dir ) )
+				$theme= Options::get('theme_name');
+				if ( file_exists( Site::get_dir('config') . '/themes/' . $theme ) )
 				{
-					$url= Site::get_url('user') .  '/themes/' . $theme->theme_dir;
+					$url= Site::get_url('user') .  '/themes/' . $theme;
 				}
 				else
 				{
-					$url= Site::get_url('habari') . '/user/themes/' . $theme->theme_dir;
+					$url= Site::get_url('habari') . '/user/themes/' . $theme;
 				}
 				break;
 			case 'admin':
@@ -209,11 +209,18 @@ class Site
 				$path= trim(dirname($_SERVER["SCRIPT_NAME"]),'/\\');
 				break;
 			case 'user':
-				$path= (Site::$config_type == Site::CONFIG_LOCAL) ? 'user' : 'user/sites/' . Site::get_dir('config');
+				if ( Site::is('main') )
+				{
+					$path= 'user';
+				}
+				else
+				{
+					$path= str_replace ( HABARI_PATH, '', Site::get_dir('config') );
+				}
 				break;
 			case 'theme':
-				$theme= Themes::get_active();
-				$path= Site::get_path('user') . '/themes/' . $theme->theme_dir;
+				$theme= Options::get('theme_name');
+				$path= Site::get_path('user') . '/themes/' . $theme;
 				break;
 		}
 		$path.= ( $tail ) ? '/' : '';

@@ -328,6 +328,19 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * fuction post_activate_theme
+	 * Activates a theme
+	**/
+	function post_activate_theme()
+	{
+		if ( 'activate' == strtolower($this->handler_vars['submit']) )
+		{
+			Themes::activate_theme( $this->handler_vars['theme_name'],  $this->handler_vars['theme_dir'] );
+		}
+		Utils::redirect( URL::get( 'admin', 'page=themes') );
+	}
+
+	/**
 	 * function post_import
 	 * Handles the submission of the import form, importing data from a WordPress database.
 	 * This function should probably be broken into an importer class, since it is WordPress-specific.
