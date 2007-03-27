@@ -371,10 +371,7 @@ class Post extends QueryRecord
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
-		$this->info->set_key( DB::last_insert_id() ); 
-		 /* If a new post is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
-		// $this->info->option_default= "saved";
-
+		$this->info->commit( DB::last_insert_id() );
 		$this->savetags();
 		return $result;
 	}
@@ -398,6 +395,7 @@ class Post extends QueryRecord
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
+		$this->info->commit();
 		return $result;
 	}
 	

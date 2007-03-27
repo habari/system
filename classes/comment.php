@@ -112,9 +112,7 @@ class Comment extends QueryRecord
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the comment object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
-		$this->info->set_key( DB::last_insert_id() );
-		 /* If a new comment is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
-		// $this->info->option_default= "saved";
+		$this->info->commit( DB::last_insert_id() );
 		return $result;
 	}
 
@@ -127,6 +125,7 @@ class Comment extends QueryRecord
 		$result = parent::update( DB::table('comments'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
+		$this->info->commit();
 		return $result;
 	}
 
@@ -174,6 +173,9 @@ class Comment extends QueryRecord
 		{
 			case 'post':
 				$out = $this->get_post();
+				break;
+			case 'info':
+				$out = $this->get_info();
 				break;
 			default:
 				$out = parent::__get( $name );
@@ -237,6 +239,20 @@ class Comment extends QueryRecord
 			$this->post_object = Post::get( array('id' => $this->post_id) );
 		}
 		return $this->post_object;
+	}
+
+	/**
+	 * function get_info
+	 * Gets the info object for this comment, which contains data from the commentinfo table
+	 * related to this comment.
+	 * @return CommentInfo object
+	**/
+	private function get_info()
+	{
+		if ( ! $this->info ) {
+			$this->info= new CommentInfo( $this->id );
+		}
+		return $this->info;
 	}
 
  	/**
