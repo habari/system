@@ -81,16 +81,11 @@ abstract class InfoRecords extends ArrayObject
 		
 		foreach ( $result as $result_element ) {
 			// XXX is this logic right?	
-			if ( is_object( $result_element->value ) || is_array ( $result_element->value ) ) {
-				if ( $result_element->type == 1 ) {
-					$this->__inforecord_array[$result_element->name]= unserialize($result_element->value);
-				}
-				else {						
-					$this->__inforecord_array[$result_element->name]= $result_element->value;
-				}
+			if ( $result_element->type == 1 ) {
+				$this->__inforecord_array[$result_element->name]= array('value'=>unserialize($result_element->value));
 			}
-			else {
-				$this->__inforecord_array[$result_element->name]= $result_element->value;
+			else {						
+				$this->__inforecord_array[$result_element->name]= array('value'=>$result_element->value);
 			}
 		}
 		
@@ -105,11 +100,12 @@ abstract class InfoRecords extends ArrayObject
 	public function __get ( $name )	
 	{
 		$this->_load();
-		return $this->__inforecord_array[$name];
+		return $this->__inforecord_array[$name]['value'];
 	}	
 
 	/**
-	 * Update the info record.
+	 * Update the info record.  
+	 * The value will not be stored in the database until calling $this->commit();
 	 * 
 	 * @param string $name Name of the key to set
 	 * @param mixed $value Value to set
@@ -117,20 +113,7 @@ abstract class InfoRecords extends ArrayObject
 	public function __set( $name, $value ) 
 	{
 		$this->_load();
-		$this->__inforecord_array[$name]= $value;		
-		
-		if ( is_array( $value ) || is_object( $value ) ) {
-			$result= DB::update( $this->_table_name, array($this->_key_name=>$this->_key_value, 'name'=>$name, 'value'=>serialize($value)
-				, 'type'=>1), array('name'=>$name, $this->_key_name=>$this->_key_value)); 
-		}			
-		else {
-			$result= DB::update( $this->_table_name, array($this->_key_name=>$this->_key_value, 'name'=>$name, 'value'=>$value, 'type'=>0)
-				, array('name'=>$name, $this->_key_name=> $this->_key_value)	 ); 
-		}
-		
-		if ( Error::is_error( $result ) ) {
-			$result->out();
-		}	
+		$this->__inforecord_array[$name]= array('changed'=>true, 'value'=>$value);		
 	}
 
 	/**
@@ -144,7 +127,7 @@ abstract class InfoRecords extends ArrayObject
 	public function __isset ( $name )
 	{
 		$this->_load();
-	    return isset( $this->__inforecord_array[$name] );
+    return isset( $this->__inforecord_array[$name] );
 	}
 
 	/**
@@ -158,13 +141,13 @@ abstract class InfoRecords extends ArrayObject
     public function __unset( $name )
 	{
 		$this->_load();
-        if ( isset( $this->__inforecord_array[$name] ) ) {			
+		if ( isset( $this->__inforecord_array[$name] ) ) {			
 			DB::delete( $this->_table_name, array ( $this->_key_name => $this->_key_value, "name"=> $name ) );
 			unset( $this->__inforecord_array[$name] );
 			return true;
-        } 
-        return false;        
-    }	
+		}
+		return false;        
+  }	
 	
 	/**
 	 * Remove all info options. Primarily used when deleting the parent object. 
@@ -185,6 +168,57 @@ abstract class InfoRecords extends ArrayObject
 		} 
 		$this->__inforecord_array = array();
 		return true;
+	}
+	
+	/**
+	 * Commit all of the changed info options to the database.
+	 * If this function is not called, then the options will not be written.
+	 * 
+	 * @param mixed $metadata_key (optional) Key to use when writing info data.
+	 */
+	public function commit( $metadata_key = null )
+	{
+		if ( !$this->_loaded ) {
+			return true;
+		}
+		if ( isset( $metadata_key ) ) {
+			$this->_key_value= $metadata_key;
+		}
+
+		foreach( $this->__inforecord_array as $name=>$record ) {
+			if( $record['changed'] ) {
+				$value = $record['value'];
+				if ( is_array( $value ) || is_object( $value ) ) {
+					$result= DB::update( 
+						$this->_table_name, 
+						array(
+							$this->_key_name=>$this->_key_value, 
+							'name'=>$name, 
+							'value'=>serialize($value),
+							'type'=>1
+						), 
+						array('name'=>$name, $this->_key_name=>$this->_key_value)
+					); 
+				}			
+				else {
+					$result= DB::update( 
+						$this->_table_name, 
+						array(
+							$this->_key_name=>$this->_key_value, 
+							'name'=>$name, 
+							'value'=>$value, 
+							'type'=>0
+						), 
+						array('name'=>$name, $this->_key_name=> $this->_key_value)	 
+					); 
+				}
+				
+				if ( Error::is_error( $result ) ) {
+					$result->out();
+				}
+				$this->__inforecord_array[$name] = array('value'=>$value);	
+			}
+		}
 	}
 }
 
