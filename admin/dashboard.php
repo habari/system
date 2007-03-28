@@ -4,7 +4,6 @@
 		<div class="dashboard-block c3" id="welcome">
 			<?php
 				$user= User::identify();
-				Utils::debug(print_r($user,TRUE));
 				if ( ! isset( $user->info->experience_level ) ) {
 			?>
 					<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
