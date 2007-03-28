@@ -1,13 +1,16 @@
-<?php
-
+<?PHP
 /**
- * Habari AtomHandler Class
- *
- * Requires PHP 5.0.4 or later
- * @package Habari
- */
+	* Habari AtomHandler class
+	* Produces Atom feeds and accepts Atom Publishing Protocol input	
+	* 
+	* @package Habari
+	* @todo Apply system error handling 	
+	*/
+	
 class AtomHandler extends ActionHandler
 {
+	
+	public $user= NULL; // Cache the username
 
 	/**
 	 * Constructor for AtomHandler class.
@@ -30,519 +33,569 @@ class AtomHandler extends ActionHandler
 		*/
 		if ( !$this->is_auth() ) {
 			Format::apply('autop', 'post_content_atom');
-			Format::apply('autop', 'post_content_atomsummary');
 		}
 	}
-
+	
 	/**
-	 * function entry
-	 * Responds to Atom requests for a single entry (post)
-	 * @param array Settings array from the URL
-	 **/
-	public function act_entry()
+		* Check if a user is authenticated for Atom editing
+		* 
+		* @todo This entire funciton should be put into the User class somehow.
+		* @todo X-WSSE
+		* @param bool $force Force authorization? If so, basic HTTP_AUTH is displayed if not authed
+		* @return User The logged-in user
+		*/
+	function is_auth( $force= FALSE )
 	{
-		switch(strtolower($_SERVER['REQUEST_METHOD']))
-		{
-		case 'get':
-			$this->get_entry($this->handler_vars['slug']);
-			break;
-		case 'put':
-			$this->put_entry($this->handler_vars['slug']);
-			break;
-		case 'delete':
-			$this->delete_entry($this->handler_vars['slug']);
-			break;
+		try {
+			if ( ( $this->user == NULL ) || ( $force != FALSE ) ) {			
+				if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
+					User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
+				}
+				
+				if ( ( $force != FALSE ) && ( !$this->user = User::identify() ) ) {
+					header( 'HTTP/1.1 401 Unauthorized' );
+					header( 'Status: 401 Unauthorized' );
+					header( 'WWW-Authenticate: Basic realm="Habari"' );
+					die();
+				}
+			}
+			
+			return $this->user;
+		}
+		catch (Exception $e) {
+   		print 'Caught exception: ' .  $e->getMessage() . "\n";
 		}
 	}
-
+	
 	/**
-	 * function collection
-	 * Responds to Atom requests for a post entry collection
-	 * @param array Settings array from the URL
-	 **/
+		* Handle incoming requests for Atom entry collections
+		*/
 	public function act_collection()
 	{
-		switch(strtolower($_SERVER['REQUEST_METHOD']))
-		{
-		case 'get':
-			$this->get_collection();
-			break;
-		case 'post':
-			$this->post_collection();
-			break;
+		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
+			case 'get':
+				$this->get_collection();
+				break;
+			case 'post':
+				$this->post_collection();
+				break;
 		}
 	}
 
 	/**
-	 * function tag_collection
-	 * Responds to Atom requests for a tag's post entry collection
-	 * @param array Settings array from the URL
-	 **/
-	public function tag_collection()
+		* function act_entry
+		* 'index' should be 'slug'
+		*/
+	public function act_entry()
 	{
-		switch(strtolower($_SERVER['REQUEST_METHOD']))
-		{
-		case 'get':
-			$this->get_tag_collection( $this->handler_vars['tag'] );
-			break;
+		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
+			case 'get':
+				$this->get_entry( $this->handler_vars['slug'] );
+				break;
+			case 'put':
+				$this->put_entry( $this->handler_vars['slug'] );
+				break;
+			case 'delete':
+				$this->delete_entry( $this->handler_vars['slug'] );
+				break;
 		}
 	}
-
+		
 	/**
-	 * function comments
-	 * Responds to Atom requests for a post's comment collection
-	 * @param array Settings array from the URL
-	 **/
-	public function comments()
+		* Handle incoming requests for RSD
+		* 
+		* @todo Move the internal list of supported feeds into options to allow dynamic editing of capabilities 				
+		*/
+	public function act_rsd()
 	{
-		switch(strtolower($_SERVER['REQUEST_METHOD']))
-		{
-		case 'get':
-			$this->get_comments($this->handler_vars['slug']);
-			break;
-		}
-	}
-
-	/**
-	 * function xml_header
-	 * Produces a standard XML header
-	 * @return string The header
-	 **/
-	private function xml_header()
-	{
-		ob_clean(); // The xml header must be the very first thing in the output
-		return '<'.'?xml version="1.0" encoding="utf-8"?'.'>';
-	}
-
-	/**
-	 * function get_entry
-	 * Responds to an Atom GET request to retrieve a single post entry
-	 * @param string The post slug to look up
-	 **/
-	private function get_entry($slug)
-	{
-		$params = array('slug'=>$slug);
-		if ( $this->is_auth() ) {
-			// Get any post, don't set status to anything.
-		}
-		else {
-			$params['status'] = Post::status('published');
-		}
-
-		if ( $post = Post::get($params) ) {
-
-			$updated = Utils::atomtime( $post->updated );
-			$permalink = $post->permalink;
-			$title = htmlspecialchars($post->title);
-			$entryurl = URL::get( 'entry', array( 'slug' => $slug) );
-			$content = html_entity_decode($post->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-
-			$xmltext = $this->xml_header();
-			$xmltext .= <<< entrysnippet
-<entry xmlns="http://www.w3.org/2005/Atom">
-	<title>{$title}</title>
-	<link rel="alternate" type="text/html" href="{$permalink}" />
-	<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
-	<id>{$post->guid}</id>
-	<updated>{$updated}</updated>
-	<content type="text/xhtml" xml:base="{$permalink}">{$content}</content>
-</entry>
-
-entrysnippet;
-			header('Content-Type: application/atom+xml');
-			echo $xmltext;
-		}
-		else {
-			header('HTTP/1.1 404 Not Found');
-			header('Status: 404 Not Found');
-		}
-	}
-
-	/**
-	 * function put_entry
-	 * Responds to an AtomPUT request to update a single post entry
-	 * @param string The post slug of the post to update
-	 **/
-	private function put_entry($slug)
-	{
-		global $db;
-
-		if ( $user = $this->force_auth() ) {
-			$post = Post::get( array( 'slug' => $slug, 'status' => '%') );
-
-			//$bxml = file_get_contents('php://input');
-		  $s = fopen("php://input", "r");
-		  while($kb = fread($s, 1024)) {
-				$bxml .= $kb;
+		try {
+			/**
+				* List of APIs supported by the RSD
+				* Refer to namespace for required elements/attributes.
+				*/
+			$apis_list= array(
+				'Blogger' => array(
+					'preferred' => 'true',
+					'apiLink' => URL::get( 'collection', 'index=1' ), // This should be the XML-RPC url
+					'blogID' => '',
+				),
+			);
+			
+			$apis_list= Plugins::filter('rsd_api_list', $apis_list);
+					
+			$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
+			
+			$rsd_service= $xml->addChild( 'service' );
+			$service_engineName= $xml->addChild( 'engineName', 'Habari' );
+			$service_engineLink= $xml->addChild( 'engineLink', 'http://www.habariproject.org/' );
+			$service_homePageLink= $xml->addChild( 'homePageLink', Site::get_url('habari') );
+			$service_apis= $xml->addChild( 'apis' );
+			
+			if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
+				return false;
 			}
-		  fclose($s);
-			$xml = new SimpleXMLElement($bxml);
+			
+			foreach ( $apis_list as $apiName => $atts ) {
+				if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
+					continue;
+				}
+				
+				$apis_api= $xml->addChild( 'api' );
+				$apis_api->addAttribute( 'name', $apiName );
+				$apis_api->addAttribute( 'preferred', $atts['preferred'] );
+				$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
+				$apis_api->addAttribute( 'blogID', $atts['blogID'] );
+							
+				if ( !isset( $atts['settings'] ) || ( count( $atts['settings'] ) < 1 ) ) {
+					continue;
+				}
+							
+				$api_settings= $xml->addChild( 'settings' );
+	
+				foreach ( $atts['settings'] as $settingName => $settingValue ) {
+					switch ( $settingName ) {
+						case 'docs':
+						case 'notes':
+							$settings_setting= $xml->addChild( $settingName, $settingValue );
+							break;
+						case 'setting':
+							foreach ( $settingValue as $settingArray ) {
+								$settings_setting= $xml->addChild( 'setting', $settingArray['value'] );
+								$settings_setting->addAttribute( 'name', $settingArray['name'] );
+							}
+							break;
+					}						
+				}
+			} 
+	
+			$xml= $xml->asXML();
+			
+			ob_clean();
+			header( 'Content-Type: application/rsd+xml' );
+			print $xml;
+		}
+		catch (Exception $e) {
+   		print 'Caught exception: ' .  $e->getMessage() . "\n";
+		}
+	}
+	
+	/**
+		* Handle incoming requests for the introspection document
+		*/
+	public function act_introspection()
+	{
+		try {
+			$xml= new SimpleXMLElement( '<service xmlns="http://purl.org/atom/app#" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
+			
+			$service_workspace= $xml->addChild( 'workspace' );
+			
+			$workspace_title= $service_workspace->addChild( 'atom:title', Options::get( 'title' ), 'http://www.w3.org/2005/Atom' );
+			
+			$workspace_collection= $service_workspace->addChild( 'collection' );
+			$workspace_collection->addAttribute( 'href', URL::get( 'collection', 'index=1' ) );
+			
+			$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
+			
+			$xml= $xml->asXML();
+			
+			ob_clean();
+			header( 'Content-Type: application/atomsvc+xml' );
+			print $xml;
+		}
+		catch (Exception $e) {
+   		print 'Caught exception: ' .  $e->getMessage() . "\n";
+		}
+	}
+	
+	/**
+		* Handle incoming requests for the Atom entry collection for a specific tag
+		*/	
+	public function act_tag_collection()
+	{
+		$this->get_collection( array( 'tag' => $this->handler_vars['tag'] ) );
+	}
+	
+	/**
+		* Handle incoming requests for the Atom entry collection for all comments
+		*/
+	function act_comments( $params= array() )
+	{
+		$this->get_comments( $params );
+	}
+	
+	/**
+		* Handle incoming requests for the Atom entry collection for comments on an entry
+		*/
+	function act_entry_comments()
+	{
+		$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
+	}
+	
+	/**
+		* Output an Atom collection of comments based on the supplied parameters.
+		* 
+		* @param array $params An array of parameters passed to Comments::get() to retrieve comments				
+		*/
+	function get_comments( $params= array() )
+	{
+		try {
+			$params['status'] = Post::status('published');
 
-			if( (string) $xml->title != '') $post->title = (string) $xml->title;
-			if( (string) $xml->content != '') $post->content = (string) $xml->content;
-			if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
-
-			if($post->update()) {
-				header('HTTP/1.1 200 OK');
-				header('Status: 200 OK');
-				$this->get_entry($slug);
+			$xml= new SimpleXMLElement( '<feed xmlns="http://www.w3.org/2005/Atom"></feed>' );
+			
+			$feed_title= $xml->addChild( 'title', Options::get( 'title' ) );
+			
+			if ( $tagline= Options::get( 'tagline' ) )
+			{
+				$feed_subtitle= $xml->addChild( 'subtitle', $tagline );
+			}
+			
+			$feed_updated= $xml->addChild( 'updated', date( 'c', time() ) );
+			
+			$feed_link= $xml->addChild( 'link' );
+			$feed_link->addAttribute( 'rel', 'alternate' );
+			$feed_link->addAttribute( 'href', URL::get( 'comments' ) );
+			
+			$feed_link= $xml->addChild( 'link' );
+			$feed_link->addAttribute( 'rel', 'self' );
+			
+			if ( isset( $params['slug'] ) ) {
+				$feed_link->addAttribute( 'href', URL::get( 'entry_comments', 'slug=' . $params['slug'] ) );
 			}
 			else {
-				header('HTTP/1.1 404 Not Found');
-				header('Status: 404 Not Found');
+				$feed_link->addAttribute( 'href', URL::get( 'comments' ) );
 			}
+				
+			$feed_generator= $xml->addChild( 'generator', 'Habari' );
+			$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
+			$feed_generator->addAttribute( 'version', Options::get( 'version' ) );
+			
+			$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $params['slug'] ) ) ? $params['slug'] : 'atom_comments' ) . '/' . Options::get( 'GUID' ) );
+
+			foreach ( Posts::get( $params ) as $post ) {
+				
+				foreach ( $post->comments->approved as $comment ) {
+					$user= User::get_by_id( $post->user_id );
+					$title= ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
+					$content= ( $this->is_auth() ) ? htmlspecialchars( $comment->content ) : htmlspecialchars( $comment->content_atom );
+				
+					$feed_entry= $xml->addChild( 'entry' );
+					$entry_title= $feed_entry->addChild( 'title', 'Comment on ' . $title . ' by ' . $comment->name );
+					
+					$entry_link= $feed_entry->addChild( 'link' );
+					$entry_link->addAttribute( 'rel', 'alternate' );
+					$entry_link->addAttribute( 'href', $post->permalink . '#comment-' . $comment->id );
+						
+					$entry_author= $feed_entry->addChild( 'author' );
+					$author_name= $entry_author->addChild( 'name', $comment->name );
+					
+					$entry_id= $feed_entry->addChild( 'id', $post->guid . '/' . $comment->id );
+					
+					$entry_updated= $feed_entry->addChild( 'updated', date( 'c', strtotime( $comment->date ) ) );
+					
+					$entry_content= $feed_entry->addChild( 'content', $content );
+					$entry_content->addAttribute( 'type', 'html' );
+				}
+			}
+			
+			$xml= $xml->asXML();
+	
+			ob_clean();
+			header( 'Content-Type: application/atom+xml' );
+			print $xml;
+		}
+		catch (Exception $e) {
+   		print 'Caught exception: ' .  $e->getMessage() . "\n";
 		}
 	}
-
+			
 	/**
-	 * function delete_entry
-	 * Responds to an Atom DELETE request to delete a single post entry
-	 * @param string The post slug of the post to delete
-	 **/
-	private function delete_entry($slug)
+		* Output the Atom entry for a specific slug
+		* 
+		* @param string $slug The slug to get the entry for 				
+		*/
+	public function get_entry( $slug )
 	{
-		global $db;
-
-		if ( $user = $this->force_auth() ) {
-			if ( $post = Post::get( array( 'slug' => $slug, 'status'=>'%') ) ) {
-				if ( $post->delete() ) {
-					header('HTTP/1.1 200 OK');
-					header('Status: 200 OK');
-					echo $post->permalink;
+		try
+		{
+			$params['slug']= $slug;
+			$params['status'] = Post::status('published');
+			
+			if ( $post = Post::get($params) ) {
+				$user= User::get_by_id( $post->user_id );
+				$title= ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
+				$content= ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
+				
+				$xml= new SimpleXMLElement( '<entry xmlns="http://www.w3.org/2005/Atom"></entry>' );
+				$entry_title= $xml->addChild( 'title', $title );
+				
+				$entry_author= $xml->addChild( 'author' );
+				$author_name= $entry_author->addChild( 'name', $user->username );
+				
+				$entry_link= $xml->addChild( 'link' );
+				$entry_link->addAttribute( 'rel', 'alternate' );
+				$entry_link->addAttribute( 'href', $post->permalink );
+				
+				$entry_link= $xml->addChild( 'link' );
+				$entry_link->addAttribute( 'rel', 'edit' );
+				$entry_link->addAttribute( 'href', URL::get( 'entry', "slug={$post->slug}" ) );
+				
+				$entry_id= $xml->addChild( 'id', $post->guid );
+				$entry_updated= $xml->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
+							
+				$entry_content= $xml->addChild( 'content', $content );
+				$entry_content->addAttribute( 'type', 'html' );
+							
+				$xml= $xml->asXML();
+	
+				ob_clean();
+				header( 'Content-Type: application/atom+xml' );
+				print $xml;
+			}
+		}
+		catch (Exception $e) {
+   		print 'Caught exception: ' .  $e->getMessage() . "\n";
+		}
+	}
+	
+	/**
+		* Updates (editing) a post entry that is sent via APP.
+		* 
+		* @param string $slug The slug of the entry to save				
+		*/
+	public function put_entry( $slug )
+	{
+		try {
+			$params= array();
+	
+			$user= $this->is_auth( TRUE );
+			$bxml= file_get_contents( 'php://input' );
+			
+			$params['slug']= $slug;
+			$params['status'] = Post::status('published');
+			if ( $post = Post::get($params) ) {
+				$xml = new SimpleXMLElement( $bxml );
+				
+				preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/i', $xml->content->asXML(), $content );
+				$xml->content= $content[1];
+			
+				if ( (string) $xml->title != '' ) {
+					$post->title= $xml->title;
 				}
-				else {
-					echo "Couldn't delete.";
+				
+				if ( (string) $xml->id != '' ) {
+					$post->guid= $xml->id;
 				}
+				
+				if ( (string) $xml->content != '' ) {
+					$post->content= (string) $xml->content;
+				}
+				
+				if ( (string) $xml->pubdate != '' ) {
+					$post->pubdate= (string) $xml->pubdate;
+				}
+				
+				if ( isset( $_SERVER['HTTP_SLUG'] ) ) {
+					$post->slug= $_SERVER['HTTP_SLUG'];
+				}
+			
+				$post->status= Post::status('published');
+				$post->user_id= $user->id;
+				$post->update();
+			}
+		}
+		catch (Exception $e) {
+			print 'Caught exception: ' .  $e->getMessage() . "\n";
+		}
+	}
+	
+	/**
+		* Delete a post based on the HTTP DELETE request via Atom
+		* 
+		* @param string $slug The post slug to delete				
+		*/
+	public function delete_entry( $slug )
+	{
+		try {
+			$params = array();
+			
+			$this->is_auth();
+			
+			$params['slug']= $slug;
+			$params['status'] = Post::status('published');
+			if ( $post= Post::get($params) ) {
+				$post->delete();
+			}
+		}
+		catch (Exception $e) {
+			print 'Caught exception: ' .  $e->getMessage() . "\n";
+		}
+	}
+	
+	/**
+		*	Output a post collection based on the provided parameters.
+		*	
+		* @param array $params An array of parameters as passed to Posts::get() to retrieve posts.				
+		*/
+	public function get_collection( $params = array() )
+	{	
+		try {
+			$xml= new SimpleXMLElement( '<feed xmlns="http://www.w3.org/2005/Atom"></feed>' );
+			
+			$feed_title= $xml->addChild( 'title', Options::get( 'title' ) );
+			
+			if ( $tagline= Options::get( 'tagline' ) ) {
+				$feed_subtitle= $xml->addChild( 'subtitle', $tagline );
+			}
+			
+			$feed_updated= $xml->addChild( 'updated', date( 'c', time() ) );
+			
+			$feed_link= $xml->addChild( 'link' );
+			$feed_link->addAttribute( 'rel', 'alternate' );
+			$feed_link->addAttribute( 'href', URL::get('index_page') );
+			
+			$feed_link= $xml->addChild( 'link' );
+			$feed_link->addAttribute( 'rel', 'self' );
+			
+			if ( isset( $params['tag'] ) ) {
+				$feed_link->addAttribute( 'href', URL::get( 'tag_collection', 'tag=' . $params['tag'] ) );
 			}
 			else {
-				// This is probably not the right error code for this, but you get the idea.
-				header('HTTP/1.1 404 Not Found');
-				header('Status: 404 Not Found');
-				Utils::debug($post, $slug);
+				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $this->handler_vars['index'] ) );
 			}
-		}
-	}
-
-	/**
-	 * function is_auth
-	 * Check if a user is authenticated for Atom editing
-	 * TODO: This entire funciton should be put into the User class somehow.
-	 * TODO: X-WSSE
-	 * @return User The logged-in user
-	 **/
-	function is_auth()
-	{
-		if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
-			User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
-		}
-
-		$user = User::identify();
-
-		return $user;
-	}
-
-	/**
-	 * function force_auth
-	 * Require authentication to continue.
-	 * Display basic HTTP_AUTH if not authed.
-	 * TODO: This entire function should be put into the User class somehow.
-	 * @return User The logged-in user
-	 **/
-	function force_auth()
-	{
-		if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
-			User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
-		}
-
-		if ( ! $user = User::identify() ) {
-			header('HTTP/1.1 401 Unauthorized');
-			header('Status: 401 Unauthorized');
-			header('WWW-Authenticate: Basic realm="Habari"');
-			die();
-		}
-		return $user;
-	}
-
-	/**
-	 * function get_collection
-	 * Return a collection of posts in Atom format
-	 **/
-	function get_collection()
-	{
-		$collectionurl = URL::get( 'collection', 'index=' . $this->handler_vars['index'] );
-		$commentscollectionurl = URL::get( 'comments' );
-		$feedupdated = Utils::atomtime(time()); // TODO: This value should be cached
-		$copyright = date('Y'); // TODO: This value should be corrected
-		$title = Options::get('title');
-		$tagline = Options::get('tagline');
-		$home = URL::get('index_page');
-		$version = Options::get('version');
-
-		$totalposts = Posts::count_last();
-		$relprevious = '';
-		$relnext = '';
-		if(intval($this->handler_vars['index']) * Options::get('paginate') < $totalposts) {
-			$relnext = '<link rel="next" type="application/atom+xml" href="' . URL::get( 'collection', 'index=' . (intval($this->handler_vars['index']) + 1) ) . '" title="Next Page" />';
-		}
-		if(intval($this->handler_vars['index']) > 1) {
-			$relprevious = '<link rel="previous" type="application/atom+xml" href="' . URL::get( 'collection', 'index=' . (intval($this->handler_vars['index']) - 1) ) . '" title="Previous Page" />';
-		}
-		$relfirst = '<link rel="first" type="application/atom+xml" href="' . URL::get( 'collection', 'index=1' ) . '" title="First Page" />';
-		$rellast = '<link rel="last" type="application/atom+xml" href="' . URL::get( 'collection', 'index=' . ceil($totalposts / Options::get('paginate') ) ) . '" title="Last Page" />';
-
-		$xmltext = $this->xml_header();
-		$xmltext .= <<< feedpreamble
-<feed xmlns="http://www.w3.org/2005/Atom">
-	<title>{$title}</title>
-	<subtitle>{$tagline}</subtitle>
-	<link rel="alternate" type="text/html" href="{$home}" />
-	<link rel="service.post" type="application/atom+xml" href="{$collectionurl}" title="{$title}" />
-	<link rel="self" type="application/atom+xml" href="{$collectionurl}" />
-	<link rel="comments" type="application/atom+xml" href="{$commentscollectionurl}" />
-	{$relfirst}{$relprevious}{$relnext}{$rellast}
-	<updated>{$feedupdated}</updated>
-	<rights>{$copyright}</rights>
-	<generator uri="http://code.google.com/p/habari/" version="{$version}">Habari</generator>
-	<id>{$home}</id>
-
-feedpreamble;
-
-		$params = array();
-		if ( $this->is_auth() ) {
-			// Get all posts, don't set status to anything.
-		}
-		else {
-			$params['status'] = Post::status('published');
-		}
-
-		foreach(Posts::get( $params ) as $post) {
-			$entryurl = URL::get( 'entry', "slug={$post->slug}" );
-			$entryupdated = Utils::atomtime( $post->updated );
-			$user = User::get_by_id( $post->user_id );
-			$title = htmlspecialchars($post->title);
-			$content = html_entity_decode($post->content_atom, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-			$summary = html_entity_decode($post->content_atomsummary, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-			$xmltext .= <<< postentry
-	<entry>
-		<title>{$title}</title>
-		<link rel="alternate" type="text/html" href="{$post->permalink}" />
-		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
-		<author>
-			<name>{$user->username}</name>
-		</author>
-		<id>{$post->guid}</id>
-		<updated>{$entryupdated}</updated>
-		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
-		<summary type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$summary}</div></summary>
-	</entry>
-
-postentry;
-		}
-		$xmltext .= '</feed>';
-
-		header('Content-Type: application/atom+xml');
-		echo $xmltext;
-	}
-
-	/**
-	 * function get_tag_collection
-	 * Outputs a collection of post entries for a specific tag
-	 **/
-	function get_tag_collection( $tag )
-	{
-		$collectionurl = URL::get_url( 'tag_collection', 'index=1' );
-		$feedupdated = Utils::atomtime(time()); // TODO: This value should be cached
-		$copyright = date('Y'); // TODO: This value should be corrected
-		$tagurl = URL::get( 'tag', 'tag=' . $tag, false );
-		$title = Options::get('title');
-		$tagline = Options::get('tagline');
-		$version = Options::get('version');
-		$home = URL::get('index_page');
-
-		$xmltext = $this->xml_header();
-		$xmltext .= <<< feedpreamble
-<feed xmlns="http://www.w3.org/2005/Atom">
-	<title>{$title}</title>
-	<subtitle>{$tagline}</subtitle>
-	<link rel="alternate" type="text/html" href="{$tagurl}" />
-	<link rel="self" type="application/atom+xml" href="{$collectionurl}" />
-	<updated>{$local['feedupdated']}</updated>
-	<rights>{$local['copyright']}</rights>
-	<generator uri="http://code.google.com/p/habari/" version="{$version}">Habari</generator>
-	<id>{$home}</id>
-
-feedpreamble;
-
-		$params = array('tag'=>$tag);
-		if ( $this->is_auth() ) {
-			// Get all posts, don't set status to anything.
-		}
-		else {
-			$params['status'] = Post::status('published');
-		}
-
-		foreach(Posts::get( $params ) as $post) {
-			$entryurl = URL::get( 'entry', "slug={$post->slug}" );
-			$entryupdated = Utils::atomtime( $post->updated );
-			$user = User::get_by_id( $post->user_id );
-			$title = htmlspecialchars($post->title);
-			$content = html_entity_decode($post->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-			$xmltext .= <<< postentry
-	<entry>
-		<title>{$title}</title>
-		<link rel="alternate" type="text/html" href="{$post->permalink}" />
-		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
-		<author>
-			<name>{$user->username}</name>
-		</author>
-		<id>{$post->guid}</id>
-		<updated>{$entryupdated}</updated>
-		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
-		<summary type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></summary>
-	</entry>
-
-postentry;
-		}
-		$xmltext .= '</feed>';
-
-		header('Content-Type: application/atom+xml');
-		echo $xmltext;
-	}
-
-	/**
-	 * function post_collection
-	 * Responds to an Atom POST request to add a new post entry
-	 **/
-	function post_collection()
-	{
-		if ( $user = $this->force_auth() ) {
-		  $s = fopen("php://input", "r");
-		  while($kb = fread($s, 1024)) {
-				$bxml .= $kb;
-			}
-		  fclose($s);
-
-			try {  // Exception handling!  Yay!
-				$bxml = str_replace("xmlns=", "a=", $bxml);  // Rearrange namespaces
-				$xml = new SimpleXMLElement($bxml);
-
-				$content = $xml->xpath("//content/*[@a='http://www.w3.org/1999/xhtml']");
-
-				$post = new Post();
-				if( (string) $xml->title != '') $post->title = (string) $xml->title;
-				if( (string) $content[0]->asXML() != '') $post->content = (string) $content[0]->asXML();
-				if( (string) $xml->pubdate != '') $post->pubdate = (string) $xml->pubdate;
-				switch ( (string) $xml->draft ) {
-				case 'false':
-					$post->status = 'publish';
-					break;
-				case 'true':
-					$post->status = 'draft';
-					break;
+				
+			if ( ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) ) > 1 ) {
+				$feed_link= $xml->addChild( 'link' );
+				$feed_link->addAttribute( 'rel', 'first' );
+				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=1' ) );	
+				$feed_link->addAttribute( 'type', 'application/atom+xml' );
+				$feed_link->addAttribute( 'title', 'First Page' );
+				
+				if ( intval( $this->handler_vars['index'] ) > 1 ) {
+					$feed_link= $xml->addChild( 'link' );
+					$feed_link->addAttribute( 'rel', 'previous' );
+					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . ( intval( $this->handler_vars['index'] ) - 1 ) ) );	
+					$feed_link->addAttribute( 'type', 'application/atom+xml' );
+					$feed_link->addAttribute( 'title', 'Previous Page' );
 				}
-				$post->insert();
+				
+				if ( ( intval( $this->handler_vars['index'] ) * Options::get( 'paginate' ) ) < Posts::count_total( Post::status('published') ) ) {
+					$feed_link= $xml->addChild( 'link' );
+					$feed_link->addAttribute( 'rel', 'next' );
+					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . ( intval( $this->handler_vars['index'] ) + 1 ) ) );	
+					$feed_link->addAttribute( 'type', 'application/atom+xml' );
+					$feed_link->addAttribute( 'title', 'Next Page' );
+				}
+				
+				$feed_link= $xml->addChild( 'link' );
+				$feed_link->addAttribute( 'rel', 'last' );
+				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) ) ) );
+				$feed_link->addAttribute( 'type', 'application/atom+xml' );
+				$feed_link->addAttribute( 'title', 'Last Page' );
 			}
-			catch ( Exception $e ) {
-				echo $e->message;
-				exit;
+			
+			$feed_generator= $xml->addChild( 'generator', 'Habari' );
+			$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
+			$feed_generator->addAttribute( 'version', Options::get( 'version' ) );
+			
+			$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $params['tag'] ) ) ? $params['tag'] : 'atom' ) . '/' . Options::get( 'GUID' ) );
+
+			if(is_numeric($this->handler_vars['index'])) {
+				$params['page'] = $this->handler_vars['index'];
+			}	
+			
+			$params['status'] = Post::status('published');	
+					
+			foreach ( Posts::get( $params ) as $post ) {
+				$user= User::get_by_id( $post->user_id );
+				$title= ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
+				$content= ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
+
+				$feed_entry= $xml->addChild( 'entry' );
+				$entry_title= $feed_entry->addChild( 'title', $title );
+				
+				$entry_link= $feed_entry->addChild( 'link' );
+				$entry_link->addAttribute( 'rel', 'alternate' );
+				$entry_link->addAttribute( 'href', $post->permalink );
+	
+				$entry_link= $feed_entry->addChild( 'link' );
+				$entry_link->addAttribute( 'rel', 'edit' );
+				$entry_link->addAttribute( 'href', URL::get( 'entry', "slug={$post->slug}" ) );
+				
+				$entry_author= $feed_entry->addChild( 'author' );
+				$author_name= $entry_author->addChild( 'name', $user->username );
+				
+				$entry_id= $feed_entry->addChild( 'id', $post->guid );
+				
+				$entry_updated= $feed_entry->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
+				
+				$entry_content= $feed_entry->addChild( 'content', $content );
+				$entry_content->addAttribute( 'type', 'html' );
 			}
+			
+			$xml= $xml->asXML();
+	
+			ob_clean();
+			header( 'Content-Type: application/atom+xml' );
+			print $xml;
+		}
+		catch (Exception $e) {
+			print 'Caught exception: ' .  $e->getMessage() . "\n";
+		}
+	}
+	
+	/**
+		* Accepts an Atom entry for insertion as a new post.
+		* 
+		*/					
+	public function post_collection()
+	{
+		try {
+			if ( $user = $this->is_auth( TRUE ) ) {
+				$bxml= file_get_contents( 'php://input' );
+			}
+
+			$xml = new SimpleXMLElement( $bxml );
+	
+			preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/i', $xml->content->asXML(), $content );
+			$xml->content= $content[1];
+	
+			$post = new Post();
+			
+			if ( (string) $xml->title != '' ) {
+				$post->title= $xml->title;
+			}
+			
+			if ( (string) $xml->id != '' ) {
+				$post->guid= $xml->id;
+			}
+			
+			if ( (string) $xml->content != '' ) {
+				$post->content= (string) $xml->content;
+			}
+			
+			if ( (string) $xml->pubdate != '' ) {
+				$post->pubdate= (string) $xml->pubdate;
+			}
+			
+			if ( isset( $_SERVER['HTTP_SLUG'] ) ) {
+				$post->slug= $_SERVER['HTTP_SLUG'];
+			}
+			
+			$post->status= Post::status('published');
+			$post->user_id= $user->id;
+			$post->insert();
+	
 			header('HTTP/1.1 201 Created');
 			header('Status: 201 Created');
 			header('Location: ' . URL::get( 'entry', array( 'slug' => $post->slug ) ) );
-
-			$this->get_entry($post->slug);
+			
+			$this->get_entry( $post->slug );
+		}
+		catch (Exception $e) {
+			print 'Caught exception: ' .  $e->getMessage() . "\n";
 		}
 	}
-
-	/**
-	 * function get_comments
-	 * Responds to an Atom GET request for post comments
-	 **/
-	function get_comments($slug)
-	{
-		$post = Post::get( array( 'slug' => $slug ) );
-
-		$collectionurl = URL::get( 'comments' );
-		$feedupdated = Utils::atomtime(time()); // TODO: This value should be cached
-		$copyright = date('Y'); // TODO: This value should be corrected
-		$tagline = Options::get('tagline');
-		$version = Options::get('version');
-		$home = URL::get('index_page');
-
-		$xmltext = $this->xml_header();
-		$xmltext .= <<< feedpreamble
-<feed xmlns="http://www.w3.org/2005/Atom">
-	<title>Comments for {$post->title}</title>
-	<link rel="alternate" type="text/html" href="{$post->permalink}" />
-	<link rel="service.post" type="application/atom+xml" href="{collectionurl}" title="{$title}" />
-	<link rel="self" type="application/atom+xml" href="{$collectionurl}" />
-	<updated>{$feedupdated}</updated>
-	<rights>{$copyright}</rights>
-	<generator uri="http://code.google.com/p/habari/" version="{$version}">Habari</generator>
-	<id>{$home}</id>
-
-feedpreamble;
-
-		foreach($post->comments->comments->approved as $comment) {
-			$entryurl = URL::get( 'entry', "slug={$post->slug}" ) . "#comment-{$comment->id}";
-			$entryupdated = Utils::atomtime( $comment->date );
-			$content = html_entity_decode($comment->content, ENT_NOQUOTES, 'UTF-8'); // @todo The character encoding needs to be applied by a filter that is enabled by default
-			$xmltext .= <<< postentry
-	<entry>
-		<title>{$post->title}</title>
-		<link rel="alternate" type="text/html" href="{$post->permalink}#comment-{$comment->id}" />
-		<link rel="edit" type="application/atom+xml" href="{$entryurl}" />
-		<author>
-			<name>{$comment->name}</name>
-		</author>
-		<id>{$post->guid}:#{$comment->id}</id>
-		<updated>{$entryupdated}</updated>
-		<content type="xhtml" xml:base="{$post->permalink}"><div xmlns="http://www.w3.org/1999/xhtml">{$content}</div></content>
-	</entry>
-
-postentry;
-		}
-		$xmltext .= '</feed>';
-
-		//header('Content-Type: application/atom+xml');
-		echo $xmltext;
-	}
-
-	function act_rsd()
-	{
-		$local['homepage'] = URL::get( 'home' );
-		$local['collectionurl'] = URL::get( 'collection', 'index=1' );
-
-		$xmltext = <<< rsdcontent
-<rsd xmlns="http://archipelago.phrasewise.com/rsd" version="1.0">
-  <service xmlns="">
-    <engineName>Habari</engineName>
-    <engineLink>http://code.google.com/p/habari/</engineLink>
-    <homePageLink>{$local['homepage']}</homePageLink>
-    <apis>
-      <api name="Blogger" preferred="true" apiLink="{$local['collectionurl']}" />
-    </apis>
-  </service>
-</rsd>
-rsdcontent;
-		header('Content-Type: application/rsd+xml');
-		echo $xmltext;
-	}
-
-	function act_introspection()
-	{
-		$xmltext = $this->xml_header();
-		$xmltext .= '
-		<service xmlns="http://purl.org/atom/app#">
-			<workspace title="' . Options::get('title') . '">
-			  <collection title="Blog Entries" rel="entries" href="' . URL::get( 'collection', 'index=1' ) . '" />
-			</workspace>
-		</service>
-		';
-
-		header('Content-Type: application/atomserv+xml');
-		echo $xmltext;
-	}
-
+	
 }
 ?>
