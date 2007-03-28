@@ -4,6 +4,7 @@
 		<div class="dashboard-block c3" id="welcome">
 			<?php
 				$user= User::identify();
+				Utils::debug(print_r($user,TRUE));
 				if ( ! isset( $user->info->experience_level ) ) {
 			?>
 					<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
@@ -15,6 +16,7 @@
 					<p>If this hasn't covered everything you need to know, there is a <a href="<?php Site::out_url('system'); ?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help Center</a> link at the bottom of every page in the admin area. The next time you visit, you'll get a more condensed version of this message.</p>
 			<?php
 					$user->info->experience_level= 'user';
+					$user->info->commit();
 				}
 				elseif ( $user->info->experience_level == 'user' ) {
 			?>

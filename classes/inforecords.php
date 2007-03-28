@@ -25,7 +25,7 @@ abstract class InfoRecords extends ArrayObject
 	 * Takes three parameters. The table of the options table, the name of the master key  and the record_id for which options are managed.
 	 * posts take a slug as a record_id, comments take a comment_id and users take a user_id (user_name)
 	 *
- 	 * <b>IMPORTANT:</b> if <tt>$primary_key_value</tt> is not set in the constructor, set_key MUST be called before inforecords can be set. Or bad things
+	 * <b>IMPORTANT:</b> if <tt>$primary_key_value</tt> is not set in the constructor, set_key MUST be called before inforecords can be set. Or bad things
 	 * (think swarms of locusts o'er the land) will happen
 	 *
 	 * @param string $table_name name of the table to insert info (use the DB::o()->table_name syntax)
@@ -127,7 +127,7 @@ abstract class InfoRecords extends ArrayObject
 	public function __isset ( $name )
 	{
 		$this->_load();
-    return isset( $this->__inforecord_array[$name] );
+		return isset( $this->__inforecord_array[$name] );
 	}
 
 	/**
@@ -138,7 +138,7 @@ abstract class InfoRecords extends ArrayObject
 	 * @param string $name Name of the option to unset
 	 * @return boolean TRUE if the option is successfully unset, FALSE otherwise
 	 **/	
-    public function __unset( $name )
+		public function __unset( $name )
 	{
 		$this->_load();
 		if ( isset( $this->__inforecord_array[$name] ) ) {			
@@ -147,7 +147,7 @@ abstract class InfoRecords extends ArrayObject
 			return true;
 		}
 		return false;        
-  }	
+	}	
 	
 	/**
 	 * Remove all info options. Primarily used when deleting the parent object. 
@@ -186,7 +186,7 @@ abstract class InfoRecords extends ArrayObject
 		}
 
 		foreach( $this->__inforecord_array as $name=>$record ) {
-			if( $record['changed'] ) {
+			if( isset( $record['changed'] ) && $record['changed'] ) {
 				$value = $record['value'];
 				if ( is_array( $value ) || is_object( $value ) ) {
 					$result= DB::update( 
@@ -220,6 +220,7 @@ abstract class InfoRecords extends ArrayObject
 			}
 		}
 	}
+	
 }
 
 ?>
