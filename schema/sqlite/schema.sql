@@ -215,12 +215,12 @@ VALUES ('comment','/^([0-9]+)\/feedback[\/]{0,1}$/i','{$id}/feedback'
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
-VALUES (NULL, 'ajax','/^ajax\\/([^\\/]+)[\\/]{0,1}$/i','ajax/{$context}'
+VALUES (NULL, 'ajax','/^ajax\/([^\/]+)[\/]{0,1}$/i','ajax/{$context}'
 ,'AjaxHandler','ajax',8,'Ajax handling');
 
 INSERT INTO {$prefix}rewrite_rules
 (rule_id, name, parse_regex, build_str, handler, action, priority, description)
-VALUES (NULL, 'auth_ajax','/^auth_ajax\\/([^\\/]+)[\\/]{0,1}$/i','auth_ajax/{$context}'
+VALUES (NULL, 'auth_ajax','/^auth_ajax\/([^\/]+)[\/]{0,1}$/i','auth_ajax/{$context}'
 ,'AjaxHandler','auth_ajax',8,'Authenticated ajax handling');
 
 UPDATE {$prefix}rewrite_rules SET is_active=1;
