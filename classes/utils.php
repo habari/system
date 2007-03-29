@@ -5,24 +5,24 @@
  * Requires PHP 5.0.4 or later
  * @package Habari
  */
- 
+
 class Utils
 {
 	/**
 	 * Utils constructor
 	 * This class should not be instantiated.
-	 **/	 	 	
+	 **/
 	private function __construct()
 	{
 	}
 
 	/**
 	 * function get_params
-	 * Returns an associative array of parameters, whether the input value is 
+	 * Returns an associative array of parameters, whether the input value is
 	 * a querystring or an associative array.
 	 * @param mixed An associative array or querystring parameter list
 	 * @return array An associative array of parameters
-	 **/	 	 	 	 	
+	 **/
 	static function get_params( $params )
 	{
 		if( is_array( $params ) ) return $params;
@@ -38,24 +38,24 @@ class Utils
 	 **/
 	static function end_in_slash( $value )
 	{
-		return rtrim($value, '/') . '/';
+		return rtrim($value, '\\/') . '/';
 	}
-	
+
 	/**
 	 * function redirect
 	 * Redirects the request to a new URL
 	 * @param string The URL to redirect to
-	 **/	 
+	 **/
 	static function redirect( $url )
 	{
 		header('Location: ' . $url, true, 302);
 	}
-	
+
 	/**
 	 * function atomtime
 	 * Returns RFC-3339 time from a time string or integer timestamp
 	 * @param mixed A string of time or integer timestamp
-	 * @return string An FRC-3339 formatted time	 	 
+	 * @return string An FRC-3339 formatted time
 	 **/
 	static function atomtime($t)
 	{
@@ -63,13 +63,13 @@ class Utils
 			$t = strtotime( $t );
 		}
 		$vdate = date( DATE_ATOM, $t );
-		// If the date format used for timezone was O instead of P... 
+		// If the date format used for timezone was O instead of P...
 		if ( substr( $vdate, -3, 1 ) != ':' ) {
 			$vdate = substr( $vdate, 0, -2) . ':' . substr( $vdate, -2, 2 );
 		}
 		return $vdate;
 	}
-	
+
 	/**
 	 * function nonce
 	 * Returns a random 12-digit hex number
@@ -120,11 +120,11 @@ class Utils
 		}
 		return $value;
 	}
-	
+
 	/**
 	 * function de_amp
 	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
-	 * @param string $value A URL, maybe with a querystring	 
+	 * @param string $value A URL, maybe with a querystring
 	 **/
 	static function de_amp($value)
 	{
@@ -136,7 +136,7 @@ class Utils
 	/**
 	 * Restore a URL separated by a parse_url() call.
 	 * @param $parsed array An array as returned by parse_url()
-	 **/	 	 	 
+	 **/
 	static function glue_url($parsed)
 	{
 		if ( ! is_array( $parsed ) ) {
@@ -153,10 +153,10 @@ class Utils
 		$uri.= isset( $parsed['path'] ) ? $parsed['path'] : '';
 		$uri.= isset( $parsed['query'] ) ? '?'.$parsed['query'] : '';
 		$uri.= isset( $parsed['fragment'] ) ? '#'.$parsed['fragment'] : '';
-		
+
 		return $uri;
-	}	
-	
+	}
+
 	/**
 	 * function revert_magic_quotes_gpc
 	 * Reverts magicquotes_gpc behavior
@@ -179,15 +179,15 @@ class Utils
 	static function quote_spaced( $value )
 	{
 		return (strpos($value, ' ') === false) ? $value : '"' . $value . '"';
-	}	 	 	 	 	
-	
+	}
+
 	/**
 	 * function implode_quoted
 	 * Behaves like the implode() function, except it quotes values that contain spaces
 	 * @param string A separator between each value
 	 * @param	array An array of values to separate
 	 * @return string The concatenated string
-	 */	 	 
+	 */
 	static function implode_quoted( $separator, $values )
 	{
 		if ( ! is_array( $values ) )
@@ -197,25 +197,25 @@ class Utils
 		$values = array_map(array('Utils', 'quote_spaced'), $values);
 		return implode( $separator, $values );
 	}
-	
+
 	/**
 	 * function archive_pages
 	 * Returns the number of pages in an archive using the number of items per page set in options
 	 * @param integer Number of items in the archive
-	 * @returns integer Number of pages based on pagination option.	
-	 **/	  	 	 	
+	 * @returns integer Number of pages based on pagination option.
+	 **/
 	static function archive_pages($item_total)
 	{
 		return ceil($item_total / Options::get('pagination'));
 	}
-	
+
 	/**
 	 * function page_selector
 	 * Returns a simple linked page selector
 	 * @param	integer Current page
 	 * @param integer Total pages
-	 * @param string The URL token for producing a link	 
-	 * @param array Settings for the URLs output	 
+	 * @param string The URL token for producing a link
+	 * @param array Settings for the URLs output
 	 **/
 	static function page_selector($current, $total, $token, $settings = array())
 	{
@@ -235,7 +235,7 @@ class Utils
 			if( $p[$z] == null ) {
 				continue;
 			}
-			if( ($p[$z] - $lastpage) > 1 ) $out .= '&hellip;'; 
+			if( ($p[$z] - $lastpage) > 1 ) $out .= '&hellip;';
 			if(isset($p[$z])) {
 				$caption = ($p[$z]==$current) ? '[' . $current . ']' : $p[$z];
 				$url = URL::get($token, array_merge($settings, array('page'=>$p[$z])), false);
@@ -244,10 +244,10 @@ class Utils
 			$lastpage = $p[$z];
 		}
 		return trim($out);
-		
+
 	}
-	
-	
+
+
 	/**
 	* Used with array_map to create an array of PHP stringvar-style search/replace strings using optional pre/postfixes
 	* <code>
@@ -262,22 +262,22 @@ class Utils
 	{
 		return $prefix . $value . $postfix;
 	}
-	
+
 	/**
 	 * function debug_reveal
 	 * Helper function used by debug()
-	 * Not for external use.	 
-	 **/	 	 	
-	static function debug_reveal($show, $hide, $debugid) 
+	 * Not for external use.
+	 **/
+	static function debug_reveal($show, $hide, $debugid)
 	{
 		return "<a href=\"#\" id=\"debugshow-{$debugid}\" onclick=\"debugtoggle('debugshow-{$debugid}');debugtoggle('debughide-{$debugid}');return false;\">$show</a><span style=\"display:none;\" id=\"debughide-{$debugid}\">$hide</span>";
 	}
-	
+
 	/**
 	 * function debug
 	 * Outputs a call stack with parameters, and a dump of the parameters passed.
 	 * @params mixed Any number of parameters to output in the debug box.
-	 **/	 	 	 	 	
+	 **/
 	static function debug()
 	{
 		$debugid= md5(microtime());
@@ -298,15 +298,15 @@ class Utils
 				extract($trace);
 				if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
 				if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
-					
+
 				$output .= "<tr><td style=\"padding-left: 10px;\">{$file} ({$line}):</td><td style=\"padding-left: 20px;white-space: pre;font-family:Courier New,Courier,monospace\">{$fname}(";
 				$comma = '';
 				foreach((array)$args as $arg) {
-					$tracect++; 
-					$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities(print_r($arg,1)), $debugid . $tracect ); 
-					$comma = ', '; 
+					$tracect++;
+					$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities(print_r($arg,1)), $debugid . $tracect );
+					$comma = ', ';
 				}
-				$output .= ");</td></tr>"; 
+				$output .= ");</td></tr>";
 			}
 			$output .= "</table>";
 			echo Utils::debug_reveal('[Show Call Stack]', $output, $debugid);
@@ -314,19 +314,19 @@ class Utils
 		echo "<pre>";
 		foreach( $fooargs as $arg1 ) {
 			echo '<em>' . gettype($arg1) . '</em> ';
-			echo htmlentities( var_export( $arg1 ) ) . "<br/>";
+			echo htmlentities( print_r( $arg1, 1 ) ) . "<br/>";
 		}
 		echo "</pre></div>";
 	}
-	
+
 	/**
 	 * Crypt a given password, or verify a given password against a given hash.
-	 * 
+	 *
 	 * @todo Enable best algo selection after DB schema change.
-	 * 
+	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification 
+	 * @return crypted password, or boolean for verification
 	 */
 	public static function crypt( $password, $hash= NULL )
 	{
@@ -366,10 +366,10 @@ class Utils
 			Error::raise( 'Invalid hash' );
 		}
 	}
-	
+
 	/**
 	 * Crypt or verify a given password using SHA.
-	 * 
+	 *
 	 * @deprecated Use any of the salted methods instead.
 	 */
 	public static function sha1( $password, $hash= NULL ) {
@@ -381,14 +381,14 @@ class Utils
 			return ( sha1( $password ) == substr( $hash, strlen( $marker ) ) );
 		}
 	}
-	
+
 	/**
 	 * Crypt or verify a given password using SSHA.
 	 * Implements the {Seeded,Salted}-SHA algorithm as per RfC 2307.
-	 * 
+	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification 
+	 * @return crypted password, or boolean for verification
 	 */
 	public static function ssha( $password, $hash= NULL )
 	{
@@ -426,9 +426,9 @@ class Utils
 	 * Crypt or verify a given password using SSHA512.
 	 * Implements a modified version of the {Seeded,Salted}-SHA algorithm
 	 * from RfC 2307, using SHA-512 instead of SHA-1.
-	 * 
+	 *
 	 * Requires the new hash*() functions.
-	 * 
+	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
 	 * @return crypted password, or boolean for verification

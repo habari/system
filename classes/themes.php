@@ -5,22 +5,28 @@
  */      
 class Themes
 {
+	private static $all_themes = null;
+
 	/**
 	 * Returns the theme information from the database
 	 * @return array An array of Theme data
 	 **/	 	 	 	 	
 	public static function get_all()
 	{
-		$theme_dirs= glob( HABARI_PATH . '/user/themes/*', GLOB_ONLYDIR | GLOB_MARK );
-		if( Site::is('multi') )
-		{
-			$site_dirs= glob( Site::get_dir('config') . '/themes/*', GLOB_ONLYDIR | GLOB_MARK );
-			if ( is_array( $site_dirs ) && ! empty( $site_dirs ) )
+		if ( ! isset( self::$all_themes )) {
+			$themes= glob( HABARI_PATH . '/user/themes/*', GLOB_ONLYDIR | GLOB_MARK );
+			if( Site::is('multi') )
 			{
-				$theme_dirs= array_merge( $theme_dirs, $site_dirs );
+				$site_dirs= glob( Site::get_dir('config') . '/themes/*', GLOB_ONLYDIR | GLOB_MARK );
+				if ( is_array( $site_dirs ) && ! empty( $site_dirs ) )
+				{
+					$themes= array_merge( $themes, $site_dirs );
+				}
 			}
 		}
-		return $theme_dirs;
+		$themefiles= array_map('basename', $themes);
+		self::$all_themes= array_combine($themefiles, $themes);
+		return self::$all_themes;
 	}
 	
 	/**
@@ -30,8 +36,31 @@ class Themes
 	public static function get_active()
 	{
 		$theme= new QueryRecord();
-		$theme->theme_dir= Options::get('theme_dir');
-		$data= simplexml_load_file( $theme->theme_dir . '/theme.xml' );
+		$theme_dir= Options::get('theme_dir');
+
+		$themes= Themes::get_all();
+		$themefiles= array_map('basename', $themes);
+		$themes= array_combine($themefiles, $themes);
+		
+		if ( isset($themes[$theme_dir]) ) {
+			$theme->theme_dir= $themes[$theme_dir];
+		}
+		else {
+			$theme_exists = false;
+			foreach($themes as $themedir) {
+				if (file_exists(Utils::end_in_slash($themedir) . 'theme.xml')) {
+					$theme->theme_dir= $themedir;
+					Options::set('theme_dir', basename($themedir));
+					$theme_exists = true;
+					break;
+				}
+			}		
+			if (!$theme_exists) {
+				die(_t('There is no valid theme currently installed.'));
+			}
+		}
+
+		$data= simplexml_load_file( Utils::end_in_slash($theme->theme_dir) . 'theme.xml' );
 		foreach ( $data as $name=>$value)
 		{
 			$theme->$name= (string) $value;
