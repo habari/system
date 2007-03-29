@@ -17,8 +17,8 @@
 				<tbody>
 				<?php 
 				$active_theme= Options::get('theme_dir');
-				foreach( Themes::get_all() as $theme_dir ) :
-					$info= simplexml_load_file( $theme_dir . '/theme.xml' ); ?>
+				foreach( Themes::get_all() as $theme_dir => $theme_path ) :
+					$info= simplexml_load_file( $theme_path . '/theme.xml' ); ?>
 					<tr>
 						<td>
 						<?php
