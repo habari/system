@@ -113,8 +113,8 @@ class Theme
 			 * @todo TODO XXX
 			 * - Don't hardcode the content type to template mapping
 			 * - Let this be handled by the theme?
-			 * */
-			if ( $posts[0]->content_type == Post::type('page') && file_exists( Site::get_path('theme') . 'page.php') ) {
+			 */
+			if ( $posts[0]->content_type == Post::type('page') && file_exists( Site::get_dir('theme', TRUE) . 'page.php' ) ) {
 				$template= 'page';
 			} else {
 				$template= 'post';
