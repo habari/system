@@ -88,7 +88,7 @@ class Theme
 		 * also, optionally, by the Theme )
 		 */
 		$valid_filters= array( 
-			  'contenttype'
+			  'content_type'
 			, 'slug'
 			, 'status'
 			, 'page' // pagination
@@ -102,9 +102,23 @@ class Theme
 		$where_filters['status'] = Post::status('published');
 
 		$posts= Posts::get( $where_filters );
-		if ( count( $posts ) == 1 && count( $where_filters ) > 0 ) {
+		/**
+		 * @todo XXX
+		 * the first part of the condition differentiates between single post and multiple posts,
+		 * but there must be a better way.
+		 * */
+		if ( isset( Controller::get_handler()->handler_vars['slug'] ) && count( $posts ) == 1 && count( $where_filters ) > 0 ) {
 			Controller::get_handler()->handler_vars['post']= $posts[0];
-			$template= 'post';
+			/**
+			 * @todo TODO XXX
+			 * - Don't hardcode the content type to template mapping
+			 * - Let this be handled by the theme?
+			 * */
+			if ( $posts[0]->content_type == Post::type('page') && file_exists( Site::get_path('theme') . 'page.php') ) {
+				$template= 'page';
+			} else {
+				$template= 'post';
+			}
 		}
 		else {
 			// Automatically assigned to theme at display time.
@@ -112,6 +126,7 @@ class Theme
 			$template= 'posts';
 		}
 		$this->display( $template );
+		
 		return true;
 	}
 	
