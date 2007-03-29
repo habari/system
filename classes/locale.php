@@ -122,17 +122,15 @@ class Locale
 	
 	private static function get_plural_function( $header )
 	{
-		if (preg_match('/plural-forms: (.*?)$/i', $header, $matches)) {
+		if (preg_match('/plural-forms: (.*?)$/i', $header, $matches) && preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/', $matches[1], $matches)) {
 			// sanitize
-			$plural_forms= preg_replace(
-				'@[^a-zA-Z0-9_:;\(\)\?\|\&=!<>+*/\%-]@',
-				'',
-				$matches[1]
-			);
+			$nplurals= preg_replace( '@[^0-9]@', '', $matches[1] );
+			$plural= preg_replace( '@[^n0-9:\(\)\?\|\&=!<>+*/\%-]@', '', $matches[2] );
+			
 			$body= str_replace(
 				array('plural',  'n',  '$n$plurals', ),
 				array('$plural', '$n', '$nplurals', ),
-				$plural_forms
+				'nplurals='. $nplurals . '; plural=' . $plural
 			);
 			
 			// add parens
