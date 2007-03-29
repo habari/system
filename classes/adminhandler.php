@@ -125,6 +125,11 @@ class AdminHandler extends ActionHandler
 				$post->content= $_POST['content'];
 				$post->content_type= Post::type( $_POST['type'] );
 				$post->status= $_POST['status'];
+				if ( 1 == $_POST['comments_disabled'] ) {
+					$post->info->comments_disabled= 1;
+				} elseif ( 1 == $post->info->comments_disabled ) {
+					$post->info->comments_disabled= 0;
+				}
 				$post->update();
 			}
 			else {
@@ -138,6 +143,10 @@ class AdminHandler extends ActionHandler
 					'content_type' => Post::type( $_POST['type'] ),
 				);
 				$post= Post::create( $postdata );
+				if ( 1 == $_POST['comments_disabled'] ) {
+					$post->info->comments_disabled= 1;
+					$post->update();
+				}
 			}
 			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) ) );
 		}

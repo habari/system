@@ -19,6 +19,11 @@ class FeedbackHandler extends ActionHandler
 		if( $this->handler_vars['content'] != '') {
 			// We'll need to get the post anyway to see if its comments are closed...
 			$post= Post::get( array( 'id'=>$this->handler_vars['id'] ) );
+			if ( $post->info->comments_disabled ) {
+				// comments are disabled, so let's just send
+				// them back to the post's permalink
+				Utils::redirect( URL::get( 'display_posts_by_slug', array('slug'=>$post->slug) ) );
+			}
 
 			if($post) {
 				$commentdata = array( 

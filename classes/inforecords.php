@@ -100,6 +100,9 @@ abstract class InfoRecords extends ArrayObject
 	public function __get ( $name )	
 	{
 		$this->_load();
+		if ( ! isset( $this->__inforecord_array[$name] ) ) {
+			return false;
+		}
 		return $this->__inforecord_array[$name]['value'];
 	}	
 
