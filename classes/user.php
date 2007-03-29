@@ -326,6 +326,30 @@ class User extends QueryRecord
 	{
 		return Posts::count_by_author( $this->id, $status );
 	}
+
+	/**
+	 * Returns an array of information about the commenter
+	 * If this is a logged-in user, then return details from their user profile.
+	 * If this is a returning commenter, then return details from their cookie
+	 * otherwise return empty strings.
+	 * @return Array an array of name, email and URL
+	**/
+	public static function commenter()
+	{
+		$commenter= array();
+		if ( User::identify() ) {
+			$commenter['name']= User::identify()->username;
+			$commenter['email']= User::identify()->email;
+			$commenter['url']= Site::get_url('habari');
+		} elseif ( isset($_COOKIE['comment_' . Options::get('GUID')]) ) {
+			list($commenter['name'], $commenter['email'], $commenter['url']) = explode('#', $_COOKIE[$cookie]);
+		} else {
+			$commenter['name']= '';
+			$commenter['email']= '';
+			$commenter['url']= '';
+		}
+		return $commenter;
+	}
 	
 	/**
 	 * Returns the karma of this person, relative to the object passed in.
