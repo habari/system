@@ -276,14 +276,17 @@ class Site
 				$path= self::$config_path;
 				break;
 			case 'user':
-				if ( Site::get_dir('config') == HABARI_PATH )
-				{
+				if ( Site::get_dir('config') == HABARI_PATH ) {
 					$path= HABARI_PATH . '/user';
 				}
-				else
-				{
+				else {
 					$path= Site::get_dir('config');
 				}
+				break;
+			case 'theme':
+				$theme= Options::get('theme_name');
+				$path= Site::get_dir('user') . '/themes/' . $theme;
+				break;
 		}
 		$path.= ($trail) ? '/' : '';
 		$path= Plugins::filter( 'site_dir_' . $name, $path );
