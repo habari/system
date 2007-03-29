@@ -36,10 +36,8 @@
 			<ul>
 				<?php
 				$statuses= Post::list_post_statuses();
-				foreach ( $statuses as $name => $value )
-				{
-					if ('any' == $name)
-					{
+				foreach ( $statuses as $name => $value ) {
+					if ('any' == $name) {
 						continue;
 					}
 					?>
@@ -48,10 +46,11 @@
 				}
 				?>
 			</ul>
-			<p class="right"><input type="submit" name="submit" id="submit" value="Save!" /></p>
+			<p class="right"><input type="submit" name="submit" id="submit" value="Save!"></p>
 		</div>
+		<input type="hidden" name="type" value="<?php echo $type; ?>">
 		<?php if ( $post->slug != '' ) { ?>
-		<input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>" />
+		<input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>">
 		<?php } ?>
 	</form>
 	</div>

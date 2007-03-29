@@ -123,6 +123,7 @@ class AdminHandler extends ActionHandler
 				$post->title= $_POST['title'];
 				$post->tags= $_POST['tags'];
 				$post->content= $_POST['content'];
+				$post->content_type= Post::type( $_POST['type'] );
 				$post->status= $_POST['status'];
 				$post->update();
 			}
@@ -134,6 +135,7 @@ class AdminHandler extends ActionHandler
 					'user_id'	=>	User::identify()->id,
 					'pubdate'	=>	date( 'Y-m-d H:i:s' ),
 					'status'	=>	$_POST['status'],
+					'content_type' => Post::type( $_POST['type'] ),
 				);
 				$post= Post::create( $postdata );
 			}
