@@ -35,18 +35,14 @@ class DB extends Singleton
 	 * @return  bool
 	 */
 	public static function connect()
-	{
+	{		
 		/*
-			has private database connection instance been created yet? if not, do that first.
-			then check if we have a pre-existing connection. If yes, short circuit processing
-			if not; call the connect method on our private instance
+			if connection has been instantiated (ie: not null), check if is already connected
 		*/
-		if ( NULL == DB::instance()->connection ) {
-			DB::instance()->connection= new DatabaseConnection();
-		}
-
-		if ( (func_num_args() == 0) && FALSE != DB::instance()->connection->is_connected() ) {
-			return TRUE;
+		if ( NULL != DB::instance()->connection ) {
+			if ( (func_num_args() == 0) && FALSE != DB::instance()->connection->is_connected() ) {
+				return TRUE;
+			}
 		}
 		
 		if ( func_num_args() > 0 ) {
@@ -60,9 +56,16 @@ class DB extends Singleton
 			$db_user= $GLOBALS['db_connection']['username'];
 			$db_pass= $GLOBALS['db_connection']['password'];
 		}
-		return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
+		DB::instance()->connection= DatabaseConnection::ConnectionFactory( $connect_string );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
+		}
+		else {
+			// do some error handling here. The connect string does not have a corresponding DB connection object
+			print "Panic! No database connection class appears to be found for the connection string specified. Please check config.php";
+		}
 	}
-	
+
 	public static function disconnect()
 	{
 		if ( NULL == DB::instance()->connection ) {
