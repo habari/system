@@ -123,12 +123,12 @@ class AdminHandler extends ActionHandler
 				$post->title= $_POST['title'];
 				$post->tags= $_POST['tags'];
 				$post->content= $_POST['content'];
-				$post->content_type= Post::type( $_POST['type'] );
+				$post->content_type= Post::type( $_POST['content_type'] );
 				$post->status= $_POST['status'];
 				if ( 1 == $_POST['comments_disabled'] ) {
 					$post->info->comments_disabled= 1;
 				} elseif ( 1 == $post->info->comments_disabled ) {
-					$post->info->comments_disabled= 0;
+					unset($post->info->comments_disabled);
 				}
 				$post->update();
 			}
@@ -140,7 +140,7 @@ class AdminHandler extends ActionHandler
 					'user_id'	=>	User::identify()->id,
 					'pubdate'	=>	date( 'Y-m-d H:i:s' ),
 					'status'	=>	$_POST['status'],
-					'content_type' => Post::type( $_POST['type'] ),
+					'content_type' => Post::type( $_POST['content_type'] ),
 				);
 				$post= Post::create( $postdata );
 				if ( 1 == $_POST['comments_disabled'] ) {
