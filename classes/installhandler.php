@@ -167,9 +167,9 @@ class InstallHandler extends ActionHandler {
 		$requirements_met= true;
 
 		/* Check that directory to write config.php is writeable */
-		$local_writeable= is_writeable(HABARI_PATH) || file_exists(HABARI_PATH . '/config.php');
+		$local_writeable= is_writeable(Site::get_dir('config')) || file_exists(Site::get_dir('config') . '/config.php');
 		$this->theme->assign('local_writeable', $local_writeable);
-		$this->theme->assign('HABARI_PATH', HABARI_PATH);
+		$this->theme->assign('HABARI_PATH', Site::get_dir('config'));
 		if (! $local_writeable)
 		{
 			$requirements_met= false;
@@ -381,7 +381,8 @@ class InstallHandler extends ActionHandler {
 		Options::set('version', '0.1alpha');
 		Options::set('pagination', '5');
 		Options::set( 'theme_name', 'k2' );
-		Options::set( 'theme_dir' , HABARI_PATH . '/user/themes/k2/' );
+		Options::set( 'theme_dir' , 'k2' );
+		Options::set( 'comments_require_id', 1 );
 		Options::set('GUID', sha1(Options::get('base_url') . Utils::nonce()));
 		return true;
 	}

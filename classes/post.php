@@ -73,12 +73,15 @@ class Post extends QueryRecord
 
 	/**
 	 * returns the interger value of the specified post status, or false
-	 * @param string a post status name
+	 * @param mixed a post status name or value
 	 * @return mixed an integer or boolean false
 	**/
 	public static function status( $name )
 	{
 		$statuses= Post::list_post_statuses();
+		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $statuses ) ) ) {
+			return $name;
+		}
 		if ( isset( $statuses[strtolower($name)] ) )
 		{
 			return $statuses[strtolower($name)];
@@ -88,12 +91,15 @@ class Post extends QueryRecord
 
 	/**
 	 * returns the integer value of the specified post type, or false
-	 * @param string a post type
+	 * @param mixed a post type name or number
 	 * @return mixed an integer or boolean false
 	**/
 	public static function type( $name )
 	{
 		$types= Post::list_post_types();
+		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $types ) ) ) {
+			return $name;
+		}
 		if ( in_array( strtolower($name), $types ) )
 		{
 			return $types[strtolower($name)];
@@ -554,7 +560,13 @@ class Post extends QueryRecord
 	private function get_info()
 	{
 		if ( ! $this->info ) {
-			$this->info= new PostInfo( $this->id );
+			// If this post isn't in the database yet...
+			if ( $this->id == 0 ) {
+				$this->info= new PostInfo();
+			}
+			else {
+				$this->info= new PostInfo( $this->id );
+			}
 		}
 		return $this->info;
 	}

@@ -11,12 +11,12 @@
 	}
 	if ( isset( $slug ) ) {
 		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status('any') ) );
-		$type= $post->content_type;
+		$content_type= $post->content_type;
 	}
 	else {
 		$post= new Post();
-		if ( ! isset( $type ) ) {
-			$type= 'entry';
+		if ( ! isset( $content_type ) ) {
+			$content_type= 'entry';
 		}
 	}
 	$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
@@ -56,10 +56,9 @@
 				<li><label><input type="radio" name="comments_disabled" id=comments_enabled" value="0" <?php echo ( $post->info->comments_disabled == 0 ) ? 'checked="checked"' : ''; ?> />Allow comments</label></li>
 				<li><label><input type="radio" name="comments_disabled" id="comments_disabled" value="1" <?php echo ( $post->info->comments_disabled == 1 ) ? 'checked="checked"' : ''; ?> />No comments</label></li>
 			</ul>
-
+			<input type="hidden" name="content_type" value="<?php echo $content_type; ?>">
 			<p class="right"><input type="submit" name="submit" id="submit" value="Save!"></p>
 		</div>
-		<input type="hidden" name="type" value="<?php echo $type; ?>">
 		<?php if ( $post->slug != '' ) { ?>
 		<input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>">
 		<?php } ?>

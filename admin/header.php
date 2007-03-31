@@ -49,8 +49,8 @@
 			<li class="menu-item" <?php echo ($page == 'publish') ? 'id="current-item"' : ''; ?>>
 				<a href="<?php URL::out('admin', 'page=publish'); ?>" title="Edit the content of your site">Publish</a>
 				<ul class="menu-list">
-					<li><a href="<?php URL::out('admin', 'page=publish&type=entry'); ?>">Post Entry</a></li>
-					<li><a href="<?php URL::out('admin', 'page=publish&type=page'); ?>">Page</a></li>
+					<li><a href="<?php URL::out('admin', 'page=publish&content_type=entry'); ?>">Post Entry</a></li>
+					<li><a href="<?php URL::out('admin', 'page=publish&content_type=page'); ?>">Page</a></li>
 				</ul>
 			</li>
 			<li class="menu-item" <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>>
