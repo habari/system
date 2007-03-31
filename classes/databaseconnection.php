@@ -23,6 +23,25 @@ class DatabaseConnection
 
 	private $prefix= '';								// class private storage of the database table prefix, defaults to ''
 	private $current_table;
+	
+	/** 
+	 * Returns the appropriate type of Connection class for the connect string passed or null on failure
+	 * 
+	 * @param connection_string a PDO connection string 
+	 * @return  mixed returns appropriate DatabaseConnection child class instance or null if connect string is invalid
+	 */
+	public static function ConnectionFactory( $connect_string ) 
+	{
+		if ( strrpos( "mysql", $connect_string) == 0 ) {
+			return new MySQLConnection();
+		}
+		else if ( strrpos( "sqlite", $connect_string) == 0 ) {
+			return new SQLiteConnection();
+		}
+		else {
+			return null;
+		}
+	}
 
 	 /**
 	 * Loads a list of habari tables from the database
