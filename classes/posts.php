@@ -20,7 +20,7 @@
  **/      
 class Posts extends ArrayObject
 {
-	static private $get_param_cache; // Stores info about the last set of data fetched that was not a single value
+	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
 	/**
 	 * function __get
@@ -213,9 +213,10 @@ class Posts extends ArrayObject
 			return $results;
 		}
 		elseif ( is_array( $results ) ) {
-			self::$get_param_cache= $paramarray;
 			$c= __CLASS__;
-			return new $c( $results );
+			$return_value = new $c( $results );
+			$return_value->get_param_cache= $paramarray;
+			return $return_value;
 		}
 	}
 
@@ -255,14 +256,13 @@ class Posts extends ArrayObject
 	}
 
 	/*
-	 * static count_last
 	 * return a count for the number of posts last queried
 	 * @return int the number of posts of specified type ( published or draft )
 	**/
-	public static function count_last()
+	public function count_all()
 	{
-		$params = array_merge((array) self::$get_param_cache, array( 'count' => '*', 'nolimit' => 1));
-		return self::get( $params );
+		$params = array_merge((array) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1));
+		return Posts::get( $params );
 	}
 		
 	/*
