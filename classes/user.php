@@ -336,13 +336,14 @@ class User extends QueryRecord
 	**/
 	public static function commenter()
 	{
+		$cookie= 'comment_' . Options::get('GUID');
 		$commenter= array();
 		if ( User::identify() ) {
 			$commenter['name']= User::identify()->username;
 			$commenter['email']= User::identify()->email;
 			$commenter['url']= Site::get_url('habari');
-		} elseif ( isset($_COOKIE['comment_' . Options::get('GUID')]) ) {
-			list($commenter['name'], $commenter['email'], $commenter['url']) = explode('#', $_COOKIE[$cookie]);
+		} elseif ( isset($_COOKIE[$cookie]) ) {
+			list($commenter['name'], $commenter['email'], $commenter['url']) = explode('#', urldecode( $_COOKIE[$cookie] ) );
 		} else {
 			$commenter['name']= '';
 			$commenter['email']= '';
