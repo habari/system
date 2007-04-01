@@ -53,8 +53,15 @@ class FeedbackHandler extends ActionHandler
 				$comment->insert();
 				
 				// if no cookie exists, we should set one
+				// but only if the user provided some details
 				$cookie = 'comment_' . Options::get('GUID');
-				if ( ( ! User::identify() ) && ( ! isset( $_COOKIE[$cookie] ) ) )
+				if ( ( ! User::identify() ) 
+					&& ( ! isset( $_COOKIE[$cookie] ) )
+					&& ( ! empty($this->handler_vars['name'])
+						|| ! empty($this->handler_vars['email'])
+						|| ! empty($this->handler_vars['url'])
+					)
+				)
 				{
 					$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
 					$site_url= Site::get_path('base');
