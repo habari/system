@@ -39,16 +39,21 @@
 			// These checks should be done via an ajax call
 			switch($(this).attr('id')) {
 			case 'databasename':
+			/*
 				if($(this).val() != 'habari') {
 					showwarning = true;
 					warningtext = 'Habari could not find a database with that name on the server. <br />Please specify the name of an existing database. <a href="#" taborder="0">Learn More...</a>';
 				}
+			*/
 				break;
 			case 'databasehost':
+			/*
 				if($(this).val() != 'localhost') {
 					showwarning = true;
 					warningtext = 'Habari could not find a MySQL server at the specified address. <br />Please provide a correct host name or address. <a href="#" taborder="0">Learn More...</a>';
 				}
+			*/
+				break;
 			}
 			fieldclass = showwarning ? 'invalid' : 'valid';
 		}
