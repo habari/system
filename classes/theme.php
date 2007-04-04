@@ -100,7 +100,7 @@ class Theme
 		$where_filters= array();
 		$where_filters = array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $valid_filters ) );
 		$where_filters['status'] = Post::status('published');
-		
+
 		$user= User::identify();
 		$posts= Posts::get( $where_filters );
 		$pages= Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) );
@@ -108,8 +108,7 @@ class Theme
 		 * @todo XXX
 		 * the first part of the condition differentiates between single post and multiple posts,
 		 * but there must be a better way.
-		 * */
-
+		 */
 		if ( isset( Controller::get_handler()->handler_vars['slug'] ) && count( $posts ) == 1 && count( $where_filters ) > 0 ) {
 			Controller::get_handler()->handler_vars['post']= $posts[0];
 			/**
@@ -138,6 +137,11 @@ class Theme
 	
 	public function act_search()
 	{
+		$user= User::identify();
+		$pages= Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) );
+		Controller::get_handler()->handler_vars['pages']= $pages;
+		Controller::get_handler()->handler_vars['user']= $user;
+
 		if ( ! isset( Controller::get_handler()->handler_vars['page'] ) )
 		{
 			Controller::get_handler()->handler_vars['page']= 1;
