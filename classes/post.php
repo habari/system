@@ -100,8 +100,7 @@ class Post extends QueryRecord
 		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $types ) ) ) {
 			return $name;
 		}
-		if ( in_array( strtolower($name), $types ) )
-		{
+		if ( isset( $types[strtolower($name)] ) ) {
 			return $types[strtolower($name)];
 		}
 		return false;
@@ -312,15 +311,14 @@ class Post extends QueryRecord
 	private function setstatus($value)
 	{
 		$statuses= Post::list_post_statuses();
-		if( is_numeric($value) && in_array($value, $statuses) )
-		{
-			$this->newfields['status'] = $value;
+		if( is_numeric($value) && in_array($value, $statuses) ) {
+			return $this->newfields['status'] = $value;
 		}
-		elseif ( array_key_exists( $value, $statuses ) )
-		{
-			$this->newfields['status'] = Post::status('publish');
+		elseif ( array_key_exists( $value, $statuses ) ) {
+			return $this->newfields['status'] = Post::status('publish');
 		}
-		return $this->newfields['status'];
+		
+		return false;
 	}
 
 	private function parsetags( $tags )
