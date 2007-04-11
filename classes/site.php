@@ -143,7 +143,7 @@ class Site
 				{
 					$protocol= 'https';
 				}
-				$url= $protocol . '://' . $_SERVER['SERVER_NAME'] . $portpart;
+				$url= $protocol . '://' . $_SERVER['HTTP_HOST'] . $portpart;
 				break;
 			case 'habari':
 				$url= Site::get_url('host');
@@ -180,7 +180,7 @@ class Site
 				$url= Site::get_url('habari') . '/scripts';
 				break;
 			case 'hostname':
-				$url= $_SERVER['SERVER_NAME'];
+				$url= $_SERVER['HTTP_HOST'];
 				break;
 		}
 		$url.= ($trail) ? '/' : '';
