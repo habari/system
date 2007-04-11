@@ -79,6 +79,7 @@ class RewriteRule extends QueryRecord
 	 **/	 	 
 	public function build($args)
 	{
+		$args = Plugins::filter('rewrite_args', $args, $this->name);
 		$searches= array_map(array('Utils', 'map_array'), array_keys($args));
 		$return_url= str_replace($searches, $args, $this->build_str);
 		$args = array_diff_key($args, array_flip($this->named_args));
