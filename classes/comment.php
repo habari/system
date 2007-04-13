@@ -112,7 +112,7 @@ class Comment extends QueryRecord
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the comment object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
-		$this->info->commit( DB::last_insert_id() );
+		$this->info->commit( $this->fields['id'] );
 		return $result;
 	}
 
