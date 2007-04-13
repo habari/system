@@ -1,7 +1,5 @@
 <?php
 
-define('SLUG_POSTFIX', '-');
-
 /**
  * @package Habari
  *
@@ -150,15 +148,14 @@ class Post extends QueryRecord
 	}
 	
 	/**
-	 * static function get
-	 * Returns a single requested post
+	 * Return a single requested post.
 	 *
 	 * <code>
 	 * $post = Post::get( array( 'slug' => 'wooga' ) );
 	 * </code>
 	 *
-	 * @param array An associated array of parameters, or a querystring
-	 * @return array A single Post object, the first if multiple results match
+	 * @param array $paramarray An associated array of parameters, or a querystring
+	 * @return Post The first post that matched the given criteria
 	 **/	 	 	 	 	
 	static function get( $paramarray = array() )
 	{
@@ -166,7 +163,7 @@ class Post extends QueryRecord
 		$defaults= array (
 			'where' => array(
 				array(
-					'status' => Post::status('published'),
+					'status' => Post::status( 'published' ),
 				),
 			),
 			'fetch_fn' => 'get_row',
@@ -176,119 +173,74 @@ class Post extends QueryRecord
 				'user_id' => $user->id,
 			);
 		}
-		foreach($defaults['where'] as $index => $where)
-		{
-			$defaults['where'][$index]= array_merge(Controller::get_handler()->handler_vars, $where, Utils::get_params($paramarray));
+		foreach ( $defaults['where'] as $index => $where ) {
+			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
 		}
+		// make sure we get at most one result
+		$defaults['limit']= 1;
 		 
 		return Posts::get( $defaults );
 	}
 	
 	/**
-	 * static function create
-	 * Creates a post and saves it
-	 * @param array An associative array of post fields
-	 * $return Post The post object that was created	 
+	 * Create a post and save it.
+	 * 
+	 * @param array $paramarray An associative array of post fields
+	 * @return Post The new Post object	 
 	 **/	 	 	
-	static function create($paramarray) 
+	static function create( $paramarray ) 
 	{
-		$post = new Post($paramarray);
+		$post= new Post( $paramarray );
 		$post->insert();
 		return $post;
 	}
 
 	/**
-	 * New slug setter.  Using different function name to test an alternate
-	 * algorithm.
-	 *
-	 * The method both sets the internal slug and returns the 
-	 * generated slug.
-	 *
-	 * @return  string  Generated slug
-	 */
-	private function set_slug() {
-		/* 
-		 * Do we already have a slug in for the post?
-		 * If so, double check we haven't changed the slug
-		 * manually by setting newfields['slug']
-		 */
-		$old_slug= strtolower($this->fields['slug']);
-		$new_slug= strtolower((isset($this->newfields['slug']) ? $this->newfields['slug'] : ''));
-
-		if (! empty($old_slug)) {
-			if ($old_slug == $new_slug)
-				return $new_slug;
-		}
-	
-		/* 
-		 * OK, we have a new slug or no slug at all
-		 * For either case, we need to double check 
-		 * that the slug doesn't already exist for another
-		 * post in the DB.  But first, we must create
-		 * a new slug if there isn't one set manually.
-		 */
-		if (empty($new_slug)) {
-			/* Create a new slug from title */
-			$title= strtolower((isset($this->newfields['title']) ? $this->newfields['title'] : $this->fields['title']));
-			$new_slug= preg_replace('/[^a-z0-9]+/i', SLUG_POSTFIX, $title);
-			$new_slug= rtrim($new_slug, SLUG_POSTFIX);
-		}
-
-		/*
-		 * Check for an existing post with the same slug.
-		 * To do so, we cut off any postfixes from the new slug
-		 * and check the DB for the slug without postfixes
-		 */
-		$check_slug= rtrim($new_slug, SLUG_POSTFIX);
-		$sql= "SELECT COUNT(*) as slug_count FROM " . DB::table('posts') . " WHERE slug LIKE '" . $check_slug . "%';";
-		$num_posts= DB::get_value($sql);
-		$valid_slug= $check_slug . str_repeat(SLUG_POSTFIX, $num_posts);
-		$this->newfields['slug']= $valid_slug;
-		return $valid_slug;
-	}
-	
-	/**
-	 * Attempts to generate the slug for a post that has none
-	 * @return The slug value	 
+	 * Generate a new slug for the post.
+	 * 
+	 * @return string The slug	 
 	 */	 	 	 	 	
 	private function setslug()
 	{
-		if ( $this->fields[ 'slug' ] != '' && $this->fields[ 'slug' ] == $this->newfields[ 'slug' ]) {
-			$value= $this->fields[ 'slug' ];
+		// determine the base value from:
+		// - the new slug
+		if ( isset( $this->newfields['slug']) && $this->newfields['slug'] != '' ) {
+			$value= $this->newfields['slug'];
 		}
-		elseif ( isset( $this->newfields['slug']) && $this->newfields[ 'slug' ] != '' ) {
-			$value= $this->newfields[ 'slug' ];
+		// - the existing slug
+		elseif ( $this->fields['slug'] != '' ) {
+			$value= $this->fields['slug'];
 		}
-		elseif ( ( $this->fields[ 'slug' ] != '' ) ) {
-			$value= $this->fields[ 'slug' ];
+		// - the new post title
+		elseif ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
+			$value= $this->newfields['title'];
 		}
-		elseif ( isset( $this->newfields['title'] ) && $this->newfields[ 'title' ] != '' ) {
-			$value= $this->newfields[ 'title' ];
+		// - the existing post title
+		elseif ( $this->fields['title'] != '' ) {
+			$value= $this->fields['title'];
 		}
-		elseif ( $this->fields[ 'title' ] != '' ) {
-			$value= $this->fields[ 'title' ];
-		}
+		// - default
 		else {
 			$value= 'Post';
 		}
 		
-		$slug= strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) );
+		// make sure our slug is unique
+		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) ), '-' );
 		$postfix= '';
 		$postfixcount= 0;
 		do {
-			if (! $slugcount = DB::get_row( 'SELECT count(slug) AS ct FROM ' . DB::table('posts') . ' WHERE slug = ?;', array( "{$slug}{$postfix}" ) )) {
-				Utils::debug(DB::get_errors());
+			if (! $slugcount = DB::get_row( 'SELECT COUNT(slug) AS ct FROM ' . DB::table('posts') . ' WHERE slug = ?;', array( $slug . $postfix ) )) {
+				Utils::debug( DB::get_errors() );
 				exit;
 			}
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
-		} while ($slugcount->ct != 0);
-		$this->newfields[ 'slug' ] = $slug . $postfix;
-		return $this->newfields[ 'slug' ];
+		} while ( $slugcount->ct != 0 );
+		
+		return $this->newfields['slug'] = $slug . $postfix;
 	}
 
 	/**
-	 * function setguid
-	 * Creates the GUID for the new post
+	 * Generate the GUID for the new post.
 	 */	 	 	 	 	
 	private function setguid()
 	{
