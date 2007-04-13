@@ -45,18 +45,18 @@ class Posts extends ArrayObject
 	}
 			
 	/**
-	 * static function get
-	 * Returns a post or posts based on supplied parameters
-	 * THIS CLASS SHOULD CACHE QUERY RESULTS!	 
-	 * @param array An associated array of parameters, or a querystring
+	 * Returns a post or posts based on supplied parameters.
+	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
+	 * 	 
+	 * @param array $paramarry An associated array of parameters, or a querystring
 	 * @return array An array of Post objects, or a single post object, depending on request
 	 **/	 	 	 	 	
-	static function get( $paramarray = array() )
+	public static function get( $paramarray = array() )
 	{
 		$params= array();
-		$fns= array('get_results',
-					'get_row',
-					'get_value');
+		$fns= array( 'get_results',
+					 'get_row',
+					 'get_value' );
 		$select= '';
 		// what to select -- by default, everything
 		foreach ( Post::default_fields() as $field => $value ) {
@@ -66,7 +66,7 @@ class Posts extends ArrayObject
 		}
 		// defaults
 		$orderby= 'ORDER BY pubdate DESC';
-		$limit= Options::get('pagination');
+		$limit= Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
 		$paramarray= Utils::get_params( $paramarray );
@@ -228,7 +228,7 @@ class Posts extends ArrayObject
 	**/
 	public function by_status ( $status )
 	{
-		return self::get( array( "status" => $status ) );
+		return self::get( array( 'status' => $status ) );
 	}
 	
 	
@@ -240,7 +240,7 @@ class Posts extends ArrayObject
 	**/
 	public function by_slug ( $slug = '' )
 	{
-		return self::get( array( "slug" => $slug ) );
+		return self::get( array( 'slug' => $slug ) );
 	}
 
 	/*
@@ -251,7 +251,7 @@ class Posts extends ArrayObject
 	**/
 	public static function count_total( $status )
 	{
-		$params = array( 'count' => 1, 'status' => $status );
+		$params= array( 'count' => 1, 'status' => $status );
 		return self::get( $params );
 	}
 
@@ -261,7 +261,7 @@ class Posts extends ArrayObject
 	**/
 	public function count_all()
 	{
-		$params = array_merge((array) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1));
+		$params= array_merge( (array) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1 ) );
 		return Posts::get( $params );
 	}
 		
@@ -290,9 +290,8 @@ class Posts extends ArrayObject
 	**/
 	public static function count_by_tag( $tag = '', $status )
 	{
-		$params = array( 'tag' => $tag, 'count' => 'slug');
-		if ( FALSE !== $status )
-		{
+		$params= array( 'tag' => $tag, 'count' => 'slug');
+		if ( FALSE !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -305,12 +304,12 @@ class Posts extends ArrayObject
 	 **/	 	 	
 	public static function search( $criteria, $page = 1 )
 	{
-		preg_match_all('/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $criteria, $matches);
-		$words = $matches[0];
+		preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $criteria, $matches );
+		$words= $matches[0];
 		
-		$where = 'status = ?';
-		$params = array(Post::status('published'));
-		foreach($words as $word) {
+		$where= 'status = ?';
+		$params= array( Post::status( 'published' ) );
+		foreach ( $words as $word ) {
 			$where .= " AND (title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
 			$params[] = $word;
 			$params[] = $word;  // Not a typo
@@ -318,9 +317,9 @@ class Posts extends ArrayObject
 
 		return self::get( 
 			array(
-				'where'=>$where,
-				'params'=>$params,
-				'page'=>$page,
+				'where' => $where,
+				'params' => $params,
+				'page' => $page,
 			) 
 		);
 	}
