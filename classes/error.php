@@ -78,7 +78,7 @@ class Error
 	 * 
 	 * Convenience method to create and return a new Error object
 	 */
-	static public function raise( $error_message, $severity = E_USER_ERROR )
+	public static function raise( $error_message, $severity = E_USER_ERROR )
 	{
 		return new Error( $error_message, $severity );
 	}
@@ -88,7 +88,7 @@ class Error
 	 * 
 	 * Returns true if the argument is an Error instance
 	 */
-	function is_error($obj)
+	public static function is_error($obj)
 	{
 		return ($obj instanceof Error);
 	}	 	 	 		 	
