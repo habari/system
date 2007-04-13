@@ -1,8 +1,15 @@
 <?php
+/**
+ * Holds the basic RemoteRequest functionality.
+ * 
+ * @package Habari
+ */
 
 /**
  * Interface for Request Processors. RemoteRequest uses a RequestProcessor to
  * do the actual work.
+ * 
+ * @package Habari
  */
 interface RequestProcessor
 {
@@ -14,6 +21,8 @@ interface RequestProcessor
 
 /**
  * Generic class to make outgoing HTTP requests.
+ * 
+ * @package Habari
  */
 class RemoteRequest
 {
@@ -233,6 +242,33 @@ class RemoteRequest
 		
 		return Utils::glue_url( $urlparts );
 	}
+	
+	/**
+	 * Static helper function to quickly fetch an URL, with semantics similar to
+	 * PHP's file_get_contents. Does not support 
+	 * 
+	 * Returns the content on success or FALSE if an error occurred.
+	 * 
+	 * @param string $url The URL to fetch
+	 * @param bool $use_include_path whether to search the PHP include path first (unsupported)
+	 * @param resource $context a stream context to use (unsupported)
+	 * @param int $offset how many bytes to skip from the beginning of the result
+	 * @param int $maxlen how many bytes to return
+	 * @return string description
+	 */
+	public static function get_contents( $url, $use_include_path= FALSE, $context= NULL, $offset=0, $maxlen= -1 )
+	{
+		$rr= new RemoteRequest( $url );
+		if ( $rr->execute() ) {
+			return ( $maxlen != -1
+				? substr( $rr->get_response_body(), $offset, $maxlen )
+				: substr( $rr->get_response_body(), $offset ) );
+		}
+		else {
+			return FALSE;
+		}
+	}
+	
 }
 
 ?>
