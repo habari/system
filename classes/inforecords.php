@@ -71,6 +71,10 @@ abstract class InfoRecords extends ArrayObject
 		if ( $this->_loaded == TRUE ) {
 			return;
 		}
+		if ( empty($this->_key_value) ) {
+			$this->_loaded == TRUE;
+			return;
+		}
 		 
 		$result= DB::get_results( '
 			SELECT name, value, type
@@ -181,7 +185,7 @@ abstract class InfoRecords extends ArrayObject
 	 */
 	public function commit( $metadata_key = null )
 	{
-		if ( !$this->_loaded ) {
+		if ( !($this->_loaded || empty($this->_key_value)) ) {
 			return true;
 		}
 		if ( isset( $metadata_key ) ) {
