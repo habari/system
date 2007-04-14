@@ -456,6 +456,20 @@ class Utils
 			return ( hash( 'sha512', $password . $salt, TRUE ) == $digest );
 		}
 	}
+	
+	/**
+	 * Return an array of date information
+	 * Just like getdate() but also returns 0-padded versions of day and month in mday0 and mon0
+	 * @param integer $timestamp A unix timestamp
+	 * @return array An array of date data	 	 	
+	 */	  	
+	public static function getdate($timestamp)
+	{
+		$info= getdate($timestamp);
+		$info['mon0']= substr('0' . $info['mon'], -2, 2); 
+		$info['mday0']= substr('0' . $info['mday'], -2, 2);
+		return $info; 
+	}
 
 }
 

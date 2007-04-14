@@ -75,18 +75,38 @@ class RewriteRule extends QueryRecord
 	/**
 	 * Builds a URL using this rule based on the passed in data
 	 * @param array $args An associative array of arguments to use for replacement in the rule
-	 * @return string The URL created from the substituted arguments
+	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
+	 * @return string The URL created from the substituted arguments	 
 	 **/	 	 
-	public function build($args)
+	public function build($args, $useall = true)
 	{
 		$args = Plugins::filter('rewrite_args', $args, $this->name);
 		$searches= array_map(array('Utils', 'map_array'), array_keys($args));
 		$return_url= str_replace($searches, $args, $this->build_str);
-		$args = array_diff_key($args, array_flip($this->named_args));
-		// Append any remaining args as query string arguments:
-		$return_url.= (count($args)==0) ? '' : '?' . http_build_query($args);
+		if( $useall ) {
+			$args = array_diff_key($args, array_flip($this->named_args));
+			// Append any remaining args as query string arguments:
+			$return_url.= (count($args)==0) ? '' : '?' . http_build_query($args);
+		}
 		return $return_url;
 	}
+	
+	/**
+	* Returns a distance from 0 indicating the appropriateness of the rule 
+	* based on the passed-in arguments.
+	* @param array $args An array of arguments
+	* @return integer Returns 0 for an exact match, a higher number for less of a match
+	* @todo Enable this logic	
+	*/
+	public function arg_match($args)
+	{
+		return 0; // Let's let this logic linger for a little while
+		$args = Plugins::filter('rewrite_args', $args, $this->name);
+		$diffargs= array_diff_key($args, array_flip($this->named_args));
+		$sameargs= array_intersect_key($args, array_flip($this->named_args));
+		$rating= count($this->named_args) - count($sameargs) + count($diffargs); 
+		return $rating;
+	}   
 	
 	/**
 	 * Magic property getter for this class
