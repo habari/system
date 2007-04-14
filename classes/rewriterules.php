@@ -49,17 +49,19 @@ class RewriteRules extends ArrayObject {
 	/**
 	 * Get a RewriteRule by its name
 	 * 
-	 * @param $name The name of the rule
+	 * @param string $name The name of the rule
 	 * @return RewriteRule The rule requested
+	 * @todo Make this return more than one rule when more than one rule matches.
 	 **/	 	 	 	 	
 	public function by_name( $name )
 	{
+		$results = array();
 		foreach($this as $rule) {
 			if($rule->name == $name) {
-				return $rule;
+				$results[]= $rule;
 			}
 		}
-		return false;
+		return count($results) ? $results : false;
 	}
 }
 

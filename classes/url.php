@@ -94,18 +94,40 @@ class URL extends Singleton
 	 * 	) );
 	 * </code>
 	 * 
-	 * @param string $rule_name name of the rule which would build the URL
+	 * @param mixed $rule_names string name of the rule or array of rules which would build the URL
 	 * @param array $args (optional) array of placeholder replacement values
+	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 */
-	static public function get( $rule_name, $args= array() )
+	static public function get( $rule_names, $args= array(), $useall= true )
 	{
 		$args= Utils::get_params( $args ); 
 		
 		$url= URL::instance();
 		$url->load_rules();
-		if ( $rule= $url->rules->by_name( $rule_name ) ) {
-			$return_url = $rule->build( $args );
-			return Site::get_url('habari', true) . htmlspecialchars($return_url);
+		if( !is_array($rule_names) ) {
+			$rule_names = array($rule_names);
+		}
+		foreach($rule_names as $rule_name) {
+			if ( $rules= $url->rules->by_name( $rule_name ) ) {
+				$rating= null;
+				$selectedrule= null;
+				foreach($rules as $rule) {
+					$newrating= $rule->arg_match($args);
+					// Is the rating perfect?
+					if($rating == 0) {
+						$selectedrule= $rule;
+						break;
+					} 
+					if( empty($rating) || ( $newrating < $rating ) ) {
+						$rating= $newrating;
+						$selectedrule= $rule;
+					}
+				}
+				if( isset($selectedrule) ) {
+					$return_url = $selectedrule->build( $args, $useall );
+					return Site::get_url('habari', true) . htmlspecialchars($return_url);
+				}
+			}
 		}
 	}
 
@@ -113,10 +135,11 @@ class URL extends Singleton
 	 * Helper wrapper function.  Outputs the URL via echo.
 	 * @param string $rule_name name of the rule which would build the URL
 	 * @param array $args (optional) array of placeholder replacement values
+	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 */
-	static public function out( $rule_name, $args= array() )
+	static public function out( $rule_name, $args= array(), $useall= true )
 	{
-		echo URL::get( $rule_name, $args );
+		echo URL::get( $rule_name, $args, $useall );
 	}
 }
 

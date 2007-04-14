@@ -192,7 +192,7 @@ abstract class InfoRecords extends ArrayObject
 			$this->_key_value= $metadata_key;
 		}
 
-		foreach( $this->__inforecord_array as $name=>$record ) {
+		foreach( (array)$this->__inforecord_array as $name=>$record ) {
 			if( isset( $record['changed'] ) && $record['changed'] ) {
 				$value = $record['value'];
 				if ( is_array( $value ) || is_object( $value ) ) {

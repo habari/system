@@ -461,11 +461,21 @@ class Post extends QueryRecord
 	 * function get_permalink
 	 * Returns a permalink for the ->permalink property of this class.
 	 * @return string A link to this post.	 
+	 * @todo separate permalink rule?  (Not sure what this means - OW)
 	 **/	 	 	
 	private function get_permalink()
 	{
-		return URL::get( 'display_posts_by_slug', array( 'slug' => $this->fields['slug'] ) );
-		// @todo separate permalink rule?
+		$args = array_merge($this->to_array(), Utils::getdate(strtotime($this->pubdate)));
+		$types= array_flip(Post::list_post_types());
+		$content_type= $types[$this->content_type];
+		return URL::get( 
+			array(
+				"display_{$content_type}",
+				'display_posts_by_slug',
+			), 
+			$args, 
+			false 
+		);
 	}
 	
 	/**
@@ -483,8 +493,9 @@ class Post extends QueryRecord
 				WHERE t2p.post_id = ?";
 			$this->tags= DB::get_column( $sql, array( $this->fields['id'] ) );
 		}	
-		if ( count( $this->tags ) == 0 )
+		if ( count( $this->tags ) == 0 ) {
 			return '';
+		}
 		return $this->tags;
 	}
 
