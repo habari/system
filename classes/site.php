@@ -215,7 +215,7 @@ class Site
 				}
 				else
 				{
-					$path= str_replace ( HABARI_PATH, '', Site::get_dir('config') );
+					$path= ltrim( str_replace ( HABARI_PATH, '', Site::get_dir('config') ), '/' );
 				}
 				break;
 			case 'theme':
