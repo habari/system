@@ -145,93 +145,119 @@ CREATE TABLE {$prefix}rewrite_rules (
 );
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'display_posts_at_page','/^page\\/([\\d]+)[\\/]{0,1}$/i','page/{$page}'
-,'UserThemeHandler','display_posts',1,'Displays posts.  Page (of post) parameter is passed in URL');
+,'UserThemeHandler','display',1,'Displays posts.  Page (of post) parameter is passed in URL', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'display_posts_by_date','/([1,2]{1}[\\d]{3})\\/([\\d]{2})\\/([\\d]{2})[\\/]{0,1}$/','{$year}/{$month}/{$day}'
-,'UserThemeHandler','display_posts',2,'Displays posts for a specific date.');
+,'UserThemeHandler','display_date',2,'Displays posts for a specific date.', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'display_posts_by_month','/([1,2]{1}[\\d]{3})\\/([\\d]{2})[\\/]{0,1}$/','{$year}/{$month}'
-,'UserThemeHandler','display_posts',3,'Displays posts for a specific month.');
+,'UserThemeHandler','display_month',3,'Displays posts for a specific month.', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'display_posts_by_year','/([1,2]{1}[\\d]{3})[\\/]{0,1}$/','{$year}'
-,'UserThemeHandler','display_posts',4,'Displays posts for a specific year.');
+,'UserThemeHandler','display_year',4,'Displays posts for a specific year.', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'display_feed_by_type','/^feed\\/(atom|rs[sd])[\\/]{0,1}$/i','feed/{$feed_type}'
-,'FeedHandler','display_feed',5,'Return feed per specified feed type');
+,'FeedHandler','display_feed',5,'Return feed per specified feed type', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'display_posts_by_tag','/^tag\\/([^\\/]*)[\\/]{0,1}$/i','tag/{$tag}'
-,'UserThemeHandler','display_posts',5,'Return posts matching specified tag');
+,'UserThemeHandler','display_tag',5,'Return posts matching specified tag', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'admin','/^admin[\\/]*([^\\/]*)[\\/]{0,1}$/i','admin/{$page}'
-,'AdminHandler','admin',6,'An admin action');
+,'AdminHandler','admin',6,'An admin action', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'userprofile', '/^admin\\/(user)\\/([^\\/]+)\\/{0,1}$/', 'admin/{$page}/{$user}',
-'AdminHandler', 'admin', 4, 'The profile page for a specific user');
+'AdminHandler', 'admin', 4, 'The profile page for a specific user', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'user','/^user\\/([^\\/]*)[\\/]{0,1}$/i','user/{$page}'
-,'UserHandler','{$page}',7,'A user action or display, for instance the login screen');
+,'UserHandler','{$page}',7,'A user action or display, for instance the login screen', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'display_posts_by_slug','/([^\\/]+)[\\/]{0,1}$/i','{$slug}'
-,'UserThemeHandler','display_posts',99,'Return posts matching specified slug');
+,'UserThemeHandler','display_post',99,'Return post matching specified slug', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
+VALUES (NULL, 'display_entry_by_slug','/([^\\/]+)[\\/]{0,1}$/i','{$slug}'
+,'UserThemeHandler','display_post',100,'Return entry matching specified slug', 1);
+
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
+VALUES (NULL, 'display_page_by_slug','/([^\\/]+)[\\/]{0,1}$/i','{$slug}'
+,'UserThemeHandler','display_post',100,'Return page matching specified slug', 1);
+
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'index_page','//',''
-,'UserThemeHandler','display_posts',1000,'Homepage (index) display');
+,'UserThemeHandler','display_home',1000,'Homepage (index) display', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'rsd','/^rsd$/i','rsd'
-,'AtomHandler','rsd',1,'RSD output');
+,'AtomHandler','rsd',1,'RSD output', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'introspection','/^atom$/i','atom'
-,'AtomHandler','introspection',1,'Atom introspection');
+,'AtomHandler','introspection',1,'Atom introspection', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'collection','/^atom\\/(.+)[\\/]{0,1}$/i','atom/{$index}'
-,'AtomHandler','collection',1,'Atom collection');
+,'AtomHandler','collection',1,'Atom collection', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'search','/^search$/i','search'
-,'UserThemeHandler','search',8,'Searches posts');
+,'UserThemeHandler','search',8,'Searches posts', 1);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'comment','/^([0-9]+)\\/feedback[\\/]{0,1}$/i','{$id}/feedback'
-,'FeedbackHandler','add_comment',8,'Adds a comment to a post');
+,'FeedbackHandler','add_comment',8,'Adds a comment to a post', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'ajax','/^ajax\\/([^\\/]+)[\\/]{0,1}$/i','ajax/{$context}'
-,'AjaxHandler','ajax',8,'Ajax handling');
+,'AjaxHandler','ajax',8,'Ajax handling', 0);
 
 INSERT INTO {$prefix}rewrite_rules
-(rule_id, name, parse_regex, build_str, handler, action, priority, description)
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
 VALUES (NULL, 'auth_ajax','/^auth_ajax\\/([^\\/]+)[\\/]{0,1}$/i','auth_ajax/{$context}'
-,'AjaxHandler','auth_ajax',8,'Authenticated ajax handling');
+,'AjaxHandler','auth_ajax',8,'Authenticated ajax handling', 0);
+
+INSERT INTO {$prefix}rewrite_rules 
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
+VALUES(null, 'entry', '/([^\\/]+)\\/atom$/i', '{$slug}/atom', 'AtomHandler', 'entry', 8, 'Atom Publishing Protocol', 0);
+
+INSERT INTO {$prefix}rewrite_rules 
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
+VALUES(null, 'entry_comments', '/^([^\\/]+)\\/atom\\/comments$/i', '{$slug}/atom/comments', 'AtomHandler', 'entry_comments', 8, 'Entry comments', 0);
+
+INSERT INTO {$prefix}rewrite_rules
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class) 
+VALUES(null, 'comments', '/^atom\\/comments$/i', 'atom/comments', 'AtomHandler', 'comments', 7, 'Entries comments', 0);
+
+INSERT INTO {$prefix}rewrite_rules 
+(rule_id, name, parse_regex, build_str, handler, action, priority, description, rule_class)
+VALUES(null, 'tag_collection', '/^tag\\/([^\\/]+)\\/atom$/i', 'tag/{$tag}/atom', 'AtomHandler', 'tag_collection', 8, 'Atom Tag Collection', 0);
 
 UPDATE {$prefix}rewrite_rules SET is_active=1;

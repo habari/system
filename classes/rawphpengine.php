@@ -14,6 +14,7 @@ class RawPHPEngine extends TemplateEngine
 {
 	// Internal data to be extracted into template symbol table
 	private $engine_vars= array();
+	private $available_templates= null;
 
 	/**
 	 * Constructor for RawPHPEngine
@@ -45,6 +46,21 @@ class RawPHPEngine extends TemplateEngine
 	}
 
 	/** 
+	 * Returns the existance of the specified template name
+	 * 
+	 * @param template $template Name of template to detect
+	 * @returns boolean True if the template exists, false if not
+	 */
+	public function template_exists( $template )
+	{
+		if( empty( $this->available_templates ) ) {
+			$this->available_templates= glob( Site::get_dir('theme', TRUE) . '*.*' );
+			$this->available_templates= array_map('basename', $this->available_templates, array_fill(1, count($this->available_templates), '.php') );
+		}
+		return in_array($template, $this->available_templates);
+	}
+
+	/** 
 	 * A function which returns the content of the transposed
 	 * template as a string
 	 *
@@ -69,6 +85,18 @@ class RawPHPEngine extends TemplateEngine
 	{
 		$this->engine_vars[$key]= $value;
 	} 
+	
+	/** 
+	 * Detects if a variable is assigned to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param string $key name of variable
+	 * @returns boolean true if key is set, false if not set
+	 */
+	public function assigned( $key )
+	{
+		return isset( $this->engine_vars[$key] );
+	}
 
 	/** 
 	 * Appends to an existing variable more values

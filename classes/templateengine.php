@@ -27,6 +27,14 @@ abstract class TemplateEngine
 	abstract function display( $template ); // virtual - implement in derived class
 
 	/** 
+	 * Returns the existance of the specified template name
+	 * 
+	 * @param template $template Name of template to detect
+	 * @returns boolean True if the template exists, false if not
+	 */
+	abstract function template_exists( $template ); // virtual - implement in derived class
+
+	/** 
 	 * A function which returns the content of the transposed
 	 * template as a string
 	 * 
@@ -42,6 +50,15 @@ abstract class TemplateEngine
 	 * @param value value of variable
 	 */
 	abstract function assign( $key, $value='' ); // virtual - implement in derived class
+
+	/** 
+	 * Detects if a variable is assigned to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param string $key name of variable
+	 * @returns boolean true if key is set, false if not set
+	 */
+	abstract function assigned( $key ); // virtual - implement in derived class
 
 	/** 
 	 * Appends to an existing variable more values

@@ -144,7 +144,83 @@ class Format
 	{
 		if ( is_numeric($date) ) return date($dateformat, $date);
 		return date($dateformat, strtotime($date));
-	}}
- 
- 
+	}
+
+	/**
+	 * Returns a shortened version of whatever is passed in.
+	 * @param string $value A string to shorten
+	 * @return string The string, shortened
+	 **/	 	 	 	
+	function summarize( $text )
+	{
+		$count= 100;  // The number of words to display
+		$maxparagraphs= 1;  // The maximum number of paragraphs to display
+	
+		preg_match_all( '/<script.*?<\/script.*?>/', $text, $scripts );
+		preg_replace( '/<script.*?<\/script.*?>/', '', $text );
+	
+		$words = preg_split( '/(<(?:\\s|".*?"|[^>])+>|\\s+)/', $text, $count + 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+	
+		$ellipsis= '';
+		if( count( $words ) > $count * 2 ) {
+			array_pop( $words );
+			$ellipsis= '...';
+		}
+		$output= '';
+		
+		$paragraphs= 0;
+		
+		$stack= array();
+		foreach( $words as $word ) {
+			if ( preg_match( '/<.*\/\\s*>$/', $word ) ) {
+				// If the tag self-closes, do nothing.
+				$output.= $word;
+			}
+			elseif( preg_match( '/<[\\s\/]+/', $word )) {
+				// If the tag ends, pop one off the stack (cheatingly assuming well-formed!)
+				array_pop( $stack );
+				preg_match( '/<\s*\/\s*(\\w+)/', $word, $tagn );
+				switch( $tagn[1] ) {
+				case 'br':
+				case 'p':
+				case 'div':
+				case 'ol':
+				case 'ul':
+					$paragraphs++;
+					if( $paragraphs >= $maxparagraphs ) {
+						$output.= '...' . $word;
+						$ellipsis= '';
+						break 2;
+					}
+				}
+				$output.= $word;
+			}
+			elseif( $word[0] == '<' ) {
+				// If the tag begins, push it on the stack
+				$stack[]= $word;
+				$output.= $word;
+			}
+			else {
+				$output.= $word;
+			}
+		}
+		$output.= $ellipsis;
+	
+		if ( count( $stack ) > 0 ) {
+			preg_match( '/<(\\w+)/', $stack[0], $tagn );
+			$stack= array_reverse( $stack );
+			foreach ( $stack as $tag ) {
+				preg_match( '/<(\\w+)/', $tag, $tagn );
+				$output.= '</' . $tagn[1] . '>';
+			}
+		}
+		foreach( $scripts[0] as $script ) {
+			$output.= $script;
+		}
+
+		return $output;
+	}
+
+	
+}
 ?>
