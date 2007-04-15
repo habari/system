@@ -284,7 +284,7 @@ class Site
 				}
 				break;
 			case 'theme':
-				$theme= Options::get('theme_name');
+				$theme= Options::get('theme_dir');
 				$path= Site::get_dir('user') . '/themes/' . $theme;
 				break;
 		}
