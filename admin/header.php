@@ -57,8 +57,9 @@
 				<a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Manage</a>
 				<ul class="menu-list">
 					<li><a href="<?php URL::out('admin', 'page=content'); ?>">Content</a></li>
-					<li><a href="<?php URL::out('admin', 'page=moderate'); ?>">Comments</a></li>
-					<li><a href="<?php URL::out('admin', 'page=spam'); ?>">Spam</a></li>
+					<li><a href="<?php URL::out('admin', 'page=moderate'); ?>">Unapproved Comments</a></li>
+					<li><a href="<?php URL::out('admin', 'page=moderate&show=approved'); ?>">Approved Comments</a></li>
+					<li><a href="<?php URL::out('admin', 'page=moderate&show=spam'); ?>">Spam</a></li>
 				</ul>
 			</li>
 			<li class="menu-item" id="logout">
