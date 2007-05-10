@@ -429,9 +429,9 @@ class Post extends QueryRecord
 			$out = parent::__get( $name );
 			break;
 		}
-		$out = Plugins::filter( "post_{$name}", $out );
+		$out = Plugins::filter( "post_{$name}", $out, $this );
 		if( $filter ) {
-			$out = Plugins::filter( "post_{$name}_{$filter}", $out );
+			$out = Plugins::filter( "post_{$name}_{$filter}", $out, $this );
 		}
 		return $out;
 	}
