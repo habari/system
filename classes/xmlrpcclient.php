@@ -50,104 +50,6 @@ class XMLRPCClient
 	}
 	
 	/**
-	 * Encode a variable value into the parameters of the XML tree
-	 * 
-	 * @param SimpleXMLElement $params The parameter to add the value elements to.
-	 * @param mixed $arg The value to encode
-	 */
-	private function _encode_arg($params, $arg) 
-	{
-		switch(true) {
-		case is_array($arg):
-			$data = $params->add_child('array')->add_child('data');
-			foreach($arg as $element) {
-				$this->_encode_arg($data, $element);
-			}
-			break;
-		case ($arg instanceof XMLRPCDate):
-			$params->addchild('value')->addchild('dateTime.iso8601', date('c', strtotime($arg->date)));
-			break;				
-		case ($arg instanceof XMLRPCBinary):
-			$params->addchild('value')->addchild('base64', base64_encode($arg->data));
-			break;				
-		case ($arg instanceof XMLRPCStruct):
-			$struct = $params->addchild('struct');
-			$object_vars = $arg->get_fields();
-			foreach($object_vars as $field) {
-				$member = $struct->add_child('member');
-				$member->addchild('name', $field);
-				$this->_encode_arg($member, $arg->$field);
-			}
-			break;				
-		case is_object($arg):
-			$struct = $params->add_child('struct');
-			$object_vars = get_object_vars($arg);
-			foreach($object_vars as $key=>$value) {
-				$member = $struct->add_child('member');
-				$member->addchild('name', $key);
-				$this->_encode_arg($member, $value);
-			}
-			break;
-		case is_integer($arg):
-			$params->addchild('value')->addchild('i4', $arg);
-			break;
-		case is_bool($arg):
-			$params->addchild('value')->addchild('boolean', $arg ? '1' : '0');
-			break;
-		case is_string($arg):
-			$params->addchild('value')->addchild('string', $arg);
-			break;
-		case is_float($arg):
-			$params->addchild('value')->addchild('double', $arg);
-			break;
-		}
-	}
-	
-	/**
-	 * Decode the value of a response parameter using the datatype specified in the XML element.
-	 * 
-	 * @param SimpleXMLElement $value A "value" element from the XMLRPC response
-	 * @return mixed The value of the element, decoded from the datatype specified in the xml element
-	 */
-	private function _decode_args($value)
-	{
-		switch($value->getName()) {
-		case 'array':
-			$result_array = array();
-			foreach($value->xpath('//data/value/*') as $array_value) {
-				$result_array[] = $this->_decode_args($array_value);
-			}
-			return $result_array;
-			break;
-		case 'struct':
-			$result_struct = new XMLRPCStruct();
-			foreach($value->xpath('//member') as $struct_value) {
-				$property_name = (string)$struct_value->name;
-				$children = $struct_value->value->children();
-				if(count($children) > 0) {
-					$result_struct->$property_name = $this->_decode_args($children[0]);
-				}
-				else {
-					$result_struct->$property_name = (string)$struct_value->value;
-				}
-			}
-			return $result_struct;
-			break;
-		case 'string':
-			return (string)$value;
-		case 'i4':
-		case 'integer':
-			return (int)$value;
-		case 'double':
-			return (double)$value;
-		case 'boolean':
-			return ((int)$value == 1) ? true : false;
-		case 'dateTime.iso8601':
-			return strtotime((string)$value);
-		}
-	}
-	
-	/**
 	 * Allow method overloading for this class.
 	 * This method allows any method name to be called on this object.  The method
 	 * called is the method called via RPC, within the scope defined in $this->scope.
@@ -171,7 +73,7 @@ class XMLRPCClient
 			$params = $rpx->addchild('params');
 			foreach($args as $arg) {
 				$param = $params->addchild('param');
-				$this->_encode_arg($param, $arg);
+				XMLRPCUtils::encode_arg($param, $arg);
 			}
 		}
 
@@ -181,21 +83,22 @@ class XMLRPCClient
 		
 		if($request->execute()) {
 			$response = $request->get_response_body();
+			$enc = mb_detect_encoding($response);
+			$responseutf8 = mb_convert_encoding($response, 'UTF-8', $enc);
 			try {
 				$bit = ini_get('error_reporting');
 				error_reporting($bit && !E_WARNING);
-				$responsexml = new SimpleXMLElement($response);
+				$responsexml = new SimpleXMLElement($responseutf8);
 				error_reporting($bit);
-				return $this->_decode_args(reset($responsexml->xpath('/methodResponse/params/param/value/*')));
+				return XMLRPCUtils::decode_args(reset($responsexml->xpath('/methodResponse/params/param/value/*')));
 			}
 			catch (Exception $e){
-				Utils::debug($response);
+				Utils::debug($response, $e);
 				error_reporting($bit);
 				return false;
 			}
 		}
 	}
-
 }
 
 ?>
