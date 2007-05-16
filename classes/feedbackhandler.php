@@ -25,12 +25,19 @@ class FeedbackHandler extends ActionHandler
 				Utils::redirect( URL::get( 'display_posts_by_slug', array('slug'=>$post->slug) ) );
 			}
 
-			if($post) {
+			if( $post && !$post->info->comments_disabled ) {
+				
+				if( $this->handler_vars['url'] != '' && strpos( $this->handler_vars['url'], 'http://' ) === false ) {
+			 		$url = 'http://' . $this->handler_vars['url'];
+			 		} else {
+						$url = $this->handler_vars['url'];
+				}
+				
 				$commentdata = array( 
 									'post_id'	=>	$this->handler_vars['id'],
 									'name'		=>	$this->handler_vars['name'],
 									'email'		=>	$this->handler_vars['email'],
-									'url'		=>	$this->handler_vars['url'],
+									'url'		=>	$url,
 									'ip'		=>	ip2long( $_SERVER['REMOTE_ADDR'] ),
 									'content'	=>	$this->handler_vars['content'],
 									'status'	=>	Comment::STATUS_UNAPPROVED,
