@@ -273,6 +273,51 @@ class InputFilter
 		return $r;
 	}
 	
+	public static function glue_url( $parsed_url )
+	{
+		if ( ! is_array( $parsed_url ) ) {
+			return FALSE;
+		}
+		
+		$res = '';
+		$res .= $parsed_url['scheme'];
+		if ( $parsed_url['is_pseudo'] || $parsed_url['scheme'] == 'mailto' ) {
+			$res .= ':';
+		}
+		else {
+			$res .= '://';
+		}
+		if ( $parsed_url['is_pseudo'] ) {
+			$res .= $parsed_url['pseudo_args'];
+		}
+		else {
+			// user[:pass]@
+			if ( $parsed_url['user'] ) {
+				$res .= $parsed_url['user'];
+				if ( $parsed_url['pass'] ) {
+					$res .= ':' . $parsed_url['pass'];
+				}
+				$res .= '@';
+			}
+			$res .= $parsed_url['host'];
+			if ( $parsed_url['port'] ) {
+				if (   ( $parsed_url['port'] == 80 && $parsed_url['scheme'] == 'http' )
+					|| ( $parsed_url['port'] == 443 && $parsed_url['scheme'] == 'https' ) ) {
+					$res .= ':' . $parsed_url['port'];
+				}
+			}
+			$res .= $parsed_url['path'];
+			if ( $parsed_url['query'] ) {
+				$res .= '?' . $parsed_url['query'];
+			}
+			if ( $parsed_url['fragment'] ) {
+				$res .= '#' . $parsed_url['fragment'];
+			}
+		}
+		
+		return $res;		
+	}
+	
 	private static function check_attr_value( $k, $v, $type )
 	{
 		if ( is_array( $type ) ) {
