@@ -1,14 +1,12 @@
 <?php
 /**
- * class Error
- *  
- * Contains error-related functions and
+ * Contains error-related functions and Habari's error handler.
  *  
  * @package Habari
  **/  
 class Error
 {
-	private $message = '';
+	private $message= '';
 
 	/**
 	 * function __construct
@@ -18,8 +16,7 @@ class Error
 	 */
 	public function __construct( $error_message, $severity = E_USER_ERROR)
 	{
-		$this->message = $error_message;
-		//$this->out();
+		$this->message= $error_message;
 		if( $severity == E_USER_ERROR ) {
 			$this->out();
 			die();
@@ -31,9 +28,9 @@ class Error
 	 * 
 	 * Configures the Error class to handle all errors.
 	 */	 	 	 	
-	static public function handle_errors()
+	public static function handle_errors()
 	{
-		set_error_handler(array('Error', 'error_handler'));
+		set_error_handler( array( 'Error', 'error_handler' ) );
 	}
 	
 	/**
@@ -41,7 +38,7 @@ class Error
 	 * 
 	 * Used to handle all PHP errors after Error::handle_errors() is called.
 	 */
-	static public function error_handler( $errno, $errstr, $errfile, $errline, $errcontext )
+	public static function error_handler( $errno, $errstr, $errfile, $errline, $errcontext )
 	{
 		if( $errno != 0 ) {
 			$error = new Error( sprintf('<p class="error"><b>%s:%d:</b> %s</p>', basename( $errfile ), $errline, $errstr), $errno );

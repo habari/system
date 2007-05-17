@@ -427,15 +427,14 @@ class InstallHandler extends ActionHandler {
 		$db_pass= $this->handler_vars['db_pass'];
 
 		$queries= array();
-		switch ($db_type)
-		{
-		case 'mysql':
-			$queries[]= 'CREATE DATABASE `' . $db_schema . '`;';
-			$queries[]= 'GRANT ALL ON `' . $db_schema . '`.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' . 
-			'IDENTIFIED BY \'' . $db_pass . '\';';
-			break;
-		default:
-			die('currently unsupported.');
+		switch ($db_type) {
+			case 'mysql':
+				$queries[]= 'CREATE DATABASE `' . $db_schema . '`;';
+				$queries[]= 'GRANT ALL ON `' . $db_schema . '`.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' . 
+				'IDENTIFIED BY \'' . $db_pass . '\';';
+				break;
+			default:
+				die('currently unsupported.');
 		}
 		return $queries;
 	}
