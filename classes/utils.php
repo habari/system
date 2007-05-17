@@ -26,6 +26,7 @@ class Utils
 	static function get_params( $params )
 	{
 		if( is_array( $params ) ) return $params;
+		$paramarray= array();
 		parse_str( $params, $paramarray );
 		return $paramarray;
 	}
@@ -55,7 +56,7 @@ class Utils
 	 * function atomtime
 	 * Returns RFC-3339 time from a time string or integer timestamp
 	 * @param mixed A string of time or integer timestamp
-	 * @return string An FRC-3339 formatted time
+	 * @return string An RFC-3339 formatted time
 	 **/
 	static function atomtime($t)
 	{
@@ -65,7 +66,7 @@ class Utils
 		$vdate = date( DATE_ATOM, $t );
 		// If the date format used for timezone was O instead of P...
 		if ( substr( $vdate, -3, 1 ) != ':' ) {
-			$vdate = substr( $vdate, 0, -2) . ':' . substr( $vdate, -2, 2 );
+			$vdate = substr( $vdate, 0, -2 ) . ':' . substr( $vdate, -2, 2 );
 		}
 		return $vdate;
 	}
@@ -314,19 +315,19 @@ class Utils
 		echo "<pre>";
 		foreach( $fooargs as $arg1 ) {
 			echo '<em>' . gettype($arg1) . '</em> ';
-			echo htmlentities( print_r( $arg1, 1 ) ) . "<br/>";
+			echo htmlentities( print_r( $arg1, TRUE ) ) . "<br/>";
 		}
 		echo "</pre></div>";
 	}
-
+	
 	/**
 	 * Crypt a given password, or verify a given password against a given hash.
-	 *
+	 * 
 	 * @todo Enable best algo selection after DB schema change.
-	 *
+	 * 
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification
+	 * @return crypted password, or boolean for verification 
 	 */
 	public static function crypt( $password, $hash= NULL )
 	{
