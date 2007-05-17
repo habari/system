@@ -15,10 +15,10 @@ class FeedbackHandler extends ActionHandler
 	*/
 	public function act_add_comment()
 	{
-		// Check for obvious things that don't hit the database first...
+		// We need to get the post anyway to redirect back to the post page.
+		$post= Post::get( array( 'id'=>$this->handler_vars['id'] ) );
+		
 		if( $this->handler_vars['content'] != '') {
-			// We'll need to get the post anyway to see if its comments are closed...
-			$post= Post::get( array( 'id'=>$this->handler_vars['id'] ) );
 			if ( $post->info->comments_disabled ) {
 				// comments are disabled, so let's just send
 				// them back to the post's permalink
@@ -26,11 +26,27 @@ class FeedbackHandler extends ActionHandler
 			}
 
 			if( $post && !$post->info->comments_disabled ) {
-				
-				if( $this->handler_vars['url'] != '' && strpos( $this->handler_vars['url'], 'http://' ) === false ) {
-			 		$url = 'http://' . $this->handler_vars['url'];
-			 		} else {
-						$url = $this->handler_vars['url'];
+				$url= $this->handler_vars['url'];
+				$parsed= InputFilter::parse_url( $url );
+				if ( $parsed['is_relative'] ) {
+					// guess if they meant to use an absolute link 
+					$parsed= InputFilter::parse_url( 'http://' . $url );
+					if ( ! $parsed['is_error'] ) {
+						$url= InputFilter::glue_url( $parsed );
+					}
+					else {
+						// disallow relative URLs
+						$url= '';
+					}
+				}
+				elseif ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) {
+					// allow only http(s) URLs
+					$url= '';
+				}
+				else {
+					// reconstruct the URL from the error-tolerant parsing
+					// http:moeffju.net/blog/ -> http://moeffju.net/blog/
+					$url= InputFilter::glue_url( $parsed );
 				}
 				
 				$commentdata = array( 
@@ -94,7 +110,7 @@ class FeedbackHandler extends ActionHandler
 		} 
 		else {
 			// do something more intelligent here
-			echo 'You forgot to add some content to your comment, please <a href="' . URL::get( 'post', "slug={$_POST['post_slug']}" ) . '" title="go back and try again!">go back and try again</a>.';
+			echo 'You forgot to add some content to your comment, please <a href="' . URL::get( 'display_posts_by_slug', array('slug'=>$post->slug) ) . '" title="go back and try again!">go back and try again</a>.';
 		}
 	}
 }
