@@ -1,12 +1,10 @@
 <?php
-define('MIN_PHP_VERSION', '5.1.0');
+define('MIN_PHP_VERSION', '5.1.2');
 
 /**
  * The class which responds to installer actions
  */
 class InstallHandler extends ActionHandler {
-  
-	private $theme= null;
 
 	/**
 	 * Entry point for installation.  The reason there is a begin_install
@@ -20,8 +18,7 @@ class InstallHandler extends ActionHandler {
 
 		// Create a new theme to handle the display of the installer
 		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
-		if (! $this->meets_all_requirements())
-		{
+		if (! $this->meets_all_requirements()) {
 			$this->display('requirements');
 		}
 
@@ -29,8 +26,7 @@ class InstallHandler extends ActionHandler {
 		 * OK, so requirements are met.
 		 * now let's check .htaccess
 		*/
-		if ( ! $this->check_htaccess() )
-		{
+		if ( ! $this->check_htaccess() ) {
 			$this->handler_vars['file_contents']= implode( "\n", $this->htaccess() );
 			$this->display('htaccess');
 		}
@@ -38,8 +34,7 @@ class InstallHandler extends ActionHandler {
 		/*
 		 * Let's check the config.php file if no POST data was submitted
 		*/
-		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['db_user']) ) )
-		{
+		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['db_user']) ) ) {
 			// no config file, and no HTTP POST
 			$this->display('db_setup');
 		}
@@ -85,8 +80,8 @@ class InstallHandler extends ActionHandler {
 		if ( ( '' == $this->handler_vars['admin_username'] )
 			|| ( '' == $this->handler_vars['admin_pass1'] )
 			|| ( '' == $this->handler_vars['admin_pass2'] )
-			|| ( '' == $this->handler_vars['admin_email']) )
-		{
+			|| ( '' == $this->handler_vars['admin_email']) 
+		) {
 			// if none of the above are set, display the form
 			$this->display('db_setup');
 		}
@@ -94,22 +89,19 @@ class InstallHandler extends ActionHandler {
 		// we got here, so we have all the info we need to install
 
 		// make sure the admin password is correct
-		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] )
-		{
+		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
 			$this->theme->assign( 'form_errors', array('password_mismatch'=>'Password mismatch!') );
 			$this->display('db_setup');
 		}
 
 		// try to write the config file
-		if (! $this->write_config_file())
-		{
+		if (! $this->write_config_file()) {
 			$this->theme->assign('form_errors', array('write_file'=>'Could not write config.php file...'));
 			$this->display('db_setup');
 		}
 
 		// try to install the database
-		if (! $this->install_db())
-		{
+		if (! $this->install_db()) {
 			// the installation failed for some reason.
 			// re-display the form
 			$this->display('db_setup');
@@ -124,8 +116,7 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function display($template_name)
 	{
-		foreach ($this->handler_vars as $key=>$value)
-		{
+		foreach ($this->handler_vars as $key=>$value) {
 			$this->theme->assign($key, $value);
 		}
 		$this->theme->display($template_name);
@@ -135,7 +126,8 @@ class InstallHandler extends ActionHandler {
 	/*
 	 * sets default values for the form
 	 */
-	public function form_defaults() {
+	public function form_defaults() 
+	{
 		$formdefaults['db_type'] = 'mysql';
 		$formdefaults['db_host'] = 'localhost';
 		$formdefaults['db_user'] = '';
@@ -170,8 +162,7 @@ class InstallHandler extends ActionHandler {
 		$local_writeable= is_writeable(Site::get_dir('config')) || file_exists(Site::get_dir('config') . '/config.php');
 		$this->theme->assign('local_writeable', $local_writeable);
 		$this->theme->assign('HABARI_PATH', Site::get_dir('config'));
-		if (! $local_writeable)
-		{
+		if (! $local_writeable) {
 			$requirements_met= false;
 		}
 		/* Check versions of PHP */
@@ -179,15 +170,13 @@ class InstallHandler extends ActionHandler {
 		$this->theme->assign('php_version_ok', $php_version_ok);
 		$this->theme->assign('PHP_OS', PHP_OS);;
 		$this->theme->assign('PHP_VERSION',  phpversion());
-		if (! $php_version_ok)
-		{
+		if (! $php_version_ok) {
 			$requirements_met= false;
 		}
 		/* Check for PDO extension */
 		$pdo_extension_ok= extension_loaded('pdo');
 		$this->theme->assign('pdo_extension_ok', $pdo_extension_ok);
-		if (! $pdo_extension_ok)
-		{
+		if (! $pdo_extension_ok) {
 			$requirements_met= false;
 		}
 		return $requirements_met;
@@ -240,7 +229,11 @@ class InstallHandler extends ActionHandler {
 
 		DB::begin_transaction();
 		/* Let's install the DB tables now. */ 
-		$create_table_queries= $this->get_create_table_queries();
+		$create_table_queries= $this->get_create_table_queries(
+			$this->handler_vars['db_type'],
+			$this->handler_vars['table_prefix'],
+			$this->handler_vars['db_schema']
+		);
 		foreach ($create_table_queries as $query) {
 			if (! DB::query($query)) {
 				$error= DB::get_last_error();
@@ -339,8 +332,9 @@ class InstallHandler extends ActionHandler {
 				// we do not have a crypted password
 				// so let's encrypt it
 				$password= Utils::crypt($admin_pass);
-			 }
-		} else {
+			}
+		} 
+		else {
 			$password= Utils::crypt($admin_pass);
 		}
 
@@ -389,13 +383,13 @@ class InstallHandler extends ActionHandler {
 
 	/**
 	 * Install schema tables from the respective RDBMS schema
+	 * @param $db_type string The schema string for the database
+	 * @param $table_prefix string The prefix to use on each table name
+	 * @param $db_schema string The database name	  	 
+	 * @return array Array of queries to execute	 	 
 	 */
-	private function get_create_table_queries()
+	private function get_create_table_queries($db_type, $table_prefix, $db_schema)
 	{
-		$table_prefix= $this->handler_vars['table_prefix'];
-		$db_type= $this->handler_vars['db_type'];
-		$db_schema= $this->handler_vars['db_schema'];
-
 		/* Grab the queries from the RDBMS schema file */
 		$file_path= HABARI_PATH . "/system/schema/{$db_type}/schema.sql";
 		$schema_sql= trim(file_get_contents($file_path), "\r\n ");
@@ -412,6 +406,7 @@ class InstallHandler extends ActionHandler {
 		$queries= preg_split('/(\\r\\n|\\r|\\n)\\1/', $schema_sql);
 		return $queries;
 	}
+
 
 	/**
 	 * Returns an RDMBS-specific CREATE SCHEMA plus user SQL expression(s)
@@ -467,8 +462,7 @@ class InstallHandler extends ActionHandler {
 	private function write_config_file()
 	{
 		// first, check if a config.php file exists
-		if ( file_exists( Site::get_dir('config_file' ) ) )
-		{
+		if ( file_exists( Site::get_dir('config_file' ) ) ) {
 			// set the defaults for comprison
 			$db_host= $this->handler_vars['db_host']; 
 			$db_type= $this->handler_vars['db_type']; 
@@ -482,7 +476,8 @@ class InstallHandler extends ActionHandler {
 				// remember, we're using $db_host to define
 				// the path to the SQLite data file
 				$connection_string= "$db_type:$db_host"; 
-			} else { 
+			} 
+			else { 
 				$connection_string= "$db_type:host=$db_host;dbname=$db_schema"; 
 			} 
 
@@ -495,8 +490,8 @@ class InstallHandler extends ActionHandler {
 				( $db_connection['connection_string'] == $connection_string )
 				&& ( $db_connection['username'] == $db_user )
 				&& ( $db_connection['password'] == $db_pass )
-				&& ( $db_connection['prefix'] == $table_prefix ) )
-			{
+				&& ( $db_connection['prefix'] == $table_prefix ) 
+			) {
 				// the values are the same, so don't bother
 				// trying to write to config.php
 				return true;
@@ -541,26 +536,22 @@ class InstallHandler extends ActionHandler {
 	**/
 	public function check_htaccess()
 	{
-		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) )
-		{
+		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
 			// .htaccess is only needed on Apache
 			// @TODO: add support for IIS and lighttpd rewrites
 			return true;
 		}
-		if ( ! file_exists( HABARI_PATH . '/.htaccess') )
-		{
+		if ( ! file_exists( HABARI_PATH . '/.htaccess') ) {
 			// no .htaccess exists.  Try to create one
 			return $this->write_htaccess(FALSE);
 		}
 		$htaccess= file_get_contents( HABARI_PATH . '/.htaccess');
-		if ( FALSE === strpos( $htaccess, 'HABARI' ) )
-		{
+		if ( FALSE === strpos( $htaccess, 'HABARI' ) ) {
 			// the Habari block does not exist in this file
 			// so try to create it
 			return $this->write_htaccess(TRUE);
 		}
-		else
-		{
+		else {
 			// the Habari block exists, but we need to make sure
 			// it is correct.
 			// @TODO: FIXME!
@@ -577,51 +568,60 @@ class InstallHandler extends ActionHandler {
 	public function write_htaccess( $exists = FALSE, $update = FALSE )
 	{
 		$file_contents= "\n" . implode( "\n", $this->htaccess() ) . "\n";
-		if ( ! $exists )
-		{
-			if ( ! is_writable( HABARI_PATH ) )
-			{
+		if ( ! $exists ) {
+			if ( ! is_writable( HABARI_PATH ) ) {
 				// we can't create the file
 				return false;
 			}
 		}
-		else
-		{
-			if ( ! is_writable( HABARI_PATH . '/.htaccess' ) )
-			{
+		else {
+			if ( ! is_writable( HABARI_PATH . '/.htaccess' ) ) {
 				// we can't update the file
 				return false;
 			}
 		}
-		if ( ! $update )
-		{
+		if ( ! $update ) {
 			// we're either creating a new .htaccess, or adding
 			// the Habari block to an existing .htaccess which
 			// previously lacked it.  As such, simply open the
 			// .htaccess file in append mode, and add the contents
-			if ( $fh= fopen( HABARI_PATH . '/.htaccess', 'a' ) )
-			{
-				if ( FALSE !== fwrite( $fh, $file_contents ) )
-				{
+			if ( $fh= fopen( HABARI_PATH . '/.htaccess', 'a' ) ) {
+				if ( FALSE !== fwrite( $fh, $file_contents ) ) {
 					return true;
 				}
-				else
-				{
+				else {
 					return false;
 				}
 			}
-			else
-			{
+			else {
 				return false;
 			}
 		}
-		else
-		{
+		else {
 			// we're updating an existing but incomplete .htaccess
 			// care must be take only to remove the Habari bits
 			// @TODO: FIXME!!
 		}
 		return true;
+	}
+	
+	public function upgrade_db()
+	{
+		global $db_connection;
+		
+		list( $schema, $remainder )= explode( ':', $db_connection['connection_string'] );
+		switch( $schema ) {
+		case 'sqlite':
+			$db_name = '';
+			break;
+		case 'mysql':
+			list($host,$name)= explode(';', $remainder);
+			list($discard, $db_name)= explode('=', $name);
+			break;				
+		}
+		$queries= $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
+		DB::dbdelta($queries);
+		Version::save_dbversion();
 	}
 }
 ?>

@@ -1,24 +1,29 @@
 <?php
 /**
+ * Habari RewriteRule Class
+ *
+ * @package Habari
+ *
  * Helper class to encapsulate rewrite rule data
+ *   
  */
 class RewriteRule extends QueryRecord 
 {
-	const RULE_SYSTEM = 0;
-	const RULE_THEME = 1;
-	const RULE_PLUGIN = 2;
-	const RULE_CUSTOM = 5;
-	
-	public $entire_match= ''; // exact matched string
-	public $named_arg_values= array(); // values of named arguments filled during URL::parse()
-	private $m_named_args= null; // named argument matches
 
+	const RULE_SYSTEM= 0;
+	const RULE_THEME= 1;
+	const RULE_PLUGIN= 2;
+	const RULE_CUSTOM= 5;
+	
+	public $entire_match= NULL; // Entire matched string from the URL
+	public $named_arg_values= array(); // Values of named arguments filled during URL::parse()
+	private $m_named_args= NULL; // Named arguments matches
+	
 	
 	/**
-	 * function default_fields
-	 * Returns the defined database columns for a Post
-	 * @return array Array of columns in the Post table
-	**/
+	 * Returns the defined database columns for a rewrite rule.
+	 * @return array Array of columns in the rewrite_rules table
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -38,8 +43,8 @@ class RewriteRule extends QueryRecord
 	/**
 	 * Constructor for the rewrite_rule class.
 	 * @param array $paramarray an associative array or querystring of initial field values
-	 **/	 	 	 	
-	public function __construct( $paramarray = array() )
+	 */	 	 	 	
+	public function __construct( $paramarray= array() )
 	{
 		// Defaults
 		$this->fields = array_merge(
@@ -47,26 +52,34 @@ class RewriteRule extends QueryRecord
 			$this->fields );
 		
 		parent::__construct( $paramarray );
-		$this->exclude_fields('rule_id');
+		$this->exclude_fields( 'rule_id' );
 	}
 	
-  
+	
 	/**
 	 * Match the stub against this rule
-   * Also sets internal structures based on a successful match   
-   * @param string The URL stub to match against
+	 * Also sets internal structures based on a successful match   
+	 * @param string The URL stub to match against
 	 * @return boolean True if this rule matches the stub, false if not
-   **/	 	 	   
-	public function match($stub) 
+	 */	 	 	   
+	public function match( $stub ) 
 	{
-		if( preg_match($this->parse_regex, $stub, $pattern_matches) ) {
+		if( preg_match( $this->parse_regex, $stub, $pattern_matches ) > 0 ) {
 			$this->entire_match= array_shift( $pattern_matches ); // The entire matched string is returned at index 0
-			if(count($this->named_args) > 0) {
-				$this->named_arg_values= array_combine($this->named_args, $pattern_matches);
-				if (preg_match('/^\\{\\$(\\w+)\\}$/', $this->action, $matches)) {
-					$this->action= $this->named_arg_values[$matches[1]]; 
+			$named_args= $this->named_args; // Direct call shows a PHP notice
+			
+			foreach ( $named_args as $keys ) {
+				foreach ( $keys as $key ) {
+					if ( !empty( $pattern_matches[$key] ) ) {
+						$this->named_arg_values[$key]= $pattern_matches[$key];
+					}
 				}
 			}
+			
+			if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0 ) {
+				$this->action= $this->named_arg_values[$matches[1]]; 
+			}
+			
 			return true;
 		}
 		return false;
@@ -77,34 +90,64 @@ class RewriteRule extends QueryRecord
 	 * @param array $args An associative array of arguments to use for replacement in the rule
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 * @return string The URL created from the substituted arguments	 
-	 **/	 	 
-	public function build($args, $useall = true)
+	 */	 	 
+	public function build( $args, $useall= true )
 	{
-		$args = Plugins::filter('rewrite_args', $args, $this->name);
-		$searches= array_map(array('Utils', 'map_array'), array_keys($args));
-		$return_url= str_replace($searches, $args, $this->build_str);
-		if( $useall ) {
-			$args = array_diff_key($args, array_flip($this->named_args));
-			// Append any remaining args as query string arguments:
-			$return_url.= (count($args)==0) ? '' : '?' . http_build_query($args);
+		$named_args= $this->named_args; // Direct call prints a PHP notice
+		$named_args_combined= array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
+		
+		$args_defined= array_intersect_key( $args, $named_args_combined );
+		$args_query= array_diff( $args, $args_defined );
+		$args= Plugins::filter( 'rewrite_args', $args, $this->name );
+		// Replace defined arguments with their value
+		foreach ( $named_args as $keys ) {
+			foreach ( $keys as $key ) {
+				if ( !empty( $args[$key] ) ) {
+					$searches[]= '/{\$'.$key.'}/';
+					$replacements[]= $args[$key];
+				}
+			}
 		}
+		
+		// Remove undefined arguments
+		$searches[]= '/\([^\(\)]*\$+[^\(\)]*\)/';
+		$replacements[]= '';
+		// Remove parens left from defined optional arguments
+		$searches[]= '/\(|\)/';
+		$replacements[]= '';
+		
+		$return_url= preg_replace( $searches, $replacements, $this->build_str );
+		
+		// Append any remaining args as query string arguments
+		if ( $useall ) {
+			$args= array_diff_key( $args, $named_args_combined );
+			$return_url.= ( count( $args ) == 0 ) ? '' : '?' . http_build_query( $args );
+		}
+		
 		return $return_url;
 	}
 	
 	/**
-	* Returns a distance from 0 indicating the appropriateness of the rule 
-	* based on the passed-in arguments.
-	* @param array $args An array of arguments
-	* @return integer Returns 0 for an exact match, a higher number for less of a match
-	* @todo Enable this logic	
-	*/
-	public function arg_match($args)
+	 * Returns a distance from 0 indicating the appropriateness of the rule 
+	 * based on the passed-in arguments.
+	 * @param array $args An array of arguments
+	 * @return integer Returns 0 for an exact match, a higher number for less of a match
+	 * @todo Enable this logic	
+	 */
+	public function arg_match( $args )
 	{
 		return 0; // Let's let this logic linger for a little while
-		$args = Plugins::filter('rewrite_args', $args, $this->name);
-		$diffargs= array_diff_key($args, array_flip($this->named_args));
-		$sameargs= array_intersect_key($args, array_flip($this->named_args));
-		$rating= count($this->named_args) - count($sameargs) + count($diffargs); 
+		
+		/* This needs further testing once that logic is established */
+		$named_args= $this->named_args; // Direct call prints a PHP notice
+		$named_args_combined= array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
+		
+		$args= Plugins::filter('rewrite_args', $args, $this->name );
+		
+		$diffargs= array_diff_key( $args, $named_args_combined );
+		$sameargs= array_intersect_key( $args, $named_args_combined );
+		$rating= count( $named_args_combined ) - count( $sameargs ) + count( $diffargs );
+		
 		return $rating;
 	}   
 	
@@ -112,18 +155,20 @@ class RewriteRule extends QueryRecord
 	 * Magic property getter for this class
 	 * @param string $name The name of the class property to return
 	 * @returns mixed The value of that field in this object
-	 **/	 	 
-	public function __get($name) 
+	 */	 	 
+	public function __get( $name ) 
 	{
-		switch($name) {
-		case 'named_args':
-			if(empty($this->m_named_args)) {
-				preg_match_all('/\\{\\$(\\w+?)\\}/', $this->build_str, $matches);
-				$this->m_named_args = $matches[1];
-			}
-			return $this->m_named_args;
-		default:
-			return parent::__get($name);
+		switch( $name ) {
+			case 'named_args':
+				if( empty( $this->m_named_args ) ) {
+					preg_match_all( '/(?<!\()\{\$(\w+?)\}(?!\))/', $this->build_str, $required );
+					preg_match_all( '/(?<=\()[^\(\)]*\{\$(\\w+?)\}[^\(\)]*(?=\))/', $this->build_str, $optional );
+					$this->m_named_args['required']= $required[1];
+					$this->m_named_args['optional']= $optional[1];
+				}
+				return $this->m_named_args;
+			default:
+				return parent::__get( $name );
 		}
 	}
 	
@@ -132,8 +177,7 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		$result = parent::insert( DB::table('rewrite_rules') );
-		return $result;
+		return parent::insert( DB::table( 'rewrite_rules' ) );
 	}	
 	
 	/**
@@ -141,8 +185,7 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		$result = parent::update( DB::table('rewrite_rules'), array('rule_id'=>$this->rule_id) );
-		return $result;
+		return parent::update( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
 	}
 	
 	/**
@@ -150,39 +193,47 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function delete()
 	{
-		return parent::delete( DB::table('rewrite_rules'), array('rule_id'=>$this->rule_id) );
+		return parent::delete( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
 	}
-
+	
 	/**
-	* Create an old-style rewrite rule
-	* @return RewriteRule The created rule
-	*/
+	 * Create an old-style rewrite rule
+		* @param string $build_str
+		* @param string $handler
+		* @param string $action
+	 * @return RewriteRule The created rule
+	 */
 	static public function create_url_rule( $build_str, $handler, $action )
 	{
-		$arr = split( '/', $build_str );
-
-		$re_arr = preg_replace('/^([^"\']+)$/', "(.+)", $arr);
-		$re_arr = preg_replace('/^["\'](.+)["\']$/', '\\1', $re_arr);
-
-		$str_arr = preg_replace('/^([^"\']+)$/', '{$\\1}', $arr);
-		$str_arr = preg_replace('/^["\'](.+)["\']$/', '\\1', $str_arr);
-
-		$regex = '/^' . implode( '\\/', $re_arr ) . '\\/?$/i';
-		$build_str = implode( '/', $str_arr );
-
+		$arr= split( '/', $build_str );
+		
+		$searches[]= '/^([^"\']+)$/';
+		$searches[]= '/^["\'](.+)["\']$/';
+		$replacements[]= '(.+)';
+		$replacements[]= '\1';
+		$re_arr= preg_replace( $searches, $replacements, $arr );
+		
+		$searches[]= '/^([^"\']+)$/';
+		$searches[]= '/^["\'](.+)["\']$/';
+		$replacements[]= '{$\1}';
+		$replacements[]= '\1';
+		$str_arr= preg_replace( $searches, $replacements, $arr );
+		
+		$regex= '/^' . implode( '\/', $re_arr ) . '\/?$/i';
+		$build_str= implode( '/', $str_arr );
+		
 		return new RewriteRule( array(
-			'name' => $action, 
-			'parse_regex' => $regex, 
-			'build_str' => $build_str, 
-			'handler' => $handler, 
-			'action' => $action, 
-			'priority' => 1,
-			'is_active' => 1,
-			'rule_class' => RewriteRule::RULE_CUSTOM,
-			'description' => 'Custom old-style rule.',
-		) );
+		 'name' => $action, 
+		 'parse_regex' => $regex, 
+		 'build_str' => $build_str, 
+		 'handler' => $handler, 
+		 'action' => $action, 
+		 'priority' => 1,
+		 'is_active' => 1,
+		 'rule_class' => RewriteRule::RULE_CUSTOM,
+		 'description' => 'Custom old-style rule.',
+		 ) );
 	}	
-	
-}
 
+}
 ?>

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Habari Theme Class
  *
@@ -17,6 +16,26 @@ class Theme
 	public $template_engine= null;
 	public $theme_dir= null;
 	public $config_vars= array();
+	
+	/**
+	 * We build the Post filters by analyzing the handler_var
+		* data which is assigned to the handler ( by the Controller and 
+		* also, optionally, by the Theme )
+		*/
+	public $valid_filters= array(
+	 'content_type',
+		'slug',
+		'status',
+		'page',
+		'tag',
+		'not:tag',
+		'month',
+		'year',
+		'day',
+		'criteria',
+		'limit',
+		'fetch_fn',
+	);
 	
 	/**
 	 * Constructor for theme
@@ -41,36 +60,41 @@ class Theme
 	}
 
 	/**
-	 * Loads a theme's metadata from an INI file in theme's
+	 * Loads a theme's metadata from an XML file in theme's
 	 * directory.
 	 * 
 	 * @param theme Name of theme to retrieve metadata about
-	 * @note  This may change to an XML file format
 	 */
 	public function info( $theme )
 	{
-		$info_file= HABARI_PATH . '/user/themes/' . $theme . '.info';
-		if ( file_exists( $info_file ) ) {
-			$theme_data= parse_ini_file( $info_file ); // Use NO sections INI
-		}
-		if ( ! empty( $theme_data ) ) {
-			// Parse out the good stuff
-			$named_member_vars= array( 'name', 'version', 'template_engine', 'theme_dir' );
-			foreach ( $theme_data as $key=>$value ) {
-				$key= strtolower( $key );
-				if ( in_array( $key, $named_member_vars ) ) { 
-					$this->$key= $value;
-				}
-				else { 
-					$this->config_vars[$key]= $value;
+		$xml_file= Site::get_path('user') . '/themes/' . $theme . '/theme.xml';
+		if ( $xml_content= file_get_contents( $xml_file ) ) {
+			$theme_data= new SimpleXMLElement(  $xml_file );
+			// Is it a valid theme xml file?
+			if ( isset( $theme_data->theme ) ) {
+				$valid_named_elements= array(
+					'name',
+					'version',
+					'template_engine',
+					'theme_dir'
+				);
+				// Assigns based on wether or not it's a valid named element.
+				foreach ( $theme_data->theme->children() as $key => $value ) {
+					$key= strtolower( $key );
+					if ( in_array( $key, $valid_named_elements ) ) { 
+						$this->$key= $value;
+					}
+					else { 
+						$this->config_vars[$key]= $value;
+					}
 				}
 			}
-		} 
+		}
 	} 
 
 	/**
-	* Assign the default variables that would be used in every template
-	*/	
+	 * Assign the default variables that would be used in every template
+	 */	
 	public function add_template_vars()
 	{
 		$handler= Controller::get_handler();
@@ -80,12 +104,12 @@ class Theme
 	}
 	
 	/**
-	* Find the first template that matches from the list provided and display it
-	* @param array $template_list The list of templates to search for
-	*/
+	 * Find the first template that matches from the list provided and display it
+	 * @param array $template_list The list of templates to search for
+	 */
 	public function display_fallback($template_list)
 	{
-		foreach($template_list as $template) {
+		foreach( $template_list as $template ) {
 			if( $this->template_engine->template_exists( $template ) ) {
 				$this->display( $template );
 				return true;
@@ -94,155 +118,6 @@ class Theme
 		return false;
 	}
 	
-	/**
-	 * Display the home page
-	 * @param array $userquery Additional arguments used to get the page content
-	 */	 	 	
-	public function act_display_home( $userquery= array() )
-	{
-		$query= array( 'content_type' => 'entry', 'status' => Post::status('published') );
-		$query= array_merge( $query, $userquery );
-		$posts= Posts::get( $query );
-		$this->assign( 'posts', $posts );
-		$this->assign( 'post', reset($posts) );
-		return $this->display_fallback(array('home', 'multiple'));
-	}
-	
-	/**
-	 * Display a post
-	 * @param array $userquery Additional arguments used to get the page content
-	 */	 	 	
-	public function act_display_post( $userquery= array() )
-	{
-		$query= array( 'slug' => Controller::get_handler()->handler_vars['slug'], 'status' => Post::status('published') );
-		$query= array_merge( $query, $userquery );
-		$post= Post::get( $query );
-		$this->assign( 'post', $post );
-		$this->assign( 'posts', new Posts(array($post)) );
-		
-		$types= array_flip( Post::list_post_types() );
-		$type= $types[$post->content_type]; 
-
-		return $this->display_fallback(array(
-			"{$type}.{$post->id}", 
-			"{$type}.single", 
-			"{$type}.multiple",
-			"single",
-			"multiple", 
-			"home",
-		));
-	}
-
-	/**
-	 * Display the posts for a tag
-	 * @param array $userquery Additional arguments used to get the page content
-	 */	 	 	
-	public function act_display_tag( $userquery= array() )
-	{
-		$tag= Controller::get_handler()->handler_vars['tag'];
-		$query= array( 'content_type' => 'entry', 'tag' => $tag, 'status' => Post::status('published') );
-		if( isset(Controller::get_handler()->handler_vars['page']) ) {
-			$query['page']= Controller::get_handler()->handler_vars['page'];
-		}
-		$query= array_merge( $query, $userquery );
-		$posts= Posts::get( $query );
-		$this->assign( 'posts', $posts );
-		$this->assign( 'post', reset($posts) );
-
-		return $this->display_fallback(array(
-			"tag.{$tag}",
-			"tag",
-			"multiple", 
-			"home",
-		));
-	}
-
-	/**
-	 * Display the post for a specific year
-	 * @param array $userquery Additional arguments used to get the page content
-	 */	 	 	
-	public function act_display_year( $userquery= array() )
-	{
-		$year= Controller::get_handler()->handler_vars['year'];
-		$query= array( 'content_type' => 'entry', 'year' => $year, 'status' => Post::status('published') );
-		if( isset(Controller::get_handler()->handler_vars['page']) ) {
-			$query['page']= Controller::get_handler()->handler_vars['page'];
-		}
-		$query= array_merge( $query, $userquery );
-		$posts= Posts::get( $query );
-		$this->assign( 'posts', $posts );
-		$this->assign( 'post', reset($posts) );
-
-		return $this->display_fallback(array(
-			"year.{$year}",
-			"year",
-			"multiple", 
-			"home",
-		));
-	}
-
-	/**
-	 * Display the posts for a specific month
-	 * @param array $userquery Additional arguments used to get the page content
-	 */	 	 	
-	public function act_display_month( $userquery= array() )
-	{
-		$year= Controller::get_handler()->handler_vars['year'];
-		$month= Controller::get_handler()->handler_vars['month'];
-		$query= array( 'content_type' => 'entry', 'year' => $year, 'month' => $month, 'status' => Post::status('published') );
-		if( isset(Controller::get_handler()->handler_vars['page']) ) {
-			$query['page']= Controller::get_handler()->handler_vars['page'];
-		}
-		$query= array_merge( $query, $userquery );
-		$posts= Posts::get( $query );
-		$this->assign( 'posts', $posts );
-		$this->assign( 'post', reset($posts) );
-
-		return $this->display_fallback(array(
-			"year.{$year}.month.{$month}",
-			"month.{$month}",
-			"year.{$year}",
-			"month",
-			"year",
-			"multiple", 
-			"home",
-		));
-	}
-
-	/**
-	 * Display the posts for a specific date
-	 * @param array $userquery Additional arguments used to get the page content
-	 */	 	 	
-	public function act_display_date( $userquery= array() )
-	{
-		$year= Controller::get_handler()->handler_vars['year'];
-		$month= Controller::get_handler()->handler_vars['month'];
-		$day= Controller::get_handler()->handler_vars['day'];
-		$query= array( 'content_type' => 'entry', 'year' => $year, 'month' => $month, 'day' => $day, 'status' => Post::status('published') );
-		if( isset(Controller::get_handler()->handler_vars['page']) ) {
-			$query['page']= Controller::get_handler()->handler_vars['page'];
-		}
-		$query= array_merge( $query, $userquery );
-		$posts= Posts::get( $query );
-		$this->assign( 'posts', $posts );
-		$this->assign( 'post', reset($posts) );
-
-		return $this->display_fallback(array(
-			"year.{$year}.month.{$month}.day.{$day}",
-			"month.{$month}.day.{$day}",
-			"year.{$year}.day.{$day}",
-			"day.{$day}",
-			"year.month.day",
-			"month.day",
-			"year.day",
-			"day",
-			"month",
-			"year",
-			"multiple", 
-			"home",
-		));
-	}
-
 	/**
 	 * Grabs post data and inserts that data into the internal
 	 * handler_vars array, which eventually gets extracted into 
@@ -255,70 +130,191 @@ class Theme
 	 * For instance, to filter by tag, ensure that handler_vars['tag']
 	 * contains the tag to filter by.  Simple as that.
 	 */
-	public function act_display()
+	public function act_display( $paramarray= array( 'user_filters'=> array() ) )
 	{
-		/* 
-		 * We build the Post filters by analyzing the handler_var
-		 * data which is assigned to the handler ( by the Controller and 
-		 * also, optionally, by the Theme )
-		 */
-		$valid_filters= array( 
-			  'content_type'
-			, 'slug'
-			, 'status'
-			, 'page' // pagination
-			, 'tag'
-			, 'month'
-			, 'year'
-			, 'day'
-		);
+		extract( $paramarray );
+		
 		$where_filters= array();
-		$where_filters = array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $valid_filters ) );
-		$where_filters['status'] = Post::status('published');
-		
+		$where_filters= array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $this->valid_filters ) );
+		$where_filters['status']= Post::status('published');
+
+		$user_filters= array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
+		$where_filters= array_merge( $where_filters, $user_filters );
+
 		$posts= Posts::get( $where_filters );
-
-		$this->assign( 'posts', $posts );
-		$this->assign( 'post', $posts[0] );
-
-		$types= array_flip( Post::list_post_types() );
-		$type= $types[$posts[0]->content_type]; 
-
-		$fallback = array("{$type}.{$posts[0]->id}");
-		if( count( $posts ) > 1 ) {
-			$fallback[]= "{$type}.multiple";
-			$fallback[]= "multiple"; 
-		}
-		else {
-			$fallback[]= "{$type}.single";
-			$fallback[]= "single"; 
-		}
-		$fallback[]= "home";
-			
-		$this->display_fallback( $fallback );
 		
-		return true;
-	}
-	
-	public function act_display_posts()
-	{
-		$this->act_display();
-	}
-	
-	public function act_search()
-	{
-		if ( ! isset( Controller::get_handler()->handler_vars['page'] ) )
-		{
-			Controller::get_handler()->handler_vars['page']= 1;
+		$this->assign( 'posts', $posts );
+		$this->assign( 'page', isset( $page ) ? $page : 1 );
+
+		if ( $posts !== false && count( $posts ) > 0 ) {
+			$post= ( count( $posts ) > 1 ) ? $posts[0] : $posts;
+			$this->assign( 'post', $post );
+			$types= array_flip( Post::list_post_types() );
+			$type= $types[$post->content_type]; 
 		}
-		$posts= Posts::search( Controller::get_handler()->handler_vars['criteria'], Controller::get_handler()->handler_vars['page'] );
-		Controller::get_handler()->handler_vars['posts']= $posts;
-		$this->display( 'search' );
+		elseif( $posts === false ) {
+			$fallback= array('404');
+		}
+		
+		extract( $where_filters );
+
+		if ( !isset( $fallback ) ) {
+			// Default fallbacks based on the number of posts
+			$fallback= array( '{$type}.{$id}', '{$type}.{$slug}' );
+			if( count( $posts ) > 1 ) {
+				$fallback[]= '{$type}.multiple';
+				$fallback[]= 'multiple'; 
+			}
+			else {
+				$fallback[]= '{$type}.single';
+				$fallback[]= 'single'; 
+			}
+			$fallback[]= 'home';
+		}
+		
+		$searches= array('{$id}','{$slug}','{$year}','{$month}','{$day}','{$type}','{$tag}',);
+		$replacements= array(
+			(isset($post) && $post instanceof Post)?$post->id:'-',
+			(isset($post) && $post instanceof Post)?$post->slug:'-',  
+			isset($year)?$year:'-', 
+			isset($month)?$month:'-', 
+			isset($day)?$day:'-', 
+			isset($type)?$type:'-', 
+			isset($tag)?$tag:'-',
+		);
+		$fallback= str_replace($searches, $replacements, $fallback);
+
+		return $this->display_fallback( $fallback );
+	}
+		
+	/**
+	 * Helper function: Displays the home page
+	 * @param array $user_filters Additional arguments used to get the page content
+	 */	 	 	
+	public function act_display_home( $user_filters= array() )
+	{	
+		$paramarray['fallback']= array(
+			'home',
+			'multiple',
+		);
+		
+		// Makes sure home displays only entries
+		$default_filters= array(
+		 'content_type' => Post::type('entry'),
+		);
+		
+		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+				
+		return $this->act_display( $paramarray );
+	}
+	
+	/**
+	 * Helper function: Display a post
+	 * @param array $user_filters Additional arguments used to get the page content
+	 */	 	 	
+	public function act_display_post( $user_filters= array() )
+	{
+		$paramarray['fallback']= array(
+		 '{$type}.{$id}', 
+		 '{$type}.{$slug}', 
+		 '{$type}.single', 
+		 '{$type}.multiple',
+		 'single',
+		 'multiple', 
+		 'home',
+		);
+
+		// Does the same as a Post::get()
+		$default_filters= array(
+		 'fetch_fn' => 'get_row',
+		 'limit' => 1,
+		);
+
+		// Remove the page from filters.
+		$page_key= array_search( 'page', $this->valid_filters );
+		unset( $this->valid_filters[$page_key] );
+		
+		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+		
+		return $this->act_display( $paramarray );
 	}
 
 	/**
-	 * Helper passthru function to avoid having to always
-	 * call $theme->template_engine->display( 'template_name' );
+	 * Helper function: Display the posts for a tag
+	 * @param array $user_filters Additional arguments used to get the page content
+	 */	 	 	
+	public function act_display_tag( $user_filters= array() )
+	{	
+		$paramarray['fallback']= array(
+			'tag.{$tag}',
+			'tag',
+			'multiple', 
+			'home',
+		);
+		
+		// Makes sure home displays only entries
+		$default_filters= array(
+		 'content_type' => Post::type('entry'),
+		);
+		
+		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+
+		return $this->act_display( $paramarray );
+	}
+
+	/**
+	 * Helper function: Display the posts for a specific date
+	 * @param array $user_filters Additional arguments used to get the page content
+	 */	 	 	
+	public function act_display_date( $user_filters= array() )
+	{
+		$handler_vars= Controller::get_handler()->handler_vars;
+		$y = isset( $handler_vars['year'] );
+		$m = isset( $handler_vars['month'] );
+		$d = isset( $handler_vars['day'] );
+		
+		if($y&&$m&&$d) $paramarray['fallback'][]= 'year.{$year}.month.{$month}.day.{$day}';
+		if($y&&$m&&$d) $paramarray['fallback'][]= 'year.month.day';
+		if($m&&$d) $paramarray['fallback'][]= 'month.{$month}.day.{$day}';
+		if($y&&$m) $paramarray['fallback'][]= 'year.{$year}.month.{$month}';
+		if($y&&$d) $paramarray['fallback'][]= 'year.{$year}.day.{$day}';
+		if($m&&$d) $paramarray['fallback'][]= 'month.day';
+		if($y&&$d) $paramarray['fallback'][]= 'year.day';
+		if($y&&$m) $paramarray['fallback'][]= 'year.month';
+		if($m) $paramarray['fallback'][]= 'month.{$month}';
+		if($d) $paramarray['fallback'][]= 'day.{$day}';
+		if($y) $paramarray['fallback'][]= 'year.{$year}';
+		if($y) $paramarray['fallback'][]= 'year';
+		if($m) $paramarray['fallback'][]= 'month';
+		if($d) $paramarray['fallback'][]= 'day';
+		$paramarray['fallback'][]= 'multiple'; 
+		$paramarray['fallback'][]= 'home';
+				
+		$paramarray['user_filters']= $user_filters;
+		if ( !isset( $paramarray['user_filters']['content_type'] ) ) {
+			$paramarray['user_filters']['content_type']= 'entry';
+		}
+
+		return $this->act_display( $paramarray );
+	}
+	
+	/**
+		* Helper function: Display the posts for a specific criteria
+		* @param array $user_filters Additional arguments used to get the page content
+		*/
+	public function act_search( $user_filters= array() )
+	{
+		$paramarray['fallback']= array(
+			'search',
+		);
+		
+		$paramarray['user_filters']= $user_filters;
+
+		return $this->act_display( $paramarray );
+	}
+	
+	/**
+	 * Helper function: Avoids having to call $theme->template_engine->display( 'template_name' );
 	 */
 	public function display( $template_name )
 	{
@@ -329,12 +325,12 @@ class Theme
 				$this->assign( $key, $value );
 			}
 		}
+		
 		$this->template_engine->display( $template_name );
 	}
 
 	/**
-	 * Helper passthru function to avoid having to always
-	 * call $theme->template_engine->assign( 'key', 'value' );
+	 * Helper function: Avoids having to call $theme->template_engine->assign( 'key', 'value' );
 	 */
 	public function assign( $key, $value )
 	{

@@ -667,6 +667,13 @@ class DatabaseConnection
 			return $this->pdo->lastInsertId( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
 		}    
 	}
+	
+	/** 
+	 * Automatic diffing function, used for determining required database upgrades.
+	 * Implemented in child classes.
+	 */	 	 
+	public function dbdelta( $queries, $execute = true, $silent = true ){} 
+	
 }
 
 ?>

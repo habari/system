@@ -351,6 +351,20 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
 	}
+
+	/**
+	 * Automatic datbase diffing function, used for determining required database upgrades.
+	 *
+	 * @param queries array of create table and insert statements which constitute a fresh install
+	 * @param (optional)  execute should the queries be executed against the database or just simulated. default = true
+	 * @param (optional) silent silent running with no messages printed? default = true
+	 * @return  string			translated SQL string
+	 */	 	 	 	 	
+	public static function dbdelta( $queries, $execute = true, $silent = true )
+	{
+		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent );
+	}
+
 }
 
 ?>
