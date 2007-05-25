@@ -143,18 +143,18 @@ class Posts extends ArrayObject
 				if ( isset( $paramset['day'] ) ) {
 					/* Got the full date */
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= "{$paramset['year']}-{$paramset['month']}-{$paramset['day']} 00:00:00";
-					$params[]= date('Y-m-d H:i:s', mktime( 12, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) ); 
+					$params[]= date('Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[]= date('Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) ); 
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= "{$paramset['year']}-{$paramset['month']}-01 00:00:00";
-					$params[]= date('Y-m-d', mktime( 12, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) ); 
+					$params[]= date('Y-m-d', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					$params[]= date('Y-m-d', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) ); 
 				}
 				elseif ( isset( $paramset['year'] ) ) { 
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= "{$paramset['year']}-01-01 00:00:00";
-					$params[]= "{$paramset['year']}-12-31 12:59:59";
+					$params[]= date('Y-m-d', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					$params[]= date('Y-m-d', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 				
 				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
