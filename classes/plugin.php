@@ -12,6 +12,14 @@
 abstract class Plugin
 {
 	/**
+	 * Plugin constructor.
+	 * Plugins should not define their own constructors, because they are instantiated
+	 * to extract plugin info.  Instead, include a sink for a "init" hook
+	 * which is executed immediately after the plugin is loaded during normal execution.
+	 **/
+	final public function __construct(){}	 
+
+	/**
 	 * function get_file
 	 * Gets the filename that contains the plugin
 	 * @return string The filename of the file that contains the plugin class.	 
