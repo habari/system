@@ -19,19 +19,16 @@
 		<p><label>Blog Tag Line:</label></p>
 		<p><input type="text" name="tagline" value="<?php Options::out('tagline'); ?>"/></p>
 		
-		<p><label>About</label></p>
+		<p><label>About:</label></p>
 		<p><textarea id="about" name="about"><?php Options::out('about'); ?></textarea></p>
 		
-		<p>Number of items per page:</p>
+		<p><label>Number of items per page:</label></p>
 		<p><input type="text" name="pagination" value="<?php Options::out('pagination'); ?>" /></p>
 		
-		<p><label>Theme</label></p>
-		<p><input type="text" name="theme_dir" value="<?php Options::out('theme_dir'); ?>" /></p>
-
-		<p>Send Pingbacks to URLs linked from posts:</p>
+		<p><label>Send Pingbacks to URLs linked from posts:</label></p>
 		<p><input type="checkbox" name="pingback_send" value="1"<?php echo (Options::get('pingback_send') == 1 ? ' checked="checked"' : ''); ?> /></p>
 		
-		<p>Require comment authors to fill out name and e-mail address:</p>
+		<p><label>Require comment authors to fill out name and e-mail address:</label></p>
 		<p><input type="checkbox" name="comments_require_id" value="1"<?php echo (Options::get('comments_require_id') == 1 ? ' checked="checked"' : ''); ?> /></p>
 		
 		<p><input type="submit" value="Update Options!" /></p>
