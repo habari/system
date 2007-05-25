@@ -20,6 +20,24 @@ class SQLiteConnection extends DatabaseConnection
 	function sql_t( $sql ) 
 	{
 	}
+	
+	/**
+	 * Connect to SQLite
+	 * Overrides the DatabaseConnection to return false if the SQLite file doesn't exist.
+	 * 	 
+	 * @param connection_string string a PDO connection string
+	 * @param db_user string the database user name
+	 * @param db_pass string the database user password
+	 * @return boolean True if connection succeeded, false if not.
+	 */
+	public function connect( $connect_string, $db_user, $db_pass )
+	{
+		list($type, $file) = explode(':', $connect_string, 2);
+		if ( ! file_exists( $file ) )	{
+			return false;
+		}
+		return parent::connect( $connect_string, $db_user, $db_pass );
+	}	 	 	 	
 
 		/** 
 	 * automatic diffing function - used for determining required database upgrades

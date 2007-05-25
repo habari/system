@@ -10,7 +10,7 @@
 
  class Version
  {
-		const DB_VERSION= 441;
+		const DB_VERSION= 442;
 		const API_VERSION= 441;
 
 		const HABARI_VERSION= 0.1;
@@ -35,8 +35,7 @@
 
 		public static function requires_upgrade() 
 		{
-			$stored_db_version= Options::o()->db_version;
-			if ( $stored_db_version < Version::DB_VERSION ) {
+			if ( Options::get('db_version') < Version::DB_VERSION ) {
 				return true;
 			}
 			return false;
