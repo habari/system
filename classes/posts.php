@@ -132,6 +132,17 @@ class Posts extends ArrayObject
 						$params[]= $nt;
 					}
 				}
+
+				/* do searching */
+				if ( isset( $paramset['criteria'] ) ) {
+					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
+					foreach ( $matches[0] as $word ) {
+						$where[] .= "(title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
+						$params[] = $word;
+						$params[] = $word;  // Not a typo
+					}
+				}
+
 				/* 
 				 * Build the pubdate 
 				 * If we've got the day, then get the date.
