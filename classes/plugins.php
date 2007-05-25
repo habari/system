@@ -166,6 +166,17 @@ class Plugins
 		// massage the return value so that this works on Windows
 		return array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $files );
 	}
+	
+	/**
+	 * Get classes that extend Plugin.
+	 * @param $class string A class name
+	 * @return boolean true if the class extends Plugin
+	 **/
+	static public function extends_plugin($class)
+	{
+		$parents= class_parents($class, false);
+		return in_array('Plugin', $parents);
+	}	 	 	 	
 
 	/**
 	 * function class_from_filename
@@ -175,6 +186,16 @@ class Plugins
 	**/
 	static public function class_from_filename( $file )
 	{
+		$classes = get_declared_classes();
+		$plugin_classes = array_filter($classes, array('Plugins', 'extends_plugin'));
+		foreach($plugin_classes as $plugin) {
+			$class = new ReflectionClass( $plugin );
+			$classfile = str_replace('\\', '/', $class->getFileName());
+			if($classfile == $file) {
+				return $plugin;
+			}
+		}
+		return false;
 		return str_replace( '.plugin.php', '',  substr( $file, ( strrpos( $file, '/') + 1 ) ) );
 	}
 
@@ -182,6 +203,7 @@ class Plugins
 	 * function load
 	 * Initialize all loaded plugins by calling their load() method
 	 * @param string the class name to load
+	 * @return Plugin The instantiated plugin class	 
 	 **/
 	static public function load( $file )
 	{
@@ -189,6 +211,7 @@ class Plugins
 		self::$plugins[$file]= new $class;
 		$plugin= self::$plugins[$file];
 		$plugin->load();
+		return $plugin;
 	}
 
 	/**

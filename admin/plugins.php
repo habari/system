@@ -18,7 +18,6 @@
 				$active_plugins= Plugins::get_active();
 				foreach ( Plugins::list_all() as $file ) :
 					$verb= 'Activate';
-					$class= Plugins::class_from_filename( $file );
 					if ( array_key_exists( $file, $active_plugins ) )
 					{
 						$verb= 'Deactivate';
@@ -28,8 +27,8 @@
 					{
 						// instantiate this plugin
 						// in order to get its info()
-						include_once( $file );
-						$plugin= new $class;
+						include_once($file);
+						$plugin= Plugins::load($file);
 						$info= $plugin->info();
 					}
 				?>
