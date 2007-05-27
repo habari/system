@@ -103,7 +103,7 @@ class FeedbackHandler extends ActionHandler
 				
 				// Return the commenter to the original page.
 				// @todo We should probably add a method to display a message like, "your comment is in moderation"
-				Utils::redirect( URL::get( 'display_posts_by_slug', array( 'slug' => $post->slug ) ) );
+				Utils::redirect( $post->permalink );
 			}
 			else {
 				// do something more intelligent here
