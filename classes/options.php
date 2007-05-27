@@ -129,6 +129,14 @@ class Options extends Singleton
 			die();
 		}
 	}
+	
+	/**
+	 * Clears memory of cached options
+	 **/
+	static public function clear_cache()
+	{
+		self::instance()->options = array();
+	}	 	
 
 }
  

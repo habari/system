@@ -4,6 +4,35 @@
 		<h1>Currently Available Plugins</h1>
 		<p>Activate, deactivate and remove plugins through this interface.</p>
 		<div class="dashboard-block c3">
+			<?php 
+				$listok= true;
+				$all_plugins= Plugins::list_all();
+				$active_plugins= Plugins::get_active();
+				if(Plugins::changed_since_last_activation()) {
+					$request= new RemoteRequest(URL::get('admin', array('page'=>'loadplugins')), 'POST', 300);
+					$request->add_header(array('Cookie'=>$_SERVER['HTTP_COOKIE']));
+					$result= $request->execute();
+					if(!$request->executed() || preg_match('%^http/1\.\d 500%i', $request->get_response_headers())) {
+						$listok= false;
+			?>
+				<p><?php _e('The plugin list has changed since the last activation.  Please wait while Habari loads the plugin list.'); ?></p>
+			<?php
+					}
+				}
+				Options::clear_cache();
+				$failed_plugins= Options::get('failed_plugins');
+				if(is_array($failed_plugins)) {
+					$all_plugins= array_diff($all_plugins, $failed_plugins);
+				} 
+				if($listok) :
+					if(count($failed_plugins) > 0) {
+						echo '<div class="warning">';
+						foreach($failed_plugins as $failed) {
+							echo '<p>' . sprintf(_t('Attempted to load the plugin file "%s", but it failed with syntax errors.'), basename($failed)) . '</p>';
+						}
+						echo '</div>';
+					}
+			?> 
 			<table cellspacing="0" width="100%">
 				<thead>
 					<tr>
@@ -15,8 +44,7 @@
 				</thead>
 				<tbody>
 				<?php
-				$active_plugins= Plugins::get_active();
-				foreach ( Plugins::list_all() as $file ) :
+				foreach ( $all_plugins as $file ) :
 					$verb= 'Activate';
 					if ( array_key_exists( $file, $active_plugins ) )
 					{
@@ -46,6 +74,7 @@
 				<?php endforeach; ?>
 				</tbody>
 			</table>
+			<?php endif; ?>
 		</div>
 	</div>
 </div>

@@ -241,6 +241,45 @@ class Plugins
 			Options::set( 'active_plugins', $activated );
 		}
 	}
+	
+	/**
+	 * Detects whether the plugins that exist have changed since they were last
+	 * activated.
+	 * @return boolean true if the plugins have changed, false if not.
+	 **/	 	 	 	
+	static public function changed_since_last_activation()
+	{
+		$old_plugins= Options::get('plugins_present');
+		//self::set_present();
+		// If the plugin list was never stored, then they've changed. 
+		if(!is_array($old_plugins)) {
+			return true;
+		}
+		// If the file list is not identical, then they've changed.
+		$new_plugin_files= Plugins::list_all();
+		$old_plugin_files= array_map(create_function('$a', 'return $a["file"];'), $old_plugins);
+		if(count(array_intersect($new_plugin_files, $old_plugin_files)) != count($new_plugin_files)) {
+			return true;
+		}
+		// If the files are not identical, then they've changed.
+		$old_plugin_checksums= array_map(create_function('$a', 'return $a["checksum"];'), $old_plugins);
+		$new_plugin_checksums= array_map('md5_file', $new_plugin_files);
+		if(count(array_intersect($old_plugin_checksums, $new_plugin_checksums)) != count($new_plugin_checksums)) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Stores the list of plugins that are present (not necessarily active) in 
+	 * the Options table for future comparison.
+	 **/
+	static public function set_present()
+	{
+		$plugin_files= Plugins::list_all();
+		$plugin_data= array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
+		Options::set('plugins_present', $plugin_data);
+	}
 }
 
 ?>
