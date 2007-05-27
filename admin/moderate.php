@@ -83,10 +83,10 @@ $SCoPH = DB::get_value('select round(360000.0 / (UNIX_TIMESTAMP(max(date)) - UNI
 
 		<p class="manage">
 			Mark All For:
-			<a href="" onclick="$('.radio_approve').attr('checked', 'checked');return false;"><?php _e('Approval'); ?></a> &middot;
-			<a href="" onclick="$('.radio_delete').attr('checked', 'checked');return false;"><?php _e('Deletion'); ?></a> &middot;
-			<a href="" onclick="$('.radio_spam').attr('checked', 'checked');return false;"><?php _e('Spam'); ?></a> &middot;
-			<a href="" onclick="$('.radio_unapprove').attr('checked', 'checked');return false;"><?php _e('Unapproval'); ?></a>
+			<a href="#" onclick="$('.radio_approve').attr('checked', 'checked');return false;"><?php _e('Approval'); ?></a> &middot;
+			<a href="#" onclick="$('.radio_delete').attr('checked', 'checked');return false;"><?php _e('Deletion'); ?></a> &middot;
+			<a href="#" onclick="$('.radio_spam').attr('checked', 'checked');return false;"><?php _e('Spam'); ?></a> &middot;
+			<a href="#" onclick="$('.radio_unapprove').attr('checked', 'checked');return false;"><?php _e('Unapproval'); ?></a>
 		</p>
 		
 		<ul id="waiting">
@@ -105,7 +105,7 @@ $SCoPH = DB::get_value('select round(360000.0 / (UNIX_TIMESTAMP(max(date)) - UNI
 					echo '<small>(' . implode(' &middot; ', $metadata) . ')</small>';
 				}
 				?>
-				On <a href="<?php URL::out('display_posts_by_slug', array( 'slug' => $comment->post->slug ) ); ?>"><?php echo $comment->post->title; ?></a>
+				On <a href="<?php echo $comment->post->permalink ?>"><?php echo $comment->post->title; ?></a>
 				<br /><small>(Commented created on <?php echo $comment->date; ?>)</small>
 				<div class="comment_content" id="comment_content_<?php echo $comment->id; ?>"
 				<?php if ($comment->status == COMMENT::STATUS_SPAM) {
