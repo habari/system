@@ -1,4 +1,4 @@
-<?PHP
+<?php
 /**
 	* Habari AtomHandler class
 	* Produces Atom feeds and accepts Atom Publishing Protocol input	
@@ -167,7 +167,8 @@ class AtomHandler extends ActionHandler
 					}						
 				}
 			} 
-	
+			
+			$xml= Plugins::filter( 'rsd', $xml, $this->handler_vars );
 			$xml= $xml->asXML();
 			
 			ob_clean();
@@ -196,6 +197,7 @@ class AtomHandler extends ActionHandler
 			
 			$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
 			
+			$xml= Plugins::filter( 'atom_introspection', $xml, $this->handler_vars );
 			$xml= $xml->asXML();
 			
 			ob_clean();
@@ -298,6 +300,7 @@ class AtomHandler extends ActionHandler
 				}
 			}
 			
+			$xml= Plugins::filter( 'atom_get_comments', $xml, $params, $this->handler_vars );
 			$xml= $xml->asXML();
 	
 			ob_clean();
@@ -345,7 +348,8 @@ class AtomHandler extends ActionHandler
 							
 				$entry_content= $xml->addChild( 'content', $content );
 				$entry_content->addAttribute( 'type', 'html' );
-							
+				
+				$xml= Plugins::filter( 'atom_get_entry', $xml, $slug, $this->handler_vars );
 				$xml= $xml->asXML();
 	
 				ob_clean();
@@ -378,6 +382,7 @@ class AtomHandler extends ActionHandler
 				
 				preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/i', $xml->content->asXML(), $content );
 				$xml->content= $content[1];
+				$xml= Plugins::filter( 'atom_put_entry', $xml, $slug, $this->handler_vars );
 			
 				if ( (string) $xml->title != '' ) {
 					$post->title= $xml->title;
@@ -533,6 +538,7 @@ class AtomHandler extends ActionHandler
 				$entry_content->addAttribute( 'type', 'html' );
 			}
 			
+			$xml= Plugins::filter( 'atom_get_collection', $xml, $params, $this->handler_vars );
 			$xml= $xml->asXML();
 	
 			ob_clean();
@@ -559,6 +565,7 @@ class AtomHandler extends ActionHandler
 	
 			preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/i', $xml->content->asXML(), $content );
 			$xml->content= $content[1];
+			$xml= Plugins::filter( 'atom_post_collection', $xml, $this->handler_vars );
 	
 			$post = new Post();
 			
