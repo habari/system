@@ -74,6 +74,7 @@ class AdminHandler extends ActionHandler
 				}
 				else {
 					// The requested console page doesn't exist
+					header("HTTP/1.0 404 Not Found");
 					$this->header();
 					_e('Whooops!');
 					$this->footer();
@@ -440,6 +441,45 @@ class AdminHandler extends ActionHandler
 			$returnpage= 'moderate';
 		}
 		Utils::redirect( URL::get( 'admin', array( 'page' => $returnpage, 'result' => 'success' ) ) );
+	}
+	
+	/**
+	 * Loads through the existing plugins to make sure that they are syntactically valid
+	 **/	 	
+	public function post_loadplugins()
+	{
+		$failed_plugins= array();
+	
+		$all_plugins= Plugins::list_all();
+		$active_plugins= Plugins::list_active(true);
+		$check_plugins= array_diff($all_plugins, $active_plugins);
+		
+		$plugin_pids= array_map('md5', $check_plugins);
+		$check_plugins= array_combine($plugin_pids, $check_plugins);
+
+		// Are we checking a single plugin?
+		if(isset($_POST['pid'])) {
+			header("HTTP/1.0 500 Internal Server Error");
+			
+			include_once($check_plugins[$_POST['pid']]);
+			
+			header("HTTP/1.0 200 OK");
+			die('Loaded ' . basename($check_plugins[$_POST['pid']]) . ' successfully.');
+		}
+		else {
+			foreach($check_plugins as $pid=>$file) {
+				$request= new RemoteRequest(URL::get('admin', array('page'=>'loadplugins')), 'POST', 300);
+				$request->add_header(array('Cookie'=>$_SERVER['HTTP_COOKIE']));
+				$request->set_body("pid={$pid}");
+				$request->execute();
+				if(!$request->executed() || preg_match('%^http/1\.\d 500%i', $request->get_response_headers())) {
+					$failed_plugins[]= $file;
+				}
+			}
+			Options::set('failed_plugins', $failed_plugins);
+			Plugins::set_present();
+		}
+		//header("HTTP/1.0 500 Internal Server Error");
 	}
 
 	/**
