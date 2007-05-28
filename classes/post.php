@@ -323,12 +323,17 @@ class Post extends QueryRecord
 		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
 		$this->setslug();
 		$this->setguid();
+		// Invoke plugins for all fields, since they're all "changed" when inserted 
+		foreach ( $this->fields as $fieldname => $value ) {
+			Plugins::act('post_update_' . $fieldname, $this, $value, $this->newfields[$fieldname] );
+		}
 		$result = parent::insert( DB::table('posts') );
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->savetags();
+		Plugins::act('post_inserted', $this);
 		return $result;
 	}
 
@@ -341,11 +346,10 @@ class Post extends QueryRecord
 		$this->updated = date('Y-m-d h:i:s');
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
 		// invoke plugins for all fields which have been changed
-		// For example, a plugin action "update_post_status" would be
+		// For example, a plugin action "post_update_status" would be
 		// triggered if the post has a new status value
-		foreach ( $this->newfields as $fieldname => $value )
-		{
-			Plugins::act('update_post_' . $fieldname, $this, $value );
+		foreach ( $this->newfields as $fieldname => $value ) {
+			Plugins::act('post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
 		}
 		$result = parent::update( DB::table('posts'), array('slug'=>$this->slug) );
 		$this->fields = array_merge($this->fields, $this->newfields);
