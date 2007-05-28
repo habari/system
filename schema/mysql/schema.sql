@@ -144,6 +144,23 @@ CREATE TABLE {$prefix}rewrite_rules (
   PRIMARY KEY (rule_id)
 );
 
+CREATE TABLE {$prefix}crontab (
+  cron_id INT unsigned NOT NULL auto_increment,
+  name VARCHAR(255) NOT NULL,
+  callback VARCHAR(255) NOT NULL,
+  last_run VARCHAR(255) NOT NULL,
+  next_run VARCHAR(255) NOT NULL,
+  increment VARCHAR(255) NOT NULL,
+  start_time VARCHAR(255) NOT NULL,
+  end_time VARCHAR(255) NOT NULL,
+  result VARCHAR(255) NOT NULL,
+  notify VARCHAR(255) NOT NULL,
+  cron_class TINYINT unsigned NOT NULL default '0',
+  description TEXT NULL,
+  PRIMARY KEY (cron_id)
+);
+
+
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_posts_by_date', CONCAT('%^(', CHAR(63), 'P<year>[1,2]{1}[\\d]{3})(', CHAR(63), ':/(', CHAR(63), 'P<month>[\\d]{2}))', CHAR(63), '(', CHAR(63), ':/(', CHAR(63), 'P<day>[\\d]{2}))', CHAR(63), '(', CHAR(63), ':/page/(', CHAR(63), 'P<page>\\d+))', CHAR(63), '/', CHAR(63), '$%i'), '{$year}/({$month}/)({$day}/)(page/{$page}/)', 'UserThemeHandler', 'display_date', '2', '1', '1', 'Displays posts for a specific date.');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_feed_by_type', CONCAT('/^feed\\/(', CHAR(63), 'P<feed_type>atom|rs[sd])[\\/]{0,1}$/i'), 'feed/{$feed_type}', 'FeedHandler', 'display_feed', '5', '1', '0', 'Return feed per specified feed type');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('admin', CONCAT('/^admin[\\/]*(', CHAR(63), 'P<page>[^\\/]*)[\\/]{0,1}$/i'), 'admin/({$page})', 'AdminHandler', 'admin', '6', '1', '0', 'An admin action');

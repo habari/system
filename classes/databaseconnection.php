@@ -68,7 +68,7 @@ class DatabaseConnection
 			$prefix= $this->prefix;
 		}
 		
-        $db->sql_tables['posts']= $prefix . 'posts';
+    $db->sql_tables['posts']= $prefix . 'posts';
 		$db->sql_tables['postinfo']= $prefix . 'postinfo';
 		$db->sql_tables['posttype']= $prefix . 'posttype';
 		$db->sql_tables['poststatus']= $prefix . 'poststatus';
@@ -83,6 +83,7 @@ class DatabaseConnection
 		$db->sql_tables['theme_vars']= $prefix . 'theme_vars';
 		$db->sql_tables['rewrite_rules']= $prefix . 'rewrite_rules';
 		$db->sql_tables['rewrite_rule_args']= $prefix . 'rewrite_rule_args';
+		$db->sql_tables['crontab']= $prefix . 'crontab';
 	} 
 
 	/** 
@@ -464,9 +465,12 @@ class DatabaseConnection
 		if ( func_num_args() == 3 ) {
 			/* Called expecting specific class return type */
 			$class_name= func_get_arg( 2 );
-			$this->set_fetch_mode( PDO::FETCH_CLASS );
-			$this->set_fetch_class( $class_name );
 		}
+		else {
+			$class_name= 'QueryRecord';
+		}
+		$this->set_fetch_mode( PDO::FETCH_CLASS );
+		$this->set_fetch_class( $class_name );
 		if ( $this->query( $query, $args ) ) {
 			return $this->pdo_statement->fetchAll();
 		}
