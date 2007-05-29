@@ -471,6 +471,34 @@ class Utils
 		$info['mday0']= substr('0' . $info['mday'], -2, 2);
 		return $info; 
 	}
+	
+	/**
+	 * Write an entry to the event log.
+	 * 
+	 * @param string $message The message
+	 * @param string $severity The severity
+	 * @param string $type The type
+	 * @param string $module The module
+	 * @param mixed $data The data
+	 * @return class:LogEntry the inserted LogEntry
+	 */
+	public static function log( $message, $severity= 'info', $type= 'default', $module= null, $data= null )
+	{
+		if ( is_null( $module ) ) {
+			$bt= debug_backtrace();
+			$last= $bt[sizeof( $bt ) - 2];
+			$module= basename( $last['file'], '.php' );
+		}
+		$log= new LogEntry( array(
+			'message' => $message,
+			'severity' => $severity,
+			'module' => $module,
+			'type' => $type,
+			'data' => $data,
+		) );
+		$log->insert();
+		return $log;
+	}
 
 }
 
