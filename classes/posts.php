@@ -54,9 +54,7 @@ class Posts extends ArrayObject
 	public static function get( $paramarray = array() )
 	{
 		$params= array();
-		$fns= array( 'get_results',
-					 'get_row',
-					 'get_value' );
+		$fns= array( 'get_results', 'get_row', 'get_value' );
 		$select= '';
 		// what to select -- by default, everything
 		foreach ( Post::default_fields() as $field => $value ) {
