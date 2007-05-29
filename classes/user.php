@@ -214,12 +214,14 @@ class User extends QueryRecord
 		
 		if ( ! $user ) {
 			// No such user.
+			Utils::log( 'Login attempt for non-existant user ' . $who, 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}
 		
 		if ( Utils::crypt( $pw, $user->password ) ) {
 			// valid credentials were supplied
+			Utils::log( 'Successful login for ' . $user->username, 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			self::$identity= $user;
@@ -227,6 +229,7 @@ class User extends QueryRecord
 		}
 		else {
 			// Wrong password.
+			Utils::log( 'Wrong password for user ' . $user->username, 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}
@@ -478,7 +481,6 @@ class User extends QueryRecord
 		}
 		return parent::__get( $name );
 	}
-
 
 }
 

@@ -10,7 +10,7 @@
 
  class Version
  {
-		const DB_VERSION= 673;
+		const DB_VERSION= 676;
 		const API_VERSION= 441;
 
 		const HABARI_VERSION= 0.1;

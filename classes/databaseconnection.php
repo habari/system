@@ -84,6 +84,8 @@ class DatabaseConnection
 		$db->sql_tables['rewrite_rules']= $prefix . 'rewrite_rules';
 		$db->sql_tables['rewrite_rule_args']= $prefix . 'rewrite_rule_args';
 		$db->sql_tables['crontab']= $prefix . 'crontab';
+		$db->sql_tables['log']= $prefix . 'log';
+		$db->sql_tables['log_types']= $prefix . 'log_types';
 	} 
 
 	/** 
