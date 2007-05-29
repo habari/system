@@ -489,7 +489,12 @@ class Utils
 			$last= $bt[sizeof( $bt ) - 2];
 			$module= basename( $last['file'], '.php' );
 		}
+		if ( ! ($user_id= User::identify()->id ) )
+		{
+			$user_id= NULL;
+		}
 		$log= new LogEntry( array(
+			'user_id' => $user_id,
 			'message' => $message,
 			'severity' => $severity,
 			'module' => $module,
