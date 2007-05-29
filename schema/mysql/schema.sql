@@ -160,26 +160,26 @@ CREATE TABLE {$prefix}crontab (
   PRIMARY KEY (cron_id)
 );
 
-CREATE TABLE `{$prefix}log` (
-	`id` INT NOT NULL AUTO_INCREMENT ,
-	`user_id` INT NULL DEFAULT NULL,
-	`type_id` INT NOT NULL ,
-	`severity_id` TINYINT NOT NULL ,
-	`message` VARCHAR( 255 ) NOT NULL ,
-	`data` BLOB NULL DEFAULT NULL,
-	`timestamp` DATETIME NOT NULL ,
-	PRIMARY KEY ( `id` )
+CREATE TABLE {$prefix}log (
+	id INT NOT NULL AUTO_INCREMENT,
+	user_id INT NULL DEFAULT NULL,
+	type_id INT NOT NULL,
+	severity_id TINYINT NOT NULL,
+	message VARCHAR(255) NOT NULL,
+	data BLOB NULL DEFAULT NULL,
+	timestamp DATETIME NOT NULL,
+	PRIMARY KEY (id)
 );
 
-CREATE TABLE `{$prefix}log_types` (
-	`id` INT NOT NULL AUTO_INCREMENT ,
-	`module` VARCHAR( 100 ) NOT NULL ,
-	`type` VARCHAR( 100 ) NOT NULL ,
-	PRIMARY KEY ( `id` ),
-	UNIQUE KEY module_type ( `module` , `type` )
+CREATE TABLE {$prefix}log_types (
+	id INT NOT NULL AUTO_INCREMENT,
+	module VARCHAR(100) NOT NULL,
+	type VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE KEY module_type (module,type)
 );
 
-INSERT INTO `{$prefix}log_types` (`module` , `type`) VALUES
+INSERT INTO {$prefix}log_types (module , type) VALUES
 	('habari', 'default'),
 	('habari', 'authentication');
 
