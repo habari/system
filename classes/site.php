@@ -130,26 +130,22 @@ class Site
 				// add the port number to the value returned 
 				// from host_url
 				$port= 80; // Default in case not set.
-				if ( isset( $_SERVER['SERVER_PORT'] ) )
-				{
+				if ( isset( $_SERVER['SERVER_PORT'] ) ) {
 					$port= $_SERVER['SERVER_PORT'];
 				}
 				$portpart= '';
-				if ( ( $port != 80 ) && ( $port != 443 ) )
-				{
+				if ( ( $port != 80 ) && ( $port != 443 ) ) {
 					$portpart= ':' . $port;
 				}
-				if ( isset( $_SERVER['HTTPS'] ) )
-				{
+				if ( isset( $_SERVER['HTTPS'] ) ) {
 					$protocol= 'https';
 				}
 				$url= $protocol . '://' . $_SERVER['HTTP_HOST'] . $portpart;
 				break;
 			case 'habari':
-				$url= Site::get_url('host');
-				$path= trim(dirname($_SERVER["SCRIPT_NAME"]),'/\\');
-				if ( '' != $path )
-				{
+				$url= Site::get_url( 'host' );
+				$path= trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
+				if ( '' != $path ) {
 					$url.= '/' . $path;
 				}
 				break;
@@ -157,33 +153,31 @@ class Site
 				$url= Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
 				break;
 			case 'theme':
-				$theme= Options::get('theme_dir');
-				if ( file_exists( Site::get_dir('config') . '/themes/' . $theme ) )
-				{
-					$url= Site::get_url('user') .  '/themes/' . $theme;
+				$theme= Options::get( 'theme_dir');
+				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
+					$url= Site::get_url( 'user' ) .  '/themes/' . $theme;
 				}
-				else
-				{
-					$url= Site::get_url('habari') . '/user/themes/' . $theme;
+				else {
+					$url= Site::get_url( 'habari' ) . '/user/themes/' . $theme;
 				}
 				break;
 			case 'admin':
-				$url= Site::get_url('habari') . '/admin';
+				$url= Site::get_url( 'habari' ) . '/admin';
 				break;
 			case 'admin_theme':
-				$url= Site::get_url('habari') . '/system/admin';
+				$url= Site::get_url( 'habari' ) . '/system/admin';
 				break;
 			case 'system':
-				$url= Site::get_url('habari') . '/system';
+				$url= Site::get_url( 'habari' ) . '/system';
 				break;
 			case 'scripts':
-				$url= Site::get_url('habari') . '/scripts';
+				$url= Site::get_url( 'habari' ) . '/scripts';
 				break;
 			case 'hostname':
 				$url= $_SERVER['HTTP_HOST'];
 				break;
 		}
-		$url.= ($trail) ? '/' : '';
+		$url.= ( $trail ) ? '/' : '';
 		$url= Plugins::filter( 'site_url_' . $name, $url );
 		return $url;
 	}
