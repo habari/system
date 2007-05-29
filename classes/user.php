@@ -221,10 +221,10 @@ class User extends QueryRecord
 		
 		if ( Utils::crypt( $pw, $user->password ) ) {
 			// valid credentials were supplied
+			self::$identity= $user;
 			Utils::log( 'Successful login for ' . $user->username, 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
-			self::$identity= $user;
 			return self::$identity;
 		}
 		else {
