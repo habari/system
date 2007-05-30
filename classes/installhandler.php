@@ -234,8 +234,8 @@ class InstallHandler extends ActionHandler {
 			$this->handler_vars['table_prefix'],
 			$this->handler_vars['db_schema']
 		);
-		foreach ($create_table_queries as $query) {
-			if (! DB::query($query)) {
+		foreach ( $create_table_queries as $query ) {
+			if ( ! DB::exec( $query ) ) {
 				$error= DB::get_last_error();
 				$this->theme->assign('form_errors', array('db_host'=>'Could not create schema tables...' . $error['message']));
 				DB::rollback();
@@ -401,7 +401,8 @@ class InstallHandler extends ActionHandler {
 		 * not separated by two newlines, let's clean it here...
 		 * Likewise, let's clean up any separations of *more* than two newlines
 		 */
-		$schema_sql= preg_replace("/;\n{1}([^\n])/", ";\n\n$1", $schema_sql);
+		$schema_sql= str_replace( array( "\r\n", "\r", ), array( "\n", "\n" ), $schema_sql );
+		$schema_sql= preg_replace("/;\n([^\n])/", ";\n\n$1", $schema_sql);
 		$schema_sql= preg_replace("/\n{3,}/","\n\n", $schema_sql);
 		$queries= preg_split('/(\\r\\n|\\r|\\n)\\1/', $schema_sql);
 		return $queries;

@@ -116,6 +116,11 @@ class DB extends Singleton
 	{
 		DB::instance()->connection->set_fetch_class( $class_name );
 	}
+	
+	public static function exec( $query )
+	{
+		return DB::instance()->connection->exec( $query );
+	}
 
 	/**
 	 * Queries the database for a given SQL command.

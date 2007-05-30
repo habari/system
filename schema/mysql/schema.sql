@@ -28,7 +28,8 @@ CREATE TABLE  {$prefix}posttype (
   PRIMARY KEY (id)
 );
 
-INSERT INTO  {$prefix}posttype (name) VALUES ("entry");
+INSERT INTO {$prefix}posttype (name) VALUES ("entry");
+
 INSERT INTO {$prefix}posttype (name) VALUES ("page");
 
 CREATE TABLE  {$prefix}poststatus (
@@ -37,10 +38,10 @@ CREATE TABLE  {$prefix}poststatus (
   PRIMARY KEY (id)
 );
 
-INSERT INTO  {$prefix}poststatus (name) VALUES ("deleted");
-INSERT INTO  {$prefix}poststatus (name) VALUES ("draft");
-INSERT INTO  {$prefix}poststatus (name) VALUES ("published");
-INSERT INTO  {$prefix}poststatus (name) VALUES ("private");
+INSERT INTO {$prefix}poststatus (name) VALUES ("deleted");
+INSERT INTO {$prefix}poststatus (name) VALUES ("draft");
+INSERT INTO {$prefix}poststatus (name) VALUES ("published");
+INSERT INTO {$prefix}poststatus (name) VALUES ("private");
 
 CREATE TABLE  {$prefix}options (
 	name VARCHAR(255) NOT NULL,
@@ -183,24 +184,24 @@ INSERT INTO {$prefix}log_types (module , type) VALUES
 	('habari', 'default'),
 	('habari', 'authentication');
 
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_posts_by_date', CONCAT('%^(', CHAR(63), 'P<year>[1,2]{1}[\\d]{3})(', CHAR(63), ':/(', CHAR(63), 'P<month>[\\d]{2}))', CHAR(63), '(', CHAR(63), ':/(', CHAR(63), 'P<day>[\\d]{2}))', CHAR(63), '(', CHAR(63), ':/page/(', CHAR(63), 'P<page>\\d+))', CHAR(63), '/', CHAR(63), '$%i'), '{$year}/({$month}/)({$day}/)(page/{$page}/)', 'UserThemeHandler', 'display_date', '2', '1', '1', 'Displays posts for a specific date.');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_feed_by_type', CONCAT('/^feed\\/(', CHAR(63), 'P<feed_type>atom|rs[sd])[\\/]{0,1}$/i'), 'feed/{$feed_type}', 'FeedHandler', 'display_feed', '5', '1', '0', 'Return feed per specified feed type');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('admin', CONCAT('/^admin[\\/]*(', CHAR(63), 'P<page>[^\\/]*)[\\/]{0,1}$/i'), 'admin/({$page})', 'AdminHandler', 'admin', '6', '1', '0', 'An admin action');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('userprofile', CONCAT('/^admin\\/(', CHAR(63), 'P<page>user)\\/(', CHAR(63), 'P<user>[^\\/]+)\\/{0,1}$/'), 'admin/{$page}/{$user}', 'AdminHandler', 'admin', '4', '1', '1', 'The profile page for a specific user');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('user', CONCAT('/^user\\/(', CHAR(63), 'P<page>[^\\/]*)[\\/]{0,1}$/i'), 'user/{$page}', 'UserHandler', '{$page}', '7', '1', '0', 'A user action or display, for instance the login screen');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_posts_by_slug', CONCAT('%^(', CHAR(63), 'P<slug>[^/]+)(', CHAR(63), ':/page/(', CHAR(63), 'P<page>\\d+))', CHAR(63), '/', CHAR(63), '$%i'), '{$slug}(/page/{$page}/)', 'UserThemeHandler', 'display_post', '99', '1', '1', 'Return post matching specified slug');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_entry_by_slug', CONCAT('%^(', CHAR(63), 'P<slug>[^/]+)(', CHAR(63), ':/page/(', CHAR(63), 'P<page>\\d+))', CHAR(63), '/', CHAR(63), '$%i'), '{$slug}(/page/{$page}/)', 'UserThemeHandler', 'display_post', '100', '1', '1', 'Return entry matching specified slug');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_page_by_slug', CONCAT('%^(', CHAR(63), 'P<slug>[^/]+)(', CHAR(63), ':/page/(', CHAR(63), 'P<page>\\d+))', CHAR(63), '/', CHAR(63), '$%i'), '{$slug}(/page/{$page}/)', 'UserThemeHandler', 'display_post', '100', '1', '1', 'Return page matching specified slug');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_posts_by_date', '%^(?P<year>[1,2]{1}[\\d]{3})(?:/(?P<month>[\\d]{2}))?(?:/(?P<day>[\\d]{2}))?(?:/page/(?P<page>\\d+))?/?$%i', '{$year}/({$month}/)({$day}/)(page/{$page}/)', 'UserThemeHandler', 'display_date', '2', '1', '1', 'Displays posts for a specific date.');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_feed_by_type', '/^feed\\/(?P<feed_type>atom|rs[sd])[\\/]?$/i', 'feed/{$feed_type}', 'FeedHandler', 'display_feed', '5', '1', '0', 'Return feed per specified feed type');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('admin', '/^admin[\\/]*(?P<page>[^\\/]*)[\\/]?$/i', 'admin/({$page})', 'AdminHandler', 'admin', '6', '1', '0', 'An admin action');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('userprofile', '/^admin\\/(?P<page>user)\\/(?P<user>[^\\/]+)\\/?$/', 'admin/{$page}/{$user}', 'AdminHandler', 'admin', '4', '1', '1', 'The profile page for a specific user');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('user', '/^user\\/(?P<page>[^\\/]*)[\\/]?$/i', 'user/{$page}', 'UserHandler', '{$page}', '7', '1', '0', 'A user action or display, for instance the login screen');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_posts_by_slug', '%^(?P<slug>[^/]+)(?:/page/(?P<page>\\d+))?/?$%i', '{$slug}(/page/{$page}/)', 'UserThemeHandler', 'display_post', '99', '1', '1', 'Return post matching specified slug');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_entry_by_slug', '%^(?P<slug>[^/]+)(?:/page/(?P<page>\\d+))?/?$%i', '{$slug}(/page/{$page}/)', 'UserThemeHandler', 'display_post', '100', '1', '1', 'Return entry matching specified slug');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_page_by_slug', '%^(?P<slug>[^/]+)(?:/page/(?P<page>\\d+))?/?$%i', '{$slug}(/page/{$page}/)', 'UserThemeHandler', 'display_post', '100', '1', '1', 'Return page matching specified slug');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('index_page', '//', '', 'UserThemeHandler', 'display_home', '1000', '1', '1', 'Homepage (index) display');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('rsd', '/^rsd$/i', 'rsd', 'AtomHandler', 'rsd', '1', '1', '0', 'RSD output');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('introspection', '/^atom$/i', 'atom', 'AtomHandler', 'introspection', '1', '1', '0', 'Atom introspection');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('collection', CONCAT('/^atom\\/(', CHAR(63), 'P<index>.+)[\\/]{0,1}$/i'), 'atom/{$index}', 'AtomHandler', 'collection', '1', '1', '0', 'Atom collection');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('collection', '/^atom\\/(?P<index>.+)[\\/]?$/i', 'atom/{$index}', 'AtomHandler', 'collection', '1', '1', '0', 'Atom collection');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('search', '/^search$/i', 'search', 'UserThemeHandler', 'search', '8', '1', '1', 'Searches posts');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('comment', CONCAT('/^(', CHAR(63), 'P<id>[0-9]+)\\/feedback[\\/]{0,1}$/i'), '{$id}/feedback', 'FeedbackHandler', 'add_comment', '8', '1', '0', 'Adds a comment to a post');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('ajax', CONCAT('/^ajax\\/(', CHAR(63), 'P<context>[^\\/]+)[\\/]{0,1}$/i'), 'ajax/{$context}', 'AjaxHandler', 'ajax', '8', '1', '0', 'Ajax handling');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('auth_ajax', CONCAT('/^auth_ajax\\/(', CHAR(63), 'P<context>[^\\/]+)[\\/]{0,1}$/i'), 'auth_ajax/{$context}', 'AjaxHandler', 'auth_ajax', '8', '1', '0', 'Authenticated ajax handling');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('entry', CONCAT('/(', CHAR(63), 'P<slug>[^\\/]+)\\/atom$/i'), '{$slug}/atom', 'AtomHandler', 'entry', '8', '1', '0', 'Atom Publishing Protocol');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('entry_comments', CONCAT('/^(', CHAR(63), 'P<slug>[^\\/]+)\\/atom\\/comments$/i'), '{$slug}/atom/comments', 'AtomHandler', 'entry_comments', '8', '1', '0', 'Entry comments');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('comment', '/^(?P<id>[0-9]+)\\/feedback[\\/]?$/i', '{$id}/feedback', 'FeedbackHandler', 'add_comment', '8', '1', '0', 'Adds a comment to a post');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('ajax', '/^ajax\\/(?P<context>[^\\/]+)[\\/]?$/i', 'ajax/{$context}', 'AjaxHandler', 'ajax', '8', '1', '0', 'Ajax handling');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('auth_ajax', '/^auth_ajax\\/(?P<context>[^\\/]+)[\\/]?$/i', 'auth_ajax/{$context}', 'AjaxHandler', 'auth_ajax', '8', '1', '0', 'Authenticated ajax handling');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('entry', '/(?P<slug>[^\\/]+)\\/atom$/i', '{$slug}/atom', 'AtomHandler', 'entry', '8', '1', '0', 'Atom Publishing Protocol');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('entry_comments', '/^(?P<slug>[^\\/]+)\\/atom\\/comments$/i', '{$slug}/atom/comments', 'AtomHandler', 'entry_comments', '8', '1', '0', 'Entry comments');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('comments', '/^atom\\/comments$/i', 'atom/comments', 'AtomHandler', 'comments', '7', '1', '0', 'Entries comments');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('tag_collection', CONCAT('/^tag\\/(', CHAR(63), 'P<tag>[^\\/]+)\\/atom$/i'), 'tag/{$tag}/atom', 'AtomHandler', 'tag_collection', '8', '1', '0', 'Atom Tag Collection');
-INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_posts_by_tag', CONCAT('%^tag/(', CHAR(63), 'P<tag>[^/]*)(', CHAR(63), ':/page/(', CHAR(63), 'P<page>\\d+)){0,1}[/]{0,1}$%i'), 'tag/{$tag}(/page/{$page}/)', 'UserThemeHandler', 'display_tag', '5', '1', '1', 'Return posts matching specified tag');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('tag_collection', '/^tag\\/(?P<tag>[^\\/]+)\\/atom$/i', 'tag/{$tag}/atom', 'AtomHandler', 'tag_collection', '8', '1', '0', 'Atom Tag Collection');
+INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_posts_by_tag', '%^tag/(?P<tag>[^/]*)(?:/page/(?P<page>\\d+))?[/]?$%i', 'tag/{$tag}(/page/{$page}/)', 'UserThemeHandler', 'display_tag', '5', '1', '1', 'Return posts matching specified tag');

@@ -93,7 +93,7 @@ class Error
 		
 		print "</pre>";
 		
-		// die on fatal errors
+		// die on all errors except for NOTICE, STRICT, and WARNING
 		if ( $errno & ( E_ALL ^ E_NOTICE ^ E_STRICT ^ E_WARNING ) ) {
 			die();
 		}
