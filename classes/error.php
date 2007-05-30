@@ -79,7 +79,7 @@ class Error
 			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
 		
-		printf( "<pre>\n<b>%s:</b> <i>%s</i>\n",
+		printf( "<pre class\"error\">\n<b>%s:</b> <i>%s</i>\n",
 			( array_key_exists( $errno, $error_names ) ? $error_names[$errno] : 'Unknown error: '.$errno ),
 			$errstr );
 		
@@ -117,17 +117,21 @@ class Error
 			}
 		
 			$args= array();
-			foreach ($a['args'] as $arg) {
+			foreach ( $a['args'] as $arg ) {
 				$args[]= htmlentities( str_replace(
 					array( "\n ", " \n", "\n", "\r" ),
 					array( '', '', ' ', '' ),
 					var_export( $arg, true )
 				) );
 			}
+			$argstr= implode( ', ', $args );
+			if ( strlen( $argstr ) > 200 ) {
+				$argstr= substr( $argstr, 0, 197 ) . '...';
+			}
 				
 			printf("#%d in <b>%s</b>:<b>%d</b>: <b>%s</b>(%s)\n",
 				$n, $a['file'], $a['line'], $a['class'].$a['type'].$a['function'],
-				implode(', ', $args)
+				$argstr
 			);
 		}
 	}		

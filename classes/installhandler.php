@@ -256,8 +256,13 @@ class InstallHandler extends ActionHandler {
 			DB::rollback();
 			return false;
 		}
-
+		
+		/* Store current DB version so we don't immediately run dbdelta. */
+		Version::save_dbversion();
+		
+		/* Ready to roll. */
 		DB::commit();
+		
 		return true;
 	}
 
