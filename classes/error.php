@@ -79,7 +79,7 @@ class Error
 			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
 		
-		printf( "<pre class\"error\">\n<b>%s:</b> <i>%s</i>\n",
+		printf( "<pre class=\"error\">\n<b>%s:</b> <i>%s</i>\n",
 			( array_key_exists( $errno, $error_names ) ? $error_names[$errno] : 'Unknown error: '.$errno ),
 			$errstr );
 		
