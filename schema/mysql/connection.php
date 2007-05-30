@@ -8,20 +8,22 @@
 
 class MySQLConnection extends DatabaseConnection 
 {	
-	 /** 
-	 * database specific SQL translation function, loosely modelled on the 
-	 * internationalization _t()  function
+	/** 
+	 * Database specific SQL translation function, loosely modelled on the 
+	 * internationalization _t() function. 
 	 * Call with a database independent SQL string and it will be translated
-	 * to a MySQL specific SQL string
+	 * to a MySQL specific SQL string.
 	 * 
-	 * @param sql database independent SQL
-	 * @return  string			translated SQL string
+	 * @param $sql database independent SQL
+	 * @return string translated SQL string
+	 * @todo Actually implement this.
 	 */
 	function sql_t( $sql ) 
 	{
+		return $sql;
 	}
 
-		/** 
+	/** 
 	 * automatic diffing function - used for determining required database upgrades
 	 * based on Owen Winkler's microwiki upgrade function
 	 *
@@ -30,8 +32,8 @@ class MySQLConnection extends DatabaseConnection
 	 * @param (optional) silent silent running with no messages printed? default = true
 	 * @return  array list of updates made
 	 */
-	function dbdelta( $queries, $execute = true, $silent = true ) 
-{
+	function dbdelta( $queries, $execute= true, $silent= true ) 
+	{
 		if( !is_array($queries) ) {
 			$queries = explode( ';', $queries );
 			if('' == $queries[count($queries) - 1]) array_pop($queries);
@@ -172,12 +174,12 @@ class MySQLConnection extends DatabaseConnection
 			}
 		}
 
-		$allqueries = $cqueries; //  Don't insert yet:  array_merge($cqueries, $iqueries);
+		$allqueries= $cqueries; //  Don't insert yet:  array_merge($cqueries, $iqueries);
 		if($execute) {
 			foreach($allqueries as $query) {
-				if(!$this->query($query))
+				if(!$this->exec($query))
 				{
-					$this->get_error(true);
+					$this->get_errors();
 					return false;
 				}
 			}

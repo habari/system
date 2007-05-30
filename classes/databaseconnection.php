@@ -17,7 +17,35 @@ class DatabaseConnection
 	private $keep_profile= DEBUG;                   	// keep profiling and timing information?
 	private $pdo= NULL;                             // handle to the PDO interface
 	private $pdo_statement= NULL;                   // handle for a PDOStatement
-	private $sql_tables= array();                   // an array of table names that Habari knows
+	
+	/**
+	 * @var array tables Habari knows about
+	 */
+	private $tables= array(
+		'posts', 
+		'postinfo', 
+		'posttype', 
+		'poststatus', 
+		'options', 
+		'users', 
+		'userinfo', 
+		'tags', 
+		'comments', 
+		'commentinfo', 
+		'tag2post', 
+		'themes', 
+		'theme_vars', 
+		'rewrite_rules', 
+		'rewrite_rule_args', 
+		'crontab', 
+		'log', 
+		'log_types', 
+	);
+	
+	/**
+	 * @var array mapping of table name -> prefixed table name
+	 */
+	private $sql_tables= array();
 	private $errors= array();                       // an array of errors related to queries
 	private $profiles= array();                     	// an array of query profiles
 
@@ -42,24 +70,14 @@ class DatabaseConnection
 			return null;
 		}
 	}
-
-	 /**
-	 * Loads a list of habari tables from the database
-	 *
-	 * @todo  Wish there were a cross platform method of 
-	 *        simply getting the tables from the DB.  Using
-	 *        the INFORMATION_SCHEMA interface, for instance,
-	 *        but I don't think that SQLite currently supports
-	 *        it.
+	
+	/**
+	 * Populate the table mapping.
+	 * 
+	 * @return void
 	 */
-	public function load_tables()
+	protected function load_tables()
 	{
-		/* Local variable caching */
-		$db= $this;
-		
-		/*if ( $db->pdo == NULL ) 
-			$db->connect();*/
-
 		if ( isset ( $GLOBALS['db_connection']['prefix'] ) ) {
 			$prefix= $GLOBALS['db_connection']['prefix'];
 		} else if ( isset( $_POST['table_prefix'] ) ) {
@@ -68,35 +86,19 @@ class DatabaseConnection
 			$prefix= $this->prefix;
 		}
 		
-    $db->sql_tables['posts']= $prefix . 'posts';
-		$db->sql_tables['postinfo']= $prefix . 'postinfo';
-		$db->sql_tables['posttype']= $prefix . 'posttype';
-		$db->sql_tables['poststatus']= $prefix . 'poststatus';
-		$db->sql_tables['options']= $prefix . 'options';
-		$db->sql_tables['users']= $prefix . 'users';
-		$db->sql_tables['userinfo']= $prefix . 'userinfo';
-		$db->sql_tables['tags']= $prefix . 'tags';
-		$db->sql_tables['comments']= $prefix . 'comments';
-		$db->sql_tables['commentinfo']= $prefix . 'commentinfo';
-		$db->sql_tables['tag2post']= $prefix . 'tag2post';
-		$db->sql_tables['themes']= $prefix . 'themes';
-		$db->sql_tables['theme_vars']= $prefix . 'theme_vars';
-		$db->sql_tables['rewrite_rules']= $prefix . 'rewrite_rules';
-		$db->sql_tables['rewrite_rule_args']= $prefix . 'rewrite_rule_args';
-		$db->sql_tables['crontab']= $prefix . 'crontab';
-		$db->sql_tables['log']= $prefix . 'log';
-		$db->sql_tables['log_types']= $prefix . 'log_types';
+		// build the mapping with prefixes
+		foreach ( $this->tables as $t ) {
+			$this->sql_tables[$t]= $prefix . $t;
+		}
 	} 
 
 	/** 
-	 * Connects to the database server.  If no arguments are
-	 * supplied, then the connection is attempted for the 
-	 * database authentication variables in config.php.
+	 * Connect to a database server
 	 * 
-	 * @param connection_string a PDO connection string
-	 * @param db_user           the database user name
-	 * @param db_pass           the database user password
-	 * @return  bool
+	 * @param string $connect_string a PDO connection string
+	 * @param string $db_user the database user name
+	 * @param string $db_pass the database user password
+	 * @return boolean TRUE on success, FALSE on error
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{	
@@ -106,27 +108,6 @@ class DatabaseConnection
 				print_r( $this->pdo->errorInfo() );
 				exit;
 			}        
-			/**
-			 * @note  MySQL has issues caching queries that use the internal prepared
-			 *        statement API (server-side); therefore, we use prepared statement
-			 *        emulation in PDO to bypass this performance problem
-			 */
-			/*
-			 * for some reason, this completely breaks on some systems
-			if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'mysql' ) {
-				// this is the PHP way to check for class constants :/
-				if ( defined( 'PDO::ATTR_EMULATE_PREPARES' ) ) {
-					$this->pdo->setAttribute( PDO::ATTR_EMULATE_PREPARES, true );
-				}
-				elseif ( defined( 'PDO::MYSQL_ATTR_DIRECT_QUERY' ) ) {
-					$this->pdo->setAttribute( PDO::MYSQL_ATTR_DIRECT_QUERY, true );
-				}
-				else {
-					// okay, now this is weird
-					// XXX throw error "Your PDO is too weird!"?
-				}
-			}
-			*/
 			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
 			$this->load_tables();
 			return true;
@@ -138,6 +119,11 @@ class DatabaseConnection
 		}
 	}
 	
+	/**
+	 * Disconnect from the database server.
+	 * 
+	 * @return boolean TRUE
+	 */
 	public function disconnect()
 	{
 		$this->pdo= NULL; // this is the canonical way :o
@@ -145,24 +131,24 @@ class DatabaseConnection
 		return TRUE; 
 	}
 
+	/**
+	 * Check whether there is an existing connection to a database.
+	 * 
+	 * @return boolean
+	 */
 	public function is_connected() 
 	{
-		if ( NULL != $this->pdo ) {
-			return true;
-		}
-		return false;
+		return ( NULL != $this->pdo );
 	}
 
 	/**
-	 * Helper function to naturally return table names
+	 * Get the full table name for the given table.
 	 *
-	 * @param table name of the table
+	 * @param string $name name of the table
+	 * @return string the full table name, or FALSE if the table was not found
 	 */
 	public function table( $name )
 	{
-		if ( $this->pdo == NULL ) {
-			$this->load_tables();
-		}
 		if ( isset( $this->sql_tables[$name] ) ) {
 			return $this->sql_tables[$name];
 		}
@@ -176,12 +162,12 @@ class DatabaseConnection
 	 * by Theme and Plugin classes to inform the DB class about
 	 * custom tables used by the plugin
 	 *
-	 * @param name  the table name
+	 * @param name the table name
 	**/
 	public function register_table( $name )
 	{
-		$prefix= ( isset( $GLOBALS['db_connection']['prefix'] ) ? $GLOBALS['db_connection']['prefix'] : $this->prefix );
-		$this->sql_tables[$name]= $prefix . $name;
+		$this->tables[]= $name;
+		$this->load_tables();
 	}
 
 	/**
@@ -203,44 +189,41 @@ class DatabaseConnection
 	{
 		$this->fetch_class_name= $class_name;
 	}
+	
+	/**
+	 * Execute the given query on the database. Encapsulates PDO::exec.
+	 * WARNING: Make sure you don't call this with a SELECT statement.
+	 * PDO will buffer the results and leave your cursor dangling.
+	 * 
+	 * @param string $query the query to run
+	 * @return boolean TRUE on success, FALSE on error
+	 */
+	public function exec( $query )
+	{
+		return ( $this->pdo->exec( $query ) !== FALSE );
+	}
 
 	/**
-	 * Queries the database for a given SQL command.
-	 * @param query       the SQL query text
-	 * @param args        array of values to use for placeholder replacement
-	 * @param class_name  ( optional ) name of class name to wrangle returned data to
-	 * @return bool	 
+	 * Execute a SQL statement.
+	 * 
+	 * @param string $query the SQL statement
+	 * @param array $args values for the bound parameters
+	 * @return boolean TRUE on success, FALSE on failure
 	 */	 	 	 	 	
 	public function query( $query, $args= array() )
 	{
-		/* Local scope caching */
-		// $db= DB::instance();
-		// $pdo= $db->pdo;
-
-		/* Auto-connect */
-		if ( $this->pdo == NULL ) {
-			if ( $this->connect() ) {
-				$this->pdo= $db->pdo;
-			}
-		}
-
-		if( $this->pdo_statement != NULL ) { 
+		if ( $this->pdo_statement != NULL ) { 
 			$this->pdo_statement->closeCursor();
 		}
 		
-		if ( $this->pdo_statement=  $this->pdo->prepare( $query ) ) {
-			/**
-			 * This section of code is EXTREMELY important, for the reasons I laid
-			 * out on php.net: @see http://us2.php.net/manual/en/function.pdostatement-setfetchmode.php
-			 *
-			 * In summary, PDO will *core dump* if the fetch mode is PDO::FETCH_CLASS and the
-			 * class supplied for instantiation is either a) not included, or b) included, but all
-			 * related classes are not included.  This is very annoying behaviour, and something that
-			 * took many hours to diagnose, as the core dump happens with no explanation as to the
-			 * source of the segfault.
-			 */
+		if ( $this->pdo_statement= $this->pdo->prepare( $query ) ) {
 			if ( $this->fetch_mode == PDO::FETCH_CLASS ) {
-				/* Ensure that the class is actually available and included already, otherwise segfault happens */
+				/* Try to get the result class autoloaded. */
+				if ( ! class_exists( strtolower( $this->fetch_class_name ) ) ) {
+					$tmp= $this->fetch_class_name;
+					new $tmp();
+				}
+				/* Ensure that the class is actually available now, otherwise segfault happens (if we haven't died earlier anyway). */
 				if ( class_exists( strtolower( $this->fetch_class_name ) ) ) {
 					$this->pdo_statement->setFetchMode( PDO::FETCH_CLASS, $this->fetch_class_name, array() );
 				}
@@ -279,24 +262,19 @@ class DatabaseConnection
 	}
 
 	/** 
-	 * Executes a stored procedure against the database
+	 * Execute a stored procedure
 	 *
 	 * @param   procedure   name of the stored procedure
 	 * @param   args        arguments for the procedure
 	 * @return  mixed       whatever the procedure returns...
 	 * @experimental 
-	 * @todo  EVERYTHING... : )
+	 * @todo  EVERYTHING... :)
 	 */
 	public function execute_procedure( $procedure, $args= array() )
 	{
 		/* Local scope caching */
 		$pdo= $this->pdo;
 		$pdo_statement= $this->pdo_statement;
-
-		/* Auto-connect */
-		if ( $pdo == NULL ) {
-			$this->connect();
-		}
 
 		if( $pdo_statement != NULL ) { 
 			$pdo_statement->closeCursor();
@@ -357,12 +335,7 @@ class DatabaseConnection
 	 */
 	public function begin_transaction()
 	{
-		$pdo= $this->pdo;
-		if ( $pdo == NULL ) {
-			$this->connect();
-		}
-
-		$pdo->beginTransaction();
+		$this->pdo->beginTransaction();
 	}
 
 	/**
@@ -372,12 +345,7 @@ class DatabaseConnection
 	 */
 	public function rollback()
 	{
-		$pdo= $this->pdo;
-		if ( $pdo == NULL ) {
-			$this->connect();
-		}
-
-		$pdo->rollBack();
+		$this->pdo->rollBack();
 	}
 
 	/**
@@ -385,12 +353,7 @@ class DatabaseConnection
 	 */
 	public function commit()
 	{
-		$pdo= $this->pdo;
-		if ( $pdo == NULL ) {
-			$this->connect();
-		}
-
-		$pdo->commit();
+		$this->pdo->commit();
 	}
 
 	/**
@@ -482,7 +445,7 @@ class DatabaseConnection
 	}
 	
 	/**
-	 * Returns a single row ( the first in a multi-result set ) object for a query
+	 * Returns a single row (the first in a multi-result set) object for a query
 	 * @param string The query to execute
 	 * @param array Arguments to pass for prepared statements
 	 * @param string Optional class name for row result object
