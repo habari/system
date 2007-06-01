@@ -220,10 +220,18 @@ class Plugins
 	 **/
 	static public function activate_plugin( $file )
 	{
-		$activated = Options::get( 'active_plugins' );
-		if( !is_array( $activated ) || !in_array( $file, $activated ) ) {
-			$activated[] = $file;
-			Options::set( 'active_plugins', $activated );
+		$ok= true;
+		$ok= Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
+		if($ok) {
+			$activated = Options::get( 'active_plugins' );
+			if( !is_array( $activated ) || !in_array( $file, $activated ) ) {
+				$activated[] = $file;
+				Options::set( 'active_plugins', $activated );
+			}
+			include_once($file);
+			$plugin= Plugins::load($file);
+			Plugins::act('plugin_activation', $file); // For the plugin to install itself
+			Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
 		}
 	}
 
@@ -233,12 +241,18 @@ class Plugins
 	 **/
 	static public function deactivate_plugin( $file )
 	{
-		$activated = Options::get( 'active_plugins' );
-		$index= array_search( $file, $activated );
-		if ( is_array( $activated ) && ( FALSE !== $index ) )
-		{
-			unset($activated[$index]);
-			Options::set( 'active_plugins', $activated );
+		$ok= true;
+		$ok= Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
+		if($ok) {
+			$activated = Options::get( 'active_plugins' );
+			$index= array_search( $file, $activated );
+			if ( is_array( $activated ) && ( FALSE !== $index ) )
+			{
+				Plugins::act('plugin_deactivation', $file);  // For the plugin to uninstall itself
+				unset($activated[$index]);
+				Options::set( 'active_plugins', $activated );
+				Plugins::act('plugin_deactivated', $file);  // For other plugins to react to a plugin uninstallation
+			}
 		}
 	}
 	
