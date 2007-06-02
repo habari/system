@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Represents a single logged event entry
+ * 
+ * @package Habari
+ **/  
+
 class LogEntry extends QueryRecord
 {
 	/**
@@ -50,15 +56,24 @@ class LogEntry extends QueryRecord
 		$this->fields= array_merge( self::default_fields(), $this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields( 'id' );
-		
-		if ( empty( self::$types ) ) {
-			// cache log types
+
+		self::cache_types();		
+	}
+	
+	/**
+	 * Get an internal cache of log types
+	 * @param boolean $force Force the reload of types from the database.	 
+	**/
+	private function cache_types($force = false)
+	{
+		if ( $force || empty( self::$types ) ) {
+			self::$types= array();
 			$res= DB::get_results( 'SELECT `id`, `module`, `type` FROM ' . DB::table( 'log_types' ));
 			foreach ( $res as $x ) {
 				self::$types[ $x->module ][ $x->type ]= $x->id;
 			}
 		}
-	}
+	}	 	
 	
 	/**
 	 * Get the integer value for the given severity, or <code>false</code>.
@@ -81,20 +96,24 @@ class LogEntry extends QueryRecord
 	 */
 	public static function type( $module, $type )
 	{
+		self::cache_types();		
 		if ( array_key_exists( $module, self::$types ) && array_key_exists( $type, self::$types[$module] ) ) {
 			return self::$types[$module][$type];
 		}
 		return false;
 	}
 
+	/**
+	 * Insert this LogEntry data into the database
+	 */
 	public function insert()
 	{
 		if ( isset( $this->fields['severity'] ) ) {
-			$this->fields['severity_id']= LogEntry::severity( $this->fields['severity'] );
+			$this->severity_id= LogEntry::severity( $this->fields['severity'] );
 			unset( $this->fields['severity'] );
 		}
 		if ( isset( $this->fields['module'] ) && isset( $this->fields['type'] ) ) {
-			$this->fields['type_id']= LogEntry::type( $this->fields['module'], $this->fields['type'] );
+			$this->type_id= LogEntry::type( $this->fields['module'], $this->fields['type'] );
 			unset( $this->fields['module'] );
 			unset( $this->fields['type'] );
 		}

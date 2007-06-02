@@ -320,6 +320,68 @@ class Utils
 		echo "</pre></div>";
 	}
 	
+	static function firedebug()
+	{
+		$debugid= md5(microtime());
+		$tracect= 0;
+
+		$bcomma = '';
+		$output = "
+			<script type=\"text/javascript\">
+			if(console) {
+				evalue={
+		";
+
+		$fooargs = func_get_args();
+
+		if(function_exists('debug_backtrace')) {
+			$output.= 'backtrace:[';
+			$backtrace = array_reverse(debug_backtrace(), true);
+			$bcomma = '';
+			foreach($backtrace as $trace) {
+				$file = $line = $class = $type = $function = '';
+				$args= array();
+				extract($trace);
+				if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
+				if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
+
+				$output.= "{$bcomma}{\nfile:'{$file}',\nline:'{$line}',\nfunction:'{$fname}'";
+				if(is_array($args) && count($args) > 0) {
+					$output .= ",\nargs:[";
+					$comma = '';
+					foreach((array)$args as $arg) {
+						$output.= "\n\t" . $comma . "'" . gettype($arg) . ': ';
+						$argtext = preg_replace('/\r\n|\n/', '\n', print_r( $arg, 1 ) );
+						$argtext = str_replace('\\', '\\\\', $argtext );
+						$output.= htmlentities( $argtext ) . "'";
+						$comma= ', ';
+					}
+					$output .= "\n]";
+				}
+				$output.= "}";
+				$bcomma = ', ';
+			}
+			$output .= "\n], \n";
+		}
+		$output.= "args:[";
+		$comma = '';
+		foreach( $fooargs as $arg ) {
+			$output.= $comma . "'" . gettype($arg) . ': ';
+			$output.= htmlentities( print_r( $arg, 1 ) ) . "'";
+			$comma= ', ';
+		}
+		$output.= "
+				]};
+				console.group('firedebug');
+				console.dir(evalue);
+				console.groupEnd();
+			}
+			</script>
+		";
+		//$output = preg_replace('/^\t+|\n|\r/', '', $output);
+		echo $output;
+	}
+
 	/**
 	 * Crypt a given password, or verify a given password against a given hash.
 	 * 
@@ -471,40 +533,6 @@ class Utils
 		$info['mday0']= substr('0' . $info['mday'], -2, 2);
 		return $info; 
 	}
-	
-	/**
-	 * Write an entry to the event log.
-	 * 
-	 * @param string $message The message
-	 * @param string $severity The severity
-	 * @param string $type The type
-	 * @param string $module The module
-	 * @param mixed $data The data
-	 * @return class:LogEntry the inserted LogEntry
-	 */
-	public static function log( $message, $severity= 'info', $type= 'default', $module= null, $data= null )
-	{
-		if ( is_null( $module ) ) {
-			$bt= debug_backtrace();
-			$last= $bt[sizeof( $bt ) - 2];
-			$module= basename( $last['file'], '.php' );
-		}
-		if ( ! ($user_id= User::identify()->id ) )
-		{
-			$user_id= NULL;
-		}
-		$log= new LogEntry( array(
-			'user_id' => $user_id,
-			'message' => $message,
-			'severity' => $severity,
-			'module' => $module,
-			'type' => $type,
-			'data' => $data,
-		) );
-		$log->insert();
-		return $log;
-	}
-
 }
 
 ?>
