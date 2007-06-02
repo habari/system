@@ -214,7 +214,7 @@ class User extends QueryRecord
 		
 		if ( ! $user ) {
 			// No such user.
-			Utils::log( 'Login attempt for non-existant user ' . $who, 'warning', 'authentication', 'habari' );
+			EventLog::log( 'Login attempt for non-existant user ' . $who, 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}
@@ -222,14 +222,14 @@ class User extends QueryRecord
 		if ( Utils::crypt( $pw, $user->password ) ) {
 			// valid credentials were supplied
 			self::$identity= $user;
-			Utils::log( 'Successful login for ' . $user->username, 'info', 'authentication', 'habari' );
+			EventLog::log( 'Successful login for ' . $user->username, 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
 		}
 		else {
 			// Wrong password.
-			Utils::log( 'Wrong password for user ' . $user->username, 'warning', 'authentication', 'habari' );
+			EventLog::log( 'Wrong password for user ' . $user->username, 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}
