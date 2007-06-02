@@ -227,11 +227,11 @@ class Plugins
 			if( !is_array( $activated ) || !in_array( $file, $activated ) ) {
 				$activated[] = $file;
 				Options::set( 'active_plugins', $activated );
+				include_once($file);
+				$plugin= Plugins::load($file);
+				Plugins::act('plugin_activation', $file); // For the plugin to install itself
+				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
 			}
-			include_once($file);
-			$plugin= Plugins::load($file);
-			Plugins::act('plugin_activation', $file); // For the plugin to install itself
-			Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
 		}
 	}
 
