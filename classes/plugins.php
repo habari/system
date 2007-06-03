@@ -95,6 +95,27 @@ class Plugins
 	}
 
 	/**
+	 * Call to execute an XMLRPC function
+	 * @param string The name of the filter to execute
+	 * @param mixed The value to filter.
+	 **/
+	static public function xmlrpc()
+	{
+		list( $hookname, $return ) = func_get_args();
+		if ( ! isset( self::$hooks['xmlrpc'][$hookname] ) ) {
+			return false;
+		}
+		$filterargs = array_slice(func_get_args(), 2);
+		foreach ( self::$hooks['xmlrpc'][$hookname] as $priority ) {
+			foreach ( $priority as $filter ) {
+				// $filter is an array of object reference and method name
+				return call_user_func_array( $filter, $filterargs );
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
 	 * @param boolean Whether to refresh the cached array.  Default FALSE

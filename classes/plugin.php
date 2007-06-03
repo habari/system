@@ -76,7 +76,7 @@ abstract class Plugin
 			$type = substr( $fn, 0, strpos( $fn, '_' ) );
 			$hook = substr( $fn, strpos( $fn, '_' ) + 1 );
 			if ( 0 === strpos( $fn, 'xmlrpc_' ) ) {
-				$hook = 'xmlrpc_' . str_replace('__', '.', $hook);
+				$hook = str_replace('__', '.', $hook);
 			}
 			Plugins::register( array($this, $fn), $type, $hook, $priority );
 		}

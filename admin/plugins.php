@@ -63,11 +63,17 @@
 					$info= $plugin->info();
 					$active= false;
 				}
+				if(isset($info['url'])) {
+					$url = "<a href='{$info['url']}' title='Visit {$info['name']}'>{$info['author']}</a>";
+				}
+				else {
+					$url = $info['author'];
+				}
 			?>
 				<tr>
 					<td><?php echo $info['name']; ?> 
 					</td>
-					<td><a href='<?php echo $info['url']; ?>' title='Visit <?php echo $info['name']; ?>'><?php echo $info['author']; ?></a></td>
+					<td><?php echo $url; ?></td>
 					<td><?php echo $info['version']; ?></td>
 					<td>
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
