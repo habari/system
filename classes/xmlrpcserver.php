@@ -22,15 +22,15 @@ class XMLRPCServer extends ActionHandler
 		$xml= new SimpleXMLElement( $input );
 		
 		$function = $xml->methodName;
+		$params= array();
 		foreach($xml->xpath('//params/param/value/*') as $param) {
 			$params[] = XMLRPCUtils::decode_args($param);
 		}
 
 		$returnvalue= false;
 		
-		Plugins::register(array($this, 'system_listMethods'), 'filter', 'xmlrpc_system.listMethods');
-
-		$returnvalue = Plugins::filter('xmlrpc_' . $function, $returnvalue, $params, $this);
+		Plugins::register(array($this, 'system_listMethods'), 'xmlrpc', 'system.listMethods');
+		$returnvalue = Plugins::xmlrpc("{$function}", $returnvalue, $params, $this);
 
 		$response = new SimpleXMLElement('<?xml version="1.0"?'.'><methodResponse><params><param></param></params></methodResponse>');
 		XMLRPCUtils::encode_arg($response->params->param, $returnvalue);

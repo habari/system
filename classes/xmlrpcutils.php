@@ -31,19 +31,19 @@ class XMLRPCUtils
 			$params->addchild('value')->addchild('base64', base64_encode($arg->data));
 			break;				
 		case ($arg instanceof XMLRPCStruct):
-			$struct = $params->addchild('struct');
+			$struct = $params->addchild('value')->addchild('struct');
 			$object_vars = $arg->get_fields();
 			foreach($object_vars as $field) {
-				$member = $struct->add_child('member');
+				$member = $struct->addchild('member');
 				$member->addchild('name', $field);
 				self::encode_arg($member, $arg->$field);
 			}
 			break;				
 		case is_object($arg):
-			$struct = $params->add_child('struct');
+			$struct = $params->addchild('value')->addchild('struct');
 			$object_vars = get_object_vars($arg);
 			foreach($object_vars as $key=>$value) {
-				$member = $struct->add_child('member');
+				$member = $struct->addchild('member');
 				$member->addchild('name', $key);
 				self::encode_arg($member, $value);
 			}
