@@ -367,7 +367,10 @@ class Utils
 		$comma = '';
 		foreach( $fooargs as $arg ) {
 			$output.= $comma . "'" . gettype($arg) . ': ';
-			$output.= htmlentities( print_r( $arg, 1 ) ) . "'";
+			$argtext = htmlentities( print_r( $arg, 1 ) ) . "'";
+			$argtext = preg_replace('/\r\n|\n/', '\n', $argtext );
+			$argtext = str_replace('\\', '\\\\', $argtext );
+			$output.= $argtext; 
 			$comma= ', ';
 		}
 		$output.= "
