@@ -11,6 +11,7 @@ class URL extends Singleton
 {
 	// static collection of rules ( pulled from RewriteController )
 	private $rules= NULL;
+	private $matched_rule= NULL;
  
 	/**
 	 * Enables singleton working properly
@@ -31,6 +32,16 @@ class URL extends Singleton
 			return;
 		}
 		URL::instance()->rules= RewriteRules::get_active();
+	}
+	
+	/**
+	 * Get the matched RewriteRule that was matched in parse().
+	 * 
+	 * @return RewriteRule matched rule, or NULL
+	 */
+	public function get_matched_rule()
+	{
+		return URL::instance()->matched_rule;
 	}
 
 	/**
@@ -73,6 +84,7 @@ class URL extends Singleton
 		$pattern_matches= array();
 		foreach ( $url->rules as $rule ) {
 			if ( $rule->match( $from_url ) ) {
+				$url->matched_rule= $rule;
 				/* Stop processing at first matched rule... */
 				return $rule;
 			}
