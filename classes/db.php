@@ -365,9 +365,9 @@ class DB extends Singleton
 	 * @param (optional) silent silent running with no messages printed? default = true
 	 * @return  string			translated SQL string
 	 */	 	 	 	 	
-	public static function dbdelta( $queries, $execute = true, $silent = true )
+	public static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
-		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent );
+		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
 	}
 
 }
