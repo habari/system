@@ -30,9 +30,10 @@ class MySQLConnection extends DatabaseConnection
 	 * @param queries array of create table and insert statements which constitute a fresh install
 	 * @param (optional)  execute should the queries be executed against the database or just simulated. default = true
 	 * @param (optional) silent silent running with no messages printed? default = true
+	 * @param boolean $doinserts (optional) Execute all insert queries found, default=false
 	 * @return  array list of updates made
 	 */
-	function dbdelta( $queries, $execute= true, $silent= true ) 
+	function dbdelta( $queries, $execute= true, $silent= true, $doinserts= false ) 
 	{
 		if( !is_array($queries) ) {
 			$queries = explode( ';', $queries );
@@ -174,7 +175,10 @@ class MySQLConnection extends DatabaseConnection
 			}
 		}
 
-		$allqueries= $cqueries; //  Don't insert yet:  array_merge($cqueries, $iqueries);
+		$allqueries= $cqueries;
+		if($doinserts) {
+			$allqueries= array_merge($allqueries, $iqueries);
+		}
 		if($execute) {
 			foreach($allqueries as $query) {
 				if(!$this->exec($query))

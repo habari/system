@@ -325,7 +325,7 @@ class Post extends QueryRecord
 		$this->setguid();
 		// Invoke plugins for all fields, since they're all "changed" when inserted 
 		foreach ( $this->fields as $fieldname => $value ) {
-			Plugins::act('post_update_' . $fieldname, $this, $value, $this->newfields[$fieldname] );
+			Plugins::act('post_update_' . $fieldname, $this, $this->$fieldname, $value );
 		}
 		$result = parent::insert( DB::table('posts') );
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id

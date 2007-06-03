@@ -234,6 +234,17 @@ class InstallHandler extends ActionHandler {
 			$this->handler_vars['table_prefix'],
 			$this->handler_vars['db_schema']
 		);
+		DB::clear_errors();
+		DB::dbdelta($create_table_queries, true, true, true);
+		
+		if(DB::has_errors()) {
+			$error= DB::get_last_error();
+			$this->theme->assign('form_errors', array('db_host'=>'Could not create schema tables...' . $error['message']));
+			DB::rollback();
+			return false;
+		}
+
+		/*
 		foreach ( $create_table_queries as $query ) {
 			if ( ! DB::exec( $query ) ) {
 				$error= DB::get_last_error();
@@ -242,6 +253,7 @@ class InstallHandler extends ActionHandler {
 				return false;
 			}
 		}
+		*/
 
 		/* Cool.  DB installed.  Let's setup the admin user now. */
 		if (! $this->create_admin_user()) {
@@ -262,7 +274,6 @@ class InstallHandler extends ActionHandler {
 		
 		/* Ready to roll. */
 		DB::commit();
-		
 		return true;
 	}
 
