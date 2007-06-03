@@ -75,8 +75,8 @@ abstract class Plugin
 			$priority = isset($priorities[$fn]) ? $priorities[$fn] : 8;
 			$type = substr( $fn, 0, strpos( $fn, '_' ) );
 			$hook = substr( $fn, strpos( $fn, '_' ) + 1 );
-			if ( 0 !== strpos( $fn, 'xmlrpc_' ) ) {
-				$hook = str_replace('__', '.', $hook);
+			if ( 0 === strpos( $fn, 'xmlrpc_' ) ) {
+				$hook = 'xmlrpc_' . str_replace('__', '.', $hook);
 			}
 			Plugins::register( array($this, $fn), $type, $hook, $priority );
 		}
