@@ -444,6 +444,16 @@ class AdminHandler extends ActionHandler
 	}
 	
 	/**
+	 * A POST handler for the admin plugins page that simply passes those options through
+	 **/
+	public function post_plugins()
+	{
+		/* Create the Theme and template engine */
+		$this->theme= Themes::create('admin', 'RawPHPEngine', ADMIN_DIR);
+		$this->display( 'plugins' );
+	}
+	
+	/**
 	 * Loads through the existing plugins to make sure that they are syntactically valid
 	 **/	 	
 	public function post_loadplugins()
