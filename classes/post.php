@@ -351,7 +351,7 @@ class Post extends QueryRecord
 		foreach ( $this->newfields as $fieldname => $value ) {
 			Plugins::act('post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
 		}
-		$result = parent::update( DB::table('posts'), array('slug'=>$this->slug) );
+		$result = parent::update( DB::table('posts'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->savetags();
