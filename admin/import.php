@@ -7,18 +7,23 @@
 			if(empty($_POST['importer'])) :
 				$import_names= array();
 				$import_names= Plugins::filter('import_names', $import_names);
-			?>
-			<p>Please choose the type of import to perform:</p>
-			<select name="importer">
-				<option></option>
-				<?php
-				foreach($import_names as $name) {
-					echo "<option>{$name}</option>";
-				}
+				if(count($import_names) == 0):
 				?>
-			</select>
-			<p class="submit"><input type="submit" name="import" value="Select" /></p>
+				<p>You do not currently have any import plugins installed.</p>
+				<p>Please <a href="<?php URL::out('admin', 'page=plugins'); ?>">activate an import plugin</a> to enable importing.</p>
+				<? else: ?>
+				<p>Please choose the type of import to perform:</p>
+				<select name="importer">
+					<option></option>
+					<?php
+					foreach($import_names as $name) {
+						echo "<option>{$name}</option>";
+					}
+					?>
+				</select>
+				<p class="submit"><input type="submit" name="import" value="Select" /></p>
 			<?php
+				endif;
 			else:
 				echo Plugins::filter('import_stage', '', @$_POST['importer'], @$_POST['stage'], @$_POST['step']);
 			?>

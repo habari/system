@@ -70,6 +70,8 @@ class AdminHandler extends ActionHandler
 					$this->handler_vars['page']= 'dashboard';
 				}
 				if ( isset( $map[$page] ) ) {
+					$this->set_admin_template_vars($this->theme);
+				
 					$this->display( $page );
 				}
 				else {
@@ -490,6 +492,96 @@ class AdminHandler extends ActionHandler
 			Plugins::set_present();
 		}
 		//header("HTTP/1.0 500 Internal Server Error");
+	}
+	
+	protected function get_main_menu()
+	{
+		$mainmenus = array(
+			'admin' => array(
+				'caption' => _t('Admin'),
+				'url' => URL::get('admin', 'page='),
+				'title'=> _t('Overview of your site'),
+				'submenu' => array(
+					'options'=>array(
+						'caption'=>_t('Options'),
+						'url'=>URL::get('admin', 'page=options')
+					),
+					'plugins'=>array(
+						'caption'=>_t('Plugins'),
+						'url'=>URL::get('admin', 'page=plugins')
+					),
+					'themes'=>array(
+						'caption'=>_t('Themes'),
+						'url'=>URL::get('admin', 'page=themes')
+					),
+					'users'=>array(
+						'caption'=>_t('Users'),
+						'url'=>URL::get('admin', 'page=themes')
+					),
+					'import'=>array(
+						'caption'=>_t('Import'),
+						'url'=>URL::get('admin', 'page=import')
+					)
+				)
+			),
+			'publish'=>array(
+				'caption'=>_t('Publish'),
+				'url'=>URL::get('admin', 'page=publish'),
+				'title'=>_t('Edit the content of your site'),
+				'submenu'=>array(
+				)
+			),
+			'manage'=>array(
+				'caption'=>_t('Manage'),
+				'url'=>URL::get('admin', 'page=options'),
+				'title'=>_t('Manage your site options'),
+				'submenu'=>array(
+					'content'=>array(
+						'caption'=>_t('Content'),
+						'url'=>URL::get('admin', 'page=content')
+					),
+					'unapproved'=>array(
+						'caption'=>_t('Unapproved Comments'),
+						'url'=>URL::get('admin', 'page=moderate')
+					),
+					'approved'=>array(
+						'caption'=>_t('Approved Comments'),
+						'url'=>URL::get('admin', 'page=moderate&show=approved')
+					),
+					'spam'=>array(
+						'caption'=>_t('Spam'),
+						'url'=>URL::get('admin', 'page=moderate&show=spam')
+					),
+				)
+			)
+		);
+		foreach(Post::list_post_types() as $type => $typeint) {
+			if( $typeint == 0 ) {
+				continue;
+			}
+			$mainmenus['publish']['submenu'][$type] = array(
+				'caption'=>_t( ucwords($type) ),
+				'url'=>URL::get('admin', 'page=publish&content_type=' . $type)
+			);
+		}
+		
+		$mainmenus = Plugins::filter('main_menu', $mainmenus);
+		
+		$out = '';
+		foreach($mainmenus as $mainmenukey => $mainmenu) {
+			$out.= "<li class=\"menu-item\"><a href=\"{$mainmenu['url']}\" title=\"{$mainmenu['title']}\">{$mainmenu['caption']}</a>";
+			$out.= "<ul class=\"menu-list\">";
+			foreach($mainmenu['submenu'] as $menukey => $menuitem) {
+				$out.= "<li><a href=\"{$menuitem['url']}\">{$menuitem['caption']}</a></li>";				
+			}
+			$out.= "</ul>";
+		}
+		return $out;
+	}
+
+	protected function set_admin_template_vars($theme)
+	{
+		$theme->assign( 'mainmenu', $this->get_main_menu());
 	}
 
 	/**

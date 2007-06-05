@@ -35,33 +35,11 @@
 			<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
 		<ol id="menu">
-			<?php $page = empty($page) ? 'overview' : $page; ?>
-			<li class="menu-item" <?php echo ($page == 'overview') ? 'id="current-item"' : ''; ?>>
-				<a href="<?php URL::out('admin', 'page='); ?>" title="Overview of your site">Admin</a>
-				<ul class="menu-list">
-					<li><a href="<?php URL::out('admin', 'page=options'); ?>">Options</a></li>
-					<li><a href="<?php URL::out('admin', 'page=plugins'); ?>">Plugins</a></li>
-					<li><a href="<?php URL::out('admin', 'page=themes'); ?>">Themes</a></li>
-					<li><a href="<?php URL::out('admin', 'page=users'); ?>">Users</a></li>
-					<li><a href="<?php URL::out('admin', 'page=import'); ?>">Import</a></li>
-				</ul>
-			</li>
-			<li class="menu-item" <?php echo ($page == 'publish') ? 'id="current-item"' : ''; ?>>
-				<a href="<?php URL::out('admin', 'page=publish'); ?>" title="Edit the content of your site">Publish</a>
-				<ul class="menu-list">
-					<li><a href="<?php URL::out('admin', 'page=publish&content_type=entry'); ?>">Post Entry</a></li>
-					<li><a href="<?php URL::out('admin', 'page=publish&content_type=page'); ?>">Page</a></li>
-				</ul>
-			</li>
-			<li class="menu-item" <?php echo ($page == 'options') ? 'id="current-item"' : ''; ?>>
-				<a href="<?php URL::out('admin', 'page=options'); ?>" title="edit your site options">Manage</a>
-				<ul class="menu-list">
-					<li><a href="<?php URL::out('admin', 'page=content'); ?>">Content</a></li>
-					<li><a href="<?php URL::out('admin', 'page=moderate'); ?>">Unapproved Comments</a></li>
-					<li><a href="<?php URL::out('admin', 'page=moderate&show=approved'); ?>">Approved Comments</a></li>
-					<li><a href="<?php URL::out('admin', 'page=moderate&show=spam'); ?>">Spam</a></li>
-				</ul>
-			</li>
+			<?php $page = empty($page) ? 'admin' : $page; ?>
+			<?php
+			
+			?>
+			<?php echo $mainmenu; ?>
 			<li class="menu-item" id="logout">
 				<a href="<?php URL::out('user', 'page=logout'); ?>" title="logout of Habari">Logout</a>
 			</li>
