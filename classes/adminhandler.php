@@ -37,6 +37,9 @@ class AdminHandler extends ActionHandler
 		$page= ( isset( $this->handler_vars['page']) && ! empty($this->handler_vars['page']) )
           ? $this->handler_vars['page']
           : 'dashboard';
+		/* Create the Theme and template engine */
+		$this->theme= Themes::create('admin', 'RawPHPEngine', ADMIN_DIR);
+		$this->set_admin_template_vars($this->theme);
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
 				// Handle POSTs to the admin pages
@@ -52,8 +55,6 @@ class AdminHandler extends ActionHandler
 				}
 				break;
 			default:
-				/* Create the Theme and template engine */
-				$this->theme= Themes::create('admin', 'RawPHPEngine', ADMIN_DIR);
 				// Handle GETs of the admin pages
 				$files= glob(ADMIN_DIR . '*.php');
 				$filekeys= array_map(
@@ -70,8 +71,6 @@ class AdminHandler extends ActionHandler
 					$this->handler_vars['page']= 'dashboard';
 				}
 				if ( isset( $map[$page] ) ) {
-					$this->set_admin_template_vars($this->theme);
-				
 					$this->display( $page );
 				}
 				else {
@@ -368,8 +367,6 @@ class AdminHandler extends ActionHandler
 			exit;
 		}
 
-		/* Create the Theme and template engine */
-		$this->theme= Themes::create('admin', 'RawPHPEngine', ADMIN_DIR);
 		$this->display( 'import' );
 	}
 
@@ -450,8 +447,6 @@ class AdminHandler extends ActionHandler
 	 **/
 	public function post_plugins()
 	{
-		/* Create the Theme and template engine */
-		$this->theme= Themes::create('admin', 'RawPHPEngine', ADMIN_DIR);
 		$this->display( 'plugins' );
 	}
 	
