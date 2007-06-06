@@ -41,6 +41,16 @@ class XMLRPCStruct
 	}
 	
 	/**
+	 * Magic isset for XMLRPCStruct, returns whether a property value is set.
+	 * @param string $name The name of the parameter
+	 * @return boolean True if the value is set, false if not
+	 */	 	 	 	
+	public function __isset($name)
+	{
+		return isset( $this->fields[$name] );
+	}
+	
+	/**
 	 * Get the list of properties that this object contains.
 	 * 
 	 * @return array List of object properties, as stored in $this->fields.
