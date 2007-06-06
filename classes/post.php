@@ -88,6 +88,25 @@ class Post extends QueryRecord
 	}
 
 	/**
+	 * returns the friendly name of a post status, or null
+	 * @param mixed a post status value, or name
+	 * @return mixed a string of the status name, or null
+	**/
+	public static function status_name( $status )
+	{
+		$statuses= array_flip( Post::list_post_statuses() );
+		if ( is_numeric( $status ) && isset( $statuses[$status] ) )
+		{
+			return $statuses[$status];
+		}
+		if ( FALSE !== in_array( $status, $statuses ) )
+		{
+			return $status;
+		}
+		return '';
+	}
+
+	/**
 	 * returns the integer value of the specified post type, or false
 	 * @param mixed a post type name or number
 	 * @return mixed an integer or boolean false
@@ -102,6 +121,25 @@ class Post extends QueryRecord
 			return $types[strtolower($name)];
 		}
 		return false;
+	}
+
+	/**
+	 * returns the friendly name of a post type, or null
+	 * @param mixed a post type number, or name
+	 * @return mixed a string of the post type, or null
+	**/
+	public function type_name( $type )
+	{
+		$types= array_flip( Post::list_post_types() );
+		if ( is_numeric( $type ) && isset( $types[$type] ) )
+		{
+			return $types[$type];
+		}
+		if ( FALSE !== in_array( $type, $types ) )
+		{
+			return $type;
+		}
+		return '';
 	}
  
 	/**
