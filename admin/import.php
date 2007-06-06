@@ -11,7 +11,7 @@
 				?>
 				<p>You do not currently have any import plugins installed.</p>
 				<p>Please <a href="<?php URL::out('admin', 'page=plugins'); ?>">activate an import plugin</a> to enable importing.</p>
-				<? else: ?>
+				<?php else: ?>
 				<p>Please choose the type of import to perform:</p>
 				<select name="importer">
 					<option></option>
