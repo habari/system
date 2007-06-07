@@ -90,7 +90,7 @@ class XMLRPCClient
 				error_reporting($bit && !E_WARNING);
 				$responsexml = new SimpleXMLElement($responseutf8);
 				error_reporting($bit);
-				return XMLRPCUtils::decode_args(reset($responsexml->xpath('/methodResponse/params/param/value/*')));
+				return XMLRPCUtils::decode_args(reset($responsexml->xpath('/methodResponse/params/param/value')));
 			}
 			catch (Exception $e){
 				Utils::debug($response, $e);

@@ -23,7 +23,7 @@ class XMLRPCServer extends ActionHandler
 		
 		$function = $xml->methodName;
 		$params= array();
-		foreach($xml->xpath('//params/param/value/*') as $param) {
+		foreach($xml->xpath('//params/param/value') as $param) {
 			$params[] = XMLRPCUtils::decode_args($param);
 		}
 
