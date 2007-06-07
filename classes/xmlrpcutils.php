@@ -71,6 +71,10 @@ class XMLRPCUtils
 	 */
 	public static function decode_args($value)
 	{
+		if(count($value->children())) {
+			$value = $value->xpath('*');
+			$value = $value[0];
+		}
 		switch($value->getName()) {
 		case 'array':
 			$result_array = array();
@@ -104,6 +108,8 @@ class XMLRPCUtils
 			return ((int)$value == 1) ? true : false;
 		case 'dateTime.iso8601':
 			return strtotime((string)$value);
+		default:
+			return (string)$value;
 		}
 	}
 
