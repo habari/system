@@ -8,6 +8,8 @@
 
 class Utils
 {
+	static $debug_defined = false;
+
 	/**
 	 * Utils constructor
 	 * This class should not be instantiated.
@@ -265,17 +267,20 @@ class Utils
 	}
 
 	/**
-	 * function debug_reveal
 	 * Helper function used by debug()
 	 * Not for external use.
 	 **/
-	static function debug_reveal($show, $hide, $debugid)
+	static function debug_reveal($show, $hide, $debugid, $close = false)
 	{
-		return "<a href=\"#\" id=\"debugshow-{$debugid}\" onclick=\"debugtoggle('debugshow-{$debugid}');debugtoggle('debughide-{$debugid}');return false;\">$show</a><span style=\"display:none;\" id=\"debughide-{$debugid}\">$hide</span>";
+		if($close) {
+			$reshow = "onclick=\"debugtoggle('debugshow-{$debugid}');debugtoggle('debughide-{$debugid}');return false;\"";
+			$restyle = "<span class=\"utils__block\">";
+			$restyle2 = "</span>";
+		}
+		return "<span class=\"utils__arg\"><a href=\"#\" id=\"debugshow-{$debugid}\" onclick=\"debugtoggle('debugshow-{$debugid}');debugtoggle('debughide-{$debugid}');return false;\">$show</a><span style=\"display:none;\" id=\"debughide-{$debugid}\" {$reshow} >{$restyle}$hide{$restyle2}</span></span>";
 	}
 
 	/**
-	 * function debug
 	 * Outputs a call stack with parameters, and a dump of the parameters passed.
 	 * @params mixed Any number of parameters to output in the debug box.
 	 **/
@@ -285,13 +290,29 @@ class Utils
 		$tracect= 0;
 
 		$fooargs = func_get_args();
-		echo "<div style=\"background-color:#ffeeee;border:1px solid red;text-align:left;\">";
-		if(function_exists('debug_backtrace')) {
+		echo "<div class=\"utils__debugger\">";
+		if(!self::$debug_defined) {
 			$output = "<script type=\"text/javascript\">
-			debuggebi = function(id) {return document.getElementById(id);}
-			debugtoggle = function(id) {debuggebi(id).style.display = debuggebi(id).style.display=='none'?'':'none';}
-			</script>
-			<table style=\"background-color:#fff8f8;\">";
+				debuggebi = function(id) {return document.getElementById(id);}
+				debugtoggle = function(id) {debuggebi(id).style.display = debuggebi(id).style.display=='none'?'inline':'none';}
+				</script>
+				<style type=\"text/css\">
+				.utils__debugger{background-color:#550000;border:1px solid red;text-align:left;}
+				.utils__debugger pre{margin:5px;}.utils__debugger pre em{color:#dddddd;}
+				.utils__debugger table{background-color:#770000;color:white;width:100%;}
+				.utils__debugger td{padding-left: 10px;vertical-align:top;white-space: pre;font-family:Courier New,Courier,monospace;}
+				.utils__debugger .utils__odd{background:#880000;}
+				.utils__debugger .utils__arg a{color:#ff3333;}
+				.utils__debugger .utils__arg span{display:none;}
+				.utils__debugger .utils__arg span span{display:inline;}
+				.utils__debugger .utils__arg span .utils__block{display:block;background:#990000;margin:0px 2em;-moz-border-radius:10px;padding:5px;}
+				</style>
+			";
+			echo $output;
+			self::$debug_defined = true;
+		}
+		if(function_exists('debug_backtrace')) {
+			$output = "<table>";
 			$backtrace = array_reverse(debug_backtrace(), true);
 			foreach($backtrace as $trace) {
 				$file = $line = $class = $type = $function = '';
@@ -299,20 +320,21 @@ class Utils
 				extract($trace);
 				if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
 				if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
-
-				$output .= "<tr><td style=\"padding-left: 10px;\">{$file} ({$line}):</td><td style=\"padding-left: 20px;white-space: pre;font-family:Courier New,Courier,monospace\">{$fname}(";
+				$odd = $odd == '' ? 'class="utils__odd"' : '';
+				$output .= "<tr {$odd}><td>{$file} ({$line}):</td><td>{$fname}(";
 				$comma = '';
 				foreach((array)$args as $arg) {
 					$tracect++;
-					$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities(print_r($arg,1)), $debugid . $tracect );
+					$argout = print_r($arg,1);
+					$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
 					$comma = ', ';
 				}
 				$output .= ");</td></tr>";
 			}
 			$output .= "</table>";
-			echo Utils::debug_reveal('[Show Call Stack]', $output, $debugid);
+			echo Utils::debug_reveal('<small>Call Stack</small>', $output, $debugid);
 		}
-		echo "<pre>";
+		echo "<pre style=\"color:white;\">";
 		foreach( $fooargs as $arg1 ) {
 			echo '<em>' . gettype($arg1) . '</em> ';
 			echo htmlentities( print_r( $arg1, TRUE ) ) . "<br/>";
@@ -320,69 +342,61 @@ class Utils
 		echo "</pre></div>";
 	}
 	
+	/**
+	 * Outputs debug information like ::debug() but using Firebug's Console.
+	 * @params mixed Any number of parameters to output in the debug box.
+	 **/
 	static function firedebug()
 	{
-		$debugid= md5(microtime());
-		$tracect= 0;
-
-		$bcomma = '';
-		$output = "
-			<script type=\"text/javascript\">
-			if(console) {
-				evalue={
-		";
-
 		$fooargs = func_get_args();
+		$output = "<script type=\"text/javascript\">\nif(window.console){\n";
+		$backtrace = array_reverse(debug_backtrace(), true);
+		$output .= Utils::firebacktrace($backtrace);
 
-		if(function_exists('debug_backtrace')) {
-			$output.= 'backtrace:[';
-			$backtrace = array_reverse(debug_backtrace(), true);
-			$bcomma = '';
-			foreach($backtrace as $trace) {
-				$file = $line = $class = $type = $function = '';
-				$args= array();
-				extract($trace);
-				if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
-				if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
-
-				$output.= "{$bcomma}{\nfile:'{$file}',\nline:'{$line}',\nfunction:'{$fname}'";
-				if(is_array($args) && count($args) > 0) {
-					$output .= ",\nargs:[";
-					$comma = '';
-					foreach((array)$args as $arg) {
-						$output.= "\n\t" . $comma . "'" . gettype($arg) . ': ';
-						$argtext = preg_replace('/\r\n|\n/', '\n', print_r( $arg, 1 ) );
-						$argtext = str_replace('\\', '\\\\', $argtext );
-						$output.= htmlentities( $argtext ) . "'";
-						$comma= ', ';
-					}
-					$output .= "\n]";
-				}
-				$output.= "}";
-				$bcomma = ', ';
-			}
-			$output .= "\n], \n";
+		foreach( $fooargs as $arg1 ) {
+			$output .= "console.info(\"%s:  %s\", \"" . gettype($arg1) . "\"";
+			$output .= ", \"" . str_replace("\n", '\n', addslashes(print_r($arg1,1))) . "\");\n";
 		}
-		$output.= "args:[";
-		$comma = '';
-		foreach( $fooargs as $arg ) {
-			$output.= $comma . "'" . gettype($arg) . ': ';
-			$argtext = htmlentities( print_r( $arg, 1 ) ) . "'";
-			$argtext = preg_replace('/\r\n|\n/', '\n', $argtext );
-			$argtext = str_replace('\\', '\\\\', $argtext );
-			$output.= $argtext; 
-			$comma= ', ';
-		}
-		$output.= "
-				]};
-				console.group('firedebug');
-				console.dir(evalue);
-				console.groupEnd();
-			}
-			</script>
-		";
-		//$output = preg_replace('/^\t+|\n|\r/', '', $output);
+		$output .= "console.groupEnd();\n}\n</script>";
 		echo $output;
+	}
+	
+	/**
+	 * Utils::firebacktrace()
+	 * 
+	 * @param array $backtrace An array of backtrace details from debug_backtrace()
+	 * @return string Javascript output that will display the backtrace in the Firebug console. 
+	 */
+	static function firebacktrace($backtrace)
+	{
+		$output = '';
+		extract(end($backtrace));
+		if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
+		if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
+		$output .= "console.group(\"%s(%s):  %s(...)\", \"".basename($file)."\", \"{$line}\", \"{$fname}\");\n";
+		foreach($backtrace as $trace) {
+			$file = $line = $class = $type = $function = '';
+			$args= array();
+			extract($trace);
+			if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
+			if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
+			
+			$output .= "console.group(\"%s(%s):  %s(%s)\", \"{$file}\", \"{$line}\", \"{$fname}\", \"";
+			
+			$output2 = $comma = $argtypes = '';
+			foreach((array)$args as $arg) {
+				$argout = str_replace("\n", '\n', addslashes(print_r($arg,1)));
+				//$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
+				$argtypes .= $comma . gettype($arg);
+				$output2 .= "console.log(\"$argout\");\n";
+				$comma = ', ';
+			}
+			$argtypes = trim($argtypes);
+			$output .= "{$argtypes}\");\n{$output2}";
+			$output .= "console.groupEnd();\n";
+			//$output .= ");</td></tr>";
+		}
+		return $output;
 	}
 
 	/**
