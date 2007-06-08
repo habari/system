@@ -112,7 +112,21 @@ class URL extends Singleton
 	 */
 	static public function get( $rule_names, $args= array(), $useall= true )
 	{
-		$args= Utils::get_params( $args ); 
+		if ( is_object( $args ) ) {
+			if ( method_exists( $args, 'url_args' ) ) {
+				$args= $args->url_args();
+			}
+			else {
+				$ob= $args;
+				$args= array();
+				foreach( $ob as $key => $val) {
+					$args[$key]= $val;
+				}
+			}
+		}
+		else {
+			$args= Utils::get_params( $args ); 
+		}
 		
 		$url= URL::instance();
 		$url->load_rules();
@@ -142,7 +156,7 @@ class URL extends Singleton
 			}
 		}
 	}
-
+	
 	/**
 	 * Helper wrapper function.  Outputs the URL via echo.
 	 * @param string $rule_name name of the rule which would build the URL

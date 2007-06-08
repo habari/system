@@ -272,6 +272,7 @@ class Utils
 	 **/
 	static function debug_reveal($show, $hide, $debugid, $close = false)
 	{
+		$reshow = $restyle = $restyle2 = '';
 		if($close) {
 			$reshow = "onclick=\"debugtoggle('debugshow-{$debugid}');debugtoggle('debughide-{$debugid}');return false;\"";
 			$restyle = "<span class=\"utils__block\">";
@@ -314,6 +315,8 @@ class Utils
 		if(function_exists('debug_backtrace')) {
 			$output = "<table>";
 			$backtrace = array_reverse(debug_backtrace(), true);
+			$odd = '';
+			$tracect = 0;
 			foreach($backtrace as $trace) {
 				$file = $line = $class = $type = $function = '';
 				$args= array();
