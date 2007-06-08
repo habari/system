@@ -587,5 +587,15 @@ class Post extends QueryRecord
 		}
 		return $this->author_object;
 	}
+	
+	/**
+	 * Returns a set of properties used by URL::get to create URLs
+	 * @return array Properties of this post used to build a URL
+	 */	 	 
+	public function url_args()
+	{  
+	Utils::debug();
+		return array_merge( $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
+	}
 }
 ?>
