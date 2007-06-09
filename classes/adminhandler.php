@@ -511,7 +511,7 @@ class AdminHandler extends ActionHandler
 					),
 					'users'=>array(
 						'caption'=>_t('Users'),
-						'url'=>URL::get('admin', 'page=themes')
+						'url'=>URL::get('admin', 'page=users')
 					),
 					'import'=>array(
 						'caption'=>_t('Import'),
