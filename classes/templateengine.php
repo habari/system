@@ -42,6 +42,39 @@ abstract class TemplateEngine
 	 */
 	abstract function fetch( $template ); // virtual - implement in derived class
 
+	/**
+	 * Tries to retrieve a variable from the internal array engine_vars.
+	 * Method returns the value if succesful, returns false otherwise.
+	 *
+	 * @param key name of variable
+	 */
+	abstract function __get( $key ); // virtual - implement in derived class
+
+	/** 
+	 * Assigns a variable to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param key name of variable
+	 * @param value value of variable
+	 */
+	abstract function __set( $key, $value ); // virtual - implement in derived class
+
+	/** 
+	 * Unassigns a variable to the template engine.
+	 * 
+	 * @param key name of variable
+	 */
+	abstract function __unset( $key );
+
+	/** 
+	 * Detects if a variable is assigned to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param key name of variable
+	 * @returns boolean true if key is set, false if not set
+	 */
+	abstract function __isset( $key ); // virtual - implement in derived class
+
 	/** 
 	 * Assigns a variable to the template engine for use in 
 	 * constructing the template's output.

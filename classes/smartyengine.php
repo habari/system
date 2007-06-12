@@ -35,6 +35,52 @@ class SmartyEngine extends TemplateEngine
 		$this->smarty->compile_check= DEBUG;
 		$this->smarty->caching= !DEBUG;
 	}
+	
+	
+	/**
+	 * Tries to retrieve a variable from the internal array engine_vars.
+	 * Method returns the value if succesful, returns false otherwise.
+	 *
+	 * @param name name of variable
+	 */
+	public function __get( $key )
+	{
+		return ( !empty( $this->smarty->get_template_vars( $key ) ) ) ? $this->smarty->get_template_vars( $key ) : null;
+	}
+	
+	/** 
+	 * Assigns a variable to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param name name of variable
+	 * @param value value of variable
+	 */
+	public function __set( $key, $value )
+	{
+		$this->smarty->assign( $key, $value );
+	}
+	
+	/** 
+	 * Unassigns a variable to the template engine.
+	 * 
+	 * @param name name of variable
+	 */
+	public function __unset( $key )
+	{
+		$this->smarty->clear_assign( $key );
+	}
+	
+	/** 
+	 * Detects if a variable is assigned to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param string $key name of variable
+	 * @returns boolean true if name is set, false if not set
+	 */
+	public function __isset( $key )
+	{
+		return ( !empty( $this->smarty->get_template_vars( $key ) ) ) ? true : false;
+	}
 
 	/**
 	 * A function which outputs the result of a transposed

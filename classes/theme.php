@@ -133,7 +133,7 @@ class Theme
 	public function act_display( $paramarray= array( 'user_filters'=> array() ) )
 	{
 		extract( $paramarray );
-		
+
 		$where_filters= array();
 		$where_filters= array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $this->valid_filters ) );
 		$where_filters['status']= Post::status('published');
@@ -330,11 +330,23 @@ class Theme
 	}
 
 	/**
-	 * Helper function: Avoids having to call $theme->template_engine->assign( 'key', 'value' );
+	 * Helper function: Avoids having to call $theme->template_engine->key= 'value';
 	 */
 	public function assign( $key, $value )
 	{
-		$this->template_engine->assign( $key, $value );
+		$this->template_engine->$key= $value;
+	}
+	
+	/** 
+	 * Detects if a variable is assigned to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param key name of variable
+	 * @returns boolean true if name is set, false if not set
+	 */
+	public function __isset( $key )
+	{
+		return isset( $this->template_engine->$key );
 	}
 }
 
