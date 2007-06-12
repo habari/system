@@ -25,7 +25,52 @@ class RawPHPEngine extends TemplateEngine
 	{
 		// Nothing to do here...
 	}
-
+	
+	/**
+	 * Tries to retrieve a variable from the internal array engine_vars.
+	 * Method returns the value if succesful, returns false otherwise.
+	 *
+	 * @param key name of variable
+	 */
+	public function __get( $key )
+	{
+		return isset( $this->engine_vars[$key] ) ? $this->engine_vars[$key] : null;
+	}
+	
+	/** 
+	 * Assigns a variable to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param key name of variable
+	 * @param value value of variable
+	 */
+	public function __set( $key, $value )
+	{
+		$this->engine_vars[$key]= $value;
+	}
+	
+	/** 
+	 * Unassigns a variable to the template engine.
+	 * 
+	 * @param key name of variable
+	 */
+	public function __unset( $key )
+	{
+		unset( $this->engine_vars[$key] );
+	}
+	
+	/** 
+	 * Detects if a variable is assigned to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param key name of variable
+	 * @returns boolean true if name is set, false if not set
+	 */
+	public function __isset( $key )
+	{
+		return isset( $this->engine_vars[$key] );
+	}
+	
 	/**
 	 * A function which outputs the result of a transposed
 	 * template to the output stream
@@ -73,7 +118,7 @@ class RawPHPEngine extends TemplateEngine
 		$contents= ob_get_contents();
 		return $contents;
 	}
-
+	
 	/** 
 	 * Assigns a variable to the template engine for use in 
 	 * constructing the template's output.
@@ -83,7 +128,7 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function assign( $key, $value= '' )
 	{
-		$this->engine_vars[$key]= $value;
+		$this->$key= $value;
 	} 
 	
 	/** 
@@ -95,7 +140,7 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function assigned( $key )
 	{
-		return isset( $this->engine_vars[$key] );
+		return isset( $this->$key );
 	}
 
 	/** 
@@ -110,7 +155,7 @@ class RawPHPEngine extends TemplateEngine
 			$this->engine_vars[$key][]= $value;
 		}
 		else {
-			$this->assign( $key, $value );
+			$this->engine_vars[$key]= $value;
 		}
 	} 
 }
