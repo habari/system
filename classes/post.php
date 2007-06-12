@@ -507,15 +507,13 @@ class Post extends QueryRecord
 	 **/	 	 	
 	private function get_permalink()
 	{
-		$args = array_merge($this->to_array(), Utils::getdate(strtotime($this->pubdate)));
-		$types= array_flip(Post::list_post_types());
-		$content_type= $types[$this->content_type];
+		$content_type= Post::type_name( $this->content_type );
 		return URL::get( 
 			array(
 				"display_{$content_type}",
 				'display_posts_by_slug',
 			), 
-			$args, 
+			$this, 
 			false 
 		);
 	}
@@ -592,10 +590,12 @@ class Post extends QueryRecord
 	 * Returns a set of properties used by URL::get to create URLs
 	 * @return array Properties of this post used to build a URL
 	 */	 	 
-	public function url_args()
+	public function get_url_args()
 	{  
-	Utils::debug();
-		return array_merge( $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
+		$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
+		$author= URL::extract_args( $this->author, 'author_' );
+		$info= URL::extract_args( $this->info, 'info_' );
+		return array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
 	}
 }
 ?>
