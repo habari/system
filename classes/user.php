@@ -482,6 +482,15 @@ class User extends QueryRecord
 		return parent::__get( $name );
 	}
 
+	/**
+	 * Returns a set of properties used by URL::get to create URLs
+	 * @return array Properties of this post used to build a URL
+	 */	 	 
+	public function get_url_args()
+	{
+		return array_merge( URL::extract_args( $this->info, 'info_' ), $this->to_array() );
+	}
+
 }
 
 ?>

@@ -8,10 +8,10 @@
  * 
  * @package Habari
  */
-abstract class InfoRecords extends ArrayObject
+abstract class InfoRecords implements URLProperties
 {	
 	// the info array
-	protected $__inforecord_array;
+	protected $__inforecord_array= array();
 	// table which contains the info records
 	protected $_table_name;
 	// name of the primary key in the info record table
@@ -155,6 +155,16 @@ abstract class InfoRecords extends ArrayObject
 		}
 		return false;        
 	}	
+
+	/**
+	 * Returns an array with the current field settings
+	 * @return array The field settings as they would be saved
+	 **/
+	public function get_url_args()
+	{
+		$this->_load();
+		return array_map( create_function( '$a', 'return $a["value"];' ), $this->__inforecord_array );
+	}
 	
 	/**
 	 * Remove all info options. Primarily used when deleting the parent object. 

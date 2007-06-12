@@ -7,7 +7,7 @@
  * @package Habari
  */
 
-class QueryRecord
+class QueryRecord implements URLProperties
 {
 	protected $fields = array();  // Holds field values from db
 	protected $newfields = array(); // Holds updated field values to commit to db
@@ -107,6 +107,15 @@ class QueryRecord
 	{
 		return array_merge($this->fields, $this->newfields);
 	}	 
+
+	/**
+	 * Returns an array with the current field settings
+	 * @return array The field settings as they would be saved
+	 **/
+	public function get_url_args()
+	{
+		return $this->to_array();
+	}
 
 	/**
 	 * function update

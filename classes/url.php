@@ -107,26 +107,12 @@ class URL extends Singleton
 	 * </code>
 	 * 
 	 * @param mixed $rule_names string name of the rule or array of rules which would build the URL
-	 * @param array $args (optional) array of placeholder replacement values
+	 * @param mixed $args (optional) array or object of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 */
 	static public function get( $rule_names, $args= array(), $useall= true )
 	{
-		if ( is_object( $args ) ) {
-			if ( method_exists( $args, 'url_args' ) ) {
-				$args= $args->url_args();
-			}
-			else {
-				$ob= $args;
-				$args= array();
-				foreach( $ob as $key => $val) {
-					$args[$key]= $val;
-				}
-			}
-		}
-		else {
-			$args= Utils::get_params( $args ); 
-		}
+		$args= self::extract_args( $args ); 
 		
 		$url= URL::instance();
 		$url->load_rules();
@@ -167,6 +153,40 @@ class URL extends Singleton
 	{
 		echo URL::get( $rule_name, $args, $useall );
 	}
+
+	/**
+	 * Extract the possible arguments to use in the URL from the passed variable
+	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
+	 * @return array Properties to use to construct  a URL
+	 **/	 	 	 	
+	static public function extract_args( $args, $prefix = '' )
+	{
+		if ( is_object( $args ) ) {
+			if ( $args instanceof URLProperties ) {
+				$args= $args->get_url_args();
+			}
+			else {
+				$args_ob= array();
+				foreach ($args as $key => $value ) {
+					$args_ob[$key]= $value;
+				}
+				$args= $args_ob;
+			}
+		}
+		else {
+			$args= Utils::get_params( $args );
+		}
+		// can this be done with array_walk?
+		if ( $prefix && $args ) {
+			$args_out= array();
+			foreach ( $args as $key => $value ) {
+				$args_out[$prefix.$key]= $value;
+			}
+			$args= $args_out;
+		}
+		return $args;
+	}
+
 }
 
 ?>
