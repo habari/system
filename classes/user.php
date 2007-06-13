@@ -305,6 +305,20 @@ class User extends QueryRecord
 	}
 
 	/**
+	 * Select a user from the database by userinfo
+	 * @param string $who the meta info.
+	 * @return object User object, or false
+	**/
+	public static function by_userinfo( $who ) {
+		if( '' == $who ) {
+			return false;
+		}
+		$user_id= DB::get_results( "SELECT user_id FROM " . DB::table('userinfo') . " WHERE value = '$who'" );
+		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array( $user_id[0]->user_id ), 'User' );
+		return $user;
+	}
+
+	/**
 	* Fetches all the users from the DB.
 	* @todo TODO still need some checks for only authors.
 	* @return array
