@@ -150,7 +150,7 @@ class FormUI
 		if(class_exists($type)) {
 			$control= new $type($name, $caption, $default);
 			$control->set_storage( $this->name . ':' . $name );
-			$this->controls[]= $control;
+			$this->controls[$name]= $control;
 		}
 		return $control;
 	}
