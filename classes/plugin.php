@@ -12,6 +12,8 @@
 abstract class Plugin
 {
 	private $_class_name= null;
+	public $info;
+	public $plugin_id;
 
 	/**
 	 * Plugin constructor.
@@ -19,7 +21,10 @@ abstract class Plugin
 	 * to extract plugin info.  Instead, include a sink for a "init" hook
 	 * which is executed immediately after the plugin is loaded during normal execution.
 	 **/
-	final public function __construct(){}	 
+	final public function __construct(){
+		$this->info= new InfoObject( $this->info() );
+		$this->plugin_id= $this->plugin_id();
+	}	 
 
 	/**
 	 * Gets the filename that contains the plugin
@@ -46,7 +51,7 @@ abstract class Plugin
 	 */
 	final public function plugin_id()
 	{
-		return sprintf('%x', crc32($this->get_file()));
+		return Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
 	}
 
 	/**
