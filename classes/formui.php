@@ -10,8 +10,9 @@
 class FormUI
 {
 	private $name;
-	private $controls= array();
+	public $controls= array();
 	private $success_callback;
+	private static $outpre = false;
 	
 	/**
 	 * Form UI constructor - create to build form UI.
@@ -52,10 +53,14 @@ class FormUI
 			}
 		}
 		$out= '
-			<form method="post" action="">
+			<form method="post" action="" class="FormUI">
 			<input type="hidden" name="FormUI" value="' . $this->salted_name() . '">
 		';
+		$out.= $this->pre_out_controls();
 		$out.= $this->output_controls($forvalidation);
+		
+		$out.= '<input type="submit" value="save">';
+		
 		$out.= '</form>';
 		
 		echo $out;
@@ -82,6 +87,24 @@ class FormUI
 		$out= '';
 		foreach($this->controls as $control) {
 			$out.= $control->out( $forvalidation );
+		}
+		return $out;
+	}
+	
+	/**
+	 * Return pre-output control configuration scripts for any controls that require them.
+	 * 
+	 * @return string The output of controls' pre-output HTML.
+	 */
+	public function pre_out_controls( )
+	{
+		$out= '';
+		if(!FormUI::$outpre) {
+			FormUI::$outpre = true;
+			$out.= '<script type="text/javascript">var controls = Object();</script>';
+		}
+		foreach($this->controls as $control) {
+			$out.= $control->pre_out( );
 		}
 		return $out;
 	}
@@ -224,6 +247,17 @@ class FormControl
 	 */
 	public function out($forvalidation) 
 	{
+		return '';
+	}
+	
+	/**
+	 * Return the HTML/script required for this type of control.
+	 * Abstract function.
+	 * 
+	 */
+	public function pre_out() 
+	{
+		return '';
 	}
 	
 	/**
@@ -348,6 +382,95 @@ class FormControlText extends FormControl
 			return array(_t('Value must be a valid URL.'));
 		}
 		return array();
+	}
+}
+
+/**
+ * A multiple-slot text control based on FormControl for output via a FormUI.
+ * @todo Make DHTML fallback for non-js browsers 
+ */
+class FormControlTextMulti extends FormControl
+{
+	public static $outpre = false;
+
+	/**
+	 * Produce HTML output for this text control.
+	 * 
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function out($forvalidation)
+	{
+		$class= 'textmulti formcontrol';
+		if($forvalidation) {
+			$validate= $this->validate();
+			if(count($validate) != 0) {
+				$class.= ' invalid';
+				$message= implode('<br>', $validate);
+			}
+		}
+	
+		$out= '<div class=' . $class . '>';
+		if(isset($message)) {
+			$out.= "<p class=\"error\">{$message}</p>";
+		}
+		$out.= '<p>' . $this->caption . '</p>';
+		$values = $this->value;
+		if(!is_array($values)) {
+			$values = array($values);
+		}
+		foreach($values as $value) {
+			$out.= '<label><input type="text" name="' . $this->field . '[]" value="' . $value . '"> <a href="#" onclick="return controls.textmulti.remove(this);">[' . _t('remove') . ']</a></label>';
+		}
+		$out.= '<a href="#" onclick="return controls.textmulti.add(this, \'' . $this->field . '\');">[' . _t('add') . ']</a>';
+		$out.= '</div>';
+		return $out;
+	}
+	
+	/**
+	 * Return the HTML/script required for this control.  Do it only once.
+	 * @return string The HTML/javascript required for this control.	 
+	 */	 
+	public function pre_out()
+	{
+		$out= '';
+		if(!FormControlTextMulti::$outpre) {
+			FormControlTextMulti::$outpre = true;
+			$out.= '
+				<script type="text/javascript">
+				controls.textmulti = {
+					add: function(e, field){
+						$(e).before("<label><input type=\"text\" name=\"" + field + "[]\"> <a href=\"#\" onclick=\"return controls.textmulti.remove(this);\">[' . _t('remove') . ']</a></label>");
+						return false;
+					},
+					remove: function(e){
+						if(confirm("' . _t('Remove this item?') . '")) {
+							$(e).parents("label").remove();
+						}
+						return false;
+					}
+				}
+				</script>
+			';
+		}
+		return $out;
+	}
+	
+	/**
+	 * A validation function that returns an error if the value passed in is not a valid URL.
+	 * 
+	 * @param array $text An array of strings to test if they are all valid URLs
+	 * @return array An empty array if the array of strings is all valid URLs, or an array with strings describing the errors
+	 */
+	public static function validate_url( $arry )
+	{
+		$result = array();
+		foreach($arry as $text) {
+			if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
+				$result[] = sprintf(_t('Value %s must be a valid URL.', $text));
+			}
+		}
+		return $result;
 	}
 }
 
