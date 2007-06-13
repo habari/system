@@ -75,6 +75,12 @@ abstract class InfoRecords implements URLProperties
 			$this->_loaded == TRUE;
 			return;
 		}
+		
+		// This InfoRecord is read-only?
+		if(empty($this->_table_name)) {
+			$this->_loaded == TRUE;
+			return;
+		}
 		 
 		$result= DB::get_results( '
 			SELECT name, value, type
@@ -174,6 +180,10 @@ abstract class InfoRecords implements URLProperties
 	 **/	
 	public function delete_all()
 	{
+		// This InfoRecord is read-only?
+		if(empty($this->_table_name)) {
+			return;
+		}
 		$result= DB::query( '
 			DELETE FROM ' . $this->_table_name . '
 			WHERE ' . $this->_key_name . ' = ?',

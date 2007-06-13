@@ -229,10 +229,23 @@ class Plugins
 	static public function load( $file )
 	{
 		$class= Plugins::class_from_filename( $file );
-		self::$plugins[$file]= new $class;
-		$plugin= self::$plugins[$file];
+		$plugin = new $class;
+		self::$plugins[$plugin->plugin_id]= $plugin;
 		$plugin->load();
 		return $plugin;
+	}
+	
+	/**
+	 * Returns a plugin id for the filename specified.  
+	 * Used to unify the way plugin ids are generated, rather than spreading the
+	 * calls internal to this function over several files. 
+	 * 
+	 * @param string $file The filename to generate an id for
+	 * @return string A plugin id.
+	 */
+	static public function id_from_file( $file )
+	{
+		return sprintf( '%x', crc32( $file ) );
 	}
 
 	/**

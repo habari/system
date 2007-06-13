@@ -4,7 +4,10 @@
 		<h1>Currently Available Plugins</h1>
 		<p>Activate, deactivate and remove plugins through this interface.</p>
 	</div>
-	<div class="dashboard-block c3">
+	<?php
+	$columnsize = isset( $this->engine_vars['configure'] ) ? 'c1' : 'c3';
+	?>
+	<div class="dashboard-block <?php echo $columnsize; ?>">
 		<?php 
 			$listok= true;
 			$all_plugins= Plugins::list_all();
@@ -47,11 +50,11 @@
 			<?php
 			foreach ( $all_plugins as $file ) :
 				$verb= 'Activate';
-				if ( array_key_exists( $file, $active_plugins ) )
+				$plugin_id= Plugins::id_from_file( $file );
+				if ( array_key_exists( $plugin_id, $active_plugins ) )
 				{
 					$verb= 'Deactivate';
-					$plugin= $active_plugins[$file];
-					$info= $plugin->info();
+					$plugin= $active_plugins[$plugin_id];
 					$active= true;
 				}
 				else
@@ -60,21 +63,20 @@
 					// in order to get its info()
 					include_once($file);
 					$plugin= Plugins::load($file);
-					$info= $plugin->info();
 					$active= false;
 				}
-				if(isset($info['url'])) {
-					$url = "<a href='{$info['url']}' title='Visit {$info['name']}'>{$info['author']}</a>";
+				if(isset($plugin->info->url)) {
+					$url = "<a href='{$plugin->info->url}' title='Visit {$plugin->info->name}'>{$plugin->info->author}</a>";
 				}
 				else {
-					$url = $info['author'];
+					$url = $plugin->info->author;
 				}
 			?>
 				<tr>
-					<td><?php echo $info['name']; ?> 
+					<td><?php echo $plugin->info->name; ?> 
 					</td>
 					<td><?php echo $url; ?></td>
-					<td><?php echo $info['version']; ?></td>
+					<td><?php echo $plugin->info->version; ?></td>
 					<td>
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
 					<input type='hidden' name='plugin' value='<?php echo $file; ?>' />
@@ -82,10 +84,13 @@
 					<?php 
 					if ($active) {
 						$actions= array();
-						$actions= Plugins::filter('plugin_config', $actions, $plugin->plugin_id());
-						foreach($actions as $action) {
+						$actions= Plugins::filter('plugin_config', $actions, $plugin->plugin_id);
+						foreach($actions as $action => $caption) {
+							if(is_numeric($action)) {
+								$action = $caption;
+							}
 							?>
-							<a href="<?php echo Utils::de_amp(URL::get( 'admin', 'page=plugins&configure=' . $plugin->plugin_id() . '&action=' . $action)); ?>"><?php echo $action; ?></a>
+							<a href="<?php echo Utils::de_amp(URL::get( 'admin', 'page=plugins&configure=' . $plugin->plugin_id . '&action=' . $action)); ?>"><?php echo $caption; ?></a>
 							<?php
 						}
 					}
@@ -98,9 +103,9 @@
 		</table>
 		<?php endif; ?>
 	</div>
-	<?php if(isset($this->engine_vars['configure'])): ?>
-	<div class="dashboard-block c3">
-		<h2>Plugin Options</h2>
+	<?php if( isset( $this->engine_vars['configure'] ) && ( $configure = $this->engine_vars['configure'] ) ): ?>
+	<div class="dashboard-block c2" id="plugin_options">
+		<h2><?php echo $active_plugins[$configure]->info->name; echo ' : '; echo $action; ?></h2>
 		<?php
 			Plugins::act('plugin_ui', $this->engine_vars['configure'], $this->engine_vars['action']);
 		?>
