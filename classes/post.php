@@ -342,9 +342,10 @@ class Post extends QueryRecord
 		if ( count($this->tags) == 0) {return;}
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
 		foreach( (array)$this->tags as $tag ) { 
+			$tag_slug= str_replace( ' ', '-', $tag);
 			// @todo TODO Make this multi-SQL safe!
 			if( DB::get_value( 'SELECT count(*) FROM ' . DB::table('tags') . ' WHERE tag_text = ?', array( $tag ) ) == 0 ) {
-				DB::query( 'INSERT INTO ' . DB::table('tags') . ' (tag_text, tag_slug) VALUES (?, ?)', array( $tag, $tag ) );
+				DB::query( 'INSERT INTO ' . DB::table('tags') . ' (tag_text, tag_slug) VALUES (?, ?)', array( $tag, $tag_slug ) );
 			}
 			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table('tags') . ' WHERE tag_text = ?', 
 				array( $this->fields['id'], $tag ) 
@@ -371,6 +372,7 @@ class Post extends QueryRecord
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->savetags();
+		EventLog::log('New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name($this->content_type) . '; Status: ' . Post::status_name($this->status), 'info', 'default', 'habari');
 		Plugins::act('post_inserted', $this);
 		return $result;
 	}
@@ -408,6 +410,7 @@ class Post extends QueryRecord
 		{
 			$this->status= Post::status('deleted');
 			$this->update();
+			EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') scheduled for deletion.', 'info', 'default', 'habari');
 			return;
 		}
 
@@ -417,7 +420,9 @@ class Post extends QueryRecord
 		// Delete all comments associated with this post
 		if(!empty($this->comments))
 			$this->comments->delete();
-		return parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
+		$result= parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
+		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') deleted.', 'info', 'default', 'habari');
+		return $result;
 	}
 	
 	/**
@@ -428,7 +433,9 @@ class Post extends QueryRecord
 	public function publish()
 	{
 		$this->status = 'publish';
-		return $this->update();
+		$result= $this->update();
+		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') published.', 'info', 'default', 'habari');
+		return $result;
 	}
 	
 	/**
@@ -439,7 +446,7 @@ class Post extends QueryRecord
 	 **/	 	 
 	public function __get( $name )
 	{
-		$fieldnames = array_keys($this->fields) + array('permalink', 'tags', 'comments', 'comment_count', 'author');
+		$fieldnames = array_merge( array_keys($this->fields), array('permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author') );
 		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
 			list( $junk, $name, $filter ) = $matches;
@@ -460,6 +467,9 @@ class Post extends QueryRecord
 			break;
 		case 'comment_count':
 			$out = $this->get_comments()->count();
+			break;
+		case 'comment_feed_link':
+			$out= $this->get_comment_feed_link();
 			break;
 		case 'author':
 			$out = $this->get_author();
@@ -526,12 +536,19 @@ class Post extends QueryRecord
 	private function get_tags() {
 		if ( empty( $this->tags ) ) {
 			$sql= "
-				SELECT t.tag_text
+				SELECT t.tag_text, t.tag_slug
 				FROM " . DB::table('tags') . " t
 				INNER JOIN " . DB::table('tag2post') . " t2p 
 				ON t.id = t2p.tag_id
 				WHERE t2p.post_id = ?";
-			$this->tags= DB::get_column( $sql, array( $this->fields['id'] ) );
+			$result= DB::get_results( $sql, array( $this->fields['id'] ) );
+			if ($result)
+			{
+				foreach ($result as $t)
+				{
+					$this->tags[$t->tag_slug]= $t->tag_text;
+				}
+			}
 		}	
 		if ( count( $this->tags ) == 0 ) {
 			return '';
@@ -550,6 +567,16 @@ class Post extends QueryRecord
 			$this->comments_object= Comments::by_post_id( $this->id );
 		}
 		return $this->comments_object;
+	}
+
+	/**
+	 * private function get_comment_feed_link
+	 * Returns the permalink for this post's comments Atom feed
+	 * @return string The permalink of this post's comments Atom feed
+	**/
+	private function get_comment_feed_link()
+	{
+		return URL::get( array( 'entry_comments' ), $this, false );
 	}
 
 	/**
