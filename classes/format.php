@@ -278,7 +278,7 @@ class Format
     		$max_words = empty($max_words) ? 9999999 : intval($max_words);
 				$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs); 
 				$summary = Format::summarize($content, $max_words, $max_paragraphs);
-				if($summary == $content) {
+				if(strlen($summary) >= strlen($content)) {
 					return $content;
 				}
 				else {
