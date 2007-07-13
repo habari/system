@@ -200,7 +200,7 @@ class Site
 		switch ( strtolower( $name ) )
 		{
 			case 'base':
-				$path= trim(dirname($_SERVER["SCRIPT_NAME"]),'/\\');
+				$path= rtrim(dirname($_SERVER["SCRIPT_NAME"]),'/\\');
 				break;
 			case 'user':
 				if ( Site::is('main') )
@@ -218,6 +218,9 @@ class Site
 				break;
 		}
 		$path.= ( $tail ) ? '/' : '';
+		// if running Habari in docroot, get_url('base') will return
+		// a double slash.  Let's fix that.
+		$path= str_replace( '//', '/', $path);
 		$path= Plugins::filter( 'site_path_' . $name, $path );
 		return $path;
 	}
