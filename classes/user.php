@@ -155,16 +155,16 @@ class User extends QueryRecord
 	public function remember()
 	{
 		// set the cookie
-		$cookie = "habari_" . Options::get('GUID');
-		$content = $this->id . '|' . Utils::crypt( $this->password . $this->id );
-		$site_url= Site::get_path('base');
+		$cookie= 'habari_' . Options::get( 'GUID' );
+		$content= $this->id . '|' . Utils::crypt( $this->password . $this->id );
+		$site_url= Site::get_path( 'base' );
 		if ( empty( $site_url ) )
 		{
 			$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
 		}
 		else
 		{
-			$site_url= '/' . $site_url . '/';
+			$site_url= $site_url . '/';
 		}
 		setcookie( $cookie, $content, time() + 604800, $site_url );
 	}
