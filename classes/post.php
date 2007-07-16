@@ -359,7 +359,7 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		$this->newfields[ 'updated' ] = date( 'Y-m-d h:i:s' );
+		$this->newfields[ 'updated' ] = date( 'Y-m-d H:i:s' );
 		$this->setslug();
 		$this->setguid();
 		// Invoke plugins for all fields, since they're all "changed" when inserted 
@@ -383,7 +383,7 @@ class Post extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		$this->updated = date('Y-m-d h:i:s');
+		$this->updated = date('Y-m-d H:i:s');
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
