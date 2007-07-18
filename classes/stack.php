@@ -9,10 +9,16 @@
  * 
  * <code>
  * // Add jquery to the javascript stack: 
- * Stack::add('javascript', Site::get_url('scripts') . '/jquery.js');
+ * Stack::add( 'javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
+ *
+ * // Add stylesheet to theme_stylesheet stack with media type
+ * Stack::add( 'theme_stylesheet', array( Site::get_url('theme') . '/style.css', 'screen' ), 'style' );
  *  
  * // Output the javascript stack:
- * Stack::out('javascript', '<script src="%" type="text/javascript"></script>');
+ * Stack::out( 'javascript', '<script src="%s" type="text/javascript"></script>' );
+ *
+ * // Output the theme_stylesheet stack:
+ * Stack::out( 'theme_stylesheet', '<link rel="stylesheet" type="text/css"  href="%s" media="%s" />' );
  * </code>   
  *
  * @package Habari
@@ -69,15 +75,57 @@ class Stack
 	/**
 	 * Add a value to a stack
 	 * @param string $stack_name The name of the stack
-	 * @param string $value The value to add
+	 * @param mixed $value The value to add
+	 * @param string $value_name The name of the value to add
 	 * @return array The stack that was added to	 
 	 **/	 
-	public static function add( $stack_name, $value )
+	public static function add( $stack_name, $value, $value_name= null )
 	{
 		$stack= self::get_named_stack( $stack_name );
-		$stack[$value]= $value;
+		$value_name= $value_name ? $value_name : md5( serialize( $value ) );
+		$stack[$value_name]= $value;
 		self::$stacks[$stack_name]= $stack;
 		return $stack;
+	}
+	
+	/**
+	 * Remove a value to a stack
+	 * @param string $stack_name The name of the stack
+	 * @param string $value_name The name of the value to add
+	 * @return array The stack that was added to	 
+	 **/	 
+	public static function remove( $stack_name, $value_name )
+	{
+		$stack= self::get_named_stack( $stack_name );
+		if ( isset( $stack[$value_name] ) ) {
+			unset( $stack[$value_name] );
+		}
+		self::$stacks[$stack_name]= $stack;
+		return $stack;
+	}
+	
+	/**
+	 * Returns all of the values of the stack
+	 * @param string $stack_name The name of the stack to output
+	 * @param mixed $format A printf-style formatting string or callback used to output each stack element
+	 **/	   	 
+	public static function get( $stack_name, $format = null)
+	{
+		$out= '';
+		$stack= self::get_named_stack( $stack_name );
+		$stack= Plugins::filter( 'stack_out', $stack, $stack_name );
+		foreach( $stack as $element ) {
+			if ( is_callable($format) ) {
+				$out.= call_user_func_array( $format, (array) $element ); 
+			}
+			elseif ( is_string( $format ) ) {
+				$out.= vsprintf( $format, (array) $element );
+			}
+			else {
+				$out.= $element;
+			}
+		}
+		return $out;
 	}
 	
 	/**
@@ -87,19 +135,7 @@ class Stack
 	 **/	   	 
 	public static function out( $stack_name, $format = null)
 	{
-		$stack= self::get_named_stack( $stack_name );
-		$stack= Plugins::filter( 'stack_out', $stack, $stack_name );
-		foreach( $stack as $element ) {
-			if ( function_exists($format) ) {
-				echo $format( $element ); 
-			}
-			elseif ( is_string( $format ) ) {
-				printf( $format, $element );
-			}
-			else {
-				echo $element;
-			}
-		}
+		echo self::get( $stack_name, $format );
 	}
 }
 
