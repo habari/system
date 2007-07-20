@@ -157,7 +157,7 @@ class Comment extends QueryRecord
 	 **/
 	public function __get( $name )
 	{
-		$fieldnames = array_keys($this->fields) + array('permalink', 'tags', 'comments', 'comment_count', 'author');
+		$fieldnames= array_merge( array_keys( $this->fields ), array('post', 'info' ) );
 		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
 			list( $junk, $name, $filter ) = $matches;
