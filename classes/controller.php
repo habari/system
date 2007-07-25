@@ -90,7 +90,14 @@ class Controller extends Singleton {
 
     /* Remove the querystring from the URL */
     if ( strpos($start_url, '?') !== FALSE )
-      list($start_url, )= explode('?', $start_url);
+      list($start_url, $query_string)= explode('?', $start_url);
+
+    /* Return $_GET values to their proper place */
+    if( !empty($query_string) )
+        parse_str($query_string, $_GET);
+
+    /* Undo what magic_quotes_gpc might have wrought */
+    Utils::revert_magic_quotes_gpc();
 
     $controller->stub= $start_url;
 
@@ -126,4 +133,3 @@ class Controller extends Singleton {
 }
 
 ?>
-
