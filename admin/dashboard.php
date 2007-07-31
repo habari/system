@@ -19,7 +19,7 @@
 				}
 				elseif ( $user->info->experience_level == 'user' ) {
 			?>
-					<p>Good to see you again, <?php echo $user->username; ?>! This is a quick pointer to help you find things like <a href="<?php Site::out_url('system'); ?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, themes, and plugins. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out('title'); ?>. When you've done that you can <a href="<?php URL::out('admin', 'page=publish&type=entry'); ?>" title="Post an Entry">post an entry</a> or <a href="<?php URL::out('admin', 'page=moderate')?>" title="Manage Comments">manage your comments</a>.</p>
+					<p>Good to see you again, <?php echo $user->username; ?>! This is a quick pointer to help you find things like <a href="<?php Site::out_url('system'); ?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, <a href="<?php URL::out('admin', 'page=themes')?>" title="Manage your themes">themes</a>, and <a href="<?php URL::out('admin', 'page=plugins')?>" title="Manage your plugins">plugins</a>. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out('title'); ?>. When you've done that you can <a href="<?php URL::out('admin', 'page=publish&type=entry'); ?>" title="Post an Entry">post an entry</a> or <a href="<?php URL::out('admin', 'page=moderate')?>" title="Manage Comments">manage your comments</a>.</p>
 			<?php
 				}
 				else {
@@ -32,8 +32,6 @@
 		<div class="dashboard-block" id="stats">
 			<h4>Site Statistics</h4>
 				<ul id="site-stats">
-					<li><span class="right">567</span> Visits Today</li>
-					<li><span class="right">10067</span> Visits Past Week</li>
 					<li><span class="right"><?php echo Posts::count_total( Post::status('all') ); ?></span> Total Posts</li>
 					<li><span class="right"><?php echo Posts::count_by_author( User::identify()->id, Post::status('all') ); ?></span> Number of Your Posts</li>
 					<li><span class="right"><?php echo Comments::count_total(); ?></span> Number of Comments</li>
@@ -71,7 +69,7 @@
 			</ul>
 		</div>
 		<div class="dashboard-block" id="incoming">
-			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&num=10&q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
+			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
 			<?php
 			// This should be fetched on a pseudo-cron and cached:
 			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url('hostname') );

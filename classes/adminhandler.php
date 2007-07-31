@@ -123,10 +123,12 @@ class AdminHandler extends ActionHandler
 			if ( isset( $_POST['slug'] ) ) {
 				$post= Post::get( array( 'slug' => $_POST['slug'], 'status' => Post::status('any') ) );
 				$post->title= $_POST['title'];
+				$post->slug= $_POST['newslug'];
 				$post->tags= $_POST['tags'];
 				$post->content= $_POST['content'];
 				$post->content_type= Post::type( $_POST['content_type'] );
 				$post->status= $_POST['status'];
+				$post->pubdate= $_POST['pubdate'];
 				if ( 1 == $_POST['comments_disabled'] ) {
 					$post->info->comments_disabled= 1;
 				} elseif ( 1 == $post->info->comments_disabled ) {
