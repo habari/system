@@ -7,20 +7,19 @@
 			case 'success':
 				_e('<p class="update">Your post has been saved.</p>');
 				break;
+			}
 		}
-	}
-	if ( isset( $slug ) ) {
-		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status('any') ) );
-		$content_type= $post->content_type;
-	}
-	else {
-		$post= new Post();
-		if ( ! isset( $content_type ) ) {
-			$content_type= 'entry';
+		if ( isset( $slug ) ) {
+			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+			$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
+			$content_type= $post->content_type;
+		} else {
+			$post= new Post();
+			$tags= array();
+			if( !isset( $content_type ) ) {
+				$content_type= 'entry';
+			}
 		}
-	}
-	$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
-	
 	?>
 	<form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
 		<div class="dashboard-block c3 publish">
@@ -32,10 +31,17 @@
 			
 			<h4>Tags</h4>
 			<div id="tagbox">
-				<input type="text" name="tags" class="right" id="tags" value="<?php echo $tags; ?>" />
+				<input type="text" name="tags" class="right" id="tags" value="<?php echo ( $tags ) ? $tags : ''; ?>" />
 				<p>Type a new tag or select from the list of existing tags below:</p>
 			</div>
-
+			
+			<h4>Meta Information</h4>
+			<p>
+				Publish Date: <input type="text" name="pubdate" id="pubdate" value="<?php echo $post->pubdate; ?>" />
+			</p>
+			<p>
+				Content Address: <input type="text" name="newslug" id="newslug" value="<?php echo $post->slug; ?>" />
+			</p>			
 			<h4>Page Settings</h4>
 			<ul>
 				<?php
