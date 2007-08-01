@@ -108,12 +108,20 @@ class Posts extends ArrayObject
 					$where[]= "user_id= ?";
 					$params[]= $paramset['user_id'];
 				}
-				if ( isset( $paramset['tag'] ) ) {
+				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
 					$join .= ' JOIN ' . DB::table( 'tag2post' ) . ' ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
 					$join .= ' JOIN ' . DB::table( 'tags' ) . ' ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 					// Need tag expression parser here.			
+				if ( isset( $paramset['tag'] ) )
+				{
 					$where[]= 'tag_text= ?';
 					$params[]= $paramset['tag'];
+				}
+				if ( isset( $paramset['tag_slug'] ) )
+				{
+					$where[]= 'tag_slug= ?';
+					$params[]= $paramset['tag_slug'];
+				}
 				}
 				if ( isset( $paramset['not:tag'] ) ) {
 					$nottag = is_array($paramset['not:tag']) ? array_values($paramset['not:tag']) : array($paramset['not:tag']);

@@ -314,6 +314,9 @@ class Post extends QueryRecord
 	private function parsetags( $tags )
 	{
 		if ( is_string( $tags ) ) {
+			if ( '' === $tags ) {
+				return array();
+			}
 			// dirrty ;)
 			$rez= array( '\\"'=>':__unlikely_quote__:', '\\\''=>':__unlikely_apos__:' );
 			$zer= array( ':__unlikely_quote__:'=>'"', ':__unlikely_apos__:'=>"'" );
@@ -339,8 +342,8 @@ class Post extends QueryRecord
 	 */	 	
 	private function savetags()
 	{
-		if ( count($this->tags) == 0) {return;}
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
+		if ( count($this->tags) == 0) {return;}
 		foreach( (array)$this->tags as $tag ) { 
 			$tag_slug= str_replace( ' ', '-', $tag);
 			// @todo TODO Make this multi-SQL safe!

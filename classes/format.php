@@ -142,8 +142,8 @@ class Format
 		{
 			$array = array ( $array );
 		}
-		$fn = create_function('$a', 'return "<a href=\\"" . URL::get( "display_posts_by_tag", array( "tag" => $a) ) . "\\">" . $a . "</a>";');
-		$array = array_map($fn, $array);
+		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_posts_by_tag", array( "tag" => $b) ) . "\\">" . $a . "</a>";');
+		$array = array_map($fn, $array, array_keys($array));
 		$last = array_pop($array);
 		$out = implode($between, $array);
 		$out .= ($out == '') ? $last : $between_last . $last;

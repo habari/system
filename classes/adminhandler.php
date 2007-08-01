@@ -24,6 +24,7 @@ class AdminHandler extends ActionHandler
 			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			exit;
 		}
+		$user->remember();
 	}
 
 	/**
