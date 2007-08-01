@@ -136,7 +136,20 @@ class Theme
 
 		$where_filters= array();
 		$where_filters= array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $this->valid_filters ) );
-		$where_filters['status']= Post::status('published');
+		//$where_filters['status']= Post::status('published');
+		if (array_key_exists('tag', $where_filters))
+		{
+			$where_filters['tag_slug']=  $where_filters['tag'];
+			unset($where_filters['tag']);
+		}
+		if ( User::identify() )
+		{
+			$where_filters['status']= Post::status('any');
+		}
+		else
+		{
+			$where_filters['status']= Post::status('published');
+		}
 
 		$user_filters= array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 		$where_filters= array_merge( $where_filters, $user_filters );
