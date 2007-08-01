@@ -106,6 +106,7 @@ class InstallHandler extends ActionHandler {
 			// re-display the form
 			$this->display('db_setup');
 		}
+		EventLog::log('Habari successfully installed.', 'info', 'default', 'habari');
 		return true;
 	}
 
@@ -255,18 +256,26 @@ class InstallHandler extends ActionHandler {
 		}
 		*/
 
-		/* Cool.  DB installed.  Let's setup the admin user now. */
-		if (! $this->create_admin_user()) {
-			$this->theme->assign('form_errors', array('admin_user'=>'Problem creating admin user.'));
-			DB::rollback();
-			return false;
+		// Cool.  DB installed.  Let's setup the admin user now.
+		// But first, let's make sure that no users exist
+		if ( empty( Users::get_all() ) )
+		{
+			if (! $this->create_admin_user()) {
+				$this->theme->assign('form_errors', array('admin_user'=>'Problem creating admin user.'));
+				DB::rollback();
+				return false;
+			}
 		}
 	
-		/* Create the default options */
-		if (! $this->create_default_options()) {
-			$this->theme->assign('form_errors', array('options'=>'Problem creating default options'));
-			DB::rollback();
-			return false;
+		// Create the default options
+		// but check first, to make sure
+		if ( ! Options::get('installed') )
+		{
+			if (! $this->create_default_options()) {
+				$this->theme->assign('form_errors', array('options'=>'Problem creating default options'));
+				DB::rollback();
+				return false;
+			}
 		}
 		
 		/* Store current DB version so we don't immediately run dbdelta. */

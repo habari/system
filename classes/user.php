@@ -127,6 +127,7 @@ class User extends QueryRecord
 		$this->info->set_key( $this->id );
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
 		// $this->info->option_default= "saved";
+		EventLog::log( 'New user created: ' . $this->username, 'info', 'default', 'habari' );
 
 		return $result;
 	}
@@ -146,6 +147,7 @@ class User extends QueryRecord
 	{
 		if(isset($this->info))
 			$this->info->delete_all();
+		EventLog::log( 'User deleted: ' . $this->username, 'info', 'default', 'habari' );
 		return parent::delete( DB::table('users'), array( 'id' => $this->id ) );
 	}
 
