@@ -56,19 +56,14 @@ class DatabaseConnection
 	 * Returns the appropriate type of Connection class for the connect string passed or null on failure
 	 * 
 	 * @param connection_string a PDO connection string 
-	 * @return  mixed returns appropriate DatabaseConnection child class instance or null if connect string is invalid
+	 * @return  mixed returns appropriate DatabaseConnection child class instance or errors out if requiring the db class fails
 	 */
 	public static function ConnectionFactory( $connect_string ) 
 	{
-		if ( strrpos( "mysql", $connect_string) == 0 ) {
-			return new MySQLConnection();
-		}
-		else if ( strrpos( "sqlite", $connect_string) == 0 ) {
-			return new SQLiteConnection();
-		}
-		else {
-			return null;
-		}
+		list($engine) = explode(':', $connect_string, 2);
+		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );
+		$engine .= 'Connection';
+		return new $engine();
 	}
 	
 	/**
