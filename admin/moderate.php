@@ -20,8 +20,6 @@ function table($headers, $data, $sort = null){
 	return $html;
 }
 
-$SCoPH = DB::get_value('select round(360000.0 / (UNIX_TIMESTAMP(max(date)) - UNIX_TIMESTAMP(min(date))), 2) from (select date from ' . DB::table('comments') . ' WHERE status = ' . Comment::STATUS_SPAM . ' order by date desc limit 10) as c3');
-
 ?>
 <?php include('header.php'); ?>
 <div id="content-area">
@@ -34,8 +32,6 @@ $SCoPH = DB::get_value('select round(360000.0 / (UNIX_TIMESTAMP(max(date)) - UNI
 			<?php _e('Total Unapproved Comments'); ?></li>
 			<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_SPAM ); ?></span>
 			<?php _e('Total Spam Comments'); ?></li>
-			<li><span class="right"><?php echo $SCoPH; ?></span>
-			<?php _e('Spam Comments Per Hour'); ?></li>
 		</ul>
 	</div>
 	<div class="dashboard-block c2">
