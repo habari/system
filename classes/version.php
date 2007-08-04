@@ -10,10 +10,12 @@
 
  class Version
  {
-		const DB_VERSION= 676;
-		const API_VERSION= 441;
+ 		// DB and API versions are aligned with the SVN revision
+		// number in which they last changed.
+		const DB_VERSION= 727;
+		const API_VERSION= 729;
 
-		const HABARI_VERSION= 0.1;
+		const HABARI_VERSION= 0.2;
 		
 		public static function get_dbversion() 
 		{
