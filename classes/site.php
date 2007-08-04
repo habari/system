@@ -213,8 +213,13 @@ class Site
 				}
 				break;
 			case 'theme':
-				$theme= Options::get('theme_name');
-				$path= Site::get_path('user') . '/themes/' . $theme;
+				$theme= Options::get('theme_dir');
+				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
+					$path= Site::get_path('user') . '/themes/' . $theme;
+				}
+				else {
+					$path= Site::get_path('base') . '/user/themes/' . $theme;
+				}
 				break;
 		}
 		$path.= ( $tail ) ? '/' : '';
@@ -229,6 +234,8 @@ class Site
 	 * get_dir returns a complete filesystem path to the requested item
 	 *	'config_file' returns the complete path to the config.php file, including the filename
 	 *	'config' returns the path of the directory containing config.php
+	 *	'user' returns the path of the user directory
+	 *	'theme' returns the path of the site's active theme
 	 * @param string the name of the path item to return
 	 * @param bool whether to include a trailing slash.  Default: No
 	 * @return string Path
@@ -282,7 +289,12 @@ class Site
 				break;
 			case 'theme':
 				$theme= Options::get('theme_dir');
-				$path= Site::get_dir('user') . '/themes/' . $theme;
+				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
+					$path= Site::get_dir('user') . '/themes/' . $theme;
+				}
+				else {
+					$path= HABARI_PATH . '/user/themes/' . $theme;
+				}
 				break;
 		}
 		$path.= ($trail) ? '/' : '';
