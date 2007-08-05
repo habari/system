@@ -90,7 +90,12 @@ class XMLRPCClient
 				error_reporting($bit && !E_WARNING);
 				$responsexml = new SimpleXMLElement($responseutf8);
 				error_reporting($bit);
-				return XMLRPCUtils::decode_args(reset($responsexml->xpath('/methodResponse/params/param/value')));
+				if (!$responsestruct= reset($responsexml->xpath('//params/param/value'))) {
+					if (!$responsestruct= reset($responsexml->xpath('//fault/value'))) {
+						throw new Exception('Invalid XML response.');
+					}
+				}
+				return XMLRPCUtils::decode_args($responsestruct);
 			}
 			catch (Exception $e){
 				Utils::debug($response, $e);
@@ -98,6 +103,25 @@ class XMLRPCClient
 				return false;
 			}
 		}
+	}
+	
+	/**
+	 * Allow scoped functions to be called in shorthand
+	 * Example:
+	 * <code>
+	 * // Create the XMLRPC object	 
+	 * $rpc= new XMLRPCClient('http://rpc.pingomatic.com');
+	 * // Call weblogUpdates.ping RPC call	 
+	 * $rpc->weblogUpdates->ping('Blog name', 'http://example.com');	 	 
+	 * </code>
+	 * 	 	 	 	 
+	 * @param string $scope The scope to set this object to.
+	 * @return XMLRPCClient This object instance
+	 **/	  	
+	public function __get($scope)
+	{
+		$this->set_scope($scope);
+		return $this;
 	}
 }
 
