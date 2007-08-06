@@ -263,7 +263,8 @@ class Post extends QueryRecord
 		}
 		
 		// make sure our slug is unique
-		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $value ) ), '-' );
+		$slug= Plugins::filter('set_slug', $value);
+		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $slug ) ), '-' );
 		$postfix= '';
 		$postfixcount= 0;
 		do {
