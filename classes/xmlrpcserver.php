@@ -15,7 +15,8 @@ class XMLRPCServer extends ActionHandler
 	public function act_xmlrpc_call()
 	{
 		if( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
-			$this->output_fault( _t('This XML-RPC server only accepts POST requests.'), 1 );
+			$exception = new XMLRPCException(1);
+			$exception->output_fault_xml(); // dies here
 		}
 		$input= file_get_contents( 'php://input' );
 		
@@ -57,20 +58,6 @@ class XMLRPCServer extends ActionHandler
 		return $res;
 	}
 	
-	
-	/**
-	 * Send an XML-RPC fault output and quit.
-	 * @param string $string A human-readable error string.
-	 * @param integer $code A machine-readable code.
-	 **/	 	 	 	
-	private function output_fault($string, $code)
-	{
-		$xmltext = '<?xml version="1.0"?'.'><methodResponse><fault><value><struct><member><name>faultCode</name><value><int>' . $code . '</int></value></member><member><name>faultString</name><value><string>' . $string . '</string></value></member></struct></value></fault></methodResponse>';
-		ob_end_clean();
-		header('Content-Type: text/xml');
-		echo trim($xmltext);
-		exit;
-	}	
 }
 
 ?>
