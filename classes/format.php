@@ -159,8 +159,8 @@ class Format
 	 **/	 	 	 	 	 		
 	public function nice_date($date, $dateformat = 'F j, Y')
 	{
-		if ( is_numeric($date) ) return date($dateformat, $date);
-		return date($dateformat, strtotime($date));
+		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
+		return Utils::locale_date($dateformat, strtotime($date));
 	}
 
 	/**
@@ -172,8 +172,8 @@ class Format
 	 **/	 	 	 	 	 		
 	public function nice_time($date, $dateformat = 'H:i:s')
 	{
-		if ( is_numeric($date) ) return date($dateformat, $date);
-		return date($dateformat, strtotime($date));
+		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
+		return Utils::locale_date($dateformat, strtotime($date));
 	}
 
 	/**
