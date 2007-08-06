@@ -28,7 +28,7 @@ class XMLRPCClient
 	/**
 	 * Create the XMLRPCClient
 	 * 
-	 * @param string $xmlrpc_entrypoint The entrypoint of te remote server
+	 * @param string $xmlrpc_entrypoint The entrypoint of the remote server
 	 */
 	public function __construct($xmlrpc_entrypoint, $scope = null) 
 	{
@@ -123,6 +123,21 @@ class XMLRPCClient
 		$this->set_scope($scope);
 		return $this;
 	}
+	
+	/**
+	 * Convenience method to create a new XMLRPCClient object
+	 * Example:
+	 * <code>
+	 * XMLRPCClient::open('http://rpc.pingomatic.com')->weblogUpdates->ping('Blog name', 'http://example.com');
+	 * </code>	 	 	 
+	 * @param string $xmlrpc_entrypoint The entrypoint of the remote server
+	 * @return XMLRPCClient The created client object
+	 **/
+	public static function open( $xmlrpc_entrypoint )
+	{
+		return new XMLRPCClient( $xmlrpc_entrypoint );
+	}
+	 	 	 
 }
 
 ?>
