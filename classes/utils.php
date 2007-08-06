@@ -572,7 +572,6 @@ class Utils
 				$output.= date($match, $timestamp);
 			}
 		}
-		Utils::debug($format, $matches);
 		return $output;
 	}
 }
