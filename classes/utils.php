@@ -553,6 +553,28 @@ class Utils
 		$info['mday0']= substr('0' . $info['mday'], -2, 2);
 		return $info; 
 	}
+	
+	/**
+	 * Return a formatted date/time trying to use strftime() AND date()
+	 * @param string $format The format for the date.  If it contains non-escaped percent signs, it uses strftime(),	otherwise date()
+	 * @param integer $timestamp The unix timestamp of the time to format
+	 * @return string The formatted time	
+	 **/	  	 	
+	public static function locale_date($format, $timestamp)
+	{
+		$matches= preg_split( '/((?<!\\\\)%[a-z]\\s*)/i', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		$output= '';
+		foreach( $matches as $match ) {
+			if( $match{0} == '%' ) {
+				$output.= strftime($match, $timestamp);
+			}
+			else {
+				$output.= date($match, $timestamp);
+			}
+		}
+		Utils::debug($format, $matches);
+		return $output;
+	}
 }
 
 ?>
