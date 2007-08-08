@@ -236,7 +236,7 @@ class Comment extends QueryRecord
 	{
 		if ( ! isset( $this->post_object ) || ( ! $use_cache)  )
 		{
-			$this->post_object = Post::get( array('id' => $this->post_id) );
+			$this->post_object = Posts::get( array('id' => $this->post_id, 'fetch_fn' => 'get_row') );
 		}
 		return $this->post_object;
 	}
