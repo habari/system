@@ -430,50 +430,9 @@ class User extends QueryRecord
 		*/
 	}
 	
-	/**
-	 * Return 1 or 0 (true or false) indicating whether the person in
-	 * question is an admin with respect to the object passed in. The
-	 * argument can be an actual object (such as a page or cms object), or
-	 * it can be the name of a module (such as 'registrar' or 'everything').
-	 * In the event that no argument is passed, the return value will be the
-	 * highest karma of this user with respect to anything. The implied
-	 * meaning is "is this user an admin anywhere?"
-	 * 
-	 * @param mixed $obj
-	 * @return boolean
-	 */
-	function is_admin( $obj = '' ) {
-		return ( $this->karma($obj) == 10 or 
-			( $obj != 'everything' and $this->karma('everything') == 10 ) )
-			? 1 : 0 ;
-	}
-	
-	/**
-	 * Returns 1 or 0 (true or false) indicating whether the person in
-	 * question is a publisher with respect to the object passed
-	 * in. The meaning is the same as with the is_admin() function
-	 * 
-	 * @param object $obj
-	 * @return boolean
-	 */
-	function is_publisher( $obj = '' ) {
-		return ( $this->karma( $obj) >= 8 or 
-			( $obj != 'everything' and $this->is_publisher('everything') ) )
-			? 1 : 0 ;
-	}
-	
-	/**
-	 * Returns 1 or 0 (true or false) indicating whether the person in
-	 * question is a drafter with respect to the object passed
-	 * in. The meaning is the same as with the is_admin() function.
-	 * 
-	 * @param object $obj
-	 * @return boolean
-	 */
-	function is_drafter( $obj = '' ) {
-		return ( $this->karma( $obj) >= 5 or 
-			( $obj != 'everything' and $this->is_drafter('everything') ) )
-			? 1 : 0 ;
+	public function can( $permission, $to = null )
+	{
+		return ACL::user_can( $this->id, $permission );
 	}
 
 	/**

@@ -24,6 +24,9 @@ class AdminHandler extends ActionHandler
 			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			exit;
 		}
+		if (!$user->can('admin')) {
+			die(_t('Permission denied.'));
+		}
 		$user->remember();
 	}
 

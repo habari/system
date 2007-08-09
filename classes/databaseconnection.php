@@ -40,6 +40,10 @@ class DatabaseConnection
 		'crontab', 
 		'log', 
 		'log_types', 
+		'groups',
+		'users_groups',
+		'permissions',
+		'groups_permissions',
 	);
 	
 	/**
