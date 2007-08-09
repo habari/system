@@ -191,3 +191,30 @@ CREATE UNIQUE INDEX module_type ON {$prefix}log_types(module, type);
 
 INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'default');
 INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'authentication');
+
+CREATE TABLE {$prefix}groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  name VARCHAR(255) NOT NULL
+);
+CREATE UNIQUE INDEX name ON {$prefix}groups(name);
+
+CREATE TABLE {$prefix}permissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  name VARCHAR(255) NOT NULL
+);
+CREATE UNIQUE INDEX name ON {$prefix}permissions(name);
+
+CREATE TABLE {$prefix}users_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	user_id INTEGER unsigned not null,
+	group_id INTEGER unsigned not null
+);
+CREATE INDEX user_group ON {$prefix}users_groups(user_id,group_id);
+
+CREATE TABLE {$prefix}groups_permissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  group_id INTEGER unsigned not null,
+	permission_id INTEGER unsigned not null,
+	denied TINYINT UNSIGNED NOT NULL DEFAULT 0
+);
+CREATE UNIQUE INDEX group_permission ON {$prefix}groups_permissions(group_id,permission_id);
