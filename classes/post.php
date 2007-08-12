@@ -376,7 +376,7 @@ class Post extends QueryRecord
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->savetags();
-		EventLog::log('New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name($this->content_type) . '; Status: ' . Post::status_name($this->status), 'info', 'default', 'habari');
+		EventLog::log('New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name($this->content_type) . '; Status: ' . Post::status_name($this->status), 'info', 'content', 'habari');
 		Plugins::act('post_inserted', $this);
 		return $result;
 	}
@@ -414,7 +414,7 @@ class Post extends QueryRecord
 		{
 			$this->status= Post::status('deleted');
 			$this->update();
-			EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') scheduled for deletion.', 'info', 'default', 'habari');
+			EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') scheduled for deletion.', 'info', 'content', 'habari');
 			return;
 		}
 
@@ -425,7 +425,7 @@ class Post extends QueryRecord
 		if(!empty($this->comments))
 			$this->comments->delete();
 		$result= parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
-		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') deleted.', 'info', 'default', 'habari');
+		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari');
 		return $result;
 	}
 	
@@ -438,7 +438,7 @@ class Post extends QueryRecord
 	{
 		$this->status = 'publish';
 		$result= $this->update();
-		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') published.', 'info', 'default', 'habari');
+		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') published.', 'info', 'content', 'habari');
 		return $result;
 	}
 	

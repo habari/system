@@ -519,6 +519,10 @@ class AdminHandler extends ActionHandler
 						'caption'=>_t('Users'),
 						'url'=>URL::get('admin', 'page=users')
 					),
+					'logs'=>array(
+						'caption'=>_t('Logs'),
+						'url'=>URL::get('admin', 'page=logs')
+					),
 					'import'=>array(
 						'caption'=>_t('Import'),
 						'url'=>URL::get('admin', 'page=import')

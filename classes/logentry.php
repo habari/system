@@ -122,6 +122,16 @@ class LogEntry extends QueryRecord
 		parent::insert( DB::table( $this->table ) );
 	}
 
+	public function get() {
+		$logs= DB::get_results( 'SELECT id, user_id, type_id, timestamp, message, severity FROM ' . DB::table( 'log' ) . ' ORDER BY timestamp DESC' );
+		return $logs;
+	}
+	
+	public function get_event_type( $event_id ) {
+		$type= DB::get_row( 'SELECT * FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $event_id );
+		return $type->type;
+	}
+
 }
 
 ?>
