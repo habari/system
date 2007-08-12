@@ -106,6 +106,7 @@ class Comments extends ArrayObject
 			// We were passed an array of comment objects. Use them directly.
 			$result= true;
 			foreach($comments as $comment)
+				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 				$result&= $comment->delete();
 		}
 		else if(is_numeric($comments[0])) {
@@ -123,6 +124,7 @@ class Comments extends ArrayObject
 
 			$result= true;
 			foreach($comments as $comment)
+				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 				$result&= $comment->delete();
 		}
 		else {
@@ -148,6 +150,7 @@ class Comments extends ArrayObject
 		$result= true;
 		foreach($comments as $commentid) {
 			$result&= DB::update(DB::table('comments'), array('status' => $status), array('id' => $commentid ) );
+			EventLog::log( 'Comment Moderated on ' . $comment->post->title, 'info', 'comment', 'habari' );
 		}
 		return $result;
 	}
@@ -331,7 +334,7 @@ class Comments extends ArrayObject
 			$result&= $c->delete();
 		// Clear ourselves.
 		$this->exchangeArray(array());
-		
+		EventLog::log( 'Comment deleted: ' . $this->id, 'info', 'comment', 'habari' );
 		return $result;
 	}
 	
