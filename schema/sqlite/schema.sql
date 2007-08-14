@@ -191,6 +191,8 @@ CREATE UNIQUE INDEX module_type ON {$prefix}log_types(module, type);
 
 INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'default');
 INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'authentication');
+INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'content');
+INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'comment');
 
 CREATE TABLE {$prefix}groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

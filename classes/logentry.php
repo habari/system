@@ -89,6 +89,16 @@ class LogEntry extends QueryRecord
 	}
 	
 	/**
+	 * Get the string representation of teh severity numeric value.
+	 * @param integer $severity The severity index.
+	 * @return string The string name of the severity, or 'Unknown'.
+	 **/
+	public static function severity_name( $severity )
+	{
+		return isset(self::$severities[$severity]) ? self::$severities[$severity] : _t('Unknown');
+	}
+	
+	/**
 	 * Get the integer value for the given module/type, or <code>false</code>.
 	 * @param string $module the module
 	 * @param string $type the type
@@ -123,13 +133,13 @@ class LogEntry extends QueryRecord
 	}
 
 	public function get() {
-		$logs= DB::get_results( 'SELECT id, user_id, type_id, timestamp, message, severity FROM ' . DB::table( 'log' ) . ' ORDER BY timestamp DESC' );
+		$logs= DB::get_results( 'SELECT id, user_id, type_id, timestamp, message, severity_id FROM ' . DB::table( 'log' ) . ' ORDER BY timestamp DESC' );
 		return $logs;
 	}
 	
 	public function get_event_type( $event_id ) {
 		$type= DB::get_row( 'SELECT * FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $event_id );
-		return $type->type;
+		return $type ? $type->type : _t('Unknown');
 	}
 
 }
