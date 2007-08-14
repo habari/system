@@ -27,7 +27,7 @@
 			<input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>" />
 
 			<h4>Content</h4>
-			<textarea name="content" id="content" rows="20"><?php echo $post->content; ?></textarea>
+			<textarea name="content" id="content" rows="20"><?php echo htmlspecialchars( $post->content ); ?></textarea>
 			
 			<h4>Tags</h4>
 			<div id="tagbox">
