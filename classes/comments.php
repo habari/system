@@ -106,8 +106,8 @@ class Comments extends ArrayObject
 			// We were passed an array of comment objects. Use them directly.
 			$result= true;
 			foreach($comments as $comment)
-				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 				$result&= $comment->delete();
+				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 		}
 		else if(is_numeric($comments[0])) {
 			// We were passed an array of ID's. Get their objects and delete them.
@@ -124,8 +124,8 @@ class Comments extends ArrayObject
 
 			$result= true;
 			foreach($comments as $comment)
-				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 				$result&= $comment->delete();
+				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 		}
 		else {
 			// We were passed a type we could not understand.
