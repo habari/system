@@ -151,6 +151,7 @@ class Theme
 			$where_filters['status']= Post::status('published');
 		}
 
+		$user_filters= Plugins::filter( 'template_user_filters', $user_filters );
 		$user_filters= array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 		$where_filters= array_merge( $where_filters, $user_filters );
 
@@ -195,6 +196,7 @@ class Theme
 			isset($type)?$type:'-', 
 			isset($tag)?$tag:'-',
 		);
+		$fallback= Plugins::filter( 'template_fallback', $fallback );
 		$fallback= str_replace($searches, $replacements, $fallback);
 
 		return $this->display_fallback( $fallback );
@@ -361,6 +363,29 @@ class Theme
 	{
 		return isset( $this->template_engine->$key );
 	}
+
+	/**
+	 * Handle methods called on this class or its descendants that are not defined by this class.	
+	 * Allow plugins to provide additional theme actions, like a custom act_display_*()
+	 * 
+	 * @param string $function The method that was called.
+	 * @param array $params An array of parameters passed to the method
+	 **/	 	 
+	public function __call( $function, $params )
+	{
+		if(strpos($function, 'act_') === 0) {
+			// The first parameter is an array, get it
+			if(count($params) > 0) {
+				list($user_filters)= $params;
+			}
+			else {
+				$user_filters= array();
+			}
+			$action = substr($function, 4);
+			Plugins::act('theme_action', $action, $this, $user_filters);
+		}
+	}
+
 }
 
 ?>
