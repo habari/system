@@ -108,7 +108,7 @@ class Format
 	 **/	 	 	  	 	
 	public function autop($value)
 	{
-		$regex = '/(<\\s*(address|blockquote|del|div|h[1-6]|hr|ins|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\\s*\/\\s*\\2\\s*>)/sm';
+		$regex = '/(<\\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\\s*\/\\s*\\2\\s*>)/sm';
 		$target = str_replace("\r\n", "\n", $value);
 		$target = preg_replace('/<\\s*br\\s*\/\\s*>(\s*)/m', "\n", $target);
 		
