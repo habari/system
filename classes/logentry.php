@@ -132,9 +132,26 @@ class LogEntry extends QueryRecord
 		parent::insert( DB::table( $this->table ) );
 	}
 
-	public function get() {
-		$logs= DB::get_results( 'SELECT id, user_id, type_id, timestamp, message, severity_id FROM ' . DB::table( 'log' ) . ' ORDER BY timestamp DESC' );
+	public static function get( $paramarray = array() ) {
+		
+		//defaults
+		$orderby= 'ORDER BY timestamp DESC';
+		$limit= '';
+		
+		// loop over each element of the $paramarray
+		foreach ( $paramarray as $key => $value ) {
+			if ( 'orderby' == $key ) {
+				$orderby= 'ORDER BY ' . $value;
+				continue;
+			}
+			
+			if ( 'limit' == $key ) {
+				$limit= " LIMIT " . $value;
+			}
+		
+		$logs= DB::get_results( "SELECT id, user_id, type_id, timestamp, message, severity_id FROM " . DB::table( 'log' ) . " {$orderby}{$limit}" );
 		return $logs;
+		}
 	}
 	
 	public function get_event_type( $event_id ) {
