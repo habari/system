@@ -35,27 +35,9 @@ class UserThemeHandler extends ActionHandler
 		$before_action_method= 'before_' . $action_method;
 		$after_action_method= 'after_' . $action_method;
 		
-		if ( method_exists( $this->theme, $action_method ) ) {
-			if ( method_exists( $this->theme, $before_action_method ) ) {
-				$this->theme->$before_action_method();
-			}
-			$this->theme->$action_method();
-			if ( method_exists( $this->theme, $after_action_method ) ) {
-				$this->theme->$after_action_method();
-			}
-		}
-		else {
-			/* OK, theme didn't override, so use the default handler */
-			 if ( method_exists( $this, $action_method ) ) {
-				if ( method_exists( $this, $before_action_method ) ) {
-					$this->$before_action_method();
-				}
-				$this->$action_method();
-				if ( method_exists( $this, $after_action_method ) ) {
-					$this->$after_action_method();
-				}
-			}
-		}
+		$this->theme->$before_action_method();
+		$this->theme->$action_method();
+		$this->theme->$after_action_method();
 	}
 
 	/**
