@@ -34,6 +34,7 @@ class Theme
 		'day',
 		'criteria',
 		'limit',
+		'nolimit',
 		'fetch_fn',
 	);
 	
