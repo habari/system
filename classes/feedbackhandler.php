@@ -22,7 +22,7 @@ class FeedbackHandler extends ActionHandler
 			if ( $post->info->comments_disabled ) {
 				// comments are disabled, so let's just send
 				// them back to the post's permalink
-				Utils::redirect( URL::get( 'display_posts_by_slug', array('slug'=>$post->slug) ) );
+				Utils::redirect( URL::get( 'display_entry', array('slug'=>$post->slug) ) );
 			}
 
 			if( $post && !$post->info->comments_disabled ) {
@@ -112,7 +112,7 @@ class FeedbackHandler extends ActionHandler
 		} 
 		else {
 			// do something more intelligent here
-			echo 'You forgot to add some content to your comment, please <a href="' . URL::get( 'display_posts_by_slug', array( 'slug' => $post->slug ) ) . '" title="Return to &quot;'.$post->title.'&quot;">go back and try again</a>.';
+			echo sprintf(_t('You forgot to add some content to your comment, please <a href="%1$s" title="Return to &quot;%2$s&quot;">go back and try again</a>.'), $post->permalink, $post->title );
 		}
 	}
 }

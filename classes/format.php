@@ -142,7 +142,7 @@ class Format
 		{
 			$array = array ( $array );
 		}
-		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_posts_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";');
+		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";');
 		$array = array_map($fn, $array, array_keys($array));
 		$last = array_pop($array);
 		$out = implode($between, $array);

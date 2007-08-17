@@ -525,7 +525,6 @@ class Post extends QueryRecord
 		return URL::get( 
 			array(
 				"display_{$content_type}",
-				'display_posts_by_slug',
 			), 
 			$this, 
 			false 
