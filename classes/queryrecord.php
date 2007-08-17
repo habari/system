@@ -60,6 +60,16 @@ class QueryRecord implements URLProperties
 	}
 
 	/**
+	* Magic isset for QueryRecord, returns whether a property value is set.
+	* @param string $name The name of the parameter
+	* @return boolean True if the value is set, false if not
+	*/	 	 	 	
+	public function __isset($name)
+	{
+		return ( isset( $this->newfields[$name] ) || isset( $this->fields[$name] ) );
+	}
+
+	/**
 	* function exclude_fields
 	* Registers a (list of) fields(s) as being managed exclusively by the database.
 	* @param mixed A database field name (string) or an array of field names
