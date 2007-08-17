@@ -99,7 +99,7 @@ class URL extends Singleton
 	 * values and returns the built URL.
 	 * 
 	 * <code>
-	 * 	URL::get( 'display_posts_by_date', array(
+	 * 	URL::get( 'display_entries_by_date', array(
 	 * 		'year' => '2000',
 	 *    	'month' => '05',
 	 *    	'day' => '01',
