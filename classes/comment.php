@@ -139,17 +139,6 @@ class Comment extends QueryRecord
 	}
 
 	/**
-	 * function publish
-	 * Updates an existing comment to published status
-	 * @return boolean True on success, false if not
-	 */
-	public function publish()
-	{
-		$this->status = 'publish';
-		return $this->update();
-	}
-
-	/**
 	 * function __get
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
@@ -191,7 +180,7 @@ class Comment extends QueryRecord
 
 	/**
 	 * function __set
-	 * Overrides QueryRecord __get to implement custom object properties
+	 * Overrides QueryRecord __set to implement custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
 	 **/
