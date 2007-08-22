@@ -26,18 +26,10 @@ CREATE TABLE {$prefix}posttype (
 	name VARCHAR(255) NOT NULL
 );
 
-INSERT INTO {$prefix}posttype (name) VALUES('entry');
-INSERT INTO {$prefix}posttype (name) VALUES('page');
-
 CREATE TABLE {$prefix}poststatus (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	name VARCHAR(255) NOT NULL
 );
-
-INSERT INTO {$prefix}poststatus (name) VALUES ('deleted');
-INSERT INTO {$prefix}poststatus (name) VALUES ('draft');
-INSERT INTO {$prefix}poststatus (name) VALUES ('published');
-INSERT INTO {$prefix}poststatus (name) VALUES ('private');
 
 CREATE TABLE {$prefix}options (
 	name VARCHAR(255) NOT NULL,
@@ -187,11 +179,6 @@ CREATE TABLE {$prefix}log_types (
 	type VARCHAR(100) NOT NULL
 );
 CREATE UNIQUE INDEX module_type ON {$prefix}log_types(module, type);
-
-INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'default');
-INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'authentication');
-INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'content');
-INSERT INTO {$prefix}log_types (module, type) VALUES ('habari', 'comment');
 
 CREATE TABLE {$prefix}groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
