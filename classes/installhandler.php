@@ -278,6 +278,16 @@ class InstallHandler extends ActionHandler {
 				return false;
 			}
 		}
+
+		// create a first post, if none exists
+		if ( ! Posts::get( array( 'count' => 1 ) ) )
+		{
+			if ( ! $this->create_first_post()) {
+				$this->theme->assign('form_errors',array('post'=>'Problem creating first post.'));
+				DB::rollback();
+				return false;
+			}
+		}
 		
 		/* Store current DB version so we don't immediately run dbdelta. */
 		Version::save_dbversion();
@@ -371,19 +381,6 @@ class InstallHandler extends ActionHandler {
 			'password'=>$password
 		));
 
-		// Insert a post record
-		Post::create(array(
-			'title'=>'First Post',
-			'content'=>'This is my first post',
-			'user_id'=>1,
-			'status'=>Post::status('published'),
-			'tags'=>'deleteme',
-		));
-		
-		// generate a random-ish number to use as the salt for
-		// a SHA1 hash that will serve as the unique identifier for
-		// this installation.  Also for use in cookies
-		$options->GUID = sha1(Controller::get_base_url() . Utils::nonce());
 		return true; 
 	}
 
@@ -403,7 +400,45 @@ class InstallHandler extends ActionHandler {
 		Options::set( 'theme_name', 'k2' );
 		Options::set( 'theme_dir' , 'k2' );
 		Options::set( 'comments_require_id', 1 );
+		// generate a random-ish number to use as the salt for
+		// a SHA1 hash that will serve as the unique identifier for
+		// this installation.  Also for use in cookies
 		Options::set('GUID', sha1(Options::get('base_url') . Utils::nonce()));
+
+		// Let's prepare the EventLog here, as well
+		EventLog::register_type('default', 'habari');
+		EventLog::register_type('authentication', 'habari');
+		EventLog::register_type('content', 'habari');
+		EventLog::register_type('comment', 'habari');
+		return true;
+	}
+
+	/**
+	 * Create the first post
+	**/
+	private function create_first_post()
+	{
+		// first, let's create our default post types of
+		// "entry" and "page"
+		Post::add_new_type('entry');
+		Post::add_new_type('page');
+
+		// now create post statuses for
+		// "published" and "draft"
+		// Should "private" status be added here, or through a plugin?
+		Post::add_new_status('draft');
+		Post::add_new_status('published');
+
+		// Now create the first post
+		Post::create(array(
+			'title' => 'First Post',
+			'content' => 'This is my first post.',
+			'user_id' => 1,
+			'status' => Post::status('published'),
+			'content_type' => Post::type('entry'),
+			'tags' => 'deleteme',
+		));
+
 		return true;
 	}
 

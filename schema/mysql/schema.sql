@@ -28,19 +28,11 @@ CREATE TABLE  {$prefix}posttype (
   PRIMARY KEY (id)
 );
 
-INSERT INTO  {$prefix}posttype (name) VALUES ("entry");
-INSERT INTO {$prefix}posttype (name) VALUES ("page");
-
 CREATE TABLE  {$prefix}poststatus (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
  	name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id)
 );
-
-INSERT INTO  {$prefix}poststatus (name) VALUES ("deleted");
-INSERT INTO  {$prefix}poststatus (name) VALUES ("draft");
-INSERT INTO  {$prefix}poststatus (name) VALUES ("published");
-INSERT INTO  {$prefix}poststatus (name) VALUES ("private");
 
 CREATE TABLE  {$prefix}options (
 	name VARCHAR(255) NOT NULL,
@@ -178,12 +170,6 @@ CREATE TABLE {$prefix}log_types (
 	PRIMARY KEY (id),
 	UNIQUE KEY module_type (module,type)
 );
-
-INSERT INTO {$prefix}log_types (module , type) VALUES
-	('habari', 'default'),
-	('habari', 'authentication'),
-	('habari', 'content'),
-	('habari', 'comment');
 
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_entries_by_date', '%^(?P<year>[1,2]{1}[\\d]{3})(?:/(?P<month>[\\d]{2}))?(?:/(?P<day>[\\d]{2}))?(?:/page/(?P<page>\\d+))?/?$%i', '{$year}/({$month}/)({$day}/)(page/{$page}/)', 'UserThemeHandler', 'display_date', '2', '1', '1', 'Displays posts for a specific date.');
 INSERT INTO {$prefix}rewrite_rules (name, parse_regex, build_str, handler, action, priority, is_active, rule_class, description) VALUES ('display_feed_by_type', '/^feed\\/(?P<feed_type>atom|rs[sd])[\\/]?$/i', 'feed/{$feed_type}', 'FeedHandler', 'display_feed', '5', '1', '0', 'Return feed per specified feed type');

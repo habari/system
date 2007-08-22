@@ -141,6 +141,40 @@ class Post extends QueryRecord
 		}
 		return '';
 	}
+
+	/**
+	 * inserts a new post type into the database, if it doesn't exist
+	 * @param string The name of the new post type
+	 * @return none
+	**/
+	public static function add_new_type( $type )
+	{
+		// refresh the cache from the DB, just to be sure
+		$types= self::list_post_types( true );
+		if ( ! array_key_exists( $type, $types ) ) {
+			DB::query( 'INSERT INTO ' . DB::table('posttype') . ' (name) VALUES (?)', array( $type ) );
+			// now force a refresh of the cache, so the new type
+			// is available for immediate use
+			$types= self::list_post_types( true );
+		}
+	}
+
+	/**
+	 * inserts a new post status into the database, if it doesn't exist
+	 * @param string The name of the new post status
+	 * @return none
+	**/
+	public static function add_new_status( $status )
+	{
+		// refresh the cache from the DB, just to be sure
+		$statuses= self::list_post_statuses( true );
+		if ( ! array_key_exists( $status, $statuses ) ) {
+			DB::query( 'INSERT INTO ' . DB::table('poststatus') . ' (name) VALUES (?)', array( $status ) );
+			// force a refresh of the cache, so the new status
+			// is available for immediate user
+			$statuses= self::list_post_statuses( true );
+		}
+	}
  
 	/**
 	 * Return the defined database columns for a Post.
@@ -366,6 +400,14 @@ class Post extends QueryRecord
 		$this->newfields[ 'updated' ] = date( 'Y-m-d H:i:s' );
 		$this->setslug();
 		$this->setguid();
+
+		$allow= true;
+		$allow= Plugins::filter('allow_post_insert', $result, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('before_post_insert', $this);
+
 		// Invoke plugins for all fields, since they're all "changed" when inserted 
 		foreach ( $this->fields as $fieldname => $value ) {
 			Plugins::act('post_update_' . $fieldname, $this, $this->$fieldname, $value );
@@ -376,8 +418,8 @@ class Post extends QueryRecord
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->savetags();
-		EventLog::log('New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name($this->content_type) . '; Status: ' . Post::status_name($this->status), 'info', 'content', 'habari');
-		Plugins::act('post_inserted', $this);
+		EventLog::log('New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name($this->content_type) . '; Status: ' . $this->statusname, 'info', 'content', 'habari');
+		Plugins::act('after_post_insert', $this);
 		return $result;
 	}
 
@@ -389,6 +431,14 @@ class Post extends QueryRecord
 	{
 		$this->updated = date('Y-m-d H:i:s');
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
+
+		$allow= true;
+		$allow= Plugins::filter('allow_post_update', $result, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('before_post_update', $this);
+
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
 		// triggered if the post has a new status value
@@ -400,32 +450,33 @@ class Post extends QueryRecord
 		$this->newfields = array();
 		$this->savetags();
 		$this->info->commit();
+
+		Plugins::act('after_post_update', $this);
 		return $result;
 	}
 	
 	/**
 	 * function delete
 	 * Deletes an existing post
-	 * @param Boolean whether to delete the post immediately, or set its status to "deleted"
 	 */	 	 	 	 	
-	public function delete( $delete_now = FALSE )
+	public function delete()
 	{
-		if ( ! $delete_now )
-		{
-			$this->status= Post::status('deleted');
-			$this->update();
-			EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') scheduled for deletion.', 'info', 'content', 'habari');
+		$allow= true;
+		$allow= Plugins::filter('allow_post_delete', $result, $this);
+		if ( ! $allow ) {
 			return;
 		}
-
 		// invoke plugins
-		Plugins::act('post_delete', $this);
+		Plugins::act('before_post_delete', $this);
 
 		// Delete all comments associated with this post
 		if(!empty($this->comments))
 			$this->comments->delete();
 		$result= parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
 		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari');
+
+		// invoke plugins on the after_post_delete action
+		Plugins::act('after_post_delete', $this);
 		return $result;
 	}
 	
@@ -436,9 +487,19 @@ class Post extends QueryRecord
 	 */
 	public function publish()
 	{
+		$allow= true;
+		$allow= Plugins::filter('allow_post_publish', $result, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('before_post_publish', $this);
+
 		$this->status = 'publish';
 		$result= $this->update();
 		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') published.', 'info', 'content', 'habari');
+
+		// and call any final plugins
+		Plugins::act('after_post_publish', $this);
 		return $result;
 	}
 	
@@ -460,6 +521,9 @@ class Post extends QueryRecord
 		}
 
 		switch($name) {
+		case 'statusname':
+			$out= self::status_name( $this->status );
+			break;
 		case 'permalink':
 			$out = $this->get_permalink();
 			break;
