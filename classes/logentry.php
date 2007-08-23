@@ -148,10 +148,10 @@ class LogEntry extends QueryRecord
 			if ( 'limit' == $key ) {
 				$limit= " LIMIT " . $value;
 			}
+		}
 		
 		$logs= DB::get_results( "SELECT id, user_id, type_id, timestamp, message, severity_id FROM " . DB::table( 'log' ) . " {$orderby}{$limit}" );
 		return $logs;
-		}
 	}
 	
 	public function get_event_type( $event_id ) {
