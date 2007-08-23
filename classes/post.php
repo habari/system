@@ -402,7 +402,7 @@ class Post extends QueryRecord
 		$this->setguid();
 
 		$allow= true;
-		$allow= Plugins::filter('allow_post_insert', $result, $this);
+		$allow= Plugins::filter('allow_post_insert', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -433,7 +433,7 @@ class Post extends QueryRecord
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
 
 		$allow= true;
-		$allow= Plugins::filter('allow_post_update', $result, $this);
+		$allow= Plugins::filter('allow_post_update', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -462,7 +462,7 @@ class Post extends QueryRecord
 	public function delete()
 	{
 		$allow= true;
-		$allow= Plugins::filter('allow_post_delete', $result, $this);
+		$allow= Plugins::filter('allow_post_delete', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -488,7 +488,7 @@ class Post extends QueryRecord
 	public function publish()
 	{
 		$allow= true;
-		$allow= Plugins::filter('allow_post_publish', $result, $this);
+		$allow= Plugins::filter('allow_post_publish', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
