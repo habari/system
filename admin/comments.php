@@ -29,7 +29,7 @@ $('ul#waiting li').quicksearch({
 		?>
 		<li>
 			Comment by <?php echo $comment->name;?> on
-			<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$post->slug) ); ?>#comment-<?php echo $comment->id; ?>" title="View this post"><?php echo $post->title; ?></a>
+			<a href="<?php echo $post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="View this post"><?php echo $post->title; ?></a>
 			<br /><small>(Comment created on <?php echo $comment->date; ?>)</small>
 			<p><?php echo $comment->content; ?></p>
 			<span class="manage">
