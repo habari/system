@@ -22,7 +22,7 @@ class FeedbackHandler extends ActionHandler
 			if ( $post->info->comments_disabled ) {
 				// comments are disabled, so let's just send
 				// them back to the post's permalink
-				Utils::redirect( URL::get( 'display_entry', array('slug'=>$post->slug) ) );
+				Utils::redirect( $post->permalink );
 			}
 
 			if( $post && !$post->info->comments_disabled ) {
