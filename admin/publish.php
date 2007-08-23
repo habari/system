@@ -46,6 +46,7 @@
 			<ul>
 				<?php
 				$statuses= Post::list_post_statuses();
+				$statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
 				foreach ( $statuses as $name => $value ) {
 					if ('any' == $name) {
 						continue;
