@@ -376,7 +376,7 @@ class InputFilter
 					if ( count( $stack ) ) {
 						// skip node if filtered element is still open
 						// XXX this is not very robust
-						$node= NULL;
+						//$node= NULL; // not reliable enough, better to have superfluous text than holes
 					}
 					else {
 						// XXX use blog charset setting
