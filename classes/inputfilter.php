@@ -60,6 +60,13 @@ class InputFilter
 	);
 	
 	/**
+	 * #EMPTY elements.
+	 */
+	private static $elements_empty= array(
+		'img',
+	);
+	
+	/**
 	 * Protocols that are ok for use in URIs.
 	 */
 	private static $whitelist_protocols= array(
@@ -190,7 +197,7 @@ class InputFilter
 	}
 	
 	/**
-	 * This really doesn't belong here. It should also be done much better. This is a nasty, nasty kludge.
+	 * This really doesn't belong here. It should also be done much better. This is a nasty, NASTY kludge.
 	 */
 	public static function parse_url( $url )
 	{
@@ -240,7 +247,7 @@ class InputFilter
 			// /optional for relative
 			. ')?'
 			// path
-			. '(/[^?#]+)?'
+			. '(/?[^?#]+)?'
 			// querystring
 			. '(?:\?([^#]+))?'
 			// fragment (hash)
@@ -373,10 +380,9 @@ class InputFilter
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_TEXT:
-					if ( count( $stack ) ) {
+					if ( sizeof( $stack ) > 0 && ! in_array( strtolower( $stack[sizeof( $stack )-1] ), self::$whitelist_elements ) ) {
 						// skip node if filtered element is still open
-						// XXX this is not very robust
-						//$node= NULL; // not reliable enough, better to have superfluous text than holes
+						$node= NULL;
 					}
 					else {
 						// XXX use blog charset setting
@@ -385,20 +391,22 @@ class InputFilter
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
 					// is this element allowed at all?
-					if ( ! in_array( $node['name'], self::$whitelist_elements ) ) {
+					if ( ! in_array( strtolower( $node['name'] ), self::$whitelist_elements ) ) {
+						if ( ! in_array( strtolower( $node['name'] ), self::$elements_empty ) ) {
+							array_push( $stack, $node['name'] );
+						}
 						$node= NULL;
-						array_push( $stack, $node['name'] );
 					}
 					else {
 						// check attributes
 						foreach ( $node['attrs'] as $k => $v ) {
 							$attr_ok= (
 								( 
-									   in_array( $k, self::$whitelist_attributes['*'] )
-									|| ( array_key_exists( $node['name'], self::$whitelist_attributes ) &&
-									     array_key_exists( $k, self::$whitelist_attributes[$node['name']] ) )
+									   in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
+									|| ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) &&
+									     array_key_exists( strtolower( $k ), self::$whitelist_attributes[strtolower( $node['name'] )] ) )
 								)
-								&& self::check_attr_value( $k, $v, self::$whitelist_attributes[$node['name']][$k] )
+								&& self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes[strtolower( $node['name'] )][strtolower( $k )] )
 							);
 							if ( ! $attr_ok ) {
 								unset( $node['attrs'][$k] );
@@ -407,12 +415,12 @@ class InputFilter
 					}
 					break; 
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
-					if ( ! in_array( $node['name'], self::$whitelist_elements ) ) {
-						$node= NULL;
-						if ( array_pop( $stack ) !== $node['name'] ) {
+					if ( ! in_array( strtolower( $node['name'] ), self::$whitelist_elements ) ) {
+						if ( strtolower( $temp= array_pop( $stack ) ) !== strtolower( $node['name'] ) ) {
 							// something weird happened (Luke, use the DOM!)
-							array_push( $stack, $node['name'] );
+							array_push( $stack, $temp );
 						}
+						$node= NULL;
 					} 
 					break;
 				case HTMLTokenizer::NODE_TYPE_PI:
@@ -465,6 +473,8 @@ class InputFilter
 			}
 		}
 		// $document->toString() is so much easier :~
+		
+		$str= preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', $str ); 
 		
 		return $str;
 	}
