@@ -297,7 +297,7 @@ class Post extends QueryRecord
 		}
 		
 		// make sure our slug is unique
-		$slug= Plugins::filter('set_slug', $value);
+		$slug= Plugins::filter('post_setslug', $value);
 		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $slug ) ), '-' );
 		$postfix= '';
 		$postfixcount= 0;
@@ -402,11 +402,11 @@ class Post extends QueryRecord
 		$this->setguid();
 
 		$allow= true;
-		$allow= Plugins::filter('allow_post_insert', $allow, $this);
+		$allow= Plugins::filter('post_insert_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
-		Plugins::act('before_post_insert', $this);
+		Plugins::act('post_insert_before', $this);
 
 		// Invoke plugins for all fields, since they're all "changed" when inserted 
 		foreach ( $this->fields as $fieldname => $value ) {
@@ -419,7 +419,7 @@ class Post extends QueryRecord
 		$this->info->commit( DB::last_insert_id() );
 		$this->savetags();
 		EventLog::log('New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name($this->content_type) . '; Status: ' . $this->statusname, 'info', 'content', 'habari');
-		Plugins::act('after_post_insert', $this);
+		Plugins::act('post_insert_after', $this);
 		return $result;
 	}
 
@@ -433,11 +433,11 @@ class Post extends QueryRecord
 		if(isset($this->fields['guid'])) unset( $this->newfields['guid'] );
 
 		$allow= true;
-		$allow= Plugins::filter('allow_post_update', $allow, $this);
+		$allow= Plugins::filter('post_update_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
-		Plugins::act('before_post_update', $this);
+		Plugins::act('post_update_before', $this);
 
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
@@ -451,7 +451,7 @@ class Post extends QueryRecord
 		$this->savetags();
 		$this->info->commit();
 
-		Plugins::act('after_post_update', $this);
+		Plugins::act('post_update_after', $this);
 		return $result;
 	}
 	
@@ -462,12 +462,12 @@ class Post extends QueryRecord
 	public function delete()
 	{
 		$allow= true;
-		$allow= Plugins::filter('allow_post_delete', $allow, $this);
+		$allow= Plugins::filter('post_delete_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
 		// invoke plugins
-		Plugins::act('before_post_delete', $this);
+		Plugins::act('post_delete_before', $this);
 
 		// Delete all comments associated with this post
 		if(!empty($this->comments))
@@ -476,7 +476,7 @@ class Post extends QueryRecord
 		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari');
 
 		// invoke plugins on the after_post_delete action
-		Plugins::act('after_post_delete', $this);
+		Plugins::act('post_delete_after', $this);
 		return $result;
 	}
 	
@@ -488,18 +488,18 @@ class Post extends QueryRecord
 	public function publish()
 	{
 		$allow= true;
-		$allow= Plugins::filter('allow_post_publish', $allow, $this);
+		$allow= Plugins::filter('post_publish_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
-		Plugins::act('before_post_publish', $this);
+		Plugins::act('post_publish_before', $this);
 
 		$this->status = 'publish';
 		$result= $this->update();
 		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') published.', 'info', 'content', 'habari');
 
 		// and call any final plugins
-		Plugins::act('after_post_publish', $this);
+		Plugins::act('post_publish_after', $this);
 		return $result;
 	}
 	
