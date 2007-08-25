@@ -75,7 +75,6 @@ class FeedbackHandler extends ActionHandler
 	
 				$spam_rating= 0; 			
 				$spam_rating= Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
-				$comment= Plugins::filter('add_comment', $comment, $this->handler_vars, $spam_rating);
 			
 				$comment->insert();
 				

@@ -108,11 +108,22 @@ class Comment extends QueryRecord
 	 */
 	public function insert()
 	{
+		$allow= true;
+		$allow= Plugins::filter('allow_comment_insert', $allow, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('comment_insert_before', $this);
+		// Invoke plugins for all fields, since they're all "chnaged" when inserted
+		foreach ( $this->fields as $fieldname => $value ) {
+			Plugins::act('comment_update_' . $fieldname, $this, $this->$fieldname, $value );
+		}
 		$result = parent::insert( DB::table('comments') );
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the comment object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->info->commit( $this->fields['id'] );
+		Plugins::act('comment_insert_after', $this);
 		return $result;
 	}
 
@@ -122,10 +133,21 @@ class Comment extends QueryRecord
 	 */
 	public function update()
 	{
+		$allow= true;
+		$allow= Plugins::filter('comment_update_allow', $allow, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('comment_update_before', $this);
+		// invoke plugins for all fields which have been updated
+		foreach ($this->newfields as $fieldname => $value ) {
+			Plugins::act('comment_update_' . $fieldname, $this, $this->fields[$fieldname], $value);
+		}
 		$result = parent::update( DB::table('comments'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->info->commit();
+		Plugins::act('comment_update_after', $this);
 		return $result;
 	}
 
@@ -135,7 +157,14 @@ class Comment extends QueryRecord
 	 */
 	public function delete()
 	{
+		$allow= true;
+		$allow= Plugins::filter('comment_delete_allow', $allow, $this);
+		if ( ! $allow ) { 
+			return;
+		}
+		Plugins::act('comment_delete_before', $this);
 		return parent::delete( DB::table('comments'), array('id'=>$this->id) );
+		Plugins::act('comment_delete_after', $this);
 	}
 
 	/**
