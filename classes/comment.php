@@ -109,7 +109,7 @@ class Comment extends QueryRecord
 	public function insert()
 	{
 		$allow= true;
-		$allow= Plugins::filter('allow_comment_insert', $allow, $this);
+		$allow= Plugins::filter('comment_insert_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
