@@ -100,6 +100,8 @@ class RewriteRule extends QueryRecord
 		$args_query= array_diff( $args, $args_defined );
 		$args= Plugins::filter( 'rewrite_args', $args, $this->name );
 		// Replace defined arguments with their value
+		$searches= array();
+		$replacements= array();
 		foreach ( $named_args as $keys ) {
 			foreach ( $keys as $key ) {
 				if ( !empty( $args[$key] ) ) {
