@@ -364,6 +364,28 @@ class Theme
 	{
 		return isset( $this->template_engine->$key );
 	}
+	
+	/**
+	 * Set a template variable, a property alias for assign()
+	 * 
+	 * @param string $key The template variable to set
+	 * @param mixed $value The value of the variable 
+	 */
+	public function __set( $key, $value )
+	{
+		$this->assign( $key, $value );
+	}
+	
+	/**
+	 * Get a template variable value
+	 * 
+	 * @param string $key The template variable name to get
+	 * @return mixed The value of the variable
+	 */
+	public function __get( $key )
+	{
+		return $this->template_engine->$key;
+	}
 
 	/**
 	 * Handle methods called on this class or its descendants that are not defined by this class.	
