@@ -63,7 +63,7 @@ class FeedbackHandler extends ActionHandler
 					'ip'		=>	ip2long( $_SERVER['REMOTE_ADDR'] ),
 					'content'	=>	$this->handler_vars['content'],
 					'status'	=>	Comment::STATUS_UNAPPROVED,
-					'date'		=>	gmdate('Y-m-d H:i:s'),
+					'date'		=>	date( 'Y-m-d H:i:s' ),
 					'type' 		=> 	Comment::COMMENT,
 			 	) );
 	
