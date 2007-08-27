@@ -27,16 +27,13 @@
 						<td><?php echo $info->template_engine; ?></td>
 						<td><?php echo $theme_dir; ?></td>
 						<td align="center">
- <?php
-                                                        if ( $theme_dir != $active_theme )
-                                                        { ?>
-                                                        <form method='post' action='<?php URL::out('admin', 'page=activate_theme'); ?>' />
-                                                        <input type='hidden' name='theme_name' value='<?php echo $info->name; ?>' />
-                                                        <input type='hidden' name='theme_dir' value='<?php echo $theme_dir; ?>' />
-                                                        <input type='submit' name='submit' value='activate' />
-                                                        </form>
-                                                        <?php }
-                                                ?>
+						<?php if ( $theme_dir != $active_theme ) { ?>
+						<form method='post' action='<?php URL::out('admin', 'page=activate_theme'); ?>'>
+						<input type='hidden' name='theme_name' value='<?php echo $info->name; ?>'>
+						<input type='hidden' name='theme_dir' value='<?php echo $theme_dir; ?>'>
+						<input type='submit' name='submit' value='activate'>
+						</form>
+						<?php } ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>

@@ -36,17 +36,17 @@
 					<td><?php echo $post->pubdate ?></td>
 					<td align="center">
 						<a href="<?php echo $post->permalink ?>" title="View this Entry">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this entry" />
+							<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this entry">
 						</a>
 						<a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit this entry">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this entry" />
+							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this entry">
 						</a>
 						<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
-							<input type="hidden" name="slug" value="<?php echo $post->slug; ?>" />
-							<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>" />
-							<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>" />
-							<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>" />
-							<input type="image" src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" name="delete" value="delete" />
+							<input type="hidden" name="slug" value="<?php echo $post->slug; ?>">
+							<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+							<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+							<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+							<input type="image" src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" name="delete" value="delete">
 						</form>
 					</td>
 				</tr>
@@ -76,17 +76,17 @@
 					<td><?php echo $draft->pubdate; ?></td>
 					<td align="center">
 						<a href="<?php echo $draft->permalink; ?>" title="View this Entry">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this entry" />
+							<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this entry">
 						</a>
 						<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit this entry">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this entry" />
+							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this entry">
 						</a>
 							<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
-								<input type="hidden" name="slug" value="<?php echo $draft->slug; ?>" />
-								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>" />
-								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>" />
-								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>" />
-								<input type="image" src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" name="delete" value="delete" />
+								<input type="hidden" name="slug" value="<?php echo $draft->slug; ?>">
+								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+								<input type="image" src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" name="delete" value="delete">
 							</form>
 					</td>
 				</tr>

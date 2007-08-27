@@ -21,7 +21,7 @@
 					}
 					?>
 				</select>
-				<p class="submit"><input type="submit" name="import" value="Select" /></p>
+				<p class="submit"><input type="submit" name="import" value="Select"></p>
 			<?php
 				endif;
 			else:

@@ -79,8 +79,8 @@
 					<td><?php echo $plugin->info->version; ?></td>
 					<td>
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
-					<input type='hidden' name='plugin' value='<?php echo $file; ?>' />
-					<input type='submit' name='submit' value='<?php echo $verb; ?>' />
+					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
+					<input type='submit' name='submit' value='<?php echo $verb; ?>'>
 					<?php 
 					if ($active) {
 						$actions= array();

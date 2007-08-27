@@ -22,7 +22,7 @@ $('ul#waiting li').quicksearch({
 		<?php if( Comments::count_total( Comment::STATUS_APPROVED ) ) { ?>
 		<p>Below you will find comments awaiting moderation.</p>
 	<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
-	<p class="submit"><input type="button" id="remove" value="Mark all for Deletion" /> or <input type="button" id="demote" value="Mark all for Unapproval" /> or <input type="button" id="spamify" value="Mark all as Spam" /> then <input type="submit" value="Execute!" /></p>
+	<p class="submit"><input type="button" id="remove" value="Mark all for Deletion"> or <input type="button" id="demote" value="Mark all for Unapproval"> or <input type="button" id="spamify" value="Mark all as Spam"> then <input type="submit" value="Execute!"></p>
 	<ul id="waiting">
 		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ) {
 		$post= Post::get( array( 'id' => $comment->post_id, ) );
@@ -30,7 +30,7 @@ $('ul#waiting li').quicksearch({
 		<li>
 			Comment by <?php echo $comment->name;?> on
 			<a href="<?php echo $post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="View this post"><?php echo $post->title; ?></a>
-			<br /><small>(Comment created on <?php echo $comment->date; ?>)</small>
+			<br><small>(Comment created on <?php echo $comment->date; ?>)</small>
 			<p><?php echo $comment->content; ?></p>
 			<span class="manage">
 				<p>Action:
@@ -44,12 +44,12 @@ $('ul#waiting li').quicksearch({
 					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam">Mark as Spam
 				</label>
 				</p>
-			</span><br />
+			</span><br>
 		</li>
 		<?php }	?>
 	</ul>
-	<input type="hidden" name="returnpage" value="comments" />
-	<p class="submit"><input type="submit" value="Moderate!" /></p>
+	<input type="hidden" name="returnpage" value="comments">
+	<p class="submit"><input type="submit" value="Moderate!"></p>
 	</form>
 	<?php } else { ?>
 		<p>There are currently no comments on this blog.</p>
