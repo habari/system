@@ -322,6 +322,8 @@ class Theme
 	{
 		$paramarray['fallback']= array(
 			'search',
+			'multiple',
+			'home',
 		);
 		
 		$paramarray['user_filters']= $user_filters;
