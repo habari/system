@@ -137,7 +137,7 @@ class URL extends Singleton
 				}
 				if( isset($selectedrule) ) {
 					$return_url = $selectedrule->build( $args, $useall );
-					return Site::get_url('habari', true) . htmlspecialchars($return_url);
+					return Site::get_url('habari', true) . $return_url;
 				}
 			}
 		}
