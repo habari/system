@@ -3,6 +3,15 @@
 <head>
 	<title>Habari Administration</title>
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/admin.css">
+	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/print.css" type="text/css" media="print">
+
+	<!-- Show the grid and baseline
+	<style type="text/css">
+	.container { background: url(<?php Site::out_url('admin_theme'); ?>/css/lib/img/grid.png); } 
+	</style>  -->
+	
+	
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/support.js" type="text/javascript"></script>
 	<script type="text/javascript">
@@ -29,8 +38,8 @@
 	</script>
 </head>
 <body>
-<div id="page">
-	<div id="menubar">
+<div id="menubar">
+	<div class="container">
 		<div id="site-name">
 			<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
@@ -44,3 +53,4 @@
 			</li>
 		</ol>
 	</div>
+</div>

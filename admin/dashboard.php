@@ -1,11 +1,14 @@
 <?php include('header.php'); ?>
-<div id="content-area">
-	<div class="dashboard-column" id="left-column">
-		<div class="dashboard-block c3" id="welcome">
+<div class="container">
+	<hr />
+		<div class="column span-4 first ">
+	<p>Good to see you again, Admin! <!-- Need to get the appropriate < ?php echo $user->username; ?> code for this section--></p> 
+	</div>
+		<div class="column span-10 last" id="welcome">
 			<?php
 				$user= User::identify();
 				if ( ! isset( $user->info->experience_level ) ) {
-			?>
+			?> 
 					<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
 					<p>In the top right corner of the window you'll find &ldquo;Admin&rdquo;, &ldquo;Publish&rdquo;, and &ldquo;Manage&rdquo;, plus the logout button. (Use that if you're sharing this computer, or paranoid, or just like pushing buttons.)</p>
 					<p>Admin has 5 options. Clicking on &ldquo;Admin&rdquo; takes you back here. &ldquo;Options&rdquo; lets you make changes to the entire blog (Title, tagline, that sort of thing). &ldquo;Plugins&rdquo; is where you control, well, plugins. There are a few included, and there are dozens more <!-- a href='link to plugin site' -->plugins<!-- a/ --> available. &ldquo;Themes&rdquo; is where you can change how your blog looks to visitors. Again, a few are provided, but there are lots of <!-- a href='link to theme site' -->themes<!-- a/ --> out there. &ldquo;Users&rdquo; is where you control what the registered visitors, authors, and fellow admins can do on the site. Finally &ldquo;Import&rdquo; allows you to bring in your posts from another blogging platform. Just because you're using Habari doesn't mean you have to lose your old work.</p>
@@ -19,17 +22,51 @@
 				}
 				elseif ( $user->info->experience_level == 'user' ) {
 			?>
-					<p>Good to see you again, <?php echo $user->username; ?>! This is a quick pointer to help you find things like <a href="<?php Site::out_url('system'); ?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, <a href="<?php URL::out('admin', 'page=themes')?>" title="Manage your themes">themes</a>, and <a href="<?php URL::out('admin', 'page=plugins')?>" title="Manage your plugins">plugins</a>. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out('title'); ?>. When you've done that you can <a href="<?php URL::out('admin', 'page=publish&type=entry'); ?>" title="Post an Entry">post an entry</a> or <a href="<?php URL::out('admin', 'page=moderate')?>" title="Manage Comments">manage your comments</a>.</p>
+					<p>This is a quick pointer to help you find things like <a href="<?php Site::out_url('system'); ?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, <a href="<?php URL::out('admin', 'page=themes')?>" title="Manage your themes">themes</a>, and <a href="<?php URL::out('admin', 'page=plugins')?>" title="Manage your plugins">plugins</a>. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out('title'); ?>. When you've done that you can <a href="<?php URL::out('admin', 'page=publish&type=entry'); ?>" title="Post an Entry">post an entry</a> or <a href="<?php URL::out('admin', 'page=moderate')?>" title="Manage Comments">manage your comments</a>.</p>
 			<?php
 				}
 				else {
 			?>
-					<p>Welcome back, <?php echo $user->username; ?>! If you need <a href="<?php Site::out_url('system')?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
+					<p>If you need <a href="<?php Site::out_url('system')?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
+		
 			<?php
 				 }
 			?>
 		</div>
-		<div class="dashboard-block" id="stats">
+		<hr />
+		<div class="column span-4 first">
+			<div class="column span-4 first" id="system-info">
+		<h4>System Information</h4>
+					<ul>
+						<li>You are running Habari <?php echo Version::get_habariversion() ?>.</li>
+						<?php
+						$updates = Update::check();
+						//Utils::debug($updates);  //Uncomment this line to see what Update:check() returns...
+						if(count($updates) > 0) :
+							foreach($updates as $update) {
+								$class = implode(' ', $update['severity']);
+						if(in_array('critical', $update['severity'])) {
+							$updatetext = _t('<a href="%1s">%2s %3s</a> is a critical update.');
+							}
+						elseif(count($update['severity']) > 1) {
+							$updatetext = _t('<a href="%1s">%2s %3s</a> contains bug fixes and additional features.');
+						}
+						elseif(in_array('bugfix', $update['severity'])) {
+							$updatetext = _t('<a href="%1s">%2s %3s</a> contains bug fixes.');
+						}
+						elseif(in_array('feature', $update['severity'])) {
+							$updatetext = _t('<a href="%1s">%2s %3s</a> contains additional features.');
+						}
+						$updatetext = sprintf($updatetext, $update['url'], $update['name'], $update['latest_version']);
+						echo "<li class=\"{$class}\">&raquo; {$updatetext}</li>";
+						}
+						else:
+							echo "<li>No updates were found.</li>";
+						endif;
+						?>
+					</ul>
+		</div>
+			<div class="column span-4 first last" id="stats">
 			<h4>Site Statistics</h4>
 				<ul id="site-stats">
 					<li><span class="right"><?php echo Posts::count_total( Post::status('all') ); ?></span> Total Posts</li>
@@ -37,38 +74,28 @@
 					<li><span class="right"><?php echo Comments::count_total(); ?></span> Number of Comments</li>
 				</ul>
 		</div>
-		<div class="dashboard-block" id="system-info">
-			<h4>System Health</h4>
-			<ul>
-				<li>&raquo; You are running Habari <?php echo Version::get_habariversion() ?>.</li>
-			<?php
-			$updates = Update::check();
-			//Utils::debug($updates);  //Uncomment this line to see what Update:check() returns...
-			if(count($updates) > 0) :
-				foreach($updates as $update) {
-					$class = implode(' ', $update['severity']);
-					if(in_array('critical', $update['severity'])) {
-						$updatetext = _t('<a href="%1s">%2s %3s</a> is a critical update.');
-					}
-					elseif(count($update['severity']) > 1) {
-						$updatetext = _t('<a href="%1s">%2s %3s</a> contains bug fixes and additional features.');
-					}
-					elseif(in_array('bugfix', $update['severity'])) {
-						$updatetext = _t('<a href="%1s">%2s %3s</a> contains bug fixes.');
-					}
-					elseif(in_array('feature', $update['severity'])) {
-						$updatetext = _t('<a href="%1s">%2s %3s</a> contains additional features.');
-					}
-					$updatetext = sprintf($updatetext, $update['url'], $update['name'], $update['latest_version']);
-					echo "<li class=\"{$class}\">&raquo; {$updatetext}</li>";
-				}
-			else:
-				echo "<li>No updates were found.</li>";
-			endif;
-			?>
-			</ul>
 		</div>
-		<div class="dashboard-block" id="incoming">
+		<div class="column span-10 last"  id="logs">
+			<h4>Activity (<a href="<?php URL::out('admin', 'page=logs'); ?>" title="More Activity Logs">more</a> &raquo;)</h4>
+			<table id="log-activity" width="100%" cellspacing="0">
+				<thead>
+					<tr>
+						<th colspan="1" align="left">Date</th>
+						<th colspan="1" align="left">Type</th>
+						<th colspan="1" align="left">Message</th>
+					</tr>
+				</thead>
+				<?php foreach( logentry::get( array( 'limit' => 5 ) ) as $log ) { ?>
+						<tr>
+							<td><?php echo $log->timestamp; ?></td>
+							<td><?php echo logentry::get_event_type( $log->type_id ); ?></td>
+							<td><p><?php echo $log->message; ?></p></td>
+						</tr>
+						<?php } ?>
+			</table>
+		</div>	
+		<hr />
+		<div class="column span-4 first" id="incoming">
 			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
 			<?php
 			// This should be fetched on a pseudo-cron and cached:
@@ -98,37 +125,9 @@
 				_e( '<p>Error fetching links.</p>' );
 			}
 			?>
-		</div>
-		<div class="dashboard-block c2" id="drafts">
-				<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
-				<ul id="site-drafts">
-				<?php
-					if ( Posts::count_total( Post::status('draft') ) ) {
-						foreach ( Posts::by_status( Post::status('draft') ) as $draft ) {
-				?>
-					<li>
-						<span class="right">
-							<a href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">
-								<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this draft">
-							</a>
-							<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
-								<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this draft">
-							</a>
-						</span>
-						<?php echo $draft->title; ?>
-					</li>
-				<?php
-						}
-				?>
-				</ul>
-				<?php
-					}
-					else {
-						_e('<p>There are currently no drafts in process</p>');
-					}
-				?>
-		</div>
-		<div class="dashboard-block c2" id="recent-comments">
+		</div>		
+		
+		<div class="column span-10 last" id="recent-comments">
 			<h4>Recent Comments
 				<?php
 					if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
@@ -171,7 +170,39 @@
 					_e('<p>There are no comments to display</p>');
 				}
 				?>
+			
 		</div>
-	</div>
+
+			<hr />
+		<div class="column prepend-4 span-10 first" id="drafts">
+				<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
+				<ul id="site-drafts">
+				<?php
+					if ( Posts::count_total( Post::status('draft') ) ) {
+						foreach ( Posts::by_status( Post::status('draft') ) as $draft ) {
+				?>
+					<li>
+						<span class="right">
+							<a href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">
+								<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this draft">
+							</a>
+							<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
+								<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this draft">
+							</a>
+						</span>
+						<?php echo $draft->title; ?>
+					</li>
+				<?php
+						}
+				?>
+				</ul>
+				<?php
+					}
+					else {
+						_e('<p>There are currently no drafts in process</p>');
+					}
+				?>
+		</div>
+
 </div>
 <?php include('footer.php'); ?>
