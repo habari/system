@@ -108,6 +108,7 @@ class AdminHandler extends ActionHandler
 			}
 			else {
 				$postdata= array(
+					'slug' => $newslug,
 					'title' => $title,
 					'tags' => $tags,
 					'content' => $content,
