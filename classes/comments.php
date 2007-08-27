@@ -294,7 +294,7 @@ class Comments extends ArrayObject
 	**/
 	public function only( $what = 'approved' )
 	{
-		if ( ! isset( $this->sort[$what] ) ) {
+		if ( ! isset( $this->sort ) || count( $this->sort ) == 0 ) {
 			$this->sort_comments();
 		}
 		if ( ! isset($this->sort[$what]) || ! is_array( $this->sort[$what] ) ) {
