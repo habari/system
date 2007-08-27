@@ -296,6 +296,9 @@ class Site
 					$path= HABARI_PATH . '/user/themes/' . $theme;
 				}
 				break;
+			case 'admin_theme':
+				$path= HABARI_PATH . '/system/admin';
+				break;
 		}
 		$path.= ($trail) ? '/' : '';
 		$path= Plugins::filter( 'site_dir_' . $name, $path );
