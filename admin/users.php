@@ -33,7 +33,7 @@ foreach ( User::get_all() as $user )
 		$url = Url::get('admin', 'page=user/' . $user->username);
 	}
 	echo '<li>';
-	echo '<a href="' . $url . '">' . $user->username . '</a><br />';
+	echo '<a href="' . $url . '">' . $user->username . '</a><br>';
 	echo Posts::count_by_author( $user->id, Post::status('published') ) . ' published posts, ' . Posts::count_by_author( $user->id, Post::status('draft') ) . ' pending drafts, and ' . Posts::count_by_author( $user->id, Post::status('private') ) . ' private posts.';
 	echo '</li>';
 }
@@ -49,13 +49,13 @@ if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 ?>
 <form method="post" action="">
 <p><strong>Add a new user</strong></p>
-<p>Username: <input type="text" size="40" name="username" value="<?php echo ( isset( $settings['username'] ) ) ? $settings['username'] : ''; ?>" /></p>
-<p>Email: <input type="text" size="40" name="email" value="<?php echo ( isset( $settings['email'] ) ) ? $settings['email'] : ''; ?>" /></p>
+<p>Username: <input type="text" size="40" name="username" value="<?php echo ( isset( $settings['username'] ) ) ? $settings['username'] : ''; ?>"></p>
+<p>Email: <input type="text" size="40" name="email" value="<?php echo ( isset( $settings['email'] ) ) ? $settings['email'] : ''; ?>"></p>
 <p>Password (twice to confirm):</p>
-<p><input type="password" size="40" name="pass1" /></p>
-<p><input type="password" size="40" name="pass2" /></p>
-<input type="hidden" name="action" value="newuser" />
-<p><input type="submit" value="Add User" /></p>
+<p><input type="password" size="40" name="pass1"></p>
+<p><input type="password" size="40" name="pass2"></p>
+<input type="hidden" name="action" value="newuser">
+<p><input type="submit" value="Add User"></p>
 </form>
 </div>
 

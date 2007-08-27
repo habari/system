@@ -5,7 +5,7 @@
 		<?php if( Comments::count_total( Comment::STATUS_SPAM ) ) { ?>
 		<p>Below you will find comments awaiting moderation.</p>
 	<form method="post" name="spam" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
-	<p class="submit"><input type="submit" name="submit" value="Update!" /> <input type="checkbox" name="mass_spam_delete" id="mass_spam_delete" value="1">Delete 'em all</p>
+	<p class="submit"><input type="submit" name="submit" value="Update!"> <input type="checkbox" name="mass_spam_delete" id="mass_spam_delete" value="1">Delete 'em all</p>
 	<ul id="waiting">
 		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ){ ?>
 		<li>
@@ -21,7 +21,7 @@
 					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete">Delete
 				</label>
 				<label>
-					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="ignore-<?php echo $comment->id; ?>" value="spam" checked="checked">Leave as Spam
+					<input type="radio" name="moderate[<?php echo $comment->id; ?>]" id="ignore-<?php echo $comment->id; ?>" value="spam" checked>Leave as Spam
 				</label>
 				</p>
 			</span><br>

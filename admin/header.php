@@ -1,8 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head profile="http://gmpg.org/xfn/11">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
 	<title>Habari Administration</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/admin.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/admin.css">
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/support.js" type="text/javascript"></script>
 	<script type="text/javascript">
@@ -35,11 +35,10 @@
 			<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 		</div>
 		<ol id="menu">
-			<?php $page = empty($page) ? 'admin' : $page; ?>
 			<?php
-			
+			$page = empty($page) ? 'admin' : $page;
+			echo $mainmenu;
 			?>
-			<?php echo $mainmenu; ?>
 			<li class="menu-item" id="logout">
 				<a href="<?php URL::out('user', 'page=logout'); ?>" title="logout of Habari">Logout</a>
 			</li>

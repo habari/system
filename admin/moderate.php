@@ -52,18 +52,18 @@ function table($headers, $data, $sort = null){
 			case 'spam':
 				$comments = Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'date DESC' ) );
 				$mass_delete = 'mass_spam_delete';
-				$default_radio['spam']= ' checked="checked"';
+				$default_radio['spam']= ' checked';
 				break;
 			case 'approved':
 				$comments = Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) );
 				$mass_delete = '';
-				$default_radio['approve']= ' checked="checked"';
+				$default_radio['approve']= ' checked';
 				break;
 			case 'unapproved':
 			default:
 				$comments = Comments::get( array( 'status' => Comment::STATUS_UNAPPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) );
 				$mass_delete = 'mass_delete';
-				$default_radio['unapprove']= ' checked="checked"';
+				$default_radio['unapprove']= ' checked';
 				break;			
 		}
 		
@@ -72,7 +72,7 @@ function table($headers, $data, $sort = null){
 		<p><?php _e('Below you will find comments awaiting moderation.'); ?></p>
 		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
 
-		<p class="submit"><input type="submit" name="moderate" value="<?php _e('Moderate!'); ?>" />
+		<p class="submit"><input type="submit" name="moderate" value="<?php _e('Moderate!'); ?>">
 		<?php if ($mass_delete != '') : ?>
 		<label><input type="checkbox" name="<?php echo $mass_delete; ?>" id="mass_delete" value="1"><?php _e("Delete 'em all"); ?></label></p>
 		<?php endif; ?>
@@ -102,7 +102,7 @@ function table($headers, $data, $sort = null){
 				}
 				?>
 				On <a href="<?php echo $comment->post->permalink ?>"><?php echo $comment->post->title; ?></a>
-				<br /><small>(Commented created on <?php echo $comment->date; ?>)</small>
+				<br><small>(Commented created on <?php echo $comment->date; ?>)</small>
 				<div class="comment_content" id="comment_content_<?php echo $comment->id; ?>"
 				<?php if ($comment->status == COMMENT::STATUS_SPAM) {
 					echo 'style="display:none;"';
@@ -143,7 +143,7 @@ function table($headers, $data, $sort = null){
 			</li>
 		<?php }	?>
 		</ul>
-		<p class="submit"><input type="submit" name="submit" value="<?php _e('Moderate!'); ?>" /> 
+		<p class="submit"><input type="submit" name="submit" value="<?php _e('Moderate!'); ?>"> 
 		<?php if ($mass_delete != '') : ?>
 		<label><input type="checkbox" name="<?php echo $mass_delete; ?>" id="mass_delete1" value="1"><?php _e("Delete 'em all"); ?></label></p>
 		<?php endif; ?>

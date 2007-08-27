@@ -109,10 +109,10 @@
 					<li>
 						<span class="right">
 							<a href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">
-								<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this draft" />
+								<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this draft">
 							</a>
 							<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
-								<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this draft" />
+								<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this draft">
 							</a>
 						</span>
 						<?php echo $draft->title; ?>
@@ -159,8 +159,8 @@
 						<td><?php echo $recent->name; ?></td>
 						<td><?php echo $recent->url; ?></td>
 						<td align="center">
-							<a href="<?php echo $post->permalink; ?>" title="View this post"><img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this comment" /></a>
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this comment" />
+							<a href="<?php echo $post->permalink; ?>" title="View this post"><img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this comment"></a>
+							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this comment">
 						</td>
 					</tr>
 					<?php } ?>
