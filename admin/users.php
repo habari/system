@@ -26,11 +26,11 @@ foreach ( User::get_all() as $user )
 {
 	if ( $user->username == $currentuser->username )
 	{
-		$url = Url::get('admin', 'page=user');
+		$url = Url::get( 'admin', 'page=user' );
 	}
 	else
 	{
-		$url = Url::get('admin', 'page=user/' . $user->username);
+		$url = Url::get( 'userprofile', array( 'page' => 'user', 'user' => $user->username ) );
 	}
 	echo '<li>';
 	echo '<a href="' . $url . '">' . $user->username . '</a><br>';
