@@ -298,7 +298,7 @@ class Post extends QueryRecord
 		
 		// make sure our slug is unique
 		$slug= Plugins::filter('post_setslug', $value);
-		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $slug ) ), '-' );
+		$slug= Utils::slugify( $slug );
 		$postfix= '';
 		$postfixcount= 0;
 		do {
@@ -380,7 +380,7 @@ class Post extends QueryRecord
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
 		if ( count($this->tags) == 0) {return;}
 		foreach( (array)$this->tags as $tag ) { 
-			$tag_slug= str_replace( ' ', '-', $tag);
+			$tag_slug= Utils::slugify( $tag );
 			// @todo TODO Make this multi-SQL safe!
 			if( DB::get_value( 'SELECT count(*) FROM ' . DB::table('tags') . ' WHERE tag_text = ?', array( $tag ) ) == 0 ) {
 				DB::query( 'INSERT INTO ' . DB::table('tags') . ' (tag_text, tag_slug) VALUES (?, ?)', array( $tag, $tag_slug ) );
@@ -445,6 +445,7 @@ class Post extends QueryRecord
 		foreach ( $this->newfields as $fieldname => $value ) {
 			Plugins::act('post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
 		}
+		$this->setslug();
 		$result = parent::update( DB::table('posts'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();

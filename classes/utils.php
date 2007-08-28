@@ -574,6 +574,17 @@ class Utils
 		}
 		return $output;
 	}
+	
+	/**
+	 * Return a sanitized slug, replacing non-alphanumeric characters to dashes
+	 * @param string $string The string to sanitize. Non-alphanumeric characters will be replaced by dashes
+	 * @return string The sanitized slug
+	 */
+	public static function slugify( $string )
+	{
+		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $string ) ), '-' );		
+		return $slug;
+	}
 }
 
 ?>
