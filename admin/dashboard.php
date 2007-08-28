@@ -164,7 +164,7 @@
 				</thead>
 				<?php foreach( logentry::get( array( 'limit' => 5 ) ) as $log ) { ?>
 						<tr>
-							<td><?php echo $log->timestamp; ?></td>
+							<td><?php echo Format::nice_date( $log->timestamp, 'F j, Y' ); ?></td>
 							<td><?php echo logentry::get_event_type( $log->type_id ); ?></td>
 							<td><p><?php echo $log->message; ?></p></td>
 						</tr>
