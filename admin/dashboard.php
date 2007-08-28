@@ -1,12 +1,12 @@
 <?php include('header.php'); ?>
 <div class="container">
 	<hr />
+	<?php $user= User::identify(); ?>
 		<div class="column span-4 first ">
-	<p>Good to see you again, Admin! <!-- Need to get the appropriate < ?php echo $user->username; ?> code for this section--></p> 
+	<p>Good to see you again, <?php echo $user->username; ?>! <!-- Need to get the appropriate < ?php echo $user->username; ?> code for this section--></p> 
 	</div>
 		<div class="column span-10 last" id="welcome">
 			<?php
-				$user= User::identify();
 				if ( ! isset( $user->info->experience_level ) ) {
 			?> 
 					<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
@@ -75,58 +75,6 @@
 				</ul>
 		</div>
 		</div>
-		<div class="column span-10 last"  id="logs">
-			<h4>Activity (<a href="<?php URL::out('admin', 'page=logs'); ?>" title="More Activity Logs">more</a> &raquo;)</h4>
-			<table id="log-activity" width="100%" cellspacing="0">
-				<thead>
-					<tr>
-						<th colspan="1" align="left">Date</th>
-						<th colspan="1" align="left">Type</th>
-						<th colspan="1" align="left">Message</th>
-					</tr>
-				</thead>
-				<?php foreach( logentry::get( array( 'limit' => 5 ) ) as $log ) { ?>
-						<tr>
-							<td><?php echo $log->timestamp; ?></td>
-							<td><?php echo logentry::get_event_type( $log->type_id ); ?></td>
-							<td><p><?php echo $log->message; ?></p></td>
-						</tr>
-						<?php } ?>
-			</table>
-		</div>	
-		<hr />
-		<div class="column span-4 first" id="incoming">
-			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
-			<?php
-			// This should be fetched on a pseudo-cron and cached:
-			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url('hostname') );
-			$search->__set_processor( new SocketRequestProcessor );
-			$search->set_timeout( 5 );
-			$result= $search->execute();
-			if ( $search->executed() ) {
-				$xml = new SimpleXMLElement($search->get_response_body());
-				if(count($xml->entry) == 0) {
-					_e( '<p>No incoming links were found to this site.</p>' );
-				}
-				else {
-			?>
-			<ul id="incoming-links">
-				<?php foreach($xml->entry as $entry) { ?>
-				<li>
-					<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / -->
-					<a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
-				</li>
-				<?php } ?>
-			</ul>
-			<?php
-				}
-			}
-			else {
-				_e( '<p>Error fetching links.</p>' );
-			}
-			?>
-		</div>		
-		
 		<div class="column span-10 last" id="recent-comments">
 			<h4>Recent Comments
 				<?php
@@ -172,7 +120,57 @@
 				?>
 			
 		</div>
-
+		<hr />
+		<div class="column span-4 first" id="incoming">
+			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
+			<?php
+			// This should be fetched on a pseudo-cron and cached:
+			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url('hostname') );
+			$search->__set_processor( new SocketRequestProcessor );
+			$search->set_timeout( 5 );
+			$result= $search->execute();
+			if ( $search->executed() ) {
+				$xml = new SimpleXMLElement($search->get_response_body());
+				if(count($xml->entry) == 0) {
+					_e( '<p>No incoming links were found to this site.</p>' );
+				}
+				else {
+			?>
+			<ul id="incoming-links">
+				<?php foreach($xml->entry as $entry) { ?>
+				<li>
+					<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / -->
+					<a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
+				</li>
+				<?php } ?>
+			</ul>
+			<?php
+				}
+			}
+			else {
+				_e( '<p>Error fetching links.</p>' );
+			}
+			?>
+		</div>
+		<div class="column span-10 last"  id="logs">
+			<h4>Activity (<a href="<?php URL::out('admin', 'page=logs'); ?>" title="More Activity Logs">more</a> &raquo;)</h4>
+			<table id="log-activity" width="100%" cellspacing="0">
+				<thead>
+					<tr>
+						<th colspan="1" align="left">Date</th>
+						<th colspan="1" align="left">Type</th>
+						<th colspan="1" align="left">Message</th>
+					</tr>
+				</thead>
+				<?php foreach( logentry::get( array( 'limit' => 5 ) ) as $log ) { ?>
+						<tr>
+							<td><?php echo $log->timestamp; ?></td>
+							<td><?php echo logentry::get_event_type( $log->type_id ); ?></td>
+							<td><p><?php echo $log->message; ?></p></td>
+						</tr>
+						<?php } ?>
+			</table>
+		</div>
 			<hr />
 		<div class="column prepend-4 span-10 first" id="drafts">
 				<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
