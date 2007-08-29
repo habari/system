@@ -16,9 +16,13 @@
 	<script src="<?php Site::out_url('scripts'); ?>/support.js" type="text/javascript"></script>
 	<script type="text/javascript">
   		$(document).ready(function(){
-		    $("tbody/tr:nth-child(even)").addClass("even");
-		    $(".dashbox ul>li:nth-child(even)").addClass("even");
-		    $("#stats td+td").addClass('value');
+                    $("tbody/tr:nth-child(even)").addClass("even");
+                    $(".dashbox ul>li:nth-child(even)").addClass("even");
+                    $("#system-info ul>li:nth-child(even)").addClass("even");
+                    $("#stats ul>li:nth-child(even)").addClass("even");
+                    $("#drafts ul>li:nth-child(even)").addClass("even");
+					 $("#incoming ul>li:nth-child(even)").addClass("even");
+                    $("#stats td+td").addClass('value');
 				$("#menu .menu-item").hover(
 					function(){ $("ul", this).fadeIn("fast"); }, 
 					function() { } 
