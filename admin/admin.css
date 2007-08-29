@@ -6,8 +6,8 @@
  */
 
 /*=== @a ===*/
-a { text-decoration: none; color: #344d61;}
-a:visited { color: #5aa6ae;}
+a { text-decoration: none; color: #3EA5C8; }
+a:visited { color: #929292; text-decoration:underline;}
 
 /*=== @b ===*/
 body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-size: 1.0em; color: #000; margin: 0.0em auto;}
@@ -38,10 +38,11 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-siz
 .even { background: #f3f3f3;}
 
 /*=== @f ===*/
-#footer { clear: both; text-align: left; padding: 20px 0px 0px 40px; margin: 0px 1.5%; background: transparent url(images/habari-logo.png) no-repeat left center; background-position: 0 15px;}
+#footer { padding: 10px 0 0 0; /*background: transparent url(images/habari-logo.png) no-repeat left center; background-position: 0 15px;*/ border-top: 1px solid #929292;}
+/*
 #footer p { padding: 10px 0px 10px 0px; margin: 0px; clear:both; border-top: 1px solid #CACACA;}
 #footer ul { list-style: none; margin: 0px; padding: 0px;}
-#footer li { display: inline; float: left; margin: 0px; padding: 0px 10px 0px 0px; font-size: xx-small;}
+#footer li { display: inline; float: left; margin: 0px; padding: 0px 10px 0px 0px; font-size: xx-small;} */
 form p { margin-bottom: -1.0em;}
 .favicon { width: 16px; height: 16px;}
 
@@ -49,11 +50,12 @@ form p { margin-bottom: -1.0em;}
 img { border: none;}
 input[type=text], input[type=password] { margin-top: 1.0em; margin-bottom: 1.0em; width: 99%;}
 #incoming h4 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
-/*#incoming ul li img { border: none; width: 16px; height: 16px; padding-right: 0.2em;} */
+#incoming ul li { padding: 0 0 5px 0;} 
 
 /*=== @h ===*/
 h4 { border-bottom: 1px solid #929292; font-weight: bold; margin: 10px 0 -0.5em 0; padding-bottom: 0.2em; font-size: 0.9em;}
-.help-menu { float: left; display: inline; width: 10.0em; margin: 0 0px 1.6em 0;}
+ul.help-menu a{ float: left; display: inline; width: 10.0em; margin: 0 0px 1.6em 0;}
+ul.help-menu li a{ display: inline; float: left; margin: 0px; padding: 0px 10px 0px 0px; font-size: xx-small;} 
 
 /*=== @l ===*/
 #left-column {}
@@ -76,7 +78,8 @@ h4 { border-bottom: 1px solid #929292; font-weight: bold; margin: 10px 0 -0.5em 
 #menu-item a:hover { background: #5aa6ae; }
 #menubar .menu-item .menu-list a { background: #335c71; }
 #menu li.menu-item:hover ul, #menu li.sfHover ul { top: 22px;  }
-#menubar #logout.menu-item a { background: url(images/logout.png); padding: 5px 0 0 0; margin:0 0 0 20px; text-indent: -9999px; width: 65px; }
+#menubar #logout.menu-item a { background: url(images/logout.png); }
+#menubar #logout.menu-item:hover a { color:#000; background: #fff url(images/logout-active.png); height:26px;border-bottom:1px solid #929292; }
 ul.menu-list  { list-style: none; margin: 10px 0 0 0; padding: 0; position: absolute; top: -999em; width: 248px; border-top:1px solid #929292; border-bottom:1px solid #929292; }
 ul.menu-list li a  { background: #334d61; display:block; width: 100%; padding: 0px; }
 ul.menu-list li a:hover  { background: #5aa6ae; }

@@ -9,8 +9,8 @@
 	<!-- Show the grid and baseline
 	<style type="text/css">
 	.container { background: url(<?php Site::out_url('admin_theme'); ?>/css/lib/img/grid.png); } 
-	</style>  -->
-	
+	</style>  
+	-->
 	
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/support.js" type="text/javascript"></script>
