@@ -412,7 +412,7 @@ class AdminHandler extends ActionHandler
 				)
 			),
 			'publish' => array(
-				'caption' => _t( 'Publish' ),
+				'caption' => _t( 'Create' ),
 				'url' => URL::get( 'admin', 'page=publish' ),
 				'title' => _t( 'Edit the content of your site' ),
 				'submenu' => array()

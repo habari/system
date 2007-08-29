@@ -82,10 +82,9 @@ hr {
 /* Tables
 -------------------------------------------------------------- */
 
-table   { margin-bottom: 10px; border-top:1px solid #ddd; border-left:1px solid #ddd; }
-th,td   { height: 13px; padding:2px 4px; border-bottom:1px solid #ddd; border-right:1px solid #ddd; }
-th      { font-weight:bold; }
-
+table   { margin-bottom: 10px;  }
+th   { height: 13px; padding:2px 4px; border-bottom:1px solid #ddd;  font-weight:bold; }
+td   { height: 13px; padding:2px 4px; }
 
 /* Some default classes
 -------------------------------------------------------------- */
