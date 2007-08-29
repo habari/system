@@ -2,10 +2,10 @@
 <div class="container">
 	<hr />
 	<?php $user= User::identify(); ?>
-		<div class="column span-4 first ">
+		<div class="column span-7 first ">
 	<p>Good to see you again, <?php echo $user->username; ?>! <!-- Need to get the appropriate < ?php echo $user->username; ?> code for this section--></p> 
 	</div>
-		<div class="column span-10 last" id="welcome">
+		<div class="column prepend-1 span-16 last" id="welcome">
 			<?php
 				if ( ! isset( $user->info->experience_level ) ) {
 			?> 
@@ -34,8 +34,8 @@
 			?>
 		</div>
 		<hr />
-		<div class="column span-4 first">
-			<div class="column span-4 first" id="system-info">
+		<div class="column span-7 first">
+			<div class="column span-7 first" id="system-info">
 		<h4>System Information</h4>
 					<ul>
 						<li>You are running Habari <?php echo Version::get_habariversion() ?>.</li>
@@ -66,7 +66,7 @@
 						?>
 					</ul>
 		</div>
-			<div class="column span-4 first last" id="stats">
+			<div class="column span-7 first last" id="stats">
 			<h4>Site Statistics</h4>
 				<ul id="site-stats">
 					<li><span class="right"><?php echo Posts::count_total( Post::status('all') ); ?></span> Total Posts</li>
@@ -75,7 +75,7 @@
 				</ul>
 		</div>
 		</div>
-		<div class="column span-10 last" id="recent-comments">
+		<div class="column prepend-1 span-16 last" id="recent-comments">
 			<h4>Recent Comments
 				<?php
 					if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
@@ -121,7 +121,7 @@
 			
 		</div>
 		<hr />
-		<div class="column span-4 first" id="incoming">
+		<div class="column span-7 first" id="incoming">
 			<h4>Incoming Links (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url('hostname') ?>" title="More incoming links">more</a> &raquo;)</h4>
 			<?php
 			// This should be fetched on a pseudo-cron and cached:
@@ -152,7 +152,7 @@
 			}
 			?>
 		</div>
-		<div class="column span-10 last"  id="logs">
+		<div class="column prepend-1 span-16 last"  id="logs">
 			<h4>Activity (<a href="<?php URL::out('admin', 'page=logs'); ?>" title="More Activity Logs">more</a> &raquo;)</h4>
 			<table id="log-activity" width="100%" cellspacing="0">
 				<thead>
@@ -172,7 +172,7 @@
 			</table>
 		</div>
 			<hr />
-		<div class="column prepend-4 span-10 first" id="drafts">
+		<div class="column prepend-8 span-16 first" id="drafts">
 				<h4>Drafts (<a href="manage/drafts" title="View Your Drafts">more</a> &raquo;)</h4>
 				<ul id="site-drafts">
 				<?php
