@@ -127,6 +127,7 @@ class User extends QueryRecord
 		$this->info->set_key( $this->id );
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
 		// $this->info->option_default= "saved";
+		$this->info->commit();
 		EventLog::log( 'New user created: ' . $this->username, 'info', 'default', 'habari' );
 
 		return $result;
@@ -137,6 +138,7 @@ class User extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
+		$this->info->commit();
 		return parent::update( DB::table('users'), array( 'id' => $this->id ) );
 	}
 	
