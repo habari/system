@@ -1,6 +1,7 @@
 <?php include('header.php'); ?>
-<div id="content-area">
- <div class="dashboard-block c3" id="welcome">
+<div class="container">
+<hr />
+ <div class="column span-24 first" id="welcome">
   <?php
   if ( isset( $result ) ) {
    switch( $result ) {

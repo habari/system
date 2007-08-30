@@ -1,5 +1,6 @@
 <?php include('header.php');?>
-<div id="content-area">
+<div class="container">
+<hr />
 <?php
 	$currentuser = User::identify();
 	if ( ! $currentuser ) {

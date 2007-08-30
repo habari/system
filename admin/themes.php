@@ -1,5 +1,6 @@
 <?php include('header.php');?>
-<div id="content-area">
+<div class="container">
+<hr />
 	<div class="dashboard-block c3" id="welcome">
 		<h1>Currently Available Themes</h1>
 		<p>Activate, deactivate and remove themes through this interface.</p>
