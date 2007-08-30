@@ -118,8 +118,8 @@
 						<td><?php echo $recent->name; ?></td>
 						<td><?php echo $recent->url; ?></td>
 						<td align="center">
-							<a href="<?php echo $post->permalink; ?>" title="<?php _e('View this post'); ?>"><img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="<?php _e('View this comment'); ?>"></a>
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="<?php _e('Edit this comment'); ?>">
+							<a class="view" href="<?php echo $post->permalink; ?>" title="<?php _e('View this post'); ?>">View</a> 
+							
 						</td>
 					</tr>
 					<?php } ?>
@@ -178,7 +178,7 @@
 						<tr>
 							<td><?php echo Format::nice_date( $log->timestamp, 'F j, Y' ); ?></td>
 							<td><?php echo logentry::get_event_type( $log->type_id ); ?></td>
-							<td><p><?php echo $log->message; ?></p></td>
+							<td><?php echo $log->message; ?></td>
 						</tr>
 						<?php } ?>
 			</table>
@@ -194,12 +194,8 @@
 					<tr>
 						<td><?php echo $draft->title; ?></td>
 						<td>
-							<a href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">
-								<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this draft">
-							</a>
-							<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">
-								<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this draft">
-							</a>
+							<a class="view" href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">View</a>
+							<a class="edit" href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">Edit</a>
 						</td>
 					</tr>
 				<?php
