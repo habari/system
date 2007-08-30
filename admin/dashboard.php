@@ -3,7 +3,13 @@
 	<hr />
 	<?php $user= User::identify(); ?>
 		<div class="column span-7 first ">
-	<p><?php printf( _t('Good to see you again, %s!'), $user->username); ?></p> 
+	<p><?php if ( isset ($user->info->imageurl ) ) {
+	?>
+		<img src="<?php echo $user->info->imageurl?>" width="45" height="45">
+	<?php
+		}
+	?>
+	<?php printf( _t('Good to see you again, %s!'), $user->username); ?></p> 
 	</div>
 		<div class="column prepend-1 span-16 last" id="welcome">
 			<?php

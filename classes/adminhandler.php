@@ -194,6 +194,12 @@ class AdminHandler extends ActionHandler
 			$user->email= $email;
 			$update= TRUE;
 		}
+
+		// Changing image url
+                if ( isset( $imageurl ) && ( $user->info->imageurl != $imageurl ) ) {
+                        $user->info->imageurl= $imageurl;
+                        $update= TRUE;
+                }
 		
 		// See if a password change is being attempted
 		if ( isset( $pass1 ) && ( !empty( $pass1 ) ) ) {

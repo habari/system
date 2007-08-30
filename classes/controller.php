@@ -56,6 +56,18 @@ class Controller extends Singleton {
   public function get_handler() {
     return Controller::instance()->handler;
   }
+  
+  /**
+   * A convenience method for returning a handler variable (handler_var).
+   * This includes parameters set on the url, and fields submitted by POST.
+   * The alternative to this, while possible to write, is just too long.
+   * @param string $name The name of the variable to return.
+   * @return mixed The value of that variable in the handler
+   **/	  	 	   
+  public static function get_var( $name )
+  {
+  	return Controller::instance()->handler->handler_vars[ $name ];
+  }
 
   /**
    * Parses the requested URL.  Automatically 
