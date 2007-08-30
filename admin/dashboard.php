@@ -5,7 +5,7 @@
 		<div class="column span-7 first ">
 	<p><?php if ( isset ($user->info->imageurl ) ) {
 	?>
-		<img src="<?php echo $user->info->imageurl?>" width="45" height="45">
+		<img src="<?php echo $user->info->imageurl?>" class="usericon">
 	<?php
 		}
 	?>
