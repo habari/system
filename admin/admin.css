@@ -7,7 +7,7 @@
 
 /*=== @a ===*/
 a { text-decoration: none; color: #3EA5C8; }
-a:visited { color: #929292; text-decoration:underline;}
+a:visited { color: #929292;}
 
 /*=== @b ===*/
 body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-size: 1.0em; color: #000; margin: 0.0em auto;}
@@ -35,7 +35,8 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-siz
 #drafts h4 { margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 
 /*=== @e ===*/ 
-.even { background: #f3f3f3;}
+.even { background: #f3f3f3; border-top:1px solid #ddd; ; border-bottom:1px solid #ddd; }
+.edit {margin: 0 0 0 5px;}
 
 /*=== @f ===*/
 #footer { padding: 10px 0 0 0; /*background: transparent url(images/habari-logo.png) no-repeat left center; background-position: 0 15px;*/ border-top: 1px solid #929292;}
@@ -119,9 +120,13 @@ textarea { margin-top: 1.0em; margin-bottom: 3.0em; width: 99%; }
 .update { background: #DC9752; width: 100%; margin: -1.5em auto 1.0em auto; }
 .update p { color: #fff; padding: 0.5em; }
 
+/*=== @w ===*/
+.view {margin:0 5px 0 0;}
+
 /*=== @w ===
 #welcome { margin-bottom: 10px; }
 #welcome p { font-size: 0.8em; color: #333; line-height: 1.5em; margin-bottom: 0px; margin-right: 1.0em; width: 66% }*/
+.welcome {font-size:1.2em; font-weight: bold;}
 #welcome h4 { margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0; }
 
 

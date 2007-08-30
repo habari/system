@@ -83,8 +83,8 @@ hr {
 -------------------------------------------------------------- */
 
 table   { margin-bottom: 10px;  }
-th   { height: 13px; padding:2px 4px; border-bottom:1px solid #ddd;  font-weight:bold; }
-td   { height: 13px; padding:2px 4px; }
+th   { height: 13px; padding:2px 4px; border-bottom:1px solid #ddd;  font-weight:bold;  }
+td   { height: 13px; padding:2px 4px; border-bottom:1px solid #ddd;}
 
 /* Some default classes
 -------------------------------------------------------------- */
