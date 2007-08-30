@@ -39,7 +39,7 @@
 		<hr />
 		<div class="column span-7 first">
 			<div class="column span-7 first" id="system-info">
-		<h4><?php _e('System Information'); ?></h4>
+		<h3><?php _e('System Information'); ?></h3>
 					<ul>
 						<li><?php printf(_t('You are running Habari %s.'), Version::get_habariversion() ); ?></li>
 						<?php
@@ -70,7 +70,7 @@
 					</ul>
 		</div>
 			<div class="column span-7 first last" id="stats">
-			<h4><?php _e('Site Statistics'); ?></h4>
+			<h3><?php _e('Site Statistics'); ?></h3>
 				<table id="site-stats" width="100%" cellspacing="0">
 					<tr><td><?php _e('Total Posts'); ?></td><td><?php echo Posts::count_total( Post::status('all') ); ?></td></tr>
 					<tr><td><?php _e('Number of Your Posts'); ?></td><td><?php echo Posts::count_by_author( User::identify()->id, Post::status('all') ); ?></td></tr>
@@ -88,7 +88,7 @@
 		</div>
 		</div>
 		<div class="column prepend-1 span-16 last" id="recent-comments">
-			<h4><?php _e('Recent Comments'); ?>
+			<h3><?php _e('Recent Comments'); ?>
 				<?php
 					if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
 				?>
@@ -96,7 +96,7 @@
 				<?php
 					}
 				?>
-			</h4>
+			</h3>
 			<?php
 				if ( Comments::count_total( Comment::STATUS_APPROVED ) ) {
 			?>
@@ -134,7 +134,7 @@
 		</div>
 		<hr />
 		<div class="column span-7 first" id="incoming">
-			<h4><?php _e('Incoming Links'); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url('hostname') ?>" title="<?php _e('More incoming links'); ?>"><?php _e('more'); ?></a> &raquo;)</h4>
+			<h3><?php _e('Incoming Links'); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url('hostname') ?>" title="<?php _e('More incoming links'); ?>"><?php _e('more'); ?></a> &raquo;)</h3>
 			<?php
 			// This should be fetched on a pseudo-cron and cached:
 			$search = new RemoteRequest('http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url('hostname') );
@@ -165,7 +165,7 @@
 			?>
 		</div>
 		<div class="column prepend-1 span-16 last"  id="logs">
-			<h4><?php _e('Activity'); ?> (<a href="<?php URL::out('admin', 'page=logs'); ?>" title="<?php _e('More Activity Logs'); ?>"><?php _e('more'); ?></a> &raquo;)</h4>
+			<h3><?php _e('Activity'); ?> (<a href="<?php URL::out('admin', 'page=logs'); ?>" title="<?php _e('More Activity Logs'); ?>"><?php _e('more'); ?></a> &raquo;)</h3>
 			<table id="log-activity" width="100%" cellspacing="0">
 				<thead>
 					<tr>
@@ -185,7 +185,7 @@
 		</div>
 			<hr />
 		<div class="column prepend-8 span-16 first" id="drafts">
-				<h4>Drafts (<a href="<?php URL::out('admin', 'page=content'); ?>#drafts" title="View Your Drafts">more</a> &raquo;)</h4>
+				<h3>Drafts (<a href="<?php URL::out('admin', 'page=content'); ?>#drafts" title="View Your Drafts">more</a> &raquo;)</h3>
 				<table id="site-drafts" width="100%" cellspacing="0">
 				<?php
 					if ( Posts::count_total( Post::status('draft') ) ) {
@@ -193,6 +193,7 @@
 				?>
 					<tr>
 						<td><?php echo $draft->title; ?></td>
+
 						<td>
 							<a class="view" href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">View</a>
 							<a class="edit" href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="Edit <?php echo $draft->title; ?>">Edit</a>

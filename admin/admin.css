@@ -17,6 +17,7 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-siz
 #content-area { text-align: left; min-width: 700px; width: 90%; margin: 0 auto;}
 #content-area h1 { padding-top: inherit; margin-bottom: 0.0em; font-size: 1.3em;}
 /*#menubar #current-item a {  background: #5095A0 url(images/bar-back-active.png) repeat scroll 0px 0px; font-size: 0.9em; padding: 0.4em 0.0em; }*/
+#content-published h3, #content-draft h3{margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 
 /*=== @d ===*/
 .dashboard-block { float: left; margin: 0px 1.5%; width: 30%; _width: 28%;}
@@ -32,7 +33,7 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-siz
 .dashboard-block ul { margin-left: 0.0em; padding-left: 0.0em;}
 .dashboard-block ul li { list-style: none; font-size: 0.9em; color: #6A6A6A; padding: 0.2em 0.0em 0.2em 0.2em; width: 99%;}
 /*  .dashbox a:link, .dashbox a:visited:link { color: #7fbac0; } */
-#drafts h4 { margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
+#drafts h3 { margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 
 /*=== @e ===*/ 
 .even { background: #f3f3f3; border-top:1px solid #ddd; ; border-bottom:1px solid #ddd; }
@@ -50,7 +51,7 @@ form p { margin-bottom: -1.0em;}
 /*=== @i ===*/
 body img { border: none; margin: 0px; /* This feature of blueprint is really annoying */}
 input[type=text], input[type=password] { margin-top: 1.0em; margin-bottom: 1.0em; width: 99%;}
-#incoming h4 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
+#incoming h3 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 #incoming ul li { padding: 0 0 5px 0;} 
 
 /*=== @h ===*/
@@ -60,7 +61,7 @@ ul.help-menu li a{ display: inline; float: left; margin: 0px; padding: 0px 10px 
 
 /*=== @l ===*/
 #left-column {}
-#logs h4 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
+#logs h3 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 
 /*=== @m ===*/
 #site-name { float: left; display: inline; background: transparent url(images/home.png) no-repeat; border-right: 1px solid #929292;  font-size: 1em; padding:5px 30px 0 30px; height:27px;}
@@ -97,19 +98,19 @@ ul.menu-list li a:hover  { background: #5aa6ae; }
 /*=== @p ===*/
 body p { text-align: left; }
 
-.publish h4  { border:0px;}
+.publish h3  { border:0px;}
 .publish input, .publish textarea { border: 1px solid #CACACA;}
 .publish #tagbox p {}
 
 /*=== @r ===*/
-#recent-comments h4{margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
+#recent-comments h3{margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 .right{	float: right; display: inline; padding-top: 0.0em;}
 #right-column {	float: right; display: inline; margin: 0 0px 1.0em 0px; width: 100%;}
 
 /*=== @s ===*/
 
-#stats h4 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0; }
-#system-info h4 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;  }
+#stats h3 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0; }
+#system-info h3 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;  }
 #support  { clear:both; margin: 20px 0px 0px; }
 /*#system-info ul li { list-style: none; background: transparent; font-size: 0.9em; color: #6A6A6A; width: 100%; padding-bottom: 0.5em; }*/
 
@@ -127,7 +128,7 @@ textarea { margin-top: 1.0em; margin-bottom: 3.0em; width: 99%; }
 #welcome { margin-bottom: 10px; }
 #welcome p { font-size: 0.8em; color: #333; line-height: 1.5em; margin-bottom: 0px; margin-right: 1.0em; width: 66% }*/
 .welcome {font-size:1.2em; font-weight: bold;}
-#welcome h4 { margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0; }
+#welcome h3 { margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0; }
 
 
 /*=== unalphabetized ===*/

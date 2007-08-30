@@ -24,7 +24,7 @@ body {
 
 /* Default fonts */
 h1,h2,h3,
-h4,h5,h6  { font-family: Constantia, "Palatino Linotype", Palatino, Georgia, "Times New Roman", Times, serif; }
+h4,h5,h6  { font-family: Arial, Constantia, "Palatino Linotype", Palatino, Georgia, "Times New Roman", Times, serif; }
 body      { font-family: Frutiger, Univers, "Helvetica Neue", "Lucida Grande", Calibri, Helvetica, Verdana, sans-serif; } 
 pre       { font-family: Corbel, Verdana, "Bitstream Vera Sans", sans-serif; } 
 code      { font-family: Consolas, "Bitstream Vera Sans Mono", "Courier New", Monaco, Courier, monospace; } 
@@ -38,12 +38,12 @@ h1,h2,h3,h4,h5,h6 {
   clear:both; 
 }
 
-h1 { font-size: 30px; line-height:36px; padding:0 0 18px 0; }
-h2 { font-size: 20px; line-height:36px; }
-h3 { font-size: 16px; line-height:36px; }
-h4 { font-size: 14px; font-weight:bold; }
-h5 { font-size: 12px; font-weight:bold; }
-h6 { font-size: 12px; }
+/*h1 { font-size: 30px; line-height:36px; padding:0 0 18px 0; }*/
+h1 { font-size: 20px; line-height:36px; }
+h2 { font-size: 16px; line-height:36px; }
+h3 { font-size: 14px; font-weight:bold; }
+h4 { font-size: 12px; font-weight:bold; }
+h5 { font-size: 12px; }
 
 
 /* Text elements

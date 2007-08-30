@@ -1,6 +1,7 @@
 <?php include('header.php');?>
-<div id="content-area">
-<div class="dashboard-block c3" id="welcome">
+<div class="container">
+<hr />
+<div class="column span-24 first" id="welcome">
 	<h1><?php _e('Habari Content'); ?></h1>
 	<p><?php _e('Here you will find all the content you have created, ready to be tweaked, edited or removed.'); ?></p>
 	<?php 
@@ -13,8 +14,8 @@
 	}
 	?>
 	</div>
-	<div class="dashboard-block c3" id="content-published">
-		<h4><?php _e('Published Entries'); ?></h4>
+	<div class="column span-24" id="content-published">
+		<h3><?php _e('Published Entries'); ?></h3>
 			<table id="post-data-published" width="100%" cellspacing="0">
 				<thead>
 					<tr>
@@ -35,18 +36,18 @@
 					<td><?php echo $post->author->username ?></td>
 					<td><?php echo $post->pubdate ?></td>
 					<td align="center">
-						<a href="<?php echo $post->permalink ?>" title="View this Entry">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="View this entry">
+						<a class="view" href="<?php echo $post->permalink ?>" title="View this Entry">
+							View
 						</a>
-						<a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit this entry">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="Edit this entry">
+						<a class="edit" href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit this entry">
+							Edit
 						</a>
 						<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
 							<input type="hidden" name="slug" value="<?php echo $post->slug; ?>">
 							<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 							<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 							<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-							<input type="image" src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" name="delete" value="<?php _e('delete'); ?>">
+							<button name="delete"><?php _e('Delete'); ?></button>
 						</form>
 					</td>
 				</tr>
@@ -58,8 +59,8 @@
 	<?php
 	$drafts= Posts::get( array( 'limit' => '10', 'status'  => Post::status('draft') ) );
 	if ( count( $drafts ) > 0 ) : ?>
-	<div class="dashboard-block c3" id="content-draft">
-		<h4 id="drafts"><?php _e('Entries Currently in Draft'); ?></h4>
+	<div class="column span-24 " id="content-draft">
+		<h3 id="drafts"><?php _e('Entries Currently in Draft'); ?></h3>
 			<table id="post-data-draft" width="100%" cellspacing="0">
 				<thead>
 					<tr>
@@ -75,18 +76,18 @@
 					<td><?php echo $draft->author->username; ?></td>
 					<td><?php echo $draft->pubdate; ?></td>
 					<td align="center">
-						<a href="<?php echo $draft->permalink; ?>" title="<?php _e('View this Entry'); ?>">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="<?php _e('View this entry'); ?>">
+						<a class="view" href="<?php echo $draft->permalink; ?>" title="<?php _e('View this Entry'); ?>">
+							View
 						</a>
-						<a href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="<?php _e('Edit this entry'); ?>">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="<?php _e('Edit this entry'); ?>">
+						<a class="edit" href="<?php URL::out('admin', 'page=publish&slug=' . $draft->slug); ?>" title="<?php _e('Edit this entry'); ?>">
+							Edit
 						</a>
 							<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
 								<input type="hidden" name="slug" value="<?php echo $draft->slug; ?>">
 								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-								<input type="image" src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" name="delete" value="<?php _e('delete'); ?>">
+								<button name="delete"><?php _e('Delete'); ?></button>
 							</form>
 					</td>
 				</tr>
@@ -98,8 +99,8 @@
 	<?php
 	$pages= Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) );
 	if ( count( $pages ) > 0 ) : ?>
-	<div class="dashboard-block c3" id="content-pages">
-		<h4><?php _e('Paged Entries'); ?></h4>
+	<div class="column span-24" id="content-pages">
+		<h3><?php _e('Paged Entries'); ?></h3>
 			<table id="post-data-draft" width="100%" cellspacing="0">
 				<thead>
 					<tr>
@@ -115,18 +116,18 @@
 					<td><?php echo $page->author->username; ?></td>
 					<td><?php echo $page->pubdate; ?></td>
 					<td align="center">
-						<a href="<?php URL::out('display_posts_by_slug', array('slug'=>$page->slug)); ?>" title="<?php _e('View this Entry'); ?>">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/view.png" alt="<?php _e('View this entry'); ?>" />
+						<a class="view" href="<?php URL::out('display_posts_by_slug', array('slug'=>$page->slug)); ?>" title="<?php _e('View this Entry'); ?>">
+							View
 						</a>
-						<a href="<?php URL::out('admin', 'page=publish&slug=' . $page->slug); ?>" title="<?php _e('Edit this entry'); ?>">
-							<img src="<?php Site::out_url('admin_theme'); ?>/images/edit.png" alt="E<?php _e('dit this entry'); ?>" />
+						<a class="edit" href="<?php URL::out('admin', 'page=publish&slug=' . $page->slug); ?>" title="<?php _e('Edit this entry'); ?>">
+							Edit
 						</a>
 							<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
 								<input type="hidden" name="slug" value="<?php echo $page->slug; ?>" />
 								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>" />
 								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>" />
 								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>" />
-								<input type="image" src="<?php Site::out_url('admin_theme'); ?>/images/delete.png" name="delete" value="<?php _e('delete'); ?>" />
+								<button name="delete"><?php _e('Delete'); ?></button>
 							</form>
 					</td>
 				</tr>
