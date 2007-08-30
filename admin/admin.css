@@ -47,7 +47,7 @@ form p { margin-bottom: -1.0em;}
 .favicon { width: 16px; height: 16px;}
 
 /*=== @i ===*/
-img { border: none;}
+body img { border: none; margin: 0px; /* This feature of blueprint is really annoying */}
 input[type=text], input[type=password] { margin-top: 1.0em; margin-bottom: 1.0em; width: 99%;}
 #incoming h4 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 #incoming ul li { padding: 0 0 5px 0;} 
@@ -94,6 +94,8 @@ ul.menu-list li a:hover  { background: #5aa6ae; }
 .options ul li small a:hover, .options ul li small a:visited:hover {  text-decoration: underline; }
 
 /*=== @p ===*/
+body p { text-align: left; }
+
 .publish h4  { border:0px;}
 .publish input, .publish textarea { border: 1px solid #CACACA;}
 .publish #tagbox p {}
