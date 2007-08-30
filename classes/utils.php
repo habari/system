@@ -415,15 +415,12 @@ class Utils
 	{
 		if ( $hash == NULL ) {
 			// encrypt
-			/*
 			if ( function_exists( 'hash' ) ) { // PHP >= 5.1.2
 				return self::ssha512( $password, $hash );
 			}
 			else {
 				return self::ssha( $password, $hash );
 			}
-			*/ // uncomment the above block after db schema changes
-			return self::ssha( $password, $hash );
 		}
 		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
 			// verify
