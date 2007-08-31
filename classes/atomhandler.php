@@ -196,6 +196,7 @@ class AtomHandler extends ActionHandler
 			$workspace_collection->addAttribute( 'href', URL::get( 'collection', 'index=1' ) );
 			
 			$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
+			$collection_accept= $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
 			
 			$xml= Plugins::filter( 'atom_introspection', $xml, $this->handler_vars );
 			$xml= $xml->asXML();
@@ -469,32 +470,36 @@ class AtomHandler extends ActionHandler
 				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $this->handler_vars['index'] ) );
 			}
 				
-			if ( ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) ) > 1 ) {
+			$lastpage= ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) );
+			$nextpage= intval( $this->handler_vars['index'] ) + 1;
+			$prevpage= intval( $this->handler_vars['index'] ) - 1;
+			
+			if ( $lastpage > 1 ) {
 				$feed_link= $xml->addChild( 'link' );
 				$feed_link->addAttribute( 'rel', 'first' );
 				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=1' ) );	
 				$feed_link->addAttribute( 'type', 'application/atom+xml' );
 				$feed_link->addAttribute( 'title', 'First Page' );
 				
-				if ( intval( $this->handler_vars['index'] ) > 1 ) {
+				if ( $prevpage > $firstpage ) {
 					$feed_link= $xml->addChild( 'link' );
 					$feed_link->addAttribute( 'rel', 'previous' );
-					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . ( intval( $this->handler_vars['index'] ) - 1 ) ) );	
+					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $prevpage ) );	
 					$feed_link->addAttribute( 'type', 'application/atom+xml' );
 					$feed_link->addAttribute( 'title', 'Previous Page' );
 				}
 				
-				if ( ( intval( $this->handler_vars['index'] ) * Options::get( 'paginate' ) ) < Posts::count_total( Post::status('published') ) ) {
+				if ( $nextpage <= $lastpage ) {
 					$feed_link= $xml->addChild( 'link' );
 					$feed_link->addAttribute( 'rel', 'next' );
-					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . ( intval( $this->handler_vars['index'] ) + 1 ) ) );	
+					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $nextpage ) );	
 					$feed_link->addAttribute( 'type', 'application/atom+xml' );
 					$feed_link->addAttribute( 'title', 'Next Page' );
 				}
 				
 				$feed_link= $xml->addChild( 'link' );
 				$feed_link->addAttribute( 'rel', 'last' );
-				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) ) ) );
+				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $lastpage ) );
 				$feed_link->addAttribute( 'type', 'application/atom+xml' );
 				$feed_link->addAttribute( 'title', 'Last Page' );
 			}
@@ -533,6 +538,7 @@ class AtomHandler extends ActionHandler
 				$entry_id= $feed_entry->addChild( 'id', $post->guid );
 				
 				$entry_updated= $feed_entry->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
+				$entry_edited= $feed_entry->addChild( 'app:edited', date( 'c', strtotime( $post->pubdate ) ), 'http://www.w3.org/2007/app' );
 				
 				$entry_content= $feed_entry->addChild( 'content', $content );
 				$entry_content->addAttribute( 'type', 'html' );
