@@ -439,13 +439,19 @@ class Post extends QueryRecord
 		}
 		Plugins::act('post_update_before', $this);
 
+		// Call setslug() only when post slug is changed
+		if ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] != '' ) {
+			if ( $this->fields['slug'] != $this->newfields['slug'] ) {
+				$this->setslug();
+			}
+		}
+
 		// invoke plugins for all fields which have been changed
 		// For example, a plugin action "post_update_status" would be
 		// triggered if the post has a new status value
 		foreach ( $this->newfields as $fieldname => $value ) {
 			Plugins::act('post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
 		}
-		$this->setslug();
 		$result = parent::update( DB::table('posts'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
