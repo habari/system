@@ -186,7 +186,7 @@ class AtomHandler extends ActionHandler
 	public function act_introspection()
 	{
 		try {
-			$xml= new SimpleXMLElement( '<service xmlns="http://purl.org/atom/app#" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
+			$xml= new SimpleXMLElement( '<service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
 			
 			$service_workspace= $xml->addChild( 'workspace' );
 			
