@@ -17,13 +17,13 @@ include_once( 'header.php' );
 					<th align="center">Severity</th>
 				</tr>
 			</thead>
-			<?php foreach( logentry::get() as $log ){ ?>
+			<?php foreach( eventlog::get( array( 'nolimit' => true ) ) as $log ){ ?>
 			<tr>
 				<td><?php echo $log->timestamp; ?></td>
 				<td><?php if ( $log->user_id ) { $user= User::get_by_id( $log->user_id ); echo $user->username; } ?></td>
-				<td><?php echo logentry::get_event_type( $log->type_id ); ?></td>
+				<td><?php echo $log->type; ?></td>
 				<td><p><?php echo $log->message; ?></p></td>
-				<td><?php echo LogEntry::severity_name( $log->severity_id ); ?></td>
+				<td><?php echo $log->severity; ?></td>
 			</tr>
 			<?php } ?>
 		</table>
