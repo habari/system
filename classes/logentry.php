@@ -8,10 +8,6 @@
 
 class LogEntry extends QueryRecord
 {
-	/**
-	 * @final
-	 */
-	private $table= 'log';
 	
 	/**
 	 * Defined event severities
@@ -35,13 +31,12 @@ class LogEntry extends QueryRecord
 	public static function default_fields()
 	{
 		return array(
-			'id' => null,
-			'user_id' => null,
-			'module' => 'habari',
-			'type' => 'default',
-			'severity' => 'info',
+			'id' => 0,
+			'user_id' => '',
+			'type_id' => '',
+			'severity_id' => '',
 			'message' => '',
-			'data' => null,
+			'data' => '',
 			'timestamp' => date( 'Y-m-d H:i:s' ),
 		);
 	}
@@ -51,20 +46,31 @@ class LogEntry extends QueryRecord
 	 * 
 	 * @param array $paramarray an associative array of initial LogEntry field values
 	**/
-	public function __construct( $paramarray= array() )
+	public function __construct( $paramarray = array() )
 	{
-		$this->fields= array_merge( self::default_fields(), $this->fields );
+		// Defaults
+		$this->fields = array_merge(
+			self::default_fields(),
+			$this->fields );
+		
 		parent::__construct( $paramarray );
+		if ( !isset( $this->fields['module'] ) ) {
+			$this->fields['module']= 'habari';
+		}
+		if ( isset( $this->fields['type'] ) ) {
+			$this->fields['type']= 'default';
+		}
+		if ( isset( $this->fields['severity'] ) ) {
+			$this->fields['severity']= 'info';
+		}
 		$this->exclude_fields( 'id' );
-
-		self::cache_types();		
 	}
 	
 	/**
 	 * Get an internal cache of log types
 	 * @param boolean $force Force the reload of types from the database.	 
 	**/
-	private function cache_types($force = false)
+	private function list_logentry_types($force = false)
 	{
 		if ( $force || empty( self::$types ) ) {
 			self::$types= array();
@@ -73,6 +79,7 @@ class LogEntry extends QueryRecord
 				self::$types[ $x->module ][ $x->type ]= $x->id;
 			}
 		}
+		return self::$types;
 	}	 	
 	
 	/**
@@ -106,7 +113,7 @@ class LogEntry extends QueryRecord
 	 */
 	public static function type( $module, $type )
 	{
-		self::cache_types();		
+		self::list_logentry_types();
 		if ( array_key_exists( $module, self::$types ) && array_key_exists( $type, self::$types[$module] ) ) {
 			return self::$types[$module][$type];
 		}
@@ -129,36 +136,97 @@ class LogEntry extends QueryRecord
 		}
 		
 		Plugins::filter( 'insert_logentry', $this );
-		parent::insert( DB::table( $this->table ) );
+		parent::insert( DB::table( 'log' ) );
 	}
 
-	public static function get( $paramarray = array() ) {
-		
-		//defaults
-		$orderby= 'ORDER BY timestamp DESC';
-		$limit= '';
-		
-		// loop over each element of the $paramarray
-		foreach ( $paramarray as $key => $value ) {
-			if ( 'orderby' == $key ) {
-				$orderby= 'ORDER BY ' . $value;
-				continue;
-			}
-			
-			if ( 'limit' == $key ) {
-				$limit= " LIMIT " . $value;
-			}
+	public function get( $paramarray = array() )
+	{
+		// Defaults
+		$defaults= array (
+			'fetch_fn' => 'get_row',
+		);
+		if ( $user = User::identify() ) {
+			$defaults['where'][]= array(
+				'user_id' => $user->id,
+			);
 		}
-		
-		$logs= DB::get_results( "SELECT id, user_id, type_id, timestamp, message, severity_id FROM " . DB::table( 'log' ) . " {$orderby}{$limit}" );
-		return $logs;
+		foreach ( $defaults['where'] as $index => $where ) {
+			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
+		}
+		// make sure we get at most one result
+		$defaults['limit']= 1;
+		 
+		return EventLog::get( $defaults );
 	}
 	
-	public function get_event_type( $event_id ) {
-		$type= DB::get_row( 'SELECT * FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $event_id );
-		return $type ? $type->type : _t('Unknown');
+	public function get_event_type() {
+		$type= DB::get_value( 'SELECT type FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
+		return $type ? $type : _t('Unknown');
 	}
+	
+	public function get_event_module() {
+		$module= DB::get_value( 'SELECT module FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
+		return $module ? $module : _t('Unknown');
+	}
+	
+	public function get_event_severity() {
+		return self::severity_name( $this->severity_id );
+	}
+	
+	/**
+	 * function __get
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value	 
+	 **/	 	 
+	public function __get( $name )
+	{
+		$fieldnames = array_merge( array_keys($this->fields), array('module', 'type', 'severity') );
+		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
+			list( $junk, $name, $filter ) = $matches;
+		}
+		else {
+			$filter = false;
+		}
 
+		switch($name) {
+		case 'module':
+			$out= $this->get_event_module();
+			break;
+		case 'type':
+			$out = $this->get_event_type();
+			break;
+		case 'severity':
+			$out = $this->get_event_severity();
+			break;
+		default:
+			$out = parent::__get( $name );
+			break;
+		}
+		$out = Plugins::filter( "logentry_{$name}", $out, $this );
+		if( $filter ) {
+			$out = Plugins::filter( "logentry_{$name}_{$filter}", $out, $this );
+		}
+		return $out;
+	}
+	
+	/**
+	 * function __set
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value	 
+	 **/	 	 
+	public function __set( $name, $value )
+	{
+		switch($name) {
+		case 'timestamp':
+			$value = date( 'Y-m-d H:i:s', strtotime( $value ) );
+			break;
+		}
+		return parent::__set( $name, $value );
+	}
+	
 }
 
 ?>

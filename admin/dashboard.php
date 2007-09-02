@@ -176,10 +176,10 @@
           <th colspan="1" align="left">Message</th>
         </tr>
       </thead>
-      <?php foreach( logentry::get( array( 'limit' => 5 ) ) as $log ) { ?>
+      <?php foreach( eventlog::get( array( 'limit' => 5 ) ) as $log ) { ?>
           <tr>
             <td><?php echo Format::nice_date( $log->timestamp, 'F j, Y' ); ?></td>
-            <td><?php echo logentry::get_event_type( $log->type_id ); ?></td>
+            <td><?php echo $log->type; ?></td>
             <td><?php echo $log->message; ?></td>
           </tr>
           <?php } ?>
