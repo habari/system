@@ -3,8 +3,8 @@
 <div class="container">
   <hr />
   <div class="column span-7 first ">
-    <p><?php if ( isset ( $user->info->imageurl ) ) { ?><img src="<?php echo $user->info->imageurl?>" class="usericon"><?php } ?>
-    <?php printf( _t( 'Good to see you again, %s!' ), $user->username ); ?></p>
+    <div class="column span-2 first"><?php if ( isset ( $user->info->imageurl ) ) { ?><img class="admin-avatar" src="<?php echo $user->info->imageurl?>" class="usericon"><?php } ?></div>
+    <div class="column span-5 last"><?php printf( _t( 'Welcome back, %s!' ), $user->username ); ?></div>
   </div>
   <div class="column prepend-1 span-16 last" id="welcome">
     <?php

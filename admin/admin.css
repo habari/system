@@ -7,6 +7,7 @@
 /*=== @a ===*/
 a { text-decoration: none; color: #3EA5C8; }
 a:visited { color: #929292;}
+.admin-avatar {padding: 2px; border: 1px solid #282828;}
 
 /*=== @b ===*/
 body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-size: 1.0em; color: #000; margin: 0.0em auto;}
