@@ -34,7 +34,8 @@ class UserHandler extends ActionHandler
 		{
 			/* Successfully authenticated. */
 			$this->handler_vars['user']= $user; // Assign into handler and theme
-			$user->info->authenticate_time= time(); // keep track of last login time
+			$user->info->authenticate_time= date( 'Y-m-d H:i:s' ); // keep track of last login time
+			$user->update();
 			// Redirect to admin dashboard
 			// XXX do we want to redirect to the referring page? 
 			Utils::redirect( Site::get_url('admin') );
