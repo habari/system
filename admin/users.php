@@ -34,7 +34,7 @@ foreach ( User::get_all() as $user )
 		$url = Url::get( 'userprofile', array( 'page' => 'user', 'user' => $user->username ) );
 	}
 	echo '<li>';
-	echo '<a href="' . $url . '">' . $user->username . '</a><br>';
+	echo '<a href="' . $url . '">' . $user->username . '</a> <em>(Last login: ' . $user->info->authenticate_time . ')</em><br>';
 	echo Posts::count_by_author( $user->id, Post::status('published') ) . ' published posts, ' . Posts::count_by_author( $user->id, Post::status('draft') ) . ' pending drafts, and ' . Posts::count_by_author( $user->id, Post::status('private') ) . ' private posts.';
 	echo '</li>';
 }
