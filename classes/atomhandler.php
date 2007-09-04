@@ -514,6 +514,11 @@ class AtomHandler extends ActionHandler
 				$params['page'] = $this->handler_vars['index'];
 			}	
 			
+			if(!isset($params['content_type'])) {
+				$params['content_type'] = Post::type('entry');
+			}
+			$params['content_type'] = Plugins::filter( 'atom_get_collection_content_type', $params['content_type'] );
+			
 			$params['status'] = Post::status('published');	
 					
 			foreach ( Posts::get( $params ) as $post ) {
