@@ -62,7 +62,7 @@ class EventLog extends ArrayObject
 	 * @param string $type The type
 	 * @param string $module The module
 	 * @param mixed $data The data
-	 * @return The inserted LogEntry object
+	 * @return object LogEntry The inserted LogEntry object
 	 */
 	public static function log( $message, $severity= 'info', $type= 'default', $module= null, $data= null )
 	{
@@ -85,7 +85,7 @@ class EventLog extends ArrayObject
 	 * Get the module in which the logged code was executed
 	 * 
 	 * @param integer $level How many backtrace calls to go back through the trace
-	 * @return The classname or .php module in which the log code was called.
+	 * @return string The classname or .php module in which the log code was called.
 	 */
 	public static function get_module( $module= null, $level= 2 )
 	{
