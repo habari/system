@@ -1,9 +1,9 @@
 <?php
-
 /**
- * Provides access to the event log
- *
+ * Habari EventLog class
+ * 
  * @package Habari
+ * @todo Apply system error handling 	
  */
 
 class EventLog extends ArrayObject
@@ -11,7 +11,6 @@ class EventLog extends ArrayObject
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
 	/**
-	 * function __get
 	 * Returns properties of a EventLog object.
 	 * This is the function that returns information about the set of log entries that
 	 * was requested.  This function should offer property names that are identical
@@ -20,8 +19,9 @@ class EventLog extends ArrayObject
 	 * global $url object for the request.  The difference would occur when
 	 * the data returned doesn't necessarily match the request, such as when
 	 * several log entries are requested, but only one is available to return.
+	 *
 	 * @param string The name of the property to return.
-	 **/	 	  	 	
+	 */	 	  	 	
 	public function __get( $name )
 	{
 		switch( $name ) {
@@ -62,7 +62,7 @@ class EventLog extends ArrayObject
 	 * @param string $type The type
 	 * @param string $module The module
 	 * @param mixed $data The data
-	 * @return class:LogEntry the inserted LogEntry
+	 * @return The inserted LogEntry object
 	 */
 	public static function log( $message, $severity= 'info', $type= 'default', $module= null, $data= null )
 	{
@@ -97,25 +97,32 @@ class EventLog extends ArrayObject
 		return $module;
 	}
 	
+	/**
+	 * Returns a LogEntry or EventLog array based on supplied parameters.
+	 * By default,fetch as many entries as pagination allows and order them in a descending fashion based on timestamp.
+	 *
+	 * @todo Cache query results.
+	 * @param array $paramarry An associated array of parameters, or a querystring
+	 * @return array An array of LogEntry objects, or a single LogEntry object, depending on request
+	 */
 	public static function get( $paramarray = array() ) {
 	
 		$params= array();
 		$fns= array( 'get_results', 'get_row', 'get_value' );
 		$select= '';
-		// what to select -- by default, everything
+	
 		foreach ( LogEntry::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
 				? DB::table( 'log' ) . ".$field"
 				: ', ' . DB::table( 'log' ) . ".$field";
 		}
-		// defaults
+		// Default parameters.
 		$orderby= 'ORDER BY timestamp DESC';
 		$limit= Options::get( 'pagination' );
 		
 		// Put incoming parameters into the local scope
 		$paramarray= Utils::get_params( $paramarray );
 		
-		// loop over each element of the $paramarray
 		foreach ( $paramarray as $key => $value ) {
 			if ( 'orderby' == $key ) {
 				$orderby= 'ORDER BY ' . $value;
@@ -142,7 +149,7 @@ class EventLog extends ArrayObject
 		}
 		else {
 			foreach( $wheresets as $paramset ) {
-				// safety mechanism to prevent empty queries
+				// Safety mechanism to prevent empty queries
 				$where= array('1=1');
 				$paramset= array_merge((array) $paramarray, (array) $paramset);
 
@@ -163,16 +170,16 @@ class EventLog extends ArrayObject
 					$params[]= $paramset['type_id'];
 				}
 				
-				/* 
+				/** 
 				 * Build the pubdate 
 				 * If we've got the day, then get the date.
 				 * If we've got the month, but no date, get the month.
 				 * If we've only got the year, get the whole year.
+				 *
 				 * @todo Ensure that we've actually got all the needed parts when we query on them
 				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')				 				 
 				 */				
 				if ( isset( $paramset['day'] ) ) {
-					/* Got the full date */
 					$where[]= 'timestamp BETWEEN ? AND ?';
 					$params[]= date('Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 					$params[]= date('Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) ); 
@@ -207,7 +214,6 @@ class EventLog extends ArrayObject
 			$fetch_fn= $fns[0];
 		}
 		
-		// is a count being request?
 		if ( isset( $count ) ) {
 			$select= "COUNT($count)";
 			$fetch_fn= 'get_value';
@@ -238,8 +244,9 @@ class EventLog extends ArrayObject
 		DB::set_fetch_class('LogEntry');
 		$results= DB::$fetch_fn( $query, $params, 'LogEntry' );
 		
+			// If the fetch callback function is not get_results,
+			// return an EventLog ArrayObject filled with the results as LogEntry objects.
 		if ( 'get_results' != $fetch_fn ) {
-			// return the results
 			return $results;
 		}
 		elseif ( is_array( $results ) ) {
