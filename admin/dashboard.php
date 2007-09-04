@@ -93,7 +93,8 @@
       <?php
         if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
       ?>
-      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'option'=>'comments' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php printf( _t( '%s comments awaiting moderation' ), Comments::count_total( Comment::STATUS_UNAPPROVED ) ); ?></a> &raquo;)
+      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'option'=>'comments' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?> 
+	<?php echo _n( 'comment awaiting moderation', 'comments awaiting moderation', Comments::count_total( Comment::STATUS_UNAPPROVED ) ); ?></a> &raquo;)
       <?php
         }
       ?>
@@ -119,7 +120,7 @@
           <td><?php echo $recent->name; ?></td>
           <td><?php echo $recent->url; ?></td>
           <td align="center">
-            <a class="view" href="<?php echo $post->permalink; ?>" title="<?php _e( 'View this post' ); ?>">View</a> 
+            <a class="view" href="<?php echo $post->permalink; ?>#comment-<?php echo $recent->id; ?>" title="<?php _e( 'View this post' ); ?>">View</a> 
             
           </td>
         </tr>
