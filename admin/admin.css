@@ -118,7 +118,7 @@ body p { text-align: left; }
 textarea { margin-top: 1.0em; margin-bottom: 3.0em; width: 99%; }
 
 /*=== @u ===*/
-.update { background: #DC9752; width: 100%; margin: -1.5em auto 1.0em auto; }
+.update { background: #ECFBFF; width: 100%; margin:-1em auto 5px auto; text-align:center; padding: 5px; color:#3EA5C8; border-top:1px solid #3EA5C8; border-bottom:1px solid #3EA5C8; }
 .update p { color: #fff; padding: 0.5em; }
 img.usericon { float: left; width: 45px; height: 45px; padding: 1px; margin: 0 5px 0 0; border: 1px solid #f3f3f3; }
 
