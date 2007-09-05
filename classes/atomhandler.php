@@ -114,7 +114,7 @@ class AtomHandler extends ActionHandler
 				* Refer to namespace for required elements/attributes.
 				*/
 			$apis_list= array(
-				'Blogger' => array(
+				'Atom' => array(
 					'preferred' => 'true',
 					'apiLink' => URL::get( 'collection', 'index=1' ), // This should be the XML-RPC url
 					'blogID' => '',
@@ -126,10 +126,10 @@ class AtomHandler extends ActionHandler
 			$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
 			
 			$rsd_service= $xml->addChild( 'service' );
-			$service_engineName= $xml->addChild( 'engineName', 'Habari' );
-			$service_engineLink= $xml->addChild( 'engineLink', 'http://www.habariproject.org/' );
-			$service_homePageLink= $xml->addChild( 'homePageLink', Site::get_url('habari') );
-			$service_apis= $xml->addChild( 'apis' );
+			$service_engineName= $rsd_service->addChild( 'engineName', 'Habari' );
+			$service_engineLink= $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
+			$service_homePageLink= $rsd_service->addChild( 'homePageLink', Site::get_url('habari') );
+			$service_apis= $rsd_service->addChild( 'apis' );
 			
 			if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
 				return false;
@@ -140,7 +140,7 @@ class AtomHandler extends ActionHandler
 					continue;
 				}
 				
-				$apis_api= $xml->addChild( 'api' );
+				$apis_api= $service_apis->addChild( 'api' );
 				$apis_api->addAttribute( 'name', $apiName );
 				$apis_api->addAttribute( 'preferred', $atts['preferred'] );
 				$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
@@ -150,17 +150,17 @@ class AtomHandler extends ActionHandler
 					continue;
 				}
 							
-				$api_settings= $xml->addChild( 'settings' );
+				$api_settings= $apis_api->addChild( 'settings' );
 	
 				foreach ( $atts['settings'] as $settingName => $settingValue ) {
 					switch ( $settingName ) {
 						case 'docs':
 						case 'notes':
-							$settings_setting= $xml->addChild( $settingName, $settingValue );
+							$settings_setting= $api_settings->addChild( $settingName, $settingValue );
 							break;
 						case 'setting':
 							foreach ( $settingValue as $settingArray ) {
-								$settings_setting= $xml->addChild( 'setting', $settingArray['value'] );
+								$settings_setting= $api_settings->addChild( 'setting', $settingArray['value'] );
 								$settings_setting->addAttribute( 'name', $settingArray['name'] );
 							}
 							break;
