@@ -381,7 +381,7 @@ class AtomHandler extends ActionHandler
 			if ( $post = Post::get($params) ) {
 				$xml = new SimpleXMLElement( $bxml );
 				
-				preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/i', $xml->content->asXML(), $content );
+				preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/is', $xml->content->asXML(), $content );
 				$xml->content= $content[1];
 				$xml= Plugins::filter( 'atom_put_entry', $xml, $slug, $this->handler_vars );
 			
