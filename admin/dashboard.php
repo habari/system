@@ -105,10 +105,10 @@
       <table name="comment-data" width="100%" cellspacing="0">
         <thead>
           <tr>
-            <th colspan="1" align="left"><?php _e( 'Post' ); ?></th>
-            <th colspan="1" align="left"><?php _e( 'Name' ); ?></th>
-            <th colspan="1" align="left"><?php _e( 'URL' ); ?></th>
-            <th colspan="1" align="center"><?php _e( 'Action' ); ?></th>
+            <th class="span-3"><?php _e( 'Post' ); ?></th>
+            <th class="span-3"><?php _e( 'Name' ); ?></th>
+            <th class="span-7"><?php _e( 'URL' ); ?></th>
+            <th class="last span-3"><?php _e( 'Action' ); ?></th>
           </tr>
         </thead>
         <?php
@@ -116,10 +116,10 @@
             $post= Post::get( array( 'id' => $recent->post_id, ) );
         ?>
         <tr>
-          <td><?php echo $post->title; ?></td>
-          <td><?php echo $recent->name; ?></td>
-          <td><?php echo $recent->url; ?></td>
-          <td align="center">
+          <td class="span-3"><?php echo $post->title; ?></td>
+          <td class="span-3"><?php echo $recent->name; ?></td>
+          <td class="span-7"><?php echo $recent->url; ?></td>
+          <td class="last span-3" align="center">
             <a class="view" href="<?php echo $post->permalink; ?>#comment-<?php echo $recent->id; ?>" title="<?php _e( 'View this post' ); ?>">View</a> 
             
           </td>
@@ -172,15 +172,15 @@
     <table id="log-activity" width="100%" cellspacing="0">
       <thead>
         <tr>
-          <th colspan="1" align="left">Date</th>
-          <th colspan="1" align="left">Type</th>
-          <th colspan="1" align="left">Message</th>
+		  <th class="span-3" align="left">Type</th>
+          <th class="span-3" align="left">Date</th>
+          <th class="span-10" align="left">Message</th>
         </tr>
       </thead>
       <?php foreach( eventlog::get( array( 'limit' => 5 ) ) as $log ) { ?>
           <tr>
-            <td><?php echo Format::nice_date( $log->timestamp, 'F j, Y' ); ?></td>
             <td><?php echo $log->type; ?></td>
+		    <td><?php echo Format::nice_date( $log->timestamp, 'F j, Y' ); ?></td>
             <td><?php echo $log->message; ?></td>
           </tr>
           <?php } ?>
@@ -197,8 +197,8 @@
         foreach ( Posts::by_status( Post::status( 'draft' ) ) as $draft ) {
     ?>
       <tr>
-        <td><?php echo $draft->title; ?></td>
-        <td>
+        <td class="span-13"><?php echo $draft->title; ?></td>
+        <td class="last span-3">
           <a class="view" href="<?php echo $draft->permalink; ?>" title="View <?php echo $draft->title; ?>">View</a>
           <a class="edit" href="<?php URL::out( 'admin', 'page=publish&slug=' . $draft->slug ); ?>" title="Edit <?php echo $draft->title; ?>">Edit</a>
         </td>
