@@ -76,6 +76,7 @@ class XMLRPCUtils
 			$value = $value[0];
 		}
 		switch($value->getName()) {
+		case 'data':
 		case 'array':
 			$result_array = array();
 			foreach($value->xpath('//data/value/*') as $array_value) {
