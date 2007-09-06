@@ -59,10 +59,10 @@ class LogEntry extends QueryRecord
 		if ( !isset( $this->fields['module'] ) ) {
 			$this->fields['module']= 'habari';
 		}
-		if ( isset( $this->fields['type'] ) ) {
+		if ( !isset( $this->fields['type'] ) ) {
 			$this->fields['type']= 'default';
 		}
-		if ( isset( $this->fields['severity'] ) ) {
+		if ( !isset( $this->fields['severity'] ) ) {
 			$this->fields['severity']= 'info';
 		}
 		$this->exclude_fields( 'id' );
