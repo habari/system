@@ -18,7 +18,10 @@ class FeedbackHandler extends ActionHandler
 		// We need to get the post anyway to redirect back to the post page.
 		$post= Post::get( array( 'id'=>$this->handler_vars['id'] ) );
 		
-		if( $this->handler_vars['content'] != '') {
+		if ( 1 == Options::get( 'comments_require_id' ) && ( empty( $this->handler_vars['name'] ) || empty( $this->handler_vars['email'] ) ) ) {
+			echo sprintf( _t( 'Both name and e-mail address must be provided, please <a href="%1$s" title="Return to &quot;%2$s&quot;">go back and try again</a>.' ), $post->permalink, $post->title );
+		}
+		elseif( $this->handler_vars['content'] != '') {
 			if ( $post->info->comments_disabled ) {
 				// comments are disabled, so let's just send
 				// them back to the post's permalink
