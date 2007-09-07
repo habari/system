@@ -68,6 +68,12 @@ class AdminHandler extends ActionHandler
 	 * Handles post requests from the options admin page.
 	 */
 	public function post_options() {
+		if ( !isset( $_POST['pingback_send'] ) ) {
+			$_POST['pingback_send']= 0;
+		}
+		if ( !isset( $_POST['comments_require_id'] ) ) {
+			$_POST['comments_require_id']= 0;
+		}
 		foreach ( $_POST as $option => $value ) {
 			if ( Options::get( $option ) != $value ) {
 				Options::set( $option, $value );
