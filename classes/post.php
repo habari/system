@@ -479,6 +479,10 @@ class Post extends QueryRecord
 		// Delete all comments associated with this post
 		if(!empty($this->comments))
 			$this->comments->delete();
+		// Delete all info records associated with this post
+		if ( isset( $this->info ) ) {
+			$this->info->delete_all();
+		}
 		$result= parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
 		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari');
 

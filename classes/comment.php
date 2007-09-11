@@ -163,6 +163,10 @@ class Comment extends QueryRecord
 			return;
 		}
 		Plugins::act('comment_delete_before', $this);
+		// Delete all info records associated with this comment
+		if ( isset( $this->info ) ) {
+			$this->info->delete_all();
+		}
 		return parent::delete( DB::table('comments'), array('id'=>$this->id) );
 		Plugins::act('comment_delete_after', $this);
 	}
