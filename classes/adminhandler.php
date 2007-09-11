@@ -68,15 +68,19 @@ class AdminHandler extends ActionHandler
 	 * Handles post requests from the options admin page.
 	 */
 	public function post_options() {
-		if ( !isset( $_POST['pingback_send'] ) ) {
-			$_POST['pingback_send']= 0;
+		extract($this->handler_vars);
+		$fields= array( 'title' => 'title', 'tagline' => 'tagline', 'about' => 'about', 'pagination' => 'pagination', 'pingback_send' => 'pingback_send', 'comments_require_id' => 'comments_require_id' );
+		$fields= Plugins::filter( 'admin_post_options_fields', $fields );
+		$checkboxes= array( 'pingback_send', 'comments_require_id' );
+		$checkboxes= Plugins::filter( 'admin_post_options_checkboxes', $checkboxes );
+		foreach ( $checkboxes as $checkbox ) {
+			if ( !isset( ${$checkbox} ) ) {
+				${$checkbox}= 0;
+			}
 		}
-		if ( !isset( $_POST['comments_require_id'] ) ) {
-			$_POST['comments_require_id']= 0;
-		}
-		foreach ( $_POST as $option => $value ) {
-			if ( Options::get( $option ) != $value ) {
-				Options::set( $option, $value );
+		foreach ( $fields as $input => $field ) {
+			if ( Options::get( $field ) != ${$input} ) {
+				Options::set( $field, ${$input} );
 			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=options&result=success' ) );
@@ -171,57 +175,63 @@ class AdminHandler extends ActionHandler
 		$currentuser= User::identify();
 		$user= $currentuser;
 		extract( $this->handler_vars );
+		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
+		$fields= Plugins::filter( 'adminhandler_post_user_fields', $fields );
+		
+		foreach ($fields as $input => $field) {
+			switch ( $input ) {
+				case 'user_id': // Editing someone else's profile? If so, load that user's profile
+					if ( $currentuser->id != $user_id ) {
+						$user= User::get_by_id( $user_id );
+						$results['user']= $user->username;
+					}
+					break;
+				case 'delete': // Deleting a user
+					if ( isset( $delete ) && ( 'user' == $delete ) ) {
+						// Extra safety check here
+						if ( isset( $user_id ) && ( $currentuser->id != $user_id ) ) {
+							$username= $user->username;
+							$user->delete();
+							$results['result']= 'deleted';
+						}
+					}
+					break;
+				case 'username': // Changing username
+					if ( isset( $username ) && ( $user->username != $username ) ) {
+						$user->username= $username;
+						$results['user']= $username;
+						$update= TRUE;
+					}
+					break;
+				case 'email': // Changing e-mail address
+					if ( isset( $email ) && ( $user->email != $email ) ) {
+						$user->email= $email;
+						$update= TRUE;
+					}
+					break;
+				case 'pass1': // Changing password
+					if ( isset( $pass1 ) && ( !empty( $pass1 ) ) ) {
+						if ( isset( $pass2 ) && ( $pass1 == $pass2 ) ) {
+							$user->password= Utils::crypt( $pass1 );
+							if ( $user == $currentuser ) {
+								$user->remember();
+							}
+							$update= TRUE;
+						}
+						else {
+							$results['error']= 'pass';
+						}
+					}
+					break;
+				default:
+					if ( isset( ${$input} ) && ( $user->info->$field != ${$input} ) ) {
+						$user->info->$field= ${$input};
+						$update= TRUE;
+					}
+					break;
+			}
+		}
 
-		if ( $currentuser->id != $user_id ) {
-			// User is editing someone else's profile, therefore load that user account
-			$user= User::get_by_id( $user_id );
-			$results['user']= $user->username;
-		}
-		
-		// Deleting a user
-		if ( isset( $delete ) && ( 'user' == $delete ) ) {
-			// Extra safety check here
-			if ( isset( $user_id ) && ( $currentuser->id != $user_id ) ) {
-				$username= $user->username;
-				$user->delete();
-				$results['result']= 'deleted';
-			}
-		}
-		
-		// Changing username
-		if ( isset( $username ) && ( $user->username != $username ) ) {
-			$user->username= $username;
-			$results['user']= $username;
-			$update= TRUE;
-		}
-		
-		// Changing e-mail address
-		if ( isset( $email ) && ( $user->email != $email ) ) {
-			$user->email= $email;
-			$update= TRUE;
-		}
-
-		// Changing image url
-                if ( isset( $imageurl ) && ( $user->info->imageurl != $imageurl ) ) {
-                        $user->info->imageurl= $imageurl;
-                        $update= TRUE;
-                }
-		
-		// See if a password change is being attempted
-		if ( isset( $pass1 ) && ( !empty( $pass1 ) ) ) {
-			if ( isset( $pass2 ) && ( $pass1 == $pass2 ) ) {
-				$user->password= Utils::crypt( $pass1 );
-				if ( $user == $currentuser ) {
-					// Update the cookie for the current user
-					$user->remember();
-				}
-				$update= TRUE;
-			}
-			else {
-				$results['error']= 'pass';
-			}
-		}
-		
 		if ( $update == TRUE ) {
 			$user->update();
 			$results['result']= 'success';
