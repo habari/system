@@ -55,6 +55,9 @@
 		<p><input type="password" name="pass2" value=""> (type again to confirm)</p>
 		<p><label>Image URL:</label></p>
 	        <p><input type="text" name="imageurl" value="<?php echo $user->info->imageurl; ?>"></p>
+	        
+	    <?php Plugins::act( 'theme_admin_user, $user ); ?>
+	    
 		<p><input type="submit" value="Update Profile!"></p>
 	</form>
 </div>

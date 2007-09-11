@@ -32,6 +32,8 @@
 		<p><label>Require comment authors to fill out name and e-mail address:</label></p>
 		<p><input type="checkbox" name="comments_require_id" value="1"<?php echo (Options::get('comments_require_id') == 1 ? ' checked' : ''); ?>></p>
 		
+		<?php Plugins::act( 'theme_admin_options' ); ?>
+		
 		<p><input type="submit" value="Update Options!"></p>
 	</form>
 </div>
