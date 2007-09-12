@@ -484,7 +484,7 @@ class Post extends QueryRecord
 			$this->info->delete_all();
 		}
 		$result= parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
-		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari');
+		EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari');
 
 		// invoke plugins on the after_post_delete action
 		Plugins::act('post_delete_after', $this);
