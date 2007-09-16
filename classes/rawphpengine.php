@@ -13,8 +13,8 @@
 class RawPHPEngine extends TemplateEngine
 {
 	// Internal data to be extracted into template symbol table
-	private $engine_vars= array();
-	private $available_templates= null;
+	protected $engine_vars= array();
+	protected $available_templates= null;
 
 	/**
 	 * Constructor for RawPHPEngine
@@ -86,7 +86,8 @@ class RawPHPEngine extends TemplateEngine
 		 */
 		extract( $this->engine_vars );
 		if ( file_exists( $this->template_dir . $template . '.php' ) ) {
-			include ( $this->template_dir . $template . '.php' );
+			$template_file= Plugins::filter('include_template_file', $this->template_dir . $template . '.php');
+			include ( $template_file );
 		}
 	}
 
