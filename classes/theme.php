@@ -355,14 +355,13 @@ class Theme
 	{
 		$this->template_engine->$key= $value;
 	}
-	
  	
  	/**
 	 * Aggregates and echos the additional header code by combining Plugins and Stack calls.
 	 */
 	public function header() {
 		Plugins::act( 'template_header' );
-		if ( is_callable( array( THEME_CLASS, 'header' ) ) ) {
+		if ( function_exists( THEME_CLASS . '::header' ) ) {
 			call_user_func( array( THEME_CLASS, 'header' ) );
 		}
 		$header= Stack::get( 'template_stylesheet', ' <link rel="stylesheet" type="text/css"  href="%s" media="%s">'."\r\n" );
@@ -377,7 +376,7 @@ class Theme
 	 */
 	public function footer() {
 		Plugins::act( 'template_footer' );
-		if ( is_callable( array( THEME_CLASS, 'footer' ) ) ) {
+		if ( function_exists( THEME_CLASS . '::footer' ) ) {
 			call_user_func( array( THEME_CLASS, 'footer' ) );
 		}
 		$footer= Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
