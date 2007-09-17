@@ -169,6 +169,7 @@ class Theme
 		}
 		elseif( $posts === false ) {
 			$fallback= array('404');
+			header( 'HTTP/1.0 404 Not Found' );
 		}
 		
 		extract( $where_filters );
