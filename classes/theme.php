@@ -356,6 +356,36 @@ class Theme
 		$this->template_engine->$key= $value;
 	}
 	
+ 	
+ 	/**
+	 * Aggregates and echos the additional header code by combining Plugins and Stack calls.
+	 */
+	public function header() {
+		Plugins::act( 'template_header' );
+		if ( is_callable( array( THEME_CLASS, 'header' ) ) ) {
+			call_user_func( array( THEME_CLASS, 'header' ) );
+		}
+		$header= Stack::get( 'template_stylesheet', ' <link rel="stylesheet" type="text/css"  href="%s" media="%s">'."\r\n" );
+		$header.= Stack::get( 'template_header_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+		if ( $header != '' ) {
+			echo $header;
+		}
+	}
+	
+	/**
+	 * Aggregates and echos the additional footer code by combining Plugins and Stack calls.
+	 */
+	public function footer() {
+		Plugins::act( 'template_footer' );
+		if ( is_callable( array( THEME_CLASS, 'footer' ) ) ) {
+			call_user_func( array( THEME_CLASS, 'footer' ) );
+		}
+		$footer= Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+		if ( $footer != '' ) {
+			echo $footer;
+		}
+	}
+	
 	/** 
 	 * Detects if a variable is assigned to the template engine for use in 
 	 * constructing the template's output.
