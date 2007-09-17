@@ -364,9 +364,8 @@ class Theme
 		if ( function_exists( THEME_CLASS . '::header' ) ) {
 			call_user_func( array( THEME_CLASS, 'header' ) );
 		}
-		$header= Stack::get( 'template_stylesheet', ' <link rel="stylesheet" type="text/css"  href="%s" media="%s">'."\r\n" );
-		$header.= Stack::get( 'template_header_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
-		echo $header;
+		Stack::out( 'template_stylesheet', ' <link rel="stylesheet" type="text/css"  href="%s" media="%s">'."\r\n" );
+		Stack::out( 'template_header_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 	}
 	
 	/**
@@ -377,8 +376,7 @@ class Theme
 		if ( function_exists( THEME_CLASS . '::footer' ) ) {
 			call_user_func( array( THEME_CLASS, 'footer' ) );
 		}
-		$footer= Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
-		echo $footer;
+		Stack::out( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 	}
 	
 	/** 
