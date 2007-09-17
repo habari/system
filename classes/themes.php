@@ -13,7 +13,7 @@ class Themes
 	 **/	 	 	 	 	
 	public static function get_all()
 	{
-		if ( ! isset( self::$all_themes )) {
+		if ( !isset( self::$all_themes ) ) {
 			$themes= glob( HABARI_PATH . '/user/themes/*', GLOB_ONLYDIR | GLOB_MARK );
 			if( Site::is('multi') ) {
 				$site_dirs= glob( Site::get_dir('config') . '/themes/*', GLOB_ONLYDIR | GLOB_MARK );
@@ -21,10 +21,10 @@ class Themes
 					$themes= array_merge( $themes, $site_dirs );
 				}
 			}
+			$themes= array_filter( $themes, create_function('$a', 'return file_exists($a . "/theme.xml");') );
+			$themefiles= array_map('basename', $themes);
+			self::$all_themes= array_combine($themefiles, $themes);
 		}
-		$themes= array_filter( $themes, create_function('$a', 'return file_exists($a . "/theme.xml");') );
-		$themefiles= array_map('basename', $themes);
-		self::$all_themes= array_combine($themefiles, $themes);
 		return self::$all_themes;
 	}
 	
