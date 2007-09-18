@@ -66,7 +66,7 @@ class Controller extends Singleton {
    **/	  	 	   
   public static function get_var( $name )
   {
-  	return Controller::instance()->handler->handler_vars[ $name ];
+  	return isset( Controller::instance()->handler->handler_vars[ $name ] ) ? Controller::instance()->handler->handler_vars[ $name ] : NULL;
   }
 
   /**
