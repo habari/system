@@ -23,7 +23,7 @@ function table($headers, $data, $sort = null){
 ?>
 <?php include('header.php'); ?>
 <div class="container">
-<hr />
+<hr>
 	<div class="dashboard-block" id="stats">
 		<h4><?php _e('Comment Statistics'); ?></h4>
 		<ul>

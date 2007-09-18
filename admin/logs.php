@@ -2,7 +2,7 @@
 include_once( 'header.php' );
 ?>
 <div class="container">
-<hr />
+<hr>
 	<div class="dashboard-block c3" id="welcome">
 		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
 	</div>

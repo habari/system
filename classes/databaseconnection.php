@@ -228,7 +228,7 @@ class DatabaseConnection
 				}
 				else {
 					/* Die gracefully before the segfault occurs */
-					echo '<br /><br />Attempt to fetch in class mode with a non-included class<br /><br />';
+					echo '<br><br>Attempt to fetch in class mode with a non-included class<br><br>';
 					return false;
 				}
 			}

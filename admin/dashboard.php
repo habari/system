@@ -1,7 +1,7 @@
 <?php include( 'header.php' ); ?>
 <?php $user= User::identify(); ?>
 <div class="container">
-  <hr />
+  <hr>
   <div class="column span-7 first ">
     <div class="column span-2 first"><?php if ( isset ( $user->info->imageurl ) ) { ?><img class="admin-avatar" src="<?php echo $user->info->imageurl?>" class="usericon"><?php } ?></div>
     <div class="column span-5 last"><?php printf( _t( 'Welcome back, %s!' ), $user->username ); ?></div>
@@ -36,7 +36,7 @@
       }
     ?>
   </div>
-  <hr />
+  <hr>
   <div class="column span-7 first">
     <div class="column span-7 first" id="system-info">
     <h3><?php _e( 'System Information' ); ?></h3>
@@ -136,7 +136,7 @@
       ?>
     
   </div>
-  <hr />
+  <hr>
   <div class="column span-7 first" id="incoming">
     <h3><?php _e( 'Incoming Links' ); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url( 'hostname' ) ?>" title="<?php _e( 'More incoming links' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
     <?php
@@ -186,7 +186,7 @@
           <?php } ?>
     </table>
   </div>
-  <hr />
+  <hr>
   <div class="column prepend-8 span-16 first" id="drafts">
     <h3>Drafts (<a href="<?php URL::out( 'admin', 'page=content' ); ?>#drafts" title="View Your Drafts">more</a> &raquo;)</h3>
     <?php

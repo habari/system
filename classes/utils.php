@@ -370,7 +370,7 @@ class Utils
 		echo "<pre style=\"color:white;\">";
 		foreach( $fooargs as $arg1 ) {
 			echo '<em>' . gettype($arg1) . '</em> ';
-			echo htmlentities( print_r( $arg1, TRUE ) ) . "<br/>";
+			echo htmlentities( print_r( $arg1, TRUE ) ) . "<br>";
 		}
 		echo "</pre></div>";
 	}

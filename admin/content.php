@@ -1,6 +1,6 @@
 <?php include('header.php');?>
 <div class="container">
-<hr />
+<hr>
 <div class="column span-24 first" id="welcome">
 	<h1><?php _e('Habari Content'); ?></h1>
 	<p><?php _e('Here you will find all the content you have created, ready to be tweaked, edited or removed.'); ?></p>
@@ -123,10 +123,10 @@
 							Edit
 						</a>
 							<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
-								<input type="hidden" name="slug" value="<?php echo $page->slug; ?>" />
-								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>" />
-								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>" />
-								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>" />
+								<input type="hidden" name="slug" value="<?php echo $page->slug; ?>">
+								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 								<button name="delete"><?php _e('Delete'); ?></button>
 							</form>
 					</td>

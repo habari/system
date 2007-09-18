@@ -118,7 +118,7 @@ class Format
 		$output = '';
 		for($z = 0; $z < count($cz); $z++) {
 			$pblock = preg_replace('/\n{2,}/', "<!--pbreak-->", trim($cz[$z]));
-			$pblock = str_replace("\n", "<br />\n", $pblock);
+			$pblock = str_replace("\n", "<br>\n", $pblock);
 			$pblock = str_replace("<!--pbreak-->", "</p>\n<p>", $pblock);
 			$pblock = ($pblock == '') ? '' : "<p>{$pblock}</p>\n";
 			$tblock = isset($cd[$z]) ? $cd[$z][0] . "\n" : '';

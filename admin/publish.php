@@ -1,6 +1,6 @@
 <?php include('header.php'); ?>
 <div class="container">
-<hr />
+<hr>
  <div class="column span-24 first" id="welcome">
   <?php
   if ( isset( $result ) ) {

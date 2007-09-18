@@ -1,6 +1,6 @@
 <?php include('header.php');?>
 <div class="container">
-<hr />
+<hr>
 <?php
 	$currentuser = User::identify();
 	if ( ! $currentuser ) {

@@ -1,4 +1,4 @@
-<hr />
+<hr>
 <div class="container" id="footer">
 	<div class="column span-24">
 		<div class="column span-8 first"><a href="http://habariproject.org/" title="Habari Official Website">Habari</a><small> - Spread the News</small></div>
