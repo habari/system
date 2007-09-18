@@ -410,7 +410,7 @@ class FormControlTextMulti extends FormControl
 			}
 		}
 	
-		$out= '<div class=' . $class . '>';
+		$out= '<div class="' . $class . '">';
 		if(isset($message)) {
 			$out.= "<p class=\"error\">{$message}</p>";
 		}
@@ -473,5 +473,80 @@ class FormControlTextMulti extends FormControl
 		return $result;
 	}
 }
+
+/**
+ * A text control based on FormControl for output via a FormUI.
+ */
+class FormControlSelect extends FormControl
+{
+	
+	public $selected;
+	
+	/**
+	 * Produce HTML output for this text control.
+	 * 
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function out($forvalidation)
+	{
+		$class= 'select formcontrol';
+		if($forvalidation) {
+			$validate= $this->validate();
+			if(count($validate) != 0) {
+				$class.= ' invalid';
+				$message= implode('<br>', $validate);
+			}
+		}
+
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<select name="' . $this->field . '">';
+		foreach ( (array) $this->value as $key => $value ) {
+			$out.= '<option value="' . $key . '"' . ( ( $this->selected == $key ) ? ' selected' : '' ) . '>' . $value . '</option>';
+		}
+		$out.= '</select></label>';
+
+		if(isset($message)) {
+			$out.= "<p class=\"error\">{$message}</p>";
+		}
+		$out.= '</div>';
+
+		return $out;
+	}
+}
+
+/**
+ * A textarea control based on FormControl for output via a FormUI.
+ */
+class FormControlTextArea extends FormControl
+{
+
+	/**
+	 * Produce HTML output for this text control.
+	 * 
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function out($forvalidation)
+	{
+		$class= 'textarea formcontrol';
+		if($forvalidation) {
+			$validate= $this->validate();
+			if(count($validate) != 0) {
+				$class.= ' invalid';
+				$message= implode('<br>', $validate);
+			}
+		}
+
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<textarea name="' . $this->field . '">' . $this->value . '</textarea></label>';
+
+		if(isset($message)) {
+			$out.= "<p class=\"error\">{$message}</p>";
+		}
+		$out.= '</div>';
+
+		return $out;
+	}
+}
+
 
 ?>
