@@ -446,7 +446,11 @@ class AtomHandler extends ActionHandler
 	public function get_collection( $params = array() )
 	{	
 		try {
-			$xml= new SimpleXMLElement( '<feed xmlns="http://www.w3.org/2005/Atom"></feed>' );
+			$namespaces= array( 'default' => 'http://www.w3.org/2005/Atom' );
+			$namespaces= Plugins::filter( 'atom_get_collection_namespaces', $namespaces );
+			array_walk( $namespaces, create_function( '$value,$key,$feed_xmlns', '$feed_xmlns.= " xmlns:" . $key . "=\"" . $value ."\"";' ), &$feed_xmlns );
+
+			$xml= new SimpleXMLElement( '<feed ' . trim( $feed_xmlns ) . '></feed>' );
 			
 			$feed_title= $xml->addChild( 'title', Options::get( 'title' ) );
 			
@@ -469,7 +473,8 @@ class AtomHandler extends ActionHandler
 			else {
 				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $this->handler_vars['index'] ) );
 			}
-				
+			
+			$firstpage= 1;
 			$lastpage= ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) );
 			$nextpage= intval( $this->handler_vars['index'] ) + 1;
 			$prevpage= intval( $this->handler_vars['index'] ) - 1;
