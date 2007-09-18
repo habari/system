@@ -1,6 +1,6 @@
 <?php include('header.php');?>
 <div class="container">
-<hr />
+<hr>
 	<div class="dashboard-block span-24 first last" id="welcome">
 		<h1>Currently Available Plugins</h1>
 		<p>Activate, deactivate and remove plugins through this interface.</p>

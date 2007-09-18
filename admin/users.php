@@ -1,6 +1,6 @@
 <?php include('header.php');?>
 <div class="container">
-<hr />
+<hr>
 <div class="dashboard-block c3" id="welcome">
 <?php
 $currentuser = User::identify();

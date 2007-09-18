@@ -1,6 +1,6 @@
 <?php include('header.php');?>
 <div class="container">
-<hr />
+<hr>
 	<div class="dashboard-block c3" id="welcome">
 		<h1>Manage Options</h1>
 		<p>Below are the options currently set on your site.</p>

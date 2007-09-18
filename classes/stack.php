@@ -18,7 +18,7 @@
  * Stack::out( 'javascript', '<script src="%s" type="text/javascript"></script>' );
  *
  * // Output the theme_stylesheet stack:
- * Stack::out( 'theme_stylesheet', '<link rel="stylesheet" type="text/css"  href="%s" media="%s" />' );
+ * Stack::out( 'theme_stylesheet', '<link rel="stylesheet" type="text/css"  href="%s" media="%s">' );
  * </code>   
  *
  * @package Habari

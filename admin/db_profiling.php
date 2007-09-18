@@ -46,7 +46,7 @@ foreach ($profiles as $profile) {
 <code class="prof_sql"><?php echo $profile->query_text;?></code>
 <div class="prof_time">Time to Execute: <strong><?php echo $profile->total_time;?></strong></div>
 <?php if (! empty($profile->backtrace)) {?>
-<pre style="text-align: left;"><strong>BACKTRACE:</strong><br/><?php print_r($profile->backtrace);?></pre>
+<pre style="text-align: left;"><strong>BACKTRACE:</strong><br><?php print_r($profile->backtrace);?></pre>
 <?php }?>
 </div>
 <?php  
