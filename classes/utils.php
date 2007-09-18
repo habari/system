@@ -215,39 +215,70 @@ class Utils
 	/**
 	 * function page_selector
 	 * Returns a simple linked page selector
-	 * @param	integer Current page
+	 * @param integer Current page
 	 * @param integer Total pages
-	 * @param string The URL token for producing a link
+	 * @param string The RewriteRule name used to build the links
 	 * @param array Settings for the URLs output
 	 **/
-	static function page_selector($current, $total, $token, $settings = array())
+	static function page_selector($current, $total, $rr_name= NULL, $settings = array())
 	{
-		$p= array(0,null,null,null,null);
-		$p[0] = 1;
-		if(1 != $total) {
-			$p[4] = $total;
+		// If RewriteRule name is not supplied, use the current RewriteRule
+		if ( $rr_name == '' ) {
+			$rr= URL::get_matched_rule();
 		}
-		if($current != 1 && $current != $total) {
-			$p[2] = $current;
+		else {
+			list( $rr )= RewriteRules::by_name( $rr_name );
 		}
-		if($current - 1 > 1) $p[1] = $current - 1;
-		if($current + 1 < $total) $p[3] = $current + 1;
+		
+		// Retrieve the RewriteRule and aggregate an array of matching arguments
+		$rr_named_args= $rr->named_args;
+		$rr_args= array_merge( $rr_named_args['required'], $rr_named_args['optional']  );
+		$rr_args_values= array();
+		foreach ( $rr_args as $rr_arg ) {
+			$rr_arg_value= Controller::get_var( $rr_arg );
+			if ( $rr_arg_value != '' ) {
+				$rr_args_values[$rr_arg]= $rr_arg_value;
+			}
+		}
+		
+		$settings= array_merge( $settings, $rr_args_values );
+		
+		// Make sure the current page is valid
+		if ( $current > $total ) {
+			$current= $total;
+		}
+		else if ( $current < 1 ) {
+			$current= 1;
+		}
+
+		for($i=1;$i<=$total;$i++) {
+			switch ($i) {
+				case (($i==($current+1)) && (($current+1) < $total)):
+				case ($i==($current-1)):
+					$pages[$i]= (int) $i;
+					break;
+				default:
+					$pages[$i]= 0;
+					break;
+			}
+		}
+		$pages[1]= 1;
+		$pages[$current]= (int) $current;
+		$pages[$total]= (int) $total;
+		$pages= array_flip($pages);
+		
 		$lastpage = 0;
 		$out = '';
-		for($z = 0; $z <= 4; $z++) {
-			if( $p[$z] == null ) {
-				continue;
-			}
-			if( ($p[$z] - $lastpage) > 1 ) $out .= '&hellip;';
-			if(isset($p[$z])) {
-				$caption = ($p[$z]==$current) ? '[' . $current . ']' : $p[$z];
-				$url = URL::get($token, array_merge($settings, array('page'=>$p[$z])), false);
-				$out .= '<a href="' . $url . '" ' . (($p[$z]==$current) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
-			}
-			$lastpage = $p[$z];
+		foreach ( $pages as $key => $value ) {
+			if ( $key == 0 ) continue;
+			if ( ($key - $lastpage) > 1 ) $out .= '&hellip;';
+			$caption = ($key==$current) ? '[' . $current . ']' : $key;
+			$url = Site::get_url('habari', true) . $rr->build( array_merge($settings, array('page'=>$key)), false);
+			$out .= '<a href="' . $url . '" ' . (($key==$current) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
+			$lastpage = $key;
 		}
+		
 		return trim($out);
-
 	}
 
 
