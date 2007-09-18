@@ -360,9 +360,9 @@ class Theme
 	 * Aggregates and echos the additional header code by combining Plugins and Stack calls.
 	 */
 	public function header() {
-		Plugins::act( 'template_header' );
+		Plugins::act( 'template_header', $this );
 		if ( function_exists( THEME_CLASS . '::header' ) ) {
-			call_user_func( array( THEME_CLASS, 'header' ) );
+			call_user_func( array( THEME_CLASS, 'header' ), $this );
 		}
 		Stack::out( 'template_stylesheet', ' <link rel="stylesheet" type="text/css"  href="%s" media="%s">'."\r\n" );
 		Stack::out( 'template_header_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
@@ -372,9 +372,9 @@ class Theme
 	 * Aggregates and echos the additional footer code by combining Plugins and Stack calls.
 	 */
 	public function footer() {
-		Plugins::act( 'template_footer' );
+		Plugins::act( 'template_footer', $this );
 		if ( function_exists( THEME_CLASS . '::footer' ) ) {
-			call_user_func( array( THEME_CLASS, 'footer' ) );
+			call_user_func( array( THEME_CLASS, 'footer' ), $this );
 		}
 		Stack::out( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 	}
