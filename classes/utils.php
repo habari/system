@@ -251,22 +251,21 @@ class Utils
 			$current= 1;
 		}
 
-		for($i=1;$i<=$total;$i++) {
+		for($i=2;$i<=$total;$i++) {
 			switch ($i) {
 				case (($i==($current+1)) && (($current+1) < $total)):
 				case ($i==($current-1)):
 					$pages[$i]= (int) $i;
 					break;
 				default:
-					$pages[$i]= 0;
 					break;
 			}
 		}
 		$pages[1]= 1;
 		$pages[$current]= (int) $current;
 		$pages[$total]= (int) $total;
-		$pages= array_flip($pages);
-		
+		ksort($pages);
+			
 		$lastpage = 0;
 		$out = '';
 		foreach ( $pages as $key => $value ) {
