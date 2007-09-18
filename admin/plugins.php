@@ -1,14 +1,11 @@
 <?php include('header.php');?>
 <div class="container">
 <hr />
-	<div class="dashboard-block c3" id="welcome">
+	<div class="dashboard-block span-24 first last" id="welcome">
 		<h1>Currently Available Plugins</h1>
 		<p>Activate, deactivate and remove plugins through this interface.</p>
 	</div>
-	<?php
-	$columnsize = isset( $this->engine_vars['configure'] ) ? 'c1' : 'c3';
-	?>
-	<div class="dashboard-block <?php echo $columnsize; ?>">
+	<div class="dashboard-block span-24 first last">
 		<?php 
 			$listok= true;
 			$all_plugins= Plugins::list_all();
@@ -105,7 +102,7 @@
 		<?php endif; ?>
 	</div>
 	<?php if( isset( $this->engine_vars['configure'] ) && ( $configure = $this->engine_vars['configure'] ) ): ?>
-	<div class="dashboard-block c2" id="plugin_options">
+	<div class="dashboard-block span-24 first last" id="plugin_options">
 		<h2><?php echo $active_plugins[$configure]->info->name; echo ' : '; echo $action; ?></h2>
 		<?php
 			Plugins::act('plugin_ui', $this->engine_vars['configure'], $this->engine_vars['action']);
