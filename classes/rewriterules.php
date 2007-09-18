@@ -99,8 +99,9 @@ class RewriteRules extends ArrayObject {
 	 **/	 	 	 	 	
 	public function by_name( $name )
 	{
+		$rules= self::get_active();
 		$results = array();
-		foreach($this as $rule) {
+		foreach($rules as $rule) {
 			if($rule->name == $name) {
 				$results[]= $rule;
 			}
