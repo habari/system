@@ -88,7 +88,7 @@
 								$action = $caption;
 							}
 							?>
-							<p><a href="<?php URL::out( 'admin', array( 'page'=>'plugins', 'configure'=>$plugin->plugin_id, 'action'=>$action ) ); ?>"><?php echo $caption; ?></a></p>
+							<p><a href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin->plugin_id . '&action=' . $action ); ?>"><?php echo $caption; ?></a></p>
 							<?php
 						}
 					}

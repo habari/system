@@ -123,7 +123,7 @@ class RewriteRule extends QueryRecord
 		// Append any remaining args as query string arguments
 		if ( $useall ) {
 			$args= array_diff_key( $args, $named_args_combined );
-			$return_url.= ( count( $args ) == 0 ) ? '' : '?' . http_build_query( $args );
+			$return_url.= ( count( $args ) == 0 ) ? '' : '?' . http_build_query( $args, '', '&amp;' );
 		}
 		
 		return $return_url;
