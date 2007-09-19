@@ -102,7 +102,7 @@
     <?php
       if ( Comments::count_total( Comment::STATUS_APPROVED ) ) {
     ?>
-      <table name="comment-data" width="100%" cellspacing="0">
+      <table id="comment-data" width="100%" cellspacing="0">
         <thead>
           <tr>
             <th class="span-3"><?php _e( 'Post' ); ?></th>

@@ -109,7 +109,7 @@ function table($headers, $data, $sort = null){
 					echo 'style="display:none;"';
 				}?>
 				>
-				<?php echo $comment->content_out; ?>
+				<?php echo htmlentities($comment->content_out); ?>
 				</div>
 				<?php if ($comment->status == COMMENT::STATUS_SPAM) : ?>
 					<a href="" onclick="$(this).hide();$('#comment_content_<?php echo $comment->id; ?>').show();return false;">[Show Comment]</a>
@@ -137,7 +137,7 @@ function table($headers, $data, $sort = null){
 						<input type="radio" class="radio_spam" name="moderate[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam" <?php echo $default_radio['spam']; ?> ><?php _e('Mark as Spam'); ?>
 					</label>
 					<label>
-						<input type="radio" class="radio_unapprove" name="moderate[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="unapprove" <?php echo $default_radio['unapprove']; ?> ><?php _e('Unapprove'); ?>
+						<input type="radio" class="radio_unapprove" name="moderate[<?php echo $comment->id; ?>]" id="unapprove-<?php echo $comment->id; ?>" value="unapprove" <?php echo $default_radio['unapprove']; ?> ><?php _e('Unapprove'); ?>
 					</label>
 				</p>
 				&nbsp;

@@ -64,7 +64,7 @@
 					$active= false;
 				}
 				if(isset($plugin->info->url)) {
-					$url = "<a href='{$plugin->info->url}' title='Visit {$plugin->info->name}'>{$plugin->info->author}</a>";
+					$url = "<p><a href='{$plugin->info->url}' title='Visit {$plugin->info->name}'>{$plugin->info->author}</a></p>";
 				}
 				else {
 					$url = $plugin->info->author;
@@ -77,8 +77,8 @@
 					<td><?php echo $plugin->info->version; ?></td>
 					<td>
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
-					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
-					<input type='submit' name='submit' value='<?php echo $verb; ?>'>
+					<p><input type='hidden' name='plugin' value='<?php echo $file; ?>'></p>
+					<p><input type='submit' name='submit' value='<?php echo $verb; ?>'></p>
 					<?php 
 					if ($active) {
 						$actions= array();
@@ -88,7 +88,7 @@
 								$action = $caption;
 							}
 							?>
-							<a href="<?php echo Utils::de_amp(URL::get( 'admin', 'page=plugins&configure=' . $plugin->plugin_id . '&action=' . $action)); ?>"><?php echo $caption; ?></a>
+							<p><a href="<?php echo Utils::de_amp(URL::get( 'admin', 'page=plugins&amp;configure=' . $plugin->plugin_id . '&amp;action=' . $action)); ?>"><?php echo $caption; ?></a></p>
 							<?php
 						}
 					}

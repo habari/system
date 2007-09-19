@@ -41,7 +41,7 @@ foreach ( User::get_all() as $user )
 ?>
 </ul>
 </div>
-<div class="dashboard-block c3" id="welcome">
+<div class="dashboard-block c3">
 <?php
 if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 {
@@ -55,9 +55,9 @@ if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 <p>Password (twice to confirm):</p>
 <p><input type="password" size="40" name="pass1"></p>
 <p><input type="password" size="40" name="pass2"></p>
-<input type="hidden" name="action" value="newuser">
+<p><input type="hidden" name="action" value="newuser"></p>
 <p><input type="submit" value="Add User"></p>
 </form>
 </div>
-
+</div>
 <?php include('footer.php');?>
