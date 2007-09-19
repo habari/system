@@ -43,30 +43,37 @@
       <ul>
         <li><?php printf( _t( 'You are running Habari %s.' ), Version::get_habariversion() ); ?></li>
         <?php
-      $updates= Update::check();
-      //Utils::debug( $updates );  //Uncomment this line to see what Update:check() returns...
-      if ( count( $updates ) > 0 ) {
-        foreach ( $updates as $update ) {
-          $class= implode( ' ', $update['severity'] );
-          if ( in_array( 'critical', $update['severity'] ) ) {
-            $updatetext= _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
-          }
-          elseif ( count( $update['severity'] ) > 1 ) {
-            $updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
-          }
-          elseif ( in_array( 'bugfix', $update['severity'] ) ) {
-            $updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
-          }
-          elseif ( in_array( 'feature', $update['severity'] ) ) {
-            $updatetext= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
-          }
-          $updatetext= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
-          echo "<li class=\"{$class}\">&raquo; {$updatetext}</li>";
+        try {
+			$updates= Update::check();
+			if ( Error::is_error( $updates ) ) {
+				throw $updates;
+			}
+			//Utils::debug( $updates );  //Uncomment this line to see what Update:check() returns...
+			if ( count( $updates ) > 0 ) {
+				foreach ( $updates as $update ) {
+					$class= implode( ' ', $update['severity'] );
+					if ( in_array( 'critical', $update['severity'] ) ) {
+						$updatetext= _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
+					}
+					elseif ( count( $update['severity'] ) > 1 ) {
+						$updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
+					}
+					elseif ( in_array( 'bugfix', $update['severity'] ) ) {
+						$updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
+					}
+					elseif ( in_array( 'feature', $update['severity'] ) ) {
+						$updatetext= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
+					}
+					$updatetext= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
+					echo "<li class=\"{$class}\">&raquo; {$updatetext}</li>";
+				}
+			}
+			else {
+				echo '<li>' . _t( 'No updates were found.' ) . '</li>';
+			}
+        } catch (Exception $e) {
+        	print '<li>' . $e->get() . "</li>\r\n";
         }
-      }
-      else {
-        echo '<li>' . _t( 'No updates were found.' ) . '</li>';
-      }
         ?>
       </ul>
     </div>
@@ -140,30 +147,32 @@
   <div class="column span-7 first" id="incoming">
     <h3><?php _e( 'Incoming Links' ); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url( 'hostname' ) ?>" title="<?php _e( 'More incoming links' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
     <?php
-    // This should be fetched on a pseudo-cron and cached:
-    $search= new RemoteRequest( 'http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url( 'hostname' ) );
-    $search->set_timeout( 5 );
-    $result= $search->execute();
-    if ( $search->executed() ) {
-      $xml= new SimpleXMLElement( $search->get_response_body() );
-      if ( count( $xml->entry ) == 0 ) {
-        echo '<p>' . _t( 'No incoming links were found to this site.' ) . '</p>';
-      }
-      else {
-    ?>
-    <ul id="incoming-links">
-      <?php foreach( $xml->entry as $entry ) { ?>
-      <li>
-        <!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / -->
-        <a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
-      </li>
-      <?php } ?>
-    </ul>
-    <?php
-      }
-    }
-    else {
-      echo '<p>' . _e( 'Error fetching links.' ) . '</p>';
+    try {
+		// This should be fetched on a pseudo-cron and cached:
+		$search= new RemoteRequest( 'http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url( 'hostname' ) );
+		$search->set_timeout( 5 );
+		$result= $search->execute();
+		if ( Error::is_error( $result ) ) {
+			throw $result;
+		}
+		$xml= new SimpleXMLElement( $search->get_response_body() );
+		if ( count( $xml->entry ) == 0 ) {
+			echo '<p>' . _t( 'No incoming links were found to this site.' ) . '</p>';
+		}
+		else {
+		?>
+		<ul id="incoming-links">
+		<?php foreach( $xml->entry as $entry ) { ?>
+			<li>
+			<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / -->
+			<a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
+			</li>
+		<?php } ?>
+		</ul>
+		<?php
+		}
+    } catch(Exception $e) {
+    	print '<p>' . $e->get() . "</p>\r\n";
     }
     ?>
   </div>

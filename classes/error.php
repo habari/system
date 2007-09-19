@@ -8,9 +8,9 @@ if ( ! defined( 'DEBUG' ) )
  *  
  * @package Habari
  **/  
-class Error
+class Error extends Exception
 {
-	private $message= '';
+	protected $message= '';
 
 	/**
 	 * function __construct
