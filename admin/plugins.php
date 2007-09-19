@@ -88,7 +88,7 @@
 								$action = $caption;
 							}
 							?>
-							<p><a href="<?php echo Utils::de_amp(URL::get( 'admin', 'page=plugins&amp;configure=' . $plugin->plugin_id . '&amp;action=' . $action)); ?>"><?php echo $caption; ?></a></p>
+							<p><a href="<?php URL::out( 'admin', array( 'page'=>'plugins', 'configure'=>$plugin->plugin_id, 'action'=>$action ) ); ?>"><?php echo $caption; ?></a></p>
 							<?php
 						}
 					}
