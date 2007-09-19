@@ -55,21 +55,28 @@ class Update extends Singleton
 	 */
 	public static function check()
 	{
-		$instance = self::instance();
-		if(count($instance->beacons) == 0) {
-			Update::add('Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion());
-			Plugins::act('update_check');
-		}
-
-		$request= new RemoteRequest(UPDATE_URL, 'POST');
-		$request->set_params(
-			array_map(
-				create_function('$a', 'return $a["version"];'),
-				$instance->beacons
-			)
-		);
-		if($request->execute()) {
+		try {
+			$instance = self::instance();
+			if(count($instance->beacons) == 0) {
+				Update::add('Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion());
+				Plugins::act('update_check');
+			}
+	
+			$request= new RemoteRequest(UPDATE_URL, 'POST');
+			$request->set_params(
+				array_map(
+					create_function('$a', 'return $a["version"];'),
+					$instance->beacons
+				)
+			);
+			$result= $request->execute();
+			if ( Error::is_error( $result ) ) {
+				throw $result;
+			}
 			$updatedata= $request->get_response_body();
+			if ( Error::is_error( $updatedata ) ) {
+				throw $updatedate;
+			}
 			$instance->update= new SimpleXMLElement($updatedata);
 			foreach($instance->update as $beacon) {
 				$beaconid = (string)$beacon['id'];
@@ -104,8 +111,10 @@ class Update extends Singleton
 					}
 				}
 			}
+			return array_filter($instance->beacons, array('Update', 'filter_unchanged'));
+		} catch (Exception $e) {
+			return $e;
 		}
-		return array_filter($instance->beacons, array('Update', 'filter_unchanged'));
 	}
 
 }
