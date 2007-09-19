@@ -39,7 +39,7 @@
 	}
 	?>
 	<form name="update-profile" id="update-profile" action="<?php URL::out('admin', 'page=user'); ?>" method="post">
-		<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
+		<p><input type="hidden" name="user_id" value="<?php echo $user->id; ?>"></p>
 		<p><label>Username:</label></p>
 		<p><input type="text" name="username" value="<?php echo $user->username; ?>"></p>
 		<p><label>Email address:</label></p>
@@ -65,37 +65,35 @@
 <?php
 if ( Posts::count_by_author( $user->id, Post::status('published') ) ) {
 	echo $possessive ." five most recent published posts:<br>\n";
-	echo "<ul>\n";
-	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
-						'limit' => 5,
-						'status' => Post::status('published'),
-					) ) as $post )
-	{
-		echo '<li><a href="' . $post->permalink . '">' . $post->title ."</a></li>\n";
+	$posts = Posts::get( array( 'user_id' => $user->id, 'limit' => 5, 'status' => Post::status('published'), ) );
+	if ( count( $posts ) > 0 ) {
+		echo "<ul>\n";
+		foreach ( $posts as $post ) {
+			echo '<li><a href="' . $post->permalink . '">' . $post->title ."</a></li>\n";
+		}
+		echo "</ul>\n";
 	}
-	echo "</ul>\n";
 }
 else {
 	echo "<p>No published posts.</p>\n";
 }
 if ( $user == $currentuser ) {
-	echo $possessive . ' five most recent draft posts:<br><ul>';
-	foreach ($posts = Posts::get( array( 'user_id' => $user->id,
-						'limit' => 5,
-						'status' => Post::status('draft'),
-					) ) as $post )
-	{
-		echo '<li><a href="' . $post->permalink . '">' . $post->title . "</a></li>\n";
+	echo $possessive . ' five most recent draft posts:<br>';
+	$posts = Posts::get( array( 'user_id' => $user->id, 'limit' => 5, 'status' => Post::status('draft'), ) );
+	if ( count( $posts ) > 0 ) {
+		echo "<ul>\n";
+		foreach ($posts as $post ) {
+			echo '<li><a href="' . $post->permalink . '">' . $post->title . "</a></li>\n";
+		}
+		echo "</ul>\n";
 	}
-	echo "</ul>\n";
 }
-echo "<p></p>\n";
+echo "<hr>\n";
 if ( $user != $currentuser ) {
-	echo "<form method='post'>";
-	echo "<div style='width: 100%, background: red;'>\n";
-	echo "<input type='hidden' name='delete' value='user'>\n";
-	echo "<input type='hidden' name='user_id' value='" . $user->id . "'>\n";
-	echo "<input type='submit' value='DELETE USER'>\n";
+	echo '<form method="post" action="">'."\n";
+	echo '<p><input type="hidden" name="delete" value="user"><p>'."\n";
+	echo '<p><input type="hidden" name="user_id" value="' . $user->id . '"><p>'."\n";
+	echo '<p><input type="submit" value="DELETE USER"><p>';
 	echo "</form>\n";
 }
 ?>

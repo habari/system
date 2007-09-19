@@ -7,7 +7,7 @@ include_once( 'header.php' );
 		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
 	</div>
 	<div class="dashboard-block c3" id="log-activity">
-		<table id="log-activity" width="100%" cellspacing="0">
+		<table id="log-activity-table" width="100%" cellspacing="0">
 			<thead>
 				<tr>
 					<th align="left">Date</th>

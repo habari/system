@@ -23,10 +23,10 @@
   <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
    <div class="dashboard-block c3 publish">
     <h4><?php _e('Title'); ?></h4>
-    <input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>">
+    <p><input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>"></p>
     
     <h4><?php _e('Content'); ?></h4>
-    <textarea name="content" id="content" rows="20"><?php echo htmlspecialchars( $post->content ); ?></textarea>
+    <p><textarea name="content" id="content" rows="20" cols="114"><?php echo htmlspecialchars( $post->content ); ?></textarea></p>
     
     <h4><?php _e('Tags'); ?></h4>
     <p><?php _e('Tags (comma separated):'); ?> <input type="text" name="tags" id="tags" value="<?php echo ( !empty( $tags ) ) ? $tags : ''; ?>"></p>
@@ -57,11 +57,11 @@
      <li><label><input type="radio" name="comments_disabled" id="comments_enabled" value="0" <?php echo ( $post->info->comments_disabled == 0 ) ? 'checked' : ''; ?>> <?php _e('Allow comments'); ?></label></li>
      <li><label><input type="radio" name="comments_disabled" id="comments_disabled" value="1" <?php echo ( $post->info->comments_disabled == 1 ) ? 'checked' : ''; ?>> <?php _e('No comments'); ?></label></li>
     </ul>
-    <input type="hidden" name="content_type" value="<?php echo $content_type; ?>">
+    <p><input type="hidden" name="content_type" value="<?php echo $content_type; ?>"></p>
     <p><input type="submit" name="submit" id="submit" value="<?php _e('Save!'); ?>"></p>
    </div>
    <?php if ( $post->slug != '' ) { ?>
-   <input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>">
+   <p><input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>"></p>
    <?php } ?>
   </form>
  </div>

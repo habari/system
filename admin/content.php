@@ -43,11 +43,11 @@
 							Edit
 						</a>
 						<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
-							<input type="hidden" name="slug" value="<?php echo $post->slug; ?>">
-							<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-							<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-							<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-							<button name="delete"><?php _e('Delete'); ?></button>
+							<p><input type="hidden" name="slug" value="<?php echo $post->slug; ?>"></p>
+							<p><input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>"></p>
+							<p><input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>"></p>
+							<p><input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>"></p>
+							<p><button name="delete"><?php _e('Delete'); ?></button></p>
 						</form>
 					</td>
 				</tr>
@@ -83,11 +83,11 @@
 							Edit
 						</a>
 							<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
-								<input type="hidden" name="slug" value="<?php echo $draft->slug; ?>">
-								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-								<button name="delete"><?php _e('Delete'); ?></button>
+								<p><input type="hidden" name="slug" value="<?php echo $draft->slug; ?>"></p>
+								<p><input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>"></p>
+								<p><input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>"></p>
+								<p><input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>"></p>
+								<p><button name="delete"><?php _e('Delete'); ?></button></p>
 							</form>
 					</td>
 				</tr>
@@ -101,7 +101,7 @@
 	if ( count( $pages ) > 0 ) : ?>
 	<div class="column span-24" id="content-pages">
 		<h3><?php _e('Paged Entries'); ?></h3>
-			<table id="post-data-draft" width="100%" cellspacing="0">
+			<table id="page-data-published" width="100%" cellspacing="0">
 				<thead>
 					<tr>
 						<th align="left"><?php _e('Title'); ?></th>
@@ -123,11 +123,11 @@
 							Edit
 						</a>
 							<form method="post" action="<?php  URL::out( 'admin', 'page=delete_post' ); ?>" class="buttonform">
-								<input type="hidden" name="slug" value="<?php echo $page->slug; ?>">
-								<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-								<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-								<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-								<button name="delete"><?php _e('Delete'); ?></button>
+								<p><input type="hidden" name="slug" value="<?php echo $page->slug; ?>"></p>
+								<p><input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>"></p>
+								<p><input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>"></p>
+								<p><input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>"></p>
+								<p><button name="delete"><?php _e('Delete'); ?></button></p>
 							</form>
 					</td>
 				</tr>
