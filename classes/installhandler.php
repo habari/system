@@ -13,6 +13,14 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function act_begin_install()
 	{
+		if ( isset( $_POST['ajax_action'] ) ) {
+			switch ( $_POST['ajax_action'] ) {
+				case 'check_mysql_credentials':
+					self::ajax_check_mysql_credentials();
+					exit;
+					break;
+			}
+		}
 		// set the default values now, which will be overriden as we go
 		$this->form_defaults();
 
@@ -30,6 +38,11 @@ class InstallHandler extends ActionHandler {
 			$this->handler_vars['file_contents']= implode( "\n", $this->htaccess() );
 			$this->display('htaccess');
 		}
+
+		/*
+		 * Add the AJAX hooks
+		 */
+		Plugins::register( array('InstallHandler', 'ajax_check_mysql_credentials'), 'ajax_', 'check_mysql_credentials' );
 
 		/*
 		 * Let's check the config.php file if no POST data was submitted
@@ -684,6 +697,54 @@ class InstallHandler extends ActionHandler {
 		$queries= $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
 		DB::dbdelta($queries);
 		Version::save_dbversion();
+	}
+	
+	/**
+	 * Validate database credentials for MySQL
+	 * Try to connect and verify if database name exists
+	 */
+	public function ajax_check_mysql_credentials() {
+		$xml= new SimpleXMLElement('<response></response>');
+		// Missing anything?
+		if ( !isset( $_POST['host'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error= $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#databasehost' );
+			$xml_error->addChild( 'message', 'The database host field was left empty.' );
+		}
+		if ( !isset( $_POST['database'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error= $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#databasename' );
+			$xml_error->addChild( 'message', 'The database name field was left empty.' );
+		}
+		if ( !isset( $_POST['user'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error= $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#databaseuser' );
+			$xml_error->addChild( 'message', 'The database user field was left empty.' );
+		}
+		if ( !isset( $xml_error ) ) {
+			// Can we connect to the DB?
+			$pdo= 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
+			if ( DB::connect( $pdo, $_POST['user'], $_POST['pass'] ) ) {
+				$xml->addChild( 'status', 1 );
+			}
+			else {
+				$xml->addChild( 'status', 0 );
+				$xml_error= $xml->addChild( 'error' );
+				$xml_error->addChild( 'id', '#databasehost' );
+				$xml_error->addChild( 'id', '#databasename' );
+				$xml_error->addChild( 'id', '#databaseuser' );
+				$xml_error->addChild( 'id', '#databasepass' );
+				$xml_error->addChild( 'message', 'We had a problem connecting to the database, please verify the informations you provided.' );
+			}
+		}
+		$xml= $xml->asXML();
+		ob_clean();
+		header("Content-type: text/xml");
+		header("Cache-Control: no-cache");
+		print $xml;
 	}
 }
 ?>
