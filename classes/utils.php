@@ -329,8 +329,10 @@ class Utils
 				</script>
 				<style type=\"text/css\">
 				.utils__debugger{background-color:#550000;border:1px solid red;text-align:left;}
-				.utils__debugger pre{margin:5px;}.utils__debugger pre em{color:#dddddd;}
+				.utils__debugger pre{margin:5px;background-color:#000}
+				.utils__debugger pre em{color:#dddddd;}
 				.utils__debugger table{background-color:#770000;color:white;width:100%;}
+				.utils__debugger tr{background-color:#000000;}
 				.utils__debugger td{padding-left: 10px;vertical-align:top;white-space: pre;font-family:Courier New,Courier,monospace;}
 				.utils__debugger .utils__odd{background:#880000;}
 				.utils__debugger .utils__arg a{color:#ff3333;}
