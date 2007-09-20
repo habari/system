@@ -131,7 +131,7 @@ class AdminHandler extends ActionHandler
 					$post->update();
 				}
 			}
-			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) ) );
+			Utils::redirect( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) );
 		}
 		else {
 			_e( 'Danger, Will Robinson!  Danger!' );
@@ -257,7 +257,7 @@ class AdminHandler extends ActionHandler
 			if ( empty( $error ) ) {
 				$user= new User( array( 'username' => $username, 'email' => $email, 'password' => Utils::crypt( $pass1 ) ) );
 				if ( $user->insert() ) {
-					Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=users&result=success&username=' . $username ) ) );
+					Utils::redirect( URL::get( 'admin', 'page=users&result=success&username=' . $username ) );
 				}
 				else {
 					$dberror= DB::get_last_error();
@@ -298,7 +298,7 @@ class AdminHandler extends ActionHandler
 	 */
 	function post_import() {
 		if ( !isset( $_REQUEST['importer'] ) ) {
-			Utils::redirect( Utils::de_amp( URL::get( 'admin', 'page=import' ) ) );
+			Utils::redirect( URL::get( 'admin', 'page=import' ) );
 			exit;
 		}
 
