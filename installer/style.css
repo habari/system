@@ -111,6 +111,10 @@ div.javascript-disabled {
 	float: left;
 }
 
+.inputfield label strong {
+	color: #FF0000;
+}
+
 .inputfield select {
 	width: 329px;
 }

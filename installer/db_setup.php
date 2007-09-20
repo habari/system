@@ -18,13 +18,13 @@
 			<p>Developer Review</p>
 		</div>
 		
-		<form action="" method="post" autocomplete="off">
-		<div class="installstep ready">
+		<form action="" method="post" id="installform">
+		<div class="installstep ready" id="databasesetup">
 			<h2>Database Setup<a href="#" class="help-me">(help)</a></h2>
 			<div class="options">
 			
 				<div class="inputfield">
-					<label for="databasetype">Database Type</label>
+					<label for="databasetype">Database Type <strong>*</strong></label>
 					<select id="databasetype" name="db_type" onchange="setDatabaseType(this)">
 						<option value="mysql" <?php echo $db_type=='mysql' ? 'selected' : ''; ?>>MySQL</option>
 						<option value="sqlite" <?php echo $db_type=='sqlite' ? 'selected' : ''; ?>>SQLite</option>
@@ -40,7 +40,7 @@
 				<div class="javascript-disabled">Use the settings below only if you have selected MySQL as your database engine.</div>
 
 				<div class="inputfield formysql">
-					<label for="databasehost">Database Host</label>
+					<label for="databasehost">Database Host <strong>*</strong></label>
 					<input type="text" id="databasehost" name="db_host" value="<?php echo $db_host; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -54,7 +54,7 @@
 				</div>
 		
 				<div class="inputfield formysql">
-					<label for="databaseuser">Username</label>
+					<label for="databaseuser">Username <strong>*</strong></label>
 					<input type="text" id="databaseuser" name="db_user" value="<?php echo $db_user; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -65,7 +65,7 @@
 				</div>
 		
 				<div class="inputfield formysql">
-					<label for="databasepass">Password</label>
+					<label for="databasepass">Password <strong>*</strong></label>
 					<input type="password" id="databasepass" name="db_pass" value="<?php echo $db_pass; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -76,7 +76,7 @@
 				</div>
 				
 				<div class="inputfield formysql">
-					<label for="databasetype">Database Name</label>
+					<label for="databasetype">Database Name <strong>*</strong></label>
 					<input type="text" id="databasename" name="db_schema" value="<?php echo $db_schema; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -86,7 +86,7 @@
 					</div>
 				</div>
 		
-				<h3 class="javascript-disabled">SQLite Settings</h3>
+				<h3 class="javascript-disabled">SQLite Settings <strong>*</strong>/h3>
 				<div class="javascript-disabled">Use the settings below only if you have selected SQLite as your database engine.</div>
 		
 				<div class="inputfield forsqlite">
@@ -122,12 +122,12 @@
 		
 		<div class="next-section"></div>
 		
-		<div class="installstep ready">
+		<div class="installstep ready" id="siteconfiguration">
 			<h2>Site Configuration<a href="#" class="help-me">(help)</a></h2>
 			<div class="options">
 			
 				<div class="inputfield">
-					<label for="sitename">Site Name</label>
+					<label for="sitename">Site Name <strong>*</strong></label>
 					<input type="text" id="sitename" name="blog_title" value="<?php echo $blog_title; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -138,7 +138,7 @@
 				</div>
 				
 				<div class="inputfield">
-					<label for="adminuser">Username</label>
+					<label for="adminuser">Username <strong>*</strong></label>
 					<input type="text" id="adminuser" name="admin_username" value="<?php echo $admin_username; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -148,9 +148,9 @@
 				</div>
 				
 				<div class="inputfield">
-					<label for="adminpass">Password</label>
-					<input type="password" id="adminpass" name="admin_pass1" value="<?php echo $admin_pass1; ?>">
-					<label for="adminpass2">Password (again) </label>
+					<label for="adminpass1">Password <strong>*</strong></label>
+					<input type="password" id="adminpass1" name="admin_pass1" value="<?php echo $admin_pass1; ?>">
+					<label for="adminpass2">Password (again) <strong>*</strong></label>
 					<input type="password" id="adminpass2" name="admin_pass2" value="<?php echo $admin_pass2; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -160,7 +160,7 @@
 				</div>
 				
 				<div class="inputfield">
-					<label for="adminemail">Admin Email</label>
+					<label for="adminemail">Admin Email <strong>*</strong></label>
 					<input type="text" id="adminemail" name="admin_email" value="<?php echo $admin_email; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
@@ -177,13 +177,13 @@
 		
 		<div class="next-section"></div>
 		
-		<div class="installstep ready">
+		<div class="installstep ready" id="install">
 			<h2>Install</h2>
 			<div class="options">
 			
 				<div class="inputfield submit">
 					<div>Habari now has all of the information needed to install itself on your server.</div>
-					<input type="submit" name="submit" value="Install Habari">
+					<input type="submit" name="submit" value="Install Habari" id="submitinstall">
 				</div>
 			
 			</div>
