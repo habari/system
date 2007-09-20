@@ -29,7 +29,9 @@ function checkDBCredentials()
 							ido= $('id',xml).get(id);
 							warningtext= $('message',xml).text();
 							$('#siteconfiguration').children('.options').fadeOut();
-							$('#siteconfiguration').removeClass('ready');
+							$('#siteconfiguration').removeClass('ready').removeClass('done');
+							$('#install').children('.options').fadeOut();
+							$('#install').removeClass('ready').removeClass('done');
 							$($(ido).text()).parents('.installstep').removeClass('done');
 							$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid');
 							$($(ido).text()).parents('.inputfield').find('.warning:hidden').html(warningtext).fadeIn();
@@ -52,6 +54,10 @@ function checkDBCredentials()
 	}
 	else {
 		$('.installstep:first').removeClass('done');
+		$('#siteconfiguration').children('.options').fadeOut();
+		$('#siteconfiguration').removeClass('ready').removeClass('done');
+		$('#install').children('.options').fadeOut();
+		$('#install').removeClass('ready').removeClass('done');
 	}
 }
 
@@ -64,6 +70,8 @@ function checkSiteConfigurationCredentials() {
 			$('#adminpass1').parents('.installstep').removeClass('done');
 			$('#adminpass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid');
 			$('#adminpass1').parents('.inputfield').find('.warning:hidden').html(warningtext).fadeIn();
+			$('#install').children('.options').fadeOut();
+			$('#install').removeClass('ready').removeClass('done');
 		}
 		else {
 			ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
@@ -78,6 +86,10 @@ function checkSiteConfigurationCredentials() {
 			$('#install').addClass('done');
 			$('#submitinstall').removeAttr( 'disabled' );
 		}
+	}
+	else {
+		$('#install').children('.options').fadeOut();
+		$('#install').removeClass('ready').removeClass('done');
 	}
 }
 
