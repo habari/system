@@ -185,7 +185,9 @@ class Plugins
 		}
 		// return $files;
 		// massage the return value so that this works on Windows
-		return array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $files );
+		$plugins= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $files );
+		sort($plugins);
+		return $plugins;
 	}
 	
 	/**
