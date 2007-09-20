@@ -110,7 +110,7 @@ class URL extends Singleton
 	 * @param mixed $args (optional) array or object of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 */
-	static public function get( $rule_names, $args= array(), $useall= true )
+	static public function get( $rule_names, $args= array(), $useall= true, $noamp= false )
 	{
 		$args= self::extract_args( $args ); 
 		
@@ -136,7 +136,7 @@ class URL extends Singleton
 					}
 				}
 				if( isset($selectedrule) ) {
-					$return_url = $selectedrule->build( $args, $useall );
+					$return_url = $selectedrule->build( $args, $useall, $noamp );
 					return Site::get_url('habari', true) . $return_url;
 				}
 			}
@@ -149,9 +149,9 @@ class URL extends Singleton
 	 * @param array $args (optional) array of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 */
-	static public function out( $rule_name, $args= array(), $useall= true )
+	static public function out( $rule_name, $args= array(), $useall= true, $noamp= true )
 	{
-		echo URL::get( $rule_name, $args, $useall );
+		echo URL::get( $rule_name, $args, $useall, $noamp );
 	}
 
 	/**

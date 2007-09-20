@@ -91,7 +91,7 @@ class RewriteRule extends QueryRecord
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 * @return string The URL created from the substituted arguments	 
 	 */	 	 
-	public function build( $args, $useall= true )
+	public function build( $args, $useall= true, $noamp= false )
 	{
 		$named_args= $this->named_args; // Direct call prints a PHP notice
 		$named_args_combined= array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
@@ -123,7 +123,8 @@ class RewriteRule extends QueryRecord
 		// Append any remaining args as query string arguments
 		if ( $useall ) {
 			$args= array_diff_key( $args, $named_args_combined );
-			$return_url.= ( count( $args ) == 0 ) ? '' : '?' . http_build_query( $args, '', '&amp;' );
+			$query_seperator= ( $noamp ) ? '&amp;' : '&';
+			$return_url.= ( count( $args ) == 0 ) ? '' : '?' . http_build_query( $args, '', $query_seperator );
 		}
 		
 		return $return_url;
