@@ -116,23 +116,35 @@ class Controller extends Singleton {
     /* Grab the URL filtering rules from DB */
     $matched_rule= URL::parse($controller->stub);
 
-    if ($matched_rule !== FALSE) {
-      /* OK, we have a matching rule.  Set the action and create a handler */
-      $controller->action= $matched_rule->action;
-      $controller->handler= new $matched_rule->handler();
-      
-      /* Insert the regexed submatches as the named parameters */
-      $controller->handler->handler_vars['entire_match']= $matched_rule->entire_match; // The entire matched string is returned at index 0
-      foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value)
-        $controller->handler->handler_vars[$named_arg_key]= $named_arg_value;
+    if ($matched_rule === FALSE) {
+    	// Create a rule to handle a 404 and force it to dispatch
+    	$matched_rule = new RewriteRule(
+	    	array( 
+					'name' => '404', 
+					'parse_regex' => '', 
+					'build_str' => '', 
+					'handler' => 'UserThemeHandler', 
+					'action' => 'display_404', 
+					'priority' => 1, 
+					'description' => 'Displays an error page when a URL is not matched.', 
+					'is_active' => 1, 
+					'rule_class' => RewriteRule::RULE_SYSTEM 
+				)
+			);
+    }
+    
+    /* OK, we have a matching rule.  Set the action and create a handler */
+    $controller->action= $matched_rule->action;
+    $controller->handler= new $matched_rule->handler();
+    
+    /* Insert the regexed submatches as the named parameters */
+    $controller->handler->handler_vars['entire_match']= $matched_rule->entire_match; // The entire matched string is returned at index 0
+    foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value)
+      $controller->handler->handler_vars[$named_arg_key]= $named_arg_value;
 
-      /* Also, we musn't forget to add the GET and POST vars into the action's settings array */
-      $controller->handler->handler_vars= array_merge($controller->handler->handler_vars, $_GET, $_POST);
-      return true;
-    }
-    else {
-      die('Unmatched rule: ' . print_r(Controller::instance())); /** @todo Standard error handling */
-    }
+    /* Also, we musn't forget to add the GET and POST vars into the action's settings array */
+    $controller->handler->handler_vars= array_merge($controller->handler->handler_vars, $_GET, $_POST);
+    return true;
   }
 
   /**

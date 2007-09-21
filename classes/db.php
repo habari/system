@@ -179,7 +179,7 @@ class DB extends Singleton
 	 *
 	 * @return  array an array of query profiles
 	 */
-	public function get_profiles()
+	public static function get_profiles()
 	{
 		return DB::instance()->connection->get_profiles();
 	}
@@ -189,7 +189,7 @@ class DB extends Singleton
 	 *
 	 * @param   error   array('query'=>query, 'error'=>errorInfo)
 	 */
-	private function add_error( $error )
+	private static function add_error( $error )
 	{
 		DB::instance()->connection->add_error( $error );
 	}
@@ -198,7 +198,7 @@ class DB extends Singleton
 	 * Returns error data gathered from database connection
 	 * @return array An array of error data	 
 	 */	  	 	
-	public function get_errors()
+	public static function get_errors()
 	{
 		return DB::instance()->connection->get_errors();
 	}
@@ -207,7 +207,7 @@ class DB extends Singleton
 	 * Determines if there have been errors since the last clear_errors() call
 	 * @return boolean True if there were errors, false if not
 	 **/	 	 	 	
-	public function has_errors()
+	public static function has_errors()
 	{
 		return DB::instance()->connection->has_errors();
 	}
@@ -215,7 +215,7 @@ class DB extends Singleton
 	/**
 	 * Updates the last error pointer to simulate resetting the error array
 	 **/	 	 	
-	public function clear_errors()
+	public static function clear_errors()
 	{
 		DB::instance()->connection->clear_errors(); 
 	}
@@ -224,7 +224,7 @@ class DB extends Singleton
 	 * Returns only the last error info
 	 * @return array Data for the last error	 
 	 **/
-	public function get_last_error()
+	public static function get_last_error()
 	{		
 		return DB::instance()->connection->get_last_error();
 	}
@@ -237,7 +237,7 @@ class DB extends Singleton
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary = DB::get_results( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>
 	 **/	 	 	 	 
-	public function get_results( $query, $args = array() )
+	public static function get_results( $query, $args = array() )
 	{
 		if ( func_num_args() == 3 ) {
 			$class_name= func_get_arg( 2 );
@@ -256,7 +256,7 @@ class DB extends Singleton
 	 * @return object A QueryRecord or an instance of the named class containing the row data	 
 	 * <code>$obj = DB::get_row( 'SELECT * FROM tablename WHERE foo = ?', array('fieldvalue'), 'extendedQueryRecord' );</code>	 
 	 **/	 	 
-	public function get_row( $query, $args = array() )
+	public static function get_row( $query, $args = array() )
 	{
 		if ( func_num_args() == 3 ) {
 			$class_name= func_get_arg( 2 );
@@ -275,7 +275,7 @@ class DB extends Singleton
 	 * @return array An array containing the column data	 
 	 * <code>$ary = DB::get_column( 'SELECT col1 FROM tablename WHERE foo = ?', array('fieldvalue') );</code>	 
 	 **/	 	 
-	public function get_column( $query, $args = array() )
+	public static function get_column( $query, $args = array() )
 	{
 		 return DB::instance()->connection->get_column( $query, $args );
 	}
@@ -287,7 +287,7 @@ class DB extends Singleton
 	 * @param array Arguments to pass for prepared statements
 	 * @return mixed a single value (int, string)
 	**/
-	public function get_value( $query, $args = array() )
+	public static function get_value( $query, $args = array() )
 	{
 		return DB::instance()->connection->get_value( $query,  $args );
 	}
@@ -299,7 +299,7 @@ class DB extends Singleton
 	 * @return boolean True on success, false if not	  	 
 	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/
-	public function insert( $table, $fieldvalues ) 
+	public static function insert( $table, $fieldvalues ) 
 	{
 		return DB::instance()->connection->insert( $table, $fieldvalues );
 	}
@@ -311,7 +311,7 @@ class DB extends Singleton
 	 * @return boolean True if any matching record exists, false if not
 	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
-	public function exists( $table, $keyfieldvalues ) 
+	public static function exists( $table, $keyfieldvalues ) 
 	{		
 		return DB::instance()->connection->exists( $table, $keyfieldvalues );
 	}
@@ -326,7 +326,7 @@ class DB extends Singleton
 	 * @return boolean True on success, false if not
 	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>	 
 	 **/	 
-	public function update( $table, $fieldvalues, $keyfields )
+	public static function update( $table, $fieldvalues, $keyfields )
 	{			
 		 return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );		
 	}
@@ -338,7 +338,7 @@ class DB extends Singleton
 	 * @return boolean True on success, false if not
 	 * <code>DB::delete( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
 	 */	 
-	public function delete( $table, $keyfields )
+	public static function delete( $table, $keyfields )
 	{
 		return DB::instance()->connection->delete( $table, $keyfields );
 	}
@@ -352,7 +352,7 @@ class DB extends Singleton
 	 * @return  mixed The last sequence value (RDBMS-dependent!)
 	 * @see     http://us2.php.net/manual/en/function.pdo-lastinsertid.php
 	 */
-	public function last_insert_id() 
+	public static function last_insert_id() 
 	{
 		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
 	}
@@ -365,7 +365,7 @@ class DB extends Singleton
 	 * @param (optional) silent silent running with no messages printed? default = true
 	 * @return  string			translated SQL string
 	 */	 	 	 	 	
-	public static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
+	public static static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
 		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
 	}

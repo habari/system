@@ -333,7 +333,20 @@ class Theme
 	}
 	
 	/**
+	 * Helper function: Display a 404 template
+	 * 
+	 * @param array $user_filters Additional arguments user to get the page content
+	 */
+	public function act_display_404( $user_filters= array() )
+	{
+		$paramarray['fallback']= array( '404' );
+		$paramarray['user_filters']= $user_filters;
+		return $this->act_display( $paramarray );
+	}
+	
+	/**
 	 * Helper function: Avoids having to call $theme->template_engine->display( 'template_name' );
+	 * @param string $template_name The name of the template to display
 	 */
 	public function display( $template_name )
 	{
