@@ -47,6 +47,12 @@ class AdminHandler extends ActionHandler
 				break;
 			default:
 				// Handle GETs of the admin pages
+				$fn= 'get_' . $page;
+				if ( method_exists( $this, $fn ) ) {
+					$this->$fn();
+					exit;
+				}
+				// If a get_ function doesn't exist, just load the template and display it
 				$files= glob( Site::get_dir( 'admin_theme', TRUE ) . '*.php' );
 				$filekeys= array_map( create_function( '$a', 'return basename( $a, \'.php\' );' ), $files );
 				$map= array_combine( $filekeys, $files );
@@ -412,71 +418,121 @@ class AdminHandler extends ActionHandler
 			Plugins::set_present();
 		}
 	}
+	
+	public function get_content()
+	{
+		$this->post_content();
+	}
 
 	/**
 	 * handles POST values from /manage/content
 	 * used to control what content to show / manage
 	**/
-	public function post_content() {
+	public function post_content() 
+	{
+		// Make certain handler_vars local with defaults, and add them to the theme output
+		$locals = array(
+			'do_update' => false,
+			'post_ids' => null,
+			'nonce' => '',
+			'timestamp' => '',
+			'PasswordDigest' => '',
+			'change' => '',
+
+			'author' => 0,
+			'type' => Post::type('entry'),
+			'status' => Post::status('published'),
+			'limit' => 20,
+			'year_month' => 'Any',
+			'search' => '',
+			'do_search' => false,
+			'page' => 1,
+		);
+		foreach($locals as $varname => $default) {
+			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
+			$this->theme->{$varname}= $$varname;
+		}
+	
 		// if we're updating posts, let's do so:
-		if ( isset( $this->handler_vars['do_update'] ) ) {
-			if ( isset( $this->handler_vars['post_ids'] ) ) {
-				$nonce= ( isset( $this->handler_vars['nonce'] ) ) ? $this->handler_vars['nonce'] : '';
-				$timestamp= ( isset( $this->handler_vars['timestamp'] ) ) ? $this->handler_vars['timestamp'] : '';
-				$PasswordDigest= ( isset( $this->handler_vars['PasswordDigest'] ) ) ? $this->handler_vars['PasswordDigest'] : '';
-				$okay= true;
-				if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
-					$okay= false;
+		if ( $do_update && isset( $post_ids ) ) {
+			$okay= true;
+			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
+				$okay= false;
+			}
+			// Ensure the request was submitted less than five minutes ago
+			if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
+				$okay= false;
+			}
+			$wsse= Utils::WSSE( $nonce, $timestamp );
+			if ( $PasswordDigest != $wsse['digest'] ) {
+				$okay= false;
+			}
+			if ( $okay ) {
+				foreach ( $post_ids as $id ) {
+					$ids[]= array( 'id' => $id );
 				}
-				// Ensure the request was submitted less than five minutes ago
-				if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
-					$okay= false;
-				}
-				$wsse= Utils::WSSE( $nonce, $timestamp );
-				if ( $PasswordDigest != $wsse['digest'] ) {
-					$okay= false;
-				}
-				if ( $okay ) {
-					foreach ( $this->handler_vars['post_ids'] as $id ) {
-						$ids[]= array( 'id' => $id );
+				$to_update= Posts::get( array( 'where' => $ids ) );
+				foreach ( $to_update as $post ) {
+					switch( $change ) {
+					case 'delete':
+						$post->delete();
+						break;
+					case 'publish':
+						$post->publish();
+						break;
+					case 'unpublish':
+						$post->status= Post::status('draft');
+						$post->update();
+						break;
 					}
-					$to_update= Posts::get( array( 'where' => $ids ) );
-					foreach ( $to_update as $post ) {
-						switch( $this->handler_vars['change'] ) {
-						case 'delete':
-							$post->delete();
-							break;
-						case 'publish':
-							$post->publish();
-							break;
-						case 'unpublish':
-							$post->status= Post::status('draft');
-							$post->update();
-							break;
-						}
-					}
-					unset( $this->handler_vars['change'] );
 				}
+				unset( $this->handler_vars['change'] );
 			}
 		}
-		if ( isset( $this->handler_vars['type']) ) {
-			$type= $this->handler_vars['type'];
+
+		// Set up Authors select box
+		$authors_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table('users') . ' JOIN ' . DB::table('posts') . ' ON ' . DB::table('users') . '.id=' . DB::table('posts') . '.user_id GROUP BY user_id ORDER BY username ASC');
+		array_unshift($authors_temp, new QueryRecord(array('username' => 'All', 'user_id' => 0)));
+		$authors= array();
+		foreach($authors_temp as $author) {
+			$authors[$author->user_id]= $author->username;
 		}
-		if ( isset( $this->handler_vars['status']) ) {
-			$status= $this->handler_vars['status'];
+		$this->theme->authors = $authors;
+		
+		// Set up the dates select box
+		$dates= DB::get_column("SELECT DATE_FORMAT(pubdate, '%Y-%m') FROM " . DB::table('posts') . ' ORDER BY pubdate DESC');
+		array_unshift($dates, 'Any');
+		$dates= array_combine($dates, $dates);
+		$this->theme->dates = $dates;
+		
+		// Set up the limits select box
+		$limits= array( 5, 10, 20, 50, 100 );
+		$limits= array_combine($limits, $limits);
+		$this->theme->limits= $limits;
+		
+		// we load the WSSE tokens 
+		// for use in the delete button		
+		$this->theme->wsse= Utils::WSSE();
+
+		$arguments= array( 
+			'content_type' => $type, 
+			'status' => $status, 
+			'limit' => $limit 
+		); 
+		if ( 'any' != strtolower($year_month) ) {
+			list($arguments['year'], $arguments['month']) = explode('-', $year_month);
 		}
-		if ( isset( $this->handler_vars['limit']) ) {
-			$limit= $this->handler_vars['limit'];
+		if ( $do_search ) {
+			$arguments= array( 
+				'criteria' => $search, 
+				'nolimit' => 1 
+			);
+		} 
+		elseif ( '' != $search ) {
+			$arguments['search']= $search;
 		}
-		if ( isset( $this->handler_vars['month_year']) ) {
-				$month_year= $this->handler_vars['month_year'];
-		}
-		if ( isset( $this->handler_vars['search']) ) {
-			$search= $this->handler_vars['search'];
-		}
-		if ( isset( $this->handler_vars['do_search']) ) {
-			$do_search= true;
-		}
+		$this->theme->posts= Posts::get( $arguments );
+
 		$this->display( 'content' );
 	}
 	

@@ -614,6 +614,33 @@ class Utils
 		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $string ) ), '-' );		
 		return $slug;
 	}
+	
+	/**
+	 * Create an HTML select tag with options and a current value
+	 * 
+	 * @param string $name The name and id of the select control
+	 * @param array $options An associative array of values to use as the select options
+	 * @param string $current The value of the currently selected option
+	 * @param array $properties An associative array of additional properties to assign to the select control
+	 * @return string The select control markup
+	 */
+	public static function html_select( $name, $options, $current = null, $properties = array())
+	{
+		$output= '<select id="' . $name . '" name="' . $name . '"';
+		foreach($properties as $key => $value) {
+			$output.= " {$key}=\"{$value}\"";
+		}
+		$output.= ">\n";
+		foreach($options as $value => $text){
+			$output.= '<option value="'.$value.'"';
+			if($current == $value) {
+				$output.= ' selected';
+			}
+			$output.= '>' . $text . "</option>\n";
+		}
+		$output.= '</select>';
+		return $output;
+	}
 }
 
 ?>
