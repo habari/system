@@ -8,7 +8,7 @@
  */
 class Options extends Singleton
 {
-	private $options= array();
+	private $options= null;
 	
 	/**
 	 * Enables singleton working properly
@@ -78,35 +78,33 @@ class Options extends Singleton
 	 **/
 	public function __get( $name )
 	{
-		if ( ! isset( $this->options[$name] ) ) {
-			$result= DB::get_row( 'SELECT value, type FROM ' . DB::table( 'options' ) . ' WHERE name = ?', array( $name ), 'QueryRecord' );
-			if ( Error::is_error( $result ) ) {
-				$result->out();
-				die();
-			}
-			elseif ( is_object( $result ) ) {
-				if ( $result->type == 1 ) {
-					$this->options[$name]= unserialize( $result->value );
-				}
-				else {
-					$this->options[$name]= $result->value;
-				}
+		if ( ! isset( $this->options ) ) {
+			$this->get_all_options();
+		}
+		$option_value= isset($this->options[$name]) ? $this->options[$name] : null;
+		$option_value= Plugins::filter('option_get_value', $option_value, $name);
+		return $option_value;
+	}
+	
+	/**
+	 * Fetch all options from the options table into local storage
+	 */
+	public function get_all_options()
+	{
+		// Set some defaults here
+		$this->options= array(
+			'pagination' => 10,
+			'comments_require_id' => false,
+		);
+		$results= DB::get_results( 'SELECT name, value, type FROM ' . DB::table( 'options' ), array(), 'QueryRecord' );
+		foreach($results as $result) {
+			if ( $result->type == 1 ) {
+				$this->options[$result->name]= unserialize( $result->value );
 			}
 			else {
-				// Return some default values here
-				switch ( $name ) {
-					case 'pagination':
-						return 10;
-					case 'comments_require_id':
-						return FALSE;
-					case 'pingback_send':
-						return FALSE;
-				}
-				return NULL;
+				$this->options[$result->name]= $result->value;
 			}
 		}
-		
-		return $this->options[$name];
 	}
 	
 	/**
@@ -116,6 +114,9 @@ class Options extends Singleton
 	 **/	 	 
 	public function __set( $name, $value )
 	{
+		if ( ! isset( $this->options ) ) {
+			$this->get_all_options();
+		}
 		$this->options[$name]= $value;
 		
 		if ( is_array( $value ) || is_object( $value ) ) {
