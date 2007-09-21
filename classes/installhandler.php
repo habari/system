@@ -727,17 +727,33 @@ class InstallHandler extends ActionHandler {
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
 			$pdo= 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
-			if ( DB::connect( $pdo, $_POST['user'], $_POST['pass'] ) ) {
+			$connect= DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+			if ( $connect === true ) {
 				$xml->addChild( 'status', 1 );
 			}
 			else {
 				$xml->addChild( 'status', 0 );
 				$xml_error= $xml->addChild( 'error' );
-				$xml_error->addChild( 'id', '#databasehost' );
-				$xml_error->addChild( 'id', '#databasename' );
-				$xml_error->addChild( 'id', '#databaseuser' );
-				$xml_error->addChild( 'id', '#databasepass' );
-				$xml_error->addChild( 'message', 'We had a problem connecting to the database, please verify the informations you provided.' );
+				if ( strpos( $connect->getMessage(), '[1045]' ) ) {
+					$xml_error->addChild( 'id', '#databaseuser' );
+					$xml_error->addChild( 'id', '#databasepass' );
+					$xml_error->addChild( 'message', 'Access denied. Make sure these credentials are valid.' );
+				}
+				else if ( strpos( $connect->getMessage(), '[1049]' ) ) {
+					$xml_error->addChild( 'id', '#databasename' );
+					$xml_error->addChild( 'message', 'That database does not exist.' );
+				}
+				else if ( strpos( $connect->getMessage(), '[2005]' ) ) {
+					$xml_error->addChild( 'id', '#databasehost' );
+					$xml_error->addChild( 'message', 'Could not connect to host.' );
+				}
+				else {
+					$xml_error->addChild( 'id', '#databaseuser' );
+					$xml_error->addChild( 'id', '#databasepass' );
+					$xml_error->addChild( 'id', '#databasename' );
+					$xml_error->addChild( 'id', '#databasehost' );
+					$xml_error->addChild( 'message', 'An unknown error occured. Please contact your administrator.' );
+				}
 			}
 		}
 		$xml= $xml->asXML();

@@ -112,9 +112,7 @@ class DatabaseConnection
 			return true;
 		}
 		catch ( PDOException $e ) {
-			/** @todo Use standard Error class */
-			echo $e->getMessage();
-			return false;
+			return $e;
 		}
 	}
 	
