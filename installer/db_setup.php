@@ -55,7 +55,7 @@
 		
 				<div class="inputfield formysql">
 					<label for="databaseuser">Username <strong>*</strong></label>
-					<input type="text" id="databaseuser" name="db_user" value="<?php /* echo $db_user; */ ?>">
+					<input type="text" id="databaseuser" name="db_user" value="<?php echo $db_user; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -66,7 +66,7 @@
 		
 				<div class="inputfield formysql">
 					<label for="databasepass">Password <strong>*</strong></label>
-					<input type="password" id="databasepass" name="db_pass" value="<?php echo $db_pass; ?>">
+					<input type="password" id="databasepass" name="db_pass" value="<?php /* echo $db_pass; */ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
