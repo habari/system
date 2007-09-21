@@ -121,7 +121,7 @@ class AdminHandler extends ActionHandler
 					'tags' => $tags,
 					'content' => $content,
 					'user_id' => User::identify()->id,
-					'pubdate' => date( 'Y-m-d H:i:s' ),
+					'pubdate' => ($pubdate == '') ? date( 'Y-m-d H:i:s' ) : $pubdate,
 					'status' => $status,
 					'content_type' => $content_type,
 				);
