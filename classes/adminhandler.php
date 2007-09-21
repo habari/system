@@ -412,6 +412,73 @@ class AdminHandler extends ActionHandler
 			Plugins::set_present();
 		}
 	}
+
+	/**
+	 * handles POST values from /manage/content
+	 * used to control what content to show / manage
+	**/
+	public function post_content() {
+		// if we're updating posts, let's do so:
+		if ( isset( $this->handler_vars['do_update'] ) ) {
+			if ( isset( $this->handler_vars['post_ids'] ) ) {
+				$nonce= ( isset( $this->handler_vars['nonce'] ) ) ? $this->handler_vars['nonce'] : '';
+				$timestamp= ( isset( $this->handler_vars['timestamp'] ) ) ? $this->handler_vars['timestamp'] : '';
+				$PasswordDigest= ( isset( $this->handler_vars['PasswordDigest'] ) ) ? $this->handler_vars['PasswordDigest'] : '';
+				$okay= true;
+				if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
+					$okay= false;
+				}
+				// Ensure the request was submitted less than five minutes ago
+				if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
+					$okay= false;
+				}
+				$wsse= Utils::WSSE( $nonce, $timestamp );
+				if ( $PasswordDigest != $wsse['digest'] ) {
+					$okay= false;
+				}
+				if ( $okay ) {
+					foreach ( $this->handler_vars['post_ids'] as $id ) {
+						$ids[]= array( 'id' => $id );
+					}
+					$to_update= Posts::get( array( 'where' => $ids ) );
+					foreach ( $to_update as $post ) {
+						switch( $this->handler_vars['change'] ) {
+						case 'delete':
+							$post->delete();
+							break;
+						case 'publish':
+							$post->publish();
+							break;
+						case 'unpublish':
+							$post->status= Post::status('draft');
+							$post->update();
+							break;
+						}
+					}
+					unset( $this->handler_vars['change'] );
+				}
+			}
+		}
+		if ( isset( $this->handler_vars['type']) ) {
+			$type= $this->handler_vars['type'];
+		}
+		if ( isset( $this->handler_vars['status']) ) {
+			$status= $this->handler_vars['status'];
+		}
+		if ( isset( $this->handler_vars['limit']) ) {
+			$limit= $this->handler_vars['limit'];
+		}
+		if ( isset( $this->handler_vars['month_year']) ) {
+				$month_year= $this->handler_vars['month_year'];
+		}
+		if ( isset( $this->handler_vars['search']) ) {
+			$search= $this->handler_vars['search'];
+		}
+		if ( isset( $this->handler_vars['do_search']) ) {
+			$do_search= true;
+		}
+		$this->display( 'content' );
+	}
 	
 	/**
 	 * Assembles the main menu for the admin area.
