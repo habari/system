@@ -374,7 +374,8 @@ class Theme
 	 */
 	public function header() {
 		Plugins::act( 'template_header', $this );
-		if ( method_exists( THEME_CLASS, 'header' ) ) {
+		$theme_header = new ReflectionMethod(THEME_CLASS, 'header');
+		if ( $theme_header->getDeclaringClass()->name != 'Theme' ) {
 			call_user_func( array( THEME_CLASS, 'header' ), $this );
 		}
 		Stack::out( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
@@ -386,7 +387,8 @@ class Theme
 	 */
 	public function footer() {
 		Plugins::act( 'template_footer', $this );
-		if ( method_exists( THEME_CLASS, 'footer' ) ) {
+		$theme_footer = new ReflectionMethod(THEME_CLASS, 'footer');
+		if ( $theme_footer->getDeclaringClass()->name != 'Theme' ) {
 			call_user_func( array( THEME_CLASS, 'footer' ), $this );
 		}
 		Stack::out( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
