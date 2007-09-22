@@ -10,6 +10,8 @@
 	<p>
 	Search post titles and content: 
 	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
+	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?>
+	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?>
 	<a href="<?php URL::out('admin', 'page=content'); ?>">Reset</a>
 	</p>
 		<table id="post-data-published" width="100%" cellspacing="0">
@@ -30,7 +32,7 @@
 				<td><?php echo Utils::html_select('author', $authors, $author); ?></td>
 				<td><?php echo Utils::html_select('year_month', $dates, $year_month); ?></td>
 				<td><?php echo Utils::html_select('type', array_flip(Post::list_post_types()), $type); ?></td>
-				<td><?php _e('Limit'); ?>: <?php echo Utils::html_select('limit', $limits, $limit); ?></td>
+				<td><?php echo Utils::html_select('status', array_flip(Post::list_post_statuses()), $status); ?></td>
 				<td><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
 			</tr>
 			<?php foreach ( $posts as $post ) : ?>
@@ -48,7 +50,7 @@
 				</td>
 			</tr>
 			<?php endforeach; ?>
-		<tr><td colspan="7" align="right" style="text-align:right">
+		<tr><td colspan="7">
 		<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 		<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">

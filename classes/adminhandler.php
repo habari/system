@@ -446,7 +446,7 @@ class AdminHandler extends ActionHandler
 			'year_month' => 'Any',
 			'search' => '',
 			'do_search' => false,
-			'page' => 1,
+			'index' => 1,
 		);
 		foreach($locals as $varname => $default) {
 			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
@@ -517,21 +517,31 @@ class AdminHandler extends ActionHandler
 		$arguments= array( 
 			'content_type' => $type, 
 			'status' => $status, 
-			'limit' => $limit 
+			'limit' => $limit,
+			'offset' => ($index - 1) * $limit,
 		); 
 		if ( 'any' != strtolower($year_month) ) {
 			list($arguments['year'], $arguments['month']) = explode('-', $year_month);
 		}
-		if ( $do_search ) {
-			$arguments= array( 
-				'criteria' => $search, 
-				'nolimit' => 1 
-			);
-		} 
-		elseif ( '' != $search ) {
-			$arguments['search']= $search;
+		if ( '' != $search ) {
+			$arguments['criteria']= $search;
 		}
 		$this->theme->posts= Posts::get( $arguments );
+
+		// Get the page count
+		$arguments['count']= 'id';
+		unset($arguments['limit']);
+		unset($arguments['offset']);
+		$totalpages= Posts::get( $arguments );
+		$pagecount= ceil( $totalpages / $limit );
+
+		// Put page numbers into an array for the page controls to output.
+		$pages= array();
+		for($z = 1; $z <= $pagecount; $z++) {
+			$pages[$z] = $z;
+		}
+		$this->theme->pagecount= $pagecount;
+		$this->theme->pages= $pages;
 
 		$this->display( 'content' );
 	}
