@@ -641,7 +641,16 @@ class Utils
 		$output.= '</select>';
 		return $output;
 	}
-
+	/**
+	 * Creates one or more HTML checkboxes
+	 * @param string The name of the checkbox element.  If there are
+	 *	multiple checkboxes for the same name, this method will
+	 *	automatically apply "[]" at the end of the name
+	 * @param array An array of checkbox options.  Each element should be
+	 *	an array containing "name" and "value".  If the checkbox
+	 *	should be checked, it should have a "checked" element.
+	 * @return string The HTML of the checkboxes
+	**/
 	public static function html_checkboxes( $name, $options )
 	{
 		$output= '';
@@ -663,6 +672,38 @@ class Utils
 		}
 		return $output;
 	}
-}
 
+	/**
+	 * Trims longer phrases to shorter ones with elipsis in the middle
+	 * @param string The string to truncate
+	 * @param integer The length of the returned string
+	 * @param bool Whether to place the ellipsis in the middle (true) or
+	 *	at the end (false)
+	 * @return string The truncated string
+	**/
+	function truncate($str, $len=10, $middle=true)
+	{
+	        // make sure $len is a positive integer
+	        if ( ! is_numeric($len) || ( 0 > $len ) ) {
+	                return $str;
+	        }
+	        // if the string is less than the length specified, bail out
+	        if ( strlen($str) <= $len ) {
+	                return $str;
+	        }
+	
+	        // okay.  Shuold we place the ellipse in the middle?
+	        if ($middle) {
+	                // yes, so compute the size of each half of the string
+	                $len = round(($len-3)/2);
+	                // and place an ellipse in between the pieces
+	                return substr($str, 0, $len) . '...' . substr($str, -$len);
+	        } else {
+	                // no, the ellipse goes at the end
+	                $len= $len-3;
+	                return substr($str, 0, $len ) . '...';
+	        }
+	} 
+
+}
 ?>
