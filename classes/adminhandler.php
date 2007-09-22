@@ -102,46 +102,41 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_publish() {
 		extract( $this->handler_vars );
-		if ( !empty( $content ) ) {
-			if ( isset( $slug ) ) {
-				$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
-				$post->title= $title;
-				$post->slug= $newslug;
-				$post->tags= $tags;
-				$post->content= $content;
-				$post->content_type= $content_type;
-				$post->status= $status;
-				$post->pubdate= $pubdate;
-				if ( $comments_disabled == TRUE ) {
-					$post->info->comments_disabled= TRUE;
-				}
-				elseif ( $post->info->comments_disabled == TRUE ) {
-					unset( $post->info->comments_disabled );
-				}
-				$post->update();
+		if ( isset( $slug ) ) {
+			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+			$post->title= $title;
+			$post->slug= $newslug;
+			$post->tags= $tags;
+			$post->content= $content;
+			$post->content_type= $content_type;
+			$post->status= $status;
+			$post->pubdate= $pubdate;
+			if ( $comments_disabled == TRUE ) {
+				$post->info->comments_disabled= TRUE;
 			}
-			else {
-				$postdata= array(
-					'slug' => $newslug,
-					'title' => $title,
-					'tags' => $tags,
-					'content' => $content,
-					'user_id' => User::identify()->id,
-					'pubdate' => ($pubdate == '') ? date( 'Y-m-d H:i:s' ) : $pubdate,
-					'status' => $status,
-					'content_type' => $content_type,
-				);
-				$post= Post::create( $postdata );
-				if ( $comments_disabled == TRUE ) {
-					$post->info->comments_disabled= TRUE;
-					$post->update();
-				}
+			elseif ( $post->info->comments_disabled == TRUE ) {
+				unset( $post->info->comments_disabled );
 			}
-			Utils::redirect( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) );
+			$post->update();
 		}
 		else {
-			_e( 'Danger, Will Robinson!  Danger!' );
+			$postdata= array(
+				'slug' => $newslug,
+				'title' => $title,
+				'tags' => $tags,
+				'content' => $content,
+				'user_id' => User::identify()->id,
+				'pubdate' => ($pubdate == '') ? date( 'Y-m-d H:i:s' ) : $pubdate,
+				'status' => $status,
+				'content_type' => $content_type,
+			);
+			$post= Post::create( $postdata );
+			if ( $comments_disabled == TRUE ) {
+				$post->info->comments_disabled= TRUE;
+				$post->update();
+			}
 		}
+		Utils::redirect( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) );
 	}
 	
 	/**
