@@ -38,18 +38,13 @@
     <h4><?php _e('Entry Settings'); ?></h4>
     <ul>
      <?php
-     $statuses= Post::list_post_statuses();
+     // pass "false" to list_post_statuses() so that we don't
+     // include internal post statuses
+     $statuses= Post::list_post_statuses( false );
+     unset( $statuses[array_search( 'any', $statuses )] );
      $statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
-     foreach ( $statuses as $name => $value ) {
-      if ( 'any' == $name ) {
-       continue;
-      }
-					$post_status= Post::status( $name );
      ?>
-     <li><label><input type="radio" name="status" id="<?php echo $name; ?>" value="<?php echo $post_status; ?>" <?php echo ( $post->status == $post_status ) ? 'checked' : ''; ?> > <?php _e( ucwords( $name ) ); ?></label></li>
-     <?php
-     }
-     ?>
+     <li><label><?php echo Utils::html_select( 'status', array_flip($statuses) ); ?></label></li>
     </ul>
     
     <h4><?php _e('Comments'); ?></h4>

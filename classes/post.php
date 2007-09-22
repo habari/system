@@ -53,20 +53,32 @@ class Post extends QueryRecord
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of post statuses names => interger values
 	**/
-	public static function list_post_statuses( $refresh= false )
+	public static function list_post_statuses( $all= true, $refresh= false  )
 	{
+		$statuses= array();
+		$statuses['any']= 0;
 		if ( ( ! $refresh ) && ( ! empty( self::$post_status_list ) ) )
 		{
-			return self::$post_status_list;
+			foreach ( self::$post_status_list as $status ) {
+				if ( $all ) {
+					$statuses[$status->name]= $status->id;
+				} elseif ( ! $status->internal ) {
+					$statuses[$status->name]= $status->id;
+				}
+			}
+			return $statuses;
 		}
-		self::$post_status_list['any']= 0;
 		$sql= 'SELECT * FROM ' . DB::table('poststatus') . ' ORDER BY id ASC';
 		$results= DB::get_results( $sql );
-		foreach ($results as $result)
-		{
-			self::$post_status_list[$result->name]= $result->id;
+		self::$post_status_list= $results;
+		foreach ( self::$post_status_list as $status ) {
+			if ( $all ) {
+				$statuses[$status->name]= $status->id;
+			} elseif ( ! $status->internal ) {
+				$statuses[$status->name]= $status->id;
+			}
 		}
-		return self::$post_status_list;
+		return $statuses;
 	}
 
 	/**
@@ -162,17 +174,21 @@ class Post extends QueryRecord
 	/**
 	 * inserts a new post status into the database, if it doesn't exist
 	 * @param string The name of the new post status
+	 * @param bool Whether this status is for internal use only.  If true,
+	 *	this status will NOT be presented to the user
 	 * @return none
 	**/
-	public static function add_new_status( $status )
+	public static function add_new_status( $status, $internal= false )
 	{
 		// refresh the cache from the DB, just to be sure
 		$statuses= self::list_post_statuses( true );
 		if ( ! array_key_exists( $status, $statuses ) ) {
-			DB::query( 'INSERT INTO ' . DB::table('poststatus') . ' (name) VALUES (?)', array( $status ) );
+			// let's make sure we only insert an integer 
+			$internal= intval( $internal );		
+			DB::query( 'INSERT INTO ' . DB::table('poststatus') . ' (name, internal) VALUES (?, ?)', array( $status, $internal ) );
 			// force a refresh of the cache, so the new status
-			// is available for immediate user
-			$statuses= self::list_post_statuses( true );
+			// is available for immediate use
+			$statuses= self::list_post_statuses( true, true );
 		}
 	}
  
@@ -498,6 +514,9 @@ class Post extends QueryRecord
 	 */
 	public function publish()
 	{
+		if ( $this->status == Post::status('published') ) {
+			return true;
+		}
 		$allow= true;
 		$allow= Plugins::filter('post_publish_allow', $allow, $this);
 		if ( ! $allow ) {
@@ -505,9 +524,9 @@ class Post extends QueryRecord
 		}
 		Plugins::act('post_publish_before', $this);
 
-		$this->status = 'publish';
+		$this->status = Post::status('published');
 		$result= $this->update();
-		EventLog::log('Post ' . $post->id . ' (' . $this->slug . ') published.', 'info', 'content', 'habari');
+		EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') published.', 'info', 'content', 'habari');
 
 		// and call any final plugins
 		Plugins::act('post_publish_after', $this);

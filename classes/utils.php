@@ -641,6 +641,28 @@ class Utils
 		$output.= '</select>';
 		return $output;
 	}
+
+	public static function html_checkboxes( $name, $options )
+	{
+		$output= '';
+		$multi= false;
+		if ( count( $options > 1 ) ) {
+			$multi= true;
+		}
+		foreach ( $options as $option ) {
+			$output.= '<input type="checkbox" id="' . $option['name'] . '" name="' . $option['name'];
+			if ( $multi ) {
+				$output.= '[]';
+			}
+			$output.= '" value="' . $option['value'] . '"';
+			if ( isset($option['checked']) )
+			{
+				$output.= ' checked';
+			}
+			$output.= '>';
+		}
+		return $output;
+	}
 }
 
 ?>

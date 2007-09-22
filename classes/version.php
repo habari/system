@@ -12,8 +12,8 @@
  {
  		// DB and API versions are aligned with the SVN revision
 		// number in which they last changed.
-		const DB_VERSION= 743;
-		const API_VERSION= 743;
+		const DB_VERSION= 892;
+		const API_VERSION= 892;
 
 		const HABARI_VERSION= 0.2;
 		

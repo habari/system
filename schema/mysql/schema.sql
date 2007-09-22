@@ -31,6 +31,7 @@ CREATE TABLE  {$prefix}posttype (
 CREATE TABLE  {$prefix}poststatus (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
  	name VARCHAR(255) NOT NULL,
+	internal TINYINT(1),
   PRIMARY KEY (id)
 );
 
@@ -187,8 +188,8 @@ CREATE TABLE {$prefix}permissions (
 
 CREATE TABLE {$prefix}users_groups (
   id INT unsigned not null auto_increment,
-	user_id INT unsigned not null,
-	group_id INT unsigned not null, 
+  user_id INT unsigned not null,
+  group_id INT unsigned not null, 
   PRIMARY KEY (id),
   KEY user_group (user_id,group_id)
 );
@@ -196,8 +197,8 @@ CREATE TABLE {$prefix}users_groups (
 CREATE TABLE {$prefix}groups_permissions (
   id INT unsigned not null auto_increment, 
   group_id INT unsigned not null,
-	permission_id INT unsigned not null,
-	denied TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  permission_id INT unsigned not null,
+  denied TINYINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY group_permission (group_id,permission_id)
 );

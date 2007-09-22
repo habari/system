@@ -28,6 +28,8 @@ class User extends QueryRecord
 	private static $identity= null;
 	
 	private $info= null;
+
+	private $group_list= null;
  
 	/**
 	 * Get default fields for this record.
@@ -374,68 +376,57 @@ class User extends QueryRecord
 		return $commenter;
 	}
 	
-	/**
-	 * Returns the karma of this person, relative to the object passed in.
-	 * The object can be any object
-	 * You will usually not actually call this yourself, but will instead
-	 * call one of the functions following - is_admin(), is_drafter(), or
-	 * is_publisher().
-	 * 
-	 * @todo Finish this.
-	 * 
-	 * @param mixed $obj An object, or an ACL object, or an ACL name
-	 * @return int Karma
-	 */
-	function karma( $obj= '' )
-	{
-		// What was the argument?
-
-		// It was a string, such as 'everything'.
-		if ( is_string( $obj ) ) {
-			$acl = new acl( $obj );
-			return $acl->karma( $this );
-
-		}
-		// It was an object  ....
-		elseif ( is_object( $obj ) ) {
-			// What kind of object is it?
-			$type = get_class( $obj );
-
-			// Special case - acl object
-			if ( $type == 'acl' ) {
-				// It's already an ACL ...
-				return $obj->karma( $user );
-			}
-			else {
-				// It's some other object
-				$acl = new acl( $obj );
-				return $acl->karma( $user );
-			}
-		}
-		else {
-			// Run screaming from the room
-			error_log("Weirdness passed to karma()");
-			return 0;
-		}
-		/*
-		// Special case - no argument
-		if ($type == '') {
-			// What's this users greatest karma, anywhere?
-			$karma = DB::get_row( "SELECT max(karma) as k
-					FROM  acl
-					WHERE userid = ? ",
-					array( $this->id ) );
-			return $karma ? $karma->k : 0;
-		} else {
-			// Um ... how did we get here?
-			error_log( "Not sure how we got here" );
-		}
-		*/
-	}
-	
 	public function can( $permission, $to = null )
 	{
 		return ACL::user_can( $this->id, $permission );
+	}
+
+	/**
+	 * function groups
+	 * Returns an array of groups to which this user belongs
+	 * @param bool Whether to refresh the cache
+	 * @return Array an array of group IDs to which this user belongs
+	**/
+	private function list_groups( $refresh= false )
+	{
+		if ( ( empty( $this->group_list ) ) || $refresh ) {
+			$this->group_list= DB::get_column( 'SELECT group_id FROM ' . DB::table('users_groups') . ' WHERE user_id=?', array( $this->id ) );
+		}
+		return $this->group_list;
+	}
+
+	/**
+	 * function in_group
+	 * Whether or not this user is is in the specified group
+	 * @param int a group ID
+	 * @return bool Whether or not this user is in the specified group
+	**/
+	public function in_group( $group )
+	{
+		$groups= $this->list_groups();
+		if ( in_array( intval($group), $groups ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * function add_to_group
+	 * @param int A group ID
+	**/
+	public function add_to_group( $group )
+	{
+		UserGroup::add_user( intval($group), $this->id );
+	}
+
+	/**
+	 * function remove_from_group
+	 * removes this user from a group
+	 * @param int A group ID
+	**/
+	public function remove_from_group( $group )
+	{
+		UserGroup::remove_user( intval($group), $this->id );
 	}
 
 	/**
@@ -456,6 +447,9 @@ class User extends QueryRecord
 				$this->info->set_key( $this->fields['id'] );
 			}
 			return $this->info;			
+		}
+		if ( $name == 'groups' ) {
+			return $this->list_groups();
 		}
 		return parent::__get( $name );
 	}
