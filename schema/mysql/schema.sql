@@ -19,7 +19,7 @@ CREATE TABLE  {$prefix}postinfo  (
  	name VARCHAR(255) NOT NULL,
  	type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
  	value TEXT,
-  PRIMARY KEY (post_id, name)
+  PRIMARY KEY (post_id,name)
 );
 
 CREATE TABLE  {$prefix}posttype (
@@ -55,7 +55,7 @@ CREATE TABLE  {$prefix}userinfo (
  	name VARCHAR(255) NOT NULL,
  	type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
  	value TEXT,
-  PRIMARY KEY (user_id, name)
+  PRIMARY KEY (user_id,name)
 );
 
 CREATE TABLE  {$prefix}tags (
@@ -69,7 +69,7 @@ CREATE TABLE  {$prefix}tags (
 CREATE TABLE  {$prefix}tag2post (
   tag_id INT UNSIGNED NOT NULL,
   post_id INT UNSIGNED NOT NULL,
-  PRIMARY KEY (tag_id, post_id),
+  PRIMARY KEY (tag_id,post_id),
   KEY post_id (post_id)
 );
 
@@ -119,7 +119,7 @@ CREATE TABLE  {$prefix}commentinfo (
  	name VARCHAR(255) NOT NULL,
  	type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
  	value TEXT NULL,
-  PRIMARY KEY (comment_id, name)
+  PRIMARY KEY (comment_id,name)
 );
 
 CREATE TABLE {$prefix}rewrite_rules (

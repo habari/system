@@ -151,7 +151,7 @@ class MySQLConnection extends DatabaseConnection
 							}
 							$index_columns = '';
 							foreach($index_data['columns'] as $column_data) {
-								if($index_columns != '') $index_columns .= ', ';
+								if($index_columns != '') $index_columns .= ',';
 								$index_columns .= $column_data['fieldname'];
 								if($column_data['subpart'] != '') {
 									$index_columns .= '('.$column_data['subpart'].')';
