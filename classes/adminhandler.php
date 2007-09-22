@@ -554,7 +554,7 @@ class AdminHandler extends ActionHandler
 			'admin' => array(
 				'caption' => _t( 'Admin' ),
 				'url' => URL::get( 'admin', 'page=' ),
-				'title' => _t( 'Overview of your site' ),
+				'title' => _t( 'Display the dashboard' ),
 				'submenu' => array( 
 					'options' => array( 'caption' => _t( 'Options' ), 'url' => URL::get( 'admin', 'page=options' ) ),
 					'plugins' => array( 'caption' => _t( 'Plugins' ), 'url' => URL::get( 'admin', 'page=plugins' ) ),
@@ -567,13 +567,13 @@ class AdminHandler extends ActionHandler
 			'publish' => array(
 				'caption' => _t( 'Create' ),
 				'url' => URL::get( 'admin', 'page=publish' ),
-				'title' => _t( 'Edit the content of your site' ),
+				'title' => _t( 'Create content for your site' ),
 				'submenu' => array()
 			),
 			'manage' => array( 
 				'caption' => _t( 'Manage' ),
-				'url' => URL::get( 'admin', 'page=options' ),
-				'title' => _t( 'Manage your site options' ),
+				'url' => URL::get( 'admin', 'page=content' ),
+				'title' => _t( 'Manage your site content' ),
 				'submenu' => array(
 					'content' => array( 'caption' => _t( 'Content' ), 'url' => URL::get( 'admin', 'page=content' ) ),
 					'unapproved' => array( 'caption' => _t( 'Unapproved Comments' ), 'url' => URL::get( 'admin', 'page=moderate' ) ),
