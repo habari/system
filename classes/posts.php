@@ -94,7 +94,7 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['status'] ) && ( Post::status_name( $paramset['status'] ) != 'any' ) ) {
 					$where[]= "status= ?";
-					$params[]= $paramset['status'];
+					$params[]= Post::status( $paramset['status'] );
 				}
 				if ( isset( $paramset['content_type'] ) && ( Post::type_name( $paramset['content_type'] ) != 'any' ) ) {
 					$where[]= "content_type= ?";
