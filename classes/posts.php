@@ -92,11 +92,11 @@ class Posts extends ArrayObject
 					$where[]= "id= ?";
 					$params[]= $paramset['id'];
 				}
-				if ( isset( $paramset['status'] ) && ( $paramset['status'] != Post::status('any') ) ) {
+				if ( isset( $paramset['status'] ) && ( Post::status_name( $paramset['status'] ) != 'any' ) ) {
 					$where[]= "status= ?";
 					$params[]= $paramset['status'];
 				}
-				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != Post::type('any') ) ) {
+				if ( isset( $paramset['content_type'] ) && ( Post::type_name( $paramset['content_type'] ) != 'any' ) ) {
 					$where[]= "content_type= ?";
 					$params[]= Post::type( $paramset['content_type'] );
 				}
