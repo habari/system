@@ -28,7 +28,8 @@ CREATE TABLE {$prefix}posttype (
 
 CREATE TABLE {$prefix}poststatus (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	name VARCHAR(255) NOT NULL
+	name VARCHAR(255) NOT NULL,
+	internal TINYINT(1)
 );
 
 CREATE TABLE {$prefix}options (
@@ -172,15 +173,15 @@ CREATE UNIQUE INDEX name ON {$prefix}permissions(name);
 
 CREATE TABLE {$prefix}users_groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	user_id INTEGER unsigned not null,
-	group_id INTEGER unsigned not null
+  user_id INTEGER unsigned not null,
+  group_id INTEGER unsigned not null
 );
 CREATE INDEX user_group ON {$prefix}users_groups(user_id,group_id);
 
 CREATE TABLE {$prefix}groups_permissions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   group_id INTEGER unsigned not null,
-	permission_id INTEGER unsigned not null,
-	denied TINYINT UNSIGNED NOT NULL DEFAULT 0
+  permission_id INTEGER unsigned not null,
+  denied TINYINT UNSIGNED NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX group_permission ON {$prefix}groups_permissions(group_id,permission_id);
