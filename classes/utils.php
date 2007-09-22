@@ -611,7 +611,8 @@ class Utils
 	 */
 	public static function slugify( $string )
 	{
-		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $string ) ), '-' );		
+		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $string ) ), '-' );
+		$slug= Plugins::filter('slugify', $slug, $string);	
 		return $slug;
 	}
 	
