@@ -176,7 +176,7 @@ class Theme
 
 		if ( !isset( $fallback ) ) {
 			// Default fallbacks based on the number of posts
-			$fallback= array( '{$type}.{$id}', '{$type}.{$slug}' );
+			$fallback= array( '{$type}.{$id}', '{$type}.{$slug}', '{$type}.tag.{$posttag}' );
 			if( count( $posts ) > 1 ) {
 				$fallback[]= '{$type}.multiple';
 				$fallback[]= 'multiple'; 
@@ -200,6 +200,20 @@ class Theme
 		);
 		$fallback= Plugins::filter( 'template_fallback', $fallback );
 		$fallback= str_replace($searches, $replacements, $fallback);
+		for($z = 0; $z < count($fallback); $z++) {
+			if( (strpos($fallback[$z], '{$posttag}') !== false) && (isset($post)) && ($post instanceof Post)) {
+				$replacements= array();
+				if( $alltags= $post->tags ) {
+					foreach($alltags as $tag_slug => $tag_text ) {
+						$replacements[] = str_replace('{$posttag}', $tag_slug, $fallback[$z]);
+					}
+					array_splice($fallback, $z, 1, $replacements);
+				}
+				else {
+					break;
+				}
+			}
+		}
 
 		return $this->display_fallback( $fallback );
 	}
@@ -233,7 +247,8 @@ class Theme
 	{
 		$paramarray['fallback']= array(
 		 '{$type}.{$id}', 
-		 '{$type}.{$slug}', 
+		 '{$type}.{$slug}',
+		 '{$type}.tag.{$posttag}', 
 		 '{$type}.single', 
 		 '{$type}.multiple',
 		 'single',
