@@ -17,7 +17,7 @@
   } else {
    $post= new Post();
    $tags= array();
-			$content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
+   $content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
   }
    ?>
   <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
@@ -44,7 +44,7 @@
      unset( $statuses[array_search( 'any', $statuses )] );
      $statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
      ?>
-     <li><label><?php echo Utils::html_select( 'status', array_flip($statuses) ); ?></label></li>
+     <li><label><?php echo Utils::html_select( 'status', array_flip($statuses), $post->status ); ?></label></li>
     </ul>
     
     <h4><?php _e('Comments'); ?></h4>
