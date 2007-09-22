@@ -38,7 +38,7 @@
 			<?php foreach ( $posts as $post ) : ?>
 			<tr>
 				<td align="center"><input type="checkbox" name="post_ids[]" value="<?php echo $post->id; ?>"></td>
-				<td><?php echo '<a href="' . $post->permalink . '">' . $post->title ?></a></td>
+				<td><?php echo '<a href="' . $post->permalink . '">' . Utils::truncate( $post->title, 20, false ); ?></a></td>
 				<td><?php echo $post->author->username ?></td>
 				<td><?php echo $post->pubdate ?></td>
 				<td><?php _e( Post::type_name( $post->content_type ) ); ?></td>
