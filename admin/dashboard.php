@@ -120,7 +120,7 @@
           </tr>
         </thead>
         <?php
-          foreach ( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'date DESC' ) ) as $recent ) {
+          foreach ( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'ORDER BY date DESC' ) ) as $recent ) {
             $post= Post::get( array( 'id' => $recent->post_id, ) );
         ?>
         <tr>
