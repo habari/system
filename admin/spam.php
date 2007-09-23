@@ -7,7 +7,7 @@
 	<form method="post" name="spam" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
 	<p class="submit"><input type="submit" name="submit" value="Update!"> <input type="checkbox" name="mass_spam_delete" id="mass_spam_delete" value="1">Delete 'em all</p>
 	<ul id="waiting">
-		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'ORDER BY date DESC' ) ) as $comment ){ ?>
+		<?php foreach( Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'date DESC' ) ) as $comment ){ ?>
 		<li>
 			Comment by <?php echo $comment->name;?> on <a href="<?php URL::out( 'post', array( 'slug' => $comment->post->slug ) ); ?>"><?php echo $comment->post->slug; ?></a>
 			<br><small>(Commented created on <?php echo $comment->date; ?>)</small>

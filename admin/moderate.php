@@ -51,18 +51,18 @@ function table($headers, $data, $sort = null){
 		);
 		switch($show) {
 			case 'spam':
-				$comments = Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'ORDER BY date DESC' ) );
+				$comments = Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'date DESC' ) );
 				$mass_delete = 'mass_spam_delete';
 				$default_radio['spam']= ' checked';
 				break;
 			case 'approved':
-				$comments = Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 30, 'orderby' => 'ORDER BY date DESC' ) );
+				$comments = Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) );
 				$mass_delete = '';
 				$default_radio['approve']= ' checked';
 				break;
 			case 'unapproved':
 			default:
-				$comments = Comments::get( array( 'status' => Comment::STATUS_UNAPPROVED, 'limit' => 30, 'orderby' => 'ORDER BY date DESC' ) );
+				$comments = Comments::get( array( 'status' => Comment::STATUS_UNAPPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) );
 				$mass_delete = 'mass_delete';
 				$default_radio['unapprove']= ' checked';
 				break;			
