@@ -20,6 +20,7 @@ include_once( 'header.php' );
 					<th></th>
 					<th align="left">Date</th>
 					<th align="left">User</th>
+					<th align="left">Module</th>
 					<th align="left">Type</th>
 					<th align="center">Severity</th>
 					<th align="left">Message</th>
@@ -29,6 +30,7 @@ include_once( 'header.php' );
 			<td></td>
 			<td><?php echo Utils::html_select('date', $dates, $date); ?></td>
 			<td><?php echo Utils::html_select('user', $users, $user); ?></td>
+			<td><?php echo Utils::html_select('module', $modules, $module); ?></td>
 			<td><?php echo Utils::html_select('type', $types, $type); ?></td>
 			<td><?php echo Utils::html_select('severity', $severities, $severity); ?></td>
 			<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
@@ -38,12 +40,13 @@ include_once( 'header.php' );
 				<td align="center"><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></td>
 				<td><?php echo $log->timestamp; ?></td>
 				<td><?php if ( $log->user_id ) { $user= User::get_by_id( $log->user_id ); echo $user->username; } ?></td>
+				<td><?php echo $log->module; ?></td>
 				<td><?php echo $log->type; ?></td>
 				<td><?php echo $log->severity; ?></td>
 				<td><p><?php echo $log->message; ?></p></td>
 			</tr>
 			<?php } ?>
-			<tr><td colspan="6">
+			<tr><td colspan="7">
 			<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 			 <input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 			 <input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">

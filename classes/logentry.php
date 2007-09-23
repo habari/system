@@ -75,7 +75,7 @@ class LogEntry extends QueryRecord
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of log entry type names => integer values
 	 */
-	private function list_logentry_types($force = false)
+	public function list_logentry_types($force = false)
 	{
 		if ( $force || empty( self::$types ) ) {
 			self::$types= array();

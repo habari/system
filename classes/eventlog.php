@@ -166,8 +166,16 @@ class EventLog extends ArrayObject
 					$params[]= LogEntry::severity($paramset['severity']);
 				}
 				if ( isset( $paramset['type_id'] ) ) {
-					$where[]= "type_id= ?";
-					$params[]= $paramset['type_id'];
+					if( is_array($paramset['type_id']) ) {
+						$types= array_filter($paramset['type_id'], 'is_numeric');
+						if(count($types)) {
+							$where[]= 'type_id IN ('. implode(',', $types).')';
+						}
+					}
+					else {
+						$where[]= 'type_id = ?';
+						$params[]= $paramset['type_id'];
+					}
 				}
 
 				/* do searching */
