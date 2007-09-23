@@ -24,68 +24,172 @@ class Comments extends ArrayObject
 	 **/
 	public static function get( $paramarray = array() )
 	{
-		// defaults
-		$fetch_fn= 'get_results';
-		$select= '*';
-		$orderby= 'ORDER BY date ASC';
-		$limit= '';
-
-		// safety mechanism to prevent an empty query
-		$where= array('1=1');
 		$params= array();
+		$fns= array( 'get_results', 'get_row', 'get_value' );
+		$select= '';
+		// what to select -- by default, everything
+		foreach ( Comment::default_fields() as $field => $value ) {
+			$select.= ( '' == $select )
+				? DB::table( 'comments' ) . ".$field"
+				: ', ' . DB::table( 'comments' ) . ".$field";
+		}
+		// defaults
+		$orderby= 'ORDER BY date DESC';
+		$limit= Options::get( 'pagination' );
 
-		// loop over each element of the $paramarray
-		foreach ( $paramarray as $key => $value ) {
-			if ( 'orderby' == $key ) {
-				$orderby= 'ORDER BY ' . $value;
-				continue;
-			}
-			if ( 'count' == $key ) {
-				// we want a count of results, rather than the contents of the results
-				$select= "COUNT($value)";
-				// set the db method to get_row
-				$fetch_fn= 'get_value';
-				$orderby= '';
-				continue;
-			}
-			if ( 'limit' == $key ) {
-				$limit= " LIMIT " . $value;
-			}
-			if ( 'offset' == $key ) {
-				$limit.= " OFFSET $value";
-			}
-			// check whether we should filter by status
-			// a value of FALSE means don't filter
-			if ( ( 'status' == $key ) && ( FALSE === $value ) ) {
-				continue;
-				// if the status is not FALSE, processing will
-				// continue to the next if block
-			}
-			// Accept a list of IDs
-			// Do not use '?' in where clause, because you cannot bind
-			// multiple values to a single parameter.
-			if ( $key == 'id_list' ) {
-				// Clean up the id list - remove all non-numeric or comma information
-				$value = preg_replace("/[^0-9,]/","",$value);
-				// You're paranoid, ringmaster! :P
-				$where[]= 'id IN (' . addslashes($value) . ')';
-			}
-			// only accept those keys that correspond to
-			// table columns
-			if ( array_key_exists ( $key, Comment::default_fields() ) ) {
-				$where[]= "$key = ?";
-				$params[]= $value;
-			}
+		// Put incoming parameters into the local scope
+		$paramarray= Utils::get_params( $paramarray );
+
+		// Transact on possible multiple sets of where information that is to be OR'ed
+		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
+			$wheresets= $paramarray['where'];
+		}
+		else {
+			$wheresets= array( array() );
 		}
 
-		$sql= "SELECT {$select} from " . DB::table('comments') . ' WHERE ' . implode( ' AND ', $where ) . " {$orderby}{$limit}";
-		$query= DB::$fetch_fn( $sql, $params, 'Comment' );
-		if ( 'get_value' == $fetch_fn ) {
-			return $query;
+		$wheres= array();
+		$join= '';
+		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
+			$wheres[]= $paramarray['where'];
 		}
-		elseif ( is_array( $query ) ) {
-			$c = __CLASS__;
-			return new $c ( $query );
+		else {
+			foreach( $wheresets as $paramset ) {
+				// safety mechanism to prevent empty queries
+				$where= array('1=1');
+				$paramset= array_merge((array) $paramarray, (array) $paramset);
+
+				if ( isset( $paramset['id'] ) && ( is_numeric( $paramset['id'] ) || is_array( $paramset['id'] ) ) ) {
+					if ( is_numeric( $paramset['id'] ) ) {
+						$where[]= "id= ?";
+						$params[]= $paramset['id'];
+					}
+					else if ( is_array( $paramset['id'] ) ) {
+						$id_list= implode( ',', $paramset['id'] );
+						// Clean up the id list - remove all non-numeric or comma information
+						$id_list= preg_replace("/[^0-9,]/","",$id_list);
+						// You're paranoid, ringmaster! :P
+						$limit= count( $paramset['id'] );
+						$where[]= 'id IN (' . addslashes($id_list) . ')';
+					}
+				}
+				if ( isset( $paramset['status'] ) && ( Comment::status_name( $paramset['status'] ) != 'any' ) ) {
+					$where[]= "status= ?";
+					$params[]= Comment::status( $paramset['status'] );
+				}
+				if ( isset( $paramset['type'] ) && ( Comment::type_name( $paramset['type'] ) != 'any' ) ) {
+					$where[]= "type= ?";
+					$params[]= Comment::type( $paramset['type'] );
+				}
+				if ( isset( $paramset['name'] ) ) {
+					$where[]= "name= ?";
+					$params[]= $paramset['name'];
+				}
+				if ( isset( $paramset['email'] ) ) {
+					$where[]= "email= ?";
+					$params[]= $paramset['email'];
+				}
+				if ( isset( $paramset['post_id'] ) ) {
+					$where[]= "post_id= ?";
+					$params[]= $paramset['post_id'];
+				}
+				if ( isset( $paramset['ip'] ) ) {
+					$where[]= "ip= ?";
+					$params[]= $paramset['ip'];
+				}				/* do searching */
+				if ( isset( $paramset['criteria'] ) ) {
+					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
+					foreach ( $matches[0] as $word ) {
+						$where[] .= "(content LIKE CONCAT('%',?,'%'))";
+						$params[] = $word;
+					}
+				}
+
+				/* 
+				 * Build the pubdate 
+				 * If we've got the day, then get the date.
+				 * If we've got the month, but no date, get the month.
+				 * If we've only got the year, get the whole year.
+				 * @todo Ensure that we've actually got all the needed parts when we query on them
+				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')				 				 
+				 */				
+				if ( isset( $paramset['day'] ) ) {
+					/* Got the full date */
+					$where[]= 'date BETWEEN ? AND ?';
+					$params[]= date('Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[]= date('Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) ); 
+				}
+				elseif ( isset( $paramset['month'] ) ) {
+					$where[]= 'date BETWEEN ? AND ?';
+					$params[]= date('Y-m-d', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					$params[]= date('Y-m-d', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) ); 
+				}
+				elseif ( isset( $paramset['year'] ) ) { 
+					$where[]= 'date BETWEEN ? AND ?';
+					$params[]= date('Y-m-d', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					$params[]= date('Y-m-d', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+				}
+				
+				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+			}
+		}
+		
+		// Get any full-query parameters
+		extract( $paramarray );
+
+		if ( isset( $page ) && is_numeric($page) ) {
+			$offset= ( intval( $page ) - 1 ) * intval( $limit );
+		}
+
+		if ( isset( $fetch_fn ) ) {
+			if ( ! in_array( $fetch_fn, $fns ) ) {
+				$fetch_fn= $fns[0];
+			}
+		}
+		else {
+			$fetch_fn= $fns[0];
+		}
+		
+		// is a count being request?
+		if ( isset( $count ) ) {
+			$select= "COUNT($count)";
+			$fetch_fn= 'get_value';
+			$orderby= '';
+		}
+		if ( isset( $limit ) ) {
+			$limit= " LIMIT $limit";
+			if ( isset( $offset ) ) {
+				$limit.= " OFFSET $offset";
+			}
+		}
+		if ( isset( $nolimit ) ) {
+			$limit= '';
+		}
+		
+		$query= '
+			SELECT ' . $select . '
+			FROM ' . DB::table('comments') .
+			' ' . $join;
+
+		if ( count( $wheres ) > 0 ) {  
+			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
+		}
+		$query.= $orderby . $limit;
+		//Utils::debug($paramarray, $fetch_fn, $query, $params);
+
+		DB::set_fetch_mode(PDO::FETCH_CLASS);
+		DB::set_fetch_class('Comment');
+		$results= DB::$fetch_fn( $query, $params, 'Comment' );
+
+		if ( 'get_results' != $fetch_fn ) {
+			// return the results
+			return $results;
+		}
+		elseif ( is_array( $results ) ) {
+			$c= __CLASS__;
+			$return_value = new $c( $results );
+			$return_value->get_param_cache= $paramarray;
+			return $return_value;
 		}
 	}
 
@@ -112,15 +216,8 @@ class Comments extends ArrayObject
 		else if(is_numeric($comments[0])) {
 			// We were passed an array of ID's. Get their objects and delete them.
 
-			// Convert the array of comment ID's into a list, cleaning out
-			// any string information.
-			$id_list= '';
-			foreach($comments as $commentID)
-				$id_list.= (int)$commentID . ',';
-			$id_list= rtrim($id_list,',');
-
 			// Get all of the comments objects
-			$comments= self::get(array('id_list'=>$id_list));
+			$comments= self::get(array('id'=>$comments));
 
 			$result= true;
 			foreach($comments as $comment)
