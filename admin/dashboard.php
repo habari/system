@@ -80,11 +80,12 @@
     <div class="column span-7 first last" id="stats">
       <h3><?php _e( 'Site Statistics' ); ?></h3>
       <table id="site-stats" width="100%" cellspacing="0">
-        <tr><td><?php _e( 'Total Posts' ); ?></td><td><?php echo Posts::count_total( Post::status( 'published' ) ); ?></td></tr>
-        <tr><td><?php _e( 'Number of Your Posts' ); ?></td><td><?php echo Posts::count_by_author( User::identify()->id, Post::status( 'all' ) ); ?></td></tr>
-        <tr><td><?php _e( 'Number of Comments' ); ?></td><td><?php echo Comments::count_total(); ?></td></tr>
         <?php
-        $stats= array();
+        $stats= array(
+        	_t( 'Total Posts' ) => Posts::count_total( Post::status( 'published' ) ),
+        	_t( 'Number of Your Posts' ) => Posts::count_by_author( User::identify()->id, Post::status( 'any' ) ),
+        	_t( 'Number of Comments' ) => Comments::count_total(),
+				);
         $stats= Plugins::filter( 'statistics_summary', $stats );
         foreach( $stats as $label => $value ) :
         ?>
