@@ -53,7 +53,7 @@ class EventLog extends ArrayObject
 	{
 		DB::query( 'DELETE FROM ' . DB::Table('log_types') . ' WHERE module = ? AND type = ?', array( self::get_module($module), $type ) );
 	}
-	
+
 	/**
 	 * Write an entry to the event log.
 	 * 
@@ -161,13 +161,22 @@ class EventLog extends ArrayObject
 					$where[]= "user_id= ?";
 					$params[]= $paramset['user_id'];
 				}
-				if ( isset( $paramset['severity'] ) ) {
-					$where[]= "severity= ?";
-					$params[]= $paramset['severity'];
+				if ( isset( $paramset['severity'] ) && ( 'any' != LogEntry::severity_name($paramset['severity']) ) ) {
+					$where[]= "severity_id= ?";
+					$params[]= LogEntry::severity($paramset['severity']);
 				}
 				if ( isset( $paramset['type_id'] ) ) {
 					$where[]= "type_id= ?";
 					$params[]= $paramset['type_id'];
+				}
+
+				/* do searching */
+				if ( isset( $paramset['criteria'] ) ) {
+					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
+					foreach ( $matches[0] as $word ) {
+						$where[] .= "(message LIKE CONCAT('%',?,'%'))";
+						$params[] = $word;
+					}
 				}
 				
 				/** 

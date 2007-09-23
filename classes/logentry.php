@@ -16,6 +16,7 @@ class LogEntry extends QueryRecord
 	 * @final
 	 */
 	private static $severities= array(
+		'any',
 		'none', // should not be used
 		'debug', 'info', 'notice', 'warning', 'err', 'crit', 'alert', 'emerg',
 	); 
@@ -69,7 +70,7 @@ class LogEntry extends QueryRecord
 	}
 	
 	/**
-	 * Returns an associative array of post types
+	 * Returns an associative array of LogEntry types
 	 *
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of log entry type names => integer values
@@ -84,7 +85,50 @@ class LogEntry extends QueryRecord
 			}
 		}
 		return self::$types;
-	}	 	
+	}
+
+	/**
+	 * Return an array of Severities
+	 * @return array An array of severity ID => name pairs
+	**/
+	public static function list_severities()
+	{
+		foreach ( self::$severities as $id => $name ) {
+			if ( 'none' == $name ) {
+				continue;
+			}
+			$results[$id]= $name;
+		}
+		return $results;
+	}
+
+	/**
+	 * Returns an array of LogEntry modules
+	 * @param bool Whether to refresh the cached values
+	 * @return array An array of LogEntry module id => name pairs
+	**/
+	public static function list_modules( $refresh= false )
+	{
+		$types= self::list_logentry_types( $refresh );
+		foreach ($types as $module => $types) {
+			$modules[]= $module;
+		}
+	}
+
+	/**
+	 * Returns an array of LogEntry types
+	 * @param bool Whether to refresh the cached values
+	 * @return array An array of LogEntry id => name pairs
+	**/
+	public static function list_types( $refresh= false )
+	{
+		$types= array();
+		$matrix= self::list_logentry_types( $refresh );
+		foreach ($matrix as $module => $module_types) {
+			$types= array_merge($types, $module_types);
+		}
+		return array_flip($types);
+	}
 	
 	/**
 	 * Get the integer value for the given severity, or <code>false</code>.
@@ -101,7 +145,7 @@ class LogEntry extends QueryRecord
 	}
 	
 	/**
-	 * Get the string representation of teh severity numeric value.
+	 * Get the string representation of the severity numeric value.
 	 *
 	 * @param integer $severity The severity index.
 	 * @return string The string name of the severity, or 'Unknown'.
@@ -250,7 +294,7 @@ class LogEntry extends QueryRecord
 	}
 	
 	/**
-	 * Overrides QueryRecord __get to implement custom object properties
+	 * Overrides QueryRecord __set to implement custom object properties
 	 *
 	 * @param string Name of property to return
 	 * @return mixed The requested field value	 
