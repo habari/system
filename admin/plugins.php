@@ -47,11 +47,11 @@
 			<tbody>
 			<?php
 			foreach ( $all_plugins as $file ) :
-				$verb= 'Activate';
+				$verb= _t('Activate');
 				$plugin_id= Plugins::id_from_file( $file );
 				if ( array_key_exists( $plugin_id, $active_plugins ) )
 				{
-					$verb= 'Deactivate';
+					$verb= _t('Deactivate');
 					$plugin= $active_plugins[$plugin_id];
 					$active= true;
 				}
@@ -78,6 +78,7 @@
 					<td>
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
 					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
+					<input type='hidden' name='action' value='<?php echo $active ? 'Deactivate' : 'Activate'; ?>'>
 					<p><button name='submit'><?php echo $verb; ?></button></p>
 					<?php 
 					if ($active) {

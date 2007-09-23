@@ -251,7 +251,6 @@ class Plugins
 	}
 
 	/**
-	 * function activate_plugin
 	 * Activates a plugin file
 	 **/
 	static public function activate_plugin( $file )
@@ -272,7 +271,6 @@ class Plugins
 	}
 
 	/**
-	 * function deactivate_plugin
 	 * Deactivates a plugin file
 	 **/
 	static public function deactivate_plugin( $file )
