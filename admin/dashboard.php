@@ -80,7 +80,7 @@
     <div class="column span-7 first last" id="stats">
       <h3><?php _e( 'Site Statistics' ); ?></h3>
       <table id="site-stats" width="100%" cellspacing="0">
-        <tr><td><?php _e( 'Total Posts' ); ?></td><td><?php echo Posts::count_total( Post::status( 'any' ) ); ?></td></tr>
+        <tr><td><?php _e( 'Total Posts' ); ?></td><td><?php echo Posts::count_total( Post::status( 'all' ) ); ?></td></tr>
         <tr><td><?php _e( 'Number of Your Posts' ); ?></td><td><?php echo Posts::count_by_author( User::identify()->id, Post::status( 'all' ) ); ?></td></tr>
         <tr><td><?php _e( 'Number of Comments' ); ?></td><td><?php echo Comments::count_total(); ?></td></tr>
         <?php
