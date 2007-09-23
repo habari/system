@@ -1,6 +1,6 @@
 <?php include('header.php');?>
 <div class="container">
-<hr />
+<hr>
 <div class="column span-24 first" id="welcome">
 	<h1><?php _e('Habari Content'); ?></h1>
 	<p><?php _e('Here you will find all the content you have created, ready to be tweaked, edited or removed.'); ?></p>
