@@ -273,7 +273,7 @@ class AdminHandler extends ActionHandler
 	 */
 	function post_plugin_toggle() {
 		extract( $this->handler_vars );
-		if ( 'activate' == strtolower( $submit ) ) {
+		if ( 'activate' == strtolower( $action ) ) {
 			Plugins::activate_plugin( $plugin );
 		}
 		else {
