@@ -558,7 +558,8 @@ class AdminHandler extends ActionHandler
 			'limit' => 20,
 			'user' => 0,
 			'date' => 'any',
-			'type' => 'any',
+			'module' => '0',
+			'type' => '0',
 			'severity' => 'any',
 			'search' => '',
 			'do_search' => false,
@@ -569,8 +570,23 @@ class AdminHandler extends ActionHandler
 			$this->theme->{$varname}= $$varname;
 		}
 		$this->theme->severities= LogEntry::list_severities();
-		$types= array( 0 => 'Any');
-		$this->theme->types= array_merge( $types, LogEntry::list_types() );
+		$any= array( '0' => 'Any' );
+		
+		$modulelist= LogEntry::list_logentry_types();
+		$modules= array();
+		$types= array();
+		foreach($modulelist as $modulename => $typearray) {
+			$modules['0,'.implode(',', $typearray)] = $modulename;
+			foreach($typearray as $typename => $typevalue) {
+				if(!isset($types[$typename])) {
+					$types[$typename]= '0';
+				}
+				$types[$typename].= ',' . $typevalue;
+			}
+		}
+		$types = array_flip($types);
+		$this->theme->types= array_merge( $any, $types );
+		$this->theme->modules= array_merge( $any, $modules );
 
 		// set up the users
 		$users_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table('users') . ' JOIN ' . DB::table('log') . ' ON ' . DB::table('users') . '.id=' . DB::table('log') . '.user_id GROUP BY user_id ORDER BY username ASC');
@@ -593,13 +609,26 @@ class AdminHandler extends ActionHandler
 
 		// prepare the WSSE tokens
 		$this->theme->wsse= Utils::WSSE();
-
+		
 		$arguments= array(
-			'type' => $type,
 			'severity' => LogEntry::severity($severity),
 			'limit' => $limit,
 			'offset' => ( $index - 1) * $limit,
 		);
+
+		// deduce type_id from module and type
+		$r_type = explode(',', substr($type, 2));
+		$r_module = explode(',', substr($module, 2));
+		if( $type != '0' && $module != '0' ) {
+			$arguments['type_id'] = array_intersect($r_type, $r_module);
+		}
+		elseif( $type == '0' ) {
+			$arguments['type_id'] = $r_module;
+		}
+		elseif( $module == '0' ) {
+			$arguments['type_id'] = $r_type;
+		}
+
 		if ( 'any' != strtolower($date) ) {
 			list($arguments['year'], $arguments['month'])= explode( '-', $date );
 		}
