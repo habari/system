@@ -34,7 +34,7 @@ class Comments extends ArrayObject
 				: ', ' . DB::table( 'comments' ) . ".$field";
 		}
 		// defaults
-		$orderby= 'ORDER BY date DESC';
+		$orderby= 'date DESC';
 		$limit= Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
@@ -174,7 +174,7 @@ class Comments extends ArrayObject
 		if ( count( $wheres ) > 0 ) {  
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= $orderby . $limit;
+		$query.= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 		//Utils::debug($paramarray, $fetch_fn, $query, $params);
 
 		DB::set_fetch_mode(PDO::FETCH_CLASS);

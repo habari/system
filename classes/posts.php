@@ -63,7 +63,7 @@ class Posts extends ArrayObject
 				: ', ' . DB::table( 'posts' ) . ".$field";
 		}
 		// defaults
-		$orderby= 'ORDER BY pubdate DESC';
+		$orderby= 'pubdate DESC';
 		$limit= Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
@@ -218,7 +218,7 @@ class Posts extends ArrayObject
 		if ( count( $wheres ) > 0 ) {  
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= $orderby . $limit;
+		$query.= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 		//Utils::debug($paramarray, $fetch_fn, $query, $params);
 
 		DB::set_fetch_mode(PDO::FETCH_CLASS);
