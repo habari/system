@@ -34,6 +34,11 @@ class Comment extends QueryRecord
 	private $post_object = null;
 
 	private $info= null;
+	
+	// static variables to hold comment status and comment type values
+	static $comment_status_list= array();
+	static $comment_type_list= array();
+	
 	/**
 	* static function default_fields
 	* Returns the defined database columns for a comment
@@ -310,7 +315,119 @@ class Comment extends QueryRecord
  		}
  		return $this->newfields['status'];
  	}
+	
+	/**
+	 * returns an associative array of comment types
+	 * @param bool whether to force a refresh of the cached values
+	 * @return array An array of comment type names => integer values
+	**/
+	public static function list_comment_types( $refresh = false )
+	{
+		if ( ( ! $refresh ) && ( ! empty( self::$comment_type_list ) ) )
+		{
+			return self::$comment_type_list;
+		}
+		self::$comment_type_list= array(
+			'COMMENT' => self::COMMENT,
+			'PINGBACK' => self::PINGBACK,
+			'TRACKBACK' => self::TRACKBACK,
+			);
+		return self::$comment_type_list;	
+	}
 
+	/**
+	 * returns an associative array of comment statuses
+	 * @param bool whether to force a refresh of the cached values
+	 * @return array An array of comment statuses names => interger values
+	**/
+	public static function list_comment_statuses( $refresh= false )
+	{
+		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) )
+		{
+			return self::$comment_status_list;
+		}
+		self::$comment_status_list= array(
+			'STATUS_UNAPPROVED' => self::STATUS_UNAPPROVED,
+			'STATUS_APPROVED' => self::STATUS_APPROVED,
+			'STATUS_SPAM' => self::STATUS_SPAM,
+			// 'STATUS_DELETED' => self::STATUS_DELETED, // Not supported
+			);
+		return self::$comment_status_list;
+	}
+	
+
+	/**
+	 * returns the interger value of the specified comment status, or false
+	 * @param mixed a comment status name or value
+	 * @return mixed an integer or boolean false
+	**/
+	public static function status( $name )
+	{
+		$statuses= Comment::list_comment_statuses();
+		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $statuses ) ) ) {
+			return $name;
+		}
+		if ( isset( $statuses[strtolower($name)] ) )
+		{
+			return $statuses[strtolower($name)];
+		}
+		return false;
+	}
+
+	/**
+	 * returns the friendly name of a comment status, or null
+	 * @param mixed a comment status value, or name
+	 * @return mixed a string of the status name, or null
+	**/
+	public static function status_name( $status )
+	{
+		$statuses= array_flip( Comment::list_comment_statuses() );
+		if ( is_numeric( $status ) && isset( $statuses[$status] ) )
+		{
+			return $statuses[$status];
+		}
+		if ( FALSE !== in_array( $status, $statuses ) )
+		{
+			return $status;
+		}
+		return '';
+	}
+
+	/**
+	 * returns the integer value of the specified comment type, or false
+	 * @param mixed a comment type name or number
+	 * @return mixed an integer or boolean false
+	**/
+	public static function type( $name )
+	{
+		$types= Comment::list_comment_types();
+		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $types ) ) ) {
+			return $name;
+		}
+		if ( isset( $types[strtolower($name)] ) ) {
+			return $types[strtolower($name)];
+		}
+		return false;
+	}
+
+	/**
+	 * returns the friendly name of a comment type, or null
+	 * @param mixed a comment type number, or name
+	 * @return mixed a string of the comment type, or null
+	**/
+	public function type_name( $type )
+	{
+		$types= array_flip( Comment::list_comment_types() );
+		if ( is_numeric( $type ) && isset( $types[$type] ) )
+		{
+			return $types[$type];
+		}
+		if ( FALSE !== in_array( $type, $types ) )
+		{
+			return $type;
+		}
+		return '';
+	}
 }
 
 ?>
