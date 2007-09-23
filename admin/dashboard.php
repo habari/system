@@ -44,33 +44,33 @@
         <li><?php printf( _t( 'You are running Habari %s.' ), Version::get_habariversion() ); ?></li>
         <?php
         try {
-			$updates= Update::check();
-			if ( Error::is_error( $updates ) ) {
-				throw $updates;
-			}
-			//Utils::debug( $updates );  //Uncomment this line to see what Update:check() returns...
-			if ( count( $updates ) > 0 ) {
-				foreach ( $updates as $update ) {
-					$class= implode( ' ', $update['severity'] );
-					if ( in_array( 'critical', $update['severity'] ) ) {
-						$updatetext= _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
+					$updates= Update::check();
+					if ( Error::is_error( $updates ) ) {
+						throw $updates;
 					}
-					elseif ( count( $update['severity'] ) > 1 ) {
-						$updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
+					//Utils::debug( $updates );  //Uncomment this line to see what Update:check() returns...
+					if ( count( $updates ) > 0 ) {
+						foreach ( $updates as $update ) {
+							$class= implode( ' ', $update['severity'] );
+							if ( in_array( 'critical', $update['severity'] ) ) {
+								$updatetext= _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
+							}
+							elseif ( count( $update['severity'] ) > 1 ) {
+								$updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
+							}
+							elseif ( in_array( 'bugfix', $update['severity'] ) ) {
+								$updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
+							}
+							elseif ( in_array( 'feature', $update['severity'] ) ) {
+								$updatetext= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
+							}
+							$updatetext= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
+							echo "<li class=\"{$class}\">&raquo; {$updatetext}</li>";
+						}
 					}
-					elseif ( in_array( 'bugfix', $update['severity'] ) ) {
-						$updatetext= _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
+					else {
+						echo '<li>' . _t( 'No updates were found.' ) . '</li>';
 					}
-					elseif ( in_array( 'feature', $update['severity'] ) ) {
-						$updatetext= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
-					}
-					$updatetext= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
-					echo "<li class=\"{$class}\">&raquo; {$updatetext}</li>";
-				}
-			}
-			else {
-				echo '<li>' . _t( 'No updates were found.' ) . '</li>';
-			}
         } catch (Exception $e) {
         	print '<li>' . $e->get() . "</li>\r\n";
         }
@@ -120,7 +120,7 @@
           </tr>
         </thead>
         <?php
-          foreach ( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'ORDER BY date DESC' ) ) as $recent ) {
+          foreach ( Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5, 'orderby' => 'date DESC' ) ) as $recent ) {
             $post= Post::get( array( 'id' => $recent->post_id, ) );
         ?>
         <tr>
