@@ -109,7 +109,7 @@ function table($headers, $data, $sort = null){
 					echo 'style="display:none;"';
 				}?>
 				>
-				<?php echo htmlentities($comment->content_out); ?>
+				<?php echo htmlentities($comment->content_out, ENT_COMPAT, 'UTF-8'); ?>
 				</div>
 				<?php if ($comment->status == COMMENT::STATUS_SPAM) : ?>
 					<a href="" onclick="$(this).hide();$('#comment_content_<?php echo $comment->id; ?>').show();return false;">[Show Comment]</a>
