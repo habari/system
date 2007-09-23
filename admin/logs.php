@@ -7,25 +7,47 @@ include_once( 'header.php' );
 		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
 	</div>
 	<div class="dashboard-block c3" id="log-activity">
+	<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
+	<p>Search log entries: 
+	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
+	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?>
+	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?>
+	<a href="<?php URL::out('admin', 'page=logs'); ?>">Reset</a>
+	</p>
 		<table id="log-activity-table" width="100%" cellspacing="0">
 			<thead>
 				<tr>
+					<th></th>
 					<th align="left">Date</th>
 					<th align="left">User</th>
 					<th align="left">Type</th>
-					<th align="left">Message</th>
 					<th align="center">Severity</th>
+					<th align="left">Message</th>
 				</tr>
 			</thead>
-			<?php foreach( eventlog::get( array( 'nolimit' => true ) ) as $log ){ ?>
 			<tr>
+			<td></td>
+			<td><?php echo Utils::html_select('date', $dates, $date); ?></td>
+			<td><?php echo Utils::html_select('user', $users, $user); ?></td>
+			<td><?php echo Utils::html_select('type', $types, $type); ?></td>
+			<td><?php echo Utils::html_select('severity', $severities, $severity); ?></td>
+			<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
+			</tr>
+			<?php foreach( $logs as $log ){ ?>
+			<tr>
+				<td align="center"><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></td>
 				<td><?php echo $log->timestamp; ?></td>
 				<td><?php if ( $log->user_id ) { $user= User::get_by_id( $log->user_id ); echo $user->username; } ?></td>
 				<td><?php echo $log->type; ?></td>
-				<td><p><?php echo $log->message; ?></p></td>
 				<td><?php echo $log->severity; ?></td>
+				<td><p><?php echo $log->message; ?></p></td>
 			</tr>
 			<?php } ?>
+			<tr><td colspan="6">
+			<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+			 <input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+			 <input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+			 <input type="submit" name="do_delete" value="<?php _e('Delete'); ?>">
 		</table>
 	</div>
 </div>

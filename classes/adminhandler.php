@@ -541,6 +541,91 @@ class AdminHandler extends ActionHandler
 		$this->display( 'content' );
 	}
 	
+	public function get_logs()
+	{
+		$this->post_logs();
+	}
+
+	public function post_logs()
+	{
+		$locals= array(
+			'do_update' => false,
+			'log_ids' => null,
+			'nonce' => '',
+			'timestamp' => '',
+			'PasswordDigest' => '',
+			'change' => '',
+			'limit' => 20,
+			'user' => 0,
+			'date' => 'any',
+			'type' => 'any',
+			'severity' => 'any',
+			'search' => '',
+			'do_search' => false,
+			'index' => 1,
+		);
+		foreach ( $locals as $varname => $default ) {
+			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
+			$this->theme->{$varname}= $$varname;
+		}
+		$this->theme->severities= LogEntry::list_severities();
+		$types= array( 0 => 'Any');
+		$this->theme->types= array_merge( $types, LogEntry::list_types() );
+
+		// set up the users
+		$users_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table('users') . ' JOIN ' . DB::table('log') . ' ON ' . DB::table('users') . '.id=' . DB::table('log') . '.user_id GROUP BY user_id ORDER BY username ASC');
+		array_unshift( $users_temp, new QueryRecord(array('username' => 'All', 'user_id' => 0)));
+		foreach ($users_temp as $user) {
+			$users[$user->user_id]= $user->username;
+		}
+		$this->theme->users= $users;
+		
+		// set up dates.
+		$dates= DB::get_column("SELECT DATE_FORMAT(timestamp, '%Y-%m') FROM " . DB::table('log') . ' ORDER BY timestamp DESC');
+		array_unshift( $dates, 'Any');
+		$dates= array_combine( $dates, $dates );
+		$this->theme->dates= $dates;
+
+		// set up the limit select box
+		$limits= array( 5, 10, 20, 50, 100 );
+		$limits= array_combine( $limits, $limits );
+		$this->theme->limits= $limits;
+
+		// prepare the WSSE tokens
+		$this->theme->wsse= Utils::WSSE();
+
+		$arguments= array(
+			'type' => $type,
+			'severity' => LogEntry::severity($severity),
+			'limit' => $limit,
+			'offset' => ( $index - 1) * $limit,
+		);
+		if ( 'any' != strtolower($date) ) {
+			list($arguments['year'], $arguments['month'])= explode( '-', $date );
+		}
+		if ( '' != $search ) {
+			$arguments['criteria']= $search;
+		}
+		$this->theme->logs= EventLog::get( $arguments );
+
+		// get the page count
+		$arguments['count']= 'id';
+		unset($arguments['limit']);
+		unset($arguments['offset']);
+		$totalpages= EventLog::get( $arguments );
+		$pagecount= ceil( $totalpages / $limit );
+
+		// put the page numbers into an array
+		$pages= array();
+		for ( $z= 1; $z <= $pagecount; $z++ ) {
+			$pages[$z]= $z;
+		}
+		$this->theme->pagecount= $pagecount;
+		$this->theme->pages= $pages;
+
+		$this->display( 'logs' );
+	}
+
 	/**
 	 * Assembles the main menu for the admin area.
 		*/

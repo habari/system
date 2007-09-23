@@ -689,7 +689,7 @@ class Utils
 	                return $str;
 	        }
 	        // if the string is less than the length specified, bail out
-	        if ( strlen($str) <= $len ) {
+	        if ( iconv_strlen($str) <= $len ) {
 	                return $str;
 	        }
 	
@@ -698,11 +698,11 @@ class Utils
 	                // yes, so compute the size of each half of the string
 	                $len = round(($len-3)/2);
 	                // and place an ellipse in between the pieces
-	                return substr($str, 0, $len) . '...' . substr($str, -$len);
+	                return iconv_substr($str, 0, $len) . '...' . substr($str, -$len);
 	        } else {
 	                // no, the ellipse goes at the end
 	                $len= $len-3;
-	                return substr($str, 0, $len ) . '...';
+	                return iconv_substr($str, 0, $len ) . '...';
 	        }
 	} 
 
