@@ -14,6 +14,11 @@
 	
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/support.js" type="text/javascript"></script>
+	<?php
+		Plugins::act( 'admin_header', $this );
+		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
+		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+	?>
 	<script type="text/javascript">
   		$(document).ready(function(){
                     $("tbody/tr:nth-child(even)").addClass("even");
