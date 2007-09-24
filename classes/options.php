@@ -136,7 +136,7 @@ class Options extends Singleton
 	 **/
 	static public function clear_cache()
 	{
-		self::instance()->options = array();
+		self::instance()->options = null;
 	}	 	
 
 }

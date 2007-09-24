@@ -21,7 +21,7 @@
 		<?php
 				}
 			}
-			//Options::clear_cache();
+			Options::clear_cache();
 			$failed_plugins= Options::get('failed_plugins');
 			if(is_array($failed_plugins)) {
 				$all_plugins= array_diff($all_plugins, $failed_plugins);
