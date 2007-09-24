@@ -305,13 +305,44 @@ class AdminHandler extends ActionHandler
 
 		$this->display( 'import' );
 	}
+	
+	function get_moderate() {
+		$this->post_moderate();
+	}
 
 	/**
 	 * Handles the submission of the comment moderation form.
 	 * @todo Separate delete from "delete until purge"
 	 */
 	function post_moderate() {
-		extract( $this->handler_vars );
+		// Make certain handler_vars local with defaults, and add them to the theme output
+		$locals = array(
+			'do_update' => false,
+			'comment_ids' => null,
+			'nonce' => '',
+			'timestamp' => '',
+			'PasswordDigest' => '',
+			'mass_spam_delete' => null,
+			'mass_delete' => null,
+
+			'type' => Comment::type('comment'),
+			'status' => Comment::status('approved'),
+			'limit' => 30,
+			'orderby' => 'date DESC',
+			'default_radio' => array( 'approve'=>'', 'delete'=>'', 'spam'=>'', 'unapprove'=>'' ),
+			'show' => 'unapproved',
+			'search' => '',
+			'search_fields' => array('content'),
+			'search_status' => null,
+			'search_type' => null,
+			'do_search' => false,
+			'index' => 1,
+		);
+		foreach($locals as $varname => $default) {
+			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
+			$this->theme->{$varname}= $$varname;
+		}
+
 		// Setting these mass_delete options prevents any other processing.  Desired?
 		if ( isset( $mass_spam_delete ) ) {
 			$comments= Comments::by_status( Comment::STATUS_SPAM );
@@ -319,6 +350,7 @@ class AdminHandler extends ActionHandler
 			foreach ( $comments as $comment ) {
 				$comment->delete();
 			}
+			$this->theme->result= 'success';
 		}
 		elseif ( isset( $mass_delete ) ) {
 			$comments= Comments::by_status( Comment::STATUS_UNAPPROVED );
@@ -326,48 +358,144 @@ class AdminHandler extends ActionHandler
 			foreach( $comments as $comment ) {
 				$comment->delete();
 			}
+			$this->theme->result= 'success';
 		}
-		else {
-			// Process each comment according to its setting in the form.
-			$deletes= array();
-			if ( isset( $moderate ) ) {
-				foreach( $moderate as $commentid => $status ) {
-					switch ( $status ) {
+		// if we're updating posts, let's do so:
+		elseif ( $do_update && isset( $comment_ids ) ) {
+			$okay= true;
+			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
+				$okay= false;
+			}
+			// Ensure the request was submitted less than five minutes ago
+			if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
+				$okay= false;
+			}
+			$wsse= Utils::WSSE( $nonce, $timestamp );
+			if ( $PasswordDigest != $wsse['digest'] ) {
+				$okay= false;
+			}
+			if ( $okay ) {
+				foreach ( $comment_ids as $id => $id_change ) {
+					if ( $id_change != $show ) { // Skip unmoderated submitted comment_ids
+						$ids[]= $id;
+						$ids_change[$id]= $id_change;
+					}
+				}
+				$to_update= Comments::get( array( 'id' => $ids ) );
+				foreach ( $to_update as $comment ) {
+					switch ( $ids_change[$comment->id] ) {
 					case 'delete':
 						// This comment was marked for deletion
-						$deletes[]= $commentid;
+						$comment->delete();
 						break;
 					case 'spam':
 						// This comment was marked as spam
-						$comment= Comment::get( $commentid );
+						$comment= Comment::get( $comment->id );
 						$comment->status= Comment::STATUS_SPAM;
 						$comment->update();
 						break;
 					case 'approve':
 						// This comment was marked for approval
-						$comment= Comment::get( $commentid );
+						$comment= Comment::get( $comment->id );
 						$comment->status= Comment::STATUS_APPROVED;
 						$comment->update();
 						break;
 					case 'unapprove':
 						// This comment was marked for unapproval
-						$comment= Comment::get( $commentid );
+						$comment= Comment::get( $comment->id );
 						$comment->status= Comment::STATUS_UNAPPROVED;
 						$comment->update();
 						break;
 					}
 				}
-				if ( count( $deletes ) > 0 ) {
-					Comments::delete_these( $deletes );
-				}
+				$this->theme->result= 'success';
+				unset( $this->handler_vars['change'] );
 			}
 		}
-
-		// Get the return page, making sure it's one of the valid pages.
-		if ( !isset( $returnpage ) || !in_array( $returnpage, array( 'comments', 'moderate', 'spam' ) )	) {
-			$returnpage= 'moderate';
+		
+		// Set up the limits select box
+		$limits= array( 5, 10, 20, 50, 100 );
+		$limits= array_combine($limits, $limits);
+		$this->theme->limits= $limits;
+		
+		// Set up the type select box
+		$types_tmp= array_flip(Comment::list_comment_types());
+		$types['All']= 'All';
+		foreach ( $types_tmp as $type_key => $type_val  ) {
+			$types[$type_key]= $type_val;
 		}
-		Utils::redirect( URL::get( 'admin', array( 'page' => $returnpage, 'result' => 'success' ) ) );
+		$this->theme->types= $types;
+		
+		// Set up the status select box
+		$statuses_tmp= array_flip(Comment::list_comment_statuses());
+		$statuses['All']= 'All';
+		foreach ( $statuses_tmp as $status_key => $status_val  ) {
+			$statuses[$status_key]= $status_val;
+		}
+		$this->theme->statuses= $statuses;
+
+		// we load the WSSE tokens 
+		// for use in the delete button		
+		$this->theme->wsse= Utils::WSSE();
+
+		$arguments= array( 
+			'limit' => $limit,
+			'offset' => ($index - 1) * $limit,
+		);
+		
+		// Decide what to display
+		switch($show) {
+			case 'spam':
+				$arguments['status']= Comment::STATUS_SPAM;
+				$this->theme->mass_delete = 'mass_spam_delete';
+				$default_radio['spam']= ' checked';
+				break;
+			case 'approved':
+				$arguments['status']= Comment::STATUS_APPROVED;
+				$this->theme->mass_delete = '';
+				$default_radio['approve']= ' checked';
+				break;
+			case 'unapproved':
+				$arguments['status']= Comment::STATUS_UNAPPROVED;
+				$this->theme->mass_delete = 'mass_delete';
+				$default_radio['unapprove']= ' checked';
+				break;
+			default:
+				$arguments['status']= null;
+				$this->theme->mass_delete = 'mass_delete';
+				$default_radio['unapprove']= ' checked';
+				break;			
+		}
+		$this->theme->default_radio= $default_radio;
+		
+		if ( '' != $search ) {
+			$arguments['criteria']= $search;
+			$arguments['criteria_fields']= $search_fields;
+			if ( $search_status == 'All' ) {
+				unset( $arguments['status'] );
+			}
+			if ( $search_type == 'All' ) {
+				unset( $arguments['type'] );
+			}
+		}
+		$this->theme->comments= Comments::get( $arguments );
+
+		// Get the page count
+		$arguments['count']= 'id';
+		unset($arguments['limit']);
+		unset($arguments['offset']);
+		$totalpages= Comments::get( $arguments );
+		$pagecount= ceil( $totalpages / $limit );
+
+		// Put page numbers into an array for the page controls to output.
+		$pages= array();
+		for($z = 1; $z <= $pagecount; $z++) {
+			$pages[$z] = $z;
+		}
+		$this->theme->pagecount= $pagecount;
+		$this->theme->pages= $pages;
+
+		$this->display( 'moderate' );
 	}
 	
 	/**
