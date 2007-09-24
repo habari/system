@@ -346,7 +346,8 @@ class AtomHandler extends ActionHandler
 				
 				$entry_id= $xml->addChild( 'id', $post->guid );
 				$entry_updated= $xml->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
-							
+				$entry_published= $xml->addChild( 'published', date( 'c', strtotime( $post->pubdate ) ) );
+				
 				$entry_content= $xml->addChild( 'content', $content );
 				$entry_content->addAttribute( 'type', 'html' );
 				
