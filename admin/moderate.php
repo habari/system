@@ -1,160 +1,139 @@
-<?php
-
-function table($headers, $data, $sort = null){
-
-	$html .= '<table><thead><tr>';
-	foreach($headers as $headercaption => $headerfield) {
-		$html .= '<th>' . $header . '</th>';
-	}
-	$html .= '</tr></thead><tbody>';
-
-	foreach($data as $row) {
-		$html .= '<tr>';
-		foreach($headers as $field) {
-			$html .= '<td>' . htmlspecialchars($row->$field) . '</td>';
-		}
-		$html .= '</tr>';
-	}
-	
-	$html .= '</tbody></table>';
-	return $html;
-}
-
-?>
 <?php include('header.php'); ?>
+
 <div class="container">
-<hr>
-	<div class="dashboard-block" id="stats">
-		<h4><?php _e('Comment Statistics'); ?></h4>
-		<ul>
-			<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_APPROVED ); ?></span>
-			<?php _e('Total Approved Comments'); ?></li>
-			<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?></span>
-			<?php _e('Total Unapproved Comments'); ?></li>
-			<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_SPAM ); ?></span>
-			<?php _e('Total Spam Comments'); ?></li>
-		</ul>
-	</div>
-	<div class="dashboard-block c2">
+	<hr>
+	<div class="column span-24 last">
 		<?php
-		
-		// Decide what to display
-		
-		if( empty($show) ) {
-			$show = 'unapproved';
+		if ( isset( $result ) ) {
+			switch( $result ) {
+				case 'success':
+					echo '<p class="update">' . _t('Comments moderated successfully.') . '</p>';
+					break;
+			}
 		}
-		$default_radio = array(
-			'approve'=>'',
-			'delete'=>'',
-			'spam'=>'',
-			'unapprove'=>'',
-		);
-		switch($show) {
-			case 'spam':
-				$comments = Comments::get( array( 'status' => Comment::STATUS_SPAM, 'limit' => 30, 'orderby' => 'date DESC' ) );
-				$mass_delete = 'mass_spam_delete';
-				$default_radio['spam']= ' checked';
-				break;
-			case 'approved':
-				$comments = Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) );
-				$mass_delete = '';
-				$default_radio['approve']= ' checked';
-				break;
-			case 'unapproved':
-			default:
-				$comments = Comments::get( array( 'status' => Comment::STATUS_UNAPPROVED, 'limit' => 30, 'orderby' => 'date DESC' ) );
-				$mass_delete = 'mass_delete';
-				$default_radio['unapprove']= ' checked';
-				break;			
-		}
-		
 		?>
-		<?php if( count($comments) ) { ?>
-		<p><?php _e('Below you will find comments awaiting moderation.'); ?></p>
-		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
-
-		<p class="submit"><input type="submit" name="moderate" value="<?php _e('Moderate!'); ?>">
-		<?php if ($mass_delete != '') : ?>
-		<label><input type="checkbox" name="<?php echo $mass_delete; ?>" id="mass_delete" value="1"><?php _e("Delete 'em all"); ?></label></p>
-		<?php endif; ?>
-
-		<p class="manage">
-			Mark All For:
-			<a href="#" onclick="$('.radio_approve').attr('checked', 'checked');return false;"><?php _e('Approval'); ?></a> &middot;
-			<a href="#" onclick="$('.radio_delete').attr('checked', 'checked');return false;"><?php _e('Deletion'); ?></a> &middot;
-			<a href="#" onclick="$('.radio_spam').attr('checked', 'checked');return false;"><?php _e('Spam'); ?></a> &middot;
-			<a href="#" onclick="$('.radio_unapprove').attr('checked', 'checked');return false;"><?php _e('Unapproval'); ?></a>
-		</p>
+		<h1><?php _e('Habari Comments'); ?></h1>
+		<p><?php _e('Here you will find all the comments, including those deleted. You can also manage the pingbacks.'); ?></p>
 		
-		<ul id="waiting">
-		<?php foreach( $comments as $comment ){ ?>
-			<li class="moderated_comment">
-				Comment by <?php echo $comment->name;?> 
-				<?php 
-				$metadata = array();
-				if ($comment->url != '') {
-					$metadata[] = '<a href="' . $comment->url . '">' . $comment->url . '</a>';
-				}
-				if ( $comment->email != '' ) {
-					$metadata[] = '<a href="mailto:' . $comment->email . '">' . $comment->email . '</a>';
-				}
-				if ( count($metadata) > 0 ) {
-					echo '<small>(' . implode(' &middot; ', $metadata) . ')</small>';
-				}
-				?>
-				On <a href="<?php echo $comment->post->permalink ?>"><?php echo $comment->post->title; ?></a>
-				<br><small>(Commented created on <?php echo $comment->date; ?>)</small>
-				<div class="comment_content" id="comment_content_<?php echo $comment->id; ?>"
-				<?php if ($comment->status == COMMENT::STATUS_SPAM) {
-					echo 'style="display:none;"';
-				}?>
-				>
-				<?php echo htmlentities($comment->content_out, ENT_COMPAT, 'UTF-8'); ?>
-				</div>
-				<?php if ($comment->status == COMMENT::STATUS_SPAM) : ?>
-					<a href="" onclick="$(this).hide();$('#comment_content_<?php echo $comment->id; ?>').show();return false;">[Show Comment]</a>
-				<?php endif; ?>
-				<?php if ($comment->info->spamcheck) : ?>
-				<ul style="list-style:disc;margin-top:10px;font-size:xx-small;">
-				<?php
-				$reasons = (array)$comment->info->spamcheck;
-				$reasons = array_unique($reasons);	
-				foreach($reasons as $reason): 
-				?>
-					<li><?php echo $reason; ?></li>
-				<?php	endforeach; ?>
-				</ul>
-				<?php endif; ?>
-				<p class="manage">
-					<?php _e('Action:'); ?>
-					<label>
-						<input type="radio" class="radio_approve" name="moderate[<?php echo $comment->id; ?>]" id="approve-<?php echo $comment->id; ?>" value="approve" <?php echo $default_radio['approve']; ?> ><?php _e('Approve'); ?>
-					</label>
-					<label>
-						<input type="radio" class="radio_delete" name="moderate[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete" <?php echo $default_radio['delete']; ?> ><?php _e('Delete'); ?>
-					</label>
-					<label>
-						<input type="radio" class="radio_spam" name="moderate[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam" <?php echo $default_radio['spam']; ?> ><?php _e('Mark as Spam'); ?>
-					</label>
-					<label>
-						<input type="radio" class="radio_unapprove" name="moderate[<?php echo $comment->id; ?>]" id="unapprove-<?php echo $comment->id; ?>" value="unapprove" <?php echo $default_radio['unapprove']; ?> ><?php _e('Unapprove'); ?>
-					</label>
+		<div class="column span-7 first" id="stats">
+			<h4><?php _e('Comment Statistics'); ?></h4>
+			<ul>
+				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_APPROVED ); ?></span><?php _e('Total Approved Comments'); ?></li>
+				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?></span><?php _e('Total Unapproved Comments'); ?></li>
+				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_SPAM ); ?></span><?php _e('Total Spam Comments'); ?></li>
+			</ul>
+		</div>
+		
+		<div class="column span-17 last push-1">
+			<form method="post" action="<?php URL::out('admin', 'page=moderate'); ?>" class="buttonform">
+			<p>
+				<label>Search comments: <input type="textbox" size="30" name="search" value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>"></label>
+				<label><?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?></label>
+				<label><?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?></label>
+				<a href="<?php URL::out('admin', 'page=moderate'); ?>">Reset</a>
+			</p>
+			<p>
+				<label>Content <input type="checkbox" name="search_fields[]" value="content"<?php echo in_array('content', $search_fields) ? ' checked' : ''; ?>></label>
+				<label>Author <input type="checkbox" name="search_fields[]" value="name"<?php echo in_array('name', $search_fields) ? ' checked' : ''; ?>></label>
+				<label>IP Address<input type="checkbox" name="search_fields[]" value="ip"<?php echo in_array('ip', $search_fields) ? ' checked' : ''; ?>></label>
+				<label>E-mail <input type="checkbox" name="search_fields[]" value="email"<?php echo in_array('email', $search_fields) ? ' checked' : ''; ?>></label>
+				<label>URL <input type="checkbox" name="search_fields[]" value="url"<?php echo in_array('url', $search_fields) ? ' checked' : ''; ?>></label>
+				<?php echo Utils::html_select('search_status', $statuses, $status); ?>
+				<?php echo Utils::html_select('search_type', $types, $type); ?>
+			</p>
+			</form>
+		</div>
+	
+	</div>
+	
+	<hr>
+	
+	<div class="column span-24 last">
+<?php if( count($comments) ) { ?>
+		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
+			
+			<div>
+				<p class="submit">
+					<input type="submit" name="do_update" value="<?php _e('Moderate!'); ?>">
+<?php if ($mass_delete != '') : ?>
+					<label><input type="checkbox" name="<?php echo $mass_delete; ?>" id="mass_delete" value="1"><?php _e("Delete 'em all"); ?></label>
+<?php endif; ?>
 				</p>
-				&nbsp;
-			</li>
-		<?php }	?>
-		</ul>
-		<p class="submit"><input type="submit" name="submit" value="<?php _e('Moderate!'); ?>"> 
-		<?php if ($mass_delete != '') : ?>
-		<label><input type="checkbox" name="<?php echo $mass_delete; ?>" id="mass_delete1" value="1"><?php _e("Delete 'em all"); ?></label></p>
-		<?php endif; ?>
+			</div>
+			
+			<div>
+				Mark All For:
+				<a href="#" onclick="$('.radio_approve').attr('checked', 'checked');return false;"><?php _e('Approval'); ?></a> &bull;
+				<a href="#" onclick="$('.radio_delete').attr('checked', 'checked');return false;"><?php _e('Deletion'); ?></a> &bull;
+				<a href="#" onclick="$('.radio_spam').attr('checked', 'checked');return false;"><?php _e('Spam'); ?></a> &bull;
+				<a href="#" onclick="$('.radio_unapprove').attr('checked', 'checked');return false;"><?php _e('Unapproval'); ?></a>
+			</div>
+			
+			<div id="waiting">
+<?php foreach( $comments as $comment ) : ?>
+			<hr>
+			<div class="comment">
+				<div class="comment_header">
+				<strong>Author:</strong> <?php echo $comment->name."\r\n";?>
+				<?php 
+				if ($comment->url != '')
+					echo '&bull; <strong>Site:</strong> <a href="' . $comment->url . '">' . $comment->url . '</a>'."\r\n";
+				?>
+				<?php
+				if ( $comment->email != '' )
+					echo '&bull; <strong>E-mail:</strong> <a href="mailto:' . $comment->email . '">' . $comment->email . '</a>'."\r\n";
+				?>
+				&bull; <strong>Post:</strong> <a href="<?php echo $comment->post->permalink ?>"><?php echo $comment->post->title; ?></a>
+				&bull; <?php echo $comment->date."\r\n"; ?>
+				</div>
+				<div class="comment_content" id="comment_content_<?php echo $comment->id; ?>"<?php echo ($comment->status == COMMENT::STATUS_SPAM) ? ' style="display:none;"' : '' ?>>
+					<?php echo htmlentities($comment->content_out, ENT_COMPAT, 'UTF-8'); ?>
+				</div>
+<?php if ($comment->status == COMMENT::STATUS_SPAM) : ?>
+					<a href="" onclick="$(this).hide();$('#comment_content_<?php echo $comment->id; ?>').show();return false;">[Show Comment]</a>
+<?php endif; ?>
+<?php if ($comment->info->spamcheck) { ?>
+				<ul style="list-style:disc;margin-top:10px;">
+<?php
+$reasons = (array)$comment->info->spamcheck;
+$reasons = array_unique($reasons);	
+foreach($reasons as $reason):
+?>
+					<li><?php echo $reason; ?></li>
+				<?php endforeach; ?>
+				</ul>
+<?php } ?>
+				<div class="comment_footer">
+					<?php _e('Action:'); ?>
+					
+					<label><input type="radio" class="radio_approve" name="comment_ids[<?php echo $comment->id; ?>]" id="approve-<?php echo $comment->id; ?>" value="approve" <?php echo $default_radio['approve']; ?>><?php _e('Approve'); ?></label>
+					<label><input type="radio" class="radio_delete" name="comment_ids[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete" <?php echo $default_radio['delete']; ?>><?php _e('Delete'); ?></label>
+					<label><input type="radio" class="radio_spam" name="comment_ids[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam" <?php echo $default_radio['spam']; ?>><?php _e('Mark as Spam'); ?></label>
+					<label><input type="radio" class="radio_unapprove" name="comment_ids[<?php echo $comment->id; ?>]" id="unapprove-<?php echo $comment->id; ?>" value="unapprove" <?php echo $default_radio['unapprove']; ?>><?php _e('Unapprove'); ?></label>
+				</div>
+			</div>
+<?php endforeach; ?>
+			<hr>
+			</div>
+			<div>
+				<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+				<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+				<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+				<input type="submit" name="do_update" value="<?php _e('Moderate!'); ?>"> 
+<?php if ($mass_delete != '') : ?>
+				<label><input type="checkbox" name="<?php echo $mass_delete; ?>" id="mass_delete1" value="1"><?php _e("Delete 'em all"); ?></label>
+<?php endif; ?>
+			</div>
 		</form>
-	<?php } else { ?>
-		<p><?php _e('You currently have no comments to moderate.'); ?></p>
-	<?php } ?>
+<?php } else { ?>
+			<p><?php _e('You currently have no comments to moderate.'); ?></p>
+<?php } ?>
 	</div>
 </div>
 <script type="text/javascript">
-$('.moderated_comment:even').css('background', '#f8f8f8');
+$('.comment:even').css('background-color', '#EEE');
+$('.comment_header:even').css('border-color', '#DDD');
+$('.comment_footer:even').css('border-color', '#DDD');
 </script>
+
 <?php include('footer.php'); ?>

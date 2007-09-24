@@ -18,6 +18,11 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-siz
 #content-area h1 { padding-top: inherit; margin-bottom: 0.0em; font-size: 1.3em;}
 /*#menubar #current-item a {  background: #5095A0 url(images/bar-back-active.png) repeat scroll 0px 0px; font-size: 0.9em; padding: 0.4em 0.0em; }*/
 #content-published h3, #content-draft h3{margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
+.comment {margin:2px 0;padding:5px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
+.comment:first-child {border-top:0;}
+.comment_header {border-bottom:1px solid #eee;padding-bottom:5px;}
+.comment_content {margin:10px 0;}
+.comment_footer {border-top:1px solid #eee;padding-top:5px;}
 
 /*=== @d ===*/
 .dashboard-block { float: left; margin: 0px 1.5%; width: 30%; _width: 28%;}
