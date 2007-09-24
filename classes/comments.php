@@ -318,7 +318,7 @@ class Comments extends ArrayObject
 	 * @return array  an array of Comment objects for the given post
 	**/
 	public static function by_post_id($post_id) {
-		return self::get( array( "post_id" => $post_id ) );
+		return self::get( array( 'post_id' => $post_id, 'nolimit' => 1, 'orderby' => 'date ASC' ) );
 	}
 
 	/**
@@ -333,7 +333,7 @@ class Comments extends ArrayObject
 		{
 			return false;
 		}
-		return self::get( array( "post_slug" => $slug ) );
+		return self::get( array( 'post_slug' => $slug, 'nolimit' => 1, 'orderby' => 'date ASC' ) );
 	}
 
 	/**
@@ -344,7 +344,7 @@ class Comments extends ArrayObject
 	**/
 	public static function by_status ( $status = 0 )
 	{
-		return self::get( array( "status" => $status ) );
+		return self::get( array( 'status' => $status, 'nolimit' => 1, 'orderby' => 'date ASC' ) );
 	}
 
 	/**
