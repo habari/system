@@ -449,9 +449,10 @@ class AtomHandler extends ActionHandler
 		try {
 			$namespaces= array( 'default' => 'http://www.w3.org/2005/Atom' );
 			$namespaces= Plugins::filter( 'atom_get_collection_namespaces', $namespaces );
-			array_walk( $namespaces, create_function( '$value,$key,$feed_xmlns', '$feed_xmlns.= " xmlns:" . $key . "=\"" . $value ."\"";' ), &$feed_xmlns );
+			$namespaces= array_map( create_function( '$value,$key', 'return "xmlns:" . $key . "=\"" . $value ."\"";' ), $namespaces, array_keys($namespaces) );
+			$namespaces= implode( ' ', $namespaces );
 
-			$xml= new SimpleXMLElement( '<feed ' . trim( $feed_xmlns ) . '></feed>' );
+			$xml= new SimpleXMLElement( '<feed ' . $namespaces . '></feed>' );
 			
 			$feed_title= $xml->addChild( 'title', Options::get( 'title' ) );
 			
