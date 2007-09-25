@@ -837,6 +837,7 @@ class AdminHandler extends ActionHandler
 				$out.= '<li><a href="' . $menuitem['url'] . '">' . $menuitem['caption'] . '</a></li>';				
 			}
 			$out.= '</ul>';
+			$out.= '</li>';
 		}
 		return $out;
 	}
