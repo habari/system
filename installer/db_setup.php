@@ -90,7 +90,7 @@
 				<div class="javascript-disabled">Use the settings below only if you have selected SQLite as your database engine.</div>
 		
 				<div class="inputfield forsqlite">
-					<label for="databasefile">Data file</label>
+					<label for="databasefile">Data file <strong>*</strong></label>
 					<input type="text" id="databasefile" name="db_file" value="<?php echo $db_file; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
