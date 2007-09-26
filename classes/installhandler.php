@@ -756,7 +756,7 @@ class InstallHandler extends ActionHandler {
 					$xml_error->addChild( 'id', '#databasepass' );
 					$xml_error->addChild( 'id', '#databasename' );
 					$xml_error->addChild( 'id', '#databasehost' );
-					$xml_error->addChild( 'message', 'An unknown error occured. Please contact your administrator.' );
+					$xml_error->addChild( 'message', $connect->getMessage() );
 				}
 			}
 		}
