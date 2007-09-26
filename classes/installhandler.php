@@ -706,7 +706,7 @@ class InstallHandler extends ActionHandler {
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
-	 */
+	 */ 
 	public function ajax_check_mysql_credentials() {
 		$xml= new SimpleXMLElement('<response></response>');
 		// Missing anything?

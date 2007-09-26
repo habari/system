@@ -219,7 +219,7 @@ class Plugins
 			}
 		}
 		return false;
-		return str_replace( '.plugin.php', '',  substr( $file, ( strrpos( $file, '/') + 1 ) ) );
+		#return str_replace( '.plugin.php', '',  substr( $file, ( strrpos( $file, '/') + 1 ) ) );
 	}
 
 	/**
