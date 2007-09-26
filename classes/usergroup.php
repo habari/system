@@ -52,7 +52,7 @@ class UserGroup
 	/**
 	 * __static() class members are called by __autoload()
 	**/
-	public statuc function __static()
+	public static function __static()
 	{
 		self::load_groups();
 	}
@@ -106,7 +106,7 @@ class UserGroup
 	**/
 	public static function add_user( $group, $id )
 	{
-		if ( ! in_array( $groups[ intval($group) ], $id ) )
+		if ( ! in_array( self::$groups[ intval($group) ], $id ) )
 		{
 			$results= DB::query( 'INSERT INTO ' . DB::table('users_groups') . ' (user_id, group_id) VALUES (?, ?)', array( intval($group), intval($id) ) );
 			$groups= load_groups();
@@ -120,7 +120,7 @@ class UserGroup
 	**/
 	public static function remove_user( $group, $id )
 	{
-		if ( in_array( $groups[ intval($group) ], $id ) ) {
+		if ( in_array( self::$groups[ intval($group) ], $id ) ) {
 			$results= DB::query( 'DELETE FROM ' . DB::table('users_groups') . ' WHERE user_id=? and group_id= ?', array( intval($id), intval($group) ) );
 			$groups= load_groups();
 		}
