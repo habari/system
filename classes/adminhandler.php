@@ -623,7 +623,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->authors = $authors;
 		
 		// Set up the dates select box
-		$dates= DB::get_column("SELECT DATE_FORMAT(pubdate, '%Y-%m') FROM " . DB::table('posts') . ' ORDER BY pubdate DESC');
+		$dates= DB::get_column("SELECT pubdate FROM " . DB::table('posts') . ' ORDER BY pubdate DESC');
+		$dates= array_map( create_function( '$date', 'return strftime( "%Y-%m", strtotime( $date ) );' ), $dates );
 		array_unshift($dates, 'Any');
 		$dates= array_combine($dates, $dates);
 		$this->theme->dates = $dates;
@@ -725,7 +726,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->users= $users;
 		
 		// set up dates.
-		$dates= DB::get_column("SELECT DATE_FORMAT(timestamp, '%Y-%m') FROM " . DB::table('log') . ' ORDER BY timestamp DESC');
+		$dates= DB::get_column("SELECT timestamp FROM " . DB::table('log') . ' ORDER BY timestamp DESC');
+		$dates= array_map( create_function( '$date', 'return strftime( "%Y-%m", strtotime( $date ) );' ), $dates );
 		array_unshift( $dates, 'Any');
 		$dates= array_combine( $dates, $dates );
 		$this->theme->dates= $dates;
