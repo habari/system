@@ -30,14 +30,14 @@ class SQLiteConnection extends DatabaseConnection
 	 * @param db_pass string the database user password
 	 * @return boolean True if connection succeeded, false if not.
 	 */
-	public function connect( $connect_string, $db_user, $db_pass )
+	/*public function connect( $connect_string, $db_user, $db_pass )
 	{
 		list($type, $file) = explode(':', $connect_string, 2);
 		if ( ! file_exists( $file ) )	{
 			return false;
 		}
 		return parent::connect( $connect_string, $db_user, $db_pass );
-	}	 	 	 	
+	}*/	 	 	 	
 
 		/** 
 	 * automatic diffing function - used for determining required database upgrades
