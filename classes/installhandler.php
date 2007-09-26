@@ -269,24 +269,24 @@ class InstallHandler extends ActionHandler {
 		}
 		*/
 
-		// Cool.  DB installed.  Let's setup the admin user now.
+		// Cool.  DB installed. Create the default options
+		// but check first, to make sure
+		if ( ! Options::get('installed') )
+		{
+			if (! $this->create_default_options()) {
+				$this->theme->assign('form_errors', array('options'=>'Problem creating default options'));
+				DB::rollback();
+				return false;
+			}
+		}
+		
+		// Let's setup the admin user now.
 		// But first, let's make sure that no users exist
 		$all_users= User::get_all();
 		if ( empty( $all_users ) )
 		{
 			if (! $this->create_admin_user()) {
 				$this->theme->assign('form_errors', array('admin_user'=>'Problem creating admin user.'));
-				DB::rollback();
-				return false;
-			}
-		}
-	
-		// Create the default options
-		// but check first, to make sure
-		if ( ! Options::get('installed') )
-		{
-			if (! $this->create_default_options()) {
-				$this->theme->assign('form_errors', array('options'=>'Problem creating default options'));
 				DB::rollback();
 				return false;
 			}
