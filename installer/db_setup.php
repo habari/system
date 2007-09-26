@@ -86,7 +86,7 @@
 					</div>
 				</div>
 		
-				<h3 class="javascript-disabled">SQLite Settings <strong>*</strong>/h3>
+				<h3 class="javascript-disabled">SQLite Settings <strong>*</strong></h3>
 				<div class="javascript-disabled">Use the settings below only if you have selected SQLite as your database engine.</div>
 		
 				<div class="inputfield forsqlite">
