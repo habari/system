@@ -52,6 +52,40 @@ function checkDBCredentials()
 			}
 		);
 	}
+	else if ( ( $('#databasetype').val() == 'sqlite' ) && ( $('#databasefile').val() != '' ) ) {
+		$.post('ajax/check_sqlite_credentials',{ // Ask InstallHandler::ajax_check_sqlite_credentials to check the credentials
+				ajax_action: 'check_sqlite_credentials',
+				file: $('#databasefile').val(),
+			}, function(xml) {
+				switch($('status',xml).text()) {
+					case '0': // Show warning, fade the borders and hide the next step
+						$('id',xml).each(function(id) {
+							ido= $('id',xml).get(id);
+							warningtext= $('message',xml).text();
+							$('#siteconfiguration').children('.options').fadeOut();
+							$('#siteconfiguration').removeClass('ready').removeClass('done');
+							$('#install').children('.options').fadeOut();
+							$('#install').removeClass('ready').removeClass('done');
+							$($(ido).text()).parents('.installstep').removeClass('done');
+							$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid');
+							$($(ido).text()).parents('.inputfield').find('.warning:hidden').html(warningtext).fadeIn();
+							});
+						break;
+					case '1': // Hide the warnings, highlight the borders and show the next step
+						ida= new Array( '#databasefile' );
+						$(ida).each(function(id) {
+							ido= $(ida).get(id);
+							$(ido).parents('.inputfield').removeClass('invalid').addClass('valid');
+							$(ido).parents('.inputfield').find('.warning:visible').fadeOut();
+							$(ido).parents('.installstep').addClass('done')
+							});
+						$('#siteconfiguration').children('.options').fadeIn();
+						$('#siteconfiguration').addClass('ready');
+						break;
+				}
+			}
+		);
+	}
 	else {
 		$('.installstep:first').removeClass('done');
 		$('#siteconfiguration').children('.options').fadeOut();

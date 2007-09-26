@@ -19,6 +19,10 @@ class InstallHandler extends ActionHandler {
 					self::ajax_check_mysql_credentials();
 					exit;
 					break;
+				case 'check_sqlite_credentials':
+					self::ajax_check_sqlite_credentials();
+					exit;
+					break;
 			}
 		}
 		// set the default values now, which will be overriden as we go
@@ -762,5 +766,41 @@ class InstallHandler extends ActionHandler {
 		header("Cache-Control: no-cache");
 		print $xml;
 	}
+
+	/**
+	 * Validate database credentials for SQLite
+	 * Try to connect and verify if database name exists
+	 */
+	public function ajax_check_sqlite_credentials() {
+		$xml= new SimpleXMLElement('<response></response>');
+		// Missing anything?
+		if ( !isset( $_POST['file'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error= $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#databasefile' );
+			$xml_error->addChild( 'message', 'The database file was left empty.' );
+		}
+		if ( !isset( $xml_error ) ) {
+			// Can we connect to the DB?
+			$pdo= 'sqlite:' . $_POST['file'];
+			$connect= DB::connect( $pdo, null, null );
+			if ( $connect === true ) {
+				$xml->addChild( 'status', 1 );
+			}
+			else {
+				$xml->addChild( 'status', 0 );
+				$xml_error= $xml->addChild( 'error' );
+				// TODO: Add error codes handling for user-friendly messages
+				$xml_error->addChild( 'id', '#databasefile' );
+				$xml_error->addChild( 'message', $connect->getMessage() );
+			}
+		}
+		$xml= $xml->asXML();
+		ob_clean();
+		header("Content-type: text/xml");
+		header("Cache-Control: no-cache");
+		print $xml;
+	}
+
 }
 ?>
