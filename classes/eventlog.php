@@ -40,7 +40,7 @@ class EventLog extends ArrayObject
 	 */
 	public static function register_type( $type= 'default', $module= null )
 	{
-		DB::query( 'INSERT IGNORE INTO ' . DB::Table('log_types') . ' (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
+		DB::query( 'INSERT INTO ' . DB::Table('log_types') . ' (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
 	}
 	
 	/**
