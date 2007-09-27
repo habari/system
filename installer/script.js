@@ -3,7 +3,7 @@ function setDatabaseType(el)
 	$('.forsqlite').hide();
 	$('.formysql').hide();
 	
-	switch($(el).fieldValue()) {
+	switch($(el).val()) {
 		case 'mysql':
 			$('.formysql').show();
 			break;
@@ -141,6 +141,7 @@ $(document).ready(function() {
 	$('#databaseuser').blur(checkDBCredentials);
 	$('#databasepass').blur(checkDBCredentials);
 	$('#databasename').blur(checkDBCredentials);
+	$('#databasefile').blur(checkDBCredentials);
 	$('#sitename').blur(checkSiteConfigurationCredentials);
 	$('#adminuser').blur(checkSiteConfigurationCredentials);
 	$('#adminpass1').blur(checkSiteConfigurationCredentials);
