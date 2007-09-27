@@ -48,16 +48,6 @@ class InstallHandler extends ActionHandler {
 		 */
 		Plugins::register( array('InstallHandler', 'ajax_check_mysql_credentials'), 'ajax_', 'check_mysql_credentials' );
 
-		/*
-		 * Let's check the config.php file if no POST data was submitted
-		*/
-		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['db_user']) ) ) {
-			// no config file, and no HTTP POST
-			$this->display('db_setup');
-		}
-
-		// we got here, so we either have a config file, or an HTTP POST
-
 		// try to load any values that might be defined in config.php
 		if ( file_exists( Site::get_dir('config_file') ) ) {
 			include( Site::get_dir('config_file') );
@@ -87,6 +77,10 @@ class InstallHandler extends ActionHandler {
 					$this->handler_vars[$blog_datum]= $value;
 				}
 			}
+		}
+		else {
+			// no config file
+			$this->display('db_setup');
 		}
 
 		// now merge in any HTTP POST values that might have been sent
@@ -544,6 +538,7 @@ class InstallHandler extends ActionHandler {
 		if ( file_exists( Site::get_dir('config_file' ) ) ) {
 			// set the defaults for comprison
 			$db_host= $this->handler_vars['db_host']; 
+			$db_file= $this->handler_vars['db_file']; 
 			$db_type= $this->handler_vars['db_type']; 
 			$db_schema= $this->handler_vars['db_schema']; 
 			$db_user= $this->handler_vars['db_user']; 
@@ -551,13 +546,13 @@ class InstallHandler extends ActionHandler {
 			$table_prefix= $this->handler_vars['table_prefix']; 
 
 			// set the connection string
-			if ( 'sqlite' == $db_type ) { 
-				// remember, we're using $db_host to define
-				// the path to the SQLite data file
-				$connection_string= "$db_type:$db_host"; 
-			} 
-			else { 
-				$connection_string= "$db_type:host=$db_host;dbname=$db_schema"; 
+			switch ( $db_type ) {
+				case 'mysql':
+					$connection_string= "$db_type:host=$db_host;dbname=$db_schema"; 
+					break;
+				case 'sqlite':
+					$connection_string= "$db_type:$db_file"; 
+					break;
 			} 
 
 			// load the config.php file
