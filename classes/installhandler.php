@@ -48,6 +48,14 @@ class InstallHandler extends ActionHandler {
 		 */
 		Plugins::register( array('InstallHandler', 'ajax_check_mysql_credentials'), 'ajax_', 'check_mysql_credentials' );
 
+		/* 
+		 * Let's check the config.php file if no POST data was submitted 
+		 */ 
+		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['admin_username']) ) ) { 
+			// no config file, and no HTTP POST 
+			$this->display('db_setup'); 
+		} 
+
 		// try to load any values that might be defined in config.php
 		if ( file_exists( Site::get_dir('config_file') ) ) {
 			include( Site::get_dir('config_file') );
@@ -77,10 +85,6 @@ class InstallHandler extends ActionHandler {
 					$this->handler_vars[$blog_datum]= $value;
 				}
 			}
-		}
-		else {
-			// no config file
-			$this->display('db_setup');
 		}
 
 		// now merge in any HTTP POST values that might have been sent
