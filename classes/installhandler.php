@@ -783,15 +783,26 @@ class InstallHandler extends ActionHandler {
 			// Can we connect to the DB?
 			$pdo= 'sqlite:' . $_POST['file'];
 			$connect= DB::connect( $pdo, null, null );
-			if ( $connect === true ) {
-				$xml->addChild( 'status', 1 );
-			}
-			else {
-				$xml->addChild( 'status', 0 );
-				$xml_error= $xml->addChild( 'error' );
-				// TODO: Add error codes handling for user-friendly messages
-				$xml_error->addChild( 'id', '#databasefile' );
-				$xml_error->addChild( 'message', $connect->getMessage() );
+			switch ($connect) {
+				case true:
+					// We were able to connect to an existing database file.
+					$xml->addChild( 'status', 1 );
+					break;
+				case false:
+					// PDO can create the database file, we need to make sure the folder is writable first.
+					$file_dir= dirname($_POST['file']);
+					if ( is_writable($file_dir) ) {
+						$xml->addChild( 'status', 1 );
+						break;
+					}
+					$connect= new Exception('Could not create the database file.');
+				default:
+					// We can't create the database file, send an error message.
+					$xml->addChild( 'status', 0 );
+					$xml_error= $xml->addChild( 'error' );
+					// TODO: Add error codes handling for user-friendly messages
+					$xml_error->addChild( 'id', '#databasefile' );
+					$xml_error->addChild( 'message', $connect->getMessage() );
 			}
 		}
 		$xml= $xml->asXML();
