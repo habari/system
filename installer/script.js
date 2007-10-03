@@ -1,3 +1,17 @@
+function handleAjaxError(msg, status, err)
+{
+	error_msg= '';
+	if (msg.responseText != '') {
+		error_msg= msg.responseText;
+	}
+	$('#installerror').html(
+		'<strong>AJAX Error</strong>'+
+		'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
+		'<strong>Server Response</strong>'+
+		'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
+	).fadeIn();
+}
+				
 function setDatabaseType()
 {
 	switch($('#databasetype').val()) {
@@ -26,6 +40,7 @@ function checkDBCredentials()
 				pass: $('#databasepass').val()
 			},
 			success: function(xml) {
+				$('#installerror').fadeOut();
 				switch($('status',xml).text()) {
 				case '0': // Show warning, fade the borders and hide the next step
 					$('id',xml).each(function(id) {
@@ -48,12 +63,7 @@ function checkDBCredentials()
 					break;
 				}
 			},
-			error: function(msg, status, err) {
-				alert("ERROR:\n"+
-				"\nStatus: "+status+
-				"\nError: "+err+
-				"\n\n"+msg.responseText);
-				},
+			error: handleAjaxError,
 		});
 	}
 	else if ( ( $('#databasetype').val() == 'sqlite' ) && ( $('#databasefile').val() != '' ) ) {
@@ -65,6 +75,7 @@ function checkDBCredentials()
 				file: $('#databasefile').val(),
 			},
 			success: function(xml) {
+				$('#installerror').fadeOut();
 				switch($('status',xml).text()) {
 				case '0': // Show warning, fade the borders and hide the next step
 					$('id',xml).each(function(id) {
@@ -87,12 +98,7 @@ function checkDBCredentials()
 					break;
 				}
 			},
-			error: function(msg, status, err) {
-				alert("ERROR:\n"+
-				"\nStatus: "+status+
-				"\nError: "+err+
-				"\n\n"+msg.responseText);
-				},
+			error: handleAjaxError,
 		});
 	}
 	else {
@@ -133,6 +139,8 @@ $(document).ready(function() {
 	$('.installstep').removeClass('ready');
 	$('.installstep:first').addClass('ready');
 	$('.javascript-disabled').hide();
+	$('#installform').before('<div class="installerror error" id="installerror"></div>');
+	$('#installerror').hide();
 	$('form').attr('autocomplete', 'off');
 	setDatabaseType();
 	checkDBCredentials();

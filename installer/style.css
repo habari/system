@@ -191,3 +191,13 @@ div.javascript-disabled {
 	/*background-color: #eeffee;*/
 }
 
+.error {
+	padding: .8em;
+	margin-bottom: 1em;
+	border: 2px solid #ddd;
+	background: #FBE3E4;
+	border-color: #FBC2C4;
+}
+.error, .error a {
+	color: #D12F19;
+}
