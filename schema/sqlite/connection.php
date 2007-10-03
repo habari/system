@@ -33,9 +33,6 @@ class SQLiteConnection extends DatabaseConnection
 	public function connect( $connect_string, $db_user, $db_pass )
 	{
 		list($type, $file) = explode(':', $connect_string, 2);
-		if ( ! file_exists( $file ) )	{
-			return false;
-		}
 		return parent::connect( $connect_string, $db_user, $db_pass );
 	}	 	 	 	
 
