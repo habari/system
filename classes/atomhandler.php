@@ -526,7 +526,8 @@ class AtomHandler extends ActionHandler
 			}
 			$params['content_type'] = Plugins::filter( 'atom_get_collection_content_type', $params['content_type'] );
 			
-			$params['status'] = Post::status('published');	
+			$params['status'] = Post::status('published');
+			$params['orderby'] = 'updated DESC';
 					
 			foreach ( Posts::get( $params ) as $post ) {
 				$user= User::get_by_id( $post->user_id );
@@ -550,7 +551,7 @@ class AtomHandler extends ActionHandler
 				$entry_id= $feed_entry->addChild( 'id', $post->guid );
 				
 				$entry_updated= $feed_entry->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
-				$entry_edited= $feed_entry->addChild( 'app:edited', date( 'c', strtotime( $post->pubdate ) ), 'http://www.w3.org/2007/app' );
+				$entry_edited= $feed_entry->addChild( 'app:edited', date( 'c', strtotime( $post->updated ) ), 'http://www.w3.org/2007/app' );
 				
 				$entry_content= $feed_entry->addChild( 'content', $content );
 				$entry_content->addAttribute( 'type', 'html' );
