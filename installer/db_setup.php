@@ -5,7 +5,6 @@
 	<meta name="robots" content="noindex,nofollow">
 	<link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.js"></script>
-	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.form.js"></script>
 	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/system/installer/script.js"></script>
 </head>
   
