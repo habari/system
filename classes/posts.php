@@ -85,7 +85,7 @@ class Posts extends ArrayObject
 		else {
 			foreach( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
-				$where= array('1=1');
+				$where= array();
 				$paramset= array_merge((array) $paramarray, (array) $paramset);
 
 				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
@@ -174,7 +174,9 @@ class Posts extends ArrayObject
 					$params[]= date('Y-m-d', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 				
-				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+				if(count($where) > 0) { 
+					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+				}
 			}
 		}
 		
