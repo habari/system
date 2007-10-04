@@ -26,7 +26,7 @@
     <p><input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>"></p>
     
     <h4><?php _e('Content'); ?></h4>
-    <p><textarea name="content" id="content" rows="20" cols="114"><?php echo htmlspecialchars( $post->content ); ?></textarea></p>
+    <p><textarea name="content" id="content" rows="20" cols="114" class="resizable"><?php echo htmlspecialchars( $post->content ); ?></textarea></p>
     
     <h4><?php _e('Tags'); ?></h4>
     <p><?php _e('Tags (comma separated):'); ?> <input type="text" name="tags" id="tags" value="<?php echo ( !empty( $tags ) ) ? $tags : ''; ?>"></p>

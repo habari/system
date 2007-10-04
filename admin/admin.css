@@ -53,6 +53,9 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-siz
 form p { margin-bottom: -1.0em;}*/
 .favicon { width: 16px; height: 16px;}
 
+/*=== @g ===*/
+.grip { height: 15px; cursor: n-resize; }
+
 /*=== @i ===*/
 body img { border: none; margin: 0px; /* This feature of blueprint is really annoying */}
 input[type=text], input[type=password] { margin-top: 1.0em; margin-bottom: 1.0em; width: 99%;}
