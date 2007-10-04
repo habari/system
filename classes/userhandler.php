@@ -3,7 +3,6 @@
 /**
  * Habari UserHandler Class
  *
- * Requires PHP 5.0.4 or later
  * @package Habari
  */
 class UserHandler extends ActionHandler

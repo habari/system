@@ -3,7 +3,6 @@
 /**
  * Habari RawPHPEngine class
  *
- * Requires PHP 5.0.4 or later
  * @package Habari
  *
  * The RawPHPEngine is a subclass of the abstract TemplateEngine class

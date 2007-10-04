@@ -3,7 +3,6 @@
 /**
  * Habari ThemeEngine Class
  *
- * Requires PHP 5.0.4 or later
  * @package Habari
  *
  * The ThemeEngine is an ancestor class that new theme engines should extend.

@@ -1,5 +1,5 @@
 <?php
-define('MIN_PHP_VERSION', '5.1.2');
+define('MIN_PHP_VERSION', '5.2.0');
 
 /**
  * The class which responds to installer actions

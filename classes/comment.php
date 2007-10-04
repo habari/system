@@ -3,7 +3,6 @@
 /**
  * Habari CommentRecord Class
  *
- * Requires PHP 5.0.4 or later
  * @package Habari
  *
  * Includes an instance of the CommentInfo class; for holding inforecords about the comment

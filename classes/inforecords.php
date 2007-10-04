@@ -3,7 +3,6 @@
 /**
  * Habari InfoRecords Class
  *
- * Requires PHP 5.1 or later
  * Base class for managing metadata about various Habari objects
  * 
  * @package Habari
@@ -132,8 +131,6 @@ abstract class InfoRecords implements URLProperties
 	/**
 	 * Test for the existence of specified info value
 	 * 
-	 * NOTE: __isset is only available from PHP 5.1 onwards.
-	 * 
 	 * @param string $name Name of the option to set
 	 * @return boolean TRUE if the info option exists, FALSE in all other cases
 	 **/	
@@ -145,8 +142,6 @@ abstract class InfoRecords implements URLProperties
 
 	/**
 	 * Remove an info option; immediately unsets from the storage AND removes from database. Use with caution.
-	 * 
-	 * NOTE: __unset is only available from PHP 5.1 onwards.
 	 * 
 	 * @param string $name Name of the option to unset
 	 * @return boolean TRUE if the option is successfully unset, FALSE otherwise

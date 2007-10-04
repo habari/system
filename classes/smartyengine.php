@@ -3,7 +3,6 @@
 /**
  * Habari SmartyEngine template engine subclass
  *
- * Requires PHP 5.0.4 or later
  * @package Habari
  *
  * The SmartyEngine is a subclass of the abstract TemplateEngine class
