@@ -10,8 +10,6 @@
  *
  * Base class for caching computationally expensive or bandwidth intensive data
  * 
- * Requires PHP 5.1 or later
- * 
  * @package Habari
  */
 abstract class Cache

@@ -2,7 +2,6 @@
 /**
  * Habari Version Class
  *
- * Requires PHP 5.1 or later
  * Base class for managing metadata about various Habari objects
  * 
  * @package Habari

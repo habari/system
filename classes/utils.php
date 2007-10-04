@@ -2,7 +2,6 @@
 /**
  * Habari Utility Class
  *
- * Requires PHP 5.0.4 or later
  * @package Habari
  */
 

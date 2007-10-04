@@ -42,7 +42,7 @@
         <?php if (! $php_version_ok) {?>
           <h2>PHP Upgrade needed...</h2>
           <p class="instructions">
-            <em>habari</em> requires PHP 5.1 or newer.  Your current PHP version is <?php echo $PHP_VERSION;?>.
+            <em>habari</em> requires PHP 5.2 or newer.  Your current PHP version is <?php echo $PHP_VERSION;?>.
           </p>
           <strong>@todo Upgrading PHP instructions</strong>
         <?php }?>

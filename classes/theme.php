@@ -2,7 +2,6 @@
 /**
  * Habari Theme Class
  *
- * Requires PHP 5.0.4 or later
  * @package Habari
  *
  * The Theme class is the behind-the-scenes representation of 

@@ -1,7 +1,6 @@
 <?php
 /**
 * Habari UserGroup Class
-* requires PHP 5.1 or later
 * @package Habari
 **/
 class UserGroup
@@ -10,7 +9,7 @@ class UserGroup
          * An array of users assigned to a specific group id.
          * Both the group and the user are id integers, not string values.
          * The user arrays have both the key and the value set to the user_id.  
-         
+         *
          * For example:
          * <code>
          * self::$groups= array(
@@ -38,7 +37,8 @@ class UserGroup
          * The group and permission are both id integers, not string values.
          * The key of each permission array is the permission id.  
          * The value of the permission id is boolean on whether to grant or deny
- that permission.
+				 * that permission.
+				 *
          * For example:
          * <code>
          * self::$group_permissions= array(
