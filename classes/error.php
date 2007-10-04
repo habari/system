@@ -103,9 +103,9 @@ class Error extends Exception
 	{
 		$trace= debug_backtrace();
 		// remove this call
-		array_shift( $trace );
+		//array_shift( $trace );
 		// remove error handler call
-		array_shift( $trace );
+		//array_shift( $trace );
 		foreach ( $trace as $n => $a ) {
 			if ( ! isset( $a['file'] ) ) { $a['file']= '[core]'; }
 			if ( ! isset( $a['line'] ) ) { $a['line']= '(eval)'; }
