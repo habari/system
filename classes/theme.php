@@ -163,7 +163,7 @@ class Theme
 		if ( $posts !== false && count( $posts ) > 0 ) {
 			$post= ( count( $posts ) > 1 ) ? $posts[0] : $posts;
 			$this->assign( 'post', $post );
-			$types= array_flip( Post::list_post_types() );
+			$types= array_flip( Post::list_active_post_types() );
 			$type= $types[$post->content_type]; 
 		}
 		elseif( $posts === false ) {

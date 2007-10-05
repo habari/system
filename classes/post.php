@@ -19,7 +19,8 @@ class Post extends QueryRecord
 {
 	// static variables to hold post status and post type values
 	static $post_status_list= array();
-	static $post_type_list= array();
+	static $post_type_list_active= array();
+	static $post_type_list_all= array();
 
 	private $tags= null;
 	private $comments_object= null;
@@ -28,24 +29,77 @@ class Post extends QueryRecord
 	private $info= null;
 
 	/**
-	 * returns an associative array of post types
+	 * returns an associative array of active post types
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of post type names => integer values
 	**/
-	public static function list_post_types( $refresh = false )
+	public static function list_active_post_types( $refresh = false )
 	{
-		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list ) ) )
-		{
-			return self::$post_type_list;
+		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_active ) ) ) {
+			return self::$post_type_list_active;
 		}
-		self::$post_type_list['any']= 0;
+		self::$post_type_list_active['any']= 0;
+		$sql= 'SELECT * FROM ' . DB::table('posttype') . ' WHERE active = 1 ORDER BY id ASC';
+		$results= DB::get_results( $sql );
+		foreach ($results as $result) {
+			self::$post_type_list_active[$result->name]= $result->id;
+		}
+		return self::$post_type_list_active;
+	}
+	
+	/**
+	 * returns an associative array of all post types
+	 * @param bool whether to force a refresh of the cached values
+	 * @return array An array of post type names => (integer values, active values)
+	**/
+	public static function list_all_post_types( $refresh = false )
+	{
+		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_all ) ) ) {
+			return self::$post_type_list_all;
+		}
+		self::$post_type_list_all['any']= 0;
 		$sql= 'SELECT * FROM ' . DB::table('posttype') . ' ORDER BY id ASC';
 		$results= DB::get_results( $sql );
-		foreach ($results as $result)
-		{
-			self::$post_type_list[$result->name]= $result->id;
+		foreach ($results as $result) {
+			self::$post_type_list_all[$result->name]= array(
+				'id' => $result->id,
+				'active' => $result->active
+				);
 		}
-		return self::$post_type_list;
+		return self::$post_type_list_all;
+	}
+	
+	public static function activate_post_type( $type )
+	{
+		$all_post_types = Post::list_all_post_types( true ); // We force a refresh
+
+		// Check if it exists
+		if ( array_key_exists( $type, $all_post_types ) ) {
+			if ( ! $all_post_types[$type]['active'] == 1 ) {
+				// Activate it
+				$sql= 'UPDATE ' . DB::table('posttype') . ' SET active = 1 WHERE id = ' . $all_post_types[$type]['id'];
+				DB::query( $sql );
+			}
+			return true;
+		}
+		else {
+			return false; // Doesn't exist
+		}
+	}
+	
+	public static function deactivate_post_type( $type )
+	{
+		$active_post_types = Post::list_active_post_types( false ); // We force a refresh
+
+		if ( array_key_exists( $type, $active_post_types ) ) {
+			// $type is active so we'll deactivate it
+			echo $active_post_types[$type];
+			$sql= 'UPDATE ' . DB::table('posttype') . ' SET active = 0 WHERE id = ' . $active_post_types[$type];
+			echo $sql;
+			DB::query( $sql );
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -125,7 +179,7 @@ class Post extends QueryRecord
 	**/
 	public static function type( $name )
 	{
-		$types= Post::list_post_types();
+		$types= Post::list_active_post_types();
 		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $types ) ) ) {
 			return $name;
 		}
@@ -142,7 +196,7 @@ class Post extends QueryRecord
 	**/
 	public function type_name( $type )
 	{
-		$types= array_flip( Post::list_post_types() );
+		$types= array_flip( Post::list_active_post_types() );
 		if ( is_numeric( $type ) && isset( $types[$type] ) )
 		{
 			return $types[$type];
@@ -157,17 +211,19 @@ class Post extends QueryRecord
 	/**
 	 * inserts a new post type into the database, if it doesn't exist
 	 * @param string The name of the new post type
+	 * @param bool Whether the new post type is active or not
 	 * @return none
 	**/
-	public static function add_new_type( $type )
+	public static function add_new_type( $type, $active= true )
 	{
 		// refresh the cache from the DB, just to be sure
-		$types= self::list_post_types( true );
+		$types= self::list_all_post_types( true );
 		if ( ! array_key_exists( $type, $types ) ) {
-			DB::query( 'INSERT INTO ' . DB::table('posttype') . ' (name) VALUES (?)', array( $type ) );
-			// now force a refresh of the cache, so the new type
+			DB::query( 'INSERT INTO ' . DB::table('posttype') . ' (name, active) VALUES (?, ?)', array( $type, $active ) );
+			// now force a refresh of the caches, so the new type
 			// is available for immediate use
-			$types= self::list_post_types( true );
+			$types= self::list_active_post_types( true );
+			$types= self::list_all_post_types( true );
 		}
 	}
 

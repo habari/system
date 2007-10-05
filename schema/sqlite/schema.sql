@@ -23,7 +23,8 @@ CREATE TABLE {$prefix}postinfo  (
 
 CREATE TABLE {$prefix}posttype (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	name VARCHAR(255) NOT NULL
+	name VARCHAR(255) NOT NULL,
+	active TINYINT(1) DEFAULT 1
 );
 
 CREATE TABLE {$prefix}poststatus (
