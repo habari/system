@@ -212,35 +212,33 @@ class Utils
 	}
 
 	/**
-	 * function page_selector
-	 * Returns a simple linked page selector
+	 * Build a collection of paginated URLs to be used for pagination.
+	 *
 	 * @param integer Current page
 	 * @param integer Total pages
-	 * @param string The RewriteRule name used to build the links
-	 * @param array Settings for the URLs output
+	 * @param string The RewriteRule name used to build the links.
+	 * @param array Various settings used by the method and the RewriteRule.
+	 * @return string Collection of paginated URLs built by the RewriteRule.
 	 **/
-	static function page_selector($current, $total, $rr_name= NULL, $settings = array())
+	static function page_selector( $current, $total, $rr_name= NULL, $settings = array() )
 	{
-		// If RewriteRule name is not supplied, use the current RewriteRule
-		if ( $rr_name == '' ) {
-			$rr= URL::get_matched_rule();
-		}
-		else {
-			list( $rr )= RewriteRules::by_name( $rr_name );
-		}
+		// If RewriteRule name is not supplied, use the current matched rule.
+		// Else retrieve the RewriteRule matching the supplied name.
+		$rr= ( $rr_name == '' ) ? URL::get_matched_rule() : reset( RewriteRules::by_name( $rr_name ) );
 		
-		// Retrieve the RewriteRule and aggregate an array of matching arguments
+		// Retrieve arguments name the RewriteRule can use to build a URL.
 		$rr_named_args= $rr->named_args;
 		$rr_args= array_merge( $rr_named_args['required'], $rr_named_args['optional']  );
+		// For each argument, check if the handler_vars array has that argument and if it does, use it.
 		$rr_args_values= array();
 		foreach ( $rr_args as $rr_arg ) {
-			$rr_arg_value= Controller::get_var( $rr_arg );
-			if ( $rr_arg_value != '' ) {
-				$rr_args_values[$rr_arg]= $rr_arg_value;
+			if ( !isset( $settings[$rr_arg] ) ) {
+				$rr_arg_value= Controller::get_var( $rr_arg );
+				if ( $rr_arg_value != '' ) {
+					$rr_args_values[$rr_arg]= $rr_arg_value;
+				}
 			}
 		}
-		
-		$settings= array_merge( $settings, $rr_args_values );
 		
 		// Make sure the current page is valid
 		if ( $current > $total ) {
@@ -249,34 +247,50 @@ class Utils
 		else if ( $current < 1 ) {
 			$current= 1;
 		}
-
-		for($i=2;$i<=$total;$i++) {
-			switch ($i) {
-				case (($i==($current+1)) && (($current+1) < $total)):
-				case ($i==($current-1)):
-					$pages[$i]= (int) $i;
-					break;
-				default:
-					break;
-			}
-		}
-		$pages[1]= 1;
-		$pages[$current]= (int) $current;
-		$pages[$total]= (int) $total;
-		ksort($pages);
-			
-		$lastpage = 0;
-		$out = '';
-		foreach ( $pages as $key => $value ) {
-			if ( $key == 0 ) continue;
-			if ( ($key - $lastpage) > 1 ) $out .= '&hellip;';
-			$caption = ($key==$current) ? '[' . $current . ']' : $key;
-			$url = Site::get_url('habari', true) . $rr->build( array_merge($settings, array('page'=>$key)), false);
-			$out .= '<a href="' . $url . '" ' . (($key==$current) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
-			$lastpage = $key;
+		
+		// Number of pages to display on each side of the current page.
+		$leftSide= isset( $settings['leftSide'] ) ? $settings['leftSide'] : 1;
+		$rightSide= isset( $settings['rightSide'] ) ? $settings['rightSide'] : 1;
+		
+		// Add the page '1'.
+		$pages[]= 1;
+		
+		// Add the pages to display on each side of the current page, based on $leftSide and $rightSide.
+		for ( $i= max( $current - $leftSide, 2 ); $i < $total && $i <= $current + $rightSide; $i++ ) {
+			$pages[]= $i;
 		}
 		
-		return trim($out);
+		// Add the last page if there is more than one page.
+		if ( $total > 1 ) {
+			$pages[]= (int) $total;
+		}
+		
+		// Sort the array by natural order.
+		natsort( $pages );
+		
+		// This variable is used to know the last page processed by the foreach().
+		$prevpage= 0;
+		// Create the output variable.
+		$out= '';
+		
+		foreach ( $pages as $page ) {
+			$settings['page']= $page;
+			
+			// Add ... if the gap between the previous page is higher than 1.
+			if ( ($page - $prevpage) > 1 ) {
+				$out.= '&hellip;';
+			}
+			// Wrap the current page number with square brackets.
+			$caption= ( $page == $current ) ? '[' . $current . ']' : $page;
+			// Build the URL using the supplied $settings and the found RewriteRules arguments.
+			$url= Site::get_url( 'habari', true ) . $rr->build( $settings , false );
+			// Build the HTML link.
+			$out.= '<a href="' . $url . '" ' . ( ( $page == $current ) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
+			
+			$prevpage= $page;
+		}
+		
+		return $out;
 	}
 
 
