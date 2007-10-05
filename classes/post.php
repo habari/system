@@ -224,7 +224,7 @@ class Post extends QueryRecord
 			DB::query( 'INSERT INTO ' . DB::table('posttype') . ' (name, active) VALUES (?, ?)', array( $type, $active ) );
 		} elseif ( $types[$type]['active'] == 0 ) {
 			// Isn't active so we activate it
-			activate_post_type( $type );
+			self::activate_post_type( $type );
 		}
 		
 		// now force a refresh of the caches, so the new/activated type
