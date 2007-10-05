@@ -25,6 +25,7 @@ CREATE TABLE  {$prefix}postinfo  (
 CREATE TABLE  {$prefix}posttype (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
  	name VARCHAR(255) NOT NULL,
+	active TINYINT(1) DEFAULT 1,
   PRIMARY KEY (id)
 );
 

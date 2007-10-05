@@ -31,7 +31,7 @@
 				<td></td>
 				<td><?php echo Utils::html_select('author', $authors, $author); ?></td>
 				<td><?php echo Utils::html_select('year_month', $dates, $year_month); ?></td>
-				<td><?php echo Utils::html_select('type', array_flip(Post::list_post_types()), $type); ?></td>
+				<td><?php echo Utils::html_select('type', array_flip(Post::list_active_post_types()), $type); ?></td>
 				<td><?php echo Utils::html_select('status', array_flip(Post::list_post_statuses( false )), $status); ?></td>
 				<td><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
 			</tr>

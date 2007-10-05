@@ -822,7 +822,7 @@ class AdminHandler extends ActionHandler
 			),
 		);
 		
-		foreach( Post::list_post_types() as $type => $typeint ) {
+		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
 				continue;
 			}
