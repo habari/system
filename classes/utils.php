@@ -235,7 +235,7 @@ class Utils
 			if ( !isset( $settings[$rr_arg] ) ) {
 				$rr_arg_value= Controller::get_var( $rr_arg );
 				if ( $rr_arg_value != '' ) {
-					$rr_args_values[$rr_arg]= $rr_arg_value;
+					$settings[$rr_arg]= $rr_arg_value;
 				}
 			}
 		}
@@ -272,7 +272,7 @@ class Utils
 		$prevpage= 0;
 		// Create the output variable.
 		$out= '';
-		
+
 		foreach ( $pages as $page ) {
 			$settings['page']= $page;
 			
