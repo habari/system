@@ -218,13 +218,19 @@ class Post extends QueryRecord
 	{
 		// refresh the cache from the DB, just to be sure
 		$types= self::list_all_post_types( true );
+				
 		if ( ! array_key_exists( $type, $types ) ) {
+			// Doesn't exist in DB.. add it and activate it.
 			DB::query( 'INSERT INTO ' . DB::table('posttype') . ' (name, active) VALUES (?, ?)', array( $type, $active ) );
-			// now force a refresh of the caches, so the new type
-			// is available for immediate use
-			$types= self::list_active_post_types( true );
-			$types= self::list_all_post_types( true );
+		} elseif ( $types[$type]['active'] == 0 ) {
+			// Isn't active so we activate it
+			activate_post_type( $type );
 		}
+		
+		// now force a refresh of the caches, so the new/activated type
+		// is available for immediate use
+		$types= self::list_active_post_types( true );
+		$types= self::list_all_post_types( true );
 	}
 
 	/**
