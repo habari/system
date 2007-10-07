@@ -33,11 +33,19 @@ class QueryRecord implements URLProperties
 	 * function __get
 	 * Handles getting virtual properties for this class
 	 * @param string Name of the property
-	 * @return mixed The set value
+	 * @return mixed The set value or NULL if none exists
 	 **/	 
 	public function __get($name)
 	{
-		return isset($this->newfields[$name]) ? $this->newfields[$name] : $this->fields[$name];
+		if ( isset( $this->newfields[$name] ) ) {
+			return $this->newfields[$name];
+		}
+		else if ( isset( $this->fields[$name] ) ) {
+			return $this->fields[$name];
+		}
+		else {
+			return NULL;
+		}
 	}
 	
 	/**
