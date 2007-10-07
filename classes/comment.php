@@ -208,9 +208,9 @@ class Comment extends QueryRecord
 				break;
 		}
 		//$out = parent::__get( $name );
-		$out = Plugins::filter( "comment_{$name}", $out );
+		$out = Plugins::filter( "comment_{$name}", $out, $this );
 		if( $filter ) {
-			$out = Plugins::filter( "comment_{$name}_{$filter}", $out );
+			$out = Plugins::filter( "comment_{$name}_{$filter}", $out, $this );
 		}
 		return $out;
 	}
