@@ -26,7 +26,7 @@
 			if ( is_array( $failed_plugins ) ) {
 				$all_plugins= array_diff( $all_plugins, $failed_plugins );
 			} 
-			if ( $listok ) :
+			if ( $listok ) {
 				if ( count( $failed_plugins ) > 0 ) {
 					echo '<div class="warning">';
 					foreach( $failed_plugins as $failed ) {
@@ -46,7 +46,7 @@
 			</thead>
 			<tbody>
 			<?php
-			foreach ( $all_plugins as $file ) :
+			foreach ( $all_plugins as $file ) {
 				$verb= _t( 'Activate' );
 				$plugin_id= Plugins::id_from_file( $file );
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
@@ -54,8 +54,7 @@
 					$plugin= $active_plugins[$plugin_id];
 					$active= true;
 				}
-				else
-				{
+				else {
 					// instantiate this plugin
 					// in order to get its info()
 					include_once( $file );
