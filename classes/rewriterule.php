@@ -71,7 +71,7 @@ class RewriteRule extends QueryRecord
 			foreach ( $named_args as $keys ) {
 				foreach ( $keys as $key ) {
 					if ( !empty( $pattern_matches[$key] ) ) {
-						$this->named_arg_values[$key]= urldecode( $pattern_matches[$key] );
+						$this->named_arg_values[$key]= urldecode( str_replace( '%252F', '%2F', $pattern_matches[$key] ) );
 					}
 				}
 			}
@@ -106,7 +106,7 @@ class RewriteRule extends QueryRecord
 			foreach ( $keys as $key ) {
 				if ( !empty( $args[$key] ) ) {
 					$searches[]= '/{\$'.$key.'}/';
-					$replacements[]= urlencode( $args[$key] );
+					$replacements[]= str_replace( '%2F', '%252F', urlencode( $args[$key] ) );
 				}
 			}
 		}
