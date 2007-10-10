@@ -364,7 +364,7 @@ class FormControlText extends FormControl
 	
 		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="text" name="' . $this->field . '" value="' . $this->value . '"></label>';
 		if(isset($message)) {
-			$out.= "<p class=\"error\">{$message}</p>";
+			$out.= '<p class="error">' . $message . '</p>';
 		}
 		$out.= '</div>';
 		return $out;
@@ -412,7 +412,7 @@ class FormControlTextMulti extends FormControl
 	
 		$out= '<div class="' . $class . '">';
 		if(isset($message)) {
-			$out.= "<p class=\"error\">{$message}</p>";
+			$out.= '<p class="error">' . $message . '</p>';
 		}
 		$out.= '<p>' . $this->caption . '</p>';
 		$values = $this->value;
@@ -506,7 +506,7 @@ class FormControlSelect extends FormControl
 		$out.= '</select></label>';
 
 		if(isset($message)) {
-			$out.= "<p class=\"error\">{$message}</p>";
+			$out.= '<p class="error">' . $message . '</p>';
 		}
 		$out.= '</div>';
 
@@ -540,7 +540,7 @@ class FormControlTextArea extends FormControl
 		$out= '<div class="' . $class . '"><label>' . $this->caption . '<textarea name="' . $this->field . '">' . $this->value . '</textarea></label>';
 
 		if(isset($message)) {
-			$out.= "<p class=\"error\">{$message}</p>";
+			$out.= '<p class="error">' . $message . '</p>';
 		}
 		$out.= '</div>';
 
