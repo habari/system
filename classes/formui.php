@@ -362,7 +362,7 @@ class FormControlText extends FormControl
 			}
 		}
 	
-		$out= '<div class=' . $class . '><label>' . $this->caption . '<input type="text" name="' . $this->field . '" value="' . $this->value . '"></label>';
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="text" name="' . $this->field . '" value="' . $this->value . '"></label>';
 		if(isset($message)) {
 			$out.= "<p class=\"error\">{$message}</p>";
 		}
