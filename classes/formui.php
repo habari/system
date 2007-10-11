@@ -378,8 +378,10 @@ class FormControlText extends FormControl
 	 */
 	public static function validate_url( $text )
 	{
-		if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
-			return array(_t('Value must be a valid URL.'));
+		if ( !empty( $text ) ) {
+			if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
+				return array(_t('Value must be a valid URL.'));
+			}
 		}
 		return array();
 	}
@@ -466,8 +468,10 @@ class FormControlTextMulti extends FormControl
 	{
 		$result = array();
 		foreach($arry as $text) {
-			if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
-				$result[] = sprintf(_t('Value %s must be a valid URL.', $text));
+			if ( !empty( $text ) ) {
+				if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
+					$result[] = sprintf(_t('Value %s must be a valid URL.', $text));
+				}
 			}
 		}
 		return $result;
