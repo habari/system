@@ -625,12 +625,10 @@ class Utils
 	public static function slugify( $string )
 	{
 		// Replace non-alphanumeric characters to dashes. Exceptions: %, _, -
+		// Note that multiple separators are collapsed automatically by the preg_replace.
 		// Convert all characters to lowercase.
 		// Trim spaces on both sides.
 		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $string ) ), '-' );
-		
-		// Collapse multiple separators with a single separator.
-		$slug= preg_replace( '/-{2,}/i', '-', $slug );
 		
 		// Let people change the behavior.
 		$slug= Plugins::filter('slugify', $slug, $string);
