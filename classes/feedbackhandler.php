@@ -72,7 +72,7 @@ class FeedbackHandler extends ActionHandler
 	
 				// Should this really be here or in a default filter?
 				// In any case, we should let plugins modify the status after we set it here.
-				if( $comment->email == User::identify()->email ) {
+				if( ( $user = User::identify() ) && ( $comment->email == $user->email ) ) {
 					$comment->status= Comment::STATUS_APPROVED;
 				}
 	
@@ -93,13 +93,7 @@ class FeedbackHandler extends ActionHandler
 				)
 				{
 					$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
-					$site_url= Site::get_path('base');
-					if ( empty( $site_url ) ) {
-						$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
-					}
-					else {
-						$site_url= '/' . $site_url . '/';
-					}
+					$site_url= Site::get_path('base',true);
 					setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );
 				}
 				
