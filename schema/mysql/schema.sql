@@ -85,22 +85,6 @@ CREATE TABLE  {$prefix}themes (
   PRIMARY KEY (id)
 );
 
-INSERT INTO  {$prefix}themes (
-  id,
-  name,
-  version,
-  template_engine,
-  theme_dir,
-  is_active
-) VALUES (
-  NULL,
-  "k2",
-  "1.0",
-  "rawphpengine",
-  "k2",
-  1
-);
-
 CREATE TABLE  {$prefix}comments (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
  	post_id INT UNSIGNED NOT NULL,

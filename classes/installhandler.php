@@ -121,6 +121,10 @@ class InstallHandler extends ActionHandler {
 			// re-display the form
 			$this->display('db_setup');
 		}
+		
+		// Install k2
+		Themes::activate_theme('k2', 'k2');
+	
 		EventLog::log('Habari successfully installed.', 'info', 'default', 'habari');
 		return true;
 	}
