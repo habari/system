@@ -388,6 +388,66 @@ class FormControlText extends FormControl
 }
 
 /**
+ * A password control based on FormControlText for output via a FormUI.
+ */
+class FormControlPassword extends FormControlText
+{
+
+	/**
+	 * Produce HTML output for this password control.
+	 * 
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function out($forvalidation)
+	{
+		$class= 'text formcontrol';
+		if($forvalidation) {
+			$validate= $this->validate();
+			if(count($validate) != 0) {
+				$class.= ' invalid';
+				$message= implode('<br>', $validate);
+			}
+		}
+	
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="password" name="' . $this->field . '" value="' . md5($this->value) . '"></label>';
+		if(isset($message)) {
+			$out.= '<p class="error">' . $message . '</p>';
+		}
+		$out.= '</div>';
+		return $out;
+	}
+	
+	/**
+	 * Magic function __get returns properties for this object, or passes it on to the parent class
+	 * Potential valid properties:
+	 * value: The value of the control, whether the default or submitted in the form
+	 * 
+	 * @param string $name The paramter to retrieve
+	 * @return mixed The value of the parameter
+	 */
+	protected function __get($name)
+	{
+		switch($name) {
+			case 'value':
+				if(isset($_POST[$this->field])) {
+					if($_POST[$this->field] == md5($this->default)) {
+						return $this->default;
+					}
+					else {
+						return $_POST[$this->field];
+					}
+				}
+				else {
+					return $this->default;
+				}
+			default:
+				return parent::__get($name);
+		}
+	}
+}
+
+/**
  * A multiple-slot text control based on FormControl for output via a FormUI.
  * @todo Make DHTML fallback for non-js browsers 
  */
@@ -483,8 +543,7 @@ class FormControlTextMulti extends FormControl
  */
 class FormControlSelect extends FormControl
 {
-	
-	public $selected;
+	public $options = array();
 	
 	/**
 	 * Produce HTML output for this text control.
@@ -504,8 +563,8 @@ class FormControlSelect extends FormControl
 		}
 
 		$out= '<div class="' . $class . '"><label>' . $this->caption . '<select name="' . $this->field . '">';
-		foreach ( (array) $this->value as $key => $value ) {
-			$out.= '<option value="' . $key . '"' . ( ( $this->selected == $key ) ? ' selected' : '' ) . '>' . $value . '</option>';
+		foreach ( (array) $this->options as $key => $value ) {
+			$out.= '<option value="' . $key . '"' . ( ( $this->value == $key ) ? ' selected' : '' ) . '>' . $value . '</option>';
 		}
 		$out.= '</select></label>';
 
