@@ -79,20 +79,6 @@ CREATE TABLE {$prefix}themes (
 	is_active TINYINT UNSIGNED NOT NULL DEFAULT 0
 );
 
-INSERT INTO {$prefix}themes (
-	name,
-	version,
-	template_engine,
-	theme_dir,
-	is_active
-) VALUES (
-	'k2',
-	'1.0',
-	'rawphpengine',
-	'k2',
-	1
-);
-
 CREATE TABLE {$prefix}comments (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	post_id INTEGER UNSIGNED NOT NULL,
