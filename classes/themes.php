@@ -38,8 +38,6 @@ class Themes
 		$theme_dir= Options::get('theme_dir');
 
 		$themes= Themes::get_all();
-		$themefiles= array_map('basename', $themes);
-		$themes= array_combine($themefiles, $themes);
 		
 		if ( isset($themes[$theme_dir]) ) {
 			$theme->theme_dir= $themes[$theme_dir];
@@ -60,8 +58,7 @@ class Themes
 		}
 
 		$data= simplexml_load_file( Utils::end_in_slash($theme->theme_dir) . 'theme.xml' );
-		foreach ( $data as $name=>$value)
-		{
+		foreach ( $data as $name=>$value) {
 			$theme->$name= (string) $value;
 		}
 		return $theme;
