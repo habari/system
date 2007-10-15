@@ -30,11 +30,12 @@
     
     <h4><?php _e('Tags'); ?></h4>
     <p><?php _e('Tags (comma separated):'); ?> <input type="text" name="tags" id="tags" value="<?php echo ( !empty( $tags ) ) ? $tags : ''; ?>"></p>
-    
+    <div class="column span-10 first">
     <h4><?php _e('Meta Information'); ?></h4>
     <p><?php _e('Publish Date:'); ?> <input type="text" name="pubdate" id="pubdate" value="<?php echo $post->pubdate; ?>"></p>
     <p><?php _e('Content Address:'); ?> <input type="text" name="newslug" id="newslug" value="<?php echo $post->slug; ?>"></p>
-    
+    </div>
+<div class="column span-10 prepend-1 last">
     <h4><?php _e('Entry Settings'); ?></h4>
     <ul>
      <?php
@@ -58,6 +59,7 @@
    <?php if ( $post->slug != '' ) { ?>
    <p><input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>"></p>
    <?php } ?>
+</div>
   </form>
  </div>
 </div>
