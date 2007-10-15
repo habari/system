@@ -49,7 +49,7 @@ function checkDBCredentials()
 					$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
 					$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
 					$($(ido).text()).parents('.installstep').removeClass('done');
-					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
+					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
 					});
 					break;
 				case '1': // Hide the warnings, highlight the borders and show the next step
@@ -84,7 +84,7 @@ function checkDBCredentials()
 					$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
 					$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
 					$($(ido).text()).parents('.installstep').removeClass('done');
-					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
+					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
 					});
 					break;
 				case '1': // Hide the warnings, highlight the borders and show the next step
