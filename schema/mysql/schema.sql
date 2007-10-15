@@ -75,16 +75,6 @@ CREATE TABLE  {$prefix}tag2post (
   KEY post_id (post_id)
 );
 
-CREATE TABLE  {$prefix}themes (
-  id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  version VARCHAR(255) NOT NULL,
-  template_engine VARCHAR(255) NOT NULL,
-  theme_dir VARCHAR(255) NOT NULL,
-  is_active TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (id)
-);
-
 CREATE TABLE  {$prefix}comments (
 	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
  	post_id INT UNSIGNED NOT NULL,
@@ -93,7 +83,7 @@ CREATE TABLE  {$prefix}comments (
  	url VARCHAR(255) NULL,
  	ip INT UNSIGNED NOT NULL,
  	content TEXT,
- 	status TINYINT UNSIGNED NOT NULL,
+ 	status SMALLINT UNSIGNED NOT NULL,
  	date TIMESTAMP NOT NULL,
  	type SMALLINT UNSIGNED NOT NULL,
   PRIMARY KEY (id),
@@ -116,8 +106,8 @@ CREATE TABLE {$prefix}rewrite_rules (
   handler VARCHAR(255) NOT NULL,
   action VARCHAR(255) NOT NULL,
   priority SMALLINT UNSIGNED NOT NULL,
-  is_active TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  rule_class TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  is_active SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  rule_class SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   description TEXT NULL,
   PRIMARY KEY (rule_id)
 );
