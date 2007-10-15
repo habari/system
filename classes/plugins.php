@@ -328,6 +328,33 @@ class Plugins
 		$plugin_data= array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
 		Options::set('plugins_present', $plugin_data);
 	}
+	
+	/**
+	 * Verify if a plugin is loaded.
+	 * You may supply an optional argument $version as a minimum version requirement.
+	 *
+	 * @param string $name Name of the plugin to find.
+	 * @param string $version Minimal version of the plugin.
+	 * @return bool Returns true if name is found and version is equal or higher than required. 
+	 */
+	static public function is_loaded( $name, $version= NULL ) {
+		foreach ( self::$plugins as $plugin ) {
+			if ( $plugin->info->name == $name ) {
+				if ( isset( $version ) ) {
+					if ( version_compare( $plugin->info->version, $version, '>=' ) ) {
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+				else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
 
 ?>
