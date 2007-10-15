@@ -368,31 +368,32 @@ class Comments extends ArrayObject
 	**/
 	private function sort_comments()
 	{
-		foreach ( $this as $c )
-		{
+		$type_sort = array(
+			Comment::COMMENT => 'comments',
+			Comment::PINGBACK => 'pingbacks',
+			Comment::TRACKBACK => 'trackbacks',
+		);
+
+		foreach ( $this as $c ) {
 			// first, divvy up approved and unapproved comments
-			if ( Comment::STATUS_APPROVED == $c->status )
-			{
-				$this->sort['approved'][] = $c;
-			}
-			else
-			{
-				$this->sort['unapproved'][] = $c;
+			switch( $c->status ) {
+				case Comment::STATUS_APPROVED:
+					$this->sort['approved'][] = $c;
+					$this->sort['moderated'][] = $c;
+					break;
+				case Comment::STATUS_UNAPPROVED:
+					if($c->ip == ip2long( $_SERVER['REMOTE_ADDR'] ) ) {
+						$this->sort['moderated'][] = $c;
+					}
+					$this->sort['unapproved'][] = $c;
+					break;
+				case Comment::STATUS_SPAM:
+					$this->sort['spam'][] = $c;
+					break;
 			}
 
 			// now sort by comment type
-			if ( Comment::COMMENT == $c->type )
-			{
-				$this->sort['comments'][] = $c;
-			}
-			elseif ( Comment::PINGBACK == $c->type )
-			{
-				$this->sort['pingbacks'][] = $c;
-			}
-			elseif ( Comment::TRACKBACK == $c->type )
-			{
-				$this->sort['trackbacks'][] = $c;
-			}
+			$this->sort[$type_sort[$c->type]][] = $c;
 		}
 	}
 
@@ -426,6 +427,7 @@ class Comments extends ArrayObject
 				return count( $this );
 			case 'approved':
 			case 'unapproved':
+			case 'moderated':
 			case 'comments':
 			case 'pingbacks':
 			case 'trackbacks':
