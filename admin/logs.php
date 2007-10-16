@@ -28,11 +28,11 @@ include_once( 'header.php' );
 			</thead>
 			<tr>
 			<td></td>
-			<td><?php echo Utils::html_select('date', $dates, $date); ?></td>
-			<td><?php echo Utils::html_select('user', $users, $user); ?></td>
-			<td><?php echo Utils::html_select('module', $modules, $module); ?></td>
-			<td><?php echo Utils::html_select('type', $types, $type); ?></td>
-			<td><?php echo Utils::html_select('severity', $severities, $severity); ?></td>
+			<td><?php echo Utils::html_select('date', $dates, $date, array( 'class'=>'longselect')); ?></td>
+			<td><?php echo Utils::html_select('user', $users, $user, array( 'class'=>'longselect')); ?></td>
+			<td><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'longselect')); ?></td>
+			<td><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'longselect')); ?></td>
+			<td><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'longselect')); ?></td>
 			<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
 			</tr>
 			<?php foreach( $logs as $log ){ ?>

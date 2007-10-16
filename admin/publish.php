@@ -22,21 +22,21 @@
    ?>
   <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
    <div class="dashboard-block c3 publish">
-    <h4><?php _e('Title'); ?></h4>
+    <h3><?php _e('Title'); ?></h3>
     <p><input type="text" name="title" id="title" size="100%" value="<?php echo $post->title; ?>"></p>
     
-    <h4><?php _e('Content'); ?></h4>
+    <h3><?php _e('Content'); ?></h4>
     <p><textarea name="content" id="content" rows="20" cols="114" class="resizable"><?php echo htmlspecialchars( $post->content ); ?></textarea></p>
     
-    <h4><?php _e('Tags'); ?></h4>
+    <h3><?php _e('Tags'); ?></h3>
     <p><?php _e('Tags (comma separated):'); ?> <input type="text" name="tags" id="tags" value="<?php echo ( !empty( $tags ) ) ? $tags : ''; ?>"></p>
     <div class="column span-10 first">
-    <h4><?php _e('Meta Information'); ?></h4>
+    <h3><?php _e('Meta Information'); ?></h4>
     <p><?php _e('Publish Date:'); ?> <input type="text" name="pubdate" id="pubdate" value="<?php echo $post->pubdate; ?>"></p>
     <p><?php _e('Content Address:'); ?> <input type="text" name="newslug" id="newslug" value="<?php echo $post->slug; ?>"></p>
     </div>
 <div class="column span-10 prepend-1 last">
-    <h4><?php _e('Entry Settings'); ?></h4>
+    <h3><?php _e('Entry Settings'); ?></h4>
     <ul>
      <?php
      // pass "false" to list_post_statuses() so that we don't
@@ -45,10 +45,10 @@
      unset( $statuses[array_search( 'any', $statuses )] );
      $statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
      ?>
-     <li><label><?php echo Utils::html_select( 'status', array_flip($statuses), $post->status ); ?></label></li>
+     <li><label><?php echo Utils::html_select( 'status', array_flip($statuses), $post->status, array( 'class'=>'longselect') ); ?></label></li>
     </ul>
     
-    <h4><?php _e('Comments'); ?></h4>
+    <h3><?php _e('Comments'); ?></h4>
     <ul>
      <li><label><input type="radio" name="comments_disabled" id="comments_enabled" value="0" <?php echo ( $post->info->comments_disabled == 0 ) ? 'checked' : ''; ?>> <?php _e('Allow comments'); ?></label></li>
      <li><label><input type="radio" name="comments_disabled" id="comments_disabled" value="1" <?php echo ( $post->info->comments_disabled == 1 ) ? 'checked' : ''; ?>> <?php _e('No comments'); ?></label></li>
