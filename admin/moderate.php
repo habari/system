@@ -16,7 +16,7 @@
 		<p><?php _e('Here you will find all the comments, including those deleted. You can also manage the pingbacks.'); ?></p>
 		
 		<div class="column span-7 first" id="stats">
-			<h4><?php _e('Comment Statistics'); ?></h4>
+			<h3><?php _e('Comment Statistics'); ?></h3>
 			<ul>
 				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_APPROVED ); ?></span><?php _e('Total Approved Comments'); ?></li>
 				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?></span><?php _e('Total Unapproved Comments'); ?></li>
@@ -27,7 +27,7 @@
 		<div class="column span-17 last push-1">
 			<form method="post" action="<?php URL::out('admin', 'page=moderate'); ?>" class="buttonform">
 			<p>
-				<label>Search comments: <input type="textbox" size="30" name="search" value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>"></label>
+				<label>Search comments: <input type="textbox" size="22" name="search" value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>"></label>
 				<label><?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?></label>
 				<label><?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?></label>
 				<a href="<?php URL::out('admin', 'page=moderate'); ?>">Reset</a>
@@ -38,8 +38,8 @@
 				<label>IP Address<input type="checkbox" name="search_fields[]" value="ip"<?php echo in_array('ip', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>E-mail <input type="checkbox" name="search_fields[]" value="email"<?php echo in_array('email', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>URL <input type="checkbox" name="search_fields[]" value="url"<?php echo in_array('url', $search_fields) ? ' checked' : ''; ?>></label>
-				<?php echo Utils::html_select('search_status', $statuses, $status); ?>
-				<?php echo Utils::html_select('search_type', $types, $type); ?>
+				<?php echo Utils::html_select('search_status', $statuses, $status, array( 'class'=>'longselect')); ?>
+				<?php echo Utils::html_select('search_type', $types, $type, array( 'class'=>'longselect')); ?>
 			</p>
 			</form>
 		</div>
