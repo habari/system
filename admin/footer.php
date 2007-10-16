@@ -1,7 +1,7 @@
 <hr>
 <div class="container" id="footer">
 	<div class="column span-24">
-		<div class="column span-8 first"><a href="http://habariproject.org/" title="Habari Official Website">Habari</a><small> - Spread the News</small></div>
+		<div class="column span-8 first"><a href="http://habariproject.org/" title="Habari Official Website">Habari</a> - Spread the News</div>
 		
 		<div class="column prepend-11 span-5 last">
 			<a href="<?php Site::out_url('habari')?>/manual/index.html" onclick="popUp(this.href);return false;" title="Read this first">User Manual</a> |

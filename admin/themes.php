@@ -1,10 +1,9 @@
 <?php include('header.php');?>
 <div class="container">
-<hr>
-	<div class="dashboard-block c3" id="welcome">
+	<div class="column span-24 first" id="welcome">
 		<h1>Currently Available Themes</h1>
 		<p>Activate, deactivate and remove themes through this interface.</p>
-		<div class="dashboard-block c3">
+		<div class="column span-24">
 			<table cellspacing="0" width="100%">
 				<thead>
 					<tr>

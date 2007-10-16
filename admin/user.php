@@ -1,6 +1,7 @@
 <?php include('header.php');?>
 <div class="container">
 <hr>
+<div class="column span-24 first" id="welcome">
 <?php
 	$currentuser = User::identify();
 	if ( ! $currentuser ) {
@@ -28,7 +29,7 @@
 		$possessive= "Your";
 	}
 ?>
-<div style="width: 45%; float: left; border-right: 1px solid #000; text-align: left;">
+<div class="column span-10 first">
 	<h3><?php echo $possessive; ?> Profile</h3>
 	<?php
 	if ( isset( $result ) && 'success' == $result ) {
@@ -61,7 +62,7 @@
 		<p><input type="submit" value="Update Profile!"></p>
 	</form>
 </div>
-<div style="width: 45%; float: left; margin-left: 2px;">
+<div class="column span-10 prepend-1 last">
 <?php
 if ( Posts::count_by_author( $user->id, Post::status('published') ) ) {
 	echo $possessive ." five most recent published posts:<br>\n";
@@ -102,5 +103,6 @@ if ( $user != $currentuser ) {
 <?php
 }
 ?>
+</div>
 </div>
 <?php include('footer.php');?>
