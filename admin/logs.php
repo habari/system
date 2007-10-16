@@ -3,10 +3,8 @@ include_once( 'header.php' );
 ?>
 <div class="container">
 <hr>
-	<div class="dashboard-block c3" id="welcome">
+	<div class="column span-24" id="welcome">
 		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
-	</div>
-	<div class="dashboard-block c3" id="log-activity">
 	<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
 	<p>Search log entries: 
 	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">

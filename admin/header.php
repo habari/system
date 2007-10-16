@@ -2,9 +2,10 @@
 <html>
 <head>
 	<title>Habari Administration</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/admin.css">
+	
 	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/screen.css" type="text/css" media="screen, projection">
 	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/print.css" type="text/css" media="print">
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/admin.css">
 
 	<!-- Show the grid and baseline
 	<style type="text/css">

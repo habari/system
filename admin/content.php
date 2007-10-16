@@ -6,7 +6,7 @@
 	<p><?php _e('Here you will find all the content you have created, ready to be tweaked, edited or removed.'); ?></p>
 	</div>
 	<form method="post" action="<?php URL::out('admin', 'page=content'); ?>" class="buttonform">
-	<div class="column span-24" id="content-published">
+	
 	<p>
 	Search post titles and content: 
 	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
@@ -27,23 +27,23 @@
 				</tr>
 			</thead>
 			<tr>
-				<td></td>
-				<td></td>
-				<td><?php echo Utils::html_select('author', $authors, $author); ?></td>
-				<td><?php echo Utils::html_select('year_month', $dates, $year_month); ?></td>
-				<td><?php echo Utils::html_select('type', array_flip(Post::list_active_post_types()), $type); ?></td>
-				<td><?php echo Utils::html_select('status', array_flip(Post::list_post_statuses( false )), $status); ?></td>
-				<td><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
+				<td class="span-1"></td>
+				<td class="span-5"></td>
+				<td class="span-3"><?php echo Utils::html_select('author', $authors, $author,array( 'class'=>'longselect')); ?></td>
+				<td class="span-3"><?php echo Utils::html_select('year_month', $dates, $year_month, array( 'class'=>'longselect')); ?></td>
+				<td class="span-3"><?php echo Utils::html_select('type', array_flip(Post::list_active_post_types()), $type, array( 'class'=>'longselect')); ?></td>
+				<td class="span-3"><?php echo Utils::html_select('status', array_flip(Post::list_post_statuses( false )), $status, array( 'class'=>'longselect')); ?></td>
+				<td class="span-3 last"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
 			</tr>
 			<?php foreach ( $posts as $post ) : ?>
 			<tr>
-				<td align="center"><input type="checkbox" name="post_ids[]" value="<?php echo $post->id; ?>"></td>
-				<td><?php echo '<a href="' . $post->permalink . '">' . Utils::truncate( $post->title, 20, false ); ?></a></td>
-				<td><?php echo $post->author->username ?></td>
-				<td><?php echo $post->pubdate ?></td>
-				<td><?php _e( Post::type_name( $post->content_type ) ); ?></td>
-				<td><?php _e( Post::status_name( $post->status ) ); ?></td>
-				<td align="center">
+				<td class="span-1"><input type="checkbox" name="post_ids[]" value="<?php echo $post->id; ?>"></td>
+				<td class="span-5"><?php echo '<a href="' . $post->permalink . '">' . Utils::truncate( $post->title, 20, false ); ?></a></td>
+				<td class="span-3"><?php echo $post->author->username ?></td>
+				<td class="span-3"><?php echo $post->pubdate ?></td>
+				<td class="span-3"><?php _e( Post::type_name( $post->content_type ) ); ?></td>
+				<td class="span-3"><?php _e( Post::status_name( $post->status ) ); ?></td>
+				<td class="span-3 last">
 					<a class="edit" href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit this entry">
 						Edit
 					</a>
@@ -54,7 +54,7 @@
 		<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 		<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-		Selected posts: &nbsp;&nbsp;<select name="change">
+		Selected posts: &nbsp;&nbsp;<select name="change" class="longselect">
 		<option value="unpublish"><?php _e('Unpublish'); ?></option>
 		<option value="publish"><?php _e('Publish'); ?></option>
 		<option value="delete"><?php _e('Delete'); ?></option>
@@ -63,6 +63,6 @@
 		</form>
 		</td></tr>
 		</table>
-	</div>
+	
 </div>
 <?php include('footer.php');?>
