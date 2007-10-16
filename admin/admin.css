@@ -10,7 +10,7 @@ a:visited { color: #929292;}
 .admin-avatar {padding: 2px; border: 1px solid #282828;}
 
 /*=== @b ===*/
-body { background-color: #fff; font-family: Arial, Helvetica San-Serif; font-size: 1.0em; color: #000; margin: 0.0em auto;}
+body { background-color: #fff; font-family: Arial, Helvetica San-Serif; color: #000; margin:0;}
 .buttonform  { display: inline; }
 
 /*=== @c ===*/
@@ -123,7 +123,7 @@ body p { text-align: left; }
 /*#system-info ul li { list-style: none; background: transparent; font-size: 0.9em; color: #6A6A6A; width: 100%; padding-bottom: 0.5em; }*/
 
 /*=== @t ===*/
-textarea { margin-top: 1.0em; margin-bottom: 3.0em; width: 99%; }
+textarea { margin-top: 1.0em; width: 99%; }
 
 /*=== @u ===*/
 .update { background: #ECFBFF; width: 100%; margin:-1em auto 5px auto; text-align:center; padding: 5px; color:#3EA5C8; border-top:1px solid #3EA5C8; border-bottom:1px solid #3EA5C8; }
@@ -142,3 +142,31 @@ img.usericon { float: left; width: 45px; height: 45px; padding: 1px; margin: 0 5
 
 /*=== unalphabetized ===*/
 .options-list { /*	display: none;*/ }
+
+/*=== BluePrint Overrides ===*/
+
+.container {
+	position: static;
+}
+
+select {
+	width: 40px;
+	margin-right: 5px;
+}
+
+.longselect {
+	width: 120px;
+}
+
+label {
+	margin-left: 5px;
+	font-weight: normal;
+}
+
+.container hr {
+	color: #fff;
+}
+
+.comment_header strong {
+	padding-right: 10px;
+}
