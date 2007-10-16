@@ -1,7 +1,7 @@
 <?php include('header.php');?>
 <div class="container">
 <hr>
-<div class="dashboard-block c3" id="welcome">
+<div class="column span-24 first" id="welcome">
 <?php
 $currentuser = User::identify();
 if ( ! $currentuser )
@@ -18,9 +18,9 @@ if ( isset( $result ) ) {
 	}
 }
 ?>
-<h1>User Managment</h1>
+<h1>User Management</h1>
 <p>Add, edit and remove users from your site from this interface.</p>
-<p><strong>Users</strong></p>
+<h3><strong>Users</strong></h3>
 <ul>
 <?php
 foreach ( User::get_all() as $user )
@@ -40,8 +40,7 @@ foreach ( User::get_all() as $user )
 }
 ?>
 </ul>
-</div>
-<div class="dashboard-block c3">
+
 <?php
 if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 {
@@ -49,7 +48,7 @@ if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
 }
 ?>
 <form method="post" action="">
-<p><strong>Add a new user</strong></p>
+<h3><strong>Add a new user</strong></h3>
 <p>Username: <input type="text" size="40" name="username" value="<?php echo ( isset( $settings['username'] ) ) ? $settings['username'] : ''; ?>"></p>
 <p>Email: <input type="text" size="40" name="email" value="<?php echo ( isset( $settings['email'] ) ) ? $settings['email'] : ''; ?>"></p>
 <p>Password (twice to confirm):</p>
