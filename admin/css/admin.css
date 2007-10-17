@@ -16,7 +16,7 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; color: #
 /*=== @c ===*/
 #content-area { text-align: left; min-width: 700px; width: 90%; margin: 0 auto;}
 #content-area h1 { padding-top: inherit; margin-bottom: 0.0em; font-size: 1.3em;}
-/*#menubar #current-item a {  background: #5095A0 url(images/bar-back-active.png) repeat scroll 0px 0px; font-size: 0.9em; padding: 0.4em 0.0em; }*/
+/*#menubar #current-item a {  background: #5095A0 url(../images/bar-back-active.png) repeat scroll 0px 0px; font-size: 0.9em; padding: 0.4em 0.0em; }*/
 #content-published h3, #content-draft h3{margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 .comment {margin:2px 0;padding:5px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .comment:first-child {border-top:0;}
@@ -45,7 +45,7 @@ body { background-color: #fff; font-family: Arial, Helvetica San-Serif; color: #
 .edit {margin: 0 0 0 5px;}
 
 /*=== @f ===*/
-#footer { padding: 10px 0 0 0; /*background: transparent url(images/habari-logo.png) no-repeat left center; background-position: 0 15px;*/ border-top: 1px solid #929292;}
+#footer { padding: 10px 0 0 0; /*background: transparent url(../images/habari-logo.png) no-repeat left center; background-position: 0 15px;*/ border-top: 1px solid #929292;}
 /*
 #footer p { padding: 10px 0px 10px 0px; margin: 0px; clear:both; border-top: 1px solid #CACACA;}
 #footer ul { list-style: none; margin: 0px; padding: 0px;}
@@ -72,24 +72,24 @@ ul.help-menu li a{ display: inline; float: left; margin: 0px; padding: 0px 10px 
 #logs h3 {margin: 10px 0 10px 0; border-bottom: 1px solid #282828; padding: 0 0 5px 0;}
 
 /*=== @m ===*/
-#site-name { float: left; display: inline; background: transparent url(images/home.png) no-repeat; border-right: 1px solid #929292;  font-size: 1em; padding:5px 30px 0 30px; height:27px;}
+#site-name { float: left; display: inline; background: transparent url(../images/home.png) no-repeat; border-right: 1px solid #929292;  font-size: 1em; padding:5px 30px 0 30px; height:27px;}
 #site-name a{ text-decoration:none; font-weight:bold;}
-#menubar { float: left; display: inline; margin: 0; width: 100%; /*min-width: 770px;*/ clear: both; text-align: left; padding:0; height:32px; background:  #282828 url(images/bar-back.png) repeat-x top;
+#menubar { float: left; display: inline; margin: 0; width: 100%; /*min-width: 770px;*/ clear: both; text-align: left; padding:0; height:32px; background:  #282828 url(../images/bar-back.png) repeat-x top;
 /* Locks up my IE:  width:expression(document.body.clientWidth < 1000 ? "1000px" : "auto" ); */ }
 #menu  { float: right; display: inline; list-style: none; }
-.menu-item { background: /*url(images/bar-back-button.png);*/ display: block; float:left; font-size: 1em; font-weight: normal; margin: 0px; line-height: 1.8em; }
+.menu-item { background: /*url(../images/bar-back-button.png);*/ display: block; float:left; font-size: 1em; font-weight: normal; margin: 0px; line-height: 1.8em; }
 #menubar a { color: #929292; padding: 0;}
-#menubar .menu-item a { border-right: 1px solid #929292; text-decoration:none; height:27px; font-weight:bold; padding: 5px 40px 0 35px; display: block; _width: 10px; background: url(images/bar-back-drop.png) no-repeat right top;}
+#menubar .menu-item a { border-right: 1px solid #929292; text-decoration:none; height:27px; font-weight:bold; padding: 5px 40px 0 35px; display: block; _width: 10px; background: url(../images/bar-back-drop.png) no-repeat right top;}
 #menubar #menu .menu-item .menu-list a { width: auto; height: 25px;}
 #menu li.menu-item:hover { background-color: #fff; height:30px;  }
-#menu li.menu-item:hover a { color:#000; background: #fff url(images/bar-back-active-drop.png) no-repeat right top;}
+#menu li.menu-item:hover a { color:#000; background: #fff url(../images/bar-back-active-drop.png) no-repeat right top;}
 #menu li.menu-item:hover .menu-list a, #menu li.sfHover .menu-list a { color:#929292;background: #fff; border-right:1px solid #929292; border-left:1px solid #929292;}
 #menu li.menu-item:hover .menu-list a:hover, #menu li.sfHover .menu-list a:hover { background: #f3f3f3; color:#282828;}
 #menu-item a:hover { background: #5aa6ae; }
 #menubar .menu-item .menu-list a { background: #335c71; }
 #menu li.menu-item:hover ul, #menu li.sfHover ul { top: 22px;  }
-#menubar #logout.menu-item a { background: url(images/logout.png); }
-#menubar #logout.menu-item:hover a { color:#000; background: #fff url(images/logout-active.png); height:26px;border-bottom:1px solid #929292; }
+#menubar #logout.menu-item a { background: url(../images/logout.png); }
+#menubar #logout.menu-item:hover a { color:#000; background: #fff url(../images/logout-active.png); height:26px;border-bottom:1px solid #929292; }
 ul.menu-list  { list-style: none; margin: 10px 0 0 0; padding: 0; position: absolute; top: -999em; width: 248px; border-top:1px solid #929292; border-bottom:1px solid #929292; }
 ul.menu-list li a  { background: #334d61; display:block; width: 100%; padding: 0px; }
 ul.menu-list li a:hover  { background: #5aa6ae; }
