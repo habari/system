@@ -3,13 +3,13 @@
 <head>
 	<title>Habari Administration</title>
 	
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/pluebrint/screen.css" type="text/css" media="screen, projection">
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/pluebrint/print.css" type="text/css" media="print">
+	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css">
 
 	<!-- Show the grid and baseline
 	<style type="text/css">
-	.container { background: url(<?php Site::out_url('habari'); ?>/3rdparty/pluebrint/lib/img/grid.png); } 
+	.container { background: url(<?php Site::out_url('habari'); ?>/3rdparty/blueprint/lib/img/grid.png); } 
 	</style>  
 	-->
 	
