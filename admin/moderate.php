@@ -17,11 +17,11 @@
 		
 		<div class="column span-7 first" id="stats">
 			<h3><?php _e('Comment Statistics'); ?></h3>
-			<ul>
-				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_APPROVED ); ?></span><?php _e('Total Approved Comments'); ?></li>
-				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?></span><?php _e('Total Unapproved Comments'); ?></li>
-				<li><span class="right"><?php echo Comments::count_total( Comment::STATUS_SPAM ); ?></span><?php _e('Total Spam Comments'); ?></li>
-			</ul>
+			<table width="100%" cellspacing="0">
+				<tr><td><?php _e('Total Approved Comments'); ?></td><td><?php echo Comments::count_total( Comment::STATUS_APPROVED ); ?></td></tr>
+			<tr><td><?php _e('Total Unapproved Comments'); ?></td><td><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?></td></tr>
+			<tr><td><?php _e('Total Spam Comments'); ?></td><td><?php echo Comments::count_total( Comment::STATUS_SPAM ); ?></td></tr>
+			</table>
 		</div>
 		
 		<div class="column span-17 last push-1">
