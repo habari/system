@@ -145,6 +145,10 @@ img.usericon { float: left; width: 45px; height: 45px; padding: 1px; margin: 0 5
 
 /*=== BluePrint Overrides ===*/
 
+ul {
+	list-style-type: none;
+}
+
 .container {
 	position: static;
 }
