@@ -79,10 +79,13 @@ class Error extends Exception
 			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
 		
+		throw new Exception($errstr);
+		
+		/*
 		printf( "<pre class=\"error\">\n<b>%s:</b> <i>%s</i>\n",
 			( array_key_exists( $errno, $error_names ) ? $error_names[$errno] : 'Unknown error: '.$errno ),
 			$errstr );
-		
+
 		if ( DEBUG ) {
 			self::print_backtrace();
 		}
@@ -92,6 +95,7 @@ class Error extends Exception
 		}
 		
 		print "</pre>";
+		*/
 		
 		// die on all errors except for NOTICE, STRICT, and WARNING
 		if ( $errno & ( E_ALL ^ E_NOTICE ^ E_STRICT ^ E_WARNING ) ) {
