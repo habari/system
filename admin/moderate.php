@@ -27,7 +27,7 @@
 		<div class="column span-17 last push-1">
 			<form method="post" action="<?php URL::out('admin', 'page=moderate'); ?>" class="buttonform">
 			<p>
-				<label>Search comments: <input type="textbox" size="22" name="search" value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>"></label>
+				<label>Search comments: <input type="textbox" size="22" name="search" value="<?php echo $search; ?>"></label> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
 				<label><?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?></label>
 				<label><?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?></label>
 				<a href="<?php URL::out('admin', 'page=moderate'); ?>">Reset</a>
@@ -38,7 +38,7 @@
 				<label>IP Address<input type="checkbox" name="search_fields[]" value="ip"<?php echo in_array('ip', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>E-mail <input type="checkbox" name="search_fields[]" value="email"<?php echo in_array('email', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>URL <input type="checkbox" name="search_fields[]" value="url"<?php echo in_array('url', $search_fields) ? ' checked' : ''; ?>></label>
-				<?php echo Utils::html_select('search_status', $statuses, $status, array( 'class'=>'longselect')); ?>
+				<?php echo Utils::html_select('search_status', $statuses, $search_status, array( 'class'=>'longselect')); ?>
 				<?php echo Utils::html_select('search_type', $types, $type, array( 'class'=>'longselect')); ?>
 			</p>
 			</form>
@@ -51,6 +51,14 @@
 	<div class="column span-24 last">
 <?php if( count($comments) ) { ?>
 		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
+			<input type="hidden" name="search" value="<?php echo $search; ?>">
+			<input type="hidden" name="limit" value="<?php echo $limit; ?>">
+			<input type="hidden" name="index" value="<?php echo $index; ?>">
+			<?php foreach($search_fields as $field): ?>
+			<input type="hidden" name="search_fields[]" value="<?php echo $field; ?>">
+			<?php endforeach; ?>
+			<input type="hidden" name="search_status" value="<?php echo $search_status; ?>">
+			<input type="hidden" name="search_type" value="<?php echo $type; ?>">
 			
 			<div>
 				<p class="submit">

@@ -322,15 +322,14 @@ class Comment extends QueryRecord
 	**/
 	public static function list_comment_types( $refresh = false )
 	{
-		if ( ( ! $refresh ) && ( ! empty( self::$comment_type_list ) ) )
-		{
+		if ( ( ! $refresh ) && ( ! empty( self::$comment_type_list ) ) ) {
 			return self::$comment_type_list;
 		}
 		self::$comment_type_list= array(
-			'COMMENT' => self::COMMENT,
-			'PINGBACK' => self::PINGBACK,
-			'TRACKBACK' => self::TRACKBACK,
-			);
+			self::COMMENT => 'Comment',
+			self::PINGBACK => 'Pingback',
+			self::TRACKBACK => 'Trackback',
+		);
 		return self::$comment_type_list;	
 	}
 
@@ -341,34 +340,33 @@ class Comment extends QueryRecord
 	**/
 	public static function list_comment_statuses( $refresh= false )
 	{
-		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) )
-		{
+		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) ) {
 			return self::$comment_status_list;
 		}
 		self::$comment_status_list= array(
-			'STATUS_UNAPPROVED' => self::STATUS_UNAPPROVED,
-			'STATUS_APPROVED' => self::STATUS_APPROVED,
-			'STATUS_SPAM' => self::STATUS_SPAM,
+			self::STATUS_UNAPPROVED => 'Unapproved',
+			self::STATUS_APPROVED => 'Approved',
+			self::STATUS_SPAM => 'Spam',
 			// 'STATUS_DELETED' => self::STATUS_DELETED, // Not supported
-			);
+		);
 		return self::$comment_status_list;
 	}
 	
 
 	/**
-	 * returns the interger value of the specified comment status, or false
+	 * returns the integer value of the specified comment status, or false
 	 * @param mixed a comment status name or value
 	 * @return mixed an integer or boolean false
 	**/
 	public static function status( $name )
 	{
 		$statuses= Comment::list_comment_statuses();
-		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $statuses ) ) ) {
+		if ( is_numeric( $name ) && ( isset( $statuses[$name] ) ) ) {
 			return $name;
 		}
-		if ( isset( $statuses[strtolower($name)] ) )
-		{
-			return $statuses[strtolower($name)];
+		$statuses= array_flip( $statuses );
+		if ( isset($statuses[$name]) ) {
+			return $statuses[$name];
 		}
 		return false;
 	}
@@ -380,13 +378,12 @@ class Comment extends QueryRecord
 	**/
 	public static function status_name( $status )
 	{
-		$statuses= array_flip( Comment::list_comment_statuses() );
-		if ( is_numeric( $status ) && isset( $statuses[$status] ) )
-		{
+		$statuses= Comment::list_comment_statuses();
+		if ( is_numeric( $status ) && isset( $statuses[$status] ) ) {
 			return $statuses[$status];
 		}
-		if ( FALSE !== in_array( $status, $statuses ) )
-		{
+		$statuses= array_flip( $statuses );
+		if ( isset( $statuses[$status] ) ) {
 			return $status;
 		}
 		return '';
@@ -400,11 +397,12 @@ class Comment extends QueryRecord
 	public static function type( $name )
 	{
 		$types= Comment::list_comment_types();
-		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $types ) ) ) {
+		if ( is_numeric( $name ) && ( isset( $types[$name] ) ) ) {
 			return $name;
 		}
-		if ( isset( $types[strtolower($name)] ) ) {
-			return $types[strtolower($name)];
+		$types= array_flip($types);
+		if ( isset( $types[$name] ) ) {
+			return $types[$name];
 		}
 		return false;
 	}
@@ -416,13 +414,12 @@ class Comment extends QueryRecord
 	**/
 	public function type_name( $type )
 	{
-		$types= array_flip( Comment::list_comment_types() );
-		if ( is_numeric( $type ) && isset( $types[$type] ) )
-		{
+		$types= Comment::list_comment_types();
+		if ( is_numeric( $type ) && isset( $types[$type] ) ) {
 			return $types[$type];
 		}
-		if ( FALSE !== in_array( $type, $types ) )
-		{
+		$types= array_flip($types);
+		if ( isset($types[$type]) ) {
 			return $type;
 		}
 		return '';

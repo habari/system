@@ -330,7 +330,7 @@ class AdminHandler extends ActionHandler
 			'limit' => 30,
 			'orderby' => 'date DESC',
 			'default_radio' => array( 'approve'=>'', 'delete'=>'', 'spam'=>'', 'unapprove'=>'' ),
-			'show' => 'unapproved',
+			'show' => '0',
 			'search' => '',
 			'search_fields' => array('content'),
 			'search_status' => null,
@@ -344,20 +344,14 @@ class AdminHandler extends ActionHandler
 		}
 
 		// Setting these mass_delete options prevents any other processing.  Desired?
-		if ( isset( $mass_spam_delete ) ) {
-			$comments= Comments::by_status( Comment::STATUS_SPAM );
+		if ( isset( $mass_spam_delete ) && $search_status == Comment::STATUS_SPAM ) {
 			// Delete all comments that have the spam status.
-			foreach ( $comments as $comment ) {
-				$comment->delete();
-			}
+			Comments::delete_by_status( Comment::STATUS_SPAM );
 			$this->theme->result= 'success';
 		}
-		elseif ( isset( $mass_delete ) ) {
-			$comments= Comments::by_status( Comment::STATUS_UNAPPROVED );
+		elseif ( isset( $mass_delete ) && $search_status == Comment::STATUS_UNAPPROVED ) {
 			// Delete all comments that are unapproved.
-			foreach( $comments as $comment ) {
-				$comment->delete();
-			}
+			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
 			$this->theme->result= 'success';
 		}
 		// if we're updating posts, let's do so:
@@ -419,7 +413,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->limits= $limits;
 		
 		// Set up the type select box
-		$types_tmp= array_flip(Comment::list_comment_types());
+		$types_tmp= Comment::list_comment_types();
 		$types['All']= 'All';
 		foreach ( $types_tmp as $type_key => $type_val  ) {
 			$types[$type_key]= $type_val;
@@ -427,7 +421,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->types= $types;
 		
 		// Set up the status select box
-		$statuses_tmp= array_flip(Comment::list_comment_statuses());
+		$statuses_tmp= Comment::list_comment_statuses();
 		$statuses['All']= 'All';
 		foreach ( $statuses_tmp as $status_key => $status_val  ) {
 			$statuses[$status_key]= $status_val;
@@ -444,27 +438,21 @@ class AdminHandler extends ActionHandler
 		);
 		
 		// Decide what to display
-		switch($show) {
-			case 'spam':
-				$arguments['status']= Comment::STATUS_SPAM;
+		$arguments['status']= intval($search_status);
+		switch($search_status) {
+			case Comment::STATUS_SPAM:
 				$this->theme->mass_delete = 'mass_spam_delete';
 				$default_radio['spam']= ' checked';
 				break;
-			case 'approved':
-				$arguments['status']= Comment::STATUS_APPROVED;
+			case Comment::STATUS_APPROVED:
 				$this->theme->mass_delete = '';
 				$default_radio['approve']= ' checked';
 				break;
-			case 'unapproved':
-				$arguments['status']= Comment::STATUS_UNAPPROVED;
+			case Comment::STATUS_UNAPPROVED:
+			default:
 				$this->theme->mass_delete = 'mass_delete';
 				$default_radio['unapprove']= ' checked';
 				break;
-			default:
-				$arguments['status']= null;
-				$this->theme->mass_delete = 'mass_delete';
-				$default_radio['unapprove']= ' checked';
-				break;			
 		}
 		$this->theme->default_radio= $default_radio;
 		
@@ -816,8 +804,8 @@ class AdminHandler extends ActionHandler
 				'submenu' => array(
 					'content' => array( 'caption' => _t( 'Content' ), 'url' => URL::get( 'admin', 'page=content' ) ),
 					'unapproved' => array( 'caption' => _t( 'Unapproved Comments' ), 'url' => URL::get( 'admin', 'page=moderate' ) ),
-					'approved' => array( 'caption' => _t( 'Approved Comments' ), 'url' => URL::get( 'admin', 'page=moderate&show=approved' ) ),
-					'spam' => array( 'caption' => _t( 'Spam' ), 'url' => URL::get( 'admin', 'page=moderate&show=spam' ) ),
+					'approved' => array( 'caption' => _t( 'Approved Comments' ), 'url' => URL::get( 'admin', 'page=moderate&search_status=1' ) ),
+					'spam' => array( 'caption' => _t( 'Spam' ), 'url' => URL::get( 'admin', 'page=moderate&search_status=2' ) ),
 				)
 			),
 		);
