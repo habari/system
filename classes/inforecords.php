@@ -200,11 +200,13 @@ abstract class InfoRecords implements URLProperties
 	 */
 	public function commit( $metadata_key = null )
 	{
-		if ( !($this->_loaded || empty($this->_key_value)) ) {
-			return true;
-		}
 		if ( isset( $metadata_key ) ) {
 			$this->_key_value= $metadata_key;
+		}
+		// If the info is not already loaded, and the key value is empty, 
+		// then we don't have enough info to do the commit
+		if ( !$this->_loaded && empty($this->_key_value) ) {
+			return true;
 		}
 
 		foreach( (array)$this->__inforecord_array as $name=>$record ) {

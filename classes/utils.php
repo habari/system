@@ -476,6 +476,7 @@ class Utils
 					case 'sha1':
 					case 'ssha':
 					case 'ssha512':
+					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
 						Error::raise( 'Unsupported digest algorithm "' . $algo . '"' );
@@ -495,7 +496,7 @@ class Utils
 	/**
 	 * Crypt or verify a given password using SHA.
 	 *
-	 * @deprecated Use any of the salted methods instead.
+	 * Passwords should not be stored using this method, but legacy systems might require it.
 	 */
 	public static function sha1( $password, $hash= NULL ) {
 		$marker= '{SHA1}';
@@ -504,6 +505,21 @@ class Utils
 		}
 		else {
 			return ( sha1( $password ) == substr( $hash, strlen( $marker ) ) );
+		}
+	}
+
+	/**
+	 * Crypt or verify a given password using MD5.
+	 *
+	 * Passwords should not be stored using this method, but legacy systems might require it.
+	 */
+	public static function md5( $password, $hash= NULL ) {
+		$marker= '{MD5}';
+		if ( $hash == NULL ) {
+			return $marker . md5( $password );
+		}
+		else {
+			return ( md5( $password ) == substr( $hash, strlen( $marker ) ) );
 		}
 	}
 
