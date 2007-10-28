@@ -55,15 +55,19 @@ class RewriteRules extends ArrayObject {
 	 **/	  	 	 	
 	static public function get_active()
 	{
-		$sql= "
-			SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority
-			FROM " . DB::table( 'rewrite_rules' ) . " AS rr
-			WHERE rr.is_active= 1
-			ORDER BY rr.priority";
-		$db_rules= DB::get_results( $sql, array(), 'RewriteRule' );
+		static $system_rules;
+	
+		if(!isset($system_rules)) {
+			$sql= "
+				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority
+				FROM " . DB::table( 'rewrite_rules' ) . " AS rr
+				WHERE rr.is_active= 1
+				ORDER BY rr.priority";
+			$db_rules= DB::get_results( $sql, array(), 'RewriteRule' );
 		
-		$rewrite_rules= self::add_system_rules( $db_rules );
-		$rewrite_rules= Plugins::filter('rewrite_rules', $rewrite_rules);
+			$system_rules= self::add_system_rules( $db_rules );
+		}
+		$rewrite_rules= Plugins::filter('rewrite_rules', $system_rules);
 
 		usort($rewrite_rules, array('RewriteRules', 'sort_rules'));
 
