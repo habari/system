@@ -547,5 +547,19 @@ class Comments extends ArrayObject
 		return self::get( $params );
 	}
 
+
+	public static function delete_by_status( $status )
+	{
+		$comments = DB::table('comments');
+		$commentinfo = DB::table('commentinfo');
+		$sql = "
+			DELETE {$comments}.*, {$commentinfo}.* 
+			FROM {$comments} 
+			LEFT JOIN {$commentinfo} ON {$comments}.id = {$commentinfo}.comment_id 
+			WHERE {$comments}.status = ?;
+		";
+		
+		DB::query($sql, array(Comment::status($status)));
+	}
 }
 ?>
