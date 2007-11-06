@@ -753,11 +753,25 @@ class Utils
 		$b= 0;
 		
 		foreach ( token_get_all( $code ) as $token ) {
-			if ( '{' == $token ) ++$b;
-			else if ( '}' == $token ) --$b;
+			if ( is_array( $token ) ) {
+				$token= token_name( $token[0] );
+			}
+			switch ( $token ) {
+				case 'T_CURLY_OPEN':
+				case 'T_DOLLAR_OPEN_CURLY_BRACES':
+				case 'T_CURLY_OPENT_VARIABLE': // This is not documented in the manual. (11.05.07)
+				case '{':
+					++$b;
+					break;
+				case '}':
+					--$b;
+					break;
+			}
 		}
 		
-		if ( $b ) return false; // Unbalanced braces would break the eval below
+		if ( $b ) {
+			return false; // Unbalanced braces would break the eval below
+		}
 		else {
 			ob_start(); // Catch potential parse error messages
 			$code = eval( 'if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
