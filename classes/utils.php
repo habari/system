@@ -742,5 +742,42 @@ class Utils
 	        }
 	} 
 
+	/**
+	 * Check the PHP syntax of (and execute) the specified code.
+	 * Performs a syntax (lint) check on the specified code testing for scripting errors.
+	 *
+	 * @param string $code The code string to be evaluated. It does not have to contain PHP opening tags.
+	 * @return bool Returns TRUE if the lint check passed, and FALSE if the link check failed.
+	 */
+	public function php_check_syntax( $code ) {
+		$b= 0;
+		
+		foreach ( token_get_all( $code ) as $token ) {
+			if ( '{' == $token ) ++$b;
+			else if ( '}' == $token ) --$b;
+		}
+		
+		if ( $b ) return false; // Unbalanced braces would break the eval below
+		else {
+			ob_start(); // Catch potential parse error messages
+			$code = eval( 'if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
+			ob_end_clean();
+			
+			return false !== $code;
+		}
+	}
+	
+	/**
+	 * Check the PHP syntax of (and execute) the specified file.
+	 *
+	 * @see Utils::php_check_syntax()
+	 */
+	public function php_check_file_syntax( $file ) {
+		// Prepend and append PHP opening tags to prevent eval() failures.
+		$code= ' ?>' . file_get_contents( $file ) . '<?php ';
+		
+		return self::php_check_syntax( $code );
+	}
+
 }
 ?>
