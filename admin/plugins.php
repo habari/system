@@ -10,15 +10,10 @@
 			$listok= true;
 			$all_plugins= Plugins::list_all();
 			$active_plugins= Plugins::get_active();
+
 			if ( Plugins::changed_since_last_activation() ) {
-				$request= new RemoteRequest( URL::get( 'admin', array( 'page' => 'loadplugins' ) ), 'POST', 300 );
-				$request->add_header( array( 'Cookie' => $_SERVER['HTTP_COOKIE'] ) );
-				$result= $request->execute();
-				if ( !$request->executed() || preg_match( '%^http/1\.\d 500%i', $request->get_response_headers() ) ) {
+				if ( Plugins::check_every_plugin_syntax() ) {
 					$listok= false;
-		?>
-			<p><?php _e( 'The plugin list has changed since the last activation.  Please wait while Habari loads the plugin list.' ); ?></p>
-		<?php
 				}
 			}
 			Options::clear_cache();
@@ -34,6 +29,7 @@
 					}
 					echo '</div>';
 				}
+			}
 		?> 
 		<table cellspacing="0" width="100%">
 			<thead>
@@ -98,7 +94,6 @@
 			<?php } ?>
 			</tbody>
 		</table>
-		<?php } ?>
 	</div>
 	<?php if ( isset( $this->engine_vars['configure'] ) ) { ?>
 	<div class="column span-24" id="plugin_options">

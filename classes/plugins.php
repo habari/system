@@ -355,6 +355,28 @@ class Plugins
 		}
 		return false;
 	}
+	
+	/**
+	 * Check the PHP syntax of every plugin available, activated or not.
+	 *
+	 * @see Utils::check_php_file_syntax()
+	 * @return bool Returns true if all plugins were valid, return false if a plugin (or more) failed.
+	 */
+	public function check_every_plugin_syntax() {
+		$failed_plugins= array();
+		$all_plugins= self::list_all();
+
+		foreach ( $all_plugins as $file ) {
+			if ( !Utils::php_check_file_syntax( $file ) ) {
+				$failed_plugins[]= $file;
+			}
+		}
+		
+		Options::set( 'failed_plugins', $failed_plugins );
+		Plugins::set_present();
+		
+		return ( count($failed_plugins) > 0 ) ? false : true;
+	}
 }
 
 ?>
