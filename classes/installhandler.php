@@ -13,6 +13,10 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function act_begin_install()
 	{
+		// Revert magic quotes, normally Controller calls this.
+		Utils::revert_magic_quotes_gpc();
+		
+		// Dispatch AJAX requests.
 		if ( isset( $_POST['ajax_action'] ) ) {
 			switch ( $_POST['ajax_action'] ) {
 				case 'check_mysql_credentials':
