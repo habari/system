@@ -3,17 +3,22 @@
 <hr>
  <div class="column span-24 first" id="welcome">
   <?php
-  if ( isset( $result ) ) {
-   switch( $result ) {
-    case 'success':
-     echo '<p class="update">' . _t('Your post has been saved.') . '</p>';
-     break;
-   }
-  }
   if ( isset( $slug ) ) {
    $post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
    $tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
    $content_type= Post::type( $post->content_type );
+	if ( isset( $result ) && $result == 'success' ) {
+		switch( Post::status($post->status) ) {
+			case 1:
+				echo '<p class="update">' . _t('Your post has been saved as draft.') . '</p>';
+				break;
+			case 2:
+				echo '<p class="update">' . _t('Your post has been published.') . '</p>';
+				break;
+			default:
+				echo '<p class="update">' . _t('Your post has been saved.') . '</p>';
+ 		}
+	}
   } else {
    $post= new Post();
    $tags= array();
