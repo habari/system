@@ -8,11 +8,11 @@
    $tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
    $content_type= Post::type( $post->content_type );
 	if ( isset( $result ) && $result == 'success' ) {
-		switch( Post::status($post->status) ) {
-			case 1:
+		switch( Post::status_name( $post->status ) ) {
+			case 'draft':
 				echo '<p class="update">' . _t('Your post has been saved as draft.') . '</p>';
 				break;
-			case 2:
+			case 'published':
 				echo '<p class="update">' . _t('Your post has been published.') . '</p>';
 				break;
 			default:
