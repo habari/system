@@ -215,7 +215,7 @@ class AtomHandler extends ActionHandler
 		*/	
 	public function act_tag_collection()
 	{
-		$this->get_collection( array( 'tag' => $this->handler_vars['tag'] ) );
+		$this->get_collection();
 	}
 	
 	/**
@@ -447,6 +447,22 @@ class AtomHandler extends ActionHandler
 	public function get_collection( $params = array() )
 	{	
 		try {
+			// Arguments we need to build our links
+			$valid_args= array_flip( array( 'tag', 'index', 'page' ) );
+			
+			// Assign alternate links based on the matched rule
+			$alternate_rules= array(
+				'tag_collection' => 'display_entries_by_tag',
+				'collection' => 'index_page',
+				'entry' => 'display_entry',
+				'entry_comments' => 'display_entry',
+				'comments' => 'index_page',
+				);
+
+			// Retrieve the needed rule name and arguments to build the links
+			$rewrite_rule= URL::get_matched_rule()->name;
+			$rewrite_args= array_intersect_key( $this->handler_vars, $valid_args );
+			
 			$namespaces= array( 'default' => 'http://www.w3.org/2005/Atom' );
 			$namespaces= Plugins::filter( 'atom_get_collection_namespaces', $namespaces );
 			$namespaces= array_map( create_function( '$value,$key', 'return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";' ), $namespaces, array_keys($namespaces) );
@@ -464,34 +480,30 @@ class AtomHandler extends ActionHandler
 			
 			$feed_link= $xml->addChild( 'link' );
 			$feed_link->addAttribute( 'rel', 'alternate' );
-			$feed_link->addAttribute( 'href', URL::get('index_page') );
+			$feed_link->addAttribute( 'href', URL::get( $alternate_rules[$rewrite_rule], $rewrite_args, false ) );
 			
 			$feed_link= $xml->addChild( 'link' );
 			$feed_link->addAttribute( 'rel', 'self' );
+			$feed_link->addAttribute( 'href', URL::get( $rewrite_rule, $rewrite_args, false ) );
 			
-			if ( isset( $params['tag'] ) ) {
-				$feed_link->addAttribute( 'href', URL::get( 'tag_collection', 'tag=' . $params['tag'] ) );
-			}
-			else {
-				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $this->handler_vars['index'] ) );
-			}
-			
+			$page= ( isset( $rewrite_args['page'] ) ) ? $rewrite_args['page'] : 1;
 			$firstpage= 1;
 			$lastpage= ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) );
-			$nextpage= intval( $this->handler_vars['index'] ) + 1;
-			$prevpage= intval( $this->handler_vars['index'] ) - 1;
-			
+
 			if ( $lastpage > 1 ) {
+				$nextpage= intval( $page ) + 1;
+				$prevpage= intval( $page ) - 1;
+				
 				$feed_link= $xml->addChild( 'link' );
 				$feed_link->addAttribute( 'rel', 'first' );
-				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=1' ) );	
+				$feed_link->addAttribute( 'href', URL::get( $rewrite_rule, array_merge( $rewrite_args, array( 'page' => $firstpage ) ) ) );	
 				$feed_link->addAttribute( 'type', 'application/atom+xml' );
 				$feed_link->addAttribute( 'title', 'First Page' );
 				
 				if ( $prevpage > $firstpage ) {
 					$feed_link= $xml->addChild( 'link' );
 					$feed_link->addAttribute( 'rel', 'previous' );
-					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $prevpage ) );	
+					$feed_link->addAttribute( 'href', URL::get( $rewrite_rule, array_merge( $rewrite_args, array( 'page' => $prevpage ) ) ) );	
 					$feed_link->addAttribute( 'type', 'application/atom+xml' );
 					$feed_link->addAttribute( 'title', 'Previous Page' );
 				}
@@ -499,14 +511,14 @@ class AtomHandler extends ActionHandler
 				if ( $nextpage <= $lastpage ) {
 					$feed_link= $xml->addChild( 'link' );
 					$feed_link->addAttribute( 'rel', 'next' );
-					$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $nextpage ) );	
+					$feed_link->addAttribute( 'href', URL::get( $rewrite_rule, array_merge( $rewrite_args, array( 'page' => $nextpage ) ) ) );	
 					$feed_link->addAttribute( 'type', 'application/atom+xml' );
 					$feed_link->addAttribute( 'title', 'Next Page' );
 				}
 				
 				$feed_link= $xml->addChild( 'link' );
 				$feed_link->addAttribute( 'rel', 'last' );
-				$feed_link->addAttribute( 'href', URL::get( 'collection', 'index=' . $lastpage ) );
+				$feed_link->addAttribute( 'href', URL::get( $rewrite_rule, array_merge( $rewrite_args, array( 'page' => $lastpage ) ) ) );	
 				$feed_link->addAttribute( 'type', 'application/atom+xml' );
 				$feed_link->addAttribute( 'title', 'Last Page' );
 			}
@@ -515,10 +527,10 @@ class AtomHandler extends ActionHandler
 			$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
 			$feed_generator->addAttribute( 'version', Options::get( 'version' ) );
 			
-			$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $params['tag'] ) ) ? $params['tag'] : 'atom' ) . '/' . Options::get( 'GUID' ) );
+			$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $rewrite_args['tag'] ) ) ? $rewrite_args['tag'] : 'atom' ) . '/' . Options::get( 'GUID' ) );
 
-			if(is_numeric($this->handler_vars['index'])) {
-				$params['page'] = $this->handler_vars['index'];
+			if( $page > 1 ) {
+				$params['page'] = $page;
 			}	
 			
 			if(!isset($params['content_type'])) {
