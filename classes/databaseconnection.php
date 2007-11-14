@@ -98,17 +98,14 @@ class DatabaseConnection
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{	
 		try {
-			if ( ! $this->pdo= new PDO( $connect_string, $db_user, $db_pass ) ) {
-				/** @todo Use standard Error class */
-				print_r( $this->pdo->errorInfo() );
-				exit;
-			}        
+			$this->pdo= new PDO( $connect_string, $db_user, $db_pass );    
 			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
 			$this->load_tables();
 			return true;
 		}
 		catch ( PDOException $e ) {
-			return $e;
+			echo 'Connection failed: ' . $e->getMessage();
+			return false;
 		}
 	}
 	
