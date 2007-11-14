@@ -14,7 +14,7 @@
 				<p>Please <a href="<?php URL::out('admin', 'page=plugins'); ?>">activate an import plugin</a> to enable importing.</p>
 				<?php else: ?>
 				<p>Please choose the type of import to perform:</p>
-				<select name="importer">
+				<select name="importer" style="width:auto;">
 					<option></option>
 					<?php
 					foreach($import_names as $name) {
