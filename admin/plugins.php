@@ -73,7 +73,7 @@
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
 					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
 					<input type='hidden' name='action' value='<?php echo $active ? 'Deactivate' : 'Activate'; ?>'>
-					<p><button name='submit'><?php echo $verb; ?></button></p>
+					<p><button name='submit' type='submit'><?php echo $verb; ?></button></p>
 					<?php 
 					if ( $active ) {
 						$plugin_actions= array();
