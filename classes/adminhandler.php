@@ -545,7 +545,7 @@ class AdminHandler extends ActionHandler
 				foreach ( $post_ids as $id ) {
 					$ids[]= array( 'id' => $id );
 				}
-				$to_update= Posts::get( array( 'where' => $ids ) );
+				$to_update= Posts::get( array( 'where' => $ids, 'nolimit' => 1 ) );
 				foreach ( $to_update as $post ) {
 					switch( $change ) {
 					case 'delete':
