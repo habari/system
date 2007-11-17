@@ -15,31 +15,32 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
-		$name= isset($this->handler_vars['habari_username']) ? $this->handler_vars['habari_username'] : '';
-		$pass= isset($this->handler_vars['habari_password']) ? $this->handler_vars['habari_password'] : '';
-		$user= User::authenticate($name, $pass);
+		$name= Controller::get_var( 'habari_username' );
+		$pass= Controller::get_var( 'habari_password' );
 		
-		if ( FALSE === $user ) {
-			//$url->settings['error'] = "badlogin";
-			// unset the password the use tried
+		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
+			$user= User::authenticate( $name, $pass );
+		
+			if ( ( $user instanceOf User ) && ( FALSE != $user ) ) {
+				/* Successfully authenticated. */
+				// Timestamp last login date and time.
+				$user->info->authenticate_time= date( 'Y-m-d H:i:s' );
+				$user->update();
+
+				Utils::redirect( Site::get_url('admin') );
+				return TRUE;
+			}
+			
+			/* Authentication failed. */
+			// Remove submitted password, see, we're secure!
 			$this->handler_vars['habari_password']= '';
-			$this->handler_vars['error']= 'Invalid login'; /** @todo Use real error handling */ 
-			/* Since we failed, display the theme's login template */
-			$this->theme= Themes::create();
-			$this->display('login');
-			return true;
+			$this->handler_vars['error']= 'Bad credentials';
 		}
-		else
-		{
-			/* Successfully authenticated. */
-			$this->handler_vars['user']= $user; // Assign into handler and theme
-			$user->info->authenticate_time= date( 'Y-m-d H:i:s' ); // keep track of last login time
-			$user->update();
-			// Redirect to admin dashboard
-			// XXX do we want to redirect to the referring page? 
-			Utils::redirect( Site::get_url('admin') );
-			return true;
-		}
+		
+		// Display the login form.
+		$this->theme= Themes::create();
+		$this->display( 'login' );
+		return TRUE;
 	}
 
 	/**
