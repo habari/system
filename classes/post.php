@@ -555,8 +555,9 @@ class Post extends QueryRecord
 		Plugins::act('post_delete_before', $this);
 
 		// Delete all comments associated with this post
-		if(!empty($this->comments))
+		if ( $this->comments->count() > 0 ) {
 			$this->comments->delete();
+		}
 		// Delete all info records associated with this post
 		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
