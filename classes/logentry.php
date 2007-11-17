@@ -36,6 +36,8 @@ class LogEntry extends QueryRecord
 		return array(
 			'id' => 0,
 			'user_id' => 0,
+			'type_id' => NULL,
+			'severity_id' => NULL,
 			'message' => '',
 			'data' => '',
 			'timestamp' => date( 'Y-m-d H:i:s' ),
