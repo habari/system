@@ -24,7 +24,7 @@ class Site
 	 * @staticvar $scriptname the name of the currently executing script (index.php)
 	 */
 	static $config_path;
-	static $config_dir;	
+	static $config_dir;
 	static $config_type = Site::CONFIG_LOCAL;
 	static $scriptname;
 
@@ -121,13 +121,13 @@ class Site
 	public static function get_url( $name, $trail = false )
 	{
 		$url= '';
-		
+
 		switch( strtolower( $name ) )
 		{
 			case 'host':
 				$protocol= 'http';
 				// If we're running on a port other than 80, i
-				// add the port number to the value returned 
+				// add the port number to the value returned
 				// from host_url
 				$port= 80; // Default in case not set.
 				if ( isset( $_SERVER['SERVER_PORT'] ) ) {
@@ -157,8 +157,11 @@ class Site
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 					$url= Site::get_url( 'user' ) .  '/themes/' . $theme;
 				}
-				else {
+				elseif ( file_exists( Site::get_dir( 'config' ) . '/user/themes/' . $theme ) ) {
 					$url= Site::get_url( 'habari' ) . '/user/themes/' . $theme;
+				}
+				else {
+					$url= Site::get_url( 'habari' ) . '/system/themes/' . $theme;
 				}
 				break;
 			case 'admin':
@@ -229,7 +232,7 @@ class Site
 		$path= Plugins::filter( 'site_path_' . $name, $path );
 		return $path;
 	}
-	
+
 	/**
 	 * get_dir returns a complete filesystem path to the requested item
 	 *	'config_file' returns the complete path to the config.php file, including the filename
@@ -243,7 +246,7 @@ class Site
 	public static function get_dir( $name, $trail = false )
 	{
 		$path= '';
-		
+
 		switch ( strtolower( $name ) )
 		{
 			case 'config_file':
@@ -253,20 +256,20 @@ class Site
 				if ( self::$config_path ) {
 					return self::$config_path;
 				}
-				
+
 				self::$config_path= HABARI_PATH;
-				
+
 				$config_dirs= preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', glob( HABARI_PATH . '/user/sites/*/config.php' ) );
-				
+
 				if ( empty( $config_dirs ) ) {
 					return self::$config_path;
 				}
-				
+
 				$server= parse_url( Site::get_url('habari') ) ;
 				$server= ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
-				
+
 				$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
-				
+
 				for ( $x= count( $request ); $x >= 0; $x-- )
 				{
 					$match= trim( $server . implode( '.', array_slice( $request, 0, $x ) ), '.' );
@@ -292,8 +295,11 @@ class Site
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 					$path= Site::get_dir('user') . '/themes/' . $theme;
 				}
-				else {
+				elseif ( file_exists( Site::get_dir( 'config' ) . '/user/themes/' . $theme ) ) {
 					$path= HABARI_PATH . '/user/themes/' . $theme;
+				}
+				else {
+					$path= HABARI_PATH . '/system/themes/' . $theme;
 				}
 				break;
 			case 'admin_theme':

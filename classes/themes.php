@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @todo document 
- */      
+ * @todo document
+ */
 class Themes
 {
 	private static $all_themes = null;
@@ -10,35 +10,38 @@ class Themes
 	/**
 	 * Returns the theme information from the database
 	 * @return array An array of Theme data
-	 **/	 	 	 	 	
+	 **/
 	public static function get_all()
 	{
 		if ( !isset( self::$all_themes ) ) {
-			$themes= glob( HABARI_PATH . '/user/themes/*', GLOB_ONLYDIR | GLOB_MARK );
+			$dirs = array( HABARI_PATH . '/system/themes/*' , HABARI_PATH . '/user/themes/*');
 			if( Site::is('multi') ) {
-				$site_dirs= glob( Site::get_dir('config') . '/themes/*', GLOB_ONLYDIR | GLOB_MARK );
-				if ( is_array( $site_dirs ) && ! empty( $site_dirs ) ) {
-					$themes= array_merge( $themes, $site_dirs );
-				}
+				$dirs[] = glob( Site::get_dir('config') . '/themes/*');
 			}
+			$themes = array();
+			foreach($dirs as $dir) {
+				$site_dirs = glob( $dir, GLOB_ONLYDIR | GLOB_MARK );
+				$themes = array_merge( $themes, $site_dirs );
+			}
+
 			$themes= array_filter( $themes, create_function('$a', 'return file_exists($a . "/theme.xml");') );
 			$themefiles= array_map('basename', $themes);
 			self::$all_themes= array_combine($themefiles, $themes);
 		}
 		return self::$all_themes;
 	}
-	
+
 	/**
 	 * Returns the active theme information from the database
 	 * @return array An array of Theme data
-	 **/	 	 	 	 	
+	 **/
 	public static function get_active()
 	{
 		$theme= new QueryRecord();
 		$theme_dir= Options::get('theme_dir');
 
 		$themes= Themes::get_all();
-		
+
 		if ( isset($themes[$theme_dir]) ) {
 			$theme->theme_dir= $themes[$theme_dir];
 		}
@@ -51,7 +54,7 @@ class Themes
 					$theme_exists = true;
 					break;
 				}
-			}		
+			}
 			if (!$theme_exists) {
 				die(_t('There is no valid theme currently installed.'));
 			}
@@ -77,11 +80,11 @@ class Themes
 
 	/**
 	 * Returns a named Theme descendant.
-	 * If no parameter is supplied, then 
+	 * If no parameter is supplied, then
 	 * load the active theme from the database.
-	 * 
+	 *
 	 * If no theme option is set, a fatal error is thrown
-	 * 
+	 *
 	 * @param name            ( optional ) override the default theme lookup
 	 * @param template_engine ( optional ) specify a template engine
 	 * @param theme_dir       ( optional ) specify a theme directory
@@ -89,7 +92,7 @@ class Themes
 	public function create( $name= '', $template_engine= '', $theme_dir= '' )
 	{
 		if ( $name != '' ) {
-			/* 
+			/*
 			 * A theme name ( or more information ) was supplied.  This happens when we
 			 * want to use a pre-installed theme ( for instance, the
 			 * installer theme. )
@@ -124,7 +127,7 @@ class Themes
 				die( 'Theme not installed.' );
 			}
 		}
-		
+
 		$classname= 'Theme';
 		/**
 		 * @todo Should we include_once a theme's theme.php file here?
@@ -132,12 +135,12 @@ class Themes
 		if( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
 			include_once( $themedata->theme_dir . 'theme.php' );
 			if( defined('THEME_CLASS') ) {
-				$classname= THEME_CLASS; 
+				$classname= THEME_CLASS;
 			}
 		}
 
 		return new $classname($themedata);
-		
+
 	}
 }
 

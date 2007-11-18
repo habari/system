@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<theme>
+	<name>K2</name>
+	<author>K2 Team</author>
+	<url>http://getk2.com/</url>
+	<version>1.0</version>
+	<template_engine>rawphpengine</template_engine>
+</theme>
