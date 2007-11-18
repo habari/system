@@ -1,12 +1,38 @@
+$.fn.hoverClass = function(c) {
+	return this.each(function(){
+		$(this).hover( 
+			function() { $(this).addClass(c);  },
+			function() { $(this).removeClass(c); }
+		);
+	});
+};
+
 String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }
 
 $(document).ready(function(){
+	// Alternate the rows' styling.
+    $("table").each(function(){
+	  $("tr:odd", this).not(".even").addClass("odd");
+	  $("tr:even", this).not(".odd").addClass("even");
+	});
+	
+	$("#menu .menu-item").hover(
+		function(){ $("ul", this).fadeIn("fast"); }, 
+		function() { } 
+	);
+	
+	if (document.all) {
+		$("#menu .menu-item").hoverClass("sfHover");
+	}
+	
+	// Prevent all checkboxes to be unchecked.
 	$(".search_field").click(function(){
 		if($(".search_field:checked").size() == 0 && !$(this).attr('checked')) {
 			return false;
 		}
 	});
 
+	// Toggle default text of inputs on the publish page.
 	$('label.incontent').each(function(){
 		var ctl = '#' + $(this).attr('for');
 		if($(ctl).val() == '') {
@@ -15,6 +41,7 @@ $(document).ready(function(){
 		}
 		$(this).hide();
 	});
+	
 	$('.islabeled').focus(function(){
 		$(this).filter('.islabeled')
 			.val('')
@@ -25,7 +52,7 @@ $(document).ready(function(){
 				.addClass('islabeled');
 		}
 	});
-
+	
 	$('.islabeled').parents('form').submit(function(){
 		$('.islabeled').val('');
 	});

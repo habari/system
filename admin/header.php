@@ -9,35 +9,12 @@
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/admin.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('admin'); ?>/script.js" type="text/javascript"></script>
 	<?php
 		Plugins::act( 'admin_header', $this );
 		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 	?>
-	<script type="text/javascript">
-  		$(document).ready(function(){
-                    $("table").each(function(){
-					  $("tr:odd", this).not(".even").addClass("odd");
-					  $("tr:even", this).not(".odd").addClass("even");
-					});
-				$("#menu .menu-item").hover(
-					function(){ $("ul", this).fadeIn("fast"); },
-					function() { }
-				);
-		  	if (document.all) {
-					$("#menu .menu-item").hoverClass("sfHover");
-				}
-		  });
-			$.fn.hoverClass = function(c) {
-				return this.each(function(){
-					$(this).hover(
-						function() { $(this).addClass(c);  },
-						function() { $(this).removeClass(c); }
-					);
-				});
-			};
-
-	</script>
 </head>
 <body>
 
