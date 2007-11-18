@@ -26,12 +26,11 @@
   }
    ?>
   <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
-    <p><label for="title" class="incontent"> Title</label><input type="text" name="title" id="title" class="bigtext" size="100%" value="<?php echo $post->title; ?>"></p>
+    <p><label for="title" class="incontent"><?php _e('Title'); ?></label><input type="text" name="title" id="title" class="bigtext" size="100%" value="<?php if ( !empty($post->title) ) { echo $post->title; } ?>"></p>
 
-    <p><label for="content" class="incontent"> Content</label><textarea name="content" id="content" rows="20" cols="114" class="resizable bigtext"><?php echo htmlspecialchars($post->content); ?></textarea></p>
-
-
-    <p><label for="tags" class="incontent"> Tags- comma separated</label><input type="text" name="tags" id="tags" class="bigtext" value="<?php echo $tags; ?>"></p>
+    <p><label for="content" class="incontent"><?php _e('Content'); ?></label><textarea name="content" id="content" rows="20" cols="114" class="resizable bigtext"><?php if ( !empty($post->content) ) { echo htmlspecialchars($post->content); } ?></textarea></p>
+   
+    <p><label for="tags" class="incontent"><?php _e('Tags - Comma Separated')?></label><input type="text" name="tags" id="tags" class="bigtext" value="<?php if ( !empty( $tags ) ) { echo $tags; } ?>"></p>
 
     <h5 class="center">Post Details</h5>
  </div>
