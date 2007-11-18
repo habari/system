@@ -15,7 +15,7 @@ class InstallHandler extends ActionHandler {
 	{
 		// Revert magic quotes, normally Controller calls this.
 		Utils::revert_magic_quotes_gpc();
-		
+
 		// Dispatch AJAX requests.
 		if ( isset( $_POST['ajax_action'] ) ) {
 			switch ( $_POST['ajax_action'] ) {
@@ -52,13 +52,13 @@ class InstallHandler extends ActionHandler {
 		 */
 		Plugins::register( array('InstallHandler', 'ajax_check_mysql_credentials'), 'ajax_', 'check_mysql_credentials' );
 
-		/* 
-		 * Let's check the config.php file if no POST data was submitted 
-		 */ 
-		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['admin_username']) ) ) { 
-			// no config file, and no HTTP POST 
-			$this->display('db_setup'); 
-		} 
+		/*
+		 * Let's check the config.php file if no POST data was submitted
+		 */
+		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['admin_username']) ) ) {
+			// no config file, and no HTTP POST
+			$this->display('db_setup');
+		}
 
 		// try to load any values that might be defined in config.php
 		if ( file_exists( Site::get_dir('config_file') ) ) {
@@ -75,7 +75,7 @@ class InstallHandler extends ActionHandler {
 					list($host,$name)= explode(';', $remainder);
 					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
 					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
-					break;				
+					break;
 				}
 				$this->handler_vars['db_user']= $db_connection['username'];
 				$this->handler_vars['db_pass']= $db_connection['password'];
@@ -94,12 +94,12 @@ class InstallHandler extends ActionHandler {
 		// now merge in any HTTP POST values that might have been sent
 		// these will override the defaults and the config.php values
 		$this->handler_vars= array_merge($this->handler_vars, $_POST);
-		
+
 		// we need details for the admin user to install
 		if ( ( '' == $this->handler_vars['admin_username'] )
 			|| ( '' == $this->handler_vars['admin_pass1'] )
 			|| ( '' == $this->handler_vars['admin_pass2'] )
-			|| ( '' == $this->handler_vars['admin_email']) 
+			|| ( '' == $this->handler_vars['admin_email'])
 		) {
 			// if none of the above are set, display the form
 			$this->display('db_setup');
@@ -125,10 +125,10 @@ class InstallHandler extends ActionHandler {
 			// re-display the form
 			$this->display('db_setup');
 		}
-		
+
 		// Install k2
 		Themes::activate_theme('k2', 'k2');
-	
+
 		EventLog::log('Habari successfully installed.', 'info', 'default', 'habari');
 		return true;
 	}
@@ -150,7 +150,7 @@ class InstallHandler extends ActionHandler {
 	/*
 	 * sets default values for the form
 	 */
-	public function form_defaults() 
+	public function form_defaults()
 	{
 		$formdefaults['db_type'] = 'mysql';
 		$formdefaults['db_host'] = 'localhost';
@@ -207,10 +207,10 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
-	 * Attempts to install the database.  Returns the result of 
+	 * Attempts to install the database.  Returns the result of
 	 * the installation, adding errors to the theme if any
 	 * occur
-	 * 
+	 *
 	 * @return bool result of installation
 	 */
 	private function install_db()
@@ -252,7 +252,7 @@ class InstallHandler extends ActionHandler {
 		}
 
 		DB::begin_transaction();
-		/* Let's install the DB tables now. */ 
+		/* Let's install the DB tables now. */
 		$create_table_queries= $this->get_create_table_queries(
 			$this->handler_vars['db_type'],
 			$this->handler_vars['table_prefix'],
@@ -260,7 +260,7 @@ class InstallHandler extends ActionHandler {
 		);
 		DB::clear_errors();
 		DB::dbdelta($create_table_queries, true, true, true);
-		
+
 		if(DB::has_errors()) {
 			$error= DB::get_last_error();
 			$this->theme->assign('form_errors', array('db_host'=>'Could not create schema tables...' . $error['message']));
@@ -289,7 +289,7 @@ class InstallHandler extends ActionHandler {
 				return false;
 			}
 		}
-		
+
 		// Let's setup the admin user now.
 		// But first, let's make sure that no users exist
 		$all_users= User::get_all();
@@ -311,10 +311,10 @@ class InstallHandler extends ActionHandler {
 				return false;
 			}
 		}
-		
+
 		/* Store current DB version so we don't immediately run dbdelta. */
 		Version::save_dbversion();
-		
+
 		/* Ready to roll. */
 		DB::commit();
 		return true;
@@ -350,7 +350,7 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
-	 * Checks that there is a database matching the supplied 
+	 * Checks that there is a database matching the supplied
 	 * arguments.
 	 *
 	 * @return  bool  Database exists with credentials?
@@ -361,7 +361,7 @@ class InstallHandler extends ActionHandler {
 		if($config= $this->get_config_file()) {
 			$config = preg_replace('/<\\?php(.*)\\?'.'>/ims', '$1', $config);
 			// Update the $db_connection global from the config that is aobut to be written:
-			eval($config);  
+			eval($config);
 
 			/* Attempt to connect to the database host */
 			return DB::connect();
@@ -392,7 +392,7 @@ class InstallHandler extends ActionHandler {
 				// so let's encrypt it
 				$password= Utils::crypt($admin_pass);
 			}
-		} 
+		}
 		else {
 			$password= Utils::crypt($admin_pass);
 		}
@@ -404,7 +404,7 @@ class InstallHandler extends ActionHandler {
 			'password'=>$password
 		));
 
-		return true; 
+		return true;
 	}
 
 	/**
@@ -413,9 +413,9 @@ class InstallHandler extends ActionHandler {
 	private function create_default_options()
 	{
 		// Create the default options
-		
+
 		Options::set('installed', true);
-		
+
 		Options::set('title', $this->handler_vars['blog_title']);
 		Options::set('base_url', substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1));
 		Options::set('version', Version::get_habariversion());
@@ -469,8 +469,8 @@ class InstallHandler extends ActionHandler {
 	 * Install schema tables from the respective RDBMS schema
 	 * @param $db_type string The schema string for the database
 	 * @param $table_prefix string The prefix to use on each table name
-	 * @param $db_schema string The database name	  	 
-	 * @return array Array of queries to execute	 	 
+	 * @param $db_schema string The database name
+	 * @return array Array of queries to execute
 	 */
 	private function get_create_table_queries($db_type, $table_prefix, $db_schema)
 	{
@@ -480,7 +480,7 @@ class InstallHandler extends ActionHandler {
 		$schema_sql= str_replace('{$schema}',$db_schema, $schema_sql);
 		$schema_sql= str_replace('{$prefix}',$table_prefix, $schema_sql);
 
-		/* 
+		/*
 		 * Just in case anyone creates a schema file with separate statements
 		 * not separated by two newlines, let's clean it here...
 		 * Likewise, let's clean up any separations of *more* than two newlines
@@ -510,7 +510,7 @@ class InstallHandler extends ActionHandler {
 		switch ($db_type) {
 			case 'mysql':
 				$queries[]= 'CREATE DATABASE `' . $db_schema . '`;';
-				$queries[]= 'GRANT ALL ON `' . $db_schema . '`.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' . 
+				$queries[]= 'GRANT ALL ON `' . $db_schema . '`.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' .
 				'IDENTIFIED BY \'' . $db_pass . '\';';
 				break;
 			default:
@@ -518,10 +518,10 @@ class InstallHandler extends ActionHandler {
 		}
 		return $queries;
 	}
-	
+
 	/**
 	* Gets the configuration template, inserts the variables into it, and returns it as a string
-	* 
+	*
 	* @return string The config.php template for the db_type schema
 	*/
 	private function get_config_file()
@@ -531,7 +531,7 @@ class InstallHandler extends ActionHandler {
 		}
 		$vars= array_map('addslashes', $this->handler_vars);
 		$file_contents= str_replace(
-			array_map(array('Utils', 'map_array'), array_keys($vars)), 
+			array_map(array('Utils', 'map_array'), array_keys($vars)),
 			$vars,
 			$file_contents
 		);
@@ -539,7 +539,7 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
-	 * Writes the configuration file with the variables needed for 
+	 * Writes the configuration file with the variables needed for
 	 * initialization of the application
 	 *
 	 * @return  bool  Did the file get written?
@@ -549,34 +549,34 @@ class InstallHandler extends ActionHandler {
 		// first, check if a config.php file exists
 		if ( file_exists( Site::get_dir('config_file' ) ) ) {
 			// set the defaults for comprison
-			$db_host= $this->handler_vars['db_host']; 
-			$db_file= $this->handler_vars['db_file']; 
-			$db_type= $this->handler_vars['db_type']; 
-			$db_schema= $this->handler_vars['db_schema']; 
-			$db_user= $this->handler_vars['db_user']; 
-			$db_pass= $this->handler_vars['db_pass']; 
-			$table_prefix= $this->handler_vars['table_prefix']; 
+			$db_host= $this->handler_vars['db_host'];
+			$db_file= $this->handler_vars['db_file'];
+			$db_type= $this->handler_vars['db_type'];
+			$db_schema= $this->handler_vars['db_schema'];
+			$db_user= $this->handler_vars['db_user'];
+			$db_pass= $this->handler_vars['db_pass'];
+			$table_prefix= $this->handler_vars['table_prefix'];
 
 			// set the connection string
 			switch ( $db_type ) {
 				case 'mysql':
-					$connection_string= "$db_type:host=$db_host;dbname=$db_schema"; 
+					$connection_string= "$db_type:host=$db_host;dbname=$db_schema";
 					break;
 				case 'sqlite':
-					$connection_string= "$db_type:$db_file"; 
+					$connection_string= "$db_type:$db_file";
 					break;
-			} 
+			}
 
 			// load the config.php file
 			include( Site::get_dir('config_file') );
-			
+
 			// and now we compare the values defined there to
 			// the values POSTed to the installer
-			if ( isset($db_connection) && 
+			if ( isset($db_connection) &&
 				( $db_connection['connection_string'] == $connection_string )
 				&& ( $db_connection['username'] == $db_user )
 				&& ( $db_connection['password'] == $db_pass )
-				&& ( $db_connection['prefix'] == $table_prefix ) 
+				&& ( $db_connection['prefix'] == $table_prefix )
 			) {
 				// the values are the same, so don't bother
 				// trying to write to config.php
@@ -690,11 +690,11 @@ class InstallHandler extends ActionHandler {
 		}
 		return true;
 	}
-	
+
 	public function upgrade_db()
 	{
 		global $db_connection;
-		
+
 		list( $schema, $remainder )= explode( ':', $db_connection['connection_string'] );
 		switch( $schema ) {
 		case 'sqlite':
@@ -703,17 +703,17 @@ class InstallHandler extends ActionHandler {
 		case 'mysql':
 			list($host,$name)= explode(';', $remainder);
 			list($discard, $db_name)= explode('=', $name);
-			break;				
+			break;
 		}
 		$queries= $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
 		DB::dbdelta($queries);
 		Version::save_dbversion();
 	}
-	
+
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
-	 */ 
+	 */
 	public function ajax_check_mysql_credentials() {
 		$xml= new SimpleXMLElement('<response></response>');
 		// Missing anything?
@@ -738,23 +738,23 @@ class InstallHandler extends ActionHandler {
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
 			$pdo= 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
-			$connect= DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
-			if ( $connect === true ) {
+			try {
+				$connect= DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
 				$xml->addChild( 'status', 1 );
 			}
-			else {
+			catch(Exception $e) {
 				$xml->addChild( 'status', 0 );
 				$xml_error= $xml->addChild( 'error' );
-				if ( strpos( $connect->getMessage(), '[1045]' ) ) {
+				if ( strpos( $e->getMessage(), '[1045]' ) ) {
 					$xml_error->addChild( 'id', '#databaseuser' );
 					$xml_error->addChild( 'id', '#databasepass' );
 					$xml_error->addChild( 'message', 'Access denied. Make sure these credentials are valid.' );
 				}
-				else if ( strpos( $connect->getMessage(), '[1049]' ) ) {
+				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
 					$xml_error->addChild( 'id', '#databasename' );
 					$xml_error->addChild( 'message', 'That database does not exist.' );
 				}
-				else if ( strpos( $connect->getMessage(), '[2005]' ) ) {
+				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
 					$xml_error->addChild( 'id', '#databasehost' );
 					$xml_error->addChild( 'message', 'Could not connect to host.' );
 				}
@@ -763,7 +763,7 @@ class InstallHandler extends ActionHandler {
 					$xml_error->addChild( 'id', '#databasepass' );
 					$xml_error->addChild( 'id', '#databasename' );
 					$xml_error->addChild( 'id', '#databasehost' );
-					$xml_error->addChild( 'message', $connect->getMessage() );
+					$xml_error->addChild( 'message', $e->getMessage() );
 				}
 			}
 		}

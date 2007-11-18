@@ -16,7 +16,7 @@ class DatabaseConnection
 	private $keep_profile= DEBUG;                   	// keep profiling and timing information?
 	private $pdo= NULL;                             // handle to the PDO interface
 	private $pdo_statement= NULL;                   // handle for a PDOStatement
-	
+
 	/**
 	 * @var array tables Habari knows about
 	 */
@@ -41,7 +41,7 @@ class DatabaseConnection
 		'users',
 		'users_groups',
 	);
-	
+
 	/**
 	 * @var array mapping of table name -> prefixed table name
 	 */
@@ -51,24 +51,24 @@ class DatabaseConnection
 
 	private $prefix= '';								// class private storage of the database table prefix, defaults to ''
 	private $current_table;
-	
-	/** 
+
+	/**
 	 * Returns the appropriate type of Connection class for the connect string passed or null on failure
-	 * 
-	 * @param connection_string a PDO connection string 
+	 *
+	 * @param connection_string a PDO connection string
 	 * @return  mixed returns appropriate DatabaseConnection child class instance or errors out if requiring the db class fails
 	 */
-	public static function ConnectionFactory( $connect_string ) 
+	public static function ConnectionFactory( $connect_string )
 	{
 		list($engine) = explode(':', $connect_string, 2);
 		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );
 		$engine .= 'Connection';
 		return new $engine();
 	}
-	
+
 	/**
 	 * Populate the table mapping.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function load_tables()
@@ -80,53 +80,47 @@ class DatabaseConnection
 		} else {
 			$prefix= $this->prefix;
 		}
-		
+
 		// build the mapping with prefixes
 		foreach ( $this->tables as $t ) {
 			$this->sql_tables[$t]= $prefix . $t;
 		}
-	} 
+	}
 
-	/** 
+	/**
 	 * Connect to a database server
-	 * 
+	 *
 	 * @param string $connect_string a PDO connection string
 	 * @param string $db_user the database user name
 	 * @param string $db_pass the database user password
 	 * @return boolean TRUE on success, FALSE on error
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
-	{	
-		try {
-			$this->pdo= new PDO( $connect_string, $db_user, $db_pass );    
-			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
-			$this->load_tables();
-			return true;
-		}
-		catch ( PDOException $e ) {
-			echo 'Connection failed: ' . $e->getMessage();
-			return false;
-		}
+	{
+		$this->pdo= new PDO( $connect_string, $db_user, $db_pass );
+		$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+		$this->load_tables();
+		return true;
 	}
-	
+
 	/**
 	 * Disconnect from the database server.
-	 * 
+	 *
 	 * @return boolean TRUE
 	 */
 	public function disconnect()
 	{
 		$this->pdo= NULL; // this is the canonical way :o
-		
-		return TRUE; 
+
+		return TRUE;
 	}
 
 	/**
 	 * Check whether there is an existing connection to a database.
-	 * 
+	 *
 	 * @return boolean
 	 */
-	public function is_connected() 
+	public function is_connected()
 	{
 		return ( NULL != $this->pdo );
 	}
@@ -179,12 +173,12 @@ class DatabaseConnection
 	{
 		$this->fetch_class_name= $class_name;
 	}
-	
+
 	/**
 	 * Execute the given query on the database. Encapsulates PDO::exec.
 	 * WARNING: Make sure you don't call this with a SELECT statement.
 	 * PDO will buffer the results and leave your cursor dangling.
-	 * 
+	 *
 	 * @param string $query the query to run
 	 * @return boolean TRUE on success, FALSE on error
 	 */
@@ -195,17 +189,17 @@ class DatabaseConnection
 
 	/**
 	 * Execute a SQL statement.
-	 * 
+	 *
 	 * @param string $query the SQL statement
 	 * @param array $args values for the bound parameters
 	 * @return boolean TRUE on success, FALSE on failure
-	 */	 	 	 	 	
+	 */
 	public function query( $query, $args= array() )
 	{
-		if ( $this->pdo_statement != NULL ) { 
+		if ( $this->pdo_statement != NULL ) {
 			$this->pdo_statement->closeCursor();
 		}
-		
+
 		if ( $this->pdo_statement= $this->pdo->prepare( $query ) ) {
 			if ( $this->fetch_mode == PDO::FETCH_CLASS ) {
 				/* Try to get the result class autoloaded. */
@@ -251,13 +245,13 @@ class DatabaseConnection
 		}
 	}
 
-	/** 
+	/**
 	 * Execute a stored procedure
 	 *
 	 * @param   procedure   name of the stored procedure
 	 * @param   args        arguments for the procedure
 	 * @return  mixed       whatever the procedure returns...
-	 * @experimental 
+	 * @experimental
 	 * @todo  EVERYTHING... :)
 	 */
 	public function execute_procedure( $procedure, $args= array() )
@@ -266,7 +260,7 @@ class DatabaseConnection
 		$pdo= $this->pdo;
 		$pdo_statement= $this->pdo_statement;
 
-		if( $pdo_statement != NULL ) { 
+		if( $pdo_statement != NULL ) {
 			$pdo_statement->closeCursor();
 		}
 
@@ -329,7 +323,7 @@ class DatabaseConnection
 	}
 
 	/**
-	 * Rolls a currently running transaction back to the 
+	 * Rolls a currently running transaction back to the
 	 * prexisting state, or, if the RDBMS supports it, whenever
 	 * a savepoint was committed.
 	 */
@@ -370,36 +364,36 @@ class DatabaseConnection
 		}
 		$this->errors[]= array_merge($error, array('backtrace'=> $backtrace)) ;
 	}
-	
+
 	/**
 	 * Returns error data gathered from database connection
-	 * @return array An array of error data	 
-	 */	  	 	
+	 * @return array An array of error data
+	 */
 	public function get_errors()
 	{
 		return $this->errors;
 	}
-	
+
 	/**
 	 * Determines if there have been errors since the last clear_errors() call
 	 * @return boolean True if there were errors, false if not
-	 **/	 	 	 	
+	 **/
 	public function has_errors()
 	{
 		return ( count( $this->errors ) > 0 );
 	}
-	
+
 	/**
 	 * Updates the last error pointer to simulate resetting the error array
-	 **/	 	 	
+	 **/
 	public function clear_errors()
 	{
-		$this->errors= array(); 
+		$this->errors= array();
 	}
 
 	/**
 	 * Returns only the last error info
-	 * @return array Data for the last error	 
+	 * @return array Data for the last error
 	 **/
 	public function get_last_error()
 	{
@@ -411,10 +405,10 @@ class DatabaseConnection
 	 * Execute a query and return the results as an array of objects
 	 * @param query   the query to execute
 	 * @param args    array of arguments to pass for prepared statements
-	 * @param string Optional class name for row result objects	 
+	 * @param string Optional class name for row result objects
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary= DB::get_results( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
-	 **/	 	 	 	 
+	 **/
 	public function get_results( $query, $args= array() )
 	{
 		if ( func_num_args() == 3 ) {
@@ -433,15 +427,15 @@ class DatabaseConnection
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Returns a single row (the first in a multi-result set) object for a query
 	 * @param string The query to execute
 	 * @param array Arguments to pass for prepared statements
 	 * @param string Optional class name for row result object
-	 * @return object A QueryRecord or an instance of the named class containing the row data	 
-	 * <code>$obj= DB::get_row( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>	 
-	 **/	 	 
+	 * @return object A QueryRecord or an instance of the named class containing the row data
+	 * <code>$obj= DB::get_row( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
+	 **/
 	public function get_row( $query, $args= array() )
 	{
 		if ( func_num_args() == 3 ) {
@@ -457,15 +451,15 @@ class DatabaseConnection
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Returns all values for a column for a query
 	 *
 	 * @param string The query to execute
 	 * @param array Arguments to pass for prepared statements
-	 * @return array An array containing the column data	 
-	 * <code>$ary= DB::get_column( 'SELECT col1 FROM tablename WHERE foo= ?', array( 'fieldvalue' ) );</code>	 
-	 **/	 	 
+	 * @return array An array containing the column data
+	 * <code>$ary= DB::get_column( 'SELECT col1 FROM tablename WHERE foo= ?', array( 'fieldvalue' ) );</code>
+	 **/
 	public function get_column( $query, $args= array() )
 	{
 		if ( $this->query( $query, $args ) ) {
@@ -493,13 +487,13 @@ class DatabaseConnection
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Inserts into the specified table values associated to the key fields
 	 * @param string The table name
 	 * @param array An associative array of fields and values to insert
-	 * @return boolean True on success, false if not	  	 
-	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
+	 * @return boolean True on success, false if not
+	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>
 	 **/
 	public function insert( $table, $fieldvalues )
 	{
@@ -507,27 +501,27 @@ class DatabaseConnection
 
 		$query= "INSERT INTO {$table} ( ";
 		$comma= '';
-		
+
 		foreach( $fieldvalues as $field => $value ) {
 			$query.= $comma . $field;
 			$comma= ', ';
 			$values[]= $value;
 		}
 		$query.= ' ) VALUES ( ' . trim( str_repeat( '?,', count( $fieldvalues ) ), ',' ) . ' );';
-		
+
 		// need to pass $table on to the $o singleton object;
 			$this->current_table= $table;
 
 		return $this->query( $query, $values );
 	}
-	
+
 	/**
 	 * Checks for a record that matches the specific criteria
 	 * @param string Table to check
 	 * @param array Associative array of field values to match
 	 * @return boolean True if any matching record exists, false if not
-	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
-	 **/	 
+	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>
+	 **/
 	public function exists( $table, $keyfieldvalues )
 	{
 		$qry= "SELECT 1 as c FROM {$table} WHERE 1=1 ";
@@ -540,17 +534,17 @@ class DatabaseConnection
 		$result= $this->get_row( $qry, $values );
 		return ( $result !== false );
 	}
-	
+
 	/**
 	 * function update
 	 * Updates any record that matches the specific criteria
-	 * A new row is inserted if no existing record matches the criteria	 
+	 * A new row is inserted if no existing record matches the criteria
 	 * @param string Table to update
-	 * @param array Associative array of field values to set	 
+	 * @param array Associative array of field values to set
 	 * @param array Associative array of field values to match
 	 * @return boolean True on success, false if not
-	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>	 
-	 **/	 
+	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>
+	 **/
 	public function update( $table, $fieldvalues, $keyfields )
 	{
 		ksort( $fieldvalues );
@@ -573,9 +567,9 @@ class DatabaseConnection
 				$qry.= $comma . " {$fieldname}= ?";
 				$values[]= $fieldvalue;
 				$comma= ' ,';
-			} 
+			}
 			$qry.= ' WHERE 1=1 ';
-			
+
 			foreach( $keyfields as $keyfield => $keyvalue ) {
 				$qry.= "AND {$keyfield}= ? ";
 				$values[]= $keyvalue;
@@ -595,8 +589,8 @@ class DatabaseConnection
 	 * @param string Table to delete from
 	 * @param array Associative array of field values to match
 	 * @return boolean True on success, false if not
-	 * <code>DB::delete( 'mytable', array( 'fieldname' => 'value' ) );</code>	 
-	 */	 
+	 * <code>DB::delete( 'mytable', array( 'fieldname' => 'value' ) );</code>
+	 */
 	public function delete( $table, $keyfields )
 	{
 		$qry= "DELETE FROM {$table} WHERE 1=1 ";
@@ -604,12 +598,12 @@ class DatabaseConnection
 			$qry.= "AND {$keyfield}= ? ";
 			$values[]= $keyvalue;
 		}
-		
+
 		return $this->query( $qry, $values );
 	}
 
 	/**
-	 * Helper function to return the last inserted sequence or 
+	 * Helper function to return the last inserted sequence or
 	 * auto_increment field.  Useful when doing multiple inserts
 	 * within a single transaction -- for example, adding dependent
 	 * related rows.
@@ -624,15 +618,15 @@ class DatabaseConnection
 		}
 		else {
 			return $this->pdo->lastInsertId( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
-		}    
+		}
 	}
-	
-	/** 
+
+	/**
 	 * Automatic diffing function, used for determining required database upgrades.
 	 * Implemented in child classes.
-	 */	 	 
-	public function dbdelta( $queries, $execute = true, $silent = true ){} 
-	
+	 */
+	public function dbdelta( $queries, $execute = true, $silent = true ){}
+
 }
 
 ?>

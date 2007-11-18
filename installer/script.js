@@ -5,8 +5,9 @@ function handleAjaxError(msg, status, err)
 		error_msg= msg.responseText;
 	}
 	$('#installerror').html(
-		'<strong>AJAX Error</strong>'+
-		'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
+		'<strong>Installation Issue</strong>'+
+		'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="/manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="noVerify();">continue without verification</a>.</p>' + 
+//		'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
 		'<strong>Server Response</strong>'+
 		'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
 	).fadeIn();
@@ -109,28 +110,76 @@ function checkDBCredentials()
 }
 
 function checkSiteConfigurationCredentials() {
-	if ( ( $('#sitename').val() != '' ) && ( $('#adminuser').val() != '' ) && ( $('#adminpass1').val() != '' ) && ( $('#adminpass2').val() != '' ) && ( $('#adminemail').val() != '' ) ) {
+	var warned = false;
+	var installok = true;
+	if ( ( $('#sitename').val() != '' ) && ( $('#adminuser').val() != '' ) && ( $('#adminpass1').val() != '' ) && ( $('#adminpass2').val() != '' ) ) {
+		//Checking fields is ok
 		if ( $('#adminpass1').val() != $('#adminpass2').val() ) {
 			warningtext= 'The passwords do not match, try typing them again.';
 			$('#install').children('.options').fadeOut().removeClass('ready');
 			$('#adminpass1').parents('.installstep').removeClass('done');
 			$('#adminpass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
-			$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
+			warned = true;
+			installok = false;
 		}
-		else {
-			ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
-			$(ida).each(function(id) {
-				ido= $(ida).get(id);
-				$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-				$(ido).parents('.installstep').addClass('done')
-				});
-			$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
-			$('#submitinstall').removeAttr( 'disabled' );
-		}
+	}
+	if($('#adminemail').val() == '' ) {
+		installok = false;
+	}
+	if(!warned) {
+		ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
+		$(ida).each(function(id) {
+			ido= $(ida).get(id);
+			$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
+			if($(ido).val() != '') {
+				$(ido).addClass('valid');
+			}
+		});
+	}
+	if(installok) {
+		$('#siteconfiguration').addClass('done');
+		$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
+		$('#submitinstall').removeAttr( 'disabled' );
 	}
 	else {
+		$('#siteconfiguration').removeClass('done');
 		$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
 	}
+}
+
+var checktimer = null;
+function queueTimer(timer){
+	if(checktimer != null) {
+		clearTimeout(checktimer);
+	}
+	checktimer = setTimeout(timer, 500);
+}
+
+function noVerify() {
+	$('#databasesetup input').unbind();
+	$('#siteconfiguration input').unbind();
+
+	ida= new Array( '#databasefile' );
+	$(ida).each(function(id) {
+	ido= $(ida).get(id);
+		$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+		$(ido).parents('.installstep').addClass('done')
+	});
+	$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
+
+	ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
+	$(ida).each(function(id) {
+		ido= $(ida).get(id);
+		$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
+		if($(ido).val() != '') {
+			$(ido).addClass('valid');
+		}
+	});
+	$('#siteconfiguration').addClass('done');
+	$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
+	$('#submitinstall').removeAttr( 'disabled' );
+	
+	$('#installerror').html('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify your installation details.</p>' + $('#installerror').html());
 }
 
 $(document).ready(function() {
@@ -146,6 +195,6 @@ $(document).ready(function() {
 	checkDBCredentials();
 	checkSiteConfigurationCredentials();
 	$('#databasetype').change(setDatabaseType);
-	$('#databasehost,#databaseuser,#databasepass,#databasename,#databasefile').blur(checkDBCredentials);
-	$('#sitename,#adminuser,#adminpass1,#adminpass2,#adminemail').blur(checkSiteConfigurationCredentials);
-	});
+	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
+	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
+});
