@@ -1,10 +1,10 @@
 <?php
 /**
- * Class which handles incoming requests and drives the 
- * MVC strategy for building the model and assigning to 
+ * Class which handles incoming requests and drives the
+ * MVC strategy for building the model and assigning to
  * a view.
- * 
- * @package Habari 
+ *
+ * @package Habari
  */
 class Controller extends Singleton {
 	public $base_url= '';        // base url for site
@@ -14,7 +14,7 @@ class Controller extends Singleton {
 
 	/**
 	 * Enables singleton working properly
-	 * 
+	 *
 	 * @see singleton.php
 	 */
 	static protected function instance() {
@@ -40,6 +40,15 @@ class Controller extends Singleton {
 	}
 
 	/**
+	 * Returns the full requested URL
+	 *
+	 * @return string The full requested URL
+	 */
+	public function get_full_url() {
+		return self::get_base_url() . self::get_stub();
+	}
+
+	/**
 	 * Returns the action
 	 *
 	 * @return  string name of action
@@ -50,7 +59,7 @@ class Controller extends Singleton {
 
 	/**
 	 * Returns the action handler
-	 * 
+	 *
 	 * @return  object  handler object
 	 */
 	public function get_handler() {
@@ -59,7 +68,7 @@ class Controller extends Singleton {
 
 	/**
 	 * Returns the action handler's variables
-	 * 
+	 *
 	 * @return  array  variables used by handler
 	 */
 	public function get_handler_vars() {
@@ -72,13 +81,13 @@ class Controller extends Singleton {
 	 * The alternative to this, while possible to write, is just too long.
 	 * @param string $name The name of the variable to return.
 	 * @return mixed The value of that variable in the handler
-	 */	  	 	   
+	 */
 	public static function get_var( $name ) {
 		return isset( Controller::instance()->handler->handler_vars[ $name ] ) ? Controller::instance()->handler->handler_vars[ $name ] : NULL;
 	}
 
 	/**
-	 * Parses the requested URL.  Automatically 
+	 * Parses the requested URL.  Automatically
 	 * translates URLs coming in from mod_rewrite and parses
 	 * out any action and parameters in the slug.
 	 */
@@ -90,14 +99,14 @@ class Controller extends Singleton {
 		$controller->base_url= Site::get_path('base', true);
 
 		/* Start with the entire URL coming from web server... */
-		$start_url= ( isset($_SERVER['REQUEST_URI']) 
-					? $_SERVER['REQUEST_URI'] 
-					: $_SERVER['SCRIPT_NAME'] . 
-						( isset($_SERVER['PATH_INFO']) 
-						? $_SERVER['PATH_INFO'] 
-						: '') . 
-							( (isset($_SERVER['QUERY_STRING']) && ($_SERVER['QUERY_STRING'] != '')) 
-							? '?' . $_SERVER['QUERY_STRING'] 
+		$start_url= ( isset($_SERVER['REQUEST_URI'])
+					? $_SERVER['REQUEST_URI']
+					: $_SERVER['SCRIPT_NAME'] .
+						( isset($_SERVER['PATH_INFO'])
+						? $_SERVER['PATH_INFO']
+						: '') .
+							( (isset($_SERVER['QUERY_STRING']) && ($_SERVER['QUERY_STRING'] != ''))
+							? '?' . $_SERVER['QUERY_STRING']
 							: ''));
 
 		/* Strip out the base URL from the requested URL */
@@ -127,16 +136,16 @@ class Controller extends Singleton {
 		if ($matched_rule === FALSE) {
 			// Create a rule to handle a 404 and force it to dispatch
 			$matched_rule = new RewriteRule(
-					array( 
-					'name' => '404', 
-					'parse_regex' => '', 
-					'build_str' => '', 
-					'handler' => 'UserThemeHandler', 
-					'action' => 'display_404', 
-					'priority' => 1, 
-					'description' => 'Displays an error page when a URL is not matched.', 
-					'is_active' => 1, 
-					'rule_class' => RewriteRule::RULE_SYSTEM 
+					array(
+					'name' => '404',
+					'parse_regex' => '',
+					'build_str' => '',
+					'handler' => 'UserThemeHandler',
+					'action' => 'display_404',
+					'priority' => 1,
+					'description' => 'Displays an error page when a URL is not matched.',
+					'is_active' => 1,
+					'rule_class' => RewriteRule::RULE_SYSTEM
 					)
 				);
 		}
