@@ -1,7 +1,7 @@
 <?php include('header.php');?>
 <div class="container">
 <hr>
-<div class="column span-24 first" id="welcome">
+<div class="column prepend-1 span-22 append-1">
 <?php
 $currentuser = User::identify();
 if ( ! $currentuser )
@@ -18,7 +18,7 @@ if ( isset( $result ) ) {
 	}
 }
 ?>
-<h1>User Management</h1>
+<h3>User Management</h3>
 <p>Add, edit and remove users from your site from this interface.</p>
 <h3><strong>Users</strong></h3>
 <ul>

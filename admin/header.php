@@ -7,12 +7,6 @@
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css">
 
-	<!-- Show the grid and baseline
-	<style type="text/css">
-	.container { background: url(<?php Site::out_url('habari'); ?>/3rdparty/blueprint/lib/img/grid.png); } 
-	</style>  
-	-->
-	
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/support.js" type="text/javascript"></script>
 	<?php
@@ -22,13 +16,10 @@
 	?>
 	<script type="text/javascript">
   		$(document).ready(function(){
-                    $("tbody/tr:nth-child(even)").addClass("even");
-                    $(".dashbox ul>li:nth-child(even)").addClass("even");
-                    $("#system-info ul>li:nth-child(even)").addClass("even");
-                    $("#stats ul>li:nth-child(even)").addClass("even");
-                    $("#drafts ul>li:nth-child(even)").addClass("even");
-					 $("#incoming ul>li:nth-child(even)").addClass("even");
-                    $("#stats td+td").addClass('value');
+                    $("table").each(function(){
+					  $("tr:odd", this).not(".even").addClass("odd");
+					  $("tr:even", this).not(".odd").addClass("even");
+					});
 				$("#menu .menu-item").hover(
 					function(){ $("ul", this).fadeIn("fast"); }, 
 					function() { } 
@@ -44,23 +35,27 @@
 						function() { $(this).removeClass(c); }
 					);
 				});
-			};  
+			};
+			function removegrid () {
+			                var div = document.getElementById('wrapper');
+			                div.style.background="none";
+			        }
+			        function applygrid () {
+			                var div = document.getElementById('wrapper');
+			                div.style.background="url(<?php Site::out_url('habari'); ?>/3rdparty/blueprint/lib/grid.png)";
+			        }  
 	</script>
 </head>
 <body>
-<div id="menubar">
-	<div class="container">
-		<div id="site-name">
-			<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
-		</div>
-		<ol id="menu">
-			<?php
-			$page = empty($page) ? 'admin' : $page;
-			echo $mainmenu;
-			?>
-			<li class="menu-item" id="logout">
-				<a href="<?php URL::out('user', 'page=logout'); ?>" title="logout of Habari">Logout</a>
-			</li>
-		</ol>
-	</div>
-</div>
+	
+<ul id="menu">
+	<li id="site-name">
+		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
+	</li>
+	<?php
+		$page = empty($page) ? 'admin' : $page;
+		echo $mainmenu;
+	?>
+</ul>
+
+<div id="wrapper">

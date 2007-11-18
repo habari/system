@@ -1,9 +1,9 @@
 <?php include('header.php');?>
 <div class="container">
-	<div class="column span-24 first" id="welcome">
-		<h1>Currently Available Themes</h1>
+	<div class="column prepend-1 span-22 append-1">
+		<h2>Currently Available Themes</h2>
 		<p>Activate, deactivate and remove themes through this interface.</p>
-		<div class="column span-24">
+		<div class="column prepend-1 span-22 append-1">
 			<table cellspacing="0" width="100%">
 				<thead>
 					<tr>

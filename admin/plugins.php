@@ -1,19 +1,24 @@
 <?php include( 'header.php' ); ?>
 <div class="container">
 <hr>
-	<div class="column span-24" id="welcome">
-		<h1>Currently Available Plugins</h1>
+	<div class="column prepend-1 span-22 append-1">
+		<h2>Currently Available Plugins</h2>
 		<p>Activate, deactivate and remove plugins through this interface.</p>
 	</div>
-	<div class="column span-24">
+	<div class="column prepend-1 span-22 append-1">
 		<?php 
 			$listok= true;
 			$all_plugins= Plugins::list_all();
 			$active_plugins= Plugins::get_active();
-
 			if ( Plugins::changed_since_last_activation() ) {
-				if ( Plugins::check_every_plugin_syntax() ) {
+				$request= new RemoteRequest( URL::get( 'admin', array( 'page' => 'loadplugins' ) ), 'POST', 300 );
+				$request->add_header( array( 'Cookie' => $_SERVER['HTTP_COOKIE'] ) );
+				$result= $request->execute();
+				if ( !$request->executed() || preg_match( '%^http/1\.\d 500%i', $request->get_response_headers() ) ) {
 					$listok= false;
+		?>
+			<p><?php _e( 'The plugin list has changed since the last activation.  Please wait while Habari loads the plugin list.' ); ?></p>
+		<?php
 				}
 			}
 			Options::clear_cache();
@@ -29,7 +34,6 @@
 					}
 					echo '</div>';
 				}
-			}
 		?> 
 		<table cellspacing="0" width="100%">
 			<thead>
@@ -73,7 +77,7 @@
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
 					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
 					<input type='hidden' name='action' value='<?php echo $active ? 'Deactivate' : 'Activate'; ?>'>
-					<p><button name='submit' type='submit'><?php echo $verb; ?></button></p>
+					<p><button name='submit'><?php echo $verb; ?></button></p>
 					<?php 
 					if ( $active ) {
 						$plugin_actions= array();
@@ -94,6 +98,7 @@
 			<?php } ?>
 			</tbody>
 		</table>
+		<?php } ?>
 	</div>
 	<?php if ( isset( $this->engine_vars['configure'] ) ) { ?>
 	<div class="column span-24" id="plugin_options">

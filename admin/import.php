@@ -1,7 +1,7 @@
 <?php include('header.php'); ?>
 <div class="container">
 <hr>
-	<div class="dashboard-block c3" id="welcome">
+	<div class="column prepend-1 span-22 append-1">
 		<h1>Import</h1>
 		<form method="post" action="">
 			<?php
@@ -14,7 +14,7 @@
 				<p>Please <a href="<?php URL::out('admin', 'page=plugins'); ?>">activate an import plugin</a> to enable importing.</p>
 				<?php else: ?>
 				<p>Please choose the type of import to perform:</p>
-				<select name="importer" style="width:auto;">
+				<select name="importer">
 					<option></option>
 					<?php
 					foreach($import_names as $name) {

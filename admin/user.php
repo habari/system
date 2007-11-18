@@ -1,7 +1,7 @@
 <?php include('header.php');?>
 <div class="container">
 <hr>
-<div class="column span-24 first" id="welcome">
+<div class="column prepend-1 span-22 append-1">
 <?php
 	$currentuser = User::identify();
 	if ( ! $currentuser ) {
