@@ -21,17 +21,17 @@
 	}
   } else {
    $post= new Post();
-   $tags= array();	
+   $tags= '';
    $content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
   }
    ?>
   <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
-    <p><input type="text" name="title" id="title" class="bigtext" size="100%" value="<?php if ( empty($post->title) ) { echo 'Title'; } else { echo $post->title; } ?>"></p>
+    <p><label for="title" class="incontent"> Title</label><input type="text" name="title" id="title" class="bigtext" size="100%" value="<?php echo $post->title; ?>"></p>
 
-    <p><textarea name="content" id="content" rows="20" cols="114" class="resizable bigtext"><?php if (empty($post->content) ) {echo 'Content'; } else {echo htmlspecialchars($post->content); } ?></textarea></p>
-    
-   
-    <p> <input type="text" name="tags" id="tags" class="bigtext" value="<?php echo ( !empty( $tags ) ) ? $tags : 'Tags- comma separated'; ?>"></p>
+    <p><label for="content" class="incontent"> Content</label><textarea name="content" id="content" rows="20" cols="114" class="resizable bigtext"><?php echo htmlspecialchars($post->content); ?></textarea></p>
+
+
+    <p><label for="tags" class="incontent"> Tags- comma separated</label><input type="text" name="tags" id="tags" class="bigtext" value="<?php echo $tags; ?>"></p>
 
     <h5 class="center">Post Details</h5>
  </div>
@@ -66,6 +66,6 @@
 	<?php } ?>
 	</form>
 	</div>
-	
+
 </div>
 <?php include('footer.php'); ?>
