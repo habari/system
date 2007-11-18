@@ -20,7 +20,7 @@ else {
 	$commenter_url= '';
 }
 ?>
-      <form action="<?php URL::out( 'comment', array( 'id' => $post->id ) ); ?>" method="post" id="commentform">
+      <form action="<?php URL::out( 'submit_feedback', array( 'id' => $post->id ) ); ?>" method="post" id="commentform">
        <div id="comment-personaldetails">
         <p>
          <input type="text" name="name" id="name" value="<?php echo $commenter_name; ?>" size="22" tabindex="1">

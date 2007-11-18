@@ -161,7 +161,7 @@ WP_IMPORT_STAGE1;
 		if ( ! isset( $utw_import ) ) {
 			$utw_import= 0;
 		}
-		$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_users' ) );
+		$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_users' ) );
 		EventLog::log(sprintf(_t('Starting import from "%s"'), $db_name));
 		Options::set('import_errors', array());
 
@@ -352,7 +352,7 @@ WP_IMPORT_STAGE2;
 				}
 			}
 			if( $max < $postcount ) {
-				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
+				$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_posts' ) );
 				$postindex++;
 
 				echo <<< WP_IMPORT_AJAX1
@@ -375,7 +375,7 @@ WP_IMPORT_STAGE2;
 WP_IMPORT_AJAX1;
 			}
 			else {
-				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
+				$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_comments' ) );
 
 				echo <<< WP_IMPORT_AJAX2
 					<script type="text/javascript">
@@ -455,7 +455,7 @@ WP_IMPORT_AJAX2;
 					Options::set('import_errors', $errors);
 				}
 			}
-			$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
+			$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_posts' ) );
 			echo <<< WP_IMPORT_USERS1
 			<script type="text/javascript">
 			// A lot of ajax stuff goes here.
@@ -569,7 +569,7 @@ WP_IMPORT_USERS1;
 			}
 
 			if( $max < $commentcount ) {
-				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
+				$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_comments' ) );
 				$commentindex++;
 
 				echo <<< WP_IMPORT_AJAX1

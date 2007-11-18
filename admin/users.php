@@ -31,7 +31,7 @@ foreach ( User::get_all() as $user )
 	}
 	else
 	{
-		$url = Url::get( 'userprofile', array( 'page' => 'user', 'user' => $user->username ) );
+		$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
 	}
 	echo '<li>';
 	echo '<a href="' . $url . '">' . $user->username . '</a> <em>(Last login: ' . $user->info->authenticate_time . ')</em><br>';
