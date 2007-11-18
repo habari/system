@@ -141,32 +141,33 @@ a:visited {
 }
 
 #footer {
-	margin:35px 0 0 0;
-	
+	width: 610px;
+	height: 42px;
+	margin: 0 auto;
+	background: url(../images/footer.png) no-repeat 0 0;
+	position: relative;
 }
 
-#footer-main {
-	background: url(../images/footer_bg.gif) no-repeat center top;
-	width: 450px;
-	margin: 0 auto;
-	padding-top: 10px;
-	text-align: center	;
-}
-#footer-main p {
-	font-size: 1.3em;
-	padding-bottom: 5px;
-	background: #626262;
+#footer p {
+	text-align: center;
+	padding-top: 12px;
+	color: #eee;
 	margin: 0;
 }
 
-#footer-main a {
-	color: #fff;
+#footer p.left {
+	position: absolute;
+	left: 15px;
 }
 
-#footer-main a:hover {
-	color: #3EA5C8;
+#footer p.right {
+	position: absolute;
+	right: 15px;
 }
 
+#footer a {
+	color: #eee;
+}
 
 /*=== BluePrint Overrides ===*/
 
