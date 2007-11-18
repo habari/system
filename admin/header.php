@@ -36,14 +36,7 @@
 					);
 				});
 			};
-			function removegrid () {
-			                var div = document.getElementById('wrapper');
-			                div.style.background="none";
-			        }
-			        function applygrid () {
-			                var div = document.getElementById('wrapper');
-			                div.style.background="url(<?php Site::out_url('habari'); ?>/3rdparty/blueprint/lib/grid.png)";
-			        }  
+			
 	</script>
 </head>
 <body>
