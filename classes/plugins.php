@@ -151,6 +151,23 @@ class Plugins
 	}
 
 	/**
+	 * Determine if a plugin is active
+	 *
+	 * @param string $name The class name or name from the info record of a plugin
+	 * @return boolean true if plugin is active, false if not
+	 */
+	static public function is_active($name)
+	{
+		$name = strtolower($name);
+		foreach(self::$plugins as $plugin) {
+			if(strtolower($plugin->info->name) == $name || $plugin instanceof $name) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	* Get references to plugin objects that implement a specific interface
 	* @param string $interface The interface to check for
 	* @return array An array of matching plugins
@@ -168,28 +185,33 @@ class Plugins
 	static public function list_all()
 	{
 		$plugins= array();
-		$files= array();
-		$plugindir= HABARI_PATH . '/user/plugins/';
-		$dirs= glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK );
-		if ( Site::CONFIG_LOCAL != Site::$config_type )
-		{
+		$plugindirs= array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/contrib/plugins/', HABARI_PATH . '/user/plugins/' );
+		if ( Site::CONFIG_LOCAL != Site::$config_type ) {
 			// include site-specific plugins
-			$site_dirs= glob( Site::get_dir('config') . '/plugins/*', GLOB_ONLYDIR | GLOB_MARK );
-			if ( is_array( $site_dirs ) && ! empty( $site_dirs ) ) {
-				$dirs= array_merge( $dirs, $site_dirs );
+			$plugindirs[]= Site::get_dir('config') . '/plugins/';
+		}
+		$dirs = array();
+		foreach($plugindirs as $plugindir) {
+			if(file_exists($plugindir)) {
+				$dirs = array_merge($dirs, glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK ));
 			}
 		}
 		foreach( $dirs as $dir ) {
 			$dirfiles = glob( $dir . '*.plugin.php' );
-			$files = array_merge($dirfiles, $files);
+			if(count($dirfiles) > 0) {
+				$dirfiles = array_combine(
+					// Use the basename of the file as the index to use the named plugin from the last directory in $dirs
+					array_map('basename', $dirfiles),
+					// massage the filenames so that this works on Windows
+					array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $dirfiles )
+				);
+				$plugins = array_merge($plugins, $dirfiles);
+			}
 		}
-		// return $files;
-		// massage the return value so that this works on Windows
-		$plugins= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $files );
-		sort($plugins);
+		ksort($plugins);
 		return $plugins;
 	}
-	
+
 	/**
 	 * Get classes that extend Plugin.
 	 * @param $class string A class name
@@ -199,7 +221,7 @@ class Plugins
 	{
 		$parents= class_parents($class, false);
 		return in_array('Plugin', $parents);
-	}	 	 	 	
+	}
 
 	/**
 	 * function class_from_filename
@@ -226,7 +248,7 @@ class Plugins
 	 * function load
 	 * Initialize all loaded plugins by calling their load() method
 	 * @param string the class name to load
-	 * @return Plugin The instantiated plugin class	 
+	 * @return Plugin The instantiated plugin class
 	 **/
 	static public function load( $file )
 	{
@@ -236,12 +258,12 @@ class Plugins
 		$plugin->load();
 		return $plugin;
 	}
-	
+
 	/**
-	 * Returns a plugin id for the filename specified.  
+	 * Returns a plugin id for the filename specified.
 	 * Used to unify the way plugin ids are generated, rather than spreading the
-	 * calls internal to this function over several files. 
-	 * 
+	 * calls internal to this function over several files.
+	 *
 	 * @param string $file The filename to generate an id for
 	 * @return string A plugin id.
 	 */
@@ -289,17 +311,17 @@ class Plugins
 			}
 		}
 	}
-	
+
 	/**
 	 * Detects whether the plugins that exist have changed since they were last
 	 * activated.
 	 * @return boolean true if the plugins have changed, false if not.
-	 **/	 	 	 	
+	 **/
 	static public function changed_since_last_activation()
 	{
 		$old_plugins= Options::get('plugins_present');
 		//self::set_present();
-		// If the plugin list was never stored, then they've changed. 
+		// If the plugin list was never stored, then they've changed.
 		if(!is_array($old_plugins)) {
 			return true;
 		}
@@ -317,9 +339,9 @@ class Plugins
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Stores the list of plugins that are present (not necessarily active) in 
+	 * Stores the list of plugins that are present (not necessarily active) in
 	 * the Options table for future comparison.
 	 **/
 	static public function set_present()
@@ -328,14 +350,14 @@ class Plugins
 		$plugin_data= array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
 		Options::set('plugins_present', $plugin_data);
 	}
-	
+
 	/**
 	 * Verify if a plugin is loaded.
 	 * You may supply an optional argument $version as a minimum version requirement.
 	 *
 	 * @param string $name Name of the plugin to find.
 	 * @param string $version Minimal version of the plugin.
-	 * @return bool Returns true if name is found and version is equal or higher than required. 
+	 * @return bool Returns true if name is found and version is equal or higher than required.
 	 */
 	static public function is_loaded( $name, $version= NULL ) {
 		foreach ( self::$plugins as $plugin ) {
@@ -355,7 +377,7 @@ class Plugins
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Check the PHP syntax of every plugin available, activated or not.
 	 *
@@ -371,10 +393,10 @@ class Plugins
 				$failed_plugins[]= $file;
 			}
 		}
-		
+
 		Options::set( 'failed_plugins', $failed_plugins );
 		Plugins::set_present();
-		
+
 		return ( count($failed_plugins) > 0 ) ? false : true;
 	}
 }
