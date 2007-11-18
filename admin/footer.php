@@ -1,7 +1,5 @@
 
 <div class="container" id="footer">
-	
-		<div class="column span-4 first"><a href="#" onclick="removegrid();return false;">Remove Grid</a> | <a href="#" onclick="applygrid();return false;">Show Grid</a></div>
 		
 		<div id="footer-main">
 			<p><a href="<?php URL::out('user', 'page=logout'); ?>" title="logout of Habari">Logout</a> |<a href="<?php Site::out_url('habari')?>/manual/index.html" onclick="popUp(this.href);return false;" title="Read this first">User Manual</a>  | 
