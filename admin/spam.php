@@ -1,7 +1,7 @@
 <?php include('header.php'); ?>
-<div id="content-area">
-	<div class="dashboard-block c3" id="welcome">
-		<h1>Comments Marked as Spam</h1>
+<div class="container">
+	<div class="column prepend-1 span-22 append-1">
+		<h2>Comments Marked as Spam</h2>
 		<?php if( Comments::count_total( Comment::STATUS_SPAM ) ) { ?>
 		<p>Below you will find comments awaiting moderation.</p>
 	<form method="post" name="spam" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">

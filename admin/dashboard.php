@@ -2,17 +2,17 @@
 <?php $user= User::identify(); ?>
 <div class="container">
   <hr>
-  <div class="column span-7 first ">
+  <div class="column prepend-1 span-6 first">
     <div class="column span-2 first"><?php if ( isset ( $user->info->imageurl ) ) { ?><img class="admin-avatar" src="<?php echo $user->info->imageurl?>" class="usericon"><?php } ?>
     <?php printf( _t( 'Welcome back, %s!' ), $user->username ); ?></div>
   </div>
-  <div class="column prepend-1 span-16 last" id="welcome">
+  <div class="column prepend-1 span-15 append-1 last">
     <?php
       if ( ! isset( $user->info->experience_level ) ) {
       /**
        * @todo Edit and Translate
        **/				 				
-    ?> 
+    ?> 	
     <p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
     <p>In the top right corner of the window you'll find &ldquo;Admin&rdquo;, &ldquo;Publish&rdquo;, and &ldquo;Manage&rdquo;, plus the logout button. (Use that if you're sharing this computer, or paranoid, or just like pushing buttons.)</p>
     <p>Admin has 5 options. Clicking on &ldquo;Admin&rdquo; takes you back here. &ldquo;Options&rdquo; lets you make changes to the entire blog (title, tagline, that sort of thing). &ldquo;Plugins&rdquo; is where you control, well, plugins. There are a few included, and there are dozens more <a href='http://wiki.habariproject.org/en/Available_Plugins'>plugins</a> available. &ldquo;Themes&rdquo; is where you can change how your blog looks to visitors. More publicly available <a href='http://wiki.habariproject.org/en/Available_Themes'>themes</a> are listed in the wiki. &ldquo;Users&rdquo; is where you control what the registered visitors, authors, and fellow admins can do on the site. Finally &ldquo;Import&rdquo; allows you to bring in your posts from another blogging platform. Just because you're using Habari doesn't mean you have to lose your old work.</p>
@@ -37,8 +37,8 @@
     ?>
   </div>
   <hr>
-  <div class="column span-7 first">
-    <div class="column span-7 first" id="system-info">
+  <div class="column prepend-1 span-6 first">
+    <div class="column span-6 first">
     <h3><?php _e( 'System Information' ); ?></h3>
       <ul>
         <li><?php printf( _t( 'You are running Habari %s.' ), Version::get_habariversion() ); ?></li>
@@ -77,7 +77,7 @@
         ?>
       </ul>
     </div>
-    <div class="column span-7 first last" id="stats">
+    <div class="column span-6 first last">
       <h3><?php _e( 'Site Statistics' ); ?></h3>
       <table id="site-stats" width="100%" cellspacing="0">
         <?php
@@ -85,6 +85,7 @@
         	_t( 'Total Posts' ) => Posts::count_total( Post::status( 'published' ) ),
         	_t( 'Number of Your Posts' ) => Posts::count_by_author( User::identify()->id, Post::status( 'any' ) ),
         	_t( 'Number of Comments' ) => Comments::count_total(),
+			_t('Total Spam Comments') => Comments::count_total( Comment::STATUS_SPAM ),
 				);
         $stats= Plugins::filter( 'statistics_summary', $stats );
         foreach( $stats as $label => $value ) :
@@ -96,12 +97,12 @@
       </table>
     </div>
   </div>
-  <div class="column prepend-1 span-16 last" id="recent-comments">
+  <div class="column prepend-1 span-15 append-1 last">
     <h3><?php _e( 'Recent Comments' ); ?>
       <?php
         if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
       ?>
-      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'option'=>'comments' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?> 
+      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'show'=>'unapproved' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?> 
 	<?php echo _n( 'comment awaiting moderation', 'comments awaiting moderation', Comments::count_total( Comment::STATUS_UNAPPROVED ) ); ?></a> &raquo;)
       <?php
         }
@@ -145,7 +146,7 @@
     
   </div>
   <hr>
-  <div class="column span-7 first" id="incoming">
+  <div class="column prepend-1 span-6 first">
     <h3><?php _e( 'Incoming Links' ); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url( 'hostname' ) ?>" title="<?php _e( 'More incoming links' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
     <?php
     try {
@@ -177,7 +178,7 @@
     }
     ?>
   </div>
-  <div class="column prepend-1 span-16 last" id="logs">
+  <div class="column prepend-1 span-15 append-1 last">
     <h3><?php _e( 'Activity' ); ?> (<a href="<?php URL::out( 'admin', 'page=logs' ); ?>" title="<?php _e( 'More Activity Logs' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
     <table id="log-activity" width="100%" cellspacing="0">
       <thead>
@@ -197,7 +198,7 @@
     </table>
   </div>
   <hr>
-  <div class="column prepend-8 span-16 first" id="drafts">
+  <div class="column prepend-8 span-16 first">
     <h3>Drafts (<a href="<?php URL::out( 'admin', 'page=content' ); ?>#drafts" title="View Your Drafts">more</a> &raquo;)</h3>
     <?php
       if ( Posts::count_total( Post::status( 'draft' ) ) ) {

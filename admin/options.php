@@ -1,7 +1,7 @@
 <?php include('header.php');?>
 <div class="container">
 <hr>
-	<div class="column span-24 first">
+	<div class="column prepend-1 span-22 append-1 first">
 		<?php 
 		if ( isset( $result ) ) {
 			switch( $result ) {

@@ -1,10 +1,10 @@
-<?php include('header.php');?>
+	<?php include('header.php');?>
 <div class="container">
 <hr>
-<div class="column span-24 first" id="welcome">
-	<h1><?php _e('Habari Content'); ?></h1>
+<div class="column prepend-1 span-22 append-1">
+	<h2><?php _e('Habari Content'); ?></h2>
 	<p><?php _e('Here you will find all the content you have created, ready to be tweaked, edited or removed.'); ?></p>
-	</div>
+	
 	<form method="post" action="<?php URL::out('admin', 'page=content'); ?>" class="buttonform">
 	
 	<p>
@@ -38,7 +38,7 @@
 			<?php foreach ( $posts as $post ) : ?>
 			<tr>
 				<td class="span-1"><input type="checkbox" name="post_ids[]" value="<?php echo $post->id; ?>"></td>
-				<td class="span-5"><?php echo '<a href="' . $post->permalink . '">' . Utils::truncate( $post->title, 20, false ); ?></a></td>
+				<td class="span-5"><?php echo '<a href="' . $post->permalink . '">' . Utils::truncate( $post->title, 32, false ); ?></a></td>
 				<td class="span-3"><?php echo $post->author->username ?></td>
 				<td class="span-3"><?php echo $post->pubdate ?></td>
 				<td class="span-3"><?php _e( Post::type_name( $post->content_type ) ); ?></td>
@@ -64,5 +64,5 @@
 		</td></tr>
 		</table>
 	
-</div>
+</div></div>
 <?php include('footer.php');?>
