@@ -116,7 +116,7 @@ class AtomHandler extends ActionHandler
 			$apis_list= array(
 				'Atom' => array(
 					'preferred' => 'true',
-					'apiLink' => URL::get( 'collection', 'index=1' ), // This should be the XML-RPC url
+					'apiLink' => URL::get( 'atom_feed', 'index=1' ), // This should be the XML-RPC url
 					'blogID' => '',
 				),
 			);
@@ -193,7 +193,7 @@ class AtomHandler extends ActionHandler
 			$workspace_title= $service_workspace->addChild( 'atom:title', Options::get( 'title' ), 'http://www.w3.org/2005/Atom' );
 			
 			$workspace_collection= $service_workspace->addChild( 'collection' );
-			$workspace_collection->addAttribute( 'href', URL::get( 'collection', 'index=1' ) );
+			$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
 			
 			$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
 			$collection_accept= $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
@@ -257,16 +257,16 @@ class AtomHandler extends ActionHandler
 			
 			$feed_link= $xml->addChild( 'link' );
 			$feed_link->addAttribute( 'rel', 'alternate' );
-			$feed_link->addAttribute( 'href', URL::get( 'comments' ) );
+			$feed_link->addAttribute( 'href', URL::get( 'atom_feed_comments' ) );
 			
 			$feed_link= $xml->addChild( 'link' );
 			$feed_link->addAttribute( 'rel', 'self' );
 			
 			if ( isset( $params['slug'] ) ) {
-				$feed_link->addAttribute( 'href', URL::get( 'entry_comments', 'slug=' . $params['slug'] ) );
+				$feed_link->addAttribute( 'href', URL::get( 'atom_feed_entry_comments', 'slug=' . $params['slug'] ) );
 			}
 			else {
-				$feed_link->addAttribute( 'href', URL::get( 'comments' ) );
+				$feed_link->addAttribute( 'href', URL::get( 'atom_feed_comments' ) );
 			}
 				
 			$feed_generator= $xml->addChild( 'generator', 'Habari' );
@@ -342,7 +342,7 @@ class AtomHandler extends ActionHandler
 				
 				$entry_link= $xml->addChild( 'link' );
 				$entry_link->addAttribute( 'rel', 'edit' );
-				$entry_link->addAttribute( 'href', URL::get( 'entry', "slug={$post->slug}" ) );
+				$entry_link->addAttribute( 'href', URL::get( 'atom_entry', "slug={$post->slug}" ) );
 				
 				$entry_id= $xml->addChild( 'id', $post->guid );
 				$entry_updated= $xml->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
@@ -449,11 +449,11 @@ class AtomHandler extends ActionHandler
 		try {
 			// Assign alternate links based on the matched rule.
 			$alternate_rules= array(
-				'tag_collection' => 'display_entries_by_tag',
-				'collection' => 'index_page',
-				'entry' => 'display_entry',
-				'entry_comments' => 'display_entry',
-				'comments' => 'index_page',
+				'atom_feed_tag' => 'display_entries_by_tag',
+				'atom_feed' => 'display_home',
+				'atom_entry' => 'display_entry',
+				'atom_feed_entry_comments' => 'display_entry',
+				'atom_feed_comments' => 'display_home',
 				);
 				
 			// Store handler vars since we'll be using them a lot.
@@ -565,7 +565,7 @@ class AtomHandler extends ActionHandler
 	
 				$entry_link= $feed_entry->addChild( 'link' );
 				$entry_link->addAttribute( 'rel', 'edit' );
-				$entry_link->addAttribute( 'href', URL::get( 'entry', "slug={$post->slug}" ) );
+				$entry_link->addAttribute( 'href', URL::get( 'atom_entry', "slug={$post->slug}" ) );
 				
 				$entry_author= $feed_entry->addChild( 'author' );
 				$author_name= $entry_author->addChild( 'name', $user->username );
@@ -636,7 +636,7 @@ class AtomHandler extends ActionHandler
 	
 			header('HTTP/1.1 201 Created');
 			header('Status: 201 Created');
-			header('Location: ' . URL::get( 'entry', array( 'slug' => $post->slug ) ) );
+			header('Location: ' . URL::get( 'atom_entry', array( 'slug' => $post->slug ) ) );
 			
 			$this->get_entry( $post->slug );
 		}

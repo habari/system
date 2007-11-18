@@ -64,14 +64,14 @@ class MyTheme extends Theme
 			switch ( $matched_rule->name ) {
 				case 'display_entry':
 				case 'display_page':
-					$feed_alternate= URL::get( 'entry', array( 'slug' => Controller::get_var('slug') ) );
+					$feed_alternate= URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
 					break;
 				case 'display_entries_by_tag':
-					$feed_alternate= URL::get( 'tag_collection', array( 'tag' => Controller::get_var('tag') ) );
+					$feed_alternate= URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var('tag') ) );
 					break;
-				case 'index_page':
+				case 'display_home':
 				default:
-					$feed_alternate= URL::get( 'collection', array( 'index' => '1' ) );
+					$feed_alternate= URL::get( 'atom_feed', array( 'index' => '1' ) );
 			}
 			$this->assign('feed_alternate', $feed_alternate);
 		}
