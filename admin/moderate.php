@@ -2,7 +2,7 @@
 
 <div class="container">
 	<hr>
-	<div class="column prepend-1 span-22 append-1">
+	<div class="column span-24 last">
 		<?php
 		if ( isset( $result ) ) {
 			switch( $result ) {
@@ -13,41 +13,52 @@
 		}
 		?>
 		<h1><?php _e('Habari Comments'); ?></h1>
-		<div id="<?php echo $active_tab; ?>">
-			<ul id="tabnav">
-				<li class="tab1"><a href="<?php URL::out('admin', 'page=moderate&show=approved'); ?>"><?php _e('Approved'); ?> (<?php echo Comments::count_total( Comment::STATUS_APPROVED ); ?>)</a></li>
-				<li class="tab2"><a href="<?php URL::out('admin', 'page=moderate&show=unapproved'); ?>"><?php _e('Unapproved'); ?> (<?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?>)</a></li>
-				<li class="tab3"><a href="<?php URL::out('admin', 'page=moderate&show=spam'); ?>"><?php _e('Spam'); ?> (<?php echo Comments::count_total( Comment::STATUS_SPAM ); ?>)</a></li>
-			</ul>
+		<p><?php _e('Here you will find all the comments, including those deleted. You can also manage the pingbacks.'); ?></p>
+		
+		<div class="column span-7 first" id="stats">
+			<h3><?php _e('Comment Statistics'); ?></h3>
+			<table width="100%" cellspacing="0">
+				<tr><td><?php _e('Total Approved Comments'); ?></td><td><?php echo Comments::count_total( Comment::STATUS_APPROVED ); ?></td></tr>
+			<tr><td><?php _e('Total Unapproved Comments'); ?></td><td><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?></td></tr>
+			<tr><td><?php _e('Total Spam Comments'); ?></td><td><?php echo Comments::count_total( Comment::STATUS_SPAM ); ?></td></tr>
+			</table>
 		</div>
-		<div id="searchform">
+		
+		<div class="column span-17 last push-1">
 			<form method="post" action="<?php URL::out('admin', 'page=moderate'); ?>" class="buttonform">
 			<p>
-				<label>Search comments: <input type="textbox" size="22" name="search" value="<?php echo $search; ?>"></label>
-				<label><?php _e('Limit'); ?>: <?php echo Utils::html_select('limit', $limits, $limit); ?></label>
-				<label><?php _e('Page'); ?>: <?php echo Utils::html_select('index', $pages, $index); ?></label>
-				<input type="submit" name="do_search" value="<?php _e('Search'); ?>">
-				<input type="reset" name="do_reset" value="Reset">
-				<a href="#" onclick="$('.searchoptions').toggle()">Advanced</a>
+				<label>Search comments: <input type="textbox" size="22" name="search" value="<?php echo $search; ?>"></label> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
+				<label><?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?></label>
+				<label><?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?></label>
+				<a href="<?php URL::out('admin', 'page=moderate'); ?>">Reset</a>
 			</p>
-			<p class="searchoptions" style="display:none;">
+			<p>
 				<label>Content <input type="checkbox" name="search_fields[]" value="content"<?php echo in_array('content', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>Author <input type="checkbox" name="search_fields[]" value="name"<?php echo in_array('name', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>IP Address<input type="checkbox" name="search_fields[]" value="ip"<?php echo in_array('ip', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>E-mail <input type="checkbox" name="search_fields[]" value="email"<?php echo in_array('email', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>URL <input type="checkbox" name="search_fields[]" value="url"<?php echo in_array('url', $search_fields) ? ' checked' : ''; ?>></label>
-				<?php echo Utils::html_select('search_status', $statuses, $status, array( 'class'=>'longselect')); ?>
+				<?php echo Utils::html_select('search_status', $statuses, $search_status, array( 'class'=>'longselect')); ?>
 				<?php echo Utils::html_select('search_type', $types, $type, array( 'class'=>'longselect')); ?>
 			</p>
 			</form>
 		</div>
+	
 	</div>
 	
-	<hr class="space">
+	<hr>
 	
-	<div class="column prepend-1 span-22 append-1 last">
+	<div class="column span-24 last">
 <?php if( count($comments) ) { ?>
 		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
+			<input type="hidden" name="search" value="<?php echo $search; ?>">
+			<input type="hidden" name="limit" value="<?php echo $limit; ?>">
+			<input type="hidden" name="index" value="<?php echo $index; ?>">
+			<?php foreach($search_fields as $field): ?>
+			<input type="hidden" name="search_fields[]" value="<?php echo $field; ?>">
+			<?php endforeach; ?>
+			<input type="hidden" name="search_status" value="<?php echo $search_status; ?>">
+			<input type="hidden" name="search_type" value="<?php echo $type; ?>">
 			
 			<div>
 				<p class="submit">
@@ -132,7 +143,5 @@ $('.comment:even').css('background-color', '#EEE');
 $('.comment_header:even').css('border-color', '#DDD');
 $('.comment_footer:even').css('border-color', '#DDD');
 </script>
-
-<hr class="space">
 
 <?php include('footer.php'); ?>
