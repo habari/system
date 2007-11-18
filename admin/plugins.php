@@ -1,31 +1,26 @@
 <?php include( 'header.php' ); ?>
 <div class="container">
 <hr>
-	<div class="column prepend-1 span-22 append-1">
+	<div class="column prepend-1 span-22 append-1" id="welcome">
 		<h2>Currently Available Plugins</h2>
 		<p>Activate, deactivate and remove plugins through this interface.</p>
 	</div>
 	<div class="column prepend-1 span-22 append-1">
-		<?php 
+		<?php
 			$listok= true;
 			$all_plugins= Plugins::list_all();
 			$active_plugins= Plugins::get_active();
+
 			if ( Plugins::changed_since_last_activation() ) {
-				$request= new RemoteRequest( URL::get( 'admin', array( 'page' => 'loadplugins' ) ), 'POST', 300 );
-				$request->add_header( array( 'Cookie' => $_SERVER['HTTP_COOKIE'] ) );
-				$result= $request->execute();
-				if ( !$request->executed() || preg_match( '%^http/1\.\d 500%i', $request->get_response_headers() ) ) {
+				if ( Plugins::check_every_plugin_syntax() ) {
 					$listok= false;
-		?>
-			<p><?php _e( 'The plugin list has changed since the last activation.  Please wait while Habari loads the plugin list.' ); ?></p>
-		<?php
 				}
 			}
 			Options::clear_cache();
 			$failed_plugins= Options::get('failed_plugins');
 			if ( is_array( $failed_plugins ) ) {
 				$all_plugins= array_diff( $all_plugins, $failed_plugins );
-			} 
+			}
 			if ( $listok ) {
 				if ( count( $failed_plugins ) > 0 ) {
 					echo '<div class="warning">';
@@ -34,7 +29,8 @@
 					}
 					echo '</div>';
 				}
-		?> 
+			}
+		?>
 		<table cellspacing="0" width="100%">
 			<thead>
 				<tr>
@@ -69,7 +65,7 @@
 				}
 			?>
 				<tr>
-					<td><?php echo $plugin->info->name; ?> 
+					<td><?php echo $plugin->info->name; ?>
 					</td>
 					<td><?php echo $url; ?></td>
 					<td><?php echo $plugin->info->version; ?></td>
@@ -77,8 +73,8 @@
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
 					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
 					<input type='hidden' name='action' value='<?php echo $active ? 'Deactivate' : 'Activate'; ?>'>
-					<p><button name='submit'><?php echo $verb; ?></button></p>
-					<?php 
+					<p><button name='submit' type='submit'><?php echo $verb; ?></button></p>
+					<?php
 					if ( $active ) {
 						$plugin_actions= array();
 						$plugin_actions= Plugins::filter( 'plugin_config', $plugin_actions, $plugin->plugin_id );
@@ -98,7 +94,6 @@
 			<?php } ?>
 			</tbody>
 		</table>
-		<?php } ?>
 	</div>
 	<?php if ( isset( $this->engine_vars['configure'] ) ) { ?>
 	<div class="column span-24" id="plugin_options">
