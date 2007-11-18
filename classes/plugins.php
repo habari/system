@@ -151,23 +151,6 @@ class Plugins
 	}
 
 	/**
-	 * Determine if a plugin is active
-	 *
-	 * @param string $name The class name or name from the info record of a plugin
-	 * @return boolean true if plugin is active, false if not
-	 */
-	static public function is_active($name)
-	{
-		$name = strtolower($name);
-		foreach(self::$plugins as $plugin) {
-			if(strtolower($plugin->info->name) == $name || $plugin instanceof $name) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	* Get references to plugin objects that implement a specific interface
 	* @param string $interface The interface to check for
 	* @return array An array of matching plugins
@@ -355,20 +338,15 @@ class Plugins
 	 * Verify if a plugin is loaded.
 	 * You may supply an optional argument $version as a minimum version requirement.
 	 *
-	 * @param string $name Name of the plugin to find.
-	 * @param string $version Minimal version of the plugin.
+	 * @param string $name Name or class name of the plugin to find.
+	 * @param string $version Optional minimal version of the plugin.
 	 * @return bool Returns true if name is found and version is equal or higher than required.
 	 */
 	static public function is_loaded( $name, $version= NULL ) {
 		foreach ( self::$plugins as $plugin ) {
-			if ( $plugin->info->name == $name ) {
+			if ( strtolower($plugin->info->name) == $name || $plugin instanceof $name ) {
 				if ( isset( $version ) ) {
-					if ( version_compare( $plugin->info->version, $version, '>=' ) ) {
-						return true;
-					}
-					else {
-						return false;
-					}
+					return version_compare( $plugin->info->version, $version, '>=' );
 				}
 				else {
 					return true;
