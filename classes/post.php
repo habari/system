@@ -25,7 +25,7 @@ class Post extends QueryRecord
 	private $tags= null;
 	private $comments_object= null;
 	private $author_object= null;
-		
+
 	private $info= null;
 
 	/**
@@ -46,7 +46,7 @@ class Post extends QueryRecord
 		}
 		return self::$post_type_list_active;
 	}
-	
+
 	/**
 	 * returns an associative array of all post types
 	 * @param bool whether to force a refresh of the cached values
@@ -68,7 +68,7 @@ class Post extends QueryRecord
 		}
 		return self::$post_type_list_all;
 	}
-	
+
 	public static function activate_post_type( $type )
 	{
 		$all_post_types = Post::list_all_post_types( true ); // We force a refresh
@@ -86,7 +86,7 @@ class Post extends QueryRecord
 			return false; // Doesn't exist
 		}
 	}
-	
+
 	public static function deactivate_post_type( $type )
 	{
 		$active_post_types = Post::list_active_post_types( false ); // We force a refresh
@@ -218,7 +218,7 @@ class Post extends QueryRecord
 	{
 		// refresh the cache from the DB, just to be sure
 		$types= self::list_all_post_types( true );
-				
+
 		if ( ! array_key_exists( $type, $types ) ) {
 			// Doesn't exist in DB.. add it and activate it.
 			DB::query( 'INSERT INTO ' . DB::table('posttype') . ' (name, active) VALUES (?, ?)', array( $type, $active ) );
@@ -226,7 +226,7 @@ class Post extends QueryRecord
 			// Isn't active so we activate it
 			self::activate_post_type( $type );
 		}
-		
+
 		// now force a refresh of the caches, so the new/activated type
 		// is available for immediate use
 		$types= self::list_active_post_types( true );
@@ -245,15 +245,15 @@ class Post extends QueryRecord
 		// refresh the cache from the DB, just to be sure
 		$statuses= self::list_post_statuses( true );
 		if ( ! array_key_exists( $status, $statuses ) ) {
-			// let's make sure we only insert an integer 
-			$internal= intval( $internal );		
+			// let's make sure we only insert an integer
+			$internal= intval( $internal );
 			DB::query( 'INSERT INTO ' . DB::table('poststatus') . ' (name, internal) VALUES (?, ?)', array( $status, $internal ) );
 			// force a refresh of the cache, so the new status
 			// is available for immediate use
 			$statuses= self::list_post_statuses( true, true );
 		}
 	}
- 
+
 	/**
 	 * Return the defined database columns for a Post.
 	 * @return array Array of columns in the Post table
@@ -278,14 +278,16 @@ class Post extends QueryRecord
 	/**
 	 * Constructor for the Post class.
 	 * @param array $paramarray an associative array of initial Post field values.
-	 **/	 	 	 	
+	 **/
 	public function __construct( $paramarray = array() )
 	{
 		// Defaults
 		$this->fields = array_merge(
 			self::default_fields(),
-			$this->fields );
-		
+			$this->fields,
+			$this->newfields
+		);
+
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) )
 		{
@@ -296,7 +298,7 @@ class Post extends QueryRecord
 		$this->info= new PostInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
-	
+
 	/**
 	 * Return a single requested post.
 	 *
@@ -306,7 +308,7 @@ class Post extends QueryRecord
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return Post The first post that matched the given criteria
-	 **/	 	 	 	 	
+	 **/
 	static function get( $paramarray = array() )
 	{
 		// Defaults
@@ -328,17 +330,17 @@ class Post extends QueryRecord
 		}
 		// make sure we get at most one result
 		$defaults['limit']= 1;
-		 
+
 		return Posts::get( $defaults );
 	}
-	
+
 	/**
 	 * Create a post and save it.
-	 * 
+	 *
 	 * @param array $paramarray An associative array of post fields
-	 * @return Post The new Post object	 
-	 **/	 	 	
-	static function create( $paramarray ) 
+	 * @return Post The new Post object
+	 **/
+	static function create( $paramarray )
 	{
 		$post= new Post( $paramarray );
 		$post->insert();
@@ -347,9 +349,9 @@ class Post extends QueryRecord
 
 	/**
 	 * Generate a new slug for the post.
-	 * 
-	 * @return string The slug	 
-	 */	 	 	 	 	
+	 *
+	 * @return string The slug
+	 */
 	private function setslug()
 	{
 		// determine the base value from:
@@ -373,7 +375,7 @@ class Post extends QueryRecord
 		else {
 			$value= 'Post';
 		}
-		
+
 		// make sure our slug is unique
 		$slug= Plugins::filter('post_setslug', $value);
 		$slug= Utils::slugify( $slug );
@@ -386,17 +388,17 @@ class Post extends QueryRecord
 			}
 			if ( $slugcount->ct != 0 ) $postfix = "-" . ( ++$postfixcount );
 		} while ( $slugcount->ct != 0 );
-		
+
 		return $this->newfields['slug'] = $slug . $postfix;
 	}
 
 	/**
 	 * Generate the GUID for the new post.
-	 */	 	 	 	 	
+	 */
 	private function setguid()
 	{
-		if ( ! isset( $this->newfields['guid'] ) 
-			|| ($this->newfields['guid'] == '')  // GUID is empty 
+		if ( ! isset( $this->newfields['guid'] )
+			|| ($this->newfields['guid'] == '')  // GUID is empty
 			|| ($this->newfields['guid'] == '//?p=') // GUID created by WP was erroneous (as is too common)
 		) {
 			$result= 'tag:' . Site::get_url('hostname') . ',' . date('Y') . ':' . $this->setslug() . '/' . time();
@@ -404,13 +406,13 @@ class Post extends QueryRecord
 		}
 		return $this->newfields['guid'];
 	}
-	
+
 	/**
 	 * function setstatus
 	 * @param mixed the status to set it to. String or integer.
 	 * @return integer the status of the post
 	 * Sets the status for a post, given a string or integer.
-	 */	 	 	 	 	
+	 */
 	private function setstatus($value)
 	{
 		$statuses= Post::list_post_statuses();
@@ -420,7 +422,7 @@ class Post extends QueryRecord
 		elseif ( array_key_exists( $value, $statuses ) ) {
 			return $this->newfields['status'] = Post::status('publish');
 		}
-		
+
 		return false;
 	}
 
@@ -452,27 +454,27 @@ class Post extends QueryRecord
 
 	/**
 	 * Save the tags associated to this post into the tags and tags2post tables
-	 */	 	
+	 */
 	private function savetags()
 	{
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
 		if ( count($this->tags) == 0) {return;}
-		foreach( (array)$this->tags as $tag ) { 
+		foreach( (array)$this->tags as $tag ) {
 			$tag_slug= Utils::slugify( $tag );
 			// @todo TODO Make this multi-SQL safe!
 			if( DB::get_value( 'SELECT count(*) FROM ' . DB::table('tags') . ' WHERE tag_text = ?', array( $tag ) ) == 0 ) {
 				DB::query( 'INSERT INTO ' . DB::table('tags') . ' (tag_text, tag_slug) VALUES (?, ?)', array( $tag, $tag_slug ) );
 			}
-			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table('tags') . ' WHERE tag_text = ?', 
-				array( $this->fields['id'], $tag ) 
-			); 
+			DB::query( 'INSERT INTO ' . DB::table('tag2post') . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table('tags') . ' WHERE tag_text = ?',
+				array( $this->fields['id'], $tag )
+			);
 		}
 	}
-	
+
 	/**
 	 * function insert
 	 * Saves a new post to the posts table
-	 */	 	 	 	 	
+	 */
 	public function insert()
 	{
 		$this->newfields[ 'updated' ] = date( 'Y-m-d H:i:s' );
@@ -486,10 +488,14 @@ class Post extends QueryRecord
 		}
 		Plugins::act('post_insert_before', $this);
 
-		// Invoke plugins for all fields, since they're all "changed" when inserted 
+		// Invoke plugins for all fields, since they're all "changed" when inserted
 		foreach ( $this->fields as $fieldname => $value ) {
 			Plugins::act('post_update_' . $fieldname, $this, ($this->id == 0) ? null : $value, $this->$fieldname );
 		}
+
+		// invoke plugins for status changes
+		Plugins::act('post_status_' . self::status_name($this->status), $this, null );
+
 		$result = parent::insert( DB::table('posts') );
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
@@ -504,7 +510,7 @@ class Post extends QueryRecord
 	/**
 	 * function update
 	 * Updates an existing post in the posts table
-	 */	 	 	 	 	
+	 */
 	public function update()
 	{
 		$this->updated = date('Y-m-d H:i:s');
@@ -530,6 +536,12 @@ class Post extends QueryRecord
 		foreach ( $this->newfields as $fieldname => $value ) {
 			Plugins::act('post_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
 		}
+
+		// invoke plugins for status changes
+		if($this->fields['status'] != $this->newfields['status'] && isset($this->newfields['status'])) {
+		  Plugins::act('post_status_' . self::status_name($this->newfields['status']), $this, $this->fields['status'] );
+		}
+
 		$result = parent::update( DB::table('posts'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
@@ -539,11 +551,11 @@ class Post extends QueryRecord
 		Plugins::act('post_update_after', $this);
 		return $result;
 	}
-	
+
 	/**
 	 * function delete
 	 * Deletes an existing post
-	 */	 	 	 	 	
+	 */
 	public function delete()
 	{
 		$allow= true;
@@ -569,11 +581,11 @@ class Post extends QueryRecord
 		Plugins::act('post_delete_after', $this);
 		return $result;
 	}
-	
+
 	/**
 	 * function publish
 	 * Updates an existing post to published status
-	 * @return boolean True on success, false if not	 
+	 * @return boolean True on success, false if not
 	 */
 	public function publish()
 	{
@@ -595,13 +607,13 @@ class Post extends QueryRecord
 		Plugins::act('post_publish_after', $this);
 		return $result;
 	}
-	
+
 	/**
 	 * function __get
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
-	 * @return mixed The requested field value	 
-	 **/	 	 
+	 * @return mixed The requested field value
+	 **/
 	public function __get( $name )
 	{
 		$fieldnames = array_merge( array_keys($this->fields), array('permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author') );
@@ -653,8 +665,8 @@ class Post extends QueryRecord
 	 * function __set
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
-	 * @return mixed The requested field value	 
-	 **/	 	 
+	 * @return mixed The requested field value
+	 **/
 	public function __set( $name, $value )
 	{
 		switch($name) {
@@ -669,36 +681,36 @@ class Post extends QueryRecord
 		}
 		return parent::__set( $name, $value );
 	}
-	
+
 	/**
 	 * function get_permalink
 	 * Returns a permalink for the ->permalink property of this class.
-	 * @return string A link to this post.	 
+	 * @return string A link to this post.
 	 * @todo separate permalink rule?  (Not sure what this means - OW)
-	 **/	 	 	
+	 **/
 	private function get_permalink()
 	{
 		$content_type= Post::type_name( $this->content_type );
-		return URL::get( 
+		return URL::get(
 			array(
 				"display_{$content_type}",
-			), 
-			$this, 
-			false 
+			),
+			$this,
+			false
 		);
 	}
-	
+
 	/**
 	 * function get_tags
 	 * Gets the tags for the post
 	 * @return &array A reference to the tags array for this post
-	 **/	 	 	 	
+	 **/
 	private function get_tags() {
 		if ( empty( $this->tags ) ) {
 			$sql= "
 				SELECT t.tag_text, t.tag_slug
 				FROM " . DB::table('tags') . " t
-				INNER JOIN " . DB::table('tag2post') . " t2p 
+				INNER JOIN " . DB::table('tag2post') . " t2p
 				ON t.id = t2p.tag_id
 				WHERE t2p.post_id = ?
 				ORDER BY t.tag_slug ASC";
@@ -710,7 +722,7 @@ class Post extends QueryRecord
 					$this->tags[$t->tag_slug]= $t->tag_text;
 				}
 			}
-		}	
+		}
 		if ( count( $this->tags ) == 0 ) {
 			return '';
 		}
@@ -759,7 +771,7 @@ class Post extends QueryRecord
 		}
 		return $this->info;
 	}
- 
+
 	/**
 	 * private function get_author()
 	 * returns a User object for the author of this post
@@ -773,13 +785,13 @@ class Post extends QueryRecord
 		}
 		return $this->author_object;
 	}
-	
+
 	/**
 	 * Returns a set of properties used by URL::get to create URLs
 	 * @return array Properties of this post used to build a URL
-	 */	 	 
+	 */
 	public function get_url_args()
-	{  
+	{
 		$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
 		$author= URL::extract_args( $this->author, 'author_' );
 		$info= URL::extract_args( $this->info, 'info_' );
