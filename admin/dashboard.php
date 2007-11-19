@@ -11,8 +11,8 @@
       if ( ! isset( $user->info->experience_level ) ) {
       /**
        * @todo Edit and Translate
-       **/				 				
-    ?> 	
+       **/
+    ?>
     <p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
     <p>In the top right corner of the window you'll find &ldquo;Admin&rdquo;, &ldquo;Publish&rdquo;, and &ldquo;Manage&rdquo;, plus the logout button. (Use that if you're sharing this computer, or paranoid, or just like pushing buttons.)</p>
     <p>Admin has 5 options. Clicking on &ldquo;Admin&rdquo; takes you back here. &ldquo;Options&rdquo; lets you make changes to the entire blog (title, tagline, that sort of thing). &ldquo;Plugins&rdquo; is where you control, well, plugins. There are a few included, and there are dozens more <a href='http://wiki.habariproject.org/en/Available_Plugins'>plugins</a> available. &ldquo;Themes&rdquo; is where you can change how your blog looks to visitors. More publicly available <a href='http://wiki.habariproject.org/en/Available_Themes'>themes</a> are listed in the wiki. &ldquo;Users&rdquo; is where you control what the registered visitors, authors, and fellow admins can do on the site. Finally &ldquo;Import&rdquo; allows you to bring in your posts from another blogging platform. Just because you're using Habari doesn't mean you have to lose your old work.</p>
@@ -102,7 +102,7 @@
       <?php
         if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
       ?>
-      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'show'=>'unapproved' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?> 
+      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'show'=>'unapproved' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?>
 	<?php echo _n( 'comment awaiting moderation', 'comments awaiting moderation', Comments::count_total( Comment::STATUS_UNAPPROVED ) ); ?></a> &raquo;)
       <?php
         }
@@ -129,8 +129,8 @@
           <td class="span-3"><?php echo $recent->name; ?></td>
           <td class="span-7"><?php echo $recent->url; ?></td>
           <td class="last span-3" align="center">
-            <a class="view" href="<?php echo $post->permalink; ?>#comment-<?php echo $recent->id; ?>" title="<?php _e( 'View this post' ); ?>">View</a> 
-            
+            <a class="view" href="<?php echo $post->permalink; ?>#comment-<?php echo $recent->id; ?>" title="<?php _e( 'View this post' ); ?>">View</a>
+
           </td>
         </tr>
         <?php } ?>
@@ -143,36 +143,43 @@
       <?php
       }
       ?>
-    
+
   </div>
   <hr>
   <div class="column prepend-1 span-6 first">
     <h3><?php _e( 'Incoming Links' ); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url( 'hostname' ) ?>" title="<?php _e( 'More incoming links' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
     <?php
     try {
-		// This should be fetched on a pseudo-cron and cached:
-		$search= new RemoteRequest( 'http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url( 'hostname' ) );
-		$search->set_timeout( 5 );
-		$result= $search->execute();
-		if ( Error::is_error( $result ) ) {
-			throw $result;
-		}
-		$xml= new SimpleXMLElement( $search->get_response_body() );
-		if ( count( $xml->entry ) == 0 ) {
-			echo '<p>' . _t( 'No incoming links were found to this site.' ) . '</p>';
-		}
-		else {
-		?>
-		<ul id="incoming-links">
-		<?php foreach( $xml->entry as $entry ) { ?>
-			<li>
-			<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / -->
-			<a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
-			</li>
-		<?php } ?>
-		</ul>
-		<?php
-		}
+			// This should be fetched on a pseudo-cron and cached:
+			if(Cache::has('admin_incoming_links')) {
+				$response = Cache::get('admin_incoming_links');
+			}
+			else {
+				$search= new RemoteRequest( 'http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url( 'hostname' ) );
+				$search->set_timeout( 5 );
+				$result= $search->execute();
+				if ( Error::is_error( $result ) ) {
+					throw $result;
+				}
+				$response = $search->get_response_body();
+				Cache::set('admin_incoming_links', $response);
+			}
+			$xml= new SimpleXMLElement( $response );
+			if ( count( $xml->entry ) == 0 ) {
+				echo '<p>' . _t( 'No incoming links were found to this site.' ) . '</p>';
+			}
+			else {
+			?>
+			<ul id="incoming-links">
+			<?php foreach( $xml->entry as $entry ) { ?>
+				<li>
+				<!-- need favicon discovery and caching here: img class="favicon" src="http://skippy.net/blog/favicon.ico" alt="favicon" / -->
+				<a href="<?php echo $entry->link['href']; ?>" title="<?php echo $entry->title; ?>"><?php echo $entry->title; ?></a>
+				</li>
+			<?php } ?>
+			</ul>
+			<?php
+			}
     } catch(Exception $e) {
     	print '<p>' . $e->get() . "</p>\r\n";
     }
