@@ -2,12 +2,12 @@
 
 /**
  * Class for storing and retrieving rewrite rules from the DB.
- */      
+ */
 class RewriteRules extends ArrayObject {
 
 	/**
 	 * Add pre-defined rules to an array of rules only if rules with their names don't already exist
-	 * 
+	 *
 	 * @param array $rules An array of RewriteRule objects
 	 * @return array An array of rules with the system rules potentially added
 	 */
@@ -41,10 +41,13 @@ class RewriteRules extends ArrayObject {
 			array( 'name' => 'atom_feed_comments', 'parse_regex' => '%^atom/comments(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'atom/comments(/page/{$page})', 'handler' => 'AtomHandler', 'action' => 'comments', 'priority' => 7, 'description' => 'Entries comments' ),
 			array( 'name' => 'atom_feed_tag', 'parse_regex' => '%^tag/(?P<tag>[^/]+)/atom(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'tag/{$tag}/atom(/page/{$page})', 'handler' => 'AtomHandler', 'action' => 'tag_collection', 'priority' => 8, 'description' => 'Atom Tag Collection' ),
 			array( 'name' => 'atom_feed_entry_comments', 'parse_regex' => '%^(?P<slug>[^/]+)/atom/comments(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}/atom/comments(/page/{$page})', 'handler' => 'AtomHandler', 'action' => 'entry_comments', 'priority' => 8, 'description' => 'Entry comments' ),
-			
+
 			// Atom Publishing Protocol
 			array( 'name' => 'atompub_servicedocument', 'parse_regex' => '%^atom$%i', 'build_str' => 'atom', 'handler' => 'AtomHandler', 'action' => 'introspection', 'priority' => 1, 'description' => 'Atom introspection' ),
-			
+
+			// Cron handling
+			array( 'name' => 'cron', 'parse_regex' => '%^cron/(?P<time>[0-9.]+)/?$%i', 'build_str' => 'cron/{$time}', 'handler' => 'CronTab', 'action' => 'poll_cron', 'priority' => 1, 'description' => 'Asyncronous cron processing' ),
+
 			// XMLRPC requests
 			array( 'name' => 'xmlrpc', 'parse_regex' => '%^xmlrpc/?$%i', 'build_str' => 'xmlrpc', 'handler' => 'XMLRPCServer', 'action' => 'xmlrpc_call', 'priority' => 8, 'description' => 'Handle incoming XMLRPC requests.' ),
 		);
@@ -59,16 +62,16 @@ class RewriteRules extends ArrayObject {
 		}
 		return $rules;
 	}
-	
+
 	/**
 	 * Return the active rewrite rules, both in the database and applied by plugins
-	 * 
+	 *
 	 * @return array Array of RewriteRule objects for active rewrite rules
-	 **/	  	 	 	
+	 **/
 	static public function get_active()
 	{
 		static $system_rules;
-	
+
 		if(!isset($system_rules)) {
 			$sql= "
 				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority
@@ -76,7 +79,7 @@ class RewriteRules extends ArrayObject {
 				WHERE rr.is_active= 1
 				ORDER BY rr.priority";
 			$db_rules= DB::get_results( $sql, array(), 'RewriteRule' );
-		
+
 			$system_rules= self::add_system_rules( $db_rules );
 		}
 		$rewrite_rules= Plugins::filter('rewrite_rules', $system_rules);
@@ -86,18 +89,18 @@ class RewriteRules extends ArrayObject {
 		$c = __CLASS__;
 		return new $c ( $rewrite_rules );
 	}
-	
+
 	/**
 	 * Helper function for sorting rewrite rules by priority.
-	 * 
+	 *
 	 * Required because plugins would insert their rules at the end of the array,
 	 * which would allow any other rule (including the one that executes by default
 	 * when no other rules work) to execute first.
 	 *
 	 * @param RewriteRule $rulea A rule to compare
 	 * @param RewriteRule $ruleb A rule to compare
-	 * @return integer The standard usort() result values, -1, 0, 1 	 	 	  
-	 **/	 	 	 
+	 * @return integer The standard usort() result values, -1, 0, 1
+	 **/
 	public function sort_rules($rulea, $ruleb)
 	{
 		if( $rulea->priority == $ruleb->priority ) {
@@ -105,14 +108,14 @@ class RewriteRules extends ArrayObject {
 		}
 		return ($rulea->priority < $ruleb->priority) ? -1 : 1;
 	}
-	
+
 	/**
 	 * Get a RewriteRule by its name
-	 * 
+	 *
 	 * @param string $name The name of the rule
 	 * @return RewriteRule The rule requested
 	 * @todo Make this return more than one rule when more than one rule matches.
-	 **/	 	 	 	 	
+	 **/
 	public function by_name( $name )
 	{
 		$rules= self::get_active();
