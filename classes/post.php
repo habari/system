@@ -600,6 +600,7 @@ class Post extends QueryRecord
 		Plugins::act('post_publish_before', $this);
 
 		$this->status = Post::status('published');
+		$this->pubdate= date( 'Y-m-d H:i:s' );
 		$result= $this->update();
 		EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') published.', 'info', 'content', 'habari');
 

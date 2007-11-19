@@ -109,8 +109,13 @@ class AdminHandler extends ActionHandler
 			$post->tags= $tags;
 			$post->content= $content;
 			$post->content_type= $content_type;
+			if ( ( $post->status != Post::status( 'published' ) ) && ( $status == Post::status('published') ) ) {
+				$post->pubdate= date( 'Y-m-d H:i:s' );
+			}
+			else {
+				$post->pubdate= $pubdate;
+			}
 			$post->status= $status;
-			$post->pubdate= $pubdate;
 			if ( $comments_disabled == TRUE ) {
 				$post->info->comments_disabled= TRUE;
 			}
