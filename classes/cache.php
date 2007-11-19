@@ -9,8 +9,6 @@
  * Habari Cache Class
  *
  * Base class for caching computationally expensive or bandwidth intensive data
- *
- * @package Habari
  */
 abstract class Cache
 {
@@ -21,8 +19,8 @@ abstract class Cache
 	 */
 	public static function __static()
 	{
-		if(!defined('CACHE_CLASS')) {
-			define('CACHE_CLASS', 'FileCache');
+		if( !defined( 'CACHE_CLASS' ) ) {
+			define( 'CACHE_CLASS', 'FileCache' );
 		}
 		$cache_class = CACHE_CLASS;
 		self::$instance = new $cache_class();
@@ -32,12 +30,12 @@ abstract class Cache
 	/**
 	 * Is record with $name in the cache?
 	 *
- 	 * @param $name string name of the cached item
+ 	 * @param string $name name of the cached item
 	 * @return boolean TRUE if item is cached, FALSE if not
-	 **/
+	 */
 	public static function has( $name )
 	{
-		return self::$instance->_has($name);
+		return self::$instance->_has( $name );
 	}
 
 	/**
@@ -57,7 +55,7 @@ abstract class Cache
 	 */
 	public static function get( $name )
 	{
-		return self::$instance->_get($name);
+		return self::$instance->_get( $name );
 	}
 
 	/**
