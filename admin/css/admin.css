@@ -12,7 +12,7 @@
 	border: 1px solid #282828;
 }
 
-/*=== @b ===*/	
+/*=== @b ===*/
 
 
 .buttonform {
@@ -37,7 +37,7 @@ body {
 a {
 	color: #3EA5C8;
 	}
-	
+
 a:visited {
 	color: #929292;
 	}
@@ -52,7 +52,7 @@ a:visited {
 	width: 100%;
 	font: normal 1.1em "Lucida Grande", "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
 	background: #242424 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAICAIAAAC3eAIWAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpikpOTY2JgYABjRkZGdAwQYAAMYgB6RRurTwAAAABJRU5ErkJggg==) repeat-x top; /* png is dropshadow */
-	} 
+	}
 
 #menu li {
 	display: inline;
@@ -197,6 +197,11 @@ textarea, #title, #tags, #tagline {
 }
 
 .bigtext {
+	font-size: 1.7em;
+	color: #363636;
+}
+
+.bigtext.islabeled {
 	font-size: 1.7em;
 	color: #CDCDCD;
 }
