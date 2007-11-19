@@ -33,10 +33,9 @@ class Options extends Singleton
 	 **/
 	public static function get( $name )
 	{
-		if( func_num_args() > 1 ) {
+		if ( func_num_args() > 1 ) {
 			$results= array();
-			$args = func_get_args();
-			$options= array_unshift( $name, $args );
+			$options= func_get_args();
 			foreach ( $options as $optname ) {
 				$results[$optname]= self::instance()->$optname;
 			}
