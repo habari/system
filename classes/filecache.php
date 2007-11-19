@@ -19,7 +19,7 @@ class FileCache extends Cache
 
 	/**
 	 * Constructor for FileCache
-	 * 
+	 *
 	 * Sets up paths etc. and reads cache index, if it exists.
 	 */
 	public function __construct()
@@ -101,8 +101,6 @@ class FileCache extends Cache
 	/**
 	 * Expires the named value from the cache.
 	 *
-	 * @todo Not implemented yet.
-	 * 
 	 * @param string $name The name of the cached item
 	 */
 	protected function _expire( $name )
@@ -110,13 +108,17 @@ class FileCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-
+		$hash= $this->get_name_hash( $name );
+		if( isset( $this->cache_files[$hash] ) ) {
+			unlink( $this->cache_files[$hash]['file'] );
+		}
+		unset($this->cache_files[$hash]);
+		$this->clear_expired();
+		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
 
 	/**
 	 * Extend the expiration of the named cached value.
-	 * 
-	 * @todo Not implemented yet.
 	 *
 	 * @param string $name The name of the cached item
 	 * @param integer $expiry The duration in seconds to extend the cache expiration by
@@ -126,12 +128,17 @@ class FileCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-
+		$hash= $this->get_name_hash( $name );
+		if( isset( $this->cache_files[$hash] ) ) {
+			$this->cache_files[$hash]['expires'] = time() + $expiry;
+		}
+		$this->clear_expired();
+		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
 
 	/**
 	 * Get the unique hash for a given key.
-	 * 
+	 *
 	 * @param string $name The name of the cached item.
 	 */
 	private function get_name_hash( $name )
