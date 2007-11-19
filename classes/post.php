@@ -700,7 +700,8 @@ class Post extends QueryRecord
 				FROM " . DB::table('tags') . " t
 				INNER JOIN " . DB::table('tag2post') . " t2p 
 				ON t.id = t2p.tag_id
-				WHERE t2p.post_id = ?";
+				WHERE t2p.post_id = ?
+				ORDER BY t.tag_slug ASC";
 			$result= DB::get_results( $sql, array( $this->fields['id'] ) );
 			if ($result)
 			{
