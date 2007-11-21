@@ -101,7 +101,7 @@
       <?php
         if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
       ?>
-      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'option'=>'comments' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?> 
+      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'show'=>'unapproved' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?> 
 	<?php echo _n( 'comment awaiting moderation', 'comments awaiting moderation', Comments::count_total( Comment::STATUS_UNAPPROVED ) ); ?></a> &raquo;)
       <?php
         }
