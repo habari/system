@@ -35,6 +35,9 @@ class FileCache extends Cache
 				$this->cache_files= unserialize( file_get_contents( $this->index_file ) );
 			}
 		}
+		else {
+			EventLog::log( 'Cache directory `' . $this->cache_location . '` not writable, filecache disabled', 'info', 'default', 'habari' );
+		}
 	}
 
 	/**
