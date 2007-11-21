@@ -278,14 +278,14 @@ class Utils
 			
 			// Add ... if the gap between the previous page is higher than 1.
 			if ( ($page - $prevpage) > 1 ) {
-				$out.= '&hellip;';
+				$out.= '&nbsp;&hellip;';
 			}
 			// Wrap the current page number with square brackets.
-			$caption= ( $page == $current ) ? '[' . $current . ']' : $page;
+			$caption= ( $page == $current ) ?  $current  : $page;
 			// Build the URL using the supplied $settings and the found RewriteRules arguments.
 			$url= Site::get_url( 'habari', true ) . $rr->build( $settings , false );
 			// Build the HTML link.
-			$out.= '<a href="' . $url . '" ' . ( ( $page == $current ) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
+			$out.= '&nbsp;<a href="' . $url . '" ' . ( ( $page == $current ) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
 			
 			$prevpage= $page;
 		}

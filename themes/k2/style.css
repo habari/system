@@ -699,38 +699,30 @@ blockquote {
 hr {
 	display: none;
 	}
+	.comments .navigation {
+		margin: 10px 0;
+		}
+		
+/*Sample Page Selector Code - active page gets .current-page class */
 
-.navigation {
+#page-selector {
 	text-align: center;
 	margin: 10px 0;
 	padding: 0;
+	font-size: 1.2em;
 	width: 100%;
-	}
-
-.comments .navigation {
-	margin: 10px 0;
-	}
-
-.navigation .left {
-	float: left;
-	width: 50%;
-	text-align: left;
-	}
-
-.navigation .right {
-	float: right;
-	width: 50%;
-	text-align: right;
-	}
-
-.navigation p {
-	margin: 0;
-	padding: 0;
-	}
-
-.navigation a {
 	color: #999;
 	}
+
+#page-selector a {
+	color: #27d;
+	}
+	
+#page-selector a.current-page {
+	padding: 2px;
+	border: 1px solid #999;
+	color: #999;
+}
 
 .alert {
 	background: #FFF6BF;
