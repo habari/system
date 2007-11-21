@@ -284,8 +284,10 @@ class Post extends QueryRecord
 		// Defaults
 		$this->fields = array_merge(
 			self::default_fields(),
-			$this->fields );
-		
+			$this->fields,
+			$this->newfields
+		);
+
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) )
 		{

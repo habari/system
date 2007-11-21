@@ -8,63 +8,63 @@
 class Options extends Singleton
 {
 	private $options= null;
-	
+
 	/**
 	 * Enables singleton working properly
-	 * 
+	 *
 	 * @see singleton.php
 	 */
 	static protected function instance()
 	{
 		return parent::instance( get_class() );
 	}
- 
+
 	/**
 	 * Shortcut to return the value of an option
-	 * 
+	 *
 	 * <code>
 	 * 	 $foo = Options::get('foo'); //or
 	 * 	 list($foo, $bar, $baz) = Options::get('foo1', 'bar2', 'baz3'); //or
 	 * 	 extract(Options::get('foo', 'bar', 'baz')); //or
 	 * </code>
-	 * 
+	 *
 	 * @param string $name... The string name(s) of the option(s) to retrieve
-	 * @return mixed The option requested or an array of requested options 	 
-	 **/	 
+	 * @return mixed The option requested or an array of requested options
+	 **/
 	public static function get( $name )
 	{
 		if( func_num_args() > 1 ) {
 			$results= array();
-			$options= array_unshift( $name, func_get_args() );
+			$options= func_get_args();
 			foreach ( $options as $optname ) {
-				$results[$optname]= self::instance()->$optname; 
+				$results[$optname]= self::instance()->$optname;
 			}
 			return $results;
 		}
 		return self::instance()->$name;
 	}
-	
+
 	/**
 	 * Shortcut to output the value of an option
-	 * 
+	 *
 	 * <code>Options::out('foo');</code>
-	 * 	 	 	 
+	 *
 	 * @param string $name Name of the option to output
-	 **/	 
+	 **/
 	public static function out( $name )
 	{
 		echo self::instance()->get( $name );
 	}
-	
+
 	/**
 	 * function set
 	 * Shortcut to set the value of an option
-	 * 
+	 *
 	 * <code>Options::set('foo', 'newvalue');</code>
-	 * 	 	 	 
+	 *
 	 * @param string $name Name of the option to set
 	 * @param mixed $value New value of the option to store
-	 **/	 
+	 **/
 	public static function set( $name, $value= '' )
 	{
 		self::instance()->$name= $value;
@@ -84,7 +84,7 @@ class Options extends Singleton
 		$option_value= Plugins::filter('option_get_value', $option_value, $name);
 		return $option_value;
 	}
-	
+
 	/**
 	 * Fetch all options from the options table into local storage
 	 */
@@ -105,39 +105,39 @@ class Options extends Singleton
 			}
 		}
 	}
-	
+
 	/**
 	 * Applies the option value to the options table
 	 * @param string $name Name of the option to set
 	 * @param mixed $value Value to set
-	 **/	 	 
+	 **/
 	public function __set( $name, $value )
 	{
 		if ( ! isset( $this->options ) ) {
 			$this->get_all_options();
 		}
 		$this->options[$name]= $value;
-		
+
 		if ( is_array( $value ) || is_object( $value ) ) {
-			$result= DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => serialize( $value ), 'type' => 1 ), array( 'name' => $name ) ); 
+			$result= DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => serialize( $value ), 'type' => 1 ), array( 'name' => $name ) );
 		}
 		else {
-			$result= DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => $value, 'type' => 0 ), array( 'name' => $name ) ); 
+			$result= DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => $value, 'type' => 0 ), array( 'name' => $name ) );
 		}
 		if ( Error::is_error( $result ) ) {
 			$result->out();
 			die();
 		}
 	}
-	
+
 	/**
 	 * Clears memory of cached options
 	 **/
 	static public function clear_cache()
 	{
 		self::instance()->options = null;
-	}	 	
+	}
 
 }
- 
+
 ?>
