@@ -35,6 +35,7 @@ class DatabaseConnection
 		'poststatus',
 		'posttype',
 		'rewrite_rules',
+		'sessions',
 		'tag2post',
 		'tags',
 		'userinfo',
