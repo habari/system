@@ -148,15 +148,15 @@ CREATE TABLE {$prefix}log_types (
 );
 
 CREATE TABLE {$prefix}groups (
-  id INT unsigned not null auto_increment, 
-  name VARCHAR(255) NOT NULL, 
+  id INT unsigned not null auto_increment,
+  name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY name (name)
 );
 
 CREATE TABLE {$prefix}permissions (
-  id INT unsigned not null auto_increment, 
-  name VARCHAR(255) NOT NULL, 
+  id INT unsigned not null auto_increment,
+  name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY name (name)
 );
@@ -164,17 +164,28 @@ CREATE TABLE {$prefix}permissions (
 CREATE TABLE {$prefix}users_groups (
   id INT unsigned not null auto_increment,
   user_id INT unsigned not null,
-  group_id INT unsigned not null, 
+  group_id INT unsigned not null,
   PRIMARY KEY (id),
   KEY user_group (user_id,group_id)
 );
 
 CREATE TABLE {$prefix}groups_permissions (
-  id INT unsigned not null auto_increment, 
+  id INT unsigned not null auto_increment,
   group_id INT unsigned not null,
   permission_id INT unsigned not null,
   denied TINYINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY group_permission (group_id,permission_id)
+);
+
+CREATE TABLE {$prefix}sessions  (
+	session_id INT UNSIGNED NOT NULL auto_increment,
+ 	token varchar(255) NOT NULL,
+ 	subnet INT UNSIGNED NOT NULL DEFAULT 0,
+ 	expires INT UNSIGNED NOT NULL DEFAULT 0,
+ 	ua VARCHAR(255) NOT NULL,
+ 	data MEDIUMTEXT,
+  PRIMARY KEY (session_id),
+  UNIQUE KEY token (token)
 );
 
