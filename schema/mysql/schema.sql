@@ -179,13 +179,13 @@ CREATE TABLE {$prefix}groups_permissions (
 );
 
 CREATE TABLE {$prefix}sessions  (
-	session_id INT UNSIGNED NOT NULL auto_increment,
  	token varchar(255) NOT NULL,
  	subnet INT UNSIGNED NOT NULL DEFAULT 0,
  	expires INT UNSIGNED NOT NULL DEFAULT 0,
  	ua VARCHAR(255) NOT NULL,
  	data MEDIUMTEXT,
-  PRIMARY KEY (session_id),
+ 	user_id SMALLINT UNSIGNED,
+  PRIMARY KEY (token),
   UNIQUE KEY token (token)
 );
 

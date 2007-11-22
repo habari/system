@@ -132,6 +132,16 @@ class Session
 		return true;
 	}
 
+	static function set_userid($user_id)
+	{
+		DB::query('UPDATE ' . DB::table('sessions') . ' SET user_id = ? WHERE token = ?', array($user_id, session_id()));
+	}
+
+	static function clear_userid()
+	{
+		DB::query('UPDATE ' . DB::table('sessions') . ' SET user_id = NULL WHERE token = ?', array(session_id()));
+	}
+
 }
 
 ?>

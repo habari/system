@@ -165,12 +165,11 @@ CREATE TABLE {$prefix}groups_permissions (
 CREATE UNIQUE INDEX group_permission ON {$prefix}groups_permissions(group_id,permission_id);
 
 CREATE TABLE {$prefix}sessions  (
-	session_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
  	token VARCHAR(255) NOT NULL,
  	subnet INTEGER unsigned not null,
  	expires INTEGER unsigned not null,
  	ua VARCHAR(255) NOT NULL,
- 	data TEXT,
-  UNIQUE KEY token (token)
+ 	user_id INTEGER,
+ 	data TEXT
 );
 CREATE UNIQUE INDEX token_key ON {$prefix}sessions(token);

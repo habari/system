@@ -4,11 +4,11 @@
  * Habari UserRecord Class
  *
  * @package Habari
- * 
+ *
  * @todo TODO Fix this documentation!
  *
  * Includes an instance of the UserInfo class; for holding inforecords about the user
- * If the User object describes an existing user; use the internal info object to get, set, unset and test for existence (isset) of 
+ * If the User object describes an existing user; use the internal info object to get, set, unset and test for existence (isset) of
  * info records
  * <code>
  *	$this->info = new UserInfo ( 1 );  // Info records of user with id = 1
@@ -25,11 +25,11 @@ class User extends QueryRecord
 	 * Static storage for the currently logged-in User record
 	 */
 	private static $identity= null;
-	
+
 	private $info= null;
 
 	private $group_list= null;
- 
+
 	/**
 	 * Get default fields for this record.
 	 * @return array an array of the fields used in the User table
@@ -64,46 +64,21 @@ class User extends QueryRecord
 	/**
 	 * Check for the existence of a cookie, and return a user object of the user, if successful
 	 * @return object user object, or false if no valid cookie exists
-	 */	
+	 */
 	public static function identify()
 	{
 		// Is the logged-in user not cached already?
-		if ( self::$identity == null ) {
-			// see if there's a cookie
-			$cookie= 'habari_' . Options::get('GUID');
-			if ( ! isset($_COOKIE[$cookie]) ) {
-				// no cookie, so stop processing
-				return false;
-			}
-			else {
-				$tmp= explode( '|', $_COOKIE[$cookie], 2 );
-				if ( count( $tmp ) == 2 ) {
-					list($userid, $cookiehash)= $tmp;
-				}
-				else {
-					// legacy cookies
-					//$userid= substr( $_COOKIE[$cookie], 40 );
-					//$cookiehash= substr( $_COOKIE[$cookie], 0, 40 );
-					return false;
-				}
-				// now try to load this user from the database
-				$user= User::get_by_id( $userid );
-				if ( ! $user ) {
-					return false;
-				}
-				if ( Utils::crypt($user->password . $userid, $cookiehash) ) {
-					// Cache the user in the static variable
-					self::$identity = $user;
-					return $user;
-				}
-				else {
-					return false;
-				}
-			}
-		}
-		else {
+		if ( isset(self::$identity) ) {
 			return self::$identity;
 		}
+		if(isset($_SESSION['user_id'])) {
+			if ( $user = User::get_by_id( $_SESSION['user_id'] ) ) {
+				// Cache the user in the static variable
+				self::$identity = $user;
+				return $user;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -120,7 +95,7 @@ class User extends QueryRecord
 
 	/**
 	 * Save a new user to the users table
-	 */	 	 	 	 	
+	 */
 	public function insert()
 	{
 		$result= parent::insert( DB::table('users') );
@@ -136,13 +111,13 @@ class User extends QueryRecord
 
 	/**
 	 * Updates an existing user in the users table
-	 */	 	 	 	 	
+	 */
 	public function update()
 	{
 		$this->info->commit();
 		return parent::update( DB::table('users'), array( 'id' => $this->id ) );
 	}
-	
+
 	/**
 	 * Delete a user account
 	 */
@@ -155,37 +130,21 @@ class User extends QueryRecord
 	}
 
 	/**
-	 * Set a cookie on the client machine for future logins
+	 * Save the user id into the session
 	 */
 	public function remember()
 	{
-		// set the cookie
-		$cookie= 'habari_' . Options::get( 'GUID' );
-		$content= $this->id . '|' . Utils::crypt( $this->password . $this->id );
-		$site_url= Site::get_path( 'base' );
-		if ( empty( $site_url ) )
-		{
-			$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
-		}
-		else
-		{
-			$site_url= $site_url . '/';
-		}
-		setcookie( $cookie, $content, time() + 604800, $site_url );
+		$_SESSION['user_id'] = $this->id;
+		Session::set_userid($this->id);
 	}
 
 	/**
-	 * Delete a cookie from the client machine
+	 * Delete the user id from the session
 	 */
 	public function forget()
 	{
-		// delete the cookie
-		$cookie = "habari_" . Options::get('GUID');
-		$site_url= Options::get('siteurl');
-		if ( empty( $site_url ) ) {
-			$site_url= rtrim( $_SERVER['SCRIPT_NAME'], 'index.php' );
-		}
-		setcookie($cookie, ' ', time() - 86400, $site_url);
+		unset($_SESSION['user_id']);
+		Session::clear_userid();
 		$home = Options::get('base_url');
 		header( "Location: " . $home );
 		exit;
@@ -194,9 +153,9 @@ class User extends QueryRecord
 	/**
 	* Check a user's credentials to see if they are legit
 	* -- calls all auth plugins BEFORE checking local database.
-	* 
+	*
 	* @todo Actually call plugins
-	* 
+	*
 	* @param string $who A username or email address
 	* @param string $pw A password
 	* @return object a User object, or false
@@ -206,7 +165,7 @@ class User extends QueryRecord
 		if ( '' === $who || '' === $pw ) {
 			return false;
 		}
-		
+
 		/* TODO execute auth plugins here */
 
 		if ( strpos( $who, '@' ) !== FALSE ) {
@@ -216,14 +175,14 @@ class User extends QueryRecord
 		else {
 			$user= User::get_by_name( $who );
 		}
-		
+
 		if ( ! $user ) {
 			// No such user.
 			EventLog::log( 'Login attempt for non-existant user ' . $who, 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}
-		
+
 		if ( Utils::crypt( $pw, $user->password ) ) {
 			// valid credentials were supplied
 			self::$identity= $user;
@@ -245,7 +204,7 @@ class User extends QueryRecord
 	 * Fetch a user from the database by name, ID, or email address.
 	 * This is a wrapper function that will invoke the appropriate
 	 * get_by_* method.
-	 * 
+	 *
 	 * @param mixed $who user ID, username, or e-mail address
 	 * @return object User object, or FALSE
 	 */
@@ -374,7 +333,7 @@ class User extends QueryRecord
 		}
 		return $commenter;
 	}
-	
+
 	public function can( $permission, $to = null )
 	{
 		return ACL::user_can( $this->id, $permission );
@@ -432,7 +391,7 @@ class User extends QueryRecord
 	 * Capture requests for the info object so that it can be initialized properly when
 	 * the constructor is bypassed (see PDO::FETCH_CLASS pecularities). Passes all other
 	 * requests to parent.
-	 * 
+	 *
 	 * @param string $name requested field name
 	 * @return mixed the requested field value
 	 */
@@ -442,10 +401,10 @@ class User extends QueryRecord
 			if ( ! isset( $this->info ) ) {
 				$this->info= new UserInfo( $this->fields['id'] );
 			}
-			else {				
+			else {
 				$this->info->set_key( $this->fields['id'] );
 			}
-			return $this->info;			
+			return $this->info;
 		}
 		if ( $name == 'groups' ) {
 			return $this->list_groups();
@@ -456,7 +415,7 @@ class User extends QueryRecord
 	/**
 	 * Returns a set of properties used by URL::get to create URLs
 	 * @return array Properties of this post used to build a URL
-	 */	 	 
+	 */
 	public function get_url_args()
 	{
 		return array_merge( URL::extract_args( $this->info, 'info_' ), $this->to_array() );
