@@ -4,32 +4,21 @@
  <div class="column prepend-3 span-18 append-3">
   <?php
   if ( isset( $slug ) ) {
-   $post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
-   $tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
-   $content_type= Post::type( $post->content_type );
-	if ( isset( $result ) && $result == 'success' ) {
-		switch( Post::status($post->status) ) {
-			case 1:
-				echo '<p class="update">' . _t('Your post has been saved as draft.') . '</p>';
-				break;
-			case 2:
-				echo '<p class="update">' . _t('Your post has been published.') . '</p>';
-				break;
-			default:
-				echo '<p class="update">' . _t('Your post has been saved.') . '</p>';
- 		}
-	}
+		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+		$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
+		$content_type= Post::type( $post->content_type );
+		Session::messages_out();
   } else {
-   $post= new Post();
-   $tags= '';
-   $content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
-  }
-   ?>
+		$post= new Post();
+		$tags= '';
+		$content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
+	}
+	?>
   <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
     <p><label for="title" class="incontent"><?php _e('Title'); ?></label><input type="text" name="title" id="title" class="bigtext" size="100%" value="<?php if ( !empty($post->title) ) { echo $post->title; } ?>"></p>
 
     <p><label for="content" class="incontent"><?php _e('Content'); ?></label><textarea name="content" id="content" rows="20" cols="114" class="resizable bigtext"><?php if ( !empty($post->content) ) { echo htmlspecialchars($post->content); } ?></textarea></p>
-   
+
     <p><label for="tags" class="incontent"><?php _e('Tags - Comma Separated')?></label><input type="text" name="tags" id="tags" class="bigtext" value="<?php if ( !empty( $tags ) ) { echo $tags; } ?>"></p>
 
     <h5 class="center">Post Details</h5>

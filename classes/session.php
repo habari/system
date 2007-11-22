@@ -151,6 +151,124 @@ class Session
 		DB::query('UPDATE ' . DB::table('sessions') . ' SET user_id = NULL WHERE token = ?', array(session_id()));
 	}
 
+	static function add_to_set($set, $value, $key = null)
+	{
+		if(!isset($_SESSION[$set])) {
+			$_SESSION[$set] = array();
+		}
+		if($key) {
+			$_SESSION[$set][$key] = $value;
+		}
+		else {
+			$_SESSION[$set][] = $value;
+		}
+	}
+
+	/**
+	 * Store a notice message in the user's session
+	 *
+	 * @param string $notice The notice message
+	 * @param string $key An optional id that would guarantee a single unique message for this key
+	 */
+	static function notice($notice, $key = null)
+	{
+		self::add_to_set('notices', $notice, $key);
+	}
+
+	/**
+	 * Store an error message in the user's session
+	 *
+	 * @param string $error The error message
+	 * @param string $key An optional id that would guarantee a single unique message for this key
+	 */
+	static function error($error, $key = null)
+	{
+		self::add_to_set('errors', $error, $key);
+	}
+
+	/**
+	 * Return a set of messages
+	 *
+	 * @param string $set The name of the message set
+	 * @param boolean $clear true to clear the messages from the session upon receipt
+	 * @return array An array of message strings
+	 */
+	static function get_set($set, $clear = true)
+	{
+		if(!isset($_SESSION[$set])) {
+			$set_array = array();
+		}
+		else {
+			$set_array = $_SESSION[$set];
+		}
+		if($clear) {
+			unset($_SESSION[$set]);
+		}
+		return $set_array;
+	}
+
+	/**
+	 * Get all notice messsages from the user session
+	 *
+	 * @param boolean $clear true to clear the messages from the session upon receipt
+	 * @return array And array of notice messages
+	 */
+	static function get_notices($clear = true)
+	{
+		return self::get_set('notices', $clear);
+	}
+
+	/**
+	 * Get all error messsages from the user session
+	 *
+	 * @param boolean $clear true to clear the messages from the session upon receipt
+	 * @return array And array of error messages
+	 */
+	static function get_errors($clear = true)
+	{
+		return self::get_set('errors', $clear);
+	}
+
+
+	/**
+	 * Return output of notice and error messages in ul and li tags
+	 *
+	 * @param boolean $clear true to clear the messages from the session upon receipt
+	 * @return string HTML output of messages
+	 */
+	static function messages_get($clear = true)
+	{
+		$errors = self::get_errors($clear);
+		$notices = self::get_notices($clear);
+
+		$output = '';
+		if(count($errors)) {
+			$output .= '<ul class="errors">';
+			foreach($errors as $error) {
+				$output .= '<li>' . $error . '</li>';
+			}
+			$output .= '</ul>';
+		}
+		if(count($notices)) {
+			$output .= '<ul class="update">';
+			foreach($notices as $notice) {
+				$output .= '<li>' . $notice . '</li>';
+			}
+			$output .= '</ul>';
+		}
+		return $output;
+	}
+
+	/**
+	 * Output notice and error messages in ul and li tags
+	 *
+	 * @param boolean $clear true to clear the messages from the session upon receipt
+	 */
+	static function messages_out($clear = true)
+	{
+		echo self::messages_get($clear);
+	}
+
 }
 
 ?>
