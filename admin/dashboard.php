@@ -181,7 +181,7 @@
 			<?php
 			}
     } catch(Exception $e) {
-    	print '<p>' . $e->get() . "</p>\r\n";
+    	print '<p>' . $e->getMessage() . "</p>\r\n";
     }
     ?>
   </div>

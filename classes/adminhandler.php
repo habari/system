@@ -141,9 +141,10 @@ class AdminHandler extends ActionHandler
 				$post->update();
 			}
 		}
-		Utils::redirect( URL::get( 'admin', 'page=publish&result=success&slug=' . $post->slug ) );
+		Session::notice(sprintf(_t('The post \'%s\' has been saved as %s.'), $title, Post::status_name($status)));
+		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
-	
+
 	/**
 	 * Deletes a post from the database.
 	 */
@@ -181,7 +182,7 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
 		$fields= Plugins::filter( 'adminhandler_post_user_fields', $fields );
-		
+
 		foreach ($fields as $input => $field) {
 			switch ( $input ) {
 				case 'user_id': // Editing someone else's profile? If so, load that user's profile
@@ -310,7 +311,7 @@ class AdminHandler extends ActionHandler
 
 		$this->display( 'import' );
 	}
-	
+
 	function get_moderate() {
 		$this->post_moderate();
 	}
@@ -411,12 +412,12 @@ class AdminHandler extends ActionHandler
 				unset( $this->handler_vars['change'] );
 			}
 		}
-		
+
 		// Set up the limits select box
 		$limits= array( 5, 10, 20, 50, 100 );
 		$limits= array_combine($limits, $limits);
 		$this->theme->limits= $limits;
-		
+
 		// Set up the type select box
 		$types_tmp= Comment::list_comment_types();
 		$types['All']= 'All';
@@ -424,7 +425,7 @@ class AdminHandler extends ActionHandler
 			$types[$type_key]= $type_val;
 		}
 		$this->theme->types= $types;
-		
+
 		// Set up the status select box
 		$statuses_tmp= Comment::list_comment_statuses();
 		$statuses['All']= 'All';
@@ -433,15 +434,15 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->statuses= $statuses;
 
-		// we load the WSSE tokens 
-		// for use in the delete button		
+		// we load the WSSE tokens
+		// for use in the delete button
 		$this->theme->wsse= Utils::WSSE();
 
-		$arguments= array( 
+		$arguments= array(
 			'limit' => $limit,
 			'offset' => ($index - 1) * $limit,
 		);
-		
+
 		// Decide what to display
 		$arguments['status']= intval($search_status);
 		switch($search_status) {
@@ -460,7 +461,7 @@ class AdminHandler extends ActionHandler
 				break;
 		}
 		$this->theme->default_radio= $default_radio;
-		
+
 		if ( '' != $search ) {
 			$arguments['criteria']= $search;
 			$arguments['criteria_fields']= $search_fields;
@@ -490,14 +491,14 @@ class AdminHandler extends ActionHandler
 
 		$this->display( 'moderate' );
 	}
-	
+
 	/**
 	 * A POST handler for the admin plugins page that simply passes those options through.
 	 */
 	public function post_plugins() {
 		$this->display( 'plugins' );
 	}
-	
+
 	public function get_content()
 	{
 		$this->post_content();
@@ -507,7 +508,7 @@ class AdminHandler extends ActionHandler
 	 * handles POST values from /manage/content
 	 * used to control what content to show / manage
 	**/
-	public function post_content() 
+	public function post_content()
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals = array(
@@ -531,7 +532,7 @@ class AdminHandler extends ActionHandler
 			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
 		}
-	
+
 		// if we're updating posts, let's do so:
 		if ( $do_update && isset( $post_ids ) ) {
 			$okay= true;
@@ -577,29 +578,29 @@ class AdminHandler extends ActionHandler
 			$authors[$author->user_id]= $author->username;
 		}
 		$this->theme->authors = $authors;
-		
+
 		// Set up the dates select box
 		$dates= DB::get_column("SELECT pubdate FROM " . DB::table('posts') . ' ORDER BY pubdate DESC');
 		$dates= array_map( create_function( '$date', 'return strftime( "%Y-%m", strtotime( $date ) );' ), $dates );
 		array_unshift($dates, 'Any');
 		$dates= array_combine($dates, $dates);
 		$this->theme->dates = $dates;
-		
+
 		// Set up the limits select box
 		$limits= array( 5, 10, 20, 50, 100 );
 		$limits= array_combine($limits, $limits);
 		$this->theme->limits= $limits;
-		
-		// we load the WSSE tokens 
-		// for use in the delete button		
+
+		// we load the WSSE tokens
+		// for use in the delete button
 		$this->theme->wsse= Utils::WSSE();
 
-		$arguments= array( 
-			'content_type' => $type, 
-			'status' => $status, 
+		$arguments= array(
+			'content_type' => $type,
+			'status' => $status,
 			'limit' => $limit,
 			'offset' => ($index - 1) * $limit,
-		); 
+		);
 		if ( 'any' != strtolower($year_month) ) {
 			list($arguments['year'], $arguments['month']) = explode('-', $year_month);
 		}
@@ -625,7 +626,7 @@ class AdminHandler extends ActionHandler
 
 		$this->display( 'content' );
 	}
-	
+
 	public function get_logs()
 	{
 		$this->post_logs();
@@ -656,7 +657,7 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->severities= LogEntry::list_severities();
 		$any= array( '0' => 'Any' );
-		
+
 		$modulelist= LogEntry::list_logentry_types();
 		$modules= array();
 		$types= array();
@@ -680,7 +681,7 @@ class AdminHandler extends ActionHandler
 			$users[$user->user_id]= $user->username;
 		}
 		$this->theme->users= $users;
-		
+
 		// set up dates.
 		$dates= DB::get_column("SELECT timestamp FROM " . DB::table('log') . ' ORDER BY timestamp DESC');
 		$dates= array_map( create_function( '$date', 'return strftime( "%Y-%m", strtotime( $date ) );' ), $dates );
@@ -695,7 +696,7 @@ class AdminHandler extends ActionHandler
 
 		// prepare the WSSE tokens
 		$this->theme->wsse= Utils::WSSE();
-		
+
 		$arguments= array(
 			'severity' => LogEntry::severity($severity),
 			'limit' => $limit,
@@ -750,7 +751,7 @@ class AdminHandler extends ActionHandler
 				'caption' => _t( 'Admin' ),
 				'url' => URL::get( 'admin', 'page=' ),
 				'title' => _t( 'Display the dashboard' ),
-				'submenu' => array( 
+				'submenu' => array(
 					'options' => array( 'caption' => _t( 'Options' ), 'url' => URL::get( 'admin', 'page=options' ) ),
 					'plugins' => array( 'caption' => _t( 'Plugins' ), 'url' => URL::get( 'admin', 'page=plugins' ) ),
 					'themes' => array( 'caption' => _t( 'Themes' ), 'url' => URL::get( 'admin', 'page=themes' ) ),
@@ -765,7 +766,7 @@ class AdminHandler extends ActionHandler
 				'title' => _t( 'Create content for your site' ),
 				'submenu' => array()
 			),
-			'manage' => array( 
+			'manage' => array(
 				'caption' => _t( 'Manage' ),
 				'url' => URL::get( 'admin', 'page=content' ),
 				'title' => _t( 'Manage your site content' ),
@@ -777,22 +778,22 @@ class AdminHandler extends ActionHandler
 				)
 			),
 		);
-		
+
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
 				continue;
 			}
 			$mainmenus['publish']['submenu'][$type]= array( 'caption' => _t( ucwords( $type ) ), 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ) );
 		}
-		
+
 		$mainmenus= Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
-		
+
 		$out= '';
 		foreach( $mainmenus as $mainmenukey => $mainmenu ) {
 			$out.= '<li class="menu-item"><a href="' . $mainmenu['url'] . '" title="' . $mainmenu['title'] . '">' . $mainmenu['caption'] . '</a>';
 			$out.= '<ul class="menu-list">';
 			foreach( $mainmenu['submenu'] as $menukey => $menuitem ) {
-				$out.= '<li><a href="' . $menuitem['url'] . '">' . $menuitem['caption'] . '</a></li>';				
+				$out.= '<li><a href="' . $menuitem['url'] . '">' . $menuitem['caption'] . '</a></li>';
 			}
 			$out.= '</ul>';
 			$out.= '</li>';
@@ -818,7 +819,7 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->display( $template_name );
 	}
-	
+
 }
 
 ?>
