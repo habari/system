@@ -17,10 +17,10 @@ class UserHandler extends ActionHandler
 	{
 		$name= Controller::get_var( 'habari_username' );
 		$pass= Controller::get_var( 'habari_password' );
-		
+
 		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
 			$user= User::authenticate( $name, $pass );
-		
+
 			if ( ( $user instanceOf User ) && ( FALSE != $user ) ) {
 				/* Successfully authenticated. */
 				// Timestamp last login date and time.
@@ -30,15 +30,18 @@ class UserHandler extends ActionHandler
 				Utils::redirect( Site::get_url('admin') );
 				return TRUE;
 			}
-			
+
 			/* Authentication failed. */
 			// Remove submitted password, see, we're secure!
 			$this->handler_vars['habari_password']= '';
 			$this->handler_vars['error']= 'Bad credentials';
 		}
-		
+
 		// Display the login form.
 		$this->theme= Themes::create();
+		if(!$this->theme->template_engine->template_exists( 'login' )) {
+			$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
+		}
 		$this->display( 'login' );
 		return TRUE;
 	}
@@ -66,11 +69,11 @@ class UserHandler extends ActionHandler
   /**
    * Helper function which automatically assigns all handler_vars
    * into the theme and displays a theme template
-   * 
+   *
    * @param template_name Name of template to display (note: not the filename)
    */
   protected function display($template_name) {
-    /* 
+    /*
      * Assign internal variables into the theme (and therefore into the theme's template
      * engine.  See Theme::assign().
      */
