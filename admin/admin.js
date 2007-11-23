@@ -59,6 +59,6 @@ $(document).ready(function(){
 
 	// Convert these links into buttons
 	$('a.link_as_button').each(function(){
-		$(this).after('<button onclick="location.href=\'' + $(this).attr('href') + '\'">' + $(this).html() + '</button>').hide();
+		$(this).after('<button onclick="location.href=\'' + $(this).attr('href') + '\';return false;">' + $(this).html() + '</button>').hide();
 	});
 });
