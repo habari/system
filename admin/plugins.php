@@ -1,6 +1,7 @@
 <?php include( 'header.php' ); ?>
 <div class="container">
 <hr>
+  <?php if(Session::has_messages()) {Session::messages_out();} ?>
 	<div class="column prepend-1 span-22 append-1" id="welcome">
 		<h2>Currently Available Plugins</h2>
 		<p>Activate, deactivate and remove plugins through this interface.</p>
@@ -73,35 +74,44 @@
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
 					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
 					<input type='hidden' name='action' value='<?php echo $active ? 'Deactivate' : 'Activate'; ?>'>
-					<p><button name='submit' type='submit'><?php echo $verb; ?></button></p>
+					<p><button name='submit' type='submit'><?php echo $verb; ?></button>
 					<?php
 					if ( $active ) {
 						$plugin_actions= array();
 						$plugin_actions= Plugins::filter( 'plugin_config', $plugin_actions, $plugin->plugin_id );
 						foreach( $plugin_actions as $plugin_action => $plugin_action_caption ) {
+							if( isset($configure) && ($configure == $plugin->plugin_id) && ($action == $plugin_action) ) {
+								continue;
+							}
 							if ( is_numeric( $plugin_action ) ) {
 								$plugin_action = $plugin_action_caption;
 							}
 							?>
-							<p><a href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin->plugin_id . '&action=' . $plugin_action ); ?>"><?php echo $plugin_action_caption; ?></a></p>
+							<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin->plugin_id . '&action=' . $plugin_action ); ?>#plugin_options"><?php echo $plugin_action_caption; ?></a>
 							<?php
 						}
 					}
 					?>
+					</p>
 					</form>
 					</td>
 				</tr>
+				<?php if ( isset( $this->engine_vars['configure'] ) && ($configure == $plugin->plugin_id)) { ?>
+				</tbody></table></div></div></div>
+				<div id="plugin_options"><div class="container"><div class="column prepend-1 span-22 append-1">
+					<h2><?php echo $active_plugins[$configure]->info->name; ?> : <? echo $action; ?></h2>
+					<?php
+						Plugins::act( 'plugin_ui', $configure, $action );
+					?>
+				</div></div></div>
+				<div class="wrapper">
+				<div class="container">
+				<div class="column prepend-1 span-22 append-1">
+				<table cellspacing="0" width="100%"><tbody>
+				<?php } ?>
 			<?php } ?>
 			</tbody>
 		</table>
 	</div>
-	<?php if ( isset( $this->engine_vars['configure'] ) ) { ?>
-	<div class="column span-24" id="plugin_options">
-		<h2><?php echo $active_plugins[$configure]->info->name; ?> : <? echo $action; ?></h2>
-		<?php
-			Plugins::act( 'plugin_ui', $configure, $action );
-		?>
-	</div>
-	<?php } ?>
 </div>
 <?php include( 'footer.php' ); ?>

@@ -1,6 +1,6 @@
 $.fn.hoverClass = function(c) {
 	return this.each(function(){
-		$(this).hover( 
+		$(this).hover(
 			function() { $(this).addClass(c);  },
 			function() { $(this).removeClass(c); }
 		);
@@ -15,16 +15,16 @@ $(document).ready(function(){
 	  $("tr:odd", this).not(".even").addClass("odd");
 	  $("tr:even", this).not(".odd").addClass("even");
 	});
-	
+
 	$("#menu .menu-item").hover(
-		function(){ $("ul", this).fadeIn("fast"); }, 
-		function() { } 
+		function(){ $("ul", this).fadeIn("fast"); },
+		function() { }
 	);
-	
+
 	if (document.all) {
 		$("#menu .menu-item").hoverClass("sfHover");
 	}
-	
+
 	// Prevent all checkboxes to be unchecked.
 	$(".search_field").click(function(){
 		if($(".search_field:checked").size() == 0 && !$(this).attr('checked')) {
@@ -41,7 +41,7 @@ $(document).ready(function(){
 		}
 		$(this).hide();
 	});
-	
+
 	$('.islabeled').focus(function(){
 		$(this).filter('.islabeled')
 			.val('')
@@ -52,8 +52,13 @@ $(document).ready(function(){
 				.addClass('islabeled');
 		}
 	});
-	
+
 	$('.islabeled').parents('form').submit(function(){
 		$('.islabeled').val('');
+	});
+
+	// Convert these links into buttons
+	$('a.link_as_button').each(function(){
+		$(this).after('<button onclick="location.href=\'' + $(this).attr('href') + '\'">' + $(this).html() + '</button>').hide();
 	});
 });

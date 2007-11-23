@@ -2,6 +2,7 @@
 <?php $user= User::identify(); ?>
 <div class="container">
   <hr>
+  <?php if(Session::has_messages()) {Session::messages_out();} ?>
   <div class="column prepend-1 span-6 first">
     <div class="column span-2 first"><?php if ( isset ( $user->info->imageurl ) ) { ?><img class="admin-avatar" src="<?php echo $user->info->imageurl?>" class="usericon"><?php } ?>
     <?php printf( _t( 'Welcome back, %s!' ), $user->username ); ?></div>

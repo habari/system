@@ -1,14 +1,15 @@
 	<?php include('header.php');?>
 <div class="container">
 <hr>
+<?php if(Session::has_messages()) {Session::messages_out();} ?>
 <div class="column prepend-1 span-22 append-1">
 	<h2><?php _e('Habari Content'); ?></h2>
 	<p><?php _e('Here you will find all the content you have created, ready to be tweaked, edited or removed.'); ?></p>
-	
+
 	<form method="post" action="<?php URL::out('admin', 'page=content'); ?>" class="buttonform">
-	
+
 	<p>
-	Search post titles and content: 
+	Search post titles and content:
 	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
 	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?>
 	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?>
@@ -63,6 +64,6 @@
 		</form>
 		</td></tr>
 		</table>
-	
+
 </div></div>
 <?php include('footer.php');?>
