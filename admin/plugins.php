@@ -97,13 +97,13 @@
 					</td>
 				</tr>
 				<?php if ( isset( $this->engine_vars['configure'] ) && ($configure == $plugin->plugin_id)) { ?>
-				</tbody></table></div></div></div>
+				</tbody></table></div></div>
 				<div id="plugin_options"><div class="container"><div class="column prepend-1 span-22 append-1">
 					<h2><?php echo $active_plugins[$configure]->info->name; ?> : <? echo $action; ?></h2>
 					<?php
 						Plugins::act( 'plugin_ui', $configure, $action );
 					?>
-				</div></div></div>
+				</div></div>
 				<div class="wrapper">
 				<div class="container">
 				<div class="column prepend-1 span-22 append-1">
