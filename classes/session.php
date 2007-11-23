@@ -65,21 +65,28 @@ class Session
 			return false;
 		}
 
+		$dodelete = false;
+
 		// Verify on the same subnet
 		$subnet = ip2long($_SERVER['REMOTE_ADDR']) >> 8;
 		if($session->subnet != $subnet) {
-			DB::query('DELETE FROM ' . DB::table('sessions') . ' WHERE token = ?', array($session_id));
-			return false;
+			$dodelete = true;
 		}
 
 		// Verify expiry
 		if( time() > $session->expires ) {
-			DB::query('DELETE FROM ' . DB::table('sessions') . ' WHERE token = ?', array($session_id));
-			return false;
+			$dodelete = true;
 		}
 
 		// Verify User Agent
 		if( $_SERVER['HTTP_USER_AGENT'] != $session->ua ) {
+			$dodelete = true;
+		}
+
+		// Let plugins ultimately decide
+		$dodelete = Plugins::filter('session_read', $dodelete, $session, $session_id);
+
+		if($dodelete) {
 			DB::query('DELETE FROM ' . DB::table('sessions') . ' WHERE token = ?', array($session_id));
 			return false;
 		}
@@ -144,13 +151,22 @@ class Session
 
 
 	/**
-	 * Clear the user_id attached to the current session
+	 * Clear the user_id attached to sessions, delete other sessions that are associated to the user_id
+	 * @param integer $user_id The user_id to clear.
 	 */
-	static function clear_userid()
+	static function clear_userid($user_id)
 	{
+		DB::query('DELETE FROM ' . DB::table('sessions') . ' WHERE user_id = ? AND token <> ?', array($user_id, session_id()));
 		DB::query('UPDATE ' . DB::table('sessions') . ' SET user_id = NULL WHERE token = ?', array(session_id()));
 	}
 
+	/**
+	 * Adds a value to a sesison set
+	 *
+	 * @param string $set Name of the set
+	 * @param mixed $value value to store
+	 * @param string $key Optional unique key for the set under which to store the value
+	 */
 	static function add_to_set($set, $value, $key = null)
 	{
 		if(!isset($_SESSION[$set])) {
