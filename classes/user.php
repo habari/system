@@ -143,8 +143,8 @@ class User extends QueryRecord
 	 */
 	public function forget()
 	{
+		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
-		Session::clear_userid();
 		$home = Options::get('base_url');
 		header( "Location: " . $home );
 		exit;
