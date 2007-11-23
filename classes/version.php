@@ -13,7 +13,7 @@ class Version{
 	const DB_VERSION = 1114;
 	const API_VERSION = 1043;
 
-	const HABARI_VERSION = 0.3;
+	const HABARI_VERSION = 0.33;
 
 	public static function get_dbversion()
 	{
