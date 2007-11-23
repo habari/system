@@ -14,7 +14,7 @@
 		const DB_VERSION= 997;
 		const API_VERSION= 1043;
 
-		const HABARI_VERSION= '0.3.2';
+		const HABARI_VERSION= '0.3.3';
 		
 		public static function get_dbversion() 
 		{
