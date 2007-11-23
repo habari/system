@@ -603,23 +603,29 @@ class InstallHandler extends ActionHandler {
 
 	/**
 	 * returns an array of .htaccess declarations used by Habari
-	**/
+	 */
 	public function htaccess()
 	{
-		return array(
+		$htaccess= array(
 			'open_block' => '### HABARI START',
 			'engine_on' => 'RewriteEngine On',
 			'rewrite_cond_f' => 'RewriteCond %{REQUEST_FILENAME} !-f',
 			'rewrite_cond_d' => 'RewriteCond %{REQUEST_FILENAME} !-d',
+			'rewrite_base' => '#RewriteBase /', 
 			'rewrite_rule' => 'RewriteRule . index.php [PT]',
 			'close_block' => '### HABARI END',
 		);
+		$rewrite_base= trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
+		if ( $rewrite_base != '' )
+			$htaccess['rewrite_base']= 'RewriteBase /' . $rewrite_base;
+			
+		return $htaccess;
 	}
 
 	/**
 	 * checks for the presence of an .htaccess file
 	 * invokes write_htaccess() as needed
-	**/
+	 */
 	public function check_htaccess()
 	{
 		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
