@@ -1,12 +1,13 @@
-<?php 
+<?php
 include_once( 'header.php' );
 ?>
 <div class="container">
 <hr>
+	<?php if(Session::has_messages()) {Session::messages_out();} ?>
 	<div class="column prepend-1 span-22 append-1">
 		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
 	<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
-	<p>Search log entries: 
+	<p>Search log entries:
 	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
 	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?>
 	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?>

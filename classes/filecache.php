@@ -36,7 +36,8 @@ class FileCache extends Cache
 			}
 		}
 		else {
-			EventLog::log( 'Cache directory `' . $this->cache_location . '` not writable, filecache disabled', 'info', 'default', 'habari' );
+			Session::error( sprintf( _t("The cache directory '%s' is not writable - the cache is disabled."), $this->cache_location ), 'filecache' );
+			EventLog::log( sprintf( _t("The cache directory '%s' is not writable - the cache is disabled."), $this->cache_location ), 'notice', 'cache', 'habari' );
 		}
 	}
 

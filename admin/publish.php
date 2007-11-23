@@ -3,11 +3,11 @@
 <hr>
  <div class="column prepend-3 span-18 append-3">
   <?php
+	Session::messages_out();
   if ( isset( $slug ) ) {
 		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 		$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
 		$content_type= Post::type( $post->content_type );
-		Session::messages_out();
   } else {
 		$post= new Post();
 		$tags= '';

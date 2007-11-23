@@ -46,10 +46,13 @@ class Utils
 	/**
 	 * function redirect
 	 * Redirects the request to a new URL
-	 * @param string The URL to redirect to
+	 * @param string $url The URL to redirect to, or omit to redirect to the current url
 	 **/
-	static function redirect( $url )
+	static function redirect( $url = '' )
 	{
+		if($url == '') {
+			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+		}
 		header('Location: ' . $url, true, 302);
 	}
 
@@ -225,7 +228,7 @@ class Utils
 		// If RewriteRule name is not supplied, use the current matched rule.
 		// Else retrieve the RewriteRule matching the supplied name.
 		$rr= ( $rr_name == '' ) ? URL::get_matched_rule() : reset( RewriteRules::by_name( $rr_name ) );
-		
+
 		// Retrieve arguments name the RewriteRule can use to build a URL.
 		$rr_named_args= $rr->named_args;
 		$rr_args= array_merge( $rr_named_args['required'], $rr_named_args['optional']  );
@@ -239,7 +242,7 @@ class Utils
 				}
 			}
 		}
-		
+
 		// Make sure the current page is valid
 		if ( $current > $total ) {
 			$current= $total;
@@ -247,27 +250,27 @@ class Utils
 		else if ( $current < 1 ) {
 			$current= 1;
 		}
-		
+
 		// Number of pages to display on each side of the current page.
 		$leftSide= isset( $settings['leftSide'] ) ? $settings['leftSide'] : 1;
 		$rightSide= isset( $settings['rightSide'] ) ? $settings['rightSide'] : 1;
-		
+
 		// Add the page '1'.
 		$pages[]= 1;
-		
+
 		// Add the pages to display on each side of the current page, based on $leftSide and $rightSide.
 		for ( $i= max( $current - $leftSide, 2 ); $i < $total && $i <= $current + $rightSide; $i++ ) {
 			$pages[]= $i;
 		}
-		
+
 		// Add the last page if there is more than one page.
 		if ( $total > 1 ) {
 			$pages[]= (int) $total;
 		}
-		
+
 		// Sort the array by natural order.
 		natsort( $pages );
-		
+
 		// This variable is used to know the last page processed by the foreach().
 		$prevpage= 0;
 		// Create the output variable.
@@ -275,7 +278,7 @@ class Utils
 
 		foreach ( $pages as $page ) {
 			$settings['page']= $page;
-			
+
 			// Add ... if the gap between the previous page is higher than 1.
 			if ( ($page - $prevpage) > 1 ) {
 				$out.= '&nbsp;&hellip;';
@@ -286,10 +289,10 @@ class Utils
 			$url= Site::get_url( 'habari', true ) . $rr->build( $settings , false );
 			// Build the HTML link.
 			$out.= '&nbsp;<a href="' . $url . '" ' . ( ( $page == $current ) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
-			
+
 			$prevpage= $page;
 		}
-		
+
 		return $out;
 	}
 
@@ -389,7 +392,7 @@ class Utils
 		}
 		echo "</pre></div>";
 	}
-	
+
 	/**
 	 * Outputs debug information like ::debug() but using Firebug's Console.
 	 * @params mixed Any number of parameters to output in the debug box.
@@ -408,12 +411,12 @@ class Utils
 		$output .= "console.groupEnd();\n}\n</script>";
 		echo $output;
 	}
-	
+
 	/**
 	 * Utils::firebacktrace()
-	 * 
+	 *
 	 * @param array $backtrace An array of backtrace details from debug_backtrace()
-	 * @return string Javascript output that will display the backtrace in the Firebug console. 
+	 * @return string Javascript output that will display the backtrace in the Firebug console.
 	 */
 	static function firebacktrace($backtrace)
 	{
@@ -428,9 +431,9 @@ class Utils
 			extract($trace);
 			if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
 			if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
-			
+
 			$output .= "console.group(\"%s(%s):  %s(%s)\", \"{$file}\", \"{$line}\", \"{$fname}\", \"";
-			
+
 			$output2 = $comma = $argtypes = '';
 			foreach((array)$args as $arg) {
 				$argout = str_replace("\n", '\n', addslashes(print_r($arg,1)));
@@ -449,12 +452,12 @@ class Utils
 
 	/**
 	 * Crypt a given password, or verify a given password against a given hash.
-	 * 
+	 *
 	 * @todo Enable best algo selection after DB schema change.
-	 * 
+	 *
 	 * @param string $password the password to crypt or verify
 	 * @param string $hash (optional) if given, verify $password against $hash
-	 * @return crypted password, or boolean for verification 
+	 * @return crypted password, or boolean for verification
 	 */
 	public static function crypt( $password, $hash= NULL )
 	{
@@ -597,27 +600,27 @@ class Utils
 			return ( hash( 'sha512', $password . $salt, TRUE ) == $digest );
 		}
 	}
-	
+
 	/**
 	 * Return an array of date information
 	 * Just like getdate() but also returns 0-padded versions of day and month in mday0 and mon0
 	 * @param integer $timestamp A unix timestamp
-	 * @return array An array of date data	 	 	
-	 */	  	
+	 * @return array An array of date data
+	 */
 	public static function getdate($timestamp)
 	{
 		$info= getdate($timestamp);
-		$info['mon0']= substr('0' . $info['mon'], -2, 2); 
+		$info['mon0']= substr('0' . $info['mon'], -2, 2);
 		$info['mday0']= substr('0' . $info['mday'], -2, 2);
-		return $info; 
+		return $info;
 	}
-	
+
 	/**
 	 * Return a formatted date/time trying to use strftime() AND date()
 	 * @param string $format The format for the date.  If it contains non-escaped percent signs, it uses strftime(),	otherwise date()
 	 * @param integer $timestamp The unix timestamp of the time to format
-	 * @return string The formatted time	
-	 **/	  	 	
+	 * @return string The formatted time
+	 **/
 	public static function locale_date($format, $timestamp)
 	{
 		$matches= preg_split( '/((?<!\\\\)%[a-z]\\s*)/i', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
@@ -632,7 +635,7 @@ class Utils
 		}
 		return $output;
 	}
-	
+
 	/**
 	 * Return a sanitized slug, replacing non-alphanumeric characters to dashes
 	 * @param string $string The string to sanitize. Non-alphanumeric characters will be replaced by dashes
@@ -645,16 +648,16 @@ class Utils
 		// Convert all characters to lowercase.
 		// Trim spaces on both sides.
 		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $string ) ), '-' );
-		
+
 		// Let people change the behavior.
 		$slug= Plugins::filter('slugify', $slug, $string);
-		
+
 		return $slug;
 	}
-	
+
 	/**
 	 * Create an HTML select tag with options and a current value
-	 * 
+	 *
 	 * @param string $name The name and id of the select control
 	 * @param array $options An associative array of values to use as the select options
 	 * @param string $current The value of the currently selected option
@@ -728,7 +731,7 @@ class Utils
 	        if ( iconv_strlen($str) <= $len ) {
 	                return $str;
 	        }
-	
+
 	        // okay.  Shuold we place the ellipse in the middle?
 	        if ($middle) {
 	                // yes, so compute the size of each half of the string
@@ -740,7 +743,7 @@ class Utils
 	                $len= $len-3;
 	                return iconv_substr($str, 0, $len ) . '...';
 	        }
-	} 
+	}
 
 	/**
 	 * Check the PHP syntax of (and execute) the specified code.
@@ -751,7 +754,7 @@ class Utils
 	 */
 	public function php_check_syntax( $code ) {
 		$b= 0;
-		
+
 		foreach ( token_get_all( $code ) as $token ) {
 			if ( is_array( $token ) ) {
 				$token= token_name( $token[0] );
@@ -768,7 +771,7 @@ class Utils
 					break;
 			}
 		}
-		
+
 		if ( $b ) {
 			return false; // Unbalanced braces would break the eval below
 		}
@@ -776,11 +779,11 @@ class Utils
 			ob_start(); // Catch potential parse error messages
 			$code = eval( 'if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
 			ob_end_clean();
-			
+
 			return false !== $code;
 		}
 	}
-	
+
 	/**
 	 * Check the PHP syntax of (and execute) the specified file.
 	 *
@@ -789,7 +792,7 @@ class Utils
 	public function php_check_file_syntax( $file ) {
 		// Prepend and append PHP opening tags to prevent eval() failures.
 		$code= ' ?>' . file_get_contents( $file ) . '<?php ';
-		
+
 		return self::php_check_syntax( $code );
 	}
 

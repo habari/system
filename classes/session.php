@@ -269,6 +269,33 @@ class Session
 		echo self::messages_get($clear);
 	}
 
+	/**
+	 * Determine if there are messages that should be displayed
+	 * Messages are not cleared when calling this function.
+	 *
+	 * @return boolean true if there are messages to display.
+	 */
+	static function has_messages()
+	{
+		return (count(self::get_notices(false)+ self::get_errors(false))) ? true : false;
+	}
+
+	/**
+	 * Determine if there are error messages to display
+	 *
+	 * @param string $key Optional key of the unique error message
+	 * @return boolean true if there are errors, false if not
+	 */
+	static function has_errors($key = null)
+	{
+		if(isset($key)) {
+			return isset($_SESSION['errors'][$key]);
+		}
+		else {
+			return count(self::get_errors()) ? true : false;
+		}
+	}
+
 }
 
 ?>

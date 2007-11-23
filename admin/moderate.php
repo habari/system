@@ -2,16 +2,8 @@
 
 <div class="container">
 	<hr>
+	<?php if(Session::has_messages()) {Session::messages_out();} ?>
 	<div class="column span-24 last">
-		<?php
-		if ( isset( $result ) ) {
-			switch( $result ) {
-				case 'success':
-					echo '<p class="update">' . _t('Comments moderated successfully.') . '</p>';
-					break;
-			}
-		}
-		?>
 		<h1><?php _e('Habari Comments'); ?></h1>
 		<p><?php _e('Here you will find all the comments, including those deleted. You can also manage the pingbacks.'); ?></p>
 
@@ -50,7 +42,7 @@
 
 	<div class="column span-24 last">
 <?php if( count($comments) ) { ?>
-		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'result' => 'success' ) ); ?>">
+		<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'moderate', 'search_status' => $search_status ) ); ?>">
 			<input type="hidden" name="search" value="<?php echo $search; ?>">
 			<input type="hidden" name="limit" value="<?php echo $limit; ?>">
 			<input type="hidden" name="index" value="<?php echo $index; ?>">

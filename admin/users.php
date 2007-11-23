@@ -1,22 +1,10 @@
 <?php include('header.php');?>
 <div class="container">
 <hr>
+<?php if(Session::has_messages()) {Session::messages_out();} ?>
 <div class="column prepend-1 span-22 append-1">
 <?php
 $currentuser = User::identify();
-if ( ! $currentuser )
-{
-	die;
-}
-if ( isset( $result ) ) {
-	switch( $result ) {
-		case 'success':
-			echo '<p class="update">' . $username;
-			_e(' has been created!');
-			echo '</p>';
-			break;
-	}
-}
 ?>
 <h3>User Management</h3>
 <p>Add, edit and remove users from your site from this interface.</p>
@@ -25,12 +13,10 @@ if ( isset( $result ) ) {
 <?php
 foreach ( User::get_all() as $user )
 {
-	if ( $user->username == $currentuser->username )
-	{
+	if ( $user->username == $currentuser->username ) {
 		$url = Url::get( 'admin', 'page=user' );
 	}
-	else
-	{
+	else {
 		$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
 	}
 	echo '<li>';

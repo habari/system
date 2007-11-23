@@ -87,7 +87,8 @@ class AdminHandler extends ActionHandler
 				Options::set( $field, ${$input} );
 			}
 		}
-		Utils::redirect( URL::get( 'admin', 'page=options&result=success' ) );
+		Session::notice(_t('Successfully updated options'));
+		Utils::redirect( URL::get( 'admin', 'page=options' ) );
 	}
 
 	/**
@@ -252,25 +253,26 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 		$error= '';
 		if ( isset( $action ) && ( 'newuser' == $action ) ) {
-			if ( !isset( $username ) || empty( $username ) ) {
-				$error.= 'Please supply a user name!<br>';
+			if ( !isset( $pass1 ) || !isset( $pass2 ) || empty( $pass1 ) || empty( $pass2 ) ) {
+				Session::error(_t('Password mis-match.'), 'adduser');
 			}
 			if ( !isset( $email ) || empty( $email ) || ( !strstr( $email, '@' ) ) ) {
-				$error.= 'Please supply a valid email address!<br>';
+				Session::error(_t('Please supply a valid email address.'), 'adduser');
 			}
-			if ( !isset( $pass1 ) || !isset( $pass2 ) || empty( $pass1 ) || empty( $pass2 ) ) {
-				$error.= 'Password mis-match!<br>';
+			if ( !isset( $username ) || empty( $username ) ) {
+				Session::error(_t('Please supply a user name.'), 'adduser');
 			}
-			if ( empty( $error ) ) {
+			if ( !Session::has_errors('adduser') ) {
 				$user= new User( array( 'username' => $username, 'email' => $email, 'password' => Utils::crypt( $pass1 ) ) );
 				if ( $user->insert() ) {
-					Utils::redirect( URL::get( 'admin', 'page=users&result=success&username=' . $username ) );
+					Session::notice(sprintf(_t("Added user '%s'"), $username));
 				}
 				else {
 					$dberror= DB::get_last_error();
-					$error.= $dberror[2];
+					Session::error($dberror[2], 'adduser');
 				}
 			}
+			Utils::redirect( );
 		}
 	}
 
@@ -281,8 +283,12 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 		if ( 'activate' == strtolower( $action ) ) {
 			Plugins::activate_plugin( $plugin );
+			$plugins = Plugins::get_active();
+			Session::notice( sprintf(_t("Activated plugin '%s'"), $plugins[Plugins::id_from_file($plugin)]->info->name ) );
 		}
 		else {
+			$plugins = Plugins::get_active();
+			Session::notice( sprintf(_t("Deactivated plugin '%s'"), $plugins[Plugins::id_from_file($plugin)]->info->name ) );
 			Plugins::deactivate_plugin( $plugin );
 		}
 		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
@@ -296,6 +302,7 @@ class AdminHandler extends ActionHandler
 		if ( 'activate' == strtolower( $submit ) ) {
 			Themes::activate_theme( $theme_name,  $theme_dir );
 		}
+		Session::notice(sprintf(_t("Activated theme '%s'"), $theme_name));
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
@@ -353,12 +360,16 @@ class AdminHandler extends ActionHandler
 		if ( isset( $mass_spam_delete ) && $search_status == Comment::STATUS_SPAM ) {
 			// Delete all comments that have the spam status.
 			Comments::delete_by_status( Comment::STATUS_SPAM );
-			$this->theme->result= 'success';
+			Session::notice(_t('Deleted all spam comments'));
+			Utils::redirect();
+			die();
 		}
 		elseif ( isset( $mass_delete ) && $search_status == Comment::STATUS_UNAPPROVED ) {
 			// Delete all comments that are unapproved.
 			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
-			$this->theme->result= 'success';
+			Session::notice(_t('Deleted all unapproved comments'));
+			Utils::redirect();
+			die();
 		}
 		// if we're updating posts, let's do so:
 		elseif ( $do_update && isset( $comment_ids ) ) {
@@ -382,35 +393,46 @@ class AdminHandler extends ActionHandler
 					}
 				}
 				$to_update= Comments::get( array( 'id' => $ids ) );
+				$modstatus = array('Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0);
 				foreach ( $to_update as $comment ) {
 					switch ( $ids_change[$comment->id] ) {
 					case 'delete':
 						// This comment was marked for deletion
 						$comment->delete();
+						$modstatus['Deleted %d comments']++;
 						break;
 					case 'spam':
 						// This comment was marked as spam
 						$comment= Comment::get( $comment->id );
+						$modstatus['Marked %d comments as spam'] += $comment->status != Comment::STATUS_SPAM;
 						$comment->status= Comment::STATUS_SPAM;
 						$comment->update();
 						break;
 					case 'approve':
 						// This comment was marked for approval
 						$comment= Comment::get( $comment->id );
+						$modstatus['Approved %d comments'] += $comment->status != Comment::STATUS_APPROVED;
 						$comment->status= Comment::STATUS_APPROVED;
 						$comment->update();
 						break;
 					case 'unapprove':
 						// This comment was marked for unapproval
 						$comment= Comment::get( $comment->id );
+						$modstatus['Unapproved %d comments'] += $comment->status != Comment::STATUS_UNAPPROVED;
 						$comment->status= Comment::STATUS_UNAPPROVED;
 						$comment->update();
 						break;
 					}
 				}
-				$this->theme->result= 'success';
+				foreach($modstatus as $key => $value) {
+					if($value) {
+						Session::notice(sprintf(_t($key), $value));
+					}
+				}
 				unset( $this->handler_vars['change'] );
 			}
+			Utils::redirect();
+			die();
 		}
 
 		// Set up the limits select box
