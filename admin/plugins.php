@@ -103,7 +103,7 @@
 					<?php
 						Plugins::act( 'plugin_ui', $configure, $action );
 					?>
-				</div></div>
+				</div></div></div>
 				<div class="wrapper">
 				<div class="container">
 				<div class="column prepend-1 span-22 append-1">
