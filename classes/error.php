@@ -46,7 +46,7 @@ class Error extends Exception
 		printf( "<pre>\n<b>Uncaught Exception:</b> <i>%s: %s</i>\n</pre>\n",
 			get_class( $exception ), $exception->getMessage() );
 		if ( DEBUG ) {
-			self::print_backtrace();
+			self::print_backtrace( $exception->getTrace() );
 		}
 	}
 	
@@ -58,6 +58,7 @@ class Error extends Exception
 		if ( ( $errno & error_reporting() ) === 0 ) {
 			return;
 		}
+		
 		// Don't be fooled, we can't actually handle most of these.
 		$error_names= array(
 			E_ERROR => 'Error',
@@ -103,13 +104,15 @@ class Error extends Exception
 		}
 	}
 	
-	private function print_backtrace()
+	private function print_backtrace( $trace= null )
 	{
-		$trace= debug_backtrace();
+		if ( !isset($trace) )
+			$trace= debug_backtrace();
 		// remove this call
 		//array_shift( $trace );
 		// remove error handler call
 		//array_shift( $trace );
+		print "<pre class=\"backtrace\">\n";
 		foreach ( $trace as $n => $a ) {
 			if ( ! isset( $a['file'] ) ) { $a['file']= '[core]'; }
 			if ( ! isset( $a['line'] ) ) { $a['line']= '(eval)'; }
@@ -123,21 +126,23 @@ class Error extends Exception
 			$args= array();
 			foreach ( $a['args'] as $arg ) {
 				$args[]= htmlentities( str_replace(
-					array( "\n ", " \n", "\n", "\r" ),
-					array( '', '', ' ', '' ),
-					var_export( $arg, true )
+					array( "\n", "\r" ),
+					array( "\n    ", '' ),
+					"\n".var_export( $arg, true )
 				) );
 			}
-			$argstr= implode( ', ', $args );
-			if ( strlen( $argstr ) > 200 ) {
-				$argstr= substr( $argstr, 0, 197 ) . '...';
+			$argstr= implode( ",    ", $args );
+			if ( !empty( $argstr) ) $argstr.= "\n  ";
+			if ( strlen( $argstr ) > 1024 ) {
+				$argstr= substr( $argstr, 0, 1021 ) . '...';
 			}
 				
-			printf("#%d in <b>%s</b>:<b>%d</b>: <b>%s</b>(%s)\n",
+			printf("#%d in <b>%s</b>:<b>%d</b>:\n  <b>%s</b>(%s)\n",
 				$n, $a['file'], $a['line'], $a['class'].$a['type'].$a['function'],
 				$argstr
 			);
 		}
+		print "</pre>\n";
 	}		
 	
 	/**
