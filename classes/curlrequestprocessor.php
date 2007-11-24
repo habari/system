@@ -7,7 +7,9 @@ class CURLRequestProcessor implements RequestProcessor
 {
 	private $response_body= '';
 	private $response_headers= '';
-	private $executed= FALSE;
+	private $executed= false;
+	
+	private $can_followlocation= true;
 	
 	/**
 	 * Maximum number of redirects to follow.
@@ -18,6 +20,13 @@ class CURLRequestProcessor implements RequestProcessor
 	 * Temporary buffer for headers.
 	 */
 	private $_headers= '';
+	
+	public function __construct()
+	{
+		if ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) {
+			$this->can_followlocation= false;
+		}
+	}
 	
 	public function execute( $method, $url, $headers, $body, $timeout )
 	{
@@ -32,7 +41,9 @@ class CURLRequestProcessor implements RequestProcessor
 		curl_setopt( $ch, CURLOPT_HEADERFUNCTION, array(&$this, '_headerfunction' ) ); // The header of the response.
 		curl_setopt( $ch, CURLOPT_MAXREDIRS, $this->max_redirs ); // Maximum number of redirections to follow.
 		curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n.
-		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // Follow 302's and the like.
+		if ( $this->can_followlocation ) {
+			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // Follow 302's and the like.
+		}
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); // Return the data from the stream.
 		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
 		curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
@@ -65,9 +76,9 @@ class CURLRequestProcessor implements RequestProcessor
 		
 		$this->response_headers= array_pop( $tmp_headers );
 		$this->response_body= $body;
-		$this->executed= TRUE;
+		$this->executed= true;
 		
-		return TRUE;
+		return true;
 	}
 	
 	public function _headerfunction( $ch, $str )
