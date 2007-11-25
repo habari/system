@@ -8,6 +8,9 @@
 		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 		$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
 		$content_type= Post::type( $post->content_type );
+?>
+<a href="<?php echo $post->permalink; ?>">View Post</a>
+<?php
   } else {
 		$post= new Post();
 		$tags= '';
