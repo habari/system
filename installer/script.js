@@ -6,13 +6,13 @@ function handleAjaxError(msg, status, err)
 	}
 	$('#installerror').html(
 		'<strong>Installation Issue</strong>'+
-		'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="/manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="noVerify();">continue without verification</a>.</p>' + 
+		'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="noVerify();">continue without verification</a>.</p>' +
 //		'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
 		'<strong>Server Response</strong>'+
 		'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
 	).fadeIn();
 }
-				
+
 function setDatabaseType()
 {
 	switch($('#databasetype').val()) {
@@ -30,7 +30,7 @@ function setDatabaseType()
 function checkDBCredentials()
 {
 	if ( ( $('#databasetype').val() == 'mysql' ) && ( $('#databasehost').val() != '' ) && ( $('#databaseuser').val() != '' ) && ( $('#databasename').val() != '' ) ) {
-		$.ajax({ 
+		$.ajax({
 			type: 'POST',
 			url: 'ajax/check_mysql_credentials',
 			data: { // Ask InstallHandler::ajax_check_mysql_credentials to check the credentials
@@ -178,7 +178,7 @@ function noVerify() {
 	$('#siteconfiguration').addClass('done');
 	$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
 	$('#submitinstall').removeAttr( 'disabled' );
-	
+
 	$('#installerror').html('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify your installation details.</p>' + $('#installerror').html());
 }
 
