@@ -180,7 +180,7 @@ CREATE TABLE {$prefix}groups_permissions (
 
 CREATE TABLE {$prefix}sessions  (
  	token varchar(255) NOT NULL,
- 	subnet INT UNSIGNED NOT NULL DEFAULT 0,
+ 	subnet INT NOT NULL DEFAULT 0,
  	expires INT UNSIGNED NOT NULL DEFAULT 0,
  	ua VARCHAR(255) NOT NULL,
  	data MEDIUMTEXT,
