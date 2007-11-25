@@ -259,14 +259,14 @@ class Session
 
 		$output = '';
 		if(count($errors)) {
-			$output .= '<ul class="errors">';
+			$output .= '<ul class="error">';
 			foreach($errors as $error) {
 				$output .= '<li>' . $error . '</li>';
 			}
 			$output .= '</ul>';
 		}
 		if(count($notices)) {
-			$output .= '<ul class="update">';
+			$output .= '<ul class="success">';
 			foreach($notices as $notice) {
 				$output .= '<li>' . $notice . '</li>';
 			}
