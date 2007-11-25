@@ -166,7 +166,7 @@ CREATE UNIQUE INDEX group_permission ON {$prefix}groups_permissions(group_id,per
 
 CREATE TABLE {$prefix}sessions  (
  	token VARCHAR(255) NOT NULL,
- 	subnet INTEGER unsigned not null,
+ 	subnet INTEGER not null,
  	expires INTEGER unsigned not null,
  	ua VARCHAR(255) NOT NULL,
  	user_id INTEGER,
