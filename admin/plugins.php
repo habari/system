@@ -72,9 +72,9 @@
 					<td><?php echo $plugin->info->version; ?></td>
 					<td>
 					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
-					<input type='hidden' name='plugin' value='<?php echo $file; ?>'>
+					<p><input type='hidden' name='plugin' value='<?php echo $file; ?>'>
 					<input type='hidden' name='action' value='<?php echo $active ? 'Deactivate' : 'Activate'; ?>'>
-					<p><button name='submit' type='submit'><?php echo $verb; ?></button>
+					<button name='submit' type='submit'><?php echo $verb; ?></button>
 					<?php
 					if ( $active ) {
 						$plugin_actions= array();
@@ -97,7 +97,7 @@
 					</td>
 				</tr>
 				<?php if ( isset( $this->engine_vars['configure'] ) && ($configure == $plugin->plugin_id)) { ?>
-				</tbody></table></div></div>
+				</tbody></table></div></div></div>
 				<div id="plugin_options"><div class="container"><div class="column prepend-1 span-22 append-1">
 					<h2><?php echo $active_plugins[$configure]->info->name; ?> : <? echo $action; ?></h2>
 					<?php
