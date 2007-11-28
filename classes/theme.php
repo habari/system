@@ -353,7 +353,10 @@ class Theme
 	 */
 	public function act_display_404( $user_filters= array() )
 	{
-		$paramarray['fallback']= array( '404' );
+		$paramarray['fallback']= array(
+			'404',
+			'home',
+		);
 		$paramarray['user_filters']= $user_filters;
 		return $this->act_display( $paramarray );
 	}
