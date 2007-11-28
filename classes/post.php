@@ -455,7 +455,7 @@ class Post extends QueryRecord
 	/**
 	 * Save the tags associated to this post into the tags and tags2post tables
 	 */
-	private function savetags()
+	private function save_tags()
 	{
 		DB::query( 'DELETE FROM ' . DB::table('tag2post') . ' WHERE post_id = ?', array( $this->fields['id'] ) );
 		if ( count($this->tags) == 0) {return;}
@@ -501,7 +501,7 @@ class Post extends QueryRecord
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
-		$this->savetags();
+		$this->save_tags();
 		EventLog::log('New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name($this->content_type) . '; Status: ' . $this->statusname, 'info', 'content', 'habari');
 		Plugins::act('post_insert_after', $this);
 		return $result;
@@ -545,7 +545,7 @@ class Post extends QueryRecord
 		$result = parent::update( DB::table('posts'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
-		$this->savetags();
+		$this->save_tags();
 		$this->info->commit();
 
 		Plugins::act('post_update_after', $this);
