@@ -517,7 +517,53 @@ class AdminHandler extends ActionHandler
 	/**
 	 * A POST handler for the admin plugins page that simply passes those options through.
 	 */
-	public function post_plugins() {
+	public function post_plugins()
+	{
+		$this->get_plugins();
+	}
+
+	public function get_plugins()
+	{
+		$all_plugins= Plugins::list_all();
+		$active_plugins= Plugins::get_active();
+
+		$plugins = array();
+		foreach ( $all_plugins as $file ) {
+			$plugin = array();
+			$plugin_id = Plugins::id_from_file( $file );
+			$plugin['plugin_id'] = $plugin_id;
+			$plugin['file'] = $file;
+
+			$error = '';
+			if ( Utils::php_check_file_syntax( $file, $error ) ) {
+				$plugin['debug'] = false;
+				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
+					$plugin['verb'] = _t( 'Deactivate' );
+					$pluginobj = $active_plugins[$plugin_id];
+					$plugin['active'] = true;
+					$plugin_actions = array();
+					$plugin['actions'] = Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
+				}
+				else {
+					// instantiate this plugin
+					// in order to get its info()
+					include_once( $file );
+					$pluginobj = Plugins::load( $file );
+					$plugin['active'] = false;
+					$plugin['verb'] = _t( 'Activate' );
+					$plugin['actions'] = array();
+				}
+				$plugin['info'] = $pluginobj->info;
+			}
+			else {
+				$plugin['debug'] = true;
+				$plugin['error'] = $error;
+			}
+			$plugins[$plugin_id] = $plugin;
+		}
+
+		$this->theme->plugins = $plugins;
+
 		$this->display( 'plugins' );
 	}
 

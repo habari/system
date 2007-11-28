@@ -367,7 +367,9 @@ class Plugins
 		$all_plugins= self::list_all();
 
 		foreach ( $all_plugins as $file ) {
-			if ( !Utils::php_check_file_syntax( $file ) ) {
+			$error = '';
+			if ( !Utils::php_check_file_syntax( $file, $error ) ) {
+				Session::error(sprintf( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>' ), basename( $file ), $error ));
 				$failed_plugins[]= $file;
 			}
 		}

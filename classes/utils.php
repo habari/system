@@ -752,7 +752,7 @@ class Utils
 	 * @param string $code The code string to be evaluated. It does not have to contain PHP opening tags.
 	 * @return bool Returns TRUE if the lint check passed, and FALSE if the link check failed.
 	 */
-	public function php_check_syntax( $code ) {
+	public function php_check_syntax( $code, &$error = null ) {
 		$b= 0;
 
 		foreach ( token_get_all( $code ) as $token ) {
@@ -778,7 +778,7 @@ class Utils
 		else {
 			ob_start(); // Catch potential parse error messages
 			$code = eval( 'if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
-			ob_end_clean();
+			$error = ob_get_clean();
 
 			return false !== $code;
 		}
@@ -789,11 +789,11 @@ class Utils
 	 *
 	 * @see Utils::php_check_syntax()
 	 */
-	public function php_check_file_syntax( $file ) {
+	public function php_check_file_syntax( $file, &$error = null ) {
 		// Prepend and append PHP opening tags to prevent eval() failures.
 		$code= ' ?>' . file_get_contents( $file ) . '<?php ';
 
-		return self::php_check_syntax( $code );
+		return self::php_check_syntax( $code, $error );
 	}
 
 }
