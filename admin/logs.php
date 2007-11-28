@@ -16,7 +16,7 @@ include_once( 'header.php' );
 		<table id="log-activity-table" width="100%" cellspacing="0">
 			<thead>
 				<tr>
-					<th></th>
+					<th class="span-1"></th>
 					<th align="left">Date</th>
 					<th align="left">User</th>
 					<th align="left">Module</th>
@@ -26,7 +26,7 @@ include_once( 'header.php' );
 				</tr>
 			</thead>
 			<tr>
-			<td></td>
+			<td class="span-1"></td>
 			<td><?php echo Utils::html_select('date', $dates, $date, array( 'class'=>'longselect')); ?></td>
 			<td><?php echo Utils::html_select('user', $users, $user, array( 'class'=>'longselect')); ?></td>
 			<td><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'longselect')); ?></td>
@@ -36,7 +36,7 @@ include_once( 'header.php' );
 			</tr>
 			<?php foreach( $logs as $log ){ ?>
 			<tr>
-				<td align="center"><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></td>
+				<td align="left"><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></td>
 				<td><?php echo $log->timestamp; ?></td>
 				<td><?php if ( $log->user_id ) { $user= User::get_by_id( $log->user_id ); echo $user->username; } ?></td>
 				<td><?php echo $log->module; ?></td>

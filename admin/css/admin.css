@@ -255,6 +255,13 @@ label {
 
 /*  Table Stylings */
 
+table {
+   table-layout:fixed;
+   overflow:hidden;
+   word-wrap:break-word;
+    }
+
+
 td, th {
 	padding-left: 4px;
 }
@@ -276,59 +283,4 @@ ul {
 	list-style-type: none;
 }
 
-/* begin css tabs */
 
-ul#tabnav { /* general settings */
-text-align: left; /* set to left, right or center */
-margin: 1em 0 0 0; /* set margins as desired */
-font: bold 11px verdana, arial, sans-serif; /* set font as desired */
-border-bottom: 1px solid #ccc; /* set border COLOR as desired */
-list-style-type: none;
-padding: 3px 10px 5px 10px; /* THIRD number must change with respect to padding-top (X) below */
-}
-
-ul#tabnav li { /* do not change */
-display: inline;
-}
-
-#tab1 li.tab1, #tab2 li.tab2, #tab3 li.tab3, #tab4 li.search { /* settings for selected tab */
-border-bottom: 1px solid #f6f6f6; /* set border color to page background color */
-background-color: #fff; /* set background color to match above border color */
-}
-
-#tab1 li.tab1 a, #tab2 li.tab2 a, #tab3 li.tab3 a, #tab4 li.search a { /* settings for selected tab link */
-background-color: #f6f6f6; /* set selected tab background color as desired */
-color: #000; /* set selected tab link color as desired */
-position: relative;
-top: 1px;
-padding-top: 5px; /* must change with respect to padding (X) above and below */
-}
-
-ul#tabnav li a { /* settings for all tab links */
-padding: 5px 5px; /* set padding (tab size) as desired; FIRST number must change with respect to padding-top (X) above */
-border: 1px solid #ccc; /* set border COLOR as desired; usually matches border color specified in #tabnav */
-background-color: #ddd; /* set unselected tab background color as desired */
-color: #666; /* set unselected tab link color as desired */
-margin-right: 0px; /* set additional spacing between tabs as desired */
-text-decoration: none;
-border-bottom: none;
-}
-
-ul#tabnav a:hover { /* settings for hover effect */
-background: #f6f6f6; /* set desired hover color */
-}
-
-#searchform {
-	background-color:#f6f6f6;
-	padding:9px 3px;
-	border-right: 1px solid #ccc;
-	border-bottom: 1px solid #ccc;
-	border-left: 1px solid #ccc;
-}
-
-#searchform p {
-	padding:0;
-	margin:0;
-}
-
-/* end css tabs */

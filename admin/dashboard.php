@@ -112,7 +112,7 @@
     <?php
       if ( Comments::count_total( Comment::STATUS_APPROVED ) ) {
     ?>
-      <table id="comment-data" width="100%" cellspacing="0">
+      <table id="comment-data" cellspacing="0">
         <thead>
           <tr>
             <th class="span-3"><?php _e( 'Post' ); ?></th>
@@ -188,7 +188,7 @@
   </div>
   <div class="column prepend-1 span-15 append-1 last">
     <h3><?php _e( 'Activity' ); ?> (<a href="<?php URL::out( 'admin', 'page=logs' ); ?>" title="<?php _e( 'More Activity Logs' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
-    <table id="log-activity" width="100%" cellspacing="0">
+    <table id="log-activity"  cellspacing="0">
       <thead>
         <tr>
 		  <th class="span-3" align="left">Type</th>
@@ -206,12 +206,12 @@
     </table>
   </div>
   <hr>
-  <div class="column prepend-8 span-16 first">
+  <div class="column prepend-7 span-16 first">
     <h3>Drafts (<a href="<?php URL::out( 'admin', 'page=content' ); ?>#drafts" title="View Your Drafts">more</a> &raquo;)</h3>
     <?php
       if ( Posts::count_total( Post::status( 'draft' ) ) ) {
     ?>
-    <table id="site-drafts" width="100%" cellspacing="0">
+    <table id="site-drafts" cellspacing="0">
     <?php
         foreach ( Posts::by_status( Post::status( 'draft' ) ) as $draft ) {
     ?>
