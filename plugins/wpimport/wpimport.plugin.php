@@ -14,7 +14,7 @@ class WPImport extends Plugin implements Importer
 	/**
 	 * Initialize plugin.
 	 * Set the supported importers.
-	 **/	 	 	
+	 **/
 	public function action_init()
 	{
 		$this->supported_importers= array( _t( 'WordPress Database' ) );
@@ -27,7 +27,7 @@ class WPImport extends Plugin implements Importer
 	*/
 	public function info()
 	{
-		return array( 
+		return array(
 			'name' => 'WordPress Importer',
 			'version' => '1.0',
 			'url' => 'http://habariproject.org/',
@@ -105,7 +105,7 @@ class WPImport extends Plugin implements Importer
 	 */
 	private function stage1( $inputs )
 	{
-		$default_values= array( 
+		$default_values= array(
 			'db_name' => '',
 			'db_host' => 'localhost',
 			'db_user' => '',
@@ -157,14 +157,14 @@ WP_IMPORT_STAGE1;
 	private function stage2( $inputs )
 	{
 		extract( $inputs );
-		
+
 		if ( ! isset( $category_import ) ) {
 			$category_import= 0;
 		}
 		if ( ! isset( $utw_import ) ) {
 			$utw_import= 0;
 		}
-		$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_users' ) );
+		$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_users' ) );
 		EventLog::log(sprintf(_t('Starting import from "%s"'), $db_name));
 		Options::set('import_errors', array());
 
@@ -174,7 +174,7 @@ WP_IMPORT_STAGE1;
 			<script type="text/javascript">
 			// A lot of ajax stuff goes here.
 			$( document ).ready( function(){
-				$( '#import_progress' ).load( 
+				$( '#import_progress' ).load(
 					"{$ajax_url}",
 					{
 						db_host: "{$db_host}",
@@ -237,7 +237,7 @@ WP_IMPORT_STAGE2;
 		$wpdb= $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
 		if( $wpdb ) {
 			$has_taxonomy= count($wpdb->get_column( "SHOW TABLES LIKE '{$db_prefix}term_taxonomy';" ));
-			
+
 			$postcount= $wpdb->get_value( "SELECT count( id ) FROM {$db_prefix}posts;" );
 			$min= $postindex * IMPORT_BATCH + ( $postindex == 0 ? 0 : 1 );
 			$max= min( ( $postindex + 1 ) * IMPORT_BATCH, $postcount );
@@ -273,7 +273,7 @@ WP_IMPORT_STAGE2;
 				// Import WP category as tags
 				if ( $category_import == 1 ) {
 					if($has_taxonomy) {
-						$tags= $wpdb->get_column( 
+						$tags= $wpdb->get_column(
 							"SELECT slug
 							FROM {$db_prefix}terms
 							INNER JOIN {$db_prefix}term_taxonomy
@@ -284,7 +284,7 @@ WP_IMPORT_STAGE2;
 						 );
 					}
 					else {
-						$tags= $wpdb->get_column( 
+						$tags= $wpdb->get_column(
 							"SELECT category_nicename
 							FROM {$db_prefix}post2cat
 							INNER JOIN {$db_prefix}categories
@@ -295,10 +295,10 @@ WP_IMPORT_STAGE2;
 				} else {
 					$tags= array();
 				}
-				
+
 				// we want to include the Ultimate Tag Warrior in that list of tags
 				if ( $utw_import == 1 ) {
-					$utw_tags= $wpdb->get_column( 
+					$utw_tags= $wpdb->get_column(
 					"SELECT tag
 					FROM {$db_prefix}post2tag
 					INNER JOIN {$db_prefix}tags
@@ -307,7 +307,7 @@ WP_IMPORT_STAGE2;
 					 );
 					// UTW substitutes underscores and hyphens for spaces, so let's do the same
 					$utw_tag_formatter= create_function( '$a', 'return preg_replace( "/_|-/", " ", $a );' );
-					
+
 					// can this be done in just two calls instead of three? I think so.
 					$tags= array_unique( array_merge( $tags, array_map( $utw_tag_formatter, $utw_tags ) ) );
 				}
@@ -341,7 +341,7 @@ WP_IMPORT_STAGE2;
 				$p->user_id = $user_map[$p->user_id];
 				$p->guid= $p->guid; // Looks fishy, but actually causes the guid to be set.
 				$p->tags= $tags;
-				
+
 				$p->info->wp_id= $post_array['id'];  // Store the WP post id in the post_info table for later
 
 				try {
@@ -355,12 +355,12 @@ WP_IMPORT_STAGE2;
 				}
 			}
 			if( $max < $postcount ) {
-				$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_posts' ) );
+				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
 				$postindex++;
 
 				echo <<< WP_IMPORT_AJAX1
 					<script type="text/javascript">
-					$( '#import_progress' ).load( 
+					$( '#import_progress' ).load(
 						"{$ajax_url}",
 						{
 							db_host: "{$db_host}",
@@ -378,11 +378,11 @@ WP_IMPORT_STAGE2;
 WP_IMPORT_AJAX1;
 			}
 			else {
-				$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_comments' ) );
+				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
 
 				echo <<< WP_IMPORT_AJAX2
 					<script type="text/javascript">
-					$( '#import_progress' ).load( 
+					$( '#import_progress' ).load(
 						"{$ajax_url}",
 						{
 							db_host: "{$db_host}",
@@ -406,13 +406,13 @@ WP_IMPORT_AJAX2;
 			echo '<p>'._t( 'The database connection details have failed to connect.' ).'</p>';
 		}
 	}
-	
+
 	/**
 	 * The plugin sink for the auth_ajax_wp_import_posts hook.
 	 * Responds via authenticated ajax to requests for post importing.
-	 * 
+	 *
 	 * @param mixed $handler
-	 * @return 
+	 * @return
 	 */
 	public function action_auth_ajax_wp_import_users( $handler )
 	{
@@ -423,16 +423,16 @@ WP_IMPORT_AJAX2;
 		if( $wpdb ) {
 			$wp_users = $wpdb->get_results(
 				"
-					SELECT 
+					SELECT
 						user_login as username,
 						user_pass as password,
 						user_email as email,
 						user_url as wp_url,
-						{$db_prefix}users.id as wp_id 
+						{$db_prefix}users.id as wp_id
 					FROM {$db_prefix}users
 					INNER JOIN {$db_prefix}posts ON {$db_prefix}posts.post_author = {$db_prefix}users.id
 					GROUP BY {$db_prefix}users.id
-				", 
+				",
 				array(),
 				'User'
 			);
@@ -444,9 +444,9 @@ WP_IMPORT_AJAX2;
 					if($user->wp_url != '') {
 						$user->info->url = $user->wp_url;
 					}
-					// This should probably remain commented until we implement ACL more, 
+					// This should probably remain commented until we implement ACL more,
 					// or any imported user will be able to log in and edit stuff
-					//$user->password = '{MD5}' . $user->password; 
+					//$user->password = '{MD5}' . $user->password;
 					$user->exclude_fields(array('wp_id', 'wp_url'));
 					$user->insert();
 					$usercount++;
@@ -458,12 +458,12 @@ WP_IMPORT_AJAX2;
 					Options::set('import_errors', $errors);
 				}
 			}
-			$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_posts' ) );
+			$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
 			echo <<< WP_IMPORT_USERS1
 			<script type="text/javascript">
 			// A lot of ajax stuff goes here.
 			$( document ).ready( function(){
-				$( '#import_progress' ).load( 
+				$( '#import_progress' ).load(
 					"{$ajax_url}",
 					{
 						db_host: "{$db_host}",
@@ -572,12 +572,12 @@ WP_IMPORT_USERS1;
 			}
 
 			if( $max < $commentcount ) {
-				$ajax_url= URL::get( 'ajax_auth', array( 'context' => 'wp_import_comments' ) );
+				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
 				$commentindex++;
 
 				echo <<< WP_IMPORT_AJAX1
 					<script type="text/javascript">
-					$( '#import_progress' ).load( 
+					$( '#import_progress' ).load(
 						"{$ajax_url}",
 						{
 							db_host: "{$db_host}",
@@ -601,7 +601,7 @@ WP_IMPORT_AJAX1;
 				$errors = Options::get('import_errors');
 				if(count($errors) > 0 ) {
 					_e( '<p>There were errors during import:</p>' );
-					
+
 					echo '<ul>';
 					foreach($errors as $error) {
 						echo '<li>' . $error . '</li>';
