@@ -71,6 +71,20 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * Handle incoming requests to /admin_ajax for admin ajax requests
+	 */
+	public function act_admin_ajax() {
+		$context = $this->handler_vars['context'];
+		if(method_exists($this, 'ajax_' . $context)) {
+			call_user_func(array($this, 'ajax_' . $context), $this->handler_vars);
+		}
+		else {
+			header('HTTP/1.1 403 Forbidden', true, 403);
+			die();
+		}
+	}
+
+	/**
 	 * Handles post requests from the options admin page.
 	 */
 	public function post_options() {
