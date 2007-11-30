@@ -33,6 +33,7 @@ class RewriteRules extends ArrayObject {
 			// AJAX requests
 			array( 'name' => 'ajax', 'parse_regex' => '%^ajax/(?P<context>[^/]+)/?$%i', 'build_str' => 'ajax/{$context}', 'handler' => 'AjaxHandler', 'action' => 'ajax', 'priority' => 8, 'description' => 'Ajax handling' ),
 			array( 'name' => 'auth_ajax', 'parse_regex' => '%^auth_ajax/(?P<context>[^/]+)/?$%i', 'build_str' => 'auth_ajax/{$context}', 'handler' => 'AjaxHandler', 'action' => 'auth_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling' ),
+			array( 'name' => 'admin_ajax', 'parse_regex' => '%^admin_ajax/(?P<context>[^/]+)/?$%i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
 
 			// Atom Syndication Format
 			array( 'name' => 'rsd', 'parse_regex' => '%^rsd$%i', 'build_str' => 'rsd', 'handler' => 'AtomHandler', 'action' => 'rsd', 'priority' => 1, 'description' => 'RSD output' ),
