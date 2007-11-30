@@ -1,8 +1,8 @@
 <?php
 /**
  * Habari FeedbackHandler Class
- * Deals with feedback mechnisms: Commenting, Pingbacking, and the like. 
- * 
+ * Deals with feedback mechnisms: Commenting, Pingbacking, and the like.
+ *
  * @package Habari
  */
 
@@ -11,13 +11,17 @@ class FeedbackHandler extends ActionHandler
 	/**
 	* function add_comment
 	* adds a comment to a post, if the comment content is not NULL
-	* @param array An associative array of content found in the $_POST array 
+	* @param array An associative array of content found in the $_POST array
 	*/
 	public function act_add_comment()
 	{
 		// We need to get the post anyway to redirect back to the post page.
 		$post= Post::get( array( 'id'=>$this->handler_vars['id'] ) );
-		
+		if( !$post ) {
+			header('HTTP/1.1 403 Forbidden', true, 403);
+			die();
+		}
+
 		if ( 1 == Options::get( 'comments_require_id' ) && ( empty( $this->handler_vars['name'] ) || empty( $this->handler_vars['email'] ) ) ) {
 			echo sprintf( _t( 'Both name and e-mail address must be provided, please <a href="%1$s" title="Return to &quot;%2$s&quot;">go back and try again</a>.' ), $post->permalink, $post->title );
 		}
@@ -33,7 +37,7 @@ class FeedbackHandler extends ActionHandler
 				$url= $this->handler_vars['url'];
 				$parsed= InputFilter::parse_url( $url );
 				if ( $parsed['is_relative'] ) {
-					// guess if they meant to use an absolute link 
+					// guess if they meant to use an absolute link
 					$parsed= InputFilter::parse_url( 'http://' . $url );
 					if ( ! $parsed['is_error'] ) {
 						$url= InputFilter::glue_url( $parsed );
@@ -53,10 +57,10 @@ class FeedbackHandler extends ActionHandler
 					$url= InputFilter::glue_url( $parsed );
 				}
 				$this->handler_vars['url']= $url;
-				
+
 				/* Sanitize the content */
 				$this->handler_vars['content']= InputFilter::filter( $this->handler_vars['content'] );
-				
+
 				/* Create comment object*/
 				$comment= new Comment( array(
 					'post_id'	=>	$this->handler_vars['id'],
@@ -69,22 +73,22 @@ class FeedbackHandler extends ActionHandler
 					'date'		=>	date( 'Y-m-d H:i:s' ),
 					'type' 		=> 	Comment::COMMENT,
 			 	) );
-	
+
 				// Should this really be here or in a default filter?
 				// In any case, we should let plugins modify the status after we set it here.
 				if( ( $user = User::identify() ) && ( $comment->email == $user->email ) ) {
 					$comment->status= Comment::STATUS_APPROVED;
 				}
-	
-				$spam_rating= 0; 			
+
+				$spam_rating= 0;
 				$spam_rating= Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
-			
+
 				$comment->insert();
-				
+
 				// if no cookie exists, we should set one
 				// but only if the user provided some details
 				$cookie= 'comment_' . Options::get('GUID');
-				if ( ( ! User::identify() ) 
+				if ( ( ! User::identify() )
 					&& ( ! isset( $_COOKIE[$cookie] ) )
 					&& ( ! empty( $this->handler_vars['name'] )
 						|| ! empty( $this->handler_vars['email'] )
@@ -96,7 +100,7 @@ class FeedbackHandler extends ActionHandler
 					$site_url= Site::get_path('base',true);
 					setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );
 				}
-				
+
 				// Return the commenter to the original page.
 				// @todo We should probably add a method to display a message like, "your comment is in moderation"
 				Utils::redirect( $post->permalink );
@@ -105,7 +109,7 @@ class FeedbackHandler extends ActionHandler
 				// do something more intelligent here
 				echo 'Hey, that post doesn\'t exist, buddy.';
 			}
-		} 
+		}
 		else {
 			// do something more intelligent here
 			echo sprintf(_t('You forgot to add some content to your comment, please <a href="%1$s" title="Return to &quot;%2$s&quot;">go back and try again</a>.'), $post->permalink, $post->title );
