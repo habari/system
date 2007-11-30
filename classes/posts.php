@@ -11,13 +11,13 @@
  * This class provides two key features.
  * 1: Posts contains static method get() that returns the
  * requested posts based on the passed criteria.  Depending on the type of
- * request, different types are returned. See the function for details 
+ * request, different types are returned. See the function for details
  * 2: An instance of Posts functions as an array (by extending ArrayObject) and
- * is returned by Posts::get() as the results of a query.  This allows the 
+ * is returned by Posts::get() as the results of a query.  This allows the
  * result of Posts::get() to be iterated (for example, in a foreach construct)
  * and to have properties that can be accessed that describe the results
  * (for example, $posts->onepost).
- **/      
+ **/
 class Posts extends ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
@@ -27,30 +27,30 @@ class Posts extends ArrayObject
 	 * Returns properties of a Posts object.
 	 * This is the function that returns information about the set of posts that
 	 * was requested.  This function should offer property names that are identical
-	 * to properties of instances of the URL class.  A call to Posts::get() 
+	 * to properties of instances of the URL class.  A call to Posts::get()
 	 * without parameters should return mostly the same property values as the
 	 * global $url object for the request.  The difference would occur when
 	 * the data returned doesn't necessarily match the request, such as when
 	 * several posts are requested, but only one is available to return.
 	 * @param string The name of the property to return.
-	 **/	 	  	 	
+	 **/
 	public function __get( $name )
 	{
 		switch( $name ) {
 			case 'onepost':
 				return ( count( $this ) == 1 );
 		}
-		
+
 		return false;
 	}
-			
+
 	/**
 	 * Returns a post or posts based on supplied parameters.
 	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
-	 * 	 
+	 *
 	 * @param array $paramarry An associated array of parameters, or a querystring
 	 * @return array An array of Post objects, or a single post object, depending on request
-	 **/	 	 	 	 	
+	 **/
 	public static function get( $paramarray = array() )
 	{
 		$params= array();
@@ -101,8 +101,13 @@ class Posts extends ArrayObject
 					$params[]= Post::type( $paramset['content_type'] );
 				}
 				if ( isset( $paramset['slug'] ) ) {
-					$where[]= "slug= ?";
-					$params[]= $paramset['slug'];
+	        if ( is_array( $paramset['slug'] ) ) {
+					  $where[]= "slug IN (" . implode( ',', array_fill( 0, count( $paramset['slug'] ), '?' ) ) . ")";
+					  $params = array_merge($params, $paramset['slug']);
+	        } else {
+					  $where[]= "slug= ?";
+					  $params[]= $paramset['slug'];
+				  }
 				}
 				if ( isset( $paramset['user_id'] ) ) {
 					$where[]= "user_id= ?";
@@ -111,32 +116,38 @@ class Posts extends ArrayObject
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
 					$join .= ' JOIN ' . DB::table( 'tag2post' ) . ' ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
 					$join .= ' JOIN ' . DB::table( 'tags' ) . ' ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
-					// Need tag expression parser here.			
-				if ( isset( $paramset['tag'] ) )
-				{
-					$where[]= 'tag_text= ?';
-					$params[]= $paramset['tag'];
-				}
-				if ( isset( $paramset['tag_slug'] ) )
-				{
-					$where[]= 'tag_slug= ?';
-					$params[]= $paramset['tag_slug'];
-				}
+					// Need tag expression parser here.
+					if ( isset( $paramset['tag'] ) ) {
+		        if ( is_array( $paramset['tag'] ) ) {
+						  $where[]= "tag_text IN (" . implode( ',', array_fill( 0, count( $paramset['tag'] ), '?' ) ) . ")";
+						  $params = array_merge($params, $paramset['tag']);
+		        }
+		        else {
+							$where[]= 'tag_text= ?';
+							$params[]= $paramset['tag'];
+						}
+					}
+					if ( isset( $paramset['tag_slug'] ) ) {
+		        if ( is_array( $paramset['tag_slug'] ) ) {
+						  $where[]= "tag_slug IN (" . implode( ',', array_fill( 0, count( $paramset['tag_slug'] ), '?' ) ) . ")";
+						  $params = array_merge($params, $paramset['tag_slug']);
+		        }
+		        else {
+							$where[]= 'tag_slug= ?';
+							$params[]= $paramset['tag_slug'];
+						}
+					}
 				}
 				if ( isset( $paramset['not:tag'] ) ) {
 					$nottag = is_array($paramset['not:tag']) ? array_values($paramset['not:tag']) : array($paramset['not:tag']);
-					// This needs to be an escaped IN clause, not a series of OR comparisons:
-					$inwhere= implode( ' OR ', array_fill( 0, count($nottag), DB::table( 'tags' ) . '.tag_slug = ?' ));
 
 					$where[]= 'not exists (select 1
 						FROM ' . DB::table( 'tag2post' ) . '
 						INNER JOIN ' . DB::table( 'tags' ) . ' on ' . DB::table( 'tags' ) . '.id = ' . DB::table( 'tag2post' ) . '.tag_id
-						WHERE (' . $inwhere . ')
+						WHERE ' . DB::table( 'tags' ) . '.tag_slug IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
 						AND ' . DB::table( 'tag2post' ) . '.post_id = ' . DB::table( 'posts' ) . '.id)
 					';
-					foreach($nottag as $nt) {
-						$params[]= $nt;
-					}
+					$params = array_merge($params, $nottag);
 				}
 
 				/* do searching */
@@ -149,37 +160,37 @@ class Posts extends ArrayObject
 					}
 				}
 
-				/* 
-				 * Build the pubdate 
+				/*
+				 * Build the pubdate
 				 * If we've got the day, then get the date.
 				 * If we've got the month, but no date, get the month.
 				 * If we've only got the year, get the whole year.
 				 * @todo Ensure that we've actually got all the needed parts when we query on them
-				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')				 				 
-				 */				
+				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')
+				 */
 				if ( isset( $paramset['day'] ) ) {
 					/* Got the full date */
 					$where[]= 'pubdate BETWEEN ? AND ?';
 					$params[]= date('Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					$params[]= date('Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) ); 
+					$params[]= date('Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
 					$params[]= date('Y-m-d', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					$params[]= date('Y-m-d', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) ); 
+					$params[]= date('Y-m-d', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
-				elseif ( isset( $paramset['year'] ) ) { 
+				elseif ( isset( $paramset['year'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
 					$params[]= date('Y-m-d', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
 					$params[]= date('Y-m-d', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
-				
-				if(count($where) > 0) { 
+
+				if(count($where) > 0) {
 					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
 		}
-		
+
 		// Get any full-query parameters
 		extract( $paramarray );
 
@@ -195,7 +206,7 @@ class Posts extends ArrayObject
 		else {
 			$fetch_fn= $fns[0];
 		}
-		
+
 		// is a count being request?
 		if ( isset( $count ) ) {
 			$select= "COUNT($count)";
@@ -211,13 +222,13 @@ class Posts extends ArrayObject
 		if ( isset( $nolimit ) ) {
 			$limit= '';
 		}
-		
+
 		$query= '
 			SELECT ' . $select . '
 			FROM ' . DB::table('posts') .
 			' ' . $join;
 
-		if ( count( $wheres ) > 0 ) {  
+		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
@@ -249,8 +260,8 @@ class Posts extends ArrayObject
 	{
 		return self::get( array( 'status' => $status ) );
 	}
-	
-	
+
+
 	/**
 	 * function by_slug
 	 * select all post content by slug
@@ -283,7 +294,7 @@ class Posts extends ArrayObject
 		$params= array_merge( (array) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1 ) );
 		return Posts::get( $params );
 	}
-		
+
 	/*
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
