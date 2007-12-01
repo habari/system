@@ -109,7 +109,7 @@ foreach($reasons as $reason):
 					<label><input type="radio" class="radio_delete" name="comment_ids[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete" <?php echo $default_radio['delete']; ?>><?php _e('Delete'); ?></label>
 					<label><input type="radio" class="radio_spam" name="comment_ids[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam" <?php echo $default_radio['spam']; ?>><?php _e('Mark as Spam'); ?></label>
 					<label><input type="radio" class="radio_unapprove" name="comment_ids[<?php echo $comment->id; ?>]" id="unapprove-<?php echo $comment->id; ?>" value="unapprove" <?php echo $default_radio['unapprove']; ?>><?php _e('Unapprove'); ?></label>
-					<label><input type="radio" class="radio_edit" name="comment_ids[<?php echo $comment->id; ?>]" id="edit-<?php echo $comment->id; ?>" onclick="$('#edit_comment_1').show();" value="edit" <?php echo $default_radio['edit']; ?>><?php _e('Edit'); ?></label>
+					<label><input type="radio" class="radio_edit" name="comment_ids[<?php echo $comment->id; ?>]" id="edit-<?php echo $comment->id; ?>" onclick="$('#edit_comment_<?php echo $comment->id; ?>').show();" value="edit" <?php echo $default_radio['edit']; ?>><?php _e('Edit'); ?></label>
 					</p>
 					<div id="edit_comment_<?php echo $comment->id; ?>" style="display:none;">
 					<h2>Edit this comment</h2>
