@@ -444,6 +444,7 @@ class AdminHandler extends ActionHandler
 						$comment->status= Comment::STATUS_UNAPPROVED;
 						$comment->update();
 						break;
+						/*
 					case 'edit':
 						// This comment was edited
 						$comment= Comment::get( $comment->id );
@@ -462,6 +463,7 @@ class AdminHandler extends ActionHandler
 						$comment->update();
 						$modstatus['Edited %d comments']++;
 						break;
+						*/
 					}
 				}
 				foreach($modstatus as $key => $value) {
