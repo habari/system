@@ -444,26 +444,24 @@ class AdminHandler extends ActionHandler
 						$comment->status= Comment::STATUS_UNAPPROVED;
 						$comment->update();
 						break;
-						/*
 					case 'edit':
 						// This comment was edited
 						$comment= Comment::get( $comment->id );
-						if( $_POST['name'] != NULL ) {
-							$comment->name= $_POST['name'];
+						if( $_POST['name_' . $comment->id] != NULL ) {
+							$comment->name= $_POST['name_' . $comment->id];
 						}
-						if( $_POST['email'] != NULL ) {
-							$comment->email= $_POST['email'];
+						if( $_POST['email_' . $comment->id] != NULL ) {
+							$comment->email= $_POST['email_' . $comment->id];
 						}
-						if( $_POST['url'] != NULL ) {
-							$comment->url= $_POST['url'];
+						if( $_POST['url_' . $comment->id] != NULL ) {
+							$comment->url= $_POST['url_' . $comment->id];
 						}
-						if( $_POST['content'] != NULL ) {
-							$comment->content= $_POST['content'];
+						if( $_POST['content_' . $comment->id] != NULL ) {
+							$comment->content= $_POST['content_' . $comment->id];
 						}
 						$comment->update();
 						$modstatus['Edited %d comments']++;
 						break;
-						*/
 					}
 				}
 				foreach($modstatus as $key => $value) {
