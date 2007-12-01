@@ -364,7 +364,7 @@ class AdminHandler extends ActionHandler
 			'status' => Comment::status('approved'),
 			'limit' => 30,
 			'orderby' => 'date DESC',
-			'default_radio' => array( 'approve'=>'', 'delete'=>'', 'spam'=>'', 'unapprove'=>'' ),
+			'default_radio' => array( 'approve'=>'', 'delete'=>'', 'spam'=>'', 'unapprove'=>'', 'edit' =>'' ),
 			'show' => '0',
 			'search' => '',
 			'search_fields' => array('content'),
