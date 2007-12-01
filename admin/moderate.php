@@ -115,21 +115,21 @@ foreach($reasons as $reason):
 					<h2>Edit this comment</h2>
 						<label>
 						<p>Name: 
-							<input type="text" name="name" id="name" value="<?php echo $comment->name; ?>">
+							<input type="text" name="name_<?php echo $comment->id; ?>" id="name_<?php echo $comment->id; ?>" value="<?php echo $comment->name; ?>">
 						</p>
 						</label>
 						<label>
 						<p>Email: 
-							<input type="text" name="email" id="email" value="<?php echo $comment->email; ?>">
+							<input type="text" name="email_<?php echo $comment->id; ?>" id="email_<?php echo $comment->id; ?>" value="<?php echo $comment->email; ?>">
 						</p>
 						</label>
 						<label>
 						<p>Website: 
-							<input type="text" name="url" id="url" value="<?php echo $comment->url; ?>">
+							<input type="text" name="url_<?php echo $comment->id; ?>" id="url_<?php echo $comment->id; ?>" value="<?php echo $comment->url; ?>">
 						</p>
 						</label>
 						<label>
-							<textarea name="content" id="content"><?php echo $comment->content; ?></textarea>
+							<textarea name="content_<?php echo $comment->id; ?>" id="content_<?php echo $comment->id; ?>"><?php echo $comment->content; ?></textarea>
 						</label>
 					</div>
 				</div>
