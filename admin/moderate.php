@@ -71,7 +71,6 @@
 
 			<div id="waiting">
 <?php foreach( $comments as $comment ) : ?>
-			<hr>
 			<div class="comment">
 				<div class="comment_header">
 				<strong>Author:</strong> <?php echo $comment->name."\r\n";?>
@@ -113,29 +112,26 @@ foreach($reasons as $reason):
 					</p>
 					<div id="edit_comment_<?php echo $comment->id; ?>" style="display:none;">
 					<h2>Edit this comment</h2>
-						<label>
-						<p>Name: 
-							<input type="text" name="name_<?php echo $comment->id; ?>" id="name_<?php echo $comment->id; ?>" value="<?php echo $comment->name; ?>">
-						</p>
-						</label>
-						<label>
-						<p>Email: 
-							<input type="text" name="email_<?php echo $comment->id; ?>" id="email_<?php echo $comment->id; ?>" value="<?php echo $comment->email; ?>">
-						</p>
-						</label>
-						<label>
-						<p>Website: 
-							<input type="text" name="url_<?php echo $comment->id; ?>" id="url_<?php echo $comment->id; ?>" value="<?php echo $comment->url; ?>">
-						</p>
-						</label>
-						<label>
+
+						<p class="column">
+						<label>Name:
+							<input type="text" name="name_<?php echo $comment->id; ?>" id="name_<?php echo $comment->id; ?>" value="<?php echo $comment->name; ?>"></label>
+
+						<label>Email:
+							<input type="text" name="email_<?php echo $comment->id; ?>" id="email_<?php echo $comment->id; ?>" value="<?php echo $comment->email; ?>"></label>
+
+						<label>Website:
+							<input type="text" name="url_<?php echo $comment->id; ?>" id="url_<?php echo $comment->id; ?>" value="<?php echo $comment->url; ?>"></label>
+
+						<label class="span-23" style="display:block;">
 							<textarea name="content_<?php echo $comment->id; ?>" id="content_<?php echo $comment->id; ?>"><?php echo $comment->content; ?></textarea>
 						</label>
+						</p>
 					</div>
 				</div>
+				<hr>
 			</div>
 <?php endforeach; ?>
-			<hr>
 			</div>
 			<div>
 				<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
