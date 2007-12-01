@@ -415,7 +415,7 @@ class AdminHandler extends ActionHandler
 					}
 				}
 				$to_update= Comments::get( array( 'id' => $ids ) );
-				$modstatus = array('Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0);
+				$modstatus = array('Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0);
 				foreach ( $to_update as $comment ) {
 					switch ( $ids_change[$comment->id] ) {
 					case 'delete':
@@ -443,6 +443,24 @@ class AdminHandler extends ActionHandler
 						$modstatus['Unapproved %d comments'] += $comment->status != Comment::STATUS_UNAPPROVED;
 						$comment->status= Comment::STATUS_UNAPPROVED;
 						$comment->update();
+						break;
+					case 'edit':
+						// This comment was edited
+						$comment= Comment::get( $comment->id );
+						if( $_POST['name'] != NULL ) {
+							$comment->name= $_POST['name'];
+						}
+						if( $_POST['email'] != NULL ) {
+							$comment->email= $_POST['email'];
+						}
+						if( $_POST['url'] != NULL ) {
+							$comment->url= $_POST['url'];
+						}
+						if( $_POST['content'] != NULL ) {
+							$comment->content= $_POST['content'];
+						}
+						$comment->update();
+						$modstatus['Edited %d comments']++;
 						break;
 					}
 				}

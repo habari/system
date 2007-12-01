@@ -4,8 +4,8 @@
 	<hr>
 	<?php if(Session::has_messages()) {Session::messages_out();} ?>
 	<div class="column span-24 last">
-		<h1><?php _e('Habari Comments'); ?></h1>
-		<p><?php _e('Here you will find all the comments, including those deleted. You can also manage the pingbacks.'); ?></p>
+		<h1><?php _e('Comments'); ?></h1>
+		<p><?php _e('Here you will find all the comments, including those deleted. You can also manage  pingbacks.'); ?></p>
 
 		<div class="column span-7 first" id="stats">
 			<h3><?php _e('Comment Statistics'); ?></h3>
@@ -104,12 +104,34 @@ foreach($reasons as $reason):
 				</ul>
 <?php } ?>
 				<div class="comment_footer">
-					<?php _e('Action:'); ?>
-
+					<p><?php _e('Action:'); ?>
 					<label><input type="radio" class="radio_approve" name="comment_ids[<?php echo $comment->id; ?>]" id="approve-<?php echo $comment->id; ?>" value="approve" <?php echo $default_radio['approve']; ?>><?php _e('Approve'); ?></label>
 					<label><input type="radio" class="radio_delete" name="comment_ids[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete" <?php echo $default_radio['delete']; ?>><?php _e('Delete'); ?></label>
 					<label><input type="radio" class="radio_spam" name="comment_ids[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam" <?php echo $default_radio['spam']; ?>><?php _e('Mark as Spam'); ?></label>
 					<label><input type="radio" class="radio_unapprove" name="comment_ids[<?php echo $comment->id; ?>]" id="unapprove-<?php echo $comment->id; ?>" value="unapprove" <?php echo $default_radio['unapprove']; ?>><?php _e('Unapprove'); ?></label>
+					<label><input type="radio" class="radio_edit" name="comment_ids[<?php echo $comment->id; ?>]" id="edit-<?php echo $comment->id; ?>" onclick="$('#edit_comment_1').show();" value="edit" <?php echo $default_radio['edit']; ?>><?php _e('Edit'); ?></label>
+					</p>
+					<div id="edit_comment_<?php echo $comment->id; ?>" style="display:none;">
+					<h2>Edit this comment</h2>
+						<label>
+						<p>Name: 
+							<input type="text" name="name" id="name" value="<?php echo $comment->name; ?>">
+						</p>
+						</label>
+						<label>
+						<p>Email: 
+							<input type="text" name="email" id="email" value="<?php echo $comment->email; ?>">
+						</p>
+						</label>
+						<label>
+						<p>Website: 
+							<input type="text" name="url" id="url" value="<?php echo $comment->url; ?>">
+						</p>
+						</label>
+						<label>
+							<textarea name="content" id="content"><?php echo $comment->content; ?></textarea>
+						</label>
+					</div>
 				</div>
 			</div>
 <?php endforeach; ?>
