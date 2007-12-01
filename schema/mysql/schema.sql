@@ -157,6 +157,7 @@ CREATE TABLE {$prefix}groups (
 CREATE TABLE {$prefix}permissions (
   id INT unsigned not null auto_increment,
   name VARCHAR(255) NOT NULL,
+  description VARCHAR(255),
   PRIMARY KEY (id),
   UNIQUE KEY name (name)
 );
