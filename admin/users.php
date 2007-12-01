@@ -27,12 +27,6 @@ foreach ( User::get_all() as $user )
 ?>
 </ul>
 
-<?php
-if ( isset( $settings['error'] ) && ( '' != $settings['error'] ) )
-{
-	echo "<p><strong>" . $settings['error'] . "</strong></p>";
-}
-?>
 <form method="post" action="">
 <h3><strong>Add a new user</strong></h3>
 <p>Username: <input type="text" size="40" name="username" value="<?php echo ( isset( $settings['username'] ) ) ? $settings['username'] : ''; ?>"></p>

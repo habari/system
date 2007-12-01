@@ -9,10 +9,6 @@
 		Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 		exit;
 	}
-	if ( isset( $result ) && 'deleted' == $result ) {
-		echo 'The user ' . $user . ' has been deleted.';
-	}
-	else {
 	// are we looking at the current user's profile, or someone else's?
 	// $user will contain the username specified on the URL
 	// http://example.com/admin/user/skippy
@@ -26,15 +22,14 @@
 	}
 	else {
 		$user= $currentuser;
-		$who= "You";
-		$possessive= "Your";
+		$who= "you";
+		$possessive= "your";
 	}
 ?>
 <div class="column span-10 first">
 	<h3><?php echo $possessive; ?> Profile</h3>
 	<?php
-	if ( isset( $result ) && 'success' == $result ) {
-		echo '<p class="update"><strong>' . $possessive . ' profile has been updated!</strong></p>';
+	if ( Session::has_messages() ) {
 	}
 	else {
 		echo "<p>Below are the data that Habari knows about " . $who . ".</p>";
@@ -101,9 +96,6 @@ if ( $user != $currentuser ) {
 ?>
 </div>
 <div style="clear: both;"></div>
-<?php
-}
-?>
 </div>
 </div>
 <?php include('footer.php');?>

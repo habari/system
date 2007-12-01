@@ -145,7 +145,8 @@ CREATE UNIQUE INDEX name ON {$prefix}groups(name);
 
 CREATE TABLE {$prefix}permissions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  name VARCHAR(255) NOT NULL
+  name VARCHAR(255) NOT NULL,
+  description VARCHAR(255)
 );
 CREATE UNIQUE INDEX name ON {$prefix}permissions(name);
 

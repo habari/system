@@ -212,20 +212,22 @@ class AdminHandler extends ActionHandler
 						if ( isset( $user_id ) && ( $currentuser->id != $user_id ) ) {
 							$username= $user->username;
 							$user->delete();
-							$results['result']= 'deleted';
+							Session::notice( sprintf(_t('%s has been deleted'), $username) );
 						}
 					}
 					break;
 				case 'username': // Changing username
 					if ( isset( $username ) && ( $user->username != $username ) ) {
+						$old_name= $user->username;
 						$user->username= $username;
-						$results['user']= $username;
+						Session::notice( sprintf( _t('%1$s has been renamed to %2$s.'), $old_name, $username ) );
 						$update= TRUE;
 					}
 					break;
 				case 'email': // Changing e-mail address
 					if ( isset( $email ) && ( $user->email != $email ) ) {
 						$user->email= $email;
+						Session::notice( $user->username ._t(' email has been changed to ') . $email . '.');
 						$update= TRUE;
 					}
 					break;
@@ -236,16 +238,18 @@ class AdminHandler extends ActionHandler
 							if ( $user == $currentuser ) {
 								$user->remember();
 							}
+							Session::notice(_t('Password changed successfully.'));
 							$update= TRUE;
 						}
 						else {
-							$results['error']= 'pass';
+							Session::error(_t('The passwords did not match, and were not changed.'));
 						}
 					}
 					break;
 				default:
 					if ( isset( ${$input} ) && ( $user->info->$field != ${$input} ) ) {
 						$user->info->$field= ${$input};
+						Session::notice(_t('Userinfo updated!'));
 						$update= TRUE;
 					}
 					break;
@@ -254,7 +258,6 @@ class AdminHandler extends ActionHandler
 
 		if ( $update == TRUE ) {
 			$user->update();
-			$results['result']= 'success';
 		}
 
 		Utils::redirect( URL::get( 'admin', $results ) );
@@ -275,6 +278,11 @@ class AdminHandler extends ActionHandler
 			}
 			if ( !isset( $username ) || empty( $username ) ) {
 				Session::error(_t('Please supply a user name.'), 'adduser');
+			}
+			// safety check to make sure no such username exists
+			$user= User::get_by_name( $username );
+			if ( isset($user->id) ) {
+				Session::error(_t('That username is already assigned.'), 'adduser');
 			}
 			if ( !Session::has_errors('adduser') ) {
 				$user= new User( array( 'username' => $username, 'email' => $email, 'password' => Utils::crypt( $pass1 ) ) );
