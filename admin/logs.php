@@ -22,6 +22,7 @@ include_once( 'header.php' );
 					<th align="left">Module</th>
 					<th align="left">Type</th>
 					<th align="center">Severity</th>
+					<th align="center">Address</th>
 					<th align="left">Message</th>
 				</tr>
 			</thead>
@@ -32,6 +33,7 @@ include_once( 'header.php' );
 			<td><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'longselect')); ?></td>
 			<td><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'longselect')); ?></td>
 			<td><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'longselect')); ?></td>
+			<td><?php echo Utils::html_select('address', $addresses, $address, array( 'class'=>'longselect')); ?></td>
 			<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
 			</tr>
 			<?php foreach( $logs as $log ){ ?>
@@ -42,6 +44,7 @@ include_once( 'header.php' );
 				<td><?php echo $log->module; ?></td>
 				<td><?php echo $log->type; ?></td>
 				<td><?php echo $log->severity; ?></td>
+				<td><?php echo long2ip($log->ip); ?></td>
 				<td><p><?php echo $log->message; ?></p></td>
 			</tr>
 			<?php } ?>

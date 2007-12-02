@@ -455,6 +455,10 @@ h4, h4 a, h4 a:hover, h4 a:visited {
 	list-style: none;
 	}
 
+#commentlist li.comment-unapproved {
+	border: #3371A3 solid 2px;
+}
+
 #commentlist li .comment-content {
 	padding: 10px 0;
 	font-size: 1.2em;

@@ -382,8 +382,18 @@ class Comments extends ArrayObject
 					$this->sort['moderated'][] = $c;
 					break;
 				case Comment::STATUS_UNAPPROVED:
-					if($c->ip == ip2long( $_SERVER['REMOTE_ADDR'] ) ) {
-						$this->sort['moderated'][] = $c;
+					if ( isset( $_COOKIE['comment_' . Options::get('GUID')] ) ) {
+						 list( $name, $email, $url )= explode( '#', $_COOKIE['comment_' . Options::get('GUID')] );
+					} else {
+						$name= '';
+						$email= '';
+						$url= '';
+					}
+					if ( ($c->ip == ip2long( $_SERVER['REMOTE_ADDR'] ) )
+						&& ( $c->name == $name )
+						&& ( $c->email == $email )
+						&& ( $c->url == $url ) ) {
+							$this->sort['moderated'][] = $c;
 					}
 					$this->sort['unapproved'][] = $c;
 					break;

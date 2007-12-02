@@ -755,6 +755,7 @@ class AdminHandler extends ActionHandler
 			'module' => '0',
 			'type' => '0',
 			'severity' => 'any',
+			'address' => '0',
 			'search' => '',
 			'do_search' => false,
 			'index' => 1,
@@ -769,6 +770,12 @@ class AdminHandler extends ActionHandler
 		$modulelist= LogEntry::list_logentry_types();
 		$modules= array();
 		$types= array();
+		$addresses= $any;
+		$ips= DB::get_column('SELECT DISTINCT(ip) FROM ' . DB::table('log') );
+		foreach ($ips as $ip) {
+			$addresses[$ip]= long2ip($ip);
+		}
+		$this->theme->addresses= $addresses;
 		foreach($modulelist as $modulename => $typearray) {
 			$modules['0,'.implode(',', $typearray)] = $modulename;
 			foreach($typearray as $typename => $typevalue) {
@@ -822,6 +829,10 @@ class AdminHandler extends ActionHandler
 		}
 		elseif( $module == '0' ) {
 			$arguments['type_id'] = $r_type;
+		}
+
+		if ( '0' != $address ) {
+			$arguments['ip']= $address;
 		}
 
 		if ( 'any' != strtolower($date) ) {

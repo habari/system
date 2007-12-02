@@ -73,6 +73,7 @@ class EventLog extends ArrayObject
 			'module' => $module,
 			'type' => $type,
 			'data' => $data,
+			'ip' => ip2long($_SERVER['REMOTE_ADDR']),
 		) );
 		if($user= User::identify()) {
 			$log->user_id= $user->id;
@@ -179,6 +180,10 @@ class EventLog extends ArrayObject
 						$where[]= 'type_id = ?';
 						$params[]= $paramset['type_id'];
 					}
+				}
+				if ( isset( $paramset['ip'] ) ) {
+					$where[]= 'ip = ?';
+					$params[]= $paramset['ip'];
 				}
 
 				/* do searching */

@@ -14,9 +14,13 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 <?php 
 if ( $post->comments->moderated->count ) {
 	foreach ( $post->comments->moderated as $comment ) {
+	$class= 'class="comment';
+	if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
+		$class.= '-unapproved';
+	}
+	$class.= '"';
 ?>
-
-      <li id="comment-<?php echo $comment->id; ?>" class="comment">
+      <li id="comment-<?php echo $comment->id; ?>" <?php echo $class; ?>>
        <a href="#comment-<?php echo $comment->id; ?>" class="counter" title="Permanent Link to this Comment"><?php echo $comment->id; ?></a>
        <span class="commentauthor"><a href="<?php echo $comment->url; ?>" rel="external"><?php echo $comment->name; ?></a></span>
        <small class="comment-meta"><a href="#comment-<?php echo $comment->id; ?>" title="Time of this comment"><?php echo $comment->date; ?></a><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em>In moderation</em><?php endif; ?></small>
