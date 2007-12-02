@@ -72,12 +72,12 @@ class FileCache extends Cache
 
 		if ( !isset( $this->cache_data[$hash] ) ) {
 			if ( isset( $this->cache_files[$hash] ) && $this->cache_files[$hash]['expires'] > time() && file_exists( $this->cache_files[$hash]['file'] ) ) {
-					$this->cache_data[$hash]= unserialize( file_get_contents( $this->cache_files[$hash]['file'] ) );
-				}
-				else {
-					$this->cache_data[$hash]= null;
-				}
+				$this->cache_data[$hash]= unserialize( file_get_contents( $this->cache_files[$hash]['file'] ) );
 			}
+			else {
+				$this->cache_data[$hash]= null;
+			}
+		}
 		return $this->cache_data[$hash];
 	}
 
@@ -107,12 +107,12 @@ class FileCache extends Cache
 			return null;
 		}
 		$hash= $this->get_name_hash( $name );
-		if( isset( $this->cache_files[$hash] ) ) {
+		if( isset( $this->cache_files[$hash] ) && file_exists( $this->cache_files[$hash]['file'] ) ) {
 			unlink( $this->cache_files[$hash]['file'] );
+			unset( $this->cache_files[$hash] );
+			$this->clear_expired();
+			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 		}
-		unset($this->cache_files[$hash]);
-		$this->clear_expired();
-		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
 
 	/**
@@ -129,9 +129,9 @@ class FileCache extends Cache
 		$hash= $this->get_name_hash( $name );
 		if( isset( $this->cache_files[$hash] ) ) {
 			$this->cache_files[$hash]['expires'] = time() + $expiry;
-		$this->clear_expired();
-		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
-	}
+			$this->clear_expired();
+			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
+		}
 	}
 
 	/**
@@ -152,7 +152,9 @@ class FileCache extends Cache
 		if ( $record['expires'] > time() ) {
 			return true;
 		}
-		unlink( $record['file'] );
+		elseif ( file_exists( $record['file'] ) ) {
+			unlink( $record['file'] );
+		}
 		return false;
 	}
 
