@@ -430,6 +430,7 @@ class InstallHandler extends ActionHandler {
 
 		// Let's prepare the EventLog here, as well
 		EventLog::register_type('default', 'habari');
+		EventLog::register_type('user', 'habari');
 		EventLog::register_type('authentication', 'habari');
 		EventLog::register_type('content', 'habari');
 		EventLog::register_type('comment', 'habari');

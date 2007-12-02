@@ -41,6 +41,7 @@ class LogEntry extends QueryRecord
 			'message' => '',
 			'data' => '',
 			'timestamp' => date( 'Y-m-d H:i:s' ),
+			'ip' => 0,
 		);
 	}
 
