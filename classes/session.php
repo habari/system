@@ -308,7 +308,7 @@ class Session
 			return isset($_SESSION['errors'][$key]);
 		}
 		else {
-			return count(self::get_errors()) ? true : false;
+			return count(self::get_errors(false)) ? true : false;
 		}
 	}
 
