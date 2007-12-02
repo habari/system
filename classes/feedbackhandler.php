@@ -100,6 +100,12 @@ class FeedbackHandler extends ActionHandler
 		$spam_rating= Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
 
 		$comment->insert();
+		if ( $comment->id ) {
+			$anchor= '#comment-' . $comment->id;
+		} else {
+			$anchor= '';
+		}
+
 		// store in the user's session that this comment is pending moderation
 		if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
 			Session::notice(_t('Your comment is pending moderation.'), 'comment_' . $comment->id );
@@ -107,8 +113,10 @@ class FeedbackHandler extends ActionHandler
 
 		// if no cookie exists, we should set one
 		// but only if the user provided some details
+		// and the comment was actually saved
 		$cookie= 'comment_' . Options::get('GUID');
 		if ( ( ! User::identify() )
+			&& ( $comment->id )
 			&& ( ! isset( $_COOKIE[$cookie] ) )
 			&& ( ! empty( $this->handler_vars['name'] )
 				|| ! empty( $this->handler_vars['email'] )
@@ -122,7 +130,7 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		// Return the commenter to the original page.
-		Utils::redirect( $post->permalink . '#comment-' . $comment->id );
+		Utils::redirect( $post->permalink . $anchor );
 	}
 }
 ?>
