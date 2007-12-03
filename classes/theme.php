@@ -186,7 +186,6 @@ class Theme
 				$fallback[]= '{$type}.single';
 				$fallback[]= 'single';
 			}
-			$fallback[]= 'home';
 		}
 
 		$searches= array('{$id}','{$slug}','{$year}','{$month}','{$day}','{$type}','{$tag}',);
@@ -199,8 +198,9 @@ class Theme
 			isset($type)?$type:'-',
 			isset($tag)?$tag:'-',
 		);
+		$fallback[]= 'home';
 		$fallback= Plugins::filter( 'template_fallback', $fallback );
-		$fallback= str_replace($searches, $replacements, $fallback);
+		$fallback= array_unique( str_replace($searches, $replacements, $fallback) );
 		for($z = 0; $z < count($fallback); $z++) {
 			if( (strpos($fallback[$z], '{$posttag}') !== false) && (isset($post)) && ($post instanceof Post)) {
 				$replacements= array();
@@ -254,7 +254,6 @@ class Theme
 		 '{$type}.multiple',
 		 'single',
 		 'multiple',
-		 'home',
 		);
 
 		// Does the same as a Post::get()
@@ -282,7 +281,6 @@ class Theme
 			'tag.{$tag}',
 			'tag',
 			'multiple',
-			'home',
 		);
 
 		// Makes sure home displays only entries
@@ -340,7 +338,6 @@ class Theme
 		$paramarray['fallback']= array(
 			'search',
 			'multiple',
-			'home',
 		);
 
 		$paramarray['user_filters']= $user_filters;
@@ -357,7 +354,6 @@ class Theme
 	{
 		$paramarray['fallback']= array(
 			'404',
-			'home',
 		);
 		$paramarray['user_filters']= $user_filters;
 		return $this->act_display( $paramarray );
