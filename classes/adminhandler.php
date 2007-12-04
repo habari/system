@@ -16,6 +16,7 @@ class AdminHandler extends ActionHandler
 	public function __construct() {
 		$user= User::identify();
 		if ( !$user ) {
+			Session::add_to_set('login', $_SERVER['REQUEST_URI'], 'original');
 			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			exit;
 		}
