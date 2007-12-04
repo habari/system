@@ -27,7 +27,16 @@ class UserHandler extends ActionHandler
 				$user->info->authenticate_time= date( 'Y-m-d H:i:s' );
 				$user->update();
 
-				Utils::redirect( Site::get_url('admin') );
+				$login_session= Session::get_set('login');
+				if ( ! empty( $login_session ) ) {
+					$dest= explode('/', substr(  $login_session['original'], strpos( $login_session['original'], 'admin/') ) );
+					if ( '' != $dest[1] ) {
+						$dest[1]= "page=" . $dest[1];
+					}
+					Utils::redirect( URL::get( $dest[0], $dest[1] ) );
+				} else {
+					Utils::redirect( Site::get_url('admin') );
+				}
 				return TRUE;
 			}
 
