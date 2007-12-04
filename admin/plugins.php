@@ -32,9 +32,9 @@
 				else {
 				?>
 					<tr>
-						<td><?php echo $plugin['info']->name; ?>
+						<td><?php echo '<a href="' . $plugin['info']->url . '">' . $plugin['info']->name . '</a>'; ?>
 						</td>
-						<td><?php echo $plugin['info']->url; ?></td>
+						<td><?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?></td>
 						<td><?php echo $plugin['info']->version; ?></td>
 						<td>
 						<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
