@@ -79,7 +79,7 @@ class XMLRPCUtils
 		case 'data':
 		case 'array':
 			$result_array = array();
-			foreach($value->xpath('//data/value/*|//data/*') as $array_value) {
+			foreach($value->xpath('//data/value/*') as $array_value) {
 				$result_array[] = self::decode_args($array_value);
 			}
 			return $result_array;
