@@ -18,7 +18,7 @@ if ( $user ) {
 elseif ( isset( $_COOKIE[$cookie] ) ) {
 	list( $commenter_name, $commenter_email, $commenter_url )= explode( '#', $_COOKIE[$cookie] );
 }
-elseif ( isset( $_SESSION['comment'] ) ) {
+if ( isset( $_SESSION['comment'] ) ) {
 	$details= Session::get_set('comment');
 	$commenter_name= $details['name'];
 	$commenter_email= $details['email'];
