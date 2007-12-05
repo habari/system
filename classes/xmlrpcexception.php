@@ -71,8 +71,7 @@ class XMLRPCException extends Exception
 			return _t('This XMLRPC server only accepts POST requests.');
 			
 		default:
-			Plugins::act( 'xmlrpcexception_get_messages', $code );
-			return _t('Unknown XMLRPC exception.');
+			return Plugins::filter( 'xmlrpcexception_get_message', _t('Unknown XMLRPC Exception'), $code );
 		}
 	} 
 	
