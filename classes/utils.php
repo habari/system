@@ -647,7 +647,7 @@ class Utils
 		// Note that multiple separators are collapsed automatically by the preg_replace.
 		// Convert all characters to lowercase.
 		// Trim spaces on both sides.
-		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-\/]+/i', '-', $string ) ), '-' );
+		$slug= rtrim( strtolower( preg_replace( '/[^a-z0-9%_\-]+/i', '-', $string ) ), '-' );
 
 		// Let people change the behavior.
 		$slug= Plugins::filter('slugify', $slug, $string);
