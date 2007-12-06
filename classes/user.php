@@ -279,6 +279,9 @@ class User extends QueryRecord
 			return false;
 		}
 		$user_id= DB::get_results( "SELECT user_id FROM " . DB::table('userinfo') . " WHERE value = '$who'" );
+		if ( FALSE == $user_id ) {
+			return false;
+		}
 		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array( $user_id[0]->user_id ), 'User' );
 		return $user;
 	}
