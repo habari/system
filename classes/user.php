@@ -146,7 +146,7 @@ class User extends QueryRecord
 		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
 		$home = Options::get('base_url');
-		header( "Location: " . $home );
+		Utils::redirect( Site::get_url( 'habari' ) );
 		exit;
 	}
 
