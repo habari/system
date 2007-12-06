@@ -30,10 +30,11 @@ class UserHandler extends ActionHandler
 				$login_session= Session::get_set('login');
 				if ( ! empty( $login_session ) ) {
 					$dest= explode('/', substr(  $login_session['original'], strpos( $login_session['original'], 'admin/') ) );
-					if ( '' != $dest[1] ) {
-						$dest[1]= "page=" . $dest[1];
+					if ( '' == $dest[0] ) {
+						Utils::redirect( Site::get_url('admin') );
+					} else {
+						Utils::redirect( URL::get( 'admin', 'page=' . $dest[1] ) );
 					}
-					Utils::redirect( URL::get( $dest[0], $dest[1] ) );
 				} else {
 					Utils::redirect( Site::get_url('admin') );
 				}
