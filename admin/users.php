@@ -11,7 +11,7 @@ $currentuser = User::identify();
 <h3><strong>Users</strong></h3>
 <ul>
 <?php
-foreach ( User::get_all() as $user )
+foreach ( Users::get_all() as $user )
 {
 	if ( $user->username == $currentuser->username ) {
 		$url = Url::get( 'admin', 'page=user' );

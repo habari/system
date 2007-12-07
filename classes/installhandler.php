@@ -292,7 +292,7 @@ class InstallHandler extends ActionHandler {
 
 		// Let's setup the admin user now.
 		// But first, let's make sure that no users exist
-		$all_users= User::get_all();
+		$all_users= Users::get_all();
 		if ( empty( $all_users ) )
 		{
 			if (! $this->create_admin_user()) {
