@@ -16,6 +16,17 @@ class InstallHandler extends ActionHandler {
 		// Revert magic quotes, normally Controller calls this.
 		Utils::revert_magic_quotes_gpc();
 
+		// Create a new theme to handle the display of the installer
+		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
+
+		/*
+		 * Check .htaccess first because ajax doesn't work without it.
+		*/
+		if ( ! $this->check_htaccess() ) {
+			$this->handler_vars['file_contents']= implode( "\n", $this->htaccess() );
+			$this->display('htaccess');
+		}
+
 		// Dispatch AJAX requests.
 		if ( isset( $_POST['ajax_action'] ) ) {
 			switch ( $_POST['ajax_action'] ) {
@@ -32,19 +43,8 @@ class InstallHandler extends ActionHandler {
 		// set the default values now, which will be overriden as we go
 		$this->form_defaults();
 
-		// Create a new theme to handle the display of the installer
-		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
 		if (! $this->meets_all_requirements()) {
 			$this->display('requirements');
-		}
-
-		/*
-		 * OK, so requirements are met.
-		 * now let's check .htaccess
-		*/
-		if ( ! $this->check_htaccess() ) {
-			$this->handler_vars['file_contents']= implode( "\n", $this->htaccess() );
-			$this->display('htaccess');
 		}
 
 		/*
@@ -612,14 +612,15 @@ class InstallHandler extends ActionHandler {
 			'engine_on' => 'RewriteEngine On',
 			'rewrite_cond_f' => 'RewriteCond %{REQUEST_FILENAME} !-f',
 			'rewrite_cond_d' => 'RewriteCond %{REQUEST_FILENAME} !-d',
-			'rewrite_base' => '#RewriteBase /', 
+			'rewrite_base' => '#RewriteBase /',
 			'rewrite_rule' => 'RewriteRule . index.php [PT]',
 			'close_block' => '### HABARI END',
 		);
 		$rewrite_base= trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
-		if ( $rewrite_base != '' )
+		if ( $rewrite_base != '' ) {
 			$htaccess['rewrite_base']= 'RewriteBase /' . $rewrite_base;
-			
+		}
+
 		return $htaccess;
 	}
 
@@ -629,27 +630,41 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function check_htaccess()
 	{
+		// If this is the mod_rewrite check request, then bounce it as a success.
+		if( strpos($_SERVER['REQUEST_URI'], 'check_mod_rewrite') !== false ) {
+			echo 'ok';
+			exit;
+		}
+
 		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
 			// .htaccess is only needed on Apache
 			// @TODO: add support for IIS and lighttpd rewrites
 			return true;
 		}
+		$result = true;
 		if ( ! file_exists( HABARI_PATH . '/.htaccess') ) {
 			// no .htaccess exists.  Try to create one
-			return $this->write_htaccess(FALSE);
+			$result = $this->write_htaccess(FALSE);
 		}
 		$htaccess= file_get_contents( HABARI_PATH . '/.htaccess');
 		if ( FALSE === strpos( $htaccess, 'HABARI' ) ) {
 			// the Habari block does not exist in this file
 			// so try to create it
-			return $this->write_htaccess(TRUE);
+			$result = $this->write_htaccess(TRUE);
 		}
-		else {
+		if($result) {
 			// the Habari block exists, but we need to make sure
 			// it is correct.
-			// @TODO: FIXME!
+			// Check that the rewrite rules actually do the job.
+			$test_ajax_url = Site::get_url('habari') . '/check_mod_rewrite';
+			$rr = new RemoteRequest( $test_ajax_url, 'POST', 20);
+			$rr_result = $rr->execute();
+			if(!$rr->executed()) {
+				$result = $this->write_htaccess(TRUE, TRUE, TRUE);
+			}
 		}
-		return true;
+
+		return $result;
 	}
 
 	/**
@@ -657,10 +672,17 @@ class InstallHandler extends ActionHandler {
 	 * or to write the Habari-specific portions to an existing .htaccess
 	 * @param bool whether an .htaccess file already exists or not
 	 * @param bool whether to remove and re-create any existing Habari block
+	 * @param bool whether to try a rewritebase in the .htaccess
 	**/
-	public function write_htaccess( $exists = FALSE, $update = FALSE )
+	public function write_htaccess( $exists = FALSE, $update = FALSE, $rewritebase = FALSE )
 	{
-		$file_contents= "\n" . implode( "\n", $this->htaccess() ) . "\n";
+		$htaccess = $this->htaccess();
+		if($rewritebase) {
+			$rewrite_base= trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
+			$htaccess['rewrite_base']= 'RewriteBase /' . $rewrite_base;
+		}
+		$file_contents= "\n" . implode( "\n", $htaccess ) . "\n";
+
 		if ( ! $exists ) {
 			if ( ! is_writable( HABARI_PATH ) ) {
 				// we can't create the file
@@ -673,28 +695,28 @@ class InstallHandler extends ActionHandler {
 				return false;
 			}
 		}
-		if ( ! $update ) {
-			// we're either creating a new .htaccess, or adding
-			// the Habari block to an existing .htaccess which
-			// previously lacked it.  As such, simply open the
-			// .htaccess file in append mode, and add the contents
-			if ( $fh= fopen( HABARI_PATH . '/.htaccess', 'a' ) ) {
-				if ( FALSE !== fwrite( $fh, $file_contents ) ) {
-					return true;
-				}
-				else {
-					return false;
-				}
-			}
-			else {
+		if ( $update ) {
+			// we're updating an existing but incomplete .htaccess
+			// care must be take only to remove the Habari bits
+			$htaccess = file_get_contents(HABARI_PATH . '/.htaccess');
+			$file_contents = preg_replace('%### HABARI START.*?### HABARI END%ims', $file_contents, $htaccess);
+			// Overwrite the existing htaccess with one that includes the modified Habari rewrite block
+			$fmode = 'w';
+		}
+		else {
+			// Append the Habari rewrite block to the existing file.
+			$fmode = 'a';
+		}
+		//Save the htaccess
+		if ( $fh= fopen( HABARI_PATH . '/.htaccess', $fmode ) ) {
+			if ( FALSE === fwrite( $fh, $file_contents ) ) {
 				return false;
 			}
 		}
 		else {
-			// we're updating an existing but incomplete .htaccess
-			// care must be take only to remove the Habari bits
-			// @TODO: FIXME!!
+			return false;
 		}
+
 		return true;
 	}
 
