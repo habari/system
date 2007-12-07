@@ -72,7 +72,7 @@ class User extends QueryRecord
 			return self::$identity;
 		}
 		if(isset($_SESSION['user_id'])) {
-			if ( $user = User::get_by_id( $_SESSION['user_id'] ) ) {
+			if ( $user = self::get_by_id( $_SESSION['user_id'] ) ) {
 				// Cache the user in the static variable
 				self::$identity = $user;
 				return $user;
@@ -170,10 +170,10 @@ class User extends QueryRecord
 
 		if ( strpos( $who, '@' ) !== FALSE ) {
 			// we were given an email address
-			$user= User::get_by_email( $who );
+			$user= self::get_by_email( $who );
 		}
 		else {
-			$user= User::get_by_name( $who );
+			$user= self::get_by_name( $who );
 		}
 
 		if ( ! $user ) {
@@ -212,94 +212,79 @@ class User extends QueryRecord
 	{
 		if ( is_int( $who ) ) {
 			// Got a User ID
-			$user= User::get_by_id( $who );
+			$user= self::get_by_id( $who );
 		}
 		elseif ( strpos( $who, '@' ) !== FALSE ) {
 			// Got an email address
-			$user= User::get_by_email( $who );
+			$user= self::get_by_email( $who );
 		}
 		else {
 			// Got username
-			$user= User::get_by_name( $who );
+			$user= self::get_by_name( $who );
 		}
 		// $user will be a user object, or false depending on the
 		// results of the get_by_* method called above
 		return $user;
 	}
-
+	
 	/**
-	 * Select a user from the database by their ID
-	 * @param int $id The user's ID
-	 * @return object User object, or false
-	**/
-	public static function get_by_id ( $id )
-	{
+	 * Select a user from the database by its id
+	 *
+	 * @param int $id
+	 * @return User
+	 */
+	public static function get_by_id( $id )	{
 		if ( 0 == $id ) {
 			return false;
 		}
-		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array( $id ), 'User' );
-		return $user;
+		
+		$params= array(
+			'id' => $id,
+			'limit' => 1,
+			'fetch_fn' => 'get_row',
+			);
+		
+		return Users::get( $params );
 	}
 
 	/**
-	 * Select a user from the database by their login name
-	 * @param string $who the user's name
-	 * @return object User object, or false
-	**/
-	public static function get_by_name( $who )
-	{
-		if ( '' === $who ) {
+	 * Select a user from the database by its username
+	 *
+	 * @param string $username
+	 * @return User
+	 */
+	public static function get_by_name( $username ) {
+		if ( '' == $username ) {
 			return false;
 		}
-		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE username = ?', array( $who ), 'User');
-		return $user;
+		
+		$params= array(
+			'username' => $username,
+			'limit' => 1,
+			'fetch_fn' => 'get_row',
+			);
+
+		return Users::get( $params );
 	}
 
 	/**
-	 * Select a user from the database by their email address
-	 * @param string $who the user's email address
-	 * @return object User object, or false
-	**/
-	public static function get_by_email( $who )
-	{
-		if ( '' === $who ) {
+	 * Select a user from the database by its email address
+	 *
+	 * @param string $email
+	 * @return Users
+	 */
+	public static function get_by_email( $email ) {
+		if ( '' === $email ) {
 			return false;
 		}
-		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE email = ?', array( $who ), 'User');
-		return $user;
-	}
+		
+		$params= array(
+			'email' => $email,
+			'limit' => 1,
+			'fetch_fn' => 'get_row',
+			);
 
-	/**
-	 * Select a user from the database by userinfo
-	 * @param string $who the meta info.
-	 * @return object User object, or false
-	**/
-	public static function by_userinfo( $who ) {
-		if( '' == $who ) {
-			return false;
-		}
-		$user_id= DB::get_results( "SELECT user_id FROM " . DB::table('userinfo') . " WHERE value = '$who'" );
-		if ( FALSE == $user_id ) {
-			return false;
-		}
-		$user= DB::get_row( 'SELECT * FROM ' . DB::table('users') . ' WHERE id = ?', array( $user_id[0]->user_id ), 'User' );
-		return $user;
-	}
-
-	/**
-	* Fetches all the users from the DB.
-	* @todo TODO still need some checks for only authors.
-	* @return array
-	*/
-	public static function get_all()
-	{
-		$list_users= DB::get_results( 'SELECT * FROM ' . DB::table('users') . ' ORDER BY username ASC', array(), 'User' );
-		if ( is_array( $list_users ) ) {
-			return $list_users;
-		}
-		else {
-			return array();
-		}
+		return Users::get( $params );
 	}
 
 	/**
@@ -323,9 +308,9 @@ class User extends QueryRecord
 	{
 		$cookie= 'comment_' . Options::get('GUID');
 		$commenter= array();
-		if ( User::identify() ) {
-			$commenter['name']= User::identify()->username;
-			$commenter['email']= User::identify()->email;
+		if ( self::identify() ) {
+			$commenter['name']= self::identify()->username;
+			$commenter['email']= self::identify()->email;
 			$commenter['url']= Site::get_url('habari');
 		} elseif ( isset($_COOKIE[$cookie]) ) {
 			list($commenter['name'], $commenter['email'], $commenter['url']) = explode('#', urldecode( $_COOKIE[$cookie] ) );
