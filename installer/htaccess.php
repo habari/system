@@ -39,7 +39,7 @@
 				to send requests to Habari for handling.
 				Habari is not able to write this file to your server
 				automatically, so you must create this file yourself to continute
-				the installation.  <a href="#">Learn More...</a>
+				the installation.  <a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation">Learn More...</a>
 			</div>
     </div>
 	</div>
