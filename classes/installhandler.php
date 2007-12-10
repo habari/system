@@ -293,7 +293,7 @@ class InstallHandler extends ActionHandler {
 		// Let's setup the admin user now.
 		// But first, let's make sure that no users exist
 		$all_users= Users::get_all();
-		if ( empty( $all_users ) )
+		if ( count( $all_users ) < 1 )
 		{
 			if (! $this->create_admin_user()) {
 				$this->theme->assign('form_errors', array('admin_user'=>'Problem creating admin user.'));
