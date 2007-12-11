@@ -412,6 +412,29 @@ ul.tabs li.ui-tabs-selected.last {
 	}
 
 
+#tagsettings ul
+{
+	text-align: left;
+	margin-right: 50px;
+	margin-left: 10px;
+}
+
+#tagsettings li
+{
+	font-family: "Arial", san-serif;
+	font-size: 0.8em;
+	display: inline;
+	line-height: 2.0em;
+	padding: 3px;
+	color: #ccc;
+	cursor: pointer;
+}
+
+#tagsettings li.clicked
+{
+	background: #000;
+}
+
 
 /*=== @a ===*/
 

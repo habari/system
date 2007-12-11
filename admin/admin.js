@@ -88,8 +88,38 @@ $(document).ready(function(){
 	
 	/* Tabs, using jQuery UI Tabs */
 	$('.tabs').tabs({ fxShow: { height: 'show', opacity: 'show' }, fxHide: { height: 'hide', opacity: 'hide' }, unselected: true })
+
+// ah, the magic of jquery...
+$('#tag-list li').click(function() {
+	// here we set the current text of #tags to current for later
+	//examination
+	var current = $('#tags').val();
+	// check to see if the tag item we clicked has been clicked before...
+	if( $( this ).attr( 'class' )== 'clicked' ) {
+		// do nothing.
+	} else {
+		// if it hasn't been clicked, go ahead and add the clicked class
+		$(this).addClass( 'clicked' );
+		// check to see if current is the default text
+		if( current == 'Tags, separated by, commas' ) {
+			// and if it is, replace it with whatever we clicked
+			$( '#tags' ).val( $( this ).text() );
+		} else {
+			// else if we already have tag content, just append the new tag
+			if( $('#tags' ).val() != '' ) {
+				$( '#tags' ).val( current + "," + $( this ).text() );
+			} else {
+				$( '#tags' ).val( $( this ).text() );
+			}
+		}
+	}
 });
 
-
-
-
+// sometimes, you just want to start over
+$( '#clear' ).click( function() {
+	// so we nuke all the tags in the tag text field
+	$( '#tags' ).val( '' );
+	// and remove the clicked class from the tags in the manager
+	$( '#tag-list li' ).removeClass( 'clicked' );
+});
+});
