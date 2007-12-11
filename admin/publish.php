@@ -84,14 +84,32 @@
 
 
 	<div id="formbuttons" class="container">
-		<p class="column span-3"><input type="submit" name="submit" class="save" value="<?php _e('Save'); ?>"></p>
-		<p class="column span-3"><input type="submit" name="submit" class="publish" value="<?php _e('Publish'); ?>">
-		<p class="column prepend-10 span-3 last"><input type="submit" name="submit" class="delete" value="<?php _e('Delete'); ?>">
+		<p class="column span-13" id="left_control_set">
+			<input type="submit" name="submit" id="save" class="save" value="<?php _e('Save'); ?>">
+		</p>
+		<p class="column span-3 last" id="right_control_set"></p>
 	</div>
 
 
 </div>
 
 </form>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	<?php if(isset($statuses['published']) && $post->status != $statuses['published']) : ?>
+	$('#left_control_set').append($('<input type="submit" name="submit" id="publish" class="publish" value="<?php _e('Publish'); ?>">'));
+	$('#publish').click(function(){
+		$('#status').val(<?php echo $statuses['published']; ?>);
+	});
+	<?php endif; ?>
+	<?php if(isset($post->slug) && ($post->slug != '')) : ?>
+	$('#right_control_set').append($('<input type="submit" name="submit" id="delete" class="delete" value="<?php _e('Delete'); ?>">'));
+	$('#delete').click(function(){
+		$('#create-content').attr('action', '<?php URL::out( 'admin', array('page' => 'delete', 'slug' => $post->slug )); ?>');
+	});
+	<?php endif; ?>
+});
+</script>
 
 <?php include('footer.php'); ?>
