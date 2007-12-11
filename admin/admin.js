@@ -47,9 +47,10 @@ $(document).ready(function(){
 			.val('')
 			.removeClass('islabeled');
 	}).blur(function(){
-		if($(this).val() == '') {
-			$(this).val($('label.incontent[for=' + $(this).attr('id') + ']').html().trim())
-				.addClass('islabeled');
+		if ($(this).val() == '') {
+			$(this)
+				.addClass('islabeled')
+				.val($('label.incontent[for=' + $(this).attr('id') + ']').html().trim())
 		}
 	});
 
@@ -61,4 +62,34 @@ $(document).ready(function(){
 	$('a.link_as_button').each(function(){
 		$(this).after('<button onclick="location.href=\'' + $(this).attr('href') + '\';return false;">' + $(this).html() + '</button>').hide();
 	});
+	
+	/* Resizable Textareas */
+	$('textarea.resizable').each(function() {
+		var textarea = $(this);
+		var offset = null;
+		var grip = $('<div class="grip"></div>').mousedown(function(ev){
+			offset = textarea.height() - (ev.clientY + document.documentElement.scrollTop)
+			$(document).mousemove(doDrag).mouseup(endDrag);
+		}).mouseup(endDrag);
+		var resizer = $('<div class="resizer"></div>').css('margin-bottom',$(this).css('margin-bottom'));
+		$(this).css('margin-bottom', '0px').wrap(resizer).parent().append(grip);
+
+		function doDrag(ev){
+			textarea.height(Math.max(offset + ev.clientY + document.documentElement.scrollTop, 60) + 'px');
+			return false;
+		}
+
+		function endDrag(ev){
+			$(document).unbind('mousemove', doDrag).unbind('mouseup', endDrag);
+			textarea.css('opacity', 1.0);
+		}
+
+	});
+	
+	/* Tabs, using jQuery UI Tabs */
+	$('.tabs').tabs({ fxShow: { height: 'show', opacity: 'show' }, fxHide: { height: 'hide', opacity: 'hide' }, unselected: true })
 });
+
+
+
+

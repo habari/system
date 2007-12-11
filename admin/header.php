@@ -8,6 +8,7 @@
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/admin.js" type="text/javascript"></script>
 	<?php
 		Plugins::act( 'admin_header', $this );
@@ -17,7 +18,7 @@
 </head>
 <body>
 
-<ul id="menu">
+<ul id="oldmenu">
 	<li id="site-name">
 		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 	</li>
@@ -27,4 +28,4 @@
 	?>
 </ul>
 
-<div id="wrapper">
+<div id="page">
