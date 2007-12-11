@@ -2,30 +2,30 @@
 /**
  * Habari LogEntry class
 	* Represents a log entry
- * 
+ *
  * @package Habari
- * @todo Apply system error handling 	
+ * @todo Apply system error handling
  */
 
 class LogEntry extends QueryRecord
 {
-	
+
 	/**
 	 * Defined event severities
-	 * 
+	 *
 	 * @final
 	 */
 	private static $severities= array(
 		'any',
 		'none', // should not be used
 		'debug', 'info', 'notice', 'warning', 'err', 'crit', 'alert', 'emerg',
-	); 
+	);
 
 	/**
 	 * Cache for log_types
 	 */
 	private static $types= array();
-	
+
 	/**
 	 * Return the defined database columns for an Event
 	 *
@@ -47,7 +47,7 @@ class LogEntry extends QueryRecord
 
 	/**
 	 * Constructor for the LogEntry class
-	 * 
+	 *
 	 * @param array $paramarray an associative array of initial LogEntry field values
 	 */
 	public function __construct( $paramarray = array() )
@@ -56,7 +56,7 @@ class LogEntry extends QueryRecord
 		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields );
-		
+
 		parent::__construct( $paramarray );
 		if ( !isset( $this->fields['module'] ) ) {
 			$this->fields['module']= 'habari';
@@ -69,7 +69,7 @@ class LogEntry extends QueryRecord
 		}
 		$this->exclude_fields( 'id' );
 	}
-	
+
 	/**
 	 * Returns an associative array of LogEntry types
 	 *
@@ -130,7 +130,7 @@ class LogEntry extends QueryRecord
 		}
 		return array_flip($types);
 	}
-	
+
 	/**
 	 * Get the integer value for the given severity, or <code>false</code>.
 	 *
@@ -144,7 +144,7 @@ class LogEntry extends QueryRecord
 		}
 		return array_search( $severity, self::$severities );
 	}
-	
+
 	/**
 	 * Get the string representation of the severity numeric value.
 	 *
@@ -155,7 +155,7 @@ class LogEntry extends QueryRecord
 	{
 		return isset(self::$severities[$severity]) ? self::$severities[$severity] : _t('Unknown');
 	}
-	
+
 	/**
 	 * Get the integer value for the given module/type, or <code>false</code>.
 	 *
@@ -167,6 +167,11 @@ class LogEntry extends QueryRecord
 	{
 		self::list_logentry_types();
 		if ( array_key_exists( $module, self::$types ) && array_key_exists( $type, self::$types[$module] ) ) {
+			return self::$types[$module][$type];
+		}
+		if( $type != null && $module != null ) {
+			EventLog::register_type( $type, $module );
+			self::list_logentry_types(true);
 			return self::$types[$module][$type];
 		}
 		return false;
@@ -186,7 +191,7 @@ class LogEntry extends QueryRecord
 			unset( $this->fields['module'] );
 			unset( $this->fields['type'] );
 		}
-		
+
 		Plugins::filter( 'insert_logentry', $this );
 		parent::insert( DB::table( 'log' ) );
 	}
@@ -200,7 +205,7 @@ class LogEntry extends QueryRecord
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return object LogEntry The first log entry that matched the given criteria
-	 */	 	 	 	 	
+	 */
 	public function get( $paramarray = array() )
 	{
 		// Default parameters.
@@ -217,13 +222,13 @@ class LogEntry extends QueryRecord
 		}
 		// Make sure we fetch only a single event. (LIMIT 1)
 		$defaults['limit']= 1;
-		 
+
 		return EventLog::get( $defaults );
 	}
-	
+
 	/**
 	 * Return the log entry's event type.
-	 * 
+	 *
 	 * <code>$log->type</code>
 	 *
 	 * @return string Human-readable event type
@@ -232,10 +237,10 @@ class LogEntry extends QueryRecord
 		$type= DB::get_value( 'SELECT type FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
 		return $type ? $type : _t('Unknown');
 	}
-	
+
 	/**
 	 * Return the log entry's event module.
-	 * 
+	 *
 	 * <code>$log->module</code>
 	 *
 	 * @return string Human-readable event module
@@ -244,10 +249,10 @@ class LogEntry extends QueryRecord
 		$module= DB::get_value( 'SELECT module FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
 		return $module ? $module : _t('Unknown');
 	}
-	
+
 	/**
 	 * Return the log entry's event severity.
-	 * 
+	 *
 	 * <code>$log->severity</code>
 	 *
 	 * @return string Human-readable event severity
@@ -255,13 +260,13 @@ class LogEntry extends QueryRecord
 	public function get_event_severity() {
 		return self::severity_name( $this->severity_id );
 	}
-	
+
 	/**
 	 * Overrides QueryRecord __get to implement custom object properties
 	 *
 	 * @param string Name of property to return
-	 * @return mixed The requested field value	 
-	 */	 	 
+	 * @return mixed The requested field value
+	 */
 	public function __get( $name )
 	{
 		$fieldnames = array_merge( array_keys($this->fields), array('module', 'type', 'severity') );
@@ -293,13 +298,13 @@ class LogEntry extends QueryRecord
 		}
 		return $out;
 	}
-	
+
 	/**
 	 * Overrides QueryRecord __set to implement custom object properties
 	 *
 	 * @param string Name of property to return
-	 * @return mixed The requested field value	 
-	 */	 	 
+	 * @return mixed The requested field value
+	 */
 	public function __set( $name, $value )
 	{
 		switch($name) {
@@ -309,7 +314,7 @@ class LogEntry extends QueryRecord
 		}
 		return parent::__set( $name, $value );
 	}
-	
+
 }
 
 ?>
