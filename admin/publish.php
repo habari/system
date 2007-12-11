@@ -32,7 +32,7 @@
 
 	<div class="container pagesplitter">
 		<ul class="tabs">
-			<li class="publishsettings first last"><a href="#publishsettings">Settings</a></li><!--li class="tagsettings"><a href="#tagsettings">Tags</a></li><li class="preview last"><a href="#preview">Preview</a></li-->
+			<li class="publishsettings first"><a href="#publishsettings">Settings</a></li><li class="tagsettings last"><a href="#tagsettings">Tags</a></li><!--li class="preview last"><a href="#preview">Preview</a></li-->
 		</ul>
 
 		<div id="publishsettings" class="splitter">
@@ -63,6 +63,21 @@
 				<?php if ( $post->slug != '' ) { ?>
 				<p><input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>"></p>
 				<?php } ?>
+			</div>
+		</div>
+		<div id="tagsettings" class="splitter">
+			<div class="splitterinside">
+				<div class="container">
+					<p class="column span-5"><input type="button" value="Clear" id="clear"></p>
+				</div>
+				<hr>
+				<div class="container">
+					<ul id="tag-list" class="column span-19">
+					<?php foreach( Tags::get() as $taglist ) { ?>
+						<li id="<?php echo $taglist->tag; ?>"><?php echo $taglist->tag; ?></li>
+					<?php } ?>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
