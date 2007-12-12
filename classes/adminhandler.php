@@ -161,6 +161,12 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
 
+	function get_publish()
+	{
+		$this->theme->silos = Media::dir();
+		$this->display( 'publish' );
+	}
+
 	/**
 	 * Deletes a post from the database.
 	 */

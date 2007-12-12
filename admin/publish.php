@@ -22,8 +22,48 @@
 		?>
 
 		<p><label for="title" class="incontent"><?php _e('Title'); ?></label><input type="text" name="title" id="title" class="styledformelement" size="100%" value="<?php if ( !empty($post->title) ) { echo $post->title; } ?>" tabindex='1'></p>
-</div>
-		<div class="container">
+	</div>
+
+	<?php if (isset($silos) && count($silos)) : ?>
+	<div class="container pagesplitter">
+		<ul class="tabs">
+			<?php
+			$first = 'first';
+			$ct = 0;
+			$last = '';
+			foreach($silos as $silodir):
+				$ct++;
+				if($ct == count($silos)) {
+					$last = 'last';
+				}
+				$class = "{$first} {$last}";
+				$first = '';
+			?><li class="<?php echo $class; ?>"><a href="#silo_<?php echo $ct; ?>"><?php echo $silodir->path; ?></a></li><?php endforeach; ?>
+		</ul>
+
+		<?php
+		$ct = 0;
+		foreach($silos as $silodir):
+			$ct++;
+		?>
+			<div id="silo_<?php echo $ct; ?>" class="splitter">
+				<div class="splitterinside" style="overflow-x:scroll;">
+					<div style="white-space:nowrap;" class="media_browser">
+				<?php
+				$assets = Media::highlights($silodir->path);
+
+				foreach((array)$assets as $asset) {
+					echo "<div class=\"media\"><img src=\"{$asset->thumbnail_url}\"><div class=\"foroutput\"><img src=\"{$asset->url}\"></div></div>";
+				}
+				?>
+					</div>
+				</div>
+			</div>
+		<?php endforeach; ?>
+	</div>
+	<?php endif; ?>
+
+	<div class="container">
 		<p><label for="content" class="incontent"><?php _e('Content'); ?></label><textarea name="content" id="content" class="styledformelement resizable" rows="20" cols="114" tabindex='2'><?php if ( !empty($post->content) ) { echo htmlspecialchars($post->content); } ?></textarea></p>
 
 		<p><label for="tags" class="incontent"><?php _e('Tags, separated by, commas')?></label><input type="text" name="tags" id="tags" class="styledformelement" value="<?php if ( !empty( $tags ) ) { echo $tags; } ?>" tabindex='3'></p>
@@ -40,7 +80,7 @@
 				<div class="container"><p class="column span-5"><?php _e('Content Type'); ?></p> 		<p class="column span-14 last"><input type="text" name="content_type" class="styledformelement" value="<?php echo $content_type; ?>"></p></div>
 				<hr>
 				<div class="container">
-					<p class="column span-5"><?php _e('Content State'); ?></p>	
+					<p class="column span-5"><?php _e('Content State'); ?></p>
 					<p class="column span-14 last">
 						<?php
 						// pass "false" to list_post_statuses() so that we don't
@@ -109,6 +149,13 @@ $(document).ready(function(){
 		$('#create-content').attr('action', '<?php URL::out( 'admin', array('page' => 'delete', 'slug' => $post->slug )); ?>');
 	});
 	<?php endif; ?>
+	$('.media').dblclick(function(){
+		$('#content').filter('.islabeled')
+			.val('')
+			.removeClass('islabeled');
+
+		$("#content").val($("#content").val() + $('.foroutput', this).html());
+	});
 });
 </script>
 
