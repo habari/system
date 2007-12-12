@@ -132,7 +132,7 @@ class AdminHandler extends ActionHandler
 				$post->pubdate= $pubdate;
 			}
 			$post->status= $status;
-			if ( $comments_disabled == TRUE ) {
+			if ( isset($comments_disabled) && $comments_disabled == TRUE ) {
 				$post->info->comments_disabled= TRUE;
 			}
 			elseif ( $post->info->comments_disabled == TRUE ) {
