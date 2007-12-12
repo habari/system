@@ -153,23 +153,23 @@ CREATE UNIQUE INDEX name ON {$prefix}permissions(name);
 
 CREATE TABLE {$prefix}users_groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  user_id INTEGER unsigned not null,
-  group_id INTEGER unsigned not null
+  user_id INTEGER UNSIGNED NOT NULL,
+  group_id INTEGER UNSIGNED NOT NULL
 );
 CREATE INDEX user_group ON {$prefix}users_groups(user_id,group_id);
 
 CREATE TABLE {$prefix}groups_permissions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  group_id INTEGER unsigned not null,
-  permission_id INTEGER unsigned not null,
+  group_id INTEGER UNSIGNED NOT NULL,
+  permission_id INTEGER UNSIGNED NOT NULL,
   denied TINYINT UNSIGNED NOT NULL DEFAULT 0
 );
 CREATE UNIQUE INDEX group_permission ON {$prefix}groups_permissions(group_id,permission_id);
 
 CREATE TABLE {$prefix}sessions  (
   token VARCHAR(255) NOT NULL,
-  subnet INTEGER not null,
-  expires INTEGER unsigned not null,
+  subnet INTEGER NOT NULL,
+  expires INTEGER UNSIGNED NOT NULL,
   ua VARCHAR(255) NOT NULL,
   user_id INTEGER,
   data TEXT
