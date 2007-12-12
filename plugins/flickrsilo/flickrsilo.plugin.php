@@ -600,6 +600,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			$flickr_ok = $this->is_auth();
 
 			if($flickr_ok){
+				$actions[] = 'De-Authorize';
 			}
 			else{
 				$actions[] = 'Authorize';
@@ -621,7 +622,9 @@ class FlickrSilo extends Plugin implements MediaSilo
 			switch ($action){
 				case 'Authorize':
 					if($this->is_auth()){
+						$deauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'De-Authorize')) . '#plugin_options';
 						echo "<p>You have already successfully authorized Habari to access your Flickr account.</p>";
+						echo "<p>Do you want to <a href=\"\">revoke authorization</a>?</p>";
 					}
 					else{
 						$flickr = new Flickr();
@@ -655,6 +658,12 @@ END_AUTH;
 						}
 						unset($_SESSION['flickr_frob']);
 					}
+					break;
+				case 'De-Authorize':
+					Options::set('flickr_token_' . User::identify()->id);
+					$reauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Authorize')) . '#plugin_options';
+					echo '<p>The Flickr Silo Plugin authorization has been deleted.<p>';
+					echo "<p>Do you want to <a href=\"{$reauth_url}\">re-authorize this plugin</a>?<p>";
 					break;
 			}
 		}
