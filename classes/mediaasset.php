@@ -10,6 +10,7 @@ class MediaAsset
 	protected $path;
 	protected $is_dir;
 	protected $content = null;
+	protected $url = array();
 
 	/**
 	 * MediaAsset constructor
@@ -54,10 +55,11 @@ class MediaAsset
 	 */
 	public function url($options = array())
 	{
-		if(empty($this->url)) {
-			$this->url = Media::url($this->path, $options);
+		$hash = md5(serialize($options));
+		if(empty($this->url[$hash])) {
+			$this->url[$hash] = Media::url($this->path, $options);
 		}
-		return $this->url;
+		return $this->url[$hash];
 	}
 
 	/**
@@ -77,6 +79,8 @@ class MediaAsset
 				return $this->is_dir;
 			case 'thumbnail_url':
 				return $this->url(array('size'=>'thumbnail'));
+			case 'path':
+				return $this->path;
 		}
 	}
 

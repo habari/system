@@ -3,86 +3,85 @@ class flickrAPI
 {
 	function __construct()
 	{
-		$this->key= 'cd0ae46b1332aa2bd52ba3063f0db41c';
-		$this->secret= '76cf747f70be9029';
-		$this->endpoint= 'http://flickr.com/services/rest/?';
-		$this->authendpoint= 'http://flickr.com/services/auth/?';
-		$this->uploadendpoint= 'http://api.flickr.com/services/upload/?';
-		$this->conntimeout= 20;
+		$this->key = 'cd0ae46b1332aa2bd52ba3063f0db41c';
+		$this->secret = '76cf747f70be9029';
+		$this->endpoint = 'http://flickr.com/services/rest/?';
+		$this->authendpoint = 'http://flickr.com/services/auth/?';
+		$this->uploadendpoint = 'http://api.flickr.com/services/upload/?';
+		$this->conntimeout = 20;
 	}
 
-	public function sign( $args )
+	public function sign($args)
 	{
-		ksort( $args );
-		unset( $args['photo'] );
+		ksort($args);
+		unset($args['photo']);
 		$a = '';
-		foreach( $args as $key => $value ) {
+		foreach($args as $key => $value){
 			$a .= $key . $value;
 		}
-		return md5( $this->secret . $a );
+		return md5($this->secret . $a);
 	}
 
-	public function encode( $args )
+	public function encode($args)
 	{
 		$encoded = array();
-		foreach ( $args as $key => $value ){
-			$encoded[] = urlencode( $key ) . '=' . urlencode( $value );
+		foreach ($args as $key => $value){
+			$encoded[] = urlencode($key) . '=' . urlencode($value);
 		}
 		return $encoded;
 	}
 
-	function call( $method, $args = array () )
+	function call($method, $args = array ())
 	{
-		$args = array_merge( array ( 'method' => $method,
-									 'api_key' => $this->key ), $args );
-			
-		ksort( $args );
-		
-		$args= array_merge( $args, array ('api_sig' => $this->sign( $args ) ) );
-		ksort( $args );
-		
-		if( $method == 'upload' ) {
-			$req= curl_init();
-	        $args['api_key']= $this->key;
-           	$photo= $args['photo'];
-            $args['photo']= '@' . $photo;
-           	curl_setopt( $req, CURLOPT_URL, $this->uploadendpoint );
-           	curl_setopt( $req, CURLOPT_TIMEOUT, 0 );
-            //curl_setopt($req, CURLOPT_INFILESIZE, filesize($photo));
+		$args = array_merge(array ('method' => $method,
+				'api_key' => $this->key), $args);
 
-	        // Sign and build request parameters
-	        curl_setopt( $req, CURLOPT_POSTFIELDS, $args );
-	        curl_setopt( $req, CURLOPT_CONNECTTIMEOUT, $this->conntimeout );
-	        curl_setopt( $req, CURLOPT_FOLLOWLOCATION, 1 );
-	        curl_setopt( $req, CURLOPT_HEADER, 0 );
-	        curl_setopt( $req, CURLOPT_RETURNTRANSFER, 1 );
-	        $this->_http_body= curl_exec( $req );
+		ksort($args);
 
-	        if (curl_errno($req)) {
-	            throw new Exception(curl_error($req));
-	        }
+		$args = array_merge($args, array ('api_sig' => $this->sign($args)));
+		ksort($args);
 
-	        curl_close( $req );
-	        $xml= simplexml_load_string( $this->_http_body );
-	        $this->xml= $xml;
+		if($method == 'upload'){
+			$req = curl_init();
+			$args['api_key'] = $this->key;
+			$photo = $args['photo'];
+			$args['photo'] = '@' . $photo;
+			curl_setopt($req, CURLOPT_URL, $this->uploadendpoint);
+			curl_setopt($req, CURLOPT_TIMEOUT, 0);
+			// curl_setopt($req, CURLOPT_INFILESIZE, filesize($photo));
+			// Sign and build request parameters
+			curl_setopt($req, CURLOPT_POSTFIELDS, $args);
+			curl_setopt($req, CURLOPT_CONNECTTIMEOUT, $this->conntimeout);
+			curl_setopt($req, CURLOPT_FOLLOWLOCATION, 1);
+			curl_setopt($req, CURLOPT_HEADER, 0);
+			curl_setopt($req, CURLOPT_RETURNTRANSFER, 1);
+			$this->_http_body = curl_exec($req);
+
+			if (curl_errno($req)){
+				throw new Exception(curl_error($req));
+			}
+
+			curl_close($req);
+			$xml = simplexml_load_string($this->_http_body);
+			$this->xml = $xml;
 			return $xml;
-		} else {
-		
-		$url= $this->endpoint . implode( '&', $this->encode( $args ) );
+		}
+		else{
+			$url = $this->endpoint . implode('&', $this->encode($args));
 
-		$call= new RemoteRequest( $url );
+			$call = new RemoteRequest($url);
 
-		$call->set_timeout( 5 );
-		$result= $call->execute();
-			if ( Error::is_error( $result ) ){
+			$call->set_timeout(5);
+			$result = $call->execute();
+			if (Error::is_error($result)){
 				throw $result;
 			}
 
-		$response= $call->get_response_body();
-		$xml= new SimpleXMLElement( $response );
-		return $xml;
+			$response = $call->get_response_body();
+			$xml = new SimpleXMLElement($response);
+			return $xml;
+		}
 	}
-}
 }
 
 class Flickr extends flickrAPI
@@ -103,28 +102,27 @@ class Flickr extends flickrAPI
 		return $xml->frob;
 	}
 
-	public function authLink( $frob )
+	public function authLink($frob)
 	{
-		$params['api_key']= $this->key;
-		$params['frob']= $frob;
-		$params['perms']= 'write';
-		$params['api_sig']= md5( $this->secret . 'api_key' . $params['api_key'] . 'frob' . $params['frob'] . 'permswrite' );
-		$link= $this->authendpoint . implode( '&', $this->encode( $params ) );
+		$params['api_key'] = $this->key;
+		$params['frob'] = $frob;
+		$params['perms'] = 'write';
+		$params['api_sig'] = md5($this->secret . 'api_key' . $params['api_key'] . 'frob' . $params['frob'] . 'permswrite');
+		$link = $this->authendpoint . implode('&', $this->encode($params));
 		return $link;
 	}
 
 	function getToken($frob)
 	{
-		$xml= $this->call('flickr.auth.getToken', array('frob' => $frob));
+		$xml = $this->call('flickr.auth.getToken', array('frob' => $frob));
 		return $xml;
 	}
-	
 	// grab the token from our db.
-	function cachedToken() {
-		$token= Options::get( 'flickr_token_' . User::identify()->id );
+	function cachedToken()
+	{
+		$token = Options::get('flickr_token_' . User::identify()->id);
 		return $token;
 	}
-	
 	// get publicly available photos
 	function getPublicPhotos($nsid, $extras = '', $per_page = '', $page = '')
 	{
@@ -164,20 +162,20 @@ class Flickr extends flickrAPI
 			$params['user_id'] = $nsid;
 		}
 
-		$xml= $this->call('flickr.photosets.getList', $params);
-			if ( Error::is_error( $xml ) ){
-				throw $xml;
-			}
-		foreach( $xml->photosets->attributes() as $key => $value ) {
+		$xml = $this->call('flickr.photosets.getList', $params);
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+		foreach($xml->photosets->attributes() as $key => $value){
 			$ret[$key] = (string)$value;
 		}
 		$i = 0;
-		foreach( $xml->photosets->photoset as $key => $value ){
-			foreach( $value->attributes() as $kk => $vv ){
+		foreach($xml->photosets->photoset as $key => $value){
+			foreach($value->attributes() as $kk => $vv){
 				$ret['photosets'][(string)$value['id']][$kk] = (string)$vv;
 			}
 
-			foreach( $value->children() as $kk => $vv ){
+			foreach($value->children() as $kk => $vv){
 				$ret['photosets'][(string)$value['id']][$kk] = (string)$vv;
 			}
 			$i++;
@@ -185,17 +183,17 @@ class Flickr extends flickrAPI
 		return $ret;
 	}
 
-	function photosetsGetInfo( $photoset_id )
+	function photosetsGetInfo($photoset_id)
 	{
-		$params= array( 'photoset_id' => $photoset_id );
-		$xml= $this->call('flickr.photosets.getInfo', $params );
-			if ( Error::is_error( $xml ) ){
-				throw $xml;
-			}
-		foreach( $xml->photoset->attributes() as $key => $value ){
+		$params = array('photoset_id' => $photoset_id);
+		$xml = $this->call('flickr.photosets.getInfo', $params);
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+		foreach($xml->photoset->attributes() as $key => $value){
 			$ret[$key] = (string)$value;
 		}
-		foreach( $xml->photoset as $key => $value ){
+		foreach($xml->photoset as $key => $value){
 			$ret[$key] = $value;
 		}
 		return $ret;
@@ -206,162 +204,206 @@ class Flickr extends flickrAPI
 		return 'http://static.flickr.com/' . $p['server'] . '/' . $p['primary'] . '_' . $p['secret'] . '_' . $size . $ext;
 	}
 
-	function photosetsGetPhotos( $photoset_id )
+	function photosetsGetPhotos($photoset_id)
 	{
-		$params= array( 'photoset_id' => $photoset_id );
-		$xml= $this->call('flickr.photosets.getPhotos', $params );
-			if ( Error::is_error( $xml ) ){
-				throw $xml;
-			}
-		
-		foreach( $xml->photoset->attributes() as $key => $value ){
+		$params = array('photoset_id' => $photoset_id);
+		$xml = $this->call('flickr.photosets.getPhotos', $params);
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+
+		foreach($xml->photoset->attributes() as $key => $value){
 			$ret[$key] = (string)$value;
 		}
 		$i = 0;
-		
-		foreach( $xml->photoset->photo as $photo ) {
-			foreach( $photo->attributes() as $key => $value ) {
+
+		foreach($xml->photoset->photo as $photo){
+			foreach($photo->attributes() as $key => $value){
 				$ret['photos'][(string)$photo['id']][$key] = (string)$value;
 			}
 			$i++;
 		}
 		return $ret;
 	}
-	
-	function photosGetInfo( $photo_id ) {
-        $params= array();
-        if( $this->cachedToken() ) {
- 			$params['auth_token']= $this->cachedToken();
+
+	function photosRecentlyUpdated()
+	{
+		$params = array();
+		if($this->cachedToken()){
+			$params['auth_token'] = $this->cachedToken();
 		}
-		
-        $params['photo_id']= $photo_id;
-		$params['secret']= $this->secret;
-        
-        $xml= $this->call( 'flickr.photos.getInfo', $params );
-        
-			if ( Error::is_error( $xml ) ){
-				throw $xml;
-			}
 
-        foreach( $xml->photo->attributes() as $key => $value ) {
-            $result[(string)$key]= (string)$value;
-        }
+		$params['secret'] = $this->secret;
+		$params['min_date'] = time() - 31536000;  // Within the last year
+		$params['per_page'] = 10;
 
-        foreach( $xml->photo->children() as $key => $value ) {
-            foreach( $value->attributes() as $kk => $vv) $result[(string)$key][(string)$kk]= (string)$vv;
-            $id = -1;
-            foreach( $value->children() as $kk => $vv ) {
-                $typed= false;
-                if(isset( $vv['id'] ) ) {
-					$id= (string)$vv['id'];
-				} elseif(isset( $vv['type'] ) ) {
-					$id= (string)$vv['type']; 
-					$typed = true; 
+		$xml = $this->call('flickr.photos.recentlyUpdated', $params);
+
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+		return $xml;
+	}
+
+	function photosSearch()
+	{
+		$params = array();
+		if($this->cachedToken()){
+			$params['auth_token'] = $this->cachedToken();
+		}
+
+		$params['secret'] = $this->secret;
+		$params['user_id'] = 'me';
+		$params['sort'] = 'date-posted-desc';
+		$params['per_page'] = 20;
+
+		$xml = $this->call('flickr.photos.search', $params);
+
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+		return $xml;
+	}
+
+	function photosGetInfo($photo_id)
+	{
+		$params = array();
+		if($this->cachedToken()){
+			$params['auth_token'] = $this->cachedToken();
+		}
+
+		$params['photo_id'] = $photo_id;
+		$params['secret'] = $this->secret;
+
+		$xml = $this->call('flickr.photos.getInfo', $params);
+
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+
+		foreach($xml->photo->attributes() as $key => $value){
+			$result[(string)$key] = (string)$value;
+		}
+
+		foreach($xml->photo->children() as $key => $value){
+			foreach($value->attributes() as $kk => $vv) $result[(string)$key][(string)$kk] = (string)$vv;
+			$id = -1;
+			foreach($value->children() as $kk => $vv){
+				$typed = false;
+				if(isset($vv['id'])){
+					$id = (string)$vv['id'];
+				}elseif(isset($vv['type'])){
+					$id = (string)$vv['type'];
+					$typed = true;
+				}else $id++;
+				foreach($vv->attributes() as $kkk => $vvv){
+					$ret[(string)$key][$id][(string)$kkk] = (string)$vvv;
 				}
-                else $id++;
-                foreach( $vv->attributes() as $kkk => $vvv ) {
-					$ret[(string)$key][$id][(string)$kkk]= (string)$vvv;
-				}
-                if( $typed ) {
+				if($typed){
 					$ret[(string)$key][$id] = (string)$vv;
-				} else {
-				 	$ret[(string)$key][$id]['text']= (string)$vv;
 				}
-            }
-            if( !count( $ret[(string)$key] ) ) $ret[(string)$key]= (string)$value;
-        }
-        return $ret;
-    }
-
-	function upload( $photo, $title= '', $description= '', $tags= '', $perms= '', $async= 1, &$info= NULL ) {
-        $store= HABARI_PATH . '/' . Site::get_path( 'user' ) . '/cache';
-		if( !is_dir( $store ) ) {
-			mkdir( $store, 0777 );	
-		}
-        $params= array( 'auth_token' => $this->cachedToken() );
-        $url= parse_url( 'file://' . $photo );
-        if( isset( $url['scheme'] ) ) {
-            $localphoto= fopen( HABARI_PATH . '/' . $photo, 'r' );
-            $store= tempnam( $store, 'G2F' );
-            file_put_contents( $store, $localphoto );
-            fclose( $localphoto );
-            $params['photo']= $store;
-        } else {
-			$params['photo']= $photo;
-        }
-
-		$info= filesize( $params['photo'] );
-        
-		if( $title ) {
-	    	$params['title']= $title;
-		}
-		
-        if( $description ) {
-			$params['description']= $description;
-		}
-		
-        if( $tags ) {
-			$params['tags']= $tags;
-		}
-		
-        if( $perms ) {
-            if( isset( $perms['is_public'] ) ) {
-				$params['is_public']= $perms['is_public'];
+				else{
+					$ret[(string)$key][$id]['text'] = (string)$vv;
+				}
 			}
-            if( isset( $perms['is_friend'] ) ) {
-				$params['is_friend']= $perms['is_friend'];
-			}
-            if( isset( $perms['is_family'] ) ) {
-	 			$params['is_family']= $perms['is_family'];
-			}
-        }
-
-        if( $async ) {
-			$params['async']= $async;
+			if(!count($ret[(string)$key])) $ret[(string)$key] = (string)$value;
 		}
-		
+		return $ret;
+	}
+
+	function upload($photo, $title = '', $description = '', $tags = '', $perms = '', $async = 1, &$info = null)
+	{
+		$store = HABARI_PATH . '/' . Site::get_path('user') . '/cache';
+		if(!is_dir($store)){
+			mkdir($store, 0777);
+		}
+		$params = array('auth_token' => $this->cachedToken());
+		$url = parse_url('file://' . $photo);
+		if(isset($url['scheme'])){
+			$localphoto = fopen(HABARI_PATH . '/' . $photo, 'r');
+			$store = tempnam($store, 'G2F');
+			file_put_contents($store, $localphoto);
+			fclose($localphoto);
+			$params['photo'] = $store;
+		}
+		else{
+			$params['photo'] = $photo;
+		}
+
+		$info = filesize($params['photo']);
+
+		if($title){
+			$params['title'] = $title;
+		}
+
+		if($description){
+			$params['description'] = $description;
+		}
+
+		if($tags){
+			$params['tags'] = $tags;
+		}
+
+		if($perms){
+			if(isset($perms['is_public'])){
+				$params['is_public'] = $perms['is_public'];
+			}
+			if(isset($perms['is_friend'])){
+				$params['is_friend'] = $perms['is_friend'];
+			}
+			if(isset($perms['is_family'])){
+				$params['is_family'] = $perms['is_family'];
+			}
+		}
+
+		if($async){
+			$params['async'] = $async;
+		}
 		// call the upload method.
-        $xml= $this->call( 'upload', $params );
+		$xml = $this->call('upload', $params);
 
-        if( $store ) {
-			unlink( $store );
+		if($store){
+			unlink($store);
 		}
-		
-			if ( Error::is_error( $xml ) ){
-				throw $xml;
-			}
 
-        if( $async ) {
-			return( (string)$xml->ticketid );
-		} else {
-			return( (string)$xml->photoid );
+		if (Error::is_error($xml)){
+			throw $xml;
 		}
-    }
 
-    function photosUploadCheckTickets( $tickets ) {
-        if( is_array( $tickets ) ) {
-            foreach( $tickets as $key => $value ) {
-                if( $key ) {
+		if($async){
+			return((string)$xml->ticketid);
+		}
+		else{
+			return((string)$xml->photoid);
+		}
+	}
+
+	function photosUploadCheckTickets($tickets)
+	{
+		if(is_array($tickets)){
+			foreach($tickets as $key => $value){
+				if($key){
 					$params['tickets'] .= ' ';
 				}
-                $params['tickets'] .= $value;
-            }
-        } else {
-			$params['tickets']= $tickets;
-        }
-        
-		$xml= $this->call( 'flickr.photos.upload.checkTickets', $params );
-			if ( Error::is_error( $xml ) ){
-				throw $xml;
+				$params['tickets'] .= $value;
 			}
-    
-        foreach( $xml->uploader->ticket as $ticket ) {
-            foreach( $ticket->attributes() as $key => $value ) {
-                $uptick[(string)$ticket['id']][$key] = (string)$value;
-            }
-        }
-        return $uptick;
-    }
+		}
+		else{
+			$params['tickets'] = $tickets;
+		}
+
+		$xml = $this->call('flickr.photos.upload.checkTickets', $params);
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+
+		foreach($xml->uploader->ticket as $ticket){
+			foreach($ticket->attributes() as $key => $value){
+				$uptick[(string)$ticket['id']][$key] = (string)$value;
+			}
+		}
+		return $uptick;
+	}
 
 	function reflectionGetMethods()
 	{
@@ -382,6 +424,8 @@ class Flickr extends flickrAPI
 class FlickrSilo extends Plugin implements MediaSilo
 {
 	const SILO_NAME = 'flickr';
+
+	static $cache = array();
 
 	/**
 	* Provide plugin info to the system
@@ -408,12 +452,16 @@ class FlickrSilo extends Plugin implements MediaSilo
 
 	/**
 	* Return basic information about this silo
-	*    name- The name of the silo, used as the root directory for media in this silo
+	*     name- The name of the silo, used as the root directory for media in this silo
 	*/
 	public function silo_info()
 	{
-		return array('name' => self::SILO_NAME,
-			);
+		if($this->is_auth()) {
+			return array('name' => self::SILO_NAME);
+		}
+		else {
+			return array();
+		}
 	}
 
 	/**
@@ -446,6 +494,18 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_url($path, $qualities = null)
 	{
+		$photo = false;
+		if(preg_match('%^photos/(.+)$%', $path, $matches)) {
+			$id = $matches[1];
+			$photo = self::$cache[$id];
+		}
+
+		$size = '';
+		if(isset($qualities['size']) && $qualities['size'] == 'thumbnail') {
+			$size = '_m';
+		}
+		$url = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}{$size}.jpg";
+		return $url;
 	}
 
 	/**
@@ -485,6 +545,15 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_highlights()
 	{
+		$flickr = new Flickr();
+		$xml = $flickr->photosSearch();
+		$result = array();
+
+		foreach($xml->photos->photo as $photo) {
+			$result[] = new MediaAsset('flickr/photos/' . $photo['id'], false);
+			self::$cache[''.$photo['id']] = $photo->attributes();
+		}
+		return $result;
 	}
 
 	/**
@@ -505,14 +574,14 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_contents()
 	{
-		$flickr= new Flickr();
-		$token= Options::get( 'flickr_token_' . User::identify()->id );
-		$result = $flickr->call('flickr.auth.checkToken', 
-							array( 'api_key' => $flickr->key, 
-							'auth_token'=>$token ) );
-		$photos= $flickr->GetPublicPhotos( $result->auth->user['nsid'], null, 5 );
-		foreach( $photos['photos'] as $photo ){
-			$url= $flickr->getPhotoURL( $photo );
+		$flickr = new Flickr();
+		$token = Options::get('flickr_token_' . User::identify()->id);
+		$result = $flickr->call('flickr.auth.checkToken',
+			array('api_key' => $flickr->key,
+				'auth_token' => $token));
+		$photos = $flickr->GetPublicPhotos($result->auth->user['nsid'], null, 5);
+		foreach($photos['photos'] as $photo){
+			$url = $flickr->getPhotoURL($photo);
 			echo '<img src="' . $url . '" width="150px">';
 		}
 	}
@@ -525,14 +594,14 @@ class FlickrSilo extends Plugin implements MediaSilo
 	* @param string $plugin_id The string id of a plugin, generated by the system
 	* @return array The array of actions to attach to the specified $plugin_id
 	*/
-	public function filter_plugin_config( $actions, $plugin_id )
+	public function filter_plugin_config($actions, $plugin_id)
 	{
 		if ($plugin_id == $this->plugin_id()){
 			$flickr_ok = $this->is_auth();
 
-			if($flickr_ok) {
+			if($flickr_ok){
 			}
-			else {
+			else{
 				$actions[] = 'Authorize';
 			}
 		}
@@ -551,11 +620,10 @@ class FlickrSilo extends Plugin implements MediaSilo
 		if ($plugin_id == $this->plugin_id()){
 			switch ($action){
 				case 'Authorize':
-					if($this->is_auth()) {
+					if($this->is_auth()){
 						echo "<p>You have already successfully authorized Habari to access your Flickr account.</p>";
 					}
-					else {
-
+					else{
 						$flickr = new Flickr();
 						$_SESSION['flickr_frob'] = '' . $flickr->getFrob();
 						$auth_url = $flickr->authLink($_SESSION['flickr_frob']);
@@ -571,17 +639,17 @@ END_AUTH;
 
 				case 'confirm':
 					$flickr = new Flickr();
-					if(!isset($_SESSION['flickr_frob'])) {
+					if(!isset($_SESSION['flickr_frob'])){
 						$auth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Authorize')) . '#plugin_options';
 						echo '<p>Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href="' . $auth_url . '">try again</a>.</p>';
 					}
-					else {
+					else{
 						$token = $flickr->getToken($_SESSION['flickr_frob']);
-						if(isset($token->auth->perms)) {
+						if(isset($token->auth->perms)){
 							Options::set('flickr_token_' . User::identify()->id, '' . $token->auth->token);
 							echo '<p>Your authorization was set successfully.</p>';
 						}
-						else {
+						else{
 							echo '<p>There was a problem with your authorization:</p>';
 							echo htmlspecialchars($token->asXML());
 						}
@@ -595,19 +663,19 @@ END_AUTH;
 	private function is_auth()
 	{
 		static $flickr_ok = null;
-		if(isset($flickr_ok)) {
+		if(isset($flickr_ok)){
 			return $flickr_ok;
 		}
 
 		$flickr_ok = false;
 		$token = Options::get('flickr_token_' . User::identify()->id);
-		if($token != '') {
+		if($token != ''){
 			$flickr = new Flickr();
-			$result = $flickr->call('flickr.auth.checkToken', array('api_key' => $flickr->key, 'auth_token'=>$token));
-			if(isset($result->auth->perms)) {
+			$result = $flickr->call('flickr.auth.checkToken', array('api_key' => $flickr->key, 'auth_token' => $token));
+			if(isset($result->auth->perms)){
 				$flickr_ok = true;
 			}
-			else {
+			else{
 				Options::set('flickr_token_' . User::identify()->id);
 				unset($_SESSION['flickr_token']);
 			}

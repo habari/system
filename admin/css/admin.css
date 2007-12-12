@@ -9,7 +9,7 @@
 
 html { /* Force Vertical Scrollbar to avoid popping */
 	/* IE */
-	overflow-y: scroll; 
+	overflow-y: scroll;
 	/* Moz */
 	height: 100%;
 	margin-bottom: 0.1em;
@@ -59,7 +59,8 @@ textarea {
 	width: 100%;
 	font-size: 1.2em;
 	background: #242424 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAICAIAAAC3eAIWAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpikpOTY2JgYABjRkZGdAwQYAAMYgB6RRurTwAAAABJRU5ErkJggg==) repeat-x top; /* Top dropshadow */
-	} 
+	z-index: 100;
+	}
 
 #oldmenu li {
 	display: inline;
@@ -138,7 +139,7 @@ textarea {
 	width: 100%;
 	font-size: 1.2em;
 	background: #242424 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAICAIAAAC3eAIWAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpikpOTY2JgYABjRkZGdAwQYAAMYgB6RRurTwAAAABJRU5ErkJggg==) repeat-x top; /* Top dropshadow */
-	} 
+	}
 
 #menu li {
 	display: inline;
@@ -196,7 +197,7 @@ textarea {
 	max-width: 250px;
 	margin: 10px 0 0 -1px;
 	}
-	
+
 .menu-list {
 	background: #e1e1e1;
 	border: 1px solid #b0b0b0;
@@ -235,7 +236,7 @@ textarea {
 	padding-bottom: 5px;
 	border-bottom: 1px solid #bbb;
 	}
-	
+
 #menu #managecontentlink {
 	padding-top: 5px;
 	}
@@ -289,20 +290,20 @@ ul.tabs li.first.last a {
 
 ul.tabs li.first {
 	background-position: left top;
-	} 
+	}
 
 ul.tabs li.last {
 	background-position: right top;
 	border: none;
-	} 
+	}
 
 ul.tabs li.ui-tabs-selected {
 	background-position: -10px bottom;
-	} 
+	}
 
 ul.tabs li.ui-tabs-selected.first {
 	background-position: left bottom;
-	} 
+	}
 
 ul.tabs li.ui-tabs-selected.last {
 	background-position: right bottom;
@@ -317,7 +318,7 @@ ul.tabs li.ui-tabs-selected.last {
 	}
 
 .splitterinside {
-	padding: 25px 0 20px;	
+	padding: 25px 0 20px;
 	}
 
 .ui-tabs-hide {
@@ -404,7 +405,7 @@ ul.tabs li.ui-tabs-selected.last {
 	}
 
 #formbuttons .publish {
-	font-weight: bold;			
+	font-weight: bold;
 	}
 
 #formbuttons p.last {
@@ -554,4 +555,19 @@ ul {
 	padding: 5px;
 	font-family: 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	margin: 15px;
+}
+
+/* Media */
+
+.media {
+	display: inline;
+}
+
+.media img {
+	margin-right:10px;
+	height:100px;
+}
+
+.media .foroutput {
+	display: none;
 }
