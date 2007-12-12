@@ -77,8 +77,7 @@
 
 		<div id="publishsettings" class="splitter">
 			<div class="splitterinside">
-				<div class="container"><p class="column span-5"><?php _e('Content Type'); ?></p> 		<p class="column span-14 last"><input type="text" name="content_type" class="styledformelement" value="<?php echo $content_type; ?>"></p></div>
-				<hr>
+	<input type="hidden" name="content_type" value="<?php echo $content_type; ?>">
 				<div class="container">
 					<p class="column span-5"><?php _e('Content State'); ?></p>
 					<p class="column span-14 last">
