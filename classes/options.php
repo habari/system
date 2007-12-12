@@ -26,20 +26,19 @@ class Options extends Singleton
 	 * 	 $foo = Options::get('foo'); //or
 	 * 	 list($foo, $bar, $baz) = Options::get('foo1', 'bar2', 'baz3'); //or
 	 * 	 extract(Options::get('foo', 'bar', 'baz')); //or
+	 *   list($foo, $bar, $baz) = Options::get(array('foo1', 'bar2', 'baz3')); // useful with array_keys()
 	 * </code>
 	 *
-	 * @param string $name... The string name(s) of the option(s) to retrieve
-	 * @return mixed The option requested or an array of requested options
+	 * @param string|array $name... The name(s) of the option(s) to retrieve
+	 * @return mixed The option requested or an array of requested options, null if it does not exist
 	 **/
 	public static function get( $name )
 	{
 		if ( func_num_args() > 1 ) {
-			$results= array();
-			$options= func_get_args();
-			foreach ( $options as $optname ) {
-				$results[$optname]= self::instance()->$optname;
-			}
-			return $results;
+			$name= func_get_args();
+		}
+		if ( is_array( $name ) ) {
+			return array_intersect_key( self::instance()->options, array_flip( $name ) );
 		}
 		return self::instance()->$name;
 	}
