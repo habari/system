@@ -84,8 +84,8 @@ class RawPHPEngine extends TemplateEngine
 		 *        the template content...
 		 */
 		extract( $this->engine_vars );
-		if ( file_exists( $this->template_dir . $template . '.php' ) ) {
-			$template_file= Plugins::filter('include_template_file', $this->template_dir . $template . '.php');
+		if ( $this->template_exists( $template ) ) {
+			$template_file= Plugins::filter('include_template_file', $this->template_dir . $template . '.php', $template);
 			include ( $template_file );
 		}
 	}
@@ -99,7 +99,7 @@ class RawPHPEngine extends TemplateEngine
 	public function template_exists( $template )
 	{
 		if( empty( $this->available_templates ) ) {
-			$this->available_templates= glob( Site::get_dir('theme', TRUE) . '*.*' );
+			$this->available_templates= glob( $this->template_dir . '*.*' );
 			$this->available_templates= array_map('basename', $this->available_templates, array_fill(1, count($this->available_templates), '.php') );
 		}
 		return in_array($template, $this->available_templates);
