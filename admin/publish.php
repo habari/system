@@ -93,7 +93,7 @@
 					</p>
 				</div>
 				<hr>
-				<div class="container"><p class="column span-5"><?php _e('Comments Allowed'); ?></p> 	<p class="column span-14 last"><input type="checkbox" name="comments_disabled" class="styledformelement" value="0" <?php echo ( $post->info->comments_disabled == 0 ) ? 'checked' : ''; ?>></p></div>
+				<div class="container"><p class="column span-5"><?php _e('Comments Allowed'); ?></p> 	<p class="column span-14 last"><input type="checkbox" name="comments_enabled" class="styledformelement" value="1" <?php echo ( $post->info->comments_disabled == 1 ) ? '' : 'checked'; ?>></p></div>
 				<hr>
 				<div class="container"><p class="column span-5"><?php _e('Publication Time'); ?></p>	<p class="column span-14 last"><input type="text" name="pubdate" id="pubdate" class="styledformelement" value="<?php echo $post->pubdate; ?>"></p></div>
 				<hr>
