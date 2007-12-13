@@ -163,7 +163,30 @@ class AdminHandler extends ActionHandler
 
 	function get_publish()
 	{
+		extract( $this->handler_vars );
+	
+		if ( isset( $slug ) ) {
+			$this->theme->post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+			$this->theme->tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
+			$this->theme->content_type= Post::type( $post->content_type );
+			$this->theme->newpost = false;
+		}
+		else {
+			$this->theme->post= new Post();
+			$this->theme->tags= '';
+			$this->theme->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
+			$this->theme->newpost = true;
+		}
+	
 		$this->theme->silos = Media::dir();
+
+		// pass "false" to list_post_statuses() so that we don't
+		// include internal post statuses
+		$statuses= Post::list_post_statuses( false );
+		unset( $statuses[array_search( 'any', $statuses )] );
+		$statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
+		$this->theme->statuses= $statuses;
+
 		$this->display( 'publish' );
 	}
 
