@@ -152,7 +152,7 @@ class AdminHandler extends ActionHandler
 				'content_type' => $content_type,
 			);
 			$post= Post::create( $postdata );
-			if ( $comments_disabled == TRUE ) {
+			if ( !isset($comments_enabled) ) {
 				$post->info->comments_disabled= TRUE;
 				$post->update();
 			}
@@ -166,7 +166,8 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 	
 		if ( isset( $slug ) ) {
-			$this->theme->post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+			$this->theme->post= $post;
 			$this->theme->tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
 			$this->theme->content_type= Post::type( $post->content_type );
 			$this->theme->newpost = false;

@@ -538,7 +538,7 @@ class Post extends QueryRecord
 		}
 
 		// invoke plugins for status changes
-		if($this->fields['status'] != $this->newfields['status'] && isset($this->newfields['status'])) {
+		if(isset($this->newfields['status']) && $this->fields['status'] != $this->newfields['status']) {
 		  Plugins::act('post_status_' . self::status_name($this->newfields['status']), $this, $this->fields['status'] );
 		}
 
