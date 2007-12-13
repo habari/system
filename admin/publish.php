@@ -5,21 +5,9 @@
 
 	<div class="container">
 
-		<?php
-			Session::messages_out();
-			if ( isset( $slug ) ) {
-				$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
-				$tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
-				$content_type= Post::type( $post->content_type );
-		?>
+		<?php if(!$newpost): ?>
 		<a href="<?php echo $post->permalink; ?>" class="viewpost">View Post</a>
-		<?php
-			} else {
-				$post= new Post();
-				$tags= '';
-				$content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
-			}
-		?>
+		<?php endif; ?>
 
 		<p><label for="title" class="incontent"><?php _e('Title'); ?></label><input type="text" name="title" id="title" class="styledformelement" size="100%" value="<?php if ( !empty($post->title) ) { echo $post->title; } ?>" tabindex='1'></p>
 	</div>
@@ -77,46 +65,12 @@
 
 		<div id="publishsettings" class="splitter">
 			<div class="splitterinside">
-	<input type="hidden" name="content_type" value="<?php echo $content_type; ?>">
-				<div class="container">
-					<p class="column span-5"><?php _e('Content State'); ?></p>
-					<p class="column span-14 last">
-						<?php
-						// pass "false" to list_post_statuses() so that we don't
-						// include internal post statuses
-						$statuses= Post::list_post_statuses( false );
-						unset( $statuses[array_search( 'any', $statuses )] );
-						$statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
-						?>
-
-					 	<label><?php echo Utils::html_select( 'status', array_flip($statuses), $post->status, array( 'class'=>'longselect') ); ?></label>
-					</p>
-				</div>
-				<hr>
-				<div class="container"><p class="column span-5"><?php _e('Comments Allowed'); ?></p> 	<p class="column span-14 last"><input type="checkbox" name="comments_enabled" class="styledformelement" value="1" <?php echo ( $post->info->comments_disabled == 1 ) ? '' : 'checked'; ?>></p></div>
-				<hr>
-				<div class="container"><p class="column span-5"><?php _e('Publication Time'); ?></p>	<p class="column span-14 last"><input type="text" name="pubdate" id="pubdate" class="styledformelement" value="<?php echo $post->pubdate; ?>"></p></div>
-				<hr>
-				<div class="container"><p class="column span-5"><?php _e('Content Address'); ?></p>		<p class="column span-14 last"><input type="text" name="newslug" id="newslug" class="styledformelement" value="<?php echo $post->slug; ?>"></p></div>
-
-				<?php if ( $post->slug != '' ) { ?>
-				<p><input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>"></p>
-				<?php } ?>
+			<?php $this->display('publish_settings'); ?>
 			</div>
 		</div>
 		<div id="tagsettings" class="splitter">
 			<div class="splitterinside">
-				<div class="container">
-					<p class="column span-5"><input type="button" value="Clear" id="clear"></p>
-				</div>
-				<hr>
-				<div class="container">
-					<ul id="tag-list" class="column span-19">
-					<?php foreach( Tags::get() as $taglist ) { ?>
-						<li id="<?php echo $taglist->tag; ?>"><?php echo $taglist->tag; ?></li>
-					<?php } ?>
-					</ul>
-				</div>
+			<?php $this->display('publish_tags'); ?>
 			</div>
 		</div>
 	</div>
