@@ -413,14 +413,14 @@ ul.tabs li.ui-tabs-selected.last {
 	}
 
 
-#tagsettings ul
+#tags_settings ul
 {
 	text-align: left;
 	margin-right: 50px;
 	margin-left: 10px;
 }
 
-#tagsettings li
+#tags_settings li
 {
 	font-family: "Arial", san-serif;
 	font-size: 0.8em;
@@ -431,7 +431,7 @@ ul.tabs li.ui-tabs-selected.last {
 	cursor: pointer;
 }
 
-#tagsettings li.clicked
+#tags_settings li.clicked
 {
 	background: #000;
 }

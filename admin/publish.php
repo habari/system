@@ -61,19 +61,35 @@
 
 	<div class="container pagesplitter">
 		<ul class="tabs">
-			<li class="publishsettings first"><a href="#publishsettings">Settings</a></li><li class="tagsettings last"><a href="#tagsettings">Tags</a></li><!--li class="preview last"><a href="#preview">Preview</a></li-->
+			<?php
+			$first = 'first';
+			$ct = 0;
+			$last = '';
+			foreach($controls as $controlsetname => $controlset) :
+				$ct++;
+				if($ct == count($controls)) {
+					$last = 'last';
+				}
+				$class = "{$first} {$last}";
+				$first = '';
+				$cname = preg_replace('%[^a-z]%', '', strtolower($controlsetname)) . '_settings';
+				echo <<< EO_CONTROLS
+<li class="{$cname} {$class}"><a href="#{$cname}">{$controlsetname}</a></li>
+EO_CONTROLS;
+			endforeach;
+			?>
 		</ul>
 
-		<div id="publishsettings" class="splitter">
+		<?php
+		foreach($controls as $controlsetname => $controlset):
+			$cname = preg_replace('%[^a-z]%', '', strtolower($controlsetname)) . '_settings';
+		?>
+		<div id="<?php echo $cname; ?>" class="splitter">
 			<div class="splitterinside">
-			<?php $this->display('publish_settings'); ?>
+			<?php echo $controlset; ?>
 			</div>
 		</div>
-		<div id="tagsettings" class="splitter">
-			<div class="splitterinside">
-			<?php $this->display('publish_tags'); ?>
-			</div>
-		</div>
+		<?php endforeach; ?>
 	</div>
 
 

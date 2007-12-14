@@ -17,14 +17,14 @@ class RawPHPEngine extends TemplateEngine
 
 	/**
 	 * Constructor for RawPHPEngine
-	 * 
+	 *
 	 * Sets up default values for required settings.
 	 */
 	public function __construct()
 	{
 		// Nothing to do here...
 	}
-	
+
 	/**
 	 * Tries to retrieve a variable from the internal array engine_vars.
 	 * Method returns the value if succesful, returns false otherwise.
@@ -35,11 +35,11 @@ class RawPHPEngine extends TemplateEngine
 	{
 		return isset( $this->engine_vars[$key] ) ? $this->engine_vars[$key] : null;
 	}
-	
-	/** 
-	 * Assigns a variable to the template engine for use in 
+
+	/**
+	 * Assigns a variable to the template engine for use in
 	 * constructing the template's output.
-	 * 
+	 *
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
@@ -47,21 +47,21 @@ class RawPHPEngine extends TemplateEngine
 	{
 		$this->engine_vars[$key]= $value;
 	}
-	
-	/** 
+
+	/**
 	 * Unassigns a variable to the template engine.
-	 * 
+	 *
 	 * @param key name of variable
 	 */
 	public function __unset( $key )
 	{
 		unset( $this->engine_vars[$key] );
 	}
-	
-	/** 
-	 * Detects if a variable is assigned to the template engine for use in 
+
+	/**
+	 * Detects if a variable is assigned to the template engine for use in
 	 * constructing the template's output.
-	 * 
+	 *
 	 * @param key name of variable
 	 * @returns boolean true if name is set, false if not set
 	 */
@@ -69,16 +69,16 @@ class RawPHPEngine extends TemplateEngine
 	{
 		return isset( $this->engine_vars[$key] );
 	}
-	
+
 	/**
 	 * A function which outputs the result of a transposed
 	 * template to the output stream
-	 * 
+	 *
 	 * @param template  Name of template to display
 	 */
 	public function display( $template )
 	{
-		/** 
+		/**
 		 * @todo  Here would be a good place to notify observers of output.
 		 *        For instance, having sessions/headers output before
 		 *        the template content...
@@ -90,9 +90,9 @@ class RawPHPEngine extends TemplateEngine
 		}
 	}
 
-	/** 
+	/**
 	 * Returns the existance of the specified template name
-	 * 
+	 *
 	 * @param template $template Name of template to detect
 	 * @returns boolean True if the template exists, false if not
 	 */
@@ -105,7 +105,7 @@ class RawPHPEngine extends TemplateEngine
 		return in_array($template, $this->available_templates);
 	}
 
-	/** 
+	/**
 	 * A function which returns the content of the transposed
 	 * template as a string
 	 *
@@ -115,26 +115,26 @@ class RawPHPEngine extends TemplateEngine
 	{
 		ob_start();
 		$this->display( $template );
-		$contents= ob_get_contents();
+		$contents= ob_get_clean();
 		return $contents;
 	}
-	
-	/** 
-	 * Assigns a variable to the template engine for use in 
+
+	/**
+	 * Assigns a variable to the template engine for use in
 	 * constructing the template's output.
-	 * 
+	 *
 	 * @param key name( s ) of variable
 	 * @param value value of variable
 	 */
 	public function assign( $key, $value= '' )
 	{
 		$this->$key= $value;
-	} 
-	
-	/** 
-	 * Detects if a variable is assigned to the template engine for use in 
+	}
+
+	/**
+	 * Detects if a variable is assigned to the template engine for use in
 	 * constructing the template's output.
-	 * 
+	 *
 	 * @param string $key name of variable
 	 * @returns boolean true if key is set, false if not set
 	 */
@@ -143,9 +143,9 @@ class RawPHPEngine extends TemplateEngine
 		return isset( $this->$key );
 	}
 
-	/** 
+	/**
 	 * Appends to an existing variable more values
-	 * 
+	 *
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
@@ -157,6 +157,6 @@ class RawPHPEngine extends TemplateEngine
 		else {
 			$this->engine_vars[$key]= $value;
 		}
-	} 
+	}
 }
 ?>
