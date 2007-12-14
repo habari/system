@@ -187,6 +187,7 @@ class AdminHandler extends ActionHandler
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
 		$this->theme->statuses= $statuses;
+		$this->theme->wsse= Utils::WSSE();
 
 		$this->display( 'publish' );
 	}
@@ -213,6 +214,7 @@ class AdminHandler extends ActionHandler
 		}
 		$post= Post::get( array( 'slug' => $slug ) );
 		$post->delete();
+		Session::notice(sprintf(_t('Deleted %1$s "%2$s".'), Post::type_name($post->content_type), $post->title));
 		Utils::redirect( URL::get( 'admin', 'page=content' ) );
 	}
 
