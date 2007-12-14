@@ -164,7 +164,7 @@ class AdminHandler extends ActionHandler
 	function get_publish()
 	{
 		extract( $this->handler_vars );
-	
+
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 			$this->theme->post= $post;
@@ -178,7 +178,7 @@ class AdminHandler extends ActionHandler
 			$this->theme->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost = true;
 		}
-	
+
 		$this->theme->silos = Media::dir();
 
 		// pass "false" to list_post_statuses() so that we don't
@@ -188,6 +188,12 @@ class AdminHandler extends ActionHandler
 		$statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
 		$this->theme->statuses= $statuses;
 		$this->theme->wsse= Utils::WSSE();
+
+		$controls = array(
+			'Settings' => $this->theme->fetch('publish_settings'),
+			'Tags' => $this->theme->fetch('publish_tags'),
+		);
+		$this->theme->controls = Plugins::filter('publish_controls', $controls);
 
 		$this->display( 'publish' );
 	}

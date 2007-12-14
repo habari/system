@@ -376,6 +376,19 @@ class Theme
 		$this->template_engine->display( $template_name );
 	}
 
+	public function fetch( $template_name )
+	{
+		$this->add_template_vars();
+
+		if( isset( Controller::get_handler()->handler_vars ) ) {
+			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
+				$this->assign( $key, $value );
+			}
+		}
+
+		return $this->template_engine->fetch( $template_name );
+	}
+
 	/**
 	 * Helper function: Avoids having to call $theme->template_engine->key= 'value';
 	 */
