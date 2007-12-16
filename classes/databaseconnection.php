@@ -47,6 +47,7 @@ class DatabaseConnection
 	 * @var array mapping of table name -> prefixed table name
 	 */
 	private $sql_tables= array();
+	private $sql_tables_repl = array();
 	private $errors= array();                       // an array of errors related to queries
 	private $profiles= array();                     	// an array of query profiles
 
@@ -85,6 +86,7 @@ class DatabaseConnection
 		// build the mapping with prefixes
 		foreach ( $this->tables as $t ) {
 			$this->sql_tables[$t]= $prefix . $t;
+			$this->sql_tables_repl[$t]= '{' . $t . '}';
 		}
 	}
 
@@ -200,6 +202,15 @@ class DatabaseConnection
 		if ( $this->pdo_statement != NULL ) {
 			$this->pdo_statement->closeCursor();
 		}
+
+		// Allow plugins to modify the query
+		$query = Plugins::filter( 'query', $query, $args );
+		// Translate the query for the database engine
+		$query = self::sql_t( $query, $args );
+		// Replace braced table names in the query with their prefixed counterparts
+		$query = self::filter_tables( $query );
+		// Allow plugins to modify the query after it has been processed
+		$query = Plugins::filter( 'query_postprocess', $query, $args );
 
 		if ( $this->pdo_statement= $this->pdo->prepare( $query ) ) {
 			if ( $this->fetch_mode == PDO::FETCH_CLASS ) {
@@ -628,6 +639,29 @@ class DatabaseConnection
 	 */
 	public function dbdelta( $queries, $execute = true, $silent = true ){}
 
+
+	/**
+	 * Translates the query for the current database engine
+	 *
+	 * @param string $query The query to translate for the current database engine
+	 * @param array $args Arguments to the query
+	 * @return string The translated query
+	 */
+	public function sql_t( $query )
+	{
+		return $query;
+	}
+
+	/**
+	 * Replace braced table names with their prefixed counterparts
+	 *
+	 * @param string $query The query with {braced} table names
+	 * @return string The translated query
+	 */
+	public function filter_tables( $query )
+	{
+		return str_replace($this->sql_tables_repl, $this->sql_tables, $query);
+	}
 }
 
 ?>
