@@ -372,6 +372,7 @@ class Theme
 				$this->assign( $key, $value );
 			}
 		}
+		$this->assign( 'theme', $this );
 
 		$this->template_engine->display( $template_name );
 	}
@@ -480,6 +481,39 @@ class Theme
 			$action = substr($function, 4);
 			Plugins::act('theme_action', $action, $this, $user_filters);
 		}
+		if ( method_exists( 'ThemeFunctions', $function ) ) {
+			call_user_func_array( array( 'ThemeFunctions', $function ), $params );
+		}
+	}
+
+}
+
+/**
+ * Library of methods used by theme developers
+ */
+class ThemeFunctions extends Theme {
+	
+	/**
+	 * Outputs a full qualified URL of the specified post based on the comments count.
+ 	 *
+	 * Passed strings are localized prior to parsing therefore to localize "%s Comments" in french, it would be "%s Commentaires".
+	 *
+	 * Since we use sprintf() in the final concatenation, you can format passed strings accordingly.
+	 *
+	 * @param $post Post object used to build the comments link
+	 * @param $zero String to return when there are no comments
+	 * @param $one String to return when there is one comment
+	 * @param $many String to return when there are more than one comment
+	 */
+	public function comments_link( $post, $zero, $one, $many ) {
+		$count= $post->comments->approved->count;
+		if ($count > 1) {
+			$text= _n( $one, $many, $count );
+		}
+		else {
+			$text= _( $zero );
+		}
+		echo '<a href="' . $post->permalink . '" title="' . _( 'Read Comments' ) . '">' . sprintf( $text, $count ) . '</a>';
 	}
 
 }
