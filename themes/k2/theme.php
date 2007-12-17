@@ -60,22 +60,6 @@ class MyTheme extends Theme
 		if( !$this->template_engine->assigned( 'page' ) ) {
 			$this->assign('page', isset( $page ) ? $page : 1 );
 		}
-		if( !$this->template_engine->assigned( 'feed_alternate' ) ) {
-			$matched_rule= URL::get_matched_rule();
-			switch ( $matched_rule->name ) {
-				case 'display_entry':
-				case 'display_page':
-					$feed_alternate= URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
-					break;
-				case 'display_entries_by_tag':
-					$feed_alternate= URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var('tag') ) );
-					break;
-				case 'display_home':
-				default:
-					$feed_alternate= URL::get( 'atom_feed', array( 'index' => '1' ) );
-			}
-			$this->assign('feed_alternate', $feed_alternate);
-		}
 		parent::add_template_vars();
 	}
 
