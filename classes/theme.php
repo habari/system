@@ -386,6 +386,7 @@ class Theme
 				$this->assign( $key, $value );
 			}
 		}
+		$this->assign( 'theme', $this );
 
 		return $this->template_engine->fetch( $template_name );
 	}
@@ -469,62 +470,15 @@ class Theme
 			$action = substr($function, 4);
 			Plugins::act('theme_action', $action, $this, $user_filters);
 		}
-		if ( method_exists( 'ThemeFunctions', $function ) ) {
-			call_user_func_array( array( 'ThemeFunctions', $function ), $params );
-		}
-	}
-
-}
-
-/**
- * Library of methods used by theme developers
- */
-class ThemeFunctions extends Theme {
-	
-	/**
-	 * Outputs a full qualified URL of the specified post based on the comments count.
- 	 *
-	 * Passed strings are localized prior to parsing therefore to localize "%s Comments" in french, it would be "%s Commentaires".
-	 *
-	 * Since we use sprintf() in the final concatenation, you can format passed strings accordingly.
-	 *
-	 * @param $post Post object used to build the comments link
-	 * @param $zero String to return when there are no comments
-	 * @param $one String to return when there is one comment
-	 * @param $many String to return when there are more than one comment
-	 */
-	public function comments_link( $post, $zero, $one, $many ) {
-		$count= $post->comments->approved->count;
-		if ($count > 1) {
-			$text= _n( $one, $many, $count );
-		}
 		else {
-			$text= _( $zero );
-		}
-		echo '<a href="' . $post->permalink . '" title="' . _( 'Read Comments' ) . '">' . sprintf( $text, $count ) . '</a>';
-	}
-	
-	/**
-	 * Returns the appropriate alternate feed based on the currently matched rewrite rule.
-	 *
-	 * @return string Link to the appropriate alternate Atom feed
-	 */
-	public function feed_alternate() {
-		$matched_rule= URL::get_matched_rule();
-		switch ( $matched_rule->name ) {
-			case 'display_entry':
-			case 'display_page':
-				echo URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
-				break;
-			case 'display_entries_by_tag':
-				echo URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var('tag') ) );
-				break;
-			case 'display_home':
-			default:
-				echo URL::get( 'atom_feed', array( 'index' => '1' ) );
+			$return = false;
+			array_unshift($params, 'theme_call_' . $function, $return, $this);
+			return call_user_func_array(array('Plugins', 'filter'), $params);
 		}
 	}
 
 }
+
+
 
 ?>
