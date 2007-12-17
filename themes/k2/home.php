@@ -10,7 +10,7 @@
        <h3 class="entry-title"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h3>
        <small class="entry-meta">
         <span class="chronodata"><abbr class="published"><?php echo $post->pubdate_out; ?></abbr></span>
-        <span class="commentslink"><?php $theme->comments_link( $post, 'No Comments', '%s Comment', '%s Comments' ); ?></span>
+        <span class="commentslink"><?php echo $theme->comments_link( $post, 'No Comments', '%s Comment', '%s Comments' ); ?></span>
 <?php if ( $user ) { ?>
         <span class="entry-edit"><a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit post">Edit</a></span>
 <?php } ?>
@@ -22,29 +22,29 @@
 
       <div class="entry-content">
        <?php echo $post->content_out; ?>
- 
+
       </div>
- 
+
      </div>
 <?php } ?>
     </div>
- 
+
     <div id="page-selector">
-	 
+
      <strong>Page:</strong> <?php echo Utils::page_selector( $page, Utils::archive_pages( $posts->count_all() ), null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?>
-    
+
     </div>
- 
+
    </div>
- 
+
    <hr>
- 
+
    <div class="secondary">
- 
+
 <?php include 'sidebar.php'; ?>
- 
+
    </div>
- 
+
    <div class="clear"></div>
   </div>
 <!-- /home -->
