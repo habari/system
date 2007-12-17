@@ -84,6 +84,7 @@ class MyTheme extends Theme
 		if ( User::identify() != FALSE ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
 		}
+		parent::header();
 	}
 
 }

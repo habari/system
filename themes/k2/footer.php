@@ -10,7 +10,7 @@
  <small><a href="<?php URL::out( 'atom_feed', array( 'index' => '1' ) ); ?>">Atom Entries</a> and <a href="<?php URL::out( 'atom_feed_comments' ); ?>">Atom Comments</a></small>
 </p>
 
-<?php Theme::footer(); ?>
+<?php $theme->footer(); ?>
 
 <?php
 // Uncomment this to view your DB profiling info
