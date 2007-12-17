@@ -118,6 +118,10 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_publish() {
 		extract( $this->handler_vars );
+		if ( !is_numeric( $content_type ) ) {
+			// fix for issue #85?
+			$content_type= Post::type( $content_type );
+		}
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 			$post->title= $title;
