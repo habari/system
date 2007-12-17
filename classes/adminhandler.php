@@ -118,10 +118,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_publish() {
 		extract( $this->handler_vars );
-		if ( !is_numeric( $content_type ) ) {
-			// fix for issue #85?
-			$content_type= Post::type( $content_type );
-		}
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 			$post->title= $title;
@@ -182,6 +178,10 @@ class AdminHandler extends ActionHandler
 			$this->theme->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost = true;
 		}
+		
+		// Theme assigns all handler vars as theme vars, thus clobbering what we
+		// set above in some cases (i.e. when ?content_type=entry is in the query string)
+		$this->handler_vars['content_type']= $this->theme->content_type;
 
 		$this->theme->silos = Media::dir();
 
@@ -198,7 +198,7 @@ class AdminHandler extends ActionHandler
 			'Tags' => $this->theme->fetch('publish_tags'),
 		);
 		$this->theme->controls = Plugins::filter('publish_controls', $controls);
-
+		
 		$this->display( 'publish' );
 	}
 
@@ -975,10 +975,6 @@ class AdminHandler extends ActionHandler
 	 * @param template_name Name of template to display (note: not the filename)
 	 */
 	protected function display( $template_name ) {
-		// Assign internal variables into the theme. See Theme::assign()
-		foreach ( $this->handler_vars as $key => $value ) {
-			$this->theme->assign( $key, $value );
-		}
 		$this->theme->display( $template_name );
 	}
 
