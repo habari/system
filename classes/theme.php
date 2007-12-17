@@ -503,6 +503,27 @@ class ThemeFunctions extends Theme {
 		}
 		echo '<a href="' . $post->permalink . '" title="' . _( 'Read Comments' ) . '">' . sprintf( $text, $count ) . '</a>';
 	}
+	
+	/**
+	 * Returns the appropriate alternate feed based on the currently matched rewrite rule.
+	 *
+	 * @return string Link to the appropriate alternate Atom feed
+	 */
+	public function feed_alternate() {
+		$matched_rule= URL::get_matched_rule();
+		switch ( $matched_rule->name ) {
+			case 'display_entry':
+			case 'display_page':
+				echo URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
+				break;
+			case 'display_entries_by_tag':
+				echo URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var('tag') ) );
+				break;
+			case 'display_home':
+			default:
+				echo URL::get( 'atom_feed', array( 'index' => '1' ) );
+		}
+	}
 
 }
 
