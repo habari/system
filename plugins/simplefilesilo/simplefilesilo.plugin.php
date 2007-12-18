@@ -26,7 +26,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 			'author' =>	'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'license' => 'Apache License 2.0',
-			'desccription' => 'Demonstrates basic silo functionality',
+			'description' => 'Demonstrates basic silo functionality',
 			'copyright' => '2007',
 		);
 	}
