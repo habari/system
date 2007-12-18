@@ -32,7 +32,7 @@
 				}
 				else {
 				?>
-					<tr>
+					<tr id="plugin_<?php echo $plugin['plugin_id']; ?>">
 						<td><?php echo '<a href="' . $plugin['info']->url . '">' . $plugin['info']->name . '</a>'; ?>
 						</td>
 						<td><?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?></td>
@@ -55,7 +55,7 @@
 									$plugin_action = $plugin_action_caption;
 								}
 								?>
-								<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&action=' . $plugin_action ); ?>#plugin_options"><?php echo $plugin_action_caption; ?></a>
+								<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&action=' . $plugin_action ); ?>#plugin_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin_action_caption; ?></a>
 								<?php
 							}
 						}
