@@ -438,7 +438,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			'author' => 'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'license' => 'Apache License 2.0',
-			'desccription' => 'Implements basic Flickr integration',
+			'description' => 'Implements basic Flickr integration',
 			'copyright' => '2007',
 			);
 	}
