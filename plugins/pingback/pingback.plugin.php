@@ -19,7 +19,7 @@ class Pingback extends Plugin {
 			'author' =>	'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'license' => 'Apache License 2.0',
-			'desccription' => 'Adds support Pingback 1.0 methods to the XML-RPC server.',
+			'description' => 'Adds support Pingback 1.0 methods to the XML-RPC server.',
 			'copyright' => '2007'
 		);
 	}
