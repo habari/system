@@ -13,6 +13,7 @@
 					<th align="left">Plugin Name</th>
 					<th align="left">Author Name</th>
 					<th align="left">Version</th>
+					<th align="left">Description</th>
 					<th>Action</th>
 				</tr>
 			</thead>
@@ -36,6 +37,7 @@
 						</td>
 						<td><?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?></td>
 						<td><?php echo $plugin['info']->version; ?></td>
+						<td><?php echo $plugin['info']->description; ?></td>
 						<td>
 						<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
 						<p><input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
