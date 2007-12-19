@@ -13,21 +13,22 @@ class FormUI
 	public $controls= array();
 	private $success_callback;
 	private static $outpre = false;
-	
+	private $has_user_options = false;
+
 	/**
 	 * Form UI constructor - create to build form UI.
-	 * 
+	 *
 	 * @param string $name The name of the form, used to differentiate multiple forms.
 	 */
 	public function __construct( $name )
 	{
 		$this->name= $name;
 	}
-	
+
 	/**
 	 * Get a unique id for this form, based on its name.
-	 * 
-	 * @return string A salted name for the form 
+	 *
+	 * @return string A salted name for the form
 	 */
 	public function salted_name()
 	{
@@ -36,7 +37,7 @@ class FormUI
 
 	/**
 	 * Produce a form with the contained fields.
-	 * 
+	 *
 	 * @return string Form HTML.
 	 */
 	public function get()
@@ -58,14 +59,14 @@ class FormUI
 		';
 		$out.= $this->pre_out_controls();
 		$out.= $this->output_controls($forvalidation);
-		
+
 		$out.= '<input type="submit" value="save">';
-		
+
 		$out.= '</form>';
-		
+
 		echo $out;
 	}
-	
+
 	/**
 	 * Output a form with the contained fields.
 	 * Calls $this->get() and echoes.
@@ -75,10 +76,10 @@ class FormUI
 		$args= func_get_args();
 		echo call_user_func_array(array($this, 'get'), $args);
 	}
-	
+
 	/**
 	 * Return the form control HTML.
-	 * 
+	 *
 	 * @param boolean $forvalidation True if the controls should output additional information based on validation.
 	 * @return string The output of controls' HTML.
 	 */
@@ -90,10 +91,10 @@ class FormUI
 		}
 		return $out;
 	}
-	
+
 	/**
 	 * Return pre-output control configuration scripts for any controls that require them.
-	 * 
+	 *
 	 * @return string The output of controls' pre-output HTML.
 	 */
 	public function pre_out_controls( )
@@ -108,10 +109,10 @@ class FormUI
 		}
 		return $out;
 	}
-	
+
 	/**
-	 * Process validation on all controls of this form. 
-	 * 
+	 * Process validation on all controls of this form.
+	 *
 	 * @return array An array of strings describing validation issues, or an empty array if no issues.
 	 */
 	public function validate()
@@ -122,7 +123,7 @@ class FormUI
 		}
 		return $validate;
 	}
-	
+
 	/**
 	 * Add a control to this form.
 	 * If a default value is not provided, the function attempts to obtain the value
@@ -131,33 +132,51 @@ class FormUI
 	 * the function attempts to obtain the control's value from Options::get('myform:mycontrol')
 	 * These settings may also be used in FormUI::success() later to write the value
 	 * of the control back into the options table.
-	 * 
+	 *
 	 * @param string $type A classname, or the postfix of a class starting 'FormControl' that will be used to create the control
 	 * @param string $name The name of the control, also the latter part of the Options table key value
-	 * @param string $caption The caption used in the form to label the control 
-	 * @param mixed $default (optional) A default value for the control, otherwise taken from Options table 
-	 * @return FormControl An instance of the named FormControl descendant. 
+	 * @param string $caption The caption used in the form to label the control
+	 * @param mixed $default (optional) A default value for the control, otherwise taken from Options table
+	 * @return FormControl An instance of the named FormControl descendant.
 	 */
 	public function add($type, $name, $caption, $default= null)
 	{
 		$control= null;
+
+
 		if(is_string($type) && class_exists('FormControl' . ucwords($type))) {
 			$type= 'FormControl' . ucwords($type);
 		}
+		if(strpos($name, 'user:') === 0) {
+			$store_user = true;
+			$name = substr($name, 5);
+			$storage_name = $this->name . '_' . $name;
+		}
+		else {
+			$store_user = false;
+			$storage_name = $this->name . ':' . $name;
+		}
+
 		if(empty($default)) {
-			$default= Options::get( $this->name . ':' . $name );
+			if($store_user) {
+				$default= User::identify()->info->{$storage_name};
+				$this->has_user_options = true;
+			}
+			else {
+				$default= Options::get( $storage_name );
+			}
 		}
 		if(class_exists($type)) {
 			$control= new $type($name, $caption, $default);
-			$control->set_storage( $this->name . ':' . $name );
+			$control->set_storage( $storage_name, $store_user );
 			$this->controls[$name]= $control;
 		}
 		return $control;
 	}
-	
+
 	/**
 	 * Set a function to call on form submission success
-	 * 
+	 *
 	 * @param mixed $callback A callback function or a plugin filter name.
 	 */
 	public function on_success( $callback )
@@ -167,7 +186,7 @@ class FormUI
 
 	/**
 	 * Calls the success callback for the form, and optionally saves the form values
-	 * to the options table. 
+	 * to the options table.
 	 */
 	public function success()
 	{
@@ -185,6 +204,9 @@ class FormUI
 				$control->save();
 			}
 		}
+		if($this->has_user_options) {
+			User::identify()->info->commit();
+		}
 	}
 
 }
@@ -200,10 +222,11 @@ class FormControl
 	protected $default;
 	protected $validators= array();
 	protected $storage;
+	protected $store_user = false;
 
 	/**
 	 * FormControl constructor - set initial settings of the control
-	 * 
+	 *
 	 * @param string $name The name of the control
 	 * @param string $caption The caption used a the label when displaying a control
 	 * @param string $default The default value of the control
@@ -214,55 +237,65 @@ class FormControl
 		$this->caption= $caption;
 		$this->default= $default;
 	}
-	
-	
+
+
 	/**
 	 * Set the Options table key under which this option will be stored
-	 * 
+	 *
 	 * @param string $key The Options table key to store this option in
+	 * @param boolean $store_user True to store the value in userinfo rather than
 	 */
-	public function set_storage($key)
+	public function set_storage($key, $store_user = false)
 	{
 		$this->storage= $key;
+		$this->store_user = $store_user;
 	}
-	
+
 	/**
 	 * Store this control's value under the conrol's specified key.
-	 * 
-	 * @param string $key (optional) The Options table key to store this option in 
+	 *
+	 * @param string $key (optional) The Options table key to store this option in
 	 */
-	public function save($key= null)
+	public function save($key= null, $store_user= null)
 	{
 		if(isset($key)) {
 			$this->storage= $key;
 		}
-		Options::set($this->storage, $this->value);
+		if(isset($store_user)) {
+			$this->store_user= $store_user;
+		}
+		if($this->store_user) {
+			User::identify()->info->{$this->storage} = $this->value;
+		}
+		else {
+			Options::set($this->storage, $this->value);
+		}
 	}
 
 	/**
 	 * Return the HTML construction of the control.
 	 * Abstract function.
-	 * 
+	 *
 	 * @param boolean $forvalidation True if the control should output validation information with the control.
 	 */
-	public function out($forvalidation) 
+	public function out($forvalidation)
 	{
 		return '';
 	}
-	
+
 	/**
 	 * Return the HTML/script required for this type of control.
 	 * Abstract function.
-	 * 
+	 *
 	 */
-	public function pre_out() 
+	public function pre_out()
 	{
 		return '';
 	}
-	
+
 	/**
 	 * Runs any attached validation functions to check validation of this control.
-	 * 
+	 *
 	 * @return array An array of string validation error descriptions or an empty array if no errors were found.
 	 */
 	public function validate()
@@ -281,14 +314,14 @@ class FormControl
 		}
 		return $valid;
 	}
-	
+
 	/**
 	 * Magic function __get returns properties for this object.
 	 * Potential valid properties:
 	 * field: A valid unique name for this control in HTML.
 	 * value: The value of the control, whether the default or submitted in the form
 	 * name: The name of the control
-	 * 
+	 *
 	 * @param string $name The paramter to retrieve
 	 * @return mixed The value of the parameter
 	 */
@@ -311,21 +344,21 @@ class FormControl
 		}
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Add a validation function to this control.
-	 * 
+	 *
 	 * @param mixed $callback A callback function or a plugin filter hook that will return an array of validation errors.
 	 */
 	public function add_validator( $callback )
 	{
-		$this->validators[]= $callback;		
+		$this->validators[]= $callback;
 	}
-	
+
 	/**
 	 * A validation function that returns an error if the value passed in is not set.
-	 * 
+	 *
 	 * @param string $text A value to test if it is empty
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
@@ -336,7 +369,7 @@ class FormControl
 		}
 		return array();
 	}
-	
+
 }
 
 /**
@@ -347,7 +380,7 @@ class FormControlText extends FormControl
 
 	/**
 	 * Produce HTML output for this text control.
-	 * 
+	 *
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
@@ -361,7 +394,7 @@ class FormControlText extends FormControl
 				$message= implode('<br>', $validate);
 			}
 		}
-	
+
 		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="text" name="' . $this->field . '" value="' . $this->value . '"></label>';
 		if(isset($message)) {
 			$out.= '<p class="error">' . $message . '</p>';
@@ -369,10 +402,10 @@ class FormControlText extends FormControl
 		$out.= '</div>';
 		return $out;
 	}
-	
+
 	/**
 	 * A validation function that returns an error if the value passed in is not a valid URL.
-	 * 
+	 *
 	 * @param string $text A string to test if it is a valid URL
 	 * @return array An empty array if the string is a valid URL, or an array with strings describing the errors
 	 */
@@ -395,7 +428,7 @@ class FormControlPassword extends FormControlText
 
 	/**
 	 * Produce HTML output for this password control.
-	 * 
+	 *
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
@@ -409,20 +442,20 @@ class FormControlPassword extends FormControlText
 				$message= implode('<br>', $validate);
 			}
 		}
-	
-		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="password" name="' . $this->field . '" value="' . md5($this->value) . '"></label>';
+
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="password" name="' . $this->field . '" value="' . substr(md5($this->value), 0, 8) . '"></label>';
 		if(isset($message)) {
 			$out.= '<p class="error">' . $message . '</p>';
 		}
 		$out.= '</div>';
 		return $out;
 	}
-	
+
 	/**
 	 * Magic function __get returns properties for this object, or passes it on to the parent class
 	 * Potential valid properties:
 	 * value: The value of the control, whether the default or submitted in the form
-	 * 
+	 *
 	 * @param string $name The paramter to retrieve
 	 * @return mixed The value of the parameter
 	 */
@@ -431,7 +464,7 @@ class FormControlPassword extends FormControlText
 		switch($name) {
 			case 'value':
 				if(isset($_POST[$this->field])) {
-					if($_POST[$this->field] == md5($this->default)) {
+					if($_POST[$this->field] == substr(md5($this->default), 0, 8)) {
 						return $this->default;
 					}
 					else {
@@ -449,7 +482,7 @@ class FormControlPassword extends FormControlText
 
 /**
  * A multiple-slot text control based on FormControl for output via a FormUI.
- * @todo Make DHTML fallback for non-js browsers 
+ * @todo Make DHTML fallback for non-js browsers
  */
 class FormControlTextMulti extends FormControl
 {
@@ -457,7 +490,7 @@ class FormControlTextMulti extends FormControl
 
 	/**
 	 * Produce HTML output for this text control.
-	 * 
+	 *
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
@@ -471,7 +504,7 @@ class FormControlTextMulti extends FormControl
 				$message= implode('<br>', $validate);
 			}
 		}
-	
+
 		$out= '<div class="' . $class . '">';
 		if(isset($message)) {
 			$out.= '<p class="error">' . $message . '</p>';
@@ -488,11 +521,11 @@ class FormControlTextMulti extends FormControl
 		$out.= '</div>';
 		return $out;
 	}
-	
+
 	/**
 	 * Return the HTML/script required for this control.  Do it only once.
-	 * @return string The HTML/javascript required for this control.	 
-	 */	 
+	 * @return string The HTML/javascript required for this control.
+	 */
 	public function pre_out()
 	{
 		$out= '';
@@ -517,10 +550,10 @@ class FormControlTextMulti extends FormControl
 		}
 		return $out;
 	}
-	
+
 	/**
 	 * A validation function that returns an error if the value passed in is not a valid URL.
-	 * 
+	 *
 	 * @param array $text An array of strings to test if they are all valid URLs
 	 * @return array An empty array if the array of strings is all valid URLs, or an array with strings describing the errors
 	 */
@@ -544,10 +577,10 @@ class FormControlTextMulti extends FormControl
 class FormControlSelect extends FormControl
 {
 	public $options = array();
-	
+
 	/**
 	 * Produce HTML output for this text control.
-	 * 
+	 *
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
@@ -585,7 +618,7 @@ class FormControlTextArea extends FormControl
 
 	/**
 	 * Produce HTML output for this text control.
-	 * 
+	 *
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
@@ -611,5 +644,64 @@ class FormControlTextArea extends FormControl
 	}
 }
 
+/**
+ * A checkbox control based on FormControl for output via a FormUI.
+ */
+class FormControlCheckbox extends FormControl
+{
+
+	/**
+	 * Produce HTML output for this text control.
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function out($forvalidation)
+	{
+		$class= 'checkbox formcontrol';
+		if($forvalidation) {
+			$validate= $this->validate();
+			if(count($validate) != 0) {
+				$class.= ' invalid';
+				$message= implode('<br>', $validate);
+			}
+		}
+
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="checkbox" name="' . $this->field . '" value="1" ' . (($this->value) ? 'checked' : '' ) . '><input type="hidden" name="' . $this->field . '_submitted" value="1" ></label>';
+
+		if(isset($message)) {
+			$out.= '<p class="error">' . $message . '</p>';
+		}
+		$out.= '</div>';
+
+		return $out;
+	}
+
+	/**
+	 * Magic __get method for returning property values
+	 * Override the handling of the value property to properly return the setting of the checkbox.
+	 *
+	 * @param string $name The name of the property
+	 * @return mixed The value of the requested property
+	 */
+	protected function __get($name)
+	{
+		switch($name) {
+		case 'value':
+			if(isset($_POST[$this->field . '_submitted'])) {
+				if(isset($_POST[$this->field])) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return $this->default;
+			}
+		}
+		return parent::__get($name);
+	}
+}
 
 ?>
