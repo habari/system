@@ -169,7 +169,10 @@ class Controller extends Singleton {
 	 */
 	public function dispatch_request() {
 		/* OK, set the wheels in motion... */
-		Controller::instance()->handler->act(Controller::instance()->action);
+		Plugins::act('handler_' . Controller::instance()->action, Controller::get_handler_vars());
+		if(method_exists(Controller::instance()->handler, 'act')) {
+			Controller::instance()->handler->act(Controller::instance()->action);
+		}
 	}
 }
 
