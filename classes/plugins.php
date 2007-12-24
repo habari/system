@@ -168,7 +168,7 @@ class Plugins
 	static public function list_all()
 	{
 		$plugins= array();
-		$plugindirs= array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/contrib/plugins/', HABARI_PATH . '/user/plugins/' );
+		$plugindirs= array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/3rdparty/plugins/', HABARI_PATH . '/user/plugins/' );
 		if ( Site::CONFIG_LOCAL != Site::$config_type ) {
 			// include site-specific plugins
 			$plugindirs[]= Site::get_dir('config') . '/plugins/';
