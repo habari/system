@@ -104,7 +104,7 @@ class Error extends Exception
 		}
 	}
 	
-	private function print_backtrace( $trace= null )
+	private static function print_backtrace( $trace= null )
 	{
 		if ( !isset($trace) )
 			$trace= debug_backtrace();

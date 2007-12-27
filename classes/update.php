@@ -19,9 +19,9 @@ class Update extends Singleton
 	 *
 	 * @see singleton.php
 	 */
-	static protected function instance()
+	protected static function instance()
 	{
-		return parent::instance( get_class() );
+		return self::getInstanceOf( get_class() );
 	}
 
 	/**

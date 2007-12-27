@@ -17,8 +17,8 @@ class Controller extends Singleton {
 	 *
 	 * @see singleton.php
 	 */
-	static protected function instance() {
-		return parent::instance(get_class());
+	protected static function instance() {
+		return self::getInstanceOf(get_class());
 	}
 
 	/**
@@ -26,7 +26,7 @@ class Controller extends Singleton {
 	 *
 	 * @return string base URL
 	 */
-	public function get_base_url() {
+	public static function get_base_url() {
 		return Controller::instance()->base_url;
 	}
 
@@ -35,7 +35,7 @@ class Controller extends Singleton {
 	 *
 	 * @return  string  the URL incoming stub
 	 */
-	public function get_stub() {
+	public static function get_stub() {
 		return Controller::instance()->stub;
 	}
 
@@ -53,7 +53,7 @@ class Controller extends Singleton {
 	 *
 	 * @return  string name of action
 	 */
-	public function get_action() {
+	public static function get_action() {
 		return Controller::instance()->action;
 	}
 
@@ -62,7 +62,7 @@ class Controller extends Singleton {
 	 *
 	 * @return  object  handler object
 	 */
-	public function get_handler() {
+	public static function get_handler() {
 		return Controller::instance()->handler;
 	}
 
@@ -71,7 +71,7 @@ class Controller extends Singleton {
 	 *
 	 * @return  array  variables used by handler
 	 */
-	public function get_handler_vars() {
+	public static function get_handler_vars() {
 		return Controller::instance()->handler->handler_vars;
 	}
 
@@ -91,7 +91,7 @@ class Controller extends Singleton {
 	 * translates URLs coming in from mod_rewrite and parses
 	 * out any action and parameters in the slug.
 	 */
-	static public function parse_request() {
+	public static function parse_request() {
 		/* Local scope variable caching */
 		$controller= Controller::instance();
 
@@ -153,7 +153,6 @@ class Controller extends Singleton {
 		/* OK, we have a matching rule.  Set the action and create a handler */
 		$controller->action= $matched_rule->action;
 		$controller->handler= new $matched_rule->handler();
-
 		/* Insert the regexed submatches as the named parameters */
 		$controller->handler->handler_vars['entire_match']= $matched_rule->entire_match; // The entire matched string is returned at index 0
 		foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value)
@@ -167,7 +166,7 @@ class Controller extends Singleton {
 	/**
 	 * Handle the requested action by firing off the matched handler action(s)
 	 */
-	public function dispatch_request() {
+	public static function dispatch_request() {
 		/* OK, set the wheels in motion... */
 		Plugins::act('handler_' . Controller::instance()->action, Controller::get_handler_vars());
 		if(method_exists(Controller::instance()->handler, 'act')) {

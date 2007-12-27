@@ -8,14 +8,14 @@
  
 class Format 
 {
-	static private $formatters = null;
+	private static $formatters = null;
 	
 	/**
 	 * Called to register a format function to a plugin hook, only passing the hook's first parameter to the Format function.
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
 	 **/	 	 	 	 	
-	static function apply($format, $onwhat)
+	public static function apply($format, $onwhat)
 	{
 		if( self::$formatters == null ) {
 			self::load_all();
@@ -44,7 +44,7 @@ class Format
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
 	 **/	 	 	 	 	
-	static function apply_with_hook_params($format, $onwhat)
+	public static function apply_with_hook_params($format, $onwhat)
 	{
 		if( self::$formatters == null ) {
 			self::load_all();
@@ -75,7 +75,7 @@ class Format
 	 * @param integer $index The index of the formatter object to return.
 	 * @return Format The formatter object requested
 	 **/
-	static function by_index($index)
+	public static function by_index($index)
 	{
 		return self::$formatters[$index];
 	}	 	  	 	
@@ -84,7 +84,7 @@ class Format
 	 * function load_all
 	 * Loads and stores an instance of all declared Format classes for future use
 	 **/	 	 	
-	static function load_all()
+	public static function load_all()
 	{
 		self::$formatters = array();
 		$classes = get_declared_classes();
@@ -106,7 +106,7 @@ class Format
 	 * @param string $value The string to apply the formatting
 	 * @returns string The formatted string
 	 **/	 	 	  	 	
-	public function autop($value)
+	public static function autop($value)
 	{
 		$regex = '/(<\\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\\s*\/\\s*\\2\\s*>)/sm';
 		$target = str_replace("\r\n", "\n", $value);
@@ -136,7 +136,7 @@ class Format
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 **/	 	 	 	 	  
-	public function tag_and_list($array, $between = ', ', $between_last = ' and ')
+	public static function tag_and_list($array, $between = ', ', $between_last = ' and ')
 	{
 		if ( ! is_array( $array ) )
 		{
@@ -157,7 +157,7 @@ class Format
 	 * @param string A date format string
 	 * @returns string The date formatted as a string
 	 **/	 	 	 	 	 		
-	public function nice_date($date, $dateformat = 'F j, Y')
+	public static function nice_date($date, $dateformat = 'F j, Y')
 	{
 		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
 		return Utils::locale_date($dateformat, strtotime($date));
@@ -170,7 +170,7 @@ class Format
 	 * @param string A date format string
 	 * @returns string The time formatted as a string
 	 **/	 	 	 	 	 		
-	public function nice_time($date, $dateformat = 'H:i:s')
+	public static function nice_time($date, $dateformat = 'H:i:s')
 	{
 		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
 		return Utils::locale_date($dateformat, strtotime($date));
@@ -183,7 +183,7 @@ class Format
 	 * @param integer $maxparagraphs Maximum paragraphs to display [1]	 	 
 	 * @return string The string, shortened
 	 **/	 	 	 	
-	function summarize( $text, $count= 100, $maxparagraphs= 1 )
+	public static function summarize( $text, $count= 100, $maxparagraphs= 1 )
 	{
 		preg_match_all( '/<script.*?<\/script.*?>/', $text, $scripts );
 		preg_replace( '/<script.*?<\/script.*?>/', '', $text );
@@ -263,30 +263,30 @@ class Format
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link	 
 	 * @return string The post content, suitable for display
 	 **/	 	 	 	
-	public function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null) 
+	public static function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null) 
 	{
-		// There should be a more readable way than this to detect if this post is being displayed by itself:
-    if(isset(Controller::get_handler()->handler_vars['slug'])) {
-    	return $content;
-    }
-    else {
-    	$matches= preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
-    	if(count($matches) > 1) {
-    		return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
-    	}
-    	elseif (isset($max_words) || isset($max_paragraphs)) {
-    		$max_words = empty($max_words) ? 9999999 : intval($max_words);
-				$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs); 
-				$summary = Format::summarize($content, $max_words, $max_paragraphs);
-				if(strlen($summary) >= strlen($content)) {
-					return $content;
-				}
-				else {
-					return $summary . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
-				}
-    	}
-    }
+	    // There should be a more readable way than this to detect if this post is being displayed by itself:
+	    if(isset(Controller::get_handler()->handler_vars['slug'])) {
 		return $content;
+	    }
+	    else {
+		$matches= preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
+		if(count($matches) > 1) {
+		    return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
+		}
+		elseif (isset($max_words) || isset($max_paragraphs)) {
+		    $max_words = empty($max_words) ? 9999999 : intval($max_words);
+		    $max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs); 
+		    $summary = Format::summarize($content, $max_words, $max_paragraphs);
+		    if(strlen($summary) >= strlen($content)) {
+			return $content;
+		    }
+		    else {
+			return $summary . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
+		    }
+		}
+	    }
+	    return $content;
 	} 
 	
 }

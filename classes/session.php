@@ -58,6 +58,10 @@ class Session
 	 */
 	static function read($session_id)
 	{
+	    /* for offline testing */
+	    $remote_address = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 0;
+	    /* not always set, even by real browsers */
+	    $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		$session = DB::get_row('SELECT * FROM ' . DB::table('sessions') . ' WHERE token = ?', array($session_id));
 
 		// Verify session exists
@@ -68,7 +72,7 @@ class Session
 		$dodelete = false;
 
 		// Verify on the same subnet
-		$subnet = ip2long($_SERVER['REMOTE_ADDR']) >> 8;
+		$subnet = ip2long($remote_address) >> 8;
 		if($session->subnet != $subnet) {
 			$dodelete = true;
 		}
@@ -79,7 +83,7 @@ class Session
 		}
 
 		// Verify User Agent
-		if( $_SERVER['HTTP_USER_AGENT'] != $session->ua ) {
+		if ( $user_agent != $session->ua ) {
 			$dodelete = true;
 		}
 
@@ -87,7 +91,10 @@ class Session
 		$dodelete = Plugins::filter('session_read', $dodelete, $session, $session_id);
 
 		if($dodelete) {
-			DB::query('DELETE FROM ' . DB::table('sessions') . ' WHERE token = ?', array($session_id));
+			$sql = 'DELETE FROM ' . DB::table('sessions') . ' WHERE token = ?';
+			$args = array($session_id);
+			$sql = Plugins::filter('sessions_clean', $sql, 'read', $args);
+			DB::query($sql, $args);
 			return false;
 		}
 
@@ -102,11 +109,15 @@ class Session
 	 */
 	static function write($session_id, $data)
 	{
+	    /* for offline testing */
+	    $remote_address = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 0;
+	    /* not always set, even by real browsers */
+	    $user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		// DB::update() checks if the record key exists, and inserts if not
 		$record = array(
-			'subnet' => ip2long($_SERVER['REMOTE_ADDR']) >> 8,
+			'subnet' => ip2long($remote_address) >> 8,
 			'expires' => time() + self::SESSION_TIMEOUT,
-			'ua' => $_SERVER['HTTP_USER_AGENT'],
+			'ua' => $user_agent,
 			'data' => $data,
 		);
 		DB::update(
@@ -124,7 +135,10 @@ class Session
 	 */
 	static function destroy($session_id)
 	{
-		DB::query('DELETE FROM ' . DB::table('sessions') . ' WHERE token = ?', array($session_id));
+		$sql = 'DELETE FROM ' . DB::table('sessions') . ' WHERE token = ?';
+		$args = array($session_id);
+		$sql = Plugins::filter('sessions_clean', $sql, 'destroy', $args);
+		DB::query($sql, $args);
 		return true;
 	}
 
@@ -135,7 +149,10 @@ class Session
 	 */
 	static function gc($max_lifetime)
 	{
-		DB::query('DELETE FROM ' . DB::table('sessions') . ' WHERE expires < ?', array(time()));
+		$sql = 'DELETE FROM ' . DB::table('sessions') . ' WHERE expires < ?';
+		$args = array(time());
+		$sql = Plugins::filter('sessions_clean', $sql, 'gc', $args);
+		DB::query($sql, $args);
 		return true;
 	}
 

@@ -194,7 +194,7 @@ class Post extends QueryRecord
 	 * @param mixed a post type number, or name
 	 * @return mixed a string of the post type, or null
 	**/
-	public function type_name( $type )
+	public static function type_name( $type )
 	{
 		$types= array_flip( Post::list_active_post_types() );
 		if ( is_numeric( $type ) && isset( $types[$type] ) )
@@ -426,7 +426,7 @@ class Post extends QueryRecord
 		return false;
 	}
 
-	private function parsetags( $tags )
+	private static function parsetags( $tags )
 	{
 		if ( is_string( $tags ) ) {
 			if ( '' === $tags ) {
@@ -492,11 +492,10 @@ class Post extends QueryRecord
 		foreach ( $this->fields as $fieldname => $value ) {
 			Plugins::act('post_update_' . $fieldname, $this, ($this->id == 0) ? null : $value, $this->$fieldname );
 		}
-
 		// invoke plugins for status changes
 		Plugins::act('post_status_' . self::status_name($this->status), $this, null );
 
-		$result = parent::insert( DB::table('posts') );
+		$result = parent::insertRecord( DB::table('posts') );
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
@@ -542,7 +541,7 @@ class Post extends QueryRecord
 		  Plugins::act('post_status_' . self::status_name($this->newfields['status']), $this, $this->fields['status'] );
 		}
 
-		$result = parent::update( DB::table('posts'), array('id'=>$this->id) );
+		$result = parent::updateRecord( DB::table('posts'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->save_tags();
@@ -574,7 +573,7 @@ class Post extends QueryRecord
 		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
 		}
-		$result= parent::delete( DB::table('posts'), array('slug'=>$this->slug) );
+		$result= parent::deleteRecord( DB::table('posts'), array('slug'=>$this->slug) );
 		EventLog::log('Post ' . $this->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari');
 
 		// invoke plugins on the after_post_delete action

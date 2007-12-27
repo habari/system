@@ -12,15 +12,15 @@ if (!defined('DEBUG'))
 class DB extends Singleton
 {
 	private $connection= null;
-	
+		
 	/**
 	 * Enables singleton working properly
 	 * 
 	 * @see singleton.php
 	 */
-	static protected function instance()
+	protected static function instance()
 	{
-		return parent::instance( get_class() );
+		return self::getInstanceOf( get_class() );
 	}
 	
 	/** 

@@ -29,7 +29,7 @@ class Plugins
 	 * @param string The plugin hook to register
 	 * @param hex An optional execution priority, in hex.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
 	**/
-	public function register( $fn, $type, $hook, $priority = 8 )
+	public static function register( $fn, $type, $hook, $priority = 8 )
 	{
 		// add the plugin function to the appropriate array
 		$index = array($type, $hook, $priority);
@@ -53,7 +53,7 @@ class Plugins
 	 * @param string The name of the action to execute
 	 * @param mixed Optional arguments needed for action
 	 **/
-	static public function act()
+	public static function act()
 	{
 		$args = func_get_args();
 		$hookname = array_shift($args);
@@ -75,7 +75,7 @@ class Plugins
 	 * @param string The name of the filter to execute
 	 * @param mixed The value to filter.
 	 **/
-	static public function filter()
+	public static function filter()
 	{
 		list( $hookname, $return ) = func_get_args();
 		if ( ! isset( self::$hooks['filter'][$hookname] ) ) {
@@ -99,7 +99,7 @@ class Plugins
 	 * @param string The name of the filter to execute
 	 * @param mixed The value to filter.
 	 **/
-	static public function xmlrpc()
+	public static function xmlrpc()
 	{
 		list( $hookname, $return ) = func_get_args();
 		if ( ! isset( self::$hooks['xmlrpc'][$hookname] ) ) {
@@ -121,7 +121,7 @@ class Plugins
 	 * @param boolean Whether to refresh the cached array.  Default FALSE
 	 * @return array An array of filenames
 	 **/
-	static public function list_active( $refresh= false )
+	public static function list_active( $refresh= false )
 	{
 		if ( ! empty( self::$plugin_files ) && ! $refresh )
 		{
@@ -145,7 +145,7 @@ class Plugins
 	 * Returns the internally stored references to all loaded plugins
 	 * @return array An array of plugin objects
 	 **/
-	static public function get_active()
+	public static function get_active()
 	{
 		return self::$plugins;
 	}
@@ -155,7 +155,7 @@ class Plugins
 	* @param string $interface The interface to check for
 	* @return array An array of matching plugins
 	*/
-	static public function get_by_interface($interface)
+	public static function get_by_interface($interface)
 	{
 		return array_filter(self::$plugins, create_function('$a', 'return $a instanceof ' . $interface . ';'));
 	}
@@ -165,7 +165,7 @@ class Plugins
 	 * Gets a list of all plugin filenames that are available
 	 * @return array An array of filenames
 	 **/
-	static public function list_all()
+	public static function list_all()
 	{
 		$plugins= array();
 		$plugindirs= array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/3rdparty/plugins/', HABARI_PATH . '/user/plugins/' );
@@ -200,7 +200,7 @@ class Plugins
 	 * @param $class string A class name
 	 * @return boolean true if the class extends Plugin
 	 **/
-	static public function extends_plugin($class)
+	public static function extends_plugin($class)
 	{
 		$parents= class_parents($class, false);
 		return in_array('Plugin', $parents);
@@ -212,7 +212,7 @@ class Plugins
 	 * @param string the full path to a plugin file
 	 * @return string the class name
 	**/
-	static public function class_from_filename( $file )
+	public static function class_from_filename( $file )
 	{
 		$classes = get_declared_classes();
 		$plugin_classes = array_filter($classes, array('Plugins', 'extends_plugin'));
@@ -233,7 +233,7 @@ class Plugins
 	 * @param string the class name to load
 	 * @return Plugin The instantiated plugin class
 	 **/
-	static public function load( $file )
+	public static function load( $file )
 	{
 		$class= Plugins::class_from_filename( $file );
 		$plugin = new $class;
@@ -250,7 +250,7 @@ class Plugins
 	 * @param string $file The filename to generate an id for
 	 * @return string A plugin id.
 	 */
-	static public function id_from_file( $file )
+	public static function id_from_file( $file )
 	{
 		return sprintf( '%x', crc32( $file ) );
 	}
@@ -258,7 +258,7 @@ class Plugins
 	/**
 	 * Activates a plugin file
 	 **/
-	static public function activate_plugin( $file )
+	public static function activate_plugin( $file )
 	{
 		$ok= true;
 		$ok= Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
@@ -278,7 +278,7 @@ class Plugins
 	/**
 	 * Deactivates a plugin file
 	 **/
-	static public function deactivate_plugin( $file )
+	public static function deactivate_plugin( $file )
 	{
 		$ok= true;
 		$ok= Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
@@ -300,7 +300,7 @@ class Plugins
 	 * activated.
 	 * @return boolean true if the plugins have changed, false if not.
 	 **/
-	static public function changed_since_last_activation()
+	public static function changed_since_last_activation()
 	{
 		$old_plugins= Options::get('plugins_present');
 		//self::set_present();
@@ -327,7 +327,7 @@ class Plugins
 	 * Stores the list of plugins that are present (not necessarily active) in
 	 * the Options table for future comparison.
 	 **/
-	static public function set_present()
+	public static function set_present()
 	{
 		$plugin_files= Plugins::list_all();
 		$plugin_data= array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
@@ -342,7 +342,7 @@ class Plugins
 	 * @param string $version Optional minimal version of the plugin.
 	 * @return bool Returns true if name is found and version is equal or higher than required.
 	 */
-	static public function is_loaded( $name, $version= NULL ) {
+	public static function is_loaded( $name, $version= NULL ) {
 		foreach ( self::$plugins as $plugin ) {
 			if ( strtolower($plugin->info->name) == $name || $plugin instanceof $name ) {
 				if ( isset( $version ) ) {

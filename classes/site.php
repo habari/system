@@ -316,7 +316,7 @@ class Site
 	 * @param string the URL to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
 	**/
-	public function out_url( $url, $trail= false )
+	public static function out_url( $url, $trail= false )
 	{
 		echo Site::get_url( $url, $trail );
 	}
@@ -326,7 +326,7 @@ class Site
 	 * @param string the URL path to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
 	**/
-	public function out_path( $path, $trail= false )
+	public static function out_path( $path, $trail= false )
 	{
 		echo Site::get_path( $path, $trail );
 	}
@@ -336,7 +336,7 @@ class Site
 	 * @param string the filesystem directory to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
 	**/
-	public function out_dir( $dir, $trail= false )
+	public static function out_dir( $dir, $trail= false )
 	{
 		echo Site::get_dir( $dir, $trail );
 	}

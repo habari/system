@@ -11,7 +11,7 @@ class RewriteRules extends ArrayObject {
 	 * @param array $rules An array of RewriteRule objects
 	 * @return array An array of rules with the system rules potentially added
 	 */
-	static public function add_system_rules($rules)
+	public static function add_system_rules($rules)
 	{
 		$default_rules= array(
 			// Display content
@@ -69,7 +69,7 @@ class RewriteRules extends ArrayObject {
 	 *
 	 * @return array Array of RewriteRule objects for active rewrite rules
 	 **/
-	static public function get_active()
+	public static function get_active()
 	{
 		static $system_rules;
 
@@ -102,7 +102,7 @@ class RewriteRules extends ArrayObject {
 	 * @param RewriteRule $ruleb A rule to compare
 	 * @return integer The standard usort() result values, -1, 0, 1
 	 **/
-	public function sort_rules($rulea, $ruleb)
+	public static function sort_rules($rulea, $ruleb)
 	{
 		if( $rulea->priority == $ruleb->priority ) {
 			return 0;
@@ -117,7 +117,7 @@ class RewriteRules extends ArrayObject {
 	 * @return RewriteRule The rule requested
 	 * @todo Make this return more than one rule when more than one rule matches.
 	 **/
-	public function by_name( $name )
+	public static function by_name( $name )
 	{
 		$rules= self::get_active();
 		$results = array();

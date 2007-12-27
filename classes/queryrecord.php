@@ -77,7 +77,6 @@ class QueryRecord implements URLProperties
 	}
 
 	/**
-	* function exclude_fields
 	* Registers a (list of) fields(s) as being managed exclusively by the database.
 	* @param mixed A database field name (string) or an array of field names
 	*/
@@ -94,7 +93,6 @@ class QueryRecord implements URLProperties
 	}
 
 	/**
-	* public function list_excluded_fields
 	* returns an array of fields that should not be included in any database insert operation
 	* @return array an array of field names
 	*/
@@ -102,14 +100,25 @@ class QueryRecord implements URLProperties
 	{
 		return $this->unsetfields;
 	}
+
+	/**
+	 * This is the public interface that inserts a record
+	 */
+	public function insert() {
+	    return null;
+	}
 	
 	/**
-	 * function insert
+	 * function insertRecord(
 	 * Inserts this record's fields as a new row
 	 * @param string Table to update
 	 * @return boolean True on success, false if not 
-	 **/	 
-	public function insert($table)
+	 **/
+	/*
+	 * Again, the parent class's method's signature must match that of the
+	 * child class's signature
+	 */
+	protected function insertRecord($table)
 	{
 		$merge =  array_merge($this->fields, $this->newfields);
 		return DB::insert($table, array_diff_key($merge, $this->unsetfields));
@@ -133,31 +142,40 @@ class QueryRecord implements URLProperties
 	{
 		return $this->to_array();
 	}
-
 	/**
-	 * function update
+	 * This is the public interface that updates a record
+	 */
+	public function update() {
+	    return null;
+	}
+	/**
+	 * function updateRecord
 	 * Updates this record's fields using the new data
 	 * @param string Table to update
 	 * @param array An associative array of field data to match	 	 	 		
 	 * @return boolean True on success, false if not 
 	 **/	 
-	public function update($table, $updatekeyfields = array() )
+	protected function updateRecord($table, $updatekeyfields = array() )
 	{
 		$merge = array_merge($this->fields, $this->newfields);
 		return DB::update($table, array_diff_key($merge, $this->unsetfields), $updatekeyfields);
 	}
-	
+
 	/**
-	 * function delete
+	 * This is the public interface that deletes a record
+	 */
+	public function delete() {
+	    return null;
+	}
+	/**
+	 * function deleteRecord
 	 * Deletes a record based on the match array
 	 * @param string Table to delete from
 	 * @param array An associative array of field data to match	 	 	 		
 	 * @return boolean True on success, false if not 
 	 **/	 
-	public function delete($table, $updatekeyfields)
+	protected function deleteRecord($table, $updatekeyfields)
 	{
-		global $db;
-		
 		return DB::delete($table, $updatekeyfields);
 	}
 

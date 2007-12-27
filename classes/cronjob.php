@@ -145,7 +145,7 @@ class CronJob extends QueryRecord
 	 */
 	public function insert()
 	{
-		return parent::insert( DB::table('crontab') );
+		return parent::insertRecord( DB::table('crontab') );
 	}
 	
 	/**
@@ -153,7 +153,7 @@ class CronJob extends QueryRecord
 	 */
 	public function update()
 	{
-		return parent::update( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
+		return parent::updateRecord( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
 	}
 	
 	/**
@@ -161,7 +161,7 @@ class CronJob extends QueryRecord
 	 */
 	public function delete()
 	{
-		return parent::delete( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
+		return parent::deleteRecord( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
 	}
 }
 

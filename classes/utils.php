@@ -7,7 +7,7 @@
 
 class Utils
 {
-	static $debug_defined = false;
+    public static $debug_defined = false;
 
 	/**
 	 * Utils constructor
@@ -24,7 +24,7 @@ class Utils
 	 * @param mixed An associative array or querystring parameter list
 	 * @return array An associative array of parameters
 	 **/
-	static function get_params( $params )
+	public static function get_params( $params )
 	{
 		if( is_array( $params ) ) return $params;
 		$paramarray= array();
@@ -38,7 +38,7 @@ class Utils
 	 * @param string A string, usually a path
 	 * @return string The string with the slash added or extra slashes removed, but with one slash only
 	 **/
-	static function end_in_slash( $value )
+	public static function end_in_slash( $value )
 	{
 		return rtrim($value, '\\/') . '/';
 	}
@@ -48,7 +48,7 @@ class Utils
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
 	 **/
-	static function redirect( $url = '' )
+	public static function redirect( $url = '' )
 	{
 		if($url == '') {
 			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
@@ -62,7 +62,7 @@ class Utils
 	 * @param mixed A string of time or integer timestamp
 	 * @return string An RFC-3339 formatted time
 	 **/
-	static function atomtime($t)
+	public static function atomtime($t)
 	{
 		if ( ! is_numeric( $t ) ) {
 			$t = strtotime( $t );
@@ -79,7 +79,7 @@ class Utils
 	 * function nonce
 	 * Returns a random 12-digit hex number
 	 **/
-	static function nonce()
+	public static function nonce()
 	{
 		return sprintf('%06x', rand(0, 16776960)) . sprintf('%06x', rand(0, 16776960));
 	}
@@ -93,7 +93,7 @@ class Utils
 	 * @param String a timestamp
 	 * @return Array an array of WSSE authentication elements
 	**/
-	static function WSSE( $nonce = '', $timestamp = '' )
+	public static function WSSE( $nonce = '', $timestamp = '' )
 	{
 		if ( '' === $nonce )
 		{
@@ -116,7 +116,7 @@ class Utils
 	 * function stripslashes
 	 * Removes slashes from escaped strings, including strings in arrays
 	 **/
-	static function stripslashes($value)
+	public static function stripslashes($value)
 	{
 		if ( is_array($value) ) {
 			$value = array_map( array('Utils', 'stripslashes') , $value );
@@ -131,7 +131,7 @@ class Utils
 	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
 	 * @param string $value A URL, maybe with a querystring
 	 **/
-	static function de_amp($value)
+	public static function de_amp($value)
 	{
 		$url = parse_url( $value );
 		$url['query'] = str_replace('&amp;', '&', $url['query']);
@@ -142,7 +142,7 @@ class Utils
 	 * Restore a URL separated by a parse_url() call.
 	 * @param $parsed array An array as returned by parse_url()
 	 **/
-	static function glue_url($parsed)
+	public static function glue_url($parsed)
 	{
 		if ( ! is_array( $parsed ) ) {
 			return false;
@@ -166,13 +166,16 @@ class Utils
 	 * function revert_magic_quotes_gpc
 	 * Reverts magicquotes_gpc behavior
 	 **/
-	static function revert_magic_quotes_gpc()
+	public static function revert_magic_quotes_gpc()
 	{
-		if ( get_magic_quotes_gpc() ) {
-			$_GET = self::stripslashes($_GET);
-			$_POST = self::stripslashes($_POST);
-			$_COOKIE = self::stripslashes($_COOKIE);
-		}
+	    /* We should only revert the magic quotes once per page hit */
+	    static $revert = true;
+	    if ( get_magic_quotes_gpc() && $revert) {
+		$_GET = self::stripslashes($_GET);
+		$_POST = self::stripslashes($_POST);
+		$_COOKIE = self::stripslashes($_COOKIE);
+		$revert = false;
+	    }
 	}
 
 	/**
@@ -181,7 +184,7 @@ class Utils
 	 * @param string A string value that might have spaces
 	 * @return string The string value, quoted if it has spaces
 	 */
-	static function quote_spaced( $value )
+	public static function quote_spaced( $value )
 	{
 		return (strpos($value, ' ') === false) ? $value : '"' . $value . '"';
 	}
@@ -193,7 +196,7 @@ class Utils
 	 * @param	array An array of values to separate
 	 * @return string The concatenated string
 	 */
-	static function implode_quoted( $separator, $values )
+	public static function implode_quoted( $separator, $values )
 	{
 		if ( ! is_array( $values ) )
 		{
@@ -209,7 +212,7 @@ class Utils
 	 * @param integer Number of items in the archive
 	 * @returns integer Number of pages based on pagination option.
 	 **/
-	static function archive_pages($item_total)
+	public static function archive_pages($item_total)
 	{
 		return ceil($item_total / Options::get('pagination'));
 	}
@@ -223,7 +226,7 @@ class Utils
 	 * @param array Various settings used by the method and the RewriteRule.
 	 * @return string Collection of paginated URLs built by the RewriteRule.
 	 **/
-	static function page_selector( $current, $total, $rr_name= NULL, $settings = array() )
+	public static function page_selector( $current, $total, $rr_name= NULL, $settings = array() )
 	{
 		// If RewriteRule name is not supplied, use the current matched rule.
 		// Else retrieve the RewriteRule matching the supplied name.
@@ -307,7 +310,7 @@ class Utils
 	* @param string $postfix The postfix for the returned value
 	* @return string The wrapped value
 	*/
-	static function map_array($value, $prefix = '{$', $postfix = '}')
+	public static function map_array($value, $prefix = '{$', $postfix = '}')
 	{
 		return $prefix . $value . $postfix;
 	}
@@ -316,7 +319,7 @@ class Utils
 	 * Helper function used by debug()
 	 * Not for external use.
 	 **/
-	static function debug_reveal($show, $hide, $debugid, $close = false)
+	public static function debug_reveal($show, $hide, $debugid, $close = false)
 	{
 		$reshow = $restyle = $restyle2 = '';
 		if($close) {
@@ -331,7 +334,7 @@ class Utils
 	 * Outputs a call stack with parameters, and a dump of the parameters passed.
 	 * @params mixed Any number of parameters to output in the debug box.
 	 **/
-	static function debug()
+	public static function debug()
 	{
 		$debugid= md5(microtime());
 		$tracect= 0;
@@ -397,7 +400,7 @@ class Utils
 	 * Outputs debug information like ::debug() but using Firebug's Console.
 	 * @params mixed Any number of parameters to output in the debug box.
 	 **/
-	static function firedebug()
+	public static function firedebug()
 	{
 		$fooargs = func_get_args();
 		$output = "<script type=\"text/javascript\">\nif(window.console){\n";
@@ -418,7 +421,7 @@ class Utils
 	 * @param array $backtrace An array of backtrace details from debug_backtrace()
 	 * @return string Javascript output that will display the backtrace in the Firebug console.
 	 */
-	static function firebacktrace($backtrace)
+	public static function firebacktrace($backtrace)
 	{
 		$output = '';
 		extract(end($backtrace));
@@ -721,7 +724,7 @@ class Utils
 	 *	at the end (false)
 	 * @return string The truncated string
 	**/
-	function truncate($str, $len=10, $middle=true)
+	public static function truncate($str, $len=10, $middle=true)
 	{
 	        // make sure $len is a positive integer
 	        if ( ! is_numeric($len) || ( 0 > $len ) ) {

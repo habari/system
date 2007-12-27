@@ -98,7 +98,7 @@ class User extends QueryRecord
 	 */
 	public function insert()
 	{
-		$result= parent::insert( DB::table('users') );
+		$result= parent::insertRecord( DB::table('users') );
 		$this->fields['id'] = DB::last_insert_id(); // Make sure the id is set in the user object to match the row id
 		$this->info->set_key( $this->id );
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
@@ -115,7 +115,7 @@ class User extends QueryRecord
 	public function update()
 	{
 		$this->info->commit();
-		return parent::update( DB::table('users'), array( 'id' => $this->id ) );
+		return parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
 	}
 
 	/**
@@ -126,7 +126,7 @@ class User extends QueryRecord
 		if(isset($this->info))
 			$this->info->delete_all();
 		EventLog::log( 'User deleted: ' . $this->username, 'info', 'default', 'habari' );
-		return parent::delete( DB::table('users'), array( 'id' => $this->id ) );
+		return parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
 	}
 
 	/**
