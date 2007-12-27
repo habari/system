@@ -180,7 +180,7 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function insert()
 	{
-		return parent::insert( DB::table( 'rewrite_rules' ) );
+		return parent::insertRecord( DB::table( 'rewrite_rules' ) );
 	}	
 	
 	/**
@@ -188,7 +188,7 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		return parent::update( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
+		return parent::updateRecord( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
 	}
 	
 	/**
@@ -196,7 +196,7 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function delete()
 	{
-		return parent::delete( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
+		return parent::deleteRecord( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
 	}
 	
 	/**
@@ -206,7 +206,7 @@ class RewriteRule extends QueryRecord
 		* @param string $action
 	 * @return RewriteRule The created rule
 	 */
-	static public function create_url_rule( $build_str, $handler, $action )
+	public static function create_url_rule( $build_str, $handler, $action )
 	{
 		$arr= split( '/', $build_str );
 		

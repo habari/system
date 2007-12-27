@@ -18,9 +18,9 @@ class URL extends Singleton
 	 * 
 	 * @see singleton.php
 	 */
-	static protected function instance()
+	protected static function instance()
 	{
-		return parent::instance( get_class() );
+		return self::getInstanceOf( get_class() );
 	}
  
 	/**
@@ -39,7 +39,7 @@ class URL extends Singleton
 	 * 
 	 * @return RewriteRule matched rule, or NULL
 	 */
-	public function get_matched_rule()
+	public static function get_matched_rule()
 	{
 		return URL::instance()->matched_rule;
 	}
@@ -110,7 +110,7 @@ class URL extends Singleton
 	 * @param mixed $args (optional) array or object of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 */
-	static public function get( $rule_names, $args= array(), $useall= true, $noamp= false )
+	public static function get( $rule_names, $args= array(), $useall= true, $noamp= false )
 	{
 		$args= self::extract_args( $args ); 
 		
@@ -149,7 +149,7 @@ class URL extends Singleton
 	 * @param array $args (optional) array of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
 	 */
-	static public function out( $rule_name, $args= array(), $useall= true, $noamp= true )
+	public static function out( $rule_name, $args= array(), $useall= true, $noamp= true )
 	{
 		echo URL::get( $rule_name, $args, $useall, $noamp );
 	}
@@ -159,7 +159,7 @@ class URL extends Singleton
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL
 	 **/	 	 	 	
-	static public function extract_args( $args, $prefix = '' )
+	public static function extract_args( $args, $prefix = '' )
 	{
 		if ( is_object( $args ) ) {
 			if ( $args instanceof URLProperties ) {

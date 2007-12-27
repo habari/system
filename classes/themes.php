@@ -89,7 +89,7 @@ class Themes
 	 * @param template_engine ( optional ) specify a template engine
 	 * @param theme_dir       ( optional ) specify a theme directory
 	 **/
-	public function create( $name= '', $template_engine= '', $theme_dir= '' )
+	public static function create( $name= '', $template_engine= '', $theme_dir= '' )
 	{
 		if ( $name != '' ) {
 			/*

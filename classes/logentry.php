@@ -76,7 +76,7 @@ class LogEntry extends QueryRecord
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of log entry type names => integer values
 	 */
-	public function list_logentry_types($force = false)
+	public static function list_logentry_types($force = false)
 	{
 		if ( $force || empty( self::$types ) ) {
 			self::$types= array();
@@ -193,7 +193,7 @@ class LogEntry extends QueryRecord
 		}
 
 		Plugins::filter( 'insert_logentry', $this );
-		parent::insert( DB::table( 'log' ) );
+		parent::insertRecord( DB::table( 'log' ) );
 	}
 
 	/**
@@ -206,7 +206,7 @@ class LogEntry extends QueryRecord
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return object LogEntry The first log entry that matched the given criteria
 	 */
-	public function get( $paramarray = array() )
+	public static function get( $paramarray = array() )
 	{
 		// Default parameters.
 		$defaults= array (

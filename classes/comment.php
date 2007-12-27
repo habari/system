@@ -122,7 +122,7 @@ class Comment extends QueryRecord
 		foreach ( $this->fields as $fieldname => $value ) {
 			Plugins::act('comment_update_' . $fieldname, $this, $this->$fieldname, $value );
 		}
-		$result = parent::insert( DB::table('comments') );
+		$result = parent::insertRecord( DB::table('comments') );
 		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the comment object to match the row id
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
@@ -147,7 +147,7 @@ class Comment extends QueryRecord
 		foreach ($this->newfields as $fieldname => $value ) {
 			Plugins::act('comment_update_' . $fieldname, $this, $this->fields[$fieldname], $value);
 		}
-		$result = parent::update( DB::table('comments'), array('id'=>$this->id) );
+		$result = parent::updateRecord( DB::table('comments'), array('id'=>$this->id) );
 		$this->fields = array_merge($this->fields, $this->newfields);
 		$this->newfields = array();
 		$this->info->commit();
@@ -171,7 +171,7 @@ class Comment extends QueryRecord
 		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
 		}
-		return parent::delete( DB::table('comments'), array('id'=>$this->id) );
+		return parent::deleteRecord( DB::table('comments'), array('id'=>$this->id) );
 		Plugins::act('comment_delete_after', $this);
 	}
 

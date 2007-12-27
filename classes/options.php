@@ -14,9 +14,9 @@ class Options extends Singleton
 	 *
 	 * @see singleton.php
 	 */
-	static protected function instance()
+	protected static function instance()
 	{
-		return parent::instance( get_class() );
+		return self::getInstanceOf( get_class() );
 	}
 
 	/**
@@ -132,7 +132,7 @@ class Options extends Singleton
 	/**
 	 * Clears memory of cached options
 	 **/
-	static public function clear_cache()
+	public static function clear_cache()
 	{
 		self::instance()->options = null;
 	}
