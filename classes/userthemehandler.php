@@ -30,6 +30,12 @@ class UserThemeHandler extends ActionHandler
 	public function act( $action )
 	{
 		$this->action= $action;
+		$this->theme->assign('matched_rule', URL::get_matched_rule());
+		$request = new StdClass();
+		foreach(RewriteRules::get_active() as $rule) {
+			$request->{$rule->name} = ($rule->name == URL::get_matched_rule()->name);
+		}
+		$this->theme->assign('request', $request);
 
 		$action_method= 'act_' . $action;
 		$before_action_method= 'before_' . $action_method;
