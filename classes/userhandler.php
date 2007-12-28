@@ -52,6 +52,11 @@ class UserHandler extends ActionHandler
 		if(!$this->theme->template_engine->template_exists( 'login' )) {
 			$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
 		}
+		$request = new StdClass();
+		foreach(RewriteRules::get_active() as $rule) {
+			$request->{$rule->name} = ($rule->name == URL::get_matched_rule()->name);
+		}
+		$this->theme->assign('request', $request);
 		$this->display( 'login' );
 		return TRUE;
 	}
