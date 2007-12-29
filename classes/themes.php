@@ -6,9 +6,10 @@
 class Themes
 {
 	private static $all_themes = null;
+	private static $all_data = null;
 
 	/**
-	 * Returns the theme information from the database
+	 * Returns the theme dir and path information
 	 * @return array An array of Theme data
 	 **/
 	public static function get_all()
@@ -29,6 +30,33 @@ class Themes
 			self::$all_themes= array_combine($themefiles, $themes);
 		}
 		return self::$all_themes;
+	}
+
+	/**
+	 * Returns all theme information -- dir, path, theme.xml, screenshot url
+	 * @return array An array of Theme data
+	 **/
+	public static function get_all_data()
+	{
+		if ( !isset( self::$all_data ) ) {
+			$themedata = array();
+			foreach(self::get_all() as $theme_dir => $theme_path ) {
+				$themedata['dir'] = $theme_dir;
+				$themedata['path'] = $theme_path;
+
+				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
+
+				if ( $screenshot= glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
+					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/$screenshot[0]";
+				}
+				else {
+					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/system/admin/images/screenshot_default.png";
+				}
+
+				self::$all_data[$theme_dir] = $themedata;
+			}
+		}
+		return self::$all_data;
 	}
 
 	/**
