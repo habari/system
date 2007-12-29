@@ -7,38 +7,20 @@
 		<p>Activate, deactivate and remove themes through this interface.</p>
 	</div>
 	<div class="column prepend-1 span-22 append-1">
-		<table cellspacing="0" width="100%">
-			<thead>
-				<tr>
-					<th align="left">Name</th>
-					<th align="left">Author</th>
-					<th align="left">Version</th>
-					<th align="left">Engine</th>
-					<th align="left">Directory</th>
-					<th align="center">Action</th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			$active_theme= Options::get('theme_dir');
-			foreach( Themes::get_all() as $theme_dir => $theme_path ) :
-				$info= simplexml_load_file( $theme_path . '/theme.xml' ); ?>
-				<tr>
-					<td><?php echo $info->name; ?></td>
-					<td><a href="<?php echo $info->url; ?>"><?php echo $info->author; ?></a></td>
-					<td><?php echo $info->version; ?></td>
-					<td><?php echo $info->template_engine; ?></td>
-					<td><?php echo $theme_dir; ?></td>
-					<td align="center">
-					<?php if ( $theme_dir != $active_theme ) { ?>
+			<?php foreach( $all_themes as $theme ) : ?>
+				<div style="float:left; width:260px; text-align:center;">
+					<img src="<?php echo $theme['screenshot']; ?>" width="200" height="150" /><br />
+					<b><?php echo $theme['info']->name; ?> <?php echo $theme['info']->version; ?></b><br />
+					 by <a href="<?php echo $theme['info']->url; ?>"><?php echo $theme['info']->author; ?></a>
+
+					<?php if ( $theme['dir'] != $active_theme ) : ?>
 					<form method='post' action='<?php URL::out('admin', 'page=activate_theme'); ?>'>
-					<input type='hidden' name='theme_name' value='<?php echo $info->name; ?>'>
-					<input type='hidden' name='theme_dir' value='<?php echo $theme_dir; ?>'>
+					<input type='hidden' name='theme_name' value='<?php echo $theme['info']->name; ?>'>
+					<input type='hidden' name='theme_dir' value='<?php echo $theme['dir']; ?>'>
 					<input type='submit' name='submit' value='activate'>
 					</form>
-					<?php } ?>
-					</td>
-				</tr>
+					<?php endif; ?>
+				</div>
 			<?php endforeach; ?>
 			</tbody>
 		</table>

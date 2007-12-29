@@ -360,6 +360,14 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
 	}
 
+	function get_themes()
+	{
+		$this->theme->active_theme = Options::get('theme_dir');
+		$this->theme->all_themes = Themes::get_all_data();
+
+		$this->theme->display( 'themes' );
+	}
+
 	/**
 	 * Activates a theme.
 	 */
