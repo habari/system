@@ -114,8 +114,8 @@ class Posts extends ArrayObject
 					$params[]= $paramset['user_id'];
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
-					$join .= ' JOIN ' . DB::table( 'tag2post' ) . ' ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
-					$join .= ' JOIN ' . DB::table( 'tags' ) . ' ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
+					$join .= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
+					$join .= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 					// Need tag expression parser here.
 					if ( isset( $paramset['tag'] ) ) {
 		        if ( is_array( $paramset['tag'] ) ) {
@@ -225,8 +225,7 @@ class Posts extends ArrayObject
 
 		$query= '
 			SELECT ' . $select . '
-			FROM ' . DB::table('posts') .
-			' ' . $join;
+			FROM {posts} ' . $join;
 
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );

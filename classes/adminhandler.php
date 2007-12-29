@@ -173,12 +173,13 @@ class AdminHandler extends ActionHandler
 			$this->theme->newpost = false;
 		}
 		else {
-			$this->theme->post= new Post();
+			$post= new Post();
+			$this->theme->post= $post;
 			$this->theme->tags= '';
 			$this->theme->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost = true;
 		}
-		
+
 		// Theme assigns all handler vars as theme vars, thus clobbering what we
 		// set above in some cases (i.e. when ?content_type=entry is in the query string)
 		$this->handler_vars['content_type']= $this->theme->content_type;
@@ -197,8 +198,8 @@ class AdminHandler extends ActionHandler
 			'Settings' => $this->theme->fetch('publish_settings'),
 			'Tags' => $this->theme->fetch('publish_tags'),
 		);
-		$this->theme->controls = Plugins::filter('publish_controls', $controls);
-		
+		$this->theme->controls = Plugins::filter('publish_controls', $controls, $post);
+
 		$this->display( 'publish' );
 	}
 

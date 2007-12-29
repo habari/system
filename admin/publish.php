@@ -2,7 +2,9 @@
 <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
 
 <div class="publish">
+	<div class="container">
 	<?php if(Session::has_messages()) {Session::messages_out();} ?>
+	</div>
 
 	<div class="container">
 
