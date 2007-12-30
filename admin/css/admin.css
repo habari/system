@@ -504,7 +504,12 @@ label {
 	font-weight: normal;
 }
 
-
+.screenshot {
+	float:left;
+	width:260px;
+	padding-bottom: 10px;
+	text-align:center;
+}
 
 /*  Table Stylings */
 

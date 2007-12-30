@@ -8,7 +8,8 @@
 	</div>
 	<div class="column prepend-1 span-22 append-1">
 			<?php foreach( $all_themes as $theme ) : ?>
-				<div style="float:left; width:260px; text-align:center;">
+				
+				<div class="screenshot">
 					<img src="<?php echo $theme['screenshot']; ?>" width="200" height="150" /><br />
 					<b><?php echo $theme['info']->name; ?> <?php echo $theme['info']->version; ?></b><br />
 					 by <a href="<?php echo $theme['info']->url; ?>"><?php echo $theme['info']->author; ?></a>
@@ -18,7 +19,7 @@
 					<input type='hidden' name='theme_name' value='<?php echo $theme['info']->name; ?>'>
 					<input type='hidden' name='theme_dir' value='<?php echo $theme['dir']; ?>'>
 					<input type='submit' name='submit' value='activate'>
-					</form>
+					</form>	
 					<?php endif; ?>
 				</div>
 			<?php endforeach; ?>
