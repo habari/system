@@ -47,7 +47,7 @@ class Themes
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
 
 				if ( $screenshot= glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
-					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/" . str_replace( HABARI_PATH, '', $screenshot[0] );
+					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/" . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
 				}
 				else {
 					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/system/admin/images/screenshot_default.png";
