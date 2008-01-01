@@ -4,7 +4,7 @@
  * Media access
  *
  * @version $Id$
- * @copyright 2007
+ * @copyright 2008
  * @package Habari
  * @todo Handle all error conditions using exceptions
  */

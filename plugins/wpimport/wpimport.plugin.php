@@ -35,7 +35,7 @@ class WPImport extends Plugin implements Importer
 			'authorurl' => 'http://habariproject.org/',
 			'license' => 'Apache License 2.0',
 			'description' => 'Import Wordpress 2.3.1 database.',
-			'copyright' => '2007'
+			'copyright' => '2008'
 		 );
 	}
 
