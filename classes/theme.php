@@ -8,7 +8,7 @@
  * of a set of UI files that compose the visual theme of the blog
  *
  */
-class Theme
+class Theme extends Pluggable
 {
 	private $name= null;
 	private $version= null;
@@ -57,6 +57,7 @@ class Theme
 		// Set up the corresponding engine to handle the templating
 		$this->template_engine= new $themedata->template_engine();
 		$this->template_engine->set_template_dir( $themedata->theme_dir );
+		$this->plugin_id= $this->plugin_id();
 	}
 
 	/**

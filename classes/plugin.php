@@ -9,11 +9,13 @@
  * @package Habari
  */
 
-abstract class Plugin
+abstract class Plugin extends Pluggable
 {
-	private $_class_name= null;
-	public $info;
-	public $plugin_id;
+	/**
+	 * Returns information about this plugin
+	 * @return array An associative array of information about this plugin
+	 **/
+	abstract public function info();
 
 	/**
 	 * Plugin constructor.
@@ -21,70 +23,9 @@ abstract class Plugin
 	 * to extract plugin info.  Instead, include a sink for a "init" hook
 	 * which is executed immediately after the plugin is loaded during normal execution.
 	 **/
-	final public function __construct(){
-		$this->info= new InfoObject( $this->info() );
-		$this->plugin_id= $this->plugin_id();
-	}	 
-
-	/**
-	 * Gets the filename that contains the plugin
-	 * @return string The filename of the file that contains the plugin class.	 
-	 **/
-	final public function get_file()
+	final public function __construct()
 	{
-		if(empty($this->_class_name)) {
-			$class = new ReflectionClass( get_class( $this ) );
-			$this->_class_name= $class->getFileName(); 
-		}
-		return $this->_class_name;
-	}	 	 	
-
-	/**
-	 * Returns information about this plugin
-	 * @return array An associative array of information about this plugin
-	 **/
-	abstract public function info();
-	
-	/**
-	 * Returns a unique id for this plugin
-	 * @return string A plugin id
-	 */
-	final public function plugin_id()
-	{
-		return Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
-	}
-
-	/**
-	 * Called when a plugin is loaded to register its actions and filters.	 
-	 * Registers all of this plugins action_ and filter_ functions with the Plugins dispatcher
-	 * Registers xmlrpc_ functions with the Plugins dispatcher, and turns '__' into '.'
-	 * for the purposes of matching dotted XMLRPC requests. 
-	 **/	 	 	 		
-	public function load()
-	{
-		// get the specific priority values for functions, as needed
-		if ( method_exists ( $this, 'set_priorities' ) ) {
-			$priorities = $this->set_priorities();
-		}
-		// loop over all the methods in this class
-		foreach ( get_class_methods( $this ) as $fn ) {
-			// make sure the method name is of the form
-			// action_foo or filter_foo
-			if ( 
-				( 0 !== strpos( $fn, 'action_' ) ) 
-				&& ( 0 !== strpos( $fn, 'filter_' ) ) 
-				&& ( 0 !== strpos( $fn, 'xmlrpc_' ) ) 
-			) {
-				continue;
-			}	
-			$priority = isset($priorities[$fn]) ? $priorities[$fn] : 8;
-			$type = substr( $fn, 0, strpos( $fn, '_' ) );
-			$hook = substr( $fn, strpos( $fn, '_' ) + 1 );
-			if ( 0 === strpos( $fn, 'xmlrpc_' ) ) {
-				$hook = str_replace('__', '.', $hook);
-			}
-			Plugins::register( array($this, $fn), $type, $hook, $priority );
-		}
+		parent::__construct();
 	}
 }
 
