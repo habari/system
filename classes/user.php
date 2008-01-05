@@ -98,6 +98,12 @@ class User extends QueryRecord
 	 */
 	public function insert()
 	{
+		$allow= true;
+		$allow= Plugins::filter('user_insert_allow', $allow, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('user_insert_before', $this);
 		$result= parent::insertRecord( DB::table('users') );
 		$this->fields['id'] = DB::last_insert_id(); // Make sure the id is set in the user object to match the row id
 		$this->info->set_key( $this->id );
@@ -105,6 +111,7 @@ class User extends QueryRecord
 		// $this->info->option_default= "saved";
 		$this->info->commit();
 		EventLog::log( 'New user created: ' . $this->username, 'info', 'default', 'habari' );
+		Plugins::act('user_insert_after', $this);
 
 		return $result;
 	}
@@ -114,8 +121,16 @@ class User extends QueryRecord
 	 */
 	public function update()
 	{
+		$allow= true;
+		$allow= Plugins::filter('user_update_allow', $allow, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('user_update_before', $this);
 		$this->info->commit();
-		return parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
+		$result = parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
+		Plugins::act('user_update_after', $this);
+		return $result;
 	}
 
 	/**
@@ -123,10 +138,19 @@ class User extends QueryRecord
 	 */
 	public function delete()
 	{
-		if(isset($this->info))
+		$allow= true;
+		$allow= Plugins::filter('user_delete_allow', $allow, $this);
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act('user_delete_before', $this);
+		if(isset($this->info)) {
 			$this->info->delete_all();
+		}
 		EventLog::log( 'User deleted: ' . $this->username, 'info', 'default', 'habari' );
-		return parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
+		$result = parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
+		Plugins::act('user_delete_after', $this);
+		return $result;
 	}
 
 	/**
@@ -166,7 +190,22 @@ class User extends QueryRecord
 			return false;
 		}
 
-		/* TODO execute auth plugins here */
+		$user= new StdClass();
+		$require= false;
+		$user= Plugins::filter('user_authenticate', $user, $who, $pw);
+		if($user instanceof User) {
+			self::$identity= $user;
+			Plugins::act( 'user_authenticate_successful', self::$identity );
+			EventLog::log( 'Successful login for ' . $user->username, 'info', 'authentication', 'habari' );
+			// set the cookie
+			$user->remember();
+			return self::$identity;
+		}
+		elseif(!is_object($user)) {
+			EventLog::log( 'Login attempt (via authentication plugin) for non-existant user ' . $who, 'warning', 'authentication', 'habari' );
+			self::$identity= null;
+			return false;
+		}
 
 		if ( strpos( $who, '@' ) !== FALSE ) {
 			// we were given an email address
@@ -226,7 +265,7 @@ class User extends QueryRecord
 		// results of the get_by_* method called above
 		return $user;
 	}
-	
+
 	/**
 	 * Select a user from the database by its id
 	 *
@@ -237,13 +276,13 @@ class User extends QueryRecord
 		if ( 0 == $id ) {
 			return false;
 		}
-		
+
 		$params= array(
 			'id' => $id,
 			'limit' => 1,
 			'fetch_fn' => 'get_row',
 			);
-		
+
 		return Users::get( $params );
 	}
 
@@ -257,7 +296,7 @@ class User extends QueryRecord
 		if ( '' == $username ) {
 			return false;
 		}
-		
+
 		$params= array(
 			'username' => $username,
 			'limit' => 1,
@@ -277,7 +316,7 @@ class User extends QueryRecord
 		if ( '' === $email ) {
 			return false;
 		}
-		
+
 		$params= array(
 			'email' => $email,
 			'limit' => 1,
