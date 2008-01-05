@@ -6,9 +6,6 @@
  * @package Habari
  */
 
-if (!defined('DEBUG'))
-	define('DEBUG', true);
-
 class DB extends Singleton
 {
 	private $connection= null;

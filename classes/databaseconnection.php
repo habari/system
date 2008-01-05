@@ -6,8 +6,6 @@
  * @package Habari
  */
 
-if ( !defined( 'DEBUG' ) )
-	define( 'DEBUG', true );
 
 class DatabaseConnection
 {
