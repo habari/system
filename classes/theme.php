@@ -139,17 +139,14 @@ class Theme extends Pluggable
 		$where_filters= array();
 		$where_filters= array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $this->valid_filters ) );
 		//$where_filters['status']= Post::status('published');
-		if (array_key_exists('tag', $where_filters))
-		{
+		if (array_key_exists('tag', $where_filters)) {
 			$where_filters['tag_slug']=  $where_filters['tag'];
 			unset($where_filters['tag']);
 		}
-		if ( User::identify() )
-		{
+		if ( User::identify() ) {
 			$where_filters['status']= Post::status('any');
 		}
-		else
-		{
+		else {
 			$where_filters['status']= Post::status('published');
 		}
 
