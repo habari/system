@@ -20,19 +20,19 @@
     <p>Next is &ldquo;Publish&rdquo;. You can work on posts or pages. Posts are like journal entries and are filed chronologically. Pages are filed separately and are great for things like telling about the authors on your site.</p>
     <p>Finally, you have the &ldquo;Manage&rdquo; option which includes &ldquo;Content&rdquo; where you can edit and delete posts and pages. You can also choose &ldquo;Comments&rdquo; where you can edit and delete comments. The last option is &ldquo;Spam&rdquo;. Here you can quickly review and destroy the spam that we've trapped.</p>
     <p>Below this message is your &ldquo;Dashboard&rdquo; where you can get a quick overview of what's been happening around <?php Options::out( 'title' ); ?>.</p>
-    <p>If this hasn't covered everything you need to know, there is a <a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help Center</a> link at the bottom of every page in the admin area. The next time you visit, you'll get a more condensed version of this message.</p>
+    <p>If this hasn't covered everything you need to know, there is a <a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help Center</a> link at the bottom of every page in the admin area. The next time you visit, you'll get a more condensed version of this message.</p>
     <?php
         $user->info->experience_level= 'user';
         $user->info->commit();
       }
       elseif ( $user->info->experience_level == 'user' ) {
     ?>
-    <p>This is a quick pointer to help you find things like <a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, <a href="<?php URL::out( 'admin', 'page=themes' )?>" title="Manage your themes">themes</a>, and <a href="<?php URL::out( 'admin', 'page=plugins' )?>" title="Manage your plugins">plugins</a>. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out( 'title' ); ?>. When you've done that you can <a href="<?php URL::out( 'admin', 'page=publish&type=entry' ); ?>" title="Post an Entry">post an entry</a> or <a href="<?php URL::out( 'admin', 'page=moderate' )?>" title="Manage Comments">manage your comments</a>.</p>
+    <p>This is a quick pointer to help you find things like <a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, <a href="<?php URL::out( 'admin', 'page=themes' )?>" title="Manage your themes">themes</a>, and <a href="<?php URL::out( 'admin', 'page=plugins' )?>" title="Manage your plugins">plugins</a>. Before you go back to creating your masterpiece, you might take a look at what's been happening around <?php Options::out( 'title' ); ?>. When you've done that you can <a href="<?php URL::out( 'admin', 'page=publish&type=entry' ); ?>" title="Post an Entry">post an entry</a> or <a href="<?php URL::out( 'admin', 'page=moderate' )?>" title="Manage Comments">manage your comments</a>.</p>
     <?php
       }
       else {
     ?>
-    <p>If you need <a href="<?php Site::out_url( 'system' )?>/help/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
+    <p>If you need <a href="<?php Site::out_url( 'habari' )?>/doc/manual/index.html" onclick="popUp(this.href);return false;" title="The Habari Help Center">Help</a>, it's always available.</p>
     <?php
       }
     ?>
