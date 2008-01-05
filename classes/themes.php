@@ -167,7 +167,9 @@ class Themes
 			}
 		}
 
-		return new $classname($themedata);
+		$created_theme = new $classname($themedata);
+		Plugins::act('init_theme');
+		return $created_theme;
 
 	}
 }

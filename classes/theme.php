@@ -58,6 +58,7 @@ class Theme extends Pluggable
 		$this->template_engine= new $themedata->template_engine();
 		$this->template_engine->set_template_dir( $themedata->theme_dir );
 		$this->plugin_id= $this->plugin_id();
+		$this->load();
 	}
 
 	/**
