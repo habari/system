@@ -43,7 +43,11 @@ class UserThemeHandler extends ActionHandler
 
 		$this->theme->$before_action_method();
 		try {
-			$this->theme->$action_method();
+			$handled = true;
+			$handled = Plugins::filter('theme_act_' . $action, $handled, $this->theme);
+			if(!$handled) {
+				$this->theme->$action_method();
+			}
 		}
 		catch(exception $e) {
 			EventLog::log($e->getMessage() . ' in ' . $e->getFile() . ' line ' . $e->getLine() , 'error', 'theme', 'habari', print_r($e, 1) );
