@@ -43,7 +43,7 @@ class UserThemeHandler extends ActionHandler
 
 		$this->theme->$before_action_method();
 		try {
-			$handled = true;
+			$handled = false;
 			$handled = Plugins::filter('theme_act_' . $action, $handled, $this->theme);
 			if(!$handled) {
 				$this->theme->$action_method();
