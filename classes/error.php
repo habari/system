@@ -1,8 +1,5 @@
 <?php
 
-if ( ! defined( 'DEBUG' ) )
-	define( 'DEBUG', true );
-
 /**
  * Contains error-related functions and Habari's error handler.
  *  
@@ -81,37 +78,12 @@ class Error extends Exception
 		}
 		
 		throw new Exception($errstr);
-		
-		/*
-		printf( "<pre class=\"error\">\n<b>%s:</b> <i>%s</i>\n",
-			( array_key_exists( $errno, $error_names ) ? $error_names[$errno] : 'Unknown error: '.$errno ),
-			$errstr );
-
-		if ( DEBUG ) {
-			self::print_backtrace();
-		}
-		else {
-			// don't display detailed backtrace
-			printf( "  in <b>%s</b>:<b>%d</b>\n<", $errfile, $errline );
-		}
-		
-		print "</pre>";
-		*/
-		
-		// die on all errors except for NOTICE, STRICT, and WARNING
-		if ( $errno & ( E_ALL ^ E_NOTICE ^ E_STRICT ^ E_WARNING ) ) {
-			die();
-		}
 	}
 	
 	private static function print_backtrace( $trace= null )
 	{
 		if ( !isset($trace) )
 			$trace= debug_backtrace();
-		// remove this call
-		//array_shift( $trace );
-		// remove error handler call
-		//array_shift( $trace );
 		print "<pre class=\"backtrace\">\n";
 		foreach ( $trace as $n => $a ) {
 			if ( ! isset( $a['file'] ) ) { $a['file']= '[core]'; }

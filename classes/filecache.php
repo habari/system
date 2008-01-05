@@ -44,7 +44,7 @@ class FileCache extends Cache
 	/**
 	 * Is record with $name in the cache?
 	 *
- 	 * @param string $name name of the cached item
+	 * @param string $name name of the cached item
 	 * @return boolean TRUE if item is cached, FALSE if not
 	 */
 	protected function _has( $name )
@@ -91,7 +91,7 @@ class FileCache extends Cache
 		$this->cache_data[$hash]= $value;
 
 		file_put_contents( $this->cache_location . $hash, serialize( $value ) );
-		$this->cache_files[$hash]= array( 'file'=>$this->cache_location . $hash, 'expires'=>time() + $expiry );
+		$this->cache_files[$hash]= array( 'file' => $this->cache_location . $hash, 'expires' => time() + $expiry );
 		$this->clear_expired();
 		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
@@ -107,7 +107,7 @@ class FileCache extends Cache
 			return null;
 		}
 		$hash= $this->get_name_hash( $name );
-		if( isset( $this->cache_files[$hash] ) && file_exists( $this->cache_files[$hash]['file'] ) ) {
+		if ( isset( $this->cache_files[$hash] ) && file_exists( $this->cache_files[$hash]['file'] ) ) {
 			unlink( $this->cache_files[$hash]['file'] );
 			unset( $this->cache_files[$hash] );
 			$this->clear_expired();
@@ -127,7 +127,7 @@ class FileCache extends Cache
 			return null;
 		}
 		$hash= $this->get_name_hash( $name );
-		if( isset( $this->cache_files[$hash] ) ) {
+		if ( isset( $this->cache_files[$hash] ) ) {
 			$this->cache_files[$hash]['expires'] = time() + $expiry;
 			$this->clear_expired();
 			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
