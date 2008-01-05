@@ -11,8 +11,6 @@
  */
 
 require( HABARI_PATH . '/3rdparty/smarty/libs/Smarty.class.php' );
-if ( !defined( 'DEBUG' ) )
-	define( 'DEBUG', true ); 
 
 class SmartyEngine extends TemplateEngine
 {
