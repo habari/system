@@ -40,7 +40,13 @@ include_once( 'header.php' );
 			<tr>
 				<td align="left"><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></td>
 				<td><?php echo $log->timestamp; ?></td>
-				<td><?php if ( $log->user_id ) { $user= User::get_by_id( $log->user_id ); echo $user->username; } ?></td>
+				<td><?php if ( $log->user_id ) { 
+					if ( $user= User::get_by_id( $log->user_id ) ) {
+						 echo $user->username;
+					} else {
+						echo $log->user_id;
+					}
+				} ?></td>
 				<td><?php echo $log->module; ?></td>
 				<td><?php echo $log->type; ?></td>
 				<td><?php echo $log->severity; ?></td>

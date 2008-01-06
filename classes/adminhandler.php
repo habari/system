@@ -253,12 +253,28 @@ class AdminHandler extends ActionHandler
 				case 'delete': // Deleting a user
 					if ( isset( $delete ) && ( 'user' == $delete ) ) {
 						// Extra safety check here
-						if ( isset( $user_id ) && ( $currentuser->id != $user_id ) ) {
+						if ( isset( $user_id ) && ( $currentuser->id != intval( $user_id ) ) ) {
 							$username= $user->username;
+							$posts= Posts::get(array( 'user_id' => $user_id ) );
+							if ( isset($reassign) && ( 1 === intval($reassign) ) ) {
+								// we're going to re-assign all of this user's posts
+								$newauthor= isset( $author ) ? intval($author) : 1;
+								foreach ( $posts as $post ) {
+									$post->user_id= $newauthor;
+									$post->update();
+								}
+							} else {
+								// delete posts
+								foreach ( $posts as $post ) {
+									$post->delete();
+								}
+							}
 							$user->delete();
 							Session::notice( sprintf(_t('%s has been deleted'), $username) );
 						}
 					}
+					// redirect to main user list
+					$results= array( 'page' => 'users' );
 					break;
 				case 'username': // Changing username
 					if ( isset( $username ) && ( $user->username != $username ) ) {
