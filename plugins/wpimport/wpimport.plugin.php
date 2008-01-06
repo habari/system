@@ -270,20 +270,30 @@ WP_IMPORT_STAGE2;
 			$post_map= array();
 			foreach( $posts as $post ) {
 
-				// Import WP category as tags
-				if ( $category_import == 1 ) {
-					if($has_taxonomy) {
-						$tags= $wpdb->get_column(
-							"SELECT slug
-							FROM {$db_prefix}terms
-							INNER JOIN {$db_prefix}term_taxonomy
-							ON ( {$db_prefix}terms.term_id = {$db_prefix}term_taxonomy.term_id AND {$db_prefix}term_taxonomy.taxonomy = 'category')
-							INNER JOIN {$db_prefix}term_relationships
-							ON ({$db_prefix}term_taxonomy.term_taxonomy_id = {$db_prefix}term_relationships.term_taxonomy_id)
-							WHERE {$db_prefix}term_relationships.object_id= {$post->id}"
-						 );
+				if ( $has_taxonomy ) {
+					// Importing from >= WP2.3
+					if ( $category_import == 1 ) {
+						// Import WP category and tags as tags
+						$taxonomies= "({$db_prefix}term_taxonomy.taxonomy= 'category' OR {$db_prefix}term_taxonomy.taxonomy= 'post_tag')";
 					}
 					else {
+						// Import WP tags as tags
+						$taxonomies= "{$db_prefix}term_taxonomy.taxonomy= 'post_tag'";
+					}
+					$tags= $wpdb->get_column(
+						"SELECT DISTINCT slug
+						FROM {$db_prefix}terms
+						INNER JOIN {$db_prefix}term_taxonomy
+						ON ( {$db_prefix}terms.term_id= {$db_prefix}term_taxonomy.term_id AND {$taxonomies} )
+						INNER JOIN {$db_prefix}term_relationships
+						ON ({$db_prefix}term_taxonomy.term_taxonomy_id= {$db_prefix}term_relationships.term_taxonomy_id)
+						WHERE {$db_prefix}term_relationships.object_id= {$post->id}"
+						);
+				}
+				else {
+					// Importing from < WP2.3
+					if ( $category_import == 1 ) {
+						// Import WP category as tags
 						$tags= $wpdb->get_column(
 							"SELECT category_nicename
 							FROM {$db_prefix}post2cat
@@ -291,9 +301,9 @@ WP_IMPORT_STAGE2;
 							ON ( {$db_prefix}categories.cat_ID= {$db_prefix}post2cat.category_id )
 							WHERE post_id= {$post->id}"
 						 );
+					} else {
+						$tags= array();
 					}
-				} else {
-					$tags= array();
 				}
 
 				// we want to include the Ultimate Tag Warrior in that list of tags
