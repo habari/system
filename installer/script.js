@@ -23,6 +23,7 @@ function setDatabaseType()
 		case 'sqlite':
 			$('.formysql').hide();
 			$('.forsqlite').show();
+			checkDBCredentials();
 			break;
 	}
 }
