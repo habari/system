@@ -171,27 +171,27 @@ class Plugins
 		$plugindirs= array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/3rdparty/plugins/', HABARI_PATH . '/user/plugins/' );
 		if ( Site::CONFIG_LOCAL != Site::$config_type ) {
 			// include site-specific plugins
-			$plugindirs[]= Site::get_dir('config') . '/plugins/';
+			$plugindirs[]= Site::get_dir( 'config' ) . '/plugins/';
 		}
-		$dirs = array();
-		foreach($plugindirs as $plugindir) {
-			if(file_exists($plugindir)) {
-				$dirs = array_merge($dirs, glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK ));
+		$dirs= array();
+		foreach ( $plugindirs as $plugindir ) {
+			if ( file_exists( $plugindir ) ) {
+				$dirs= array_merge( $dirs, Utils::glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 		}
-		foreach( $dirs as $dir ) {
-			$dirfiles = glob( $dir . '*.plugin.php' );
-			if(count($dirfiles) > 0) {
-				$dirfiles = array_combine(
+		foreach ( $dirs as $dir ) {
+			$dirfiles= Utils::glob( $dir . '*.plugin.php' );
+			if ( ! empty( $dirfiles ) ) {
+				$dirfiles= array_combine(
 					// Use the basename of the file as the index to use the named plugin from the last directory in $dirs
-					array_map('basename', $dirfiles),
+					array_map( 'basename', $dirfiles ),
 					// massage the filenames so that this works on Windows
 					array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), $dirfiles )
 				);
-				$plugins = array_merge($plugins, $dirfiles);
+				$plugins = array_merge( $plugins, $dirfiles );
 			}
 		}
-		ksort($plugins);
+		ksort( $plugins );
 		return $plugins;
 	}
 
@@ -200,10 +200,10 @@ class Plugins
 	 * @param $class string A class name
 	 * @return boolean true if the class extends Plugin
 	 **/
-	public static function extends_plugin($class)
+	public static function extends_plugin( $class )
 	{
-		$parents= class_parents($class, false);
-		return in_array('Plugin', $parents);
+		$parents= class_parents( $class, false );
+		return in_array( 'Plugin', $parents );
 	}
 
 	/**
@@ -214,17 +214,16 @@ class Plugins
 	**/
 	public static function class_from_filename( $file )
 	{
-		$classes = get_declared_classes();
-		$plugin_classes = array_filter($classes, array('Plugins', 'extends_plugin'));
-		foreach($plugin_classes as $plugin) {
-			$class = new ReflectionClass( $plugin );
-			$classfile = str_replace('\\', '/', $class->getFileName());
-			if($classfile == $file) {
+		$classes= get_declared_classes();
+		$plugin_classes= array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
+		foreach ( $plugin_classes as $plugin ) {
+			$class= new ReflectionClass( $plugin );
+			$classfile= str_replace( '\\', '/', $class->getFileName() );
+			if ( $classfile == $file ) {
 				return $plugin;
 			}
 		}
 		return false;
-		#return str_replace( '.plugin.php', '',  substr( $file, ( strrpos( $file, '/') + 1 ) ) );
 	}
 
 	/**

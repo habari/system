@@ -684,6 +684,7 @@ class Utils
 		$output.= '</select>';
 		return $output;
 	}
+	
 	/**
 	 * Creates one or more HTML checkboxes
 	 * @param string The name of the checkbox element.  If there are
@@ -749,13 +750,14 @@ class Utils
 	}
 
 	/**
-	 * Check the PHP syntax of (and execute) the specified code.
+	 * Check the PHP syntax of the specified code.
 	 * Performs a syntax (lint) check on the specified code testing for scripting errors.
 	 *
 	 * @param string $code The code string to be evaluated. It does not have to contain PHP opening tags.
 	 * @return bool Returns TRUE if the lint check passed, and FALSE if the link check failed.
 	 */
-	public function php_check_syntax( $code, &$error = null ) {
+	public static function php_check_syntax( $code, &$error = null )
+	{
 		$b= 0;
 
 		foreach ( token_get_all( $code ) as $token ) {
@@ -792,11 +794,19 @@ class Utils
 	 *
 	 * @see Utils::php_check_syntax()
 	 */
-	public function php_check_file_syntax( $file, &$error = null ) {
+	public static function php_check_file_syntax( $file, &$error = null )
+	{
 		// Prepend and append PHP opening tags to prevent eval() failures.
 		$code= ' ?>' . file_get_contents( $file ) . '<?php ';
 
 		return self::php_check_syntax( $code, $error );
+	}
+	
+	public static function glob( $pattern, $flags = 0 )
+	{
+		$res= glob( $pattern, $flags );
+		if ( $res === false ) $res= array();
+		return $res;
 	}
 
 }

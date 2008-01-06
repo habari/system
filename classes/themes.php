@@ -21,8 +21,7 @@ class Themes
 			}
 			$themes = array();
 			foreach($dirs as $dir) {
-				$site_dirs = glob( $dir, GLOB_ONLYDIR | GLOB_MARK );
-				$themes = array_merge( $themes, $site_dirs );
+				$themes = array_merge( $themes, Utils::glob( $dir, GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 
 			$themes= array_filter( $themes, create_function('$a', 'return file_exists($a . "/theme.xml");') );
@@ -46,7 +45,7 @@ class Themes
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
 
-				if ( $screenshot= glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
+				if ( $screenshot= Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
 					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/" . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
 				}
 				else {
