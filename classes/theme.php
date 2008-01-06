@@ -267,6 +267,36 @@ class Theme extends Pluggable
 
 		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
 
+		// Handle comment submissions and default commenter id values
+		$cookie= 'comment_' . Options::get( 'GUID' );
+		$commenter_name= '';
+		$commenter_email= '';
+		$commenter_url= '';
+		$commenter_content = '';
+		$user = User::identify();
+		if ( isset( $_SESSION['comment'] ) ) {
+			$details= Session::get_set('comment');
+			$commenter_name= $details['name'];
+			$commenter_email= $details['email'];
+			$commenter_url= $details['url'];
+			$commenter_content = $details['content'];
+		}
+		elseif ( $user ) {
+			$commenter_name= $user->username;
+			$commenter_email= $user->email;
+			$commenter_url= Site::get_url('habari');
+		}
+		elseif ( isset( $_COOKIE[$cookie] ) ) {
+			list( $commenter_name, $commenter_email, $commenter_url )= explode( '#', $_COOKIE[$cookie] );
+		}
+
+		$this->commenter_name = $commenter_name;
+		$this->commenter_email = $commenter_email;
+		$this->commenter_url = $commenter_url;
+		$this->commenter_content = $commenter_content;
+
+		$this->comments_require_id = Options::get('comments_require_id');
+
 		return $this->act_display( $paramarray );
 	}
 
