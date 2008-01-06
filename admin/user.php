@@ -84,7 +84,15 @@ if ( $user != $currentuser ) {
 	echo '<form method="post" action="">'."\n";
 	echo '<p><input type="hidden" name="delete" value="user"><p>'."\n";
 	echo '<p><input type="hidden" name="user_id" value="' . $user->id . '"><p>'."\n";
-	echo '<p><input type="submit" value="DELETE USER"><p>';
+	echo '<p><ul><li><input type="radio" name="reassign" id="purge" value="0" checked>Delete posts</li>';
+	$author_list= DB::get_results('SELECT id,username FROM ' . DB::table('users') . ' WHERE username <> ? ORDER BY username ASC', array( $user->username) );
+	foreach ( $author_list as $author ) {
+		$authors[ $author->id ]= $author->username;
+	}
+	echo '<li><input type="radio" name="reassign" id="reassign" value="1">';
+	printf( _t('Reassign posts to: %s'), Utils::html_select('Author', $authors ));
+	echo '</li></ul>';
+	echo '<p><input type="submit" value="'. _('DELETE USER') . '"><p>';
 	echo "</form>\n";
 }
 ?>
