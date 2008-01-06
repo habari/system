@@ -262,6 +262,11 @@ class AdminHandler extends ActionHandler
 					break;
 				case 'username': // Changing username
 					if ( isset( $username ) && ( $user->username != $username ) ) {
+						// make sure the name isn't already used
+						if ( $test= User::get_by_name( $username ) ) {
+							Session::error(_t('That username is already in use!') );
+							break;
+						}
 						$old_name= $user->username;
 						$user->username= $username;
 						Session::notice( sprintf( _t('%1$s has been renamed to %2$s.'), $old_name, $username ) );
