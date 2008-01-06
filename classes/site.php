@@ -259,7 +259,7 @@ class Site
 
 				self::$config_path= HABARI_PATH;
 
-				$config_dirs= preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', glob( HABARI_PATH . '/user/sites/*/config.php' ) );
+				$config_dirs= preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', Utils::glob( HABARI_PATH . '/user/sites/*/config.php' ) );
 
 				if ( empty( $config_dirs ) ) {
 					return self::$config_path;

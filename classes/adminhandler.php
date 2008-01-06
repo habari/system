@@ -54,7 +54,7 @@ class AdminHandler extends ActionHandler
 					exit;
 				}
 				// If a get_ function doesn't exist, just load the template and display it
-				$files= glob( Site::get_dir( 'admin_theme', TRUE ) . '*.php' );
+				$files= Utils::glob( Site::get_dir( 'admin_theme', TRUE ) . '*.php' );
 				$filekeys= array_map( create_function( '$a', 'return basename( $a, \'.php\' );' ), $files );
 				$map= array_combine( $filekeys, $files );
 				if ( isset( $map[$page] ) ) {

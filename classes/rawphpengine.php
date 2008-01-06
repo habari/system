@@ -98,11 +98,11 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function template_exists( $template )
 	{
-		if( empty( $this->available_templates ) ) {
-			$this->available_templates= glob( $this->template_dir . '*.*' );
-			$this->available_templates= array_map('basename', $this->available_templates, array_fill(1, count($this->available_templates), '.php') );
+		if ( empty( $this->available_templates ) ) {
+			$this->available_templates= Utils::glob( $this->template_dir . '*.*' );
+			$this->available_templates= array_map( 'basename', $this->available_templates, array_fill( 1, count( $this->available_templates ), '.php' ) );
 		}
-		return in_array($template, $this->available_templates);
+		return in_array( $template, $this->available_templates );
 	}
 
 	/**
