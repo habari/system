@@ -111,22 +111,28 @@ class Controller extends Singleton {
 
 		/* Strip out the base URL from the requested URL */
 		/* but only if the base URL isn't / */
-		if ( '/' != $controller->base_url)
+		if ( '/' != $controller->base_url) {
 			$start_url= str_replace($controller->base_url, '', $start_url);
+		}
 
 		/* Trim off any leading or trailing slashes */
 		$start_url= trim($start_url, '/');
 
 		/* Remove the querystring from the URL */
-		if ( strpos($start_url, '?') !== FALSE )
+		if ( strpos($start_url, '?') !== FALSE ) {
 			list($start_url, $query_string)= explode('?', $start_url);
+		}
 
 		/* Return $_GET values to their proper place */
-		if( !empty($query_string) )
+		if( !empty($query_string) ) {
 			parse_str($query_string, $_GET);
+		}
 
 		/* Undo what magic_quotes_gpc might have wrought */
 		Utils::revert_magic_quotes_gpc();
+
+		/* Allow plugins to rewrite the stub before it's passed through the rules */
+		$start_url= Plugins::filter('rewrite_request', $start_url);
 
 		$controller->stub= $start_url;
 
@@ -155,8 +161,9 @@ class Controller extends Singleton {
 		$controller->handler= new $matched_rule->handler();
 		/* Insert the regexed submatches as the named parameters */
 		$controller->handler->handler_vars['entire_match']= $matched_rule->entire_match; // The entire matched string is returned at index 0
-		foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value)
+		foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value) {
 			$controller->handler->handler_vars[$named_arg_key]= $named_arg_value;
+		}
 
 		/* Also, we musn't forget to add the GET and POST vars into the action's settings array */
 		$controller->handler->handler_vars= array_merge($controller->handler->handler_vars, $_GET, $_POST);
