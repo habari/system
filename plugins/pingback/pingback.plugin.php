@@ -159,7 +159,7 @@ class Pingback extends Plugin {
 				'url'		=>	$source_uri,
 				'ip'		=>	'',
 				'content'	=>	$source_excerpt,
-				'status'	=>	Comment::STATUS_APPROVED,
+				'status'	=>	Comment::STATUS_UNAPPROVED,
 				'date'		=>	date( 'Y-m-d H:i:s' ),
 				'type' 		=> 	Comment::PINGBACK,
 				) );
