@@ -72,7 +72,7 @@ class URL extends Singleton
 	
 		/* Remove the querystring from the URL */
 		if ( strpos( $from_url, '?' ) !== FALSE ) {
-			list($from_url, )= explode( '?', $from_url );
+			list( $from_url, )= explode( '?', $from_url );
 		}
 	
 		$url= URL::instance();
@@ -116,28 +116,28 @@ class URL extends Singleton
 		
 		$url= URL::instance();
 		$url->load_rules();
-		if( !is_array($rule_names) ) {
-			$rule_names = array($rule_names);
+		if ( !is_array( $rule_names ) ) {
+			$rule_names= array( $rule_names );
 		}
-		foreach($rule_names as $rule_name) {
+		foreach ( $rule_names as $rule_name ) {
 			if ( $rules= $url->rules->by_name( $rule_name ) ) {
 				$rating= null;
 				$selectedrule= null;
-				foreach($rules as $rule) {
-					$newrating= $rule->arg_match($args);
+				foreach ( $rules as $rule ) {
+					$newrating= $rule->arg_match( $args );
 					// Is the rating perfect?
-					if($rating == 0) {
+					if ( $rating == 0 ) {
 						$selectedrule= $rule;
 						break;
 					} 
-					if( empty($rating) || ( $newrating < $rating ) ) {
+					if ( empty( $rating ) || ( $newrating < $rating ) ) {
 						$rating= $newrating;
 						$selectedrule= $rule;
 					}
 				}
-				if( isset($selectedrule) ) {
-					$return_url = $selectedrule->build( $args, $useall, $noamp );
-					return Site::get_url('habari', true) . $return_url;
+				if ( isset( $selectedrule ) ) {
+					$return_url= $selectedrule->build( $args, $useall, $noamp );
+					return Site::get_url( 'habari', true ) . $return_url;
 				}
 			}
 		}
@@ -159,7 +159,7 @@ class URL extends Singleton
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL
 	 **/	 	 	 	
-	public static function extract_args( $args, $prefix = '' )
+	public static function extract_args( $args, $prefix= '' )
 	{
 		if ( is_object( $args ) ) {
 			if ( $args instanceof URLProperties ) {
@@ -167,7 +167,7 @@ class URL extends Singleton
 			}
 			else {
 				$args_ob= array();
-				foreach ($args as $key => $value ) {
+				foreach ( $args as $key => $value ) {
 					$args_ob[$key]= $value;
 				}
 				$args= $args_ob;

@@ -27,16 +27,20 @@ class UserHandler extends ActionHandler
 				$user->info->authenticate_time= date( 'Y-m-d H:i:s' );
 				$user->update();
 
-				$login_session= Session::get_set('login');
+				$login_session= Session::get_set( 'login' );
 				if ( ! empty( $login_session ) ) {
-					$dest= explode('/', substr(  $login_session['original'], strpos( $login_session['original'], 'admin/') ) );
+					$dest= explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
 					if ( '' == $dest[0] ) {
-						Utils::redirect( Site::get_url('admin') );
-					} else {
+						Utils::redirect( Site::get_url( 'admin' ) );
+					} 
+					else {
+						// Replace '?' with '&' in $dest[1] before call URL::get()
+						$dest[1]= str_replace( '?', '&', $dest[1] );
 						Utils::redirect( URL::get( 'admin', 'page=' . $dest[1] ) );
 					}
-				} else {
-					Utils::redirect( Site::get_url('admin') );
+				} 
+				else {
+					Utils::redirect( Site::get_url( 'admin' ) );
 				}
 				return TRUE;
 			}
@@ -49,14 +53,14 @@ class UserHandler extends ActionHandler
 
 		// Display the login form.
 		$this->theme= Themes::create();
-		if(!$this->theme->template_engine->template_exists( 'login' )) {
+		if ( !$this->theme->template_engine->template_exists( 'login' ) ) {
 			$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
 		}
-		$request = new StdClass();
-		foreach(RewriteRules::get_active() as $rule) {
-			$request->{$rule->name} = ($rule->name == URL::get_matched_rule()->name);
+		$request= new StdClass();
+		foreach ( RewriteRules::get_active() as $rule ) {
+			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
 		}
-		$this->theme->assign('request', $request);
+		$this->theme->assign( 'request', $request );
 		$this->display( 'login' );
 		return TRUE;
 	}
@@ -67,14 +71,14 @@ class UserHandler extends ActionHandler
 	* @param string the Action that was in the URL rule
 	* @param array An associative array of settings found in the URL by the URL
 	*/
-	public function act_logout() {
+	public function act_logout() 
+	{
 		// get the user from their cookie
-		if ( $user = user::identify() )
-		{
+		if ( $user = user::identify() ) {
 			// delete the cookie, and destroy the object
 			Utils::debug( $user );
 			Utils::debug( $user->forget() );
-			$user = null;
+			$user= null;
 		}
 		Utils::debug( $user );
 		//$theme= new ThemeHandler( 'logout', $settings );
@@ -87,15 +91,17 @@ class UserHandler extends ActionHandler
    *
    * @param template_name Name of template to display (note: not the filename)
    */
-  protected function display($template_name) {
+	protected function display( $template_name ) 
+	{
     /*
      * Assign internal variables into the theme (and therefore into the theme's template
      * engine.  See Theme::assign().
      */
-    foreach ($this->handler_vars as $key=>$value)
-      $this->theme->assign($key, $value);
-    $this->theme->display($template_name);
-  }
+		foreach ( $this->handler_vars as $key=>$value ) {
+			$this->theme->assign($key, $value);
+		}
+		$this->theme->display($template_name);
+	}
 
 }
 ?>

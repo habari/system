@@ -13,10 +13,11 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Verifies user credentials before creating the theme and displaying the request.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		$user= User::identify();
 		if ( !$user ) {
-			Session::add_to_set('login', $_SERVER['REQUEST_URI'], 'original');
+			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
 			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			exit;
 		}
@@ -29,7 +30,8 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Dispatches the request to the defined method. (ie: post_{page})
 	 */
-	public function act_admin() {
+	public function act_admin()
+	{
 		$page= ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->set_admin_template_vars( $this->theme );
@@ -74,13 +76,14 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handle incoming requests to /admin_ajax for admin ajax requests
 	 */
-	public function act_admin_ajax() {
-		$context = $this->handler_vars['context'];
-		if(method_exists($this, 'ajax_' . $context)) {
-			call_user_func(array($this, 'ajax_' . $context), $this->handler_vars);
+	public function act_admin_ajax()
+	{
+		$context= $this->handler_vars['context'];
+		if ( method_exists( $this, 'ajax_' . $context ) ) {
+			call_user_func( array( $this, 'ajax_' . $context ), $this->handler_vars );
 		}
 		else {
-			header('HTTP/1.1 403 Forbidden', true, 403);
+			header( 'HTTP/1.1 403 Forbidden', true, 403 );
 			die();
 		}
 	}
@@ -88,8 +91,9 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles post requests from the options admin page.
 	 */
-	public function post_options() {
-		extract($this->handler_vars);
+	public function post_options()
+	{
+		extract( $this->handler_vars );
 		$fields= array( 'title' => 'title', 'tagline' => 'tagline', 'about' => 'about', 'pagination' => 'pagination', 'pingback_send' => 'pingback_send', 'comments_require_id' => 'comments_require_id' );
 		$checkboxes= array( 'pingback_send', 'comments_require_id' );
 		foreach ( $checkboxes as $checkbox ) {
@@ -102,21 +106,23 @@ class AdminHandler extends ActionHandler
 				Options::set( $field, ${$input} );
 			}
 		}
-		Session::notice(_t('Successfully updated options'));
+		Session::notice( _t( 'Successfully updated options' ) );
 		Utils::redirect( URL::get( 'admin', 'page=options' ) );
 	}
 
 	/**
 	 * Handles post requests from the dashboard.
 	 */
-	public function post_dashboard() {
+	public function post_dashboard()
+	{
 		_e( 'Nothing sends POST requests to the dashboard. Yet.' );
 	}
 
 	/**
 	 * Handles post requests from the publish page.
 	 */
-	public function post_publish() {
+	public function post_publish()
+	{
 		extract( $this->handler_vars );
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
@@ -125,14 +131,14 @@ class AdminHandler extends ActionHandler
 			$post->tags= $tags;
 			$post->content= $content;
 			$post->content_type= $content_type;
-			if ( ( $post->status != Post::status( 'published' ) ) && ( $status == Post::status('published') ) ) {
+			if ( ( $post->status != Post::status( 'published' ) ) && ( $status == Post::status( 'published' ) ) ) {
 				$post->pubdate= date( 'Y-m-d H:i:s' );
 			}
 			else {
 				$post->pubdate= $pubdate;
 			}
 			$post->status= $status;
-			if ( !isset($comments_enabled)) {
+			if ( !isset( $comments_enabled ) ) {
 				$post->info->comments_disabled= TRUE;
 			}
 			elseif ( $post->info->comments_disabled == TRUE ) {
@@ -147,17 +153,17 @@ class AdminHandler extends ActionHandler
 				'tags' => $tags,
 				'content' => $content,
 				'user_id' => User::identify()->id,
-				'pubdate' => ($pubdate == '') ? date( 'Y-m-d H:i:s' ) : $pubdate,
+				'pubdate' => ( $pubdate == '' ) ? date( 'Y-m-d H:i:s' ) : $pubdate,
 				'status' => $status,
 				'content_type' => $content_type,
 			);
 			$post= Post::create( $postdata );
-			if ( !isset($comments_enabled) ) {
+			if ( !isset( $comments_enabled ) ) {
 				$post->info->comments_disabled= TRUE;
 				$post->update();
 			}
 		}
-		Session::notice(sprintf(_t('The post \'%s\' has been saved as %s.'), $title, Post::status_name($status)));
+		Session::notice( sprintf( _t( 'The post \'%s\' has been saved as %s.' ), $title, Post::status_name( $status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
 
@@ -170,35 +176,35 @@ class AdminHandler extends ActionHandler
 			$this->theme->post= $post;
 			$this->theme->tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
 			$this->theme->content_type= Post::type( $post->content_type );
-			$this->theme->newpost = false;
+			$this->theme->newpost= false;
 		}
 		else {
 			$post= new Post();
 			$this->theme->post= $post;
 			$this->theme->tags= '';
 			$this->theme->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
-			$this->theme->newpost = true;
+			$this->theme->newpost= true;
 		}
 
 		// Theme assigns all handler vars as theme vars, thus clobbering what we
 		// set above in some cases (i.e. when ?content_type=entry is in the query string)
 		$this->handler_vars['content_type']= $this->theme->content_type;
 
-		$this->theme->silos = Media::dir();
+		$this->theme->silos= Media::dir();
 
 		// pass "false" to list_post_statuses() so that we don't
 		// include internal post statuses
 		$statuses= Post::list_post_statuses( false );
 		unset( $statuses[array_search( 'any', $statuses )] );
-		$statuses= Plugins::filter('admin_publish_list_post_statuses', $statuses);
+		$statuses= Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 		$this->theme->statuses= $statuses;
 		$this->theme->wsse= Utils::WSSE();
 
-		$controls = array(
-			'Settings' => $this->theme->fetch('publish_settings'),
-			'Tags' => $this->theme->fetch('publish_tags'),
+		$controls= array(
+			'Settings' => $this->theme->fetch( 'publish_settings' ),
+			'Tags' => $this->theme->fetch( 'publish_tags' ),
 		);
-		$this->theme->controls = Plugins::filter('publish_controls', $controls, $post);
+		$this->theme->controls= Plugins::filter( 'publish_controls', $controls, $post );
 
 		$this->display( 'publish' );
 	}
@@ -206,7 +212,8 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Deletes a post from the database.
 	 */
-	function post_delete_post() {
+	function post_delete_post()
+	{
 		extract( $this->handler_vars );
 		$okay= TRUE;
 		if ( empty( $slug ) || empty( $nonce ) || empty( $timestamp ) || empty( $PasswordDigest ) ) {
@@ -225,14 +232,15 @@ class AdminHandler extends ActionHandler
 		}
 		$post= Post::get( array( 'slug' => $slug ) );
 		$post->delete();
-		Session::notice(sprintf(_t('Deleted %1$s "%2$s".'), Post::type_name($post->content_type), $post->title));
+		Session::notice( sprintf( _t( 'Deleted %1$s "%2$s".' ), Post::type_name( $post->content_type ), $post->title ) );
 		Utils::redirect( URL::get( 'admin', 'page=content' ) );
 	}
 
 	/**
 	 * Handles post requests from the user profile page.
 	 */
-	function post_user() {
+	function post_user()
+	{
 		// Keep track of whether we actually need to update any fields
 		$update= FALSE;
 		$results= array( 'page' => 'user' );
@@ -242,7 +250,7 @@ class AdminHandler extends ActionHandler
 		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
 		$fields= Plugins::filter( 'adminhandler_post_user_fields', $fields );
 
-		foreach ($fields as $input => $field) {
+		foreach ( $fields as $input => $field ) {
 			switch ( $input ) {
 				case 'user_id': // Editing someone else's profile? If so, load that user's profile
 					if ( $currentuser->id != $user_id ) {
@@ -255,10 +263,10 @@ class AdminHandler extends ActionHandler
 						// Extra safety check here
 						if ( isset( $user_id ) && ( $currentuser->id != intval( $user_id ) ) ) {
 							$username= $user->username;
-							$posts= Posts::get(array( 'user_id' => $user_id ) );
-							if ( isset($reassign) && ( 1 === intval($reassign) ) ) {
+							$posts= Posts::get( array( 'user_id' => $user_id ) );
+							if ( isset( $reassign ) && ( 1 === intval( $reassign ) ) ) {
 								// we're going to re-assign all of this user's posts
-								$newauthor= isset( $author ) ? intval($author) : 1;
+								$newauthor= isset( $author ) ? intval( $author ) : 1;
 								foreach ( $posts as $post ) {
 									$post->user_id= $newauthor;
 									$post->update();
@@ -270,7 +278,7 @@ class AdminHandler extends ActionHandler
 								}
 							}
 							$user->delete();
-							Session::notice( sprintf(_t('%s has been deleted'), $username) );
+							Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
 						}
 					}
 					// redirect to main user list
@@ -280,19 +288,19 @@ class AdminHandler extends ActionHandler
 					if ( isset( $username ) && ( $user->username != $username ) ) {
 						// make sure the name isn't already used
 						if ( $test= User::get_by_name( $username ) ) {
-							Session::error(_t('That username is already in use!') );
+							Session::error( _t( 'That username is already in use!' ) );
 							break;
 						}
 						$old_name= $user->username;
 						$user->username= $username;
-						Session::notice( sprintf( _t('%1$s has been renamed to %2$s.'), $old_name, $username ) );
+						Session::notice( sprintf( _t( '%1$s has been renamed to %2$s.' ), $old_name, $username ) );
 						$update= TRUE;
 					}
 					break;
 				case 'email': // Changing e-mail address
 					if ( isset( $email ) && ( $user->email != $email ) ) {
 						$user->email= $email;
-						Session::notice( $user->username ._t(' email has been changed to ') . $email . '.');
+						Session::notice( $user->username . _t( ' email has been changed to ' ) . $email . '.' );
 						$update= TRUE;
 					}
 					break;
@@ -303,18 +311,18 @@ class AdminHandler extends ActionHandler
 							if ( $user == $currentuser ) {
 								$user->remember();
 							}
-							Session::notice(_t('Password changed successfully.'));
+							Session::notice( _t( 'Password changed successfully.' ) );
 							$update= TRUE;
 						}
 						else {
-							Session::error(_t('The passwords did not match, and were not changed.'));
+							Session::error( _t( 'The passwords did not match, and were not changed.' ) );
 						}
 					}
 					break;
 				default:
 					if ( isset( ${$input} ) && ( $user->info->$field != ${$input} ) ) {
 						$user->info->$field= ${$input};
-						Session::notice(_t('Userinfo updated!'));
+						Session::notice( _t( 'Userinfo updated!' ) );
 						$update= TRUE;
 					}
 					break;
@@ -331,32 +339,33 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles post requests from the Users listing (ie: creating a new user)
 	 */
-	public function post_users() {
+	public function post_users()
+	{
 		extract( $this->handler_vars );
 		$error= '';
 		if ( isset( $action ) && ( 'newuser' == $action ) ) {
 			if ( !isset( $pass1 ) || !isset( $pass2 ) || empty( $pass1 ) || empty( $pass2 ) ) {
-				Session::error(_t('Password mis-match.'), 'adduser');
+				Session::error( _t( 'Password mis-match.' ), 'adduser' );
 			}
 			if ( !isset( $email ) || empty( $email ) || ( !strstr( $email, '@' ) ) ) {
-				Session::error(_t('Please supply a valid email address.'), 'adduser');
+				Session::error( _t( 'Please supply a valid email address.' ), 'adduser' );
 			}
 			if ( !isset( $username ) || empty( $username ) ) {
-				Session::error(_t('Please supply a user name.'), 'adduser');
+				Session::error( _t( 'Please supply a user name.' ), 'adduser' );
 			}
 			// safety check to make sure no such username exists
 			$user= User::get_by_name( $username );
-			if ( isset($user->id) ) {
-				Session::error(_t('That username is already assigned.'), 'adduser');
+			if ( isset( $user->id ) ) {
+				Session::error( _t( 'That username is already assigned.' ), 'adduser' );
 			}
-			if ( !Session::has_errors('adduser') ) {
+			if ( !Session::has_errors( 'adduser' ) ) {
 				$user= new User( array( 'username' => $username, 'email' => $email, 'password' => Utils::crypt( $pass1 ) ) );
 				if ( $user->insert() ) {
-					Session::notice(sprintf(_t("Added user '%s'"), $username));
+					Session::notice( sprintf( _t( "Added user '%s'" ), $username ) );
 				}
 				else {
 					$dberror= DB::get_last_error();
-					Session::error($dberror[2], 'adduser');
+					Session::error( $dberror[2], 'adduser' );
 				}
 			}
 			Utils::redirect( );
@@ -366,16 +375,17 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles plugin activation or deactivation.
 	 */
-	function post_plugin_toggle() {
+	function post_plugin_toggle()
+	{
 		extract( $this->handler_vars );
 		if ( 'activate' == strtolower( $action ) ) {
 			Plugins::activate_plugin( $plugin );
-			$plugins = Plugins::get_active();
-			Session::notice( sprintf(_t("Activated plugin '%s'"), $plugins[Plugins::id_from_file($plugin)]->info->name ) );
+			$plugins= Plugins::get_active();
+			Session::notice( sprintf( _t( "Activated plugin '%s'" ), $plugins[Plugins::id_from_file( $plugin )]->info->name ) );
 		}
 		else {
-			$plugins = Plugins::get_active();
-			Session::notice( sprintf(_t("Deactivated plugin '%s'"), $plugins[Plugins::id_from_file($plugin)]->info->name ) );
+			$plugins= Plugins::get_active();
+			Session::notice( sprintf( _t( "Deactivated plugin '%s'" ), $plugins[Plugins::id_from_file( $plugin )]->info->name ) );
 			Plugins::deactivate_plugin( $plugin );
 		}
 		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
@@ -383,8 +393,8 @@ class AdminHandler extends ActionHandler
 
 	function get_themes()
 	{
-		$this->theme->active_theme = Options::get('theme_dir');
-		$this->theme->all_themes = Themes::get_all_data();
+		$this->theme->active_theme= Options::get( 'theme_dir' );
+		$this->theme->all_themes= Themes::get_all_data();
 
 		$this->theme->display( 'themes' );
 	}
@@ -392,12 +402,13 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Activates a theme.
 	 */
-	function post_activate_theme() {
+	function post_activate_theme()
+	{
 		extract( $this->handler_vars );
 		if ( 'activate' == strtolower( $submit ) ) {
 			Themes::activate_theme( $theme_name,  $theme_dir );
 		}
-		Session::notice(sprintf(_t("Activated theme '%s'"), $theme_name));
+		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
@@ -405,7 +416,8 @@ class AdminHandler extends ActionHandler
 	 * Handles the submission of the import form, importing data from a WordPress database.
 	 * This function should probably be broken into an importer class, since it is WordPress-specific.
 	 */
-	function post_import() {
+	function post_import()
+	{
 		if ( !isset( $_REQUEST['importer'] ) ) {
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
 			exit;
@@ -414,7 +426,8 @@ class AdminHandler extends ActionHandler
 		$this->display( 'import' );
 	}
 
-	function get_moderate() {
+	function get_moderate()
+	{
 		$this->post_moderate();
 	}
 
@@ -422,9 +435,10 @@ class AdminHandler extends ActionHandler
 	 * Handles the submission of the comment moderation form.
 	 * @todo Separate delete from "delete until purge"
 	 */
-	function post_moderate() {
+	function post_moderate()
+	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
-		$locals = array(
+		$locals= array(
 			'do_update' => false,
 			'comment_ids' => null,
 			'nonce' => '',
@@ -433,21 +447,21 @@ class AdminHandler extends ActionHandler
 			'mass_spam_delete' => null,
 			'mass_delete' => null,
 
-			'type' => Comment::type('comment'),
-			'status' => Comment::status('approved'),
+			'type' => Comment::type( 'comment' ),
+			'status' => Comment::status( 'approved' ),
 			'limit' => 30,
 			'orderby' => 'date DESC',
 			'default_radio' => array( 'approve'=>'', 'delete'=>'', 'spam'=>'', 'unapprove'=>'', 'edit' =>'' ),
 			'show' => '0',
 			'search' => '',
-			'search_fields' => array('content'),
+			'search_fields' => array( 'content' ),
 			'search_status' => null,
 			'search_type' => null,
 			'do_search' => false,
 			'index' => 1,
 		);
-		foreach($locals as $varname => $default) {
-			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
+		foreach ( $locals as $varname => $default ) {
+			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
 		}
 
@@ -455,14 +469,14 @@ class AdminHandler extends ActionHandler
 		if ( isset( $mass_spam_delete ) && $search_status == Comment::STATUS_SPAM ) {
 			// Delete all comments that have the spam status.
 			Comments::delete_by_status( Comment::STATUS_SPAM );
-			Session::notice(_t('Deleted all spam comments'));
+			Session::notice( _t( 'Deleted all spam comments' ) );
 			Utils::redirect();
 			die();
 		}
 		elseif ( isset( $mass_delete ) && $search_status == Comment::STATUS_UNAPPROVED ) {
 			// Delete all comments that are unapproved.
 			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
-			Session::notice(_t('Deleted all unapproved comments'));
+			Session::notice( _t( 'Deleted all unapproved comments' ) );
 			Utils::redirect();
 			die();
 		}
@@ -488,7 +502,7 @@ class AdminHandler extends ActionHandler
 					}
 				}
 				$to_update= Comments::get( array( 'id' => $ids ) );
-				$modstatus = array('Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0);
+				$modstatus= array( 'Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0 );
 				foreach ( $to_update as $comment ) {
 					switch ( $ids_change[$comment->id] ) {
 					case 'delete':
@@ -537,9 +551,9 @@ class AdminHandler extends ActionHandler
 						break;
 					}
 				}
-				foreach($modstatus as $key => $value) {
-					if($value) {
-						Session::notice(sprintf(_t($key), $value));
+				foreach ( $modstatus as $key => $value ) {
+					if ( $value ) {
+						Session::notice( sprintf( _t( $key ), $value ) );
 					}
 				}
 				unset( $this->handler_vars['change'] );
@@ -550,7 +564,7 @@ class AdminHandler extends ActionHandler
 
 		// Set up the limits select box
 		$limits= array( 5, 10, 20, 50, 100 );
-		$limits= array_combine($limits, $limits);
+		$limits= array_combine( $limits, $limits );
 		$this->theme->limits= $limits;
 
 		// Set up the type select box
@@ -575,23 +589,23 @@ class AdminHandler extends ActionHandler
 
 		$arguments= array(
 			'limit' => $limit,
-			'offset' => ($index - 1) * $limit,
+			'offset' => ( $index - 1 ) * $limit,
 		);
 
 		// Decide what to display
-		$arguments['status']= intval($search_status);
-		switch($search_status) {
+		$arguments['status']= intval( $search_status );
+		switch ( $search_status ) {
 			case Comment::STATUS_SPAM:
-				$this->theme->mass_delete = 'mass_spam_delete';
+				$this->theme->mass_delete= 'mass_spam_delete';
 				$default_radio['spam']= ' checked';
 				break;
 			case Comment::STATUS_APPROVED:
-				$this->theme->mass_delete = '';
+				$this->theme->mass_delete= '';
 				$default_radio['approve']= ' checked';
 				break;
 			case Comment::STATUS_UNAPPROVED:
 			default:
-				$this->theme->mass_delete = 'mass_delete';
+				$this->theme->mass_delete= 'mass_delete';
 				$default_radio['unapprove']= ' checked';
 				break;
 		}
@@ -611,15 +625,15 @@ class AdminHandler extends ActionHandler
 
 		// Get the page count
 		$arguments['count']= 'id';
-		unset($arguments['limit']);
-		unset($arguments['offset']);
+		unset( $arguments['limit'] );
+		unset( $arguments['offset'] );
 		$totalpages= Comments::get( $arguments );
 		$pagecount= ceil( $totalpages / $limit );
 
 		// Put page numbers into an array for the page controls to output.
 		$pages= array();
-		for($z = 1; $z <= $pagecount; $z++) {
-			$pages[$z] = $z;
+		for ( $z= 1; $z <= $pagecount; $z++ ) {
+			$pages[$z]= $z;
 		}
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
@@ -640,42 +654,42 @@ class AdminHandler extends ActionHandler
 		$all_plugins= Plugins::list_all();
 		$active_plugins= Plugins::get_active();
 
-		$plugins = array();
+		$plugins= array();
 		foreach ( $all_plugins as $file ) {
-			$plugin = array();
-			$plugin_id = Plugins::id_from_file( $file );
-			$plugin['plugin_id'] = $plugin_id;
-			$plugin['file'] = $file;
+			$plugin= array();
+			$plugin_id= Plugins::id_from_file( $file );
+			$plugin['plugin_id']= $plugin_id;
+			$plugin['file']= $file;
 
-			$error = '';
+			$error= '';
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
-				$plugin['debug'] = false;
+				$plugin['debug']= false;
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
-					$plugin['verb'] = _t( 'Deactivate' );
-					$pluginobj = $active_plugins[$plugin_id];
-					$plugin['active'] = true;
-					$plugin_actions = array();
-					$plugin['actions'] = Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
+					$plugin['verb']= _t( 'Deactivate' );
+					$pluginobj= $active_plugins[$plugin_id];
+					$plugin['active']= true;
+					$plugin_actions= array();
+					$plugin['actions']= Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
 				}
 				else {
 					// instantiate this plugin
 					// in order to get its info()
 					include_once( $file );
-					$pluginobj = Plugins::load( $file );
-					$plugin['active'] = false;
-					$plugin['verb'] = _t( 'Activate' );
-					$plugin['actions'] = array();
+					$pluginobj= Plugins::load( $file );
+					$plugin['active']= false;
+					$plugin['verb']= _t( 'Activate' );
+					$plugin['actions']= array();
 				}
-				$plugin['info'] = $pluginobj->info;
+				$plugin['info']= $pluginobj->info;
 			}
 			else {
-				$plugin['debug'] = true;
-				$plugin['error'] = $error;
+				$plugin['debug']= true;
+				$plugin['error']= $error;
 			}
-			$plugins[$plugin_id] = $plugin;
+			$plugins[$plugin_id]= $plugin;
 		}
 
-		$this->theme->plugins = $plugins;
+		$this->theme->plugins= $plugins;
 
 		$this->display( 'plugins' );
 	}
@@ -692,7 +706,7 @@ class AdminHandler extends ActionHandler
 	public function post_content()
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
-		$locals = array(
+		$locals= array(
 			'do_update' => false,
 			'post_ids' => null,
 			'nonce' => '',
@@ -701,16 +715,16 @@ class AdminHandler extends ActionHandler
 			'change' => '',
 
 			'author' => 0,
-			'type' => Post::type('entry'),
-			'status' => Post::status('published'),
+			'type' => Post::type( 'entry' ),
+			'status' => Post::status( 'published' ),
 			'limit' => 20,
 			'year_month' => 'Any',
 			'search' => '',
 			'do_search' => false,
 			'index' => 1,
 		);
-		foreach($locals as $varname => $default) {
-			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
+		foreach ( $locals as $varname => $default ) {
+			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
 		}
 
@@ -742,7 +756,7 @@ class AdminHandler extends ActionHandler
 						$post->publish();
 						break;
 					case 'unpublish':
-						$post->status= Post::status('draft');
+						$post->status= Post::status( 'draft' );
 						$post->update();
 						break;
 					}
@@ -752,24 +766,24 @@ class AdminHandler extends ActionHandler
 		}
 
 		// Set up Authors select box
-		$authors_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table('users') . ' JOIN ' . DB::table('posts') . ' ON ' . DB::table('users') . '.id=' . DB::table('posts') . '.user_id GROUP BY user_id ORDER BY username ASC');
-		array_unshift($authors_temp, new QueryRecord(array('username' => 'All', 'user_id' => 0)));
+		$authors_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table( 'users' ) . ' JOIN ' . DB::table( 'posts' ) . ' ON ' . DB::table( 'users' ) . '.id=' . DB::table( 'posts' ) . '.user_id GROUP BY user_id ORDER BY username ASC' );
+		array_unshift( $authors_temp, new QueryRecord( array( 'username' => 'All', 'user_id' => 0 ) ) );
 		$authors= array();
-		foreach($authors_temp as $author) {
+		foreach ( $authors_temp as $author ) {
 			$authors[$author->user_id]= $author->username;
 		}
-		$this->theme->authors = $authors;
+		$this->theme->authors= $authors;
 
 		// Set up the dates select box
-		$dates= DB::get_column("SELECT pubdate FROM " . DB::table('posts') . ' ORDER BY pubdate DESC');
+		$dates= DB::get_column( "SELECT pubdate FROM " . DB::table( 'posts' ) . ' ORDER BY pubdate DESC' );
 		$dates= array_map( create_function( '$date', 'return strftime( "%Y-%m", strtotime( $date ) );' ), $dates );
-		array_unshift($dates, 'Any');
-		$dates= array_combine($dates, $dates);
-		$this->theme->dates = $dates;
+		array_unshift( $dates, 'Any' );
+		$dates= array_combine( $dates, $dates );
+		$this->theme->dates= $dates;
 
 		// Set up the limits select box
 		$limits= array( 5, 10, 20, 50, 100 );
-		$limits= array_combine($limits, $limits);
+		$limits= array_combine( $limits, $limits );
 		$this->theme->limits= $limits;
 
 		// we load the WSSE tokens
@@ -780,10 +794,10 @@ class AdminHandler extends ActionHandler
 			'content_type' => $type,
 			'status' => $status,
 			'limit' => $limit,
-			'offset' => ($index - 1) * $limit,
+			'offset' => ( $index - 1 ) * $limit,
 		);
-		if ( 'any' != strtolower($year_month) ) {
-			list($arguments['year'], $arguments['month']) = explode('-', $year_month);
+		if ( 'any' != strtolower( $year_month ) ) {
+			list( $arguments['year'], $arguments['month'] )= explode( '-', $year_month );
 		}
 		if ( '' != $search ) {
 			$arguments['criteria']= $search;
@@ -792,15 +806,15 @@ class AdminHandler extends ActionHandler
 
 		// Get the page count
 		$arguments['count']= 'id';
-		unset($arguments['limit']);
-		unset($arguments['offset']);
+		unset( $arguments['limit'] );
+		unset( $arguments['offset'] );
 		$totalpages= Posts::get( $arguments );
 		$pagecount= ceil( $totalpages / $limit );
 
 		// Put page numbers into an array for the page controls to output.
 		$pages= array();
-		for($z = 1; $z <= $pagecount; $z++) {
-			$pages[$z] = $z;
+		for ( $z= 1; $z <= $pagecount; $z++ ) {
+			$pages[$z]= $z;
 		}
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
@@ -834,7 +848,7 @@ class AdminHandler extends ActionHandler
 			'index' => 1,
 		);
 		foreach ( $locals as $varname => $default ) {
-			$$varname= isset($this->handler_vars[$varname]) ? $this->handler_vars[$varname] : $default;
+			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
 		}
 		$this->theme->severities= LogEntry::list_severities();
@@ -844,36 +858,36 @@ class AdminHandler extends ActionHandler
 		$modules= array();
 		$types= array();
 		$addresses= $any;
-		$ips= DB::get_column('SELECT DISTINCT(ip) FROM ' . DB::table('log') );
-		foreach ($ips as $ip) {
-			$addresses[$ip]= long2ip($ip);
+		$ips= DB::get_column( 'SELECT DISTINCT(ip) FROM ' . DB::table( 'log' ) );
+		foreach ( $ips as $ip ) {
+			$addresses[$ip]= long2ip( $ip );
 		}
 		$this->theme->addresses= $addresses;
-		foreach($modulelist as $modulename => $typearray) {
-			$modules['0,'.implode(',', $typearray)] = $modulename;
-			foreach($typearray as $typename => $typevalue) {
-				if(!isset($types[$typename])) {
+		foreach ( $modulelist as $modulename => $typearray ) {
+			$modules['0,'.implode( ',', $typearray )]= $modulename;
+			foreach ( $typearray as $typename => $typevalue ) {
+				if ( !isset( $types[$typename] ) ) {
 					$types[$typename]= '0';
 				}
 				$types[$typename].= ',' . $typevalue;
 			}
 		}
-		$types = array_flip($types);
+		$types= array_flip( $types );
 		$this->theme->types= array_merge( $any, $types );
 		$this->theme->modules= array_merge( $any, $modules );
 
 		// set up the users
-		$users_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table('users') . ' JOIN ' . DB::table('log') . ' ON ' . DB::table('users') . '.id=' . DB::table('log') . '.user_id GROUP BY user_id ORDER BY username ASC');
-		array_unshift( $users_temp, new QueryRecord(array('username' => 'All', 'user_id' => 0)));
-		foreach ($users_temp as $user) {
+		$users_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table( 'users' ) . ' JOIN ' . DB::table( 'log' ) . ' ON ' . DB::table( 'users' ) . '.id=' . DB::table( 'log' ) . '.user_id GROUP BY user_id ORDER BY username ASC' );
+		array_unshift( $users_temp, new QueryRecord( array( 'username' => 'All', 'user_id' => 0 ) ) );
+		foreach ( $users_temp as $user ) {
 			$users[$user->user_id]= $user->username;
 		}
 		$this->theme->users= $users;
 
 		// set up dates.
-		$dates= DB::get_column("SELECT timestamp FROM " . DB::table('log') . ' ORDER BY timestamp DESC');
+		$dates= DB::get_column( "SELECT timestamp FROM " . DB::table( 'log' ) . ' ORDER BY timestamp DESC' );
 		$dates= array_map( create_function( '$date', 'return strftime( "%Y-%m", strtotime( $date ) );' ), $dates );
-		array_unshift( $dates, 'Any');
+		array_unshift( $dates, 'Any' );
 		$dates= array_combine( $dates, $dates );
 		$this->theme->dates= $dates;
 
@@ -886,30 +900,30 @@ class AdminHandler extends ActionHandler
 		$this->theme->wsse= Utils::WSSE();
 
 		$arguments= array(
-			'severity' => LogEntry::severity($severity),
+			'severity' => LogEntry::severity( $severity ),
 			'limit' => $limit,
 			'offset' => ( $index - 1) * $limit,
 		);
 
 		// deduce type_id from module and type
-		$r_type = explode(',', substr($type, 2));
-		$r_module = explode(',', substr($module, 2));
+		$r_type= explode( ',', substr( $type, 2 ) );
+		$r_module= explode( ',', substr( $module, 2 ) );
 		if( $type != '0' && $module != '0' ) {
-			$arguments['type_id'] = array_intersect($r_type, $r_module);
+			$arguments['type_id']= array_intersect( $r_type, $r_module );
 		}
 		elseif( $type == '0' ) {
-			$arguments['type_id'] = $r_module;
+			$arguments['type_id']= $r_module;
 		}
 		elseif( $module == '0' ) {
-			$arguments['type_id'] = $r_type;
+			$arguments['type_id']= $r_type;
 		}
 
 		if ( '0' != $address ) {
 			$arguments['ip']= $address;
 		}
 
-		if ( 'any' != strtolower($date) ) {
-			list($arguments['year'], $arguments['month'])= explode( '-', $date );
+		if ( 'any' != strtolower( $date ) ) {
+			list( $arguments['year'], $arguments['month'] )= explode( '-', $date );
 		}
 		if ( '' != $search ) {
 			$arguments['criteria']= $search;
@@ -918,8 +932,8 @@ class AdminHandler extends ActionHandler
 
 		// get the page count
 		$arguments['count']= 'id';
-		unset($arguments['limit']);
-		unset($arguments['offset']);
+		unset( $arguments['limit'] );
+		unset( $arguments['offset'] );
 		$totalpages= EventLog::get( $arguments );
 		$pagecount= ceil( $totalpages / $limit );
 
@@ -937,8 +951,9 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Assembles the main menu for the admin area.
 		*/
-	protected function get_main_menu() {
-		$mainmenus = array(
+	protected function get_main_menu()
+	{
+		$mainmenus= array(
 			'admin' => array(
 				'caption' => _t( 'Admin' ),
 				'url' => URL::get( 'admin', 'page=' ),
@@ -996,7 +1011,8 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Assigns the main menu to $mainmenu into the theme.
 		*/
-	protected function set_admin_template_vars( $theme ) {
+	protected function set_admin_template_vars( $theme )
+	{
 		$theme->assign( 'mainmenu', $this->get_main_menu() );
 	}
 
@@ -1004,7 +1020,8 @@ class AdminHandler extends ActionHandler
 	 * Helper function to assign all handler_vars into the theme and displays a theme template.
 	 * @param template_name Name of template to display (note: not the filename)
 	 */
-	protected function display( $template_name ) {
+	protected function display( $template_name )
+	{
 		$this->theme->display( $template_name );
 	}
 
