@@ -47,7 +47,7 @@ class RewriteRule extends QueryRecord
 	public function __construct( $paramarray= array() )
 	{
 		// Defaults
-		$this->fields = array_merge(
+		$this->fields= array_merge(
 			self::default_fields(),
 			$this->fields );
 		
@@ -145,7 +145,7 @@ class RewriteRule extends QueryRecord
 		$named_args= $this->named_args; // Direct call prints a PHP notice
 		$named_args_combined= array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
 		
-		$args= Plugins::filter('rewrite_args', $args, $this->name );
+		$args= Plugins::filter( 'rewrite_args', $args, $this->name );
 		
 		$diffargs= array_diff_key( $args, $named_args_combined );
 		$sameargs= array_intersect_key( $args, $named_args_combined );
