@@ -165,6 +165,7 @@ class Theme extends Pluggable
 			$user_filters= Plugins::filter( 'template_user_filters', $user_filters );
 			$user_filters= array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 			$where_filters= array_merge( $where_filters, $user_filters );
+			$where_filters= Plugins::filter( 'template_where_filters', $where_filters );
 
 			$posts= Posts::get( $where_filters );
 		}
