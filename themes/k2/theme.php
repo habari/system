@@ -63,12 +63,12 @@ class MyTheme extends Theme
 		parent::add_template_vars();
 	}
 
-	public function header()
+	public function filter_theme_call_header( $return, $theme )
 	{
 		if ( User::identify() != FALSE ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
 		}
-		parent::header();
+		return $return;
 	}
 
 }
