@@ -101,6 +101,7 @@ class RawPHPEngine extends TemplateEngine
 		if ( empty( $this->available_templates ) ) {
 			$this->available_templates= Utils::glob( $this->template_dir . '*.*' );
 			$this->available_templates= array_map( 'basename', $this->available_templates, array_fill( 1, count( $this->available_templates ), '.php' ) );
+			$this->available_templates= Plugins::filter('available_templates', $this->available_templates, __CLASS__);
 		}
 		return in_array( $template, $this->available_templates );
 	}

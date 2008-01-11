@@ -32,13 +32,13 @@ class UserHandler extends ActionHandler
 					$dest= explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
 					if ( '' == $dest[0] ) {
 						Utils::redirect( Site::get_url( 'admin' ) );
-					} 
+					}
 					else {
 						// Replace '?' with '&' in $dest[1] before call URL::get()
 						$dest[1]= str_replace( '?', '&', $dest[1] );
 						Utils::redirect( URL::get( 'admin', 'page=' . $dest[1] ) );
 					}
-				} 
+				}
 				else {
 					Utils::redirect( Site::get_url( 'admin' ) );
 				}
@@ -53,7 +53,7 @@ class UserHandler extends ActionHandler
 
 		// Display the login form.
 		$this->theme= Themes::create();
-		if ( !$this->theme->template_engine->template_exists( 'login' ) ) {
+		if ( !$this->theme->template_exists( 'login' ) ) {
 			$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
 		}
 		$request= new StdClass();
@@ -71,7 +71,7 @@ class UserHandler extends ActionHandler
 	* @param string the Action that was in the URL rule
 	* @param array An associative array of settings found in the URL by the URL
 	*/
-	public function act_logout() 
+	public function act_logout()
 	{
 		// get the user from their cookie
 		if ( $user = user::identify() ) {
@@ -91,7 +91,7 @@ class UserHandler extends ActionHandler
    *
    * @param template_name Name of template to display (note: not the filename)
    */
-	protected function display( $template_name ) 
+	protected function display( $template_name )
 	{
     /*
      * Assign internal variables into the theme (and therefore into the theme's template
