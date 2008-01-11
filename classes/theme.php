@@ -112,12 +112,23 @@ class Theme extends Pluggable
 	public function display_fallback($template_list)
 	{
 		foreach( $template_list as $template ) {
-			if( $this->template_engine->template_exists( $template ) ) {
+			if( $this->template_exists( $template ) ) {
 				$this->display( $template );
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Determine if a template exists in the current theme
+	 *
+	 * @param string $template_name The name of the template to detect
+	 * @return boolean True if template exists
+	 */
+	public function template_exists( $template_name )
+	{
+		return $this->template_engine->template_exists( $template_name );
 	}
 
 	/**
@@ -431,10 +442,10 @@ class Theme extends Pluggable
  	/**
 	 * Aggregates and echos the additional header code by combining Plugins and Stack calls.
 	 */
-	public function header() {
-		Plugins::act( 'template_header', $this );
-		Stack::out( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
-		Stack::out( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+	public function filter_theme_call_header( $output, $theme ) {
+		$output .= Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
+		$output .= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+		return $output;
 	}
 
 	/**
