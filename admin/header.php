@@ -26,7 +26,7 @@
 </head>
 <body>
 
-<ul id="menu">
+<ul id="oldmenu">
 	<li id="site-name">
 		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 	</li>
