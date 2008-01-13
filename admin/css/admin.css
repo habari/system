@@ -203,7 +203,6 @@ textarea {
 	border: 1px solid #b0b0b0;
 	border-top: none;
 	padding: 5px 0;
-	opacity: 0.9;
 	}
 
 #menu li.menu-item:hover ul {
@@ -608,6 +607,7 @@ ul {
 
 .splitter.mediasplitter {
 	background: #333333 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAuCAIAAAB8sQSzAAAAW0lEQVR4nO3VMRIAIQhD0WUF9BDW3v+CDl7hFymhfpMiRbBzzgfOIwK5zJS6OSdyay1pHnW0F+rcHbkxhtSZmdL9BLVr107ivKqk7t6rdLb3Rnl0x+n/oHsK3QNrcA5DpDiz3gAAAABJRU5ErkJggg==) top repeat-x; /* Drop shadow */
+
 }
 
 .media_controls {
