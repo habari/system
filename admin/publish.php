@@ -17,7 +17,7 @@
 
 	<?php if (isset($silos) && count($silos)) : ?>
 	<div class="container pagesplitter">
-		<ul class="tabs">
+		<ul id="mediatabs" class="tabs">
 			<?php
 			$first = 'first';
 			$ct = 0;
@@ -37,16 +37,13 @@
 		foreach($silos as $silodir):
 			$ct++;
 		?>
-			<div id="silo_<?php echo $ct; ?>" class="splitter">
-				<div class="splitterinside" style="overflow-x:scroll;">
+			<div id="silo_<?php echo $ct; ?>" class="splitter mediasplitter">
+				<div class="toload pathstore" style="display:none;"><?php echo $silodir->path; ?></div>
+				<div class="splitterinside" style="overflow-x:scroll;overflow-y:hidden;">
+					<div class="media_controls"><a href="#" onclick="media.showdir('<?php echo $silodir->path; ?>');return false;">Root</a></div>
 					<div style="white-space:nowrap;" class="media_browser">
-				<?php
-				$assets = Media::highlights($silodir->path);
-
-				foreach((array)$assets as $asset) {
-					echo "<div class=\"media\"><img src=\"{$asset->thumbnail_url}\"><div class=\"foroutput\"><img src=\"{$asset->url}\"></div></div>";
-				}
-				?>
+						<div class="mediadir"></div>
+						<div class="mediaphotos"></div>
 					</div>
 				</div>
 			</div>
@@ -62,7 +59,7 @@
 
 
 	<div class="container pagesplitter">
-		<ul class="tabs">
+		<ul class="tabcontrol tabs">
 			<?php
 			$first = 'first';
 			$ct = 0;
@@ -123,13 +120,6 @@ $(document).ready(function(){
 			.attr('action', '<?php URL::out( 'admin', array('page' => 'delete_post', 'slug' => $post->slug )); ?>');
 	});
 	<?php endif; ?>
-	$('.media').dblclick(function(){
-		$('#content').filter('.islabeled')
-			.val('')
-			.removeClass('islabeled');
-
-		$("#content").val($("#content").val() + $('.foroutput', this).html());
-	});
 });
 </script>
 

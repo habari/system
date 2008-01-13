@@ -26,7 +26,7 @@ class RewriteRules extends ArrayObject {
 			array( 'name' => 'submit_feedback', 'parse_regex' => '%^(?P<id>[0-9]+)/feedback/?$%i', 'build_str' => '{$id}/feedback', 'handler' => 'FeedbackHandler', 'action' => 'add_comment', 'priority' => 8, 'description' => 'Adds a comment to a post' ),
 
 			// User actions
-			array( 'name' => 'admin', 'parse_regex' => '%^admin/?(?P<page>[^/]*)/?$%i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
+			array( 'name' => 'admin', 'parse_regex' => '%^admin(?:/?$|/(?P<page>[^/]*))/?$%i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
 			array( 'name' => 'user', 'parse_regex' => '%^user/(?P<page>[^/]*)$%i', 'build_str' => 'user/{$page}', 'handler' => 'UserHandler', 'action' => '{$page}', 'priority' => 7, 'description' => 'A user action or display, for instance the login screen' ),
 			array( 'name' => 'user_profile', 'parse_regex' => '%^admin/(?P<page>user)/(?P<user>[^/]+)/?$%', 'build_str' => 'admin/{$page}/{$user}', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The profile page for a specific user' ),
 

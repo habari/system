@@ -343,7 +343,7 @@ class Plugins
 	 */
 	public static function is_loaded( $name, $version= NULL ) {
 		foreach ( self::$plugins as $plugin ) {
-			if ( strtolower($plugin->info->name) == $name || $plugin instanceof $name ) {
+			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || strtolower($plugin->info->guid) == strtolower($name)) {
 				if ( isset( $version ) ) {
 					return version_compare( $plugin->info->version, $version, '>=' );
 				}

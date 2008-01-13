@@ -78,8 +78,14 @@ class flickrAPI
 			}
 
 			$response = $call->get_response_body();
-			$xml = new SimpleXMLElement($response);
-			return $xml;
+			try{
+				$xml = new SimpleXMLElement($response);
+				return $xml;
+			}
+			catch(Exception $e) {
+				Utils::debug($url, $response);
+				return false;
+			}
 		}
 	}
 }
@@ -423,7 +429,7 @@ class Flickr extends flickrAPI
 
 class FlickrSilo extends Plugin implements MediaSilo
 {
-	const SILO_NAME = 'flickr';
+	const SILO_NAME = 'Flickr';
 
 	static $cache = array();
 
@@ -472,6 +478,48 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_dir($path)
 	{
+		$flickr = new Flickr();
+		$xml = $flickr->photosSearch();
+		$results = array();
+
+		list($section) = explode('/', $path);
+		switch($section) {
+			case 'photos':
+				foreach($xml->photos->photo as $photo) {
+
+					$props = array();
+					foreach($photo->attributes() as $name => $value) {
+						$props[$name] = (string)$value;
+					}
+					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
+					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+
+					$results[] = new MediaAsset(
+						self::SILO_NAME . '/photos/' . $photo['id'],
+						false,
+						$props
+					);
+				}
+			break;
+			case '':
+				$results[] = new MediaAsset(
+					self::SILO_NAME . '/photos',
+					true,
+					array('title' => 'Photos')
+				);
+				$results[] = new MediaAsset(
+					self::SILO_NAME . '/tags',
+					true,
+					array('title' => 'Tags')
+				);
+				$results[] = new MediaAsset(
+					self::SILO_NAME . '/groups',
+					true,
+					array('title' => 'Groups')
+				);
+				break;
+		}
+		return $results;
 	}
 
 	/**
@@ -545,15 +593,6 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_highlights()
 	{
-		$flickr = new Flickr();
-		$xml = $flickr->photosSearch();
-		$result = array();
-
-		foreach($xml->photos->photo as $photo) {
-			$result[] = new MediaAsset('flickr/photos/' . $photo['id'], false);
-			self::$cache[''.$photo['id']] = $photo->attributes();
-		}
-		return $result;
 	}
 
 	/**

@@ -6,16 +6,16 @@
 	#
 	#  Docs: http://wiki.developers.viddler.com/index.php/Phpviddler
 	#
-	#  License(s): Dual licensed under: 
+	#  License(s): Dual licensed under:
 	#  MIT (MIT-LICENSE.txt)
     #  GPL (GPL-LICENSE.txt)
-    # 
+    #
     #  Third-party code:
     #  XML Library by Keith Devens
 	#  xmlparser.php
 	#
 	#  Version 0.3
-	########################################################	
+	########################################################
 */
 
 class Phpviddler {
@@ -25,10 +25,10 @@ class Phpviddler {
 	var $xml; // Raw XML returned by API
 	var $response; // Array of results
 	var $parser= false; // Use the included XML parser? Default: true.
-	
+
 	// Optional
 	var $uploaddir= false; // Used for temporary upload directory.
-/*##########  User functions ########### */	
+/*##########  User functions ########### */
 	/* viddler.users.auth
 	/ accepts: $userInfo = array
 	/ returns: array - sessionid (if not asking for record_token)
@@ -40,7 +40,7 @@ class Phpviddler {
 		$args = $this->buildArguments($userInfo); // Arguments as string
 		//var_dump( $args ); exit;
 		$xml = $this->sendRequest('viddler.users.auth',$args); // Get XML response
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -49,7 +49,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -57,7 +57,7 @@ class Phpviddler {
 				if (!$args['record_token']) {
 					return $response['auth']['sessionid'];
 				} else {
-					return $response['auth'];	
+					return $response['auth'];
 				}
 			}
 		} else {
@@ -65,16 +65,16 @@ class Phpviddler {
 		}
 	return false;
 	}
-	
+
 	/* viddler.users.getProfile
 	/ accepts: $username = string
 	/ returns: array - user's profile
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.users.getProfile
 	*/
 	function user_profile($username) {
-		
+
 		$xml = $this->sendRequest('viddler.users.getProfile','user='.$username); // Get XML response
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -83,7 +83,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -94,7 +94,7 @@ class Phpviddler {
 		}
 	return false;
 	}
-	
+
 	/* viddler.users.setOptions
 	/ accepts: $options = array
 	/ returns: string - number of options updated
@@ -103,9 +103,9 @@ class Phpviddler {
 	function user_setoptions($options) {
 		$args= '';
 		$args = $this->buildArguments($options); // Arguments as string
-		
+
 		$xml = $this->sendRequest('viddler.users.setOptions',$args); // Get XML response
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -114,7 +114,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -125,7 +125,7 @@ class Phpviddler {
 		}
 	return false;
 	}
-	
+
 /*##########  Video functions ########### */
 
 	/* viddler.videos.upload
@@ -137,9 +137,9 @@ class Phpviddler {
 	function video_upload($videoInfo) {
 		$args= '';
 		$args = $this->buildArguments($videoInfo,'array'); // Arguments as array
-		
+
 		$xml = $this->sendRequest('viddler.videos.upload',$args); // Get XML response
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -148,12 +148,12 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			// Deletes the uploaded file from the server
 			//if ($this->uploaddir) {
 			//	unlink($this->uploaddir.$_FILES['file']['name']);
 			//}
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -164,7 +164,7 @@ class Phpviddler {
 		}
 	return false;
 	}
-	
+
 	/* viddler.videos.getRecordToken
 	/ accepts: $sessionid = string
 	/ returns: string - token needed for recording with webcam
@@ -173,9 +173,9 @@ class Phpviddler {
 	/ Instructions for use: http://wiki.developers.viddler.com/index.php/Record_With_Webcam_API
 	*/
 	function video_getrecordtoken($sessionid) {
-		
+
 		$xml = $this->sendRequest('viddler.videos.getRecordToken','sessionid='.$sessionid); // Get XML response
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -184,7 +184,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -195,7 +195,7 @@ class Phpviddler {
 		}
 	return false;
 	}
-	
+
 	/* Not a method...
 	/ accepts: $token = string
 	/ returns: string - html for recorder embed with token included.
@@ -203,9 +203,9 @@ class Phpviddler {
 	/ doc: None.
 	*/
 	function video_getrecordembed($token) {
-		
+
 		if (!$token) return false;
-		
+
 		$html = '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="449" height="400" id="viddler_recorder" align="middle">
 			<param name="allowScriptAccess" value="always" />
 			<param name="allowNetworking" value="all" />
@@ -216,11 +216,11 @@ class Phpviddler {
 			<param name="flashvars" value="fake=1&recordToken='.$token.'" />
 			<embed src="http://www.viddler.com/flash/recorder.swf" quality="high" scale="noScale" bgcolor="#000000" allowScriptAccess="always" allowNetworking="all" width="449" height="400" name="viddler_recorder" flashvars="fake=1&recordToken='.$token.'" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
 		</object>';
-		
+
 		return $html;
 	}
 
-	
+
 	/* viddler.videos.getStatus
 	/ accepts: $videoID = string
 	/ returns: array - info about video's upload status
@@ -235,9 +235,9 @@ class Phpviddler {
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.getStatus
 	*/
 	function video_status($videoID) {
-		
+
 		$xml = $this->sendRequest('video.status','video_id='.$videoID); // Get XML response
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -246,7 +246,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -257,7 +257,7 @@ class Phpviddler {
 		}
 	return false;
 	}
-	
+
 	/* viddler.videos.getDetails
 	/ accepts: $sessionid and $videoID = string
 	/ returns: array - info about video's upload status
@@ -272,9 +272,9 @@ class Phpviddler {
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.getDetails
 	*/
 	function video_details($sessionid,$videoID) {
-		
+
 		$xml = $this->sendRequest('viddler.videos.getDetails','sessionid='.$sessionid.'&video_id='.$videoID); // Get XML response
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -283,7 +283,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -302,10 +302,10 @@ class Phpviddler {
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.getByUser
 	*/
 	function videos_listbyuser($user,$page=1,$per_page=5) {
-		
+
 		 // Get XML response
 		$xml = $this->sendRequest('viddler.videos.getByUser','user='.$user.'&page='.$page.'&per_page='.$per_page);
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -314,7 +314,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -323,20 +323,19 @@ class Phpviddler {
 		} else {
 			return $xml;
 		}
-	return false;
 	}
-	
-	
+
+
 	/* viddler.videos.getByTag
 	/ accepts: $tag = string, $page = string, $per_page = string
 	/ returns: array - information about videos matching this tag
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.getByTag
 	*/
 	function videos_listbytag($tag,$page=1,$per_page=5) {
-		
+
 		 // Get XML response
 		$xml = $this->sendRequest('viddler.videos.getByTag','tag='.$tag.'&page='.$page.'&per_page='.$per_page);
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -345,7 +344,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -356,17 +355,17 @@ class Phpviddler {
 		}
 	return false;
 	}
-	
+
 	/* viddler.videos.getFeatured
 	/ accepts: nothing.
 	/ returns: array - information about videos that are featured
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.getFeatured
 	*/
 	function videos_listfeatured() {
-		
+
 		 // Get XML response
 		$xml = $this->sendRequest('viddler.videos.getFeatured','');
-		
+
 		// Use included parser?
 		if ($this->parser) {
 			// Several steps
@@ -375,7 +374,7 @@ class Phpviddler {
 			//    i. Return array of error number, short, and long description
 			// 3. Return multidimensional array of response.
 			$response = $this->checkErrors(XML_unserialize($xml));
-			
+
 			if ($response['error']) {
 				return $response;
 			} else {
@@ -390,14 +389,14 @@ class Phpviddler {
 
 
 /*##########  Misc. Functions ########### */
-	
+
 	// Error checking
 	function checkErrors($response) {
-		
+
 		if ($response['error']) {
-		
+
 			switch($response['error']) {
-			
+
 				case '1':
 					$errorshort = 'An internal error has occurred.';
 					break;
@@ -456,84 +455,96 @@ class Phpviddler {
 					$errorshort = 'An unknown error has occured.';
 					break;
 			} // End switch
-			
+
 			$error = array('error' => array('number'=>$response['error'],'shortdesc'=>$errorshort));
-			
+
 			return $error;
 		}
-		
-		return $response;
-		
-	}
-	
-	
-	// Build arguments
-	// $p = $_POST
-	// $t = type (string,array)
-	function buildArguments($p,$t='string') {
-		foreach ($p as $key => $value) {
-			
-			// Skip method request name and submit button
-			if ($key == 'method' || $key == 'submit' || $key == 'MAX_FILE_SIZE') continue;
-			
-			if ($t == 'array') { $args[$key] = $value; }
-			
-			if ($t == 'string') { $args .= $key.'='.urlencode($value).'&'; }
-			
-		} // end foreach
-		
-		// If array assume uploading
-		if ($t == 'array') {
-			
-			$uploadfile = $this->uploaddir . basename($_FILES['file']['name']);
 
-			if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
-				$args["file"] = '@'.$uploadfile;
+		return $response;
+
+	}
+
+
+	/**
+	 * Build arguments to use for a request to the API
+	 *
+	 * @param array $p An associative array of parameters
+	 * @param string $return_type Optional return type of parameters ['array'|'string']
+	 * @return mixed The filtered arguments in the format requested
+	 */
+	public function buildArguments( $p, $return_type = 'string') {
+		$args = array();
+		foreach ($p as $key => $value) {
+
+			// Skip method request name and submit button
+			switch($key) {
+				case 'method':
+				case 'submit':
+				case 'MAX_FILE_SIZE':
+					continue;
 			}
-		
+
+			$args[$key] = $value;
+
+		} // end foreach
+
+		switch($return_type) {
+			// If array assume uploading
+			case 'array':
+				$uploadfile = $this->uploaddir . basename($_FILES['file']['name']);
+
+				if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
+					$args['file'] = "@{$uploadfile}";
+				}
+				break;
+
+			// If String, chop off last ampersand
+			case 'string':
+			default:
+				$args = http_build_query($args, null, '&');
+				break;
 		}
-		
-		// If String, chop off last ampersand
-		if ($t == 'string') { $args = substr($args, 0, -1); }
-		
+
 		return $args;
 	}
-	
+
 
 	// Send REST request
 	function sendRequest($method,$args) {
-		
+
 		// Build Request URL
 		$reqURL = $this->viddlerREST.'?api_key='.$this->apiKey.'&method='.$method;
 		if ($method != 'viddler.videos.upload') $reqURL .= '&'.$args;
-		
+
 		// Send request via CURL
 		$curl_handle = curl_init();
 		curl_setopt ($curl_handle, CURLOPT_URL, $reqURL); // Request URL
 		curl_setopt ($curl_handle, CURLOPT_RETURNTRANSFER, 1); // Return as string
 		curl_setopt ($curl_handle, CURLOPT_CONNECTTIMEOUT, 1); // Fail if timeout
-		
+
 		// If sending a file, change to POST instead of GET
 		if ($method == 'viddler.videos.upload') {
 			curl_setopt($curl_handle, CURLOPT_POSTFIELDS, $args);
 		}
-		
+
 		$response = curl_exec($curl_handle); // Call!
-		
+
 		if (!$response)	$response = curl_error($curl_handle);
-		
+
 		curl_close($curl_handle); // Close connection
-		
+
 		// When CURL doesn't work, use this.
 		//$response = file_get_contents($reqURL);
-		
+
+
 		// Return XML response as string
 		if (!$response) {
 			return false; // 'There is no response. CURL might not by allowed? <br />'.$reqURL.'<br /><br />';
 		}
-		
-        return $response;
-        
+
+		return $response;
+
 	} // End sentReq();
 
 }
@@ -546,7 +557,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 {
 	const SILO_NAME = 'Viddler';
 
-	static $cache = array();
+	protected $cache = array();
 
 	/**
 	* Provide plugin info to the system
@@ -563,7 +574,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 			'copyright' => '2007',
 			);
 	}
-	
+
 	/*
 	// add a rewrite rule for our auto-generated video page.
 	public function filter_rewrite_rules( $rules )	{
@@ -576,7 +587,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 			'priority' => 7,
 			'is_active' => 1,
 		));
-		
+
 		return $rules;
 	}
 	*/
@@ -588,6 +599,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	{
 		// add some js to the admin header
 		Stack::add( 'admin_header_javascript', '/system/plugins/viddlersilo/vidfuncs.js', 'viddlerjs' );
+		$this->viddler = new Phpviddler();
 	}
 
 	/**
@@ -612,6 +624,34 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_dir($path)
 	{
+		$user= Options::get( 'viddlersilo:username_' . User::identify()->id );
+
+		if(Cache::has('viddler:videos:' . $user)) {
+			$pre = Cache::get('viddler:videos:' . $user);
+		}
+		else {
+			$pre = $this->viddler->videos_listbyuser( $user, '', 20 );
+			Cache::set('viddler:videos:' . $user, $pre);
+		}
+		$xml = new SimpleXMLElement( $pre );
+		$results = array();
+		foreach( $xml->video as $video ) {
+
+			$props = array();
+			foreach($video->children() as $name => $value) {
+				$props[$name] = (string)$value;
+			}
+
+			$asset = new MediaAsset(
+				self::SILO_NAME . '/' . $path . ($path == '' ? '' : '/') . $video->id,
+				false,
+				$props
+			);
+			$results[] = $asset;
+
+			//echo '<div class="media"><img src="' . $video->thumbnail_url . '" width="150px"><div class="foroutput"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="437" height="370" id="viddler_chrisjdavis_' . $video->id . '"><param name="movie" value="http://www.viddler.com/player/' . $video->id . '/" /><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="true" /><embed src="http://www.viddler.com/player/' . $video->id . '/" width="437" height="370" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_chrisjdavis" ></embed></object></div></div>';
+		}
+		return $results;
 	}
 
 	/**
@@ -634,8 +674,14 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_url( $path, $qualities = null )
 	{
-		$video= self::$cache[$id];
-		$url = '<img src="' . $video->thumbnail_url . '" width="150px">';
+		$id = basename($path);
+		$video = $this->cache[$id];
+		if(isset($qualities['size']) && $qualities['size']=='thumbnail') {
+			$url = $video->thumbnail_url;
+		}
+		else {
+			$url = $video->url;
+		}
 		return $url;
 	}
 
@@ -676,16 +722,6 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_highlights()
 	{
-		$user= Options::get( 'viddlersilo:username_' . User::identify()->id );
-		$viddler= new Phpviddler();
-		$pre= $viddler->videos_listbyuser( $user, '', 20 );
-		$xml= new SimpleXMLElement( $pre );
-		$result= array();
-			foreach( $xml->video as $video ) {
-				echo '<div class="media"><img src="' . $video->thumbnail_url . '" width="150px"><div class="foroutput"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="437" height="370" id="viddler_chrisjdavis_' . $video->id . '"><param name="movie" value="http://www.viddler.com/player/' . $video->id . '/" /><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="true" /><embed src="http://www.viddler.com/player/' . $video->id . '/" width="437" height="370" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" name="viddler_chrisjdavis" ></embed></object></div></div>';
-				self::$cache['' . $video['id']]= $video->attributes();
-			}
-		return $result;
 	}
 
 	public function controls()
@@ -766,14 +802,14 @@ class ViddlerSilo extends Plugin implements MediaSilo
 		if ( $plugin_id == $this->plugin_id() ) {
 			$viddler_ok= $this->is_auth();
 			if( $viddler_ok ) {
-				$actions[]= 'Viddler-DeAuthorize';
+				$actions[]= 'Log Out';
 			} else {
-				$actions[]= 'Viddler-Authorize';
+				$actions[]= 'Log In';
 			}
 		}
 		return $actions;
 	}
-	
+
 	/**
 	* Respond to the user selecting an action on the plugin page
 	*
@@ -782,44 +818,44 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function action_plugin_ui( $plugin_id, $action ) {
 		switch ( $action ) {
-			case 'Viddler-Authorize':
-				if( $this->is_auth() == true ) {
-					$deauth_url= URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Viddler-DeAuthorize')) . '#plugin_options';
-					echo "<p>You have already successfully authorized Habari to access your Viddler account.</p>";
-					echo "<p>Do you want to <a href=\"{$deauth_url}\">revoke authorization</a>?</p>";
-				} else {
-					$viddler= new Phpviddler();
-					$ui= new FormUI( strtolower( get_class( $this ) ) );
-					$viddler_username= $ui->add('text', 'username_' . User::identify()->id, 'Viddler Username:');
-                    $viddler_password= $ui->add('password', 'password_' . User::identify()->id, 'Viddler Password:');
-                    $ui->on_success( array( $this, 'updated_config' ) );
-                    $ui->out();
+			case 'Log In':
+				$ui= new FormUI( strtolower( get_class( $this ) ) );
+				$viddler_username= $ui->add('text', 'username_' . User::identify()->id, 'Viddler Username:');
+				$viddler_password= $ui->add('password', 'password_' . User::identify()->id, 'Viddler Password:');
+				$ui->on_success( array( $this, 'updated_config' ) );
+				$ui->out();
 
+				if( $this->is_auth() ) {
+					$deauth_url= URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Log Out')) . '#plugin_options';
+					echo "<p>You have successfully logged into Vidder via Habari.</p>";
+					echo "<p>Do you want to <a href=\"{$deauth_url}\">log out</a>?</p>";
+				}
+				else {
 					$username = Options::get( 'viddlersilo:username_' . User::identify()->id );
-	                $password = Options::get( 'viddlersilo:password_' . User::identify()->id );
-					$auth= $viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
+					$password = Options::get( 'viddlersilo:password_' . User::identify()->id );
+					$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
+
 					$xml= new SimpleXMLElement( $auth );
-					//var_dump( $xml ); exit;
 					Options::set('viddler_token_' . User::identify()->id, '' . $xml->sessionid );
 				}
 				break;
-				case 'Viddler-DeAuthorize':
+			case 'Log Out':
 				Options::set( 'viddler_token_' . User::identify()->id );
-				$reauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Viddler-Authorize')) . '#plugin_options';
-				echo '<p>The Viddler Silo Plugin authorization has been deleted.<p>';
-				echo "<p>Do you want to <a href=\"{$reauth_url}\">re-authorize this plugin</a>?<p>";
+				$reauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Log In')) . '#plugin_options';
+				echo '<p>The Viddler Silo Plugin session has been logged out.<p>';
+				echo "<p>Do you want to <a href=\"{$reauth_url}\">log in again</a>?<p>";
 				break;
 		}
 	}
-	
+
 	/**
-     * Returns true if plugin config form values defined in action_plugin_ui should be stored in options by Habari
-     * @return boolean True if options should be stored      
-     **/      
-    public function updated_config($ui)
-    {
-            return true;
-    }
+   * Returns true if plugin config form values defined in action_plugin_ui should be stored in options by Habari
+   * @return boolean True if options should be stored
+   **/
+  public function updated_config($ui)
+  {
+    return true;
+  }
 
 	private function is_auth()
 	{
@@ -841,17 +877,17 @@ class ViddlerAdminHandler extends ActionHandler
 {
 	private $vids;
 	private $theme= null;
-	
+
 	public function __construct() {
 		$this->theme= Themes::create();
 	}
-	
+
 	public function act_display_viddlerlist() {
 		$this->load_vids();
 		$this->theme->assign( 'vids', $this->vid );
 		$this->theme->display( 'vids' );
 	}
-	
+
 	public function load_vids() {
 		$user= Options::get( 'viddlersilo:username_' . User::identify()->id );
 		$viddler= new Phpviddler();

@@ -10,6 +10,7 @@
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/admin.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('admin_theme'); ?>/media.js" type="text/javascript"></script>
 	<?php
 		Plugins::act( 'admin_header', $this );
 		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );

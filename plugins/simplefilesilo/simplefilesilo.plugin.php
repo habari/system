@@ -10,7 +10,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	protected $root = null;
 	protected $url = null;
 
-	const SILO_NAME = 'simple_file';
+	const SILO_NAME = 'Local Files';
 
 	const DERIV_DIR = '.deriv';
 
@@ -36,8 +36,8 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	 */
 	public function action_init()
 	{
-		$this->root = Options::get('simple_file_root');
-		$this->url = Options::get('simple_file_url');
+		$this->root = HABARI_PATH . '/' . Site::get_path('user', true) . 'files'; //Options::get('simple_file_root');
+		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
 	}
 
 	/**
@@ -63,16 +63,49 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 		}
 
 		$path = preg_replace('%\.{2,}%', '.', $path);
-		$result = array();
+		$results = array();
 
-		$dir = glob($this->root . $path . '/*');
+		$dir = glob($this->root . ($path == '' ? '' : '/') . $path . '/*');
+
+
 		foreach($dir as $item) {
 			if( substr(basename($item), 0, 1) == '.' ) {
 				continue;
 			}
-			$result[] = new MediaAsset( self::SILO_NAME . '/' . $path . ($path == '' ? '' : '/') . basename($item), is_dir($item) );
+			if( basename($item) == 'desktop.ini' ) {
+				continue;
+			}
+
+			$file = basename($item);
+			$props = array(
+				'title' => basename($item),
+			);
+			if(!is_dir($item)) {
+				$thumbnail_suffix = SimpleFileSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
+				$thumbnail_url = $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
+
+				if(!file_exists(dirname($item) . $thumbnail_suffix)) {
+					if(!$this->create_thumbnail($item)) {
+						// Do something if we can't create a thumbnail, like return a default image
+					}
+				}
+				$props = array_merge(
+					$props,
+					array(
+						'url' => $this->url . '/' . $path . ($path == '' ? '' : '/') . $file,
+						'thumbnail_url' => $thumbnail_url,
+					)
+				);
+			}
+
+			$results[] = new MediaAsset(
+				self::SILO_NAME . '/' . $path . ($path == '' ? '' : '/') . basename($item),
+				is_dir($item),
+				$props
+			);
 		}
-		return $result;
+		//print_r($results);
+		return $results;
 	}
 
 
@@ -100,36 +133,6 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 		return false;
 	}
 
-	/**
-	 * Get the direct URL of the file of the specified path
-	 * @param string $path The path of the file to retrieve
-	 * @param array $qualities Qualities that specify the version of the file to retrieve.
-	 * @return string The requested url
-	 **/
-	public function silo_url( $path, $qualities = null )
-	{
-		if(!isset( $this->url )) {
-			return false;
-		}
-
-		$path = preg_replace('%\.{2,}%', '.', $path);
-
-		// Return a thumbnail URL?
-		if(isset($qualities) && isset($qualities['size']) && $qualities['size'] == 'thumbnail') {
-			$file = $this->root . '/' . $path;
-			$url = $this->url . '/' . dirname($path) . '/'.SimpleFileSilo::DERIV_DIR.'/' . basename($path) . '.thumbnail.jpg' ;
-			if(!file_exists(dirname($file) . '/'.SimpleFileSilo::DERIV_DIR.'/' . basename($file) . '.thumbnail.jpg')) {
-				if(!$this->create_thumbnail($file)) {
-					// Do something if we can't create a thumbnail, like return a default image
-				}
-			}
-		}
-		else {
-			$url = $this->url . '/' . $path;
-		}
-
-		return $url;
-	}
 
 	/**
 	 * Create a thumbnail in the derivative directory

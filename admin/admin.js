@@ -64,7 +64,7 @@ $(document).ready(function(){
 	$('a.link_as_button').each(function(){
 		$(this).after('<button onclick="location.href=\'' + $(this).attr('href') + '\';return false;">' + $(this).html() + '</button>').hide();
 	});
-	
+
 	/* Resizable Textareas */
 	$('textarea.resizable').each(function() {
 		var textarea = $(this);
@@ -87,30 +87,30 @@ $(document).ready(function(){
 		}
 
 	});
-	
+
 	/* Tabs, using jQuery UI Tabs */
-	$('.tabs').tabs({ fxShow: { height: 'show', opacity: 'show' }, fxHide: { height: 'hide', opacity: 'hide' }, unselected: true })
+	$('.tabcontrol').tabs({ fxShow: { height: 'show', opacity: 'show' }, fxHide: { height: 'hide', opacity: 'hide' }, unselected: true })
 
 	// Tag Drawer: Add tag via click
 	$('#tag-list li').click(function() {
 		// here we set the current text of #tags to current for later examination
 		var current = $('#tags').val();
-		
+
 		// create a regex that finds the clicked tag in the input field
 		var replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
 
 		// check to see if the tag item we clicked has been clicked before...
 		if( $( this ).attr( 'class' )== 'clicked' ) {
-			// remove that tag from the input field 
+			// remove that tag from the input field
 			$( '#tags' ).val( current.replace(replstr, '') );
 			// unhighlight that tag
 			$(this).removeClass( 'clicked' );
-		} 
+		}
 		else {
 			// if it hasn't been clicked, go ahead and add the clicked class
 			$(this).addClass( 'clicked' );
 			// be sure that the option wasn't already in the input field
-			if(!current.match(replstr) || $( '#tags.islabeled' ).size() > 0) { 
+			if(!current.match(replstr) || $( '#tags.islabeled' ).size() > 0) {
 				// check to see if current is the default text
 				if( $( '#tags.islabeled' ).size() > 0 ) {
 					// and if it is, replace it with whatever we clicked
@@ -131,12 +131,12 @@ $(document).ready(function(){
 		$( '#tags' ).val( $( '#tags' ).val().replace(new RegExp('\\s*,(\\s*,)+\\s*', "gi"), ','));
 
 	});
-	
+
 	$( '#tags' ).keyup(function(){
 		clearTimeout(tagskeyup);
 		tagskeyup = setTimeout(resetTags, 500);
 	});
-	
+
 	// Tag Drawer: Remove all tags.
 	$( '#clear' ).click( function() {
 		// so we nuke all the tags in the tag text field
@@ -160,3 +160,12 @@ function resetTags() {
 	});
 
 }
+
+var habari_editor = {
+	insert_selection: function(value) {
+		$('#content').filter('.islabeled')
+			.val('')
+			.removeClass('islabeled');
+		$("#content").val($("#content").val() + value);
+	}
+};
