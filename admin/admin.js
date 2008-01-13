@@ -161,8 +161,8 @@ function resetTags() {
 
 }
 
-var habari_editor = {
-	insert_selection: function(value) {
+habari.editor = {
+	insertSelection: function(value) {
 		$('#content').filter('.islabeled')
 			.val('')
 			.removeClass('islabeled');

@@ -9,6 +9,13 @@
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	var habari = {
+		url: {
+			habari: '<?php Site::out_url('habari'); ?>'
+		}
+	};
+	</script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/admin.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/media.js" type="text/javascript"></script>
 	<?php
@@ -19,7 +26,7 @@
 </head>
 <body>
 
-<ul id="oldmenu">
+<ul id="menu">
 	<li id="site-name">
 		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 	</li>

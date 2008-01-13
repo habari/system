@@ -203,6 +203,7 @@ textarea {
 	border: 1px solid #b0b0b0;
 	border-top: none;
 	padding: 5px 0;
+	opacity: 0.9;
 	}
 
 #menu li.menu-item:hover ul {
