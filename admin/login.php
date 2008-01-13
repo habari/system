@@ -7,9 +7,10 @@
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
 	<link href="<?php Site::out_url( 'habari' ); ?>/system/installer/style.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css">
-	
+
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/admin.js" type="text/javascript"></script>
 	<?php
 		Plugins::act( 'admin_header', $this );
@@ -22,7 +23,7 @@
 			background: #f1f1f1;
 			font-family: Verdana;
 		}
-		
+
 		#databasesetup {
 			margin:0 auto;
 		}
@@ -42,7 +43,7 @@
 	<li id="site-name">
 		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 	</li>
-	
+
 </ul>
 
 	<div id="wrapper">
@@ -66,18 +67,18 @@
 						<input class="submit" type="submit" value="GO!">
 					</p>
 				</div>
-			</div>			
+			</div>
 			<div class="bottom"></div>
 		</div>
-	
+
 
 		<div id="footer">
-			<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href); return false;" title="Read the user manual">Manual</a> - 
-				<a href="http://wiki.habariproject.org/" title="Read the Habari wiki">Wiki</a> - 
+			<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href); return false;" title="Read the user manual">Manual</a> -
+				<a href="http://wiki.habariproject.org/" title="Read the Habari wiki">Wiki</a> -
 				<a href="http://groups.google.com/group/habari-users" title="Ask the community">Mailing List</a>
 			</p>
 
-			
+
 		</div>
 
 		<?php

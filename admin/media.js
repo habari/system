@@ -9,7 +9,7 @@ var media = {
 		}
 		if($('.pathstore', container).html() != path || $('.pathstore.toload', container).size()) {
 			$.post(
-				'/admin_ajax/media',
+				habari.url.habari + '/admin_ajax/media',
 				{
 					path: path
 				},
@@ -42,7 +42,7 @@ var media = {
 					}
 					$('.mediaphotos', container).html(output);
 					$('.media').dblclick(function(){
-						habari_editor.insert_selection($('.foroutput', this).html());
+						habari.editor.insertSelection($('.foroutput', this).html());
 					});
 				},
 				'json'
