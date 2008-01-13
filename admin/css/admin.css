@@ -620,7 +620,9 @@ ul {
 	text-decoration: none;
 }
 
-.media_browser {
+.media_browser td {
+	padding: 0px;
+	border: 0px;
 }
 
 .mediadir {
@@ -636,7 +638,6 @@ ul {
 	display: block;
 	margin-right: 1px;
 	text-decoration: none;
-	width: 80px;
 	white-space: nowrap;
 	overflow: hidden;
 }
@@ -644,8 +645,11 @@ ul {
 .mediadir a.active {
 	background-color: #5B5B5B;
 	background: #5B5B5B url(../images/media_arrow_active.png) scroll no-repeat center right;
+	color: #e8e8e8;
 }
 
 .media_dirlevel {
 	float: left;
+	height: 197px;
+	overflow-y: auto;
 }

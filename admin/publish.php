@@ -39,9 +39,9 @@
 		?>
 			<div id="silo_<?php echo $ct; ?>" class="splitter mediasplitter">
 				<div class="toload pathstore" style="display:none;"><?php echo $silodir->path; ?></div>
-				<div class="splitterinside" style="overflow-x:scroll;overflow-y:hidden;">
+				<div class="splitterinside">
 					<div class="media_controls"><a href="#" onclick="media.showdir('<?php echo $silodir->path; ?>');return false;">Root</a></div>
-					<div style="white-space:nowrap;" class="media_browser">
+					<div style="white-space:nowrap;overflow-x:scroll;overflow-y:hidden;" class="media_browser">
 						<div class="mediadir"></div>
 						<div class="mediaphotos"></div>
 					</div>

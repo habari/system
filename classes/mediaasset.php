@@ -55,6 +55,7 @@ class MediaAsset
 			array(
 				'path' => $this->path,
 				'basename' => basename($this->path),
+				'title' => basename($this->path),
 			),
 			$this->props
 		);

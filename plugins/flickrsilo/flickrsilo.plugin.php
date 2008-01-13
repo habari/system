@@ -160,9 +160,6 @@ class Flickr extends flickrAPI
 	function photosetsGetList($nsid = '')
 	{
 		$params = array();
-		if($this->token){
-			$params['auth_token'] = $this->token;
-		}
 
 		if($nsid){
 			$params['user_id'] = $nsid;
@@ -172,21 +169,7 @@ class Flickr extends flickrAPI
 		if (Error::is_error($xml)){
 			throw $xml;
 		}
-		foreach($xml->photosets->attributes() as $key => $value){
-			$ret[$key] = (string)$value;
-		}
-		$i = 0;
-		foreach($xml->photosets->photoset as $key => $value){
-			foreach($value->attributes() as $kk => $vv){
-				$ret['photosets'][(string)$value['id']][$kk] = (string)$vv;
-			}
-
-			foreach($value->children() as $kk => $vv){
-				$ret['photosets'][(string)$value['id']][$kk] = (string)$vv;
-			}
-			$i++;
-		}
-		return $ret;
+		return $xml;
 	}
 
 	function photosetsGetInfo($photoset_id)
@@ -196,13 +179,7 @@ class Flickr extends flickrAPI
 		if (Error::is_error($xml)){
 			throw $xml;
 		}
-		foreach($xml->photoset->attributes() as $key => $value){
-			$ret[$key] = (string)$value;
-		}
-		foreach($xml->photoset as $key => $value){
-			$ret[$key] = $value;
-		}
-		return $ret;
+		return $xml;
 	}
 
 	function photosetGetPrimary($p, $size = 'm', $ext = '.jpg')
@@ -217,19 +194,7 @@ class Flickr extends flickrAPI
 		if (Error::is_error($xml)){
 			throw $xml;
 		}
-
-		foreach($xml->photoset->attributes() as $key => $value){
-			$ret[$key] = (string)$value;
-		}
-		$i = 0;
-
-		foreach($xml->photoset->photo as $photo){
-			foreach($photo->attributes() as $key => $value){
-				$ret['photos'][(string)$photo['id']][$key] = (string)$value;
-			}
-			$i++;
-		}
-		return $ret;
+		return $xml;
 	}
 
 	function photosRecentlyUpdated()
@@ -251,9 +216,8 @@ class Flickr extends flickrAPI
 		return $xml;
 	}
 
-	function photosSearch()
+	function photosSearch( $params = array()  )
 	{
-		$params = array();
 		if($this->cachedToken()){
 			$params['auth_token'] = $this->cachedToken();
 		}
@@ -268,6 +232,16 @@ class Flickr extends flickrAPI
 		if (Error::is_error($xml)){
 			throw $xml;
 		}
+		return $xml;
+	}
+
+	function tagsGetListUser($userid = null)
+	{
+		$params = array();
+		if(isset($userid)) {
+			$params['user_id'] = $userid;
+		}
+		$xml = $this->call('flickr.tags.getListUser', $params);
 		return $xml;
 	}
 
@@ -479,12 +453,12 @@ class FlickrSilo extends Plugin implements MediaSilo
 	public function silo_dir($path)
 	{
 		$flickr = new Flickr();
-		$xml = $flickr->photosSearch();
 		$results = array();
 
-		list($section) = explode('/', $path);
+		$section = strtok($path, '/');
 		switch($section) {
 			case 'photos':
+				$xml = $flickr->photosSearch();
 				foreach($xml->photos->photo as $photo) {
 
 					$props = array();
@@ -500,7 +474,71 @@ class FlickrSilo extends Plugin implements MediaSilo
 						$props
 					);
 				}
-			break;
+				break;
+			case 'tags':
+				$selected_tag = strtok('/');
+				if($selected_tag) {
+					$xml = $flickr->photosSearch(array('tags'=>$selected_tag));
+					foreach($xml->photos->photo as $photo) {
+
+						$props = array();
+						foreach($photo->attributes() as $name => $value) {
+							$props[$name] = (string)$value;
+						}
+						$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
+						$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+
+						$results[] = new MediaAsset(
+							self::SILO_NAME . '/photos/' . $photo['id'],
+							false,
+							$props
+						);
+					}
+				}
+				else {
+					$xml = $flickr->tagsGetListUser($_SESSION['nsid']);
+					foreach($xml->who->tags->tag as $tag) {
+						$results[] = new MediaAsset(
+							self::SILO_NAME . '/tags/' . (string)$tag,
+							true,
+							array('title' => (string)$tag)
+						);
+					}
+				}
+				break;
+			case 'sets':
+				$selected_set = strtok('/');
+				if($selected_set) {
+					$xml = $flickr->photosetsGetPhotos($selected_set);
+					foreach($xml->photoset->photo as $photo) {
+
+						$props = array();
+						foreach($photo->attributes() as $name => $value) {
+							$props[$name] = (string)$value;
+						}
+						$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
+						$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+
+						$results[] = new MediaAsset(
+							self::SILO_NAME . '/photos/' . $photo['id'],
+							false,
+							$props
+						);
+					}
+				}
+				else {
+					$xml = $flickr->photosetsGetList($_SESSION['nsid']);
+					foreach($xml->photosets->photoset as $set) {
+						$results[] = new MediaAsset(
+							self::SILO_NAME . '/sets/' . (string)$set['id'],
+							true,
+							array('title' => (string)$set->title)
+						);
+					}
+				}
+				break;
+
+
 			case '':
 				$results[] = new MediaAsset(
 					self::SILO_NAME . '/photos',
@@ -513,9 +551,9 @@ class FlickrSilo extends Plugin implements MediaSilo
 					array('title' => 'Tags')
 				);
 				$results[] = new MediaAsset(
-					self::SILO_NAME . '/groups',
+					self::SILO_NAME . '/sets',
 					true,
-					array('title' => 'Groups')
+					array('title' => 'Sets')
 				);
 				break;
 		}
@@ -722,6 +760,7 @@ END_AUTH;
 			$result = $flickr->call('flickr.auth.checkToken', array('api_key' => $flickr->key, 'auth_token' => $token));
 			if(isset($result->auth->perms)){
 				$flickr_ok = true;
+				$_SESSION['nsid'] = (string)$result->auth->user['nsid'];
 			}
 			else{
 				Options::set('flickr_token_' . User::identify()->id);

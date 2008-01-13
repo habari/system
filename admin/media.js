@@ -15,31 +15,28 @@ var media = {
 				},
 				function(result) {
 					$('.pathstore', container).html(result.path);
-					var output = '<div class="media_dirlevel"><div>';
+					var output = '<div class="media_dirlevel"><table>';
 					for(var dir in result.dirs) {
-						output += '<a class="directory" href="#" onclick="return media.clickdir(this, \'' + result.dirs[dir].path + '\');">' + dir + '</a>';
+						output += '<tr><td><a class="directory" href="#" onclick="return media.clickdir(this, \'' + result.dirs[dir].path + '\');">' + result.dirs[dir].title + '</a></td></tr>';
 					}
-					output += '</div></div>';
+					output += '</table></div>';
 					if(el) {
-						deldir = $($(el).parents('.media_dirlevel')).next();
-						while(deldir.size()) {
-							deldir.remove();
-							deldir = $($(el).parents('.media_dirlevel')).next();
-						}
-						$(el).siblings().removeClass('active');
+						$($(el).parents('.media_dirlevel')).nextAll().remove();
+						$('.directory', $(el).parents('.media_dirlevel')).removeClass('active');
 						$(el).addClass('active');
 						$(el).parents('.media_dirlevel').after(output);
 					}
 					else {
 						$('.mediadir', container).html(output);
 					}
-					output = '';
+					output = '<table><tr>';
 					var first = ' first';
 					for(var file in result.files) {
 						stats = '';
-						output += '<div class="media' + first + '"><div class="mediatitle">' + result.files[file].title + '</div><img src="' + result.files[file].thumbnail_url + '"><div class="mediastats"> ' + stats + '</div><div class="foroutput"><img src="' + result.files[file].url + '"></div></div>';
+						output += '<td><div class="media' + first + '"><div class="mediatitle">' + result.files[file].title + '</div><img src="' + result.files[file].thumbnail_url + '"><div class="mediastats"> ' + stats + '</div><div class="foroutput"><img src="' + result.files[file].url + '"></div></div></td>';
 						first = '';
 					}
+					output += '</tr></table>';
 					$('.mediaphotos', container).html(output);
 					$('.media').dblclick(function(){
 						habari.editor.insertSelection($('.foroutput', this).html());
