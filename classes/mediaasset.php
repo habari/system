@@ -10,18 +10,20 @@ class MediaAsset
 	protected $path;
 	protected $is_dir;
 	protected $content = null;
-	protected $url = array();
+	protected $props = array();
 
 	/**
 	 * MediaAsset constructor
 	 *
 	 * @param string $path The path of the asset
 	 * @param boolean $is_dir true if the asset is a directory
+	 * @param array $properties An associative array of property values
 	 */
-	public function __construct($path, $is_dir = false)
+	public function __construct($path, $is_dir, $properties = array())
 	{
 		$this->path = $path;
 		$this->is_dir = $is_dir;
+		$this->props = $properties;
 	}
 
 	/**
@@ -29,7 +31,7 @@ class MediaAsset
 	 *
 	 * @return mixed The asset content
 	 */
-	public function get()
+	protected function _get()
 	{
 		if(empty($this->content)) {
 			$this->content = Media::get($this->path);
@@ -42,24 +44,20 @@ class MediaAsset
 	 *
 	 * @param mixed $content The asset content
 	 */
-	public function set($content)
+	protected function _set($content)
 	{
 		$this->content = $content;
 	}
 
-	/**
-	 * Get the url where this asset can be viewed
-	 *
-	 * @param array $options Qualities of the URL to return (such as 'thumbnail' or 'size')
-	 * @return string The URL of the asset
-	 */
-	public function url($options = array())
+	public function get_props()
 	{
-		$hash = md5(serialize($options));
-		if(empty($this->url[$hash])) {
-			$this->url[$hash] = Media::url($this->path, $options);
-		}
-		return $this->url[$hash];
+		return array_merge(
+			array(
+				'path' => $this->path,
+				'basename' => basename($this->path),
+			),
+			$this->props
+		);
 	}
 
 	/**
@@ -71,16 +69,30 @@ class MediaAsset
 	public function __get($name)
 	{
 		switch($name) {
-			case 'url':
-				return $this->url();
 			case 'content':
-				return $this->get($content);
+				return $this->_get($content);
 			case 'is_dir':
 				return $this->is_dir;
-			case 'thumbnail_url':
-				return $this->url(array('size'=>'thumbnail'));
 			case 'path':
 				return $this->path;
+			case 'basename':
+				return basename($this->path);
+			default:
+				return $this->props[$name];
+		}
+	}
+
+	public function __set($name, $value)
+	{
+		switch($name) {
+			case 'content':
+				return $this->_set($value);
+			case 'is_dir':
+			case 'path':
+				break;
+			default:
+				$this->props[$name] = $value;
+				break;
 		}
 	}
 

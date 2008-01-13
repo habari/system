@@ -1025,6 +1025,26 @@ class AdminHandler extends ActionHandler
 		$this->theme->display( $template_name );
 	}
 
+	public function ajax_media( $handler_vars )
+	{
+		$assets = Media::dir($handler_vars['path']);
+		$output = array(
+			'ok' => 1,
+			'dirs' => array(),
+			'files' => array(),
+			'path' => $handler_vars['path'],
+		);
+		foreach($assets as $asset) {
+			if($asset->is_dir) {
+				$output['dirs'][$asset->basename] = $asset->get_props();
+			}
+			else {
+				$output['files'][$asset->basename] = $asset->get_props();
+			}
+		}
+		echo json_encode($output);
+	}
+
 }
 
 ?>
