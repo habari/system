@@ -129,11 +129,7 @@ class SpamChecker extends Plugin
 			}
 		}
 
-		if ( $comment->status != Comment::STATUS_SPAM ) {
-			$spamcheck[] = sprintf(_t('No spam detected by spamchecker on comment #%s'), $comment->id);
-		}
-
-		if(is_array($comment->info->spamcheck)) {
+		if( isset($comment->info->spamcheck) && is_array($comment->info->spamcheck)) {
 			$comment->info->spamcheck = array_unique(array_merge($comment->info->spamcheck, $spamcheck));
 		}
 		else {
