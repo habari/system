@@ -84,6 +84,12 @@ class UserGroup
 		return self::$group_names;
 	}
 
+	/**
+	 * function add_group
+	 * Adds a new group to the Groups table
+	 * @param string The name of the group to add
+	 * @return bool Whether the group was added or not
+	**/
 	public static function add_group( $group )
 	{
 		if ( in_array( $group, self::$group_names ) ) {
@@ -102,6 +108,12 @@ class UserGroup
 		return true;
 	}
 
+	/**
+	 * function remove_group
+	 * Remove a group from the Groups table.  Also removes all users_groups
+	 *	members of the group.
+	 * @param mixed A Group name or ID
+	 * @return bool Whether the group was removed or not
 	public static function remove_group( $group )
 	{
 		// we have to use is_numeric because the number is coming
@@ -125,7 +137,10 @@ class UserGroup
 			return false;
 		}
 		Plugins::act('usergroup_remove_before');
+		// delete the group
 		$results= DB::query( 'DELETE FROM {groups} WHERE id=?', array( $group) );
+		// and delete any members assigned to the group
+		$results= DB::query( 'DELETE FROM {users_groups} WHERE group_id=?', array( $group ) );
 		Plugins::act('usergroup_remove_after');
 		self::load_groups();
 		return true;
