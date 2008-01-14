@@ -84,6 +84,53 @@ class UserGroup
 		return self::$group_names;
 	}
 
+	public static function add_group( $group )
+	{
+		if ( in_array( $group, self::$group_names ) ) {
+			Session::notice( _t( 'That group already exists.' ) );
+			return false;
+		}
+		$allow= true;
+		$allow= Plugins::filter('usergroup_insert_allow', $allow );
+		if ( ! $allow ) {
+			return false;
+		}
+		Plugins::act('usergroup_add_before');
+		$results= DB::query( 'INSERT INTO {groups} (name) VALUES (?)', array( $group ) );
+		Plugins::act('usergroup_add_after');
+		self::load_groups();
+		return true;
+	}
+
+	public static function remove_group( $group )
+	{
+		// we have to use is_numeric because the number is coming
+		// from form input: http://www.php.net/is_int
+		if ( is_numeric( $group ) ) {
+			if ( ! array_key_exists( $group, self::$group_names ) ) {
+				Session::notice( _t('That group does not exist.' ) );
+				return false;
+			}
+		} else {
+			if ( ! in_array( $group, self::$group_names ) ) {
+				Session::notice( _t('That group does not exist.' ) );
+				return false;
+			}
+			$groups= array_flip( self::$group_names );
+			$group= $groups[ $group ];
+		}
+		$allow= true;
+		$allow= Plugins::filter('usergroup_insert_allow', $allow );
+		if ( ! $allow ) {
+			return false;
+		}
+		Plugins::act('usergroup_remove_before');
+		$results= DB::query( 'DELETE FROM {groups} WHERE id=?', array( $group) );
+		Plugins::act('usergroup_remove_after');
+		self::load_groups();
+		return true;
+	}
+
 	/**
 	 * function members
 	 * returns an array of user IDs belogning to the specified group
