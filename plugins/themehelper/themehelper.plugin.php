@@ -42,7 +42,7 @@ class ThemeHelper extends Plugin
 	 */
 	public function filter_theme_call_comments_link( $return, $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
 	{
-		return '<a href="' . $post->permalink . '" title="' . _( 'Read Comments' ) . '">' . $theme->comments_count($post, $zero, $one, $many) . '</a>';
+		return '<a href="' . $post->permalink . '" title="' . _t( 'Read Comments' ) . '">' . $theme->comments_count($post, $zero, $one, $many) . '</a>';
 	}
 
 	/**
@@ -67,7 +67,7 @@ class ThemeHelper extends Plugin
 			$text= _n( $one, $many, $count );
 		}
 		else {
-			$text= _( $zero );
+			$text= _t( $zero );
 		}
 		return sprintf( $text, $count );
 	}
