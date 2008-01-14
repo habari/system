@@ -948,6 +948,37 @@ class AdminHandler extends ActionHandler
 		$this->display( 'logs' );
 	}
 
+	public function get_groups()
+	{
+		$this->post_groups();
+	}
+
+	public function post_groups()
+	{
+		$this->theme->groups= UserGroup::all_groups();
+		if ( isset( $this->handler_vars['add'] ) ) {
+			if ( UserGroup::add_group( $this->handler_vars['add'] ) ) {
+				Session::notice( sprintf(_t( 'Added group %s'), $this->handler_vars['add'] ) );
+				// reload the groups
+				$this->theme->groups= UserGroup::all_groups();
+			}
+		}
+		if ( isset( $this->handler_vars['group'] ) ) {
+			$this->theme->group= $this->handler_vars['group'];
+			$this->theme->group_members= UserGroup::members( $this->theme->group );
+		}
+		if ( isset( $this->handler_vars['delete'] ) ) {
+			// capture the group name before we delete it
+			$group_name=  $this->theme->groups[$this->theme->group];
+			if ( UserGroup::remove_group( $this->handler_vars['group'] ) ) {
+				Session::notice( sprintf( _t('Removed group %s'), $group_name ) );
+				// reload the groups
+				$this->theme->groups= UserGroup::all_groups();
+			}
+		}
+		$this->display( 'groups' );
+	}
+
 	/**
 	 * Assembles the main menu for the admin area.
 		*/
