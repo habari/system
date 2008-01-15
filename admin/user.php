@@ -92,7 +92,7 @@ if ( $user != $currentuser ) {
 	echo '<li><input type="radio" name="reassign" id="reassign" value="1">';
 	printf( _t('Reassign posts to: %s'), Utils::html_select('Author', $authors ));
 	echo '</li></ul>';
-	echo '<p><input type="submit" value="'. _('DELETE USER') . '"><p>';
+	echo '<p><input type="submit" value="'. _t('DELETE USER') . '"><p>';
 	echo "</form>\n";
 }
 ?>
