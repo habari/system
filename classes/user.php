@@ -69,10 +69,16 @@ class User extends QueryRecord
 	{
 		// Is the logged-in user not cached already?
 		if ( isset(self::$identity) ) {
+			// is this user acting as another user?
+			if ( isset($_SESSION['sudo']) ) {
+				// if so, let's return that user data
+				return self::get_by_id( intval($_SESSION['sudo']) );
+			}
+			// otherwise return the logged-in user
 			return self::$identity;
 		}
 		if(isset($_SESSION['user_id'])) {
-			if ( $user = self::get_by_id( $_SESSION['user_id'] ) ) {
+			if ( $user = self::get_by_id( intval($_SESSION['user_id']) ) ) {
 				// Cache the user in the static variable
 				self::$identity = $user;
 				return $user;
@@ -167,6 +173,14 @@ class User extends QueryRecord
 	 */
 	public function forget()
 	{
+		// is this user acting as another user?
+		if ( isset( $_SESSION['sudo'] ) ) {
+			// if so, remove the sudo token, but don't log out
+			// the user
+			unset( $_SESSION['sudo'] );
+			Utils::redirect( Site::get_url( 'admin' ) );
+			exit;
+		}
 		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
 		$home = Options::get('base_url');
