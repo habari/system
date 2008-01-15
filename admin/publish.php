@@ -40,11 +40,12 @@
 			<div id="silo_<?php echo $ct; ?>" class="splitter mediasplitter">
 				<div class="toload pathstore" style="display:none;"><?php echo $silodir->path; ?></div>
 				<div class="splitterinside">
-					<div class="media_controls"><a href="#" onclick="media.showdir('<?php echo $silodir->path; ?>');return false;">Root</a></div>
+					<div class="media_controls"><ul><li><a href="#" onclick="habari.media.showdir('<?php echo $silodir->path; ?>');return false;">Root</a></li></ul></div>
 					<div style="white-space:nowrap;overflow-x:scroll;overflow-y:hidden;" class="media_browser">
 						<div class="mediadir"></div>
 						<div class="mediaphotos"></div>
 					</div>
+					<div class="media_panel"></div>
 				</div>
 			</div>
 		<?php endforeach; ?>

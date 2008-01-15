@@ -620,6 +620,15 @@ ul {
 	text-decoration: none;
 }
 
+.media_controls li {
+	list-style: none;
+}
+
+.media_controls li {
+	margin-right: 15px;
+	display: inline;
+}
+
 .media_browser td {
 	padding: 0px;
 	border: 0px;
@@ -652,4 +661,9 @@ ul {
 	float: left;
 	height: 197px;
 	overflow-y: auto;
+}
+
+.media_panel {
+	height: 197px;
+	display: none;
 }

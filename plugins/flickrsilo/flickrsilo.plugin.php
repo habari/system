@@ -83,7 +83,8 @@ class flickrAPI
 				return $xml;
 			}
 			catch(Exception $e) {
-				Utils::debug($url, $response);
+				Session::error('Currently unable to connect to Flickr.', 'flickr API');
+//				Utils::debug($url, $response);
 				return false;
 			}
 		}

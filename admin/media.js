@@ -1,6 +1,8 @@
-var media = {
+habari.media = {
 
 	showdir: function (path, el, container) {
+		$('.media_browser', container).show();
+		$('.media_panel', container).hide();
 		if(!el && !container) {
 			container = $('.mediasplitter:visible');
 		}
@@ -17,7 +19,7 @@ var media = {
 					$('.pathstore', container).html(result.path);
 					var output = '<div class="media_dirlevel"><table>';
 					for(var dir in result.dirs) {
-						output += '<tr><td><a class="directory" href="#" onclick="return media.clickdir(this, \'' + result.dirs[dir].path + '\');">' + result.dirs[dir].title + '</a></td></tr>';
+						output += '<tr><td><a class="directory" href="#" onclick="return habari.media.clickdir(this, \'' + result.dirs[dir].path + '\');">' + result.dirs[dir].title + '</a></td></tr>';
 					}
 					output += '</table></div>';
 					if(el) {
@@ -41,6 +43,8 @@ var media = {
 					$('.media').dblclick(function(){
 						habari.editor.insertSelection($('.foroutput', this).html());
 					});
+					$('.media_controls ul li:first', container).nextAll().remove();
+					$('.media_controls ul li:first', container).after(result.controls);
 				},
 				'json'
 			);
@@ -50,6 +54,27 @@ var media = {
 	clickdir: function(el, path) {
 		this.showdir(path, el);
 		return false;
+	},
+
+	showpanel: function (path, panel) {
+		$.post(
+			habari.url.habari + '/admin_ajax/media_panel',
+			{
+				path: path,
+				panel: panel
+			},
+			habari.media.jsonpanel,
+			'json'
+		);
+	},
+
+	jsonpanel: function(result) {
+		container = $('.mediasplitter:visible');
+		$('.media_controls ul li:first', container).nextAll().remove();
+		$('.media_controls ul li:first', container).after(result.controls);
+		$('.media_panel', container).html(result.panel);
+		$('.media_browser', container).hide();
+		$('.media_panel', container).show();
 	}
 
 };
@@ -62,7 +87,7 @@ $(document).ready(function(){
 		show: function(clicked, shown, hidden){
 			var path = $('.pathstore', shown).html().trim();
 			if(path != '') {
-				media.showdir(path, null, shown);
+				habari.media.showdir(path, null, shown);
 				$('.toload', shown).removeClass('toload');
 			}
 			return true;
