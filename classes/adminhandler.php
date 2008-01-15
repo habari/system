@@ -956,25 +956,44 @@ class AdminHandler extends ActionHandler
 	public function post_groups()
 	{
 		$this->theme->groups= UserGroup::all_groups();
-		if ( isset( $this->handler_vars['add'] ) ) {
-			if ( UserGroup::add_group( $this->handler_vars['add'] ) ) {
-				Session::notice( sprintf(_t( 'Added group %s'), $this->handler_vars['add'] ) );
-				// reload the groups
+		if ( isset( $this->handler_vars['add_group'] ) ) {
+			if ( UserGroup::add_group( $this->handler_vars['add_group'] ) ) {
+				Session::notice( sprintf(_t( 'Added group %s'), $this->handler_vars['add_group'] ) );
 				$this->theme->groups= UserGroup::all_groups();
 			}
 		}
-		if ( isset( $this->handler_vars['group'] ) ) {
-			$this->theme->group= $this->handler_vars['group'];
-			$this->theme->group_members= UserGroup::members( $this->theme->group );
-		}
-		if ( isset( $this->handler_vars['delete'] ) ) {
+
+		if ( isset( $this->handler_vars['delete_group'] ) ) {
 			// capture the group name before we delete it
-			$group_name=  $this->theme->groups[$this->theme->group];
-			if ( UserGroup::remove_group( $this->handler_vars['group'] ) ) {
+			$group_name=  $this->theme->groups[$this->handler_vars['group']];
+			if ( UserGroup::remove_group( intval($this->handler_vars['group'] ) ) ) {
 				Session::notice( sprintf( _t('Removed group %s'), $group_name ) );
 				// reload the groups
 				$this->theme->groups= UserGroup::all_groups();
 			}
+		}
+
+		if ( isset( $this->handler_vars['add_user'] ) ) {
+			UserGroup::add_user( $this->handler_vars['group'], $this->handler_vars['add_user'] );
+			$this->theme->groups= UserGroup::all_groups();
+		}
+
+		if ( isset( $this->handler_vars['remove_user'] ) ) {
+			UserGroup::remove_user( $this->handler_vars['user_group'], $this->handler_vars['remove_user'] );
+			$this->theme->groups= UserGroup::all_groups();
+		}
+
+		if ( isset( $this->handler_vars['edit_group'] ) ) {
+			$this->theme->group= $this->handler_vars['group'];
+			$this->theme->group_members= UserGroup::members( $this->theme->group );
+			$all_users= Users::get_all();
+			$users= array();
+			foreach ($all_users as $user) {
+				if ( ! in_array( $user->id,  $this->theme->group_members ) ) {
+					$users[$user->id]= $user->username;
+				}
+			}
+			$this->theme->users= $users;
 		}
 		$this->display( 'groups' );
 	}

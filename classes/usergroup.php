@@ -63,12 +63,13 @@ class UserGroup
 	public static function load_groups ()
 	{
 		self::$group_names= array();
-		$results= DB::get_results( 'SELECT * FROM ' . DB::table('groups') );
+		$results= DB::get_results( 'SELECT * FROM {groups}' );
+		natsort( $results );
 		foreach ($results as $group) {
 			self::$group_names[$group->id]= $group->name;
 		}
 		self::$groups= array();
-		$results= DB::get_results( 'SELECT * FROM ' . DB::table('users_groups') );
+		$results= DB::get_results( 'SELECT * FROM {users_groups}' );
 		foreach ( $results as $group ) {
 			self::$groups[$group->group_id][$group->user_id]= $group->user_id;
 		}
@@ -110,15 +111,13 @@ class UserGroup
 
 	/**
 	 * function remove_group
-	 * Remove a group from the Groups table.  Also removes all users_groups
-	 *	members of the group.
-	 * @param mixed A Group name or ID
+	 * Remove a group from the Groups table.  Also removes all users_groups members of the group.
+	 * @param mixed A Group name or integer ID
 	 * @return bool Whether the group was removed or not
+	**/
 	public static function remove_group( $group )
 	{
-		// we have to use is_numeric because the number is coming
-		// from form input: http://www.php.net/is_int
-		if ( is_numeric( $group ) ) {
+		if ( is_int( $group ) ) {
 			if ( ! array_key_exists( $group, self::$group_names ) ) {
 				Session::notice( _t('That group does not exist.' ) );
 				return false;
@@ -168,11 +167,13 @@ class UserGroup
 	**/
 	public static function add_user( $group, $id )
 	{
-		if ( ! in_array( self::$groups[ intval($group) ], $id ) )
+		if ( empty( self::$groups[ intval( $group) ] ) || ! in_array( self::$groups[ intval($group) ], $id ) )
 		{
-			$results= DB::query( 'INSERT INTO ' . DB::table('users_groups') . ' (user_id, group_id) VALUES (?, ?)', array( intval($group), intval($id) ) );
-			$groups= load_groups();
+			$results= DB::query( 'INSERT INTO ' . DB::table('users_groups') . ' (group_id, user_id) VALUES (?, ?)', array( intval($group), intval($id) ) );
+			$groups= self::load_groups();
 		}
+		$user= User::get_by_id( $id );
+		Session::notice( sprintf( _t('Added %1s to %2s'), $user->username, self::$group_names[$group] ) );
 	}
 
 	/**
@@ -182,10 +183,12 @@ class UserGroup
 	**/
 	public static function remove_user( $group, $id )
 	{
-		if ( in_array( self::$groups[ intval($group) ], $id ) ) {
-			$results= DB::query( 'DELETE FROM ' . DB::table('users_groups') . ' WHERE user_id=? and group_id= ?', array( intval($id), intval($group) ) );
-			$groups= load_groups();
+		if ( in_array( intval($id), self::$groups[ intval($group) ] ) ) {
+			$results= DB::query( 'DELETE FROM {users_groups} WHERE group_id=? and user_id= ?', array( intval($group), intval($id) ) );
+			$groups= self::load_groups();
 		}
+		$user= User::get_by_id($id);
+		Session::notice( sprintf( _t('Removed %1s from %2s'), $user->username, self::$group_names[$group]) );
 	}
 
 	/**
