@@ -3,6 +3,7 @@
 /**
  * Simple file access silo
  *
+ * @todo Create some helper functions in a superclass to display panel controls more easily, so that you don't need to include 80 lines of code to build a simple upload form every time.
  */
 
 class SimpleFileSilo extends Plugin implements MediaSilo
@@ -254,6 +255,126 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	{
 	}
 
+	/**
+	 * Produce a link for the media control bar that causes a specific path to be displayed
+	 *
+	 * @param string $path The path to display
+	 * @param string $title The text to use for the link in the control bar
+	 * @return string The link to create
+	 */
+	public function link_path( $path, $title = '' )
+	{
+		if($title == '') {
+			$title = basename($path);
+		}
+		return '<a href="#" onclick="habari.media.showdir(\''.$path.'\');return false;">' . $title . '</a>';
+	}
+
+	/**
+	 * Produce a link for the media control bar that causes a specific panel to be displayed
+	 *
+	 * @param string $path The path to pass
+	 * @param string $path The panel to display
+	 * @param string $title The text to use for the link in the control bar
+	 * @return string The link to create
+	 */
+	public function link_panel( $path, $panel, $title )
+	{
+		return '<a href="#" onclick="habari.media.showpanel(\''.$path.'\', \''.$panel.'\');return false;">' . $title . '</a>';
+	}
+
+	/**
+	 * Provide controls for the media control bar
+	 *
+	 * @param array $controls Incoming controls from other plugins
+	 * @param MediaSilo $silo An instance of a MediaSilo
+	 * @param string $path The path to get controls for
+	 * @param string $panelname The name of the requested panel, if none then emptystring
+	 * @return array The altered $controls array with new (or removed) controls
+	 *
+	 * @todo This should really use FormUI, but FormUI needs a way to submit forms via ajax
+	 */
+	public function filter_media_controls( $controls, $silo, $path, $panelname )
+	{
+		$class = __CLASS__;
+		if($silo instanceof $class) {
+			$controls[] = $this->link_path(self::SILO_NAME . '/' . $path, 'current path');
+			if(User::identify()->can('upload_media')) {
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', 'Upload');
+			}
+			$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'test', 'Form Test');
+		}
+		return $controls;
+	}
+
+	/**
+	 * Provide requested media panels for this plugin
+	 *
+	 * Regarding Uploading:
+	 * A panel is returned to the media bar that contains a form, an iframe, and a javascript function.
+	 * The form allows the user to select a file, and is submitted back to the same URL that produced this panel in the first place.
+	 * This has the result of submitting the uploaded file to here when the form is submitted.
+	 * To prevent the panel form from reloading the whole publishing page, the form is submitted into the iframe.
+	 * An onload event attached to the iframe calls the function.
+	 * The function accesses the content of the iframe when it loads, which should contain the results of the request to obtain this panel, which are in JSON format.
+	 * The JSON data is passed to the habari.media.jsonpanel() function in media.js to process the data and display the results, just like when displaying a panel normally.
+	 *
+	 * @param string $panel The HTML content of the panel to be output in the media bar
+	 * @param MediaSilo $silo The silo for which the panel was requested
+	 * @param string $path The path within the silo (silo root omitted) for which the panel was requested
+	 * @param string $panelname The name of the requested panel
+	 * @return string The modified $panel to contain the HTML output for the requested panel
+	 *
+	 * @todo Move the uploaded file from the temporary location to the location indicated by the path field.
+	 */
+	public function filter_media_panels( $panel, $silo, $path, $panelname)
+	{
+		$class = __CLASS__;
+		if($silo instanceof $class) {
+			switch($panelname) {
+				case 'test':
+					$form = new FormUI('simplefileupload');
+					$form->add('text', 'test', 'Test Field');
+					$panel .= $form->get();
+					break;
+				case 'upload':
+					if(isset($_FILES['file'])) {
+						$panel .= '<p>File Uploaded:</p>';
+						$panel .= '<pre>'. htmlspecialchars(print_r($_FILES, 1)). '</pre>';
+
+						/* The location of the file that was uploaded is known here in $_FILES['file'] */
+
+					}
+					else {
+
+						$fullpath = self::SILO_NAME . '/' . $path;
+						$panel .= <<< UPLOAD_FORM
+<form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="/admin_ajax/media_panel">
+	<p>Upload to: {$path}</p>
+	<p><input type="file" name="file">
+	<input type="hidden" name="path" value="{$fullpath}">
+	<input type="hidden" name="panel" value="{$panelname}">
+	</p>
+	<p><input type="submit" name="upload" value="Upload"></p>
+</form>
+<iframe id="simple_upload_frame" name="simple_upload_frame" style="width:1px;height:1px;" onload="simple_uploaded();"></iframe>
+<script type="text/javascript">
+function simple_uploaded() {
+	if(!$('#simple_upload_frame')[0].contentWindow) return;
+	var response = $($('#simple_upload_frame')[0].contentWindow.document.body).text();
+	if(response) {
+		eval('data = ' + response);
+		habari.media.jsonpanel(data);
+	}
+}
+</script>
+UPLOAD_FORM;
+
+				}
+			}
+		}
+		return $panel;
+	}
 
 }
 

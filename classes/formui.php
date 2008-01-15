@@ -64,7 +64,7 @@ class FormUI
 
 		$out.= '</form>';
 
-		echo $out;
+		return $out;
 	}
 
 	/**

@@ -34,13 +34,6 @@ interface MediaSilo
 	public function silo_get( $path, $qualities = null );
 
 	/**
-	 * Create a new asset instance for the specified path
-	 * @param string $path The path of the new file to create
-	 * @return MediaAsset The requested asset
-	 **/
-	public function silo_new( $path );
-
-	/**
 	 * Store the specified media at the specified path
 	 * @param string $path The path of the file to retrieve
 	 * @param MediaAsset The asset to store
@@ -66,6 +59,7 @@ interface MediaSilo
 	 * @return array An array of permissions constants (MediaSilo::PERM_READ, MediaSilo::PERM_WRITE)
 	 **/
 	public function silo_permissions( $path );
+
 }
 
 ?>

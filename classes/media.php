@@ -51,19 +51,6 @@ class Media
 	}
 
 	/**
-	 * Get the direct URL reference to the asset stored at the virtual path
-	 *
-	 * @param string $path The virtual path of the file to retrieve
-	 * @param array $qualities Qualities of the URL to return (such as 'thumbnail' or 'size')
-	 * @return string The URL of the asset
-	 */
-	public static function url($path, $qualities = null)
-	{
-		$silo = Media::get_silo($path, true);
-		return $silo->silo_url($path, $qualities);
-	}
-
-	/**
 	 * Fetch an empty MediaAsset with the available metadata keys pre-allocated
 	 * <code>
 	 * $asset = Media::prepare('silotype/foo/bar');
