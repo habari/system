@@ -782,7 +782,9 @@ class Utils
 		}
 		else {
 			ob_start(); // Catch potential parse error messages
-			$code = eval( 'if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
+			$tmp_setting= @ini_set('display_errors', 'on'); // Make sure we have something to catch
+			$code = eval( ' if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
+			@ini_set('display_errors', $tmp_setting); // be a good citizen
 			$error = ob_get_clean();
 
 			return false !== $code;
