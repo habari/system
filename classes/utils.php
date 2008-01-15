@@ -778,13 +778,16 @@ class Utils
 		}
 
 		if ( $b ) {
+			$error = 'Unbalanced braces.';
 			return false; // Unbalanced braces would break the eval below
 		}
 		else {
 			ob_start(); // Catch potential parse error messages
-			$tmp_setting= @ini_set('display_errors', 'on'); // Make sure we have something to catch
+			$display_errors= ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
+			$error_reporting= error_reporting( E_ALL ^ E_NOTICE );
 			$code = eval( ' if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
-			@ini_set('display_errors', $tmp_setting); // be a good citizen
+			ini_set( 'display_errors', $display_errors ); // be a good citizen
+			error_reporting($error_reporting);
 			$error = ob_get_clean();
 
 			return false !== $code;
