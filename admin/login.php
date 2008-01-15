@@ -39,6 +39,7 @@
 
 		</style>
 </head>
+<body>
 <ul id="menu">
 	<li id="site-name">
 		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
@@ -46,46 +47,46 @@
 
 </ul>
 
-	<div id="wrapper">
-		<div id="masthead">
-			<h1>Habari</h1>
-		</div>
-		<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
-		<div class="installstep ready done" id="databasesetup">
-			<h2>Login to <?php Options::out( 'title' ); ?></h2>
-			<div class="options">
-				<div class="inputfield">
-					<p>
-						<label for="habari_username">Name:</label>
-						<input type="text" size="25" name="habari_username" id="habari_username">
-					</p>
-					<p>
-						<label for="habari_password">Password:</label>
-						<input type="password" size="25" name="habari_password" id="habari_password">
-					</p>
-					<p>
-						<input class="submit" type="submit" value="GO!">
-					</p>
-				</div>
-			</div>
-			<div class="bottom"></div>
-		</div>
-
-
-		<div id="footer">
-			<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href); return false;" title="Read the user manual">Manual</a> -
-				<a href="http://wiki.habariproject.org/" title="Read the Habari wiki">Wiki</a> -
-				<a href="http://groups.google.com/group/habari-users" title="Ask the community">Mailing List</a>
+<div id="wrapper">
+<div id="masthead">
+	<h1>Habari</h1>
+</div>
+<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
+<div class="installstep ready done" id="databasesetup">
+	<h2>Login to <?php Options::out( 'title' ); ?></h2>
+	<div class="options">
+		<div class="inputfield">
+			<p>
+				<label for="habari_username">Name:</label>
+				<input type="text" size="25" name="habari_username" id="habari_username">
 			</p>
-
-
+			<p>
+				<label for="habari_password">Password:</label>
+				<input type="password" size="25" name="habari_password" id="habari_password">
+			</p>
+			<p>
+				<input class="submit" type="submit" value="GO!">
+			</p>
 		</div>
+	</div>
+	<div class="bottom"></div>
+</div>
+</form>
 
-		<?php
-			Plugins::act( 'admin_footer', $this );
-			Stack::out( 'admin_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
-			include ('db_profiling.php');
-		?>
-		</div>
-		</body>
-		</html>
+<div id="footer">
+	<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href); return false;" title="Read the user manual">Manual</a> -
+		<a href="http://wiki.habariproject.org/" title="Read the Habari wiki">Wiki</a> -
+		<a href="http://groups.google.com/group/habari-users" title="Ask the community">Mailing List</a>
+	</p>
+
+
+</div>
+
+<?php
+	Plugins::act( 'admin_footer', $this );
+	Stack::out( 'admin_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+	include ('db_profiling.php');
+?>
+</div>
+</body>
+</html>

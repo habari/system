@@ -646,7 +646,7 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_plugins()
 	{
-		$this->get_plugins();
+		return $this->get_plugins();
 	}
 
 	public function get_plugins()
