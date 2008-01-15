@@ -65,7 +65,7 @@
 						</td>
 					</tr>
 					<?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ) { ?>
-					</tbody></table></div></div></div>
+					</tbody></table></div></div>
 					<div id="plugin_options"><div class="container"><div class="column prepend-1 span-22 append-1">
 						<h2><?php echo $plugins[$configure]['info']->name; ?> : <?php echo $action; ?></h2>
 						<?php
