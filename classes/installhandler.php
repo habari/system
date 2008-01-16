@@ -631,7 +631,7 @@ class InstallHandler extends ActionHandler {
 	public function check_htaccess()
 	{
 		// If this is the mod_rewrite check request, then bounce it as a success.
-		if( strpos($_SERVER['REQUEST_URI'], 'check_mod_rewrite') !== false ) {
+		if( strpos( $_SERVER['REQUEST_URI'], 'check_mod_rewrite' ) !== false ) {
 			echo 'ok';
 			exit;
 		}
@@ -641,26 +641,29 @@ class InstallHandler extends ActionHandler {
 			// @TODO: add support for IIS and lighttpd rewrites
 			return true;
 		}
-		$result = true;
-		if ( ! file_exists( HABARI_PATH . '/.htaccess') ) {
+		
+		$result= false;
+		if ( file_exists( HABARI_PATH . '/.htaccess') ) {
+			$htaccess= file_get_contents( HABARI_PATH . '/.htaccess');
+			if ( false === strpos( $htaccess, 'HABARI' ) ) {
+				// the Habari block does not exist in this file
+				// so try to create it
+				$result= $this->write_htaccess( true );
+			}
+		}
+		else {
 			// no .htaccess exists.  Try to create one
-			$result = $this->write_htaccess(FALSE);
+			$result= $this->write_htaccess( false );
 		}
-		$htaccess= file_get_contents( HABARI_PATH . '/.htaccess');
-		if ( FALSE === strpos( $htaccess, 'HABARI' ) ) {
-			// the Habari block does not exist in this file
-			// so try to create it
-			$result = $this->write_htaccess(TRUE);
-		}
-		if($result) {
+		if ( $result ) {
 			// the Habari block exists, but we need to make sure
 			// it is correct.
 			// Check that the rewrite rules actually do the job.
-			$test_ajax_url = Site::get_url('habari') . '/check_mod_rewrite';
-			$rr = new RemoteRequest( $test_ajax_url, 'POST', 20);
-			$rr_result = $rr->execute();
-			if(!$rr->executed()) {
-				$result = $this->write_htaccess(TRUE, TRUE, TRUE);
+			$test_ajax_url= Site::get_url( 'habari' ) . '/check_mod_rewrite';
+			$rr= new RemoteRequest( $test_ajax_url, 'POST', 20 );
+			$rr_result= $rr->execute();
+			if ( ! $rr->executed() ) {
+				$result= $this->write_htaccess( true, true, true );
 			}
 		}
 
