@@ -201,7 +201,13 @@ class Pingback extends Plugin {
 			return false;
 		}
 
-		$response= XMLRPCClient::open( $pingback_endpoint )->pingback->ping( $source_uri, $target_uri );
+		try {
+			$response= XMLRPCClient::open( $pingback_endpoint )->pingback->ping( $source_uri, $target_uri );
+		}
+		catch(Exception $e) {
+			EventLog::log( 'Invalid Pingback endpoint - ' . $pingback_endpoint . '  (Source: ' . $source_uri . ' | Target: ' . $target_uri . ')', 'info', 'Pingback' );
+			return false;
+		}
 
 		if ( isset( $response->faultString ) ) {
 			EventLog::log( $response->faultCode . ' - ' . $response->faultString . ' (Source: ' . $source_uri . ' | Target: ' . $target_uri . ')', 'info', 'Pingback' );
