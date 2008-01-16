@@ -7,10 +7,18 @@
 
 class MediaAsset
 {
+	const MODE_NONE = 0;
+	const MODE_DATA = 1;
+	const MODE_FILE = 2;
+	const MODE_STREAM = 3;
+	const MODE_UPLOAD = 4;
+
 	protected $path;
 	protected $is_dir;
 	protected $content = null;
 	protected $props = array();
+	protected $filename;
+	protected $mode = self::MODE_NONE;
 
 	/**
 	 * MediaAsset constructor
@@ -34,7 +42,18 @@ class MediaAsset
 	protected function _get()
 	{
 		if(empty($this->content)) {
-			$this->content = Media::get($this->path);
+			switch($this->mode) {
+				case self::MODE_DATA:
+					$this->content = Media::get($this->path);
+					break;
+				case self::MODE_FILE:
+					$this->content = file_get_contents($this->filename);
+					break;
+				case self::MODE_STREAM:
+					$this->content = stream_get_contents($this->stream);
+					fclose($this->stream);
+					break;
+			}
 		}
 		return $this->content;
 	}
@@ -71,7 +90,7 @@ class MediaAsset
 	{
 		switch($name) {
 			case 'content':
-				return $this->_get($content);
+				return $this->_get();
 			case 'is_dir':
 				return $this->is_dir;
 			case 'path':
@@ -83,10 +102,17 @@ class MediaAsset
 		}
 	}
 
+	/**
+	 * Set attributes about this asset
+	 *
+	 * @param string $name The name of the property to set
+	 * @param mixed $value The value to set
+	 */
 	public function __set($name, $value)
 	{
 		switch($name) {
 			case 'content':
+				$this->mode = self::MODE_DATA;
 				return $this->_set($value);
 			case 'is_dir':
 			case 'path':
@@ -95,6 +121,66 @@ class MediaAsset
 				$this->props[$name] = $value;
 				break;
 		}
+	}
+
+	/**
+	 * Load the asset data from a file
+	 *
+	 * @param string $file The filename to load
+	 */
+	public function load( $file )
+	{
+		$this->mode = self::MODE_FILE;
+		$this->filename = $file;
+	}
+
+	/**
+	 * Save the asset data to a file
+	 *
+	 * @param string $file The destination filename
+	 * @return boolean True on success
+	 */
+	public function save( $file )
+	{
+		switch( $this->mode ) {
+			case self::MODE_DATA:
+				return file_put_contents( $file, $this->content ) !== false;
+				break;
+			case self::MODE_UPLOAD:
+				return move_uploaded_file( $this->filename, $file ) !== false;
+				break;
+			case self::MODE_FILE:
+				return copy( $this->filename, $file );
+				break;
+			case self::MODE_STREAM:
+				$dest = fopen( $file, 'w+');
+				stream_copy_to_stream( $this->stream, $dest );
+				fclose( $this->stream );
+				return fclose( $dest );
+				break;
+		}
+	}
+
+	/**
+	 * Load the asset data from an upload
+	 *
+	 * @param array $files The $_FILES array created when a file is uploaded
+	 */
+	public function upload( $files )
+	{
+		$this->mode = self::MODE_UPLOAD;
+		$this->filename = $files['tmp_name'];
+	}
+
+
+	/**
+	 * Shortcut for putting an asset into the correct silo based on its path
+	 *
+	 * @return boolean True on success
+	 */
+	public function put()
+	{
+		return Media::put($this);
 	}
 
 }

@@ -223,10 +223,15 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	/**
 	 * Store the specified media at the specified path
 	 * @param string $path The path of the file to retrieve
-	 * @param MediaAsset The asset to store
+	 * @param MediaAsset $filedata The MediaAsset to store
+	 * @return boolean True on success
 	 **/
 	public function silo_put( $path, $filedata )
 	{
+		$path = preg_replace('%\.{2,}%', '.', $path);
+		$file = $this->root . '/' . $path;
+
+		return $filedata->save( $file );
 	}
 
 	/**
@@ -298,11 +303,10 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	{
 		$class = __CLASS__;
 		if($silo instanceof $class) {
-			$controls[] = $this->link_path(self::SILO_NAME . '/' . $path, 'current path');
+			$controls[] = $this->link_path(self::SILO_NAME . '/' . $path, 'Current Path');
 			if(User::identify()->can('upload_media')) {
 				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', 'Upload');
 			}
-			$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'test', 'Form Test');
 		}
 		return $controls;
 	}
@@ -332,40 +336,48 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 		$class = __CLASS__;
 		if($silo instanceof $class) {
 			switch($panelname) {
-				case 'test':
-					$form = new FormUI('simplefileupload');
-					$form->add('text', 'test', 'Test Field');
-					$panel .= $form->get();
-					break;
 				case 'upload':
 					if(isset($_FILES['file'])) {
-						$panel .= '<p>File Uploaded:</p>';
-						$panel .= '<pre>'. htmlspecialchars(print_r($_FILES, 1)). '</pre>';
+						$size = Utils::human_size($_FILES['file']['size']);
+						$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>File Uploaded: {$_FILES['file']['name']} ($size)</p>";
 
-						/* The location of the file that was uploaded is known here in $_FILES['file'] */
+						$path = self::SILO_NAME . '/' . preg_replace('%\.{2,}%', '.', $path). '/' . $_FILES['file']['name'];
+						$asset = new MediaAsset($path, false);
+						$asset->upload($_FILES['file']);
 
+						if($asset->put()) {
+							$panel .= '<p>File added successfully.</p>';
+						}
+						else {
+							$panel .= '<p>File could not be added to the silo.</p>';
+						}
+
+						$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname($path) . '\');">Browse the current silo path.</a></p></div>';
 					}
 					else {
 
 						$fullpath = self::SILO_NAME . '/' . $path;
 						$panel .= <<< UPLOAD_FORM
-<form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="/admin_ajax/media_panel">
-	<p>Upload to: {$path}</p>
-	<p><input type="file" name="file">
+<form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="/admin_ajax/media_panel" class="span-10" style="margin:0px auto;text-align: center">
+	<p style="padding-top:30px;">Upload to: <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
+	<p><input type="file" name="file"><input type="submit" name="upload" value="Upload">
 	<input type="hidden" name="path" value="{$fullpath}">
 	<input type="hidden" name="panel" value="{$panelname}">
 	</p>
-	<p><input type="submit" name="upload" value="Upload"></p>
 </form>
 <iframe id="simple_upload_frame" name="simple_upload_frame" style="width:1px;height:1px;" onload="simple_uploaded();"></iframe>
 <script type="text/javascript">
+var responsedata;
 function simple_uploaded() {
 	if(!$('#simple_upload_frame')[0].contentWindow) return;
 	var response = $($('#simple_upload_frame')[0].contentWindow.document.body).text();
 	if(response) {
-		eval('data = ' + response);
-		habari.media.jsonpanel(data);
+		eval('responsedata = ' + response);
+		window.setTimeout(simple_uploaded_complete, 500);
 	}
+}
+function simple_uploaded_complete() {
+	habari.media.jsonpanel(responsedata);
 }
 </script>
 UPLOAD_FORM;

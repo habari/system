@@ -16,6 +16,7 @@ habari.media = {
 					path: path
 				},
 				function(result) {
+					habari.media.unqueueLoad();
 					$('.pathstore', container).html(result.path);
 					var output = '<div class="media_dirlevel"><table>';
 					for(var dir in result.dirs) {
@@ -28,7 +29,7 @@ habari.media = {
 						$(el).addClass('active');
 						$(el).parents('.media_dirlevel').after(output);
 					}
-					else {
+					else if($('.mediadir', container).html() == '') {
 						$('.mediadir', container).html(output);
 					}
 					output = '<table><tr>';
@@ -75,6 +76,16 @@ habari.media = {
 		$('.media_panel', container).html(result.panel);
 		$('.media_browser', container).hide();
 		$('.media_panel', container).show();
+	},
+
+	unqueueLoad: function() {
+		container = $('.mediasplitter:visible');
+		$('.toload', container).removeClass('toload');
+	},
+
+	forceReload: function() {
+		container = $('.mediasplitter:visible');
+		$('.pathstore', container).addClass('toload');
 	}
 
 };
@@ -88,7 +99,7 @@ $(document).ready(function(){
 			var path = $('.pathstore', shown).html().trim();
 			if(path != '') {
 				habari.media.showdir(path, null, shown);
-				$('.toload', shown).removeClass('toload');
+				habari.media.unqueueLoad();
 			}
 			return true;
 		}
