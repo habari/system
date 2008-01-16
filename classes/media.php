@@ -69,12 +69,15 @@ class Media
 	/**
 	 * Store the asset at the specified virtual path
 	 *
-	 * @param string $path The virtual path where the asset will be stored
 	 * @param MediaAsset $filedata The asset to store
+	 * @param string $path The virtual path where the asset will be stored
 	 * @return boolean true on success
 	 */
-	public static function put($path, $filedata)
+	public static function put($filedata, $path = null)
 	{
+		if(!$path) {
+			$path = $filedata->path;
+		}
 		$silo = Media::get_silo($path, true);
 		if($path == '') {
 			return false;

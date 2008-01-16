@@ -684,7 +684,7 @@ class Utils
 		$output.= '</select>';
 		return $output;
 	}
-	
+
 	/**
 	 * Creates one or more HTML checkboxes
 	 * @param string The name of the checkbox element.  If there are
@@ -806,12 +806,45 @@ class Utils
 
 		return self::php_check_syntax( $code, $error );
 	}
-	
+
+	/**
+	 * Replacement for system glob that returns an empty array if there are no results
+	 *
+	 * @param string $pattern The glob() file search pattern
+	 * @param integer $flags Standard glob() flags
+	 * @return array An array of result files, or an empty array if no results found
+	 */
 	public static function glob( $pattern, $flags = 0 )
 	{
 		$res= glob( $pattern, $flags );
 		if ( $res === false ) $res= array();
 		return $res;
+	}
+
+	/**
+	 * Produces a human-readable size string.
+	 * For example, converts 12345 into 12.34KB
+	 *
+	 * @param integer $bytesize Number of bytes
+	 * @return string Human-readable string
+	 */
+	public static function human_size( $bytesize )
+	{
+		$tick = 0;
+		while($bytesize > 1024) {
+			$tick++;
+			$bytesize /= 1024;
+		}
+		$sizes = array(
+			' bytes',
+			'KB',
+			'MB',
+			'GB',
+			'TB',
+			'PB'
+		);
+
+		return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
 	}
 
 }
