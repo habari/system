@@ -50,10 +50,10 @@ class LogEntry extends QueryRecord
 	 *
 	 * @param array $paramarray an associative array of initial LogEntry field values
 	 */
-	public function __construct( $paramarray = array() )
+	public function __construct( $paramarray= array() )
 	{
 		// Defaults
-		$this->fields = array_merge(
+		$this->fields= array_merge(
 			self::default_fields(),
 			$this->fields );
 
@@ -76,7 +76,7 @@ class LogEntry extends QueryRecord
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of log entry type names => integer values
 	 */
-	public static function list_logentry_types($force = false)
+	public static function list_logentry_types( $force= false )
 	{
 		if ( $force || empty( self::$types ) ) {
 			self::$types= array();
@@ -111,7 +111,7 @@ class LogEntry extends QueryRecord
 	public static function list_modules( $refresh= false )
 	{
 		$types= self::list_logentry_types( $refresh );
-		foreach ($types as $module => $types) {
+		foreach ( $types as $module => $types ) {
 			$modules[]= $module;
 		}
 	}
@@ -125,10 +125,10 @@ class LogEntry extends QueryRecord
 	{
 		$types= array();
 		$matrix= self::list_logentry_types( $refresh );
-		foreach ($matrix as $module => $module_types) {
-			$types= array_merge($types, $module_types);
+		foreach ( $matrix as $module => $module_types ) {
+			$types= array_merge( $types, $module_types );
 		}
-		return array_flip($types);
+		return array_flip( $types );
 	}
 
 	/**
@@ -153,7 +153,7 @@ class LogEntry extends QueryRecord
 	 */
 	public static function severity_name( $severity )
 	{
-		return isset(self::$severities[$severity]) ? self::$severities[$severity] : _t('Unknown');
+		return isset( self::$severities[$severity] ) ? self::$severities[$severity] : _t( 'Unknown' );
 	}
 
 	/**
@@ -169,9 +169,9 @@ class LogEntry extends QueryRecord
 		if ( array_key_exists( $module, self::$types ) && array_key_exists( $type, self::$types[$module] ) ) {
 			return self::$types[$module][$type];
 		}
-		if( $type != null && $module != null ) {
+		if ( $type != null && $module != null ) {
 			EventLog::register_type( $type, $module );
-			self::list_logentry_types(true);
+			self::list_logentry_types( true );
 			return self::$types[$module][$type];
 		}
 		return false;
@@ -200,19 +200,19 @@ class LogEntry extends QueryRecord
 	 * Return a single requested log entry.
 	 *
 	 * <code>
-	 * $log = LogEntry::get( array( 'id' => 5 ) );
+	 * $log= LogEntry::get( array( 'id' => 5 ) );
 	 * </code>
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return object LogEntry The first log entry that matched the given criteria
 	 */
-	public static function get( $paramarray = array() )
+	public static function get( $paramarray= array() )
 	{
 		// Default parameters.
 		$defaults= array (
 			'fetch_fn' => 'get_row',
 		);
-		if ( $user = User::identify() ) {
+		if ( $user= User::identify() ) {
 			$defaults['where'][]= array(
 				'user_id' => $user->id,
 			);
@@ -235,7 +235,7 @@ class LogEntry extends QueryRecord
 	 */
 	public function get_event_type() {
 		$type= DB::get_value( 'SELECT type FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
-		return $type ? $type : _t('Unknown');
+		return $type ? $type : _t( 'Unknown' );
 	}
 
 	/**
@@ -247,7 +247,7 @@ class LogEntry extends QueryRecord
 	 */
 	public function get_event_module() {
 		$module= DB::get_value( 'SELECT module FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
-		return $module ? $module : _t('Unknown');
+		return $module ? $module : _t( 'Unknown' );
 	}
 
 	/**
@@ -262,6 +262,22 @@ class LogEntry extends QueryRecord
 	}
 
 	/**
+	 * function delete
+	 * Deletes this logentry
+	 */
+	public function delete()
+	{
+		$allow= true;
+		$allow= Plugins::filter( 'logentry_delete_allow', $allow, $this );
+		if ( ! $allow ) { 
+			return;
+		}
+		Plugins::act( 'logentry_delete_before', $this );
+		return parent::deleteRecord( DB::table( 'log' ), array( 'id'=>$this->id ) );
+		Plugins::act( 'logentry_delete_after', $this );
+	}
+
+	/**
 	 * Overrides QueryRecord __get to implement custom object properties
 	 *
 	 * @param string Name of property to return
@@ -269,32 +285,32 @@ class LogEntry extends QueryRecord
 	 */
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys($this->fields), array('module', 'type', 'severity') );
-		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
-			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
-			list( $junk, $name, $filter ) = $matches;
+		$fieldnames= array_merge( array_keys( $this->fields ), array( 'module', 'type', 'severity' ) );
+		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
+			list( $junk, $name, $filter )= $matches;
 		}
 		else {
-			$filter = false;
+			$filter= false;
 		}
 
-		switch($name) {
+		switch ( $name ) {
 		case 'module':
 			$out= $this->get_event_module();
 			break;
 		case 'type':
-			$out = $this->get_event_type();
+			$out= $this->get_event_type();
 			break;
 		case 'severity':
-			$out = $this->get_event_severity();
+			$out= $this->get_event_severity();
 			break;
 		default:
-			$out = parent::__get( $name );
+			$out= parent::__get( $name );
 			break;
 		}
-		$out = Plugins::filter( "logentry_{$name}", $out, $this );
-		if( $filter ) {
-			$out = Plugins::filter( "logentry_{$name}_{$filter}", $out, $this );
+		$out= Plugins::filter( "logentry_{$name}", $out, $this );
+		if ( $filter ) {
+			$out= Plugins::filter( "logentry_{$name}_{$filter}", $out, $this );
 		}
 		return $out;
 	}
@@ -307,9 +323,9 @@ class LogEntry extends QueryRecord
 	 */
 	public function __set( $name, $value )
 	{
-		switch($name) {
+		switch ( $name ) {
 		case 'timestamp':
-			$value = date( 'Y-m-d H:i:s', strtotime( $value ) );
+			$value= date( 'Y-m-d H:i:s', strtotime( $value ) );
 			break;
 		}
 		return parent::__set( $name, $value );

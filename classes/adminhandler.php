@@ -271,7 +271,8 @@ class AdminHandler extends ActionHandler
 									$post->user_id= $newauthor;
 									$post->update();
 								}
-							} else {
+							} 
+							else {
 								// delete posts
 								foreach ( $posts as $post ) {
 									$post->delete();
@@ -513,21 +514,21 @@ class AdminHandler extends ActionHandler
 					case 'spam':
 						// This comment was marked as spam
 						$comment= Comment::get( $comment->id );
-						$modstatus['Marked %d comments as spam'] += $comment->status != Comment::STATUS_SPAM;
+						$modstatus['Marked %d comments as spam']+= $comment->status != Comment::STATUS_SPAM;
 						$comment->status= Comment::STATUS_SPAM;
 						$comment->update();
 						break;
 					case 'approve':
 						// This comment was marked for approval
 						$comment= Comment::get( $comment->id );
-						$modstatus['Approved %d comments'] += $comment->status != Comment::STATUS_APPROVED;
+						$modstatus['Approved %d comments']+= $comment->status != Comment::STATUS_APPROVED;
 						$comment->status= Comment::STATUS_APPROVED;
 						$comment->update();
 						break;
 					case 'unapprove':
 						// This comment was marked for unapproval
 						$comment= Comment::get( $comment->id );
-						$modstatus['Unapproved %d comments'] += $comment->status != Comment::STATUS_UNAPPROVED;
+						$modstatus['Unapproved %d comments']+= $comment->status != Comment::STATUS_UNAPPROVED;
 						$comment->status= Comment::STATUS_UNAPPROVED;
 						$comment->update();
 						break;
@@ -830,7 +831,7 @@ class AdminHandler extends ActionHandler
 	public function post_logs()
 	{
 		$locals= array(
-			'do_update' => false,
+			'do_delete' => false,
 			'log_ids' => null,
 			'nonce' => '',
 			'timestamp' => '',
@@ -850,6 +851,38 @@ class AdminHandler extends ActionHandler
 		foreach ( $locals as $varname => $default ) {
 			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
+		}
+		if ( $do_delete && isset( $log_ids ) ) {
+			$okay= true;
+			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
+				$okay= false;
+			}
+			// Ensure the request was submitted less than five minutes ago
+			if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
+				$okay= false;
+			}
+			$wsse= Utils::WSSE( $nonce, $timestamp );
+			if ( $PasswordDigest != $wsse['digest'] ) {
+				$okay= false;
+			}
+			if ( $okay ) {
+				foreach ( $log_ids as $id ) {
+					$ids[]= array( 'id' => $id );
+				}
+				$to_delete= EventLog::get( array( 'where' => $ids, 'nolimit' => 1 ) );
+				$logstatus= array( 'Deleted %d logs' => 0 );
+				foreach ( $to_delete as $log ) {
+					$log->delete();
+					$logstatus['Deleted %d logs']+= 1;
+				}
+				foreach ( $logstatus as $key => $value ) {
+					if ( $value ) {
+						Session::notice( sprintf( _t( $key ), $value ) );
+					}
+				}
+			}
+			Utils::redirect();
+			die();
 		}
 		$this->theme->severities= LogEntry::list_severities();
 		$any= array( '0' => 'Any' );
@@ -966,8 +999,8 @@ class AdminHandler extends ActionHandler
 		if ( isset( $this->handler_vars['delete_group'] ) ) {
 			// capture the group name before we delete it
 			$group_name=  $this->theme->groups[$this->handler_vars['group']];
-			if ( UserGroup::remove_group( intval($this->handler_vars['group'] ) ) ) {
-				Session::notice( sprintf( _t('Removed group %s'), $group_name ) );
+			if ( UserGroup::remove_group( intval( $this->handler_vars['group'] ) ) ) {
+				Session::notice( sprintf( _t( 'Removed group %s' ), $group_name ) );
 				// reload the groups
 				$this->theme->groups= UserGroup::all_groups();
 			}
@@ -988,7 +1021,7 @@ class AdminHandler extends ActionHandler
 			$this->theme->group_members= UserGroup::members( $this->theme->group );
 			$all_users= Users::get_all();
 			$users= array();
-			foreach ($all_users as $user) {
+			foreach ( $all_users as $user ) {
 				if ( ! in_array( $user->id,  $this->theme->group_members ) ) {
 					$users[$user->id]= $user->username;
 				}
@@ -1077,50 +1110,50 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_media( $handler_vars )
 	{
-		$path = $handler_vars['path'];
-		$rpath = $path;
-		$silo = Media::get_silo($rpath, true);  // get_silo sets $rpath by reference to the path inside the silo
-		$assets = Media::dir($path);
-		$output = array(
+		$path= $handler_vars['path'];
+		$rpath= $path;
+		$silo= Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
+		$assets= Media::dir( $path );
+		$output= array(
 			'ok' => 1,
 			'dirs' => array(),
 			'files' => array(),
 			'path' => $path,
 		);
-		foreach($assets as $asset) {
-			if($asset->is_dir) {
-				$output['dirs'][$asset->basename] = $asset->get_props();
+		foreach ( $assets as $asset ) {
+			if ( $asset->is_dir ) {
+				$output['dirs'][$asset->basename]= $asset->get_props();
 			}
 			else {
-				$output['files'][$asset->basename] = $asset->get_props();
+				$output['files'][$asset->basename]= $asset->get_props();
 			}
 		}
-		$controls = array();
-		$controls = Plugins::filter('media_controls', $controls, $silo, $rpath, '');
-		$output['controls'] = '<li>' . implode('</li><li>', $controls) . '</li>';
+		$controls= array();
+		$controls= Plugins::filter( 'media_controls', $controls, $silo, $rpath, '' );
+		$output['controls']= '<li>' . implode( '</li><li>', $controls ) . '</li>';
 
-		echo json_encode($output);
+		echo json_encode( $output );
 	}
 
 	public function ajax_media_panel( $handler_vars )
 	{
-		$path = $handler_vars['path'];
-		$panelname = $handler_vars['panel'];
-		$rpath = $path;
-		$silo = Media::get_silo($rpath, true);  // get_silo sets $rpath by reference to the path inside the silo
+		$path= $handler_vars['path'];
+		$panelname= $handler_vars['panel'];
+		$rpath= $path;
+		$silo= Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
 
-		$panel = '';
-		$panel = Plugins::filter('media_panels', $panel, $silo, $rpath, $panelname);
-		$controls = array();
-		$controls = Plugins::filter('media_controls', $controls, $silo, $rpath, $panelname);
-		$controls = '<li>' . implode('</li><li>', $controls) . '</li>';
-		$output = array(
+		$panel= '';
+		$panel= Plugins::filter( 'media_panels', $panel, $silo, $rpath, $panelname );
+		$controls= array();
+		$controls= Plugins::filter( 'media_controls', $controls, $silo, $rpath, $panelname );
+		$controls= '<li>' . implode( '</li><li>', $controls ) . '</li>';
+		$output= array(
 			'controls' => $controls,
 			'panel' => $panel,
 		);
 
-		header('content-type:text/javascript');
-		echo json_encode($output);
+		header( 'content-type:text/javascript' );
+		echo json_encode( $output );
 	}
 
 }
