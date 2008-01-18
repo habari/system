@@ -68,6 +68,7 @@ abstract class Pluggable
 				( 0 !== strpos( $fn, 'action_' ) )
 				&& ( 0 !== strpos( $fn, 'filter_' ) )
 				&& ( 0 !== strpos( $fn, 'xmlrpc_' ) )
+				&& ( 0 !== strpos( $fn, 'theme_' ) )
 			) {
 				continue;
 			}

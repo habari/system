@@ -452,9 +452,10 @@ class Theme extends Pluggable
 	/**
 	 * Aggregates and echos the additional footer code by combining Plugins and Stack calls.
 	 */
-	public function footer() {
-		Plugins::act( 'template_footer', $this );
-		Stack::out( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+	public function filter_theme_call_footer( $output, $theme ) {
+		Plugins::act( 'template_footer', $theme );
+		$output .= Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+		return $output;
 	}
 
 	/**
@@ -513,8 +514,8 @@ class Theme extends Pluggable
 		}
 		else {
 			$return = false;
-			array_unshift($params, 'theme_call_' . $function, $return, $this);
-			return call_user_func_array(array('Plugins', 'filter'), $params);
+			array_unshift($params, $function, $return, $this);
+			return call_user_func_array(array('Plugins', 'theme'), $params);
 		}
 	}
 
