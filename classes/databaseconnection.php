@@ -204,7 +204,7 @@ class DatabaseConnection
 		// Allow plugins to modify the query
 		$query = Plugins::filter( 'query', $query, $args );
 		// Translate the query for the database engine
-		$query = self::sql_t( $query, $args );
+		$query = $this->sql_t( $query, $args );
 		// Replace braced table names in the query with their prefixed counterparts
 		$query = self::filter_tables( $query );
 		// Allow plugins to modify the query after it has been processed

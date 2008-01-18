@@ -18,7 +18,21 @@ class SQLiteConnection extends DatabaseConnection
 	 */
 	function sql_t( $sql )
 	{
+		$sql = preg_replace_callback('%concat\(([^)]+?)\)%i', array(&$this, 'replace_concat'), $sql);
 		return $sql;
+	}
+	
+	/**
+	 * Replaces the MySQL CONCAT function with SQLite-compatible statements
+	 * @todo needs work, kind of sucky conversion
+	 * @param array $matches Matches from the regex in sql_t()
+	 * @return string The replacement for the MySQL SQL
+	 * @see SQLiteConnection::sql_t()
+	 */	 	 
+	function replace_concat( $matches )
+	{
+		$innards = explode(',', $matches[1]);
+		return implode(' || ', $innards);
 	}
 
 	/**
