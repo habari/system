@@ -95,6 +95,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 					array(
 						'url' => $this->url . '/' . $path . ($path == '' ? '' : '/') . $file,
 						'thumbnail_url' => $thumbnail_url,
+						'filetype' => 'image',
 					)
 				);
 			}
@@ -307,6 +308,9 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 			if(User::identify()->can('upload_media')) {
 				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', 'Upload');
 			}
+			if(User::identify()->can('create_directories')) {
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'mkdir', 'Create Directory');
+			}
 		}
 		return $controls;
 	}
@@ -336,6 +340,13 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 		$class = __CLASS__;
 		if($silo instanceof $class) {
 			switch($panelname) {
+				case 'mkdir':
+					$form = new FormUI('simplefilesilomkdir');
+					$form->add('text', 'directory', 'Enter the name of the new directory to create here');
+					$form->media_panel();
+					$form->on_success(array(&$this, 'mkdir'), $panel, $silo, $path);
+					return $form->get();
+					break;
 				case 'upload':
 					if(isset($_FILES['file'])) {
 						$size = Utils::human_size($_FILES['file']['size']);
@@ -357,8 +368,9 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 					else {
 
 						$fullpath = self::SILO_NAME . '/' . $path;
+						$form_action = URL::get('admin_ajax', array('context' => 'media_panel'));
 						$panel .= <<< UPLOAD_FORM
-<form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="/admin_ajax/media_panel" class="span-10" style="margin:0px auto;text-align: center">
+<form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="{$form_action}" class="span-10" style="margin:0px auto;text-align: center">
 	<p style="padding-top:30px;">Upload to: <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
 	<p><input type="file" name="file"><input type="submit" name="upload" value="Upload">
 	<input type="hidden" name="path" value="{$fullpath}">
@@ -386,6 +398,11 @@ UPLOAD_FORM;
 			}
 		}
 		return $panel;
+	}
+
+	public function mkdir($form, $panel, $silo, $path)
+	{
+		return false;
 	}
 
 }
