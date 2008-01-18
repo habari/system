@@ -15,6 +15,12 @@ class FormUI
 	private static $outpre = false;
 	private $has_user_options = false;
 
+	/** Option for the form **/
+	private $options = array(
+		'show_form_on_success' => true,
+		'save_button' => true,
+		'ajax' => false,
+	);
 	/**
 	 * Form UI constructor - create to build form UI.
 	 *
@@ -43,26 +49,34 @@ class FormUI
 	public function get()
 	{
 		$forvalidation = false;
+		$showform = false;
 		// Should we be validating?
 		if(isset($_POST['FormUI']) && $_POST['FormUI'] == $this->salted_name()) {
 			$validate= $this->validate();
 			if(count($validate) == 0) {
 				$this->success();
+				$showform = $this->options['show_form_on_success'];
 			}
 			else {
 				$forvalidation= true;
 			}
 		}
-		$out= '
-			<form method="post" action="" class="FormUI">
-			<input type="hidden" name="FormUI" value="' . $this->salted_name() . '">
-		';
-		$out.= $this->pre_out_controls();
-		$out.= $this->output_controls($forvalidation);
 
-		$out.= '<input type="submit" value="save">';
+		$out = '';
+		if($showform) {
+			$out.= '
+				<form method="post" action="" class="FormUI">
+				<input type="hidden" name="FormUI" value="' . $this->salted_name() . '">
+			';
+			$out.= $this->pre_out_controls();
+			$out.= $this->output_controls($forvalidation);
 
-		$out.= '</form>';
+			if($this->options['save_button']) {
+				$out.= '<input type="submit" value="save">';
+			}
+
+			$out.= '</form>';
+		}
 
 		return $out;
 	}
@@ -207,6 +221,19 @@ class FormUI
 		if($this->has_user_options) {
 			User::identify()->info->commit();
 		}
+	}
+
+
+	/**
+	 * Set a form option
+	 * Defaults for options are stored in the $this->options array
+	 *
+	 * @param string $option The name of the option to set
+	 * @param mixed $value The value of the option
+	 */
+	public function set_option( $option, $value )
+	{
+		$this->options[$option] = $value;
 	}
 
 }
@@ -419,6 +446,37 @@ class FormControlText extends FormControl
 		return array();
 	}
 }
+
+/**
+ * A text control based on FormControl for output via a FormUI.
+ */
+class FormControlStatic extends FormControl
+{
+
+	/**
+	 * Produce HTML output for this text control.
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function out($forvalidation)
+	{
+		return '<div class="static formcontrol">' . $this->caption . '</div>';
+	}
+
+	/**
+	 * Do not store this static control anywhere
+	 *
+	 * @param mixed $key Unused
+	 * @param mixed $store_user Unused
+	 */
+	public function save($key= null, $store_user= null)
+	{
+		// This function should do nothing.
+	}
+
+}
+
 
 /**
  * A password control based on FormControlText for output via a FormUI.
