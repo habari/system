@@ -116,6 +116,52 @@ class Plugins
 	}
 
 	/**
+	 * Call to execute a theme function
+	 * @param string The name of the filter to execute
+	 * @param mixed The value to filter
+	 * @return The filtered value
+	 */
+	public static function theme()
+	{
+		list( $hookname, $return ) = func_get_args();
+
+		$filtersets = array();
+		if(isset(self::$hooks['theme'][$hookname])) {
+			$filtersets[] = self::$hooks['theme'][$hookname];
+		}
+		if(isset(self::$hooks['filter']['theme_call_' . $hookname])) {
+			$filtersets[] = self::$hooks['filter']['theme_call_' . $hookname];
+		}
+		if(count($filtersets) == 0 ) {
+			return $return;
+		}
+
+		$filterargs = array_slice(func_get_args(), 2);
+		foreach( $filtersets as $set ) {
+			foreach ( $set as $priority ) {
+				foreach ( $priority as $filter ) {
+					// $filter is an array of object reference and method name
+					$callargs = $filterargs;
+					array_unshift( $callargs, $return );
+					$return = call_user_func_array( $filter, $callargs );
+				}
+			}
+		}
+		return $return;
+	}
+
+	/**
+	 * Determine if any plugin implements the indicated theme hook
+	 *
+	 * @param string $hookname The name of the hook to check for
+	 * @return boolean True if the hook is implemented
+	 */
+	public static function theme_implemented( $hookname )
+	{
+		return isset( self::$hooks['theme'][$hookname] );
+	}
+
+	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
 	 * @param boolean Whether to refresh the cached array.  Default FALSE
