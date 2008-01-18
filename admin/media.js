@@ -34,15 +34,25 @@ habari.media = {
 					}
 					output = '<table><tr>';
 					var first = ' first';
+					habari.media.assets = result.files;
 					for(var file in result.files) {
 						stats = '';
-						output += '<td><div class="media' + first + '"><div class="mediatitle">' + result.files[file].title + '</div><img src="' + result.files[file].thumbnail_url + '"><div class="mediastats"> ' + stats + '</div><div class="foroutput"><img src="' + result.files[file].url + '"></div></div></td>';
+						output += '<td><div class="media' + first + '"><span class="foroutput">' + file + '</span>';
+
+						if(result.files[file].filetype && habari.media.preview[result.files[file].filetype]) {
+							output += habari.media.preview[result.files[file].filetype](file, result.files[file]);
+						}
+						else {
+							output += habari.media.preview.image(file, result.files[file]);
+						}
+
+						output += '</div></td>';
 						first = '';
 					}
 					output += '</tr></table>';
 					$('.mediaphotos', container).html(output);
 					$('.media').dblclick(function(){
-						habari.editor.insertSelection($('.foroutput', this).html());
+						habari.media.insertAsset(this);
 					});
 					$('.media_controls ul li:first', container).nextAll().remove();
 					$('.media_controls ul li:first', container).after(result.controls);
@@ -86,6 +96,33 @@ habari.media = {
 	forceReload: function() {
 		container = $('.mediasplitter:visible');
 		$('.pathstore', container).addClass('toload');
+	},
+
+	preview: {
+		image: function(fileindex, fileobj) {
+			var stats = '';
+			return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+		}
+	},
+
+	output: {
+		image: function(fileindex, fileobj) {
+			habari.editor.insertSelection('<img src="' + fileobj.url + '">');
+		}
+	},
+
+	submitPanel: function(form) {
+		var query = $(form).serialize();
+	},
+
+	insertAsset: function(asset) {
+		var id = $('.foroutput', asset).html();
+		if(this.assets[id].filetype && habari.media.output[this.assets[id].filetype]) {
+			habari.media.output[this.assets[id].filetype](id, this.assets[id]);
+		}
+		else {
+			habari.media.output.image(id, this.assets[id]);
+		}
 	}
 
 };
