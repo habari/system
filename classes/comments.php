@@ -225,7 +225,7 @@ class Comments extends ArrayObject
 			$result= true;
 			foreach ( $comments as $comment ) {
 				$result&= $comment->delete();
-				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
+				EventLog::log( 'Comment ' . $comment->id . ' deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
@@ -237,7 +237,7 @@ class Comments extends ArrayObject
 			$result= true;
 			foreach ( $comments as $comment ) {
 				$result&= $comment->delete();
-				EventLog::log( 'Comment deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
+				EventLog::log( 'Comment ' . $comment->id . ' deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
 			}
 		}
 		else {
@@ -304,8 +304,7 @@ class Comments extends ArrayObject
 	**/
 	public static function by_ip ( $ip= '' )
 	{
-		if ( ! $ip )
-		{
+		if ( ! $ip ) {
 			return false;
 		}
 		return self::get( array ( "ip" => $ip ) );
@@ -319,8 +318,7 @@ class Comments extends ArrayObject
 	**/
 	public static function by_url ( $url= '' )
 	{
-		if ( ! $url )
-		{
+		if ( ! $url ) {
 			return false;
 		}
 		return self::get( array( "url" => $url ) );
@@ -344,8 +342,7 @@ class Comments extends ArrayObject
 	**/
 	public static function by_slug ( $slug= '' )
 	{
-		if ( ! $slug )
-		{
+		if ( ! $slug ) {
 			return false;
 		}
 		return self::get( array( 'post_slug' => $slug, 'nolimit' => 1, 'orderby' => 'date ASC' ) );
@@ -457,10 +454,10 @@ class Comments extends ArrayObject
 		$result= true;
 		foreach ( $this as $c ) {
 			$result&= $c->delete();
+			EventLog::log( 'Comment ' . $c->id . ' deleted from ' . $c->post->title, 'info', 'comment', 'habari' );
 		}
 		// Clear ourselves.
 		$this->exchangeArray( array() );
-		EventLog::log( 'Comment deleted: ' . $this->id, 'info', 'comment', 'habari' );
 		return $result;
 	}
 	
@@ -487,8 +484,7 @@ class Comments extends ArrayObject
 	public static function count_by_name( $name= '', $status= Comment::STATUS_APPROVED )
 	{
 		$params= array ( 'name' => $name, 'count' => 'name' );
-		if ( FALSE !== $status )
-		{
+		if ( FALSE !== $status ) {
 			$params['status']= $status;
 		}
 		return self::get( $params );
@@ -504,8 +500,7 @@ class Comments extends ArrayObject
 	public static function count_by_email( $email= '', $status= Comment::STATUS_APPROVED )
 	{
 		$params= array( 'email' => $email, 'count' => 'email');
-		if ( FALSE !== $status )
-		{
+		if ( FALSE !== $status ) {
 			$params['status']= $status;
 		}
 		return self::get( $params );
@@ -521,8 +516,7 @@ class Comments extends ArrayObject
 	public static function count_by_url( $url= '', $status= Comment::STATUS_APPROVED )
 	{
 		$params= array( 'url' => $url, 'count' => 'url');
-		if ( FALSE !== $status )
-		{
+		if ( FALSE !== $status ) {
 			$params['status']= $status;
 		}
 		return self::get( $params );
@@ -537,8 +531,7 @@ class Comments extends ArrayObject
 	public static function count_by_ip( $ip= '', $status= Comment::STATUS_APPROVED )
 	{
 		$params= array( 'ip' => $ip, 'count' => 'ip');
-		if ( FALSE !== $status )
-		{
+		if ( FALSE !== $status ) {
 			$params['status']= $status;
 		}
 		return self::get( $params );
@@ -554,8 +547,7 @@ class Comments extends ArrayObject
 	public static function count_by_slug( $slug= '', $status= Comment::STATUS_APPROVED )
 	{
 		$params= array( 'post_slug' => $slug, 'count' => 'id');
-		if ( FALSE !== $status )
-		{
+		if ( FALSE !== $status ) {
 			$params['status']= $status;
 		}
 		return self::get( $params );
