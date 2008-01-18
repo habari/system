@@ -12,6 +12,7 @@ class FormUI
 	private $name;
 	public $controls= array();
 	private $success_callback;
+	private $success_callback_params = array();
 	private static $outpre = false;
 	private $has_user_options = false;
 
@@ -20,6 +21,8 @@ class FormUI
 		'show_form_on_success' => true,
 		'save_button' => true,
 		'ajax' => false,
+		'form_action' => '',
+		'on_submit' => '',
 	);
 	/**
 	 * Form UI constructor - create to build form UI.
@@ -49,7 +52,7 @@ class FormUI
 	public function get()
 	{
 		$forvalidation = false;
-		$showform = false;
+		$showform = true;
 		// Should we be validating?
 		if(isset($_POST['FormUI']) && $_POST['FormUI'] == $this->salted_name()) {
 			$validate= $this->validate();
@@ -65,7 +68,7 @@ class FormUI
 		$out = '';
 		if($showform) {
 			$out.= '
-				<form method="post" action="" class="FormUI">
+				<form method="post" action="'. $this->options['form_action'] .'" class="FormUI" onsubmit="'. $this->options['on_submit'] .'">
 				<input type="hidden" name="FormUI" value="' . $this->salted_name() . '">
 			';
 			$out.= $this->pre_out_controls();
@@ -195,7 +198,10 @@ class FormUI
 	 */
 	public function on_success( $callback )
 	{
+		$params = func_get_args();
+		$callback = array_shift($params);
 		$this->success_callback = $callback;
+		$this->success_callback_params = $params;
 	}
 
 	/**
@@ -206,11 +212,14 @@ class FormUI
 	{
 		$result= true;
 		if(isset($this->success_callback)) {
+			$params = $this->success_callback_params;
+			array_unshift($params, $this);
 			if(is_callable($this->success_callback)) {
-				$result= call_user_func($this->success_callback, $this);
+				$result= call_user_func_array($this->success_callback, $params);
 			}
 			else {
-				$result= Plugins::filter($this->success_callback, $result, $this);
+				array_unshift($params, $this->success_callback);
+				$result= call_user_func_array(array('Plugins', 'filter'), $params);
 			}
 		}
 		if($result) {
@@ -234,6 +243,18 @@ class FormUI
 	public function set_option( $option, $value )
 	{
 		$this->options[$option] = $value;
+	}
+
+	/**
+	 * Configure all the options necessary to make this form work inside a media bar panel
+	 */
+	public function media_panel()
+	{
+		$this->options['show_form_on_success'] = false;
+		//$this->options['save_button'] = false;
+		$this->options['ajax'] = true;
+		$this->options['form_action'] = URL::get('admin_ajax', array('context' => 'media_panel'));
+		$this->options['on_submit'] = 'habari.media.submitPanel();return false;';
 	}
 
 }
