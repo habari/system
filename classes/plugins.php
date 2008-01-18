@@ -251,6 +251,7 @@ class Plugins
 	 */
 	public static function id_from_file( $file )
 	{
+		$file = str_replace(array('\\', '/'), PATH_SEPARATOR, $file);
 		return sprintf( '%x', crc32( $file ) );
 	}
 
