@@ -649,6 +649,9 @@ class InstallHandler extends ActionHandler {
 				// the Habari block does not exist in this file
 				// so try to create it
 				$result= $this->write_htaccess( true );
+			} else {
+				// the Habari block exists
+				$result= true;
 			}
 		}
 		else {
