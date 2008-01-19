@@ -513,8 +513,7 @@ class Theme extends Pluggable
 			Plugins::act('theme_action', $action, $this, $user_filters);
 		}
 		else {
-			$return = false;
-			array_unshift($params, $function, $return, $this);
+			array_unshift($params, $function, $this);
 			return call_user_func_array(array('Plugins', 'theme'), $params);
 		}
 	}
