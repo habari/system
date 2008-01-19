@@ -123,31 +123,36 @@ class Plugins
 	 */
 	public static function theme()
 	{
-		list( $hookname, $return ) = func_get_args();
+		$filter_args = func_get_args();
+		$hookname = array_shift($filter_args);
 
 		$filtersets = array();
-		if(isset(self::$hooks['theme'][$hookname])) {
-			$filtersets[] = self::$hooks['theme'][$hookname];
-		}
-		if(isset(self::$hooks['filter']['theme_call_' . $hookname])) {
-			$filtersets[] = self::$hooks['filter']['theme_call_' . $hookname];
-		}
-		if(count($filtersets) == 0 ) {
-			return $return;
+		if(!isset(self::$hooks['theme'][$hookname])) {
+			return '';
 		}
 
-		$filterargs = array_slice(func_get_args(), 2);
-		foreach( $filtersets as $set ) {
-			foreach ( $set as $priority ) {
-				foreach ( $priority as $filter ) {
-					// $filter is an array of object reference and method name
-					$callargs = $filterargs;
-					array_unshift( $callargs, $return );
-					$return = call_user_func_array( $filter, $callargs );
+		$return = array();
+		foreach ( self::$hooks['theme'][$hookname] as $priority ) {
+			foreach ( $priority as $filter ) {
+				// $filter is an array of object reference and method name
+				$callargs = $filter_args;
+				if(is_array($filter)) {
+					if(is_string($filter[0])) {
+						$module = $filter[0];
+					}
+					else {
+						$module = get_class($filter[0]);
+					}
 				}
+				else {
+					$module = $filter;
+				}
+				$return[$module] = call_user_func_array( $filter, $callargs );
 			}
 		}
-		return $return;
+		array_unshift($filter_args, 'theme_call_' . $hookname, $return);
+		$result = call_user_func_array(array('Plugins', 'filter'), $filter_args);
+		return implode('', $result);
 	}
 
 	/**
