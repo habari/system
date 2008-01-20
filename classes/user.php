@@ -110,6 +110,7 @@ class User extends QueryRecord
 			return;
 		}
 		Plugins::act('user_insert_before', $this);
+		$this->exclude_fields('id');
 		$result= parent::insertRecord( DB::table('users') );
 		$this->fields['id'] = DB::last_insert_id(); // Make sure the id is set in the user object to match the row id
 		$this->info->set_key( $this->id );
