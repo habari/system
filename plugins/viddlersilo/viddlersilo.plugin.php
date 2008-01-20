@@ -769,8 +769,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 			<p><?php
 			$user= Options::get( 'viddlersilo:username_' . User::identify()->id );
 			$pass= Options::get( 'viddlersilo:password_' . User::identify()->id );
-			$test= new Phpviddler();
-			$auth= $test->user_authenticate( array( 'user' => $user, 'password' => $pass, 'get_record_token' => 1 ) );
+			$auth= $this->viddler->user_authenticate( array( 'user' => $user, 'password' => $pass, 'get_record_token' => 1 ) );
 			$sid= new SimpleXMLElement( $auth );
 			$mt= $test->video_getrecordtoken( $sid->sessionid );
 			$token= new SimpleXMLElement( $mt );
@@ -885,6 +884,122 @@ habari.media.output.viddler = function(index, fileobj) {
 </script>
 HEADER;
 	}
+
+	/**
+	 * Produce a link for the media control bar that causes a specific panel to be displayed
+	 *
+	 * @param string $path The path to pass
+	 * @param string $path The panel to display
+	 * @param string $title The text to use for the link in the control bar
+	 * @return string The link to create
+	 */
+	public function link_panel( $path, $panel, $title )
+	{
+		return '<a href="#" onclick="habari.media.showpanel(\''.$path.'\', \''.$panel.'\');return false;">' . $title . '</a>';
+	}
+
+	/**
+	 * Provide controls for the media control bar
+	 *
+	 * @param array $controls Incoming controls from other plugins
+	 * @param MediaSilo $silo An instance of a MediaSilo
+	 * @param string $path The path to get controls for
+	 * @param string $panelname The name of the requested panel, if none then emptystring
+	 * @return array The altered $controls array with new (or removed) controls
+	 *
+	 * @todo This should really use FormUI, but FormUI needs a way to submit forms via ajax
+	 */
+	public function filter_media_controls( $controls, $silo, $path, $panelname )
+	{
+		$class = __CLASS__;
+		if($silo instanceof $class) {
+			if(User::identify()->can('upload_viddler')) {
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', 'Upload');
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'record', 'Record');
+			}
+		}
+		return $controls;
+	}
+
+	/**
+	 * Provide requested media panels for this plugin
+	 *
+	 * @param string $panel The HTML content of the panel to be output in the media bar
+	 * @param MediaSilo $silo The silo for which the panel was requested
+	 * @param string $path The path within the silo (silo root omitted) for which the panel was requested
+	 * @param string $panelname The name of the requested panel
+	 * @return string The modified $panel to contain the HTML output for the requested panel
+	 *
+	 * @todo Move the uploaded file from the temporary location to the location indicated by the path field.
+	 */
+	public function filter_media_panels( $panel, $silo, $path, $panelname)
+	{
+		$class = __CLASS__;
+		if($silo instanceof $class) {
+			switch($panelname) {
+				case 'record':
+					$user = Options::get( 'viddlersilo:username_' . User::identify()->id );
+					$pass = Options::get( 'viddlersilo:password_' . User::identify()->id );
+					$auth = $this->viddler->user_authenticate( array( 'user' => $user, 'password' => $pass, 'get_record_token' => 1, 'record_token' => 1 ) );
+					$sid = new SimpleXMLElement( $auth );
+					$rt = $sid->record_token;
+					$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\">";
+					$panel .= $this->viddler->video_getrecordembed( $rt );
+					$panel .= '</div>';
+					break;
+				case 'upload':
+					if(isset($_FILES['file'])) {
+						$size = Utils::human_size($_FILES['file']['size']);
+						$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>File Uploaded: {$_FILES['file']['name']} ($size)</p>";
+
+						$path = self::SILO_NAME . '/' . preg_replace('%\.{2,}%', '.', $path). '/' . $_FILES['file']['name'];
+						$asset = new MediaAsset($path, false);
+						$asset->upload($_FILES['file']);
+
+						if($asset->put()) {
+							$panel .= '<p>File added successfully.</p>';
+						}
+						else {
+							$panel .= '<p>File could not be added to the silo.</p>';
+						}
+
+						$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname($path) . '\');">Browse the current silo path.</a></p></div>';
+					}
+					else {
+
+						$fullpath = self::SILO_NAME . '/' . $path;
+						$form_action = URL::get('admin_ajax', array('context' => 'media_panel'));
+						$panel .= <<< UPLOAD_FORM
+<form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="{$form_action}" class="span-10" style="margin:0px auto;text-align: center">
+	<p style="padding-top:30px;">Upload to: <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
+	<p><input type="file" name="file"><input type="submit" name="upload" value="Upload">
+	<input type="hidden" name="path" value="{$fullpath}">
+	<input type="hidden" name="panel" value="{$panelname}">
+	</p>
+</form>
+<iframe id="simple_upload_frame" name="simple_upload_frame" style="width:1px;height:1px;" onload="simple_uploaded();"></iframe>
+<script type="text/javascript">
+var responsedata;
+function simple_uploaded() {
+	if(!$('#simple_upload_frame')[0].contentWindow) return;
+	var response = $($('#simple_upload_frame')[0].contentWindow.document.body).text();
+	if(response) {
+		eval('responsedata = ' + response);
+		window.setTimeout(simple_uploaded_complete, 500);
+	}
+}
+function simple_uploaded_complete() {
+	habari.media.jsonpanel(responsedata);
+}
+</script>
+UPLOAD_FORM;
+
+				}
+			}
+		}
+		return $panel;
+	}
+
 }
 
 /*
