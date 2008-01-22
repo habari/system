@@ -89,7 +89,6 @@ class CronJob extends QueryRecord
 			$result = @call_user_func( $this->callback, $paramarray );
 		}
 		else {
-			Error::raise('function does not exist: '. $this->callback);
 			$result = true;
 			$result = Plugins::filter( $this->callback, $result, $paramarray );
 		}
