@@ -85,10 +85,11 @@ class CronJob extends QueryRecord
 	{
 		$paramarray = array_merge( array( 'now' => $this->now ), $this->to_array() );
 		
-		if ( function_exists( $this->callback ) ) {
+		if ( is_callable( $this->callback ) ) {
 			$result = @call_user_func( $this->callback, $paramarray );
 		}
 		else {
+			Error::raise('function does not exist: '. $this->callback);
 			$result = true;
 			$result = Plugins::filter( $this->callback, $result, $paramarray );
 		}
@@ -96,13 +97,11 @@ class CronJob extends QueryRecord
 		if ( $result === false ) {
 			$this->result = 'failed';
 		}
-		else
-		{
+		else {
 			$this->result = 'executed';
 			
 			// it ran successfully, so check if it's time to delete it.
-			if ( $this->end_time && ( $this->now >= $this->end_time ) )
-			{
+			if ( $this->end_time && ( $this->now >= $this->end_time ) ) {
 				$this->delete();
 				return;
 			}
