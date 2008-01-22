@@ -185,6 +185,15 @@ class DatabaseConnection
 	 */
 	public function exec( $query )
 	{
+		// Allow plugins to modify the query
+		$query = Plugins::filter( 'db_exec', $query, $args );
+		// Translate the query for the database engine
+		$query = $this->sql_t( $query, $args );
+		// Replace braced table names in the query with their prefixed counterparts
+		$query = self::filter_tables( $query );
+		// Allow plugins to modify the query after it has been processed
+		$query = Plugins::filter( 'db_exec_postprocess', $query, $args );
+
 		return ( $this->pdo->exec( $query ) !== FALSE );
 	}
 
