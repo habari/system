@@ -40,13 +40,20 @@ class FeedbackHandler extends ActionHandler
 			Session::add_to_set('comment', $this->handler_vars['content'], 'content');
 			// now send them back to the form
 			Utils::redirect( $post->permalink . '#respond' );
-			die();
+			exit();
 		}
 
 		if ( $post->info->comments_disabled ) {
 			// comments are disabled, so let's just send
 			// them back to the post's permalink
+			Session::error( _t( 'Comments on this post are disabled!' ) );
 			Utils::redirect( $post->permalink );
+			exit();
+		}
+
+		/* Sanitize data */
+		foreach ( array( 'name', 'email', 'url', 'content' ) as $k ) {
+			$this->handler_vars[$k]= InputFilter::filter( $this->handler_vars[$k] );
 		}
 
 		/* Sanitize the URL */
@@ -74,20 +81,17 @@ class FeedbackHandler extends ActionHandler
 		}
 		$this->handler_vars['url']= $url;
 
-		/* Sanitize the content */
-		$this->handler_vars['content']= InputFilter::filter( $this->handler_vars['content'] );
-
 		/* Create comment object*/
 		$comment= new Comment( array(
-			'post_id'	=>	$this->handler_vars['id'],
-			'name'		=>	$this->handler_vars['name'],
-			'email'		=>	$this->handler_vars['email'],
-			'url'		=>	$this->handler_vars['url'],
-			'ip'		=>	ip2long( $_SERVER['REMOTE_ADDR'] ),
-			'content'	=>	$this->handler_vars['content'],
-			'status'	=>	Comment::STATUS_UNAPPROVED,
-			'date'		=>	date( 'Y-m-d H:i:s' ),
-			'type' 		=> 	Comment::COMMENT,
+			'post_id'	=> $this->handler_vars['id'],
+			'name' => $this->handler_vars['name'],
+			'email' => $this->handler_vars['email'],
+			'url' => $this->handler_vars['url'],
+			'ip' => ip2long( $_SERVER['REMOTE_ADDR'] ),
+			'content'	=> $this->handler_vars['content'],
+			'status' =>	Comment::STATUS_UNAPPROVED,
+			'date' =>	date( 'Y-m-d H:i:s' ),
+			'type' => Comment::COMMENT,
 	 	) );
 
 		// Should this really be here or in a default filter?
