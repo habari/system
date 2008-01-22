@@ -846,6 +846,11 @@ class Utils
 
 		return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
 	}
+	
+	public static function truncate_log() {
+		// Truncate the log table
+		return DB::exec('DELETE FROM {log} WHERE `timestamp` < DATE_SUB(NOW(), INTERVAL 14 DAY)');
+	}
 
 }
 ?>
