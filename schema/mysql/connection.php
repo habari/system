@@ -5,24 +5,24 @@
  * @package Habari
  */
 
-class MySQLConnection extends DatabaseConnection 
-{	
-	/** 
-	 * Database specific SQL translation function, loosely modelled on the 
-	 * internationalization _t() function. 
+class MySQLConnection extends DatabaseConnection
+{
+	/**
+	 * Database specific SQL translation function, loosely modelled on the
+	 * internationalization _t() function.
 	 * Call with a database independent SQL string and it will be translated
 	 * to a MySQL specific SQL string.
-	 * 
+	 *
 	 * @param $sql database independent SQL
 	 * @return string translated SQL string
 	 * @todo Actually implement this.
 	 */
-	function sql_t( $sql ) 
+	function sql_t( $sql )
 	{
 		return $sql;
 	}
 
-	/** 
+	/**
 	 * automatic diffing function - used for determining required database upgrades
 	 * based on Owen Winkler's microwiki upgrade function
 	 *
@@ -32,7 +32,7 @@ class MySQLConnection extends DatabaseConnection
 	 * @param boolean $doinserts (optional) Execute all insert queries found, default=false
 	 * @return  array list of updates made
 	 */
-	function dbdelta( $queries, $execute= true, $silent= true, $doinserts= false ) 
+	function dbdelta( $queries, $execute= true, $silent= true, $doinserts= false )
 	{
 		if( !is_array($queries) ) {
 			$queries = explode( ';', $queries );
@@ -103,7 +103,7 @@ class MySQLConnection extends DatabaseConnection
 							// Use default field sizes
 							$field_default_names = array('/(?'.'>\bint\s*)(?!\(.*$)/i','/(?'.'>smallint\s*)(?!\(.*$)/i','/(?'.'>tinyint\s*)(?!\(.*$)/i','/(?'.'>bigint\s*)(?!\(.*$)/i');
 							$field_sized_names = array('int(10) ','smallint(5) ','tinyint(3) ','bigint(20) ');
-							$fieldtype = preg_replace($field_default_names, $field_sized_names, $fieldtype);							
+							$fieldtype = preg_replace($field_default_names, $field_sized_names, $fieldtype);
 							if(strtolower($tablefield->Type) != strtolower($fieldtype)) {
 								$cqueries[] = "ALTER TABLE {$table} CHANGE COLUMN {$tablefield->Field} " . $cfields[strtolower($tablefield->Field)];
 								$for_update[$table.'.'.$tablefield->Field] = "Changed type of {$table}.{$tablefield->Field} from {$tablefield->Type} to {$fieldtype}";
@@ -205,6 +205,18 @@ class MySQLConnection extends DatabaseConnection
 			}
 		}
 		return $for_update;
-	}	
+	}
+
+	/**
+	 * Upgrade data in the database between database revisions
+	 *
+	 * @param integer $version Optional version to upgrade to
+	 */
+	public function upgrade( $old_version )
+	{
+		switch(true) {
+			case $old_version < 1170:  // An example of how to add things to the database at a certain revision.  No need to break
+		}
+	}
 }
 ?>

@@ -186,13 +186,13 @@ class DatabaseConnection
 	public function exec( $query )
 	{
 		// Allow plugins to modify the query
-		$query = Plugins::filter( 'db_exec', $query, $args );
+		$query = Plugins::filter( 'db_exec', $query, array() );
 		// Translate the query for the database engine
-		$query = $this->sql_t( $query, $args );
+		$query = $this->sql_t( $query, array() );
 		// Replace braced table names in the query with their prefixed counterparts
 		$query = self::filter_tables( $query );
 		// Allow plugins to modify the query after it has been processed
-		$query = Plugins::filter( 'db_exec_postprocess', $query, $args );
+		$query = Plugins::filter( 'db_exec_postprocess', $query, array() );
 
 		return ( $this->pdo->exec( $query ) !== FALSE );
 	}
@@ -646,6 +646,14 @@ class DatabaseConnection
 	 */
 	public function dbdelta( $queries, $execute = true, $silent = true ){}
 
+
+	/**
+	 * Updates the content of the database between versions.
+	 * Implemented in child classes.
+	 *
+	 * @param integer $old_version The old Version::DB_VERSION
+	 */
+	public function upgrade( $old_version ) {}
 
 	/**
 	 * Translates the query for the current database engine
