@@ -33,7 +33,8 @@ class AdminHandler extends ActionHandler
 	public function act_admin()
 	{
 		$page= ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
-		$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$this->set_admin_template_vars( $this->theme );
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
@@ -56,7 +57,7 @@ class AdminHandler extends ActionHandler
 					exit;
 				}
 				// If a get_ function doesn't exist, just load the template and display it
-				$files= Utils::glob( Site::get_dir( 'admin_theme', TRUE ) . '*.php' );
+				$files= Utils::glob( $theme_dir . '*.php' );
 				$filekeys= array_map( create_function( '$a', 'return basename( $a, \'.php\' );' ), $files );
 				$map= array_combine( $filekeys, $files );
 				if ( isset( $map[$page] ) ) {
@@ -271,7 +272,7 @@ class AdminHandler extends ActionHandler
 									$post->user_id= $newauthor;
 									$post->update();
 								}
-							} 
+							}
 							else {
 								// delete posts
 								foreach ( $posts as $post ) {
