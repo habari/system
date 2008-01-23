@@ -471,6 +471,8 @@ class AdminHandler extends ActionHandler
 		if ( isset( $mass_spam_delete ) && $search_status == Comment::STATUS_SPAM ) {
 			// Delete all comments that have the spam status.
 			Comments::delete_by_status( Comment::STATUS_SPAM );
+			// let's optimize the table
+			$result= DB::query('OPTIMIZE TABLE {comments}');
 			Session::notice( _t( 'Deleted all spam comments' ) );
 			Utils::redirect();
 			die();
