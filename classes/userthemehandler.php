@@ -51,6 +51,9 @@ class UserThemeHandler extends ActionHandler
 		}
 		catch(exception $e) {
 			EventLog::log($e->getMessage() . ' in ' . $e->getFile() . ' line ' . $e->getLine() , 'error', 'theme', 'habari', print_r($e, 1) );
+			if(DEBUG) {
+				Utils::debug($e);
+			}
 		}
 		$this->theme->$after_action_method();
 	}

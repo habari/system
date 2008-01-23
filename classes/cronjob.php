@@ -12,10 +12,10 @@ class CronJob extends QueryRecord
 	const CRON_THEME = 2;
 	const CRON_PLUGIN = 4;
 	const CRON_CUSTOM = 8;
-	
+
 	private $now;
-	
-	
+
+
 	/**
 	 * Returns the defined database columns for a cronjob.
 	 * @return array Array of columns in the crontab table
@@ -33,10 +33,11 @@ class CronJob extends QueryRecord
 			'end_time' => '',
 			'result' => '',
 			'cron_class' => self::CRON_CUSTOM,
-			'description' => ''
+			'description' => '',
+			'notify' => '',
 		);
 	}
-	
+
 	/**
 	 * Constructor for the CronJob class.
 	 * @param array $paramarray an associative array or querystring of initial field values
@@ -44,28 +45,28 @@ class CronJob extends QueryRecord
 	public function __construct( $paramarray = array() )
 	{
 		$this->now = time();
-		
+
 		// Defaults
 		$this->fields = array_merge(
 			self::default_fields(),
-			$this->fields 
+			$this->fields
 		);
-		
+
 		// maybe serialize the callback
 		$paramarray = Utils::get_params( $paramarray );
-		if ( isset($paramarray['callback']) 
+		if ( isset($paramarray['callback'])
 			&& (
-			 	is_array( $paramarray['callback'] ) 
-				|| is_object( $paramarray['callback'] ) 
-			) 
+			 	is_array( $paramarray['callback'] )
+				|| is_object( $paramarray['callback'] )
+			)
 		) {
 			$paramarray['callback'] = serialize( $paramarray['callback'] );
 		}
-		
+
 		parent::__construct( $paramarray );
 		$this->exclude_fields( 'cron_id' );
 	}
-	
+
 	/**
 	 * Runs this job.
 	 *
@@ -84,7 +85,7 @@ class CronJob extends QueryRecord
 	public function execute()
 	{
 		$paramarray = array_merge( array( 'now' => $this->now ), $this->to_array() );
-		
+
 		if ( is_callable( $this->callback ) ) {
 			$result = @call_user_func( $this->callback, $paramarray );
 		}
@@ -92,25 +93,25 @@ class CronJob extends QueryRecord
 			$result = true;
 			$result = Plugins::filter( $this->callback, $result, $paramarray );
 		}
-		
+
 		if ( $result === false ) {
 			$this->result = 'failed';
 		}
 		else {
 			$this->result = 'executed';
-			
+
 			// it ran successfully, so check if it's time to delete it.
 			if ( $this->end_time && ( $this->now >= $this->end_time ) ) {
 				$this->delete();
 				return;
 			}
 		}
-		
+
 		$this->last_run = $this->now;
 		$this->next_run = $this->last_run + $this->increment;
 		$this->update();
 	}
-	
+
 	/**
 	 * Magic property setter
 	 * Serializes the callback if needed.
@@ -122,7 +123,7 @@ class CronJob extends QueryRecord
 		}
 		return parent::__set( $name, $value );
 	}
-	
+
 	/**
 	 * Magic property getter
 	 * Unserializes the callback if called.
@@ -136,8 +137,8 @@ class CronJob extends QueryRecord
 		}
 		return parent::__get( $name );
 	}
-	
-	
+
+
 	/**
 	 * Saves a new cron job to the crontab table
 	 */
@@ -145,7 +146,7 @@ class CronJob extends QueryRecord
 	{
 		return parent::insertRecord( DB::table('crontab') );
 	}
-	
+
 	/**
 	 * Updates an existing cron job to the crontab table
 	 */
@@ -153,7 +154,7 @@ class CronJob extends QueryRecord
 	{
 		return parent::updateRecord( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
 	}
-	
+
 	/**
 	 * Deletes an existing cron job
 	 */

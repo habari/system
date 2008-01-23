@@ -641,7 +641,7 @@ class InstallHandler extends ActionHandler {
 			// @TODO: add support for IIS and lighttpd rewrites
 			return true;
 		}
-		
+
 		$result= false;
 		if ( file_exists( HABARI_PATH . '/.htaccess') ) {
 			$htaccess= file_get_contents( HABARI_PATH . '/.htaccess');
@@ -680,7 +680,7 @@ class InstallHandler extends ActionHandler {
 	 * @param bool whether to remove and re-create any existing Habari block
 	 * @param bool whether to try a rewritebase in the .htaccess
 	**/
-	public function write_htaccess( $exists = FALSE, $update = FALSE, $rewritebase = FALSE )
+	public function write_htaccess( $exists = FALSE, $update = FALSE, $rewritebase = TRUE )
 	{
 		$htaccess = $this->htaccess();
 		if($rewritebase) {
@@ -726,10 +726,15 @@ class InstallHandler extends ActionHandler {
 		return true;
 	}
 
+	/**
+	 * Upgrade the database when the database version stored is lower than the one in source
+	 * @todo Make more db-independent
+	 */
 	public function upgrade_db()
 	{
 		global $db_connection;
 
+		// This database-specific code needs to be moved into the schema-specific functions
 		list( $schema, $remainder )= explode( ':', $db_connection['connection_string'] );
 		switch( $schema ) {
 		case 'sqlite':
@@ -740,8 +745,22 @@ class InstallHandler extends ActionHandler {
 			list($discard, $db_name)= explode('=', $name);
 			break;
 		}
+
+		// Get the queries for this database and apply the changes to the structure
 		$queries= $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
 		DB::dbdelta($queries);
+
+		// Apply data changes to the database based on version, call the db-specific upgrades, too.
+		$version = Options::get('db_version');
+		switch(true) {
+			case $version < 1310:
+				// Auto-truncate the log table
+				if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
+					CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), 'Truncate the log table' );
+				}
+		}
+		DB::upgrade( $version );
+
 		Version::save_dbversion();
 	}
 

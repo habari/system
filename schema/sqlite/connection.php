@@ -21,14 +21,14 @@ class SQLiteConnection extends DatabaseConnection
 		$sql = preg_replace_callback('%concat\(([^)]+?)\)%i', array(&$this, 'replace_concat'), $sql);
 		return $sql;
 	}
-	
+
 	/**
 	 * Replaces the MySQL CONCAT function with SQLite-compatible statements
 	 * @todo needs work, kind of sucky conversion
 	 * @param array $matches Matches from the regex in sql_t()
 	 * @return string The replacement for the MySQL SQL
 	 * @see SQLiteConnection::sql_t()
-	 */	 	 
+	 */
 	function replace_concat( $matches )
 	{
 		$innards = explode(',', $matches[1]);
@@ -70,6 +70,7 @@ class SQLiteConnection extends DatabaseConnection
 		$cqueries = array();
 		$iqueries = array();
 		$for_update = array();
+		$allqueries = array();
 
 		foreach($queries as $qry) {
 			if(preg_match("|CREATE TABLE ([^ ]*)|", $qry, $matches)) {
@@ -87,11 +88,26 @@ class SQLiteConnection extends DatabaseConnection
 			}
 		}
 
-		if( $execute ) {
-			$allqueries = $cqueries;
-			if( $doinserts ) {
-				$allqueries = array_merge($allqueries, $iqueries);
+		$tables = $this->get_column("SELECT name FROM sqlite_master WHERE type = 'table';");
+
+		foreach($cqueries as $tablename => $query) {
+			if(in_array($tablename, $tables)) {
+				$sql = $this->get_value("SELECT sql FROM sqlite_master WHERE type = 'table' AND name='{" . $tablename . "}';");
+				$sql = preg_replace('%\s+%', ' ', $sql) . ';';
+				$query = preg_replace('%\s+%', ' ', $query);
+				if($sql != $query) {
+					$allqueries[] = 'ALTER TABLE {' . $tablename . '} RENAME TO {' . $tablename . '}__temp;';
+					$allqueries[] = $query;
+					$allqueries[] = 'INSERT INTO {' . $tablename . '} SELECT * FROM {' . $tablename . '}__temp;';
+					$allqueries[] = 'DROP TABLE {' . $tablename . '}__temp;';
+				}
 			}
+			else {
+				$allqueries[] = $query;
+			}
+		}
+
+		if( $execute ) {
 			foreach($allqueries as $query) {
 				if(!$this->query($query)) {
 					$this->get_error(true);
@@ -101,6 +117,18 @@ class SQLiteConnection extends DatabaseConnection
 		}
 
 		return $allqueries;
+	}
+
+	/**
+	 * Upgrade data in the database between database revisions
+	 *
+	 * @param integer $version Optional version to upgrade to
+	 */
+	public function upgrade( $old_version )
+	{
+		switch(true) {
+			case $old_version < 1170:  // An example of how to add things to the database at a certain revision.  No need to break
+		}
 	}
 
 }
