@@ -2,51 +2,55 @@
 
 /**
  * Contains error-related functions and Habari's error handler.
- *  
+ *
  * @package Habari
- **/  
+ **/
 class Error extends Exception
 {
 	protected $message= '';
 
 	/**
-	 * function __construct
-	 * 
-	 * Constructor for the Error class, used to initialize the instance.
-	 * @param string The message that describes the error	 
-	 */
-	public function __construct( $error_message, $severity = E_USER_ERROR)
-	{
-		$this->message= $error_message;
-		if( $severity == E_USER_ERROR ) {
-			$this->out();
-			die();
-		}
-	}
-	
-	/**
 	 * function handle_errors
-	 * 
+	 *
 	 * Configures the Error class to handle all errors.
-	 */	 	 	 	
+	 */
 	public static function handle_errors()
 	{
 		set_error_handler( array( 'Error', 'error_handler' ) );
 		set_exception_handler( array( 'Error', 'exception_handler' ) );
 	}
-	
+
 	/**
 	 * Used to handle all uncaught exceptions.
 	 */
 	public static function exception_handler( $exception )
 	{
-		printf( "<pre>\n<b>Uncaught Exception:</b> <i>%s: %s</i>\n</pre>\n",
-			get_class( $exception ), $exception->getMessage() );
+		printf(
+			"<pre class=\"error\">\n<b>%s:</b> %s\n",
+			get_class( $exception ),
+			$exception->getMessage()
+		);
+		$trace = $exception->getTrace();
+		do {
+			$details = current( $trace );
+			if( !isset( $details['class'] ) || ( isset( $details['class'] ) && $details['class'] != 'Error' ) ) {
+				$details = current($trace);
+				break;
+			}
+		} while( next( $trace ) );
+		if( isset( $details ) ) {
+			printf(
+				"%s : Line %s",
+				$details['file'],
+				$details['line']
+			);
+		}
+		print "</pre>\n";
 		if ( DEBUG ) {
 			self::print_backtrace( $exception->getTrace() );
 		}
 	}
-	
+
 	/**
 	 * Used to handle all PHP errors after Error::handle_errors() is called.
 	 */
@@ -55,7 +59,7 @@ class Error extends Exception
 		if ( ( $errno & error_reporting() ) === 0 ) {
 			return;
 		}
-		
+
 		// Don't be fooled, we can't actually handle most of these.
 		$error_names= array(
 			E_ERROR => 'Error',
@@ -72,14 +76,14 @@ class Error extends Exception
 			E_STRICT => 'Strict Notice',
 			E_RECOVERABLE_ERROR => 'Recoverable Error',
 		);
-		
+
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
 			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
-		
-		throw new Exception($errstr);
+
+		throw new Error($errstr);
 	}
-	
+
 	private static function print_backtrace( $trace= null )
 	{
 		if ( !isset($trace) )
@@ -94,7 +98,7 @@ class Error extends Exception
 			if ( strpos( $a['file'], HABARI_PATH ) === 0 ) {
 				$a['file']= substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
-		
+
 			$args= array();
 			foreach ( $a['args'] as $arg ) {
 				$args[]= htmlentities( str_replace(
@@ -108,18 +112,18 @@ class Error extends Exception
 			if ( strlen( $argstr ) > 1024 ) {
 				$argstr= substr( $argstr, 0, 1021 ) . '...';
 			}
-				
+
 			printf("#%d in <b>%s</b>:<b>%d</b>:\n  <b>%s</b>(%s)\n",
 				$n, $a['file'], $a['line'], $a['class'].$a['type'].$a['function'],
 				$argstr
 			);
 		}
 		print "</pre>\n";
-	}		
-	
+	}
+
 	/**
 	 * function out
-	 * 
+	 *
 	 * Outputs the error message in plain text
 	 */
 	public function out()
@@ -131,36 +135,36 @@ class Error extends Exception
 			echo var_export($this->message, TRUE) . "\n";
 		}
 	}
-	
+
 	/**
 	 * function get
-	 * 
+	 *
 	 * Returns the error message in plain text
 	 */
 	public function get()
 	{
 		return $this->message;
 	}
-	
+
 	/**
 	 * function raise
-	 * 
+	 *
 	 * Convenience method to create and return a new Error object
 	 */
 	public static function raise( $error_message, $severity = E_USER_ERROR )
 	{
 		return new Error( $error_message, $severity );
 	}
-	
+
 	/**
 	 * function is_error
-	 * 
+	 *
 	 * Returns true if the argument is an Error instance
 	 */
 	public static function is_error($obj)
 	{
 		return ($obj instanceof Error);
-	}	 	 	 		 	
+	}
 
 }
 

@@ -33,7 +33,12 @@ class UserThemeHandler extends ActionHandler
 		$this->theme->assign('matched_rule', URL::get_matched_rule());
 		$request = new StdClass();
 		foreach(RewriteRules::get_active() as $rule) {
-			$request->{$rule->name} = ($rule->name == URL::get_matched_rule()->name);
+			if(URL::get_matched_rule()){
+				$request->{$rule->name} = ($rule->name == URL::get_matched_rule()->name);
+			}
+			else {
+				$request->{$rule->name} = ($rule->name == 'display_404');
+			}
 		}
 		$this->theme->assign('request', $request);
 
