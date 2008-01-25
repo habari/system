@@ -728,6 +728,8 @@ hr {
 	color: #999;
 }
 
+.draft { background: #FFFFCC; }
+
 .alert {
 	background: #FFF6BF;
 	border-top: 2px solid #FFD324;
