@@ -97,7 +97,7 @@ class Undelete extends Plugin
 	public function filter_plugin_config( $actions, $plugin_id )
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
-			$actions[]= _('Configure');
+			$actions[]= _t( 'Configure' );
 		}
 		return $actions;
 	}
@@ -106,9 +106,9 @@ class Undelete extends Plugin
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
 			switch ( $action ) {
-			case _('Configure'):
-				$ui = new FormUI( strtolower( get_class( $this ) ) );
-				$head_code = $ui->add( 'text', 'style', 'Style declaration for deleted content:', Options::get('undelete:style') );
+			case _t( 'Configure' ):
+				$ui= new FormUI( strtolower( get_class( $this ) ) );
+				$head_code= $ui->add( 'text', 'style', 'Style declaration for deleted content:', Options::get( 'undelete:style' ) );
 				$ui->on_success( array( $this, 'updated_config' ) );
 				$ui->out();
 				break;
@@ -128,7 +128,7 @@ class Undelete extends Plugin
 		// only show the style to logged in users
 		if ( User::identify() !== false ) {
 			echo '<style type="text/css">';
-			Options::out('undelete:style');
+			Options::out( 'undelete:style' );
 			echo '</style>';
 		}
 	}
