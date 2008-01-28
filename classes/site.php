@@ -134,13 +134,15 @@ class Site
 					$port= $_SERVER['SERVER_PORT'];
 				}
 				$portpart= '';
-				if ( ( $port != 80 ) && ( $port != 443 ) ) {
+				$host= $_SERVER['HTTP_HOST'];
+				// if the port isn't a standard port, and isn't part of $host already, add it
+				if ( ( $port != 80 ) && ( $port != 443 ) && ( substr($host, strlen($host) - strlen($port) ) != $port ) ) {
 					$portpart= ':' . $port;
 				}
 				if ( isset( $_SERVER['HTTPS'] ) ) {
 					$protocol= 'https';
 				}
-				$url= $protocol . '://' . $_SERVER['HTTP_HOST'] . $portpart;
+				$url= $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
 				$url= Site::get_url( 'host' );
