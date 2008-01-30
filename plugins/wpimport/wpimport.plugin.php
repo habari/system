@@ -267,8 +267,12 @@ WP_IMPORT_STAGE2;
 				LIMIT {$min}, " . IMPORT_BATCH
 				, array(), 'Post' );
 
-			$post_map= array();
+			$post_map= DB::get_column( "SELECT value FROM {postinfo} WHERE name='wp_id';");
 			foreach( $posts as $post ) {
+
+				if(in_array($post->id, $post_map)) {
+					continue;
+				}
 
 				if ( $has_taxonomy ) {
 					// Importing from >= WP2.3
@@ -449,23 +453,32 @@ WP_IMPORT_AJAX2;
 			$usercount = 0;
 			_e('<p>Importing users...</p>');
 			foreach($wp_users as $user) {
-				try {
-					$user->info->wp_id = $user->wp_id;
-					if($user->wp_url != '') {
-						$user->info->url = $user->wp_url;
-					}
-					// This should probably remain commented until we implement ACL more,
-					// or any imported user will be able to log in and edit stuff
-					//$user->password = '{MD5}' . $user->password;
-					$user->exclude_fields(array('wp_id', 'wp_url'));
-					$user->insert();
-					$usercount++;
+				$habari_user = User::get_by_name($user->username);
+				// If username exists
+				if($habari_user instanceof User) {
+					$habari_user->info->wp_id = $user->wp_id;
+					$habari_user->info->url = $user->wp_url;
+					$habari_user->update();
 				}
-				catch( Exception $e ) {
-					EventLog::log($e->getMessage(), 'err', null, null, print_r(array($user, $e), 1));
-					$errors = Options::get('import_errors');
-					$errors[] = $user->username . ' : ' . $e->getMessage();
-					Options::set('import_errors', $errors);
+				else {
+					try {
+						$user->info->wp_id = $user->wp_id;
+						if($user->wp_url != '') {
+							$user->info->url = $user->wp_url;
+						}
+						// This should probably remain commented until we implement ACL more,
+						// or any imported user will be able to log in and edit stuff
+						//$user->password = '{MD5}' . $user->password;
+						$user->exclude_fields(array('wp_id', 'wp_url'));
+						$user->insert();
+						$usercount++;
+					}
+					catch( Exception $e ) {
+						EventLog::log($e->getMessage(), 'err', null, null, print_r(array($user, $e), 1));
+						$errors = Options::get('import_errors');
+						$errors[] = $user->username . ' : ' . $e->getMessage();
+						Options::set('import_errors', $errors);
+					}
 				}
 			}
 			$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
