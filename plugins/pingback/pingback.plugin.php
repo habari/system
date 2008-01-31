@@ -6,12 +6,14 @@
  * @package Habari
  */
 
-class Pingback extends Plugin {
+class Pingback extends Plugin
+{
 
 	/**
 	 * Provide plugin info to the system
 	 */
-	public function info() {
+	public function info()
+	{
 		return array(
 			'name' => 'Pingback',
 			'version' => '1.0',
@@ -27,7 +29,8 @@ class Pingback extends Plugin {
 	/**
 	 * Register the Pingback event type with the event log
 	 */
-	public function action_plugin_activation( $file ) {
+	public function action_plugin_activation( $file )
+	{
 		if ( realpath( $file ) == __FILE__ ) {
 			EventLog::register_type( 'Pingback' );
 		}
@@ -37,7 +40,8 @@ class Pingback extends Plugin {
 	 * Unregister the Pingback event type on deactivation
 	 * @todo Should we be doing this?
 	 */
-	public function action_plugin_deactivation( $file ) {
+	public function action_plugin_deactivation( $file )
+	{
 		if ( realpath( $file ) == __FILE__ ) {
 			EventLog::unregister_type( 'Pingback' );
 		}
@@ -47,9 +51,10 @@ class Pingback extends Plugin {
 	 * Pingback links from the post content when a post is inserted into the database.
 	 * @param post The post from which to send pingbacks
 	 */
-	public function action_post_insert_after( $post ) {
+	public function action_post_insert_after( $post )
+	{
 		// only execute if this is a published post
-		if ( Post::status('published') != $post->status ) {
+		if ( Post::status( 'published' ) != $post->status ) {
 			return;
 		}
 		self::pingback_all_links( $post->content, $post->permalink, $post );
@@ -65,9 +70,10 @@ class Pingback extends Plugin {
 	 *		already pinged, so if the content hasnt changed no
 	 *		pings will be sent`
 	 */
-	public function action_post_update_after( $post ) {
+	public function action_post_update_after( $post )
+	{
 		// only execute if this is a published post
-		if ( Post::status('published') != $post->status) {
+		if ( Post::status( 'published' ) != $post->status) {
 			return;
 		}
 		self::pingback_all_links( $post->content, $post->permalink, $post );
@@ -77,7 +83,8 @@ class Pingback extends Plugin {
 	 * Add the Pingback header on single post/page requests
 	 * Not to the entire site.  Clever.
 	 */
-	public function action_add_template_vars() {
+	public function action_add_template_vars()
+	{
 		$action= Controller::get_action();
 		if ( $action == 'display_post' ) {
 			header( 'X-Pingback: ' . URL::get( 'xmlrpc' ) );
@@ -89,10 +96,11 @@ class Pingback extends Plugin {
 
 	/**
 	 * Receive a Pingback via XMLRPC
-	 * @param array $params An array of XMLRPC parameters from teh remote call
+	 * @param array $params An array of XMLRPC parameters from the remote call
 	 * @return string The success state of the pingback
 	 */
-	public function xmlrpc_pingback__ping( $params ) {
+	public function xmlrpc_pingback__ping( $params )
+	{
 		try {
 			list( $source_uri, $target_uri )= $params;
 
@@ -108,7 +116,7 @@ class Pingback extends Plugin {
 			$target_stub= trim( $target_stub, '/' );
 
 			if ( strpos( $target_stub, '?' ) !== FALSE ) {
-				list($target_stub, $query_string)= explode('?', $target_stub);
+				list( $target_stub, $query_string )= explode( '?', $target_stub );
 			}
 
 			// Can this be used as a target?
@@ -123,6 +131,11 @@ class Pingback extends Plugin {
 
 			if ( $target_post === FALSE ) {
 				throw new XMLRPCException( 32 );
+			}
+
+			// Is comment allowed?
+			if ( $target_post->info->comments_disabled ) {
+				throw new XMLRPCException( 33 );
 			}
 
 			// Is this Pingback already registered?
@@ -167,7 +180,8 @@ class Pingback extends Plugin {
 
 			// Respond to the Pingback
 			return 'The pingback has been registered';
-		} catch (XMLRPCException $e) {
+		}
+		catch ( XMLRPCException $e ) {
 			$e->output_fault_xml();
 		}
 	}
@@ -179,7 +193,8 @@ class Pingback extends Plugin {
 	 * @param Post $post The post	object that is initiating the ping, used to track the pings that were sent
 	 * @todo If receive error code of already pinged, add to the successful.
 	 */
-	public function send_pingback( $source_uri, $target_uri, $post= NULL ) {
+	public function send_pingback( $source_uri, $target_uri, $post= NULL )
+	{
 		// RemoteRequest makes it easier to retrieve the headers.
 		$rr= new RemoteRequest( $target_uri );
 		if ( ! $rr->execute() ) {
@@ -204,7 +219,7 @@ class Pingback extends Plugin {
 		try {
 			$response= XMLRPCClient::open( $pingback_endpoint )->pingback->ping( $source_uri, $target_uri );
 		}
-		catch(Exception $e) {
+		catch ( Exception $e ) {
 			EventLog::log( 'Invalid Pingback endpoint - ' . $pingback_endpoint . '  (Source: ' . $source_uri . ' | Target: ' . $target_uri . ')', 'info', 'Pingback' );
 			return false;
 		}
@@ -234,7 +249,8 @@ class Pingback extends Plugin {
 	 * @param Post $post The post object of the source of the ping
 	 * @param boolean $force If true, force the system to ping all links even if that had been pinged before
 	 */
-	public static function pingback_all_links( $content, $source_uri, $post= NULL, $force= false ) {
+	public static function pingback_all_links( $content, $source_uri, $post= NULL, $force= false )
+	{
 		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>]+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
 
 		if ( is_object( $post ) && isset( $post->info->pingbacks_successful ) ) {
