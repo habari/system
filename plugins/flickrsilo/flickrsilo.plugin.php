@@ -468,6 +468,8 @@ class FlickrSilo extends Plugin implements MediaSilo
 					}
 					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
 					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+					$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
+					$props['filetype'] = 'flickr';
 
 					$results[] = new MediaAsset(
 						self::SILO_NAME . '/photos/' . $photo['id'],
@@ -488,6 +490,8 @@ class FlickrSilo extends Plugin implements MediaSilo
 						}
 						$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
 						$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+						$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
+						$props['filetype'] = 'flickr';
 
 						$results[] = new MediaAsset(
 							self::SILO_NAME . '/photos/' . $photo['id'],
@@ -519,6 +523,8 @@ class FlickrSilo extends Plugin implements MediaSilo
 						}
 						$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
 						$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+						$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
+						$props['filetype'] = 'flickr';
 
 						$results[] = new MediaAsset(
 							self::SILO_NAME . '/photos/' . $photo['id'],
@@ -745,6 +751,19 @@ END_AUTH;
 					break;
 			}
 		}
+	}
+	public function action_admin_footer() {
+		echo <<< FLICKR
+		<script type="text/javascript">
+			habari.media.output.flickr = function(fileindex, fileobj) {
+				habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
+			}
+			habari.media.preview.flickr = function(fileindex, fileobj) {
+				var stats = '';
+				return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+			}
+		</script>
+FLICKR;
 	}
 
 	private function is_auth()
