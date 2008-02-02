@@ -14,12 +14,18 @@
 
 		<div id="masthead">
 			<h1>Habari</h1>
-			<p>Developer Review</p>
+			<div id="footer">
+				<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="Read the user manual">Manual</a> &middot; 
+					<a href="http://wiki.habariproject.org/" title="Read the Habari wiki">Wiki</a> &middot; 
+					<a href="http://groups.google.com/group/habari-users" title="Ask the community">Mailing List</a>
+				</p>
+			</div>
 		</div>
 		
 		<form action="" method="post" id="installform">
 		<div class="installstep ready" id="databasesetup">
-			<h2>Database Setup<a href="#" class="help-me">(help)</a></h2>
+			<h2>Database Setup</h2>
+			<a href="#" class="help-me">Help</a>
 			<div class="options">
 			
 				<div class="inputfield">
@@ -181,7 +187,7 @@
 			<div class="options">
 			
 				<div class="inputfield submit">
-					<div>Habari now has all of the information needed to install itself on your server.</div>
+					<p>Habari now has all of the information needed to install itself on your server.</p>
 					<input type="submit" name="submit" value="Install Habari" id="submitinstall">
 				</div>
 			
@@ -190,6 +196,8 @@
 			<div class="bottom"></div>
 		</div>
 		</form>
+
+
 		
 	</div>
 

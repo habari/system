@@ -62,6 +62,7 @@ function checkDBCredentials()
 					$(ido).parents('.installstep').addClass('done')
 					});
 					$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
+					$('#sitename').focus()
 					break;
 				}
 			},
@@ -198,4 +199,5 @@ $(document).ready(function() {
 	$('#databasetype').change(setDatabaseType);
 	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
 	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
+	$('#databaseuser').focus()
 });
