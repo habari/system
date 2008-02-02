@@ -2,11 +2,11 @@
 <div class="container">
 <hr>
   <?php if(Session::has_messages()) {Session::messages_out();} ?>
-	<div class="column prepend-1 span-22 append-1" id="welcome">
-		<h2>Currently Available Plugins</h2>
-		<p>Activate, deactivate and remove plugins through this interface.</p>
+	<div class="column prepend-2 span-20 append-2" id="welcome">
+		<h2 class="center">Currently Available Plugins</h2>
+		<p class="center">Activate, deactivate and configure plugins through this interface.</p>
 	</div>
-	<div class="column prepend-1 span-22 append-1">
+	<div class="column prepend-2 span-20 append-2">
 		<table cellspacing="0" width="100%">
 			<thead>
 				<tr>
@@ -71,10 +71,11 @@
 						<?php
 							Plugins::act( 'plugin_ui', $configure, $action );
 						?>
+						<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php echo 'close' ?></a>
 					</div></div></div>
 					<div class="wrapper">
 					<div class="container">
-					<div class="column prepend-1 span-22 append-1">
+					<div class="column prepend-2 span-20 append-2">
 					<table cellspacing="0" width="100%"><tbody>
 					<?php } ?>
 				<?php } ?>

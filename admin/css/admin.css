@@ -127,127 +127,6 @@ textarea {
 	background: #333;
 	}
 
-
-
-/* The NEW HOTNESS Menu */
-
-#menu {
-	position: fixed;
-	top: 0;
-	height: 32px;
-	padding: 0 0px;
-	width: 100%;
-	font-size: 1.2em;
-	background: #242424 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAICAIAAAC3eAIWAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpikpOTY2JgYABjRkZGdAwQYAAMYgB6RRurTwAAAABJRU5ErkJggg==) repeat-x top; /* Top dropshadow */
-	}
-
-#menu li {
-	display: inline;
-	}
-
-#menu li#site-name {
-	float: right;
-	margin-right: 10px;
-	}
-
-#menu li#site-name a {
-	padding: 0 20px 0 20px;
-	border: none;
-	}
-
-#menu > li > a {
-	font-family: 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
-	}
-
-#menu li a {
-	color: white;
-	line-height: 32px;
-	text-decoration:none;
-	display: block;
-	}
-
-#menu li.menu-item:hover a, #menu li#site-name a:hover {
-	background-color: #424242;
-	}
-
-#menu > .menu-item {
-	float: left;
-	}
-
-#menu #contentmenu {
-	border-left: 1px solid #131313;
-	margin-left: 10px;
-	}
-
-#menu #adminmenu {
-	border-left: 1px solid #131313;
-	border-right: 1px solid #131313;
-	}
-
-#menu > .menu-item > a {
-	width: 105px;
-	padding: 0 0 0 15px;
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGlJREFUeNpinD59+mcGBgYeBtzgCxOQ6GPAD/pgit7hUPAOpugjHtNA4h+ZoJyJQPwCTcELqDgDTNEXIO5AU9QBFYcrAoHpQPwUyn4K5TOgK/oFxE1A/AhK/4JJsKBZsQCqaB+yIECAAQB0mBnahYs+3AAAAABJRU5ErkJggg==) 100px center no-repeat; /* png is dropdown arrow */
-	}
-
-#menu li.menu-item > ul {
-	position: absolute;
-	top: -10000px;
-	min-width: 120px;
-	max-width: 250px;
-	margin: 10px 0 0 -1px;
-	}
-
-.menu-list {
-	background: #e1e1e1;
-	border: 1px solid #b0b0b0;
-	border-top: none;
-	padding: 5px 0;
-	}
-
-#menu li.menu-item:hover ul {
-	top: 22px;
-	}
-
-#menu li.menu-item .menu-list a {
-	width: auto;
-	font-size: .8em;
-	line-height: 1.6em;
-	color: #333;
-	padding: 3px 15px;
-	background: none;
-	}
-
-#menu .submenuitems {
-	margin: 0;
-	}
-
-#menu .submenuitems a {
-	font-size: .75em !important;
-	padding-left: 25px !important;
-	color: #777 !important;
-	}
-
-#menu .menu-list li {
-	display: block;
-	}
-
-#menu #createpagelink {
-	padding-bottom: 5px;
-	border-bottom: 1px solid #bbb;
-	}
-
-#menu #managecontentlink {
-	padding-top: 5px;
-	}
-
-#menu li.menu-item:hover .menu-list a:hover {
-	color: white !important;
-	background: #333;
-	}
-
-
-
 /* Page Splitter Tabs */
 
 ul.tabs {
@@ -464,7 +343,7 @@ ul.tabs li.ui-tabs-selected.last {
 /* BluePrint Overrides */
 
 #plugin_options {
-	background: #3A3A3A;
+	background: #333333 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAVCAYAAACHUoQEAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEBJREFUeNpiYGBgSGICEowg4i+I+AMnfoGI33ACzP0FxAxmIMIARGiBCBUQIQciJEGECIjgAxFcIIINRDADBBgAlsIJb8O3yoQAAAAASUVORK5CYII=) top repeat-x; /* Drop shadow */
 	border-top: 1px solid #C0C0C0;
 	border-bottom: 1px solid #C0C0C0;
 	color: white;
