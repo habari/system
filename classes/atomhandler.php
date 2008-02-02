@@ -255,7 +255,7 @@ class AtomHandler extends ActionHandler
 
 		$feed_generator= $xml->addChild( 'generator', 'Habari' );
 		$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
-		$feed_generator->addAttribute( 'version', Options::get( 'version' ) );
+		$feed_generator->addAttribute( 'version', Version::get_habariversion() );
 
 		$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $params['slug'] ) ) ? $params['slug'] : 'atom_comments' ) . '/' . Options::get( 'GUID' ) );
 
@@ -496,7 +496,7 @@ class AtomHandler extends ActionHandler
 
 		$feed_generator= $xml->addChild( 'generator', 'Habari' );
 		$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
-		$feed_generator->addAttribute( 'version', Options::get( 'version' ) );
+		$feed_generator->addAttribute( 'version', Version::get_habariversion() );
 
 		$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $rr_args_values['tag'] ) ) ? $rr_args_values['tag'] : 'atom' ) . '/' . Options::get( 'GUID' ) );
 
