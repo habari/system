@@ -1004,7 +1004,7 @@ class AdminHandler extends ActionHandler
 				$group= UserGroup::create($groupdata);
 				Session::notice( sprintf(_t( 'Added group %s'), $name ) );
 				// reload the groups
-				$this->theme->groups= UserGroups::get();
+				$this->theme->groups= UserGroups::get_all();
 			}
 		}
 
@@ -1018,7 +1018,7 @@ class AdminHandler extends ActionHandler
 				$group->delete();
 				Session::notice( sprintf( _t( 'Removed group %s' ), $name ) );
 				// reload the groups
-				$this->theme->groups= UserGroups::get();
+				$this->theme->groups= UserGroups::get_all();
 			}
 		}
 
@@ -1052,7 +1052,7 @@ class AdminHandler extends ActionHandler
 				$group->update();
 				Session::notice( sprintf(_t( 'Removed user %s from group %s'), $user->username, $name ) );
 				// reload the groups
-				$this->theme->groups= UserGroups::get();
+				$this->theme->groups= UserGroups::get_all();
 			}
 		}
 
