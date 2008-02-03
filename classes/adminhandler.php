@@ -991,45 +991,82 @@ class AdminHandler extends ActionHandler
 
 	public function post_groups()
 	{
-		$this->theme->groups= UserGroup::all_groups();
+		$this->theme->groups= UserGroups::get_all();
 		if ( isset( $this->handler_vars['add_group'] ) ) {
-			if ( UserGroup::add_group( $this->handler_vars['add_group'] ) ) {
-				Session::notice( sprintf(_t( 'Added group %s'), $this->handler_vars['add_group'] ) );
-				$this->theme->groups= UserGroup::all_groups();
+			$name= $this->handler_vars['add_group'];
+			if ( UserGroup::exists($name) ) {
+				Session::notice( sprintf(_t( 'The group %s already exists'), $name ) );
+			}
+			else {
+				$groupdata= array(
+					'name' => $name
+				);
+				$group= UserGroup::create($groupdata);
+				Session::notice( sprintf(_t( 'Added group %s'), $name ) );
+				// reload the groups
+				$this->theme->groups= UserGroups::get();
 			}
 		}
 
 		if ( isset( $this->handler_vars['delete_group'] ) ) {
-			// capture the group name before we delete it
-			$group_name=  $this->theme->groups[$this->handler_vars['group']];
-			if ( UserGroup::remove_group( intval( $this->handler_vars['group'] ) ) ) {
-				Session::notice( sprintf( _t( 'Removed group %s' ), $group_name ) );
+			$name= $this->handler_vars['group'];
+			if ( !UserGroup::exists($name) ) {
+				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
+			}
+			else {
+				$group= UserGroup::get($name);
+				$group->delete();
+				Session::notice( sprintf( _t( 'Removed group %s' ), $name ) );
 				// reload the groups
-				$this->theme->groups= UserGroup::all_groups();
+				$this->theme->groups= UserGroups::get();
 			}
 		}
 
 		if ( isset( $this->handler_vars['add_user'] ) ) {
-			UserGroup::add_user( $this->handler_vars['group'], $this->handler_vars['add_user'] );
-			$this->theme->groups= UserGroup::all_groups();
+			$name= $this->handler_vars['group'];
+			$user_id= (int) $this->handler_vars['add_user'];
+			if ( ! UserGroup::exists($name) ) {
+				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
+			}
+			else {
+				$group= UserGroup::get($name);
+				$user= User::get( (int) $user_id );
+				$group->add( $user_id );
+				$group->update();
+				Session::notice( sprintf(_t( 'Added user %s to group %s'), $user->username, $name ) );
+				// reload the groups
+				$this->theme->groups= UserGroups::get_all();
+			}
 		}
 
 		if ( isset( $this->handler_vars['remove_user'] ) ) {
-			UserGroup::remove_user( $this->handler_vars['user_group'], $this->handler_vars['remove_user'] );
-			$this->theme->groups= UserGroup::all_groups();
+			$name= $this->handler_vars['group'];
+			$user_id= $this->handler_vars['remove_user'];
+			if ( !UserGroup::exists($name) ) {
+				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
+			}
+			else {
+				$group= UserGroup::get($name);
+				$user= User::get((int)$user_id);
+				$group->remove((int)$user_id);
+				$group->update();
+				Session::notice( sprintf(_t( 'Removed user %s from group %s'), $user->username, $name ) );
+				// reload the groups
+				$this->theme->groups= UserGroups::get();
+			}
 		}
 
 		if ( isset( $this->handler_vars['edit_group'] ) ) {
-			$this->theme->group= $this->handler_vars['group'];
-			$this->theme->group_members= UserGroup::members( $this->theme->group );
-			$all_users= Users::get_all();
-			$users= array();
-			foreach ( $all_users as $user ) {
-				if ( ! in_array( $user->id,  $this->theme->group_members ) ) {
-					$users[$user->id]= $user->username;
-				}
+			$name= $this->handler_vars['group'];
+			if ( !UserGroup::exists($name) ) {
+				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
 			}
-			$this->theme->users= $users;
+			else {
+				$group= UserGroup::get($name);
+				$this->theme->group_edit= $group;
+				$this->theme->members= $group->members();
+				$this->theme->users= Users::get_all();
+			}
 		}
 		$this->display( 'groups' );
 	}
