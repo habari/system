@@ -164,7 +164,7 @@ class Format
 	}
 
 	/**
-	 * function nice_date
+	 * function nice_time
 	 * Formats a time using a date format string
 	 * @param mixed A date as a string or a timestamp
 	 * @param string A date format string
