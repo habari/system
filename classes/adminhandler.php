@@ -1030,7 +1030,7 @@ class AdminHandler extends ActionHandler
 			}
 			else {
 				$group= UserGroup::get($name);
-				$user= User::get( (int) $user_id );
+				$user= User::get( $user_id );
 				$group->add( $user_id );
 				$group->update();
 				Session::notice( sprintf(_t( 'Added user %s to group %s'), $user->username, $name ) );
