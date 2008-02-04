@@ -73,10 +73,13 @@
         <?php if (! $pdo_extension_ok) {?>
           <h2>PDO extension needed...</h2>
           <p class="instructions">
-            <em>habari</em> requires that the PDO PHP extension  be installed.
+            <em>habari</em> requires that the <a href="http://www.php.net/pdo">PDO PHP extension</a> be installed.  Please contact your hosting provider to enable PDO.
           </p>
-          <strong>@todo Installing PDO instructions</strong>
         <?php }?>
+	<?php if ( ! $pdo_drivers_ok ) { ?>
+	  <h2>No PDO drivers enabled</h2>
+	    <p class="instructions"><em>habari</em> requires that at least one <a href="http://www.php.net/pdo">PDO driver</a> be installed.  Please ask your hosting provider to enable one of the PDO drivers supported by Habari.</p>
+	<? } ?>
      </div>
     </div>
   </body>

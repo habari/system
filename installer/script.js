@@ -15,7 +15,7 @@ function handleAjaxError(msg, status, err)
 
 function setDatabaseType()
 {
-	switch($('#databasetype').val()) {
+	switch($('#db_type').val()) {
 		case 'mysql':
 			$('.forsqlite').hide();
 			$('.formysql').show();
@@ -30,7 +30,7 @@ function setDatabaseType()
 
 function checkDBCredentials()
 {
-	if ( ( $('#databasetype').val() == 'mysql' ) && ( $('#databasehost').val() != '' ) && ( $('#databaseuser').val() != '' ) && ( $('#databasename').val() != '' ) ) {
+	if ( ( $('#db_type').val() == 'mysql' ) && ( $('#databasehost').val() != '' ) && ( $('#databaseuser').val() != '' ) && ( $('#databasename').val() != '' ) ) {
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/check_mysql_credentials',
@@ -69,7 +69,7 @@ function checkDBCredentials()
 			error: handleAjaxError,
 		});
 	}
-	else if ( ( $('#databasetype').val() == 'sqlite' ) && ( $('#databasefile').val() != '' ) ) {
+	else if ( ( $('#db_type').val() == 'sqlite' ) && ( $('#databasefile').val() != '' ) ) {
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/check_sqlite_credentials',
@@ -196,7 +196,7 @@ $(document).ready(function() {
 	setDatabaseType();
 	checkDBCredentials();
 	checkSiteConfigurationCredentials();
-	$('#databasetype').change(setDatabaseType);
+	$('#db_type').change(setDatabaseType);
 	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
 	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
 	$('#databaseuser').focus()

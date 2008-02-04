@@ -203,6 +203,23 @@ class InstallHandler extends ActionHandler {
 		if (! $pdo_extension_ok) {
 			$requirements_met= false;
 		}
+		/* Check for PDO drivers */
+		$pdo_drivers= array_combine( PDO::getAvailableDrivers(), PDO::getAvailableDrivers() );
+		// Include only those drivers that we include database support for
+		$pdo_schemas= array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
+		$pdo_schemas= array_combine( $pdo_schemas, $pdo_schemas );
+
+		$pdo_drivers= array_intersect_key(
+			$pdo_drivers,
+			$pdo_schemas
+		);
+
+		$pdo_drivers_ok= count( $pdo_drivers );
+		$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
+		$this->theme->assign( 'pdo_drivers', $pdo_drivers );
+		if ( ! $pdo_drivers_ok ) {
+			$requirements_met= false;
+		}
 		return $requirements_met;
 	}
 
