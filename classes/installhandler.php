@@ -285,21 +285,9 @@ class InstallHandler extends ActionHandler {
 			return false;
 		}
 
-		/*
-		foreach ( $create_table_queries as $query ) {
-			if ( ! DB::exec( $query ) ) {
-				$error= DB::get_last_error();
-				$this->theme->assign('form_errors', array('db_host'=>'Could not create schema tables...' . $error['message']));
-				DB::rollback();
-				return false;
-			}
-		}
-		*/
-
 		// Cool.  DB installed. Create the default options
 		// but check first, to make sure
-		if ( ! Options::get('installed') )
-		{
+		if ( ! Options::get('installed') ) {
 			if (! $this->create_default_options()) {
 				$this->theme->assign('form_errors', array('options'=>'Problem creating default options'));
 				DB::rollback();
@@ -310,8 +298,7 @@ class InstallHandler extends ActionHandler {
 		// Let's setup the admin user now.
 		// But first, let's make sure that no users exist
 		$all_users= Users::get_all();
-		if ( count( $all_users ) < 1 )
-		{
+		if ( count( $all_users ) < 1 ) {
 			if (! $this->create_admin_user()) {
 				$this->theme->assign('form_errors', array('admin_user'=>'Problem creating admin user.'));
 				DB::rollback();
@@ -320,8 +307,7 @@ class InstallHandler extends ActionHandler {
 		}
 
 		// create a first post, if none exists
-		if ( ! Posts::get( array( 'count' => 1 ) ) )
-		{
+		if ( ! Posts::get( array( 'count' => 1 ) ) ) {
 			if ( ! $this->create_first_post()) {
 				$this->theme->assign('form_errors',array('post'=>'Problem creating first post.'));
 				DB::rollback();
@@ -450,6 +436,10 @@ class InstallHandler extends ActionHandler {
 		EventLog::register_type('authentication', 'habari');
 		EventLog::register_type('content', 'habari');
 		EventLog::register_type('comment', 'habari');
+
+		// Add the cronjob to truncate the log so that it doesn't get too big
+		CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), 'Truncate the log table' );
+
 		return true;
 	}
 
