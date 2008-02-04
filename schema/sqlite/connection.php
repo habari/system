@@ -19,6 +19,8 @@ class SQLiteConnection extends DatabaseConnection
 	function sql_t( $sql )
 	{
 		$sql = preg_replace_callback('%concat\(([^)]+?)\)%i', array(&$this, 'replace_concat'), $sql);
+		$sql = preg_replace('%DATE_SUB\s*\(\s*NOW\(\s*\)\s*,\s*INTERVAL\s+([0-9]+)\s+DAY\s*\)%ims', 'date(\'now\', \'-${1} days\')', $sql);
+
 		return $sql;
 	}
 
