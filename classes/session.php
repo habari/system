@@ -9,8 +9,6 @@
 
 class Session
 {
-	const SESSION_TIMEOUT= 1200; // 20 minutes
-
 	/**
 	 * Initialize the session handlers
 	 */
@@ -116,7 +114,7 @@ class Session
 		// DB::update() checks if the record key exists, and inserts if not
 		$record= array(
 			'subnet' => ip2long( $remote_address ) >> 8,
-			'expires' => time() + self::SESSION_TIMEOUT,
+			'expires' => time() + ini_get('session.gc_maxlifetime'),
 			'ua' => $user_agent,
 			'data' => $data,
 		);
