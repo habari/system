@@ -1,4 +1,3 @@
-				<input type="hidden" name="content_type" value="<?php echo $content_type; ?>">
 				<div class="container">
 					<p class="column span-5"><?php _e('Content State'); ?></p>
 					<p class="column span-14 last">
@@ -12,6 +11,3 @@
 				<hr>
 				<div class="container"><p class="column span-5"><?php _e('Content Address'); ?></p>		<p class="column span-14 last"><input type="text" name="newslug" id="newslug" class="styledformelement" value="<?php echo $post->slug; ?>"></p></div>
 
-				<?php if ( $post->slug != '' ) { ?>
-				<p><input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>"></p>
-				<?php } ?>

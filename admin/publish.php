@@ -91,7 +91,12 @@ EO_CONTROLS;
 		</div>
 		<?php endforeach; ?>
 	</div>
-
+	<div style="display:none;" id="hiddenfields">
+	<input type="hidden" name="content_type" value="<?php echo $content_type; ?>">
+	<?php if ( $post->slug != '' ) { ?>
+	<input type="hidden" name="slug" id="slug" value="<?php echo $post->slug; ?>">
+	<?php } ?>
+	</div>
 
 	<div id="formbuttons" class="container">
 		<p class="column span-13" id="left_control_set">
