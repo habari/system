@@ -326,5 +326,49 @@ class Posts extends ArrayObject
 		return self::get( $params );
 	}
 
+	/**
+	 * Reassigns the author of a specified set of posts
+	 * @param mixed a user ID or name
+	 * @param mixed an array of post IDs, an array of Post objects, or an instance of Posts
+	 * @return bool Whether the rename operation succeeded or not
+	**/
+	public static function reassign( $user, $posts )
+	{
+		// allow plugins the opportunity to prevent reassignment
+		$allow= true;
+		$allow= Plugins::filter( 'posts_reassign_allow', $allow );
+		if ( ! $allow ) {
+			return false;
+		}
+
+		if ( ! is_int( $user ) ) {
+			$u= User::get( $user );
+			$user= $u->id;
+		}
+		// safety checks
+		if ( ( $user == 0 ) || empty( $posts ) ) {
+			return false;
+		}
+		switch( true ) {
+			case is_integer(reset($posts)):
+				break;
+			case reset($posts) instanceof Post:
+				$ids = array();
+				foreach($posts as $post) {
+					$ids[] = $post->id;
+				}
+				$posts= $ids;
+				break;
+			default:
+				return false;
+		}
+		$ids= implode( ',', $posts );
+		Plugins::act( 'posts_reassign_before', array( $user, $posts ) );
+		$results= DB::query( "UPDATE {posts} SET user_id=? WHERE id IN ({$ids})", array( $user ) );
+		Plugins::act( 'posts_reassign_after', array( $user, $posts ) );
+
+		return $results;
+	}
+
 }
 ?>
