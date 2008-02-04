@@ -36,8 +36,11 @@ class AdminHandler extends ActionHandler
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$this->set_admin_template_vars( $this->theme );
+		$this->theme->admin_page = $page;
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
+				// Let plugins try to handle the page
+				Plugins::act('admin_theme_post_' . $page, $this, $this->theme);
 				// Handle POSTs to the admin pages
 				$fn= 'post_' . $page;
 				if ( method_exists( $this, $fn ) ) {
@@ -50,6 +53,8 @@ class AdminHandler extends ActionHandler
 				}
 				break;
 			default:
+				// Let plugins try to handle the page
+				Plugins::act('admin_theme_get_' . $page, $this, $this->theme);
 				// Handle GETs of the admin pages
 				$fn= 'get_' . $page;
 				if ( method_exists( $this, $fn ) ) {
@@ -57,10 +62,7 @@ class AdminHandler extends ActionHandler
 					exit;
 				}
 				// If a get_ function doesn't exist, just load the template and display it
-				$files= Utils::glob( $theme_dir . '*.php' );
-				$filekeys= array_map( create_function( '$a', 'return basename( $a, \'.php\' );' ), $files );
-				$map= array_combine( $filekeys, $files );
-				if ( isset( $map[$page] ) ) {
+				if ( $this->theme->template_exists( $page ) ) {
 					$this->display( $page );
 				}
 				else {
@@ -767,7 +769,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		// Set up Authors select box
-		$authors_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table( 'users' ) . ' JOIN ' . DB::table( 'posts' ) . ' ON ' . DB::table( 'users' ) . '.id=' . DB::table( 'posts' ) . '.user_id GROUP BY user_id ORDER BY username ASC' );
+		$authors_temp= DB::get_results( 'SELECT username, user_id FROM {users} JOIN {posts} ON {users}.id={posts}.user_id GROUP BY user_id ORDER BY username ASC' );
 		array_unshift( $authors_temp, new QueryRecord( array( 'username' => 'All', 'user_id' => 0 ) ) );
 		$authors= array();
 		foreach ( $authors_temp as $author ) {
