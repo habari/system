@@ -155,6 +155,18 @@ class URL extends Singleton
 	}
 
 	/**
+	 * Get a fully-qualified URL from a filesystem path
+	 *
+	 * @param string $path The filesystem path
+	 * @return string URL
+	 */
+	public static function get_from_filesystem($path)
+	{
+		$url= Site::get_url('habari') . substr(dirname($path), strlen(HABARI_PATH));
+		return $url;
+	}
+
+	/**
 	 * Extract the possible arguments to use in the URL from the passed variable
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL

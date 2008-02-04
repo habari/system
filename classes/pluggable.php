@@ -40,6 +40,16 @@ abstract class Pluggable
 	}
 
 	/**
+	 * Get a fully-qualified URL for the directory that contains this pluggable class
+	 *
+	 * @return string URL
+	 */
+	public function get_url()
+	{
+		return URL::get_from_filesystem($this->get_file());
+	}
+
+	/**
 	 * Returns a unique id for this pluggable
 	 * @return string A plugin id
 	 */
