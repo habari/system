@@ -264,14 +264,11 @@ class AdminHandler extends ActionHandler
 						// Extra safety check here
 						if ( isset( $user_id ) && ( $currentuser->id != intval( $user_id ) ) ) {
 							$username= $user->username;
-							$posts= Posts::get( array( 'user_id' => $user_id ) );
+							$posts= Posts::get( array( 'user_id' => $user_id, 'nolimit' => 1 ) );
 							if ( isset( $reassign ) && ( 1 === intval( $reassign ) ) ) {
 								// we're going to re-assign all of this user's posts
 								$newauthor= isset( $author ) ? intval( $author ) : 1;
-								foreach ( $posts as $post ) {
-									$post->user_id= $newauthor;
-									$post->update();
-								}
+								Posts::reassign( $newauthor, $posts );
 							}
 							else {
 								// delete posts
