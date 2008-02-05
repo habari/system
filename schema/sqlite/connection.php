@@ -100,10 +100,10 @@ class SQLiteConnection extends DatabaseConnection
 				$sql= preg_replace( '%\s+%', ' ', $sql ) . ';';
 				$query= preg_replace( '%\s+%', ' ', $query );
 				if ( $sql != $query ) {
-					$allqueries[]= 'ALTER TABLE {$tablename} RENAME TO {$tablename}__temp;';
+					$allqueries[]= "ALTER TABLE {$tablename} RENAME TO {$tablename}__temp;";
 					$allqueries[]= $query;
-					$allqueries[]= 'INSERT INTO {$tablename} SELECT * FROM {$tablename}__temp;';
-					$allqueries[]= 'DROP TABLE {$tablename}__temp;';
+					$allqueries[]= "INSERT INTO {$tablename} SELECT * FROM {$tablename}__temp;";
+					$allqueries[]= "DROP TABLE {$tablename}__temp;";
 				}
 			}
 			else {
