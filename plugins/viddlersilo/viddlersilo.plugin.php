@@ -833,10 +833,12 @@ class ViddlerSilo extends Plugin implements MediaSilo
 				else {
 					$username = Options::get( 'viddlersilo:username_' . User::identify()->id );
 					$password = Options::get( 'viddlersilo:password_' . User::identify()->id );
-					$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
-
-					$xml= new SimpleXMLElement( $auth );
-					Options::set('viddler_token_' . User::identify()->id, '' . $xml->sessionid );
+					if($username != '' && $password != '') {
+						$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
+	
+						$xml= new SimpleXMLElement( $auth );
+						Options::set('viddler_token_' . User::identify()->id, '' . $xml->sessionid );
+					}
 				}
 				break;
 			case 'Log Out':
@@ -867,9 +869,10 @@ class ViddlerSilo extends Plugin implements MediaSilo
 		}
 	}
 
-	public function action_admin_header()
+	public function action_admin_header( $theme )
 	{
-		echo <<< HEADER
+		if($theme->admin_page == 'publish') {
+			echo <<< HEADER
 <script type="text/javascript">
 habari.media.output.viddler = function(index, fileobj) {
 	habari.editor.insertSelection( ''+
@@ -883,6 +886,7 @@ habari.media.output.viddler = function(index, fileobj) {
 }
 </script>
 HEADER;
+		}
 	}
 
 	/**
