@@ -521,8 +521,10 @@ class FormControlPassword extends FormControlText
 				$message= implode('<br>', $validate);
 			}
 		}
+		
+		$outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
 
-		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="password" name="' . $this->field . '" value="' . substr(md5($this->value), 0, 8) . '"></label>';
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="password" name="' . $this->field . '" value="' . $outvalue . '"></label>';
 		if(isset($message)) {
 			$out.= '<p class="error">' . $message . '</p>';
 		}
