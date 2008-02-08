@@ -163,9 +163,57 @@ function resetTags() {
 
 habari.editor = {
 	insertSelection: function(value) {
+		if($('#content').filter('.islabeled').size() > 0) {
+			$('#content').filter('.islabeled')
+				.removeClass('islabeled')
+				.val(value);
+		}
+		else {
+			var contentel = $('#content')[0];
+			if('selectionStart' in contentel) {
+				var content = $('#content').val();
+				$('#content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
+			}
+			else if(document.selection) {
+				contentel.focus();
+				document.selection.createRange().text = value;
+			}
+			else {
+				$('#content').filter('.islabeled')
+					.removeClass('islabeled')
+					.val(value);
+			}
+		}
+	},
+	getContents: function() {
+		return $('#content').val();
+	},
+	setContents: function(contents) {
 		$('#content').filter('.islabeled')
 			.val('')
 			.removeClass('islabeled');
-		$("#content").val($("#content").val() + value);
+		$('#content').val(contents)
+	},
+	getSelection: function(contents) {
+		if($('#content').filter('.islabeled').size() > 0) {
+			return '';
+		}
+		else {
+			var contentel = $('#content')[0];
+			if('selectionStart' in contentel) {
+				return $('#content').val().substr(contentel.selectionStart, contentel.selectionEnd - contentel.selectionStart);
+			}
+			else if(document.selection) {
+				contentel.focus();
+				var range = document.selection.createRange();
+				if (range == null) {
+					return '';
+				}
+				return range.text;
+			}
+			else {
+				return $("#content").val();
+			}
+		}
 	}
 };
