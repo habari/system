@@ -217,10 +217,17 @@ class ACL {
 		if ( ! is_int( $action ) ) {
 			$action= ACL::permission_id( $action );
 		}
-		if ( ! $user instanceof User ) {
-			$user= User::get( $user );
+		// if we were given a user ID, use that to fetch the group membership from the DB
+		if ( is_int( $user) ) {
+			$groups= DB::get_column( 'SELECT group_id FROM {users_groups} WHERE user_id=?', array( $user ) );
+		} else {
+			// otherwise, make sure we have a User object, and get
+			// the groups from that
+			if ( ! $user instanceof User ) {
+				$user= User::get( $user );
+			}
+			$groups= implode( ',', $user->groups );
 		}
-		$groups= implode( ',', $user->groups );
 		if ( '' === $groups ) {
 			return self::ACCESS_NONEXISTANT_PERMISSION;
 		}
