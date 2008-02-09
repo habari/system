@@ -219,24 +219,21 @@ class ACL {
 		}
 		// if we were given a user ID, use that to fetch the group membership from the DB
 		if ( is_int( $user) ) {
-			$groups= DB::get_column( 'SELECT group_id FROM {users_groups} WHERE user_id=?', array( $user ) );
+			$user_id= $user;
 		} else {
 			// otherwise, make sure we have a User object, and get
 			// the groups from that
 			if ( ! $user instanceof User ) {
 				$user= User::get( $user );
 			}
-			$groups= implode( ',', $user->groups );
-		}
-		if ( '' === $groups ) {
-			return self::ACCESS_NONEXISTANT_PERMISSION;
+			$user_id= $user->id;
 		}
 		
 		// we select the "denied" value from all the permissions 
 		// assigned to all the groups to which this user is a member.
 		// array_unique() should consolidate this down to, at most,
 		// two values: 0 and 1.
-		$permissions= array_unique( DB::get_column( "SELECT denied FROM {groups_permissions} WHERE group_id IN ($groups)" ) );
+		$permissions= DB::get_column(' SELECT gp.denied from {groups_permissions} gp, {users_groups} g where gp.group_id = g.group_id and g.user_id=? and permission_id=?', array( $user_id, $action ) );
 
 		// if any group is explicitly denied access to this permission,
 		// this user is denied access to that permission
