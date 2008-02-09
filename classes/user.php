@@ -378,7 +378,7 @@ class User extends QueryRecord
 
 	public function can( $permission, $to = null )
 	{
-		return ACL::user_can( $this->id, $permission );
+		return ACL::user_can( $this, $permission );
 	}
 
 	/**

@@ -14,14 +14,13 @@ class UserGroup extends QueryRecord
 	**/
 	private $db_member_ids= null;
 	private $db_permissions_granted= null;
-	private $db_permissons_denied= null;
+	private $db_permissions_denied= null;
 
 	// these next three hold changes before they're committed to the DB
 	private $member_ids= null;
 	private $permissions_granted= null;
 	private $permissions_denied= null;
 	private $permissions_revoked= null;
-	private $toggle_permissions= null;
 
 	/**
 	 * get default fields for this record
@@ -51,9 +50,6 @@ class UserGroup extends QueryRecord
 		$this->db_member_ids= array();
 		$this->db_permissions_granted= array();
 		$this->db_permissions_denied= array();
-		$this->toggle_permissions= array();
-		// $this->toggle_permission['grant']= array();
-		// $this->toggle_permissions['deny']= array();
 		
 		// if we have an ID, load this UserGroup's members & permissions
 		if ( $this->id ) {
@@ -61,12 +57,14 @@ class UserGroup extends QueryRecord
 				$this->db_member_ids= array_combine($result, $result);
 			}
 
-			if ( $result= DB::get_column( 'SELECT permission_id FROM {groups_permissions} WHERE group_id=? AND denied=0 ', array( $this->id ) ) ) {
-				$this->db_permissions_granted = array_combine($result, $result);
-			}
-
-			if ( $result= DB::get_column( 'SELECT permission_id FROM {groups_permissions} WHERE group_id=? AND denied=1', array( $this->id ) ) ) {
-				$this->db_permissions_denied = array_combine($result, $result);
+			if ( $results= DB::get_results( 'SELECT permission_id, denied FROM {groups_permissions} WHERE group_id=?', array( $this->id ) ) ) {
+				foreach ( $results as $result ) {
+					if ( 1 === (int) $result->denied ) {
+						 $this->db_permissions_denied[ $result->permission_id ]= $result->permission_id;
+					} else { 
+						 $this->db_permissions_granted[ $result->permission_id ]= $result->permission_id;
+					}
+				}
 			}
 		}
 
@@ -77,7 +75,7 @@ class UserGroup extends QueryRecord
 		$this->permissions_denied= $this->db_permissions_denied;
 		
 		// exclude a whole bunch of fields
-		$this->exclude_fields( array( 'id', 'db_member_ids', 'db_permissions_granted', 'db_permissions_denied', 'member_ids', 'permissions_granted', 'permissons_denied', 'permissions_revoked', 'toggle_permissions' ) );
+		$this->exclude_fields( array( 'id', 'db_member_ids', 'db_permissions_granted', 'db_permissions_denied', 'member_ids', 'permissions_granted', 'permissions_denied', 'permissions_revoked' ) );
 	}
 
 	/**
@@ -148,35 +146,11 @@ class UserGroup extends QueryRecord
 			}
 		}
 
-		// were any permissions toggled?  We do this to economize hits
-		// to the DB: rather than execute separate DELETE then INSERT
-		// commands, we can execute a single UPDATE
-		if ( ! empty( $this->toggle_permissions['grant'] ) ) {
-			// grant permissions previously denied
-			$ids= implode( ',', $this->toggle_permissions['grant'] );
-			$results= DB::query( "UPDATE {groups_permissions} set denied=0 WHERE id IN ($ids)" );
-			//update DB arrays, to prevent the next set of checks 
-			// from trying to insert this permission
-			foreach ( $this->toggle_permissions['grant'] as $id ) {
-				$this->db_permissions_granted[ $id ]= $id;
-				if ( isset( $this->db_permissions_denied[$id] ) ) {
-					// this should make the db array match
-					// its corresponding temp array
-					unset( $this->db_permissions_denied[$id] );
-				}
-			}
-		}
-		if ( ! empty( $this->toggle_permissions['deny'] ) ) {
-			$ids= implode( ',', $this->toggle_permissions['deny'] );
-			$results= DB::query( "UPDATE {groups_permissions} set denied=1 WHERE id IN ($ids)" );
-			//update DB arrays again
-			foreach ( $this->toggle_permissions['deny'] as $id ) {
-				$this->db_permissions_denied[ $id ]= $id;
-				if  ( isset( $this->db_permissions_granted[$id] ) ) {
-					// this should make the db array match
-					// its corresponding temp array
-					unset( $this->db_permissions_granted[$id] );
-				}
+		// we process revoked permissions first, so that permissions
+		// that are changed are first removed, and then applied
+		if ( count( $this->permissions_revoked ) > 0 ) {
+			foreach ( $this->permissions_revoked as $revoked ) {
+				DB::query( 'DELETE FROM {groups_permissions} WHERE group_id=? AND permission_id=?', array( $this->id, $revoked ) );
 			}
 		}
 
@@ -199,17 +173,8 @@ class UserGroup extends QueryRecord
 			if ( count( $denied ) > 0 ) {
 				// one or more permissions denied
 				foreach( $denied as $perm ) {
-					DB::query('INSERT INTO {groups_permissions} (group_id, permission_id, denied) VAlUED (?, ? 1)', array( $this->id, $perm ) );
+					DB::query('INSERT INTO {groups_permissions} (group_id, permission_id, denied) VALUES (?, ?, 1)', array( $this->id, $perm ) );
 				}
-			}
-		}
-
-		// finally, were any previously assigned permissions
-		// (granted or denied) removed?  If so, take them out of the DB
-		if ( count( $this->permissions_revoked ) > 0 ) {
-			// one or more permissions revoked
-			foreach ( $this->permissions_revoked as $perm ) {
-				DB::query( 'DELETE FROM {users_groups} WHERE group_id=? AND permission_id=?', array( $this->id, $perm ) );
 			}
 		}
 
@@ -242,128 +207,172 @@ class UserGroup extends QueryRecord
 	}
 
 	/**
-	 * function members
-	 * returns an array of user IDs belogning to this UserGroup
-	 * @return array an array of user IDs
+	 * function __get
+	 * magic get function for returning virtual properties of the class
+	 * @param mixed the property to get
+	 * @return mixed the property
 	**/
-	public function members()
+	public function __get( $param )
 	{
-		return $this->member_ids;
-	}
-	
-	/**
-	 * Add a user to this group
-	 * @param mixed a user ID or name
-	**/
-	public function add( $id )
-	{
-		if ( ! is_int( $id ) ) {
-			$user= User::get( $id );
-			$id= $user->id;
-		}
-		if ( isset( $this->member_ids[ $id ] ) ) {
-			// this user is already a member
-			return false; 
-		}
-		$this->member_ids[$id]= $id;
-		return true;
-	}
-
-	/**
-	 * Remove a user from this group
-	 * @param mixed a user ID or name
-	**/
-	public function remove( $id )
-	{
-		if ( ! is_int( $id ) ) {
-			$user= User::get( $id );
-			$id= $user->id;
-		}
-		if ( ! isset( $this->member_ids[ $id ] ) ) {
-			// this user is not a member of this group
-			return false;
-		}
-		unset($this->member_ids[ $id ]);
-		return true;
-	}
-
-	/**
-	 * Assign a new permission to this group
-	 * @param int A permission ID
-	**/
-	public function grant( $permission )
-	{
-		// is this permisson currently assigned to this group?
-		if ( isset( $this->permissions_granted[ $permission ] ) ) {
-			// we can short-circuit and stop processing
-			return true;
-		}
 		
-		// is this permission currently denied to ths group?
-		if ( isset( $permission, $this->permissions_denied[ $permission ] ) ) {
-			// we need to toggle the denied bit, which is a single
-			// UPDATE operation, rather than a DELETE + INSERT
-			$this->toggle_permissions['grant']= $permission;
-
-			// we also need to update the temporary variable
-			// so that the can() method works as expected
-			// even before calls to update() occur
-			unset( $this->permissions_denied[ $permission ] );
+		switch ( $param ) {
+		case 'members':
+			return $this->member_ids;
+			break;
+		case 'granted':
+			return $this->permissions_granted;
+			break;
+		case 'denied':
+			return $this->permissions_denied;
+			break;
+		default:
+			return parent::__get( $param );
+			break;
 		}
-
-		// finally, we grant this permission
-		$this->permissions_granted[ $permission ]= $permission;
 	}
 
 	/**
-	 * Deny a permission to this group
-	 * @param int The permission ID to be denied
+	 * Add one or more users to this group
+	 * @param mixed a user ID or name, or an array of the same
 	**/
-	public function deny( $permission )
+	public function add( $who )
 	{
-		// short-circuit: is this permission already denied?
-		if ( isset( $this->permissions_denied[ $permission ] ) ) {
-			return true;
+		if ( ! is_array( $who ) ) {
+			$who= array( $who );
 		}
-
-		// is this permission currently granted?
-		if ( isset( $this->permissions_granted[ $permission] ) ) {
-			// we need to toggle the denied bit, which is a single
-			// UPDATE operation, rather than a DELETE + INSERT
-			$this->toggle_permissions['deny']= $permission;
-
-			// we also need to update the temporary variable
-			// so that the can() method works as expected
-			// even before calls to update() occur
-			unset( $this->permissions_granted[ $permission ] );
+		foreach ( $who as $id ) {
+			if ( ! is_int( $id ) ) {
+				$user= User::get( $id );
+				$id= $user->id;
+			}
+			if ( ! isset( $this->member_ids[ $id ] ) ) {
+				$this->member_ids[$id]= $id;
+			}
 		}
-
-		// finally, we deny the permission
-		$this->permissions_denied[ $permission ] = $permission;
 	}
 
 	/**
-	 * Remove a permission from a group
-	 * @param int a permission ID
+	 * Remove one or more user from this group
+	 * @param mixed a user ID or name, or an array of the same
 	**/
-	public function revoke( $permission )
+	public function remove( $who )
 	{
-		if ( isset( $this->permissons_granted[ $permission ] ) ) {
-			unset( $this->permissions_granted[ $permission ] );
+		if ( ! is_array( $who ) ) {
+			$who= array( $who );
 		}
-		if ( isset( $permission, $this->permissions_denied[ $permission ] ) ) {
-			unset( $this->permissions_denied[ $permission] );
+		foreach ( $who as $id ) {
+			if ( ! is_int( $id ) ) {
+				$user= User::get( $id );
+				$id= $user->id;
+			}
+			if ( isset( $this->member_ids[ $id ] ) ) {
+				unset($this->member_ids[ $id ]);
+			}
 		}
-		$this->permissions_revoked[ $permission ]= $permission;
+	}
+
+	/**
+	 * Assign one or more new permissions to this group
+	 * @param mixed A permission ID, name, or array of the same
+	**/
+	public function grant( $permissions )
+	{
+		if ( ! is_array( $permissions ) ) {
+			$permissions= array( $permissions );
+		}
+		foreach ( $permissions as $permission ) {
+			if ( ! is_numeric( $permission ) ) {
+				$permission= ACL::permission_id( $permission );
+			}
+			// is this permission currently assigned to this group?
+			if ( isset( $this->permissions_granted[ $permission ] ) ) {
+				// skip this permission, and process the rest
+				continue;
+			}
+		
+			// is this permission currently denied to ths group?
+			if ( isset( $permission, $this->permissions_denied[ $permission ] ) ) {
+				// revoke it
+				$this->permissions_revoked[ $permission ]= $permission;
+
+				// we also need to update the temporary variable
+				// so that the can() method works as expected
+				// even before calls to update() occur
+				unset( $this->permissions_denied[ $permission ] );
+			}
+
+			// finally, we grant this permission
+			$this->permissions_granted[ $permission ]= $permission;
+		}
+	}
+
+	/**
+	 * Deny one or more permissions to this group
+	 * @param mixed The permission ID or name to be denied, or an array of the same
+	**/
+	public function deny( $permissions )
+	{
+		if ( ! is_array( $permissions ) ) {
+			$permissions= array( $permissions );
+		}
+		foreach( $permissions as $permission ) {
+			if ( ! is_int( $permission ) ) {
+				$permission= ACL::permission_id( $permission );
+			}
+			// short-circuit: is this permission already denied?
+			if ( isset( $this->permissions_denied[ $permission ] ) ) {
+				continue;
+			}
+	
+			// is this permission currently granted?
+			if ( isset( $this->permissions_granted[ $permission] ) ) {
+				// revoke it
+				$this->permissions_revoked[ $permission ]= $permission;
+
+				// we also need to update the temporary variable
+				// so that the can() method works as expected
+				// even before calls to update() occur
+				unset( $this->permissions_granted[ $permission ] );
+			}
+
+			// finally, we deny the permission
+			$this->permissions_denied[ $permission ] = $permission;
+		}
+	}
+
+	/**
+	 * Remove one or more permissions from a group
+	 * @param mixed a permission ID, name, or array of the same
+	**/
+	public function revoke( $permissions )
+	{
+		if ( ! is_array( $permissions ) ) {
+			$permissions= array( $permissions );
+		}
+		foreach( $permissions as $permission ) {
+			if ( ! is_int( $permission ) ) {
+				$permission= ACL::permission_id( $permission );
+			}
+			if ( isset( $this->permissions_granted[ $permission ] ) ) {
+				unset( $this->permissions_granted[ $permission ] );
+			}
+			if ( isset( $this->permissions_denied[ $permission ] ) ) {
+				unset( $this->permissions_denied[ $permission] );
+			}
+			$this->permissions_revoked[ $permission ]= $permission;
+		}
 	}
 
 	/**
 	 * Determine whether members of a group can do something
-	 * @param string a text description of a permission
+	 * @param mixed a permission ID or name
 	 * @return mixed If a permission is denied to this group, return boolean FALSE; if a permission is granted, return boolean TRUE; if a permission is neither granted nor denied, return an empty string.
 	**/
 	public function can( $permission )
 	{
+		if ( ! is_int( $permission ) ) {
+			$permission= ACL::permission_id( $permission );
+		}
 		if ( isset( $this->permissions_denied[ $permission ] ) ) {
 			return false;
 		}
@@ -429,5 +438,35 @@ class UserGroup extends QueryRecord
 		return DB::get_value("SELECT COUNT(id) FROM {groups} WHERE $query=?", array( $group ) );
 	}
 
+	/**
+	 * Given a group's ID, return its friendly name
+	 * @param int a group's ID
+	 * @return string the group's name
+	**/
+	public static function name( $id )
+	{
+		if ( ! is_int( $id ) ) {
+			return false;
+		}
+		$name= DB::get_value( 'SELECT name FROM {groups} WHERE id=?', array( $id ) );
+		if ( $name ) {
+			return $name;
+		}
+		return $false;
+	}
+
+	/**
+	 * Given a group's name, return its ID
+	 * @param string a group's name
+	 * @return int the group's ID
+	**/
+	public static function id( $name )
+	{
+		$id= DB::get_value( 'SELECT id FROM {groups} WHERE name=?', array( $id ) );
+		if ( $id ) {
+			return $id;
+		}
+		return false;
+	}
 }
 ?>

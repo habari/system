@@ -16,57 +16,6 @@
  
 class ACL {
 	/**
-	 * An array of users assigned to a specific group id.
-	 * Both the group and the user are id integers, not string values.
-	 * The user arrays have both the key and the value set to the user_id. 	 	 
-	 * For example:
-	 * <code>
-	 * self::$groups= array(
-	 * 	1 => array(1 => 1),
-	 * 	2 => array(1 => 1, 2 => 2),
-	 * );
-	 * </code>
-	 **/	 
-	private static $groups= array();
-
-	/**
-	 * An array of group IDs with group names.
-	 * For example:
-	 * <code>
-	 * self::$group_names= array(
-	 * 	1 => 'administrators',
-	 * 	2 => 'guests',
-	 * );
-	 * </code>	 
-	 **/	 	 
-	private static $group_names= array();
-
-	/**
-	 * An array of permssions assigned to a group.
-	 * The group and permission are both id integers, not string values.
-	 * The key of each permission array is the permission id.  
-	 * The value of the permission id is boolean on whether to grant or deny that permission.
-	 * For example:
-	 * <code>
-	 * self::$group_permissions= array(
-	 * 	1 => array( 1 => true, 2 => true),
-	 * 	2 => array( 2 => false),
-	 * );
-	 * </code>
-	 **/	 	 	 	 	 	 	 	 	 	 	
-	private static $group_permissions= array();
-
-	/**
-	 * An array in which specific user permissions are cached as they are built from the other structures.
-	 **/	  		
-	private static $user_permissions= array();
-	
-	/**
-	 * An array of permissions, with the permission id as the key and the string value as the value.
-	 **/	 	
-	private static $permissions= array();
-	
-	/**
 	 * How to handle a permission request for a permission that is not in the permission list.
 	 * For example, if you request $user->can('some non-existant permission') then this value is returned.
 	 * It's true at the moment because that allows access to all features for upgrading users.
@@ -75,100 +24,227 @@ class ACL {
 	const ACCESS_NONEXISTANT_PERMISSION = true;
 
 	/**
-	 * Load all group and permission data from the DB
-	 * __static() class members are called by __autoload()	 
+	 * Create a new permission, and save it to the Permissions table
+	 * @param string The name of the permission
+	 * @param string The description of the permission
+	 * @return mixed the ID of the newly created permission, or boolean FALSE
 	**/
-	public static function __static()
+	public static function create_permission( $name, $description )
 	{
-		$results= DB::get_results( 'SELECT * FROM ' . DB::table('groups') );
-		foreach ($results as $group) {
-			self::$group_names[$group->id]= $group->name;
+		// first, make sure this isn't a duplicate
+		if ( ACL::permission_exists( $name ) ) {
+			return false;
 		}
-		$results= DB::get_results( 'SELECT * FROM ' . DB::table('permissions'));
-		foreach ( $results as $permission ) {
-			self::$permissions[$permission->id] = $permission->name;
+		$allow= true;
+		// Plugins have the opportunity to prevent adding this permission
+		$allow= Plugins::filter('permission_create_allow', $allow, $name, $description );
+		if ( ! $allow ) {
+			return false;
 		}
-		$results= DB::get_results( 'SELECT * FROM ' . DB::table('users_groups') );
-		foreach ( $results as $group ) {
-			self::$groups[$group->group_id][$group->user_id]= $group->user_id;
+		Plugins::act('permission_create_before', $this);
+		$result= DB::query('INSERT INTO {permissions} (name, description) VALUES (?, ?)', array( $name, $description) );
+		if ( ! $result ) {
+			// if it didn't work, don't bother trying to log it
+			return false;
 		}
-		$results= DB::get_results( 'SELECT * FROM ' . DB::table('groups_permissions'));
-		foreach ( $results as $permission ) {
-			self::$group_permissions[$permission->group_id][$permission->permission_id]= !$permission->denied;
+		EventLog::log('New permission created: ' . $name, 'info', 'default', 'habari');
+		Plugins::act('permission_create_after', $name, $description );
+		return $result;
+	}
+
+	/**
+	 * Remove a permission, and any assignments of it
+	 * @param mixed a permission ID or name
+	 * @return bool whether the permission was deleted or not
+	**/
+	public static function destroy_permission( $permission )
+	{
+		// make sure the permission exists, first
+		if ( ! ACL::permission_exists( $permission ) ) {
+			return false;
 		}
+
+		if ( ! is_int( $permission ) ) {
+			$permission= ACL::permission_id( $permission );
+		}
+		$allow= true;
+		// plugins have the opportunity to prevent deletion
+		$allow= Plugins::filter('permission_destroy_allow', $allow, $permission);
+		if ( ! $allow ) {
+			return false;
+		}
+		Plugins::act('permission_destroy_before', $permission );
+		// capture the permission name
+		$name= DB::get_value( 'SELECT name FROM {permissions} WHERE id=?', array( $permission ) );
+		// remove all references to this permissions
+		$result= DB::query( 'DELETE FROM {groups_permissions} WHERE permission_id=?', array( $permission ) );
+		// remove this permission
+		 $result= DB::query( 'DELETE FROM {permissions} WHERE permissions_id=?', array( $permission ) );
+		 if ( ! $result ) {
+		 	// if it didn't work, don't bother trying to log it
+		 	return false;
+		}
+		 EventLog::log('Permission deleted: ' . $name, 'info', 'default', 'habari');
+		 Plugins::act('permission_destroy_after', $permission );
+		 return $result;
+	}
+
+	/**
+	 * Get all permission IDs
+	 * @return array an associative array of all permissions
+	**/
+	public static function all_permissions()
+	{
+		$permissions= array();
+		$results= DB::get_results( 'SELECT id, name FROM {permissions}' );
+		if ( $results ) {
+			foreach ( $results as $result ) {
+				$permissions[ $result->id ]= $result->name;
+			}
+		}
+		return $permissions;
+	}
+
+	/**
+	 * Get a permission's name by its ID
+	 * @param int a permission ID
+	 * @return string the name of the permission, or boolean FALSE
+	**/
+	public static function permission_name( $id )
+	{
+		if ( ! is_int( $id ) ) {
+			return false;
+		} else {
+			return DB::get_value( 'SELECT name FROM {permissions} WHERE id=?', array( $id ) );
+		}
+	}
+
+	/**
+	 * Get a permission's ID by its name
+	 * @param string the name of the permission
+	 * @return int the permission's ID
+	**/
+	public static function permission_id( $name )
+	{
+		return DB::get_value( 'SELECT id FROM {permissions} WHERE name=?', array( $name ) );
+	}
+
+	/**
+	 * Fetch a permission description from the DB
+	 * @param mixed a permission name or ID
+	 * @return string the description of the permission
+	**/
+	public static function permission_description( $permission )
+	{
+		if ( is_int( $permission) ) {
+			$query= 'id';
+		} else {
+			$query= 'name';
+		}
+		return DB::get_value( "SELECT description FROM {permissions} WHERE $query=?", array( $permission ) );
+	}
+
+	/**
+	 * Determine whether a permission exists
+	 * @param mixed a permission name or ID
+	 * @return bool whether the permission exists or not
+	**/
+	public static function permission_exists( $permission )
+	{
+		if ( is_int( $permission ) ) {
+			$query= 'id';
+		} else {
+			$query= 'name';
+		}
+		return DB::query( "SELECT COUNT(id) FROM {permissions} WHERE $query=?", array( $permission ) );
 	}
 
 	/**
 	 * Determine whether the specified user is a member of the specified group
-	 * @param int A user  ID
-	 * @param int A group ID
+	 * @param mixed A user  ID or name
+	 * @param mixed A group ID or name
 	 * @return bool True if the user is in the group, otherwise false
 	**/
 	public static function user_in_group( $user_id, $group_id )
 	{
-		return isset(self::$groups[self::group_id( $group_id )][$user_id]);
-	}
-
-	/**
-	 * Return an array of the groups to which this user belongs
-	 * @param int A user ID
-	 * @return array An array of group IDs
-	**/
-	public static function user_group_list( $user_id )
-	{
-		$user_id= intval($user_id);
-		return array_keys( array_filter( self::$groups, create_function('$a', 'return isset($a[' . $user_id . ']);') ) );
+		if ( ! is_int( $user_id ) ) {
+			$user= User::get( $user_id );
+			$user_id= $user->id;
+		}
+		if ( ! is_int( $group_id ) ) {
+			$group_id= UserGroup::id( $group_id );
+		}
+		$group= DB::get_value( 'SELECT id FROM {users_groups} WHERE user_id=? AND group_id=?', array( $user_id, $group_id ) );
+		if ( $group ) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Determine whether a group can perform a specific action
-	 * @param int A group ID
-	 * @param string An action
+	 * @param mixed A group ID or name
+	 * @param mixed An action ID or name
 	 * @return bool Whether the group can perform the action
 	**/
-	public static function group_can( $group_id, $action )
+	public static function group_can( $group, $permission )
 	{
-		return isset(self::$group_permissions[self::group_id( $group_id )][$action]) && self::$group_permissions[self::group_id( $group_id )][$action];
+		if ( ! is_int( $group ) ) {
+			$group= UserGroup::id( $group );
+		}
+		if ( ! is_int( $permission ) ) {
+			$permission= ACL::permission_id( $permission );
+		}
+		$permission= DB::get_value( 'SELECT denied FROM {groups_permissions} WHERE permission_id=? AND group_id=?', array( $permission, $group ) );
+		if ( 0 === $permission ) {
+			// the permission has been granted to this group
+			return true;
+		}
+		// either the permission hasn't been granted, or it's been
+		// explicitly denied.
+		return self::ACCESS_NONEXISTANT_PERMISSION;
+		return false;
 	}
 	
 	/**
-	 * Return the id of a group, provided the name
-	 * @param string $group_id The name of the group
-	 * @return int The group id
-	 **/
-	public static function group_id( $group_id )
-	{
-		if(!is_numeric($group_id)) {
-			$group_id = array_search($group_id, self::$group_names);
-		}
-		return $group_id;
-	}	 	 	 	
-
-	/**
 	 * Determine whether a user can perform a specific action
-	 * @param int A user ID
-	 * @param string An action
+	 * @param mixed A user object, user ID or a username
+	 * @param mixed A permission ID or name
 	 * @return bool Whether the user can perform the action
 	**/
-	public static function user_can( $user_id, $action )
+	public static function user_can( $user, $action )
 	{
-		if(($permission_id = array_search($action, self::$permissions)) === false) {
-			return ACL::ACCESS_NONEXISTANT_PERMISSION;
+		if ( ! is_int( $action ) ) {
+			$action= ACL::permission_id( $action );
 		}
-		if(!isset(self::$user_permissions[$user_id])) {
-			self::$user_permissions[$user_id] = array();
-			foreach( self::user_group_list( $user_id ) as $group_id )	{
-				foreach( self::$group_permissions[$group_id] as $action => $grant ) {
-					if(isset(self::$user_permissions[$user_id][$permission_id])) {
-						self::$user_permissions[$user_id][$permission_id]= self::$user_permissions[$user_id][$permission_id] && $grant;
-					}
-					else {
-						self::$user_permissions[$user_id][$permission_id]= $grant;
-					}
-				}
-			}
+		if ( ! $user instanceof User ) {
+			$user= User::get( $user );
 		}
-		return isset(self::$user_permissions[$user_id][$permission_id]) && self::$user_permissions[$user_id][$permission_id];
+		$groups= implode( ',', $user->groups );
+		if ( '' === $groups ) {
+			return self::ACCESS_NONEXISTANT_PERMISSION;
+		}
+		
+		// we select the "denied" value from all the permissions 
+		// assigned to all the groups to which this user is a member.
+		// array_unique() should consolidate this down to, at most,
+		// two values: 0 and 1.
+		$permissions= array_unique( DB::get_column( "SELECT denied FROM {groups_permissions} WHERE group_id IN ($groups)" ) );
+
+		// if any group is explicitly denied access to this permission,
+		// this user is denied access to that permission
+		if ( in_array( 1, $permissions ) ) {
+			return false;
+		}
+		// if the permission is not explicitly denied, make sure it's
+		// explicitly granted.  If it is, the user can do this.
+		if ( in_array( 0, $permissions, true ) ) {
+			return true;
+		}
+		// if the permission is neither denied nor granted, they're not
+		// allowed to do it.
+		return self::ACCESS_NONEXISTANT_PERMISSION;
+		return false;
 	}
 }
 ?>

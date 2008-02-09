@@ -1021,40 +1021,6 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		if ( isset( $this->handler_vars['add_user'] ) ) {
-			$name= $this->handler_vars['group'];
-			$user_id= (int) $this->handler_vars['add_user'];
-			if ( ! UserGroup::exists($name) ) {
-				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
-			}
-			else {
-				$group= UserGroup::get($name);
-				$user= User::get( $user_id );
-				$group->add( $user_id );
-				$group->update();
-				Session::notice( sprintf(_t( 'Added user %s to group %s'), $user->username, $name ) );
-				// reload the groups
-				$this->theme->groups= UserGroups::get_all();
-			}
-		}
-
-		if ( isset( $this->handler_vars['remove_user'] ) ) {
-			$name= $this->handler_vars['group'];
-			$user_id= $this->handler_vars['remove_user'];
-			if ( !UserGroup::exists($name) ) {
-				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
-			}
-			else {
-				$group= UserGroup::get($name);
-				$user= User::get((int)$user_id);
-				$group->remove((int)$user_id);
-				$group->update();
-				Session::notice( sprintf(_t( 'Removed user %s from group %s'), $user->username, $name ) );
-				// reload the groups
-				$this->theme->groups= UserGroups::get_all();
-			}
-		}
-
 		if ( isset( $this->handler_vars['edit_group'] ) ) {
 			$name= $this->handler_vars['group'];
 			if ( !UserGroup::exists($name) ) {
@@ -1063,10 +1029,92 @@ class AdminHandler extends ActionHandler
 			else {
 				$group= UserGroup::get($name);
 				$this->theme->group_edit= $group;
-				$this->theme->members= $group->members();
+				$this->theme->members= $group->members;
 				$this->theme->users= Users::get_all();
+				$this->theme->permissions= ACL::all_permissions();
+				$this->theme->permissions_granted= $group->granted;
+				$this->theme->permissions_denied= $group->denied;
 			}
 		}
+
+		if ( isset( $this->handler_vars['users'] ) ) {
+			$name= $this->handler_vars['group'];
+			if ( ! UserGroup::exists($name) ) {
+				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
+			}
+			else {
+				$group= UserGroup::get($name);
+				$add_users= array();
+				$remove_users= array();
+				$form_users= array();
+				if ( isset( $this->handler_vars['user_id'] ) ) {
+					$form_users= $this->handler_vars['user_id'];
+				}
+				foreach ( Users::get_all() as $user ) {
+					if ( in_array( $user->id, $form_users ) ) {
+						$add_users[]= (int) $user->id;
+					} else {
+						$remove_users[]= (int) $user->id;
+					}
+				}
+				if ( ! empty( $add_users ) ) {
+					$group->add( $add_users );
+				}
+				if ( ! empty( $remove_users ) ) {
+					$group->remove( $remove_users );
+				}
+				$group->update();
+				Session::notice( sprintf(_t( 'Modified membership of group %s'), $name ) );
+				// reload the groups
+				$this->theme->groups= UserGroups::get_all();
+			}
+		}
+
+		if ( isset( $this->handler_vars['permissions'] ) ) {
+			$group_name= $this->handler_vars['group'];
+			if ( !UserGroup::exists( $group_name ) ) {
+				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
+			}
+			else {
+				$grant= array();
+				$deny= array();
+				$revoke= array();
+				if ( isset( $this->handler_vars['grant'] ) ) {
+					$form_grant= $this->handler_vars['grant'];
+				} else {
+					$form_grant= array();
+				}
+				if ( isset( $this->handler_vars['deny'] ) ) {
+					$form_deny= $this->handler_vars['deny'];
+				} else {
+					$form_deny= array();
+				}
+				$group= UserGroup::get( $group_name );
+				foreach( ACL::all_permissions() as $id => $name ) {
+					if ( in_array( $id, $form_grant ) ) {
+						$grant[]= (int) $id;
+					} elseif ( in_array( $id, $form_deny ) ) {
+						$deny[]= (int) $id;
+					} else {
+						$revoke[]= (int) $id;
+					}
+				}
+				if ( ! empty( $grant ) ){
+					$group->grant( $grant );
+				}
+				if ( ! empty( $deny ) ) {
+					$group->deny( $deny );
+				}
+				if ( ! empty( $revoke ) ) {
+					$group->revoke( $revoke );
+				}
+				$group->update();
+				Session::notice( sprintf(_t( 'Granted the permission to group %s'), $name ) );
+				// reload the groups
+				$this->theme->groups= UserGroups::get_all();
+			}
+		}
+
 		$this->display( 'groups' );
 	}
 
