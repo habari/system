@@ -80,6 +80,13 @@ class FeedbackHandler extends ActionHandler
 			$url= InputFilter::glue_url( $parsed );
 		}
 		$this->handler_vars['url']= $url;
+		
+		$cleaned_content= preg_replace( '/^\s+/', '', $this->handler_vars['content'] );
+		if ( $cleaned_content === '' ) {
+		    Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
+			Utils::redirect( $post->permalink );
+	        exit();
+		}
 
 		/* Create comment object*/
 		$comment= new Comment( array(
