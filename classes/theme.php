@@ -443,8 +443,8 @@ class Theme extends Pluggable
  	/**
 	 * Aggregates and echos the additional header code by combining Plugins and Stack calls.
 	 */
-	public function filter_theme_call_header( $output, $theme ) {
-		$output .= Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
+	public function theme_header( $theme ) {
+		$output = Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 		$output .= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 		return $output;
 	}
@@ -452,10 +452,48 @@ class Theme extends Pluggable
 	/**
 	 * Aggregates and echos the additional footer code by combining Plugins and Stack calls.
 	 */
-	public function filter_theme_call_footer( $output, $theme ) {
+	public function theme_footer( $theme ) {
 		Plugins::act( 'template_footer', $theme );
-		$output .= Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+		$output = Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 		return $output;
+	}
+
+	/**
+	 * Returns the appropriate alternate feed based on the currently matched rewrite rule.
+	 *
+	 * @param mixed $return Incoming return value from other plugins
+	 * @param Theme $theme The current theme object
+	 * @return string Link to the appropriate alternate Atom feed
+	 */
+	public function theme_feed_alternate( $theme )
+	{
+		$matched_rule= URL::get_matched_rule();
+		switch ( $matched_rule->name ) {
+			case 'display_entry':
+			case 'display_page':
+				return URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
+				break;
+			case 'display_entries_by_tag':
+				return URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var('tag') ) );
+				break;
+			case 'display_home':
+			default:
+				return URL::get( 'atom_feed', array( 'index' => '1' ) );
+		}
+		return '';
+	}
+
+
+	/**
+	 * Returns the feedback URL to which comments should be submitted for the indicated Post
+	 *
+	 * @param Theme $theme The current theme
+	 * @param Post $post The post object to get the feedback URL for
+	 * @return string The URL to the feedback entrypoint for this comment
+	 */
+	public function theme_comment_form_action( $theme, $post )
+	{
+		return URL::get( 'submit_feedback', array( 'id' => $post->id ) );
 	}
 
 	/**
@@ -513,8 +551,24 @@ class Theme extends Pluggable
 			Plugins::act('theme_action', $action, $this, $user_filters);
 		}
 		else {
+			$purposed = 'output';
+			if(preg_match('%^(.*)_(return|end)$%', $function, $matches)) {
+				$purposed = $matches[2];
+				$function = $matches[1];
+			}
 			array_unshift($params, $function, $this);
-			return call_user_func_array(array('Plugins', 'theme'), $params);
+			$result = call_user_func_array(array('Plugins', 'theme'), $params);
+			switch($purposed) {
+				case 'return':
+					return $result;
+				case 'end':
+					echo end($result);
+					return end($result);
+				default:
+					$output = implode('', $result);
+					echo $output;
+					return $output;
+			}
 		}
 	}
 

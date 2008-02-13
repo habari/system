@@ -52,7 +52,6 @@ class ThemeHelper extends Plugin
 	 *
 	 * Since we use sprintf() in the final concatenation, you must format passed strings accordingly.
 	 *
-	 * @param mixed $return Incoming return value from other plugins
 	 * @param Theme $theme The current theme object
 	 * @param Post $post Post object used to build the comments link
 	 * @param string $zero String to return when there are no comments
@@ -60,7 +59,7 @@ class ThemeHelper extends Plugin
 	 * @param string $many String to return when there are more than one comment
 	 * @return string String to display for comment count
 	 */
-	public function filter_theme_call_comments_count( $return, $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
+	public function theme_comments_count( $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
 	{
 		$count= $post->comments->approved->count;
 		if ($count >= 1) {
@@ -73,36 +72,11 @@ class ThemeHelper extends Plugin
 	}
 
 	/**
-	 * Returns the appropriate alternate feed based on the currently matched rewrite rule.
-	 *
-	 * @param mixed $return Incoming return value from other plugins
-	 * @param Theme $theme The current theme object
-	 * @return string Link to the appropriate alternate Atom feed
-	 */
-	public function filter_theme_call_feed_alternate( $return )
-	{
-		$matched_rule= URL::get_matched_rule();
-		switch ( $matched_rule->name ) {
-			case 'display_entry':
-			case 'display_page':
-				echo URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
-				break;
-			case 'display_entries_by_tag':
-				echo URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var('tag') ) );
-				break;
-			case 'display_home':
-			default:
-				echo URL::get( 'atom_feed', array( 'index' => '1' ) );
-		}
-		return $return;
-	}
-
-	/**
 	 * Returns the count of queries executed
 	 *
 	 * @return integer The query count
 	 */
-	public function filter_theme_call_query_count()
+	public function theme_query_count()
 	{
 		return count(DB::get_profiles());
 	}
@@ -112,7 +86,7 @@ class ThemeHelper extends Plugin
 	 *
 	 * @return float Query execution time in seconds, with fractions.
 	 */
-	public function filter_theme_call_query_time( )
+	public function theme_query_time( )
 	{
 		return array_sum(array_map(create_function('$a', 'return $a->total_time;'), DB::get_profiles()));
 	}
@@ -120,12 +94,11 @@ class ThemeHelper extends Plugin
 	/**
 	 * Returns a humane commenter's link for a comment if a URL is supplied, or just display the comment author's name
 	 *
-	 * @param mixed $return Incoming return value from other plugins
 	 * @param Theme $theme The current theme
 	 * @param Comment $comment The comment object
 	 * @return string A link to the comment author or the comment author's name with no link
 	 */
-	public function filter_theme_call_comment_author_link( $return, $theme, $comment )
+	public function theme_comment_author_link( $theme, $comment )
 	{
 		$url = $comment->url;
 		if($url != '') {
@@ -144,20 +117,6 @@ class ThemeHelper extends Plugin
 			return $comment->name;
 		}
 	}
-
-	/**
-	 * Returns the feedback URL to which comments should be submitted for the indicated Post
-	 *
-	 * @param mixed $return Incoming reurn value from other plugins
-	 * @param Theme $theme The current theme
-	 * @param Post $post The post object to get the feedback URL for
-	 * @return string The URL to the feedback entrypoint for this comment
-	 */
-	public function filter_theme_call_comment_form_action( $return, $theme, $post )
-	{
-		return URL::get( 'submit_feedback', array( 'id' => $post->id ) );
-	}
-
 }
 
 ?>
