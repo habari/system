@@ -13,7 +13,6 @@
  <link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url( 'theme' ); ?>/style.css">
 
 <?php $theme->header(); ?>
-	<?php Stack::out('template_header_javascript', '<script type="text/javascript" src="%s"></script>'); ?>
 </head>
 
 <body class="home">

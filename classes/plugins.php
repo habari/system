@@ -128,7 +128,7 @@ class Plugins
 
 		$filtersets = array();
 		if(!isset(self::$hooks['theme'][$hookname])) {
-			return '';
+			return array();
 		}
 
 		$return = array();
@@ -152,7 +152,7 @@ class Plugins
 		}
 		array_unshift($filter_args, 'theme_call_' . $hookname, $return);
 		$result = call_user_func_array(array('Plugins', 'filter'), $filter_args);
-		return implode('', $result);
+		return $result;
 	}
 
 	/**
