@@ -657,7 +657,9 @@ class AdminHandler extends ActionHandler
 		$all_plugins= Plugins::list_all();
 		$active_plugins= Plugins::get_active();
 
-		$plugins= array();
+		$sort_active_plugins= array();
+		$sort_inactive_plugins= array();
+		
 		foreach ( $all_plugins as $file ) {
 			$plugin= array();
 			$plugin_id= Plugins::id_from_file( $file );
@@ -689,10 +691,16 @@ class AdminHandler extends ActionHandler
 				$plugin['debug']= true;
 				$plugin['error']= $error;
 			}
-			$plugins[$plugin_id]= $plugin;
+			if ($plugin['active']) {
+				$sort_active_plugins[$plugin_id]= $plugin;
+			} else {
+				$sort_inactive_plugins[$plugin_id]= $plugin;
+			}
 		}
 
-		$this->theme->plugins= $plugins;
+		//$this->theme->plugins= array_merge($sort_active_plugins, $sort_inactive_plugins);
+		$this->theme->active_plugins= $sort_active_plugins;
+		$this->theme->inactive_plugins= $sort_inactive_plugins;
 
 		$this->display( 'plugins' );
 	}
