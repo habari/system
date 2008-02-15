@@ -23,7 +23,7 @@
    <p class="description"><?php Options::out( 'tagline' ); ?></p>
 
    <ul class="menu">
-    <li><a href="http://habariproject.org/" title="Habari Project">Habari Project</a></li>
+    <li><a href="<?php Site::out_url( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
 <?php
 // Menu tabs
 foreach ( $pages as $tab ) {

@@ -51,6 +51,10 @@ class MyTheme extends Theme
 	 */
 	public function add_template_vars()
 	{
+		//Theme Options
+		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
+		
+		
 		if( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
 		}
