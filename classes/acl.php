@@ -31,6 +31,9 @@ class ACL {
 	**/
 	public static function create_permission( $name, $description )
 	{
+		// we don't permit spaces in the name
+		// and force the name to be lowercase
+		$name= strtolower( preg_replace( '/\s/', '_', $name ) );
 		// first, make sure this isn't a duplicate
 		if ( ACL::permission_exists( $name ) ) {
 			return false;
@@ -126,6 +129,8 @@ class ACL {
 	**/
 	public static function permission_id( $name )
 	{
+		// we don't permit spaces in the name, and names should be lowercase
+		$name= strtolower( preg_replace( '/\s/', '_', $name ) );
 		return DB::get_value( 'SELECT id FROM {permissions} WHERE name=?', array( $name ) );
 	}
 
@@ -140,6 +145,7 @@ class ACL {
 			$query= 'id';
 		} else {
 			$query= 'name';
+			$permission= strtolower( preg_replace( '/\s/', '_', $permission ) );
 		}
 		return DB::get_value( "SELECT description FROM {permissions} WHERE $query=?", array( $permission ) );
 	}
@@ -155,6 +161,7 @@ class ACL {
 			$query= 'id';
 		} else {
 			$query= 'name';
+			$permission= strtolower( preg_replace( '/\s/', '_', $permission ) );
 		}
 		return DB::query( "SELECT COUNT(id) FROM {permissions} WHERE $query=?", array( $permission ) );
 	}
