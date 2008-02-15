@@ -21,6 +21,9 @@ class SQLiteConnection extends DatabaseConnection
 		$sql= preg_replace_callback( '%concat\(([^)]+?)\)%i', array( &$this, 'replace_concat' ), $sql );
 		$sql= preg_replace( '%DATE_SUB\s*\(\s*NOW\(\s*\)\s*,\s*INTERVAL\s+([0-9]+)\s+DAY\s*\)%ims', 'date(\'now\', \'-${1} days\')', $sql );
 		$sql= preg_replace( '%OPTIMIZE TABLE ([^ ]*)%i', 'VACUUM;', $sql );
+		$sql= preg_replace( '%YEAR\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%Y\', ${1})', $sql );
+		$sql= preg_replace( '%MONTH\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%m\', ${1})', $sql );
+		$sql= preg_replace( '%DAY\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%d\', ${1})', $sql );
 		return $sql;
 	}
 
@@ -100,10 +103,10 @@ class SQLiteConnection extends DatabaseConnection
 				$sql= preg_replace( '%\s+%', ' ', $sql ) . ';';
 				$query= preg_replace( '%\s+%', ' ', $query );
 				if ( $sql != $query ) {
-					$allqueries[]= "ALTER TABLE {{$tablename}} RENAME TO {{$tablename}}__temp;";
+					$allqueries[]= "ALTER TABLE {$tablename} RENAME TO {$tablename}__temp;";
 					$allqueries[]= $query;
-					$allqueries[]= "INSERT INTO {{$tablename}} SELECT * FROM {{$tablename}}__temp;";
-					$allqueries[]= "DROP TABLE {{$tablename}}__temp;";
+					$allqueries[]= "INSERT INTO {$tablename} SELECT * FROM {$tablename}__temp;";
+					$allqueries[]= "DROP TABLE {$tablename}__temp;";
 				}
 			}
 			else {
