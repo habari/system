@@ -39,6 +39,8 @@
 		<p><input type="hidden" name="user_id" value="<?php echo $user->id; ?>"></p>
 		<p><label>Username:</label></p>
 		<p><input type="text" name="username" value="<?php echo $user->username; ?>"></p>
+                <p><label>Display Name:</label></p>
+                <p><input type="text" name="displayname" value="<?php echo $user->info->displayname; ?>"></p>
 		<p><label>Email address:</label></p>
 		<p><input type="text" name="email" value="<?php echo $user->email; ?>"></p>
 		<p><label>New Password:</label></p>

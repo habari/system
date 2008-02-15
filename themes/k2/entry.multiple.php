@@ -9,7 +9,7 @@
       <div class="entry-head">
        <h3 class="entry-title"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h3>
        <small class="entry-meta">
-        <span class="chronodata"><abbr class="published"><?php echo $post->pubdate_out; ?></abbr></span>
+        <span class="chronodata"><abbr class="published"><?php echo $post->pubdate_out; ?></abbr></span><?php if ( $show_author ) { ?> by <?php if ( isset ( $user->info->displayname ) ) { echo $user->info->displayname; } else { echo $post->author->name; } ?> <?php } ?>
         <span class="commentslink"><?php echo $theme->comments_link( $post, 'No Comments', '%s Comment', '%s Comments' ); ?></span>
 <?php if ( $user ) { ?>
         <span class="entry-edit"><a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit post">Edit</a></span>

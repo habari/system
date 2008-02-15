@@ -53,6 +53,7 @@ class MyTheme extends Theme
 	{
 		//Theme Options
 		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
+		$this->assign( 'show_author' , false ); //Display author in posts 
 		
 		
 		if( !$this->template_engine->assigned( 'pages' ) ) {
