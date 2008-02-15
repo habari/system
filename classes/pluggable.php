@@ -40,13 +40,14 @@ abstract class Pluggable
 	}
 
 	/**
-	 * Get a fully-qualified URL for the directory that contains this pluggable class
+	 * Get a fully-qualified URL directory that contains this pluggable class
 	 *
+	 * @param bool whether to include a trailing slash.  Default: No
 	 * @return string URL
 	 */
-	public function get_url()
+	public function get_url( $trail = false )
 	{
-		return URL::get_from_filesystem($this->get_file());
+		return URL::get_from_filesystem($this->get_file(), $trail);
 	}
 
 	/**
