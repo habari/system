@@ -250,7 +250,7 @@ class AdminHandler extends ActionHandler
 		$currentuser= User::identify();
 		$user= $currentuser;
 		extract( $this->handler_vars );
-		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
+		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
 		$fields= Plugins::filter( 'adminhandler_post_user_fields', $fields );
 
 		foreach ( $fields as $input => $field ) {
