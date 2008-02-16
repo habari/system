@@ -35,7 +35,7 @@ class ACL {
 		// and force the name to be lowercase
 		$name= strtolower( preg_replace( '/\s/', '_', $name ) );
 		// first, make sure this isn't a duplicate
-		if ( ACL::permission_exists( $name ) ) {
+		if ( ! ACL::permission_exists( $name ) ) {
 			return false;
 		}
 		$allow= true;
@@ -44,7 +44,7 @@ class ACL {
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('permission_create_before', $this);
+		Plugins::act('permission_create_before', $name, $description);
 		$result= DB::query('INSERT INTO {permissions} (name, description) VALUES (?, ?)', array( $name, $description) );
 		if ( ! $result ) {
 			// if it didn't work, don't bother trying to log it
