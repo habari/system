@@ -74,15 +74,12 @@ class UserHandler extends ActionHandler
 	public function act_logout()
 	{
 		// get the user from their cookie
-		if ( $user = user::identify() ) {
+		if ( $user = User::identify() ) {
 			// delete the cookie, and destroy the object
-			Utils::debug( $user );
-			Utils::debug( $user->forget() );
+			$user->forget();
 			$user= null;
 		}
-		Utils::debug( $user );
-		//$theme= new ThemeHandler( 'logout', $settings );
-		die;
+		Utils::redirect(Site::get_url('habari'));
 	}
 
   /**
