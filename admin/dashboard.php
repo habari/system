@@ -206,7 +206,7 @@
     </table>
   </div>
   <hr>
-  <div class="column prepend-7 span-16 first">
+  <div class="column prepend-8 span-15 first">
     <h3>Drafts (<a href="<?php URL::out( 'admin', 'page=content' ); ?>#drafts" title="View Your Drafts">more</a> &raquo;)</h3>
     <?php
       if ( Posts::count_total( Post::status( 'draft' ) ) ) {
