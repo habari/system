@@ -565,7 +565,7 @@ class Theme extends Pluggable
 					echo end($result);
 					return end($result);
 				default:
-					$output = implode('', $result);
+					$output = implode('', (array)$result);
 					echo $output;
 					return $output;
 			}

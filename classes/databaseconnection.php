@@ -508,6 +508,29 @@ class DatabaseConnection
 	}
 
 	/**
+	 * Returns an associative array using the first returned column as the array key and the second as the array value
+	 *
+	 * @param string The query to execute
+	 * @param array Arguments to pass for prepared statements
+	 * @return array An array containing the associative data
+	 * <code>$ary= $dbconnection->get_keyvalue( 'SELECT keyfield, valuefield FROM tablename');</code>
+	 **/
+	public function get_keyvalue( $query, $args= array() )
+	{
+		if ( $this->query( $query, $args ) ) {
+			$result= $this->pdo_statement->fetchAll( PDO::FETCH_NUM );
+			$output = array();
+			foreach($result as $item) {
+				$output[$item[0]] = $item[1];
+			}
+			return $output;
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
 	 * Inserts into the specified table values associated to the key fields
 	 * @param string The table name
 	 * @param array An associative array of fields and values to insert

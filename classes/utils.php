@@ -846,10 +846,24 @@ class Utils
 
 		return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
 	}
-	
+
 	public static function truncate_log() {
 		// Truncate the log table
 		return DB::exec('DELETE FROM {log} WHERE `timestamp` < DATE_SUB(NOW(), INTERVAL 14 DAY)');
+	}
+
+	/**
+	 * Convert a single non-array variable into an array with that one element
+	 *
+	 * @param mixed $element Some value, either an array or not
+	 * @return array Either the original array value, or the passed value as the single element of an array
+	 */
+	public static function single_array( $element )
+	{
+		if(!is_array($element)) {
+			return array($element);
+		}
+		return $element;
 	}
 
 }
