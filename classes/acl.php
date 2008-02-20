@@ -91,12 +91,17 @@ class ACL {
 	}
 
 	/**
-	 * Get all permission IDs
-	 * @return array an associative array of all permissions
+	 * Get an array of QueryRecord objects containing all permissions
+	 * @param string the order in which to sort the returning array
+	 * @return array an array of QueryRecord objects containing all permissions
 	**/
-	public static function all_permissions()
+	public static function all_permissions( $order= 'id' )
 	{
-		$permissions= DB::get_results( 'SELECT id, name FROM {permissions}' );
+		$order= strtolower( $order );
+		if ( ( 'id' != $order ) && ( 'name' != $order ) && ( 'description' != $order ) ) {
+			$order= 'id';
+		}
+		$permissions= DB::get_results( 'SELECT id, name, description FROM {permissions} ORDER BY ' . $order );
 		return $permissions ? $permissions : array();
 	}
 
