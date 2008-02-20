@@ -752,18 +752,20 @@ END_AUTH;
 			}
 		}
 	}
-	public function action_admin_footer() {
-		echo <<< FLICKR
-		<script type="text/javascript">
-			habari.media.output.flickr = function(fileindex, fileobj) {
-				habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
-			}
-			habari.media.preview.flickr = function(fileindex, fileobj) {
-				var stats = '';
-				return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
-			}
-		</script>
+	public function action_admin_footer( $theme ) {
+		if ($theme->admin_page == 'publish') {
+			echo <<< FLICKR
+			<script type="text/javascript">
+				habari.media.output.flickr = function(fileindex, fileobj) {
+					habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
+				}
+				habari.media.preview.flickr = function(fileindex, fileobj) {
+					var stats = '';
+					return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+				}
+			</script>
 FLICKR;
+		}
 	}
 
 	private function is_auth()
