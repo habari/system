@@ -659,7 +659,7 @@ class AdminHandler extends ActionHandler
 
 		$sort_active_plugins= array();
 		$sort_inactive_plugins= array();
-		
+
 		foreach ( $all_plugins as $file ) {
 			$plugin= array();
 			$plugin_id= Plugins::id_from_file( $file );
@@ -1089,22 +1089,26 @@ class AdminHandler extends ActionHandler
 				$revoke= array();
 				if ( isset( $this->handler_vars['grant'] ) ) {
 					$form_grant= $this->handler_vars['grant'];
-				} else {
+				}
+				else {
 					$form_grant= array();
 				}
 				if ( isset( $this->handler_vars['deny'] ) ) {
 					$form_deny= $this->handler_vars['deny'];
-				} else {
+				}
+				else {
 					$form_deny= array();
 				}
 				$group= UserGroup::get( $group_name );
-				foreach( ACL::all_permissions() as $id => $name ) {
-					if ( in_array( $id, $form_grant ) ) {
-						$grant[]= (int) $id;
-					} elseif ( in_array( $id, $form_deny ) ) {
-						$deny[]= (int) $id;
-					} else {
-						$revoke[]= (int) $id;
+				foreach( ACL::all_permissions() as $permission ) {
+					if ( in_array( $permission->id, $form_grant ) ) {
+						$grant[]= (int) $permission->id;
+					}
+					elseif ( in_array( $permission->id, $form_deny ) ) {
+						$deny[]= (int) $permission->id;
+					}
+					else {
+						$revoke[]= (int) $permission->id;
 					}
 				}
 				if ( ! empty( $grant ) ){
@@ -1117,7 +1121,7 @@ class AdminHandler extends ActionHandler
 					$group->revoke( $revoke );
 				}
 				$group->update();
-				Session::notice( sprintf(_t( 'Granted the permission to group %s'), $name ) );
+				Session::notice( sprintf(_t( 'Granted the permission to group %s'), $group_name ) );
 				// reload the groups
 				$this->theme->groups= UserGroups::get_all();
 			}

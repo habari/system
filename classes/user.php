@@ -284,10 +284,11 @@ class User extends QueryRecord
 	/**
 	 * Select a user from the database by its id
 	 *
-	 * @param int $id
-	 * @return User
+	 * @param int $id The id of a user
+	 * @return User The User object of the specified user
 	 */
-	public static function get_by_id( $id )	{
+	public static function get_by_id( $id )
+	{
 		if ( 0 == $id ) {
 			return false;
 		}
@@ -304,10 +305,11 @@ class User extends QueryRecord
 	/**
 	 * Select a user from the database by its username
 	 *
-	 * @param string $username
-	 * @return User
+	 * @param string $username The name of a user
+	 * @return User The User object of the specified user
 	 */
-	public static function get_by_name( $username ) {
+	public static function get_by_name( $username )
+	{
 		if ( '' == $username ) {
 			return false;
 		}
@@ -324,10 +326,11 @@ class User extends QueryRecord
 	/**
 	 * Select a user from the database by its email address
 	 *
-	 * @param string $email
-	 * @return Users
+	 * @param string $email The email address of a user
+	 * @return User The User object of the specified user
 	 */
-	public static function get_by_email( $email ) {
+	public static function get_by_email( $email )
+	{
 		if ( '' === $email ) {
 			return false;
 		}
@@ -339,6 +342,18 @@ class User extends QueryRecord
 			);
 
 		return Users::get( $params );
+	}
+
+	/**
+	 * Return the id of a user
+	 *
+	 * @param mixed $user The id, name, or email address of a user
+	 * @return integer The id of the specified user or false if that user doesn't exist
+	 */
+	public static function get_id( $user )
+	{
+		$user = self::get( $user );
+		return $user->id;
 	}
 
 	/**
@@ -376,7 +391,13 @@ class User extends QueryRecord
 		return $commenter;
 	}
 
-	public function can( $permission, $to = null )
+	/**
+	 * Determine if a user has a specific permission
+	 *
+	 * @param string $permission The name of the permission to detect
+	 * @return boolean True if this user has the requested permission, false if not
+	 */
+	public function can( $permission )
 	{
 		return ACL::user_can( $this, $permission );
 	}
@@ -398,35 +419,32 @@ class User extends QueryRecord
 	/**
 	 * function in_group
 	 * Whether or not this user is is in the specified group
-	 * @param int a group ID
+	 * @param int $group a group ID or name
 	 * @return bool Whether or not this user is in the specified group
 	**/
 	public function in_group( $group )
 	{
 		$groups= $this->list_groups();
-		if ( in_array( intval($group), $groups ) ) {
-			return true;
-		}
-		return false;
+		return in_array( UserGroup::id($group), $groups );
 	}
 
 	/**
 	 * function add_to_group
-	 * @param int A group ID
+	 * @param mixed $group A group ID or name
 	**/
 	public function add_to_group( $group )
 	{
-		UserGroup::add_user( intval($group), $this->id );
+		UserGroup::add( $group, $this->id );
 	}
 
 	/**
 	 * function remove_from_group
 	 * removes this user from a group
-	 * @param int A group ID
+	 * @param mixed $group A group ID or name
 	**/
 	public function remove_from_group( $group )
 	{
-		UserGroup::remove_user( intval($group), $this->id );
+		UserGroup::remove( $group, $this->id );
 	}
 
 	/**
