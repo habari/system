@@ -7,8 +7,7 @@
  */
 class Tags extends ArrayObject
 {
-	function get() {
-		global $prefix;
+    public static function get() {
 		$tags= DB::get_results( 'SELECT tag_text as tag FROM ' . DB::table('tags') . ' ORDER BY tag_text ASC' );
 		return $tags;
 	}

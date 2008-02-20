@@ -255,7 +255,7 @@ class Posts extends ArrayObject
 	 * @param int a status value
 	 * @return array an array of Comment objects with the same status
 	**/
-	public function by_status ( $status )
+	public static function by_status ( $status )
 	{
 		return self::get( array( 'status' => $status ) );
 	}
@@ -267,7 +267,7 @@ class Posts extends ArrayObject
 	 * @param string a post slug
 	 * @return array an array of post content
 	**/
-	public function by_slug ( $slug = '' )
+	public static function by_slug ( $slug = '' )
 	{
 		return self::get( array( 'slug' => $slug ) );
 	}
