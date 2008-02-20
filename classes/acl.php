@@ -1,8 +1,8 @@
 <?php
 
-/** 
+/**
  * Access Control List class
- *  
+ *
  * The default Habari ACL class implements groups, and group permissions
  * Users are assigned to one or more groups.
  * Groups are assigned one or more permissions.
@@ -10,17 +10,17 @@
  * means you have that permission.  Membership in any group that denies
  * that permission denies the user that permission, even if another group
  * grants that permission.
- *     
+ *
  * @package Habari
  **/
- 
+
 class ACL {
 	/**
 	 * How to handle a permission request for a permission that is not in the permission list.
 	 * For example, if you request $user->can('some non-existant permission') then this value is returned.
 	 * It's true at the moment because that allows access to all features for upgrading users.
 	 * @todo Decide if this is a setting we need or want to change, or perhaps it should be an option.
-	 **/	 	 	 	 	
+	 **/
 	const ACCESS_NONEXISTANT_PERMISSION = true;
 
 	/**
@@ -31,11 +31,9 @@ class ACL {
 	**/
 	public static function create_permission( $name, $description )
 	{
-		// we don't permit spaces in the name
-		// and force the name to be lowercase
-		$name= strtolower( preg_replace( '/\s/', '_', $name ) );
+		$name= self::normalize_permission( $name );
 		// first, make sure this isn't a duplicate
-		if ( ! ACL::permission_exists( $name ) ) {
+		if ( ACL::permission_exists( $name ) ) {
 			return false;
 		}
 		$allow= true;
@@ -67,9 +65,9 @@ class ACL {
 			return false;
 		}
 
-		if ( ! is_int( $permission ) ) {
-			$permission= ACL::permission_id( $permission );
-		}
+		// Use ids internall for permissions
+		$permission= ACL::permission_id( $permission );
+
 		$allow= true;
 		// plugins have the opportunity to prevent deletion
 		$allow= Plugins::filter('permission_destroy_allow', $allow, $permission);
@@ -82,14 +80,14 @@ class ACL {
 		// remove all references to this permissions
 		$result= DB::query( 'DELETE FROM {groups_permissions} WHERE permission_id=?', array( $permission ) );
 		// remove this permission
-		 $result= DB::query( 'DELETE FROM {permissions} WHERE permissions_id=?', array( $permission ) );
-		 if ( ! $result ) {
-		 	// if it didn't work, don't bother trying to log it
-		 	return false;
+		$result= DB::query( 'DELETE FROM {permissions} WHERE permissions_id=?', array( $permission ) );
+		if ( ! $result ) {
+			// if it didn't work, don't bother trying to log it
+			return false;
 		}
-		 EventLog::log('Permission deleted: ' . $name, 'info', 'default', 'habari');
-		 Plugins::act('permission_destroy_after', $permission );
-		 return $result;
+		EventLog::log('Permission deleted: ' . $name, 'info', 'default', 'habari');
+		Plugins::act('permission_destroy_after', $permission );
+		return $result;
 	}
 
 	/**
@@ -98,14 +96,8 @@ class ACL {
 	**/
 	public static function all_permissions()
 	{
-		$permissions= array();
-		$results= DB::get_results( 'SELECT id, name FROM {permissions}' );
-		if ( $results ) {
-			foreach ( $results as $result ) {
-				$permissions[ $result->id ]= $result->name;
-			}
-		}
-		return $permissions;
+		$permissions= DB::get_results( 'SELECT id, name FROM {permissions}' );
+		return $permissions ? $permissions : array();
 	}
 
 	/**
@@ -129,8 +121,10 @@ class ACL {
 	**/
 	public static function permission_id( $name )
 	{
-		// we don't permit spaces in the name, and names should be lowercase
-		$name= strtolower( preg_replace( '/\s/', '_', $name ) );
+		if( is_integer($name) ) {
+			return $name;
+		}
+		$name= self::normalize_permission( $name );
 		return DB::get_value( 'SELECT id FROM {permissions} WHERE name=?', array( $name ) );
 	}
 
@@ -145,7 +139,7 @@ class ACL {
 			$query= 'id';
 		} else {
 			$query= 'name';
-			$permission= strtolower( preg_replace( '/\s/', '_', $permission ) );
+			$permission= self::normalize_permission( $permission );
 		}
 		return DB::get_value( "SELECT description FROM {permissions} WHERE $query=?", array( $permission ) );
 	}
@@ -159,11 +153,12 @@ class ACL {
 	{
 		if ( is_int( $permission ) ) {
 			$query= 'id';
-		} else {
-			$query= 'name';
-			$permission= strtolower( preg_replace( '/\s/', '_', $permission ) );
 		}
-		return DB::query( "SELECT COUNT(id) FROM {permissions} WHERE $query=?", array( $permission ) );
+		else {
+			$query= 'name';
+			$permission= self::normalize_permission( $permission );
+		}
+		return ( DB::get_value( "SELECT COUNT(id) FROM {permissions} WHERE $query=?", array( $permission ) ) > 0 );
 	}
 
 	/**
@@ -190,40 +185,35 @@ class ACL {
 
 	/**
 	 * Determine whether a group can perform a specific action
-	 * @param mixed A group ID or name
-	 * @param mixed An action ID or name
+	 * @param mixed $group A group ID or name
+	 * @param mixed $permission An action ID or name
 	 * @return bool Whether the group can perform the action
 	**/
 	public static function group_can( $group, $permission )
 	{
-		if ( ! is_int( $group ) ) {
-			$group= UserGroup::id( $group );
-		}
-		if ( ! is_int( $permission ) ) {
-			$permission= ACL::permission_id( $permission );
-		}
-		$permission= DB::get_value( 'SELECT denied FROM {groups_permissions} WHERE permission_id=? AND group_id=?', array( $permission, $group ) );
-		if ( 0 === $permission ) {
+		// Use only numeric ids internally
+		$group= UserGroup::id( $group );
+		$permission= ACL::permission_id( $permission );
+		$result= DB::get_value( 'SELECT denied FROM {groups_permissions} WHERE permission_id=? AND group_id=?', array( $permission, $group ) );
+		if ( 0 === intval($result) ) {
 			// the permission has been granted to this group
 			return true;
 		}
 		// either the permission hasn't been granted, or it's been
 		// explicitly denied.
-		return self::ACCESS_NONEXISTANT_PERMISSION;
 		return false;
 	}
-	
+
 	/**
 	 * Determine whether a user can perform a specific action
-	 * @param mixed A user object, user ID or a username
-	 * @param mixed A permission ID or name
+	 * @param mixed $user A user object, user ID or a username
+	 * @param mixed $permission A permission ID or name
 	 * @return bool Whether the user can perform the action
 	**/
-	public static function user_can( $user, $action )
+	public static function user_can( $user, $permission )
 	{
-		if ( ! is_int( $action ) ) {
-			$action= ACL::permission_id( $action );
-		}
+		// Use only numeric ids internally
+		$permission= ACL::permission_id( $permission );
 		// if we were given a user ID, use that to fetch the group membership from the DB
 		if ( is_int( $user) ) {
 			$user_id= $user;
@@ -235,12 +225,12 @@ class ACL {
 			}
 			$user_id= $user->id;
 		}
-		
-		// we select the "denied" value from all the permissions 
+
+		// we select the "denied" value from all the permissions
 		// assigned to all the groups to which this user is a member.
 		// array_unique() should consolidate this down to, at most,
 		// two values: 0 and 1.
-		$permissions= DB::get_column(' SELECT gp.denied from {groups_permissions} gp, {users_groups} g where gp.group_id = g.group_id and g.user_id=? and permission_id=?', array( $user_id, $action ) );
+		$permissions= DB::get_column('SELECT gp.denied from {groups_permissions} gp, {users_groups} g where gp.group_id = g.group_id and g.user_id=? and permission_id=?', array( $user_id, $permission ) );
 
 		// if any group is explicitly denied access to this permission,
 		// this user is denied access to that permission
@@ -256,6 +246,17 @@ class ACL {
 		// allowed to do it.
 		return self::ACCESS_NONEXISTANT_PERMISSION;
 		return false;
+	}
+
+	/**
+	 * Convert a permission name into a valid format
+	 *
+	 * @param string $name The name of a permission
+	 * @return string The permission with spaces converted to underscores and all lowercase
+	 */
+	public static function normalize_permission( $name )
+	{
+		return strtolower( preg_replace( '/\s+/', '_', trim($name) ) );
 	}
 }
 ?>

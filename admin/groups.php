@@ -55,20 +55,20 @@ if ( isset( $group_edit ) ) {
 		echo '<form method="post" action="">';
 		echo '<input type="hidden" name="group" value="' . $group_edit->name . '">';
 		echo '<table><tr><th>Granted</th><th>Permission</th><th>Denied</th></tr>';
-		foreach( $permissions as $id => $name ) {
+		foreach( $permissions as $perm ) {
 			echo '<tr>';
-			if(  isset( $permissions_granted[ $id ] ) ) {
+			if(  isset( $permissions_granted[ $perm->id ] ) ) {
 				// indicate that this permission is granted
-			} elseif ( isset( $permissions_denied[ $id ] ) ) {
+			} elseif ( isset( $permissions_denied[ $perm->id ] ) ) {
 				// indicate that this permission is denied
 			}
-			echo "<td><input type='checkbox' name='grant[]' value='$id'";
-			if ( isset( $permissions_granted[ $id ] ) ) {
+			echo "<td><input type='checkbox' name='grant[]' value='{$perm->id}'";
+			if ( in_array( $perm->id, $permissions_granted ) ) {
 				echo ' checked';
 			}
-			echo "></td><td> $name </td><td>";
-			echo "<input type='checkbox' name='deny[]' value='$id'";
-			if ( isset( $permissions_denied[ $id ] ) ) {
+			echo "></td><td> {$perm->name} </td><td>";
+			echo "<input type='checkbox' name='deny[]' value='{$perm->id}'";
+			if ( in_array( $perm->id, $permissions_denied ) ) {
 				echo ' checked';
 			}
 			echo '></td></tr>';
