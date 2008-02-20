@@ -66,7 +66,7 @@ if ( isset( $group_edit ) ) {
 			if ( in_array( $perm->id, $permissions_granted ) ) {
 				echo ' checked';
 			}
-			echo "></td><td> {$perm->name} </td><td>";
+			echo "></td><td> {$perm->description} </td><td>";
 			echo "<input type='checkbox' name='deny[]' value='{$perm->id}'";
 			if ( in_array( $perm->id, $permissions_denied ) ) {
 				echo ' checked';

@@ -1039,7 +1039,7 @@ class AdminHandler extends ActionHandler
 				$this->theme->group_edit= $group;
 				$this->theme->members= $group->members;
 				$this->theme->users= Users::get_all();
-				$this->theme->permissions= ACL::all_permissions();
+				$this->theme->permissions= ACL::all_permissions( 'description' );
 				$this->theme->permissions_granted= $group->granted;
 				$this->theme->permissions_denied= $group->denied;
 			}
