@@ -851,6 +851,13 @@ class InstallHandler extends ActionHandler {
 			// Can we connect to the DB?
 			$pdo= 'sqlite:' . $_POST['file'];
 			$connect= DB::connect( $pdo, null, null );
+
+			// Don't leave empty files laying around
+			DB::disconnect();
+			if ( file_exists( $_POST['file'] ) ) {
+				unlink($_POST['file']);
+			}
+
 			switch ($connect) {
 				case true:
 					// We were able to connect to an existing database file.
