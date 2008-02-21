@@ -95,7 +95,8 @@ textarea {
 #oldmenu .menu-item a {
 	width: 105px;
 	padding: 0 0 0 15px;
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGlJREFUeNpinD59+mcGBgYeBtzgCxOQ6GPAD/pgit7hUPAOpugjHtNA4h+ZoJyJQPwCTcELqDgDTNEXIO5AU9QBFYcrAoHpQPwUyn4K5TOgK/oFxE1A/AhK/4JJsKBZsQCqaB+yIECAAQB0mBnahYs+3AAAAABJRU5ErkJggg==) 100px center no-repeat; /* png is dropdown arrow */
+	/* background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGlJREFUeNpinD59+mcGBgYeBtzgCxOQ6GPAD/pgit7hUPAOpugjHtNA4h+ZoJyJQPwCTcELqDgDTNEXIO5AU9QBFYcrAoHpQPwUyn4K5TOgK/oFxE1A/AhK/4JJsKBZsQCqaB+yIECAAQB0mBnahYs+3AAAAABJRU5ErkJggg==) 100px center no-repeat; /* png is dropdown arrow */
+	background: url(../images/bar-back-drop.png) 100px center no-repeat;
 	}
 
 #oldmenu li.menu-item ul {
@@ -109,7 +110,7 @@ textarea {
 	margin: 10px 0 0 0;
 	}
 
-#oldmenu li.menu-item:hover ul {
+#oldmenu li.menu-item:hover ul, #oldmenu li.menu-item.iehover ul {
 	top: 22px;
 	}
 
@@ -122,7 +123,7 @@ textarea {
 	background: none;
 	}
 
-#oldmenu li.menu-item:hover .menu-list a:hover {
+#oldmenu li.menu-item:hover .menu-list a:hover, #oldmenu li.menu-item.iehover .menu-list a:hover {
 	color: white;
 	background: #333;
 	}
