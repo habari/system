@@ -2,7 +2,7 @@ $.fn.hoverClass = function(c) {
 	return this.each(function(){
 		$(this).hover(
 			function() { $(this).addClass(c);  },
-			function() { $(this).removeClass(c); }
+			function() { $(this).removeClass(c); $('.menu-list').hide();}
 		);
 	});
 };
@@ -18,13 +18,13 @@ $(document).ready(function(){
 	  $("tr:even", this).not(".odd").addClass("even");
 	});
 
-	$("#menu .menu-item").hover(
+	$("#oldmenu .menu-item").hover(
 		function(){ $("ul", this).fadeIn("fast"); },
 		function() { }
 	);
 
 	if (document.all) {
-		$("#menu .menu-item").hoverClass("sfHover");
+		$("#oldmenu .menu-item").hoverClass("iehover");
 	}
 
 	// Prevent all checkboxes to be unchecked.
