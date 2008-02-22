@@ -31,12 +31,12 @@
             <ol>
               <li>
                 Open a terminal window, and then change to the installation directory:
-                <pre><strong>$></strong> cd <?php echo $HABARI_PATH;?></pre>
+                <pre><strong>$&gt;</strong> cd <?php echo $HABARI_PATH;?></pre>
               </li>
               <li>
               Change the <em>mode</em> (permissions) of the current directory:
-                <pre><strong>$></strong> chmod g+w .</pre><br />
-                <pre><strong>$></strong> chmod g+x .</pre>
+                <pre><strong>$&gt;</strong> chmod g+w .</pre><br />
+                <pre><strong>$&gt;</strong> chmod g+x .</pre>
                 <p class="note">
                   <em>Note</em>: You may need to use <strong>sudo</strong> and enter
                   an administrator password if you do not own the
@@ -51,8 +51,8 @@
             </p>
             <ol>
             <li>
-                <pre><strong>$></strong> chmod o+w .</pre><br />
-                <pre><strong>$></strong> chmod o+x .</pre>
+                <pre><strong>$&gt;</strong> chmod o+w .</pre><br />
+                <pre><strong>$&gt;</strong> chmod o+x .</pre>
             </li>
             </ol>
             <p>
