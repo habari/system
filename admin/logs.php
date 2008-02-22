@@ -60,6 +60,7 @@ include_once( 'header.php' );
 			 <input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 			 <input type="submit" name="do_delete" value="<?php _e('Delete'); ?>">
 		</table>
+		</form>
 	</div>
 </div>
 	<?php include('footer.php');?>
