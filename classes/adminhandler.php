@@ -690,6 +690,7 @@ class AdminHandler extends ActionHandler
 			else {
 				$plugin['debug']= true;
 				$plugin['error']= $error;
+				$plugin['active']= false;
 			}
 			if ($plugin['active']) {
 				$sort_active_plugins[$plugin_id]= $plugin;
