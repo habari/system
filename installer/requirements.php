@@ -18,9 +18,9 @@
           <?php if ($PHP_OS != 'WIN') {?>
             <p class="instructions">
               Before you can install habari, you first need to make the install
-              directory writeable by php, so that the installation script can 
+              directory writeable by php, so that the installation script can
               write your configuration information properly. The exact proces of
-              doing this will vary depending on the configuration of your web 
+              doing this will vary depending on the configuration of your web
               server and the ownership of the directory.
             </p>
             <p>
@@ -79,7 +79,7 @@
 	<?php if ( ! $pdo_drivers_ok ) { ?>
 	  <h2>No PDO drivers enabled</h2>
 	    <p class="instructions"><em>habari</em> requires that at least one <a href="http://www.php.net/pdo">PDO driver</a> be installed.  Please ask your hosting provider to enable one of the PDO drivers supported by Habari.</p>
-	<? } ?>
+	<?php } ?>
      </div>
     </div>
   </body>
