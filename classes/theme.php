@@ -468,7 +468,14 @@ class Theme extends Pluggable
 	public function theme_feed_alternate( $theme )
 	{
 		$matched_rule= URL::get_matched_rule();
-		switch ( $matched_rule->name ) {
+		// If this is a 404 and no rewrite rule matched the request
+		if(!is_object($matched_rule)) {
+			$rulename = '';
+		}
+		else {
+			$rulename = $matched_rule->name;
+		}
+		switch ( $rulename ) {
 			case 'display_entry':
 			case 'display_page':
 				return URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
