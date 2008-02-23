@@ -182,6 +182,7 @@ class Theme extends Pluggable
 		elseif( $posts === false ) {
 			$fallback= array('404');
 			header( 'HTTP/1.0 404 Not Found' );
+			URL::set_404();
 		}
 
 		extract( $where_filters );
@@ -468,12 +469,13 @@ class Theme extends Pluggable
 	public function theme_feed_alternate( $theme )
 	{
 		$matched_rule= URL::get_matched_rule();
-		// If this is a 404 and no rewrite rule matched the request
-		if(!is_object($matched_rule)) {
-			$rulename = '';
+		if(is_object($matched_rule)) {
+			// This is not a 404
+			$rulename = $matched_rule->name;
 		}
 		else {
-			$rulename = $matched_rule->name;
+			// If this is a 404 and no rewrite rule matched the request
+			$rulename = '';
 		}
 		switch ( $rulename ) {
 			case 'display_entry':

@@ -4,7 +4,7 @@
  * URL class which handles creation of URLs based on the rewrite
  * rules in the database.  Uses rules to construct pretty URLs for use
  * by the system and especially the theme's template engine
- * 
+ *
  * @package Habari
  */
 class URL extends Singleton
@@ -12,17 +12,18 @@ class URL extends Singleton
 	// static collection of rules ( pulled from RewriteController )
 	private $rules= NULL;
 	private $matched_rule= NULL;
- 
+	private static $stub= NULL;
+
 	/**
 	 * Enables singleton working properly
-	 * 
+	 *
 	 * @see singleton.php
 	 */
 	protected static function instance()
 	{
 		return self::getInstanceOf( get_class() );
 	}
- 
+
 	/**
 	 * A simple caching mechanism to avoid reloading rule array
 	 */
@@ -33,10 +34,10 @@ class URL extends Singleton
 		}
 		URL::instance()->rules= RewriteRules::get_active();
 	}
-	
+
 	/**
 	 * Get the matched RewriteRule that was matched in parse().
-	 * 
+	 *
 	 * @return RewriteRule matched rule, or NULL
 	 */
 	public static function get_matched_rule()
@@ -45,43 +46,70 @@ class URL extends Singleton
 	}
 
 	/**
+	 * Cause the matched rule to be unset in the case of a 404
+	 *
+	 * @return RewriteRule A rewrite rule that represents a 404 error - no match on the URL requested
+	 */
+	public static function set_404()
+	{
+		if( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != '404') ) {
+			URL::instance()->matched_rule = new RewriteRule(
+				array(
+					'name' => '404',
+					'parse_regex' => '%^.*$%',
+					'build_str' => '',
+					'handler' => 'UserThemeHandler',
+					'action' => 'display_404',
+					'priority' => 1,
+					'description' => 'Displays an error page when a URL is not matched.',
+					'is_active' => 1,
+					'rule_class' => RewriteRule::RULE_SYSTEM,
+				)
+			);
+			URL::instance()->matched_rule->match(self::$stub);
+		}
+		return URL::instance()->matched_rule;
+	}
+
+	/**
 	 * Match a URL/URI against the rewrite rules stored in the DB.
 	 * This method is used by the Controller class for parsing
 	 * requests, and by other classes, such as Pingback, which
 	 * uses it to determine the post slug for a given URL.
-	 * 
+	 *
 	 * Returns the matched RewriteRule object, or FALSE.
-	 * 
+	 *
 	 * @param string $from_url URL string to parse
 	 * @return RewriteRule matched rule, or FALSE
 	 */
 	public static function parse( $from_url )
 	{
 		$base_url= Site::get_path( 'base', true );
-		
-		/* 
+
+		/*
 		 * Strip out the base URL from the requested URL
-		 * but only if the base URL isn't / 
+		 * but only if the base URL isn't /
 		 */
 		if ( strpos( $from_url, $base_url ) === 0 ) {
 			$from_url= substr( $from_url, strlen( $base_url ) );
 		}
-		
+
 		/* Trim off any leading or trailing slashes */
 		$from_url= trim( $from_url, '/' );
-	
+
 		/* Remove the querystring from the URL */
 		if ( strpos( $from_url, '?' ) !== FALSE ) {
 			list( $from_url, )= explode( '?', $from_url );
 		}
-	
+
 		$url= URL::instance();
 		$url->load_rules(); // Cached in singleton
-	
-		/* 
+
+		/*
 		 * Run the stub through the regex matcher
 		 */
 		$pattern_matches= array();
+		self::$stub = $from_url;
 		foreach ( $url->rules as $rule ) {
 			if ( $rule->match( $from_url ) ) {
 				$url->matched_rule= $rule;
@@ -89,15 +117,15 @@ class URL extends Singleton
 				return $rule;
 			}
 		}
-		
+
 		return FALSE;
 	}
-	
-	/** 
+
+	/**
 	 * Builds the required pretty URL given a supplied
 	 * rule name and a set of placeholder replacement
 	 * values and returns the built URL.
-	 * 
+	 *
 	 * <code>
 	 * 	URL::get( 'display_entries_by_date', array(
 	 * 		'year' => '2000',
@@ -105,15 +133,15 @@ class URL extends Singleton
 	 *    	'day' => '01',
 	 * 	) );
 	 * </code>
-	 * 
+	 *
 	 * @param mixed $rule_names string name of the rule or array of rules which would build the URL
 	 * @param mixed $args (optional) array or object of placeholder replacement values
-	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
+	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 */
 	public static function get( $rule_names, $args= array(), $useall= true, $noamp= false )
 	{
-		$args= self::extract_args( $args ); 
-		
+		$args= self::extract_args( $args );
+
 		$url= URL::instance();
 		$url->load_rules();
 		if ( !is_array( $rule_names ) ) {
@@ -129,7 +157,7 @@ class URL extends Singleton
 					if ( $rating == 0 ) {
 						$selectedrule= $rule;
 						break;
-					} 
+					}
 					if ( empty( $rating ) || ( $newrating < $rating ) ) {
 						$rating= $newrating;
 						$selectedrule= $rule;
@@ -142,12 +170,12 @@ class URL extends Singleton
 			}
 		}
 	}
-	
+
 	/**
 	 * Helper wrapper function.  Outputs the URL via echo.
 	 * @param string $rule_name name of the rule which would build the URL
 	 * @param array $args (optional) array of placeholder replacement values
-	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring	 
+	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 */
 	public static function out( $rule_name, $args= array(), $useall= true, $noamp= true )
 	{
@@ -174,7 +202,7 @@ class URL extends Singleton
 	 * Extract the possible arguments to use in the URL from the passed variable
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL
-	 **/	 	 	 	
+	 **/
 	public static function extract_args( $args, $prefix= '' )
 	{
 		if ( is_object( $args ) ) {

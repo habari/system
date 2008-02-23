@@ -140,20 +140,7 @@ class Controller extends Singleton {
 		$matched_rule= URL::parse($controller->stub);
 
 		if ($matched_rule === FALSE) {
-			// Create a rule to handle a 404 and force it to dispatch
-			$matched_rule = new RewriteRule(
-					array(
-					'name' => '404',
-					'parse_regex' => '',
-					'build_str' => '',
-					'handler' => 'UserThemeHandler',
-					'action' => 'display_404',
-					'priority' => 1,
-					'description' => 'Displays an error page when a URL is not matched.',
-					'is_active' => 1,
-					'rule_class' => RewriteRule::RULE_SYSTEM
-					)
-				);
+			$matched_rule = URL::set_404();
 		}
 
 		/* OK, we have a matching rule.  Set the action and create a handler */
