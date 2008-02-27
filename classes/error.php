@@ -60,7 +60,7 @@ class Error extends Exception
 	{
 		$trace = $this->getTrace();
 		$trace1 = reset($trace);
-		return sprintf(_t('%1$s in %2$s line %3$s'), $this->getMessage(), $trace1['file'], $trace1['line']);
+		return sprintf(_t('%1$s in %2$s line %3$s on request of "%4$s"'), $this->getMessage(), $trace1['file'], $trace1['line'], $_SERVER['REQUEST_URI']);
 	}
 
 	/**
