@@ -52,6 +52,18 @@ class Error extends Exception
 	}
 
 	/**
+	 * Get the error text, file, and line number from the backtrace, which is more accurate
+	 *
+	 * @return string The contructed error string
+	 */
+	public function humane_error()
+	{
+		$trace = $this->getTrace();
+		$trace1 = reset($trace);
+		return sprintf(_t('%1$s in %2$s line %3$s'), $this->getMessage(), $trace1['file'], $trace1['line']);
+	}
+
+	/**
 	 * Used to handle all PHP errors after Error::handle_errors() is called.
 	 */
 	public static function error_handler( $errno, $errstr, $errfile, $errline, $errcontext )
@@ -86,8 +98,9 @@ class Error extends Exception
 
 	private static function print_backtrace( $trace= null )
 	{
-		if ( !isset($trace) )
+		if ( !isset($trace) ) {
 			$trace= debug_backtrace();
+		}
 		print "<pre class=\"backtrace\">\n";
 		foreach ( $trace as $n => $a ) {
 			if ( ! isset( $a['file'] ) ) { $a['file']= '[core]'; }

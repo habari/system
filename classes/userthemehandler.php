@@ -54,8 +54,8 @@ class UserThemeHandler extends ActionHandler
 				$this->theme->$action_method();
 			}
 		}
-		catch(exception $e) {
-			EventLog::log($e->getMessage() . ' in ' . $e->getFile() . ' line ' . $e->getLine() , 'error', 'theme', 'habari', print_r($e, 1) );
+		catch(Error $e) {
+			EventLog::log($e->humane_error(), 'error', 'theme', 'habari', print_r($e, 1) );
 			if(DEBUG) {
 				Utils::debug($e);
 			}
@@ -81,8 +81,8 @@ class UserThemeHandler extends ActionHandler
 		try {
 			$this->theme->display( $template_name );
 		}
-		catch(exception $e) {
-			EventLog::log($e->getMessage() . ' in ' . $e->getFile() . ' line ' . $e->getLine() , 'error', 'theme', 'habari', print_r($e, 1) );
+		catch(Error $e) {
+			EventLog::log($e->humane_error(), 'error', 'theme', 'habari', print_r($e, 1) );
 		}
 	}
 }
