@@ -88,6 +88,10 @@ class Comments extends ArrayObject
 					$where[]= "email= ?";
 					$params[]= $paramset['email'];
 				}
+				if ( isset( $paramset['url'] ) ) {
+					$where[]= "url= ?";
+					$params[]= $paramset['url'];
+				}
 				if ( isset( $paramset['post_id'] ) ) {
 					$where[]= "post_id= ?";
 					$params[]= $paramset['post_id'];
