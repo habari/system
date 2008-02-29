@@ -21,7 +21,8 @@ class RewriteRules extends ArrayObject {
 			array( 'name' => 'display_entry', 'parse_regex' => '%^(?P<slug>[^/]+)(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_post', 'priority' => 100, 'description' => 'Return entry matching specified slug' ),
 			array( 'name' => 'display_page', 'parse_regex' => '%^(?P<slug>[^/]+)(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_post', 'priority' => 100, 'description' => 'Return page matching specified slug' ),
 			array( 'name' => 'display_search', 'parse_regex' => '%^search(?:/(?P<criteria>[^/]+))?(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'search(/{$criteria})(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'search', 'priority' => 8, 'description' => 'Searches posts' ),
-
+			array( 'name' => 'display_404', 'parse_regex' => '%^.*$%', 'build_str' => '', 'handler' => 'UserThemeHandler', 'action' => 'display_404', 'priority' => 9999, 'description' => 'Displays an error page when a URL is not matched.' ),
+			
 			// Form actions
 			array( 'name' => 'submit_feedback', 'parse_regex' => '%^(?P<id>[0-9]+)/feedback/?$%i', 'build_str' => '{$id}/feedback', 'handler' => 'FeedbackHandler', 'action' => 'add_comment', 'priority' => 8, 'description' => 'Adds a comment to a post' ),
 

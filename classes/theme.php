@@ -182,7 +182,10 @@ class Theme extends Pluggable
 		elseif( $posts === false ) {
 			$fallback= array('404');
 			header( 'HTTP/1.0 404 Not Found' );
-			URL::set_404();
+			// Replace template variables with the 404 rewrite rule
+			$this->request->{URL::get_matched_rule()->name}= false;
+			$this->request->{URL::set_404()->name}= true;
+			$this->matched_rule= URL::get_matched_rule();
 		}
 
 		extract( $where_filters );
