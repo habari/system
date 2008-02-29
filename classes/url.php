@@ -52,20 +52,8 @@ class URL extends Singleton
 	 */
 	public static function set_404()
 	{
-		if( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != '404') ) {
-			URL::instance()->matched_rule = new RewriteRule(
-				array(
-					'name' => '404',
-					'parse_regex' => '%^.*$%',
-					'build_str' => '',
-					'handler' => 'UserThemeHandler',
-					'action' => 'display_404',
-					'priority' => 1,
-					'description' => 'Displays an error page when a URL is not matched.',
-					'is_active' => 1,
-					'rule_class' => RewriteRule::RULE_SYSTEM,
-				)
-			);
+		if( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
+			URL::instance()->matched_rule = reset(RewriteRules::by_name('display_404'));
 			URL::instance()->matched_rule->match(self::$stub);
 		}
 		return URL::instance()->matched_rule;

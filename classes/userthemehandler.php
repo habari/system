@@ -31,15 +31,11 @@ class UserThemeHandler extends ActionHandler
 	{
 		$this->action= $action;
 		$this->theme->assign('matched_rule', URL::get_matched_rule());
-		$request = new StdClass();
+		$request= new StdClass();
 		foreach(RewriteRules::get_active() as $rule) {
-			if(URL::get_matched_rule()){
-				$request->{$rule->name} = ($rule->name == URL::get_matched_rule()->name);
-			}
-			else {
-				$request->{$rule->name} = ($rule->name == 'display_404');
-			}
+			$request->{$rule->name}= false;
 		}
+		$request->{$this->theme->matched_rule->name}= true;
 		$this->theme->assign('request', $request);
 
 		$action_method= 'act_' . $action;
