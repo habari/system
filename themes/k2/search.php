@@ -10,7 +10,7 @@
       <div class="entry-head">
        <h3 class="entry-title"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h3>
        <small class="entry-meta">
-        <span class="chronodata"><abbr class="published"><?php echo $post->pubdate_out; ?></abbr></span><?php if ( $show_author ) { ?> by <?php if ( isset ( $user->info->displayname ) ) { echo $user->info->displayname; } else { echo $post->author->name; } ?> <?php } ?>
+        <span class="chronodata"><abbr class="published"><?php echo $post->pubdate_out; ?></abbr></span><?php if ( $show_author ) { ?> by <?php echo $post->author->displayname; ?> <?php } ?>
         <span class="commentslink"><a href="<?php echo $post->permalink; ?>#comments" title="Comments to this post"><?php echo $post->comments->approved->count; ?>
 		<?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></span>
 <?php if ( $user ) { ?>
