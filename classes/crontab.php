@@ -30,6 +30,15 @@ class CronTab extends ActionHandler
 			$request->execute();
 		}
 		else {
+			if( Options::get('cron_running') ) {
+				return;
+			}
+			$hash = md5(microtime(true));
+			Options::set('cron_running', $hash);
+			usleep(5000);
+			if( Options::get('cron_running') != $hash ) {
+				return;
+			}
 			$crons = DB::get_results( 'SELECT * FROM ' . DB::table('crontab') . ' WHERE start_time <= ? AND next_run <= ?', array( time(), time() ), 'CronJob' );
 			if ( $crons ) {
 				foreach( $crons as $cron ) {
@@ -37,6 +46,7 @@ class CronTab extends ActionHandler
 				}
 			}
 			Options::set('poll_cron', 0);
+			Options::set('cron_running', false);
 		}
 	}
 
