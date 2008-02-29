@@ -122,6 +122,37 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * Handles get requests for the dashboard
+	 */
+	public function get_dashboard()
+	{
+		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
+		$firstpostdate = strtotime(DB::get_value('SELECT min(pubdate) FROM {posts} WHERE status = ?', array(Post::status('published'))));
+		$firstpostdate = time() - $firstpostdate;
+		$this->theme->active_time = array(
+			'years' => floor($firstpostdate / 31536000),
+			'months' => floor(($firstpostdate % 31536000) / 2678400),
+			'days' => round(($firstpostdate % 2678400) / 86400),
+		);
+
+		$this->theme->stats = array(
+			'author_count' => DB::get_value('SELECT count(*) FROM {posts} GROUP BY user_id;'),
+			'page_count' => DB::get_value('SELECT count(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('page'), Post::status('published'))),
+			'entry_count' => DB::get_value('SELECT count(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('entry'), Post::status('published'))),
+			'comment_count' => DB::get_value('SELECT min(pubdate) FROM {posts} WHERE content_type = ?', array(Post::type('page'))),
+			'tag_count' => DB::get_value('SELECT count(*) FROM {tags}'),
+			'page_draft_count' => DB::get_value('SELECT min(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('page'), Post::status('draft'))),
+			'entry_draft_count' => DB::get_value('SELECT min(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('entry'), Post::status('draft'))),
+			'unapproved_comment_count' => Comments::count_total( Comment::STATUS_UNAPPROVED ),
+		);
+
+		$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8 ) );
+		$this->theme->recent_comments = Comments::get( array( 'status' => 'approved', 'limit' => 5 ) );
+
+		$this->display( 'dashboard' );
+	}
+
+	/**
 	 * Handles post requests from the publish page.
 	 */
 	public function post_publish()
@@ -524,6 +555,7 @@ class AdminHandler extends ActionHandler
 						// This comment was marked for approval
 						$comment= Comment::get( $comment->id );
 						$modstatus['Approved %d comments']+= $comment->status != Comment::STATUS_APPROVED;
+						$modstatus['Approved comments on these posts: %s'] = (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
 						$comment->status= Comment::STATUS_APPROVED;
 						$comment->update();
 						break;
@@ -680,7 +712,7 @@ class AdminHandler extends ActionHandler
 					// instantiate this plugin
 					// in order to get its info()
 					include_once( $file );
-					$pluginobj= Plugins::load( $file );
+					$pluginobj= Plugins::load( $file, false );
 					$plugin['active']= false;
 					$plugin['verb']= _t( 'Activate' );
 					$plugin['actions']= array();

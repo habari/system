@@ -280,15 +280,18 @@ class Plugins
 	/**
 	 * function load
 	 * Initialize all loaded plugins by calling their load() method
-	 * @param string the class name to load
+	 * @param string $file the class name to load
+	 * @param boolean $activate True if the plugin's load() method should be called	 
 	 * @return Plugin The instantiated plugin class
 	 **/
-	public static function load( $file )
+	public static function load( $file, $activate = true )
 	{
 		$class= Plugins::class_from_filename( $file );
 		$plugin = new $class;
 		self::$plugins[$plugin->plugin_id]= $plugin;
-		$plugin->load();
+		if($activate) {
+			$plugin->load();
+		}
 		return $plugin;
 	}
 
