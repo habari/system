@@ -457,19 +457,22 @@ class User extends QueryRecord
 	 */
 	public function __get( $name )
 	{
-		if ( $name == 'info' ) {
-			if ( ! isset( $this->info ) ) {
-				$this->info= new UserInfo( $this->fields['id'] );
-			}
-			else {
-				$this->info->set_key( $this->fields['id'] );
-			}
-			return $this->info;
+		switch ($name) {
+			case 'info':
+				if ( ! isset( $this->info ) ) {
+					$this->info= new UserInfo( $this->fields['id'] );
+				}
+				else {
+					$this->info->set_key( $this->fields['id'] );
+				}
+				return $this->info;
+			case 'groups':
+				return $this->list_groups();
+			case 'displayname':
+				return ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
+			default:
+				return parent::__get( $name );
 		}
-		if ( $name == 'groups' ) {
-			return $this->list_groups();
-		}
-		return parent::__get( $name );
 	}
 
 	/**
