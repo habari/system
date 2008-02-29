@@ -418,6 +418,7 @@ class AtomHandler extends ActionHandler
 			'atom_feed_entry_comments' => 'display_entry',
 			'atom_feed_comments' => 'display_home',
 			);
+		$alternate_rules= Plugins::filter( 'atom_get_collection_alternate_rules', $alternate_rules );
 
 		// Store handler vars since we'll be using them a lot.
 		$handler_vars= Controller::get_handler_vars();
