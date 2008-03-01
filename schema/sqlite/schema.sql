@@ -1,3 +1,5 @@
+PRAGMA auto_vacuum = 1;
+
 CREATE TABLE {$prefix}posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   slug VARCHAR(255) NOT NULL,
