@@ -76,6 +76,7 @@ class SQLiteConnection extends DatabaseConnection
 
 		$cqueries= array();
 		$iqueries= array();
+		$pqueries= array();
 		$for_update= array();
 		$allqueries= array();
 
@@ -90,10 +91,19 @@ class SQLiteConnection extends DatabaseConnection
 			else if ( preg_match( "|UPDATE ([^ ]*)|", $qry, $matches ) ) {
 				$iqueries[]= $qry;
 			}
+			else if ( preg_match ( "|PRAGMA ([^ ]*)|", $qry, $matches ) ) {
+				$pqueries[]= $qry;
+			}
 			else {
 				// Unrecognized query type
 			}
 		}
+
+		// Merge the queries into allqueries; pragmas MUST go first
+		$allqueries = $pqueries;
+		$allqueries = array_merge($allqueries, $iqueries);
+
+
 
 		$tables= $this->get_column( "SELECT name FROM sqlite_master WHERE type = 'table';" );
 
