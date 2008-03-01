@@ -31,7 +31,7 @@
 				<label>E-mail <input type="checkbox" name="search_fields[]" class="search_field" value="email"<?php echo in_array('email', $search_fields) ? ' checked' : ''; ?>></label>
 				<label>URL <input type="checkbox" name="search_fields[]" class="search_field" value="url"<?php echo in_array('url', $search_fields) ? ' checked' : ''; ?>></label>
 				<?php echo Utils::html_select('search_status', $statuses, $search_status, array( 'class'=>'longselect')); ?>
-				<?php echo Utils::html_select('search_type', $types, $type, array( 'class'=>'longselect')); ?>
+				<?php echo Utils::html_select('search_type', $types, $search_type, array( 'class'=>'longselect')); ?>
 			</p>
 			</form>
 		</div>

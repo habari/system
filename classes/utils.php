@@ -676,7 +676,7 @@ class Utils
 		$output.= ">\n";
 		foreach($options as $value => $text){
 			$output.= '<option value="'.$value.'"';
-			if($current == $value) {
+			if($current == (string)$value) {
 				$output.= ' selected';
 			}
 			$output.= '>' . $text . "</option>\n";
