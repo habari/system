@@ -646,15 +646,19 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->default_radio= $default_radio;
 
+		if($search_type != 'All') {
+			$arguments['type']= intval( $search_type );
+		}
+
 		if ( '' != $search ) {
 			$arguments['criteria']= $search;
 			$arguments['criteria_fields']= $search_fields;
-			if ( $search_status == 'All' ) {
-				unset( $arguments['status'] );
-			}
-			if ( $search_type == 'All' ) {
-				unset( $arguments['type'] );
-			}
+		}
+		if ( $search_status == 'All' ) {
+			unset( $arguments['status'] );
+		}
+		if ( $search_type == 'All' ) {
+			unset( $arguments['type'] );
 		}
 		$this->theme->comments= Comments::get( $arguments );
 
