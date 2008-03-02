@@ -343,7 +343,7 @@ ul.tabs li.ui-tabs-selected.last {
 
 /* BluePrint Overrides */
 
-#plugin_options {
+#plugin_options, #theme_options {
 	background: #333333 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAVCAYAAACHUoQEAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEBJREFUeNpiYGBgSGICEowg4i+I+AMnfoGI33ACzP0FxAxmIMIARGiBCBUQIQciJEGECIjgAxFcIIINRDADBBgAlsIJb8O3yoQAAAAASUVORK5CYII=) top repeat-x; /* Drop shadow */
 	border-top: 1px solid #C0C0C0;
 	border-bottom: 1px solid #C0C0C0;
@@ -352,7 +352,7 @@ ul.tabs li.ui-tabs-selected.last {
 	padding: 0px 0px 20px;
 }
 
-#plugin_options h2 {
+#plugin_options h2, #theme_options h2 {
 	color: white;
 }
 

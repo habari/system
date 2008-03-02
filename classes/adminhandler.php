@@ -423,10 +423,31 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
 	}
 
+	/**
+	 * A POST handler for the admin themes page that simply passes those options through.
+	 */
+	public function post_themes()
+	{
+		return $this->get_themes();
+	}
+
+	/**
+	 * Handles GET requests for the theme listing
+	 */
 	function get_themes()
 	{
-		$this->theme->active_theme= Options::get( 'theme_dir' );
-		$this->theme->all_themes= Themes::get_all_data();
+
+		$all_themes= Themes::get_all_data();
+		$this->theme->all_themes= $all_themes;
+
+		$active_theme_dir= Options::get( 'theme_dir' );
+		$this->theme->active_theme_dir= $active_theme_dir;
+		$this->theme->active_theme= $all_themes[$active_theme_dir];
+
+		// instantiate the active theme to see if it's configurable
+		$active_theme= Themes::create();
+		$this->theme->active_theme_name= $all_themes[$active_theme_dir]['info']->name;
+		$this->theme->configurable= Plugins::filter( 'theme_config', false, $active_theme);
 
 		$this->theme->display( 'themes' );
 	}
