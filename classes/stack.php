@@ -9,16 +9,16 @@
  * 
  * <code>
  * // Add jquery to the javascript stack: 
- * Stack::add( 'javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
+ * Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
  *
  * // Add stylesheet to theme_stylesheet stack with media type
- * Stack::add( 'theme_stylesheet', array( Site::get_url('theme') . '/style.css', 'screen' ), 'style' );
+ * Stack::add( 'template_stylesheet', array( Site::get_url('theme') . '/style.css', 'screen' ), 'style' );
  *  
  * // Output the javascript stack:
- * Stack::out( 'javascript', '<script src="%s" type="text/javascript"></script>' );
+ * Stack::out( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>' );
  *
  * // Output the theme_stylesheet stack:
- * Stack::out( 'theme_stylesheet', '<link rel="stylesheet" type="text/css"  href="%s" media="%s">' );
+ * Stack::out( 'template_stylesheet', '<link rel="stylesheet" type="text/css"  href="%s" media="%s">' );
  * </code>   
  *
  * @package Habari
