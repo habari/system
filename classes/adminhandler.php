@@ -106,7 +106,7 @@ class AdminHandler extends ActionHandler
 		}
 		foreach ( $fields as $input => $field ) {
 			if ( Options::get( $field ) != ${$input} ) {
-				Options::set( $field, htmlentities( ${$input} ) );
+				Options::set( $field, ${$input} );
 			}
 		}
 		Session::notice( _t( 'Successfully updated options' ) );
