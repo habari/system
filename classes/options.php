@@ -52,7 +52,7 @@ class Options extends Singleton
 	 **/
 	public static function out( $name )
 	{
-		echo htmlentities( self::instance()->get( $name ) );
+		echo htmlspecialchars( self::instance()->get( $name ) );
 	}
 
 	/**
