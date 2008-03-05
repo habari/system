@@ -104,9 +104,9 @@ class AtomHandler extends ActionHandler
 	public function act_rsd()
 	{
 		/**
-			* List of APIs supported by the RSD
-			* Refer to namespace for required elements/attributes.
-			*/
+		 * List of APIs supported by the RSD
+		 * Refer to namespace for required elements/attributes.
+		 */
 		$apis_list= array(
 			'Atom' => array(
 				'preferred' => 'true',
@@ -116,52 +116,70 @@ class AtomHandler extends ActionHandler
 		);
 
 		$apis_list= Plugins::filter('rsd_api_list', $apis_list);
-
-		$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
-
-		$rsd_service= $xml->addChild( 'service' );
-		$service_engineName= $rsd_service->addChild( 'engineName', 'Habari' );
-		$service_engineLink= $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
-		$service_homePageLink= $rsd_service->addChild( 'homePageLink', Site::get_url('habari') );
-		$service_apis= $rsd_service->addChild( 'apis' );
-
-		if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
-			return false;
+		
+		if ( Cache::has('atom:rsd:apis') ) {
+			$cache_apis= Cache::get('atom:rsd:apis');
+			if ( ($cache_apis === $apis_list) && Cache::has('atom:rsd:xml') ) {
+				$cache_xml= Cache::get('atom:rsd:xml');
+				$cache_xml= simplexml_load_string($cache_xml);
+			}
 		}
+		else {
+			Cache::set( 'atom:rsd:apis', $apis_list );
+		}
+		
+		if ( $cache_xml instanceOf SimpleXMLElement ) {
+			$xml= $cache_xml;
+		}
+		else {
+			$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
 
-		foreach ( $apis_list as $apiName => $atts ) {
-			if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
-				continue;
+			$rsd_service= $xml->addChild( 'service' );
+			$service_engineName= $rsd_service->addChild( 'engineName', 'Habari' );
+			$service_engineLink= $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
+			$service_homePageLink= $rsd_service->addChild( 'homePageLink', Site::get_url('habari') );
+			$service_apis= $rsd_service->addChild( 'apis' );
+
+			if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
+				return false;
 			}
 
-			$apis_api= $service_apis->addChild( 'api' );
-			$apis_api->addAttribute( 'name', $apiName );
-			$apis_api->addAttribute( 'preferred', $atts['preferred'] );
-			$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
-			$apis_api->addAttribute( 'blogID', $atts['blogID'] );
+			foreach ( $apis_list as $apiName => $atts ) {
+				if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
+					continue;
+				}
 
-			if ( !isset( $atts['settings'] ) || ( count( $atts['settings'] ) < 1 ) ) {
-				continue;
-			}
+				$apis_api= $service_apis->addChild( 'api' );
+				$apis_api->addAttribute( 'name', $apiName );
+				$apis_api->addAttribute( 'preferred', $atts['preferred'] );
+				$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
+				$apis_api->addAttribute( 'blogID', $atts['blogID'] );
 
-			$api_settings= $apis_api->addChild( 'settings' );
+				if ( !isset( $atts['settings'] ) || ( count( $atts['settings'] ) < 1 ) ) {
+					continue;
+				}
 
-			foreach ( $atts['settings'] as $settingName => $settingValue ) {
-				switch ( $settingName ) {
-					case 'docs':
-					case 'notes':
-						$settings_setting= $api_settings->addChild( $settingName, $settingValue );
-						break;
-					case 'setting':
-						foreach ( $settingValue as $settingArray ) {
-							$settings_setting= $api_settings->addChild( 'setting', $settingArray['value'] );
-							$settings_setting->addAttribute( 'name', $settingArray['name'] );
-						}
-						break;
+				$api_settings= $apis_api->addChild( 'settings' );
+
+				foreach ( $atts['settings'] as $settingName => $settingValue ) {
+					switch ( $settingName ) {
+						case 'docs':
+						case 'notes':
+							$settings_setting= $api_settings->addChild( $settingName, $settingValue );
+							break;
+						case 'setting':
+							foreach ( $settingValue as $settingArray ) {
+								$settings_setting= $api_settings->addChild( 'setting', $settingArray['value'] );
+								$settings_setting->addAttribute( 'name', $settingArray['name'] );
+							}
+							break;
+					}
 				}
 			}
+			
+			Cache::set( 'atom:rsd:xml', $xml->asXML() );
 		}
-
+		
 		$xml= Plugins::filter( 'rsd', $xml, $this->handler_vars );
 		$xml= $xml->asXML();
 
@@ -175,18 +193,30 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_introspection()
 	{
-		$xml= new SimpleXMLElement( '<service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
+		if ( Cache::has('atom:introspection:xml') ) {
+			$cache_xml= Cache::get('atom:introspection:xml');
+			$cache_xml= simplexml_load_string($cache_xml);
+		}
+		
+		if ( $cache_xml instanceOf SimpleXMLElement ) {
+			$xml= $cache_xml;
+		}
+		else {
+			$xml= new SimpleXMLElement( '<service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
 
-		$service_workspace= $xml->addChild( 'workspace' );
+			$service_workspace= $xml->addChild( 'workspace' );
 
-		$workspace_title= $service_workspace->addChild( 'atom:title', Options::get( 'title' ), 'http://www.w3.org/2005/Atom' );
+			$workspace_title= $service_workspace->addChild( 'atom:title', htmlspecialchars( Options::get( 'title' ) ), 'http://www.w3.org/2005/Atom' );
 
-		$workspace_collection= $service_workspace->addChild( 'collection' );
-		$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
+			$workspace_collection= $service_workspace->addChild( 'collection' );
+			$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
 
-		$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
-		$collection_accept= $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
-
+			$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
+			$collection_accept= $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
+			
+			Cache::set('atom:introspection:xml', $xml->asXML() );
+		}
+		
 		$xml= Plugins::filter( 'atom_introspection', $xml, $this->handler_vars );
 		$xml= $xml->asXML();
 
@@ -230,11 +260,11 @@ class AtomHandler extends ActionHandler
 
 		$xml= new SimpleXMLElement( '<feed xmlns="http://www.w3.org/2005/Atom"></feed>' );
 
-		$feed_title= $xml->addChild( 'title', Options::get( 'title' ) );
+		$feed_title= $xml->addChild( 'title', htmlspecialchars( Options::get( 'title' ) ) );
 
 		if ( $tagline= Options::get( 'tagline' ) )
 		{
-			$feed_subtitle= $xml->addChild( 'subtitle', $tagline );
+			$feed_subtitle= $xml->addChild( 'subtitle', htmlspecialchars( $tagline ) );
 		}
 
 		$feed_updated= $xml->addChild( 'updated', date( 'c', time() ) );
@@ -436,10 +466,10 @@ class AtomHandler extends ActionHandler
 
 		$xml= new SimpleXMLElement( '<feed ' . $namespaces . '></feed>' );
 
-		$feed_title= $xml->addChild( 'title', Options::get( 'title' ) );
+		$feed_title= $xml->addChild( 'title', htmlspecialchars( Options::get( 'title' ) ) );
 
 		if ( $tagline= Options::get( 'tagline' ) ) {
-			$feed_subtitle= $xml->addChild( 'subtitle', $tagline );
+			$feed_subtitle= $xml->addChild( 'subtitle', htmlspecialchars( $tagline ) );
 		}
 
 		$feed_updated= $xml->addChild( 'updated', date( 'c', time() ) );
