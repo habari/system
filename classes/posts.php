@@ -51,7 +51,7 @@ class Posts extends ArrayObject
 	 * @param array $paramarry An associated array of parameters, or a querystring
 	 * @return array An array of Post objects, or a single post object, depending on request
 	 **/
-	public static function get( $paramarray = array() )
+	public static function get( $paramarray= array() )
 	{
 		$params= array();
 		$fns= array( 'get_results', 'get_row', 'get_value' );
@@ -83,10 +83,10 @@ class Posts extends ArrayObject
 			$wheres[]= $paramarray['where'];
 		}
 		else {
-			foreach( $wheresets as $paramset ) {
+			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
 				$where= array();
-				$paramset= array_merge((array) $paramarray, (array) $paramset);
+				$paramset= array_merge( ( array ) $paramarray, ( array ) $paramset );
 
 				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
 					$where[]= "id= ?";
@@ -101,45 +101,46 @@ class Posts extends ArrayObject
 					$params[]= Post::type( $paramset['content_type'] );
 				}
 				if ( isset( $paramset['slug'] ) ) {
-	        if ( is_array( $paramset['slug'] ) ) {
-					  $where[]= "slug IN (" . implode( ',', array_fill( 0, count( $paramset['slug'] ), '?' ) ) . ")";
-					  $params = array_merge($params, $paramset['slug']);
-	        } else {
-					  $where[]= "slug= ?";
-					  $params[]= $paramset['slug'];
-				  }
+					if ( is_array( $paramset['slug'] ) ) {
+						$where[]= "slug IN (" . implode( ',', array_fill( 0, count( $paramset['slug'] ), '?' ) ) . ")";
+						$params= array_merge( $params, $paramset['slug'] );
+					}
+					else {
+						$where[]= "slug= ?";
+						$params[]= $paramset['slug'];
+					}
 				}
 				if ( isset( $paramset['user_id'] ) ) {
 					$where[]= "user_id= ?";
 					$params[]= $paramset['user_id'];
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
-					$join .= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
-					$join .= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
+					$join.= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
+					$join.= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 					// Need tag expression parser here.
 					if ( isset( $paramset['tag'] ) ) {
-		        if ( is_array( $paramset['tag'] ) ) {
-						  $where[]= "tag_text IN (" . implode( ',', array_fill( 0, count( $paramset['tag'] ), '?' ) ) . ")";
-						  $params = array_merge($params, $paramset['tag']);
-		        }
-		        else {
+						if ( is_array( $paramset['tag'] ) ) {
+							$where[]= "tag_text IN (" . implode( ',', array_fill( 0, count( $paramset['tag'] ), '?' ) ) . ")";
+							$params= array_merge( $params, $paramset['tag'] );
+						}
+						else {
 							$where[]= 'tag_text= ?';
 							$params[]= $paramset['tag'];
 						}
 					}
 					if ( isset( $paramset['tag_slug'] ) ) {
-		        if ( is_array( $paramset['tag_slug'] ) ) {
-						  $where[]= "tag_slug IN (" . implode( ',', array_fill( 0, count( $paramset['tag_slug'] ), '?' ) ) . ")";
-						  $params = array_merge($params, $paramset['tag_slug']);
-		        }
-		        else {
+						if ( is_array( $paramset['tag_slug'] ) ) {
+							$where[]= "tag_slug IN (" . implode( ',', array_fill( 0, count( $paramset['tag_slug'] ), '?' ) ) . ")";
+							$params= array_merge( $params, $paramset['tag_slug'] );
+						}
+						else {
 							$where[]= 'tag_slug= ?';
 							$params[]= $paramset['tag_slug'];
 						}
 					}
 				}
 				if ( isset( $paramset['not:tag'] ) ) {
-					$nottag = is_array($paramset['not:tag']) ? array_values($paramset['not:tag']) : array($paramset['not:tag']);
+					$nottag= is_array( $paramset['not:tag'] ) ? array_values( $paramset['not:tag'] ) : array( $paramset['not:tag'] );
 
 					$where[]= 'not exists (select 1
 						FROM ' . DB::table( 'tag2post' ) . '
@@ -147,16 +148,16 @@ class Posts extends ArrayObject
 						WHERE ' . DB::table( 'tags' ) . '.tag_slug IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
 						AND ' . DB::table( 'tag2post' ) . '.post_id = ' . DB::table( 'posts' ) . '.id)
 					';
-					$params = array_merge($params, $nottag);
+					$params= array_merge( $params, $nottag );
 				}
 
 				/* do searching */
 				if ( isset( $paramset['criteria'] ) ) {
 					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= "(title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
-						$params[] = $word;
-						$params[] = $word;  // Not a typo
+						$where[].= "(title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
+						$params[]= $word;
+						$params[]= $word;  // Not a typo
 					}
 				}
 
@@ -171,21 +172,21 @@ class Posts extends ArrayObject
 				if ( isset( $paramset['day'] ) ) {
 					/* Got the full date */
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= date('Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					$params[]= date('Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= date('Y-m-d', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					$params[]= date('Y-m-d', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= date('Y-m-d', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					$params[]= date('Y-m-d', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
-				if(count($where) > 0) {
+				if ( count( $where ) > 0 ) {
 					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
@@ -194,7 +195,7 @@ class Posts extends ArrayObject
 		// Get any full-query parameters
 		extract( $paramarray );
 
-		if ( isset( $page ) && is_numeric($page) ) {
+		if ( isset( $page ) && is_numeric( $page ) ) {
 			$offset= ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
@@ -230,11 +231,11 @@ class Posts extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug($paramarray, $fetch_fn, $query, $params);
+		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
+		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
-		DB::set_fetch_mode(PDO::FETCH_CLASS);
-		DB::set_fetch_class('Post');
+		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_class( 'Post' );
 		$results= DB::$fetch_fn( $query, $params, 'Post' );
 
 		if ( 'get_results' != $fetch_fn ) {
@@ -243,7 +244,7 @@ class Posts extends ArrayObject
 		}
 		elseif ( is_array( $results ) ) {
 			$c= __CLASS__;
-			$return_value = new $c( $results );
+			$return_value= new $c( $results );
 			$return_value->get_param_cache= $paramarray;
 			return $return_value;
 		}
@@ -267,7 +268,7 @@ class Posts extends ArrayObject
 	 * @param string a post slug
 	 * @return array an array of post content
 	**/
-	public static function by_slug ( $slug = '' )
+	public static function by_slug ( $slug= '' )
 	{
 		return self::get( array( 'slug' => $slug ) );
 	}
@@ -290,7 +291,7 @@ class Posts extends ArrayObject
 	**/
 	public function count_all()
 	{
-		$params= array_merge( (array) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1 ) );
+		$params= array_merge( ( array ) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1 ) );
 		return Posts::get( $params );
 	}
 
@@ -301,7 +302,7 @@ class Posts extends ArrayObject
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts by the specified author
 	**/
-	public static function count_by_author( $user_id = '', $status )
+	public static function count_by_author( $user_id= '', $status )
 	{
 		$params= array( 'user_id' => $user_id, 'count' => 'id' );
 		if ( FALSE !== $status ) {
@@ -317,11 +318,11 @@ class Posts extends ArrayObject
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts with the specified tag
 	**/
-	public static function count_by_tag( $tag = '', $status )
+	public static function count_by_tag( $tag= '', $status )
 	{
 		$params= array( 'tag' => $tag, 'count' => 'slug');
 		if ( FALSE !== $status ) {
-			$params['status'] = $status;
+			$params['status']= $status;
 		}
 		return self::get( $params );
 	}
@@ -350,12 +351,12 @@ class Posts extends ArrayObject
 			return false;
 		}
 		switch( true ) {
-			case is_integer(reset($posts)):
+			case is_integer( reset( $posts ) ):
 				break;
-			case reset($posts) instanceof Post:
-				$ids = array();
-				foreach($posts as $post) {
-					$ids[] = $post->id;
+			case reset( $posts ) instanceof Post:
+				$ids= array();
+				foreach ( $posts as $post ) {
+					$ids[]= $post->id;
 				}
 				$posts= $ids;
 				break;

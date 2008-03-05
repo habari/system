@@ -53,10 +53,10 @@ class Comments extends ArrayObject
 			$wheres[]= $paramarray['where'];
 		}
 		else {
-			foreach( $wheresets as $paramset ) {
+			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
 				$where= array( '1=1' );
-				$paramset= array_merge((array) $paramarray, (array) $paramset);
+				$paramset= array_merge( ( array ) $paramarray, ( array ) $paramset );
 
 				if ( isset( $paramset['id'] ) && ( is_numeric( $paramset['id'] ) || is_array( $paramset['id'] ) ) ) {
 					if ( is_numeric( $paramset['id'] ) ) {
@@ -111,7 +111,7 @@ class Comments extends ArrayObject
 						$paramset['criteria_fields']= array( 'content' );
 					}
 					$paramset['criteria_fields']= array_unique( $paramset['criteria_fields'] );
-					
+
 					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
 						foreach ( $paramset['criteria_fields'] as $criteria_field ) {
@@ -122,35 +122,35 @@ class Comments extends ArrayObject
 					$where[]= '(' . implode( " \nOR\n ", $where_search ).')';
 				}
 
-				/* 
-				 * Build the pubdate 
+				/*
+				 * Build the pubdate
 				 * If we've got the day, then get the date.
 				 * If we've got the month, but no date, get the month.
 				 * If we've only got the year, get the whole year.
 				 * @todo Ensure that we've actually got all the needed parts when we query on them
-				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')				 				 
-				 */				
+				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')
+				 */
 				if ( isset( $paramset['day'] ) ) {
 					/* Got the full date */
 					$where[]= 'date BETWEEN ? AND ?';
 					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) ); 
+					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) ); 
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
-				elseif ( isset( $paramset['year'] ) ) { 
+				elseif ( isset( $paramset['year'] ) ) {
 					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
-				
+
 				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 			}
 		}
-		
+
 		// Get any full-query parameters
 		extract( $paramarray );
 
@@ -166,7 +166,7 @@ class Comments extends ArrayObject
 		else {
 			$fetch_fn= $fns[0];
 		}
-		
+
 		// is a count being request?
 		if ( isset( $count ) ) {
 			$select= "COUNT($count)";
@@ -182,13 +182,13 @@ class Comments extends ArrayObject
 		if ( isset( $nolimit ) ) {
 			$limit= '';
 		}
-		
+
 		$query= '
 			SELECT ' . $select . '
 			FROM ' . DB::table( 'comments' ) .
 			' ' . $join;
 
-		if ( count( $wheres ) > 0 ) {  
+		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
@@ -261,7 +261,7 @@ class Comments extends ArrayObject
 		if ( ! is_array( $comments ) ) {
 			$comments= array( $comments );
 		}
-		if( count( $comments ) == 0 ) {
+		if ( count( $comments ) == 0 ) {
 			return;
 		}
 		$result= true;
@@ -387,7 +387,7 @@ class Comments extends ArrayObject
 				case Comment::STATUS_UNAPPROVED:
 					if ( isset( $_COOKIE['comment_' . Options::get( 'GUID' )] ) ) {
 						 list( $name, $email, $url )= explode( '#', $_COOKIE['comment_' . Options::get( 'GUID' )] );
-					} 
+					}
 					else {
 						$name= '';
 						$email= '';
@@ -452,7 +452,7 @@ class Comments extends ArrayObject
 	/**
 	 * function delete
 	 * Deletes all comments in this object
-	 */	 	 	 	 	
+	 */
 	public function delete()
 	{
 		$result= true;
@@ -464,7 +464,7 @@ class Comments extends ArrayObject
 		$this->exchangeArray( array() );
 		return $result;
 	}
-	
+
 	/**
 	 * static count_by_name
 	 * returns the number of comments attributed to the specified name
