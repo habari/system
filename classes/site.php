@@ -159,7 +159,7 @@ class Site
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 					$url= Site::get_url( 'user' ) .  '/themes/' . $theme;
 				}
-				elseif ( file_exists( Site::get_dir( 'config' ) . '/user/themes/' . $theme ) ) {
+				elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
 					$url= Site::get_url( 'habari' ) . '/user/themes/' . $theme;
 				}
 				else {
@@ -297,7 +297,7 @@ class Site
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 					$path= Site::get_dir('user') . '/themes/' . $theme;
 				}
-				elseif ( file_exists( Site::get_dir( 'config' ) . '/user/themes/' . $theme ) ) {
+				elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
 					$path= HABARI_PATH . '/user/themes/' . $theme;
 				}
 				else {
