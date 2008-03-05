@@ -55,6 +55,7 @@ class UserHandler extends ActionHandler
 		$this->theme= Themes::create();
 		if ( !$this->theme->template_exists( 'login' ) ) {
 			$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
+			$this->theme->assign( 'admin_page', 'login' );
 		}
 		$request= new StdClass();
 		foreach ( RewriteRules::get_active() as $rule ) {
