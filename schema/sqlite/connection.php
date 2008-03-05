@@ -75,6 +75,7 @@ class SQLiteConnection extends DatabaseConnection
 		}
 
 		$cqueries= array();
+		$indexqueries= array();
 		$iqueries= array();
 		$pqueries= array();
 		$for_update= array();
@@ -84,6 +85,9 @@ class SQLiteConnection extends DatabaseConnection
 			if ( preg_match( "|CREATE TABLE ([^ ]*)|", $qry, $matches ) ) {
 				$cqueries[strtolower( $matches[1] )]= $qry;
 				$for_update[$matches[1]]= 'Created table '.$matches[1];
+			}
+			else if ( preg_match( "|CREATE (UNIQUE )?INDEX ([^ ]*)|", $qry, $matches ) ) {
+				$indexqueries[] = $qry;
 			}
 			else if ( preg_match( "|INSERT INTO ([^ ]*)|", $qry, $matches ) ) {
 				$iqueries[]= $qry;
@@ -100,8 +104,7 @@ class SQLiteConnection extends DatabaseConnection
 		}
 
 		// Merge the queries into allqueries; pragmas MUST go first
-		$allqueries = $pqueries;
-		$allqueries = array_merge($allqueries, $iqueries);
+		$allqueries = array_merge($pqueries, $indexqueries, $iqueries);
 
 
 
