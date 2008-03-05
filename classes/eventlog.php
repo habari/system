@@ -41,7 +41,7 @@ class EventLog extends ArrayObject
 	public static function register_type( $type= 'default', $module= null )
 	{
 		try {
-			DB::query( 'INSERT INTO ' . DB::Table('log_types') . ' (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
+			DB::query( 'INSERT INTO ' . DB::Table( 'log_types' ) . ' (module, type) VALUES (?,?)', array( self::get_module( $module ), $type ) );
 		}
 		catch( Exception $e ) {
 			// Don't really care if there's a duplicate.
@@ -56,7 +56,7 @@ class EventLog extends ArrayObject
 	 */
 	public static function unregister_type( $type= 'default', $module= null )
 	{
-		DB::query( 'DELETE FROM ' . DB::Table('log_types') . ' WHERE module = ? AND type = ?', array( self::get_module($module), $type ) );
+		DB::query( 'DELETE FROM ' . DB::Table( 'log_types' ) . ' WHERE module = ? AND type = ?', array( self::get_module( $module ), $type ) );
 	}
 
 	/**
@@ -78,14 +78,14 @@ class EventLog extends ArrayObject
 			'module' => $module,
 			'type' => $type,
 			'data' => $data,
-			'ip' => ip2long($_SERVER['REMOTE_ADDR']),
+			'ip' => ip2long( $_SERVER['REMOTE_ADDR'] ),
 		) );
-		if($user= User::identify()) {
+		if ( $user= User::identify() ) {
 			$log->user_id= $user->id;
 		}
 		$log->insert();
-		if(LogEntry::severity($severity) >= LogEntry::severity('warning')) {
-			Session::error($message, $module);
+		if ( LogEntry::severity( $severity ) >= LogEntry::severity( 'warning' ) ) {
+			Session::error( $message, $module );
 		}
 		return $log;
 	}
@@ -101,7 +101,7 @@ class EventLog extends ArrayObject
 		if ( is_null( $module ) ) {
 			$bt= debug_backtrace();
 			$last= $bt[$level];
-			$module= isset($last['class']) ? $last['class'] : basename( $last['file'], '.php' );
+			$module= isset( $last['class'] ) ? $last['class'] : basename( $last['file'], '.php' );
 		}
 		return $module;
 	}
@@ -114,8 +114,8 @@ class EventLog extends ArrayObject
 	 * @param array $paramarry An associated array of parameters, or a querystring
 	 * @return array An array of LogEntry objects, or a single LogEntry object, depending on request
 	 */
-	public static function get( $paramarray = array() ) {
-
+	public static function get( $paramarray= array() )
+	{
 		$params= array();
 		$fns= array( 'get_results', 'get_row', 'get_value' );
 		$select= '';
@@ -157,10 +157,10 @@ class EventLog extends ArrayObject
 			$wheres[]= $paramarray['where'];
 		}
 		else {
-			foreach( $wheresets as $paramset ) {
+			foreach ( $wheresets as $paramset ) {
 				// Safety mechanism to prevent empty queries
-				$where= array('1=1');
-				$paramset= array_merge((array) $paramarray, (array) $paramset);
+				$where= array( '1=1' );
+				$paramset= array_merge( ( array ) $paramarray, ( array ) $paramset );
 
 				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
 					$where[]= "id= ?";
@@ -170,15 +170,15 @@ class EventLog extends ArrayObject
 					$where[]= "user_id= ?";
 					$params[]= $paramset['user_id'];
 				}
-				if ( isset( $paramset['severity'] ) && ( 'any' != LogEntry::severity_name($paramset['severity']) ) ) {
+				if ( isset( $paramset['severity'] ) && ( 'any' != LogEntry::severity_name( $paramset['severity'] ) ) ) {
 					$where[]= "severity_id= ?";
-					$params[]= LogEntry::severity($paramset['severity']);
+					$params[]= LogEntry::severity( $paramset['severity'] );
 				}
 				if ( isset( $paramset['type_id'] ) ) {
-					if( is_array($paramset['type_id']) ) {
-						$types= array_filter($paramset['type_id'], 'is_numeric');
-						if(count($types)) {
-							$where[]= 'type_id IN ('. implode(',', $types).')';
+					if ( is_array( $paramset['type_id'] ) ) {
+						$types= array_filter( $paramset['type_id'], 'is_numeric' );
+						if ( count( $types ) ) {
+							$where[]= 'type_id IN (' . implode( ',', $types ) . ')';
 						}
 					}
 					else {
@@ -195,8 +195,8 @@ class EventLog extends ArrayObject
 				if ( isset( $paramset['criteria'] ) ) {
 					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= "(message LIKE CONCAT('%',?,'%'))";
-						$params[] = $word;
+						$where[].= "(message LIKE CONCAT('%',?,'%'))";
+						$params[]= $word;
 					}
 				}
 
@@ -211,18 +211,18 @@ class EventLog extends ArrayObject
 				 */
 				if ( isset( $paramset['day'] ) ) {
 					$where[]= 'timestamp BETWEEN ? AND ?';
-					$params[]= date('Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					$params[]= date('Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[]= 'timestamp BETWEEN ? AND ?';
-					$params[]= date('Y-m-d', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					$params[]= date('Y-m-d', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[]= 'timestamp BETWEEN ? AND ?';
-					$params[]= date('Y-m-d', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					$params[]= date('Y-m-d', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
 				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
@@ -231,7 +231,7 @@ class EventLog extends ArrayObject
 		// Get any full-query parameters
 		extract( $paramarray );
 
-		if ( isset( $page ) && is_numeric($page) ) {
+		if ( isset( $page ) && is_numeric( $page ) ) {
 			$offset= ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
@@ -268,10 +268,10 @@ class EventLog extends ArrayObject
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= $orderby . $limit;
-		// Utils::debug($paramarray, $fetch_fn, $query, $params);
+		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
-		DB::set_fetch_mode(PDO::FETCH_CLASS);
-		DB::set_fetch_class('LogEntry');
+		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_class( 'LogEntry' );
 		$results= DB::$fetch_fn( $query, $params, 'LogEntry' );
 
 			// If the fetch callback function is not get_results,
@@ -281,7 +281,7 @@ class EventLog extends ArrayObject
 		}
 		elseif ( is_array( $results ) ) {
 			$c= __CLASS__;
-			$return_value = new $c( $results );
+			$return_value= new $c( $results );
 			$return_value->get_param_cache= $paramarray;
 			return $return_value;
 		}
