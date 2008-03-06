@@ -18,8 +18,8 @@ class AdminHandler extends ActionHandler
 		$user= User::identify();
 		if ( !$user ) {
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
-			Session::add_to_set( 'login', $_POST, 'post_data' );
-			Session::add_to_set( 'login', $_GET, 'get_data' );
+			Session::add_to_set( 'last_form_data', $_POST, 'post' );
+			Session::add_to_set( 'last_form_data', $_GET, 'get' );
 			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			exit;
 		}
