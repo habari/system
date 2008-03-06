@@ -18,11 +18,11 @@ class Theme extends Pluggable
 
 	/**
 	 * We build the Post filters by analyzing the handler_var
-		* data which is assigned to the handler ( by the Controller and
-		* also, optionally, by the Theme )
-		*/
+	 * data which is assigned to the handler ( by the Controller and
+	 * also, optionally, by the Theme )
+	 */
 	public $valid_filters= array(
-	 'content_type',
+		'content_type',
 		'slug',
 		'status',
 		'page',
@@ -35,6 +35,7 @@ class Theme extends Pluggable
 		'limit',
 		'nolimit',
 		'fetch_fn',
+		'id',
 	);
 
 	/**
@@ -49,7 +50,7 @@ class Theme extends Pluggable
 	 * @param template_engine ( optional ) specify a template engine
 	 * @param theme_dir       ( optional ) specify a theme directory
 	 */
-	public function __construct($themedata)
+	public function __construct( $themedata )
 	{
 		$this->name= $themedata->name;
 		$this->version= $themedata->version;
@@ -69,7 +70,7 @@ class Theme extends Pluggable
 	 */
 	public function info( $theme )
 	{
-		$xml_file= Site::get_path('user') . '/themes/' . $theme . '/theme.xml';
+		$xml_file= Site::get_path( 'user' ) . '/themes/' . $theme . '/theme.xml';
 		if ( $xml_content= file_get_contents( $xml_file ) ) {
 			$theme_data= new SimpleXMLElement(  $xml_file );
 			// Is it a valid theme xml file?
@@ -100,8 +101,8 @@ class Theme extends Pluggable
 	public function add_template_vars()
 	{
 		$handler= Controller::get_handler();
-		if( isset( $handler ) ) {
-			Plugins::act('add_template_vars', $this, Controller::get_handler()->handler_vars);
+		if ( isset( $handler ) ) {
+			Plugins::act( 'add_template_vars', $this, Controller::get_handler()->handler_vars );
 		}
 	}
 
@@ -109,10 +110,10 @@ class Theme extends Pluggable
 	 * Find the first template that matches from the list provided and display it
 	 * @param array $template_list The list of templates to search for
 	 */
-	public function display_fallback($template_list)
+	public function display_fallback( $template_list )
 	{
-		foreach( $template_list as $template ) {
-			if( $this->template_exists( $template ) ) {
+		foreach ( $template_list as $template ) {
+			if ( $this->template_exists( $template ) ) {
 				$this->display( $template );
 				return true;
 			}
@@ -149,19 +150,19 @@ class Theme extends Pluggable
 
 		$where_filters= array();
 		$where_filters= array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $this->valid_filters ) );
-		//$where_filters['status']= Post::status('published');
-		if (array_key_exists('tag', $where_filters)) {
+		//$where_filters['status']= Post::status( 'published' );
+		if ( array_key_exists( 'tag', $where_filters ) ) {
 			$where_filters['tag_slug']=  $where_filters['tag'];
-			unset($where_filters['tag']);
+			unset( $where_filters['tag'] );
 		}
 		if ( User::identify() ) {
-			$where_filters['status']= Post::status('any');
+			$where_filters['status']= Post::status( 'any' );
 		}
 		else {
-			$where_filters['status']= Post::status('published');
+			$where_filters['status']= Post::status( 'published' );
 		}
 
-		if( !isset( $posts ) ) {
+		if ( !isset( $posts ) ) {
 			$user_filters= Plugins::filter( 'template_user_filters', $user_filters );
 			$user_filters= array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 			$where_filters= array_merge( $where_filters, $user_filters );
@@ -179,8 +180,8 @@ class Theme extends Pluggable
 			$types= array_flip( Post::list_active_post_types() );
 			$type= $types[$post->content_type];
 		}
-		elseif( $posts === false ) {
-			$fallback= array('404');
+		elseif ( $posts === false ) {
+			$fallback= array( '404' );
 			header( 'HTTP/1.0 404 Not Found' );
 			// Replace template variables with the 404 rewrite rule
 			$this->request->{URL::get_matched_rule()->name}= false;
@@ -193,7 +194,7 @@ class Theme extends Pluggable
 		if ( !isset( $fallback ) ) {
 			// Default fallbacks based on the number of posts
 			$fallback= array( '{$type}.{$id}', '{$type}.{$slug}', '{$type}.tag.{$posttag}' );
-			if( count( $posts ) > 1 ) {
+			if ( count( $posts ) > 1 ) {
 				$fallback[]= '{$type}.multiple';
 				$fallback[]= 'multiple';
 			}
@@ -203,27 +204,27 @@ class Theme extends Pluggable
 			}
 		}
 
-		$searches= array('{$id}','{$slug}','{$year}','{$month}','{$day}','{$type}','{$tag}',);
+		$searches= array( '{$id}','{$slug}','{$year}','{$month}','{$day}','{$type}','{$tag}', );
 		$replacements= array(
-			(isset($post) && $post instanceof Post)?$post->id:'-',
-			(isset($post) && $post instanceof Post)?$post->slug:'-',
-			isset($year)?$year:'-',
-			isset($month)?$month:'-',
-			isset($day)?$day:'-',
-			isset($type)?$type:'-',
-			isset($tag)?$tag:'-',
+			( isset( $post ) && $post instanceof Post ) ? $post->id : '-',
+			( isset( $post ) && $post instanceof Post ) ? $post->slug : '-',
+			isset( $year ) ? $year : '-',
+			isset( $month ) ? $month : '-',
+			isset( $day ) ? $day : '-',
+			isset( $type ) ? $type : '-',
+			isset( $tag ) ? $tag : '-',
 		);
 		$fallback[]= 'home';
 		$fallback= Plugins::filter( 'template_fallback', $fallback );
-		$fallback= array_unique( str_replace($searches, $replacements, $fallback) );
-		for($z = 0; $z < count($fallback); $z++) {
-			if( (strpos($fallback[$z], '{$posttag}') !== false) && (isset($post)) && ($post instanceof Post)) {
+		$fallback= array_unique( str_replace( $searches, $replacements, $fallback ) );
+		for ( $z= 0; $z < count( $fallback ); $z++ ) {
+			if ( ( strpos( $fallback[$z], '{$posttag}' ) !== false ) && ( isset( $post ) ) && ( $post instanceof Post ) ) {
 				$replacements= array();
-				if( $alltags= $post->tags ) {
-					foreach($alltags as $tag_slug => $tag_text ) {
-						$replacements[] = str_replace('{$posttag}', $tag_slug, $fallback[$z]);
+				if ( $alltags= $post->tags ) {
+					foreach ( $alltags as $tag_slug => $tag_text ) {
+						$replacements[]= str_replace( '{$posttag}', $tag_slug, $fallback[$z] );
 					}
-					array_splice($fallback, $z, 1, $replacements);
+					array_splice( $fallback, $z, 1, $replacements );
 				}
 				else {
 					break;
@@ -247,7 +248,7 @@ class Theme extends Pluggable
 
 		// Makes sure home displays only entries
 		$default_filters= array(
-		 'content_type' => Post::type('entry'),
+			'content_type' => Post::type( 'entry' ),
 		);
 
 		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
@@ -288,30 +289,30 @@ class Theme extends Pluggable
 		$commenter_name= '';
 		$commenter_email= '';
 		$commenter_url= '';
-		$commenter_content = '';
-		$user = User::identify();
+		$commenter_content= '';
+		$user= User::identify();
 		if ( isset( $_SESSION['comment'] ) ) {
-			$details= Session::get_set('comment');
+			$details= Session::get_set( 'comment' );
 			$commenter_name= $details['name'];
 			$commenter_email= $details['email'];
 			$commenter_url= $details['url'];
-			$commenter_content = $details['content'];
+			$commenter_content= $details['content'];
 		}
 		elseif ( $user ) {
 			$commenter_name= $user->username;
 			$commenter_email= $user->email;
-			$commenter_url= Site::get_url('habari');
+			$commenter_url= Site::get_url( 'habari' );
 		}
 		elseif ( isset( $_COOKIE[$cookie] ) ) {
 			list( $commenter_name, $commenter_email, $commenter_url )= explode( '#', $_COOKIE[$cookie] );
 		}
 
-		$this->commenter_name = $commenter_name;
-		$this->commenter_email = $commenter_email;
-		$this->commenter_url = $commenter_url;
-		$this->commenter_content = $commenter_content;
+		$this->commenter_name= $commenter_name;
+		$this->commenter_email= $commenter_email;
+		$this->commenter_url= $commenter_url;
+		$this->commenter_content= $commenter_content;
 
-		$this->comments_require_id = Options::get('comments_require_id');
+		$this->comments_require_id= Options::get( 'comments_require_id' );
 
 		return $this->act_display( $paramarray );
 	}
@@ -330,7 +331,7 @@ class Theme extends Pluggable
 
 		// Makes sure home displays only entries
 		$default_filters= array(
-		 'content_type' => Post::type('entry'),
+			'content_type' => Post::type( 'entry' ),
 		);
 
 		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
@@ -345,24 +346,52 @@ class Theme extends Pluggable
 	public function act_display_date( $user_filters= array() )
 	{
 		$handler_vars= Controller::get_handler()->handler_vars;
-		$y = isset( $handler_vars['year'] );
-		$m = isset( $handler_vars['month'] );
-		$d = isset( $handler_vars['day'] );
+		$y= isset( $handler_vars['year'] );
+		$m= isset( $handler_vars['month'] );
+		$d= isset( $handler_vars['day'] );
 
-		if($y&&$m&&$d) $paramarray['fallback'][]= 'year.{$year}.month.{$month}.day.{$day}';
-		if($y&&$m&&$d) $paramarray['fallback'][]= 'year.month.day';
-		if($m&&$d) $paramarray['fallback'][]= 'month.{$month}.day.{$day}';
-		if($y&&$m) $paramarray['fallback'][]= 'year.{$year}.month.{$month}';
-		if($y&&$d) $paramarray['fallback'][]= 'year.{$year}.day.{$day}';
-		if($m&&$d) $paramarray['fallback'][]= 'month.day';
-		if($y&&$d) $paramarray['fallback'][]= 'year.day';
-		if($y&&$m) $paramarray['fallback'][]= 'year.month';
-		if($m) $paramarray['fallback'][]= 'month.{$month}';
-		if($d) $paramarray['fallback'][]= 'day.{$day}';
-		if($y) $paramarray['fallback'][]= 'year.{$year}';
-		if($y) $paramarray['fallback'][]= 'year';
-		if($m) $paramarray['fallback'][]= 'month';
-		if($d) $paramarray['fallback'][]= 'day';
+		if ( $y && $m && $d ) {
+			$paramarray['fallback'][]= 'year.{$year}.month.{$month}.day.{$day}';
+		}
+		if ( $y && $m && $d) {
+			$paramarray['fallback'][]= 'year.month.day';
+		}
+		if ( $m && $d ) {
+			$paramarray['fallback'][]= 'month.{$month}.day.{$day}';
+		}
+		if ( $y && $m ) {
+			$paramarray['fallback'][]= 'year.{$year}.month.{$month}';
+		}
+		if ( $y && $d ) {
+			$paramarray['fallback'][]= 'year.{$year}.day.{$day}';
+		}
+		if ( $m && $d ) {
+			$paramarray['fallback'][]= 'month.day';
+		}
+		if ( $y && $d ) {
+			$paramarray['fallback'][]= 'year.day';
+		}
+		if ( $y && $m ) {
+			$paramarray['fallback'][]= 'year.month';
+		}
+		if ( $m ) {
+			$paramarray['fallback'][]= 'month.{$month}';
+		}
+		if ( $d ) {
+			$paramarray['fallback'][]= 'day.{$day}';
+		}
+		if ( $y ) {
+			$paramarray['fallback'][]= 'year.{$year}';
+		}
+		if ( $y ) {
+			$paramarray['fallback'][]= 'year';
+		}
+		if ( $m ) {
+			$paramarray['fallback'][]= 'month';
+		}
+		if ( $d ) {
+			$paramarray['fallback'][]= 'day';
+		}
 		$paramarray['fallback'][]= 'multiple';
 		$paramarray['fallback'][]= 'home';
 
@@ -412,7 +441,7 @@ class Theme extends Pluggable
 	{
 		$this->add_template_vars();
 
-		if( isset( Controller::get_handler()->handler_vars ) ) {
+		if ( isset( Controller::get_handler()->handler_vars ) ) {
 			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
 				$this->assign( $key, $value );
 			}
@@ -426,7 +455,7 @@ class Theme extends Pluggable
 	{
 		$this->add_template_vars();
 
-		if( isset( Controller::get_handler()->handler_vars ) ) {
+		if ( isset( Controller::get_handler()->handler_vars ) ) {
 			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
 				$this->assign( $key, $value );
 			}
@@ -447,18 +476,20 @@ class Theme extends Pluggable
  	/**
 	 * Aggregates and echos the additional header code by combining Plugins and Stack calls.
 	 */
-	public function theme_header( $theme ) {
-		$output = Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
-		$output .= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+	public function theme_header( $theme )
+	{
+		$output= Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
+		$output.= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 		return $output;
 	}
 
 	/**
 	 * Aggregates and echos the additional footer code by combining Plugins and Stack calls.
 	 */
-	public function theme_footer( $theme ) {
+	public function theme_footer( $theme )
+	{
 		Plugins::act( 'template_footer', $theme );
-		$output = Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+		$output= Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 		return $output;
 	}
 
@@ -472,21 +503,21 @@ class Theme extends Pluggable
 	public function theme_feed_alternate( $theme )
 	{
 		$matched_rule= URL::get_matched_rule();
-		if(is_object($matched_rule)) {
+		if ( is_object( $matched_rule ) ) {
 			// This is not a 404
-			$rulename = $matched_rule->name;
+			$rulename= $matched_rule->name;
 		}
 		else {
 			// If this is a 404 and no rewrite rule matched the request
-			$rulename = '';
+			$rulename= '';
 		}
 		switch ( $rulename ) {
 			case 'display_entry':
 			case 'display_page':
-				return URL::get( 'atom_entry', array( 'slug' => Controller::get_var('slug') ) );
+				return URL::get( 'atom_entry', array( 'slug' => Controller::get_var( 'slug' ) ) );
 				break;
 			case 'display_entries_by_tag':
-				return URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var('tag') ) );
+				return URL::get( 'atom_feed_tag', array( 'tag' => Controller::get_var( 'tag' ) ) );
 				break;
 			case 'display_home':
 			default:
@@ -551,41 +582,37 @@ class Theme extends Pluggable
 	 **/
 	public function __call( $function, $params )
 	{
-		if(strpos($function, 'act_') === 0) {
+		if ( strpos( $function, 'act_' ) === 0 ) {
 			// The first parameter is an array, get it
-			if(count($params) > 0) {
-				list($user_filters)= $params;
+			if ( count( $params ) > 0 ) {
+				list( $user_filters )= $params;
 			}
 			else {
 				$user_filters= array();
 			}
-			$action = substr($function, 4);
-			Plugins::act('theme_action', $action, $this, $user_filters);
+			$action= substr( $function, 4 );
+			Plugins::act( 'theme_action', $action, $this, $user_filters );
 		}
 		else {
-			$purposed = 'output';
-			if(preg_match('%^(.*)_(return|end)$%', $function, $matches)) {
-				$purposed = $matches[2];
-				$function = $matches[1];
+			$purposed= 'output';
+			if ( preg_match( '%^(.*)_(return|end)$%', $function, $matches ) ) {
+				$purposed= $matches[2];
+				$function= $matches[1];
 			}
-			array_unshift($params, $function, $this);
-			$result = call_user_func_array(array('Plugins', 'theme'), $params);
-			switch($purposed) {
+			array_unshift( $params, $function, $this );
+			$result= call_user_func_array( array( 'Plugins', 'theme' ), $params );
+			switch( $purposed ) {
 				case 'return':
 					return $result;
 				case 'end':
-					echo end($result);
-					return end($result);
+					echo end( $result );
+					return end( $result );
 				default:
-					$output = implode('', (array)$result);
+					$output= implode( '', ( array ) $result );
 					echo $output;
 					return $output;
 			}
 		}
 	}
-
 }
-
-
-
 ?>
