@@ -29,12 +29,22 @@ class UserHandler extends ActionHandler
 
 				$login_session= Session::get_set( 'login' );
 				if ( ! empty( $login_session ) ) {
+					/* Now that we know we're dealing with the same user, transfer the form data so he does not lose his request */
+					if ( ! empty( $login_session['post_data'] ) ) {
+						Session::add_to_set( 'last_form_data', $login_session['post_data'], 'post' );
+					}
+					if ( ! empty( $login_session['get_data'] ) ) {
+						Session::add_to_set( 'last_form_data', $login_session['get_data'], 'get' );
+					}
+					
+					/* Redirect to the correct admin page */
 					$dest= explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
 					if ( '' == $dest[0] ) {
 						Utils::redirect( Site::get_url( 'admin' ) );
 					}
 					else {
 						// Replace '?' with '&' in $dest[1] before call URL::get()
+						// Therefore calling URL::get() with a query string
 						$dest[1]= str_replace( '?', '&', $dest[1] );
 						Utils::redirect( URL::get( 'admin', 'page=' . $dest[1] ) );
 					}
