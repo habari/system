@@ -31,10 +31,10 @@ class UserHandler extends ActionHandler
 				if ( ! empty( $login_session ) ) {
 					/* Now that we know we're dealing with the same user, transfer the form data so he does not lose his request */
 					if ( ! empty( $login_session['post_data'] ) ) {
-						Session::add_to_set( 'last_form_data', $login_session['post_data'], 'post' );
+						Session::add_to_set( 'last_form_data', $last_form_data['post'], 'post' );
 					}
 					if ( ! empty( $login_session['get_data'] ) ) {
-						Session::add_to_set( 'last_form_data', $login_session['get_data'], 'get' );
+						Session::add_to_set( 'last_form_data', $last_form_data['get'], 'get' );
 					}
 					
 					/* Redirect to the correct admin page */
