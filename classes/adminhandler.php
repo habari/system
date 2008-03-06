@@ -182,7 +182,9 @@ class AdminHandler extends ActionHandler
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 			$post->title= $title;
-			$post->slug= $newslug;
+			if ( ( $newslug != '' ) && ( $newslug != $slug ) ) {
+				$post->slug= $newslug;
+			}
 			$post->tags= $tags;
 			$post->content= $content;
 			$post->content_type= $content_type;
