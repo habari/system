@@ -24,7 +24,7 @@
 			font-family: Verdana;
 		}
 
-		#databasesetup {
+		#loginform {
 			margin:0 auto;
 		}
 
@@ -36,24 +36,36 @@
 		.bottom {
 			margin-bottom: 50px;
 		}
+		.notice, .error {
+			margin-left:auto;
+			margin-right:auto;
+			width:552px;
+		}
 
 		</style>
 </head>
 <body>
-<ul id="menu">
+<ul id="oldmenu">
 	<li id="site-name">
 		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
 	</li>
-
 </ul>
 
-<div id="wrapper">
-<div id="masthead">
-	<h1>Habari</h1>
+<div style="min-height:45px;">
+<?php
+if ( Session::has_errors( 'expired_session' ) ) {
+	echo '<div class="error">' . Session::get_error( 'expired_session', false ) . '</div>';
+}
+if ( Session::has_errors( 'expired_form_submission' ) ) {
+	echo '<div class="notice">' . Session::get_error( 'expired_form_submission', false ) . '</div>';
+}
+?>
 </div>
+
+<div id="wrapper">
 <form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
-<div class="installstep ready done" id="databasesetup">
-	<h2>Login to <?php Options::out( 'title' ); ?></h2>
+<div class="installstep ready done" id="loginform">
+	<h2>Login to Habari</h2>
 	<div class="options">
 		<div class="inputfield">
 			<p>
@@ -64,8 +76,8 @@
 				<label for="habari_password">Password:</label>
 				<input type="password" size="25" name="habari_password" id="habari_password">
 			</p>
-			<p>
-				<input class="submit" type="submit" value="GO!">
+			<p class="center">
+				<input class="submit" type="submit" value="Let's go!">
 			</p>
 		</div>
 	</div>
@@ -73,13 +85,11 @@
 </div>
 </form>
 
-<div id="footer">
+<div>
 	<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href); return false;" title="Read the user manual">Manual</a> -
 		<a href="http://wiki.habariproject.org/" title="Read the Habari wiki">Wiki</a> -
 		<a href="http://groups.google.com/group/habari-users" title="Ask the community">Mailing List</a>
 	</p>
-
-
 </div>
 
 <?php
