@@ -374,7 +374,7 @@ class DB extends Singleton
 	 * @param (optional) silent silent running with no messages printed? default = true
 	 * @return  string			translated SQL string
 	 */
-	public static static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
+	public static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
 		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
 	}
@@ -384,7 +384,7 @@ class DB extends Singleton
 	 *
 	 * @param integer $old_version Optional version to upgrade to
 	 */
-	public static static function upgrade( $old_version )
+	public static function upgrade( $old_version )
 	{
 		 return DB::instance()->connection->upgrade( $old_version );
 	}
