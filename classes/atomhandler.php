@@ -1,11 +1,11 @@
 <?php
 /**
- * Habari AtomHandler class
- * Produces Atom feeds and accepts Atom Publishing Protocol input
- *
- * @package Habari
- * @todo Apply system error handling
- */
+	* Habari AtomHandler class
+	* Produces Atom feeds and accepts Atom Publishing Protocol input
+	*
+	* @package Habari
+	* @todo Apply system error handling
+	*/
 
 class AtomHandler extends ActionHandler
 {
@@ -18,7 +18,7 @@ class AtomHandler extends ActionHandler
 	 */
 	public function __construct()
 	{
-		Plugins::act( 'init_atom' );
+		Plugins::act('init_atom');
 		/**
 		* The following Format::apply calls should be moved into a plugin that is
 		* active by default.  They apply autop formatting to the Atom content
@@ -32,18 +32,18 @@ class AtomHandler extends ActionHandler
 		* feed URL?
 		*/
 		if ( !$this->is_auth() ) {
-			Format::apply( 'autop', 'post_content_atom' );
+			Format::apply('autop', 'post_content_atom');
 		}
 	}
 
 	/**
-	 * Check if a user is authenticated for Atom editing
-	 *
+		* Check if a user is authenticated for Atom editing
+		*
 	 * @todo This entire function should be put into the User class somehow.
-	 * @todo X-WSSE
-	 * @param bool $force Force authorization? If so, basic HTTP_AUTH is displayed if not authed
-	 * @return User The logged-in user
-	 */
+		* @todo X-WSSE
+		* @param bool $force Force authorization? If so, basic HTTP_AUTH is displayed if not authed
+		* @return User The logged-in user
+		*/
 	function is_auth( $force= FALSE )
 	{
 		if ( ( $this->user == NULL ) || ( $force != FALSE ) ) {
@@ -51,7 +51,7 @@ class AtomHandler extends ActionHandler
 				User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
 			}
 
-			if ( ( $force != FALSE ) && ( !$this->user= User::identify() ) ) {
+			if ( ( $force != FALSE ) && ( !$this->user = User::identify() ) ) {
 				header( 'HTTP/1.1 401 Unauthorized' );
 				header( 'Status: 401 Unauthorized' );
 				header( 'WWW-Authenticate: Basic realm="Habari"' );
@@ -63,8 +63,8 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle incoming requests for Atom entry collections
-	 */
+		* Handle incoming requests for Atom entry collections
+		*/
 	public function act_collection()
 	{
 		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
@@ -78,9 +78,9 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * function act_entry
-	 * 'index' should be 'slug'
-	 */
+		* function act_entry
+		* 'index' should be 'slug'
+		*/
 	public function act_entry()
 	{
 		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
@@ -97,25 +97,25 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle incoming requests for RSD
-	 *
-	 * @todo Move the internal list of supported feeds into options to allow dynamic editing of capabilities
-	 */
+		* Handle incoming requests for RSD
+		*
+		* @todo Move the internal list of supported feeds into options to allow dynamic editing of capabilities
+		*/
 	public function act_rsd()
 	{
 		/**
-		 * List of APIs supported by the RSD
-		 * Refer to namespace for required elements/attributes.
-		 */
+			* List of APIs supported by the RSD
+			* Refer to namespace for required elements/attributes.
+			*/
 		$apis_list= array(
 			'Atom' => array(
 				'preferred' => 'true',
 				'apiLink' => URL::get( 'atom_feed', 'index=1' ), // This should be the XML-RPC url
-				'blogID' => '',
+				'blogID' => '1',
 			),
 		);
 
-		$apis_list= Plugins::filter( 'rsd_api_list', $apis_list );
+		$apis_list= Plugins::filter('rsd_api_list', $apis_list);
 
 		if ( Cache::has( 'atom:rsd:apis' ) ) {
 			$cache_apis= Cache::get( 'atom:rsd:apis' );
@@ -132,50 +132,50 @@ class AtomHandler extends ActionHandler
 			$xml= $cache_xml;
 		}
 		else {
-			$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
+		$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
 
-			$rsd_service= $xml->addChild( 'service' );
-			$service_engineName= $rsd_service->addChild( 'engineName', 'Habari' );
-			$service_engineLink= $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
-			$service_homePageLink= $rsd_service->addChild( 'homePageLink', Site::get_url( 'habari' ) );
-			$service_apis= $rsd_service->addChild( 'apis' );
+		$rsd_service= $xml->addChild( 'service' );
+		$service_engineName= $rsd_service->addChild( 'engineName', 'Habari' );
+		$service_engineLink= $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
+		$service_homePageLink= $rsd_service->addChild( 'homePageLink', Site::get_url('habari') );
+		$service_apis= $rsd_service->addChild( 'apis' );
 
-			if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
-				return false;
+		if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
+			return false;
+		}
+
+		foreach ( $apis_list as $apiName => $atts ) {
+			if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
+				continue;
 			}
 
-			foreach ( $apis_list as $apiName => $atts ) {
-				if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
-					continue;
-				}
+			$apis_api= $service_apis->addChild( 'api' );
+			$apis_api->addAttribute( 'name', $apiName );
+			$apis_api->addAttribute( 'preferred', $atts['preferred'] );
+			$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
+			$apis_api->addAttribute( 'blogID', $atts['blogID'] == '' ? '1' : $atts['blogID'] );
 
-				$apis_api= $service_apis->addChild( 'api' );
-				$apis_api->addAttribute( 'name', $apiName );
-				$apis_api->addAttribute( 'preferred', $atts['preferred'] );
-				$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
-				$apis_api->addAttribute( 'blogID', $atts['blogID'] );
+			if ( !isset( $atts['settings'] ) || ( count( $atts['settings'] ) < 1 ) ) {
+				continue;
+			}
 
-				if ( !isset( $atts['settings'] ) || ( count( $atts['settings'] ) < 1 ) ) {
-					continue;
-				}
+			$api_settings= $apis_api->addChild( 'settings' );
 
-				$api_settings= $apis_api->addChild( 'settings' );
-
-				foreach ( $atts['settings'] as $settingName => $settingValue ) {
-					switch ( $settingName ) {
-						case 'docs':
-						case 'notes':
-							$settings_setting= $api_settings->addChild( $settingName, $settingValue );
-							break;
-						case 'setting':
-							foreach ( $settingValue as $settingArray ) {
-								$settings_setting= $api_settings->addChild( 'setting', $settingArray['value'] );
-								$settings_setting->addAttribute( 'name', $settingArray['name'] );
-							}
-							break;
-					}
+			foreach ( $atts['settings'] as $settingName => $settingValue ) {
+				switch ( $settingName ) {
+					case 'docs':
+					case 'notes':
+						$settings_setting= $api_settings->addChild( $settingName, $settingValue );
+						break;
+					case 'setting':
+						foreach ( $settingValue as $settingArray ) {
+							$settings_setting= $api_settings->addChild( 'setting', $settingArray['value'] );
+							$settings_setting->addAttribute( 'name', $settingArray['name'] );
+						}
+						break;
 				}
 			}
+		}
 
 			Cache::set( 'atom:rsd:xml', $xml->asXML() );
 		}
@@ -189,8 +189,8 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle incoming requests for the introspection document
-	 */
+		* Handle incoming requests for the introspection document
+		*/
 	public function act_introspection()
 	{
 		if ( Cache::has( 'atom:introspection:xml' ) ) {
@@ -202,17 +202,17 @@ class AtomHandler extends ActionHandler
 			$xml= $cache_xml;
 		}
 		else {
-			$xml= new SimpleXMLElement( '<service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
+		$xml= new SimpleXMLElement( '<service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
 
-			$service_workspace= $xml->addChild( 'workspace' );
+		$service_workspace= $xml->addChild( 'workspace' );
 
 			$workspace_title= $service_workspace->addChild( 'atom:title', htmlspecialchars( Options::get( 'title' ) ), 'http://www.w3.org/2005/Atom' );
 
-			$workspace_collection= $service_workspace->addChild( 'collection' );
-			$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
+		$workspace_collection= $service_workspace->addChild( 'collection' );
+		$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
 
-			$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
-			$collection_accept= $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
+		$collection_title= $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
+		$collection_accept= $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
 
 			Cache::set( 'atom:introspection:xml', $xml->asXML() );
 		}
@@ -226,42 +226,42 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle incoming requests for the Atom entry collection for a specific tag
-	 */
+		* Handle incoming requests for the Atom entry collection for a specific tag
+		*/
 	public function act_tag_collection()
 	{
 		$this->get_collection();
 	}
 
 	/**
-	 * Handle incoming requests for the Atom entry collection for all comments
-	 */
+		* Handle incoming requests for the Atom entry collection for all comments
+		*/
 	function act_comments( $params= array() )
 	{
 		$this->get_comments( $params );
 	}
 
 	/**
-	 * Handle incoming requests for the Atom entry collection for comments on an entry
-	 */
+		* Handle incoming requests for the Atom entry collection for comments on an entry
+		*/
 	function act_entry_comments()
 	{
 		if ( isset( $this->handler_vars['slug'] ) ) {
-			$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
-		}
+		$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
+	}
 		else {
 			$this->act_comments( array( 'id' => $this->handler_vars['id'] ) );
 		}
 	}
 
 	/**
-	 * Output an Atom collection of comments based on the supplied parameters.
-	 *
-	 * @param array $params An array of parameters passed to Comments::get() to retrieve comments
-	 */
+		* Output an Atom collection of comments based on the supplied parameters.
+		*
+		* @param array $params An array of parameters passed to Comments::get() to retrieve comments
+		*/
 	function get_comments( $params= array() )
 	{
-		$params['status']= Post::status( 'published' );
+		$params['status'] = Post::status('published');
 
 		$xml= new SimpleXMLElement( '<feed xmlns="http://www.w3.org/2005/Atom"></feed>' );
 
@@ -291,7 +291,7 @@ class AtomHandler extends ActionHandler
 		$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
 		$feed_generator->addAttribute( 'version', Version::get_habariversion() );
 
-		$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url( 'hostname' ) . ',' . date( "Y-m-d" ) . ':' . ( ( isset( $params['slug'] ) ) ? $params['slug'] : 'atom_comments' ) . '/' . Options::get( 'GUID' ) );
+		$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $params['slug'] ) ) ? $params['slug'] : 'atom_comments' ) . '/' . Options::get( 'GUID' ) );
 
 		foreach ( Posts::get( $params ) as $post ) {
 
@@ -328,16 +328,16 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * Output the Atom entry for a specific slug
-	 *
-	 * @param string $slug The slug to get the entry for
-	 */
+		* Output the Atom entry for a specific slug
+		*
+		* @param string $slug The slug to get the entry for
+		*/
 	public function get_entry( $slug )
 	{
 		$params['slug']= $slug;
-		$params['status']= Post::status( 'published' );
+		$params['status'] = Post::status('published');
 
-		if ( $post= Post::get( $params ) ) {
+		if ( $post = Post::get($params) ) {
 			$user= User::get_by_id( $post->user_id );
 			$title= ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
 			$content= ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
@@ -373,10 +373,10 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * Updates (editing) a post entry that is sent via APP.
-	 *
-	 * @param string $slug The slug of the entry to save
-	 */
+		* Updates (editing) a post entry that is sent via APP.
+		*
+		* @param string $slug The slug of the entry to save
+		*/
 	public function put_entry( $slug )
 	{
 		$params= array();
@@ -385,64 +385,64 @@ class AtomHandler extends ActionHandler
 		$bxml= file_get_contents( 'php://input' );
 
 		$params['slug']= $slug;
-		$params['status']= Post::status( 'published' );
-		if ( $post= Post::get( $params ) ) {
-			$xml= new SimpleXMLElement( $bxml );
+		$params['status'] = Post::status('published');
+		if ( $post = Post::get($params) ) {
+			$xml = new SimpleXMLElement( $bxml );
 
 			preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/is', $xml->content->asXML(), $content );
 			$xml->content= $content[1];
 			$xml= Plugins::filter( 'atom_put_entry', $xml, $slug, $this->handler_vars );
 
-			if ( ( string ) $xml->title != '' ) {
+			if ( (string) $xml->title != '' ) {
 				$post->title= $xml->title;
 			}
 
-			if ( ( string ) $xml->id != '' ) {
+			if ( (string) $xml->id != '' ) {
 				$post->guid= $xml->id;
 			}
 
-			if ( ( string ) $xml->content != '' ) {
-				$post->content= ( string ) $xml->content;
+			if ( (string) $xml->content != '' ) {
+				$post->content= (string) $xml->content;
 			}
 
-			if ( ( string ) $xml->pubdate != '' ) {
-				$post->pubdate= ( string ) $xml->pubdate;
+			if ( (string) $xml->pubdate != '' ) {
+				$post->pubdate= (string) $xml->pubdate;
 			}
 
 			if ( isset( $_SERVER['HTTP_SLUG'] ) ) {
 				$post->slug= $_SERVER['HTTP_SLUG'];
 			}
 
-			$post->status= Post::status( 'published' );
+			$post->status= Post::status('published');
 			$post->user_id= $user->id;
 			$post->update();
 		}
 	}
 
 	/**
-	 * Delete a post based on the HTTP DELETE request via Atom
-	 *
-	 * @param string $slug The post slug to delete
-	 */
+		* Delete a post based on the HTTP DELETE request via Atom
+		*
+		* @param string $slug The post slug to delete
+		*/
 	public function delete_entry( $slug )
 	{
-		$params= array();
+		$params = array();
 
 		$this->is_auth();
 
 		$params['slug']= $slug;
-		$params['status']= Post::status( 'published' );
-		if ( $post= Post::get( $params ) ) {
+		$params['status'] = Post::status('published');
+		if ( $post= Post::get($params) ) {
 			$post->delete();
 		}
 	}
 
 	/**
-	 *	Output a post collection based on the provided parameters.
-	 *
-	 * @param array $params An array of parameters as passed to Posts::get() to retrieve posts.
-	 */
-	public function get_collection( $params= array() )
+		*	Output a post collection based on the provided parameters.
+		*
+		* @param array $params An array of parameters as passed to Posts::get() to retrieve posts.
+		*/
+	public function get_collection( $params = array() )
 	{
 		// Assign alternate links based on the matched rule.
 		$alternate_rules= array(
@@ -465,7 +465,7 @@ class AtomHandler extends ActionHandler
 		// Build the namespaces, plugins can alter it to overrive or insert their own.
 		$namespaces= array( 'default' => 'http://www.w3.org/2005/Atom' );
 		$namespaces= Plugins::filter( 'atom_get_collection_namespaces', $namespaces );
-		$namespaces= array_map( create_function( '$value,$key', 'return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";' ), $namespaces, array_keys( $namespaces ) );
+		$namespaces= array_map( create_function( '$value,$key', 'return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";' ), $namespaces, array_keys($namespaces) );
 		$namespaces= implode( ' ', $namespaces );
 
 		$xml= new SimpleXMLElement( '<feed ' . $namespaces . '></feed>' );
@@ -488,7 +488,7 @@ class AtomHandler extends ActionHandler
 
 		$page= ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
 		$firstpage= 1;
-		$lastpage= ceil( Posts::count_total( Post::status( 'published' ) ) / Options::get( 'pagination' ) );
+		$lastpage= ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) );
 
 		if ( $lastpage > 1 ) {
 			$nextpage= intval( $page ) + 1;
@@ -533,19 +533,19 @@ class AtomHandler extends ActionHandler
 		$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
 		$feed_generator->addAttribute( 'version', Version::get_habariversion() );
 
-		$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url( 'hostname' ) . ',' . date( "Y-m-d" ) . ':' . ( ( isset( $rr_args_values['tag'] ) ) ? $rr_args_values['tag'] : 'atom' ) . '/' . Options::get( 'GUID' ) );
+		$feed_id= $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . ( ( isset( $rr_args_values['tag'] ) ) ? $rr_args_values['tag'] : 'atom' ) . '/' . Options::get( 'GUID' ) );
 
-		if ( $page > 1 ) {
-			$params['page']= $page;
+		if( $page > 1 ) {
+			$params['page'] = $page;
 		}
 
-		if ( !isset( $params['content_type'] ) ) {
-			$params['content_type']= Post::type( 'entry' );
+		if(!isset($params['content_type'])) {
+			$params['content_type'] = Post::type('entry');
 		}
-		$params['content_type']= Plugins::filter( 'atom_get_collection_content_type', $params['content_type'] );
+		$params['content_type'] = Plugins::filter( 'atom_get_collection_content_type', $params['content_type'] );
 
-		$params['status']= Post::status( 'published' );
-		$params['orderby']= 'updated DESC';
+		$params['status'] = Post::status('published');
+		$params['orderby'] = 'updated DESC';
 
 		$params= array_merge( $params, $rr_args );
 
@@ -586,49 +586,49 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-	 * Accepts an Atom entry for insertion as a new post.
-	 */
+		* Accepts an Atom entry for insertion as a new post.
+		*/
 	public function post_collection()
 	{
-		if ( $user= $this->is_auth( TRUE ) ) {
+		if ( $user = $this->is_auth( TRUE ) ) {
 			$bxml= file_get_contents( 'php://input' );
 		}
 
-		$xml= new SimpleXMLElement( $bxml );
+		$xml = new SimpleXMLElement( $bxml );
 
 		preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/i', $xml->content->asXML(), $content );
 		$xml->content= $content[1];
 		$xml= Plugins::filter( 'atom_post_collection', $xml, $this->handler_vars );
 
-		$post= new Post();
+		$post = new Post();
 
-		if ( ( string ) $xml->title != '' ) {
+		if ( (string) $xml->title != '' ) {
 			$post->title= $xml->title;
 		}
 
-		if ( ( string ) $xml->id != '' ) {
+		if ( (string) $xml->id != '' ) {
 			$post->guid= $xml->id;
 		}
 
-		if ( ( string ) $xml->content != '' ) {
-			$post->content= ( string ) $xml->content;
+		if ( (string) $xml->content != '' ) {
+			$post->content= (string) $xml->content;
 		}
 
-		if ( ( string ) $xml->pubdate != '' ) {
-			$post->pubdate= ( string ) $xml->pubdate;
+		if ( (string) $xml->pubdate != '' ) {
+			$post->pubdate= (string) $xml->pubdate;
 		}
 
 		if ( isset( $_SERVER['HTTP_SLUG'] ) ) {
 			$post->slug= $_SERVER['HTTP_SLUG'];
 		}
 
-		$post->status= Post::status( 'published' );
+		$post->status= Post::status('published');
 		$post->user_id= $user->id;
 		$post->insert();
 
-		header( 'HTTP/1.1 201 Created' );
-		header( 'Status: 201 Created' );
-		header( 'Location: ' . URL::get( 'atom_entry', array( 'slug' => $post->slug ) ) );
+		header('HTTP/1.1 201 Created');
+		header('Status: 201 Created');
+		header('Location: ' . URL::get( 'atom_entry', array( 'slug' => $post->slug ) ) );
 
 		$this->get_entry( $post->slug );
 	}
