@@ -26,6 +26,11 @@ class UserHandler extends ActionHandler
 				// Timestamp last login date and time.
 				$user->info->authenticate_time= date( 'Y-m-d H:i:s' );
 				$user->update();
+				
+				// Remove left over expired session error message.
+				if ( Session::has_errors( 'expired_session' ) ) {
+					Session::remove_error( 'expired_session' );
+				}
 
 				$login_session= Session::get_set( 'login' );
 				if ( ! empty( $login_session ) ) {
