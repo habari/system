@@ -78,7 +78,7 @@ class Posts extends ArrayObject
 		}
 
 		$wheres= array();
-		$join= '';
+		$joins= array();
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
 			$wheres[]= $paramarray['where'];
 		}
@@ -97,8 +97,14 @@ class Posts extends ArrayObject
 					$params[]= Post::status( $paramset['status'] );
 				}
 				if ( isset( $paramset['content_type'] ) && ( Post::type_name( $paramset['content_type'] ) != 'any' ) ) {
-					$where[]= "content_type= ?";
-					$params[]= Post::type( $paramset['content_type'] );
+					if ( is_array( $paramset['content_type'] ) ) {
+						$where[]= "content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
+						$params = array_merge($params, $paramset['content_type']);
+					}
+					else {
+						$where[]= "content_type= ?";
+						$params[]= Post::type( $paramset['content_type'] );
+					}
 				}
 				if ( isset( $paramset['slug'] ) ) {
 					if ( is_array( $paramset['slug'] ) ) {
@@ -115,8 +121,8 @@ class Posts extends ArrayObject
 					$params[]= $paramset['user_id'];
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
-					$join.= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
-					$join.= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
+					$joins['tag2post_posts'] = ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
+					$joins['tags_tag2post'] = ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 					// Need tag expression parser here.
 					if ( isset( $paramset['tag'] ) ) {
 						if ( is_array( $paramset['tag'] ) ) {
@@ -226,7 +232,7 @@ class Posts extends ArrayObject
 
 		$query= '
 			SELECT ' . $select . '
-			FROM {posts} ' . $join;
+			FROM {posts} ' . implode(' ', $joins);
 
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
