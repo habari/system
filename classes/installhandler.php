@@ -182,13 +182,6 @@ class InstallHandler extends ActionHandler {
 	{
 		$requirements_met= true;
 
-		/* Check that directory to write config.php is writeable */
-		$local_writeable= is_writeable(Site::get_dir('config')) || file_exists(Site::get_dir('config') . '/config.php');
-		$this->theme->assign('local_writeable', $local_writeable);
-		$this->theme->assign('HABARI_PATH', Site::get_dir('config'));
-		if (! $local_writeable) {
-			$requirements_met= false;
-		}
 		/* Check versions of PHP */
 		$php_version_ok= version_compare(phpversion(), MIN_PHP_VERSION, '>=');
 		$this->theme->assign('php_version_ok', $php_version_ok);
@@ -329,23 +322,29 @@ class InstallHandler extends ActionHandler {
 	**/
 	private function check_sqlite() {
 		$db_file = $this->handler_vars['db_host'];
-		if ( file_exists( $db_file ) && is_writable( $db_file ) ) {
+		if ( file_exists( $db_file ) && is_writable( $db_file ) && is_writable( dirname( $db_file ) ) ) {
 			// the file exists, and it writable.  We're all set
 			return true;
 		}
 
 		// try to figure out what the problem is.
-		if ( file_exists( $db_file ) && ! is_writable( $db_file ) ) {
-			$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file is not writable.') );
-			return false;
+		if ( file_exists( $db_file ) ) {
+			// the DB file exists, why can't we access it?
+			if ( ! is_writable( $db_file ) ) {
+				$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file is not writable.') );
+				return false;
+			}
+			if ( ! is_writable( dirname( $db_file ) ) ) {
+				$this->theme->assign('form_errors', array('db_file'=>'The directory in which the SQLite data file resides must be writable by the web server.  See <a href="http://us3.php.net/manual/en/ref.sqlite.php#37875">here</a> and <a href="http://us3.php.net/manual/en/ref.pdo-sqlite.php#57356">here</a> for details.') );
+				return false;
+			}
 		}
 
 		if ( ! file_exists( $db_file ) ) {
 			// let's see if the directory is writable
 			// so that we could create the file
-			$dir= dirname( $db_file );
-			if ( ! is_writable( $dir ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file does not exist, and it cannot be created in the specified directory.') );
+			if ( ! is_writable( dirname( $db_file ) ) ) {
+				$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file does not exist, and it cannot be created in the specified directory.  SQLite requires that the directory containing the database file be writable by the web server.') );
 				return false;
 			}
 		}
@@ -839,45 +838,51 @@ class InstallHandler extends ActionHandler {
 	 * Try to connect and verify if database name exists
 	 */
 	public function ajax_check_sqlite_credentials() {
+		$db_file= $_POST['file'];
 		$xml= new SimpleXMLElement('<response></response>');
 		// Missing anything?
-		if ( !isset( $_POST['file'] ) ) {
+		if ( !isset( $db_file ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error= $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#databasefile' );
-			$xml_error->addChild( 'message', 'The database file was left empty.' );
+			$xml_error->addChild( 'message', _t('The database file was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
-			// Can we connect to the DB?
-			$pdo= 'sqlite:' . $_POST['file'];
-			$connect= DB::connect( $pdo, null, null );
+			if ( ! is_writable( dirname( $db_file ) ) ) {
+				$xml->addChild( 'status', 0 );
+				$xml_error= $xml->addChild( 'error' );
+				$xml_error->addChild( 'id', '#databasefile' );
+				$xml_error->addChild( 'message', _t('SQLite requires that the directory that holds the DB file be writable by the web server.') );
+			} elseif ( file_exists( $db_file ) && ( ! is_writable( $db_file ) ) ) {
+				$xml->addChild( 'status', 0 );
+				$xml_error= $xml->addChild( 'error' );
+				$xml_error->addChild( 'id', '#databasefile' );
 
-			// Don't leave empty files laying around
-			DB::disconnect();
-			if ( file_exists( $_POST['file'] ) ) {
-				unlink($_POST['file']);
-			}
+				$xml_error->addChild( 'message', _t('The SQLite data file is not writable by the web server.') );
+			} else {
+				// Can we connect to the DB?
+				$pdo= 'sqlite:' . $db_file;
+				$connect= DB::connect( $pdo, null, null );
 
-			switch ($connect) {
-				case true:
-					// We were able to connect to an existing database file.
-					$xml->addChild( 'status', 1 );
-					break;
-				case false:
-					// PDO can create the database file, we need to make sure the folder is writable first.
-					$file_dir= dirname($_POST['file']);
-					if ( is_writable($file_dir) ) {
+				// Don't leave empty files laying around
+				DB::disconnect();
+				if ( file_exists( $db_file ) ) {
+					unlink($db_file);
+				}
+
+				switch ($connect) {
+					case true:
+						// We were able to connect to an existing database file.
 						$xml->addChild( 'status', 1 );
 						break;
-					}
-					$connect= new Exception('Could not create the database file.');
-				default:
-					// We can't create the database file, send an error message.
-					$xml->addChild( 'status', 0 );
-					$xml_error= $xml->addChild( 'error' );
-					// TODO: Add error codes handling for user-friendly messages
-					$xml_error->addChild( 'id', '#databasefile' );
-					$xml_error->addChild( 'message', $connect->getMessage() );
+					default:
+						// We can't create the database file, send an error message.
+						$xml->addChild( 'status', 0 );
+						$xml_error= $xml->addChild( 'error' );
+						// TODO: Add error codes handling for user-friendly messages
+						$xml_error->addChild( 'id', '#databasefile' );
+						$xml_error->addChild( 'message', $connect->getMessage() );
+				}
 			}
 		}
 		$xml= $xml->asXML();
