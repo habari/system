@@ -144,14 +144,14 @@ CREATE TABLE {$prefix}groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL
 );
-CREATE UNIQUE INDEX name ON {$prefix}groups(name);
+CREATE UNIQUE INDEX group_name ON {$prefix}groups(name);
 
 CREATE TABLE {$prefix}permissions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   description VARCHAR(255)
 );
-CREATE UNIQUE INDEX name ON {$prefix}permissions(name);
+CREATE UNIQUE INDEX permissions_name ON {$prefix}permissions(name);
 
 CREATE TABLE {$prefix}users_groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
