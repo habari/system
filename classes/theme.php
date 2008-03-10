@@ -257,6 +257,27 @@ class Theme extends Pluggable
 	}
 
 	/**
+	 * Helper function: Displays multiple entries
+	 * @param array $user_filters Additional arguments used to get the page content
+	 */
+	public function act_display_entries( $user_filters= array() )
+	{
+		$paramarray['fallback']= array(
+		 	'{$type}.multiple',
+			'multiple',
+		);
+
+		// Makes sure home displays only entries
+		$default_filters= array(
+			'content_type' => Post::type( 'entry' ),
+		);
+
+		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+
+		return $this->act_display( $paramarray );
+	}
+
+	/**
 	 * Helper function: Display a post
 	 * @param array $user_filters Additional arguments used to get the page content
 	 */
