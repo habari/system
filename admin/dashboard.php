@@ -100,14 +100,31 @@
   </div>
   <div class="column prepend-1 span-15 append-1 last">
     <h3><?php _e( 'Recent Comments' ); ?>
-      <?php
-        if ( Comments::count_total( Comment::STATUS_UNAPPROVED ) ) {
-      ?>
-      (<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'show'=>'unapproved' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>"><?php echo Comments::count_total( Comment::STATUS_UNAPPROVED ); ?>
-	<?php echo _n( 'comment awaiting moderation', 'comments awaiting moderation', Comments::count_total( Comment::STATUS_UNAPPROVED ) ); ?></a> &raquo;)
-      <?php
-        }
-      ?>
+    	<?php
+		$total_comments= Comments::count_total( Comment::STATUS_UNAPPROVED );
+		$total_pingbacks= Comments::count_total( Comment::STATUS_UNAPPROVED, Comment::PINGBACK );
+		if ( $total_comments || $total_pingbacks ) {
+		?>
+		(
+			<?php if ( $total_comments ) { ?>
+			<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'show'=>'unapproved' ) );?>" title="<?php _e( 'View Comments Awaiting Moderation' ); ?>">
+			<?php echo $total_comments; ?>
+			<?php echo _n( 'comment', 'comments', $total_comments ); ?></a>
+			<?php } ?>
+			
+			<?php if ( $total_comments && $total_pingbacks ) { ?>
+			and
+			<?php } ?>
+			
+			<?php if ( $total_pingbacks ) { ?>
+			<a href="<?php URL::out( 'admin', array( 'page'=>'moderate', 'show'=>'unapproved', 'search_type' => Comment::PINGBACK ) );?>" title="<?php _e( 'View Pingbacks Awaiting Moderation' ); ?>">
+			<?php echo $total_pingbacks; ?>
+			<?php echo _n( 'pingback', 'pingbacks', $total_pingbacks ); ?></a>
+			<?php } ?>
+			
+			awaiting moderation
+		)
+		<?php } ?>
     </h3>
     <?php
       if ( Comments::count_total( Comment::STATUS_APPROVED ) ) {

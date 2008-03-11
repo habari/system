@@ -466,15 +466,16 @@ class Comments extends ArrayObject
 	}
 
 	/**
-	 * static count_by_name
-	 * returns the number of comments attributed to the specified name
+	 * static count_total
+	 * returns the number of comments based on the specified status and type
 	 * @param string a commenter's name
 	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
-	 * @return int a count of the comments from the specified name
+	 * @param mixed A comment type value, or FALSE to not filter on type (default: Comment::COMMENT)
+	 * @return int a count of the comments based on the specified status and type
 	**/
-	public static function count_total( $status= Comment::STATUS_APPROVED )
+	public static function count_total( $status= Comment::STATUS_APPROVED, $type= Comment::COMMENT )
 	{
-		$params= array( 'count' => 1, 'status' => $status );
+		$params= array( 'count' => 1, 'status' => $status, 'type' => $type );
 		return self::get( $params );
 	}
 
