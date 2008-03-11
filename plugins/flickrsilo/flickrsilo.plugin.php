@@ -666,7 +666,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		$photos = $flickr->GetPublicPhotos($result->auth->user['nsid'], null, 5);
 		foreach($photos['photos'] as $photo){
 			$url = $flickr->getPhotoURL($photo);
-			echo '<img src="' . $url . '" width="150px">';
+			echo '<img src="' . $url . '" width="150px" alt="' . ( isset( $photo['title'] ) ? $photo['title'] : _t('This photo has no title') ) . '">';
 		}
 	}
 
