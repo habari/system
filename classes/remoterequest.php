@@ -240,7 +240,7 @@ class RemoteRequest
 		
 		$urlparts['query']= http_build_query( array_merge( Utils::get_params( $urlparts['query'] ), $params ), '', '&' );
 		
-		return Utils::glue_url( $urlparts );
+		return InputFilter::glue_url( $urlparts );
 	}
 	
 	/**
