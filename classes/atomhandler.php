@@ -116,7 +116,9 @@ class AtomHandler extends ActionHandler
 		);
 
 		$apis_list= Plugins::filter('rsd_api_list', $apis_list);
-
+		
+		$cache_xml= null;
+		
 		if ( Cache::has( 'atom:rsd:apis' ) ) {
 			$cache_apis= Cache::get( 'atom:rsd:apis' );
 			if ( ( $cache_apis === $apis_list ) && Cache::has( 'atom:rsd:xml' ) ) {
@@ -193,6 +195,8 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_introspection()
 	{
+		$cache_xml= null;
+		
 		if ( Cache::has( 'atom:introspection:xml' ) ) {
 			$cache_xml= Cache::get( 'atom:introspection:xml' );
 			$cache_xml= simplexml_load_string( $cache_xml );
