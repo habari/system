@@ -267,7 +267,7 @@ class Site
 					return self::$config_path;
 				}
 
-				$server= parse_url( Site::get_url('habari') ) ;
+				$server= InputFilter::parse_url( Site::get_url('habari') ) ;
 				$server= ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
 
 				$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );

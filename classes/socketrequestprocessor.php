@@ -35,7 +35,7 @@ class SocketRequestProcessor implements RequestProcessor
 	
 	private function _request( $method, $url, $headers, $body, $timeout )
 	{
-		$urlbits= parse_url( $url );
+		$urlbits= InputFilter::parse_url( $url );
 		
 		return $this->_work( $method, $urlbits, $headers, $body, $timeout );
 	}
@@ -116,7 +116,7 @@ class SocketRequestProcessor implements RequestProcessor
 			if ( preg_match( '|^Location: (.+)$|mi', $header, $location_matches ) ) {
 				$redirect_url= $location_matches[1];
 				
-				$redirect_urlbits= parse_url( $redirect_url );
+				$redirect_urlbits= InputFilter::parse_url( $redirect_url );
 				
 				if ( !isset( $redirect_url['host'] ) ) {
 					$redirect_urlbits['host']= $urlbits['host'];

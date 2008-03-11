@@ -299,7 +299,7 @@ class Flickr extends flickrAPI
 			mkdir($store, 0777);
 		}
 		$params = array('auth_token' => $this->cachedToken());
-		$url = parse_url('file://' . $photo);
+		$url = InputFilter::parse_url('file://' . $photo);
 		if(isset($url['scheme'])){
 			$localphoto = fopen(HABARI_PATH . '/' . $photo, 'r');
 			$store = tempnam($store, 'G2F');
