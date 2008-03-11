@@ -228,7 +228,7 @@ class RemoteRequest
 	 */
 	private function merge_query_params( $url, $params )
 	{
-		$urlparts= parse_url( $url );
+		$urlparts= InputFilter::parse_url( $url );
 		
 		if ( ! isset( $urlparts['query'] ) ) {
 			$urlparts['query']= '';

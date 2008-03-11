@@ -133,7 +133,7 @@ class Utils
 	 **/
 	public static function de_amp($value)
 	{
-		$url = parse_url( $value );
+		$url = InputFilter::parse_url( $value );
 		$url['query'] = str_replace('&amp;', '&', $url['query']);
 		return Utils::glue_url($url);
 	}
