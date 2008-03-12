@@ -16,14 +16,14 @@ class RewriteRules extends ArrayObject {
 		$default_rules= array(
 			// Display content
 			array( 'name' => 'display_home', 'parse_regex' => '%^(?:page/(?P<page>[01]))?/?$%', 'build_str' => '(page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_home', 'priority' => 1000, 'description' => 'Homepage (index) display' ),
-			array( 'name' => 'display_entries', 'parse_regex' => '%^(?:page/(?P<page>[2-9]\d*))/?$%', 'build_str' => '(page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_entries', 'priority' => 999, 'description' => 'Display multiple entries' ),			
+			array( 'name' => 'display_entries', 'parse_regex' => '%^(?:page/(?P<page>[2-9]\d*))/?$%', 'build_str' => '(page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_entries', 'priority' => 999, 'description' => 'Display multiple entries' ),
 			array( 'name' => 'display_entries_by_date', 'parse_regex' => '%^(?P<year>[1,2]{1}[\d]{3})(?:/(?P<month>[\d]{2}))?(?:/(?P<day>[\d]{2}))?(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$year}/({$month}/)({$day}/)(page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_date', 'priority' => 2, 'description' => 'Displays posts for a specific date.' ),
 			array( 'name' => 'display_entries_by_tag', 'parse_regex' => '%^tag/(?P<tag>[^/]*)(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'tag/{$tag}(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_tag', 'priority' => 5, 'description' => 'Return posts matching specified tag.' ),
 			array( 'name' => 'display_entry', 'parse_regex' => '%^(?P<slug>[^/]+)(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_post', 'priority' => 100, 'description' => 'Return entry matching specified slug' ),
 			array( 'name' => 'display_page', 'parse_regex' => '%^(?P<slug>[^/]+)(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_post', 'priority' => 100, 'description' => 'Return page matching specified slug' ),
 			array( 'name' => 'display_search', 'parse_regex' => '%^search(?:/(?P<criteria>[^/]+))?(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'search(/{$criteria})(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'search', 'priority' => 8, 'description' => 'Searches posts' ),
 			array( 'name' => 'display_404', 'parse_regex' => '%^.*$%', 'build_str' => '', 'handler' => 'UserThemeHandler', 'action' => 'display_404', 'priority' => 9999, 'description' => 'Displays an error page when a URL is not matched.' ),
-			
+
 			// Form actions
 			array( 'name' => 'submit_feedback', 'parse_regex' => '%^(?P<id>[0-9]+)/feedback/?$%i', 'build_str' => '{$id}/feedback', 'handler' => 'FeedbackHandler', 'action' => 'add_comment', 'priority' => 8, 'description' => 'Adds a comment to a post' ),
 
@@ -44,6 +44,7 @@ class RewriteRules extends ArrayObject {
 			array( 'name' => 'atom_feed_comments', 'parse_regex' => '%^atom/comments(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'atom/comments(/page/{$page})', 'handler' => 'AtomHandler', 'action' => 'comments', 'priority' => 7, 'description' => 'Entries comments' ),
 			array( 'name' => 'atom_feed_tag', 'parse_regex' => '%^tag/(?P<tag>[^/]+)/atom(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'tag/{$tag}/atom(/page/{$page})', 'handler' => 'AtomHandler', 'action' => 'tag_collection', 'priority' => 8, 'description' => 'Atom Tag Collection' ),
 			array( 'name' => 'atom_feed_entry_comments', 'parse_regex' => '%^(?P<slug>[^/]+)/atom/comments(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}/atom/comments(/page/{$page})', 'handler' => 'AtomHandler', 'action' => 'entry_comments', 'priority' => 8, 'description' => 'Entry comments' ),
+			array( 'name' => 'atom_feed_page_comments', 'parse_regex' => '%^(?P<slug>[^/]+)/atom/comments(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}/atom/comments(/page/{$page})', 'handler' => 'AtomHandler', 'action' => 'entry_comments', 'priority' => 8, 'description' => 'Page comments' ),
 
 			// Atom Publishing Protocol
 			array( 'name' => 'atompub_servicedocument', 'parse_regex' => '%^atom$%i', 'build_str' => 'atom', 'handler' => 'AtomHandler', 'action' => 'introspection', 'priority' => 1, 'description' => 'Atom introspection' ),
