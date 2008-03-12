@@ -220,7 +220,6 @@ class InputFilter
 		// result array
 		$r= array(
 			'scheme' => '',
-			'full_address' => '',
 			'host' => '',
 			'port' => '',
 			'user' => '',
@@ -274,9 +273,12 @@ class InputFilter
 			;
 		
 		$t= preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
-		if (!$t) return $r; // TODO better error handling
+		if ( ! $t ) // TODO better error handling
+			return $r;
 		
 		$matches= $matches[0];
+		if ( ! isset( $matches['full_address'] ) )
+			$matches['full_address']= '';
 		
 		$r['is_error']= FALSE;
 		$r['is_relative']= empty( $matches['full_address'] );
