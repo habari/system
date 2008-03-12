@@ -725,7 +725,7 @@ class Post extends QueryRecord
 			}
 		}
 		if ( count( $this->tags ) == 0 ) {
-			return '';
+			return array();
 		}
 		return $this->tags;
 	}
