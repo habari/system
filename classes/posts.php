@@ -97,7 +97,7 @@ class Posts extends ArrayObject
 
 				if ( isset( $paramset['id'] ) ) {
 					if ( is_array( $paramset['id'] ) ) {
-						array_walk( $paramset['id'], create_function( '$a,$b,$c', '$c[$b]= intval($a);' ), &$paramset['id'] );
+						array_walk( $paramset['id'], create_function( '$a,$b,&$c', '$c[$b]= intval($a);' ), $paramset['id'] );
 						$where[]= "id IN (" . implode( ',', array_fill( 0, count( $paramset['id'] ), '?' ) ) . ")";
 						$params= array_merge( $params, $paramset['id'] );
 					}
@@ -108,7 +108,7 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) ) {
 					if ( is_array( $paramset['status'] ) ) {
-						array_walk( $paramset['status'], create_function( '$a,$b,$c', 'if ($a = \'any\') { $c[$b]= Post::status($a); } else { unset($c[$b]); }' ), &$paramset['status'] );
+						array_walk( $paramset['status'], create_function( '$a,$b,&$c', 'if ($a = \'any\') { $c[$b]= Post::status($a); } else { unset($c[$b]); }' ), $paramset['status'] );
 						$where[]= "status IN (" . implode( ',', array_fill( 0, count( $paramset['status'] ), '?' ) ) . ")";
 						$params= array_merge( $params, $paramset['status'] );
 					}
@@ -119,7 +119,7 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) ) {
 					if ( is_array( $paramset['content_type'] ) ) {
-						array_walk( $paramset['content_type'], create_function( '$a,$b,$c', 'if ($a = \'any\') { $c[$b]= Post::type($a); } else { unset($c[$b]); }' ), &$paramset['content_type'] );
+						array_walk( $paramset['content_type'], create_function( '$a,$b,&$c', 'if ($a = \'any\') { $c[$b]= Post::type($a); } else { unset($c[$b]); }' ), $paramset['content_type'] );
 						$where[]= "content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
 						$params= array_merge( $params, $paramset['content_type'] );
 					}
@@ -140,7 +140,7 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['user_id'] ) ) {
 					if ( is_array( $paramset['user_id'] ) ) {
-						array_walk( $paramset['user_id'], create_function( '$a,$b,$c', '$c[$b]= intval($a);' ), &$paramset['user_id'] );
+						array_walk( $paramset['user_id'], create_function( '$a,$b,&$c', '$c[$b]= intval($a);' ), $paramset['user_id'] );
 						$where[]= "user_id IN (" . implode( ',', array_fill( 0, count( $paramset['user_id'] ), '?' ) ) . ")";
 						$params= array_merge( $params, $paramset['user_id'] );
 					}
