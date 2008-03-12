@@ -226,6 +226,7 @@ class Posts extends ArrayObject
 		// Get any full-query parameters
 		extract( $paramarray );
 
+		// Calculate the OFFSET based on the page number
 		if ( isset( $page ) && is_numeric( $page ) ) {
 			$offset= ( intval( $page ) - 1 ) * intval( $limit );
 		}
@@ -239,22 +240,36 @@ class Posts extends ArrayObject
 			$fetch_fn= $fns[0];
 		}
 
-		// is a count being request?
+		/**
+		 * If a count is requested:
+		 * Replace the current fields to select with a COUNT();
+		 * Change the fetch function to 'get_value';
+		 * Remove the ORDER BY since it's useless.
+		 */
 		if ( isset( $count ) ) {
 			$select= "COUNT($count)";
 			$fetch_fn= 'get_value';
 			$orderby= '';
 		}
+		
+		// Define the LIMIT and add the OFFSET if it exists
 		if ( isset( $limit ) ) {
 			$limit= " LIMIT $limit";
 			if ( isset( $offset ) ) {
 				$limit.= " OFFSET $offset";
 			}
 		}
+		
+		// Remove the LIMIT if 'nolimit' is set
 		if ( isset( $nolimit ) ) {
 			$limit= '';
 		}
+		
+		/* All SQL parts are constructed, on to real business! */
 
+		/**
+		 * Build the final SQL statement
+		 */
 		$query= '
 			SELECT ' . $select . '
 			FROM {posts} ' . implode(' ', $joins);
@@ -263,12 +278,23 @@ class Posts extends ArrayObject
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
+		
+		/**
+		 * DEBUG: Uncomment the following line to
+		 * display everything that happens in this function
+		 */
+		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
+		/**
+		 * Execute the SQL statement using the PDO extension
+		 */
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Post' );
 		$results= DB::$fetch_fn( $query, $params, 'Post' );
 
+		/**
+		 * Return the results based on the fetch function
+		 */
 		if ( 'get_results' != $fetch_fn ) {
 			// return the results
 			return $results;
