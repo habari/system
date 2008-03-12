@@ -50,11 +50,11 @@
 							$plugin_actions= array();
 							$plugin_actions= Plugins::filter( 'plugin_config', $plugin_actions, $plugin['plugin_id'] );
 							foreach( $plugin['actions'] as $plugin_action => $plugin_action_caption ) {
-								if( isset($configure) && ($configure == $plugin['plugin_id']) && ($action == $plugin_action) ) {
-									continue;
-								}
 								if ( is_numeric( $plugin_action ) ) {
 									$plugin_action = $plugin_action_caption;
+								}
+								if( isset($configure) && ($configure == $plugin['plugin_id']) && ($action == $plugin_action) ) {
+									continue;
 								}
 								?>
 								<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&action=' . $plugin_action ); ?>#plugin_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin_action_caption; ?></a>
