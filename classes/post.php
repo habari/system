@@ -750,7 +750,8 @@ class Post extends QueryRecord
 	**/
 	private function get_comment_feed_link()
 	{
-		return URL::get( array( 'atom_feed_entry_comments' ), $this, false );
+		$content_type= Post::type_name( $this->content_type );
+		return URL::get( array( "atom_feed_{$content_type}_comments" ), $this, false );
 	}
 
 	/**

@@ -116,9 +116,9 @@ class AtomHandler extends ActionHandler
 		);
 
 		$apis_list= Plugins::filter('rsd_api_list', $apis_list);
-		
+
 		$cache_xml= null;
-		
+
 		if ( Cache::has( 'atom:rsd:apis' ) ) {
 			$cache_apis= Cache::get( 'atom:rsd:apis' );
 			if ( ( $cache_apis === $apis_list ) && Cache::has( 'atom:rsd:xml' ) ) {
@@ -134,50 +134,50 @@ class AtomHandler extends ActionHandler
 			$xml= $cache_xml;
 		}
 		else {
-		$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
+			$xml= new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
 
-		$rsd_service= $xml->addChild( 'service' );
-		$service_engineName= $rsd_service->addChild( 'engineName', 'Habari' );
-		$service_engineLink= $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
-		$service_homePageLink= $rsd_service->addChild( 'homePageLink', Site::get_url('habari') );
-		$service_apis= $rsd_service->addChild( 'apis' );
+			$rsd_service= $xml->addChild( 'service' );
+			$service_engineName= $rsd_service->addChild( 'engineName', 'Habari' );
+			$service_engineLink= $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
+			$service_homePageLink= $rsd_service->addChild( 'homePageLink', Site::get_url('habari') );
+			$service_apis= $rsd_service->addChild( 'apis' );
 
-		if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
-			return false;
-		}
-
-		foreach ( $apis_list as $apiName => $atts ) {
-			if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
-				continue;
+			if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
+				return false;
 			}
 
-			$apis_api= $service_apis->addChild( 'api' );
-			$apis_api->addAttribute( 'name', $apiName );
-			$apis_api->addAttribute( 'preferred', $atts['preferred'] );
-			$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
-			$apis_api->addAttribute( 'blogID', $atts['blogID'] == '' ? '1' : $atts['blogID'] );
+			foreach ( $apis_list as $apiName => $atts ) {
+				if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
+					continue;
+				}
 
-			if ( !isset( $atts['settings'] ) || ( count( $atts['settings'] ) < 1 ) ) {
-				continue;
-			}
+				$apis_api= $service_apis->addChild( 'api' );
+				$apis_api->addAttribute( 'name', $apiName );
+				$apis_api->addAttribute( 'preferred', $atts['preferred'] );
+				$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
+				$apis_api->addAttribute( 'blogID', $atts['blogID'] == '' ? '1' : $atts['blogID'] );
 
-			$api_settings= $apis_api->addChild( 'settings' );
+				if ( !isset( $atts['settings'] ) || ( count( $atts['settings'] ) < 1 ) ) {
+					continue;
+				}
 
-			foreach ( $atts['settings'] as $settingName => $settingValue ) {
-				switch ( $settingName ) {
-					case 'docs':
-					case 'notes':
-						$settings_setting= $api_settings->addChild( $settingName, $settingValue );
-						break;
-					case 'setting':
-						foreach ( $settingValue as $settingArray ) {
-							$settings_setting= $api_settings->addChild( 'setting', $settingArray['value'] );
-							$settings_setting->addAttribute( 'name', $settingArray['name'] );
-						}
-						break;
+				$api_settings= $apis_api->addChild( 'settings' );
+
+				foreach ( $atts['settings'] as $settingName => $settingValue ) {
+					switch ( $settingName ) {
+						case 'docs':
+						case 'notes':
+							$settings_setting= $api_settings->addChild( $settingName, $settingValue );
+							break;
+						case 'setting':
+							foreach ( $settingValue as $settingArray ) {
+								$settings_setting= $api_settings->addChild( 'setting', $settingArray['value'] );
+								$settings_setting->addAttribute( 'name', $settingArray['name'] );
+							}
+							break;
+					}
 				}
 			}
-		}
 
 			Cache::set( 'atom:rsd:xml', $xml->asXML() );
 		}
@@ -196,7 +196,7 @@ class AtomHandler extends ActionHandler
 	public function act_introspection()
 	{
 		$cache_xml= null;
-		
+
 		if ( Cache::has( 'atom:introspection:xml' ) ) {
 			$cache_xml= Cache::get( 'atom:introspection:xml' );
 			$cache_xml= simplexml_load_string( $cache_xml );
@@ -251,7 +251,7 @@ class AtomHandler extends ActionHandler
 	function act_entry_comments()
 	{
 		if ( isset( $this->handler_vars['slug'] ) ) {
-		$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
+			$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
 	}
 		else {
 			$this->act_comments( array( 'id' => $this->handler_vars['id'] ) );
@@ -284,8 +284,15 @@ class AtomHandler extends ActionHandler
 		$feed_link= $xml->addChild( 'link' );
 		$feed_link->addAttribute( 'rel', 'self' );
 
-		if ( isset( $params['slug'] ) ) {
-			$feed_link->addAttribute( 'href', URL::get( 'atom_feed_entry_comments', 'slug=' . $params['slug'] ) );
+		if ( isset( $params['slug'] ) || isset( $params['id'] ) ) {
+			if ( isset( $params['slug'] ) ) {
+				$post= Post::get( array( 'slug' => $params['slug'] ) );
+			}
+			elseif ( isset( $params['id'] ) ) {
+				$post= Post::get( array( 'id' => $params['id'] ) );
+			}
+			$content_type= Post::type_name( $post->content_type );
+			$feed_link->addAttribute( 'href', URL::get( "atom_feed_{$content_type}_comments", $post, false ) );
 		}
 		else {
 			$feed_link->addAttribute( 'href', URL::get( 'atom_feed_comments' ) );
@@ -454,6 +461,7 @@ class AtomHandler extends ActionHandler
 			'atom_feed' => 'display_home',
 			'atom_entry' => 'display_entry',
 			'atom_feed_entry_comments' => 'display_entry',
+			'atom_feed_page_comments' => 'display_entry',
 			'atom_feed_comments' => 'display_home',
 			);
 		$alternate_rules= Plugins::filter( 'atom_get_collection_alternate_rules', $alternate_rules );
