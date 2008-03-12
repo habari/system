@@ -71,7 +71,7 @@ class Posts extends ArrayObject
 		// If $paramarray is a querystring, convert it to an array
 		$paramarray= Utils::get_params( $paramarray );
 
-		// Transact on possible multiple sets of where information that is to be OR'ed
+		// Define the WHERE sets to process and OR in the final SQL statement
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
 			$wheresets= $paramarray['where'];
 		}
@@ -79,8 +79,12 @@ class Posts extends ArrayObject
 			$wheresets= array( array() );
 		}
 
+		/* Start building the WHERE clauses */
+
 		$wheres= array();
 		$joins= array();
+		
+		// If the request as a textual WHERE clause, skip the processing of the $wheresets since it's empty
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
 			$wheres[]= $paramarray['where'];
 		}
@@ -171,7 +175,7 @@ class Posts extends ArrayObject
 						}
 					}
 				}
-				
+
 				if ( isset( $paramset['not:tag'] ) ) {
 					$nottag= is_array( $paramset['not:tag'] ) ? array_values( $paramset['not:tag'] ) : array( $paramset['not:tag'] );
 
@@ -192,7 +196,6 @@ class Posts extends ArrayObject
 						$params[]= $word;  // Not a typo (there are two ? in the above statement)
 					}
 				}
-
 
 				/**
 				 * Build the statement needed to filter by pubdate:
@@ -216,14 +219,15 @@ class Posts extends ArrayObject
 					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
-				// Concatenate the WHERE statements
+				// Concatenate the WHERE clauses
 				if ( count( $where ) > 0 ) {
 					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
 		}
 
-		// Get any full-query parameters
+		// Extract the remaining parameters which will be used onwards
+		// For example: page number, fetch function, limit
 		extract( $paramarray );
 
 		// Calculate the OFFSET based on the page number
@@ -231,6 +235,11 @@ class Posts extends ArrayObject
 			$offset= ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
+		/**
+		 * Determine which fetch function to use:
+		 * If it is specified, make sure it is valid (based on the $fns array defined at the beginning of this function);
+		 * Else, use 'get_results' which will return a Posts array of Post objects.
+		 */
 		if ( isset( $fetch_fn ) ) {
 			if ( ! in_array( $fetch_fn, $fns ) ) {
 				$fetch_fn= $fns[0];
@@ -251,7 +260,7 @@ class Posts extends ArrayObject
 			$fetch_fn= 'get_value';
 			$orderby= '';
 		}
-		
+
 		// Define the LIMIT and add the OFFSET if it exists
 		if ( isset( $limit ) ) {
 			$limit= " LIMIT $limit";
@@ -259,12 +268,12 @@ class Posts extends ArrayObject
 				$limit.= " OFFSET $offset";
 			}
 		}
-		
+
 		// Remove the LIMIT if 'nolimit' is set
 		if ( isset( $nolimit ) ) {
 			$limit= '';
 		}
-		
+
 		/* All SQL parts are constructed, on to real business! */
 
 		/**
@@ -278,10 +287,9 @@ class Posts extends ArrayObject
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		
+
 		/**
-		 * DEBUG: Uncomment the following line to
-		 * display everything that happens in this function
+		 * DEBUG: Uncomment the following line to display everything that happens in this function
 		 */
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
@@ -293,13 +301,14 @@ class Posts extends ArrayObject
 		$results= DB::$fetch_fn( $query, $params, 'Post' );
 
 		/**
-		 * Return the results based on the fetch function
+		 * Return the results
 		 */
 		if ( 'get_results' != $fetch_fn ) {
-			// return the results
+			// Since a single result was requested, return a single Post object.
 			return $results;
 		}
 		elseif ( is_array( $results ) ) {
+			// With multiple results, return a Posts array of Post objects.
 			$c= __CLASS__;
 			$return_value= new $c( $results );
 			$return_value->get_param_cache= $paramarray;
