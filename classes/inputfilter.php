@@ -220,6 +220,7 @@ class InputFilter
 		// result array
 		$r= array(
 			'scheme' => '',
+			'full_address' => '',
 			'host' => '',
 			'port' => '',
 			'user' => '',
@@ -320,7 +321,7 @@ class InputFilter
 				$res .= '@';
 			}
 			$res .= $parsed_url['host'];
-			if ( $parsed_url['port'] ) {
+			if ( !empty( $parsed_url['port'] ) ) {
 				if ( array_key_exists( $parsed_url['scheme'], self::$scheme_ports ) && self::$scheme_ports[ $parsed_url['scheme'] ] == $parsed_url['port'] ) {
 					// default port for this scheme, do nothing
 				}
