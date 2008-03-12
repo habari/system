@@ -87,23 +87,39 @@ class Posts extends ArrayObject
 				// safety mechanism to prevent empty queries
 				$where= array();
 				$paramset= array_merge( ( array ) $paramarray, ( array ) $paramset );
+				// $nots= preg_grep( '%^not:(\w+)$%i', (array) $paramset );
 
-				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
-					$where[]= "id= ?";
-					$params[]= $paramset['id'];
+				if ( isset( $paramset['id'] ) ) {
+					if ( is_array( $paramset['id'] ) ) {
+						array_walk( $paramset['id'], create_function( '$a,$b,$c', '$c[$b]= intval($a);' ), &$paramset['id'] );
+						$where[]= "id IN (" . implode( ',', array_fill( 0, count( $paramset['id'] ), '?' ) ) . ")";
+						$params= array_merge( $params, $paramset['id'] );
+					}
+					else {
+						$where[]= "id= ?";
+						$params[]= (int) $paramset['id'];
+					}
 				}
-				if ( isset( $paramset['status'] ) && ( Post::status_name( $paramset['status'] ) != 'any' ) ) {
-					$where[]= "status= ?";
-					$params[]= Post::status( $paramset['status'] );
+				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) ) {
+					if ( is_array( $paramset['status'] ) ) {
+						array_walk( $paramset['status'], create_function( '$a,$b,$c', 'if ($a = \'any\') { $c[$b]= Post::status($a); } else { unset($c[$b]); }' ), &$paramset['status'] );
+						$where[]= "status IN (" . implode( ',', array_fill( 0, count( $paramset['status'] ), '?' ) ) . ")";
+						$params= array_merge( $params, $paramset['status'] );
+					}
+					else {
+						$where[]= "status= ?";
+						$params[]= (int) Post::status( $paramset['status'] );
+					}
 				}
-				if ( isset( $paramset['content_type'] ) && ( Post::type_name( $paramset['content_type'] ) != 'any' ) ) {
+				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) ) {
 					if ( is_array( $paramset['content_type'] ) ) {
+						array_walk( $paramset['content_type'], create_function( '$a,$b,$c', 'if ($a = \'any\') { $c[$b]= Post::type($a); } else { unset($c[$b]); }' ), &$paramset['content_type'] );
 						$where[]= "content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
-						$params = array_merge($params, $paramset['content_type']);
+						$params= array_merge( $params, $paramset['content_type'] );
 					}
 					else {
 						$where[]= "content_type= ?";
-						$params[]= Post::type( $paramset['content_type'] );
+						$params[]= (int) Post::type( $paramset['content_type'] );
 					}
 				}
 				if ( isset( $paramset['slug'] ) ) {
@@ -113,12 +129,19 @@ class Posts extends ArrayObject
 					}
 					else {
 						$where[]= "slug= ?";
-						$params[]= $paramset['slug'];
+						$params[]= (string) $paramset['slug'];
 					}
 				}
 				if ( isset( $paramset['user_id'] ) ) {
-					$where[]= "user_id= ?";
-					$params[]= $paramset['user_id'];
+					if ( is_array( $paramset['user_id'] ) ) {
+						array_walk( $paramset['user_id'], create_function( '$a,$b,$c', '$c[$b]= intval($a);' ), &$paramset['user_id'] );
+						$where[]= "user_id IN (" . implode( ',', array_fill( 0, count( $paramset['user_id'] ), '?' ) ) . ")";
+						$params= array_merge( $params, $paramset['user_id'] );
+					}
+					else {
+						$where[]= "user_id= ?";
+						$params[]= (int) $paramset['user_id'];
+					}
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
 					$joins['tag2post_posts'] = ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
