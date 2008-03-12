@@ -56,17 +56,19 @@ class Posts extends ArrayObject
 		$params= array();
 		$fns= array( 'get_results', 'get_row', 'get_value' );
 		$select= '';
-		// what to select -- by default, everything
+		
+		// Default fields to select, everything by default
 		foreach ( Post::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
 				? DB::table( 'posts' ) . ".$field"
 				: ', ' . DB::table( 'posts' ) . ".$field";
 		}
-		// defaults
+		
+		// Default parameters
 		$orderby= 'pubdate DESC';
 		$limit= Options::get( 'pagination' );
 
-		// Put incoming parameters into the local scope
+		// If $paramarray is a querystring, convert it to an array
 		$paramarray= Utils::get_params( $paramarray );
 
 		// Transact on possible multiple sets of where information that is to be OR'ed
@@ -84,9 +86,9 @@ class Posts extends ArrayObject
 		}
 		else {
 			foreach ( $wheresets as $paramset ) {
-				// safety mechanism to prevent empty queries
+				// Safety mechanism to prevent empty queries
 				$where= array();
-				$paramset= array_merge( ( array ) $paramarray, ( array ) $paramset );
+				$paramset= array_merge( (array) $paramarray, (array) $paramset );
 				// $nots= preg_grep( '%^not:(\w+)$%i', (array) $paramset );
 
 				if ( isset( $paramset['id'] ) ) {
@@ -144,9 +146,10 @@ class Posts extends ArrayObject
 					}
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
-					$joins['tag2post_posts'] = ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
-					$joins['tags_tag2post'] = ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
+					$joins['tag2post_posts']= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
+					$joins['tags_tag2post']= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 					// Need tag expression parser here.
+					// ^^ What does this mean? -freakerz
 					if ( isset( $paramset['tag'] ) ) {
 						if ( is_array( $paramset['tag'] ) ) {
 							$where[]= "tag_text IN (" . implode( ',', array_fill( 0, count( $paramset['tag'] ), '?' ) ) . ")";
@@ -154,7 +157,7 @@ class Posts extends ArrayObject
 						}
 						else {
 							$where[]= 'tag_text= ?';
-							$params[]= $paramset['tag'];
+							$params[]= (string) $paramset['tag'];
 						}
 					}
 					if ( isset( $paramset['tag_slug'] ) ) {
@@ -164,47 +167,45 @@ class Posts extends ArrayObject
 						}
 						else {
 							$where[]= 'tag_slug= ?';
-							$params[]= $paramset['tag_slug'];
+							$params[]= (string) $paramset['tag_slug'];
 						}
 					}
 				}
+				
 				if ( isset( $paramset['not:tag'] ) ) {
 					$nottag= is_array( $paramset['not:tag'] ) ? array_values( $paramset['not:tag'] ) : array( $paramset['not:tag'] );
 
-					$where[]= 'not exists (select 1
+					$where[]= 'NOT EXISTS (SELECT 1
 						FROM ' . DB::table( 'tag2post' ) . '
-						INNER JOIN ' . DB::table( 'tags' ) . ' on ' . DB::table( 'tags' ) . '.id = ' . DB::table( 'tag2post' ) . '.tag_id
+						INNER JOIN ' . DB::table( 'tags' ) . ' ON ' . DB::table( 'tags' ) . '.id = ' . DB::table( 'tag2post' ) . '.tag_id
 						WHERE ' . DB::table( 'tags' ) . '.tag_slug IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
 						AND ' . DB::table( 'tag2post' ) . '.post_id = ' . DB::table( 'posts' ) . '.id)
 					';
 					$params= array_merge( $params, $nottag );
 				}
 
-				/* do searching */
 				if ( isset( $paramset['criteria'] ) ) {
 					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
 						$where[].= "(title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
 						$params[]= $word;
-						$params[]= $word;  // Not a typo
+						$params[]= $word;  // Not a typo (there are two ? in the above statement)
 					}
 				}
 
-				/*
-				 * Build the pubdate
-				 * If we've got the day, then get the date.
-				 * If we've got the month, but no date, get the month.
+
+				/**
+				 * Build the statement needed to filter by pubdate:
+				 * If we've got the day, then get the date;
+				 * If we've got the month, but no date, get the month;
 				 * If we've only got the year, get the whole year.
-				 * @todo Ensure that we've actually got all the needed parts when we query on them
-				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')
 				 */
-				if ( isset( $paramset['day'] ) ) {
-					/* Got the full date */
+				if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
 					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
-				elseif ( isset( $paramset['month'] ) ) {
+				elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
 					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
 					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
@@ -215,6 +216,7 @@ class Posts extends ArrayObject
 					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
+				// Concatenate the WHERE statements
 				if ( count( $where ) > 0 ) {
 					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 				}
