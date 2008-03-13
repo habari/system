@@ -13,7 +13,7 @@ CREATE TABLE {$prefix}posts (
   pubdate DATETIME NOT NULL,
   updated TIMESTAMP NOT NULL
 );
-CREATE UNIQUE INDEX slug ON {$prefix}posts(slug);
+CREATE UNIQUE INDEX IF NOT EXISTS slug ON {$prefix}posts(slug);
 
 CREATE TABLE {$prefix}postinfo  (
   post_id INTEGER UNSIGNED NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE {$prefix}users (
   email VARCHAR(255) NOT NULL,
   password VARCHAR(255) NOT NULL
 );
-CREATE UNIQUE INDEX username ON {$prefix}users(username);
+CREATE UNIQUE INDEX IF NOT EXISTS username ON {$prefix}users(username);
 
 CREATE TABLE {$prefix}userinfo (
   user_id SMALLINT UNSIGNED NOT NULL,
@@ -63,14 +63,14 @@ CREATE TABLE {$prefix}tags (
   tag_text VARCHAR(255) NOT NULL,
   tag_slug VARCHAR(255) NOT NULL
 );
-CREATE UNIQUE INDEX tag_text ON {$prefix}tags(tag_text);
+CREATE UNIQUE INDEX IF NOT EXISTS tag_text ON {$prefix}tags(tag_text);
 
 CREATE TABLE {$prefix}tag2post (
   tag_id INTEGER UNSIGNED NOT NULL,
   post_id INTEGER UNSIGNED NOT NULL,
   PRIMARY KEY (tag_id, post_id)
 );
-CREATE INDEX tag2post_post_id ON {$prefix}tag2post(post_id);
+CREATE INDEX IF NOT EXISTS tag2post_post_id ON {$prefix}tag2post(post_id);
 
 CREATE TABLE {$prefix}comments (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE {$prefix}comments (
   date TIMESTAMP NOT NULL,
   type SMALLINT UNSIGNED NOT NULL
 );
-CREATE INDEX comments_post_id ON {$prefix}comments(post_id);
+CREATE INDEX IF NOT EXISTS comments_post_id ON {$prefix}comments(post_id);
 
 CREATE TABLE {$prefix}commentinfo (
   comment_id INTEGER UNSIGNED NOT NULL,
@@ -138,27 +138,27 @@ CREATE TABLE {$prefix}log_types (
   module VARCHAR(100) NOT NULL,
   type VARCHAR(100) NOT NULL
 );
-CREATE UNIQUE INDEX module_type ON {$prefix}log_types(module, type);
+CREATE UNIQUE INDEX IF NOT EXISTS module_type ON {$prefix}log_types(module, type);
 
 CREATE TABLE {$prefix}groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL
 );
-CREATE UNIQUE INDEX group_name ON {$prefix}groups(name);
+CREATE UNIQUE INDEX IF NOT EXISTS group_name ON {$prefix}groups(name);
 
 CREATE TABLE {$prefix}permissions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   description VARCHAR(255)
 );
-CREATE UNIQUE INDEX permissions_name ON {$prefix}permissions(name);
+CREATE UNIQUE INDEX IF NOT EXISTS permissions_name ON {$prefix}permissions(name);
 
 CREATE TABLE {$prefix}users_groups (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   user_id INTEGER UNSIGNED NOT NULL,
   group_id INTEGER UNSIGNED NOT NULL
 );
-CREATE INDEX user_group ON {$prefix}users_groups(user_id,group_id);
+CREATE INDEX IF NOT EXISTS user_group ON {$prefix}users_groups(user_id,group_id);
 
 CREATE TABLE {$prefix}groups_permissions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -166,7 +166,7 @@ CREATE TABLE {$prefix}groups_permissions (
   permission_id INTEGER UNSIGNED NOT NULL,
   denied TINYINT UNSIGNED NOT NULL DEFAULT 0
 );
-CREATE UNIQUE INDEX group_permission ON {$prefix}groups_permissions(group_id,permission_id);
+CREATE UNIQUE INDEX IF NOT EXISTS group_permission ON {$prefix}groups_permissions(group_id,permission_id);
 
 CREATE TABLE {$prefix}sessions  (
   token VARCHAR(255) NOT NULL,
@@ -176,4 +176,4 @@ CREATE TABLE {$prefix}sessions  (
   user_id INTEGER,
   data TEXT
 );
-CREATE UNIQUE INDEX token_key ON {$prefix}sessions(token);
+CREATE UNIQUE INDEX IF NOT EXISTS token_key ON {$prefix}sessions(token);
