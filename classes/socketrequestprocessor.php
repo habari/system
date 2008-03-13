@@ -48,7 +48,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$_errno= 0;
 		$_errstr= '';
 		
-		if ( !isset( $urlbits['port'] ) ) {
+		if ( !isset( $urlbits['port'] ) || $urlbits['port'] == 0 ) {
 			$urlbits['port']= 80;
 		}
 		
@@ -182,5 +182,3 @@ class SocketRequestProcessor implements RequestProcessor
 		return $this->response_headers;
 	}
 }
-
-?>
