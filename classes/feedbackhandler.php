@@ -28,12 +28,6 @@ class FeedbackHandler extends ActionHandler
 			Session::error(_t( 'Both name and e-mail address must be provided.' ) );
 		}
 		
-		// let's check if we're dealing with a con artist, but we'll be polite and offer an advice
-		if ( !User::identify() && Users::get( array( 'count' => true, 'username' => $this->handler_vars['name'], 'email' => $this->handler_vars['email'] ) ) ) {
-			Session::error(_t('The informations you provided match an existing user, please enter a different name or email address.'));
-			Session::notice(_t('You must log in if you wish to post your comment using those credentials.'));
-		}
-
 		if ( empty( $this->handler_vars['content'] ) ) {
 			Session::error( _t('You did not provide any content for your comment!') );
 		}
