@@ -26,7 +26,7 @@ if ( Session::has_errors() ) {
        </div>
        <p>
 <textarea name="content" id="content" cols="100" rows="10" tabindex="4">
-<?php if ( isset( $details['content'] ) ) { echo $details['content']; } ?>
+<?php echo $commenter_content; ?>
 </textarea>
        </p>
        <p>
