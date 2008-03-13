@@ -28,23 +28,10 @@ class FeedbackHandler extends ActionHandler
 			Session::error(_t( 'Both name and e-mail address must be provided.' ) );
 		}
 		
-		// is the user logged in?
-		if (!User::identify() || (User::identify()->username == $this->handler_vars['name']) || (User::identify()->email == $this->handler_vars['email'])) {
-			// let's check if we're dealing with a con artist, but we'll be polite and offer an advice
-			$user_match= false;
-			if ( Users::get( array( 'count' => true, 'username' => $this->handler_vars['name'] ) ) ) {
-				Session::error(_t('The name you have supplied matches an existing user, please provide a different name.'));
-				$user_match= true;
-			}
-		
-			if ( Users::get( array( 'count' => true, 'email' => $this->handler_vars['email'] ) ) ) {
-				Session::error(_t('The email address you have supplied matches an existing user, please provide a different email address.'));
-				$user_match= true;
-			}
-		
-			if ( $user_match ) {
-				Session::notice(_t('You must log in if you wish to post your comment using those credentials.'));
-			}
+		// let's check if we're dealing with a con artist, but we'll be polite and offer an advice
+		if ( !User::identify() && Users::get( array( 'count' => true, 'username' => $this->handler_vars['name'], 'email' => $this->handler_vars['email'] ) ) ) {
+			Session::error(_t('The informations you provided match an existing user, please enter a different name or email address.'));
+			Session::notice(_t('You must log in if you wish to post your comment using those credentials.'));
 		}
 
 		if ( empty( $this->handler_vars['content'] ) ) {
