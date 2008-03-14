@@ -291,7 +291,7 @@ class Posts extends ArrayObject
 		/**
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
 		 */
-		Utils::debug( $paramarray, $fetch_fn, $query, $params );
+		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
 		/**
 		 * Execute the SQL statement using the PDO extension
