@@ -106,7 +106,7 @@ class Posts extends ArrayObject
 						$params[]= (int) $paramset['id'];
 					}
 				}
-				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) ) {
+				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 != $paramset['status'] )) {
 					if ( is_array( $paramset['status'] ) ) {
 						array_walk( $paramset['status'], create_function( '$a,$b,&$c', 'if ($a = \'any\') { $c[$b]= Post::status($a); } else { unset($c[$b]); }' ), $paramset['status'] );
 						$where[]= "status IN (" . implode( ',', array_fill( 0, count( $paramset['status'] ), '?' ) ) . ")";
@@ -117,7 +117,7 @@ class Posts extends ArrayObject
 						$params[]= (int) Post::status( $paramset['status'] );
 					}
 				}
-				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) ) {
+				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 != $paramset['content_type'] ) ) {
 					if ( is_array( $paramset['content_type'] ) ) {
 						array_walk( $paramset['content_type'], create_function( '$a,$b,&$c', 'if ($a = \'any\') { $c[$b]= Post::type($a); } else { unset($c[$b]); }' ), $paramset['content_type'] );
 						$where[]= "content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
