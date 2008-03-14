@@ -820,6 +820,16 @@ class AdminHandler extends ActionHandler
 			$this->theme->{$varname}= $$varname;
 		}
 
+		// numbers submitted by HTTP forms are seen as strings
+		// but we want the integer value for use in Posts::get,
+		// so cast these two values to (int)
+		if ( isset( $this->handler_vars['type'] ) ) {
+			$type= (int) $this->handler_vars['type'];
+		}
+		if ( isset( $this->handler_vars['status'] ) ) {
+			$status= (int) $this->handler_vars['status'];
+		}
+
 		// if we're updating posts, let's do so:
 		if ( $do_update && isset( $post_ids ) ) {
 			$okay= true;
