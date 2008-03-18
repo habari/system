@@ -17,12 +17,33 @@ class AdminHandler extends ActionHandler
 	{
 		$user= User::identify();
 		if ( !$user ) {
+			Session::error( _t('Your session expired.'), 'expired_session' );
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
+			if ( !empty( $_POST ) ) {
+				Session::add_to_set( 'last_form_data', $_POST, 'post' );
+				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+			}
+			if ( !empty( $_GET ) ) {
+				Session::add_to_set( 'last_form_data', $_GET, 'get' );
+				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+			}
 			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			exit;
 		}
 		if ( !$user->can( 'admin' ) ) {
 			die( _t( 'Permission denied.' ) );
+		}
+		$last_form_data= Session::get_set( 'last_form_data' ); // This was saved in the "if ( !$user )" above, UserHandler transferred it properly.
+		/* At this point, Controller has not created handler_vars, so we have to modify $_POST/$_GET. */
+		if ( isset( $last_form_data['post'] ) ) {
+			$_POST= array_merge( $_POST, $last_form_data['post'] );
+			$_SERVER['REQUEST_METHOD']= 'POST'; // This will trigger the proper act_admin switches.
+			Session::remove_error( 'expired_form_submission' );
+		}
+		if ( isset( $last_form_data['get'] ) ) {
+			$_GET= array_merge( $_GET, $last_form_data['get'] );
+			Session::remove_error( 'expired_form_submission' );
+			// No need to change REQUEST_METHOD since GET is the default.
 		}
 		$user->remember();
 	}

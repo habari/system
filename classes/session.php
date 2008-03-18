@@ -250,6 +250,25 @@ class Session
 	}
 
 	/**
+	 * Retrieve a specific notice from stored errors.
+	 *
+	 * @param string $key ID of the notice to retrieve
+	 * @param boolean $clear true to clear the notice from the session upon receipt
+	 * @return string Return the notice message
+	 */
+	static function get_notice( $key, $clear= true )
+	{
+		$notices= self::get_notices( false );
+		if ( isset( $notices[$key] ) ) {
+			$notice= $notices[$key];
+			if ( $clear ) {
+				self::remove_notice( $key );
+			}
+			return $notice;
+		}
+	}
+
+	/**
 	 * Get all error messsages from the user session
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
@@ -258,6 +277,49 @@ class Session
 	static function get_errors( $clear= true )
 	{
 		return self::get_set( 'errors', $clear );
+	}
+
+	/**
+	 * Retrieve a specific error from stored errors.
+	 *
+	 * @param string $key ID of the error to retrieve
+	 * @param boolean $clear true to clear the error from the session upon receipt
+	 * @return string Return the error message
+	 */
+	static function get_error( $key, $clear= true )
+	{
+		$errors= self::get_errors( false );
+		if ( isset( $errors[$key] ) ) {
+			$error= $errors[$key];
+			if ( $clear ) {
+				self::remove_error( $key );
+			}
+			return $error;
+		}
+	}
+
+	/**
+	 * Removes a specific notice from the stored notices.
+	 *
+	 * @param string $key ID of the notice to remove
+	 * @return boolean True or false depending if the notice was removed successfully.
+	 */
+	static function remove_notice( $key )
+	{
+		unset( $_SESSION['notices'][$key] );
+		return ( !isset( $_SESSION['notices'][$key] ) ? true : false );
+	}
+
+	/**
+	 * Removes a specific error from the stored errors.
+	 *
+	 * @param string $key ID of the error to remove
+	 * @return boolean True or false depending if the error was removed successfully.
+	 */
+	static function remove_error( $key )
+	{
+		unset( $_SESSION['errors'][$key] );
+		return ( !isset( $_SESSION['errors'][$key] ) ? true : false );
 	}
 
 	/**
