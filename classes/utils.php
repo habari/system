@@ -816,9 +816,27 @@ class Utils
 	 */
 	public static function glob( $pattern, $flags = 0 )
 	{
-		$res= glob( $pattern, $flags );
-		if ( $res === false ) $res= array();
-		return $res;
+		if ( ! defined( 'GLOB_NOBRACE' ) || ! ( $flags & GLOB_BRACE == GLOB_BRACE ) ) {
+			// this platform supports GLOB_BRACE out of the box
+			$results= glob( $pattern, $flags );
+		}
+		elseif ( ! preg_match_all( '/\{.*?\}/', $pattern, $m ) ) {
+			// this pattern doesn't even use braces
+			$results= glob( $pattern, $flags ^ GLOB_BRACE );
+		}
+		else {
+			// pattern uses braces, but platform doesn't support GLOB_BRACE
+			$braces= array();
+			foreach ( $m[0] as $raw_brace ) {
+				$braces[ preg_quote( $raw_brace ) ] = '(' . str_replace( ',', '|', preq_quote( substr( $raw_brace, 1, -1 ) ) ) . ')';
+			}
+			$new_pattern= preg_replace( '/\{.*?\}/', '*', $pattern );
+			$regex= '/' . str_replace( array_keys( $braces ), array_values( $braces ), preg_quote( $pattern ) ) . '/';
+			$results= preg_grep( $regex, glob( $new_pattern, $flags ^ GLOB_BRACE) );
+		}
+		
+		if ( $results === false ) $results= array();
+		return $results;
 	}
 
 	/**
@@ -830,21 +848,22 @@ class Utils
 	 */
 	public static function human_size( $bytesize )
 	{
-		$tick = 0;
-		while($bytesize > 1024) {
-			$tick++;
-			$bytesize /= 1024;
-		}
 		$sizes = array(
 			' bytes',
-			'KB',
-			'MB',
-			'GB',
-			'TB',
-			'PB'
-		);
+			'KiB',
+			'MiB',
+			'GiB',
+			'TiB',
+			'PiB'
+			);
+			$tick = 0;
+			$max_tick = count($sizes) - 1;
+			while($bytesize > 1024 && $tick < $max_tick) {
+				$tick++;
+				$bytesize /= 1024;
+			}
 
-		return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
+			return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
 	}
 
 	public static function truncate_log() {
