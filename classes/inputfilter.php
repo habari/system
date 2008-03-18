@@ -110,6 +110,22 @@ class InputFilter
 	);
 	private static $character_entities_re= '';
 	
+	private static $scheme_ports= array(
+		'ftp' => 21,
+		'ssh' => 22,
+		'telnet' => 23,
+		'http' => 80,
+		'pop3' => 110,
+		'nntp' => 119,
+		'news' => 119,
+		'irc' => 194,
+		'imap3' => 220,
+		'https' => 443,
+		'nntps' => 563,
+		'imaps' => 993,
+		'pop3s' => 995,
+	); 
+	
 	/**
 	 * Perform all filtering, return new string.
 	 * @param string $str Input string.
@@ -224,58 +240,56 @@ class InputFilter
 			// scheme, address, port are optional for relative urls ...
 			. '(?:'
 				// scheme
-				. '([a-zA-Z][^:]*):(?://)?'
+				. '(?P<scheme>[a-zA-Z][^:]*):(?://)?'
 				// real protocols
-				. '((?:'
+				. '(?P<full_address>(?:'
 					// optional userinfo
 					. '(?:'
 						// username
-						. '((?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;&=+$,])+)'
+						. '(?P<user>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;&=+$,])+)'
 						// password
-						. ':((?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;:&=+$,])+)?\@)?'
+						. ':(?P<pass>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;:&=+$,])+)?\@)?'
 					// address:
-					. '('
+					. '(?P<host>'
 					//   ip
 					  . '(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|'
 					//   or hostname
 					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*\.[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
 					. ')'
 					// optional port (:0-65535)
-					. '(?::([0-5]?[0-9]{1,4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?'
+					. '(?::(?P<port>[0-5]?[0-9]{1,4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?'
 				// pseudo-protocols
 				. ')|.+)'
 			// /optional for relative
 			. ')?'
 			// path
-			. '(/?[^?#]+)?'
+			. '(?P<path>/?[^?#]+)?'
 			// querystring
-			. '(?:\?([^#]+))?'
+			. '(?:\?(?P<query>[^#]+))?'
 			// fragment (hash)
-			. '(?:#(.*))?'
+			. '(?:#(?P<fragment>.*))?'
 			// delimiter
 			. '@'
 			;
 		
 		$t= preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
-		if (!$t) return $r; // TODO better error handling
+		if ( ! $t ) // TODO better error handling
+			return $r;
 		
 		$matches= $matches[0];
+		if ( ! isset( $matches['full_address'] ) )
+			$matches['full_address']= '';
 		
 		$r['is_error']= FALSE;
-		$r['is_relative']= empty( $matches[1] );
-		$r['is_pseudo']= count( $matches ) == 3;
+		$r['is_relative']= empty( $matches['full_address'] );
+		$r['is_pseudo']= ! array_key_exists( 'host', $matches );
+		$r['pseudo_args']= $r['is_pseudo'] ? $matches['full_address'] : '';
 		
-		$matches= array_pad( $matches, 10, '' );
-		
-		$r['scheme']= $matches[1];
-		if ($r['is_pseudo']) $r['pseudo_args']= $matches[2];
-		$r['user']= $matches[3];
-		$r['pass']= $matches[4];
-		$r['host']= $matches[5];
-		$r['port']= $matches[6];
-		$r['path']= $matches[7];
-		$r['query']= $matches[8];
-		$r['fragment']= $matches[9];
+		foreach ( array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment' ) as $k ) {
+			if ( array_key_exists( $k, $matches ) ) {
+				$r[$k]= $matches[$k];
+			}
+		}
 		
 		return $r;
 	}
@@ -292,7 +306,9 @@ class InputFilter
 			$res .= ':';
 		}
 		else {
-			$res .= '://';
+			if ( ! $parsed_url['is_relative'] ) {
+				$res .= '://';
+			}
 		}
 		if ( $parsed_url['is_pseudo'] ) {
 			$res .= $parsed_url['pseudo_args'];
@@ -307,13 +323,20 @@ class InputFilter
 				$res .= '@';
 			}
 			$res .= $parsed_url['host'];
-			if ( $parsed_url['port'] ) {
-				if (   ( $parsed_url['port'] == 80 && $parsed_url['scheme'] == 'http' )
-					|| ( $parsed_url['port'] == 443 && $parsed_url['scheme'] == 'https' ) ) {
+			if ( !empty( $parsed_url['port'] ) ) {
+				if ( array_key_exists( $parsed_url['scheme'], self::$scheme_ports ) && self::$scheme_ports[ $parsed_url['scheme'] ] == $parsed_url['port'] ) {
+					// default port for this scheme, do nothing
+				}
+				else {	
 					$res .= ':' . $parsed_url['port'];
 				}
 			}
-			$res .= $parsed_url['path'];
+			if ( !empty( $parsed_url['path'] ) ) {
+				$res .= $parsed_url['path'];
+			}
+			else {
+				$res .= '/';
+			}
 			if ( $parsed_url['query'] ) {
 				$res .= '?' . $parsed_url['query'];
 			}
