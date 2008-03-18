@@ -93,9 +93,7 @@ class Post extends QueryRecord
 
 		if ( array_key_exists( $type, $active_post_types ) ) {
 			// $type is active so we'll deactivate it
-			echo $active_post_types[$type];
 			$sql= 'UPDATE ' . DB::table( 'posttype' ) . ' SET active = 0 WHERE id = ' . $active_post_types[$type];
-			echo $sql;
 			DB::query( $sql );
 			return true;
 		}
