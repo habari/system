@@ -79,7 +79,7 @@
 	<?php if ( ! $pdo_drivers_ok ) { ?>
 	  <h2>No PDO drivers enabled</h2>
 	    <p class="instructions"><em>habari</em> requires that at least one <a href="http://www.php.net/pdo">PDO driver</a> be installed.  Please ask your hosting provider to enable one of the PDO drivers supported by Habari.</p>
-	<? } ?>
+	<?php } ?>
      </div>
     </div>
   </body>
