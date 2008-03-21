@@ -75,7 +75,9 @@ class SQLiteConnection extends DatabaseConnection
 		}
 
 		$cqueries= array();
+		$indexqueries= array();
 		$iqueries= array();
+		$pqueries= array();
 		$for_update= array();
 		$allqueries= array();
 
@@ -84,16 +86,25 @@ class SQLiteConnection extends DatabaseConnection
 				$cqueries[strtolower( $matches[1] )]= $qry;
 				$for_update[$matches[1]]= 'Created table '.$matches[1];
 			}
+			else if ( preg_match( "|CREATE (UNIQUE )?INDEX ([^ ]*)|", $qry, $matches ) ) {
+				$indexqueries[] = $qry;
+			}
 			else if ( preg_match( "|INSERT INTO ([^ ]*)|", $qry, $matches ) ) {
 				$iqueries[]= $qry;
 			}
 			else if ( preg_match( "|UPDATE ([^ ]*)|", $qry, $matches ) ) {
 				$iqueries[]= $qry;
 			}
+			else if ( preg_match ( "|PRAGMA ([^ ]*)|", $qry, $matches ) ) {
+				$pqueries[]= $qry;
+			}
 			else {
 				// Unrecognized query type
 			}
 		}
+
+		// Merge the queries into allqueries; pragmas MUST go first
+		$allqueries = array_merge($pqueries, $iqueries);
 
 		$tables= $this->get_column( "SELECT name FROM sqlite_master WHERE type = 'table';" );
 
@@ -113,6 +124,8 @@ class SQLiteConnection extends DatabaseConnection
 				$allqueries[]= $query;
 			}
 		}
+		
+		$allqueries = array_merge($allqueries, $indexqueries);
 
 		if ( $execute ) {
 			foreach ( $allqueries as $query ) {
