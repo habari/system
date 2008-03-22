@@ -247,14 +247,17 @@ class FormUI
 
 	/**
 	 * Configure all the options necessary to make this form work inside a media bar panel
+	 * @param string $path Identifies the silo 
+	 * @param string $panel The panel in the silo to submit to
+	 * @param string $callback Javascript function to call on form submission
 	 */
-	public function media_panel()
+	public function media_panel($path, $panel, $callback)
 	{
 		$this->options['show_form_on_success'] = false;
 		//$this->options['save_button'] = false;
 		$this->options['ajax'] = true;
 		$this->options['form_action'] = URL::get('admin_ajax', array('context' => 'media_panel'));
-		$this->options['on_submit'] = 'habari.media.submitPanel();return false;';
+		$this->options['on_submit'] = "habari.media.submitPanel('$path', '$panel', this, '{$callback}');return false;";
 	}
 
 }
@@ -443,7 +446,7 @@ class FormControlText extends FormControl
 			}
 		}
 
-		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="text" name="' . $this->field . '" value="' . $this->value . '"></label>';
+		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="text" name="' . $this->name . '" value="' . $this->value . '"></label>';
 		if(isset($message)) {
 			$out.= '<p class="error">' . $message . '</p>';
 		}
@@ -784,5 +787,25 @@ class FormControlCheckbox extends FormControl
 		return parent::__get($name);
 	}
 }
+
+/**
+ * A hidden field control based on FormControl for output via a FormUI.
+ */
+class FormControlHidden extends FormControl
+{
+
+	/**
+	 * Produce HTML output for this hidden control.
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function out($forvalidation)
+	{
+		return '<input type="hidden" name="' . $this->name . '" value="' . $this->default . '">';
+	}
+
+}
+
 
 ?>

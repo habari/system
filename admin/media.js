@@ -16,6 +16,7 @@ habari.media = {
 					path: path
 				},
 				function(result) {
+					var reload = $('.pathstore.toload', container).size();
 					habari.media.unqueueLoad();
 					$('.pathstore', container).html(result.path);
 					var output = '<div class="media_dirlevel"><table>';
@@ -32,6 +33,12 @@ habari.media = {
 					else if($('.mediadir', container).html() == '') {
 						$('.mediadir', container).html(output);
 					}
+					else if(reload) {
+						// only need to reload the current directory
+						$('.media_dirlevel:last', container).remove();
+						$('.mediadir', container).append(output);
+					}
+
 					output = '<table><tr>';
 					var first = ' first';
 					habari.media.assets = result.files;
@@ -111,8 +118,21 @@ habari.media = {
 		}
 	},
 
-	submitPanel: function(form) {
-		var query = $(form).serialize();
+	submitPanel: function(path, panel, form, callback) {
+		var query = $(form).serializeArray();
+		query.push({name: 'path', value: path});
+		query.push({name: 'panel', value: panel});
+		
+		$.post(
+			habari.url.habari + '/admin_ajax/media_panel',
+			query,
+			function(result) {
+				$('.media_panel').html(result.panel);
+				if (callback != '') {
+					eval(callback);
+				}
+			},
+			'json');
 	},
 
 	insertAsset: function(asset) {
@@ -123,6 +143,14 @@ habari.media = {
 		else {
 			habari.media.output.image(id, this.assets[id]);
 		}
+	},
+	
+	clearSelections: function() {
+		var container = $('.mediasplitter:visible')
+		// remove all highlights
+		$('.mediadir .directory', container).removeClass('active');
+		// remove second level directories
+		$('.mediadir .media_dirlevel', $('.mediasplitter:visible')).nextAll().remove()
 	}
 
 };
