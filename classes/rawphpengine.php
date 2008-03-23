@@ -85,7 +85,7 @@ class RawPHPEngine extends TemplateEngine
 		 */
 		extract( $this->engine_vars );
 		if ( $this->template_exists( $template ) ) {
-			$template_file= Plugins::filter('include_template_file', $this->template_dir . $template . '.php', $template);
+			$template_file= Plugins::filter('include_template_file', $this->template_dir . $template . '.php', $template, __CLASS__);
 			include ( $template_file );
 		}
 	}
