@@ -499,6 +499,7 @@ class Theme extends Pluggable
 	 */
 	public function theme_header( $theme )
 	{
+		Plugins::act( 'template_header', $theme );
 		$output= Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 		$output.= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 		return $output;
