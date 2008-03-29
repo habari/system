@@ -455,6 +455,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	{
 		$flickr = new Flickr();
 		$results = array();
+		$size = Options::get('flickrsilo:flickr_size');
 
 		$section = strtok($path, '/');
 		switch($section) {
@@ -466,7 +467,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 					foreach($photo->attributes() as $name => $value) {
 						$props[$name] = (string)$value;
 					}
-					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
+					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
 					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
 					$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
 					$props['filetype'] = 'flickr';
@@ -689,6 +690,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			else{
 				$actions[] = 'Authorize';
 			}
+			$actions[] = 'Configure';
 		}
 
 		return $actions;
@@ -748,6 +750,12 @@ END_AUTH;
 					$reauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Authorize')) . '#plugin_options';
 					echo '<p>The Flickr Silo Plugin authorization has been deleted.<p>';
 					echo "<p>Do you want to <a href=\"{$reauth_url}\">re-authorize this plugin</a>?<p>";
+					break;
+				case 'Configure' :
+					$ui= new FormUI( strtolower( get_class( $this ) ) );
+					$flickr_size= $ui->add( 'select', 'flickr_size', 'Default size for images in Posts:' );
+					$flickr_size->options= array( '_s' => 'Square (75x75)', '_t' => 'Thubmnail (100px)', '_m' => 'Small (240px)', '' => 'Medium (500px)', '_b' => 'Large (1024px)', '_o' => 'Original Size' );
+					$ui->out();
 					break;
 			}
 		}
