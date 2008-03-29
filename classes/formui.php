@@ -365,6 +365,24 @@ class FormUI
 		$this->controls= array_values( $this->controls );
 	}
 
+	/**
+	 * Returns an associative array of the controls' values
+	 *
+	 * @return array Associative array where key is control's name
+	 */
+	function get_values()
+	{
+		$values= array();
+		foreach ($this->controls as $control) {
+			if ($control instanceOf FormControlFieldset) {
+				$values= array_merge($values, $control->get_values());
+			}
+			else {
+				$values[$control->name]= $control->value;
+			}
+		}
+		return $values;
+	}
 }
 
 /**
@@ -1043,7 +1061,7 @@ class FormControlFieldset extends FormControl
 {
 	
 	public $legend= null;
-	private $controls= array();
+	protected $controls= array();
 	
 	/**
 	 * Override the FormControl constructor to support more parameters
@@ -1172,6 +1190,17 @@ class FormControlFieldset extends FormControl
 		foreach($this->controls as $control) {
 			$control->save();
 		}
+	}
+	
+	/**
+	 * Returns an associative array of the controls' values
+	 * In the end, this will use FormUI::get_values()
+	 *
+	 * @return array Associative array where key is control's name
+	 */
+	function get_values()
+	{
+		return FormUI::get_values();
 	}
 	
 }
