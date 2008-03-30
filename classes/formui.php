@@ -177,7 +177,8 @@ class FormContainer
 	 */
 	function remove( $target )
 	{
-		unset( $this->controls[array_search($target, $this->controls)] );
+		// Strictness will skip recursiveness, else you get an exception (recursive dependency)
+		unset( $this->controls[array_search($target, $this->controls, TRUE)] );
 	}
 
 	/**
@@ -1086,7 +1087,8 @@ class FormControlFieldset extends FormContainer
 	{
 		$controls= func_get_args();
 		foreach ( $controls as $control ) {
-			unset( $this->controls[array_search($control, $this->controls)] );
+			// Strictness will skip recursiveness, else you get an exception (recursive dependency)
+			unset( $this->controls[array_search($control, $this->controls, TRUE)] );
 		}
 	}
 
