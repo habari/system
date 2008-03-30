@@ -484,6 +484,22 @@ class FormValidators
 		}
 		return array();
 	}
+	
+	/**
+	 * A validation function that returns an error if the value passed in is not a valid Email Address, 
+	 * as per RFC2822 and RFC2821.
+	 *
+	 * @param string $text A string to test if it is a valid Email Address
+	 * @return array An empty array if the string is a valid Email Address, or an array with strings describing the errors
+	 */
+	function validate_email( $text )
+	{
+		// validate email addy as per RFC2822 and RFC2821 with a little exception (see: http://www.regular-expressions.info/email.html)
+		if( !preg_match("@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
+			return array(_t('Value must be a valid Email Address.'));
+		}
+		return array();
+	}
 
 	/**
 	 * A validation function that returns an error if the value passed in is not set.
