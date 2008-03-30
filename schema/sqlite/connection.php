@@ -124,7 +124,7 @@ class SQLiteConnection extends DatabaseConnection
 				$allqueries[]= $query;
 			}
 		}
-		
+
 		$allqueries = array_merge($allqueries, $indexqueries);
 
 		if ( $execute ) {
@@ -140,15 +140,14 @@ class SQLiteConnection extends DatabaseConnection
 	}
 
 	/**
-	 * Upgrade data in the database between database revisions
+	 * Run all of the upgrades since the last database revision.
 	 *
-	 * @param integer $version Optional version to upgrade to
+	 * @param integer $old_version The current version of the database that is being upgraded
+	 * @return boolean True on success
 	 */
 	public function upgrade( $old_version )
 	{
-		switch ( true ) {
-			case $old_version < 1170:  // An example of how to add things to the database at a certain revision.  No need to break
-		}
+		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades');
 	}
 
 }
