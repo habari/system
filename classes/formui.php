@@ -494,7 +494,6 @@ class FormValidators
 	 */
 	function validate_email( $text )
 	{
-		// validate email addy as per RFC2822 and RFC2821 with a little exception (see: http://www.regular-expressions.info/email.html)
 		if( !preg_match("@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
 			return array(_t('Value must be a valid Email Address.'));
 		}
@@ -513,11 +512,6 @@ class FormValidators
 			return array(_t('A value for this field is required.'));
 		}
 		return array();
-	}
-
-	function validate_email( $email )
-	{
-		// We need to add this validator
 	}
 }
 
