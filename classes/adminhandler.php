@@ -581,6 +581,7 @@ class AdminHandler extends ActionHandler
 				}
 				$to_update= Comments::get( array( 'id' => $ids ) );
 				$modstatus= array( 'Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0 );
+				Plugins::act( 'admin_moderate_comments', $ids_change, $to_update, $this );
 				foreach ( $to_update as $comment ) {
 					switch ( $ids_change[$comment->id] ) {
 					case 'delete':
