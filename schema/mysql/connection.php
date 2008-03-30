@@ -213,35 +213,30 @@ class MySQLConnection extends DatabaseConnection
 			}
 		}
 
-		if(!$silent)
-		{
-			if(count($for_update) > 0)
-			{
+		if(!$silent) {
+			if(count($for_update) > 0) {
 				echo "<ul>\n";
-				foreach($for_update as $upgrade)
-				{
+				foreach($for_update as $upgrade) {
 					echo "<li>{$upgrade}</li>\n";
 				}
 				echo "</ul>\n";
 			}
-			else
-			{
-			echo "<ul><li>No Upgrades</li></ul>";
+			else {
+				echo "<ul><li>No Upgrades</li></ul>";
 			}
 		}
 		return $for_update;
 	}
 
 	/**
-	 * Upgrade data in the database between database revisions
+	 * Run all of the upgrades since the last database revision.
 	 *
-	 * @param integer $version Optional version to upgrade to
+	 * @param integer $old_version The current version of the database that is being upgraded
+	 * @return boolean True on success
 	 */
 	public function upgrade( $old_version )
 	{
-		switch(true) {
-			case $old_version < 1170:  // An example of how to add things to the database at a certain revision.  No need to break
-		}
+		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades');
 	}
 }
 ?>

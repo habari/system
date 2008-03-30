@@ -49,7 +49,7 @@ class DatabaseConnection
 	private $errors= array();                       // an array of errors related to queries
 	private $profiles= array();                     	// an array of query profiles
 
-	private $prefix= '';								// class private storage of the database table prefix, defaults to ''
+	protected $prefix= '';								// class protected storage of the database table prefix, defaults to ''
 	private $current_table;
 
 	/**
@@ -80,6 +80,7 @@ class DatabaseConnection
 		} else {
 			$prefix= $this->prefix;
 		}
+		$this->prefix = $prefix;
 
 		// build the mapping with prefixes
 		foreach ( $this->tables as $t ) {
@@ -676,7 +677,74 @@ class DatabaseConnection
 	 *
 	 * @param integer $old_version The old Version::DB_VERSION
 	 */
-	public function upgrade( $old_version ) {}
+	public function upgrade( $old_version, $upgrade_path )
+	{
+		// Get all the upgrade files
+		$upgrade_files= Utils::glob("{$upgrade_path}/*.sql");
+
+		// Put the upgrade files into an array using the 0-padded revision + '_0' as the key
+		$upgrades = array();
+		foreach( $upgrade_files as $file ) {
+			if( intval( basename( $file, '.sql' ) ) >= $old_version) {
+				$upgrades[ sprintf( '%010s_0', basename( $file, '.sql' ) )] = $file;
+			}
+		}
+
+		// Put the upgrade functions into an array using the 0-padded revision + '_1' as the key
+		$upgrade_functions = get_class_methods($this);
+		foreach($upgrade_functions as $fn) {
+			if(preg_match('%^upgrade_([0-9]+)$%i', $fn, $matches)) {
+				if( intval( $matches[1] ) > $old_version) {
+					$upgrades[ sprintf('%010s_1', $matches[1])] = array($this, $fn);
+				}
+			}
+		}
+
+		// Sort the upgrades by revision, ascending
+		ksort($upgrades);
+
+		// Execute all of the upgrade functions
+		$result = true;
+		foreach($upgrades as $upgrade) {
+			if(is_array($upgrade)) {
+				$result &= $upgrade();
+			}
+			else {
+				$result &= $this->query_file($upgrade);
+			}
+			if(!$result) {
+				break;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Load a file containing queries, replace the prefix, execute all queries present
+	 *
+	 * @param string $file The filename containing the queries
+	 * @return boolean True on successful execution of all queries
+	 */
+	public function query_file( $file )
+	{
+		$upgrade_sql= trim( file_get_contents( $file ) );
+		$upgrade_sql= str_replace( '{$prefix}', $this->prefix, $upgrade_sql );
+
+		// Split up the queries
+		$queries= explode( ';', $upgrade_sql );
+
+		foreach( $queries as $query ) {
+			if(trim($query) != '') {
+				if( !$this->query($query) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Translates the query for the current database engine
