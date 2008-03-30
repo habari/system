@@ -58,6 +58,17 @@ abstract class Pluggable
 	{
 		return Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
 	}
+	
+	/**
+	 * Load a translation domain/file for this pluggable
+	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
+	 */
+	public function load_text_domain( $domain )
+	{
+		$base_dir= realpath(dirname( $this->get_file() ));
+		
+		return Locale::load_pluggable_domain( $domain, $base_dir );
+	}
 
 	/**
 	 * Called when a pluggable is loaded to register its actions and filters.

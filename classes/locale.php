@@ -30,6 +30,22 @@ class Locale
 	}
 	
 	/**
+	 * Load translations for a given domain and base directory for a pluggable object.
+	 * Translations are stored in gettext-style .mo files.
+	 * The internal workings of the file format are not entirely meant to be understood.
+	 * 
+	 * @link http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html GNU Gettext Manual: Description of the MO file format
+	 * @param string $domain the domain to load
+	 * @param string $base_dir the base directory in which to find the translation files
+	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
+	 **/	
+	public static function load_pluggable_domain( $domain, $base_dir )
+	{
+		$file= $base_dir . '/locale/' . self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
+		return self::load_file( $domain, $file );
+	}
+	
+	/**
 	 * Load translations for a given domain.
 	 * Translations are stored in gettext-style .mo files.
 	 * The internal workings of the file format are not entirely meant to be understood.
@@ -267,9 +283,9 @@ class Locale
  * 
  * @param string $text The text to translate
  **/	 	 	 	
-function _e( $text )
+function _e( $text, $domain= 'habari' )
 {
-	return Locale::_e( $text );
+	return Locale::_e( $text, $domain );
 }
 
 /**
@@ -280,9 +296,9 @@ function _e( $text )
  * @param string $plural The plural form
  * @param string $count The count
  **/	 	
-function _ne( $singular, $plural, $count )
+function _ne( $singular, $plural, $count, $domain= 'habari' )
 {
-	return Locale::_ne( $singular, $plural, $count );
+	return Locale::_ne( $singular, $plural, $count, $domain );
 }
 
 /**
@@ -291,9 +307,9 @@ function _ne( $singular, $plural, $count )
  * @param string $text The text to translate
  * @return string The translated string
  **/	 	 	 	 	 	
-function _t( $text )
+function _t( $text, $domain= 'habari' )
 {
-	return Locale::_t( $text );
+	return Locale::_t( $text, $domain );
 }
 
 /**
@@ -304,9 +320,9 @@ function _t( $text )
  * @param string $count The count
  * @return string The appropriately translated string
  **/       
-function _n( $singular, $plural, $count )
+function _n( $singular, $plural, $count, $domain= 'habari' )
 {
-	return Locale::_n( $singular, $plural, $count );
+	return Locale::_n( $singular, $plural, $count, $domain );
 }
 
 ?>
