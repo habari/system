@@ -3,7 +3,7 @@
  * FormUI Library - Create interfaces for plugins
  *
  * FormUI			This is the main class, it generates the form itself;
- * FormController	To create groups of instances (ex: fieldsets), also to reduce infinite recurrence;
+ * FormContainer	A form-related class that can contain form elements, derived by FormUI and FormControlFieldset;
  * FormValidators	Catalog of validation functions, it can be extended if needed;
  * FormControl		Parent class to controls, it contains basic functionalities overrode in each control's class;
  * FormControl*		Every control needs a FormControl* class, FormUI literally looks for example, FormControlCheckbox.
@@ -12,20 +12,245 @@
  * @package Habari
  */
 
+class FormContainer
+{
+	protected $name= '';
+	public $controls= array();
+	protected $theme_obj = null;
+
+	/**
+	 * Constructor for FormContainer prevents construction of this class directly
+	 */
+	private function __construct() {}
+
+	/**
+	 * Add a control to this form.
+	 * If a default value is not provided, the function attempts to obtain the value
+	 * from the Options table using the form name and the control name as the key.  For
+	 * example, if the form name is "myform" and the control name is "mycontrol" then
+	 * the function attempts to obtain the control's value from Options::get('myform:mycontrol')
+	 * These settings may also be used in FormUI::success() later to write the value
+	 * of the control back into the options table.
+	 *
+	 * @param string $type A classname, or the postfix of a class starting 'FormControl' that will be used to create the control
+	 * @param string $name The name of the control, also the latter part of the Options table key value
+	 * @return FormControl An instance of the named FormControl descendant.
+	 */
+	public function add($type, $name)
+	{
+		$control= null;
+		$args= func_get_args();
+		array_shift($args); // Remove $type, keep name for override __construct()
+
+
+		if(is_string($type) && class_exists('FormControl' . ucwords($type))) {
+			$type= 'FormControl' . ucwords($type);
+		}
+		if(strpos($name, 'user:') === 0) {
+			$store_user = true;
+			$name = substr($name, 5);
+			$storage_name = $this->name . '_' . $name;
+		}
+		else {
+			$store_user = false;
+			$storage_name = $this->name . ':' . $name;
+		}
+
+		if(class_exists($type)) {
+			// Instanciate a new object from $type
+			$controlreflect= new ReflectionClass($type);
+			$control= $controlreflect->newInstanceArgs($args);
+			if($control instanceof FormControl) {
+				$control->set_storage( $storage_name, $store_user );
+			}
+			$control->container = $this;
+			$this->controls[$name]= $control;
+		}
+		return $control;
+	}
+
+	/**
+	 * Returns an associative array of the controls' values
+	 *
+	 * @return array Associative array where key is control's name and value is the control's value
+	 */
+	public function get_values()
+	{
+		$values= array();
+		foreach ($this->controls as $control) {
+			if ($control instanceOf FormContainer) {
+				$values= array_merge($values, $control->get_values());
+			}
+			else {
+				$values[$control->name]= $control->value;
+			}
+		}
+		return $values;
+	}
+
+	/**
+	 * Returns an associative array of controls
+	 *
+	 * @return array An array of FormControls
+	 */
+	public function get_controls()
+	{
+		$controls= array();
+		foreach ($this->controls as $control) {
+			if ($control instanceOf FormContainer) {
+				$controls= array_merge($controls, $control->get_controls());
+			}
+			else {
+				$controls[$control->name]= $control;
+			}
+		}
+		return $controls;
+	}
+
+	/**
+	 * Moves a control to target's position to which we add $int if specified
+	 * That integer is useful to move before or move after the target
+	 *
+	 * @param FormControl $control FormControl object to move
+	 * @param FormControl $target FormControl object acting as destination
+	 * @param int $int Integer added to $target's position (index)
+	 */
+	function move($source, $target, $offset= 0)
+	{
+		// Remove the source control from its container's list of controls
+		$controls = array();
+		foreach($source->container->controls as $name => $ctrl) {
+			if($ctrl == $source) {
+				$source_name = $name;
+				continue;
+			}
+			$controls[$name] = $ctrl;
+		}
+		$source->container->controls = $controls;
+
+		// Insert the source control into the destination control's container's list of controls in the correct location
+		$target_index = array_search($target, array_values($target->container->controls));
+		$left_slice= array_slice($target->container->controls, 0, ($target_index + $offset), true);
+		$right_slice= array_slice($target->container->controls, ($target_index + $offset), count($target->container->controls), true);
+
+		$target->container->controls = $left_slice + array($source_name => $source) + $right_slice;
+	}
+
+	/**
+	 * Moves a control before the target control
+	 *
+	 * @param FormControl $control FormControl object to move
+	 * @param FormControl $target FormControl object acting as destination
+	 */
+	function move_before($control, $target)
+	{
+		$this->move($control, $target);
+	}
+
+/**
+	 * Moves a control after the target control
+	 *
+	 * @param FormControl $control FormControl object to move
+	 * @param FormControl $target FormControl object acting as destination
+	 */
+	function move_after($control, $target)
+	{
+		$this->move($control, $target, 1); // Increase left slice's size by one.
+	}
+
+	/**
+	 * Replaces a target control by the supplied control
+	 *
+	 * @param FormControl $target FormControl object to replace
+	 * @param FormControl $control FormControl object to replace $target with
+	 */
+	function replace($target, $control)
+	{
+		$this->move_after($control, $target);
+		$this->remove($target);
+	}
+
+	/**
+	 * Removes a target control from this group (can be the form or a fieldset)
+	 *
+	 * @param FormControl $target FormControl to remove
+	 */
+	function remove( $target )
+	{
+		unset( $this->controls[array_search($target, $this->controls)] );
+	}
+
+	/**
+	 * Retreive the Theme used to display the form component
+	 *
+	 * @param boolean $forvalidation If true, perform validation on control and add error messages to output
+	 * @param FormControl $control The control to output using a template
+	 * @return Theme The theme object to display the template for the control
+	 */
+	function get_theme($forvalidation, $control)
+	{
+		if(!isset($this->theme_obj)) {
+			$theme_dir= Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
+			$this->theme_obj= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		}
+		if($control instanceof FormControl) {
+			$this->theme_obj->field= $control->field;
+			$this->theme_obj->value= $control->value;
+			$this->theme_obj->caption= $control->caption;
+
+			$class= 'formcontrol ';
+
+			$classname= get_class( $control );
+			if(preg_match('%FormControl(.+)%i', $classname, $controltype)) {
+				$class.= strtolower($controltype[1]);
+			}
+			else {
+				$class.= strtolower($classname);
+			}
+
+			$message= '';
+			if($forvalidation) {
+				$validate= $control->validate();
+				if(count($validate) != 0) {
+					$class.= ' invalid';
+					$message= implode('<br>', $validate);
+				}
+			}
+			$this->theme_obj->class= $class;
+			$this->theme_obj->message= $message;
+		}
+		return $this->theme_obj;
+	}
+
+	/**
+	 * Returns true if any of the controls this container contains should be stored in userinfo
+	 *
+	 * @return boolean True if control data should be sotred in userinfo
+	 */
+	function has_user_options()
+	{
+		$has_user_options = false;
+		foreach($this->controls as $control) {
+			$has_user_options |= $control->has_user_options();
+		}
+		return $has_user_options;
+	}
+
+
+}
+
+
 /**
  * FormUI Class
  * This will generate the <form> structure and call subsequent controls
  *
  * For a list of options to customize its output or behavior see FormUI::set_option()
  */
-class FormUI
+class FormUI extends FormContainer
 {
-	private $name;
-	public $controls= array();
 	private $success_callback;
 	private $success_callback_params = array();
 	private static $outpre = false;
-	private $has_user_options = false;
 	private $options = array(
 		'show_form_on_success' => true,
 		'save_button' => true,
@@ -33,16 +258,15 @@ class FormUI
 		'form_action' => '',
 		'on_submit' => '',
 	);
-	
+
 	/**
-	 * FormUI's constructor, called on instantiation, it will register the form with FormController.
+	 * FormUI's constructor, called on instantiation.
 	 *
 	 * @param string $name The name of the form, used to differentiate multiple forms.
 	 */
 	public function __construct( $name )
 	{
 		$this->name= $name;
-		FormController::register($this);
 	}
 
 	/**
@@ -153,59 +377,6 @@ class FormUI
 	}
 
 	/**
-	 * Add a control to this form.
-	 * If a default value is not provided, the function attempts to obtain the value
-	 * from the Options table using the form name and the control name as the key.  For
-	 * example, if the form name is "myform" and the control name is "mycontrol" then
-	 * the function attempts to obtain the control's value from Options::get('myform:mycontrol')
-	 * These settings may also be used in FormUI::success() later to write the value
-	 * of the control back into the options table.
-	 *
-	 * @param string $type A classname, or the postfix of a class starting 'FormControl' that will be used to create the control
-	 * @param string $name The name of the control, also the latter part of the Options table key value
-	 * @return FormControl An instance of the named FormControl descendant.
-	 */
-	public function add($type, $name)
-	{
-		$control= null;
-		$args= func_get_args();
-		array_shift($args); // Remove $type, keep name for override __construct()
-
-
-		if(is_string($type) && class_exists('FormControl' . ucwords($type))) {
-			$type= 'FormControl' . ucwords($type);
-		}
-		if(strpos($name, 'user:') === 0) {
-			$store_user = true;
-			$name = substr($name, 5);
-			$storage_name = $this->name . '_' . $name;
-		}
-		else {
-			$store_user = false;
-			$storage_name = $this->name . ':' . $name;
-		}
-
-		if(empty($default)) {
-			if($store_user) {
-				$default= User::identify()->info->{$storage_name};
-				$this->has_user_options = true;
-			}
-			else {
-				$default= Options::get( $storage_name );
-			}
-		}
-		if(class_exists($type)) {
-			// Instanciate a new object from $type
-			$controlreflect= new ReflectionClass($type);
-			$control= $controlreflect->newInstanceArgs($args);
-			$control->assign_form($this->salted_name());
-			$control->set_storage( $storage_name, $store_user );
-			$this->controls[$name]= $control;
-		}
-		return $control;
-	}
-
-	/**
 	 * Set a function to call on form submission success
 	 *
 	 * @param mixed $callback A callback function or a plugin filter name.
@@ -241,7 +412,7 @@ class FormUI
 				$control->save();
 			}
 		}
-		if($this->has_user_options) {
+		if($this->has_user_options()) {
 			User::identify()->info->commit();
 		}
 	}
@@ -261,7 +432,7 @@ class FormUI
 
 	/**
 	 * Configure all the options necessary to make this form work inside a media bar panel
-	 * @param string $path Identifies the silo 
+	 * @param string $path Identifies the silo
 	 * @param string $panel The panel in the silo to submit to
 	 * @param string $callback Javascript function to call on form submission
 	 */
@@ -273,156 +444,21 @@ class FormUI
 		$this->options['form_action'] = URL::get('admin_ajax', array('context' => 'media_panel'));
 		$this->options['on_submit'] = "habari.media.submitPanel('$path', '$panel', this, '{$callback}');return false;";
 	}
-	
+
 	/**
-	 * Moves a control to target's position to which we add $int if specified
-	 * That integer is useful to move before or move after the target
+	 * Magic property getter, returns the value of the specified form control
 	 *
-	 * @param FormControl $control FormControl object to move
-	 * @param FormControl $target FormControl object acting as destination
-	 * @param int $int Integer added to $target's position (index)
+	 * @param string $name The name of the control
+	 * @return mixed The value of the control
 	 */
-	function move($control, $target, $int= 0)
+	public function __get($name)
 	{
-		$control_group= FormController::instance($control->group);
-		$target_group= FormController::instance($target->group);
-		$control_index= $control->get_index();
-		$target_index= $target->get_index();
-		if ( is_int($control_index) && is_int($target_index) ) {
-			$left_slice= array_slice($target_group->controls, 0, ($target_index+$int), true);
-			$right_slice= array_slice($target_group->controls, ($target_index+$int), count($target_group->controls), true);
-			if ( $control_index < $target_index ) { // Control is in left slice
-				if ( $control->group === $target->group ) {
-					// Remove control from slice
-					unset($left_slice[$control_index]);
-				}
-				else {
-					$control_group->remove($control);
-				}
-				// Append control to slice
-				$control->group= $target->group;
-				$left_slice[]= $control;
-			}
-			else { // Control is in right slice
-				if ( $control->group === $target->group ) {
-					// Remove control from slice
-					unset($right_slice[$control_index]);
-				}
-				else {
-					$control_group->remove($control);
-				}
-				// Prepend control to slice
-				$control->group= $target->group;
-				array_unshift($right_slice, $control);
-			}
-			$target_group->controls= array_merge($left_slice, $right_slice);
+		$controls = $this->get_controls();
+		if(strpos($name, 'user_') === 0) {
+			$name = 'user:' . substr($name, 5);
 		}
+		return $controls[$name];
 	}
-	
-	/**
-	 * Moves a control before the target control
-	 *
-	 * @param FormControl $control FormControl object to move
-	 * @param FormControl $target FormControl object acting as destination
-	 */
-	function move_before($control, $target)
-	{
-		$this->move($control, $target);
-	}
-
-	/**
-	 * Moves a control after the target control
-	 *
-	 * @param FormControl $control FormControl object to move
-	 * @param FormControl $target FormControl object acting as destination
-	 */
-	function move_after($control, $target)
-	{
-		$this->move($control, $target, 1); // Increase left slice's size by one.
-	}
-
-	/**
-	 * Replaces a target control by the supplied control
-	 *
-	 * @param FormControl $target FormControl object to replace
-	 * @param FormControl $control FormControl object to replace $target with
-	 */
-	function replace($target, $control)
-	{
-		FormController::instance($target->group)->move_after($control, $target);
-		FormController::instance($target->group)->remove($target);
-	}
-	
-	/**
-	 * Removes a target control from this group (can be the form or a fieldset)
-	 *
-	 * @param FormControl $target FormControl to remove
-	 */
-	function remove( $target )
-	{
-		$target_index= $target->get_index();
-		unset( $this->controls[$target_index] );
-		$this->controls= array_values( $this->controls );
-	}
-
-	/**
-	 * Returns an associative array of the controls' values
-	 *
-	 * @return array Associative array where key is control's name
-	 */
-	function get_values()
-	{
-		$values= array();
-		foreach ($this->controls as $control) {
-			if ($control instanceOf FormControlFieldset) {
-				$values= array_merge($values, $control->get_values());
-			}
-			else {
-				$values[$control->name]= $control->value;
-			}
-		}
-		return $values;
-	}
-}
-
-/**
- * FormController Class
- * A modified and simpler version of Singleton
- *
- * Basically, it keeps track of instances when requested
- * This way two classes can talk to each other without recursiveness lurking around
- */
-class FormController
-{
-	
-	public static $instances= array();
-	
-	/**
-	 * Register a new instance
-	 *
-	 * @param object It can be anything, as long as it implements the method salted_name to use as a key
-	 */
-	function register( $object )
-	{
-		self::$instances[$object->salted_name()]= $object;
-	}
-	
-	/**
-	 * Retrieve a specific instance based on the salted named
-	 *
-	 * @param string $salt The instance's hash (salted_name) to fetch
-	 * @return object|bool If an instance is found, it will return it
-	 */
-	function instance( $salt )
-	{		
-		if ( isset(self::$instances[$salt]) ) {
-			return self::$instances[$salt];
-		}
-		else {
-			return false;
-		}
-	}
-
 }
 
 /**
@@ -432,7 +468,7 @@ class FormController
  */
 class FormValidators
 {
-	
+
 	/**
 	 * A validation function that returns an error if the value passed in is not a valid URL.
 	 *
@@ -448,7 +484,7 @@ class FormValidators
 		}
 		return array();
 	}
-	
+
 	/**
 	 * A validation function that returns an error if the value passed in is not set.
 	 *
@@ -462,7 +498,7 @@ class FormValidators
 		}
 		return array();
 	}
-	
+
 	function validate_email( $email )
 	{
 		// We need to add this validator
@@ -480,14 +516,14 @@ class FormControl
 	protected $validators= array();
 	protected $storage;
 	protected $store_user = false;
-	public $form= null;
-	public $group= null;
+	protected $theme_obj;
+	protected $container = null;
 
 	/**
 	 * FormControl constructor - set initial settings of the control
 	 *
 	 * @param string $name The name of the control
-	 * @param string $caption The caption used a the label when displaying a control
+	 * @param string $caption The caption used as the label when displaying a control
 	 * @param string $default The default value of the control
 	 */
 	public function __construct( $name, $caption= null, $default= null )
@@ -495,6 +531,23 @@ class FormControl
 		$this->name= $name;
 		$this->caption= $caption;
 		$this->default= $default;
+	}
+
+
+	/**
+	 * Set the default value of this control from options or userinfo if the default value isn't explicitly set on creation
+	 */
+	protected function get_default()
+	{
+		// Get the default value from Options/UserInfo if it's not set explicitly
+		if(empty($this->default)) {
+			if($this->store_user) {
+				$this->default= User::identify()->info->{$this->storage};
+			}
+			else {
+				$this->default= Options::get( $this->storage );
+			}
+		}
 	}
 
 
@@ -508,10 +561,11 @@ class FormControl
 	{
 		$this->storage= $key;
 		$this->store_user = $store_user;
+		$this->get_default();
 	}
 
 	/**
-	 * Store this control's value under the conrol's specified key.
+	 * Store this control's value under the control's specified key.
 	 *
 	 * @param string $key (optional) The Options table key to store this option in
 	 */
@@ -539,7 +593,17 @@ class FormControl
 	 */
 	public function out($forvalidation)
 	{
-		return '';
+		$theme= $this->get_theme($forvalidation);
+
+		$classname= get_class( $this );
+		if(preg_match('%FormControl(.+)%i', $classname, $controltype)) {
+			$type.= strtolower($controltype[1]);
+		}
+		else {
+			$type.= strtolower($classname);
+		}
+
+		return $theme->fetch( 'formcontrol_' . $type );
 	}
 
 	/**
@@ -583,30 +647,72 @@ class FormControl
 	 * @param string $name The parameter to retrieve
 	 * @return mixed The value of the parameter
 	 */
-	protected function __get($name)
+	public function __get($name)
 	{
 		switch($name) {
-		case 'field':
-			// must be same every time, no spaces
-			return sprintf('%x', crc32($this->name));
-		case 'value':
-			if(isset($_POST[$this->field])) {
-				return $_POST[$this->field];
-			}
-			elseif (User::identify()->info->{$this->storage} != '') {
-				return User::identify()->info->{$this->storage};
-			}
-			elseif (Options::get($this->storage) != '') {
-				return Options::get($this->storage);
-			}
-			else {
-				return $this->default;
-			}
+			case 'field':
+				// must be same every time, no spaces
+				return sprintf('%x', crc32($this->name));
+			case 'value':
+				if(isset($_POST[$this->field])) {
+					return $_POST[$this->field];
+				}
+				elseif ($this->store_user && User::identify() && User::identify()->info->{$this->storage} != '') {
+					return User::identify()->info->{$this->storage};
+				}
+				elseif (Options::get($this->storage) != '') {
+					return Options::get($this->storage);
+				}
+				else {
+					return $this->default;
+				}
 		}
 		if(isset($this->$name)) {
 			return $this->$name;
 		}
 		return null;
+	}
+
+	/**
+	 * Returns true if this control should be stored as userinfo
+	 *
+	 * @return boolean True if this control should be stored as userinfo
+	 */
+	public function has_user_options()
+	{
+		return $this->store_user;
+	}
+
+	/**
+	 * Magic property setter for FormControl and its descendants
+	 *
+	 * @param string $name The name of the property
+	 * @param mixed $value The value to set the property to
+	 */
+	public function __set($name, $value)
+	{
+		switch($name) {
+			case 'value':
+				$this->default = $value;
+				break;
+			case 'container':
+				if($this->container != $value && isset($this->container)) {
+					$this->container->remove($this);
+				}
+				$this->container = $value;
+				break;
+		}
+	}
+
+	/**
+	 * Return the theme used to output this control and perform validation if required.
+	 *
+	 * @param boolean $forvalidation If true, process this control for validation (adds validation failure messages to the theme)
+	 * @return Theme The theme that will display this control
+	 */
+	protected function get_theme($forvalidation)
+	{
+		return $this->container->get_theme($forvalidation, $this);
 	}
 
 
@@ -619,50 +725,8 @@ class FormControl
 		$args= func_get_args();
 		$this->validators= array_merge($this->validators, $args);
 	}
-	
-	/**
-	 * Assign a form to this control
-	 * Since this is used at the control's creation, the group will be the assigned form
-	 *
-	 * @param string $salted_name Salted name of the form this control is in
-	 */
-	function assign_form( $salted_name )
-	{
-		$this->form= $salted_name;
-		$this->group= $salted_name;
-	}
-	
-	/**
-	 * Generate a unique MD5 hash based on the form's name or the control's name.
-	 * In the end, this will use FormUI::salted_name()
-	 *
-	 * @return string Unique string composed of 35 hexadecimal digits representing the victim.
-	 */
-	function salted_name()
-	{
-		return FormUI::salted_name();
-	}
-	
-	/**
-	 * Get the index of this control within its current group (form or fieldset)
-	 *
-	 * @return int Index key for this control in its group
-	 */
-	function get_index()
-	{
-		$arrayobject= new ArrayObject(FormController::instance($this->group)->controls);
-		$iterator= $arrayobject->getIterator();		
-		while ( $iterator->valid() ) {
-			if ( $iterator->current() === $this ) {
-				return $iterator->key();
-			}
-			
-			$iterator->next();
-		}
-		return false;
-	}
 
-	/**
+/**
 	 * Move this control before the target
 	 * In the end, this will use FormUI::move()
 	 *
@@ -670,9 +734,9 @@ class FormControl
 	 */
 	function move_before( $target )
 	{
-		FormController::instance($this->group)->move_before( $this, $target );
+		$this->container->move_before( $this, $target );
 	}
-	
+
 	/**
 	 * Move this control after the target
 	 * In the end, this will use FormUI::move()
@@ -681,7 +745,7 @@ class FormControl
 	 */
 	function move_after( $target )
 	{
-		FormController::instance($this->group)->move_after( $this, $target );
+		$this->container->move_after( $this, $target );
 	}
 
 }
@@ -700,21 +764,9 @@ class FormControlText extends FormControl
 	 */
 	public function out($forvalidation)
 	{
-		$class= 'text formcontrol';
-		if($forvalidation) {
-			$validate= $this->validate();
-			if(count($validate) != 0) {
-				$class.= ' invalid';
-				$message= implode('<br>', $validate);
-			}
-		}
+		$theme= $this->get_theme($forvalidation);
 
-		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="text" name="' . $this->field . '" value="' . $this->value . '"></label>';
-		if(isset($message)) {
-			$out.= '<p class="error">' . $message . '</p>';
-		}
-		$out.= '</div>';
-		return $out;
+		return $theme->fetch( 'formcontrol_text' );
 	}
 
 }
@@ -764,23 +816,10 @@ class FormControlPassword extends FormControlText
 	 */
 	public function out($forvalidation)
 	{
-		$class= 'text formcontrol';
-		if($forvalidation) {
-			$validate= $this->validate();
-			if(count($validate) != 0) {
-				$class.= ' invalid';
-				$message= implode('<br>', $validate);
-			}
-		}
-		
-		$outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
+		$theme= $this->get_theme($forvalidation);
+		$theme->outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
 
-		$out= '<div class="' . $class . '"><label>' . $this->caption . '<input type="password" name="' . $this->field . '" value="' . $outvalue . '"></label>';
-		if(isset($message)) {
-			$out.= '<p class="error">' . $message . '</p>';
-		}
-		$out.= '</div>';
-		return $out;
+		return $theme->fetch( 'formcontrol_password' );
 	}
 
 	/**
@@ -791,7 +830,7 @@ class FormControlPassword extends FormControlText
 	 * @param string $name The paramter to retrieve
 	 * @return mixed The value of the parameter
 	 */
-	protected function __get($name)
+	public function __get($name)
 	{
 		switch($name) {
 			case 'value':
@@ -828,30 +867,9 @@ class FormControlTextMulti extends FormControl
 	 */
 	public function out($forvalidation)
 	{
-		$class= 'textmulti formcontrol';
-		if($forvalidation) {
-			$validate= $this->validate();
-			if(count($validate) != 0) {
-				$class.= ' invalid';
-				$message= implode('<br>', $validate);
-			}
-		}
+		$theme= $this->get_theme($forvalidation);
 
-		$out= '<div class="' . $class . '">';
-		if(isset($message)) {
-			$out.= '<p class="error">' . $message . '</p>';
-		}
-		$out.= '<p>' . $this->caption . '</p>';
-		$values = $this->value;
-		if(!is_array($values)) {
-			$values = array($values);
-		}
-		foreach($values as $value) {
-			$out.= '<label><input type="text" name="' . $this->field . '[]" value="' . $value . '"> <a href="#" onclick="return controls.textmulti.remove(this);">[' . _t('remove') . ']</a></label>';
-		}
-		$out.= '<a href="#" onclick="return controls.textmulti.add(this, \'' . $this->field . '\');">[' . _t('add') . ']</a>';
-		$out.= '</div>';
-		return $out;
+		return $theme->fetch( 'formcontrol_textmulti' );
 	}
 
 	/**
@@ -899,7 +917,7 @@ class FormControlSelect extends FormControl
 	 * @param string $name
 	 * @param string $caption
 	 * @param array $options
-	 * @param string $selected 
+	 * @param string $selected
 	 */
 	public function __construct( $name, $caption= null, $options= null, $selected= null )
 	{
@@ -908,7 +926,7 @@ class FormControlSelect extends FormControl
 		$this->options= $options;
 		$this->default= $selected;
 	}
-	
+
 	/**
 	 * Produce HTML output for this text control.
 	 *
@@ -917,27 +935,10 @@ class FormControlSelect extends FormControl
 	 */
 	public function out($forvalidation)
 	{
-		$class= 'select formcontrol';
-		if($forvalidation) {
-			$validate= $this->validate();
-			if(count($validate) != 0) {
-				$class.= ' invalid';
-				$message= implode('<br>', $validate);
-			}
-		}
+		$theme= $this->get_theme($forvalidation);
+		$theme->options = $this->options;
 
-		$out= '<div class="' . $class . '"><label>' . $this->caption . '<select name="' . $this->field . '">';
-		foreach ( (array) $this->options as $key => $value ) {
-			$out.= '<option value="' . $key . '"' . ( ( $this->value == $key ) ? ' selected' : '' ) . '>' . $value . '</option>';
-		}
-		$out.= '</select></label>';
-
-		if(isset($message)) {
-			$out.= '<p class="error">' . $message . '</p>';
-		}
-		$out.= '</div>';
-
-		return $out;
+		return $theme->fetch( 'formcontrol_select' );
 	}
 }
 
@@ -955,23 +956,10 @@ class FormControlTextArea extends FormControl
 	 */
 	public function out($forvalidation)
 	{
-		$class= 'textarea formcontrol';
-		if($forvalidation) {
-			$validate= $this->validate();
-			if(count($validate) != 0) {
-				$class.= ' invalid';
-				$message= implode('<br>', $validate);
-			}
-		}
+		$theme= $this->get_theme($forvalidation);
+		$theme->options = $this->options;
 
-		$out= '<div class="' . $class . '"><label>' . $this->caption . '<textarea name="' . $this->field . '">' . $this->value . '</textarea></label>';
-
-		if(isset($message)) {
-			$out.= '<p class="error">' . $message . '</p>';
-		}
-		$out.= '</div>';
-
-		return $out;
+		return $theme->fetch( 'formcontrol_textarea' );
 	}
 }
 
@@ -989,23 +977,9 @@ class FormControlCheckbox extends FormControl
 	 */
 	public function out($forvalidation)
 	{
-		$class= 'checkbox formcontrol';
-		if($forvalidation) {
-			$validate= $this->validate();
-			if(count($validate) != 0) {
-				$class.= ' invalid';
-				$message= implode('<br>', $validate);
-			}
-		}
+		$theme= $this->get_theme($forvalidation);
 
-		$out= '<div class="' . $class . '"><label><input type="checkbox" name="' . $this->field . '" value="' . $this->value . '" ' . (($this->value) ? 'checked' : '' ) . '>' . $this->caption . '<input type="hidden" name="' . $this->field . '_submitted" value="1" ></label>';
-
-		if(isset($message)) {
-			$out.= '<p class="error">' . $message . '</p>';
-		}
-		$out.= '</div>';
-
-		return $out;
+		return $theme->fetch( 'formcontrol_checkbox' );
 	}
 
 	/**
@@ -1015,7 +989,7 @@ class FormControlCheckbox extends FormControl
 	 * @param string $name The name of the property
 	 * @return mixed The value of the requested property
 	 */
-	protected function __get($name)
+	public function __get($name)
 	{
 		switch($name) {
 		case 'value':
@@ -1057,30 +1031,29 @@ class FormControlHidden extends FormControl
 /**
  * A fieldset control based on FormControl for output via a FormUI.
  */
-class FormControlFieldset extends FormControl
+class FormControlFieldset extends FormContainer
 {
-	
+
 	public $legend= null;
-	protected $controls= array();
-	
+	public $controls= array();
+
 	/**
 	 * Override the FormControl constructor to support more parameters
-	 * We want to store the legend, register with FormController and add controls if provided
+	 * We want to store the legend, add controls if provided
 	 *
 	 * @param string $name Name and legend of this fieldset
 	 * @param array $controls Array of FormControls to add to this fieldset
 	 */
 	function __construct( $name, $controls= null )
-	{		
+	{
 		$this->name= $name;
 		$this->legend= $name;
-		FormController::register($this);
-		
+
 		if ( is_array($controls) ) {
 			call_user_func_array( array( $this, 'add' ), $controls );
 		}
 	}
-	
+
 	/**
 	 * Adds a control or more to this fieldset
 	 * You can pass as many parameters as you wish, each will be added
@@ -1090,11 +1063,11 @@ class FormControlFieldset extends FormControl
 		$controls= func_get_args();
 		foreach ( $controls as $control ) {
 			$this->controls[]= $control;
-			FormController::instance($control->group)->remove($control);
-			$control->group= $this->salted_name();
+			$control->container->remove($control);
+			$control->container= $this;
 		}
 	}
-	
+
 	/**
 	 * Removes a target control from this fieldset
 	 * You can pass as many parameters as you wish, each will be removed
@@ -1103,8 +1076,7 @@ class FormControlFieldset extends FormControl
 	{
 		$controls= func_get_args();
 		foreach ( $controls as $control ) {
-			unset( $this->controls[$control->get_index()] );
-			$this->controls= array_values( $this->controls );
+			unset( $this->controls[array_search($control, $this->controls)] );
 		}
 	}
 
@@ -1114,22 +1086,22 @@ class FormControlFieldset extends FormControl
 	 *
 	 * @param object $target The target control to move this control before
 	 */
-	function move_before( $control, $target )
+	function move_before( $target )
 	{
-		FormController::instance($this->form)->move( $control, $target );
+		$this->container->move( $this, $target );
 	}
-		
+
 	/**
 	 * Move this control after the target
 	 * In the end, this will use FormUI::move()
 	 *
 	 * @param object $target The target control to move this control after
 	 */
-	function move_after( $control, $target )
+	function move_after( $target )
 	{
-		FormController::instance($this->form)->move( $control, $target, 1 ); // Increase left slice's size by one.
+		$this->move( $this, $target, 1 ); // Increase left slice's size by one.
 	}
-	
+
 	/**
 	 * Produce HTML output for all this fieldset and all contained controls
 	 *
@@ -1138,18 +1110,18 @@ class FormControlFieldset extends FormControl
 	 */
 	function out($forvalidation)
 	{
-		$class= 'formcontrol fieldset';
-		
-		$out= '<fieldset id="' . $this->id . '">';
-		$out.= '<legend>' . $this->legend . '</legend>';
+		$theme= $this->get_theme($forvalidation, $this);
+		$theme->id = $this->name;
+		$theme->legend = $this->legend;
+		$contents = '';
 		foreach ( $this->controls as $control ) {
-			$out.= $control->out($forvalidation);
+			$contents.= $control->out($forvalidation);
 		}
-		$out.= '</fieldset>';
-		
-		return $out;
+		$theme->contents= $contents;
+
+		return $theme->fetch( 'formcontrol_fieldset' );
 	}
-	
+
 	/**
 	 * Return the HTML/script required for all contained controls.  Do it only once.
 	 *
@@ -1163,7 +1135,7 @@ class FormControlFieldset extends FormControl
 		}
 		return $preout;
 	}
-	
+
 	/**
 	 * Runs any attached validation functions to check validation of each control contained in this fieldset.
 	 *
@@ -1179,7 +1151,7 @@ class FormControlFieldset extends FormControl
 		}
 		return $results;
 	}
-	
+
 	/**
 	 * Store each contained control's value under the control's specified key.
 	 *
@@ -1191,7 +1163,7 @@ class FormControlFieldset extends FormControl
 			$control->save();
 		}
 	}
-	
+
 	/**
 	 * Returns an associative array of the controls' values
 	 * In the end, this will use FormUI::get_values()
@@ -1202,7 +1174,7 @@ class FormControlFieldset extends FormControl
 	{
 		return FormUI::get_values();
 	}
-	
+
 }
 
 /**
@@ -1210,7 +1182,7 @@ class FormControlFieldset extends FormControl
  */
 class FormControlLabel extends FormControl
 {
-	
+
 	/**
 	 * Produce HTML output for this label control.
 	 *
@@ -1223,32 +1195,15 @@ class FormControlLabel extends FormControl
 		$out= '<div class="' . $class . '"><label for="' . $this->name . '">' . $this->caption . '</label></div>';
 		return $out;
 	}
-	
+
 }
 
 /**
  * A radio control based on FormControl for output via a FormUI.
  */
-class FormControlRadio extends FormControl
+class FormControlRadio extends FormControlSelect
 {
-	
-	public $radios= array();
-	
-	/**
-	 * Override the FormControl constructor to support more parameters
-	 * We need to do this because ->value is not a property, we use ->radios to store the various radios
-	 *
-	 * @param string $name Name of this control
-	 * @param array $values Array of radios to render, key is value and value the caption
-	 * @param string $default Value of radio to check
-	 */
-	function __construct( $name, $values, $default= null )
-	{
-		$this->name= $name;
-		$this->radios= $values;
-		$this->default= $default;
-	}
-	
+
 	/**
 	 * Produce HTML output for this radio control.
 	 *
@@ -1257,28 +1212,12 @@ class FormControlRadio extends FormControl
 	 */
 	function out($forvalidation)
 	{
-		$class= 'formcontrol radio';
-		if($forvalidation) {
-			$validate= $this->validate();
-			if(count($validate) != 0) {
-				$class.= ' invalid';
-				$message= implode('<br>', $validate);
-			}
-		}
+		$theme= $this->get_theme($forvalidation);
+		$theme->options = $this->options;
 
-		$out= '<div class="' . $class . '">';
-		foreach ( $this->radios as $value => $label ) {
-			$out.= '<label><input type="radio" name="' . $this->field . '" value="' . $value . '"' . ( ($this->value == $value) ? ' checked="checked"' : '' ) . '>' . $label . '</label>' . "\r\n";
-		}
-		
-		if(isset($message)) {
-			$out.= '<p class="error">' . $message . '</p>';
-		}
-		$out.= '</div>';
-		
-		return $out;
+		return $theme->fetch( 'formcontrol_radio' );
 	}
-	
+
 }
 
 ?>
