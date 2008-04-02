@@ -224,7 +224,7 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
 
-	function get_publish()
+	function get_publish( $template= 'publish')
 	{
 		extract( $this->handler_vars );
 
@@ -263,7 +263,7 @@ class AdminHandler extends ActionHandler
 		);
 		$this->theme->controls= Plugins::filter( 'publish_controls', $controls, $post );
 
-		$this->display( 'publish' );
+		$this->display( $template );
 	}
 
 	/**
