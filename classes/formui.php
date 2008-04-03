@@ -637,13 +637,13 @@ class FormControl
 		$valid= array();
 		foreach($this->validators as $validator) {
 			if(is_callable($validator)) {
-				$valid= array_merge($valid, call_user_func($validator, $this->value));
+				$valid= array_merge($valid, call_user_func($validator, $this->value, $this, $this->container ));
 			}
 			elseif(is_callable(array('FormValidators', $validator))){
 				$valid= array_merge($valid, call_user_func(array('FormValidators', $validator), $this->value));
 			}
 			else {
-				$valid= array_merge($valid, Plugins::filter($validator, $valid, $this->value));
+				$valid= array_merge($valid, Plugins::filter($validator, $valid, $this->value, $this, $this->container ));
 			}
 		}
 		return $valid;
@@ -1034,7 +1034,7 @@ class FormControlHidden extends FormControl
 	 */
 	public function out($forvalidation)
 	{
-		return '<input type="hidden" name="' . $this->name . '" value="' . $this->default . '">';
+		return '<input type="hidden" name="' . $this->field . '" value="' . $this->default . '">';
 	}
 
 }
