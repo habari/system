@@ -356,33 +356,24 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 		if( $silo instanceof $class ) {
 			switch( $panelname ) {
 				case 'mkdir':
-					/* catch form submission */
-					if ( isset( $_POST['directory'] ) ) {
-						$dir= preg_replace('%\.{2,}%', '.', $_POST['directory']);
-						if ( isset( $path ) ) {
-							$dir= $this->root . '/' . $path . '/' . $dir;
-						} else {
-							$dir= $this->root . '/' . $dir;
-						}
-						if ( mkdir( $dir, 0766 ) ) {
-							$panel= "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>Directory Created: {$dir}</p>";
-						}
-						else {
-							$panel= "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>Failed to create directory: {$dir}. Check that the webserver has write permission in the parent directory</p></div>";
-						}
-						return $panel;
 
+					$fullpath= self::SILO_NAME . '/' . $path;
+										
+					$form= new FormUI( 'simplefilesilomkdir' );
+					$form->add( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>");
+					
+					// add the parent directory as a hidden input for later validation
+					$form->add( 'hidden', 'path', '', $path );
+					$dir_text_control= $form->add( 'text', 'directory', _t('Enter the name of the new directory to create here') );
+					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
+					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
+					$form->on_success( array( $this, 'mkdir_success' ) );
+					$panel= $form->get(); /* form submission magicallly happens here */
+					if ( empty( $panel ) ) {
+						$panel= "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>". _t('Directory Created:') ." {$dir_text_control->value}</p>";
 					}
-					else {
-						$fullpath= self::SILO_NAME . '/' . $path;
+					return $panel;
 
-						$form= new FormUI( 'simplefilesilomkdir' );
-						$form->add('static', 'ParentDirectory', "Parent Directory: <strong>/{$path}</strong>");
-						$form->add('text', 'directory', 'Enter the name of the new directory to create here');
-						$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
-						return $form->get();
-						return $panel;
-					}
 					break;
 				case 'upload':
 					if( isset( $_FILES['file'] ) ) {
@@ -445,6 +436,47 @@ UPLOAD_FORM;
 		$path= preg_replace('%\.{2,}%', '.', $path);
 		$dir= $this->root . '/' . $path;
 		return mkdir( $dir );
+	}
+	
+	/** 
+	 * A validator for the mkdir form created with FormUI. Checks to see if the
+	 * webserver can write to the parent directory and that the directory does
+	 * not already exist.
+	 * @param $dir The input from the form
+	 * @param $control The FormControl object
+	 * @param $form The FormUI object
+	 */
+	public function mkdir_validator( $dir, $control, $form )
+	{
+		$dir= preg_replace( '%\.{2,}%', '.', $dir );
+		$path= preg_replace( '%\.{2,}%', '.', $form->path->value );
+		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
+		
+		if ( ! is_writable( $this->root . '/' . $path ) ) {
+			return array(_t("Webserver does not have permission to create directory: {$dir}."));
+		}
+		if ( is_dir( $dir ) ) {
+			return array(_t("Directory: {$dir} already exists."));
+		}
+		
+		return array();
+	}
+	/**
+	 * This function performs the mkdir action on submission of the form. It is 
+	 * called by FormUI's success() method. It returns false so that the form is
+	 * not saved in the Options table.
+	 * @param FormUI $form
+	 */
+	public function mkdir_success ( $form )
+	{
+		$controlValues= $form->get_values();
+		$dir= preg_replace( '%\.{2,}%', '.', $controlValues['directory'] );
+		$path= preg_replace( '%\.{2,}%', '.', $controlValues['path'] );
+		
+		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
+		mkdir( $dir, 0766 );
+
+		return false;
 	}
 
 }
