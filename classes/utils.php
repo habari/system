@@ -834,7 +834,7 @@ class Utils
 			$regex= '/' . str_replace( array_keys( $braces ), array_values( $braces ), preg_quote( $pattern ) ) . '/';
 			$results= preg_grep( $regex, glob( $new_pattern, $flags ^ GLOB_BRACE) );
 		}
-		
+
 		if ( $results === false ) $results= array();
 		return $results;
 	}
@@ -883,6 +883,39 @@ class Utils
 			return array($element);
 		}
 		return $element;
+	}
+
+	/**
+	 * Return the mimetype of a file
+	 *
+	 * @param string $filename the path of a file
+	 * @return string The mimetype of the file.
+	 */
+	public static function mimetype( $filename )
+	{
+		if(function_exists('finfo_open')) {
+			$finfo = finfo_open(FILEINFO_MIME);
+			$mimetype = finfo_file($finfo, $filename);
+			finfo_close($finfo);
+		}
+		else if(function_exists('mime_content_type')) {
+			$mimetype = mime_content_type( $filename );
+		}
+		if(!$mimetype) {
+			$pi = pathinfo($filename);
+			switch(strtolower($pi['extension'])) {
+				// hacky, hacky, kludge, kludge...
+				case 'jpg': $mimetype = 'image/jpeg'; break;
+				case 'gif': $mimetype = 'image/gif'; break;
+				case 'png': $mimetype = 'image/png'; break;
+				case 'mp3': $mimetype = 'audio/mpeg3'; break;
+				case 'wav': $mimetype = 'audio/wav'; break;
+				case 'mpg': $mimetype = 'video/mpeg'; break;
+				case 'swf': $mimetype = 'application/x-shockwave-flash'; break;
+			}
+		}
+		$mimetype = Plugins::filter('get_mime_type', $mimetype, $filename);
+		return $mimetype;
 	}
 
 }

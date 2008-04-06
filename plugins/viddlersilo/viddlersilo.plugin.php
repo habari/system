@@ -835,7 +835,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 					$password = Options::get( 'viddlersilo:password_' . User::identify()->id );
 					if($username != '' && $password != '') {
 						$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
-	
+
 						$xml= new SimpleXMLElement( $auth );
 						Options::set('viddler_token_' . User::identify()->id, '' . $xml->sessionid );
 					}
@@ -874,7 +874,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 		if($theme->admin_page == 'publish') {
 			echo <<< HEADER
 <script type="text/javascript">
-habari.media.output.viddler = function(index, fileobj) {
+habari.media.output.viddler = {display: function(index, fileobj) {
 	habari.editor.insertSelection( ''+
 		'<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="437" height="370" id="viddler_' + fileobj.basename + '">' +
 		'<param name="movie" value="http://www.viddler.com/player/' + fileobj.basename + '/" />' +
@@ -883,7 +883,7 @@ habari.media.output.viddler = function(index, fileobj) {
 		'<embed src="http://www.viddler.com/player/' + fileobj.basename + '/" width="437" height="370" type="application/x-shockwave-flash" allowScriptAccess="always" allowFullScreen="true" ></embed>' +
 		'</object>'
 	);
-}
+}}
 </script>
 HEADER;
 		}

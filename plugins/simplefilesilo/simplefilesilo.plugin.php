@@ -48,7 +48,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 				Session::error( "Web server does not have permission to create 'files' directory for SimpleFile Media Silo." );
 			}
 		}
-		 
+
 	}
 
 	/**
@@ -105,7 +105,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 					array(
 						'url' => $this->url . '/' . $path . ($path == '' ? '' : '/') . $file,
 						'thumbnail_url' => $thumbnail_url,
-						'filetype' => 'image',
+						'filetype' => preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($item)),
 					)
 				);
 			}
@@ -358,10 +358,10 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 				case 'mkdir':
 
 					$fullpath= self::SILO_NAME . '/' . $path;
-										
+
 					$form= new FormUI( 'simplefilesilomkdir' );
 					$form->add( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>");
-					
+
 					// add the parent directory as a hidden input for later validation
 					$form->add( 'hidden', 'path', '', $path );
 					$dir_text_control= $form->add( 'text', 'directory', _t('Enter the name of the new directory to create here') );
@@ -428,7 +428,7 @@ UPLOAD_FORM;
 		return $panel;
 	}
 
-	/* this function should convert the virtual path to a real path and 
+	/* this function should convert the virtual path to a real path and
 	 * then call php's mkdir function */
 	public function mkdir($form, $panel, $silo, $path)
 	{
@@ -437,8 +437,8 @@ UPLOAD_FORM;
 		$dir= $this->root . '/' . $path;
 		return mkdir( $dir );
 	}
-	
-	/** 
+
+	/**
 	 * A validator for the mkdir form created with FormUI. Checks to see if the
 	 * webserver can write to the parent directory and that the directory does
 	 * not already exist.
@@ -451,18 +451,18 @@ UPLOAD_FORM;
 		$dir= preg_replace( '%\.{2,}%', '.', $dir );
 		$path= preg_replace( '%\.{2,}%', '.', $form->path->value );
 		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
-		
+
 		if ( ! is_writable( $this->root . '/' . $path ) ) {
 			return array(_t("Webserver does not have permission to create directory: {$dir}."));
 		}
 		if ( is_dir( $dir ) ) {
 			return array(_t("Directory: {$dir} already exists."));
 		}
-		
+
 		return array();
 	}
 	/**
-	 * This function performs the mkdir action on submission of the form. It is 
+	 * This function performs the mkdir action on submission of the form. It is
 	 * called by FormUI's success() method. It returns false so that the form is
 	 * not saved in the Options table.
 	 * @param FormUI $form
@@ -472,7 +472,7 @@ UPLOAD_FORM;
 		$controlValues= $form->get_values();
 		$dir= preg_replace( '%\.{2,}%', '.', $controlValues['directory'] );
 		$path= preg_replace( '%\.{2,}%', '.', $controlValues['path'] );
-		
+
 		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 		mkdir( $dir, 0766 );
 
