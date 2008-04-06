@@ -50,7 +50,7 @@ habari.media = {
 							output += habari.media.preview[result.files[file].filetype](file, result.files[file]);
 						}
 						else {
-							output += habari.media.preview.image(file, result.files[file]);
+							output += habari.media.preview._(file, result.files[file]);
 						}
 
 						output += '</div></td>';
@@ -106,23 +106,28 @@ habari.media = {
 	},
 
 	preview: {
-		image: function(fileindex, fileobj) {
+		_: function(fileindex, fileobj) {
 			var stats = '';
 			return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 		}
 	},
 
 	output: {
-		image: function(fileindex, fileobj) {
-			habari.editor.insertSelection('<img src="' + fileobj.url + '">');
-		}
+		image_jpeg: {image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		image_gif: {image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		image_png: {image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		audio_mpeg3: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		video_mpeg: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		audio_wav: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		application_x_shockwave_flash: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		_: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}}
 	},
 
 	submitPanel: function(path, panel, form, callback) {
 		var query = $(form).serializeArray();
 		query.push({name: 'path', value: path});
 		query.push({name: 'panel', value: panel});
-		
+
 		$.post(
 			habari.url.habari + '/admin_ajax/media_panel',
 			query,
@@ -138,13 +143,29 @@ habari.media = {
 	insertAsset: function(asset) {
 		var id = $('.foroutput', asset).html();
 		if(this.assets[id].filetype && habari.media.output[this.assets[id].filetype]) {
-			habari.media.output[this.assets[id].filetype](id, this.assets[id]);
+			fns = habari.media.output[this.assets[id].filetype];
 		}
 		else {
-			habari.media.output.image(id, this.assets[id]);
+			fns = habari.media.output._;
+		}
+		if(jQuery.makeArray(fns).length == 1) {
+			for(var fname in fns) {
+				fns[fname](id, this.assets[id]);
+			}
+		}
+		else {
+			habari.media.multioutput(fns, id, this.assets[id]);
 		}
 	},
-	
+
+	multioutput: function(fns, id, asset) {
+		/* @todo Create interface for multiple output methods on a single file type */
+		for(var fname in fns) {
+			fns[fname](id, this.assets[id]);
+			break;
+		}
+	},
+
 	clearSelections: function() {
 		var container = $('.mediasplitter:visible')
 		// remove all highlights
