@@ -901,7 +901,7 @@ class Utils
 		else if(function_exists('mime_content_type')) {
 			$mimetype = mime_content_type( $filename );
 		}
-		if(!$mimetype) {
+		if( empty( $mimetype ) ) {
 			$pi = pathinfo($filename);
 			switch(strtolower($pi['extension'])) {
 				// hacky, hacky, kludge, kludge...
