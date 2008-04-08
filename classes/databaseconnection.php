@@ -11,7 +11,8 @@ class DatabaseConnection
 {
 	private $fetch_mode= PDO::FETCH_CLASS;          // PDO Fetch mode
 	private $fetch_class_name= 'QueryRecord';    	// The default class name for fetching classes
-	private $keep_profile= DEBUG;                   	// keep profiling and timing information?
+	private $driver;								// PDO driver name
+	private $keep_profile= DEBUG;                   // keep profiling and timing information?
 	private $pdo= NULL;                             // handle to the PDO interface
 	private $pdo_statement= NULL;                   // handle for a PDOStatement
 
@@ -767,6 +768,14 @@ class DatabaseConnection
 	public function filter_tables( $query )
 	{
 		return str_replace($this->sql_tables_repl, $this->sql_tables, $query);
+	}
+	
+	public function get_driver_name()
+	{
+		if ( ! $this->driver ) {
+			$this->driver= $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME );
+		}
+		return $this->driver;
 	}
 }
 
