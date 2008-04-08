@@ -388,7 +388,11 @@ class DB extends Singleton
 	{
 		 return DB::instance()->connection->upgrade( $old_version );
 	}
-
+	
+	public static function get_driver_name()
+	{
+		return DB::instance()->connection->get_driver_name();
+	}
 }
 
 ?>
