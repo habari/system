@@ -1,4 +1,4 @@
-<div class="<?php echo $class ?>">
+<div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
 <?php if($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>
