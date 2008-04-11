@@ -1,4 +1,4 @@
-<div class="<?php echo $class ?>">
+<div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
 <?php foreach($options as $key => $text) : ?>
 	<label><input type="radio" name="<?php echo $field; ?>" value="<?php echo $key; ?>"<?php echo ( ( $value == $key ) ? ' checked' : '' ); ?>><?php echo htmlspecialchars($text); ?></label>
 <?php endforeach; ?>

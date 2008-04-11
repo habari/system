@@ -63,6 +63,7 @@ class FormContainer
 			if($control instanceof FormControl) {
 				$control->set_storage( $storage_name, $store_user );
 			}
+			$control->class[]= func_get_arg(0);
 			$control->container = $this;
 			$this->controls[$name]= $control;
 		}
@@ -147,7 +148,7 @@ class FormContainer
 		$this->move($control, $target);
 	}
 
-/**
+	/**
 	 * Moves a control after the target control
 	 *
 	 * @param FormControl $control FormControl object to move
@@ -198,26 +199,18 @@ class FormContainer
 			$this->theme_obj->field= $control->field;
 			$this->theme_obj->value= $control->value;
 			$this->theme_obj->caption= $control->caption;
-
-			$class= 'formcontrol ';
-
-			$classname= get_class( $control );
-			if(preg_match('%FormControl(.+)%i', $classname, $controltype)) {
-				$class.= strtolower($controltype[1]);
-			}
-			else {
-				$class.= strtolower($classname);
-			}
-
+			$this->theme_obj->id= (string) $control->id;
+			$class= $control->class;
+			
 			$message= '';
 			if($forvalidation) {
 				$validate= $control->validate();
 				if(count($validate) != 0) {
-					$class.= ' invalid';
-					$message= implode('<br>', $validate);
+					$class[]= 'invalid';
+					$message= implode('<br>', (array) $validate);
 				}
 			}
-			$this->theme_obj->class= $class;
+			$this->theme_obj->class= implode( ' ', (array) $class );
 			$this->theme_obj->message= $message;
 		}
 		return $this->theme_obj;
@@ -259,6 +252,8 @@ class FormUI extends FormContainer
 		'form_action' => '',
 		'on_submit' => '',
 	);
+	public $class= array( 'formui' );
+	public $id= null;
 
 	/**
 	 * FormUI's constructor, called on instantiation.
@@ -304,7 +299,7 @@ class FormUI extends FormContainer
 		$out = '';
 		if($showform) {
 			$out.= '
-				<form method="post" action="'. $this->options['form_action'] .'" class="FormUI" onsubmit="'. $this->options['on_submit'] .'">
+				<form method="post" action="'. $this->options['form_action'] .'"'. ( ($this->class) ? ' class="' . implode( " ", (array) $this->class ) . '"' : '' ) . ( ($this->id) ? ' id="' . $this->id . '"' : '' ) .' onsubmit="'. $this->options['on_submit'] .'">
 				<input type="hidden" name="FormUI" value="' . $this->salted_name() . '">
 			';
 			$out.= $this->pre_out_controls();
@@ -529,6 +524,8 @@ class FormControl
 	protected $store_user = false;
 	protected $theme_obj;
 	protected $container = null;
+	public $id= null;
+	public $class= array( 'formcontrol' );
 
 	/**
 	 * FormControl constructor - set initial settings of the control
@@ -712,6 +709,9 @@ class FormControl
 				}
 				$this->container = $value;
 				break;
+			case 'id':
+				$this->id= (string) $value;
+				break;
 		}
 	}
 
@@ -737,7 +737,7 @@ class FormControl
 		$this->validators= array_merge($this->validators, $args);
 	}
 
-/**
+	/**
 	 * Move this control before the target
 	 * In the end, this will use FormUI::move()
 	 *
@@ -1065,8 +1065,19 @@ class FormControlFieldset extends FormContainer
 		$this->legend= $name;
 
 		if ( is_array($controls) ) {
-			call_user_func_array( array( $this, 'add' ), $controls );
+			$args= $controls;
 		}
+		elseif ( $controls != '' ) {
+			$args= func_get_args();
+			if ( count($args) > 1 ) {
+				array_shift($args);
+			}
+			else {
+				$args= array();
+			}
+		}
+		
+		call_user_func_array( array( $this, 'add' ), $args );
 	}
 
 	/**
@@ -1207,8 +1218,7 @@ class FormControlLabel extends FormControl
 	 */
 	function out()
 	{
-		$class= 'formcontrol label';
-		$out= '<div class="' . $class . '"><label for="' . $this->name . '">' . $this->caption . '</label></div>';
+		$out= '<div' . (($this->class) ? ' class="' . implode( " ", (array) $this->class ) . '"' : '') . (($this->id) ? ' id="' . $this->id . '"' : '') .'><label for="' . $this->name . '">' . $this->caption . '</label></div>';
 		return $out;
 	}
 
