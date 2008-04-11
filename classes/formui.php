@@ -920,6 +920,8 @@ class FormControlTextMulti extends FormControl
 class FormControlSelect extends FormControl
 {
 	public $options = array();
+	public $multiple = false;
+	public $size = 5;
 
 	/**
 	 * Override the FormControl constructor to support more parameters
@@ -948,6 +950,8 @@ class FormControlSelect extends FormControl
 	{
 		$theme= $this->get_theme($forvalidation);
 		$theme->options = $this->options;
+		$theme->multiple = $this->multiple;
+		$theme->size = $this->size;
 
 		return $theme->fetch( 'formcontrol_select' );
 	}
