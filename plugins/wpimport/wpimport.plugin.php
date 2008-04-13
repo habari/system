@@ -285,7 +285,7 @@ WP_IMPORT_STAGE2;
 						$taxonomies= "{$db_prefix}term_taxonomy.taxonomy= 'post_tag'";
 					}
 					$tags= $wpdb->get_column(
-						"SELECT DISTINCT slug
+						"SELECT DISTINCT name
 						FROM {$db_prefix}terms
 						INNER JOIN {$db_prefix}term_taxonomy
 						ON ( {$db_prefix}terms.term_id= {$db_prefix}term_taxonomy.term_id AND {$taxonomies} )
