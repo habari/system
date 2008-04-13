@@ -1138,13 +1138,16 @@ class FormControlFieldset extends FormContainer
 	function out($forvalidation)
 	{
 		$theme= $this->get_theme($forvalidation, $this);
-		$theme->id = $this->name;
-		$theme->legend = $this->legend;
 		$contents = '';
 		foreach ( $this->controls as $control ) {
 			$contents.= $control->out($forvalidation);
 		}
 		$theme->contents= $contents;
+		// Do not move before $contents
+		// Else, these variables will contain the last control's values
+		$theme->class = $this->class;
+		$theme->id = $this->name;
+		$theme->legend = $this->legend;
 
 		return $theme->fetch( 'formcontrol_fieldset' );
 	}
