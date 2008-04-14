@@ -165,7 +165,7 @@
   </div>
   <hr>
   <div class="column prepend-1 span-6 first">
-    <h3><?php _e( 'Incoming Links' ); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url( 'hostname' ) ?>" title="<?php _e( 'More incoming links' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
+    <h3><?php _e( 'Incoming Links' ); ?> (<a href="http://blogsearch.google.com/?scoring=d&amp;num=10&amp;q=link:<?php Site::out_url( 'habari' ) ?>" title="<?php _e( 'More incoming links' ); ?>"><?php _e( 'more' ); ?></a> &raquo;)</h3>
     <?php
     try {
 			// This should be fetched on a pseudo-cron and cached:
@@ -173,7 +173,7 @@
 				$response = Cache::get('admin_incoming_links');
 			}
 			else {
-				$search= new RemoteRequest( 'http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url( 'hostname' ) );
+				$search= new RemoteRequest( 'http://blogsearch.google.com/blogsearch_feeds?scoring=d&num=10&output=atom&q=link:' . Site::get_url( 'habari' ) );
 				$search->set_timeout( 5 );
 				$result= $search->execute();
 				if ( Error::is_error( $result ) ) {
@@ -246,7 +246,7 @@
     <?php
       }
       else {
-        echo '<p>' . _t( 'There are currently no drafts in process.' ) . '</p>';
+        echo '<p>' . _t( 'There are currently no drafts in progress.' ) . '</p>';
       }
     ?>
   </div>
