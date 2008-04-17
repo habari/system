@@ -162,6 +162,9 @@ class Site
 				elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
 					$url= Site::get_url( 'habari' ) . '/user/themes/' . $theme;
 				}
+				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
+					$url= Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+				}
 				else {
 					$url= Site::get_url( 'habari' ) . '/system/themes/' . $theme;
 				}

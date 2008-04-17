@@ -15,7 +15,7 @@ class Themes
 	public static function get_all()
 	{
 		if ( !isset( self::$all_themes ) ) {
-			$dirs = array( HABARI_PATH . '/system/themes/*' , HABARI_PATH . '/user/themes/*');
+			$dirs = array( HABARI_PATH . '/system/themes/*' , HABARI_PATH . '/3rdparty/themes/*', HABARI_PATH . '/user/themes/*');
 			if( Site::is('multi') ) {
 				$dirs[] = Site::get_dir('config') . '/themes/*';
 			}
