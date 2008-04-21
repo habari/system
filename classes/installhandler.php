@@ -197,15 +197,18 @@ class InstallHandler extends ActionHandler {
 			$requirements_met= false;
 		}
 		/* Check for PDO drivers */
-		$pdo_drivers= array_combine( PDO::getAvailableDrivers(), PDO::getAvailableDrivers() );
-		// Include only those drivers that we include database support for
-		$pdo_schemas= array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
-		$pdo_schemas= array_combine( $pdo_schemas, $pdo_schemas );
+		$pdo_drivers= PDO::getAvailableDrivers();
+		if ( ! empty( $pdo_drivers ) ) {
+			$pdo_drivers= array_combine( $pdo_drivers, $pdo_drivers );
+			// Include only those drivers that we include database support for
+			$pdo_schemas= array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
+			$pdo_schemas= array_combine( $pdo_schemas, $pdo_schemas );
 
-		$pdo_drivers= array_intersect_key(
-			$pdo_drivers,
-			$pdo_schemas
-		);
+			$pdo_drivers= array_intersect_key(
+				$pdo_drivers,
+				$pdo_schemas
+			);
+		}
 
 		$pdo_drivers_ok= count( $pdo_drivers );
 		$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
