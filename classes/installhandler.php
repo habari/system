@@ -460,12 +460,12 @@ class InstallHandler extends ActionHandler {
 
 		// Now create the first post
 		Post::create(array(
-			'title' => 'First Post',
-			'content' => 'This is my first post.',
+			'title' => 'Habari',
+			'content' => 'This site is running <a href="http://habariproject.org/">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href="http://habariproject.org/">http://habariproject.org/</a> to find out more!',
 			'user_id' => 1,
 			'status' => Post::status('published'),
 			'content_type' => Post::type('entry'),
-			'tags' => 'deleteme',
+			'tags' => 'habari',
 		));
 
 		return true;
