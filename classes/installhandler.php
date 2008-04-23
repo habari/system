@@ -189,6 +189,7 @@ class InstallHandler extends ActionHandler {
 			'iconv' => 'http://php.net/iconv',
 			'tokenizer' => 'http://php.net/tokenizer',
 			'simplexml' => 'http://php.net/simplexml',
+			'mbstring' => 'http://php.net/mbstring',
 			);
 		$requirements_met= true;
 
