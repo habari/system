@@ -94,7 +94,7 @@ class FeedbackHandler extends ActionHandler
 			'name' => $this->handler_vars['name'],
 			'email' => $this->handler_vars['email'],
 			'url' => $this->handler_vars['url'],
-			'ip' => ip2long( $_SERVER['REMOTE_ADDR'] ),
+			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 			'content'	=> $this->handler_vars['content'],
 			'status' =>	Comment::STATUS_UNAPPROVED,
 			'date' =>	date( 'Y-m-d H:i:s' ),

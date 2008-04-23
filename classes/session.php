@@ -72,7 +72,7 @@ class Session
 		$dodelete= false;
 
 		// Verify on the same subnet
-		$subnet= ip2long( $remote_address ) >> 8;
+		$subnet= sprintf("%u", ip2long( $remote_address ) ) >> 8;
 		if ( $session->subnet != $subnet ) {
 			$dodelete= true;
 		}
@@ -129,7 +129,7 @@ class Session
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
 			$record= array(
-				'subnet' => ip2long( $remote_address ) >> 8,
+				'subnet' => sprintf("%u", ip2long( $remote_address ) ) >> 8,
 				'expires' => time() + ini_get('session.gc_maxlifetime'),
 				'ua' => $user_agent,
 				'data' => $data,
