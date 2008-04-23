@@ -13,13 +13,13 @@
         <h1>Before you install <em>habari</em>...</h1>
       </div>
       <div id="page">
-        <?php if (! $local_writeable) {?>
-          <h2>Writeable directory needed...</h2>
+        <?php if (! $local_writable) {?>
+          <h2>Writable directory needed...</h2>
           <?php if ($PHP_OS != 'WIN') {?>
             <p class="instructions">
               Before you can install habari, you first need to make the install
-              directory writeable by php, so that the installation script can
-              write your configuration information properly. The exact proces of
+              directory writable by php, so that the installation script can
+              write your configuration information properly. The exact process of
               doing this will vary depending on the configuration of your web
               server and the ownership of the directory.
             </p>
@@ -70,10 +70,15 @@
           </p>
           <strong>@todo Upgrading PHP instructions</strong>
         <?php }?>
-        <?php if (! $pdo_extension_ok) {?>
-          <h2>PDO extension needed...</h2>
+        <?php if (!empty($missing_extensions)) {
+	 	foreach ($missing_extensions as $ext_name => $ext_url) {
+			$missing_ext_html[]= '<a href="' . $ext_url . '">' . $ext_name . '</a>';
+		}
+		$missing_ext_html= implode( ', ', $missing_ext_html );
+		?>
+          <h2>Missing Extensions</h2>
           <p class="instructions">
-            <em>habari</em> requires that the <a href="http://www.php.net/pdo">PDO PHP extension</a> be installed.  Please contact your hosting provider to enable PDO.
+            <em>habari</em> requires that the following PHP extensions to be installed: <?php echo $missing_ext_html; ?>. Please contact your web hosting provider if you do not have access to your server.
           </p>
         <?php }?>
 	<?php if ( ! $pdo_drivers_ok ) { ?>

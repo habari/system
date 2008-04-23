@@ -180,6 +180,16 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function meets_all_requirements()
 	{
+		// Required extensions, this list will augment with time
+		// Even if they are enabled by default, it seems some install turn them off
+		// We use the URL in the Installer template to link to the installation page
+		$required_extensions= array(
+			'pdo' => 'http://php.net/pdo',
+			'hash' => 'http://php.net/hash',
+			'iconv' => 'http://php.net/iconv',
+			'tokenizer' => 'http://php.net/tokenizer',
+			'simplexml' => 'http://php.net/simplexml',
+			);
 		$requirements_met= true;
 
 		/* Check versions of PHP */
@@ -190,12 +200,15 @@ class InstallHandler extends ActionHandler {
 		if (! $php_version_ok) {
 			$requirements_met= false;
 		}
-		/* Check for PDO extension */
-		$pdo_extension_ok= extension_loaded('pdo');
-		$this->theme->assign('pdo_extension_ok', $pdo_extension_ok);
-		if (! $pdo_extension_ok) {
-			$requirements_met= false;
+		/* Check for required extensions */
+		$missing_extensions= array();
+		foreach ($required_extensions as $ext_name => $ext_url) {
+			if (!extension_loaded($ext_name)) {
+				$missing_extensions[$ext_name]= $ext_url;
+				$requirements_met= false;
+			}
 		}
+		$this->theme->assign('missing_extensions',  $missing_extensions);
 		/* Check for PDO drivers */
 		$pdo_drivers= PDO::getAvailableDrivers();
 		if ( ! empty( $pdo_drivers ) ) {
@@ -216,6 +229,15 @@ class InstallHandler extends ActionHandler {
 		if ( ! $pdo_drivers_ok ) {
 			$requirements_met= false;
 		}
+		
+		/**
+		 * $local_writable is used in the template, but never set in Habari
+		 * Won't remove the template code since it looks like it should be there
+		 *
+		 * This will only meet the requirement so there's no "undefined variable" exception
+		 */
+		$this->theme->assign( 'local_writable', true );
+		
 		return $requirements_met;
 	}
 
