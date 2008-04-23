@@ -561,6 +561,11 @@ class AtomHandler extends ActionHandler
 
 		$params= array_merge( $params, $rr_args );
 
+		if ( array_key_exists( 'tag', $params ) ) {
+			$params['tag_slug']=  Utils::slugify($params['tag']);
+			unset( $params['tag'] );
+		}
+
 		foreach ( Posts::get( $params ) as $post ) {
 			$user= User::get_by_id( $post->user_id );
 			$title= ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
