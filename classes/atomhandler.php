@@ -357,7 +357,7 @@ class AtomHandler extends ActionHandler
 			$entry_title= $xml->addChild( 'title', $title );
 
 			$entry_author= $xml->addChild( 'author' );
-			$author_name= $entry_author->addChild( 'name', $user->username );
+			$author_name= $entry_author->addChild( 'name', $user->displayname );
 
 			$entry_link= $xml->addChild( 'link' );
 			$entry_link->addAttribute( 'rel', 'alternate' );
@@ -578,7 +578,7 @@ class AtomHandler extends ActionHandler
 			$entry_link->addAttribute( 'href', URL::get( 'atom_entry', "slug={$post->slug}" ) );
 
 			$entry_author= $feed_entry->addChild( 'author' );
-			$author_name= $entry_author->addChild( 'name', $user->username );
+			$author_name= $entry_author->addChild( 'name', $user->displayname );
 
 			$entry_id= $feed_entry->addChild( 'id', $post->guid );
 
