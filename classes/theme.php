@@ -320,7 +320,7 @@ class Theme extends Pluggable
 			$commenter_content= $details['content'];
 		}
 		elseif ( $user ) {
-			$commenter_name= $user->username;
+			$commenter_name= $user->displayname;
 			$commenter_email= $user->email;
 			$commenter_url= Site::get_url( 'habari' );
 		}
