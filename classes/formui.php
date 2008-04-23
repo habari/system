@@ -1076,6 +1076,9 @@ class FormControlFieldset extends FormContainer
 				$args= array();
 			}
 		}
+		else {
+			$args= array();
+		}
 		
 		call_user_func_array( array( $this, 'add' ), $args );
 	}
