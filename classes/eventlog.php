@@ -78,7 +78,7 @@ class EventLog extends ArrayObject
 			'module' => $module,
 			'type' => $type,
 			'data' => $data,
-			'ip' => ip2long( $_SERVER['REMOTE_ADDR'] ),
+			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 		) );
 		if ( $user= User::identify() ) {
 			$log->user_id= $user->id;
