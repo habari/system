@@ -250,5 +250,33 @@
       }
     ?>
   </div>
+<div class="column prepend-8 span-15 first">
+    <h3>Scheduled Posts (<a href="<?php URL::out( 'admin', array('page'=> 'content', 'status'=> Post::status('scheduled')) ); ?>" title="View Your Scheduled Posts">more</a> &raquo;)</h3>
+    <?php
+      if ( Posts::count_total( Post::status( 'scheduled' ) ) ) {
+    ?>
+    <table id="site-scheduled" cellspacing="0">
+    <?php
+        foreach ( Posts::by_status( Post::status( 'scheduled' ) ) as $scheduled ) {
+    ?>
+      <tr>
+        <td class="span-5"><?php echo $scheduled->title; ?></td>
+	<td class="span-8"><?php echo $scheduled->pubdate; ?></td>
+        <td class="last span-3">
+          <a class="view" href="<?php echo $scheduled->permalink; ?>" title="View <?php echo $scheduled->title; ?>">View</a>
+          <a class="edit" href="<?php URL::out( 'admin', 'page=publish&slug=' . $scheduled->slug ); ?>" title="Edit <?php echo $scheduled->title; ?>">Edit</a>
+        </td>
+      </tr>
+    <?php
+        }
+    ?>
+    </table>
+    <?php
+      }
+      else {
+        echo '<p>' . _t( 'There are currently no posts scheduled for future publication.' ) . '</p>';
+      }
+    ?>
+  </div>
 </div>
 <?php include( 'footer.php' ); ?>

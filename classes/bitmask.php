@@ -13,7 +13,11 @@ class Bitmask {
    * @param (optional)  an array of integer flags
    */
   public function __construct() {
-      $this->flags= func_get_arg(0);
+		$flags= func_get_arg(0);
+		if (! is_array($flags))
+			throw new InvalidArgumentException('Bitmask constructor expects either no arguments or an array as a first argument');
+
+		$this->flags= $flags;
   }
 
   /**
@@ -46,7 +50,7 @@ class Bitmask {
   public function __get($bit) {
     if (!isset($this->flags[$bit]))
       return false;
-    return ($this->value & $this->flags[$bit]);
+    return (($this->value & $this->flags[$bit]) == $this->flags[$bit]);
   }
     
 }

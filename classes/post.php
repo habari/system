@@ -478,7 +478,7 @@ class Post extends QueryRecord
 		$this->newfields[ 'updated' ]= date( 'Y-m-d H:i:s' );
 		$this->setslug();
 		$this->setguid();
-
+		
 		$allow= true;
 		$allow= Plugins::filter( 'post_insert_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -501,6 +501,12 @@ class Post extends QueryRecord
 		$this->save_tags();
 		EventLog::log( 'New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name( $this->content_type ) . '; Status: ' . $this->statusname, 'info', 'content', 'habari' );
 		Plugins::act( 'post_insert_after', $this );
+
+		//scheduled post
+		if( $this->status == Post::status( 'scheduled' ) ) {
+			Posts::update_scheduled_posts_cronjob();
+		}
+
 		return $result;
 	}
 
@@ -540,13 +546,18 @@ class Post extends QueryRecord
 		if ( isset( $this->newfields['status'] ) && $this->fields['status'] != $this->newfields['status'] ) {
 		  Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
 		}
-
+		
 		$result= parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ) );
+
+		//scheduled post
+		if ( $this->fields['status'] == Post::status( 'scheduled' ) || $this->status == Post::status( 'scheduled' ) ) {
+			Posts::update_scheduled_posts_cronjob();
+		}
+
 		$this->fields= array_merge( $this->fields, $this->newfields );
 		$this->newfields= array();
 		$this->save_tags();
 		$this->info->commit();
-
 		Plugins::act( 'post_update_after', $this );
 		return $result;
 	}
@@ -576,6 +587,11 @@ class Post extends QueryRecord
 		$result= parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
 		EventLog::log( 'Post ' . $this->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari' );
 
+		//scheduled post
+		if( $this->status == Post::status( 'scheduled' ) ) {
+			Posts::update_scheduled_posts_cronjob();
+		}
+
 		// invoke plugins on the after_post_delete action
 		Plugins::act( 'post_delete_after', $this );
 		return $result;
@@ -598,10 +614,20 @@ class Post extends QueryRecord
 		}
 		Plugins::act( 'post_publish_before', $this );
 
+		if ( $this->status != Post::status( 'scheduled' ) )  {
+			$this->pubdate= date( 'Y-m-d H:i:s' );
+		}
+		
+		if ( $this->status == Post::status( 'scheduled' ) ) {
+			$msg= 'Scheduled Post ' . $this->id . ' (' . $this->slug  . ') published at ' . date( 'Y-m-d H:i:s' ) . '.';
+		}
+		else {
+			$msg=  'Post ' . $this->id . ' (' . $this->slug  . ') published.';
+		}
+		
 		$this->status= Post::status( 'published' );
-		$this->pubdate= date( 'Y-m-d H:i:s' );
 		$result= $this->update();
-		EventLog::log( 'Post ' . $this->id . ' (' . $this->slug . ') published.', 'info', 'content', 'habari' );
+		EventLog::log( $msg, 'info', 'content', 'habari' );
 
 		// and call any final plugins
 		Plugins::act( 'post_publish_after', $this );
@@ -797,5 +823,6 @@ class Post extends QueryRecord
 		$info= URL::extract_args( $this->info, 'info_' );
 		return array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
 	}
+	
 }
 ?>
