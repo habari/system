@@ -437,5 +437,37 @@ class Posts extends ArrayObject
 		return $results;
 	}
 
+	/**
+	 * function publish_scheduled_posts
+	 *
+	 * Callback function to publish scheduled posts
+	 */
+	public static function publish_scheduled_posts( $params ) 
+	{
+		$posts= DB::get_results('SELECT * FROM {posts} WHERE status = ? AND pubdate <= ? ORDER BY pubdate DESC', array( Post::status( 'scheduled' ), date( 'Y-m-d H:i:s' ) ), 'Post' );
+		foreach( $posts as $post ) {
+			$post->publish();
+		}
+	}
+
+	/**
+	 * function update_scheduled_posts_cronjob
+	 *
+	 * Creates or recreates the cronjob to publish
+	 * scheduled posts. It is called whenever a post
+	 * is updated or created
+	 * 
+	 */
+	public static function update_scheduled_posts_cronjob()
+	{
+		$min_time= DB::get_value( 'SELECT MIN(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'scheduled' ) ) );
+
+		CronTab::delete_cronjob( 'publish_scheduled_posts' );
+		if( $min_time ) {
+			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts'),  strtotime( $min_time ), 'Next run: ' . $min_time );
+		}
+	}
+
 }
+
 ?>

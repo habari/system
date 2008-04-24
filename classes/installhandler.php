@@ -483,6 +483,7 @@ class InstallHandler extends ActionHandler {
 		// Should "private" status be added here, or through a plugin?
 		Post::add_new_status('draft');
 		Post::add_new_status('published');
+		Post::add_new_status( 'scheduled', true );
 
 		// Now create the first post
 		Post::create(array(

@@ -1,7 +1,7 @@
 				<div class="container">
 					<p class="column span-5"><?php _e('Content State'); ?></p>
 					<p class="column span-14 last">
-					 	<label><?php echo Utils::html_select( 'status', array_flip($statuses), $post->status, array( 'class'=>'longselect') ); ?></label>
+					 	<label><?php echo Utils::html_select( 'status', array_flip($statuses), $post->status == Post::status( 'scheduled' ) ? Post::status( 'published' ) : $post->status, array( 'class'=>'longselect') ); ?></label>
 					</p>
 				</div>
 				<hr>

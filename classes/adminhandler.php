@@ -179,6 +179,11 @@ class AdminHandler extends ActionHandler
 	public function post_publish()
 	{
 		extract( $this->handler_vars );
+
+		if( $pubdate > date('Y-m-d H:i:s') && $status == Post::status('published') ) {
+			$status= Post::status('scheduled');
+		}
+
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 			$post->title= $title;
@@ -194,6 +199,7 @@ class AdminHandler extends ActionHandler
 			else {
 				$post->pubdate= $pubdate;
 			}
+				
 			$post->status= $status;
 			if ( !isset( $comments_enabled ) ) {
 				$post->info->comments_disabled= TRUE;
@@ -214,12 +220,16 @@ class AdminHandler extends ActionHandler
 				'status' => $status,
 				'content_type' => $content_type,
 			);
+			
+
 			$post= Post::create( $postdata );
+
 			if ( !isset( $comments_enabled ) ) {
 				$post->info->comments_disabled= TRUE;
 				$post->update();
 			}
 		}
+
 		Session::notice( sprintf( _t( 'The post \'%s\' has been saved as %s.' ), $title, Post::status_name( $status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
