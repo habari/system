@@ -509,6 +509,26 @@ class FormValidators
 		}
 		return array();
 	}
+	
+	/**
+	 * A validation function that returns an error if the value passed does not match the regex specified.
+	 *
+	 * @param string $value A value to test if it is empty
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $container The container that holds the control
+	 * @param string $regex The regular expression to test against
+	 * @param string $warning An optional error message	  	  	 	 
+	 * @return array An empty array if the value exists, or an array with strings describing the errors
+	 */
+	function validate_regex( $value, $control, $container, $regex, $warning = 'The value does not meet submission requirements' )
+	{
+		if(preg_match($regex, $value)) {
+			return array();
+		}
+		else {
+			return array(_t($warning));
+		}
+	}
 }
 
 /**
@@ -633,14 +653,19 @@ class FormControl
 	{
 		$valid= array();
 		foreach($this->validators as $validator) {
-			if(is_callable($validator)) {
-				$valid= array_merge($valid, call_user_func($validator, $this->value, $this, $this->container ));
+			$validator_fn= array_shift($validator);
+			if(is_callable($validator_fn)) {
+				$params= array_merge(array($this->value, $this, $this->container), $validator);
+				$valid= array_merge($valid, call_user_func_array( $validator_fn, $params ) );
 			}
-			elseif(is_callable(array('FormValidators', $validator))){
-				$valid= array_merge($valid, call_user_func(array('FormValidators', $validator), $this->value));
+			elseif(is_callable(array('FormValidators', $validator_fn))) {
+				$validator_fn= array('FormValidators', $validator_fn);
+				$params= array_merge(array($this->value, $this, $this->container), $validator);
+				$valid= array_merge($valid, call_user_func_array( $validator_fn, $params ) );
 			}
 			else {
-				$valid= array_merge($valid, Plugins::filter($validator, $valid, $this->value, $this, $this->container ));
+				$params= array_merge(array($validator_fn, $valid, $this->value, $this, $this->container), $validator);
+				$valid= array_merge($valid, call_user_func_array( array('Plugins', 'filter'), $params ) );
 			}
 		}
 		return $valid;
@@ -729,12 +754,16 @@ class FormControl
 
 	/**
 	 * Add a validation function to this control
-	 * You can pass multiple validators at once, each parameter will be considered a callback
+	 * Multiple parameters are passed as parameters to the validation function
+	 * @param mixed $validator A callback function
+	 * @param mixed $option... Multiple parameters added to those used to call the validator callback
+	 * @return FormControl Returns the control for chained execution	 
 	 */
 	public function add_validator()
 	{
 		$args= func_get_args();
-		$this->validators= array_merge($this->validators, $args);
+		$this->validators[]= $args;
+		return $this;
 	}
 
 	/**
