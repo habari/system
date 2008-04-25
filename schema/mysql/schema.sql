@@ -30,7 +30,7 @@ CREATE TABLE  {$prefix}posttype (
 );
 
 CREATE TABLE  {$prefix}poststatus (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   internal TINYINT(1),
   PRIMARY KEY (id)
