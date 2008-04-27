@@ -54,7 +54,7 @@ include_once( 'header.php' );
 				<td><p><?php echo $log->message; ?></p></td>
 			</tr>
 			<?php } ?>
-			<tr><td colspan="7">
+			<tr><td colspan="8">
 			<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 			 <input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 			 <input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
