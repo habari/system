@@ -562,6 +562,73 @@ class Theme extends Pluggable
 	}
 
 	/**
+	 * Build a collection of paginated URLs to be used for pagination.
+	 *
+	 * @param integer Current page
+	 * @param integer Total pages
+	 * @param string The RewriteRule name used to build the links.
+	 * @param array Various settings used by the method and the RewriteRule.
+	 * @return string Collection of paginated URLs built by the RewriteRule.
+	 **/
+	public static function theme_page_selector( $theme, $rr_name= NULL, $settings= array() )
+	{
+		$current= $theme->page;
+		$total= Utils::archive_pages( $theme->posts->count_all() );
+
+		// Make sure the current page is valid
+		if ( $current > $total ) {
+			$current= $total;
+		}
+		else if ( $current < 1 ) {
+			$current= 1;
+		}
+
+		// Number of pages to display on each side of the current page.
+		$leftSide= isset( $settings['leftSide'] ) ? $settings['leftSide'] : 1;
+		$rightSide= isset( $settings['rightSide'] ) ? $settings['rightSide'] : 1;
+
+		// Add the page '1'.
+		$pages[]= 1;
+
+		// Add the pages to display on each side of the current page, based on $leftSide and $rightSide.
+		for ( $i= max( $current - $leftSide, 2 ); $i < $total && $i <= $current + $rightSide; $i++ ) {
+			$pages[]= $i;
+		}
+
+		// Add the last page if there is more than one page.
+		if ( $total > 1 ) {
+			$pages[]= (int) $total;
+		}
+
+		// Sort the array by natural order.
+		natsort( $pages );
+
+		// This variable is used to know the last page processed by the foreach().
+		$prevpage= 0;
+		// Create the output variable.
+		$out= '';
+
+		foreach ( $pages as $page ) {
+			$settings['page']= $page;
+
+			// Add ... if the gap between the previous page is higher than 1.
+			if ( ($page - $prevpage) > 1 ) {
+				$out.= '&nbsp;&hellip;';
+			}
+			// Wrap the current page number with square brackets.
+			$caption= ( $page == $current ) ?  $current  : $page;
+			// Build the URL using the supplied $settings and the found RewriteRules arguments.
+			$url= URL::get( $rr_name, $settings , false );
+			// Build the HTML link.
+			$out.= '&nbsp;<a href="' . $url . '" ' . ( ( $page == $current ) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
+
+			$prevpage= $page;
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Detects if a variable is assigned to the template engine for use in
 	 * constructing the template's output.
 	 *
