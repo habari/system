@@ -125,6 +125,7 @@
 			awaiting moderation
 		)
 		<?php } ?>
+(<a href="<?php URL::out( 'admin', 'page=moderate&search_status=1' ); ?>" title="More Comments"><?php _e( 'more' ); ?></a> &raquo;)
     </h3>
     <?php
       if ( Comments::count_total( Comment::STATUS_APPROVED ) ) {
