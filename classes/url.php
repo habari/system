@@ -131,32 +131,58 @@ class URL extends Singleton
 		$args= self::extract_args( $args );
 
 		$url= URL::instance();
-		$url->load_rules();
-		if ( !is_array( $rule_names ) ) {
-			$rule_names= array( $rule_names );
-		}
-		foreach ( $rule_names as $rule_name ) {
-			if ( $rules= $url->rules->by_name( $rule_name ) ) {
-				$rating= null;
-				$selectedrule= null;
-				foreach ( $rules as $rule ) {
-					$newrating= $rule->arg_match( $args );
-					// Is the rating perfect?
-					if ( $rating == 0 ) {
-						$selectedrule= $rule;
-						break;
-					}
-					if ( empty( $rating ) || ( $newrating < $rating ) ) {
-						$rating= $newrating;
-						$selectedrule= $rule;
+		if ( $rule_names == '' ) {			
+			// Retrieve current matched RewriteRule
+			$selectedrule= $url->get_matched_rule();
+			
+			// Retrieve arguments name the RewriteRule can use to build a URL.
+			$rr_named_args= $selectedrule->named_args;
+			
+			$rr_args= array_merge( $rr_named_args['required'], $rr_named_args['optional']  );
+			// For each argument, check if the handler_vars array has that argument and if it does, use it.
+			$rr_args_values= array();
+
+			foreach ( $rr_args as $rr_arg ) {
+				if ( !isset( $args[$rr_arg] ) ) {
+					$rr_arg_value= Controller::get_var( $rr_arg );
+					if ( $rr_arg_value != '' ) {
+						$args[$rr_arg]= $rr_arg_value;
 					}
 				}
-				if ( isset( $selectedrule ) ) {
-					$return_url= $selectedrule->build( $args, $useall, $noamp );
-					return Site::get_url( 'habari', true ) . $return_url;
+			}
+			
+		}
+		else {
+			$url->load_rules();
+			
+			if ( !is_array( $rule_names ) ) {
+				$rule_names= array( $rule_names );
+			}
+			foreach ( $rule_names as $rule_name ) {
+				if ( $rules= $url->rules->by_name( $rule_name ) ) {
+					$rating= null;
+					$selectedrule= null;
+					foreach ( $rules as $rule ) {
+						$newrating= $rule->arg_match( $args );
+						// Is the rating perfect?
+						if ( $rating == 0 ) {
+							$selectedrule= $rule;
+							break;
+						}
+						if ( empty( $rating ) || ( $newrating < $rating ) ) {
+							$rating= $newrating;
+							$selectedrule= $rule;
+						}
+					}
+					if ( isset( $selectedrule ) ) {
+						break;
+					}
 				}
 			}
 		}
+		
+		$return_url= $selectedrule->build( $args, $useall, $noamp );
+		return Site::get_url( 'habari', true ) . $return_url;
 	}
 
 	/**
