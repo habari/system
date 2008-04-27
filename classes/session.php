@@ -101,7 +101,7 @@ class Session
 		// Do garbage collection, since PHP is bad at it
 		$probability = ini_get( 'session.gc_probability' );
 		// Allow plugins to control the probability of a gc event, return >=100 to always collect garbage
-		$probability = Plugins::filter( 'gc_probability', is_numeric($probability) ? $probability : 1 );
+		$probability = Plugins::filter( 'gc_probability', ( is_numeric($probability) && $probability > 0 ) ? $probability : 1 );
 		if( rand(1, 100) <= $probability ) {
 			self::gc( ini_get( 'session.gc_maxlifetime' ) );
 		}
