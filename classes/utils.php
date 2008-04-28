@@ -733,7 +733,7 @@ class Utils
 	 */
 	public static function glob( $pattern, $flags = 0 )
 	{
-		if ( ! defined( 'GLOB_NOBRACE' ) || ! ( $flags & GLOB_BRACE == GLOB_BRACE ) ) {
+		if ( ! defined( 'GLOB_NOBRACE' ) || ! ( ( $flags & GLOB_BRACE ) == GLOB_BRACE ) ) {
 			// this platform supports GLOB_BRACE out of the box
 			$results= glob( $pattern, $flags );
 		}
@@ -773,14 +773,14 @@ class Utils
 			'TiB',
 			'PiB'
 			);
-			$tick = 0;
-			$max_tick = count($sizes) - 1;
-			while($bytesize > 1024 && $tick < $max_tick) {
-				$tick++;
-				$bytesize /= 1024;
-			}
+		$tick = 0;
+		$max_tick = count($sizes) - 1;
+		while($bytesize > 1024 && $tick < $max_tick) {
+			$tick++;
+			$bytesize /= 1024;
+		}
 
-			return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
+		return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
 	}
 
 	public static function truncate_log() {
