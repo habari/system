@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php $theme->display ('header'); ?>
 <!-- page.single -->
   <div class="page">
    <div id="primary">
@@ -25,18 +25,18 @@
      </div>
 
     </div>
-<?php include 'comments.php'; ?>
+<?php $theme->display ( 'comments' ); ?>
    </div>
 
    <hr>
 
    <div class="secondary">
 
-<?php include 'sidebar.php'; ?>
+<?php $theme->display ('sidebar'); ?>
 
    </div>
 
    <div class="clear"></div>
   </div>
 <!-- /page.single -->
-<?php include 'footer.php'; ?>
+<?php $theme->display ( 'footer' ); ?>

@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php $theme->display ( 'header' ); ?>
 <!-- tag -->
   <div class="content">
    <div id="primary">
@@ -41,11 +41,11 @@
 
    <div class="secondary">
 
-<?php include 'sidebar.php'; ?>
+<?php $theme->display ('sidebar' ); ?>
 
    </div>
 
    <div class="clear"></div>
   </div>
 <!-- /tag -->
-<?php include 'footer.php'; ?>
+<?php $theme->display ( 'footer' ); ?>
