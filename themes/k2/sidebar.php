@@ -3,7 +3,7 @@
 
     <div id="search">
      <h2>Search</h2>
-<?php include 'searchform.php'; ?>
+<?php $theme->display ('searchform' ); ?>
     </div>	
  
     <div class="sb-about">
@@ -13,7 +13,7 @@
  
     <div class="sb-user">
      <h2>User</h2>
-<?php include 'loginform.php'; ?>
+<?php $theme->display ( 'loginform' ); ?>
     </div>	
     
 <?php Plugins::act( 'theme_sidebar_bottom' ); ?>

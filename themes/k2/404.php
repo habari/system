@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php $theme->display ( 'header' ); ?>
 <!-- error -->
   <div class="content">
    <div id="primary">
@@ -19,11 +19,11 @@
    
    <div class="secondary">
   
-<?php include 'sidebar.php'; ?>
+<?php $theme->display ( 'sideabar' ); ?>
 
    </div>
    
    <div class="clear"></div>
   </div>
 <!-- /error -->
-<?php include 'footer.php'; ?>
+<?php $theme->display ('footer'); ?>
