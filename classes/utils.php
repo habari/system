@@ -733,7 +733,7 @@ class Utils
 	 */
 	public static function glob( $pattern, $flags = 0 )
 	{
-			if ( ! defined( 'GLOB_NOBRACE' ) || ! ( ( $flags & GLOB_BRACE ) == GLOB_BRACE ) ) {
+		if ( ! defined( 'GLOB_NOBRACE' ) || ! ( ( $flags & GLOB_BRACE ) == GLOB_BRACE ) ) {
 			// this platform supports GLOB_BRACE out of the box or GLOB_BRACE wasn't requested
 			$results= glob( $pattern, $flags );
 		}
@@ -748,13 +748,13 @@ class Utils
 				$braces[ preg_quote( $raw_brace ) ] = '(?:' . str_replace( ',', '|', preg_quote( substr( $raw_brace, 1, -1 ), '/' ) ) . ')';
 			}
 			$new_pattern= preg_replace( '/\{.*?\}/', '*', $pattern );
-      $pattern= preg_quote( $pattern, '/' );
-      $pattern= str_replace( '\\*', '.*', $pattern );
-      $pattern= str_replace( '\\?', '.', $pattern );
+			$pattern= preg_quote( $pattern, '/' );
+			$pattern= str_replace( '\\*', '.*', $pattern );
+			$pattern= str_replace( '\\?', '.', $pattern );
 			$regex= '/' . str_replace( array_keys( $braces ), array_values( $braces ), $pattern ) . '/';
 			$results= preg_grep( $regex, Utils::glob( $new_pattern, $flags ^ GLOB_BRACE) );
 		}
-		
+
 		if ( $results === false ) $results= array();
 		return $results;
 	}
