@@ -186,7 +186,17 @@ class URL extends Singleton
 			return Site::get_url( 'habari', true ) . $return_url;
 		}
 		else {
-			throw new Exception( sprintf( _t('Could not find a rule named: %s.'), implode(', ', $rule_names) ) );
+			$error= new Exception();
+			$error_trace= $error->getTrace();
+			// Since URL::out() calls this function, the index 0 is URL::get() which is not the proper failing call.
+			if ( isset($error_trace[1]['class']) && isset($error_trace[1]['function']) && ($error_trace[1]['class'] == 'URL') && ($error_trace[1]['function'] == 'out') ) {
+				$error_args= $error_trace[1];
+			}
+			// When calling URL::get() directly, the index 0 is the proper file and line of the failing call.
+			else {
+				$error_args= $error_trace[0];
+			}
+			EventLog::log( sprintf( _t('Could not find a rule matching the following names: %s. File: %s (line %s)'), implode(', ', $rule_names), $error_args['file'], $error_args['line'] ) , 'notice', 'rewriterules', 'habari' );
 		}
 	}
 
