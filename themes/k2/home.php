@@ -1,4 +1,4 @@
-<?php $theme->display( 'header '); ?>
+<?php $theme->display( 'header'); ?>
 <!-- home -->
   <div class="content">
    <div id="primary">
