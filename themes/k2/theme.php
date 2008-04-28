@@ -75,32 +75,6 @@ class MyTheme extends Theme
 		}
 		return $return;
 	}
-		
-	public function theme_prev_page_link( $theme )
-	{
-		$settings= array();
-		
-		// If there's no previous page, skip and return null
-		$settings['page']= (int) ( $theme->page - 1);
-		if ($settings['page'] < 1) {
-			return null;
-		}
-
-		return '<a href="' . URL::get(null, $settings, false) . '" title="Previous Page">&larr; ' . _t('Previous') . '</a>';
-	}
-	
-	public function theme_next_page_link( $theme )
-	{
-		$settings= array();
-		
-		// If there's no previous page, skip and return null
-		$settings['page']= (int) ( $theme->page + 1);
-		if ($settings['page'] > Utils::archive_pages( $theme->posts->count_all() )) {
-			return null;
-		}
-
-		return '<a href="' . URL::get(null, $settings, false) . '" title="Next Page">' . _t('Next') . ' &rarr;</a>';
-	}
 
 }
 
