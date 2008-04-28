@@ -467,7 +467,88 @@ class Posts extends ArrayObject
 			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts'),  strtotime( $min_time ), 'Next run: ' . $min_time );
 		}
 	}
+	
+	/**
+	 * Returns an ascending post
+	 *
+	 * @params The Post from which to start
+	 * @params The params by which to work out what is the next ascending post
+	 * @return Post The ascending post
+	 */
+	public static function ascend( $post, $params= null)
+	{
+		$posts= null;
+		$ascend= false;
+		if ( !$params ) {
+			$params= array( 'where' => "pubdate >= '{$post->pubdate}' AND content_type = {$post->content_type}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
+			$posts= Posts::get($params);			
+		}
+		elseif ( $params instanceof Posts ) {			
+			$posts= $params;
+		}
+		else {			
+			if ( !array_key_exists( 'orderby', $params ) ) {
+				$params['orderby']= 'pubdate ASC';
+			}
+			$posts= Posts::get($params);
+		}
+		// find $post and return the next one.
+		$index= $posts->search( $post );
+		$target= $index + 1;
+		if ( array_key_exists( $target, $posts ) ) {
+			$ascend= $posts[$target];
+		}
+		return $ascend;
+	}
+
+	/**
+	 * Returns a descending post
+	 *
+	 * @params The Post from which to start
+	 * @params The params by which to work out what is the next descending post
+	 * @return Post The descending post
+	 */
+	public static function descend( $post, $params= null)
+	{
+		$posts= null;
+		$descend= false;
+		if ( !$params ) {
+			$params= array( 'where' => "pubdate <= '{$post->pubdate}' AND content_type = {$post->content_type}", 'limit' => 2, 'orderby' => 'pubdate DESC' );
+			$posts= Posts::get($params);
+		}
+		elseif ( $params instanceof Posts ) {
+			$posts= array_reverse($params);
+		}
+		else {
+			if ( !array_key_exists( 'orderby', $params ) ) {
+				$params['orderby']= 'pubdate DESC';
+			}
+			$posts= Posts::get($params);
+		}
+		// find $post and return the next one.
+		$index= $posts->search( $post );
+		$target= $index + 1;
+		if ( array_key_exists( $target, $posts ) ) {
+			$descend= $posts[$target];
+		}
+		return $descend;
+	}
+	
+	/**
+	 * Search this Posts object for the needle, returns its key if found
+	 *
+	 * @param Post $needle Post object to find within this Posts object
+	 * @return mixed Returns the index of the needle, on failure, null is returned
+	 */
+	public function search( $needle )
+	{
+		foreach ($this as $key => $value) {
+			if ( $needle === $value ) {
+				return $key;
+			}
+		}
+		return NULL;
+	}
 
 }
-
 ?>

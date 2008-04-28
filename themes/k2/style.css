@@ -620,6 +620,27 @@ a {
 .entry-content a:visited {
 	color: #b41;
 	}
+	
+/*- Navigation */
+.navigation {
+	margin-bottom:10pt;
+}
+
+.navigation a {
+	color: #999;
+}
+
+.navigation .left {
+	float: left;
+	text-align: left;
+	width: 50%;
+}
+
+.navigation .right {
+	float: right;
+	text-align: right;
+	width: 50%;
+}
 
 /*- Various Tags and Classes */
 

@@ -824,5 +824,25 @@ class Post extends QueryRecord
 		return array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
 	}
 	
+	/**
+	 * Returns the ascending post, relative to this post, according to params
+	 * @params The params by which to work out what is the ascending post
+	 * @return Post The ascending post
+	 */
+	public function ascend($params= null)
+	{
+		return Posts::ascend($this, $params);
+	}
+
+	/**
+	 * Returns the descending post, relative to this post, according to params
+	 * @params The params by which to work out what is the descending post
+	 * @return Post The descending post
+	 */
+	public function descend($params= null)
+	{
+		return Posts::descend($this, $params);
+	}
+	
 }
 ?>
