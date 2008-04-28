@@ -627,6 +627,52 @@ class Theme extends Pluggable
 
 		return $out;
 	}
+	
+	/**
+	*Provides a link to the previous page 
+	*
+	* @param string $text text to display for link
+	*/
+	public function theme_prev_page_link( $theme, $text= NULL )
+	{
+		$settings= array();
+		
+		// If there's no previous page, skip and return null
+		$settings['page']= (int) ( $theme->page - 1);
+		if ($settings['page'] < 1) {
+			return null;
+		}
+		
+		// If no text was supplied, use default text
+		if ($text == '') {
+			$text= '&larr; ' . _t( 'Previous' );
+		}
+
+		return '<a class="prev-page" href="' . URL::get(null, $settings, false) . '" title="' . $text . '">' . $text . '</a>';
+	}
+	
+	/**
+	*Provides a link to the next page 
+	*
+	* @param string $text text to display for link
+	*/
+	public function theme_next_page_link( $theme, $text= NULL )
+	{
+		$settings= array();
+		
+		// If there's no next page, skip and return null
+		$settings['page']= (int) ( $theme->page + 1);
+		if ($settings['page'] > Utils::archive_pages( $theme->posts->count_all() )) {
+			return null;
+		}
+		
+		// If no text was supplied, use default text
+		if ($text == '') {
+			$text= _t( 'Next' ) . ' &rarr;';
+		}
+
+		return '<a class="next-page" href="' . URL::get(null, $settings, false) . '" title="' . $text . '">' . $text . '</a>';
+	}
 
 	/**
 	 * Detects if a variable is assigned to the template engine for use in
