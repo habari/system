@@ -7,7 +7,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
     <div class="comments">
      <h4><span id="comments"><?php echo $post->comments->moderated->count; ?> Responses to <?php echo $post->title; ?></span></h4>
      <div class="metalinks">
-      <span class="commentsrsslink"><a href="<?php echo $post->comment_feed_link; ?>">Feed for this Entry</a></span> <span class="trackbacklink">Trackback Address</span>
+      <span class="commentsrsslink"><a href="<?php echo $post->comment_feed_link; ?>">Feed for this Entry</a></span>
      </div>
      
      <ol id="commentlist">
