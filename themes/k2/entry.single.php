@@ -2,6 +2,18 @@
 <!-- entry.single -->
   <div class="single">
    <div id="primary">
+	<div class="navigation">
+		<?php
+		if ( $previous= $post->descend() ) {
+			echo "<div class=\"left\">&laquo; <a href=\"{$previous->permalink}\" title=\"{$previous->slug}\">{$previous->title}</a></div>";
+		}
+		if ( $next= $post->ascend() ) {
+			echo "<div class=\"right\"><a href=\"{$next->permalink}\" title=\"{$next->slug}\">{$next->title}</a> &raquo;</div>";
+		}
+		?>
+		<div class="clear"></div>
+	</div>
+		
     <div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 
      <div class="entry-head">
