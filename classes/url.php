@@ -154,14 +154,14 @@ class URL extends Singleton
 		}
 		else {
 			$url->load_rules();
-			
+			$selectedrule= null;
+
 			if ( !is_array( $rule_names ) ) {
 				$rule_names= array( $rule_names );
 			}
 			foreach ( $rule_names as $rule_name ) {
 				if ( $rules= $url->rules->by_name( $rule_name ) ) {
 					$rating= null;
-					$selectedrule= null;
 					foreach ( $rules as $rule ) {
 						$newrating= $rule->arg_match( $args );
 						// Is the rating perfect?
@@ -181,8 +181,13 @@ class URL extends Singleton
 			}
 		}
 		
-		$return_url= $selectedrule->build( $args, $useall, $noamp );
-		return Site::get_url( 'habari', true ) . $return_url;
+		if ( $selectedrule instanceOf RewriteRule ) {
+			$return_url= $selectedrule->build( $args, $useall, $noamp );
+			return Site::get_url( 'habari', true ) . $return_url;
+		}
+		else {
+			throw new Exception( sprintf( _t('Could not find a rule named: %s.'), implode(', ', $rule_names) ) );
+		}
 	}
 
 	/**
