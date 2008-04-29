@@ -3,14 +3,13 @@
   <div class="single">
    <div id="primary">
 	<div class="navigation">
-		<?php
-		if ( $previous= $post->descend() ) {
-			echo "<div class=\"left\">&laquo; <a href=\"{$previous->permalink}\" title=\"{$previous->slug}\">{$previous->title}</a></div>";
-		}
-		if ( $next= $post->ascend() ) {
-			echo "<div class=\"right\"><a href=\"{$next->permalink}\" title=\"{$next->slug}\">{$next->title}</a> &raquo;</div>";
-		}
-		?>
+		<?php if ( $previous= $post->descend() ): ?>
+		<div class="left"> &laquo; <a href="<?php echo $previous->permalink ?>" title="<?php echo $previous->slug ?>"><?php echo $previous->title ?></a></div>
+		<?php endif; ?>
+		<?php if ( $next= $post->ascend() ): ?>
+		<div class="right"><a href="<?php echo $next->permalink ?>" title="<?php echo $next->slug ?>"><?php echo $next->title ?></a> &raquo;</div>
+		<?php endif; ?>
+		
 		<div class="clear"></div>
 	</div>
 		
