@@ -126,8 +126,27 @@ class InstallHandler extends ActionHandler {
 			$this->display('db_setup');
 		}
 
-		// Install k2
-		Themes::activate_theme('k2', 'k2');
+		// Install a theme.
+		$themes= Utils::glob( Site::get_dir( 'user' ) . '/themes/*', GLOB_ONLYDIR );
+		if ( 1 === count( $themes ) ) {
+			// only one theme exists in /user/themes
+			// assume the user wants that one activated.
+			$theme= basename( $themes[0] );
+			Themes::activate_theme( $theme, $theme );
+		} elseif ( 1 < count( $themes ) ) {
+			// we have multiple user themes installed
+			// select one at random to use
+			$random= rand( 1, count( $themes ) );
+			$theme= basename( $themes[ $random ] );
+			Themes::activate_theme( $theme, $theme );
+		} else {
+			// no user themes installed
+			// activate a random system theme
+			$themes= Utils::glob( HABARI_PATH . '/system/themes/*', GLOB_ONLYDIR );
+			$random= rand( 1, count( $themes ) );
+			$theme= basename( $themes[ $random ] );
+			Themes::activate_theme( $theme, $theme );
+		}
 
 		EventLog::log('Habari successfully installed.', 'info', 'default', 'habari');
 		return true;
