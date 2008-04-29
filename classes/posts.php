@@ -480,7 +480,7 @@ class Posts extends ArrayObject
 		$posts= null;
 		$ascend= false;
 		if ( !$params ) {
-			$params= array( 'where' => "pubdate >= '{$post->pubdate}' AND content_type = {$post->content_type}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
+			$params= array( 'where' => "pubdate >= '{$post->pubdate}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
 			$posts= Posts::get($params);			
 		}
 		elseif ( $params instanceof Posts ) {			
@@ -513,7 +513,7 @@ class Posts extends ArrayObject
 		$posts= null;
 		$descend= false;
 		if ( !$params ) {
-			$params= array( 'where' => "pubdate <= '{$post->pubdate}' AND content_type = {$post->content_type}", 'limit' => 2, 'orderby' => 'pubdate DESC' );
+			$params= array( 'where' => "pubdate <= '{$post->pubdate}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate DESC' );
 			$posts= Posts::get($params);
 		}
 		elseif ( $params instanceof Posts ) {
@@ -542,12 +542,7 @@ class Posts extends ArrayObject
 	 */
 	public function search( $needle )
 	{
-		foreach ($this as $key => $value) {
-			if ( $needle === $value ) {
-				return $key;
-			}
-		}
-		return NULL;
+		return array_search( $needle, $this->getArrayCopy() );
 	}
 
 }
