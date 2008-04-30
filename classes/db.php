@@ -393,6 +393,16 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->get_driver_name();
 	}
+	
+	/**
+	 * Returns a list of tables the DB currently knows about.
+	 *
+	 * @return array The list of tables.
+	 */
+	public static function list_tables()
+	{
+		return DB::instance()->connection->list_tables();
+	}
 }
 
 ?>
