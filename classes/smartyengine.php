@@ -98,6 +98,22 @@ class SmartyEngine extends TemplateEngine
 	} 
 
 	/** 
+	 * Returns the existance of the specified template name
+	 * 
+	 * @param template $template Name of template to detect
+	 * @returns boolean True if the template exists, false if not
+	 */
+	public function template_exists( $template )
+	{
+		if ( empty( $this->available_templates ) ) {
+			$this->available_templates= Utils::glob( $this->template_dir . '*.*' );
+			$this->available_templates= array_map( 'basename', $this->available_templates, array_fill( 1, count( $this->available_templates ), '.tpl' ) );
+			$this->available_templates= Plugins::filter('available_templates', $this->available_templates, __CLASS__);
+		}
+		return in_array( $template, $this->available_templates );
+	}
+	
+	/** 
 	 * A function which returns the content of the transposed
 	 * template as a string
 	 *
@@ -126,6 +142,18 @@ class SmartyEngine extends TemplateEngine
 			$this->smarty->assign( $key );
 		}
 	} 
+
+	/** 
+	 * Detects if a variable is assigned to the template engine for use in 
+	 * constructing the template's output.
+	 * 
+	 * @param string $key name of variable
+	 * @returns boolean true if key is set, false if not set
+	 */
+	public function assigned( $name )
+	{
+		return isset($this->smarty->_tpl_vars[$name]);
+	}
 
 	/** 
 	 * Appends to an existing variable more values
