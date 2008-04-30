@@ -617,26 +617,32 @@ class AdminHandler extends ActionHandler
 						$modstatus['Deleted %d comments']++;
 						break;
 					case 'spam':
-						// This comment was marked as spam
-						$comment= Comment::get( $comment->id );
-						$modstatus['Marked %d comments as spam']+= $comment->status != Comment::STATUS_SPAM;
-						$comment->status= Comment::STATUS_SPAM;
-						$comment->update();
+						if ( $comment->status != Comment::STATUS_SPAM ) {
+							// This comment was marked as spam
+							$comment= Comment::get( $comment->id );
+							$modstatus['Marked %d comments as spam']+= $comment->status != Comment::STATUS_SPAM;
+							$comment->status= Comment::STATUS_SPAM;
+							$comment->update();
+						}
 						break;
 					case 'approve':
-						// This comment was marked for approval
-						$comment= Comment::get( $comment->id );
-						$modstatus['Approved %d comments']+= $comment->status != Comment::STATUS_APPROVED;
-						$modstatus['Approved comments on these posts: %s'] = (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
-						$comment->status= Comment::STATUS_APPROVED;
-						$comment->update();
+						if ( $comment->status != Comment::STATUS_APPROVED) {
+							// This comment was marked for approval
+							$comment= Comment::get( $comment->id );
+							$modstatus['Approved %d comments']+= $comment->status != Comment::STATUS_APPROVED;
+							$modstatus['Approved comments on these posts: %s'] = (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+							$comment->status= Comment::STATUS_APPROVED;
+							$comment->update();
+						}
 						break;
 					case 'unapprove':
+						if ( $comment->status != Comment::STATUS_UNAPPROVED ) {
 						// This comment was marked for unapproval
 						$comment= Comment::get( $comment->id );
 						$modstatus['Unapproved %d comments']+= $comment->status != Comment::STATUS_UNAPPROVED;
 						$comment->status= Comment::STATUS_UNAPPROVED;
 						$comment->update();
+						}
 						break;
 					case 'edit':
 						// This comment was edited
