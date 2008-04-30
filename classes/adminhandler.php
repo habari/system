@@ -316,9 +316,10 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
 		$fields= Plugins::filter( 'adminhandler_post_user_fields', $fields );
-
-		foreach ( $fields as $input => $field ) {
-			switch ( $input ) {
+		$posted_fields= array_intersect_key( $this->handler_vars, $fields );
+		
+		foreach ( $posted_fields as $posted_field => $posted_value ) {
+			switch ( $posted_field ) {
 				case 'user_id': // Editing someone else's profile? If so, load that user's profile
 					if ( $currentuser->id != $user_id ) {
 						$user= User::get_by_id( $user_id );
@@ -359,6 +360,7 @@ class AdminHandler extends ActionHandler
 						$old_name= $user->username;
 						$user->username= $username;
 						Session::notice( sprintf( _t( '%1$s has been renamed to %2$s.' ), $old_name, $username ) );
+						$results['user']= $username;
 						$update= TRUE;
 					}
 					break;
@@ -385,8 +387,8 @@ class AdminHandler extends ActionHandler
 					}
 					break;
 				default:
-					if ( isset( ${$input} ) && ( $user->info->$field != ${$input} ) ) {
-						$user->info->$field= ${$input};
+					if ( isset( ${$fields[$posted_field]} ) && ( $user->info->$fields[$posted_field] != ${$fields[$posted_field]} ) ) {
+						$user->info->$fields[$posted_field]= ${$fields[$posted_field]};
 						Session::notice( _t( 'Userinfo updated!' ) );
 						$update= TRUE;
 					}
