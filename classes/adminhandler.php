@@ -312,20 +312,22 @@ class AdminHandler extends ActionHandler
 		$update= FALSE;
 		$results= array( 'page' => 'user' );
 		$currentuser= User::identify();
-		$user= $currentuser;
 		extract( $this->handler_vars );
 		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
 		$fields= Plugins::filter( 'adminhandler_post_user_fields', $fields );
 		$posted_fields= array_intersect_key( $this->handler_vars, $fields );
 		
+		// Editing someone else's profile? If so, load that user's profile
+		if ( isset($user_id) && ($currentuser->id != $user_id) ) {
+			$user= User::get_by_id( $user_id );
+			$results['user']= $user->username;
+		}
+		else {
+			$user= $currentuser;
+		}
+		
 		foreach ( $posted_fields as $posted_field => $posted_value ) {
 			switch ( $posted_field ) {
-				case 'user_id': // Editing someone else's profile? If so, load that user's profile
-					if ( $currentuser->id != $user_id ) {
-						$user= User::get_by_id( $user_id );
-						$results['user']= $user->username;
-					}
-					break;
 				case 'delete': // Deleting a user
 					if ( isset( $delete ) && ( 'user' == $delete ) ) {
 						// Extra safety check here
