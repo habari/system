@@ -1,0 +1,3 @@
+Mzingi is released under the same Apache 2.0 license that Habari is.  A copy of that license can be found in the root directory of Habari or  at http://www.apache.org/licenses/
+
+Code modified for the contact form has been granted permission by the author to be included with the Apache license.

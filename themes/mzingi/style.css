@@ -1,0 +1,540 @@
+/*-----------------------------------------------------------------------------
+mzingi, a base Habari theme
+
+version:   .3
+author:    Michael Bishop
+email:    miklb@bloggingmeta.com
+website:   http://www.bloggingmeta.com/
+-----------------------------------------------------------------------------*/
+
+/* =General
+-----------------------------------------------------------------------------*/
+
+/* Resets */
+/* Remove padding and margin */
+* {
+  margin: 0;
+	padding: 0;
+}
+
+/* Put it back on certain elements */
+h1, h2, h3, h4, h5, h6, p, pre, blockquote, form, fieldset, table, ul {
+  margin: .5em 0;
+}
+
+em {
+	font-style: italic;
+}
+
+strong {
+	font-weight: 700;
+}
+
+blockquote {
+	border-left: 10px solid #62A20C;
+	padding: 5px 0 5px 20px;
+	margin: 10px 0 10px 30px;
+}
+
+blockquote p {
+	border-top: 1px solid #666;
+	border-bottom: 1px solid #666;
+	padding: 8px 0;
+	font-style: italic;
+}
+
+.right {
+	float: right;
+}
+
+.left {
+	float: left;
+}
+
+img.right  {
+	border: 1px solid #666;
+	padding: 3px;
+	margin-left: 8px;
+}
+
+img.left {
+	border: 1px solid #666;
+	padding: 3px;
+	margin-right: 8px;
+}
+
+/* Class for clearing floats */
+.clear {
+	clear:both;
+}
+
+/* define inline elements as block */
+
+.block {
+	display: block;
+}
+
+
+/* Remove border around linked images */
+img {
+	border: 0;
+}
+
+
+/* =Typography
+-----------------------------------------------------------------------------*/
+
+body {
+  font: 108% verdana;
+  color: #666;
+  background: #FEFFFD;
+  
+}
+
+/* =Structure
+-----------------------------------------------------------------------------*/
+
+#wrapper {
+	width: 950px;
+	margin:0 auto;
+	background: #fff;
+	
+}
+
+#masthead {
+	margin: 30px 0;
+	border-bottom: 2px dotted #62A20C;
+	padding-bottom: 5px;
+}
+
+#content {
+	margin:10px;
+	text-align: left;
+	
+}
+
+#primaryContent {
+	float: left;
+	width:625px;
+	padding-right: 30px;
+	margin-bottom: 10px;
+}
+
+#secondaryContent {
+	float: right;
+	width: 240px;
+}
+
+#footer {
+	height: 60px;
+	border-top: 2px dotted #62A20C;
+	padding-top: 5px;
+	margin-top: 5px;
+}
+
+
+
+/* =Headings
+-----------------------------------------------------------------------------*/
+
+
+h1 {
+	font-size: 225%;
+	font-family: Georgia;
+	color: #545454;
+}
+
+h2 {
+	color: #545454;
+	font-family: Trebuchet MS;
+}
+
+h3 {
+	font-size: 123.1%;
+	font-family: times new roman;
+}
+
+#masthead h3 {
+	padding-left: 33px;
+	margin: 0;
+}
+
+#primaryContent h2 {
+	font-size: 159%;
+	margin-left: 80px;
+}
+
+#page #content #primaryContent h2 {
+	text-align: center;
+	margin: 0;
+}
+
+#secondaryContent h2 {
+	font-size: 144%;
+}
+
+#site {
+
+}
+
+#rss {
+
+}
+
+#aside {
+
+}
+
+#commentheading {
+
+}
+
+
+/* =Links
+-----------------------------------------------------------------------------*/
+
+a:link {
+	color: #62A20C;
+}
+
+a:visited {
+	color: #62A20C;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: none;
+	color: #E0A352;
+}
+
+a:active {
+	color: #62A20C;
+}
+
+
+
+ul#nav li a:link, ul#nav li a:visited {
+	display: block;
+	width: 200px;
+	padding-bottom: 5px;
+	color: #666;
+	text-decoration: none;
+	text-indent: 20px;
+}
+
+ul#nav li a:hover {
+	color: #000;
+}
+
+#branding a {
+	border: none;
+}
+
+ul#tidbits a {
+	text-decoration: none;
+
+}
+
+
+
+
+/* =Masthead
+-----------------------------------------------------------------------------*/
+
+#branding {
+	margin-left: 35px;
+}
+
+
+/* =Main Nav
+-----------------------------------------------------------------------------*/
+
+
+
+
+/* =Primary Content
+-----------------------------------------------------------------------------*/
+
+#post-nav {
+	margin: 10px 5px 45px 5px;
+}
+
+.cal {
+	height: 76px;
+	width: 70px;
+	float: left;
+	margin:0  12px 7px 0;
+	text-align: center;
+	border: 1px solid #62A20C;
+}
+
+.calyear {
+	background: #62A20C;
+	color: #fff;
+	padding:0 14px;
+}
+
+.calday {
+	font-size: 138.5%;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+.calmonth {
+	font-size: 77%;
+	margin: 0;
+	border-top: 1px solid #62A20C;
+	width: 100%;
+}
+
+.entry {
+	font-family: Verdana;
+	text-align: justify;
+}
+
+.draft {
+	background: #FFF6BF;
+	color: #817134;
+	border-color: #FFD324;
+	padding: 5px;
+}
+
+.entry ul {
+	list-style-type: square;
+	padding-left: 55px;
+	clear: left;
+}
+
+.entry li {
+	padding-bottom: 4px;
+}
+
+.entryMeta {
+	margin:30px 5px 45px 5px;
+	font-size: 92%;
+}
+
+.commentCount {
+	float:  right;
+}
+
+.tags {
+	float: left;
+}
+
+#pagenav {
+	text-align: center;
+	border: 1px solid #ccc;
+	padding: 4px;
+	background: #F5F5F5;
+	margin-top: 10px;
+}
+
+#pagenav a {
+	text-decoration: none;
+	padding: 2px;
+
+}
+
+#pagenav a:hover {
+	background: #545454;
+	padding: 2px;
+	color: #fff;
+	text-decoration: none;
+}
+
+#pagenav a.current-page {
+	border: 1px solid #545454;
+	color: #545454;
+	padding: 2px;
+}
+
+
+
+/* =Secondary Content
+-----------------------------------------------------------------------------*/
+ul#nav {
+	list-style-type: none;
+}
+
+ul#nav li {
+	margin-bottom: 7px ;
+}
+
+ul#asides {
+	list-style-type: none;
+	margin-left: 5px;
+}
+
+ul#moreposts {
+	list-style-type: none;
+	margin-left: 5px;
+}
+
+ul#moreposts li {
+	padding-bottom: 5px;
+}
+}
+
+ul#recentcomments {
+	list-style-type: none;
+	margin-left: 5px;
+}
+
+ul#recentcomments li {
+	margin-bottom: 8px;
+	list-style-type: none;
+}
+
+
+/* =Footer
+-----------------------------------------------------------------------------*/
+
+#footer p {
+	text-align: center;
+}
+
+
+/* =Forms
+-----------------------------------------------------------------------------*/
+
+/* Removes fieldset borders. even on Opea 7 */
+fieldset {
+  border: 1px solid transparent;
+}
+
+
+
+/* =Tables
+-----------------------------------------------------------------------------*/
+
+table { 
+  border-spacing: 0;
+	border-collapse: collapse;
+}
+
+td {
+  text-align: left;
+	font-weight: normal;
+}
+
+
+
+/*Comments-----------------------------------------------------------------------------*/
+
+#comments {
+	padding-top: 20px;
+}
+
+#pings {
+	margin:15px 0 25px 0;
+}
+
+.ping-meta {
+	background: #ddd;
+	border: 1px solid #ccc;
+	padding: 4px;
+	margin-bottom: 15px;
+}
+
+ul#pings-list {
+	list-style-type: none;
+}
+
+ul#commentlist {
+	list-style-type: none;
+}
+
+.comment {
+	margin-bottom: 15px;
+}
+
+.comment-content {
+	border: 1px solid #ccc;
+	padding: 4px;
+	background: #F5F5F5;
+}
+
+.comment-unapproved .comment-content {
+	background: #ffc;
+}
+
+.comment-meta { 
+	background: #ddd;
+	border: 1px solid #ccc;
+	padding: 4px;
+}
+
+/* Comment Form - heavily leaned on code from Andy Budd's book CSS Mastery, re-used with permission from author */
+/* fieldset styling */
+#comment_form {
+	padding-top: 25px;
+}
+fieldset {
+	margin: 1em 0; /*  space out the fieldsets a little*/
+	padding: 1em;
+	border : 1px solid #ccc;
+	background-color:#F5F5F5
+}
+
+/* legend styling */
+legend {
+	font-weight: bold;
+}
+
+form p {
+  position: relative;
+	width: 100%;
+}
+
+/* style for  labels */
+label {
+	float: left;
+	width: 10em;
+}
+input {
+  width: 200px;
+}
+
+input[type="text"], textarea {
+	border-top: 2px solid #999;
+	border-left: 2px solid #999;
+	border-bottom: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+}
+input.submit {
+  width: auto;
+}
+
+label .required {
+	position: absolute;
+	margin-left: 11em;
+	left: 200px;
+  	right: 0;
+	font-size: small;
+	font-style: italic;
+	color:#760000;
+	padding-left: 35px;
+}
+/* style form elements on focus */
+input:focus, textarea:focus {
+	background: #ffc;
+}
+
+textarea {
+	width: 350px;
+	height: 200px;
+}
+
+/*Search Form*/
+#searchsubmit {
+	margin: 5px auto;
+	width: 160px;
+}
+
+#s {
+	height: 1.6em;
+	padding: 3px;
+	font-size: 100%;
+}
