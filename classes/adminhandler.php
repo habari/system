@@ -1045,8 +1045,8 @@ class AdminHandler extends ActionHandler
 		// set up the users
 		$users_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table( 'users' ) . ' JOIN ' . DB::table( 'log' ) . ' ON ' . DB::table( 'users' ) . '.id=' . DB::table( 'log' ) . '.user_id GROUP BY user_id ORDER BY username ASC' );
 		array_unshift( $users_temp, new QueryRecord( array( 'username' => 'All', 'user_id' => 0 ) ) );
-		foreach ( $users_temp as $user ) {
-			$users[$user->user_id]= $user->username;
+		foreach ( $users_temp as $user_temp ) {
+			$users[$user_temp->user_id]= $user_temp->username;
 		}
 		$this->theme->users= $users;
 
@@ -1093,6 +1093,9 @@ class AdminHandler extends ActionHandler
 		}
 		if ( '' != $search ) {
 			$arguments['criteria']= $search;
+		}
+		if ( '0' != $user ) {
+			$arguments['user_id']= $user;
 		}
 		$this->theme->logs= EventLog::get( $arguments );
 
