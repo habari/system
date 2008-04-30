@@ -57,30 +57,31 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		/* Sanitize the URL */
-		$url= $this->handler_vars['url'];
-		$parsed= InputFilter::parse_url( $url );
-		if ( $parsed['is_relative'] ) {
-			// guess if they meant to use an absolute link
-			$parsed= InputFilter::parse_url( 'http://' . $url );
-			if ( ! $parsed['is_error'] ) {
-				$url= InputFilter::glue_url( $parsed );
+		if (!empty($this->handler_vars['url'])) {
+			$url= $this->handler_vars['url'];
+			$parsed= InputFilter::parse_url( $url );
+			if ( $parsed['is_relative'] ) {
+				// guess if they meant to use an absolute link
+				$parsed= InputFilter::parse_url( 'http://' . $url );
+				if ( ! $parsed['is_error'] ) {
+					$url= InputFilter::glue_url( $parsed );
+				}
+				else {
+					// disallow relative URLs
+					$url= '';
+				}
 			}
-			else {
-				// disallow relative URLs
+			elseif ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) {
+				// allow only http(s) URLs
 				$url= '';
 			}
+			else {
+				// reconstruct the URL from the error-tolerant parsing
+				// http:moeffju.net/blog/ -> http://moeffju.net/blog/
+				$url= InputFilter::glue_url( $parsed );
+			}
+			$this->handler_vars['url']= $url;
 		}
-		elseif ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) {
-			// allow only http(s) URLs
-			$url= '';
-		}
-		else {
-			// reconstruct the URL from the error-tolerant parsing
-			// http:moeffju.net/blog/ -> http://moeffju.net/blog/
-			$url= InputFilter::glue_url( $parsed );
-		}
-		$this->handler_vars['url']= $url;
-		
 		$cleaned_content= preg_replace( '/^\s+/', '', $this->handler_vars['content'] );
 		if ( $cleaned_content === '' ) {
 		    Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
