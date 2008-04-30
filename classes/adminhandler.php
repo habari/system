@@ -410,7 +410,10 @@ class AdminHandler extends ActionHandler
 		$error= '';
 		if ( isset( $action ) && ( 'newuser' == $action ) ) {
 			if ( !isset( $pass1 ) || !isset( $pass2 ) || empty( $pass1 ) || empty( $pass2 ) ) {
-				Session::error( _t( 'Password mis-match.' ), 'adduser' );
+				Session::error( _t( 'Password is required.' ), 'adduser' );
+			}
+			else if ( $pass1 !== $pass2 ) {
+				Session::error( _t( 'Password mis-match.'), 'adduser' );
 			}
 			if ( !isset( $email ) || empty( $email ) || ( !strstr( $email, '@' ) ) ) {
 				Session::error( _t( 'Please supply a valid email address.' ), 'adduser' );
@@ -433,7 +436,17 @@ class AdminHandler extends ActionHandler
 					Session::error( $dberror[2], 'adduser' );
 				}
 			}
-			Utils::redirect( );
+			else {
+				$settings= array();
+				if ( isset($username) ) {
+					$settings['username']= $username;
+				}
+				if ( isset( $email ) ) {
+					$settings['email']= $email;
+				}
+				$this->theme->assign( 'settings', $settings );
+			}
+			$this->theme->display('users');
 		}
 	}
 
