@@ -196,6 +196,100 @@ class Posts extends ArrayObject
 						$params[]= $word;  // Not a typo (there are two ? in the above statement)
 					}
 				}
+				
+				if ( isset( $paramset['all:info'] ) || isset( $paramset['info'] ) ) {
+					
+					// merge the two possibile calls together
+					$infos= array_merge( isset( $paramset['all:info'] ) ? $paramset['all:info'] : array(), isset( $paramset['info'] ) ? $paramset['info'] : array() );
+					
+					if ( is_array( $infos ) ) {
+												
+						foreach ( $infos as $info_key => $info_value ) {
+
+							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$params[]= $info_key;
+							$params[]= $info_value;
+							
+						}
+						
+						$where[]= DB::table( 'posts' ) . '.id IN ( 
+										SELECT post_id FROM ' . DB::table( 'postinfo' ) . '
+										WHERE CONCAT(name,\'**\',value) IN ( ' . implode( ', ', $the_ins ) . ' )
+										GROUP BY post_id 
+										HAVING COUNT(*) = ' . count( $infos ) . ' )';
+										// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
+
+					}
+					
+				}
+				
+				if ( isset( $paramset['any:info'] ) ) {
+					
+					if ( is_array( $paramset['any:info'] ) ) {
+												
+						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
+
+							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$params[]= $info_key;
+							$params[]= $info_value;
+							
+						}
+												
+						$where[]= DB::table( 'posts' ) . '.id IN ( 
+										SELECT post_id FROM ' . DB::table( 'postinfo' ) . ' 
+										WHERE CONCAT( name, \'**\', value ) IN ( ' . implode( ', ', $the_ins ) . ' ) ) ';
+						
+						
+					}
+					
+				}
+				
+				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
+					
+					// merge the two possible calls together
+					$infos= array_merge( isset( $paramset['not:all:info'] ) ? $paramset['not:all:info'] : array(), isset( $paramset['not:info'] ) ? $paramset['not:info'] : array() );
+					
+					if ( is_array( $infos ) ) {
+												
+						foreach ( $infos as $info_key => $info_value ) {
+
+							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$params[]= $info_key;
+							$params[]= $info_value;
+							
+						}
+						
+						$where[]= DB::table( 'posts' ) . '.id NOT IN ( 
+										SELECT post_id FROM ' . DB::table( 'postinfo' ) . '
+										WHERE CONCAT(name,\'**\',value) IN ( ' . implode( ', ', $the_ins ) . ' )
+										GROUP BY post_id 
+										HAVING COUNT(*) = ' . count( $infos ) . ' )';
+										// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
+
+					}
+					
+				}
+				
+				if ( isset( $paramset['not:any:info'] ) ) {
+					
+					if ( is_array( $paramset['not:any:info'] ) ) {
+												
+						foreach ( $paramset['not:any:info'] as $info_key => $info_value ) {
+
+							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$params[]= $info_key;
+							$params[]= $info_value;
+							
+						}
+												
+						$where[]= DB::table( 'posts' ) . '.id NOT IN ( 
+										SELECT post_id FROM ' . DB::table( 'postinfo' ) . ' 
+										WHERE CONCAT( name, \'**\', value ) IN ( ' . implode( ', ', $the_ins ) . ' ) ) ';
+						
+						
+					}
+					
+				}
 
 				/**
 				 * Build the statement needed to filter by pubdate:
