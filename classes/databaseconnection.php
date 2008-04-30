@@ -777,6 +777,17 @@ class DatabaseConnection
 		}
 		return $this->driver;
 	}
+	
+	/**
+	 * Returns a list of tables the DB currently knows about.
+	 *
+	 * @return array The list of tables.
+	 */
+	public function list_tables()
+	{
+		return $this->sql_tables;
+	}
+
 }
 
 ?>
