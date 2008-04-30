@@ -104,11 +104,27 @@ foreach($reasons as $reason):
 <?php } ?>
 				<div class="comment_footer">
 					<p><?php _e('Action:'); ?>
-					<label><input type="radio" class="radio_approve" name="comment_ids[<?php echo $comment->id; ?>]" id="approve-<?php echo $comment->id; ?>" value="approve" <?php echo $default_radio['approve']; ?>><?php _e('Approve'); ?></label>
-					<label><input type="radio" class="radio_delete" name="comment_ids[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete" <?php echo $default_radio['delete']; ?>><?php _e('Delete'); ?></label>
-					<label><input type="radio" class="radio_spam" name="comment_ids[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam" <?php echo $default_radio['spam']; ?>><?php _e('Mark as Spam'); ?></label>
-					<label><input type="radio" class="radio_unapprove" name="comment_ids[<?php echo $comment->id; ?>]" id="unapprove-<?php echo $comment->id; ?>" value="unapprove" <?php echo $default_radio['unapprove']; ?>><?php _e('Unapprove'); ?></label>
-					<label><input type="radio" class="radio_edit" name="comment_ids[<?php echo $comment->id; ?>]" id="edit-<?php echo $comment->id; ?>" onclick="$('#edit_comment_<?php echo $comment->id; ?>').show();" value="edit" <?php echo $default_radio['edit']; ?>><?php _e('Edit'); ?></label>
+<?php
+$checked_radio= $default_radio;
+if (!array_search('checked', $checked_radio)) {
+	switch ($comment->status) {
+		case Comment::STATUS_APPROVED:
+			$checked_radio['approve']= 'checked';
+			break;
+		case Comment::STATUS_SPAM:
+			$checked_radio['spam']= 'checked';
+			break;
+		case Comment::STATUS_UNAPPROVED:
+			$checked_radio['unapprove']= 'checked';
+			break;
+	}
+}
+?>
+					<label><input type="radio" class="radio_approve" name="comment_ids[<?php echo $comment->id; ?>]" id="approve-<?php echo $comment->id; ?>" value="approve" <?php echo $checked_radio['approve']; ?>><?php _e('Approve'); ?></label>
+					<label><input type="radio" class="radio_delete" name="comment_ids[<?php echo $comment->id; ?>]" id="delete-<?php echo $comment->id; ?>" value="delete" <?php echo $checked_radio['delete']; ?>><?php _e('Delete'); ?></label>
+					<label><input type="radio" class="radio_spam" name="comment_ids[<?php echo $comment->id; ?>]" id="spam-<?php echo $comment->id; ?>" value="spam" <?php echo $checked_radio['spam']; ?>><?php _e('Mark as Spam'); ?></label>
+					<label><input type="radio" class="radio_unapprove" name="comment_ids[<?php echo $comment->id; ?>]" id="unapprove-<?php echo $comment->id; ?>" value="unapprove" <?php echo $checked_radio['unapprove']; ?>><?php _e('Unapprove'); ?></label>
+					<label><input type="radio" class="radio_edit" name="comment_ids[<?php echo $comment->id; ?>]" id="edit-<?php echo $comment->id; ?>" onclick="$('#edit_comment_<?php echo $comment->id; ?>').show();" value="edit" <?php echo $checked_radio['edit']; ?>><?php _e('Edit'); ?></label>
 					</p>
 					<div id="edit_comment_<?php echo $comment->id; ?>" style="display:none;">
 					<h2>Edit this comment</h2>

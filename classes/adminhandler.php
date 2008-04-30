@@ -297,7 +297,7 @@ class AdminHandler extends ActionHandler
 		if ( !$okay )	{
 			Utils::redirect( URL::get( 'admin', 'page=content' ) );
 		}
-		$post= Post::get( array( 'slug' => $slug ) );
+		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 		$post->delete();
 		Session::notice( sprintf( _t( 'Deleted %1$s "%2$s".' ), Post::type_name( $post->content_type ), $post->title ) );
 		Utils::redirect( URL::get( 'admin', 'page=content' ) );
@@ -685,6 +685,10 @@ class AdminHandler extends ActionHandler
 		// Decide what to display
 		$arguments['status']= intval( $search_status );
 		switch ( $search_status ) {
+			case 'All':
+				$this->theme->mass_delete= '';
+				unset( $arguments['status'] );
+				break;
 			case Comment::STATUS_SPAM:
 				$this->theme->mass_delete= 'mass_spam_delete';
 				$default_radio['spam']= ' checked';
@@ -694,9 +698,11 @@ class AdminHandler extends ActionHandler
 				$default_radio['approve']= ' checked';
 				break;
 			case Comment::STATUS_UNAPPROVED:
-			default:
 				$this->theme->mass_delete= 'mass_delete';
 				$default_radio['unapprove']= ' checked';
+				break;
+			default:
+				$this->theme->mass_delete= '';
 				break;
 		}
 		$this->theme->default_radio= $default_radio;
@@ -709,9 +715,7 @@ class AdminHandler extends ActionHandler
 			$arguments['criteria']= $search;
 			$arguments['criteria_fields']= $search_fields;
 		}
-		if ( $search_status == 'All' ) {
-			unset( $arguments['status'] );
-		}
+		
 		if ( $search_type == 'All' ) {
 			unset( $arguments['type'] );
 		}
