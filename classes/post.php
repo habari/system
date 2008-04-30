@@ -619,6 +619,7 @@ class Post extends QueryRecord
 		}
 		
 		if ( $this->status == Post::status( 'scheduled' ) ) {
+			$this->get_tags();
 			$msg= 'Scheduled Post ' . $this->id . ' (' . $this->slug  . ') published at ' . date( 'Y-m-d H:i:s' ) . '.';
 		}
 		else {
