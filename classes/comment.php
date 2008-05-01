@@ -17,7 +17,7 @@
  * </code>
  *
  */
-class Comment extends QueryRecord
+class Comment extends QueryRecord implements IsContent
 {
 
 	// our definitions for comment types and statuses
@@ -33,11 +33,11 @@ class Comment extends QueryRecord
 	private $post_object = null;
 
 	private $info= null;
-	
+
 	// static variables to hold comment status and comment type values
 	static $comment_status_list= array();
 	static $comment_type_list= array();
-	
+
 	/**
 	* static function default_fields
 	* Returns the defined database columns for a comment
@@ -163,7 +163,7 @@ class Comment extends QueryRecord
 	{
 		$allow= true;
 		$allow= Plugins::filter('comment_delete_allow', $allow, $this);
-		if ( ! $allow ) { 
+		if ( ! $allow ) {
 			return;
 		}
 		Plugins::act('comment_delete_before', $this);
@@ -191,7 +191,7 @@ class Comment extends QueryRecord
 		else {
 			$filter = false;
 		}
-		
+
 		if ( $name == 'name' && parent::__get( $name ) == '' ) {
 			return _t('Anonymous');
 		}
@@ -314,7 +314,7 @@ class Comment extends QueryRecord
  		}
  		return $this->newfields['status'];
  	}
-	
+
 	/**
 	 * returns an associative array of comment types
 	 * @param bool whether to force a refresh of the cached values
@@ -330,7 +330,7 @@ class Comment extends QueryRecord
 			self::PINGBACK => 'Pingback',
 			self::TRACKBACK => 'Trackback',
 		);
-		return self::$comment_type_list;	
+		return self::$comment_type_list;
 	}
 
 	/**
@@ -351,7 +351,7 @@ class Comment extends QueryRecord
 		);
 		return self::$comment_status_list;
 	}
-	
+
 
 	/**
 	 * returns the integer value of the specified comment status, or false
@@ -423,6 +423,17 @@ class Comment extends QueryRecord
 			return $type;
 		}
 		return '';
+	}
+
+	/**
+	 * Return the content type of this object
+	 *
+	 * @return string The content type of this object
+	 * @see IsContent
+	 */
+	public function content_type()
+	{
+		return Comment::type_name($this->type);
 	}
 }
 
