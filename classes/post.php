@@ -821,7 +821,7 @@ class Post extends QueryRecord
 	{
 		static $args = null;
 		
-		if(!$args) {
+		if($args == null) {
 			$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
 			$author= URL::extract_args( $this->author, 'author_' );
 			$info= URL::extract_args( $this->info, 'info_' );

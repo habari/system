@@ -133,13 +133,11 @@ class RewriteRules extends ArrayObject {
 	{
 		static $named= null; 
 	
-		if(! $named  ) {
+		if( $named == null ) {
 			$named= array();
 			$rules= self::get_active();
 			foreach($rules as $rule) {
-				if($rule->name == $name) {
-					$named[$name][] = $rule;
-				}
+				$named[$rule->name][] = $rule;
 			}
 		}
 
