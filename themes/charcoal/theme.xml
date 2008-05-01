@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<theme>
+	<name>Charcoal</name>
+	<author>Habari Community</author>
+	<url>http://wiki.habariproject.org/en/Themes/Charcoal</url>
+	<version>0.5-alpha</version>
+	<template_engine>rawphpengine</template_engine></theme>
