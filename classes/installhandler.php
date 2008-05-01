@@ -136,14 +136,14 @@ class InstallHandler extends ActionHandler {
 		} elseif ( 1 < count( $themes ) ) {
 			// we have multiple user themes installed
 			// select one at random to use
-			$random= rand( 1, count( $themes ) );
+			$random= rand( 0, count( $themes ) - 1 );
 			$theme= basename( $themes[ $random ] );
 			Themes::activate_theme( $theme, $theme );
 		} else {
 			// no user themes installed
 			// activate a random system theme
 			$themes= Utils::glob( HABARI_PATH . '/system/themes/*', GLOB_ONLYDIR );
-			$random= rand( 1, count( $themes ) );
+			$random= rand( 0, count( $themes ) - 1 );
 			$theme= basename( $themes[ $random ] );
 			Themes::activate_theme( $theme, $theme );
 		}
