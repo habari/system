@@ -819,10 +819,15 @@ class Post extends QueryRecord
 	 */
 	public function get_url_args()
 	{
-		$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
-		$author= URL::extract_args( $this->author, 'author_' );
-		$info= URL::extract_args( $this->info, 'info_' );
-		return array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
+		static $args = null;
+		
+		if(!$args) {
+			$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
+			$author= URL::extract_args( $this->author, 'author_' );
+			$info= URL::extract_args( $this->info, 'info_' );
+			$args= array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
+		}
+		return $args;
 	}
 	
 	/**

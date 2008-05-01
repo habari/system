@@ -88,7 +88,7 @@ class RewriteRules extends ArrayObject {
 		}
 		$rewrite_rules= Plugins::filter('rewrite_rules', $system_rules);
 
-		usort($rewrite_rules, array('RewriteRules', 'sort_rules'));
+		$rewrite_rules= self::sort_rules($rewrite_rules);
 
 		$c = __CLASS__;
 		return new $c ( $rewrite_rules );
@@ -101,16 +101,25 @@ class RewriteRules extends ArrayObject {
 	 * which would allow any other rule (including the one that executes by default
 	 * when no other rules work) to execute first.
 	 *
-	 * @param RewriteRule $rulea A rule to compare
-	 * @param RewriteRule $ruleb A rule to compare
-	 * @return integer The standard usort() result values, -1, 0, 1
+	 * @param array $rewrite_rules An array of RewriteRules
+	 * @return array Sorted rewrite rules by priority
 	 **/
-	public static function sort_rules($rulea, $ruleb)
+	public static function sort_rules($rewrite_rules)
 	{
-		if( $rulea->priority == $ruleb->priority ) {
-			return 0;
+		$pr = array();
+		$max_priority = 0;
+		foreach($rewrite_rules as $r) {
+			$priority = $r->priority;
+			$pr[$priority][] = $r;
+			$max_priority = max($max_priority, $priority);
 		}
-		return ($rulea->priority < $ruleb->priority) ? -1 : 1;
+		$rewrite_rules = array();
+		for($z = 0; $z <= $max_priority; $z++) {
+			if(isset($pr[$z])) {
+				$rewrite_rules = array_merge($rewrite_rules, $pr[$z]);
+			}
+		}
+		return $rewrite_rules;
 	}
 
 	/**
@@ -122,14 +131,19 @@ class RewriteRules extends ArrayObject {
 	 **/
 	public static function by_name( $name )
 	{
-		$rules= self::get_active();
-		$results = array();
-		foreach($rules as $rule) {
-			if($rule->name == $name) {
-				$results[]= $rule;
+		static $named= null; 
+	
+		if(! $named  ) {
+			$named= array();
+			$rules= self::get_active();
+			foreach($rules as $rule) {
+				if($rule->name == $name) {
+					$named[$name][] = $rule;
+				}
 			}
 		}
-		return count($results) ? $results : false;
+
+		return isset($named[$name]) ? $named[$name] : false;
 	}
 }
 
