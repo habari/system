@@ -15,7 +15,7 @@
  * </code>
  *
  */
-class Post extends QueryRecord
+class Post extends QueryRecord implements IsContent
 {
 	// static variables to hold post status and post type values
 	static $post_status_list= array();
@@ -478,7 +478,7 @@ class Post extends QueryRecord
 		$this->newfields[ 'updated' ]= date( 'Y-m-d H:i:s' );
 		$this->setslug();
 		$this->setguid();
-		
+
 		$allow= true;
 		$allow= Plugins::filter( 'post_insert_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -546,7 +546,7 @@ class Post extends QueryRecord
 		if ( isset( $this->newfields['status'] ) && $this->fields['status'] != $this->newfields['status'] ) {
 		  Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
 		}
-		
+
 		$result= parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ) );
 
 		//scheduled post
@@ -617,7 +617,7 @@ class Post extends QueryRecord
 		if ( $this->status != Post::status( 'scheduled' ) )  {
 			$this->pubdate= date( 'Y-m-d H:i:s' );
 		}
-		
+
 		if ( $this->status == Post::status( 'scheduled' ) ) {
 			$this->get_tags();
 			$msg= 'Scheduled Post ' . $this->id . ' (' . $this->slug  . ') published at ' . date( 'Y-m-d H:i:s' ) . '.';
@@ -625,7 +625,7 @@ class Post extends QueryRecord
 		else {
 			$msg=  'Post ' . $this->id . ' (' . $this->slug  . ') published.';
 		}
-		
+
 		$this->status= Post::status( 'published' );
 		$result= $this->update();
 		EventLog::log( $msg, 'info', 'content', 'habari' );
@@ -819,17 +819,14 @@ class Post extends QueryRecord
 	 */
 	public function get_url_args()
 	{
-		static $args = null;
-		
-		if($args == null) {
-			$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
-			$author= URL::extract_args( $this->author, 'author_' );
-			$info= URL::extract_args( $this->info, 'info_' );
-			$args= array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
-		}
+		$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
+		$author= URL::extract_args( $this->author, 'author_' );
+		$info= URL::extract_args( $this->info, 'info_' );
+		$args= array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
+
 		return $args;
 	}
-	
+
 	/**
 	 * Returns the ascending post, relative to this post, according to params
 	 * @params The params by which to work out what is the ascending post
@@ -849,6 +846,17 @@ class Post extends QueryRecord
 	{
 		return Posts::descend($this, $params);
 	}
-	
+
+	/**
+	 * Return the content type of this object
+	 *
+	 * @return string The content type of this object
+	 * @see IsContent
+	 */
+	public function content_type()
+	{
+		return Post::type_name($this->content_type);
+	}
+
 }
 ?>

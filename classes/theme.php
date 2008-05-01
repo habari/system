@@ -110,12 +110,11 @@ class Theme extends Pluggable
 	 * Find the first template that matches from the list provided and display it
 	 * @param array $template_list The list of templates to search for
 	 */
-	public function display_fallback( $template_list )
+	public function display_fallback( $template_list, $display_function = 'display' )
 	{
 		foreach ( $template_list as $template ) {
 			if ( $this->template_exists( $template ) ) {
-				$this->display( $template );
-				return true;
+				return $this->$display_function( $template );
 			}
 		}
 		return false;
@@ -172,7 +171,16 @@ class Theme extends Pluggable
 		}
 
 		$this->assign( 'posts', $posts );
-		$this->assign( 'page', isset( $page ) ? $page : 1 );
+		$this->assign( 'page', isset($page)? $page:1 );
+		/*
+		if( !isset( $this->page ) ) {
+			if( isset( $page ) ) {
+				$this->assign( 'page', $page );
+			}
+			elseif( isset( Controller::get_handler()->handler_vars['page'] ) ) {
+				$this->assign( 'page', Controller::get_handler()->handler_vars['page'] );
+			}
+		}*/
 
 		if ( $posts !== false && count( $posts ) > 0 ) {
 			$post= ( count( $posts ) > 1 ) ? $posts[0] : $posts;
@@ -472,6 +480,12 @@ class Theme extends Pluggable
 		$this->template_engine->display( $template_name );
 	}
 
+	/**
+	 * Helper function: Avoids having to call $theme->template_engine->fetch( 'template_name' );
+	 *
+	 * @param string $template_name The name of the template to display
+	 * @return string The content of the template
+	 */
 	public function fetch( $template_name )
 	{
 		$this->add_template_vars();
@@ -483,6 +497,18 @@ class Theme extends Pluggable
 		}
 		$this->assign( 'theme', $this );
 
+		return $this->template_engine->fetch( $template_name );
+	}
+
+	/**
+	 * Calls the template engine's fetch() method without pre-assigning template variables.
+	 * Assumes that the template variables have already been set.
+	 *
+	 * @param string $template_name The name of the template to display
+	 * @return string The content of the template
+	 */
+	public function fetch_unassigned( $template_name )
+	{
 		return $this->template_engine->fetch( $template_name );
 	}
 
@@ -513,6 +539,27 @@ class Theme extends Pluggable
 		Plugins::act( 'template_footer', $theme );
 		$output= Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 		return $output;
+	}
+
+	/**
+	 * Display an object using a template designed for the type of object it is
+	 * The $object is assigned into the theme using the $content template variable
+	 *
+	 * @param Theme $theme The theme used to display the object
+	 * @param object $object An object to display
+	 * @return
+	 */
+	public function theme_content( $theme, $object )
+	{
+		$fallback = array(
+			"content",
+		);
+		if( $object instanceof IsContent ) {
+			$content_type = $object->content_type();
+			array_unshift($fallback, $content_type);
+		}
+		$theme->content = $object;
+		$this->display_fallback( $fallback, 'fetch_unassigned' );
 	}
 
 	/**
@@ -627,22 +674,22 @@ class Theme extends Pluggable
 
 		return $out;
 	}
-	
+
 	/**
-	*Provides a link to the previous page 
+	*Provides a link to the previous page
 	*
 	* @param string $text text to display for link
 	*/
 	public function theme_prev_page_link( $theme, $text= NULL )
 	{
 		$settings= array();
-		
+
 		// If there's no previous page, skip and return null
 		$settings['page']= (int) ( $theme->page - 1);
 		if ($settings['page'] < 1) {
 			return null;
 		}
-		
+
 		// If no text was supplied, use default text
 		if ($text == '') {
 			$text= '&larr; ' . _t( 'Previous' );
@@ -650,22 +697,22 @@ class Theme extends Pluggable
 
 		return '<a class="prev-page" href="' . URL::get(null, $settings, false) . '" title="' . $text . '">' . $text . '</a>';
 	}
-	
+
 	/**
-	*Provides a link to the next page 
+	*Provides a link to the next page
 	*
 	* @param string $text text to display for link
 	*/
 	public function theme_next_page_link( $theme, $text= NULL )
 	{
 		$settings= array();
-		
+
 		// If there's no next page, skip and return null
 		$settings['page']= (int) ( $theme->page + 1);
 		if ($settings['page'] > Utils::archive_pages( $theme->posts->count_all() )) {
 			return null;
 		}
-		
+
 		// If no text was supplied, use default text
 		if ($text == '') {
 			$text= _t( 'Next' ) . ' &rarr;';
