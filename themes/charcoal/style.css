@@ -106,7 +106,7 @@ p {
 
 #header {
 	width: 930px;
-	min-height: 200px;
+	min-height: 180px;
 }
 
 #title {
@@ -148,6 +148,7 @@ p {
 	padding: 0px;
 	height: 48px;
 	display: block;
+	margin-bottom:5px;
 }
 
 #navbar ul li {
@@ -202,7 +203,17 @@ li.login a:hover {
 }
 
 #main-posts {
-	
+	margin:0;
+	padding:0;
+}
+.post-nav{
+	margin-top:10px;
+	height:15px;
+	padding-left: 57px;
+}
+.post-nav a{
+	font-size:90%;
+	border:none;
 }
 
 .post {
@@ -366,7 +377,8 @@ li.login a:hover {
 }
 
 .feedlink a:hover {
-	background-color: #dadada;
+	background: url("images/feed_hover_1.png") center left no-repeat;
+	color: #aaaaaa;
 }
 
 #habari-link {
@@ -735,4 +747,12 @@ margin: 10px 20px 20px 10px;
 padding: 15px 0 0 70px;
 text-indent: 0;
 font-style: italic;
+}
+
+.left{
+	float:left;
+}
+
+.right{
+	float:right;
 }

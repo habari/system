@@ -2,10 +2,10 @@
 
 		<?php if (isset($post)) : ?>
 			<div id="main-posts">
-				<p class="prompt">Search results for '<?php $theme->search_keywords(htmlspecialchars( $criteria )); ?>'</p>
+				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria ), true ); ?></p>
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
-				<?php if ( is_array( $post->tags ) && ($tags_in_multiple) ) : ?>
+				<?php if ( is_array( $post->tags ) && !empty($post->tags) && ($tags_in_multiple) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>
@@ -29,7 +29,10 @@
 			<?php endforeach; ?>
 			</div>
 		<?php else: ?>
-			<p class="prompt">No results found for '<?php $theme->search_keywords(htmlspecialchars( $criteria )); ?>'</p>
+			<div id="main-posts">
+				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria ), false ); ?></p>
+				<div class="post multi"></div>
+			</div>
 		<?php endif; ?>
 		</div>
 		<div id="top-secondary">

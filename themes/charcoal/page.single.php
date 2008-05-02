@@ -2,7 +2,7 @@
 
 			<div id="main-posts">
 				<div class="<?php echo $page_class?>">
-				<?php if ( is_array( $post->tags ) ) : ?>
+				<?php if ( is_array( $post->tags ) && !empty($post->tags) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>

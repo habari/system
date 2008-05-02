@@ -19,6 +19,7 @@
 .post-sup {
 	height: 30px
 }
+
 .post-comments-link a {
 	margin-top: 0;
 	padding-top: 0;
@@ -29,12 +30,32 @@
 }
 
 .prev-post-excerpt p a img {
-	display:none;
+	display: none;
 }
-#prev-posts-footer{
+
+#prev-posts-footer {
 	
 }
 
+#prev-posts-footer .nav-prev {
+	background: none;
+}
+
+#prev-posts-footer .nav-prev a {
+	margin: 0;
+}
+
+#prev-posts-footer img {
+	display: inline;
+}
+
+#prev-posts-footer .nav-next {
+	background: none;
+}
+
+#prev-posts-footer .nav-next a {
+	margin: 0;
+}
 
 #archives {
 	height: 147px;
