@@ -3,7 +3,7 @@
 define( 'THEME_CLASS', 'charcoal' );
 
 class charcoal extends Theme
-{
+{	
 	//Set to true to show the title image, false to display the title text.
 	const SHOW_TITLE_IMAGE = false;
 
@@ -24,6 +24,9 @@ class charcoal extends Theme
 	
 	//Set to true to show the post tags in the multiple posts pages (search, tags, archives), false to hide them.
 	const TAGS_IN_MULTIPLE = false;
+	
+	//Set to true to show single post navigation links, false to hide them.
+	const SHOW_POST_NAV = true;
 	
 	/**
 	 * Execute on theme init to apply these filters to output
@@ -56,6 +59,7 @@ class charcoal extends Theme
 		$this->assign('tags_in_multiple', self::TAGS_IN_MULTIPLE);
 		$this->assign('post_class', 'post' . ( ! self::SHOW_ENTRY_PAPERCLIP ? ' alt' : '' ) );
 		$this->assign('page_class', 'post' . ( ! self::SHOW_PAGE_PAPERCLIP ? ' alt' : '' ) );
+		$this->assign('show_post_nav', self::SHOW_POST_NAV);
 		
 		if( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
@@ -89,16 +93,16 @@ class charcoal extends Theme
 	
 	public function theme_post_comments_link($theme, $post, $zero, $one, $more)
 	{
-		$c=$post->comments->approved->count;
+		$c= $post->comments->approved->count;
 		switch ($c) {
 			case '0':
 				return $zero;
 				break;
 			case '1':
-				return str_replace('%s','1',$one);
+				return str_replace( '%s', '1', $one );
 				break;
 			default :
-				return str_replace('%s',$c,$more);
+				return str_replace( '%s', $c, $more);
 		}
 	}
 		
@@ -107,21 +111,27 @@ class charcoal extends Theme
  		return strip_tags($return);
  	}
 
-	public function theme_search_keywords( $theme, $criteria )
+	public function theme_search_prompt( $theme, $criteria, $has_results )
 	{
-		$out='';
+		$out=array();
 		$keywords=explode(' ',trim($criteria));
-		if ( sizeof( $keywords ) > 1 )
-		{
-			foreach ($keywords as $keyword){
-				$out.= '<a href="' . Site::get_url( 'habari', true ) .'search?criteria=' . $keyword . '" title="Search for ' . $keyword . '">' . $keyword . '</a> ';
+		foreach ($keywords as $keyword) {
+			$out[]= '<a href="' . Site::get_url( 'habari', true ) .'search?criteria=' . $keyword . '" title="Search for ' . $keyword . '">' . $keyword . '</a> ';
+		}
+		
+		if ( sizeof( $keywords ) > 1 ) {
+			if ( $has_results ) {
+				return 'Search results for \'' .  implode(' ',$out) . '\'';
+				exit;
 			}
-			echo $out;
+			return 'No results found for your search \'' . $criteria . '\'<br>You can try searching for \''  . implode('\' or \'',$out) . '\'';
 		}
-		else
-		{
-			echo $criteria;
+		else {
+			return 'Search results for \'' .  $criteria . '\'';
+			exit;
 		}
+		return 'No results found for your search \'' . $criteria .'\'';
+
 	}
 	
 	public function theme_search_form( $theme )
@@ -134,18 +144,25 @@ class charcoal extends Theme
 	 */
 	public function theme_show_tags ( $theme )
 	{
-		$sql="SELECT distinct t.tag_slug AS slug, t.tag_text AS text
-			FROM ". DB::table( 'tags' ) ." t
-			RIGHT JOIN ". DB::table( 'tag2post' ) ." tp
+		$sql="
+			SELECT t.tag_slug AS slug, t.tag_text AS text, count(tp.post_id) as ttl
+			FROM {tags} t
+			INNER JOIN {tag2post} tp
 			ON t.id=tp.tag_id
-			LEFT JOIN ". DB::table( 'posts' )." p
-			ON p.id=tp.post_id
-			WHERE p.status=2";
-		$result= DB::get_results( $sql );
-		$tags='';
-		foreach ($result as $tag){
-			$tags.= '<li><a href="' . '#' . '" title="' . $tag->text .'" rel="tag" style="font-size: 125%;">' . $tag->text . '</a></li>'."\n";
+			INNER JOIN {posts} p
+			ON p.id=tp.post_id AND p.status = ?
+			GROUP BY t.tag_slug
+			ORDER BY t.tag_text
+		";
+		$tags= DB::get_results( $sql, array(Post::status('published')) );
+		//$tags='';
+		foreach ($tags as $index => $tag) {
+			$tags[$index]->url = URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) );
+			//$tags.= '<li><a href="' . URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) ) . '" title="' . $tag->text .'" rel="tag" style="font-size: 125%;">' . $tag->text . '</a></li>'."\n";
 		}
+		$theme->taglist = $tags;
+		
+		return $theme->fetch( 'taglist' );
 
 		return '<ul>' . $tags . '</ul>';
 	}

@@ -3,7 +3,7 @@
 			<div id="main-posts">
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
-				<?php if ( is_array( $post->tags ) && ($tags_in_multiple) ) : ?>
+				<?php if ( is_array( $post->tags ) && !empty($post->tags) && ($tags_in_multiple) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>
@@ -37,8 +37,8 @@
 	<div id="wrapper-bottom">
 		<div id="bottom-primary">
 			<div id="prev-posts-footer">
-				<span class="nav-next"><?php $theme->prev_page_link('Newer Posts'); ?></span>
-				<span class="nav-prev"><?php $theme->next_page_link('Older Posts'); ?></span>
+				<span class="nav-next"><?php $theme->prev_page_link('Newer Posts'); ?><img class="hidden" src="<?php Site::out_url('theme'); ?>/images/nav-right.png" /></span>
+				<span class="nav-prev"><img class="hidden" src="<?php Site::out_url('theme'); ?>/images/nav-left.png" /><?php $theme->next_page_link('Older Posts'); ?></span>
 				<br class="clear">
 			</div>
 			<?php $theme->display_archives() ;?>
