@@ -155,16 +155,13 @@ class charcoal extends Theme
 			ORDER BY t.tag_text
 		";
 		$tags= DB::get_results( $sql, array(Post::status('published')) );
-		//$tags='';
+
 		foreach ($tags as $index => $tag) {
 			$tags[$index]->url = URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) );
-			//$tags.= '<li><a href="' . URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) ) . '" title="' . $tag->text .'" rel="tag" style="font-size: 125%;">' . $tag->text . '</a></li>'."\n";
 		}
 		$theme->taglist = $tags;
 		
 		return $theme->fetch( 'taglist' );
-
-		return '<ul>' . $tags . '</ul>';
 	}
 }
 ?>
