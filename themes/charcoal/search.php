@@ -5,7 +5,7 @@
 				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria ), true ); ?></p>
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
-				<?php if ( is_array( $post->tags ) && !empty($post->tags) && ($tags_in_multiple) ) : ?>
+				<?php if ( is_array( $post->tags ) && ($tags_in_multiple) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>

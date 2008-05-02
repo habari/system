@@ -3,7 +3,7 @@
 			<div id="main-posts">
 				<?php $post=reset($posts); ?>
 				<div class="<?php echo $post_class?>">
-				<?php if ( is_array( $post->tags ) && !empty($post->tags) ) : ?>
+				<?php if ( is_array( $post->tags ) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>
