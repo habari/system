@@ -108,6 +108,9 @@ class FeedbackHandler extends ActionHandler
 			$comment->status= Comment::STATUS_APPROVED;
 		}
 
+		// Allow themes to work with comment hooks
+		Themes::create();
+
 		$spam_rating= 0;
 		$spam_rating= Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
 
