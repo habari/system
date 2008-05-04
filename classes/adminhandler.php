@@ -284,10 +284,6 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 		$okay= TRUE;
 		if ( empty( $slug ) || empty( $nonce ) || empty( $timestamp ) || empty( $PasswordDigest ) ) {
-			$okey= FALSE;
-		}
-		// Ensure the request was submitted less than five minutes ago
-		if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
 			$okay= FALSE;
 		}
 		$wsse= Utils::WSSE( $nonce, $timestamp );
@@ -591,10 +587,6 @@ class AdminHandler extends ActionHandler
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
 				$okay= false;
 			}
-			// Ensure the request was submitted less than five minutes ago
-			if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
-				$okay= false;
-			}
 			$wsse= Utils::WSSE( $nonce, $timestamp );
 			if ( $PasswordDigest != $wsse['digest'] ) {
 				$okay= false;
@@ -874,10 +866,6 @@ class AdminHandler extends ActionHandler
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
 				$okay= false;
 			}
-			// Ensure the request was submitted less than five minutes ago
-			if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
-				$okay= false;
-			}
 			$wsse= Utils::WSSE( $nonce, $timestamp );
 			if ( $PasswordDigest != $wsse['digest'] ) {
 				$okay= false;
@@ -994,10 +982,6 @@ class AdminHandler extends ActionHandler
 		if ( $do_delete && isset( $log_ids ) ) {
 			$okay= true;
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
-				$okay= false;
-			}
-			// Ensure the request was submitted less than five minutes ago
-			if ( ( time() - strtotime( $timestamp ) ) > 300 ) {
 				$okay= false;
 			}
 			$wsse= Utils::WSSE( $nonce, $timestamp );

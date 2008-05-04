@@ -368,7 +368,7 @@ class InstallHandler extends ActionHandler {
 	private function check_sqlite() {
 		$db_file = $this->handler_vars['db_host'];
 		if ( file_exists( $db_file ) && is_writable( $db_file ) && is_writable( dirname( $db_file ) ) ) {
-			// the file exists, and it writable.  We're all set
+			// the file exists, and is writable.  We're all set
 			return true;
 		}
 
