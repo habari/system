@@ -44,6 +44,27 @@ class Options extends Singleton
 	}
 
 	/**
+	 * Fetch a group of options with a specific prefix
+	 * Useful for plugins that use FormUI to automatically store options with the plugin's prefix.
+	 *
+	 * @param string $prefix The prefix to fetch
+	 * @return array An associative array of all options with that prefix
+	 */
+	public static function get_group( $prefix )
+	{
+		$results = array();
+		if( substr($prefix, -1) != ':' ) {
+			$prefix .= ':';
+		}
+		foreach( self::instance()->options as $key => $value ) {
+			if( strpos( $value, $prefix ) === 0 ) {
+				$results[substr( $key, strlen( $prefix ) )] = $value;
+			}
+		}
+		return $results;
+	}
+
+	/**
 	 * Shortcut to output the value of an option
 	 *
 	 * <code>Options::out('foo');</code>
@@ -67,6 +88,17 @@ class Options extends Singleton
 	public static function set( $name, $value= '' )
 	{
 		self::instance()->$name= $value;
+	}
+
+
+	/**
+	 * Shortcut to unset an option in the options table
+	 *
+	 * @param string $name The name of the option
+	 */
+	public static function delete( $name )
+	{
+		unset(self::instance()->$name);
 	}
 
 	/**
@@ -127,6 +159,17 @@ class Options extends Singleton
 			$result->out();
 			die();
 		}
+	}
+
+	/**
+	 * Removes an option from the options table
+	 *
+	 * @param string $name The name of the option
+	 */
+	public function __unset( $name )
+	{
+		unset($this->options[$name]);
+		DB::delete( DB::table( 'options' ), array( 'name' => $name ) );
 	}
 
 	/**
