@@ -199,7 +199,7 @@ class AdminHandler extends ActionHandler
 			else {
 				$post->pubdate= $pubdate;
 			}
-				
+
 			$post->status= $status;
 			if ( !isset( $comments_enabled ) ) {
 				$post->info->comments_disabled= TRUE;
@@ -220,7 +220,7 @@ class AdminHandler extends ActionHandler
 				'status' => $status,
 				'content_type' => $content_type,
 			);
-			
+
 
 			$post= Post::create( $postdata );
 
@@ -482,8 +482,21 @@ class AdminHandler extends ActionHandler
 	 */
 	function get_themes()
 	{
-
 		$all_themes= Themes::get_all_data();
+		foreach($all_themes as $name => $theme) {
+			if(isset($all_themes[$name]['info']->update) && $all_themes[$name]['info']->update != '' && isset($all_themes[$name]['info']->version) && $all_themes[$name]['info']->version != '') {
+				Update::add($name, $all_themes[$name]['info']->update, $all_themes[$name]['info']->version);
+			}
+		}
+		$updates= Update::check();
+		foreach($all_themes as $name => $theme) {
+			if(isset($all_themes[$name]['info']->update) && isset($updates[$all_themes[$name]['info']->update])) {
+				$all_themes[$name]['info']->update = $updates[$all_themes[$name]['info']->update]['latest_version'];
+			}
+			else {
+				$all_themes[$name]['info']->update = '';
+			}
+		}
 		$this->theme->all_themes= $all_themes;
 
 		$active_theme_dir= Options::get( 'theme_dir' );
@@ -494,6 +507,7 @@ class AdminHandler extends ActionHandler
 		$active_theme= Themes::create();
 		$this->theme->active_theme_name= $all_themes[$active_theme_dir]['info']->name;
 		$this->theme->configurable= Plugins::filter( 'theme_config', false, $active_theme);
+		$this->theme->active_theme= $all_themes[$active_theme_dir];
 
 		$this->theme->display( 'themes' );
 	}
@@ -525,16 +539,16 @@ class AdminHandler extends ActionHandler
 		$this->display( 'import' );
 	}
 
-	function get_moderate()
+	function get_comments()
 	{
-		$this->post_moderate();
+		$this->post_comments();
 	}
 
 	/**
 	 * Handles the submission of the comment moderation form.
 	 * @todo Separate delete from "delete until purge"
 	 */
-	function post_moderate()
+	function post_comments()
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals= array(
@@ -554,7 +568,7 @@ class AdminHandler extends ActionHandler
 			'show' => '0',
 			'search' => '',
 			'search_fields' => array( 'content' ),
-			'search_status' => null,
+			'search_status' => 1,
 			'search_type' => null,
 			'do_search' => false,
 			'index' => 1,
@@ -751,7 +765,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
 
-		$this->display( 'moderate' );
+		$this->display( 'comments' );
 	}
 
 	/**
@@ -816,16 +830,11 @@ class AdminHandler extends ActionHandler
 		$this->display( 'plugins' );
 	}
 
-	public function get_content()
-	{
-		$this->post_content();
-	}
-
 	/**
-	 * handles POST values from /manage/content
-	 * used to control what content to show / manage
-	**/
-	public function post_content()
+	 * Assign values needed to display the entries page to the theme based on handlervars and parameters
+	 *
+	 */
+	private function fetch_entries( $params = array() )
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals= array(
@@ -840,13 +849,14 @@ class AdminHandler extends ActionHandler
 			'type' => Post::type( 'entry' ),
 			'status' => Post::status( 'published' ),
 			'limit' => 20,
+			'offset' => 0,
 			'year_month' => 'Any',
 			'search' => '',
 			'do_search' => false,
 			'index' => 1,
 		);
 		foreach ( $locals as $varname => $default ) {
-			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
+			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[varname] : $default);
 			$this->theme->{$varname}= $$varname;
 		}
 
@@ -920,9 +930,9 @@ class AdminHandler extends ActionHandler
 
 		$arguments= array(
 			'content_type' => $type,
-			'status' => $status,
+//			'status' => $status,
 			'limit' => $limit,
-			'offset' => ( $index - 1 ) * $limit,
+			'offset' => $offset,
 		);
 		if ( 'any' != strtolower( $year_month ) ) {
 			list( $arguments['year'], $arguments['month'] )= explode( '-', $year_month );
@@ -946,15 +956,56 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
-
-		$this->display( 'content' );
+		$this->theme->monthposts = DB::get_results('select month(pubdate) as `month`, year(pubdate) as `year`, count(id) as ct from {posts} where content_type = ? group by `year`, `month` order by `year`, `month`', array($type));
 	}
 
+	/**
+	 * Handles GET requests to /admin/entries
+	 *
+	 */
+	public function get_entries()
+	{
+		$this->fetch_entries();
+		$this->display( 'entries' );
+	}
+
+	/**
+	 * handles POST values from /manage/entries
+	 * used to control what content to show / manage
+	**/
+	public function post_entries()
+	{
+		$this->fetch_entries();
+		$this->display( 'entries' );
+	}
+
+	public function ajax_entries()
+	{
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+		$params = $_POST;
+
+		$this->fetch_entries( $params );
+		$items = $this->theme->fetch( 'entries_items' );
+
+		$output = array(
+			'items' => $items,
+		);
+		echo json_encode($output);
+	}
+
+	/**
+	 * Handle GET requests for /admin/logs to display the logs
+	 */
 	public function get_logs()
 	{
 		$this->post_logs();
 	}
 
+	/**
+	 * Handle POST requests for /admin/logs to display the logs
+	 */
 	public function post_logs()
 	{
 		$locals= array(
@@ -1248,62 +1299,44 @@ class AdminHandler extends ActionHandler
 
 	/**
 	 * Assembles the main menu for the admin area.
-		*/
-	protected function get_main_menu()
+	 * @param Theme $theme The theme to add the menu to
+	 */
+	protected function get_main_menu( $theme )
 	{
-		$mainmenus= array(
-			'admin' => array(
-				'caption' => _t( 'Admin' ),
-				'url' => URL::get( 'admin', 'page=' ),
-				'title' => _t( 'Display the dashboard' ),
-				'submenu' => array(
-					'options' => array( 'caption' => _t( 'Options' ), 'url' => URL::get( 'admin', 'page=options' ) ),
-					'plugins' => array( 'caption' => _t( 'Plugins' ), 'url' => URL::get( 'admin', 'page=plugins' ) ),
-					'themes' => array( 'caption' => _t( 'Themes' ), 'url' => URL::get( 'admin', 'page=themes' ) ),
-					'users' => array( 'caption' => _t( 'Users' ), 'url' => URL::get( 'admin', 'page=users' ) ),
-					'logs' => array( 'caption' => _t( 'Logs' ), 'url' => URL::get( 'admin', 'page=logs' ) ),
-					'import' => array( 'caption' => _t( 'Import' ), 'url' => URL::get( 'admin', 'page=import' ) ),
-				)
-			),
-			'publish' => array(
-				'caption' => _t( 'Create' ),
-				'url' => URL::get( 'admin', 'page=publish' ),
-				'title' => _t( 'Create content for your site' ),
-				'submenu' => array()
-			),
-			'manage' => array(
-				'caption' => _t( 'Manage' ),
-				'url' => URL::get( 'admin', 'page=content' ),
-				'title' => _t( 'Manage your site content' ),
-				'submenu' => array(
-					'content' => array( 'caption' => _t( 'Content' ), 'url' => URL::get( 'admin', 'page=content' ) ),
-					'unapproved' => array( 'caption' => _t( 'Unapproved Comments' ), 'url' => URL::get( 'admin', 'page=moderate' ) ),
-					'approved' => array( 'caption' => _t( 'Approved Comments' ), 'url' => URL::get( 'admin', 'page=moderate&search_status=1' ) ),
-					'spam' => array( 'caption' => _t( 'Spam' ), 'url' => URL::get( 'admin', 'page=moderate&search_status=2' ) ),
-				)
-			),
-		);
-
+		/*
+		// Something like this needs to go back in to replace the currently static content types below
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			$mainmenus['publish']['submenu'][$type]= array( 'caption' => _t( ucwords( $type ) ), 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ) );
+			$mainmenus['publish']['submenu'][$type]= array( 'caption' => _t( ucwords( $type ) ), 'url' => URL::get( 'admin', 'page=publish&type=' . $type ) );
+		}
+		*/
+
+		$mainmenus= array(
+			'create_entry' => array( 'url' => URL::get( 'admin', 'page=publish&content_type=entry' ), 'title' => _t('Content: Create a Blog Entry'), 'text' => _t('Create Entry'), 'hotkey' => '1' ),
+			'create_page' => array( 'url' => URL::get( 'admin', 'page=publish&content_type=page' ), 'title' => _t('Content: Create a Static Page'), 'text' => _t('Create Page'), 'hotkey' => '2' ),
+			'manage_entry' => array( 'url' => URL::get( 'admin', 'page=entries&type=1' ), 'title' => _t('Content: Manage Blog Entries'), 'text' => _t('Entries'), 'hotkey' => '3' ),
+			'manage_page' => array( 'url' => URL::get( 'admin', 'page=entries&type=2' ), 'title' => _t('Content: Manage Static Pages'), 'text' => _t('Pages'), 'hotkey' => '4' ),
+			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t('Content: Manage Blog Comments'), 'text' => _t('Comments'), 'hotkey' => '5' ),
+			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t('Content: Manage Tags'), 'text' => _t('Tags'), 'hotkey' => '6' ),
+			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t('Admin: Your User Dashboard'), 'text' => _t('Dashboard'), 'hotkey' => 'D' ),
+			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t('Options'), 'text' => _t('Options'), 'hotkey' => 'O' ),
+			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t('Themes'), 'text' => _t('Themes'), 'hotkey' => 'T' ),
+			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t('Plugins'), 'text' => _t('Plugins'), 'hotkey' => 'P' ),
+			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t('Import'), 'text' => _t('Import'), 'hotkey' => 'I' ),
+			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t('Users'), 'text' => _t('Users'), 'hotkey' => 'U' ),
+			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => 'Log out of the Administration Interface', 'text' => 'Logout', 'hotkey' => 'L' ),
+		);
+
+		foreach($mainmenus as $menu_id => $menu) {
+			// Change this to set the correct menu as the active menu
+			$mainmenus[$menu_id]['selected'] = false;
 		}
 
 		$mainmenus= Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
 
-		$out= '';
-		foreach( $mainmenus as $mainmenukey => $mainmenu ) {
-			$out.= '<li class="menu-item"><a href="' . $mainmenu['url'] . '" title="' . $mainmenu['title'] . '">' . $mainmenu['caption'] . '</a>';
-			$out.= '<ul class="menu-list">';
-			foreach( $mainmenu['submenu'] as $menukey => $menuitem ) {
-				$out.= '<li><a href="' . $menuitem['url'] . '">' . $menuitem['caption'] . '</a></li>';
-			}
-			$out.= '</ul>';
-			$out.= '</li>';
-		}
-		return $out;
+		$theme->assign( 'mainmenu', $mainmenus );
 	}
 
 	/**
@@ -1311,7 +1344,7 @@ class AdminHandler extends ActionHandler
 		*/
 	protected function set_admin_template_vars( $theme )
 	{
-		$theme->assign( 'mainmenu', $this->get_main_menu() );
+		$this->get_main_menu( $theme );
 	}
 
 	/**

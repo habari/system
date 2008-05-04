@@ -1,144 +1,130 @@
-<?php include( 'header.php' ); ?>
-<div class="container">
-<hr>
-  <?php if(Session::has_messages()) {Session::messages_out();} ?>
-	<div class="column prepend-2 span-20 append-2" id="welcome">
-		<h2 class="center">Currently Available Plugins</h2>
-		<p class="center">Activate, deactivate and configure plugins through this interface.</p>
-	</div>
-	<div class="column prepend-2 span-20 append-2">
-		<h3>Active Plugins</h3>
-		<table cellspacing="0" width="100%">
-			<thead>
-				<tr>
-					<th align="left">Plugin Name</th>
-					<th align="left">Author Name</th>
-					<th align="left">Version</th>
-					<th align="left">Description</th>
-					<th>Action</th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			foreach($active_plugins as $plugin) {
+<?php include('header.php'); ?>
 
-				if($plugin['debug']) {
-				?>
-					<tr>
-						<td colspan="3" class="error"><p>The plugin file '<?php echo $plugin['file']; ?>' had syntax errors and could not load.</p>
-						<div style="display:none;" id="error_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin['error']; ?></div>
-						</td>
-						<td><button onclick="$('#error_<?php echo $plugin['plugin_id']; ?>').show();">Show Error</button></td>
-					</tr>
-				<?php
-				}
-				else {
-				?>
-					<tr id="plugin_<?php echo $plugin['plugin_id']; ?>">
-						<td><?php echo '<a href="' . $plugin['info']->url . '">' . $plugin['info']->name . '</a>'; ?>
-						</td>
-						<td><?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?></td>
-						<td><?php echo $plugin['info']->version; ?></td>
-						<td><?php echo $plugin['info']->description; ?></td>
-						<td>
-						<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
-						<p><input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
-						<input type='hidden' name='action' value='<?php echo $plugin['active'] ? 'Deactivate' : 'Activate'; ?>'>
-						<button name='submit' type='submit'><?php echo $plugin['verb']; ?></button>
+<div class="container plugins activeplugins">
+  <?php if(Session::has_messages()) {Session::messages_out();} ?>	
+	<h2>Active Plugins</h2>
+	<?php foreach($active_plugins as $plugin) {
+		if($plugin['debug']) {
+		?>
+		<div class="item clear">
+			<div class="head">
+				<p>The plugin file '<?php echo $plugin['file']; ?>' had syntax errors and could not load.</p>
+				<div style="display:none;" id="error_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin['error']; ?></div>
+					<ul class="dropbutton">
+						<li><a href="#" onclick="$('#error_<?php echo $plugin['plugin_id']; ?>').show();">Show Error</a></li>
+					</ul>
+			</div>
+		</div>
+		<?php
+		}
+		else {
+		?>	
+	<div class="item clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
+		<div class="head">
+			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '"></a>'; ?><span class="dim">by</span> <?php echo $plugin['info']->author; ?></a></span>
+
+			<ul class="dropbutton">
+				
 						<?php
 						if ( $plugin['active'] ) {
 							$plugin_actions= array();
 							$plugin_actions= Plugins::filter( 'plugin_config', $plugin_actions, $plugin['plugin_id'] );
 							foreach( $plugin['actions'] as $plugin_action => $plugin_action_caption ) {
-								if ( is_numeric( $plugin_action ) ) {
-									$plugin_action = $plugin_action_caption;
-								}
 								if( isset($configure) && ($configure == $plugin['plugin_id']) && ($action == $plugin_action) ) {
 									continue;
 								}
+								if ( is_numeric( $plugin_action ) ) {
+									$plugin_action = $plugin_action_caption;
+								}
 								?>
-								<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&action=' . $plugin_action ); ?>#plugin_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin_action_caption; ?></a>
+								<li><a href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&action=' . $plugin_action ); ?>#plugin_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin_action_caption; ?></a></li>
 								<?php
 							}
 						}
 						?>
-						</p>
-						</form>
-						</td>
-					</tr>
-					<?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ) { ?>
-					</tbody></table></div></div>
-					<div id="plugin_options"><div class="container"><div class="column prepend-1 span-22 append-1">
-						<h2><?php echo $active_plugins[$configure]['info']->name; ?> : <?php echo $action; ?></h2>
-						<?php
-							Plugins::act( 'plugin_ui', $configure, $action );
-						?>
-						<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php echo 'close' ?></a>
-					</div></div></div>
-					<div class="wrapper">
-					<div class="container">
-					<div class="column prepend-2 span-20 append-2">
-					<table cellspacing="0" width="100%"><tbody>
-					<?php } ?>
+				<li>
+				<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
+				<input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
+				<input type='hidden' name='action' value='<?php echo $plugin['active'] ? 'Deactivate' : 'Activate'; ?>'>
+				<button name='submit' type='submit'><?php echo $plugin['verb']; ?></button></form>
+				</li>
+				
+						
+			</ul>
+			<?php if( isset( $updates ) ) { ?>
+			<ul class="dropbutton alert"> 
+				<li><a href="#">v1.1 Update Available Now</a></li>
+			</ul>
+			<?php } ?>
+		</div>
+		<p class="description"><?php echo $plugin['info']->description; ?></p>
+		<?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ) { ?>
+		<div id="container pagesplitter"><div class="splitter splitterinside">
+			<?php
+				Plugins::act( 'plugin_ui', $configure, $action );
+			?>
+			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php echo 'close' ?></a>
+		</div></div>
 				<?php } ?>
 			<?php } ?>
-			</tbody>
-		</table>
-		<h3>Inactive Plugins</h3>
-        <table cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th align="left">Plugin Name</th>
-                    <th align="left">Author Name</th>
-                    <th align="left">Version</th>
-                    <th align="left">Description</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php
-            foreach($inactive_plugins as $plugin) {
-                
-                if($plugin['debug']) {
-                ?>  
-                    <tr>
-                        <td colspan="3" class="error"><p>The plugin file '<?php echo $plugin['file']; ?>' had syntax errors and could not load.</p>
-                        <div style="display:none;" id="error_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin['error']; ?></div>
-                        </td>
-                        <td><button onclick="$('#error_<?php echo $plugin['plugin_id']; ?>').show();">Show Error</button></td>
-                    </tr>
-                <?php
-                }   
-                else {
-                ?>  
-                    <tr id="plugin_<?php echo $plugin['plugin_id']; ?>">
-                        <td><?php echo '<a href="' . $plugin['info']->url . '">' . $plugin['info']->name . '</a>'; ?>
-                        </td>
-                        <td><?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?></td>         
-                        <td><?php echo $plugin['info']->version; ?></td>
-                        <td><?php echo $plugin['info']->description; ?></td>
-                        <td>
-                        <form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
-                        <p><input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
-                        <input type='hidden' name='action' value='Activate'>
-                        <button name='submit' type='submit'><?php echo $plugin['verb']; ?></button>
-                        </p>
-                        </form>
-                        </td>
-                    </tr>
-                    <?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ) { ?>
-                    </tbody></table></div></div>
-                    <div class="wrapper">
-                    <div class="container">
-                    <div class="column prepend-1 span-22 append-1">
-                    <table cellspacing="0" width="100%"><tbody>
-                    <?php } ?>
-                <?php } ?>
-            <?php } ?>
-            </tbody>
-        </table>
+	</div>
+	<?php } ?>
+</div>
+
+<div class="container plugins activeplugins">
+	
+	<h2>Inactive Plugins</h2>
+	<?php foreach($inactive_plugins as $plugin) {
+		if($plugin['debug']) {
+		?>
+		<div class="item clear">
+			<div class="head">
+				<p>The plugin file '<?php echo $plugin['file']; ?>' had syntax errors and could not load.</p>
+				<div style="display:none;" id="error_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin['error']; ?></div>
+					<ul class="dropbutton">
+						<li><a href="#" onclick="$('#error_<?php echo $plugin['plugin_id']; ?>').show();">Show Error</a></li>
+					</ul>
+			</div>
+		</div>
+		<?php
+		}
+		else {
+		?>	
+	<div class="item clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
+		<div class="head">
+			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '"></a>'; ?><span class="dim">by</span> <?php echo $plugin['info']->author; ?></a></span>
+
+			<ul class="dropbutton">
+				<li>
+				<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
+				<input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
+				<input type='hidden' name='action' value='<?php echo $plugin['active'] ? 'Deactivate' : 'Activate'; ?>'>
+				<button name='submit' type='submit'><?php echo $plugin['verb']; ?></button>
+			    </li></form>
+			</ul>
+			<?php if( isset( $updates ) ) { ?>
+			<ul class="dropbutton alert"> 
+				<li><a href="#">v1.1 Update Available Now</a></li>
+			</ul>
+			<?php } ?>
+		</div>
+		<p class="description"><?php echo $plugin['info']->description; ?></p>
+</div>		
+				<?php } ?>
+			<?php } ?>
+	</div>
 
 
+
+
+<div class="container uploadpackage">
+	<h2>Upload Plugin Package</h2>
+	
+	<div class="uploadform">
+		<input type="file"></input>
+		<input type="submit" value="Upload"></input>
 	</div>
 </div>
-<?php include( 'footer.php' ); ?>
+
+
+<?php include('footer.php'); ?>

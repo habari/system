@@ -1,46 +1,78 @@
 <?php include('header.php');?>
-<div class="container">
-	<hr>
-	<?php if(Session::has_messages()) {Session::messages_out();} ?>
-	<div class="column prepend-1 span-22 append-1">
-		<h2 class="center">Currently Available Themes</h2>
-		<p class="center">Activate, deactivate, configure and remove themes through this interface.</p>
-	</div>
-		<?php
-		if ( isset( $this->engine_vars['configure'] ) ): ?>
-			</div>
-				<div id="theme_options"><div class="container"><div class="column prepend-1 span-22 append-1">
-					<h2><?php echo $active_theme_name ?> : Configure</h2>
-					<?php Plugins::act( 'theme_ui', $active_theme ); ?>
-					<a class="link_as_button" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php echo 'close' ?></a>
-				</div></div></div>
-			<div class="container">
-		<?php endif; ?>
-	<div class="column prepend-1 span-22 append-1">
-		<?php foreach( $all_themes as $theme ) : ?>
-			<div class="screenshot">
-				<img src="<?php echo $theme['screenshot']; ?>" width="200" height="150" /><br>
-				<b><?php echo $theme['info']->name; ?> <?php echo $theme['info']->version; ?></b><br>
-				 by <a href="<?php echo $theme['info']->url; ?>"><?php echo $theme['info']->author; ?></a>
 
-				<?php if ( $theme['dir'] != $active_theme_dir ) { ?>
-				<form method='post' action='<?php URL::out('admin', 'page=activate_theme'); ?>'>
-				<input type='hidden' name='theme_name' value='<?php echo $theme['info']->name; ?>'>
-				<input type='hidden' name='theme_dir' value='<?php echo $theme['dir']; ?>'>
-				<input type='submit' name='submit' value='activate'>
-				</form>
-				<?php } else {
-						echo "<br><strong>Currently Active Theme</strong><br><br>";
-						if ( $configurable ) {
-						?>
-							<a class="link_as_button" href="<?php URL::out( 'admin', 'page=themes&configure=' . $theme['dir'] ); ?>">Configure</a>
-						<?php
-						}
-				  }
-				 ?>
 
-			</div>
-		<?php endforeach; ?>
+<div class="container currenttheme">
+<?php if(Session::has_messages()) {Session::messages_out();} ?>
+	<h2>Current Theme</h2>
+	<div class="item clear">
+		<div class="head">
+			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim">by</span> <a href="<?php echo $active_theme['info']->url; ?>"><?php echo $active_theme['info']->author; ?></a></span>
+
+			<?php if($configurable): ?>
+			<ul class="dropbutton">
+				<li><a href="<?php URL::out( 'admin', 'page=themes&configure=' . $active_theme['dir'] ); ?>">Settings</a></li>
+			</ul>
+			<?php endif; ?>
+
+			<?php if($active_theme['info']->update != ''): ?>
+			<ul class="dropbutton alert">
+				<li><a href="#">v<?php echo $active_theme['info']->update; ?> Update Available</a></li>
+			</ul>
+			<?php endif; ?>
+		</div>
+
+		<div>
+			<div class="thumb pct20"><span><img src="<?php echo $active_theme['screenshot']; ?>"></span></div>
+
+			<p class="description pct80"><?php echo $active_theme['info']->description; ?></p>
+			<?php if($active_theme['info']->license != ''): ?>
+			<p class="description pct80"><?php echo $active_theme['info']->name; ?> is licensed under the <?php echo $active_theme['info']->license; ?></p>
+			<?php endif; ?>
+		</div>
 	</div>
+
 </div>
+
+
+
+<div class="container availablethemes">
+
+	<h2>Available Themes</h2>
+<?php
+foreach($all_themes as $inactive_theme):
+	if ( $inactive_theme['dir'] != $active_theme_dir ) : ?>
+	<div class="item clear">
+		<div class="head">
+			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim">by</span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a></span>
+
+			<ul class="dropbutton">
+				<li><form method='post' action='<?php URL::out('admin', 'page=activate_theme'); ?>'>
+				<input type='hidden' name='theme_name' value='<?php echo $inactive_theme['info']->name; ?>'>
+				<input type='hidden' name='theme_dir' value='<?php echo $inactive_theme['dir']; ?>'>
+				<input type='submit' name='submit' value='activate'>
+				</form></li>
+
+			</ul>
+		</div>
+
+		<div>
+			<div class="thumb pct20"><span><img src="<?php echo $inactive_theme['screenshot']; ?>"></span></div>
+
+			<p class="description pct80"><?php echo $inactive_theme['info']->description; ?></p>
+			<?php if($inactive_theme['info']->license != ''): ?>
+			<p class="description pct80"><?php echo $inactive_theme['info']->name; ?> is licensed under the <?php echo $inactive_theme['info']->license; ?></p>
+			<?php endif; ?>
+		</div>
+	</div>
+
+<?php
+	endif;
+endforeach;
+?>
+</div>
+
+
+
+
+
 <?php include('footer.php');?>
