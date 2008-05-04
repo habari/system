@@ -1,102 +1,58 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<title>Habari Administration</title>
+	<title>Login to <?php Options::out( 'title' ); ?></title>
 
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen">
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
-	<link href="<?php Site::out_url( 'habari' ); ?>/system/installer/style.css" rel="stylesheet" type="text/css">
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css">
-
+	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/jquery.dimensions.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/ui.mouse.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('admin_theme'); ?>/admin.js" type="text/javascript"></script>
-	<?php
-		Plugins::act( 'admin_header', $this );
-		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
-		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
-	?>
-		<style type="text/css">
-		body {
-			text-align: center;
-			background: #f1f1f1;
-			font-family: Verdana;
-		}
+	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.ext.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	var habari = {
+		url: { habari: '<?php Site::out_url('habari'); ?>' }
+	};
+	</script>
+	<script src="<?php Site::out_url('admin_theme'); ?>/js/media.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('admin_theme'); ?>/js/admin.js" type="text/javascript"></script>
 
-		#loginform {
-			margin:0 auto;
-		}
-
-		.submit
-		{
-			width: auto !important;
-			position: relative;
-		}
-		.bottom {
-			margin-bottom: 50px;
-		}
-		.notice, .error {
-			margin-left:auto;
-			margin-right:auto;
-			width:552px;
-		}
-
-		</style>
 </head>
-<body>
-<ul id="oldmenu">
-	<li id="site-name">
-		<a href="<?php Site::out_url('habari'); ?>" title="<?php Options::out('title'); ?>"><?php Options::out('title'); ?></a>
-	</li>
-</ul>
+<body class="login">
 
-<div style="min-height:45px;">
-<?php
-if ( Session::has_errors( 'expired_session' ) ) {
-	echo '<div class="error">' . Session::get_error( 'expired_session', false ) . '</div>';
-}
-if ( Session::has_errors( 'expired_form_submission' ) ) {
-	echo '<div class="notice">' . Session::get_error( 'expired_form_submission', false ) . '</div>';
-}
-?>
-</div>
+	<div id="page">
 
-<div id="wrapper">
-<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
-<div class="installstep ready done" id="loginform">
-	<h2>Login to Habari</h2>
-	<div class="options">
-		<div class="inputfield">
-			<p>
-				<label for="habari_username">Name:</label>
-				<input type="text" size="25" name="habari_username" id="habari_username">
-			</p>
-			<p>
-				<label for="habari_password">Password:</label>
-				<input type="password" size="25" name="habari_password" id="habari_password">
-			</p>
-			<p class="center">
-				<input class="submit" type="submit" value="Let's go!">
-			</p>
+		<h1><a href="<?php Site::out_url('habari'); ?>" title="Go to Site"><?php Options::out('title'); ?></a></h1>
+
+		<div class="container">
+
+				<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
+
+					<p>
+						<label for="habari_username" class="incontent">Name</label><input type="text" name="habari_username" id="habari_username" class="styledformelement">
+					</p>
+					<p>
+						<label for="habari_password" class="incontent">Password</label><input type="password" name="habari_password" id="habari_password" class="styledformelement">
+					</p>
+					<p>
+						<!--<span class="remember"><input type="checkbox" name="remember"><label for="remember">Remember Me</label></span>-->
+						<input class="submit" type="submit" value="Login">
+					</p>
+
+				</form>
+
 		</div>
-	</div>
-	<div class="bottom"></div>
-</div>
-</form>
 
-<div>
-	<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/manual/index.html" onclick="popUp(this.href); return false;" title="Read the user manual">Manual</a> -
-		<a href="http://wiki.habariproject.org/" title="Read the Habari wiki">Wiki</a> -
-		<a href="http://groups.google.com/group/habari-users" title="Ask the community">Mailing List</a>
-	</p>
-</div>
+	</div>
 
 <?php
 	Plugins::act( 'admin_footer', $this );
 	Stack::out( 'admin_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 	include ('db_profiling.php');
 ?>
-</div>
 </body>
 </html>
