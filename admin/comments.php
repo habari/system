@@ -40,7 +40,7 @@
 					echo '<a href="mailto:' . $comment->email . '">' . $comment->email . '</a>'."\r\n"; ?>
 				<!--<a href="#">86.73.54.12</a><br>-->
 			</span>
-			<span class="content pct75">Morbi posuere lacinia sapien. Vestibulum leo. Sed ac lacus ut lorem ultrices fermentum. Sed eget massa quis mauris dapibus aliquet. Sed fermentum, ipsum a egestas porttitor, tellus dolor scelerisque nibh, at sodales lorem mi vitae risus. Integer elementum eros vitae ante. Pellentesque posuere purus in orci. Ut eget urna id enim venenatis ullamcorper. Pellentesque eget lorem ac felis sollicitudin sagittis. Sed nisi.</span>
+            <span class="content pct75"><?php echo $comment->content ?></span>
 		</div>
 	</div>
 
