@@ -20,8 +20,8 @@
 		<p><?php
 		printf(
 			_t('You currently have <a href="' . URL::get( 'admin', 'page=content&type=1&status=1' ) . '">%1$d entry drafts</a>, <a href="' . URL::get( 'admin', 'page=content&type=1&status=1' ) . '">%2$d page drafts</a> and <a href="' . URL::get( 'admin', 'page=moderate&show=unapproved' ) . '">%3$d comments awaiting approval</a>'),
-			$stats['page_draft_count'],
 			$stats['entry_draft_count'],
+			$stats['page_draft_count'],
 			$stats['unapproved_comment_count']
 		);
 		?>
@@ -44,9 +44,9 @@
 
 					<?php foreach($recent_posts as $post): ?>
 					<li class="item clear">
-						<span class="date pct15 minor"><a href="#" title="<?php printf(_t('Posted at %1$s'), date('h.m on F jS, Y', strtotime($post->pubdate))); ?>"><?php echo date('M j', strtotime($post->pubdate)); ?></a></span>
+						<span class="date pct15 minor"><a href="<?php echo URL::get('display_entries_by_date', array('year' => date('Y', strtotime($post->pubdate)), 'month' => date('m', strtotime($post->pubdate)), 'day' => date('d', strtotime($post->pubdate)))); ?>" title="<?php printf(_t('Posted at %1$s'), date('h.m on F jS, Y', strtotime($post->pubdate))); ?>"><?php echo date('M j', strtotime($post->pubdate)); ?></a></span>
 						<span class="title pct75"><a href="<?php echo $post->permalink; ?>"><?php echo $post->title; ?></a> <a class="minor" href="<?php Site::out_url('habari'); ?>/admin/user/<?php echo $post->author->username; ?>">by <?php echo $post->author->username; ?></a></span>
-						<span class="comments pct10"><a href="#"><?php echo $post->comments->approved->count; ?></a></span>
+						<span class="comments pct10"><a href="<?php echo $post->permalink; ?>#comments"><?php echo $post->comments->approved->count; ?></a></span>
 					</li>
 					<?php endforeach; ?>
 
@@ -91,7 +91,7 @@
 						<span class="comments pct15"><a href="<?php echo $comment->post->permalink; ?>#comments" title="<?php printf(_n('%1$d comment', '%1$d comments', $comment->post->comments->approved->comments->count), $comment->post->comments->approved->comments->count); ?>"><?php echo $comment->post->comments->approved->comments->count; ?></a></span>
 						<ul class="commentauthors pct85 minor">
 							<?php foreach($comment->post->comments->comments->approved as $comment): ?>
-							<li><a href="<?php echo $comment->post->permalink; ?>#comment_<?php echo $comment->id; ?>" title="<?php printf(_t('Posted at %1$s'), date('h.m on F jS, Y', strtotime($comment->pubdate))); ?>" class="opa100"><?php echo $comment->name; ?></a></li>
+							<li><a href="<?php echo $comment->post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="<?php printf(_t('Posted at %1$s'), date('h.m on F jS, Y', strtotime($comment->pubdate))); ?>" class="opa100"><?php echo $comment->name; ?></a></li>
 							<?php endforeach; ?>
 						</ul>
 					</li>
