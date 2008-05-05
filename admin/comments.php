@@ -21,8 +21,8 @@
 				<a href="#" class="author"><?php echo $comment->name."\r\n";?></a>
 			</span>
 			<span class="entry pct30"><a href="<?php echo $comment->post->permalink ?>"><?php echo $comment->post->title; ?></a><a href="#"><span class="dim">in</span> 'Why Habari Rocks'</a></span>
-			<span class="time pct10"><a href="#"><span class="dim">at</span> 19.18</a></span>
-			<span class="date pct15"><a href="#"><span class="dim">on</span> Jan 20, 2007</a></span>
+            <span class="time pct10"><a href="#"><span class="dim">at</span> <?php echo date('H.i', strtotime($comment->date));?></a></span>
+            <span class="date pct15"><a href="#"><span class="dim">on</span> <?php echo date('M d, Y', strtotime($comment->date));?></a></span>
 			<ul class="dropbutton">
 				<li><a href="#">Delete</a></li>
 				<li><a href="#">Spam</a></li>
@@ -38,7 +38,6 @@
 					echo '<a href="' . $comment->url . '">' . $comment->url . '</a>'."\r\n"; ?>
 				<?php if ( $comment->email != '' )
 					echo '<a href="mailto:' . $comment->email . '">' . $comment->email . '</a>'."\r\n"; ?>
-				<!--<a href="#">86.73.54.12</a><br>-->
 			</span>
             <span class="content pct75"><?php echo $comment->content ?></span>
 		</div>
