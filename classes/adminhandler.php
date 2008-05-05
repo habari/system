@@ -157,17 +157,17 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->theme->stats = array(
-			'author_count' => DB::get_value('SELECT count(*) FROM {posts} GROUP BY user_id;'),
-			'page_count' => DB::get_value('SELECT count(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('page'), Post::status('published'))),
-			'entry_count' => DB::get_value('SELECT count(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('entry'), Post::status('published'))),
-			'comment_count' => DB::get_value('SELECT min(pubdate) FROM {posts} WHERE content_type = ?', array(Post::type('page'))),
-			'tag_count' => DB::get_value('SELECT count(*) FROM {tags}'),
-			'page_draft_count' => DB::get_value('SELECT min(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('page'), Post::status('draft'))),
-			'entry_draft_count' => DB::get_value('SELECT min(pubdate) FROM {posts} WHERE content_type = ? and status = ?', array(Post::type('entry'), Post::status('draft'))),
+			'author_count' => Users::get( array( 'count' => 1 ) ),
+			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),
+			'entry_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('published') ) ),
+			'comment_count' => Comments::count_total(),
+			'tag_count' => DB::get_value('SELECT count(id) FROM {tags}'),
+			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
+			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'unapproved_comment_count' => Comments::count_total( Comment::STATUS_UNAPPROVED ),
 		);
-
-		$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8 ) );
+		
+	$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8 ) );
 		$this->theme->recent_comments = Comments::get( array( 'status' => 'approved', 'limit' => 5 ) );
 
 		$this->display( 'dashboard' );
