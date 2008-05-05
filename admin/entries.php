@@ -57,7 +57,7 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 	spinner.start();
 	$.ajax({
 		type: "POST",
-		url: "/admin_ajax/entries",
+		url: "<?php echo URL::get('admin_ajax', array('context' => 'entries')); ?>",
 		data: "offset=" + (parseInt(c) - parseInt(b)) + "&limit=" + (parseInt(b) - parseInt(a)),
 		dataType: 'json',
 		success: function(json){
