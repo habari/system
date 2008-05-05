@@ -164,6 +164,9 @@ body, textarea, #footer {
 	font-size: 9px;
 	list-style: none outside;
 	margin: 0 0 0 10px;
+	position:absolute;
+	top:0;
+	right:0;
 	}
 
  #page .dropbutton.alert {
