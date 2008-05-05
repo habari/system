@@ -3,7 +3,6 @@ include_once( 'header.php' );
 ?>
 <div class="container">
 <hr>
-	<?php if(Session::has_messages()) {Session::messages_out();} ?>
 	<div class="column span-20">
 		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
 	<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">

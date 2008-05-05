@@ -1,7 +1,6 @@
 <?php include('header.php'); ?>
 <div class="container">
 <hr>
-	<?php if(Session::has_messages()) {Session::messages_out();} ?>
 	<div class="column prepend-1 span-22 append-1">
 		<h1>Import</h1>
 		<form method="post" action="">

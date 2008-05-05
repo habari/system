@@ -3,6 +3,7 @@
 <head>
 	<title><?php Options::out('title'); ?> : <?php echo $admin_page; ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.css" type="text/css" media="screen">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.dimensions.js" type="text/javascript"></script>
@@ -12,6 +13,7 @@
 	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.ext.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.spinner.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	var habari = {
 		url: { habari: '<?php Site::out_url('habari'); ?>' }
