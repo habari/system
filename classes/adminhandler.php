@@ -1326,7 +1326,8 @@ class AdminHandler extends ActionHandler
 			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t('Plugins'), 'text' => _t('Plugins'), 'hotkey' => 'P' ),
 			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t('Import'), 'text' => _t('Import'), 'hotkey' => 'I' ),
 			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t('Users'), 'text' => _t('Users'), 'hotkey' => 'U' ),
-			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => 'Log out of the Administration Interface', 'text' => 'Logout', 'hotkey' => 'L' ),
+			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t('View system log messages'), 'text' => _t('Logs'), 'hotkey' => 'L') ,
+			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => 'Log out of the Administration Interface', 'text' => 'Logout', 'hotkey' => 'X' ),
 		);
 
 		foreach($mainmenus as $menu_id => $menu) {
