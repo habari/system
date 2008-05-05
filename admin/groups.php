@@ -1,7 +1,6 @@
 <?php include('header.php');?>
 <div class="container">
 <hr>
-<?php if(Session::has_messages()) {Session::messages_out();} ?>
 <?php
 $currentuser = User::identify();
 ?>

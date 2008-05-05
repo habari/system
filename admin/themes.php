@@ -2,7 +2,6 @@
 
 
 <div class="container currenttheme">
-<?php if(Session::has_messages()) {Session::messages_out();} ?>
 	<h2>Current Theme</h2>
 	<div class="item clear">
 		<div class="head">

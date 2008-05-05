@@ -4,7 +4,6 @@
 <form name="create-content" id="create-content" method="post" action="<?php URL::out( 'admin', 'page=publish' ); ?>">
 
 <div class="create">
-	<?php if(Session::has_messages()) {Session::messages_out();} ?>
 
 	<?php if(!$newpost): ?>
 	<div class="container">

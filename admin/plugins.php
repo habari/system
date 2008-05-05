@@ -1,7 +1,6 @@
 <?php include('header.php'); ?>
 
 <div class="container plugins activeplugins">
-  <?php if(Session::has_messages()) {Session::messages_out();} ?>	
 	<h2>Active Plugins</h2>
 	<?php foreach($active_plugins as $plugin) {
 		if($plugin['debug']) {
