@@ -166,9 +166,17 @@ class AdminHandler extends ActionHandler
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'unapproved_comment_count' => Comments::count_total( Comment::STATUS_UNAPPROVED ),
 		);
-		
-	$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8 ) );
+
+		$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 		$this->theme->recent_comments = Comments::get( array( 'status' => 'approved', 'limit' => 5 ) );
+
+		$modules= array(
+			'latestentries' => 'dash_latestentries',
+			'latestcomments' => 'dash_latestcomments',
+		);
+		$modules= Plugins::filter( 'admin_modules_theme', $modules, $this->theme );
+		$modules= array_map(array($this->theme, 'fetch'), $modules);
+		$this->theme->modules= Plugins::filter( 'admin_modules', $modules, $this->theme );
 
 		$this->display( 'dashboard' );
 	}
@@ -312,7 +320,7 @@ class AdminHandler extends ActionHandler
 		$fields= array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL );
 		$fields= Plugins::filter( 'adminhandler_post_user_fields', $fields );
 		$posted_fields= array_intersect_key( $this->handler_vars, $fields );
-		
+
 		// Editing someone else's profile? If so, load that user's profile
 		if ( isset($user_id) && ($currentuser->id != $user_id) ) {
 			$user= User::get_by_id( $user_id );
@@ -321,7 +329,7 @@ class AdminHandler extends ActionHandler
 		else {
 			$user= $currentuser;
 		}
-		
+
 		foreach ( $posted_fields as $posted_field => $posted_value ) {
 			switch ( $posted_field ) {
 				case 'delete': // Deleting a user
@@ -744,7 +752,7 @@ class AdminHandler extends ActionHandler
 			$arguments['criteria']= $search;
 			$arguments['criteria_fields']= $search_fields;
 		}
-		
+
 		if ( $search_type == 'All' ) {
 			unset( $arguments['type'] );
 		}
