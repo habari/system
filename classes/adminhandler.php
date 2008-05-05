@@ -948,7 +948,7 @@ class AdminHandler extends ActionHandler
 
 		$arguments= array(
 			'content_type' => $type,
-//			'status' => $status,
+			'status' => $status,
 			'limit' => $limit,
 			'offset' => $offset,
 		);
