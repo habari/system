@@ -56,6 +56,15 @@ class AdminHandler extends ActionHandler
 		$page= ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+		// Add some default stylesheets
+	  Stack::add('admin_stylesheet', array(Site::get_url('habari') . '/3rdparty/blueprint/screen.css', 'screen'), 'blueprint');
+	  Stack::add('admin_stylesheet', array(Site::get_url('habari') . '/3rdparty/blueprint/print.css', 'print'), 'blueprint_print');
+	  Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
+
+	  // Add some default scripts
+
+
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_page = $page;
 		switch( $_SERVER['REQUEST_METHOD'] ) {
@@ -1311,21 +1320,33 @@ class AdminHandler extends ActionHandler
 	 */
 	protected function get_main_menu( $theme )
 	{
-		/*
-		// Something like this needs to go back in to replace the currently static content types below
+		// These need to be replaced with submenus, but access to them is provided temporarily
+		$createmenu= array();
+		$managemenu= array();
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			$mainmenus['publish']['submenu'][$type]= array( 'caption' => _t( ucwords( $type ) ), 'url' => URL::get( 'admin', 'page=publish&type=' . $type ) );
+			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t('Content: Create a ' . ucwords($type)), 'text' => _t('Create ' . ucwords($type)) );
+			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=entries&type=' . $typeint ), 'title' => _t('Content: Manage ' . ucwords($type)), 'text' => _t('Manage ' . ucwords($type)) );
+			switch($type) {
+				case 'entry':
+					$createmenu['create_' . $typeint]['hotkey'] = '1';
+					$managemenu['manage_' . $typeint]['hotkey'] = '3';
+					break;
+				case 'page':
+					$createmenu['create_' . $typeint]['hotkey'] = '2';
+					$managemenu['manage_' . $typeint]['hotkey'] = '4';
+					break;
+				default:
+					$createmenu['create_' . $typeint]['hotkey'] = '';
+					$managemenu['manage_' . $typeint]['hotkey'] = '';
+					break;
+			}
 		}
-		*/
 
-		$mainmenus= array(
-			'create_entry' => array( 'url' => URL::get( 'admin', 'page=publish&content_type=entry' ), 'title' => _t('Content: Create a Blog Entry'), 'text' => _t('Create Entry'), 'hotkey' => '1' ),
-			'create_page' => array( 'url' => URL::get( 'admin', 'page=publish&content_type=page' ), 'title' => _t('Content: Create a Static Page'), 'text' => _t('Create Page'), 'hotkey' => '2' ),
-			'manage_entry' => array( 'url' => URL::get( 'admin', 'page=entries&type=1' ), 'title' => _t('Content: Manage Blog Entries'), 'text' => _t('Entries'), 'hotkey' => '3' ),
-			'manage_page' => array( 'url' => URL::get( 'admin', 'page=entries&type=2' ), 'title' => _t('Content: Manage Static Pages'), 'text' => _t('Pages'), 'hotkey' => '4' ),
+		$adminmenu= array(
+//		'create' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t('Content'), 'text' => _t('Comments'), 'submenu' => array($createmenu) ),
 			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t('Content: Manage Blog Comments'), 'text' => _t('Comments'), 'hotkey' => '5' ),
 			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t('Content: Manage Tags'), 'text' => _t('Tags'), 'hotkey' => '6' ),
 			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t('Admin: Your User Dashboard'), 'text' => _t('Dashboard'), 'hotkey' => 'D' ),
@@ -1337,6 +1358,7 @@ class AdminHandler extends ActionHandler
 			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t('View system log messages'), 'text' => _t('Logs'), 'hotkey' => 'L') ,
 			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => 'Log out of the Administration Interface', 'text' => 'Logout', 'hotkey' => 'X' ),
 		);
+		$mainmenus = array_merge($createmenu, $managemenu, $adminmenu);
 
 		foreach($mainmenus as $menu_id => $menu) {
 			// Change this to set the correct menu as the active menu
