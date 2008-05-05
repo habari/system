@@ -4,13 +4,13 @@ include_once( 'header.php' );
 <div class="container">
 <hr>
 	<?php if(Session::has_messages()) {Session::messages_out();} ?>
-	<div class="column prepend-1 span-22 append-1">
+	<div class="column span-20">
 		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
 	<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
 	<p>Search log entries:
 	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
-	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit)); ?>
-	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index)); ?>
+	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit, array( 'class'=>'pct10'))); ?>
+	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index, array( 'class'=>'pct10'))); ?>
 	<a href="<?php URL::out('admin', 'page=logs'); ?>">Reset</a>
 	</p>
 		<table id="log-activity-table" width="100%" cellspacing="0">
@@ -28,12 +28,12 @@ include_once( 'header.php' );
 			</thead>
 			<tr>
 			<td class="span-1"></td>
-			<td><?php echo Utils::html_select('date', $dates, $date, array( 'class'=>'longselect')); ?></td>
-			<td><?php echo Utils::html_select('user', $users, $user, array( 'class'=>'longselect')); ?></td>
-			<td><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'longselect')); ?></td>
-			<td><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'longselect')); ?></td>
-			<td><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'longselect')); ?></td>
-			<td><?php echo Utils::html_select('address', $addresses, $address, array( 'class'=>'longselect')); ?></td>
+			<td><?php echo Utils::html_select('date', $dates, $date, array( 'class'=>'pct100')); ?></td>
+			<td><?php echo Utils::html_select('user', $users, $user, array( 'class'=>'pct100')); ?></td>
+			<td><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'pct100')); ?></td>
+			<td><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'pct100')); ?></td>
+			<td><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct100')); ?></td>
+			<td><?php echo Utils::html_select('address', $addresses, $address, array( 'class'=>'pct100')); ?></td>
 			<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
 			</tr>
 			<?php foreach( $logs as $log ){ ?>
