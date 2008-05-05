@@ -12,9 +12,8 @@
 		<span class="date pct15"><a href="#"><span class="dim">on</span> <?php echo date('M j, Y', strtotime($post->pubdate)); ?></a></span>
 
 		<ul class="dropbutton">
-			<li><a href="#">Edit</a></li>
-			<li><a href="#">Delete</a></li>
-			<li><a href="#">Draft</a></li>
+			<li><a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>">Edit</a></li>
+			<li><a href="javascript:void(humanMsg.displayMsg('Not yet implemented'));">Delete</a></li>
 		</ul>
 	</div>
 
