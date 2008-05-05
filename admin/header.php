@@ -13,6 +13,7 @@
 	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.ext.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.spinner.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	var habari = {
 		url: { habari: '<?php Site::out_url('habari'); ?>' }

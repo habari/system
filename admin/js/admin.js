@@ -204,17 +204,17 @@ var dropButton = {
 
 	showMenu: function(element) {
 		// Close all open dropbuttons
-		$('.dropbutton').removeClass('hovering')
+		$('.dropbutton').removeClass('hovering');
 
 		// Open this dropbutton
-		$(dropButton.currentDropButton).addClass('hovering')
+		$(dropButton.currentDropButton).addClass('hovering');
 	},
 
 	hideMenu: function(element) {
 		// Fade out and close dropbutton
-		$(dropButton.currentDropButton).removeClass('hovering')
+		$(dropButton.currentDropButton).removeClass('hovering');
 
-		$('.carrot').removeClass('carrot')
+		$('.carrot').removeClass('carrot');
 	}
 };
 
@@ -230,30 +230,28 @@ var theMenu = {
 		}, function() {
 			$('#menulist li').removeClass('carrot')
 		})
-
-		// Adhoc hotkey support
-		$('html').keydown(function (e) {
-			var keyCode = e.keyCode;
-
-			// Disable hotkeys in relevant form elements
-			if (e.target.tagName == 'INPUT' || e.target.tagName == 'TEXTAREA')
-				return;
-
-			// Temp keydown-checker
-			// Hide menu on ESC
-			if (keyCode == 27) {
-				$('.carrot').removeClass('carrot')
-				dropButton.hideMenu();
-
-			// Catch 'Q'
-			} else if (keyCode == 81 && ($('#menu #menulist').css('display') != 'block')) {
+				
+		// Open menu on Q
+		$.hotkeys.add('q', {disableInInput: true}, function(){
+			if ($('#menu #menulist').css('display') != 'block') {
 				dropButton.currentDropButton = $('#menu');
 				dropButton.showMenu();
-			} else if (keyCode == 81 && ($('#menu #menulist').css('display') == 'block')) {
+			} else if ($('#menu #menulist').css('display') == 'block') {
 				dropButton.hideMenu();
-
-			// Down Arrow & Menu Open?
-			} else if (($('#menu').hasClass('hovering') == true) && keyCode == 40) {
+			} else {
+				return false;
+			}
+		});
+		
+		// Close menu on ESC
+		$.hotkeys.add('esc', {disableInInput: false}, function(){
+			$('.carrot').removeClass('carrot')
+			dropButton.hideMenu();
+		});
+		
+		// Down arrow
+		$.hotkeys.add('down', {disableInInput: true}, function(){
+			if(($('#menu').hasClass('hovering') == true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:first').addClass('carrot')
@@ -264,10 +262,14 @@ var theMenu = {
 				// If carrot exists, move it down
 				} else
 					$('.carrot').removeClass('carrot').next().addClass('carrot')
-
-			// Up Arrow & Menu Open?
-			} else if (($('#menu').hasClass('hovering') == true) && keyCode == 38) {
-
+			} else {
+				return false;
+			}
+		});
+		
+		// Up arrow
+		$.hotkeys.add('up', {disableInInput: true}, function(){
+			if ($('#menu').hasClass('hovering') == true) {
 				// If carrot doesn't exist, select last item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:last').addClass('carrot')
@@ -278,19 +280,34 @@ var theMenu = {
 				// If carrot exists, move it up
 				} else
 					$('.carrot').removeClass('carrot').prev().addClass('carrot')
-
-			// Enter & Carrot
-			} else if ($('#menu').hasClass('hovering') == true && $('.carrot') && keyCode == 13) {
+			} else {
+				return false;
+			}
+		});
+		
+		// Enter & Carrot
+		$.hotkeys.add('return', {disableInInput: true}, function(){
+			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
 				location = $('.carrot a').attr('href')
-
-
-			// Pass it along if it isn't for us
-			} else
-				return;
-
-			// Don't pass key along
-			return false;
-		})
+			} else {
+				return false;
+			}
+		});
+		
+		// Page hotkeys
+		$('#menu ul li').each(function() {
+			var hotkey = $('a span.hotkey', this).text();
+			var href = $('a', this).attr('href');
+			if(hotkey) {
+				$.hotkeys.add(hotkey, {disableInInput: true}, function(){
+					if ($('#menu').hasClass('hovering') == true) {
+						location = href;
+					} else {
+						return false;
+					}
+				});
+			}
+		});
 	}
 }
 
