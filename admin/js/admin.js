@@ -32,8 +32,6 @@ var timeline = {
 			maxValue: timelineWidth-20,
 			stop: function(event, ui) {
 				timelineHandle.updateLoupeInfo();
-
-				console.log('Loupe Moved To: '+ui.value)
 			}
 		})
 		.unbind('click')
@@ -62,7 +60,6 @@ var timeline = {
 		timelineHandle.init();
 	},
 	skipLoupeLeft: function(e) {
-		console.log('Jump Left')
 		if (timeline.noJump == true) {
 			timeline.noJump = null;
 			return false;
@@ -74,7 +71,6 @@ var timeline = {
 
 	},
 	skipLoupeRight: function(e) {
-		console.log('Jump Right')
 		if (timeline.noJump == true) {
 			timeline.noJump = null;
 			return false;
