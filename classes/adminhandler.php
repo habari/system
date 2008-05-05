@@ -61,6 +61,7 @@ class AdminHandler extends ActionHandler
 	  Stack::add('admin_stylesheet', array(Site::get_url('habari') . '/3rdparty/blueprint/screen.css', 'screen'), 'blueprint');
 	  Stack::add('admin_stylesheet', array(Site::get_url('habari') . '/3rdparty/blueprint/print.css', 'print'), 'blueprint_print');
 	  Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
+		Stack::add('admin_stylesheet', array(Site::get_url('habari') . '/3rdparty/humanmsg/humanmsg.css', 'screen'), 'humanmsg');
 
 	  // Add some default scripts
 
@@ -247,7 +248,7 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		Session::notice( sprintf( _t( 'The post \'%s\' has been saved as %s.' ), $title, Post::status_name( $status ) ) );
+		Session::notice( sprintf( _t( 'The post <a href="%1$s">\'%2$s\'</a> has been saved as %3$s.' ), $post->permalink, $title, Post::status_name( $status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
 

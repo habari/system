@@ -352,18 +352,16 @@ class Session
 
 		$output= '';
 		if ( count( $errors ) ) {
-			$output.= '<ul class="error">';
 			foreach ( $errors as $error ) {
-				$output.=  $error ;
+				$error= addslashes($error);
+				$output.= "humanMsg.displayMsg('{$error}');";
 			}
-			$output.= '</ul>';
 		}
 		if ( count( $notices ) ) {
-			$output.= '<ul">';
 			foreach ( $notices as $notice ) {
-				$output.= $notice;
+				$notice= addslashes($notice);
+				$output.= "humanMsg.displayMsg('{$notice}');";
 			}
-			$output.= '</ul>';
 		}
 		return $output;
 	}
