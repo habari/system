@@ -2,10 +2,7 @@
 <html>
 <head>
 	<title><?php Options::out('title'); ?> : <?php echo $admin_page; ?></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen">
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
-	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.dimensions.js" type="text/javascript"></script>
@@ -28,7 +25,7 @@
 		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 	?>
-	
+
 </head>
 <body class="page-<?php echo $admin_page; ?>">
 
@@ -40,12 +37,20 @@
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
 			<?php foreach($mainmenu as $menu_id => $menu): ?>
-				<li id="link-<?php echo $menu_id ?>" class="<?php echo $menu['selected'] ? 'selected' : ''; ?>" title="<?php echo $menu['title']; ?>"><a href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?> <span class="hotkey"><?php echo $menu['hotkey']; ?></span></a></li>
+				<li id="link-<?php echo $menu_id ?>" class="<?php echo $menu['selected'] ? 'selected' : ''; ?>" title="<?php echo $menu['title']; ?>"><a href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
+				<?php if(isset($menu['hotkey']) && $menu['hotkey'] != ''): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
+				</a>
+				<?php if(isset($menu['submenu'])): ?>
+				<ul>
+					<li><a href="#">Submenu</a></li>
+				</ul>
+				<?php endif; ?>
+				</li>
 			<?php endforeach; ?>
 			</ul>
 		</div>
 	</div>
-	
+
 	<a href="<?php Site::out_url('habari'); ?>" id="site" title="Go to Site"><?php Options::out('title'); ?></a>
 
 </div>
