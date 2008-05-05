@@ -8,52 +8,17 @@
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#">Newer &raquo;</a></span>
 </div>
-
+<?php
+	$tags=Tags::get();
+	//what's the max count?
+	//ugly! and probably needs to be a Tags method or something
+	$max=0;
+	foreach ($tags as $tag){if ($max < $tag->count) $max=$tag->count;}
+?>
 <div class="container tags">
-	<a href="#" class="tag wt5"><span>07</span><sup>24</sup></a>
-	<a href="#" class="tag wt6 selected">africa<sup>33</sup></a>
-	<a href="#" class="tag wt5">amsterdam<sup>26</sup></a>
-	<a href="#" class="tag wt6">animals<sup>16</sup></a>
-	<a href="#" class="tag wt7">architecture<sup>19</sup></a>
-	<a href="#" class="tag wt3 selected">art<sup>17</sup></a>
-	<a href="#" class="tag wt10">August<sup>47</sup></a>
-	<a href="#" class="tag wt3">Australia<sup>12</sup></a>
-	<a href="#" class="tag wt5">Autumn<sup>22</sup></a>
-	<a href="#" class="tag wt5">Baby<sup>26</sup></a>
-	<a href="#" class="tag wt6">barcelona<sup>29</sup></a>
-	<a href="#" class="tag wt4">beach<sup>16</sup></a>
-	<a href="#" class="tag wt4">berlin<sup>16</sup></a>
-	<a href="#" class="tag wt4">birthday<sup>17</sup></a>
-	<a href="#" class="tag wt3">black<sup>10</sup></a>
-	<a href="#" class="tag wt3">blackandwhite<sup>13</sup></a>
-	<a href="#" class="tag wt3">blue<sup>14</sup></a>
-	<a href="#" class="tag wt3">boston<sup>16</sup></a>
-	<a href="#" class="tag wt4">bw<sup>18</sup></a>
-	<a href="#" class="tag wt9">california<sup>43</sup></a>
-	<a href="#" class="tag wt5">cameraphone<sup>15</sup></a>
-	<a href="#" class="tag wt4">camping<sup>18</sup></a>
-	<a href="#" class="tag wt6">canada<sup>30</sup></a>
-	<a href="#" class="tag wt3 selected">canon<sup>12</sup></a>
-	<a href="#" class="tag wt3">car<sup>11</sup></a>
-	<a href="#" class="tag wt3">cat<sup>11</sup></a>
-	<a href="#" class="tag wt5">chicago<sup>24</sup></a>
-	<a href="#" class="tag wt4 selected">china<sup>20</sup></a>
-	<a href="#" class="tag wt4">christmas<sup>20</sup></a>
-	<a href="#" class="tag wt3">city<sup>14</sup></a>
-	<a href="#" class="tag wt3">clouds<sup>16</sup></a>
-	<a href="#" class="tag wt3">color<sup>16</sup></a>
-	<a href="#" class="tag wt2">concert<sup>10</sup></a>
-	<a href="#" class="tag wt5">day<sup>16</sup></a>
-	<a href="#" class="tag wt6">dog<sup>13</sup></a>
-	<a href="#" class="tag wt4">england<sup>21</sup></a>
-	<a href="#" class="tag wt4 selected">europe<sup>18</sup></a>
-	<a href="#" class="tag wt3">fall<sup>10</sup></a>
-	<a href="#" class="tag wt3">family<sup>6</sup></a>
-	<a href="#" class="tag wt4">festival<sup>14</sup></a>
-	<a href="#" class="tag wt6">film<sup>33</sup></a>
-	<a href="#" class="tag wt3">florida<sup>22</sup></a>
-	<a href="#" class="tag wt1 selected">flower<sup>4</sup></a>
-	<a href="#" class="tag wt4">flowers<sup>20</sup></a>
+<?php foreach ($tags as $tag) { ?>
+	<a href="#" class="tag wt<?php echo round(($tag->count * 10)/$max); ?>"><span><?php echo $tag->tag; ?></span><sup><?php echo $tag->count; ?></sup></a>
+<?php } ?>
 		<ul class="dropbutton">
 			<li><a href="#">Select Visible</a></li>
 			<li><a href="#">Select All</a></li>
