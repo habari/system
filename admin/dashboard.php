@@ -15,19 +15,22 @@
 			$stats['entry_count'],
 			$stats['comment_count'],
 			$stats['tag_count'],
-			URL::get( 'admin', 'page=users' ),
-			URL::get( 'admin', 'page=content&type=2' ),
-			URL::get( 'admin', 'page=content&type=1' ),
-			URL::get( 'admin', 'page=moderate&search_status=1' ),
-			URL::get( 'admin', 'page=tags' )
+			URL::get( 'admin', array('page' => 'users' ) ),
+			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ),
+			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ) ) ),
+			URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_APPROVED ) ),
+			URL::get( 'admin', array( 'page' => 'tags' ) )
 		);
 		?></p>
 		<p><?php
 		printf(
-			_t('You currently have <a href="' . URL::get( 'admin', 'page=content&type=1&status=1' ) . '">%1$d entry drafts</a>, <a href="' . URL::get( 'admin', 'page=content&type=1&status=1' ) . '">%2$d page drafts</a> and <a href="' . URL::get( 'admin', 'page=moderate&show=unapproved' ) . '">%3$d comments awaiting approval</a>'),
+			_t('You currently have <a href="%4$s">%1$d entry drafts</a>, <a href="%5$s">%2$d page drafts</a> and <a href="%6$s">%3$d comments awaiting approval</a>'),
 			$stats['entry_draft_count'],
 			$stats['page_draft_count'],
-			$stats['unapproved_comment_count']
+			$stats['unapproved_comment_count'],
+			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ),
+			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ),
+			URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_UNAPPROVED ) )
 		);
 		?>
 		</p>
