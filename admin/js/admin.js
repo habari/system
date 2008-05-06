@@ -16,6 +16,92 @@ var dashboard = {
 	}
 }
 
+// Item Management
+var itemManage = {
+	init: function() {
+		if(!$('.item.controls input[type=checkbox]')) return;
+		
+		itemManage.initItems();
+		
+		$('.item.controls input[type=checkbox]').change(function () {
+			if($('.item.controls span.selectedtext').hasClass('all')) {
+				itemManage.uncheckAll();
+			} else {
+				itemManage.checkAll();
+			}
+		});
+		
+		$('.item.controls input.submitbutton').click(function () {
+			if($('.item.controls select.actiondropdown').val() == 1) {
+				itemManage.delete();
+			}
+		});
+	},
+	initItems: function() {
+		$('.item .checkboxandtitle input[type=checkbox]').change(function () {
+			itemManage.changeItem();
+		});
+	},
+	selected: [],
+	changeItem: function() {
+		var selected = {};
+		count = $('.item .checkboxandtitle input[type=checkbox]:checked').length;
+		$('.item .checkboxandtitle input[type=checkbox]:checked').each(function() {
+			id = $(this).parent().parent().parent().attr('id');
+			id = id.substr(5);
+			selected['p' + id] = 1;
+		});
+		$('.item .checkboxandtitle input[type=checkbox]:not(:checked)').each(function() {
+			id = $(this).parent().parent().parent().attr('id');
+			id = id.substr(5);
+			selected['p' + id] = 0;
+		});
+		
+		itemManage.selected = $.merge( selected, itemManage.selected );
+				
+		if(count == 0) {
+			$('.item.controls input[type=checkbox]').each(function() {
+				this.checked = 0;
+			});
+			$('.item.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
+		} else if(count == $('.item .checkboxandtitle input[type=checkbox]').length) {
+			$('.item.controls input[type=checkbox]').each(function() {
+				this.checked = 1;
+			});
+			$('.item.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
+		} else {
+			$('.item.controls input[type=checkbox]').each(function() {
+				this.checked = 0;
+			});
+			$('.item.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+		}
+	},
+	uncheckAll: function() {
+		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
+			this.checked = 0;
+		});
+		itemManage.changeItem();
+	},
+	checkAll: function() {
+		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
+			this.checked = 1;
+		});
+		itemManage.changeItem();
+	},
+	delete: function() {		
+		spinner.start();
+		$.ajax({
+			type: "POST",
+			url: habari.url.ajaxDelete,
+			data: itemManage.selected,
+			success: function(){
+				spinner.stop();
+				timelineHandle.updateLoupeInfo();
+			}
+		 });
+	}
+}
+
 // TIMELINE
 var timeline = {
 	init: function() {
@@ -140,7 +226,7 @@ var timelineHandle = {
 
 		/* AJAX call to fetch needed info goes here. */
 		if(jQuery.isFunction(this.loupeUpdate)) {
-			this.loupeUpdate(loupePosition, loupeWidth, timelineWidth);
+			return this.loupeUpdate(loupePosition, loupeWidth, timelineWidth);
 		}
 	},
 	endDrag: function(e) {
@@ -351,6 +437,7 @@ $(document).ready(function(){
 	theMenu.init();
 	dashboard.init();
 	timeline.init();
+	itemManage.init();
 
 	// Damn the lack of proper support for pseudo-classes!
 	$('.modulecore .item:first-child, ul li:first-child').addClass('first-child')

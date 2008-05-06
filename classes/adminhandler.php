@@ -1012,7 +1012,27 @@ class AdminHandler extends ActionHandler
 		);
 		echo json_encode($output);
 	}
-
+	
+	/**
+	 * handles AJAX from /manage/entries
+	 * used to delete entries
+	 */
+	public function ajax_delete_entries($handler_vars) {
+		
+		foreach($_POST as $id => $delete) {
+			$id = substr($id, 1);
+			if($delete) {
+				$post = Posts::get(array('id' => $id));
+				$post = $post[0];
+				$post->delete();
+			}
+		}
+		
+		$output = TRUE;
+		
+		echo json_encode($output);
+	}
+	
 	/**
 	 * Handle GET requests for /admin/logs to display the logs
 	 */

@@ -16,7 +16,7 @@
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	var habari = {
-		url: { habari: '<?php Site::out_url('habari'); ?>' }
+		url: { habari: '<?php Site::out_url('habari'); ?>', ajaxDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_entries')); ?>' }
 	};
 	</script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/js/media.js" type="text/javascript"></script>
