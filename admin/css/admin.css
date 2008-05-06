@@ -187,7 +187,7 @@ body, textarea, #footer {
 	display: block;
 	}
 
-	#page .dropbutton a, #page .dropbutton button, #page .dropbutton input {
+#page .dropbutton a, #page .dropbutton button, #page .dropbutton input {
 	color: white;
 	font-weight: normal;
 	display: block;
@@ -953,7 +953,14 @@ p:hover > label.incontent.popup {
 
 .plugins .description {
 	margin: 0;
+	width: 70%;
 	}
+
+.plugins .item {
+		padding: 9px 0;
+		border-bottom: 1px dotted #e6e6e6;
+	}
+
 
 /* SETTINGS */
 
@@ -1206,6 +1213,11 @@ a.tag:hover {
 
 
 /* THEMES */
+
+.availablethemes .item {
+	padding: 9px 0;
+	border-bottom: 1px dotted #e6e6e6;
+}
 .thumb,
 .description {
 	float: left;
