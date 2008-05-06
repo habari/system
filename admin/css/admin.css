@@ -187,7 +187,7 @@ body, textarea, #footer {
 	display: block;
 	}
 
-#page .dropbutton a, #page .dropbutton button, #page .dropbutton input {
+	#page .dropbutton a, #page .dropbutton button, #page .dropbutton input {
 	color: white;
 	font-weight: normal;
 	display: block;
@@ -201,6 +201,7 @@ body, textarea, #footer {
 	padding-left: 0px;
 	}
 
+
 #page .dropbutton button {
 	border: none;
 	background: none;
@@ -213,15 +214,15 @@ body, textarea, #footer {
 #page .dropbutton li.first-child {
 	-webkit-border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
-	-moz-border-top-right-radius: 3px;
-	-moz-border-top-left-radius: 3px;
+	-moz-border-radius-topright: 3px;
+	-moz-border-radius-topleft: 3px;
 	}
 
 #page .dropbutton li.last-child {
 	-webkit-border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
-	-moz-border-bottom-right-radius: 3px;
-	-moz-border-bottom-left-radius: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-moz-border-radius-bottomleft: 3px;
 	}
 
 #page .dropbutton li:hover {
@@ -233,8 +234,8 @@ body, textarea, #footer {
 	background: url(../images/arrowdown.png) right 6px no-repeat;
 	-webkit-border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
-	-moz-border-top-right-radius: 3px;
-	-moz-border-top-left-radius: 3px;
+	-moz-border-radius-topright: 3px;
+	-moz-border-radius-topleft: 3px;
 	}
 
 #page .dropbutton li.first-child.last-child a {
