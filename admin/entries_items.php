@@ -4,12 +4,12 @@
 	<div class="head clear">
 		<span class="checkboxandtitle pct30">
 			<input type="checkbox" class="checkbox">
-			<a href="#" class="title"><?php echo $post->title; ?></a>
+			<a href="<?php echo $post->permalink; ?>" class="title"><?php echo $post->title; ?></a>
 		</span>
-		<span class="state pct10"><a href="#"><?php echo $post->statusname; ?></a></span>
-		<span class="author pct20"><a href="#"><span class="dim">by</span> <?php echo $post->author->username; ?></a></span>
-		<span class="time pct10"><a href="#"><span class="dim">at</span> <?php echo date('H:i', strtotime($post->pubdate)); ?></a></span>
-		<span class="date pct15"><a href="#"><span class="dim">on</span> <?php echo date('M j, Y', strtotime($post->pubdate)); ?></a></span>
+		<span class="state pct10"><a href="<?php URL::out('admin', array('page' => 'entries', 'type' => $post->content_type, 'status' => $post->status ) ); ?>"><?php echo $post->statusname; ?></a></span>
+		<span class="author pct20"><a href="<?php URL::out('admin', array('page' => 'entries', 'user_id' => $post->user_id, 'type' => $post->content_type, 'status' => 'any') ); ?>"><span class="dim">by</span> <?php echo $post->author->username; ?></a></span>
+		<span class="time pct10"><span class="dim">at</span> <strong><?php echo date('H:i', strtotime($post->pubdate)); ?></strong></span>
+		<span class="date pct15"><a href="<?php URL::out('admin', array('page' => 'entries', 'type' => $post->content_type, 'year_month' => date( 'Y-m', strtotime( $post->pubdate ) ) ) ); ?>"><span class="dim">on</span> <?php echo date('M j, Y', strtotime($post->pubdate)); ?></a></span>
 
 		<ul class="dropbutton">
 			<li><a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>">Edit</a></li>
