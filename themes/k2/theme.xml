@@ -5,6 +5,6 @@
 	<url>http://getk2.com/</url>
 	<version>1.0</version>
 	<template_engine>rawphpengine</template_engine>
-	<description>This is the description for the K2 Theme</description>
-	<license>Apache Software License 2.0</license>
+	<description>A port of the popular design K2 and first Habari "theme"</description>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
 </theme>
