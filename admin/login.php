@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Login to <?php Options::out( 'title' ); ?></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen">
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
