@@ -1,6 +1,6 @@
 <?php include('header.php'); ?>
 
-<div class="container timeline">
+<div class="container navigator">
 	<span class="older pct10"><a href="#">&laquo; Older</a></span>
 	<span class="currentposition pct15 minor">0-20 of <?php echo Comments::count_total() ?></span>
 	<span class="search pct50"><input type="search" placeholder="Type and wait to search for any comments component" autosave="habaricontent" results="10"></input></span>
@@ -21,7 +21,7 @@
 
 	<?php foreach( $comments as $comment ) : ?>
 
-	<div class="item clear" id="uniquecommentid">
+	<div class="item clear" id="comment_<?php echo $comment->id; ?>">
 		<div class="head clear">
 			<span class="checkboxandtitle pct25">
 				<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1"></input>

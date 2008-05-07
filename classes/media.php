@@ -12,7 +12,7 @@
 class Media
 {
 	static $silos = null;
-	const THUMBNAIL_WIDTH = 100;
+	const THUMBNAIL_WIDTH = 200;
 	const THUMBNAIL_HEIGHT = 100;
 
 	/**

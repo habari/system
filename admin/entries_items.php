@@ -3,7 +3,7 @@
 <div class="item clear" id="post_<?php echo $post->id; ?>">
 	<div class="head clear">
 		<span class="checkboxandtitle pct30">
-			<input type="checkbox" class="checkbox">
+			<input type="checkbox" class="checkbox" name="checkbox_ids[<?php echo $post->id; ?>]" id="checkbox_ids[<?php echo $post->id; ?>]"></input>
 			<a href="<?php echo $post->permalink; ?>" class="title"><?php echo $post->title; ?></a>
 		</span>
 		<span class="state pct10"><a href="<?php URL::out('admin', array('page' => 'entries', 'type' => $post->content_type, 'status' => $post->status ) ); ?>"><?php echo $post->statusname; ?></a></span>
