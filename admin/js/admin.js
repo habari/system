@@ -41,11 +41,23 @@ var itemManage = {
 		$('.item .checkboxandtitle input[type=checkbox]').change(function () {
 			itemManage.changeItem();
 		});
+		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
+			id = $(this).parent().parent().parent().attr('id');
+			id = id.substr(5);
+			if(itemManage.selected['p' + id] == 1) {
+				this.checked = 1;
+			}
+		});
+		itemManage.changeItem();
 	},
 	selected: [],
 	changeItem: function() {
 		var selected = {};
-		count = $('.item .checkboxandtitle input[type=checkbox]:checked').length;
+		
+		if(itemManage.selected.length != 0) {
+			selected = itemManage.selected;
+		}
+				
 		$('.item .checkboxandtitle input[type=checkbox]:checked').each(function() {
 			id = $(this).parent().parent().parent().attr('id');
 			id = id.substr(5);
@@ -57,23 +69,37 @@ var itemManage = {
 			selected['p' + id] = 0;
 		});
 		
-		itemManage.selected = $.merge( selected, itemManage.selected );
-				
+		itemManage.selected = selected;
+			
+		visible = $('.item .checkboxandtitle input[type=checkbox]:checked').length;
+		count = 0;
+		for (var id in itemManage.selected)	{
+			if(itemManage.selected[id] == 1) {
+				count = count + 1;
+			}
+		}
+		
 		if(count == 0) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
 			$('.item.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if(count == $('.item .checkboxandtitle input[type=checkbox]').length) {
+		} else if(visible == $('.item .checkboxandtitle input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
 			$('.item.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
+			if(visible != count) {
+				$('.item.controls span.selectedtext').text('All visible selected (' + count + ' total)');
+			}
 		} else {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
 			$('.item.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			if(visible != count) {
+				$('.item.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
+			}
 		}
 	},
 	uncheckAll: function() {
