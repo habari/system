@@ -13,7 +13,7 @@
 			<span class="comments pct15"><a href="<?php echo $comment->post->permalink; ?>#comments" title="<?php printf(_n('%1$d comment', '%1$d comments', $comment->post->comments->approved->comments->count), $comment->post->comments->approved->comments->count); ?>"><?php echo $comment->post->comments->approved->comments->count; ?></a></span>
 			<ul class="commentauthors pct85 minor">
 				<?php foreach($comment->post->comments->comments->approved as $comment): ?>
-				<li><a href="<?php echo $comment->post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="<?php printf(_t('Posted at %1$s'), date('h.m on F jS, Y', strtotime($comment->pubdate))); ?>" class="opa100"><?php echo $comment->name; ?></a></li>
+				<li><a href="<?php echo $comment->post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="<?php printf(_t('Posted at %1$s'), date('h.m on F jS, Y', strtotime($comment->post->pubdate))); ?>" class="opa100"><?php echo $comment->name; ?></a></li>
 				<?php endforeach; ?>
 			</ul>
 		</li>
