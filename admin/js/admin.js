@@ -42,8 +42,8 @@ var itemManage = {
 			itemManage.changeItem();
 		});
 		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
-			id = $(this).parent().parent().parent().attr('id');
-			id = id.substr(5);
+			id = $(this).attr('id');
+			id = /.*\[(.*)\]/.exec(id); // checkbox ids have the form name[id]
 			if(itemManage.selected['p' + id] == 1) {
 				this.checked = 1;
 			}
@@ -59,13 +59,13 @@ var itemManage = {
 		}
 				
 		$('.item .checkboxandtitle input[type=checkbox]:checked').each(function() {
-			id = $(this).parent().parent().parent().attr('id');
-			id = id.substr(5);
+			id = $(this).attr('id');
+			id = /.*\[(.*)\]/.exec(id);
 			selected['p' + id] = 1;
 		});
 		$('.item .checkboxandtitle input[type=checkbox]:not(:checked)').each(function() {
-			id = $(this).parent().parent().parent().attr('id');
-			id = id.substr(5);
+			id = $(this).attr('id');
+			id = /.*\[(.*)\]/.exec(id);
 			selected['p' + id] = 0;
 		});
 		
