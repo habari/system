@@ -33,7 +33,7 @@ var itemManage = {
 		
 		$('.item.controls input.submitbutton').click(function () {
 			if($('.item.controls select.actiondropdown').val() == 1) {
-				itemManage.delete();
+				itemManage.remove();
 			}
 		});
 	},
@@ -114,7 +114,7 @@ var itemManage = {
 		});
 		itemManage.changeItem();
 	},
-	delete: function() {		
+	remove: function() {		
 		spinner.start();
 		$.ajax({
 			type: "POST",
