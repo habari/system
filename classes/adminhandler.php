@@ -184,6 +184,7 @@ class AdminHandler extends ActionHandler
 		$modules= array(
 			'latestentries' => 'dash_latestentries',
 			'latestcomments' => 'dash_latestcomments',
+			'logs' => 'dash_logs',
 		);
 		$modules= Plugins::filter( 'admin_modules_theme', $modules, $this->theme );
 		$modules= array_map(array($this->theme, 'fetch'), $modules);
