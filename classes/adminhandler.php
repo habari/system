@@ -175,6 +175,7 @@ class AdminHandler extends ActionHandler
 			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'unapproved_comment_count' => Comments::count_total( Comment::STATUS_UNAPPROVED ),
+			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'entry'), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
 		);
 
 		$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );

@@ -1,6 +1,5 @@
 <?php include( 'header.php' ); ?>
 
-
 <div class="container dashboardinfo transparent">
 		<p>
 		<?php
@@ -24,11 +23,13 @@
 		?></p>
 		<p><?php
 		printf(
-			_t('You currently have <a href="%4$s">%1$d entry drafts</a>, <a href="%5$s">%2$d page drafts</a> and <a href="%6$s">%3$d comments awaiting approval</a>'),
+			_t('You currently have <a href="%5$s">%1$d entry drafts</a>, <a href="%6$s">%2$d scheduled entries</a>, <a href="%7$s">%3$d page drafts</a>, and <a href="%8$s">%4$d comments awaiting approval</a>'),
 			$stats['entry_draft_count'],
+			$stats['user_entry_scheduled_count'],
 			$stats['page_draft_count'],
 			$stats['unapproved_comment_count'],
 			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ),
+			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'scheduled' ) ) ),
 			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ),
 			URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_UNAPPROVED ) )
 		);
