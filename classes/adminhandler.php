@@ -571,7 +571,10 @@ class AdminHandler extends ActionHandler
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals= array(
-			'do_update' => false,
+			'do_delete' => false,
+			'do_spam' => false,
+			'do_approve' => false,
+			'do_unapprove' => false,
 			'comment_ids' => null,
 			'nonce' => '',
 			'timestamp' => '',
@@ -615,7 +618,7 @@ class AdminHandler extends ActionHandler
 			die();
 		}
 		// if we're updating posts, let's do so:
-		elseif ( $do_update && isset( $comment_ids ) ) {
+		elseif ( ( $do_delete || $do_spam || $do_approve || $do_unapprove ) && isset( $comment_ids )) {
 			$okay= true;
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
 				$okay= false;
@@ -625,15 +628,28 @@ class AdminHandler extends ActionHandler
 				$okay= false;
 			}
 			if ( $okay ) {
-				foreach ( $comment_ids as $id => $id_change ) {
-					if ( $id_change != $show ) { // Skip unmoderated submitted comment_ids
+				if ( $do_delete ) {
+					$action= 'delete';
+				}
+				elseif ( $do_spam ) {
+					$action= 'spam';
+				}
+				elseif ( $do_approve ) {
+					$action= 'approve';
+				}
+				elseif ( $do_unapprove ) {
+					$action= 'unapprove';
+				}
+				foreach ( $comment_ids as $id => $id_value ) {
+					if ( ! isset( ${'$comment_ids['.$id.']'} ) ) { // Skip unmoderated submitted comment_ids
 						$ids[]= $id;
-						$ids_change[$id]= $id_change;
+						$ids_change[$id]= $action;
 					}
 				}
 				$to_update= Comments::get( array( 'id' => $ids ) );
 				$modstatus= array( 'Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0 );
 				Plugins::act( 'admin_moderate_comments', $ids_change, $to_update, $this );
+				
 				foreach ( $to_update as $comment ) {
 					switch ( $ids_change[$comment->id] ) {
 					case 'delete':
