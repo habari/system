@@ -739,6 +739,13 @@ p:hover > label.incontent.popup {
 	width: 50%;
 	height: 260px;
 	}
+	
+.dashboard .logsmodule {
+	position: relative;
+	float: left;
+	width: 100%;
+	height: 260px;
+}
 
 .dashboard .module .modulecore,
 .dashboard .module .optionswindow {
@@ -896,17 +903,17 @@ p:hover > label.incontent.popup {
 
 /* DASHBOARD - LATEST COMMENTS MODULE*/
 
-.dashboard #latestcommentsmodule .item > span {
+.dashboard .latestcommentsmodule .item > span {
 	float: left;
 	}
 
-.dashboard #latestcommentsmodule .titleanddate {
+.dashboard .latestcommentsmodule .titleanddate {
 	margin-top: 5px;
 	line-height: 16px;
 	color: #ddd;
 	}
 
-.dashboard #latestcommentsmodule ul {
+.dashboard .latestcommentsmodule ul {
 	margin-bottom: 5px;
 	line-height: 13px;
 	white-space: nowrap;
@@ -914,23 +921,23 @@ p:hover > label.incontent.popup {
 	overflow: hidden;
 	}
 
-.dashboard #latestcommentsmodule ul.commentauthors li {
+.dashboard .latestcommentsmodule ul.commentauthors li {
 	display: inline;
 	}
 
-.dashboard #latestcommentsmodule ul li:after {
+.dashboard .latestcommentsmodule ul li:after {
 	content: ', ';
 	}
 
-.dashboard #latestcommentsmodule ul li.last-child:after {
+.dashboard .latestcommentsmodule ul li.last-child:after {
 	content: '';
 	}
 
-.dashboard #latestcommentsmodule .commentauthors a:hover {
+.dashboard .latestcommentsmodule .commentauthors a:hover {
 	opacity: 100 !important;
 	}
 
-.dashboard #latestcommentsmodule .comments {
+.dashboard .latestcommentsmodule .comments {
 	position: absolute;
 	right: 3%;
 	line-height: 37px;
