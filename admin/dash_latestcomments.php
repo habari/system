@@ -18,7 +18,7 @@
 				<?php
 				$comment_count= 0;
 				$comments = DB::get_results('SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND `date` >= ? AND `type` = ?', array($post->id, Comment::STATUS_APPROVED, $mindate, Comment::COMMENT), 'Comment');
-				foreach($comments as $comment):
+				foreach( array_reverse( $comments ) as $comment):
 					$comment_count++;
 					if($comment_count > 5) {
 					 	break;
