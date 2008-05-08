@@ -311,12 +311,12 @@ class AdminHandler extends ActionHandler
 			$okay= FALSE;
 		}
 		if ( !$okay )	{
-			Utils::redirect( URL::get( 'admin', 'page=content' ) );
+			Utils::redirect( URL::get( 'admin', 'page=entries&type='. Post::status( 'any' ) ) );
 		}
 		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 		$post->delete();
 		Session::notice( sprintf( _t( 'Deleted %1$s "%2$s".' ), Post::type_name( $post->content_type ), $post->title ) );
-		Utils::redirect( URL::get( 'admin', 'page=content' ) );
+		Utils::redirect( URL::get( 'admin', 'page=entries&type=' . Post::status( 'any' ) ) );
 	}
 
 	/**
