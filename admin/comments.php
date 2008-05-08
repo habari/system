@@ -17,6 +17,22 @@
 	<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 
+	<div class="container transparent">
+
+		<div class="item controls">
+			<span class="checkboxandselected pct25">
+				<input type="checkbox"></input>
+				<span class="selectedtext minor none">None selected</span>
+			</span>
+			<span class="buttons">
+				<input type="submit" name="do_delete" value="Delete" class="deletebutton"></input>
+				<input type="submit" name="do_spam" value="Spam" class="spambutton"></input>
+				<input type="submit" name="do_unapprove" value="Unapprove" class="spambutton"></input>
+				<input type="submit" name="do_approve" value="Approve" class="approvebutton"></input>
+			</span>
+		</div>
+	</div>
+
 <div class="container manage comments">
 
 	<?php foreach( $comments as $comment ) : ?>
