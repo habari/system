@@ -710,6 +710,18 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * Handle calls to this Post object that are implemented by plugins
+	 * @param string $name The name of the function called
+	 * @param array $args Arguments passed to the function call	 
+	 * @return mixed The value returned from any plugin filters, null if no value is returned	 
+	 **/	 
+	public function __call( $name, $args )
+	{
+		array_unshift($args, 'post_call_' . $name, null, $this);
+		return call_user_func_array(array('Plugins', 'filter'), $args);
+	}
+
+	/**
 	 * function get_permalink
 	 * Returns a permalink for the ->permalink property of this class.
 	 * @return string A link to this post.
