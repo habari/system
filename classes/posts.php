@@ -56,14 +56,14 @@ class Posts extends ArrayObject
 		$params= array();
 		$fns= array( 'get_results', 'get_row', 'get_value' );
 		$select= '';
-		
+
 		// Default fields to select, everything by default
 		foreach ( Post::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
 				? DB::table( 'posts' ) . ".$field"
 				: ', ' . DB::table( 'posts' ) . ".$field";
 		}
-		
+
 		// Default parameters
 		$orderby= 'pubdate DESC';
 		$limit= Options::get( 'pagination' );
@@ -83,7 +83,7 @@ class Posts extends ArrayObject
 
 		$wheres= array();
 		$joins= array();
-		
+
 		// If the request as a textual WHERE clause, skip the processing of the $wheresets since it's empty
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
 			$wheres[]= $paramarray['where'];
@@ -196,99 +196,106 @@ class Posts extends ArrayObject
 						$params[]= $word;  // Not a typo (there are two ? in the above statement)
 					}
 				}
-				
+
 				if ( isset( $paramset['all:info'] ) || isset( $paramset['info'] ) ) {
-					
+
 					// merge the two possibile calls together
 					$infos= array_merge( isset( $paramset['all:info'] ) ? $paramset['all:info'] : array(), isset( $paramset['info'] ) ? $paramset['info'] : array() );
-					
+
 					if ( is_array( $infos ) ) {
-												
+
 						foreach ( $infos as $info_key => $info_value ) {
 
-							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$the_ins[]= ' (name = ? AND value = ? ) ';
 							$params[]= $info_key;
 							$params[]= $info_value;
-							
-						}
-						
-						$where[]= DB::table( 'posts' ) . '.id IN ( 
-										SELECT post_id FROM ' . DB::table( 'postinfo' ) . '
-										WHERE CONCAT(name,\'**\',value) IN ( ' . implode( ', ', $the_ins ) . ' )
-										GROUP BY post_id 
-										HAVING COUNT(*) = ' . count( $infos ) . ' )';
-										// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
 
+						}
+
+						$where[]= '
+							{posts}.id IN (
+							SELECT post_id FROM {postinfo}
+							WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
+							GROUP BY post_id
+							HAVING COUNT(*) = ' . count( $infos ) . ' )
+						';
+						// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
 					}
-					
+
 				}
-				
+
 				if ( isset( $paramset['any:info'] ) ) {
-					
+
 					if ( is_array( $paramset['any:info'] ) ) {
-												
+
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
 
-							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$the_ins[]= ' (name = ? AND value = ? ) ';
 							$params[]= $info_key;
 							$params[]= $info_value;
-							
+
 						}
-												
-						$where[]= DB::table( 'posts' ) . '.id IN ( 
-										SELECT post_id FROM ' . DB::table( 'postinfo' ) . ' 
-										WHERE CONCAT( name, \'**\', value ) IN ( ' . implode( ', ', $the_ins ) . ' ) ) ';
-						
-						
+
+						$where[]= '
+							{posts}.id IN (
+								SELECT post_id FROM {postinfo}
+								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
+							)
+						';
+
 					}
-					
+
 				}
-				
+
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
-					
+
 					// merge the two possible calls together
 					$infos= array_merge( isset( $paramset['not:all:info'] ) ? $paramset['not:all:info'] : array(), isset( $paramset['not:info'] ) ? $paramset['not:info'] : array() );
-					
+
 					if ( is_array( $infos ) ) {
-												
+
 						foreach ( $infos as $info_key => $info_value ) {
 
-							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$the_ins[]= ' (name = ? AND value = ? ) ';
 							$params[]= $info_key;
 							$params[]= $info_value;
-							
+
 						}
-						
-						$where[]= DB::table( 'posts' ) . '.id NOT IN ( 
-										SELECT post_id FROM ' . DB::table( 'postinfo' ) . '
-										WHERE CONCAT(name,\'**\',value) IN ( ' . implode( ', ', $the_ins ) . ' )
-										GROUP BY post_id 
-										HAVING COUNT(*) = ' . count( $infos ) . ' )';
-										// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
+
+						$where[]= '
+							{posts}.id NOT IN (
+							SELECT post_id FROM {postinfo}
+							WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
+							GROUP BY post_id
+							HAVING COUNT(*) = ' . count( $infos ) . ' )
+						';
+						// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
 
 					}
-					
+
 				}
-				
+
 				if ( isset( $paramset['not:any:info'] ) ) {
-					
+
 					if ( is_array( $paramset['not:any:info'] ) ) {
-												
+
 						foreach ( $paramset['not:any:info'] as $info_key => $info_value ) {
 
 							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
 							$params[]= $info_key;
 							$params[]= $info_value;
-							
+
 						}
-												
-						$where[]= DB::table( 'posts' ) . '.id NOT IN ( 
-										SELECT post_id FROM ' . DB::table( 'postinfo' ) . ' 
-										WHERE CONCAT( name, \'**\', value ) IN ( ' . implode( ', ', $the_ins ) . ' ) ) ';
-						
-						
+
+						$where[]= '
+							{posts}}.id NOT IN (
+								SELECT post_id FROM {postinfo}
+								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
+							)
+						';
+
 					}
-					
+
 				}
 
 				/**
@@ -311,6 +318,18 @@ class Posts extends ArrayObject
 					$where[]= 'pubdate BETWEEN ? AND ?';
 					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
 					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+				}
+
+				if( isset( $paramset['after'] ) ) {
+					$aftertime= strtotime( $paramset['after'] );
+					$where[]= 'pubdate > ?';
+					$params[]= date( 'Y-m-d H:i:s', $aftertime );
+				}
+
+				if( isset( $paramset['before'] ) ) {
+					$beforetime= strtotime( $paramset['before'] );
+					$where[]= 'pubdate < ?';
+					$params[]= date( 'Y-m-d H:i:s', $beforetime );
 				}
 
 				// Concatenate the WHERE clauses
@@ -386,6 +405,7 @@ class Posts extends ArrayObject
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
 		 */
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
+		// Session::notice($query);
 
 		/**
 		 * Execute the SQL statement using the PDO extension
@@ -536,7 +556,7 @@ class Posts extends ArrayObject
 	 *
 	 * Callback function to publish scheduled posts
 	 */
-	public static function publish_scheduled_posts( $params ) 
+	public static function publish_scheduled_posts( $params )
 	{
 		$posts= DB::get_results('SELECT * FROM {posts} WHERE status = ? AND pubdate <= ? ORDER BY pubdate DESC', array( Post::status( 'scheduled' ), date( 'Y-m-d H:i:s' ) ), 'Post' );
 		foreach( $posts as $post ) {
@@ -550,7 +570,7 @@ class Posts extends ArrayObject
 	 * Creates or recreates the cronjob to publish
 	 * scheduled posts. It is called whenever a post
 	 * is updated or created
-	 * 
+	 *
 	 */
 	public static function update_scheduled_posts_cronjob()
 	{
@@ -561,7 +581,7 @@ class Posts extends ArrayObject
 			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts'),  strtotime( $min_time ), 'Next run: ' . $min_time );
 		}
 	}
-	
+
 	/**
 	 * Returns an ascending post
 	 *
@@ -575,12 +595,12 @@ class Posts extends ArrayObject
 		$ascend= false;
 		if ( !$params ) {
 			$params= array( 'where' => "pubdate >= '{$post->pubdate}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
-			$posts= Posts::get($params);			
+			$posts= Posts::get($params);
 		}
-		elseif ( $params instanceof Posts ) {			
+		elseif ( $params instanceof Posts ) {
 			$posts= $params;
 		}
-		else {			
+		else {
 			if ( !array_key_exists( 'orderby', $params ) ) {
 				$params['orderby']= 'pubdate ASC';
 			}
@@ -627,7 +647,7 @@ class Posts extends ArrayObject
 		}
 		return $descend;
 	}
-	
+
 	/**
 	 * Search this Posts object for the needle, returns its key if found
 	 *
