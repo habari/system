@@ -79,7 +79,7 @@ class AdminHandler extends ActionHandler
 				}
 				else {
 					$classname= get_class( $this );
-					echo sprintf( _t( "\n%s->%s() does not exist.\n" ), $classname, $fn );
+					echo sprintf( _t( "\n%1$s->%2$s() does not exist.\n" ), $classname, $fn );
 					exit;
 				}
 				break;
@@ -288,8 +288,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->wsse= Utils::WSSE();
 
 		$controls= array(
-			'Settings' => $this->theme->fetch( 'publish_settings' ),
-			'Tags' => $this->theme->fetch( 'publish_tags' ),
+			_t('Settings') => $this->theme->fetch( 'publish_settings' ),
+			_t('Tags') => $this->theme->fetch( 'publish_tags' ),
 		);
 		$this->theme->controls= Plugins::filter( 'publish_controls', $controls, $post );
 
@@ -315,7 +315,7 @@ class AdminHandler extends ActionHandler
 		}
 		$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 		$post->delete();
-		Session::notice( sprintf( _t( 'Deleted %1$s "%2$s".' ), Post::type_name( $post->content_type ), $post->title ) );
+		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), $post->title ) );
 		Utils::redirect( URL::get( 'admin', 'page=entries&type=' . Post::status( 'any' ) ) );
 	}
 
@@ -385,7 +385,7 @@ class AdminHandler extends ActionHandler
 				case 'email': // Changing e-mail address
 					if ( isset( $email ) && ( $user->email != $email ) ) {
 						$user->email= $email;
-						Session::notice( $user->username . _t( ' email has been changed to ' ) . $email . '.' );
+						Session::notice( sprintf( _t( '%1$s email has been changed to %2$s', $user->username, $email ) ) );
 						$update= TRUE;
 					}
 					break;
@@ -1436,8 +1436,8 @@ class AdminHandler extends ActionHandler
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t('Content: Create a ' . ucwords($type)), 'text' => _t('Create ' . ucwords($type)) );
-			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=entries&type=' . $typeint ), 'title' => _t('Content: Manage ' . ucwords($type)), 'text' => _t('Manage ' . ucwords($type)) );
+			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf(_t('Content: Create a %s'), ucwords($type)), 'text' => sprintf(_t('Create %s'), ucwords($type)) );
+			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=entries&type=' . $typeint ), 'title' => sprintf(_t('Content: Manage %s'), ucwords($type)), 'text' => sprintf(_t('Manage %s'), ucwords($type)) );
 			switch($type) {
 				case 'entry':
 					$createmenu['create_' . $typeint]['hotkey'] = '1';
@@ -1465,7 +1465,7 @@ class AdminHandler extends ActionHandler
 			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t('Import'), 'text' => _t('Import'), 'hotkey' => 'I' ),
 			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t('Users'), 'text' => _t('Users'), 'hotkey' => 'U' ),
 			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t('View system log messages'), 'text' => _t('Logs'), 'hotkey' => 'L') ,
-			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => 'Log out of the Administration Interface', 'text' => 'Logout', 'hotkey' => 'X' ),
+			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t('Log out of the Administration Interface'), 'text' => _t('Logout'), 'hotkey' => 'X' ),
 		);
 		$mainmenus = array_merge($createmenu, $managemenu, $adminmenu);
 
