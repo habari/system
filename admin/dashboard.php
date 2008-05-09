@@ -8,7 +8,11 @@
 		<br>
 		<?php
 		printf(
-			_t('The <a href="%6$s">%1$d authors</a> have published <a href="%7$s">%2$d pages</a> and <a href="%8$s">%3$d entries</a> with <a href="%9$s">%4$d comments</a> and <a href="%10$s">%5$d tags</a>'),
+			_t('The <a href="%6$s">%1$d author' . ($stats['author_count'] == 1 ? '' : 's' ) . '</a> ' .
+			   ($stats['author_count'] == 1 ? 'has' : 'have' ) . 
+			   ' published <a href="%7$s">%2$d page' . ($stats['page_count'] == 1 ? '' : 's' ) . 
+			    '</a> and <a href="%8$s">%3$d entr' . ($stats['entry_count'] == 1 ? 'y' : 'ies') . 
+	                    '</a> with <a href="%9$s">%4$d comments</a> and <a href="%10$s">%5$d tags</a>'),
 			$stats['author_count'],
 			$stats['page_count'],
 			$stats['entry_count'],
