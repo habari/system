@@ -104,6 +104,22 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 		}
 	});
 };
+
+itemManage.update = function( id, action) {
+	spinner.start();
+
+	$.post(
+		habari.url.ajaxUpdateComment,
+		'id=' + id + '&action=' + action,
+		function(result) {
+			spinner.stop();
+			timelineHandle.updateLoupeInfo();
+			humanMsg.displayMsg(result);
+		},
+		'json'
+	);
+}
+
 </script>
 
 

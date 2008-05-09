@@ -1066,17 +1066,59 @@ class AdminHandler extends ActionHandler
 	public function ajax_delete_entries($handler_vars) {
 
 		foreach($_POST as $id => $delete) {
-			$id = substr($id, 1);
-			if($delete) {
-				$post = Posts::get(array('id' => $id));
-				$post = $post[0];
+			$id= substr($id, 1);
+
+			if( $delete ) {
+				$post= Posts::get(array('id' => $id));
+				$post= $post[0];
 				$post->delete();
 			}
 		}
 
-		$output = TRUE;
+		$output= TRUE;
 
 		echo json_encode($output);
+	}
+
+	public function ajax_update_comment( $handler_vars) {
+
+		$comment= Comments::get( array( 'id' => $handler_vars['id'] ) );
+		$comment= $comment[0];
+		$status_msg= 'No change.';
+
+		switch ( $handler_vars['action'] ) {
+		case 'delete':
+			// This comment was marked for deletion
+			$status_msg= 'Deleted comment '. $comment->id . '.';
+			$comment->delete();
+			break;
+		case 'spam':
+			if ( $comment->status != Comment::STATUS_SPAM ) {
+				// This comment was marked as spam
+				$status_msg= 'Marked comment '. $comment->id . ' as spam.';
+				$comment->status= Comment::STATUS_SPAM;
+				$comment->update();
+			}
+			break;
+		case 'approve':
+			if ( $comment->status != Comment::STATUS_APPROVED) {
+				// This comment was marked for approval
+				$status_msg= 'Approved comment '. $comment->id . '.';
+				$comment->status= Comment::STATUS_APPROVED;
+				$comment->update();
+			}
+			break;
+		case 'unapprove':
+			if ( $comment->status != Comment::STATUS_UNAPPROVED ) {
+				// This comment was marked for unapproval
+				$status_msg= 'Unapproved comment '. $comment->id . '.';
+				$comment->status= Comment::STATUS_UNAPPROVED;
+				$comment->update();
+			}
+			break;
+		}
+
+		echo json_encode($status_msg);
 	}
 
 	/**
