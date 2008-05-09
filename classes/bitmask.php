@@ -15,7 +15,7 @@ class Bitmask {
   public function __construct() {
 		$flags= func_get_arg(0);
 		if (! is_array($flags))
-			throw new InvalidArgumentException('Bitmask constructor expects either no arguments or an array as a first argument');
+			throw new InvalidArgumentException(_t('Bitmask constructor expects either no arguments or an array as a first argument'));
 
 		$this->flags= $flags;
   }

@@ -380,7 +380,7 @@ class InputFilter
 					return preg_match( '/^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:Z|[\+-][0-2][0-9]:[0-5][0-9])$/', $v );
 					break;
 				default:
-					Error::raise( sprintf( 'Unkown attribute type "%s" in %s', $type, __CLASS__ ) );
+					Error::raise( sprintf( _t('Unkown attribute type "%s" in %s'), $type, __CLASS__ ) );
 					return FALSE;
 			}
 		}
@@ -490,7 +490,7 @@ class InputFilter
 				case HTMLTokenizer::NODE_TYPE_COMMENT:
 				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
 				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					Error::raise( sprintf( 'Undead token "%s" (%d) in %s', $node['name'], $node['type'], __CLASS__ ) ); 
+					Error::raise( sprintf( _t('Undead token "%s" (%d) in %s'), $node['name'], $node['type'], __CLASS__ ) ); 
 					break;
 				default:
 			}

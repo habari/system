@@ -71,7 +71,7 @@ class HTMLTokenizer
 					$this->state= $this->parse_pi();
 					break;
 				default:
-					Error::raise( sprintf( 'Invalid state %d in %s->parse()', $this->state, __CLASS__ ) );
+					Error::raise( sprintf( _t('Invalid state %d in %s->parse()'), $this->state, __CLASS__ ) );
 					$this->state= self::$STATE_FINISHED;
 					break;
 			}

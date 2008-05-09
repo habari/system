@@ -499,7 +499,7 @@ class Post extends QueryRecord implements IsContent
 		$this->newfields= array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->save_tags();
-		EventLog::log( 'New post ' . $this->id . ' (' . $this->slug . ');  Type: ' . Post::type_name( $this->content_type ) . '; Status: ' . $this->statusname, 'info', 'content', 'habari' );
+		EventLog::log( sprintf(_t('New post %1$s (%2$s);  Type: %3$s; Status: %4s'), $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname), 'info', 'content', 'habari' );
 		Plugins::act( 'post_insert_after', $this );
 
 		//scheduled post
@@ -585,7 +585,7 @@ class Post extends QueryRecord implements IsContent
 			$this->info->delete_all();
 		}
 		$result= parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
-		EventLog::log( 'Post ' . $this->id . ' (' . $this->slug . ') deleted.', 'info', 'content', 'habari' );
+		EventLog::log( sprintf(_t('Post %1$s (%2$s) deleted.'), $this->id, $this->slug), 'info', 'content', 'habari' );
 
 		//scheduled post
 		if( $this->status == Post::status( 'scheduled' ) ) {
@@ -620,10 +620,10 @@ class Post extends QueryRecord implements IsContent
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
 			$this->get_tags();
-			$msg= 'Scheduled Post ' . $this->id . ' (' . $this->slug  . ') published at ' . date( 'Y-m-d H:i:s' ) . '.';
+			$msg= sprintf(_t('Scheduled Post %1$s (%2$s) published at %3$s.'), $this->id, $this->slug, date( 'Y-m-d H:i:s' ));
 		}
 		else {
-			$msg=  'Post ' . $this->id . ' (' . $this->slug  . ') published.';
+			$msg= sprintf(_t('Post %1$s (%2$s) published.'), $this->id, $this->slug);
 		}
 
 		$this->status= Post::status( 'published' );

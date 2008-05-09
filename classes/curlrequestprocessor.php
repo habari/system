@@ -57,12 +57,12 @@ class CURLRequestProcessor implements RequestProcessor
 		$body= curl_exec( $ch );
 		
 		if ( curl_errno( $ch ) !== 0 ) {
-			return Error::raise( sprintf( '%s: CURL Error %d: %s', __CLASS__, curl_errno( $ch ), curl_error( $ch ) ),
+			return Error::raise( sprintf( _t('%s: CURL Error %d: %s'), __CLASS__, curl_errno( $ch ), curl_error( $ch ) ),
 				E_USER_WARNING );
 		}
 		
 		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
-			return Error::raise( sprintf( 'Bad return code (%1$d) for: %2$s', 
+			return Error::raise( sprintf( _t('Bad return code (%1$d) for: %2$s'), 
 				curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 
 				$url ),
 				E_USER_WARNING
@@ -91,7 +91,7 @@ class CURLRequestProcessor implements RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( 'Request did not yet execute.' );
+			return Error::raise( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_body;
@@ -100,7 +100,7 @@ class CURLRequestProcessor implements RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( 'Request did not yet execute.' );
+			return Error::raise( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_headers;

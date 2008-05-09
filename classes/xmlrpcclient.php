@@ -92,7 +92,7 @@ class XMLRPCClient
 				error_reporting($bit);
 				if (!$responsestruct= reset($responsexml->xpath('//params/param/value'))) {
 					if (!$responsestruct= reset($responsexml->xpath('//fault/value'))) {
-						throw new Exception('Invalid XML response.');
+						throw new Exception(_t('Invalid XML response.'));
 					}
 				}
 				return XMLRPCUtils::decode_args($responsestruct);

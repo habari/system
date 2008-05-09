@@ -53,7 +53,7 @@ class Site
 			$scriptname= $_SERVER['SCRIPT_NAME'];
 			break;
 		default:
-			Error::raise('Could not determine script name.');
+			Error::raise(_t('Could not determine script name.'));
 			die();
 		}
 		return $scriptname;

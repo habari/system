@@ -234,7 +234,7 @@ class DatabaseConnection
 				}
 				else {
 					/* Die gracefully before the segfault occurs */
-					echo '<br><br>Attempt to fetch in class mode with a non-included class<br><br>';
+					echo '<br><br>' . _t('Attempt to fetch in class mode with a non-included class') . '<br><br>';
 					return false;
 				}
 			}
@@ -308,7 +308,7 @@ class DatabaseConnection
 				break;
 			case 'pgsql':
 			case 'oracle':
-				die( "not yet supported on $driver" );
+				die( sprinf(_t('not yet supported on %s'), $driver) );
 				break;
 		}
 

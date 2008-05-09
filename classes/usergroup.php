@@ -91,7 +91,7 @@ class UserGroup extends QueryRecord
 
 		$this->set_permissions();
 
-		EventLog::log('New group created: ' . $this->name, 'info', 'default', 'habari');
+		EventLog::log( sprintf(_t('New group created: %s'), $this->name), 'info', 'default', 'habari');
 		Plugins::act('usergroup_insert_after', $this);
 		return $result;
 	}
@@ -111,7 +111,7 @@ class UserGroup extends QueryRecord
 
 		$this->set_permissions();
 
-		EventLog::log('User Group updated: ' . $this->name, 'info', 'default', 'habari');
+		EventLog::log(sprintf(_t('User Group updated: %s'), $this->name), 'info', 'default', 'habari');
 		Plugins::act('usergroup_update_after', $this);
 	}
 

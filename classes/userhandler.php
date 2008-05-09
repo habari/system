@@ -63,7 +63,7 @@ class UserHandler extends ActionHandler
 			/* Authentication failed. */
 			// Remove submitted password, see, we're secure!
 			$this->handler_vars['habari_password']= '';
-			$this->handler_vars['error']= 'Bad credentials';
+			$this->handler_vars['error']= _t('Bad credentials');
 		}
 
 		// Display the login form.

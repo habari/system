@@ -55,7 +55,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$fp= @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
 		if ( $fp === FALSE ) {
-			return Error::raise( sprintf( '%s: Error %d: %s while connecting to %s:%d', __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
+			return Error::raise( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
 				E_USER_WARNING );
 		}
 		
@@ -93,7 +93,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$out= implode( "\r\n", $request );
 		
 		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
-			return Error::raise( 'Error writing to socket.' );
+			return Error::raise( _t('Error writing to socket.') );
 		}
 		
 		$in= '';
@@ -125,13 +125,13 @@ class SocketRequestProcessor implements RequestProcessor
 				$this->redir_count++;
 				
 				if ( $this->redir_count > $this->max_redirs ) {
-					return Error::raise( 'Maximum number of redirections exceeded.' );
+					return Error::raise( _t('Maximum number of redirections exceeded.') );
 				}
 				
 				return $this->_work( $method, $redirect_urlbits, $headers, $body, $timeout );
 			}
 			else {
-				return Error::raise( 'Redirection response without Location: header.' );
+				return Error::raise( _t('Redirection response without Location: header.') );
 			}
 		}
 		
@@ -167,7 +167,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( 'Request did not yet execute.' );
+			return Error::raise( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_body;
@@ -176,7 +176,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( 'Request did not yet execute.' );
+			return Error::raise( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_headers;
