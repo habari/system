@@ -604,7 +604,7 @@ class AdminHandler extends ActionHandler
 			'offset' => 0,
 		);
 		foreach ( $locals as $varname => $default ) {
-			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[varname] : $default);
+			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[$varname] : $default);
 			$this->theme->{$varname}= $$varname;
 		}
 
