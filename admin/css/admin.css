@@ -1021,6 +1021,11 @@ p:hover > label.incontent.popup {
 	float: left;
 	}
 
+.manage .item {
+	padding: 9px 0;
+	border-bottom: 1px dotted #e6e6e6;
+	}
+
 .manage .item .title {
 	margin-left: 5px;
 	}
@@ -1038,6 +1043,11 @@ p:hover > label.incontent.popup {
 
 .comments .infoandcontent > span {
 	float: left;
+	}
+
+.comments .item {
+	padding: 9px 0;
+	border-bottom: 1px dotted #e6e6e6;
 	}
 
 .comments .item .authorinfo a {
