@@ -182,7 +182,7 @@ class AtomHandler extends ActionHandler
 			Cache::set( 'atom:rsd:xml', $xml->asXML() );
 		}
 
-		$xml= Plugins::filter( 'rsd', $xml, $this->handler_vars );
+		Plugins::act( 'rsd', $xml, $this->handler_vars );
 		$xml= $xml->asXML();
 
 		ob_clean();
@@ -221,7 +221,7 @@ class AtomHandler extends ActionHandler
 			Cache::set( 'atom:introspection:xml', $xml->asXML() );
 		}
 
-		$xml= Plugins::filter( 'atom_introspection', $xml, $this->handler_vars );
+		Plugins::act( 'atom_introspection', $xml, $this->handler_vars );
 		$xml= $xml->asXML();
 
 		ob_clean();
@@ -330,7 +330,7 @@ class AtomHandler extends ActionHandler
 			}
 		}
 
-		$xml= Plugins::filter( 'atom_get_comments', $xml, $params, $this->handler_vars );
+		Plugins::act( 'atom_get_comments', $xml, $params, $this->handler_vars );
 		$xml= $xml->asXML();
 
 		ob_clean();
@@ -374,7 +374,7 @@ class AtomHandler extends ActionHandler
 			$entry_content= $xml->addChild( 'content', $content );
 			$entry_content->addAttribute( 'type', 'html' );
 
-			$xml= Plugins::filter( 'atom_get_entry', $xml, $slug, $this->handler_vars );
+			Plugins::act( 'atom_get_entry', $xml, $post, $this->handler_vars );
 			$xml= $xml->asXML();
 
 			ob_clean();
@@ -402,7 +402,7 @@ class AtomHandler extends ActionHandler
 
 			preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/is', $xml->content->asXML(), $content );
 			$xml->content= $content[1];
-			$xml= Plugins::filter( 'atom_put_entry', $xml, $slug, $this->handler_vars );
+			Plugins::act( 'atom_put_entry', $xml, $post, $this->handler_vars );
 
 			if ( (string) $xml->title != '' ) {
 				$post->title= $xml->title;
@@ -592,9 +592,10 @@ class AtomHandler extends ActionHandler
 
 			$entry_content= $feed_entry->addChild( 'content', $content );
 			$entry_content->addAttribute( 'type', 'html' );
+			Plugins::act( 'atom_get_collection_entry', $xml, $post, $handler_vars );
 		}
 
-		$xml= Plugins::filter( 'atom_get_collection', $xml, $params, $handler_vars );
+		Plugins::act( 'atom_get_collection', $xml, $params, $handler_vars );
 		$xml= $xml->asXML();
 
 		ob_clean();
@@ -615,9 +616,9 @@ class AtomHandler extends ActionHandler
 
 		preg_match( '/<content type=[\'|"]\w*[\'|"]>(.*)<\/content>/i', $xml->content->asXML(), $content );
 		$xml->content= $content[1];
-		$xml= Plugins::filter( 'atom_post_collection', $xml, $this->handler_vars );
 
 		$post = new Post();
+		Plugins::act( 'atom_post_collection', $xml, $post, $this->handler_vars );
 
 		if ( (string) $xml->title != '' ) {
 			$post->title= $xml->title;
