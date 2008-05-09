@@ -5,9 +5,9 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
     <hr>
     
     <div class="comments">
-     <h4><span id="comments"><?php echo $post->comments->moderated->count; ?> Responses to <?php echo $post->title; ?></span></h4>
+     <h4><span id="comments"><?php echo $post->comments->moderated->count; ?> <?php _e('Responses to'); ?> <?php echo $post->title; ?></span></h4>
      <div class="metalinks">
-      <span class="commentsrsslink"><a href="<?php echo $post->comment_feed_link; ?>">Feed for this Entry</a></span>
+      <span class="commentsrsslink"><a href="<?php echo $post->comment_feed_link; ?>"><?php _e('Feed for this Entry'); ?></a></span>
      </div>
      
      <ol id="commentlist">
@@ -21,9 +21,9 @@ if ( $post->comments->moderated->count ) {
 	$class.= '"';
 ?>
       <li id="comment-<?php echo $comment->id; ?>" <?php echo $class; ?>>
-       <a href="#comment-<?php echo $comment->id; ?>" class="counter" title="Permanent Link to this Comment"><?php echo $comment->id; ?></a>
+       <a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a>
        <span class="commentauthor"><a href="<?php echo $comment->url; ?>" rel="external"><?php echo $comment->name; ?></a></span>
-       <small class="comment-meta"><a href="#comment-<?php echo $comment->id; ?>" title="Time of this comment"><?php echo $comment->date; ?></a><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em>In moderation</em><?php endif; ?></small>
+       <small class="comment-meta"><a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this Comment'); ?>"><?php echo $comment->date; ?></a><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></small>
        
        <div class="comment-content">
         <?php echo $comment->content_out; ?>
