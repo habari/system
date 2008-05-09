@@ -43,7 +43,7 @@ var itemManage = {
 		});
 		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
 			id = $(this).attr('id');
-			id = /.*\[(.*)\]/.exec(id); // checkbox ids have the form name[id]
+			id = id.replace(/.*\[(.*)\]/, "$1" ); // checkbox ids have the form name[id]
 			if(itemManage.selected['p' + id] == 1) {
 				this.checked = 1;
 			}
@@ -60,12 +60,12 @@ var itemManage = {
 				
 		$('.item .checkboxandtitle input[type=checkbox]:checked').each(function() {
 			id = $(this).attr('id');
-			id = /.*\[(.*)\]/.exec(id);
+			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 1;
 		});
 		$('.item .checkboxandtitle input[type=checkbox]:not(:checked)').each(function() {
 			id = $(this).attr('id');
-			id = /.*\[(.*)\]/.exec(id);
+			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
 		});
 		
@@ -125,6 +125,23 @@ var itemManage = {
 				timelineHandle.updateLoupeInfo();
 			}
 		 });
+	},
+	delete: function( id ) {
+		spinner.start();
+		selected= {};
+		selected['p' + id]= 1;
+		success_msg= "Entry " + id + " deleted.";
+
+		$.ajax({
+			type: "POST",
+			url: habari.url.ajaxDelete,
+			data: selected,
+			success: function() {
+				spinner.stop();
+				timelineHandle.updateLoupeInfo();
+				humanMsg.displayMsg(success_msg);
+			}
+		});
 	}
 }
 

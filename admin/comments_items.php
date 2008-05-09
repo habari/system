@@ -14,10 +14,10 @@
     <span class="time pct10"><a href="#"><span class="dim">at</span> <?php echo date('H:i', strtotime($comment->date));?></a></span>
     <span class="date pct15"><a href="#"><span class="dim">on</span> <?php echo date('M d, Y', strtotime($comment->date));?></a></span>
 		<ul class="dropbutton">
-			<li><a href="#">Delete</a></li>
-			<li><a href="#">Spam</a></li>
-			<li><a href="#">Approve</a></li>
-			<li><a href="#">Unapprove</a></li>
+			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'delete');">Delete</a></li>
+			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'spam');">Spam</a></li>
+			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'approve');">Approve</a></li>
+			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'unapprove');">Unapprove</a></li>
 			<li><a href="#">Edit</a></li>
 		</ul>
 	</div>

@@ -13,7 +13,7 @@
 
 		<ul class="dropbutton">
 			<li><a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>">Edit</a></li>
-			<li><a href="javascript:void(humanMsg.displayMsg('Not yet implemented'));">Delete</a></li>
+			<li><a href="#" onclick="itemManage.delete(<?php echo $post->id; ?>, 'post');">Delete</a></li>
 		</ul>
 	</div>
 
