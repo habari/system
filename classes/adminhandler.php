@@ -570,6 +570,12 @@ class AdminHandler extends ActionHandler
 	 */
 	function post_comments()
 	{
+		$this->fetch_comments();
+		$this->display( 'comments' );
+	}
+
+	function fetch_comments( $params = array() )
+	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals= array(
 			'do_delete' => false,
@@ -595,9 +601,10 @@ class AdminHandler extends ActionHandler
 			'search_type' => null,
 			'do_search' => false,
 			'index' => 1,
+			'offset' => 0,
 		);
 		foreach ( $locals as $varname => $default ) {
-			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
+			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[varname] : $default);
 			$this->theme->{$varname}= $$varname;
 		}
 
@@ -744,7 +751,7 @@ class AdminHandler extends ActionHandler
 
 		$arguments= array(
 			'limit' => $limit,
-			'offset' => ( $index - 1 ) * $limit,
+			'offset' => isset($offset) ? $offset : 0,
 		);
 
 		// Decide what to display
@@ -801,8 +808,6 @@ class AdminHandler extends ActionHandler
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
 		$this->theme->monthcomments = DB::get_results('select month(`date`) as `month`, year(`date`) as `year`, count(id) as ct from {comments} group by `year`, `month` order by `year`, `month`', array());
-
-		$this->display( 'comments' );
 	}
 
 	/**
@@ -1016,6 +1021,9 @@ class AdminHandler extends ActionHandler
 		$this->display( 'entries' );
 	}
 
+	/**
+	 * Handles ajax requests from the manage posts page
+	 */
 	public function ajax_entries()
 	{
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
@@ -1025,6 +1033,25 @@ class AdminHandler extends ActionHandler
 
 		$this->fetch_entries( $params );
 		$items = $this->theme->fetch( 'entries_items' );
+
+		$output = array(
+			'items' => $items,
+		);
+		echo json_encode($output);
+	}
+
+	/**
+	 * Handles ajax requests from the manage commens page
+	 */
+	public function ajax_comments()
+	{
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+		$params = $_POST;
+
+		$this->fetch_comments( $params );
+		$items = $this->theme->fetch( 'comments_items' );
 
 		$output = array(
 			'items' => $items,
