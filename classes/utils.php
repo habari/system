@@ -402,7 +402,7 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						Error::raise( 'Unsupported digest algorithm "' . $algo . '"' );
+						Error::raise( sprintf(_t('Unsupported digest algorithm "%s"'), $algo) );
 						return FALSE;
 				}
 			}
@@ -695,7 +695,7 @@ class Utils
 		}
 
 		if ( $b ) {
-			$error = 'Unbalanced braces.';
+			$error = _t('Unbalanced braces.');
 			return false; // Unbalanced braces would break the eval below
 		}
 		else {

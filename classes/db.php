@@ -58,7 +58,7 @@ class DB extends Singleton
 		}
 		else {
 			// do some error handling here. The connect string does not have a corresponding DB connection object
-			print "Panic! No database connection class appears to be found for the connection string specified. Please check config.php";
+			print _t('Panic! No database connection class appears to be found for the connection string specified. Please check config.php');
 		}
 	}
 

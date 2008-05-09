@@ -117,7 +117,7 @@ class User extends QueryRecord
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
 		// $this->info->option_default= "saved";
 		$this->info->commit();
-		EventLog::log( 'New user created: ' . $this->username, 'info', 'default', 'habari' );
+		EventLog::log( sprintf(_t('New user created: %s'), $this->username), 'info', 'default', 'habari' );
 		Plugins::act('user_insert_after', $this);
 
 		return $result;
@@ -154,7 +154,7 @@ class User extends QueryRecord
 		if(isset($this->info)) {
 			$this->info->delete_all();
 		}
-		EventLog::log( 'User deleted: ' . $this->username, 'info', 'default', 'habari' );
+		EventLog::log( sprintf(_t('User deleted: %s'), $this->username), 'info', 'default', 'habari' );
 		$result = parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
 		Plugins::act('user_delete_after', $this);
 		return $result;
@@ -211,13 +211,13 @@ class User extends QueryRecord
 		if($user instanceof User) {
 			self::$identity= $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( 'Successful login for ' . $user->username, 'info', 'authentication', 'habari' );
+			EventLog::log( sprintf(_t('Successful login for %s'), $user->username), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
 		}
 		elseif(!is_object($user)) {
-			EventLog::log( 'Login attempt (via authentication plugin) for non-existant user ' . $who, 'warning', 'authentication', 'habari' );
+			EventLog::log( sprintf(_t('Login attempt (via authentication plugin) for non-existant user %s'), $who), 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}
@@ -232,7 +232,7 @@ class User extends QueryRecord
 
 		if ( ! $user ) {
 			// No such user.
-			EventLog::log( 'Login attempt for non-existant user ' . $who, 'warning', 'authentication', 'habari' );
+			EventLog::log( sprintf(_t('Login attempt for non-existant user %s'), $who), 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}
@@ -241,14 +241,14 @@ class User extends QueryRecord
 			// valid credentials were supplied
 			self::$identity= $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( 'Successful login for ' . $user->username, 'info', 'authentication', 'habari' );
+			EventLog::log( sprintf(_t('Successful login for %s'), $user->username), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
 		}
 		else {
 			// Wrong password.
-			EventLog::log( 'Wrong password for user ' . $user->username, 'warning', 'authentication', 'habari' );
+			EventLog::log( sprintf(_t('Wrong password for user %s'), $user->username), 'warning', 'authentication', 'habari' );
 			self::$identity= null;
 			return false;
 		}

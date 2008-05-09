@@ -229,7 +229,7 @@ class Comments extends ArrayObject
 			$result= true;
 			foreach ( $comments as $comment ) {
 				$result&= $comment->delete();
-				EventLog::log( 'Comment ' . $comment->id . ' deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
+				EventLog::log( sprintf(_t('Comment %1$s deleted from %2s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
@@ -241,7 +241,7 @@ class Comments extends ArrayObject
 			$result= true;
 			foreach ( $comments as $comment ) {
 				$result&= $comment->delete();
-				EventLog::log( 'Comment ' . $comment->id . ' deleted from ' . $comment->post->title, 'info', 'comment', 'habari' );
+				EventLog::log( sprintf(_t('Comment %1$s deleted from %2$s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
 			}
 		}
 		else {
@@ -267,7 +267,7 @@ class Comments extends ArrayObject
 		$result= true;
 		foreach ( $comments as $commentid ) {
 			$result&= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
-			EventLog::log( 'Comment Moderated on ' . $comment->post->title, 'info', 'comment', 'habari' );
+			EventLog::log( sprintf(_t('Comment Moderated on %s'), $comment->post->title), 'info', 'comment', 'habari' );
 		}
 		return $result;
 	}
@@ -458,7 +458,7 @@ class Comments extends ArrayObject
 		$result= true;
 		foreach ( $this as $c ) {
 			$result&= $c->delete();
-			EventLog::log( 'Comment ' . $c->id . ' deleted from ' . $c->post->title, 'info', 'comment', 'habari' );
+			EventLog::log( sprintf(_t('Comment %1$s deleted from %2$s'), $c->id, $c->post->title), 'info', 'comment', 'habari' );
 		}
 		// Clear ourselves.
 		$this->exchangeArray( array() );

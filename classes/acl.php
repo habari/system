@@ -85,7 +85,7 @@ class ACL {
 			// if it didn't work, don't bother trying to log it
 			return false;
 		}
-		EventLog::log('Permission deleted: ' . $name, 'info', 'default', 'habari');
+		EventLog::log( sprintf(_t('Permission deleted: %s'), $name), 'info', 'default', 'habari');
 		Plugins::act('permission_destroy_after', $permission );
 		return $result;
 	}

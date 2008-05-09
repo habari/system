@@ -520,13 +520,19 @@ class FormValidators
 	 * @param string $warning An optional error message	  	  	 	 
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
-	function validate_regex( $value, $control, $container, $regex, $warning = 'The value does not meet submission requirements' )
+	function validate_regex( $value, $control, $container, $regex, $warning = NULL )
 	{
 		if(preg_match($regex, $value)) {
 			return array();
 		}
 		else {
-			return array(_t($warning));
+			if ($warning == NULL) {
+				$warning= _t('The value does not meet submission requirements');
+			}
+			else {
+				$warning= _t($warning);
+			}
+			return array($warning);
 		}
 	}
 }

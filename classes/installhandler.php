@@ -109,13 +109,13 @@ class InstallHandler extends ActionHandler {
 
 		// make sure the admin password is correct
 		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
-			$this->theme->assign( 'form_errors', array('password_mismatch'=>'Password mismatch!') );
+			$this->theme->assign( 'form_errors', array('password_mismatch'=>_t('Password mis-match.')) );
 			$this->display('db_setup');
 		}
 
 		// try to write the config file
 		if (! $this->write_config_file()) {
-			$this->theme->assign('form_errors', array('write_file'=>'Could not write config.php file...'));
+			$this->theme->assign('form_errors', array('write_file'=>_t('Could not write config.php file...')));
 			$this->display('db_setup');
 		}
 
@@ -148,7 +148,7 @@ class InstallHandler extends ActionHandler {
 			Themes::activate_theme( $theme, $theme );
 		}
 
-		EventLog::log('Habari successfully installed.', 'info', 'default', 'habari');
+		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
 		return true;
 	}
 
@@ -280,15 +280,15 @@ class InstallHandler extends ActionHandler {
 		case 'mysql':
 			// MySQL requires specific connection information
 			if (empty($db_user)) {
-				$this->theme->assign('form_errors', array('db_user'=>'User is required.'));
+				$this->theme->assign('form_errors', array('db_user'=>_t('User is required.')));
 				return false;
 			}
 			if (empty($db_schema)) {
-				$this->theme->assign('form_errors', array('db_schema'=>'Name for database is required.'));
+				$this->theme->assign('form_errors', array('db_schema'=>_t('Name for database is required.')));
 				return false;
 			}
 			if (empty($db_host)) {
-				$this->theme->assign('form_errors', array('db_host'=>'Host is required.'));
+				$this->theme->assign('form_errors', array('db_host'=>_t('Host is required.')));
 				return false;
 			}
 			break;
@@ -302,7 +302,7 @@ class InstallHandler extends ActionHandler {
 		}
 
 		if (! $this->connect_to_existing_db()) {
-			$this->theme->assign('form_errors', array('db_user'=>'Problem connecting to supplied database credentials'));
+			$this->theme->assign('form_errors', array('db_user'=>_t('Problem connecting to supplied database credentials')));
 			return false;
 		}
 
@@ -318,7 +318,7 @@ class InstallHandler extends ActionHandler {
 
 		if(DB::has_errors()) {
 			$error= DB::get_last_error();
-			$this->theme->assign('form_errors', array('db_host'=>'Could not create schema tables...' . $error['message']));
+			$this->theme->assign('form_errors', array('db_host'=>sprintf(_t('Could not create schema tables... %s'), $error['message'])));
 			DB::rollback();
 			return false;
 		}
@@ -327,7 +327,7 @@ class InstallHandler extends ActionHandler {
 		// but check first, to make sure
 		if ( ! Options::get('installed') ) {
 			if (! $this->create_default_options()) {
-				$this->theme->assign('form_errors', array('options'=>'Problem creating default options'));
+				$this->theme->assign('form_errors', array('options'=>_t('Problem creating default options')));
 				DB::rollback();
 				return false;
 			}
@@ -338,7 +338,7 @@ class InstallHandler extends ActionHandler {
 		$all_users= Users::get_all();
 		if ( count( $all_users ) < 1 ) {
 			if (! $this->create_admin_user()) {
-				$this->theme->assign('form_errors', array('admin_user'=>'Problem creating admin user.'));
+				$this->theme->assign('form_errors', array('admin_user'=>_t('Problem creating admin user.')));
 				DB::rollback();
 				return false;
 			}
@@ -347,7 +347,7 @@ class InstallHandler extends ActionHandler {
 		// create a first post, if none exists
 		if ( ! Posts::get( array( 'count' => 1 ) ) ) {
 			if ( ! $this->create_first_post()) {
-				$this->theme->assign('form_errors',array('post'=>'Problem creating first post.'));
+				$this->theme->assign('form_errors',array('post'=>_t('Problem creating first post.')));
 				DB::rollback();
 				return false;
 			}
@@ -376,11 +376,11 @@ class InstallHandler extends ActionHandler {
 		if ( file_exists( $db_file ) ) {
 			// the DB file exists, why can't we access it?
 			if ( ! is_writable( $db_file ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file is not writable.') );
+				$this->theme->assign('form_errors', array('db_file'=>_t('The SQLite data file is not writable by the web server.') ) );
 				return false;
 			}
 			if ( ! is_writable( dirname( $db_file ) ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>'The directory in which the SQLite data file resides must be writable by the web server.  See <a href="http://us3.php.net/manual/en/ref.sqlite.php#37875">here</a> and <a href="http://us3.php.net/manual/en/ref.pdo-sqlite.php#57356">here</a> for details.') );
+				$this->theme->assign('form_errors', array('db_file'=>_t('SQLite requires that the directory that holds the DB file be writable by the web server.') ) );
 				return false;
 			}
 		}
@@ -389,7 +389,7 @@ class InstallHandler extends ActionHandler {
 			// let's see if the directory is writable
 			// so that we could create the file
 			if ( ! is_writable( dirname( $db_file ) ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>'The SQLite data file does not exist, and it cannot be created in the specified directory.  SQLite requires that the directory containing the database file be writable by the web server.') );
+				$this->theme->assign('form_errors', array('db_file'=>_t('The SQLite data file does not exist, and it cannot be created in the specified directory.  SQLite requires that the directory containing the database file be writable by the web server.')) );
 				return false;
 			}
 		}
@@ -482,7 +482,7 @@ class InstallHandler extends ActionHandler {
 		EventLog::register_type('comment', 'habari');
 
 		// Add the cronjob to truncate the log so that it doesn't get too big
-		CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), 'Truncate the log table' );
+		CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
 
 		return true;
 	}
@@ -507,7 +507,7 @@ class InstallHandler extends ActionHandler {
 		// Now create the first post
 		Post::create(array(
 			'title' => 'Habari',
-			'content' => 'This site is running <a href="http://habariproject.org/">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href="http://habariproject.org/">http://habariproject.org/</a> to find out more!',
+			'content' => _t('This site is running <a href="http://habariproject.org/">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href="http://habariproject.org/">http://habariproject.org/</a> to find out more!'),
 			'user_id' => 1,
 			'status' => Post::status('published'),
 			'content_type' => Post::type('entry'),
@@ -807,7 +807,7 @@ class InstallHandler extends ActionHandler {
 			case $version < 1310:
 				// Auto-truncate the log table
 				if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
-					CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), 'Truncate the log table' );
+					CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
 				}
 		}
 		DB::upgrade( $version );
@@ -826,19 +826,19 @@ class InstallHandler extends ActionHandler {
 			$xml->addChild( 'status', 0 );
 			$xml_error= $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#databasehost' );
-			$xml_error->addChild( 'message', 'The database host field was left empty.' );
+			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
 		}
 		if ( !isset( $_POST['database'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error= $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#databasename' );
-			$xml_error->addChild( 'message', 'The database name field was left empty.' );
+			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
 		}
 		if ( !isset( $_POST['user'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error= $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#databaseuser' );
-			$xml_error->addChild( 'message', 'The database user field was left empty.' );
+			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
@@ -853,15 +853,15 @@ class InstallHandler extends ActionHandler {
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
 					$xml_error->addChild( 'id', '#databaseuser' );
 					$xml_error->addChild( 'id', '#databasepass' );
-					$xml_error->addChild( 'message', 'Access denied. Make sure these credentials are valid.' );
+					$xml_error->addChild( 'message', _t('Access denied. Make sure these credentials are valid.') );
 				}
 				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
 					$xml_error->addChild( 'id', '#databasename' );
-					$xml_error->addChild( 'message', 'That database does not exist.' );
+					$xml_error->addChild( 'message', _t('That database does not exist.') );
 				}
 				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
 					$xml_error->addChild( 'id', '#databasehost' );
-					$xml_error->addChild( 'message', 'Could not connect to host.' );
+					$xml_error->addChild( 'message', _t('Could not connect to host.') );
 				}
 				else {
 					$xml_error->addChild( 'id', '#databaseuser' );
