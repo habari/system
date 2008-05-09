@@ -650,7 +650,7 @@ class AdminHandler extends ActionHandler
 				$to_update= Comments::get( array( 'id' => $ids ) );
 				$modstatus= array( 'Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0 );
 				Plugins::act( 'admin_moderate_comments', $ids_change, $to_update, $this );
-				
+
 				foreach ( $to_update as $comment ) {
 					switch ( $ids_change[$comment->id] ) {
 					case 'delete':
@@ -800,6 +800,7 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
+		$this->theme->monthcomments = DB::get_results('select month(`date`) as `month`, year(`date`) as `year`, count(id) as ct from {comments} group by `year`, `month` order by `year`, `month`', array());
 
 		$this->display( 'comments' );
 	}
@@ -1030,13 +1031,13 @@ class AdminHandler extends ActionHandler
 		);
 		echo json_encode($output);
 	}
-	
+
 	/**
 	 * handles AJAX from /manage/entries
 	 * used to delete entries
 	 */
 	public function ajax_delete_entries($handler_vars) {
-		
+
 		foreach($_POST as $id => $delete) {
 			$id = substr($id, 1);
 			if($delete) {
@@ -1045,12 +1046,12 @@ class AdminHandler extends ActionHandler
 				$post->delete();
 			}
 		}
-		
+
 		$output = TRUE;
-		
+
 		echo json_encode($output);
 	}
-	
+
 	/**
 	 * Handle GET requests for /admin/logs to display the logs
 	 */
