@@ -31,7 +31,7 @@ foreach ( $pages as $tab ) {
 <?php
 }
 if ( $user ) { ?>
-    <li class="admintab"><a href="<?php Site::out_url( 'admin' ); ?>" title="Admin area">Admin</a></li>
+    <li class="admintab"><a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e('Admin area'); ?>"><?php _e('Admin'); ?></a></li>
 <?php } ?>
    </ul>
 

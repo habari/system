@@ -28,7 +28,7 @@
 }
 </style>
 <div class="prof_container">
-	<h1 class="prof_header">DB Profiling</h1>
+	<h1 class="prof_header"><?php _e('DB Profiling'); ?></h1>
 	<?php
 	$profiles= DB::get_profiles();
 	$total_time_querying= 0;
@@ -39,7 +39,7 @@
 			<?php echo $profile->query_text; ?>
 		</code>
 		<div class="prof_time">
-			<p>Time to Execute: <strong><?php echo $profile->total_time; ?></strong></p>
+			<p><?php _e('Time to Execute:'); ?> <strong><?php echo $profile->total_time; ?></strong></p>
 		</div>
 		<?php if ( !empty( $profile->backtrace ) ) { ?>
 		<pre style="text-align: left;">
@@ -53,6 +53,6 @@
 	}
 	?>
 	<div class="prof_time_total">
-		<p>Total Time Executing Queries: <?php echo $total_time_querying; ?></p>
+		<p><?php _e('Total Time Executing Queries:'); ?> <?php echo $total_time_querying; ?></p>
 	</div>
 </div>

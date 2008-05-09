@@ -3,7 +3,7 @@
 if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directly. Thanks!') ); }
 ?>
      <div class="comments">
-      <h4 id="respond" class="reply">Leave a Reply</h4>
+      <h4 id="respond" class="reply"><?php _e('Leave a Reply'); ?></h4>
 <?php
 if ( Session::has_errors() ) {
 	Session::messages_out();
@@ -13,15 +13,15 @@ if ( Session::has_errors() ) {
        <div id="comment-personaldetails">
         <p>
          <input type="text" name="name" id="name" value="<?php echo $commenter_name; ?>" size="22" tabindex="1">
-         <label for="name"><small><strong>Name</strong></small></label>
+         <label for="name"><small><strong><?php _e('Name'); ?></strong></small></label>
         </p>
         <p>
          <input type="text" name="email" id="email" value="<?php echo $commenter_email; ?>" size="22" tabindex="2">
-         <label for="email"><small><strong>Mail</strong> (will not be published)</small></label>
+         <label for="email"><small><strong><?php _e('Mail'); ?></strong> (<?php _e('will not be published'); ?>)</small></label>
         </p>
         <p>
          <input type="text" name="url" id="url" value="<?php echo $commenter_url; ?>" size="22" tabindex="3">
-         <label for="url"><small><strong>Website</strong></small></label>
+         <label for="url"><small><strong><?php _e('Website'); ?></strong></small></label>
         </p>
        </div>
        <p>
@@ -30,7 +30,7 @@ if ( Session::has_errors() ) {
 </textarea>
        </p>
        <p>
-        <input name="submit" type="submit" id="submit" tabindex="5" value="Submit">
+        <input name="submit" type="submit" id="submit" tabindex="5" value="<?php _e('Submit'); ?>">
        </p>
        <div class="clear"></div>
       </form>
