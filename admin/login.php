@@ -2,11 +2,12 @@
 <html>
 <head>
 	<title>Login to <?php Options::out( 'title' ); ?></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen">
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
 	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
+	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.css" type="text/css" media="screen">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.dimensions.js" type="text/javascript"></script>
@@ -14,7 +15,8 @@
 	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.ext.js" type="text/javascript"></script>
-    <script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script> 
+	<script src="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script>
 
 	<script type="text/javascript">
 	var habari = {
@@ -23,6 +25,12 @@
 	</script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/js/media.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/js/admin.js" type="text/javascript"></script>
+
+	<?php
+		Plugins::act( 'admin_header', $this );
+		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
+		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+	?>
 
 </head>
 <body class="login">
@@ -55,6 +63,13 @@
 <?php
 	Plugins::act( 'admin_footer', $this );
 	Stack::out( 'admin_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+?>
+	<script type="text/javascript">
+	jQuery(document).ready(function() {
+		<?php echo Session::messages_out(); ?>
+	})
+  </script>
+<?php
 	include ('db_profiling.php');
 ?>
 </body>
