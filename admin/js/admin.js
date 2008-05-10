@@ -114,34 +114,29 @@ var itemManage = {
 		});
 		itemManage.changeItem();
 	},
-	remove: function() {		
+	remove: function( id ) {
 		spinner.start();
-		$.ajax({
-			type: "POST",
-			url: habari.url.ajaxDelete,
-			data: itemManage.selected,
-			success: function(){
+		
+		var query= {}
+		if ( id == null ) {
+			query = itemManage.selected;
+		}
+		else {
+			query['p' + id]= 1;
+		}
+		query['timestamp']= $('input#timestamp').attr('value');
+		query['nonce']= $('input#nonce').attr('value');
+		query['digest']= $('input#PasswordDigest').attr('value');
+		$.post(
+			habari.url.ajaxDelete,
+			query,
+			function(msg) {
 				spinner.stop();
 				timelineHandle.updateLoupeInfo();
-			}
-		 });
-	},
-	delete: function( id ) {
-		spinner.start();
-		selected= {};
-		selected['p' + id]= 1;
-		success_msg= "Entry " + id + " deleted.";
-
-		$.ajax({
-			type: "POST",
-			url: habari.url.ajaxDelete,
-			data: selected,
-			success: function() {
-				spinner.stop();
-				timelineHandle.updateLoupeInfo();
-				humanMsg.displayMsg(success_msg);
-			}
-		});
+				humanMsg.displayMsg(msg);
+			},
+			'json'
+		 );
 	}
 }
 

@@ -1064,20 +1064,28 @@ class AdminHandler extends ActionHandler
 	 * used to delete entries
 	 */
 	public function ajax_delete_entries($handler_vars) {
+		$count= 0;
+		
+		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+			echo json_encode( 'WSSE authentication failed.' );
+			return;
+		}
 
 		foreach($_POST as $id => $delete) {
-			$id= substr($id, 1);
-
-			if( $delete ) {
+			// skip POST elements which are not post ids
+			if ( preg_match( '/^p\d+/', $id )  && $delete ) {
+				$id= substr($id, 1);
 				$post= Posts::get(array('id' => $id));
 				$post= $post[0];
 				$post->delete();
+				$count++;
 			}
 		}
+		
+		$msg_status= sprintf( _t('Deleted %d entries.'), $count );
 
-		$output= TRUE;
-
-		echo json_encode($output);
+		echo json_encode($msg_status);
 	}
 
 	public function ajax_update_comment( $handler_vars) {
@@ -1088,7 +1096,12 @@ class AdminHandler extends ActionHandler
 
 		switch ( $handler_vars['action'] ) {
 		case 'delete':
-			// This comment was marked for deletion
+			// This comment was marked for deletion, check WSSE authentication
+			$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+			if ( $handler_vars['digest'] != $wsse['digest'] ) {
+				echo json_encode( 'WSSE authentication failed.' );
+				return;
+			}
 			$status_msg= 'Deleted comment '. $comment->id . '.';
 			$comment->delete();
 			break;

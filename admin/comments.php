@@ -32,9 +32,9 @@
 	<input type="hidden" name="limit" value="<?php echo $limit; ?>">
 	<input type="hidden" name="index" value="<?php echo $index; ?>">
 	<input type="hidden" name="search_status" value="<?php echo $search_status; ?>">
-	<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 
 	<div class="container transparent">
 
@@ -107,10 +107,16 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 
 itemManage.update = function( id, action) {
 	spinner.start();
+	var query= {};
+	query['id']= id;
+	query['action']= action;
+	query['timestamp']= $('input#timestamp').attr('value');
+	query['nonce']= $('input#nonce').attr('value');
+	query['digest']= $('input#PasswordDigest').attr('value');
 
 	$.post(
 		habari.url.ajaxUpdateComment,
-		'id=' + id + '&action=' + action,
+		query,
 		function(result) {
 			spinner.stop();
 			timelineHandle.updateLoupeInfo();

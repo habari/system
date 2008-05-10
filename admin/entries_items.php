@@ -13,7 +13,7 @@
 
 		<ul class="dropbutton">
 			<li><a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>">Edit</a></li>
-			<li><a href="#" onclick="itemManage.delete(<?php echo $post->id; ?>, 'post');">Delete</a></li>
+			<li><a href="#" onclick="itemManage.remove(<?php echo $post->id; ?>, 'post');return false;">Delete</a></li>
 		</ul>
 	</div>
 
