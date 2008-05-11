@@ -78,6 +78,30 @@
 </form>
 
 <script type="text/javascript">
+liveSearch.search= function() {
+	spinner.start();
+
+	$.post(
+		'<?php echo URL::get('admin_ajax', array('context' => 'comments')) ?>',
+		'do_search=1&search=' + liveSearch.input.val() +
+		<?php
+				$vars= Controller::get_handler_vars();
+				$out= '';
+				$keys= array_keys($vars);
+				foreach($keys as $key) {
+					$out .= "&$key=$vars[$key]";
+				}
+				echo '"' . $out . '"';
+			?>,
+		function(json) {
+			$('#comments').html(json.items);
+			spinner.stop();
+			itemManage.initItems();
+		},
+		'json'
+		);
+};
+
 timelineHandle.loupeUpdate = function(a,b,c) {
 	spinner.start();
 
