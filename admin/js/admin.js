@@ -356,7 +356,7 @@ var theMenu = {
 		})
 				
 		// Open menu on Q
-		$.hotkeys.add('q', {disableInInput: true}, function(){
+		$.hotkeys.add('q', {propagate:true, disableInInput: true}, function(){
 			if ($('#menu #menulist').css('display') != 'block') {
 				dropButton.currentDropButton = $('#menu');
 				dropButton.showMenu();
@@ -368,13 +368,13 @@ var theMenu = {
 		});
 		
 		// Close menu on ESC
-		$.hotkeys.add('esc', {disableInInput: false}, function(){
+		$.hotkeys.add('esc', {propagate:true, disableInInput: false}, function(){
 			$('.carrot').removeClass('carrot')
 			dropButton.hideMenu();
 		});
 		
 		// Down arrow
-		$.hotkeys.add('down', {disableInInput: true}, function(){
+		$.hotkeys.add('down', {propagate:true, disableInInput: true}, function(){
 			if(($('#menu').hasClass('hovering') == true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot'))
@@ -392,7 +392,7 @@ var theMenu = {
 		});
 		
 		// Up arrow
-		$.hotkeys.add('up', {disableInInput: true}, function(){
+		$.hotkeys.add('up', {propagate:true, disableInInput: true}, function(){
 			if ($('#menu').hasClass('hovering') == true) {
 				// If carrot doesn't exist, select last item
 				if (!$('#menulist li').hasClass('carrot'))
@@ -410,7 +410,7 @@ var theMenu = {
 		});
 		
 		// Enter & Carrot
-		$.hotkeys.add('return', {disableInInput: true}, function(){
+		$.hotkeys.add('return', {propagate:true, disableInInput: true}, function(){
 			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
 				location = $('.carrot a').attr('href')
 			} else {
@@ -423,7 +423,7 @@ var theMenu = {
 			var hotkey = $('a span.hotkey', this).text();
 			var href = $('a', this).attr('href');
 			if(hotkey) {
-				$.hotkeys.add(hotkey, {disableInInput: true}, function(){
+				$.hotkeys.add(hotkey, {propagate:true, disableInInput: true}, function(){
 					if ($('#menu').hasClass('hovering') == true) {
 						location = href;
 					} else {
