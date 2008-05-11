@@ -282,7 +282,7 @@ var timelineHandle = {
 
 		return false;
 	},
-	// This function is assigned on the page so that the loupe can be bound to disctinct ajax calls
+	// This function is assigned on the page so that the loupe can be bound to distinct ajax calls
 	loupeUpdate: null
 }
 
@@ -435,6 +435,57 @@ var theMenu = {
 	}
 }
 
+// LIVESEARCH
+var liveSearch = {
+	init: function() {
+		liveSearch.input= $('.search input');
+		liveSearch.searchPrompt= liveSearch.input.attr('placeholder');
+
+		liveSearch.input
+			.focus( function() {
+				if ( liveSearch.input.val() == liveSearch.searchPrompt ) {
+					liveSearch.input.val('');
+				}
+			})
+			.blur( function () {
+				if (liveSearch.input.val() == '') {
+					liveSearch.input.val( liveSearch.searchPrompt );
+				}
+			})
+			.keyup( function( event ) {
+				var code= event.keyCode;
+
+				if ( liveSearch.input.val() == '') {
+					return false;
+				} else if ( code == 27 ) { // ESC key
+					liveSearch.input.val('');
+				} else if ( code != 13 ) { // anything but enter
+					if ( liveSearch.timer) {
+						clearTimeout( liveSearch.timer);
+					}
+					liveSearch.timer = setTimeout( liveSearch.doSearch, 500);
+				}
+			})
+			.submit( liveSearch.doSearch );
+
+	},
+	searchprompt: '',
+	timer: null,
+	prevSearch: '',
+	input: null,
+	doSearch: function() {
+		if ( liveSearch.input.val() == liveSearch.prevSearch ) return;
+
+		liveSearch.prevSearch= liveSearch.input.val();
+		
+		if ( jQuery.isFunction( liveSearch.search ) ) {
+			return liveSearch.search();
+		}
+
+	},
+	search: null, // specific search functions are defined on the individual pages
+}
+
 
 // RESIZABLE TEXTAREAS
 $.fn.resizeable = function(){
@@ -476,6 +527,7 @@ $(document).ready(function(){
 	dashboard.init();
 	timeline.init();
 	itemManage.init();
+	liveSearch.init();
 
 	// Damn the lack of proper support for pseudo-classes!
 	$('.modulecore .item:first-child, ul li:first-child').addClass('first-child')
