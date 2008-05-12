@@ -147,7 +147,16 @@ var timeline = {
 		if (!$('.timeline').length) return;
 
 		var timelineWidth = $('.years').width();
-		var steps = $('.years').width()/$('.handle').width();
+		
+		// get an array of posts per month
+		timeline.monthData= [];
+		timeline.monthWidths= [];
+		timeline.totalCount= 0;
+		$('.years span').each(function(i) {
+			timeline.monthData[i] = $(this).width();
+			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
+			timeline.totalCount += timeline.monthData[i];
+		});
 
 		$('.track')
 		.width($('.years').width())
@@ -173,15 +182,15 @@ var timeline = {
 			if ($(e.target).is('.handle')) return false;
 
 			// Click to left or right of handle?
-			if (e.layerX < $('.track').slider("value") )
+			if (e.layerX < $('.track').slider('value') )
 				timeline.t1 = setTimeout('timeline.skipLoupeLeft()', 300);
 			else
 				timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
 		})
-		.slider('moveTo', timelineWidth)
+		.slider('moveTo', timelineWidth);
 
-		// Spool the timline handle
-		timelineHandle.init();
+		// Spool the timeline handle
+		timelineHandle.init()
 	},
 	skipLoupeLeft: function(e) {
 		if (timeline.noJump == true) {
@@ -203,6 +212,25 @@ var timeline = {
 		$('.handle').css( 'left', Math.min(parseInt($('.handle').css('left')) + $('.handle').width(), parseInt($('.track').width()) - $('.handle').width() ))
 
 		timelineHandle.updateLoupeInfo();
+	},
+	indexFromPosition: function(pos) {
+		var monthBoundary= 0;
+		var monthIndex= 0;
+		var month= 0;
+		var i;
+	
+		// get the index of the first post in the month that the handle is over
+	
+		for ( i = 0; i < timeline.monthWidths.length && monthBoundary + timeline.monthWidths[i] < pos; i++ ) {
+			monthBoundary += timeline.monthWidths[i];
+			monthIndex += timeline.monthData[i];
+			month= i + 1;
+		}
+	
+		// the index is the offset from this boundary, but it cannot be greater than
+		// the number of posts in the month (the month has some extra padding which
+		// increases its width).
+		return monthIndex + Math.min( pos - monthBoundary, timeline.monthData[month] );
 	}
 }
 
@@ -235,12 +263,10 @@ var timelineHandle = {
 		$('.handle').css({
 			'left': 	'auto',
 			'right': 	$('.handle').parents('.track').width() - (parseInt($('.handle').css('left')) + $('.handle').width())
-		})
-
-		Math.min()
+		});
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the left
-		$('.handle').css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - $('.track').offset().left)), 20), Math.min($('.track').width() - parseInt($('.handle').css('right')), 200)))
+		$('.handle').css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - $('.track').offset().left)), 20), Math.min($('.track').width() - parseInt($('.handle').css('right')), 200)));
 
 		return false;
 	},
@@ -248,23 +274,23 @@ var timelineHandle = {
 		$('.handle').css({
 			'left': 	$('.handle').offset().left - $('.track').offset().left,
 			'right': 	'auto'
-		})
+		});
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the right
-		$('.handle').css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min($('.track').width() - parseInt($('.handle').css('left')), 200)) )
+		$('.handle').css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min($('.track').width() - parseInt($('.handle').css('left')), 200)) );
 
 		return false;
 	},
 	updateLoupeInfo: function() {
-		timelineWidth = $('.track').width();
-		loupePosition = parseInt($('.handle').css('left'));
-		loupeWidth = loupePosition + $('.handle').width();
+		loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) );
+		loupeWidth= $('.handle').width();
+		loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth );
 
-		$('.currentposition').text( loupePosition +'-'+ loupeWidth +' of '+ timelineWidth )
-
+		$('.currentposition').text( loupeStartPosition +'-'+ loupeEndPosition +' of '+ timeline.totalCount );
+		
 		/* AJAX call to fetch needed info goes here. */
 		if(jQuery.isFunction(this.loupeUpdate)) {
-			return this.loupeUpdate(loupePosition, loupeWidth, timelineWidth);
+			return this.loupeUpdate(loupeStartPosition, loupeEndPosition, timeline.totalCount);
 		}
 	},
 	endDrag: function(e) {
