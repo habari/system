@@ -163,6 +163,8 @@ var timeline = {
 		.slider({
 			handle: '.handle',
 			maxValue: timelineWidth-20,
+			startValue: timelineWidth-20,
+			axis: 'horizontal',
 			stop: function(event, ui) {
 				timelineHandle.updateLoupeInfo();
 			}
@@ -186,8 +188,7 @@ var timeline = {
 				timeline.t1 = setTimeout('timeline.skipLoupeLeft()', 300);
 			else
 				timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
-		})
-		.slider('moveTo', timelineWidth);
+		});
 
 		// Spool the timeline handle
 		timelineHandle.init()
