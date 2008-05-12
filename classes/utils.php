@@ -788,7 +788,7 @@ class Utils
 
 	public static function truncate_log() {
 		// Truncate the log table
-		return DB::exec('DELETE FROM {log} WHERE `timestamp` < DATE_SUB(NOW(), INTERVAL 14 DAY)');
+		return DB::exec( 'DELETE FROM {log} WHERE timestamp < DATE_SUB(NOW(), INTERVAL 14 DAY)' );
 	}
 
 	/**

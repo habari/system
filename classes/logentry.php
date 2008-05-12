@@ -80,7 +80,7 @@ class LogEntry extends QueryRecord
 	{
 		if ( $force || empty( self::$types ) ) {
 			self::$types= array();
-			$res= DB::get_results( 'SELECT `id`, `module`, `type` FROM ' . DB::table( 'log_types' ));
+			$res= DB::get_results( 'SELECT id, module, type FROM {log_types}' );
 			foreach ( $res as $x ) {
 				self::$types[ $x->module ][ $x->type ]= $x->id;
 			}
