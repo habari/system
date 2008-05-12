@@ -179,7 +179,7 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
-		$this->theme->recent_comments = Comments::get( array( 'status' => 'approved', 'limit' => 5 ) );
+		$this->theme->recent_comments= Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5 ) );
 
 		$modules= array(
 			'latestentries' => 'dash_latestentries',
@@ -807,7 +807,7 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
-		$this->theme->monthcomments = DB::get_results('select month(`date`) as `month`, year(`date`) as `year`, count(id) as ct from {comments} group by `year`, `month` order by `year`, `month`', array());
+		$this->theme->monthcomments= DB::get_results( 'SELECT MONTH(date) AS month, YEAR(date) AS year, COUNT(id) AS ct FROM {comments} GROUP BY year, month ORDER BY year, month', array() );
 	}
 
 	/**
@@ -946,7 +946,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		// Set up Authors select box
-		$authors_temp= DB::get_results( 'SELECT username, user_id FROM {users} JOIN {posts} ON {users}.id={posts}.user_id GROUP BY user_id ORDER BY username ASC' );
+		$authors_temp= DB::get_results( 'SELECT DISTINCT username, user_id FROM {users} JOIN {posts} ON {users}.id = {posts}.user_id ORDER BY username ASC' );
 		array_unshift( $authors_temp, new QueryRecord( array( 'username' => 'All', 'user_id' => 0 ) ) );
 		$authors= array();
 		foreach ( $authors_temp as $author ) {
@@ -998,7 +998,7 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->pagecount= $pagecount;
 		$this->theme->pages= $pages;
-		$this->theme->monthposts = DB::get_results('select month(pubdate) as `month`, year(pubdate) as `year`, count(id) as ct from {posts} where content_type = ? group by `year`, `month` order by `year`, `month`', array($type));
+		$this->theme->monthposts= DB::get_results( 'SELECT MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(id) AS ct FROM {posts} WHERE content_type = ? GROUP BY year, month ORDER BY year, month', array( $type ) );
 	}
 
 	/**
@@ -1223,7 +1223,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->modules= array_merge( $any, $modules );
 
 		// set up the users
-		$users_temp= DB::get_results( 'SELECT username, user_id FROM ' . DB::table( 'users' ) . ' JOIN ' . DB::table( 'log' ) . ' ON ' . DB::table( 'users' ) . '.id=' . DB::table( 'log' ) . '.user_id GROUP BY user_id ORDER BY username ASC' );
+		$users_temp= DB::get_results( 'SELECT DISTINCT username, user_id FROM {users} JOIN {log} ON {users}.id = {log}.user_id ORDER BY username ASC' );
 		array_unshift( $users_temp, new QueryRecord( array( 'username' => 'All', 'user_id' => 0 ) ) );
 		foreach ( $users_temp as $user_temp ) {
 			$users[$user_temp->user_id]= $user_temp->username;
