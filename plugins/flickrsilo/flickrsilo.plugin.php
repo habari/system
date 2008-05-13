@@ -754,7 +754,7 @@ END_AUTH;
 				case 'Configure' :
 					$ui= new FormUI( strtolower( get_class( $this ) ) );
 					$flickr_size= $ui->add( 'select', 'flickr_size', 'Default size for images in Posts:' );
-					$flickr_size->options= array( '_s' => 'Square (75x75)', '_t' => 'Thubmnail (100px)', '_m' => 'Small (240px)', '' => 'Medium (500px)', '_b' => 'Large (1024px)', '_o' => 'Original Size' );
+					$flickr_size->options= array( '_s' => 'Square (75x75)', '_t' => 'Thumbnail (100px)', '_m' => 'Small (240px)', '' => 'Medium (500px)', '_b' => 'Large (1024px)', '_o' => 'Original Size' );
 					$ui->out();
 					break;
 			}
