@@ -17,18 +17,11 @@ function setDatabaseType()
 {
 	switch($('#db_type').val()) {
 		case 'mysql':
-			$('.forpgsql').hide();
 			$('.forsqlite').hide();
 			$('.formysql').show();
 			break;
-		case 'pgsql':
-			$('.formysql').hide();
-			$('.forsqlite').hide();
-			$('.forpgsql').show();
-			break;
 		case 'sqlite':
 			$('.formysql').hide();
-			$('.forpgsql').hide();
 			$('.forsqlite').show();
 			checkDBCredentials();
 			break;
@@ -37,16 +30,16 @@ function setDatabaseType()
 
 function checkDBCredentials()
 {
-	if ( ( $('#db_type').val() == 'mysql' ) && ( $('#mysqldatabasehost').val() != '' ) && ( $('#mysqldatabaseuser').val() != '' ) && ( $('#mysqldatabasename').val() != '' ) ) {
+	if ( ( $('#db_type').val() == 'mysql' ) && ( $('#databasehost').val() != '' ) && ( $('#databaseuser').val() != '' ) && ( $('#databasename').val() != '' ) ) {
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/check_mysql_credentials',
 			data: { // Ask InstallHandler::ajax_check_mysql_credentials to check the credentials
 				ajax_action: 'check_mysql_credentials',
-				host: $('#mysqldatabasehost').val(),
-				database: $('#mysqldatabasename').val(),
-				user: $('#mysqldatabaseuser').val(),
-				pass: $('#mysqldatabasepass').val()
+				host: $('#databasehost').val(),
+				database: $('#databasename').val(),
+				user: $('#databaseuser').val(),
+				pass: $('#databasepass').val()
 			},
 			success: function(xml) {
 				$('#installerror').fadeOut();
@@ -62,46 +55,7 @@ function checkDBCredentials()
 					});
 					break;
 				case '1': // Hide the warnings, highlight the borders and show the next step
-					ida= new Array( '#mysqldatabasename', '#mysqldatabasehost', '#mysqldatabasepass', '#mysqldatabaseuser' );
-					$(ida).each(function(id) {
-					ido= $(ida).get(id);
-					$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-					$(ido).parents('.installstep').addClass('done')
-					});
-					$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
-					$('#sitename').focus()
-					break;
-				}
-			},
-			error: handleAjaxError,
-		});
-	}
-	else if ( ( $('#db_type').val() == 'pgsql' ) && ( $('#pgsqldatabasehost').val() != '' ) && ( $('#pgsqldatabaseuser').val() != '' ) && ( $('#pgsqldatabasename').val() != '' ) ) {
-		$.ajax({
-			type: 'POST',
-			url: 'ajax/check_pgsql_credentials',
-			data: { // Ask InstallHandler::ajax_check_pgsql_credentials to check the credentials
-				ajax_action: 'check_pgsql_credentials',
-				host: $('#pgsqldatabasehost').val(),
-				database: $('#pgsqldatabasename').val(),
-				user: $('#pgsqldatabaseuser').val(),
-				pass: $('#pgsqldatabasepass').val()
-			},
-			success: function(xml) {
-				$('#installerror').fadeOut();
-				switch($('status',xml).text()) {
-				case '0': // Show warning, fade the borders and hide the next step
-					$('id',xml).each(function(id) {
-					ido= $('id',xml).get(id);
-					warningtext= $('message',xml).text();
-					$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$($(ido).text()).parents('.installstep').removeClass('done');
-					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
-					});
-					break;
-				case '1': // Hide the warnings, highlight the borders and show the next step
-					ida= new Array( '#pgsqldatabasename', '#pgsqldatabasehost', '#pgsqldatabasepass', '#pgsqldatabaseuser' );
+					ida= new Array( '#databasename', '#databasehost', '#databasepass', '#databaseuser' );
 					$(ida).each(function(id) {
 					ido= $(ida).get(id);
 					$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
@@ -119,7 +73,7 @@ function checkDBCredentials()
 		$.ajax({
 			type: 'POST',
 			url: 'ajax/check_sqlite_credentials',
-			data: { // Ask InstallHandler::ajax_check_sqlite_credentials to check the credentials
+			data: { // Ask InstallHandler::ajax_check_mysql_credentials to check the credentials
 				ajax_action: 'check_sqlite_credentials',
 				file: $('#databasefile').val(),
 			},
