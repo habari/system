@@ -34,6 +34,10 @@ class InstallHandler extends ActionHandler {
 					self::ajax_check_mysql_credentials();
 					exit;
 					break;
+				case 'check_pgsql_credentials':
+					self::ajax_check_pgsql_credentials();
+					exit;
+					break;
 				case 'check_sqlite_credentials':
 					self::ajax_check_sqlite_credentials();
 					exit;
@@ -51,6 +55,7 @@ class InstallHandler extends ActionHandler {
 		 * Add the AJAX hooks
 		 */
 		Plugins::register( array('InstallHandler', 'ajax_check_mysql_credentials'), 'ajax_', 'check_mysql_credentials' );
+		Plugins::register( array('InstallHandler', 'ajax_check_pgsql_credentials'), 'ajax_', 'check_pgsql_credentials' );
 
 		/*
 		 * Let's check the config.php file if no POST data was submitted
@@ -73,6 +78,11 @@ class InstallHandler extends ActionHandler {
 					break;
 				case 'mysql':
 					list($host,$name)= explode(';', $remainder);
+					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
+					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
+					break;
+				case 'pgsql':
+					list($host,$name)= explode(' ', $remainder);
 					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
 					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
 					break;
@@ -278,7 +288,8 @@ class InstallHandler extends ActionHandler {
 
 		switch($db_type) {
 		case 'mysql':
-			// MySQL requires specific connection information
+		case 'pgsql':
+			// MySQL & PostgreSQL requires specific connection information
 			if (empty($db_user)) {
 				$this->theme->assign('form_errors', array('db_user'=>_t('User is required.')));
 				return false;
@@ -407,7 +418,7 @@ class InstallHandler extends ActionHandler {
 		global $db_connection;
 		if($config= $this->get_config_file()) {
 			$config = preg_replace('/<\\?php(.*)\\?'.'>/ims', '$1', $config);
-			// Update the $db_connection global from the config that is aobut to be written:
+			// Update the $db_connection global from the config that is about to be written:
 			eval($config);
 
 			/* Attempt to connect to the database host */
@@ -561,9 +572,13 @@ class InstallHandler extends ActionHandler {
 		$queries= array();
 		switch ($db_type) {
 			case 'mysql':
-				$queries[]= 'CREATE DATABASE `' . $db_schema . '`;';
-				$queries[]= 'GRANT ALL ON `' . $db_schema . '`.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' .
+				$queries[]= 'CREATE DATABASE ' . $db_schema . ';';
+				$queries[]= 'GRANT ALL ON ' . $db_schema . '.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' .
 				'IDENTIFIED BY \'' . $db_pass . '\';';
+				break;
+			case 'pgsql':
+				$queries[]= 'CREATE DATABASE ' . $db_schema . ';';
+				$queries[]= 'GRANT ALL ON DATABASE ' . $db_schema . ' TO ' . $db_user . ';';
 				break;
 			default:
 				die('currently unsupported.');
@@ -613,6 +628,9 @@ class InstallHandler extends ActionHandler {
 			switch ( $db_type ) {
 				case 'mysql':
 					$connection_string= "$db_type:host=$db_host;dbname=$db_schema";
+					break;
+				case 'pgsql':
+					$connection_string= "$db_type:host=$db_host dbname=$db_schema";
 					break;
 				case 'sqlite':
 					$connection_string= "$db_type:$db_file";
@@ -795,6 +813,10 @@ class InstallHandler extends ActionHandler {
 			list($host,$name)= explode(';', $remainder);
 			list($discard, $db_name)= explode('=', $name);
 			break;
+		case 'pgsql':
+			list($host,$name)= explode(' ', $remainder);
+			list($discard, $db_name)= explode('=', $name);
+			break;
 		}
 
 		// Get the queries for this database and apply the changes to the structure
@@ -825,19 +847,19 @@ class InstallHandler extends ActionHandler {
 		if ( !isset( $_POST['host'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error= $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#databasehost' );
+			$xml_error->addChild( 'id', '#mysqldatabasehost' );
 			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
 		}
 		if ( !isset( $_POST['database'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error= $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#databasename' );
+			$xml_error->addChild( 'id', '#mysqldatabasename' );
 			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
 		}
 		if ( !isset( $_POST['user'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error= $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#databaseuser' );
+			$xml_error->addChild( 'id', '#mysqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
@@ -851,23 +873,87 @@ class InstallHandler extends ActionHandler {
 				$xml->addChild( 'status', 0 );
 				$xml_error= $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
-					$xml_error->addChild( 'id', '#databaseuser' );
-					$xml_error->addChild( 'id', '#databasepass' );
+					$xml_error->addChild( 'id', '#mysqldatabaseuser' );
+					$xml_error->addChild( 'id', '#mysqldatabasepass' );
 					$xml_error->addChild( 'message', _t('Access denied. Make sure these credentials are valid.') );
 				}
 				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
-					$xml_error->addChild( 'id', '#databasename' );
+					$xml_error->addChild( 'id', '#mysqldatabasename' );
 					$xml_error->addChild( 'message', _t('That database does not exist.') );
 				}
 				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
-					$xml_error->addChild( 'id', '#databasehost' );
+					$xml_error->addChild( 'id', '#mysqldatabasehost' );
 					$xml_error->addChild( 'message', _t('Could not connect to host.') );
 				}
 				else {
-					$xml_error->addChild( 'id', '#databaseuser' );
-					$xml_error->addChild( 'id', '#databasepass' );
-					$xml_error->addChild( 'id', '#databasename' );
-					$xml_error->addChild( 'id', '#databasehost' );
+					$xml_error->addChild( 'id', '#mysqldatabaseuser' );
+					$xml_error->addChild( 'id', '#mysqldatabasepass' );
+					$xml_error->addChild( 'id', '#mysqldatabasename' );
+					$xml_error->addChild( 'id', '#mysqldatabasehost' );
+					$xml_error->addChild( 'message', $e->getMessage() );
+				}
+			}
+		}
+		$xml= $xml->asXML();
+		ob_clean();
+		header("Content-type: text/xml");
+		header("Cache-Control: no-cache");
+		print $xml;
+	}
+
+	/**
+	 * Validate database credentials for PostgreSQL
+	 * Try to connect and verify if database name exists
+	 */
+	public function ajax_check_pgsql_credentials() {
+		$xml= new SimpleXMLElement('<response></response>');
+		// Missing anything?
+		if ( !isset( $_POST['host'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error= $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#pgsqldatabasehost' );
+			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
+		}
+		if ( !isset( $_POST['database'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error= $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#pgsqldatabasename' );
+			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
+		}
+		if ( !isset( $_POST['user'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error= $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
+			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
+		}
+		if ( !isset( $xml_error ) ) {
+			// Can we connect to the DB?
+			$pdo= 'pgsql:host=' . $_POST['host'] . ' dbname=' . $_POST['database'];
+			try {
+				$connect= DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+				$xml->addChild( 'status', 1 );
+			}
+			catch(Exception $e) {
+				$xml->addChild( 'status', 0 );
+				$xml_error= $xml->addChild( 'error' );
+				if ( strpos( $e->getMessage(), '[1045]' ) ) {
+					$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
+					$xml_error->addChild( 'id', '#pgsqldatabasepass' );
+					$xml_error->addChild( 'message', _t('Access denied. Make sure these credentials are valid.') );
+				}
+				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
+					$xml_error->addChild( 'id', '#pgsqldatabasename' );
+					$xml_error->addChild( 'message', _t('That database does not exist.') );
+				}
+				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
+					$xml_error->addChild( 'id', '#pgsqldatabasehost' );
+					$xml_error->addChild( 'message', _t('Could not connect to host.') );
+				}
+				else {
+					$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
+					$xml_error->addChild( 'id', '#pgsqldatabasepass' );
+					$xml_error->addChild( 'id', '#pgsqldatabasename' );
+					$xml_error->addChild( 'id', '#pgsqldatabasehost' );
 					$xml_error->addChild( 'message', $e->getMessage() );
 				}
 			}
