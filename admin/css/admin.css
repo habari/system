@@ -1072,7 +1072,7 @@ p:hover > label.incontent.popup {
 /* TIMELINE */
 
 .navigator {
-	padding: ;
+	padding:0 ;
 	}
 
 .navigator span {
@@ -1120,7 +1120,7 @@ p:hover > label.incontent.popup {
 .timeline .years .months {
 	display: table-row;
 	height: inherit;
-	overflow: none;
+	overflow: hidden;
 	position: relative;
 	}
 
