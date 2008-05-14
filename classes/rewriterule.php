@@ -27,7 +27,7 @@ class RewriteRule extends QueryRecord
 	public static function default_fields()
 	{
 		return array(
-			'rule_id' => 0,
+			'id' => 0,
 			'name' => '',
 			'parse_regex' => '/.^/',
 			'build_str' => '',
@@ -52,7 +52,7 @@ class RewriteRule extends QueryRecord
 			$this->fields );
 		
 		parent::__construct( $paramarray );
-		$this->exclude_fields( 'rule_id' );
+		$this->exclude_fields( 'id' );
 	}
 	
 	
@@ -188,7 +188,7 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function update()
 	{
-		return parent::updateRecord( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
+		return parent::updateRecord( DB::table( 'rewrite_rules' ), array( 'id' => $this->id ) );
 	}
 	
 	/**
@@ -196,7 +196,7 @@ class RewriteRule extends QueryRecord
 	 */	 	 	 	 	
 	public function delete()
 	{
-		return parent::deleteRecord( DB::table( 'rewrite_rules' ), array( 'rule_id' => $this->rule_id ) );
+		return parent::deleteRecord( DB::table( 'rewrite_rules' ), array( 'id' => $this->id ) );
 	}
 	
 	/**

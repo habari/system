@@ -45,7 +45,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasehost">Database Host <strong>*</strong></label>
-					<input type="text" id="databasehost" name="db_host" value="<?php echo $db_host; ?>">
+					<input type="text" id="mysqldatabasehost" name="db_host" value="<?php echo $db_host; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -59,7 +59,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databaseuser">Username <strong>*</strong></label>
-					<input type="text" id="databaseuser" name="db_user" value="<?php echo $db_user; ?>">
+					<input type="text" id="mysqldatabaseuser" name="db_user" value="<?php echo $db_user; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -70,7 +70,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasepass">Password <strong>*</strong></label>
-					<input type="password" id="databasepass" name="db_pass" value="<?php /* echo $db_pass; */ ?>">
+					<input type="password" id="mysqldatabasepass" name="db_pass" value="<?php /* echo $db_pass; */ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -81,11 +81,61 @@
 
 				<div class="inputfield formysql">
 					<label for="databasetype">Database Name <strong>*</strong></label>
-					<input type="text" id="databasename" name="db_schema" value="<?php echo $db_schema; ?>">
+					<input type="text" id="mysqldatabasename" name="db_schema" value="<?php echo $db_schema; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
 						<strong>Database Name</strong> is the name of the MySQL database to
+						which Habari will connect.  <a href="#">Learn More...</a>
+					</div>
+				</div>
+
+				<h3 class="javascript-disabled">PostgreSQL Settings</h3>
+				<div class="javascript-disabled">Use the settings below only if you have selected PostgreSQL as your database engine.</div>
+
+				<div class="inputfield forpgsql">
+					<label for="databasehost">Database Host <strong>*</strong></label>
+					<input type="text" id="pgsqldatabasehost" name="db_host" value="<?php echo $db_host; ?>">
+					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
+					<div class="warning"></div>
+					<div class="help">
+						<strong>Database Host</strong> is the host (domain) name or server IP
+						address of the server that runs the PostgreSQL database to
+						which Habari will connect.  If PostgreSQL is running on your web server,
+						and most of the time it is, "localhost" is usually a good value
+						for this field.  <a href="#">Learn More...</a>
+					</div>
+				</div>
+
+				<div class="inputfield forpgsql">
+					<label for="databaseuser">Username <strong>*</strong></label>
+					<input type="text" id="pgsqldatabaseuser" name="db_user" value="<?php echo $db_user; ?>">
+					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
+					<div class="warning"></div>
+					<div class="help">
+						<strong>Database User</strong> is the username used to connect Habari
+						to the PostgreSQL database.  <a href="#">Learn More...</a>
+					</div>
+				</div>
+
+				<div class="inputfield forpgsql">
+					<label for="databasepass">Password <strong>*</strong></label>
+					<input type="password" id="pgsqldatabasepass" name="db_pass" value="<?php /* echo $db_pass; */ ?>">
+					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
+					<div class="warning"></div>
+					<div class="help">
+						<strong>Database Password</strong> is the password used to connect
+						the specified user to the PostgreSQL database.  <a href="#">Learn More...</a>
+					</div>
+				</div>
+
+				<div class="inputfield forpgsql">
+					<label for="databasetype">Database Name <strong>*</strong></label>
+					<input type="text" id="pgsqldatabasename" name="db_schema" value="<?php echo $db_schema; ?>">
+					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
+					<div class="warning"></div>
+					<div class="help">
+						<strong>Database Name</strong> is the name of the PostgreSQL database to
 						which Habari will connect.  <a href="#">Learn More...</a>
 					</div>
 				</div>

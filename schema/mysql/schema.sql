@@ -99,7 +99,7 @@ CREATE TABLE  {$prefix}commentinfo (
 );
 
 CREATE TABLE {$prefix}rewrite_rules (
-  rule_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   parse_regex VARCHAR(255) NOT NULL,
   build_str VARCHAR(255) NOT NULL,
@@ -109,11 +109,11 @@ CREATE TABLE {$prefix}rewrite_rules (
   is_active SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   rule_class SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   description TEXT NULL,
-  PRIMARY KEY (rule_id)
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE {$prefix}crontab (
-  cron_id INT unsigned NOT NULL auto_increment,
+  id INT unsigned NOT NULL auto_increment,
   name VARCHAR(255) NOT NULL,
   callback VARCHAR(255) NOT NULL,
   last_run VARCHAR(255) NOT NULL,
@@ -123,9 +123,9 @@ CREATE TABLE {$prefix}crontab (
   end_time VARCHAR(255) NOT NULL,
   result VARCHAR(255) NOT NULL,
   notify VARCHAR(255) NOT NULL,
-  cron_class TINYINT unsigned NOT NULL default '0',
+  cron_class TINYINT unsigned NOT NULL DEFAULT 0,
   description TEXT NULL,
-  PRIMARY KEY (cron_id)
+  PRIMARY KEY (id)
 );
 
 CREATE TABLE {$prefix}log (
@@ -187,7 +187,6 @@ CREATE TABLE {$prefix}sessions  (
   ua VARCHAR(255) NOT NULL,
   data MEDIUMTEXT,
   user_id SMALLINT UNSIGNED,
-  PRIMARY KEY (token),
-  UNIQUE KEY token (token)
+  PRIMARY KEY (token)
 );
 

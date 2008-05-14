@@ -23,7 +23,7 @@ class CronJob extends QueryRecord
 	public static function default_fields()
 	{
 		return array(
-			'cron_id' => 0,
+			'id' => 0,
 			'name' => '',
 			'callback' => '',
 			'last_run' => '',
@@ -64,7 +64,7 @@ class CronJob extends QueryRecord
 		}
 
 		parent::__construct( $paramarray );
-		$this->exclude_fields( 'cron_id' );
+		$this->exclude_fields( 'id' );
 	}
 
 	/**
@@ -152,7 +152,7 @@ class CronJob extends QueryRecord
 	 */
 	public function update()
 	{
-		return parent::updateRecord( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
+		return parent::updateRecord( DB::table('crontab'), array('id'=>$this->id) );
 	}
 
 	/**
@@ -160,7 +160,7 @@ class CronJob extends QueryRecord
 	 */
 	public function delete()
 	{
-		return parent::deleteRecord( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
+		return parent::deleteRecord( DB::table('crontab'), array('id'=>$this->id) );
 	}
 }
 
