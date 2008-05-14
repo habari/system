@@ -133,13 +133,17 @@ class MySQLConnection extends DatabaseConnection
 								$cqueries[] = "ALTER TABLE {$table} CHANGE COLUMN {$tablefield->Field} " . $cfields[strtolower($tablefield->Field)];
 								$for_update[$table.'.'.$tablefield->Field] = "Changed type of {$table}.{$tablefield->Field} from {$tablefield->Type} to {$fieldtype}";
 							}
-							if(preg_match("| DEFAULT '(.*)'|i", $cfields[strtolower($tablefield->Field)], $matches)) {
+							if(preg_match("| DEFAULT ([^ ]*)|i", $cfields[strtolower($tablefield->Field)], $matches)) {
 								$default_value = $matches[1];
 								if($tablefield->Default != $default_value)
 								{
-									$cqueries[] = "ALTER TABLE {$table} ALTER COLUMN {$tablefield->Field} SET DEFAULT '{$default_value}'";
+									$cqueries[] = "ALTER TABLE {$table} ALTER COLUMN {$tablefield->Field} SET DEFAULT {$default_value}";
 									$for_update[$table.'.'.$tablefield->Field] = "Changed default value of {$table}.{$tablefield->Field} from {$tablefield->Default} to {$default_value}";
 								}
+							}
+							elseif ( strlen( $tablefield->Default) > 0 ) {
+								$cqueries[]= "ALTER TABLE {$table} ALTER COLUMN {$tablefield->Field} DROP DEFAULT";
+								$for_update[$table.'.'.$tablefield->Field] = "Dropped default value of {$table}.{$tablefield->Field}";
 							}
 							unset($cfields[strtolower($tablefield->Field)]);
 						}
