@@ -1341,7 +1341,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 	padding: 25px 0 20px;
 	}
 
-.splitterinside a {
+.splitterinside * a {
 	color: #999;
 	}
 
