@@ -1303,7 +1303,7 @@ ul.tabs li a:hover {
 	text-decoration: none;
 	}
 
-ul.tabs li.first.last a {
+ul.tabs li.first-child.last-child a {
 	width: 150px;
 	}
 
