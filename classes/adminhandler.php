@@ -54,7 +54,7 @@ class AdminHandler extends ActionHandler
 	public function act_admin()
 	{
 		$page= ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		// Add some default stylesheets
@@ -67,7 +67,7 @@ class AdminHandler extends ActionHandler
 
 
 		$this->set_admin_template_vars( $this->theme );
-		$this->theme->admin_page = $page;
+		$this->theme->admin_page= $page;
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
 				// Let plugins try to handle the page
@@ -158,15 +158,15 @@ class AdminHandler extends ActionHandler
 	public function get_dashboard()
 	{
 		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
-		$firstpostdate = strtotime(DB::get_value('SELECT min(pubdate) FROM {posts} WHERE status = ?', array(Post::status('published'))));
-		$firstpostdate = time() - $firstpostdate;
-		$this->theme->active_time = array(
+		$firstpostdate= strtotime(DB::get_value('SELECT min(pubdate) FROM {posts} WHERE status = ?', array(Post::status('published'))));
+		$firstpostdate= time() - $firstpostdate;
+		$this->theme->active_time= array(
 			'years' => floor($firstpostdate / 31536000),
 			'months' => floor(($firstpostdate % 31536000) / 2678400),
 			'days' => round(($firstpostdate % 2678400) / 86400),
 		);
 
-		$this->theme->stats = array(
+		$this->theme->stats= array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),
 			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),
 			'entry_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('published') ) ),
@@ -178,7 +178,7 @@ class AdminHandler extends ActionHandler
 			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'entry'), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
 		);
 
-		$this->theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
+		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 		$this->theme->recent_comments= Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5 ) );
 
 		$modules= array(
@@ -511,10 +511,10 @@ class AdminHandler extends ActionHandler
 		$updates= Update::check();
 		foreach($all_themes as $name => $theme) {
 			if(isset($all_themes[$name]['info']->update) && isset($updates[$all_themes[$name]['info']->update])) {
-				$all_themes[$name]['info']->update = $updates[$all_themes[$name]['info']->update]['latest_version'];
+				$all_themes[$name]['info']->update= $updates[$all_themes[$name]['info']->update]['latest_version'];
 			}
 			else {
-				$all_themes[$name]['info']->update = '';
+				$all_themes[$name]['info']->update= '';
 			}
 		}
 		$this->theme->all_themes= $all_themes;
@@ -574,7 +574,7 @@ class AdminHandler extends ActionHandler
 		$this->display( 'comments' );
 	}
 
-	function fetch_comments( $params = array() )
+	function fetch_comments( $params= array() )
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals= array(
@@ -679,7 +679,7 @@ class AdminHandler extends ActionHandler
 							// This comment was marked for approval
 							$comment= Comment::get( $comment->id );
 							$modstatus['Approved %d comments']+= $comment->status != Comment::STATUS_APPROVED;
-							$modstatus['Approved comments on these posts: %s'] = (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+							$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
 							$comment->status= Comment::STATUS_APPROVED;
 							$comment->update();
 						}
@@ -860,7 +860,8 @@ class AdminHandler extends ActionHandler
 			}
 			if ($plugin['active']) {
 				$sort_active_plugins[$plugin_id]= $plugin;
-			} else {
+			}
+			else {
 				$sort_inactive_plugins[$plugin_id]= $plugin;
 			}
 		}
@@ -876,7 +877,7 @@ class AdminHandler extends ActionHandler
 	 * Assign values needed to display the entries page to the theme based on handlervars and parameters
 	 *
 	 */
-	private function fetch_entries( $params = array() )
+	private function fetch_entries( $params= array() )
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals= array(
@@ -1026,15 +1027,15 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_entries()
 	{
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		$params = $_POST;
+		$params= $_POST;
 
 		$this->fetch_entries( $params );
-		$items = $this->theme->fetch( 'entries_items' );
+		$items= $this->theme->fetch( 'entries_items' );
 
-		$output = array(
+		$output= array(
 			'items' => $items,
 		);
 		echo json_encode($output);
@@ -1045,15 +1046,15 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_comments()
 	{
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		$params = $_POST;
+		$params= $_POST;
 
 		$this->fetch_comments( $params );
-		$items = $this->theme->fetch( 'comments_items' );
+		$items= $this->theme->fetch( 'comments_items' );
 
-		$output = array(
+		$output= array(
 			'items' => $items,
 		);
 		echo json_encode($output);
@@ -1063,9 +1064,10 @@ class AdminHandler extends ActionHandler
 	 * handles AJAX from /manage/entries
 	 * used to delete entries
 	 */
-	public function ajax_delete_entries($handler_vars) {
+	public function ajax_delete_entries($handler_vars)
+	{
 		$count= 0;
-		
+
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			echo json_encode( 'WSSE authentication failed.' );
@@ -1082,13 +1084,14 @@ class AdminHandler extends ActionHandler
 				$count++;
 			}
 		}
-		
+
 		$msg_status= sprintf( _t('Deleted %d entries.'), $count );
 
 		echo json_encode($msg_status);
 	}
 
-	public function ajax_update_comment( $handler_vars) {
+	public function ajax_update_comment( $handler_vars)
+	{
 
 		$comment= Comments::get( array( 'id' => $handler_vars['id'] ) );
 		$comment= $comment[0];
@@ -1367,7 +1370,8 @@ class AdminHandler extends ActionHandler
 				foreach ( Users::get_all() as $user ) {
 					if ( in_array( $user->id, $form_users ) ) {
 						$add_users[]= (int) $user->id;
-					} else {
+					}
+					else {
 						$remove_users[]= (int) $user->id;
 					}
 				}
@@ -1437,6 +1441,47 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * Handle GET requests for /admin/tags to display the logs
+	 */
+	public function get_tags()
+	{
+		$this->theme->wsse= Utils::WSSE();
+		$this->theme->available_tags= Tags::get();
+		$this->display( 'tags' );
+	}
+
+	/**
+	 * handles AJAX from /admin/tags
+	 * used to delete and rename tags
+	 */
+	public function ajax_tags( $handler_vars)
+	{
+		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+			echo json_encode( 'WSSE authentication failed.' );
+			return;
+		}
+
+		$tag_names= array();
+		$action= $this->handler_vars['action'];
+		switch ( $action ) {
+			case 'delete':
+				foreach($_POST as $id => $delete) {
+					// skip POST elements which are not post ids
+					if ( preg_match( '/^tag_\d+/', $id ) && $delete ) {
+						$id= substr($id, 4);
+						$tag= Tags::get_by_id($id);
+						$tag_names[]= $tag->tag_text;
+						Tags::delete($tag);
+					}
+				}
+				$msg_status= sprintf( _t('Tags %s have been deleted.'), implode($tag_names, ', ') );
+				break;
+		}
+		echo json_encode($msg_status);
+	}
+
+	/**
 	 * Assembles the main menu for the admin area.
 	 * @param Theme $theme The theme to add the menu to
 	 */
@@ -1449,20 +1494,20 @@ class AdminHandler extends ActionHandler
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf(_t('Content: Create a %s'), ucwords($type)), 'text' => sprintf(_t('Create %s'), ucwords($type)) );
-			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=entries&type=' . $typeint ), 'title' => sprintf(_t('Content: Manage %s'), ucwords($type)), 'text' => sprintf(_t('Manage %s'), ucwords($type)) );
+			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf(_t('Content: Create a %s'), ucwords($type)), 'text' => sprintf(_t('Create %s'), ucwords($type)) );
+			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=entries&type=' . $typeint ), 'title' => sprintf(_t('Content: Manage %s'), ucwords($type)), 'text' => sprintf(_t('Manage %s'), ucwords($type)) );
 			switch($type) {
 				case 'entry':
-					$createmenu['create_' . $typeint]['hotkey'] = '1';
-					$managemenu['manage_' . $typeint]['hotkey'] = '3';
+					$createmenu['create_' . $typeint]['hotkey']= '1';
+					$managemenu['manage_' . $typeint]['hotkey']= '3';
 					break;
 				case 'page':
-					$createmenu['create_' . $typeint]['hotkey'] = '2';
-					$managemenu['manage_' . $typeint]['hotkey'] = '4';
+					$createmenu['create_' . $typeint]['hotkey']= '2';
+					$managemenu['manage_' . $typeint]['hotkey']= '4';
 					break;
 				default:
-					$createmenu['create_' . $typeint]['hotkey'] = '';
-					$managemenu['manage_' . $typeint]['hotkey'] = '';
+					$createmenu['create_' . $typeint]['hotkey']= '';
+					$managemenu['manage_' . $typeint]['hotkey']= '';
 					break;
 			}
 		}
@@ -1480,11 +1525,11 @@ class AdminHandler extends ActionHandler
 			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t('View system log messages'), 'text' => _t('Logs'), 'hotkey' => 'L') ,
 			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t('Log out of the Administration Interface'), 'text' => _t('Logout'), 'hotkey' => 'X' ),
 		);
-		$mainmenus = array_merge($createmenu, $managemenu, $adminmenu);
+		$mainmenus= array_merge($createmenu, $managemenu, $adminmenu);
 
 		foreach($mainmenus as $menu_id => $menu) {
 			// Change this to set the correct menu as the active menu
-			$mainmenus[$menu_id]['selected'] = false;
+			$mainmenus[$menu_id]['selected']= false;
 		}
 
 		$mainmenus= Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
