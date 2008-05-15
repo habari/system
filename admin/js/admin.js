@@ -147,13 +147,13 @@ var tagManage = {
 		if(!$('.page-tags').length) return;
 
 		$('.tags .tag').click(function() {
-				$(this).toggleClass("selected");
+				$(this).toggleClass('selected');
 				tagManage.changeTag();
 			}
 		);
 
 		$('.tags.controls input.deletebutton').click(function () {
-			tagManage.delete();
+			tagManage.remove();
 		});
 		$('.tags.controls input.renamebutton').click(function () {
 			tagManage.rename();
