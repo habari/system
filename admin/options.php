@@ -44,18 +44,9 @@
 	
 	<div class="container settings">
 		<h2>Publishing</h2>
-		<div class="item clear" id="siteabout">
-			<span class="column span-5">
-				<label for="sitetagline">About</label>
-			</span>
-			<span class="column span-14 last">
-				<textarea name="about" id="about" class="border"><?php Options::out('about'); ?></textarea>
-			</span>
-		</div>
-		
 		<div class="item clear" id="encoding">
 			<span class="column span-5">
-				<label for="encoding">Items per page</label>
+				<label for="encoding">Items per Page</label>
 			</span>
 			<span class="column span-5 last">
 				<input type="text" class="border" id="pagination" name="pagination" value="<?php Options::out('pagination'); ?>">
@@ -64,7 +55,7 @@
 		
 		<div class="item clear" id="encoding">
 			<span class="column span-5">
-				<label for="encoding">Send Pingbacks to linked URLs</label>
+				<label for="encoding">Send Pingbacks to Links</label>
 			</span>
 			<span class="column span-5 last">
 				<input type="checkbox" id="pingback_send" name="pingback_send" value="1"<?php echo (Options::get('pingback_send') == 1 ? ' checked' : ''); ?>>			</span>
@@ -73,7 +64,7 @@
 		
 		<div class="item clear" id="encoding">
 			<span class="column span-5">
-				<label for="encoding">Require comment authors info</label>
+				<label for="encoding">Require Comment Author Info</label>
 			</span>
 			<span class="column span-5 last">
 				<input type="checkbox" id="comments_require_id" name="comments_require_id" value="1"<?php echo (Options::get('comments_require_id') == 1 ? ' checked' : ''); ?>>
