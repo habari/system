@@ -60,7 +60,9 @@ class PGSQLConnection extends DatabaseConnection
 			}
 		}
 
+		$cseqqueries= array();
 		$cqueries= array();
+		$alterseqqueries= array();
 		$indexqueries= array();
 		$iqueries= array();
 		$for_update= array();
@@ -77,6 +79,12 @@ class PGSQLConnection extends DatabaseConnection
 			else if ( preg_match( "|CREATE DATABASE ([^ ]*)|", $qry, $matches ) ) {
 				array_unshift( $cqueries, $qry );
 			}
+			else if ( preg_match( "|CREATE SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
+				$cseqqueries[strtolower( $matches[1] )]= $qry;
+			}
+			else if ( preg_match( "|ALTER SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
+				$alterseqqueries[]= $qry;
+			}
 			else if ( preg_match( "|INSERT INTO ([^ ]*)|", $qry, $matches ) ) {
 				$iqueries[]= $qry;
 			}
@@ -85,6 +93,24 @@ class PGSQLConnection extends DatabaseConnection
 			}
 			else {
 				// Unrecognized query type
+			}
+		}
+
+		// Checking sequence
+		if ( $seqnames= $this->get_results(
+			"SELECT c.relname as name,
+				CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' END AS type
+			   FROM pg_catalog.pg_class c
+			   JOIN pg_catalog.pg_roles r ON r.oid = c.relowner
+				LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+				WHERE c.relkind IN ('S','')
+				AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+				AND pg_catalog.pg_table_is_visible(c.oid)
+				ORDER BY 1,2;" ) ) {
+			foreach ( ( array ) $seqnames as $seqname ) {
+				if ( array_key_exists( strtolower( $seqname->name ), $cseqqueries ) ) {
+					unset( $cseqqueries[$seqname->name] );
+				}
 			}
 		}
 
@@ -147,19 +173,6 @@ class PGSQLConnection extends DatabaseConnection
 							$cfieldtype= $matches[2];
 							$fieldtype= $tablefield->type;
 
-							if ( stripos( $tablefield->default, '_id_seq' ) === false ) {
-								// do nothing
-							}
-							else {
-								switch ( strtolower( $fieldtype ) ) {
-									case 'integer':
-										$fieldtype= 'SERIAL';
-										break;
-									case 'bigint':
-										$fieldtype= 'BIGSERIAL';
-										break;
-								}
-							}
 							if ( stripos( $fieldtype, 'character' ) === false ) {
 								// do nothing
 							}
@@ -178,9 +191,6 @@ class PGSQLConnection extends DatabaseConnection
 								$fieldtype= 'timestamp';
 							}
 							if ( strtolower( $fieldtype ) != strtolower( $cfieldtype ) ) {
-								$field_default_names= array( '/^SERIAL/i', '/^BIGSERIAL/i' );
-								$field_true_type_names= array( 'integer', 'bigint' );
-								$cfieldtype= preg_replace( $field_default_names, $field_true_type_names, $cfieldtype );
 								$cqueries[]= "ALTER TABLE {$table} ALTER COLUMN " . $cfieldname . " TYPE " . $cfieldtype;
 								$for_update[$table.'.'.$tablefield->field]= "Changed type of {$table}.{$tablefield->field} from {$tablefield->type} to {$fieldtype}";
 							}
@@ -191,7 +201,7 @@ class PGSQLConnection extends DatabaseConnection
 								}
 								else {
 									preg_match( '|(.*)::|', $tablefield->default, $matches );
-									$tablefield_default= $matches[1];
+									$tablefield_default= $matches[1] . ( preg_match( '|^nextval|i', $matches[1] ) > 0 ? ')' : '' );
 								}
 								if ( $tablefield_default != $default_value ) {
 									$cqueries[]= "ALTER TABLE {$table} ALTER COLUMN {$tablefield->field} SET DEFAULT {$default_value}";
@@ -200,6 +210,7 @@ class PGSQLConnection extends DatabaseConnection
 							}
 							elseif ( strlen( $tablefield->default) > 0 ) {
 								$cqueries[]= "ALTER TABLE {$table} ALTER COLUMN {$tablefield->field} DROP DEFAULT";
+								$for_update[$table.'.'.$tablefield->field]= "Dropped default value of {$table}.{$tablefield->field}";
 							}
 							unset( $cfields[strtolower( $tablefield->field )] );
 						}
@@ -274,7 +285,7 @@ class PGSQLConnection extends DatabaseConnection
 			}
 		}
 
-		$allqueries= $cqueries;
+		$allqueries= array_merge( $cseqqueries, $cqueries, $alterseqqueries );
 		if ( $doinserts ) {
 			$allqueries= array_merge( $allqueries, $iqueries );
 		}

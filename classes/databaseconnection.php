@@ -658,7 +658,7 @@ class DatabaseConnection
 	public function last_insert_id()
 	{
 		if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'pgsql' ) {
-			return $this->pdo->lastInsertId( $this->current_table. '_id_seq' ) ;
+			return $this->pdo->lastInsertId( $this->current_table. '_pkey_seq' ) ;
 		}
 		else {
 			return $this->pdo->lastInsertId( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
