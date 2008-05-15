@@ -778,8 +778,8 @@ p:hover > label.incontent.popup {
 	position: absolute;
 	top: 14px;
 	left: 20px;
-	font-size: 1.5em;
-	line-height: 20px;
+	font-size: 1.5em !important;
+	line-height: 22px !important;
 	}
 
 .dashboard .item {
