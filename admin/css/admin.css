@@ -1028,6 +1028,11 @@ p:hover > label.incontent.popup {
 
 .manage .item .title {
 	margin-left: 5px;
+	white-space: nowrap;
+	width: 25% !important;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	position: absolute;
 	}
 
 .manage .selectedtext.none {
