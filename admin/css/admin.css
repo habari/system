@@ -956,16 +956,31 @@ p:hover > label.incontent.popup {
 	line-height: 18px;
 	}
 
+
 /* PLUGINS */
+
+.plugins .item {
+	padding: 4px 40px;
+	margin: 10px -40px;
+	}
+
+.plugins .item:hover {
+	background: #eee;
+	}
+
+.plugins .item .dropbutton {
+	top: 5px !important;
+	right: 40px !important;
+	}
+
+.plugins .head {
+	margin: 0;
+	font-size: 1.1em;
+	}
 
 .plugins .description {
 	margin: 0;
 	width: 70%;
-	}
-
-.plugins .item {
-		padding: 9px 0;
-		border-bottom: 1px dotted #e6e6e6;
 	}
 
 
@@ -1043,6 +1058,11 @@ p:hover > label.incontent.popup {
 	width: 110px;
 	margin-right: 5px;
 	}
+
+.manage .state {
+	text-transform: capitalize;
+	}
+
 
 /* COMMENTS */
 
