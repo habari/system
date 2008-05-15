@@ -44,7 +44,7 @@
 </div>
 
 <script type="text/javascript">
-tagManage.delete= function() {
+tagManage.remove= function() {
 	spinner.start();
 
 	selected= $('.tags .tag.selected');
