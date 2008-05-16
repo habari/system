@@ -556,7 +556,7 @@ ENDOFSQL;
 		$posts= $this->s9ydb->get_results( $sql, array($import_user_id), 'QueryRecord' );
 		if ( count( $posts ) > 0 ) {
 			$result= TRUE;
-			echo "Starting import of <b>" . count( $posts ) . "</b> posts...";
+			echo "Starting import of <b>" . count( $posts ) . "</b> posts...<br/ >";
 			foreach ( $posts as $post )
 				$result&= $this->import_post( $post, $habari_user->id );
 			if ( $result )
@@ -681,7 +681,7 @@ WHERE entry_id = ?
 ENDOFSQL;
 			if ( $this->comments_ignore_unapproved )
 				$sql.= " AND status = 'Approved' ";
-			$comments= $this->s9ydb->get_results( $sql, array( $post->id ), 'QueryRecord' );
+			$comments= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' );
 			if ( count( $comments ) > 0 ) {
 				$result= TRUE;
 				echo "Starting import of <b>" . count( $comments ) . "</b> comments for post \"" . $post->title . "\"...";
@@ -724,6 +724,7 @@ ENDOFSQL;
 		);
 
 		$comment= new Comment();
+		$comment->post_id= $habari_post_id;
 		$comment->info->s9y_id= $comment_info->id;
 		if ( ! empty( $comment_info->parent_id ) 
 			&&  $comment_info->parent_id != "0" )
