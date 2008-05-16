@@ -128,7 +128,7 @@ class AdminHandler extends ActionHandler
 	public function post_options()
 	{
 		extract( $this->handler_vars );
-		$fields= array( 'title' => 'title', 'tagline' => 'tagline', 'about' => 'about', 'pagination' => 'pagination', 'pingback_send' => 'pingback_send', 'comments_require_id' => 'comments_require_id' );
+		$fields= array( 'title' => 'title', 'tagline' => 'tagline', 'pagination' => 'pagination', 'pingback_send' => 'pingback_send', 'comments_require_id' => 'comments_require_id' );
 		$checkboxes= array( 'pingback_send', 'comments_require_id' );
 		foreach ( $checkboxes as $checkbox ) {
 			if ( !isset( ${$checkbox} ) ) {
