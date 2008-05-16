@@ -181,8 +181,8 @@ var timeline = {
 		var timelineWidth = $('.years').width();
 
 		// get an array of posts per month
-		timeline.monthData= [];
-		timeline.monthWidths= [];
+		timeline.monthData= [0];
+		timeline.monthWidths= [0];
 		timeline.totalCount= 0;
 		$('.years span').each(function(i) {
 			timeline.monthData[i] = $(this).width();
@@ -190,12 +190,15 @@ var timeline = {
 			timeline.totalCount += timeline.monthData[i];
 		});
 
+		// if there are fewer than 20 things, set the handle width to the timelineWidth
+		var minWidth= ( timelineWidth < 20 ) ? timelineWidth : 20;
+
 		$('.track')
 		.width($('.years').width())
 		.slider({
 			handle: '.handle',
-			maxValue: timelineWidth-20,
-			startValue: timelineWidth-20,
+			maxValue: timelineWidth - minWidth,
+			startValue: timelineWidth - minWidth,
 			axis: 'horizontal',
 			stop: function(event, ui) {
 				timelineHandle.updateLoupeInfo();
@@ -221,9 +224,13 @@ var timeline = {
 			else
 				timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
 		});
-
+		
+		// update current position text
+		loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) );
+		$('.currentposition').text( loupeStartPosition +'-'+ timeline.totalCount +' of '+ timeline.totalCount );
+		
 		// Spool the timeline handle
-		timelineHandle.init()
+		timelineHandle.init( ( timelineWidth < 20 ) ? timelineWidth : 20 );
 	},
 	skipLoupeLeft: function(e) {
 		if (timeline.noJump == true) {
@@ -248,7 +255,7 @@ var timeline = {
 	},
 	indexFromPosition: function(pos) {
 		var monthBoundary= 0;
-		var monthIndex= 0;
+		var monthIndex= 1;
 		var month= 0;
 		var i;
 
@@ -263,14 +270,19 @@ var timeline = {
 		// the index is the offset from this boundary, but it cannot be greater than
 		// the number of posts in the month (the month has some extra padding which
 		// increases its width).
-		return monthIndex + Math.min( pos - monthBoundary, timeline.monthData[month] );
+		var padding= parseInt( $('.years span').css('margin-left') );
+		padding= padding ? padding : 0;
+		return monthIndex + Math.min(
+									Math.max( pos - ( monthBoundary + padding ), 0 ),
+									timeline.monthData[month] - 1 );
 	}
 }
 
 
 // TIMELINE HANDLE
 var timelineHandle = {
-	init: function() {
+	init: function( handleWidth ) {
+		$('.handle').css('width', handleWidth + 'px');
 		// Resize Handle Left
 		$('.resizehandleleft')
 			.mousedown(function(e) {

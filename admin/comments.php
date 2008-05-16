@@ -109,7 +109,7 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 	$.ajax({
 		type: "POST",
 		url: "<?php echo URL::get('admin_ajax', array('context' => 'comments')); ?>",
-		data: "offset=" + (parseInt(c) - parseInt(b)) + "&limit=" + (parseInt(b) - parseInt(a)) +
+		data: "offset=" + (parseInt(c) - parseInt(b)) + "&limit=" + (1 + parseInt(b) - parseInt(a)) +
 			<?php
 				$vars= Controller::get_handler_vars();
 				$out= '';
