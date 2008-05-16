@@ -5,6 +5,8 @@ define( 'S9Y_CONFIG_FILENAME', 'serendipity_config.inc.php');
 /**
  * Serendipity Importer - Imports data from Serendipity into Habari
  *
+ * @note	Currently, this imports data from s9y versions 0.9 and up.
+ *
  * @package Habari
  */
 class S9YImport extends Plugin implements Importer
@@ -12,11 +14,12 @@ class S9YImport extends Plugin implements Importer
 	private $supported_importers= array();
 	/** A string that is displayed on trigger of a warning */
 	private $warning= null;
-	/** HTML ID of the element to run AJAX import actions */
+	/** HTML ID of the element to run AJAX import actions -- CURRENTLY NOT USED -- */
 	private $ajax_html_id= 'import_progress';
 	/** Connection to the s9y database to use during import */
 	private $s9ydb= null;
 	/** The table prefix for the s9y tables (only used in the private import_xxx() functions */
+	private $s9y_db_prefix= 's9y_';
 
 	/**
 	 * Initialize plugin.
@@ -340,7 +343,7 @@ WP_IMPORT_STAGE2;
 	/**
 	 * Create the UI for stage two of the WP import process
 	 *
-	 * This stage kicks off the ajax import.
+	 * This stage kicks off the actual import process.
 	 *
 	 * @return string The UI for the second stage of the import process
 	 */
@@ -553,8 +556,13 @@ ENDOFSQL;
 		$posts= $this->s9ydb->get_results( $sql, array($import_user_id), 'QueryRecord' );
 		if ( count( $posts ) > 0 ) {
 			$result= TRUE;
+			echo "Starting import of <b>" . count( $posts ) . "</b> posts...";
 			foreach ( $posts as $post )
 				$result&= $this->import_post( $post, $habari_user->id );
+			if ( $result )
+				echo $this->success_html() . "<br />";
+			else
+				echo $this->fail_html() . "<br />";
 			return $result;
 		}
 		else {
@@ -654,13 +662,42 @@ ENDOFSQL;
 			 * +------------+----------------------+------+-----+---------+----------------+
 			 */
 			$sql=<<<ENDOFSQL
-
+SELECT
+	id
+, parent_id
+, `timestamp`
+, title
+, author
+, email
+, url
+, ip
+, body
+, type
+, subscribed
+, status
+, referer
+FROM {$this->s9y_db_prefix}comments
+WHERE entry_id = ?
 ENDOFSQL;
-			$result= TRUE;
-			return $result;
+			if ( $this->comments_ignore_unapproved )
+				$sql.= " AND status = 'Approved' ";
+			$comments= $this->s9ydb->get_results( $sql, array( $post->id ), 'QueryRecord' );
+			if ( count( $comments ) > 0 ) {
+				$result= TRUE;
+				echo "Starting import of <b>" . count( $comments ) . "</b> comments for post \"" . $post->title . "\"...";
+				foreach ( $comments as $comment )
+					$result&= $this->import_comment( $comment, $post->id );
+				if ( $result )
+					echo $this->success_html() . "<br />";
+				else
+					echo $this->fail_html() . "<br />";
+				return $result;
+			}
+			else
+				return TRUE;
 		}
-		else {
-			print_r($post);exit;
+		else { /* Something went wrong on $post->insert() */
+			EventLog::log($e->getMessage(), 'err', null, null, print_r(array($post, $e), 1));
 			return FALSE;
 		}
 	}
@@ -675,7 +712,37 @@ ENDOFSQL;
 	 */
 	private function import_comment( $comment_info= array(), $habari_post_id )
 	{
+		/* A mapping for s9y comment status to habari comment status codes */
+		$status_map= array(
+			'APPROVED'=> Comment::STATUS_APPROVED
+			, 'PENDING'=> Comment::STATUS_UNAPPROVED
+		);
+		/* A mapping for s9y comment type to habari comment type codes */
+		$type_map= array(
+			'TRACKBACK'=> Comment::TRACKBACK
+			, 'NORMAL'=> Comment::COMMENT
+		);
 
+		$comment= new Comment();
+		$comment->info->s9y_id= $comment_info->id;
+		if ( ! empty( $comment_info->parent_id ) 
+			&&  $comment_info->parent_id != "0" )
+			$comment->info->s9y_parent_id= $comment->info->parent_id;
+		$comment->ip= sprintf ("%u", ip2long($comment_info->ip) );
+		$comment->status= $status_map[strtoupper($comment_info->status)];
+		$comment->type= $type_map[strtoupper($comment_info->type)];
+		$comment->name= $comment_info->author;
+		$comment->url= $comment_info->url;
+		$comment->date= date('Y-m-d H:i:s', $comment_info->timestamp);
+		$comment->email= $comment_info->email;
+		$comment->content= $comment_info->body;
+
+		if ( $comment->insert() )
+			return TRUE;
+		else {
+			EventLog::log($e->getMessage(), 'err', null, null, print_r(array($comment, $e), 1));
+			return FALSE;
+		}
 	}
 
 	/**
@@ -765,144 +832,12 @@ ENDOFSQL;
 		}
 	}
 
-
-	/**
-	 * The plugin sink for the auth_ajax_s9y_import_comments hook.
-	 * Responds via authenticated ajax to requests for comment importing.
-	 *
-	 * @param AjaxHandler $handler The handler that handled the request, contains $_POST info
-	 */
-	public function action_auth_ajax_s9y_import_comments( $handler )
-	{
-		$valid_fields= array( 'db_name','db_host','db_user','db_pass','db_prefix','commentindex', 'category_import', 'utw_import' );
-		$inputs= array_intersect_key( $_POST, array_flip( $valid_fields ) );
-		extract( $inputs );
-		$s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
-		if( $s9ydb ) {
-			$commentcount= $s9ydb->get_value( "SELECT count( comment_ID ) FROM {$db_prefix}comments;" );
-			$min= $commentindex * IMPORT_BATCH + 1;
-			$max= min( ( $commentindex + 1 ) * IMPORT_BATCH, $commentcount );
-
-			echo "<p>Importing comments {$min}-{$max} of {$commentcount}.</p>";
-
-			$postinfo= DB::table( 'postinfo' );
-			$post_info= DB::get_results( "SELECT post_id, value FROM {$postinfo} WHERE name= 's9y_id';" );
-			foreach( $post_info as $info ) {
-				$post_map[$info->value]= $info->post_id;
-			}
-
-			$comments= $s9ydb->get_results( "
-				SELECT
-				comment_content as content,
-				comment_author as name,
-				comment_author_email as email,
-				comment_author_url as url,
-				INET_ATON( comment_author_IP ) as ip,
-			 	comment_approved as status,
-				comment_date as date,
-				comment_type as type,
-				ID as s9y_post_id
-				FROM {$db_prefix}comments
-				INNER JOIN
-				{$db_prefix}posts on ( {$db_prefix}posts.ID= {$db_prefix}comments.comment_post_ID )
-				LIMIT {$min}, " . IMPORT_BATCH
-				, array(), 'Comment' );
-
-			foreach( $comments as $comment ) {
-				switch( $comment->type ) {
-					case 'pingback': $comment->type= Comment::PINGBACK; break;
-					case 'trackback': $comment->type= Comment::TRACKBACK; break;
-					default: $comment->type= Comment::COMMENT;
-				}
-
-				$carray= $comment->to_array();
-				if ( $carray['ip'] == '' ) {
-					$carray['ip']= 0;
-				}
-				switch( $carray['status'] ) {
-				case '0':
-					$carray['status']= Comment::STATUS_UNAPPROVED;
-					break;
-				case '1':
-					$carray['status']= Comment::STATUS_APPROVED;
-					break;
-				case 'spam':
-					$carray['status']= Comment::STATUS_SPAM;
-					break;
-				}
-				if ( !isset( $post_map[$carray['s9y_post_id']] ) ) {
-					Utils::debug( $carray );
-				}
-				else {
-					$carray['post_id']= $post_map[$carray['s9y_post_id']];
-					unset( $carray['s9y_post_id'] );
-
-					$c= new Comment( $carray );
-					//Utils::debug( $c );
-					try{
-						$c->insert();
-					}
-					catch( Exception $e ) {
-						EventLog::log($e->getMessage(), 'err', null, null, print_r(array($c, $e), 1));
-						$errors = Options::get('import_errors');
-						$errors[] = $e->getMessage();
-						Options::set('import_errors', $errors);
-					}
-				}
-			}
-
-			if( $max < $commentcount ) {
-				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 's9y_import_comments' ) );
-				$commentindex++;
-
-				echo <<< WP_IMPORT_AJAX1
-					<script type="text/javascript">
-					$( '#import_progress' ).load(
-						"{$ajax_url}",
-						{
-							db_host: "{$db_host}",
-							db_name: "{$db_name}",
-							db_user: "{$db_user}",
-							db_pass: "{$db_pass}",
-							db_prefix: "{$db_prefix}",
-							category_import: "{$category_import}",
-							utw_import: "{$utw_import}",
-							commentindex: {$commentindex}
-						}
-					 );
-
-				</script>
-WP_IMPORT_AJAX1;
-			}
-			else {
-				EventLog::log('Import complete from "'. $db_name .'"');
-				echo _t( '<p>Import is complete.</p>' );
-
-				$errors = Options::get('import_errors');
-				if(count($errors) > 0 ) {
-					_e( '<p>There were errors during import:</p>' );
-
-					echo '<ul>';
-					foreach($errors as $error) {
-						echo '<li>' . $error . '</li>';
-					}
-					echo '</ul>';
-				}
-
-			}
-		}
-		else {
-			EventLog::log(sprintf(_t('Failed to import from "%s"'), $db_name), 'crit');
-			echo '<p>'._t( 'Failed to connect using the given database connection details.' ).'</p>';
-		}
-	}
-
 	private function success_html() {
-		return "<b style=\"color: green;\">succeeded</b>";
+		return "<b style=\"color: green;\">" . _t( "succeeded" ) . "</b>";
 	}
 
 	private function fail_html() {
-		return "<b style=\"color: red;\">failed</b>";
+		return "<b style=\"color: red;\">" . _t( "failed" ) . "</b>";
 	}
 }
 ?>
