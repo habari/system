@@ -45,7 +45,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasehost">Database Host <strong>*</strong></label>
-					<input type="text" id="mysqldatabasehost" name="db_host" value="<?php echo $db_host; ?>">
+					<input type="text" id="mysqldatabasehost" name="mysql_db_host" value="<?php echo $db_host; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -59,7 +59,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databaseuser">Username <strong>*</strong></label>
-					<input type="text" id="mysqldatabaseuser" name="db_user" value="<?php echo $db_user; ?>">
+					<input type="text" id="mysqldatabaseuser" name="mysql_db_user" value="<?php echo $db_user; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -70,7 +70,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasepass">Password <strong>*</strong></label>
-					<input type="password" id="mysqldatabasepass" name="db_pass" value="<?php /* echo $db_pass; */ ?>">
+					<input type="password" id="mysqldatabasepass" name="mysql_db_pass" value="<?php /* echo $db_pass; */ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -81,7 +81,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasetype">Database Name <strong>*</strong></label>
-					<input type="text" id="mysqldatabasename" name="db_schema" value="<?php echo $db_schema; ?>">
+					<input type="text" id="mysqldatabasename" name="mysql_db_schema" value="<?php echo $db_schema; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -95,7 +95,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databasehost">Database Host <strong>*</strong></label>
-					<input type="text" id="pgsqldatabasehost" name="db_host" value="<?php echo $db_host; ?>">
+					<input type="text" id="pgsqldatabasehost" name="pgsql_db_host" value="<?php echo $db_host; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -109,7 +109,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databaseuser">Username <strong>*</strong></label>
-					<input type="text" id="pgsqldatabaseuser" name="db_user" value="<?php echo $db_user; ?>">
+					<input type="text" id="pgsqldatabaseuser" name="pgsql_db_user" value="<?php echo $db_user; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -120,7 +120,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databasepass">Password <strong>*</strong></label>
-					<input type="password" id="pgsqldatabasepass" name="db_pass" value="<?php /* echo $db_pass; */ ?>">
+					<input type="password" id="pgsqldatabasepass" name="pgsql_db_pass" value="<?php /* echo $db_pass; */ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -131,7 +131,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databasetype">Database Name <strong>*</strong></label>
-					<input type="text" id="pgsqldatabasename" name="db_schema" value="<?php echo $db_schema; ?>">
+					<input type="text" id="pgsqldatabasename" name="pgsql_db_schema" value="<?php echo $db_schema; ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
