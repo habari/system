@@ -154,6 +154,7 @@ class AdminHandler extends ActionHandler
 
 	/**
 	 * Handles get requests for the dashboard
+	 * @todo update check should probably be cron'd and cached, not re-checked every load
 	 */
 	public function get_dashboard()
 	{
@@ -165,6 +166,9 @@ class AdminHandler extends ActionHandler
 			'months' => floor(($firstpostdate % 31536000) / 2678400),
 			'days' => round(($firstpostdate % 2678400) / 86400),
 		);
+
+		// check for updates to core and any hooked plugins
+		$this->theme->updates= Update::check();
 
 		$this->theme->stats= array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),
@@ -729,7 +733,7 @@ class AdminHandler extends ActionHandler
 		// there is no explicit 'all' type/status for comments, so we need to unset these arguments
 		// if that's what we want. At the same time we can set up the search field
 		$this->theme->search_args= '';
-		if ( $type == 'All') { 
+		if ( $type == 'All') {
 			unset( $arguments['type'] );
 		}
 		else {
