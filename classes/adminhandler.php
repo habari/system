@@ -588,20 +588,11 @@ class AdminHandler extends ActionHandler
 			'PasswordDigest' => '',
 			'mass_spam_delete' => null,
 			'mass_delete' => null,
-
-			'type' => Comment::type( 'comment' ),
-			'status' => Comment::status( 'approved' ),
-			'limit' => 30,
-			'orderby' => 'date DESC',
-			'default_radio' => array( 'approve'=>'', 'delete'=>'', 'spam'=>'', 'unapprove'=>'', 'edit' =>'' ),
-			'show' => '0',
-			'search' => '',
-			'search_fields' => array( 'content' ),
-			'search_status' => 1,
-			'search_type' => null,
-			'do_search' => false,
-			'index' => 1,
+			'type' => 'All',
+			'limit' => 20,
 			'offset' => 0,
+			'search' => '',
+			'search_status' => 'All',
 		);
 		foreach ( $locals as $varname => $default ) {
 			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[$varname] : $default);
@@ -724,89 +715,39 @@ class AdminHandler extends ActionHandler
 			die();
 		}
 
-		// Set up the limits select box
-		$limits= array( 5, 10, 20, 50, 100 );
-		$limits= array_combine( $limits, $limits );
-		$this->theme->limits= $limits;
-
-		// Set up the type select box
-		$types_tmp= Comment::list_comment_types();
-		$types['All']= 'All';
-		foreach ( $types_tmp as $type_key => $type_val  ) {
-			$types[$type_key]= $type_val;
-		}
-		$this->theme->types= $types;
-
-		// Set up the status select box
-		$statuses_tmp= Comment::list_comment_statuses();
-		$statuses['All']= 'All';
-		foreach ( $statuses_tmp as $status_key => $status_val  ) {
-			$statuses[$status_key]= $status_val;
-		}
-		$this->theme->statuses= $statuses;
-
 		// we load the WSSE tokens
 		// for use in the delete button
 		$this->theme->wsse= Utils::WSSE();
 
 		$arguments= array(
+			'type' => $type,
+			'status' => $search_status,
 			'limit' => $limit,
-			'offset' => isset($offset) ? $offset : 0,
+			'offset' => $offset,
 		);
 
-		// Decide what to display
-		$arguments['status']= intval( $search_status );
-		switch ( $search_status ) {
-			case 'All':
-				$this->theme->mass_delete= '';
-				unset( $arguments['status'] );
-				break;
-			case Comment::STATUS_SPAM:
-				$this->theme->mass_delete= 'mass_spam_delete';
-				$default_radio['spam']= ' checked';
-				break;
-			case Comment::STATUS_APPROVED:
-				$this->theme->mass_delete= '';
-				$default_radio['approve']= ' checked';
-				break;
-			case Comment::STATUS_UNAPPROVED:
-				$this->theme->mass_delete= 'mass_delete';
-				$default_radio['unapprove']= ' checked';
-				break;
-			default:
-				$this->theme->mass_delete= '';
-				break;
+		// there is no explicit 'all' type/status for comments, so we need to unset these arguments
+		// if that's what we want. At the same time we can set up the search field
+		$this->theme->search_args= '';
+		if ( $type == 'All') { 
+			unset( $arguments['type'] );
 		}
-		$this->theme->default_radio= $default_radio;
-
-		if($search_type != 'All') {
-			$arguments['type']= intval( $search_type );
+		else {
+			$this->theme->search_args= 'type:' . Comment::type_name( $type ) . ' ';
+		}
+		if ( $search_status == 'All') {
+			unset ( $arguments['status'] );
+		}
+		else {
+			$this->theme->search_args.= 'status:' . Comment::status_name( $search_status );
 		}
 
 		if ( '' != $search ) {
-			$arguments['criteria']= $search;
-			$arguments['criteria_fields']= $search_fields;
+			$arguments= array_merge( $arguments, Comments::search_to_get( $search ) );
 		}
 
-		if ( $search_type == 'All' ) {
-			unset( $arguments['type'] );
-		}
 		$this->theme->comments= Comments::get( $arguments );
 
-		// Get the page count
-		$arguments['count']= 'id';
-		unset( $arguments['limit'] );
-		unset( $arguments['offset'] );
-		$totalpages= Comments::get( $arguments );
-		$pagecount= ceil( $totalpages / $limit );
-
-		// Put page numbers into an array for the page controls to output.
-		$pages= array();
-		for ( $z= 1; $z <= $pagecount; $z++ ) {
-			$pages[$z]= $z;
-		}
-		$this->theme->pagecount= $pagecount;
-		$this->theme->pages= $pages;
 		$this->theme->monthcomments= DB::get_results( 'SELECT MONTH(date) AS month, YEAR(date) AS year, COUNT(id) AS ct FROM {comments} GROUP BY year, month ORDER BY year, month', array() );
 	}
 
@@ -887,16 +828,12 @@ class AdminHandler extends ActionHandler
 			'timestamp' => '',
 			'PasswordDigest' => '',
 			'change' => '',
-
 			'author' => 0,
 			'type' => Post::type( 'entry' ),
-			'status' => Post::status( 'published' ),
+			'status' => Post::status( 'any' ),
 			'limit' => 20,
 			'offset' => 0,
-			'year_month' => 'Any',
 			'search' => '',
-			'do_search' => false,
-			'index' => 1,
 		);
 		foreach ( $locals as $varname => $default ) {
 			$$varname= isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[varname] : $default);
@@ -946,27 +883,6 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		// Set up Authors select box
-		$authors_temp= DB::get_results( 'SELECT DISTINCT username, user_id FROM {users} JOIN {posts} ON {users}.id = {posts}.user_id ORDER BY username ASC' );
-		array_unshift( $authors_temp, new QueryRecord( array( 'username' => 'All', 'user_id' => 0 ) ) );
-		$authors= array();
-		foreach ( $authors_temp as $author ) {
-			$authors[$author->user_id]= $author->username;
-		}
-		$this->theme->authors= $authors;
-
-		// Set up the dates select box
-		$dates= DB::get_column( "SELECT pubdate FROM " . DB::table( 'posts' ) . ' ORDER BY pubdate DESC' );
-		$dates= array_map( create_function( '$date', 'return strftime( "%Y-%m", strtotime( $date ) );' ), $dates );
-		array_unshift( $dates, 'Any' );
-		$dates= array_combine( $dates, $dates );
-		$this->theme->dates= $dates;
-
-		// Set up the limits select box
-		$limits= array( 5, 10, 20, 50, 100 );
-		$limits= array_combine( $limits, $limits );
-		$this->theme->limits= $limits;
-
 		// we load the WSSE tokens
 		// for use in the delete button
 		$this->theme->wsse= Utils::WSSE();
@@ -977,28 +893,21 @@ class AdminHandler extends ActionHandler
 			'limit' => $limit,
 			'offset' => $offset,
 		);
-		if ( 'any' != strtolower( $year_month ) ) {
-			list( $arguments['year'], $arguments['month'] )= explode( '-', $year_month );
-		}
+
 		if ( '' != $search ) {
-			$arguments['criteria']= $search;
+			$arguments= array_merge( $arguments, Posts::search_to_get( $search ) );
 		}
 		$this->theme->posts= Posts::get( $arguments );
 
-		// Get the page count
-		$arguments['count']= 'id';
-		unset( $arguments['limit'] );
-		unset( $arguments['offset'] );
-		$totalpages= Posts::get( $arguments );
-		$pagecount= ceil( $totalpages / $limit );
-
-		// Put page numbers into an array for the page controls to output.
-		$pages= array();
-		for ( $z= 1; $z <= $pagecount; $z++ ) {
-			$pages[$z]= $z;
+		// setup keyword in search field if a status or type was passed in POST
+		$this->theme->search_args= '';
+		if ( $status != Post::status( 'any' ) ) {
+			$this->theme->search_args= 'status:' . Post::status_name( $status ) . ' ';
 		}
-		$this->theme->pagecount= $pagecount;
-		$this->theme->pages= $pages;
+		if ( $type != Post::type( 'any' ) ) {
+			$this->theme->search_args.= 'type:' . Post::type_name( $type );
+		}
+
 		$this->theme->monthposts= DB::get_results( 'SELECT MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(id) AS ct FROM {posts} WHERE content_type = ? GROUP BY year, month ORDER BY year, month', array( $type ) );
 	}
 

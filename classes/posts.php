@@ -658,6 +658,81 @@ class Posts extends ArrayObject
 	{
 		return array_search( $needle, $this->getArrayCopy() );
 	}
+	
+	/**
+	 * Parses a search string for status, type, author, and tag keywords. Returns
+	 * an associative array which can be passed to Posts::get(). If multiple
+	 * authors, statuses, tags, or types are specified, we assume an implicit OR
+	 * such that (e.g.) any author that matches would be returned.
+	 *
+	 * @param string $search_string The search string
+	 * @return array An associative array which can be passed to Posts::get()
+	 */
+	public static function search_to_get( $search_string )
+	{
+		$keywords= array( 'author' => 1, 'status' => 1, 'type' => 1, 'tag' => 1 );
+		$statuses= Post::list_post_statuses();
+		$types= Post::list_active_post_types();
+		$arguments= array(
+						'user_id' => array(),
+						'status' => array(),
+						'content_type' => array(),
+						'tag' => array()
+						);
+		$criteria= '';
+		
+		$tokens= explode( ' ', $search_string );
+		
+		foreach( $tokens as $token ) {
+			// check for a keyword:value pair
+			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
+				list( $keyword, $value )= explode( ':', $token );
+
+				$keyword= strtolower( $keyword );
+				switch ( $keyword ) {
+					case 'author':
+						if ( $u= User::get( $value ) ) {
+							$arguments['user_id'][]= (int) $u->id;
+						}
+						break;
+					case 'tag':
+						$arguments['tag'][]= $value;
+						break;
+					case 'status':
+						if ( isset( $statuses[$value] ) ) {
+							$arguments['status'][]= (int) $statuses[$value];
+						}
+						break;
+					case 'type':
+						if ( isset( $types[$value] ) ) {
+							$arguments['content_type'][]= (int) $types[$value];
+						}
+						break;
+				}
+			}
+			else {
+				$criteria .= $token . ' ';
+			}
+		}
+
+		// flatten keys that have single-element or no-element arrays
+		foreach ( $arguments as $key => $arg ) {
+			switch ( count( $arg ) ) {
+				case 0:
+					unset( $arguments[$key] );
+					break;
+				case 1:
+					$arguments[$key]= $arg[0];
+					break;
+			}
+		}
+
+		if ( $criteria != '' ) {
+			$arguments['criteria']= $criteria;
+		}
+		
+		return $arguments;
+	}
 
 }
 ?>

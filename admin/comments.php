@@ -3,7 +3,7 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; Older</a></span>
 	<span class="currentposition pct15 minor">0-0 of 0</span>
-	<span class="search pct50"><input type="search" placeholder="Type and wait to search for any entry component" autosave="habaricontent" results="10"></span>
+	<span class="search pct50"><input type="search" placeholder="Type and wait to search for any entry component" autosave="habaricontent" results="10" value="<?php echo $search_args ?>"></span>
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false">Newer &raquo;</a></span>
 
@@ -30,7 +30,6 @@
 <form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'comments', 'search_status' => $search_status ) ); ?>">
 	<input type="hidden" name="search" value="<?php echo $search; ?>">
 	<input type="hidden" name="limit" value="<?php echo $limit; ?>">
-	<input type="hidden" name="index" value="<?php echo $index; ?>">
 	<input type="hidden" name="search_status" value="<?php echo $search_status; ?>">
 	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">

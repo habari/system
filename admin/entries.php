@@ -4,7 +4,7 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; Older</a></span>
 	<span class="currentposition pct15 minor">0-0 of 0</span>
-	<span class="search pct50"><input type="search" placeholder="Type and wait to search for any entry component" autosave="habaricontent" results="10"></span>
+	<span class="search pct50"><input type="search" placeholder="Type and wait to search for any entry component" autosave="habaricontent" results="10" value="<?php echo $search_args ?>"></span>
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false">Newer &raquo;</a></span>
 
