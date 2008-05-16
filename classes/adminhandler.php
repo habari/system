@@ -1380,18 +1380,36 @@ class AdminHandler extends ActionHandler
 		switch ( $action ) {
 			case 'delete':
 				foreach($_POST as $id => $delete) {
-					// skip POST elements which are not post ids
+					// skip POST elements which are not tag ids
 					if ( preg_match( '/^tag_\d+/', $id ) && $delete ) {
 						$id= substr($id, 4);
 						$tag= Tags::get_by_id($id);
-						$tag_names[]= $tag->tag_text;
+						$tag_names[]= $tag->tag;
 						Tags::delete($tag);
 					}
 				}
-				$msg_status= sprintf( _t('Tags %s have been deleted.'), implode($tag_names, ', ') );
+				echo json_encode( sprintf( _t('Tags %s have been deleted.'), implode($tag_names, ', ') ) );
+				break;
+			case 'rename':
+				if ( isset($this->handler_vars['master']) ) {
+					$master= $this->handler_vars['master'];
+					$tag_names= array();
+					foreach($_POST as $id => $rename) {
+						// skip POST elements which are not tag ids
+						if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
+							$id= substr($id, 4);
+							$tag= Tags::get_by_id($id);
+							$tag_names[]= $tag->tag;
+						}
+					}
+					Tags::rename($master, $tag_names);
+					$msg_status= sprintf( _t('Tags %s have been renamed to %s.'), implode($tag_names, ', '), $master );
+					$master= Tags::get_one( $master );
+					$wt= round(($master->count * 10)/$master->count);
+					echo json_encode( array( 'msg' => $msg_status, 'count' => $master->count, 'id' => $master->id, 'wt' => $wt ) );
+				}
 				break;
 		}
-		echo json_encode($msg_status);
 	}
 
 	/**

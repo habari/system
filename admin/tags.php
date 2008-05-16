@@ -76,13 +76,8 @@ tagManage.remove= function() {
 	);
 };
 tagManage.rename= function() {
-	//spinner.start();
-
-	selected = $('.tags .tag.selected');
-	master = $('.tags.controls input.renametext').val().trim();
-	//TODO This isn't implemented yet
-	//TODO if master is selected, unselect it
-	//TODO update the number of posts the master has
+	selected= $('.tags .tag.selected');
+	master= $('.tags.controls input.renametext').val().trim();
 
 	if ( selected.length == 0 ) {
 		humanMsg.displayMsg('You need to select some tags before you can rename them.');
@@ -94,26 +89,50 @@ tagManage.rename= function() {
 	}
 	var query= {}
 
+	// Unselect the master, if it's selected
+	$('.tags .tag:contains(' + master + ')').each(function() {
+		if ($(this).find('span').text() == master) {
+			$(this).removeClass('selected');
+		}
+	})
+
+	spinner.start();
+
 	selected.each(function() {
 		query[$(this).attr('id')]= 1;
 	});
 
+	query['master']= master;
 	query['action']= 'rename';
 	query['timestamp']= $('input#timestamp').attr('value');
 	query['nonce']= $('input#nonce').attr('value');
 	query['digest']= $('input#PasswordDigest').attr('value');
-	//$.post(
-	//	"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
-	//	query,
-	//	function(msg) {
-	//		spinner.stop();
-	//		//TODO When there's a loupe, update it
-	//		//timelineHandle.updateLoupeInfo();
-	//		selected.remove();
-	//		humanMsg.displayMsg(msg);
-	//	},
-	//	'json'
-	//);
+	$.post(
+		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
+		query,
+		function(data) {
+			spinner.stop();
+			//TODO When there's a loupe, update it
+			//timelineHandle.updateLoupeInfo();
+			master_found= false;
+			// Update the master tag count
+			$('.tags .tag:contains(' + master + ')').each(function() {
+				if ($(this).find('span').text() == master) {
+					$(this).find('sup').text(data['count']);
+					// TODO should change the wt%d class
+					master_found= true;
+				}
+			})
+			// master wasn't an existing tag, add it to the list
+			// It's going to be last, not in order
+			if (!master_found) {
+				$('.tags .tag:last').after('<a href="#" id="tag_' + data['id'] + '" class="tag wt' + data['wt'] + '"><span>' + master + '</span><sup>' + data['count'] + '</sup></a>');
+			}
+			selected.remove();
+			humanMsg.displayMsg(data['msg']);
+		},
+		'json'
+	);
 };
 </script>
 
