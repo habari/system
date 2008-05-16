@@ -25,7 +25,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_one($tag)
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE slug = ? OR id = ? GROUP BY tag', array(Utils::slugify($tag), $tag) );
+ 		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_slug = ? OR t.id = ? GROUP BY id', array( Utils::slugify( $tag ), $tag ) );
 	}
 
 	/**
@@ -51,22 +51,54 @@ class Tags extends ArrayObject
 	 **/
 	public static function rename($master, $tags)
 	{
+		
 		$master_tag= Tags::get_one($master);
-
+		
 		// it didn't exist, so we assume it's tag text and create it
-		if ( !$master_tag  ) {
-			DB::query( 'INSERT INTO {tags} (tag_text, tag_slug) VALUES (?, ?)', array( $master, Utils::slugify($master) ) );
+		if ( $master_tag === FALSE  ) {
+			DB::query( 'INSERT INTO {tags} (tag_text, tag_slug) VALUES ( ?, ? )', array( $master, Utils::slugify($master) ) );
 			$master_tag= Tags::get_one($master);
 		}
+		
+		// if only one tag was passed in, make it an array so we don't duplicate code
+		if ( !is_array( $tags ) ) {
+			$tags= array( $tags );
+		}			
 
+		$posts= array();
+		
 		foreach ( $tags as $tag ) {
-			$tag= Tags::get_one($tag);
-
-			if ( $tag && $tag != $master_tag ) {
-				DB::query( 'UPDATE {tag2post} SET tag_id = ? WHERE tag_id = ?', array($master_tag->id, $tag->id) );
-				Tags::delete( $tag );
+			
+			$tag= Tags::get_one( $tag );
+			
+			// get all the post ID's tagged with this tag
+			$posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $tag->id ) );
+			
+			if ( count( $posts ) > 0 ) {
+			
+				// build a list of all the post_id's we need for the new tag
+				foreach ( $posts as $post ) {
+					$post_ids[ $post->post_id ]= $post->post_id;
+				}
+			
 			}
+			
+			// delete each tag
+			Tags::delete( $tag );
+			
 		}
+		
+		if ( count( $post_ids ) > 0 ) {
+
+			// link the master tag to each distinct post we removed tags from
+			foreach ( $post_ids as $post_id ) {
+				
+				DB::query( 'INSERT INTO {tag2post} ( tag_id, post_id ) VALUES ( ?, ? )', array( $master_tag->id, $post_id ) );
+				
+			}
+		
+		}
+
 	}
 
 	/**
@@ -97,12 +129,12 @@ class Tags extends ArrayObject
 
 	public static function get_by_text($tag)
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag = ? GROUP BY id', array($tag) );
+		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_text = ? GROUP BY id', array($tag) );
 	}
 
 	public static function get_by_slug($tag)
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE slug = ? GROUP BY id', array($tag) );
+		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_slug = ? GROUP BY id', array($tag) );
 	}
 
 	public static function get_by_id($tag)
