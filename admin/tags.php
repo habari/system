@@ -7,22 +7,8 @@
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#">Newer &raquo;</a></span>
 </div>
-<?php
-	$tags= $available_tags;
-	//what's the max count?
-	//ugly! and probably needs to be a Tags method or something
-	$max=0;
-	foreach ($tags as $tag){if ($max < $tag->count) $max=$tag->count;}
-?>
-<div class="container tags">
-<?php foreach ($tags as $tag) { ?>
-	<a href="#" id="<?php echo 'tag_' . $tag->id ?>" class="tag wt<?php echo round(($tag->count * 10)/$max); ?>"><span><?php echo $tag->tag; ?></span><sup><?php echo $tag->count; ?></sup></a>
-<?php } ?>
-		<ul class="dropbutton">
-			<li><a href="#">Select Visible</a></li>
-			<li><a href="#">Select All</a></li>
-			<li><a href="#">Deselect All</a></li>
-		</ul>
+<div id="tag_collection" class="container tags">
+  <?php $theme->display( 'tag_collection' ); ?>
 </div>
 
 <div class="container tags transparent">
@@ -115,25 +101,13 @@ tagManage.rename= function() {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
-			master_found= false;
-			// Update the master tag count
-			$('.tags .tag:contains(' + master + ')').each(function() {
-				if ($(this).find('span').text() == master) {
-					$(this).find('sup').text(data['count']);
-					// TODO should change the wt%d class
-					master_found= true;
-				}
-			})
-			// master wasn't an existing tag, add it to the list
-			// It's going to be last, not in order
-			if (!master_found) {
-				$('.tags .tag:last').after('<a href="#" id="tag_' + data['id'] + '" class="tag wt' + data['wt'] + '"><span>' + master + '</span><sup>' + data['count'] + '</sup></a>');
-				$('.tags .tag:last').click(function() {
+			$('#tag_collection').html(data['tags']);
+			$('.tags .tag').click(function() {
 					$(this).toggleClass('selected');
 					tagManage.changeTag();
-				});
-			}
-			selected.remove();
+				}
+			);
+			tagManage.changeTag();
 			humanMsg.displayMsg(data['msg']);
 		},
 		'json'
