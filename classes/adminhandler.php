@@ -1387,7 +1387,13 @@ class AdminHandler extends ActionHandler
 						Tags::delete($tag);
 					}
 				}
-				echo json_encode( sprintf( _t('Tags %s have been deleted.'), implode($tag_names, ', ') ) );
+				$msg_status= sprintf(
+					_n('Tag %s has been deleted.',
+							'Tags %s have been deleted.',
+							count($tag_names)
+					), implode($tag_names, ', ')
+				);
+				echo json_encode( sprintf( $msg_status ) );
 				break;
 			case 'rename':
 				if ( isset($this->handler_vars['master']) ) {
@@ -1404,7 +1410,12 @@ class AdminHandler extends ActionHandler
 						}
 					}
 					Tags::rename($master, $tag_names);
-					$msg_status= sprintf( _t('Tags %s have been renamed to %s.'), implode($tag_names, ', '), $master );
+					$msg_status= sprintf(
+						_n('Tag %s has been renamed to %s.',
+							 'Tags %s have been renamed to %s.',
+							 count($tag_names)
+						), implode($tag_names, ', '), $master
+					);
 					echo json_encode( array( 'msg' => $msg_status, 'tags' => $this->theme->fetch( 'tag_collection' ) ) );
 				}
 				break;

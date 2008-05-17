@@ -37,6 +37,7 @@ class Tags extends ArrayObject
 	{
 		DB::query( 'DELETE FROM {tag2post} WHERE tag_id = ?', array($tag->id) );
 		DB::query( 'DELETE FROM {tags} WHERE id = ?', array($tag->id) );
+		EventLog::log( sprintf(_t('Tag deleted: %s'), $tag->tag), 'info', 'tag', 'habari' );
 	}
 
 	/**
@@ -51,53 +52,59 @@ class Tags extends ArrayObject
 	 **/
 	public static function rename($master, $tags)
 	{
-		
+
 		$master_tag= Tags::get_one($master);
-		
+
 		// it didn't exist, so we assume it's tag text and create it
 		if ( $master_tag === FALSE  ) {
 			DB::query( 'INSERT INTO {tags} (tag_text, tag_slug) VALUES ( ?, ? )', array( $master, Utils::slugify($master) ) );
 			$master_tag= Tags::get_one($master);
 		}
-		
+
 		// if only one tag was passed in, make it an array so we don't duplicate code
 		if ( !is_array( $tags ) ) {
 			$tags= array( $tags );
-		}			
+		}
 
 		$posts= array();
-		
+		$tag_names= array();
+
 		foreach ( $tags as $tag ) {
-			
 			$tag= Tags::get_one( $tag );
-			
+
 			// get all the post ID's tagged with this tag
 			$posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $tag->id ) );
-			
+
 			if ( count( $posts ) > 0 ) {
-			
+
 				// build a list of all the post_id's we need for the new tag
 				foreach ( $posts as $post ) {
 					$post_ids[ $post->post_id ]= $post->post_id;
 				}
-			
+				$tag_names[]= $tag->tag;
 			}
-			
+
 			// delete each tag
 			Tags::delete( $tag );
-			
+
 		}
-		
+
 		if ( count( $post_ids ) > 0 ) {
 
 			// link the master tag to each distinct post we removed tags from
 			foreach ( $post_ids as $post_id ) {
-				
+
 				DB::query( 'INSERT INTO {tag2post} ( tag_id, post_id ) VALUES ( ?, ? )', array( $master_tag->id, $post_id ) );
-				
+
 			}
-		
+
 		}
+		EventLog::log(sprintf(
+			_n('Tag %s has been renamed to %s.',
+				 'Tags %s have been renamed to %s.',
+				  count($tags)
+			), implode($tag_names, ', '), $master ), 'info', 'tag', 'habari'
+		);
 
 	}
 
