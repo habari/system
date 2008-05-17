@@ -118,10 +118,10 @@ class Tags extends ArrayObject
 	 **/
 	public static function post_count($tag) {
 		if ( is_int( $tag ) ) {
-			$tag= self::get_by_id( $tag );
+			$tag= Tags::get_by_id( $tag );
 		}
 		else if ( is_string( $tag ) ) {
-			$tag= self::get_by_slug( Utils::slugify($tag) );
+			$tag= Tags::get_by_slug( Utils::slugify($tag) );
 		}
 
 		return DB::get_row( 'SELECT COUNT(tag_id) AS count FROM {tag2post} WHERE tag_id = ?', array($tag->id) );
