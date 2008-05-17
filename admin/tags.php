@@ -71,6 +71,7 @@ tagManage.remove= function() {
 			//timelineHandle.updateLoupeInfo();
 			selected.remove();
 			humanMsg.displayMsg(msg);
+			tagManage.changeTag();
 		},
 		'json'
 	);
@@ -127,6 +128,10 @@ tagManage.rename= function() {
 			// It's going to be last, not in order
 			if (!master_found) {
 				$('.tags .tag:last').after('<a href="#" id="tag_' + data['id'] + '" class="tag wt' + data['wt'] + '"><span>' + master + '</span><sup>' + data['count'] + '</sup></a>');
+				$('.tags .tag:last').click(function() {
+					$(this).toggleClass('selected');
+					tagManage.changeTag();
+				});
 			}
 			selected.remove();
 			humanMsg.displayMsg(data['msg']);
