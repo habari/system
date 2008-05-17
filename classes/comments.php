@@ -573,5 +573,76 @@ class Comments extends ArrayObject
 		// now purge any commentinfo records from those comments
 		DB::query( 'DELETE FROM {commentinfo} WHERE comment_id NOT IN ( SELECT id FROM {comments} )' );
 	}
+
+	/**
+	 * Parses a search string for status, type, author, and tag keywords. Returns
+	 * an associative array which can be passed to Comments::get(). If multiple
+	 * authors, statuses, or types are specified, we assume an implicit OR
+	 * such that (e.g.) any author that matches would be returned.
+	 *
+	 * @param string $search_string The search string
+	 * @return array An associative array which can be passed to Comments::get()
+	 */
+	public static function search_to_get( $search_string ) {
+		$keywords= array('author' => 1, 'status' => 1, 'type' => 1 );
+		// Comments::list_comment_statuses and list_comment_types return associative arrays with key/values
+		// in the opposite order of the equivalent functions in Posts. Maybe we should change this?
+		// In any case, we need to flip them for our purposes
+		$statuses= array_flip( Comment::list_comment_statuses() );
+		$types= array_flip( Comment::list_comment_types() );
+		$arguments= array(
+						'name' => array(),
+						'status' => array(),
+						'type' => array()
+						);
+		$criteria= '';
+		
+		$tokens= explode( ' ', $search_string );
+		
+		foreach( $tokens as $token ) {
+			// check for a keyword:value pair
+			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
+				list( $keyword, $value )= explode( ':', $token );
+
+				$keyword= strtolower( $keyword );
+				switch ( $keyword ) {
+					case 'author':
+						$arguments['name'][]= $value;
+						break;
+					case 'status':
+						if ( isset( $statuses[ucfirst( $value )] ) ) {
+							$arguments['status'][]= (int) $statuses[ucfirst( $value )];
+						}
+						break;
+					case 'type':
+						if ( isset( $types[ucfirst( $value )] ) ) {
+							$arguments['type'][]= (int) $types[ucfirst( $value )];
+						}
+						break;
+				}
+			}
+			else {
+				$criteria .= $token . ' ';
+			}
+		}
+		// flatten keys that have single-element or no-element arrays
+		foreach ( $arguments as $key => $arg ) {
+			switch ( count( $arg ) ) {
+				case 0:
+					unset( $arguments[$key] );
+					break;
+				case 1:
+					$arguments[$key]= $arg[0];
+					break;
+			}
+		}
+
+		if ( $criteria != '' ) {
+			$arguments['criteria']= $criteria;
+		}
+		
+		return $arguments;
+
+	}
 }
 ?>

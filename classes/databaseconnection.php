@@ -462,9 +462,14 @@ class DatabaseConnection
 		if ( func_num_args() == 3 ) {
 			/* Called expecting specific class return type */
 			$class_name= func_get_arg( 2 );
-			$this->set_fetch_mode( PDO::FETCH_CLASS );
-			$this->set_fetch_class( $class_name );
 		}
+		else {
+			$class_name= 'QueryRecord';
+		}
+
+		$this->set_fetch_mode( PDO::FETCH_CLASS );
+		$this->set_fetch_class( $class_name );
+
 		if ( $this->query( $query, $args ) ) {
 			return $this->pdo_statement->fetch();
 		}

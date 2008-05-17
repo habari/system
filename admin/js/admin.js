@@ -20,9 +20,9 @@ var dashboard = {
 var itemManage = {
 	init: function() {
 		if(!$('.item.controls input[type=checkbox]')) return;
-		
+
 		itemManage.initItems();
-		
+
 		$('.item.controls input[type=checkbox]').change(function () {
 			if($('.item.controls span.selectedtext').hasClass('all')) {
 				itemManage.uncheckAll();
@@ -30,7 +30,7 @@ var itemManage = {
 				itemManage.checkAll();
 			}
 		});
-		
+
 		$('.item.controls input.submitbutton').click(function () {
 			if($('.item.controls select.actiondropdown').val() == 1) {
 				itemManage.remove();
@@ -53,11 +53,11 @@ var itemManage = {
 	selected: [],
 	changeItem: function() {
 		var selected = {};
-		
+
 		if(itemManage.selected.length != 0) {
 			selected = itemManage.selected;
 		}
-				
+
 		$('.item .checkboxandtitle input[type=checkbox]:checked').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
@@ -68,9 +68,9 @@ var itemManage = {
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
 		});
-		
+
 		itemManage.selected = selected;
-			
+
 		visible = $('.item .checkboxandtitle input[type=checkbox]:checked').length;
 		count = 0;
 		for (var id in itemManage.selected)	{
@@ -78,7 +78,7 @@ var itemManage = {
 				count = count + 1;
 			}
 		}
-		
+
 		if(count == 0) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
@@ -116,7 +116,7 @@ var itemManage = {
 	},
 	remove: function( id ) {
 		spinner.start();
-		
+
 		var query= {}
 		if ( id == null ) {
 			query = itemManage.selected;
@@ -140,6 +140,38 @@ var itemManage = {
 	}
 }
 
+// Tag Management
+var tagManage = {
+	init: function() {
+		// Return if we're not on the tags page
+		if(!$('.page-tags').length) return;
+
+		$('.tags .tag').click(function() {
+				$(this).toggleClass('selected');
+				tagManage.changeTag();
+			}
+		);
+
+		$('.tags.controls input.deletebutton').click(function () {
+			tagManage.remove();
+		});
+		$('.tags.controls input.renamebutton').click(function () {
+			tagManage.rename();
+		});
+	},
+	changeTag: function() {
+		count = $('.tags .tag.selected').length;
+
+		if(count == 0) {
+			$('.tags.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
+		} else if(count == $('.tags .tag').length) {
+			$('.tags.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
+		} else {
+			$('.tags.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+		}
+	}
+}
+
 // TIMELINE
 var timeline = {
 	init: function() {
@@ -147,10 +179,10 @@ var timeline = {
 		if (!$('.timeline').length) return;
 
 		var timelineWidth = $('.years').width();
-		
+
 		// get an array of posts per month
-		timeline.monthData= [];
-		timeline.monthWidths= [];
+		timeline.monthData= [0];
+		timeline.monthWidths= [0];
 		timeline.totalCount= 0;
 		$('.years span').each(function(i) {
 			timeline.monthData[i] = $(this).width();
@@ -158,12 +190,15 @@ var timeline = {
 			timeline.totalCount += timeline.monthData[i];
 		});
 
+		// if there are fewer than 20 things, set the handle width to the timelineWidth
+		var minWidth= ( timelineWidth < 20 ) ? timelineWidth : 20;
+
 		$('.track')
 		.width($('.years').width())
 		.slider({
 			handle: '.handle',
-			maxValue: timelineWidth-20,
-			startValue: timelineWidth-20,
+			maxValue: timelineWidth - minWidth,
+			startValue: timelineWidth - minWidth,
 			axis: 'horizontal',
 			stop: function(event, ui) {
 				timelineHandle.updateLoupeInfo();
@@ -189,9 +224,13 @@ var timeline = {
 			else
 				timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
 		});
-
+		
+		// update current position text
+		loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) );
+		$('.currentposition').text( loupeStartPosition +'-'+ timeline.totalCount +' of '+ timeline.totalCount );
+		
 		// Spool the timeline handle
-		timelineHandle.init()
+		timelineHandle.init( ( timelineWidth < 20 ) ? timelineWidth : 20 );
 	},
 	skipLoupeLeft: function(e) {
 		if (timeline.noJump == true) {
@@ -216,29 +255,34 @@ var timeline = {
 	},
 	indexFromPosition: function(pos) {
 		var monthBoundary= 0;
-		var monthIndex= 0;
+		var monthIndex= 1;
 		var month= 0;
 		var i;
-	
+
 		// get the index of the first post in the month that the handle is over
-	
+
 		for ( i = 0; i < timeline.monthWidths.length && monthBoundary + timeline.monthWidths[i] < pos; i++ ) {
 			monthBoundary += timeline.monthWidths[i];
 			monthIndex += timeline.monthData[i];
 			month= i + 1;
 		}
-	
+
 		// the index is the offset from this boundary, but it cannot be greater than
 		// the number of posts in the month (the month has some extra padding which
 		// increases its width).
-		return monthIndex + Math.min( pos - monthBoundary, timeline.monthData[month] );
+		var padding= parseInt( $('.years span').css('margin-left') );
+		padding= padding ? padding : 0;
+		return monthIndex + Math.min(
+									Math.max( pos - ( monthBoundary + padding ), 0 ),
+									timeline.monthData[month] - 1 );
 	}
 }
 
 
 // TIMELINE HANDLE
 var timelineHandle = {
-	init: function() {
+	init: function( handleWidth ) {
+		$('.handle').css('width', handleWidth + 'px');
 		// Resize Handle Left
 		$('.resizehandleleft')
 			.mousedown(function(e) {
@@ -288,7 +332,7 @@ var timelineHandle = {
 		loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth );
 
 		$('.currentposition').text( loupeStartPosition +'-'+ loupeEndPosition +' of '+ timeline.totalCount );
-		
+
 		/* AJAX call to fetch needed info goes here. */
 		if(jQuery.isFunction(this.loupeUpdate)) {
 			return this.loupeUpdate(loupeStartPosition, loupeEndPosition, timeline.totalCount);
@@ -381,7 +425,7 @@ var theMenu = {
 		}, function() {
 			$('#menulist li').removeClass('carrot')
 		})
-				
+
 		// Open menu on Q
 		$.hotkeys.add('q', {propagate:true, disableInInput: true}, function(){
 			if ($('#menu #menulist').css('display') != 'block') {
@@ -393,13 +437,13 @@ var theMenu = {
 				return false;
 			}
 		});
-		
+
 		// Close menu on ESC
 		$.hotkeys.add('esc', {propagate:true, disableInInput: false}, function(){
 			$('.carrot').removeClass('carrot')
 			dropButton.hideMenu();
 		});
-		
+
 		// Down arrow
 		$.hotkeys.add('down', {propagate:true, disableInInput: true}, function(){
 			if(($('#menu').hasClass('hovering') == true)) {
@@ -417,7 +461,7 @@ var theMenu = {
 				return false;
 			}
 		});
-		
+
 		// Up arrow
 		$.hotkeys.add('up', {propagate:true, disableInInput: true}, function(){
 			if ($('#menu').hasClass('hovering') == true) {
@@ -435,7 +479,7 @@ var theMenu = {
 				return false;
 			}
 		});
-		
+
 		// Enter & Carrot
 		$.hotkeys.add('return', {propagate:true, disableInInput: true}, function(){
 			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
@@ -444,7 +488,7 @@ var theMenu = {
 				return false;
 			}
 		});
-		
+
 		// Page hotkeys
 		$('#menu ul li').each(function() {
 			var hotkey = $('a span.hotkey', this).text();
@@ -504,7 +548,7 @@ var liveSearch = {
 		if ( liveSearch.input.val() == liveSearch.prevSearch ) return;
 
 		liveSearch.prevSearch= liveSearch.input.val();
-		
+
 		if ( jQuery.isFunction( liveSearch.search ) ) {
 			return liveSearch.search();
 		}
@@ -554,6 +598,7 @@ $(document).ready(function(){
 	dashboard.init();
 	timeline.init();
 	itemManage.init();
+	tagManage.init();
 	liveSearch.init();
 
 	// Damn the lack of proper support for pseudo-classes!

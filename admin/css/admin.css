@@ -778,8 +778,8 @@ p:hover > label.incontent.popup {
 	position: absolute;
 	top: 14px;
 	left: 20px;
-	font-size: 1.5em;
-	line-height: 20px;
+	font-size: 1.5em !important;
+	line-height: 22px !important;
 	}
 
 .dashboard .item {
@@ -956,16 +956,31 @@ p:hover > label.incontent.popup {
 	line-height: 18px;
 	}
 
+
 /* PLUGINS */
+
+.plugins .item {
+	padding: 4px 40px;
+	margin: 10px -40px;
+	}
+
+.plugins .item:hover {
+	background: #eee;
+	}
+
+.plugins .item .dropbutton {
+	top: 5px !important;
+	right: 40px !important;
+	}
+
+.plugins .head {
+	margin: 0;
+	font-size: 1.1em;
+	}
 
 .plugins .description {
 	margin: 0;
 	width: 70%;
-	}
-
-.plugins .item {
-		padding: 9px 0;
-		border-bottom: 1px dotted #e6e6e6;
 	}
 
 
@@ -1028,6 +1043,11 @@ p:hover > label.incontent.popup {
 
 .manage .item .title {
 	margin-left: 5px;
+	white-space: nowrap;
+	width: 25% !important;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	position: absolute;
 	}
 
 .manage .selectedtext.none {
@@ -1038,6 +1058,11 @@ p:hover > label.incontent.popup {
 	width: 110px;
 	margin-right: 5px;
 	}
+
+.manage .state {
+	text-transform: capitalize;
+	}
+
 
 /* COMMENTS */
 
@@ -1072,7 +1097,7 @@ p:hover > label.incontent.popup {
 /* TIMELINE */
 
 .navigator {
-	padding: ;
+	padding:0 ;
 	}
 
 .navigator span {
@@ -1120,7 +1145,7 @@ p:hover > label.incontent.popup {
 .timeline .years .months {
 	display: table-row;
 	height: inherit;
-	overflow: none;
+	overflow: hidden;
 	position: relative;
 	}
 
@@ -1303,7 +1328,7 @@ ul.tabs li a:hover {
 	text-decoration: none;
 	}
 
-ul.tabs li.first.last a {
+ul.tabs li.first-child.last-child a {
 	width: 150px;
 	}
 
@@ -1341,7 +1366,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 	padding: 25px 0 20px;
 	}
 
-.splitterinside a {
+.splitterinside * a {
 	color: #999;
 	}
 
