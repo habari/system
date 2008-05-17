@@ -294,6 +294,7 @@ class DatabaseConnection
 		$driver= $pdo->getAttribute( PDO::ATTR_DRIVER_NAME );
 		switch ( $driver ) {
 			case 'mysql':
+			case 'pgsql':
 			case 'db2':
 				/*
 				 * These databases use ANSI-92 syntax for procedure calling:
@@ -306,7 +307,6 @@ class DatabaseConnection
 				}
 				$query.= ' )';
 				break;
-			case 'pgsql':
 			case 'oracle':
 				die( sprinf(_t('not yet supported on %s'), $driver) );
 				break;
