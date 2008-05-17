@@ -470,7 +470,7 @@ class AdminHandler extends ActionHandler
 				}
 				$this->theme->assign( 'settings', $settings );
 			}
-			$this->theme->display('users');
+			$this->theme->display( 'users' );
 		}
 	}
 
@@ -1359,7 +1359,6 @@ class AdminHandler extends ActionHandler
 	public function get_tags()
 	{
 		$this->theme->wsse= Utils::WSSE();
-		$this->theme->available_tags= Tags::get();
 		$this->display( 'tags' );
 	}
 
@@ -1392,6 +1391,8 @@ class AdminHandler extends ActionHandler
 				break;
 			case 'rename':
 				if ( isset($this->handler_vars['master']) ) {
+					$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+					$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 					$master= $this->handler_vars['master'];
 					$tag_names= array();
 					foreach($_POST as $id => $rename) {
@@ -1404,9 +1405,7 @@ class AdminHandler extends ActionHandler
 					}
 					Tags::rename($master, $tag_names);
 					$msg_status= sprintf( _t('Tags %s have been renamed to %s.'), implode($tag_names, ', '), $master );
-					$master= Tags::get_one( $master );
-					$wt= round(($master->count * 10)/$master->count);
-					echo json_encode( array( 'msg' => $msg_status, 'count' => $master->count, 'id' => $master->id, 'wt' => $wt ) );
+					echo json_encode( array( 'msg' => $msg_status, 'tags' => $this->theme->fetch( 'tag_collection' ) ) );
 				}
 				break;
 		}
