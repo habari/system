@@ -63,8 +63,16 @@ tagManage.remove= function() {
 	);
 };
 tagManage.rename= function() {
-	selected= $('.tags .tag.selected');
 	master= $('.tags.controls input.renametext').val().trim();
+
+	// Unselect the master, if it's selected
+	$('.tags .tag:contains(' + master + ')').each(function() {
+		if ($(this).find('span').text() == master) {
+			$(this).removeClass('selected');
+		}
+	})
+
+	selected= $('.tags .tag.selected');
 
 	if ( selected.length == 0 ) {
 		humanMsg.displayMsg('You need to select some tags before you can rename them.');
@@ -75,13 +83,6 @@ tagManage.rename= function() {
 		return;
 	}
 	var query= {}
-
-	// Unselect the master, if it's selected
-	$('.tags .tag:contains(' + master + ')').each(function() {
-		if ($(this).find('span').text() == master) {
-			$(this).removeClass('selected');
-		}
-	})
 
 	spinner.start();
 
