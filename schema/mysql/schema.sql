@@ -123,7 +123,7 @@ CREATE TABLE {$prefix}crontab (
   end_time VARCHAR(255) NOT NULL,
   result VARCHAR(255) NOT NULL,
   notify VARCHAR(255) NOT NULL,
-  cron_class TINYINT unsigned NOT NULL default '0',
+  cron_class TINYINT unsigned NOT NULL DEFAULT 0,
   description TEXT NULL,
   PRIMARY KEY (cron_id)
 );
@@ -187,7 +187,6 @@ CREATE TABLE {$prefix}sessions  (
   ua VARCHAR(255) NOT NULL,
   data MEDIUMTEXT,
   user_id SMALLINT UNSIGNED,
-  PRIMARY KEY (token),
-  UNIQUE KEY token (token)
+  PRIMARY KEY (token)
 );
 
