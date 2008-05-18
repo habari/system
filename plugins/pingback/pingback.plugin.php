@@ -170,7 +170,7 @@ class Pingback extends Plugin
 				'name'		=>	$source_title,
 				'email'		=>	'',
 				'url'		=>	$source_uri,
-				'ip'		=>	'',
+				'ip'		=>	0,
 				'content'	=>	$source_excerpt,
 				'status'	=>	Comment::STATUS_UNAPPROVED,
 				'date'		=>	date( 'Y-m-d H:i:s' ),
