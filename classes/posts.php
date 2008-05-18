@@ -373,6 +373,15 @@ class Posts extends ArrayObject
 			$fetch_fn= 'get_value';
 			$orderby= '';
 		}
+		
+		// If the month counts are requested, replaced the select clause
+		$groupby= '';
+		if( isset( $paramset['month_cts'] ) ) {
+			$select= 'MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(id) AS ct';
+			$groupby= 'year, month';
+			$orderby= 'year, month';
+		}
+		
 
 		// Define the LIMIT and add the OFFSET if it exists
 		if ( isset( $limit ) ) {
@@ -382,8 +391,8 @@ class Posts extends ArrayObject
 			}
 		}
 
-		// Remove the LIMIT if 'nolimit' is set
-		if ( isset( $nolimit ) ) {
+		// Remove the LIMIT if 'nolimit' or 'month_cts' is set
+		if ( isset( $nolimit ) || isset( $paramset['month_cts'] ) ) {
 			$limit= '';
 		}
 
@@ -399,6 +408,7 @@ class Posts extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
+		$query.= ( $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		/**

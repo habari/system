@@ -11,9 +11,7 @@
 	<div class="timeline">
 		<div class="years">
 			<div class="months">
-				<?php foreach($monthposts as $pdata): ?>
-				<div><span style="width: <?php echo $pdata->ct; ?>px"><?php echo date('M', mktime(0, 0, 0, $pdata->month)) ?></span></div>
-				<?php endforeach; ?>
+				<?php $theme->display( 'timeline_items' )?>
 			</div>
 		</div>
 
@@ -60,20 +58,13 @@ liveSearch.search= function() {
 
 	$.post(
 		'<?php echo URL::get('admin_ajax', array('context' => 'entries')) ?>',
-		'do_search=1&search=' + liveSearch.input.val() +
-		<?php
-				$vars= Controller::get_handler_vars();
-				$out= '';
-				$keys= array_keys($vars);
-				foreach($keys as $key) {
-					$out .= "&$key=$vars[$key]";
-				}
-				echo '"' . $out . '"';
-			?>,
+		'&search=' + liveSearch.input.val() + '&limit=20',
 		function(json) {
 			$('.entries').html(json.items);
+			$('.years .months').html(json.timeline);
 			spinner.stop();
 			itemManage.initItems();
+			timeline.reset();
 			$('.modulecore .item:first-child, ul li:first-child').addClass('first-child').show();
 			$('.modulecore .item:last-child, ul li:last-child').addClass('last-child');
 		},
@@ -83,20 +74,13 @@ liveSearch.search= function() {
 
 timelineHandle.loupeUpdate = function(a,b,c) {
 	spinner.start();
+	
+	var search_args= $('.search input').val();
 
 	$.ajax({
-		type: "POST",
+		type: 'POST',
 		url: "<?php echo URL::get('admin_ajax', array('context' => 'entries')); ?>",
-		data: "offset=" + (parseInt(c) - parseInt(b)) + "&limit=" + (1 + parseInt(b) - parseInt(a)) +
-			<?php
-				$vars= Controller::get_handler_vars();
-				$out= '';
-				$keys= array_keys($vars);
-				foreach($keys as $key) {
-					$out .= "&$key=$vars[$key]";
-				}
-				echo '"' . $out . '"';
-			?>,
+		data: 'offset=' + (parseInt(c) - parseInt(b)) + '&limit=' + (1 + parseInt(b) - parseInt(a)) + '&search=' + search_args,
 		dataType: 'json',
 		success: function(json){
 			$('.entries').html(json.items);

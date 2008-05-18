@@ -751,8 +751,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		$this->theme->comments= Comments::get( $arguments );
-
-		$this->theme->monthcomments= DB::get_results( 'SELECT MONTH(date) AS month, YEAR(date) AS year, COUNT(id) AS ct FROM {comments} GROUP BY year, month ORDER BY year, month', array() );
+		$this->theme->monthcts= Comments::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
 	}
 
 	/**
@@ -912,7 +911,7 @@ class AdminHandler extends ActionHandler
 			$this->theme->search_args.= 'type:' . Post::type_name( $type );
 		}
 
-		$this->theme->monthposts= DB::get_results( 'SELECT MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(id) AS ct FROM {posts} WHERE content_type = ? GROUP BY year, month ORDER BY year, month', array( $type ) );
+		$this->theme->monthcts= Posts::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
 	}
 
 	/**
@@ -947,15 +946,17 @@ class AdminHandler extends ActionHandler
 
 		$this->fetch_entries( $params );
 		$items= $this->theme->fetch( 'entries_items' );
+		$timeline= $this->theme->fetch( 'timeline_items' );
 
 		$output= array(
 			'items' => $items,
+			'timeline' => $timeline,
 		);
 		echo json_encode($output);
 	}
 
 	/**
-	 * Handles ajax requests from the manage commens page
+	 * Handles ajax requests from the manage comments page
 	 */
 	public function ajax_comments()
 	{
@@ -966,9 +967,11 @@ class AdminHandler extends ActionHandler
 
 		$this->fetch_comments( $params );
 		$items= $this->theme->fetch( 'comments_items' );
+		$timeline= $this->theme->fetch( 'timeline_items' );
 
 		$output= array(
 			'items' => $items,
+			'timeline' => $timeline,
 		);
 		echo json_encode($output);
 	}
