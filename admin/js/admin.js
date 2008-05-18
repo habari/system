@@ -190,14 +190,21 @@ var timeline = {
 			timeline.totalCount += timeline.monthData[i];
 		});
 
-		// if there are fewer than 20 things, set the handle width to the timelineWidth
-		var minWidth= ( timelineWidth < 20 ) ? timelineWidth : 20;
+		// find the width which makes the loupe select 20 items
+		var minWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+
+		/* Initialize the timeline handle. We need to do this before we create the slider because
+		 * at the end of the slider initializer, it calls slider('moveTo', startValue) which will
+		 * trigger the 'stop' event. We also don't need to do a search on initial page load, so
+		 * set do_search to false until after slider initialization */
+		timelineHandle.init( minWidth );
+		timeline.do_search= false;
 
 		$('.track')
 		.width($('.years').width())
 		.slider({
 			handle: '.handle',
-			maxValue: timelineWidth - minWidth,
+			maxValue: Math.max( 1, timelineWidth - minWidth ),
 			startValue: timelineWidth - minWidth,
 			axis: 'horizontal',
 			stop: function(event, ui) {
@@ -223,14 +230,11 @@ var timeline = {
 				timeline.t1 = setTimeout('timeline.skipLoupeLeft()', 300);
 			else
 				timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
-		});
-		
-		// update current position text
-		loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) );
-		$('.currentposition').text( loupeStartPosition +'-'+ timeline.totalCount +' of '+ timeline.totalCount );
-		
-		// Spool the timeline handle
-		timelineHandle.init( ( timelineWidth < 20 ) ? timelineWidth : 20 );
+		})
+		.slider( 'moveTo', timelineWidth - minWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
+
+		// update the do_search state variable
+		timeline.do_search= true;
 	},
 	skipLoupeLeft: function(e) {
 		if (timeline.noJump == true) {
@@ -273,8 +277,55 @@ var timeline = {
 		var padding= parseInt( $('.years span').css('margin-left') );
 		padding= padding ? padding : 0;
 		return monthIndex + Math.min(
-									Math.max( pos - ( monthBoundary + padding ), 0 ),
-									timeline.monthData[month] - 1 );
+						Math.max( pos - ( monthBoundary + padding ), 0 ),
+						timeline.monthData[month] - 1 );
+	},
+	/* the reverse of the above function */
+	positionFromIndex: function(index) {
+		var month= 0;
+		var position= 0;
+		var positionIndex= 1;
+
+		if ( index < 1 ) return 0;
+
+		for ( i = 0; i < timeline.monthWidths.length && positionIndex + timeline.monthData[i] < index; i++ ) {
+			position+= timeline.monthWidths[i];
+			positionIndex+= timeline.monthData[i];
+			month= i + 1;
+		}
+
+		var padding= parseInt( $('.years .months span').css('margin-left') );
+		padding= padding ? padding : 0;
+		return position + padding + ( index - positionIndex );
+	},
+	reset: function () {
+		var timelineWidth = $('.years').width();
+
+		// update the arrays of posts per month
+		timeline.monthData= [0];
+		timeline.monthWidths= [0];
+		timeline.totalCount= 0;
+		$('.years span').each(function(i) {
+			timeline.monthData[i] = $(this).width();
+			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
+			timeline.totalCount += timeline.monthData[i];
+		});
+
+		// find the width which makes the loupe select 20 items
+		var minWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+
+		// reset the widths
+		$('.track').width( $('.years').width() );
+		$('.handle').width( minWidth + 'px' );
+
+		// reset the slider maxValue
+		$('.track').data('ui-slider').size= timelineWidth;
+		$('.track').data('ui-slider').options['realMaxValue']= Math.max( 1, timelineWidth - minWidth );
+
+		// move the handle without triggering a search
+		timeline.do_search= false;
+		$('.track').slider( 'moveTo', timelineWidth - minWidth );
+		timeline.do_search= true;
 	}
 }
 
@@ -334,7 +385,7 @@ var timelineHandle = {
 		$('.currentposition').text( loupeStartPosition +'-'+ loupeEndPosition +' of '+ timeline.totalCount );
 
 		/* AJAX call to fetch needed info goes here. */
-		if(jQuery.isFunction(this.loupeUpdate)) {
+		if( timeline.do_search && jQuery.isFunction(this.loupeUpdate) ) {
 			return this.loupeUpdate(loupeStartPosition, loupeEndPosition, timeline.totalCount);
 		}
 	},

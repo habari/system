@@ -173,13 +173,20 @@ class Comments extends ArrayObject
 			$fetch_fn= 'get_value';
 			$orderby= '';
 		}
+		// is a count of comments by month being requested?
+		$groupby= '';
+		if ( isset ( $month_cts ) ) {
+			$select= 'MONTH(date) AS month, YEAR(date) AS year, COUNT(id) AS ct';
+			$groupby= 'year, month';
+			$orderby= 'year, month';
+		}
 		if ( isset( $limit ) ) {
 			$limit= " LIMIT $limit";
 			if ( isset( $offset ) ) {
 				$limit.= " OFFSET $offset";
 			}
 		}
-		if ( isset( $nolimit ) ) {
+		if ( isset( $nolimit ) || isset( $month_cts )) {
 			$limit= '';
 		}
 
@@ -191,6 +198,7 @@ class Comments extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
+		$query.= ( $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
