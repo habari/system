@@ -169,6 +169,10 @@ body, textarea, #footer {
 	right:0;
 	}
 
+#page .dropbutton * {
+	cursor: pointer;
+	}
+
  #page .dropbutton.alert {
 	background: orangered;
 	}
@@ -1036,11 +1040,6 @@ p:hover > label.incontent.popup {
 	float: left;
 	}
 
-.manage .item {
-	padding: 9px 0;
-	border-bottom: 1px dotted #e6e6e6;
-	}
-
 .manage .item .title {
 	margin-left: 5px;
 	white-space: nowrap;
@@ -1257,10 +1256,6 @@ a.tag:hover {
 
 /* THEMES */
 
-.availablethemes .item {
-	padding: 9px 0;
-	border-bottom: 1px dotted #e6e6e6;
-}
 .thumb,
 .description {
 	float: left;
