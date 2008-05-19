@@ -20,7 +20,7 @@
 		?>	
 	<div class="item clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
-			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '"></a>'; ?><span class="dim">by</span> <?php echo $plugin['info']->author; ?></a></span>
+			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim">by</span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
 
 			<ul class="dropbutton">
 				
@@ -91,7 +91,7 @@
 		?>	
 	<div class="item clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
-			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '"></a>'; ?><span class="dim">by</span> <?php echo $plugin['info']->author; ?></a></span>
+			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim">by</span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
 
 			<ul class="dropbutton">
 				<li>
