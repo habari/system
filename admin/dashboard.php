@@ -7,11 +7,11 @@
 			Options::get('title') .
 			_n(' has been active for %1$d year, ', ' has been active for %1$d years, ', $active_time['years']) .
 			_n('%2$d month ', '%2$d months ', $active_time['months']) .
-			_n('and %3$d day.', 'and %3$d days.', $active_time['days']),
+			_n('and %3$d day.', 'and %3$d days', $active_time['days']),
 			$active_time['years'], $active_time['months'], $active_time['days']
 		 );
-		?>
-		<br>
+		?><br>
+
 		<?php
 		printf(
 			_n('The <a href="%6$s">%1$d author </a> has ', 'The <a href="%6$s">%1$d authors </a> have ', $stats['author_count']) .
@@ -31,6 +31,7 @@
 			URL::get( 'admin', array( 'page' => 'tags' ) )
 		);
 		?></p>
+
 		<p><?php
 		printf(
 			_n('You currently have <a href="%5$s">%1$d entry draft</a>, ', 'You currently have <a href="%5$s">%1$d entry drafts</a>, ', $stats['entry_draft_count']) .
@@ -46,8 +47,43 @@
 			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ),
 			URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_UNAPPROVED ) )
 		);
+		?></p>
+		
+		<?php
+
+			if ( count( $updates ) > 0 ) {
+				
+				foreach ( $updates as $update ) {
+					
+					$class= implode( ' ', $update['severity'] );
+					
+					if ( in_array( 'critical', $update['severity'] ) ) {
+						$update_text= _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
+					}
+					elseif ( count( $update['severity'] ) > 1 ) {
+						$update_text= _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
+					}
+					elseif ( in_array( 'bugfix', $update['severity'] ) ) {
+						$update_text= _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
+					}
+					elseif ( in_array( 'feature', $update['severity'] ) ) {
+						$update_text= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
+					}
+					
+					$update_text= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
+					
+					?>
+					
+						<p class="<?php echo $class; ?>"><?php echo $update_text; ?></p>
+					
+					<?php
+					
+				}
+				
+			}
+		
 		?>
-		</p>
+		
 		
 		<?php
 
