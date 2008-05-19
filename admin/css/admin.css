@@ -1230,7 +1230,8 @@ a.tag:hover {
 	float: left;
 	}
 
-.wt1 { font-size: 10px; }
+.wt0 { font-size: 10px; }
+.wt1 { font-size: 11px; }
 .wt2 { font-size: 12px; }
 .wt3 { font-size: 13px; }
 .wt4 { font-size: 15px; }
