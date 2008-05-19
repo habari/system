@@ -139,7 +139,7 @@ body, textarea, #footer {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 	}
 
-#menulist li#link-tags, #menulist li#link-users {
+#menulist li#link-tags, #menulist li#link-logs {
 	padding-bottom: 5px;
 	}
 
