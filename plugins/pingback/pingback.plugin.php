@@ -170,12 +170,13 @@ class Pingback extends Plugin
 				'name'		=>	$source_title,
 				'email'		=>	'',
 				'url'		=>	$source_uri,
-				'ip'		=>	0,
+				'ip'		=>	sprintf( "%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 				'content'	=>	$source_excerpt,
 				'status'	=>	Comment::STATUS_UNAPPROVED,
 				'date'		=>	date( 'Y-m-d H:i:s' ),
 				'type' 		=> 	Comment::PINGBACK,
 				) );
+
 			$pingback->insert();
 
 			// Respond to the Pingback
