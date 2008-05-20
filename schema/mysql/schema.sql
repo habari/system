@@ -65,7 +65,7 @@ CREATE TABLE  {$prefix}tags (
   tag_text VARCHAR(255) NOT NULL,
   tag_slug VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE KEY tag_text (tag_text)
+  UNIQUE KEY tag_slug (tag_slug)
 );
 
 CREATE TABLE  {$prefix}tag2post (
@@ -168,7 +168,7 @@ CREATE TABLE {$prefix}users_groups (
   user_id INT unsigned not null,
   group_id INT unsigned not null,
   PRIMARY KEY (id),
-  KEY user_group (user_id,group_id)
+  UNIQUE KEY user_group (user_id,group_id)
 );
 
 CREATE TABLE {$prefix}groups_permissions (

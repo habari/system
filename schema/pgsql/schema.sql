@@ -74,7 +74,7 @@ CREATE TABLE {$prefix}tags (
   tag_text VARCHAR(255) NOT NULL,
   tag_slug VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE (tag_text)
+  UNIQUE (tag_slug)
 );
 ALTER SEQUENCE {$prefix}tags_pkey_seq OWNED BY {$prefix}tags.id;
 
@@ -198,14 +198,10 @@ CREATE TABLE {$prefix}users_groups (
   id INTEGER NOT NULL DEFAULT nextval('{$prefix}users_groups_pkey_seq'),
   user_id INTEGER NOT NULL,
   group_id INTEGER NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (user_id,group_id)
 );
 ALTER SEQUENCE {$prefix}users_groups_pkey_seq OWNED BY {$prefix}users_groups.id;
-
-CREATE INDEX {$prefix}users_groups_user_group_key ON {$prefix}users_groups (
-  user_id, 
-  group_id
-);
 
 CREATE SEQUENCE {$prefix}groups_permissions_pkey_seq;
 CREATE TABLE {$prefix}groups_permissions (
