@@ -457,10 +457,17 @@ class Post extends QueryRecord implements IsContent
 		if ( count( $this->tags ) == 0 ) {
 			return;
 		}
+
 		foreach ( ( array ) $this->tags as $tag ) {
 			$tag_slug= Utils::slugify( $tag );
 			// @todo TODO Make this multi-SQL safe!
-			if ( DB::get_value( 'SELECT count(*) FROM ' . DB::table( 'tags' ) . ' WHERE tag_text = ?', array( $tag ) ) == 0 ) {
+			/*
+			 * Fix for Ticket#378 (Problems with using existing tags.
+			 *
+			 * We add an OR condition in the SQL code to ensure
+			 * both unique keys on tag_text and tag_slug are not violated.
+			 */
+			if ( DB::get_value( 'SELECT count(*) FROM ' . DB::table( 'tags' ) . ' WHERE tag_text = ? OR tag_slug = ? ', array( $tag, $tag_slug ) ) == 0 ) {
 				DB::query( 'INSERT INTO ' . DB::table( 'tags' ) . ' (tag_text, tag_slug) VALUES (?, ?)', array( $tag, $tag_slug ) );
 			}
 			DB::query( 'INSERT INTO ' . DB::table( 'tag2post' ) . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table( 'tags' ) . ' WHERE tag_text = ?',
