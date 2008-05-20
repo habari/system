@@ -496,7 +496,7 @@ var theMenu = {
 		});
 
 		// Down arrow
-		$.hotkeys.add('down', {propagate:true, disableInInput: true}, function(){
+		$.hotkeys.add('down', {propagate:false, disableInInput: true}, function() {
 			if(($('#menu').hasClass('hovering') == true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot'))
@@ -511,6 +511,7 @@ var theMenu = {
 			} else {
 				return false;
 			}
+			return false;
 		});
 
 		// Up arrow
@@ -554,6 +555,13 @@ var theMenu = {
 				});
 			}
 		});
+		
+		// If menu is open and mouse is clicked outside menu, close menu.
+		$('html').click(function() {
+			if ($('#menu #menulist').css('display') == 'block') {
+				dropButton.hideMenu();
+			}
+		})
 	}
 }
 
