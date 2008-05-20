@@ -79,7 +79,7 @@ class PGSQLConnection extends DatabaseConnection
 			else if ( preg_match( "|CREATE DATABASE ([^ ]*)|", $qry, $matches ) ) {
 				array_unshift( $cqueries, $qry );
 			}
-			else if ( preg_match( "|CREATE SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
+			else if ( preg_match( "|CREATE SEQUENCE ([^ ]*);|", $qry, $matches ) ) {
 				$cseqqueries[strtolower( $matches[1] )]= $qry;
 			}
 			else if ( preg_match( "|ALTER SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
@@ -270,6 +270,14 @@ class PGSQLConnection extends DatabaseConnection
 							if ( !( ( $aindex= array_search( $index_string, $indices ) ) === false ) ) {
 								unset( $indices[$aindex] );
 								unset( $indexqueries[$table] );
+							}
+							else {
+								if ( $index_data['unique'] ) {
+									$cqueries[]= "ALTER TABLE {$table} DROP CONSTRAINT {$index_name}";
+								}
+								else {
+									$cqueries[]= "DROP INDEX {$index_name}";
+								}
 							}
 						}
 					}
