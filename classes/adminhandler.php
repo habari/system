@@ -831,7 +831,7 @@ class AdminHandler extends ActionHandler
 			'timestamp' => '',
 			'PasswordDigest' => '',
 			'change' => '',
-			'author' => 0,
+			'user_id' => 0,
 			'type' => Post::type( 'entry' ),
 			'status' => Post::status( 'any' ),
 			'limit' => 20,
@@ -895,6 +895,7 @@ class AdminHandler extends ActionHandler
 			'status' => $status,
 			'limit' => $limit,
 			'offset' => $offset,
+			'user_id' => $user_id,
 		);
 
 		if ( '' != $search ) {
