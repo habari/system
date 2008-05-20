@@ -377,7 +377,10 @@ class Posts extends ArrayObject
 		
 		// If the month counts are requested, replaced the select clause
 		if( isset( $paramset['month_cts'] ) ) {
-			$select= 'MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(*) AS ct';
+			if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] ))
+				$select= 'MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(DISTINCT {posts}.id) AS ct';
+			else
+				$select= 'MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(*) AS ct';
 			$groupby= 'year, month';
 			$orderby= 'year, month';
 		}
