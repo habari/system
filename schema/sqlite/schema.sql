@@ -63,7 +63,7 @@ CREATE TABLE {$prefix}tags (
   tag_text VARCHAR(255) NOT NULL,
   tag_slug VARCHAR(255) NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS tag_text ON {$prefix}tags(tag_text);
+CREATE UNIQUE INDEX IF NOT EXISTS tag_slug ON {$prefix}tags(tag_slug);
 
 CREATE TABLE {$prefix}tag2post (
   tag_id INTEGER UNSIGNED NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE {$prefix}users_groups (
   user_id INTEGER UNSIGNED NOT NULL,
   group_id INTEGER UNSIGNED NOT NULL
 );
-CREATE INDEX IF NOT EXISTS user_group ON {$prefix}users_groups(user_id,group_id);
+CREATE UNIQUE INDEX IF NOT EXISTS user_group ON {$prefix}users_groups(user_id,group_id);
 
 CREATE TABLE {$prefix}groups_permissions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
