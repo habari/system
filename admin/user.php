@@ -1,8 +1,6 @@
 <?php include('header.php');?>
-<div class="container">
-<hr>
-<div class="column prepend-1 span-22 append-1">
-<?php
+
+<?php // Fetch user information
 	$currentuser = User::identify();
 	if ( ! $currentuser ) {
 		Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
@@ -14,46 +12,123 @@
 	if ( isset( $user ) && ( $user != $currentuser->username ) ) {
 		$user = User::get_by_name( $user );
 		if ( ! $user ) {
-			echo "No such user!";
+			echo "<p class='error'>No such user!</p>";
 		}
 		$who= $user->username;
 		$possessive= $user->username . "'s";
 	}
 	else {
 		$user= $currentuser;
-		$who= "you";
-		$possessive= "your";
+		$who= "You";
+		$possessive= "Your";
 	}
 ?>
-<div class="column span-10 first">
-	<h3><?php echo $possessive; ?> Profile</h3>
-	<?php
-	if ( Session::has_messages() ) {
-	}
-	else {
-		echo "<p>Below are the data that Habari knows about " . $who . ".</p>";
-	}
-	?>
-	<form name="update-profile" id="update-profile" action="<?php URL::out('admin', 'page=user'); ?>" method="post">
-		<p><input type="hidden" name="user_id" value="<?php echo $user->id; ?>"></p>
-		<p><label>Username:</label></p>
-		<p><input type="text" name="username" value="<?php echo $user->username; ?>"></p>
-                <p><label>Display Name:</label></p>
-                <p><input type="text" name="displayname" value="<?php echo $user->info->displayname; ?>"></p>
-		<p><label>Email address:</label></p>
-		<p><input type="text" name="email" value="<?php echo $user->email; ?>"></p>
-		<p><label>New Password:</label></p>
-		<p><input type="password" name="pass1" value=""></p>
-		<p><input type="password" name="pass2" value=""> (type again to confirm)</p>
-		<p><label>Image URL:</label></p>
-	        <p><input type="text" name="imageurl" value="<?php echo $user->info->imageurl; ?>"></p>
 
-	    <?php Plugins::act( 'theme_admin_user', $user ); ?>
 
-		<p><input type="submit" value="Update Profile!"></p>
-	</form>
+<div class="container navigation">
+	<span class="pct40">
+		<form>
+		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
+			<?php /*
+			foreach ( Users::get_all() as $user ) {
+				if ( $user->username == $currentuser->username ) {
+					$url = Url::get( 'admin', 'page=user' );
+				}
+				else {
+					$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
+				}
+				echo '<option id="' . $user->id . '" value="' . $url . '">' . $user->displayname . '</option>';
+			} */ ?>
+			<option value="">Complete User List</option>
+		</select>
+		</form>
+	</span>
+	<span class="or pct20">
+		or
+	</span>
+	<span class="pct40">
+		<input type="search" placeholder="search users" autosave="habarisettings" results="10"></input>
+	</span>
 </div>
-<div class="column span-10 prepend-1 last">
+
+
+<form name="update-profile" id="update-profile" action="<?php URL::out('admin', 'page=user'); ?>" method="post">
+<div class="container settings user userinformation">
+
+	<h2><?php echo $possessive; ?> User Information</h2>
+
+		<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
+
+		<div class="item clear" id="displayname">
+			<span class="column span-5">
+				<label for="sitename">Display Name</label>
+			</span>
+			<span class="column span-14 last">
+				<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>"></input>
+			</span>
+		</div>
+
+		<div class="item clear" id="username">
+			<span class="column span-5">
+				<label for="sitetagline">User Name</label>
+			</span>
+			<span class="column span-14 last">
+				<input type="text" name="username" class="border" value="<?php echo $user->username; ?>"></input>
+			</span>
+		</div>	
+
+		<div class="item clear" id="email">
+			<span class="column span-5">
+				<label for="sitetagline">E-Mail</label>
+			</span>
+			<span class="column span-14 last">
+				<input type="text" name="email" class="border" value="<?php echo $user->email; ?>"></input>
+			</span>
+		</div>	
+
+		<div class="item clear" id="portraiturl">
+			<span class="column span-5">
+				<label for="sitetagline">Portrait URL</label>
+			</span>
+			<span class="column span-14 last">
+				<input type="text" name="imageurl" class="border" value=""></input>
+			</span>
+		</div>	
+</div>
+
+
+<div class="container settings user changepassword">
+
+	<h2>Change Password</h2>
+
+		<div class="item clear" id="password">
+			<span class="column span-5">
+				<label for="sitetagline">Password</label>
+			</span>
+			<span class="column span-14 last">
+				<input type="password" name="pass1" class="border" value=""></input>
+			</span>
+		</div>	
+
+		<div class="item clear" id="passwordagain">
+			<span class="column span-5">
+				<label for="sitetagline">Password Again</label>
+			</span>
+			<span class="column span-14 last">
+				<input type="password" name="pass2" class="border" value=""></input>
+			</span>
+		</div>	
+</div>
+
+<?php Plugins::act( 'theme_admin_user', $user ); ?>
+
+<div class="container transparent">
+	<input type="submit" value="Apply" class="savebutton"></input>
+</div>
+</form>
+
+<!-- Not sure what to do with this just now, so I'm commenting it out and returning later
+
 <?php
 if ( Posts::count_by_author( $user->id, Post::status('published') ) ) {
 	echo $possessive ." five most recent published posts:<br>\n";
@@ -97,8 +172,7 @@ if ( $user != $currentuser ) {
 	echo "</form>\n";
 }
 ?>
-</div>
-<div style="clear: both;"></div>
-</div>
-</div>
+
+-->
+
 <?php include('footer.php');?>
