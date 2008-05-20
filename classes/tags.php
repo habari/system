@@ -14,7 +14,28 @@ class Tags extends ArrayObject
 	 **/
 	public static function get()
 	{
-		$tags= DB::get_results( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id GROUP BY id, tag, slug ORDER BY tag ASC' );
+		/*
+		 * A LEFT JOIN is needed here in order to accomodate tags,
+		 * such as the default "habari" tag added to the database, 
+		 * which are not related (yet) to any post itself.  These
+		 * tags are essentially lost to the world.
+		 *
+		 * This is a partial fix for Issue#375.  See get_by_id() for the 
+		 * other part.
+		 */
+		$sql=<<<ENDOFSQL
+SELECT 
+	t.id AS id
+, t.tag_text AS tag
+, t.tag_slug AS slug
+, COUNT(*) AS count 
+FROM {tags} t 
+LEFT JOIN {tag2post} tp 
+ON t.id=tp.tag_id 
+GROUP BY id, tag, slug 
+ORDER BY tag ASC
+ENDOFSQL;
+		$tags= DB::get_results( $sql );
 		return $tags;
 	}
 
@@ -144,9 +165,32 @@ class Tags extends ArrayObject
 		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_slug = ? GROUP BY id, tag, slug', array($tag) );
 	}
 
-	public static function get_by_id($tag)
+	/**
+	 * Returns a Tag object based on a supplied ID
+	 *
+	 * @param		tag_id	The ID of the tag to retrieve
+	 * @return	A Tag object
+	 */
+	public static function get_by_id( $tag_id )
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE id = ? GROUP BY id, tag, slug', array($tag) );
+		/*
+		 * A LEFT JOIN is needed here to accomodate tags not yet
+		 * related to a post, like the default "habari" tag...
+		 * Remaining fix for Issue#375
+		 */
+		$sql=<<<ENDOFSQL
+SELECT 
+  t.id AS id
+, t.tag_text AS tag
+, t.tag_slug AS slug
+, COUNT(*) AS count 
+FROM {tags} t 
+LEFT JOIN {tag2post} tp 
+ON t.id=tp.tag_id 
+WHERE id = ? 
+GROUP BY id, tag, slug
+ENDOFSQL;
+		return DB::get_row( $sql, array($tag_id) );
 	}
 }
 ?>

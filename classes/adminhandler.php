@@ -1358,11 +1358,11 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle GET requests for /admin/tags to display the logs
+	 * Handle GET requests for /admin/tags to display the tags 
 	 */
 	public function get_tags()
 	{
-		$this->theme->wsse= Utils::WSSE();
+		$this->theme->wsse= Utils::WSSE(); /* @TODO: What the heck is this doing here? */
 		$this->display( 'tags' );
 	}
 
