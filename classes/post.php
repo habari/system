@@ -453,27 +453,125 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
-		DB::query( 'DELETE FROM ' . DB::table( 'tag2post' ) . ' WHERE post_id = ?', array( $this->fields['id'] ) );
-		if ( count( $this->tags ) == 0 ) {
-			return;
+		/* 
+		 * First, let's clean the incoming tag text array, ensuring we have
+		 * a unique set of tag texts and slugs.
+		 */
+		$clean_tags= array();
+		foreach ( ( array ) $this->tags as $tag )
+			if ( ! in_array( $tag, array_keys( $clean_tags ) ) )
+				if ( ! in_array( $slug= Utils::slugify( $tag ), array_values( $clean_tags ) ) )
+					$clean_tags[$tag]= $slug;
+
+		if ( count( $this->tags ) == 0) {
+			DB::query("DELETE FROM {tag2post} WHERE post_id = ?", array( $this->fields['id'] ) );
+			return TRUE;
 		}
 
-		foreach ( ( array ) $this->tags as $tag ) {
-			$tag_slug= Utils::slugify( $tag );
-			// @todo TODO Make this multi-SQL safe!
-			/*
-			 * Fix for Ticket#378 (Problems with using existing tags.
-			 *
-			 * We add an OR condition in the SQL code to ensure
-			 * both unique keys on tag_text and tag_slug are not violated.
-			 */
-			if ( DB::get_value( 'SELECT count(*) FROM ' . DB::table( 'tags' ) . ' WHERE tag_text = ? OR tag_slug = ? ', array( $tag, $tag_slug ) ) == 0 ) {
-				DB::query( 'INSERT INTO ' . DB::table( 'tags' ) . ' (tag_text, tag_slug) VALUES (?, ?)', array( $tag, $tag_slug ) );
+		/* Now, let's insert any *new* tag texts or slugs into the tags table */
+		$repeat_questions= rtrim( str_repeat( '?,', count( $clean_tags ) ), ',' );
+		$sql_tags_exist=<<<ENDOFSQL
+SELECT id, tag_text, tag_slug
+FROM {tags}
+WHERE tag_text IN ({$repeat_questions})
+OR tag_slug IN ({$repeat_questions})
+ENDOFSQL;
+		$params= array_merge( array_keys( $clean_tags ), array_values( $clean_tags ) );
+		$existing_tags= DB::get_results( $sql_tags_exist, $params );
+		if ( count( $existing_tags ) > 0 ) {
+			/* Tags exist which match the text or the slug */
+			foreach ( $existing_tags as $existing_tag ) {
+				if ( in_array( $existing_tag->tag_text, array_keys( $clean_tags ) ) ) {
+					/* 
+					 * Tag text exists.  
+					 * Add the ID to the list of Tag IDs to add to the tag2post table 
+					 */
+					$tag_ids_to_post[]= $existing_tag->id;
+					/* 
+					 * We remove it from the clean_tags collection as we only 
+					 * want to add to the tags table those tags which don't already exist 
+					 */
+					unset( $clean_tags[$existing_tag->tag_text] );
+				}
+				if ( in_array( $existing_tag->tag_slug, array_values( $clean_tags ) ) ) {
+					$tag_ids_to_post[]= $existing_tag->id;
+					foreach ( $clean_tags as $text=>$slug ) {
+						if ( $slug == $existing_tag->tag_slug ) {
+							unset( $clean_tags[$text] );
+							break;
+						}
+					}
+				}
 			}
-			DB::query( 'INSERT INTO ' . DB::table( 'tag2post' ) . ' (tag_id, post_id) SELECT id AS tag_id, ? AS post_id FROM ' . DB::table( 'tags' ) . ' WHERE tag_text = ?',
-				array( $this->fields['id'], $tag )
-			);
 		}
+
+		DB::begin_transaction();
+		$result= TRUE;
+		/*
+		 * OK, at this point, we have two "clean" collections.  $clean_tags
+		 * contains an associative array of tags we need to add to the main tags
+		 * table.  $tag_ids_to_post is an array of tag ID values that we will 
+		 * attempt to add to the tag2post mapping table.
+		 *
+		 * First, let's add the new tags to the tags table...
+		 */
+		foreach ( $clean_tags as $new_tag_text=>$new_tag_slug ) {
+			$sql_tag_new=<<<ENDOFSQL
+INSERT INTO {tags} (id, tag_text, tag_slug) VALUES (NULL, ?, ?)
+ENDOFSQL;
+			if (FALSE !== ($insert= DB::query( $sql_tag_new, array( $new_tag_text, $new_tag_slug ) ) ) )
+				$tag_ids_to_post[]= DB::last_insert_id();
+			$result&= $insert;
+		}
+
+		if ( ! $result ) {
+			DB::rollback();
+			return FALSE;
+		}
+
+		/*
+		 * $tag_ids_to_post now contains tag IDs of all tags to relate to the
+		 * post.  Go ahead and add them to the tag2post table...
+		 */
+		print_r( $tag_ids_to_post);
+		$post_id= $this->fields['id'];
+		foreach ( $tag_ids_to_post as $index=>$new_tag_id ) {
+			$sql_tag_post_exists=<<<ENDOFSQL
+SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?
+ENDOFSQL;
+			if ( 0 == DB::get_value( $sql_tag_post_exists, array( $new_tag_id, $post_id ) ) ) {
+			  $sql_tag_post_new=<<<ENDOFSQL
+INSERT INTO {tag2post} (tag_id, post_id) VALUES (?, ?)
+ENDOFSQL;
+			  $result&= DB::query( $sql_tag_post_new, array( $new_tag_id, $post_id ) );
+			}
+		}
+
+		if ( count( $tag_ids_to_post ) > 0 ) {
+			/*
+			 * Finally, remove the tags which are no longer associated with the
+			 * post.
+			 */
+			$repeated_questions= rtrim( str_repeat( '?,', count( $tag_ids_to_post ) ), ',');
+			$sql_delete=<<<ENDOFSQL
+DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeated_questions});
+ENDOFSQL;
+			$params= array_merge( (array) $post_id, array_values( $tag_ids_to_post ) );
+			$result&= DB::query( $sql_delete, $params );
+		}
+
+		if ( ! $result ) {
+			DB::rollback();
+			return FALSE;
+		}
+
+		if ( ! $result ) {
+			DB::rollback();
+			return FALSE;
+		}
+		DB::commit();
+		return TRUE;
+		
 	}
 
 	/**

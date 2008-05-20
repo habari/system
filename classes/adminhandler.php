@@ -214,7 +214,8 @@ class AdminHandler extends ActionHandler
 			if ( ( $newslug != '' ) && ( $newslug != $slug ) ) {
 				$post->slug= $newslug;
 			}
-			$post->tags= $tags;
+			if (! empty( $tags ) )
+				$post->tags= $tags;
 			$post->content= $content;
 			$post->content_type= $content_type;
 			if ( ( $post->status != Post::status( 'published' ) ) && ( $status == Post::status( 'published' ) ) ) {
