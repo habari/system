@@ -408,7 +408,7 @@ class Posts extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= ( $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query.= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		/**
