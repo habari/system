@@ -45,8 +45,10 @@
 						<div class="upload"><input type="file"></input><input type="submit" value="Upload"></input></div>
 					</div>
 					<div class="media_browser">
-						<ul class="mediadir"></ul>
-						<div class="mediaphotos"></div>
+						<div class="media_row">
+							<ul class="mediadir"></ul>
+							<div class="mediaphotos"></div>
+						</div>
 					</div>
 					<div class="media_panel"></div>
 				</div>
