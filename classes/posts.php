@@ -138,7 +138,7 @@ class Posts extends ArrayObject
 						$params[]= (string) $paramset['slug'];
 					}
 				}
-				if ( isset( $paramset['user_id'] ) ) {
+				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
 					if ( is_array( $paramset['user_id'] ) ) {
 						array_walk( $paramset['user_id'], create_function( '$a,$b,&$c', '$c[$b]= intval($a);' ), $paramset['user_id'] );
 						$where[]= "user_id IN (" . implode( ',', array_fill( 0, count( $paramset['user_id'] ), '?' ) ) . ")";
