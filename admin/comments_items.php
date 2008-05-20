@@ -10,7 +10,7 @@
 			<?php echo $comment->name; ?>
 			<?php endif; ?>
 		</span>
-		<span class="entry pct30"><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>"><?php echo $comment->post->title; ?></a></span>
+		<span class="entry pct30"><span class="dim">in '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
     <span class="time pct10"><a href="#"><span class="dim">at</span> <?php echo date('H:i', strtotime($comment->date));?></a></span>
     <span class="date pct15"><a href="#"><span class="dim">on</span> <?php echo date('M d, Y', strtotime($comment->date));?></a></span>
 		<ul class="dropbutton">
