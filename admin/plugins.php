@@ -1,5 +1,6 @@
 <?php include('header.php'); ?>
 
+<?php if ( count($active_plugins) > 0 ): ?>
 <div class="container plugins activeplugins">
 	<h2>Active Plugins</h2>
 	<?php foreach($active_plugins as $plugin) {
@@ -17,13 +18,13 @@
 		<?php
 		}
 		else {
-		?>	
+		?>
 	<div class="item clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
 			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim">by</span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
 
 			<ul class="dropbutton">
-				
+
 						<?php
 						if ( $plugin['active'] ) {
 							$plugin_actions= array();
@@ -47,11 +48,10 @@
 				<input type='hidden' name='action' value='<?php echo $plugin['active'] ? 'Deactivate' : 'Activate'; ?>'>
 				<button name='submit' type='submit'><?php echo $plugin['verb']; ?></button></form>
 				</li>
-				
-						
+
 			</ul>
 			<?php if( isset( $updates ) ) { ?>
-			<ul class="dropbutton alert"> 
+			<ul class="dropbutton alert">
 				<li><a href="#">v1.1 Update Available Now</a></li>
 			</ul>
 			<?php } ?>
@@ -69,9 +69,11 @@
 	</div>
 	<?php } ?>
 </div>
+<?php endif; ?>
 
-<div class="container plugins activeplugins">
-	
+<?php if ( count($inactive_plugins) > 0 ): ?>
+<div class="container plugins inactiveplugins">
+
 	<h2>Inactive Plugins</h2>
 	<?php foreach($inactive_plugins as $plugin) {
 		if($plugin['debug']) {
@@ -88,7 +90,7 @@
 		<?php
 		}
 		else {
-		?>	
+		?>
 	<div class="item clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
 			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim">by</span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
@@ -102,28 +104,24 @@
 			    </li></form>
 			</ul>
 			<?php if( isset( $updates ) ) { ?>
-			<ul class="dropbutton alert"> 
+			<ul class="dropbutton alert">
 				<li><a href="#">v1.1 Update Available Now</a></li>
 			</ul>
 			<?php } ?>
 		</div>
 		<p class="description"><?php echo $plugin['info']->description; ?></p>
-</div>		
+</div>
 				<?php } ?>
 			<?php } ?>
 	</div>
-
-
-
+<?php endif; ?>
 
 <div class="container uploadpackage">
 	<h2>Upload Plugin Package</h2>
-	
 	<div class="uploadform">
 		<input type="file"></input>
 		<input type="submit" value="Upload"></input>
 	</div>
 </div>
-
 
 <?php include('footer.php'); ?>
