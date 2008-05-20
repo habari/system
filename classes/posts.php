@@ -376,7 +376,6 @@ class Posts extends ArrayObject
 		}
 		
 		// If the month counts are requested, replaced the select clause
-		$groupby= '';
 		if( isset( $paramset['month_cts'] ) ) {
 			$select= 'MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(*) AS ct';
 			$groupby= 'year, month';
