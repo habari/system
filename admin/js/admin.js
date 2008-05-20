@@ -432,6 +432,17 @@ var spinner = {
 }
 
 
+// NAVIGATION DROPDOWNS
+var navigationDropdown = {
+	changePage: function(location) {
+		nextPage = location.options[location.selectedIndex].value
+
+		if (nextPage != "")
+			document.location.href = nextPage
+	}
+}
+
+
 // DROPBUTTON
 var dropButton = {
 	init: function() {
