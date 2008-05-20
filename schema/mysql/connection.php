@@ -190,6 +190,16 @@ class MySQLConnection extends DatabaseConnection
 							if(!(($aindex = array_search($index_string, $indices)) === false)) {
 								unset($indices[$aindex]);
 							}
+							else {
+								preg_match( '|(^.*)\((.*)\)|', $index_string, $matches );
+								$tindextype= $matches[1];
+								if ( preg_match( '/^KEY|UNIQUE KEY/i', $tindextype ) > 0 ) {
+									$cqueries[]= "ALTER TABLE {$table} DROP INDEX {$index_name}";
+								}
+								else {
+									$cqueries[]= "ALTER TABLE {$table} DROP PRIMARY KEY";
+								}
+							}
 						}
 					}
 					foreach($indices as $index) {
@@ -198,7 +208,8 @@ class MySQLConnection extends DatabaseConnection
 					}
 					unset($cqueries[strtolower($table)]);
 					unset($for_update[strtolower($table)]);
-				} else {
+				} 
+				else {
 				}
 			}
 		}
