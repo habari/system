@@ -1,5 +1,3 @@
-/* @override http://localhost/habaricommit/system/admin/css/admin.css */
-
 /*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
@@ -915,6 +913,11 @@ p:hover > label.incontent.popup {
 
 /* DASHBOARD - LATEST COMMENTS MODULE*/
 
+.dashboard .latestcommentsmodule .item {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	}
+	
 .dashboard .latestcommentsmodule .item > span {
 	float: left;
 	}
