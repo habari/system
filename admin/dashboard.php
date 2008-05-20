@@ -48,15 +48,15 @@
 			URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_UNAPPROVED ) )
 		);
 		?></p>
-		
+
 		<?php
 
 			if ( count( $updates ) > 0 ) {
-				
+
 				foreach ( $updates as $update ) {
-					
+
 					$class= implode( ' ', $update['severity'] );
-					
+
 					if ( in_array( 'critical', $update['severity'] ) ) {
 						$update_text= _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
 					}
@@ -69,64 +69,23 @@
 					elseif ( in_array( 'feature', $update['severity'] ) ) {
 						$update_text= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
 					}
-					
-					$update_text= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
-					
-					?>
-					
-						<p class="<?php echo $class; ?>"><?php echo $update_text; ?></p>
-					
-					<?php
-					
-				}
-				
-			}
-		
-		?>
-		
-		
-		<?php
 
-			if ( count( $updates ) > 0 ) {
-				
-				foreach ( $updates as $update ) {
-					
-					$class= implode( ' ', $update['severity'] );
-					
-					if ( in_array( 'critical', $update['severity'] ) ) {
-						$update_text= _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
-					}
-					elseif ( count( $update['severity'] ) > 1 ) {
-						$update_text= _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
-					}
-					elseif ( in_array( 'bugfix', $update['severity'] ) ) {
-						$update_text= _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
-					}
-					elseif ( in_array( 'feature', $update['severity'] ) ) {
-						$update_text= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
-					}
-					
 					$update_text= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
-					
-					?>
-					
-						<p class="<?php echo $class; ?>"><?php echo $update_text; ?></p>
-					
-					<?php
-					
+					echo "<p class='{$class}'>{$update_text}</p>";
+
 				}
-				
+
 			}
-		
+
 		?>
-		
+
 </div>
 
 <div class="container dashboard transparent">
 
 	<ul class="modules">
 		<?php foreach($modules as $modulename => $module): ?>
-		<li class="module <?php echo $modulename; ?>module" id=<?php echo $modulename; ?>module">
+		<li class="module <?php echo $modulename; ?>module" id="<?php echo $modulename; ?>module">
 			<?php echo $module; ?>
 		</li>
 		<?php endforeach; ?>
