@@ -1,3 +1,5 @@
+/* @override http://localhost/habaricommit/system/admin/css/admin.css */
+
 /*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
@@ -165,8 +167,8 @@ body, textarea, #footer {
 	list-style: none outside;
 	margin: 0 0 0 10px;
 	position:absolute;
-	top:0;
-	right:0;
+	top: 10px !important;
+	right: 5px;
 	}
 
 #page .dropbutton * {
@@ -285,6 +287,7 @@ body, textarea, #footer {
 #page .container h2 {
 	font: 1.6em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
 	color: #333;
+	text-transform: capitalize;
 	}
 
 #page .container h3 {
@@ -298,11 +301,16 @@ body, textarea, #footer {
 
 .item {
 	position: relative;
-	margin: 5px 0 20px;
+	padding: 10px 0 10px;
+	border-bottom: 1px solid #eee;
+	}
+
+.item.last-child {
+	border: none;
 	}
 
 .item .head {
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 	font-size: 1.1em;
 	}
 
@@ -963,18 +971,8 @@ p:hover > label.incontent.popup {
 
 /* PLUGINS */
 
-.plugins .item {
-	padding: 4px 40px;
-	margin: 10px -40px;
-	}
-
 .plugins .item:hover {
 	background: #eee;
-	}
-
-.plugins .item .dropbutton {
-	top: 5px !important;
-	right: 40px !important;
 	}
 
 .plugins .head {
@@ -1008,15 +1006,16 @@ p:hover > label.incontent.popup {
 	font-size: 11px;
 	}
 
-.container.settings input[type=text] {
+.container.settings input[type=text],
+.container.settings input[type=password] {
 	width: 100%;
 	font: 1em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
 	color: #444;
 	padding: 2px 1px;
 	}
 
-#sitename input {
-	font-size: 1.9em;
+.container input.big {
+	font-size: 1.9em !important;
 	}
 
 .humanepathspreview {

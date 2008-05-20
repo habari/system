@@ -617,12 +617,12 @@ var liveSearch = {
 	doSearch: function() {
 		if ( liveSearch.input.val() == liveSearch.prevSearch ) return;
 
-		liveSearch.prevSearch= liveSearch.input.val();
+		liveSearch.prevSearch = liveSearch.input.val();
 
 		if ( jQuery.isFunction( liveSearch.search ) ) {
 			return liveSearch.search();
 		}
-
+		
 	},
 	search: null, // specific search functions are defined on the individual pages
 }
@@ -655,6 +655,11 @@ $.fn.resizeable = function(){
 }
 
 
+// Damn the lack of proper support for pseudo-classes!
+function findChildren() {
+	$('div > .item:first-child, .modulecore .item:first-child, ul li:first-child').addClass('first-child')
+	$('div > .item:last-child, .modulecore .item:last-child, ul li:last-child').addClass('last-child')
+}
 
 /* ON PAGE STARTUP */
 String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }
@@ -662,7 +667,7 @@ String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }
 var tagskeyup;
 
 $(document).ready(function(){
-	// Ready all dropbuttons and The Menu
+	// Initialize all sub-systems
 	dropButton.init();
 	theMenu.init();
 	dashboard.init();
@@ -670,10 +675,7 @@ $(document).ready(function(){
 	itemManage.init();
 	tagManage.init();
 	liveSearch.init();
-
-	// Damn the lack of proper support for pseudo-classes!
-	$('.modulecore .item:first-child, ul li:first-child').addClass('first-child')
-	$('.modulecore .item:last-child, ul li:last-child').addClass('last-child')
+	findChildren();
 
 	// Alternate the rows' styling.
     $("table").each(function(){
