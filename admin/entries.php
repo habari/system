@@ -65,8 +65,7 @@ liveSearch.search= function() {
 			spinner.stop();
 			itemManage.initItems();
 			timeline.reset();
-			$('.modulecore .item:first-child, ul li:first-child').addClass('first-child').show();
-			$('.modulecore .item:last-child, ul li:last-child').addClass('last-child');
+			findChildren()
 		},
 		'json'
 		);
