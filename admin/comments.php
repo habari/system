@@ -1,11 +1,11 @@
 <?php include('header.php'); ?>
 
 <div class="container navigator">
-	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; Older</a></span>
-	<span class="currentposition pct15 minor">0 of 0</span>
-	<span class="search pct50"><input type="search" placeholder="Type and wait to search for any comment component" autosave="habaricontent" results="10" value="<?php echo $search_args ?>"></span>
+	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
+	<span class="currentposition pct15 minor"><?php _e('0 of 0'); ?></span>
+	<span class="search pct50"><input type="search" placeholder="<?php _e('Type and wait to search for any comment component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>"></span>
 	<span class="nothing pct15">&nbsp;</span>
-	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false">Newer &raquo;</a></span>
+	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
 	<div class="timeline">
 		<div class="years">
@@ -38,13 +38,13 @@
 		<div class="item controls">
 			<span class="checkboxandselected pct25">
 				<input type="checkbox"></input>
-				<span class="selectedtext minor none">None selected</span>
+				<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 			</span>
 			<span class="buttons">
-				<input type="submit" name="do_delete" value="Delete" class="deletebutton"></input>
-				<input type="submit" name="do_spam" value="Spam" class="spambutton"></input>
-				<input type="submit" name="do_unapprove" value="Unapprove" class="spambutton"></input>
-				<input type="submit" name="do_approve" value="Approve" class="approvebutton"></input>
+				<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton"></input>
+				<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton"></input>
+				<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="spambutton"></input>
+				<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton"></input>
 			</span>
 		</div>
 	</div>
@@ -61,13 +61,13 @@
 	<div class="item controls">
 		<span class="checkboxandselected pct25">
 			<input type="checkbox"></input>
-			<span class="selectedtext minor none">None selected</span>
+			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 		</span>
 		<span class="buttons">
-			<input type="submit" name="do_delete" value="Delete" class="deletebutton"></input>
-			<input type="submit" name="do_spam" value="Spam" class="spambutton"></input>
-			<input type="submit" name="do_unapprove" value="Unapprove" class="spambutton"></input>
-			<input type="submit" name="do_approve" value="Approve" class="approvebutton"></input>
+			<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton"></input>
+			<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton"></input>
+			<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="spambutton"></input>
+			<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton"></input>
 		</span>
 	</div>
 </div>

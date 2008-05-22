@@ -1,5 +1,5 @@
 				<div class="container">
-					<p class="column span-5"><input type="button" value="Clear" id="clear"></p>
+					<p class="column span-5"><input type="button" value="<?php _e('Clear'); ?>" id="clear"></p>
 				</div>
 				<hr>
 				<div class="container">

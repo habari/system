@@ -1,22 +1,22 @@
-<?php include('header.php');?>
+<?php include('header.php'); ?>
 <div class="container">
 <hr>
 <?php
 $currentuser = User::identify();
 ?>
-<h3>Group Management</h3>
+<h3><?php _e('Group Management'); ?></h3>
 <div class="column span-8">
-<p>Groups</p>
+<p><?php _e('Groups'); ?></p>
 <form method="post" action="">
 <input type="textarea" size="20" name="add_group" />
-<input type="submit" value="Add">
+<input type="submit" value="<?php _e('Add'); ?>">
 </form>
 <ul>
 <?php
 foreach ( $groups as $group ) {
 	echo '<li>';
-	echo '<form method="post" action=""><input type="hidden" name="group" value="' . $group->name . '"><input type="submit" name="delete_group" value="Delete"> ';
-	echo '<input type="submit" name="edit_group" value="Edit"> ';
+	echo '<form method="post" action=""><input type="hidden" name="group" value="' . $group->name . '"><input type="submit" name="delete_group" value="' . _t('Delete') . '"> ';
+	echo '<input type="submit" name="edit_group" value="' . _t('Edit') . '"> ';
 	echo $group->name . '</form>';
 	echo '</li>';
 }
@@ -24,11 +24,11 @@ foreach ( $groups as $group ) {
 </ul>
 </div>
 <div class="column span-8">
-<p>Members</p>
+<p><?php _e('Members'); ?></p>
 <?php
 if ( isset( $group_edit ) ) {
 	if ( isset( $users) && ( ! empty( $users ) ) ) {
-		echo '<p>Editing members of ' . $group_edit->name . '</p>';
+		echo '<p>' . _t('Editing members of ') . $group_edit->name . '</p>';
 		echo '<form method="post" action="">';
 		echo '<input type="hidden" name="group" value="' . $group_edit->name . '">';
 		foreach ( $users as $user ) {
@@ -38,22 +38,22 @@ if ( isset( $group_edit ) ) {
 			}
 			echo '"> ' . $user->username . '<br>';
 		}
-		echo '<input type="submit" name="users" value="Submit"></form>';
+		echo '<input type="submit" name="users" value="' . _t('Submit') . '"></form>';
 	} else {
-		echo '<p>No members.</p>';
+		echo '<p>' . _t('No members.') . '</p>';
 	}
 }
 ?>
 </div>
 <div class="column span-8 last">
-<p>Permissions</p>
+<p><?php _e('Permissions'); ?></p>
 <?php
 if ( isset( $group_edit ) ) {
 	if ( isset( $permissions) && ( ! empty( $permissions ) ) ) {
-		echo '<p>Editing Permissions of ' . $group_edit->name . '</p>';
+		echo '<p>' . _t('Editing Permissions of ') . $group_edit->name . '</p>';
 		echo '<form method="post" action="">';
 		echo '<input type="hidden" name="group" value="' . $group_edit->name . '">';
-		echo '<table><tr><th>Granted</th><th>Permission</th><th>Denied</th></tr>';
+		echo '<table><tr><th>' . _t('Granted') . '</th><th>' . _t('Permission') . '</th><th>' . _t('Denied') . '</th></tr>';
 		foreach( $permissions as $perm ) {
 			echo '<tr>';
 			if(  isset( $permissions_granted[ $perm->id ] ) ) {
@@ -75,7 +75,7 @@ if ( isset( $group_edit ) ) {
 		echo '<tr><td colspan="3"><input type="submit" name="permissions" value="' . _t('Submit') . '"></td>';
 		echo '</table></form>';
 	} else {
-		echo '<p>No permissions.</p>';
+		echo '<p>' . _t('No permissions.') . '</p>';
 	}
 }
 ?>

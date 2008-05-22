@@ -1,11 +1,11 @@
 <?php include('header.php');?>
 
 <div class="container"><!-- TODO: implement the tags loupe -->
-	<span class="older pct10"><a href="#">&laquo; Older</a></span>
-	<span class="currentposition pct15 minor">0-20 of 480</span>
-	<span class="search pct50"><input type="search" placeholder="Type and wait to search tags" autosave="habaricontent" results="10"></input></span>
+	<span class="older pct10"><a href="#"><?php _e('&laquo; Older'); ?></a></span>
+	<span class="currentposition pct15 minor"><?php '0-20 of 480' ?></span>
+	<span class="search pct50"><input type="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autosave="habaricontent" results="10"></input></span>
 	<span class="nothing pct15">&nbsp;</span>
-	<span class="newer pct10"><a href="#">Newer &raquo;</a></span>
+	<span class="newer pct10"><a href="#"><?php _e('Newer'); ?> &raquo;</a></span>
 </div>
 <div id="tag_collection" class="container tags">
   <?php $theme->display( 'tag_collection' ); ?>
@@ -15,13 +15,13 @@
 
 	<div class="tags controls">
 		<span class="checkboxandselected pct15">
-			<span class="selectedtext minor none">None selected</span>
+			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 		</span>
-		<span><input type="button" value="Delete" class="deletebutton"></input></span>
-		<span class="or pct5">or</span>
+		<span><input type="button" value="<?php _e('Delete'); ?>" class="deletebutton"></input></span>
+		<span class="or pct5"><?php _e('or'); ?></span>
 		<span class="renamecontrols">
 			<input type="text" class="renametext"></input>
-			<input type="button" value="Rename" class="renamebutton"></input>
+			<input type="button" value="<?php _e('Rename'); ?>" class="renamebutton"></input>
 		</span>
 		<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
@@ -35,7 +35,7 @@ tagManage.remove= function() {
 
 	selected= $('.tags .tag.selected');
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg('You need to select some tags before you can delete them.');
+		humanMsg.displayMsg( <?php _e('You need to select some tags before you can delete them.'); ?> );
 		return;
 	}
 	var query= {}
@@ -75,11 +75,11 @@ tagManage.rename= function() {
 	selected= $('.tags .tag.selected');
 
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg('You need to select some tags before you can rename them.');
+		humanMsg.displayMsg( <?php _e('You need to select some tags before you can rename them.'); ?> );
 		return;
 	}
 	else if ( master == '' ) {
-		humanMsg.displayMsg('You need to enter a new tag to rename tags.');
+		humanMsg.displayMsg( <?php _e('You need to enter a new tag to rename tags.'); ?> );
 		return;
 	}
 	var query= {}

@@ -12,7 +12,7 @@
 	if ( isset( $user ) && ( $user != $currentuser->username ) ) {
 		$user = User::get_by_name( $user );
 		if ( ! $user ) {
-			echo "<p class='error'>No such user!</p>";
+			echo "<p class='error'>" . _t('No such user!') . "</p>";
 		}
 		$who= $user->username;
 		$possessive= $user->username . "'s";
@@ -39,15 +39,15 @@
 				}
 				echo '<option id="' . $user->id . '" value="' . $url . '">' . $user->displayname . '</option>';
 			} */ ?>
-			<option value="">Complete User List</option>
+			<option value=""><?php _e('Complete User List'); ?></option>
 		</select>
 		</form>
 	</span>
 	<span class="or pct20">
-		or
+		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" placeholder="search users" autosave="habarisettings" results="10"></input>
+		<input type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10"></input>
 	</span>
 </div>
 
@@ -55,13 +55,13 @@
 <form name="update-profile" id="update-profile" action="<?php URL::out('admin', 'page=user'); ?>" method="post">
 <div class="container settings user userinformation">
 
-	<h2><?php echo $possessive; ?> User Information</h2>
+	<h2><?php echo $possessive; ?> <?php _e('User Information'); ?></h2>
 
 		<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
 
 		<div class="item clear" id="displayname">
 			<span class="column span-5">
-				<label for="sitename">Display Name</label>
+				<label for="sitename"><?php _e('Display Name'); ?></label>
 			</span>
 			<span class="column span-14 last">
 				<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>"></input>
@@ -70,7 +70,7 @@
 
 		<div class="item clear" id="username">
 			<span class="column span-5">
-				<label for="sitetagline">User Name</label>
+				<label for="sitetagline"><?php _e('User Name'); ?></label>
 			</span>
 			<span class="column span-14 last">
 				<input type="text" name="username" class="border" value="<?php echo $user->username; ?>"></input>
@@ -79,7 +79,7 @@
 
 		<div class="item clear" id="email">
 			<span class="column span-5">
-				<label for="sitetagline">E-Mail</label>
+				<label for="sitetagline"><?php _e('E-Mail'); ?></label>
 			</span>
 			<span class="column span-14 last">
 				<input type="text" name="email" class="border" value="<?php echo $user->email; ?>"></input>
@@ -88,7 +88,7 @@
 
 		<div class="item clear" id="portraiturl">
 			<span class="column span-5">
-				<label for="sitetagline">Portrait URL</label>
+				<label for="sitetagline"><?php _e('Portrait URL'); ?></label>
 			</span>
 			<span class="column span-14 last">
 				<input type="text" name="imageurl" class="border" value=""></input>
@@ -99,11 +99,11 @@
 
 <div class="container settings user changepassword">
 
-	<h2>Change Password</h2>
+	<h2><?php _e('Change Password'); ?></h2>
 
 		<div class="item clear" id="password">
 			<span class="column span-5">
-				<label for="sitetagline">Password</label>
+				<label for="sitetagline"><?php _e('Password'); ?></label>
 			</span>
 			<span class="column span-14 last">
 				<input type="password" name="pass1" class="border" value=""></input>
@@ -112,7 +112,7 @@
 
 		<div class="item clear" id="passwordagain">
 			<span class="column span-5">
-				<label for="sitetagline">Password Again</label>
+				<label for="sitetagline"><?php _e('Password Again'); ?></label>
 			</span>
 			<span class="column span-14 last">
 				<input type="password" name="pass2" class="border" value=""></input>
@@ -123,7 +123,7 @@
 <?php Plugins::act( 'theme_admin_user', $user ); ?>
 
 <div class="container transparent">
-	<input type="submit" value="Apply" class="savebutton"></input>
+	<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton"></input>
 </div>
 </form>
 
@@ -131,7 +131,7 @@
 
 <?php
 if ( Posts::count_by_author( $user->id, Post::status('published') ) ) {
-	echo $possessive ." five most recent published posts:<br>\n";
+	echo $possessive . _t(' five most recent published posts:') . "<br>\n";
 	$posts = Posts::get( array( 'user_id' => $user->id, 'limit' => 5, 'status' => Post::status('published'), ) );
 	if ( count( $posts ) > 0 ) {
 		echo "<ul>\n";
@@ -142,10 +142,10 @@ if ( Posts::count_by_author( $user->id, Post::status('published') ) ) {
 	}
 }
 else {
-	echo "<p>No published posts.</p>\n";
+	echo "<p>" . _t('No published posts.') . "</p>\n";
 }
 if ( $user == $currentuser ) {
-	echo $possessive . ' five most recent draft posts:<br>';
+	echo $possessive . _t(' five most recent draft posts:') . '<br>';
 	$posts = Posts::get( array( 'user_id' => $user->id, 'limit' => 5, 'status' => Post::status('draft'), ) );
 	if ( count( $posts ) > 0 ) {
 		echo "<ul>\n";
@@ -160,7 +160,7 @@ if ( $user != $currentuser ) {
 	echo '<form method="post" action="">'."\n";
 	echo '<p><input type="hidden" name="delete" value="user"><p>'."\n";
 	echo '<p><input type="hidden" name="user_id" value="' . $user->id . '"><p>'."\n";
-	echo '<p><ul><li><input type="radio" name="reassign" id="purge" value="0" checked>Delete posts</li>';
+	echo '<p><ul><li><input type="radio" name="reassign" id="purge" value="0" checked>' . _t('Delete posts') . '</li>';
 	$author_list= DB::get_results('SELECT id,username FROM ' . DB::table('users') . ' WHERE username <> ? ORDER BY username ASC', array( $user->username) );
 	foreach ( $author_list as $author ) {
 		$authors[ $author->id ]= $author->username;
