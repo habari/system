@@ -178,7 +178,13 @@ var timeline = {
 		// No Timeline? No runny-runny.
 		if (!$('.timeline').length) return;
 
-		var timelineWidth = $('.years').width();
+		var timelineWidth= $('.years').width();
+		var viewWidth= $('.timeline').width();
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+
+		// set up pointers to elements for speed
+		timeline.view= $('.timeline');
+		timeline.handle= $('.handle', timeline.view);
 
 		// get an array of posts per month
 		timeline.monthData= [0];
@@ -191,25 +197,32 @@ var timeline = {
 		});
 
 		// find the width which makes the loupe select 20 items
-		var minWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+		
+		// make the slider bounded by the view
+		var maxSliderValue= Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		/* Initialize the timeline handle. We need to do this before we create the slider because
 		 * at the end of the slider initializer, it calls slider('moveTo', startValue) which will
 		 * trigger the 'stop' event. We also don't need to do a search on initial page load, so
 		 * set do_search to false until after slider initialization */
-		timelineHandle.init( minWidth );
+		timelineHandle.init( handleWidth );
 		timeline.do_search= false;
 
 		$('.track')
-		.width($('.years').width())
+		.width( $('.years').width() - timeline.overhang )
 		.slider({
 			handle: '.handle',
-			maxValue: Math.max( 1, timelineWidth - minWidth ),
-			startValue: timelineWidth - minWidth,
+			maxValue: Math.max( 1, maxSliderValue ),
+			startValue: maxSliderValue,
 			axis: 'horizontal',
 			stop: function(event, ui) {
+				timeline.updateView();
 				timelineHandle.updateLoupeInfo();
-			}
+			},
+			slide: function( event, ui) {
+				timeline.updateView();
+			},
 		})
 		.unbind('click')
 		.bind('dblclick', function(e) { // Double-clicking on either side of the handle moves the handle to the clicked position.
@@ -231,7 +244,7 @@ var timeline = {
 			else
 				timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
 		})
-		.slider( 'moveTo', timelineWidth - minWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
+		.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
 
 		// update the do_search state variable
 		timeline.do_search= true;
@@ -242,7 +255,8 @@ var timeline = {
 			return false;
 		}
 
-		$('.handle').css( 'left', Math.max(parseInt($('.handle').css('left')) - $('.handle').width(), 0) )
+		$('.handle').css( 'left', Math.max(parseInt($('.handle').css('left')) - $('.handle').width(), 0) );
+		timeline.updateView();
 
 		timelineHandle.updateLoupeInfo();
 
@@ -253,9 +267,28 @@ var timeline = {
 			return false;
 		}
 
-		$('.handle').css( 'left', Math.min(parseInt($('.handle').css('left')) + $('.handle').width(), parseInt($('.track').width()) - $('.handle').width() ))
+		$('.handle').css( 'left', Math.min(parseInt($('.handle').css('left')) + $('.handle').width(), parseInt($('.track').width()) - $('.handle').width() ));
+		timeline.updateView();
 
 		timelineHandle.updateLoupeInfo();
+	},
+	updateView: function() {
+		if ( ! timeline.overhang )
+			return;
+		if ( timeline.handle.offset().left <= timeline.view.offset().left + 5) {
+			// timeline needs to slide right if we are within 5px of edge
+			$('.years').css( 'right', Math.max( parseInt($('.years').css('right')) - timeline.handle.width(), 0 - timeline.overhang ) );
+			/*$('.years').stop().animate( {
+				right: Math.max( parseInt($('.years').css('right')) - 2*timeline.handle.width(), 0 - timeline.overhang )
+				}, function() { timeline.sliding= false; } );*/
+		}
+		else if ( timeline.handle.offset().left + timeline.handle.width() + 5 >= timeline.view.offset().left + timeline.view.width() ) {
+			// slide the timeline to the left
+			$('.years').css( 'right', Math.min( parseInt($('.years').css('right')) + timeline.handle.width(), 0 ) );
+			/*$('.years').stop().animate( {
+				right: Math.min( parseInt($('.years').css('right')) + 2*timeline.handle.width(), 0 )
+				}, function() { timeline.sliding= false; } );*/
+		}
 	},
 	indexFromPosition: function(pos) {
 		var monthBoundary= 0;
@@ -299,7 +332,9 @@ var timeline = {
 		return position + padding + ( index - positionIndex );
 	},
 	reset: function () {
-		var timelineWidth = $('.years').width();
+		var timelineWidth= $('.years').width();
+		var viewWidth= $('.timeline').width();
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
 		// update the arrays of posts per month
 		timeline.monthData= [0];
@@ -312,19 +347,21 @@ var timeline = {
 		});
 
 		// find the width which makes the loupe select 20 items
-		var minWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+		// make the slider bounded by the view
+		var maxSliderValue= Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		// reset the widths
-		$('.track').width( $('.years').width() );
-		$('.handle').width( minWidth + 'px' );
+		$('.track').width( $('.years').width() - timeline.overhang );
+		$('.handle').width( handleWidth + 'px' );
 
 		// reset the slider maxValue
-		$('.track').data('ui-slider').size= timelineWidth;
-		$('.track').data('ui-slider').options['realMaxValue']= Math.max( 1, timelineWidth - minWidth );
+		$('.track').data('ui-slider').size= Math.min( viewWidth, timelineWidth );
+		$('.track').data('ui-slider').options['realMaxValue']= Math.max( 1, maxSliderValue );
 
 		// move the handle without triggering a search
 		timeline.do_search= false;
-		$('.track').slider( 'moveTo', timelineWidth - minWidth );
+		$('.track').slider( 'moveTo', maxSliderValue );
 		timeline.do_search= true;
 	}
 }
@@ -378,9 +415,10 @@ var timelineHandle = {
 		return false;
 	},
 	updateLoupeInfo: function() {
-		loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) );
+		var cur_overhang= $('.track').offset().left - $('.years').offset().left;
+		loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + cur_overhang);
 		loupeWidth= $('.handle').width();
-		loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth );
+		loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth + cur_overhang );
 
 		$('.currentposition').text( loupeStartPosition +'-'+ loupeEndPosition +' of '+ timeline.totalCount );
 
@@ -396,7 +434,7 @@ var timelineHandle = {
 		$('.handle').css({
 			'left': 	$('.handle').offset().left - $('.track').offset().left,
 			'right': 	'auto'
-		})
+		});
 
 		timelineHandle.updateLoupeInfo();
 
