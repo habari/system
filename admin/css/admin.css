@@ -1484,6 +1484,23 @@ body.login input[type=submit] {
 	margin-right: -1px;
 	}
 
+/* FOOTER */
+
+#footer {
+	margin-top: 50px;
+	padding-bottom: 10px;
+	padding-left: 15px;
+	font-size: 1.1em;
+	text-align: center;
+	color: #ddd;
+	}
+
+#footer a {
+	padding: 5px;
+	font-family: 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
+	margin: 15px;
+	}
+	
 /* OPACITY PERCENTAGES */
 .opa0 { opacity: 0; }
 .opa10 { opacity: .10; }
