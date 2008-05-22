@@ -553,7 +553,7 @@ ENDOFSQL;
 			 */
 			$repeat_questions= Utils::placeholder_string( count($tag_ids_to_post) );
 			$sql_delete=<<<ENDOFSQL
-DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeated_questions});
+DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeat_questions});
 ENDOFSQL;
 			$params= array_merge( (array) $post_id, array_values( $tag_ids_to_post ) );
 			$result&= DB::query( $sql_delete, $params );
