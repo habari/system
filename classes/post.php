@@ -605,7 +605,7 @@ ENDOFSQL;
 		$this->newfields= array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->save_tags();
-		EventLog::log( sprintf(_t('New post %1$s (%2$s);  Type: %3$s; Status: %4s'), $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname), 'info', 'content', 'habari' );
+		EventLog::log( sprintf(_t('New post %1$s (%2$s);  Type: %3$s; Status: %4$s'), $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname), 'info', 'content', 'habari' );
 		Plugins::act( 'post_insert_after', $this );
 
 		//scheduled post
