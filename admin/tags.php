@@ -35,7 +35,7 @@ tagManage.remove= function() {
 
 	selected= $('.tags .tag.selected');
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can delete them.'); ?>" );
+		humanMsg.displayMsg( <?php _e('You need to select some tags before you can delete them.'); ?> );
 		return;
 	}
 	var query= {}
@@ -75,11 +75,11 @@ tagManage.rename= function() {
 	selected= $('.tags .tag.selected');
 
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can rename them.'); ?>" );
+		humanMsg.displayMsg( <?php _e('You need to select some tags before you can rename them.'); ?> );
 		return;
 	}
 	else if ( master == '' ) {
-		humanMsg.displayMsg( "<?php _e('You need to enter a new tag to rename tags.'); ?>" );
+		humanMsg.displayMsg( <?php _e('You need to enter a new tag to rename tags.'); ?> );
 		return;
 	}
 	var query= {}
