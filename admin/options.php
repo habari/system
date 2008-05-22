@@ -128,6 +128,21 @@
 		</div>
 	</div>
 	
+	<div class="container settings">
+		<h2><?php _e('Language'); ?></h2>
+		<div class="item clear" id="language">
+			<span class="column span-5">
+				<label for="locale"><?php _e('Locale'); ?></label>
+			</span>
+			<span class="column span-5">
+				<input type="text" class="border" id="locale" name="locale" value="<?php Options::out('locale'); ?>">
+			</span>
+			<span class="column span-9 last helptext">
+				<span><?php _e("International language code");?></span>
+			</span>
+		</div>
+	
+	</div>
 	
 	<div class="container settings">
 		<h2><?php _e('Presentation'); ?></h2>
