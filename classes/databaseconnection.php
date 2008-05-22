@@ -351,8 +351,10 @@ class DatabaseConnection
 	 */
 	public function begin_transaction()
 	{
-		$this->pdo->beginTransaction();
-		$this->pdo_transaction= TRUE;
+		if (! $this->pdo_transaction) {
+			$this->pdo->beginTransaction();
+			$this->pdo_transaction= TRUE;
+		}
 	}
 
 	/**
