@@ -4,25 +4,25 @@ include_once( 'header.php' );
 <div class="container">
 <hr>
 	<div class="column span-20">
-		<p>Take a look behind the curtain and see the Great Oz at work.  Here you will see an up-to-date log of Habari's activity.</p>
+		<p><?php _e('Take a look behind the curtain and see the Great Oz at work. Here you will see an up-to-date log of Habari\'s activity.'); ?></p>
 	<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
-	<p>Search log entries:
+	<p><?php _e('Search log entries:'); ?>
 	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
 	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit, array( 'class'=>'pct10'))); ?>
 	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index, array( 'class'=>'pct10'))); ?>
-	<a href="<?php URL::out('admin', 'page=logs'); ?>">Reset</a>
+	<a href="<?php URL::out('admin', 'page=logs'); ?>"><?php _e('Reset'); ?></a>
 	</p>
 		<table id="log-activity-table" width="100%" cellspacing="0">
 			<thead>
 				<tr>
 					<th class="span-1"></th>
-					<th align="left">Date</th>
-					<th align="left">User</th>
-					<th align="left">Module</th>
-					<th align="left">Type</th>
-					<th align="center">Severity</th>
-					<th align="center">Address</th>
-					<th align="left">Message</th>
+					<th align="left"><?php _e('Date'); ?></th>
+					<th align="left"><?php _e('User'); ?></th>
+					<th align="left"><?php _e('Module'); ?></th>
+					<th align="left"><?php _e('Type'); ?></th>
+					<th align="center"><?php _e('Severity'); ?></th>
+					<th align="center"><?php _e('Address'); ?></th>
+					<th align="left"><?php _e('Message'); ?></th>
 				</tr>
 			</thead>
 			<tr>

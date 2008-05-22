@@ -7,7 +7,7 @@
 
 	<?php if(!$newpost): ?>
 	<div class="container">
-		<a href="<?php echo $post->permalink; ?>" class="viewpost">View Post</a>
+		<a href="<?php echo $post->permalink; ?>" class="viewpost"><?php _e('View Post'); ?></a>
 	</div>
 	<?php endif; ?>
 
@@ -38,11 +38,11 @@
 				<div class="splitterinside">
 					<div id="mediaspinner"></div>
 					<div class="media_controls">
-						<input type="search" placeholder="Search descriptions, names and tags" autosave="habarisettings" results="10"></input>
+						<input type="search" placeholder="<?php _e('Search descriptions, names and tags'); ?>" autosave="habarisettings" results="10"></input>
 						<ul>
-							<li><a href="#" onclick="habari.media.showdir('<?php echo $silodir->path; ?>');return false;">Root</a></li>
+							<li><a href="#" onclick="habari.media.showdir('<?php echo $silodir->path; ?>');return false;"><?php _e('Root'); ?></a></li>
 						</ul>
-						<div class="upload"><input type="file"></input><input type="submit" value="Upload"></input></div>
+						<div class="upload"><input type="file"></input><input type="submit" value="<?php _e('Upload'); ?>"></input></div>
 					</div>
 					<div class="media_browser">
 						<div class="media_row">

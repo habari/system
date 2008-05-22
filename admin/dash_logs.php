@@ -1,6 +1,6 @@
 <div class="options">&nbsp;</div>
 <div class="modulecore">
-	<h2>Activity Logs</h2>
+	<h2><?php _e('Activity Logs'); ?></h2>
 	<div class="handle">&nbsp;</div>
 	<ul class="items">
 		<?php foreach( eventlog::get( array( 'limit' => 10 ) ) as $log ) { ?>
@@ -13,20 +13,20 @@
 	</ul>
 </div>
 <div class="optionswindow">
-	<h2>Activity Logs</h2>
+	<h2><?php _e('Activity Logs'); ?></h2>
 
 	<div class="handle">&nbsp;</div>
 
 	<div class="optionscontent">
 		<p>
-			<label for="dummy" class="pct30"># of Log Entries</label>
+			<label for="dummy" class="pct30"><?php _e('# of Log Entries'); ?></label>
 			<select class="pct55">
 				<option>10</option>
 			</select>
 		</p>
 
 		<p class="buttons">
-			<input type="submit" value="Submit">
+			<input type="submit" value="<?php _e('Submit'); ?>">
 		</p>
 	</div>
 </div>

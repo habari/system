@@ -48,7 +48,7 @@
 				</a>
 				<?php if(isset($menu['submenu'])): ?>
 				<ul>
-					<li><a href="#">Submenu</a></li>
+					<li><a href="#"><?php _e('Submenu'); ?></a></li>
 				</ul>
 				<?php endif; ?>
 				</li>
@@ -57,7 +57,7 @@
 		</div>
 	</div>
 
-	<a href="<?php Site::out_url('habari'); ?>" id="site" title="Go to Site"><?php Options::out('title'); ?></a>
+	<a href="<?php Site::out_url('habari'); ?>" id="site" title="<?php _e('Go to Site'); ?>"><?php Options::out('title'); ?></a>
 
 </div>
 
