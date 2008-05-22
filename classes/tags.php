@@ -20,22 +20,8 @@ class Tags extends ArrayObject
 		 * which are not related (yet) to any post itself.  These
 		 * tags are essentially lost to the world.
 		 *
-		 * This is a partial fix for Issue#375.  See get_by_id() for the 
-		 * other part.
 		 */
-		$sql=<<<ENDOFSQL
-SELECT 
-	t.id AS id
-, t.tag_text AS tag
-, t.tag_slug AS slug
-, COUNT(*) AS count 
-FROM {tags} t 
-LEFT JOIN {tag2post} tp 
-ON t.id=tp.tag_id 
-GROUP BY id, tag, slug 
-ORDER BY tag ASC
-ENDOFSQL;
-		$tags= DB::get_results( $sql );
+		$tags= DB::get_results( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id GROUP BY id, tag, slug ORDER BY tag ASC' );
 		return $tags;
 	}
 
@@ -81,16 +67,30 @@ ENDOFSQL;
 			DB::query( 'INSERT INTO {tags} (tag_text, tag_slug) VALUES ( ?, ? )', array( $master, Utils::slugify($master) ) );
 			$master_tag= Tags::get_one($master);
 		}
+		else {
+			// get the tags the master post is already on so we don't duplicate them
+			$master_posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $master_tag->id ) );
+			
+			foreach ( $master_posts as $master_post ) {
+				$master_ids[]= $master_post->post_id;
+			}
+			
+		}
+			
 
 		// if only one tag was passed in, make it an array so we don't duplicate code
 		if ( !is_array( $tags ) ) {
 			$tags= array( $tags );
 		}
 
-		$posts= array();
+		
 		$tag_names= array();
 
 		foreach ( $tags as $tag ) {
+			
+			$posts= array();
+			$post_ids= array();
+			
 			$tag= Tags::get_one( $tag );
 
 			// get all the post ID's tagged with this tag
@@ -112,6 +112,9 @@ ENDOFSQL;
 
 		if ( count( $post_ids ) > 0 ) {
 
+			// only try and add the master tag to posts it's not already on
+			$post_ids= array_diff( $post_ids, $master_ids );
+			
 			// link the master tag to each distinct post we removed tags from
 			foreach ( $post_ids as $post_id ) {
 
@@ -157,12 +160,12 @@ ENDOFSQL;
 
 	public static function get_by_text($tag)
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_text = ? GROUP BY id, tag, slug', array($tag) );
+		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_text = ? GROUP BY id, tag, slug', array($tag) );
 	}
 
 	public static function get_by_slug($tag)
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t INNER JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_slug = ? GROUP BY id, tag, slug', array($tag) );
+		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_slug = ? GROUP BY id, tag, slug', array($tag) );
 	}
 
 	/**
@@ -171,26 +174,13 @@ ENDOFSQL;
 	 * @param		tag_id	The ID of the tag to retrieve
 	 * @return	A Tag object
 	 */
-	public static function get_by_id( $tag_id )
+	public static function get_by_id( $tag )
 	{
 		/*
 		 * A LEFT JOIN is needed here to accomodate tags not yet
 		 * related to a post, like the default "habari" tag...
-		 * Remaining fix for Issue#375
 		 */
-		$sql=<<<ENDOFSQL
-SELECT 
-  t.id AS id
-, t.tag_text AS tag
-, t.tag_slug AS slug
-, COUNT(*) AS count 
-FROM {tags} t 
-LEFT JOIN {tag2post} tp 
-ON t.id=tp.tag_id 
-WHERE id = ? 
-GROUP BY id, tag, slug
-ENDOFSQL;
-		return DB::get_row( $sql, array($tag_id) );
+		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE id = ? GROUP BY id, tag, slug', array($tag) );
 	}
 }
 ?>
