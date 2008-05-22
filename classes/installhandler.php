@@ -844,6 +844,10 @@ class InstallHandler extends ActionHandler {
 				if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
 					CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
 				}
+				break;
+			case $version < 1794:
+				Post::add_new_status( 'scheduled', true );
+				break;
 		}
 		DB::upgrade( $version );
 
