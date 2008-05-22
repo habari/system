@@ -206,7 +206,7 @@ class URL extends Singleton
 	 * @param array $args (optional) array of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 */
-	public static function out( $rule_name, $args= array(), $useall= true, $noamp= true )
+	public static function out( $rule_name= null, $args= array(), $useall= true, $noamp= true )
 	{
 		echo URL::get( $rule_name, $args, $useall, $noamp );
 	}
