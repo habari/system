@@ -15,6 +15,7 @@ class DatabaseConnection
 	private $keep_profile= DEBUG;                   // keep profiling and timing information?
 	private $pdo= NULL;                             // handle to the PDO interface
 	private $pdo_statement= NULL;                   // handle for a PDOStatement
+	private $pdo_transaction= FALSE;					// handle for transaction status
 
 	/**
 	 * @var array tables Habari knows about
@@ -126,6 +127,16 @@ class DatabaseConnection
 	public function is_connected()
 	{
 		return ( NULL != $this->pdo );
+	}
+	
+	/**
+	 * Check whether there is a transaction underway.
+	 *
+	 * @return boolean
+	 */
+	public function in_transaction()
+	{
+		return $this->pdo_transaction;
 	}
 
 	/**
@@ -341,6 +352,7 @@ class DatabaseConnection
 	public function begin_transaction()
 	{
 		$this->pdo->beginTransaction();
+		$this->pdo_transaction= TRUE;
 	}
 
 	/**
@@ -351,6 +363,7 @@ class DatabaseConnection
 	public function rollback()
 	{
 		$this->pdo->rollBack();
+		$this->pdo_transaction= FALSE;
 	}
 
 	/**
@@ -359,6 +372,7 @@ class DatabaseConnection
 	public function commit()
 	{
 		$this->pdo->commit();
+		$this->pdo_transaction= FALSE;
 	}
 
 	/**

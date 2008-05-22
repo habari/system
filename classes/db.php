@@ -403,6 +403,26 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->list_tables();
 	}
+	
+	/**
+	 * Check whether there is an existing connection to a database.
+	 *
+	 * @return boolean
+	 */
+	public static function is_connected()
+	{
+		return DB::instance()->connection->is_connected();
+	}
+	
+	/**
+	 * Check whether there is a transaction underway.
+	 *
+	 * @return boolean
+	 */
+	public static function in_transaction()
+	{
+		return DB::instance()->connection->in_transaction();
+	}
 }
 
 ?>
