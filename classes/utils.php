@@ -207,6 +207,20 @@ class Utils
 	}
 
 	/**
+	 * Returns a string of question mark parameter
+	 * placeholders.
+	 *
+	 * Useful when building, for instance, an IN() list for SQL
+	 *
+	 * @param		count		Number of placeholders to put in the string
+	 * @return	string	Placeholder string
+	 */
+	public static function placeholder_string( $count )
+	{
+		return rtrim( str_repeat( '?,', $count ), ',' );
+	}
+
+	/**
 	 * function archive_pages
 	 * Returns the number of pages in an archive using the number of items per page set in options
 	 * @param integer Number of items in the archive
