@@ -469,7 +469,7 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		/* Now, let's insert any *new* tag texts or slugs into the tags table */
-		$repeat_questions= rtrim( str_repeat( '?,', count( $clean_tags ) ), ',' );
+		$repeat_questions= implode( ',', array_fill( 0, count($clean_tags), '?' ) );
 		$sql_tags_exist=<<<ENDOFSQL
 SELECT id, tag_text, tag_slug
 FROM {tags}
@@ -505,7 +505,9 @@ ENDOFSQL;
 			}
 		}
 
-		DB::begin_transaction();
+		if (!DB::in_transaction()) {
+			DB::begin_transaction();
+		}
 		$result= TRUE;
 		/*
 		 * OK, at this point, we have two "clean" collections.  $clean_tags
@@ -533,7 +535,6 @@ ENDOFSQL;
 		 * $tag_ids_to_post now contains tag IDs of all tags to relate to the
 		 * post.  Go ahead and add them to the tag2post table...
 		 */
-		print_r( $tag_ids_to_post);
 		$post_id= $this->fields['id'];
 		foreach ( $tag_ids_to_post as $index=>$new_tag_id ) {
 			$sql_tag_post_exists=<<<ENDOFSQL
@@ -552,7 +553,7 @@ ENDOFSQL;
 			 * Finally, remove the tags which are no longer associated with the
 			 * post.
 			 */
-			$repeated_questions= rtrim( str_repeat( '?,', count( $tag_ids_to_post ) ), ',');
+			$repeated_questions= implode( ',', array_fill( 0, count($tag_ids_to_post), '?' ) );
 			$sql_delete=<<<ENDOFSQL
 DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeated_questions});
 ENDOFSQL;

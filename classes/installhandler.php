@@ -372,6 +372,11 @@ class InstallHandler extends ActionHandler {
 			}
 		}
 
+		/* Post::save_tags() closes transaction, until we fix that, check and reconnect if needed */
+		if (!DB::in_transaction()) {
+			DB::begin_transaction();
+		}
+		
 		/* Store current DB version so we don't immediately run dbdelta. */
 		Version::save_dbversion();
 
