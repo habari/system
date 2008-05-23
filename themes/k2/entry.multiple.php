@@ -4,7 +4,7 @@
    <div id="primary">
     <div id="primarycontent" class="hfeed">
 <?php foreach ( $posts as $post ) { ?>
-     <div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
+     <div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?> hentry">
 
       <div class="entry-head">
        <h3 class="entry-title"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h3>
