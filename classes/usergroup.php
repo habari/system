@@ -195,7 +195,7 @@ class UserGroup extends QueryRecord
 		// Use ids internally for all users
 		$users = array_map(array('User', 'get_id'), $users);
 		// Remove users from group membership
-		$this->member_ids = $this->member_ids + $users;
+		$this->member_ids = array_merge( (array) $this->member_ids, (array) $users);
 		// List each group member exactly once
 		$this->member_ids = array_unique($this->member_ids);
 	}

@@ -240,7 +240,7 @@ class InputFilter
 			// scheme, address, port are optional for relative urls ...
 			. '(?:'
 				// scheme
-				. '(?P<scheme>[a-zA-Z][^:]*):(?://)?'
+				. '(?P<scheme>[a-zA-Z][^:]*):(//)?'
 				// real protocols
 				. '(?P<full_address>(?:'
 					// optional userinfo
@@ -254,7 +254,7 @@ class InputFilter
 					//   ip
 					  . '(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|'
 					//   or hostname
-					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*\.[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
+					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*(?(2)|\.)[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
 					. ')'
 					// optional port (:0-65535)
 					. '(?::(?P<port>[0-5]?[0-9]{1,4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?'
