@@ -41,7 +41,7 @@ include_once( 'header.php' );
 				<td><?php echo $log->timestamp; ?></td>
 				<td><?php if ( $log->user_id ) { 
 					if ( $user= User::get_by_id( $log->user_id ) ) {
-						 echo $user->username;
+						 echo $user->displayname;
 					} else {
 						echo $log->user_id;
 					}
