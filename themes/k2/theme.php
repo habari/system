@@ -75,6 +75,24 @@ class MyTheme extends Theme
 		}
 		return $return;
 	}
+	
+	public function k2_comment_class( $comment, $post )
+	{
+		$class= 'class="comment';
+		if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
+			$class.= '-unapproved';
+		}
+		// check to see if the comment is by a registered user
+		if ( $u= User::get( $comment->email ) ) {
+			$class.= ' byuser comment-author-' . Utils::slugify( $u->displayname );
+		}
+		if( $comment->email == $post->author->email ) {
+			$class.= ' bypostauthor';
+		}
+
+		$class.= '"';
+		return $class;
+	}
 
 }
 
