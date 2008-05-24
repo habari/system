@@ -71,6 +71,8 @@ class Tags extends ArrayObject
 			// get the tags the master post is already on so we don't duplicate them
 			$master_posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $master_tag->id ) );
 			
+			$master_ids= array();
+			
 			foreach ( $master_posts as $master_post ) {
 				$master_ids[]= $master_post->post_id;
 			}
