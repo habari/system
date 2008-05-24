@@ -988,6 +988,14 @@ body.page-logs .item input[type=checkbox] {
 	}
 
 
+/* OPTIONS */
+
+body.page-options .item {
+	padding: 1px;
+	border: none;
+	}
+
+
 /* NAVIGATION */
 
 .navigation span > * {
