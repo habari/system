@@ -20,7 +20,7 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 Format::apply( 'nice_date', 'post_pubdate_out', 'F j, Y g:ia' );
 
 // Remove the comment on the following line to limit post length on the home page to 1 paragraph or 100 characters
-//Format::apply_with_hook_params( 'more', 'post_content_out', 'more', 100, 1 );
+//Format::apply_with_hook_params( 'more', 'post_content_out', _t('more'), 100, 1 );
 
 // We must tell Habari to use MyTheme as the custom theme class:
 define( 'THEME_CLASS', 'MyTheme' );

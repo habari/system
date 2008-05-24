@@ -143,7 +143,7 @@ class Format
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 **/
-	public static function tag_and_list($array, $between = ', ', $between_last = ' and ')
+	public static function tag_and_list($array, $between = ', ', $between_last = _t(' and '))
 	{
 		if ( ! is_array( $array ) )
 		{
@@ -270,7 +270,7 @@ class Format
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
 	 * @return string The post content, suitable for display
 	 **/
-	public static function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null)
+	public static function more($content, $post, $more_text = _t('Read More') . '&raquo;', $max_words = null, $max_paragraphs = null)
 	{
 		// If the post requested is the post under consideration, always return the full post
 		if( $post->slug == Controller::get_var('slug') ) {

@@ -40,7 +40,7 @@ class Error extends Exception
 		} while( next( $trace ) );
 		if( isset( $details ) ) {
 			printf(
-				"%s : Line %s",
+				_t('%s : Line %s'),
 				$details['file'],
 				$details['line']
 			);
@@ -126,7 +126,7 @@ class Error extends Exception
 				$argstr= substr( $argstr, 0, 1021 ) . '...';
 			}
 
-			printf("#%d in <b>%s</b>:<b>%d</b>:\n  <b>%s</b>(%s)\n",
+			printf( _t('#%d in <b>%s</b>:<b>%d</b>:\n  <b>%s</b>(%s)\n'),
 				$n, $a['file'], $a['line'], $a['class'].$a['type'].$a['function'],
 				$argstr
 			);

@@ -83,7 +83,7 @@ class Themes
 				}
 			}
 			if (!$theme_exists) {
-				die(_t('There is no valid theme currently installed.'));
+				die( _t('There is no valid theme currently installed.') );
 			}
 		}
 
@@ -142,7 +142,7 @@ class Themes
 				/* lookup in DB for template engine info. */
 				$themedata= self::get_by_name( $name );
 				if ( empty( $themedata ) ) {
-					die( 'Theme not installed.' );
+					die( _t('Theme not installed.') );
 				}
 				$themedata->theme_dir= HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
 			}
@@ -151,7 +151,7 @@ class Themes
 			// Grab the theme from the database
 			$themedata= self::get_active();
 			if ( empty( $themedata ) ) {
-				die( 'Theme not installed.' );
+				die( _t('Theme not installed.') );
 			}
 		}
 

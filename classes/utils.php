@@ -426,7 +426,7 @@ class Utils
 			}
 		}
 		else {
-			Error::raise( 'Invalid hash' );
+			Error::raise( _t('Invalid hash') );
 		}
 	}
 
@@ -485,7 +485,7 @@ class Utils
 		else { // verify
 			// is this a SSHA hash?
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( 'Invalid hash' );
+				Error::raise( _t('Invalid hash') );
 				return FALSE;
 			}
 			// cut off {SSHA} marker
@@ -524,7 +524,7 @@ class Utils
 		}
 		else { // verify
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( 'Invalid hash' );
+				Error::raise( _t('Invalid hash') );
 				return FALSE;
 			}
 			$hash= substr( $hash, strlen( $marker ) );
