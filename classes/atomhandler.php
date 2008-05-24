@@ -312,7 +312,7 @@ class AtomHandler extends ActionHandler
 				$content= ( $this->is_auth() ) ? htmlspecialchars( $comment->content ) : htmlspecialchars( $comment->content_atom );
 
 				$feed_entry= $xml->addChild( 'entry' );
-				$entry_title= $feed_entry->addChild( 'title', 'Comment on ' . $title . ' by ' . $comment->name );
+				$entry_title= $feed_entry->addChild( 'title', _t('Comment on ') . $title . _t(' by ') . $comment->name );
 
 				$entry_link= $feed_entry->addChild( 'link' );
 				$entry_link->addAttribute( 'rel', 'alternate' );
@@ -511,7 +511,7 @@ class AtomHandler extends ActionHandler
 			$feed_link->addAttribute( 'rel', 'first' );
 			$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
 			$feed_link->addAttribute( 'type', 'application/atom+xml' );
-			$feed_link->addAttribute( 'title', 'First Page' );
+			$feed_link->addAttribute( 'title', _t('First Page') );
 
 			if ( $prevpage > $firstpage ) {
 				$rr_args['page']= $prevpage;
@@ -519,7 +519,7 @@ class AtomHandler extends ActionHandler
 				$feed_link->addAttribute( 'rel', 'previous' );
 				$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
 				$feed_link->addAttribute( 'type', 'application/atom+xml' );
-				$feed_link->addAttribute( 'title', 'Previous Page' );
+				$feed_link->addAttribute( 'title', _t('Previous Page') );
 			}
 
 			if ( $nextpage <= $lastpage ) {
@@ -528,7 +528,7 @@ class AtomHandler extends ActionHandler
 				$feed_link->addAttribute( 'rel', 'next' );
 				$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
 				$feed_link->addAttribute( 'type', 'application/atom+xml' );
-				$feed_link->addAttribute( 'title', 'Next Page' );
+				$feed_link->addAttribute( 'title', _t('Next Page') );
 			}
 
 			$rr_args['page']= $lastpage;
@@ -536,7 +536,7 @@ class AtomHandler extends ActionHandler
 			$feed_link->addAttribute( 'rel', 'last' );
 			$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
 			$feed_link->addAttribute( 'type', 'application/atom+xml' );
-			$feed_link->addAttribute( 'title', 'Last Page' );
+			$feed_link->addAttribute( 'title', _t('Last Page') );
 		}
 
 		$rr_args['page']= $page;

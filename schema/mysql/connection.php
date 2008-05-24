@@ -237,7 +237,7 @@ class MySQLConnection extends DatabaseConnection
 				echo "</ul>\n";
 			}
 			else {
-				echo "<ul><li>No Upgrades</li></ul>";
+				echo "<ul><li>" . _t('No Upgrades') . "</li></ul>";
 			}
 		}
 		return $for_update;

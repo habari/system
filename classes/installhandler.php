@@ -594,7 +594,7 @@ class InstallHandler extends ActionHandler {
 				$queries[]= 'GRANT ALL ON DATABASE ' . $db_schema . ' TO ' . $db_user . ';';
 				break;
 			default:
-				die('currently unsupported.');
+				die( _t('currently unsupported.') );
 		}
 		return $queries;
 	}
