@@ -1016,6 +1016,9 @@ body.page-logs .item input[type=checkbox] {
 	width: 70%;
 	}
 
+.plugins #pluginconfigure {
+	clear: both;
+	}
 
 /* SETTINGS */
 
