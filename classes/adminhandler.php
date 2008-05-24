@@ -266,7 +266,7 @@ class AdminHandler extends ActionHandler
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 			$this->theme->post= $post;
-			$this->theme->tags= htmlspecialchars( Utils::implode_quoted( ',', $post->tags ) );
+			$this->theme->tags= htmlspecialchars( Utils::implode_quoted( ', ', $post->tags ) );
 			$this->theme->content_type= Post::type( $post->content_type );
 			$this->theme->newpost= false;
 		}
