@@ -306,7 +306,7 @@ class FormUI extends FormContainer
 			$out.= $this->output_controls($forvalidation);
 
 			if($this->options['save_button']) {
-				$out.= '<input type="submit" value="_t('save')">';
+				$out.= '<input type="submit" value="save">';
 			}
 
 			$out.= '</form>';
