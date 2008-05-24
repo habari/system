@@ -1,65 +1,108 @@
-<?php
-include_once( 'header.php' );
-?>
-<div class="container">
-<hr>
-	<div class="column span-20">
-		<p><?php _e('Take a look behind the curtain and see the Great Oz at work. Here you will see an up-to-date log of Habari\'s activity.'); ?></p>
-	<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
-	<p><?php _e('Search log entries:'); ?>
-	<input type="textbox" size="50" name='search' value="<?php echo $search; ?>"> <input type="submit" name="do_search" value="<?php _e('Search'); ?>">
+<?php include_once( 'header.php' ); ?>
+
+
+<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
+
+
+<div class="container navigator">
+	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
+	<span class="currentposition pct15 minor"><?php _e('0-0 of 0'); ?></span>
+	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search; ?>"></span>
+	<span class="nothing pct15">&nbsp;</span>
+	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
+
+	<div class="timeline">
+		<div class="years">
+			<div class="months">
+				<?php // $theme->display( 'timeline_items' )?>
+			</div>
+		</div>
+
+		<div class="track">
+			<div class="handle">
+				<span class="resizehandleleft"></span>
+				<span class="resizehandleright"></span>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+
+
+<!--
 	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit, array( 'class'=>'pct10'))); ?>
 	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index, array( 'class'=>'pct10'))); ?>
 	<a href="<?php URL::out('admin', 'page=logs'); ?>"><?php _e('Reset'); ?></a>
-	</p>
-		<table id="log-activity-table" width="100%" cellspacing="0">
-			<thead>
-				<tr>
-					<th class="span-1"></th>
-					<th align="left"><?php _e('Date'); ?></th>
-					<th align="left"><?php _e('User'); ?></th>
-					<th align="left"><?php _e('Module'); ?></th>
-					<th align="left"><?php _e('Type'); ?></th>
-					<th align="center"><?php _e('Severity'); ?></th>
-					<th align="center"><?php _e('Address'); ?></th>
-					<th align="left"><?php _e('Message'); ?></th>
-				</tr>
-			</thead>
-			<tr>
-			<td class="span-1"></td>
-			<td><?php echo Utils::html_select('date', $dates, $date, array( 'class'=>'pct100')); ?></td>
-			<td><?php echo Utils::html_select('user', $users, $user, array( 'class'=>'pct100')); ?></td>
-			<td><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'pct100')); ?></td>
-			<td><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'pct100')); ?></td>
-			<td><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct100')); ?></td>
-			<td><?php echo Utils::html_select('address', $addresses, $address, array( 'class'=>'pct100')); ?></td>
-			<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></td>
-			</tr>
-			<?php foreach( $logs as $log ){ ?>
-			<tr>
-				<td align="left"><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></td>
-				<td><?php echo $log->timestamp; ?></td>
-				<td><?php if ( $log->user_id ) { 
+-->
+
+
+<div class="container wideitems">
+
+	<div class="item clear">
+		<div class="head clear">
+
+			<span class="checkbox pct5">&nbsp;</span>
+			<span class="time pct15">Date &amp; Time</span>
+			<span class="user pct15">User</span>
+			<span class="ip pct10">IP</span>
+			<span class="module pct10">Module</span>
+			<span class="type pct10">Type</span>
+			<span class="severity pct5">Severity</span>
+			<span class="message pct30">Message</span>
+
+		</div>
+	</div>
+
+
+	<div class="item clear">
+		<span class="pct5">&nbsp;</span>
+		<span class="pct15"><?php echo Utils::html_select('date', $dates, $date, array( 'class'=>'pct90')); ?></span>
+		<span class="pct15"><?php echo Utils::html_select('user', $users, $user, array( 'class'=>'pct90')); ?></span>
+		<span class="pct10"><?php echo Utils::html_select('address', $addresses, $address, array( 'class'=>'pct90')); ?></span>
+		<span class="pct10"><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'pct90')); ?></span>
+		<span class="pct10"><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'pct90')); ?></span>
+		<span class="pct5"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
+		<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
+	</div>
+
+	<?php foreach( $logs as $log ){ ?>
+	<div class="item clear">
+			<span class="checkbox pct5"><span><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></span></span>
+			<span class="time pct15 minor"><span><?php echo Format::nice_date( $log->timestamp, "M j, Y" ); ?> &middot; <?php echo Format::nice_date( $log->timestamp, "H:i" ); ?></span></span>
+			<span class="user pct15 minor"><span>
+				<?php if ( $log->user_id ) { 
 					if ( $user= User::get_by_id( $log->user_id ) ) {
 						 echo $user->displayname;
 					} else {
 						echo $log->user_id;
 					}
-				} ?></td>
-				<td><?php echo $log->module; ?></td>
-				<td><?php echo $log->type; ?></td>
-				<td><?php echo $log->severity; ?></td>
-				<td><?php echo long2ip($log->ip); ?></td>
-				<td><p><?php echo $log->message; ?></p></td>
-			</tr>
-			<?php } ?>
-			<tr><td colspan="8">
-			<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-			 <input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-			 <input type="hidden" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-			 <input type="submit" name="do_delete" value="<?php _e('Delete'); ?>">
-		</table>
-		</form>
+				} ?>&nbsp;
+			</span></span>
+			<span class="ip pct10 minor"><span><?php echo long2ip($log->ip); ?></span></span>
+			<span class="module pct10 minor"><span><?php echo $log->module; ?></span></span>
+			<span class="type pct10 minor"><span><?php echo $log->type; ?></span></span>
+			<span class="severity pct5 minor"><span><?php echo $log->severity; ?></span></span>
+			<span class="message pct30 minor"><span><?php echo $log->message; ?></span></span>
 	</div>
+	<?php } ?>
+
 </div>
-	<?php include('footer.php');?>
+
+
+<div class="container transparent wideitems">
+
+	<div class="item controls">
+		<span class="pct25">
+			<input type="checkbox">
+			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+		</span>
+		<input type="button" value="<?php _e('Delete'); ?>" class="submitbutton">
+	</div>
+
+</div>
+
+
+</form>
+
+<?php include('footer.php'); ?>
