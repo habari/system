@@ -119,8 +119,8 @@
 <div class="container uploadpackage">
 	<h2><?php _e('Upload Plugin Package'); ?></h2>
 	<div class="uploadform">
-		<input type="file"></input>
-		<input type="submit" value="<?php _e('Upload'); ?>"></input>
+		<input type="file">
+		<input type="submit" value="<?php _e('Upload'); ?>">
 	</div>
 </div>
 

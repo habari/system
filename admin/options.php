@@ -14,7 +14,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" placeholder="<?php _e('search settings'); ?>" autosave="habarisettings" results="10"></input>
+		<input type="search" placeholder="<?php _e('search settings'); ?>" autosave="habarisettings" results="10">
 	</span>
 </div>
 
@@ -28,7 +28,7 @@
 					<label for="sitename"><?php _e('Site Name'); ?></label>
 				</span>
 				<span class="column span-14 last">
-					<input type="text" name="title" class="border" value="<?php Options::out('title'); ?>"></input>
+					<input type="text" name="title" class="border" value="<?php Options::out('title'); ?>">
 				</span>
 			</div>
 	
@@ -37,7 +37,7 @@
 					<label for="sitetagline"><?php _e('Site Tagline'); ?></label>
 				</span>
 				<span class="column span-14 last">
-					<input type="text" name="tagline" class="border" value="<?php Options::out('tagline'); ?>"></input>
+					<input type="text" name="tagline" class="border" value="<?php Options::out('tagline'); ?>">
 				</span>
 			</div>	
 	</div>
@@ -107,7 +107,7 @@
 				<label for="dateformat"><?php _e('Date Format'); ?></label>
 			</span>
 			<span class="column span-5">
-				<input type="text" name="dateformat" class="border"></input>
+				<input type="text" name="dateformat" class="border">
 			</span>
 			<span class="column span-9 last helptext">
 				<span>Tuesday, Jan 15th, 2008</span>
@@ -120,7 +120,7 @@
 				<label for="timeformat"><?php _e('Time Format'); ?></label>
 			</span>
 			<span class="column span-5">
-				<input type="text" name="timeformat" class="border"></input>
+				<input type="text" name="timeformat" class="border">
 			</span>
 			<span class="column span-9 last helptext">
 				<span>21:44</span>
@@ -161,7 +161,7 @@
 	</div>
 	
 	<div class="container transparent">
-		<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton"></input>
+		<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton">
 	</div>
 </form>
 
