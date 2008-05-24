@@ -455,7 +455,6 @@ var timelineHandle = {
 	- Float month name if outside view
 	- Display and float years
 	- Reinit slider (or do away with slider alltogether and gather the info manually)
-	-
 */
 
 

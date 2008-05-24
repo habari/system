@@ -47,7 +47,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10"></input>
+		<input type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10">
 	</span>
 </div>
 
@@ -64,7 +64,7 @@
 				<label for="sitename"><?php _e('Display Name'); ?></label>
 			</span>
 			<span class="column span-14 last">
-				<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>"></input>
+				<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
 			</span>
 		</div>
 
@@ -73,7 +73,7 @@
 				<label for="sitetagline"><?php _e('User Name'); ?></label>
 			</span>
 			<span class="column span-14 last">
-				<input type="text" name="username" class="border" value="<?php echo $user->username; ?>"></input>
+				<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
 			</span>
 		</div>	
 
@@ -82,7 +82,7 @@
 				<label for="sitetagline"><?php _e('E-Mail'); ?></label>
 			</span>
 			<span class="column span-14 last">
-				<input type="text" name="email" class="border" value="<?php echo $user->email; ?>"></input>
+				<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
 			</span>
 		</div>	
 
@@ -91,7 +91,7 @@
 				<label for="sitetagline"><?php _e('Portrait URL'); ?></label>
 			</span>
 			<span class="column span-14 last">
-				<input type="text" name="imageurl" class="border" value=""></input>
+				<input type="text" name="imageurl" class="border" value="">
 			</span>
 		</div>	
 </div>
@@ -106,7 +106,7 @@
 				<label for="sitetagline"><?php _e('Password'); ?></label>
 			</span>
 			<span class="column span-14 last">
-				<input type="password" name="pass1" class="border" value=""></input>
+				<input type="password" name="pass1" class="border" value="">
 			</span>
 		</div>	
 
@@ -115,7 +115,7 @@
 				<label for="sitetagline"><?php _e('Password Again'); ?></label>
 			</span>
 			<span class="column span-14 last">
-				<input type="password" name="pass2" class="border" value=""></input>
+				<input type="password" name="pass2" class="border" value="">
 			</span>
 		</div>	
 </div>
@@ -123,7 +123,7 @@
 <?php Plugins::act( 'theme_admin_user', $user ); ?>
 
 <div class="container transparent">
-	<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton"></input>
+	<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton">
 </div>
 </form>
 
