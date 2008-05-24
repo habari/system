@@ -317,6 +317,13 @@ body, textarea, #footer {
 	color: #333;
 	}
 
+.wideitems .item {
+	margin-left: -40px;
+	padding-left: 5px;
+	margin-right: -40px;
+	padding-right: 5px;
+	}
+
 span.dim {
 	font-weight: normal;
 	color: #555;
@@ -957,6 +964,27 @@ p:hover > label.incontent.popup {
 	right: 3%;
 	line-height: 37px;
 	font-size: 24px;
+	}
+
+
+/* LOGS */
+
+body.page-logs .time, body.page-logs .user, body.page-logs .ip, body.page-logs .module, body.page-logs .severity {
+admin	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	}
+
+body.page-logs .item select {
+	margin-right: 10px;
+	}
+
+body.page-logs .item {
+	padding: 3px 0 3px 2px;
+	}
+
+body.page-logs .item input[type=checkbox] {
+	margin-left: 10px;
 	}
 
 
