@@ -1002,8 +1002,17 @@ body.page-logs .item input[type=checkbox] {
 
 /* PLUGINS */
 
+.plugins .item {
+	padding-left: 40px;
+	padding-right: 40px;
+	}
+
+.plugins .item .dropbutton {
+	right: 40px !important;
+	}
+
 .plugins .item:hover {
-	background: #eee;
+	background: #dfdfdf;
 	}
 
 .plugins .head {
@@ -1019,6 +1028,7 @@ body.page-logs .item input[type=checkbox] {
 .plugins #pluginconfigure {
 	clear: both;
 	}
+
 
 /* SETTINGS */
 

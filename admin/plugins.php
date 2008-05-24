@@ -2,7 +2,7 @@
 
 <?php if ( count($active_plugins) > 0 ): ?>
 
-<div class="container plugins activeplugins">
+<div class="container plugins activeplugins wideitems">
 
 	<h2><?php _e('Active Plugins'); ?></h2>
 
@@ -76,7 +76,7 @@
 <?php endif; ?>
 
 <?php if ( count($inactive_plugins) > 0 ): ?>
-<div class="container plugins inactiveplugins">
+<div class="container plugins inactiveplugins wideitems">
 
 	<h2><?php _e('Inactive Plugins'); ?></h2>
 
