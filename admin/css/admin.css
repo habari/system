@@ -523,7 +523,7 @@ p:hover > label.incontent.popup {
 	}
 
 .viewpost {
-	display: none; /* Temp */
+	float: right;
 	}
 
 
@@ -1526,22 +1526,38 @@ body.login input[type=submit] {
 	margin-right: -1px;
 	}
 
+
 /* FOOTER */
 
 #footer {
-	margin-top: 50px;
-	padding-bottom: 10px;
-	padding-left: 15px;
-	font-size: 1.1em;
+	margin: 35px 0;
 	text-align: center;
-	color: #ddd;
+	}
+
+#footer p {
+	white-space: nowrap;
+	padding: 7px 15px;
+	background: #e3e3e3;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	display: inline;
+	}
+
+#footer a, #footer span {
+	font-size: 11px;
+	color: #888;
 	}
 
 #footer a {
-	padding: 5px;
-	font-family: 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
-	margin: 15px;
+	font-weight: bold;
+	color: #777;
 	}
+
+#footer .middot {
+	padding: 0 5px;
+	color: #aaa;
+	}
+
 	
 /* OPACITY PERCENTAGES */
 .opa0 { opacity: 0; }
