@@ -675,7 +675,14 @@ class AdminHandler extends ActionHandler
 							// This comment was marked for approval
 							$comment= Comment::get( $comment->id );
 							$modstatus['Approved %d comments']+= $comment->status != Comment::STATUS_APPROVED;
-							$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+							// Only add to this if it doesn't already have a link to that post.
+							if ( !( isset($modstatus['Approved comments on these posts: %s']) && strstr( $modstatus['Approved comments on these posts: %s'], $comment->post->permalink) ) ) {
+								// its a dup so do nothing
+							// } else {
+								// not a dup, add to string
+								$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+							}							
+							
 							$comment->status= Comment::STATUS_APPROVED;
 							$comment->update();
 						}
