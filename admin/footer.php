@@ -2,7 +2,7 @@
 	<p>
 		<span><a href="http://habariproject.org/">Habari <?php echo version::get_habariversion() ?></a></span> <span class="middot">&middot;</span>
 		<span>Logged in as</span> <a href="<?php Site::out_url( 'habari' ); ?>/admin/user"><?php echo User::identify()->displayname ?></a></span> <span class="middot">&middot;</span>
-		<span><a href="http://wiki.habariproject.org/" title="<?php _e('Read the Habari wiki'); ?>"><?php _e('Support'); ?></a></span> 
+		<span><a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="<?php _e('Read the user manual'); ?>"><?php _e('Manual'); ?></a></span> 
 
 	<!--
 		<a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="<?php _e('Read the user manual'); ?>"><?php _e('Manual'); ?></a> &middot; 
