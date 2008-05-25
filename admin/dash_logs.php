@@ -1,13 +1,12 @@
 <div class="options">&nbsp;</div>
 <div class="modulecore">
-	<h2><?php _e('Activity Logs'); ?></h2>
+	<h2><a href="logs/"><?php _e('Activity Logs'); ?></a></h2>
 	<div class="handle">&nbsp;</div>
 	<ul class="items">
-		<?php foreach( eventlog::get( array( 'limit' => 10 ) ) as $log ) { ?>
+		<?php foreach( eventlog::get( array( 'limit' => 8 ) ) as $log ) { ?>
 			<li class="item clear">
-				<span class="date pct15 minor"><?php echo Format::nice_date( $log->timestamp, 'F j, Y' ); ?></span>
-				<span class="title pct15"><?php echo $log->type; ?></span>
-				<span class="pct70"><?php echo $log->message; ?></span>
+				<span class="date pct15 minor"><?php echo Format::nice_date( $log->timestamp, 'F j' ); ?></span>
+				<span class="message pct85 minor"><?php echo $log->message; ?></span>
 			</li>
 		<?php } ?>
 	</ul>
