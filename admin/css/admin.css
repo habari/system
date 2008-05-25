@@ -757,13 +757,6 @@ p:hover > label.incontent.popup {
 	height: 260px;
 	}
 	
-.dashboard .logsmodule {
-	position: relative;
-	float: left;
-	width: 100%;
-	height: 260px;
-}
-
 .dashboard .module .modulecore,
 .dashboard .module .optionswindow {
 	height: 195px;

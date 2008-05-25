@@ -1,7 +1,7 @@
 <div class="options">&nbsp;</div>
 
 <div class="modulecore">
-	<h2><?php _e('Latest Entries'); ?></h2>
+	<h2><a href="entries?type=1"><?php _e('Latest Entries'); ?></a></h2>
 
 	<div class="handle">&nbsp;</div>
 
