@@ -760,6 +760,9 @@ ENDOFSQL;
 		case 'statusname':
 			$out= self::status_name( $this->status );
 			break;
+		case 'typename':
+			$out = self::type_name( $this->content_type );
+			break;
 		case 'permalink':
 			$out= $this->get_permalink();
 			break;
