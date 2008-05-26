@@ -255,18 +255,24 @@ class EventLog extends ArrayObject
 				$limit.= " OFFSET $offset";
 			}
 		}
-		if ( isset( $nolimit ) ) {
+		// If the month counts are requested, replace the select clause
+		if( isset( $paramset['month_cts'] ) ) {
+			$select= 'MONTH(timestamp) AS month, YEAR(timestamp) AS year, COUNT(*) AS ct';
+			$groupby= 'year, month';
+			$orderby= ' ORDER BY year, month';
+		}
+		if ( isset( $nolimit ) || isset( $month_cts ) ) {
 			$limit= '';
 		}
 
 		$query= '
 			SELECT ' . $select . '
-			FROM ' . DB::table( 'log' ) .
-			' ' . $join;
+			FROM {log} ' . $join;
 
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
+		$query.= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query.= $orderby . $limit;
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 

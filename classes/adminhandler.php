@@ -1098,6 +1098,16 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_logs()
 	{
+		$this->fetch_logs();
+		$this->display( 'logs' );
+	}
+	
+	/**
+	 * Assign values needed to display the logs page to the theme based on handlervars and parameters
+	 *
+	 */
+	public function fetch_logs()
+	{
 		$locals= array(
 			'do_delete' => false,
 			'log_ids' => null,
@@ -1188,11 +1198,6 @@ class AdminHandler extends ActionHandler
 		$dates= array_combine( $dates, $dates );
 		$this->theme->dates= $dates;
 
-		// set up the limit select box
-		$limits= array( 5, 10, 20, 50, 100 );
-		$limits= array_combine( $limits, $limits );
-		$this->theme->limits= $limits;
-
 		// prepare the WSSE tokens
 		$this->theme->wsse= Utils::WSSE();
 
@@ -1229,23 +1234,28 @@ class AdminHandler extends ActionHandler
 			$arguments['user_id']= $user;
 		}
 		$this->theme->logs= EventLog::get( $arguments );
+		$this->theme->monthcts= EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
+	}
 
-		// get the page count
-		$arguments['count']= 'id';
-		unset( $arguments['limit'] );
-		unset( $arguments['offset'] );
-		$totalpages= EventLog::get( $arguments );
-		$pagecount= ceil( $totalpages / $limit );
+	/**
+	 * Handles ajax requests from the logs page
+	 */
+	public function ajax_logs()
+	{
+		$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		// put the page numbers into an array
-		$pages= array();
-		for ( $z= 1; $z <= $pagecount; $z++ ) {
-			$pages[$z]= $z;
-		}
-		$this->theme->pagecount= $pagecount;
-		$this->theme->pages= $pages;
+		$params= $_POST;
 
-		$this->display( 'logs' );
+		$this->fetch_logs( $params );
+		$items= $this->theme->fetch( 'logs_items' );
+		$timeline= $this->theme->fetch( 'timeline_items' );
+
+		$output= array(
+			'items' => $items,
+			'timeline' => $timeline,
+		);
+		echo json_encode($output);
 	}
 
 	public function get_groups()
