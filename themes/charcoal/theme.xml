@@ -4,4 +4,6 @@
 	<author>Habari Community</author>
 	<url>http://wiki.habariproject.org/en/Themes/Charcoal</url>
 	<version>0.5-alpha</version>
-	<template_engine>rawphpengine</template_engine></theme>
+	<template_engine>rawphpengine</template_engine><description>Charcoal is a Habari signature release, demonstrating the craft and style of the Habari platform.</description>
+	
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license></theme>
