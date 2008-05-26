@@ -1,7 +1,7 @@
 <?php include('header.php'); ?>
 <div class="container">
 <hr>
-	<div class="column prepend-1 span-22 append-1">
+	<div class="">
 		<h1><?php _e('Import'); ?></h1>
 		<form method="post" action="">
 			<?php

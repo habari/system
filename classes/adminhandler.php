@@ -679,8 +679,8 @@ class AdminHandler extends ActionHandler
 							if ( !( isset($modstatus['Approved comments on these posts: %s']) && strstr( $modstatus['Approved comments on these posts: %s'], $comment->post->permalink) ) ) {
 								// not a dup, add to string
 								$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
-							}							
-							
+							}
+
 							$comment->status= Comment::STATUS_APPROVED;
 							$comment->update();
 						}
@@ -927,7 +927,32 @@ class AdminHandler extends ActionHandler
 	 */
 	public function get_entries()
 	{
+		// Get the default page contents
 		$this->fetch_entries();
+
+		// Get special search statuses
+		$statuses = array_keys(Post::list_post_statuses());
+		array_shift($statuses);
+		$statuses = array_combine(
+			$statuses,
+			array_map(
+				create_function('$a', 'return "status:{$a}";'),
+				$statuses
+			)
+		);
+
+		// Get special search types
+		$types = array_keys(Post::list_active_post_types());
+		array_shift($types);
+		$types = array_combine(
+			$types,
+			array_map(
+				create_function('$a', 'return "type:{$a}";'),
+				$types
+			)
+		);
+
+		$this->theme->special_searches = array_merge($statuses, $types);
 		$this->display( 'entries' );
 	}
 
@@ -1364,7 +1389,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle GET requests for /admin/tags to display the tags 
+	 * Handle GET requests for /admin/tags to display the tags
 	 */
 	public function get_tags()
 	{
