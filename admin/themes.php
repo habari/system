@@ -25,7 +25,7 @@
 
 			<p class="description pct80"><?php echo $active_theme['info']->description; ?></p>
 			<?php if($active_theme['info']->license != ''): ?>
-			<p class="description pct80"><?php echo $active_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <?php echo $active_theme['info']->license; ?></p>
+			<p class="description pct80"><?php echo $active_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <a href=" <?php echo $active_theme['info']->license['url']; ?>"><?php echo $active_theme['info']->license; ?></a></p>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -59,7 +59,7 @@ foreach($all_themes as $inactive_theme):
 
 			<p class="description pct80"><?php echo $inactive_theme['info']->description; ?></p>
 			<?php if($inactive_theme['info']->license != ''): ?>
-			<p class="description pct80"><?php echo $inactive_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <?php echo $inactive_theme['info']->license; ?></p>
+			<p class="description pct80"><?php echo $inactive_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <a href=" <?php echo $active_theme['info']->license['url']; ?>"><?php echo $inactive_theme['info']->license; ?></a></p>
 			<?php endif; ?>
 		</div>
 	</div>
