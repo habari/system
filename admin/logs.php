@@ -1,7 +1,7 @@
 <?php include_once( 'header.php' ); ?>
 
 
-<form method="post" action="<?php URL::out('admin', 'page=logs'); ?>" class="buttonform">
+<form method="post" action="<?php URL::out('admin', array( 'page' => 'logs' ) ); ?>" class="buttonform">
 
 
 <div class="container navigator">
@@ -14,7 +14,7 @@
 	<div class="timeline">
 		<div class="years">
 			<div class="months">
-				<?php // $theme->display( 'timeline_items' )?>
+				<?php $theme->display( 'timeline_items' )?>
 			</div>
 		</div>
 
@@ -28,14 +28,6 @@
 	</div>
 
 </div>
-
-
-<!--
-	<?php printf( _t('Limit: %s'), Utils::html_select('limit', $limits, $limit, array( 'class'=>'pct10'))); ?>
-	<?php printf( _t('Page: %s'), Utils::html_select('index', $pages, $index, array( 'class'=>'pct10'))); ?>
-	<a href="<?php URL::out('admin', 'page=logs'); ?>"><?php _e('Reset'); ?></a>
--->
-
 
 <div class="container wideitems">
 
@@ -65,27 +57,12 @@
 		<span class="pct5"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
 		<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
 	</div>
+	
+	<div class="manage logs">
 
-	<?php foreach( $logs as $log ){ ?>
-	<div class="item clear">
-			<span class="checkbox pct5"><span><input type="checkbox" name="log_ids[]" value="<?php echo $log->id; ?>"></span></span>
-			<span class="time pct15 minor"><span><?php echo Format::nice_date( $log->timestamp, "M j, Y" ); ?> &middot; <?php echo Format::nice_date( $log->timestamp, "H:i" ); ?></span></span>
-			<span class="user pct15 minor"><span>
-				<?php if ( $log->user_id ) { 
-					if ( $user= User::get_by_id( $log->user_id ) ) {
-						 echo $user->displayname;
-					} else {
-						echo $log->user_id;
-					}
-				} ?>&nbsp;
-			</span></span>
-			<span class="ip pct10 minor"><span><?php echo long2ip($log->ip); ?></span></span>
-			<span class="module pct10 minor"><span><?php echo $log->module; ?></span></span>
-			<span class="type pct10 minor"><span><?php echo $log->type; ?></span></span>
-			<span class="severity pct5 minor"><span><?php echo $log->severity; ?></span></span>
-			<span class="message pct30 minor"><span><?php echo $log->message; ?></span></span>
+	<?php $theme->display('logs_items'); ?>
+
 	</div>
-	<?php } ?>
 
 </div>
 
@@ -104,5 +81,45 @@
 
 
 </form>
+
+<script type="text/javascript">
+liveSearch.search= function() {
+	spinner.start();
+
+	$.post(
+		'<?php echo URL::get('admin_ajax', array('context' => 'logs')) ?>',
+		'&search=' + liveSearch.input.val() + '&limit=20',
+		function(json) {
+			$('.logs').html(json.items);
+			$('.years .months').html(json.timeline);
+			spinner.stop();
+			itemManage.initItems();
+			timeline.reset();
+			findChildren()
+		},
+		'json'
+		);
+};
+
+timelineHandle.loupeUpdate = function(a,b,c) {
+	spinner.start();
+
+	var search_args= $('.search input').val();
+
+	$.ajax({
+		type: 'POST',
+		url: "<?php echo URL::get('admin_ajax', array('context' => 'logs')); ?>",
+		data: 'offset=' + (parseInt(c) - parseInt(b)) + '&limit=' + (1 + parseInt(b) - parseInt(a)) + '&search=' + search_args,
+		dataType: 'json',
+		success: function(json){
+			$('.logs').html(json.items);
+			spinner.stop();
+			itemManage.initItems();
+			$('.modulecore .item:first-child, ul li:first-child').addClass('first-child').show();
+			$('.modulecore .item:last-child, ul li:last-child').addClass('last-child');
+		}
+	});
+};
+</script>
 
 <?php include('footer.php'); ?>
