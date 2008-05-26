@@ -4,7 +4,14 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('0-0 of 0'); ?></span>
-	<span class="search pct50"><input type="search" placeholder="<?php _e('Type and wait to search for any entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>"></span>
+	<span class="search pct50">
+		<input id="search" type="search" placeholder="<?php _e('Type and wait to search for any entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>">
+		<div class="special_search pct100">
+			<?php foreach($special_searches as $text => $term): ?>
+			<a href="#<?php echo $term; ?>"><?php echo $text; ?></a>
+			<?php endforeach; ?>
+		</div>
+	</span>
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
@@ -73,7 +80,7 @@ liveSearch.search= function() {
 
 timelineHandle.loupeUpdate = function(a,b,c) {
 	spinner.start();
-	
+
 	var search_args= $('.search input').val();
 
 	$.ajax({

@@ -178,7 +178,7 @@ var timeline = {
 		// No Timeline? No runny-runny.
 		if (!$('.timeline').length) return;
 
-		var timelineWidth= $('.years').width();
+		var timelineWidth = $('.years').width();
 		var viewWidth= $('.timeline').width();
 		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
@@ -198,7 +198,7 @@ var timeline = {
 
 		// find the width which makes the loupe select 20 items
 		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
-		
+
 		// make the slider bounded by the view
 		var maxSliderValue= Math.min( viewWidth, timelineWidth ) - handleWidth;
 
@@ -332,7 +332,7 @@ var timeline = {
 		return position + padding + ( index - positionIndex );
 	},
 	reset: function () {
-		var timelineWidth= $('.years').width();
+		var timelineWidth = $('.years').width();
 		var viewWidth= $('.timeline').width();
 		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
@@ -603,7 +603,7 @@ var theMenu = {
 				});
 			}
 		});
-		
+
 		// If menu is open and mouse is clicked outside menu, close menu.
 		$('html').click(function() {
 			if ($('#menu #menulist').css('display') == 'block') {
@@ -659,11 +659,25 @@ var liveSearch = {
 		if ( jQuery.isFunction( liveSearch.search ) ) {
 			return liveSearch.search();
 		}
-		
+
 	},
 	search: null, // specific search functions are defined on the individual pages
 }
 
+// SEARCH CRITERIA TOGGLE
+function toggleSearch() {
+	var re = new RegExp('\\s*' + $(this).attr('href').substr(1), 'gi');
+	if($('#search').val().match(re)) {
+		$('#search').val($('#search').val().replace(re, ''));
+		$(this).removeClass('active');
+	}
+	else {
+		$('#search').val($('#search').val() + ' ' + $(this).attr('href').substr(1));
+		$(this).addClass('active');
+	}
+	liveSearch.doSearch();
+	return false;
+}
 
 // RESIZABLE TEXTAREAS
 $.fn.resizeable = function(){
@@ -852,8 +866,17 @@ $(document).ready(function(){
 		document.getElementById('habari_password').type = 'password';
 
 	// LOGIN: Focus cursor on 'Name'.
-	$('body.login #habari_username').focus()
+	$('body.login #habari_username').focus();
 
+	// SEARCH: Set default special search terms and assign click handler
+	$('.special_search a')
+		.click(toggleSearch)
+		.each(function(){
+			var re = new RegExp($(this).attr('href').substr(1));
+			if($('#search').val().match(re)) {
+				$(this).addClass('active');
+			}
+		});
 
 });
 

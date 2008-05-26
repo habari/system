@@ -1156,13 +1156,27 @@ body.page-options .item {
 	text-align: center;
 	}
 
-.navigator span input {
+.navigator input {
 	width: 90%;
 	margin: 0 5%;
 	}
 
 .navigator .newer {
 	text-align: right;
+	}
+
+.navigator .special_search {
+	text-align: center;
+	}
+
+.navigator .special_search a {
+	outline: none;
+	padding: 0px 2px;
+	margin: 2px 5px;
+	}
+
+.navigator .special_search a.active {
+	background-color: #a9a9a9;
 	}
 
 .timeline {
