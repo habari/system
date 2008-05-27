@@ -1123,7 +1123,7 @@ class AdminHandler extends ActionHandler
 	 * Assign values needed to display the logs page to the theme based on handlervars and parameters
 	 *
 	 */
-	public function fetch_logs()
+	private function fetch_logs()
 	{
 		$locals= array(
 			'do_delete' => false,
@@ -1251,7 +1251,16 @@ class AdminHandler extends ActionHandler
 			$arguments['user_id']= $user;
 		}
 		$this->theme->logs= EventLog::get( $arguments );
-		$this->theme->monthcts= EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
+		$monthcts= EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
+		foreach( $monthcts as $month ) { 
+			if ( isset($years[$month->year]) ) { 
+				$years[$month->year][]= $month; 
+			} 
+			else { 
+				$years[$month->year]= array( $month ); 
+			} 
+		}
+		$this->theme->years= $years;
 	}
 
 	/**

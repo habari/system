@@ -190,7 +190,7 @@ var timeline = {
 		timeline.monthData= [0];
 		timeline.monthWidths= [0];
 		timeline.totalCount= 0;
-		$('.years months span').each(function(i) {
+		$('.years .months span').each(function(i) {
 			timeline.monthData[i] = $(this).width();
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
 			timeline.totalCount += timeline.monthData[i];
@@ -340,7 +340,7 @@ var timeline = {
 		timeline.monthData= [0];
 		timeline.monthWidths= [0];
 		timeline.totalCount= 0;
-		$('.years months span').each(function(i) {
+		$('.years .months span').each(function(i) {
 			timeline.monthData[i] = $(this).width();
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
 			timeline.totalCount += timeline.monthData[i];
