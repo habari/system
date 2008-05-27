@@ -135,9 +135,28 @@ class Format
 	}
 
 	/**
+	 * function and_list
+	 * Turns an array of strings into a friendly delimited string separated by commas and an "and"
+	 * @param array $array An array of strings
+	 * @param string $between Text to put between each element
+	 * @param string $between_last Text to put between the next-to-last element and the last element
+	 * @reutrn string The constructed string
+	**/
+	public static function and_list( $array, $between = ', ', $between_last = ' and ' )
+	{
+		if ( ! is_array( $array ) ) {
+			$array = array( $array );
+		}
+		$last= array_pop( $array );
+		$out = implode(', ', $array );
+		$out .= ($out == '') ? $last : ' and ' . $last;
+		return $out;
+	}
+
+	/**
 	 * function tag_and_list
 	 * Formatting function (should be in Format class?)
-	 * Turns an array of tag names into an HTML-linked list with command and an "and".
+	 * Turns an array of tag names into an HTML-linked list with commas and an "and".
 	 * @param array $array An array of tag names
 	 * @param string $between Text to put between each element
 	 * @param string $between_last Text to put between the next to last element and the last element
