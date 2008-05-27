@@ -7,7 +7,6 @@
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen">
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
 	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.css" type="text/css" media="screen">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.dimensions.js" type="text/javascript"></script>
