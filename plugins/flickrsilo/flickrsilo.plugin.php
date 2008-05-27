@@ -769,7 +769,7 @@ END_AUTH;
 				}}
 				habari.media.preview.flickr = function(fileindex, fileobj) {
 					var stats = '';
-					return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink">media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 				}
 			</script>
 FLICKR;

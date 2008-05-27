@@ -74,7 +74,7 @@ habari.media = {
 					});
 					$('.media_controls ul li:first', container).nextAll().remove();
 					$('.media_controls ul li:first', container).after(result.controls);
-					
+
 					spinner.stop();
 
 					// When first opened, load the first directory automatically
@@ -100,7 +100,7 @@ habari.media = {
 
 		// Get new media items
 		this.showdir(path, el);
-		
+
 		// Mark the current directory
 		$(el).addClass('active').siblings().removeClass('active')
 
@@ -141,7 +141,7 @@ habari.media = {
 	preview: {
 		_: function(fileindex, fileobj) {
 			var stats = '';
-			return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+			return '<div class="mediatitle">' + fileobj.title + 'zz</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 		}
 	},
 
@@ -160,7 +160,7 @@ habari.media = {
 		var query = $(form).serializeArray();
 		query.push({name: 'path', value: path});
 		query.push({name: 'panel', value: panel});
-		
+
 		$.post(
 			habari.url.habari + '/admin_ajax/media_panel',
 			query,
@@ -198,7 +198,7 @@ habari.media = {
 			break;
 		}
 	},
-	
+
 	clearSelections: function() {
 		var container = $('.mediasplitter:visible')
 		// remove all highlights
