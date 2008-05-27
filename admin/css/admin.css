@@ -1115,6 +1115,13 @@ body.page-options .item {
 	text-transform: capitalize;
 	}
 
+.special_search {
+	padding: 3px 0 5px;
+	}
+
+.special_search  a {
+	color: #666;
+	}
 
 /* COMMENTS */
 
@@ -1208,11 +1215,27 @@ body.page-options .item {
 	background: #222;
 	}
 
+.timeline .years .year {
+	position: relative;
+	}
+
+.timeline .years .year > span {
+	position: absolute;
+	display: inline;
+	bottom: 0;
+	font: 20px 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif !important;
+	padding: 40px 0 0 3px;
+	margin: 0 !important;
+	opacity: .2;
+	border-left: 1px solid #777;
+	}
+
 .timeline .years .months {
 	display: table-row;
 	height: inherit;
 	overflow: hidden;
 	position: relative;
+	border: none !important;
 	}
 
 .timeline .years .months div {
