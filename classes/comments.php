@@ -72,11 +72,11 @@ class Comments extends ArrayObject
 						$where[]= 'id IN (' . addslashes( $id_list ) . ')';
 					}
 				}
-				if ( isset( $paramset['status'] ) && ( Comment::status_name( $paramset['status'] ) != 'any' ) ) {
+				if ( isset( $paramset['status'] ) && FALSE !== $paramset['status'] ) {
 					$where[]= "status= ?";
 					$params[]= Comment::status( $paramset['status'] );
 				}
-				if ( isset( $paramset['type'] ) && ( Comment::type_name( $paramset['type'] ) != 'any' ) ) {
+				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
 					$where[]= "type= ?";
 					$params[]= Comment::type( $paramset['type'] );
 				}
@@ -476,7 +476,6 @@ class Comments extends ArrayObject
 	/**
 	 * static count_total
 	 * returns the number of comments based on the specified status and type
-	 * @param string a commenter's name
 	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @param mixed A comment type value, or FALSE to not filter on type (default: Comment::COMMENT)
 	 * @return int a count of the comments based on the specified status and type
