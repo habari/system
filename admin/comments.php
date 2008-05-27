@@ -81,7 +81,7 @@ liveSearch.search= function() {
 		'&search=' + liveSearch.input.val() + '&limit=20',
 		function(json) {
 			$('#comments').html(json.items);
-			$('.years .months').html(json.timeline);
+			$('.timeline .years').html(json.timeline);
 			spinner.stop();
 			itemManage.initItems();
 			timeline.reset();

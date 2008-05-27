@@ -190,7 +190,14 @@ class AdminHandler extends ActionHandler
 			'logs' => 'dash_logs',
 		);
 		$modules= Plugins::filter( 'admin_modules_theme', $modules, $this->theme );
-		$modules= array_map(array($this->theme, 'fetch'), $modules);
+		foreach( $modules as $modulename => $moduletemplate ) {
+			$themeinit = 'fetch_dash_module_' . $modulename;
+			if( method_exists( $this, $themeinit ) ) {
+				$this->$themeinit($this->theme);
+			}
+			$modules[$modulename] = $this->theme->fetch($moduletemplate);
+		}
+		//$modules= array_map(array($this->theme, 'fetch'), $modules);
 		$this->theme->modules= Plugins::filter( 'admin_modules', $modules, $this->theme );
 
 		$this->display( 'dashboard' );
