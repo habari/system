@@ -112,7 +112,7 @@ class Comments extends ArrayObject
 					}
 					$paramset['criteria_fields']= array_unique( $paramset['criteria_fields'] );
 
-					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
+					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
 						foreach ( $paramset['criteria_fields'] as $criteria_field ) {
 							$where_search[].= "($criteria_field LIKE CONCAT('%',?,'%'))";

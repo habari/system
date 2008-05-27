@@ -190,7 +190,7 @@ class Posts extends ArrayObject
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
-					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
+					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
 						$where[].= "(title LIKE CONCAT('%',?,'%') OR content LIKE CONCAT('%',?,'%'))";
 						$params[]= $word;
