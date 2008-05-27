@@ -33,20 +33,33 @@
 		?></p>
 
 		<p><?php
-		printf(
-			_n('You currently have <a href="%5$s">%1$d entry draft</a>, ', 'You currently have <a href="%5$s">%1$d entry drafts</a>, ', $stats['entry_draft_count']) .
-			_n('<a href="%6$s">%2$d scheduled entry</a>, ', '<a href="%6$s">%2$d scheduled entries</a>, ', $stats['user_entry_scheduled_count']) .
-			_n('<a href="%7$s">%3$d page draft</a>, ', '<a href="%7$s">%3$d page drafts</a>, ', $stats['page_draft_count']) .
-			_n('and <a href="%8$s">%4$d comment awaiting approval</a>', 'and <a href="%8$s">%4$d comments awaiting approval</a>', $stats['unapproved_comment_count']),
-			$stats['entry_draft_count'],
-			$stats['user_entry_scheduled_count'],
-			$stats['page_draft_count'],
-			$stats['unapproved_comment_count'],
-			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ),
-			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'scheduled' ) ) ),
-			URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ),
-			URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_UNAPPROVED ) )
-		);
+		$message_bits= array();
+		if ( ! empty( $stats['entry_draft_count'] ) ) {
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ) . '">';
+			$message.= sprintf( _n( '%d entry draft', '%d entry drafts', $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
+			$message.= '</a>';
+			$message_bits[]= $message;
+		}
+		if ( ! empty( $stats['user_entry_scheduled_count'] ) ) {
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'scheduled' ) ) ) . '</a>';
+			$message.= sprintf( _n( '%d scheduled entry', '%d scheduled entries', $stats['user_entry_scheduled_count'] ) );
+			$message.= '</a>';
+			$message_bits[]= $message;
+		}
+		if ( ! empty( $stats['page_draft_count'] ) ) {
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) . '">';
+			$message.= sprintf( _n( '%d page draft', '%d page drafts', $stats['page_draft_count'] ), $stats['page_draft_count'] );
+			$message.= '</a>';
+			$message_bits[]= $message;
+		}
+		if ( ! empty(  $stats['unapproved_comment_count'] ) ) {
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_UNAPPROVED ) ) . '">';
+			$message.= sprintf( _n( '%d comment awaiting approval', '%d comments awaiting approval', $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
+			$message.= '</a>';
+			$message_bits[]= $message;
+		}
+
+		echo _t('You have ' ) . Format::and_list( $message_bits);
 		?></p>
 
 		<?php
