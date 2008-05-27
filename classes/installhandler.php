@@ -889,6 +889,18 @@ class InstallHandler extends ActionHandler {
 			case $version < 1794:
 				Post::add_new_status( 'scheduled', true );
 				break;
+			case $version < 1845:
+				// Strip the base path off active plugins
+				$base_path= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
+				$activated= Options::get( 'active_plugins' );
+				if( is_array( $activated ) ) {
+					foreach( $activated as $plugin ) {
+						$index= array_search( $plugin, $activated );
+						$plugin= str_replace( $base_path, '', $plugin );
+						$activated[$index]= $plugin;
+					}
+					Options::set( 'active_plugins', $activated );
+				}
 		}
 		DB::upgrade( $version );
 

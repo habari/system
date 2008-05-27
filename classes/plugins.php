@@ -181,6 +181,9 @@ class Plugins
 		$plugins = Options::get( 'active_plugins' );
 		if( is_array($plugins) ) {
 			foreach( $plugins as $plugin ) {
+				// add base path to stored path
+				$plugin= HABARI_PATH . $plugin;
+
 				if( file_exists( $plugin ) ) {
 					self::$plugin_files[] = $plugin;
 				}
@@ -317,9 +320,12 @@ class Plugins
 		$ok= true;
 		$ok= Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
 		if($ok) {
+			// strip base path from stored path
+			$short_file= substr( $file, strlen( HABARI_PATH ) );
+
 			$activated = Options::get( 'active_plugins' );
-			if( !is_array( $activated ) || !in_array( $file, $activated ) ) {
-				$activated[] = $file;
+			if( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
+				$activated[] = $short_file;
 				Options::set( 'active_plugins', $activated );
 				include_once($file);
 				$plugin= Plugins::load($file);
@@ -337,8 +343,11 @@ class Plugins
 		$ok= true;
 		$ok= Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
 		if($ok) {
+			// strip base path from stored path
+			$short_file= substr( $file, strlen( HABARI_PATH ) );
+
 			$activated = Options::get( 'active_plugins' );
-			$index= array_search( $file, $activated );
+			$index= array_search( $short_file, $activated );
 			if ( is_array( $activated ) && ( FALSE !== $index ) )
 			{
 				Plugins::act('plugin_deactivation', $file);  // For the plugin to uninstall itself
@@ -362,6 +371,10 @@ class Plugins
 		if(!is_array($old_plugins)) {
 			return true;
 		}
+		// add base path onto stored path
+		foreach( $old_plugins as $old_plugin ) {
+			$old_plugin = HABARI_PATH . $old_plugin;
+		}
 		// If the file list is not identical, then they've changed.
 		$new_plugin_files= Plugins::list_all();
 		$old_plugin_files= array_map(create_function('$a', 'return $a["file"];'), $old_plugins);
@@ -384,6 +397,11 @@ class Plugins
 	public static function set_present()
 	{
 		$plugin_files= Plugins::list_all();
+		// strip base path
+		foreach( $plugin_files as $plugin_file ) {
+			$plugin_file= substr( $file, strlen( HABARI_PATH ) );
+		}
+		
 		$plugin_data= array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
 		Options::set('plugins_present', $plugin_data);
 	}
