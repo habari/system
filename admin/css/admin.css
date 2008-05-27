@@ -698,6 +698,14 @@ p:hover > label.incontent.popup {
 	content: '\000001';
 	}
 
+.mediaphotos li .medialink {
+	float: right;
+	background: url('../images/medialink.png') no-repeat;
+	width: 10px;
+	height: 9px;
+	text-indent: -3000px;
+	}
+
 .mediaphotos li img {
 	margin: 0 0 -3px;
 	height: 100px;
@@ -756,7 +764,7 @@ p:hover > label.incontent.popup {
 	width: 50%;
 	height: 260px;
 	}
-	
+
 .dashboard .module .modulecore,
 .dashboard .module .optionswindow {
 	height: 195px;
@@ -917,7 +925,7 @@ p:hover > label.incontent.popup {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	}
-	
+
 .dashboard .latestcommentsmodule .item > span {
 	float: left;
 	}
@@ -1572,7 +1580,7 @@ body.login input[type=submit] {
 	color: #aaa;
 	}
 
-	
+
 /* OPACITY PERCENTAGES */
 .opa0 { opacity: 0; }
 .opa10 { opacity: .10; }
