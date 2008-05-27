@@ -856,9 +856,14 @@ END_AUTH;
 				habari.media.output.flickr = {display: function(fileindex, fileobj) {
 					habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
 				}}
-				habari.media.output.flickrvideo = {display: function(fileindex, fileobj) {
-					habari.editor.insertSelection('<object type="application/x-shockwave-flash" width="{$vsizex}" height="{$vsizey}" data="http://www.flickr.com/apps/video/stewart.swf?v=49235" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;show_info_box=true"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=49235"></param> <param name="bgcolor" value="#000000"></param> <param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=49235" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;flickr_show_info_box=true" height="{$vsizey}" width="{$vsizex}"></embed></object>');
-				}}
+				habari.media.output.flickrvideo = {
+					embed_video: function(fileindex, fileobj) {
+						habari.editor.insertSelection('<object type="application/x-shockwave-flash" width="{$vsizex}" height="{$vsizey}" data="http://www.flickr.com/apps/video/stewart.swf?v=49235" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;show_info_box=true"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=49235"></param> <param name="bgcolor" value="#000000"></param> <param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=49235" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;flickr_show_info_box=true" height="{$vsizey}" width="{$vsizex}"></embed></object>');
+					},
+					thumbnail: function(fileindex, fileobj) {
+						habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
+					},
+				}
 				habari.media.preview.flickr = function(fileindex, fileobj) {
 					var stats = '';
 					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink">media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';

@@ -54,6 +54,19 @@ habari.media = {
 						stats = '';
 						output += '<li class="media' + first + '"><span class="foroutput">' + file + '</span>';
 
+						output += '<ul class="mediaactions">'
+						if (result.files[file].filetype && habari.media.output[result.files[file].filetype]) {
+							for(method in habari.media.output[result.files[file].filetype]) {
+								output += '<li><a href="#" onclick="habari.media.output.' + result.files[file].filetype + '.' + method + '(' + file +', habari.media.assets['+ file + ']);return false;">' + method.replace('_', ' ') + '</a></li>';
+							}
+						}
+						else {
+							for(method in habari.media.output._) {
+								output += '<li><a href="#" onclick="habari.media.output._.' + method + '(' + file +');return false;">' + method.replace('_', ' ') + '</a></li>';
+							}
+						}
+						output += '</ul>';
+
 						if (result.files[file].filetype && habari.media.preview[result.files[file].filetype]) {
 							output += habari.media.preview[result.files[file].filetype](file, result.files[file]);
 						}
