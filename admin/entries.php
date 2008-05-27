@@ -17,9 +17,7 @@
 
 	<div class="timeline">
 		<div class="years">
-			<div class="months">
-				<?php $theme->display( 'timeline_items' )?>
-			</div>
+			<?php $theme->display( 'timeline_items' )?>
 		</div>
 
 		<div class="track">

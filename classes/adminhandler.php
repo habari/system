@@ -756,7 +756,16 @@ class AdminHandler extends ActionHandler
 		}
 
 		$this->theme->comments= Comments::get( $arguments );
-		$this->theme->monthcts= Comments::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
+		$monthcts= Comments::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
+		foreach( $monthcts as $month ) { 
+			if ( isset($years[$month->year]) ) { 
+				$years[$month->year][]= $month; 
+			} 
+			else { 
+				$years[$month->year]= array( $month ); 
+			} 
+		}
+		$this->theme->years= $years;
 	}
 
 	/**
@@ -917,7 +926,16 @@ class AdminHandler extends ActionHandler
 			$this->theme->search_args.= 'type:' . Post::type_name( $type );
 		}
 
-		$this->theme->monthcts= Posts::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
+		$monthcts= Posts::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
+		foreach( $monthcts as $month ) { 
+			if ( isset($years[$month->year]) ) { 
+				$years[$month->year][]= $month; 
+			} 
+			else { 
+				$years[$month->year]= array( $month ); 
+			} 
+		}
+		$this->theme->years= $years;
 	}
 
 	/**
@@ -1585,6 +1603,18 @@ class AdminHandler extends ActionHandler
 
 		header( 'content-type:text/javascript' );
 		echo json_encode( $output );
+	}
+	
+	public function fetch_dash_latestcomments( $params= array() )
+	{
+		$post_ids= DB::get_results( 'select distinct post_id from ( select date, post_id from {comments} where status = ? and type = ? order by date desc, post_id ) as post_ids limit 5;', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
+		$this->theme->latest_commented_posts= array();
+		
+		foreach( $posts_ids as $post ) {
+			$this->theme->latest_commented_posts[] = $post= DB::get_row( 'select * from {posts} where id = ?', array( $comment_post->post_id ) , 'Post' );
+			$this->theme->latest_comments[] = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $comment_post->post_id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
+		}
+		
 	}
 
 }
