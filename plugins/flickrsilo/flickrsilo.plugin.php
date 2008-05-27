@@ -217,6 +217,25 @@ class Flickr extends flickrAPI
 		return $xml;
 	}
 
+	function mediaSearch( $params = array()  )
+	{
+		if($this->cachedToken()){
+			$params['auth_token'] = $this->cachedToken();
+		}
+
+		$params['secret'] = $this->secret;
+		$params['user_id'] = 'me';
+		$params['sort'] = 'date-posted-desc';
+		$params['per_page'] = 20;
+
+		$xml = $this->call('flickr.photos.search', $params);
+
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+		return $xml;
+	}
+
 	function photosSearch( $params = array()  )
 	{
 		if($this->cachedToken()){
@@ -227,6 +246,27 @@ class Flickr extends flickrAPI
 		$params['user_id'] = 'me';
 		$params['sort'] = 'date-posted-desc';
 		$params['per_page'] = 20;
+		$params['media'] = 'photos';
+
+		$xml = $this->call('flickr.photos.search', $params);
+
+		if (Error::is_error($xml)){
+			throw $xml;
+		}
+		return $xml;
+	}
+
+	function videoSearch( $params = array()  )
+	{
+		if($this->cachedToken()){
+			$params['auth_token'] = $this->cachedToken();
+		}
+
+		$params['secret'] = $this->secret;
+		$params['user_id'] = 'me';
+		$params['sort'] = 'date-posted-desc';
+		$params['per_page'] = 20;
+		$params['media'] = 'videos';
 
 		$xml = $this->call('flickr.photos.search', $params);
 
@@ -479,6 +519,26 @@ class FlickrSilo extends Plugin implements MediaSilo
 					);
 				}
 				break;
+			case 'videos':
+				$xml = $flickr->videoSearch();
+				foreach($xml->photos->photo as $photo) {
+
+					$props = array();
+					foreach($photo->attributes() as $name => $value) {
+						$props[$name] = (string)$value;
+					}
+					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
+					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+					$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
+					$props['filetype'] = 'flickrvideo';
+
+					$results[] = new MediaAsset(
+						self::SILO_NAME . '/photos/' . $photo['id'],
+						false,
+						$props
+					);
+				}
+				break;
 			case 'tags':
 				$selected_tag = strtok('/');
 				if($selected_tag) {
@@ -552,6 +612,11 @@ class FlickrSilo extends Plugin implements MediaSilo
 					self::SILO_NAME . '/photos',
 					true,
 					array('title' => 'Photos')
+				);
+				$results[] = new MediaAsset(
+					self::SILO_NAME . '/videos',
+					true,
+					array('title' => 'Videos')
 				);
 				$results[] = new MediaAsset(
 					self::SILO_NAME . '/tags',
@@ -762,12 +827,43 @@ END_AUTH;
 	}
 	public function action_admin_footer( $theme ) {
 		if ($theme->admin_page == 'publish') {
+			$size = Options::get('flickrsilo:flickr_size');
+			switch($size) {
+				case '_s':
+					$vsizex = 75;
+					break;
+				case '_t':
+					$vsizex = 100;
+					break;
+				case '_m':
+					$vsizex = 240;
+					break;
+				case '':
+					$vsizex = 500;
+					break;
+				case '_b':
+					$vsizex = 1024;
+					break;
+				case '_o':
+					$vsizex = 400;
+					break;
+			}
+			$vsizey = intval($vsizex/4*3);
+
+
 			echo <<< FLICKR
 			<script type="text/javascript">
 				habari.media.output.flickr = {display: function(fileindex, fileobj) {
 					habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
 				}}
+				habari.media.output.flickrvideo = {display: function(fileindex, fileobj) {
+					habari.editor.insertSelection('<object type="application/x-shockwave-flash" width="{$vsizex}" height="{$vsizey}" data="http://www.flickr.com/apps/video/stewart.swf?v=49235" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;show_info_box=true"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=49235"></param> <param name="bgcolor" value="#000000"></param> <param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=49235" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;flickr_show_info_box=true" height="{$vsizey}" width="{$vsizex}"></embed></object>');
+				}}
 				habari.media.preview.flickr = function(fileindex, fileobj) {
+					var stats = '';
+					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink">media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+				}
+				habari.media.preview.flickrvideo = function(fileindex, fileobj) {
 					var stats = '';
 					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink">media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 				}
