@@ -62,7 +62,7 @@ habari.media = {
 						}
 						else {
 							for(method in habari.media.output._) {
-								output += '<li><a href="#" onclick="habari.media.output._.' + method + '(' + file +');return false;">' + method.replace('_', ' ') + '</a></li>';
+								output += '<li><a href="#" onclick="habari.media.output._.' + method + '(' + file +', habari.media.assets['+ file + ']);return false;">' + method.replace('_', ' ') + '</a></li>';
 							}
 						}
 						output += '</ul>';
