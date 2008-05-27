@@ -1216,7 +1216,9 @@ body.page-options .item {
 	}
 
 .timeline .years .year {
-	position: relative;
+	display: table-cell;
+	height: inherit;
+	overflow: hidden !important; /* Not working :( */
 	}
 
 .timeline .years .year > span {
@@ -1228,6 +1230,7 @@ body.page-options .item {
 	margin: 0 !important;
 	opacity: .2;
 	border-left: 1px solid #777;
+	color: white;
 	}
 
 .timeline .years .months {
@@ -1240,7 +1243,7 @@ body.page-options .item {
 
 .timeline .years .months div {
 	display: table-cell;
-	border-right: 1px solid #111;
+	border-right: 1px solid #161616;
 	height: inherit;
 	overflow: hidden;
 	}
@@ -1257,7 +1260,6 @@ body.page-options .item {
 	height: inherit;
 	margin-left: auto;
 	}
-
 
 .timeline .handle {
 	background: url('../images/loupebg.png') repeat-x;
