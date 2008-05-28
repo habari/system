@@ -91,9 +91,11 @@ liveSearch.search= function() {
 		'&search=' + liveSearch.input.val() + '&limit=20',
 		function(json) {
 			$('#comments').html(json.items);
-			$('.timeline .years').html(json.timeline);
+			// we hide and show the timeline to fix a firefox display bug
+			$('.years').html(json.timeline).hide();
 			spinner.stop();
 			itemManage.initItems();
+			$('.years').show();
 			timeline.reset();
 			findChildren();
 		},
