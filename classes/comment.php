@@ -289,10 +289,10 @@ class Comment extends QueryRecord implements IsContent
  	 */
  	private function setstatus($value)
  	{
- 		if(is_numeric($value))
+ 		if ( is_numeric( $value ) ) {
  			$this->newfields['status']= $value;
- 		else
- 		{
+		}
+ 		else {
  			switch(strtolower($value))
  			{
  				case "approved":
