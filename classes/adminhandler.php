@@ -677,82 +677,64 @@ class AdminHandler extends ActionHandler
 				elseif ( $do_unapprove ) {
 					$action= 'unapprove';
 				}
+				$ids= array();
 				foreach ( $comment_ids as $id => $id_value ) {
 					if ( ! isset( ${'$comment_ids['.$id.']'} ) ) { // Skip unmoderated submitted comment_ids
 						$ids[]= $id;
-						$ids_change[$id]= $action;
 					}
 				}
 				$to_update= Comments::get( array( 'id' => $ids ) );
 				$modstatus= array( 'Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0 );
-				Plugins::act( 'admin_moderate_comments', $ids_change, $to_update, $this );
+				Plugins::act( 'admin_moderate_comments', $action, $to_update, $this );
 
-				foreach ( $to_update as $comment ) {
-					switch ( $ids_change[$comment->id] ) {
-					case 'delete':
-						// This comment was marked for deletion
-						$comment->delete();
-						$modstatus['Deleted %d comments']++;
-						break;
-					case 'spam':
-						if ( $comment->status != Comment::STATUS_SPAM ) {
-							// This comment was marked as spam
-							$comment= Comment::get( $comment->id );
-							$modstatus['Marked %d comments as spam']+= $comment->status != Comment::STATUS_SPAM;
-							$comment->status= Comment::STATUS_SPAM;
-							$comment->update();
-						}
-						break;
-					case 'approve':
-						if ( $comment->status != Comment::STATUS_APPROVED) {
-							// This comment was marked for approval
-							$comment= Comment::get( $comment->id );
-							$modstatus['Approved %d comments']+= $comment->status != Comment::STATUS_APPROVED;
-							// Only add to this if it doesn't already have a link to that post.
-							if ( !( isset($modstatus['Approved comments on these posts: %s']) && strstr( $modstatus['Approved comments on these posts: %s'], $comment->post->permalink) ) ) {
-								// not a dup, add to string
-								$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
-							}
-
-							$comment->status= Comment::STATUS_APPROVED;
-							$comment->update();
-						}
-						break;
-					case 'unapprove':
-						if ( $comment->status != Comment::STATUS_UNAPPROVED ) {
-						// This comment was marked for unapproval
-						$comment= Comment::get( $comment->id );
-						$modstatus['Unapproved %d comments']+= $comment->status != Comment::STATUS_UNAPPROVED;
-						$comment->status= Comment::STATUS_UNAPPROVED;
-						$comment->update();
-						}
-						break;
-					case 'edit':
+				switch ( $action ) {
+				case 'delete':
+					// This comment was marked for deletion
+					Comments::delete_these( $to_update );
+					$modstatus['Deleted %d comments'] = count( $to_update );
+					break;
+				case 'spam':
+					// This comment was marked as spam
+					Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
+					$modstatus['Marked %d comments as spam'] = count( $to_update );
+					break;
+				case 'approve':
+					// Comments marked for approval
+					Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
+					$modstatus['Approved %d comments'] = count( $to_update );
+					foreach( $to_update as $comment ) {
+						$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+					}
+					break;
+				case 'unapprove':
+					// This comment was marked for unapproval
+					Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
+					$modstatus['Unapproved %d comments'] = count ( $to_update );
+					break;
+				case 'edit':
+					foreach ( $to_update as $comment ) {
 						// This comment was edited
-						$comment= Comment::get( $comment->id );
 						if( $_POST['name_' . $comment->id] != NULL ) {
-							$comment->name= $_POST['name_' . $comment->id];
+							$comment->name = $_POST['name_' . $comment->id];
 						}
 						if( $_POST['email_' . $comment->id] != NULL ) {
-							$comment->email= $_POST['email_' . $comment->id];
+							$comment->email = $_POST['email_' . $comment->id];
 						}
 						if( $_POST['url_' . $comment->id] != NULL ) {
-							$comment->url= $_POST['url_' . $comment->id];
+							$comment->url = $_POST['url_' . $comment->id];
 						}
 						if( $_POST['content_' . $comment->id] != NULL ) {
-							$comment->content= $_POST['content_' . $comment->id];
+							$comment->content = $_POST['content_' . $comment->id];
 						}
-						$comment->update();
-						$modstatus['Edited %d comments']++;
-						break;
 					}
+					$modstatus['Edited %d comments'] = count( $to_update );
+				break;
 				}
 				foreach ( $modstatus as $key => $value ) {
 					if ( $value ) {
 						Session::notice( sprintf( _t( $key ), $value ) );
 					}
 				}
-				unset( $this->handler_vars['change'] );
 			}
 			Utils::redirect();
 			die();
@@ -1090,19 +1072,21 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_update_comment( $handler_vars)
 	{
-
 		$comment= Comments::get( array( 'id' => $handler_vars['id'] ) );
 		$comment= $comment[0];
 		$status_msg= 'No change.';
 
+		// check WSSE authentication
+		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+			echo json_encode( 'WSSE authentication failed.' );
+			return;
+		}
+		
+		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], array( $comment ), $this );
+
 		switch ( $handler_vars['action'] ) {
 		case 'delete':
-			// This comment was marked for deletion, check WSSE authentication
-			$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-			if ( $handler_vars['digest'] != $wsse['digest'] ) {
-				echo json_encode( 'WSSE authentication failed.' );
-				return;
-			}
 			$status_msg= 'Deleted comment '. $comment->id . '.';
 			$comment->delete();
 			break;

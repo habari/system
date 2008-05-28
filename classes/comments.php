@@ -241,7 +241,7 @@ class Comments extends ArrayObject
 	**/
 	public static function delete_these( $comments )
 	{
-		if ( ! is_array( $comments ) ) {
+		if ( ! is_array( $comments ) && ! $comments instanceOf Comments ) {
 			$comments= array( $comments );
 		}
 
@@ -283,16 +283,34 @@ class Comments extends ArrayObject
 	**/
 	public static function moderate_these( $comments, $status= Comment::STATUS_UNAPPROVED )
 	{
-		if ( ! is_array( $comments ) ) {
+		if ( ! is_array( $comments )  && ! $comments instanceOf Comments ) {
 			$comments= array( $comments );
 		}
 		if ( count( $comments ) == 0 ) {
 			return;
 		}
-		$result= true;
-		foreach ( $comments as $commentid ) {
-			$result&= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
-			EventLog::log( sprintf(_t('Comment Moderated on %s'), $comment->post->title), 'info', 'comment', 'habari' );
+		if ( $comments[0] instanceOf Comment ) {
+			// We were passed an array of comment objects. Use them directly.
+			$result= true;
+			foreach ( $comments as $comment ) {
+				$comment->status = $status;
+				$result &= $comment->update();
+				EventLog::log( sprintf(_t('Comment %1$s moderated from %2s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
+			}
+		}
+		else if ( is_numeric( $comments[0] ) ) {
+			// Get all of the comments objects
+			$comments= self::get( array( 'id' => $comments ) );
+
+			$result= true;
+			foreach ( $comments as $commentid ) {
+				$result&= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
+				EventLog::log( sprintf(_t('Comment Moderated on %s'), $comment->post->title), 'info', 'comment', 'habari' );
+			}
+		}
+		else {
+			// We were passed a type we could not understand.
+			return false;
 		}
 		return $result;
 	}
