@@ -4,10 +4,10 @@
 	</div>
 	<div id="footer">
 		<p>
-			<?php Options::out('title'); _e(' is powered by'); ?> <a
-			href="http://www.habariproject.org/" title="Habari">Habari <?php echo Version::HABARI_VERSION ; ?></a> 
-			<?php _e(' - ') ?><a href="<?php URL::out( 'atom_feed', array( 'index' => '1' ) ); ?>">Atom
-			Entries</a> and <a href="<?php URL::out( 'atom_feed_comments' ); ?>">Atom Comments</a>
+			<?php printf( _t('%1$s is powered by %2$s'), Options::get('title'),' <a
+			href="http://www.habariproject.org/" title="Habari">Habari ' . Version::HABARI_VERSION  . '</a>' ); ?> - 
+			<a href="<?php URL::out( 'atom_feed', array( 'index' => '1' ) ); ?>"><?php _e( 'AtomEntries' ); ?></a><?php _e( ' and ' ); ?>
+			<a href="<?php URL::out( 'atom_feed_comments' ); ?>"><?php _e( 'Atom Comments' ); ?></a>
 		</p>
 	</div>
 	<div class="clear"></div>

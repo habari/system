@@ -116,21 +116,21 @@ class charcoal extends Theme
 		$out=array();
 		$keywords=explode(' ',trim($criteria));
 		foreach ($keywords as $keyword) {
-			$out[]= '<a href="' . Site::get_url( 'habari', true ) .'search?criteria=' . $keyword . '" title="Search for ' . $keyword . '">' . $keyword . '</a> ';
+			$out[]= '<a href="' . Site::get_url( 'habari', true ) .'search?criteria=' . $keyword . '" title="' . _t( 'Search for ' ) . $keyword . '">' . $keyword . '</a>';
 		}
 		
 		if ( sizeof( $keywords ) > 1 ) {
 			if ( $has_results ) {
-				return 'Search results for \'' .  implode(' ',$out) . '\'';
+				return sprintf( _t( 'Search results for \'%s\'' ), implode(' ',$out) );
 				exit;
 			}
-			return 'No results found for your search \'' . $criteria . '\'<br>You can try searching for \''  . implode('\' or \'',$out) . '\'';
+			return sprintf( _t('No results found for your search \'%1$s\'') . '<br>'. _t('You can try searching for \'%2$s\''), $criteria, implode('\' or \'',$out) );
 		}
 		else {
-			return 'Search results for \'' .  $criteria . '\'';
+			return sprintf( _t( 'Search results for \'%s\'' ), $criteria );
 			exit;
 		}
-		return 'No results found for your search \'' . $criteria .'\'';
+		return sprintf( _t( 'No results found for your search \'%s\'' ), $criteria );
 
 	}
 	
