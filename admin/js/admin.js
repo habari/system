@@ -878,6 +878,15 @@ $(document).ready(function(){
 			}
 		});
 
+	$('body').bind('ajaxSuccess', function(event, req, opts){
+		if(opts.dataType == 'json') {
+			eval('var cc=' + req.responseText);
+			if(cc.callback) {
+				cc.callback();
+			}
+		}
+	});
+
 });
 
 function resetTags() {
