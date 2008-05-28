@@ -19,15 +19,20 @@ class AdminHandler extends ActionHandler
 		if ( !$user ) {
 			Session::error( _t('Your session expired.'), 'expired_session' );
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
-			if ( !empty( $_POST ) ) {
-				Session::add_to_set( 'last_form_data', $_POST, 'post' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+			if(URL::get_matched_rule()->name == 'admin_ajax') {
+				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
 			}
-			if ( !empty( $_GET ) ) {
-				Session::add_to_set( 'last_form_data', $_GET, 'get' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+			else {
+				if ( !empty( $_POST ) ) {
+					Session::add_to_set( 'last_form_data', $_POST, 'post' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				if ( !empty( $_GET ) ) {
+					Session::add_to_set( 'last_form_data', $_GET, 'get' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			}
-			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			exit;
 		}
 		if ( !$user->can( 'admin' ) ) {
@@ -975,9 +980,16 @@ class AdminHandler extends ActionHandler
 	 */
 	public function get_entries()
 	{
-		// Get the default page contents
-		$this->fetch_entries();
+		$this->post_entries();
+	}
 
+	/**
+	 * handles POST values from /manage/entries
+	 * used to control what content to show / manage
+	**/
+	public function post_entries()
+	{
+		$this->fetch_entries();
 		// Get special search statuses
 		$statuses = array_keys(Post::list_post_statuses());
 		array_shift($statuses);
@@ -1001,16 +1013,6 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->theme->special_searches = array_merge($statuses, $types);
-		$this->display( 'entries' );
-	}
-
-	/**
-	 * handles POST values from /manage/entries
-	 * used to control what content to show / manage
-	**/
-	public function post_entries()
-	{
-		$this->fetch_entries();
 		$this->display( 'entries' );
 	}
 
