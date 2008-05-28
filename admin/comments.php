@@ -3,7 +3,17 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('0 of 0'); ?></span>
-	<span class="search pct50"><input type="search" placeholder="<?php _e('Type and wait to search for any comment component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>"></span>
+	
+	
+	<span class="search pct50">
+		<input id="search" type="search" placeholder="<?php _e('Type and wait to search for any entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>">
+		<div class="special_search pct100">
+			<?php foreach($special_searches as $text => $term): ?>
+			<a href="#<?php echo $term; ?>"><?php echo $text; ?></a>
+			<?php endforeach; ?>
+		</div>
+	</span>
+	
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
@@ -23,10 +33,10 @@
 
 </div>
 
-<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'comments', 'search_status' => $search_status ) ); ?>">
+<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'comments', 'status' => $status ) ); ?>">
 	<input type="hidden" name="search" value="<?php echo $search; ?>">
 	<input type="hidden" name="limit" value="<?php echo $limit; ?>">
-	<input type="hidden" name="search_status" value="<?php echo $search_status; ?>">
+	<input type="hidden" name="status" value="<?php echo $status; ?>">
 	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">

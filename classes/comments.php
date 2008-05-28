@@ -73,12 +73,26 @@ class Comments extends ArrayObject
 					}
 				}
 				if ( isset( $paramset['status'] ) && FALSE !== $paramset['status'] ) {
-					$where[]= "status= ?";
-					$params[]= Comment::status( $paramset['status'] );
+					if(is_array( $paramset['status'] )) {
+						array_walk( $paramset['status'], create_function( '$a,$b,&$c', 'if ($a != "any") { $c[$b]= Comment::status($a); } else { unset($c[$b]); }' ), $paramset['status'] );
+						$where[]= "type IN (" . Utils::placeholder_string(count($paramset['status'])) . ")";
+						$params= array_merge( $params, $paramset['status'] );
+					}
+					else {
+						$where[]= "status= ?";
+						$params[]= Comment::type( $paramset['status'] );
+					}
 				}
 				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
-					$where[]= "type= ?";
-					$params[]= Comment::type( $paramset['type'] );
+					if(is_array( $paramset['type'] )) {
+						array_walk( $paramset['type'], create_function( '$a,$b,&$c', 'if ($a != "any") { $c[$b]= Comment::type($a); } else { unset($c[$b]); }' ), $paramset['type'] );
+						$where[]= "type IN (" . Utils::placeholder_string(count($paramset['type'])) . ")";
+						$params= array_merge( $params, $paramset['type'] );
+					}
+					else {
+						$where[]= "type= ?";
+						$params[]= Comment::type( $paramset['type'] );
+					}
 				}
 				if ( isset( $paramset['name'] ) ) {
 					$where[]= "name= ?";
@@ -113,13 +127,16 @@ class Comments extends ArrayObject
 					$paramset['criteria_fields']= array_unique( $paramset['criteria_fields'] );
 
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
+					$where_search = array();
 					foreach ( $matches[0] as $word ) {
 						foreach ( $paramset['criteria_fields'] as $criteria_field ) {
 							$where_search[].= "($criteria_field LIKE CONCAT('%',?,'%'))";
 							$params[]= $word;
 						}
 					}
-					$where[]= '(' . implode( " \nOR\n ", $where_search ).')';
+					if(count($where_search) > 0) {
+						$where[]= '(' . implode( " \nOR\n ", $where_search ).')';
+					}
 				}
 
 				/*
@@ -603,9 +620,9 @@ class Comments extends ArrayObject
 						'type' => array()
 						);
 		$criteria= '';
-		
+
 		$tokens= explode( ' ', $search_string );
-		
+
 		foreach( $tokens as $token ) {
 			// check for a keyword:value pair
 			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
@@ -647,7 +664,7 @@ class Comments extends ArrayObject
 		if ( $criteria != '' ) {
 			$arguments['criteria']= $criteria;
 		}
-		
+
 		return $arguments;
 
 	}
