@@ -3,10 +3,10 @@
 			<div id="main-posts">
 				<div class="post alt">
 					<div class="post-title">
-						<h3>Whoops! 404</h3>
+						<h3><?php _e( "Whoops! 404" ); ?></h3>
 					</div>
 					<div class="post-entry">
-						<p>The page you were trying to access is not really there. Please try again.<p>
+						<p><?php _e( "The page you were trying to access is not really there. Please try again." ); ?><p>
 					</div>
 				</div>
 			</div>

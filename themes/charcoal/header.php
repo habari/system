@@ -42,9 +42,9 @@
 						<?php if ($display_login): ?>
 							<li class="login">
 							<?php if ( isset( $user ) && is_object( $user ) ) : ?>
-								<a href="<?php Site::out_url( 'admin' ); ?>" title="Admin area">Admin</a>
+								<a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e( "Admin area" ); ?>"><?php _e( "Admin" ); ?></a>
 							<?php else: ?>
-								<a href="<?php Site::out_url( 'habari' ); ?>/user/login" title="Login">Login</a>
+								<a href="<?php Site::out_url( 'habari' ); ?>/user/login" title="<?php _e( "Login" ); ?>"><?php _e( "Login" ); ?></a>
 							</li>
 							<?php endif; ?>
 						<?php endif; ?>
