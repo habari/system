@@ -18,7 +18,7 @@
 					<div class="post-sup">
 						<span class="post-date"><?php echo $post->pubdate_out; ?></span>
 						<span class="post-comments-link">
-							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="Comments on this post"><?php $theme->post_comments_link( $post, 'No Comments', '%s Comment', '%s Comments' ); ?></a>
+							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('%s Comment'), _t('%s Comments') ); ?></a>
 						</span>
 						<span class="clear"></span>
 					</div>
@@ -44,8 +44,8 @@
 	<div id="wrapper-bottom">
 		<div id="bottom-primary">
 			<div id="prev-posts-footer">
-				<span class="nav-next"><?php $theme->prev_page_link('Newer Posts'); ?></span>
-				<span class="nav-prev"><?php $theme->next_page_link('Older Posts'); ?></span>
+				<span class="nav-next"><?php $theme->prev_page_link( _t('Newer Posts') ); ?></span>
+				<span class="nav-prev"><?php $theme->next_page_link( _t('Older Posts') ); ?></span>
 				<br class="clear">
 			</div>
 			<?php $theme->display_archives() ;?>

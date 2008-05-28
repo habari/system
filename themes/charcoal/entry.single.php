@@ -26,7 +26,7 @@
 					<div class="post-sup">
 						<span class="post-date"><?php echo $post->pubdate_out; ?></span>
 						<span class="post-comments-link">
-							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="Comments on this post"><?php $theme->post_comments_link( $post, 'No Comments', '%s Comment', '%s Comments' ); ?></a>
+							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('%s Comment'), _t('%s Comments') ); ?></a>
 						</span>
 						<span class="clear"></span>
 					</div>
@@ -36,7 +36,7 @@
 					<div class="post-footer">
 					<?php if ( $user ) : ?>
 						<span class="post-edit">
-							<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>"title="Edit post">Edit</a>
+							<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>"title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
 						</span>
 					<?php endif; ?>
 					</div>

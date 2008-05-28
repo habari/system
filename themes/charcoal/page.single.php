@@ -18,7 +18,7 @@
 					<div class="post-footer">
 					<?php if ( $user ) : ?>
 						<span class="post-edit">
-						<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit post">Edit</a>
+						<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
 						</span>
 					<?php endif;?>
 					</div>
@@ -53,12 +53,12 @@
 				</div>
 				<div class="post-comment-body">
 					<?php echo $comment->content_out; ?>
-					<p class="post-comment-link"><a href="#comment-<?php echo $comment->id; ?>" title="Time of this comment"><?php echo $comment->date; ?></a></p>
+					<p class="post-comment-link"><a href="#comment-<?php echo $comment->id; ?>" title="<?php _e( "Time of this comment" ); ?>"><?php echo $comment->date; ?></a></p>
 				</div>
 			</div>
 			<?php endforeach; ?>
 			<?php else : ?>
-			<h2>Be the first to write a comment!</h2>
+			<h2><?php _e( "Be the first to write a comment!" ); ?></h2>
 			<?php endif; ?>
 			<div id="post-comments-footer">
 				<!-- TODO: A hook can be placed here-->

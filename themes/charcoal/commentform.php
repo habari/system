@@ -8,15 +8,15 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 		<div id="comment-personaldetails">
 			<p>
 				<input type="text" name="name" id="name" value="<?php echo $commenter_name; ?>" size="30" tabindex="1">
-				<label for="name"><strong>Name</strong> (Required)</label>
+				<label for="name"><strong><?php _e( "Name" ); ?></strong> <?php _e( "(Required)" ); ?></label>
 			</p>
 			<p>
 				<input type="text" name="email" id="email" value="<?php echo $commenter_email; ?>" size="30" tabindex="2">
-				<label for="email"><strong>Mail</strong> (will not be published - Required)</label>
+				<label for="email"><strong><?php _e( "Mail" ); ?></strong> <?php _e( "(will not be published - Required)" ); ?></label>
 			</p>
 			<p>
 				<input type="text" name="url" id="url" value="<?php echo $commenter_url; ?>" size="30" tabindex="3">
-				<label for="url"><strong>Website</strong></label>
+				<label for="url"><strong><?php _e( "Website" ); ?></strong></label>
 			</p>
 		</div>
 		<p>
@@ -25,13 +25,13 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 </textarea>
 		</p>
 		<p>
-			<input name="submit" type="submit" id="submit" tabindex="5" value="Submit">
+			<input name="submit" type="submit" id="submit" tabindex="5" value="<?php _e( "Submit" ); ?>">
 		</p>
 		<div class="clear"></div>
 	</form>
 </div>
 <?php else: ?> 
 <div id="comments-closed">
-	<p>Comments are closed for this post</p>
+	<p><?php _e( "Comments are closed for this post" ); ?></p>
 </div>
 <?php endif; ?>
