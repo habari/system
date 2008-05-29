@@ -74,7 +74,7 @@
 			$message_bits[]= $message;
 		}
 		if ( ! empty(  $stats['unapproved_comment_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_UNAPPROVED ) ) . '">';
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'comment awaiting approval' ), '%d ' . _t( 'comments awaiting approval' ), $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;
