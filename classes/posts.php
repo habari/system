@@ -368,11 +368,13 @@ class Posts extends ArrayObject
 		 * Replace the current fields to select with a COUNT();
 		 * Change the fetch function to 'get_value';
 		 * Remove the ORDER BY since it's useless.
+		 * Remove the GROUP BY (tag search added it)
 		 */
 		if ( isset( $count ) ) {
 			$select= "COUNT($count)";
 			$fetch_fn= 'get_value';
 			$orderby= '';
+			$groupby= '';
 		}
 		
 		// If the month counts are requested, replaced the select clause
