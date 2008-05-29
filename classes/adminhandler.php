@@ -153,7 +153,7 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_dashboard()
 	{
-		_e( 'Nothing sends POST requests to the dashboard. Yet.' );
+		$this->get_dashboard();
 	}
 
 	/**
@@ -187,7 +187,6 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
-		$this->theme->recent_comments= Comments::get( array( 'status' => Comment::STATUS_APPROVED, 'limit' => 5 ) );
 
 		$modules= array(
 			'latestentries' => 'dash_latestentries',
@@ -1631,16 +1630,62 @@ class AdminHandler extends ActionHandler
 		echo json_encode( $output );
 	}
 
-	public function fetch_dash_latestcomments( $params= array() )
+	/** Function used to set theme variables to the latest comments dashboard widget
+	 */
+	public function fetch_dash_module_latestcomments()
 	{
-		$post_ids= DB::get_results( 'select distinct post_id from ( select date, post_id from {comments} where status = ? and type = ? order by date desc, post_id ) as post_ids limit 5;', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
-		$this->theme->latest_commented_posts= array();
+		$num_posts = User::identify()->info->dash_latestcomments_number;
+		if ( ! isset( $num_posts ) || ! is_numeric( $num_posts ) ) {
+			$num_posts = 5;
+		}
+		$post_ids = DB::get_results( 'select distinct post_id from ( select date, post_id from {comments} where status = ? and type = ? order by date desc, post_id ) as post_ids limit 5;', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
+		// this line should be (but it is not working)
+		//$post_ids = DB::get_results( 'select distinct post_id from ( select date, post_id from {comments} where status = ? and type = ? order by date desc, post_id ) as post_ids limit ?;', array( Comment::STATUS_APPROVED, Comment::COMMENT, (int) $num_posts ), 'Post' );
+		$posts = array();
+		$latestcomments = array();
 
-		foreach( $posts_ids as $post ) {
-			$this->theme->latest_commented_posts[] = $post= DB::get_row( 'select * from {posts} where id = ?', array( $comment_post->post_id ) , 'Post' );
-			$this->theme->latest_comments[] = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $comment_post->post_id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
+		foreach( $post_ids as $comment_post ) {
+			$post = DB::get_row( 'select * from {posts} where id = ?', array( $comment_post->post_id ) , 'Post' );
+			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $comment_post->post_id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
+			$posts[] = $post;
+			$latestcomments[$post->post_id] = $comments;
 		}
 
+		$this->theme->latestcomments_posts = $posts;
+		$this->theme->latestcomments = $latestcomments;
+		
+		// register the formUI filter
+		Plugins::register( array( $this, 'filter_control_theme_dir' ), 'filter', 'control_theme_dir' );
+		// Create options form
+		$form = new FormUI( 'dash_latestcomments' );
+		$form_select = $form->add( 'select', 'user:number', _t('# of Entries'), '5' );
+		$form_select->options = array(
+			'5' => '5', '10' => '10',
+			);
+		$form->add( 'submit', 'user:submit', _t('Submit') );
+		$form->set_option( 'save_button', false );
+		$form->on_success( array( $this, 'dash_module_success' ) );
+		$this->theme->latestcomments_form = $form->get();
+	}
+	
+	/** filter_control_theme_dir
+	 * Sets the FormUI theme dir to 'dash_module_formcontrols' for dash widgets
+	 */
+	public function filter_control_theme_dir ( $dir, $control )
+	{
+		if ( strpos( $control->container->name, 'dash_' ) === 0 ) {
+			$dir = Site::get_dir( 'admin_theme', TRUE ) . 'dash_module_formcontrols/';
+			return $dir;
+		}
+		else return $dir;
+	}
+	
+	/** dash_module_success
+	 * Dummy function needed to get FormUI to save values to user table
+	 */
+	public function dash_module_success ()
+	{
+		return true;
 	}
 
 }
