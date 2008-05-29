@@ -254,7 +254,7 @@ class Comments extends ArrayObject
 			$result= true;
 			foreach ( $comments as $comment ) {
 				$result&= $comment->delete();
-				EventLog::log( sprintf(_t('Comment %1$s deleted from %2s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
+				EventLog::log( sprintf(_t('Comment %1$s deleted from %2$s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
@@ -295,7 +295,7 @@ class Comments extends ArrayObject
 			foreach ( $comments as $comment ) {
 				$comment->status = $status;
 				$result &= $comment->update();
-				EventLog::log( sprintf(_t('Comment %1$s moderated from %2s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
+				EventLog::log( sprintf(_t('Comment %1$s moderated from %2$s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
