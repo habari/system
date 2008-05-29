@@ -14,7 +14,7 @@
 
 class FormContainer
 {
-	protected $name= '';
+	public $name= '';
 	public $controls= array();
 	protected $theme_obj = null;
 
@@ -631,10 +631,10 @@ class FormControl
 
 		$classname= get_class( $this );
 		if(preg_match('%FormControl(.+)%i', $classname, $controltype)) {
-			$type.= strtolower($controltype[1]);
+			$type = strtolower($controltype[1]);
 		}
 		else {
-			$type.= strtolower($classname);
+			$type = strtolower($classname);
 		}
 
 		return $theme->fetch( 'formcontrol_' . $type );
@@ -815,6 +815,18 @@ class FormControlText extends FormControl
 		return $theme->fetch( 'formcontrol_text' );
 	}
 
+}
+
+class FormControlSubmit extends FormControl
+{
+	public function __construct()
+	{
+		$args = func_get_args();
+		list($name, $caption) = array_merge($args, array_fill(0, 3, null));
+ 
+		$this->name= $name;
+		$this->caption= $caption;
+	}
 }
 
 /**
