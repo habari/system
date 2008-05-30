@@ -14,9 +14,15 @@
     <span class="time pct10"><?php _e('at'); ?> <a href="#"><span class="dim"></span><?php echo date('H:i', strtotime($comment->date));?></a></span>
     <span class="date pct15"><?php _e('on'); ?> <a href="#"><span class="dim"></span><?php echo date('M d, Y', strtotime($comment->date));?></a></span>
 		<ul class="dropbutton">
+		<?php if ( $comment->status != Comment::STATUS_APPROVED ) : ?>
 			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'approve');return false;"><?php _e('Approve'); ?></a></li>
+		<?php endif; ?>
+		<?php if ( $comment->status != Comment::STATUS_UNAPPROVED ) : ?>
 			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'unapprove');return false;"><?php _e('Unapprove'); ?></a></li>
+		<?php endif; ?>
+		<?php if ( $comment->status != Comment::STATUS_SPAM ) :?>
 			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'spam');return false;"><?php _e('Spam'); ?></a></li>
+		<?php endif; ?>
 			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'delete');return false;"><?php _e('Delete'); ?></a></li>
 			<li><a href="#"><?php _e('Edit'); ?></a></li>
 		</ul>
