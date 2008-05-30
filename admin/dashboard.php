@@ -29,7 +29,7 @@
 
 		$comment_tag_msg= array();
 		if ( !empty( $stats['comment_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'search_status' => Comment::STATUS_APPROVED ) ) . '">';
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_APPROVED ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'comment' ), '%d ' . _t( 'comments' ), $stats['comment_count'] ), $stats['comment_count'] );
 			$message.= '</a>';
 			$comment_tag_msg[]= $message;
