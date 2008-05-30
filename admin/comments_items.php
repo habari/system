@@ -11,8 +11,8 @@
 			<?php endif; ?>
 		</span>
 		<span class="entry pct30"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
-    <span class="time pct10"><?php _e('at'); ?> <a href="#"><span class="dim"></span><?php echo date('H:i', strtotime($comment->date));?></a></span>
-    <span class="date pct15"><?php _e('on'); ?> <a href="#"><span class="dim"></span><?php echo date('M d, Y', strtotime($comment->date));?></a></span>
+    <span class="time pct10"><span class="dim"><?php _e('at'); ?></span> <a href="#"><?php echo date('H:i', strtotime($comment->date));?></a></span>
+    <span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="#"><?php echo date('M d, Y', strtotime($comment->date));?></a></span>
 		<ul class="dropbutton">
 		<?php if ( $comment->status != Comment::STATUS_APPROVED ) : ?>
 			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'approve');return false;"><?php _e('Approve'); ?></a></li>
