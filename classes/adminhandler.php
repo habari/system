@@ -1638,9 +1638,7 @@ class AdminHandler extends ActionHandler
 		if ( ! isset( $num_posts ) || ! is_numeric( $num_posts ) ) {
 			$num_posts = 5;
 		}
-		$post_ids = DB::get_results( 'select distinct post_id from ( select date, post_id from {comments} where status = ? and type = ? order by date desc, post_id ) as post_ids limit 5;', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
-		// this line should be (but it is not working)
-		//$post_ids = DB::get_results( 'select distinct post_id from ( select date, post_id from {comments} where status = ? and type = ? order by date desc, post_id ) as post_ids limit ?;', array( Comment::STATUS_APPROVED, Comment::COMMENT, (int) $num_posts ), 'Post' );
+		$post_ids = DB::get_results( 'SELECT DISTINCT post_id FROM ( SELECT date, post_id FROM {comments} WHERE status = ' . Comment::STATUS_APPROVED . ' AND type = ' . Comment::COMMENT . ' ORDER BY date DESC, post_id ) AS post_ids LIMIT ' . $num_posts );
 		$posts = array();
 		$latestcomments = array();
 
