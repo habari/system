@@ -33,13 +33,13 @@
 		<div class="head clear">
 
 			<span class="checkbox pct5">&nbsp;</span>
-			<span class="time pct15">Date &amp; Time</span>
-			<span class="user pct15">User</span>
-			<span class="ip pct10">IP</span>
-			<span class="module pct10">Module</span>
-			<span class="type pct10">Type</span>
-			<span class="severity pct5">Severity</span>
-			<span class="message pct30">Message</span>
+			<span class="time pct15"><?php _e('Date &amp; Time'); ?></span>
+			<span class="user pct15"><?php _e('User'); ?></span>
+			<span class="ip pct10"><?php _e('IP'); ?></span>
+			<span class="module pct10"><?php _e('Module'); ?></span>
+			<span class="type pct10"><?php _e('Type'); ?></span>
+			<span class="severity pct5"><?php _e('Severity'); ?></span>
+			<span class="message pct30"><?php _e('Message'); ?></span>
 
 		</div>
 	</div>

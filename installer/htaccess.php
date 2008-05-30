@@ -6,7 +6,7 @@
     <meta name="robots" content="noindex,nofollow" />
     <link href="system/installer/style.css" rel="stylesheet" type="text/css" />
     
-	  <title>Install Habari</title>
+	  <title><?php _e('Install Habari'); ?></title>
 		<script type="text/javascript" src="/scripts/jquery.js"></script>
 		<script type="text/javascript" src="/scripts/jquery.form.js"></script>
 	<script type="text/javascript">
@@ -26,20 +26,20 @@
 
 <div id="masthead">
 	<h1>Habari</h1>
-	<p>Developer Review</p>
+	<p><?php _e('Developer Review'); ?></p>
 </div>
 <div class="installstep ready">
-	<h2>.htaccess<a href="#" class="help-me">(help)</a></h2>
+	<h2>.htaccess<a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
 	<div class="options">
 		<div class="inputfield">
-			Your <strong>.htaccess</strong> file is not writable.  In order to successfully install Habari, please paste the following into <strong><?php echo HABARI_PATH . '/.htaccess'; ?></strong>:<br />
+			<?php _e('Your <strong>.htaccess</strong> file is not writable. In order to successfully install Habari, please paste the following into'); ?> <strong><?php echo HABARI_PATH . '/.htaccess'; ?></strong>:<br />
 			<textarea class="config"><?php echo $file_contents; ?></textarea>
 			<div class="help">
-				<strong>.htaccess</strong> is a file that tells your Apache web server
+				<strong>.htaccess</strong> <?php _e('is a file that tells your Apache web server
 				to send requests to Habari for handling.
 				Habari is not able to write this file to your server
-				automatically, so you must create this file yourself to continute
-				the installation.  <a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation">Learn More...</a>
+				automatically, so you must create this file yourself to continue
+				the installation.'); ?>  <a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
 			</div>
     </div>
 	</div>
@@ -50,12 +50,12 @@
 <div class="next-section"></div>
 
 <div class="installstep ready">
-	<h2>Install</h2>
+	<h2><?php _e('Install'); ?></h2>
 	<div class="options">
 		
 		<div class="inputfield submit">
-			<div>When you have successfully placed the .htaccess file, run the installer again.</div>
-			<input type="submit" name="submit" value="Restart Installer" />
+			<div><?php _e('When you have successfully placed the .htaccess file, run the installer again.'); ?></div>
+			<input type="submit" name="submit" value="<?php _e('Restart Installer'); ?>" />
 		</div>
 		
 	</div>
