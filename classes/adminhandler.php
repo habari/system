@@ -1648,7 +1648,7 @@ class AdminHandler extends ActionHandler
 			$post = DB::get_row( 'select * from {posts} where id = ?', array( $comment_post->post_id ) , 'Post' );
 			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $comment_post->post_id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
 			$posts[] = $post;
-			$latestcomments[$post->post_id] = $comments;
+			$latestcomments[$post->id] = $comments;
 		}
 
 		$this->theme->latestcomments_posts = $posts;
