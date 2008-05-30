@@ -50,9 +50,9 @@
 			</span>
 			<span class="buttons">
 				<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-				<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 				<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
 				<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="spambutton">
+				<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 			</span>
 		</div>
 	</div>
@@ -72,10 +72,10 @@
 			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 		</span>
 		<span class="buttons">
-			<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+			<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
 			<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
 			<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="spambutton">
-			<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
+			<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 		</span>
 	</div>
 </div>
