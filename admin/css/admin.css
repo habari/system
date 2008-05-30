@@ -419,6 +419,8 @@ label.incontent {
 	font-weight: normal;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
 	position: absolute;
 	margin-top: -13px;
 	margin-left: 5px;
