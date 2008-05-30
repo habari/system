@@ -265,7 +265,7 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		Session::notice( sprintf( _t( 'The post <a href="%1$s">\'%2$s\'</a> has been saved as %3$s.' ), $post->permalink, $title, Post::status_name( $status ) ) );
+		Session::notice( sprintf( _t( 'The post ' ) . '<a href="%1$s">\'%2$s\'</a>' . _t( ' has been saved as %3$s.' ), $post->permalink, $title, Post::status_name( $status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
 

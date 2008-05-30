@@ -619,11 +619,11 @@ WP_IMPORT_AJAX1;
 			}
 			else {
 				EventLog::log('Import complete from "'. $db_name .'"');
-				echo _t( '<p>Import is complete.</p>' );
+				echo '<p>' . _t( 'Import is complete.' ) . '</p>';
 
 				$errors = Options::get('import_errors');
 				if(count($errors) > 0 ) {
-					_e( '<p>There were errors during import:</p>' );
+					echo '<p>' . _t( 'There were errors during import:' ) . '</p>';
 
 					echo '<ul>';
 					foreach($errors as $error) {
