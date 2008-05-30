@@ -282,14 +282,14 @@ class Posts extends ArrayObject
 
 						foreach ( $paramset['not:any:info'] as $info_key => $info_value ) {
 
-							$the_ins[]= ' CONCAT( ?, \'**\', ? ) ';
+							$the_ins[]= ' (name = ? AND value = ? ) ';
 							$params[]= $info_key;
 							$params[]= $info_value;
 
 						}
 
 						$where[]= '
-							{posts}}.id NOT IN (
+							{posts}.id NOT IN (
 								SELECT post_id FROM {postinfo}
 								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
 							)
