@@ -4,7 +4,7 @@
 		<!--begin primary content-->
 		<div id="primaryContent">
 			<!--begin loop-->
-			<h2>Results for search of "<?php echo htmlspecialchars( $criteria ); ?>"</h2>
+			<h2><?php _e('Results for search of'); ?> "<?php echo htmlspecialchars( $criteria ); ?>"</h2>
 			<?php if (isset($post)) : ?>
 <?php foreach ( $posts as $post ): ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
@@ -15,20 +15,20 @@
 					<div class="entryMeta">
 						
 						<?php if ( is_array( $post->tags ) ) { ?>
-						<div class="tags">Tagged: <?php echo $post->tags_out; ?></div>
+						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
-						<div class="commentCount"><a href="<?php echo $post->permalink; ?>" title="Comments on this post"><?php echo $post->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></div>
+						<div class="commentCount"><a href="<?php echo $post->permalink; ?>" title="<?php _e('Comments on this post'); ?>"><?php echo $post->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></div>
 					</div><br>
 					<?php if ( $user ) { ?>
-					<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit post">Edit</a>
+					<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 					<?php } ?>
 				</div>
 <?php endforeach; ?>
 			<!--end loop-->
 			<div id="pagenav">
-				<?php $theme->prev_page_link('&laquo; Newer Results'); ?> <?php $theme->page_selector( null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?> <?php $theme->next_page_link('&raquo; Older Results'); ?>
+				<?php $theme->prev_page_link('&laquo; ' . _t('Newer Results')); ?> <?php $theme->page_selector( null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?> <?php $theme->next_page_link('&raquo; ' . _t('Older Results')); ?>
 			<?php else: ?>
-				<p><em>No results for <?php echo htmlspecialchars( $criteria ); ?></em></p>
+				<p><em><?php _e('No results for'); ?> <?php echo htmlspecialchars( $criteria ); ?></em></p>
 			<?php endif; ?>
 			</div>
 			</div>

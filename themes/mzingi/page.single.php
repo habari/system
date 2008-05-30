@@ -17,7 +17,7 @@
 					</div>
 					<div class="entryMeta">
 						<?php if ( $user ) { ?>
-						<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit post">Edit</a>
+						<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 						<?php } ?>
 					</div>
 				</div>

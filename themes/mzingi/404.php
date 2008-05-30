@@ -4,7 +4,7 @@
 		<!--begin primary content-->
 		<div id="primaryContent">
 			<div class="entry">
-						<p>You've seemed to not find what you are looking for.</p><p>Perhaps you can try searching.</p>
+						<p><?php _e("It seems you couldn't find what you are looking for."); ?></p><p><?php _e('Perhaps you can try searching.'); ?></p>
 						<?php $theme->display ( 'searchform' ); ?>
 			</div>
 	
