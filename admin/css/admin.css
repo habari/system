@@ -99,6 +99,7 @@ body, textarea, #footer {
 	padding: 5px 0;
 	opacity: .99;
 	display: none;
+	-webkit-box-shadow: 0px 2px 20px #111;
 	}
 
 #menulist ul {
@@ -152,6 +153,7 @@ body, textarea, #footer {
 	top: 6px;
 	}
 
+
 /* DROPBUTTONS */
 #page .dropbutton {
 	float: right;
@@ -164,9 +166,13 @@ body, textarea, #footer {
 	font-size: 9px;
 	list-style: none outside;
 	margin: 0 0 0 10px;
-	position:absolute;
+	position: absolute;
 	top: 10px !important;
-	right: 5px;
+	right: 40px;
+	}
+
+#page .dropbutton:hover {
+	z-index: 1000;
 	}
 
 #page .dropbutton * {
@@ -301,6 +307,10 @@ body, textarea, #footer {
 	position: relative;
 	padding: 10px 0 10px;
 	border-bottom: 1px solid #eee;
+	margin-left: -40px;
+	padding-left: 40px;
+	margin-right: -40px;
+	padding-right: 40px;
 	}
 
 .item.last-child {
@@ -480,7 +490,7 @@ p:hover > label.incontent.popup {
 	float: left;
 	}
 
-.create .buttons input {
+.buttons input {
 	width: 100px;
 	margin-left: 10px;
 	}
@@ -648,24 +658,25 @@ p:hover > label.incontent.popup {
 	display: table;
 	}
 
-.mediaphotos ul {
+.mediaphotos > ul {
 	display: table-row;
 	}
 
-.mediaphotos ul li {
+.mediaphotos > ul li {
 	display: table-cell;
 	font-size: 0.8em;
 	overflow: hidden;
 	border-right: 1px solid #303030;
 	padding: 0 10px;
 	min-width: 30px;
+	position: relative;
 	}
 
-.mediaphotos ul li.first {
+.mediaphotos > ul li.first {
 	background: url('../images/shadow-light-left.png') left repeat-y;
 	}
 
-.mediaphotos ul li.end {
+.mediaphotos > ul li.end {
 	border: none;
 	font-size: 3em;
 	line-height: 10px;
@@ -676,38 +687,39 @@ p:hover > label.incontent.popup {
 	width: 100px !important;
 	background: url('../images/shadow-light-left.png') left repeat-y	}
 
-.mediaphotos ul li:hover {
+.mediaphotos > ul li:hover {
 	background: #111;
 	}
 
-.mediaphotos ul li.end:hover {
+.mediaphotos > ul li.end:hover {
 	background: url('../images/shadow-light-left.png') left repeat-y	}
 
-.mediaphotos li .foroutput {
+.mediaphotos li.media .foroutput {
 	display: none;
 	}
 
-.mediaphotos li .mediatitle {
+.mediaphotos li.media .mediatitle {
 	line-height: 35px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	}
 
-.mediaphotos li .mediatitle:after { /* Helps Safari if there is no title */
-	content: '\000001';
+.mediaphotos li.media .mediatitle:after { /* Helps Safari if there is no title */
+	-webk-content: '\000001';
 	}
 
-.mediaphotos li .medialink {
-	float: right;
+.mediaphotos li.media .medialink {
 	background: url('../images/medialink.png') no-repeat;
 	width: 10px;
 	height: 9px;
 	text-indent: -3000px;
 	margin-top: 12px;
+	float: right;
+	margin-right: -5px;
 	}
 
-.mediaphotos li img {
+.mediaphotos li.media img {
 	margin: 0 0 -3px;
 	height: 100px;
 	border: 1px solid #fff;
@@ -716,17 +728,17 @@ p:hover > label.incontent.popup {
 	min-width: 30px;
 	}
 
-.mediaphotos li:last-child img {
+.mediaphotos li.media:last-child img {
 	border-left: 1px solid white;
 	}
 
-.mediaphotos li img.loading {
+.mediaphotos li.media img.loading {
 	border-color: #333;
 	width: 100%;
 	background: #303030;
 	}
 
-.mediaphotos li .mediastats {
+.mediaphotos li.media .mediastats {
 	padding-left: 5px;
 	height: 42px;
 	}
@@ -1017,10 +1029,6 @@ body.page-options .item {
 	padding-right: 40px;
 	}
 
-.plugins .item .dropbutton {
-	right: 40px !important;
-	}
-
 .plugins .item:hover {
 	background: #dfdfdf;
 	}
@@ -1039,6 +1047,16 @@ body.page-options .item {
 	clear: both;
 	}
 
+
+/* THEMES */
+
+body.page-themes .head {
+	margin: 10px 0 15px;
+	}
+
+body.page-themes #page .dropbutton {
+	top: 20px !important;
+	}
 
 /* SETTINGS */
 
@@ -1090,16 +1108,17 @@ body.page-options .item {
 /* MANAGE (ENTRIES/PAGES/COMMENTS/TAGS) */
 
 .manage .item .head > span {
-	float: left;
+	white-space: nowrap;
 	}
 
 .manage .item .title {
-	margin-left: 5px;
-	white-space: nowrap;
-	width: 25% !important;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	position: absolute;
+	}
+
+.manage .item .checkboxandtitle {
+	overflow: hidden;
+	text-overflow: ellipsis;
 	}
 
 .manage .selectedtext.none {
@@ -1218,18 +1237,17 @@ body.page-options .item {
 .timeline .years .year {
 	display: table-cell;
 	height: inherit;
-	overflow: hidden !important; /* Not working :( */
+	overflow: hidden !important;
 	}
 
 .timeline .years .year > span {
 	position: absolute;
-	display: inline;
 	bottom: 0;
 	font: 20px 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif !important;
 	padding: 40px 0 0 3px;
 	margin: 0 !important;
 	opacity: .2;
-	border-left: 1px solid #777;
+	border-left: 1px solid #ccc;
 	color: white;
 	}
 
@@ -1243,7 +1261,7 @@ body.page-options .item {
 
 .timeline .years .months div {
 	display: table-cell;
-	border-right: 1px solid #161616;
+	border-right: 1px solid #2b2b2b;
 	height: inherit;
 	overflow: hidden;
 	}

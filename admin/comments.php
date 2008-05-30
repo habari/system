@@ -3,19 +3,17 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('0 of 0'); ?></span>
-	
-	
 	<span class="search pct50">
 		<input id="search" type="search" placeholder="<?php _e('Type and wait to search for any entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>">
-		<div class="special_search pct100">
-			<?php foreach($special_searches as $text => $term): ?>
-			<a href="#<?php echo $term; ?>"><?php echo $text; ?></a>
-			<?php endforeach; ?>
-		</div>
 	</span>
-	
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
+
+	<div class="special_search pct100 minor">
+		<?php foreach($special_searches as $text => $term): ?>
+		<a href="#<?php echo $term; ?>"><?php echo $text; ?></a>
+		<?php endforeach; ?>
+	</div>
 
 	<div class="timeline">
 		<div class="years">
@@ -41,22 +39,6 @@
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 
-	<div class="container transparent">
-
-		<div class="item controls">
-			<span class="checkboxandselected pct25">
-				<input type="checkbox">
-				<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
-			</span>
-			<span class="buttons">
-				<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-				<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-				<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="spambutton">
-				<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
-			</span>
-		</div>
-	</div>
-
 <div id="comments" class="container manage">
 
 <?php $theme->display('comments_items'); ?>
@@ -73,8 +55,8 @@
 		</span>
 		<span class="buttons">
 			<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
+			<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
 			<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-			<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="spambutton">
 			<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 		</span>
 	</div>
