@@ -1,10 +1,10 @@
 	<!--begin secondary content-->
 	<div id="secondaryContent">
 		<?php $theme->display ( 'searchform' ); ?>
-	<h3><a id="rss" href="<?php $theme->feed_alternate(); ?>" class="block">Subscribe to Feed</a></h3>
-	<h2 id="site">Navigation</h2>
+	<h3><a id="rss" href="<?php $theme->feed_alternate(); ?>" class="block"><?php _e('Subscribe to Feed'); ?></a></h3>
+	<h2 id="site"><?php _e('Navigation'); ?></h2>
 	<ul id="nav">
-		<li><a href="<?php Site::out_url( 'habari' ); ?>">Home</a></li>
+		<li><a href="<?php Site::out_url( 'habari' ); ?>"><?php _e('Home'); ?></a></li>
 		<?php
 		// List Pages
 		foreach ( $pages as $page ) {
@@ -13,7 +13,7 @@
 		?>
 	</ul>
 	
-	<h2 id="aside">Asides</h2>
+	<h2 id="aside"><?php _e('Asides'); ?></h2>
 	<ul id="asides">
 		<?php 
 	          foreach($asides as $post):
@@ -26,7 +26,7 @@
 	<?php endforeach; ?>
    </ul>
 
-		<h2>More Posts</h2>
+		<h2><?php _e('More Posts'); ?></h2>
 		<ul id="moreposts">
 			<?php foreach($more_posts as $post): ?>
 				<?php
@@ -37,11 +37,11 @@
 			<?php endforeach; ?>					
 		</ul>
 		
-	<h2 id="commentheading">Recent Comments</h2>
+	<h2 id="commentheading"><?php _e('Recent Comments'); ?></h2>
 	<ul id="recentcomments">
 		
 	<?php foreach($recent_comments as $comment): ?>
-	<li><a href="<?php echo $comment->url ?>"><?php echo $comment->name ?></a> on <a href="<?php echo $comment->post->permalink; ?>"><?php echo $comment->post->title; ?></a></li>
+	<li><a href="<?php echo $comment->url ?>"><?php echo $comment->name ?></a> <?php _e('on'); ?> <a href="<?php echo $comment->post->permalink; ?>"><?php echo $comment->post->title; ?></a></li>
 	<?php endforeach; ?>
 	</ul>
 

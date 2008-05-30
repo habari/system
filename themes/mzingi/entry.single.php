@@ -23,11 +23,11 @@
 					</div>
 					<div class="entryMeta">	
 						<?php if ( is_array( $post->tags ) ) { ?>
-						<div class="tags">Tagged: <?php echo $post->tags_out; ?></div>
+						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
 					</div><br>
 						<?php if ( $user ) { ?>
-						<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit post">Edit</a>
+						<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 						<?php } ?>
 					
 				</div>

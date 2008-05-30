@@ -15,18 +15,18 @@
 					</div>
 					<div class="entryMeta">					
 						<?php if ( is_array( $post->tags ) ) { ?>
-						<div class="tags">Tagged: <?php echo $post->tags_out; ?></div>
+						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
-						<div class="commentCount"><a href="<?php echo $post->permalink; ?>" title="Comments on this post"><?php echo $post->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></div>
+						<div class="commentCount"><a href="<?php echo $post->permalink; ?>" title="<?php _e('Comments on this post'); ?>"><?php echo $post->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></div>
 					</div><br>
 					<?php if ( $user ) { ?>
-					<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="Edit post">Edit</a>
+					<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 					<?php } ?>
 				</div>
 			<?php } ?>
 			<!--end loop-->
 			<div id="pagenav">
-				<?php $theme->prev_page_link('&laquo; Newer Posts'); ?> <?php $theme->page_selector( null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?> <?php $theme->next_page_link('&raquo; Older Posts'); ?>
+				<?php $theme->prev_page_link('&laquo; ' . _t('Newer Posts')); ?> <?php $theme->page_selector( null, array( 'leftSide' => 2, 'rightSide' => 2 ) ); ?> <?php $theme->next_page_link('&raquo; ' . _t('Older Posts')); ?>
 			</div>
 			</div>
 			
