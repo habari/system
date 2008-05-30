@@ -44,6 +44,8 @@
 	<li><a href="<?php echo $comment->url ?>"><?php echo $comment->name ?></a> <?php _e('on'); ?> <a href="<?php echo $comment->post->permalink; ?>"><?php echo $comment->post->title; ?></a></li>
 	<?php endforeach; ?>
 	</ul>
+	<h2 id="loginheading"><?php _e('User Login'); ?></h2>
+	<?php $theme->display ( 'loginform' ); ?> 
 
 	</div>
 	<!--end secondary content-->
