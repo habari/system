@@ -205,12 +205,12 @@ class SpamChecker extends Plugin
 		if(!$this->verify_code($handlervars['ccode'], $comment->post_id)) {
 			ob_end_clean();
 			header('HTTP/1.1 403 Forbidden');
-			die(_t('<h1>The selected action is forbidden.</h1>'));
+			die('<h1>' . _t('The selected action is forbidden.') . '</h1>');
 		}
 		if(!isset($_SESSION['comments_allowed']) || ! in_array($handlervars['ccode'], $_SESSION['comments_allowed'])) {
 			ob_end_clean();
 			header('HTTP/1.1 403 Forbidden');
-			die(_t('<h1>The selected action is forbidden.</h1>'));
+			die('<h1>' . _t('The selected action is forbidden.') . '</h1>');
 		}
 
 		return $spam_rating;
