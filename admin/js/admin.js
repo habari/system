@@ -172,6 +172,21 @@ var tagManage = {
 	}
 }
 
+// Plugin Management
+var pluginManage = {
+	init: function() {
+		// Return if we're not on the tags page
+		if(!$('.page-plugins').length) return;
+
+		$('.plugins .item').hover( function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
+			}, function() {
+			$(this).find('#pluginconfigure:visible').parent().css('background', '');
+      }
+		);
+	}
+}
+
 // TIMELINE
 var timeline = {
 	init: function() {
@@ -725,6 +740,7 @@ $(document).ready(function(){
 	timeline.init();
 	itemManage.init();
 	tagManage.init();
+	pluginManage.init();
 	liveSearch.init();
 	findChildren();
 
