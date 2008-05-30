@@ -14,7 +14,7 @@
 			<ul class="commentauthors pct85 minor">
 				<?php
 				$comment_count= 0;
-				foreach( $latestcomments[$post->post_id] as $comment):
+				foreach( $latestcomments[$post->id] as $comment):
 					$comment_count++;
 					$opa = 'opa' . (100 - $comment_count * 15);
 				?>
