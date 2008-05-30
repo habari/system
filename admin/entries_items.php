@@ -7,8 +7,8 @@
 			<a href="<?php echo $post->permalink; ?>" class="title"><?php echo $post->title; ?></a>
 		</span>
 		<span class="state pct10"><a href="<?php URL::out('admin', array('page' => 'entries', 'type' => $post->content_type, 'status' => $post->status ) ); ?>"><?php echo $post->statusname; ?></a></span>
-		<span class="author pct20"><a href="<?php URL::out('admin', array('page' => 'entries', 'user_id' => $post->user_id, 'type' => $post->content_type, 'status' => 'any') ); ?>"><span class="dim"><?php _e('by'); ?></span> <?php echo $post->author->displayname; ?></a></span>
-		<span class="date pct15"><a href="<?php URL::out('admin', array('page' => 'entries', 'type' => $post->content_type, 'year_month' => date( 'Y-m', strtotime( $post->pubdate ) ) ) ); ?>"><span class="dim"><?php _e('on'); ?></span> <?php echo date('M j, Y', strtotime($post->pubdate)); ?></a></span>
+		<span class="author pct20"><?php _e('by'); ?> <a href="<?php URL::out('admin', array('page' => 'entries', 'user_id' => $post->user_id, 'type' => $post->content_type, 'status' => 'any') ); ?>"><span class="dim"></span><?php echo $post->author->displayname; ?></a></span>
+		<span class="date pct15"><?php _e('on'); ?> <a href="<?php URL::out('admin', array('page' => 'entries', 'type' => $post->content_type, 'year_month' => date( 'Y-m', strtotime( $post->pubdate ) ) ) ); ?>"><span class="dim"></span><?php echo date('M j, Y', strtotime($post->pubdate)); ?></a></span>
 		<span class="time pct10"><span class="dim"><?php _e('at'); ?> <?php echo date('H:i', strtotime($post->pubdate)); ?></span></span>
 
 		<ul class="dropbutton">
