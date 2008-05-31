@@ -16,20 +16,18 @@
 
 
 <div class="container tags transparent">
-	<div class="tags controls">
-		<span class="checkboxandselected pct15">
-			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
-		</span>
-		<span><input type="button" value="<?php _e('Delete'); ?>" class="deletebutton"></span>
-		<span class="or pct5"><?php _e('or'); ?></span>
-		<span class="renamecontrols">
-			<input type="text" class="renametext">
-			<input type="button" value="<?php _e('Rename'); ?>" class="renamebutton">
-		</span>
-		<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-		<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-		<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-	</div>
+	<span class="checkboxandselected pct15">
+		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+	</span>
+	<span class="pct15 buttons"><input type="button" value="<?php _e('Delete'); ?>" class="deletebutton"></span>
+	<span class="or pct10"><?php _e('or'); ?></span>
+	<span class="renamecontrols buttons">
+		<input type="text" class="renametext">
+		<input type="button" value="<?php _e('Rename'); ?>" class="renamebutton">
+	</span>
+	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 </div>
 
 <script type="text/javascript">
