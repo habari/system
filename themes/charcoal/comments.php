@@ -1,3 +1,6 @@
+<?php // Do not delete these lines
+	if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directly. Thanks!') ); }
+?>
 		<?php if ( !$post->info->comments_disabled || $post->comments->moderated->count ) :?>
 			<div id="post-comments">
 			<?php if ( $post->comments->moderated->count ) : ?>
