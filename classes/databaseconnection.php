@@ -13,7 +13,7 @@ class DatabaseConnection
 	private $fetch_class_name= 'QueryRecord';    	// The default class name for fetching classes
 	private $driver;								// PDO driver name
 	private $keep_profile= DEBUG;                   // keep profiling and timing information?
-	private $pdo= NULL;                             // handle to the PDO interface
+	protected $pdo= NULL;                             // handle to the PDO interface
 	private $pdo_statement= NULL;                   // handle for a PDOStatement
 	private $pdo_transaction= FALSE;					// handle for transaction status
 

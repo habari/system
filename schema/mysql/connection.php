@@ -22,13 +22,14 @@ class MySQLConnection extends DatabaseConnection
 		if( !parent::connect( $connect_string, $db_user, $db_pass ) ) {
 			return false;
 		}
+		$this->pdo->setAttribute( PDO::ATTR_EMULATE_PREPARES, true );
 
 		// Everything is OK. Let's update the charset!
 		if(!defined('MYSQL_CHAR_SET')) {
 			define('MYSQL_CHAR_SET', 'UTF8');
 		}
 		$this->exec('SET CHARACTER SET ' . MYSQL_CHAR_SET);
-
+		
 		return true;
 	}
 
