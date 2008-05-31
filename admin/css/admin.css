@@ -986,7 +986,7 @@ p:hover > label.incontent.popup {
 /* LOGS */
 
 body.page-logs .time, body.page-logs .user, body.page-logs .ip, body.page-logs .module, body.page-logs .severity {
-admin	white-space: nowrap;
+	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	}
@@ -1064,12 +1064,10 @@ body.page-themes #page .dropbutton {
 
 .container.settings .item {
 	line-height: 34px;
-	margin: 0;
 	}
 
 .container.settings .item label {
 	font-weight: normal;
-	width: 200px;
 	margin-left: 10px;
 	color: #555;
 	}
@@ -1146,6 +1144,11 @@ body.page-themes #page .dropbutton {
 
 /* COMMENTS */
 
+.container.controls {
+	padding-bottom: 0 !important;
+	background: red;
+	}
+
 .comments .infoandcontent > span {
 	float: left;
 	}
@@ -1158,10 +1161,6 @@ body.page-themes #page .dropbutton {
 .comments .item .authorinfo a {
 	float: left;
 	margin-left: 14%;
-	}
-
-.controls > span {
-	float: left;
 	}
 
 .controls input[type=button] {
