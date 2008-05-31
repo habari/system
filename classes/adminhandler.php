@@ -166,9 +166,9 @@ class AdminHandler extends ActionHandler
 		$firstpostdate= strtotime(DB::get_value('SELECT min(pubdate) FROM {posts} WHERE status = ?', array(Post::status('published'))));
 		$firstpostdate= time() - $firstpostdate;
 		$this->theme->active_time= array(
-			'years' => floor($firstpostdate / 31536000),
-			'months' => floor(($firstpostdate % 31536000) / 2678400),
-			'days' => round(($firstpostdate % 2678400) / 86400),
+			'years' => floor($firstpostdate / 31556736),
+			'months' => floor(($firstpostdate % 31556736) / 2629728),
+			'days' => round(($firstpostdate % 2629728) / 86400),
 		);
 
 		// check for updates to core and any hooked plugins
