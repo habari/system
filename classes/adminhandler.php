@@ -164,7 +164,7 @@ class AdminHandler extends ActionHandler
 	{
 		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
 		$firstpostdate= strtotime(DB::get_value('SELECT min(pubdate) FROM {posts} WHERE status = ?', array(Post::status('published'))));
-		$firstpostdate= time() - $firstpostdate;
+		if ( intval( $firstpostdate ) !== 0 ) $firstpostdate= time() - $firstpostdate;
 		$this->theme->active_time= array(
 			'years' => floor($firstpostdate / 31556736),
 			'months' => floor(($firstpostdate % 31556736) / 2629728),
