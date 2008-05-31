@@ -3,13 +3,22 @@
 <div class="container dashboardinfo transparent">
 		<p>
 		<?php
-		printf(
-			Options::get('title') .
-			_n(' has been active for %1$d year, ', ' has been active for %1$d years, ', $active_time['years']) .
-			_n('%2$d month ', '%2$d months ', $active_time['months']) .
-			_n('and %3$d day.', 'and %3$d days', $active_time['days']),
-			$active_time['years'], $active_time['months'], $active_time['days']
-		 );
+		$active_msg= array();
+		if ( !empty( $active_time['years'] ) ) {
+			$message= sprintf( _n( '%1$d ' . _t( 'year' ), '%1$d ' . _t( 'years' ), $active_time['years'] ), $active_time['years'] );
+			$active_msg[]= $message;
+		}
+		if ( !empty( $active_time['months'] ) ) {
+			$message= sprintf( _n( '%1$d ' . _t( 'month' ), '%1$d ' . _t( 'months' ), $active_time['months'] ), $active_time['months'] );
+			$active_msg[]= $message;
+		}
+		if ( !empty( $active_time['days'] ) ) {
+			$message= sprintf( _n( '%1$d ' . _t( 'day' ), '%1$d ' . _t( 'days' ), $active_time['days'] ), $active_time['days'] );
+			$active_msg[]= $message;
+		}
+		if ( !empty( $active_msg ) ) {
+			echo Options::get('title') . _t( ' has been active for ' ) .  Format::and_list( $active_msg );
+		}
 		?><br>
 
 		<?php
