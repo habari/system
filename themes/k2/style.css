@@ -584,6 +584,10 @@ input[type=text]:focus, textarea:focus {
 	float: right;
 	}
 
+.comments .required {
+	color: #FF0000;
+}
+
 #footer {
 	margin-top: 20px;
 	text-align: center;

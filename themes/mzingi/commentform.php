@@ -67,12 +67,12 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 		<fieldset>
 			<legend><?php _e('About You'); ?></legend>
 			<p>
-			<label for="name"><?php _e('Name:'); ?> <span class="required">(<?php _e('Required'); ?>)</span></label>
+			<label for="name"><?php _e('Name:'); ?> <span class="required"><?php if (Options::get('comments_require_id') == 1) : ?> *<?php _e('Required'); ?><?php endif; ?></span></label>
 			<input name="name" id="name" value="<?php echo $commenter_name; ?>" type="text" >
 			</p>
 
 			<p>
-			<label for="email"><?php _e('Email Address:'); ?> <span class="required">(<?php _e('Required'); ?>)</span></label>
+			<label for="email"><?php _e('Email Address:'); ?> <span class="required"><?php if (Options::get('comments_require_id') == 1) : ?> *<?php _e('Required'); ?><?php endif; ?></span></label>
 			<input name="email" id="email" value="<?php echo $commenter_email; ?>" type="text" >
 			</p>
 
