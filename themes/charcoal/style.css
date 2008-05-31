@@ -461,14 +461,6 @@ li.login a:hover {
 	padding-right: 20px;
 }
 
-.prev-post {
-	
-}
-
-.prev-post-title {
-	
-}
-
 .prev-post-excerpt {
 	padding-bottom: 20px;
 	text-align: justify;
@@ -544,8 +536,9 @@ div.post-comments-title {
 	margin-bottom: 20px;
 }
 
-.post-comment-u {
-	border: #cccccc 1px dotted;
+.comment-message {
+	font-size: .9;
+	font-weight: bold;
 }
 
 .post-comment  h2,.post-comment-u h2 {
