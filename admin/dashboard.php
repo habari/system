@@ -16,9 +16,10 @@
 			$message= sprintf( _n( '%1$d ' . _t( 'day' ), '%1$d ' . _t( 'days' ), $active_time['days'] ), $active_time['days'] );
 			$active_msg[]= $message;
 		}
-		if ( !empty( $active_msg ) ) {
-			echo Options::get('title') . _t( ' has been active for ' ) .  Format::and_list( $active_msg );
-		}
+		printf(
+			Options::get('title') . _t( ' has been active for ' ) . '%s',
+			!empty( $active_msg) ? Format::and_list( $active_msg ) : '0 ' . _t( 'day' )
+		);
 		?><br>
 
 		<?php
