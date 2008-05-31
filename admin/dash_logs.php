@@ -1,6 +1,6 @@
 <div class="options">&nbsp;</div>
 <div class="modulecore">
-	<h2><a href="<?php Site::out_url('admin'); ?>/logs"><?php _e('Activity Logs'); ?></a></h2>
+	<h2><a href="<?php Site::out_url('admin'); ?>/logs"><?php _e('Latest Log Activity'); ?></a></h2>
 	<div class="handle">&nbsp;</div>
 	<ul class="items">
 		<?php foreach( eventlog::get( array( 'limit' => 8 ) ) as $log ) { ?>
