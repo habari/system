@@ -116,7 +116,7 @@
 						$update_text= _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
 					}
 
-					$update_text= sprintf( $updatetext, $update['url'], $update['name'], $update['latest_version'] );
+					$update_text= sprintf( $update_text, $update['url'], $update['name'], $update['latest_version'] );
 					echo "<p class='{$class}'>{$update_text}</p>";
 
 				}
