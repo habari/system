@@ -72,7 +72,7 @@
 			$message_bits[]= $message;
 		}
 		if ( ! empty( $stats['user_entry_scheduled_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'scheduled' ) ) ) . '</a>';
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'scheduled' ) ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'scheduled entry' ), '%d ' . _t( 'scheduled entries' ), $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
 			$message.= '</a>';
 			$message_bits[]= $message;
