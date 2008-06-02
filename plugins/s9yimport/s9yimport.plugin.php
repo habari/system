@@ -668,9 +668,10 @@ INNER JOIN {$this->s9y_db_prefix}entrycat ec
 ON c.categoryid = ec.categoryid
 AND ec.entryid = ?
 ENDOFSQL;
-				if ( FALSE !== ( $categories= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' ) ) )
+				if ( FALSE !== ( $categories= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' ) ) ) {
 					foreach ( $categories as $category ) 
 						$result&= $this->import_post_category( $post->id, $this->imported_categories[$category->categoryid] );
+				}
 			}
 
 			/* 
@@ -780,7 +781,7 @@ ENDOFSQL;
 		$comment->info->s9y_id= $comment_info->id;
 		if ( ! empty( $comment_info->parent_id ) 
 			&&  $comment_info->parent_id != "0" )
-			$comment->info->s9y_parent_id= $comment->info->parent_id;
+			$comment->info->s9y_parent_id= $comment_info->parent_id;
 		$comment->ip= sprintf ("%u", ip2long($comment_info->ip) );
 		$comment->status= $status_map[strtoupper($comment_info->status)];
 		$comment->type= $type_map[strtoupper($comment_info->type)];
