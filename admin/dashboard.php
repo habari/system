@@ -130,9 +130,9 @@
 <div class="container dashboard transparent">
 
 	<ul class="modules">
-		<?php foreach($modules as $modulename => $module): ?>
-		<li class="module <?php echo $modulename; ?>module" id="<?php echo $modulename; ?>module">
-			<?php echo $module; ?>
+		<?php foreach($modules as $moduleid => $module): ?>
+		<li class="module <?php echo $module['name']; ?>module" id="<?php echo $moduleid; ?>">
+			<?php echo $module['content']; ?>
 		</li>
 		<?php endforeach; ?>
 	</ul>

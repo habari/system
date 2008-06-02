@@ -852,21 +852,21 @@ p:hover > label.incontent.popup {
 	text-align: right;
 	}
 
-.dashboard .module#additem .modulecore {
+.dashboard .module#addmodule .modulecore {
 	height: 0px;
 	}
 
-.dashboard .module#additem h2,
+.dashboard .module#additemmodule h2,
 .dashboard .module#additem form {
 	position: absolute;
 	top: 16px;
 	}
 
-.dashboard .module#additem form {
+.dashboard .module#additemmodule form {
 	left: 120px;
 	}
 
-.dashboard .module#additem select {
+.dashboard .module#additemmodule select {
 	width: 230px;
 	}
 
