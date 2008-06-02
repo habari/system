@@ -198,9 +198,9 @@ class AdminHandler extends ActionHandler
 		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 
 		$available_modules = array(
-			'latestentries',
-			'latestcomments',
-			'logs',
+			array( 'name' => 'latestentries', 'id' => 1 ),
+			array( 'name' => 'latestcomments', 'id' => 1),
+			array( 'name' => 'logs', 'id' => 1),
 		);
 		$modules = User::identify()->info->dash_modules;
 		/* TODO: For now, use a default list of modules if empty, but if empty we should really
@@ -208,20 +208,26 @@ class AdminHandler extends ActionHandler
 		if ( ! isset( $modules ) || empty( $modules ) ) {
 			$modules = $available_modules;
 		}
-		// get module templates
-		foreach( $modules as $key => $modulename ) {
+		// always include the 'additem' module
+		if ( ! in_array( array( 'name' => 'additem', 'id' => 1 ), $modules ) ) {
+			$modules[] = array( 'name' => 'additem', 'id' => 1 );
+		}
+		// add module templates to array
+		foreach( $modules as $key => $module ) {
 			unset( $modules[$key] );
-			/* TODO allow module names of the form name_1, name_2 with custom data in the
-			 * userinfo table */
-			$modules[$modulename] = 'dash_' . $modulename;
+			$moduleid = $module['name'] . ':' . $module['id'];
+			$module['template'] = 'dash_' . $module['name'];
+			$modules[$moduleid] = $module;
 		}
 		$modules= Plugins::filter( 'admin_modules_theme', $modules, $this->theme );
-		foreach( $modules as $modulename => $moduletemplate ) {
-			$themeinit = 'fetch_dash_module_' . $modulename;
+		foreach( $modules as $id => $module ) {
+			$themeinit = 'fetch_dash_module_' . $module['name'];
 			if( method_exists( $this, $themeinit ) ) {
+				/* TODO modify fetch functions to take a module ID for the case of
+				duplicate modules */
 				$this->$themeinit($this->theme);
 			}
-			$modules[$modulename] = $this->theme->fetch($moduletemplate);
+			$modules[$id]['content'] = $this->theme->fetch($module['template']);
 		}
 		$this->theme->modules= Plugins::filter( 'admin_modules', $modules, $this->theme );
 
@@ -1028,8 +1034,9 @@ class AdminHandler extends ActionHandler
 			$modules = array();
 			foreach($_POST as $key => $module ) {
 				// skip POST elements which are not module names
-				if ( preg_match( '/^module\d+/', $key ) ) {
-					$modules[] = $module;
+				if ( preg_match( '/^module\d+$/', $key ) ) {
+					preg_match( '/^(.+):(\d+)$/', $module, $matches );
+					$modules[] = array( 'name' => $matches[1], 'id' => $matches[2] );
 				}
 			}
 			$u = User::identify();
@@ -1670,6 +1677,65 @@ class AdminHandler extends ActionHandler
 
 		header( 'content-type:text/javascript' );
 		echo json_encode( $output );
+	}
+
+	/**
+	 * Function used to set theme variables to the add module dashboard widget
+	 * TODO make this form use an AJAX call instead of reloading the page
+	 */
+	public function fetch_dash_module_additem()
+	{
+		$modules = array(
+			'latestentries' => 'Latest Entries',
+			'latestcomments' => 'Latest Comments',
+			'logs' => 'Logs',
+		);
+		$modules = Plugins::filter( 'admin_modules', $modules, $this->theme );
+		
+		$form = new FormUI( 'dash_additem' );
+		$form_select = $form->add( 'select', 'user:module', _t('Module') );
+		$form_select->options = $modules;
+		$form->add( 'submit', 'user:submit', _t('+') );
+		$form->set_option( 'save_button', false );
+		$form->on_success( array( $this, 'dash_additem' ) );
+		$this->theme->additem_form = $form->get();
+	}
+	
+	/**
+	 * Adds a module to the user's dashboard
+	 * @param object form FormUI object
+	 */
+	public function dash_additem( $form )
+	{
+		$u = User::identify();
+		$modules = $u->info->dash_modules;
+		$new_module = $form->user_module->value;
+		if ( empty( $modules) ) {
+			$modules = array();
+			$modules[] = array( 'name' => $new_module, 'id' => 1 );
+		}
+		else {
+			// find a unique id for the module
+			$ids = array();
+			foreach ( $modules as $module ) {
+				if ( $module['name'] == $new_module ) {
+					$ids[] = $module['id'];
+				}
+			}
+			if ( count( $ids ) > 0 ) {
+				$id = max( $ids ) + 1;
+			}
+			else {
+				$id = 1;
+			}
+			$modules[] = array( 'name' => $new_module, 'id' => $id );
+		}
+
+		$u->info->dash_modules = $modules;
+		$u->info->commit();
+
+		// return false so that we don't save extraneous stuff to the userinfo table
+		return false;
 	}
 
 	/**

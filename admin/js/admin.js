@@ -22,8 +22,7 @@ var dashboard = {
 		$('.modules').sortable('disable');
 		var query = {};
 		$('.module', '.modules').not('.ui-sortable-helper').each( function(i) {
-			var res = this.getAttribute('id').match(/(.+)module/);
-			query['module' + i] = res[1];
+			query['module' + i] = this.getAttribute('id');
 		} );	
 		query['action'] = 'updateModules';
 		$.post(
