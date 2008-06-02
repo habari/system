@@ -131,10 +131,13 @@ class EventLog extends ArrayObject
 
 		// Put incoming parameters into the local scope
 		$paramarray= Utils::get_params( $paramarray );
+		 
+		// Get any full-query parameters
+		extract( $paramarray );
 
 		foreach ( $paramarray as $key => $value ) {
 			if ( 'orderby' == $key ) {
-				$orderby= 'ORDER BY ' . $value;
+				$orderby= ' ORDER BY ' . $value;
 				continue;
 			}
 
@@ -228,9 +231,6 @@ class EventLog extends ArrayObject
 				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 			}
 
-		// Get any full-query parameters
-		extract( $paramarray );
-
 		if ( isset( $page ) && is_numeric( $page ) ) {
 			$offset= ( intval( $page ) - 1 ) * intval( $limit );
 		}
@@ -250,7 +250,6 @@ class EventLog extends ArrayObject
 			$orderby= '';
 		}
 		if ( isset( $limit ) ) {
-			$limit= " LIMIT $limit";
 			if ( isset( $offset ) ) {
 				$limit.= " OFFSET $offset";
 			}
