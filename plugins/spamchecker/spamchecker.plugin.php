@@ -114,7 +114,8 @@ class SpamChecker extends Plugin
 
 		// Must have less than half link content
 		$nonacontent = strip_tags(preg_replace('/<a.*?<\/a/i', '', $comment->content));
-		if ( strlen($nonacontent) / strlen($textonly) < 0.5 ) {
+		$text_length= strlen( $textonly );
+		if ( strlen($nonacontent) / ( $text_length == 0 ? 1 : $text_length) < 0.5 ) {
 			$comment->status = Comment::STATUS_SPAM;
 			$spamcheck[] = _t('Too much text that is a link compared to that which is not.');
 		}
