@@ -5,14 +5,34 @@ var dashboard = {
 			accept: '.module',
 			handle: 'div.handle',
 			opacity: .9,
-			onStop : function(){ /* AJAX call goes here. Maybe disable and enable dragging while it's being made? */ }
-		})
+			stop: function() {
+				dashboard.update();
+			}
+		});
 
 		$('.options').toggle(function() {
 				$(this).parents('li').addClass('viewingoptions')
 			}, function() {
 				$(this).parents('li').removeClass('viewingoptions')
-			})
+			});
+	},
+	update: function() {
+		spinner.start();
+		// disable dragging and dropping while we update
+		$('.modules').sortable('disable');
+		var query = {};
+		$('.module', '.modules').not('.ui-sortable-helper').each( function(i) {
+			var res = this.getAttribute('id').match(/(.+)module/);
+			query['module' + i] = res[1];
+		} );	
+		query['action'] = 'updateModules';
+		$.post(
+			habari.url.ajaxDashboard,
+			query,
+			function() {
+		     		spinner.stop();
+				$('.modules').sortable('enable');
+			});
 	}
 }
 
