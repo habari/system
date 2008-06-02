@@ -85,7 +85,7 @@ class Tag extends QueryRecord
 	{
 		$result= TRUE;
 		Plugins::act( 'tag_attach_to_post_before', $tag_id, $post_id );
-		if (FALSE === ( DB::get_value( "SELECT 1 FROM {tag2post} WHERE tag_id = ? AND post_id = ?", array( $tag_id, $post_id ) ) ) ) {
+		if (0 == (int) DB::get_value( "SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?", array( $tag_id, $post_id ) ) ) {
 			$sql= "INSERT INTO {tag2post} (tag_id, post_id) VALUES (?,?)";
 			$result= DB::query( $sql, array( $tag_id, $post_id ) );
 		}
