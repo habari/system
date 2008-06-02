@@ -188,11 +188,24 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 
-		$modules= array(
-			'latestentries' => 'dash_latestentries',
-			'latestcomments' => 'dash_latestcomments',
-			'logs' => 'dash_logs',
+		$available_modules = array(
+			'latestentries',
+			'latestcomments',
+			'logs',
 		);
+		$modules = User::identify()->info->dash_modules;
+		/* TODO: For now, use a default list of modules if empty, but if empty we should really
+		 * just show the 'add module' module */
+		if ( ! isset( $modules ) || empty( $modules ) ) {
+			$modules = $available_modules;
+		}
+		// get module templates
+		foreach( $modules as $key => $modulename ) {
+			unset( $modules[$key] );
+			/* TODO allow module names of the form name_1, name_2 with custom data in the
+			 * userinfo table */
+			$modules[$modulename] = 'dash_' . $modulename;
+		}
 		$modules= Plugins::filter( 'admin_modules_theme', $modules, $this->theme );
 		foreach( $modules as $modulename => $moduletemplate ) {
 			$themeinit = 'fetch_dash_module_' . $modulename;
@@ -201,7 +214,6 @@ class AdminHandler extends ActionHandler
 			}
 			$modules[$modulename] = $this->theme->fetch($moduletemplate);
 		}
-		//$modules= array_map(array($this->theme, 'fetch'), $modules);
 		$this->theme->modules= Plugins::filter( 'admin_modules', $modules, $this->theme );
 
 		$this->display( 'dashboard' );
@@ -995,6 +1007,27 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->special_searches = array_merge($statuses, $types);
 		$this->display( 'entries' );
+	}
+
+	/**
+	 * Handles ajax requests from the dashboard
+	 */
+	public function ajax_dashboard( $handler_vars )
+	{
+		switch ( $handler_vars['action'] ) {
+		case 'updateModules':
+			$modules = array();
+			foreach($_POST as $key => $module ) {
+				// skip POST elements which are not module names
+				if ( preg_match( '/^module\d+/', $key ) ) {
+					$modules[] = $module;
+				}
+			}
+			$u = User::identify();
+			$u->info->dash_modules = $modules;
+			$u->info->commit();
+			break;
+		}
 	}
 
 	/**

@@ -18,6 +18,7 @@
 	var habari = {
 		url: {
 			habari: '<?php Site::out_url('habari'); ?>',
+			ajaxDashboard: '<?php echo URL::get('admin_ajax', array('context' => 'dashboard')); ?>',
 			ajaxDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_entries')); ?>',
 			ajaxUpdateComment: '<?php echo URL::get('admin_ajax', array('context' => 'update_comment')); ?>'
 		}
