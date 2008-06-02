@@ -20,6 +20,8 @@ class S9YImport extends Plugin implements Importer
 	private $s9ydb= null;
 	/** The table prefix for the s9y tables (only used in the private import_xxx() functions */
 	private $s9y_db_prefix= 's9y_';
+	/** Cache for imported categories uses as a map from s9y to habari during import. */
+	private $imported_categories= array();
 
 	/**
 	 * Initialize plugin.
@@ -404,6 +406,50 @@ WP_IMPORT_STAGE2;
 					if ( $merge_user[$import_user_id] != '__new_user')
 						$users[$import_user_id]['habari_user_id']= $merge_user[$import_user_id];
 			}
+			
+			echo "Starting import transaction.<br />";
+			$this->s9ydb->begin_transaction();
+
+			if ( $category_import ) {
+				/*
+				 * If we are importing the categories as taxonomy, 
+				 * let's go ahead and import the base category tags
+				 * now, and during the post import, we'll attach
+				 * the category tag to the relevant posts.
+				 *
+				 * mysql> desc s9y_category;
+				 * +----------------------+--------------+------+-----+---------+----------------+
+				 * | Field                | Type         | Null | Key | Default | Extra          |
+				 * +----------------------+--------------+------+-----+---------+----------------+
+				 * | categoryid           | int(11)      |      | PRI | NULL    | auto_increment |
+				 * | category_name        | varchar(255) | YES  |     | NULL    |                |
+				 * | category_icon        | varchar(255) | YES  |     | NULL    |                |
+				 * | category_description | text         | YES  |     | NULL    |                |
+				 * | authorid             | int(11)      | YES  | MUL | NULL    |                |
+				 * | category_left        | int(11)      | YES  | MUL | 0       |                |
+				 * | category_right       | int(11)      | YES  |     | 0       |                |
+				 * | parentid             | int(11)      |      | MUL | 0       |                |
+				 * +----------------------+--------------+------+-----+---------+----------------+
+				 */
+				$sql=<<<ENDOFSQL
+SELECT categoryid, category_name
+FROM `{$db_prefix}category
+ENDOFSQL;
+				if ( FALSE !== ( $imported_categories= $this->s9ydb->get_results( $sql, array(), 'QueryRecord' ) ) ) {
+					$num_categories_imported= 0;
+					foreach ( $imported_categories as $imported_category ) {
+						if ( $new_tag= Tag::create( array( 'tag_text' => $imported_category->category_name ) ) ) {
+							$this->imported_categories[$imported_category->categoryid]= $new_tag->id;
+							++$num_categories_imported;
+						}
+						else {
+							$this->s9ydb->rollback();
+							return FALSE;
+						}
+					}
+					printf("%d categories imported as tags...<br />", $num_categories_imported);
+				}
+			}
 
 			/*
 			 * Now that we have an array of the users to import, 
@@ -432,9 +478,6 @@ ENDOFSQL;
 			$sql.= " WHERE a.authorid IN (" . implode(',', array_keys($users)) . ")";
 			$import_users= $this->s9ydb->get_results( $sql, array(), 'QueryRecord' 	);
 			$result= TRUE;
-			
-			echo "Starting import transaction.<br />";
-			$this->s9ydb->begin_transaction();
 
 			foreach ($import_users as $import_user)
 				$result&= $this->import_user( $import_user->authorid
@@ -454,7 +497,8 @@ ENDOFSQL;
 			else {
 				echo "Rolling back failed import transaction.<br />";
 				$this->s9ydb->rollback();
-				/* Display failure */
+				/* Display failure -- but how..? */
+				return FALSE;
 			}
 		}
 	}
@@ -511,7 +555,7 @@ ENDOFSQL;
 			}
 		}
 		catch( Exception $e ) { /** @TODO: This should be a specific exception, not the general one... */
-			EventLog::log( $e->getMessage(), 'err', null, null, print_r( array( $new_user, $e ), 1 ) );
+			EventLog::log( $e->getMessage(), 'err', null, null, print_r( array( $habari_user, $e ), 1 ) );
 			return FALSE;
 		}
 
@@ -584,42 +628,6 @@ ENDOFSQL;
 	 */
 	private function import_post( $post_info= array(), $habari_user_id ) 
 	{
-		/*
-		 * If we are going to import taxonomy, , then first check to see if 
-		 * this post has any categories attached to it, and import as tags
-		 *
-		 * mysql> desc s9y_category;
-		 * +----------------------+--------------+------+-----+---------+----------------+
-		 * | Field                | Type         | Null | Key | Default | Extra          |
-		 * +----------------------+--------------+------+-----+---------+----------------+
-		 * | categoryid           | int(11)      |      | PRI | NULL    | auto_increment |
-		 * | category_name        | varchar(255) | YES  |     | NULL    |                |
-		 * | category_icon        | varchar(255) | YES  |     | NULL    |                |
-		 * | category_description | text         | YES  |     | NULL    |                |
-		 * | authorid             | int(11)      | YES  | MUL | NULL    |                |
-		 * | category_left        | int(11)      | YES  | MUL | 0       |                |
-		 * | category_right       | int(11)      | YES  |     | 0       |                |
-		 * | parentid             | int(11)      |      | MUL | 0       |                |
-		 * +----------------------+--------------+------+-----+---------+----------------+
-		 *
-		 * mysql> desc s9y_entrycat;
-		 * +------------+---------+------+-----+---------+-------+
-		 * | Field      | Type    | Null | Key | Default | Extra |
-		 * +------------+---------+------+-----+---------+-------+
-		 * | entryid    | int(11) | NO   | PRI | 0       |       | 
-		 * | categoryid | int(11) | NO   | PRI | 0       |       | 
-		 * +------------+---------+------+-----+---------+-------+
-		 */
-		if ( $this->category_import ) {
-			$sql=<<<ENDOFSQL
-SELECT c.category_name 
-FROM {$this->s9y_db_prefix}category c 
-INNER JOIN {$this->s9y_db_prefix}entrycat ec
-ON c.categoryid = ec.categoryid
-AND ec.entryid = ?
-ENDOFSQL;
-			$categories= $this->s9ydb->get_results( $sql, array($post_info->id), 'QueryRecord' );
-		}
 
 		/* 
 		 * Import the post itself 
@@ -638,6 +646,33 @@ ENDOFSQL;
 			$post->tags= $categories->to_array();
 
 		if ( $post->insert() ) {
+			/*
+			 * If we are going to import taxonomy, , then first check to see if 
+			 * this post has any categories attached to it, and import the relationship
+			 * using the cached habari->s9y tag map. 
+			 *
+			 * mysql> desc s9y_entrycat;
+			 * +------------+---------+------+-----+---------+-------+
+			 * | Field      | Type    | Null | Key | Default | Extra |
+			 * +------------+---------+------+-----+---------+-------+
+			 * | entryid    | int(11) | NO   | PRI | 0       |       | 
+			 * | categoryid | int(11) | NO   | PRI | 0       |       | 
+			 * +------------+---------+------+-----+---------+-------+
+			 */
+			$result= TRUE;
+			if ( $this->category_import ) {
+				$sql=<<<ENDOFSQL
+SELECT c.categoryid
+FROM {$this->s9y_db_prefix}category c 
+INNER JOIN {$this->s9y_db_prefix}entrycat ec
+ON c.categoryid = ec.categoryid
+AND ec.entryid = ?
+ENDOFSQL;
+				if ( FALSE !== ( $categories= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' ) ) )
+					foreach ( $categories as $category ) 
+						$result&= $this->import_post_category( $post->id, $this->imported_categories[$category->categoryid] );
+			}
+
 			/* 
 			 * Grab the comments and insert `em 
 			 *  
@@ -683,7 +718,6 @@ ENDOFSQL;
 				$sql.= " AND status = 'Approved' ";
 			$comments= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' );
 			if ( count( $comments ) > 0 ) {
-				$result= TRUE;
 				echo "Starting import of <b>" . count( $comments ) . "</b> comments for post \"" . $post->title . "\"...";
 				foreach ( $comments as $comment )
 					$result&= $this->import_comment( $comment, $post->id );
@@ -698,6 +732,24 @@ ENDOFSQL;
 		}
 		else { /* Something went wrong on $post->insert() */
 			EventLog::log($e->getMessage(), 'err', null, null, print_r(array($post, $e), 1));
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Imports a single comment from the s9y database into the
+	 * habari database
+	 *
+	 * @param		post_id						ID of the new Habari post to attach tag to
+	 * @param		tag_id						ID of the Habari tag to attach the post to
+	 * @return	TRUE or FALSE if import of tag2post relationship succeeded
+	 */
+	private function import_post_category( $post_id, $tag_id )
+	{
+		if ( Tag::attach_to_post( $tag_id, $post_id ) )
+			return TRUE;
+		else {
+			EventLog::log($e->getMessage(), 'err', null, null, print_r(array($tag_id, $post_id, $e), 1));
 			return FALSE;
 		}
 	}

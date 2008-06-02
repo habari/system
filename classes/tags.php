@@ -19,7 +19,6 @@ class Tags extends ArrayObject
 		 * such as the default "habari" tag added to the database, 
 		 * which are not related (yet) to any post itself.  These
 		 * tags are essentially lost to the world.
-		 *
 		 */
 		$tags= DB::get_results( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id GROUP BY id, tag, slug ORDER BY tag ASC' );
 		return $tags;
