@@ -97,7 +97,7 @@
 
 		<?php
 
-			if ( count( $updates ) > 0 ) {
+			if ( isset( $updates ) && count( $updates ) > 0 ) {
 
 				foreach ( $updates as $update ) {
 

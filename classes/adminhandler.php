@@ -8,7 +8,12 @@
 
 class AdminHandler extends ActionHandler
 {
+	/** Cached theme object for handling templates and presentation */
 	private $theme= NULL;
+	/** Stores the default presentation settings for the admin interface */
+	private $admin_settings= array(
+		'dash_module_logs_number_display'=> 8
+	);
 
 	/**
 	 * Verifies user credentials before creating the theme and displaying the request.
@@ -171,8 +176,12 @@ class AdminHandler extends ActionHandler
 			'days' => round(($firstpostdate % 2629728) / 86400),
 		);
 
-		// check for updates to core and any hooked plugins
-		$this->theme->updates= Update::check();
+		/*
+		 * Check for updates to core and any hooked plugins
+		 * once about one in five displays...
+		 */
+		if ( mt_rand(1,5) >= 5 )
+			$this->theme->updates= Update::check();
 
 		$this->theme->stats= array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),
@@ -1663,7 +1672,28 @@ class AdminHandler extends ActionHandler
 		echo json_encode( $output );
 	}
 
-	/** Function used to set theme variables to the latest comments dashboard widget
+	/**
+	 * Sets theme variables and handles logic for the
+	 * dashboard's log history module.
+	 */
+	private function fetch_dash_module_logs() 
+	{
+		if ( FALSE === ( $num_logs= User::identify()->info->dash_module_logs_number_display ) )
+			$num_logs= $this->admin_settings['dash_module_logs_number_display'];
+
+		$params= array(
+			'where'=> array(
+				'user_id'=> User::identify()->id
+			)
+			, 'orderby'=> 'id DESC' /* Otherwise, exactly same timestamp values muck it up... Plus, this is more efficient to sort on the primary key... */
+			, 'limit'=> $num_logs
+		);
+		$this->theme->logs= EventLog::get( $params );
+
+	}
+
+	/** 
+	 * Function used to set theme variables to the latest comments dashboard widget
 	 */
 	public function fetch_dash_module_latestcomments()
 	{
