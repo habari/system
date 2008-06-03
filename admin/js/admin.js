@@ -168,6 +168,7 @@ var tagManage = {
 		$('.tags .tag').click(function() {
 				$(this).toggleClass('selected');
 				tagManage.changeTag();
+				return false;
 			}
 		);
 
