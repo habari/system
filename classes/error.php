@@ -30,9 +30,9 @@ class Error extends Exception
 			get_class( $exception ),
 			$exception->getMessage()
 		);
-		$trace = $exception->getTrace();
+		$trace= $exception->getTrace();
 		do {
-			$details = current( $trace );
+			$details= current( $trace );
 			if( !isset( $details['class'] ) || ( isset( $details['class'] ) && $details['class'] != 'Error' ) ) {
 				$details = current($trace);
 				break;
@@ -58,9 +58,13 @@ class Error extends Exception
 	 */
 	public function humane_error()
 	{
-		$trace = $this->getTrace();
-		$trace1 = reset($trace);
-		return sprintf(_t('%1$s in %2$s line %3$s on request of "%4$s"'), $this->getMessage(), $trace1['file'], $trace1['line'], $_SERVER['REQUEST_URI']);
+		$trace= $this->getTrace();
+		$trace1= reset($trace);
+		
+		$file= isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
+		$line= isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
+		
+		return sprintf(_t('%1$s in %2$s line %3$s on request of "%4$s"'), $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI']);
 	}
 
 	/**
@@ -107,7 +111,7 @@ class Error extends Exception
 			if ( ! isset( $a['line'] ) ) { $a['line']= '(eval)'; }
 			if ( ! isset( $a['class'] ) ) { $a['class']= ''; }
 			if ( ! isset( $a['type'] ) ) { $a['type']= ''; }
-			if ( ! is_array( $a['args'] ) ) { $a['args'] = array(); }
+			if ( ! is_array( $a['args'] ) ) { $a['args']= array(); }
 			if ( strpos( $a['file'], HABARI_PATH ) === 0 ) {
 				$a['file']= substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
