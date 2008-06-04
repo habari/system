@@ -88,7 +88,7 @@ class AdminHandler extends ActionHandler
 				}
 				else {
 					$classname= get_class( $this );
-					echo sprintf( _t( "\n%1$s->%2$s() does not exist.\n" ), $classname, $fn );
+					echo sprintf( _t( '%1$s->%2$s() does not exist.' ), $classname, $fn );
 					exit;
 				}
 				break;
@@ -1139,7 +1139,7 @@ class AdminHandler extends ActionHandler
 			echo json_encode( 'WSSE authentication failed.' );
 			return;
 		}
-		
+
 		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], array( $comment ), $this );
 
 		switch ( $handler_vars['action'] ) {
@@ -1699,13 +1699,14 @@ class AdminHandler extends ActionHandler
 			'latestcomments' => 'Latest Comments',
 			'logs' => 'Logs',
 		);
-		$modules = Plugins::filter( 'admin_modules', $modules, $this->theme );
+		/* need a means to get a list of available modules... the call below does not
+		function in that way at present */
+		//$modules = Plugins::filter( 'admin_modules', $modules, $this->theme );
 		
 		$form = new FormUI( 'dash_additem' );
-		$form_select = $form->add( 'select', 'user:module', _t('Module') );
-		$form_select->options = $modules;
-		$form->add( 'submit', 'user:submit', _t('+') );
-		$form->set_option( 'save_button', false );
+		$form->append( 'select', 'module', 'null:unused', _t('Add Module') );
+		$form->module->options = $modules;
+		$form->append( 'submit', 'submit', _t('+') );
 		$form->on_success( array( $this, 'dash_additem' ) );
 		$this->theme->additem_form = $form->get();
 	}
@@ -1718,7 +1719,7 @@ class AdminHandler extends ActionHandler
 	{
 		$u = User::identify();
 		$modules = $u->info->dash_modules;
-		$new_module = $form->user_module->value;
+		$new_module = $form->module->value;
 		if ( empty( $modules) ) {
 			$modules = array();
 			$modules[] = array( 'name' => $new_module, 'id' => 1 );
@@ -1743,7 +1744,7 @@ class AdminHandler extends ActionHandler
 		$u->info->dash_modules = $modules;
 		$u->info->commit();
 
-		// return false so that we don't save extraneous stuff to the userinfo table
+		// return false to redisplay the form
 		return false;
 	}
 
@@ -1751,7 +1752,7 @@ class AdminHandler extends ActionHandler
 	 * Sets theme variables and handles logic for the
 	 * dashboard's log history module.
 	 */
-	private function fetch_dash_module_logs() 
+	private function fetch_dash_module_logs()
 	{
 		if ( FALSE === ( $num_logs= User::identify()->info->dash_module_logs_number_display ) )
 			$num_logs= $this->admin_settings['dash_module_logs_number_display'];
@@ -1767,7 +1768,7 @@ class AdminHandler extends ActionHandler
 
 	}
 
-	/** 
+	/**
 	 * Function used to set theme variables to the latest comments dashboard widget
 	 */
 	public function fetch_dash_module_latestcomments()
@@ -1789,41 +1790,16 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->latestcomments_posts = $posts;
 		$this->theme->latestcomments = $latestcomments;
-		
-		// register the formUI filter
-		Plugins::register( array( $this, 'filter_control_theme_dir' ), 'filter', 'control_theme_dir' );
+
 		// Create options form
 		$form = new FormUI( 'dash_latestcomments' );
-		$form_select = $form->add( 'select', 'user:number', _t('# of Entries'), '5' );
+		$form_select = $form->append( 'select', 'lastest_comments', 'user:number', _t('# of Entries'), '5' );
 		$form_select->options = array(
 			'5' => '5', '10' => '10',
 			);
-		$form->add( 'submit', 'user:submit', _t('Submit') );
-		$form->set_option( 'save_button', false );
-		$form->on_success( array( $this, 'dash_module_success' ) );
+		$form->append( 'submit', 'submit', _t('Submit') );
 		$this->theme->latestcomments_form = $form->get();
 	}
-	
-	/** filter_control_theme_dir
-	 * Sets the FormUI theme dir to 'dash_module_formcontrols' for dash widgets
-	 */
-	public function filter_control_theme_dir ( $dir, $control )
-	{
-		if ( strpos( $control->container->name, 'dash_' ) === 0 ) {
-			$dir = Site::get_dir( 'admin_theme', TRUE ) . 'dash_module_formcontrols/';
-			return $dir;
-		}
-		else return $dir;
-	}
-	
-	/** dash_module_success
-	 * Dummy function needed to get FormUI to save values to user table
-	 */
-	public function dash_module_success ()
-	{
-		return true;
-	}
-
 }
 
 ?>

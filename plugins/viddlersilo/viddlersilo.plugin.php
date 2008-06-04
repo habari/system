@@ -624,7 +624,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_dir($path)
 	{
-		$user= Options::get( 'viddlersilo:username_' . User::identify()->id );
+		$user= User::identify()->info->viddler__username;
 
 		if(Cache::has('viddler:videos:' . $user)) {
 			$pre = Cache::get('viddler:videos:' . $user);
@@ -767,8 +767,8 @@ class ViddlerSilo extends Plugin implements MediaSilo
 			<div class="column span-14 prepend-4">
 			<h2>Record a Video</h2>
 			<p><?php
-			$user= Options::get( 'viddlersilo:username_' . User::identify()->id );
-			$pass= Options::get( 'viddlersilo:password_' . User::identify()->id );
+			$user= User::identify()->info->viddler__username;
+			$pass= User::identify()->info->viddler__password;
 			$auth= $this->viddler->user_authenticate( array( 'user' => $user, 'password' => $pass, 'get_record_token' => 1 ) );
 			$sid= new SimpleXMLElement( $auth );
 			$mt= $test->video_getrecordtoken( $sid->sessionid );
@@ -820,29 +820,32 @@ class ViddlerSilo extends Plugin implements MediaSilo
 		switch ( $action ) {
 			case 'Log In':
 				$ui= new FormUI( strtolower( get_class( $this ) ) );
-				$viddler_username= $ui->add('text', 'username_' . User::identify()->id, 'Viddler Username:');
-				$viddler_password= $ui->add('password', 'password_' . User::identify()->id, 'Viddler Password:');
+				$ui->append('text', 'username', 'user:viddler__username', 'Viddler Username:');
+				$ui->append('password', 'password', 'user:viddler__password', 'Viddler Password:');
+				$ui->append('submit', 'submit', 'Log In');
 				$ui->on_success( array( $this, 'updated_config' ) );
 				$ui->out();
 
+/*
 				if( $this->is_auth() ) {
 					$deauth_url= URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Log Out')) . '#plugin_options';
 					echo "<p>You have successfully logged into Vidder via Habari.</p>";
 					echo "<p>Do you want to <a href=\"{$deauth_url}\">log out</a>?</p>";
 				}
 				else {
-					$username = Options::get( 'viddlersilo:username_' . User::identify()->id );
-					$password = Options::get( 'viddlersilo:password_' . User::identify()->id );
+					$username = $ui->username->value;
+					$password = $ui->password->value;
 					if($username != '' && $password != '') {
 						$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
 
 						$xml= new SimpleXMLElement( $auth );
-						Options::set('viddler_token_' . User::identify()->id, '' . $xml->sessionid );
+						User::identify()->info->viddler__token = (string) $xml->session_id;
 					}
 				}
+*/
 				break;
 			case 'Log Out':
-				Options::set( 'viddler_token_' . User::identify()->id );
+				unset(User::identify()->info->viddler__token);
 				$reauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Log In')) . '#plugin_options';
 				echo '<p>The Viddler Silo Plugin session has been logged out.<p>';
 				echo "<p>Do you want to <a href=\"{$reauth_url}\">log in again</a>?<p>";
@@ -856,12 +859,30 @@ class ViddlerSilo extends Plugin implements MediaSilo
    **/
   public function updated_config($ui)
   {
-    return true;
+		$username = $ui->username->value;
+		$password = $ui->password->value;
+		if($username != '' && $password != '') {
+			$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
+
+			$xml= new SimpleXMLElement( $auth );
+			$token = (string) $xml->sessionid;
+			if($token == '') {
+		  	$ui->set_option('success_message', _t('The username and password you supplied failed to log in to Viddler.'));
+			}
+			else {
+		  	$ui->save();
+				User::identify()->info->viddler__token = $token;
+				User::identify()->info->commit();
+		  	return  '<p>' . _t('You have logged in to Viddler.') . '</p>';
+			}
+		}
+
+    return false;
   }
 
 	private function is_auth()
 	{
-		$token= Options::get( 'viddler_token_' . User::identify()->id );
+		$token= User::identify()->info->viddler__token;
 		if( $token != '' ) {
 			return true;
 		} else {
@@ -942,8 +963,8 @@ HEADER;
 		if($silo instanceof $class) {
 			switch($panelname) {
 				case 'record':
-					$user = Options::get( 'viddlersilo:username_' . User::identify()->id );
-					$pass = Options::get( 'viddlersilo:password_' . User::identify()->id );
+					$user = User::identify()->info->viddler__username;
+					$pass = User::identify()->info->viddler__password;
 					$auth = $this->viddler->user_authenticate( array( 'user' => $user, 'password' => $pass, 'get_record_token' => 1, 'record_token' => 1 ) );
 					$sid = new SimpleXMLElement( $auth );
 					$rt = $sid->record_token;

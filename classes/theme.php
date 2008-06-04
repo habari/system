@@ -15,6 +15,8 @@ class Theme extends Pluggable
 	public $template_engine= null;
 	public $theme_dir= null;
 	public $config_vars= array();
+	private $var_stack = array(array());
+	private $current_var_stack = 0;
 
 	/**
 	 * We build the Post filters by analyzing the handler_var
@@ -468,14 +470,18 @@ class Theme extends Pluggable
 	 */
 	public function display( $template_name )
 	{
+		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
+			$this->template_engine->assign( $key, $value );
+		}
+	
 		$this->add_template_vars();
 
 		if ( isset( Controller::get_handler()->handler_vars ) ) {
 			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
-				$this->assign( $key, $value );
+				$this->template_engine->assign( $key, $value );
 			}
 		}
-		$this->assign( 'theme', $this );
+		$this->template_engine->assign( 'theme', $this );
 
 		$this->template_engine->display( $template_name );
 	}
@@ -484,10 +490,15 @@ class Theme extends Pluggable
 	 * Helper function: Avoids having to call $theme->template_engine->fetch( 'template_name' );
 	 *
 	 * @param string $template_name The name of the template to display
+	 * @param boolean $unstack If true, end the current template variable buffer upon returning
 	 * @return string The content of the template
 	 */
-	public function fetch( $template_name )
+	public function fetch( $template_name, $unstack = false )
 	{
+		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
+			$this->template_engine->assign( $key, $value );
+		}
+
 		$this->add_template_vars();
 
 		if ( isset( Controller::get_handler()->handler_vars ) ) {
@@ -497,7 +508,11 @@ class Theme extends Pluggable
 		}
 		$this->assign( 'theme', $this );
 
-		return $this->template_engine->fetch( $template_name );
+		$return = $this->fetch_unassigned( $template_name );
+		if ( $unstack ) {
+			$this->end_buffer();
+		}
+		return $return;
 	}
 
 	/**
@@ -517,7 +532,7 @@ class Theme extends Pluggable
 	 */
 	public function assign( $key, $value )
 	{
-		$this->template_engine->$key= $value;
+		$this->var_stack[$this->current_var_stack][$key] = $value;
 	}
 
  	/**
@@ -730,7 +745,7 @@ class Theme extends Pluggable
 	 */
 	public function __isset( $key )
 	{
-		return isset( $this->template_engine->$key );
+		return isset( $this->var_stack[$this->current_var_stack][$key] );
 	}
 
 	/**
@@ -752,7 +767,35 @@ class Theme extends Pluggable
 	 */
 	public function __get( $key )
 	{
-		return $this->template_engine->$key;
+		return $this->var_stack[$this->current_var_stack][$key];
+	}
+	
+	/**
+	 * Remove a template variable value
+	 * 
+	 * @param string $key The template variable name to unset
+	 */
+	public function __unset( $key )
+	{
+		unset($this->var_stack[$this->current_var_stack][$key]);
+	}
+	
+	/**
+	 * Start a new template variable buffer
+	 */
+	public function start_buffer()
+	{
+		$this->current_var_stack++;
+		$this->var_stack[$this->current_var_stack] = $this->var_stack[$this->current_var_stack - 1];
+	}
+	
+	/**
+	 * End the current template variable buffer
+	 */
+	public function end_buffer()
+	{
+		unset($this->var_stack[$this->current_var_stack]);
+		$this->current_var_stack--;
 	}
 
 	/**
