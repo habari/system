@@ -470,11 +470,11 @@ class Theme extends Pluggable
 	 */
 	public function display( $template_name )
 	{
+		$this->add_template_vars();
+		
 		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
 			$this->template_engine->assign( $key, $value );
 		}
-	
-		$this->add_template_vars();
 
 		if ( isset( Controller::get_handler()->handler_vars ) ) {
 			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
