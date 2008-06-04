@@ -178,11 +178,20 @@ class AdminHandler extends ActionHandler
 
 		/*
 		 * Check for updates to core and any hooked plugins
-		 * once about one in five displays...
+		 * cache the output so we don't make a request every load but can still display updates
 		 */
-		if ( mt_rand(1,5) >= 5 )
-			$this->theme->updates= Update::check();
-
+		if ( Cache::has( 'dashboard_updates' ) ) {
+			$this->theme->updates= Cache::get( 'dashboard_updates' );
+		}
+		else {
+			$updates= Update::check();
+			
+			if ( !Error::is_error( $updates ) ) {
+				Cache::set( 'dashboard_updates', $updates );
+				$this->theme->updates= $updates;
+			}
+		}
+		
 		$this->theme->stats= array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),
 			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),
