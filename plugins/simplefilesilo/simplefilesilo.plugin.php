@@ -360,18 +360,17 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 					$fullpath= self::SILO_NAME . '/' . $path;
 
 					$form= new FormUI( 'simplefilesilomkdir' );
-					$form->add( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>");
+					$form->append( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>" );
 
 					// add the parent directory as a hidden input for later validation
-					$form->add( 'hidden', 'path', '', $path );
-					$dir_text_control= $form->add( 'text', 'directory', _t('Enter the name of the new directory to create here') );
+					$form->append( 'hidden', 'path', 'null:unused', '', $path );
+					$dir_text_control= $form->append( 'text', 'directory', 'null:unused', _t('Enter the name of the new directory to create here') );
 					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
+					$form->append( 'submit', 'submit', _t('Submit') );
 					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
 					$form->on_success( array( $this, 'mkdir_success' ) );
 					$panel= $form->get(); /* form submission magicallly happens here */
-					if ( empty( $panel ) ) {
-						$panel= "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>". _t('Directory Created:') ." {$dir_text_control->value}</p>";
-					}
+
 					return $panel;
 
 					break;
@@ -463,20 +462,18 @@ UPLOAD_FORM;
 	}
 	/**
 	 * This function performs the mkdir action on submission of the form. It is
-	 * called by FormUI's success() method. It returns false so that the form is
-	 * not saved in the Options table.
+	 * called by FormUI's success() method.
 	 * @param FormUI $form
 	 */
 	public function mkdir_success ( $form )
 	{
-		$controlValues= $form->get_values();
-		$dir= preg_replace( '%\.{2,}%', '.', $controlValues['directory'] );
-		$path= preg_replace( '%\.{2,}%', '.', $controlValues['path'] );
+		$dir= preg_replace( '%\.{2,}%', '.', $form->directory->value );
+		$path= preg_replace( '%\.{2,}%', '.', $form->path->value );
 
 		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 		mkdir( $dir, 0766 );
 
-		return false;
+		return "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>". _t('Directory Created:') ." {$form->directory->value}</p>";
 	}
 
 }

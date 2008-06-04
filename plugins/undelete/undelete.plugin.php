@@ -108,8 +108,9 @@ class Undelete extends Plugin
 			switch ( $action ) {
 			case _t( 'Configure' ):
 				$ui= new FormUI( strtolower( get_class( $this ) ) );
-				$head_code= $ui->add( 'text', 'style', 'Style declaration for deleted content:', Options::get( 'undelete:style' ) );
-				$ui->on_success( array( $this, 'updated_config' ) );
+				$ui->append( 'text', 'style', 'option:undelete__style', _t( 'Style declaration for deleted content:' ) );
+				$ui->append( 'submit', 'save', 'Save' );
+				$ui->on_success( 'updated_config' );
 				$ui->out();
 				break;
 			}
@@ -118,7 +119,8 @@ class Undelete extends Plugin
 
 	public function updated_config( $ui )
 	{
-		return true;
+		$form->save();
+		return false;
 	}
 
 	// this method will inject some CSS into the <head>
@@ -128,7 +130,7 @@ class Undelete extends Plugin
 		// only show the style to logged in users
 		if ( User::identify() !== false ) {
 			echo '<style type="text/css">';
-			Options::out( 'undelete:style' );
+			Options::out( 'undelete__style' );
 			echo '</style>';
 		}
 	}

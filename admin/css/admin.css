@@ -852,23 +852,26 @@ p:hover > label.incontent.popup {
 	text-align: right;
 	}
 
-.dashboard .module#addmodule .modulecore {
+.dashboard .module.additemmodule .modulecore {
 	height: 0px;
 	}
 
-.dashboard .module#additemmodule h2,
-.dashboard .module#additem form {
+.dashboard .module.additemmodule h2,
+.dashboard .module.additemmodule form {
 	position: absolute;
 	top: 16px;
 	}
 
-.dashboard .module#additemmodule form {
+.dashboard .module.additemmodule form {
 	left: 120px;
 	}
 
-.dashboard .module#additemmodule select {
+.dashboard .module.additemmodule select {
 	width: 230px;
 	}
+.dashboard .module.additemmodule .formcontrol {
+	display: inline;
+}
 
 .dashboard .modulecore ul li {
 	list-style-type: none;

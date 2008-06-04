@@ -495,7 +495,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	{
 		$flickr = new Flickr();
 		$results = array();
-		$size = Options::get('flickrsilo:flickr_size');
+		$size = Options::get('flickrsilo__flickr_size');
 
 		$section = strtok($path, '/');
 		switch($section) {
@@ -818,8 +818,10 @@ END_AUTH;
 					break;
 				case 'Configure' :
 					$ui= new FormUI( strtolower( get_class( $this ) ) );
-					$flickr_size= $ui->add( 'select', 'flickr_size', 'Default size for images in Posts:' );
-					$flickr_size->options= array( '_s' => 'Square (75x75)', '_t' => 'Thumbnail (100px)', '_m' => 'Small (240px)', '' => 'Medium (500px)', '_b' => 'Large (1024px)', '_o' => 'Original Size' );
+					$ui->append( 'select', 'flickr_size','option:flickrsilo__flickr_size', _t( 'Default size for images in Posts:' ) );
+					$ui->flickr_size->options= array( '_s' => 'Square (75x75)', '_t' => 'Thumbnail (100px)', '_m' => 'Small (240px)', '' => 'Medium (500px)', '_b' => 'Large (1024px)', '_o' => 'Original Size' );
+					$ui->append('submit', 'save', _t( 'Save' ) );
+					$ui->set_option('success_message', _t('Options saved'));
 					$ui->out();
 					break;
 			}
@@ -827,7 +829,7 @@ END_AUTH;
 	}
 	public function action_admin_footer( $theme ) {
 		if ($theme->admin_page == 'publish') {
-			$size = Options::get('flickrsilo:flickr_size');
+			$size = Options::get('flickrsilo__flickr_size');
 			switch($size) {
 				case '_s':
 					$vsizex = 75;
