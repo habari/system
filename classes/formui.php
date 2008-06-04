@@ -181,7 +181,9 @@ class FormContainer
 			$this->theme_obj= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		}
 		if($control instanceof FormControl) {
-			foreach($control->properties as $name => $value) {
+			// PHP doesn't allow __get() to return pointers, and passing this array to foreach directly generates an error.
+			$properties = $control->properties;
+			foreach($properties as $name => $value) {
 				$this->theme_obj->$name = $value;
 			}
 			$this->theme_obj->field= $control->field;
