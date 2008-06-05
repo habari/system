@@ -176,6 +176,11 @@ class AdminHandler extends ActionHandler
 			'days' => round(($firstpostdate % 2629728) / 86400),
 		);
 
+		// if the active plugin list has changed, expire the updates cache
+		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_plugins' ) != Options::get( 'active_plugins' ) ) ) {
+			Cache::expire( 'dashboard_updates' ); 
+		}
+		
 		/*
 		 * Check for updates to core and any hooked plugins
 		 * cache the output so we don't make a request every load but can still display updates
@@ -189,6 +194,9 @@ class AdminHandler extends ActionHandler
 			if ( !Error::is_error( $updates ) ) {
 				Cache::set( 'dashboard_updates', $updates );
 				$this->theme->updates= $updates;
+				
+				// cache the set of plugins we just used to check for
+				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
 			}
 		}
 		
