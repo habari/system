@@ -1308,7 +1308,7 @@ class FormControlCheckbox extends FormControl
 				}
 			}
 			else {
-				return $this->default;
+				return $this->get_default();
 			}
 		}
 		return parent::__get($name);
