@@ -1329,7 +1329,7 @@ class FormControlHidden extends FormControl
 	 */
 	public function get($forvalidation)
 	{
-		return '<input type="hidden" name="' . $this->field . '" value="' . $this->default . '">';
+		return '<input type="hidden" name="' . $this->field . '" value="' . $this->get_default() . '">';
 	}
 
 }
