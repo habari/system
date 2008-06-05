@@ -174,7 +174,6 @@ class Posts extends ArrayObject
 							$params[]= (string) $paramset['tag_slug'];
 						}
 					}
-					$groupby= "{posts}.id";
 				}
 
 				if ( isset( $paramset['not:tag'] ) ) {
