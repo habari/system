@@ -54,7 +54,7 @@
 
 
 <div class="container userstats">
-	<? echo Posts::count_by_author( $user->id, Post::status('published') ) . _t(' published posts, ') . Posts::count_by_author( $user->id, Post::status('draft') ) . _t(' pending drafts, and ') . Posts::count_by_author( $user->id, Post::status('private') ) . _t(' private posts'); ?>
+	<?php echo Posts::count_by_author( $user->id, Post::status('published') ) . _t(' published posts, ') . Posts::count_by_author( $user->id, Post::status('draft') ) . _t(' pending drafts, and ') . Posts::count_by_author( $user->id, Post::status('private') ) . _t(' private posts'); ?>
 </div>
 
 
