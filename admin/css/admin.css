@@ -1640,7 +1640,7 @@ body.login input[type=submit] {
 */
 
 html, body {
-	height: 100%; /* Damn you IE! */
+	/*	height: 100%; /* Damn you IE! */
 }
 
 .humanMsg {
@@ -1692,6 +1692,15 @@ body.login .humanMsg {
 	max-height: 200px;
 	display: none;
 	z-index: 10000;
+	opacity: .3;
+	}
+
+#humanMsgLog:hover {
+	opacity: 1;
+	}
+
+#humanMsgLog.logisopen {
+	opacity: 1;
 	}
 
 #humanMsgLog p {
@@ -1706,10 +1715,10 @@ body.login .humanMsg {
 	text-align: center;
 	white-space: pre;
 	cursor: pointer;
-	}
-
-#humanMsgLog p:hover {
-	background: #222;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-topleft: 5px;
 	}
 
 #humanMsgLog ul {
