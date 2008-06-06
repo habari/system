@@ -27,6 +27,7 @@
 
 <div class="container navigation">
 	<span class="pct40">
+
 		<form>
 		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
 			<?php /*
@@ -49,6 +50,11 @@
 	<span class="pct40">
 		<input type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10">
 	</span>
+</div>
+
+
+<div class="container userstats">
+	<? echo Posts::count_by_author( $user->id, Post::status('published') ) . _t(' published posts, ') . Posts::count_by_author( $user->id, Post::status('draft') ) . _t(' pending drafts, and ') . Posts::count_by_author( $user->id, Post::status('private') ) . _t(' private posts'); ?>
 </div>
 
 
