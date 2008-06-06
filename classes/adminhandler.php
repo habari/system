@@ -1705,7 +1705,7 @@ class AdminHandler extends ActionHandler
 		$modules = array(
 			'latestentries' => 'Latest Entries',
 			'latestcomments' => 'Latest Comments',
-			'logs' => 'Logs',
+			'logs' => 'Latest Log Activity',
 		);
 		/* need a means to get a list of available modules... the call below does not
 		function in that way at present */
