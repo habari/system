@@ -514,26 +514,6 @@ p:hover > label.incontent.popup {
 	font-weight: bold;
 	}
 
-#tags_settings ul {
-	text-align: left;
-	margin-right: 50px;
-	margin-left: 10px;
-	}
-
-#tags_settings li {
-	font-family: "Arial", san-serif;
-	font-size: 0.8em;
-	display: inline;
-	line-height: 2.0em;
-	padding: 3px;
-	color: #ccc;
-	cursor: pointer;
-	}
-
-#tags_settings li.clicked {
-	background: #000;
-	}
-
 .viewpost {
 	float: right;
 	}
@@ -654,6 +634,7 @@ p:hover > label.incontent.popup {
 	color: white;
 	}
 
+
 /* -- MEDIA LISTING */
 
 .mediaphotos {
@@ -718,7 +699,6 @@ p:hover > label.incontent.popup {
 	text-indent: -3000px;
 	margin-top: 12px;
 	float: right;
-	margin-right: -5px;
 	}
 
 .mediaphotos li.media img {
@@ -743,6 +723,20 @@ p:hover > label.incontent.popup {
 .mediaphotos li.media .mediastats {
 	padding-left: 5px;
 	height: 42px;
+	}
+
+
+/* MEDIA ACTION DROPBUTTONS */
+
+.mediaactions.dropbutton {
+	position: relative !important;
+	right: 0px !important;
+	min-width: 100% !important;
+	opacity: .8;
+	}
+
+.mediastats {
+	display: none !important;
 	}
 
 
@@ -1004,6 +998,15 @@ body.page-logs .item {
 
 body.page-logs .item input[type=checkbox] {
 	margin-left: 10px;
+	}
+
+
+/* USERS */
+
+.userstats {
+	font: 1.5em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
+	text-align: center;
+	color: #333;
 	}
 
 
@@ -1315,6 +1318,7 @@ body.page-themes #page .dropbutton {
 	line-height: 20px;
 	padding: 2px 0;
 	text-transform: lowercase;
+	white-space: nowrap;
 	}
 
 .tag.selected {
