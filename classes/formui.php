@@ -770,7 +770,7 @@ class FormControl
 					$this->default= Options::get( $location );
 					break;
 				case 'action':
-					$this->default= Plugins::filter($location, '', $name, false);
+					$this->default= Plugins::filter($location, '', $this->name, false);
 					break;
 				case 'null':
 					break;
@@ -811,7 +811,7 @@ class FormControl
 				Options::set( $location, $this->value );
 				break;
 			case 'action':
-				Plugins::filter($location, $this->value, $name, true);
+				Plugins::filter($location, $this->value, $this->name, true);
 				break;
 			case 'null':
 				break;
