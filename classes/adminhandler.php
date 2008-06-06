@@ -1712,7 +1712,7 @@ class AdminHandler extends ActionHandler
 		//$modules = Plugins::filter( 'admin_modules', $modules, $this->theme );
 		
 		$form = new FormUI( 'dash_additem' );
-		$form->append( 'select', 'module', 'null:unused', _t('Add Module') );
+		$form->append( 'select', 'module', 'null:unused' );
 		$form->module->options = $modules;
 		$form->append( 'submit', 'submit', _t('+') );
 		$form->on_success( array( $this, 'dash_additem' ) );
