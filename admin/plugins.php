@@ -102,7 +102,8 @@
 				<input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
 				<input type='hidden' name='action' value='<?php echo $plugin['active'] ? _t('Deactivate') : _t('Activate'); ?>'>
 				<button name='submit' type='submit'><?php echo $plugin['verb']; ?></button>
-			    </li></form>
+			    </form>
+				</li>
 			</ul>
 
 			<?php if( isset( $updates ) ) { ?>
