@@ -1740,67 +1740,6 @@ class AdminHandler extends ActionHandler
 		// return false to redisplay the form
 		return false;
 	}
-
-	/**
-	 * Sets theme variables and handles logic for the
-	 * dashboard's log history module.
-	 */
-	public function filter_dash_module_latest_log_activity( $module_id )
-	{
-		if ( FALSE === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
-			$num_logs = $this->admin_settings['dash_module_logs_number_display'];
-		}
-
-		$params = array(
-			'where' => array(
-				'user_id' => User::identify()->id
-			),
-			'orderby' => 'id DESC', /* Otherwise, exactly same timestamp values muck it up... Plus, this is more efficient to sort on the primary key... */
-			'limit' => $num_logs,
-		);
-		$this->theme->logs = EventLog::get( $params );
-		return $this->theme->fetch( 'dash_logs' );
-	}
-	
-	/**
-	 * filter_dash_module_latest_entries
-	 * Gets the latest entries module
-	 * @param string $module_id
-	 * @return string The contents of the module
-	 */
-	public function filter_dash_module_latest_entries( $module_id )
-	{
-		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
-		return $this->theme->fetch( 'dash_latestentries' );
-	}
-
-	/**
-	 * Function used to set theme variables to the latest comments dashboard widget
-	 */
-	public function filter_dash_module_latest_comments( $module_id )
-	{
-		$post_ids = DB::get_results( 'SELECT DISTINCT post_id FROM ( SELECT date, post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) AS post_ids LIMIT 5', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
-		$posts = array();
-		$latestcomments = array();
-
-		foreach( $post_ids as $comment_post ) {
-			$post = DB::get_row( 'select * from {posts} where id = ?', array( $comment_post->post_id ) , 'Post' );
-			$comments = DB::get_results( 'SELECT * FROM {comments} WHERE post_id = ? AND status = ? AND type = ? ORDER BY date DESC LIMIT 5;', array( $comment_post->post_id, Comment::STATUS_APPROVED, Comment::COMMENT ), 'Comment' );
-			$posts[] = $post;
-			$latestcomments[$post->id] = $comments;
-		}
-
-		$this->theme->latestcomments_posts = $posts;
-		$this->theme->latestcomments = $latestcomments;
-
-		// Create options form
-		$form = new FormUI( 'dash_latestcomments' );
-		$form->append( 'checkbox', 'remove', 'null:unused', _t('Remove this module') );
-		$form->append( 'submit', 'submit', _t('Submit') );
-		$this->theme->latestcomments_form = $form->get();
-		return $this->theme->fetch( 'dash_latestcomments' );
-	}
-
 }
 
 ?>
