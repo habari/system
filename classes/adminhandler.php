@@ -213,40 +213,25 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
+		
+		// get the active module list
+		$modules = Modules::get_active();
 
-		$available_modules = array(
-			array( 'name' => 'latestentries', 'id' => 1 ),
-			array( 'name' => 'latestcomments', 'id' => 1),
-			array( 'name' => 'logs', 'id' => 1),
-		);
-		$modules = User::identify()->info->dash_modules;
-		/* TODO: For now, use a default list of modules if empty, but if empty we should really
-		 * just show the 'add module' module */
-		if ( ! isset( $modules ) || empty( $modules ) ) {
-			$modules = $available_modules;
+		// always include the 'Add Item' module
+		if ( ! in_array( 'Add Item', $modules ) ) {
+			Modules::add( 'Add Item' );
+			$modules = Modules::get_active();
 		}
-		// always include the 'additem' module
-		if ( ! in_array( array( 'name' => 'additem', 'id' => 1 ), $modules ) ) {
-			$modules[] = array( 'name' => 'additem', 'id' => 1 );
-		}
-		// add module templates to array
-		foreach( $modules as $key => $module ) {
-			unset( $modules[$key] );
-			$moduleid = $module['name'] . ':' . $module['id'];
-			$module['template'] = 'dash_' . $module['name'];
-			$modules[$moduleid] = $module;
-		}
-		$modules= Plugins::filter( 'admin_modules_theme', $modules, $this->theme );
+
+		// register the 'Add Item' filter
+		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
+
 		foreach( $modules as $id => $module ) {
-			$themeinit = 'fetch_dash_module_' . $module['name'];
-			if( method_exists( $this, $themeinit ) ) {
-				/* TODO modify fetch functions to take a module ID for the case of
-				duplicate modules */
-				$this->$themeinit($this->theme);
-			}
-			$modules[$id]['content'] = $this->theme->fetch($module['template']);
+			$slug = Utils::slugify( $module, '_' );
+			$content = Plugins::filter( 'dash_module_' . $slug, $id );
+			$modules[$id] = array( 'name' => $module, 'content' => $content );
 		}
-		$this->theme->modules= Plugins::filter( 'admin_modules', $modules, $this->theme );
+		$this->theme->modules = $modules;
 
 		$this->display( 'dashboard' );
 	}
@@ -1052,13 +1037,18 @@ class AdminHandler extends ActionHandler
 			foreach($_POST as $key => $module ) {
 				// skip POST elements which are not module names
 				if ( preg_match( '/^module\d+$/', $key ) ) {
-					preg_match( '/^(.+):(\d+)$/', $module, $matches );
-					$modules[] = array( 'name' => $matches[1], 'id' => $matches[2] );
+					list( $module_id, $module_name ) = split( ':', $module, 2 );
+					$modules[$module_id] = $module_name;
 				}
 			}
-			$u = User::identify();
-			$u->info->dash_modules = $modules;
-			$u->info->commit();
+
+			Modules::set_active( $modules );
+			break;
+		case 'removeModule':
+			Modules::remove( $handler_vars['moduleid'] );
+			$result = array();
+			$result['message'] = 'Removed module';
+			return json_encode( $result );
 			break;
 		}
 	}
@@ -1700,23 +1690,21 @@ class AdminHandler extends ActionHandler
 	 * Function used to set theme variables to the add module dashboard widget
 	 * TODO make this form use an AJAX call instead of reloading the page
 	 */
-	public function fetch_dash_module_additem()
+	public function filter_dash_module_add_item( $module_id )
 	{
-		$modules = array(
-			'latestentries' => 'Latest Entries',
-			'latestcomments' => 'Latest Comments',
-			'logs' => 'Latest Log Activity',
-		);
-		/* need a means to get a list of available modules... the call below does not
-		function in that way at present */
-		//$modules = Plugins::filter( 'admin_modules', $modules, $this->theme );
-		
+		$modules = Modules::get_all();
+		foreach( $modules as $key => $module ) {
+			unset( $modules[$key] );
+			$modules[$module] = $module;
+		}
+	
 		$form = new FormUI( 'dash_additem' );
 		$form->append( 'select', 'module', 'null:unused' );
 		$form->module->options = $modules;
 		$form->append( 'submit', 'submit', _t('+') );
 		$form->on_success( array( $this, 'dash_additem' ) );
 		$this->theme->additem_form = $form->get();
+		return $this->theme->fetch( 'dash_additem' );
 	}
 	
 	/**
@@ -1725,11 +1713,9 @@ class AdminHandler extends ActionHandler
 	 */
 	public function dash_additem( $form )
 	{
-		$u = User::identify();
-		$modules = $u->info->dash_modules;
+		$modules = Modules::get_active();
 		$new_module = $form->module->value;
 		if ( empty( $modules) ) {
-			$modules = array();
 			$modules[] = array( 'name' => $new_module, 'id' => 1 );
 		}
 		else {
@@ -1748,9 +1734,8 @@ class AdminHandler extends ActionHandler
 			}
 			$modules[] = array( 'name' => $new_module, 'id' => $id );
 		}
-
-		$u->info->dash_modules = $modules;
-		$u->info->commit();
+		
+		Modules::set_active( $modules );
 
 		// return false to redisplay the form
 		return false;
@@ -1760,32 +1745,41 @@ class AdminHandler extends ActionHandler
 	 * Sets theme variables and handles logic for the
 	 * dashboard's log history module.
 	 */
-	private function fetch_dash_module_logs()
+	public function filter_dash_module_latest_log_activity( $module_id )
 	{
-		if ( FALSE === ( $num_logs= User::identify()->info->dash_module_logs_number_display ) )
-			$num_logs= $this->admin_settings['dash_module_logs_number_display'];
+		if ( FALSE === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
+			$num_logs = $this->admin_settings['dash_module_logs_number_display'];
+		}
 
-		$params= array(
-			'where'=> array(
-				'user_id'=> User::identify()->id
-			)
-			, 'orderby'=> 'id DESC' /* Otherwise, exactly same timestamp values muck it up... Plus, this is more efficient to sort on the primary key... */
-			, 'limit'=> $num_logs
+		$params = array(
+			'where' => array(
+				'user_id' => User::identify()->id
+			),
+			'orderby' => 'id DESC', /* Otherwise, exactly same timestamp values muck it up... Plus, this is more efficient to sort on the primary key... */
+			'limit' => $num_logs,
 		);
-		$this->theme->logs= EventLog::get( $params );
-
+		$this->theme->logs = EventLog::get( $params );
+		return $this->theme->fetch( 'dash_logs' );
+	}
+	
+	/**
+	 * filter_dash_module_latest_entries
+	 * Gets the latest entries module
+	 * @param string $module_id
+	 * @return string The contents of the module
+	 */
+	public function filter_dash_module_latest_entries( $module_id )
+	{
+		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
+		return $this->theme->fetch( 'dash_latestentries' );
 	}
 
 	/**
 	 * Function used to set theme variables to the latest comments dashboard widget
 	 */
-	public function fetch_dash_module_latestcomments()
+	public function filter_dash_module_latest_comments( $module_id )
 	{
-		$num_posts = User::identify()->info->dash_latestcomments_number;
-		if ( ! isset( $num_posts ) || ! is_numeric( $num_posts ) ) {
-			$num_posts = 5;
-		}
-		$post_ids = DB::get_results( 'SELECT DISTINCT post_id FROM ( SELECT date, post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) AS post_ids LIMIT ' . $num_posts, array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
+		$post_ids = DB::get_results( 'SELECT DISTINCT post_id FROM ( SELECT date, post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) AS post_ids LIMIT 5', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
 		$posts = array();
 		$latestcomments = array();
 
@@ -1801,13 +1795,12 @@ class AdminHandler extends ActionHandler
 
 		// Create options form
 		$form = new FormUI( 'dash_latestcomments' );
-		$form_select = $form->append( 'select', 'lastest_comments', 'user:number', _t('# of Entries'), '5' );
-		$form_select->options = array(
-			'5' => '5', '10' => '10',
-			);
+		$form->append( 'checkbox', 'remove', 'null:unused', _t('Remove this module') );
 		$form->append( 'submit', 'submit', _t('Submit') );
 		$this->theme->latestcomments_form = $form->get();
+		return $this->theme->fetch( 'dash_latestcomments' );
 	}
+
 }
 
 ?>

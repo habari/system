@@ -29,8 +29,25 @@ var dashboard = {
 			habari.url.ajaxDashboard,
 			query,
 			function() {
-		     		spinner.stop();
+		     	spinner.stop();
 				$('.modules').sortable('enable');
+			});
+	},
+	remove: function( id ) {
+		spinner.start();
+		// disable dragging and dropping while we update
+		$('.modules').sortable('disable');
+		var query = {};
+		query['action'] = 'removeModule';
+		query['moduleid'] = id;
+		$.post(
+			habari.url.ajaxDashboard,
+			query,
+			function( result) {
+		     	spinner.stop();
+				// replace modules div HTML
+				$('.modules').sortable('enable');
+				humanMsg.displayMsg( result.message );
 			});
 	}
 }

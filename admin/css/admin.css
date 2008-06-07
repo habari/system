@@ -847,24 +847,24 @@ p:hover > label.incontent.popup {
 	text-align: right;
 	}
 
-.dashboard .module.additemmodule .modulecore {
+.dashboard .module.add-item-module .modulecore {
 	height: 0px;
 	}
 
-.dashboard .module.additemmodule h2,
-.dashboard .module.additemmodule form {
+.dashboard .module.add-item-module h2,
+.dashboard .module.add-item-module form {
 	position: absolute;
 	top: 16px;
 	}
 
-.dashboard .module.additemmodule form {
+.dashboard .module.add-item-module form {
 	left: 120px;
 	}
 
-.dashboard .module.additemmodule select {
+.dashboard .module.add-item-module select {
 	width: 230px;
 	}
-.dashboard .module.additemmodule .formcontrol {
+.dashboard .module.add-item-module .formcontrol {
 	display: inline;
 }
 
@@ -934,22 +934,22 @@ p:hover > label.incontent.popup {
 
 /* DASHBOARD - LATEST COMMENTS MODULE*/
 
-.dashboard .latestcommentsmodule .item {
+.dashboard .latest-comments-module .item {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	}
 
-.dashboard .latestcommentsmodule .item > span {
+.dashboard .latest-comments-module .item > span {
 	float: left;
 	}
 
-.dashboard .latestcommentsmodule .titleanddate {
+.dashboard .latest-comments-module .titleanddate {
 	margin-top: 5px;
 	line-height: 16px;
 	color: #ddd;
 	}
 
-.dashboard .latestcommentsmodule ul {
+.dashboard .latest-comments-module ul {
 	margin-bottom: 5px;
 	line-height: 13px;
 	white-space: nowrap;
@@ -957,23 +957,23 @@ p:hover > label.incontent.popup {
 	overflow: hidden;
 	}
 
-.dashboard .latestcommentsmodule ul.commentauthors li {
+.dashboard .latest-comments-module ul.commentauthors li {
 	display: inline;
 	}
 
-.dashboard .latestcommentsmodule ul li:after {
+.dashboard .latest-comments-module ul li:after {
 	content: ', ';
 	}
 
-.dashboard .latestcommentsmodule ul li.last-child:after {
+.dashboard .latest-comments-module ul li.last-child:after {
 	content: '';
 	}
 
-.dashboard .latestcommentsmodule .commentauthors a:hover {
+.dashboard .latest-comments-module .commentauthors a:hover {
 	opacity: 100 !important;
 	}
 
-.dashboard .latestcommentsmodule .comments {
+.dashboard .latest-comments-module .comments {
 	position: absolute;
 	right: 3%;
 	line-height: 37px;
