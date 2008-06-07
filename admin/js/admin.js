@@ -281,6 +281,11 @@ var timeline = {
 		})
 		.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
 
+		// Fix width of years, so they don't spill into the next year
+		$('.year > span').each( function() {
+			$(this).width( $(this).parents('.year').width() - 4 )
+		})
+
 		// update the do_search state variable
 		timeline.do_search= true;
 	},
