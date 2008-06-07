@@ -1155,24 +1155,16 @@ body.page-themes #page .dropbutton {
 
 /* COMMENTS */
 
-.container.controls {
-	padding-bottom: 0 !important;
-	background: red;
+#comments .item.spam {
+	border-left: 3px solid #f8595f;
+	border-right: 3px solid #f8595f;
 	}
 
-.comments .infoandcontent > span {
-	float: left;
+#comments .item.unapproved {
+	border-left: 3px solid #fcd915;
+	border-right: 3px solid #fcd915;
 	}
 
-.comments .item {
-	padding: 9px 0;
-	border-bottom: 1px dotted #e6e6e6;
-	}
-
-.comments .item .authorinfo a {
-	float: left;
-	margin-left: 14%;
-	}
 
 .controls input[type=button] {
 	width: 80px;
