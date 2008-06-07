@@ -1056,6 +1056,14 @@ body.page-options .item {
 	clear: both;
 	}
 
+.plugins #pluginconfigure form {
+	background-color:#f8f8f8;
+	border:#bbb 1px solid;
+	padding:12px;
+	margin-bottom:5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
 
 /* THEMES */
 
