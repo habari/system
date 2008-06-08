@@ -203,6 +203,12 @@ class Comment extends QueryRecord implements IsContent
 			case 'info':
 				$out = $this->get_info();
 				break;
+			case 'statusname':
+				$out= self::status_name( $this->status );
+				break;
+			case 'typename':
+				$out = self::type_name( $this->type );
+				break;
 			default:
 				$out = parent::__get( $name );
 				break;

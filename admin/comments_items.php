@@ -1,6 +1,6 @@
 <?php foreach( $comments as $comment ) : ?>
 
-<div class="item clear <?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) { echo 'unapproved'; } ?> <?php if ( $comment->status == Comment::STATUS_APPROVED ) { echo 'approved'; } ?> <?php if ( $comment->status == Comment::STATUS_SPAM ) { echo 'spam'; } ?>" id="comment_<?php echo $comment->id; ?>">
+<div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>">
 	<div class="head clear">
 		<span class="checkboxandtitle pct25">
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
