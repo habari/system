@@ -36,7 +36,10 @@ class Modules
 	{
 		if ( empty ( self::$modules ) ) {
 			$modules = User::identify()->info->dash_modules;
-			self::$modules = ( isset( $modules ) ) ? $modules : array();
+			if ( ! is_array( $modules ) ) {
+				$modules= array();
+			}
+			self::$modules = $modules;
 		}
 
 		return self::$modules;
