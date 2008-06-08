@@ -76,6 +76,28 @@ class Undelete extends Plugin
 	}
 
 	/**
+	 * function filter_comment_insert_allow
+	 * This function is executed whenever a new comment is about to be
+	 * 	inserted into the database.  If the post to which this comment
+	 *	is to be attached has a status of 'deleted', then it should
+	 *	not be saved.
+	 * @param bool Whether to allow the comment to be inserted
+	 * @param Comment the comment object that is to be inserted
+	 * @return bool Whether to permit the comment to be inserted
+	**/
+	public function filter_comment_insert_before( $result, $comment )
+	{
+		$post= Post::get( array( 'id' => $comment->post_id ) );
+		if ( ! $post ) {
+			return false;
+		}
+		if ( Post::status('deleted') == $post->status ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * function undelete_post
 	 * This function reverts a post's status from 'deleted' to whatever
 	 * it previously was.
@@ -88,11 +110,17 @@ class Undelete extends Plugin
 		$post->update();
 	}
 
-/*
-	public function filter_rewrite_rules()
+	public function filter_admin_content_list_post_statuses( $statuses )
 	{
+		$user= User::identify();
+		if ( ! $user ) {
+			return $statuses;
+		}
+		if ( $user->can('undelete_view_deleted') ) {
+			$statuses['deleted']= Post::status('deleted');
+		}
+		return $statuses;
 	}
-*/
 
 	public function filter_plugin_config( $actions, $plugin_id )
 	{
