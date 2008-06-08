@@ -25,14 +25,14 @@
 		<?php
 		$content_type_msg= array();
 		if ( !empty( $stats['page_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ) . '">';
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'page' ), '%d ' . _t( 'pages' ), $stats['page_count'] ), $stats['page_count'] );
 			$message.= '</a>';
 			$content_type_msg[]= $message;
 		}
 		if ( !empty( $stats['entry_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'entry' ), '%d ' . _t( 'entries' ), $stats['entry_count'] ), $stats['entry_count'] );
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'post' ), 'status' => Post::status( 'published' ) ) ) . '">';
+			$message.= sprintf( _n( '%d ' . _t( 'post' ), '%d ' . _t( 'posts' ), $stats['entry_count'] ), $stats['entry_count'] );
 			$message.= '</a>';
 			$content_type_msg[]= $message;
 		}
@@ -66,19 +66,19 @@
 		<p><?php
 		$message_bits= array();
 		if ( ! empty( $stats['entry_draft_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'entry draft' ), '%d ' . _t( 'entry drafts' ), $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'post' ), 'status' => Post::status( 'draft' ) ) ) . '">';
+			$message.= sprintf( _n( '%d ' . _t( 'post draft' ), '%d ' . _t( 'post drafts' ), $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
 		if ( ! empty( $stats['user_entry_scheduled_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'scheduled' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'scheduled entry' ), '%d ' . _t( 'scheduled entries' ), $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'post' ), 'status' => Post::status( 'scheduled' ) ) ) . '">';
+			$message.= sprintf( _n( '%d ' . _t( 'scheduled post' ), '%d ' . _t( 'scheduled posts' ), $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
 		if ( ! empty( $stats['page_draft_count'] ) ) {
-			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'entries', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) . '">';
+			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'page draft' ), '%d ' . _t( 'page drafts' ), $stats['page_draft_count'] ), $stats['page_draft_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;

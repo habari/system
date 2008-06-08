@@ -49,7 +49,7 @@
 			<span class="aka pct 100">
 				<strong><?php echo $user->username ?></strong> 
 				<?php _e('was last seen'); ?> <strong><?php echo date('M j, Y', strtotime($user->info->authenticate_time)) ?> at <?php echo date('H:i', strtotime($user->info->authenticate_time)) ?></strong>
-				<?php _e('and currently has') ?> <strong><?php echo Posts::count_by_author( $user->id, Post::status('published') ) . _t(' published posts, ') . Posts::count_by_author( $user->id, Post::status('draft') ) . _t(' pending drafts, and ') . Posts::count_by_author( $user->id, Post::status('private') ) . _t(' private posts'); ?></strong>
+				<?php _e('and currently has') ?> <strong><?php echo Posts::count_by_author( $user->id, Post::status('published') ) . _t(' published posts, ') . Posts::count_by_author( $user->id, Post::status('draft') ) . _t(' pending drafts and ') . Posts::count_by_author( $user->id, Post::status('private') ) . _t(' private posts'); ?></strong>
 			</span>
 		</li>
 
