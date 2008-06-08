@@ -328,13 +328,6 @@ body, textarea, #footer {
 	color: #333;
 	}
 
-.wideitems .item {
-	margin-left: -40px;
-	padding-left: 5px;
-	margin-right: -40px;
-	padding-right: 5px;
-	}
-
 span.dim {
 	font-weight: normal;
 	color: #555;
@@ -1068,8 +1061,8 @@ body.page-user .userstats {
 /* OPTIONS */
 
 body.page-options .item {
-	padding: 1px;
-	border: none;
+	padding-top: 2px;
+	padding-bottom: 2px;
 	}
 
 

@@ -17,7 +17,7 @@
 		</ul>
 	</div>
 
-	<span class="content" ><?php echo substr( strip_tags( $post->content ), 0, 200); ?>&hellip;</span>
+	<span class="content" ><?php echo substr( strip_tags( $post->content ), 0, 250); ?>&hellip;</span>
 </div>
 
 <?php endforeach; ?>

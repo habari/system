@@ -27,7 +27,7 @@
 
 </div>
 
-<div class="container wideitems">
+<div class="container">
 
 	<div class="item clear">
 		<div class="head clear">
@@ -65,7 +65,7 @@
 </div>
 
 
-<div class="container transparent wideitems">
+<div class="container transparent">
 
 	<div class="item controls">
 		<span class="pct25">
