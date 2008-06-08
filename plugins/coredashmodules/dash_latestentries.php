@@ -1,5 +1,3 @@
-<div class="options">&nbsp;</div>
-
 <div class="modulecore">
 	<h2><a href="<?php Site::out_url('admin'); ?>/entries?type=1"><?php _e('Latest Entries'); ?></a></h2>
 
@@ -16,23 +14,4 @@
 		<?php endforeach; ?>
 
 	</ul>
-</div>
-
-<div class="optionswindow">
-	<h2><?php _e('Latest Entries'); ?></h2>
-
-	<div class="handle">&nbsp;</div>
-
-	<div class="optionscontent">
-		<p>
-			<label for="dummy" class="pct30"><?php _e('# of Entries'); ?></label>
-			<select class="pct55">
-				<option>10</option>
-			</select>
-		</p>
-
-		<p class="buttons">
-			<input type="submit" value="<?php _e('Submit'); ?>">
-		</p>
-	</div>
 </div>
