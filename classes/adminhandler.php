@@ -225,10 +225,13 @@ class AdminHandler extends ActionHandler
 
 		// register the 'Add Item' filter
 		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
-
+		
 		foreach( $modules as $id => $module ) {
 			$slug = Utils::slugify( $module, '_' );
-			$content = Plugins::filter( 'dash_module_' . $slug, $id );
+			$content = '';
+			if ( ! $content = Plugins::filter( 'dash_module_' . $slug, $content, $id, $this->theme ) ) {
+				$content = $this->theme->fetch( 'dash_module_' . $slug );
+			}
 			$modules[$id] = array( 'name' => $module, 'content' => $content );
 		}
 		$this->theme->modules = $modules;
@@ -1693,9 +1696,8 @@ class AdminHandler extends ActionHandler
 	public function filter_dash_module_add_item( $module_id )
 	{
 		$modules = Modules::get_all();
-		foreach( $modules as $key => $module ) {
-			unset( $modules[$key] );
-			$modules[$module] = $module;
+		if ( $modules ) {
+			$modules = array_combine( array_values( $modules ), array_values( $modules ) );
 		}
 	
 		$form = new FormUI( 'dash_additem' );
@@ -1713,30 +1715,9 @@ class AdminHandler extends ActionHandler
 	 */
 	public function dash_additem( $form )
 	{
-		$modules = Modules::get_active();
 		$new_module = $form->module->value;
-		if ( empty( $modules) ) {
-			$modules[] = array( 'name' => $new_module, 'id' => 1 );
-		}
-		else {
-			// find a unique id for the module
-			$ids = array();
-			foreach ( $modules as $module ) {
-				if ( $module['name'] == $new_module ) {
-					$ids[] = $module['id'];
-				}
-			}
-			if ( count( $ids ) > 0 ) {
-				$id = max( $ids ) + 1;
-			}
-			else {
-				$id = 1;
-			}
-			$modules[] = array( 'name' => $new_module, 'id' => $id );
-		}
+		Modules::add( $new_module );
 		
-		Modules::set_active( $modules );
-
 		// return false to redisplay the form
 		return false;
 	}
