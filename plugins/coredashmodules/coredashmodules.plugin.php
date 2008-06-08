@@ -36,7 +36,7 @@ class CoreDashModules extends Plugin
 	{
 		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
 			$modules = array(
-				'Latest Entries',
+				'Latest Posts',
 				'Latest Comments',
 				'Latest Log Activity',
 			);
@@ -66,7 +66,7 @@ class CoreDashModules extends Plugin
 	{
 		if(Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__)) {
 			$modules = array(
-				'Latest Entries',
+				'Latest Posts',
 				'Latest Comments',
 				'Latest Log Activity',
 			);
