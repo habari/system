@@ -4,4 +4,3 @@
 	<?php echo $additem_form; ?>
 
 </div>
-

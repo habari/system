@@ -93,8 +93,8 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 			$('.entries').html(json.items);
 			spinner.stop();
 			itemManage.initItems();
-			$('.modulecore .item:first-child, ul li:first-child').addClass('first-child').show();
-			$('.modulecore .item:last-child, ul li:last-child').addClass('last-child');
+			console.log('test')
+			findChildren();
 		}
 	});
 };

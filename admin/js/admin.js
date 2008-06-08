@@ -234,11 +234,11 @@ var timeline = {
 		var viewWidth= $('.timeline').width();
 		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
-		// set up pointers to elements for speed
+		// Set up pointers to elements for speed
 		timeline.view= $('.timeline');
 		timeline.handle= $('.handle', timeline.view);
 
-		// get an array of posts per month
+		// Get an array of posts per month
 		timeline.monthData= [0];
 		timeline.monthWidths= [0];
 		timeline.totalCount= 0;
@@ -248,10 +248,10 @@ var timeline = {
 			timeline.totalCount += timeline.monthData[i];
 		});
 
-		// find the width which makes the loupe select 20 items
+		// Find the width which makes the loupe select 20 items
 		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
 
-		// make the slider bounded by the view
+		// Make the slider bounded by the view
 		var maxSliderValue= Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		/* Initialize the timeline handle. We need to do this before we create the slider because
@@ -807,7 +807,7 @@ $(document).ready(function(){
 	// Move labels into elements. Use with usability-driven care.
 	$('label.incontent').each(function(){
 		if ($('#habari_password').length > 0)
-			document.getElementById('habari_password').type = 'text';
+			document.getElementById('habari_password').type = 'text'; // Can't do this with jQuery for some reason
 
 		var ctl = '#' + $(this).attr('for');
 		if($(ctl).val() == '') {
