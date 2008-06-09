@@ -9,7 +9,57 @@
 class Modules
 {
 	private static $available_modules = array();
-	private static $modules = array();
+	private static $active_modules = array();
+	private static $module_order = array();
+	
+	/**
+	 * static intializer to setup base vars.
+	 */
+	public function __static()
+	{
+		self::$available_modules = Options::get( 'dash_available_modules' );
+		self::$active_modules = User::identify()->info->dashboard_modules ?  User::identify()->info->dashboard_modules : array();
+		
+		// check if we have orphaned active modules.
+		foreach( array_keys(self::$active_modules) as $module_name ) {
+			if ( empty(self::$available_modules[$module_name]) ) {
+				unset( self::$active_modules[$module_name] );
+				self::commit();
+			}
+		}
+	}
+	
+	/**
+	 * Registers a module to make it available in the 'add item' module
+	 * @param string $name module name
+	 */
+	public function register( $module )
+	{
+		self::$available_modules[Utils::slugify( $module, '_' )] = $module;
+		self::commit();
+	}
+	
+	/**
+	 * Unregisters a module to make it available in the 'add item' module
+	 * @param string $name module name
+	 */
+
+	public function unregister( $module )
+	{
+		if ( isset( self::$available_modules[Utils::slugify($module)] ) ) {
+			unset( self::$available_modules[Utils::slugify($module)] );
+		}
+		if ( isset( self::$active_modules[Utils::slugify($module)] ) ) {
+			unset( self::$active_modules[Utils::slugify($module)] );
+		}
+		self::commit();
+	}
+	
+	/**
+	 * DEPRECATED do not use this. use activate()
+	 * @deprecated
+	 */
+	public static function add(){}
 	
 	/**
 	 * function get_all
@@ -18,11 +68,6 @@ class Modules
 	 */
 	public static function get_all()
 	{
-		if ( empty( self::$available_modules ) ) {
-			$modules = Options::get( 'dash_available_modules' );
-			self::$available_modules = ( isset( $modules ) ) ? $modules : array();
-		}
-
 		return self::$available_modules;		
 	}
 	
@@ -34,157 +79,123 @@ class Modules
 	 */
 	public static function get_active()
 	{
-		if ( empty ( self::$modules ) ) {
-			$modules = User::identify()->info->dash_modules;
-			if ( ! is_array( $modules ) ) {
-				$modules= array();
-			}
-			self::$modules = $modules;
-		}
-
-		return self::$modules;
+		return self::$active_modules;
 	}
 	
 	/**
-	 * function set_active
-	 * Saves the list of active modules to the userinfo table
-	 * @param array An associative array of module names with the moduleIDs at keys.
-	 */
-	public static function set_active( $modules )
-	{
-		self::$modules = $modules;
-		$u = User::identify();
-		$u->info->dash_modules = $modules;
-		$u->info->commit();
-	}
-	
-	/**
-	 * function register
-	 * Registers a module to make it available in the 'add item' module
-	 * @param string $name module name
-	 */
-	public static function register( $name )
-	{
-		$modules = Modules::get_all();
-		$modules[] = $name;
-		self::$available_modules = array_unique( $modules );
-		Options::set( 'dash_available_modules', self::$available_modules );
-	}
-	
-	/**
-	 * function unregister
-	 * Unregisters a module to remove it from the 'add item' module list
-	 * @param string $name module name
-	 */
-	public static function unregister( $name )
-	{
-		// remove any instances currently on the dashboard
-		Modules::remove_by_name( $name );
-		
-		// remove from available modules list
-		$modules = Modules::get_all();
-		self::$available_modules = array_diff( $modules, array( $name ) );
-		Options::set( 'dash_available_modules', self::$available_modules );
-	}
-	
-	/**
-	 * function add
 	 * Adds a module to the user's dashboard. Generate a unique module ID
 	 * @param string $module_name the name of the module to add
 	 * @return string A unique module id.
 	 */
-	public static function add( $module_name )
+	public static function activate( $module_name )
 	{
-		$modules = self::get_active();
-		if ( ! isset( $modules ) || empty( $modules) ) {
-			$modules = array();
-			$id = '1';
+		if ( isset( self::$available_modules[$module_name] ) ) {
+			self::$active_modules = array_unique( 
+				array_merge(
+					(array) self::$active_modules,
+					array( $module_name => self::$available_modules[$module_name] )
+					)
+				);
+			self::commit();
+			return true;
 		}
-		else {
-			// create a unique id for the module
-			$ids = array_keys( $modules );
-			foreach( $ids as $key => $id ) {
-				$ids[$key] = (int) $id;
-			}
-			$id = max( $ids ) + 1;
-			$id = '' + $id;
-		}
-
-		$modules[$id] = $module_name;
-		self::set_active( $modules );
-		return $id;
+		return false;
 	}
 	
 	/**
-	 * function remove
 	 * Removes a module from the user's dashboard
 	 * @param string $module_id The ID of the module to remove
 	 */
-	public static function remove( $module_id )
+	public static function deactivate( $module_name )
 	{
-		$modules = self::get_active();
-		unset( $modules[$module_id] );
-		self::set_active( $modules );
+		if ( isset( self::$active_modules[$module_name] ) ) {
+			unset( self::$active_modules[$module_name] );
+			return true;
+		}
+		return false;
 	}
 	
 	/**
-	 * function remove_by_name
-	 * Removes all modules with a given name from the user's dashboard
-	 * @param string $module_name
+	 * Save the current state of all modules
+	 * @param string $module_id The ID of the module to remove
 	 */
-	public static function remove_by_name( $module_name )
+	private function commit()
 	{
-		$modules = self::get_active();
-		
-		foreach( $modules as $key => $module ) {
-			if ( $module == $module_name ) {
-				unset( $modules[$key] );
+		Options::set( 'dash_available_modules', self::$available_modules );
+		$u = User::identify();
+		$u->info->dashboard_modules = self::$active_modules;
+		$u->info->commit();
+	}
+	
+	/**
+	 * Sort modules based on the provided array of "module slug names"
+	 * @param string $module_id The ID of the module to remove
+	 */
+	public static function sort( $order )
+	{
+		$ordered_modules = array();
+		foreach( $order as $module_name ) {
+			if ( isset( self::$active_modules[$module_name] ) ) {
+				$ordered_modules[$module_name] = self::$active_modules[$module_name];
 			}
 		}
-		
-		self::set_active( $modules );
+		self::$active_modules = $ordered_modules;
+		self::commit();
 	}
 	
 	/**
-	 * function storage_name ( $module_id, $option )
 	 * Gets the storage name for a module option
 	 * @param string $module_id the module id
 	 * @param string $option the option name
 	 * @return string storage name for the module option
 	 */
-	private static function storage_name( $module_id, $option )
+	private static function storage_name( $module_name, $option )
 	{
-		$modules = self::get_active();
-		$module_name = $modules[$module_id];
-		return Utils::slugify( $module_name ) . ':' . $module_id . ':' . $option;
+		return 'dashboard_' . $module_name . '_' . $option;
 	}
 	
 	/**
-	 * function set_option
 	 * Sets a module option
 	 * @param string $module_id
 	 * @param string $option
 	 * @param mixed $value
 	 */
-	public static function set_option( $module_id, $option, $value )
+	public static function set_option( $module_name, $option, $value )
 	{
-		$storage_name = self::storage_name( $module_id, $option );
+		$storage_name = self::storage_name( $module_name, $option );
 		$u = User::identify();
 		$u->info->$storage_name = $value;
 		$u->info->commit();
 	}
 
 	/**
-	 * function get_option
 	 * Gets a module option
 	 * @param string $module_id
 	 * @param string $option
 	 * @return mixed The option value
 	 */
-	public static function get_option( $module_id, $option )
+	public static function get_option( $module_name, $option )
 	{
-		$storage_name = self::storage_name( $module_id, $option );
+		$storage_name = self::storage_name( $module_name, $option );
 		return User::identify()->info->$storage_name;	
+	}
+	
+	/**
+	 * Function used to set theme variables to the add module dashboard widget
+	 */
+	public function add_item_form()
+	{
+		$form = new FormUI( 'dash_additem' );
+		$form->set_option( 'ajax', true );
+		$form->set_option( 'form_action', URL::get('admin_ajax', array('context' => 'dashboard')) );
+		$form->properties['onsubmit'] = "dashboard.add(); return false;";
+		
+		$form->append( 'select', 'module', 'null:unused' );
+		$form->module->options = self::$available_modules;
+		$form->module->id = 'dashboard-add-module';
+		$form->append( 'submit', 'submit', _t('Add Item') );
+		$form->on_success( create_function( '$form', 'Modules::activate( $form->module->value ); return false;' ) );
+		return $form->get();
 	}
 }
 ?>
