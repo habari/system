@@ -9,7 +9,24 @@
 class Modules
 {
 	private static $available_modules = array();
-	private static $modules = array();
+	private static $active_modules = array();
+	
+   /**
+     * static initializer to setup base vars.
+     */
+	public function __static()
+	{
+		self::$available_modules = Options::get( 'dash_available_modules' );
+		self::$active_modules = isset( User::identify()->info->dash_modules ) ?  User::identify()->info->dash_modules : array();
+
+		// check if we have orphaned active modules.
+		foreach( self::$active_modules as $id => $module_name ) {
+			if ( ! in_array($module_name, self::$available_modules) ) {
+				unset( self::$active_modules[$id] );
+				self::commit_active();
+			}
+		}
+	}
 	
 	/**
 	 * function get_all
@@ -18,11 +35,6 @@ class Modules
 	 */
 	public static function get_all()
 	{
-		if ( empty( self::$available_modules ) ) {
-			$modules = Options::get( 'dash_available_modules' );
-			self::$available_modules = ( isset( $modules ) ) ? $modules : array();
-		}
-
 		return self::$available_modules;		
 	}
 	
@@ -34,15 +46,7 @@ class Modules
 	 */
 	public static function get_active()
 	{
-		if ( empty ( self::$modules ) ) {
-			$modules = User::identify()->info->dash_modules;
-			if ( ! is_array( $modules ) ) {
-				$modules= array();
-			}
-			self::$modules = $modules;
-		}
-
-		return self::$modules;
+		return self::$active_modules;
 	}
 	
 	/**
@@ -52,10 +56,8 @@ class Modules
 	 */
 	public static function set_active( $modules )
 	{
-		self::$modules = $modules;
-		$u = User::identify();
-		$u->info->dash_modules = $modules;
-		$u->info->commit();
+		self::$active_modules = $modules;
+		self::commit_active();
 	}
 	
 	/**
@@ -65,10 +67,9 @@ class Modules
 	 */
 	public static function register( $name )
 	{
-		$modules = Modules::get_all();
-		$modules[] = $name;
-		self::$available_modules = array_unique( $modules );
-		Options::set( 'dash_available_modules', self::$available_modules );
+		self::$available_modules[] = $name;
+		self::$available_modules = array_unique( self::$available_modules );
+		self::commit();
 	}
 	
 	/**
@@ -80,11 +81,9 @@ class Modules
 	{
 		// remove any instances currently on the dashboard
 		Modules::remove_by_name( $name );
-		
-		// remove from available modules list
-		$modules = Modules::get_all();
-		self::$available_modules = array_diff( $modules, array( $name ) );
-		Options::set( 'dash_available_modules', self::$available_modules );
+		self::$available_modules = array_diff( self::$available_modules, array( $name ) );
+		self::commit_active();
+		self::commit();
 	}
 	
 	/**
@@ -95,14 +94,13 @@ class Modules
 	 */
 	public static function add( $module_name )
 	{
-		$modules = self::get_active();
-		if ( ! isset( $modules ) || empty( $modules) ) {
-			$modules = array();
+		if ( empty( self::$active_modules) ) {
 			$id = '1';
 		}
 		else {
 			// create a unique id for the module
-			$ids = array_keys( $modules );
+			$ids = array_keys( self::$active_modules );
+			// convert IDs to integers so we can find the max
 			foreach( $ids as $key => $id ) {
 				$ids[$key] = (int) $id;
 			}
@@ -110,8 +108,8 @@ class Modules
 			$id = '' + $id;
 		}
 
-		$modules[$id] = $module_name;
-		self::set_active( $modules );
+		self::$active_modules[$id] = $module_name;
+		self::commit_active();
 		return $id;
 	}
 	
@@ -122,9 +120,8 @@ class Modules
 	 */
 	public static function remove( $module_id )
 	{
-		$modules = self::get_active();
-		unset( $modules[$module_id] );
-		self::set_active( $modules );
+		unset( self::$active_modules[$module_id] );
+		self::commit_active();
 	}
 	
 	/**
@@ -134,15 +131,12 @@ class Modules
 	 */
 	public static function remove_by_name( $module_name )
 	{
-		$modules = self::get_active();
-		
-		foreach( $modules as $key => $module ) {
+		foreach( self::$active_modules as $key => $module ) {
 			if ( $module == $module_name ) {
-				unset( $modules[$key] );
+				unset( self::$active_modules[$key] );
 			}
 		}
-		
-		self::set_active( $modules );
+		self::commit_active();
 	}
 	
 	/**
@@ -154,8 +148,7 @@ class Modules
 	 */
 	private static function storage_name( $module_id, $option )
 	{
-		$modules = self::get_active();
-		$module_name = $modules[$module_id];
+		$module_name = self::$active_modules[$module_id];
 		return Utils::slugify( $module_name ) . ':' . $module_id . ':' . $option;
 	}
 	
@@ -185,6 +178,26 @@ class Modules
 	{
 		$storage_name = self::storage_name( $module_id, $option );
 		return User::identify()->info->$storage_name;	
+	}
+	
+	/**
+	 * function commit
+	 * Saves the available modules list to the options table
+	 */
+	public static function commit()
+	{
+		Options::set( 'dash_available_modules', self::$available_modules );
+	}
+	
+	/**
+	 * function commit_active
+	 * Saves the active modules list to the userinfo table.
+	 */
+	public static function commit_active()
+	{
+		$u = User::identify();
+		$u->info->dash_modules = self::$active_modules;
+		$u->info->commit();
 	}
 }
 ?>
