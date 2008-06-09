@@ -96,8 +96,9 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_log_activity( $module_id )
+	public function filter_dash_module_latest_log_activity( $content, $module_id, $theme )
 	{
+		
 		$theme = $this->get_theme();
 
 		if ( FALSE === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
@@ -121,7 +122,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_entries( $module_id )
+	public function filter_dash_module_latest_entries( $content, $module_id, $theme )
 	{
 		$theme = $this->get_theme();
 
@@ -135,7 +136,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_comments( $module_id )
+	public function filter_dash_module_latest_comments( $content, $module_id, $theme )
 	{
 		$theme = $this->get_theme();
 
