@@ -173,7 +173,6 @@ class Theme extends Pluggable
 		}
 
 		$this->assign( 'posts', $posts );
-		$this->assign( 'page', isset($page)? $page:1 );
 		/*
 		if( !isset( $this->page ) ) {
 			if( isset( $page ) ) {
@@ -200,6 +199,7 @@ class Theme extends Pluggable
 		}
 
 		extract( $where_filters );
+		$this->assign( 'page', isset($page)? $page:1 );
 
 		if ( !isset( $fallback ) ) {
 			// Default fallbacks based on the number of posts
