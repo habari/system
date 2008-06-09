@@ -222,7 +222,7 @@ class Theme extends Pluggable
 			isset( $month ) ? $month : '-',
 			isset( $day ) ? $day : '-',
 			isset( $type ) ? $type : '-',
-			isset( $tag ) ? $tag : '-',
+			isset( $tag_slug ) ? $tag_slug : '-',
 		);
 		$fallback[]= 'home';
 		$fallback= Plugins::filter( 'template_fallback', $fallback );
@@ -471,7 +471,7 @@ class Theme extends Pluggable
 	public function display( $template_name )
 	{
 		$this->add_template_vars();
-		
+
 		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
 			$this->template_engine->assign( $key, $value );
 		}
@@ -769,17 +769,17 @@ class Theme extends Pluggable
 	{
 		return $this->var_stack[$this->current_var_stack][$key];
 	}
-	
+
 	/**
 	 * Remove a template variable value
-	 * 
+	 *
 	 * @param string $key The template variable name to unset
 	 */
 	public function __unset( $key )
 	{
 		unset($this->var_stack[$this->current_var_stack][$key]);
 	}
-	
+
 	/**
 	 * Start a new template variable buffer
 	 */
@@ -788,7 +788,7 @@ class Theme extends Pluggable
 		$this->current_var_stack++;
 		$this->var_stack[$this->current_var_stack] = $this->var_stack[$this->current_var_stack - 1];
 	}
-	
+
 	/**
 	 * End the current template variable buffer
 	 */
