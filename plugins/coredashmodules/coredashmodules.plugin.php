@@ -96,7 +96,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_log_activity( $module_id )
+	public function filter_dash_module_latest_log_activity( $content, $module_id )
 	{
 		$theme = $this->get_theme();
 
