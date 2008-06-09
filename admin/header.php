@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<title><?php Options::out('title'); ?> &middot; <?php echo ucfirst($admin_page); ?></title>
+	<title><?php Options::out('title'); ?> &middot; <?php echo ucfirst($admin_page); ?> <?php echo ucfirst( $admin_type ); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
