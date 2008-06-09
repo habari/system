@@ -36,7 +36,7 @@ class CoreDashModules extends Plugin
 	{
 		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
 			$modules = array(
-				'Latest Posts',
+				'Latest Entries',
 				'Latest Comments',
 				'Latest Log Activity',
 			);
@@ -66,7 +66,7 @@ class CoreDashModules extends Plugin
 	{
 		if(Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__)) {
 			$modules = array(
-				'Latest Posts',
+				'Latest Entries',
 				'Latest Comments',
 				'Latest Log Activity',
 			);
@@ -96,7 +96,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_log_activity( $content, $module_id, $theme )
+	public function filter_dash_module_latest_log_activity( $module_id )
 	{
 		
 		$theme = $this->get_theme();
@@ -113,6 +113,14 @@ class CoreDashModules extends Plugin
 			'limit' => $num_logs,
 		);
 		$theme->logs = EventLog::get( $params );
+		
+		// Create options form
+		$form = new FormUI( 'dash_logs' );
+		$form->append( 'checkbox', 'remove', 'null:unused', _t('Remove this module') );
+		$form->append( 'submit', 'submit', _t('Submit') );
+		$form->properties['onsubmit'] = "dashboard.remove({$module_id}); return false;";
+		$theme->logs_form = $form->get();
+		
 		return $theme->fetch( 'dash_logs' );
 	}
 	
@@ -122,7 +130,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_entries( $content, $module_id, $theme )
+	public function filter_dash_module_latest_entries( $module_id )
 	{
 		$theme = $this->get_theme();
 
@@ -136,7 +144,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_comments( $content, $module_id, $theme )
+	public function filter_dash_module_latest_comments( $module_id )
 	{
 		$theme = $this->get_theme();
 
@@ -153,13 +161,7 @@ class CoreDashModules extends Plugin
 
 		$theme->latestcomments_posts = $posts;
 		$theme->latestcomments = $latestcomments;
-
-		// Create options form
-		$form = new FormUI( 'dash_latestcomments' );
-		$form->append( 'checkbox', 'remove', 'null:unused', _t('Remove this module') );
-		$form->append( 'submit', 'submit', _t('Submit') );
-		$form->properties['onsubmit'] = "dashboard.remove({$module_id}); return false;";
-		$theme->latestcomments_form = $form->get();
+		
 		return $theme->fetch( 'dash_latestcomments' );
 	}
 }

@@ -33,6 +33,26 @@ var dashboard = {
 				$('.modules').sortable('enable');
 			});
 	},
+	add: function() {
+		spinner.start();
+		// disable dragging and dropping while we update
+		$('.modules').sortable('disable');
+		var query = {};
+		query['action'] = 'addModule';
+		query['module_name'] = $('#dash_additem option:selected').val();
+		$.post(
+			habari.url.ajaxDashboard,
+			query,
+			function( json ) {
+		     	spinner.stop();
+				$('.modules').html( json.modules );
+				dashboard.init();
+				//$('.modules').sortable('enable');
+				humanMsg.displayMsg( json.message );
+			},
+			'json'
+			);
+	},
 	remove: function( id ) {
 		spinner.start();
 		// disable dragging and dropping while we update
@@ -43,12 +63,15 @@ var dashboard = {
 		$.post(
 			habari.url.ajaxDashboard,
 			query,
-			function( result) {
+			function( json ) {
 		     	spinner.stop();
-				// replace modules div HTML
-				$('.modules').sortable('enable');
-				humanMsg.displayMsg( result.message );
-			});
+				$('.modules').html( json.modules );
+				dashboard.init();
+				//$('.modules').sortable('enable');
+				humanMsg.displayMsg( json.message );
+			},
+			'json'
+			);
 	}
 }
 

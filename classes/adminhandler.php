@@ -214,16 +214,21 @@ class AdminHandler extends ActionHandler
 			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'entry'), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
 		);
 
-		$this->theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
-		
+		$this->fetch_dashboard_modules();
+
+		$this->display( 'dashboard' );
+	}
+	
+	/**
+	 * Fetches active modules for display on the dashboard
+	 */
+	public function fetch_dashboard_modules()
+	{
 		// get the active module list
 		$modules = Modules::get_active();
 
-		// always include the 'Add Item' module
-		if ( ! in_array( 'Add Item', $modules ) ) {
-			Modules::add( 'Add Item' );
-			$modules = Modules::get_active();
-		}
+		// append the 'Add Item' module
+		$modules['nosort'] = 'Add Item';
 
 		// register the 'Add Item' filter
 		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
@@ -231,14 +236,13 @@ class AdminHandler extends ActionHandler
 		foreach( $modules as $id => $module ) {
 			$slug = Utils::slugify( (string) $module, '_' );
 			$content = '';
-			if ( ! $content = Plugins::filter( 'dash_module_' . $slug, $content, $id, $this->theme ) ) {
+			if ( ! $content = Plugins::filter( 'dash_module_' . $slug, $id ) ) {
 				$content = $this->theme->fetch( 'dash_module_' . $slug );
 			}
 			$modules[$id] = array( 'name' => $module, 'content' => $content );
 		}
+		
 		$this->theme->modules = $modules;
-
-		$this->display( 'dashboard' );
 	}
 
 	/**
@@ -1036,6 +1040,9 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_dashboard( $handler_vars )
 	{
+		$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
 		switch ( $handler_vars['action'] ) {
 		case 'updateModules':
 			$modules = array();
@@ -1043,17 +1050,33 @@ class AdminHandler extends ActionHandler
 				// skip POST elements which are not module names
 				if ( preg_match( '/^module\d+$/', $key ) ) {
 					list( $module_id, $module_name ) = split( ':', $module, 2 );
-					$modules[$module_id] = $module_name;
+					// remove non-sortable modules from the list
+					if ( $module_id != 'nosort' ) {
+						$modules[$module_id] = $module_name;
+					}
 				}
 			}
 
 			Modules::set_active( $modules );
+			echo json_encode( true );
+			break;
+		case 'addModule':
+			$id = Modules::add( $handler_vars['module_name'] );
+			$this->fetch_dashboard_modules();
+			$result = array(
+				'message' => "Added module {$handler_vars['module_name']}.",
+				'modules' => $this->theme->fetch( 'dashboard_modules' ),
+			);
+			echo json_encode( $result );
 			break;
 		case 'removeModule':
 			Modules::remove( $handler_vars['moduleid'] );
-			$result = array();
-			$result['message'] = 'Removed module';
-			return json_encode( $result );
+			$this->fetch_dashboard_modules();
+			$result = array(
+				'message' => 'Removed module',
+				'modules' => $this->theme->fetch( 'dashboard_modules' ),
+			);
+			echo json_encode( $result );
 			break;
 		}
 	}
@@ -1706,7 +1729,8 @@ class AdminHandler extends ActionHandler
 		$form->append( 'select', 'module', 'null:unused' );
 		$form->module->options = $modules;
 		$form->append( 'submit', 'submit', _t('+') );
-		$form->on_success( array( $this, 'dash_additem' ) );
+		//$form->on_success( array( $this, 'dash_additem' ) );
+		$form->properties['onsubmit'] = "dashboard.add(); return false;";
 		$this->theme->additem_form = $form->get();
 		return $this->theme->fetch( 'dash_additem' );
 	}
