@@ -16,7 +16,7 @@ class Modules
      */
 	public function __static()
 	{
-		self::$available_modules = Options::get( 'dash_available_modules' );
+		self::$available_modules = (array) Options::get( 'dash_available_modules' );
 		self::$active_modules = isset( User::identify()->info->dash_modules ) ?  User::identify()->info->dash_modules : array();
 
 		// check if we have orphaned active modules.
