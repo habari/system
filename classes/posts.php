@@ -60,8 +60,8 @@ class Posts extends ArrayObject
 		// Default fields to select, everything by default
 		foreach ( Post::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
-				? DB::table( 'posts' ) . ".$field"
-				: ', ' . DB::table( 'posts' ) . ".$field";
+				? DB::table( 'posts' ) . ".$field AS $field"
+				: ', ' . DB::table( 'posts' ) . ".$field AS $field";
 		}
 
 		// Default parameters
@@ -150,6 +150,7 @@ class Posts extends ArrayObject
 					}
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
+					$select= 'DISTINCT ' . $select;
 					$joins['tag2post_posts']= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
 					$joins['tags_tag2post']= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 					// Need tag expression parser here.
@@ -174,7 +175,6 @@ class Posts extends ArrayObject
 							$params[]= (string) $paramset['tag_slug'];
 						}
 					}
-					$groupby= "{posts}.id";
 				}
 
 				if ( isset( $paramset['not:tag'] ) ) {
