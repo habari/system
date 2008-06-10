@@ -54,7 +54,21 @@
 
 
 <div class="container userstats">
-	<?php echo Posts::count_by_author( $user->id, Post::status('published') ) . _t(' published posts, ') . Posts::count_by_author( $user->id, Post::status('draft') ) . _t(' pending drafts, and ') . Posts::count_by_author( $user->id, Post::status('private') ) . _t(' private posts'); ?>
+<?php
+	$message_bits = array();
+	$post_statuses= Post::list_post_statuses();
+	unset( $post_statuses[array_search( 'any', $post_statuses )] );
+	foreach ( $post_statuses as $status_name => $status_id ) {
+		$count= Posts::count_by_author( $user->id, $status_id );
+		if ( $count > 0 ) {
+			$message = '<strong><a href="' . URL::get( 'admin', array( 'page' => 'entries', 'user_id' => $user->id, 'type' => Post::type( 'any' ), 'status' => $status_id ) ) . '">';
+			$message.= sprintf( '%d ' . _n( _t( $status_name . ' post' ), _t( $status_name . ' posts' ), $count ), Posts::count_by_author( $user->id, $status_id ) ) ;
+			$message.= '</a></strong>';
+			$message_bits[]= $message;
+		}
+	}
+	echo Format::and_list( $message_bits );
+?>
 </div>
 
 

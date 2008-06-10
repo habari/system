@@ -47,9 +47,31 @@
 			<span class="user pct100"><a href="<?php echo $url ?>" title="<?php _e('Open '. $user->displayname .'\'s user page') ?>"><?php echo $user->displayname ?></a></span><br>
 
 			<span class="aka pct 100">
-				<strong><?php echo $user->username ?></strong> 
-				<?php _e('was last seen'); ?> <strong><?php echo date('M j, Y', strtotime($user->info->authenticate_time)) ?> at <?php echo date('H:i', strtotime($user->info->authenticate_time)) ?></strong>
-				<?php _e('and currently has') ?> <strong><?php echo Posts::count_by_author( $user->id, Post::status('published') ) . _t(' published posts, ') . Posts::count_by_author( $user->id, Post::status('draft') ) . _t(' pending drafts and ') . Posts::count_by_author( $user->id, Post::status('private') ) . _t(' private posts'); ?></strong>
+			<?php
+				if ( !$user->info->authenticate_time ) {
+					_e( "was not logged in yet.");
+				}
+				else {
+					$message_bits = array();
+					$post_statuses= Post::list_post_statuses();
+					unset( $post_statuses[array_search( 'any', $post_statuses )] );
+					foreach ( $post_statuses as $status_name => $status_id ) {
+						$count= Posts::count_by_author( $user->id, $status_id );
+						if ( $count > 0 ) {
+							$message = '<strong><a href="' . URL::get( 'admin', array( 'page' => 'entries', 'user_id' => $user->id, 'type' => Post::type( 'any' ), 'status' => $status_id ) ) . '">';
+							$message.= sprintf( '%d ' . _n( _t( $status_name . ' post' ), _t( $status_name . ' posts' ), $count ), Posts::count_by_author( $user->id, $status_id ) ) ;
+							$message.= '</a></strong>';
+							$message_bits[]= $message;
+						}
+					}
+
+					printf( _t( 'was last seen %1$s at %2$s and currently has %3$s'),
+						"<strong>" . date('M j, Y', strtotime($user->info->authenticate_time)) . "</strong>",
+						"<strong>" . date('H:i', strtotime($user->info->authenticate_time)) . "</strong>",
+						Format::and_list( $message_bits )
+					);
+				}
+			?>
 			</span>
 		</li>
 
