@@ -719,6 +719,10 @@ p:hover > label.incontent.popup {
 	height: 42px;
 	}
 
+.media_panel {
+	min-height: 200px;
+	}
+
 
 /* MEDIA ACTION DROPBUTTONS */
 
@@ -731,6 +735,15 @@ p:hover > label.incontent.popup {
 
 .mediastats {
 	display: none !important;
+	}
+
+
+/* VIDDLER SILO */
+
+.viddler_recorder_container {
+	text-align: center;
+	padding: 15px 0;
+	background: url('../images/shadow-light-top.png') top right repeat-x; /* Drop shadow */
 	}
 
 
