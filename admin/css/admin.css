@@ -885,6 +885,17 @@ p:hover > label.incontent.popup {
 	clear: both;
 	}
 
+.dashboard .module .close {
+	position: absolute;
+	top: 7px;
+	left: 7px;
+	height: 16px;
+	width: 16px;
+	background: url('../images/closebutton.png') center center no-repeat;
+	cursor: pointer;
+	z-index: 110;
+}
+
 .dashboard .module .options {
 	position: absolute;
 	top: 7px;

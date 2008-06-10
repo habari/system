@@ -1,3 +1,5 @@
+<div class="close">&nbsp;</div>
+
 <div class="modulecore">
 	<h2><a href="<?php Site::out_url('admin'); ?>/comments"><?php _e('Latest Comments'); ?></a></h2>
 
