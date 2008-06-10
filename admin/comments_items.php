@@ -2,7 +2,7 @@
 
 <div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>">
 	<div class="head clear">
-		<span class="checkboxandtitle pct25">
+		<span class="checkbox title pct25">
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
 			<?php if($comment->url != ''): ?>
 			<a href="#" class="author"><?php echo $comment->name; ?></a>

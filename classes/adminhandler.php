@@ -1152,6 +1152,48 @@ class AdminHandler extends ActionHandler
 
 		echo json_encode($msg_status);
 	}
+	
+	/**
+	 * handles AJAX from /logs
+	 * used to delete logs
+	 */
+	public function ajax_delete_logs($handler_vars)
+	{
+		$count= 0;
+
+		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+			echo json_encode( 'WSSE authentication failed.' );
+			return;
+		}
+
+		foreach($_POST as $id => $delete) {
+			// skip POST elements which are not log ids
+			if ( preg_match( '/^p\d+/', $id ) && $delete ) {
+				$id= substr($id, 1);
+				
+				$ids[]= array( 'id' => $id );
+				
+			}
+		}
+		
+		$to_delete= EventLog::get( array( 'date' => 'any', 'where' => $ids, 'nolimit' => 1 ) );
+				
+		$logstatus= array( 'Deleted %d logs' => 0 );
+		foreach ( $to_delete as $log ) {
+			$log->delete();
+			$count++;
+		}
+		foreach ( $logstatus as $key => $value ) {
+			if ( $value ) {
+				Session::notice( sprintf( _t( $key ), $value ) );
+			}
+		}
+
+		$msg_status= sprintf( _t('Deleted %d logs.'), $count );
+
+		echo json_encode($msg_status);
+	}
 
 	public function ajax_update_comment( $handler_vars)
 	{
@@ -1223,7 +1265,7 @@ class AdminHandler extends ActionHandler
 	 * Assign values needed to display the logs page to the theme based on handlervars and parameters
 	 *
 	 */
-	private function fetch_logs()
+	private function fetch_logs($params = NULL)
 	{
 		$locals= array(
 			'do_delete' => false,
@@ -1260,7 +1302,7 @@ class AdminHandler extends ActionHandler
 				foreach ( $log_ids as $id ) {
 					$ids[]= array( 'id' => $id );
 				}
-				$to_delete= EventLog::get( array( 'where' => $ids, 'nolimit' => 1 ) );
+				$to_delete= EventLog::get( array( 'nolimit' => 1 ) );
 				$logstatus= array( 'Deleted %d logs' => 0 );
 				foreach ( $to_delete as $log ) {
 					$log->delete();
@@ -1350,7 +1392,13 @@ class AdminHandler extends ActionHandler
 		if ( '0' != $user ) {
 			$arguments['user_id']= $user;
 		}
+		
+		if(is_array($params)) {
+			$arguments = array_merge($arguments, $params);
+		}
+				
 		$this->theme->logs= EventLog::get( $arguments );
+		
 		$monthcts= EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
 		foreach( $monthcts as $month ) {
 			if ( isset($years[$month->year]) ) {
@@ -1372,7 +1420,7 @@ class AdminHandler extends ActionHandler
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$params= $_POST;
-
+		
 		$this->fetch_logs( $params );
 		$items= $this->theme->fetch( 'logs_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
