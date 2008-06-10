@@ -3,13 +3,13 @@ habari.media = {
 	showdir: function (path, el, container) {
 		$('.media_browser', container).show();
 		$('.media_panel', container).hide();
-		if(!el && !container) {
+		if ( !el && !container ) {
 			container = $('.mediasplitter:visible');
 		}
-		if(el && !container) {
+		if ( el && !container ) {
 			container = $(el).parents('.mediasplitter');
 		}
-		if($('.pathstore', container).html() != path || $('.pathstore.toload', container).size()) {
+		if ( $('.pathstore', container).html() != path || $('.pathstore.toload', container).size() ) {
 			$.ajax({
 				type: "POST",
 				url: habari.url.habari + '/admin_ajax/media',
