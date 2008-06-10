@@ -340,40 +340,62 @@ class Session
 	}
 
 	/**
-	 * Return output of notice and error messages in ul and li tags
+	 * Return output of notice and error messages
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
+	 * @param boolean $use_humane_msg true to use the humane message system, false 
+	 * to use and unordered list
 	 * @return string HTML output of messages
 	 */
-	static function messages_get( $clear= true )
+	static function messages_get( $clear= true, $use_humane_msg= true )
 	{
 		$errors= self::get_errors( $clear );
 		$notices= self::get_notices( $clear );
 
 		$output= '';
-		if ( count( $errors ) ) {
-			foreach ( $errors as $error ) {
-				$error= addslashes($error);
-				$output.= "humanMsg.displayMsg('{$error}');";
+		if ( $use_humane_msg ) {
+			if ( count( $errors ) ) {
+				foreach ( $errors as $error ) {
+					$error= addslashes($error);
+					$output.= "humanMsg.displayMsg('{$error}');";
+				}
+			}
+			if ( count( $notices ) ) {
+				foreach ( $notices as $notice ) {
+					$notice= addslashes($notice);
+					$output.= "humanMsg.displayMsg('{$notice}');";
+				}
 			}
 		}
-		if ( count( $notices ) ) {
-			foreach ( $notices as $notice ) {
-				$notice= addslashes($notice);
-				$output.= "humanMsg.displayMsg('{$notice}');";
+		else {
+			if ( count( $errors ) ) {
+				$output.= '<ul class="error">';
+				foreach ( $errors as $error ) {
+					$output.= '<li>' . $error . '</li>';
+				}
+				$output.= '</ul>';
+			}
+			if ( count( $notices ) ) {
+				$output.= '<ul class="success">';
+				foreach ( $notices as $notice ) {
+					$output.= '<li>' . $notice . '</li>';
+				}
+				$output.= '</ul>';
 			}
 		}
 		return $output;
 	}
 
 	/**
-	 * Output notice and error messages in ul and li tags
+	 * Output notice and error messages 
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
+	 * @param boolean $use_humane_msg true to use the humane messages system, false
+	 * to use and unordered list
 	 */
-	static function messages_out( $clear= true )
+	static function messages_out( $clear= true, $use_humane_msg= true )
 	{
-		echo self::messages_get( $clear );
+		echo self::messages_get( $clear, $use_humane_msg );
 	}
 
 	/**
