@@ -39,7 +39,7 @@
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 
-<div class="container transparent controls">
+<div class="container transparent item controls">
 	<span class="checkboxandselected pct25">
 		<input type="checkbox">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
@@ -59,7 +59,7 @@
 </div>
 
 
-<div class="container transparent controls">
+<div class="container transparent item controls">
 	<span class="checkboxandselected pct25">
 		<input type="checkbox">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>

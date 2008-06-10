@@ -2,7 +2,7 @@
 
 <div class="item clear <?php echo $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
 	<div class="head clear">
-		<span class="checkboxandtitle pct35">
+		<span class="checkbox title pct35">
 			<input type="checkbox" class="checkbox" name="checkbox_ids[<?php echo $post->id; ?>]" id="checkbox_ids[<?php echo $post->id; ?>]">
 			<a href="<?php echo $post->permalink; ?>" class="title" title="<?php _e('Edit \''.$post->title.'\'') ?>"><?php echo $post->title; ?></a>
 		</span>

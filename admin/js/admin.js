@@ -79,7 +79,7 @@ var dashboard = {
 var itemManage = {
 	init: function() {
 		if(!$('.item.controls input[type=checkbox]')) return;
-
+		
 		itemManage.initItems();
 
 		$('.item.controls input[type=checkbox]').change(function () {
@@ -91,16 +91,54 @@ var itemManage = {
 		});
 
 		$('.item.controls input.submitbutton').click(function () {
-			if($('.item.controls select.actiondropdown').val() == 1) {
-				itemManage.remove();
-			}
+			itemManage.remove();
 		});
+		
+		if($('#comments').length != 0) {
+			$('.item.controls input.approvebutton').click(function () {
+				for (var id in itemManage.selected)	{
+					if(itemManage.selected[id] == 1) {
+						id= id.substr(1);
+						itemManage.update(id, 'approve');
+					}
+				}
+				return false;
+			});
+			$('.item.controls input.unapprovebutton').click(function () {
+				for (var id in itemManage.selected)	{
+					if(itemManage.selected[id] == 1) {
+						id= id.substr(1);
+						itemManage.update(id, 'unapprove');
+					}
+				}
+				return false;
+			});
+			$('.item.controls input.spambutton').click(function () {
+				for (var id in itemManage.selected)	{
+					if(itemManage.selected[id] == 1) {
+						id= id.substr(1);
+						itemManage.update(id, 'spam');
+					}
+				}
+				return false;
+			});
+			$('.item.controls input.deletebutton').click(function () {
+				for (var id in itemManage.selected)	{
+					if(itemManage.selected[id] == 1) {
+						id= id.substr(1);
+						itemManage.update(id, 'delete');
+						itemManage.selected = [];
+					}
+				}
+				return false;
+			});
+		}
 	},
 	initItems: function() {
-		$('.item .checkboxandtitle input[type=checkbox]').change(function () {
+		$('.item .checkbox input[type=checkbox]').change(function () {
 			itemManage.changeItem();
 		});
-		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
+		$('.item .checkbox input[type=checkbox]').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" ); // checkbox ids have the form name[id]
 			if(itemManage.selected['p' + id] == 1) {
@@ -117,12 +155,12 @@ var itemManage = {
 			selected = itemManage.selected;
 		}
 
-		$('.item .checkboxandtitle input[type=checkbox]:checked').each(function() {
+		$('.item .checkbox input[type=checkbox]:checked').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 1;
 		});
-		$('.item .checkboxandtitle input[type=checkbox]:not(:checked)').each(function() {
+		$('.item .checkbox input[type=checkbox]:not(:checked)').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
@@ -130,7 +168,7 @@ var itemManage = {
 
 		itemManage.selected = selected;
 
-		visible = $('.item .checkboxandtitle input[type=checkbox]:checked').length;
+		visible = $('.item .checkbox input[type=checkbox]:checked').length;
 		count = 0;
 		for (var id in itemManage.selected)	{
 			if(itemManage.selected[id] == 1) {
@@ -143,7 +181,7 @@ var itemManage = {
 				this.checked = 0;
 			});
 			$('.item.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if(visible == $('.item .checkboxandtitle input[type=checkbox]').length) {
+		} else if(visible == $('.item .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
@@ -162,20 +200,20 @@ var itemManage = {
 		}
 	},
 	uncheckAll: function() {
-		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
+		$('.item .checkbox input[type=checkbox]').each(function() {
 			this.checked = 0;
 		});
 		itemManage.changeItem();
 	},
 	checkAll: function() {
-		$('.item .checkboxandtitle input[type=checkbox]').each(function() {
+		$('.item .checkbox input[type=checkbox]').each(function() {
 			this.checked = 1;
 		});
 		itemManage.changeItem();
 	},
 	remove: function( id ) {
 		spinner.start();
-
+		
 		var query= {}
 		if ( id == null ) {
 			query = itemManage.selected;
@@ -183,16 +221,25 @@ var itemManage = {
 		else {
 			query['p' + id]= 1;
 		}
+		
+		if($('.logs.manage').length != 0) {
+			var url = habari.url.ajaxLogDelete;
+		} else {
+			var url = habari.url.ajaxDelete;
+		}
+
 		query['timestamp']= $('input#timestamp').attr('value');
 		query['nonce']= $('input#nonce').attr('value');
 		query['digest']= $('input#PasswordDigest').attr('value');
+		
 		$.post(
-			habari.url.ajaxDelete,
+			url,
 			query,
 			function(msg) {
 				spinner.stop();
 				timelineHandle.updateLoupeInfo();
 				humanMsg.displayMsg(msg);
+				itemManage.selected = [];
 			},
 			'json'
 		 );
