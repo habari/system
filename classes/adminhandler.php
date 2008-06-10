@@ -236,7 +236,7 @@ class AdminHandler extends ActionHandler
 		foreach( $modules as $id => $module ) {
 			$slug = Utils::slugify( (string) $module, '_' );
 			$content = '';
-			if ( ! $content = Plugins::filter( 'dash_module_' . $slug, $id ) ) {
+			if ( ! $content = Plugins::filter( 'dash_module_' . $slug, $id, $this->theme ) ) {
 				$content = $this->theme->fetch( 'dash_module_' . $slug );
 			}
 			$modules[$id] = array( 'name' => $module, 'content' => $content );
