@@ -997,16 +997,16 @@ class AdminHandler extends ActionHandler
 	 * Handles GET requests to /admin/entries
 	 *
 	 */
-	public function get_entries()
+	public function get_posts()
 	{
-		$this->post_entries();
+		$this->post_posts();
 	}
 
 	/**
 	 * handles POST values from /manage/entries
 	 * used to control what content to show / manage
 	**/
-	public function post_entries()
+	public function post_posts()
 	{
 		$this->fetch_entries();
 		// Get special search statuses
@@ -1032,7 +1032,7 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->theme->special_searches = array_merge($statuses, $types);
-		$this->display( 'entries' );
+		$this->display( 'posts' );
 	}
 
 	/**
@@ -1655,7 +1655,7 @@ class AdminHandler extends ActionHandler
 				continue;
 			}
 			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf(_t('Content: Create a %s'), ucwords($type)), 'text' => sprintf(_t('Create %s'), ucwords($type)) );
-			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=entries&type=' . $typeint ), 'title' => sprintf(_t('Content: Manage %s'), ucwords($type)), 'text' => sprintf(_t('Manage %s'), ucwords($type)) );
+			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf(_t('Content: Manage %s'), ucwords($type)), 'text' => sprintf(_t('Manage %s'), ucwords($type)) );
 			switch($type) {
 				case 'entry':
 					$createmenu['create_' . $typeint]['hotkey']= '1';
