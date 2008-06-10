@@ -1,3 +1,5 @@
+<div class="close">&nbsp;</div>
+
 <div class="options">&nbsp;</div>
 
 <div class="modulecore">
