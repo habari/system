@@ -35,7 +35,7 @@
 
 <div class="container manage entries">
 
-<?php $theme->display('entries_items'); ?>
+<?php $theme->display('posts_items'); ?>
 
 </div>
 
