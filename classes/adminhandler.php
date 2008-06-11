@@ -1144,7 +1144,7 @@ class AdminHandler extends ActionHandler
 	**/
 	public function post_posts()
 	{
-		$this->fetch_entries();
+		$this->fetch_posts();
 		// Get special search statuses
 		$statuses = array_keys(Post::list_post_statuses());
 		array_shift($statuses);
@@ -1220,14 +1220,14 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles ajax requests from the manage posts page
 	 */
-	public function ajax_entries()
+	public function ajax_posts()
 	{
 		$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$params= $_POST;
 
-		$this->fetch_entries( $params );
+		$this->fetch_posts( $params );
 		$items= $this->theme->fetch( 'entries_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
 
