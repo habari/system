@@ -53,12 +53,13 @@ body, textarea, #footer {
 	margin-left: 5px;
 	height: 27px;
 	}
-
+	
 #menu a:hover {
 	text-decoration: none;
 	}
 
 #menu a .hotkey {
+	display:none;
 	color: #777;
 	position: absolute;
 	top: 0;
@@ -66,6 +67,10 @@ body, textarea, #footer {
 	width: 15px;
 	text-align: center;
 	}
+	
+#menu a .hotkey.enabled {
+	display:block;
+}
 
 #menubutton {
 	font-size: 12px;
@@ -108,7 +113,7 @@ body, textarea, #footer {
 	margin-bottom: 0;
 	}
 
-#menu.hovering #menulist {
+#menu.hovering #menulist, #menu:hover #menulist {
 	display: block;
 	}
 
@@ -128,7 +133,7 @@ body, textarea, #footer {
 	overflow: hidden;
 	}
 
-#menulist li.carrot a {
+#menulist li.carrot a, #menulist li a:hover {
 	background: #444;
 	}
 

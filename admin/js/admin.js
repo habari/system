@@ -769,6 +769,9 @@ var theMenu = {
 			}
 		});
 
+		// Display hotkeys
+		$('#menu a .hotkey').addClass('enabled');
+
 		// If menu is open and mouse is clicked outside menu, close menu.
 		$('html').click(function() {
 			if ($('#menu #menulist').css('display') == 'block') {

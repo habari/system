@@ -40,12 +40,12 @@
 <div id="menubar">
 
 	<div id="menu" class="dropbutton">
-		<h1 id="menubutton"><a href="<?php URL::out( 'admin', 'page=' . $admin_page ); ?>"><?php echo $admin_page; ?> <span class="hotkey">Q</span></a></h1>
+		<h1 id="menubutton"><a href="#"><?php echo $admin_page; ?> <span class="hotkey">Q</span></a></h1>
 
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
 			<?php foreach($mainmenu as $menu_id => $menu): ?>
-				<li id="link-<?php echo $menu_id ?>" class="<?php echo $menu['selected'] ? 'selected' : ''; ?>" title="<?php echo $menu['title']; ?>"><a href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
+				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == TRUE) { echo 'selected'; } ?>" title="<?php echo $menu['title']; ?>"><a href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
 				<?php if(isset($menu['hotkey']) && $menu['hotkey'] != ''): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
 				</a>
 				<?php if(isset($menu['submenu'])): ?>
