@@ -15,12 +15,6 @@ var dashboard = {
 			}, function() {
 				$(this).parents('li').removeClass('viewingoptions')
 			});
-
-		$('.close', '.modules').click( function() {
-			// grab the module ID from the parent DIV id attribute.
-			matches = $(this).parents('.module').attr('id').split( ':', 2 );
-			dashboard.remove( matches[0] );
-		});
 	},
 	update: function() {
 		spinner.start();
@@ -98,6 +92,8 @@ var itemManage = {
 
 		$('.item.controls input.submitbutton').click(function () {
 			itemManage.remove();
+			
+			return false;
 		});
 		
 		if($('#comments').length != 0) {
@@ -220,7 +216,9 @@ var itemManage = {
 	remove: function( id ) {
 		spinner.start();
 		
-		var query= {}
+		itemManage.changeItem();
+		
+		var query= {};
 		if ( id == null ) {
 			query = itemManage.selected;
 		}
@@ -230,10 +228,17 @@ var itemManage = {
 		
 		if($('.logs.manage').length != 0) {
 			var url = habari.url.ajaxLogDelete;
+		} else if($('.manage.users').length != 0) {
+			var url = habari.url.ajaxUpdateUsers;
 		} else {
 			var url = habari.url.ajaxDelete;
 		}
-
+		
+		if($('.manage.users').length != 0) {
+			query['action']= 'delete';
+			query['reassign']= $('select#reassign').attr('value');
+		}
+		
 		query['timestamp']= $('input#timestamp').attr('value');
 		query['nonce']= $('input#nonce').attr('value');
 		query['digest']= $('input#PasswordDigest').attr('value');
@@ -243,7 +248,22 @@ var itemManage = {
 			query,
 			function(msg) {
 				spinner.stop();
-				timelineHandle.updateLoupeInfo();
+				if($('.manage.users').length == 0) {
+					timelineHandle.updateLoupeInfo();
+				} else {
+					spinner.start();
+					query = {};
+					query['action'] = 'fetch';
+					$.post(
+						url,
+						query,
+						function(users) {
+							spinner.stop();
+							$('.manage.users').html(users);
+						},
+						'json'
+					 );
+				}
 				humanMsg.displayMsg(msg);
 				itemManage.selected = [];
 			},
