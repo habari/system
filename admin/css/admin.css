@@ -507,7 +507,26 @@ p:hover > label.incontent.popup {
 #publish {
 	font-weight: bold;
 	}
+#tags_settings ul {
+    text-align: left;
+    margin-right: 50px;
+    margin-left: 10px;
+    }
 
+#tags_settings li {
+    font-family: "Arial", san-serif;
+    font-size: 0.8em;
+    display: inline;
+    line-height: 2.0em;
+    padding: 3px;
+    color: #ccc;
+    cursor: pointer;
+    }
+
+#tags_settings li.clicked {
+    background: #000;
+    }
+    
 .viewpost {
 	float: right;
 	}
