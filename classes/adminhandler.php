@@ -241,9 +241,9 @@ class AdminHandler extends ActionHandler
 				'content' => '',
 				'options' => ''
 				);
-			
+
 			$module = Plugins::filter( 'dash_module_' .$slug, $module, $id, $this->theme );
-			
+
 			$modules[$id] = $module;
 		}
 
@@ -1788,6 +1788,8 @@ class AdminHandler extends ActionHandler
 	 */
 	protected function get_main_menu( $theme )
 	{
+		$page= ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
+
 		// These need to be replaced with submenus, but access to them is provided temporarily
 		$createmenu= array();
 		$managemenu= array();
@@ -1811,6 +1813,13 @@ class AdminHandler extends ActionHandler
 					$managemenu['manage_' . $typeint]['hotkey']= '';
 					break;
 			}
+
+			if( $page == 'publish' && isset($this->handler_vars['content_type']) && $this->handler_vars['content_type'] == $type ) {
+				$createmenu['create_' . $typeint]['selected']= TRUE;
+			}
+			if( $page == 'posts' && isset($this->handler_vars['type']) && $this->handler_vars['type'] == $typeint ) {
+				$managemenu['manage_' . $typeint]['selected']= TRUE;
+			}
 		}
 
 		$adminmenu= array(
@@ -1826,14 +1835,23 @@ class AdminHandler extends ActionHandler
 			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t('View system log messages'), 'text' => _t('Logs'), 'hotkey' => 'L') ,
 			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t('Log out of the Administration Interface'), 'text' => _t('Logout'), 'hotkey' => 'X' ),
 		);
+
 		$mainmenus= array_merge($createmenu, $managemenu, $adminmenu);
 
-		foreach($mainmenus as $menu_id => $menu) {
+		foreach( $mainmenus as $menu_id => $menu ) {
 			// Change this to set the correct menu as the active menu
-			$mainmenus[$menu_id]['selected']= false;
+			if( !isset($mainmenus[$menu_id]['selected']) ) {
+				$mainmenus[$menu_id]['selected']= false;
+			}
 		}
 
 		$mainmenus= Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
+
+		foreach( $mainmenus as $key => $attrs ) {
+			if( $page == $key ) {
+				$mainmenus[$key]['selected']= true;
+			}
+		}
 
 		$theme->assign( 'mainmenu', $mainmenus );
 	}
@@ -1921,7 +1939,7 @@ class AdminHandler extends ActionHandler
 		//$form->on_success( array( $this, 'dash_additem' ) );
 		$form->properties['onsubmit'] = "dashboard.add(); return false;";
 		$theme->additem_form = $form->get();
-		
+
 		$module['content'] = $theme->fetch( 'dash_additem' );
 		return $module;
 	}
