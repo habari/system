@@ -37,19 +37,6 @@ class CoreDashModules extends Plugin
 		array_push( $modules, 'Latest Entries', 'Latest Comments', 'Latest Log Activity' );
 		return $modules;
 	}
-
-	/**
-	 * get_theme
-	 * Creates a theme object if it does not already exist
-	 * @return object A theme object
-	 */
-	private function get_theme()
-	{
-		if ( ! isset( $this->theme ) ) {
-			$this->theme = Themes::create( 'coredashmodules', 'RawPHPEngine', dirname( __FILE__ ) . '/' );
-		}
-		return $this->theme;
-	}
 	
 	/**
 	 * filter_dash_module_latest_log_activity
@@ -58,10 +45,10 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_log_activity( $module, $module_id )
+	public function filter_dash_module_latest_log_activity( $module, $module_id, $theme )
 	{
 		
-		$theme = $this->get_theme();
+		$this->add_template( 'dash_logs', dirname( __FILE__ ) . '/dash_logs.php' );
 
 		if ( FALSE === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
 			$num_logs = 8;
@@ -94,9 +81,9 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_entries( $module, $module_id )
+	public function filter_dash_module_latest_entries( $module, $module_id, $theme )
 	{
-		$theme = $this->get_theme();
+		$this->add_template( 'dash_latestentries', dirname( __FILE__ ) . '/dash_latestentries.php' );
 
 		$theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 		
@@ -111,9 +98,9 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_comments( $module, $module_id )
+	public function filter_dash_module_latest_comments( $module, $module_id, $theme )
 	{
-		$theme = $this->get_theme();
+		$this->add_template( 'dash_latestcomments', dirname( __FILE__ ) . '/dash_latestcomments.php' );
 
 		$post_ids = DB::get_results( 'SELECT DISTINCT post_id FROM ( SELECT date, post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) AS post_ids LIMIT 5', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
 		$posts = array();
