@@ -458,7 +458,7 @@ class AdminHandler extends ActionHandler
 				case 'email': // Changing e-mail address
 					if ( isset( $email ) && ( $user->email != $email ) ) {
 						$user->email= $email;
-						Session::notice( sprintf( _t( '%1$s email has been changed to %2$s', $user->username, $email ) ) );
+						Session::notice( sprintf( _t( '%1$s email has been changed to %2$s' ), $user->username, $email ) );
 						$update= TRUE;
 					}
 					break;
