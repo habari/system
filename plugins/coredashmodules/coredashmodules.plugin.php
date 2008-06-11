@@ -143,7 +143,6 @@ class CoreDashModules extends Plugin
 		
 		$module['title'] = '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>';
 		$module['content'] = $theme->fetch( 'dash_latestcomments' );
-		Utils::debug( $theme->fetch( 'dash_latestcomments' ));
 		return $module;
 	}
 }
