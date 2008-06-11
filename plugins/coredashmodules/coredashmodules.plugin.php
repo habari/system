@@ -32,50 +32,12 @@ class CoreDashModules extends Plugin
 	 * dashboard if the dashboard is currently empty.
 	 * @param string $file plugin file
 	 */
-	function action_plugin_activation( $file )
+	function filter_dash_modules( $modules )
 	{
-		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
-			$modules = array(
-				'Latest Entries',
-				'Latest Comments',
-				'Latest Log Activity',
-			);
-			
-			foreach( $modules as $module ) {
-				Modules::register( $module );
-			}
-			
-			// if the only active module is the 'add item' module, add the core modules to the dash
-			$active_modules = array_diff( Modules::get_active(), array( 'Add Item' ) );
-			if ( empty( $active_modules ) ) {
-				foreach( $modules as $module ) {
-					Modules::add( $module );
-				}
-				
-				Session::notice( 'Added core modules to dashboard.' );
-			}
-		}
+		array_push( $modules, 'Latest Entries', 'Latest Comments', 'Latest Log Activity' );
+		return $modules;
 	}
 
-	/**
-	 * action_plugin_deactivation
-	 * Unregisters the core modules.
-	 * @param string $file plugin file
-	 */
-	function action_plugin_deactivation( $file )
-	{
-		if(Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__)) {
-			$modules = array(
-				'Latest Entries',
-				'Latest Comments',
-				'Latest Log Activity',
-			);
-			foreach ( $modules as $module ) {
-				Modules::unregister( $module );
-			}
-		}
-	}
-	
 	/**
 	 * get_theme
 	 * Creates a theme object if it does not already exist
@@ -96,7 +58,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_log_activity( $module_id, $theme )
+	public function filter_dash_module_latest_log_activity( $module, $module_id )
 	{
 		
 		$theme = $this->get_theme();
@@ -116,12 +78,14 @@ class CoreDashModules extends Plugin
 		
 		// Create options form
 		$form = new FormUI( 'dash_logs' );
-		$form->append( 'checkbox', 'remove', 'null:unused', _t('Remove this module') );
+		$form->append( 'text', 'logs_number_display', 'option:' . Modules::storage_name( $module_id, 'logs_number_display' ), _t('Number of items') );
 		$form->append( 'submit', 'submit', _t('Submit') );
-		$form->properties['onsubmit'] = "dashboard.remove({$module_id}); return false;";
-		$theme->logs_form = $form->get();
+		$form->properties['onsubmit'] = "dashboard.updateModule({$module_id}); return false;";
 		
-		return $theme->fetch( 'dash_logs' );
+		$module['title'] = '<a href="' . Site::get_url('admin') . '/logs">' . _t('Latest Log Activity') . '</a>';
+		$module['options'] = $form->get();
+		$module['content'] = $theme->fetch( 'dash_logs' );
+		return $module;
 	}
 	
 	/**
@@ -130,12 +94,15 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_entries( $module_id, $theme )
+	public function filter_dash_module_latest_entries( $module, $module_id )
 	{
 		$theme = $this->get_theme();
 
 		$theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
-		return $theme->fetch( 'dash_latestentries' );
+		
+		$module['title'] = '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>';
+		$module['content'] = $theme->fetch( 'dash_latestentries' );
+		return $module;
 	}
 
 	/**
@@ -144,7 +111,7 @@ class CoreDashModules extends Plugin
 	 * @param string $module_id
 	 * @return string The contents of the module
 	 */
-	public function filter_dash_module_latest_comments( $module_id, $theme )
+	public function filter_dash_module_latest_comments( $module, $module_id )
 	{
 		$theme = $this->get_theme();
 
@@ -162,7 +129,9 @@ class CoreDashModules extends Plugin
 		$theme->latestcomments_posts = $posts;
 		$theme->latestcomments = $latestcomments;
 		
-		return $theme->fetch( 'dash_latestcomments' );
+		$module['title'] = '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>';
+		$module['content'] = $theme->fetch( 'dash_latestcomments' );
+		return $module;
 	}
 }
 

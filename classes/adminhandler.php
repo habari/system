@@ -233,13 +233,18 @@ class AdminHandler extends ActionHandler
 		// register the 'Add Item' filter
 		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
 
-		foreach( $modules as $id => $module ) {
-			$slug = Utils::slugify( (string) $module, '_' );
-			$content = '';
-			if ( ! $content = Plugins::filter( 'dash_module_' . $slug, $id, $this->theme ) ) {
-				$content = $this->theme->fetch( 'dash_module_' . $slug );
-			}
-			$modules[$id] = array( 'name' => $module, 'content' => $content );
+		foreach( $modules as $id => $module_name ) {
+			$slug = Utils::slugify( (string) $module_name, '_' );
+			$module = array(
+				'name' => $module_name,
+				'title' => $module_name,
+				'content' => '',
+				'options' => ''
+				);
+			
+			$module = Plugins::filter( 'dash_module_' .$slug, $module, $id, $this->theme );
+			
+			$modules[$id] = $module;
 		}
 
 		$this->theme->modules = $modules;
@@ -1902,7 +1907,7 @@ class AdminHandler extends ActionHandler
 	 * Function used to set theme variables to the add module dashboard widget
 	 * TODO make this form use an AJAX call instead of reloading the page
 	 */
-	public function filter_dash_module_add_item( $module_id )
+	public function filter_dash_module_add_item( $module, $id, $theme )
 	{
 		$modules = Modules::get_all();
 		if ( $modules ) {
@@ -1915,8 +1920,10 @@ class AdminHandler extends ActionHandler
 		$form->append( 'submit', 'submit', _t('+') );
 		//$form->on_success( array( $this, 'dash_additem' ) );
 		$form->properties['onsubmit'] = "dashboard.add(); return false;";
-		$this->theme->additem_form = $form->get();
-		return $this->theme->fetch( 'dash_additem' );
+		$theme->additem_form = $form->get();
+		
+		$module['content'] = $theme->fetch( 'dash_additem' );
+		return $module;
 	}
 
 	/**

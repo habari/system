@@ -16,7 +16,7 @@ class Modules
      */
 	public function __static()
 	{
-		self::$available_modules = (array) Options::get( 'dash_available_modules' );
+		self::$available_modules = (array) Plugins::filter( 'dash_modules', array() );
 		self::$active_modules = isset( User::identify()->info->dash_modules ) ?  User::identify()->info->dash_modules : array();
 
 		// check if we have orphaned active modules.
@@ -146,7 +146,7 @@ class Modules
 	 * @param string $option the option name
 	 * @return string storage name for the module option
 	 */
-	private static function storage_name( $module_id, $option )
+	public static function storage_name( $module_id, $option )
 	{
 		$module_name = self::$active_modules[$module_id];
 		return Utils::slugify( $module_name ) . ':' . $module_id . ':' . $option;

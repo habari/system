@@ -39,6 +39,12 @@ var dashboard = {
 				$('.modules').sortable('enable');
 			});
 	},
+	updateModule: function() {
+		//spinner.start();
+		// disable dragging and dropping while we update
+		// here we would update the modules options then 
+		// reload the modules
+	},
 	add: function() {
 		spinner.start();
 		// disable dragging and dropping while we update

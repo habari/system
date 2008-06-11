@@ -1,10 +1,3 @@
-<div class="close">&nbsp;</div>
-
-<div class="modulecore">
-	<h2><a href="<?php Site::out_url('admin'); ?>/comments"><?php _e('Latest Comments'); ?></a></h2>
-
-	<div class="handle">&nbsp;</div>
-
 	<ul class="items">
 
 		<?php foreach ( $latestcomments_posts as $post ): ?>
@@ -25,5 +18,3 @@
 		<?php endforeach; ?>
 
 	</ul>
-
-</div>

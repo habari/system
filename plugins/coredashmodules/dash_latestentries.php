@@ -1,10 +1,3 @@
-<div class="close">&nbsp;</div>
-
-<div class="modulecore">
-	<h2><a href="<?php Site::out_url('admin'); ?>/posts?type=1"><?php _e('Latest Entries'); ?></a></h2>
-
-	<div class="handle">&nbsp;</div>
-
 	<ul class="items">
 
 		<?php foreach($recent_posts as $post): ?>
@@ -16,4 +9,3 @@
 		<?php endforeach; ?>
 
 	</ul>
-</div>
