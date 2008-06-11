@@ -1233,7 +1233,7 @@ class AdminHandler extends ActionHandler
 		$params= $_POST;
 
 		$this->fetch_posts( $params );
-		$items= $this->theme->fetch( 'entries_items' );
+		$items= $this->theme->fetch( 'posts_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
 
 		$output= array(
