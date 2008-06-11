@@ -394,29 +394,26 @@ class AdminHandler extends ActionHandler
 		else {
 			$user= $currentuser;
 		}
-
+				
 		foreach ( $posted_fields as $posted_field => $posted_value ) {
 			switch ( $posted_field ) {
 				case 'delete': // Deleting a user
-					if ( isset( $delete ) && ( 'user' == $delete ) ) {
-						// Extra safety check here
-						if ( isset( $user_id ) && ( $currentuser->id != intval( $user_id ) ) ) {
-							$username= $user->username;
-							$posts= Posts::get( array( 'user_id' => $user_id, 'nolimit' => 1 ) );
-							if ( isset( $reassign ) && ( 1 === intval( $reassign ) ) ) {
-								// we're going to re-assign all of this user's posts
-								$newauthor= isset( $author ) ? intval( $author ) : 1;
-								Posts::reassign( $newauthor, $posts );
-							}
-							else {
-								// delete posts
-								foreach ( $posts as $post ) {
-									$post->delete();
-								}
-							}
-							$user->delete();
-							Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
+					if ( isset( $user_id ) && ( $currentuser->id != intval( $user_id ) ) ) {
+						$username= $user->username;
+						$posts= Posts::get( array( 'user_id' => $user_id, 'nolimit' => 1 ) );
+						if ( isset( $reassign ) && ( 1 === intval( $reassign ) ) ) {
+							// we're going to re-assign all of this user's posts
+							$newauthor= isset( $author ) ? intval( $author ) : 1;
+							Posts::reassign( $newauthor, $posts );
 						}
+						else {
+							// delete posts
+							foreach ( $posts as $post ) {
+								$post->delete();
+							}
+						}
+						$user->delete();
+						Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
 					}
 					// redirect to main user list
 					$results= array( 'page' => 'users' );
@@ -470,15 +467,131 @@ class AdminHandler extends ActionHandler
 		if ( $update == TRUE ) {
 			$user->update();
 		}
-
+		
 		Utils::redirect( URL::get( 'admin', $results ) );
-	}
 
+	}
+	
+	/**
+	 * handles AJAX from /users
+	 * used to delete users and fetch new ones
+	 */
+	public function ajax_update_users($handler_vars) {
+		
+		echo json_encode($this->update_users($handler_vars));
+		
+	}
+	
+	public function update_users($handler_vars) {
+		if($handler_vars['action'] == 'delete') {
+			
+			$currentuser = User::identify();
+			
+			$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+			if ( isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest'] ) { 
+				return _t('WSSE authentication failed.');
+			}
+			
+			foreach($_POST as $id => $delete) {
+				
+				// skip POST elements which are not log ids
+				if ( preg_match( '/^p\d+/', $id ) && $delete ) {
+					$id= substr($id, 1);
+
+					$ids[]= array( 'id' => $id );
+
+				}
+				
+			}
+			
+			if(isset($handler_vars['checkbox_ids'])) {
+				foreach($handler_vars['checkbox_ids'] as $id => $delete) {
+					if($delete) {
+						$ids[]= array( 'id' => $id );
+					}
+				}
+			}
+			
+			$count = 0;
+			
+			if(!isset($ids)) {
+				return sprintf( _t('Deleted %d users.'), $count );
+			}
+					
+			foreach($ids as $id) {
+				$id = $id['id'];
+				$user = User::get_by_id($id);
+								
+				if($currentuser != $user) {
+					if($handler_vars['reassign'] != 0) {
+						$assign = intval($handler_vars['reassign']);
+						
+						if($user->id == $assign) {
+							return;
+						}
+						
+						$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
+						
+						if(isset($posts[0])) {
+							Posts::reassign( $assign, $posts );
+						}
+					}
+					
+					$user->delete();
+				} else {
+					$msg_status = _t('You cannot delete yourself.');
+				}
+				
+				$count++;
+			} 
+			
+			if(!isset($msg_status)) {
+				$msg_status= sprintf( _t('Deleted %d users.'), $count );
+			}
+
+			return $msg_status;
+			
+		} elseif($handler_vars['action'] == 'fetch') {
+			$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+			$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+			
+			$this->theme->currentuser = User::identify();
+
+			return $this->theme->fetch( 'users_items' );
+		}
+	}
+	
+	/**
+	 * Assign values needed to display the users listing
+	 *
+	 */
+	private function fetch_users($params = NULL) {
+
+		// prepare the WSSE tokens
+		$this->theme->wsse= Utils::WSSE();
+		
+		// Get author list
+		$author_list = Users::get_all();
+		$authors[0] = _t('nobody');
+		foreach ( $author_list as $author ) {
+			$authors[ $author->id ]= $author->displayname;
+		}
+		$this->theme->authors = $authors;
+	}
+	
+	public function get_users() {
+		
+		return $this->post_users();
+	}
+	
 	/**
 	 * Handles post requests from the Users listing (ie: creating a new user)
 	 */
 	public function post_users()
 	{
+		
+		$this->fetch_users();
+		
 		extract( $this->handler_vars );
 		$error= '';
 		if ( isset( $action ) && ( 'newuser' == $action ) ) {
@@ -519,8 +632,13 @@ class AdminHandler extends ActionHandler
 				}
 				$this->theme->assign( 'settings', $settings );
 			}
-			$this->theme->display( 'users' );
+		} else if ( isset( $action ) && ( 'delete' == $action ) ) {
+					
+			Session::notice($this->update_users($this->handler_vars));
+			
 		}
+		
+		$this->theme->display('users');
 	}
 
 	/**
