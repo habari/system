@@ -1118,7 +1118,10 @@ class AdminHandler extends ActionHandler
 			$this->theme->search_args= 'status:' . Post::status_name( $status ) . ' ';
 		}
 		if ( $type != Post::type( 'any' ) ) {
-			$this->theme->search_args.= 'type:' . Post::type_name( $type );
+			$this->theme->search_args.= 'type:' . Post::type_name( $type ) . ' ';
+		}
+		if ( $user_id != 0 ) {
+			$this->theme->search_args.= 'author:' . User::get_by_id( $user_id )->username;
 		}
 
 		$monthcts= Posts::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
