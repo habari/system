@@ -142,8 +142,17 @@
 
 <?php Plugins::act( 'theme_admin_user', $user ); ?>
 
-<div class="container transparent">
-	<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton">
+<div class="container controls transparent">
+	<span class="pct25">
+		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+	</span>
+	<span class="pct50">
+		<?php printf( _t('Reassign posts to: %s'), Utils::html_select('reassign', $authors )); ?>
+	</span>
+	
+	<span class="pct25">
+		<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton">
+	</span>
 </div>
 </form>
 

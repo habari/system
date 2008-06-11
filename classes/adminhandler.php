@@ -180,9 +180,9 @@ class AdminHandler extends ActionHandler
 
 		// if the active plugin list has changed, expire the updates cache
 		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_plugins' ) != Options::get( 'active_plugins' ) ) ) {
-			Cache::expire( 'dashboard_updates' ); 
+			Cache::expire( 'dashboard_updates' );
 		}
-		
+
 		/*
 		 * Check for updates to core and any hooked plugins
 		 * cache the output so we don't make a request every load but can still display updates
@@ -192,16 +192,16 @@ class AdminHandler extends ActionHandler
 		}
 		else {
 			$updates= Update::check();
-			
+
 			if ( !Error::is_error( $updates ) ) {
 				Cache::set( 'dashboard_updates', $updates );
 				$this->theme->updates= $updates;
-				
+
 				// cache the set of plugins we just used to check for
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
 			}
 		}
-		
+
 		$this->theme->stats= array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),
 			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),
@@ -218,7 +218,7 @@ class AdminHandler extends ActionHandler
 
 		$this->display( 'dashboard' );
 	}
-	
+
 	/**
 	 * Fetches active modules for display on the dashboard
 	 */
@@ -232,7 +232,7 @@ class AdminHandler extends ActionHandler
 
 		// register the 'Add Item' filter
 		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
-		
+
 		foreach( $modules as $id => $module ) {
 			$slug = Utils::slugify( (string) $module, '_' );
 			$content = '';
@@ -241,7 +241,7 @@ class AdminHandler extends ActionHandler
 			}
 			$modules[$id] = array( 'name' => $module, 'content' => $content );
 		}
-		
+
 		$this->theme->modules = $modules;
 	}
 
@@ -372,11 +372,28 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
 	}
 
+	public function get_user()
+	{
+		// Get author list
+		$author_list = Users::get_all();
+		$authors[0] = _t('nobody');
+		foreach ( $author_list as $author ) {
+			$authors[ $author->id ]= $author->displayname;
+		}
+		$this->theme->authors = $authors;
+
+		$this->theme->currentuser = User::identify();
+
+		$this->theme->display('user');
+
+	}
+
 	/**
 	 * Handles post requests from the user profile page.
 	 */
 	function post_user()
 	{
+
 		// Keep track of whether we actually need to update any fields
 		$update= FALSE;
 		$results= array( 'page' => 'user' );
@@ -394,7 +411,7 @@ class AdminHandler extends ActionHandler
 		else {
 			$user= $currentuser;
 		}
-				
+
 		foreach ( $posted_fields as $posted_field => $posted_value ) {
 			switch ( $posted_field ) {
 				case 'delete': // Deleting a user
@@ -417,6 +434,7 @@ class AdminHandler extends ActionHandler
 					}
 					// redirect to main user list
 					$results= array( 'page' => 'users' );
+					Utils::redirect( URL::get( 'admin', $results ) );
 					break;
 				case 'username': // Changing username
 					if ( isset( $username ) && ( $user->username != $username ) ) {
@@ -466,34 +484,34 @@ class AdminHandler extends ActionHandler
 
 		if ( $update == TRUE ) {
 			$user->update();
+			Utils::redirect( URL::get( 'admin', $results ) );
 		}
-		
-		Utils::redirect( URL::get( 'admin', $results ) );
+
 
 	}
-	
+
 	/**
 	 * handles AJAX from /users
 	 * used to delete users and fetch new ones
 	 */
 	public function ajax_update_users($handler_vars) {
-		
+
 		echo json_encode($this->update_users($handler_vars));
-		
+
 	}
-	
+
 	public function update_users($handler_vars) {
 		if($handler_vars['action'] == 'delete') {
-			
+
 			$currentuser = User::identify();
-			
+
 			$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-			if ( isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest'] ) { 
+			if ( isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest'] ) {
 				return _t('WSSE authentication failed.');
 			}
-			
+
 			foreach($_POST as $id => $delete) {
-				
+
 				// skip POST elements which are not log ids
 				if ( preg_match( '/^p\d+/', $id ) && $delete ) {
 					$id= substr($id, 1);
@@ -501,9 +519,9 @@ class AdminHandler extends ActionHandler
 					$ids[]= array( 'id' => $id );
 
 				}
-				
+
 			}
-			
+
 			if(isset($handler_vars['checkbox_ids'])) {
 				foreach($handler_vars['checkbox_ids'] as $id => $delete) {
 					if($delete) {
@@ -511,56 +529,56 @@ class AdminHandler extends ActionHandler
 					}
 				}
 			}
-			
+
 			$count = 0;
-			
+
 			if(!isset($ids)) {
 				return sprintf( _t('Deleted %d users.'), $count );
 			}
-					
+
 			foreach($ids as $id) {
 				$id = $id['id'];
 				$user = User::get_by_id($id);
-								
+
 				if($currentuser != $user) {
 					if($handler_vars['reassign'] != 0) {
 						$assign = intval($handler_vars['reassign']);
-						
+
 						if($user->id == $assign) {
 							return;
 						}
-						
+
 						$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
-						
+
 						if(isset($posts[0])) {
 							Posts::reassign( $assign, $posts );
 						}
 					}
-					
+
 					$user->delete();
 				} else {
 					$msg_status = _t('You cannot delete yourself.');
 				}
-				
+
 				$count++;
-			} 
-			
+			}
+
 			if(!isset($msg_status)) {
 				$msg_status= sprintf( _t('Deleted %d users.'), $count );
 			}
 
 			return $msg_status;
-			
+
 		} elseif($handler_vars['action'] == 'fetch') {
 			$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 			$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-			
+
 			$this->theme->currentuser = User::identify();
 
 			return $this->theme->fetch( 'users_items' );
 		}
 	}
-	
+
 	/**
 	 * Assign values needed to display the users listing
 	 *
@@ -569,7 +587,7 @@ class AdminHandler extends ActionHandler
 
 		// prepare the WSSE tokens
 		$this->theme->wsse= Utils::WSSE();
-		
+
 		// Get author list
 		$author_list = Users::get_all();
 		$authors[0] = _t('nobody');
@@ -578,20 +596,20 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->authors = $authors;
 	}
-	
+
 	public function get_users() {
-		
+
 		return $this->post_users();
 	}
-	
+
 	/**
 	 * Handles post requests from the Users listing (ie: creating a new user)
 	 */
 	public function post_users()
 	{
-		
+
 		$this->fetch_users();
-		
+
 		extract( $this->handler_vars );
 		$error= '';
 		if ( isset( $action ) && ( 'newuser' == $action ) ) {
@@ -633,11 +651,11 @@ class AdminHandler extends ActionHandler
 				$this->theme->assign( 'settings', $settings );
 			}
 		} else if ( isset( $action ) && ( 'delete' == $action ) ) {
-					
+
 			Session::notice($this->update_users($this->handler_vars));
-			
+
 		}
-		
+
 		$this->theme->display('users');
 	}
 
@@ -1270,7 +1288,7 @@ class AdminHandler extends ActionHandler
 
 		echo json_encode($msg_status);
 	}
-	
+
 	/**
 	 * handles AJAX from /logs
 	 * used to delete logs
@@ -1289,14 +1307,14 @@ class AdminHandler extends ActionHandler
 			// skip POST elements which are not log ids
 			if ( preg_match( '/^p\d+/', $id ) && $delete ) {
 				$id= substr($id, 1);
-				
+
 				$ids[]= array( 'id' => $id );
-				
+
 			}
 		}
-		
+
 		$to_delete= EventLog::get( array( 'date' => 'any', 'where' => $ids, 'nolimit' => 1 ) );
-				
+
 		$logstatus= array( 'Deleted %d logs' => 0 );
 		foreach ( $to_delete as $log ) {
 			$log->delete();
@@ -1510,13 +1528,13 @@ class AdminHandler extends ActionHandler
 		if ( '0' != $user ) {
 			$arguments['user_id']= $user;
 		}
-		
+
 		if(is_array($params)) {
 			$arguments = array_merge($arguments, $params);
 		}
-				
+
 		$this->theme->logs= EventLog::get( $arguments );
-		
+
 		$monthcts= EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
 		foreach( $monthcts as $month ) {
 			if ( isset($years[$month->year]) ) {
@@ -1538,7 +1556,7 @@ class AdminHandler extends ActionHandler
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$params= $_POST;
-		
+
 		$this->fetch_logs( $params );
 		$items= $this->theme->fetch( 'logs_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
@@ -1890,7 +1908,7 @@ class AdminHandler extends ActionHandler
 		if ( $modules ) {
 			$modules = array_combine( array_values( $modules ), array_values( $modules ) );
 		}
-	
+
 		$form = new FormUI( 'dash_additem' );
 		$form->append( 'select', 'module', 'null:unused' );
 		$form->module->options = $modules;
@@ -1900,7 +1918,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->additem_form = $form->get();
 		return $this->theme->fetch( 'dash_additem' );
 	}
-	
+
 	/**
 	 * Adds a module to the user's dashboard
 	 * @param object form FormUI object
@@ -1909,7 +1927,7 @@ class AdminHandler extends ActionHandler
 	{
 		$new_module = $form->module->value;
 		Modules::add( $new_module );
-		
+
 		// return false to redisplay the form
 		return false;
 	}
