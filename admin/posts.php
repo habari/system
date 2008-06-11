@@ -63,7 +63,7 @@ liveSearch.search= function() {
 	spinner.start();
 
 	$.post(
-		'<?php echo URL::get('admin_ajax', array('context' => 'entries')) ?>',
+		'<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>',
 		'&search=' + liveSearch.input.val() + '&limit=20',
 		function(json) {
 			$('.entries').html(json.items);
@@ -73,7 +73,7 @@ liveSearch.search= function() {
 			itemManage.initItems();
 			$('.years').show();
 			timeline.reset();
-			findChildren()
+			findChildren();
 		},
 		'json'
 		);
@@ -86,14 +86,13 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 
 	$.ajax({
 		type: 'POST',
-		url: "<?php echo URL::get('admin_ajax', array('context' => 'entries')); ?>",
+		url: "<?php echo URL::get('admin_ajax', array('context' => 'posts')); ?>",
 		data: 'offset=' + (parseInt(c) - parseInt(b)) + '&limit=' + (1 + parseInt(b) - parseInt(a)) + '&search=' + search_args,
 		dataType: 'json',
 		success: function(json){
 			$('.entries').html(json.items);
 			spinner.stop();
 			itemManage.initItems();
-			console.log('test')
 			findChildren();
 		}
 	});
