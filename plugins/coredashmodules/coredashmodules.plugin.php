@@ -25,16 +25,48 @@ class CoreDashModules extends Plugin
 			'license' => 'Apache License 2.0',
 		);
 	}
-
-	/**
+	
+		/**
 	 * action_plugin_activation
 	 * Registers the core modules with the Modules class. Add these modules to the
 	 * dashboard if the dashboard is currently empty.
 	 * @param string $file plugin file
 	 */
+	function action_plugin_activation( $file )
+	{
+		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
+			Modules::add( 'Latest Entries' );
+			Modules::add( 'Latest Comments' );
+			Modules::add( 'Latest Log Activity' );
+		}
+	}
+
+	/**
+	 * action_plugin_deactivation
+	 * Unregisters the core modules.
+	 * @param string $file plugin file
+	 */
+	function action_plugin_deactivation( $file )
+	{
+		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
+			Modules::remove_by_name( 'Latest Entries' );
+			Modules::remove_by_name( 'Latest Comments' );
+			Modules::remove_by_name( 'Latest Log Activity' );
+		}
+	}
+
+	/**
+	 * filter_dash_modules
+	 * Registers the core modules with the Modules class. 
+	 */
 	function filter_dash_modules( $modules )
 	{
 		array_push( $modules, 'Latest Entries', 'Latest Comments', 'Latest Log Activity' );
+		
+		$this->add_template( 'dash_logs', dirname( __FILE__ ) . '/dash_logs.php' );
+		$this->add_template( 'dash_latestentries', dirname( __FILE__ ) . '/dash_latestentries.php' );
+		$this->add_template( 'dash_latestcomments', dirname( __FILE__ ) . '/dash_latestcomments.php' );
+		
 		return $modules;
 	}
 	
@@ -47,9 +79,6 @@ class CoreDashModules extends Plugin
 	 */
 	public function filter_dash_module_latest_log_activity( $module, $module_id, $theme )
 	{
-		
-		$this->add_template( 'dash_logs', dirname( __FILE__ ) . '/dash_logs.php' );
-
 		if ( FALSE === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
 			$num_logs = 8;
 		}
@@ -83,8 +112,6 @@ class CoreDashModules extends Plugin
 	 */
 	public function filter_dash_module_latest_entries( $module, $module_id, $theme )
 	{
-		$this->add_template( 'dash_latestentries', dirname( __FILE__ ) . '/dash_latestentries.php' );
-
 		$theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 		
 		$module['title'] = '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>';
@@ -100,8 +127,6 @@ class CoreDashModules extends Plugin
 	 */
 	public function filter_dash_module_latest_comments( $module, $module_id, $theme )
 	{
-		$this->add_template( 'dash_latestcomments', dirname( __FILE__ ) . '/dash_latestcomments.php' );
-
 		$post_ids = DB::get_results( 'SELECT DISTINCT post_id FROM ( SELECT date, post_id FROM {comments} WHERE status = ? AND type = ? ORDER BY date DESC, post_id ) AS post_ids LIMIT 5', array( Comment::STATUS_APPROVED, Comment::COMMENT ), 'Post' );
 		$posts = array();
 		$latestcomments = array();
@@ -118,6 +143,7 @@ class CoreDashModules extends Plugin
 		
 		$module['title'] = '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>';
 		$module['content'] = $theme->fetch( 'dash_latestcomments' );
+		Utils::debug( $theme->fetch( 'dash_latestcomments' ));
 		return $module;
 	}
 }
