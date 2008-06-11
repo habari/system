@@ -15,6 +15,12 @@ var dashboard = {
 			}, function() {
 				$(this).parents('li').removeClass('viewingoptions')
 			});
+
+		$('.close', '.modules').click( function() { 
+		    // grab the module ID from the parent DIV id attribute. 
+		    matches = $(this).parents('.module').attr('id').split( ':', 2 ); 
+		    dashboard.remove( matches[0] ); 
+		}); 
 	},
 	update: function() {
 		spinner.start();
