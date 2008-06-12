@@ -108,6 +108,13 @@ var itemManage = {
 			return false;
 		});
 		
+		if($('.manage.users').length != 0) {
+			$("input#search").keyup(function (e) {
+				var str= $('input#search').val();
+				itemManage.simpleFilter(str);
+			});
+		}
+		
 		if($('#comments').length != 0) {
 			$('.item.controls input.approvebutton').click(function () {
 				for (var id in itemManage.selected)	{
@@ -162,6 +169,20 @@ var itemManage = {
 		itemManage.changeItem();
 	},
 	selected: [],
+	simpleFilter: function( search ) {
+		var count= 0;
+		$('li.item').each(function() {
+			if($('.user:contains(' + search + ')', this).length == 0) {
+				$(this).hide();
+				$(this).addClass('hidden');
+			} else {
+				count= count + 1;
+				$(this).show();
+				$(this).removeClass('hidden');
+			}
+		});
+		itemManage.changeItem();
+	},
 	changeItem: function() {
 		var selected = {};
 
@@ -182,7 +203,8 @@ var itemManage = {
 
 		itemManage.selected = selected;
 
-		visible = $('.item .checkbox input[type=checkbox]:checked').length;
+		visible = $('.item:not(.hidden) .checkbox input[type=checkbox]:checked').length;
+		
 		count = 0;
 		for (var id in itemManage.selected)	{
 			if(itemManage.selected[id] == 1) {
@@ -195,7 +217,7 @@ var itemManage = {
 				this.checked = 0;
 			});
 			$('.item.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if(visible == $('.item .checkbox input[type=checkbox]').length) {
+		} else if(visible == $('.item:not(.hidden) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
