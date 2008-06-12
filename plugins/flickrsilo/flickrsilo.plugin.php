@@ -773,7 +773,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 			switch ($action){
 				case 'Authorize':
 					if($this->is_auth()){
-						$deauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'De-Authorize')) . '#plugin_options';
+						$deauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'De-Authorize')) . '#plugin_options';
 						echo "<p>You have already successfully authorized Habari to access your Flickr account.</p>";
 						echo "<p>Do you want to <a href=\"\">revoke authorization</a>?</p>";
 					}
@@ -781,7 +781,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 						$flickr = new Flickr();
 						$_SESSION['flickr_frob'] = '' . $flickr->getFrob();
 						$auth_url = $flickr->authLink($_SESSION['flickr_frob']);
-						$confirm_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'confirm')) . '#plugin_options';
+						$confirm_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'confirm')) . '#plugin_options';
 						echo <<< END_AUTH
 
 <p>To use this plugin, you must <a href="{$auth_url}" target="_blank">authorize Habari to have access to your Flickr account</a>.
@@ -794,7 +794,7 @@ END_AUTH;
 				case 'confirm':
 					$flickr = new Flickr();
 					if(!isset($_SESSION['flickr_frob'])){
-						$auth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Authorize')) . '#plugin_options';
+						$auth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'Authorize')) . '#plugin_options';
 						echo '<p>Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href="' . $auth_url . '">try again</a>.</p>';
 					}
 					else{
@@ -812,7 +812,7 @@ END_AUTH;
 					break;
 				case 'De-Authorize':
 					Options::set('flickr_token_' . User::identify()->id);
-					$reauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Authorize')) . '#plugin_options';
+					$reauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'Authorize')) . '#plugin_options';
 					echo '<p>The Flickr Silo Plugin authorization has been deleted.<p>';
 					echo "<p>Do you want to <a href=\"{$reauth_url}\">re-authorize this plugin</a>?<p>";
 					break;
