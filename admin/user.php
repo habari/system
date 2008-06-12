@@ -48,7 +48,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10">
+		<input id="search" type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10">
 	</span>
 </div>
 
