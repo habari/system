@@ -5,11 +5,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('scripts'); ?>/ui.mouse.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/ui.core.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.slider.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.ext.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/ui.resizable.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.spinner.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script>

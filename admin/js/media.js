@@ -225,9 +225,9 @@ habari.media = {
 
 $(document).ready(function(){
 	$('#mediatabs').tabs({
-		fxShow: { height: 'show', opacity: 'show' },
-		fxHide: { height: 'hide', opacity: 'hide' },
-		unselected: true,
+		fx: { height: 'toggle', opacity: 'toggle' },
+		selected: null,
+		unselect: true,
 		show: function(clicked, shown, hidden){
 			var path = $('.pathstore', shown).html().trim();
 			if(path != '') {
