@@ -77,43 +77,43 @@
 
 	<h2><?php echo $possessive; ?> <?php _e('User Information'); ?></h2>
 
-		<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
+	<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
 
-		<div class="item clear" id="displayname">
-			<span class="column span-5">
-				<label for="sitename"><?php _e('Display Name'); ?></label>
-			</span>
-			<span class="column span-14 last">
-				<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
-			</span>
-		</div>
+	<div class="item clear" id="displayname">
+		<span class="column span-5">
+			<label for="sitename"><?php _e('Display Name'); ?></label>
+		</span>
+		<span class="column span-14 last">
+			<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
+		</span>
+	</div>
 
-		<div class="item clear" id="username">
-			<span class="column span-5">
-				<label for="sitetagline"><?php _e('User Name'); ?></label>
-			</span>
-			<span class="column span-14 last">
-				<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
-			</span>
-		</div>	
+	<div class="item clear" id="username">
+		<span class="column span-5">
+			<label for="sitetagline"><?php _e('User Name'); ?></label>
+		</span>
+		<span class="column span-14 last">
+			<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
+		</span>
+	</div>
 
-		<div class="item clear" id="email">
-			<span class="column span-5">
-				<label for="sitetagline"><?php _e('E-Mail'); ?></label>
-			</span>
-			<span class="column span-14 last">
-				<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
-			</span>
-		</div>	
+	<div class="item clear" id="email">
+		<span class="column span-5">
+			<label for="sitetagline"><?php _e('E-Mail'); ?></label>
+		</span>
+		<span class="column span-14 last">
+			<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
+		</span>
+	</div>
 
-		<div class="item clear" id="portraiturl">
-			<span class="column span-5">
-				<label for="sitetagline"><?php _e('Portrait URL'); ?></label>
-			</span>
-			<span class="column span-14 last">
-				<input type="text" name="imageurl" class="border" value="">
-			</span>
-		</div>	
+	<div class="item clear" id="portraiturl">
+		<span class="column span-5">
+			<label for="sitetagline"><?php _e('Portrait URL'); ?></label>
+		</span>
+		<span class="column span-14 last">
+			<input type="text" name="imageurl" class="border" value="">
+		</span>
+	</div>
 </div>
 
 
@@ -121,26 +121,32 @@
 
 	<h2><?php _e('Change Password'); ?></h2>
 
-		<div class="item clear" id="password">
-			<span class="column span-5">
-				<label for="sitetagline"><?php _e('Password'); ?></label>
-			</span>
-			<span class="column span-14 last">
-				<input type="password" name="pass1" class="border" value="">
-			</span>
-		</div>	
+	<div class="item clear" id="password">
+		<span class="column span-5">
+			<label for="sitetagline"><?php _e('Password'); ?></label>
+		</span>
+		<span class="column span-14 last">
+			<input type="password" name="pass1" class="border" value="">
+		</span>
+	</div>
 
-		<div class="item clear" id="passwordagain">
-			<span class="column span-5">
-				<label for="sitetagline"><?php _e('Password Again'); ?></label>
-			</span>
-			<span class="column span-14 last">
-				<input type="password" name="pass2" class="border" value="">
-			</span>
-		</div>	
+	<div class="item clear" id="passwordagain">
+		<span class="column span-5">
+			<label for="sitetagline"><?php _e('Password Again'); ?></label>
+		</span>
+		<span class="column span-14 last">
+			<input type="password" name="pass2" class="border" value="">
+		</span>
+	</div>
 </div>
 
-<?php Plugins::act( 'theme_admin_user', $user ); ?>
+<div class="container settings user info">
+
+	<h2><?php _e('Additional User Information'); ?></h2>
+
+	<?php Plugins::act( 'theme_admin_user', $user ); ?>
+
+</div>
 
 <div class="container controls transparent">
 	<span class="pct25">
@@ -149,7 +155,7 @@
 	<span class="pct50">
 		<?php printf( _t('Reassign posts to: %s'), Utils::html_select('reassign', $authors )); ?>
 	</span>
-	
+
 	<span class="pct25">
 		<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton">
 	</span>
