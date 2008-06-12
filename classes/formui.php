@@ -20,7 +20,7 @@ class FormContainer
 	public $controls= array();
 	protected $theme_obj = null;
 	protected $checksum;
-	protected $template = 'formcontainer';
+	public $template = 'formcontainer';
 	public $properties = array();
 
 	/**
@@ -708,11 +708,12 @@ class FormControl
 	public function __construct()
 	{
 		$args = func_get_args();
-		list($name, $storage, $caption) = array_merge($args, array_fill(0, 3, null));
+		list($name, $storage, $caption, $template) = array_merge($args, array_fill(0, 4, null));
 
 		$this->name= $name;
 		$this->storage= $storage;
 		$this->caption= $caption;
+		$this->template= $template;
 
 		$this->default = null;
 	}
@@ -916,7 +917,7 @@ class FormControl
 		switch($name) {
 			case 'field':
 				// must be same every time, no spaces
-				return sprintf('%x', crc32($this->name));
+				return isset($this->id) ? $this->id : sprintf('%x', crc32($this->name));
 			case 'value':
 				if(isset($_POST[$this->field])) {
 					return $_POST[$this->field];
@@ -1087,10 +1088,11 @@ class FormControlNoSave extends FormControl
 	public function __construct()
 	{
 		$args = func_get_args();
-		list($name, $caption) = array_merge($args, array_fill(0, 3, null));
+		list($name, $caption, $template) = array_merge($args, array_fill(0, 3, null));
 
 		$this->name= $name;
 		$this->caption= $caption;
+		$this->template= $template;
 	}
 
 	/**
@@ -1248,12 +1250,13 @@ class FormControlSelect extends FormControl
 	public function __construct( )
 	{
 		$args = func_get_args();
-		list($name, $storage, $caption, $options) = array_merge($args, array_fill(0, 4, null));
+		list($name, $storage, $caption, $options, $template) = array_merge($args, array_fill(0, 5, null));
 
 		$this->name= $name;
 		$this->storage= $storage;
 		$this->caption= $caption;
 		$this->options= $options;
+		$this->template= $template;
 
 		$this->default = null;
 	}
@@ -1270,6 +1273,7 @@ class FormControlSelect extends FormControl
 		$theme->options = $this->options;
 		$theme->multiple = $this->multiple;
 		$theme->size = $this->size;
+		$theme->id = $this->name;
 
 		return $theme->fetch( $this->get_template() );
 	}
@@ -1329,7 +1333,7 @@ class FormControlHidden extends FormControl
 	 */
 	public function get($forvalidation)
 	{
-		return '<input type="hidden" name="' . $this->field . '" value="' . $this->get_default() . '">';
+		return '<input type="hidden" name="' . $this->field . '" value="' . $this->value . '">';
 	}
 
 }
@@ -1349,11 +1353,11 @@ class FormControlFieldset extends FormContainer
 	public function __construct()
 	{
 		$args = func_get_args();
-		list($name, $caption) = array_merge($args, array_fill(0, 3, null));
+		list($name, $caption, $template) = array_merge($args, array_fill(0, 3, null));
 
 		$this->name= $name;
 		$this->caption= $caption;
-		$this->template = 'formcontrol_fieldset';
+		$this->template = isset($template) ? $template : 'formcontrol_fieldset';
 	}
 }
 
@@ -1371,12 +1375,12 @@ class FormControlWrapper extends FormContainer
 	public function __construct()
 	{
 		$args = func_get_args();
-		list($name, $class) = array_merge($args, array_fill(0, 3, null));
+		list($name, $class, $template) = array_merge($args, array_fill(0, 3, null));
 
 		$this->name= $name;
 		$this->class= $class;
 		$this->caption = '';
-		$this->template = 'formcontrol_wrapper';
+		$this->template = isset($template) ? $template : 'formcontrol_wrapper';
 	}
 }
 
@@ -1415,6 +1419,61 @@ class FormControlRadio extends FormControlSelect
 class FormControlSilos extends FormControlNoSave
 {
 // Placeholder class
+}
+
+/**
+ * A control to display a tab splitter based on FormControl for output via a FormUI.
+ */
+class FormControlTabs extends FormContainer
+{
+	/**
+	 * Override the FormControl constructor to support more parameters
+	 *
+	 * @param string $name Name of this control
+	 * @param string $caption The legend to display in the fieldset markup
+	 */
+	public function __construct()
+	{
+		$args = func_get_args();
+		list($name, $caption, $template) = array_merge($args, array_fill(0, 3, null));
+
+		$this->name= $name;
+		$this->caption= $caption;
+		$this->template = isset($template) ? $template : 'formcontrol_tabs';
+	}
+
+	/**
+	 * Produce HTML output for all this fieldset and all contained controls
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	function get($forvalidation)
+	{
+		$theme= $this->get_theme($forvalidation, $this);
+
+		foreach ( $this->controls as $control ) {
+			if($control instanceof FormContainer) {
+				$content = '';
+				foreach( $control->controls as $subcontrol) {
+					if($content != '') {
+						$content .= '<hr>';
+					}
+					$content .= $subcontrol->get($forvalidation);
+				}
+				$controls[$control->caption] = $content;
+			}
+		}
+		$theme->controls = $controls;
+		// Do not move before $contents
+		// Else, these variables will contain the last control's values
+		$theme->class = $this->class;
+		$theme->id = $this->name;
+		$theme->caption = $this->caption;
+
+		return $theme->fetch( $this->template );
+	}
+
 }
 
 ?>
