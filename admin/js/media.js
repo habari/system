@@ -63,11 +63,11 @@ habari.media = {
 						output += '<ul class="mediaactions dropbutton">'
 						if (result.files[file].filetype && habari.media.output[result.files[file].filetype]) {
 							for (method in habari.media.output[result.files[file].filetype]) {
-								output += '<li><a href="#" onclick="habari.media.output.' + result.files[file].filetype + '.' + method + '(' + file +', habari.media.assets['+ file + ']);return false;">' + method.replace('_', ' ') + '</a></li>';
+								output += '<li><a href="#" onclick="habari.media.output.' + result.files[file].filetype + '.' + method + '(\'' + file +'\', habari.media.assets[\''+ file + '\']);return false;">' + method.replace('_', ' ') + '</a></li>';
 							}
 						} else {
 							for (method in habari.media.output._) {
-								output += '<li><a href="#" onclick="habari.media.output._.' + method + '(' + file +', habari.media.assets['+ file + ']);return false;">' + method.replace('_', ' ') + '</a></li>';
+								output += '<li><a href="#" onclick="habari.media.output._.' + method + '(\'' + file +'\', habari.media.assets[\''+ file + '\']);return false;">' + method.replace('_', ' ') + '</a></li>';
 							}
 						}
 						output += '</ul>';
