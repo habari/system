@@ -2,7 +2,7 @@
 var dashboard = {
 	init: function() {
 		$('.modules').sortable({
-			accept: '.module',
+			items: '.module:not(.add-item-module)',
 			handle: 'div.handle',
 			opacity: .9,
 			stop: function() {
@@ -373,7 +373,7 @@ var timeline = {
 		.width( $('.years').width() - timeline.overhang )
 		.slider({
 			handle: '.handle',
-			maxValue: Math.max( 1, maxSliderValue ),
+			max: Math.max( 1, maxSliderValue ),
 			startValue: maxSliderValue,
 			axis: 'horizontal',
 			stop: function(event, ui) {
@@ -521,8 +521,7 @@ var timeline = {
 		$('.handle').width( handleWidth + 'px' );
 
 		// reset the slider maxValue
-		$('.track').data('ui-slider').size= Math.min( viewWidth, timelineWidth );
-		$('.track').data('ui-slider').options['realMaxValue']= Math.max( 1, maxSliderValue );
+		$('.track').slider( 'setData', 'max', Math.max( 1, maxSliderValue ) );
 
 		// move the handle without triggering a search
 		timeline.do_search= false;
@@ -972,8 +971,7 @@ $(document).ready(function(){
 
 
 	/* Init Tabs, using jQuery UI Tabs */
-	$('.tabcontrol').tabs({ fxShow: { height: 'show', opacity: 'show' }, fxHide: { height: 'hide', opacity: 'hide' }, unselected: true })
-
+	$('.tabcontrol').tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: null, unselect: true })
 
 	// Tag Drawer: Add tag via click
 	$('#tag-list li').click(function() {
