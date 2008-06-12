@@ -236,13 +236,13 @@ var itemManage = {
 		}
 	},
 	uncheckAll: function() {
-		$('.item .checkbox input[type=checkbox]').each(function() {
+		$('.item:not(.hidden) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 0;
 		});
 		itemManage.changeItem();
 	},
 	checkAll: function() {
-		$('.item .checkbox input[type=checkbox]').each(function() {
+		$('.item:not(.hidden) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 1;
 		});
 		itemManage.changeItem();
