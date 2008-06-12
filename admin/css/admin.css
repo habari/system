@@ -495,6 +495,10 @@ p:hover > label.incontent.popup {
 	width: 100px;
 	margin-left: 10px;
 	}
+	
+.buttons .formcontrol {
+	display:inline;
+	}
 
 .create .buttons #left_control_set input {
 	margin-left: 0;

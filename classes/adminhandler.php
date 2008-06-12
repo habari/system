@@ -256,59 +256,52 @@ class AdminHandler extends ActionHandler
 	public function post_publish()
 	{
 		extract( $this->handler_vars );
+		
+		$form = $this->form_publish( new Post() );
 
-		if( $pubdate > date('Y-m-d H:i:s') && $status == Post::status('published') ) {
-			$status= Post::status('scheduled');
-		}
-
-		if ( isset( $slug ) ) {
-			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
-			$post->title= $title;
-			if ( ( $newslug != '' ) && ( $newslug != $slug ) ) {
-				$post->slug= $newslug;
+		if ( $form->slug->value != '' ) {
+			$post= Post::get( array( 'slug' => $form->slug->value, 'status' => Post::status( 'any' ) ) );
+			$post->title= $form->title->value;
+			if ( ( $form->newslug->value != '' ) && ( $form->newslug->value != $form->slug->value ) ) {
+				$post->slug= $form->newslug->value;
 			}
-			if (! empty( $tags ) )
-				$post->tags= $tags;
-			$post->content= $content;
-			$post->content_type= $content_type;
-			if ( ( $post->status != Post::status( 'published' ) ) && ( $status == Post::status( 'published' ) ) ) {
+			$post->tags= $form->tags->value;
+
+			$post->content= $form->content->value;
+			$post->content_type= $form->content_type->value;
+			if ( ( $post->status != Post::status( 'published' ) ) && ( $form->status->value == Post::status( 'published' ) ) ) {
 				$post->pubdate= date( 'Y-m-d H:i:s' );
 			}
 			else {
-				$post->pubdate= $pubdate;
+				$post->pubdate= $form->pubdate->value;
 			}
 
-			$post->status= $status;
-			if ( !isset( $comments_enabled ) ) {
-				$post->info->comments_disabled= TRUE;
-			}
-			elseif ( $post->info->comments_disabled == TRUE ) {
-				unset( $post->info->comments_disabled );
-			}
-			$post->update();
+			$post->status= $form->status->value;
 		}
 		else {
 			$postdata= array(
-				'slug' => $newslug,
-				'title' => $title,
-				'tags' => $tags,
-				'content' => $content,
+				'slug' => $form->slug->value,
+				'title' => $form->title->value,
+				'tags' => $form->tags->value,
+				'content' => $form->content->value,
 				'user_id' => User::identify()->id,
-				'pubdate' => ( $pubdate == '' ) ? date( 'Y-m-d H:i:s' ) : $pubdate,
-				'status' => $status,
-				'content_type' => $content_type,
+				'pubdate' => ( $form->pubdate->value == '' ) ? date( 'Y-m-d H:i:s' ) : $form->pubdate->value,
+				'status' => $form->status->value,
+				'content_type' => $form->content_type->value,
 			);
 
-
 			$post= Post::create( $postdata );
-
-			if ( !isset( $comments_enabled ) ) {
-				$post->info->comments_disabled= TRUE;
-				$post->update();
-			}
 		}
 
-		Session::notice( sprintf( _t( 'The post ' ) . '<a href="%1$s">\'%2$s\'</a>' . _t( ' has been saved as %3$s.' ), $post->permalink, $title, Post::status_name( $status ) ) );
+		if( $form->pubdate->value > date('Y-m-d H:i:s') && $form->status->value == Post::status('published') ) {
+			$form->status->value= Post::status('scheduled');
+		}
+		$post->info->comments_disabled= !$form->comments_enabled->value;
+
+		Plugins::act('publish_post', $post, $form);
+		$post->update();
+
+		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, $post->title), Post::status_name( $post->status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
 
@@ -330,28 +323,85 @@ class AdminHandler extends ActionHandler
 			$this->theme->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost= true;
 		}
+		
+		$statuses= Post::list_post_statuses( false );
+		$this->theme->statuses = $statuses;		
+		
+		$this->theme->form = $this->form_publish($post);
 
-		// Theme assigns all handler vars as theme vars, thus clobbering what we
-		// set above in some cases (i.e. when ?content_type=entry is in the query string)
-		$this->handler_vars['content_type']= $this->theme->content_type;
+		$this->theme->wsse= Utils::WSSE();
 
-		$this->theme->silos= Media::dir();
+		$this->display( $template );
+	}
+	
+	function form_publish($post)
+  {
+		$form = new FormUI('publishform');
+		$form->class[] = 'create';
+		
+		// Create the Title field
+		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
+		$form->title->tabindex = 1;
+		$form->title->value = $post->title;
+		
+		// Create the silos
+		$form->append('silos', 'silos');
+		$form->silos->silos = Media::dir();
+		
+		// Create the Content field
+		$form->append('textarea', 'content', 'null:null', _t('Content'), 'admincontrol_textarea');
+		$form->content->class[] = 'resizable';
+		$form->content->tabindex = 2;
+		$form->content->value = $post->content;
 
-		// pass "false" to list_post_statuses() so that we don't
-		// include internal post statuses
+		// Create the tags field
+		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
+		$form->tags->tabindex = 3;
+		$form->tags->value = implode(',', $post->tags);
+		
+		// Create the publishing controls
+		// pass "false" to list_post_statuses() so that we don't include internal post statuses
 		$statuses= Post::list_post_statuses( false );
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses= Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
-		$this->theme->statuses= $statuses;
-		$this->theme->wsse= Utils::WSSE();
 
-		$controls= array(
-			_t('Settings') => $this->theme->fetch( 'publish_settings' ),
-			_t('Tags') => $this->theme->fetch( 'publish_tags' ),
-		);
-		$this->theme->controls= Plugins::filter( 'publish_controls', $controls, $post );
+		$publish_controls = $form->append('tabs', 'publish_controls');
+		$settings = $publish_controls->append('fieldset', 'settings', 'Settings');
 
-		$this->display( $template );
+		$settings->append('select', 'status', 'null:null', 'Content State', array_flip($statuses), 'tabcontrol_select');
+		$settings->status->value = $post->status;
+
+		$settings->append('checkbox', 'comments_enabled', 'null:null', 'Comments Allowed', 'tabcontrol_checkbox');
+		$settings->comments_enabled->value = $post->info->comments_disabled ? false : true;
+
+		$settings->append('text', 'pubdate', 'null:null', 'Publication Time', 'tabcontrol_text');
+		$settings->pubdate->value = date('Y-m-d H:i:s', strtotime($post->pubdate));
+
+		$settings->append('text', 'newslug', 'null:null', 'Content Address', 'tabcontrol_text');
+		$settings->newslug->value = $post->slug;
+		
+		// Create the button area
+		$buttons = $form->append('fieldset', 'buttons');
+		$buttons->template = 'admincontrol_buttons';
+		$buttons->class[] = 'container';
+		$buttons->class[] = 'buttons';
+		
+		// Create the Save button
+		$buttons->append('submit', 'save', 'Save');
+		
+		// Add required hidden controls
+		$form->append('hidden', 'content_type', 'null:null');
+		$form->content_type->value = $post->content_type;
+		
+		$form->append('hidden', 'slug', 'null:null');
+		$form->slug->value = $post->slug;
+		
+		// Let plugins alter this form
+		Plugins::act('form_publish', $form, $post);
+		
+		// Put the form into the theme
+		$theme->form = $form->get();
+		return $form;
 	}
 
 	/**
