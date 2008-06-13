@@ -1,8 +1,9 @@
 <ul class="modules">
 	<?php foreach($modules as $moduleid => $module): ?>
 	<li class="module <?php echo Utils::slugify( $module['name'] ); ?>-module" id="<?php echo $moduleid . ':' . $module['name']; ?>">
-		
+	<?php if ( $module['name'] != 'Add Item' ): ?>
 		<div class="close">&nbsp;</div> 
+	<?php endif; ?>
 		<?php if ( $module['options'] ) : ?>
 			<div class="options">&nbsp;</div>
 		<?php endif; ?>
