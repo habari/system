@@ -227,6 +227,7 @@ class InstallHandler extends ActionHandler {
 			'tokenizer' => 'http://php.net/tokenizer',
 			'simplexml' => 'http://php.net/simplexml',
 			'mbstring' => 'http://php.net/mbstring',
+			'json' => 'http://php.net/json'
 			);
 		$requirements_met= true;
 
