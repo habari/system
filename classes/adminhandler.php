@@ -308,19 +308,15 @@ class AdminHandler extends ActionHandler
 	function get_publish( $template= 'publish')
 	{
 		extract( $this->handler_vars );
-
 		if ( isset( $slug ) ) {
 			$post= Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
 			$this->theme->post= $post;
-			$this->theme->tags= htmlspecialchars( Utils::implode_quoted( ', ', $post->tags ) );
-			$this->theme->content_type= Post::type( $post->content_type );
 			$this->theme->newpost= false;
 		}
 		else {
 			$post= new Post();
 			$this->theme->post= $post;
-			$this->theme->tags= '';
-			$this->theme->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
+			$post->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost= true;
 		}
 		
