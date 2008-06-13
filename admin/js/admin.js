@@ -984,7 +984,7 @@ $(document).ready(function(){
 		var replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
 
 		// check to see if the tag item we clicked has been clicked before...
-		if( $( this ).attr( 'class' )== 'clicked' ) {
+		if( $( this ).hasClass('clicked') ) {
 			// remove that tag from the input field
 			$( '#tags' ).val( current.replace(replstr, '') );
 			// unhighlight that tag
