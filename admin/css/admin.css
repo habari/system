@@ -516,13 +516,13 @@ p:hover > label.incontent.popup {
 #publish {
 	font-weight: bold;
 	}
-#tags_settings ul {
+#tags_list ul {
     text-align: left;
     margin-right: 50px;
     margin-left: 10px;
     }
 
-#tags_settings li {
+#tags_list ul li {
     font-family: "Arial", san-serif;
     font-size: 0.8em;
     display: inline;
@@ -532,7 +532,7 @@ p:hover > label.incontent.popup {
     cursor: pointer;
     }
 
-#tags_settings li.clicked {
+#tags_list ul li.clicked {
     background: #000;
     }
     
