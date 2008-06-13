@@ -1136,10 +1136,55 @@ class FormControlStatic extends FormControlNoSave
 	 */
 	public function get($forvalidation)
 	{
-		return '<div class="static formcontrol">' . $this->caption . '</div>';
+		return $this->caption;
 	}
 }
 
+/**
+ * A control to display a single tag for output via FormUI
+ */
+class FormControlTag extends FormContainer
+{
+	/**
+	 * Override the FormControl constructor to support more parameters
+	 *
+	 * @param string $name Name of this control
+	 * @param string $tag A tag object
+	 * @param string $template A template to use for display
+	 */
+	public function __construct()
+	{
+		$args = func_get_args();
+		list($name, $tag, $template) = array_merge($args, array_fill(0, 3, null));
+
+		$this->name= $name;
+		$this->tag= $tag;
+		$this->template = isset($template) ? $template : 'tabcontrol_tag';
+	}
+
+	/**
+	 * Produce HTML output for all this fieldset and all contained controls
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	function get($forvalidation)
+	{
+		$theme= $this->get_theme($forvalidation, $this);
+		$max= Tags::max_count();
+		
+		$tag = $this->tag;
+		
+		$theme->class= 'tag_'.$tag->slug;
+		$theme->id= $tag->id;
+		$theme->weight= $max > 0 ? round(($tag->count * 10)/$max) : 0;
+		$theme->caption= $tag->tag;
+		$theme->count= $tag->count;
+				
+		return $theme->fetch( 'tabcontrol_tag' );
+	}
+
+}
 
 /**
  * A password control based on FormControlText for output via a FormUI.

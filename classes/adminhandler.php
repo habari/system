@@ -359,13 +359,36 @@ class AdminHandler extends ActionHandler
 		$form->tags->tabindex = 3;
 		$form->tags->value = implode(',', $post->tags);
 		
+		// Create the splitter
+		$publish_controls = $form->append('tabs', 'publish_controls');
+
+		// Create the tags selector
+		$tagselector= $publish_controls->append('fieldset', 'tagselector', _t('Tags'));
+		
+		$tags_buttons= $tagselector->append('wrapper', 'tags_buttons');
+		$tags_buttons->class='container';		
+		$tags_buttons->append('static', 'clearbutton', '<p class="column span-5"><input type="button" value="'._t('Clear').'" id="clear"></p>');
+				
+		$tags_list= $tagselector->append('wrapper', 'tags_list');
+		$tags_list->class=' container';
+		$tags_list->append('static', 'tagsliststart', '<ul id="tag-list" class="column span-19">');
+		
+		$tags= Tags::get();
+		$max= Tags::max_count();
+		foreach ($tags as $tag) {
+			$tags_list->append('tag', 'tag_'.$tag->slug, $tag, 'tabcontrol_text');
+		}
+		
+		$tags_list->append('static', 'tagslistend', '</ul>');
+		
+		
 		// Create the publishing controls
 		// pass "false" to list_post_statuses() so that we don't include internal post statuses
 		$statuses= Post::list_post_statuses( false );
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses= Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
-		$publish_controls = $form->append('tabs', 'publish_controls');
+		
 		$settings = $publish_controls->append('fieldset', 'settings', 'Settings');
 
 		$settings->append('select', 'status', 'null:null', 'Content State', array_flip($statuses), 'tabcontrol_select');
@@ -379,7 +402,7 @@ class AdminHandler extends ActionHandler
 
 		$settings->append('text', 'newslug', 'null:null', 'Content Address', 'tabcontrol_text');
 		$settings->newslug->value = $post->slug;
-		
+
 		// Create the button area
 		$buttons = $form->append('fieldset', 'buttons');
 		$buttons->template = 'admincontrol_buttons';
@@ -403,7 +426,7 @@ class AdminHandler extends ActionHandler
 		$theme->form = $form->get();
 		return $form;
 	}
-
+	
 	/**
 	 * Deletes a post from the database.
 	 */
