@@ -31,20 +31,24 @@
 
 </div>
 
+<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'comments', 'status' => $status ) ); ?>">
+	<input type="hidden" name="search" value="<?php echo $search; ?>">
+	<input type="hidden" name="status" value="<?php echo $status; ?>">
+	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+
 <div class="container transparent item controls">
 	<span class="checkboxandselected pct25">
 		<input type="checkbox">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="button" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-		<input type="button" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
-		<input type="button" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-		<input type="button" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
+		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
+		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
+		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 	</span>
-	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 </div>
 
 <div id="comments" class="container manage">
@@ -60,10 +64,10 @@
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="button" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-		<input type="button" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
-		<input type="button" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-		<input type="button" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
+		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
+		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
+		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 	</span>
 </div>
 

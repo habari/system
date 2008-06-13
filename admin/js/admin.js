@@ -118,16 +118,20 @@ var itemManage = {
 		if($('#comments').length != 0) {
 			$('.item.controls input.approvebutton').click(function () {
 				itemManage.update( 'approve' );
+				return false;
 			});
 			$('.item.controls input.unapprovebutton').click(function () {
 				itemManage.update( 'unapprove' );
+				return false;
 			});
 			$('.item.controls input.spambutton').click(function () {
 				itemManage.update( 'spam' );
+				return false;
 			});
 			$('.item.controls input.deletebutton').click(function () {
 				itemManage.update( 'delete' );
 				itemManage.selected = [];
+				return false;
 			});
 		}
 	},
