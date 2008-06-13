@@ -299,9 +299,6 @@ class Comments extends ArrayObject
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
-			// Get all of the comments objects
-			$comments= self::get( array( 'id' => $comments ) );
-
 			$result= true;
 			foreach ( $comments as $commentid ) {
 				$result&= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );

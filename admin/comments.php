@@ -31,25 +31,20 @@
 
 </div>
 
-<form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'comments', 'status' => $status ) ); ?>">
-	<input type="hidden" name="search" value="<?php echo $search; ?>">
-	<input type="hidden" name="limit" value="<?php echo $limit; ?>">
-	<input type="hidden" name="status" value="<?php echo $status; ?>">
-	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-
 <div class="container transparent item controls">
 	<span class="checkboxandselected pct25">
 		<input type="checkbox">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
-		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+		<input type="button" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
+		<input type="button" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
+		<input type="button" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
+		<input type="button" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 	</span>
+	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 </div>
 
 <div id="comments" class="container manage">
@@ -65,10 +60,10 @@
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
-		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+		<input type="button" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
+		<input type="button" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
+		<input type="button" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
+		<input type="button" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
 	</span>
 </div>
 
@@ -114,10 +109,15 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 	});
 };
 
-itemManage.update = function( id, action) {
+itemManage.update = function( action, id ) {
 	spinner.start();
 	var query= {};
-	query['id']= id;
+	if ( id == null ) {
+		query = itemManage.selected;
+	}
+	else {
+		query['p' + id]= 1;
+	}
 	query['action']= action;
 	query['timestamp']= $('input#timestamp').attr('value');
 	query['nonce']= $('input#nonce').attr('value');
@@ -126,13 +126,13 @@ itemManage.update = function( id, action) {
 	$.post(
 		habari.url.ajaxUpdateComment,
 		query,
-		function(result) {
+		function( result ) {
 			spinner.stop();
 			timelineHandle.updateLoupeInfo();
-			humanMsg.displayMsg(result);
+			humanMsg.displayMsg( result );
 		},
 		'json'
-	);
+		);
 }
 
 </script>

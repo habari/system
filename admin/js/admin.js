@@ -117,41 +117,17 @@ var itemManage = {
 		
 		if($('#comments').length != 0) {
 			$('.item.controls input.approvebutton').click(function () {
-				for (var id in itemManage.selected)	{
-					if(itemManage.selected[id] == 1) {
-						id= id.substr(1);
-						itemManage.update(id, 'approve');
-					}
-				}
-				return false;
+				itemManage.update( 'approve' );
 			});
 			$('.item.controls input.unapprovebutton').click(function () {
-				for (var id in itemManage.selected)	{
-					if(itemManage.selected[id] == 1) {
-						id= id.substr(1);
-						itemManage.update(id, 'unapprove');
-					}
-				}
-				return false;
+				itemManage.update( 'unapprove' );
 			});
 			$('.item.controls input.spambutton').click(function () {
-				for (var id in itemManage.selected)	{
-					if(itemManage.selected[id] == 1) {
-						id= id.substr(1);
-						itemManage.update(id, 'spam');
-					}
-				}
-				return false;
+				itemManage.update( 'spam' );
 			});
 			$('.item.controls input.deletebutton').click(function () {
-				for (var id in itemManage.selected)	{
-					if(itemManage.selected[id] == 1) {
-						id= id.substr(1);
-						itemManage.update(id, 'delete');
-						itemManage.selected = [];
-					}
-				}
-				return false;
+				itemManage.update( 'delete' );
+				itemManage.selected = [];
 			});
 		}
 	},
