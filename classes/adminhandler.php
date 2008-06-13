@@ -10,10 +10,6 @@ class AdminHandler extends ActionHandler
 {
 	/** Cached theme object for handling templates and presentation */
 	private $theme= NULL;
-	/** Stores the default presentation settings for the admin interface */
-	private $admin_settings= array(
-		'dash_module_logs_number_display'=> 8
-	);
 
 	/**
 	 * Verifies user credentials before creating the theme and displaying the request.
@@ -1410,49 +1406,53 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_update_comment( $handler_vars)
 	{
-		$comment= Comments::get( array( 'id' => $handler_vars['id'] ) );
-		$comment= $comment[0];
-		$status_msg= 'No change.';
-
 		// check WSSE authentication
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			echo json_encode( 'WSSE authentication failed.' );
+			echo json_encode( _t('WSSE authentication failed.') );
 			return;
 		}
 
-		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], array( $comment ), $this );
+		$ids = array();
+
+		foreach($_POST as $id => $update) {
+			// skip POST elements which are not comment ids
+			if ( preg_match( '/^p\d+/', $id )  && $update ) {
+				$ids[] = substr($id, 1);
+			}
+		}
+
+		$comments = Comments::get( array( 'id' => $ids ) );
+		if ( $comments === FALSE ) {
+			echo json_encode( _t('No comments selected.') );
+			return;
+		}
+
+		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], $ids, $this );
+		$status_msg = _t('Unknown action');
 
 		switch ( $handler_vars['action'] ) {
 		case 'delete':
-			$status_msg= 'Deleted comment '. $comment->id . '.';
-			$comment->delete();
+			// Comments marked for deletion
+			Comments::delete_these( $comments );
+			$status_msg = sprintf( _n('Deleted %d comment', 'Deleted %d comments', count( $ids ) ), count( $ids ) );
 			break;
 		case 'spam':
-			if ( $comment->status != Comment::STATUS_SPAM ) {
-				// This comment was marked as spam
-				$status_msg= 'Marked comment '. $comment->id . ' as spam.';
-				$comment->status= Comment::STATUS_SPAM;
-				$comment->update();
-			}
+			// Comments marked as spam
+			Comments::moderate_these( $comments, Comment::STATUS_SPAM );
+			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 			break;
 		case 'approve':
-			if ( $comment->status != Comment::STATUS_APPROVED) {
-				// This comment was marked for approval
-				$status_msg= 'Approved comment '. $comment->id . '.';
-				$comment->status= Comment::STATUS_APPROVED;
-				$comment->update();
-			}
+			// Comments marked for approval
+			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
+			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 			break;
 		case 'unapprove':
-			if ( $comment->status != Comment::STATUS_UNAPPROVED ) {
-				// This comment was marked for unapproval
-				$status_msg= 'Unapproved comment '. $comment->id . '.';
-				$comment->status= Comment::STATUS_UNAPPROVED;
-				$comment->update();
-			}
+			// Comments marked for unapproval
+			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
+			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
 			break;
-		}
+		}		
 
 		echo json_encode($status_msg);
 	}

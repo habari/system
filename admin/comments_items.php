@@ -16,15 +16,15 @@
 
 		<ul class="dropbutton">
 		<?php if ( $comment->status != Comment::STATUS_APPROVED ) : ?>
-			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'approve');return false;" title="<?php _e('Approve this comment') ?>"><?php _e('Approve'); ?></a></li>
+			<li><a href="#" onclick="itemManage.update( 'approve', <?php echo $comment->id; ?> );return false;" title="<?php _e('Approve this comment') ?>"><?php _e('Approve'); ?></a></li>
 		<?php endif; ?>
 		<?php if ( $comment->status != Comment::STATUS_UNAPPROVED ) : ?>
-			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'unapprove');return false;" title="<?php _e('Unapprove this comment') ?>"><?php _e('Unapprove'); ?></a></li>
+			<li><a href="#" onclick="itemManage.update( 'unapprove', <?php echo $comment->id; ?> );return false;" title="<?php _e('Unapprove this comment') ?>"><?php _e('Unapprove'); ?></a></li>
 		<?php endif; ?>
 		<?php if ( $comment->status != Comment::STATUS_SPAM ) :?>
-			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'spam');return false;" title="<?php _e('Spam this comment') ?>"><?php _e('Spam'); ?></a></li>
+			<li><a href="#" onclick="itemManage.update( 'spam', <?php echo $comment->id; ?> );return false;" title="<?php _e('Spam this comment') ?>"><?php _e('Spam'); ?></a></li>
 		<?php endif; ?>
-			<li><a href="#" onclick="itemManage.update(<?php echo $comment->id; ?>, 'delete');return false;" title="<?php _e('Delete this Comment') ?>"><?php _e('Delete'); ?></a></li>
+			<li><a href="#" onclick="itemManage.update( 'delete', <?php echo $comment->id; ?> );return false;" title="<?php _e('Delete this Comment') ?>"><?php _e('Delete'); ?></a></li>
 			<li><a href="#"><?php _e('Edit'); ?></a></li>
 		</ul>
 	</div>
