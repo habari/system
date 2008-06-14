@@ -114,26 +114,6 @@ var itemManage = {
 				itemManage.simpleFilter(str);
 			});
 		}
-		
-		if($('#comments').length != 0) {
-			$('.item.controls input.approvebutton').click(function () {
-				itemManage.update( 'approve' );
-				return false;
-			});
-			$('.item.controls input.unapprovebutton').click(function () {
-				itemManage.update( 'unapprove' );
-				return false;
-			});
-			$('.item.controls input.spambutton').click(function () {
-				itemManage.update( 'spam' );
-				return false;
-			});
-			$('.item.controls input.deletebutton').click(function () {
-				itemManage.update( 'delete' );
-				itemManage.selected = [];
-				return false;
-			});
-		}
 	},
 	initItems: function() {
 		$('.item .checkbox input[type=checkbox]').change(function () {
@@ -227,7 +207,7 @@ var itemManage = {
 		});
 		itemManage.changeItem();
 	},
-	update:  function( action, id ) {
+	update: function( action, id ) {
 		spinner.start();
 		var query= {};
 		if ( id == null ) {
@@ -242,14 +222,17 @@ var itemManage = {
 		query['digest']= $('input#PasswordDigest').attr('value');
 
 		$.post(
-				habari.url.ajaxUpdateComment,
-				query,
-				function( result ) {
+			habari.url.ajaxUpdateComment,
+			query,
+			function( result ) {
 				spinner.stop();
 				timelineHandle.updateLoupeInfo();
 				humanMsg.displayMsg( result );
-				},
-				'json'
+				if ( action == 'delete' ) {
+					itemManage.selected = [];
+				}
+			},
+			'json'
 		      );
 	},
 	remove: function( id ) {
