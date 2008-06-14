@@ -686,7 +686,7 @@ class FormValidators
 class FormControl
 {
 	protected $caption;
-	protected $default;
+	protected $default = null;
 	protected $validators= array();
 	protected $storage;
 	protected $store_user = false;
@@ -760,7 +760,7 @@ class FormControl
 					$type = 'option';
 					break;
 				default:
-					return '';
+					return $this->default;
 			}
 
 			switch($type) {
@@ -801,7 +801,7 @@ class FormControl
 				$type = 'option';
 				break;
 			default:
-				return '';
+				return;
 		}
 
 		switch($type) {
@@ -1072,6 +1072,14 @@ class FormControl
 	function move_after( $target )
 	{
 		$this->container->move_after( $this, $target );
+	}
+	
+	/**
+	 * Remove this controls from the form
+	 */
+	function remove()
+	{
+		$this->container->remove($this);
 	}
 
 }
