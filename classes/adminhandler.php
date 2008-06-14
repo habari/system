@@ -1429,7 +1429,7 @@ class AdminHandler extends ActionHandler
 			return;
 		}
 
-		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], $ids, $this );
+		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], $comments, $this );
 		$status_msg = _t('Unknown action');
 
 		switch ( $handler_vars['action'] ) {
