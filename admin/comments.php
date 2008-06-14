@@ -44,10 +44,10 @@
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
-		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton" onclick="itemManage.update( 'approve' ); return false;">
+		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton" onclick="itemManage.update( 'unapprove' ); return false;">
+		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton" onclick="itemManage.update( 'spam' ); return false;">
+		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton" onclick="itemManage.update( 'delete' ); return false;">
 	</span>
 </div>
 
@@ -64,10 +64,10 @@
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton">
-		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton">
-		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton">
-		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton" onclick="itemManage.update( 'approve' ); return false;">
+		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton" onclick="itemManage.update( 'unapprove' ); return false;">
+		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton" onclick="itemManage.update( 'spam' ); return false;">
+		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton" onclick="itemManage.update( 'delete' ); return false;">
 	</span>
 </div>
 
