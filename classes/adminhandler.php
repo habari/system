@@ -1043,7 +1043,7 @@ class AdminHandler extends ActionHandler
 
 		$sort_active_plugins= array();
 		$sort_inactive_plugins= array();
-
+		
 		foreach ( $all_plugins as $file ) {
 			$plugin= array();
 			$plugin_id= Plugins::id_from_file( $file );
@@ -1064,6 +1064,7 @@ class AdminHandler extends ActionHandler
 					// instantiate this plugin
 					// in order to get its info()
 					include_once( $file );
+					Plugins::get_plugin_classes();
 					$pluginobj= Plugins::load( $file, false );
 					$plugin['active']= false;
 					$plugin['verb']= _t( 'Activate' );
