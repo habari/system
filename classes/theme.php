@@ -767,7 +767,10 @@ class Theme extends Pluggable
 	 */
 	public function __get( $key )
 	{
-		return $this->var_stack[$this->current_var_stack][$key];
+		if ( isset( $this->var_stack[$this->current_var_stack][$key] ) ) {
+			return $this->var_stack[$this->current_var_stack][$key];
+		}
+		return '';
 	}
 
 	/**
