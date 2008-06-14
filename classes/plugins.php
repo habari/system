@@ -11,6 +11,7 @@ class Plugins
 	private static $hooks= array();
 	private static $plugins= array();
 	private static $plugin_files= array();
+	private static $plugin_classes = array();
 
 	/**
 	 * function __construct
@@ -268,9 +269,10 @@ class Plugins
 	**/
 	public static function class_from_filename( $file )
 	{
-		$classes= get_declared_classes();
-		$plugin_classes= array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
-		foreach ( $plugin_classes as $plugin ) {
+		if ( ! self::$plugin_classes ) {
+			self::get_plugin_classes();
+		}
+		foreach ( self::$plugin_classes as $plugin ) {
 			$class= new ReflectionClass( $plugin );
 			$classfile= str_replace( '\\', '/', $class->getFileName() );
 			if ( $classfile == $file ) {
@@ -278,6 +280,12 @@ class Plugins
 			}
 		}
 		return false;
+	}
+	
+	public static function get_plugin_classes()
+	{
+		$classes= get_declared_classes();
+		self::$plugin_classes= array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
 	}
 
 	/**
