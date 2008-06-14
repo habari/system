@@ -112,33 +112,6 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 		}
 	});
 };
-
-itemManage.update = function( action, id ) {
-	spinner.start();
-	var query= {};
-	if ( id == null ) {
-		query = itemManage.selected;
-	}
-	else {
-		query['p' + id]= 1;
-	}
-	query['action']= action;
-	query['timestamp']= $('input#timestamp').attr('value');
-	query['nonce']= $('input#nonce').attr('value');
-	query['digest']= $('input#PasswordDigest').attr('value');
-
-	$.post(
-		habari.url.ajaxUpdateComment,
-		query,
-		function( result ) {
-			spinner.stop();
-			timelineHandle.updateLoupeInfo();
-			humanMsg.displayMsg( result );
-		},
-		'json'
-		);
-}
-
 </script>
 
 
