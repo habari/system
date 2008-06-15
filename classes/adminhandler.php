@@ -333,6 +333,7 @@ class AdminHandler extends ActionHandler
 		
 		// Create the Title field
 		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
+		$form->title->class= 'important text';
 		$form->title->tabindex = 1;
 		$form->title->value = $post->title;
 		
@@ -349,6 +350,7 @@ class AdminHandler extends ActionHandler
 		// Create the tags field
 		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
 		$form->tags->tabindex = 3;
+		$form->tags->class= 'text';
 		$form->tags->value = implode(',', $post->tags);
 		
 		// Create the splitter
