@@ -99,7 +99,8 @@ var inEdit = {
 		$(inEdit.editables, $('.item')).filter(':not(a)').each(function() {
 			$(this).addClass('editable');
 			$(this).click(function() {
-				if(inEdit.activated == false) {
+				if(inEdit.activated != $(this).parents('.item').attr('id').substring(8)) {
+					inEdit.deactivate();
 					inEdit.activate($(this).parents('.item'));
 				}
 				return false;
@@ -149,11 +150,11 @@ var inEdit = {
 				field.height(100)
 					.attr('class', classes)
 					.removeClass('pct75')
-					.width(width - 3);
+					.width(width - 5);
 			} else {
 				var field= $('<input></input>');
 				field.attr('class', classes)
-					.width(width);
+					.width(width + 5);
 			}
 			field.addClass('editor').removeClass('editable')
 				.val(val)
@@ -162,9 +163,19 @@ var inEdit = {
 		
 		$('ul.dropbutton li:not(.cancel):not(.submit)', parent).remove();
 		$('ul.dropbutton li.cancel, ul.dropbutton li.submit', parent).removeClass('nodisplay');
-		$('ul.dropbutton li.submit').addClass('first-child');
-		$('ul.dropbutton li.cancel').addClass('last-child');
+		$('ul.dropbutton li.submit', parent).addClass('first-child');
+		$('ul.dropbutton li.cancel', parent).addClass('last-child');
 		dropButton.init();
+		$('ul.dropbutton a', parent).css('color', 'inherit');
+		$('ul.dropbutton', parent).animate({
+			backgroundColor: '#FFFFCC',
+			color: '#333333'
+		}, 100, 'linear', function() {
+			$('ul.dropbutton', parent).animate({
+				backgroundColor: '#333333',
+				color: 'white'
+			},10000);
+		});
 				
 		var submit= $('<input type="submit"></input>')
 			.addClass('inEditSubmit')
