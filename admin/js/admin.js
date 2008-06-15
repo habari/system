@@ -263,9 +263,12 @@ var itemManage = {
 	},
 	selected: [],
 	simpleFilter: function( search ) {
+		search= search.toLowerCase();
+
 		var count= 0;
-		$('li.item').each(function() {
-			if($('.user:contains(' + search + ')', this).length == 0) {
+		$('li.item, a.tag').each(function() {
+			var text= $('.user, span', this).text().toLowerCase();
+			if((text.search( search ) == -1) && (text != search)) {
 				$(this).hide();
 				$(this).addClass('hidden');
 			} else {
@@ -274,7 +277,9 @@ var itemManage = {
 				$(this).removeClass('hidden');
 			}
 		});
-		itemManage.changeItem();
+		if($('li.item').length != 0) {
+			itemManage.changeItem();
+		}
 	},
 	changeItem: function() {
 		var selected = {};
@@ -446,16 +451,30 @@ var tagManage = {
 		$('.tags.controls input.renamebutton').click(function () {
 			tagManage.rename();
 		});
+
+		$("input#search").keyup(function (e) {
+			var str= $('input#search').val();
+			itemManage.simpleFilter(str);
+			tagManage.changeTag();
+		});
 	},
 	changeTag: function() {
 		count = $('.tags .tag.selected').length;
 
+		visible = $('.tags .tag.selected:not(.hidden)').length;
+
 		if(count == 0) {
 			$('.tags.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if(count == $('.tags .tag').length) {
+		} else if(visible == $('.tags .tag:not(.hidden)').length) {
 			$('.tags.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
+			if(visible != count) {
+				$('.tags.controls span.selectedtext').text('All visible selected (' + count + ' total)');
+			}
 		} else {
 			$('.tags.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			if(visible != count) {
+				$('.tags.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
+			}
 		}
 	}
 }

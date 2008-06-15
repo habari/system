@@ -1,7 +1,7 @@
 <?php include('header.php');?>
 
 <div class="container navigator">
-	<input type="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autosave="habaricontent" results="10">
+	<input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autosave="habaricontent" results="10">
 </div>
 
 
