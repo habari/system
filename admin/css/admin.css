@@ -447,35 +447,37 @@ p:hover > label.incontent.popup {
 	margin: 0;
 	}
 
-.create #title, .create #content, .create #tags {
+.create input.text, .create textarea {
 	font-family: 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 3px 5px;
 	margin: 0 0 0 -6px;
 	width: 100%;
 	}
 
-.create #title.islabeled, .create #content.islabeled, .create #tags.islabeled {
+.create input.text.islabeled, .create textarea.islabeled {
 	text-transform: lowercase;
 	color: #aeaeae;
 	}
 
-.create #title {
+.create input.text {
+	font-size: 1.1em;
+	}
+
+.create input.text.important {
 	font-size: 1.7em;
 	}
 
-.create #title:focus {
+.create input.text:focus {
 	color: #222;
 	}
 
-.create #content {
+.create textarea {
 	padding: 5px;
 	height: 330px;
 	font-size: 14px;
 	}
 
-.create #tags {
-	font-size: 1.1em;
-	}
+
 
 .grip {
 	height: 10px;
