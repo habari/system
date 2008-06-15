@@ -87,6 +87,139 @@ var dashboard = {
 	}
 }
 
+// Inline edit
+var inEdit = {
+	init: function() {
+		inEdit.editables= '.date a.edit-date, .title a.author.edit-author, .authorinfo a.edit-url, .authorinfo a.edit-email, .time span.edit-time, .content.edit-content';
+		
+		if($('#comments').length == 0) { // Only works for comments, presently
+			return;
+		}
+		
+		$(inEdit.editables, $('.item')).filter(':not(a)').each(function() {
+			$(this).addClass('editable');
+			$(this).click(function() {
+				if(inEdit.activated == false) {
+					inEdit.activate($(this).parents('.item'));
+				}
+				return false;
+			});
+		})
+	},
+	activated: false,
+	editables: null,
+	getDestination: function( classes ) {
+		classes= classes.split(" ");
+		
+		var clas= null;
+		
+		var key = 0;
+		for (var key in classes) {
+			clas= classes[key];
+			if(clas.search('edit-') != -1) {
+				destination= clas.substring(clas.search('edit-') + 5);
+				return destination;
+			}
+		}
+		
+		return false;
+				
+	},
+	activate: function( parent ) {		
+		$(parent).hide().addClass('ignore');
+		
+		parent= $(parent).clone().addClass('clone').removeClass('ignore').show().insertAfter(parent);
+		
+		editables = $(inEdit.editables, parent);
+				
+		inEdit.activated= $(parent).attr('id').substring(8);
+		var form = $('<form action="#"></form>').addClass('inEdit');
+		parent.wrap(form);
+		
+		editables.each(function() {
+			var classes= $(this).attr('class');
+			destination= inEdit.getDestination(classes);
+			var val= $(this).text();
+			var width= $(this).width();
+			
+			$(this).hide();
+			
+			if($(this).hasClass('area')) {
+				var field= $('<textarea></textarea>');
+				field.height(100)
+					.attr('class', classes)
+					.removeClass('pct75')
+					.width(width - 3);
+			} else {
+				var field= $('<input></input>');
+				field.attr('class', classes)
+					.width(width);
+			}
+			field.addClass('editor').removeClass('editable')
+				.val(val)
+				.insertAfter($(this));
+		});
+		
+		$('ul.dropbutton li:not(.cancel):not(.submit)', parent).remove();
+		$('ul.dropbutton li.cancel, ul.dropbutton li.submit', parent).removeClass('nodisplay');
+		$('ul.dropbutton li.submit').addClass('first-child');
+		$('ul.dropbutton li.cancel').addClass('last-child');
+		dropButton.init();
+				
+		var submit= $('<input type="submit"></input>')
+			.addClass('inEditSubmit')
+			.val('Update')
+			.hide()
+			.appendTo(parent);
+		
+		$("form").submit(function() {
+			inEdit.update();
+			return false;
+		});
+		
+		itemManage.initItems();
+		itemManage.changeItem();
+		
+	},
+	update: function() {
+		spinner.start();
+		
+		query= {};
+		
+		$('.editor').each(function() {
+			query[inEdit.getDestination($(this).attr('class'))]= $(this).val();
+		});
+		
+		query['id']= inEdit.activated;
+		query['timestamp']= $('input#timestamp').attr('value');
+		query['nonce']= $('input#nonce').attr('value');
+		query['digest']= $('input#PasswordDigest').attr('value');
+		
+		$.ajax({
+			type: 'POST',
+				url: habari.url.ajaxInEdit,
+				data: query,
+				dataType: 'json',
+				success: function( result ){
+					spinner.stop();
+					humanMsg.displayMsg( result );
+					inEdit.deactivate();
+					timelineHandle.updateLoupeInfo();
+				}
+		});
+		
+	},
+	deactivate: function() {
+		inEdit.activated = false;
+		
+		$('.item').show().removeClass('ignore');
+		$('form.inEdit').remove();
+		
+		itemManage.changeItem();
+		
+	}
+}
+
 // Item Management
 var itemManage = {
 	init: function() {
@@ -116,10 +249,10 @@ var itemManage = {
 		}
 	},
 	initItems: function() {
-		$('.item .checkbox input[type=checkbox]').change(function () {
+		$('.item:not(.ignore) .checkbox input[type=checkbox]').change(function () {
 			itemManage.changeItem();
 		});
-		$('.item .checkbox input[type=checkbox]').each(function() {
+		$('.item:not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" ); // checkbox ids have the form name[id]
 			if(itemManage.selected['p' + id] == 1) {
@@ -150,12 +283,12 @@ var itemManage = {
 			selected = itemManage.selected;
 		}
 
-		$('.item .checkbox input[type=checkbox]:checked').each(function() {
+		$('.item:not(.ignore) .checkbox input[type=checkbox]:checked').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 1;
 		});
-		$('.item .checkbox input[type=checkbox]:not(:checked)').each(function() {
+		$('.item:not(.ignore) .checkbox input[type=checkbox]:not(:checked)').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
@@ -163,7 +296,7 @@ var itemManage = {
 
 		itemManage.selected = selected;
 
-		visible = $('.item:not(.hidden) .checkbox input[type=checkbox]:checked').length;
+		visible = $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]:checked').length;
 		
 		count = 0;
 		for (var id in itemManage.selected)	{
@@ -177,7 +310,7 @@ var itemManage = {
 				this.checked = 0;
 			});
 			$('.item.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if(visible == $('.item:not(.hidden) .checkbox input[type=checkbox]').length) {
+		} else if(visible == $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
@@ -196,13 +329,13 @@ var itemManage = {
 		}
 	},
 	uncheckAll: function() {
-		$('.item:not(.hidden) .checkbox input[type=checkbox]').each(function() {
+		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 0;
 		});
 		itemManage.changeItem();
 	},
 	checkAll: function() {
-		$('.item:not(.hidden) .checkbox input[type=checkbox]').each(function() {
+		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 1;
 		});
 		itemManage.changeItem();
@@ -900,6 +1033,7 @@ $(document).ready(function(){
 	theMenu.init();
 	dashboard.init();
 	timeline.init();
+	inEdit.init();
 	itemManage.init();
 	tagManage.init();
 	pluginManage.init();

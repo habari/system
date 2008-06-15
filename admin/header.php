@@ -21,7 +21,8 @@
 			ajaxDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_entries')); ?>',
 			ajaxLogDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_logs')); ?>',
 			ajaxUpdateUsers: '<?php echo URL::get('admin_ajax', array('context' => 'update_users')); ?>',
-			ajaxUpdateComment: '<?php echo URL::get('admin_ajax', array('context' => 'update_comment')); ?>'
+			ajaxUpdateComment: '<?php echo URL::get('admin_ajax', array('context' => 'update_comment')); ?>',
+			ajaxInEdit: '<?php echo URL::get('admin_ajax', array('context' => 'in_edit')); ?>'
 		}
 	};
 	</script>

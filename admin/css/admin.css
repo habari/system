@@ -1415,6 +1415,13 @@ body.page-themes #page .dropbutton {
 	right: -2px;
 	}
 
+/* Inline Editor */
+ul.dropbutton li.nodisplay {
+	display:none !important;
+}
+.editable:hover {
+	background:#FFFFCC;
+}
 
 /* TAGS */
 .tag {
