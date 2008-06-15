@@ -108,6 +108,8 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 			$('#comments').html(json.items);
 			spinner.stop();
 			itemManage.initItems();
+			inEdit.init();
+			inEdit.deactivate();
 			findChildren();
 		}
 	});

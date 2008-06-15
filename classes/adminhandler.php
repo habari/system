@@ -1334,6 +1334,46 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * handles AJAX from /comments
+	 * used to edit comments inline
+	 */
+	public function ajax_in_edit($handler_vars)
+	{
+
+		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+		if ( $handler_vars['digest'] != $wsse['digest'] ) {
+			echo json_encode( _t('WSSE authentication failed.') );
+			return;
+		}
+		
+		$comment= Comment::get($handler_vars['id']);
+		
+		if(isset($handler_vars['author']) && $handler_vars['author'] != '') {
+			$comment->name= $handler_vars['author'];	
+		}
+		if(isset($handler_vars['url']) && $handler_vars['url'] != '') {
+			$comment->url= $handler_vars['url'];	
+		}
+		if(isset($handler_vars['email']) && $handler_vars['email'] != '') {
+			$comment->email= $handler_vars['email'];	
+		}
+		if(isset($handler_vars['content']) && $handler_vars['content'] != '') {
+			$comment->content= $handler_vars['content'];	
+		}
+		if(isset($handler_vars['time']) && $handler_vars['time'] != '' && isset($handler_vars['date']) && $handler_vars['date'] != '') {
+			$seconds = date('s', strtotime($comment->date));
+			$date= date('Y-m-d H:i:s', strtotime($handler_vars['date'] . ' ' . $handler_vars['time'] . ':' . $seconds));
+			$comment->date= $date;
+		}
+		
+		$comment->update();
+		
+		echo json_encode(_t('Updated 1 comment.'));
+		
+		return;
+	}
+
+	/**
 	 * handles AJAX from /manage/entries
 	 * used to delete entries
 	 */
