@@ -228,10 +228,12 @@ $(document).ready(function(){
 		fx: { height: 'toggle', opacity: 'toggle' },
 		selected: null,
 		unselect: true,
-		show: function(clicked, shown, hidden){
-			var path = $('.pathstore', shown).html().trim();
+		show: function(){
+			var tabindex = $(this).data('selected.tabs');
+			var tab = $('.mediasplitter').eq(tabindex);
+			var path = $('.pathstore', tab).html().trim();
 			if(path != '') {
-				habari.media.showdir(path, null, shown);
+				habari.media.showdir( path, null, tab );
 				habari.media.unqueueLoad();
 			}
 			return true;
