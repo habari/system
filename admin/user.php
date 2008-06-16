@@ -150,14 +150,16 @@
 
 <div class="container controls transparent">
 	<span class="pct25">
-		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="deletebutton">
+		<input type="submit" value="<?php _e('Apply'); ?>" class="button save">
 	</span>
-	<span class="pct50">
+	<span class="pct40 reassigntext">
 		<?php printf( _t('Reassign posts to: %s'), Utils::html_select('reassign', $authors )); ?>
 	</span>
-
-	<span class="pct25">
-		<input type="submit" value="<?php _e('Apply'); ?>" class="savebutton">
+	<span class="minor pct10 conjunction">
+		<?php _e('and'); ?>
+	</span>
+	<span class="pct20">
+		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
 	</span>
 </div>
 </form>
