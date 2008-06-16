@@ -375,8 +375,9 @@ a.minor {
 	text-align: center;
 	}
 
-.selectedtext {
+.selectedtext, .reassigntext {
 	color: #999;
+	padding:1px;
 	}
 
 ul {
@@ -392,7 +393,37 @@ ul {
 	right: 8px;
 	z-index: 100;
 	}
+	
+/* buttons */
+.create #save input, .button {
+	width: 100px;
+	margin-left: 10px;
+}
+.button.delete, .button.publish {
+	float:right;
+	width:120px;
+	margin-left: 0;
+	margin-right: 10px;
+}
+.button.submit, .comments .button.delete {
+	float:left;
+	width:100px;
+	margin-left: 10px;
+	margin-right: 0;
+}
+.comments .buttons {
+	float:right;
+}
+.comments .button.delete {
+	float:none;
+}
+.button.publish {
+	font-weight:bold;
+}
 
+.buttons .formcontrol {
+	display:inline;
+	}
 
 /* FORMS */
 input, textarea {
@@ -483,40 +514,6 @@ p:hover > label.incontent.popup {
 	height: 10px;
 	cursor: row-resize;
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAAADCAYAAAAuu3lbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACRJREFUeNpivHLlyn+GUYABGP//Hw0XbIDl6tWroyGDBQAEGADRQAn91uPxnQAAAABJRU5ErkJggg==) center center no-repeat; /* Double line 'grip' */
-	}
-
-#right_control_set {
-	float: right;
-	}
-
-#left_control_set {
-	float: left;
-	}
-
-.buttons input {
-	width: 100px;
-	margin-left: 10px;
-	}
-	
-.buttons .formcontrol {
-	display:inline;
-	}
-
-.create .buttons #left_control_set input {
-	margin-left: 0;
-	margin-right: 10px;
-	}
-
-#formbuttons .create {
-	font-weight: bold;
-	}
-
-#formbuttons p.last {
-	float: right;
-	}
-
-#publish {
-	font-weight: bold;
 	}
 #tags_list ul {
     text-align: left;
@@ -1272,12 +1269,6 @@ body.page-themes #page .dropbutton {
 #comments .item.unapproved {
 	border-left: 3px solid #fcd915;
 	border-right: 3px solid #fcd915;
-	}
-
-
-.controls input[type=button] {
-	width: 80px;
-	margin-right: 5px;
 	}
 
 .controls select {

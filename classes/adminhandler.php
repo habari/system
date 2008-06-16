@@ -401,6 +401,7 @@ class AdminHandler extends ActionHandler
 		$buttons->template = 'admincontrol_buttons';
 		$buttons->class[] = 'container';
 		$buttons->class[] = 'buttons';
+		$buttons->class[] = 'publish';
 		
 		// Create the Save button
 		$buttons->append('submit', 'save', 'Save');

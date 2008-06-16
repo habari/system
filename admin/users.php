@@ -50,7 +50,7 @@
 		
 		<span class="pct50 minor reassigntext"><?php printf( _t('Reassign posts to: %s'), Utils::html_select('reassign', $authors )); ?></span>
 		
-		<input type="submit" value="<?php _e('Delete'); ?>" class="submitbutton">
+		<input type="submit" value="<?php _e('Delete Selected'); ?>" class="delete button">
 	</div>
 
 </div>

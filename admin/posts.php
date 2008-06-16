@@ -50,10 +50,7 @@
 			<input type="checkbox">
 			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 		</span>
-		<select class="actiondropdown">
-			<option value="1"><?php _e('Delete'); ?></option>
-		</select>
-		<input type="button" value="<?php _e('Submit'); ?>" class="submitbutton">
+		<input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button">
 	</div>
 
 </div>

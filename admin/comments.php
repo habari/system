@@ -38,16 +38,16 @@
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 
-<div class="container transparent item controls">
+<div class="container transparent item comments controls">
 	<span class="checkboxandselected pct25">
 		<input type="checkbox">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton" onclick="itemManage.update( 'approve' ); return false;">
-		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton" onclick="itemManage.update( 'unapprove' ); return false;">
-		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton" onclick="itemManage.update( 'spam' ); return false;">
-		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton" onclick="itemManage.update( 'delete' ); return false;">
+		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approve button" onclick="itemManage.update( 'approve' ); return false;">
+		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprove button" onclick="itemManage.update( 'unapprove' ); return false;">
+		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spam button" onclick="itemManage.update( 'spam' ); return false;">
+		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="delete button" onclick="itemManage.update( 'delete' ); return false;">
 	</span>
 </div>
 
@@ -58,16 +58,16 @@
 </div>
 
 
-<div class="container transparent item controls">
+<div class="container transparent item comments controls">
 	<span class="checkboxandselected pct25">
 		<input type="checkbox">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 	<span class="buttons">
-		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approvebutton" onclick="itemManage.update( 'approve' ); return false;">
-		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprovebutton" onclick="itemManage.update( 'unapprove' ); return false;">
-		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spambutton" onclick="itemManage.update( 'spam' ); return false;">
-		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="deletebutton" onclick="itemManage.update( 'delete' ); return false;">
+		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approve button" onclick="itemManage.update( 'approve' ); return false;">
+		<input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprove button" onclick="itemManage.update( 'unapprove' ); return false;">
+		<input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spam button" onclick="itemManage.update( 'spam' ); return false;">
+		<input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="delete button" onclick="itemManage.update( 'delete' ); return false;">
 	</span>
 </div>
 

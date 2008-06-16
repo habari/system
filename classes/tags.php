@@ -60,19 +60,23 @@ class Tags extends ArrayObject
 	{
 
 		$master_tag= Tags::get_one($master);
-
+		
+		
 		// it didn't exist, so we assume it's tag text and create it
-		if ( $master_tag === FALSE  ) {
-			DB::query( 'INSERT INTO {tags} (tag_text, tag_slug) VALUES ( ?, ? )', array( $master, Utils::slugify($master) ) );
-			$master_tag= Tags::get_one($master);
+		if ( !isset($master_tag->slug) ) {
+					
+			$master_tag= Tag::create(array('tag_slug' => Utils::slugify($master), 'tag_text' => $master));
+			
+			$master_ids= array();
 		}
 		else {
-			// get the tags the master post is already on so we don't duplicate them
+						
+			// get the posts the tags post is already on so we don't duplicate them
 			$master_posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $master_tag->id ) );
 			
 			$master_ids= array();
 			
-			foreach ( $master_posts as $master_post ) {
+			foreach ( $master_posts as $master_post ) {				
 				$master_ids[]= $master_post->post_id;
 			}
 			
@@ -98,7 +102,7 @@ class Tags extends ArrayObject
 			$posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $tag->id ) );
 
 			if ( count( $posts ) > 0 ) {
-
+								
 				// build a list of all the post_id's we need for the new tag
 				foreach ( $posts as $post ) {
 					$post_ids[ $post->post_id ]= $post->post_id;
@@ -112,7 +116,7 @@ class Tags extends ArrayObject
 		}
 
 		if ( count( $post_ids ) > 0 ) {
-
+			
 			// only try and add the master tag to posts it's not already on
 			$post_ids= array_diff( $post_ids, $master_ids );
 			
