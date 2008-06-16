@@ -368,7 +368,7 @@ a.minor {
 	padding-left: 5px;
 	}
 
-.or {
+.or, .conjunction {
 	font-size: 1.3em;
 	line-height: 16px;
 	color: #aaa;
