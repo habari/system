@@ -246,7 +246,7 @@ var itemManage = {
 			}
 		});
 
-		$('.item.controls input.submitbutton').click(function () {
+		$('.item.controls input.button.delete').click(function () {
 			itemManage.remove();
 			
 			return false;
@@ -456,10 +456,10 @@ var tagManage = {
 			}
 		);
 
-		$('.tags.controls input.deletebutton').click(function () {
+		$('.tags.controls input.delete.button').click(function () {
 			tagManage.remove();
 		});
-		$('.tags.controls input.renamebutton').click(function () {
+		$('.tags.controls input.rename.button').click(function () {
 			tagManage.rename();
 		});
 

@@ -11,15 +11,19 @@
 
 
 <div class="container tags transparent tags controls">
-	<span class="checkboxandselected pct15">
+	<span class="checkboxandselected pct25">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
-	<span class="pct15 buttons"><input type="button" value="<?php _e('Delete'); ?>" class="deletebutton"></span>
-	<span class="or pct10"><?php _e('or'); ?></span>
-	<span class="renamecontrols buttons">
+	
+	<span class="renamecontrols pct50">
 		<input type="text" class="renametext">
-		<input type="button" value="<?php _e('Rename'); ?>" class="renamebutton">
+		<input type="button" value="<?php _e('Rename'); ?>" class="rename button">
 	</span>
+	
+	<span class="or pct10"><?php _e('or'); ?></span>
+	
+	<span class="pct15 buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
+	
 	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
@@ -44,19 +48,20 @@ tagManage.remove= function() {
 	query['timestamp']= $('input#timestamp').attr('value');
 	query['nonce']= $('input#nonce').attr('value');
 	query['digest']= $('input#PasswordDigest').attr('value');
+	
 	$.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
-		query,
-		function(msg) {
-			spinner.stop();
-			//TODO When there's a loupe, update it
-			//timelineHandle.updateLoupeInfo();
-			selected.remove();
-			humanMsg.displayMsg(msg);
-			tagManage.changeTag();
-		},
-		'json'
-	);
+        query,
+ 	        function(msg) {
+ 	            spinner.stop();
+ 	            //TODO When there's a loupe, update it
+ 	            //timelineHandle.updateLoupeInfo();
+ 	            selected.remove();
+ 	            humanMsg.displayMsg(msg);
+ 	            tagManage.changeTag();
+ 	        },
+ 	        'json'
+ 	    );
 };
 tagManage.rename= function() {
 	master= $('.tags.controls input.renametext').val().trim();
@@ -98,6 +103,7 @@ tagManage.rename= function() {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
+			$('#tag_collection').html('lol');
 			$('#tag_collection').html(data['tags']);
 			$('.tags .tag').click(function() {
 					$(this).toggleClass('selected');

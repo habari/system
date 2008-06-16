@@ -76,7 +76,7 @@
 		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 		
-		<input type="button" value="<?php _e('Delete'); ?>" class="submitbutton">
+		<input type="button" value="<?php _e('Delete'); ?>" class="button delete">
 	</div>
 
 </div>
