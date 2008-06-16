@@ -813,6 +813,17 @@ var navigationDropdown = {
 
 		if (nextPage != "")
 			document.location.href = nextPage
+	},
+	filter: function() {
+		var selected = $('select[name=navigationdropdown]').val();
+		
+		if ( selected == 'all' ) {
+			$('.settings').show();
+		}
+		else {
+			$('.settings:not(#' + selected + ')').hide();
+			$('.settings#' + selected).show();
+		}
 	}
 }
 

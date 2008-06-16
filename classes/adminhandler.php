@@ -130,25 +130,128 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles post requests from the options admin page.
+	 * Handles get requests from the options admin page
+	 */
+	public function get_options()
+	{
+		$this->post_options();
+	}
+
+	/**
+	 * Handles posts requests from the options admin page
 	 */
 	public function post_options()
 	{
-		extract( $this->handler_vars );
-		$fields= array( 'title' => 'title', 'tagline' => 'tagline', 'pagination' => 'pagination', 'pingback_send' => 'pingback_send', 'comments_require_id' => 'comments_require_id', 'locale' => 'locale' );
-		$checkboxes= array( 'pingback_send', 'comments_require_id' );
-		foreach ( $checkboxes as $checkbox ) {
-			if ( !isset( ${$checkbox} ) ) {
-				${$checkbox}= 0;
+		$option_items = array();
+		
+		$option_items[_t('Name & Tagline')] = array(
+			'title' => array(
+				'label' => _t('Site Name'),
+				'type' => 'text',
+				'helptext' => '',
+				),
+			'tagline' => array(
+				'label' => _t('Site Tagline'),
+				'type' => 'text',
+				'helptext' => '',
+				),
+			);
+
+		$option_items[_t('Publishing')] = array(
+			'pagination' => array(
+				'label' => _t('Items per Page'),
+				'type' => 'text',
+				'helptext' => '',
+				),
+			'pingback_send' => array(
+				'label' => _t('Send Pingbacks to Links'),
+				'type' => 'checkbox',
+				'helptext' => '',
+				),
+			'comments_require_id' => array(
+				'label' => _t('Require Comment Author Info'),
+				'type' => 'checkbox',
+				'helptext' => '',
+				),
+			);
+
+		$option_items[_t('Time & Date')] = array(
+			'presets' => array(
+				'label' => _t('Presets'),
+				'type' => 'select',
+				'selectarray' => array(
+					'europe' => _t('Europe')
+					),
+				'helptext' => '',
+				),
+			'timezone' => array(
+				'label' => _t('Time Zone'),
+				'type' => 'select',
+				'selectarray' => array(
+					'1' => 'GMT +1'
+					),
+				'helptext' => 'Adjusts server time to 21.44',
+				),
+			'dateformat' => array(
+				'label' => _t('Date Format'),
+				'type' => 'text',
+				'helptext' => 'Tuesday, Jan 15th, 2008',
+				),
+			'timeformat' => array(
+				'label' => _t('Time Format'),
+				'type' => 'text',
+				'helptext' => '21:44',
+				)
+			);
+
+		$option_items[_t('Language')] = array(
+			'locale' => array(
+				'label' => _t('Locale'),
+				'type' => 'text',
+				'helptext' => _t('International language code'),
+				),
+			);
+
+		$option_items[_t('Presentation')] = array(
+			'encoding' => array(
+				'label' => _t('Encoding'),
+				'type' => 'select',
+				'selectarray' => array(
+					'UTF-8' => 'UTF-8'
+					),
+				'helptext' => '',
+				),
+			);
+
+		$form = new FormUI('Admin Options');
+
+		foreach ( $option_items as $name => $option_fields ) {
+			$fieldset = $form->append( 'wrapper', Utils::slugify( $name ), $name );
+			$fieldset->class = 'container settings';
+			$fieldset->append( 'static', $name, '<h2>' . htmlentities( $name ) . '</h2>' );
+			foreach ( $option_fields as $option_name => $option ) {
+				$field = $fieldset->append( $option['type'], $option_name, $option_name, $option['label'] );
+				$field->template = 'optionscontrol_' . $option['type'];
+				$field->class = 'item clear';
+				if ( $option['type'] == 'select' && isset( $option['selectarray'] ) ) {
+					$field->options = $option['selectarray'];
+				}
+				// @todo: do something with helptext
 			}
 		}
-		foreach ( $fields as $input => $field ) {
-			if ( Options::get( $field ) != ${$input} ) {
-				Options::set( $field, ${$input} );
-			}
-		}
-		Session::notice( _t( 'Successfully updated options' ) );
-		Utils::redirect( URL::get( 'admin', 'page=options' ) );
+
+		/* @todo: filter for additional options from plugins
+		 * We could either use existing config forms and simply extract
+		 * the form controls, or we could create something different
+		 */
+
+		$form->append( 'submit', 'apply', _t('Apply'), 'admincontrol_submit' );
+		$form->apply->class = 'savebutton';
+		$form->set_option( 'success_message', _t( 'Successfully updated options' ) );
+
+		$this->theme->form = $form->get();
+		$this->theme->option_names = array_keys( $option_items );
+		$this->theme->display( 'options' );
 	}
 
 	/**
