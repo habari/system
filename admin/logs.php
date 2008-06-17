@@ -11,7 +11,7 @@
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
-	<div class="timeline">
+	<?php if(isset($years)) { ?><div class="timeline">
 		<div class="years">
 			<?php $theme->display( 'timeline_items' )?>
 		</div>
@@ -23,13 +23,13 @@
 			</div>
 		</div>
 
-	</div>
+	</div><?php } ?>
 
 </div>
 
 <div class="container">
 
-	<div class="item clear">
+	<?php if(isset($years)) { ?><div class="item clear">
 		<div class="head clear">
 
 			<span class="checkbox pct5">&nbsp;</span>
@@ -60,12 +60,15 @@
 
 	<?php $theme->display('logs_items'); ?>
 
-	</div>
+	</div><?php } else { ?><div class="item clear">
+		<span class="pct5">&nbsp;</span><span class="pct90"><?php _e('There are no logs to be displayed at this time.'); ?></span><span class="pct5">&nbsp;</span>
+	</div><?php } ?>
+	
 
 </div>
 
 
-<div class="container transparent">
+<?php if(isset($years)) { ?><div class="container transparent">
 
 	<div class="item controls">
 		<span class="pct25">
@@ -79,7 +82,7 @@
 		<input type="button" value="<?php _e('Delete'); ?>" class="button delete">
 	</div>
 
-</div>
+</div><?php } ?>
 
 
 </form>
