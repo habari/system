@@ -234,6 +234,13 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
+		if($('.manage.users, .page-options').length != 0) {
+			$("input#search").keyup(function (e) {
+				var str= $('input#search').val();
+				itemManage.simpleFilter(str);
+			});
+		}
+		
 		if(!$('.item.controls input[type=checkbox]')) return;
 		
 		itemManage.initItems();
@@ -252,12 +259,6 @@ var itemManage = {
 			return false;
 		});
 		
-		if($('.manage.users').length != 0) {
-			$("input#search").keyup(function (e) {
-				var str= $('input#search').val();
-				itemManage.simpleFilter(str);
-			});
-		}
 	},
 	initItems: function() {
 		$('.item:not(.ignore) .checkbox input[type=checkbox]').change(function () {
@@ -275,10 +276,11 @@ var itemManage = {
 	selected: [],
 	simpleFilter: function( search ) {
 		search= search.toLowerCase();
-
+		
 		var count= 0;
-		$('li.item, a.tag').each(function() {
-			var text= $('.user, span', this).text().toLowerCase();
+		$('li.item, a.tag, div.settings div.item').each(function() {
+			var labels= $('.user, span', this);
+			var text= $(this).text().toLowerCase();
 			if((text.search( search ) == -1) && (text != search)) {
 				$(this).hide();
 				$(this).addClass('hidden');
@@ -288,6 +290,25 @@ var itemManage = {
 				$(this).removeClass('hidden');
 			}
 		});
+		
+		if($('div.settings').length != 0) {
+			$('select[name=navigationdropdown]').val('all');
+			
+			$('div.settings.container').each(function() {
+				if(($('div.item:not(.hidden)', this).length == 0) && ($('h2', this).text().toLowerCase().search( search ) == -1)) {
+					$(this).hide().addClass('hidden');
+				} else {
+					$(this).show().removeClass('hidden');
+				}
+				
+				if($('h2', this).text().toLowerCase().search( search ) != -1) {
+					$('div.item', this).each(function() {
+						$(this).show().removeClass('hidden');
+					});
+				}
+			});
+		}
+		
 		if($('li.item').length != 0) {
 			itemManage.changeItem();
 		}
@@ -821,8 +842,8 @@ var navigationDropdown = {
 			$('.settings').show();
 		}
 		else {
-			$('.settings:not(#' + selected + ')').hide();
-			$('.settings#' + selected).show();
+			$('.settings:not(#' + selected + ')').addClass('hidden').hide();
+			$('.settings#' + selected).removeClass('hidden').show();
 		}
 	}
 }
