@@ -143,7 +143,7 @@ class Tags extends ArrayObject
 	 * @return int The number of times the most used tag is used.
 	 **/
 	public static function max_count() {
-		return DB::get_value( 'SELECT count( t2.post_id ) AS max FROM {tags} t, {tag2post} t2 WHERE t2.tag_id = t.id GROUP BY t.id ORDER BY count( t2.post_id ) DESC LIMIT 1' );
+		return DB::get_value( 'SELECT count( t2.post_id ) AS max FROM {tags} t, {tag2post} t2 WHERE t2.tag_id = t.id GROUP BY t.id ORDER BY max DESC LIMIT 1' );
 	}
 
 	/**
