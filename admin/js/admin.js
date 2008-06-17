@@ -234,7 +234,7 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.manage.users, .page-options').length != 0) {
+		if($('.manage.users, .page-options, .page-user').length != 0) {
 			$("input#search").keyup(function (e) {
 				var str= $('input#search').val();
 				itemManage.simpleFilter(str);
@@ -829,6 +829,15 @@ var spinner = {
 
 // NAVIGATION DROPDOWNS
 var navigationDropdown = {
+	init: function() {
+		if($('.page-user').length == 0) {
+			return;
+		}
+		
+		$('.container.settings').each(function() {
+			$('<option></option>').attr('value', $(this).attr('id')).text($('h2', this).text()).appendTo($('select[name=navigationdropdown]'));
+		});
+	},
 	changePage: function(location) {
 		nextPage = location.options[location.selectedIndex].value
 
@@ -1101,6 +1110,7 @@ $(document).ready(function(){
 	pluginManage.init();
 	liveSearch.init();
 	findChildren();
+	navigationDropdown.init();
 
 	// Alternate the rows' styling.
     $("table").each(function(){

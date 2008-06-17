@@ -29,18 +29,8 @@
 	<span class="pct40">
 
 		<form>
-		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
-			<?php /*
-			foreach ( Users::get_all() as $user ) {
-				if ( $user->username == $currentuser->username ) {
-					$url = Url::get( 'admin', 'page=user' );
-				}
-				else {
-					$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
-				}
-				echo '<option id="' . $user->id . '" value="' . $url . '">' . $user->displayname . '</option>';
-			} */ ?>
-			<option value=""><?php _e('Complete User List'); ?></option>
+		<select class="navigationdropdown" onChange="navigationDropdown.filter();" name="navigationdropdown">
+			<option value="all"><?php _e('All options'); ?></option>
 		</select>
 		</form>
 	</span>
@@ -73,7 +63,7 @@
 
 
 <form name="update-profile" id="update-profile" action="<?php URL::out('admin', 'page=user'); ?>" method="post">
-<div class="container settings user userinformation">
+<div class="container settings user userinformation" id="userinformation">
 
 	<h2><?php echo $possessive; ?> <?php _e('User Information'); ?></h2>
 
@@ -117,7 +107,7 @@
 </div>
 
 
-<div class="container settings user changepassword">
+<div class="container settings user changepassword" id="changepassword">
 
 	<h2><?php _e('Change Password'); ?></h2>
 
@@ -140,7 +130,7 @@
 	</div>
 </div>
 
-<div class="container settings user info">
+<div class="container settings user info" id="additionaluserinfo">
 
 	<h2><?php _e('Additional User Information'); ?></h2>
 
