@@ -1,7 +1,7 @@
 <?php
 /**
  * Habari AdminHandler Class
-	* Backbone of the admin area, handles requests and functionality.
+ * Backbone of the admin area, handles requests and functionality.
  *
  * @package Habari
  */
@@ -143,7 +143,7 @@ class AdminHandler extends ActionHandler
 	public function post_options()
 	{
 		$option_items = array();
-		
+
 		$option_items[_t('Name & Tagline')] = array(
 			'title' => array(
 				'label' => _t('Site Name'),
@@ -345,7 +345,7 @@ class AdminHandler extends ActionHandler
 
 			$modules[$id] = $module;
 		}
-		
+
 		// special case for add item module ...
 		if ( Options::get('235381938') == true ) {
 			$options = null;
@@ -365,7 +365,7 @@ class AdminHandler extends ActionHandler
 	public function post_publish()
 	{
 		extract( $this->handler_vars );
-		
+
 		$form = $this->form_publish( new Post() );
 
 		if ( $form->slug->value != '' ) {
@@ -389,7 +389,7 @@ class AdminHandler extends ActionHandler
 		}
 		else {
 			$postdata= array(
-				'slug' => $form->slug->value,
+				'slug' => $form->newslug->value,
 				'title' => $form->title->value,
 				'tags' => $form->tags->value,
 				'content' => $form->content->value,
@@ -428,32 +428,32 @@ class AdminHandler extends ActionHandler
 			$post->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost= true;
 		}
-		
+
 		$statuses= Post::list_post_statuses( false );
-		$this->theme->statuses = $statuses;		
-		
+		$this->theme->statuses = $statuses;
+
 		$this->theme->form = $this->form_publish($post);
 
 		$this->theme->wsse= Utils::WSSE();
 
 		$this->display( $template );
 	}
-	
+
 	function form_publish($post)
-  {
+	{
 		$form = new FormUI('publishform');
 		$form->class[] = 'create';
-		
+
 		// Create the Title field
 		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
 		$form->title->class= 'important';
 		$form->title->tabindex = 1;
 		$form->title->value = $post->title;
-		
+
 		// Create the silos
 		$form->append('silos', 'silos');
 		$form->silos->silos = Media::dir();
-		
+
 		// Create the Content field
 		$form->append('textarea', 'content', 'null:null', _t('Content'), 'admincontrol_textarea');
 		$form->content->class[] = 'resizable';
@@ -464,37 +464,35 @@ class AdminHandler extends ActionHandler
 		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
 		$form->tags->tabindex = 3;
 		$form->tags->value = implode(',', $post->tags);
-		
+
 		// Create the splitter
 		$publish_controls = $form->append('tabs', 'publish_controls');
 
 		// Create the tags selector
 		$tagselector= $publish_controls->append('fieldset', 'tagselector', _t('Tags'));
-		
+
 		$tags_buttons= $tagselector->append('wrapper', 'tags_buttons');
-		$tags_buttons->class='container';		
+		$tags_buttons->class='container';
 		$tags_buttons->append('static', 'clearbutton', '<p class="column span-5"><input type="button" value="'._t('Clear').'" id="clear"></p>');
-				
+
 		$tags_list= $tagselector->append('wrapper', 'tags_list');
 		$tags_list->class=' container';
 		$tags_list->append('static', 'tagsliststart', '<ul id="tag-list" class="column span-19">');
-		
+
 		$tags= Tags::get();
 		$max= Tags::max_count();
 		foreach ($tags as $tag) {
 			$tags_list->append('tag', 'tag_'.$tag->slug, $tag, 'tabcontrol_text');
 		}
-		
+
 		$tags_list->append('static', 'tagslistend', '</ul>');
-		
-		
+
 		// Create the publishing controls
 		// pass "false" to list_post_statuses() so that we don't include internal post statuses
 		$statuses= Post::list_post_statuses( false );
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses= Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
-		
 		$settings = $publish_controls->append('fieldset', 'settings', 'Settings');
 
 		$settings->append('select', 'status', 'null:null', 'Content State', array_flip($statuses), 'tabcontrol_select');
@@ -515,25 +513,25 @@ class AdminHandler extends ActionHandler
 		$buttons->class[] = 'container';
 		$buttons->class[] = 'buttons';
 		$buttons->class[] = 'publish';
-		
+
 		// Create the Save button
 		$buttons->append('submit', 'save', 'Save');
-		
+
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
 		$form->content_type->value = $post->content_type;
-		
+
 		$form->append('hidden', 'slug', 'null:null');
 		$form->slug->value = $post->slug;
-		
+
 		// Let plugins alter this form
 		Plugins::act('form_publish', $form, $post);
-		
+
 		// Put the form into the theme
 		$theme->form = $form->get();
 		return $form;
 	}
-	
+
 	/**
 	 * Deletes a post from the database.
 	 */
@@ -1158,7 +1156,7 @@ class AdminHandler extends ActionHandler
 
 		$sort_active_plugins= array();
 		$sort_inactive_plugins= array();
-		
+
 		foreach ( $all_plugins as $file ) {
 			$plugin= array();
 			$plugin_id= Plugins::id_from_file( $file );
@@ -1438,7 +1436,7 @@ class AdminHandler extends ActionHandler
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$params= $_POST;
-		
+
 		Comments::set( $params );
 		$this->fetch_comments( $params );
 		$items= $this->theme->fetch( 'comments_items' );
@@ -1463,31 +1461,31 @@ class AdminHandler extends ActionHandler
 			echo json_encode( _t('WSSE authentication failed.') );
 			return;
 		}
-		
+
 		$comment= Comment::get($handler_vars['id']);
-		
+
 		if(isset($handler_vars['author']) && $handler_vars['author'] != '') {
-			$comment->name= $handler_vars['author'];	
+			$comment->name= $handler_vars['author'];
 		}
 		if(isset($handler_vars['url']) && $handler_vars['url'] != '') {
-			$comment->url= $handler_vars['url'];	
+			$comment->url= $handler_vars['url'];
 		}
 		if(isset($handler_vars['email']) && $handler_vars['email'] != '') {
-			$comment->email= $handler_vars['email'];	
+			$comment->email= $handler_vars['email'];
 		}
 		if(isset($handler_vars['content']) && $handler_vars['content'] != '') {
-			$comment->content= $handler_vars['content'];	
+			$comment->content= $handler_vars['content'];
 		}
 		if(isset($handler_vars['time']) && $handler_vars['time'] != '' && isset($handler_vars['date']) && $handler_vars['date'] != '') {
 			$seconds = date('s', strtotime($comment->date));
 			$date= date('Y-m-d H:i:s', strtotime($handler_vars['date'] . ' ' . $handler_vars['time'] . ':' . $seconds));
 			$comment->date= $date;
 		}
-		
+
 		$comment->update();
-		
+
 		echo json_encode(_t('Updated 1 comment.'));
-		
+
 		return;
 	}
 
@@ -1611,7 +1609,7 @@ class AdminHandler extends ActionHandler
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
 			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
 			break;
-		}		
+		}
 
 		echo json_encode($status_msg);
 	}
