@@ -47,51 +47,98 @@ class FileCache extends Cache
 	 * @param string $name name of the cached item
 	 * @return boolean TRUE if item is cached, FALSE if not
 	 */
-	protected function _has( $name )
+	protected function _has( $name, $group )
 	{
 		if ( !$this->enabled ) {
 			return false;
 		}
 		$hash= $this->get_name_hash( $name );
+		$ghash = $this->get_group_hash( $group );
 
-		return isset( $this->cache_files[$hash] ) && $this->cache_files[$hash]['expires'] > time() && file_exists( $this->cache_files[$hash]['file'] );
+		return isset( $this->cache_files[$ghash][$hash] ) && $this->cache_files[$ghash][$hash]['expires'] > time() && file_exists( $this->cache_files[$ghash][$hash]['file'] );
+	}
+	
+	/**
+	 * Is group in the cache?
+	 *
+	 * @param string $name name of the cached item
+	 * @return boolean TRUE if item is cached, FALSE if not
+	 */
+	protected function _has_group( $group )
+	{
+		if ( !$this->enabled ) {
+			return false;
+		}
+		$ghash = $this->get_group_hash( $group );
+
+		return ( isset( $this->cache_files[$ghash] ) && count($this->cache_files[$ghash]) > 1 );
 	}
 
+	/**
+	 * Returns the group from the cache.
+	 *
+	 * @param string $name The name of the cached item
+	 * @return mixed The group or array() if it doesn't exist in cache
+	 */
+	protected function _get_group( $group )
+	{
+		if ( !$this->enabled ) {
+			return null;
+		}
+		$ghash = $this->get_group_hash( $group );
+
+		if ( !isset( $this->cache_data[$group] ) ) {
+			if ( isset( $this->cache_files[$ghash] ) && count($this->cache_files[$ghash]) > 1 ) {
+				foreach ( $this->cache_files[$ghash] as $hash => $record ) {
+					$this->cache_data[$group] = unserialize(
+						file_get_contents( $this->cache_files[$group][$record['name']]['file'] )
+						);
+				}
+			}
+			else {
+				$this->cache_data[$group]= array();
+			}
+		}
+		return $this->cache_data[$group];
+	}
+	
 	/**
 	 * Returns the named value from the cache.
 	 *
 	 * @param string $name The name of the cached item
 	 * @return mixed The item value or NULL if it doesn't exist in cache
 	 */
-	protected function _get( $name )
+	protected function _get( $name, $group )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
 		$hash= $this->get_name_hash( $name );
+		$ghash = $this->get_group_hash( $group );
 
-		if ( !isset( $this->cache_data[$hash] ) ) {
-			if ( isset( $this->cache_files[$hash] ) && $this->cache_files[$hash]['expires'] > time() && file_exists( $this->cache_files[$hash]['file'] ) ) {
-				$this->cache_data[$hash]= unserialize( file_get_contents( $this->cache_files[$hash]['file'] ) );
+		if ( !isset( $this->cache_data[$group][$name] ) ) {
+			if ( isset( $this->cache_files[$ghash][$hash] ) && $this->cache_files[$ghash][$hash]['expires'] > time() && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
+				$this->cache_data[$group][$name]= unserialize( file_get_contents( $this->cache_files[$ghash][$hash]['file'] ) );
 			}
 			else {
-				$this->cache_data[$hash]= null;
+				$this->cache_data[$group][$name]= null;
 			}
 		}
-		return $this->cache_data[$hash];
+		return $this->cache_data[$group][$name];
 	}
 
-	protected function _set( $name, $value, $expiry )
+	protected function _set( $name, $value, $expiry, $group )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
 		$hash= $this->get_name_hash( $name );
+		$ghash = $this->get_group_hash( $group );
 
-		$this->cache_data[$hash]= $value;
+		$this->cache_data[$group][$name]= $value;
 
-		file_put_contents( $this->cache_location . $hash, serialize( $value ) );
-		$this->cache_files[$hash]= array( 'file' => $this->cache_location . $hash, 'expires' => time() + $expiry );
+		file_put_contents( $this->cache_location . $ghash . $hash, serialize( $value ) );
+		$this->cache_files[$ghash][$hash]= array( 'file' => $this->cache_location . $ghash . $hash, 'expires' => time() + $expiry, 'name' => $name );
 		$this->clear_expired();
 		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
@@ -101,15 +148,17 @@ class FileCache extends Cache
 	 *
 	 * @param string $name The name of the cached item
 	 */
-	protected function _expire( $name )
+	protected function _expire( $name, $group )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
 		$hash= $this->get_name_hash( $name );
-		if ( isset( $this->cache_files[$hash] ) && file_exists( $this->cache_files[$hash]['file'] ) ) {
-			unlink( $this->cache_files[$hash]['file'] );
-			unset( $this->cache_files[$hash] );
+		$ghash = $this->get_group_hash( $group );
+		
+		if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
+			unlink( $this->cache_files[$ghash][$hash]['file'] );
+			unset( $this->cache_files[$ghash][$hash] );
 			$this->clear_expired();
 			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 		}
@@ -121,14 +170,16 @@ class FileCache extends Cache
 	 * @param string $name The name of the cached item
 	 * @param integer $expiry The duration in seconds to extend the cache expiration by
 	 */
-	protected function _extend( $name, $expiry )
+	protected function _extend( $name, $expiry, $group )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
 		$hash= $this->get_name_hash( $name );
-		if ( isset( $this->cache_files[$hash] ) ) {
-			$this->cache_files[$hash]['expires'] = time() + $expiry;
+		$ghash = $this->get_group_hash( $group );
+		
+		if ( isset( $this->cache_files[$ghash][$hash] ) ) {
+			$this->cache_files[$ghash][$hash]['expires'] = time() + $expiry;
 			$this->clear_expired();
 			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 		}
@@ -142,6 +193,16 @@ class FileCache extends Cache
 	private function get_name_hash( $name )
 	{
 		return md5( $name . Options::get( 'GUID' ) ) . '.cache';
+	}
+	
+	/**
+	 * Get the unique hash for a given key.
+	 *
+	 * @param string $name The name of the cached group.
+	 */
+	private function get_group_hash( $group )
+	{
+		return md5( $group . Options::get( 'GUID' ) ) . '.';
 	}
 
 	/**
@@ -163,7 +224,9 @@ class FileCache extends Cache
 	 */
 	private function clear_expired()
 	{
-		$this->cache_files= array_filter( $this->cache_files, array( $this, 'record_fresh' ) );
+		foreach ( $this->cache_files as $ghash => $records ) {
+			$this->cache_files[$ghash]= array_filter( $records, array( $this, 'record_fresh' ) );
+		}
 	}
 
 }
