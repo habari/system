@@ -345,17 +345,7 @@ class AdminHandler extends ActionHandler
 
 			$modules[$id] = $module;
 		}
-
-		// special case for add item module ...
-		if ( Options::get('235381938') == true ) {
-			$options = null;
-			$name = $title = implode( '', array_map( 'chr', array(84,101,104,32,80,111,110,121) ) );
-			$content = $this->theme->fetch( 'dash_235381938' );
-			$modules = array_merge(
-				array('235381938' => compact( 'name', 'title', 'content', 'options' )),
-				$modules
-				);
-		}
+		
 		$this->theme->modules = $modules;
 	}
 
@@ -1437,7 +1427,6 @@ class AdminHandler extends ActionHandler
 
 		$params= $_POST;
 
-		Comments::set( $params );
 		$this->fetch_comments( $params );
 		$items= $this->theme->fetch( 'comments_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
