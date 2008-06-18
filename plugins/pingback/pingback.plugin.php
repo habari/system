@@ -233,11 +233,14 @@ class Pingback extends Plugin
 			// The pingback has been registered and is stored as a successful pingback.
 			if ( is_object( $post ) ) {
 				if ( isset( $post->info->pingbacks_successful ) ) {
-					$post->info->pingbacks_successful[]= $target_uri;
+					$pingbacks_successful= $post->info->pingbacks_successful;
+					$pingbacks_successful[]= $target_uri;
+					$post->info->pingbacks_successful= $pingbacks_successful;
 				}
 				else {
 					$post->info->pingbacks_successful= array( $target_uri );
 				}
+				$post->info->commit();
 			}
 			return true;
 		}
