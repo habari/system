@@ -15,9 +15,10 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
-		$name= Controller::get_var( 'habari_username' );
-		$pass= Controller::get_var( 'habari_password' );
-
+		$name= InputFilter::filter( Controller::get_var( 'habari_username' ) );
+		$pass= InputFilter::filter( Controller::get_var( 'habari_password' ) );
+		
+		
 		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
 			$user= User::authenticate( $name, $pass );
 
