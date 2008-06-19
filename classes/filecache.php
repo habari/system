@@ -25,7 +25,7 @@ class FileCache extends Cache
 	public function __construct()
 	{
 		if ( !defined( 'FILE_CACHE_LOCATION' ) ) {
-			define( 'FILE_CACHE_LOCATION', HABARI_PATH . '/system/cache/' );
+			define( 'FILE_CACHE_LOCATION', HABARI_PATH . '/user/cache/' );
 		}
 		$this->cache_location= FILE_CACHE_LOCATION;
 		$this->index_file= $this->cache_location . md5( 'index' . Options::get( 'GUID' ) ) . '.data';
