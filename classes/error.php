@@ -8,6 +8,20 @@
 class Error extends Exception
 {
 	protected $message= '';
+	protected $is_error = false;
+	
+	/**
+	 * Constructor for the Error class
+	 * 
+	 * @param string $message Exception to display
+	 * @param integer $code Code of the exception
+	 * @param boolean $is_error true if the exception represents an error handled by the Error class 
+	 */
+	public function __construct($message = 'Generic Habari Error', $code = 0, $is_error = false)
+	{
+		parent::__construct($message, $code);
+		$this->is_error = $is_error;
+	}
 
 	/**
 	 * function handle_errors
@@ -25,32 +39,22 @@ class Error extends Exception
 	 */
 	public static function exception_handler( $exception )
 	{
-		printf(
-			"<pre class=\"error\">\n<b>%s:</b> %s\n",
-			get_class( $exception ),
-			$exception->getMessage()
-		);
-		$trace= $exception->getTrace();
-		do {
-			$details= current( $trace );
-			if( !isset( $details['class'] ) || ( isset( $details['class'] ) && $details['class'] != 'Error' ) ) {
-				$details = current($trace);
-				break;
-			}
-		} while( next( $trace ) );
-		if( isset( $details ) ) {
-			printf(
-				_t('%s : Line %s'),
-				$details['file'],
-				$details['line']
-			);
+		if(isset($exception->is_error) && $exception->is_error) {
+			return;
 		}
-		print "</pre>\n";
+		printf(
+			"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
+			get_class( $exception ),
+			$exception->getMessage(),
+			$exception->file,
+			$exception->line
+		);
+
 		if ( DEBUG ) {
 			self::print_backtrace( $exception->getTrace() );
 		}
 	}
-
+	
 	/**
 	 * Get the error text, file, and line number from the backtrace, which is more accurate
 	 *
@@ -97,45 +101,77 @@ class Error extends Exception
 			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
 
-		throw new Error($errstr);
+		printf(
+			"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
+			$error_names[$errno],
+			$errstr,
+			$errfile,
+			$errline
+		);
+		if( DEBUG ) {
+			Error::print_backtrace();
+		}
+		
+		throw new Error($errstr, 0, true);
 	}
 
+	/**
+	 * Print a backtrace in a format that looks reasonable in both rendered HTML and text
+	 * 
+	 * @param array $trace An optional array of trace data
+	 */
 	private static function print_backtrace( $trace= null )
 	{
 		if ( !isset($trace) ) {
 			$trace= debug_backtrace();
 		}
 		print "<pre class=\"backtrace\">\n";
+		$defaults = array(
+			'file' => '[core]',
+			'line' => '(eval)',
+			'class' => '',
+			'type' => '',
+			'args' => array(),
+		);
+
 		foreach ( $trace as $n => $a ) {
-			if ( ! isset( $a['file'] ) ) { $a['file']= '[core]'; }
-			if ( ! isset( $a['line'] ) ) { $a['line']= '(eval)'; }
-			if ( ! isset( $a['class'] ) ) { $a['class']= ''; }
-			if ( ! isset( $a['type'] ) ) { $a['type']= ''; }
-			if ( ! is_array( $a['args'] ) ) { $a['args']= array(); }
+			$a = array_merge($defaults, $a);
+			
+			if($a['class'] == 'Error') {
+				continue;
+			}
+		
 			if ( strpos( $a['file'], HABARI_PATH ) === 0 ) {
 				$a['file']= substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
 
-			$args= array();
-			foreach ( $a['args'] as $arg ) {
-				$args[]= htmlentities( str_replace(
-					array( "\n", "\r" ),
-					array( "\n    ", '' ),
-					"\n".var_export( $arg, true )
-				) );
+			if(defined('DEBUG_ARGS')) {
+				$args= array();
+				foreach ( $a['args'] as $arg ) {
+					$args[]= htmlentities( str_replace(
+						array( "\n", "\r" ),
+						array( "\n   ", '' ),
+						var_export( $arg, true )
+					) );
+				}
+				$args= implode( ",    ", $args );
+				if ( strlen( $args ) > 1024 ) {
+					$args= substr( $args, 0, 1021 ) . '...';
+				}
 			}
-			$argstr= implode( ",    ", $args );
-			if ( !empty( $argstr) ) $argstr.= "\n  ";
-			if ( strlen( $argstr ) > 1024 ) {
-				$argstr= substr( $argstr, 0, 1021 ) . '...';
+			else {
+				$args = count($a['args']) == 0 ? ' ' : sprintf(_n(' ...%d arg... ', ' ...%d args... ', count($a['args'])), $a['args']);
 			}
 
-			printf( _t('#%d in <b>%s</b>:<b>%d</b>:\n  <b>%s</b>(%s)\n'),
-				$n, $a['file'], $a['line'], $a['class'].$a['type'].$a['function'],
-				$argstr
+			printf( 
+				_t("%s line %d:\n  %s(%s)\n"),
+				$a['file'], 
+				$a['line'], 
+				$a['class'].$a['type'].$a['function'],
+				$args
 			);
 		}
-		print "</pre>\n";
+		print "\n</pre>\n";
 	}
 
 	/**
