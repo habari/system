@@ -40,6 +40,17 @@ abstract class Pluggable
 	}
 
 	/**
+	 * Gets a database schema associated with this pluggable
+	 * @return string The database schema
+	 **/
+	final public function get_db_schema()
+	{
+		$db = DB::get_driver_name();
+		$schema = dirname($this->get_file()) . '/schema/' . $db . '.sql';
+		return file_get_contents($schema);
+	}
+
+	/**
 	 * Get a fully-qualified URL directory that contains this pluggable class
 	 *
 	 * @param bool whether to include a trailing slash.  Default: No
