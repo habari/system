@@ -25,7 +25,11 @@ class CronTab extends ActionHandler
 			$poll_time = microtime(true) + 30;
 			Options::set('poll_cron', $poll_time);
 			// Timeout is really low so that it doesn't wait for the request to finish
-			$cronurl = URL::get('cron', array('time' => sprintf('%.6F', $poll_time)));
+			$cronurl = URL::get('cron',
+				array(
+					'time' => sprintf('%.6F', $poll_time),
+					'asyncronous' => Utils::crypt(Options::get('guid')) )
+				);
 			$request= new RemoteRequest($cronurl, 'GET', 1);
 			$request->execute();
 		}
