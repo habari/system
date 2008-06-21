@@ -1613,8 +1613,8 @@ ul.tabs li.ui-tabs-selected.last-child {
 
 .splitter hr {
 	height: 1px;
-	background: #424242;
-	border-top: 1px solid #2c2c2c;
+	background: #2c2c2c;
+	border-bottom: 1px solid #424242;
 	margin: 0 auto;
 	width: 770px;
 	}
