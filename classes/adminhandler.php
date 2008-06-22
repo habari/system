@@ -228,7 +228,7 @@ class AdminHandler extends ActionHandler
 		foreach ( $option_items as $name => $option_fields ) {
 			$fieldset = $form->append( 'wrapper', Utils::slugify( $name ), $name );
 			$fieldset->class = 'container settings';
-			$fieldset->append( 'static', $name, '<h2>' . htmlentities( $name ) . '</h2>' );
+			$fieldset->append( 'static', $name, '<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>' );
 			foreach ( $option_fields as $option_name => $option ) {
 				$field = $fieldset->append( $option['type'], $option_name, $option_name, $option['label'] );
 				$field->template = 'optionscontrol_' . $option['type'];
