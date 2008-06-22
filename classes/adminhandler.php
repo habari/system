@@ -483,18 +483,18 @@ class AdminHandler extends ActionHandler
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses= Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
-		$settings = $publish_controls->append('fieldset', 'settings', 'Settings');
+		$settings = $publish_controls->append('fieldset', 'settings', _t('Settings'));
 
-		$settings->append('select', 'status', 'null:null', 'Content State', array_flip($statuses), 'tabcontrol_select');
+		$settings->append('select', 'status', 'null:null', _t('Content State'), array_flip($statuses), 'tabcontrol_select');
 		$settings->status->value = $post->status;
 
-		$settings->append('checkbox', 'comments_enabled', 'null:null', 'Comments Allowed', 'tabcontrol_checkbox');
+		$settings->append('checkbox', 'comments_enabled', 'null:null', _t('Comments Allowed'), 'tabcontrol_checkbox');
 		$settings->comments_enabled->value = $post->info->comments_disabled ? false : true;
 
-		$settings->append('text', 'pubdate', 'null:null', 'Publication Time', 'tabcontrol_text');
+		$settings->append('text', 'pubdate', 'null:null', _t('Publication Time'), 'tabcontrol_text');
 		$settings->pubdate->value = date('Y-m-d H:i:s', strtotime($post->pubdate));
 
-		$settings->append('text', 'newslug', 'null:null', 'Content Address', 'tabcontrol_text');
+		$settings->append('text', 'newslug', 'null:null', _t('Content Address'), 'tabcontrol_text');
 		$settings->newslug->value = $post->slug;
 
 		// Create the button area
@@ -505,7 +505,7 @@ class AdminHandler extends ActionHandler
 		$buttons->class[] = 'publish';
 
 		// Create the Save button
-		$buttons->append('submit', 'save', 'Save');
+		$buttons->append('submit', 'save', _t('Save'));
 
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
