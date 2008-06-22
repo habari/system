@@ -20,7 +20,6 @@
 	<?php $theme->header(); ?>
 </head>
 <body>
-<?php Utils::debug($localized_css); ?>
 	<div id="page-top">
 		<div id="wrapper-top">
 			<div id="top-primary">
