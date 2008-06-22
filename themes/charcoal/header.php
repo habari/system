@@ -8,6 +8,9 @@
 	<link rel="edit" type="application/atom+xml" title="Atom Publishing Protocol" href="<?php URL::out( 'atompub_servicedocument' ); ?>">
 	<link rel="EditURI" type="application/rsd+xml" title="RSD" href="<?php URL::out( 'rsd' ); ?>">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url( 'theme' ); ?>/style.css">
+	<?php if ($localized_css): ?>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo Site::get_url( 'theme', true ) . $localized_css; ?>">
+	<?php endif; ?>
 	<!--[if lt IE 7]>
 	<link rel="stylesheet" href="<?php Site::out_url( 'theme' ); ?>/ie.css" type="text/css" media="screen" />
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript" charset="utf-8"></script>
@@ -17,6 +20,7 @@
 	<?php $theme->header(); ?>
 </head>
 <body>
+<?php Utils::debug($localized_css); ?>
 	<div id="page-top">
 		<div id="wrapper-top">
 			<div id="top-primary">

@@ -61,6 +61,14 @@ class charcoal extends Theme
 		$this->assign('page_class', 'post' . ( ! self::SHOW_PAGE_PAPERCLIP ? ' alt' : '' ) );
 		$this->assign('show_post_nav', self::SHOW_POST_NAV);
 		
+		$locale=Options::get( 'locale' );
+		if ( file_exists( Site::get_dir( 'theme', true ). $locale . '.css' ) ){
+			$this->assign( 'localized_css',  $locale . '.css' );
+		}
+		else {
+			$this->assign( 'localized_css', false );
+		}
+		
 		if( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
 		}
