@@ -725,6 +725,9 @@ ul.archlist-left li a:hover,ul.archlist-right li a:hover {
 	margin: 0;
 }
 
+.noposts{
+	margin-bottom:120px;
+
 input {
 	border: 2px solid;
 }

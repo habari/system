@@ -1,6 +1,7 @@
 <?php include 'header.php'; ?>
 
 			<div id="main-posts">
+			<?php if ( sizeof( $posts ) ): ?>
 				<?php $post=reset($posts); ?>
 				<div class="<?php echo $post_class?>">
 				<?php if ( is_array( $post->tags ) ) : ?>
@@ -33,6 +34,9 @@
 						<?php endif; ?>
 					</div>
 				</div>
+			<?php else: ?>
+				<p class="noposts prompt">No posts published, yet.</p>
+			<?php endif; ?>
 			</div>
 		</div>
 		<div id="top-secondary">
