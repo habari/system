@@ -48,7 +48,7 @@ class Comments extends ArrayObject
 		}
 
 		$wheres= array();
-		$join= '';
+		$joins= array();
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
 			$wheres[]= $paramarray['where'];
 		}
@@ -114,6 +114,17 @@ class Comments extends ArrayObject
 					$where[]= "ip= ?";
 					$params[]= $paramset['ip'];
 				}				/* do searching */
+				if ( isset( $paramset['post_author'] ) ) {
+					$joins['posts']= ' INNER JOIN {posts} ON {comments}.post_id = {posts}.id';
+					if ( is_array( $paramset['post_author'] ) ) {
+						$where[]= "{posts}.user_id IN (" . implode( ',', array_fill( 0, count( $paramset['post_author'] ), '?' ) ) . ")";
+						$params= array_merge( $params, $paramset['post_author'] );
+					}
+					else {
+						$where[]= '{posts}.user_id = ?';
+						$params[]= (string) $paramset['post_author'];
+					}
+				}
 				if ( isset( $paramset['criteria'] ) ) {
 					if ( isset( $paramset['criteria_fields'] ) ) {
 						// Support 'criteria_fields' => 'author,ip' rather than 'criteria_fields' => array( 'author', 'ip' )
@@ -210,7 +221,7 @@ class Comments extends ArrayObject
 		$query= '
 			SELECT ' . $select . '
 			FROM ' . DB::table( 'comments' ) .
-			' ' . $join;
+			' ' . implode(' ', $joins);
 
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
