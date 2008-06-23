@@ -52,7 +52,7 @@
 		$count= Posts::count_by_author( $user->id, $status_id );
 		if ( $count > 0 ) {
 			$message = '<strong><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'user_id' => $user->id, 'type' => Post::type( 'any' ), 'status' => $status_id ) ) . '">';
-			$message.= sprintf( '%d ' . _n( _t( $status_name . ' post' ), _t( $status_name . ' posts' ), $count ), Posts::count_by_author( $user->id, $status_id ) ) ;
+			$message.= sprintf( '%d ' . _n( _t( $status_name . ' post' ), _t( $status_name . ' posts' ), $count ), $count ) ;
 			$message.= '</a></strong>';
 			$message_bits[]= $message;
 		}
