@@ -24,7 +24,7 @@ class SQLiteConnection extends DatabaseConnection
 		$sql= preg_replace( '%YEAR\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%Y\', ${1})', $sql );
 		$sql= preg_replace( '%MONTH\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%m\', ${1})', $sql );
 		$sql= preg_replace( '%DAY\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%d\', ${1})', $sql );
-		$sql= preg_replace( '%TRUNCATE\s*([^ ]*)%i', 'DELETE FROM ${1}', $sql );
+		$sql= preg_replace( '%TRUNCATE \s*([^ ]*)%i', 'DELETE FROM ${1}', $sql );
 		return $sql;
 	}
 
