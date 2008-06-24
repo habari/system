@@ -835,18 +835,23 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles plugin activation or deactivation.
 	 */
-	function post_plugin_toggle()
+	function get_plugin_toggle()
 	{
 		extract( $this->handler_vars );
-		if ( 'activate' == strtolower( $action ) ) {
-			Plugins::activate_plugin( $plugin );
-			$plugins= Plugins::get_active();
-			Session::notice( sprintf( _t( "Activated plugin '%s'" ), $plugins[Plugins::id_from_file( $plugin )]->info->name ) );
-		}
-		else {
-			$plugins= Plugins::get_active();
-			Session::notice( sprintf( _t( "Deactivated plugin '%s'" ), $plugins[Plugins::id_from_file( $plugin )]->info->name ) );
-			Plugins::deactivate_plugin( $plugin );
+		$plugins = Plugins::list_all();
+		foreach($plugins as $file) {
+			if(Plugins::id_from_file($file) == $plugin_id) {
+				if ( 'activate' == strtolower( $action ) ) {
+					Plugins::activate_plugin( $file );
+					$plugins= Plugins::get_active();
+					Session::notice( sprintf( _t( "Activated plugin '%s'" ), $plugins[Plugins::id_from_file( $file )]->info->name ) );
+				}
+				else {
+					$plugins= Plugins::get_active();
+					Session::notice( sprintf( _t( "Deactivated plugin '%s'" ), $plugins[Plugins::id_from_file( $file )]->info->name ) );
+					Plugins::deactivate_plugin( $file );
+				}
+			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
 	}
@@ -897,10 +902,10 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Activates a theme.
 	 */
-	function post_activate_theme()
+	function get_activate_theme()
 	{
 		extract( $this->handler_vars );
-		if ( 'activate' == strtolower( $submit ) ) {
+		if ( isset($theme_name)  && isset($theme_dir) ) {
 			Themes::activate_theme( $theme_name,  $theme_dir );
 		}
 		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
