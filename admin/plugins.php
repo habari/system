@@ -40,12 +40,7 @@
 				<?php } } ?>
 
 
-				<li>
-					<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
-					<input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
-					<input type='hidden' name='action' value='<?php echo $plugin['active'] ? _t('Deactivate') : _t('Activate'); ?>'>
-					<button name='submit' type='submit'><?php echo $plugin['verb']; ?></button></form>
-				</li>
+				<li><a href="<?php URL::out( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=deactivate'); ?>"><?php echo $plugin['verb']; ?></a></li>
 
 			</ul>
 
@@ -97,13 +92,7 @@
 			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim">by</span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
 
 			<ul class="dropbutton">
-				<li>
-				<form method='POST' action='<?php URL::out( 'admin', 'page=plugin_toggle' ); ?>'>
-				<input type='hidden' name='plugin' value='<?php echo $plugin['file']; ?>'>
-				<input type='hidden' name='action' value='<?php echo $plugin['active'] ? _t('Deactivate') : _t('Activate'); ?>'>
-				<button name='submit' type='submit'><?php echo $plugin['verb']; ?></button>
-			    </form>
-				</li>
+				<li><a href="<?php URL::out( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=activate'); ?>"><?php echo $plugin['verb']; ?></a></li>
 			</ul>
 
 			<?php if( isset( $updates ) ) { ?>

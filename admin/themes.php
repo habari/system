@@ -45,12 +45,7 @@ foreach($all_themes as $inactive_theme):
 			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a></span>
 
 			<ul class="dropbutton">
-				<li><form method='post' action='<?php URL::out('admin', 'page=activate_theme'); ?>'>
-				<input type='hidden' name='theme_name' value='<?php echo $inactive_theme['info']->name; ?>'>
-				<input type='hidden' name='theme_dir' value='<?php echo $inactive_theme['dir']; ?>'>
-				<input type='submit' name='submit' value='<?php _e('activate'); ?>'>
-				</form></li>
-
+				<li><a href="<?php URL::out( 'admin', 'page=activate_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
 			</ul>
 		</div>
 
