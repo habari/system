@@ -35,7 +35,7 @@
 					</div>
 				</div>
 			<?php else: ?>
-				<p class="noposts prompt">No posts published, yet.</p>
+				<p class="noposts prompt"><?php _e( "No posts published, yet." ); ?></p>
 			<?php endif; ?>
 			</div>
 		</div>
