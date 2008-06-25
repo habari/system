@@ -3,7 +3,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 ?>
 <?php if ( !$post->info->comments_disabled ) : ?>
 <div id="comment-form">
-<?php if ( Session::has_errors() ) Session::messages_out(); ?>
+<?php if ( Session::has_errors() ) Session::messages_out( true, false ); ?>
 	<form action="<?php URL::out( 'submit_feedback', array( 'id' => $post->id ) ); ?>" method="post" id="commentform">
 		<div id="comment-personaldetails">
 			<p>
