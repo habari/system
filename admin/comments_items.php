@@ -33,11 +33,12 @@
 
 	<div class="infoandcontent clear">
 		<span class="authorinfo pct25 minor">
+			<ul>
 			<?php if ($comment->url != '')
-				echo '<a class="edit-url" href="' . $comment->url . '">' . $comment->url . '</a>'."\r\n"; ?>
+				echo '<li><a class="edit-url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n"; ?>
 			<?php if ( $comment->email != '' )
-				echo '<a class="edit-email" href="mailto:' . $comment->email . '">' . $comment->email . '</a>'."\r\n"; ?>
-
+				echo '<li><a class="edit-email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n"; ?>
+			</ul>
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
 				<p>Marked as spam</p>
 			<?php endif; ?>
