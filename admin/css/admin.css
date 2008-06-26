@@ -1275,6 +1275,10 @@ body.page-themes #page .dropbutton {
 	margin-right: 5px;
 	}
 
+.authorinfo {
+	overflow: hidden;
+	}
+
 /* TIMELINE */
 
 .navigator {
