@@ -1489,26 +1489,25 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_delete_entries($handler_vars)
 	{
-		$count= 0;
-
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			echo json_encode( 'WSSE authentication failed.' );
 			return;
 		}
 
+		$ids = array();
 		foreach($_POST as $id => $delete) {
 			// skip POST elements which are not post ids
 			if ( preg_match( '/^p\d+/', $id )  && $delete ) {
-				$id= substr($id, 1);
-				$post= Posts::get(array('id' => $id));
-				$post= $post[0];
-				$post->delete();
-				$count++;
+				$ids[] = substr($id, 1);
 			}
 		}
+		$posts = Posts::get( array( 'id' => $ids ) );
+		foreach ( $posts as $post ) {
+			$post->delete();
+		}
 
-		$msg_status= sprintf( _t('Deleted %d entries.'), $count );
+		$msg_status= sprintf( _t('Deleted %d entries.'), count($ids) );
 
 		echo json_encode($msg_status);
 	}

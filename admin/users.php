@@ -86,4 +86,9 @@
 
 </div>
 
+<script type="text/javascript">
+itemManage.removeURL = habari.url.ajaxUpdateUsers;
+
+</script>
+
 <?php include('footer.php');?>

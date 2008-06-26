@@ -252,13 +252,16 @@ var itemManage = {
 				itemManage.checkAll();
 			}
 		});
-
-		$('.item.controls input.button.delete').click(function () {
-			itemManage.remove();
-			
-			return false;
-		});
 		
+		/* for all manage pages except for comments, add an ajax call to the
+		 * delete button
+		 */
+		if( $('.manage.comments').length == 0 ) {
+			$('.item.controls input.button.delete').click(function () {
+				itemManage.remove();
+				return false;
+			});
+		}
 	},
 	initItems: function() {
 		$('.item:not(.ignore) .checkbox input[type=checkbox]').change(function () {
@@ -418,14 +421,6 @@ var itemManage = {
 			query['p' + id]= 1;
 		}
 		
-		if($('.logs.manage').length != 0) {
-			var url = habari.url.ajaxLogDelete;
-		} else if($('.manage.users').length != 0) {
-			var url = habari.url.ajaxUpdateUsers;
-		} else {
-			var url = habari.url.ajaxDelete;
-		}
-		
 		if($('.manage.users').length != 0) {
 			query['action']= 'delete';
 			query['reassign']= $('select#reassign').attr('value');
@@ -436,7 +431,7 @@ var itemManage = {
 		query['digest']= $('input#PasswordDigest').attr('value');
 		
 		$.post(
-			url,
+			itemManage.removeURL,
 			query,
 			function(msg) {
 				spinner.stop();
@@ -447,7 +442,7 @@ var itemManage = {
 					query = {};
 					query['action'] = 'fetch';
 					$.post(
-						url,
+						itemManage.removeURL,
 						query,
 						function(users) {
 							spinner.stop();
