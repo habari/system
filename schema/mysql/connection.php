@@ -60,6 +60,9 @@ class MySQLConnection extends DatabaseConnection
 	 */
 	function dbdelta( $queries, $execute= true, $silent= true, $doinserts= false )
 	{
+		$queries = preg_replace("/({\$\w*})/",$this->prefix,$queries);	//Converts {$prefix}table_name to prefix__table_name
+		$queries = preg_replace("/{(\w*)}/",$this->prefix . '$1' ,$queries);	//Converts {table_name} to prefix__table_name
+		
 		if( !is_array($queries) ) {
 			$queries = explode( ';', $queries );
 			if('' == $queries[count($queries) - 1]) array_pop($queries);
@@ -71,6 +74,7 @@ class MySQLConnection extends DatabaseConnection
 		$indices = array();
 
 		foreach($queries as $qry) {
+
 			if(preg_match("|CREATE TABLE\s+(\w*)|", $qry, $matches)) {
 				$cqueries[strtolower($matches[1])] = $qry;
 				$for_update[$matches[1]] = 'Created table '.$matches[1];
