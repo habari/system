@@ -2021,8 +2021,8 @@ class AdminHandler extends ActionHandler
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf(_t('Content: Create a %s'), ucwords($type)), 'text' => sprintf(_t('Create %s'), ucwords($type)) );
-			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf(_t('Content: Manage %s'), ucwords($type)), 'text' => sprintf(_t('Manage %s'), ucwords($type)) );
+			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => sprintf( _t( 'Create %s' ), ucwords( $type ) ) );
+			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ) );
 			switch($type) {
 				case 'entry':
 					$createmenu['create_' . $typeint]['hotkey']= '1';
@@ -2039,41 +2039,41 @@ class AdminHandler extends ActionHandler
 			}
 
 			if( $page == 'publish' && isset($this->handler_vars['content_type']) && $this->handler_vars['content_type'] == $type ) {
-				$createmenu['create_' . $typeint]['selected']= TRUE;
+				$createmenu['create_' . $typeint]['selected'] = TRUE;
 			}
 			if( $page == 'posts' && isset($this->handler_vars['type']) && $this->handler_vars['type'] == $typeint ) {
-				$managemenu['manage_' . $typeint]['selected']= TRUE;
+				$managemenu['manage_' . $typeint]['selected'] = TRUE;
 			}
 		}
 
 		$adminmenu= array(
 //		'create' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t('Content'), 'text' => _t('Comments'), 'submenu' => array($createmenu) ),
-			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t('Content: Manage Blog Comments'), 'text' => _t('Comments'), 'hotkey' => '5' ),
-			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t('Content: Manage Tags'), 'text' => _t('Tags'), 'hotkey' => '6' ),
-			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t('Admin: Your User Dashboard'), 'text' => _t('Dashboard'), 'hotkey' => 'D' ),
-			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t('Options'), 'text' => _t('Options'), 'hotkey' => 'O' ),
-			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t('Themes'), 'text' => _t('Themes'), 'hotkey' => 'T' ),
-			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t('Plugins'), 'text' => _t('Plugins'), 'hotkey' => 'P' ),
-			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t('Import'), 'text' => _t('Import'), 'hotkey' => 'I' ),
-			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t('Users'), 'text' => _t('Users'), 'hotkey' => 'U' ),
-			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t('View system log messages'), 'text' => _t('Logs'), 'hotkey' => 'L') ,
-			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t('Log out of the Administration Interface'), 'text' => _t('Logout'), 'hotkey' => 'X' ),
+			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => '5' ),
+			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => '6' ),
+			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D' ),
+			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure blog options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O' ),
+			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T' ),
+			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P' ),
+			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t( 'Import content from another blog' ), 'text' => _t( 'Import' ), 'hotkey' => 'I' ),
+			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U' ),
+			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L') ,
+			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
 		);
 
-		$mainmenus= array_merge($createmenu, $managemenu, $adminmenu);
+		$mainmenus= array_merge( $createmenu, $managemenu, $adminmenu );
 
 		foreach( $mainmenus as $menu_id => $menu ) {
 			// Change this to set the correct menu as the active menu
-			if( !isset($mainmenus[$menu_id]['selected']) ) {
-				$mainmenus[$menu_id]['selected']= false;
+			if( !isset( $mainmenus[$menu_id]['selected'] ) ) {
+				$mainmenus[$menu_id]['selected'] = false;
 			}
 		}
 
-		$mainmenus= Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
+		$mainmenus = Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
 
 		foreach( $mainmenus as $key => $attrs ) {
 			if( $page == $key ) {
-				$mainmenus[$key]['selected']= true;
+				$mainmenus[$key]['selected'] = true;
 			}
 		}
 
