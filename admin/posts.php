@@ -33,7 +33,7 @@
 </div>
 
 
-<div class="container manage entries">
+<div class="container manage posts">
 
 <?php $theme->display('posts_items'); ?>
 
@@ -56,6 +56,8 @@
 </div>
 
 <script type="text/javascript">
+itemManage.removeURL = habari.url.ajaxDelete;
+
 liveSearch.search= function() {
 	spinner.start();
 
@@ -87,7 +89,7 @@ timelineHandle.loupeUpdate = function(a,b,c) {
 		data: 'offset=' + (parseInt(c) - parseInt(b)) + '&limit=' + (1 + parseInt(b) - parseInt(a)) + '&search=' + search_args,
 		dataType: 'json',
 		success: function(json){
-			$('.entries').html(json.items);
+			$('.posts').html(json.items);
 			spinner.stop();
 			itemManage.initItems();
 			findChildren();

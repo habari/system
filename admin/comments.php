@@ -51,7 +51,7 @@
 	</span>
 </div>
 
-<div id="comments" class="container manage">
+<div id="comments" class="container manage comments">
 
 <?php $theme->display('comments_items'); ?>
 
@@ -74,6 +74,8 @@
 </form>
 
 <script type="text/javascript">
+itemManage.removeURL = habari.url.ajaxUpdateComment;
+
 liveSearch.search= function() {
 	spinner.start();
 

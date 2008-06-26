@@ -88,6 +88,8 @@
 </form>
 
 <script type="text/javascript">
+itemManage.removeURL = habari.url.ajaxLogDelete;
+
 liveSearch.search= function() {
 	spinner.start();
 
