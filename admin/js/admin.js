@@ -1127,49 +1127,30 @@ $(document).ready(function(){
 
 	// Move labels into elements. Use with usability-driven care.
 	$('label.incontent').each(function(){
-		if ($('#habari_password').length > 0)
-			document.getElementById('habari_password').type = 'text'; // Can't do this with jQuery for some reason
 
 		var ctl = '#' + $(this).attr('for');
 		if($(ctl).val() == '') {
-			$(ctl).val($(this).html().trim())
-				.addClass('islabeled');
+			$(ctl).addClass('islabeled');
+			$(this).addClass('overcontent');
+		} else {
+			$(ctl).addClass('islabeled'); 
+			$(this).addClass('abovecontent'); 
 		}
-
-		$(this).hide()
+		
+		$(this).click(function() {
+			$(ctl).focus();
+		})
 	});
 
 	$('.islabeled').focus(function(){
-		$('label[for='+$(this).attr('id')+']').show()
-
-		if ($(this).attr('id') == 'habari_password')
-			document.getElementById('habari_password').type = 'password';
-
-		$(this).filter('.islabeled')
-			.val('')
-			.removeClass('islabeled');
+		$('label[for='+$(this).attr('id')+']').removeClass('overcontent').addClass('abovecontent').show(); 
 	}).blur(function(){
-		$('label[for='+$(this).attr('id')+']').hide()
-
 		if ($(this).val() == '') {
-			$('label[for='+$(this).attr('id')+']').removeClass('popup')
-
-
-			if ($(this).attr('id') == 'habari_password')
-				document.getElementById('habari_password').type = 'text';
-
-			$(this)
-				.addClass('islabeled')
-				.val($('label.incontent[for=' + $(this).attr('id') + ']').html().trim())
+			$('label[for='+$(this).attr('id')+']').addClass('overcontent').removeClass('abovecontent'); 
 		} else {
-			$('label[for='+$(this).attr('id')+']').addClass('popup')
+			$('label[for='+$(this).attr('id')+']').removeClass('overcontent').addClass('abovecontent').hide();
 		}
 	});
-
-	$('.islabeled').parents('form').submit(function(){
-		$('.islabeled').val('');
-	});
-
 
 	// Convert these links into buttons
 	$('a.link_as_button').each(function(){
@@ -1237,11 +1218,6 @@ $(document).ready(function(){
 		// and remove the clicked class from the tags in the manager
 		$( '#tag-list li' ).removeClass( 'clicked' );
 	});
-
-
-	// LOGIN: Obscure password field if browser has loaded in cookie'd info
-	if ($('body.login #habari_password').length > 0 && $('body.login #habari_password').val() != 'Password')
-		document.getElementById('habari_password').type = 'password';
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();
