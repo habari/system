@@ -505,8 +505,8 @@ class AdminHandler extends ActionHandler
 		$buttons->class[] = 'publish';
 
 		// Create the Save button
-		$buttons->append('submit', 'save', _t('Save'));
-
+		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit'); 
+		
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
 		$form->content_type->value = $post->content_type;
