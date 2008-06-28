@@ -160,6 +160,7 @@ body, textarea, #footer {
 
 
 /* DROPBUTTONS */
+
 #page .dropbutton {
 	float: right;
 	min-width: 8em;
@@ -216,7 +217,6 @@ body, textarea, #footer {
 	padding-left: 0px;
 	}
 
-
 #page .dropbutton button {
 	border: none;
 	background: none;
@@ -270,8 +270,8 @@ body, textarea, #footer {
 	}
 
 
-
 /* GENERAL STRUCTURE & STYLING */
+
 #page {
 	margin-top: 50px;
 	}
@@ -394,38 +394,9 @@ ul {
 	z-index: 100;
 	}
 	
-/* buttons */
-.create #save input, .button {
-	width: 100px;
-	margin-left: 10px;
-}
-.button.delete, .button.publish {
-	float:right;
-	width:120px;
-	margin-left: 0;
-	margin-right: 10px;
-}
-.button.submit, .comments .button.delete {
-	float:left;
-	width:100px;
-	margin-left: 10px;
-	margin-right: 0;
-}
-.comments .buttons {
-	float:right;
-}
-.comments .button.delete {
-	float:none;
-}
-.button.publish {
-	font-weight:bold;
-}
-
-.buttons .formcontrol {
-	display:inline;
-	}
 
 /* FORMS */
+
 input, textarea {
 	color: #333;
 	}
@@ -456,16 +427,49 @@ label.abovecontent {
 	z-index: 2;
 	}
 
-label.overcontent { 
-	font-weight:normal; 
-	position:absolute; 
-	margin:1px 0 0 1px; 
-	width:auto !important;
-	cursor:text;
+label.overcontent {
+	font-weight: normal; 
+	position: absolute; 
+	margin: 1px 0 0 1px; 
+	width: auto !important;
+	cursor: text;
+	-webkit-box-shadow: none !important;
 	}
 	
 p:hover > label.abovecontent {
 	display: block !important;
+	}
+
+/*-- BUTTONS  */
+
+.button, #save input {
+	width: 110px;
+	float: right;
+	margin-left: 10px;
+	}
+
+.button#delete {
+	float: left;
+	margin-left: 0;
+	margin-right: 10px;
+	}
+	
+.button.submit, .comments .button.delete {
+	float: left;
+	margin-left: 10px;
+	margin-right: 0;
+	}
+	
+.comments .buttons {
+	float: right;
+	}
+	
+.button.publish {
+	font-weight: bold;
+	}
+
+.buttons .formcontrol {
+	display: inline;
 	}
 
 
@@ -516,7 +520,7 @@ p:hover > label.abovecontent {
 	}
 
 .create label.textarea.overcontent { 
-	padding:5px;
+	padding: 5px;
 	}
 
 .grip {
@@ -1172,6 +1176,7 @@ body.page-options .item {
 	-webkit-border-radius: 5px;
 	}
 
+
 /* THEMES */
 
 body.page-themes .head {
@@ -1181,6 +1186,7 @@ body.page-themes .head {
 body.page-themes #page .dropbutton {
 	top: 20px !important;
 	}
+
 
 /* SETTINGS */
 
@@ -1268,6 +1274,7 @@ body.page-themes #page .dropbutton {
 	color: #666;
 	}
 
+
 /* COMMENTS */
 
 #comments .item.spam {
@@ -1288,6 +1295,7 @@ body.page-themes #page .dropbutton {
 .authorinfo {
 	overflow: hidden;
 	}
+
 
 /* TIMELINE */
 
@@ -1421,13 +1429,16 @@ body.page-themes #page .dropbutton {
 	right: -2px;
 	}
 
-/* Inline Editor */
+
+/* INLINE EDITOR */
+
 ul.dropbutton li.nodisplay {
-	display:none !important;
-}
+	display: none !important;
+	}
+
 .editable:hover {
-	background:#FFFFCC;
-}
+	background: #FFFFCC;
+	}
 
 /* TAGS */
 .tag {
@@ -1669,7 +1680,7 @@ body.login #page {
 
 body.login h1 {
 	text-align: center;
-	padding: 70px 0;
+	padding: 50px 0;
 	margin: 0;
 	font: 3.5em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	line-height: 100px;
