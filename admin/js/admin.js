@@ -367,6 +367,7 @@ var itemManage = {
 				$('.item.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
 		}
+		 inEdit.init(); 
 	},
 	uncheckAll: function() {
 		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
