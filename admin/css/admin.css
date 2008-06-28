@@ -4,7 +4,7 @@
  * License: Apache License 2.0
  */
 
-/* THE BASICS */
+/*- THE BASICS */
 
 body {
 	background-color: #f0f0f0;
@@ -16,7 +16,7 @@ body, textarea, #footer {
 }
 
 
-/* THE MENUBAR */
+/*- THE MENUBAR */
 
 #menubar {
 	background: #1a1a1a;
@@ -42,7 +42,7 @@ body, textarea, #footer {
 }
 
 
-/* THE MENU */
+/*- THE MENU */
 
 #menu {
 	position: fixed;
@@ -259,18 +259,8 @@ body, textarea, #footer {
 	padding-right: 0;
 }
 
-#page .dropbutton li.first-child.last-child input,
-#page .dropbutton li.first-child.last-child button {
-	/* No dropdown indicator if only one <li> */
-	border: none;
-	color: white;
-	background: none;
-	background-color: transparent;
-	padding-right: 0;
-}
 
-
-/* GENERAL STRUCTURE & STYLING */
+/*- GENERAL STRUCTURE & STYLING */
 
 #page {
 	margin-top: 50px;
@@ -395,7 +385,7 @@ ul {
 }
 	
 
-/* FORMS */
+/*- FORMS */
 
 input, textarea {
 	color: #333;
@@ -440,7 +430,7 @@ p:hover > label.abovecontent {
 	display: block !important;
 }
 
-/*-- BUTTONS  */
+/*-- FORM BUTTONS  */
 
 .button, #save input {
 	width: 110px;
@@ -473,7 +463,7 @@ p:hover > label.abovecontent {
 }
 
 
-/* CREATE */
+/*- CREATE */
 #page .create {
 	margin-top: 70px;
 }
@@ -553,7 +543,7 @@ p:hover > label.abovecontent {
 }
 
 
-/* MEDIA SILOS */
+/*- MEDIA SILOS */
 
 .mediasplitter {
 	border-bottom: 1px solid white;
@@ -612,7 +602,7 @@ p:hover > label.abovecontent {
 	color: #888;
 }
 
-/* -- MEDIABROWSER */
+/* -- MEDIA BROWSER */
 
 .media_browser {
 	height: 195px;
@@ -622,7 +612,7 @@ p:hover > label.abovecontent {
 	background: url('../images/shadow-light-top.png') top right repeat-x; /* Drop shadow */
 }
 
-/* -- DIRECTORIES */
+/* -- MEDIA DIRECTORIES */
 
 .media_dirlevel {
 	float: left;
@@ -764,7 +754,7 @@ p:hover > label.abovecontent {
 }
 
 
-/* MEDIA ACTION DROPBUTTONS */
+/*-- MEDIA ACTION DROPBUTTONS */
 
 .mediaactions.dropbutton {
 	position: relative !important;
@@ -778,7 +768,7 @@ p:hover > label.abovecontent {
 }
 
 
-/* VIDDLER SILO */
+/*-- VIDDLER SILO */
 
 .viddler_recorder_container {
 	text-align: center;
@@ -787,7 +777,7 @@ p:hover > label.abovecontent {
 }
 
 
-/* DASHBOARD */
+/*- DASHBOARD */
 
 #page .dashboardinfo {
 	padding: 5px 0 0;
@@ -994,7 +984,7 @@ p:hover > label.abovecontent {
 }
 
 
-/* DASHBOARD - LATEST COMMENTS MODULE*/
+/*-- DASHBOARD - LATEST COMMENTS MODULE */
 
 .dashboard .latest-comments-module .item {
 	padding-top: 2px;
@@ -1043,7 +1033,7 @@ p:hover > label.abovecontent {
 }
 
 
-/* LOGS */
+/* LOGS PAGE */
 
 body.page-logs .time, body.page-logs .user, body.page-logs .ip, body.page-logs .module, body.page-logs .severity {
 	white-space: nowrap;
@@ -1064,7 +1054,7 @@ body.page-logs .item input[type=checkbox] {
 }
 
 
-/* USERS & GROUPS */
+/*- USERS & GROUPS PAGES */
 
 .users .item .user {
 	font-size: 1.3em;
@@ -1113,7 +1103,7 @@ body.page-logs .item input[type=checkbox] {
 }
 
 
-/* USER */
+/*-- USER */
 
 body.page-user .userstats {
 	font: 1.5em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
@@ -1122,7 +1112,7 @@ body.page-user .userstats {
 }
 
 
-/* OPTIONS */
+/*- OPTIONS PAGE */
 
 body.page-options .item {
 	padding-top: 2px;
@@ -1130,7 +1120,7 @@ body.page-options .item {
 }
 
 
-/* NAVIGATION */
+/*- NAVIGATION */
 
 .navigation span > * {
 	width: 100%;
@@ -1142,7 +1132,7 @@ body.page-options .item {
 }
 
 
-/* PLUGINS */
+/*- PLUGINS PAGE */
 
 .plugins .item {
 	padding-left: 40px;
@@ -1177,7 +1167,7 @@ body.page-options .item {
 }
 
 
-/* THEMES */
+/*- THEMES PAGE */
 
 body.page-themes .head {
 	margin: 10px 0 15px;
@@ -1187,8 +1177,36 @@ body.page-themes #page .dropbutton {
 	top: 20px !important;
 }
 
+.thumb,
+.description {
+	float: left;
+}
 
-/* SETTINGS */
+.thumb * {
+	width: 125px;
+}
+
+.thumb .empty {
+	background: #eee;
+	text-align: center;
+	line-height: 125px;
+	height: 125px;
+	color: #aaa;
+	font-size: .9em;
+	-webkit-border-radius: 5px;
+}
+
+.uploadpackage h2 {
+	float: left;
+	margin: 0;
+}
+
+.uploadform {
+	float: right;
+}
+
+
+/*- SETTINGS PAGE */
 
 .container.settings .item {
 	line-height: 34px;
@@ -1233,7 +1251,7 @@ body.page-themes #page .dropbutton {
 }
 
 
-/* MANAGE (ENTRIES/PAGES/COMMENTS/TAGS) */
+/*- MANAGE PAGE (ENTRIES/PAGES/COMMENTS/TAGS) */
 
 .container .item:hover {
 	background: #f3f3f3;
@@ -1275,7 +1293,7 @@ body.page-themes #page .dropbutton {
 }
 
 
-/* COMMENTS */
+/*- MANAGE COMMENTS PAGE */
 
 #comments .item.spam {
 	border-left: 3px solid #f8595f;
@@ -1297,7 +1315,7 @@ body.page-themes #page .dropbutton {
 }
 
 
-/* TIMELINE */
+/*- MANAGE TIMELINE */
 
 .navigator {
 	padding:0 ;
@@ -1430,7 +1448,7 @@ body.page-themes #page .dropbutton {
 }
 
 
-/* INLINE EDITOR */
+/*- MANAGE PAGES - INLINE EDITOR */
 
 ul.dropbutton li.nodisplay {
 	display: none !important;
@@ -1440,7 +1458,9 @@ ul.dropbutton li.nodisplay {
 	background: #FFFFCC;
 }
 
-/* TAGS */
+
+/*- TAGS PAGE */
+
 .tag {
 	color: #555;
 	margin: 0 5px;
@@ -1500,39 +1520,7 @@ a.tag:hover {
 }
 
 
-/* THEMES */
-
-.thumb,
-.description {
-	float: left;
-}
-
-.thumb * {
-	width: 125px;
-}
-
-.thumb .empty {
-	background: #eee;
-	text-align: center;
-	line-height: 125px;
-	height: 125px;
-	color: #aaa;
-	font-size: .9em;
-	-webkit-border-radius: 5px;
-}
-
-.uploadpackage h2 {
-	float: left;
-	margin: 0;
-}
-
-.uploadform {
-	float: right;
-}
-
-
-
-/* TABS */
+/*- TABS */
 
 ul.tabs {
 	position: relative;
@@ -1596,8 +1584,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 }
 
 
-
-/* PAGESPLITTER  */
+/*- PAGESPLITTER  */
 
 #page .container.pagesplitter {
 	width: 100% !important;
@@ -1649,7 +1636,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 }
 
 
-/* CLEAR
+/*- CLEAR
    Clearing floats without extra markup
    Based on How To Clear Floats Without Structural Markup by PiE
    [http://www.positioniseverything.net/easyclearing.html] */
@@ -1666,7 +1653,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 .clear { display: block; }
 
 
-/* LOGIN */
+/*- LOGIN PAGE */
 
 body.login {
 	margin: 0;
@@ -1730,7 +1717,7 @@ body.login input[type=submit] {
 }
 
 
-/* FOOTER */
+/*- FOOTER */
 
 #footer {
 	margin: 35px 0;
@@ -1762,10 +1749,8 @@ body.login input[type=submit] {
 }
 
 
-/*
-	HUMANIZED MESSAGES 1.0 - Habari Edition
-	home - http://humanmsg.googlecode.com
-*/
+/*- HUMANIZED MESSAGES 1.0 (Habari Edition)
+	home - http://humanmsg.googlecode.com */
 
 html, body {
 	/*	height: 100%; /* Damn you IE! */
@@ -1892,7 +1877,8 @@ body.login .humanMsg {
 	height: inherit;
 }
 
-/* OPACITY PERCENTAGES */
+
+/*- OPACITY PERCENTAGES */
 .opa0 { opacity: 0; }
 .opa10 { opacity: .10; }
 .opa15 { opacity: .15; }
@@ -1914,7 +1900,8 @@ body.login .humanMsg {
 .opa95 { opacity: .95; }
 .opa100 { opacity: 1; }
 
-/* WIDTH PERCENTAGES */
+
+/*- WIDTH PERCENTAGES */
 
 .pct5, .pct10, .pct15, .pct20, .pct25, .pct30, .pct35, .pct40, .pct45, .pct50, .pct55, .pct60, .pct65, .pct70, .pct75, .pct80, .pct85, .pct90, .pct95, .pct100 {
 	float: left;
