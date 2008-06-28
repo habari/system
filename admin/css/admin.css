@@ -439,7 +439,7 @@ select {
 	width: 100%;
 	}
 
-label.incontent {
+label.abovecontent {
 	font-size: 9px;
 	line-height: 10px;
 	background: #d4d4d4;
@@ -456,7 +456,15 @@ label.incontent {
 	z-index: 2;
 	}
 
-p:hover > label.incontent.popup {
+label.overcontent { 
+	font-weight:normal; 
+	position:absolute; 
+	margin:1px 0 0 1px; 
+	width:auto !important;
+	cursor:text;
+	}
+	
+p:hover > label.abovecontent {
 	display: block !important;
 	}
 
@@ -477,23 +485,23 @@ p:hover > label.incontent.popup {
 	margin: 0;
 	}
 
-.create input.text, .create textarea {
+.create input.text, .create textarea, .create label.overcontent {
 	font-family: 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 3px 5px;
 	margin: 0 0 0 -6px;
 	width: 100%;
 	}
 
-.create input.text.islabeled, .create textarea.islabeled {
+.create label.overcontent {
 	text-transform: lowercase;
 	color: #aeaeae;
 	}
 
-.create input.text {
+.create input.text, .create label.overcontent {
 	font-size: 1.1em;
 	}
 
-.create input.text.important {
+.create input.text.important, .create label.important.overcontent {
 	font-size: 1.7em;
 	}
 
@@ -507,7 +515,9 @@ p:hover > label.incontent.popup {
 	font-size: 14px;
 	}
 
-
+.create label.textarea.overcontent { 
+	padding:5px;
+	}
 
 .grip {
 	height: 10px;
@@ -1094,9 +1104,9 @@ body.page-logs .item input[type=checkbox] {
 	float: right;
 	}
 
-.addnewuser .islabeled {
-	color: #999 !important;
-	}
+.addnewuser {
+	color: #999;
+}
 
 
 /* USER */
@@ -1673,7 +1683,7 @@ body.login #page .container {
 	margin: auto;
 	}
 
-body.login input[type=text], body.login input[type=password] {
+body.login input[type=text], body.login input[type=password], body.login label.overcontent {
 	width: 100%;
 	font: 1.5em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 3px 5px;
@@ -1685,7 +1695,7 @@ body.login input[type=text], body.login input[type=password] {
 	-moz-border-radius: 5px;
 	}
 
-body.login input.islabeled {
+body.login label.overcontent {
 	text-transform: lowercase;
 	color: #aeaeae;
 	}
