@@ -1170,7 +1170,7 @@ $(document).ready(function(){
 	$('#tag-list li').click(function() {
 		// here we set the current text of #tags to current for later examination
 		var current = $('#tags').val();
-
+		
 		// create a regex that finds the clicked tag in the input field
 		var replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
 
@@ -1187,9 +1187,10 @@ $(document).ready(function(){
 			// be sure that the option wasn't already in the input field
 			if(!current.match(replstr) || $( '#tags.islabeled' ).size() > 0) {
 				// check to see if current is the default text
-				if( $( '#tags.islabeled' ).size() > 0 ) {
+				if( $( '#tags').val().length == 0 ) {
 					// and if it is, replace it with whatever we clicked
 					$( '#tags' ).removeClass('islabeled').val( $( this ).text() );
+					$('label[for=tags]').removeClass('overcontent').addClass('abovecontent').hide();
 				} else {
 					// else if we already have tag content, just append the new tag
 					if( $('#tags' ).val() != '' ) {
@@ -1204,6 +1205,8 @@ $(document).ready(function(){
 		// replace unneccessary commas
 		$( '#tags' ).val( $( '#tags' ).val().replace(new RegExp('^\\s*,\\s*|\\s*,\\s*$', "gi"), ''));
 		$( '#tags' ).val( $( '#tags' ).val().replace(new RegExp('\\s*,(\\s*,)+\\s*', "gi"), ','));
+		
+		resetTags();
 
 	});
 
@@ -1215,7 +1218,8 @@ $(document).ready(function(){
 	// Tag Drawer: Remove all tags.
 	$( '#clear' ).click( function() {
 		// so we nuke all the tags in the tag text field
-		$( '#tags' ).val( 'Tags, separated by, commas' ).addClass('islabeled');
+		$(' #tags ').val( '' );
+		$('label[for=tags]').removeClass('abovecontent').addClass('overcontent').show();
 		// and remove the clicked class from the tags in the manager
 		$( '#tag-list li' ).removeClass( 'clicked' );
 	});
@@ -1256,6 +1260,10 @@ function resetTags() {
 			$(this).removeClass('clicked');
 		}
 	});
+	
+	if(current.length == 0) {
+		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
+	}
 
 }
 
