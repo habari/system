@@ -278,15 +278,19 @@ class Site
 
 				$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
 
-				for ( $x= count( $request ); $x >= 0; $x-- )
+				$match= trim( $server . implode( $request ), '.' );
+				$x= count( $request );
+				while( strpos( $match, '.' ) !== false )
 				{
-					$match= trim( $server . implode( '.', array_slice( $request, 0, $x ) ), '.' );
+
 					if ( in_array( $match, $config_dirs ) ) {
 						self::$config_dir= $match;
 						self::$config_path= HABARI_PATH . '/user/sites/' . self::$config_dir;
 						self::$config_type= ($x > 0) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
 						break;
 					}
+					$match=substr($match, strpos($match, '.') + 1);
+					$x--;
 				}
 				$path= self::$config_path;
 				break;
