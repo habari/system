@@ -41,7 +41,7 @@ class EventLog extends ArrayObject
 	public static function register_type( $type= 'default', $module= null )
 	{
 		try {
-			DB::query( 'INSERT INTO ' . DB::Table( 'log_types' ) . ' (module, type) VALUES (?,?)', array( self::get_module( $module ), $type ) );
+			DB::insert( 'log_types', array( 'module' => self::get_module( $module ), 'type' => $type ) );
 		}
 		catch( Exception $e ) {
 			// Don't really care if there's a duplicate.
@@ -56,7 +56,12 @@ class EventLog extends ArrayObject
 	 */
 	public static function unregister_type( $type= 'default', $module= null )
 	{
-		DB::query( 'DELETE FROM ' . DB::Table( 'log_types' ) . ' WHERE module = ? AND type = ?', array( self::get_module( $module ), $type ) );
+		$id = DB::get_value( "SELECT id FROM {log_types} WHERE module = ? and type = ?", array( self::get_module( $module ), $type ) );
+		if( $id ) {
+			if( !DB::exists( 'log', array( 'type_id' => $id ) ) ) {
+				DB::delete( 'log_types', array( 'id' => $id ) );
+			}
+		}
 	}
 
 	/**
