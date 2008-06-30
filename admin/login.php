@@ -41,7 +41,7 @@
 				<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
 
 					<p>
-						<label for="habari_username" class="incontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username" class="styledformelement">
+						<label for="habari_username" class="incontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if(isset($habari_username)) { ?> value="<?php echo $habari_username; ?>"<?php } ?> class="styledformelement">
 					</p>
 					<p>
 						<label for="habari_password" class="incontent"><?php _e('Password'); ?></label><input type="password" name="habari_password" id="habari_password" class="styledformelement">
