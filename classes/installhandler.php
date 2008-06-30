@@ -166,6 +166,14 @@ class InstallHandler extends ActionHandler {
 			Themes::activate_theme( $theme, $theme );
 		}
 
+		// Installation complete. Secure sqlite if it was chosen as the database type to use
+		if ( $db_type == 'sqlite' ) {
+			if ( !$this->secure_sqlite() ) {
+				$this->handler_vars['sqlite_contents'] = implode( "\n", $this->sqlite_contents() );
+				$this->display( 'sqlite' );
+			}
+		}
+
 		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
 		return true;
 	}
@@ -801,11 +809,73 @@ class InstallHandler extends ActionHandler {
 			if ( FALSE === fwrite( $fh, $file_contents ) ) {
 				return false;
 			}
+			fclose( $fh );
 		}
 		else {
 			return false;
 		}
 
+		return true;
+	}
+
+	/**
+	 * returns an array of Files declarations used by Habari
+	 */
+	public function sqlite_contents()
+	{
+		$contents = array(
+			'### HABARI SQLITE START',
+			'<Files "' . $this->handler_vars['db_file'] . '">',
+			'Order deny,allow',
+			'deny from all',
+			'</Files>',
+			'### HABARI SQLITE END'
+		);
+
+		return $contents;
+	}
+
+	/**
+	 * attempts to write the Files clause to the .htaccess file 
+	 * if the clause for this sqlite doesn't exist.
+	 * @return bool success or failure
+	**/
+	public function secure_sqlite()
+	{
+		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
+			// .htaccess is only needed on Apache
+			return false;
+		}
+		if ( !file_exists( HABARI_PATH . '/.htaccess') ) {
+			// no .htaccess to write to
+			return false;
+		}
+		if ( !is_writable( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess' ) ) {
+			// we can't update the file
+			return false;
+		}
+
+		// Get the files clause
+		$sqlite_contents = $this->sqlite_contents();
+		$files_contents = "\n" . implode( "\n", $sqlite_contents ) . "\n";
+
+		// See if it already exists
+		$current_files_contents = file_get_contents( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess');
+		if ( FALSE === strpos( $current_files_contents, $files_contents ) ) {
+			// If not, append the files clause to the .htaccess file
+			if ( $fh = fopen( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess', 'a' ) ) {
+				if ( FALSE === fwrite( $fh, $files_contents ) ) {
+					// Can't write to the file
+					return false;
+				}
+				fclose( $fh );
+			}
+			else {
+				// Can't open the file
+				return false;
+			}
+		}
+		// Success!
 		return true;
 	}
 
