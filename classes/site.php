@@ -277,21 +277,20 @@ class Site
 				$server= ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
 
 				$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
-
-				$match= trim( $server . implode( $request ), '.' );
-				$x= count( $request );
-				while( strpos( $match, '.' ) !== false )
-				{
-
+				$match= trim( $server, '.' );
+				$x = count( $request );
+				do {
 					if ( in_array( $match, $config_dirs ) ) {
 						self::$config_dir= $match;
 						self::$config_path= HABARI_PATH . '/user/sites/' . self::$config_dir;
-						self::$config_type= ($x > 0) ? Site::CONFIG_SUBDIR : Site::CONFIG_SUBDOMAIN;
+						self::$config_type= ($x > 0) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
 						break;
 					}
+
 					$match=substr($match, strpos($match, '.') + 1);
 					$x--;
-				}
+				} while(strpos($match,'.') !== false);
+				
 				$path= self::$config_path;
 				break;
 			case 'user':
