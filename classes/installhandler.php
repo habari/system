@@ -823,9 +823,10 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function sqlite_contents()
 	{
+		$db_file = basename( $this->handler_vars['db_file'] );
 		$contents = array(
 			'### HABARI SQLITE START',
-			'<Files "' . $this->handler_vars['db_file'] . '">',
+			'<Files "' . $db_file . '">',
 			'Order deny,allow',
 			'deny from all',
 			'</Files>',
