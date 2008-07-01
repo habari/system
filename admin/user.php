@@ -71,7 +71,7 @@
 
 	<div class="item clear" id="displayname">
 		<span class="column span-5">
-			<label for="sitename"><?php _e('Display Name'); ?></label>
+			<label for="displayname"><?php _e('Display Name'); ?></label>
 		</span>
 		<span class="column span-14 last">
 			<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
@@ -80,7 +80,7 @@
 
 	<div class="item clear" id="username">
 		<span class="column span-5">
-			<label for="sitetagline"><?php _e('User Name'); ?></label>
+			<label for="username"><?php _e('User Name'); ?></label>
 		</span>
 		<span class="column span-14 last">
 			<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
@@ -89,7 +89,7 @@
 
 	<div class="item clear" id="email">
 		<span class="column span-5">
-			<label for="sitetagline"><?php _e('E-Mail'); ?></label>
+			<label for="email"><?php _e('E-Mail'); ?></label>
 		</span>
 		<span class="column span-14 last">
 			<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
@@ -98,10 +98,10 @@
 
 	<div class="item clear" id="portraiturl">
 		<span class="column span-5">
-			<label for="sitetagline"><?php _e('Portrait URL'); ?></label>
+			<label for="imageurl"><?php _e('Portrait URL'); ?></label>
 		</span>
 		<span class="column span-14 last">
-			<input type="text" name="imageurl" class="border" value="">
+			<input type="text" name="imageurl" class="border" value="<?php echo $user->info->imageurl; ?>">
 		</span>
 	</div>
 </div>
