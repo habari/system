@@ -37,7 +37,7 @@
 		<h1><a href="<?php Site::out_url('habari'); ?>" title="<?php _e('Go to Site'); ?>"><?php Options::out('title'); ?></a></h1>
 
 		<div class="container">
-
+			<?php Plugins::act( 'theme_loginform_before' ); ?>
 				<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
 
 					<p>
@@ -46,13 +46,14 @@
 					<p>
 						<label for="habari_password" class="incontent"><?php _e('Password'); ?></label><input type="password" name="habari_password" id="habari_password" class="styledformelement">
 					</p>
+					<?php Plugins::act( 'theme_loginform_controls' ); ?>
 					<p>
 						<!--<span class="remember"><input type="checkbox" name="remember"><label for="remember"><?php _e('Remember Me'); ?></label></span>-->
 						<input class="submit" type="submit" value="<?php _e('Login'); ?>">
 					</p>
 
 				</form>
-
+     			<?php Plugins::act( 'theme_loginform_after' ); ?>
 		</div>
 
 	</div>
