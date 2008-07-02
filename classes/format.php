@@ -314,6 +314,72 @@ class Format
     }
     return $content;
 	}
+	
+	/**
+	 * html_messages
+	 * Creates an HTML unordered list of an array of messages
+	 * @param array $notices a list of success messages
+	 * @param array $errors a list of error messages
+	 * @return string HTML output
+	 **/
+	public static function html_messages( $notices, $errors )
+	{
+		$output = '';
+		if ( count( $errors ) ) {
+			$output.= '<ul class="error">';
+			foreach ( $errors as $error ) {
+				$output.= '<li>' . $error . '</li>';
+			}
+			$output.= '</ul>';
+		}
+		if ( count( $notices ) ) {
+			$output.= '<ul class="success">';
+			foreach ( $notices as $notice ) {
+				$output.= '<li>' . $notice . '</li>';
+			}
+			$output.= '</ul>';
+		}
+		
+		return $output;
+	}
 
+	/**
+	 * humane_messages
+	 * Creates JS calls to display session messages
+	 * @param array $notices a list of success messages
+	 * @param array $errors a list of error messages
+	 * @return string JS output
+	 **/
+	public static function humane_messages( $notices, $errors )
+	{
+		$output = '';
+		if ( count( $errors ) ) {
+			foreach ( $errors as $error ) {
+				$error= addslashes($error);
+				$output.= "humanMsg.displayMsg('{$error}');";
+			}
+		}
+		if ( count( $notices ) ) {
+			foreach ( $notices as $notice ) {
+				$notice= addslashes($notice);
+				$output.= "humanMsg.displayMsg('{$notice}');";
+			}
+		}
+		
+		return $output;
+	}
+
+	/**
+	 * json_messages
+	 * Creates a JSON list of session messages
+	 * @param array $notices a list of success messages
+	 * @param array $errors a list of error messages
+	 * @return string JS output
+	 **/
+	public static function json_messages( $notices, $errors )
+	{
+		$messages = array_merge( $errors, $notices );
+		return json_encode( $messages );
+	}
 }
 ?>
