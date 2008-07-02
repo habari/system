@@ -213,7 +213,9 @@ var inEdit = {
 				dataType: 'json',
 				success: function( result ){
 					spinner.stop();
-					humanMsg.displayMsg( result );
+					jQuery.each( result, function( index, value) {
+						humanMsg.displayMsg( value );
+					} );
 					inEdit.deactivate();
 					timelineHandle.updateLoupeInfo();
 				}
@@ -401,7 +403,10 @@ var itemManage = {
 			function( result ) {
 				spinner.stop();
 				timelineHandle.updateLoupeInfo();
-				humanMsg.displayMsg( result );
+				jQuery.each( result, function( index, value ) {
+					humanMsg.displayMsg( value );
+				});
+				
 				if ( action == 'delete' ) {
 					itemManage.selected = [];
 				}
@@ -434,7 +439,7 @@ var itemManage = {
 		$.post(
 			itemManage.removeURL,
 			query,
-			function(msg) {
+			function( result ) {
 				spinner.stop();
 				if($('.manage.users').length == 0) {
 					timelineHandle.updateLoupeInfo();
@@ -452,7 +457,9 @@ var itemManage = {
 						'json'
 					 );
 				}
-				humanMsg.displayMsg(msg);
+				jQuery.each( result, function( index, value ) {
+					humanMsg.displayMsg( value );
+				});
 				itemManage.selected = [];
 			},
 			'json'

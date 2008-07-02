@@ -193,7 +193,7 @@ class Session
 	}
 
 	/**
-	 * Adds a value to a sesison set
+	 * Adds a value to a session set
 	 *
 	 * @param string $set Name of the set
 	 * @param mixed $value value to store
@@ -343,46 +343,27 @@ class Session
 	 * Return output of notice and error messages
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
-	 * @param boolean $use_humane_msg true to use the humane message system, false 
-	 * to use and unordered list
-	 * @return string HTML output of messages
+	 * @param array $callback a reference to a callback function for formatting the the messages
+	 * @return mixed output of messages
 	 */
-	static function messages_get( $clear= true, $use_humane_msg= true )
+	static function messages_get( $clear = true, $callback = null )
 	{
 		$errors= self::get_errors( $clear );
 		$notices= self::get_notices( $clear );
+		
+		if ( ! isset( $callback ) || $callback != 'array' || ! is_callable( $callback ) ) {
+			$callback = array( 'Format', 'html_messages' );
+			$callback = Format::html_messages( $notices, $errors );
+		}
 
-		$output= '';
-		if ( $use_humane_msg ) {
-			if ( count( $errors ) ) {
-				foreach ( $errors as $error ) {
-					$error= addslashes($error);
-					$output.= "humanMsg.displayMsg('{$error}');";
-				}
-			}
-			if ( count( $notices ) ) {
-				foreach ( $notices as $notice ) {
-					$notice= addslashes($notice);
-					$output.= "humanMsg.displayMsg('{$notice}');";
-				}
-			}
+		// if callback is 'array', then just return the raw data
+		if ( $callback = 'array' ) {
+			$output = array_merge( $errors, $notices );
 		}
 		else {
-			if ( count( $errors ) ) {
-				$output.= '<ul class="error">';
-				foreach ( $errors as $error ) {
-					$output.= '<li>' . $error . '</li>';
-				}
-				$output.= '</ul>';
-			}
-			if ( count( $notices ) ) {
-				$output.= '<ul class="success">';
-				foreach ( $notices as $notice ) {
-					$output.= '<li>' . $notice . '</li>';
-				}
-				$output.= '</ul>';
-			}
+			$output = call_user_func( $callback, $notices, $errors );
 		}
+
 		return $output;
 	}
 

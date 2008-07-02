@@ -30,41 +30,43 @@
 </div>
 
 <script type="text/javascript">
-tagManage.remove= function() {
+tagManage.remove = function() {
 	spinner.start();
 
-	selected= $('.tags .tag.selected');
+	selected = $('.tags .tag.selected');
 	if ( selected.length == 0 ) {
 		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can delete them.'); ?>" );
 		return;
 	}
-	var query= {}
+	var query = {}
 
 	selected.each(function() {
-		query[$(this).attr('id')]= 1;
+		query[$(this).attr('id')] = 1;
 	});
 
-	query['action']= 'delete';
-	query['timestamp']= $('input#timestamp').attr('value');
-	query['nonce']= $('input#nonce').attr('value');
-	query['digest']= $('input#PasswordDigest').attr('value');
+	query['action'] = 'delete';
+	query['timestamp'] = $('input#timestamp').attr('value');
+	query['nonce'] = $('input#nonce').attr('value');
+	query['digest'] = $('input#PasswordDigest').attr('value');
 
 	$.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
         query,
- 	        function(msg) {
- 	            spinner.stop();
- 	            //TODO When there's a loupe, update it
- 	            //timelineHandle.updateLoupeInfo();
- 	            selected.remove();
- 	            humanMsg.displayMsg(msg);
- 	            tagManage.changeTag();
- 	        },
- 	        'json'
+        function(msg) {
+			spinner.stop();
+			//TODO When there's a loupe, update it
+			//timelineHandle.updateLoupeInfo();
+			selected.remove();
+			jQuery.each( msg, function( index, value ) {
+				humanMsg.displayMsg( value );
+			});
+			tagManage.changeTag();
+		},
+		'json'
  	    );
 };
 tagManage.rename= function() {
-	master= $('.tags.controls input.renametext').val().trim();
+	master = $('.tags.controls input.renametext').val().trim();
 
 	// Unselect the master, if it's selected
 	$('.tags .tag:contains(' + master + ')').each(function() {
@@ -73,7 +75,7 @@ tagManage.rename= function() {
 		}
 	})
 
-	selected= $('.tags .tag.selected');
+	selected = $('.tags .tag.selected');
 
 	if ( selected.length == 0 ) {
 		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can rename them.'); ?>" );
@@ -83,34 +85,36 @@ tagManage.rename= function() {
 		humanMsg.displayMsg( "<?php _e('You need to enter a new tag to rename tags.'); ?>" );
 		return;
 	}
-	var query= {}
+	var query = {}
 
 	spinner.start();
 
 	selected.each(function() {
-		query[$(this).attr('id')]= 1;
+		query[$(this).attr('id')] = 1;
 	});
 
-	query['master']= master;
-	query['action']= 'rename';
-	query['timestamp']= $('input#timestamp').attr('value');
-	query['nonce']= $('input#nonce').attr('value');
-	query['digest']= $('input#PasswordDigest').attr('value');
+	query['master'] = master;
+	query['action'] = 'rename';
+	query['timestamp'] = $('input#timestamp').attr('value');
+	query['nonce'] = $('input#nonce').attr('value');
+	query['digest'] = $('input#PasswordDigest').attr('value');
 	$.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
 		query,
-		function(data) {
+		function(result) {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
-			$('#tag_collection').html(data['tags']);
+			$('#tag_collection').html(result['tags']);
 			$('.tags .tag').click(function() {
 					$(this).toggleClass('selected');
 					tagManage.changeTag();
 				}
 			);
 			tagManage.changeTag();
-			humanMsg.displayMsg(data['msg']);
+			jQuery.each( result['msg'], function( index, value ) {
+				humanMsg.displayMsg( value );
+			});
 		},
 		'json'
 	);

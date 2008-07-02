@@ -680,7 +680,8 @@ class AdminHandler extends ActionHandler
 
 			$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 			if ( isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest'] ) {
-				return _t('WSSE authentication failed.');
+				Session::error( _t('WSSE authentication failed.') );
+				return Session::messages_get( true, 'array' );
 			}
 
 			foreach($_POST as $id => $delete) {
@@ -706,7 +707,8 @@ class AdminHandler extends ActionHandler
 			$count = 0;
 
 			if(!isset($ids)) {
-				return sprintf( _t('Deleted %d users.'), $count );
+				Session::notice( _t('No users deleted.') );
+				return Session::messages_get( true, 'array' );
 			}
 
 			foreach($ids as $id) {
@@ -740,7 +742,8 @@ class AdminHandler extends ActionHandler
 				$msg_status= sprintf( _t('Deleted %d users.'), $count );
 			}
 
-			return $msg_status;
+			Sessions::notice( $msg_status );
+			return Session::messages_get( true, 'array' );
 
 		} elseif($handler_vars['action'] == 'fetch') {
 			$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
@@ -1452,7 +1455,8 @@ class AdminHandler extends ActionHandler
 
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			echo json_encode( _t('WSSE authentication failed.') );
+			Session::error( _t('WSSE authentication failed.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
@@ -1478,9 +1482,8 @@ class AdminHandler extends ActionHandler
 
 		$comment->update();
 
-		echo json_encode(_t('Updated 1 comment.'));
-
-		return;
+		Session::notice( _t('Updated 1 comment.') );
+		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
 	/**
@@ -1491,7 +1494,8 @@ class AdminHandler extends ActionHandler
 	{
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			echo json_encode( 'WSSE authentication failed.' );
+			Session::error( _t('WSSE authentication failed.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
@@ -1507,9 +1511,8 @@ class AdminHandler extends ActionHandler
 			$post->delete();
 		}
 
-		$msg_status= sprintf( _t('Deleted %d entries.'), count($ids) );
-
-		echo json_encode($msg_status);
+		Session::notice( sprintf( _t('Deleted %d entries.'), count($ids) ) );
+		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
 	/**
@@ -1522,7 +1525,8 @@ class AdminHandler extends ActionHandler
 
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			echo json_encode( 'WSSE authentication failed.' );
+			Session::error( _t('WSSE authentication failed.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
@@ -1549,17 +1553,17 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		$msg_status= sprintf( _t('Deleted %d logs.'), $count );
-
-		echo json_encode($msg_status);
+		Session::notice( sprintf( _t('Deleted %d logs.'), $count ) );
+		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
-	public function ajax_update_comment( $handler_vars)
+	public function ajax_update_comment( $handler_vars )
 	{
 		// check WSSE authentication
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			echo json_encode( _t('WSSE authentication failed.') );
+			Session::error( _t('WSSE authentication failed.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
@@ -1574,7 +1578,8 @@ class AdminHandler extends ActionHandler
 
 		$comments = Comments::get( array( 'id' => $ids ) );
 		if ( $comments === FALSE ) {
-			echo json_encode( _t('No comments selected.') );
+			Session::notice( _t('No comments selected.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
@@ -1604,7 +1609,8 @@ class AdminHandler extends ActionHandler
 			break;
 		}
 
-		echo json_encode($status_msg);
+		Session::notice( $status_msg );
+		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
 	/**
@@ -1954,7 +1960,8 @@ class AdminHandler extends ActionHandler
 	{
 		$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			echo json_encode( 'WSSE authentication failed.' );
+			Session::error( _t('WSSE authentication failed.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
@@ -1977,7 +1984,8 @@ class AdminHandler extends ActionHandler
 							count($tag_names)
 					), implode($tag_names, ', ')
 				);
-				echo json_encode( sprintf( $msg_status ) );
+				Session::notice( $msg_status );
+				echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 				break;
 			case 'rename':
 				if ( isset($this->handler_vars['master']) ) {
@@ -2000,7 +2008,11 @@ class AdminHandler extends ActionHandler
 							 count($tag_names)
 						), implode($tag_names, ', '), $master
 					);
-					echo json_encode( array( 'msg' => $msg_status, 'tags' => $this->theme->fetch( 'tag_collection' ) ) );
+					Session::notice( $msg_status );
+					echo json_encode( array(
+						'msg' => Session::messages_get( true, 'array' ),
+						'tags' => $this->theme->fetch( 'tag_collection' ),
+						) );
 				}
 				break;
 		}
