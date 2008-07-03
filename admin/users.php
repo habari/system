@@ -63,21 +63,21 @@
 	<form method="post" action="">
 
 	<span class="pct25">
-		<label for="username" class="incontent">Username</label>
-		<input type="text" size="40" name="username" id="username" value="<?php echo ( isset( $settings['username'] ) ) ? $settings['username'] : ''; ?>" class="styledformelement">
+		<label for="new_username" class="incontent">Username</label>
+		<input type="text" size="40" name="new_username" id="new_username" value="<?php echo ( isset( $settings['new_username'] ) ) ? $settings['new_username'] : ''; ?>" class="styledformelement">
 	</span>
 
 	<span class="pct25">
-		<label for="email" class="incontent">E-Mail</label>
-		<input type="text" size="40" id="email" name="email" value="<?php echo ( isset( $settings['email'] ) ) ? $settings['email'] : ''; ?>" class="styledformelement">
+		<label for="new_email" class="incontent">E-Mail</label>
+		<input type="text" size="40" id="new_email" name="new_email" value="<?php echo ( isset( $settings['new_email'] ) ) ? $settings['new_email'] : ''; ?>" class="styledformelement">
 	</span>
 	<span class="pct25">
-		<label for="pass1" class="incontent">Password</label>
-		<input type="password" size="40" name="pass1" id="pass1" class="styledformelement">
+		<label for="new_pass1" class="incontent">Password</label>
+		<input type="password" size="40" name="new_pass1" id="new_pass1" class="styledformelement">
 	</span>
 	<span class="pct25 last-child">
-		<label for="pass2" class="incontent">Password Again</label>
-		<input type="password" size="40" name="pass2" id="pass2" class="styledformelement">
+		<label for="new_pass2" class="incontent">Password Again</label>
+		<input type="password" size="40" name="new_pass2" id="new_pass2" class="styledformelement">
 	</span>
 
 	<input type="hidden" name="action" value="newuser">
