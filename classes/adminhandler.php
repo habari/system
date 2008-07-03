@@ -789,27 +789,27 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 		$error= '';
 		if ( isset( $action ) && ( 'newuser' == $action ) ) {
-			if ( !isset( $pass1 ) || !isset( $pass2 ) || empty( $pass1 ) || empty( $pass2 ) ) {
+			if ( !isset( $new_pass1 ) || !isset( $new_pass2 ) || empty( $new_pass1 ) || empty( $new_pass2 ) ) {
 				Session::error( _t( 'Password is required.' ), 'adduser' );
 			}
-			else if ( $pass1 !== $pass2 ) {
+			else if ( $new_pass1 !== $new_pass2 ) {
 				Session::error( _t( 'Password mis-match.'), 'adduser' );
 			}
-			if ( !isset( $email ) || empty( $email ) || ( !strstr( $email, '@' ) ) ) {
+			if ( !isset( $new_email ) || empty( $new_email ) || ( !strstr( $new_email, '@' ) ) ) {
 				Session::error( _t( 'Please supply a valid email address.' ), 'adduser' );
 			}
-			if ( !isset( $username ) || empty( $username ) ) {
+			if ( !isset( $new_username ) || empty( $new_username ) ) {
 				Session::error( _t( 'Please supply a user name.' ), 'adduser' );
 			}
 			// safety check to make sure no such username exists
-			$user= User::get_by_name( $username );
+			$user= User::get_by_name( $new_username );
 			if ( isset( $user->id ) ) {
 				Session::error( _t( 'That username is already assigned.' ), 'adduser' );
 			}
 			if ( !Session::has_errors( 'adduser' ) ) {
-				$user= new User( array( 'username' => $username, 'email' => $email, 'password' => Utils::crypt( $pass1 ) ) );
+				$user= new User( array( 'username' => $new_username, 'email' => $new_email, 'password' => Utils::crypt( $new_pass1 ) ) );
 				if ( $user->insert() ) {
-					Session::notice( sprintf( _t( "Added user '%s'" ), $username ) );
+					Session::notice( sprintf( _t( "Added user '%s'" ), $new_username ) );
 				}
 				else {
 					$dberror= DB::get_last_error();
@@ -819,10 +819,10 @@ class AdminHandler extends ActionHandler
 			else {
 				$settings= array();
 				if ( isset($username) ) {
-					$settings['username']= $username;
+					$settings['new_username']= $new_username;
 				}
-				if ( isset( $email ) ) {
-					$settings['email']= $email;
+				if ( isset( $new_email ) ) {
+					$settings['new_email']= $email;
 				}
 				$this->theme->assign( 'settings', $settings );
 			}
