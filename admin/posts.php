@@ -65,7 +65,7 @@ liveSearch.search= function() {
 		'<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>',
 		'&search=' + liveSearch.input.val() + '&limit=20',
 		function(json) {
-			$('.entries').html(json.items);
+			$('.posts').html(json.items);
 			// we hide and show the timeline to fix a firefox display bug
 			$('.years').html(json.timeline).hide();
 			spinner.stop();
