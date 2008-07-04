@@ -59,6 +59,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	{
 		return array(
 			'name' => self::SILO_NAME,
+			'icon' => URL::get_from_filesystem(__FILE__) . '/icon.png'
 		);
 	}
 

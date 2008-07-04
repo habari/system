@@ -609,7 +609,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	public function silo_info()
 	{
 		if($this->is_auth()) {
-			return array('name' => self::SILO_NAME);
+			return array('name' => self::SILO_NAME, 'icon' => URL::get_from_filesystem(__FILE__) . '/icon.png');
 		}
 		else {
 			return array();

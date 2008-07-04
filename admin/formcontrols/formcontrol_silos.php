@@ -1,6 +1,6 @@
 <div class="container pagesplitter">
 	<ul id="mediatabs" class="tabs">
-		<?php foreach($silos as $ct => $silodir):?><li><a href="#silo_<?php echo $ct; ?>"><?php echo $silodir->path; ?></a></li><?php endforeach; ?>
+		<?php foreach($silos as $ct => $silodir): ?><li><a href="#silo_<?php echo $ct; ?>"<?php if($silodir->icon != NULL): ?> style="background-image: url(<?php echo $silodir->icon; ?>)"<?php endif; ?>><?php echo $silodir->path; ?></a></li><?php endforeach; ?>
 	</ul>
 
 	<?php foreach($silos as $ct => $silodir): ?>
