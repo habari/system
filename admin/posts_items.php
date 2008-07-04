@@ -1,4 +1,4 @@
-<?php	foreach($posts as $post) : ?>
+<?php foreach($posts as $post) : ?>
 
 <div class="item clear <?php echo $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
 	<div class="head clear">
