@@ -17,6 +17,7 @@ class MediaAsset
 	protected $is_dir;
 	protected $content = null;
 	protected $props = array();
+	public $icon = null;
 	protected $filename;
 	protected $mode = self::MODE_NONE;
 
@@ -27,11 +28,12 @@ class MediaAsset
 	 * @param boolean $is_dir true if the asset is a directory
 	 * @param array $properties An associative array of property values
 	 */
-	public function __construct($path, $is_dir, $properties = array())
+	public function __construct($path, $is_dir, $properties = array(), $icon = NULL)
 	{
 		$this->path = $path;
 		$this->is_dir = $is_dir;
 		$this->props = $properties;
+		$this->icon = $icon;
 	}
 
 	/**

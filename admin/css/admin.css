@@ -560,6 +560,22 @@ p:hover > label.abovecontent {
 	padding: 0;
 }
 
+#mediatabs a {
+	background:no-repeat 5% 50%;
+}
+
+#mediatabs.iconify a {
+	width:30px;
+	background-position:50% 50%;
+	text-indent:-10000px;
+}
+
+#mediatabs.iconify li.ui-tabs-selected a {
+	width:110px;
+	text-indent:0;
+	background-position:5% 50%;
+}
+
 /* -- TOOLBAR */
 
 .media_controls {

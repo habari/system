@@ -1172,7 +1172,14 @@ $(document).ready(function(){
 
 	/* Init Tabs, using jQuery UI Tabs */
 	$('.tabcontrol').tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: null, unselect: true })
-
+	
+	/* Icons only for thin-width clients */
+	var width = $('#mediatabs li').length * $('#mediatabs li').width();
+	
+	if($('#title').width() < width) {
+		$('#mediatabs').addClass('iconify');
+	}
+	
 	// Tag Drawer: Add tag via click
 	$('#tag-list li').click(function() {
 		// here we set the current text of #tags to current for later examination

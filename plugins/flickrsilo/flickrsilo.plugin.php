@@ -474,11 +474,12 @@ class FlickrSilo extends Plugin implements MediaSilo
 	/**
 	* Return basic information about this silo
 	*     name- The name of the silo, used as the root directory for media in this silo
+	*	  icon- An icon to represent the silo
 	*/
 	public function silo_info()
 	{
 		if($this->is_auth()) {
-			return array('name' => self::SILO_NAME);
+			return array('name' => self::SILO_NAME, 'icon' => URL::get_from_filesystem(__FILE__) . '/icon.png');
 		}
 		else {
 			return array();
