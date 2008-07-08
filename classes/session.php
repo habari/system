@@ -350,18 +350,19 @@ class Session
 	{
 		$errors= self::get_errors( $clear );
 		$notices= self::get_notices( $clear );
-		
-		if ( ! isset( $callback ) || $callback != 'array' || ! is_callable( $callback ) ) {
-			$callback = array( 'Format', 'html_messages' );
-			$callback = Format::html_messages( $notices, $errors );
-		}
 
 		// if callback is 'array', then just return the raw data
-		if ( $callback = 'array' ) {
+		if ( $callback == 'array' ) {
 			$output = array_merge( $errors, $notices );
 		}
-		else {
+		// if a function is passed in $callback, call it
+		else if ( isset( $callback ) && is_callable( $callback ) ) {
 			$output = call_user_func( $callback, $notices, $errors );
+		}
+		// default to html output
+		else {
+			$callback = array( 'Format', 'html_messages' );
+			$output = Format::html_messages( $notices, $errors );
 		}
 
 		return $output;
