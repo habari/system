@@ -361,7 +361,6 @@ class Session
 		}
 		// default to html output
 		else {
-			$callback = array( 'Format', 'html_messages' );
 			$output = Format::html_messages( $notices, $errors );
 		}
 
