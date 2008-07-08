@@ -5,8 +5,8 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
      <div class="comments">
       <h4 id="respond" class="reply"><?php _e('Leave a Reply'); ?></h4>
 <?php
-if ( Session::has_errors() ) {
-	Session::messages_out( true, false );
+if ( Session::has_messages() ) {
+	Session::messages_out();
 }
 ?>
 

@@ -64,7 +64,7 @@
 ?>
 	<script type="text/javascript">
 	jQuery(document).ready(function() {
-		<?php echo Session::messages_out(); ?>
+		<?php Session::messages_out( true, array( 'Format', 'humane_messages' ) ); ?>
 	})
   </script>
 <?php
