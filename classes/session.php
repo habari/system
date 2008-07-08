@@ -374,9 +374,9 @@ class Session
 	 * @param boolean $use_humane_msg true to use the humane messages system, false
 	 * to use and unordered list
 	 */
-	static function messages_out( $clear= true, $use_humane_msg= true )
+	static function messages_out( $clear = true, $callback = null )
 	{
-		echo self::messages_get( $clear, $use_humane_msg );
+		echo self::messages_get( $clear, $callback );
 	}
 
 	/**
