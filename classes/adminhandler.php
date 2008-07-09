@@ -75,6 +75,7 @@ class AdminHandler extends ActionHandler
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_type= $type;
 		$this->theme->admin_page= $page;
+		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
 				// Let plugins try to handle the page
@@ -439,7 +440,7 @@ class AdminHandler extends ActionHandler
 		$form->title->class= 'important';
 		$form->title->tabindex = 1;
 		$form->title->value = $post->title;
-
+		$this->theme->admin_page= sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 		// Create the silos
 		$form->append('silos', 'silos');
 		$form->silos->silos = Media::dir();
@@ -1351,7 +1352,8 @@ class AdminHandler extends ActionHandler
 				$types
 			)
 		);
-
+		$this->theme->admin_page= _t('Manage Posts');
+		$this->theme->admin_title=_t( 'Manage Posts' );
 		$this->theme->special_searches = array_merge($statuses, $types);
 		$this->display( 'posts' );
 	}
