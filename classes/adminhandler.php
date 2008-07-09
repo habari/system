@@ -176,7 +176,7 @@ class AdminHandler extends ActionHandler
 				),
 			);
 
-		$option_items[_t('Time & Date')] = array(
+		/*$option_items[_t('Time & Date')] = array(
 			'presets' => array(
 				'label' => _t('Presets'),
 				'type' => 'select',
@@ -222,7 +222,7 @@ class AdminHandler extends ActionHandler
 					),
 				'helptext' => '',
 				),
-			);
+			);*/
 
 		$form = new FormUI('Admin Options');
 
