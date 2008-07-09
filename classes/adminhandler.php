@@ -247,7 +247,6 @@ class AdminHandler extends ActionHandler
 		 */
 
 		$form->append( 'submit', 'apply', _t('Apply'), 'admincontrol_submit' );
-		$form->apply->class = 'savebutton';
 		$form->set_option( 'success_message', _t( 'Successfully updated options' ) );
 
 		$this->theme->form = $form->get();
