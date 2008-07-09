@@ -190,12 +190,22 @@ class Theme extends Pluggable
 			$type= $types[$post->content_type];
 		}
 		elseif ( $posts === false ) {
+			if ($this->template_exists('404')) {
 			$fallback= array( '404' );
 			header( 'HTTP/1.0 404 Not Found' );
 			// Replace template variables with the 404 rewrite rule
 			$this->request->{URL::get_matched_rule()->name}= false;
-			$this->request->{URL::set_404()->name}= true;
+			$this->request->{URL::set_404()->name}= true;	
 			$this->matched_rule= URL::get_matched_rule();
+			} else {
+				$this->display('header');
+				echo '<h2>';
+				 _e( "Whoops! 404. The page you were trying to access is not really there. Please try again." );
+				echo '</h2>';
+				header( 'HTTP/1.0 404 Not Found' );
+				$this->display('footer');
+				die;
+			}
 		}
 
 		extract( $where_filters );
