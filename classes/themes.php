@@ -59,26 +59,22 @@ class Themes
 	}
 
 	/**
-	 * Returns the active theme information from the database
-	 * @return array An array of Theme data
-	 **/
-	public static function get_active()
+	 * Returns the active theme's full directory path.
+	 * @return string The full path to the active theme directory
+	 */
+	private static function get_active_theme_dir()
 	{
-		$theme= new QueryRecord();
 		$theme_dir= Options::get('theme_dir');
-
 		$themes= Themes::get_all();
 
-		if ( isset($themes[$theme_dir]) ) {
-			$theme->theme_dir= $themes[$theme_dir];
-		}
-		else {
-			$theme_exists = false;
-			foreach($themes as $themedir) {
+		if (!isset($themes[$theme_dir]))
+		{
+			$theme_exists= false;
+			foreach ($themes as $themedir) {
 				if (file_exists(Utils::end_in_slash($themedir) . 'theme.xml')) {
-					$theme->theme_dir= $themedir;
+					$theme_dir= basename($themedir);
 					Options::set('theme_dir', basename($themedir));
-					$theme_exists = true;
+					$theme_exists= true;
 					break;
 				}
 			}
@@ -86,6 +82,17 @@ class Themes
 				die( _t('There is no valid theme currently installed.') );
 			}
 		}
+		return $themes[$theme_dir];
+	}
+
+	/**
+	 * Returns the active theme information from the database
+	 * @return array An array of Theme data
+	 **/
+	public static function get_active()
+	{
+		$theme= new QueryRecord();
+		$theme->theme_dir= Themes::get_active_theme_dir();
 
 		$data= simplexml_load_file( Utils::end_in_slash($theme->theme_dir) . 'theme.xml' );
 		foreach ( $data as $name=>$value) {
@@ -93,6 +100,19 @@ class Themes
 		}
 		return $theme;
 	}
+
+	/**
+	 * Returns theme information for the active theme -- dir, path, theme.xml, screenshot url
+	 * @return array An array of Theme data
+	 */
+	public static function get_active_data()
+	{
+		$all_data= Themes::get_all_data();
+		$active_theme_dir= basename(Themes::get_active_theme_dir());
+		$active_data= $all_data[$active_theme_dir];
+		return $active_data;
+	}
+
 
 	/**
 	 * functiona activate_theme
