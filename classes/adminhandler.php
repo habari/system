@@ -889,16 +889,14 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->all_themes= $all_themes;
 
-		$active_theme_dir= Options::get( 'theme_dir' );
-		$this->theme->active_theme_dir= $active_theme_dir;
-		$this->theme->active_theme= $all_themes[$active_theme_dir];
+		$this->theme->active_theme= Themes::get_active_data();
+		$this->theme->active_theme_dir= $this->theme->active_theme['path'];
 
 		// instantiate the active theme to see if it's configurable
 		$active_theme= Themes::create();
-		$this->theme->active_theme_name= $all_themes[$active_theme_dir]['info']->name;
+		$this->theme->active_theme_name= $this->theme->active_theme['info']->name;
 		$this->theme->configurable= Plugins::filter( 'theme_config', false, $active_theme);
-		$this->theme->active_theme= $all_themes[$active_theme_dir];
-
+		
 		$this->theme->display( 'themes' );
 	}
 
