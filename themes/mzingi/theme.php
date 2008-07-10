@@ -58,12 +58,6 @@ class CornerStone extends Theme
 		if( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) ) );
 		}
-		if( !$this->template_engine->assigned( 'user' ) ) {
-			$this->assign('user', User::identify() );
-		}
-		if( !$this->template_engine->assigned( 'page' ) ) {
-			$this->assign('page', isset( $page ) ? $page : 1 );
-		}
 		//For Asides loop in sidebar.php
 		$this->assign( 'asides', Posts::get( array( 'tag'=>'aside', 'limit'=>5) ) );
 		
