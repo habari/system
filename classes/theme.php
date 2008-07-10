@@ -102,6 +102,14 @@ class Theme extends Pluggable
 	 */
 	public function add_template_vars()
 	{
+		if( !$this->template_engine->assigned( 'user' ) ) {
+			$this->assign('user', User::identify() );
+		}
+
+		if( !$this->template_engine->assigned( 'page' ) ) {
+			$this->assign('page', isset( $this->page ) ? $this->page : 1 );
+		}
+
 		$handler= Controller::get_handler();
 		if ( isset( $handler ) ) {
 			Plugins::act( 'add_template_vars', $this, Controller::get_handler()->handler_vars );
