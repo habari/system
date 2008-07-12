@@ -892,7 +892,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 
 	public function action_admin_header( $theme )
 	{
-		if($theme->admin_page == 'publish') {
+		if(Controller::get_var('page') == 'publish') {
 			echo <<< HEADER
 <script type="text/javascript">
 habari.media.output.viddler = {display: function(index, fileobj) {
