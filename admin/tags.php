@@ -15,10 +15,9 @@
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
 
-	<span class="renamecontrols pct50">
-		<input type="text" class="renametext">
-		<input type="button" value="<?php _e('Rename'); ?>" class="rename button">
-	</span>
+	<span class="renamecontrols pct35"><input type="text" class="renametext"></span>
+	
+	<span class="pct15 buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
 
 	<span class="or pct10"><?php _e('or'); ?></span>
 
