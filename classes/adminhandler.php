@@ -439,7 +439,7 @@ class AdminHandler extends ActionHandler
 		$form->title->class= 'important';
 		$form->title->tabindex = 1;
 		$form->title->value = $post->title;
-		$this->theme->admin_page= sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
+		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 		// Create the silos
 		$form->append('silos', 'silos');
 		$form->silos->silos = Media::dir();
@@ -1351,8 +1351,8 @@ class AdminHandler extends ActionHandler
 				$types
 			)
 		);
-		$this->theme->admin_page= _t('Manage Posts');
-		$this->theme->admin_title=_t( 'Manage Posts' );
+		$this->theme->admin_page = _t('Manage Posts');
+		$this->theme->admin_title = _t('Manage Posts');
 		$this->theme->special_searches = array_merge($statuses, $types);
 		$this->display( 'posts' );
 	}
