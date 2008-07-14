@@ -9,7 +9,7 @@
 	// are we looking at the current user's profile, or someone else's?
 	// $user will contain the username specified on the URL
 	// http://example.com/admin/user/skippy
-	if ( isset( $user ) && ( $user != $currentuser->username ) ) {
+	if ( isset( $user ) && is_string( $user ) && ( $user != $currentuser->username ) ) {
 		$user = User::get_by_name( $user );
 		if ( ! $user ) {
 			echo "<p class='error'>" . _t('No such user!') . "</p>";
