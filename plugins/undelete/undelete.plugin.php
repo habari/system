@@ -37,19 +37,19 @@ class Undelete extends Plugin
 	{
 		if ( realpath( $file ) == __FILE__ ) {
 			Post::add_new_status( 'deleted', true );
-			Options::set( 'undelete:style', '#primarycontent .deleted { background-color: #933; text-decoration: line-through; }' );
+			Options::set( 'undelete__style', '#primarycontent .deleted { background-color: #933; text-decoration: line-through; }' );
 		}
 	}
 	
 	/**
 	 * function actions_plugins_loaded
 	 * Executes after all plugins are loaded
-	 **/	 	 	
+	 **/
 	public function action_plugins_loaded()
 	{
 		//Utils::debug('ok');
 	}
-	
+
 	/**
 	 * function filter_allow_post_delete
 	 * This function is executed when the filter "before_post_delete" is 
@@ -59,7 +59,7 @@ class Undelete extends Plugin
 	 * @param Boolean Whether to delete the post or not
 	 * @param Post The post object to potentially delete
 	 * @return Boolean Whether to delete the post or not
-	 **/	 	 	 	 	
+	 **/
 	function filter_post_delete_allow( $result, $post )
 	{
 		// all we need to do is set the post status to "deleted"
@@ -110,7 +110,7 @@ class Undelete extends Plugin
 				$ui= new FormUI( strtolower( get_class( $this ) ) );
 				$ui->append( 'text', 'style', 'option:undelete__style', _t( 'Style declaration for deleted content:' ) );
 				$ui->append( 'submit', 'save', 'Save' );
-				$ui->on_success( 'updated_config' );
+				$ui->on_success( array( $this, 'updated_config' ) );
 				$ui->out();
 				break;
 			}
@@ -119,7 +119,7 @@ class Undelete extends Plugin
 
 	public function updated_config( $ui )
 	{
-		$form->save();
+		$ui->save();
 		return false;
 	}
 
