@@ -829,7 +829,7 @@ END_AUTH;
 		}
 	}
 	public function action_admin_footer( $theme ) {
-		if ($theme->admin_page == 'publish') {
+		if(Controller::get_var('page') == 'publish') {
 			$size = Options::get('flickrsilo__flickr_size');
 			switch($size) {
 				case '_s':
