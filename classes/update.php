@@ -61,7 +61,7 @@ class Update extends Singleton
 				Update::add('Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion());
 				Plugins::act('update_check');
 			}
-	
+
 			$request= new RemoteRequest(UPDATE_URL, 'POST');
 			$request->set_params(
 				array_map(
@@ -75,7 +75,7 @@ class Update extends Singleton
 			}
 			$updatedata= $request->get_response_body();
 			if ( Error::is_error( $updatedata ) ) {
-				throw $updatedate;
+				throw $updatedata;
 			}
 			$instance->update= new SimpleXMLElement($updatedata);
 			foreach($instance->update as $beacon) {

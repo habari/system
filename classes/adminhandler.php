@@ -203,7 +203,7 @@ class AdminHandler extends ActionHandler
 				'type' => 'text',
 				'helptext' => '21:44',
 				)
-			);
+			);*/
 
 		$option_items[_t('Language')] = array(
 			'locale' => array(
@@ -213,7 +213,7 @@ class AdminHandler extends ActionHandler
 				),
 			);
 
-		$option_items[_t('Presentation')] = array(
+		/*$option_items[_t('Presentation')] = array(
 			'encoding' => array(
 				'label' => _t('Encoding'),
 				'type' => 'select',
@@ -742,7 +742,7 @@ class AdminHandler extends ActionHandler
 				$msg_status= sprintf( _t('Deleted %d users.'), $count );
 			}
 
-			Sessions::notice( $msg_status );
+			Session::notice( $msg_status );
 			return Session::messages_get( true, 'array' );
 
 		} elseif($handler_vars['action'] == 'fetch') {

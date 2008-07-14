@@ -1228,6 +1228,12 @@ $(document).ready(function(){
 		clearTimeout(tagskeyup);
 		tagskeyup = setTimeout(resetTags, 500);
 	});
+	
+	$('#tags').focus(function() {
+		$('#tags').addClass('focus');
+		}).blur(function() {
+			$('#tags').removeClass('focus');
+		});
 
 	// Tag Drawer: Remove all tags.
 	$( '#clear' ).click( function() {
@@ -1275,7 +1281,7 @@ function resetTags() {
 		}
 	});
 	
-	if(current.length == 0) {
+	if(current.length == 0 && !$('#tags').hasClass('focus')) {
 		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
 	}
 
