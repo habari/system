@@ -742,7 +742,7 @@ class AdminHandler extends ActionHandler
 				$msg_status= sprintf( _t('Deleted %d users.'), $count );
 			}
 
-			Sessions::notice( $msg_status );
+			Session::notice( $msg_status );
 			return Session::messages_get( true, 'array' );
 
 		} elseif($handler_vars['action'] == 'fetch') {
