@@ -2,10 +2,7 @@
 
 <ul>
 	<?php foreach (Users::get_all() as $user) {
-		if ( $user->username == $currentuser->username )
-			$url = Url::get( 'admin', 'page=user' );
-		else
-			$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
+		$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
 	?>
 
 	<li class="item clear">
