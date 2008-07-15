@@ -669,65 +669,65 @@ class AdminHandler extends ActionHandler
 	 * handles AJAX from /users
 	 * used to delete users and fetch new ones
 	 */
-	public function ajax_update_users($handler_vars) {
-
-		echo json_encode($this->update_users($handler_vars));
-
+	public function ajax_update_users($handler_vars)
+	{
+		echo json_encode( $this->update_users( $handler_vars ) );
 	}
 
-	public function update_users($handler_vars) {
-		if($handler_vars['action'] == 'delete') {
+	public function update_users($handler_vars)
+	{
+		if( $handler_vars['action'] == 'delete' ) {
 
 			$currentuser = User::identify();
 
-			$wsse= Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+			$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 			if ( isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest'] ) {
 				Session::error( _t('WSSE authentication failed.') );
 				return Session::messages_get( true, 'array' );
 			}
 
-			foreach($_POST as $id => $delete) {
+			foreach ( $_POST as $id => $delete ) {
 
 				// skip POST elements which are not log ids
 				if ( preg_match( '/^p\d+/', $id ) && $delete ) {
-					$id= substr($id, 1);
+					$id = substr($id, 1);
 
-					$ids[]= array( 'id' => $id );
+					$ids[] = array( 'id' => $id );
 
 				}
 
 			}
 
-			if(isset($handler_vars['checkbox_ids'])) {
-				foreach($handler_vars['checkbox_ids'] as $id => $delete) {
-					if($delete) {
-						$ids[]= array( 'id' => $id );
+			if ( isset( $handler_vars['checkbox_ids'] ) ) {
+				foreach ( $handler_vars['checkbox_ids'] as $id => $delete ) {
+					if ( $delete ) {
+						$ids[] = array( 'id' => $id );
 					}
 				}
 			}
 
 			$count = 0;
 
-			if(!isset($ids)) {
+			if( ! isset($ids) ) {
 				Session::notice( _t('No users deleted.') );
 				return Session::messages_get( true, 'array' );
 			}
 
-			foreach($ids as $id) {
+			foreach ( $ids as $id ) {
 				$id = $id['id'];
-				$user = User::get_by_id($id);
+				$user = User::get_by_id( $id );
 
-				if($currentuser != $user) {
-					if($handler_vars['reassign'] != 0) {
+				if ( $currentuser != $user ) {
+					if ( $handler_vars['reassign'] != 0 ) {
 						$assign = intval($handler_vars['reassign']);
 
-						if($user->id == $assign) {
+						if ( $user->id == $assign ) {
 							return;
 						}
 
 						$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
 
-						if(isset($posts[0])) {
+						if ( isset($posts[0]) ) {
 							Posts::reassign( $assign, $posts );
 						}
 					}
@@ -740,7 +740,7 @@ class AdminHandler extends ActionHandler
 				$count++;
 			}
 
-			if(!isset($msg_status)) {
+			if ( !isset($msg_status) ) {
 				$msg_status= sprintf( _t('Deleted %d users.'), $count );
 			}
 
@@ -761,8 +761,8 @@ class AdminHandler extends ActionHandler
 	 * Assign values needed to display the users listing
 	 *
 	 */
-	private function fetch_users($params = NULL) {
-
+	private function fetch_users($params = NULL)
+	{
 		// prepare the WSSE tokens
 		$this->theme->wsse= Utils::WSSE();
 
@@ -775,8 +775,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->authors = $authors;
 	}
 
-	public function get_users() {
-
+	public function get_users()
+	{
 		return $this->post_users();
 	}
 
@@ -785,7 +785,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_users()
 	{
-
 		$this->fetch_users();
 
 		extract( $this->handler_vars );

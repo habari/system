@@ -87,7 +87,11 @@
 </div>
 
 <script type="text/javascript">
+itemManage.updateURL = habari.url.ajaxUpdateUsers;
 itemManage.removeURL = habari.url.ajaxUpdateUsers;
+itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'users')) ?>";
+itemManage.fetchReplace = $('.users');
+itemManage.inEdit = false;
 
 </script>
 
