@@ -1,4 +1,5 @@
-<?php foreach($posts as $post) : ?>
+<?php if(count($posts) != 0) :
+	foreach($posts as $post) : ?>
 
 <div class="item clear <?php echo $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
 	<div class="head clear">
@@ -20,4 +21,9 @@
 	<span class="content" ><?php echo substr( strip_tags( $post->content ), 0, 250); ?>&hellip;</span>
 </div>
 
-<?php endforeach; ?>
+<?php 	endforeach; 
+else : ?>
+<div class="message none">
+	<p><?php echo _t('No posts could be found to match the query criteria.'); ?></p>
+</div>
+<?php endif; ?>

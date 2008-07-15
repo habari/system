@@ -1,4 +1,5 @@
-<?php foreach( $comments as $comment ) : ?>
+<?php if(count($comments) != 0) :
+	foreach( $comments as $comment ) : ?>
 
 <div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>">
 	<div class="head clear">
@@ -11,7 +12,7 @@
 			<?php endif; ?>
 		</span>
 		<span class="title pct40"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e('Go to \''.$comment->post->title.'\'') ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
-	    <span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="#" class="edit-date" title="<?php _e('Search for other comments from '.date('M, Y', strtotime($comment->date))) ?>"><?php echo date('M d, Y', strtotime($comment->date));?></a></span>
+	    <span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => date( 'Y', strtotime( $comment->date ) ), 'month' => date( 'm', strtotime( $comment->date ) ) ) ); ?>" class="edit-date" title="<?php _e('Search for other comments from '.date('M, Y', strtotime($comment->date))) ?>"><?php echo date('M d, Y', strtotime($comment->date));?></a></span>
 	    <span class="time pct10 dim"><?php _e('at'); ?> <span class="edit-time"><?php echo date('H:i', strtotime($comment->date));?></span></span>
 
 		<ul class="dropbutton">
@@ -48,4 +49,9 @@
 	</div>
 </div>
 
-<?php endforeach; ?>
+<?php 	endforeach; 
+else : ?>
+<div class="message none">
+	<p><?php echo _t('No comments could be found to match the query criteria.'); ?></p>
+</div>
+<?php endif; ?>
