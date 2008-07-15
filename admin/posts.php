@@ -56,46 +56,12 @@
 </div>
 
 <script type="text/javascript">
+
 itemManage.removeURL = habari.url.ajaxDelete;
+itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>";
+itemManage.fetchReplace = $('.posts');
+itemManage.inEdit = false;
 
-liveSearch.search= function() {
-	spinner.start();
-
-	$.post(
-		'<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>',
-		'&search=' + liveSearch.input.val() + '&limit=20',
-		function(json) {
-			$('.posts').html(json.items);
-			// we hide and show the timeline to fix a firefox display bug
-			$('.years').html(json.timeline).hide();
-			spinner.stop();
-			itemManage.initItems();
-			$('.years').show();
-			timeline.reset();
-			findChildren();
-		},
-		'json'
-		);
-};
-
-timelineHandle.loupeUpdate = function(a,b,c) {
-	spinner.start();
-
-	var search_args= $('.search input').val();
-
-	$.ajax({
-		type: 'POST',
-		url: "<?php echo URL::get('admin_ajax', array('context' => 'posts')); ?>",
-		data: 'offset=' + (parseInt(c) - parseInt(b)) + '&limit=' + (1 + parseInt(b) - parseInt(a)) + '&search=' + search_args,
-		dataType: 'json',
-		success: function(json){
-			$('.posts').html(json.items);
-			spinner.stop();
-			itemManage.initItems();
-			findChildren();
-		}
-	});
-};
 </script>
 
 

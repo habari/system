@@ -217,7 +217,7 @@ var inEdit = {
 						humanMsg.displayMsg( value );
 					} );
 					inEdit.deactivate();
-					timelineHandle.updateLoupeInfo();
+					//timelineHandle.updateLoupeInfo();
 				}
 		});
 		
@@ -260,7 +260,7 @@ var itemManage = {
 		 */
 		if( $('.manage.comments').length == 0 ) {
 			$('.item.controls input.button.delete').click(function () {
-				itemManage.remove();
+				itemManage.update( 'delete' );
 				return false;
 			});
 		}
@@ -392,27 +392,36 @@ var itemManage = {
 		else {
 			query['p' + id]= 1;
 		}
-		query['action']= action;
+
+		query['action'] = action;
 		query['timestamp']= $('input#timestamp').attr('value');
 		query['nonce']= $('input#nonce').attr('value');
 		query['digest']= $('input#PasswordDigest').attr('value');
+		if($('.manage.users').length != 0) {
+			query['reassign']= $('select#reassign').attr('value');
+		}
 
 		$.post(
-			habari.url.ajaxUpdateComment,
+			itemManage.updateURL,
 			query,
 			function( result ) {
 				spinner.stop();
-				timelineHandle.updateLoupeInfo();
 				jQuery.each( result, function( index, value ) {
 					humanMsg.displayMsg( value );
 				});
+				/* TODO: calculate new offset and limit based on filtering
+				 * and the current action
+				 */
+				loupeInfo = timelineHandle.getLoupeInfo();
+				itemManage.fetch( 0, loupeInfo.limit, true );
+				timelineHandle.updateLoupeInfo();
 				
 				if ( action == 'delete' ) {
 					itemManage.selected = [];
 				}
 			},
 			'json'
-		      );
+			);
 	},
 	remove: function( id ) {
 		spinner.start();
@@ -427,11 +436,6 @@ var itemManage = {
 			query['p' + id]= 1;
 		}
 		
-		if($('.manage.users').length != 0) {
-			query['action']= 'delete';
-			query['reassign']= $('select#reassign').attr('value');
-		}
-		
 		query['timestamp']= $('input#timestamp').attr('value');
 		query['nonce']= $('input#nonce').attr('value');
 		query['digest']= $('input#PasswordDigest').attr('value');
@@ -441,29 +445,51 @@ var itemManage = {
 			query,
 			function( result ) {
 				spinner.stop();
-				if($('.manage.users').length == 0) {
-					timelineHandle.updateLoupeInfo();
-				} else {
-					spinner.start();
-					query = {};
-					query['action'] = 'fetch';
-					$.post(
-						itemManage.removeURL,
-						query,
-						function(users) {
-							spinner.stop();
-							$('.manage.users').html(users);
-						},
-						'json'
-					 );
-				}
 				jQuery.each( result, function( index, value ) {
 					humanMsg.displayMsg( value );
 				});
+
+				loupeInfo = timelineHandle.getLoupeInfo();
+				itemManage.fetch( 0, loupeInfo.limit, true );
+				timelineHandle.updateLoupeInfo();
+				
 				itemManage.selected = [];
 			},
 			'json'
 		 );
+	},
+	fetch: function( offset, limit, resetTimeline ) {
+		offset = ( offset == null ) ? 0 : offset;
+		limit = ( limit == null ) ? 20: limit;
+		spinner.start();
+
+		$.ajax({
+			type: 'POST',
+			url: itemManage.fetchURL,
+			data: '&search=' + liveSearch.input.val() + '&offset=' + offset + '&limit=' + limit,
+			dataType: 'json',
+			success: function(json) {
+				itemManage.fetchReplace.html(json.items);
+				// check for timeline data
+				if ( resetTimeline && json.timeline ) {
+					// we hide and show the timeline to fix a firefox display bug
+					$('.years').html(json.timeline).hide();
+					spinner.stop();
+					itemManage.initItems();
+					$('.years').show();
+					timeline.reset();
+				}
+				else {
+					spinner.stop();
+					itemManage.initItems();
+				}
+				if ( itemManage.inEdit == true ) {
+					inEdit.init();
+					inEdit.deactivate();
+				}
+				findChildren();
+			}
+		});
 	}
 }
 
@@ -575,6 +601,10 @@ var timeline = {
 			axis: 'horizontal',
 			stop: function(event, ui) {
 				timeline.updateView();
+				if ( timeline.do_search ) {
+					var loupeInfo = timelineHandle.getLoupeInfo();
+					itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
+				}
 				timelineHandle.updateLoupeInfo();
 			},
 			slide: function( event, ui) {
@@ -619,7 +649,8 @@ var timeline = {
 
 		$('.handle').css( 'left', Math.max(parseInt($('.handle').css('left')) - $('.handle').width(), 0) );
 		timeline.updateView();
-
+		var loupeInfo = timelineHandle.getLoupeInfo();
+		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 		timelineHandle.updateLoupeInfo();
 
 	},
@@ -631,7 +662,8 @@ var timeline = {
 
 		$('.handle').css( 'left', Math.min(parseInt($('.handle').css('left')) + $('.handle').width(), parseInt($('.track').width()) - $('.handle').width() ));
 		timeline.updateView();
-
+		var loupeInfo = timelineHandle.getLoupeInfo();
+		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 		timelineHandle.updateLoupeInfo();
 	},
 	updateView: function() {
@@ -775,18 +807,24 @@ var timelineHandle = {
 
 		return false;
 	},
-	updateLoupeInfo: function() {
+	getLoupeInfo: function() {
 		var cur_overhang= $('.track').offset().left - $('.years').offset().left;
-		loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + cur_overhang);
-		loupeWidth= $('.handle').width();
-		loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth + cur_overhang );
+		var loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + cur_overhang);
+		var loupeWidth= $('.handle').width();
+		var loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth + cur_overhang );
+		
+		var loupeInfo = {
+			start: loupeStartPosition,
+			end: loupeEndPosition,
+			offset: parseInt(timeline.totalCount) - parseInt(loupeEndPosition),
+			limit: 1 + parseInt(loupeEndPosition) - parseInt(loupeStartPosition),
+			};
+		return loupeInfo;
+	},
+	updateLoupeInfo: function() {
+		var loupeInfo = timelineHandle.getLoupeInfo();
 
-		$('.currentposition').text( loupeStartPosition +'-'+ loupeEndPosition +' of '+ timeline.totalCount );
-
-		/* AJAX call to fetch needed info goes here. */
-		if( timeline.do_search && jQuery.isFunction(this.loupeUpdate) ) {
-			return this.loupeUpdate(loupeStartPosition, loupeEndPosition, timeline.totalCount);
-		}
+		$('.currentposition').text( loupeInfo.start +'-'+ loupeInfo.end +' of '+ timeline.totalCount );
 	},
 	endDrag: function(e) {
 		timeline.noJump = true;
@@ -797,14 +835,14 @@ var timelineHandle = {
 			'right': 	'auto'
 		});
 
+		var loupeInfo = timelineHandle.getLoupeInfo();
+		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 		timelineHandle.updateLoupeInfo();
 
 		$(document).unbind('mousemove', timelineHandle.doDrag).unbind('mouseup', timelineHandle.endDrag);
 
 		return false;
 	},
-	// This function is assigned on the page so that the loupe can be bound to distinct ajax calls
-	loupeUpdate: null
 }
 
 
@@ -814,7 +852,6 @@ var timelineHandle = {
 		- Problem: timeline length might not be suitable for steps, so at either end, the loupe might not fit.
 	- Draggable timeline
 	- Float month name if outside view
-	- Display and float years
 	- Reinit slider (or do away with slider alltogether and gather the info manually)
 */
 
@@ -1039,13 +1076,8 @@ var liveSearch = {
 		if ( liveSearch.input.val() == liveSearch.prevSearch ) return;
 
 		liveSearch.prevSearch = liveSearch.input.val();
-
-		if ( jQuery.isFunction( liveSearch.search ) ) {
-			return liveSearch.search();
-		}
-
+		itemManage.fetch( 0, 20, true );
 	},
-	search: null, // specific search functions are defined on the individual pages
 }
 
 // SEARCH CRITERIA TOGGLE
