@@ -40,17 +40,33 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 		$user_path= HABARI_PATH . '/' . Site::get_path('user', true);
 		$this->root= $user_path . 'files'; //Options::get('simple_file_root');
 		$this->url= Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
-		/* Check for the existence of the files directory */
+		
+		if (! $this->check_files()) {
+			Session::error( "Web server does not have permission to create 'files' directory for SimpleFile Media Silo." );
+			Plugins::deactivate_plugin(__FILE__); //Deactivate plugin
+			Utils::redirect(); //Refresh page – unfortunately, if not done so then results don't appear
+		}
+	}
+	
+	/**
+	 * Checks if files directory is usable
+	 */
+	private function check_files() {
+		$user_path= HABARI_PATH . '/' . Site::get_path('user', true);
+		$this->root= $user_path . 'files'; //Options::get('simple_file_root');
+		$this->url= Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
+		
 		if ( ! is_dir( $this->root ) ) {
 			if ( is_writable( $user_path ) ) {
 				mkdir( $this->root, 0766 );
 			} else {
-				Session::error( "Web server does not have permission to create 'files' directory for SimpleFile Media Silo." );
+				return false;
 			}
 		}
-
+		
+		return true;
 	}
-
+	
 	/**
 	 * Return basic information about this silo
 	 *   name- The name of the silo, used as the root directory for media in this silo
