@@ -418,6 +418,8 @@ class AdminHandler extends ActionHandler
 			$post->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost= true;
 		}
+		
+		$this->theme->admin_page= sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 
 		$statuses= Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
