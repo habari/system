@@ -63,11 +63,11 @@ habari.media = {
 						output += '<ul class="mediaactions dropbutton">'
 						if (result.files[file].filetype && habari.media.output[result.files[file].filetype]) {
 							for (method in habari.media.output[result.files[file].filetype]) {
-								output += '<li><a href="#" onclick="habari.media.output.' + result.files[file].filetype + '.' + method + '(\'' + file +'\', habari.media.assets[\''+ file + '\']);return false;">' + method.replace('_', ' ') + '</a></li>';
+								output += '<li><a href="#" onclick="habari.media.output.' + result.files[file].filetype + '.' + method + '(\'' + file +'\', habari.media.assets[\''+ file + '\']);return false;">' + method.replace('_', ' ', 'g') + '</a></li>';
 							}
 						} else {
 							for (method in habari.media.output._) {
-								output += '<li><a href="#" onclick="habari.media.output._.' + method + '(\'' + file +'\', habari.media.assets[\''+ file + '\']);return false;">' + method.replace('_', ' ') + '</a></li>';
+								output += '<li><a href="#" onclick="habari.media.output._.' + method + '(\'' + file +'\', habari.media.assets[\''+ file + '\']);return false;">' + method.replace('_', ' ', 'g') + '</a></li>';
 							}
 						}
 						output += '</ul>';
@@ -160,14 +160,14 @@ habari.media = {
 	},
 
 	output: {
-		image_jpeg: {image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_gif: {image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_png: {image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		audio_mpeg3: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
-		video_mpeg: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
-		audio_wav: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
-		application_x_shockwave_flash: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
-		_: {link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}}
+		image_jpeg: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		image_gif: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		image_png: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		audio_mpeg3: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		video_mpeg: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		audio_wav: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		application_x_shockwave_flash: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
+		_: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}}
 	},
 
 	submitPanel: function(path, panel, form, callback) {
