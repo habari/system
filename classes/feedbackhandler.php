@@ -82,8 +82,7 @@ class FeedbackHandler extends ActionHandler
 			}
 			$this->handler_vars['url']= $url;
 		}
-		$cleaned_content= preg_replace( '/^\s+/', '', $this->handler_vars['content'] );
-		if ( $cleaned_content === '' ) {
+		if ( preg_match( '/^\p{Z}*$/u', $this->handler_vars['content'] ) ) {
 			Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
 			Utils::redirect( $post->permalink );
 			exit();
