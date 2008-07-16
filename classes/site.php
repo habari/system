@@ -139,7 +139,7 @@ class Site
 				if ( ( $port != 80 ) && ( $port != 443 ) && ( substr($host, strlen($host) - strlen($port) ) != $port ) ) {
 					$portpart= ':' . $port;
 				}
-				if ( isset( $_SERVER['HTTPS'] ) ) {
+				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
 					$protocol= 'https';
 				}
 				$url= $protocol . '://' . $host . $portpart;
@@ -290,7 +290,7 @@ class Site
 					$match=substr($match, strpos($match, '.') + 1);
 					$x--;
 				} while(strpos($match,'.') !== false);
-				
+
 				$path= self::$config_path;
 				break;
 			case 'user':
