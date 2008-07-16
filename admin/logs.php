@@ -89,7 +89,7 @@
 
 <script type="text/javascript">
 
-itemManage.removeURL = habari.url.ajaxLogDelete;
+itemManage.updateURL = habari.url.ajaxLogDelete;
 itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>";
 itemManage.fetchReplace = $('.logs');
 itemManage.inEdit = false;

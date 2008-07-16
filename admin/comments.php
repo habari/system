@@ -75,7 +75,6 @@
 
 <script type="text/javascript">
 
-itemManage.removeURL = habari.url.ajaxUpdateComment;
 itemManage.updateURL = habari.url.ajaxUpdateComment;
 itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'comments')) ?>";
 itemManage.fetchReplace = $('#comments');
