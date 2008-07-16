@@ -421,47 +421,13 @@ var itemManage = {
 					itemManage.fetch( 0, 20, false );
 				}
 				
-				if ( action == 'delete' ) {
-					itemManage.selected = [];
-				}
+				itemManage.selected = [];
 			},
 			'json'
 			);
 	},
 	remove: function( id ) {
-		spinner.start();
-		
-		itemManage.changeItem();
-		
-		var query= {};
-		if ( id == null ) {
-			query = itemManage.selected;
-		}
-		else {
-			query['p' + id]= 1;
-		}
-		
-		query['timestamp']= $('input#timestamp').attr('value');
-		query['nonce']= $('input#nonce').attr('value');
-		query['digest']= $('input#PasswordDigest').attr('value');
-		
-		$.post(
-			itemManage.removeURL,
-			query,
-			function( result ) {
-				spinner.stop();
-				jQuery.each( result, function( index, value ) {
-					humanMsg.displayMsg( value );
-				});
-
-				loupeInfo = timelineHandle.getLoupeInfo();
-				itemManage.fetch( 0, loupeInfo.limit, true );
-				timelineHandle.updateLoupeInfo();
-				
-				itemManage.selected = [];
-			},
-			'json'
-		 );
+		itemManage.update( 'delete', id );
 	},
 	fetch: function( offset, limit, resetTimeline ) {
 		offset = ( offset == null ) ? 0 : offset;
