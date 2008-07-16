@@ -746,14 +746,6 @@ class AdminHandler extends ActionHandler
 
 			Session::notice( $msg_status );
 			return Session::messages_get( true, 'array' );
-
-		} elseif($handler_vars['action'] == 'fetch') {
-			$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
-			$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
-			$this->theme->currentuser = User::identify();
-
-			return $this->theme->fetch( 'users_items' );
 		}
 	}
 
@@ -820,10 +812,10 @@ class AdminHandler extends ActionHandler
 			else {
 				$settings= array();
 				if ( isset($username) ) {
-					$settings['new_username']= $new_username;
+					$settings['new_username'] = $new_username;
 				}
 				if ( isset( $new_email ) ) {
-					$settings['new_email']= $email;
+					$settings['new_email'] = $new_email;
 				}
 				$this->theme->assign( 'settings', $settings );
 			}
@@ -1442,6 +1434,23 @@ class AdminHandler extends ActionHandler
 		$output= array(
 			'items' => $items,
 			'timeline' => $timeline,
+		);
+		echo json_encode($output);
+	}
+
+	/**
+	 * Handles ajax requests from the manage users page
+	 */
+	public function ajax_users()
+	{
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+		$this->theme->currentuser = User::identify();
+		$items = $this->theme->fetch( 'users_items' );
+
+		$output = array(
+			'items' => $items,
 		);
 		echo json_encode($output);
 	}

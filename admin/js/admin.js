@@ -397,8 +397,8 @@ var itemManage = {
 		query['timestamp']= $('input#timestamp').attr('value');
 		query['nonce']= $('input#nonce').attr('value');
 		query['digest']= $('input#PasswordDigest').attr('value');
-		if($('.manage.users').length != 0) {
-			query['reassign']= $('select#reassign').attr('value');
+		if ( $('.manage.users').length != 0 ) {
+			query['reassign'] = $('select#reassign').attr('value');
 		}
 
 		$.post(
@@ -409,12 +409,17 @@ var itemManage = {
 				jQuery.each( result, function( index, value ) {
 					humanMsg.displayMsg( value );
 				});
-				/* TODO: calculate new offset and limit based on filtering
-				 * and the current action
-				 */
-				loupeInfo = timelineHandle.getLoupeInfo();
-				itemManage.fetch( 0, loupeInfo.limit, true );
-				timelineHandle.updateLoupeInfo();
+				if ( $('.timeline').length ) {
+					/* TODO: calculate new offset and limit based on filtering
+					 * and the current action
+					 */
+					loupeInfo = timelineHandle.getLoupeInfo();
+					itemManage.fetch( 0, loupeInfo.limit, true );
+					timelineHandle.updateLoupeInfo();
+				}
+				else {
+					itemManage.fetch( 0, 20, false );
+				}
 				
 				if ( action == 'delete' ) {
 					itemManage.selected = [];
