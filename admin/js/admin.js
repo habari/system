@@ -441,8 +441,8 @@ var itemManage = {
 			dataType: 'json',
 			success: function(json) {
 				itemManage.fetchReplace.html(json.items);
-				// check for timeline data
-				if ( resetTimeline && json.timeline ) {
+				// if we have a timeline, replace its content
+				if ( resetTimeline && $('.timeline').length !=0 ) {
 					// we hide and show the timeline to fix a firefox display bug
 					$('.years').html(json.timeline).hide();
 					spinner.stop();
