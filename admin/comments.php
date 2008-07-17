@@ -74,48 +74,12 @@
 </form>
 
 <script type="text/javascript">
-itemManage.removeURL = habari.url.ajaxUpdateComment;
 
-liveSearch.search= function() {
-	spinner.start();
+itemManage.updateURL = habari.url.ajaxUpdateComment;
+itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'comments')) ?>";
+itemManage.fetchReplace = $('#comments');
+itemManage.inEdit = true;
 
-	$.post(
-		'<?php echo URL::get('admin_ajax', array('context' => 'comments')) ?>',
-		'&search=' + liveSearch.input.val() + '&limit=20',
-		function(json) {
-			$('#comments').html(json.items);
-			// we hide and show the timeline to fix a firefox display bug
-			$('.years').html(json.timeline).hide();
-			spinner.stop();
-			itemManage.initItems();
-			$('.years').show();
-			timeline.reset();
-			findChildren();
-		},
-		'json'
-		);
-};
-
-timelineHandle.loupeUpdate = function(a,b,c) {
-	spinner.start();
-
-	var search_args= $('.search input').val();
-
-	$.ajax({
-		type: 'POST',
-		url: "<?php echo URL::get('admin_ajax', array('context' => 'comments')); ?>",
-		data: 'offset=' + (parseInt(c) - parseInt(b)) + '&limit=' + (1 + parseInt(b) - parseInt(a)) + '&search=' + search_args,
-		dataType: 'json',
-		success: function(json){
-			$('#comments').html(json.items);
-			spinner.stop();
-			itemManage.initItems();
-			inEdit.init();
-			inEdit.deactivate();
-			findChildren();
-		}
-	});
-};
 </script>
 
 
