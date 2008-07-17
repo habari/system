@@ -1103,13 +1103,16 @@ function findChildren() {
 String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }
 
 var tagskeyup;
+// initialize the timeline after window load to make sure CSS has been applied to the DOM
+$(window).load( function() {
+	timeline.init();
+});
 
 $(document).ready(function(){
 	// Initialize all sub-systems
 	dropButton.init();
 	theMenu.init();
 	dashboard.init();
-	timeline.init();
 	inEdit.init();
 	itemManage.init();
 	tagManage.init();
@@ -1119,9 +1122,9 @@ $(document).ready(function(){
 	navigationDropdown.init();
 
 	// Alternate the rows' styling.
-    $("table").each(function(){
-	  $("tr:odd", this).not(".even").addClass("odd");
-	  $("tr:even", this).not(".odd").addClass("even");
+	$("table").each( function() {
+		$("tr:odd", this).not(".even").addClass("odd");
+		$("tr:even", this).not(".odd").addClass("even");
 	});
 
 	$("#oldmenu .menu-item").hover(
