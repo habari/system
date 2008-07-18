@@ -314,6 +314,17 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->fetch_dashboard_modules();
+		
+		// check for first run
+		$u = User::identify();
+		if ( ! isset( $u->info->experience_level ) ) {
+			$this->theme->first_run = true;
+			$u->info->experience_level = 'user';
+			$u->info->commit();
+		}
+		else {
+			$this->theme->first_run = false;
+		}
 
 		$this->display( 'dashboard' );
 	}
