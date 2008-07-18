@@ -402,7 +402,7 @@ WP_IMPORT_STAGE2;
 					$users[$import_user_id]['habari_user_id']= $merge_user_matched[$import_user_id];
 				
 				/* Is this s9y user manually selected to merge with a habari user? */ 
-				if ( in_array( $import_user_id, array_keys( $merge_user ) ) )
+				if ( isset($merge_user) && in_array( $import_user_id, array_keys( $merge_user ) ) )
 					if ( $merge_user[$import_user_id] != '__new_user')
 						$users[$import_user_id]['habari_user_id']= $merge_user[$import_user_id];
 			}
@@ -637,7 +637,7 @@ ENDOFSQL;
 		$post->guid= $post->guid; /* @TODO: This works to create a GUID, but man, it's weird. */
 		$post->info->s9y_id= $post_info->id;
 		$post->title= $post_info->title;
-		$post->content= ( empty( $post_info->extended ) ? $post_info->body : $post_info->extended );
+		$post->content= ( empty( $post_info->extended ) ? $post_info->body : $post_info->body . $post_info->extended );
 		$post->status= ( $post_info->isdraft == "true" ? Post::status( 'draft' ) : Post::status( 'published' ) );
 		$post->content_type= Post::type( 'entry' );
 		$post->updated= date('Y-m-d H:i:s', $post_info->last_modified);
