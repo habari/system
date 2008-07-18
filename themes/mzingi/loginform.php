@@ -12,6 +12,7 @@ if ( $user ) {
 }
 else {
 ?>
+<?php Plugins::act( 'theme_loginform_before' ); ?>
 <form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
 	<p>
 		<label for="habari_username"><small><strong><?php _e('Name:'); ?></strong></small></label>
@@ -21,10 +22,12 @@ else {
 		<label for="habari_password"><small><strong><?php _e('Password:'); ?></strong></small></label>
 		<input type="password" size="25" name="habari_password" id="habari_password">
 	</p>
+	<?php Plugins::act( 'theme_loginform_controls' ); ?>
 	<p>
 		<input type="submit" value="<?php _e('GO!'); ?>">
 	</p>
 </form>
+<?php Plugins::act( 'theme_loginform_after' ); ?>
 <?php
 }
 ?>
