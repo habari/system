@@ -637,7 +637,8 @@ ENDOFSQL;
 		$post->guid= $post->guid; /* @TODO: This works to create a GUID, but man, it's weird. */
 		$post->info->s9y_id= $post_info->id;
 		$post->title= $post_info->title;
-		$post->content= ( empty( $post_info->extended ) ? $post_info->body : $post_info->body . $post_info->extended );
+		$content = ( empty( $post_info->extended ) ? $post_info->body : $post_info->body . $post_info->extended );
+		$post->content= iconv( 'Windows-1252', 'UTF-8', $content ); // this conversion works for my S9Y. Untested globally.
 		$post->status= ( $post_info->isdraft == "true" ? Post::status( 'draft' ) : Post::status( 'published' ) );
 		$post->content_type= Post::type( 'entry' );
 		$post->updated= date('Y-m-d H:i:s', $post_info->last_modified);
