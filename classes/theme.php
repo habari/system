@@ -653,7 +653,10 @@ class Theme extends Pluggable
 	public static function theme_page_selector( $theme, $rr_name= NULL, $settings= array() )
 	{
 		$current= $theme->page;
-		$total= Utils::archive_pages( $theme->posts->count_all() );
+		$items_per_page = isset($theme->posts->get_param_cache['limit']) ?
+			$theme->posts->get_param_cache['limit'] :
+			Options::get('pagination');
+		$total= Utils::archive_pages( $theme->posts->count_all(), $items_per_page );
 
 		// Make sure the current page is valid
 		if ( $current > $total ) {
@@ -742,7 +745,11 @@ class Theme extends Pluggable
 
 		// If there's no next page, skip and return null
 		$settings['page']= (int) ( $theme->page + 1);
-		if ($settings['page'] > Utils::archive_pages( $theme->posts->count_all() )) {
+		$items_per_page = isset($theme->posts->get_param_cache['limit']) ?
+			$theme->posts->get_param_cache['limit'] :
+			Options::get('pagination');
+		$total= Utils::archive_pages( $theme->posts->count_all(), $items_per_page );
+		if ( $settings['page'] > $total ) {
 			return null;
 		}
 
