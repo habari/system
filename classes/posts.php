@@ -20,7 +20,7 @@
  **/
 class Posts extends ArrayObject
 {
-	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
+	public $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
 	/**
 	 * function __get

@@ -224,10 +224,14 @@ class Utils
 	 * function archive_pages
 	 * Returns the number of pages in an archive using the number of items per page set in options
 	 * @param integer Number of items in the archive
+	 * @param integer Number of items per page
 	 * @returns integer Number of pages based on pagination option.
 	 **/
-	public static function archive_pages($item_total)
+	public static function archive_pages( $item_total, $items_per_page = null )
 	{
+		if ( $items_per_page ) {
+			return ceil($item_total / $items_per_page);
+		}
 		return ceil($item_total / Options::get('pagination'));
 	}
 
