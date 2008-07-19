@@ -102,6 +102,7 @@ class S9YImport extends Plugin implements Importer
 		$valid_fields= array(
 			'db_name'
 			, 'db_host'
+			, 'db_port'
 			, 'db_user'
 			, 'db_pass'
 			, 'db_prefix'
@@ -117,6 +118,7 @@ class S9YImport extends Plugin implements Importer
 		$default_values= array(
 			'db_name' => ''
 			, 'db_host' => 'localhost'
+			, 'db_port' => null
 			, 'db_user' => ''
 			, 'db_pass' => ''
 			, 'db_prefix' => 's9y_'
@@ -150,6 +152,7 @@ class S9YImport extends Plugin implements Importer
 			<table>
 				<tr><td>Database Name</td><td><input type="text" name="db_name" value="{$db_name}"></td></tr>
 				<tr><td>Database Host</td><td><input type="text" name="db_host" value="{$db_host}"></td></tr>
+				<tr><td>Database Port</td><td><input type="text" name="db_port" value="{$db_port}">(optional)</td></tr>
 				<tr><td>Database User</td><td><input type="text" name="db_user" value="{$db_user}"></td></tr>
 				<tr><td>Database Password</td><td><input type="password" name="db_pass" value="{$db_pass}"></td></tr>
 				<tr><td>Table Prefix</td><td><input type="text" name="db_prefix" value="{$db_prefix}"></td></tr>
@@ -185,6 +188,7 @@ WP_IMPORT_STAGE1;
 		$valid_fields= array(
 			'db_name'
 			, 'db_host'
+			, 'db_port'
 			, 'db_user'
 			, 'db_pass'
 			, 'db_prefix'
@@ -230,7 +234,7 @@ WP_IMPORT_STAGE1;
 			return $this->stage1();
 		}
 
-		if ( FALSE == ($s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix ) ) ) {
+		if ( FALSE == ($s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port ) ) ) {
 			$this->warning= 'A connection to the specified database could not be created.  Please check the values you provided.';
 			return $this->stage1();
 		}
@@ -354,6 +358,7 @@ WP_IMPORT_STAGE2;
 		$valid_fields= array(
 			'db_name'
 			, 'db_host'
+			, 'db_port'
 			, 'db_user'
 			, 'db_pass'
 			, 'db_prefix'
@@ -379,7 +384,7 @@ WP_IMPORT_STAGE2;
 		$this->category_import= $category_import;
 		$this->s9y_db_prefix= $db_prefix;
 
-		if ( FALSE !== ( $this->s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix ) ) ) {
+		if ( FALSE !== ( $this->s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port ) ) ) {
 			/*
 			 * First step is to go through our import_user and
 			 * merge_user arrays and see if we need to merge the
@@ -878,14 +883,19 @@ ENDOFSQL;
 	 * @param string $db_user The user of the WP database
 	 * @param string $db_pass The user's password for the WP database
 	 * @param string $db_prefix The table prefix for the WP instance in the database
+	 * @param string $db_port The port number of the WP database
 	 * @return mixed false on failure, DatabseConnection on success
 	 */
-	private function s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix )
+	private function s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port = null)
 	{
 		// Connect to the database or return false
 		try {
 			$s9ydb= new DatabaseConnection();
-			$s9ydb->connect( "mysql:host={$db_host};dbname={$db_name}", $db_user, $db_pass, $db_prefix );
+			$connect_str = "mysql:host={$db_host};dbname={$db_name}";
+			if ( !is_null( $db_port ) ) {
+				$connect_str .= ";port={$db_port}";
+			}
+			$s9ydb->connect( $connect_str, $db_user, $db_pass, $db_prefix );
 			return $s9ydb;
 		}
 		catch( PDOException $e ) {
