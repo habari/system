@@ -217,7 +217,9 @@ var inEdit = {
 						humanMsg.displayMsg( value );
 					} );
 					inEdit.deactivate();
-					//timelineHandle.updateLoupeInfo();
+
+					loupeInfo = timelineHandle.getLoupeInfo();
+					itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 				}
 		});
 		
@@ -369,7 +371,6 @@ var itemManage = {
 				$('.item.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
 		}
-		 inEdit.init(); 
 	},
 	uncheckAll: function() {
 		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
