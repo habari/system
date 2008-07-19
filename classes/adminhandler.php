@@ -1526,12 +1526,12 @@ class AdminHandler extends ActionHandler
 				$ids[] = substr($id, 1);
 			}
 		}
-		$posts = Posts::get( array( 'id' => $ids ) );
+		$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
 		foreach ( $posts as $post ) {
 			$post->delete();
 		}
 
-		Session::notice( sprintf( _t('Deleted %d entries.'), count($ids) ) );
+		Session::notice( sprintf( _t('Deleted %d entries.'), count($posts) ) );
 		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
@@ -1596,7 +1596,7 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		$comments = Comments::get( array( 'id' => $ids ) );
+		$comments = Comments::get( array( 'id' => $ids, 'nolimit' => true ) );
 		if ( $comments === FALSE ) {
 			Session::notice( _t('No comments selected.') );
 			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
