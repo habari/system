@@ -438,6 +438,12 @@ ENDOFSQL;
 				if ( FALSE !== ( $imported_categories= $this->s9ydb->get_results( $sql, array(), 'QueryRecord' ) ) ) {
 					$num_categories_imported= 0;
 					foreach ( $imported_categories as $imported_category ) {
+						if ( $tag_check = Tags::get_one( $imported_category->category_name ) ) {
+							// tag already exists
+							$this->imported_categories[$imported_category->categoryid]= $tag_check->id;
+							++$num_categories_imported;
+							continue;
+						}
 						if ( $new_tag= Tag::create( array( 'tag_text' => $imported_category->category_name ) ) ) {
 							$this->imported_categories[$imported_category->categoryid]= $new_tag->id;
 							++$num_categories_imported;
