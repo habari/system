@@ -365,6 +365,16 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
 	}
+	
+	/**
+	 * Returns number of rows affected by the last DELETE, INSERT, or UPDATE
+	 *
+	 * @return int The number of rows affected.
+	 */
+	public static function row_count()
+	{
+		return DB::instance()->connection->row_count();
+	}
 
 	/**
 	 * Automatic datbase diffing function, used for determining required database upgrades.
