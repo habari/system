@@ -879,6 +879,125 @@ class InstallHandler extends ActionHandler {
 		// Success!
 		return true;
 	}
+	
+	private function upgrade_db_pre ( $current_version ) {
+		
+		// this is actually a stripped-down version of DatabaseConnection::upgrade() - it doesn't support files
+		
+		$upgrade_functions = get_class_methods( $this );
+		
+		foreach ( $upgrade_functions as $fn ) {
+			
+			// match all methods named "upgrade_db_pre_<rev#>"
+			if ( preg_match( '%^upgrade_db_pre_([0-9]+)$%i', $fn, $matches ) ) {
+				
+				$upgrade_version = intval( $matches[1] );
+				
+				if ( $upgrade_version > $current_version ) {
+					
+					$upgrades[ sprintf( '%010s_1', $upgrade_version ) ] = $fn;
+					
+				}
+				
+			}
+			
+		}
+		
+		// sort the upgrades by revision, ascending
+		ksort( $upgrades );
+				
+		
+		foreach ( $upgrades as $upgrade ) {
+			
+			$result =& call_user_func( array( $this, $upgrade ) );
+			
+			// if we failed, abort
+			if ( $result === false ) {
+				break;
+			}
+			
+		}
+		
+	}
+	
+	private function upgrade_db_post ( $current_version ) {
+		
+		// this is actually a stripped-down version of DatabaseConnection::upgrade() - it doesn't support files
+		
+		$upgrade_functions = get_class_methods( $this );
+		
+		foreach ( $upgrade_functions as $fn ) {
+			
+			// match all methods named "upgrade_db_post_<rev#>"
+			if ( preg_match( '%^upgrade_db_post_([0-9]+)$%i', $fn, $matches ) ) {
+				
+				$upgrade_version = intval( $matches[1] );
+				
+				if ( $upgrade_version > $current_version ) {
+					
+					$upgrades[ sprintf( '%010s_1', $upgrade_version ) ] = $fn;
+					
+				}
+				
+			}
+			
+		}
+		
+		// sort the upgrades by revision, ascending
+		ksort( $upgrades );
+		
+		
+		foreach ( $upgrades as $upgrade ) {
+			
+			$result =& call_user_func( array( $this, $upgrade ) );
+			
+			// if we failed, abort
+			if ( $result === false ) {
+				break;
+			}
+			
+		}
+		
+	}
+	
+	private function upgrade_db_pre_1345 ( ) {
+		
+		// fix duplicate tag_slug's
+				
+		// first, get all the tags with duplicate entries
+		$query= 'select id, tag_slug, tag_text from ' . DB::table( 'tags' ) . ' where tag_slug in ( select tag_slug from ' . DB::table( 'tags' ) . ' group by tag_slug having count(*) > 1 ) order by id';
+		$tags= DB::get_results( $query );
+		
+		// assuming we got some tags to fix...
+		if ( count( $tags ) > 0 ) {
+			
+			$slug_to_id= array();
+			$fix_tags= array();
+			
+			foreach ( $tags as $tag_row ) {
+				
+				// skip the first tag text so we end up with something, presumably the first tag entered (it had the lowest ID in the db)
+				if ( !isset( $fix_tags[ $tag_row->tag_slug ] ) ) {
+					$slug_to_id[ $tag_row->tag_slug ]= $tag_row->id;		// collect the slug => id so we can rename with an absolute id later
+					$fix_tags[ $tag_row->tag_slug ]= array();
+				}
+				else {
+					$fix_tags[ $tag_row->tag_slug ][ $tag_row->id ]= $tag_row->tag_text;
+				}
+				
+			}
+			
+			foreach ( $fix_tags as $tag_slug => $tag_texts ) {
+				
+				Tags::rename( $slug_to_id[ $tag_slug ], array_keys( $tag_texts ) );
+				
+			}
+			
+		}
+		
+		return true;
+		
+	}
 
 	/**
 	 * Upgrade the database when the database version stored is lower than the one in source
@@ -908,75 +1027,56 @@ class InstallHandler extends ActionHandler {
 		$version = Options::get('db_version');
 		
 		// do some pre-dbdelta ad-hoc hacky hack code
-		switch(true) {
-			case $version < 1345:
-				// fix duplicate tag_slug's
-				
-				// first, get all the tags with duplicate entries
-				$query= 'select id, tag_slug, tag_text from ' . DB::table( 'tags' ) . ' where tag_slug in ( select tag_slug from ' . DB::table( 'tags' ) . ' group by tag_slug having count(*) > 1 ) order by id';
-				$tags= DB::get_results( $query );
-				
-				// assuming we got some tags to fix...
-				if ( count( $tags ) > 0 ) {
-					
-					$slug_to_id= array();
-					$fix_tags= array();
-					
-					foreach ( $tags as $tag_row ) {
-						
-						// skip the first tag text so we end up with something, presumably the first tag entered (it had the lowest ID in the db)
-						if ( !isset( $fix_tags[ $tag_row->tag_slug ] ) ) {
-							$slug_to_id[ $tag_row->tag_slug ]= $tag_row->id;		// collect the slug => id so we can rename with an absolute id later
-							$fix_tags[ $tag_row->tag_slug ]= array();
-						}
-						else {
-							$fix_tags[ $tag_row->tag_slug ][ $tag_row->id ]= $tag_row->tag_text;
-						}
-						
-					}
-					
-					foreach ( $fix_tags as $tag_slug => $tag_texts ) {
-						
-						Tags::rename( $slug_to_id[ $tag_slug ], array_keys( $tag_texts ) );
-						
-					}
-					
-				}
-				
-				break;
-		}
+		$this->upgrade_db_pre( $version );
 
 		// Get the queries for this database and apply the changes to the structure
 		$queries= $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
 		DB::dbdelta($queries);
 
 		// Apply data changes to the database based on version, call the db-specific upgrades, too.
-		switch(true) {
-			case $version < 1310:
-				// Auto-truncate the log table
-				if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
-					CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
-				}
-				break;
-			case $version < 1794:
-				Post::add_new_status( 'scheduled', true );
-				break;
-			case $version < 1845:
-				// Strip the base path off active plugins
-				$base_path= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
-				$activated= Options::get( 'active_plugins' );
-				if( is_array( $activated ) ) {
-					foreach( $activated as $plugin ) {
-						$index= array_search( $plugin, $activated );
-						$plugin= str_replace( $base_path, '', $plugin );
-						$activated[$index]= $plugin;
-					}
-					Options::set( 'active_plugins', $activated );
-				}
-		}
+		$this->upgrade_db_post( $version );
+		
+		// run schema-specific upgrade scripts
 		DB::upgrade( $version );
 
 		Version::save_dbversion();
+	}
+	
+	private function upgrade_db_post_1310 ( ) {
+		
+		// Auto-truncate the log table
+		if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
+			CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
+		}
+		
+		return true;
+		
+	}
+	
+	private function upgrade_db_post_1794 ( ) {
+		
+		Post::add_new_status( 'scheduled', true );
+		
+		return true;
+		
+	}
+	
+	private function upgrade_db_post_1845 ( ) {
+		
+		// Strip the base path off active plugins
+		$base_path= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
+		$activated= Options::get( 'active_plugins' );
+		if( is_array( $activated ) ) {
+			foreach( $activated as $plugin ) {
+				$index= array_search( $plugin, $activated );
+				$plugin= str_replace( $base_path, '', $plugin );
+				$activated[$index]= $plugin;
+			}
+			Options::set( 'active_plugins', $activated );
+		}
+		
+		return true;
+		
 	}
 
 	/**
