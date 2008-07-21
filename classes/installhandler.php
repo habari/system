@@ -886,6 +886,8 @@ class InstallHandler extends ActionHandler {
 		
 		$upgrade_functions = get_class_methods( $this );
 		
+		$upgrades = array();
+		
 		foreach ( $upgrade_functions as $fn ) {
 			
 			// match all methods named "upgrade_db_pre_<rev#>"
@@ -925,6 +927,8 @@ class InstallHandler extends ActionHandler {
 		// this is actually a stripped-down version of DatabaseConnection::upgrade() - it doesn't support files
 		
 		$upgrade_functions = get_class_methods( $this );
+		
+		$upgrades = array();
 		
 		foreach ( $upgrade_functions as $fn ) {
 			
