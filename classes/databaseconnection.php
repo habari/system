@@ -800,6 +800,16 @@ class DatabaseConnection
 	}
 	
 	/**
+	 * Returns number of rows affected by the last DELETE, INSERT, or UPDATE
+	 *
+	 * @return int The number of rows affected.
+	 */
+	public function row_count()
+	{
+		return $this->pdo_statement->rowCount();
+	}
+	
+	/**
 	 * Returns a list of tables the DB currently knows about.
 	 *
 	 * @return array The list of tables.
