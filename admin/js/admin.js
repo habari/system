@@ -581,7 +581,7 @@ var timeline = {
 			},
 			slide: function( event, ui) {
 				timeline.updateView();
-			},
+			}
 		})
 		.unbind('click')
 		.bind('dblclick', function(e) { // Double-clicking on either side of the handle moves the handle to the clicked position.
@@ -789,7 +789,7 @@ var timelineHandle = {
 			start: loupeStartPosition,
 			end: loupeEndPosition,
 			offset: parseInt(timeline.totalCount) - parseInt(loupeEndPosition),
-			limit: 1 + parseInt(loupeEndPosition) - parseInt(loupeStartPosition),
+			limit: 1 + parseInt(loupeEndPosition) - parseInt(loupeStartPosition)
 			};
 		return loupeInfo;
 	},
@@ -814,7 +814,7 @@ var timelineHandle = {
 		$(document).unbind('mousemove', timelineHandle.doDrag).unbind('mouseup', timelineHandle.endDrag);
 
 		return false;
-	},
+	}
 }
 
 
@@ -1049,7 +1049,7 @@ var liveSearch = {
 
 		liveSearch.prevSearch = liveSearch.input.val();
 		itemManage.fetch( 0, 20, true );
-	},
+	}
 }
 
 // SEARCH CRITERIA TOGGLE
