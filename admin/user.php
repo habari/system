@@ -15,12 +15,12 @@
 			echo "<p class='error'>" . _t('No such user!') . "</p>";
 		}
 		$who= $user->username;
-		$possessive= $user->username . "'s";
+		$possessive= sprintf( _t("%s's User Information"), $user->username );;
 	}
 	else {
 		$user= $currentuser;
-		$who= "You";
-		$possessive= "Your";
+		$who= _t("You");
+		$possessive= _t("Your User Information");
 	}
 ?>
 
@@ -65,7 +65,7 @@
 <form name="update-profile" id="update-profile" action="<?php URL::out('admin', 'page=user'); ?>" method="post">
 <div class="container settings user userinformation" id="userinformation">
 
-	<h2><?php echo $possessive; ?> <?php _e('User Information'); ?></h2>
+	<h2><?php echo $possessive; ?></h2>
 
 	<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
 
