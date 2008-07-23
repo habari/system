@@ -808,8 +808,7 @@ ENDOFSQL;
 			$value= date( 'Y-m-d H:i:s', strtotime( $value ) );
 			break;
 		case 'tags':
-			$this->tags= $this->parsetags( $value );
-			return $this->get_tags();
+			return $this->tags= $this->parsetags( $value );
 		case 'status':
 			return $this->setstatus( $value );
 		}
