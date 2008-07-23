@@ -301,7 +301,7 @@ var itemManage = {
 		if($('div.settings').length != 0) {
 			$('select[name=navigationdropdown]').val('all');
 			
-			$('div.settings.container').each(function() {
+			$('div.settings.container:not(.addnewuser)').each(function() { 
 				if(($('div.item:not(.hidden)', this).length == 0) && ($('h2', this).text().toLowerCase().search( search ) == -1)) {
 					$(this).hide().addClass('hidden');
 				} else {
