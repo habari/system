@@ -32,7 +32,7 @@
 	<h2>.htaccess<a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
 	<div class="options">
 		<div class="inputfield">
-			<?php _e('Your <strong>.htaccess</strong> file is not writable. In order to secure your SQLite database, please paste the following into'); ?> <strong><?php echo HABARI_PATH . '/.htaccess'; ?></strong>:<br />
+			<?php printf(_t('Your <b>.htaccess</b> file is not writable. In order to secure your SQLite database, please paste the following into <b>%s</b>:'), HABARI_PATH . '/.htaccess'); ?><br />
 			<textarea class="config"><?php echo $sqlite_contents; ?></textarea>
 			<div class="help">
 				<?php _e('Your SQLite database is a file on your server like
