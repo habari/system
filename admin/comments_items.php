@@ -10,7 +10,7 @@
 			<?php echo $comment->name; ?>
 			<?php endif; ?>
 		</span>
-		<span class="title pct40"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e('Go to \''.$comment->post->title.'\'') ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
+		<span class="title pct40"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php printf( _t('Go to %s'), $comment->post->title ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
 	    <span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="#" class="edit-date" title="<?php _e('Search for other comments from '.date('M, Y', strtotime($comment->date))) ?>"><?php echo date('M d, Y', strtotime($comment->date));?></a></span>
 	    <span class="time pct10 dim"><?php _e('at'); ?> <span class="edit-time"><?php echo date('H:i', strtotime($comment->date));?></span></span>
 
