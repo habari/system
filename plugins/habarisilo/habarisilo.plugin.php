@@ -6,12 +6,12 @@
  * @todo Create some helper functions in a superclass to display panel controls more easily, so that you don't need to include 80 lines of code to build a simple upload form every time.
  */
 
-class SimpleFileSilo extends Plugin implements MediaSilo
+class HabariSilo extends Plugin implements MediaSilo
 {
 	protected $root= null;
 	protected $url= null;
 
-	const SILO_NAME= 'Local Files';
+	const SILO_NAME= 'Habari';
 
 	const DERIV_DIR= '.deriv';
 
@@ -21,13 +21,13 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	public function info()
 	{
 		return array(
-			'name' => 'Simple File Media Silo',
+			'name' => 'Habari Media Silo',
 			'version' => '1.0',
 			'url' => 'http://habariproject.org/',
 			'author' =>	'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'license' => 'Apache License 2.0',
-			'description' => 'Demonstrates basic silo functionality',
+			'description' => 'Provides simple file uploading and embedding functionality',
 			'copyright' => '2008',
 		);
 	}
@@ -40,33 +40,17 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 		$user_path= HABARI_PATH . '/' . Site::get_path('user', true);
 		$this->root= $user_path . 'files'; //Options::get('simple_file_root');
 		$this->url= Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
-		
-		if (! $this->check_files()) {
-			Session::error( "Web server does not have permission to create 'files' directory for SimpleFile Media Silo." );
-			Plugins::deactivate_plugin(__FILE__); //Deactivate plugin
-			Utils::redirect(); //Refresh page – unfortunately, if not done so then results don't appear
-		}
-	}
-	
-	/**
-	 * Checks if files directory is usable
-	 */
-	private function check_files() {
-		$user_path= HABARI_PATH . '/' . Site::get_path('user', true);
-		$this->root= $user_path . 'files'; //Options::get('simple_file_root');
-		$this->url= Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
-		
+		/* Check for the existence of the files directory */
 		if ( ! is_dir( $this->root ) ) {
 			if ( is_writable( $user_path ) ) {
 				mkdir( $this->root, 0766 );
 			} else {
-				return false;
+				Session::error( _t("Web server does not have permission to create 'files' directory for the Habari Media Silo.") );
 			}
 		}
-		
-		return true;
+
 	}
-	
+
 	/**
 	 * Return basic information about this silo
 	 *   name- The name of the silo, used as the root directory for media in this silo
@@ -109,7 +93,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 				'title' => basename( $item ),
 			);
 			if( ! is_dir( $item ) ) {
-				$thumbnail_suffix= SimpleFileSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
+				$thumbnail_suffix= HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
 				$thumbnail_url= $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
 
 				if( ! file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
@@ -174,7 +158,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 	private function create_thumbnail($src_filename, $max_width = Media::THUMBNAIL_WIDTH, $max_height = Media::THUMBNAIL_HEIGHT)
 	{
 		// Does derivative directory not exist?
-		$thumbdir = dirname( $src_filename ) . '/' . SimpleFileSilo::DERIV_DIR . '';
+		$thumbdir = dirname( $src_filename ) . '/' . HabariSilo::DERIV_DIR . '';
 		if( ! is_dir( $thumbdir ) ) {
 			// Create the derivative driectory
 			if( ! mkdir( $thumbdir, 0766 ) ){
@@ -376,7 +360,7 @@ class SimpleFileSilo extends Plugin implements MediaSilo
 
 					$fullpath= self::SILO_NAME . '/' . $path;
 
-					$form= new FormUI( 'simplefilesilomkdir' );
+					$form= new FormUI( 'habarisilomkdir' );
 					$form->append( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>" );
 
 					// add the parent directory as a hidden input for later validation
