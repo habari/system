@@ -865,7 +865,7 @@ END_AUTH;
 					},
 					thumbnail: function(fileindex, fileobj) {
 						habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
-					},
+					}
 				}
 				habari.media.preview.flickr = function(fileindex, fileobj) {
 					var stats = '';
