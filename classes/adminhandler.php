@@ -446,7 +446,13 @@ class AdminHandler extends ActionHandler
 	{
 		$form = new FormUI('publishform');
 		$form->class[] = 'create';
-
+		
+		if(isset($this->handler_vars['slug'])) {
+			$post_links = $form->append('wrapper', 'post_links');
+			$post_links->append('static', 'post_permalink', '<a href="'.$post->permalink.'" class="viewpost">'._t('View Post').'</a>');
+			$post_links->class='container';
+		}
+		
 		// Create the Title field
 		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
 		$form->title->class= 'important';

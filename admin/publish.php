@@ -5,11 +5,6 @@
 
 <div class="create">
 
-	<?php if(!$newpost): ?>
-	<div class="container">
-		<a href="<?php echo $post->permalink; ?>" class="viewpost"><?php _e('View Post'); ?></a>
-	</div>
-	<?php endif; ?>
 
 	<?php $form->out(); ?>
 
