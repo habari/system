@@ -130,6 +130,12 @@ class SpamChecker extends Plugin
 			}
 		}
 
+		// Any commenter that takes longer than the session timeout is automatically moderated
+		if(!isset($_SESSION['comments_allowed']) || ! in_array(Controller::get_var('ccode'), $_SESSION['comments_allowed'])) {
+			$comment->status = Comment::STATUS_UNAPPROVED;
+			$spamcheck[] = _t("The commenter's session timed out.");
+		}
+
 		if( isset($comment->info->spamcheck) && is_array($comment->info->spamcheck)) {
 			$comment->info->spamcheck = array_unique(array_merge($comment->info->spamcheck, $spamcheck));
 		}
@@ -193,7 +199,7 @@ class SpamChecker extends Plugin
 	 *
 	 * @param float $spam_rating The spamminess of the comment as detected by other plugins
 	 * @param Comment $comment The submitted comment object
-	 * @param array $handlervars And array of handlervars passed in via the comment submission URL
+	 * @param array $handlervars An array of handlervars passed in via the comment submission URL
 	 * @return float The original spam rating
 	 */
 	function filter_spam_filter( $spam_rating, $comment, $handlervars )
@@ -204,11 +210,6 @@ class SpamChecker extends Plugin
 		}
 
 		if(!$this->verify_code($handlervars['ccode'], $comment->post_id)) {
-			ob_end_clean();
-			header('HTTP/1.1 403 Forbidden');
-			die('<h1>' . _t('The selected action is forbidden.') . '</h1>');
-		}
-		if(!isset($_SESSION['comments_allowed']) || ! in_array($handlervars['ccode'], $_SESSION['comments_allowed'])) {
 			ob_end_clean();
 			header('HTTP/1.1 403 Forbidden');
 			die('<h1>' . _t('The selected action is forbidden.') . '</h1>');
