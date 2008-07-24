@@ -39,7 +39,7 @@
 	<h2><?php _e('Available Themes'); ?></h2>
 <?php
 foreach($all_themes as $inactive_theme):
-	if ( $inactive_theme['dir'] != $active_theme_dir ) : ?>
+	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
 	<div class="item clear">
 		<div class="head">
 			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a></span>
