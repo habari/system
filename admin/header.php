@@ -35,6 +35,9 @@
 		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 	?>
+	<!--[if IE 7]>
+	<link rel="stylesheet" type="text/css" href="<?php Site::out_url('admin_theme'); ?>/css/ie.css" media="screen">
+	<![endif]-->
 
 </head>
 <body class="page-<?php echo $admin_page; ?>">
