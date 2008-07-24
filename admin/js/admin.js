@@ -757,12 +757,16 @@ var timeline = {
 // TIMELINE HANDLE
 var timelineHandle = {
 	init: function( handleWidth ) {
-		$('.handle').css('width', handleWidth + 'px');
+		timeline.handle.css('width', handleWidth + 'px');
+
+		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the 
+		 * right side of the handle */
+		timeline.handle.css('right', 'auto');
 		// Resize Handle Left
 		$('.resizehandleleft')
 			.mousedown(function(e) {
-				timelineHandle.firstMousePos = $('.handle').offset().left - $('.track').offset().left;
-				timelineHandle.initialSize = $('.handle').width();
+				timelineHandle.firstMousePos = timeline.handle.offset().left - $('.track').offset().left;
+				timelineHandle.initialSize = timeline.handle.width();
 
 				$(document).mousemove(timelineHandle.doDragLeft).mouseup(timelineHandle.endDrag);
 				return false;
@@ -772,7 +776,7 @@ var timelineHandle = {
 		$('.resizehandleright')
 			.mousedown(function(e) {
 				timelineHandle.firstMousePos = e.clientX;
-				timelineHandle.initialSize = $('.handle').width();
+				timelineHandle.initialSize = timeline.handle.width();
 
 				$(document).mousemove(timelineHandle.doDragRight).mouseup(timelineHandle.endDrag);
 				return false;
@@ -780,24 +784,32 @@ var timelineHandle = {
 			.mouseup(timelineHandle.endDrag);
 	},
 	doDragLeft: function(e) {
-		$('.handle').css({
-			'left': 	'auto',
-			'right': 	$('.handle').parents('.track').width() - (parseInt($('.handle').css('left')) + $('.handle').width())
-		});
+		var h = timeline.handle;
+		var track = h.parents('.track');
+		// fix the right side (only do this if we haven't already done it)
+		if ( h.css('right') == 'auto' ) {
+			h.css({
+				'left':	'auto',
+				'right': track.width() - ( parseInt(h.css('left')) + h.width() )
+			});
+		}
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the left
-		$('.handle').css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - $('.track').offset().left)), 20), Math.min($('.track').width() - parseInt($('.handle').css('right')), 200)));
+		h.css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - track.offset().left)), 20), Math.min(track.width() - parseInt(h.css('right')), 200)));
 
 		return false;
 	},
 	doDragRight: function(e) {
-		$('.handle').css({
-			'left': 	$('.handle').offset().left - $('.track').offset().left,
-			'right': 	'auto'
+		var h = timeline.handle;
+		var track = h.parents('.track');
+		// fix the left side
+		h.css({
+			'left': h.offset().left - track.offset().left,
+			'right': 'auto'
 		});
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the right
-		$('.handle').css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min($('.track').width() - parseInt($('.handle').css('left')), 200)) );
+		h.css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min(track.width() - parseInt(h.css('left')), 200)) );
 
 		return false;
 	},
