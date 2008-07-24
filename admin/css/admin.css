@@ -1414,7 +1414,7 @@ body.page-themes #page .dropbutton {
 .timeline .years .months {
 	display: table-row;
 	height: inherit;
-	overflow: hidden;
+	/*overflow: hidden;*/
 	position: relative;
 	border: none !important;
 }

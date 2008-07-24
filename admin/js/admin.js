@@ -533,10 +533,6 @@ var timeline = {
 		// No Timeline? No runny-runny.
 		if (!$('.timeline').length) return;
 
-		var timelineWidth = $('.years').width();
-		var viewWidth= $('.timeline').width();
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
-
 		// Set up pointers to elements for speed
 		timeline.view= $('.timeline');
 		timeline.handle= $('.handle', timeline.view);
@@ -550,6 +546,21 @@ var timeline = {
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
 			timeline.totalCount += timeline.monthData[i];
 		});
+
+		// manually set the timelineWidth to contain its children for IE7
+		var timelineWidth = 0;
+		if ( $.browser.msie ) {
+			jQuery(timeline.monthWidths).each(function() { timelineWidth += this; } );
+			$('.years').width( timelineWidth );
+		}
+		else {
+			timelineWidth = $('.years').width();
+		}
+
+		// check for a timeline larger than its view
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		var viewWidth= $('.timeline').width();
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
 		// Find the width which makes the loupe select 20 items
 		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
@@ -698,10 +709,6 @@ var timeline = {
 		return position + padding + ( index - positionIndex );
 	},
 	reset: function () {
-		var timelineWidth = $('.years').width();
-		var viewWidth= $('.timeline').width();
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
-
 		// update the arrays of posts per month
 		timeline.monthData= [0];
 		timeline.monthWidths= [0];
@@ -711,6 +718,21 @@ var timeline = {
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
 			timeline.totalCount += timeline.monthData[i];
 		});
+
+		// manually set the timelineWidth to contain its children for IE7
+		var timelineWidth = 0;
+		if ( $.browser.msie ) {
+			jQuery(timeline.monthWidths).each(function() { timelineWidth += this; } );
+			$('.years').width( timelineWidth );
+		}
+		else {
+			timelineWidth = $('.years').width();
+		}
+
+		// check for a timeline larger than its view
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		var viewWidth= $('.timeline').width();
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0
 
 		// find the width which makes the loupe select 20 items
 		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
