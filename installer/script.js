@@ -73,7 +73,7 @@ function checkDBCredentials()
 					break;
 				}
 			},
-			error: handleAjaxError,
+			error: handleAjaxError
 		});
 	}
 	else if ( ( $('#db_type').val() == 'pgsql' ) && ( $('#pgsqldatabasehost').val() != '' ) && ( $('#pgsqldatabaseuser').val() != '' ) && ( $('#pgsqldatabasename').val() != '' ) ) {
@@ -112,7 +112,7 @@ function checkDBCredentials()
 					break;
 				}
 			},
-			error: handleAjaxError,
+			error: handleAjaxError
 		});
 	}
 	else if ( ( $('#db_type').val() == 'sqlite' ) && ( $('#databasefile').val() != '' ) ) {
@@ -121,7 +121,7 @@ function checkDBCredentials()
 			url: 'ajax/check_sqlite_credentials',
 			data: { // Ask InstallHandler::ajax_check_sqlite_credentials to check the credentials
 				ajax_action: 'check_sqlite_credentials',
-				file: $('#databasefile').val(),
+				file: $('#databasefile').val()
 			},
 			success: function(xml) {
 				$('#installerror').fadeOut();
@@ -147,7 +147,7 @@ function checkDBCredentials()
 					break;
 				}
 			},
-			error: handleAjaxError,
+			error: handleAjaxError
 		});
 	}
 	else {
