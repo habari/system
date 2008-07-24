@@ -1331,27 +1331,20 @@ function resetTags() {
 // EDITOR INTERACTION
 habari.editor = {
 	insertSelection: function(value) {
-		if($('#content').filter('.islabeled').size() > 0) {
-			$('#content').filter('.islabeled')
-				.removeClass('islabeled')
-				.val(value);
+		var contentel = $('#content')[0];
+		if('selectionStart' in contentel) {
+			var content = $('#content').val();
+			$('#content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
+		}
+		else if(document.selection) {
+			contentel.focus();
+			document.selection.createRange().text = value;
 		}
 		else {
-			var contentel = $('#content')[0];
-			if('selectionStart' in contentel) {
-				var content = $('#content').val();
-				$('#content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
-			}
-			else if(document.selection) {
-				contentel.focus();
-				document.selection.createRange().text = value;
-			}
-			else {
-				$('#content').filter('.islabeled')
-					.removeClass('islabeled')
-					.val(value);
-			}
+			$('#content').filter('.islabeled')
+				.val(value);
 		}
+		$('label[for=content].overcontent').addClass('abovecontent').removeClass('overcontent').hide();
 	},
 	getContents: function() {
 		return $('#content').val();
