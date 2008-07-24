@@ -404,7 +404,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		if( $form->pubdate->value > date('Y-m-d H:i:s') && $form->status->value == Post::status('published') ) {
-			$form->status->value= Post::status('scheduled');
+			$post->status = Post::status( 'scheduled' );
 		}
 		$post->info->comments_disabled= !$form->comments_enabled->value;
 
