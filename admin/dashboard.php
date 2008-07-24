@@ -17,8 +17,9 @@
 			$active_msg[]= $message;
 		}
 		printf(
-			Options::get('title') . _t( ' has been active for ' ) . '%s',
-			!empty( $active_msg) ? Format::and_list( $active_msg ) : '0 ' . _t( 'day' )
+			_t( '%1$s has been active for %2$s'),
+			Options::get('title'),
+			!empty( $active_msg) ? Format::and_list( $active_msg ) : '0 ' . _t( 'days' )
 		);
 		?><br>
 
@@ -50,16 +51,17 @@
 			$message.= '</a>';
 			$comment_tag_msg[]= $message;
 		}
-
 		if ( !empty( $content_type_msg ) ) {
-			printf(
-				_n( '<a href="%2$s">' . _t( 'You' ) . '</a>', _t( 'The' ) . ' <a href="%2$s">%1$d ' . _t( 'authors' ) . '</a>', $stats['author_count'] ) .
-				_t( ' have published ' ) .
-				Format::and_list( $content_type_msg ) . '%3$s',
-				$stats['author_count'],
-				URL::get( 'admin', array('page' => 'users' ) ),
-				!empty( $comment_tag_msg ) ? _t( ' with ' ) .  Format::and_list( $comment_tag_msg ) : ''
-			);
+			$status_report = sprintf( _n( '[You] have published %1$s%2$s', 'The [%3$d authors] have published %1$s%2$s', $stats['author_count'] ),
+				Format::and_list( $content_type_msg ),
+				!empty( $comment_tag_msg ) ? _t( ' with ' ) . Format::and_list( $comment_tag_msg ) : "",
+				$stats['author_count'] );
+
+			$status_report = str_replace( array( '[', ']' ),
+				array( '<a href="' . URL::get( 'admin', array('page'=>'users') ) . '">', '</a>' ),
+				$status_report );
+
+			echo $status_report; 
 		}
 		?></p>
 
@@ -91,7 +93,7 @@
 		}
 
 		if ( !empty( $message_bits ) ) {
-			echo _t('You have ' ) . Format::and_list( $message_bits);
+			printf( _t('You have %s'), Format::and_list( $message_bits) );
 		}
 		?></p>
 
