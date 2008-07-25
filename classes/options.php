@@ -147,6 +147,7 @@ class Options extends Singleton
 		if ( ! isset( $this->options ) ) {
 			$this->get_all_options();
 		}
+		$value = Plugins::filter( 'option_set_value', $value, $name, isset($this->options[$name]) ? $this->options[$name] : null );
 		$this->options[$name]= $value;
 
 		if ( is_array( $value ) || is_object( $value ) ) {
