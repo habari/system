@@ -1414,7 +1414,7 @@ body.page-themes #page .dropbutton {
 .timeline .years .months {
 	display: table-row;
 	height: inherit;
-	overflow: hidden;
+	/*overflow: hidden;*/
 	position: relative;
 	border: none !important;
 }
@@ -1482,6 +1482,9 @@ ul.dropbutton li.nodisplay {
 	margin: 0 5px;
 	line-height: 20px;
 	padding: 2px 0;
+}
+
+.tag span {
 	white-space: nowrap;
 }
 

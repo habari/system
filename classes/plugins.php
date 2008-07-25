@@ -269,7 +269,7 @@ class Plugins
 	**/
 	public static function class_from_filename( $file )
 	{
-		if ( ! self::$plugin_classes ) {
+		if ( true || ! self::$plugin_classes ) {
 			self::get_plugin_classes();
 		}
 		foreach ( self::$plugin_classes as $plugin ) {

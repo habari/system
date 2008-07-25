@@ -533,10 +533,6 @@ var timeline = {
 		// No Timeline? No runny-runny.
 		if (!$('.timeline').length) return;
 
-		var timelineWidth = $('.years').width();
-		var viewWidth= $('.timeline').width();
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
-
 		// Set up pointers to elements for speed
 		timeline.view= $('.timeline');
 		timeline.handle= $('.handle', timeline.view);
@@ -550,6 +546,21 @@ var timeline = {
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
 			timeline.totalCount += timeline.monthData[i];
 		});
+
+		// manually set the timelineWidth to contain its children for IE7
+		var timelineWidth = 0;
+		if ( $.browser.msie ) {
+			jQuery(timeline.monthWidths).each(function() { timelineWidth += this; } );
+			$('.years').width( timelineWidth );
+		}
+		else {
+			timelineWidth = $('.years').width();
+		}
+
+		// check for a timeline larger than its view
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		var viewWidth= $('.timeline').width();
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
 		// Find the width which makes the loupe select 20 items
 		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
@@ -581,7 +592,7 @@ var timeline = {
 			},
 			slide: function( event, ui) {
 				timeline.updateView();
-			},
+			}
 		})
 		.unbind('click')
 		.bind('dblclick', function(e) { // Double-clicking on either side of the handle moves the handle to the clicked position.
@@ -698,10 +709,6 @@ var timeline = {
 		return position + padding + ( index - positionIndex );
 	},
 	reset: function () {
-		var timelineWidth = $('.years').width();
-		var viewWidth= $('.timeline').width();
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
-
 		// update the arrays of posts per month
 		timeline.monthData= [0];
 		timeline.monthWidths= [0];
@@ -711,6 +718,21 @@ var timeline = {
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
 			timeline.totalCount += timeline.monthData[i];
 		});
+
+		// manually set the timelineWidth to contain its children for IE7
+		var timelineWidth = 0;
+		if ( $.browser.msie ) {
+			jQuery(timeline.monthWidths).each(function() { timelineWidth += this; } );
+			$('.years').width( timelineWidth );
+		}
+		else {
+			timelineWidth = $('.years').width();
+		}
+
+		// check for a timeline larger than its view
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		var viewWidth= $('.timeline').width();
+		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0
 
 		// find the width which makes the loupe select 20 items
 		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
@@ -735,12 +757,16 @@ var timeline = {
 // TIMELINE HANDLE
 var timelineHandle = {
 	init: function( handleWidth ) {
-		$('.handle').css('width', handleWidth + 'px');
+		timeline.handle.css('width', handleWidth + 'px');
+
+		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the 
+		 * right side of the handle */
+		timeline.handle.css('right', 'auto');
 		// Resize Handle Left
 		$('.resizehandleleft')
 			.mousedown(function(e) {
-				timelineHandle.firstMousePos = $('.handle').offset().left - $('.track').offset().left;
-				timelineHandle.initialSize = $('.handle').width();
+				timelineHandle.firstMousePos = timeline.handle.offset().left - $('.track').offset().left;
+				timelineHandle.initialSize = timeline.handle.width();
 
 				$(document).mousemove(timelineHandle.doDragLeft).mouseup(timelineHandle.endDrag);
 				return false;
@@ -750,7 +776,7 @@ var timelineHandle = {
 		$('.resizehandleright')
 			.mousedown(function(e) {
 				timelineHandle.firstMousePos = e.clientX;
-				timelineHandle.initialSize = $('.handle').width();
+				timelineHandle.initialSize = timeline.handle.width();
 
 				$(document).mousemove(timelineHandle.doDragRight).mouseup(timelineHandle.endDrag);
 				return false;
@@ -758,24 +784,32 @@ var timelineHandle = {
 			.mouseup(timelineHandle.endDrag);
 	},
 	doDragLeft: function(e) {
-		$('.handle').css({
-			'left': 	'auto',
-			'right': 	$('.handle').parents('.track').width() - (parseInt($('.handle').css('left')) + $('.handle').width())
-		});
+		var h = timeline.handle;
+		var track = h.parents('.track');
+		// fix the right side (only do this if we haven't already done it)
+		if ( h.css('right') == 'auto' ) {
+			h.css({
+				'left':	'auto',
+				'right': track.width() - ( parseInt(h.css('left')) + h.width() )
+			});
+		}
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the left
-		$('.handle').css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - $('.track').offset().left)), 20), Math.min($('.track').width() - parseInt($('.handle').css('right')), 200)));
+		h.css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - track.offset().left)), 20), Math.min(track.width() - parseInt(h.css('right')), 200)));
 
 		return false;
 	},
 	doDragRight: function(e) {
-		$('.handle').css({
-			'left': 	$('.handle').offset().left - $('.track').offset().left,
-			'right': 	'auto'
+		var h = timeline.handle;
+		var track = h.parents('.track');
+		// fix the left side
+		h.css({
+			'left': h.offset().left - track.offset().left,
+			'right': 'auto'
 		});
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the right
-		$('.handle').css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min($('.track').width() - parseInt($('.handle').css('left')), 200)) );
+		h.css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min(track.width() - parseInt(h.css('left')), 200)) );
 
 		return false;
 	},
@@ -789,8 +823,8 @@ var timelineHandle = {
 			start: loupeStartPosition,
 			end: loupeEndPosition,
 			offset: parseInt(timeline.totalCount) - parseInt(loupeEndPosition),
-			limit: 1 + parseInt(loupeEndPosition) - parseInt(loupeStartPosition),
-			};
+			limit: 1 + parseInt(loupeEndPosition) - parseInt(loupeStartPosition)
+		};
 		return loupeInfo;
 	},
 	updateLoupeInfo: function() {
@@ -814,7 +848,7 @@ var timelineHandle = {
 		$(document).unbind('mousemove', timelineHandle.doDrag).unbind('mouseup', timelineHandle.endDrag);
 
 		return false;
-	},
+	}
 }
 
 
@@ -1049,7 +1083,7 @@ var liveSearch = {
 
 		liveSearch.prevSearch = liveSearch.input.val();
 		itemManage.fetch( 0, 20, true );
-	},
+	}
 }
 
 // SEARCH CRITERIA TOGGLE
