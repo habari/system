@@ -28,6 +28,7 @@
 			<li><a href="#" onclick="itemManage.update( 'delete', <?php echo $comment->id; ?> );return false;" title="<?php _e('Delete this Comment') ?>"><?php _e('Delete'); ?></a></li>
 			<li class="submit nodisplay"><a href="#" onclick="inEdit.update(); return false;" title="<?php _e('Submit changes') ?>"><?php _e('Update'); ?></a></li>
 			<li class="cancel nodisplay" class="nodisplay"><a href="#" onclick="inEdit.deactivate(); return false;" title="<?php _e('Cancel changes') ?>"><?php _e('Cancel'); ?></a></li>
+			<?php $theme->admin_comment_actions($comment); ?>
 			<li><a href="#"><?php _e('Edit'); ?></a></li>
 		</ul>
 	</div>

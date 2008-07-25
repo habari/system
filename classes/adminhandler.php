@@ -1441,6 +1441,7 @@ class AdminHandler extends ActionHandler
 	{
 		$theme_dir= Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		$this->theme->theme = $this->theme;
 
 		$params= $_POST;
 
@@ -1632,6 +1633,10 @@ class AdminHandler extends ActionHandler
 			// Comments marked for unapproval
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
 			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
+			break;
+		default:
+			// Specific plugin-supplied action
+			$status_msg = Plugins::filter( 'admin_comments_action', $status_msg, $handler_vars['action'], $comments );
 			break;
 		}
 
