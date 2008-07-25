@@ -58,20 +58,45 @@ class Tags extends ArrayObject
 	 **/
 	public static function rename($master, $tags)
 	{
+		if ( !is_array( $tags ) ) {
+			$tags= array( $tags );
+		}
 
+		$tag_names= array();
+
+		// get array of existing tags first to make sure we don't conflict with a new master tag
+		foreach ( $tags as $tag ) {
+			
+			$posts = array();
+			$post_ids = array();
+			$tag = Tags::get_one( $tag );
+			
+			// get all the post ID's tagged with this tag
+			$posts = DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $tag->id ) );
+
+			if ( count( $posts ) > 0 ) {
+								
+				// build a list of all the post_id's we need for the new tag
+				foreach ( $posts as $post ) {
+					$post_ids[] = $post->post_id;
+				}
+				$tag_names[] = $tag->tag;
+			}
+
+			Tags::delete( $tag );
+		}
+		
+		// get the master tag
 		$master_tag= Tags::get_one($master);
 		
-		
-		// it didn't exist, so we assume it's tag text and create it
 		if ( !isset($master_tag->slug) ) {
-					
+			// it didn't exist, so we assume it's tag text and create it
 			$master_tag= Tag::create(array('tag_slug' => Utils::slugify($master), 'tag_text' => $master));
 			
 			$master_ids= array();
 		}
 		else {
-						
-			// get the posts the tags post is already on so we don't duplicate them
+			// get the posts the tag is already on so we don't duplicate them
 			$master_posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $master_tag->id ) );
 			
 			$master_ids= array();
@@ -80,39 +105,6 @@ class Tags extends ArrayObject
 				$master_ids[]= $master_post->post_id;
 			}
 			
-		}
-			
-
-		// if only one tag was passed in, make it an array so we don't duplicate code
-		if ( !is_array( $tags ) ) {
-			$tags= array( $tags );
-		}
-
-		
-		$tag_names= array();
-
-		foreach ( $tags as $tag ) {
-			
-			$posts= array();
-			$post_ids= array();
-			
-			$tag= Tags::get_one( $tag );
-
-			// get all the post ID's tagged with this tag
-			$posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $tag->id ) );
-
-			if ( count( $posts ) > 0 ) {
-								
-				// build a list of all the post_id's we need for the new tag
-				foreach ( $posts as $post ) {
-					$post_ids[ $post->post_id ]= $post->post_id;
-				}
-				$tag_names[]= $tag->tag;
-			}
-
-			// delete each tag
-			Tags::delete( $tag );
-
 		}
 
 		if ( count( $post_ids ) > 0 ) {
