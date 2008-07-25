@@ -59,7 +59,7 @@ class Session
 	static function read( $session_id )
 	{
 		// for offline testing
-		$remote_address= isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 0;
+		$remote_address= isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 		// not always set, even by real browsers
 		$user_agent= isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		$session= DB::get_row( 'SELECT * FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?', array( $session_id ) );
@@ -71,10 +71,12 @@ class Session
 
 		$dodelete= false;
 
-		// Verify on the same subnet
-		$subnet= sprintf("%u", ip2long( $remote_address ) ) >> 8;
-		if ( $session->subnet != $subnet ) {
-			$dodelete= true;
+		if ( !defined( 'SESSION_SKIP_SUBNET' ) || SESSION_SKIP_SUBNET != true ) {
+			// Verify on the same subnet
+			$subnet= self::get_subnet( $remote_address );
+			if ( $session->subnet != $subnet ) {
+				$dodelete= true;
+			}
 		}
 
 		// Verify expiry
@@ -118,7 +120,7 @@ class Session
 	static function write( $session_id, $data )
 	{
 		// for offline testing
-		$remote_address= isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 0;
+		$remote_address= isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 		// not always set, even by real browsers
 		$user_agent= isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
@@ -129,7 +131,7 @@ class Session
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
 			$record= array(
-				'subnet' => sprintf("%u", ip2long( $remote_address ) ) >> 8,
+				'subnet' => self::get_subnet( $remote_address ),
 				'expires' => time() + ini_get('session.gc_maxlifetime'),
 				'ua' => $user_agent,
 				'data' => $data,
@@ -404,6 +406,25 @@ class Session
 		else {
 			return count( self::get_errors( false ) ) ? true : false;
 		}
+	}
+	
+	protected static function get_subnet( $remote_address = '' ) {
+		
+		$long_addr = ip2long( $remote_address );
+		
+		if ( $long_addr >= ip2long('0.0.0.0') && $long_addr <= ip2long('127.255.255.255') ) {
+			// class A
+			return sprintf("%u", $long_addr) >> 24;
+		}
+		else if ( $long_addr >= ip2long('128.0.0.0') && $long_addr <= ip2long('191.255.255.255') ) {
+			// class B
+			return sprintf("%u", $long_addr) >> 16;
+		}
+		else {
+			// class C, D, or something we missed
+			return sprintf("%u", $long_addr) >> 8;
+		}
+		
 	}
 
 }
