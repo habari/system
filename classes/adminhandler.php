@@ -247,11 +247,22 @@ class AdminHandler extends ActionHandler
 		 */
 
 		$form->append( 'submit', 'apply', _t('Apply'), 'admincontrol_submit' );
-		$form->set_option( 'success_message', _t( 'Successfully updated options' ) );
+		$form->on_success( array( $this, 'form_options_success' ) );
 
 		$this->theme->form = $form->get();
 		$this->theme->option_names = array_keys( $option_items );
 		$this->theme->display( 'options' );
+	}
+
+	/**
+	 * Display a message when the site options are saved, and save those options
+	 *
+	 * @param FormUI $form The successfully submitted form
+	 */
+	public function form_options_success($form)
+	{
+		Session::notice( _t( 'Successfully updated options' ) );
+		$form->save();
 	}
 
 	/**
@@ -314,7 +325,7 @@ class AdminHandler extends ActionHandler
 		);
 
 		$this->fetch_dashboard_modules();
-		
+
 		// check for first run
 		$u = User::identify();
 		if ( ! isset( $u->info->experience_level ) ) {
@@ -356,7 +367,7 @@ class AdminHandler extends ActionHandler
 
 			$modules[$id] = $module;
 		}
-		
+
 		$this->theme->modules = $modules;
 	}
 
@@ -429,7 +440,7 @@ class AdminHandler extends ActionHandler
 			$post->content_type= Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost= true;
 		}
-		
+
 		$this->theme->admin_page= sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 
 		$statuses= Post::list_post_statuses( false );
@@ -446,13 +457,13 @@ class AdminHandler extends ActionHandler
 	{
 		$form = new FormUI('publishform');
 		$form->class[] = 'create';
-		
+
 		if(isset($this->handler_vars['slug'])) {
 			$post_links = $form->append('wrapper', 'post_links');
 			$post_links->append('static', 'post_permalink', '<a href="'.$post->permalink.'" class="viewpost">'._t('View Post').'</a>');
 			$post_links->class='container';
 		}
-		
+
 		// Create the Title field
 		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
 		$form->title->class= 'important';
@@ -524,8 +535,8 @@ class AdminHandler extends ActionHandler
 		$buttons->class[] = 'publish';
 
 		// Create the Save button
-		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit'); 
-		
+		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
+
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
 		$form->content_type->value = $post->content_type;
@@ -906,7 +917,7 @@ class AdminHandler extends ActionHandler
 		$active_theme= Themes::create();
 		$this->theme->active_theme_name= $this->theme->active_theme['info']->name;
 		$this->theme->configurable= Plugins::filter( 'theme_config', false, $active_theme);
-		
+
 		$this->theme->display( 'themes' );
 	}
 
