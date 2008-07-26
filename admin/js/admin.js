@@ -1197,7 +1197,7 @@ $(document).ready(function(){
 		if ($(this).val() == '') {
 			$('label[for='+$(this).attr('id')+']').addClass('overcontent').removeClass('abovecontent'); 
 		} else {
-			$('label[for='+$(this).attr('id')+']').removeClass('overcontent').addClass('abovecontent').hide();
+			$('label[for='+$(this).attr('id')+']').removeClass('overcontent').addClass('abovecontent');
 		}
 	});
 
