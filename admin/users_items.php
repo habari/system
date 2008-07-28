@@ -30,19 +30,19 @@
 						$message_bits[]= $message;
 					}
 				}
-				
-				$string = 'was last seen %1$s at %2$s';
-				if(Posts::count_by_author( $user->id, Post::status('any') ) != 0) {
-					$string .= ' and currently has %3$s';
+
+				if ( Posts::count_by_author( $user->id, Post::status('any') ) != 0 ) {
+					$string = _t('was last seen %1$s at %2$s and currently has %3$s');
 				}
-				
-				printf( _t( $string ),
+				else {
+					$string = _t('was last seen %1$s at %2$s');
+				}
+
+				printf( $string,
 					"<strong>" . date('M j, Y', strtotime($user->info->authenticate_time)) . "</strong>",
 					"<strong>" . date('H:i', strtotime($user->info->authenticate_time)) . "</strong>",
 					Format::and_list( $message_bits )
 				);
-				
-				
 			}
 		?>
 		</span>
