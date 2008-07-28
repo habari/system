@@ -17,7 +17,7 @@ class MultiByte
 	* @var $hab_enc String holding the current encoding the class is using
 	*/
 	static $hab_enc = 'UTF-8';
-	static $use_mbstring = true;
+	static $use_mbstring = TRUE;
 
 	/**
 	 * function __construct
@@ -53,13 +53,13 @@ class MultiByte
 	*/
 	public static function convert_encoding( $str, $enc = null )
 	{
-		$ret = false;
+		$ret = FALSE;
 
 		if( ! isset( $enc ) ) {
 			$enc = self::$hab_enc;
 		}
 
-		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == true ) {
+		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == TRUE ) {
 			$from_enc = MultiByte::detect_encoding( $str );
 			$ret = mb_convert_encoding( $str, $enc, $from_enc );
 		}
@@ -74,16 +74,22 @@ class MultiByte
 	 *
 	 * @param $str string. The string who's encoding is being detected 
 	 *
-	 * @return mixed The  source string's encoding, or boolean false
-	 * if the coding couldn't be detected.
+	 * @return mixed The  source string's detected encoding, or boolean false.
 	*/
 	public static function detect_encoding( $str )
 	{
-		$enc = false;
+		$enc = FALSE;
 
-		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == true ) {
+		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == TRUE ) {
+			// get original detection order
+			$old_order = mb_detect_order();
+//			Utils::debug( $old_order );
+			// make sure  ISO-8859-1 is included
 			mb_detect_order( array( 'ASCII', 'JIS', 'UTF-8', 'ISO-8859-1', 'EUC-JP', 'SJIS' ) );
+			//detect the encoding . the detected encoding may be wrong, but it's better than nothing
 			$enc = mb_detect_encoding( $str );
+			// reset detection order
+			mb_detect_order( $old_order);
 		}
 
 		return $enc;
@@ -99,14 +105,15 @@ class MultiByte
 	 * @param $len integer. How long the returned string should be.
 	 *
 	 * @return mixed The  section of the source string requested in the encoding requested or false.
+	 *  
 	*/
 	public static function substr( $str, $begin, $len = null )
 	{
-		$ret = false;
+		$ret = FALSE;
 
 		$enc = self::$hab_enc;
 
-		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == true ) {
+		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == TRUE ) {
 			$ret = mb_convert_encoding( $str, $enc, MultiByte::detect_encoding( $str ) );
 			$ret = mb_substr( $ret, $begin, $len, $enc );
 		}
@@ -118,7 +125,7 @@ class MultiByte
 	 *
 	 * Gets the length of a string in characters
 	 *
-	 * @param $str string. The string who's encoding is being changed. 
+	 * @param $str string. The string who's length is being returned. 
 	 *
 	 * @return integer. The length in characters of the string, or the length in bytes if the mbstring extension isn't loaded.
 	*/
@@ -128,7 +135,7 @@ class MultiByte
 
 		$enc = self::$hab_enc;
 
-		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == true ) {
+		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == TRUE ) {
 			$str = mb_convert_encoding( $str, $enc, MultiByte::detect_encoding( $str ) );
 			$len = mb_strlen( $str, $enc );
 		}
@@ -143,7 +150,7 @@ class MultiByte
 	 * function strtolower
 	 *
 	 * Converts a multibyte string to lowercase. If the mbstring extension isn't loaded, strtolower() will
-	 * be used, which can lead to undetermined results.
+	 * be used, which can lead to unexpected results.
 	 *
 	 * @param $str string. The string to lowercase
 	 *
@@ -151,11 +158,9 @@ class MultiByte
 	*/
 	public static function strtolower( $str )
 	{
-		$ret = false;
-
 		$enc = self::$hab_enc;
 
-		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == true ) {
+		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == TRUE ) {
 			$ret = mb_strtolower( MultiByte::convert_encoding( $str ), $enc );
 		}
 		else {
@@ -169,7 +174,7 @@ class MultiByte
 	 * function strtoupper
 	 *
 	 * Converts a multibyte string to uppercase. If the mbstring extension isn't loaded, strtoupper() will
-	 * be used, which can lead to undetermined results.
+	 * be used, which can lead to unexpected results.
 	 *
 	 * @param $str string. The string to uppercase
 	 *
@@ -177,11 +182,9 @@ class MultiByte
 	*/
 	public static function strtoupper( $str )
 	{
-		$ret = false;
-
 		$enc = self::$hab_enc;
 
-		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == true ) {
+		if ( extension_loaded( 'mbstring' ) && self::$use_mbstring == TRUE ) {
 			$ret = mb_strtoupper( MultiByte::convert_encoding( $str ), $enc );
 		}
 		else {
