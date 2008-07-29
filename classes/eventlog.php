@@ -58,8 +58,8 @@ class EventLog extends ArrayObject
 	{
 		$id = DB::get_value( "SELECT id FROM {log_types} WHERE module = ? and type = ?", array( self::get_module( $module ), $type ) );
 		if( $id ) {
-			if( !DB::exists( 'log', array( 'type_id' => $id ) ) ) {
-				DB::delete( 'log_types', array( 'id' => $id ) );
+			if( !DB::exists( '{log}', array( 'type_id' => $id ) ) ) {
+				DB::delete( '{log_types}', array( 'id' => $id ) );
 			}
 		}
 	}
