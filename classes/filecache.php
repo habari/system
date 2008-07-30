@@ -90,8 +90,8 @@ class FileCache extends Cache
 		if ( !isset( $this->cache_data[$group] ) ) {
 			if ( isset( $this->cache_files[$ghash] ) && count($this->cache_files[$ghash]) > 1 ) {
 				foreach ( $this->cache_files[$ghash] as $hash => $record ) {
-					$this->cache_data[$group] = unserialize(
-						file_get_contents( $this->cache_files[$group][$record['name']]['file'] )
+					$this->cache_data[$group][$record['name']] = unserialize(
+						file_get_contents( $record['file'] )
 						);
 				}
 			}
