@@ -259,7 +259,7 @@ class RemoteRequest
 	public static function get_contents( $url, $use_include_path= FALSE, $context= NULL, $offset=0, $maxlen= -1 )
 	{
 		$rr= new RemoteRequest( $url );
-		if ( $rr->execute() ) {
+		if ( $rr->execute() === TRUE) {
 			return ( $maxlen != -1
 				? substr( $rr->get_response_body(), $offset, $maxlen )
 				: substr( $rr->get_response_body(), $offset ) );
