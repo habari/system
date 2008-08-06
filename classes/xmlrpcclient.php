@@ -37,7 +37,7 @@ class XMLRPCClient
 			$this->scope = $scope;
 		}
 	}
-	
+
 	/**
 	 * Set the scope of any subsequent function calls
 	 * The default scope is 'system'.
@@ -48,7 +48,7 @@ class XMLRPCClient
 	{
 		$this->scope = $scope;
 	}
-	
+
 	/**
 	 * Allow method overloading for this class.
 	 * This method allows any method name to be called on this object.  The method
@@ -66,7 +66,7 @@ class XMLRPCClient
 		else {
 			$rpc_method = $fname;
 		}
-	
+
 		$rpx = new SimpleXMLElement('<methodCall/>');
 		$rpx->addChild('methodName', $rpc_method);
 		if(count($args) > 0) {
@@ -80,8 +80,10 @@ class XMLRPCClient
 		$request= new RemoteRequest($this->entrypoint, 'POST');
 		$request->add_header('Content-Type: text/xml');
 		$request->set_body($rpx->asXML());
-		
-		if($request->execute()) {
+
+		$request->execute();
+
+		if ( $request->executed() ) {
 			$response = $request->get_response_body();
 			$enc = mb_detect_encoding($response);
 			$responseutf8 = mb_convert_encoding($response, 'UTF-8', $enc);
@@ -104,32 +106,32 @@ class XMLRPCClient
 			}
 		}
 	}
-	
+
 	/**
 	 * Allow scoped functions to be called in shorthand
 	 * Example:
 	 * <code>
-	 * // Create the XMLRPC object	 
+	 * // Create the XMLRPC object
 	 * $rpc= new XMLRPCClient('http://rpc.pingomatic.com');
-	 * // Call weblogUpdates.ping RPC call	 
-	 * $rpc->weblogUpdates->ping('Blog name', 'http://example.com');	 	 
+	 * // Call weblogUpdates.ping RPC call
+	 * $rpc->weblogUpdates->ping('Blog name', 'http://example.com');
 	 * </code>
-	 * 	 	 	 	 
+	 * 
 	 * @param string $scope The scope to set this object to.
 	 * @return XMLRPCClient This object instance
-	 **/	  	
+	 **/
 	public function __get($scope)
 	{
 		$this->set_scope($scope);
 		return $this;
 	}
-	
+
 	/**
 	 * Convenience method to create a new XMLRPCClient object
 	 * Example:
 	 * <code>
 	 * XMLRPCClient::open('http://rpc.pingomatic.com')->weblogUpdates->ping('Blog name', 'http://example.com');
-	 * </code>	 	 	 
+	 * </code>
 	 * @param string $xmlrpc_entrypoint The entrypoint of the remote server
 	 * @return XMLRPCClient The created client object
 	 **/
@@ -137,7 +139,7 @@ class XMLRPCClient
 	{
 		return new XMLRPCClient( $xmlrpc_entrypoint );
 	}
-	 	 	 
+
 }
 
 ?>
