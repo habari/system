@@ -1222,7 +1222,7 @@ body.page-themes #page .dropbutton {
 }
 
 
-/*- SETTINGS PAGE */
+/*- OPTIONS PAGE */
 
 .container.settings .item {
 	line-height: 34px;
@@ -1305,6 +1305,13 @@ body.page-themes #page .dropbutton {
 }
 
 .special_search  a {
+	color: #666;
+}
+
+.message.none p {
+	text-align: center;
+	margin: 0;
+	font-size: 1.2em;
 	color: #666;
 }
 
