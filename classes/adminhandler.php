@@ -471,8 +471,10 @@ class AdminHandler extends ActionHandler
 		$form->title->value = $post->title;
 		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 		// Create the silos
-		$form->append('silos', 'silos');
-		$form->silos->silos = Media::dir();
+		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
+			$form->append('silos', 'silos');
+			$form->silos->silos = Media::dir();
+		}
 
 		// Create the Content field
 		$form->append('textarea', 'content', 'null:null', _t('Content'), 'admincontrol_textarea');
