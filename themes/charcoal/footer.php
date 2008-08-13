@@ -1,6 +1,6 @@
 	</div>
 	<div id="bottom-secondary">
-		<div id="tags"><?php if (Plugins::is_loaded('tagcloud')) echo $tag_cloud; else $theme->show_tags();?></div>
+		<div id="tags"><?php if (Plugins::is_loaded('tagcloud')) $theme->tag_cloud(); else $theme->show_tags();?></div>
 	</div>
 	<div id="footer">
 		<p>
