@@ -19,7 +19,7 @@
    
    <div class="secondary">
   
-<?php $theme->display ( 'sideabar' ); ?>
+<?php $theme->display ( 'sidebar' ); ?>
 
    </div>
    
