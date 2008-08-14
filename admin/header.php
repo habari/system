@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ 	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
@@ -71,3 +71,6 @@
 <div id="spinner"></div>
 
 <div id="page">
+
+<?php Plugins::act('admin_info', $theme, $page); ?>
+
