@@ -56,7 +56,20 @@ class Locale
 	 **/
 	private static function load_domain( $domain )
 	{
-		$file= HABARI_PATH . '/system/locale/' . self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
+		$file_end = self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
+
+		if (file_exists( Site::get_dir( 'config' ) . '/locale/' . $file_end ) ) {
+			$file = Site::get_dir( 'config' ) . '/locale/' . $file_end;
+		}
+		else if (file_exists( HABARI_PATH . '/user/locale/' . $file_end ) ) {
+			$file = HABARI_PATH . '/user/locale/' . $file_end;
+		}
+		else if (file_exists( HABARI_PATH . '/3rdparty/locale/' . $file_end ) ) {
+			$file = HABARI_PATH . '/3rdparty/locale/' . $file_end;
+		}
+		else {
+			$file = HABARI_PATH . '/system/locale/' . $file_end;
+		}
 
 		return self::load_file( $domain, $file );
 	}
