@@ -68,14 +68,16 @@ a {
 	position: absolute;
 	top: 15px;
 	right: 20px;
-	display: block;
+	display: none;
 	height: 20px;
 	width: 20px;
 	text-indent: -3000px;
 	background: url(images/install-step_h2_help-me.png) scroll no-repeat top left;
 	outline: none;
 	}
-
+.ready .help-me {
+	display:block;
+}
 .help-me:hover {
 	background: url(images/install-step_h2_help-me_over.png) scroll no-repeat top left;
 	}
@@ -117,12 +119,15 @@ div.javascript-disabled {
 	text-align: center;
 	}
 
+.inputfield label, .item label {
+	color: #666;
+	}
+	
 .inputfield label {
+	padding: 3px 20px 0 0;
 	display: block;
 	width: 122px;
-	padding: 3px 20px 0 0;
 	float: left;
-	color: #666;
 	}
 
 .inputfield label strong {
@@ -237,3 +242,29 @@ div.javascript-disabled {
 #footer a:hover {
 	color: #666;
 	}
+
+/* item selection */
+.items div.item {
+	padding:5px 0;
+}
+
+.items span.checkbox {
+	position:absolute;
+}
+
+.items label {
+	position:relative;
+	top:3px;
+}
+
+.items label, .items div.help {
+	padding-left:30px;
+}
+
+.items .controls {
+	margin-top:20px;
+}
+
+.items .controls label {
+	color:#888888;
+}

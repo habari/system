@@ -64,9 +64,9 @@ function checkDBCredentials()
 				case '1': // Hide the warnings, highlight the borders and show the next step
 					ida= new Array( '#mysqldatabasename', '#mysqldatabasehost', '#mysqldatabasepass', '#mysqldatabaseuser' );
 					$(ida).each(function(id) {
-					ido= $(ida).get(id);
-					$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-					$(ido).parents('.installstep').addClass('done')
+						ido= $(ida).get(id);
+						$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+						$(ido).parents('.installstep').addClass('done')
 					});
 					$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
 					$('#sitename').focus()
@@ -187,6 +187,8 @@ function checkSiteConfigurationCredentials() {
 	if(installok) {
 		$('#siteconfiguration').addClass('done');
 		$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
+		$('#pluginactivation').children('.options').fadeIn().addClass('ready').addClass('done');
+		$('#pluginactivation').children('.help-me').show();
 		$('#submitinstall').removeAttr( 'disabled' );
 	}
 	else {
@@ -230,8 +232,62 @@ function noVerify() {
 	$('#installerror').html('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify your installation details.</p>' + $('#installerror').html());
 }
 
+var itemManage = {
+	init: function() {
+		if(!$('.item.controls input[type=checkbox]')) return;
+		
+		$('.item.controls input[type=checkbox]').change(function () {
+			if($('.item.controls label').hasClass('all')) {
+				itemManage.uncheckAll();
+			} else {
+				itemManage.checkAll();
+			}
+		});
+		
+		$('.item:not(.ignore):not(.controls) .checkbox input[type=checkbox]').change(function () {
+			itemManage.changeItem();
+		});
+		
+		itemManage.changeItem();
+	},
+	changeItem: function() {
+		var selected = {};
+
+		count = $('.item:not(.hidden):not(.ignore):not(.controls) .checkbox input[type=checkbox]:checked').length;
+
+		if(count == 0) {
+			$('.item.controls input[type=checkbox]').each(function() {
+				this.checked = 0;
+			});
+			$('.item.controls label').addClass('none').removeClass('all').text('None selected');
+		} else if(count == $('.item:not(.hidden):not(.ignore):not(.controls) .checkbox input[type=checkbox]').length) {
+			$('.item.controls input[type=checkbox]').each(function() {
+				this.checked = 1;
+			});
+			$('.item.controls label').removeClass('none').addClass('all').text('All selected');
+		} else {
+			$('.item.controls input[type=checkbox]').each(function() {
+				this.checked = 0;
+			});
+			$('.item.controls label').removeClass('none').removeClass('all').text(count + ' selected');
+		}
+	},
+	uncheckAll: function() {
+		$('.item:not(.hidden):not(.ignore):not(.controls) .checkbox input[type=checkbox]').each(function() {
+			this.checked = 0;
+		});
+		itemManage.changeItem();
+	},
+	checkAll: function() {
+		$('.item:not(.hidden):not(.ignore):not(.controls) .checkbox input[type=checkbox]').each(function() {
+			this.checked = 1;
+		});
+		itemManage.changeItem();
+	}
+}
+
 $(document).ready(function() {
-	$('.help-me').click(function(){$(this).parents('.installstep').find('.help').slideToggle();return false;})
+	$('.help-me').click(function(){$(this).parents('.installstep').find('.help').slideToggle();return false;});
 	$('.help').hide();
 	$('.installstep').removeClass('ready');
 	$('.installstep:first').addClass('ready');
@@ -239,6 +295,7 @@ $(document).ready(function() {
 	$('#installform').before('<div class="installerror error" id="installerror"></div>');
 	$('#installerror').hide();
 	$('form').attr('autocomplete', 'off');
+	itemManage.init();
 	setDatabaseType();
 	checkDBCredentials();
 	checkSiteConfigurationCredentials();
