@@ -751,7 +751,7 @@ class InstallHandler extends ActionHandler {
 		// extract checked plugin IDs from $_POST
 		$plugin_ids = array();
 		foreach ( $_POST as $id => $activate ) {
-			if ( preg_match( '/plugin_\d+/', $id ) && $activate ) {
+			if ( preg_match( '/plugin_\w+/', $id ) && $activate ) {
 				$id = substr( $id, 7 );
 				$plugin_ids[] = $id;
 			}
