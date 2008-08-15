@@ -142,14 +142,19 @@ class Format
 	 * @param string $between_last Text to put between the next-to-last element and the last element
 	 * @reutrn string The constructed string
 	**/
-	public static function and_list( $array, $between = ', ', $between_last = ' and ' )
+	public static function and_list( $array, $between = ', ', $between_last = NULL )
 	{
 		if ( ! is_array( $array ) ) {
 			$array = array( $array );
 		}
+
+		if( $between_last === NULL ) {
+			$between_last = _t( ' and ' );
+		}
+
 		$last= array_pop( $array );
 		$out = implode(', ', $array );
-		$out .= ($out == '') ? $last : ' and ' . $last;
+		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
 	}
 
@@ -162,12 +167,16 @@ class Format
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 **/
-	public static function tag_and_list($array, $between = ', ', $between_last = ' and ')
+	public static function tag_and_list($array, $between = ', ', $between_last = NULL )
 	{
-		if ( ! is_array( $array ) )
-		{
+		if ( ! is_array( $array ) ) {
 			$array = array ( $array );
 		}
+
+		if ( $between_last === NULL ) {
+			$between_last = _t(' and ');
+		}
+
 		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";');
 		$array = array_map($fn, $array, array_keys($array));
 		$last = array_pop($array);
