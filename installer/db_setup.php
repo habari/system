@@ -231,6 +231,32 @@
 
 		<div class="next-section"></div>
 
+		<div class="installstep ready" id="pluginactivation">
+			<h2><?php _e('Plugin Activation'); ?><a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
+			<a href="#" class="help-me"><?php _e('Help'); ?></a>
+			<div class="options items">
+				<?php foreach($plugins as $plugin) { ?>
+				<div class="item clear">
+					<div class="head">
+						<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>" id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked'; ?>></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
+					</div>
+					
+					<div class="help"><?php echo $plugin['info']->description; ?></div>
+
+				</div>
+				<?php } ?>
+				
+				<div class="controls item">
+					<span class="checkbox"><input type="checkbox" name="checkbox_controller" id="checkbox_controller"></span>
+					<label for="checkbox_controller">None Selected</label>
+				</div>
+			</div>
+
+			<div class="bottom"></div>
+		</div>
+
+		<div class="next-section"></div>
+
 		<div class="installstep ready" id="install">
 			<h2><?php _e('Install'); ?></h2>
 			<div class="options">

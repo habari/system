@@ -144,6 +144,11 @@ class InstallHandler extends ActionHandler {
 			$this->display('db_setup');
 		}
 
+		// activate plugins on POST
+		if ( !empty( $_POST ) ) {
+			$this->activate_plugins();
+		}
+
 		// Install a theme.
 		$themes= Utils::glob( Site::get_dir( 'user' ) . '/themes/*', GLOB_ONLYDIR );
 		if ( 1 === count( $themes ) ) {
@@ -177,7 +182,52 @@ class InstallHandler extends ActionHandler {
 		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
 		return true;
 	}
+	
+	/*
+	 * Helper function to grab list of plugins
+	 */
+	public function get_plugins() {
+		$all_plugins= Plugins::list_all();
+		$recommended_list = array(
+			'coredashmodules.plugin.php',
+			'habarisilo.plugin.php',
+			'pingback.plugin.php',
+			'spamchecker.plugin.php',
+			'undelete.plugin.php'
+		);
 
+		foreach ( $all_plugins as $file ) {
+			$plugin= array();
+			$plugin_id= Plugins::id_from_file( $file );
+			$plugin['plugin_id']= $plugin_id;
+			$plugin['file']= $file;
+
+			$error= '';
+			if ( Utils::php_check_file_syntax( $file, $error ) ) {
+				$plugin['debug']= false;
+				// instantiate this plugin
+				// in order to get its info()
+				include_once( $file );
+				Plugins::get_plugin_classes();
+				$pluginobj= Plugins::load( $file, false );
+				$plugin['active']= false;
+				$plugin['verb']= _t( 'Activate' );
+				$plugin['actions']= array();
+				$plugin['info']= $pluginobj->info;
+				$plugin['recommended'] = in_array( basename($file), $recommended_list );
+			}
+			else {
+				$plugin['debug']= true;
+				$plugin['error']= $error;
+				$plugin['active']= false;
+			}
+			
+			$plugins[$plugin_id]= $plugin;
+		}
+		
+		return $plugins;
+	}
+	
 	/**
 	 * Helper function to remove code repetition
 	 *
@@ -188,6 +238,9 @@ class InstallHandler extends ActionHandler {
 		foreach ($this->handler_vars as $key=>$value) {
 			$this->theme->assign($key, $value);
 		}
+		
+		$this->theme->assign('plugins', $this->get_plugins());
+		
 		$this->theme->display($template_name);
 		exit;
 	}
@@ -691,6 +744,35 @@ class InstallHandler extends ActionHandler {
 			return false;
 		}
 		return false;  // Only happens when config.php template does not exist.
+	}
+
+	public function activate_plugins()
+	{
+		// extract checked plugin IDs from $_POST
+		$plugin_ids = array();
+		foreach ( $_POST as $id => $activate ) {
+			if ( preg_match( '/plugin_\d+/', $id ) && $activate ) {
+				$id = substr( $id, 7 );
+				$plugin_ids[] = $id;
+			}
+		}
+
+		// set the user_id in the session in case plugin activation methods need it
+		$u = User::get_by_name('admin');
+		$u->remember();
+
+		// loop through all plugins to find matching plugin files
+		$plugin_files = Plugins::list_all();
+		foreach ( $plugin_files as $file ) {
+			$id = Plugins::id_from_file( $file );
+			if ( in_array( $id, $plugin_ids ) ) {
+				Plugins::activate_plugin( $file );
+			}
+		}
+
+		// unset the user_id session variable
+		Session::clear_userid($_SESSION['user_id']);
+		unset($_SESSION['user_id']);
 	}
 
 	/**
