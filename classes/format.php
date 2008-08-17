@@ -110,27 +110,52 @@ class Format
 	 **/
 	public static function autop($value)
 	{
-		$regex= '/(<\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ismU';
-		$target = str_replace("\r\n", "\n", $value);
+		$regex = '/(<\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
 
-		$cz = preg_split($regex, $target);
-		preg_match_all($regex, $target, $cd, PREG_SET_ORDER);
+		// First, clean out any windows line endings 
+		$target = str_replace( "\r\n", "\n", $value );
 
+		// Then, find any of the approved tags above, and split the content on them
+		$cz = preg_split( $regex, $target );
+		preg_match_all( $regex, $target, $cd, PREG_SET_ORDER );
+
+		/**
+		 * Loop through each content block, turning two newlines in a row into </p><p>'s and 
+		 * single newlines into <br>'s
+		 **/
 		$output = '';
 		for($z = 0; $z < count($cz); $z++) {
-			$pblock= preg_replace( '/\n{2,}/', "</p><p>", trim( $cz[$z] ) );
-			$pblock= ($pblock == '') ? '' : "<p>{$pblock}</p>";
+			$pblock = preg_replace( '/\n{2,}/', "</p><p>", trim( $cz[$z] ) );
+			$pblock = ( $pblock == '' ) ? '' : "<p>{$pblock}</p>";
 
-			$tblock= isset( $cd[$z] ) ? $cd[$z][0] : '';
+			$tblock = isset( $cd[$z] ) ? $cd[$z][0] : '';
 			$output .= $pblock . $tblock;
 		}
 
 
-		$output= preg_replace( '%>\s*\n%i', '>', $output );
-		$output= preg_replace( '%\n\s*<%i', '<', $output );
-		$output= preg_replace( '%\n%i', '<br />', $output );
+		$output = preg_replace( '%>\s*\n%i', '>', $output );
+		$output = preg_replace( '%\n\s*<%i', '<', $output );
+		$output = preg_replace( '%\n%i', '<br />', $output );
 
-		return trim($output);
+
+		/**
+		 * Now filter out any erroneous paragraph or break tags, like ones that would occur in nested lists.
+		 * There may very well be more cases for this: table td's, etc? 
+		 **/
+		$cleanNestedRegex = '<\/?\s*(ul|ol|li|dl|dt|dd)[^>]*>';
+
+		// Filter out paragraph tags
+		$output = preg_replace( "/<p>\s*($cleanNestedRegex)/", "$1", $output );
+		$output = preg_replace( "/($cleanNestedRegex)\s*<\/p>/", "$1", $output );
+
+		// Filter out br tags
+		$output = preg_replace( "/($cleanNestedRegex)\s*<br>/", "$1", $output );
+		$output = preg_replace( "/<br>\s*($cleanNestedRegex)/", '$1', $output );
+
+		// Finally, move misplaced p tags to after hr tags
+		$output= preg_replace( '%<p><hr\s*/*\s*>%', "<hr/><p>", $output );
+
+		return trim( $output );
 
 	}
 
