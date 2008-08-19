@@ -130,14 +130,10 @@
 </div>
 
 <?php if ( $first_run ): ?>
-<div class="container dashboard">
+<div class="container dashboard transparent">
 	<div class="item">
-	<p><em>Welcome to Habari! This is the first time you've been here, so a quick tour is in order.</em></p>
-	<p>In the top left corner of the window you'll find a dropdown menu which provides links to all the various sections of the Habari admin. This menu can be accessed with keyboard shortcuts. &ldquo;Q&rdquo; will bring focus to the menu, then press one of the indicated keys to go to another page.</p>
-	<p>Wondering what you can do on some of the administrative pages? There are two &ldquo;Create&rdquo; pages for entries and pages. Entries are like journal entries and are filed chronologically. Pages are filed separately and are great for things like telling about the authors on your site. There are also two &ldquo;Manage&rdquo; links where you can find, edit, and delete entries and pages.</p>
-	<p>Below the horizontal separator is &ldquo;Dashboard&rdquo;, which takes you back here. &ldquo;Options&rdquo; lets you make changes to the entire blog (title, tagline, that sort of thing). &ldquo;Plugins&rdquo; is where you control, well, plugins. There are a few included, and there are dozens more <a href='http://wiki.habariproject.org/en/Available_Plugins'>plugins</a> available. &ldquo;Themes&rdquo; is where you can change how your blog looks to visitors. More publicly available <a href='http://wiki.habariproject.org/en/Available_Themes'>themes</a> are listed in the wiki. &ldquo;Users&rdquo; is where you control what the registered visitors, authors, and fellow admins can do on the site. Finally &ldquo;Import&rdquo; allows you to bring in your posts from another blogging platform. Just because you're using Habari doesn't mean you have to lose your old work.</p>
-	<p>Below this message is your &ldquo;Dashboard&rdquo;. It is rather empty out of the box, but you can add dashboard modules which give you quick information about activity on your blog. The Habari Community recommends heading immediately to the <a href="<?php echo URL::get( 'admin', 'page=plugins' )?>">plugins page</a> and activating the &ldquo;Core Dashboard Modules&rdquo; so that you will see something here.</p>
-	<p>If this hasn't covered everything you need to know, there is a link to the <a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href);return false;" title="Habari Manual">manual</a> at the bottom of every page in the admin area. This message will disappear next time you visit.</p>
+	<p>Welcome to Habari! We hope that you will jump right in and start exploring. If you get stuck or want to learn more about some of the advanced features, we encourage you to read the <a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href);return false;" title="Habari Manual">manual</a>, which is bundled with every Habari install. This link also appears at the bottom of every page in the admin area.</p>
+	<p>This message will disappear next time you visit.</p>
 	</div>
 </div>
 	
