@@ -13,8 +13,8 @@
 		<span class="time pct10"><span class="dim"><?php _e('at'); ?> <?php echo date('H:i', strtotime($post->pubdate)); ?></span></span>
 
 		<ul class="dropbutton">	
-			<li><a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit \''.$post->title.'\'') ?>"><?php _e('Edit'); ?></a></li>
-			<li><a href="<?php echo $post->permalink; ?>" title="<?php _e('View \''.$post->title.'\'') ?>"><?php _e('View'); ?></a></li>
+			<li><a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php printf( _t('Edit \'%s\''), $post->title ); ?>"><?php _e('Edit'); ?></a></li>
+			<li><a href="<?php echo $post->permalink; ?>" title="<?php printf( _t('View \'%s\''), $post->title ); ?>"><?php _e('View'); ?></a></li>
 			<li><a href="#" onclick="itemManage.remove(<?php echo $post->id; ?>, 'post');return false;" title="<?php _e('Delete this item') ?>"><?php _e('Delete'); ?></a></li>
 		</ul>
 	</div>
