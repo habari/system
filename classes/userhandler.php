@@ -92,6 +92,7 @@ class UserHandler extends ActionHandler
 	{
 		// get the user from their cookie
 		if ( $user = User::identify() ) {
+			Plugins::act( 'user_logout', $this );
 			// delete the cookie, and destroy the object
 			$user->forget();
 			$user= null;
