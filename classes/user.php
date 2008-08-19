@@ -182,6 +182,7 @@ class User extends QueryRecord
 			Utils::redirect( Site::get_url( 'admin' ) );
 			exit;
 		}
+		Plugins::act( 'user_forget', $this );
 		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
 		$home = Options::get('base_url');
