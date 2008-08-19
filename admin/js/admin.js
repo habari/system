@@ -1143,6 +1143,55 @@ $(window).load( function() {
 	timeline.init();
 });
 
+// code for making inline labels which then move above form inputs when the inputs have content
+var labeler = {
+	focus: null,
+	init: function() {
+		labeler.checkAll();
+				
+		$('.islabeled:not(.lock)').focus(function(){
+			labeler.focus= $(this);
+			labeler.aboveLabel($(this));
+		}).blur(function(){
+			labeler.focus= null;
+			labeler.check($('label[for='+$(this).attr('id')+']'));
+		});
+	},
+	checkAll: function() {
+		$('label.incontent').each(function(){
+			labeler.check(this);
+			
+			// focus on the input when clicking on the label
+			$(this).click(function() {
+				$('#' + $(this).attr('for')).focus();
+			});
+		});
+	},
+	check: function(label) {
+		var target = $('#' + $(label).attr('for'));
+		
+		if( target.val() == null || target.hasClass('lock') ) return;
+		
+		if( labeler.focus != null && labeler.focus.attr('id') == target.attr('id') ) {
+			labeler.aboveLabel(target);
+		}
+		else if( target.val() == '' ) {
+			labeler.overLabel(target);
+		}
+		else {
+			labeler.aboveLabel(target);
+		}
+	},
+	aboveLabel: function(el) {
+		$(el).addClass('islabeled');
+		$('label[for=' + $(el).attr('id') + ']').removeClass('overcontent').addClass('abovecontent');	
+	},
+	overLabel: function(el) {
+		$(el).addClass('islabeled');
+		$('label[for=' + $(el).attr('id') + ']').addClass('overcontent').removeClass('abovecontent');
+	}
+}
+
 $(document).ready(function(){
 	// Initialize all sub-systems
 	dropButton.init();
@@ -1155,6 +1204,7 @@ $(document).ready(function(){
 	liveSearch.init();
 	findChildren();
 	navigationDropdown.init();
+	labeler.init();
 
 	// Alternate the rows' styling.
 	$("table").each( function() {
@@ -1171,33 +1221,6 @@ $(document).ready(function(){
 	$(".search_field").click(function(){
 		if($(".search_field:checked").size() == 0 && !$(this).attr('checked')) {
 			return false;
-		}
-	});
-
-	// Move labels into elements. Use with usability-driven care.
-	$('label.incontent').each(function(){
-
-		var ctl = '#' + $(this).attr('for');
-		if($(ctl).val() == '') {
-			$(ctl).addClass('islabeled');
-			$(this).addClass('overcontent');
-		} else {
-			$(ctl).addClass('islabeled'); 
-			$(this).addClass('abovecontent'); 
-		}
-		
-		$(this).click(function() {
-			$(ctl).focus();
-		})
-	});
-
-	$('.islabeled').focus(function(){
-		$('label[for='+$(this).attr('id')+']').removeClass('overcontent').addClass('abovecontent').show(); 
-	}).blur(function(){
-		if ($(this).val() == '') {
-			$('label[for='+$(this).attr('id')+']').addClass('overcontent').removeClass('abovecontent'); 
-		} else {
-			$('label[for='+$(this).attr('id')+']').removeClass('overcontent').addClass('abovecontent');
 		}
 	});
 
