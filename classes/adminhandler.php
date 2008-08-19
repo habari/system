@@ -455,7 +455,8 @@ class AdminHandler extends ActionHandler
 
 	function form_publish($post)
 	{
-		$form = new FormUI('publishform');
+		$form = new FormUI('create-content');
+		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
 		$form->class[] = 'create';
 
 		if(isset($this->handler_vars['slug'])) {
