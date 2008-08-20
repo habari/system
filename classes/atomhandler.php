@@ -193,10 +193,10 @@ class AtomHandler extends ActionHandler
 
 			$entry_content= $feed_entry->addChild( 'content', $content );
 			$entry_content->addAttribute( 'type', 'html' );
-			Plugins::act( 'atom_add_post', $xml, $post );
+			Plugins::act( 'atom_add_post', $feed_entry, $post );
 		}
 		return $xml;
-  }
+	}
 
 	/**
 	 * Add comments as items in the provided xml structure
