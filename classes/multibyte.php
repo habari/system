@@ -13,7 +13,6 @@
 class MultiByte
 {
 
-
 	const USE_MBSTRING = 0;
 
 	/*
@@ -40,20 +39,19 @@ class MultiByte
 	*
 	* Sets and returns the internal encoding. 
 	*
-	* @param $enc string. The encoding to be used
+	* @param $use_enc string. The encoding to be used
 	^
 	* @return string. If $enc is null, returns the current
 	* encoding. If $enc is not null, returns the old encoding
 	*/
-	public static function hab_encoding( $enc = null )
+	public static function hab_encoding( $use_enc = null )
 	{
-		return self::$hab_enc;
-		if ( $enc == null ) {
+		if ( $use_enc === null ) {
 			return self::$hab_enc;
 		}
 		else{
 			$old_enc = self::$hab_enc;
-			self::$hab_enc = $enc;
+			self::$hab_enc = $use_enc;
 			return $old_enc;
 		}
 	}
@@ -65,18 +63,18 @@ class MultiByte
 	*
 	* @param $int The new library to use. 
 	*
-	* @return int  If $new_library is null, returns the current library
+	* @return mixed  If $new_library is null, returns the current library
 	* being used. If $new_library has a valid value, returns the old library,
 	* else returns false.
 	*/
 	public static function library( $new_library = null )
 	{
-		if ( $new_library == null ) {
+		if ( $new_library === null ) {
 			return self::$use_library;
 		}
-		else if ($new_library == self::USE_MBSTRING ) {
-			$old_library = $use_library;
-			$use_library = $new_library;
+		else if ($new_library === self::USE_MBSTRING ) {
+			$old_library = self::$use_library;
+			self::$use_library = $new_library;
 			return $old_library;
 
 		}
@@ -91,17 +89,18 @@ class MultiByte
 	* Converts a string's encoding to a new encoding
 	*
 	* @param $str string. The string who's encoding is being changed. 
-	* @param $enc string. The encoding to convert to. If not present,
+	* @param $use_enc string. The encoding to convert to. If not set,
 	* the internal encoding will be used.
 	*
 	* @return mixed  The  source string in the new encoding or boolean false.
 	*/
-	public static function convert_encoding( $str, $enc = null )
+	public static function convert_encoding( $str, $use_enc = null )
 	{
 		$ret = FALSE;
 
-		if( ! isset( $enc ) ) {
-			$enc = self::$hab_enc;
+		$enc = self::$hab_enc;
+		if( $use_enc !== null ) {
+			$enc = $use_enc;
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
@@ -137,7 +136,7 @@ class MultiByte
 				//detect the encoding . the detected encoding may be wrong, but it's better than guessing
 				$enc = mb_detect_encoding( $str );
 				// reset detection order
-				mb_detect_order( $old_order);
+				mb_detect_order( $old_order );
 			}
 		}
 
@@ -154,23 +153,28 @@ class MultiByte
 	* @param $len integer. How long the returned string should be. If $len is
 	* not set, the section of the string from $begin to the end of the string is
 	* returned.
+	* @param $use_enc string. The encoding to be used. If not set, 
+	* the internal encoding will be used.
 	*
 	* @return mixed The  section of the source string requested in the encoding requested or false.
+	* If $len is not set, returns substring from $begin to end of string.
 	*  
 	*/
-	public static function substr( $str, $begin, $len = null )
+	public static function substr( $str, $begin, $len = null, $use_enc = null )
 	{
 		$ret = FALSE;
 
 		$enc = self::$hab_enc;
+		if( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			if ( extension_loaded( 'mbstring' ) ) {
-				$ret = mb_convert_encoding( $str, $enc, MultiByte::detect_encoding( $str ) );
 				if( ! isset( $len ) ) {
 					$len = MultiByte::strlen( $str ) - $begin;
 				}
-				$ret = mb_substr( $ret, $begin, $len, $enc );
+				$ret = mb_substr( $str, $begin, $len, $enc );
 			}
 		}
 		return $ret;
@@ -182,19 +186,23 @@ class MultiByte
 	* Gets the length of a string in characters
 	*
 	* @param $str string. The string who's length is being returned. 
+	* @param $use_enc string. The encoding to be used. If not set, 
+	* the internal encoding will be used.
 	*
 	* @return integer. The length in characters of the string, or the length in bytes if a valid 
 	* multibyte library isn't loaded.
 	*/
-	public static function strlen( $str )
+	public static function strlen( $str, $use_enc = null )
 	{
 		$len = 0;
 
 		$enc = self::$hab_enc;
+		if( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			if ( extension_loaded( 'mbstring' ) ) {
-				$str = mb_convert_encoding( $str, $enc, MultiByte::detect_encoding( $str ) );
 				$len = mb_strlen( $str, $enc );
 			}
 		}
@@ -212,16 +220,21 @@ class MultiByte
 	* isn't loaded, strtolower() will be used, which can lead to unexpected results.
 	 *
 	 * @param $str string. The string to lowercase
+	* @param $use_enc string. The encoding to be used. If not set, 
+	* the internal encoding will be used.
 	 *
 	 * @return string. The lowercased string.
 	*/
-	public static function strtolower( $str )
+	public static function strtolower( $str, $use_enc = null )
 	{
 		$enc = self::$hab_enc;
+		if( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			if ( extension_loaded( 'mbstring' ) ) {
-				$ret = mb_strtolower( MultiByte::convert_encoding( $str ), $enc );
+				$ret = mb_strtolower( $str, $enc );
 			}
 		}
 		else {
@@ -238,16 +251,21 @@ class MultiByte
 	* isn't loaded, strtoupper() will be used, which can lead to unexpected results.
 	*
 	* @param $str string. The string to uppercase
+	* @param $use_enc string. The encoding to be used. If not set, 
+	* the internal encoding will be used.
 	*
 	* @return string. The uppercased string.
 	*/
-	public static function strtoupper( $str )
+	public static function strtoupper( $str, $use_enc = null )
 	{
 		$enc = self::$hab_enc;
+		if( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			if ( extension_loaded( 'mbstring' ) ) {
-				$ret = mb_strtoupper( MultiByte::convert_encoding( $str ), $enc );
+				$ret = mb_strtoupper( $str, $enc );
 			}
 		}
 		else {
