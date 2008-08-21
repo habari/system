@@ -269,7 +269,6 @@ WP_IMPORT_STAGE2;
 
 			$post_map= DB::get_column( "SELECT value FROM {postinfo} WHERE name='wp_id';");
 			foreach( $posts as $post ) {
-
 				if(in_array($post->id, $post_map)) {
 					continue;
 				}
@@ -326,6 +325,11 @@ WP_IMPORT_STAGE2;
 					$tags= array_unique( array_merge( $tags, array_map( $utw_tag_formatter, $utw_tags ) ) );
 				}
 
+				$post->content = MultiByte::convert_encoding( $post->content );
+				$post->title = MultiByte::convert_encoding( $post->title );
+				$tags = implode( ',', $tags );
+				$tags = MultiByte::convert_encoding( $tags );
+
 				$post_array= $post->to_array();
 				switch( $post_array['post_status'] ) {
 				case 'publish':
@@ -368,6 +372,7 @@ WP_IMPORT_STAGE2;
 					Options::set('import_errors', $errors);
 				}
 			}
+
 			if( $max < $postcount ) {
 				$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
 				$postindex++;
@@ -452,6 +457,7 @@ WP_IMPORT_AJAX2;
 			);
 			$usercount = 0;
 			_e('<p>Importing users...</p>');
+
 			foreach($wp_users as $user) {
 				$habari_user = User::get_by_name($user->username);
 				// If username exists
@@ -481,6 +487,7 @@ WP_IMPORT_AJAX2;
 					}
 				}
 			}
+
 			$ajax_url= URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
 			echo <<< WP_IMPORT_USERS1
 			<script type="text/javascript">
@@ -557,6 +564,9 @@ WP_IMPORT_USERS1;
 					case 'trackback': $comment->type= Comment::TRACKBACK; break;
 					default: $comment->type= Comment::COMMENT;
 				}
+
+				$comment->content = MultiByte::convert_encoding( $comment->content );
+				$comment->name = MultiByte::convert_encoding( $comment->name );
 
 				$carray= $comment->to_array();
 				if ( $carray['ip'] == '' ) {
