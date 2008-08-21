@@ -15,7 +15,6 @@
 				<?php else: ?>
 				<p><?php _e('Please choose the type of import to perform:'); ?></p>
 				<select name="importer">
-					<option></option>
 					<?php
 					foreach($import_names as $name) {
 						echo "<option>{$name}</option>";
