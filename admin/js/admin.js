@@ -460,7 +460,7 @@ var itemManage = {
 					inEdit.deactivate();
 				}
 				findChildren();
-				spinner.stop();
+				Spinner.stop();
 			}
 		});
 	}
@@ -472,17 +472,17 @@ var tagManage = {
 		// Return if we're not on the tags page
 		if(!$('.page-tags').length) return;
 
-		$('.tags .tag').click(function() {
+		$('.tag').click(function() {
 				$(this).toggleClass('selected');
 				tagManage.changeTag();
 				return false;
 			}
 		);
 
-		$('.tags.controls input.delete.button').click(function () {
+		$('.controls input.delete.button').click(function () {
 			tagManage.remove();
 		});
-		$('.tags.controls input.rename.button').click(function () {
+		$('.controls input.rename.button').click(function () {
 			tagManage.rename();
 		});
 
@@ -493,21 +493,21 @@ var tagManage = {
 		});
 	},
 	changeTag: function() {
-		count = $('.tags .tag.selected').length;
+		count = $('.tag.selected').length;
 
-		visible = $('.tags .tag.selected:not(.hidden)').length;
+		visible = $('.tag.selected:not(.hidden)').length;
 
 		if(count == 0) {
-			$('.tags.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if(visible == $('.tags .tag:not(.hidden)').length) {
-			$('.tags.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
+			$('.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
+		} else if (visible == $('.tag:not(.hidden)').length) {
+			$('.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
 			if(visible != count) {
-				$('.tags.controls span.selectedtext').text('All visible selected (' + count + ' total)');
+				$('.controls span.selectedtext').text('All visible selected (' + count + ' total)');
 			}
 		} else {
-			$('.tags.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			$('.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
 			if(visible != count) {
-				$('.tags.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
+				$('.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
 		}
 	}
