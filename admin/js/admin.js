@@ -460,6 +460,7 @@ var itemManage = {
 					inEdit.deactivate();
 				}
 				findChildren();
+				spinner.stop();
 			}
 		});
 	}
@@ -1043,8 +1044,8 @@ var theMenu = {
 // LIVESEARCH
 var liveSearch = {
 	init: function() {
-		liveSearch.input= $('.search input');
-		liveSearch.searchPrompt= liveSearch.input.attr('placeholder');
+		liveSearch.input = $('.search input');
+		liveSearch.searchPrompt = liveSearch.input.attr('placeholder');
 		liveSearch.prevSearch = liveSearch.getSearchText();
 
 		liveSearch.input
@@ -1059,16 +1060,16 @@ var liveSearch = {
 				}
 			})
 			.keyup( function( event ) {
-				var code= event.keyCode;
+				var code = event.keyCode;
 
 				if ( code == 27 ) { // ESC key
 					liveSearch.input.val('');
 					$('.special_search a').removeClass('active');
 				}
-				
+
 				if ( code != 13 ) { // anything but enter
-					if ( liveSearch.timer) {
-						clearTimeout( liveSearch.timer);
+					if (liveSearch.timer) {
+						clearTimeout(liveSearch.timer);
 					}
 					liveSearch.timer = setTimeout( liveSearch.doSearch, 500);
 				}
@@ -1082,6 +1083,8 @@ var liveSearch = {
 	input: null,
 	doSearch: function() {
 		if ( liveSearch.getSearchText() == liveSearch.prevSearch ) return;
+
+		spinner.start();
 
 		liveSearch.prevSearch = liveSearch.getSearchText();
 		itemManage.fetch( 0, 20, true );
