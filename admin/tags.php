@@ -5,12 +5,12 @@
 </div>
 
 
-<div id="tag_collection" class="container tags">
+<div id="tag_collection" class="container">
   <?php $theme->display( 'tag_collection' ); ?>
 </div>
 
 
-<div class="container tags transparent tags controls">
+<div class="container transparent controls">
 	<span class="checkboxandselected pct25">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 	</span>
@@ -32,9 +32,9 @@
 tagManage.remove = function() {
 	spinner.start();
 
-	selected = $('.tags .tag.selected');
+	selected = $('.tag.selected');
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can delete them.'); ?>" );
+		humanMsg.displayMsg( "<?php _e('Error: No tags selected.'); ?>" );
 		return;
 	}
 	var query = {}
@@ -64,24 +64,25 @@ tagManage.remove = function() {
 		'json'
  	    );
 };
+
 tagManage.rename= function() {
-	master = $('.tags.controls input.renametext').val().trim();
+	master = $('.controls input.renametext').val().trim();
 
 	// Unselect the master, if it's selected
-	$('.tags .tag:contains(' + master + ')').each(function() {
+	$('.tag:contains(' + master + ')').each(function() {
 		if ($(this).find('span').text() == master) {
 			$(this).removeClass('selected');
 		}
 	})
 
-	selected = $('.tags .tag.selected');
+	selected = $('.tag.selected');
 
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can rename them.'); ?>" );
+		humanMsg.displayMsg( "<?php _e('Error: No tags selected.'); ?>" );
 		return;
 	}
 	else if ( master == '' ) {
-		humanMsg.displayMsg( "<?php _e('You need to enter a new tag to rename tags.'); ?>" );
+		humanMsg.displayMsg( "<?php _e('Error: New name not specified.'); ?>" );
 		return;
 	}
 	var query = {}
@@ -104,8 +105,9 @@ tagManage.rename= function() {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
+			$('.controls input.renametext').val('');
 			$('#tag_collection').html(result['tags']);
-			$('.tags .tag').click(function() {
+			$('.tag').click(function() {
 					$(this).toggleClass('selected');
 					tagManage.changeTag();
 				}

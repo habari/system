@@ -1,3 +1,5 @@
+/* @override http://localhost/habari/system/admin/css/admin.css */
+
 /*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
@@ -757,7 +759,7 @@ p:hover > label.abovecontent {
 .mediaphotos li.media img.loading {
 	border-color: #333;
 	width: 100%;
-	background: #303030;
+	backgroundd: #303030;
 }
 
 .mediaphotos li.media .mediastats {
@@ -1484,22 +1486,23 @@ ul.dropbutton li.nodisplay {
 
 /*- TAGS PAGE */
 
-.tag {
+body.page-tags .container a {
 	color: #555;
 	margin: 0 5px;
 	line-height: 20px;
 	padding: 2px 0;
+	outline: none;
 }
 
-.tag span {
+body.page-tags .container span {
 	white-space: nowrap;
 }
 
-.tag.selected {
-	color: orangered;
+body.page-tags .container .selected {
+	color: #fb430f;
 }
 
-.tags sup {
+body.page-tags .container sup {
 	color: #aaa;
 	font-size: 9px;
 	margin-left: 2px;
