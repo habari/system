@@ -438,7 +438,7 @@ var itemManage = {
 		$.ajax({
 			type: 'POST',
 			url: itemManage.fetchURL,
-			data: '&search=' + liveSearch.input.val() + '&offset=' + offset + '&limit=' + limit,
+			data: '&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
 			dataType: 'json',
 			success: function(json) {
 				itemManage.fetchReplace.html(json.items);
@@ -1045,26 +1045,28 @@ var liveSearch = {
 	init: function() {
 		liveSearch.input= $('.search input');
 		liveSearch.searchPrompt= liveSearch.input.attr('placeholder');
+		liveSearch.prevSearch = liveSearch.getSearchText();
 
 		liveSearch.input
 			.focus( function() {
-				if ( liveSearch.input.val() == liveSearch.searchPrompt ) {
+				if ( $.trim( liveSearch.input.val() ) == liveSearch.searchPrompt ) {
 					liveSearch.input.val('');
 				}
 			})
 			.blur( function () {
-				if (liveSearch.input.val() == '') {
+				if ( $.trim( liveSearch.input.val() ) == '' ) {
 					liveSearch.input.val( liveSearch.searchPrompt );
 				}
 			})
 			.keyup( function( event ) {
 				var code= event.keyCode;
 
-				if ( liveSearch.input.val() == '') {
-					return false;
-				} else if ( code == 27 ) { // ESC key
+				if ( code == 27 ) { // ESC key
 					liveSearch.input.val('');
-				} else if ( code != 13 ) { // anything but enter
+					$('.special_search a').removeClass('active');
+				}
+				
+				if ( code != 13 ) { // anything but enter
 					if ( liveSearch.timer) {
 						clearTimeout( liveSearch.timer);
 					}
@@ -1079,10 +1081,17 @@ var liveSearch = {
 	prevSearch: '',
 	input: null,
 	doSearch: function() {
-		if ( liveSearch.input.val() == liveSearch.prevSearch ) return;
+		if ( liveSearch.getSearchText() == liveSearch.prevSearch ) return;
 
-		liveSearch.prevSearch = liveSearch.input.val();
+		liveSearch.prevSearch = liveSearch.getSearchText();
 		itemManage.fetch( 0, 20, true );
+	},
+	getSearchText: function() {
+		var search_txt = $.trim( liveSearch.input.val() );
+		if ( search_txt == liveSearch.searchPrompt ) {
+			return '';
+		}
+		return search_txt;
 	}
 }
 
@@ -1090,11 +1099,11 @@ var liveSearch = {
 function toggleSearch() {
 	var re = new RegExp('\\s*' + $(this).attr('href').substr(1), 'gi');
 	if($('#search').val().match(re)) {
-		$('#search').val($('#search').val().replace(re, ''));
+		$('#search').val(liveSearch.getSearchText().replace(re, ''));
 		$(this).removeClass('active');
 	}
 	else {
-		$('#search').val($('#search').val() + ' ' + $(this).attr('href').substr(1));
+		$('#search').val(liveSearch.getSearchText() + ' ' + $(this).attr('href').substr(1));
 		$(this).addClass('active');
 	}
 	liveSearch.doSearch();
