@@ -759,7 +759,7 @@ p:hover > label.abovecontent {
 .mediaphotos li.media img.loading {
 	border-color: #333;
 	width: 100%;
-	backgroundd: #303030;
+	background: #303030;
 }
 
 .mediaphotos li.media .mediastats {

@@ -281,20 +281,24 @@ var itemManage = {
 		itemManage.changeItem();
 	},
 	selected: [],
+	searchCache: [],
+	searchRows: [],
 	simpleFilter: function( search ) {
-		search= search.toLowerCase();
+		search = $.trim( search.toLowerCase() );
 		
-		var count= 0;
-		$('li.item, a.tag, div.settings div.item').each(function() {
-			var labels= $('.user, span', this);
-			var text= $(this).text().toLowerCase();
-			if((text.search( search ) == -1) && (text != search)) {
-				$(this).hide();
-				$(this).addClass('hidden');
+		// cache search items on first call
+		if ( itemManage.searchCache.length == 0 ) {
+			itemManage.searchRows = $('li.item, a.tag, div.settings div.item');
+			itemManage.searchCache = itemManage.searchRows.map(function() {
+				return $(this).text().toLowerCase();
+			});
+		}
+
+		itemManage.searchCache.each(function(i) {
+			if( (this.search( search ) == -1) && (this != search) ) {
+				$(itemManage.searchRows[i]).hide().addClass('hidden');
 			} else {
-				count= count + 1;
-				$(this).show();
-				$(this).removeClass('hidden');
+				$(itemManage.searchRows[i]).show().removeClass('hidden');
 			}
 		});
 		
@@ -317,7 +321,7 @@ var itemManage = {
 		}
 		
 		if($('li.item').length != 0) {
-			itemManage.changeItem();
+			//itemManage.changeItem();
 		}
 	},
 	changeItem: function() {
@@ -460,7 +464,7 @@ var itemManage = {
 					inEdit.deactivate();
 				}
 				findChildren();
-				Spinner.stop();
+				spinner.stop();
 			}
 		});
 	}
