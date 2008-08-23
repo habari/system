@@ -3,7 +3,7 @@
     <name>Mzingi</name>
 	<author>Habari Community</author>
 	<url>http://habariproject.org</url>
-    <version>0.6</version>
+    <version>0.8</version>
     <template_engine>rawphpengine</template_engine>
 	<description>Mzingi, Swahili for foundation, is intended as a clean, simple design that can be used
 		as a framework for customization and theme development.</description>

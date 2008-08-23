@@ -17,12 +17,12 @@
 </head>
 <body>
 	<!--begin wrapper-->
-	<div id="wrapper" class="container prepend-1 appen-1">
+	<div id="wrapper" class="container prepend-1 append-1">
 		<!--begin masthead-->
 		<div id="masthead"  class="span-15 pull-1">
 			<div id="branding">
-				<h1><?php Options::out( 'title' ); ?></h1>
-				<h3 class="prepend-1"><?php Options::out( 'tagline' ); ?></h3>
+				<h1><a href="<?php Site::out_url( 'habari'); ?>" title="<?php Options::out( 'title' ); ?>"> <?php Options::out( 'title' ); ?></a></h1>
+				<h3 class="prepend-1"><em><?php Options::out( 'tagline' ); ?></em></h3>
 			</div>	
 		</div>
 	<!--end masthead-->

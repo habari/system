@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------*/
 
 blockquote {
-	border-left: 10px solid #629B16;
+	border-left: 10px solid #41670F;
 	padding: 5px 0 5px 20px;
 	margin: 10px 0 10px 40px;
 }
@@ -71,7 +71,7 @@ body {
 
 #masthead {
 	margin: 20px 0 40px 0;
-	border-bottom: 2px dotted #629B16;
+	border-bottom: 2px dashed #41670F;
 	padding-bottom: 5px;
 }
 
@@ -89,7 +89,7 @@ body {
 
 #footer {
 	height: 60px;
-	border-top: 2px dotted #629B16;
+	border-top: 2px dotted #41670F;
 	padding-top: 5px;
 	margin-top: 5px;
 }
@@ -113,8 +113,9 @@ h3 {
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
 
-#masthead h3 {
-	margin: 0;
+#masthead#branding h3 {
+	text-transform: italics;
+	font-size: ;
 }
 
 #primaryContent h2 {
@@ -150,21 +151,21 @@ h3 {
 -----------------------------------------------------------------------------*/
 
 a:link {
-	color: #629B16;
+	color: #41670F;
 }
 
 a:visited {
-	color: #629B16;
+	color: #41670F;
 	text-decoration: none;
 }
 
 a:hover {
 	text-decoration: none;
-	color: #D29C54;
+	color: #A37941;
 }
 
 a:active {
-	color: #629B16;
+	color: #41670F;
 }
 
 ul#nav li a:link, ul#nav li a:visited {
@@ -210,11 +211,11 @@ ul#tidbits a {
 	float: left;
 	margin: 0  12px 7px 0;
 	text-align: center;
-	border: 1px solid #D29C54;
+	border: 1px solid #A37941;
 }
 
 .calyear {
-	background: #D29C54;
+	background: #A37941;
 	color: #fff;
 	padding: 0 13px;
 }
@@ -224,14 +225,14 @@ ul#tidbits a {
 	margin: 0;
 	padding: 0;
 	text-align: center;
-	color: #629B16;
+	color: #A37941;
 }
 
 .calmonth {
 	font-size: 77%;
 	margin: 0;
-	border-top: 1px solid #629B16;
-	color: #629B16;
+	border-top: 1px solid #A37941;
+	color: #A37941;
 	width: 100%;
 }
 
