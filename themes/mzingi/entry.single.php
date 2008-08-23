@@ -2,7 +2,7 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent">
+		<div id="primaryContent" class="span-16 append-2">
 			<!--begin single post navigation-->
 			<div id="post-nav">
 				<?php if ( $previous= $post->ascend() ): ?>
@@ -14,7 +14,7 @@
 			</div>
 			<!--begin loop-->			
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
-						<h2><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
+						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 						<div class="cal">
 							<?php $date= Utils::getdate( strtotime( $post->pubdate ) ); ?> <span class="calyear"><?php echo $date['year']; ?></span><br><span class="calday"><?php echo $date['mday']; ?></span><br><span class="calmonth"><?php echo $date['month']; ?></span>
 						</div>	
