@@ -247,8 +247,7 @@ ul#tidbits a {
 
 .entry ul {
 	list-style-type: square;
-	padding-left: 55px;
-	clear: left;
+	padding-left: 80px;
 }
 
 .entry li {
