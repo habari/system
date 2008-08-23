@@ -1,26 +1,6 @@
 /* =General
 -----------------------------------------------------------------------------*/
 
-/* Resets */
-/* Remove padding and margin */
-* {
-  margin: 0;
-	padding: 0;
-}
-
-/* Put it back on certain elements */
-h1, h2, h3, h4, h5, h6, p, pre, blockquote, form, fieldset, table, ul {
-  margin: .5em 0;
-}
-
-em {
-	font-style: italic;
-}
-
-strong {
-	font-weight: 700;
-}
-
 blockquote {
 	border-left: 10px solid #62A20C;
 	padding: 5px 0 5px 20px;
@@ -76,7 +56,7 @@ img {
 -----------------------------------------------------------------------------*/
 
 body {
-  font: 108% verdana;
+  font: 108% "Lucida Grande", Lucida, Verdana, sans-serif;
   color: #666;
   background: #FEFFFD;
   
@@ -131,18 +111,18 @@ body {
 
 h1 {
 	font-size: 225%;
-	font-family: Georgia;
+	font-family: Georgia, "Times New Roman", Times, serif;
 	color: #545454;
 }
 
 h2 {
 	color: #545454;
-	font-family: Trebuchet MS;
+	font-family: Trebuchet, Tahoma, Arial, sans-serif;
 }
 
 h3 {
 	font-size: 123.1%;
-	font-family: times new roman;
+	font-family: Georgia, "Times New Roman", Times, serif;
 }
 
 #masthead h3 {
@@ -280,7 +260,7 @@ ul#tidbits a {
 }
 
 .entry {
-	font-family: Verdana;
+	font-family: "Lucida Grande", Lucida, Verdana, sans-serif;
 	text-align: justify;
 }
 
