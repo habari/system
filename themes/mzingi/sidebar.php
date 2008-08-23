@@ -1,5 +1,5 @@
 	<!--begin secondary content-->
-	<div id="secondaryContent" class="span-6 last">
+	<div id="secondaryContent" class="span-5 last">
 		<?php $theme->display ( 'searchform' ); ?>
 	<h3><a id="rss" href="<?php $theme->feed_alternate(); ?>" class="block"><?php _e('Subscribe to Feed'); ?></a></h3>
 	<h2 id="site"><?php _e('Navigation'); ?></h2>

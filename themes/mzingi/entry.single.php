@@ -2,7 +2,7 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-16 append-2">
+		<div id="primaryContent" class="span-15 append-2">
 			<!--begin single post navigation-->
 			<div id="post-nav">
 				<?php if ( $previous= $post->ascend() ): ?>
