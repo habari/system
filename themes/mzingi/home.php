@@ -2,7 +2,7 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-16 append-2">
+		<div id="primaryContent" class="span-15 append-2">
 			<!--begin loop-->
 			<?php foreach ( $posts as $post ) { ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">

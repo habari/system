@@ -2,7 +2,7 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent" class="span-16 append-2">
+		<div id="primaryContent" class="span-15 append-2">
 			<!--begin loop-->
 			<h2 class="prepend-2"><?php _e('Results for search of'); ?> "<?php echo htmlspecialchars( $criteria ); ?>"</h2>
 			<?php if (isset($post)) : ?>

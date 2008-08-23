@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------*/
 
 blockquote {
-	border-left: 10px solid #62A20C;
+	border-left: 10px solid #629B16;
 	padding: 5px 0 5px 20px;
 	margin: 10px 0 10px 40px;
 }
@@ -58,7 +58,7 @@ img {
 body {
 	font: 108% "Lucida Grande", Lucida, Verdana, sans-serif;
 	color: #666;
-	background: #FEFFFD;
+	background: #EEEEEE;
 }
 
 /* =Structure
@@ -71,7 +71,7 @@ body {
 
 #masthead {
 	margin: 20px 0 40px 0;
-	border-bottom: 2px dotted #62A20C;
+	border-bottom: 2px dotted #629B16;
 	padding-bottom: 5px;
 }
 
@@ -89,7 +89,7 @@ body {
 
 #footer {
 	height: 60px;
-	border-top: 2px dotted #62A20C;
+	border-top: 2px dotted #629B16;
 	padding-top: 5px;
 	margin-top: 5px;
 }
@@ -150,21 +150,21 @@ h3 {
 -----------------------------------------------------------------------------*/
 
 a:link {
-	color: #62A20C;
+	color: #629B16;
 }
 
 a:visited {
-	color: #62A20C;
+	color: #629B16;
 	text-decoration: none;
 }
 
 a:hover {
 	text-decoration: none;
-	color: #E0A352;
+	color: #D29C54;
 }
 
 a:active {
-	color: #62A20C;
+	color: #629B16;
 }
 
 ul#nav li a:link, ul#nav li a:visited {
@@ -201,7 +201,7 @@ ul#tidbits a {
 -----------------------------------------------------------------------------*/
 
 #post-nav {
-	margin: 10px 5px 45px 5px;
+	margin: 10px 5px 40px 5px;
 }
 
 .cal {
@@ -210,13 +210,13 @@ ul#tidbits a {
 	float: left;
 	margin: 0  12px 7px 0;
 	text-align: center;
-	border: 1px solid #62A20C;
+	border: 1px solid #D29C54;
 }
 
 .calyear {
-	background: #62A20C;
+	background: #D29C54;
 	color: #fff;
-	padding: 0 14px;
+	padding: 0 13px;
 }
 
 .calday {
@@ -224,18 +224,19 @@ ul#tidbits a {
 	margin: 0;
 	padding: 0;
 	text-align: center;
+	color: #629B16;
 }
 
 .calmonth {
 	font-size: 77%;
 	margin: 0;
-	border-top: 1px solid #62A20C;
+	border-top: 1px solid #629B16;
+	color: #629B16;
 	width: 100%;
 }
 
 .entry {
 	font-family: Trebuchet, "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-	text-align: justify;
 }
 
 .draft {
