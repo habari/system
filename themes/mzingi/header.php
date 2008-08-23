@@ -17,12 +17,12 @@
 </head>
 <body>
 	<!--begin wrapper-->
-	<div id="wrapper">
+	<div id="wrapper" class="container">
 		<!--begin masthead-->
-		<div id="masthead">
+		<div id="masthead"  class="span-16 pull-1">
 			<div id="branding">
 				<h1><?php Options::out( 'title' ); ?></h1>
-				<h3><?php Options::out( 'tagline' ); ?></h3>
+				<h3 class="prepend-1"><?php Options::out( 'tagline' ); ?></h3>
 			</div>	
 		</div>
 	<!--end masthead-->

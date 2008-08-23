@@ -2,7 +2,7 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent">
+		<div id="primaryContent" class="span-16 append-2">
 			<?php include 'loginform.php'; ?>
 			</div>
 		<!--end primary content-->
