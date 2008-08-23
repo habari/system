@@ -387,7 +387,10 @@ ul {
 	right: 8px;
 	z-index: 100;
 }
-	
+
+.hidden {
+	display: none !important;
+}
 
 /*- FORMS */
 
