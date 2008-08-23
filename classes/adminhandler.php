@@ -496,11 +496,11 @@ class AdminHandler extends ActionHandler
 
 		$tags_buttons= $tagselector->append('wrapper', 'tags_buttons');
 		$tags_buttons->class='container';
-		$tags_buttons->append('static', 'clearbutton', '<p class="column span-5"><input type="button" value="'._t('Clear').'" id="clear"></p>');
+		$tags_buttons->append('static', 'clearbutton', '<p class="span-5"><input type="button" value="'._t('Clear').'" id="clear"></p>');
 
 		$tags_list= $tagselector->append('wrapper', 'tags_list');
 		$tags_list->class=' container';
-		$tags_list->append('static', 'tagsliststart', '<ul id="tag-list" class="column span-19">');
+		$tags_list->append('static', 'tagsliststart', '<ul id="tag-list" class="span-19">');
 
 		$tags= Tags::get();
 		$max= Tags::max_count();

@@ -70,37 +70,37 @@
 	<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
 
 	<div class="item clear" id="displayname">
-		<span class="column span-5">
+		<span class="span-5">
 			<label for="displayname"><?php _e('Display Name'); ?></label>
 		</span>
-		<span class="column span-14 last">
+		<span class="span-14 last">
 			<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
 		</span>
 	</div>
 
 	<div class="item clear" id="username">
-		<span class="column span-5">
+		<span class="span-5">
 			<label for="username"><?php _e('User Name'); ?></label>
 		</span>
-		<span class="column span-14 last">
+		<span class="span-14 last">
 			<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
 		</span>
 	</div>
 
 	<div class="item clear" id="email">
-		<span class="column span-5">
+		<span class="span-5">
 			<label for="email"><?php _e('E-Mail'); ?></label>
 		</span>
-		<span class="column span-14 last">
+		<span class="span-14 last">
 			<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
 		</span>
 	</div>
 
 	<div class="item clear" id="portraiturl">
-		<span class="column span-5">
+		<span class="span-5">
 			<label for="imageurl"><?php _e('Portrait URL'); ?></label>
 		</span>
-		<span class="column span-14 last">
+		<span class="span-14 last">
 			<input type="text" name="imageurl" class="border" value="<?php echo $user->info->imageurl; ?>">
 		</span>
 	</div>
@@ -112,19 +112,19 @@
 	<h2><?php _e('Change Password'); ?></h2>
 
 	<div class="item clear" id="password">
-		<span class="column span-5">
+		<span class="span-5">
 			<label for="sitetagline"><?php _e('Password'); ?></label>
 		</span>
-		<span class="column span-14 last">
+		<span class="span-14 last">
 			<input type="password" name="pass1" class="border" value="">
 		</span>
 	</div>
 
 	<div class="item clear" id="passwordagain">
-		<span class="column span-5">
+		<span class="span-5">
 			<label for="sitetagline"><?php _e('Password Again'); ?></label>
 		</span>
-		<span class="column span-14 last">
+		<span class="span-14 last">
 			<input type="password" name="pass2" class="border" value="">
 		</span>
 	</div>

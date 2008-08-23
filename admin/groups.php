@@ -5,7 +5,7 @@
 $currentuser = User::identify();
 ?>
 <h3><?php _e('Group Management'); ?></h3>
-<div class="column span-8">
+<div class="span-8">
 <p><?php _e('Groups'); ?></p>
 <form method="post" action="">
 <input type="textarea" size="20" name="add_group" />
@@ -23,7 +23,7 @@ foreach ( $groups as $group ) {
 ?>
 </ul>
 </div>
-<div class="column span-8">
+<div class="span-8">
 <p><?php _e('Members'); ?></p>
 <?php
 if ( isset( $group_edit ) ) {
@@ -45,7 +45,7 @@ if ( isset( $group_edit ) ) {
 }
 ?>
 </div>
-<div class="column span-8 last">
+<div class="span-8 last">
 <p><?php _e('Permissions'); ?></p>
 <?php
 if ( isset( $group_edit ) ) {
