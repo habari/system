@@ -12,7 +12,7 @@
 
 	<div class="special_search pct100">
 		<?php foreach($special_searches as $text => $term): ?>
-		<a href="#<?php echo $term; ?>"><?php echo $text; ?></a>
+		<a href="#<?php echo $term; ?>" title="Filter results for '<?php echo $text; ?>'"><?php echo $text; ?></a>
 		<?php endforeach; ?>
 	</div>
 
@@ -56,13 +56,10 @@
 </div>
 
 <script type="text/javascript">
-
-itemManage.updateURL = habari.url.ajaxDelete;
-itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>";
-itemManage.fetchReplace = $('.posts');
-itemManage.inEdit = false;
-
+	itemManage.updateURL = habari.url.ajaxDelete;
+	itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>";
+	itemManage.fetchReplace = $('.posts');
+	itemManage.inEdit = false;
 </script>
-
 
 <?php include('footer.php');?>
