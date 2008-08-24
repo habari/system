@@ -8,6 +8,7 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+	$('.container').addClass('transparent');
 	<?php if(isset($post->slug) && ($post->slug != '')) : ?>
 	$('.container.buttons').prepend($('<input type="submit" name="submit" id="delete" class="button delete" value="<?php _e('Delete'); ?>">'));
 	$('#delete').click(function(){
@@ -16,9 +17,10 @@ $(document).ready(function(){
 			.attr('action', '<?php URL::out( 'admin', array('page' => 'delete_post', 'slug' => $post->slug )); ?>');
 	});
 	<?php endif; ?>
+
 	<?php if(isset($statuses['published']) && $post->status != $statuses['published']) : ?>
 	$('.container.buttons').prepend($('<input type="submit" name="submit" id="publish" class="button publish" value="<?php _e('Publish'); ?>">'));
-	$('#publish').click(function(){
+	$('#publish').click( function() {
 		$('#status').val(<?php echo $statuses['published']; ?>);
 	});
 	<?php endif; ?>
