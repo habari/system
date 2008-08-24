@@ -32,6 +32,21 @@
 
 </div>
 
+<div class="container transparent">
+
+	<div class="item controls">
+		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+		<span class="pct25">
+			<input type="checkbox">
+			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+		</span>
+		<input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button">
+	</div>
+
+</div>
+
 
 <div class="container manage posts">
 

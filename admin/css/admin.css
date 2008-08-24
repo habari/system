@@ -1309,9 +1309,8 @@ body.page-themes #page .dropbutton {
 	background: #f3f3f3;
 }
 
-.manage .item .head > span, .manage .item .head > input[type=checkbox] {
+.manage .item .head > span {
 	white-space: nowrap;
-	background: red;
 	line-height: 20px;
 }
 
@@ -1325,9 +1324,8 @@ body.page-Manage .item.deleted {
 	text-overflow: ellipsis;
 }
 
-.manage .item .checkboxandtitle {
-	overflow: hidden;
-	text-overflow: ellipsis;
+.manage .item .title input.checkbox {
+	margin-right: 10px;
 }
 
 .manage .selectedtext.none {
