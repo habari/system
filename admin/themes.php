@@ -28,11 +28,12 @@
 			<p class="description pct80"><?php echo $active_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <a href=" <?php echo $active_theme['info']->license['url']; ?>"><?php echo $active_theme['info']->license; ?></a></p>
 			<?php endif; ?>
 		</div>
+
 		<?php if ( isset( $this->engine_vars['configure'] ) ): ?>
-			<div id="themeconfigure">
-				<?php Plugins::act( 'theme_ui', $active_theme ); ?>
-				<a class="link_as_button" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('close'); ?></a>
-			</div>
+		<div id="themeconfigure">
+			<?php Plugins::act( 'theme_ui', $active_theme ); ?>
+			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('close'); ?></a>
+		</div>
 		<?php endif; ?>
 	</div>
 

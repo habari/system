@@ -1,8 +1,4 @@
-/* @override 
-	http://localhost/habari/system/admin/css/admin.css
-*/
-
-/*
+A/*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
  * License: Apache License 2.0
@@ -443,7 +439,7 @@ label.abovecontent {
 label.overcontent {
 	font-weight: normal; 
 	position: absolute; 
-	margin: 1px 0 0 1px; 
+	margin: 1px 0 0 1px !important;
 	width: auto !important;
 	cursor: text;
 	-webkit-box-shadow: none !important;
@@ -1218,7 +1214,7 @@ body.page-options .item {
 
 .plugins .description {
 	margin: 0;
-	width: 70%;
+	width: 80%;
 }
 
 .plugins #pluginconfigure {
@@ -1294,7 +1290,7 @@ body.page-themes #page .dropbutton {
 
 /*- OPTIONS PAGE */
 
-.container .item {
+body.page-options .container .item {
 	line-height: 34px;
 }
 

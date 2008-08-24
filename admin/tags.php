@@ -4,9 +4,10 @@
 	<input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autosave="habaricontent" results="10">
 </div>
 
+<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>
 
 <div id="tag_collection" class="container">
-  <?php $theme->display( 'tag_collection' ); ?>
+  	<?php $theme->display( 'tag_collection' ); ?>
 </div>
 
 
