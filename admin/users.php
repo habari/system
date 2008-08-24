@@ -30,61 +30,74 @@
 	</span>
 </div>
 
-<form method="post" action=""><div class="container manage users">
 
-<?php $theme->display('users_items'); ?>
-
-</div>
-
+<form method="post" action="">
 <div class="container transparent">
-
 	<div class="item users controls">
-		<span class="pct25">
-			<input type="checkbox">
-			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
-		</span>
+		<input type="checkbox">
+		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+
 		<input type="hidden" name="action" value="delete">
 		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-		
-		<span class="pct50 minor reassigntext"><?php printf( _t('Reassign posts to: %s'), Utils::html_select('reassign', $authors )); ?></span>
-		
-		<input type="submit" value="<?php _e('Delete Selected'); ?>" class="delete button">
+	
+		<span class="reassign minor">
+			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
+			<input type="submit" value="<?php _e('Delete Selected'); ?>">
+		</span>
 	</div>
+</div>
 
+
+<div class="container users">
+	<form method="post" action="">
+	<div class="addnewuser item">
+
+		<label for="new_username" class="incontent">Username</label>
+		<input type="text" name="new_username" id="new_username" value="<?php echo ( isset( $settings['new_username'] ) ) ? $settings['new_username'] : ''; ?>" class="border">
+
+			<label for="new_email" class="incontent">E-Mail</label>
+			<input type="text" id="new_email" name="new_email" value="<?php echo ( isset( $settings['new_email'] ) ) ? $settings['new_email'] : ''; ?>" class="border">
+
+			<label for="new_pass1" class="incontent">Password</label>
+			<input type="password" name="new_pass1" id="new_pass1" class="border">
+
+			<label for="new_pass2" class="incontent">Password Again</label>
+			<input type="password" name="new_pass2" id="new_pass2" class="border">
+
+		<input type="hidden" name="action" value="newuser">
+		<input type="submit" value="<?php _e('Add User'); ?>">
+
+	</div>
+	</form>
+
+	<?php $theme->display('users_items'); ?>
+</div>
+
+
+<div class="container transparent">
+	<div class="item users controls">
+		<input type="checkbox">
+		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+
+		<input type="hidden" name="action" value="delete">
+		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	
+		<span class="reassign minor">
+			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
+			<input type="submit" value="<?php _e('Delete Selected'); ?>">
+		</span>
+	</div>
 </div>
 </form>
 
-<div class="container users addnewuser settings">
 
-	<h2><?php _e('Add New User'); ?></h2>
 
-	<form method="post" action="">
 
-	<span class="pct25">
-		<label for="new_username" class="incontent">Username</label>
-		<input type="text" size="40" name="new_username" id="new_username" value="<?php echo ( isset( $settings['new_username'] ) ) ? $settings['new_username'] : ''; ?>" class="styledformelement">
-	</span>
 
-	<span class="pct25">
-		<label for="new_email" class="incontent">E-Mail</label>
-		<input type="text" size="40" id="new_email" name="new_email" value="<?php echo ( isset( $settings['new_email'] ) ) ? $settings['new_email'] : ''; ?>" class="styledformelement">
-	</span>
-	<span class="pct25">
-		<label for="new_pass1" class="incontent">Password</label>
-		<input type="password" size="40" name="new_pass1" id="new_pass1" class="styledformelement">
-	</span>
-	<span class="pct25 last-child">
-		<label for="new_pass2" class="incontent">Password Again</label>
-		<input type="password" size="40" name="new_pass2" id="new_pass2" class="styledformelement">
-	</span>
-
-	<input type="hidden" name="action" value="newuser">
-	<input type="submit" value="<?php _e('Add User'); ?>">
-	</form>
-
-</div>
 
 <script type="text/javascript">
 
