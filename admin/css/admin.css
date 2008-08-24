@@ -1,3 +1,5 @@
+/* @override http://localhost/habari/system/admin/css/admin.css */
+
 /*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
@@ -1307,8 +1309,10 @@ body.page-themes #page .dropbutton {
 	background: #f3f3f3;
 }
 
-.manage .item .head > span {
+.manage .item .head > span, .manage .item .head > input[type=checkbox] {
 	white-space: nowrap;
+	background: red;
+	line-height: 20px;
 }
 
 body.page-Manage .item.deleted {
