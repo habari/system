@@ -42,7 +42,7 @@
 				echo '<li><a class="edit-email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n"; ?>
 			</ul>
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
-				<p><?php e_('Marked as spam'); ?></p>
+				<p><?php _e('Marked as spam'); ?></p>
 			<?php endif; ?>
 
 		</span>
