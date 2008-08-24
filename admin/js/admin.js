@@ -441,10 +441,12 @@ var itemManage = {
 					itemManage.initItems();
 					$('.years').show();
 					timeline.reset();
+					$('input.checkbox').rangeSelect();
 				}
 				else {
 					spinner.stop();
 					itemManage.initItems();
+					$('input.checkbox').rangeSelect();
 				}
 				if ( itemManage.inEdit == true ) {
 					inEdit.init();
@@ -1181,7 +1183,7 @@ var labeler = {
 	init: function() {
 		labeler.checkAll();
 				
-		$('.islabeled:not(.lock)').focus(function(){
+		$('.islabeled:not(.lock)').focus( function() {
 			labeler.focus= $(this);
 			labeler.aboveLabel($(this));
 		}).blur(function(){
@@ -1190,7 +1192,7 @@ var labeler = {
 		});
 	},
 	checkAll: function() {
-		$('label.incontent').each(function(){
+		$('label.incontent').each( function() {
 			labeler.check(this);
 			
 			// focus on the input when clicking on the label
