@@ -6,7 +6,7 @@
 		<span class="checkbox title pct25">
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
 			<?php if($comment->url != ''): ?>
-			<a href="#" class="author edit-author"><?php echo $comment->name; ?></a>
+			<a href="#" class="author edit-author" title="<?php echo $comment->name; ?>"><?php echo $comment->name; ?></a>
 			<?php else: ?>
 			<?php echo $comment->name; ?>
 			<?php endif; ?>

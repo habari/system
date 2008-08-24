@@ -1,3 +1,7 @@
+/* @override 
+	http://localhost/habari/system/admin/css/admin.css
+*/
+
 /*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
@@ -1290,17 +1294,27 @@ body.page-themes #page .dropbutton {
 
 /*- OPTIONS PAGE */
 
-.container.settings .item {
+.container .item {
 	line-height: 34px;
 }
 
-.container.settings .item label {
+body.page-options #title {
+	line-height: 40px;
+	}
+
+body.page-options #title input {
+	font-size: 2em !important;
+	padding: 2px 0 2px 2px !important;
+	margin: 0 !important;
+	}
+
+.container .item label {
 	font-weight: normal;
 	margin-left: 10px;
 	color: #555;
 }
 
-.container.settings .item .helptext span {
+.container .item .helptext span {
 	margin-left: 10px;
 	color: #888;
 	font-size: 11px;

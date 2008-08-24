@@ -349,7 +349,7 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
-			$('.item.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
+			$('.item.controls span.selectedtext').removeClass('none').addClass('all').text('All ' + count + ' selected');
 			if(visible != count) {
 				$('.item.controls span.selectedtext').text('All visible selected (' + count + ' total)');
 			}
@@ -1098,6 +1098,7 @@ var liveSearch = {
 	}
 }
 
+
 // SEARCH CRITERIA TOGGLE
 function toggleSearch() {
 	var re = new RegExp('\\s*' + $(this).attr('href').substr(1), 'gi');
@@ -1112,6 +1113,7 @@ function toggleSearch() {
 	liveSearch.doSearch();
 	return false;
 }
+
 
 // RESIZABLE TEXTAREAS
 $.fn.resizeable = function(){
@@ -1138,6 +1140,24 @@ $.fn.resizeable = function(){
 
 	});
 }
+
+
+// RANGE SELECT - Courtesy of Barney Boisvert at http://www.barneyb.com/barneyblog/projects/jquery-checkbox-range-selection/
+$.fn.rangeSelect = function() {
+	var lastCheckbox = null;
+	var $spec = this;
+
+	$spec.bind("click", function(e) {
+		if (lastCheckbox != null && e.shiftKey) {
+			$spec.slice(
+				Math.min($spec.index(lastCheckbox), $spec.index(e.target)),
+				Math.max($spec.index(lastCheckbox), $spec.index(e.target)) + 1
+			).attr({checked: e.target.checked ? "checked" : ""});
+		}
+		lastCheckbox = e.target;
+	});
+	return $spec;
+ };
 
 
 // Home-made pseudo-classes
@@ -1336,6 +1356,8 @@ $(document).ready(function(){
 			}
 		}
 	});
+	
+	$('input.checkbox').rangeSelect();
 });
 
 function resetTags() {
