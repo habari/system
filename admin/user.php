@@ -27,7 +27,6 @@
 
 <div class="container navigation">
 	<span class="pct40">
-
 		<form>
 		<select class="navigationdropdown" onChange="navigationDropdown.filter();" name="navigationdropdown">
 			<option value="all"><?php _e('All options'); ?></option>
@@ -43,7 +42,7 @@
 </div>
 
 
-<div class="container userstats">
+<div class="container transparent userstats">
 <?php
 	$message_bits = array();
 	$post_statuses= Post::list_post_statuses();
@@ -70,37 +69,37 @@
 	<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
 
 	<div class="item clear" id="displayname">
-		<span class="span-5">
+		<span class="pct20">
 			<label for="displayname"><?php _e('Display Name'); ?></label>
 		</span>
-		<span class="span-14 last">
+		<span class="pct80">
 			<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
 		</span>
 	</div>
 
 	<div class="item clear" id="username">
-		<span class="span-5">
+		<span class="pct20">
 			<label for="username"><?php _e('User Name'); ?></label>
 		</span>
-		<span class="span-14 last">
+		<span class="pct80">
 			<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
 		</span>
 	</div>
 
 	<div class="item clear" id="email">
-		<span class="span-5">
+		<span class="pct20">
 			<label for="email"><?php _e('E-Mail'); ?></label>
 		</span>
-		<span class="span-14 last">
+		<span class="pct80">
 			<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
 		</span>
 	</div>
 
 	<div class="item clear" id="portraiturl">
-		<span class="span-5">
+		<span class="pct20">
 			<label for="imageurl"><?php _e('Portrait URL'); ?></label>
 		</span>
-		<span class="span-14 last">
+		<span class="pct80">
 			<input type="text" name="imageurl" class="border" value="<?php echo $user->info->imageurl; ?>">
 		</span>
 	</div>
@@ -112,19 +111,19 @@
 	<h2><?php _e('Change Password'); ?></h2>
 
 	<div class="item clear" id="password">
-		<span class="span-5">
+		<span class="pct20">
 			<label for="sitetagline"><?php _e('Password'); ?></label>
 		</span>
-		<span class="span-14 last">
+		<span class="pct80">
 			<input type="password" name="pass1" class="border" value="">
 		</span>
 	</div>
 
 	<div class="item clear" id="passwordagain">
-		<span class="span-5">
+		<span class="pct20">
 			<label for="sitetagline"><?php _e('Password Again'); ?></label>
 		</span>
-		<span class="span-14 last">
+		<span class="pct80">
 			<input type="password" name="pass2" class="border" value="">
 		</span>
 	</div>
