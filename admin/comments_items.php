@@ -42,7 +42,7 @@
 				echo '<li><a class="edit-email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n"; ?>
 			</ul>
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
-				<p>Marked as spam</p>
+				<p><?php e_('Marked as spam'); ?></p>
 			<?php endif; ?>
 
 		</span>
@@ -53,6 +53,6 @@
 <?php 	endforeach; 
 else : ?>
 <div class="message none">
-	<p><?php echo _t('No comments could be found to match the query criteria.'); ?></p>
+	<p><?php _e('No comments could be found to match the query criteria.'); ?></p>
 </div>
 <?php endif; ?>

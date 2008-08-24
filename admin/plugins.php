@@ -9,7 +9,7 @@
 	<?php foreach($active_plugins as $plugin) { if($plugin['debug']) { ?>
 	<div class="item clear">
 		<div class="head">
-			<p><?php echo _t('The plugin file ') . $plugin['file'] . _t(' had syntax errors and could not load.'); ?></p>
+  			<p><?php printf( _t('The plugin file %s had syntax errors and could not load.'), $plugin['file'] ); ?></p>
 			<div style="display:none;" id="error_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin['error']; ?></div>
 				<ul class="dropbutton">
 					<li><a href="#" onclick="$('#error_<?php echo $plugin['plugin_id']; ?>').show();"><?php _e('Show Error'); ?></a></li>

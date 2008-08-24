@@ -11,7 +11,7 @@
 				if(count($import_names) == 0):
 				?>
 				<p><?php _e('You do not currently have any import plugins installed.'); ?></p>
-				<p><?php _e('Please '); ?><a href="<?php URL::out('admin', 'page=plugins'); ?>"><?php _e('activate an import plugin</a> to enable importing.'); ?></p>
+				<p><?php printf( _t('Please <a href="%1$s">activate an import plugin</a> to enable importing.'), URL::get('admin', 'page=plugins') ); ?></p>
 				<?php else: ?>
 				<p><?php _e('Please choose the type of import to perform:'); ?></p>
 				<select name="importer">

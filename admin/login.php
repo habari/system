@@ -1,8 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<title><?php _e('Login to '); ?><?php Options::out( 'title' ); ?></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title><?php printf( _t('Login to %s'), Options::get( 'title' ) ); ?></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen">
 	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
