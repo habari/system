@@ -32,24 +32,6 @@
 
 
 <form method="post" action="">
-<div class="container transparent">
-	<div class="item users controls">
-		<input type="checkbox">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
-
-		<input type="hidden" name="action" value="delete">
-		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-	
-		<span class="reassign minor">
-			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
-			<input type="submit" value="<?php _e('Delete Selected'); ?>">
-		</span>
-	</div>
-</div>
-
-
 <div class="container users">
 	<form method="post" action="">
 	<div class="addnewuser item">
@@ -77,7 +59,7 @@
 
 
 <div class="container transparent">
-	<div class="item users controls">
+	<div class="controls">
 		<input type="checkbox">
 		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
 

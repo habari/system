@@ -1828,7 +1828,7 @@ body.login input[type=submit] {
 /*- FOOTER */
 
 #footer {
-	margin: 35px 0;
+	margin: 35px auto;
 	text-align: center;
 }
 
