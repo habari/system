@@ -1415,12 +1415,14 @@ body.page-Manage .item.deleted {
 
 .navigator .special_search a {
 	outline: none;
-	padding: 0px 2px;
-	margin: 2px 5px;
+	padding: 2px;
+	margin: 0 5px;
+	font-size: 11px;
 }
 
 .navigator .special_search a.active {
-	background-color: #a9a9a9;
+	font-weight: bolder;
+	color: #222;
 }
 
 .timeline {
@@ -1496,6 +1498,8 @@ body.page-Manage .item.deleted {
 	position: absolute;
 	top: 0;
 	cursor: move;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
 }
 
 .timeline .handle .resizehandleleft,
