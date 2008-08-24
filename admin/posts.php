@@ -5,7 +5,7 @@
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('no results'); ?></span>
 	<span class="search pct50">
-		<input id="search" type="search" placeholder="<?php _e('Type and wait to search for any entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>">
+		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>">
 	</span>
 	<span class="filters pct15">&nbsp;
 		<ul class="dropbutton special_search">	
@@ -44,11 +44,11 @@
 		</span>
 		<input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button">
 	</div>
-
+	
 </div>
 
 
-<div class="container manage posts">
+<div class="container posts">
 
 <?php $theme->display('posts_items'); ?>
 
