@@ -7,7 +7,7 @@
 /*- THE BASICS */
 
 html {
-	overflow-y: scroll;
+	overflow-y: scroll; /* To precent 'popping' */
 	}
 
 body {
@@ -1311,6 +1311,11 @@ body.page-themes #page .dropbutton {
 	white-space: nowrap;
 }
 
+body.page-Manage .item.deleted {
+	border-left: 3px solid #f8595f;
+	border-right: 3px solid #f8595f;
+}
+
 .manage .item .title {
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1348,6 +1353,7 @@ body.page-themes #page .dropbutton {
 	font-size: 1.2em;
 	color: #666;
 }
+
 
 
 /*- MANAGE COMMENTS PAGE */
