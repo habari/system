@@ -455,6 +455,10 @@ p:hover > label.abovecontent {
 	margin-left: 10px;
 }
 
+.button.delete {
+	float: right;
+	}
+
 .button#delete {
 	float: left;
 	margin-left: 0;
@@ -518,6 +522,10 @@ p:hover > label.abovecontent {
 
 .create input.text:focus {
 	color: #222;
+}
+
+body.page-Publish .buttons input {
+	float: right;
 }
 
 .create textarea {
