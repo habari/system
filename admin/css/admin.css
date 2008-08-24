@@ -448,7 +448,7 @@ p:hover > label.abovecontent {
 /*-- FORM BUTTONS  */
 
 .button, #save input {
-	width: 110px;
+	min-width: 110px;
 	float: right;
 	margin-left: 10px;
 }
@@ -1339,6 +1339,7 @@ body.page-Manage .item.deleted {
 	text-transform: capitalize;
 }
 
+/*
 .special_search {
 	padding: 3px 0 5px;
 }
@@ -1346,6 +1347,7 @@ body.page-Manage .item.deleted {
 .special_search  a {
 	color: #666;
 }
+*/
 
 .message.none p {
 	text-align: center;
@@ -1384,7 +1386,7 @@ body.page-Manage .item.deleted {
 /*- MANAGE TIMELINE */
 
 .navigator {
-	padding:0 ;
+	position: relative;
 }
 
 .navigator span {
@@ -1409,25 +1411,23 @@ body.page-Manage .item.deleted {
 	text-align: right;
 }
 
-.navigator .special_search {
-	text-align: center;
-}
+.navigator .filters {
+	position: relative;
+	}
 
-.navigator .special_search a {
-	outline: none;
-	padding: 2px;
-	margin: 0 5px;
-	font-size: 11px;
-}
+#page .navigator .dropbutton.special_search {
+	top: 1px !important;
+	right: 20px;
+	z-index: 500;
+	}
 
 .navigator .special_search a.active {
-	font-weight: bolder;
-	color: #222;
+	text-decoration: underline !important;
 }
 
 .timeline {
 	position: relative;
-	background: #111;
+	background: #ddd;
 	width: 830px;
 	height: 50px;
 	clear: both;
@@ -1466,14 +1466,12 @@ body.page-Manage .item.deleted {
 .timeline .years .months {
 	display: table-row;
 	height: inherit;
-	/*overflow: hidden;*/
 	position: relative;
-	border: none !important;
 }
 
 .timeline .years .months div {
 	display: table-cell;
-	border-right: 1px solid #2b2b2b;
+	border-right: 1px solid #333;
 	height: inherit;
 	overflow: hidden;
 }
