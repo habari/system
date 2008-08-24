@@ -6,14 +6,15 @@
 	<span class="search pct50">
 		<input id="search" type="search" placeholder="<?php _e('Type and wait to search for any entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search_args ?>">
 	</span>
-	<span class="nothing pct15">&nbsp;</span>
+	<span class="filters pct15">&nbsp;
+		<ul class="dropbutton special_search">
+			<?php foreach($special_searches as $text => $term): ?>
+			<li><a href="#<?php echo $term; ?>"><?php echo $text; ?></a></li>
+			<?php endforeach; ?>
+		</ul>
+	</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
-	<div class="special_search pct100 minor">
-		<?php foreach($special_searches as $text => $term): ?>
-		<a href="#<?php echo $term; ?>"><?php echo $text; ?></a>
-		<?php endforeach; ?>
-	</div>
 
 	<div class="timeline">
 		<div class="years">
