@@ -7,7 +7,7 @@
 /*- THE BASICS */
 
 html {
-	overflow-y: scroll; /* To precent 'popping' */
+	overflow-y: scroll; /* To prevent 'popping' */
 	}
 
 body {
@@ -283,10 +283,12 @@ body, textarea, #footer {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-box-shadow: 0px 1px 15px #ddd;
+	border: 1px solid #e7e7e7;
 }
 
 #page .container.transparent {
 	background: transparent;
+	border: none;
 	padding-top: 0;
 	padding-bottom: 0;
 	-webkit-box-shadow: none;
@@ -357,6 +359,7 @@ a:hover {
 
 .border {
 	border: 1px solid #bbb;
+	margin: 0;
 }
 
 .minor,
@@ -377,9 +380,8 @@ a.minor {
 	text-align: center;
 }
 
-.selectedtext, .reassigntext {
+.selectedtext {
 	color: #999;
-	padding: 1px;
 	margin-left: 10px;
 	top: 0;
 }
@@ -441,6 +443,7 @@ label.overcontent {
 	width: auto !important;
 	cursor: text;
 	-webkit-box-shadow: none !important;
+	opacity: .5;
 }
 	
 p:hover > label.abovecontent {
@@ -451,7 +454,6 @@ p:hover > label.abovecontent {
 
 .button, #save input {
 	min-width: 110px;
-	float: right;
 	margin-left: 10px;
 }
 
@@ -1090,51 +1092,78 @@ body.page-logs .item input[type=checkbox] {
 
 /*- USERS & GROUPS PAGES */
 
-.users .item .user {
+body.page-users .navigation {
+	margin-bottom: 20px !important;
+}
+
+body.page-users .container.users {
+	padding-top: 10px !important;
+	padding-bottom: 10px !important;
+}
+
+body.page-users .item .user {
 	font-size: 1.3em;
 	line-height: 16px;
 	font-weight: bold;
 }
 
-.users .item .user a {
+body.page-users .item .user a {
 	color: #444;
 }
 
-.users .item .aka,
-.users .item .userlogin,
-.users .item .userstats {
+body.page-users .item .aka,
+body.page-users .item .userlogin {
 	font-size: 11px;
 	color: #999;
 }
 
-.users .item strong {
+body.page-users .item strong {
 	color: #777;
 	padding: 0 2px;
 }
 
-.users .item span {
+body.page-users .item span {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.addnewuser span {
-	padding-right: 1%;
-	width: 24% !important;
+body.page-users .addnewuser {
+	position: relative;
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-topleft: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	background: #f3f3f3 !important;
+	margin: -10px -40px 0 -40px;
+	padding: 16px 40px 15px 80px;
 }
 
-.addnewuser span.last-child {
-	padding-right: 0;
+.addnewuser input[type=text], .addnewuser input[type=password] {
+	margin-right: 5px;
+	margin-left: -5px;
+	margin-top: -1px;
+	padding: 3px;
+	width: 140px;
 }
 
 .addnewuser input[type=submit] {
-	width: 15%;
-	float: right;
+	min-width: 100px;
 }
 
-.addnewuser {
+.reassign {
 	color: #999;
-}
+	float: right;
+	}
+
+.reassign select#reassign {
+	margin: 0 10px;
+	}
+
+.reassign input {
+	margin-left: 10px;
+	min-width: 110px;
+	}
 
 
 /*-- USER */
@@ -1143,6 +1172,7 @@ body.page-user .userstats {
 	font: 1.5em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
 	text-align: center;
 	color: #333;
+	padding: 10px !important;
 }
 
 
@@ -1192,10 +1222,10 @@ body.page-options .item {
 }
 
 .plugins #pluginconfigure form {
-	background-color:#f8f8f8;
-	border:#bbb 1px solid;
-	padding:12px;
-	margin-bottom:5px;
+	background-color: #f8f8f8;
+	border: #bbb 1px solid;
+	padding: 12px;
+	margin-bottom: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -1406,6 +1436,7 @@ body.page-Manage .state {
 
 .navigator .currentposition {
 	text-align: center;
+	color: #999;
 }
 
 .navigator input {
