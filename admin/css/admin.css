@@ -6,6 +6,10 @@
 
 /*- THE BASICS */
 
+html {
+	overflow-y: scroll;
+	}
+
 body {
 	background-color: #f0f0f0;
 	color: #000;
@@ -31,6 +35,7 @@ body, textarea, #footer {
 
 #menubar a {
 	color: #fff;
+	outline: none;
 }
 
 #site {
@@ -215,6 +220,7 @@ body, textarea, #footer {
 	font-size: 9px;
 	font-family: "Helvetica Neue", Helvetica, "Lucida Grande", Arial, Verdana, Sans-Serif;
 	padding-left: 0px;
+	outline: none;
 }
 
 #page .dropbutton button {
@@ -267,9 +273,11 @@ body, textarea, #footer {
 }
 
 #page .container {
+/*	width: 70%;
+	min-width: 750px;
+	max-width: 900px;*/
 	width: 750px;
 	margin: 10px auto;
-	width: 750px;
 	padding: 15px 40px;
 	background: #fafafa;
 	-webkit-border-radius: 5px;
@@ -525,6 +533,7 @@ p:hover > label.abovecontent {
 	cursor: row-resize;
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEYAAAADCAYAAAAuu3lbAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACRJREFUeNpivHLlyn+GUYABGP//Hw0XbIDl6tWroyGDBQAEGADRQAn91uPxnQAAAABJRU5ErkJggg==) center center no-repeat; /* Double line 'grip' */
 }
+
 #tags_list ul {
     text-align: left;
     margin-right: 50px;
@@ -1362,6 +1371,9 @@ body.page-themes #page .dropbutton {
 	overflow: hidden;
 }
 
+/* Inline Comments Editor */
+
+
 
 /*- MANAGE TIMELINE */
 
@@ -1509,17 +1521,28 @@ ul.dropbutton li.nodisplay {
 
 /*- TAGS PAGE */
 
+body.page-tags .instructions {
+	text-align: center;
+	font-size: 19px;
+	margin: 5px 0 10px;
+	color: #999;
+	}
+
+body.page-tags .instructions span {
+	color: #111;
+	}
+
 body.page-tags .container a {
 	color: #555;
 	margin: 0 5px;
-	line-height: 20px;
+	line-height: 30px;
 	padding: 2px 0;
 	outline: none;
 }
 
 body.page-tags .container span {
 	white-space: nowrap;
-}
+	}
 
 body.page-tags .container .selected {
 	color: #fb430f;
@@ -1626,7 +1649,8 @@ ul.tabs li.ui-tabs-selected.last-child {
 
 #page .container.pagesplitter {
 	width: 100% !important;
-	margin: 20px 0;
+	max-width: none;
+	margin: 20px auto;
 }
 
 .splitterinside {
@@ -1790,10 +1814,6 @@ body.login input[type=submit] {
 /*- HUMANIZED MESSAGES 1.0 (Habari Edition)
 	home - http://humanmsg.googlecode.com */
 
-html, body {
-	/*	height: 100%; /* Damn you IE! */
-}
-
 .humanMsg {
 	font: normal 12px Helvetica, Arial, Sans-Serif;
 	position: fixed;
@@ -1843,18 +1863,14 @@ body.login .humanMsg {
 	max-height: 200px;
 	display: none;
 	z-index: 10000;
-	opacity: .3;
 }
 
-#humanMsgLog:hover {
-	opacity: 1;
-}
-
-#humanMsgLog.logisopen {
+#humanMsgLog p:hover {
 	opacity: 1;
 }
 
 #humanMsgLog p {
+	opacity: .3;
 	position: relative;
 	left: 50%;
 	width: 200px;
@@ -1870,6 +1886,10 @@ body.login .humanMsg {
 	-webkit-border-top-left-radius: 5px;
 	-moz-border-radius-topright: 5px;
 	-moz-border-radius-topleft: 5px;
+}
+
+#humanMsgLog.logisopen p {
+	opacity: 1;
 }
 
 #humanMsgLog ul {

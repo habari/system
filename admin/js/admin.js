@@ -161,6 +161,7 @@ var inEdit = {
 				.insertAfter($(this));
 		});
 		
+/*		All of the follow is rather redundant
 		$('ul.dropbutton li:not(.cancel):not(.submit)', parent).remove();
 		$('ul.dropbutton li.cancel, ul.dropbutton li.submit', parent).removeClass('nodisplay');
 		$('ul.dropbutton li.submit', parent).addClass('first-child');
@@ -168,20 +169,19 @@ var inEdit = {
 		dropButton.init();
 		$('ul.dropbutton a', parent).css('color', 'inherit');
 		$('ul.dropbutton', parent).animate({
-			backgroundColor: '#FFFFCC',
-			color: '#333333'
+			backgroundColor: '#e40f0d'
 		}, 100, 'linear', function() {
 			$('ul.dropbutton', parent).animate({
-				backgroundColor: '#333333',
-				color: 'white'
-			},10000);
+				backgroundColor: '#333333'
+			},5000);
 		});
-				
+*/
+		dropButton.init();
 		var submit= $('<input type="submit"></input>')
-			.addClass('inEditSubmit')
-			.val('Update')
-			.hide()
-			.appendTo(parent);
+						.addClass('inEditSubmit')
+						.val('Update')
+						.hide()
+						.appendTo(parent);
 		
 		$("form").submit(function() {
 			inEdit.update();
@@ -997,9 +997,10 @@ var theMenu = {
 		});
 
 		// Enter & Carrot
-		$.hotkeys.add('return', {propagate:true, disableInInput: true}, function(){
+		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
 			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
 				location = $('.carrot a').attr('href')
+				theMenu.blinkCarrot($('.carrot a').parent())
 			} else {
 				return false;
 			}
@@ -1009,10 +1010,14 @@ var theMenu = {
 		$('#menu ul li').each(function() {
 			var hotkey = $('a span.hotkey', this).text();
 			var href = $('a', this).attr('href');
-			if(hotkey) {
-				$.hotkeys.add(hotkey, {propagate:true, disableInInput: true}, function(){
+			var owner = this;
+			var blinkSpeed = 100;
+
+			if (hotkey) {
+				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
 					if ($('#menu').hasClass('hovering') == true) {
 						location = href;
+						theMenu.blinkCarrot(owner)
 					} else {
 						return false;
 					}
@@ -1023,12 +1028,23 @@ var theMenu = {
 		// Display hotkeys
 		$('#menu a .hotkey').addClass('enabled');
 
+		$('#menu ul li a').click( function() {
+			theMenu.blinkCarrot(this);
+		})
+
 		// If menu is open and mouse is clicked outside menu, close menu.
 		$('html').click(function() {
 			if ($('#menu #menulist').css('display') == 'block') {
 				dropButton.hideMenu();
 			}
 		})
+	},
+	blinkCarrot: function(owner) {
+		spinner.start()
+		var blinkSpeed = 100;
+		$(owner).addClass('carrot').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed, function() {
+			dropButton.hideMenu();
+		});
 	}
 }
 
@@ -1131,7 +1147,7 @@ $.fn.resizeable = function(){
 }
 
 
-// Damn the lack of proper support for pseudo-classes!
+// Home-made pseudo-classes
 function findChildren() {
 	$('div > .item:first-child, .modulecore .item:first-child, ul li:first-child').addClass('first-child')
 	$('div > .item:last-child, .modulecore .item:last-child, ul li:last-child').addClass('last-child')
@@ -1214,11 +1230,6 @@ $(document).ready(function(){
 		$("tr:odd", this).not(".even").addClass("odd");
 		$("tr:even", this).not(".odd").addClass("even");
 	});
-
-	$("#oldmenu .menu-item").hover(
-		function(){ $("ul", this).fadeIn("fast"); },
-		function() { }
-	);
 
 	// Prevent all checkboxes to be unchecked.
 	$(".search_field").click(function(){
@@ -1332,7 +1343,6 @@ $(document).ready(function(){
 			}
 		}
 	});
-
 });
 
 function resetTags() {
