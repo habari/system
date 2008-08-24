@@ -25,6 +25,6 @@
 <?php 	endforeach; 
 else : ?>
 <div class="message none">
-	<p><?php echo _t('No posts could be found to match the query criteria.'); ?></p>
+	<p><?php _e('No posts could be found to match the query criteria.'); ?></p>
 </div>
 <?php endif; ?>

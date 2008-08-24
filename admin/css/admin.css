@@ -1,4 +1,4 @@
-A/*
+/*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
  * License: Apache License 2.0
@@ -439,11 +439,9 @@ label.abovecontent {
 label.overcontent {
 	font-weight: normal; 
 	position: absolute; 
-	margin: 1px 0 0 1px !important;
 	width: auto !important;
 	cursor: text;
 	-webkit-box-shadow: none !important;
-	opacity: .5;
 }
 	
 p:hover > label.abovecontent {
@@ -777,7 +775,7 @@ p:hover > label.abovecontent {
 .mediaphotos li.media img.loading {
 	border-color: #333;
 	width: 100%;
-	backgroundd: #303030;
+	background: #303030;
 }
 
 .mediaphotos li.media .mediastats {
@@ -1146,6 +1144,11 @@ body.page-users .addnewuser {
 	padding: 3px;
 	width: 140px;
 }
+
+.addnewuser label.overcontent {
+	margin: 1px 0 0 1px !important;
+	color: #ccc !important;
+	}
 
 .addnewuser input[type=submit] {
 	min-width: 100px;

@@ -9,7 +9,7 @@
 	<span class="filters pct15">&nbsp;
 		<ul class="dropbutton special_search">
 			<?php foreach($special_searches as $text => $term): ?>
-			<li><a href="#<?php echo $term; ?>"><?php echo $text; ?></a></li>
+			<li><a href="#<?php echo $term; ?>" title="<?php printf( _t('Filter results for \'%s\''), $text ); ?>"><?php echo $text; ?></a></li>
 			<?php endforeach; ?>
 		</ul>
 	</span>
