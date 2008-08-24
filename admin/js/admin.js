@@ -21,6 +21,7 @@ var dashboard = {
 		    matches = $(this).parents('.module').attr('id').split( ':', 2 ); 
 		    dashboard.remove( matches[0] ); 
 		}); 
+		findChildren();
 	},
 	update: function() {
 		spinner.start();
