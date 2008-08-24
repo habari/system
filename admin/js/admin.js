@@ -526,13 +526,13 @@ var timeline = {
 		if (!$('.timeline').length) return;
 
 		// Set up pointers to elements for speed
-		timeline.view= $('.timeline');
-		timeline.handle= $('.handle', timeline.view);
+		timeline.view = $('.timeline');
+		timeline.handle = $('.handle', timeline.view);
 
 		// Get an array of posts per month
-		timeline.monthData= [0];
-		timeline.monthWidths= [0];
-		timeline.totalCount= 0;
+		timeline.monthData = [0];
+		timeline.monthWidths = [0];
+		timeline.totalCount = 0;
 		$('.years .months span').each(function(i) {
 			timeline.monthData[i] = $(this).width();
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
@@ -543,22 +543,21 @@ var timeline = {
 		var timelineWidth = 0;
 		if ( $.browser.msie ) {
 			jQuery(timeline.monthWidths).each(function() { timelineWidth += this; } );
-			$('.years').width( timelineWidth );
-		}
-		else {
+			$('.years').width(timelineWidth);
+		} else {
 			timelineWidth = $('.years').width();
 		}
 
 		// check for a timeline larger than its view
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
-		var viewWidth= $('.timeline').width();
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		var viewWidth = $('.timeline').width();
+		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
 		// Find the width which makes the loupe select 20 items
-		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+		var handleWidth = timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
 
 		// Make the slider bounded by the view
-		var maxSliderValue= Math.min( viewWidth, timelineWidth ) - handleWidth;
+		var maxSliderValue = Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		/* Initialize the timeline handle. We need to do this before we create the slider because
 		 * at the end of the slider initializer, it calls slider('moveTo', startValue) which will
@@ -806,9 +805,9 @@ var timelineHandle = {
 		return false;
 	},
 	getLoupeInfo: function() {
-		var cur_overhang= $('.track').offset().left - $('.years').offset().left;
+		var cur_overhang = $('.track').offset().left - $('.years').offset().left;
 		var loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + cur_overhang);
-		var loupeWidth= $('.handle').width();
+		var loupeWidth = $('.handle').width();
 		var loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth + cur_overhang );
 		
 		var loupeInfo = {
@@ -823,6 +822,10 @@ var timelineHandle = {
 		var loupeInfo = timelineHandle.getLoupeInfo();
 
 		$('.currentposition').text( loupeInfo.start +'-'+ loupeInfo.end +' of '+ timeline.totalCount );
+
+		// Hide 'newer' and 'older' links as necessary
+		if (loupeInfo.start == 1) $('.navigator .older').animate({opacity: '0'}, 200); else $('.navigator .older').animate({opacity: '1'}, 200);
+		if (loupeInfo.end == timeline.totalCount) $('.navigator .newer').animate({opacity: '0'}, 200); else $('.navigator .newer').animate({opacity: '1'}, 200);
 	},
 	endDrag: function(e) {
 		timeline.noJump = true;
@@ -842,16 +845,6 @@ var timelineHandle = {
 		return false;
 	}
 }
-
-
-
-/* TIMELINE TODO:
-	- Consider step'd resize
-		- Problem: timeline length might not be suitable for steps, so at either end, the loupe might not fit.
-	- Draggable timeline
-	- Float month name if outside view
-	- Reinit slider (or do away with slider alltogether and gather the info manually)
-*/
 
 
 // SPINNER
