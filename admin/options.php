@@ -6,7 +6,7 @@
 		<select name="navigationdropdown" onchange="navigationDropdown.filter();">
 			<option value="all"><?php _e('All options'); ?></option>
 			<?php foreach ( $option_names as $name ): ?>
-			<option value="<?php echo Utils::slugify( $name ); ?>"><?php echo $name; ?></option>
+				<option value="<?php echo Utils::slugify( $name ); ?>"><?php echo $name; ?></option>
 			<?php endforeach; ?>
 		</select>
 	</span>
