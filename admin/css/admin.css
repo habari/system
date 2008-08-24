@@ -1809,6 +1809,7 @@ body.login #page .container {
 	-webkit-box-shadow: none;
 	padding: 0;
 	margin: auto;
+	border: none;
 }
 
 body.login input[type=text], body.login input[type=password], body.login label.overcontent {
