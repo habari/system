@@ -870,6 +870,7 @@ body.page-Publish .buttons input {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-box-shadow: 0px 1px 15px #ddd;
+	border:1px solid #E7E7E7;
 }
 
 .dashboard .module .handle {
