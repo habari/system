@@ -1226,7 +1226,16 @@ body.page-themes #page .dropbutton {
 	padding: 20px 40px;
 	border-bottom: 1px solid #ddd;
 	border-top: 1px solid #ddd;
-	}
+}
+
+#themeconfigure form {
+	background-color:#f8f8f8;
+	border:#bbb 1px solid;
+	padding:12px;
+	margin-bottom:5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
 
 .uploadpackage h2 {
 	float: left;
