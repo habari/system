@@ -75,9 +75,9 @@
 <?php if(isset($years)) { ?><div class="container transparent">
 
 	<div class="item controls">
-		<span class="pct25">
-			<input type="checkbox">
-			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+		<span class="checkboxandselected pct25">
+			<input type="checkbox" id="master_checkbox" name="master_checkbox">
+			<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 		</span>
 		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">

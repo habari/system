@@ -32,14 +32,14 @@
 
 </div>
 
-<div class="container transparent controls">
+<div class="container transparent item controls">
 
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-	<span class="pct25">
-		<input type="checkbox">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+	<span class="checkboxandselected pct25">
+		<input type="checkbox" id="master_checkbox" name="master_checkbox">
+		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 	<input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button">
 	
@@ -53,14 +53,14 @@
 </div>
 
 
-<div class="container transparent controls">
+<div class="container transparent item controls">
 
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-	<span class="pct25">
-		<input type="checkbox">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+	<span class="checkboxandselected pct25">
+		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
+		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
 	</span>
 	<input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button">
 

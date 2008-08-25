@@ -151,7 +151,7 @@ var inEdit = {
 				field.height(100)
 					.attr('class', classes)
 					.removeClass('pct75')
-					.width(width - 5);
+					.width(width - 13);
 			} else {
 				var field= $('<input></input>');
 				field.attr('class', classes)
@@ -162,21 +162,12 @@ var inEdit = {
 				.insertAfter($(this));
 		});
 		
-/*		All of the follow is rather redundant
 		$('ul.dropbutton li:not(.cancel):not(.submit)', parent).remove();
 		$('ul.dropbutton li.cancel, ul.dropbutton li.submit', parent).removeClass('nodisplay');
 		$('ul.dropbutton li.submit', parent).addClass('first-child');
 		$('ul.dropbutton li.cancel', parent).addClass('last-child');
 		dropButton.init();
-		$('ul.dropbutton a', parent).css('color', 'inherit');
-		$('ul.dropbutton', parent).animate({
-			backgroundColor: '#e40f0d'
-		}, 100, 'linear', function() {
-			$('ul.dropbutton', parent).animate({
-				backgroundColor: '#333333'
-			},5000);
-		});
-*/
+
 		dropButton.init();
 		var submit= $('<input type="submit"></input>')
 						.addClass('inEditSubmit')
@@ -251,7 +242,7 @@ var itemManage = {
 		itemManage.initItems();
 
 		$('.item.controls input[type=checkbox]').change(function () {
-			if($('.item.controls span.selectedtext').hasClass('all')) {
+			if($('.item.controls label.selectedtext').hasClass('all')) {
 				itemManage.uncheckAll();
 			} else {
 				itemManage.checkAll();
@@ -345,22 +336,22 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
+			$('.item.controls label.selectedtext').addClass('none').removeClass('all').text('None selected');
 		} else if(visible == $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
-			$('.item.controls span.selectedtext').removeClass('none').addClass('all').text('All ' + count + ' selected');
+			$('.item.controls label.selectedtext').removeClass('none').addClass('all').text('All ' + count + ' selected');
 			if(visible != count) {
-				$('.item.controls span.selectedtext').text('All visible selected (' + count + ' total)');
+				$('.item.controls label.selectedtext').text('All visible selected (' + count + ' total)');
 			}
 		} else {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
-			$('.item.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
 			if(visible != count) {
-				$('.item.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
+				$('.item.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
 		}
 	},
@@ -492,16 +483,16 @@ var tagManage = {
 		visible = $('.tag.selected:not(.hidden)').length;
 
 		if(count == 0) {
-			$('.controls span.selectedtext').addClass('none').removeClass('all').text('None selected');
+			$('.controls label.selectedtext').addClass('none').removeClass('all').text('None selected');
 		} else if (visible == $('.tag:not(.hidden)').length) {
-			$('.controls span.selectedtext').removeClass('none').addClass('all').text('All selected');
+			$('.controls label.selectedtext').removeClass('none').addClass('all').text('All selected');
 			if(visible != count) {
-				$('.controls span.selectedtext').text('All visible selected (' + count + ' total)');
+				$('.controls label.selectedtext').text('All visible selected (' + count + ' total)');
 			}
 		} else {
-			$('.controls span.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			$('.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
 			if(visible != count) {
-				$('.controls span.selectedtext').text(count + ' selected (' + visible + ' visible)');
+				$('.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
 		}
 	}

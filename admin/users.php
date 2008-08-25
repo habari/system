@@ -59,9 +59,11 @@
 
 
 <div class="container transparent">
-	<div class="controls">
-		<input type="checkbox">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+	<div class="controls item">
+		<span class="checkboxandselected pct25">
+			<input type="checkbox" id="master_checkbox" name="master_checkbox">
+			<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
+		</span>
 
 		<input type="hidden" name="action" value="delete">
 		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">

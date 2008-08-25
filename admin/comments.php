@@ -41,8 +41,8 @@
 
 <div class="container transparent item comments controls">
 	<span class="checkboxandselected pct25">
-		<input type="checkbox">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+		<input type="checkbox" id="master_checkbox" name="master_checkbox">
+		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 	<span class="buttons">
 		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approve button" onclick="itemManage.update( 'approve' ); return false;">
@@ -61,8 +61,8 @@
 
 <div class="container transparent item comments controls">
 	<span class="checkboxandselected pct25">
-		<input type="checkbox">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
+		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
 	</span>
 	<span class="buttons">
 		<input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approve button" onclick="itemManage.update( 'approve' ); return false;">
