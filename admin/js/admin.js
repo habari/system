@@ -822,13 +822,6 @@ var timelineHandle = {
 		// Hide 'newer' and 'older' links as necessary
 		if (loupeInfo.start == 1) $('.navigator .older').animate({opacity: '0'}, 200); else $('.navigator .older').animate({opacity: '1'}, 200);
 		if (loupeInfo.end == timeline.totalCount) $('.navigator .newer').animate({opacity: '0'}, 200); else $('.navigator .newer').animate({opacity: '1'}, 200);
-
-		// Slide and fade in the handle
-		var handleLocation = parseInt(timeline.handle.css('left'));
-		timeline.handle
-			.css( 'left', handleLocation - 250 )
-			.animate({ opacity: 1, left: handleLocation }, 1100, 'swing');
-
 	},
 	endDrag: function(e) {
 		timeline.noJump = true;
