@@ -129,20 +129,24 @@
 
 </div>
 
-<?php if ( $first_run ): ?>
+<?php if ( $first_run ): 
+	$msg = _t('Welcome to Habari! We hope that you will jump right in and start exploring. If you get stuck or want to learn more about some of the advanced features, we encourage you to read the [manual], which is bundled with every Habari install. This link also appears at the bottom of every page in the admin area.'); 
+ 	$msg = str_replace( array( '[', ']' ), array( '<a href="' . Site::get_url('habari') . '/doc/manual/index.html" onclick="popUp(this.href);return false;" title="' . _t('Habari Manual') . '">', '</a>' ), $msg ); 
+?> 
+
 <div class="container dashboard transparent">
 	<div class="item">
-	<p>Welcome to Habari! We hope that you will jump right in and start exploring. If you get stuck or want to learn more about some of the advanced features, we encourage you to read the <a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href);return false;" title="Habari Manual">manual</a>, which is bundled with every Habari install. This link also appears at the bottom of every page in the admin area.</p>
-	<p>This message will disappear next time you visit.</p>
+	<p><?php echo $msg; ?></p> 
+	<p><?php _e( 'This message will disappear next time you visit.' ); ?></p>
 	</div>
 </div>
-	
+
 <?php endif; ?>
+
 <div class="container dashboard transparent">
 
 	<?php $theme->display('dashboard_modules'); ?>
 
 </div>
-
 
 <?php include( 'footer.php' ); ?>
