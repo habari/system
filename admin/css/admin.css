@@ -493,13 +493,6 @@ p:hover > label.abovecontent {
 	margin-top: 70px;
 }
 
-#page .create .container {
-	padding: 0px;
-	background: transparent;
-	-webkit-box-shadow: none;
-	overflow: visible;
-}
-
 #page .create .container > p {
 	margin: 0;
 }
@@ -509,6 +502,8 @@ p:hover > label.abovecontent {
 	padding: 3px 5px;
 	margin: 0 0 0 -6px;
 	width: 100%;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
 }
 
 .create label.overcontent {
@@ -1483,7 +1478,7 @@ body.page-Manage .state {
 	right: 20px;
 	z-index: 500;
 	text-transform: capitalize;
-	}
+}
 
 .navigator .special_search a.active {
 	text-decoration: underline !important;
@@ -1723,6 +1718,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 	width: 100% !important;
 	max-width: none;
 	margin: 20px auto;
+	padding: 0;
 }
 
 .splitterinside {
