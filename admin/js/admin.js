@@ -230,7 +230,7 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.manage.users, .page-options, .page-user').length != 0) {
+		if($('.page-users, .page-options, .page-user').length != 0) {
 			$("input#search").keyup(function (e) {
 				var str= $('input#search').val();
 				itemManage.simpleFilter(str);
@@ -280,7 +280,7 @@ var itemManage = {
 		
 		// cache search items on first call
 		if ( itemManage.searchCache.length == 0 ) {
-			itemManage.searchRows = $('li.item, a.tag, .page-options div.settings');
+			itemManage.searchRows = $('li.item, a.tag, div.settings');
 			itemManage.searchCache = itemManage.searchRows.map(function() {
 				return $(this).text().toLowerCase();
 			});
