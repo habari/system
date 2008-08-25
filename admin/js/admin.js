@@ -601,11 +601,6 @@ var timeline = {
 			})
 			.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
 
-		// Fix width of years, so they don't spill into the next year
-		$('.year > span').each( function() {
-			$(this).width( $(this).parents('.year').width() - 4 )
-		})
-
 		// update the do_search state variable
 		timeline.do_search= true;
 	},
@@ -728,6 +723,11 @@ var timeline = {
 		$('.track').width( $('.years').width() - timeline.overhang );
 		$('.handle').width( handleWidth + 'px' );
 
+		// Fix width of years, so they don't spill into the next year
+		$('.year > span').each( function() {
+			$(this).width( $(this).parents('.year').width() - 4 )
+		})
+
 		// reset the slider maxValue
 		$('.track').slider( 'setData', 'max', Math.max( 1, maxSliderValue ) );
 
@@ -747,6 +747,13 @@ var timelineHandle = {
 		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the 
 		 * right side of the handle */
 		timeline.handle.css( 'right', 'auto' )
+
+
+		// Slide and fade in the handle
+		var handleLocation = parseInt(timeline.handle.css('left'));
+		timeline.handle
+//			.css( 'left', handleLocation - 250 )
+			.animate({ opacity: 1 /* , left: handleLocation */ }, 2000, 'swing');
 
 		// Resize Handle Left
 		$('.resizehandleleft')
