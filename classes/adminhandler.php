@@ -539,6 +539,7 @@ class AdminHandler extends ActionHandler
 
 		// Create the Save button
 		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
+		$buttons->save->tabindex = 4;
 
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
