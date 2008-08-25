@@ -465,12 +465,16 @@ p:hover > label.abovecontent {
 	margin-right: 10px;
 }
 	
-.button.submit, .comments .button.delete {
+.button.submit {
 	float: left;
 	margin-left: 10px;
 	margin-right: 0;
 }
-	
+
+.comments .button.delete {
+	float:none;
+}
+
 .comments .buttons {
 	float: right;
 }
