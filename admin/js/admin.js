@@ -561,45 +561,45 @@ var timeline = {
 		timeline.do_search= false;
 
 		$('.track')
-		.width( $('.years').width() - timeline.overhang )
-		.slider({
-			handle: '.handle',
-			max: Math.max( 1, maxSliderValue ),
-			startValue: maxSliderValue,
-			axis: 'horizontal',
-			stop: function(event, ui) {
-				timeline.updateView();
-				if ( timeline.do_search ) {
-					var loupeInfo = timelineHandle.getLoupeInfo();
-					itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
+			.width( $('.years').width() - timeline.overhang )
+			.slider({
+				handle: '.handle',
+				max: Math.max( 1, maxSliderValue ),
+				startValue: maxSliderValue,
+				axis: 'horizontal',
+				stop: function(event, ui) {
+					timeline.updateView();
+					if ( timeline.do_search ) {
+						var loupeInfo = timelineHandle.getLoupeInfo();
+						itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
+					}
+					timelineHandle.updateLoupeInfo();
+				},
+				slide: function( event, ui) {
+					timeline.updateView();
 				}
-				timelineHandle.updateLoupeInfo();
-			},
-			slide: function( event, ui) {
-				timeline.updateView();
-			}
-		})
-		.unbind('click')
-		.bind('dblclick', function(e) { // Double-clicking on either side of the handle moves the handle to the clicked position.
-			// Dismiss clicks on handle
-			if ($(e.target).is('.handle')) return false;
+			})
+			.unbind('click')
+			.bind('dblclick', function(e) { // Double-clicking on either side of the handle moves the handle to the clicked position.
+				// Dismiss clicks on handle
+				if ($(e.target).is('.handle')) return false;
 
-			timeline.noJump = true;
-			clearTimeout(timeline.t1);
-			$('.track').slider('moveTo', e.layerX)
-		})
-		.bind('click', function(e) { // Clicking either side of the handle moves the handle its own length to that side.
+				timeline.noJump = true;
+				clearTimeout(timeline.t1);
+				$('.track').slider('moveTo', e.layerX)
+			})
+			.bind('click', function(e) { // Clicking either side of the handle moves the handle its own length to that side.
 
-			// Dismiss clicks on handle
-			if ($(e.target).is('.handle')) return false;
+				// Dismiss clicks on handle
+				if ($(e.target).is('.handle')) return false;
 
-			// Click to left or right of handle?
-			if (e.layerX < $('.track').slider('value') )
-				timeline.t1 = setTimeout('timeline.skipLoupeLeft()', 300);
-			else
-				timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
-		})
-		.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
+				// Click to left or right of handle?
+				if (e.layerX < $('.track').slider('value') )
+					timeline.t1 = setTimeout('timeline.skipLoupeLeft()', 300);
+				else
+					timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
+			})
+			.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
 
 		// Fix width of years, so they don't spill into the next year
 		$('.year > span').each( function() {
@@ -698,7 +698,7 @@ var timeline = {
 		timeline.monthData= [0];
 		timeline.monthWidths= [0];
 		timeline.totalCount= 0;
-		$('.years .months span').each(function(i) {
+		$('.years .months span').each( function(i) {
 			timeline.monthData[i] = $(this).width();
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
 			timeline.totalCount += timeline.monthData[i];
@@ -746,7 +746,8 @@ var timelineHandle = {
 
 		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the 
 		 * right side of the handle */
-		timeline.handle.css('right', 'auto');
+		timeline.handle.css( 'right', 'auto' )
+
 		// Resize Handle Left
 		$('.resizehandleleft')
 			.mousedown(function(e) {
@@ -816,10 +817,18 @@ var timelineHandle = {
 		var loupeInfo = timelineHandle.getLoupeInfo();
 
 		$('.currentposition').text( loupeInfo.start +'-'+ loupeInfo.end +' of '+ timeline.totalCount );
-
+		if ($('.currentposition').css('opacity')) $('.currentposition').animate({opacity: 1}, 500)
+		
 		// Hide 'newer' and 'older' links as necessary
 		if (loupeInfo.start == 1) $('.navigator .older').animate({opacity: '0'}, 200); else $('.navigator .older').animate({opacity: '1'}, 200);
 		if (loupeInfo.end == timeline.totalCount) $('.navigator .newer').animate({opacity: '0'}, 200); else $('.navigator .newer').animate({opacity: '1'}, 200);
+
+		// Slide and fade in the handle
+		var handleLocation = parseInt(timeline.handle.css('left'));
+		timeline.handle
+			.css( 'left', handleLocation - 250 )
+			.animate({ opacity: 1, left: handleLocation }, 1100, 'swing');
+
 	},
 	endDrag: function(e) {
 		timeline.noJump = true;

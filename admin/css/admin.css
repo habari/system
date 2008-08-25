@@ -1458,6 +1458,7 @@ body.page-Manage .state {
 .navigator .currentposition {
 	text-align: center;
 	color: #999;
+	opacity: 0;
 }
 
 .navigator input {
@@ -1467,6 +1468,7 @@ body.page-Manage .state {
 
 .navigator .newer {
 	text-align: right;
+	opacity: 0;
 }
 
 .navigator .filters {
@@ -1557,6 +1559,7 @@ body.page-Manage .state {
 	cursor: move;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
+	opacity: 0;
 }
 
 .timeline .handle .resizehandleleft,
