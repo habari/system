@@ -75,6 +75,33 @@ class Locale
 	}
 
 	/**
+	* function list_all
+	 * Retrieves an array of the Habari locales that are installed
+	 * 
+	 * @return array. An array of Habari locales in the installation
+	 **/
+	public static function list_all()
+	{
+		$localedirs = array( HABARI_PATH . '/system/locale/', HABARI_PATH . '/3rdparty/locale/', HABARI_PATH . '/user/locale/' );
+		if ( Site::CONFIG_LOCAL != Site::$config_type ) {
+			// include site-specific locales
+			$localedirs[] = Site::get_dir( 'config' ) . '/locale/';
+		}
+
+		$dirs= array();
+		foreach ( $localedirs as $localedir ) {
+			if ( file_exists( $localedir ) ) {
+				$dirs = array_merge( $dirs, Utils::glob( $localedir . '*', GLOB_ONLYDIR | GLOB_MARK ) );
+			}
+		}
+		$dirs = array_filter( $dirs, create_function('$a', 'return file_exists($a . "LC_MESSAGES/habari.mo");') );
+
+		$locales = array_map( 'basename', $dirs );
+		ksort( $locales );
+		return $locales;
+	}
+
+	/**
 	 * Load translations from a given file.
 	 * 
 	 * @param string $domain the domain to load the data into
