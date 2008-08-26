@@ -14,7 +14,7 @@ class Modules
    /**
      * static initializer to setup base vars.
      */
-	public function __static()
+	public static function __static()
 	{
 		self::$available_modules = (array) Plugins::filter( 'dash_modules', array() );
 		self::$active_modules = isset( User::identify()->info->dash_modules ) ?  User::identify()->info->dash_modules : array();
