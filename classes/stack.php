@@ -59,6 +59,49 @@ class Stack
 	}
 	
 	/**
+	 * Check for the existence of a given stack item.
+	 *
+	 * @param string $stack_name The name of the stack in which to check.
+	 * @param string $value The value to check for.
+	 * @return boolean TRUE if the item exists, FALSE otherwise.
+	 */
+	public static function has ( $stack_name, $value_name ) {
+		
+		// get the stack
+		$stack = self::get_named_stack( $stack_name );
+		
+		if ( isset( $stack[ $value_name ] ) ) {
+			return true;
+		}
+		else {
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * Get a single item from a given stack.
+	 *
+	 * @param string $stack_name The name of the stack to fetch an item from.
+	 * @param string $value The item to fetch.
+	 * @param mixed $default_value The default value to return if the item does not exist in the stack.
+	 * @return mixed The item, or $default_value if it does not exist.
+	 */
+	public static function get_item ( $stack_name, $value_name, $default_value = null ) {
+		
+		// get the stack
+		$stack = self::get_named_stack( $stack_name );
+		
+		if ( isset( $stack[ $value_name ] ) ) {
+			return $stack[ $value_name ];
+		}
+		else {
+			return $default_value;
+		}
+		
+	}
+	
+	/**
 	 * Creates and retreives a named stack instance
 	 * @param string $stack_name The name of the stack to create and return
 	 * @return array The created stack
@@ -91,8 +134,8 @@ class Stack
 	/**
 	 * Remove a value to a stack
 	 * @param string $stack_name The name of the stack
-	 * @param string $value_name The name of the value to add
-	 * @return array The stack that was added to	 
+	 * @param string $value_name The name of the value to remove
+	 * @return array The rest of the stack, post-remove	 
 	 **/	 
 	public static function remove( $stack_name, $value_name )
 	{
