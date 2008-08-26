@@ -647,9 +647,9 @@ ENDOFSQL;
 		$post->user_id= $habari_user_id;
 		$post->guid= $post->guid; /* @TODO: This works to create a GUID, but man, it's weird. */
 		$post->info->s9y_id= $post_info->id;
-		$post->title= $post_info->title;
+		$post->title= $this->transcode( $post_info->title );
 		$content = ( empty( $post_info->extended ) ? $post_info->body : $post_info->body . $post_info->extended );
-		$post->content= iconv( 'Windows-1252', 'UTF-8', $content ); // this conversion works for my S9Y. Untested globally.
+		$post->content= $this->transcode( $content );
 		$post->status= ( $post_info->isdraft == "true" ? Post::status( 'draft' ) : Post::status( 'published' ) );
 		$post->content_type= Post::type( 'entry' );
 		$post->updated= date('Y-m-d H:i:s', $post_info->last_modified);
@@ -797,12 +797,11 @@ ENDOFSQL;
 		$comment->ip= sprintf ("%u", ip2long($comment_info->ip) );
 		$comment->status= $status_map[strtoupper($comment_info->status)];
 		$comment->type= $type_map[strtoupper($comment_info->type)];
-		$comment->name= $comment_info->author;
+		$comment->name= $this->transcode( $comment_info->author );
 		$comment->url= $comment_info->url;
 		$comment->date= date('Y-m-d H:i:s', $comment_info->timestamp);
-		$comment->email= $comment_info->email;
-		$comment->content= $comment_info->body;
-
+		$comment->email= $this->transcode( $comment_info->email );
+		$comment->content= $this->transcode( $comment_info->body );
 		if ( $comment->insert() )
 			return TRUE;
 		else {
@@ -909,6 +908,10 @@ ENDOFSQL;
 
 	private function fail_html() {
 		return "<b style=\"color: red;\">" . _t( "failed" ) . "</b>";
+	}
+	
+	protected function transcode( $content ) {
+		return iconv( 'Windows-1252', 'UTF-8', $content );
 	}
 }
 ?>
