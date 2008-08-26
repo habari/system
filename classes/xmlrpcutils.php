@@ -26,10 +26,10 @@ class XMLRPCUtils
 			break;
 		case ($arg instanceof XMLRPCDate):
 			$params->addchild('value')->addchild('dateTime.iso8601', date('c', strtotime($arg->date)));
-			break;				
+			break;
 		case ($arg instanceof XMLRPCBinary):
 			$params->addchild('value')->addchild('base64', base64_encode($arg->data));
-			break;				
+			break;
 		case ($arg instanceof XMLRPCStruct):
 			$struct = $params->addchild('value')->addchild('struct');
 			$object_vars = $arg->get_fields();
@@ -38,7 +38,7 @@ class XMLRPCUtils
 				$member->addchild('name', $field);
 				self::encode_arg($member, $arg->$field);
 			}
-			break;				
+			break;
 		case is_object($arg):
 			$struct = $params->addchild('value')->addchild('struct');
 			$object_vars = get_object_vars($arg);
@@ -79,7 +79,7 @@ class XMLRPCUtils
 		case 'data':
 		case 'array':
 			$result_array = array();
-			foreach($value->xpath('//data/value/*') as $array_value) {
+			foreach($value->xpath('//data/value') as $array_value) {
 				$result_array[] = self::decode_args($array_value);
 			}
 			return $result_array;
