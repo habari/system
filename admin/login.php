@@ -41,10 +41,10 @@
 				<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
 
 					<p>
-						<label for="habari_username" class="incontent abovecontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if(isset($habari_username)) { ?> value="<?php echo $habari_username; ?>"<?php } ?> class="styledformelement lock">
+						<label for="habari_username" class="incontent abovecontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if(isset($habari_username)) { ?> value="<?php echo $habari_username; ?>"<?php } ?> placeholder="<?php _e('name'); ?>" class="styledformelement">
 					</p>
 					<p>
-						<label for="habari_password" class="incontent abovecontent"><?php _e('Password'); ?></label><input type="password" name="habari_password" id="habari_password" class="styledformelement lock">
+						<label for="habari_password" class="incontent abovecontent"><?php _e('Password'); ?></label><input type="password" name="habari_password" id="habari_password" placeholder="<?php _e('password'); ?>" class="styledformelement">
 					</p>
 					<?php Plugins::act( 'theme_loginform_controls' ); ?>
 					<p>

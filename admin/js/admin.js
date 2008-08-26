@@ -1169,22 +1169,20 @@ function findChildren() {
 	$('div > .item:last-child, .modulecore .item:last-child, ul li:last-child').addClass('last-child')
 }
 
-/* ON PAGE STARTUP */
-String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }
-
-var tagskeyup;
-// initialize the timeline after window load to make sure CSS has been applied to the DOM
-$(window).load( function() {
-	timeline.init();
-});
-
 // code for making inline labels which then move above form inputs when the inputs have content
 var labeler = {
 	focus: null,
 	init: function() {
-		labeler.checkAll();
-				
-		$('.islabeled:not(.lock)').focus( function() {
+		$('label.incontent').each( function() {
+			labeler.check(this);
+
+			// focus on the input when clicking on the label
+			$(this).click(function() {
+				$('#' + $(this).attr('for')).focus();
+			});
+		});
+
+		$('.islabeled').focus( function() {
 			labeler.focus= $(this);
 			labeler.aboveLabel($(this));
 		}).blur(function(){
@@ -1192,21 +1190,11 @@ var labeler = {
 			labeler.check($('label[for='+$(this).attr('id')+']'));
 		});
 	},
-	checkAll: function() {
-		$('label.incontent').each( function() {
-			labeler.check(this);
-			
-			// focus on the input when clicking on the label
-			$(this).click(function() {
-				$('#' + $(this).attr('for')).focus();
-			});
-		});
-	},
 	check: function(label) {
 		var target = $('#' + $(label).attr('for'));
-		
-		if( target.val() == null || target.hasClass('lock') ) return;
-		
+
+		if( !target ) return;
+
 		if( labeler.focus != null && labeler.focus.attr('id') == target.attr('id') ) {
 			labeler.aboveLabel(target);
 		}
@@ -1219,13 +1207,28 @@ var labeler = {
 	},
 	aboveLabel: function(el) {
 		$(el).addClass('islabeled');
-		$('label[for=' + $(el).attr('id') + ']').removeClass('overcontent').addClass('abovecontent');	
+		$('label[for=' + $(el).attr('id') + ']').removeClass('overcontent').removeClass('hidden').addClass('abovecontent');	
 	},
 	overLabel: function(el) {
 		$(el).addClass('islabeled');
-		$('label[for=' + $(el).attr('id') + ']').addClass('overcontent').removeClass('abovecontent');
+		// for Safari only, we can simply hide labels when we have provided a
+		// placeholder attribute
+		if ($.browser.safari && $(el).attr('placeholder') ) {
+			$('label[for=' + $(el).attr('id') + ']').addClass('hidden');
+		}
+		else {
+			$('label[for=' + $(el).attr('id') + ']').addClass('overcontent').removeClass('abovecontent');
+		}
 	}
 }
+
+/* ON PAGE STARTUP */
+
+var tagskeyup;
+// initialize the timeline after window load to make sure CSS has been applied to the DOM
+$(window).load( function() {
+	timeline.init();
+});
 
 $(document).ready(function(){
 	// Initialize all sub-systems
