@@ -552,7 +552,7 @@ class AdminHandler extends ActionHandler
 		Plugins::act('form_publish', $form, $post);
 
 		// Put the form into the theme
-		$theme->form = $form->get();
+		$this->theme->form = $form->get();
 		return $form;
 	}
 
