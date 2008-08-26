@@ -150,7 +150,7 @@ class FormContainer
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get($forvalidation)
+	function get($forvalidation = true)
 	{
 		$theme= $this->get_theme($forvalidation, $this);
 		$contents = '';
@@ -825,7 +825,7 @@ class FormControl
 	 *
 	 * @param boolean $forvalidation True if the control should output validation information with the control.
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		$theme= $this->get_theme($forvalidation);
 		$theme->start_buffer();
@@ -1142,7 +1142,7 @@ class FormControlStatic extends FormControlNoSave
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		return $this->caption;
 	}
@@ -1176,7 +1176,7 @@ class FormControlTag extends FormContainer
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get($forvalidation)
+	function get($forvalidation = true)
 	{
 		$theme= $this->get_theme($forvalidation, $this);
 		$max= Tags::max_count();
@@ -1206,7 +1206,7 @@ class FormControlPassword extends FormControlText
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		$theme= $this->get_theme($forvalidation);
 		$theme->outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
@@ -1320,7 +1320,7 @@ class FormControlSelect extends FormControl
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		$theme= $this->get_theme($forvalidation);
 		$theme->options = $this->options;
@@ -1343,7 +1343,7 @@ class FormControlCheckboxes extends FormControlSelect
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		$theme= $this->get_theme($forvalidation);
 		$theme->options = $this->options;
@@ -1433,7 +1433,7 @@ class FormControlHidden extends FormControl
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		return '<input type="hidden" name="' . $this->field . '" value="' . $this->value . '">';
 	}
@@ -1499,7 +1499,7 @@ class FormControlLabel extends FormControlNoSave
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get()
+	function get( $forvalidation = true )
 	{
 		$out= '<div' . (($this->class) ? ' class="' . implode( " ", (array) $this->class ) . '"' : '') . (($this->id) ? ' id="' . $this->id . '"' : '') .'><label for="' . $this->name . '">' . $this->caption . '</label></div>';
 		return $out;
@@ -1550,7 +1550,7 @@ class FormControlTabs extends FormContainer
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get($forvalidation)
+	function get($forvalidation = true)
 	{
 		$theme= $this->get_theme($forvalidation, $this);
 
