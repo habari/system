@@ -12,10 +12,17 @@
 		<span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'year_month' => date( 'Y-m', strtotime( $post->pubdate ) ) ) ); ?>" title="<?php printf( _t('Search for other items from %s'), date('M, Y', strtotime($post->pubdate)) ) ; ?>"><?php echo date('M j, Y', strtotime($post->pubdate)); ?></a></span>
 		<span class="time pct10"><span class="dim"><?php _e('at'); ?> <?php echo date('H:i', strtotime($post->pubdate)); ?></span></span>
 
-		<ul class="dropbutton">	
-			<li><a href="<?php URL::out('admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php printf( _t('Edit \'%s\''), $post->title ); ?>"><?php _e('Edit'); ?></a></li>
-			<li><a href="<?php echo $post->permalink; ?>" title="<?php printf( _t('View \'%s\''), $post->title ); ?>"><?php _e('View'); ?></a></li>
-			<li><a href="#" onclick="itemManage.remove(<?php echo $post->id; ?>, 'post');return false;" title="<?php _e('Delete this item') ?>"><?php _e('Delete'); ?></a></li>
+		<ul class="dropbutton">
+			<?php $actions= array(
+				'edit' => array('url' => URL::get('admin', 'page=publish&slug=' . $post->slug), 'title' => sprintf( _t('Edit \'%s\''), $post->title ), 'label' => _t('Edit')),
+				'view' => array('url' => $post->permalink, 'title' => sprintf( _t('View \'%s\''), $post->title ), 'label' => _t('View')),
+				'remove' => array('url' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t('Delete this item'), 'label' => _t('Delete'))
+			);
+			$actions= Plugins::filter('post_actions', $actions, $post);
+			foreach($actions as $action):
+			?>
+				<li><a href="<?php echo $action['url']; ?>" title="<?php echo $action['title']; ?>"><?php echo $action['label']; ?></a></li>
+			<?php endforeach; ?>
 		</ul>
 	</div>
 
