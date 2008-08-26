@@ -207,13 +207,14 @@ class AdminHandler extends ActionHandler
 
 		$option_items[_t('Language')] = array(
 			'locale' => array(
-				'label' => _t('Locale'),
-				'type' => 'text',
-				'helptext' => _t('International language code'),
-				),
-			);
+				'label' => _t( 'Locale' ),
+				'type' => 'select',
+				'selectarray' => array_merge( array( '' => 'default' ), array_combine( Locale::list_all(), Locale::list_all() ) ),
+				'helptext' => 'International language code',
+			)
+		);
 
-		/*$option_items[_t('Presentation')] = array(
+			/*$option_items[_t('Presentation')] = array(
 			'encoding' => array(
 				'label' => _t('Encoding'),
 				'type' => 'select',
@@ -263,6 +264,7 @@ class AdminHandler extends ActionHandler
 	{
 		Session::notice( _t( 'Successfully updated options' ) );
 		$form->save();
+		Utils::redirect();
 	}
 
 	/**
