@@ -231,7 +231,7 @@ $(document).ready(function(){
 		show: function(){
 			var tabindex = $(this).data('selected.tabs');
 			var tab = $('.mediasplitter').eq(tabindex);
-			var path = $('.pathstore', tab).html().trim();
+			var path = $.trim( $('.pathstore', tab).html() );
 			if(path != '') {
 				habari.media.showdir( path, null, tab );
 				habari.media.unqueueLoad();
