@@ -488,7 +488,7 @@ class AdminHandler extends ActionHandler
 		// Create the tags field
 		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
 		$form->tags->tabindex = 3;
-		$form->tags->value = implode(',', $post->tags);
+		$form->tags->value = implode(', ', $post->tags);
 
 		// Create the splitter
 		$publish_controls = $form->append('tabs', 'publish_controls');
