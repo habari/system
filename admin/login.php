@@ -63,8 +63,14 @@
 	Stack::out( 'admin_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
 ?>
 	<script type="text/javascript">
-	jQuery(document).ready(function() {
+	var password_label;
+	$(document).ready( function() {
 		<?php Session::messages_out( true, array( 'Format', 'humane_messages' ) ); ?>
+		password_label = $('label[for=habari_password]');
+		// to fix autofill issues, we need to check the password field on every keyup
+		$('#habari_username').keyup( function() {
+			setTimeout( "labeler.check( password_label );", 10 ); 
+		} );
 	})
   </script>
 <?php
