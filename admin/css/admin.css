@@ -1,3 +1,5 @@
+/* @override http://localhost/habari/system/admin/css/admin.css */
+
 /*
  * Name: Habari Admin Stylesheet
  * Author: Habari Community
@@ -1532,7 +1534,7 @@ body.page-Manage .state {
 
 .timeline .years .months div {
 	display: table-cell;
-	border-right: 1px solid #333;
+	border-right: 1px solid #2d2d2d;
 	height: inherit;
 	overflow: hidden;
 }
@@ -1892,6 +1894,7 @@ body.login input[type=submit] {
 	top: 40px;
 	left: 10px;
 	width: 30%;
+	max-width: 300px;
 	color: white;
 	text-align: left;
 	z-index: 900;
