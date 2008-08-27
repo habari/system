@@ -10,9 +10,9 @@
 class URL extends Singleton
 {
 	// static collection of rules ( pulled from RewriteController )
-	private $rules= NULL;
-	private $matched_rule= NULL;
-	private static $stub= NULL;
+	private $rules = NULL;
+	private $matched_rule = NULL;
+	private static $stub = NULL;
 
 	/**
 	 * Enables singleton working properly
@@ -32,7 +32,7 @@ class URL extends Singleton
 		if ( URL::instance()->rules != NULL ) {
 			return;
 		}
-		URL::instance()->rules= RewriteRules::get_active();
+		URL::instance()->rules = RewriteRules::get_active();
 	}
 
 	/**
@@ -72,35 +72,35 @@ class URL extends Singleton
 	 */
 	public static function parse( $from_url )
 	{
-		$base_url= Site::get_path( 'base', true );
+		$base_url = Site::get_path( 'base', true );
 
 		/*
 		 * Strip out the base URL from the requested URL
 		 * but only if the base URL isn't /
 		 */
 		if ( strpos( $from_url, $base_url ) === 0 ) {
-			$from_url= substr( $from_url, strlen( $base_url ) );
+			$from_url = substr( $from_url, strlen( $base_url ) );
 		}
 
 		/* Trim off any leading or trailing slashes */
-		$from_url= trim( $from_url, '/' );
+		$from_url = trim( $from_url, '/' );
 
 		/* Remove the querystring from the URL */
 		if ( strpos( $from_url, '?' ) !== FALSE ) {
 			list( $from_url, )= explode( '?', $from_url );
 		}
 
-		$url= URL::instance();
+		$url = URL::instance();
 		$url->load_rules(); // Cached in singleton
 
 		/*
 		 * Run the stub through the regex matcher
 		 */
-		$pattern_matches= array();
+		$pattern_matches = array();
 		self::$stub = $from_url;
 		foreach ( $url->rules as $rule ) {
 			if ( $rule->match( $from_url ) ) {
-				$url->matched_rule= $rule;
+				$url->matched_rule = $rule;
 				/* Stop processing at first matched rule... */
 				return $rule;
 			}
@@ -125,53 +125,54 @@ class URL extends Singleton
 	 * @param mixed $rule_names string name of the rule or array of rules which would build the URL
 	 * @param mixed $args (optional) array or object of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
+	 * @param boolean $prepend_site If true (default), a full URL is returned, if false, only the path part of the URL is returned
 	 */
-	public static function get( $rule_names, $args= array(), $useall= true, $noamp= false )
+	public static function get( $rule_names, $args = array(), $useall = true, $noamp = false, $prepend_site = true )
 	{
-		$args= self::extract_args( $args );
+		$args = self::extract_args( $args );
 
-		$url= URL::instance();
-		if ( $rule_names == '' ) {			
+		$url = URL::instance();
+		if ( $rule_names == '' ) {
 			// Retrieve current matched RewriteRule
-			$selectedrule= $url->get_matched_rule();
-			
+			$selectedrule = $url->get_matched_rule();
+
 			// Retrieve arguments name the RewriteRule can use to build a URL.
-			$rr_named_args= $selectedrule->named_args;
-			
-			$rr_args= array_merge( $rr_named_args['required'], $rr_named_args['optional']  );
+			$rr_named_args = $selectedrule->named_args;
+
+			$rr_args = array_merge( $rr_named_args['required'], $rr_named_args['optional']  );
 			// For each argument, check if the handler_vars array has that argument and if it does, use it.
-			$rr_args_values= array();
+			$rr_args_values = array();
 
 			foreach ( $rr_args as $rr_arg ) {
 				if ( !isset( $args[$rr_arg] ) ) {
-					$rr_arg_value= Controller::get_var( $rr_arg );
+					$rr_arg_value = Controller::get_var( $rr_arg );
 					if ( $rr_arg_value != '' ) {
-						$args[$rr_arg]= $rr_arg_value;
+						$args[$rr_arg] = $rr_arg_value;
 					}
 				}
 			}
-			
+
 		}
 		else {
 			$url->load_rules();
-			$selectedrule= null;
+			$selectedrule = null;
 
 			if ( !is_array( $rule_names ) ) {
-				$rule_names= array( $rule_names );
+				$rule_names = array( $rule_names );
 			}
 			foreach ( $rule_names as $rule_name ) {
-				if ( $rules= $url->rules->by_name( $rule_name ) ) {
-					$rating= null;
+				if ( $rules = $url->rules->by_name( $rule_name ) ) {
+					$rating = null;
 					foreach ( $rules as $rule ) {
-						$newrating= $rule->arg_match( $args );
+						$newrating = $rule->arg_match( $args );
 						// Is the rating perfect?
 						if ( $rating == 0 ) {
-							$selectedrule= $rule;
+							$selectedrule = $rule;
 							break;
 						}
 						if ( empty( $rating ) || ( $newrating < $rating ) ) {
-							$rating= $newrating;
-							$selectedrule= $rule;
+							$rating = $newrating;
+							$selectedrule = $rule;
 						}
 					}
 					if ( isset( $selectedrule ) ) {
@@ -180,21 +181,25 @@ class URL extends Singleton
 				}
 			}
 		}
-		
+
 		if ( $selectedrule instanceOf RewriteRule ) {
-			$return_url= $selectedrule->build( $args, $useall, $noamp );
-			return Site::get_url( 'habari', true ) . $return_url;
+			$return_url = $selectedrule->build( $args, $useall, $noamp );
+			if ( $prepend_site ) {
+				return Site::get_url( 'habari', true ) . $return_url;
+			} else {
+				return $return_url;
+			}
 		}
 		else {
-			$error= new Exception();
-			$error_trace= $error->getTrace();
+			$error = new Exception();
+			$error_trace = $error->getTrace();
 			// Since URL::out() calls this function, the index 0 is URL::get() which is not the proper failing call.
 			if ( isset($error_trace[1]['class']) && isset($error_trace[1]['function']) && ($error_trace[1]['class'] == 'URL') && ($error_trace[1]['function'] == 'out') ) {
-				$error_args= $error_trace[1];
+				$error_args = $error_trace[1];
 			}
 			// When calling URL::get() directly, the index 0 is the proper file and line of the failing call.
 			else {
-				$error_args= $error_trace[0];
+				$error_args = $error_trace[0];
 			}
 			EventLog::log( sprintf( _t('Could not find a rule matching the following names: %s. File: %s (line %s)'), implode(', ', $rule_names), $error_args['file'], $error_args['line'] ) , 'notice', 'rewriterules', 'habari' );
 		}
@@ -205,10 +210,11 @@ class URL extends Singleton
 	 * @param string $rule_name name of the rule which would build the URL
 	 * @param array $args (optional) array of placeholder replacement values
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
+	 * @param boolean $prepend_site If true (default), a full URL is returned, if false, only the path part of the URL is returned
 	 */
-	public static function out( $rule_name= null, $args= array(), $useall= true, $noamp= true )
+	public static function out( $rule_name = null, $args = array(), $useall = true, $noamp = true, $prepend_site = true )
 	{
-		echo URL::get( $rule_name, $args, $useall, $noamp );
+		echo URL::get( $rule_name, $args, $useall, $noamp, $prepend_site );
 	}
 
 	/**
@@ -220,10 +226,10 @@ class URL extends Singleton
 	 */
 	public static function get_from_filesystem($path, $trail = false)
 	{
-		$url= Site::get_url('habari') . substr(dirname($path), strlen(HABARI_PATH));
+		$url = Site::get_url('habari') . substr(dirname($path), strlen(HABARI_PATH));
 		// Replace windows paths with forward slashes
-		$url= str_replace( '\\', '/', $url);
-		$url.= ( $trail ) ? '/' : '';
+		$url = str_replace( '\\', '/', $url);
+		$url .= ( $trail ) ? '/' : '';
 		return $url;
 	}
 
@@ -232,30 +238,30 @@ class URL extends Singleton
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL
 	 **/
-	public static function extract_args( $args, $prefix= '' )
+	public static function extract_args( $args, $prefix = '' )
 	{
 		if ( is_object( $args ) ) {
 			if ( $args instanceof URLProperties ) {
-				$args= $args->get_url_args();
+				$args = $args->get_url_args();
 			}
 			else {
-				$args_ob= array();
+				$args_ob = array();
 				foreach ( $args as $key => $value ) {
-					$args_ob[$key]= $value;
+					$args_ob[$key] = $value;
 				}
-				$args= $args_ob;
+				$args = $args_ob;
 			}
 		}
 		else {
-			$args= Utils::get_params( $args );
+			$args = Utils::get_params( $args );
 		}
 		// can this be done with array_walk?
 		if ( $prefix && $args ) {
-			$args_out= array();
+			$args_out = array();
 			foreach ( $args as $key => $value ) {
-				$args_out[$prefix.$key]= $value;
+				$args_out[$prefix.$key] = $value;
 			}
-			$args= $args_out;
+			$args = $args_out;
 		}
 		return $args;
 	}
