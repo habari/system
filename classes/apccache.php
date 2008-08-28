@@ -100,7 +100,7 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		apc_store( "$group:$name", $value, $expiry );
+		apc_store( "$group:$name", $value, intval($expiry) );
 	}
 
 	/**

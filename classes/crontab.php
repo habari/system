@@ -16,7 +16,7 @@ class CronTab extends ActionHandler
 	static function run_cron( $async = false )
 	{
 		// check if it's time to run crons, and if crons are already running.
-		$next_cron = doubleval( Options::get('next_cron') );
+		$next_cron = intval( Options::get('next_cron') );
 		if ( ( $next_cron > time() )
 			|| ( Options::get('cron_running') && Options::get('cron_running') > microtime(true) )
 			) {
@@ -24,7 +24,9 @@ class CronTab extends ActionHandler
 		}
 		
 		// cron_running will timeout in 10 minutes
+		// round cron_running to 4 decimals
 		$run_time = microtime(true) + 600;
+		$run_time = sprintf("%.4f", $run_time); 
 		Options::set('cron_running', $run_time);
 		
 		if ( $async ) {
@@ -43,9 +45,10 @@ class CronTab extends ActionHandler
 				return;
 			}
 			
+			$time = time();
 			$crons = DB::get_results(
 				'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',
-				array( time(), time() ),
+				array( $time, $time ),
 				'CronJob'
 				);
 			if ( $crons ) {
@@ -66,7 +69,7 @@ class CronTab extends ActionHandler
 	 */
 	function act_poll_cron()
 	{
-		$time = $this->handler_vars['time'];
+		$time = doubleval($this->handler_vars['time']);
 		if ( $time != Options::get('cron_running') ) {
 			return;
 		}
@@ -74,9 +77,10 @@ class CronTab extends ActionHandler
 		// allow script to run for 10 minutes
 		set_time_limit(600);
 		
+		$time = time();
 		$crons = DB::get_results(
 			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',
-			array( time(), time() ),
+			array( $time, $time ),
 			'CronJob'
 			);
 		
@@ -87,6 +91,8 @@ class CronTab extends ActionHandler
 		}
 		
 		// set the next run time to the lowest next_run OR a max of one day.
+		// @todo next_cron should be the actuall next run time and update it when new crons are
+		// added instead of just maxing out at one day..
 		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
 		Options::set('next_cron', min( (int) $next_cron, time() + 86400 ) );
 		Options::set('cron_running', false);
