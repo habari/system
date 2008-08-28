@@ -699,7 +699,7 @@ class DatabaseConnection
 	 *
 	 * @param integer $old_version The old Version::DB_VERSION
 	 */
-	public function upgrade( $old_version, $upgrade_path )
+	public function upgrade( $old_version, $upgrade_path = '' )
 	{
 		// Get all the upgrade files
 		$upgrade_files= Utils::glob("{$upgrade_path}/*.sql");
