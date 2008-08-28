@@ -69,6 +69,7 @@ class Update extends Singleton
 					$instance->beacons
 				)
 			);
+			$request->set_timeout( 10 );
 			$result= $request->execute();
 			if ( Error::is_error( $result ) ) {
 				throw $result;
