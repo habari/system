@@ -146,7 +146,7 @@ class SQLiteConnection extends DatabaseConnection
 	 * @param integer $old_version The current version of the database that is being upgraded
 	 * @return boolean True on success
 	 */
-	public function upgrade( $old_version )
+	public function upgrade( $old_version, $upgrade_path = '' )
 	{
 		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades');
 	}
