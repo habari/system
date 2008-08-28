@@ -58,7 +58,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		
 		if ( ! is_dir( $this->root ) ) {
 			if ( is_writable( $user_path ) ) {
-				mkdir( $this->root, 0766 );
+				mkdir( $this->root, 0755 );
 			} else {
 				return false;
 			}
@@ -178,7 +178,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		$thumbdir = dirname( $src_filename ) . '/' . HabariSilo::DERIV_DIR . '';
 		if( ! is_dir( $thumbdir ) ) {
 			// Create the derivative driectory
-			if( ! mkdir( $thumbdir, 0766 ) ){
+			if( ! mkdir( $thumbdir, 0755 ) ){
 				// Couldn't make derivative directory
 				return false;
 			}
@@ -489,7 +489,7 @@ UPLOAD_FORM;
 		$path= preg_replace( '%\.{2,}%', '.', $form->path->value );
 
 		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
-		mkdir( $dir, 0766 );
+		mkdir( $dir, 0755 );
 
 		return "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>". _t('Directory Created:') ." {$form->directory->value}</p>";
 	}
