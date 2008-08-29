@@ -91,10 +91,12 @@ class MultiByte
 	* @param $str string. The string who's encoding is being changed. 
 	* @param $use_enc string. The encoding to convert to. If not set,
 	* the internal encoding will be used.
+	* @param $from_enc string. encoding before conversion. If not set, 
+ 	* encoding is detected automatically.
 	*
 	* @return mixed  The  source string in the new encoding or boolean false.
 	*/
-	public static function convert_encoding( $str, $use_enc = null )
+	public static function convert_encoding( $str, $use_enc = null, $from_enc = null )
 	{
 		$ret = FALSE;
 
@@ -105,7 +107,9 @@ class MultiByte
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			if (extension_loaded( 'mbstring' ) ) {
-				$from_enc = MultiByte::detect_encoding( $str );
+				if( $from_enc == null ) {
+					$from_enc = MultiByte::detect_encoding( $str );
+				}
 				$ret = mb_convert_encoding( $str, $enc, $from_enc );
 			}
 		}
