@@ -150,6 +150,16 @@ class Pingback extends Plugin
 			}
 			$source_contents= $rr->get_response_body();
 
+			// encoding is converted into internal encoding.
+			// @todo check BOM at beginning of file before checking for a charset attribute
+			$habari_encoding = MultiByte::hab_encoding();
+			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) !== FALSE && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
+				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $matches[1] );
+				if ( $ret !== FALSE ) {
+					$source_contents = $ret;
+				}
+			}
+
 			// Find the page's title
 			preg_match( '/<title>(.*)<\/title>/is', $source_contents, $matches );
 			$source_title= $matches[1];
