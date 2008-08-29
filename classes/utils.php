@@ -832,6 +832,7 @@ class Utils
 	 */
 	public static function mimetype( $filename )
 	{
+		$mimetype=null;
 		if(function_exists('finfo_open')) {
 			$finfo = finfo_open(FILEINFO_MIME);
 			$mimetype = finfo_file($finfo, $filename);
