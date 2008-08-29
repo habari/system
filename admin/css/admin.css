@@ -1829,7 +1829,7 @@ body.login input[type=text], body.login input[type=password], body.login label.o
 	width: 100%;
 	font: 1.5em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 3px 5px;
-	margin: 0 auto;
+	margin: 0 auto 15px;
 	width: 280px; /* 100% will break the vertical lines */
 	color: #333;
 	-webkit-border-radius: 5px;
