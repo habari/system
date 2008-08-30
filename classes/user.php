@@ -12,8 +12,8 @@
  * info records
  * <code>
  *	$this->info = new UserInfo ( 1 );  // Info records of user with id = 1
- * $this->info->option1= "blah"; // set info record with name "option1" to value "blah"
- * $info_value= $this->info->option1; // get value of info record with name "option1" into variable $info_value
+ * $this->info->option1 = "blah"; // set info record with name "option1" to value "blah"
+ * $info_value = $this->info->option1; // get value of info record with name "option1" into variable $info_value
  * if ( isset ($this->info->option1) )  // test for existence of "option1"
  * unset ( $this->info->option1 ); // delete "option1" info record
  * </code>
@@ -24,11 +24,11 @@ class User extends QueryRecord
 	/**
 	 * Static storage for the currently logged-in User record
 	 */
-	private static $identity= null;
+	private static $identity = null;
 
-	private $info= null;
+	private $info = null;
 
-	private $group_list= null;
+	private $group_list = null;
 
 	/**
 	 * Get default fields for this record.
@@ -56,7 +56,7 @@ class User extends QueryRecord
 			$this->fields );
 		parent::__construct($paramarray);
 		$this->exclude_fields('id');
-		$this->info= new UserInfo ( $this->fields['id'] );
+		$this->info = new UserInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new user. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 
 	}
@@ -94,7 +94,7 @@ class User extends QueryRecord
 	**/
 	public static function create( $paramarray )
 	{
-		$user= new User( $paramarray );
+		$user = new User( $paramarray );
 		$user->insert();
 		return $user;
 	}
@@ -104,18 +104,18 @@ class User extends QueryRecord
 	 */
 	public function insert()
 	{
-		$allow= true;
-		$allow= Plugins::filter('user_insert_allow', $allow, $this);
+		$allow = true;
+		$allow = Plugins::filter('user_insert_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
 		Plugins::act('user_insert_before', $this);
 		$this->exclude_fields('id');
-		$result= parent::insertRecord( DB::table('users') );
+		$result = parent::insertRecord( DB::table('users') );
 		$this->fields['id'] = DB::last_insert_id(); // Make sure the id is set in the user object to match the row id
 		$this->info->set_key( $this->id );
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
-		// $this->info->option_default= "saved";
+		// $this->info->option_default = "saved";
 		$this->info->commit();
 		EventLog::log( sprintf(_t('New user created: %s'), $this->username), 'info', 'default', 'habari' );
 		Plugins::act('user_insert_after', $this);
@@ -128,8 +128,8 @@ class User extends QueryRecord
 	 */
 	public function update()
 	{
-		$allow= true;
-		$allow= Plugins::filter('user_update_allow', $allow, $this);
+		$allow = true;
+		$allow = Plugins::filter('user_update_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -145,8 +145,8 @@ class User extends QueryRecord
 	 */
 	public function delete()
 	{
-		$allow= true;
-		$allow= Plugins::filter('user_delete_allow', $allow, $this);
+		$allow = true;
+		$allow = Plugins::filter('user_delete_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -206,11 +206,11 @@ class User extends QueryRecord
 			return false;
 		}
 
-		$user= new StdClass();
-		$require= false;
-		$user= Plugins::filter('user_authenticate', $user, $who, $pw);
+		$user = new StdClass();
+		$require = false;
+		$user = Plugins::filter('user_authenticate', $user, $who, $pw);
 		if($user instanceof User) {
-			self::$identity= $user;
+			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
 			EventLog::log( sprintf(_t('Successful login for %s'), $user->username), 'info', 'authentication', 'habari' );
 			// set the cookie
@@ -218,29 +218,29 @@ class User extends QueryRecord
 			return self::$identity;
 		}
 		elseif(!is_object($user)) {
-			EventLog::log( sprintf(_t('Login attempt (via authentication plugin) for non-existant user %s'), $who), 'warning', 'authentication', 'habari' );
-			self::$identity= null;
+			EventLog::log( sprintf(_t('Login attempt (via authentication plugin) for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
+			self::$identity = null;
 			return false;
 		}
 
 		if ( strpos( $who, '@' ) !== FALSE ) {
 			// we were given an email address
-			$user= self::get_by_email( $who );
+			$user = self::get_by_email( $who );
 		}
 		else {
-			$user= self::get_by_name( $who );
+			$user = self::get_by_name( $who );
 		}
 
 		if ( ! $user ) {
 			// No such user.
-			EventLog::log( sprintf(_t('Login attempt for non-existant user %s'), $who), 'warning', 'authentication', 'habari' );
-			self::$identity= null;
+			EventLog::log( sprintf(_t('Login attempt for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
+			self::$identity = null;
 			return false;
 		}
 
 		if ( Utils::crypt( $pw, $user->password ) ) {
 			// valid credentials were supplied
-			self::$identity= $user;
+			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
 			EventLog::log( sprintf(_t('Successful login for %s'), $user->username), 'info', 'authentication', 'habari' );
 			// set the cookie
@@ -250,7 +250,7 @@ class User extends QueryRecord
 		else {
 			// Wrong password.
 			EventLog::log( sprintf(_t('Wrong password for user %s'), $user->username), 'warning', 'authentication', 'habari' );
-			self::$identity= null;
+			self::$identity = null;
 			return false;
 		}
 	}
@@ -267,15 +267,15 @@ class User extends QueryRecord
 	{
 		if ( is_int( $who ) ) {
 			// Got a User ID
-			$user= self::get_by_id( $who );
+			$user = self::get_by_id( $who );
 		}
 		elseif ( strpos( $who, '@' ) !== FALSE ) {
 			// Got an email address
-			$user= self::get_by_email( $who );
+			$user = self::get_by_email( $who );
 		}
 		else {
 			// Got username
-			$user= self::get_by_name( $who );
+			$user = self::get_by_name( $who );
 		}
 		// $user will be a user object, or false depending on the
 		// results of the get_by_* method called above
@@ -294,7 +294,7 @@ class User extends QueryRecord
 			return false;
 		}
 
-		$params= array(
+		$params = array(
 			'id' => $id,
 			'limit' => 1,
 			'fetch_fn' => 'get_row',
@@ -315,7 +315,7 @@ class User extends QueryRecord
 			return false;
 		}
 
-		$params= array(
+		$params = array(
 			'username' => $username,
 			'limit' => 1,
 			'fetch_fn' => 'get_row',
@@ -336,7 +336,7 @@ class User extends QueryRecord
 			return false;
 		}
 
-		$params= array(
+		$params = array(
 			'email' => $email,
 			'limit' => 1,
 			'fetch_fn' => 'get_row',
@@ -376,18 +376,20 @@ class User extends QueryRecord
 	**/
 	public static function commenter()
 	{
-		$cookie= 'comment_' . Options::get('GUID');
-		$commenter= array();
+		$cookie = 'comment_' . Options::get('GUID');
+		$commenter = array();
 		if ( self::identify() ) {
-			$commenter['name']= self::identify()->username;
-			$commenter['email']= self::identify()->email;
-			$commenter['url']= Site::get_url('habari');
-		} elseif ( isset($_COOKIE[$cookie]) ) {
+			$commenter['name'] = self::identify()->username;
+			$commenter['email'] = self::identify()->email;
+			$commenter['url'] = Site::get_url('habari');
+		}
+		elseif ( isset($_COOKIE[$cookie]) ) {
 			list($commenter['name'], $commenter['email'], $commenter['url']) = explode('#', urldecode( $_COOKIE[$cookie] ) );
-		} else {
-			$commenter['name']= '';
-			$commenter['email']= '';
-			$commenter['url']= '';
+		}
+		else {
+			$commenter['name'] = '';
+			$commenter['email'] = '';
+			$commenter['url'] = '';
 		}
 		return $commenter;
 	}
@@ -409,10 +411,10 @@ class User extends QueryRecord
 	 * @param bool Whether to refresh the cache
 	 * @return Array an array of group IDs to which this user belongs
 	**/
-	private function list_groups( $refresh= false )
+	private function list_groups( $refresh = false )
 	{
 		if ( ( empty( $this->group_list ) ) || $refresh ) {
-			$this->group_list= DB::get_column( 'SELECT group_id FROM ' . DB::table('users_groups') . ' WHERE user_id=?', array( $this->id ) );
+			$this->group_list = DB::get_column( 'SELECT group_id FROM ' . DB::table('users_groups') . ' WHERE user_id=?', array( $this->id ) );
 		}
 		return $this->group_list;
 	}
@@ -425,7 +427,7 @@ class User extends QueryRecord
 	**/
 	public function in_group( $group )
 	{
-		$groups= $this->list_groups();
+		$groups = $this->list_groups();
 		return in_array( UserGroup::id($group), $groups );
 	}
 
@@ -461,7 +463,7 @@ class User extends QueryRecord
 		switch ($name) {
 			case 'info':
 				if ( ! isset( $this->info ) ) {
-					$this->info= new UserInfo( $this->fields['id'] );
+					$this->info = new UserInfo( $this->fields['id'] );
 				}
 				else {
 					$this->info->set_key( $this->fields['id'] );
