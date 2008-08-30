@@ -16,9 +16,9 @@ class FeedbackHandler extends ActionHandler
 	public function act_add_comment()
 	{
 		// We need to get the post anyway to redirect back to the post page.
-		$post= Post::get( array( 'id'=>$this->handler_vars['id'] ) );
+		$post = Post::get( array( 'id'=>$this->handler_vars['id'] ) );
 		if( !$post ) {
-			// trying to comment on a non-existant post?  Weirdo.
+			// trying to comment on a non-existent post?  Weirdo.
 			header('HTTP/1.1 403 Forbidden', true, 403);
 			die();
 		}
@@ -53,34 +53,34 @@ class FeedbackHandler extends ActionHandler
 
 		/* Sanitize data */
 		foreach ( array( 'name', 'email', 'url', 'content' ) as $k ) {
-			$this->handler_vars[$k]= InputFilter::filter( $this->handler_vars[$k] );
+			$this->handler_vars[$k] = InputFilter::filter( $this->handler_vars[$k] );
 		}
 
 		/* Sanitize the URL */
 		if (!empty($this->handler_vars['url'])) {
-			$url= $this->handler_vars['url'];
-			$parsed= InputFilter::parse_url( $url );
+			$url = $this->handler_vars['url'];
+			$parsed = InputFilter::parse_url( $url );
 			if ( $parsed['is_relative'] ) {
 				// guess if they meant to use an absolute link
-				$parsed= InputFilter::parse_url( 'http://' . $url );
+				$parsed = InputFilter::parse_url( 'http://' . $url );
 				if ( ! $parsed['is_error'] ) {
-					$url= InputFilter::glue_url( $parsed );
+					$url = InputFilter::glue_url( $parsed );
 				}
 				else {
 					// disallow relative URLs
-					$url= '';
+					$url = '';
 				}
 			}
 			elseif ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) {
 				// allow only http(s) URLs
-				$url= '';
+				$url = '';
 			}
 			else {
 				// reconstruct the URL from the error-tolerant parsing
 				// http:moeffju.net/blog/ -> http://moeffju.net/blog/
-				$url= InputFilter::glue_url( $parsed );
+				$url = InputFilter::glue_url( $parsed );
 			}
-			$this->handler_vars['url']= $url;
+			$this->handler_vars['url'] = $url;
 		}
 		if ( preg_match( '/^\p{Z}*$/u', $this->handler_vars['content'] ) ) {
 			Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
@@ -89,7 +89,7 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		/* Create comment object*/
-		$comment= new Comment( array(
+		$comment = new Comment( array(
 			'post_id'	=> $this->handler_vars['id'],
 			'name' => $this->handler_vars['name'],
 			'email' => $this->handler_vars['email'],
@@ -104,21 +104,21 @@ class FeedbackHandler extends ActionHandler
 		// Should this really be here or in a default filter?
 		// In any case, we should let plugins modify the status after we set it here.
 		if( ( $user = User::identify() ) && ( $comment->email == $user->email ) ) {
-			$comment->status= Comment::STATUS_APPROVED;
+			$comment->status = Comment::STATUS_APPROVED;
 		}
 
 		// Allow themes to work with comment hooks
 		Themes::create();
 
-		$spam_rating= 0;
-		$spam_rating= Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
+		$spam_rating = 0;
+		$spam_rating = Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
 
 		$comment->insert();
-		$anchor= '';
+		$anchor = '';
 
 		// If the comment was saved
 		if ( $comment->id ) {
-			$anchor= '#comment-' . $comment->id;
+			$anchor = '#comment-' . $comment->id;
 
 			// store in the user's session that this comment is pending moderation
 			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
@@ -127,7 +127,7 @@ class FeedbackHandler extends ActionHandler
 
 			// if no cookie exists, we should set one
 			// but only if the user provided some details
-			$cookie= 'comment_' . Options::get('GUID');
+			$cookie = 'comment_' . Options::get('GUID');
 			if ( ( ! User::identify() )
 				&& ( ! isset( $_COOKIE[$cookie] ) )
 				&& ( ! empty( $this->handler_vars['name'] )
@@ -138,7 +138,7 @@ class FeedbackHandler extends ActionHandler
 			{
 				Session::notice(_t('Setting the cookie.'), 'comment_' . $comment->id );
 				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
-				$site_url= Site::get_path('base',true);
+				$site_url = Site::get_path('base',true);
 				setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );
 			}
 		}
