@@ -153,8 +153,7 @@ class Posts extends ArrayObject
 					$select= 'DISTINCT ' . $select;
 					$joins['tag2post_posts']= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
 					$joins['tags_tag2post']= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
-					// Need tag expression parser here.
-					// ^^ What does this mean? -freakerz
+
 					if ( isset( $paramset['tag'] ) ) {
 						if ( is_array( $paramset['tag'] ) ) {
 							$where[]= "tag_text IN (" . implode( ',', array_fill( 0, count( $paramset['tag'] ), '?' ) ) . ")";
@@ -175,6 +174,27 @@ class Posts extends ArrayObject
 							$params[]= (string) $paramset['tag_slug'];
 						}
 					}
+				}
+				
+				if ( isset( $paramset['all:tag'] ) ) {
+					
+					$select = 'DISTINCT ' . $select;
+					$joins['tag2post_posts']= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
+					$joins['tags_tag2post']= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
+					
+					if ( is_array( $paramset['all:tag'] ) ) {
+						$where[] = 'tag_text IN (' . implode( ',', array_fill( 0, count( $paramset['all:tag'] ), '?' ) ) . ')';
+						$params = array_merge( $params, $paramset['all:tag'] );
+						
+						$groupby = '{posts}.id';
+						$having = 'count(*) = ' . count( $paramset['all:tag'] );
+					}
+					else {
+						// this is actually the same as plain 'tag' for a single tag search - go with it
+						$where[] = 'tag_text = ?';
+						$params[] = $paramset['all:tag'];
+					}
+					
 				}
 
 				if ( isset( $paramset['not:tag'] ) ) {
@@ -414,6 +434,7 @@ class Posts extends ArrayObject
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
 		$query.= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query.= ( ! isset($having) || $having == '' ) ? '' : ' HAVING ' . $having;
 		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		/**
