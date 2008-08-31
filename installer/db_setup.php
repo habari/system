@@ -164,7 +164,7 @@
 					<div class="help">
 						<?php _e('<strong>Table Prefix</strong> is a prefix that will be appended to
 						each table that Habari creates in the database, making it easy to
-						distinguish thode tables in the database from those of other
+						distinguish those tables in the database from those of other
 						installations.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
