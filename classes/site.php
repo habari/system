@@ -146,7 +146,7 @@ class Site
 				break;
 			case 'habari':
 				$url= Site::get_url( 'host' );
-				$path= trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
+				$path= trim( dirname( Site::script_name() ), '/\\' );
 				if ( '' != $path ) {
 					$url.= '/' . $path;
 				}
@@ -208,7 +208,7 @@ class Site
 		switch ( strtolower( $name ) )
 		{
 			case 'base':
-				$path= rtrim(dirname($_SERVER["SCRIPT_NAME"]),'/\\');
+				$path= rtrim(dirname(Site::script_name()),'/\\');
 				break;
 			case 'user':
 				if ( Site::is('main') )
