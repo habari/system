@@ -7,7 +7,7 @@
  *
  * The HiEngine is a subclass of the RawPHPEngine class
  * which is intended for those theme designers who want to use
- * simple <hi:*> tags four output instead of PHP
+ * simple {hi:*} tags four output instead of PHP
  *
  * To use this engine, specify "hiengine" in the theme.xml of a theme.
  *
@@ -190,6 +190,26 @@ class HiEngineParser
 		if(preg_match('%^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*$%i', $cmd)) {
 			$cmd = str_replace('.', '->', $cmd);
 			return '<?php echo $'. $cmd . '; ?>';
+		}
+
+		// Catch tags in the format {hi:command:parameter}
+		if(preg_match('%^(\w+):(.+)$%', $cmd, $cmd_matches)) {
+			switch(strtolower($cmd_matches[1])) {
+				case 'display':
+					return '<?php $theme->display(\'' . $cmd_matches[2] . '\'); ?>';
+				case 'option':
+				case 'options':
+					return '<?php Options::out(\'' . $cmd_matches[2] . '\'); ?>';
+				case 'siteurl':
+					return '<?php Site::out_url( \'' . $cmd_matches[2] . '\' ); ?>';
+				case 'url':
+					return '<?php URL::out( \'' . $cmd_matches[2] . '\' ); ?>';
+			}
+		}
+
+		// Use tags in the format {hi:@foo} as theme functions, ala $theme->foo();
+		if($cmd[0] == '@') {
+			return '<?php $theme->' . substr($cmd, 1) . '(); ?>';
 		}
 
 		// Didn't match anything we support so far
