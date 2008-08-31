@@ -226,7 +226,7 @@ class AtomHandler extends ActionHandler
 
 			$content= $item->addChild( 'content', $comment->content );
 			$content->addAttribute( 'type', 'html' );
-			Plugins::act( 'atom_add_comment', $item, $comment->comment );
+			Plugins::act( 'atom_add_comment', $item, $comment );
 		}
 		return $xml;
 	}
