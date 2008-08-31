@@ -263,6 +263,7 @@ WP_IMPORT_STAGE2;
 					post_status,
 					post_type
 				FROM {$db_prefix}posts
+				WHERE post_type != 'revision'
 				ORDER BY ID DESC
 				LIMIT {$min}, " . IMPORT_BATCH
 				, array(), 'Post' );
