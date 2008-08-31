@@ -9,7 +9,7 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pr
 table {border-collapse:separate;border-spacing:0;}
 caption, th, td {text-align:left;font-weight:normal;}
 table, td, th {vertical-align:middle;}
-
+fieldset {padding:1.4em;margin:0 0 1.5em 0;border:1px solid #ccc;}
 
 /*- THE BASICS */
 
