@@ -46,11 +46,11 @@ class Site
 		switch ( true ) {
 		case isset ( $scriptname ):
 			break;
-		case isset( $_SERVER['SCRIPT_URL'] ):
-			$scriptname= $_SERVER['SCRIPT_URL'];
-			break;
 		case isset( $_SERVER['SCRIPT_NAME'] ):
 			$scriptname= $_SERVER['SCRIPT_NAME'];
+			break;
+		case isset( $_SERVER['PHP_SELF'] ):
+			$scriptname= $_SERVER['PHP_SELF'];
 			break;
 		default:
 			Error::raise(_t('Could not determine script name.'));
