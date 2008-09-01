@@ -259,26 +259,38 @@ class Locale
 	 * @param string $text The text to echo translated
 	 * @param string $domain (optional) The domain to search for the message	 
 	 **/
-	public static function _e( $text, $domain= 'habari' )
+	public static function _e( )
 	{
-		echo self::_t( $text, $domain );
+		$args = func_get_args();
+		echo call_user_func_array(array('Locale', '_t'), $args);
 	}
 
 	/**
 	 * Return a version of the string translated into the current locale
-	 * 
+	 *
 	 * @param string $text The text to echo translated
-	 * @param string $domain (optional) The domain to search for the message	 
+	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The translated string
 	 **/
-	public static function _t( $text, $domain= 'habari' )
+	public static function _t($text, $args = array(), $domain = 'habari')
 	{
+		if( is_string($args) ) {
+			$domain = $args;
+		}
+
 		if ( isset( self::$messages[$domain][$text] ) ) {
-			return self::$messages[$domain][$text][1][0];
+			$t = self::$messages[$domain][$text][1][0];
 		}
 		else {
-			return $text;
+			$t = $text;
 		}
+
+		if(!empty($args) && is_array($args)) {
+			array_unshift($args, $t);
+			$t = call_user_func_array('sprintf', $args);
+		}
+
+		return $t;
 	}
 
 	/**
@@ -323,9 +335,9 @@ class Locale
  * 
  * @param string $text The text to translate
  **/
-function _e( $text, $domain= 'habari' )
+function _e( $text, $args = array(), $domain= 'habari' )
 {
-	return Locale::_e( $text, $domain );
+	return Locale::_e( $text, $args, $domain );
 }
 
 /**
@@ -347,9 +359,9 @@ function _ne( $singular, $plural, $count, $domain= 'habari' )
  * @param string $text The text to translate
  * @return string The translated string
  **/
-function _t( $text, $domain= 'habari' )
+function _t( $text, $args = array(), $domain= 'habari' )
 {
-	return Locale::_t( $text, $domain );
+	return Locale::_t( $text, $args, $domain );
 }
 
 /**
