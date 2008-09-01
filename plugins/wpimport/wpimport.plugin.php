@@ -357,7 +357,16 @@ WP_IMPORT_STAGE2;
 
 				$p= new Post( $post_array );
 				$p->slug= $post->slug;
-				$p->user_id = $user_map[$p->user_id];
+				if(isset($user_map[$p->user_id])) {
+					$p->user_id = $user_map[$p->user_id];
+				}
+				else {
+					$errors = Options::get('import_errors');
+					$errors[] = _t('Post author id %s was not found in WP database, assigning post "%s" (WP post id #%d) to current user.', array($p->user_id, $p->title,$post_array['id']) );
+					Options::set('import_errors', $errors);
+					$p->user_id = User::identify()->id;
+				}
+
 				$p->guid= $p->guid; // Looks fishy, but actually causes the guid to be set.
 				$p->tags= $tags;
 
