@@ -4,8 +4,6 @@
 	<title><?php printf( _t('Login to %s'), Options::get( 'title' ) ); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/screen.css" type="text/css" media="screen">
-	<link rel="stylesheet" href="<?php Site::out_url('habari'); ?>/3rdparty/blueprint/print.css" type="text/css" media="print">
 	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
@@ -20,7 +18,6 @@
 		url: { habari: '<?php Site::out_url('habari'); ?>' }
 	};
 	</script>
-	<script src="<?php Site::out_url('admin_theme'); ?>/js/media.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('admin_theme'); ?>/js/admin.js" type="text/javascript"></script>
 
 	<?php
