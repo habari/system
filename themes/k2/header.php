@@ -22,12 +22,14 @@
    <p class="description"><?php Options::out( 'tagline' ); ?></p>
 
    <ul class="menu">
-    <li><a href="<?php Site::out_url( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
+    <li <?php if($request->display_home) { ?>
+	class="current_page_item"<?php } ?>><a href="<?php Site::out_url( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
 <?php
 // Menu tabs
 foreach ( $pages as $tab ) {
 ?>
-    <li><a href="<?php echo $tab->permalink; ?>" title="<?php echo $tab->title; ?>"><?php echo $tab->title; ?></a></li>
+    <li<?php if(isset($post) && $post->slug == $tab->slug) { ?>
+	class="current_page_item"<?php } ?>><a href="<?php echo $tab->permalink; ?>" title="<?php echo $tab->title; ?>"><?php echo $tab->title; ?></a></li>
 <?php
 }
 if ( $user ) { ?>
