@@ -28,6 +28,27 @@ class Locale
 		self::$locale= strtolower( $locale );
 		self::$uselocale= self::load_domain( 'habari' );
 	}
+	
+	/**
+	 * Set system locale.
+	 *
+	 * The problem is that every platform has its own way to designate a locale,
+	 * so for German you could have 'de', 'de_DE', 'de_DE.UTF-8', 'de_DE.UTF-8@euro'
+	 * (Linux) or 'DEU' (Windows), etc.
+	 *
+	 * @todo: This setting should probably be stored in the language files.
+	 *
+	 * @param string... $locale The locale(s) to set. They will be tried in order.
+	 * @return string the locale that was picked, or FALSE if an error occurred
+	 */
+	public static function set_system_locale()
+	{
+		if ( func_num_args() == 0 ) return;
+		$args= func_get_args();
+		array_unshift( $args, LC_ALL );
+		
+		return call_user_func_array( 'setlocale', $args );
+	}
 
 	/**
 	 * Load translations for a given domain and base directory for a pluggable object.
