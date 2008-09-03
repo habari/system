@@ -162,6 +162,11 @@ class AdminHandler extends ActionHandler
 				'type' => 'text',
 				'helptext' => '',
 				),
+			'atom_entries' => array(
+				'label' => _t('Entries to show in Atom feed'),
+				'type' => 'text',
+				'helptext' => '',
+				),
 			'pingback_send' => array(
 				'label' => _t('Send Pingbacks to Links'),
 				'type' => 'checkbox',
