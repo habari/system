@@ -633,6 +633,7 @@ class AtomHandler extends ActionHandler
 
 		$params['status'] = Post::status('published');
 		$params['orderby'] = 'updated DESC';
+		$params['limit'] = Options::get( 'atom_entries' );
 
 		$params= array_merge( $params, $rr_args );
 
