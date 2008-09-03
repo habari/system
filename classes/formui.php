@@ -219,7 +219,7 @@ class FormContainer
 		// Remove the source control from its container's list of controls
 		$controls = array();
 		foreach($source->container->controls as $name => $ctrl) {
-			if($ctrl == $source) {
+			if($ctrl === $source) {
 				$source_name = $name;
 				continue;
 			}
@@ -228,7 +228,7 @@ class FormContainer
 		$source->container->controls = $controls;
 
 		// Insert the source control into the destination control's container's list of controls in the correct location
-		$target_index = array_search($target, array_values($target->container->controls));
+		$target_index = array_search($target, array_values($target->container->controls), true);
 		$left_slice= array_slice($target->container->controls, 0, ($target_index + $offset), true);
 		$right_slice= array_slice($target->container->controls, ($target_index + $offset), count($target->container->controls), true);
 
