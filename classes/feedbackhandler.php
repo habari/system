@@ -71,7 +71,7 @@ class FeedbackHandler extends ActionHandler
 					$url = '';
 				}
 			}
-			elseif ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) {
+			if ( $parsed['is_pseudo'] || ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) ) {
 				// allow only http(s) URLs
 				$url = '';
 			}
