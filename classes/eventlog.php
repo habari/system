@@ -89,9 +89,6 @@ class EventLog extends ArrayObject
 			$log->user_id= $user->id;
 		}
 		$log->insert();
-		if ( LogEntry::severity( $severity ) >= LogEntry::severity( 'warning' ) ) {
-			Session::error( $message, $module );
-		}
 		return $log;
 	}
 
