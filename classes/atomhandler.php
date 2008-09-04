@@ -217,7 +217,7 @@ class AtomHandler extends ActionHandler
 			$link->addAttribute( 'href', $comment->post->permalink . '#comment-' . $comment->id );
 
 			$author= $item->addChild( 'author' );
-			$author_name= $author->addChild( 'name', $comment->name );
+			$author_name= $author->addChild( 'name', htmlspecialchars( $comment->name ) );
 
 			$id= $item->addChild( 'id', $comment->post->guid . '/' . $comment->id );
 
