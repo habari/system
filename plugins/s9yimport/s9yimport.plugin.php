@@ -567,6 +567,7 @@ ENDOFSQL;
 		}
 		catch( Exception $e ) { /** @TODO: This should be a specific exception, not the general one... */
 			EventLog::log( $e->getMessage(), 'err', null, null, print_r( array( $habari_user, $e ), 1 ) );
+			Session::error( $e->getMessage() );
 			return FALSE;
 		}
 
@@ -745,6 +746,7 @@ ENDOFSQL;
 		}
 		else { /* Something went wrong on $post->insert() */
 			EventLog::log($e->getMessage(), 'err', null, null, print_r(array($post, $e), 1));
+			Session::error( $e->getMessage() );
 			return FALSE;
 		}
 	}
@@ -763,6 +765,7 @@ ENDOFSQL;
 			return TRUE;
 		else {
 			EventLog::log($e->getMessage(), 'err', null, null, print_r(array($tag_id, $post_id, $e), 1));
+			Session::error( $e->getMessage() );
 			return FALSE;
 		}
 	}
@@ -806,6 +809,7 @@ ENDOFSQL;
 			return TRUE;
 		else {
 			EventLog::log($e->getMessage(), 'err', null, null, print_r(array($comment, $e), 1));
+			Session::error( $e->getMessage() );
 			return FALSE;
 		}
 	}
