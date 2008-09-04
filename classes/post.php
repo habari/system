@@ -470,12 +470,10 @@ class Post extends QueryRecord implements IsContent
 
 		/* Now, let's insert any *new* tag texts or slugs into the tags table */
 		$repeat_questions= Utils::placeholder_string( count($clean_tags) );
-		$sql_tags_exist=<<<ENDOFSQL
-SELECT id, tag_text, tag_slug
-FROM {tags}
-WHERE tag_text IN ({$repeat_questions})
-OR tag_slug IN ({$repeat_questions})
-ENDOFSQL;
+		$sql_tags_exist= 'SELECT id, tag_text, tag_slug
+			FROM {tags}
+			WHERE tag_text IN ({$repeat_questions})
+			OR tag_slug IN ({$repeat_questions})';
 		$params= array_merge( array_keys( $clean_tags ), array_values( $clean_tags ) );
 		$existing_tags= DB::get_results( $sql_tags_exist, $params );
 		if ( count( $existing_tags ) > 0 ) {
@@ -516,9 +514,8 @@ ENDOFSQL;
 		 * First, let's add the new tags to the tags table...
 		 */
 		foreach ( $clean_tags as $new_tag_text=>$new_tag_slug ) {
-			$sql_tag_new=<<<ENDOFSQL
-INSERT INTO {tags} (id, tag_text, tag_slug) VALUES (NULL, ?, ?)
-ENDOFSQL;
+			$sql_tag_new= 'INSERT INTO {tags} (tag_text, tag_slug) VALUES (?, ?)';
+			
 			if (FALSE !== ($insert= DB::query( $sql_tag_new, array( $new_tag_text, $new_tag_slug ) ) ) )
 				$tag_ids_to_post[]= DB::last_insert_id();
 			$result&= $insert;
@@ -535,13 +532,9 @@ ENDOFSQL;
 		 */
 		$post_id= $this->fields['id'];
 		foreach ( $tag_ids_to_post as $index=>$new_tag_id ) {
-			$sql_tag_post_exists=<<<ENDOFSQL
-SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?
-ENDOFSQL;
+			$sql_tag_post_exists= 'SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?';
 			if ( 0 == DB::get_value( $sql_tag_post_exists, array( $new_tag_id, $post_id ) ) ) {
-			  $sql_tag_post_new=<<<ENDOFSQL
-INSERT INTO {tag2post} (tag_id, post_id) VALUES (?, ?)
-ENDOFSQL;
+			  $sql_tag_post_new= 'INSERT INTO {tag2post} (tag_id, post_id) VALUES (?, ?)';
 			  $result&= DB::query( $sql_tag_post_new, array( $new_tag_id, $post_id ) );
 			}
 		}
@@ -552,9 +545,7 @@ ENDOFSQL;
 			 * post.
 			 */
 			$repeat_questions= Utils::placeholder_string( count($tag_ids_to_post) );
-			$sql_delete=<<<ENDOFSQL
-DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeat_questions});
-ENDOFSQL;
+			$sql_delete= 'DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeat_questions})';
 			$params= array_merge( (array) $post_id, array_values( $tag_ids_to_post ) );
 			$result&= DB::query( $sql_delete, $params );
 		}
