@@ -377,6 +377,7 @@ WP_IMPORT_STAGE2;
 				}
 				catch( Exception $e ) {
 					EventLog::log($e->getMessage(), 'err', null, null, print_r(array($p, $e), 1));
+					Session::error( $e->getMessage() );
 					$errors = Options::get('import_errors');
 					$errors[] = $p->title . ' : ' . $e->getMessage();
 					Options::set('import_errors', $errors);
@@ -432,6 +433,7 @@ WP_IMPORT_AJAX2;
 		}
 		else {
 			EventLog::log(sprintf(_t('Failed to import from "%s"'), $db_name), 'crit');
+			Session::error( $e->getMessage() );
 			echo '<p>'._t( 'The database connection details have failed to connect.' ).'</p>';
 		}
 	}
@@ -491,6 +493,7 @@ WP_IMPORT_AJAX2;
 					}
 					catch( Exception $e ) {
 						EventLog::log($e->getMessage(), 'err', null, null, print_r(array($user, $e), 1));
+						Session::error( $e->getMessage() );
 						$errors = Options::get('import_errors');
 						$errors[] = $user->username . ' : ' . $e->getMessage();
 						Options::set('import_errors', $errors);
@@ -522,6 +525,7 @@ WP_IMPORT_USERS1;
 		}
 		else {
 			EventLog::log(sprintf(_t('Failed to import from "%s"'), $db_name), 'crit');
+			Session::error( $e->getMessage() );
 			echo '<p>'._t( 'Failed to connect using the given database connection details.' ).'</p>';
 		}
 	}
@@ -607,6 +611,7 @@ WP_IMPORT_USERS1;
 					}
 					catch( Exception $e ) {
 						EventLog::log($e->getMessage(), 'err', null, null, print_r(array($c, $e), 1));
+						Session::error( $e->getMessage() );
 						$errors = Options::get('import_errors');
 						$errors[] = $e->getMessage();
 						Options::set('import_errors', $errors);
@@ -656,6 +661,7 @@ WP_IMPORT_AJAX1;
 		}
 		else {
 			EventLog::log(sprintf(_t('Failed to import from "%s"'), $db_name), 'crit');
+			Session::error( $e->getMessage() );
 			echo '<p>'._t( 'Failed to connect using the given database connection details.' ).'</p>';
 		}
 	}
