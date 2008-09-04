@@ -52,6 +52,7 @@ class UserThemeHandler extends ActionHandler
 		}
 		catch(Error $e) {
 			EventLog::log($e->humane_error(), 'error', 'theme', 'habari', print_r($e, 1) );
+			Session::error($e->humane_error()); //Should we display any error here?
 			if(DEBUG) {
 				Utils::debug($e);
 			}
