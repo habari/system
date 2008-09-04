@@ -211,7 +211,6 @@ class AtomHandler extends ActionHandler
 
 			$item= $xml->addChild( 'entry' );
 			$title= $item->addChild( 'title', htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ) ) );
-			$title= $item->addChild( 'title', _t('Comment on ') . $title . _t(' by ') . $comment->name );
 
 			$link= $item->addChild( 'link' );
 			$link->addAttribute( 'rel', 'alternate' );
@@ -224,7 +223,7 @@ class AtomHandler extends ActionHandler
 
 			$updated= $item->addChild( 'updated', date( 'c', strtotime( $comment->date ) ) );
 
-			$content= $item->addChild( 'content', $comment->content );
+			$content= $item->addChild( 'content', $content );
 			$content->addAttribute( 'type', 'html' );
 			Plugins::act( 'atom_add_comment', $item, $comment );
 		}
