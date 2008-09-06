@@ -236,10 +236,8 @@ class MultiByte
 			$enc = $use_enc;
 		}
 
-		if ( self::$use_library == self::USE_MBSTRING ) {
-			if ( extension_loaded( 'mbstring' ) ) {
-				$ret = mb_strtolower( $str, $enc );
-			}
+		if ( self::$use_library == self::USE_MBSTRING ) && extension_loaded( 'mbstring' ) {
+			$ret = mb_strtolower( $str, $enc );
 		}
 		else {
 			$ret = strtolower( $str );
