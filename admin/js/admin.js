@@ -375,6 +375,7 @@ var itemManage = {
 		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 0;
 		});
+		itemManage.selected = [];
 		itemManage.changeItem();
 	},
 	checkAll: function() {
