@@ -325,6 +325,8 @@ var itemManage = {
 
 		visible = $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]:checked').length;
 		
+		total= $('.currentposition .total').text();
+		
 		count = 0;
 		for (var id in itemManage.selected)	{
 			if(itemManage.selected[id] == 1) {
@@ -341,19 +343,33 @@ var itemManage = {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
-			$('.item.controls label.selectedtext').removeClass('none').addClass('all').text('All ' + count + ' selected');
+			$('.item.controls label.selectedtext').removeClass('none').addClass('all').html('All ' + count + ' visible selected (<a href="#all" class="everything">Select all ' + total + '</a>)');
+			
+			$('.item.controls label.selectedtext .everything').click(function() {
+				itemManage.checkEverything();
+				return false;
+			});
+			
 			if(visible != count) {
 				$('.item.controls label.selectedtext').text('All visible selected (' + count + ' total)');
+			}
+			
+			if((total == count) || $('.currentposition .total').length == 0) {
+				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html('All ' + total + ' selected');
 			}
 		} else {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
 			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
+			
 			if(visible != count) {
 				$('.item.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
 		}
+	},
+	checkEverything: function() {
+		itemManage.fetch(0, $('.currentposition .total').text(), false, true);
 	},
 	uncheckAll: function() {
 		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
@@ -413,9 +429,10 @@ var itemManage = {
 	remove: function( id ) {
 		itemManage.update( 'delete', id );
 	},
-	fetch: function( offset, limit, resetTimeline ) {
+	fetch: function( offset, limit, resetTimeline, silent ) {
 		offset = ( offset == null ) ? 0 : offset;
 		limit = ( limit == null ) ? 20: limit;
+		silent = ( silent == null ) ? false: silent;
 		spinner.start();
 
 		$.ajax({
@@ -424,28 +441,35 @@ var itemManage = {
 			data: '&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
 			dataType: 'json',
 			success: function(json) {
-				itemManage.fetchReplace.html(json.items);
-				// if we have a timeline, replace its content
-				if ( resetTimeline && $('.timeline').length !=0 ) {
-					// we hide and show the timeline to fix a firefox display bug
-					$('.years').html(json.timeline).hide();
-					spinner.stop();
+				if(silent) {
+					itemManage.selected= json.item_ids;
 					itemManage.initItems();
-					$('.years').show();
-					timeline.reset();
-					$('input.checkbox').rangeSelect();
+				} else {
+					itemManage.fetchReplace.html(json.items);
+					// if we have a timeline, replace its content
+					if ( resetTimeline && $('.timeline').length !=0 ) {
+						// we hide and show the timeline to fix a firefox display bug
+						$('.years').html(json.timeline).hide();
+						spinner.stop();
+						itemManage.initItems();
+						$('.years').show();
+						timeline.reset();
+						$('input.checkbox').rangeSelect();
+					}
+					else {
+						spinner.stop();
+						itemManage.initItems();
+						$('input.checkbox').rangeSelect();
+					}
+					if ( itemManage.inEdit == true ) {
+						inEdit.init();
+						inEdit.deactivate();
+					}
+					findChildren();
 				}
-				else {
-					spinner.stop();
-					itemManage.initItems();
-					$('input.checkbox').rangeSelect();
-				}
-				if ( itemManage.inEdit == true ) {
-					inEdit.init();
-					inEdit.deactivate();
-				}
-				findChildren();
+				
 				spinner.stop();
+				
 			}
 		});
 	}
@@ -823,7 +847,7 @@ var timelineHandle = {
 	updateLoupeInfo: function() {
 		var loupeInfo = timelineHandle.getLoupeInfo();
 
-		$('.currentposition').text( loupeInfo.start +'-'+ loupeInfo.end +' of '+ timeline.totalCount );
+		$('.currentposition').html( loupeInfo.start +'-'+ loupeInfo.end +' of <span class="total inline">'+ timeline.totalCount + '</span>');
 		if ($('.currentposition').css('opacity')) $('.currentposition').animate({opacity: 1}, 500)
 		
 		// Hide 'newer' and 'older' links as necessary
