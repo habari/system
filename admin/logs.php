@@ -75,7 +75,7 @@
 <?php if(isset($years)) { ?><div class="container transparent">
 
 	<div class="item controls">
-		<span class="checkboxandselected pct25">
+		<span class="checkboxandselected pct40">
 			<input type="checkbox" id="master_checkbox" name="master_checkbox">
 			<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 		</span>

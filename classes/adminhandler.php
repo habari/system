@@ -1347,6 +1347,7 @@ class AdminHandler extends ActionHandler
 		if(isset($years)) {
 			$this->theme->years= $years;
 		}
+		
 	}
 
 	/**
@@ -1451,9 +1452,16 @@ class AdminHandler extends ActionHandler
 		$this->fetch_posts( $params );
 		$items= $this->theme->fetch( 'posts_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
-
+		
+		$item_ids= array();
+		
+		foreach($this->theme->posts as $post) {
+			$item_ids['p' . $post->id]= 1;
+		}
+		
 		$output= array(
 			'items' => $items,
+			'item_ids' => $item_ids,
 			'timeline' => $timeline,
 		);
 		echo json_encode($output);
@@ -1474,8 +1482,15 @@ class AdminHandler extends ActionHandler
 		$items= $this->theme->fetch( 'comments_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
 
+		$item_ids= array();
+		
+		foreach($this->theme->comments as $comment) {
+			$item_ids['p' . $comment->id]= 1;
+		}
+		
 		$output= array(
 			'items' => $items,
+			'item_ids' => $item_ids,
 			'timeline' => $timeline,
 		);
 		echo json_encode($output);
@@ -1852,8 +1867,15 @@ class AdminHandler extends ActionHandler
 		$items= $this->theme->fetch( 'logs_items' );
 		$timeline= $this->theme->fetch( 'timeline_items' );
 
+		$item_ids= array();
+		
+		foreach($this->theme->logs as $log) {
+			$item_ids['p' . $log->id]= 1;
+		}
+		
 		$output= array(
 			'items' => $items,
+			'item_ids' => $item_ids,
 			'timeline' => $timeline,
 		);
 		echo json_encode($output);

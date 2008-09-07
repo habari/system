@@ -1460,6 +1460,10 @@ body.page-Manage .state {
 	float: left;
 }
 
+.navigator span span {
+	float:none;
+}
+
 .navigator .newer a, .navigator .older a {
 	font-weight: bold;
 	color: #333;
