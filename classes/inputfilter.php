@@ -398,7 +398,7 @@ class InputFilter
 		$tokens= $tokenizer->parse();
 		
 		// filter token stream
-		$filtered= array();
+		$filtered= new HTMLTokenSet;
 		$stack= array();
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
@@ -461,45 +461,7 @@ class InputFilter
 		}
 		
 		// rebuild our output string
-		$str= '';
-		foreach ( $filtered as $node ) {
-			switch ( $node['type'] ) {
-				case HTMLTokenizer::NODE_TYPE_TEXT:
-					$str.= $node['value'];
-					break;
-				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
-					$str.= '<';
-					$str.= $node['name'];
-					if ( $node['attrs'] ) {
-						foreach ( $node['attrs'] as $k => $v ) {
-							$str.= ' ';
-							$str.= $k;
-							$str.= '="';
-							$str.= htmlspecialchars( html_entity_decode( $v, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
-							$str.= '"';
-						}
-					}
-					$str.= '>';
-					break;
-				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
-					$str.= '</';
-					$str.= $node['name'];
-					$str.= '>';
-					break;
-				case HTMLTokenizer::NODE_TYPE_PI:
-				case HTMLTokenizer::NODE_TYPE_COMMENT:
-				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
-				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					Error::raise( sprintf( _t('Undead token "%s" (%d) in %s'), $node['name'], $node['type'], __CLASS__ ) ); 
-					break;
-				default:
-			}
-		}
-		// $document->toString() is so much easier :~
-		
-		$str= preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', $str ); 
-		
-		return $str;
+		return preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', (string) $tokens ); 
 	}
 }
 
