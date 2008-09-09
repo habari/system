@@ -42,7 +42,7 @@ class HTMLTokenizer
 		$this->html= $html;
 		$this->len= strlen( $html );
 		$this->pos= 0;
-		$this->nodes= array();
+		$this->nodes = new HTMLTokenSet;
 
 		$this->state= self::$STATE_START;
 	}
