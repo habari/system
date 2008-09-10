@@ -31,7 +31,7 @@
 </div>
 
 
-<form method="post" action="">
+
 <div class="container users">
 	<form method="post" action="">
 	<div class="addnewuser item">
@@ -57,7 +57,7 @@
 	<?php $theme->display('users_items'); ?>
 </div>
 
-
+<form method="post" action="">
 <div class="container transparent">
 	<div class="controls item">
 		<span class="checkboxandselected pct25">
