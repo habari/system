@@ -446,7 +446,7 @@ class Theme extends Pluggable
 
 		$paramarray['user_filters']= $user_filters;
 		if ( !isset( $paramarray['user_filters']['content_type'] ) ) {
-			$paramarray['user_filters']['content_type']= 'entry';
+			$paramarray['user_filters']['content_type']= Post::type( 'entry' );
 		}
 
 		return $this->act_display( $paramarray );
