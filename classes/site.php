@@ -134,7 +134,8 @@ class Site
 					$port= $_SERVER['SERVER_PORT'];
 				}
 				$portpart= '';
-				$host= $_SERVER['HTTP_HOST'];
+				// HTTP_HOST is not set for HTTP/1.0 requests
+				$host= (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']);
 				// if the port isn't a standard port, and isn't part of $host already, add it
 				if ( ( $port != 80 ) && ( $port != 443 ) && ( substr($host, strlen($host) - strlen($port) ) != $port ) ) {
 					$portpart= ':' . $port;
