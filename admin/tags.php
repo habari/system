@@ -6,14 +6,19 @@
 
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
 
-<div id="tag_collection" class="container">
+<div id="tag_collection" class="container items">
   	<?php $theme->display( 'tag_collection' ); ?>
 </div>
 
 
-<div class="container transparent controls">
-	<span class="checkboxandselected pct25">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+<div class="container transparent item controls">
+	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	
+	<span class="checkboxandselected pct20">
+		<input type="checkbox" id="master_checkbox" name="master_checkbox">
+		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 
 	<span class="renamecontrols pct35"><input type="text" class="renametext"></span>
@@ -30,7 +35,7 @@
 </div>
 
 <script type="text/javascript">
-tagManage.remove = function() {
+itemManage.update = function( action, id ) { 
 	spinner.start();
 
 	selected = $('.tag.selected');
@@ -57,18 +62,20 @@ tagManage.remove = function() {
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
 			selected.remove();
+			itemManage.selected = {}; 
+			itemManage.changeItem(); 
+			itemManage.initItems();
 			jQuery.each( msg, function( index, value ) {
 				humanMsg.displayMsg( value );
 			});
-			tagManage.changeTag();
 		},
 		'json'
  	    );
 };
 
-tagManage.rename= function() {
-	master = $('.controls input.renametext').val().trim();
-
+itemManage.rename= function() {
+	master = $('.controls input.renametext').val();
+		
 	// Unselect the master, if it's selected
 	$('.tag:contains(' + master + ')').each(function() {
 		if ($(this).find('span').text() == master) {
@@ -108,15 +115,13 @@ tagManage.rename= function() {
 			//timelineHandle.updateLoupeInfo();
 			$('.controls input.renametext').val('');
 			$('#tag_collection').html(result['tags']);
-			$('.tag').click(function() {
-					$(this).toggleClass('selected');
-					tagManage.changeTag();
-				}
-			);
-			tagManage.changeTag();
 			jQuery.each( result['msg'], function( index, value ) {
 				humanMsg.displayMsg( value );
 			});
+			
+			itemManage.selected = {}; 
+			
+			itemManage.initItems(); 
 		},
 		'json'
 	);

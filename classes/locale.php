@@ -4,7 +4,7 @@
  * Habari Locale Class
  *
  * Provides translation services.
- * 
+ *
  * @package Habari
  */
 class Locale
@@ -16,7 +16,7 @@ class Locale
 
 	/**
 	 * Sets the locale for Habari.
-	 * 
+	 *
 	 * @param string $locale A language code like 'en' or 'en-us' or 'x-klingon', will be lowercased
 	 **/
 	public static function set( $locale= NULL )
@@ -54,7 +54,7 @@ class Locale
 	 * Load translations for a given domain and base directory for a pluggable object.
 	 * Translations are stored in gettext-style .mo files.
 	 * The internal workings of the file format are not entirely meant to be understood.
-	 * 
+	 *
 	 * @link http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html GNU Gettext Manual: Description of the MO file format
 	 * @param string $domain the domain to load
 	 * @param string $base_dir the base directory in which to find the translation files
@@ -70,7 +70,7 @@ class Locale
 	 * Load translations for a given domain.
 	 * Translations are stored in gettext-style .mo files.
 	 * The internal workings of the file format are not entirely meant to be understood.
-	 * 
+	 *
 	 * @link http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html GNU Gettext Manual: Description of the MO file format
 	 * @param string $domain the domain to load
 	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
@@ -124,7 +124,7 @@ class Locale
 
 	/**
 	 * Load translations from a given file.
-	 * 
+	 *
 	 * @param string $domain the domain to load the data into
 	 * @param string $file the file name
 	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
@@ -278,7 +278,7 @@ class Locale
 	/**
 	 * Echo a version of the string translated into the current locale
 	 * @param string $text The text to echo translated
-	 * @param string $domain (optional) The domain to search for the message	 
+	 * @param string $domain (optional) The domain to search for the message
 	 **/
 	public static function _e( )
 	{
@@ -316,11 +316,11 @@ class Locale
 
 	/**
 	 * Echo singular or plural version of the string, translated into the current locale, based on the count provided
-	 * 
+	 *
 	 * @param string $singular The singular form
 	 * @param string $plural The plural form
 	 * @param string $count The count
-	 * @param string $domain (optional) The domain to search for the message	 
+	 * @param string $domain (optional) The domain to search for the message
 	 **/
 	public static function _ne( $singular, $plural, $count, $domain= 'habari' )
 	{
@@ -329,13 +329,13 @@ class Locale
 
 	/**
 	 * Return a singular or plural string translated into the current locale based on the count provided
-	 * 
+	 *
 	 * @param string $singular The singular form
 	 * @param string $plural The plural form
 	 * @param string $count The count
-	 * @param string $domain (optional) The domain to search for the message	 
+	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The appropriately translated string
-	 **/       
+	 **/
 	public static function _n($singular, $plural, $count, $domain= 'habari')
 	{
 		if ( isset( self::$messages[$domain][$singular] ) ) {
@@ -352,8 +352,8 @@ class Locale
 }
 
 /**
- * Echo a version of the string translated into the current locale, alias for Locale::_e() 
- * 
+ * Echo a version of the string translated into the current locale, alias for Locale::_e()
+ *
  * @param string $text The text to translate
  **/
 function _e( $text, $args = array(), $domain= 'habari' )
@@ -376,7 +376,7 @@ function _ne( $singular, $plural, $count, $domain= 'habari' )
 
 /**
  * Return a version of the string translated into the current locale, alias for Locale::_t()
- *  
+ *
  * @param string $text The text to translate
  * @return string The translated string
  **/
@@ -387,12 +387,12 @@ function _t( $text, $args = array(), $domain= 'habari' )
 
 /**
  * Return a singular or plural string translated into the current locale based on the count provided
- * 
+ *
  * @param string $singular The singular form
  * @param string $plural The plural form
  * @param string $count The count
  * @return string The appropriately translated string
- **/       
+ **/
 function _n( $singular, $plural, $count, $domain= 'habari' )
 {
 	return Locale::_n( $singular, $plural, $count, $domain );

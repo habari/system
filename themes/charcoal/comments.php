@@ -15,7 +15,7 @@
 					</div>
 					<div class="post-comment-body">
 						<?php echo $comment->content_out; ?>
-						<p class="post-comment-link"><a href="#comment-<?php echo $comment->id; ?>" title="Time of this comment - Click for comment permalink"><?php echo $comment->date; ?></a></p>
+						<p class="post-comment-link"><a href="#comment-<?php echo $comment->id; ?>" title="Time of this comment - Click for comment permalink"><?php $comment->date->out('F j, Y g:ia'); ?></a></p>
 						<?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?>
 						<p class="comment-message"><em><?php _e( 'Your comment is awaiting moderation' ) ;?></em></p>
 						<?php endif; ?>

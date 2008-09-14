@@ -66,43 +66,43 @@
 
 	<h2><?php echo $possessive; ?></h2>
 
-	<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
+		<input type="hidden" name="user_id" value="<?php echo $user->id; ?>">
 
-	<div class="item clear" id="displayname">
+		<div class="item clear" id="displayname">
 		<span class="pct20">
 			<label for="displayname"><?php _e('Display Name'); ?></label>
-		</span>
+			</span>
 		<span class="pct80">
-			<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
-		</span>
-	</div>
+				<input type="text" name="displayname" class="border big" value="<?php echo $user->info->displayname; ?>">
+			</span>
+		</div>
 
-	<div class="item clear" id="username">
+		<div class="item clear" id="username">
 		<span class="pct20">
 			<label for="username"><?php _e('User Name'); ?></label>
-		</span>
+			</span>
 		<span class="pct80">
-			<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
-		</span>
-	</div>
+				<input type="text" name="username" class="border" value="<?php echo $user->username; ?>">
+			</span>
+		</div>	
 
-	<div class="item clear" id="email">
+		<div class="item clear" id="email">
 		<span class="pct20">
 			<label for="email"><?php _e('E-Mail'); ?></label>
-		</span>
+			</span>
 		<span class="pct80">
-			<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
-		</span>
-	</div>
+				<input type="text" name="email" class="border" value="<?php echo $user->email; ?>">
+			</span>
+		</div>	
 
-	<div class="item clear" id="portraiturl">
+		<div class="item clear" id="portraiturl">
 		<span class="pct20">
 			<label for="imageurl"><?php _e('Portrait URL'); ?></label>
-		</span>
+			</span>
 		<span class="pct80">
 			<input type="text" name="imageurl" class="border" value="<?php echo $user->info->imageurl; ?>">
-		</span>
-	</div>
+			</span>
+		</div>	
 </div>
 
 
@@ -110,32 +110,70 @@
 
 	<h2><?php _e('Change Password'); ?></h2>
 
-	<div class="item clear" id="password">
+		<div class="item clear" id="password">
 		<span class="pct20">
-			<label for="sitetagline"><?php _e('Password'); ?></label>
-		</span>
+				<label for="sitetagline"><?php _e('Password'); ?></label>
+			</span>
 		<span class="pct80">
-			<input type="password" name="pass1" class="border" value="">
+				<input type="password" name="pass1" class="border" value="">
+			</span>
+		</div>	
+
+		<div class="item clear" id="passwordagain">
+		<span class="pct20">
+				<label for="sitetagline"><?php _e('Password Again'); ?></label>
+			</span>
+		<span class="pct80">
+				<input type="password" name="pass2" class="border" value="">
+			</span>
+		</div>	
+</div>
+
+<div class="container settings regionalsettings" id="regionalsettings">
+	<h2>Regional Settings</h2>
+
+	<div class="item clear" id="timezone">
+		<span class="pct20">
+			<label for="timezone">Timezone</label>
+		</span>
+		<span class="pct20">
+			<select id="timezone" name="locale_tz">
+			<?php foreach (DateTimeZone::listIdentifiers() as $tz_identifier) : ?>
+				<option value="<?php echo $tz_identifier; ?>" <?php echo ( $user->info->locale_tz == $tz_identifier) ? 'selected="selected"' : '' ?>><?php echo $tz_identifier; ?></option>
+			<?php endforeach; ?>
+			</select>
 		</span>
 	</div>
 
-	<div class="item clear" id="passwordagain">
+	<div class="item clear" id="date_format">
 		<span class="pct20">
-			<label for="sitetagline"><?php _e('Password Again'); ?></label>
+			<label for="date_format">Date Format</label>
 		</span>
-		<span class="pct80">
-			<input type="password" name="pass2" class="border" value="">
+		<span class="pct20">
+			<input type="text" name="locale_date_format" class="border" value="<?php echo $user->info->locale_date_format ?>">
+		</span>
+		<span class="pct80 helptext">
+			<span><?php HabariDateTime::date_create()->out($user->info->locale_date_format) ?></span>
+		</span>
+	</div>
+
+
+	<div class="item clear" id="time_format">
+		<span class="pct20">
+			<label for="time_format">Time Format</label>
+		</span>
+		<span class="pct20">
+			<input type="text" name="locale_time_format" class="border" value="<?php echo $user->info->locale_time_format ?>">
+		</span>
+		<span class="pct80 helptext">
+			<span><?php HabariDateTime::date_create()->out($user->info->locale_time_format) ?></span>
 		</span>
 	</div>
 </div>
 
-<div class="container settings user info" id="additionaluserinfo">
+<?php Plugins::act( 'theme_admin_user', $user ); ?>
 
-	<h2><?php _e('Additional User Information'); ?></h2>
 
-	<?php Plugins::act( 'theme_admin_user', $user ); ?>
-
-</div>
 
 <div class="container controls transparent">
 	<span class="pct25">

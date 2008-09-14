@@ -9,12 +9,12 @@ CREATE TABLE {$prefix}posts (
   cached_content TEXT NOT NULL,
   user_id INTEGER NOT NULL,
   status INTEGER NOT NULL,
-  pubdate TIMESTAMP NOT NULL,
-  updated TIMESTAMP NOT NULL,
+  pubdate INTEGER NOT NULL,
+  updated INTEGER NOT NULL,
+  modified INTEGER NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (slug)
 );
-ALTER SEQUENCE {$prefix}posts_pkey_seq OWNED BY {$prefix}posts.id;
 
 CREATE TABLE {$prefix}postinfo (
   post_id BIGINT NOT NULL,
@@ -31,7 +31,6 @@ CREATE TABLE {$prefix}posttype (
   active SMALLINT DEFAULT 1,
   PRIMARY KEY (id)
 );
-ALTER SEQUENCE {$prefix}posttype_pkey_seq OWNED BY {$prefix}posttype.id;
 
 CREATE SEQUENCE {$prefix}poststatus_pkey_seq;
 CREATE TABLE {$prefix}poststatus (
@@ -40,7 +39,6 @@ CREATE TABLE {$prefix}poststatus (
   internal SMALLINT,
   PRIMARY KEY (id)
 );
-ALTER SEQUENCE {$prefix}poststatus_pkey_seq OWNED BY {$prefix}poststatus.id;
 
 CREATE TABLE {$prefix}options (
   name VARCHAR(255) NOT NULL,
@@ -58,7 +56,6 @@ CREATE TABLE {$prefix}users (
   PRIMARY KEY (id),
   UNIQUE (username)
 );
-ALTER SEQUENCE {$prefix}users_pkey_seq OWNED BY {$prefix}users.id;
 
 CREATE TABLE {$prefix}userinfo (
   user_id SMALLINT NOT NULL,
@@ -76,7 +73,6 @@ CREATE TABLE {$prefix}tags (
   PRIMARY KEY (id),
   UNIQUE (tag_slug)
 );
-ALTER SEQUENCE {$prefix}tags_pkey_seq OWNED BY {$prefix}tags.id;
 
 CREATE TABLE {$prefix}tag2post (
   tag_id BIGINT NOT NULL,
@@ -98,11 +94,10 @@ CREATE TABLE {$prefix}comments (
   ip BIGINT NOT NULL,
   content TEXT,
   status INTEGER NOT NULL,
-  date TIMESTAMP NOT NULL,
+  date INT NOT NULL,
   type INTEGER NOT NULL,
   PRIMARY KEY (id)
 );
-ALTER SEQUENCE {$prefix}comments_pkey_seq OWNED BY {$prefix}comments.id;
 
 CREATE INDEX {$prefix}comments_post_id_key ON {$prefix}comments (
   post_id
@@ -128,27 +123,26 @@ CREATE TABLE {$prefix}rewrite_rules (
   is_active INTEGER NOT NULL DEFAULT 0,
   rule_class INTEGER NOT NULL DEFAULT 0,
   description TEXT NULL,
+  parameters TEXT NULL,
   PRIMARY KEY (rule_id)
 );
-ALTER SEQUENCE {$prefix}rewrite_rules_pkey_seq OWNED BY {$prefix}rewrite_rules.rule_id;
 
 CREATE SEQUENCE {$prefix}crontab_pkey_seq;
 CREATE TABLE {$prefix}crontab (
   cron_id INTEGER NOT NULL DEFAULT nextval('{$prefix}crontab_pkey_seq'),
   name VARCHAR(255) NOT NULL,
   callback VARCHAR(255) NOT NULL,
-  last_run VARCHAR(255) NOT NULL,
-  next_run VARCHAR(255) NOT NULL,
-  increment VARCHAR(255) NOT NULL,
-  start_time VARCHAR(255) NOT NULL,
-  end_time VARCHAR(255) NOT NULL,
+  last_run INTEGER,
+  next_run INTEGER NOT NULL,
+  increment INTEGER NOT NULL,
+  start_time INTEGER NOT NULL,
+  end_time INTEGER,
   result VARCHAR(255) NOT NULL,
   notify VARCHAR(255) NOT NULL,
   cron_class SMALLINT NOT NULL DEFAULT 0,
   description TEXT NULL,
   PRIMARY KEY (cron_id)
 );
-ALTER SEQUENCE {$prefix}crontab_pkey_seq OWNED BY {$prefix}crontab.cron_id;
 
 CREATE SEQUENCE {$prefix}log_pkey_seq;
 CREATE TABLE {$prefix}log (
@@ -158,11 +152,10 @@ CREATE TABLE {$prefix}log (
   severity_id SMALLINT NOT NULL,
   message VARCHAR(255) NOT NULL,
   data BYTEA NULL,
-  timestamp TIMESTAMP NOT NULL,
+  timestamp INT NOT NULL,
   ip BIGINT NOT NULL DEFAULT 0, 
   PRIMARY KEY (id)
 );
-ALTER SEQUENCE {$prefix}log_pkey_seq OWNED BY {$prefix}log.id;
 
 CREATE SEQUENCE {$prefix}log_types_pkey_seq;
 CREATE TABLE {$prefix}log_types (
@@ -172,7 +165,6 @@ CREATE TABLE {$prefix}log_types (
   PRIMARY KEY (id),
   UNIQUE (module,type)
 );
-ALTER SEQUENCE {$prefix}log_types_pkey_seq OWNED BY {$prefix}log_types.id;
 
 CREATE SEQUENCE {$prefix}groups_pkey_seq;
 CREATE TABLE {$prefix}groups (
@@ -181,17 +173,6 @@ CREATE TABLE {$prefix}groups (
   PRIMARY KEY (id),
   UNIQUE (name)
 );
-ALTER SEQUENCE {$prefix}groups_pkey_seq OWNED BY {$prefix}groups.id;
-
-CREATE SEQUENCE {$prefix}permissions_pkey_seq;
-CREATE TABLE {$prefix}permissions (
-  id INTEGER NOT NULL DEFAULT nextval('{$prefix}permissions_pkey_seq'),
-  name VARCHAR(255) NOT NULL,
-  description VARCHAR(255),
-  PRIMARY KEY (id),
-  UNIQUE (name)
-);
-ALTER SEQUENCE {$prefix}permissions_pkey_seq OWNED BY {$prefix}permissions.id;
 
 CREATE SEQUENCE {$prefix}users_groups_pkey_seq;
 CREATE TABLE {$prefix}users_groups (
@@ -201,18 +182,6 @@ CREATE TABLE {$prefix}users_groups (
   PRIMARY KEY (id),
   UNIQUE (user_id,group_id)
 );
-ALTER SEQUENCE {$prefix}users_groups_pkey_seq OWNED BY {$prefix}users_groups.id;
-
-CREATE SEQUENCE {$prefix}groups_permissions_pkey_seq;
-CREATE TABLE {$prefix}groups_permissions (
-  id INTEGER NOT NULL DEFAULT nextval('{$prefix}groups_permissions_pkey_seq'),
-  group_id INTEGER NOT NULL,
-  permission_id INTEGER NOT NULL,
-  denied SMALLINT NOT NULL DEFAULT 0,
-  PRIMARY KEY (id),
-  UNIQUE (group_id,permission_id)
-);
-ALTER SEQUENCE {$prefix}groups_permissions_pkey_seq OWNED BY {$prefix}groups_permissions.id;
 
 CREATE TABLE {$prefix}sessions (
   token varchar(255) NOT NULL,
@@ -224,3 +193,80 @@ CREATE TABLE {$prefix}sessions (
   PRIMARY KEY (token)
 );
 
+CREATE SEQUENCE {$prefix}terms_pkey_seq;
+CREATE TABLE {$prefix}terms (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}terms_pkey_seq'),
+  term VARCHAR(255) NOT NULL,
+  term_display VARCHAR(255) NOT NULL,
+  vocabulary_id INTEGER NOT NULL,
+  mptt_left INTEGER NOT NULL,
+  mptt_right INTEGER NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE {$prefix}vocabularies_pkey_seq;
+CREATE TABLE {$prefix}vocabularies (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}vocabularies_pkey_seq'),
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  heirarchical SMALLINT NOT NULL DEFAULT 0,
+  required SMALLINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE {$prefix}object_terms (
+  object_id INTEGER NOT NULL,
+  term_id INTEGER NOT NULL,
+  object_type_id INTEGER NOT NULL,
+  PRIMARY KEY (object_id, term_id)
+);
+
+CREATE SEQUENCE {$prefix}object_types_pkey_seq;
+CREATE TABLE {$prefix}object_types (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}object_types_pkey_seq'),
+  name VARCHAR(50),
+  PRIMARY KEY (id)
+);
+
+INSERT INTO {$prefix}object_types (name) VALUES ('post');
+
+CREATE SEQUENCE {$prefix}tokens_pkey_seq;
+CREATE TABLE {$prefix}tokens (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}tokens_pkey_seq'),
+  name VARCHAR(255) NOT NULL,
+  description VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  UNIQUE (name)
+);
+
+CREATE TABLE {$prefix}post_tokens (
+  post_id INTEGER NOT NULL,
+  token_id INTEGER NOT NULL,
+  PRIMARY KEY (post_id, token_id)
+);
+
+CREATE TABLE {$prefix}group_token_permissions (
+  group_id INTEGER NOT NULL,
+  token_id INTEGER NOT NULL,
+  permission_flag SMALLINT NOT NULL,
+  PRIMARY KEY (group_id, token_id)
+);
+
+CREATE TABLE {$prefix}user_token_permissions (
+  user_id INTEGER NOT NULL,
+  token_id INTEGER NOT NULL,
+  permission_id SMALLINT NOT NULL,
+  PRIMARY KEY (user_id, token_id)
+);
+
+CREATE SEQUENCE {$prefix}permissions_pkey_seq;
+CREATE TABLE {$prefix}permissions (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}permissions_pkey_seq'),
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+INSERT INTO {$prefix}permissions (name) VALUES ('denied');
+INSERT INTO {$prefix}permissions (name) VALUES ('read');
+INSERT INTO {$prefix}permissions (name) VALUES ('write');
+INSERT INTO {$prefix}permissions (name) VALUES ('full');

@@ -25,11 +25,14 @@ class DatabaseConnection
 		'comments',
 		'crontab',
 		'groups',
-		'groups_permissions',
+		'group_token_permissions',
 		'log',
 		'log_types',
+		'object_terms',
+		'object_types',
 		'options',
 		'permissions',
+		'post_tokens',
 		'postinfo',
 		'posts',
 		'poststatus',
@@ -38,9 +41,13 @@ class DatabaseConnection
 		'sessions',
 		'tag2post',
 		'tags',
+		'terms',
+		'tokens',
 		'userinfo',
 		'users',
+		'user_token_permissions',
 		'users_groups',
+		'vocabularies',
 	);
 
 	/**
@@ -575,7 +582,7 @@ class DatabaseConnection
 		$query.= ' ) VALUES ( ' . trim( str_repeat( '?,', count( $fieldvalues ) ), ',' ) . ' );';
 
 		// need to pass $table on to the $o singleton object;
-			$this->current_table= $table;
+		$this->current_table= $table;
 
 		return $this->query( $query, $values );
 	}

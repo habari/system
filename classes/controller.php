@@ -44,7 +44,7 @@ class Controller extends Singleton {
 	 *
 	 * @return string The full requested URL
 	 */
-	public function get_full_url() {
+	public static function get_full_url() {
 		return self::get_base_url() . self::get_stub();
 	}
 

@@ -53,24 +53,16 @@ if ( isset( $group_edit ) ) {
 		echo '<p>' . _t('Editing Permissions of ') . $group_edit->name . '</p>';
 		echo '<form method="post" action="">';
 		echo '<input type="hidden" name="group" value="' . $group_edit->name . '">';
-		echo '<table><tr><th>' . _t('Granted') . '</th><th>' . _t('Permission') . '</th><th>' . _t('Denied') . '</th></tr>';
+		echo '<table><tr><th>' . _t('Permission') . '</th><th>' . _t('Denied') . '</th><th>' . _t('Read') . '</th><th>' . _t('Write') . '</th><th>' . _t('Full') . '</th></tr>';
 		foreach( $permissions as $perm ) {
-			echo '<tr>';
-			if(  isset( $permissions_granted[ $perm->id ] ) ) {
-				// indicate that this permission is granted
-			} elseif ( isset( $permissions_denied[ $perm->id ] ) ) {
-				// indicate that this permission is denied
+			echo "<tr><td> {$perm->description} </td>";
+			foreach ( ACL::permission_ids() as $access_name => $access_id ) {
+				echo "<td><input type='checkbox' name='perm_{$perm->id}' value='{$access_name}'";
+				if ( isset( $permissions_granted[$perm->id] ) && $permissions_granted[$perm->id] == $access_id ) {
+					echo ' checked';
+				}
+				echo "></td><td>";
 			}
-			echo "<td><input type='checkbox' name='grant[]' value='{$perm->id}'";
-			if ( in_array( $perm->id, $permissions_granted ) ) {
-				echo ' checked';
-			}
-			echo "></td><td> {$perm->description} </td><td>";
-			echo "<input type='checkbox' name='deny[]' value='{$perm->id}'";
-			if ( in_array( $perm->id, $permissions_denied ) ) {
-				echo ' checked';
-			}
-			echo '></td></tr>';
 		}
 		echo '<tr><td colspan="3"><input type="submit" name="permissions" value="' . _t('Submit') . '"></td>';
 		echo '</table></form>';

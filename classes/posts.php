@@ -327,30 +327,40 @@ class Posts extends ArrayObject
 				 */
 				if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[]= $startDate->sql;
+					$params[]= $startDate->modify( '+1 day' )->sql;
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[]= $startDate->sql;
+					$params[]= $startDate->modify( '+1 month' )->sql;
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[]= 'pubdate BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[]= $startDate->sql;
+					$params[]= $startDate->modify( '+1 year' )->sql;
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
 				if( isset( $paramset['after'] ) ) {
-					$aftertime= strtotime( $paramset['after'] );
 					$where[]= 'pubdate > ?';
-					$params[]= date( 'Y-m-d H:i:s', $aftertime );
+					$params[]= HabariDateTime::date_create( $paramset['after'] )->sql;
 				}
 
 				if( isset( $paramset['before'] ) ) {
-					$beforetime= strtotime( $paramset['before'] );
 					$where[]= 'pubdate < ?';
-					$params[]= date( 'Y-m-d H:i:s', $beforetime );
+					$params[]= HabariDateTime::date_create( $paramset['before'] )->sql;
 				}
 
 				// Concatenate the WHERE clauses
@@ -400,9 +410,9 @@ class Posts extends ArrayObject
 		// If the month counts are requested, replaced the select clause
 		if( isset( $paramset['month_cts'] ) ) {
 			if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] ))
-				$select= 'MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(DISTINCT {posts}.id) AS ct';
+				$select= 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(DISTINCT {posts}.id) AS ct';
 			else
-				$select= 'MONTH(pubdate) AS month, YEAR(pubdate) AS year, COUNT(*) AS ct';
+				$select= 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(*) AS ct';
 			$groupby= 'year, month';
 			$orderby= 'year, month';
 		}
@@ -594,7 +604,7 @@ class Posts extends ArrayObject
 	 */
 	public static function publish_scheduled_posts( $params )
 	{
-		$posts= DB::get_results('SELECT * FROM {posts} WHERE status = ? AND pubdate <= ? ORDER BY pubdate DESC', array( Post::status( 'scheduled' ), date( 'Y-m-d H:i:s' ) ), 'Post' );
+		$posts= DB::get_results('SELECT * FROM {posts} WHERE status = ? AND pubdate <= ? ORDER BY pubdate DESC', array( Post::status( 'scheduled' ), HabariDateTime::date_create() ), 'Post' );
 		foreach( $posts as $post ) {
 			$post->publish();
 		}
@@ -614,7 +624,7 @@ class Posts extends ArrayObject
 
 		CronTab::delete_cronjob( 'publish_scheduled_posts' );
 		if( $min_time ) {
-			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts'),  strtotime( $min_time ), 'Next run: ' . $min_time );
+			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts'),  $min_time, 'Next run: ' . $min_time );
 		}
 	}
 
@@ -630,7 +640,7 @@ class Posts extends ArrayObject
 		$posts= null;
 		$ascend= false;
 		if ( !$params ) {
-			$params= array( 'where' => "pubdate >= '{$post->pubdate}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
+			$params= array( 'where' => "pubdate >= '{$post->pubdate->sql}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
 			$posts= Posts::get($params);
 		}
 		elseif ( $params instanceof Posts ) {
@@ -663,7 +673,7 @@ class Posts extends ArrayObject
 		$posts= null;
 		$descend= false;
 		if ( !$params ) {
-			$params= array( 'where' => "pubdate <= '{$post->pubdate}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate DESC' );
+			$params= array( 'where' => "pubdate <= '{$post->pubdate->sql}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate DESC' );
 			$posts= Posts::get($params);
 		}
 		elseif ( $params instanceof Posts ) {

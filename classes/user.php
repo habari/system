@@ -154,6 +154,10 @@ class User extends QueryRecord
 		if(isset($this->info)) {
 			$this->info->delete_all();
 		}
+		// remove all this user's permissions
+		DB::query( 'DELETE FROM {user_token_permissions} WHERE user_id=?', array( $this->id ) );
+		// remove user from any groups
+		DB::query( 'DELETE FROM {users_groups} WHERE user_id=?', array( $this->id ) );
 		EventLog::log( sprintf(_t('User deleted: %s'), $this->username), 'info', 'default', 'habari' );
 		$result = parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
 		Plugins::act('user_delete_after', $this);
@@ -268,7 +272,7 @@ class User extends QueryRecord
 	 */
 	public static function get( $who )
 	{
-		if ( is_int( $who ) ) {
+		if ( is_numeric( $who ) ) {
 			// Got a User ID
 			$user = self::get_by_id( $who );
 		}
@@ -401,11 +405,50 @@ class User extends QueryRecord
 	 * Determine if a user has a specific permission
 	 *
 	 * @param string $permission The name of the permission to detect
+	 * @param string $access The type of access to check for (read, write, full, etc.)
 	 * @return boolean True if this user has the requested permission, false if not
 	 */
-	public function can( $permission )
+	public function can( $permission, $access = 'full' )
 	{
-		return ACL::user_can( $this, $permission );
+		return ACL::user_can( $this, $permission, $access );
+	}
+
+	/**
+	 * Assign one or more new permissions to this user
+	 * @param mixed A permission token ID, name, or array of the same
+	**/
+	public function grant( $permissions, $access = 'full' )
+	{
+		$permissions = Utils::single_array( $permissions );
+		// Use ids internally for all permissions
+		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+
+		foreach ( $permissions as $permission ) {
+			ACL::grant_user( $this->id, $permission, $access );
+		}
+	}
+
+	/**
+	 * Deny one or more permissions to this user
+	 * @param mixed The permission ID or name to be denied, or an array of the same
+	**/
+	public function deny( $permissions )
+	{
+		$this->grant( $permissions, 'deny' );
+	}
+
+	/**
+	 * Remove one or more permissions from a user
+	 * @param mixed a permission ID, name, or array of the same
+	**/
+	public function revoke( $permissions )
+	{
+		$permissions = Utils::single_array( $permissions );
+		// get token IDs
+		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+		foreach ( $permissions as $permission ) {
+			ACL::revoke_user_permission( $this->id, $permission );
+		}
 	}
 
 	/**
@@ -440,7 +483,10 @@ class User extends QueryRecord
 	**/
 	public function add_to_group( $group )
 	{
-		UserGroup::add( $group, $this->id );
+		$group = UserGroup::get( $group );
+		if ( $group instanceOf UserGroup ) {
+			$group->add( $this->id );
+		}
 	}
 
 	/**

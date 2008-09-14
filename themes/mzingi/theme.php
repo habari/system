@@ -16,10 +16,6 @@ Format::apply( 'autop', 'post_content_out' );
 Format::apply( 'autop', 'comment_content_out' );
 // Apply Format::tag_and_list() to post tags... 
 Format::apply( 'tag_and_list', 'post_tags_out' );
-// Apply Format::nice_date() to post date...
-Format::apply( 'nice_date', 'post_pubdate_out', 'F j' );
-// Apply Format::nice_date() to comment date
-Format::apply( 'nice_date', 'comment_date_out', 'F j, Y g:ia');
 // Only uses the <!--more--> tag, with the 'more' as the link to full post
 Format::apply_with_hook_params( 'more', 'post_content_out', 'more' );
 // Creates an excerpt option. echo $post->content_excerpt;
@@ -73,11 +69,11 @@ class CornerStone extends Theme
 	
 	}
 
-public function act_display_home()
-{
-	//To exclude aside tag from main content loop
-    parent::act_display_home( array( 'not:tag' => 'aside' ) );
-}
+	public function act_display_home( $user_filters= array() )
+	{
+		//To exclude aside tag from main content loop
+	    parent::act_display_home( array( 'not:tag' => 'aside' ) );
+	}
 	
 }
 

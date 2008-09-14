@@ -16,7 +16,7 @@
 					</div>
 					<div class="post-sup">
 						<span class="post-date">
-							<?php echo $post->pubdate_out; ?>
+							<?php $post->pubdate->out('F j, Y g:ia e'); ?>
 						</span>
 						<span class="post-comments-link">
 							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('%s Comment'), _t('%s Comments') ); ?></a>

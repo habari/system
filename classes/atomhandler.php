@@ -91,6 +91,7 @@ class AtomHandler extends ActionHandler
 			$feed_subtitle= $xml->addChild( 'subtitle', htmlspecialchars( $tagline ) );
 		}
 
+		// Todo Should be the latest updated of any of the posts #657
 		$feed_updated= $xml->addChild( 'updated', date( 'c', time() ) );
 
 		$feed_link= $xml->addChild( 'link' );
@@ -183,8 +184,8 @@ class AtomHandler extends ActionHandler
 
 			$entry_id= $feed_entry->addChild( 'id', $post->guid );
 
-			$entry_updated= $feed_entry->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
-			$entry_edited= $feed_entry->addChild( 'app:edited', date( 'c', strtotime( $post->updated ) ), 'http://www.w3.org/2007/app' );
+			$entry_updated= $feed_entry->addChild( 'updated', $post->updated->get('c') );
+			$entry_edited= $feed_entry->addChild( 'app:edited', $post->updated->get('c'), 'http://www.w3.org/2007/app' );
 
 				foreach ( $post->tags as $tag ) {
 					$entry_category= $feed_entry->addChild( 'category' );
@@ -221,7 +222,7 @@ class AtomHandler extends ActionHandler
 
 			$id= $item->addChild( 'id', $comment->post->guid . '/' . $comment->id );
 
-			$updated= $item->addChild( 'updated', date( 'c', strtotime( $comment->date ) ) );
+			$updated= $item->addChild( 'updated', $comment->date->get('c') );
 
 			$content= $item->addChild( 'content', $content );
 			$content->addAttribute( 'type', 'html' );
@@ -502,8 +503,8 @@ class AtomHandler extends ActionHandler
 			$entry_link->addAttribute( 'href', URL::get( 'atom_entry', "slug={$post->slug}" ) );
 
 			$entry_id= $xml->addChild( 'id', $post->guid );
-			$entry_updated= $xml->addChild( 'updated', date( 'c', strtotime( $post->updated ) ) );
-			$entry_published= $xml->addChild( 'published', date( 'c', strtotime( $post->pubdate ) ) );
+			$entry_updated= $xml->addChild( 'updated', $post->updated->get('c') );
+			$entry_published= $xml->addChild( 'published', $post->pubdate->get('c') );
 
 				foreach ( $post->tags as $tag ) {
 					$entry_category= $xml->addChild( 'category' );
@@ -551,10 +552,6 @@ class AtomHandler extends ActionHandler
 
 			if ( (string) $xml->content != '' ) {
 				$post->content= (string) $xml->content;
-			}
-
-			if ( (string) $xml->pubdate != '' ) {
-				$post->pubdate= (string) $xml->pubdate;
 			}
 
 			if ( isset( $_SERVER['HTTP_SLUG'] ) ) {

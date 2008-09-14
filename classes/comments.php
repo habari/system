@@ -161,18 +161,30 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['day'] ) ) {
 					/* Got the full date */
 					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[]= $startDate->sql;
+					$params[]= $startDate->modify( '+1 day' )->sql;
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[]= $startDate->sql;
+					$params[]= $startDate->modify( '+1 month' )->sql;
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[]= $startDate->sql;
+					$params[]= $startDate->modify( '+1 year' )->sql;
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
 				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
@@ -204,7 +216,7 @@ class Comments extends ArrayObject
 		// is a count of comments by month being requested?
 		$groupby= '';
 		if ( isset ( $month_cts ) ) {
-			$select= 'MONTH(date) AS month, YEAR(date) AS year, COUNT(id) AS ct';
+			$select= 'MONTH(FROM_UNIXTIME(date)) AS month, YEAR(FROM_UNIXTIME(date)) AS year, COUNT(id) AS ct';
 			$groupby= 'year, month';
 			$orderby= 'year, month';
 		}
@@ -628,7 +640,7 @@ class Comments extends ArrayObject
 		}
 		return null;
 	}
-
+	
 	/**
 	 * static delete_by_status
 	 * delete all the comments and commentinfo for comments with this status
