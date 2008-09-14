@@ -1016,10 +1016,9 @@ class InstallHandler extends ActionHandler {
 		// sort the upgrades by revision, ascending
 		ksort( $upgrades );
 		
-		
 		foreach ( $upgrades as $upgrade ) {
 			
-			$result &= call_user_func( array( $this, $upgrade ) );
+			$result = call_user_func( array( $this, $upgrade ) );
 			
 			// if we failed, abort
 			if ( $result === false ) {
