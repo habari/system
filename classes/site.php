@@ -125,69 +125,69 @@ class Site
 		switch( strtolower( $name ) )
 		{
 			case 'host':
-				$protocol= 'http';
+				$protocol = 'http';
 				// If we're running on a port other than 80, i
 				// add the port number to the value returned
 				// from host_url
-				$port= 80; // Default in case not set.
+				$port = 80; // Default in case not set.
 				if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-					$port= $_SERVER['SERVER_PORT'];
+					$port = $_SERVER['SERVER_PORT'];
 				}
-				$portpart= '';
-				// HTTP_HOST is not set for HTTP/1.0 requests
-				$host= (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME']);
+				$portpart = '';
+				$host = Site::get_url('hostname');
 				// if the port isn't a standard port, and isn't part of $host already, add it
 				if ( ( $port != 80 ) && ( $port != 443 ) && ( substr($host, strlen($host) - strlen($port) ) != $port ) ) {
-					$portpart= ':' . $port;
+					$portpart = ':' . $port;
 				}
 				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
-					$protocol= 'https';
+					$protocol = 'https';
 				}
-				$url= $protocol . '://' . $host . $portpart;
+				$url = $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
-				$url= Site::get_url( 'host' );
-				$path= trim( dirname( Site::script_name() ), '/\\' );
+				$url = Site::get_url( 'host' );
+				$path = trim( dirname( Site::script_name() ), '/\\' );
 				if ( '' != $path ) {
-					$url.= '/' . $path;
+					$url .= '/' . $path;
 				}
 				break;
 			case 'user':
-				$url= Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
+				$url = Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
 				break;
 			case 'theme':
-				$theme= Options::get( 'theme_dir');
+				$theme = Options::get( 'theme_dir');
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-					$url= Site::get_url( 'user' ) .  '/themes/' . $theme;
+					$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
-					$url= Site::get_url( 'habari' ) . '/user/themes/' . $theme;
+					$url = Site::get_url( 'habari' ) . '/user/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url= Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+					$url = Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
 				}
 				else {
-					$url= Site::get_url( 'habari' ) . '/system/themes/' . $theme;
+					$url = Site::get_url( 'habari' ) . '/system/themes/' . $theme;
 				}
 				break;
 			case 'admin':
-				$url= Site::get_url( 'habari' ) . '/admin';
+				$url = Site::get_url( 'habari' ) . '/admin';
 				break;
 			case 'admin_theme':
-				$url= Site::get_url( 'habari' ) . '/system/admin';
+				$url = Site::get_url( 'habari' ) . '/system/admin';
 				break;
 			case 'system':
-				$url= Site::get_url( 'habari' ) . '/system';
+				$url = Site::get_url( 'habari' ) . '/system';
 				break;
 			case 'scripts':
-				$url= Site::get_url( 'habari' ) . '/scripts';
+				$url = Site::get_url( 'habari' ) . '/scripts';
 				break;
 			case 'hostname':
-				$url= $_SERVER['HTTP_HOST'];
+				// HTTP_HOST is not set for HTTP/1.0 requests
+				$url = ( $_SERVER['SERVER_PROTOCOL'] == 'HTTP/1.0' || !isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
 				break;
 		}
-		$url.= ( $trail ) ? '/' : '';
-		$url= Plugins::filter( 'site_url_' . $name, $url );
+		$url .= ( $trail ) ? '/' : '';
+		$url = Plugins::filter( 'site_url_' . $name, $url );
 		return $url;
 	}
 
