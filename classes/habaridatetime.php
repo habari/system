@@ -75,16 +75,19 @@ class HabariDateTime extends DateTime
 	public function set_date( $year, $month, $day )
 	{
 		parent::setDate($year, $month, $day);
+		return $this;
 	}
 
 	public function set_isodate( $year, $week, $day = null )
 	{
 		parent::setISODate($year, $week, $day);
+		return $this;
 	}
 
 	public function set_time( $hour, $minute, $second = null )
 	{
 		parent::setTime($hour, $minute, $second);
+		return $this;
 	}
 
 	public function set_timezone( $timezone )
@@ -93,6 +96,7 @@ class HabariDateTime extends DateTime
 			$timezone = new DateTimeZone($timezone);
 		}
 		parent::setTimezone($timezone);
+		return $this;
 	}
 	
 	/**
