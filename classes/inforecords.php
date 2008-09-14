@@ -19,6 +19,8 @@ abstract class InfoRecords implements URLProperties
 	protected $_key_value;
 	// set to TRUE only when the inforecords have been loaded
 	protected $_loaded= FALSE;
+	
+	protected $url_args;
 
 	/**
 	 * Takes three parameters. The table of the options table, the name of the master key  and the record_id for which options are managed.
@@ -158,13 +160,16 @@ abstract class InfoRecords implements URLProperties
 	}	
 
 	/**
-	 * Returns an array with the current field settings
-	 * @return array The field settings as they would be saved
+	 * Returns a set of properties used by URL::get to create URLs
+	 * @return array Properties of this post used to build a URL
 	 **/
 	public function get_url_args()
 	{
-		$this->_load();
-		return array_map( create_function( '$a', 'return $a["value"];' ), $this->__inforecord_array );
+		if ( !$this->url_args ) {
+			$this->_load();
+			$this->url_args = array_map( create_function( '$a', 'return $a["value"];' ), $this->__inforecord_array );
+		}
+		return $this->url_args;
 	}
 	
 	/**

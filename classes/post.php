@@ -27,6 +27,8 @@ class Post extends QueryRecord implements IsContent
 	private $author_object= null;
 
 	private $info= null;
+	
+	protected $url_args;
 
 	/**
 	 * returns an associative array of active post types
@@ -845,6 +847,7 @@ class Post extends QueryRecord implements IsContent
 		return URL::get(
 			array(
 				"display_{$content_type}",
+				"display_post"
 			),
 			$this,
 			false
@@ -943,12 +946,13 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function get_url_args()
 	{
-		$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
-		$author= URL::extract_args( $this->author, 'author_' );
-		$info= URL::extract_args( $this->info, 'info_' );
-		$args= array_merge( $author, $info, $arr, $this->to_array(), $this->pubdate->getdate() );
-
-		return $args;
+		if ( !$this->url_args ) {
+			$arr = array( 'content_type_name' => Post::type_name( $this->content_type ) );
+			$author = URL::extract_args( $this->author, 'author_' );
+			$info = URL::extract_args( $this->info, 'info_' );
+			$this->url_args = array_merge( $author, $info, $arr, $this->to_array(), $this->pubdate->getdate() );
+		}
+		return $this->url_args;
 	}
 
 	/**

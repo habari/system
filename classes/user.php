@@ -29,6 +29,8 @@ class User extends QueryRecord
 	private $info = null;
 
 	private $group_list = null;
+	
+	protected $url_args;
 
 	/**
 	 * Get default fields for this record.
@@ -533,7 +535,10 @@ class User extends QueryRecord
 	 */
 	public function get_url_args()
 	{
-		return array_merge( URL::extract_args( $this->info, 'info_' ), $this->to_array() );
+		if ( !$this->url_args ) {
+			$this->url_args = array_merge( URL::extract_args( $this->info, 'info_' ), $this->to_array() );
+		}
+		return $this->url_args;
 	}
 
 }
