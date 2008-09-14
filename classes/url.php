@@ -53,7 +53,8 @@ class URL extends Singleton
 	public static function set_404()
 	{
 		if( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
-			URL::instance()->matched_rule = reset(RewriteRules::by_name('display_404'));
+			$rule = RewriteRules::by_name('display_404');
+			URL::instance()->matched_rule = reset($rule);
 			URL::instance()->matched_rule->match(self::$stub);
 		}
 		return URL::instance()->matched_rule;
