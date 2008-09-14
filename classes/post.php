@@ -264,8 +264,9 @@ class Post extends QueryRecord implements IsContent
 			'cached_content' => '',
 			'user_id' => 0,
 			'status' => Post::status( 'draft' ),
-			'pubdate' => date( 'Y-m-d H:i:s' ),
-			'updated' => date ( 'Y-m-d H:i:s' ),
+			'pubdate' => HabariDateTime::date_create(),
+			'updated' => HabariDateTime::date_create(),
+			'modified' => HabariDateTime::date_create(),
 			'content_type' => Post::type( 'entry' )
 		);
 	}
@@ -288,6 +289,7 @@ class Post extends QueryRecord implements IsContent
 			$this->tags= $this->parsetags( $this->fields['tags'] );
 			unset( $this->fields['tags'] );
 		}
+
 		$this->exclude_fields( 'id' );
 		$this->info= new PostInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
@@ -453,7 +455,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
-		/* 
+		/*
 		 * First, let's clean the incoming tag text array, ensuring we have
 		 * a unique set of tag texts and slugs.
 		 */
@@ -480,14 +482,14 @@ class Post extends QueryRecord implements IsContent
 			/* Tags exist which match the text or the slug */
 			foreach ( $existing_tags as $existing_tag ) {
 				if ( in_array( $existing_tag->tag_text, array_keys( $clean_tags ) ) ) {
-					/* 
-					 * Tag text exists.  
-					 * Add the ID to the list of Tag IDs to add to the tag2post table 
+					/*
+					 * Tag text exists.
+					 * Add the ID to the list of Tag IDs to add to the tag2post table
 					 */
 					$tag_ids_to_post[]= $existing_tag->id;
-					/* 
-					 * We remove it from the clean_tags collection as we only 
-					 * want to add to the tags table those tags which don't already exist 
+					/*
+					 * We remove it from the clean_tags collection as we only
+					 * want to add to the tags table those tags which don't already exist
 					 */
 					unset( $clean_tags[$existing_tag->tag_text] );
 				}
@@ -508,7 +510,7 @@ class Post extends QueryRecord implements IsContent
 		/*
 		 * OK, at this point, we have two "clean" collections.  $clean_tags
 		 * contains an associative array of tags we need to add to the main tags
-		 * table.  $tag_ids_to_post is an array of tag ID values that we will 
+		 * table.  $tag_ids_to_post is an array of tag ID values that we will
 		 * attempt to add to the tag2post mapping table.
 		 *
 		 * First, let's add the new tags to the tags table...
@@ -561,7 +563,7 @@ class Post extends QueryRecord implements IsContent
 		}
 		DB::commit();
 		return TRUE;
-		
+
 	}
 
 	/**
@@ -570,7 +572,8 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function insert()
 	{
-		$this->newfields[ 'updated' ]= date( 'Y-m-d H:i:s' );
+		$this->newfields['updated']= HabariDateTime::date_create();
+		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setslug();
 		$this->setguid();
 
@@ -594,6 +597,7 @@ class Post extends QueryRecord implements IsContent
 		$this->newfields= array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->save_tags();
+		$this->create_default_permissions();
 		EventLog::log( sprintf(_t('New post %1$s (%2$s);  Type: %3$s; Status: %4$s'), $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname), 'info', 'content', 'habari' );
 		Plugins::act( 'post_insert_after', $this );
 
@@ -608,10 +612,14 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * function update
 	 * Updates an existing post in the posts table
+	 * @param bool $minor Indicates if this is a major or minor update
 	 */
-	public function update()
+	public function update( $minor = true )
 	{
-		$this->updated= date( 'Y-m-d H:i:s' );
+		$this->modified = HabariDateTime::date_create();
+		if ( ! $minor ) {
+			$this->updated = $this->modified;
+		}
 		if ( isset( $this->fields['guid'] ) ) {
 			unset( $this->newfields['guid'] );
 		}
@@ -679,6 +687,9 @@ class Post extends QueryRecord implements IsContent
 		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
 		}
+		// Delete all permissions associated with this post
+		$this->delete_permissions();
+
 		$result= parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
 		EventLog::log( sprintf(_t('Post %1$s (%2$s) deleted.'), $this->id, $this->slug), 'info', 'content', 'habari' );
 
@@ -710,12 +721,12 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_publish_before', $this );
 
 		if ( $this->status != Post::status( 'scheduled' ) )  {
-			$this->pubdate= date( 'Y-m-d H:i:s' );
+			$this->pubdate= HabariDateTime::create_date();
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
 			$this->get_tags();
-			$msg= sprintf(_t('Scheduled Post %1$s (%2$s) published at %3$s.'), $this->id, $this->slug, date( 'Y-m-d H:i:s' ));
+			$msg= sprintf(_t('Scheduled Post %1$s (%2$s) published at %3$s.'), $this->id, $this->slug, $this->pubdate->format());
 		}
 		else {
 			$msg= sprintf(_t('Post %1$s (%2$s) published.'), $this->id, $this->slug);
@@ -796,7 +807,11 @@ class Post extends QueryRecord implements IsContent
 	{
 		switch( $name ) {
 		case 'pubdate':
-			$value= date( 'Y-m-d H:i:s', strtotime( $value ) );
+		case 'updated':
+		case 'modified':
+			if ( !($value instanceOf HabariDateTime) ) {
+				$value = HabariDateTime::date_create($value);
+			}
 			break;
 		case 'tags':
 			return $this->tags= $this->parsetags( $value );
@@ -809,9 +824,9 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * Handle calls to this Post object that are implemented by plugins
 	 * @param string $name The name of the function called
-	 * @param array $args Arguments passed to the function call	 
-	 * @return mixed The value returned from any plugin filters, null if no value is returned	 
-	 **/	 
+	 * @param array $args Arguments passed to the function call
+	 * @return mixed The value returned from any plugin filters, null if no value is returned
+	 **/
 	public function __call( $name, $args )
 	{
 		array_unshift($args, 'post_call_' . $name, null, $this);
@@ -931,7 +946,7 @@ class Post extends QueryRecord implements IsContent
 		$arr= array( 'content_type_name' => Post::type_name( $this->content_type ) );
 		$author= URL::extract_args( $this->author, 'author_' );
 		$info= URL::extract_args( $this->info, 'info_' );
-		$args= array_merge( $author, $info, $arr, $this->to_array(), Utils::getdate( strtotime( $this->pubdate ) ) );
+		$args= array_merge( $author, $info, $arr, $this->to_array(), $this->pubdate->getdate() );
 
 		return $args;
 	}
@@ -967,5 +982,32 @@ class Post extends QueryRecord implements IsContent
 		return Post::type_name($this->content_type);
 	}
 
+	/**
+	 * Creates default permissions on a post
+	 */
+	public function create_default_permissions()
+	{
+		$this->add_permission( $this->content_type() );
+	}
+
+	/**
+	 * Add a permission to a post
+	 * @param string $permission The name of the permission to add
+	 **/
+	public function add_permission( $permission )
+	{
+		$token_id = ACL::token_id( $permission );
+		if ( isset( $token_id ) ) {
+			DB::insert( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
+		}
+	}
+
+	/**
+	 * Deletes permissions on a post
+	 */
+	public function delete_permissions()
+	{
+		DB::delete( '{post_tokens}', array( 'post_id' => $this->id ) );
+	}
 }
 ?>

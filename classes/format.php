@@ -213,27 +213,31 @@ class Format
 	/**
 	 * function nice_date
 	 * Formats a date using a date format string
-	 * @param mixed A date as a string or a timestamp
+	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The date formatted as a string
 	 **/
 	public static function nice_date($date, $dateformat = 'F j, Y')
 	{
-		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
-		return Utils::locale_date($dateformat, strtotime($date));
+		if ( !( $date instanceOf HabariDateTime ) ) {
+			$date = HabariDateTime::date_create( $date );
+		}
+		return $date->format( $dateformat );
 	}
 
 	/**
 	 * function nice_time
 	 * Formats a time using a date format string
-	 * @param mixed A date as a string or a timestamp
+	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The time formatted as a string
 	 **/
 	public static function nice_time($date, $dateformat = 'H:i:s')
 	{
-		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
-		return Utils::locale_date($dateformat, strtotime($date));
+		if ( !( $date instanceOf HabariDateTime ) ) {
+			$date = HabariDateTime::date_create( $date );
+		}
+		return $date->format( $dateformat );
 	}
 
 	/**

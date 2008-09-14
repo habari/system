@@ -16,7 +16,7 @@
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 						<div class="cal">
-							<?php $date= Utils::getdate( strtotime( $post->pubdate ) ); ?> <span class="calyear"><?php echo $date['year']; ?></span><br><span class="calday"><?php echo $date['mday']; ?></span><br><span class="calmonth"><?php echo $date['month']; ?></span>
+							<span class="calyear"><?php $post->pubdate->out('Y'); ?></span><br><span class="calday"><?php $post->pubdate->out('j'); ?></span><br><span class="calmonth"><?php $post->pubdate->out('F'); ?></span>
 						</div>	
 						<div class="entry">
 						<?php echo $post->content_out; ?>

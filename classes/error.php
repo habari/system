@@ -100,19 +100,22 @@ class Error extends Exception
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
 			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
-
-		printf(
-			"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
-			$error_names[$errno],
-			$errstr,
-			$errfile,
-			$errline
-		);
-		if( DEBUG ) {
-			Error::print_backtrace();
+		
+		if ( ini_get('display_errors') || DEBUG ) {
+			printf(
+				"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
+				$error_names[$errno],
+				$errstr,
+				$errfile,
+				$errline
+			);
+			if( DEBUG ) {
+				Error::print_backtrace();
+			}
 		}
 		
-		throw new Error($errstr, 0, true);
+		// throwing an Error make every error fatal!
+		//throw new Error($errstr, 0, true);
 	}
 
 	/**

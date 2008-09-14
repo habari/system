@@ -22,9 +22,12 @@ class PGSQLConnection extends DatabaseConnection
 		$sql= preg_replace_callback( '%concat\(([^)]+?)\)%i', array( &$this, 'replace_concat' ), $sql );
 		$sql= preg_replace( '%DATE_SUB\s*\(\s*NOW\(\s*\)\s*,\s*INTERVAL\s+([0-9]+)\s+DAY\s*\)%ims', 'NOW() - INTERVAL \'${1} DAYS\'', $sql );
 		$sql= preg_replace( '%OPTIMIZE TABLE ([^ ]*)%i', 'VACUUM ${1};', $sql );
-		$sql= preg_replace( '%YEAR\s*\(\s*([^ ]*)\s*\)%ims', 'date_part(\'year\', ${1})', $sql );
-		$sql= preg_replace( '%MONTH\s*\(\s*([^ ]*)\s*\)%ims', 'date_part(\'month\', ${1})', $sql );
-		$sql= preg_replace( '%DAY\s*\(\s*([^ ]*)\s*\)%ims', 'date_part(\'day\', ${1})', $sql );
+		//$sql= preg_replace( '%YEAR\s*\(\s*([^ ]*)\s*\)%ims', 'date_part(\'year\', ${1})', $sql );
+		//$sql= preg_replace( '%MONTH\s*\(\s*([^ ]*)\s*\)%ims', 'date_part(\'month\', ${1})', $sql );
+		//$sql= preg_replace( '%DAY\s*\(\s*([^ ]*)\s*\)%ims', 'date_part(\'day\', ${1})', $sql );
+		$sql= preg_replace( '%YEAR\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'year\', \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
+		$sql= preg_replace( '%MONTH\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'month\',  \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
+		$sql= preg_replace( '%DAY\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'day\',  \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
 		return $sql;
 	}
 

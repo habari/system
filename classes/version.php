@@ -11,7 +11,7 @@ class Version
 {
 	// DB and API versions are aligned with the SVN revision
 	// number in which they last changed.
-	const DB_VERSION = 1845;
+	const DB_VERSION = 2264;
 	const API_VERSION = 2264;
 
 	const HABARI_VERSION = '0.6-alpha';

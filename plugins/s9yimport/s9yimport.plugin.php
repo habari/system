@@ -24,6 +24,16 @@ class S9YImport extends Plugin implements Importer
 	private $imported_categories= array();
 
 	/**
+	 * Cache for imported category names
+	 */
+	protected $imported_category_names = array();
+
+	/**
+	 * List of already-rewritten categories (prevents duplicate rewrite rules)
+	 */
+	protected $rewritten_categories = array();
+
+	/**
 	 * Initialize plugin.
 	 * Set the supported importers.
 	 **/
@@ -106,12 +116,12 @@ class S9YImport extends Plugin implements Importer
 			, 'db_user'
 			, 'db_pass'
 			, 'db_prefix'
-			, 'category_import'
 			, 's9y_version'
 			, 's9y_root_web'
 			, 's9y_input_version'
 			, 'category_import'
 			, 'comments_ignore_unapproved'
+			, 'rewrites_import'
 		);
 		$inputs= $this->get_valid_inputs( $valid_fields );
 
@@ -125,6 +135,7 @@ class S9YImport extends Plugin implements Importer
 			, 'warning' => ''
 			, 'category_import' => 1
 			, 'comments_ignore_unapproved' => 1
+			, 'rewrites_import' => 1
 			, 's9y_root_web' => ''
 			, 's9y_input_version' =>''
 		 ) ;
@@ -164,9 +175,10 @@ class S9YImport extends Plugin implements Importer
 			<table>
 				<tr><td>Import Serendipity Categories as Tags?</td><td><input type="checkbox" name="category_import" value="1" checked="true"></td></tr>
 				<tr><td>Ignore Unapproved Comments?</td><td><input type="checkbox" name="comments_ignore_unapproved" value="1" checked="true"></td></tr>
+				<tr><td>Port rewrites?</td><td><input type="checkbox" name="rewrites_import" value="1" checked="true"></td></tr>
 			</table>
 			<input type="hidden" name="stage" value="1">
-			<p class="submit"><input type="submit" name="import" value="Process with Import" /></p>
+			<p class="submit"><input type="submit" name="import" value="Proceed with Import" /></p>
 WP_IMPORT_STAGE1;
 
 		return $output;
@@ -192,12 +204,12 @@ WP_IMPORT_STAGE1;
 			, 'db_user'
 			, 'db_pass'
 			, 'db_prefix'
-			, 'category_import'
 			, 's9y_version'
 			, 's9y_root_web'
 			, 's9y_input_version'
 			, 'category_import'
 			, 'comments_ignore_unapproved'
+			, 'rewrites_import'
 		);
 		$inputs= $this->get_valid_inputs( $valid_fields );
 
@@ -208,6 +220,8 @@ WP_IMPORT_STAGE1;
 			$comments_ignore_unapproved= 1;
 		if ( isset( $category_import ) )
 			$category_import= 1;
+		if ( isset( $rewrites_import ) )
+			$rewrites_import= 1;
 
 		if ( empty( $s9y_input_version )
 			&& empty( $s9y_root_web ) ) {
@@ -336,6 +350,11 @@ WP_IMPORT_STAGE2;
 			<div><strong>Tags to be imported:</strong>&nbsp;{$num_imported_tags}</div>
 WP_IMPORT_STAGE2;
 		}
+		if ( $rewrites_import == 1 ) {
+			$output.=<<<WP_IMPORT_STAGE2
+			<div><strong>Porting Rewrites.</strong></div>
+WP_IMPORT_STAGE2;
+		}
 		foreach ( $inputs as $key=>$value ) 
 			$output.= "<input type='hidden' name='{$key}' value='" . htmlentities($value) . "' />";
 		$output.=<<<WP_IMPORT_STAGE2
@@ -362,12 +381,12 @@ WP_IMPORT_STAGE2;
 			, 'db_user'
 			, 'db_pass'
 			, 'db_prefix'
-			, 'category_import'
 			, 's9y_version'
 			, 's9y_root_web'
 			, 's9y_input_version'
 			, 'category_import'
 			, 'comments_ignore_unapproved'
+			, 'rewrites_import'
 			, 'merge_user'
 			, 'merge_user_matched'
 			, 'import_user'
@@ -383,6 +402,60 @@ WP_IMPORT_STAGE2;
 		$this->comments_ignore_unapproved= $comments_ignore_unapproved;
 		$this->category_import= $category_import;
 		$this->s9y_db_prefix= $db_prefix;
+		$this->port_rewrites= $rewrites_import;
+		
+		if ( $rewrites_import ) {
+
+
+			// atom feed link:
+			$rew_url = URL::get( 'atom_feed', array( 'index' => 1 ), true, false, false );
+			$rewrite = new RewriteRule( array(
+				'name' => 'from_s9yimporter_atom_feed', 
+				'parse_regex' => '%^feeds/atom(?P<r>.*)$%i', 
+				'build_str' => $rew_url . '(/{$p})', 
+				'handler' => 'actionHandler',
+				'action' => 'redirect', 
+				'priority' => 1,
+				'is_active' => 1,
+				'rule_class' => RewriteRule::RULE_CUSTOM,
+				'description' => 'redirects s9y atom feed to habari feed',
+			) );
+			$rewrite->insert();
+
+			// rss feed link:
+			$rew_url = Plugins::is_loaded( 'RSS 2.0' )
+							? URL::get( 'rss_feed', array( 'index' => 1 ), true, false, false )
+							: URL::get( 'atom_feed', array( 'index' => 1 ), true, false, false );
+			$rewrite = new RewriteRule( array(
+				'name' => 'from_s9yimporter_rss_feed', 
+				'parse_regex' => '%^feeds/index.rss(?P<r>.*)$%i', 
+				'build_str' => $rew_url . '(/{$p})', 
+				'handler' => 'actionHandler',
+				'action' => 'redirect', 
+				'priority' => 1,
+				'is_active' => 1,
+				'rule_class' => RewriteRule::RULE_CUSTOM,
+				'description' => 'redirects s9y rss feed to habari feed',
+			) );
+			$rewrite->insert();
+			
+			// comments feed link:
+			$rew_url = Plugins::is_loaded( 'RSS 2.0' )
+							? URL::get( 'rss_feed_comments', array( ), true, false, false )
+							: URL::get( 'atom_feed_comments', array( ), true, false, false );
+			$rewrite = new RewriteRule( array(
+				'name' => 'from_s9yimporter_comments_feed', 
+				'parse_regex' => '%^feeds/comments.rss(?P<r>.*)$%i', 
+				'build_str' => $rew_url . '(/{$p})', 
+				'handler' => 'actionHandler',
+				'action' => 'redirect', 
+				'priority' => 1,
+				'is_active' => 1,
+				'rule_class' => RewriteRule::RULE_CUSTOM,
+				'description' => 'redirects s9y rss feed to habari feed',
+			) );
+			$rewrite->insert();
+		}
 
 		if ( FALSE !== ( $this->s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port ) ) ) {
 			/*
@@ -446,11 +519,13 @@ ENDOFSQL;
 						if ( $tag_check = Tags::get_one( $imported_category->category_name ) ) {
 							// tag already exists
 							$this->imported_categories[$imported_category->categoryid]= $tag_check->id;
+							$this->imported_category_names[$imported_category->categoryid] = $imported_category->category_name;
 							++$num_categories_imported;
 							continue;
 						}
 						if ( $new_tag= Tag::create( array( 'tag_text' => $imported_category->category_name ) ) ) {
 							$this->imported_categories[$imported_category->categoryid]= $new_tag->id;
+							$this->imported_category_names[$imported_category->categoryid] = $imported_category->category_name;
 							++$num_categories_imported;
 						}
 						else {
@@ -659,6 +734,22 @@ ENDOFSQL;
 			$post->tags= $categories->to_array();
 
 		if ( $post->insert() ) {
+			
+			if ( $this->port_rewrites ) {
+				$rewrite = new RewriteRule( array(
+					'name' => 'from_s9yimporter_' . $post_info->id, 
+					'parse_regex' => '%^archives/' . $post_info->id . '-(?P<r>.*)$%i', 
+					'build_str' => $post->slug . '(/{$p})', 
+					'handler' => 'actionHandler',
+					'action' => 'redirect', 
+					'priority' => 1,
+					'is_active' => 1,
+					'rule_class' => RewriteRule::RULE_CUSTOM,
+					'description' => 'redirects /archives/' . $post_info->id .' to /' . $post->slug,
+				) );
+				$rewrite->insert();
+			}
+			
 			/*
 			 * If we are going to import taxonomy, , then first check to see if 
 			 * this post has any categories attached to it, and import the relationship
@@ -682,8 +773,27 @@ ON c.categoryid = ec.categoryid
 AND ec.entryid = ?
 ENDOFSQL;
 				if ( FALSE !== ( $categories= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' ) ) ) {
-					foreach ( $categories as $category ) 
+					foreach ( $categories as $category ) {
 						$result&= $this->import_post_category( $post->id, $this->imported_categories[$category->categoryid] );
+						if ( $this->port_rewrites && !isset( $this->rewritten_categories[ $category->categoryid ] ) ) {
+							// rss feed link:
+							$this->rewritten_categories[ $category->categoryid ] = 1;
+							$rew_url = URL::get( 'atom_feed_tag', array( 'tag' => $this->imported_category_names[ $category->categoryid ] ), true, false, false );
+							$rewrite = new RewriteRule( array(
+								'name' => 'from_s9yimporter_category_feed', 
+								'parse_regex' => '%^feeds/categories/' . $category->categoryid . '-(?P<r>.*)$%i', 
+								'build_str' => $rew_url . '(/{$p})', 
+								'handler' => 'actionHandler',
+								'action' => 'redirect', 
+								'priority' => 1,
+								'is_active' => 1,
+								'rule_class' => RewriteRule::RULE_CUSTOM,
+								'description' => 'redirects s9y category feed to habari feed',
+							) );
+							$rewrite->insert();
+						}
+						
+					}
 				}
 			}
 
@@ -752,7 +862,7 @@ ENDOFSQL;
 	}
 
 	/**
-	 * Imports a single comment from the s9y database into the
+	 * Imports a single category from the s9y database into the
 	 * habari database
 	 *
 	 * @param		post_id						ID of the new Habari post to attach tag to

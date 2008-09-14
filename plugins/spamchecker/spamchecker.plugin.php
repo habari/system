@@ -122,7 +122,7 @@ class SpamChecker extends Plugin
 
 		// Only do db checks if it's not already spam
 		if($comment->status != Comment::STATUS_SPAM) {
-			$spams = DB::get_value('SELECT count(*) FROM ' . DB::table('comments') . ' WHERE status = 2 AND ip = ?', array($comment->ip));
+			$spams = DB::get_value('SELECT count(*) FROM ' . DB::table('comments') . ' WHERE status = ? AND ip = ?', array(Comment::STATUS_SPAM, $comment->ip));
 			// If you've already got two spams on your IP address, all you ever do is spam
 			if($spams > 1) {
 				$comment->status= Comment::STATUS_SPAM;

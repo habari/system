@@ -31,18 +31,17 @@ class ThemeHelper extends Plugin
 	 *
 	 * Since we use sprintf() in the final concatenation, you must format passed strings accordingly.
 	 *
-	 * @param mixed $return Incoming return value from other plugins
 	 * @param Theme $theme The current theme object
 	 * @param Post $post Post object used to build the comments link
 	 * @param string $zero String to return when there are no comments
 	 * @param string $one String to return when there is one comment
 	 * @param string $many String to return when there are more than one comment
 	 * @return string Linked string to display for comment count
-	 * @see ThemeHelper::filter_theme_call_comments_count()
+	 * @see ThemeHelper::theme_call_comments_count()
 	 */
-	public function filter_theme_call_comments_link( $return, $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
+	public function theme_call_comments_link( $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
 	{
-		return '<a href="' . $post->permalink . '" title="' . _t( 'Read Comments' ) . '">' . $theme->comments_count($post, $zero, $one, $many) . '</a>';
+		return '<a href="' . $post->permalink . '#comments" title="' . _t( 'Read Comments' ) . '">' . end( $theme->comments_count_return( $post, $zero, $one, $many ) ) . '</a>';
 	}
 
 	/**
@@ -117,6 +116,42 @@ class ThemeHelper extends Plugin
 			return $comment->name;
 		}
 	}
+
+	/**
+	 * Returns a comment form for themer's to use.
+	 * Theme code: <?php $theme->comment_form( ); ?>
+	 *
+	 * @param Theme $theme The current theme
+	 * @return Nothing. Outputs the comment form at
+	 */
+	public function theme_comment_form( $theme )
+	{
+		$ui = new FormUI( 'commentform' );
+		$ui->set_option( 'form_action',  URL::get( 'submit_feedback', array( 'id' => $theme->post->id ) ) );
+
+		$name = $ui->append( 'text', 'ename', 'null:null', _t( 'Name' ) . ' (<em>' . _t( 'Required' ) . '</em>)' );
+		$name->value = $theme->commenter_name;
+		$name->id = 'name';
+
+		$email = $ui->append( 'text', 'email', 'null:null', _t('Email' ) . ' (<em>' . _t( 'Required - not published' ) . '</em>)' );
+		$email->value = $theme->commenter_email;
+		$email->id = $email->name;
+
+		$url = $ui->append( 'text', 'url', 'null:null', _t( 'Web Address' ) );
+		$url->value = $theme->commenter_url;
+		$url->id = $url->name;
+
+		$commentContent = $ui->append( 'textarea', 'commentContent', 'null:null', _t( 'Message' ) . " (<em>" . _t( 'Required' ) . "</em>)" );
+		$commentContent->value = $theme->commenter_content;
+		$commentContent->id = 'content';
+
+		$submit = $ui->append( 'submit', 'submit', _t( 'Say It' ) );
+		$submit->id = $submit->name;
+
+		$ui->out();
+
+	}
+
 }
 
 ?>

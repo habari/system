@@ -645,7 +645,7 @@ class FormValidators
 	 * @param string $text A value to test if it is empty
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
-	function validate_required( $value )
+	public static function validate_required( $value )
 	{
 		if(empty($value) || $value == '') {
 			return array(_t('A value for this field is required.'));

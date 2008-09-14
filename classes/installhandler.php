@@ -149,27 +149,7 @@ class InstallHandler extends ActionHandler {
 			$this->activate_plugins();
 		}
 
-		// Install a theme.
-		$themes= Utils::glob( Site::get_dir( 'user' ) . '/themes/*', GLOB_ONLYDIR );
-		if ( 1 === count( $themes ) ) {
-			// only one theme exists in /user/themes
-			// assume the user wants that one activated.
-			$theme= basename( $themes[0] );
-			Themes::activate_theme( $theme, $theme );
-		} elseif ( 1 < count( $themes ) ) {
-			// we have multiple user themes installed
-			// select one at random to use
-			$random= rand( 0, count( $themes ) - 1 );
-			$theme= basename( $themes[ $random ] );
-			Themes::activate_theme( $theme, $theme );
-		} else {
-			// no user themes installed
-			// activate a random system theme
-			$themes= Utils::glob( HABARI_PATH . '/system/themes/*', GLOB_ONLYDIR );
-			$random= rand( 0, count( $themes ) - 1 );
-			$theme= basename( $themes[ $random ] );
-			Themes::activate_theme( $theme, $theme );
-		}
+		
 
 		// Installation complete. Secure sqlite if it was chosen as the database type to use
 		if ( $db_type == 'sqlite' ) {
@@ -1119,6 +1099,9 @@ class InstallHandler extends ActionHandler {
 		// do some pre-dbdelta ad-hoc hacky hack code
 		$this->upgrade_db_pre( $version );
 
+		// run schema-specific upgrade scripts
+		DB::upgrade( $version );
+
 		// Get the queries for this database and apply the changes to the structure
 		$queries= $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
 		DB::dbdelta($queries);
@@ -1126,9 +1109,6 @@ class InstallHandler extends ActionHandler {
 		// Apply data changes to the database based on version, call the db-specific upgrades, too.
 		$this->upgrade_db_post( $version );
 		
-		// run schema-specific upgrade scripts
-		DB::upgrade( $version );
-
 		Version::save_dbversion();
 	}
 	
@@ -1167,6 +1147,27 @@ class InstallHandler extends ActionHandler {
 		
 		return true;
 		
+	}
+	
+	private function upgrade_db_post_2264()
+	{
+		// create admin group
+		$admin_group = UserGroup::get_by_name( 'admin' );
+		if ( ! ( $admin_group instanceOf UserGroup ) ) {
+			$admin_group = UserGroup::create( array( 'name' => 'admin' ) );
+		}
+		
+		// add all users to the admin group
+		$users = Users::get_all();
+		$ids = array();
+		foreach ( $users as $user ) {
+			$ids[] = $user->id;
+		}
+		$admin_group->add( $ids );
+		$admin_group->update();
+
+		// @TODO: Decide on a set of default admin permissions and give them to the admin group
+		return true;
 	}
 
 	/**

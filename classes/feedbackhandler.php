@@ -97,7 +97,7 @@ class FeedbackHandler extends ActionHandler
 			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 			'content'	=> $this->handler_vars['content'],
 			'status' =>	Comment::STATUS_UNAPPROVED,
-			'date' =>	date( 'Y-m-d H:i:s' ),
+			'date' => HabariDateTime::date_create(),
 			'type' => Comment::COMMENT,
 		) );
 

@@ -75,7 +75,7 @@
 		}
 		if ( ! empty( $stats['user_entry_scheduled_count'] ) ) {
 			$message= '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'scheduled' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'scheduled post' ), '%d ' . _t( 'scheduled posts' ), $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
+			$message.= sprintf( _n( '%d scheduled post' , '%d scheduled posts' , $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
@@ -93,7 +93,7 @@
 		}
 
 		if ( !empty( $message_bits ) ) {
-			printf( _t('You have %s'), Format::and_list( $message_bits) );
+			_e('You have %s', array(Format::and_list( $message_bits)) );
 		}
 		?></p>
 

@@ -40,7 +40,7 @@ class LogEntry extends QueryRecord
 			'severity_id' => NULL,
 			'message' => '',
 			'data' => '',
-			'timestamp' => date( 'Y-m-d H:i:s' ),
+			'timestamp' => HabariDateTime::date_create(),
 			'ip' => 0,
 		);
 	}
@@ -66,6 +66,9 @@ class LogEntry extends QueryRecord
 		}
 		if ( !isset( $this->fields['severity'] ) ) {
 			$this->fields['severity']= 'info';
+		}
+		if ( isset( $this->fields['timestamp'] ) ) {
+			$this->fields['timestamp'] = HabariDateTime::date_create( $this->fields['timestamp'] );
 		}
 		$this->exclude_fields( 'id' );
 	}
@@ -325,7 +328,9 @@ class LogEntry extends QueryRecord
 	{
 		switch ( $name ) {
 		case 'timestamp':
-			$value= date( 'Y-m-d H:i:s', strtotime( $value ) );
+			if ( !($value instanceOf HabariDateTime) ) {
+				$value= HabariDateTime::date_create($value);
+			}
 			break;
 		}
 		return parent::__set( $name, $value );

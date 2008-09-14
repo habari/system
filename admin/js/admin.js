@@ -230,7 +230,7 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.page-users, .page-options, .page-user').length != 0) {
+		if($('.page-users, .page-options, .page-user, .page-tags').length != 0) {
 			$("input#search").keyup(function (e) {
 				var str= $('input#search').val();
 				itemManage.simpleFilter(str);
@@ -258,6 +258,10 @@ var itemManage = {
 				return false;
 			});
 		}
+		
+		$('.item.controls input.rename.button').click(function() { 
+		 	itemManage.rename(); 
+		});
 	},
 	initItems: function() {
 		$('.item:not(.ignore) .checkbox input[type=checkbox]').change(function () {
@@ -270,7 +274,22 @@ var itemManage = {
 				this.checked = 1;
 			}
 		});
+		$('.item .less').click(function() {
+			itemManage.expand($(this).parent());
+		});
 		itemManage.changeItem();
+	},
+	expand: function(item) {
+		$('.item').removeClass('expanded');
+		
+		item.addClass('expanded');
+		
+		$('.more', item).click(function() {
+			itemManage.contract($(this).parent());
+		});
+	},
+	contract: function(item) {
+		item.removeClass('expanded');
 	},
 	selected: [],
 	searchCache: [],
@@ -280,7 +299,7 @@ var itemManage = {
 		
 		// cache search items on first call
 		if ( itemManage.searchCache.length == 0 ) {
-			itemManage.searchRows = $('li.item, a.tag, div.settings');
+			itemManage.searchRows = $('li.item, .item.tag, div.settings');
 			itemManage.searchCache = itemManage.searchRows.map(function() {
 				return $(this).text().toLowerCase();
 			});
@@ -311,14 +330,18 @@ var itemManage = {
 		}
 
 		$('.item:not(.ignore) .checkbox input[type=checkbox]:checked').each(function() {
-			id = $(this).attr('id');
+			check= $(this);
+			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 1;
+			check.parent().parent().addClass('selected');
 		});
 		$('.item:not(.ignore) .checkbox input[type=checkbox]:not(:checked)').each(function() {
-			id = $(this).attr('id');
+			check= $(this);
+			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
+			check.parent().parent().removeClass('selected');
 		});
 
 		itemManage.selected = selected;
@@ -427,6 +450,7 @@ var itemManage = {
 			'json'
 			);
 	},
+	rename: null,
 	remove: function( id ) {
 		itemManage.update( 'delete', id );
 	},
@@ -473,53 +497,6 @@ var itemManage = {
 				
 			}
 		});
-	}
-}
-
-// Tag Management
-var tagManage = {
-	init: function() {
-		// Return if we're not on the tags page
-		if(!$('.page-tags').length) return;
-
-		$('.tag').click(function() {
-				$(this).toggleClass('selected');
-				tagManage.changeTag();
-				return false;
-			}
-		);
-
-		$('.controls input.delete.button').click(function () {
-			tagManage.remove();
-		});
-		$('.controls input.rename.button').click(function () {
-			tagManage.rename();
-		});
-
-		$("input#search").keyup(function (e) {
-			var str= $('input#search').val();
-			itemManage.simpleFilter(str);
-			tagManage.changeTag();
-		});
-	},
-	changeTag: function() {
-		count = $('.tag.selected').length;
-
-		visible = $('.tag.selected:not(.hidden)').length;
-
-		if(count == 0) {
-			$('.controls label.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if (visible == $('.tag:not(.hidden)').length) {
-			$('.controls label.selectedtext').removeClass('none').addClass('all').text('All selected');
-			if(visible != count) {
-				$('.controls label.selectedtext').text('All visible selected (' + count + ' total)');
-			}
-		} else {
-			$('.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
-			if(visible != count) {
-				$('.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
-			}
-		}
 	}
 }
 
@@ -1045,6 +1022,11 @@ var theMenu = {
 				});
 			}
 		});
+		
+		// View blog hotkey
+		$.hotkeys.add('v', { propagate: true, disableInInput: true }, function() {
+			location = $('#site').attr('href');
+		});
 
 		// Display hotkeys
 		$('#menu a .hotkey').addClass('enabled');
@@ -1319,7 +1301,6 @@ $(document).ready(function(){
 	dashboard.init();
 	inEdit.init();
 	itemManage.init();
-	tagManage.init();
 	pluginManage.init();
 	liveSearch.init();
 	findChildren();

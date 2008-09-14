@@ -26,11 +26,11 @@ class CronJob extends QueryRecord
 			'cron_id' => 0,
 			'name' => '',
 			'callback' => '',
-			'last_run' => '',
-			'next_run' => time(),
+			'last_run' => NULL,
+			'next_run' => HabariDateTime::date_create(),
 			'increment' => 86400, // one day
-			'start_time' => time(),
-			'end_time' => '',
+			'start_time' => HabariDateTime::date_create(),
+			'end_time' => NULL,
 			'result' => '',
 			'cron_class' => self::CRON_CUSTOM,
 			'description' => '',
@@ -44,7 +44,7 @@ class CronJob extends QueryRecord
 	 */
 	public function __construct( $paramarray = array() )
 	{
-		$this->now = time();
+		$this->now = HabariDateTime::date_create();
 
 		// Defaults
 		$this->fields = array_merge(
@@ -75,8 +75,8 @@ class CronJob extends QueryRecord
 	 * by email to specified address.
 	 * Note: end_time can be null, ie. "The Never Ending Cron Job".
 	 *
-	 * Callback is passed a param_array of the Cron Job feilds and the exection time
-	 * as the 'now' feild. The 'result' feild contains the result of the last execution; either
+	 * Callback is passed a param_array of the Cron Job fields and the execution time
+	 * as the 'now' field. The 'result' field contains the result of the last execution; either
 	 * 'executed' or 'failed'.
 	 *
 	 * @todo delete job after # failed attempts.
@@ -101,14 +101,14 @@ class CronJob extends QueryRecord
 			$this->result = 'executed';
 
 			// it ran successfully, so check if it's time to delete it.
-			if ( $this->end_time && ( $this->now >= $this->end_time ) ) {
+			if ( ! is_null($this->end_time) && ( $this->now >= $this->end_time ) ) {
 				$this->delete();
 				return;
 			}
 		}
 
 		$this->last_run = $this->now;
-		$this->next_run = $this->last_run + $this->increment;
+		$this->next_run = $this->now->int + $this->increment;
 		$this->update();
 	}
 
@@ -118,8 +118,20 @@ class CronJob extends QueryRecord
 	 */
 	public function __set( $name, $value )
 	{
-		if ( $name == 'callback' && ( is_array($value) || is_object($value) ) ) {
-			$value = serialize( $value );
+		switch( $name ) {
+		case 'callback':
+			if ( is_array($value) || is_object($value) ) {
+				$value = serialize( $value );
+			}
+			break;
+		case 'next_run':
+		case 'last_run':
+		case 'start_time':
+		case 'end_time':
+			if ( !($value instanceOf HabariDateTime) && ! is_null( $value ) ) {
+				$value = HabariDateTime::date_create($value);
+			}
+			break;
 		}
 		return parent::__set( $name, $value );
 	}

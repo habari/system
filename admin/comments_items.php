@@ -12,8 +12,8 @@
 			<?php endif; ?>
 		</span>
 		<span class="title pct40"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php printf( _t('Go to %s'), $comment->post->title ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
-	    <span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => date( 'Y', strtotime( $comment->date ) ), 'month' => date( 'm', strtotime( $comment->date ) ) ) ); ?>" class="edit-date" title="<?php _e('Search for other comments from '.date('M, Y', strtotime($comment->date))) ?>"><?php echo date('M d, Y', strtotime($comment->date));?></a></span>
-	    <span class="time pct10 dim"><?php _e('at'); ?> <span class="edit-time"><?php echo date('H:i', strtotime($comment->date));?></span></span>
+	    <span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => $comment->date->year, 'month' => $comment->date->mon )); ?>" class="edit-date" title="<?php _e('Search for other comments from '. $comment->date->format('M, Y')) ?>"><?php $comment->date->out('M d, Y');?></a></span>
+	    <span class="time pct10 dim"><?php _e('at'); ?> <span class="edit-time"><?php $comment->date->out('H:i');?></span></span>
 
 		<ul class="dropbutton">
 		<?php if ( $comment->status != Comment::STATUS_APPROVED ) : ?>
@@ -29,7 +29,7 @@
 			<li class="submit nodisplay"><a href="#" onclick="inEdit.update(); return false;" title="<?php _e('Submit changes') ?>"><?php _e('Update'); ?></a></li>
 			<li class="cancel nodisplay" class="nodisplay"><a href="#" onclick="inEdit.deactivate(); return false;" title="<?php _e('Cancel changes') ?>"><?php _e('Cancel'); ?></a></li>
 			<?php $theme->admin_comment_actions($comment); ?>
-			<li><a href="#"><?php _e('Edit'); ?></a></li>
+			<li><a href="<?php echo URL::get('admin', 'page=comment&id=' . $comment->id); ?>"><?php _e('Edit'); ?></a></li>
 		</ul>
 	</div>
 

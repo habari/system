@@ -10,7 +10,7 @@
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 					<div class="entry">
-					<?php echo $post->pubdate_out; ?> -	<?php echo $post->content_excerpt; ?>
+					<?php echo $post->pubdate->out('F j, Y'); ?> -	<?php echo $post->content_excerpt; ?>
 					</div>
 					<div class="entryMeta">
 						
