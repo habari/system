@@ -7,7 +7,7 @@
 class HabariDateTime extends DateTime
 {
 	private static $default_timezone;
-	private static $default_datetime_format = '%c';
+	private static $default_datetime_format = 'c';
 	
 	/**
 	 * Set default timezone to system default on init.
