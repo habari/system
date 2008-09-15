@@ -4,11 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="en"/>
     <meta name="robots" content="noindex,nofollow" />
-    <link href="system/installer/style.css" rel="stylesheet" type="text/css" />
+    <link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.js"></script>
     
-	  <title><?php _e('Install Habari'); ?></title>
-		<script type="text/javascript" src="/scripts/jquery.js"></script>
-		<script type="text/javascript" src="/scripts/jquery.form.js"></script>
+	<title><?php _e('Install Habari'); ?></title>
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
@@ -19,10 +18,12 @@
 		
   </head>
   <body id="installer">
+  <?php include "locale_dropdown.php"; ?>
 
 <div id="wrapper">
 
-<form action="" method="get">
+<form action="" method="post">
+<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
 
 <div id="masthead">
 	<h1>Habari</h1>
