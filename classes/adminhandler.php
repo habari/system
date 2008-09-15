@@ -403,7 +403,7 @@ class AdminHandler extends ActionHandler
 			$post->content_type= $form->content_type->value;
 			if ( ( $post->status != Post::status( 'published' ) ) 
 				&& ( $form->status->value == Post::status( 'published' ) )
-				&& ( HabariDateTime::date_create( $form->pubdate->value ) <= HabariDateTime::date_create() ) 
+				&& ( HabariDateTime::date_create( $form->pubdate->value )->int <= HabariDateTime::date_create()->int ) 
 				) {
 				$post->pubdate = HabariDateTime::date_create();
 			}
@@ -428,7 +428,7 @@ class AdminHandler extends ActionHandler
 			$post= Post::create( $postdata );
 		}
 
-		if( $post->pubdate > HabariDateTime::date_create() && $post->status == Post::status( 'published' ) ) {
+		if( $post->pubdate->int > HabariDateTime::date_create()->int && $post->status == Post::status( 'published' ) ) {
 			$post->status = Post::status( 'scheduled' );
 		}
 
