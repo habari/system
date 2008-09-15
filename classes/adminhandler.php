@@ -401,11 +401,14 @@ class AdminHandler extends ActionHandler
 
 			$post->content= $form->content->value;
 			$post->content_type= $form->content_type->value;
-			if ( ( $post->status != Post::status( 'published' ) ) && ( $form->status->value == Post::status( 'published' ) ) ) {
-				$post->pubdate= HabariDateTime::date_create();
+			if ( ( $post->status != Post::status( 'published' ) ) 
+				&& ( $form->status->value == Post::status( 'published' ) )
+				&& ( HabariDateTime::date_create( $form->pubdate->value ) <= HabariDateTime::date_create() ) 
+				) {
+				$post->pubdate = HabariDateTime::date_create();
 			}
 			else {
-				$post->pubdate= HabariDateTime::date_create($form->pubdate->value);
+				$post->pubdate = HabariDateTime::date_create($form->pubdate->value);
 			}
 
 			$post->status= $form->status->value;
@@ -425,9 +428,10 @@ class AdminHandler extends ActionHandler
 			$post= Post::create( $postdata );
 		}
 
-		if( HabariDateTime::date_create($form->pubdate->value) > HabariDateTime::date_create() && $form->status->value == Post::status('published') ) {
+		if( $post->pubdate > HabariDateTime::date_create() && $post->status == Post::status( 'published' ) ) {
 			$post->status = Post::status( 'scheduled' );
 		}
+
 		$post->info->comments_disabled= !$form->comments_enabled->value;
 
 		Plugins::act('publish_post', $post, $form);
