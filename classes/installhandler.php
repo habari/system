@@ -18,6 +18,21 @@ class InstallHandler extends ActionHandler {
 
 		// Create a new theme to handle the display of the installer
 		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
+		
+		/**
+		 * Set user selected Locale or default
+		 */
+		$this->theme->locales = Locale::list_all();
+		if ( isset($_POST['locale']) && $_POST['locale'] != null ) {
+			Locale::set($_POST['locale']);
+			$this->theme->locale = $_POST['locale'];
+			$this->handler_vars['locale'] = $_POST['locale'];
+		}
+		else {
+			Locale::set( 'en-us' );
+			$this->theme->locale = 'en-us';
+			$this->handler_vars['locale'] = 'en_us';
+		}
 
 		/*
 		 * Check .htaccess first because ajax doesn't work without it.
@@ -536,6 +551,7 @@ class InstallHandler extends ActionHandler {
 		Options::set( 'theme_name', 'k2' );
 		Options::set( 'theme_dir' , 'k2' );
 		Options::set( 'comments_require_id', 1 );
+		Options::set( 'locale', $this->handler_vars['locale'] );
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
