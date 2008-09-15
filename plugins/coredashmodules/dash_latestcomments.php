@@ -11,7 +11,7 @@
 					$comment_count++;
 					$opa = 'opa' . (100 - $comment_count * 15);
 				?>
-				<li><a href="<?php echo $comment->post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="<?php printf(_t('Posted at %1$s'), date('g:m a \o\n F jS, Y', strtotime($comment->date))); ?>" class="<?php echo $opa; ?>"><?php echo $comment->name; ?></a></li>
+				<li><a href="<?php echo $comment->post->permalink; ?>#comment-<?php echo $comment->id; ?>" title="<?php printf(_t('Posted at %1$s'), $comment->date->get( 'g:m a \o\n F jS, Y' ) ); ?>" class="<?php echo $opa; ?>"><?php echo $comment->name; ?></a></li>
 				<?php endforeach; ?>
 			</ul>
 		</li>
