@@ -389,29 +389,31 @@ class AdminHandler extends ActionHandler
 	{
 		extract( $this->handler_vars );
 
-		$form = $this->form_publish( new Post() );
+		$form = $this->form_publish( new Post(), false );
 
+		// check to see if we are updating or creating a new post
 		if ( $form->slug->value != '' ) {
-			$post= Post::get( array( 'slug' => $form->slug->value, 'status' => Post::status( 'any' ) ) );
-			$post->title= $form->title->value;
-			if ( ( $form->newslug->value != '' ) && ( $form->newslug->value != $form->slug->value ) ) {
-				$post->slug= $form->newslug->value;
+			$post = Post::get( array( 'slug' => $form->slug->value, 'status' => Post::status( 'any' ) ) );
+			$post->title = $form->title->value;
+			if ( $form->newslug->value == '' ) {
+				Session::notice( _e('A post slug cannot be empty. Keeping old slug.') );
 			}
-			$post->tags= $form->tags->value;
+			elseif ( $form->newslug->value != $form->slug->value ) {
+				$post->slug = $form->newslug->value;
+			}
+			$post->tags = $form->tags->value;
 
-			$post->content= $form->content->value;
-			$post->content_type= $form->content_type->value;
+			$post->content = $form->content->value;
+			$post->content_type = $form->content_type->value;
+			// if not previously published and the user wants to publish now, update the pubdate
 			if ( ( $post->status != Post::status( 'published' ) ) 
 				&& ( $form->status->value == Post::status( 'published' ) )
 				&& ( HabariDateTime::date_create( $form->pubdate->value )->int <= HabariDateTime::date_create()->int ) 
 				) {
 				$post->pubdate = HabariDateTime::date_create();
 			}
-			else {
-				$post->pubdate = HabariDateTime::date_create($form->pubdate->value);
-			}
 
-			$post->status= $form->status->value;
+			$post->status = $form->status->value;
 		}
 		else {
 			$postdata= array(
@@ -425,25 +427,19 @@ class AdminHandler extends ActionHandler
 				'content_type' => $form->content_type->value,
 			);
 
-			$post= Post::create( $postdata );
+			$post = Post::create( $postdata );
 		}
 
 		if( $post->pubdate->int > HabariDateTime::date_create()->int && $post->status == Post::status( 'published' ) ) {
 			$post->status = Post::status( 'scheduled' );
 		}
 
-		$post->info->comments_disabled= !$form->comments_enabled->value;
+		$post->info->comments_disabled = !$form->comments_enabled->value;
 
 		Plugins::act('publish_post', $post, $form);
 
-		if ( isset( $post->minor_edit ) ):
-			$post->update( $form->minor_edit->value );
-		else:
-			$post->update( false );
-		endif;
-		
-		
-		
+		$post->update( $form->minor_edit->value );
+
 		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, $post->title), Post::status_name( $post->status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
 	}
@@ -468,14 +464,14 @@ class AdminHandler extends ActionHandler
 		$statuses= Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
 
-		$this->theme->form = $this->form_publish($post);
+		$this->theme->form = $this->form_publish($post, $this->theme->newpost );
 
 		$this->theme->wsse= Utils::WSSE();
 
 		$this->display( $template );
 	}
 
-	function form_publish($post)
+	function form_publish($post, $newpost = true)
 	{
 		$form = new FormUI('create-content');
 		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
@@ -542,8 +538,13 @@ class AdminHandler extends ActionHandler
 
 		$settings->append('select', 'status', 'null:null', _t('Content State'), array_flip($statuses), 'tabcontrol_select');
 		$settings->status->value = $post->status;
-				
-		if ( $post->status == Post::status( 'published' ) ) {
+
+		if ( $newpost ) {
+			// hide the field
+			$settings->append('hidden', 'minor_edit', 'null:null');
+			$settings->minor_edit->value = false;
+		}
+		else {
 			$settings->append('checkbox', 'minor_edit', 'null:null', _t('Minor Edit'), 'tabcontrol_checkbox');
 			$settings->minor_edit->value = true;
 		}
