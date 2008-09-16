@@ -573,7 +573,7 @@ class AtomHandler extends ActionHandler
 	{
 		$params = array();
 
-		$this->is_auth();
+		$this->is_auth(TRUE);
 
 		$params['slug']= $slug;
 		$params['status'] = Post::status('published');
