@@ -441,6 +441,7 @@ class Theme extends Pluggable
 		if ( $d ) {
 			$paramarray['fallback'][]= 'day';
 		}
+		$paramarray['fallback'][]= 'date';
 		$paramarray['fallback'][]= 'multiple';
 		$paramarray['fallback'][]= 'home';
 
