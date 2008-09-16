@@ -79,7 +79,7 @@ class RewriteRules extends ArrayObject {
 
 		if(!isset($system_rules)) {
 			$sql= "
-				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority
+				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority, rr.parameters
 				FROM " . DB::table( 'rewrite_rules' ) . " AS rr
 				WHERE rr.is_active= 1
 				ORDER BY rr.priority";
@@ -132,8 +132,8 @@ class RewriteRules extends ArrayObject {
 	 **/
 	public static function by_name( $name )
 	{
-		static $named= null; 
-	
+		static $named= null;
+
 		if( $named == null ) {
 			$named= array();
 			$rules= self::get_active();
