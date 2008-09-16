@@ -291,7 +291,7 @@ class AdminHandler extends ActionHandler
 	public function get_dashboard()
 	{
 		// Not sure how best to determine this yet, maybe set an option on install, maybe do this:
-		$firstpostdate= strtotime(DB::get_value('SELECT min(pubdate) FROM {posts} WHERE status = ?', array(Post::status('published'))));
+		$firstpostdate= DB::get_value('SELECT min(pubdate) FROM {posts} WHERE status = ?', array(Post::status('published')));
 		if ( intval( $firstpostdate ) !== 0 ) $firstpostdate= time() - $firstpostdate;
 		$this->theme->active_time= array(
 			'years' => floor($firstpostdate / 31556736),
