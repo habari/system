@@ -233,7 +233,9 @@ class AdminHandler extends ActionHandler
 				'helptext' => '',
 				),
 			);*/
-
+		
+		$option_items = Plugins::filter( 'admin_option_items', $option_items );
+		
 		$form = new FormUI('Admin Options');
 
 		foreach ( $option_items as $name => $option_fields ) {
