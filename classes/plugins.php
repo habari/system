@@ -264,11 +264,15 @@ class Plugins
 	/**
 	 * function class_from_filename
 	 * returns the class name from a plugin's filename
-	 * @param string the full path to a plugin file
+	 * @param string $file the full path to a plugin file
+	 * @param bool $check_realpath whether or not to try realpath resolution
 	 * @return string the class name
 	**/
-	public static function class_from_filename( $file )
+	public static function class_from_filename( $file, $check_realpath = false )
 	{
+		if ( $check_realpath ) {
+			$file = realpath( $file );
+		}
 		if ( ! self::$plugin_classes ) {
 			self::get_plugin_classes();
 		}
@@ -279,7 +283,13 @@ class Plugins
 				return $plugin;
 			}
 		}
-		return false;
+		// if we haven't found the plugin class, try again with realpath resolution:
+		if ($check_realpath) {
+			// really can't find it
+			return false;
+		} else {
+			return self::class_from_filename( $file, true );
+		}
 	}
 	
 	public static function get_plugin_classes()
