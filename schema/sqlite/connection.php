@@ -133,7 +133,7 @@ class SQLiteConnection extends DatabaseConnection
 		if ( $execute ) {
 			foreach ( $allqueries as $query ) {
 				if ( !$this->query( $query ) ) {
-					$this->get_error( true );
+					$this->get_errors();
 					return false;
 				}
 			}
