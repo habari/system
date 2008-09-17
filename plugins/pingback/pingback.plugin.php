@@ -171,8 +171,36 @@ class Pingback extends Plugin
 			if ( !preg_match( '%.{0,100}?<a[^>]*?href\\s*=\\s*("|\'|)' . $target_uri . '\\1[^>]*?'.'>(.+?)</a>.{0,100}%s', $source_contents_filtered, $source_excerpt ) ) {
 				throw new XMLRPCException( 17 );
 			}
-
+			
+			/** Sanitize Data */
 			$source_excerpt= '...' . InputFilter::filter( $source_excerpt[0] ) . '...';
+			$source_title = InputFilter::filter($source_title);
+			$source_uri = InputFilter::filter($source_uri);
+			
+			/* Sanitize the URL */
+			if (!empty($source_uri)) {
+				$parsed = InputFilter::parse_url( $source_uri );
+				if ( $parsed['is_relative'] ) {
+					// guess if they meant to use an absolute link
+					$parsed = InputFilter::parse_url( 'http://' . $source_uri );
+					if ( ! $parsed['is_error'] ) {
+						$source_uri = InputFilter::glue_url( $parsed );
+					}
+					else {
+						// disallow relative URLs
+						$source_uri = '';
+					}
+				}
+				if ( $parsed['is_pseudo'] || ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) ) {
+					// allow only http(s) URLs
+					$source_uri = '';
+				}
+				else {
+					// reconstruct the URL from the error-tolerant parsing
+					// http:moeffju.net/blog/ -> http://moeffju.net/blog/
+					$source_uri = InputFilter::glue_url( $parsed );
+				}
+			}
 
 			// Add a new pingback comment
 			$pingback= new Comment( array(
