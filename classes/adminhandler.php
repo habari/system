@@ -407,12 +407,19 @@ class AdminHandler extends ActionHandler
 
 			$post->content = $form->content->value;
 			$post->content_type = $form->content_type->value;
-			// if not previously published and the user wants to publish now, update the pubdate
+			// if not previously published and the user wants to publish now, change the pubdate to the current date/time
+			// if the post pubdate is <= the current date/time.
 			if ( ( $post->status != Post::status( 'published' ) ) 
 				&& ( $form->status->value == Post::status( 'published' ) )
 				&& ( HabariDateTime::date_create( $form->pubdate->value )->int <= HabariDateTime::date_create()->int ) 
 				) {
 				$post->pubdate = HabariDateTime::date_create();
+			}
+			// else let the user change the publication date.
+			//  If previously published and the new date is in the future, the post will be unpublished and scheduled. Any other status, and the post will just get the new pubdate.
+			// This will result in the post being scheduled for future publication if the date/time is in the future and the new status is published.
+			else {
+				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
 			}
 
 			$post->status = $form->status->value;
