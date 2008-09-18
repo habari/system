@@ -67,6 +67,12 @@ class SpamChecker extends Plugin
 			$spamcheck[] = _t('Comments that are only numeric are spammy.');
 		}
 
+		// is the content whitespaces only?
+		if ( preg_match( "/\A\s+\z/", $textonly ) ) {
+			$comment->status = Comment::STATUS_SPAM;
+			$spamcheck[] = _t('Comments that are only whitespace characters are spammy.');
+		}
+
 		// is the content the single word "array"?
 		if ( 'array' == strtolower( $textonly ) ) {
 			$comment->status = Comment::STATUS_SPAM;
