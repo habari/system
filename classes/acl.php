@@ -326,6 +326,13 @@ SQL;
 		if ( isset( $result ) && self::access_check( $result, $access ) ) {
 			return true;
 		}
+		/**
+		 * Do we allow perms that don't exist?
+		 * When ACL is functional ACCESS_NONEXISTANT_PERMISSION should be false by default.
+		 */
+		elseif ( empty($result) && self::ACCESS_NONEXISTANT_PERMISSION ) {
+			return true;
+		}
 
 		// either the permission hasn't been granted, or it's been
 		// explicitly denied.
