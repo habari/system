@@ -12,7 +12,7 @@
         <span class="chronodata"><abbr class="published"><?php $post->pubdate->out('F j, Y g:ia'); ?></abbr></span><?php if ( $show_author ) { ?> <?php _e('by'); ?> <?php echo $post->author->displayname; ?> <?php } ?>
         <span class="commentslink"><a href="<?php echo $post->permalink; ?>#comments" title="<?php _e('Comments to this post'); ?>"><?php echo $post->comments->approved->count; ?>
 		<?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></span>
-<?php if ( $user ) { ?>
+<?php if ( $user instanceof User ) { ?>
         <span class="entry-edit"><a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
 <?php } ?>
 <?php if ( is_array( $post->tags ) ) { ?>

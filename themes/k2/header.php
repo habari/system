@@ -32,7 +32,7 @@ foreach ( $pages as $tab ) {
 	class="current_page_item"<?php } ?>><a href="<?php echo $tab->permalink; ?>" title="<?php echo $tab->title; ?>"><?php echo $tab->title; ?></a></li>
 <?php
 }
-if ( $user ) { ?>
+if ( $user instanceof User ) { ?>
     <li class="admintab"><a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e('Admin area'); ?>"><?php _e('Admin'); ?></a></li>
 <?php } ?>
    </ul>
