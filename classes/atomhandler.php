@@ -575,7 +575,7 @@ class AtomHandler extends ActionHandler
 		*/
 	public function delete_entry( $slug )
 	{
-		$params = array();
+		$params = array(TRUE);
 
 		$this->is_auth();
 
