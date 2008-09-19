@@ -7,7 +7,7 @@
  */
 class Options extends Singleton
 {
-	private $options= null;
+	private $options = null;
 
 	/**
 	 * Enables singleton working properly
@@ -35,7 +35,7 @@ class Options extends Singleton
 	public static function get( $name )
 	{
 		if ( func_num_args() > 1 ) {
-			$name= func_get_args();
+			$name = func_get_args();
 		}
 		if ( is_array( $name ) ) {
 			return array_intersect_key( self::instance()->options, array_flip( $name ) );
@@ -85,9 +85,9 @@ class Options extends Singleton
 	 * @param string $name Name of the option to set
 	 * @param mixed $value New value of the option to store
 	 **/
-	public static function set( $name, $value= '' )
+	public static function set( $name, $value = '' )
 	{
-		self::instance()->$name= $value;
+		self::instance()->$name = $value;
 	}
 
 
@@ -111,8 +111,8 @@ class Options extends Singleton
 		if ( ! isset( $this->options ) ) {
 			$this->get_all_options();
 		}
-		$option_value= isset($this->options[$name]) ? $this->options[$name] : null;
-		$option_value= Plugins::filter('option_get_value', $option_value, $name);
+		$option_value = isset($this->options[$name]) ? $this->options[$name] : null;
+		$option_value = Plugins::filter('option_get_value', $option_value, $name);
 		return $option_value;
 	}
 
@@ -122,11 +122,11 @@ class Options extends Singleton
 	public function get_all_options()
 	{
 		// Set some defaults here
-		$this->options= array(
+		$this->options = array(
 			'pagination' => 10,
 			'comments_require_id' => false,
 		);
-		$results= DB::get_results( 'SELECT name, value, type FROM ' . DB::table( 'options' ), array(), 'QueryRecord' );
+		$results = DB::get_results( 'SELECT name, value, type FROM ' . DB::table( 'options' ), array(), 'QueryRecord' );
 		foreach($results as $result) {
 			if ( $result->type == 1 ) {
 				$this->options[$result->name]= unserialize( $result->value );
@@ -151,10 +151,10 @@ class Options extends Singleton
 		$this->options[$name]= $value;
 
 		if ( is_array( $value ) || is_object( $value ) ) {
-			$result= DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => serialize( $value ), 'type' => 1 ), array( 'name' => $name ) );
+			$result = DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => serialize( $value ), 'type' => 1 ), array( 'name' => $name ) );
 		}
 		else {
-			$result= DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => $value, 'type' => 0 ), array( 'name' => $name ) );
+			$result = DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => $value, 'type' => 0 ), array( 'name' => $name ) );
 		}
 		if ( Error::is_error( $result ) ) {
 			$result->out();

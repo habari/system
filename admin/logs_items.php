@@ -4,7 +4,7 @@
 		<span class="time pct15 minor"><span><?php $log->timestamp->out( "M j, Y" ); ?> &middot; <?php $log->timestamp->out( "H:i" ); ?></span></span>
 		<span class="user pct15 minor"><span>
 			<?php if ( $log->user_id ) { 
-				if ( $user= User::get_by_id( $log->user_id ) ) {
+				if ( $user = User::get_by_id( $log->user_id ) ) {
 					 echo $user->displayname;
 				} else {
 					echo $log->user_id;

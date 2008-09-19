@@ -7,10 +7,10 @@
  * @package Habari
  */
 class Controller extends Singleton {
-	public $base_url= '';        // base url for site
-	private $stub= '';            // stub supplied by rewriter
-	private $action= '';          // action name (string)
-	private $handler= null;       // the action handler object
+	public $base_url = '';        // base url for site
+	private $stub = '';            // stub supplied by rewriter
+	private $action = '';          // action name (string)
+	private $handler = null;       // the action handler object
 
 	/**
 	 * Enables singleton working properly
@@ -93,13 +93,13 @@ class Controller extends Singleton {
 	 */
 	public static function parse_request() {
 		/* Local scope variable caching */
-		$controller= Controller::instance();
+		$controller = Controller::instance();
 
 		/* Grab the base URL from the Site class */
-		$controller->base_url= Site::get_path('base', true);
+		$controller->base_url = Site::get_path('base', true);
 
 		/* Start with the entire URL coming from web server... */
-		$start_url= ( isset($_SERVER['REQUEST_URI'])
+		$start_url = ( isset($_SERVER['REQUEST_URI'])
 					? $_SERVER['REQUEST_URI']
 					: $_SERVER['SCRIPT_NAME'] .
 						( isset($_SERVER['PATH_INFO'])
@@ -112,11 +112,11 @@ class Controller extends Singleton {
 		/* Strip out the base URL from the requested URL */
 		/* but only if the base URL isn't / */
 		if ( '/' != $controller->base_url) {
-			$start_url= str_replace($controller->base_url, '', $start_url);
+			$start_url = str_replace($controller->base_url, '', $start_url);
 		}
 
 		/* Trim off any leading or trailing slashes */
-		$start_url= trim($start_url, '/');
+		$start_url = trim($start_url, '/');
 
 		/* Remove the querystring from the URL */
 		if ( strpos($start_url, '?') !== FALSE ) {
@@ -132,20 +132,20 @@ class Controller extends Singleton {
 		Utils::revert_magic_quotes_gpc();
 
 		/* Allow plugins to rewrite the stub before it's passed through the rules */
-		$start_url= Plugins::filter('rewrite_request', $start_url);
+		$start_url = Plugins::filter('rewrite_request', $start_url);
 
-		$controller->stub= $start_url;
+		$controller->stub = $start_url;
 
 		/* Grab the URL filtering rules from DB */
-		$matched_rule= URL::parse($controller->stub);
+		$matched_rule = URL::parse($controller->stub);
 
 		if ($matched_rule === FALSE) {
 			$matched_rule = URL::set_404();
 		}
 
 		/* OK, we have a matching rule.  Set the action and create a handler */
-		$controller->action= $matched_rule->action;
-		$controller->handler= new $matched_rule->handler();
+		$controller->action = $matched_rule->action;
+		$controller->handler = new $matched_rule->handler();
 		/* Insert the regexed submatches as the named parameters */
 		$controller->handler->handler_vars['entire_match']= $matched_rule->entire_match; // The entire matched string is returned at index 0
 		foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value) {
@@ -153,7 +153,7 @@ class Controller extends Singleton {
 		}
 
 		/* Also, we musn't forget to add the GET and POST vars into the action's settings array */
-		$controller->handler->handler_vars= array_merge($controller->handler->handler_vars, $_GET, $_POST);
+		$controller->handler->handler_vars = array_merge($controller->handler->handler_vars, $_GET, $_POST);
 		return true;
 	}
 

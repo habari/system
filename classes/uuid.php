@@ -7,7 +7,7 @@
  */
 class UUID
 {
-	private $uuid= array();
+	private $uuid = array();
 	
 	/**
 	 * Create a UUID (Universally Unique IDentifier) as per RfC 4122.
@@ -17,10 +17,10 @@ class UUID
 	 * 
 	 * @param int $version UUID version to generate (currently, only version 4 is supported)
 	 */
-	public function __construct( $version= 4 )
+	public function __construct( $version = 4 )
 	{
-		$uuid= array();
-		for ( $i= 0; $i < 16; $i++ ) {
+		$uuid = array();
+		for ( $i = 0; $i < 16; $i++ ) {
 			$uuid[]= mt_rand( 0, 255 );
 		}
 		// variant (bit 6 = 1, bit 7 = 0)
@@ -32,7 +32,7 @@ class UUID
 		// version (bits 12-15 = 0100)
 		$uuid[6]= ( $uuid[6] & 0x0f ) | 0x40;
 		
-		$this->uuid= $uuid;
+		$this->uuid = $uuid;
 	}
 	
 	/**
@@ -64,8 +64,8 @@ class UUID
 	 */
 	public function get_hex()
 	{
-		$uuid_hex= '';
-		for ( $i= 0; $i < 16; $i++ ) {
+		$uuid_hex = '';
+		for ( $i = 0; $i < 16; $i++ ) {
 			if ( 4==$i || 6==$i || 8==$i || 10==$i ) {
 				$uuid_hex.= '-';
 			}
@@ -82,7 +82,7 @@ class UUID
 	 */
 	public static function get()
 	{
-		$uuid= new UUID();
+		$uuid = new UUID();
 		return $uuid->get_hex();
 	}
 	

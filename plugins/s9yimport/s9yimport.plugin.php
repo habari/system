@@ -11,17 +11,17 @@ define( 'S9Y_CONFIG_FILENAME', 'serendipity_config.inc.php');
  */
 class S9YImport extends Plugin implements Importer
 {
-	private $supported_importers= array();
+	private $supported_importers = array();
 	/** A string that is displayed on trigger of a warning */
-	private $warning= null;
+	private $warning = null;
 	/** HTML ID of the element to run AJAX import actions -- CURRENTLY NOT USED -- */
-	private $ajax_html_id= 'import_progress';
+	private $ajax_html_id = 'import_progress';
 	/** Connection to the s9y database to use during import */
-	private $s9ydb= null;
+	private $s9ydb = null;
 	/** The table prefix for the s9y tables (only used in the private import_xxx() functions */
-	private $s9y_db_prefix= 's9y_';
+	private $s9y_db_prefix = 's9y_';
 	/** Cache for imported categories uses as a map from s9y to habari during import. */
-	private $imported_categories= array();
+	private $imported_categories = array();
 
 	/**
 	 * Cache for imported category names
@@ -39,7 +39,7 @@ class S9YImport extends Plugin implements Importer
 	 **/
 	public function action_init()
 	{
-		$this->supported_importers= array( _t( 'Serendipity Database' ) );
+		$this->supported_importers = array( _t( 'Serendipity Database' ) );
 	}
 
 	/**
@@ -88,9 +88,9 @@ class S9YImport extends Plugin implements Importer
 			return $stageoutput;
 
 		if ( isset( $_POST ) )
-			$stage= (int) $stage + 1; /* Note that we do the error checking in the stageX() methods, not here... */
+			$stage = (int) $stage + 1; /* Note that we do the error checking in the stageX() methods, not here... */
 
-		$stage_method= 'stage' . $stage;
+		$stage_method = 'stage' . $stage;
 		if ( method_exists( $this, $stage_method ) )
 			return $this->$stage_method();
 
@@ -109,7 +109,7 @@ class S9YImport extends Plugin implements Importer
 	 */
 	private function stage1()
 	{
-		$valid_fields= array(
+		$valid_fields = array(
 			'db_name'
 			, 'db_host'
 			, 'db_port'
@@ -123,9 +123,9 @@ class S9YImport extends Plugin implements Importer
 			, 'comments_ignore_unapproved'
 			, 'rewrites_import'
 		);
-		$inputs= $this->get_valid_inputs( $valid_fields );
+		$inputs = $this->get_valid_inputs( $valid_fields );
 
-		$default_values= array(
+		$default_values = array(
 			'db_name' => ''
 			, 'db_host' => 'localhost'
 			, 'db_port' => null
@@ -139,15 +139,15 @@ class S9YImport extends Plugin implements Importer
 			, 's9y_root_web' => ''
 			, 's9y_input_version' =>''
 		 ) ;
-		$inputs= array_merge( $default_values, $inputs );
+		$inputs = array_merge( $default_values, $inputs );
 
 		extract( $inputs );
 
-		$warning= '';
+		$warning = '';
 		if( ! empty( $this->warning ) )
-			$warning= $this->get_warning_html( $this->warning );
+			$warning = $this->get_warning_html( $this->warning );
 
-		$output=<<<WP_IMPORT_STAGE1
+		$output =<<<WP_IMPORT_STAGE1
 			<h3>Habari will attempt to import from a Serendipity Database.</h3>
 			{$warning}
 			<p>
@@ -197,7 +197,7 @@ WP_IMPORT_STAGE1;
 	 */
 	private function stage2()
 	{
-		$valid_fields= array(
+		$valid_fields = array(
 			'db_name'
 			, 'db_host'
 			, 'db_port'
@@ -211,17 +211,17 @@ WP_IMPORT_STAGE1;
 			, 'comments_ignore_unapproved'
 			, 'rewrites_import'
 		);
-		$inputs= $this->get_valid_inputs( $valid_fields );
+		$inputs = $this->get_valid_inputs( $valid_fields );
 
 		extract( $inputs );
 
 		/* Verify required and expected values from input */
 		if ( isset( $comments_ignore_unapproved) )
-			$comments_ignore_unapproved= 1;
+			$comments_ignore_unapproved = 1;
 		if ( isset( $category_import ) )
-			$category_import= 1;
+			$category_import = 1;
 		if ( isset( $rewrites_import ) )
-			$rewrites_import= 1;
+			$rewrites_import = 1;
 
 		if ( empty( $s9y_input_version )
 			&& empty( $s9y_root_web ) ) {
@@ -229,27 +229,27 @@ WP_IMPORT_STAGE1;
 				 * We need either the version or the config file 
 				 * location to determine version of DB 
 				 */
-			$this->warning= 'Please enter either a location to find the s9y configuration file (root web directory for s9y) OR the version of s9y to import';
+			$this->warning = 'Please enter either a location to find the s9y configuration file (root web directory for s9y) OR the version of s9y to import';
 			return $this->stage1();
 		}
 
 		if ( empty( $db_host ) ) {
-			$this->warning= 'Please enter a value for the database host.';
+			$this->warning = 'Please enter a value for the database host.';
 			return $this->stage1();
 		}
 
 		if ( empty( $db_name ) ) {
-			$this->warning= 'Please enter a name for the database to import.';
+			$this->warning = 'Please enter a name for the database to import.';
 			return $this->stage1();
 		}
 
 		if ( empty( $db_user ) ) {
-			$this->warning= 'Please enter a database username.';
+			$this->warning = 'Please enter a database username.';
 			return $this->stage1();
 		}
 
-		if ( FALSE == ($s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port ) ) ) {
-			$this->warning= 'A connection to the specified database could not be created.  Please check the values you provided.';
+		if ( FALSE == ($s9ydb = $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port ) ) ) {
+			$this->warning = 'A connection to the specified database could not be created.  Please check the values you provided.';
 			return $this->stage1();
 		}
 
@@ -257,11 +257,11 @@ WP_IMPORT_STAGE1;
 		 * OK, now calculate some information about the imported data that
 		 * we can show to the user in the confirmation screen
 		 */
-		$num_imported_posts= $s9ydb->get_value( "SELECT COUNT(*) FROM `{$db_prefix}entries`" );
-		$comment_where= '';
+		$num_imported_posts = $s9ydb->get_value( "SELECT COUNT(*) FROM `{$db_prefix}entries`" );
+		$comment_where = '';
 		if ( $comments_ignore_unapproved == 1 )
-			$comment_where= "WHERE status = 'Approved' ";
-		$num_imported_comments= $s9ydb->get_value( "SELECT COUNT(*) FROM `{$db_prefix}comments`" . $comment_where);
+			$comment_where = "WHERE status = 'Approved' ";
+		$num_imported_comments = $s9ydb->get_value( "SELECT COUNT(*) FROM `{$db_prefix}comments`" . $comment_where);
 
 		/* 
 		 * Users are important during import.  We want to show the importer that
@@ -270,7 +270,7 @@ WP_IMPORT_STAGE1;
 		 * step, let's try to map an incoming (imported) author to an existing Habari
 		 * user...
 		 */
-		$user_sql=<<<ENDOFSQL
+		$user_sql =<<<ENDOFSQL
 SELECT e.authorid, e.author, a.realname, a.username, a.email,COUNT(*) as num_posts 
 FROM `{$db_prefix}entries` e 
 INNER JOIN `{$db_prefix}authors` a 
@@ -278,15 +278,15 @@ ON e.authorid = a.authorid
 GROUP BY e.authorid, e.author
 ENDOFSQL;
 
-		$imported_users= $s9ydb->get_results( $user_sql );
-		$num_imported_users= count( $imported_users );
+		$imported_users = $s9ydb->get_results( $user_sql );
+		$num_imported_users = count( $imported_users );
 		
 		/* Grab the categories from s9y to use as tags in Habari */
-		$num_imported_tags= 0;
+		$num_imported_tags = 0;
 		if ( $category_import == 1 )
-			$num_imported_tags= $s9ydb->get_value( "SELECT COUNT(*) FROM `{$db_prefix}category`" );
+			$num_imported_tags = $s9ydb->get_value( "SELECT COUNT(*) FROM `{$db_prefix}category`" );
 
-		$output=<<<WP_IMPORT_STAGE2
+		$output =<<<WP_IMPORT_STAGE2
 			<h3>To be imported</h3>
 			<p>
 			We have identified information that will be imported into Habari.  Please review
@@ -305,26 +305,26 @@ WP_IMPORT_STAGE2;
 				$output.= "<tr><td><input type='checkbox' name='import_user[{$user->authorid}]' value='1' checked='true' /></td>" .
 					"<td>{$user->realname}</td><td>{$user->email}</td><td>{$user->num_posts}</td><td>&nbsp;";
 
-				$user_table_name= DB::table('users');
-				$match_sql=<<<ENDOFSQL
+				$user_table_name = DB::table('users');
+				$match_sql =<<<ENDOFSQL
 SELECT id, username, email
 FROM {$user_table_name}
 WHERE email = ? OR username = ?
 ENDOFSQL;
-				$match_params= array( $user->email, $user->username );
-				$habari_matched_users= DB::get_results( $match_sql, $match_params, 'User' );
+				$match_params = array( $user->email, $user->username );
+				$habari_matched_users = DB::get_results( $match_sql, $match_params, 'User' );
 				if ( count( $habari_matched_users ) > 0 ) {
 					$output.= "<strong>Match found for habari user:</strong>&nbsp;";
-					$matched_user= $habari_matched_users[0]; /* Just take the first match... */
+					$matched_user = $habari_matched_users[0]; /* Just take the first match... */
 					$output.= $matched_user->username . "<input type=\"hidden\" name=\"merge_user_matched[{$user->authorid}]\" value=\"{$matched_user->id}\" />";
 				}
 				else {
 					/* No matches.  Allow importer to select a merged user account */
-					$all_habari_users= Users::get_all();
+					$all_habari_users = Users::get_all();
 					if ( isset( $all_habari_user_select ) )
 						$output.= $all_habari_user_select;
 					else {
-						$all_habari_user_select= "<select name='merge_user[{$user->authorid}]'>";
+						$all_habari_user_select = "<select name='merge_user[{$user->authorid}]'>";
 						$all_habari_user_select.= "<option value='__new_user' selected='true'>Create a new user</option>";
 						foreach ( $all_habari_users as $habari_user )
 							$all_habari_user_select.= "<option value='{$habari_user->id}'>Merge with {$habari_user->username}</option>";
@@ -374,7 +374,7 @@ WP_IMPORT_STAGE2;
 	 */
 	private function stage3()
 	{
-		$valid_fields= array(
+		$valid_fields = array(
 			'db_name'
 			, 'db_host'
 			, 'db_port'
@@ -391,7 +391,7 @@ WP_IMPORT_STAGE2;
 			, 'merge_user_matched'
 			, 'import_user'
 		);
-		$inputs= $this->get_valid_inputs( $valid_fields );
+		$inputs = $this->get_valid_inputs( $valid_fields );
 
 		extract( $inputs );
 
@@ -399,10 +399,10 @@ WP_IMPORT_STAGE2;
 		 * Cache some local private variables for use in 
 		 * the import_xxx() private functions 
 		 */
-		$this->comments_ignore_unapproved= $comments_ignore_unapproved;
-		$this->category_import= $category_import;
-		$this->s9y_db_prefix= $db_prefix;
-		$this->port_rewrites= $rewrites_import;
+		$this->comments_ignore_unapproved = $comments_ignore_unapproved;
+		$this->category_import = $category_import;
+		$this->s9y_db_prefix = $db_prefix;
+		$this->port_rewrites = $rewrites_import;
 		
 		if ( $rewrites_import ) {
 
@@ -457,7 +457,7 @@ WP_IMPORT_STAGE2;
 			$rewrite->insert();
 		}
 
-		if ( FALSE !== ( $this->s9ydb= $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port ) ) ) {
+		if ( FALSE !== ( $this->s9ydb = $this->s9y_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix, $db_port ) ) ) {
 			/*
 			 * First step is to go through our import_user and
 			 * merge_user arrays and see if we need to merge the
@@ -467,7 +467,7 @@ WP_IMPORT_STAGE2;
 			 * $import_user= array( [imported_user_id] => [1 | null], [next_imported_user_id] => [1 | null], ...)
 			 * $merge_user= array( [imported_user_id] => [habari_user_id | "__new_user"], ...)
 			 */
-			$users= array();
+			$users = array();
 			foreach ( $import_user as $import_user_id=>$import_this ) {
 				/* Is this s9y user selected for import? */ 
 				if ( $import_this != 1 ) 
@@ -509,12 +509,12 @@ WP_IMPORT_STAGE2;
 				 * | parentid             | int(11)      |      | MUL | 0       |                |
 				 * +----------------------+--------------+------+-----+---------+----------------+
 				 */
-				$sql=<<<ENDOFSQL
+				$sql =<<<ENDOFSQL
 SELECT categoryid, category_name
 FROM `{$db_prefix}category
 ENDOFSQL;
-				if ( FALSE !== ( $imported_categories= $this->s9ydb->get_results( $sql, array(), 'QueryRecord' ) ) ) {
-					$num_categories_imported= 0;
+				if ( FALSE !== ( $imported_categories = $this->s9ydb->get_results( $sql, array(), 'QueryRecord' ) ) ) {
+					$num_categories_imported = 0;
 					foreach ( $imported_categories as $imported_category ) {
 						if ( $tag_check = Tags::get_one( $imported_category->category_name ) ) {
 							// tag already exists
@@ -523,7 +523,7 @@ ENDOFSQL;
 							++$num_categories_imported;
 							continue;
 						}
-						if ( $new_tag= Tag::create( array( 'tag_text' => $imported_category->category_name ) ) ) {
+						if ( $new_tag = Tag::create( array( 'tag_text' => $imported_category->category_name ) ) ) {
 							$this->imported_categories[$imported_category->categoryid]= $new_tag->id;
 							$this->imported_category_names[$imported_category->categoryid] = $imported_category->category_name;
 							++$num_categories_imported;
@@ -557,13 +557,13 @@ ENDOFSQL;
 			 * | right_publish   | int(1)          | YES  |     | 1       |                | 
 			 * +-----------------+-----------------+------+-----+---------+----------------+
 			 */
-			$sql=<<<ENDOFSQL
+			$sql =<<<ENDOFSQL
 SELECT a.authorid, a.realname, a.username, a.email
 FROM `{$db_prefix}authors` a 
 ENDOFSQL;
 			$sql.= " WHERE a.authorid IN (" . implode(',', array_keys($users)) . ")";
-			$import_users= $this->s9ydb->get_results( $sql, array(), 'QueryRecord' 	);
-			$result= TRUE;
+			$import_users = $this->s9ydb->get_results( $sql, array(), 'QueryRecord' 	);
+			$result = TRUE;
 
 			foreach ($import_users as $import_user)
 				$result&= $this->import_user( $import_user->authorid
@@ -607,7 +607,7 @@ ENDOFSQL;
 	 * @param		import_user_info	QueryRecord of imported user information
 	 * @return	TRUE or FALSE if import of user succeeded
 	 */
-	private function import_user( $import_user_id, $import_user_info= array(), $habari_user_id= NULL ) 
+	private function import_user( $import_user_id, $import_user_info = array(), $habari_user_id = NULL ) 
 	{
 
 		/*
@@ -617,16 +617,16 @@ ENDOFSQL;
 		 */
 		if ( is_null( $habari_user_id ) ) {
 			/* New habari user account */
-			$habari_user= new User();
-			$habari_user->email= $import_user_info->email;
-			$habari_user->username= $import_user_info->username;
-			$habari_user->info->s9y_id= $import_user_info->authorid;
-			$habari_user->info->s9y_realname= $import_user_info->realname;
+			$habari_user = new User();
+			$habari_user->email = $import_user_info->email;
+			$habari_user->username = $import_user_info->username;
+			$habari_user->info->s9y_id = $import_user_info->authorid;
+			$habari_user->info->s9y_realname = $import_user_info->realname;
 		}
 		else {
-			$habari_user= User::get_by_id($habari_user_id);
-			$habari_user->info->s9y_id= $import_user_info->authorid;
-			$habari_user->info->s9y_realname= $import_user_info->realname;
+			$habari_user = User::get_by_id($habari_user_id);
+			$habari_user->info->s9y_id = $import_user_info->authorid;
+			$habari_user->info->s9y_realname = $import_user_info->realname;
 		}
 
 		try {
@@ -672,7 +672,7 @@ ENDOFSQL;
 		 * +-------------------+----------------------+------+-----+---------+----------------+
 		 *
 		 */
-		$sql=<<<ENDOFSQL
+		$sql =<<<ENDOFSQL
 SELECT
   e.id
 ,	e.extended
@@ -684,9 +684,9 @@ SELECT
 FROM {$this->s9y_db_prefix}entries e
 WHERE e.authorid = ?
 ENDOFSQL;
-		$posts= $this->s9ydb->get_results( $sql, array($import_user_id), 'QueryRecord' );
+		$posts = $this->s9ydb->get_results( $sql, array($import_user_id), 'QueryRecord' );
 		if ( count( $posts ) > 0 ) {
-			$result= TRUE;
+			$result = TRUE;
 			echo "Starting import of <b>" . count( $posts ) . "</b> posts...<br/ >";
 			foreach ( $posts as $post )
 				$result&= $this->import_post( $post, $habari_user->id );
@@ -713,25 +713,25 @@ ENDOFSQL;
 	 * @param		habari_user_id		The habari user ID of the post's author
 	 * @return	TRUE or FALSE if import of post succeeded
 	 */
-	private function import_post( $post_info= array(), $habari_user_id ) 
+	private function import_post( $post_info = array(), $habari_user_id ) 
 	{
 
 		/* 
 		 * Import the post itself 
 		 */
-		$post= new Post();
-		$post->user_id= $habari_user_id;
-		$post->guid= $post->guid; /* @TODO: This works to create a GUID, but man, it's weird. */
-		$post->info->s9y_id= $post_info->id;
-		$post->title= $this->transcode( $post_info->title );
+		$post = new Post();
+		$post->user_id = $habari_user_id;
+		$post->guid = $post->guid; /* @TODO: This works to create a GUID, but man, it's weird. */
+		$post->info->s9y_id = $post_info->id;
+		$post->title = $this->transcode( $post_info->title );
 		$content = ( empty( $post_info->extended ) ? $post_info->body : $post_info->body . $post_info->extended );
-		$post->content= $this->transcode( $content );
-		$post->status= ( $post_info->isdraft == "true" ? Post::status( 'draft' ) : Post::status( 'published' ) );
-		$post->content_type= Post::type( 'entry' );
-		$post->updated= date('Y-m-d H:i:s', $post_info->last_modified);
-		$post->pubdate= ( $post_info->isdraft == "false" ? date( 'Y-m-d H:i:s', $post_info->timestamp ) : NULL );
+		$post->content = $this->transcode( $content );
+		$post->status = ( $post_info->isdraft == "true" ? Post::status( 'draft' ) : Post::status( 'published' ) );
+		$post->content_type = Post::type( 'entry' );
+		$post->updated = date('Y-m-d H:i:s', $post_info->last_modified);
+		$post->pubdate = ( $post_info->isdraft == "false" ? date( 'Y-m-d H:i:s', $post_info->timestamp ) : NULL );
 		if ( $this->category_import && isset ( $categories ) && $categories instanceof QueryRecord )
-			$post->tags= $categories->to_array();
+			$post->tags = $categories->to_array();
 
 		if ( $post->insert() ) {
 			
@@ -763,16 +763,16 @@ ENDOFSQL;
 			 * | categoryid | int(11) | NO   | PRI | 0       |       | 
 			 * +------------+---------+------+-----+---------+-------+
 			 */
-			$result= TRUE;
+			$result = TRUE;
 			if ( $this->category_import ) {
-				$sql=<<<ENDOFSQL
+				$sql =<<<ENDOFSQL
 SELECT c.categoryid
 FROM {$this->s9y_db_prefix}category c 
 INNER JOIN {$this->s9y_db_prefix}entrycat ec
 ON c.categoryid = ec.categoryid
 AND ec.entryid = ?
 ENDOFSQL;
-				if ( FALSE !== ( $categories= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' ) ) ) {
+				if ( FALSE !== ( $categories = $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' ) ) ) {
 					foreach ( $categories as $category ) {
 						$result&= $this->import_post_category( $post->id, $this->imported_categories[$category->categoryid] );
 						if ( $this->port_rewrites && !isset( $this->rewritten_categories[ $category->categoryid ] ) ) {
@@ -820,7 +820,7 @@ ENDOFSQL;
 			 * | referer    | varchar(200)         | YES  |     | NULL    |                | 
 			 * +------------+----------------------+------+-----+---------+----------------+
 			 */
-			$sql=<<<ENDOFSQL
+			$sql =<<<ENDOFSQL
 SELECT
 	id
 , parent_id
@@ -840,7 +840,7 @@ WHERE entry_id = ?
 ENDOFSQL;
 			if ( $this->comments_ignore_unapproved )
 				$sql.= " AND status = 'Approved' ";
-			$comments= $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' );
+			$comments = $this->s9ydb->get_results( $sql, array( $post_info->id ), 'QueryRecord' );
 			if ( count( $comments ) > 0 ) {
 				echo "Starting import of <b>" . count( $comments ) . "</b> comments for post \"" . $post->title . "\"...";
 				foreach ( $comments as $comment )
@@ -888,33 +888,33 @@ ENDOFSQL;
 	 * @param		habari_post_id		ID of the post to attach the comment to
 	 * @return	TRUE or FALSE if import of comment succeeded
 	 */
-	private function import_comment( $comment_info= array(), $habari_post_id )
+	private function import_comment( $comment_info = array(), $habari_post_id )
 	{
 		/* A mapping for s9y comment status to habari comment status codes */
-		$status_map= array(
+		$status_map = array(
 			'APPROVED'=> Comment::STATUS_APPROVED
 			, 'PENDING'=> Comment::STATUS_UNAPPROVED
 		);
 		/* A mapping for s9y comment type to habari comment type codes */
-		$type_map= array(
+		$type_map = array(
 			'TRACKBACK'=> Comment::TRACKBACK
 			, 'NORMAL'=> Comment::COMMENT
 		);
 
-		$comment= new Comment();
-		$comment->post_id= $habari_post_id;
-		$comment->info->s9y_id= $comment_info->id;
+		$comment = new Comment();
+		$comment->post_id = $habari_post_id;
+		$comment->info->s9y_id = $comment_info->id;
 		if ( ! empty( $comment_info->parent_id ) 
 			&&  $comment_info->parent_id != "0" )
-			$comment->info->s9y_parent_id= $comment_info->parent_id;
-		$comment->ip= sprintf ("%u", ip2long($comment_info->ip) );
-		$comment->status= $status_map[strtoupper($comment_info->status)];
-		$comment->type= $type_map[strtoupper($comment_info->type)];
-		$comment->name= $this->transcode( $comment_info->author );
-		$comment->url= $comment_info->url;
-		$comment->date= date('Y-m-d H:i:s', $comment_info->timestamp);
-		$comment->email= $this->transcode( $comment_info->email );
-		$comment->content= $this->transcode( $comment_info->body );
+			$comment->info->s9y_parent_id = $comment_info->parent_id;
+		$comment->ip = sprintf ("%u", ip2long($comment_info->ip) );
+		$comment->status = $status_map[strtoupper($comment_info->status)];
+		$comment->type = $type_map[strtoupper($comment_info->type)];
+		$comment->name = $this->transcode( $comment_info->author );
+		$comment->url = $comment_info->url;
+		$comment->date = date('Y-m-d H:i:s', $comment_info->timestamp);
+		$comment->email = $this->transcode( $comment_info->email );
+		$comment->content = $this->transcode( $comment_info->body );
 		if ( $comment->insert() )
 			return TRUE;
 		else {
@@ -967,19 +967,19 @@ ENDOFSQL;
 			return false;
 		}
 		else
-			$root_web= rtrim($input['s9y_root_web'], ' ' . DIRECTORY_SEPARATOR);
+			$root_web = rtrim($input['s9y_root_web'], ' ' . DIRECTORY_SEPARATOR);
 
-		$config_file= $root_web . DIRECTORY_SEPARATOR . S9Y_CONFIG_FILENAME;
+		$config_file = $root_web . DIRECTORY_SEPARATOR . S9Y_CONFIG_FILENAME;
 		if (! is_readable($config_file)) {
 			$this->add_error('The configuration file for s9y (' . $config_file . ') is not readable.');
 			return false;
 		}
 
 		/* Pull in the configuration file and grab the version information from it */
-		$config_file_contents= file_get_contents($config_file);
-		$matches= array();
+		$config_file_contents = file_get_contents($config_file);
+		$matches = array();
 		if (1 == preg_match("/^\$serendipity\[\'version\'\]\s+\=\s+\'([^']+)\'", $config_file_contents, $matches))
-			$version= $matches[1];
+			$version = $matches[1];
 		else {
 			$this->add_error('No version information found in s9y configuration file');
 			return false;
@@ -1003,7 +1003,7 @@ ENDOFSQL;
 	{
 		// Connect to the database or return false
 		try {
-			$s9ydb= new DatabaseConnection();
+			$s9ydb = new DatabaseConnection();
 			$connect_str = "mysql:host={$db_host};dbname={$db_name}";
 			if ( !is_null( $db_port ) ) {
 				$connect_str .= ";port={$db_port}";

@@ -3,10 +3,10 @@
 			<div id="main-posts">
 			<?php if ($show_post_nav) : ?>
 				<div class="post-nav">
-				<?php if ( $previous= $post->descend() ): ?>
+				<?php if ( $previous = $post->descend() ): ?>
 					<div class="left"> &laquo; <a href="<?php echo $previous->permalink ?>" title="<?php echo $previous->slug ?>"><?php echo $previous->title ?></a></div>
 				<?php endif; ?>
-				<?php if ( $next= $post->ascend() ): ?>
+				<?php if ( $next = $post->ascend() ): ?>
 					<div class="right"><a href="<?php echo $next->permalink ?>" title="<?php echo $next->slug ?>"><?php echo $next->title ?></a> &raquo;</div>
 				<?php endif; ?>
 					<div class="clear"></div>

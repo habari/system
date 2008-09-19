@@ -57,7 +57,7 @@ class charcoal extends Theme
 		$this->assign('page_class', 'post' . ( ! self::SHOW_PAGE_PAPERCLIP ? ' alt' : '' ) );
 		$this->assign('show_post_nav', self::SHOW_POST_NAV);
 		
-		$locale=Options::get( 'locale' );
+		$locale =Options::get( 'locale' );
 		if ( file_exists( Site::get_dir( 'theme', true ). $locale . '.css' ) ){
 			$this->assign( 'localized_css',  $locale . '.css' );
 		}
@@ -91,7 +91,7 @@ class charcoal extends Theme
 	
 	public function theme_post_comments_link($theme, $post, $zero, $one, $more)
 	{
-		$c= $post->comments->approved->count;
+		$c = $post->comments->approved->count;
 		switch ($c) {
 			case '0':
 				return $zero;
@@ -111,8 +111,8 @@ class charcoal extends Theme
 
 	public function theme_search_prompt( $theme, $criteria, $has_results )
 	{
-		$out=array();
-		$keywords=explode(' ',trim($criteria));
+		$out =array();
+		$keywords =explode(' ',trim($criteria));
 		foreach ($keywords as $keyword) {
 			$out[]= '<a href="' . Site::get_url( 'habari', true ) .'search?criteria=' . $keyword . '" title="' . _t( 'Search for ' ) . $keyword . '">' . $keyword . '</a>';
 		}
@@ -142,7 +142,7 @@ class charcoal extends Theme
 	 */
 	public function theme_show_tags ( $theme )
 	{
-		$sql="
+		$sql ="
 			SELECT t.tag_slug AS slug, t.tag_text AS text, count(tp.post_id) as ttl
 			FROM {tags} t
 			INNER JOIN {tag2post} tp
@@ -152,7 +152,7 @@ class charcoal extends Theme
 			GROUP BY t.tag_slug
 			ORDER BY t.tag_text
 		";
-		$tags= DB::get_results( $sql, array(Post::status('published')) );
+		$tags = DB::get_results( $sql, array(Post::status('published')) );
 
 		foreach ($tags as $index => $tag) {
 			$tags[$index]->url = URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) );

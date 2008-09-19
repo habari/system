@@ -21,22 +21,22 @@ class Comment extends QueryRecord implements IsContent
 {
 
 	// our definitions for comment types and statuses
-	const STATUS_UNAPPROVED= 0;
-	const STATUS_APPROVED= 1;
-	const STATUS_SPAM= 2;
-	const STATUS_DELETED= 3;
+	const STATUS_UNAPPROVED = 0;
+	const STATUS_APPROVED = 1;
+	const STATUS_SPAM = 2;
+	const STATUS_DELETED = 3;
 
-	const COMMENT= 0;
-	const PINGBACK= 1;
-	const TRACKBACK= 2;
+	const COMMENT = 0;
+	const PINGBACK = 1;
+	const TRACKBACK = 2;
 
 	private $post_object = null;
 
-	private $info= null;
+	private $info = null;
 
 	// static variables to hold comment status and comment type values
-	static $comment_status_list= array();
-	static $comment_type_list= array();
+	static $comment_status_list = array();
+	static $comment_type_list = array();
 
 	/**
 	* static function default_fields
@@ -69,7 +69,7 @@ class Comment extends QueryRecord implements IsContent
 		$this->fields = array_merge( self::default_fields(), $this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields('id');
-		$this->info= new CommentInfo ( $this->fields['id'] );
+		$this->info = new CommentInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new comment. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 
 	}
@@ -112,8 +112,8 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	public function insert()
 	{
-		$allow= true;
-		$allow= Plugins::filter('comment_insert_allow', $allow, $this);
+		$allow = true;
+		$allow = Plugins::filter('comment_insert_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -137,8 +137,8 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	public function update()
 	{
-		$allow= true;
-		$allow= Plugins::filter('comment_update_allow', $allow, $this);
+		$allow = true;
+		$allow = Plugins::filter('comment_update_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -161,8 +161,8 @@ class Comment extends QueryRecord implements IsContent
 	 */
 	public function delete()
 	{
-		$allow= true;
-		$allow= Plugins::filter('comment_delete_allow', $allow, $this);
+		$allow = true;
+		$allow = Plugins::filter('comment_delete_allow', $allow, $this);
 		if ( ! $allow ) {
 			return;
 		}
@@ -183,7 +183,7 @@ class Comment extends QueryRecord implements IsContent
 	 **/
 	public function __get( $name )
 	{
-		$fieldnames= array_merge( array_keys( $this->fields ), array('post', 'info' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info' ) );
 		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
 			list( $junk, $name, $filter ) = $matches;
@@ -204,7 +204,7 @@ class Comment extends QueryRecord implements IsContent
 				$out = $this->get_info();
 				break;
 			case 'statusname':
-				$out= self::status_name( $this->status );
+				$out = self::status_name( $this->status );
 				break;
 			case 'typename':
 				$out = self::type_name( $this->type );
@@ -287,7 +287,7 @@ class Comment extends QueryRecord implements IsContent
 	private function get_info()
 	{
 		if ( ! $this->info ) {
-			$this->info= new CommentInfo( $this->id );
+			$this->info = new CommentInfo( $this->id );
 		}
 		return $this->info;
 	}
@@ -336,7 +336,7 @@ class Comment extends QueryRecord implements IsContent
 		if ( ( ! $refresh ) && ( ! empty( self::$comment_type_list ) ) ) {
 			return self::$comment_type_list;
 		}
-		self::$comment_type_list= array(
+		self::$comment_type_list = array(
 			self::COMMENT => 'Comment',
 			self::PINGBACK => 'Pingback',
 			self::TRACKBACK => 'Trackback',
@@ -349,12 +349,12 @@ class Comment extends QueryRecord implements IsContent
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of comment statuses names => interger values
 	**/
-	public static function list_comment_statuses( $refresh= false )
+	public static function list_comment_statuses( $refresh = false )
 	{
 		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) ) {
 			return self::$comment_status_list;
 		}
-		self::$comment_status_list= array(
+		self::$comment_status_list = array(
 			self::STATUS_UNAPPROVED => 'Unapproved',
 			self::STATUS_APPROVED => 'Approved',
 			self::STATUS_SPAM => 'Spam',
@@ -371,11 +371,11 @@ class Comment extends QueryRecord implements IsContent
 	**/
 	public static function status( $name )
 	{
-		$statuses= Comment::list_comment_statuses();
+		$statuses = Comment::list_comment_statuses();
 		if ( is_numeric( $name ) && ( isset( $statuses[$name] ) ) ) {
 			return $name;
 		}
-		$statuses= array_flip( $statuses );
+		$statuses = array_flip( $statuses );
 		if ( isset($statuses[$name]) ) {
 			return $statuses[$name];
 		}
@@ -389,11 +389,11 @@ class Comment extends QueryRecord implements IsContent
 	**/
 	public static function status_name( $status )
 	{
-		$statuses= Comment::list_comment_statuses();
+		$statuses = Comment::list_comment_statuses();
 		if ( is_numeric( $status ) && isset( $statuses[$status] ) ) {
 			return $statuses[$status];
 		}
-		$statuses= array_flip( $statuses );
+		$statuses = array_flip( $statuses );
 		if ( isset( $statuses[$status] ) ) {
 			return $status;
 		}
@@ -407,11 +407,11 @@ class Comment extends QueryRecord implements IsContent
 	**/
 	public static function type( $name )
 	{
-		$types= Comment::list_comment_types();
+		$types = Comment::list_comment_types();
 		if ( is_numeric( $name ) && ( isset( $types[$name] ) ) ) {
 			return $name;
 		}
-		$types= array_flip($types);
+		$types = array_flip($types);
 		if ( isset( $types[$name] ) ) {
 			return $types[$name];
 		}
@@ -425,11 +425,11 @@ class Comment extends QueryRecord implements IsContent
 	**/
 	public function type_name( $type )
 	{
-		$types= Comment::list_comment_types();
+		$types = Comment::list_comment_types();
 		if ( is_numeric( $type ) && isset( $types[$type] ) ) {
 			return $types[$type];
 		}
-		$types= array_flip($types);
+		$types = array_flip($types);
 		if ( isset($types[$type]) ) {
 			return $type;
 		}

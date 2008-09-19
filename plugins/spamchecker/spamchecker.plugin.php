@@ -120,7 +120,7 @@ class SpamChecker extends Plugin
 
 		// Must have less than half link content
 		$nonacontent = strip_tags(preg_replace('/<a.*?<\/a/i', '', $comment->content));
-		$text_length= strlen( $textonly );
+		$text_length = strlen( $textonly );
 		if ( strlen($nonacontent) / ( $text_length == 0 ? 1 : $text_length) < 0.5 ) {
 			$comment->status = Comment::STATUS_SPAM;
 			$spamcheck[] = _t('Too much text that is a link compared to that which is not.');
@@ -131,7 +131,7 @@ class SpamChecker extends Plugin
 			$spams = DB::get_value('SELECT count(*) FROM ' . DB::table('comments') . ' WHERE status = ? AND ip = ?', array(Comment::STATUS_SPAM, $comment->ip));
 			// If you've already got two spams on your IP address, all you ever do is spam
 			if($spams > 1) {
-				$comment->status= Comment::STATUS_SPAM;
+				$comment->status = Comment::STATUS_SPAM;
 				$spamcheck[] = sprintf(_t('Too many existing spams from this IP: %s'), long2ip($comment->ip));
 			}
 		}
@@ -233,7 +233,7 @@ class SpamChecker extends Plugin
 	public function get_code($post_id, $ip = '')
 	{
 		if( $ip == '' ) {
-			$ip= sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
+			$ip = sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
 		}
 		$code = substr(md5( $post_id . Options::get('GUID') . 'more salt' . $ip ), 0, 10);
 		$code = Plugins::filter('comment_code', $code, $post_id, $ip);
@@ -249,7 +249,7 @@ class SpamChecker extends Plugin
 	public function verify_code($suspect_code, $post_id, $ip = '')
 	{
 		if( $ip == '' ) {
-			$ip= sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
+			$ip = sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
 		}
 		$code = substr(md5( $post_id . Options::get('GUID') . 'more salt' . $ip ), 0, 10);
 		$code = Plugins::filter('comment_code', $code, $post_id, $ip);

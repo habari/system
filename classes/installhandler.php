@@ -17,7 +17,7 @@ class InstallHandler extends ActionHandler {
 		Utils::revert_magic_quotes_gpc();
 
 		// Create a new theme to handle the display of the installer
-		$this->theme= Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
+		$this->theme = Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
 		
 		/**
 		 * Set user selected Locale or default
@@ -118,7 +118,7 @@ class InstallHandler extends ActionHandler {
 
 		// now merge in any HTTP POST values that might have been sent
 		// these will override the defaults and the config.php values
-		$this->handler_vars= array_merge($this->handler_vars, $_POST);
+		$this->handler_vars = array_merge($this->handler_vars, $_POST);
 
 		// we need details for the admin user to install
 		if ( ( '' == $this->handler_vars['admin_username'] )
@@ -130,7 +130,7 @@ class InstallHandler extends ActionHandler {
 			$this->display('db_setup');
 		}
 
-		$db_type= $this->handler_vars['db_type'];
+		$db_type = $this->handler_vars['db_type'];
 		if ( $db_type == 'mysql' || $db_type == 'pgsql' ) {
 			$this->handler_vars['db_host']= $_POST["{$db_type}_db_host"];
 			$this->handler_vars['db_user']= $_POST["{$db_type}_db_user"];
@@ -182,7 +182,7 @@ class InstallHandler extends ActionHandler {
 	 * Helper function to grab list of plugins
 	 */
 	public function get_plugins() {
-		$all_plugins= Plugins::list_all();
+		$all_plugins = Plugins::list_all();
 		$recommended_list = array(
 			'coredashmodules.plugin.php',
 			'habarisilo.plugin.php',
@@ -192,19 +192,19 @@ class InstallHandler extends ActionHandler {
 		);
 
 		foreach ( $all_plugins as $file ) {
-			$plugin= array();
-			$plugin_id= Plugins::id_from_file( $file );
+			$plugin = array();
+			$plugin_id = Plugins::id_from_file( $file );
 			$plugin['plugin_id']= $plugin_id;
 			$plugin['file']= $file;
 
-			$error= '';
+			$error = '';
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug']= false;
 				// instantiate this plugin
 				// in order to get its info()
 				include_once( $file );
 				Plugins::get_plugin_classes();
-				$pluginobj= Plugins::load( $file, false );
+				$pluginobj = Plugins::load( $file, false );
 				$plugin['active']= false;
 				$plugin['verb']= _t( 'Activate' );
 				$plugin['actions']= array();
@@ -276,7 +276,7 @@ class InstallHandler extends ActionHandler {
 		// Required extensions, this list will augment with time
 		// Even if they are enabled by default, it seems some install turn them off
 		// We use the URL in the Installer template to link to the installation page
-		$required_extensions= array(
+		$required_extensions = array(
 			'pdo' => 'http://php.net/pdo',
 			'hash' => 'http://php.net/hash',
 			'iconv' => 'http://php.net/iconv',
@@ -285,44 +285,44 @@ class InstallHandler extends ActionHandler {
 			'mbstring' => 'http://php.net/mbstring',
 			'json' => 'http://php.net/json'
 			);
-		$requirements_met= true;
+		$requirements_met = true;
 
 		/* Check versions of PHP */
-		$php_version_ok= version_compare(phpversion(), MIN_PHP_VERSION, '>=');
+		$php_version_ok = version_compare(phpversion(), MIN_PHP_VERSION, '>=');
 		$this->theme->assign('php_version_ok', $php_version_ok);
 		$this->theme->assign('PHP_OS', PHP_OS);;
 		$this->theme->assign('PHP_VERSION',  phpversion());
 		if (! $php_version_ok) {
-			$requirements_met= false;
+			$requirements_met = false;
 		}
 		/* Check for required extensions */
-		$missing_extensions= array();
+		$missing_extensions = array();
 		foreach ($required_extensions as $ext_name => $ext_url) {
 			if (!extension_loaded($ext_name)) {
 				$missing_extensions[$ext_name]= $ext_url;
-				$requirements_met= false;
+				$requirements_met = false;
 			}
 		}
 		$this->theme->assign('missing_extensions',  $missing_extensions);
 		/* Check for PDO drivers */
-		$pdo_drivers= PDO::getAvailableDrivers();
+		$pdo_drivers = PDO::getAvailableDrivers();
 		if ( ! empty( $pdo_drivers ) ) {
-			$pdo_drivers= array_combine( $pdo_drivers, $pdo_drivers );
+			$pdo_drivers = array_combine( $pdo_drivers, $pdo_drivers );
 			// Include only those drivers that we include database support for
-			$pdo_schemas= array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
-			$pdo_schemas= array_combine( $pdo_schemas, $pdo_schemas );
+			$pdo_schemas = array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
+			$pdo_schemas = array_combine( $pdo_schemas, $pdo_schemas );
 
-			$pdo_drivers= array_intersect_key(
+			$pdo_drivers = array_intersect_key(
 				$pdo_drivers,
 				$pdo_schemas
 			);
 		}
 
-		$pdo_drivers_ok= count( $pdo_drivers );
+		$pdo_drivers_ok = count( $pdo_drivers );
 		$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
 		$this->theme->assign( 'pdo_drivers', $pdo_drivers );
 		if ( ! $pdo_drivers_ok ) {
-			$requirements_met= false;
+			$requirements_met = false;
 		}
 		
 		/**
@@ -345,11 +345,11 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function install_db()
 	{
-		$db_host= $this->handler_vars['db_host'];
-		$db_type= $this->handler_vars['db_type'];
-		$db_schema= $this->handler_vars['db_schema'];
-		$db_user= $this->handler_vars['db_user'];
-		$db_pass= $this->handler_vars['db_pass'];
+		$db_host = $this->handler_vars['db_host'];
+		$db_type = $this->handler_vars['db_type'];
+		$db_schema = $this->handler_vars['db_schema'];
+		$db_user = $this->handler_vars['db_user'];
+		$db_pass = $this->handler_vars['db_pass'];
 
 		switch($db_type) {
 		case 'mysql':
@@ -384,7 +384,7 @@ class InstallHandler extends ActionHandler {
 
 		DB::begin_transaction();
 		/* Let's install the DB tables now. */
-		$create_table_queries= $this->get_create_table_queries(
+		$create_table_queries = $this->get_create_table_queries(
 			$this->handler_vars['db_type'],
 			$this->handler_vars['table_prefix'],
 			$this->handler_vars['db_schema']
@@ -393,7 +393,7 @@ class InstallHandler extends ActionHandler {
 		DB::dbdelta($create_table_queries, true, true, true);
 
 		if(DB::has_errors()) {
-			$error= DB::get_last_error();
+			$error = DB::get_last_error();
 			$this->theme->assign('form_errors', array('db_host'=>sprintf(_t('Could not create schema tables... %s'), $error['message'])));
 			DB::rollback();
 			return false;
@@ -411,7 +411,7 @@ class InstallHandler extends ActionHandler {
 
 		// Let's setup the admin user now.
 		// But first, let's make sure that no users exist
-		$all_users= Users::get_all();
+		$all_users = Users::get_all();
 		if ( count( $all_users ) < 1 ) {
 			if (! $this->create_admin_user()) {
 				$this->theme->assign('form_errors', array('admin_user'=>_t('Problem creating admin user.')));
@@ -486,7 +486,7 @@ class InstallHandler extends ActionHandler {
 	private function connect_to_existing_db()
 	{
 		global $db_connection;
-		if($config= $this->get_config_file()) {
+		if($config = $this->get_config_file()) {
 			$config = preg_replace('/<\\?php(.*)\\?'.'>/ims', '$1', $config);
 			// Update the $db_connection global from the config that is about to be written:
 			eval($config);
@@ -505,24 +505,24 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function create_admin_user()
 	{
-		$admin_username= $this->handler_vars['admin_username'];
-		$admin_email= $this->handler_vars['admin_email'];
-		$admin_pass= $this->handler_vars['admin_pass1'];
+		$admin_username = $this->handler_vars['admin_username'];
+		$admin_email = $this->handler_vars['admin_email'];
+		$admin_pass = $this->handler_vars['admin_pass1'];
 
 		if ($admin_pass{0} == '{') {
 			// looks like we might have a crypted password
-			$password= $admin_pass;
+			$password = $admin_pass;
 
 			// but let's double-check
 			$algo = strtolower( substr( $admin_pass, 1, 3) );
 			if ( ('ssh' != $algo) && ( 'sha' != $algo) ) {
 				// we do not have a crypted password
 				// so let's encrypt it
-				$password= Utils::crypt($admin_pass);
+				$password = Utils::crypt($admin_pass);
 			}
 		}
 		else {
-			$password= Utils::crypt($admin_pass);
+			$password = Utils::crypt($admin_pass);
 		}
 
 		// Insert the admin user
@@ -610,20 +610,20 @@ class InstallHandler extends ActionHandler {
 	private function get_create_table_queries($db_type, $table_prefix, $db_schema)
 	{
 		/* Grab the queries from the RDBMS schema file */
-		$file_path= HABARI_PATH . "/system/schema/{$db_type}/schema.sql";
-		$schema_sql= trim(file_get_contents($file_path), "\r\n ");
-		$schema_sql= str_replace('{$schema}',$db_schema, $schema_sql);
-		$schema_sql= str_replace('{$prefix}',$table_prefix, $schema_sql);
+		$file_path = HABARI_PATH . "/system/schema/{$db_type}/schema.sql";
+		$schema_sql = trim(file_get_contents($file_path), "\r\n ");
+		$schema_sql = str_replace('{$schema}',$db_schema, $schema_sql);
+		$schema_sql = str_replace('{$prefix}',$table_prefix, $schema_sql);
 
 		/*
 		 * Just in case anyone creates a schema file with separate statements
 		 * not separated by two newlines, let's clean it here...
 		 * Likewise, let's clean up any separations of *more* than two newlines
 		 */
-		$schema_sql= str_replace( array( "\r\n", "\r", ), array( "\n", "\n" ), $schema_sql );
-		$schema_sql= preg_replace("/;\n([^\n])/", ";\n\n$1", $schema_sql);
-		$schema_sql= preg_replace("/\n{3,}/","\n\n", $schema_sql);
-		$queries= preg_split('/(\\r\\n|\\r|\\n)\\1/', $schema_sql);
+		$schema_sql = str_replace( array( "\r\n", "\r", ), array( "\n", "\n" ), $schema_sql );
+		$schema_sql = preg_replace("/;\n([^\n])/", ";\n\n$1", $schema_sql);
+		$schema_sql = preg_replace("/\n{3,}/","\n\n", $schema_sql);
+		$queries = preg_split('/(\\r\\n|\\r|\\n)\\1/', $schema_sql);
 		return $queries;
 	}
 
@@ -635,13 +635,13 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function get_create_schema_and_user_queries()
 	{
-		$db_host= $this->handler_vars['db_host'];
-		$db_type= $this->handler_vars['db_type'];
-		$db_schema= $this->handler_vars['db_schema'];
-		$db_user= $this->handler_vars['db_user'];
-		$db_pass= $this->handler_vars['db_pass'];
+		$db_host = $this->handler_vars['db_host'];
+		$db_type = $this->handler_vars['db_type'];
+		$db_schema = $this->handler_vars['db_schema'];
+		$db_user = $this->handler_vars['db_user'];
+		$db_pass = $this->handler_vars['db_pass'];
 
-		$queries= array();
+		$queries = array();
 		switch ($db_type) {
 			case 'mysql':
 				$queries[]= 'CREATE DATABASE ' . $db_schema . ';';
@@ -665,11 +665,11 @@ class InstallHandler extends ActionHandler {
 	*/
 	private function get_config_file()
 	{
-		if (! ($file_contents= file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
+		if (! ($file_contents = file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
 			return false;
 		}
-		$vars= array_map('addslashes', $this->handler_vars);
-		$file_contents= str_replace(
+		$vars = array_map('addslashes', $this->handler_vars);
+		$file_contents = str_replace(
 			array_map(array('Utils', 'map_array'), array_keys($vars)),
 			$vars,
 			$file_contents
@@ -688,24 +688,24 @@ class InstallHandler extends ActionHandler {
 		// first, check if a config.php file exists
 		if ( file_exists( Site::get_dir('config_file' ) ) ) {
 			// set the defaults for comprison
-			$db_host= $this->handler_vars['db_host'];
-			$db_file= $this->handler_vars['db_file'];
-			$db_type= $this->handler_vars['db_type'];
-			$db_schema= $this->handler_vars['db_schema'];
-			$db_user= $this->handler_vars['db_user'];
-			$db_pass= $this->handler_vars['db_pass'];
-			$table_prefix= $this->handler_vars['table_prefix'];
+			$db_host = $this->handler_vars['db_host'];
+			$db_file = $this->handler_vars['db_file'];
+			$db_type = $this->handler_vars['db_type'];
+			$db_schema = $this->handler_vars['db_schema'];
+			$db_user = $this->handler_vars['db_user'];
+			$db_pass = $this->handler_vars['db_pass'];
+			$table_prefix = $this->handler_vars['table_prefix'];
 
 			// set the connection string
 			switch ( $db_type ) {
 				case 'mysql':
-					$connection_string= "$db_type:host=$db_host;dbname=$db_schema";
+					$connection_string = "$db_type:host=$db_host;dbname=$db_schema";
 					break;
 				case 'pgsql':
-					$connection_string= "$db_type:host=$db_host dbname=$db_schema";
+					$connection_string = "$db_type:host=$db_host dbname=$db_schema";
 					break;
 				case 'sqlite':
-					$connection_string= "$db_type:$db_file";
+					$connection_string = "$db_type:$db_file";
 					break;
 			}
 
@@ -725,11 +725,11 @@ class InstallHandler extends ActionHandler {
 				return true;
 			}
 		}
-		if (! ($file_contents= file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
+		if (! ($file_contents = file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
 			return false;
 		}
-		if($file_contents= $this->get_config_file()) {
-			if ($file= @fopen(Site::get_dir('config_file'), 'w')) {
+		if($file_contents = $this->get_config_file()) {
+			if ($file = @fopen(Site::get_dir('config_file'), 'w')) {
 				if (fwrite($file, $file_contents, strlen($file_contents))) {
 					fclose($file);
 					return true;
@@ -780,7 +780,7 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function htaccess()
 	{
-		$htaccess= array(
+		$htaccess = array(
 			'open_block' => '### HABARI START',
 			'engine_on' => 'RewriteEngine On',
 			'rewrite_cond_f' => 'RewriteCond %{REQUEST_FILENAME} !-f',
@@ -789,7 +789,7 @@ class InstallHandler extends ActionHandler {
 			'rewrite_rule' => 'RewriteRule . index.php [PT]',
 			'close_block' => '### HABARI END',
 		);
-		$rewrite_base= trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
+		$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
 		if ( $rewrite_base != '' ) {
 			$htaccess['rewrite_base']= 'RewriteBase /' . $rewrite_base;
 		}
@@ -815,31 +815,31 @@ class InstallHandler extends ActionHandler {
 			return true;
 		}
 
-		$result= false;
+		$result = false;
 		if ( file_exists( HABARI_PATH . '/.htaccess') ) {
-			$htaccess= file_get_contents( HABARI_PATH . '/.htaccess');
+			$htaccess = file_get_contents( HABARI_PATH . '/.htaccess');
 			if ( false === strpos( $htaccess, 'HABARI' ) ) {
 				// the Habari block does not exist in this file
 				// so try to create it
-				$result= $this->write_htaccess( true );
+				$result = $this->write_htaccess( true );
 			} else {
 				// the Habari block exists
-				$result= true;
+				$result = true;
 			}
 		}
 		else {
 			// no .htaccess exists.  Try to create one
-			$result= $this->write_htaccess( false );
+			$result = $this->write_htaccess( false );
 		}
 		if ( $result ) {
 			// the Habari block exists, but we need to make sure
 			// it is correct.
 			// Check that the rewrite rules actually do the job.
-			$test_ajax_url= Site::get_url( 'habari' ) . '/check_mod_rewrite';
-			$rr= new RemoteRequest( $test_ajax_url, 'POST', 20 );
-			$rr_result= $rr->execute();
+			$test_ajax_url = Site::get_url( 'habari' ) . '/check_mod_rewrite';
+			$rr = new RemoteRequest( $test_ajax_url, 'POST', 20 );
+			$rr_result = $rr->execute();
 			if ( ! $rr->executed() ) {
-				$result= $this->write_htaccess( true, true, true );
+				$result = $this->write_htaccess( true, true, true );
 			}
 		}
 
@@ -857,10 +857,10 @@ class InstallHandler extends ActionHandler {
 	{
 		$htaccess = $this->htaccess();
 		if($rewritebase) {
-			$rewrite_base= trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
+			$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
 			$htaccess['rewrite_base']= 'RewriteBase /' . $rewrite_base;
 		}
-		$file_contents= "\n" . implode( "\n", $htaccess ) . "\n";
+		$file_contents = "\n" . implode( "\n", $htaccess ) . "\n";
 
 		if ( ! $exists ) {
 			if ( ! is_writable( HABARI_PATH ) ) {
@@ -887,7 +887,7 @@ class InstallHandler extends ActionHandler {
 			$fmode = 'a';
 		}
 		//Save the htaccess
-		if ( $fh= fopen( HABARI_PATH . '/.htaccess', $fmode ) ) {
+		if ( $fh = fopen( HABARI_PATH . '/.htaccess', $fmode ) ) {
 			if ( FALSE === fwrite( $fh, $file_contents ) ) {
 				return false;
 			}
@@ -1050,14 +1050,14 @@ class InstallHandler extends ActionHandler {
 		// fix duplicate tag_slug's
 				
 		// first, get all the tags with duplicate entries
-		$query= 'select id, tag_slug, tag_text from ' . DB::table( 'tags' ) . ' where tag_slug in ( select tag_slug from ' . DB::table( 'tags' ) . ' group by tag_slug having count(*) > 1 ) order by id';
-		$tags= DB::get_results( $query );
+		$query = 'select id, tag_slug, tag_text from ' . DB::table( 'tags' ) . ' where tag_slug in ( select tag_slug from ' . DB::table( 'tags' ) . ' group by tag_slug having count(*) > 1 ) order by id';
+		$tags = DB::get_results( $query );
 		
 		// assuming we got some tags to fix...
 		if ( count( $tags ) > 0 ) {
 			
-			$slug_to_id= array();
-			$fix_tags= array();
+			$slug_to_id = array();
+			$fix_tags = array();
 			
 			foreach ( $tags as $tag_row ) {
 				
@@ -1118,7 +1118,7 @@ class InstallHandler extends ActionHandler {
 		DB::upgrade( $version );
 
 		// Get the queries for this database and apply the changes to the structure
-		$queries= $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
+		$queries = $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
 		DB::dbdelta($queries);
 
 		// Apply data changes to the database based on version, call the db-specific upgrades, too.
@@ -1149,12 +1149,12 @@ class InstallHandler extends ActionHandler {
 	private function upgrade_db_post_1845 ( ) {
 		
 		// Strip the base path off active plugins
-		$base_path= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
-		$activated= Options::get( 'active_plugins' );
+		$base_path = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
+		$activated = Options::get( 'active_plugins' );
 		if( is_array( $activated ) ) {
 			foreach( $activated as $plugin ) {
-				$index= array_search( $plugin, $activated );
-				$plugin= str_replace( $base_path, '', $plugin );
+				$index = array_search( $plugin, $activated );
+				$plugin = str_replace( $base_path, '', $plugin );
 				$activated[$index]= $plugin;
 			}
 			Options::set( 'active_plugins', $activated );
@@ -1190,36 +1190,36 @@ class InstallHandler extends ActionHandler {
 	 * Try to connect and verify if database name exists
 	 */
 	public function ajax_check_mysql_credentials() {
-		$xml= new SimpleXMLElement('<response></response>');
+		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
 			$xml->addChild( 'status', 0 );
-			$xml_error= $xml->addChild( 'error' );
+			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#mysqldatabasehost' );
 			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
 		}
 		if ( !isset( $_POST['database'] ) ) {
 			$xml->addChild( 'status', 0 );
-			$xml_error= $xml->addChild( 'error' );
+			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#mysqldatabasename' );
 			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
 		}
 		if ( !isset( $_POST['user'] ) ) {
 			$xml->addChild( 'status', 0 );
-			$xml_error= $xml->addChild( 'error' );
+			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#mysqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
-			$pdo= 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
+			$pdo = 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
 			try {
-				$connect= DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
 				$xml->addChild( 'status', 1 );
 			}
 			catch(Exception $e) {
 				$xml->addChild( 'status', 0 );
-				$xml_error= $xml->addChild( 'error' );
+				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
 					$xml_error->addChild( 'id', '#mysqldatabaseuser' );
 					$xml_error->addChild( 'id', '#mysqldatabasepass' );
@@ -1242,7 +1242,7 @@ class InstallHandler extends ActionHandler {
 				}
 			}
 		}
-		$xml= $xml->asXML();
+		$xml = $xml->asXML();
 		ob_clean();
 		header("Content-type: text/xml");
 		header("Cache-Control: no-cache");
@@ -1254,36 +1254,36 @@ class InstallHandler extends ActionHandler {
 	 * Try to connect and verify if database name exists
 	 */
 	public function ajax_check_pgsql_credentials() {
-		$xml= new SimpleXMLElement('<response></response>');
+		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
 			$xml->addChild( 'status', 0 );
-			$xml_error= $xml->addChild( 'error' );
+			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabasehost' );
 			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
 		}
 		if ( !isset( $_POST['database'] ) ) {
 			$xml->addChild( 'status', 0 );
-			$xml_error= $xml->addChild( 'error' );
+			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabasename' );
 			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
 		}
 		if ( !isset( $_POST['user'] ) ) {
 			$xml->addChild( 'status', 0 );
-			$xml_error= $xml->addChild( 'error' );
+			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
-			$pdo= 'pgsql:host=' . $_POST['host'] . ' dbname=' . $_POST['database'];
+			$pdo = 'pgsql:host=' . $_POST['host'] . ' dbname=' . $_POST['database'];
 			try {
-				$connect= DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
+				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
 				$xml->addChild( 'status', 1 );
 			}
 			catch(Exception $e) {
 				$xml->addChild( 'status', 0 );
-				$xml_error= $xml->addChild( 'error' );
+				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
 					$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
 					$xml_error->addChild( 'id', '#pgsqldatabasepass' );
@@ -1306,7 +1306,7 @@ class InstallHandler extends ActionHandler {
 				}
 			}
 		}
-		$xml= $xml->asXML();
+		$xml = $xml->asXML();
 		ob_clean();
 		header("Content-type: text/xml");
 		header("Cache-Control: no-cache");
@@ -1318,31 +1318,31 @@ class InstallHandler extends ActionHandler {
 	 * Try to connect and verify if database name exists
 	 */
 	public function ajax_check_sqlite_credentials() {
-		$db_file= $_POST['file'];
-		$xml= new SimpleXMLElement('<response></response>');
+		$db_file = $_POST['file'];
+		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
 		if ( !isset( $db_file ) ) {
 			$xml->addChild( 'status', 0 );
-			$xml_error= $xml->addChild( 'error' );
+			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#databasefile' );
 			$xml_error->addChild( 'message', _t('The database file was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
 			if ( ! is_writable( dirname( $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
-				$xml_error= $xml->addChild( 'error' );
+				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
 				$xml_error->addChild( 'message', _t('SQLite requires that the directory that holds the DB file be writable by the web server.') );
 			} elseif ( file_exists( $db_file ) && ( ! is_writable( $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
-				$xml_error= $xml->addChild( 'error' );
+				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
 
 				$xml_error->addChild( 'message', _t('The SQLite data file is not writable by the web server.') );
 			} else {
 				// Can we connect to the DB?
-				$pdo= 'sqlite:' . $db_file;
-				$connect= DB::connect( $pdo, null, null );
+				$pdo = 'sqlite:' . $db_file;
+				$connect = DB::connect( $pdo, null, null );
 
 				// Don't leave empty files laying around
 				DB::disconnect();
@@ -1358,14 +1358,14 @@ class InstallHandler extends ActionHandler {
 					default:
 						// We can't create the database file, send an error message.
 						$xml->addChild( 'status', 0 );
-						$xml_error= $xml->addChild( 'error' );
+						$xml_error = $xml->addChild( 'error' );
 						// TODO: Add error codes handling for user-friendly messages
 						$xml_error->addChild( 'id', '#databasefile' );
 						$xml_error->addChild( 'message', $connect->getMessage() );
 				}
 			}
 		}
-		$xml= $xml->asXML();
+		$xml = $xml->asXML();
 		ob_clean();
 		header("Content-type: text/xml");
 		header("Cache-Control: no-cache");

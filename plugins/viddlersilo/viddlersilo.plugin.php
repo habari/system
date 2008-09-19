@@ -20,14 +20,14 @@
 
 class Phpviddler {
 
-	var $apiKey= '01172c643b9743485249534a4441564953151';
-	var $viddlerREST= 'http://api.viddler.com/rest/v1/'; // REST URL Version 1.0
+	var $apiKey = '01172c643b9743485249534a4441564953151';
+	var $viddlerREST = 'http://api.viddler.com/rest/v1/'; // REST URL Version 1.0
 	var $xml; // Raw XML returned by API
 	var $response; // Array of results
-	var $parser= false; // Use the included XML parser? Default: true.
+	var $parser = false; // Use the included XML parser? Default: true.
 
 	// Optional
-	var $uploaddir= false; // Used for temporary upload directory.
+	var $uploaddir = false; // Used for temporary upload directory.
 /*##########  User functions ########### */
 	/* viddler.users.auth
 	/ accepts: $userInfo = array
@@ -36,7 +36,7 @@ class Phpviddler {
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.users.auth
 	*/
 	function user_authenticate($userInfo) {
-		$args= '';
+		$args = '';
 		$args = $this->buildArguments($userInfo); // Arguments as string
 		//var_dump( $args ); exit;
 		$xml = $this->sendRequest('viddler.users.auth',$args); // Get XML response
@@ -101,7 +101,7 @@ class Phpviddler {
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.users.setOptions
 	*/
 	function user_setoptions($options) {
-		$args= '';
+		$args = '';
 		$args = $this->buildArguments($options); // Arguments as string
 
 		$xml = $this->sendRequest('viddler.users.setOptions',$args); // Get XML response
@@ -135,7 +135,7 @@ class Phpviddler {
 	doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.upload
 	*/
 	function video_upload($videoInfo) {
-		$args= '';
+		$args = '';
 		$args = $this->buildArguments($videoInfo,'array'); // Arguments as array
 
 		$xml = $this->sendRequest('viddler.videos.upload',$args); // Get XML response
@@ -301,7 +301,7 @@ class Phpviddler {
 	/ returns: array - information about the videos matching this user
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.getByUser
 	*/
-	function videos_listbyuser($user,$page=1,$per_page=5) {
+	function videos_listbyuser($user,$page =1,$per_page =5) {
 
 		 // Get XML response
 		$xml = $this->sendRequest('viddler.videos.getByUser','user='.$user.'&page='.$page.'&per_page='.$per_page);
@@ -331,7 +331,7 @@ class Phpviddler {
 	/ returns: array - information about videos matching this tag
 	/ doc: http://wiki.developers.viddler.com/index.php/Viddler.videos.getByTag
 	*/
-	function videos_listbytag($tag,$page=1,$per_page=5) {
+	function videos_listbytag($tag,$page =1,$per_page =5) {
 
 		 // Get XML response
 		$xml = $this->sendRequest('viddler.videos.getByTag','tag='.$tag.'&page='.$page.'&per_page='.$per_page);
@@ -624,7 +624,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_dir($path)
 	{
-		$user= User::identify()->info->viddler__username;
+		$user = User::identify()->info->viddler__username;
 
 		if(Cache::has('viddler:videos:' . $user)) {
 			$pre = Cache::get('viddler:videos:' . $user);
@@ -767,13 +767,13 @@ class ViddlerSilo extends Plugin implements MediaSilo
 			<div class="column span-14 prepend-4">
 			<h2>Record a Video</h2>
 			<p><?php
-			$user= User::identify()->info->viddler__username;
-			$pass= User::identify()->info->viddler__password;
-			$auth= $this->viddler->user_authenticate( array( 'user' => $user, 'password' => $pass, 'get_record_token' => 1 ) );
-			$sid= new SimpleXMLElement( $auth );
-			$mt= $test->video_getrecordtoken( $sid->sessionid );
-			$token= new SimpleXMLElement( $mt );
-			$embed= $test->video_getrecordembed( $token );
+			$user = User::identify()->info->viddler__username;
+			$pass = User::identify()->info->viddler__password;
+			$auth = $this->viddler->user_authenticate( array( 'user' => $user, 'password' => $pass, 'get_record_token' => 1 ) );
+			$sid = new SimpleXMLElement( $auth );
+			$mt = $test->video_getrecordtoken( $sid->sessionid );
+			$token = new SimpleXMLElement( $mt );
+			$embed = $test->video_getrecordembed( $token );
 			echo $embed;
 			?></p>
 		</div>
@@ -800,7 +800,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function filter_plugin_config( $actions, $plugin_id ) {
 		if ( $plugin_id == $this->plugin_id() ) {
-			$viddler_ok= $this->is_auth();
+			$viddler_ok = $this->is_auth();
 			if( $viddler_ok ) {
 				$actions[]= 'Log Out';
 			} else {
@@ -819,7 +819,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	public function action_plugin_ui( $plugin_id, $action ) {
 		switch ( $action ) {
 			case 'Log In':
-				$ui= new FormUI( strtolower( get_class( $this ) ) );
+				$ui = new FormUI( strtolower( get_class( $this ) ) );
 				$ui->append('text', 'username', 'user:viddler__username', 'Viddler Username:');
 				$ui->append('password', 'password', 'user:viddler__password', 'Viddler Password:');
 				$ui->append('submit', 'submit', 'Log In');
@@ -862,9 +862,9 @@ class ViddlerSilo extends Plugin implements MediaSilo
 		$username = $ui->username->value;
 		$password = $ui->password->value;
 		if($username != '' && $password != '') {
-			$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
+			$auth = $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
 
-			$xml= new SimpleXMLElement( $auth );
+			$xml = new SimpleXMLElement( $auth );
 			$token = (string) $xml->sessionid;
 			if($token == '') {
 		  	$ui->set_option('success_message', _t('The username and password you supplied failed to log in to Viddler.'));
@@ -882,7 +882,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 
 	private function is_auth()
 	{
-		$token= User::identify()->info->viddler__token;
+		$token = User::identify()->info->viddler__token;
 		if( $token != '' ) {
 			return true;
 		} else {

@@ -7,7 +7,7 @@
  **/
 class Error extends Exception
 {
-	protected $message= '';
+	protected $message = '';
 	protected $is_error = false;
 	
 	/**
@@ -62,11 +62,11 @@ class Error extends Exception
 	 */
 	public function humane_error()
 	{
-		$trace= $this->getTrace();
-		$trace1= reset($trace);
+		$trace = $this->getTrace();
+		$trace1 = reset($trace);
 		
-		$file= isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
-		$line= isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
+		$file = isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
+		$line = isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
 		
 		return sprintf(_t('%1$s in %2$s line %3$s on request of "%4$s"'), $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI']);
 	}
@@ -81,7 +81,7 @@ class Error extends Exception
 		}
 
 		// Don't be fooled, we can't actually handle most of these.
-		$error_names= array(
+		$error_names = array(
 			E_ERROR => 'Error',
 			E_WARNING => 'Warning',
 			E_PARSE => 'Parse Error',
@@ -98,7 +98,7 @@ class Error extends Exception
 		);
 
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
-			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
+			$errfile = substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
 		
 		if ( ini_get('display_errors') || DEBUG ) {
@@ -123,10 +123,10 @@ class Error extends Exception
 	 * 
 	 * @param array $trace An optional array of trace data
 	 */
-	private static function print_backtrace( $trace= null )
+	private static function print_backtrace( $trace = null )
 	{
 		if ( !isset($trace) ) {
-			$trace= debug_backtrace();
+			$trace = debug_backtrace();
 		}
 		print "<pre class=\"backtrace\">\n";
 		$defaults = array(
@@ -149,7 +149,7 @@ class Error extends Exception
 			}
 
 			if(defined('DEBUG_ARGS')) {
-				$args= array();
+				$args = array();
 				foreach ( $a['args'] as $arg ) {
 					$args[]= htmlentities( str_replace(
 						array( "\n", "\r" ),
@@ -157,9 +157,9 @@ class Error extends Exception
 						var_export( $arg, true )
 					) );
 				}
-				$args= implode( ",    ", $args );
+				$args = implode( ",    ", $args );
 				if ( strlen( $args ) > 1024 ) {
-					$args= substr( $args, 0, 1021 ) . '...';
+					$args = substr( $args, 0, 1021 ) . '...';
 				}
 			}
 			else {

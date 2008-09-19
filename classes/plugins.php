@@ -8,9 +8,9 @@
 
 class Plugins
 {
-	private static $hooks= array();
-	private static $plugins= array();
-	private static $plugin_files= array();
+	private static $hooks = array();
+	private static $plugins = array();
+	private static $plugin_files = array();
 	private static $plugin_classes = array();
 
 	/**
@@ -173,7 +173,7 @@ class Plugins
 	 * @param boolean Whether to refresh the cached array.  Default FALSE
 	 * @return array An array of filenames
 	 **/
-	public static function list_active( $refresh= false )
+	public static function list_active( $refresh = false )
 	{
 		if ( ! empty( self::$plugin_files ) && ! $refresh )
 		{
@@ -183,7 +183,7 @@ class Plugins
 		if( is_array($plugins) ) {
 			foreach( $plugins as $plugin ) {
 				// add base path to stored path
-				$plugin= HABARI_PATH . $plugin;
+				$plugin = HABARI_PATH . $plugin;
 
 				if( file_exists( $plugin ) ) {
 					self::$plugin_files[] = $plugin;
@@ -191,7 +191,7 @@ class Plugins
 			}
 		}
 		// make sure things work on Windows
-		self::$plugin_files= array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), self::$plugin_files );
+		self::$plugin_files = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), self::$plugin_files );
 		return self::$plugin_files;
 	}
 
@@ -222,22 +222,22 @@ class Plugins
 	 **/
 	public static function list_all()
 	{
-		$plugins= array();
-		$plugindirs= array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/3rdparty/plugins/', HABARI_PATH . '/user/plugins/' );
+		$plugins = array();
+		$plugindirs = array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/3rdparty/plugins/', HABARI_PATH . '/user/plugins/' );
 		if ( Site::CONFIG_LOCAL != Site::$config_type ) {
 			// include site-specific plugins
 			$plugindirs[]= Site::get_dir( 'config' ) . '/plugins/';
 		}
-		$dirs= array();
+		$dirs = array();
 		foreach ( $plugindirs as $plugindir ) {
 			if ( file_exists( $plugindir ) ) {
-				$dirs= array_merge( $dirs, Utils::glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK ) );
+				$dirs = array_merge( $dirs, Utils::glob( $plugindir . '*', GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 		}
 		foreach ( $dirs as $dir ) {
-			$dirfiles= Utils::glob( $dir . '*.plugin.php' );
+			$dirfiles = Utils::glob( $dir . '*.plugin.php' );
 			if ( ! empty( $dirfiles ) ) {
-				$dirfiles= array_combine(
+				$dirfiles = array_combine(
 					// Use the basename of the file as the index to use the named plugin from the last directory in $dirs
 					array_map( 'basename', $dirfiles ),
 					// massage the filenames so that this works on Windows
@@ -257,7 +257,7 @@ class Plugins
 	 **/
 	public static function extends_plugin( $class )
 	{
-		$parents= class_parents( $class, false );
+		$parents = class_parents( $class, false );
 		return in_array( 'Plugin', $parents );
 	}
 
@@ -277,8 +277,8 @@ class Plugins
 			self::get_plugin_classes();
 		}
 		foreach ( self::$plugin_classes as $plugin ) {
-			$class= new ReflectionClass( $plugin );
-			$classfile= str_replace( '\\', '/', $class->getFileName() );
+			$class = new ReflectionClass( $plugin );
+			$classfile = str_replace( '\\', '/', $class->getFileName() );
 			if ( $classfile == $file ) {
 				return $plugin;
 			}
@@ -294,8 +294,8 @@ class Plugins
 	
 	public static function get_plugin_classes()
 	{
-		$classes= get_declared_classes();
-		self::$plugin_classes= array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
+		$classes = get_declared_classes();
+		self::$plugin_classes = array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
 	}
 
 	/**
@@ -307,7 +307,7 @@ class Plugins
 	 **/
 	public static function load( $file, $activate = true )
 	{
-		$class= Plugins::class_from_filename( $file );
+		$class = Plugins::class_from_filename( $file );
 		$plugin = new $class;
 		self::$plugins[$plugin->plugin_id]= $plugin;
 		if($activate) {
@@ -335,11 +335,11 @@ class Plugins
 	 **/
 	public static function activate_plugin( $file )
 	{
-		$ok= true;
-		$ok= Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
+		$ok = true;
+		$ok = Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
 		if($ok) {
 			// strip base path from stored path
-			$short_file= substr( $file, strlen( HABARI_PATH ) );
+			$short_file = substr( $file, strlen( HABARI_PATH ) );
 
 			$activated = Options::get( 'active_plugins' );
 			if( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
@@ -347,7 +347,7 @@ class Plugins
 				Options::set( 'active_plugins', $activated );
 				include_once($file);
 				self::get_plugin_classes();
-				$plugin= Plugins::load($file);
+				$plugin = Plugins::load($file);
 				Plugins::act('plugin_activation', $file); // For the plugin to install itself
 				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
 			}
@@ -359,14 +359,14 @@ class Plugins
 	 **/
 	public static function deactivate_plugin( $file )
 	{
-		$ok= true;
-		$ok= Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
+		$ok = true;
+		$ok = Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
 		if($ok) {
 			// strip base path from stored path
-			$short_file= substr( $file, strlen( HABARI_PATH ) );
+			$short_file = substr( $file, strlen( HABARI_PATH ) );
 
 			$activated = Options::get( 'active_plugins' );
-			$index= array_search( $short_file, $activated );
+			$index = array_search( $short_file, $activated );
 			if ( is_array( $activated ) && ( FALSE !== $index ) )
 			{
 				Plugins::act('plugin_deactivation', $file);  // For the plugin to uninstall itself
@@ -384,7 +384,7 @@ class Plugins
 	 **/
 	public static function changed_since_last_activation()
 	{
-		$old_plugins= Options::get('plugins_present');
+		$old_plugins = Options::get('plugins_present');
 		//self::set_present();
 		// If the plugin list was never stored, then they've changed.
 		if(!is_array($old_plugins)) {
@@ -395,14 +395,14 @@ class Plugins
 			$old_plugin = HABARI_PATH . $old_plugin;
 		}
 		// If the file list is not identical, then they've changed.
-		$new_plugin_files= Plugins::list_all();
-		$old_plugin_files= array_map(create_function('$a', 'return $a["file"];'), $old_plugins);
+		$new_plugin_files = Plugins::list_all();
+		$old_plugin_files = array_map(create_function('$a', 'return $a["file"];'), $old_plugins);
 		if(count(array_intersect($new_plugin_files, $old_plugin_files)) != count($new_plugin_files)) {
 			return true;
 		}
 		// If the files are not identical, then they've changed.
-		$old_plugin_checksums= array_map(create_function('$a', 'return $a["checksum"];'), $old_plugins);
-		$new_plugin_checksums= array_map('md5_file', $new_plugin_files);
+		$old_plugin_checksums = array_map(create_function('$a', 'return $a["checksum"];'), $old_plugins);
+		$new_plugin_checksums = array_map('md5_file', $new_plugin_files);
 		if(count(array_intersect($old_plugin_checksums, $new_plugin_checksums)) != count($new_plugin_checksums)) {
 			return true;
 		}
@@ -415,13 +415,13 @@ class Plugins
 	 **/
 	public static function set_present()
 	{
-		$plugin_files= Plugins::list_all();
+		$plugin_files = Plugins::list_all();
 		// strip base path
 		foreach( $plugin_files as $plugin_file ) {
-			$plugin_file= substr( $file, strlen( HABARI_PATH ) );
+			$plugin_file = substr( $file, strlen( HABARI_PATH ) );
 		}
 		
-		$plugin_data= array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
+		$plugin_data = array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
 		Options::set('plugins_present', $plugin_data);
 	}
 
@@ -433,7 +433,7 @@ class Plugins
 	 * @param string $version Optional minimal version of the plugin.
 	 * @return bool Returns true if name is found and version is equal or higher than required.
 	 */
-	public static function is_loaded( $name, $version= NULL ) {
+	public static function is_loaded( $name, $version = NULL ) {
 		foreach ( self::$plugins as $plugin ) {
 			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || strtolower($plugin->info->guid) == strtolower($name)) {
 				if ( isset( $version ) ) {
@@ -454,8 +454,8 @@ class Plugins
 	 * @return bool Returns true if all plugins were valid, return false if a plugin (or more) failed.
 	 */
 	public function check_every_plugin_syntax() {
-		$failed_plugins= array();
-		$all_plugins= self::list_all();
+		$failed_plugins = array();
+		$all_plugins = self::list_all();
 
 		foreach ( $all_plugins as $file ) {
 			$error = '';

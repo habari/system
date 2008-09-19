@@ -7,7 +7,7 @@
 abstract class Singleton
 {
 	// Single instance of class available.
-	private static $instances= array();
+	private static $instances = array();
 
 	/**
 	 * Declarations that extend this method must have the same signature

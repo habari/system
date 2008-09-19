@@ -27,8 +27,8 @@
 
 				<?php
 				if ( $plugin['active'] ) {
-					$plugin_actions= array();
-					$plugin_actions= Plugins::filter( 'plugin_config', $plugin_actions, $plugin['plugin_id'] );
+					$plugin_actions = array();
+					$plugin_actions = Plugins::filter( 'plugin_config', $plugin_actions, $plugin['plugin_id'] );
 					foreach( $plugin['actions'] as $plugin_action => $plugin_action_caption ) {
 						if( isset($configure) && ($configure == $plugin['plugin_id']) && ($configaction == $plugin_action) )
 							continue;

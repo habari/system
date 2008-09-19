@@ -153,7 +153,7 @@ class Format
 		$output = preg_replace( "/<br>\s*($cleanNestedRegex)/", '$1', $output );
 
 		// Finally, move misplaced p tags to after hr tags
-		$output= preg_replace( '%<p><hr\s*/*\s*>%', "<hr/><p>", $output );
+		$output = preg_replace( '%<p><hr\s*/*\s*>%', "<hr/><p>", $output );
 
 		return trim( $output );
 
@@ -177,7 +177,7 @@ class Format
 			$between_last = _t( ' and ' );
 		}
 
-		$last= array_pop( $array );
+		$last = array_pop( $array );
 		$out = implode(', ', $array );
 		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
@@ -247,23 +247,23 @@ class Format
 	 * @param integer $maxparagraphs Maximum paragraphs to display [1]
 	 * @return string The string, shortened
 	 **/
-	public static function summarize( $text, $count= 100, $maxparagraphs= 1 )
+	public static function summarize( $text, $count = 100, $maxparagraphs = 1 )
 	{
 		preg_match_all( '/<script.*?<\/script.*?>/', $text, $scripts );
 		preg_replace( '/<script.*?<\/script.*?>/', '', $text );
 
 		$words = preg_split( '/(<(?:\\s|".*?"|[^>])+>|\\s+)/', $text, $count + 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
 
-		$ellipsis= '';
+		$ellipsis = '';
 		if( count( $words ) > $count * 2 ) {
 			array_pop( $words );
-			$ellipsis= '...';
+			$ellipsis = '...';
 		}
-		$output= '';
+		$output = '';
 
-		$paragraphs= 0;
+		$paragraphs = 0;
 
-		$stack= array();
+		$stack = array();
 		foreach( $words as $word ) {
 			if ( preg_match( '/<.*\/\\s*>$/', $word ) ) {
 				// If the tag self-closes, do nothing.
@@ -282,7 +282,7 @@ class Format
 					$paragraphs++;
 					if( $paragraphs >= $maxparagraphs ) {
 						$output.= '...' . $word;
-						$ellipsis= '';
+						$ellipsis = '';
 						break 2;
 					}
 				}
@@ -301,7 +301,7 @@ class Format
 
 		if ( count( $stack ) > 0 ) {
 			preg_match( '/<(\\w+)/', $stack[0], $tagn );
-			$stack= array_reverse( $stack );
+			$stack = array_reverse( $stack );
 			foreach ( $stack as $tag ) {
 				preg_match( '/<(\\w+)/', $tag, $tagn );
 				$output.= '</' . $tagn[1] . '>';
@@ -334,7 +334,7 @@ class Format
 			return $content;
 		}
 		else {
-			$matches= preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
+			$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
 			if(count($matches) > 1) {
 				return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
 			}
@@ -393,13 +393,13 @@ class Format
 		$output = '';
 		if ( count( $errors ) ) {
 			foreach ( $errors as $error ) {
-				$error= addslashes($error);
+				$error = addslashes($error);
 				$output.= "humanMsg.displayMsg('{$error}');";
 			}
 		}
 		if ( count( $notices ) ) {
 			foreach ( $notices as $notice ) {
-				$notice= addslashes($notice);
+				$notice = addslashes($notice);
 				$output.= "humanMsg.displayMsg('{$notice}');";
 			}
 		}

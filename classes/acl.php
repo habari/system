@@ -107,19 +107,19 @@ class ACL {
 	**/
 	public static function create_permission( $name, $description )
 	{
-		$name= self::normalize_permission( $name );
+		$name = self::normalize_permission( $name );
 		// first, make sure this isn't a duplicate
 		if ( ACL::token_exists( $name ) ) {
 			return false;
 		}
-		$allow= true;
+		$allow = true;
 		// Plugins have the opportunity to prevent adding this permission
-		$allow= Plugins::filter('permission_create_allow', $allow, $name, $description );
+		$allow = Plugins::filter('permission_create_allow', $allow, $name, $description );
 		if ( ! $allow ) {
 			return false;
 		}
 		Plugins::act('permission_create_before', $name, $description);
-		$result= DB::query('INSERT INTO {tokens} (name, description) VALUES (?, ?)', array( $name, $description) );
+		$result = DB::query('INSERT INTO {tokens} (name, description) VALUES (?, ?)', array( $name, $description) );
 
 		if ( ! $result ) {
 			// if it didn't work, don't bother trying to log it
@@ -173,11 +173,11 @@ class ACL {
 	 * @param string the order in which to sort the returning array
 	 * @return array an array of QueryRecord objects containing all permissions
 	**/
-	public static function all_permissions( $order= 'id' )
+	public static function all_permissions( $order = 'id' )
 	{
 		$order = strtolower( $order );
 		if ( ( 'id' != $order ) && ( 'name' != $order ) && ( 'description' != $order ) ) {
-			$order= 'id';
+			$order = 'id';
 		}
 		$permissions = DB::get_results( 'SELECT id, name, description FROM {tokens} ORDER BY ' . $order );
 		return $permissions ? $permissions : array();
@@ -207,7 +207,7 @@ class ACL {
 		if( is_numeric($name) ) {
 			return $name;
 		}
-		$name= self::normalize_permission( $name );
+		$name = self::normalize_permission( $name );
 		return DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) );
 	}
 
@@ -219,10 +219,10 @@ class ACL {
 	public static function token_description( $permission )
 	{
 		if ( is_int( $permission) ) {
-			$query= 'id';
+			$query = 'id';
 		} else {
-			$query= 'name';
-			$permission= self::normalize_permission( $permission );
+			$query = 'name';
+			$permission = self::normalize_permission( $permission );
 		}
 		return DB::get_value( "SELECT description FROM {tokens} WHERE $query=?", array( $permission ) );
 	}
@@ -235,11 +235,11 @@ class ACL {
 	public static function token_exists( $permission )
 	{
 		if ( is_numeric( $permission ) ) {
-			$query= 'id';
+			$query = 'id';
 		}
 		else {
-			$query= 'name';
-			$permission= self::normalize_permission( $permission );
+			$query = 'name';
+			$permission = self::normalize_permission( $permission );
 		}
 		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {tokens} WHERE $query=?", array( $permission ) ) > 0 );
 	}

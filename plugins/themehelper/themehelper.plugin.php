@@ -60,12 +60,12 @@ class ThemeHelper extends Plugin
 	 */
 	public function theme_comments_count( $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
 	{
-		$count= $post->comments->approved->count;
+		$count = $post->comments->approved->count;
 		if ($count >= 1) {
-			$text= _n( $one, $many, $count );
+			$text = _n( $one, $many, $count );
 		}
 		else {
-			$text= _t( $zero );
+			$text = _t( $zero );
 		}
 		return sprintf( $text, $count );
 	}

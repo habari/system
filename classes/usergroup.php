@@ -26,9 +26,9 @@ class UserGroup extends QueryRecord
 	 * Constructor for the UserGroup class
 	 * @param array $paramarray an associative array of UserGroup fields
 	**/
-	public function __construct( $paramarray= array() )
+	public function __construct( $paramarray = array() )
 	{
-		$this->fields= array_merge(
+		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields
 		);
@@ -36,8 +36,8 @@ class UserGroup extends QueryRecord
 
 		// if we have an ID, load this UserGroup's members & permissions
 		if ( $this->id ) {
-			if ( $result= DB::get_column( 'SELECT user_id FROM {users_groups} WHERE group_id= ?', array( $this->id ) ) ) {
-				$this->member_ids= $result;
+			if ( $result = DB::get_column( 'SELECT user_id FROM {users_groups} WHERE group_id= ?', array( $this->id ) ) ) {
+				$this->member_ids = $result;
 			}
 		}
 
@@ -52,7 +52,7 @@ class UserGroup extends QueryRecord
 	**/
 	public static function create( $paramarray )
 	{
-		$usergroup= new UserGroup( $paramarray );
+		$usergroup = new UserGroup( $paramarray );
 		if ( $usergroup->insert() ) {
 			return $usergroup;
 		}
@@ -66,15 +66,15 @@ class UserGroup extends QueryRecord
 	**/
 	public function insert()
 	{
-		$allow= true;
+		$allow = true;
 		// plugins have the opportunity to prevent insertion
-		$allow= Plugins::filter('usergroup_insert_allow', $allow, $this);
+		$allow = Plugins::filter('usergroup_insert_allow', $allow, $this);
 		if ( ! $allow ) {
 			return false;
 		}
 		Plugins::act('usergroup_insert_before', $this);
 		$this->exclude_fields('id');
-		$result= parent::insertRecord( DB::table('groups') );
+		$result = parent::insertRecord( DB::table('groups') );
 		$this->fields['id']= DB::last_insert_id();
 
 		$this->set_member_list();
@@ -89,9 +89,9 @@ class UserGroup extends QueryRecord
 	**/
 	public function update()
 	{
-		$allow= true;
+		$allow = true;
 		// plugins have the opportunity to prevent modification
-		$allow= Plugins::filter('usergroup_update_allow', $allow, $this);
+		$allow = Plugins::filter('usergroup_update_allow', $allow, $this);
 		if ( ! $allow ) {
 			return false;
 		}
@@ -122,20 +122,20 @@ class UserGroup extends QueryRecord
 	**/
 	public function delete()
 	{
-		$allow= true;
+		$allow = true;
 		// plugins have the opportunity to prevent deletion
-		$allow= Plugins::filter('usergroup_delete_allow', $allow, $this);
+		$allow = Plugins::filter('usergroup_delete_allow', $allow, $this);
 		 if ( ! $allow ) {
 		 	return;
 		}
 
 		Plugins::act('usergroup_delete_before', $this);
 		// remove all this group's permissions
-		$results= DB::query( 'DELETE FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) );
+		$results = DB::query( 'DELETE FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) );
 		// remove all this group's members
-		$results= DB::query( 'DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
+		$results = DB::query( 'DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
 		// remove this group
-		$result= parent::deleteRecord( DB::table('groups'), array( 'id' => $this->id ) );
+		$result = parent::deleteRecord( DB::table('groups'), array( 'id' => $this->id ) );
 		Plugins::act('usergroup_delete_after', $this);
 		return $result;
 	}
@@ -238,7 +238,7 @@ class UserGroup extends QueryRecord
 	**/
 	public function can( $permission, $access = 'full' )
 	{
-		$permission= ACL::token_id( $permission );
+		$permission = ACL::token_id( $permission );
 		if ( is_null( $this->permissions ) ) {
 			$this->load_permissions_cache();
 		}
@@ -262,7 +262,7 @@ class UserGroup extends QueryRecord
 	 */
 	public function load_permissions_cache()
 	{
-		if ( $results= DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
+		if ( $results = DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
 			foreach ( $results as $result ) {
 				$this->permissions[$result->token_id] = $result->permission_id;
 			}

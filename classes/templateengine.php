@@ -13,7 +13,7 @@
 abstract class TemplateEngine
 {
 	// directory where the template resides
-	protected $template_dir= null;
+	protected $template_dir = null;
 	
 	abstract function __construct(); // virtual - implement in derived class
 
@@ -81,7 +81,7 @@ abstract class TemplateEngine
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
-	abstract function assign( $key, $value='' ); // virtual - implement in derived class
+	abstract function assign( $key, $value ='' ); // virtual - implement in derived class
 
 	/**
 	 * Detects if a variable is assigned to the template engine for use in
@@ -98,7 +98,7 @@ abstract class TemplateEngine
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
-	abstract function append( $key, $value='' ); // virtual - implement in derived class
+	abstract function append( $key, $value ='' ); // virtual - implement in derived class
 	
 	/**
 	 * Sets the directory for the engine to find templates
@@ -106,7 +106,7 @@ abstract class TemplateEngine
 	 * @param mixed Directory path as string or array.  Earlier elements override later elements.
 	 */
 	public function set_template_dir( $dir ) {
-		$this->template_dir= $dir;
+		$this->template_dir = $dir;
 	}
 }
 

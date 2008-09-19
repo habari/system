@@ -26,29 +26,29 @@ interface RequestProcessor
  */
 class RemoteRequest
 {
-	private $method= 'GET';
+	private $method = 'GET';
 	private $url;
-	private $params= array();
-	private $headers= array();
-	private $body= '';
-	private $timeout= 180;
-	private $processor= NULL;
-	private $executed= FALSE;
+	private $params = array();
+	private $headers = array();
+	private $body = '';
+	private $timeout = 180;
+	private $processor = NULL;
+	private $executed = FALSE;
 	
-	private $response_body= '';
-	private $response_headers= '';
+	private $response_body = '';
+	private $response_headers = '';
 	
-	private $user_agent= 'Habari'; // TODO add version to that (Habari/0.1.4) 
+	private $user_agent = 'Habari'; // TODO add version to that (Habari/0.1.4) 
 	
 	/**
 	 * @param string $url URL to request
 	 * @param string $method Request method to use (default 'GET')
 	 * @param int $timeuot Timeout in seconds (default 180)
 	 */
-	public function __construct( $url, $method= 'GET', $timeout= 180 )
+	public function __construct( $url, $method = 'GET', $timeout = 180 )
 	{
-		$this->method= strtoupper( $method );
-		$this->url= $url;
+		$this->method = strtoupper( $method );
+		$this->url = $url;
 		$this->set_timeout( $timeout );
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
 		
@@ -56,10 +56,10 @@ class RemoteRequest
 		// fallback to srp for now
 		if ( function_exists( 'curl_init' )
 			 && ! ( ini_get( 'safe_mode' ) && ini_get( 'open_basedir' ) ) ) {
-			$this->processor= new CURLRequestProcessor;
+			$this->processor = new CURLRequestProcessor;
 		}
 		else {
-			$this->processor= new SocketRequestProcessor;
+			$this->processor = new SocketRequestProcessor;
 		}
 	}
 	
@@ -69,7 +69,7 @@ class RemoteRequest
 	 */
 	public function __set_processor( $processor )
 	{
-		$this->processor= $processor;
+		$this->processor = $processor;
 	}
 	
 	/**
@@ -79,7 +79,7 @@ class RemoteRequest
 	public function add_header( $header )
 	{
 		if ( is_array( $header ) ) {
-			$this->headers= array_merge( $this->headers, $header );
+			$this->headers = array_merge( $this->headers, $header );
 		}
 		else {
 			list( $k, $v )= explode( ': ', $header );
@@ -108,7 +108,7 @@ class RemoteRequest
 		if ( $this->method !== 'POST' )
 			return Error::raise( _t('Trying to add a request body to a non-POST request'), E_USER_WARNING );
 		
-		$this->body= $body;
+		$this->body = $body;
 	}
 	
 	/**
@@ -119,9 +119,9 @@ class RemoteRequest
 	public function set_params( $params )
 	{
 		if ( ! is_array( $params ) )
-			$params= parse_str( $params );
+			$params = parse_str( $params );
 		
-		$this->params= $params;
+		$this->params = $params;
 	}
 	
 	/**
@@ -130,7 +130,7 @@ class RemoteRequest
 	 */
 	public function set_timeout( $timeout )
 	{
-		$this->timeout= $timeout;
+		$this->timeout = $timeout;
 		return $this->timeout;
 	}
 	
@@ -140,9 +140,9 @@ class RemoteRequest
 	private function prepare()
 	{
 		// remove anchors (#foo) from the URL
-		$this->url= $this->strip_anchors( $this->url );
+		$this->url = $this->strip_anchors( $this->url );
 		// merge query params from the URL with params given
-		$this->url= $this->merge_query_params( $this->url, $this->params );
+		$this->url = $this->merge_query_params( $this->url, $this->params );
 		
 		if ( $this->method === 'POST' ) {
 			$this->add_header( array( 'Content-Length' => strlen( $this->body ) ) );
@@ -161,19 +161,19 @@ class RemoteRequest
 	public function execute()
 	{
 		$this->prepare();
-		$result= $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
+		$result = $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
 		
 		if ( $result && ! Error::is_error( $result ) ) { // XXX exceptions?
-			$this->response_headers= $this->processor->get_response_headers();
-			$this->response_body= $this->processor->get_response_body();
-			$this->executed= TRUE;
+			$this->response_headers = $this->processor->get_response_headers();
+			$this->response_body = $this->processor->get_response_body();
+			$this->executed = TRUE;
 			
 			return TRUE;
 		}
 		else {
 			// actually, processor->execute should throw an Error which would bubble up
 			// we need a new Error class and error handler for that, though
-			$this->executed= FALSE;
+			$this->executed = FALSE;
 			
 			return $result;
 		}
@@ -228,7 +228,7 @@ class RemoteRequest
 	 */
 	private function merge_query_params( $url, $params )
 	{
-		$urlparts= InputFilter::parse_url( $url );
+		$urlparts = InputFilter::parse_url( $url );
 		
 		if ( ! isset( $urlparts['query'] ) ) {
 			$urlparts['query']= '';
@@ -256,9 +256,9 @@ class RemoteRequest
 	 * @param int $maxlen how many bytes to return
 	 * @return string description
 	 */
-	public static function get_contents( $url, $use_include_path= FALSE, $context= NULL, $offset=0, $maxlen= -1 )
+	public static function get_contents( $url, $use_include_path = FALSE, $context = NULL, $offset =0, $maxlen = -1 )
 	{
-		$rr= new RemoteRequest( $url );
+		$rr = new RemoteRequest( $url );
 		if ( $rr->execute() === TRUE) {
 			return ( $maxlen != -1
 				? substr( $rr->get_response_body(), $offset, $maxlen )

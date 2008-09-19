@@ -8,7 +8,7 @@ class QueryProfile {
   public $start_time;     // time that query started execution
   public $end_time;       // time that query ended execution
   public $query_text;     // SQL text
-  public $backtrace= '';  // stack backtrace for debugging.
+  public $backtrace = '';  // stack backtrace for debugging.
 
   /**
    * Constructor for the query profile.  Automatically sets the 
@@ -17,19 +17,19 @@ class QueryProfile {
    * @param query SQL being executed
    */
   public function __construct($query) {
-    $this->query_text= $query;
+    $this->query_text = $query;
     /* Backtracing is very verbose. Enable only if set via query string */
     if (isset($_GET['db_profile']) 
       && $_GET['db_profile'] == 'verbose')
-      $this->backtrace= debug_backtrace();
+      $this->backtrace = debug_backtrace();
   }
 
   public function start() {
-    $this->start_time= $this->get_time_in_microseconds();
+    $this->start_time = $this->get_time_in_microseconds();
   }
 
   public function stop() {
-    $this->end_time= $this->get_time_in_microseconds();
+    $this->end_time = $this->get_time_in_microseconds();
   }
 
   public function __get($name) {

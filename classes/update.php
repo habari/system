@@ -62,7 +62,7 @@ class Update extends Singleton
 				Plugins::act('update_check');
 			}
 
-			$request= new RemoteRequest(UPDATE_URL, 'POST');
+			$request = new RemoteRequest(UPDATE_URL, 'POST');
 			$request->set_params(
 				array_map(
 					create_function('$a', 'return $a["version"];'),
@@ -70,15 +70,15 @@ class Update extends Singleton
 				)
 			);
 			$request->set_timeout( 10 );
-			$result= $request->execute();
+			$result = $request->execute();
 			if ( Error::is_error( $result ) ) {
 				throw $result;
 			}
-			$updatedata= $request->get_response_body();
+			$updatedata = $request->get_response_body();
 			if ( Error::is_error( $updatedata ) ) {
 				throw $updatedata;
 			}
-			$instance->update= new SimpleXMLElement($updatedata);
+			$instance->update = new SimpleXMLElement($updatedata);
 			foreach($instance->update as $beacon) {
 				$beaconid = (string)$beacon['id'];
 				foreach($beacon->update as $update) {

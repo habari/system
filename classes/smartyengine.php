@@ -15,7 +15,7 @@ require( HABARI_PATH . '/3rdparty/smarty/libs/Smarty.class.php' );
 class SmartyEngine extends TemplateEngine
 {
 	// Actual Smarty template processor
-	private $smarty= null;
+	private $smarty = null;
 
 	/**
 	 * Constructor for SmartyEngine
@@ -24,13 +24,13 @@ class SmartyEngine extends TemplateEngine
 	 */
 	public function __construct()
 	{
-		$this->smarty= new Smarty();
-		$this->smarty->compile_dir= HABARI_PATH . '/3rdparty/smarty/templates_c/';
-		$this->smarty->cache_dir= HABARI_PATH . '/3rdparty/smarty/cached/';
-		$this->smarty->plugins_dir= HABARI_PATH . '/3rdparty/smarty/libs/plugins/';
-		$this->smarty->force_compile= DEBUG;
-		$this->smarty->compile_check= DEBUG;
-		$this->smarty->caching= !DEBUG;
+		$this->smarty = new Smarty();
+		$this->smarty->compile_dir = HABARI_PATH . '/3rdparty/smarty/templates_c/';
+		$this->smarty->cache_dir = HABARI_PATH . '/3rdparty/smarty/cached/';
+		$this->smarty->plugins_dir = HABARI_PATH . '/3rdparty/smarty/libs/plugins/';
+		$this->smarty->force_compile = DEBUG;
+		$this->smarty->compile_check = DEBUG;
+		$this->smarty->caching = !DEBUG;
 	}
 
 
@@ -97,9 +97,9 @@ class SmartyEngine extends TemplateEngine
 		if ( $this->template_exists( $template ) ) {
 			//$template_file= Plugins::filter('include_template_file', $this->template_dir . $template . '.php', $template, __CLASS__);
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
-			$template_file= Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
+			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			// Set directory now to allow theme to load theme directory after constructor.
-			$this->smarty->template_dir= dirname($template_file);
+			$this->smarty->template_dir = dirname($template_file);
 			$this->smarty->display( basename($template_file) );
 		}
 
@@ -123,10 +123,10 @@ class SmartyEngine extends TemplateEngine
 				$templates = Utils::glob( $dir . '*.*' );
 				$alltemplates = array_merge($alltemplates, $templates);
 			}
-			$this->available_templates= array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.tpl' ) );
+			$this->available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.tpl' ) );
 			$this->template_map = array_combine($this->available_templates, $alltemplates);
 			array_unique($this->available_templates);
-			$this->available_templates= Plugins::filter('available_templates', $this->available_templates, __CLASS__);
+			$this->available_templates = Plugins::filter('available_templates', $this->available_templates, __CLASS__);
 		}
 		return in_array( $template, $this->available_templates );
 	}
@@ -140,7 +140,7 @@ class SmartyEngine extends TemplateEngine
 	public function fetch( $template )
 	{
 		// Set directory now to allow theme to load theme directory after contructor.
-		$this->smarty->template_dir= $this->template_dir;
+		$this->smarty->template_dir = $this->template_dir;
 		$this->smarty->fetch( $template );
 	}
 
@@ -151,7 +151,7 @@ class SmartyEngine extends TemplateEngine
 	 * @param key name( s ) of variable
 	 * @param value value of variable
 	 */
-	public function assign( $key, $value= '' )
+	public function assign( $key, $value = '' )
 	{
 		if ( ! is_array( $key ) ) {
 			$this->smarty->assign( $key, $value );
@@ -179,7 +179,7 @@ class SmartyEngine extends TemplateEngine
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
-	public function append( $key, $value= '' )
+	public function append( $key, $value = '' )
 	{
 		if ( ! is_array( $key ) ) {
 			$this->smarty->assign( $key, $value );
