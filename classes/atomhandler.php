@@ -575,9 +575,9 @@ class AtomHandler extends ActionHandler
 		*/
 	public function delete_entry( $slug )
 	{
-		$params = array(TRUE);
+		$params = array();
 
-		$this->is_auth();
+		$this->is_auth(TRUE);
 
 		$params['slug']= $slug;
 		$params['status'] = Post::status('published');
