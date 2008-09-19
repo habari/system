@@ -77,7 +77,7 @@ class XMLRPCClient
 			}
 		}
 
-		$request= new RemoteRequest($this->entrypoint, 'POST');
+		$request = new RemoteRequest($this->entrypoint, 'POST');
 		$request->add_header('Content-Type: text/xml');
 		$request->set_body($rpx->asXML());
 
@@ -92,8 +92,8 @@ class XMLRPCClient
 				error_reporting($bit && !E_WARNING);
 				$responsexml = new SimpleXMLElement($responseutf8);
 				error_reporting($bit);
-				if (!$responsestruct= reset($responsexml->xpath('//params/param/value'))) {
-					if (!$responsestruct= reset($responsexml->xpath('//fault/value'))) {
+				if (!$responsestruct = reset($responsexml->xpath('//params/param/value'))) {
+					if (!$responsestruct = reset($responsexml->xpath('//fault/value'))) {
 						throw new Exception(_t('Invalid XML response.'));
 					}
 				}

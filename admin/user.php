@@ -14,13 +14,13 @@
 		if ( ! $user ) {
 			echo "<p class='error'>" . _t('No such user!') . "</p>";
 		}
-		$who= $user->username;
-		$possessive= sprintf( _t("%s's User Information"), $user->username );;
+		$who = $user->username;
+		$possessive = sprintf( _t("%s's User Information"), $user->username );;
 	}
 	else {
-		$user= $currentuser;
-		$who= _t("You");
-		$possessive= _t("Your User Information");
+		$user = $currentuser;
+		$who = _t("You");
+		$possessive = _t("Your User Information");
 	}
 ?>
 
@@ -45,10 +45,10 @@
 <div class="container transparent userstats">
 <?php
 	$message_bits = array();
-	$post_statuses= Post::list_post_statuses();
+	$post_statuses = Post::list_post_statuses();
 	unset( $post_statuses[array_search( 'any', $post_statuses )] );
 	foreach ( $post_statuses as $status_name => $status_id ) {
-		$count= Posts::count_by_author( $user->id, $status_id );
+		$count = Posts::count_by_author( $user->id, $status_id );
 		if ( $count > 0 ) {
 			$message = '<strong><a href="' . URL::get( 'admin', array( 'page' => 'posts', 'user_id' => $user->id, 'type' => Post::type( 'any' ), 'status' => $status_id ) ) . '">';
 			$message.= sprintf( '%d ' . _n( _t( $status_name . ' post' ), _t( $status_name . ' posts' ), $count ), $count ) ;
@@ -225,7 +225,7 @@ if ( $user != $currentuser ) {
 	echo '<p><input type="hidden" name="delete" value="user"><p>'."\n";
 	echo '<p><input type="hidden" name="user_id" value="' . $user->id . '"><p>'."\n";
 	echo '<p><ul><li><input type="radio" name="reassign" id="purge" value="0" checked>' . _t('Delete posts') . '</li>';
-	$author_list= DB::get_results('SELECT id,username FROM ' . DB::table('users') . ' WHERE username <> ? ORDER BY username ASC', array( $user->username) );
+	$author_list = DB::get_results('SELECT id,username FROM ' . DB::table('users') . ' WHERE username <> ? ORDER BY username ASC', array( $user->username) );
 	foreach ( $author_list as $author ) {
 		$authors[ $author->id ]= $author->username;
 	}

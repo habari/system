@@ -76,7 +76,7 @@
 	 	foreach ($missing_extensions as $ext_name => $ext_url) {
 			$missing_ext_html[]= '<a href="' . $ext_url . '">' . $ext_name . '</a>';
 		}
-		$missing_ext_html= implode( ', ', $missing_ext_html );
+		$missing_ext_html = implode( ', ', $missing_ext_html );
 		?>
           <h2><?php _e('Missing Extensions'); ?></h2>
           <p class="instructions">

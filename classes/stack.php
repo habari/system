@@ -26,7 +26,7 @@
 
 class Stack
 {
-	private static $stacks= array();
+	private static $stacks = array();
 	
 	/**
 	 * Private constructor for Stack.
@@ -109,7 +109,7 @@ class Stack
 	public static function create_stack( $stack_name )
 	{
 		if ( empty( self::$stacks[$stack_name] ) ) {
-			$stack= array();
+			$stack = array();
 			self::$stacks[$stack_name] = $stack;
 		}
 		return self::$stacks[$stack_name];
@@ -122,10 +122,10 @@ class Stack
 	 * @param string $value_name The name of the value to add
 	 * @return array The stack that was added to	 
 	 **/	 
-	public static function add( $stack_name, $value, $value_name= null )
+	public static function add( $stack_name, $value, $value_name = null )
 	{
-		$stack= self::get_named_stack( $stack_name );
-		$value_name= $value_name ? $value_name : md5( serialize( $value ) );
+		$stack = self::get_named_stack( $stack_name );
+		$value_name = $value_name ? $value_name : md5( serialize( $value ) );
 		$stack[$value_name]= $value;
 		self::$stacks[$stack_name]= $stack;
 		return $stack;
@@ -139,7 +139,7 @@ class Stack
 	 **/	 
 	public static function remove( $stack_name, $value_name )
 	{
-		$stack= self::get_named_stack( $stack_name );
+		$stack = self::get_named_stack( $stack_name );
 		if ( isset( $stack[$value_name] ) ) {
 			unset( $stack[$value_name] );
 		}
@@ -154,9 +154,9 @@ class Stack
 	 **/	   	 
 	public static function get( $stack_name, $format = null)
 	{
-		$out= '';
-		$stack= self::get_named_stack( $stack_name );
-		$stack= Plugins::filter( 'stack_out', $stack, $stack_name );
+		$out = '';
+		$stack = self::get_named_stack( $stack_name );
+		$stack = Plugins::filter( 'stack_out', $stack, $stack_name );
 		foreach( $stack as $element ) {
 			if ( is_callable($format) ) {
 				$out.= call_user_func_array( $format, (array) $element ); 

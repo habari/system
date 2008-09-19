@@ -62,14 +62,14 @@ class CornerStone extends Theme
 		
 		parent::add_template_vars();		
 		//visiting page/2, /3 will offset to the next page of posts in the sidebar
-		$page=Controller::get_var( 'page' );
-		$pagination=Options::get('pagination');
-		if ( $page == '' ) { $page= 1; }
+		$page =Controller::get_var( 'page' );
+		$pagination =Options::get('pagination');
+		if ( $page == '' ) { $page = 1; }
 		$this->assign( 'more_posts', Posts::get(array ( 'status' => 'published','content_type' => 'entry', 'offset' => ($pagination)*($page), 'limit' => 5,  ) ) );
 	
 	}
 
-	public function act_display_home( $user_filters= array() )
+	public function act_display_home( $user_filters = array() )
 	{
 		//To exclude aside tag from main content loop
 	    parent::act_display_home( array( 'not:tag' => 'aside' ) );

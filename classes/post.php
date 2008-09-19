@@ -18,15 +18,15 @@
 class Post extends QueryRecord implements IsContent
 {
 	// static variables to hold post status and post type values
-	static $post_status_list= array();
-	static $post_type_list_active= array();
-	static $post_type_list_all= array();
+	static $post_status_list = array();
+	static $post_type_list_active = array();
+	static $post_type_list_all = array();
 
-	private $tags= null;
-	private $comments_object= null;
-	private $author_object= null;
+	private $tags = null;
+	private $comments_object = null;
+	private $author_object = null;
 
-	private $info= null;
+	private $info = null;
 	
 	protected $url_args;
 
@@ -35,14 +35,14 @@ class Post extends QueryRecord implements IsContent
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of post type names => integer values
 	**/
-	public static function list_active_post_types( $refresh= false )
+	public static function list_active_post_types( $refresh = false )
 	{
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_active ) ) ) {
 			return self::$post_type_list_active;
 		}
 		self::$post_type_list_active['any']= 0;
-		$sql= 'SELECT * FROM ' . DB::table( 'posttype' ) . ' WHERE active = 1 ORDER BY id ASC';
-		$results= DB::get_results( $sql );
+		$sql = 'SELECT * FROM ' . DB::table( 'posttype' ) . ' WHERE active = 1 ORDER BY id ASC';
+		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
 			self::$post_type_list_active[$result->name]= $result->id;
 		}
@@ -54,14 +54,14 @@ class Post extends QueryRecord implements IsContent
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of post type names => (integer values, active values)
 	**/
-	public static function list_all_post_types( $refresh= false )
+	public static function list_all_post_types( $refresh = false )
 	{
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_all ) ) ) {
 			return self::$post_type_list_all;
 		}
 		self::$post_type_list_all['any']= 0;
-		$sql= 'SELECT * FROM ' . DB::table( 'posttype' ) . ' ORDER BY id ASC';
-		$results= DB::get_results( $sql );
+		$sql = 'SELECT * FROM ' . DB::table( 'posttype' ) . ' ORDER BY id ASC';
+		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
 			self::$post_type_list_all[$result->name]= array(
 				'id' => $result->id,
@@ -73,13 +73,13 @@ class Post extends QueryRecord implements IsContent
 
 	public static function activate_post_type( $type )
 	{
-		$all_post_types= Post::list_all_post_types( true ); // We force a refresh
+		$all_post_types = Post::list_all_post_types( true ); // We force a refresh
 
 		// Check if it exists
 		if ( array_key_exists( $type, $all_post_types ) ) {
 			if ( ! $all_post_types[$type]['active'] == 1 ) {
 				// Activate it
-				$sql= 'UPDATE ' . DB::table( 'posttype' ) . ' SET active = 1 WHERE id = ' . $all_post_types[$type]['id'];
+				$sql = 'UPDATE ' . DB::table( 'posttype' ) . ' SET active = 1 WHERE id = ' . $all_post_types[$type]['id'];
 				DB::query( $sql );
 			}
 			return true;
@@ -91,11 +91,11 @@ class Post extends QueryRecord implements IsContent
 
 	public static function deactivate_post_type( $type )
 	{
-		$active_post_types= Post::list_active_post_types( false ); // We force a refresh
+		$active_post_types = Post::list_active_post_types( false ); // We force a refresh
 
 		if ( array_key_exists( $type, $active_post_types ) ) {
 			// $type is active so we'll deactivate it
-			$sql= 'UPDATE ' . DB::table( 'posttype' ) . ' SET active = 0 WHERE id = ' . $active_post_types[$type];
+			$sql = 'UPDATE ' . DB::table( 'posttype' ) . ' SET active = 0 WHERE id = ' . $active_post_types[$type];
 			DB::query( $sql );
 			return true;
 		}
@@ -107,9 +107,9 @@ class Post extends QueryRecord implements IsContent
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of post statuses names => interger values
 	**/
-	public static function list_post_statuses( $all= true, $refresh= false )
+	public static function list_post_statuses( $all = true, $refresh = false )
 	{
-		$statuses= array();
+		$statuses = array();
 		$statuses['any']= 0;
 		if ( ( ! $refresh ) && ( ! empty( self::$post_status_list ) ) ) {
 			foreach ( self::$post_status_list as $status ) {
@@ -122,9 +122,9 @@ class Post extends QueryRecord implements IsContent
 			}
 			return $statuses;
 		}
-		$sql= 'SELECT * FROM ' . DB::table( 'poststatus' ) . ' ORDER BY id ASC';
-		$results= DB::get_results( $sql );
-		self::$post_status_list= $results;
+		$sql = 'SELECT * FROM ' . DB::table( 'poststatus' ) . ' ORDER BY id ASC';
+		$results = DB::get_results( $sql );
+		self::$post_status_list = $results;
 		foreach ( self::$post_status_list as $status ) {
 			if ( $all ) {
 				$statuses[$status->name]= $status->id;
@@ -143,7 +143,7 @@ class Post extends QueryRecord implements IsContent
 	**/
 	public static function status( $name )
 	{
-		$statuses= Post::list_post_statuses();
+		$statuses = Post::list_post_statuses();
 		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $statuses ) ) ) {
 			return $name;
 		}
@@ -160,7 +160,7 @@ class Post extends QueryRecord implements IsContent
 	**/
 	public static function status_name( $status )
 	{
-		$statuses= array_flip( Post::list_post_statuses() );
+		$statuses = array_flip( Post::list_post_statuses() );
 		if ( is_numeric( $status ) && isset( $statuses[$status] ) ) {
 			return $statuses[$status];
 		}
@@ -177,7 +177,7 @@ class Post extends QueryRecord implements IsContent
 	**/
 	public static function type( $name )
 	{
-		$types= Post::list_active_post_types();
+		$types = Post::list_active_post_types();
 		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $types ) ) ) {
 			return $name;
 		}
@@ -194,7 +194,7 @@ class Post extends QueryRecord implements IsContent
 	**/
 	public static function type_name( $type )
 	{
-		$types= array_flip( Post::list_active_post_types() );
+		$types = array_flip( Post::list_active_post_types() );
 		if ( is_numeric( $type ) && isset( $types[$type] ) ) {
 			return $types[$type];
 		}
@@ -210,10 +210,10 @@ class Post extends QueryRecord implements IsContent
 	 * @param bool Whether the new post type is active or not
 	 * @return none
 	**/
-	public static function add_new_type( $type, $active= true )
+	public static function add_new_type( $type, $active = true )
 	{
 		// refresh the cache from the DB, just to be sure
-		$types= self::list_all_post_types( true );
+		$types = self::list_all_post_types( true );
 
 		if ( ! array_key_exists( $type, $types ) ) {
 			// Doesn't exist in DB.. add it and activate it.
@@ -226,8 +226,8 @@ class Post extends QueryRecord implements IsContent
 
 		// now force a refresh of the caches, so the new/activated type
 		// is available for immediate use
-		$types= self::list_active_post_types( true );
-		$types= self::list_all_post_types( true );
+		$types = self::list_active_post_types( true );
+		$types = self::list_all_post_types( true );
 	}
 
 	/**
@@ -237,17 +237,17 @@ class Post extends QueryRecord implements IsContent
 	 *	this status will NOT be presented to the user
 	 * @return none
 	**/
-	public static function add_new_status( $status, $internal= false )
+	public static function add_new_status( $status, $internal = false )
 	{
 		// refresh the cache from the DB, just to be sure
-		$statuses= self::list_post_statuses( true );
+		$statuses = self::list_post_statuses( true );
 		if ( ! array_key_exists( $status, $statuses ) ) {
 			// let's make sure we only insert an integer
-			$internal= intval( $internal );
+			$internal = intval( $internal );
 			DB::query( 'INSERT INTO ' . DB::table( 'poststatus' ) . ' (name, internal) VALUES (?, ?)', array( $status, $internal ) );
 			// force a refresh of the cache, so the new status
 			// is available for immediate use
-			$statuses= self::list_post_statuses( true, true );
+			$statuses = self::list_post_statuses( true, true );
 		}
 	}
 
@@ -277,10 +277,10 @@ class Post extends QueryRecord implements IsContent
 	 * Constructor for the Post class.
 	 * @param array $paramarray an associative array of initial Post field values.
 	 **/
-	public function __construct( $paramarray= array() )
+	public function __construct( $paramarray = array() )
 	{
 		// Defaults
-		$this->fields= array_merge(
+		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields,
 			$this->newfields
@@ -288,12 +288,12 @@ class Post extends QueryRecord implements IsContent
 
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) ) {
-			$this->tags= $this->parsetags( $this->fields['tags'] );
+			$this->tags = $this->parsetags( $this->fields['tags'] );
 			unset( $this->fields['tags'] );
 		}
 
 		$this->exclude_fields( 'id' );
-		$this->info= new PostInfo ( $this->fields['id'] );
+		$this->info = new PostInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 
@@ -307,10 +307,10 @@ class Post extends QueryRecord implements IsContent
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return Post The first post that matched the given criteria
 	 **/
-	static function get( $paramarray= array() )
+	static function get( $paramarray = array() )
 	{
 		// Defaults
-		$defaults= array (
+		$defaults = array (
 			'where' => array(
 				array(
 					'status' => Post::status( 'published' ),
@@ -318,7 +318,7 @@ class Post extends QueryRecord implements IsContent
 			),
 			'fetch_fn' => 'get_row',
 		);
-		if ( $user= User::identify() ) {
+		if ( $user = User::identify() ) {
 			$defaults['where'][]= array(
 				'user_id' => $user->id,
 			);
@@ -340,7 +340,7 @@ class Post extends QueryRecord implements IsContent
 	 **/
 	static function create( $paramarray )
 	{
-		$post= new Post( $paramarray );
+		$post = new Post( $paramarray );
 		$post->insert();
 		return $post;
 	}
@@ -355,37 +355,37 @@ class Post extends QueryRecord implements IsContent
 		// determine the base value from:
 		// - the new slug
 		if ( isset( $this->newfields['slug']) && $this->newfields['slug'] != '' ) {
-			$value= $this->newfields['slug'];
+			$value = $this->newfields['slug'];
 		}
 		// - the existing slug
 		elseif ( $this->fields['slug'] != '' ) {
-			$value= $this->fields['slug'];
+			$value = $this->fields['slug'];
 		}
 		// - the new post title
 		elseif ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
-			$value= $this->newfields['title'];
+			$value = $this->newfields['title'];
 		}
 		// - the existing post title
 		elseif ( $this->fields['title'] != '' ) {
-			$value= $this->fields['title'];
+			$value = $this->fields['title'];
 		}
 		// - default
 		else {
-			$value= 'Post';
+			$value = 'Post';
 		}
 
 		// make sure our slug is unique
-		$slug= Plugins::filter( 'post_setslug', $value );
-		$slug= Utils::slugify( $slug );
-		$postfix= '';
-		$postfixcount= 0;
+		$slug = Plugins::filter( 'post_setslug', $value );
+		$slug = Utils::slugify( $slug );
+		$postfix = '';
+		$postfixcount = 0;
 		do {
-			if ( ! $slugcount= DB::get_row( 'SELECT COUNT(slug) AS ct FROM ' . DB::table( 'posts' ) . ' WHERE slug = ?;', array( $slug . $postfix ) ) ) {
+			if ( ! $slugcount = DB::get_row( 'SELECT COUNT(slug) AS ct FROM ' . DB::table( 'posts' ) . ' WHERE slug = ?;', array( $slug . $postfix ) ) ) {
 				Utils::debug( DB::get_errors() );
 				exit;
 			}
 			if ( $slugcount->ct != 0 ) {
-				$postfix= "-" . ( ++$postfixcount );
+				$postfix = "-" . ( ++$postfixcount );
 			}
 		} while ( $slugcount->ct != 0 );
 
@@ -401,7 +401,7 @@ class Post extends QueryRecord implements IsContent
 			|| ( $this->newfields['guid'] == '' )  // GUID is empty
 			|| ( $this->newfields['guid'] == '//?p=' ) // GUID created by WP was erroneous (as is too common)
 		) {
-			$result= 'tag:' . Site::get_url( 'hostname' ) . ',' . date( 'Y' ) . ':' . $this->setslug() . '/' . time();
+			$result = 'tag:' . Site::get_url( 'hostname' ) . ',' . date( 'Y' ) . ':' . $this->setslug() . '/' . time();
 			$this->newfields['guid']= $result;
 		}
 		return $this->newfields['guid'];
@@ -415,7 +415,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function setstatus( $value )
 	{
-		$statuses= Post::list_post_statuses();
+		$statuses = Post::list_post_statuses();
 		if ( is_numeric( $value ) && in_array( $value, $statuses ) ) {
 			return $this->newfields['status']= $value;
 		}
@@ -433,17 +433,17 @@ class Post extends QueryRecord implements IsContent
 				return array();
 			}
 			// dirrty ;)
-			$rez= array( '\\"'=>':__unlikely_quote__:', '\\\''=>':__unlikely_apos__:' );
-			$zer= array( ':__unlikely_quote__:'=>'"', ':__unlikely_apos__:'=>"'" );
+			$rez = array( '\\"'=>':__unlikely_quote__:', '\\\''=>':__unlikely_apos__:' );
+			$zer = array( ':__unlikely_quote__:'=>'"', ':__unlikely_apos__:'=>"'" );
 			// escape
-			$tagstr= str_replace( array_keys( $rez ), $rez, $tags );
+			$tagstr = str_replace( array_keys( $rez ), $rez, $tags );
 			// match-o-matic
 			preg_match_all( '/((("|((?<= )|^)\')\\S([^\\3]*?)\\3((?=[\\W])|$))|[^,])+/', $tagstr, $matches );
 			// cleanup
-			$tags= array_map( 'trim', $matches[0] );
-			$tags= preg_replace( array_fill( 0, count( $tags ), '/^(["\'])(((?!").)+)(\\1)$/'), '$2', $tags );
+			$tags = array_map( 'trim', $matches[0] );
+			$tags = preg_replace( array_fill( 0, count( $tags ), '/^(["\'])(((?!").)+)(\\1)$/'), '$2', $tags );
 			// unescape
-			$tags= str_replace( array_keys( $zer ), $zer, $tags );
+			$tags = str_replace( array_keys( $zer ), $zer, $tags );
 			// hooray
 			return $tags;
 		}
@@ -461,10 +461,10 @@ class Post extends QueryRecord implements IsContent
 		 * First, let's clean the incoming tag text array, ensuring we have
 		 * a unique set of tag texts and slugs.
 		 */
-		$clean_tags= array();
+		$clean_tags = array();
 		foreach ( ( array ) $this->tags as $tag )
 			if ( ! in_array( $tag, array_keys( $clean_tags ) ) )
-				if ( ! in_array( $slug= Utils::slugify( $tag ), array_values( $clean_tags ) ) )
+				if ( ! in_array( $slug = Utils::slugify( $tag ), array_values( $clean_tags ) ) )
 					$clean_tags[$tag]= $slug;
 
 		if ( count( $this->tags ) == 0) {
@@ -473,13 +473,13 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		/* Now, let's insert any *new* tag texts or slugs into the tags table */
-		$repeat_questions= Utils::placeholder_string( count($clean_tags) );
-		$sql_tags_exist= "SELECT id, tag_text, tag_slug
+		$repeat_questions = Utils::placeholder_string( count($clean_tags) );
+		$sql_tags_exist = "SELECT id, tag_text, tag_slug
 			FROM {tags}
 			WHERE tag_text IN ({$repeat_questions})
 			OR tag_slug IN ({$repeat_questions})";
-		$params= array_merge( array_keys( $clean_tags ), array_values( $clean_tags ) );
-		$existing_tags= DB::get_results( $sql_tags_exist, $params );
+		$params = array_merge( array_keys( $clean_tags ), array_values( $clean_tags ) );
+		$existing_tags = DB::get_results( $sql_tags_exist, $params );
 		if ( count( $existing_tags ) > 0 ) {
 			/* Tags exist which match the text or the slug */
 			foreach ( $existing_tags as $existing_tag ) {
@@ -508,7 +508,7 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		DB::begin_transaction();
-		$result= TRUE;
+		$result = TRUE;
 		/*
 		 * OK, at this point, we have two "clean" collections.  $clean_tags
 		 * contains an associative array of tags we need to add to the main tags
@@ -518,9 +518,9 @@ class Post extends QueryRecord implements IsContent
 		 * First, let's add the new tags to the tags table...
 		 */
 		foreach ( $clean_tags as $new_tag_text=>$new_tag_slug ) {
-			$sql_tag_new= 'INSERT INTO {tags} (tag_text, tag_slug) VALUES (?, ?)';
+			$sql_tag_new = 'INSERT INTO {tags} (tag_text, tag_slug) VALUES (?, ?)';
 			
-			if (FALSE !== ($insert= DB::query( $sql_tag_new, array( $new_tag_text, $new_tag_slug ) ) ) )
+			if (FALSE !== ($insert = DB::query( $sql_tag_new, array( $new_tag_text, $new_tag_slug ) ) ) )
 				$tag_ids_to_post[]= DB::last_insert_id();
 			$result&= $insert;
 		}
@@ -534,11 +534,11 @@ class Post extends QueryRecord implements IsContent
 		 * $tag_ids_to_post now contains tag IDs of all tags to relate to the
 		 * post.  Go ahead and add them to the tag2post table...
 		 */
-		$post_id= $this->fields['id'];
+		$post_id = $this->fields['id'];
 		foreach ( $tag_ids_to_post as $index=>$new_tag_id ) {
-			$sql_tag_post_exists= 'SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?';
+			$sql_tag_post_exists = 'SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?';
 			if ( 0 == DB::get_value( $sql_tag_post_exists, array( $new_tag_id, $post_id ) ) ) {
-			  $sql_tag_post_new= 'INSERT INTO {tag2post} (tag_id, post_id) VALUES (?, ?)';
+			  $sql_tag_post_new = 'INSERT INTO {tag2post} (tag_id, post_id) VALUES (?, ?)';
 			  $result&= DB::query( $sql_tag_post_new, array( $new_tag_id, $post_id ) );
 			}
 		}
@@ -548,9 +548,9 @@ class Post extends QueryRecord implements IsContent
 			 * Finally, remove the tags which are no longer associated with the
 			 * post.
 			 */
-			$repeat_questions= Utils::placeholder_string( count($tag_ids_to_post) );
-			$sql_delete= "DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeat_questions})";
-			$params= array_merge( (array) $post_id, array_values( $tag_ids_to_post ) );
+			$repeat_questions = Utils::placeholder_string( count($tag_ids_to_post) );
+			$sql_delete = "DELETE FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeat_questions})";
+			$params = array_merge( (array) $post_id, array_values( $tag_ids_to_post ) );
 			$result&= DB::query( $sql_delete, $params );
 		}
 
@@ -579,8 +579,8 @@ class Post extends QueryRecord implements IsContent
 		$this->setslug();
 		$this->setguid();
 
-		$allow= true;
-		$allow= Plugins::filter( 'post_insert_allow', $allow, $this );
+		$allow = true;
+		$allow = Plugins::filter( 'post_insert_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
@@ -593,10 +593,10 @@ class Post extends QueryRecord implements IsContent
 		// invoke plugins for status changes
 		Plugins::act( 'post_status_' . self::status_name( $this->status ), $this, null );
 
-		$result= parent::insertRecord( DB::table( 'posts' ) );
+		$result = parent::insertRecord( DB::table( 'posts' ) );
 		$this->newfields['id']= DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
-		$this->fields= array_merge( $this->fields, $this->newfields );
-		$this->newfields= array();
+		$this->fields = array_merge( $this->fields, $this->newfields );
+		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
 		$this->save_tags();
 		$this->create_default_permissions();
@@ -626,8 +626,8 @@ class Post extends QueryRecord implements IsContent
 			unset( $this->newfields['guid'] );
 		}
 
-		$allow= true;
-		$allow= Plugins::filter( 'post_update_allow', $allow, $this );
+		$allow = true;
+		$allow = Plugins::filter( 'post_update_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
@@ -652,15 +652,15 @@ class Post extends QueryRecord implements IsContent
 		  Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
 		}
 
-		$result= parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ) );
+		$result = parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ) );
 
 		//scheduled post
 		if ( $this->fields['status'] == Post::status( 'scheduled' ) || $this->status == Post::status( 'scheduled' ) ) {
 			Posts::update_scheduled_posts_cronjob();
 		}
 
-		$this->fields= array_merge( $this->fields, $this->newfields );
-		$this->newfields= array();
+		$this->fields = array_merge( $this->fields, $this->newfields );
+		$this->newfields = array();
 		$this->save_tags();
 		$this->info->commit();
 		Plugins::act( 'post_update_after', $this );
@@ -673,8 +673,8 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function delete()
 	{
-		$allow= true;
-		$allow= Plugins::filter( 'post_delete_allow', $allow, $this );
+		$allow = true;
+		$allow = Plugins::filter( 'post_delete_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
@@ -692,7 +692,7 @@ class Post extends QueryRecord implements IsContent
 		// Delete all permissions associated with this post
 		$this->delete_permissions();
 
-		$result= parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
+		$result = parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
 		EventLog::log( sprintf(_t('Post %1$s (%2$s) deleted.'), $this->id, $this->slug), 'info', 'content', 'habari' );
 
 		//scheduled post
@@ -715,27 +715,27 @@ class Post extends QueryRecord implements IsContent
 		if ( $this->status == Post::status( 'published' ) ) {
 			return true;
 		}
-		$allow= true;
-		$allow= Plugins::filter( 'post_publish_allow', $allow, $this );
+		$allow = true;
+		$allow = Plugins::filter( 'post_publish_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
 		Plugins::act( 'post_publish_before', $this );
 
 		if ( $this->status != Post::status( 'scheduled' ) )  {
-			$this->pubdate= HabariDateTime::create_date();
+			$this->pubdate = HabariDateTime::create_date();
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
 			$this->get_tags();
-			$msg= sprintf(_t('Scheduled Post %1$s (%2$s) published at %3$s.'), $this->id, $this->slug, $this->pubdate->format());
+			$msg = sprintf(_t('Scheduled Post %1$s (%2$s) published at %3$s.'), $this->id, $this->slug, $this->pubdate->format());
 		}
 		else {
-			$msg= sprintf(_t('Post %1$s (%2$s) published.'), $this->id, $this->slug);
+			$msg = sprintf(_t('Post %1$s (%2$s) published.'), $this->id, $this->slug);
 		}
 
-		$this->status= Post::status( 'published' );
-		$result= $this->update();
+		$this->status = Post::status( 'published' );
+		$result = $this->update();
 		EventLog::log( $msg, 'info', 'content', 'habari' );
 
 		// and call any final plugins
@@ -751,50 +751,50 @@ class Post extends QueryRecord implements IsContent
 	 **/
 	public function __get( $name )
 	{
-		$fieldnames= array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author' ) );
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
 			list( $junk, $name, $filter )= $matches;
 		}
 		else {
-			$filter= false;
+			$filter = false;
 		}
 
 		switch( $name ) {
 		case 'statusname':
-			$out= self::status_name( $this->status );
+			$out = self::status_name( $this->status );
 			break;
 		case 'typename':
 			$out = self::type_name( $this->content_type );
 			break;
 		case 'permalink':
-			$out= $this->get_permalink();
+			$out = $this->get_permalink();
 			break;
 		case 'tags':
-			$out= $this->get_tags();
+			$out = $this->get_tags();
 			break;
 		case 'comments':
-			$out= $this->get_comments();
+			$out = $this->get_comments();
 			break;
 		case 'comment_count':
-			$out= $this->get_comments()->count();
+			$out = $this->get_comments()->count();
 			break;
 		case 'comment_feed_link':
-			$out= $this->get_comment_feed_link();
+			$out = $this->get_comment_feed_link();
 			break;
 		case 'author':
-			$out= $this->get_author();
+			$out = $this->get_author();
 			break;
 		case 'info':
-			$out= $this->get_info();
+			$out = $this->get_info();
 			break;
 		default:
-			$out= parent::__get( $name );
+			$out = parent::__get( $name );
 			break;
 		}
-		$out= Plugins::filter( "post_{$name}", $out, $this );
+		$out = Plugins::filter( "post_{$name}", $out, $this );
 		if ( $filter ) {
-			$out= Plugins::filter( "post_{$name}_{$filter}", $out, $this );
+			$out = Plugins::filter( "post_{$name}_{$filter}", $out, $this );
 		}
 		return $out;
 	}
@@ -816,7 +816,7 @@ class Post extends QueryRecord implements IsContent
 			}
 			break;
 		case 'tags':
-			return $this->tags= $this->parsetags( $value );
+			return $this->tags = $this->parsetags( $value );
 		case 'status':
 			return $this->setstatus( $value );
 		}
@@ -843,7 +843,7 @@ class Post extends QueryRecord implements IsContent
 	 **/
 	private function get_permalink()
 	{
-		$content_type= Post::type_name( $this->content_type );
+		$content_type = Post::type_name( $this->content_type );
 		return URL::get(
 			array(
 				"display_{$content_type}",
@@ -862,14 +862,14 @@ class Post extends QueryRecord implements IsContent
 	private function get_tags()
 	{
 		if ( empty( $this->tags ) ) {
-			$sql= "
+			$sql = "
 				SELECT t.tag_text, t.tag_slug
 				FROM " . DB::table( 'tags' ) . " t
 				INNER JOIN " . DB::table( 'tag2post' ) . " t2p
 				ON t.id = t2p.tag_id
 				WHERE t2p.post_id = ?
 				ORDER BY t.tag_slug ASC";
-			$result= DB::get_results( $sql, array( $this->fields['id'] ) );
+			$result = DB::get_results( $sql, array( $this->fields['id'] ) );
 			if ( $result ) {
 				foreach ( $result as $t ) {
 					$this->tags[$t->tag_slug]= $t->tag_text;
@@ -890,7 +890,7 @@ class Post extends QueryRecord implements IsContent
 	private function &get_comments()
 	{
 		if ( ! $this->comments_object ) {
-			$this->comments_object= Comments::by_post_id( $this->id );
+			$this->comments_object = Comments::by_post_id( $this->id );
 		}
 		return $this->comments_object;
 	}
@@ -902,7 +902,7 @@ class Post extends QueryRecord implements IsContent
 	**/
 	private function get_comment_feed_link()
 	{
-		$content_type= Post::type_name( $this->content_type );
+		$content_type = Post::type_name( $this->content_type );
 		return URL::get( array( "atom_feed_{$content_type}_comments" ), $this, false );
 	}
 
@@ -917,10 +917,10 @@ class Post extends QueryRecord implements IsContent
 		if ( ! $this->info ) {
 			// If this post isn't in the database yet...
 			if ( $this->id == 0 ) {
-				$this->info= new PostInfo();
+				$this->info = new PostInfo();
 			}
 			else {
-				$this->info= new PostInfo( $this->id );
+				$this->info = new PostInfo( $this->id );
 			}
 		}
 		return $this->info;
@@ -935,7 +935,7 @@ class Post extends QueryRecord implements IsContent
 	{
 		if ( ! isset( $this->author_object ) ) {
 			// XXX for some reason, user_id is a string sometimes?
-			$this->author_object= User::get_by_id( $this->user_id );
+			$this->author_object = User::get_by_id( $this->user_id );
 		}
 		return $this->author_object;
 	}
@@ -960,7 +960,7 @@ class Post extends QueryRecord implements IsContent
 	 * @params The params by which to work out what is the ascending post
 	 * @return Post The ascending post
 	 */
-	public function ascend($params= null)
+	public function ascend($params = null)
 	{
 		return Posts::ascend($this, $params);
 	}
@@ -970,7 +970,7 @@ class Post extends QueryRecord implements IsContent
 	 * @params The params by which to work out what is the descending post
 	 * @return Post The descending post
 	 */
-	public function descend($params= null)
+	public function descend($params = null)
 	{
 		return Posts::descend($this, $params);
 	}

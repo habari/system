@@ -12,12 +12,12 @@
 		<span class="time pct10"><span class="dim"><?php _e('at'); ?> <?php $post->pubdate->out('H:i'); ?></span></span>
 
 		<ul class="dropbutton">
-			<?php $actions= array(
+			<?php $actions = array(
 				'edit' => array('url' => URL::get('admin', 'page=publish&slug=' . $post->slug), 'title' => sprintf( _t('Edit \'%s\''), $post->title ), 'label' => _t('Edit')),
 				'view' => array('url' => $post->permalink, 'title' => sprintf( _t('View \'%s\''), $post->title ), 'label' => _t('View')),
 				'remove' => array('url' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t('Delete this item'), 'label' => _t('Delete'))
 			);
-			$actions= Plugins::filter('post_actions', $actions, $post);
+			$actions = Plugins::filter('post_actions', $actions, $post);
 			foreach($actions as $action):
 			?>
 				<li><a href="<?php echo $action['url']; ?>" title="<?php echo $action['title']; ?>"><?php echo $action['label']; ?></a></li>

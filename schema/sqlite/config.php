@@ -1,5 +1,5 @@
 <?php
-$db_connection= array(
+$db_connection = array(
 	'connection_string'=>'sqlite:{$db_file}',
 	'username'=>'',
 	'password'=>'',

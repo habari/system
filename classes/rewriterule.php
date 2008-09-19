@@ -10,14 +10,14 @@
 class RewriteRule extends QueryRecord
 {
 
-	const RULE_SYSTEM= 0;
-	const RULE_THEME= 1;
-	const RULE_PLUGIN= 2;
-	const RULE_CUSTOM= 5;
+	const RULE_SYSTEM = 0;
+	const RULE_THEME = 1;
+	const RULE_PLUGIN = 2;
+	const RULE_CUSTOM = 5;
 
-	public $entire_match= NULL; // Entire matched string from the URL
-	public $named_arg_values= array(); // Values of named arguments filled during URL::parse()
-	private $m_named_args= NULL; // Named arguments matches
+	public $entire_match = NULL; // Entire matched string from the URL
+	public $named_arg_values = array(); // Values of named arguments filled during URL::parse()
+	private $m_named_args = NULL; // Named arguments matches
 
 
 	/**
@@ -45,10 +45,10 @@ class RewriteRule extends QueryRecord
 	 * Constructor for the rewrite_rule class.
 	 * @param array $paramarray an associative array or querystring of initial field values
 	 */
-	public function __construct( $paramarray= array() )
+	public function __construct( $paramarray = array() )
 	{
 		// Defaults
-		$this->fields= array_merge(
+		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields );
 
@@ -66,8 +66,8 @@ class RewriteRule extends QueryRecord
 	public function match( $stub )
 	{
 		if( preg_match( $this->parse_regex, $stub, $pattern_matches ) > 0 ) {
-			$this->entire_match= array_shift( $pattern_matches ); // The entire matched string is returned at index 0
-			$named_args= $this->named_args; // Direct call shows a PHP notice
+			$this->entire_match = array_shift( $pattern_matches ); // The entire matched string is returned at index 0
+			$named_args = $this->named_args; // Direct call shows a PHP notice
 
 			if($parameters = unserialize($this->parameters)) {
 				$this->named_arg_values = array_merge($this->named_arg_values, $parameters);
@@ -82,7 +82,7 @@ class RewriteRule extends QueryRecord
 			}
 
 			if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0 ) {
-				$this->action= $this->named_arg_values[$matches[1]];
+				$this->action = $this->named_arg_values[$matches[1]];
 			}
 
 			return true;
@@ -96,17 +96,17 @@ class RewriteRule extends QueryRecord
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 * @return string The URL created from the substituted arguments
 	 */
-	public function build( $args, $useall= true, $noamp= false )
+	public function build( $args, $useall = true, $noamp = false )
 	{
-		$named_args= $this->named_args; // Direct call prints a PHP notice
-		$named_args_combined= array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
+		$named_args = $this->named_args; // Direct call prints a PHP notice
+		$named_args_combined = array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
 
-		$args_defined= array_intersect_key( $args, $named_args_combined );
-		$args_query= array_diff( $args, $args_defined );
-		$args= Plugins::filter( 'rewrite_args', $args, $this->name );
+		$args_defined = array_intersect_key( $args, $named_args_combined );
+		$args_query = array_diff( $args, $args_defined );
+		$args = Plugins::filter( 'rewrite_args', $args, $this->name );
 		// Replace defined arguments with their value
-		$searches= array();
-		$replacements= array();
+		$searches = array();
+		$replacements = array();
 		foreach ( $named_args as $keys ) {
 			foreach ( $keys as $key ) {
 				if ( !empty( $args[$key] ) ) {
@@ -123,12 +123,12 @@ class RewriteRule extends QueryRecord
 		$searches[]= '/\(|\)/';
 		$replacements[]= '';
 
-		$return_url= preg_replace( $searches, $replacements, $this->build_str );
+		$return_url = preg_replace( $searches, $replacements, $this->build_str );
 
 		// Append any remaining args as query string arguments
 		if ( $useall ) {
-			$args= array_diff_key( $args, $named_args_combined );
-			$query_seperator= ( $noamp ) ? '&amp;' : '&';
+			$args = array_diff_key( $args, $named_args_combined );
+			$query_seperator = ( $noamp ) ? '&amp;' : '&';
 			$return_url.= ( count( $args ) == 0 ) ? '' : '?' . http_build_query( $args, '', $query_seperator );
 		}
 
@@ -147,14 +147,14 @@ class RewriteRule extends QueryRecord
 		return 0; // Let's let this logic linger for a little while
 
 		/* This needs further testing once that logic is established */
-		$named_args= $this->named_args; // Direct call prints a PHP notice
-		$named_args_combined= array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
+		$named_args = $this->named_args; // Direct call prints a PHP notice
+		$named_args_combined = array_flip( array_merge( $named_args['required'], $named_args['optional'] ) );
 
-		$args= Plugins::filter( 'rewrite_args', $args, $this->name );
+		$args = Plugins::filter( 'rewrite_args', $args, $this->name );
 
-		$diffargs= array_diff_key( $args, $named_args_combined );
-		$sameargs= array_intersect_key( $args, $named_args_combined );
-		$rating= count( $named_args_combined ) - count( $sameargs ) + count( $diffargs );
+		$diffargs = array_diff_key( $args, $named_args_combined );
+		$sameargs = array_intersect_key( $args, $named_args_combined );
+		$rating = count( $named_args_combined ) - count( $sameargs ) + count( $diffargs );
 
 		return $rating;
 	}
@@ -213,22 +213,22 @@ class RewriteRule extends QueryRecord
 	 */
 	public static function create_url_rule( $build_str, $handler, $action )
 	{
-		$arr= split( '/', $build_str );
+		$arr = split( '/', $build_str );
 
 		$searches[]= '/^([^"\']+)$/';
 		$searches[]= '/^["\'](.+)["\']$/';
 		$replacements[]= '(.+)';
 		$replacements[]= '\1';
-		$re_arr= preg_replace( $searches, $replacements, $arr );
+		$re_arr = preg_replace( $searches, $replacements, $arr );
 
 		$searches[]= '/^([^"\']+)$/';
 		$searches[]= '/^["\'](.+)["\']$/';
 		$replacements[]= '{$\1}';
 		$replacements[]= '\1';
-		$str_arr= preg_replace( $searches, $replacements, $arr );
+		$str_arr = preg_replace( $searches, $replacements, $arr );
 
-		$regex= '/^' . implode( '\/', $re_arr ) . '\/?$/i';
-		$build_str= implode( '/', $str_arr );
+		$regex = '/^' . implode( '\/', $re_arr ) . '\/?$/i';
+		$build_str = implode( '/', $str_arr );
 
 		return new RewriteRule( array(
 		 'name' => $action,

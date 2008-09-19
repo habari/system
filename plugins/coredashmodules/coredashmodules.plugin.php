@@ -112,7 +112,7 @@ class CoreDashModules extends Plugin
 	 */
 	public function filter_dash_module_latest_entries( $module, $module_id, $theme )
 	{
-		$theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
+		$theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 		
 		$module['title'] = '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>';
 		$module['content'] = $theme->fetch( 'dash_latestentries' );

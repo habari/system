@@ -26,7 +26,7 @@ class AjaxHandler extends ActionHandler
 	 */
 	public function act_auth_ajax()
 	{
-		$user= User::identify();
+		$user = User::identify();
 		if ($user !== FALSE) {
 			Plugins::act('auth_ajax_' . $this->handler_vars['context'], $this);
 			exit;

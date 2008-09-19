@@ -32,7 +32,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 		<?php 
 		if ( $post->comments->moderated->count ) {
 			foreach ( $post->comments->moderated as $comment ) {
-			$class= 'class="comment';
+			$class = 'class="comment';
 			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
 				$class.= '-unapproved';
 			}

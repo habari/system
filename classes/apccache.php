@@ -8,7 +8,7 @@
 
 class APCCache extends Cache
 {
-	protected $enabled= false;
+	protected $enabled = false;
 	
 	/**
 	 * Constructor for APCCache

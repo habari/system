@@ -5,10 +5,10 @@
 		<div id="primaryContent" class="span-15 append-2">
 			<!--begin single post navigation-->
 			<div id="post-nav">
-				<?php if ( $previous= $post->ascend() ): ?>
+				<?php if ( $previous = $post->ascend() ): ?>
 				<span class="left"> &laquo; <a href="<?php echo $previous->permalink ?>" title="<?php echo $previous->slug ?>"><?php echo $previous->title ?></a></span>
 				<?php endif; ?>
-				<?php if ( $next= $post->descend() ): ?>
+				<?php if ( $next = $post->descend() ): ?>
 				<span class="right"><a href="<?php echo $next->permalink ?>" title="<?php echo $next->slug ?>"><?php echo $next->title ?></a> &raquo;</span>
 				<?php endif; ?>
 			</div>

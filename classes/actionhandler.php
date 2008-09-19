@@ -6,8 +6,8 @@
  * @package Habari
  **/  
 class ActionHandler {
-	public $action= '';               // string name of action
-	public $handler_vars= array();    // internal array of handler variables (state info)
+	public $action = '';               // string name of action
+	public $handler_vars = array();    // internal array of handler variables (state info)
 
 	/**
 	 * All handlers must implement act() to conform to handler API.
@@ -18,11 +18,11 @@ class ActionHandler {
 	 * @param string $action the action that was in the URL rule
 	 */	 	 	 	 
 	public function act($action) {
-		$this->action= $action;
+		$this->action = $action;
 		
-		$action_method= 'act_' . $action;
-		$before_action_method= 'before_' . $action_method;
-		$after_action_method= 'after_' . $action_method;
+		$action_method = 'act_' . $action;
+		$before_action_method = 'before_' . $action_method;
+		$after_action_method = 'after_' . $action_method;
 		
 		if (method_exists($this, $action_method)) {
 			if (method_exists($this, $before_action_method)) {
@@ -47,7 +47,7 @@ class ActionHandler {
 	 * @param array $args function arguments
 	 */
 	public function __call($function, $args) {
-		$this->handler_vars= array_merge($this->handler_vars, $args);
+		$this->handler_vars = array_merge($this->handler_vars, $args);
 		return $this->act($function);
 	}
 	

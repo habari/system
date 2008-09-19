@@ -3,8 +3,8 @@
  * Class to wrap around bitmap field functionality
  */
 class Bitmask {
-  public $flags= array();  // set of flag bit masks
-  private $value= 0;        // internal integer value of the bitmask
+  public $flags = array();  // set of flag bit masks
+  private $value = 0;        // internal integer value of the bitmask
 
   /**
    * Constructor.  Takes an optional array parameter
@@ -13,11 +13,11 @@ class Bitmask {
    * @param (optional)  an array of integer flags
    */
   public function __construct() {
-		$flags= func_get_arg(0);
+		$flags = func_get_arg(0);
 		if (! is_array($flags))
 			throw new InvalidArgumentException(_t('Bitmask constructor expects either no arguments or an array as a first argument'));
 
-		$this->flags= $flags;
+		$this->flags = $flags;
   }
 
   /**
@@ -29,7 +29,7 @@ class Bitmask {
   public function __set($bit, $on) {
     if ($bit == 'value') {
       // To set the actual value of the bitmask (i.e. from the DB)
-      $this->value= $on;
+      $this->value = $on;
       return true;
     }
     if (!is_bool($on)) 

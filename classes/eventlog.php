@@ -38,7 +38,7 @@ class EventLog extends ArrayObject
 	 * @param string $type The type of the error
 	 * @param string $module The module of the error
 	 */
-	public static function register_type( $type= 'default', $module= null )
+	public static function register_type( $type = 'default', $module = null )
 	{
 		try {
 			DB::query( 'INSERT INTO ' . DB::Table('log_types') . ' (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
@@ -54,7 +54,7 @@ class EventLog extends ArrayObject
 	 * @param string $type The type of the error
 	 * @param string $module The module of the error
 	 */
-	public static function unregister_type( $type= 'default', $module= null )
+	public static function unregister_type( $type = 'default', $module = null )
 	{
 		$id = DB::get_value( "SELECT id FROM {log_types} WHERE module = ? and type = ?", array( self::get_module( $module ), $type ) );
 		if( $id ) {
@@ -74,10 +74,10 @@ class EventLog extends ArrayObject
 	 * @param mixed $data The data
 	 * @return object LogEntry The inserted LogEntry object
 	 */
-	public static function log( $message, $severity= 'info', $type= 'default', $module= null, $data= null )
+	public static function log( $message, $severity = 'info', $type = 'default', $module = null, $data = null )
 	{
-		$module= self::get_module( $module );
-		$log= new LogEntry( array(
+		$module = self::get_module( $module );
+		$log = new LogEntry( array(
 			'message' => $message,
 			'severity' => $severity,
 			'module' => $module,
@@ -85,8 +85,8 @@ class EventLog extends ArrayObject
 			'data' => $data,
 			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 		) );
-		if ( $user= User::identify() ) {
-			$log->user_id= $user->id;
+		if ( $user = User::identify() ) {
+			$log->user_id = $user->id;
 		}
 		$log->insert();
 		return $log;
@@ -98,12 +98,12 @@ class EventLog extends ArrayObject
 	 * @param integer $level How many backtrace calls to go back through the trace
 	 * @return string The classname or .php module in which the log code was called.
 	 */
-	public static function get_module( $module= null, $level= 2 )
+	public static function get_module( $module = null, $level = 2 )
 	{
 		if ( is_null( $module ) ) {
-			$bt= debug_backtrace();
-			$last= $bt[$level];
-			$module= isset( $last['class'] ) ? $last['class'] : basename( $last['file'], '.php' );
+			$bt = debug_backtrace();
+			$last = $bt[$level];
+			$module = isset( $last['class'] ) ? $last['class'] : basename( $last['file'], '.php' );
 		}
 		return $module;
 	}
@@ -116,11 +116,11 @@ class EventLog extends ArrayObject
 	 * @param array $paramarry An associated array of parameters, or a querystring
 	 * @return array An array of LogEntry objects, or a single LogEntry object, depending on request
 	 */
-	public static function get( $paramarray= array() )
+	public static function get( $paramarray = array() )
 	{
-		$params= array();
-		$fns= array( 'get_results', 'get_row', 'get_value' );
-		$select= '';
+		$params = array();
+		$fns = array( 'get_results', 'get_row', 'get_value' );
+		$select = '';
 
 		foreach ( LogEntry::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
@@ -128,44 +128,44 @@ class EventLog extends ArrayObject
 				: ', ' . DB::table( 'log' ) . ".$field";
 		}
 		// Default parameters.
-		$orderby= 'ORDER BY timestamp DESC';
-		$limit= Options::get( 'pagination' );
+		$orderby = 'ORDER BY timestamp DESC';
+		$limit = Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
-		$paramarray= Utils::get_params( $paramarray );
+		$paramarray = Utils::get_params( $paramarray );
 		 
 		// Get any full-query parameters
 		extract( $paramarray );
 
 		foreach ( $paramarray as $key => $value ) {
 			if ( 'orderby' == $key ) {
-				$orderby= ' ORDER BY ' . $value;
+				$orderby = ' ORDER BY ' . $value;
 				continue;
 			}
 
 			if ( 'limit' == $key ) {
-				$limit= " LIMIT " . $value;
+				$limit = " LIMIT " . $value;
 			}
 		}
 
 		// Transact on possible multiple sets of where information that is to be OR'ed
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
-			$wheresets= $paramarray['where'];
+			$wheresets = $paramarray['where'];
 		}
 		else {
-			$wheresets= array( array() );
+			$wheresets = array( array() );
 		}
 
-		$wheres= array();
-		$join= '';
+		$wheres = array();
+		$join = '';
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
 			$wheres[]= $paramarray['where'];
 		}
 		else {
 			foreach ( $wheresets as $paramset ) {
 				// Safety mechanism to prevent empty queries
-				$where= array( '1=1' );
-				$paramset= array_merge( ( array ) $paramarray, ( array ) $paramset );
+				$where = array( '1=1' );
+				$paramset = array_merge( ( array ) $paramarray, ( array ) $paramset );
 
 				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
 					$where[]= "id= ?";
@@ -181,7 +181,7 @@ class EventLog extends ArrayObject
 				}
 				if ( isset( $paramset['type_id'] ) ) {
 					if ( is_array( $paramset['type_id'] ) ) {
-						$types= array_filter( $paramset['type_id'], 'is_numeric' );
+						$types = array_filter( $paramset['type_id'], 'is_numeric' );
 						if ( count( $types ) ) {
 							$where[]= 'type_id IN (' . implode( ',', $types ) . ')';
 						}
@@ -246,22 +246,22 @@ class EventLog extends ArrayObject
 			}
 
 		if ( isset( $page ) && is_numeric( $page ) ) {
-			$offset= ( intval( $page ) - 1 ) * intval( $limit );
+			$offset = ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
 		if ( isset( $fetch_fn ) ) {
 			if ( ! in_array( $fetch_fn, $fns ) ) {
-				$fetch_fn= $fns[0];
+				$fetch_fn = $fns[0];
 			}
 		}
 		else {
-			$fetch_fn= $fns[0];
+			$fetch_fn = $fns[0];
 		}
 
 		if ( isset( $count ) ) {
-			$select= "COUNT($count)";
-			$fetch_fn= 'get_value';
-			$orderby= '';
+			$select = "COUNT($count)";
+			$fetch_fn = 'get_value';
+			$orderby = '';
 		}
 		if ( isset( $limit ) ) {
 			if ( isset( $offset ) ) {
@@ -270,15 +270,15 @@ class EventLog extends ArrayObject
 		}
 		// If the month counts are requested, replace the select clause
 		if( isset( $paramset['month_cts'] ) ) {
-			$select= 'MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year, COUNT(*) AS ct';
-			$groupby= 'year, month';
-			$orderby= ' ORDER BY year, month';
+			$select = 'MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year, COUNT(*) AS ct';
+			$groupby = 'year, month';
+			$orderby = ' ORDER BY year, month';
 		}
 		if ( isset( $nolimit ) || isset( $month_cts ) ) {
-			$limit= '';
+			$limit = '';
 		}
 
-		$query= '
+		$query = '
 			SELECT ' . $select . '
 			FROM {log} ' . $join;
 
@@ -291,7 +291,7 @@ class EventLog extends ArrayObject
 
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'LogEntry' );
-		$results= DB::$fetch_fn( $query, $params, 'LogEntry' );
+		$results = DB::$fetch_fn( $query, $params, 'LogEntry' );
 
 			// If the fetch callback function is not get_results,
 			// return an EventLog ArrayObject filled with the results as LogEntry objects.
@@ -299,9 +299,9 @@ class EventLog extends ArrayObject
 			return $results;
 		}
 		elseif ( is_array( $results ) ) {
-			$c= __CLASS__;
-			$return_value= new $c( $results );
-			$return_value->get_param_cache= $paramarray;
+			$c = __CLASS__;
+			$return_value = new $c( $results );
+			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
 	}

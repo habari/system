@@ -30,8 +30,8 @@
 <div class="prof_container">
 	<h1 class="prof_header"><?php _e('DB Profiling'); ?></h1>
 	<?php
-	$profiles= DB::get_profiles();
-	$total_time_querying= 0;
+	$profiles = DB::get_profiles();
+	$total_time_querying = 0;
 	foreach ( $profiles as $profile ) {
 	?>
 	<div>

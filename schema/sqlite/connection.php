@@ -18,16 +18,16 @@ class SQLiteConnection extends DatabaseConnection
 	 */
 	function sql_t( $sql )
 	{
-		$sql= preg_replace_callback( '%concat\(([^)]+?)\)%i', array( &$this, 'replace_concat' ), $sql );
-		$sql= preg_replace( '%DATE_SUB\s*\(\s*NOW\(\s*\)\s*,\s*INTERVAL\s+([0-9]+)\s+DAY\s*\)%ims', 'date(\'now\', \'-${1} days\')', $sql );
-		$sql= preg_replace( '%OPTIMIZE TABLE ([^ ]*)%i', 'VACUUM;', $sql );
+		$sql = preg_replace_callback( '%concat\(([^)]+?)\)%i', array( &$this, 'replace_concat' ), $sql );
+		$sql = preg_replace( '%DATE_SUB\s*\(\s*NOW\(\s*\)\s*,\s*INTERVAL\s+([0-9]+)\s+DAY\s*\)%ims', 'date(\'now\', \'-${1} days\')', $sql );
+		$sql = preg_replace( '%OPTIMIZE TABLE ([^ ]*)%i', 'VACUUM;', $sql );
 		//$sql= preg_replace( '%YEAR\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%Y\', ${1})', $sql );
 		//$sql= preg_replace( '%MONTH\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%m\', ${1})', $sql );
 		//$sql= preg_replace( '%DAY\s*\(\s*([^ ]*)\s*\)%ims', 'strftime(\'%d\', ${1})', $sql );
-		$sql= preg_replace( '%YEAR\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%Y\', ${1}, \'unixepoch\')', $sql );
-		$sql= preg_replace( '%MONTH\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%m\', ${1}, \'unixepoch\')', $sql );
-		$sql= preg_replace( '%DAY\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%d\', ${1}, \'unixepoch\')', $sql );
-		$sql= preg_replace( '%TRUNCATE \s*([^ ]*)%i', 'DELETE FROM ${1}', $sql );
+		$sql = preg_replace( '%YEAR\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%Y\', ${1}, \'unixepoch\')', $sql );
+		$sql = preg_replace( '%MONTH\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%m\', ${1}, \'unixepoch\')', $sql );
+		$sql = preg_replace( '%DAY\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%d\', ${1}, \'unixepoch\')', $sql );
+		$sql = preg_replace( '%TRUNCATE \s*([^ ]*)%i', 'DELETE FROM ${1}', $sql );
 		return $sql;
 	}
 
@@ -40,7 +40,7 @@ class SQLiteConnection extends DatabaseConnection
 	 */
 	function replace_concat( $matches )
 	{
-		$innards= explode( ',', $matches[1] );
+		$innards = explode( ',', $matches[1] );
 		return implode( ' || ', $innards );
 	}
 
@@ -69,21 +69,21 @@ class SQLiteConnection extends DatabaseConnection
 	 * @return  string			translated SQL string
 	 *** FIXME: SQLite diffing is horribly terribly broken. There is varying support for alter table and mucking with columns
 	 */
-	function dbdelta( $queries, $execute= true, $silent= true, $doinserts= false )
+	function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
 		if ( !is_array( $queries ) ) {
-			$queries= explode( ';', $queries );
+			$queries = explode( ';', $queries );
 			if ( '' == $queries[count( $queries ) - 1] ) {
 				array_pop( $queries );
 			}
 		}
 
-		$cqueries= array();
-		$indexqueries= array();
-		$iqueries= array();
-		$pqueries= array();
-		$for_update= array();
-		$allqueries= array();
+		$cqueries = array();
+		$indexqueries = array();
+		$iqueries = array();
+		$pqueries = array();
+		$for_update = array();
+		$allqueries = array();
 
 		foreach ( $queries as $qry ) {
 			if ( preg_match( "|CREATE TABLE ([^ ]*)|", $qry, $matches ) ) {
@@ -110,13 +110,13 @@ class SQLiteConnection extends DatabaseConnection
 		// Merge the queries into allqueries; pragmas MUST go first
 		$allqueries = array_merge($pqueries);
 
-		$tables= $this->get_column( "SELECT name FROM sqlite_master WHERE type = 'table';" );
+		$tables = $this->get_column( "SELECT name FROM sqlite_master WHERE type = 'table';" );
 
 		foreach ( $cqueries as $tablename => $query ) {
 			if ( in_array( $tablename, $tables ) ) {
-				$sql= $this->get_value( "SELECT sql FROM sqlite_master WHERE type = 'table' AND name='{" . $tablename . "}';" );
-				$sql= preg_replace( '%\s+%', ' ', $sql ) . ';';
-				$query= preg_replace( '%\s+%', ' ', $query );
+				$sql = $this->get_value( "SELECT sql FROM sqlite_master WHERE type = 'table' AND name='{" . $tablename . "}';" );
+				$sql = preg_replace( '%\s+%', ' ', $sql ) . ';';
+				$query = preg_replace( '%\s+%', ' ', $query );
 				if ( $sql != $query ) {
 					$allqueries[]= "ALTER TABLE {$tablename} RENAME TO {$tablename}__temp;";
 					$allqueries[]= $query;

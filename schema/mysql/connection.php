@@ -58,7 +58,7 @@ class MySQLConnection extends DatabaseConnection
 	 * @param boolean $doinserts (optional) Execute all insert queries found, default=false
 	 * @return  array list of updates made
 	 */
-	function dbdelta( $queries, $execute= true, $silent= true, $doinserts= false )
+	function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
 		$queries = preg_replace("/({\$prefix})/",$this->prefix,$queries);	//Converts {$prefix}table_name to prefix__table_name
 		$queries = $this->filter_tables( $queries );	//Converts {table_name} to prefix__table_name
@@ -163,7 +163,7 @@ class MySQLConnection extends DatabaseConnection
 
 					if($tableindices) {
 						unset($index_ary);
-						$index_ary= array();
+						$index_ary = array();
 						foreach($tableindices as $tableindex) {
 							$keyname = $tableindex->Key_name;
 							$index_ary[$keyname]['columns'][] = array('fieldname' => $tableindex->Column_name, 'subpart' => $tableindex->Sub_part);
@@ -196,7 +196,7 @@ class MySQLConnection extends DatabaseConnection
 							}
 							else {
 								preg_match( '|(^.*)\((.*)\)|', $index_string, $matches );
-								$tindextype= $matches[1];
+								$tindextype = $matches[1];
 								if ( preg_match( '/^KEY|UNIQUE KEY/i', $tindextype ) > 0 ) {
 									$cqueries[]= "ALTER TABLE {$table} DROP INDEX {$index_name}";
 								}
@@ -218,9 +218,9 @@ class MySQLConnection extends DatabaseConnection
 			}
 		}
 
-		$allqueries= $cqueries;
+		$allqueries = $cqueries;
 		if($doinserts) {
-			$allqueries= array_merge($allqueries, $iqueries);
+			$allqueries = array_merge($allqueries, $iqueries);
 		}
 		if($execute) {
 			foreach($allqueries as $query) {

@@ -66,7 +66,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	/**
 	 * Fetch a section of the tokens, based on passed criteria
 	 */
-	public function slice( $name, array $attr=null ) {
+	public function slice( $name, array $attr =null ) {
 		$offset = 0;
 		$slices = array();
 		while ( $slice = $this->find_slice( $offset, $name, $attr ) ) {

@@ -2,7 +2,7 @@
 
 			<div id="main-posts">
 			<?php if ( sizeof( $posts ) ): ?>
-				<?php $post=reset($posts); ?>
+				<?php $post =reset($posts); ?>
 				<div class="<?php echo $post_class?>">
 				<?php if ( is_array( $post->tags ) ) : ?>
 					<div class="post-tags">
@@ -49,7 +49,7 @@
 	<div id="wrapper-bottom">
 		<div id="bottom-primary">
 			<div id="prev-posts">
-			<?php while($post=next($posts)) : ?>
+			<?php while($post =next($posts)) : ?>
 				<div class="prev-post">
 					<div class="prev-post-title">
 						<h2>
