@@ -839,20 +839,34 @@ class Utils
 			$mimetype = finfo_file($finfo, $filename);
 			finfo_close($finfo);
 		}
-		else if(function_exists('mime_content_type')) {
-			$mimetype = mime_content_type( $filename );
-		}
+		
 		if( empty( $mimetype ) ) {
 			$pi = pathinfo($filename);
 			switch(strtolower($pi['extension'])) {
 				// hacky, hacky, kludge, kludge...
-				case 'jpg': $mimetype = 'image/jpeg'; break;
-				case 'gif': $mimetype = 'image/gif'; break;
-				case 'png': $mimetype = 'image/png'; break;
-				case 'mp3': $mimetype = 'audio/mpeg3'; break;
-				case 'wav': $mimetype = 'audio/wav'; break;
-				case 'mpg': $mimetype = 'video/mpeg'; break;
-				case 'swf': $mimetype = 'application/x-shockwave-flash'; break;
+				case 'jpg':
+				case 'jpeg':
+					$mimetype = 'image/jpeg';
+					break;
+				case 'gif':
+					$mimetype = 'image/gif';
+					break;
+				case 'png':
+					$mimetype = 'image/png';
+					break;
+				case 'mp3':
+					$mimetype = 'audio/mpeg3';
+					break;
+				case 'wav':
+					$mimetype = 'audio/wav';
+					break;
+				case 'mpg':
+				case 'mpeg':
+					$mimetype = 'video/mpeg';
+					break;
+				case 'swf':
+					$mimetype = 'application/x-shockwave-flash';
+					break;
 			}
 		}
 		$mimetype = Plugins::filter('get_mime_type', $mimetype, $filename);
