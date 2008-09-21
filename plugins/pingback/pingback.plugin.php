@@ -171,12 +171,12 @@ class Pingback extends Plugin
 			if ( !preg_match( '%.{0,100}?<a[^>]*?href\\s*=\\s*("|\'|)' . $target_uri . '\\1[^>]*?'.'>(.+?)</a>.{0,100}%s', $source_contents_filtered, $source_excerpt ) ) {
 				throw new XMLRPCException( 17 );
 			}
-			
+
 			/** Sanitize Data */
 			$source_excerpt = '...' . InputFilter::filter( $source_excerpt[0] ) . '...';
 			$source_title = InputFilter::filter($source_title);
 			$source_uri = InputFilter::filter($source_uri);
-			
+
 			/* Sanitize the URL */
 			if (!empty($source_uri)) {
 				$parsed = InputFilter::parse_url( $source_uri );
@@ -211,7 +211,7 @@ class Pingback extends Plugin
 				'ip'		=>	sprintf( "%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 				'content'	=>	$source_excerpt,
 				'status'	=>	Comment::STATUS_UNAPPROVED,
-				'date'		=>	date( 'Y-m-d H:i:s' ),
+				'date'		=>	HabariDateTime::date_create(),
 				'type' 		=> 	Comment::PINGBACK,
 				) );
 
