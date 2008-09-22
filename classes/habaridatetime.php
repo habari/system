@@ -1,9 +1,13 @@
 <?php
 /**
- * 
- * 
+ * HabariDateTime class to wrap dates in.
+ *
+ * @package Habari
+ *
+ * @property-read HabariDateTime $clone Returns a clonned object.
+ * @property-read string $sql Returns a unix timestamp for inserting into DB.
+ * @property-read int $int Returns a unix timestamp as integer.
  */
-// Unix time is UTC timezone _always_
 class HabariDateTime extends DateTime
 {
 	private static $default_timezone;
@@ -11,17 +15,28 @@ class HabariDateTime extends DateTime
 	
 	/**
 	 * Set default timezone to system default on init.
-	 **/
+	 */
 	public static function __static()
 	{
 		self::$default_timezone = date_default_timezone_get();
 	}
 	
+	/**
+	 * Set default date/time format. The format is the same as the
+	 * internal {@link http://ca.php.net/date date() function}.
+	 *
+	 * @param string $format The date format.
+	 */
 	public static function set_default_datetime_format( $format )
 	{
 		self::$default_datetime_format = $format;
 	}
 	
+	/**
+	 * Get the default date/time format set.
+	 *
+	 * @return string The date format set.
+	 */
 	public static function get_default_datetime_format()
 	{
 		return self::$default_datetime_format;
@@ -31,7 +46,7 @@ class HabariDateTime extends DateTime
 	 * Sets the timezone for Habari and PHP.
 	 * 
 	 * @param string $timezone A timezone name, not an abbreviation, for example 'America/New York'
-	 **/
+	 */
 	public static function set_default_timezone( $timezone )
 	{
 		self::$default_timezone = $timezone;
@@ -41,7 +56,7 @@ class HabariDateTime extends DateTime
 	/**
 	 * Get the timezone for Habari and PHP.
 	 * Defaults to system timezone if not set.
-	 **/
+	 */
 	public static function get_default_timezone()
 	{
 		return self::$default_timezone;
@@ -100,7 +115,9 @@ class HabariDateTime extends DateTime
 	}
 	
 	/**
-	 * Get the timezone name
+	 * Get the timezone identifier that is set for this datetime object.
+	 * 
+	 * @return string The timezone identifier.
 	 */
 	public function get_timezone()
 	{

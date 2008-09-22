@@ -4,21 +4,38 @@
  * CronJob is a single cron task
  *
  * @package Habari
+ * 
+ * @property string $name The name of the cron job.
+ * @property mixed $callback The callback function or plugin action for the cron job to execute.
+ * @property HabariDateTime $start_time The time the cron job entry will begin executing.
+ * @property HabariDateTime $end_time The time the cron job entry will end executing and delete.
+ * @property HabariDateTime $last_run The time job was last run.
+ * @property HabariDateTime $next_run The time the job will run next.
+ * @property int $increment The amount of time, in seconds, between each execution.
+ * @property string $result The result of the last run. Either null, 'executed', or 'failed'.
+ * @property string $description The description of the cron job.
+ * @property int $cron_class The type of cron job.
+ * @property string $notify Not implemented.
  */
-
 class CronJob extends QueryRecord
 {
 	const CRON_SYSTEM = 1;
 	const CRON_THEME = 2;
 	const CRON_PLUGIN = 4;
 	const CRON_CUSTOM = 8;
-
+	
+	/**
+	 * The internally stored execution time of this cronjob. (unix timestamp)
+	 * 
+	 * @var int
+	 */
 	private $now;
 
 
 	/**
 	 * Returns the defined database columns for a cronjob.
-	 * @return array Array of columns in the crontab table
+	 * 
+	 * @return array Array of default columns in the crontab table
 	 */
 	public static function default_fields()
 	{
@@ -40,6 +57,8 @@ class CronJob extends QueryRecord
 
 	/**
 	 * Constructor for the CronJob class.
+	 * 
+	 * @see QueryRecord::__construct()
 	 * @param array $paramarray an associative array or querystring of initial field values
 	 */
 	public function __construct( $paramarray = array() )
@@ -113,8 +132,13 @@ class CronJob extends QueryRecord
 	}
 
 	/**
-	 * Magic property setter
+	 * Magic property setter to set the cronjob properties.
 	 * Serializes the callback if needed.
+	 * 
+	 * @see QueryRecord::__set()
+	 * @param string $name The name of the property to set.
+	 * @param mixed $value The value of the property to set.
+	 * @return mixed The new value of the property.
 	 */
 	public function __set( $name, $value )
 	{
@@ -137,8 +161,12 @@ class CronJob extends QueryRecord
 	}
 
 	/**
-	 * Magic property getter
+	 * Magic property getter to get the cronjob properties.
 	 * Unserializes the callback if called.
+	 * 
+	 * @see QueryRecord::__get()
+	 * @param string $name The name of the property to get.
+	 * @return mixed The value of the property, or null if no property by that name.
 	 */
 	public function __get( $name )
 	{
@@ -152,7 +180,10 @@ class CronJob extends QueryRecord
 
 
 	/**
-	 * Saves a new cron job to the crontab table
+	 * Saves a new cron job to the crontab table.
+	 * 
+	 * @see QueryRecord::insertRecord()
+	 * @return CronJob The newly inserted cron job, or false if failed.
 	 */
 	public function insert()
 	{
@@ -160,7 +191,10 @@ class CronJob extends QueryRecord
 	}
 
 	/**
-	 * Updates an existing cron job to the crontab table
+	 * Updates an existing cron job to the crontab table.
+	 * 
+	 * @see QueryRecord::updateRecord()
+	 * @return CronJob The updated cron job, or false if failed.
 	 */
 	public function update()
 	{
@@ -168,7 +202,10 @@ class CronJob extends QueryRecord
 	}
 
 	/**
-	 * Deletes an existing cron job
+	 * Deletes an existing cron job.
+	 * 
+	 * @see QueryRecord::deleteRecord()
+	 * @return bool If the delete was successful
 	 */
 	public function delete()
 	{
