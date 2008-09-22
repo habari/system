@@ -614,7 +614,7 @@ class FormValidators
 	 * @param string $text A string to test if it is a valid URL
 	 * @return array An empty array if the string is a valid URL, or an array with strings describing the errors
 	 */
-	function validate_url( $text )
+	public static function validate_url( $text )
 	{
 		if ( !empty( $text ) ) {
 			if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
@@ -631,7 +631,7 @@ class FormValidators
 	 * @param string $text A string to test if it is a valid Email Address
 	 * @return array An empty array if the string is a valid Email Address, or an array with strings describing the errors
 	 */
-	function validate_email( $text )
+	public static function validate_email( $text )
 	{
 		if( !preg_match("@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
 			return array(_t('Value must be a valid Email Address.'));
@@ -663,7 +663,7 @@ class FormValidators
 	 * @param string $warning An optional error message
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
-	function validate_regex( $value, $control, $container, $regex, $warning = NULL )
+	public static function validate_regex( $value, $control, $container, $regex, $warning = NULL )
 	{
 		if(preg_match($regex, $value)) {
 			return array();
