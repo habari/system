@@ -912,16 +912,35 @@ class AdminHandler extends ActionHandler
 		$plugins = Plugins::list_all();
 		foreach($plugins as $file) {
 			if(Plugins::id_from_file($file) == $plugin_id) {
-		if ( 'activate' == strtolower( $action ) ) {
-					Plugins::activate_plugin( $file );
-			$plugins = Plugins::get_active();
-					Session::notice( sprintf( _t( "Activated plugin '%s'" ), $plugins[Plugins::id_from_file( $file )]->info->name ) );
-		}
-		else {
-			$plugins = Plugins::get_active();
-					Session::notice( sprintf( _t( "Deactivated plugin '%s'" ), $plugins[Plugins::id_from_file( $file )]->info->name ) );
-					Plugins::deactivate_plugin( $file );
-		}
+				switch ( strtolower($action) ) {
+					case 'activate':
+						if ( Plugins::activate_plugin($file) ) {
+							$plugins = Plugins::get_active();
+							Session::notice(
+								_t("Activated plugin '%s'", $plugins[Plugins::id_from_file($file)]->info->name),
+								$plugins[Plugins::id_from_file($file)]->plugin_id
+							);
+						}
+					break;
+					case 'deactivate':
+						if ( Plugins::deactivate_plugin($file) ) {
+							$plugins = Plugins::get_active();
+							Session::notice(
+								_t("Deactivated plugin '%s'", $plugins[Plugins::id_from_file($file)]->info->name),
+								$plugins[Plugins::id_from_file($file)]->plugin_id
+							);
+						}
+					break;
+					default:
+						Plugins::act(
+							'adminhandler_get_plugin_toggle_action',
+							$action,
+							$file,
+							$plugin_id,
+							$plugins
+						);
+					break;
+				}
 			}
 		}
 		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
