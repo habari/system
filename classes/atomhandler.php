@@ -484,34 +484,42 @@ class AtomHandler extends ActionHandler
 		$params['status'] = Post::status('published');
 
 		if ( $post = Post::get($params) ) {
+			// Assign alternate link.
+			$alternate = URL::get( 'atom_feed_entry' );
+			$self = URL::get( 'atom_feed_entry' );
+			$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_entry';
+			
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
+			
+			$xml = $this->create_atom_wrapper( $alternate, $self, $id );
+			
+			$entry = $xml->addChild('entry');
+			$entry->addAttribute( 'xmlns', 'http://www.w3.org/2005/Atom' );
+			$entry_title = $entry->addChild( 'title', $title );
 
-			$xml = new SimpleXMLElement( '<entry xmlns="http://www.w3.org/2005/Atom"></entry>' );
-			$entry_title = $xml->addChild( 'title', $title );
-
-			$entry_author = $xml->addChild( 'author' );
+			$entry_author = $entry->addChild( 'author' );
 			$author_name = $entry_author->addChild( 'name', $user->displayname );
 
 			$entry_link = $xml->addChild( 'link' );
 			$entry_link->addAttribute( 'rel', 'alternate' );
 			$entry_link->addAttribute( 'href', $post->permalink );
 
-			$entry_link = $xml->addChild( 'link' );
+			$entry_link = $entry->addChild( 'link' );
 			$entry_link->addAttribute( 'rel', 'edit' );
 			$entry_link->addAttribute( 'href', URL::get( 'atom_entry', "slug={$post->slug}" ) );
 
-			$entry_id = $xml->addChild( 'id', $post->guid );
+			$entry_id = $entry->addChild( 'id', $post->guid );
 			$entry_updated = $xml->addChild( 'updated', $post->updated->get('c') );
 			$entry_published = $xml->addChild( 'published', $post->pubdate->get('c') );
 
 				foreach ( $post->tags as $tag ) {
-					$entry_category = $xml->addChild( 'category' );
+					$entry_category = $entry->addChild( 'category' );
 					$entry_category->addAttribute( 'term', $tag );
 				}
 
-			$entry_content = $xml->addChild( 'content', $content );
+			$entry_content = $entry->addChild( 'content', $content );
 			$entry_content->addAttribute( 'type', 'html' );
 
 			Plugins::act( 'atom_get_entry', $xml, $post, $this->handler_vars );
