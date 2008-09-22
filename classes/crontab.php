@@ -4,13 +4,13 @@
  * Static class to build and read cron entries
  *
  * @package Habari
- * @todo Document this class
  */
 
 class CronTab extends ActionHandler
 {
 	/**
-	 * Executes all cron jobs in the DB.
+	 * Executes all cron jobs in the DB if there are any to run.
+	 * 
 	 * @param boolean $async If true, allows execution to continue by making an asynchronous request to a cron URL
 	 */
 	static function run_cron( $async = false )
@@ -66,7 +66,10 @@ class CronTab extends ActionHandler
 	}
 	
 	/**
-	 * Handles asyncronous cron calls
+	 * Handles asyncronous cron calls.
+	 * 
+	 * @todo next_cron should be the actual next run time and update it when new
+	 * crons are added instead of just maxing out at one day..
 	 */
 	function act_poll_cron()
 	{
@@ -92,8 +95,6 @@ class CronTab extends ActionHandler
 		}
 		
 		// set the next run time to the lowest next_run OR a max of one day.
-		// @todo next_cron should be the actual next run time and update it when new crons are
-		// added instead of just maxing out at one day..
 		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
 		Options::set('next_cron', min( intval($next_cron), $time->modify( '+1 day' )->int ) );
 		Options::set('cron_running', false);
@@ -101,21 +102,21 @@ class CronTab extends ActionHandler
 	
 	/**
 	 * Get a Cron Job by name from the Database.
-	 * @param string $name Document the functions.
-	 * @return obj the CronJob retreived from the DB
+	 * 
+	 * @param string $name The name of the cron job to retreive.
+	 * @return CronJob The cron job retreived from the DB
 	 */
 	static function get_cronjob( $name )
 	{
 		$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE name = ?', array( $name ), 'CronJob' );
-		// return $cron ? $cron : new Error( 'No Cron Job named ' . $name );
 		return $cron;
 	}
 
 	/**
-	 * function delete_cronjob
 	 * Delete a Cron Job by name from the Database.
-	 * @param string $name Document the functions.
-	 * @return bool wheather or not the delete was successfull
+	 * 
+	 * @param string $name The name of the cron job to delete.
+	 * @return bool Wheather or not the delete was successfull
 	 */
 	static function delete_cronjob( $name )
 	{
@@ -128,6 +129,8 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB.
+	 * 
+	 * @see CronJob
 	 * @param array $paramarray A paramarray of cron job feilds.
 	 */
 	static function add_cron( $paramarray )
@@ -137,11 +140,11 @@ class CronTab extends ActionHandler
 	}
 
 	/**
-	 * function add_single_cron
 	 * Add a new cron job to the DB, that runs only once.
+	 * 
 	 * @param string $name The name of the cron job.
-	 * @param string $callback The callback function for the cron job to execute.
-	 * @param string $run_time The time (PHP timestamp) to execute the cron.
+	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
+	 * @param HabariDateTime $run_time The time to execute the cron.
 	 * @param string $description The description of the cron job.
 	 */
 	static function add_single_cron( $name, $callback, $run_time, $description = '' )
@@ -158,8 +161,9 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs hourly.
+	 * 
 	 * @param string $name The name of the cron job.
-	 * @param string $callback The callback function for the cron job to execute.
+	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
 	 */
 	static function add_hourly_cron( $name, $callback, $description = '' )
@@ -175,8 +179,9 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs daily.
+	 * 
 	 * @param string $name The name of the cron job.
-	 * @param string $callback The callback function for the cron job to execute.
+	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
 	 */
 	static function add_daily_cron( $name, $callback, $description = '' )
@@ -192,8 +197,9 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs weekly.
+	 * 
 	 * @param string $name The name of the cron job.
-	 * @param string $callback The callback function for the cron job to execute.
+	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
 	 */
 	static function add_weekly_cron( $name, $callback, $description = '' )
@@ -209,8 +215,9 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs monthly.
+	 * 
 	 * @param string $name The name of the cron job.
-	 * @param string $callback The callback function for the cron job to execute.
+	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
 	 */
 	static function add_monthly_cron( $name, $callback, $description = '' )
