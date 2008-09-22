@@ -66,7 +66,7 @@ class Posts extends ArrayObject
 
 		// Default parameters
 		$orderby = 'pubdate DESC';
-		$limit = Options::get( 'pagination' );
+		$limit = (int) Options::get('pagination') ? (int) Options::get('pagination') : 5;
 
 		// If $paramarray is a querystring, convert it to an array
 		$paramarray = Utils::get_params( $paramarray );
