@@ -729,9 +729,12 @@ class AdminHandler extends ActionHandler
 
 		if ( $update == TRUE ) {
 			$user->update();
-			Utils::redirect( URL::get( 'admin', $results ) );
+		}
+		else {
+			Session::notice( 'Nothing changed.' );
 		}
 
+		Utils::redirect( URL::get( 'admin', $results ) );
 
 	}
 
