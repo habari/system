@@ -337,9 +337,9 @@ class Comment extends QueryRecord implements IsContent
 			return self::$comment_type_list;
 		}
 		self::$comment_type_list = array(
-			self::COMMENT => 'Comment',
-			self::PINGBACK => 'Pingback',
-			self::TRACKBACK => 'Trackback',
+			self::COMMENT => 'comment',
+			self::PINGBACK => 'pingback',
+			self::TRACKBACK => 'trackback',
 		);
 		return self::$comment_type_list;
 	}
@@ -355,9 +355,9 @@ class Comment extends QueryRecord implements IsContent
 			return self::$comment_status_list;
 		}
 		self::$comment_status_list = array(
-			self::STATUS_UNAPPROVED => 'Unapproved',
-			self::STATUS_APPROVED => 'Approved',
-			self::STATUS_SPAM => 'Spam',
+			self::STATUS_UNAPPROVED => 'unapproved',
+			self::STATUS_APPROVED => 'approved',
+			self::STATUS_SPAM => 'spam',
 			// 'STATUS_DELETED' => self::STATUS_DELETED, // Not supported
 		);
 		return self::$comment_status_list;
