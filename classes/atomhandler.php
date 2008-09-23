@@ -485,8 +485,8 @@ class AtomHandler extends ActionHandler
 
 		if ( $post = Post::get($params) ) {
 			// Assign alternate link.
-			$alternate = URL::get( 'atom_feed_entry' );
-			$self = URL::get( 'atom_feed_entry' );
+			$alternate = URL::get( 'atom_entry' );
+			$self = URL::get( 'atom_entry' );
 			$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_entry';
 			
 			$user = User::get_by_id( $post->user_id );
