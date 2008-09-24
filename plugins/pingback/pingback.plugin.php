@@ -236,7 +236,8 @@ class Pingback extends Plugin
 	{
 		// RemoteRequest makes it easier to retrieve the headers.
 		$rr = new RemoteRequest( $target_uri );
-		if ( ! $rr->execute() ) {
+		$rr->execute();
+		if ( ! $rr->executed() ) {
 			return false;
 		}
 
