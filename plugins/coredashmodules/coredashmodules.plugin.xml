@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
+	<name>Core Dash Modules</name>
+	<url>http://habariproject.org/</url>
+	<author>Habari Community</author>
+	<authorurl>http://habariproject.org/</authorurl>
+	<version>1.0</version>
+	<description>Provides a core set of dashboard modules for the dashboard.</description>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	<copyright>2008</copyright>
+</plugin>
