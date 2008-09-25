@@ -14,7 +14,10 @@
 <?php $theme->footer(); ?>
 
 <?php
-// Uncomment this to view your DB profiling info
+/* In order to see DB profiling information:
+ 1. Insert this line in your config file: define( 'DEBUG', TRUE );
+ 2.Uncomment the followng line
+ */
 // include 'db_profiling.php';
 ?>
 </body>
