@@ -395,8 +395,8 @@ class AdminHandler extends ActionHandler
 		$form = $this->form_publish( new Post(), false );
 
 		// check to see if we are updating or creating a new post
-		if ( $form->id->value != '' ) {
-			$post = Post::get( array( 'id' => $form->id->value, 'status' => Post::status( 'any' ) ) );
+		if ( $form->post_id->value != 0 ) {
+			$post = Post::get( array( 'id' => $form->post_id->value, 'status' => Post::status( 'any' ) ) );
 			$post->title = $form->title->value;
 			if ( $form->newslug->value == '' ) {
 				Session::notice( _e('A post slug cannot be empty. Keeping old slug.') );
@@ -582,6 +582,13 @@ class AdminHandler extends ActionHandler
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
 		$form->content_type->value = $post->content_type;
+		
+		$form->append('hidden', 'post_id', 'null:null');
+		if ( $newpost ) {
+			$form->post_id->value= 0;
+		} else {
+			$form->post_id->value= $this->handler_vars['id'];
+		}
 
 		$form->append('hidden', 'slug', 'null:null');
 		$form->slug->value = $post->slug;
