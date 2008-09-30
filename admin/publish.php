@@ -9,12 +9,12 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$('.container').addClass('transparent');
-	<?php if(isset($post->slug) && ($post->slug != '')) : ?>
+	<?php if(isset($post->id) && ($post->id != '')) : ?>
 	$('.container.buttons').prepend($('<input type="submit" name="submit" id="delete" class="button delete" tabindex="6" value="<?php _e('Delete'); ?>">'));
 	$('#delete').click(function(){
 		$('#create-content')
 			.append($('<input type="hidden" name="nonce" value="<?php echo $wsse['nonce']; ?>"><input type="hidden" name="timestamp" value="<?php echo $wsse['timestamp']; ?>"><input type="hidden" name="digest" value="<?php echo $wsse['digest']; ?>">'))
-			.attr('action', '<?php URL::out( 'admin', array('page' => 'delete_post', 'slug' => $post->slug )); ?>');
+			.attr('action', '<?php URL::out( 'admin', array('page' => 'delete_post', 'id' => $post->id )); ?>');
 	});
 	<?php endif; ?>
 

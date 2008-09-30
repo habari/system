@@ -395,8 +395,8 @@ class AdminHandler extends ActionHandler
 		$form = $this->form_publish( new Post(), false );
 
 		// check to see if we are updating or creating a new post
-		if ( $form->slug->value != '' ) {
-			$post = Post::get( array( 'slug' => $form->slug->value, 'status' => Post::status( 'any' ) ) );
+		if ( $form->id->value != '' ) {
+			$post = Post::get( array( 'id' => $form->id->value, 'status' => Post::status( 'any' ) ) );
 			$post->title = $form->title->value;
 			if ( $form->newslug->value == '' ) {
 				Session::notice( _e('A post slug cannot be empty. Keeping old slug.') );
@@ -451,14 +451,14 @@ class AdminHandler extends ActionHandler
 		$post->update( $form->minor_edit->value );
 
 		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, $post->title), Post::status_name( $post->status ) ) );
-		Utils::redirect( URL::get( 'admin', 'page=publish&slug=' . $post->slug ) );
+		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
 	function get_publish( $template = 'publish')
 	{
 		extract( $this->handler_vars );
-		if ( isset( $slug ) ) {
-			$post = Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+		if ( isset( $id ) ) {
+			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 			$this->theme->post = $post;
 			$this->theme->newpost = false;
 		}
@@ -487,7 +487,7 @@ class AdminHandler extends ActionHandler
 		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
 		$form->class[] = 'create';
 
-		if( isset( $this->handler_vars['slug'] ) ) {
+		if( isset( $this->handler_vars['id'] ) ) {
 			$post_links = $form->append('wrapper', 'post_links');
 			$post_links->append('static', 'post_permalink', '<a href="'.$post->permalink.'" class="viewpost">'._t('View Post').'</a>');
 			$post_links->class ='container';
@@ -601,7 +601,7 @@ class AdminHandler extends ActionHandler
 	{
 		extract( $this->handler_vars );
 		$okay = TRUE;
-		if ( empty( $slug ) || empty( $nonce ) || empty( $timestamp ) || empty( $PasswordDigest ) ) {
+		if ( empty( $id ) || empty( $nonce ) || empty( $timestamp ) || empty( $PasswordDigest ) ) {
 			$okay = FALSE;
 		}
 		$wsse = Utils::WSSE( $nonce, $timestamp );
@@ -611,7 +611,7 @@ class AdminHandler extends ActionHandler
 		if ( !$okay )	{
 			Utils::redirect( URL::get( 'admin', 'page=posts&type='. Post::status( 'any' ) ) );
 		}
-		$post = Post::get( array( 'slug' => $slug, 'status' => Post::status( 'any' ) ) );
+		$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 		$post->delete();
 		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), $post->title ) );
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
@@ -1088,7 +1088,7 @@ class AdminHandler extends ActionHandler
 		// $stats= $form->stats_tab->append('wrapper', 'tags_buttons');
 		// $stats->class='container';
 		// 
-		// $stats->append('static', 'post_count', '<div class="container"><p class="pct25">'._t('Comments on this post:').'</p><p><strong>' . Comments::count_by_slug($comment->post->slug) . '</strong></p></div><hr />');
+		// $stats->append('static', 'post_count', '<div class="container"><p class="pct25">'._t('Comments on this post:').'</p><p><strong>' . Comments::count_by_id($comment->post->id) . '</strong></p></div><hr />');
 		// $stats->append('static', 'ip_count', '<div class="container"><p class="pct25">'._t('Comments from this IP:').'</p><p><strong>' . Comments::count_by_ip($comment->ip) . '</strong></p></div><hr />');
 		// $stats->append('static', 'email_count', '<div class="container"><p class="pct25">'._t('Comments by this author:').'</p><p><strong>' . Comments::count_by_email($comment->email) . '</strong></p></div><hr />');
 		// $stats->append('static', 'url_count', '<div class="container"><p class="pct25">'._t('Comments with this URL:').'</p><p><strong>' . Comments::count_by_url($comment->url) . '</strong></p></div><hr />');

@@ -619,6 +619,22 @@ class Comments extends ArrayObject
 		}
 		return self::get( $params );
 	}
+
+	/**
+	 * static count_by_id
+	 * returns the number of comments attached to the specified post
+	 * @param int a post ID
+	 * @param mixed A comment status value, or FALSE to not filter on status(default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments attached to the specified post
+	**/
+	 public static function count_by_id( $id= 0,  $status = Comment::STATUS_APPROVED )
+	 {
+	 	$params = array( 'post_id' => $id, 'count' => 'id' );
+		if ( FALSE !== $status ) {
+			$params['status']= $status;
+		}
+		return self::get( $params );
+	 }
 	
 	/**
 	 * static set
