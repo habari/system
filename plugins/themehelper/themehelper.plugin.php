@@ -129,15 +129,15 @@ class ThemeHelper extends Plugin
 		$ui = new FormUI( 'commentform' );
 		$ui->set_option( 'form_action',  URL::get( 'submit_feedback', array( 'id' => $theme->post->id ) ) );
 
-		$name = $ui->append( 'text', 'ename', 'null:null', _t( 'Name' ) . ' (<em>' . _t( 'Required' ) . '</em>)' );
+		$name = $ui->append( 'text', 'ename', 'null:null', _t( 'Name' ) . ' (<em>' . _t( 'Required' ) . '</em>) ' );
 		$name->value = $theme->commenter_name;
 		$name->id = 'name';
 
-		$email = $ui->append( 'text', 'email', 'null:null', _t('Email' ) . ' (<em>' . _t( 'Required - not published' ) . '</em>)' );
+		$email = $ui->append( 'text', 'email', 'null:null', _t('Email' ) . ' (<em>' . _t( 'Required - not published' ) . '</em>) ' );
 		$email->value = $theme->commenter_email;
 		$email->id = $email->name;
 
-		$url = $ui->append( 'text', 'url', 'null:null', _t( 'Web Address' ) );
+		$url = $ui->append( 'text', 'url', 'null:null', _t( 'Web Address' ) . ' ' );
 		$url->value = $theme->commenter_url;
 		$url->id = $url->name;
 

@@ -13,7 +13,7 @@
 
 		<ul class="dropbutton">
 			<?php $actions = array(
-				'edit' => array('url' => URL::get('admin', 'page=publish&slug=' . $post->slug), 'title' => sprintf( _t('Edit \'%s\''), $post->title ), 'label' => _t('Edit')),
+				'edit' => array('url' => URL::get('admin', 'page=publish&id=' . $post->id), 'title' => sprintf( _t('Edit \'%s\''), $post->title ), 'label' => _t('Edit')),
 				'view' => array('url' => $post->permalink, 'title' => sprintf( _t('View \'%s\''), $post->title ), 'label' => _t('View')),
 				'remove' => array('url' => 'javascript:itemManage.remove('. $post->id . ', \'post\');', 'title' => _t('Delete this item'), 'label' => _t('Delete'))
 			);
