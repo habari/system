@@ -10,7 +10,7 @@ class CronTab extends ActionHandler
 {
 	/**
 	 * Executes all cron jobs in the DB if there are any to run.
-	 * 
+	 *
 	 * @param boolean $async If true, allows execution to continue by making an asynchronous request to a cron URL
 	 */
 	static function run_cron( $async = false )
@@ -23,13 +23,13 @@ class CronTab extends ActionHandler
 			) {
 			return;
 		}
-		
+
 		// cron_running will timeout in 10 minutes
 		// round cron_running to 4 decimals
 		$run_time = microtime(true) + 600;
-		$run_time = sprintf("%.4f", $run_time); 
+		$run_time = sprintf("%.4f", $run_time);
 		Options::set('cron_running', $run_time);
-		
+
 		if ( $async ) {
 			// Timeout is really low so that it doesn't wait for the request to finish
 			$cronurl = URL::get('cron',
@@ -45,7 +45,7 @@ class CronTab extends ActionHandler
 			if( Options::get('cron_running') != $run_time ) {
 				return;
 			}
-			
+
 			$time = HabariDateTime::date_create();
 			$crons = DB::get_results(
 				'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',
@@ -57,17 +57,17 @@ class CronTab extends ActionHandler
 					$cron->execute();
 				}
 			}
-			
+
 			// set the next run time to the lowest next_run OR a max of one day.
 			$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
 			Options::set('next_cron', min( intval($next_cron), $time->modify( '+1 day' )->int ) );
 			Options::set('cron_running', false);
 		}
 	}
-	
+
 	/**
 	 * Handles asyncronous cron calls.
-	 * 
+	 *
 	 * @todo next_cron should be the actual next run time and update it when new
 	 * crons are added instead of just maxing out at one day..
 	 */
@@ -77,32 +77,32 @@ class CronTab extends ActionHandler
 		if ( $time != Options::get('cron_running') ) {
 			return;
 		}
-		
+
 		// allow script to run for 10 minutes
 		set_time_limit(600);
-		
+
 		$time = HabariDateTime::date_create();
 		$crons = DB::get_results(
 			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',
 			array( $time->sql, $time->sql ),
 			'CronJob'
 			);
-		
+
 		if ( $crons ) {
 			foreach( $crons as $cron ) {
 				$cron->execute();
 			}
 		}
-		
+
 		// set the next run time to the lowest next_run OR a max of one day.
 		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
 		Options::set('next_cron', min( intval($next_cron), $time->modify( '+1 day' )->int ) );
 		Options::set('cron_running', false);
 	}
-	
+
 	/**
 	 * Get a Cron Job by name from the Database.
-	 * 
+	 *
 	 * @param string $name The name of the cron job to retreive.
 	 * @return CronJob The cron job retreived from the DB
 	 */
@@ -114,7 +114,7 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Delete a Cron Job by name from the Database.
-	 * 
+	 *
 	 * @param string $name The name of the cron job to delete.
 	 * @return bool Wheather or not the delete was successfull
 	 */
@@ -129,19 +129,26 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB.
-	 * 
+	 *
 	 * @see CronJob
 	 * @param array $paramarray A paramarray of cron job feilds.
 	 */
 	static function add_cron( $paramarray )
 	{
 		$cron = new CronJob( $paramarray );
-		return $cron->insert();
+		$result = $cron->insert();
+
+		//If the new cron should run earlier than the others, rest next_cron to its strat time.
+		$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
+		if ( intval( Options::get('next_cron') ) > intval( $next_cron ) ){
+			Options::set( 'next_cron', $next_cron );
+		}
+		return $result;
 	}
 
 	/**
 	 * Add a new cron job to the DB, that runs only once.
-	 * 
+	 *
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param HabariDateTime $run_time The time to execute the cron.
@@ -161,7 +168,7 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs hourly.
-	 * 
+	 *
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
@@ -179,7 +186,7 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs daily.
-	 * 
+	 *
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
@@ -197,7 +204,7 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs weekly.
-	 * 
+	 *
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
@@ -215,7 +222,7 @@ class CronTab extends ActionHandler
 
 	/**
 	 * Add a new cron job to the DB, that runs monthly.
-	 * 
+	 *
 	 * @param string $name The name of the cron job.
 	 * @param mixed $callback The callback function or plugin action for the cron job to execute.
 	 * @param string $description The description of the cron job.
