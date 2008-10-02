@@ -22,7 +22,7 @@
 						<div class="commentCount"><a href="<?php echo $post->permalink; ?>" title="<?php _e('Comments on this post'); ?>"><?php echo $post->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></div>
 					<br>
 					<?php if ( $user ) { ?>
-					<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
+					<a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 					<?php } ?>
 					</div>
 				</div>
