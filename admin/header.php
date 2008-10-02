@@ -1,8 +1,8 @@
  	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.core.js" type="text/javascript"></script>
