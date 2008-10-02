@@ -13,7 +13,7 @@
         <span class="commentslink"><a href="<?php echo $post->permalink; ?>#comments" title="<?php _e('Comments to this post'); ?>"><?php echo $post->comments->approved->count; ?>
 		<?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></span>
 <?php if ( $user instanceof User ) { ?>
-        <span class="entry-edit"><a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
+        <span class="entry-edit"><a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
 <?php } ?>
 <?php if ( is_array( $post->tags ) ) { ?>
         <span class="entry-tags"><?php echo $post->tags_out; ?></span>
