@@ -302,5 +302,5 @@ $(document).ready(function() {
 	$('#db_type').change(setDatabaseType);
 	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
 	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
-	$('#databaseuser').focus()
+	$('#locale').focus();
 });

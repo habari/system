@@ -3,7 +3,7 @@
 		
 			<label for="locale"><?php _e('Language'); ?> </label>
 			
-			<select name="locale" id="locale" onchange="$('#locale-form').submit();">
+			<select name="locale" id="locale" onchange="$('#locale-form').submit();" tabindex="1">
 				<?php foreach($locales as $loc): ?>
 				<option value="<?php echo  htmlspecialchars($loc); ?>"
 					<?php echo (isset($locale) && $loc == $locale) ? 'selected' : ''; ?> >
