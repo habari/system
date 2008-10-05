@@ -31,7 +31,7 @@ class ACL {
 	 */
 	public static function __static()
 	{
-		self::$access_ids = DB::get_keyvalue( 'SELECT name, id FROM {permissions};' );
+		self::$access_ids = DB::get_keyvalue( 'SELECT description, id FROM {permissions};' );
 
 		if ( ! isset(self::$access_ids) ) {
 			self::$access_ids = array();
@@ -280,6 +280,15 @@ class ACL {
 	{
 		// Use only numeric ids internally
 		$permission = self::token_id( $permission );
+
+		/**
+		 * Do we allow perms that don't exist?
+		 * When ACL is functional ACCESS_NONEXISTANT_PERMISSION should be false by default.
+		 */
+		if ( is_null( $permission ) ) {
+			return self::ACCESS_NONEXISTANT_PERMISSION;
+		}
+
 		// if we were given a user ID, use that to fetch the group membership from the DB
 		if ( is_numeric( $user ) ) {
 			$user_id = $user;
@@ -294,20 +303,20 @@ class ACL {
 
 		/**
 		 * Jay Pipe's explanation of the following SQL
-		 * 1) Look into user_permissions for the user and the token.  
-		 * If exists, use that permission flag for the check. If not, 
+		 * 1) Look into user_permissions for the user and the token.
+		 * If exists, use that permission flag for the check. If not,
 		 * go to 2)
 		 *
-		 * 2) Look into the group_permissions joined to 
-		 * users_groups for the user and the token.  Order the results 
-		 * by the permission_id flag. The lower the flag value, the 
-		 * fewest permissions that group has. Use the first record's 
+		 * 2) Look into the group_permissions joined to
+		 * users_groups for the user and the token.  Order the results
+		 * by the permission_id flag. The lower the flag value, the
+		 * fewest permissions that group has. Use the first record's
 		 * permission flag to check the ACL.
 		 *
-		 * This gives the system very fine grained control and grabbing 
-		 * the permission flag and can be accomplished in a single SQL 
+		 * This gives the system very fine grained control and grabbing
+		 * the permission flag and can be accomplished in a single SQL
 		 * call.
-		 */ 
+		 */
 		$sql = <<<SQL
 SELECT permission_id
   FROM {user_token_permissions}
@@ -324,13 +333,6 @@ SQL;
 		$result = DB::get_value( $sql, array( ':user_id' => $user_id, ':token_id' => $permission ) );
 
 		if ( isset( $result ) && self::access_check( $result, $access ) ) {
-			return true;
-		}
-		/**
-		 * Do we allow perms that don't exist?
-		 * When ACL is functional ACCESS_NONEXISTANT_PERMISSION should be false by default.
-		 */
-		elseif ( empty($result) && self::ACCESS_NONEXISTANT_PERMISSION ) {
 			return true;
 		}
 
@@ -362,7 +364,7 @@ SQL;
 	}
 
 	/**
-	 * Grant a permission to a user 
+	 * Grant a permission to a user
 	 * @param integer $user_id The user ID
 	 * @param integer $token_id The name or ID of the permission token to grant
 	 * @param string $access The kind of access to assign the group
@@ -378,7 +380,7 @@ SQL;
 
 		return $result;
 	}
-	
+
 	/**
 	 * Deny permission to a group
 	 * @param integer $group_id The group ID
@@ -391,7 +393,7 @@ SQL;
 	}
 
 	/**
-	 * Deny permission to a user 
+	 * Deny permission to a user
 	 * @param integer $user_id The user ID
 	 * @param mixed $token_id The name or ID of the permission token
 	 * @return Result of the DB query
@@ -399,7 +401,7 @@ SQL;
 	public static function deny_user( $user_id, $token_id )
 	{
 		self::grant_user( $group_id, $token_id, 'deny' );
-	}	
+	}
 
 	/**
 	 * Remove a permission from the group permissions table
