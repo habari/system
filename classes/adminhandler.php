@@ -454,7 +454,7 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
-	function get_publish( $template = 'publish')
+	public function get_publish( $template = 'publish')
 	{
 		extract( $this->handler_vars );
 		if ( isset( $id ) ) {
@@ -481,7 +481,7 @@ class AdminHandler extends ActionHandler
 		$this->display( $template );
 	}
 
-	function form_publish($post, $newpost = true)
+	public function form_publish($post, $newpost = true)
 	{
 		$form = new FormUI('create-content');
 		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
@@ -604,7 +604,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Deletes a post from the database.
 	 */
-	function post_delete_post()
+	public function post_delete_post()
 	{
 		extract( $this->handler_vars );
 		$okay = TRUE;
@@ -643,7 +643,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles post requests from the user profile page.
 	 */
-	function post_user()
+	public function post_user()
 	{
 
 		// Keep track of whether we actually need to update any fields
@@ -917,7 +917,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles plugin activation or deactivation.
 	 */
-	function get_plugin_toggle()
+	public function get_plugin_toggle()
 	{
 		extract( $this->handler_vars );
 		$plugins = Plugins::list_all();
@@ -968,7 +968,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles GET requests for the theme listing
 	 */
-	function get_themes()
+	public function get_themes()
 	{
 		$all_themes = Themes::get_all_data();
 		foreach($all_themes as $name => $theme) {
@@ -1001,7 +1001,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Activates a theme.
 	 */
-	function get_activate_theme()
+	public function get_activate_theme()
 	{
 		extract( $this->handler_vars );
 		if ( isset($theme_name)  && isset($theme_dir) ) {
@@ -1015,7 +1015,7 @@ class AdminHandler extends ActionHandler
 	 * Handles the submission of the import form, importing data from a WordPress database.
 	 * This function should probably be broken into an importer class, since it is WordPress-specific.
 	 */
-	function post_import()
+	public function post_import()
 	{
 		if ( !isset( $_REQUEST['importer'] ) ) {
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
@@ -1025,7 +1025,7 @@ class AdminHandler extends ActionHandler
 		$this->display( 'import' );
 	}
 
-	function form_comment($comment, $actions) {		
+	public function form_comment($comment, $actions) {		
 		$form = new FormUI( 'comment' );
 		
 		$user = User::identify();
@@ -1120,7 +1120,7 @@ class AdminHandler extends ActionHandler
 		return $form;
 	}
 	
-	function get_comment($update = FALSE) {				
+	public function get_comment($update = FALSE) {				
 		if ( isset( $this->handler_vars['id'] ) && $comment = Comment::get( $this->handler_vars['id'] ) ) {			
 			$this->theme->comment = $comment;		
 			
@@ -1185,11 +1185,11 @@ class AdminHandler extends ActionHandler
 		}
 	}
 	
-	function post_comment() {		
+	public function post_comment() {		
 		$this->get_comment(true);
 	}
 
-	function get_comments()
+	public function get_comments()
 	{
 		$this->post_comments();
 	}
@@ -1198,7 +1198,7 @@ class AdminHandler extends ActionHandler
 	 * Handles the submission of the comment moderation form.
 	 * @todo Separate delete from "delete until purge"
 	 */
-	function post_comments()
+	public function post_comments()
 	{
 		// Get special search statuses
 		$statuses = Comment::list_comment_statuses();
@@ -1226,7 +1226,7 @@ class AdminHandler extends ActionHandler
 		$this->display( 'comments' );
 	}
 
-	function fetch_comments( $params = array() )
+	public function fetch_comments( $params = array() )
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
 		$locals = array(
@@ -2358,6 +2358,7 @@ class AdminHandler extends ActionHandler
 			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P' ),
 			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t( 'Import content from another blog' ), 'text' => _t( 'Import' ), 'hotkey' => 'I' ),
 			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U' ),
+			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G' ),
 			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L') ,
 			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
 		);
