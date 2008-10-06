@@ -114,7 +114,7 @@ class UserGroup extends QueryRecord
 		foreach( $this->member_ids as $user_id ) {
 			DB::query('INSERT INTO {users_groups} (user_id, group_id) VALUES (?, ?)', array( $user_id, $this->id) );
 		}
-
+		EventLog::log( _t( 'User Group %s: Member list reset', array( $this->name ) ), 'notice', 'user', 'habari' );
 	}
 
 	/**
@@ -129,6 +129,7 @@ class UserGroup extends QueryRecord
 		 	return;
 		}
 
+		$name = $this->name;
 		Plugins::act('usergroup_delete_before', $this);
 		// remove all this group's permissions
 		$results = DB::query( 'DELETE FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) );
@@ -137,6 +138,7 @@ class UserGroup extends QueryRecord
 		// remove this group
 		$result = parent::deleteRecord( DB::table('groups'), array( 'id' => $this->id ) );
 		Plugins::act('usergroup_delete_after', $this);
+		EventLog::log( _t( 'User Group %s: Group deleted.', array( $name ) ), 'notice', 'user', 'habari' );
 		return $result;
 	}
 
@@ -174,6 +176,8 @@ class UserGroup extends QueryRecord
 		$this->member_ids = array_merge( (array) $this->member_ids, (array) $users);
 		// List each group member exactly once
 		$this->member_ids = array_unique($this->member_ids);
+
+		EventLog::log( _t( 'User Group %1$s: Users were added to the group.', array( $this->name ) ), 'notice', 'user', 'habari' ); 
 	}
 
 	/**
@@ -187,6 +191,8 @@ class UserGroup extends QueryRecord
 		$users = array_map(array('User', 'get_id'), $users);
 		// Remove users from group membership
 		$this->member_ids = array_diff( $this->member_ids, $users);
+
+		EventLog::log( _t( 'User Group %1$s: Users were removed from the group.', array( $this->name ) ), 'notice', 'user', 'habari' );
 	}
 
 	/**
@@ -202,6 +208,7 @@ class UserGroup extends QueryRecord
 		// grant the new permissions
 		foreach ( $permissions as $permission ) {
 			ACL::grant_group( $this->id, $permission, $access );
+			EventLog::log( _t( 'Group %1$s: Access to %2$s changed to %3$s', array( $this->name, ACL::token_name( $permission ), $access ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
@@ -225,6 +232,7 @@ class UserGroup extends QueryRecord
 
 		foreach ( $permissions as $permission ) {
 			ACL::revoke_group_permission( $this->id, $permission );
+			EventLog::log( _t( 'Group %1$s: Permission to %2$s revoked.', array( $this->name, ACL::token_name( $permission ) ) ), 'notice', 'user', 'habari' );
 		}
 	}
 

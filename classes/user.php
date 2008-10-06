@@ -138,6 +138,7 @@ class User extends QueryRecord
 		Plugins::act('user_update_before', $this);
 		$this->info->commit();
 		$result = parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
+		EventLog::log( _t( 'User %s: Information updated.', array( $this->username ) ), 'notice', 'user', 'habari' );
 		Plugins::act('user_update_after', $this);
 		return $result;
 	}
@@ -427,6 +428,7 @@ class User extends QueryRecord
 
 		foreach ( $permissions as $permission ) {
 			ACL::grant_user( $this->id, $permission, $access );
+			EventLog::log( _t( 'User %1$s: Access to %2$s changed to %3$s', array( $this->username, ACL::token_name( $permission ), $access ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
@@ -450,6 +452,7 @@ class User extends QueryRecord
 		$permissions = array_map(array('ACL', 'token_id'), $permissions);
 		foreach ( $permissions as $permission ) {
 			ACL::revoke_user_permission( $this->id, $permission );
+			EventLog::log( _t( 'User %1$s: Permission to %2$s revoked.', array( $this->username, ACL::token_name( $permission ) ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
@@ -488,6 +491,7 @@ class User extends QueryRecord
 		$group = UserGroup::get( $group );
 		if ( $group instanceOf UserGroup ) {
 			$group->add( $this->id );
+			EventLog::log( _t( ' User %1$s: Added to %2$s group.', array( $this->username, $group->name ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
@@ -499,6 +503,7 @@ class User extends QueryRecord
 	public function remove_from_group( $group )
 	{
 		UserGroup::remove( $group, $this->id );
+		EventLog::log( _t( 'User %1$s: Removed from group %2$s.', array( $this->username, $group->name ) ), 'notice', 'user', 'habari' );
 	}
 
 	/**
