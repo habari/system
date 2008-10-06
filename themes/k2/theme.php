@@ -52,9 +52,9 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 	{
 		//Theme Options
 		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
-		$this->assign( 'show_author' , false ); //Display author in posts 
-		
-		
+		$this->assign( 'show_author' , false ); //Display author in posts
+
+
 		if( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
 		}
@@ -63,16 +63,12 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 			$this->assign('page', isset( $page ) ? $page : 1 );
 		}
 		parent::add_template_vars();
-	}
 
-	public function filter_theme_call_header( $return, $theme )
-	{
 		if ( User::identify() != FALSE ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
 		}
-		return $return;
 	}
-	
+
 	public function k2_comment_class( $comment, $post )
 	{
 		$class = 'class="comment';
