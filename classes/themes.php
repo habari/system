@@ -123,6 +123,7 @@ class Themes
 	{
 		Options::set( 'theme_name', $theme_name );
 		Options::set( 'theme_dir', $theme_dir );
+		EventLog::log( _t( 'Activated Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
 	}
 
 	/**

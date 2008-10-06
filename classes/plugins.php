@@ -352,6 +352,7 @@ class Plugins
 				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
 			}
 		}
+		EventLog::log( _t( 'Activated Plugin: %s', array( self::$plugins[Plugins::id_from_file( $file )]->info->name ) ), 'notice', 'plugin', 'habari' );
 		return $ok;
 	}
 
@@ -361,6 +362,7 @@ class Plugins
 	public static function deactivate_plugin( $file )
 	{
 		$ok = true;
+		$name = '';
 		$ok = Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
 		if($ok) {
 			// strip base path from stored path
@@ -370,12 +372,16 @@ class Plugins
 			$index = array_search( $short_file, $activated );
 			if ( is_array( $activated ) && ( FALSE !== $index ) )
 			{
+				// Get plugin name for logging
+				$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
+
 				Plugins::act('plugin_deactivation', $file);  // For the plugin to uninstall itself
 				unset($activated[$index]);
 				Options::set( 'active_plugins', $activated );
 				Plugins::act('plugin_deactivated', $file);  // For other plugins to react to a plugin uninstallation
 			}
 		}
+		EventLog::log( _t( 'Deactivated Plugin: %s', array( $name ) ), 'notice', 'plugin', 'habari' );
 		return $ok;
 	}
 
