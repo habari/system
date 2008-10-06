@@ -234,9 +234,9 @@ class AdminHandler extends ActionHandler
 				'helptext' => '',
 				),
 			);*/
-		
+
 		$option_items = Plugins::filter( 'admin_option_items', $option_items );
-		
+
 		$form = new FormUI('Admin Options');
 
 		foreach ( $option_items as $name => $option_fields ) {
@@ -410,9 +410,9 @@ class AdminHandler extends ActionHandler
 			$post->content_type = $form->content_type->value;
 			// if not previously published and the user wants to publish now, change the pubdate to the current date/time
 			// if the post pubdate is <= the current date/time.
-			if ( ( $post->status != Post::status( 'published' ) ) 
+			if ( ( $post->status != Post::status( 'published' ) )
 				&& ( $form->status->value == Post::status( 'published' ) )
-				&& ( HabariDateTime::date_create( $form->pubdate->value )->int <= HabariDateTime::date_create()->int ) 
+				&& ( HabariDateTime::date_create( $form->pubdate->value )->int <= HabariDateTime::date_create()->int )
 				) {
 				$post->pubdate = HabariDateTime::date_create();
 			}
@@ -489,7 +489,7 @@ class AdminHandler extends ActionHandler
 
 		if( isset( $this->handler_vars['id'] ) ) {
 			$post_links = $form->append('wrapper', 'post_links');
-			$post_links->append('static', 'post_permalink', '<a href="'.$post->permalink.'" class="viewpost">'._t('View Post').'</a>');
+			$post_links->append('static', 'post_permalink', '<a href="'.$post->permalink.( $post->statusname == 'draft' ? '?preview=1' : '' ).'" class="viewpost" onclick="$(this).attr(\'target\', \'preview\');">'.( $post->statusname == 'draft' ? _t('Preview Post') : _t('View Post') ).'</a>');
 			$post_links->class ='container';
 		}
 
@@ -582,7 +582,7 @@ class AdminHandler extends ActionHandler
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
 		$form->content_type->value = $post->content_type;
-		
+
 		$form->append('hidden', 'post_id', 'null:null');
 		if ( $newpost ) {
 			$form->post_id->value= 0;
@@ -859,13 +859,13 @@ class AdminHandler extends ActionHandler
 		$this->fetch_users();
 
 		extract( $this->handler_vars );
-				
+
 		if(isset($newuser)) {
 			$action = 'newuser';
 		} elseif(isset($delete)) {
 			$action = 'delete';
 		}
-		
+
 		$error = '';
 		if ( isset( $action ) && ( 'newuser' == $action ) ) {
 			if ( !isset( $new_pass1 ) || !isset( $new_pass2 ) || empty( $new_pass1 ) || empty( $new_pass2 ) ) {
@@ -906,9 +906,9 @@ class AdminHandler extends ActionHandler
 				$this->theme->assign( 'settings', $settings );
 			}
 		} else if ( isset( $action ) && ( 'delete' == $action ) ) {
-						
+
 			$this->update_users($this->handler_vars);
-			
+
 		}
 
 		$this->theme->display('users');
@@ -1027,103 +1027,103 @@ class AdminHandler extends ActionHandler
 
 	public function form_comment($comment, $actions) {		
 		$form = new FormUI( 'comment' );
-		
+
 		$user = User::identify();
-		
+
 		// Create the top description
 		$top = $form->append('wrapper', 'buttons_1');
 		$top->class = 'container buttons comment overview';
-		
+
 		$top->append('static', 'overview', $this->theme->fetch('comment.overview'));
-		
+
 		$buttons_1 = $top->append('wrapper', 'buttons_1');
 		$buttons_1->class = 'item buttons';
-		
-		
+
+
 		foreach($actions as $status => $action) {
 			$id = $action . '_1';
 			if($status == Comment::status_name($comment->status)):
 				$buttons_1->append('static', $id, '<div id="' . $id . '" class="status ' . $action . '">' . Comment::status_name($comment->status) . '</div>');
 			else:
 				$buttons_1->append('submit', $id, _t(ucfirst($action)));
-				$buttons_1->$id->class = 'button ' . $action;		
+				$buttons_1->$id->class = 'button ' . $action;
 			endif;
 		}
-				
+
 		// Content
 		$form->append('wrapper', 'content_wrapper');
 		$content = $form->content_wrapper->append('textarea', 'content', 'null:null', _t('Comment'), 'admincontrol_textarea');
-		$content->class = 'resizable';	
+		$content->class = 'resizable';
 		$content->value = $comment->content;
-		
+
 		// Create the splitter
 		$comment_controls = $form->append('tabs', 'comment_controls');
- 
+
 		// Create the author info
 		$author = $comment_controls->append('fieldset', 'authorinfo', _t('Author'));
-		
+
 		$author->append('text', 'author_name', 'null:null', _t('Author Name'), 'tabcontrol_text');
 		$author->author_name->value = $comment->name;
-		
+
 		$author->append('text', 'author_email', 'null:null', _t('Author Email'), 'tabcontrol_text');
 		$author->author_email->value = $comment->email;
-		
+
 		$author->append('text', 'author_url', 'null:null', _t('Author URL'), 'tabcontrol_text');
 		$author->author_url->value = $comment->url;
-		
+
 		$author->append('text', 'author_ip', 'null:null', _t('IP Address:'), 'tabcontrol_text');
 		$author->author_ip->value = long2ip($comment->ip);
-		
+
 		// Create the advanced settings
 		$settings = $comment_controls->append('fieldset', 'settings', _t('Settings'));
-		
+
 		$settings->append('text', 'comment_date', 'null:null', _t('Date:'), 'tabcontrol_text');
 		$settings->comment_date->value = $comment->date->get('Y-m-d H:i:s');
-		
-		
-		
+
+
+
 		$settings->append('text', 'comment_post', 'null:null', _t('Post ID:'), 'tabcontrol_text');
 		$settings->comment_post->value = $comment->post->id;
-		
+
 		$statuses = Comment::list_comment_statuses( false );
 		$statuses = Plugins::filter( 'admin_publish_list_comment_statuses', $statuses );
 		$settings->append('select', 'comment_status', 'null:null', _t('Status'), $statuses, 'tabcontrol_select');
 		$settings->comment_status->value = $comment->status;
-		
+
 		// // Create the stats
 		// $comment_controls->append('fieldset', 'stats_tab', _t('Stats'));
 		// $stats= $form->stats_tab->append('wrapper', 'tags_buttons');
 		// $stats->class='container';
-		// 
+		//
 		// $stats->append('static', 'post_count', '<div class="container"><p class="pct25">'._t('Comments on this post:').'</p><p><strong>' . Comments::count_by_id($comment->post->id) . '</strong></p></div><hr />');
 		// $stats->append('static', 'ip_count', '<div class="container"><p class="pct25">'._t('Comments from this IP:').'</p><p><strong>' . Comments::count_by_ip($comment->ip) . '</strong></p></div><hr />');
 		// $stats->append('static', 'email_count', '<div class="container"><p class="pct25">'._t('Comments by this author:').'</p><p><strong>' . Comments::count_by_email($comment->email) . '</strong></p></div><hr />');
 		// $stats->append('static', 'url_count', '<div class="container"><p class="pct25">'._t('Comments with this URL:').'</p><p><strong>' . Comments::count_by_url($comment->url) . '</strong></p></div><hr />');
-		
-		// Create the second set of action buttons			
+
+		// Create the second set of action buttons
 		$buttons_2 = $form->append('wrapper', 'buttons_2');
 		$buttons_2->class = 'container buttons comment';
-		
+
 		foreach($actions as $status => $action) {
 			$id = $action . '_2';
 			if($status == Comment::status_name($comment->status)):
 				$buttons_2->append('static', $id, '<div id="' . $id . '" class="status ' . $action . '">' . Comment::status_name($comment->status) . '</div>');
 			else:
 				$buttons_2->append('submit', $id, _t(ucfirst($action)));
-				$buttons_2->$id->class = 'button ' . $action;		
+				$buttons_2->$id->class = 'button ' . $action;
 			endif;
 		}
-		
+
 		// Allow plugins to alter form
 		Plugins::act('form_comment_edit', $form, $comment);
-		
+
 		return $form;
 	}
-	
+
 	public function get_comment($update = FALSE) {				
-		if ( isset( $this->handler_vars['id'] ) && $comment = Comment::get( $this->handler_vars['id'] ) ) {			
-			$this->theme->comment = $comment;		
-			
+		if ( isset( $this->handler_vars['id'] ) && $comment = Comment::get( $this->handler_vars['id'] ) ) {
+			$this->theme->comment = $comment;
+
 			// Convenience array to output actions twice
 			$actions = array(
 				'Deleted' => 'delete',
@@ -1132,7 +1132,7 @@ class AdminHandler extends ActionHandler
 				'Approved' => 'approve',
 				'Saved' => 'save'
 				);
-			
+
 			$form = $this->form_comment( $comment, $actions );
 
 			if ( $update ) {
@@ -1172,19 +1172,19 @@ class AdminHandler extends ActionHandler
 				$comment->update();
 
 				Plugins::act('comment_edit', $comment, $form);
-				
+
 				Utils::redirect();
 			}
-			
+
 			$comment->content = $form;
 			$this->theme->form = $form;
-			
+
 			$this->display('comment');
 		} else {
 			Utils::redirect(URL::get('admin', 'page=comments'));
 		}
 	}
-	
+
 	public function post_comment() {		
 		$this->get_comment(true);
 	}
@@ -1574,7 +1574,7 @@ class AdminHandler extends ActionHandler
 		if(isset($years)) {
 			$this->theme->years = $years;
 		}
-		
+
 	}
 
 	/**
@@ -1679,13 +1679,13 @@ class AdminHandler extends ActionHandler
 		$this->fetch_posts( $params );
 		$items = $this->theme->fetch( 'posts_items' );
 		$timeline = $this->theme->fetch( 'timeline_items' );
-		
+
 		$item_ids = array();
-		
+
 		foreach($this->theme->posts as $post) {
 			$item_ids['p' . $post->id]= 1;
 		}
-		
+
 		$output = array(
 			'items' => $items,
 			'item_ids' => $item_ids,
@@ -1710,11 +1710,11 @@ class AdminHandler extends ActionHandler
 		$timeline = $this->theme->fetch( 'timeline_items' );
 
 		$item_ids = array();
-		
+
 		foreach($this->theme->comments as $comment) {
 			$item_ids['p' . $comment->id]= 1;
 		}
-		
+
 		$output = array(
 			'items' => $items,
 			'item_ids' => $item_ids,
@@ -2095,11 +2095,11 @@ class AdminHandler extends ActionHandler
 		$timeline = $this->theme->fetch( 'timeline_items' );
 
 		$item_ids = array();
-		
+
 		foreach($this->theme->logs as $log) {
 			$item_ids['p' . $log->id]= 1;
 		}
-		
+
 		$output = array(
 			'items' => $items,
 			'item_ids' => $item_ids,
@@ -2457,7 +2457,7 @@ class AdminHandler extends ActionHandler
 		$modules = Modules::get_all();
 		if ( $modules ) {
 			$modules = array_combine( array_values( $modules ), array_values( $modules ) );
-}
+		}
 
 		$form = new FormUI( 'dash_additem' );
 		$form->append( 'select', 'module', 'null:unused' );

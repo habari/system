@@ -165,7 +165,7 @@ class Theme extends Pluggable
 			unset( $where_filters['tag'] );
 		}
 		if ( User::identify() ) {
-			$where_filters['status']= Post::status( 'any' );
+			$where_filters['status']= isset( $_GET['preview'] ) ? Post::status( 'any' ) : Post::status( 'published' );
 		}
 		else {
 			$where_filters['status']= Post::status( 'published' );
@@ -203,7 +203,7 @@ class Theme extends Pluggable
 			header( 'HTTP/1.0 404 Not Found' );
 			// Replace template variables with the 404 rewrite rule
 			$this->request->{URL::get_matched_rule()->name}= false;
-			$this->request->{URL::set_404()->name}= true;	
+			$this->request->{URL::set_404()->name}= true;
 			$this->matched_rule = URL::get_matched_rule();
 			} else {
 				$this->display('header');
