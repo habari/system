@@ -350,9 +350,9 @@ class Plugins
 				$plugin = Plugins::load($file);
 				Plugins::act('plugin_activation', $file); // For the plugin to install itself
 				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
+				EventLog::log( _t( 'Activated Plugin: %s', array( self::$plugins[Plugins::id_from_file( $file )]->info->name ) ), 'notice', 'plugin', 'habari' );
 			}
 		}
-		EventLog::log( _t( 'Activated Plugin: %s', array( self::$plugins[Plugins::id_from_file( $file )]->info->name ) ), 'notice', 'plugin', 'habari' );
 		return $ok;
 	}
 
@@ -379,9 +379,9 @@ class Plugins
 				unset($activated[$index]);
 				Options::set( 'active_plugins', $activated );
 				Plugins::act('plugin_deactivated', $file);  // For other plugins to react to a plugin uninstallation
+				EventLog::log( _t( 'Deactivated Plugin: %s', array( $name ) ), 'notice', 'plugin', 'habari' );
 			}
 		}
-		EventLog::log( _t( 'Deactivated Plugin: %s', array( $name ) ), 'notice', 'plugin', 'habari' );
 		return $ok;
 	}
 
