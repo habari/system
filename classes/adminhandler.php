@@ -11,6 +11,8 @@ class AdminHandler extends ActionHandler
 {
 	/** Cached theme object for handling templates and presentation */
 	private $theme = NULL;
+	/** An instance of the active public theme, which allows plugin hooks to execute */
+	protected $active_theme = NULL;
 
 	/**
 	 * Verifies user credentials before creating the theme and displaying the request.
@@ -40,7 +42,8 @@ class AdminHandler extends ActionHandler
 		/* TODO: update ACL class so that this works
 		if ( !$user->can( 'admin' ) ) {
 			die( _t( 'Permission denied.' ) );
-		}*/
+		}
+		//*/
 		$last_form_data = Session::get_set( 'last_form_data' ); // This was saved in the "if ( !$user )" above, UserHandler transferred it properly.
 		/* At this point, Controller has not created handler_vars, so we have to modify $_POST/$_GET. */
 		if ( isset( $last_form_data['post'] ) ) {
@@ -54,6 +57,9 @@ class AdminHandler extends ActionHandler
 			// No need to change REQUEST_METHOD since GET is the default.
 		}
 		$user->remember();
+
+		// Create an instance of the active public theme so that its plugin functions are implemented
+		$this->active_theme = Themes::create();
 	}
 
 	/**
@@ -990,10 +996,9 @@ class AdminHandler extends ActionHandler
 		$this->theme->active_theme = Themes::get_active_data();
 		$this->theme->active_theme_dir = $this->theme->active_theme['path'];
 
-		// instantiate the active theme to see if it's configurable
-		$active_theme = Themes::create();
+		// If the active theme is configurable, allow it to configure
 		$this->theme->active_theme_name = $this->theme->active_theme['info']->name;
-		$this->theme->configurable = Plugins::filter( 'theme_config', false, $active_theme);
+		$this->theme->configurable = Plugins::filter( 'theme_config', false, $this->active_theme);
 
 		$this->theme->display( 'themes' );
 	}
@@ -1025,7 +1030,7 @@ class AdminHandler extends ActionHandler
 		$this->display( 'import' );
 	}
 
-	public function form_comment($comment, $actions) {		
+	public function form_comment($comment, $actions) {
 		$form = new FormUI( 'comment' );
 
 		$user = User::identify();
@@ -1120,7 +1125,7 @@ class AdminHandler extends ActionHandler
 		return $form;
 	}
 
-	public function get_comment($update = FALSE) {				
+	public function get_comment($update = FALSE) {
 		if ( isset( $this->handler_vars['id'] ) && $comment = Comment::get( $this->handler_vars['id'] ) ) {
 			$this->theme->comment = $comment;
 
@@ -1185,7 +1190,7 @@ class AdminHandler extends ActionHandler
 		}
 	}
 
-	public function post_comment() {		
+	public function post_comment() {
 		$this->get_comment(true);
 	}
 
@@ -1435,7 +1440,7 @@ class AdminHandler extends ActionHandler
 					// instantiate this plugin
 					// in order to get its info()
 					include_once( $file );
-					Plugins::get_plugin_classes();
+					Plugins::get_plugin_classes( true );
 					$pluginobj = Plugins::load( $file, false );
 					$plugin['active']= false;
 					$plugin['verb']= _t( 'Activate' );
