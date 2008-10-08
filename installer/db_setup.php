@@ -10,8 +10,8 @@
 </head>
 
 <body id="installer">
-<?php include "locale_dropdown.php"; ?>
-<?php $tab = 2; ?>
+
+<?php $tab = 1; ?>
 
 	<div id="wrapper">
 
@@ -25,8 +25,12 @@
 			</div>
 		</div>
 
+		<?php include "locale_dropdown.php"; ?>
+
 		<form action="" method="post" id="installform">
 		<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
+		
+		
 		
 		<div class="installstep ready" id="databasesetup">
 			<h2><?php _e('Database Setup'); ?></h2>
