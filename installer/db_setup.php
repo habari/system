@@ -39,7 +39,20 @@
 
 				<div class="inputfield">
 					<label for="db_type"><?php _e('Database Type'); ?> <strong>*</strong></label>
-					<?php echo Utils::html_select( 'db_type', $pdo_drivers, $db_type, array( 'tabindex' => $tab++ ) ); ?>
+					<select id="db_type" name="db_type" tabindex="<?php echo $tab++; ?>">
+					<?php
+						foreach($pdo_drivers as $value => $text){
+							echo '<option value="'.$value.'"';
+							if($db_type == (string)$value) {
+								echo ' selected';
+							}
+							echo '>' . $text . "</option>\n";
+						}
+						foreach($pdo_missing_drivers as $value => $text){
+							echo '<optgroup label="' . _t('%1$s - missing PDO driver, see help', array($text)) . '"></optgroup>';
+						}
+					?>					
+					</select>
 					<div class="help">
 						<?php _e('<strong>Database Type</strong> specifies the type of database to which
 						Habari will connect.  Changing this setting may affect the other fields

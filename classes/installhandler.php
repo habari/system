@@ -316,11 +316,16 @@ class InstallHandler extends ActionHandler {
 				$pdo_drivers,
 				$pdo_schemas
 			);
+			$pdo_missing_drivers = array_diff(
+				$pdo_schemas,
+				$pdo_drivers
+			);
 		}
 
 		$pdo_drivers_ok = count( $pdo_drivers );
 		$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
 		$this->theme->assign( 'pdo_drivers', $pdo_drivers );
+		$this->theme->assign( 'pdo_missing_drivers', $pdo_missing_drivers );
 		if ( ! $pdo_drivers_ok ) {
 			$requirements_met = false;
 		}
