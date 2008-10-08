@@ -80,7 +80,7 @@ class Session
 		}
 
 		// Verify expiry
-		if ( time() > $session->expires ) {
+		if ( HabariDateTime::date_create( time() )->int > $session->expires ) {
 			$dodelete = true;
 		}
 
