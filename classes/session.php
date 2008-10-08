@@ -132,7 +132,7 @@ class Session
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
 				'subnet' => self::get_subnet( $remote_address ),
-				'expires' => HabariDateTime::date_create( time() ) + ini_get('session.gc_maxlifetime'),
+				'expires' => HabariDateTime::date_create( time() )->int + ini_get('session.gc_maxlifetime'),
 				'ua' => $user_agent,
 				'data' => $data,
 			);
@@ -167,7 +167,7 @@ class Session
 	static function gc( $max_lifetime )
 	{
 		$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE expires < ?';
-		$args = array( HabariDateTime::date_create( time() ) );
+		$args = array( HabariDateTime::date_create( time() )->int );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
 		return true;
