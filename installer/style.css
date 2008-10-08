@@ -270,3 +270,10 @@ div.javascript-disabled {
 .items .controls label {
 	color:#888888;
 }
+
+optgroup {
+	font-style: normal;
+	color: #aaaaaa;
+	font-weight: normal;
+	padding-left: 3px;
+}
