@@ -40,20 +40,6 @@ a {
 	margin: 0px;
 	}
 
-.locale-dropdown {
-	width: 280px;
-	margin: 0 auto 50px;
-	font-size: 12px;
-	}
-
-.locale-dropdown select {
-	width: 150px;
-	}
-	
-.locale-dropdown label {
-	color: #666;
-	}
-
 .installstep {
 	width: 552px;
 	background: url(images/install-step.png) scroll repeat-y 0px 47px;

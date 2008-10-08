@@ -290,7 +290,7 @@ $(document).ready(function() {
 	$('.help-me').click(function(){$(this).parents('.installstep').find('.help').slideToggle();return false;});
 	$('.help').hide();
 	$('.installstep').removeClass('ready');
-	$('.installstep:first').addClass('ready');
+	$('.installstep:eq(0), .installstep:eq(1)').addClass('ready');
 	$('.javascript-disabled').hide();
 	$('#installform').before('<div class="installerror error" id="installerror"></div>');
 	$('#installerror').hide();
@@ -302,5 +302,7 @@ $(document).ready(function() {
 	$('#db_type').change(setDatabaseType);
 	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
 	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
-	$('#locale').focus();
+	$('#locale').focus().change(function() {
+		$('#locale-form').submit();
+	});
 });

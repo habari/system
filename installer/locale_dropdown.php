@@ -1,15 +1,26 @@
-	<div class="locale-dropdown ">
-		<form method="post" action="" id="locale-form">
-		
-			<label for="locale"><?php _e('Language'); ?> </label>
+	
+	<div class="installstep locale-dropdown ready done" id="locale">
+		<h2><?php _e('Locale'); ?></h2>
+		<div class="options">
 			
-			<select name="locale" id="locale" onchange="$('#locale-form').submit();" tabindex="1">
-				<?php foreach($locales as $loc): ?>
-				<option value="<?php echo  htmlspecialchars($loc); ?>"
-					<?php echo (isset($locale) && $loc == $locale) ? 'selected' : ''; ?> >
-					<?php echo htmlspecialchars($loc); ?>
-				</option>
-				<?php endforeach; ?>
-			</select>
-		</form>
+			<form method="post" action="" id="locale-form">
+			
+			<div class="inputfield">
+				<label for="locale"><?php _e('Language'); ?></label>
+				<?php
+				$locs= array();
+				foreach($locales as $loc):
+					$locs[$loc]= $loc;
+				endforeach;
+				
+				echo Utils::html_select( 'locale', $locs, $locale, array( 'tabindex' => $tab++ ) ); ?>
+			</div>
+			
+			</form>
+
+		</div>
+
+		<div class="bottom"></div>
 	</div>
+
+	<div class="next-section"></div>
