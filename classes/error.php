@@ -53,6 +53,8 @@ class Error extends Exception
 		if ( DEBUG ) {
 			self::print_backtrace( $exception->getTrace() );
 		}
+		
+		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, get_class( $exception ), 'default', null, print_r( debug_backtrace(), true ) );
 	}
 	
 	/**
@@ -113,6 +115,8 @@ class Error extends Exception
 				Error::print_backtrace();
 			}
 		}
+		
+		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, $error_names[ $errno ], 'default', null, print_r( debug_backtrace(), true ) );
 		
 		// throwing an Error make every error fatal!
 		//throw new Error($errstr, 0, true);
