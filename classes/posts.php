@@ -97,7 +97,7 @@ class Posts extends ArrayObject
 
 				if ( isset( $paramset['id'] ) ) {
 					if ( is_array( $paramset['id'] ) ) {
-						array_walk( $paramset['id'], create_function( '$a,$b,&$c', '$c[$b]= intval($a);' ), $paramset['id'] );
+						array_walk( $paramset['id'], create_function( '&$a,$b', '$a = intval($a);' ) );
 						$where[]= "id IN (" . implode( ',', array_fill( 0, count( $paramset['id'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['id'] );
 					}
@@ -121,7 +121,9 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['content_type'] ) && ( $paramset['content_type'] != 'any' ) && ( 0 !== $paramset['content_type'] ) ) {
 					if ( is_array( $paramset['content_type'] ) ) {
-						array_walk( $paramset['content_type'], create_function( '$a,$b,$c', 'if ($a != \'any\') { $c[$b]= Post::type($a); } else { unset($c[$b]); }' ), &$paramset['content_type'] );
+						// remove 'any' from the list if we have an array
+						$paramset['content_type'] = array_diff( $paramset['content_type'], array( 'any' ) );
+						array_walk( $paramset['content_type'], create_function( '&$a,$b', '$a = Post::type($a);' ) );
 						$where[]= "content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['content_type'] );
 					}
@@ -142,7 +144,7 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
 					if ( is_array( $paramset['user_id'] ) ) {
-						array_walk( $paramset['user_id'], create_function( '$a,$b,&$c', '$c[$b]= intval($a);' ), $paramset['user_id'] );
+						array_walk( $paramset['user_id'], create_function( '&$a,$b', '$a = intval($a);' ) );
 						$where[]= "user_id IN (" . implode( ',', array_fill( 0, count( $paramset['user_id'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['user_id'] );
 					}
