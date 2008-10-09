@@ -6,9 +6,9 @@
 		<span class="checkbox title pct25">
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
 			<?php if($comment->url != ''): ?>
-			<a href="#" class="author edit-author" title="<?php echo $comment->name; ?>"><?php echo $comment->name; ?></a>
+			<a href="#" class="author edit-author" title="<?php echo htmlspecialchars( $comment->name ); ?>"><?php echo htmlspecialchars( $comment->name ); ?></a>
 			<?php else: ?>
-			<?php echo $comment->name; ?>
+			<?php echo htmlspecialchars( $comment->name ); ?>
 			<?php endif; ?>
 		</span>
 		<span class="title pct40"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php printf( _t('Go to %s'), $comment->post->title ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
@@ -46,7 +46,7 @@
 			<?php endif; ?>
 
 		</span>
-		<span class="content edit-content area pct75"><?php echo $comment->content ?></span>
+		<span class="content edit-content area pct75"><?php echo htmlspecialchars( $comment->content ); ?></span>
 	</div>
 </div>
 
