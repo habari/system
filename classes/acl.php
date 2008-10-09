@@ -31,7 +31,7 @@ class ACL {
 	 */
 	public static function __static()
 	{
-		self::$access_ids = DB::get_keyvalue( 'SELECT description, id FROM {permissions};' );
+		self::$access_ids = DB::get_keyvalue( 'SELECT name, id FROM {permissions};' );
 
 		if ( ! isset(self::$access_ids) ) {
 			self::$access_ids = array();
