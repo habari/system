@@ -1544,6 +1544,30 @@ body.page-Manage .state {
 	margin-right: 0;
 }
 
+#page .comments .button
+{
+	margin-left: 0!important;
+}
+#page .comments .buttons span{
+	padding-bottom: 5px;
+	margin-left: 10px;
+}
+
+#page .comments .buttons span.delete{
+	border-bottom:2px black solid;
+}
+
+#page .comments .buttons span.approve{
+	border-bottom:2px #339933 solid;
+}
+
+#page .comments .buttons span.unapprove{
+	border-bottom:2px #fcd915 solid;
+}
+
+#page .comments .buttons span.spam{
+	border-bottom:2px #f8595f solid;
+}
 
 /* Inline Comments Editor */
 
