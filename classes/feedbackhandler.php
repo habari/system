@@ -15,12 +15,27 @@ class FeedbackHandler extends ActionHandler
 	*/
 	public function act_add_comment()
 	{
+		
+		$defaults = array(
+			'name' => '',
+			'email' => '',
+			'url' => '',
+			'content' => ''
+		);
+		
 		// We need to get the post anyway to redirect back to the post page.
 		$post = Post::get( array( 'id'=>$this->handler_vars['id'] ) );
 		if( !$post ) {
 			// trying to comment on a non-existent post?  Weirdo.
 			header('HTTP/1.1 403 Forbidden', true, 403);
 			die();
+		}
+		
+		// make sure all our default values are set so we don't throw undefined index errors
+		foreach ( $defaults as $k => $v ) {
+			if ( !isset( $this->handler_vars[ $k ] ) ) {
+				$this->handler_vars[ $k ] = $v;
+			}
 		}
 
 		// let's do some basic sanity checking on the submission
@@ -52,7 +67,7 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		/* Sanitize data */
-		foreach ( array( 'name', 'email', 'url', 'content' ) as $k ) {
+		foreach ( $defaults as $k => $v ) {
 			$this->handler_vars[$k] = InputFilter::filter( $this->handler_vars[$k] );
 		}
 
