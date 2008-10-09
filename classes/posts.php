@@ -108,7 +108,9 @@ class Posts extends ArrayObject
 				}
 				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] )) {
 					if ( is_array( $paramset['status'] ) ) {
-						array_walk( $paramset['status'], create_function( '$a,$b,$c', 'if ($a != \'any\') { $c[$b]= Post::status($a); } else { unset($c[$b]); }' ), &$paramset['status'] );
+						// remove 'any' from the list if we have an array
+						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
+						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Post::status($a);' ) );
 						$where[]= "status IN (" . implode( ',', array_fill( 0, count( $paramset['status'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['status'] );
 					}
