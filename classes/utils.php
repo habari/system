@@ -808,7 +808,7 @@ class Utils
 	public static function truncate_log() {
 		// Truncate the log table
 		$date = HabariDateTime::date_create()->modify( '-14 days' );
-		return DB::exec( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
+		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
 	}
 
 	/**
