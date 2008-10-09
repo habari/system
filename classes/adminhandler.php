@@ -1307,56 +1307,66 @@ class AdminHandler extends ActionHandler
 				Plugins::act( 'admin_moderate_comments', $action, $to_update, $this );
 
 				switch ( $action ) {
+					
 					case 'delete':
 						// This comment was marked for deletion
-					Comments::delete_these( $to_update );
-					$modstatus['Deleted %d comments'] = count( $to_update );
+						Comments::delete_these( $to_update );
+						$modstatus['Deleted %d comments'] = count( $to_update );
 						break;
+						
 					case 'spam':
 							// This comment was marked as spam
-					Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
-					$modstatus['Marked %d comments as spam'] = count( $to_update );
+						Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
+						$modstatus['Marked %d comments as spam'] = count( $to_update );
 						break;
+						
 					case 'approve':
-					// Comments marked for approval
-					Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
-					$modstatus['Approved %d comments'] = count( $to_update );
-					foreach( $to_update as $comment ) {
-								$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
-					}
+						// Comments marked for approval
+						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
+						$modstatus['Approved %d comments'] = count( $to_update );
+						foreach( $to_update as $comment ) {
+									$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+						}
 						break;
+						
 					case 'unapprove':
 						// This comment was marked for unapproval
-					Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
-					$modstatus['Unapproved %d comments'] = count ( $to_update );
+						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
+						$modstatus['Unapproved %d comments'] = count ( $to_update );
 						break;
+						
 					case 'edit':
-					foreach ( $to_update as $comment ) {
-						// This comment was edited
-						if( $_POST['name_' . $comment->id] != NULL ) {
-							$comment->name = $_POST['name_' . $comment->id];
+						foreach ( $to_update as $comment ) {
+							// This comment was edited
+							if( $_POST['name_' . $comment->id] != NULL ) {
+								$comment->name = $_POST['name_' . $comment->id];
+							}
+							if( $_POST['email_' . $comment->id] != NULL ) {
+								$comment->email = $_POST['email_' . $comment->id];
+							}
+							if( $_POST['url_' . $comment->id] != NULL ) {
+								$comment->url = $_POST['url_' . $comment->id];
+							}
+							if( $_POST['content_' . $comment->id] != NULL ) {
+								$comment->content = $_POST['content_' . $comment->id];
+							}
 						}
-						if( $_POST['email_' . $comment->id] != NULL ) {
-							$comment->email = $_POST['email_' . $comment->id];
-						}
-						if( $_POST['url_' . $comment->id] != NULL ) {
-							$comment->url = $_POST['url_' . $comment->id];
-						}
-						if( $_POST['content_' . $comment->id] != NULL ) {
-							$comment->content = $_POST['content_' . $comment->id];
-						}
-					}
-					$modstatus['Edited %d comments'] = count( $to_update );
+						$modstatus['Edited %d comments'] = count( $to_update );
 						break;
-					}
+						
+				}
+				
 				foreach ( $modstatus as $key => $value ) {
 					if ( $value ) {
 						Session::notice( sprintf( _t( $key ), $value ) );
 					}
 				}
+				
 			}
+			
 			Utils::redirect();
 			die();
+			
 		}
 
 		// we load the WSSE tokens
@@ -1379,11 +1389,12 @@ class AdminHandler extends ActionHandler
 		else {
 			$this->theme->search_args = 'type:' . Comment::type_name( $type ) . ' ';
 		}
+		
 		if ( $status == 'All') {
 			unset ( $arguments['status'] );
 		}
 		else {
-			$this->theme->search_args.= 'status:' . Comment::status_name( $status );
+			$this->theme->search_args .= 'status:' . Comment::status_name( $status );
 		}
 
 		if ( '' != $search ) {
@@ -1396,8 +1407,9 @@ class AdminHandler extends ActionHandler
 		foreach( $monthcts as $month ) {
 			if ( isset($years[$month->year]) ) {
 				$years[$month->year][]= $month;
-	}
-			else {
+			}
+			else
+			{
 				$years[$month->year]= array( $month );
 			}
 		}
@@ -1957,19 +1969,25 @@ class AdminHandler extends ActionHandler
 			'do_search' => false,
 			'index' => 1,
 		);
+		
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
 		}
+		
 		if ( $do_delete && isset( $log_ids ) ) {
 			$okay = true;
+			
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
 				$okay = false;
 			}
+			
 			$wsse = Utils::WSSE( $nonce, $timestamp );
+			
 			if ( $PasswordDigest != $wsse['digest'] ) {
 				$okay = false;
 			}
+			
 			if ( $okay ) {
 				foreach ( $log_ids as $id ) {
 					$ids[] = array( 'id' => $id );
@@ -1986,9 +2004,12 @@ class AdminHandler extends ActionHandler
 					}
 				}
 			}
+			
 			Utils::redirect();
 			die();
+			
 		}
+		
 		$this->theme->severities = LogEntry::list_severities();
 		$any = array( '0' => 'Any' );
 
@@ -2073,16 +2094,23 @@ class AdminHandler extends ActionHandler
 
 		$monthcts = EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
 		foreach( $monthcts as $month ) {
+			
 			if ( isset($years[$month->year]) ) {
 				$years[$month->year][] = $month;
-		}
+			}
 			else {
 				$years[$month->year] = array( $month );
 			}
+			
 		}
+		
 		if ( isset($years) ) {
 			$this->theme->years = $years;
 		}
+		else {
+			$this->theme->years = array();
+		}
+		
 	}
 
 	/**
