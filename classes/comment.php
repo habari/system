@@ -423,7 +423,7 @@ class Comment extends QueryRecord implements IsContent
 	 * @param mixed a comment type number, or name
 	 * @return mixed a string of the comment type, or null
 	**/
-	public function type_name( $type )
+	public static function type_name( $type )
 	{
 		$types = Comment::list_comment_types();
 		if ( is_numeric( $type ) && isset( $types[$type] ) ) {
