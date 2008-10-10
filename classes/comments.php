@@ -74,7 +74,8 @@ class Comments extends ArrayObject
 				}
 				if ( isset( $paramset['status'] ) && FALSE !== $paramset['status'] ) {
 					if(is_array( $paramset['status'] )) {
-						array_walk( $paramset['status'], create_function( '$a,$b,&$c', 'if ($a != "any") { $c[$b]= Comment::status($a); } else { unset($c[$b]); }' ), $paramset['status'] );
+						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
+						array_walk( $paramset['status'], createfunction( '&$a,$b', '$a = Comment::status( $a );' ) );
 						$where[]= "type IN (" . Utils::placeholder_string(count($paramset['status'])) . ")";
 						$params = array_merge( $params, $paramset['status'] );
 					}
@@ -85,7 +86,8 @@ class Comments extends ArrayObject
 				}
 				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
 					if(is_array( $paramset['type'] )) {
-						array_walk( $paramset['type'], create_function( '$a,$b,&$c', 'if ($a != "any") { $c[$b]= Comment::type($a); } else { unset($c[$b]); }' ), $paramset['type'] );
+						$paramset['type'] = array_diff( $paramset['type'], array( 'any' ) );
+						array_walk( $paramset['type'], createfunction( '&$a,$b', '$a = Comment::type( $a );' ) );
 						$where[]= "type IN (" . Utils::placeholder_string(count($paramset['type'])) . ")";
 						$params = array_merge( $params, $paramset['type'] );
 					}
