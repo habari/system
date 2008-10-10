@@ -706,18 +706,19 @@ class Comments extends ArrayObject
 				list( $keyword, $value )= explode( ':', $token );
 
 				$keyword = strtolower( $keyword );
+				$value = strtolower( $value );
 				switch ( $keyword ) {
 					case 'author':
 						$arguments['name'][]= $value;
 						break;
 					case 'status':
-						if ( isset( $statuses[ucfirst( $value )] ) ) {
-							$arguments['status'][]= (int) $statuses[ucfirst( $value )];
+						if ( isset( $statuses[$value] ) ) {
+							$arguments['status'][]= (int) $statuses[$value];
 						}
 						break;
 					case 'type':
-						if ( isset( $types[ucfirst( $value )] ) ) {
-							$arguments['type'][]= (int) $types[ucfirst( $value )];
+						if ( isset( $types[$value] ) ) {
+							$arguments['type'][]= (int) $types[$value];
 						}
 						break;
 				}
