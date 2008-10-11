@@ -1046,12 +1046,8 @@ class AdminHandler extends ActionHandler
 
 		foreach($actions as $status => $action) {
 			$id = $action . '_1';
-			if($status == Comment::status_name($comment->status)):
-				$buttons_1->append('static', $id, '<div id="' . $id . '" class="status ' . $action . '">' . Comment::status_name($comment->status) . '</div>');
-			else:
-				$buttons_1->append('submit', $id, _t(ucfirst($action)));
-				$buttons_1->$id->class = 'button ' . $action;
-			endif;
+			$buttons_1->append('submit', $id, _t(ucfirst($action)));
+			$buttons_1->$id->class = 'button ' . $action;
 		}
 
 		// Content
@@ -1110,12 +1106,8 @@ class AdminHandler extends ActionHandler
 
 		foreach($actions as $status => $action) {
 			$id = $action . '_2';
-			if($status == Comment::status_name($comment->status)):
-				$buttons_2->append('static', $id, '<div id="' . $id . '" class="status ' . $action . '">' . Comment::status_name($comment->status) . '</div>');
-			else:
-				$buttons_2->append('submit', $id, _t(ucfirst($action)));
-				$buttons_2->$id->class = 'button ' . $action;
-			endif;
+			$buttons_2->append('submit', $id, _t(ucfirst($action)));
+			$buttons_2->$id->class = 'button ' . $action;
 		}
 
 		// Allow plugins to alter form
