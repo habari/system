@@ -588,14 +588,13 @@ class AdminHandler extends ActionHandler
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
 		$form->content_type->value = $post->content_type;
-
 		$form->append('hidden', 'post_id', 'null:null');
+		$form->post_id->id = 'id';
 		if ( $newpost ) {
 			$form->post_id->value= 0;
 		} else {
 			$form->post_id->value= $this->handler_vars['id'];
 		}
-
 		$form->append('hidden', 'slug', 'null:null');
 		$form->slug->value = $post->slug;
 
