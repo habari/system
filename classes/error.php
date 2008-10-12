@@ -9,6 +9,24 @@ class Error extends Exception
 {
 	protected $message = '';
 	protected $is_error = false;
+	protected static $error_levels = array(
+		1 => 'err', // E_ERROR
+		2 => 'warning', // E_WARNING
+		4 => 'err', // E_PARSE
+		8 => 'notice', // E_NOTICE
+		16 => 'err', // E_CORE_ERROR
+		32 => 'warning', // E_CORE_WARNING
+		64 => 'err', // E_COMPILE_ERROR
+		128 => 'warning', // E_COMPILE_WARNING
+		256 => 'err', // E_USER_ERROR
+		512 => 'warning', // E_USER_WARNING
+		1024 => 'notice', // E_USER_NOTICE
+		6143 => 'err', // E_ALL
+		2048 => 'err', // E_STRICT
+		4096 => 'err', // E_RECOVERABLE_ERROR
+		8192 => 'debug', // E_DEPRECATED
+		16384 => 'debug' // E_USER_DEPRECATED
+		);
 	
 	/**
 	 * Constructor for the Error class
@@ -28,18 +46,45 @@ class Error extends Exception
 	 *
 	 * Configures the Error class to handle all errors.
 	 */
-	public static function handle_errors()
+	public static function prepare_error_handlers()
 	{
-		set_error_handler( array( 'Error', 'error_handler' ) );
-		set_exception_handler( array( 'Error', 'exception_handler' ) );
+		set_error_handler( array( 'Error', 'handle_error' ) );
+		set_exception_handler( array( 'Error', 'handle_exception' ) );
+		
+		// Preload default handlers
+		__autoload('habarierror');
+		__autoload('habariexception');
+		__autoload('habarierrorhandler');
+		__autoload('habariexceptionhandler');
+	}
+	
+	public static function handle_shutdown()
+	{
+		if ($error = error_get_last()) {
+			if (isset($error['type']) && ($error['type'] == E_ERROR || $error['type'] == E_PARSE || $error['type'] == E_COMPILE_ERROR)) {
+	            ob_end_clean();
+
+	            /* if (!headers_sent()) {
+	                header('HTTP/1.1 500 Internal Server Error');
+	            } */
+
+				EventLog::log( $error['message'] . ' in ' . $error['file'] . ':' . $error['line'], self::$error_levels[$error['type']], 'default' );
+	        }
+		}
 	}
 
 	/**
 	 * Used to handle all uncaught exceptions.
 	 */
-	public static function exception_handler( $exception )
+	public static function handle_exception( $exception )
 	{
-		if(isset($exception->is_error) && $exception->is_error) {
+		if (class_exists(get_class($exception) . 'Handler')) {
+			if (method_exists(get_class($exception) . 'Handler', 'handle_exception')) {
+				call_user_func( array( get_class($exception) . 'Handler', 'handle_exception' ), $exception );
+			}
+		}
+		
+		/* if(isset($exception->is_error) && $exception->is_error) {
 			return;
 		}
 		printf(
@@ -52,9 +97,14 @@ class Error extends Exception
 
 		if ( DEBUG ) {
 			self::print_backtrace( $exception->getTrace() );
-		}
+		} */
 		
 		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, get_class( $exception ), 'default', null, print_r( debug_backtrace(), true ) );
+	}
+	
+	public static function handle_error( $errno, $errstr, $errfile, $errline, $errcontext )
+	{
+		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, self::$error_levels[$errno], 'default', null, print_r( $errcontext, true ) );
 	}
 	
 	/**
