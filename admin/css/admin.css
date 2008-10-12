@@ -1577,6 +1577,10 @@ body.page-Manage .state {
 	border-bottom:2px #f8595f solid;
 }
 
+#page .comment .buttons div.active {
+	border-bottom-color:#CCC;
+}
+
 /* Inline Comments Editor */
 
 

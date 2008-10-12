@@ -1048,6 +1048,12 @@ class AdminHandler extends ActionHandler
 			$id = $action . '_1';
 			$buttons_1->append('submit', $id, _t(ucfirst($action)));
 			$buttons_1->$id->class = 'button ' . $action;
+			if(Comment::status_name($comment->status) == $status) {
+				$buttons_1->$id->class = 'button active ' . $action;
+				$buttons_1->$id->disabled = true;
+			} else {
+				$buttons_1->$id->disabled = false;
+			}
 		}
 
 		// Content
@@ -1108,6 +1114,12 @@ class AdminHandler extends ActionHandler
 			$id = $action . '_2';
 			$buttons_2->append('submit', $id, _t(ucfirst($action)));
 			$buttons_2->$id->class = 'button ' . $action;
+			if(Comment::status_name($comment->status) == $status) {
+				$buttons_2->$id->class = 'button active ' . $action;
+				$buttons_2->$id->disabled = true;
+			} else {
+				$buttons_2->$id->disabled = false;
+			}
 		}
 
 		// Allow plugins to alter form
@@ -1122,11 +1134,11 @@ class AdminHandler extends ActionHandler
 
 			// Convenience array to output actions twice
 			$actions = array(
-				'Deleted' => 'delete',
-				'Spam' => 'spam',
-				'Unapproved' => 'unapprove',
-				'Approved' => 'approve',
-				'Saved' => 'save'
+				'deleted' => 'delete',
+				'spam' => 'spam',
+				'unapproved' => 'unapprove',
+				'approved' => 'approve',
+				'saved' => 'save'
 				);
 
 			$form = $this->form_comment( $comment, $actions );
