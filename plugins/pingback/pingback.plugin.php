@@ -16,7 +16,7 @@ class Pingback extends Plugin
 	{
 		return array(
 			'name' => 'Pingback',
-			'version' => '1.0',
+			'version' => '1.0.1',
 			'url' => 'http://habariproject.org/',
 			'author' =>	'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
@@ -57,7 +57,7 @@ class Pingback extends Plugin
 		if ( Post::status( 'published' ) != $post->status ) {
 			return;
 		}
-		self::pingback_all_links( $post->content, $post->permalink, $post );
+		$this->pingback_all_links( $post->content, $post->permalink, $post );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Pingback extends Plugin
 		if ( Post::status( 'published' ) != $post->status) {
 			return;
 		}
-		self::pingback_all_links( $post->content, $post->permalink, $post );
+		$this->pingback_all_links( $post->content, $post->permalink, $post );
 	}
 
 	/**
@@ -292,7 +292,7 @@ class Pingback extends Plugin
 	 * @param Post $post The post object of the source of the ping
 	 * @param boolean $force If true, force the system to ping all links even if that had been pinged before
 	 */
-	public static function pingback_all_links( $content, $source_uri, $post = NULL, $force = false )
+	public function pingback_all_links( $content, $source_uri, $post = NULL, $force = false )
 	{
 		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>]+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
 
@@ -307,7 +307,7 @@ class Pingback extends Plugin
 		$links = array_unique( $links );
 
 		foreach ( $links as $target_uri ) {
-			if ( self::send_pingback( $source_uri, $target_uri, $post ) ) {
+			if ( $this->send_pingback( $source_uri, $target_uri, $post ) ) {
 				EventLog::log( sprintf( _t( 'Sent pingbacks for "%1$s", target: %2$s' ), $post->title, $target_uri ), 'info', 'Pingback' );
 			}
 		}
