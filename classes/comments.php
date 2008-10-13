@@ -87,7 +87,7 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
 					if(is_array( $paramset['type'] )) {
 						$paramset['type'] = array_diff( $paramset['type'], array( 'any' ) );
-						array_walk( $paramset['type'], createfunction( '&$a,$b', '$a = Comment::type( $a );' ) );
+						array_walk( $paramset['type'], create_function( '&$a,$b', '$a = Comment::type( $a );' ) );
 						$where[]= "type IN (" . Utils::placeholder_string(count($paramset['type'])) . ")";
 						$params = array_merge( $params, $paramset['type'] );
 					}
