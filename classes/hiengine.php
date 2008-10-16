@@ -55,6 +55,7 @@ class HiEngineParser
 	protected $filename;
 	protected $position;
 	protected $contexts;
+	protected $strings = array();
 
 	/**
 	 * Open a HiEngineParser stream
@@ -182,7 +183,8 @@ class HiEngineParser
 	 */
 	function process( $template )
 	{
-		$template = preg_replace_callback('%\{hi:(.+?)\}(.+?){/hi:\1}%ism', array($this, 'hi_loop'), $template);
+		$template = preg_replace_callback('%\{hi:([^\?]+?)\}(.+?){/hi:\1}%ism', array($this, 'hi_loop'), $template);
+		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?){/hi:\?}%ism', array($this, 'hi_if'), $template);
 		$template = preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_command'), $template);
 		return $template;
 	}
@@ -253,11 +255,80 @@ class HiEngineParser
 	 */
 	function hi_loop($matches)
 	{
-		$output = '<?php foreach($' . $matches[1] . ' as $' . $matches[1] . '_1): ?>';
+		$output = '<?php foreach($' . $matches[1] . ' as $' . $matches[1] . '_index => $' . $matches[1] . '_1): ?>';
 		$this->contexts[] = "{$matches[1]}_1";
 		$output .= $this->process($matches[2]);
 		$output .= '<?php endforeach; ?>';
 		array_pop($this->contexts);
+		return $output;
+	}
+	
+	/**
+	 * Replace variables in the hiengine syntax with PHP varaibles
+	 * @param array $matches The match array found in hi_if()
+	 * @returns string A PHP variable string to use as the replacement
+	 */	 	 	 
+	function var_replace($matches)
+	{
+		$var = $matches[0];
+		if(is_callable($var)) {
+			return $var;
+		}
+	
+		$var = str_replace('.', '->', $var);
+		if(count($this->contexts)) {
+			// Build a conditional that checks for the most specific, then the least
+			// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x 
+			$ctx = $this->contexts;
+			$prefixes = array();
+			foreach($ctx as $void) {
+				$prefixes[] = implode('->', $this->contexts);
+				array_pop($ctx);
+			}
+			$output = '';
+			foreach($prefixes as $prefix) {
+				$output .= '(!is_null($' . $prefix . '->' . $var . ') ? $' . $prefix . '->' . $var . ' : ';
+			}
+			$output .= '$' . $var . ')';
+			return $output;
+		}
+		else {
+			return '$'. $var;
+		}
+	}
+	
+	/**
+	 * Creates a table of static strings in hiengine expressions to be replaced in later
+	 * @param array $matches The match found in hi_if()
+	 * @returns string An uncommon string index for the stored static string.
+	 */	 	 	 	
+	function string_stack($matches)
+	{
+		$key = chr(0) . count($this->strings) . chr(1);
+		$this->strings[$key] = $matches[0];
+		return $key;
+	}
+	
+	/**
+	 * Replace an if tag section with its PHP counterpart
+	 *
+	 * @param array $matches The match array found in HiEngineParser::process()
+	 * @return string The PHP replacement for the template tag
+	 */
+	function hi_if($matches)
+	{
+		list($void, $eval, $context) = $matches;
+
+		$eval = preg_replace_callback('/([\'"]).*?(?<!\\\\)\1/i', array($this, 'string_stack'), $eval);
+		$eval = preg_replace_callback('/\b(?<!::)[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*(?!::)\b/i', array($this, 'var_replace'), $eval);
+		$eval = preg_replace('/(?<!=)=(?!=)/i', '==', $eval);
+		$eval = str_replace(array_keys($this->strings), $this->strings, $eval);
+		
+		$context = preg_replace('/\{hi:\?else\?\}/i', '<?php else: ?>', $context);
+
+		$output = '<?php if(' . $eval . '): ?>';
+		$output .= $this->process($context);
+		$output .= '<?php endif; ?>';
 		return $output;
 	}
 }
