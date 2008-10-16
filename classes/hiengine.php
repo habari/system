@@ -55,6 +55,7 @@ class HiEngineParser
 	protected $file;
 	protected $filename;
 	protected $position;
+	protected $contexts;
 
 	/**
 	 * Open a HiEngineParser stream
@@ -173,7 +174,9 @@ class HiEngineParser
 	 */
 	function process( $template )
 	{
-		return preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_command'), $template);
+		$template = preg_replace_callback('%\{hi:(.+?)\}(.+?){/hi:\1}%ism', array($this, 'hi_loop'), $template);
+		$template = preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_command'), $template);
+		return $template;
 	}
 
 	/**
@@ -189,7 +192,25 @@ class HiEngineParser
 		// Straight variable or property output, ala {hi:variable_name} or {hi:post.title}
 		if(preg_match('%^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*$%i', $cmd)) {
 			$cmd = str_replace('.', '->', $cmd);
-			return '<?php echo $'. $cmd . '; ?>';
+			if(count($this->contexts)) {
+				// Build a conditional that checks for the most specific, then the least
+				// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x 
+				$ctx = $this->contexts;
+				$prefixes = array();
+				foreach($ctx as $void) {
+					$prefixes[] = implode('->', $this->contexts);
+					array_pop($ctx);
+				}
+				$output = '<?php echo ';
+				foreach($prefixes as $prefix) {
+					$output .= '($' . $prefix . '->' . $cmd . ' != \'\') ? $' . $prefix . '->' . $cmd . ' : ';
+				}
+				$output .= '$' . $cmd . '; ?>';
+				return $output;
+			}
+			else {
+				return '<?php echo $'. $cmd . '; ?>';
+			}
 		}
 
 		// Catch tags in the format {hi:command:parameter}
@@ -214,6 +235,22 @@ class HiEngineParser
 
 		// Didn't match anything we support so far
 		return $matches[0];
+	}
+	
+	/**
+	 * Replace a loop tag section with its PHP counterpart, and add the context to the stack
+	 *
+	 * @param array $matches The match array found in HiEngineParser::process()
+	 * @return string The PHP replacement for the template tag
+	 */
+	function hi_loop($matches)
+	{
+		$output = '<?php foreach($' . $matches[1] . ' as $' . $matches[1] . '_1): ?>';
+		$this->contexts[] = "{$matches[1]}_1";
+		$output .= $this->process($matches[2]);
+		$output .= '<?php endforeach; ?>';
+		array_pop($this->contexts);
+		return $output;
 	}
 }
 
