@@ -751,7 +751,7 @@ class Post extends QueryRecord implements IsContent
 	 **/
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author', 'editlink' ) );
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
 			list( $junk, $name, $filter )= $matches;
@@ -769,6 +769,9 @@ class Post extends QueryRecord implements IsContent
 			break;
 		case 'permalink':
 			$out = $this->get_permalink();
+			break;
+		case 'editlink':
+			$out = $this->get_editlink();
 			break;
 		case 'tags':
 			$out = $this->get_tags();
@@ -836,9 +839,8 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * function get_permalink
-	 * Returns a permalink for the ->permalink property of this class.
-	 * @return string A link to this post.
+	 * Returns a URL for the ->permalink property of this class.
+	 * @return string A URL to this post.
 	 * @todo separate permalink rule?  (Not sure what this means - OW)
 	 **/
 	private function get_permalink()
@@ -852,6 +854,15 @@ class Post extends QueryRecord implements IsContent
 			$this,
 			false
 		);
+	}
+
+	/**
+	 * Returns a URL for the ->editlink property of this class.
+	 * @return string A url to edit this post in the admin.
+	 **/
+	private function get_editlink()
+	{
+		return URL::get('admin', 'page=publish&id=' . $this->id);
 	}
 
 	/**
