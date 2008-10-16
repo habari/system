@@ -44,7 +44,6 @@ class HiEngine extends RawPHPEngine {
 			include ($template_file);
 		}
 	}
-
 }
 
 /**
@@ -165,6 +164,15 @@ class HiEngineParser
 				return false;
 		}
 	}
+	
+	/**
+	 * Return fstat() info as required when calling stats on the stream
+	 * @return array An array of stat info
+	 */	 	  	
+	function stream_stat()
+	{
+		return array();
+	}
 
 	/**
 	 * Process the template file for template tags
@@ -203,7 +211,7 @@ class HiEngineParser
 				}
 				$output = '<?php echo ';
 				foreach($prefixes as $prefix) {
-					$output .= '($' . $prefix . '->' . $cmd . ' != \'\') ? $' . $prefix . '->' . $cmd . ' : ';
+					$output .= '!is_null($' . $prefix . '->' . $cmd . ') ? $' . $prefix . '->' . $cmd . ' : ';
 				}
 				$output .= '$' . $cmd . '; ?>';
 				return $output;
