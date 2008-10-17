@@ -78,6 +78,7 @@ class UserHandler extends ActionHandler
 			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
 		}
 		$this->theme->assign( 'request', $request );
+		$this->theme->assign( 'habari_username', $name );
 		$this->display( 'login' );
 		return TRUE;
 	}

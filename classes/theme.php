@@ -465,7 +465,8 @@ class Theme extends Pluggable
 		);
 
 		$paramarray['user_filters']= $user_filters;
-
+		
+		$this->assign( 'criteria', htmlentities( Controller::get_var('criteria'), ENT_QUOTES, 'UTF-8' ) );
 		return $this->act_display( $paramarray );
 	}
 
@@ -496,7 +497,6 @@ class Theme extends Pluggable
 		}
 
 		$this->template_engine->assign( 'theme', $this );
-
 		$this->template_engine->display( $template_name );
 	}
 
