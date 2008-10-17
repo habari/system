@@ -109,13 +109,6 @@ class UserHandler extends ActionHandler
    */
 	protected function display( $template_name )
 	{
-    /*
-     * Assign internal variables into the theme (and therefore into the theme's template
-     * engine.  See Theme::assign().
-     */
-		foreach ( $this->handler_vars as $key=>$value ) {
-			$this->theme->assign($key, $value);
-		}
 		$this->theme->display($template_name);
 	}
 
