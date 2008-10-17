@@ -495,11 +495,6 @@ class Theme extends Pluggable
 			$this->template_engine->assign( $key, $value );
 		}
 
-		if ( isset( Controller::get_handler()->handler_vars ) ) {
-			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
-				$this->template_engine->assign( $key, $value );
-			}
-		}
 		$this->template_engine->assign( 'theme', $this );
 
 		$this->template_engine->display( $template_name );
