@@ -464,7 +464,7 @@ class Theme extends Pluggable
 		);
 
 		$paramarray['user_filters']= $user_filters;
-
+		$this->assign( 'criteria', htmlentities( Controller::get_var('criteria'), ENT_QUOTES, 'UTF-8' ) );
 		return $this->act_display( $paramarray );
 	}
 
@@ -494,13 +494,7 @@ class Theme extends Pluggable
 			$this->template_engine->assign( $key, $value );
 		}
 
-		if ( isset( Controller::get_handler()->handler_vars ) ) {
-			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
-				$this->template_engine->assign( $key, $value );
-			}
-		}
 		$this->template_engine->assign( 'theme', $this );
-
 		$this->template_engine->display( $template_name );
 	}
 
@@ -519,11 +513,6 @@ class Theme extends Pluggable
 
 		$this->add_template_vars();
 
-		if ( isset( Controller::get_handler()->handler_vars ) ) {
-			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
-				$this->assign( $key, $value );
-			}
-		}
 		$this->assign( 'theme', $this );
 
 		$return = $this->fetch_unassigned( $template_name );

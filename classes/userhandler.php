@@ -17,8 +17,7 @@ class UserHandler extends ActionHandler
 	{
 		$name= InputFilter::filter( Controller::get_var( 'habari_username' ) );
 		$pass= InputFilter::filter( Controller::get_var( 'habari_password' ) );
-		
-		
+				
 		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
 			$user= User::authenticate( $name, $pass );
 
@@ -78,6 +77,7 @@ class UserHandler extends ActionHandler
 			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
 		}
 		$this->theme->assign( 'request', $request );
+		$this->theme->assign( 'habari_username', $name );
 		$this->display( 'login' );
 		return TRUE;
 	}
@@ -107,13 +107,6 @@ class UserHandler extends ActionHandler
    */
 	protected function display( $template_name )
 	{
-    /*
-     * Assign internal variables into the theme (and therefore into the theme's template
-     * engine.  See Theme::assign().
-     */
-		foreach ( $this->handler_vars as $key=>$value ) {
-			$this->theme->assign($key, $value);
-		}
 		$this->theme->display($template_name);
 	}
 

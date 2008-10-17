@@ -1199,6 +1199,8 @@ class AdminHandler extends ActionHandler
 		}
 
 		//$this->theme->plugins= array_merge($sort_active_plugins, $sort_inactive_plugins);
+		$this->theme->assign( 'configaction', Controller::get_var('configaction') );
+		$this->theme->assign( 'configure', Controller::get_var('configure') );
 		$this->theme->active_plugins= $sort_active_plugins;
 		$this->theme->inactive_plugins= $sort_inactive_plugins;
 
