@@ -10,6 +10,8 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	protected $sliceOffsetBegin  = null;
 	protected $sliceOffsetLength = null;
 	
+	protected $prevStringedTokenEmpty = false;
+	
 	public function __tostring() {
 		$out = '';
 		foreach ( $this->tokens as $token ) {
@@ -33,11 +35,21 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 						$out .= '"';
 					}
 				}
+				if ($token['empty']) {
+					$this->prevStringedTokenEmpty = $token['name'];
+					$out .= ' /';
+				}
 				$out .= '>';
+				return $out; // (early)
 				break;
 			
 			case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
-				$out = "</{$token['name']}>";
+				if ($this->prevStringedTokenEmpty == $token['name']) {
+					// empty token; needs no closing tag (already closed)
+					$out = '';
+				} else {
+					$out = "</{$token['name']}>";
+				}
 				break;
 			
 			case HTMLTokenizer::NODE_TYPE_PI:
@@ -56,6 +68,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				$out = "<!{$token['value']}>";
 				break;
 		}
+		$this->prevStringedTokenEmpty = false;
 		return $out;
 	}
 	
@@ -73,7 +86,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 			$slices[] = $slice;
 			$offset = $slice->get_end_offset();
 		}
-		// Meed to reverse this because we need to splice the last chunks first
+		// Need to reverse this because we need to splice the last chunks first
 		// if we splice the earlier chunks first, then the offsets get all
 		// messed up. Trust me. 
 		return array_reverse( $slices );

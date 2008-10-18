@@ -85,13 +85,14 @@ class HTMLTokenizer
 		return ( $this->pos < $this->len );
 	}
 	
-	private function node( $type, $name, $value, $attrs )
+	private function node( $type, $name, $value, $attrs, $empty = false )
 	{
 		$this->nodes[]= array(
 			'type' => $type,
 			'name' => $name,
 			'value' => $value,
 			'attrs' => $attrs,
+			'empty' => $empty
 		);
 	}
 	
@@ -231,10 +232,8 @@ class HTMLTokenizer
 			$char = $this->get();
 			if ( $char == '/' && $this->peek() == '>' ) {
 				$this->inc(); // skip peeked '>'
-				// empty tag in collapsed form (<br />)
-				// XXX mark this somehow?
-				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
-				$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL );
+				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr, true );
+				$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL, true );
 			} else {
 				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
 			}
