@@ -54,7 +54,7 @@ class RewriteRules extends ArrayObject {
 			array( 'name' => 'cron', 'parse_regex' => '%^cron/(?P<time>[0-9.]+)/?$%i', 'build_str' => 'cron/{$time}', 'callback' => array( 'CronTab', 'poll_cron' ), 'priority' => 1, 'description' => 'Asyncronous cron processing' ),
 
 			// XMLRPC requests
-			array( 'name' => 'xmlrpc', 'parse_regex' => '%^xmlrpc/?$%i', 'build_str' => 'xmlrpc', 'callback' => array( 'XMLRPCServer', 'xmlrpc_call' ), 'priority' => 8, 'description' => 'Handle incoming XMLRPC requests.' ),
+			array( 'name' => 'xmlrpc', 'parse_regex' => '%^xmlrpc/?$%i', 'build_str' => 'xmlrpc', 'callback' => array( 'POST' => array( 'XMLRPCServer', 'xmlrpc_post_call' ), 'GET' => array( 'XMLRPCServer', 'xmlrpc_get_call' ), 'priority' => 8, 'description' => 'Handle incoming XMLRPC requests.' ),
 		);
 		$default_rules = Plugins::filter('default_rewrite_rules', $default_rules);
 		$default_rules_properties = array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );

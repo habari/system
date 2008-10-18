@@ -10,14 +10,10 @@ class XMLRPCServer extends ActionHandler
 {
 
 	/**
-	 * Handle all incoming XMLRPC requests.
+	 * Handle POST incoming XMLRPC requests.
 	 */	 	
-	public function act_xmlrpc_call()
+	public function act_xmlrpc_post_call()
 	{
-		if( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
-			$exception = new XMLRPCException(1);
-			$exception->output_fault_xml(); // dies here
-		}
 		$input = file_get_contents( 'php://input' );
 
 		$xml = new SimpleXMLElement( $input );
@@ -43,6 +39,15 @@ class XMLRPCServer extends ActionHandler
 		header('Content-Type: text/xml');
 		echo trim($response->asXML());
 		exit;
+	}
+	
+	/**
+	 * Handle GET incoming XMLRPC requests.
+	 */
+	public function act_xmlrpc_get_call()
+	{
+		$exception = new XMLRPCException(1);
+		$exception->output_fault_xml(); // dies here
 	}
 
 	/**
