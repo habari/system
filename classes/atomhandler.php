@@ -232,40 +232,6 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Handle incoming requests for Atom entry collections
-		*/
-	public function act_collection()
-	{
-		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
-			case 'get':
-				$this->get_collection();
-				break;
-			case 'post':
-				$this->post_collection();
-				break;
-		}
-	}
-
-	/**
-		* function act_entry
-		* 'index' should be 'slug'
-		*/
-	public function act_entry()
-	{
-		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
-			case 'get':
-				$this->get_entry( $this->handler_vars['slug'] );
-				break;
-			case 'put':
-				$this->put_entry( $this->handler_vars['slug'] );
-				break;
-			case 'delete':
-				$this->delete_entry( $this->handler_vars['slug'] );
-				break;
-		}
-	}
-
-	/**
 		* Handle incoming requests for RSD
 		*
 		* @todo Move the internal list of supported feeds into options to allow dynamic editing of capabilities
@@ -399,40 +365,11 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Handle incoming requests for the Atom entry collection for a specific tag
-		*/
-	public function act_tag_collection()
-	{
-		$this->get_collection();
-	}
-
-	/**
-		* Handle incoming requests for the Atom entry collection for all comments
-		*/
-	function act_comments( $params = array() )
-	{
-		$this->get_comments( $params );
-	}
-
-	/**
-		* Handle incoming requests for the Atom entry collection for comments on an entry
-		*/
-	function act_entry_comments()
-	{
-		if ( isset( $this->handler_vars['slug'] ) ) {
-			$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
-	}
-		else {
-			$this->act_comments( array( 'id' => $this->handler_vars['id'] ) );
-		}
-	}
-
-	/**
 		* Output an Atom collection of comments based on the supplied parameters.
 		*
 		* @param array $params An array of parameters passed to Comments::get() to retrieve comments
 		*/
-	function get_comments( $params = array() )
+	function act_get_comments()
 	{
 		$comments = '';
 
@@ -478,9 +415,9 @@ class AtomHandler extends ActionHandler
 		*
 		* @param string $slug The slug to get the entry for
 		*/
-	public function get_entry( $slug )
+	public function act_get_entry()
 	{
-		$params['slug']= $slug;
+		$params['slug']= Controller::get_var('slug');
 		$params['status'] = Post::status('published');
 
 		if ( $post = Post::get($params) ) {
@@ -536,14 +473,14 @@ class AtomHandler extends ActionHandler
 		*
 		* @param string $slug The slug of the entry to save
 		*/
-	public function put_entry( $slug )
+	public function act_put_entry()
 	{
 		$params = array();
 
 		$user = $this->is_auth( TRUE );
 		$bxml = file_get_contents( 'php://input' );
 
-		$params['slug']= $slug;
+		$params['slug']=  Controller::get_var('slug');
 		$params['status'] = Post::status('published');
 		if ( $post = Post::get($params) ) {
 			$xml = new SimpleXMLElement( $bxml );
@@ -577,13 +514,13 @@ class AtomHandler extends ActionHandler
 		*
 		* @param string $slug The post slug to delete
 		*/
-	public function delete_entry( $slug )
+	public function act_delete_entry()
 	{
 		$params = array();
 
 		$this->is_auth(TRUE);
 
-		$params['slug']= $slug;
+		$params['slug']= Controller::get_var('slug');
 		$params['status'] = Post::status('published');
 		if ( $post = Post::get($params) ) {
 			$post->delete();
@@ -595,7 +532,7 @@ class AtomHandler extends ActionHandler
 		*
 		* @param array $params An array of parameters as passed to Posts::get() to retrieve posts.
 		*/
-	public function get_collection( $params = array() )
+	public function act_get_collection()
 	{
 		// Store handler vars since we'll be using them a lot.
 		$handler_vars = Controller::get_handler_vars();
@@ -660,7 +597,7 @@ class AtomHandler extends ActionHandler
 	/**
 		* Accepts an Atom entry for insertion as a new post.
 		*/
-	public function post_collection()
+	public function act_post_collection()
 	{
 		if ( $user = $this->is_auth( TRUE ) ) {
 			$bxml = file_get_contents( 'php://input' );
