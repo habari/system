@@ -75,12 +75,11 @@ class AdminHandler extends ActionHandler
 		// Add some default stylesheets
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
 
-	  // Add some default scripts
-
-
+	  // Add some default template variables
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_type = $type;
 		$this->theme->admin_page = $page;
+		$this->theme->page = $page;
 		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
