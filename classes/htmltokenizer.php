@@ -14,7 +14,7 @@ class HTMLTokenizer
 	const NODE_TYPE_CDATA_SECTION = 6;
 	const NODE_TYPE_STATEMENT = 7;
 
-	/* States of the Machine ;p */	
+	/* States of the Machine ;p */
 	private static $STATE_FINISHED = -1; 
 	private static $STATE_START = 0;
 	private static $STATE_TAG = 1;
@@ -146,156 +146,156 @@ class HTMLTokenizer
 	}
 
 	//
-    private function parse_start()
-    {
-        $data = $this->up_to_str( self::$CHR_TAG_BEGIN );
-        $this->inc();
-        if ( $data != '' ) {
-        	$this->node( self::NODE_TYPE_TEXT, '#text', $data, NULL );
-        }
-        
-        return self::$STATE_TAG;
-    }
-    
-    private function parse_attributes()
-    {
-        $attr = array();
-        $name = '';
-        
-        $this->skip_whitespace();
-    
-      	// read attribute name
-        while ( $name = $this->up_to_chr( self::$CHR_ATTRNAME_END . self::$CHR_TAG_END . self::$CHR_WHITESPACE ) ) {
-            $name = strtolower( $name );
-	        // skip any whitespace
-            $this->skip_whitespace();
-            // first non-ws char
-            $char = $this->get();
-            if ($char == '=') {
-            	// attribute value follows
-                $this->skip_whitespace();
-                $char = $this->get();
-                if ($char == '"') {
-                	// double-quoted
-                    $value = $this->up_to_str( '"' );
-                    $this->inc();
-                }
-                elseif ($char == '\'') {
-                	// single-quoted
-                    $value = $this->up_to_str( '\'' );
-                    $this->inc();
-                }
-                else {
-                	// bad, bad, bad
-                    $this->dec();
-                    $value = $this->up_to_chr( self::$CHR_WHITESPACE . '>' );
-                }
-            }
-            elseif ( $char !== NULL ) {
-            	// TODO HTMLParser should handle #IMPLIED attrs
-                $value = NULL;
-                $this->dec();
-            }
-            $attr[$name]= $value;
-            $this->skip_whitespace();
-        }
-        
-        return $attr;
-    }
+	private function parse_start()
+	{
+		$data = $this->up_to_str( self::$CHR_TAG_BEGIN );
+		$this->inc();
+		if ( $data != '' ) {
+			$this->node( self::NODE_TYPE_TEXT, '#text', $data, NULL );
+		}
+		
+		return self::$STATE_TAG;
+	}
+	
+	private function parse_attributes()
+	{
+		$attr = array();
+		$name = '';
+		
+		$this->skip_whitespace();
+	
+	  	// read attribute name
+		while ( $name = $this->up_to_chr( self::$CHR_ATTRNAME_END . self::$CHR_TAG_END . self::$CHR_WHITESPACE ) ) {
+			$name = strtolower( $name );
+			// skip any whitespace
+			$this->skip_whitespace();
+			// first non-ws char
+			$char = $this->get();
+			if ($char == '=') {
+				// attribute value follows
+				$this->skip_whitespace();
+				$char = $this->get();
+				if ($char == '"') {
+					// double-quoted
+					$value = $this->up_to_str( '"' );
+					$this->inc();
+				}
+				elseif ($char == '\'') {
+					// single-quoted
+					$value = $this->up_to_str( '\'' );
+					$this->inc();
+				}
+				else {
+					// bad, bad, bad
+					$this->dec();
+					$value = $this->up_to_chr( self::$CHR_WHITESPACE . '>' );
+				}
+			}
+			elseif ( $char !== NULL ) {
+				// TODO HTMLParser should handle #IMPLIED attrs
+				$value = NULL;
+				$this->dec();
+			}
+			$attr[$name]= $value;
+			$this->skip_whitespace();
+		}
+		
+		return $attr;
+	}
 
-    private function parse_tag()
-    {
-        switch ( $this->get() ) {
-	        case '!':
-	            return self::$STATE_STATEMENT;
-	            break;
-	        case '?':
-	        	// mmmh, PI
-	            return self::$STATE_PI;
-	            break;
-	        case '/':
-	            return self::$STATE_ELEMENT_CLOSE;
-	            break;
-	        default:
-	        	// we just ate the first char of the tagName, oops
-	            $this->dec();
-	            return self::$STATE_ELEMENT_OPEN;
-        }
-    }
+	private function parse_tag()
+	{
+		switch ( $this->get() ) {
+			case '!':
+				return self::$STATE_STATEMENT;
+				break;
+			case '?':
+				// mmmh, PI
+				return self::$STATE_PI;
+				break;
+			case '/':
+				return self::$STATE_ELEMENT_CLOSE;
+				break;
+			default:
+				// we just ate the first char of the tagName, oops
+				$this->dec();
+				return self::$STATE_ELEMENT_OPEN;
+		}
+	}
 
-    private function parse_element_open()
-    {
-        $tag = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
-        if ( $tag != '' ) {
-            $attr = $this->parse_attributes();
-            $char = $this->get();
-            if ( $char == '/' && $this->peek() == '>' ) {
-            	$this->inc(); // skip peeked '>'
-                // empty tag in collapsed form (<br />)
-                // XXX mark this somehow?
+	private function parse_element_open()
+	{
+		$tag = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
+		if ( $tag != '' ) {
+			$attr = $this->parse_attributes();
+			$char = $this->get();
+			if ( $char == '/' && $this->peek() == '>' ) {
+				$this->inc(); // skip peeked '>'
+				// empty tag in collapsed form (<br />)
+				// XXX mark this somehow?
 				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
 				$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL );
-            } else {
-                $this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
-            }
-        }
-            
-        return self::$STATE_START;
-    }
+			} else {
+				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr ); 
+			}
+		}
+			
+		return self::$STATE_START;
+	}
 
-    private function parse_element_close()
-    {
-        $tag = $this->up_to_chr( self::$CHR_TAG_END );
-        
-        if ( $tag != '' ) {
-            $char = $this->get();
-            if ( $char == '/' && $this->peek() == '>' ) {
-            	$this->inc();
-            }
-            
-            $this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL ); 
-        }
-        
-        return self::$STATE_START;
-    }
-    
-    private function parse_statement()
-    {
-    	// everything starting with <!
-    	$nodeName = '#statement';
-    	$nodeType = self::NODE_TYPE_STATEMENT;
-    	
-        $char = $this->get();
-        if ( $char == '[' ) {
-        	// CDATA
-            // <http://www.w3.org/TR/DOM-Level-2-Core/core.html>
-            $nodeName = '#cdata-section';
-            $nodeType = self::NODE_TYPE_CDATA_SECTION;
-            
-            $this->inc( 6 ); // strlen( 'CDATA[' )
-            $data = $this->up_to_str( ']]>' );
-            $this->inc( 2 ); // strlen( ']]' )
-        }
-        elseif ( $char == '-' && $this->peek() == '-' ) {
-        	// comment
-            $nodeName = '#comment';
-            $nodeType = self::NODE_TYPE_COMMENT;
-            
-            // skip peeked -
-        	$this->inc();
-            // consume text
-            $data = $this->up_to_str( '-->' );
-            $data = $data; // should trim() upstream
-            // skip over final --
-            $this->inc( 2 );
-        }
-        else {
-        	// some other kind of statement
-            $this->dec();
-        }
-        
-        if ( $nodeType == self::NODE_TYPE_STATEMENT ) {
-        	$data = '';
+	private function parse_element_close()
+	{
+		$tag = $this->up_to_chr( self::$CHR_TAG_END );
+		
+		if ( $tag != '' ) {
+			$char = $this->get();
+			if ( $char == '/' && $this->peek() == '>' ) {
+				$this->inc();
+			}
+			
+			$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL ); 
+		}
+		
+		return self::$STATE_START;
+	}
+	
+	private function parse_statement()
+	{
+		// everything starting with <!
+		$nodeName = '#statement';
+		$nodeType = self::NODE_TYPE_STATEMENT;
+		
+		$char = $this->get();
+		if ( $char == '[' ) {
+			// CDATA
+			// <http://www.w3.org/TR/DOM-Level-2-Core/core.html>
+			$nodeName = '#cdata-section';
+			$nodeType = self::NODE_TYPE_CDATA_SECTION;
+			
+			$this->inc( 6 ); // strlen( 'CDATA[' )
+			$data = $this->up_to_str( ']]>' );
+			$this->inc( 2 ); // strlen( ']]' )
+		}
+		elseif ( $char == '-' && $this->peek() == '-' ) {
+			// comment
+			$nodeName = '#comment';
+			$nodeType = self::NODE_TYPE_COMMENT;
+			
+			// skip peeked -
+			$this->inc();
+			// consume text
+			$data = $this->up_to_str( '-->' );
+			$data = $data; // should trim() upstream
+			// skip over final --
+			$this->inc( 2 );
+		}
+		else {
+			// some other kind of statement
+			$this->dec();
+		}
+		
+		if ( $nodeType == self::NODE_TYPE_STATEMENT ) {
+			$data = '';
 			$nodeName = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
 			if ( $this->peek() != '>' ) {
 				// there be data or something
@@ -308,31 +308,31 @@ class HTMLTokenizer
 			}
 			$data.= $this->up_to_str( '>' );
 			// not like anyone uses them, eh?
-        }
+		}
 
-        // skip over final '>'
-        $this->inc();
-        
-        if ( $data != '' ) {
-        	$this->node( $nodeType, $nodeName, $data, NULL );
-        }
-        
-        return self::$STATE_START;
-    }
+		// skip over final '>'
+		$this->inc();
+		
+		if ( $data != '' ) {
+			$this->node( $nodeType, $nodeName, $data, NULL );
+		}
+		
+		return self::$STATE_START;
+	}
 
-    private function parse_pi() 
-    {
-        $target = $this->up_to_chr( self::$CHR_WHITESPACE );
-        $data = $this->up_to_str( '?>' );
-        // skip over closing tag
-        $this->inc( 2 );
-        
-        if ( $data != '' ) {
-        	$this->node( self::NODE_TYPE_PI, $target, $data, array() ); 
-        }
-        
-        return self::$STATE_START;
-    }
+	private function parse_pi() 
+	{
+		$target = $this->up_to_chr( self::$CHR_WHITESPACE );
+		$data = $this->up_to_str( '?>' );
+		// skip over closing tag
+		$this->inc( 2 );
+		
+		if ( $data != '' ) {
+			$this->node( self::NODE_TYPE_PI, $target, $data, array() ); 
+		}
+		
+		return self::$STATE_START;
+	}
 
 }
 
