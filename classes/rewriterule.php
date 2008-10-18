@@ -38,6 +38,7 @@ class RewriteRule extends QueryRecord
 			'rule_class' => RewriteRule::RULE_CUSTOM,
 			'description' => '',
 			'parameters' => '',
+			'callback' => '',
 		);
 	}
 
@@ -80,8 +81,31 @@ class RewriteRule extends QueryRecord
 					}
 				}
 			}
-
-			if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0 ) {
+			
+			/* Parse the callback in an action and handler */
+			// What if there is no callback for a REQUEST_METHOD? Throw an exception now or later?
+			if ( isset($this->callback) ) {
+				if ( isset( $this->callback[$_SERVER['REQUEST_METHOD']] ) && is_callable( $this->callback[$_SERVER['REQUEST_METHOD']], true ) ) {
+					$this->handler = $this->callback[$_SERVER['REQUEST_METHOD']][0];
+					if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->callback[$_SERVER['REQUEST_METHOD']][1], $matches ) > 0 ) {
+						$this->action = $this->named_arg_values[$matches[1]];
+					}
+					else {
+						$this->action = $this->callback[$_SERVER['REQUEST_METHOD']][1];
+					}
+				}
+				elseif ( is_callable( $this->callback, true ) ) {
+					$this->handler = $this->callback[0];
+					if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->callback[1], $matches ) > 0 ) {
+						$this->action = $this->named_arg_values[$matches[1]];
+					}
+					else {
+						$this->action = $this->callback[1];
+					}
+				}
+			}
+			elseif (preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0) {
+				$this->handler = $this->callback[0];
 				$this->action = $this->named_arg_values[$matches[1]];
 			}
 
@@ -240,6 +264,7 @@ class RewriteRule extends QueryRecord
 		 'is_active' => 1,
 		 'rule_class' => RewriteRule::RULE_CUSTOM,
 		 'description' => 'Custom old-style rule.',
+		 'callback' => array( $handler, $action ),
 		 ) );
 	}
 
