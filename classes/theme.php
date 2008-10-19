@@ -383,6 +383,7 @@ class Theme extends Pluggable
 			'content_type' => Post::type( 'entry' ),
 		);
 
+		$this->assign( 'tag', htmlentities( Controller::get_var( 'tag' ), ENT_QUOTES, 'UTF-8' ) );
 		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
 
 		return $this->act_display( $paramarray );
@@ -449,6 +450,10 @@ class Theme extends Pluggable
 		if ( !isset( $paramarray['user_filters']['content_type'] ) ) {
 			$paramarray['user_filters']['content_type']= Post::type( 'entry' );
 		}
+
+		$this->assign( 'year', Controller::get_var( 'year' ) );
+		$this->assign( 'month', Controller::get_var( 'month' ) );
+		$this->assign( 'day', Controller::get_var( 'day' ) );
 
 		return $this->act_display( $paramarray );
 	}
