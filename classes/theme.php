@@ -451,9 +451,9 @@ class Theme extends Pluggable
 			$paramarray['user_filters']['content_type']= Post::type( 'entry' );
 		}
 
-		$this->assign( 'year', Controller::get_var( 'year' ) );
-		$this->assign( 'month', Controller::get_var( 'month' ) );
-		$this->assign( 'day', Controller::get_var( 'day' ) );
+		$this->assign( 'year' , $y ? (int)Controller::get_var( 'year' ) : NULL );
+		$this->assign( 'month' , $m ? (int)Controller::get_var( 'month' ) : NULL );
+		$this->assign( 'day' , $d ? (int)Controller::get_var( 'day' ) : NULL );
 
 		return $this->act_display( $paramarray );
 	}
