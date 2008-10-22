@@ -1462,6 +1462,9 @@ body.page-Manage .state {
 	overflow: hidden;
 }
 
+.authorinfo .empty {
+	font-style: italic;
+}
 
 /*- EDIT COMMENT PAGE */
 .page-comment .overview .textual a, .page-comment .overview .textual strong {

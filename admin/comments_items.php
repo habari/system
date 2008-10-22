@@ -36,10 +36,16 @@
 	<div class="infoandcontent clear">
 		<span class="authorinfo pct25 minor">
 			<ul>
-			<?php if ($comment->url != '')
-				echo '<li><a class="edit-url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n"; ?>
-			<?php if ( $comment->email != '' )
-				echo '<li><a class="edit-email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n"; ?>
+				<?php if ($comment->url != '') {
+					echo '<li><a class="edit-url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
+					} else {
+						echo '<li class="empty">no url given</li>';
+					} ?>
+				<?php if ( $comment->email != '' ) {
+					echo '<li><a class="edit-email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n";
+					} else {
+						echo '<li class="empty">no email provided</li>';
+					} ?>
 			</ul>
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
 				<p><?php _e('Marked as spam'); ?></p>
