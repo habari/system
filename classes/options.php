@@ -57,7 +57,7 @@ class Options extends Singleton
 			$prefix .= '__';
 		}
 		foreach( self::instance()->options as $key => $value ) {
-			if( strpos( $value, $prefix ) === 0 ) {
+			if( strpos( $key, $prefix ) === 0 ) {
 				$results[substr( $key, strlen( $prefix ) )] = $value;
 			}
 		}
