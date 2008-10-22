@@ -52,6 +52,9 @@ class Error extends Exception
 
 		if ( DEBUG ) {
 			self::print_backtrace( $exception->getTrace() );
+		}
+		
+		if ( Options::get( 'log_backtraces' ) ) {
 			$backtrace = print_r( $exception->getTrace(), true );
 		}
 		else {
@@ -117,6 +120,9 @@ class Error extends Exception
 			);
 			if( DEBUG ) {
 				Error::print_backtrace();
+			}
+			
+			if ( Options::get( 'log_backtraces' ) ) {
 				$backtrace = print_r( debug_backtrace(), true );
 			}
 			else {
