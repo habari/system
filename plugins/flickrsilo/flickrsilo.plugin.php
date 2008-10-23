@@ -247,6 +247,7 @@ class Flickr extends flickrAPI
 		$params['sort'] = 'date-posted-desc';
 		$params['per_page'] = 20;
 		$params['media'] = 'photos';
+		$params['extras'] = 'original_format';
 
 		$xml = $this->call('flickr.photos.search', $params);
 
