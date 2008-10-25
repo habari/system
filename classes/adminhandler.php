@@ -251,7 +251,7 @@ class AdminHandler extends ActionHandler
 		$option_items = Plugins::filter( 'admin_option_items', $option_items );
 
 		$form = new FormUI('Admin Options');
-
+		$tab_index = 3;
 		foreach ( $option_items as $name => $option_fields ) {
 			$fieldset = $form->append( 'wrapper', Utils::slugify( $name ), $name );
 			$fieldset->class = 'container settings';
@@ -263,6 +263,8 @@ class AdminHandler extends ActionHandler
 				if ( $option['type'] == 'select' && isset( $option['selectarray'] ) ) {
 					$field->options = $option['selectarray'];
 				}
+				$field->tabindex = $tab_index;
+				$tab_index++;
 				$field->helptext = $option['helptext'];
 				if ( isset( $option['helptext'] ) ) {
 					$field->helptext = $option['helptext'];
@@ -279,7 +281,8 @@ class AdminHandler extends ActionHandler
 		 * the form controls, or we could create something different
 		 */
 
-		$form->append( 'submit', 'apply', _t('Apply'), 'admincontrol_submit' );
+		$submit = $form->append( 'submit', 'apply', _t('Apply'), 'admincontrol_submit' );
+		$submit->tabindex = $tab_index;
 		$form->on_success( array( $this, 'form_options_success' ) );
 
 		$this->theme->form = $form->get();
@@ -2372,13 +2375,13 @@ class AdminHandler extends ActionHandler
 		// These need to be replaced with submenus, but access to them is provided temporarily
 		$createmenu = array();
 		$managemenu = array();
-		
+
 		$i= 1;
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			
+
 			if($i == 10) {
 				$hotkey= 0;
 			} elseif($i > 10) {
@@ -2386,7 +2389,7 @@ class AdminHandler extends ActionHandler
 			} else {
 				$hotkey= $i;
 			}
-			
+
 			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
 			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
 			$createmenu['create_' . $typeint]['hotkey']= $hotkey;
