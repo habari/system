@@ -41,6 +41,7 @@ class HiEngine extends RawPHPEngine {
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			$template_file = 'hi://' . $template_file;
+//Utils::debug(file_get_contents($template_file));
 			include ($template_file);
 		}
 	}
@@ -272,6 +273,9 @@ class HiEngineParser
 	{
 		$var = $matches[0];
 		if(is_callable($var)) {
+			return $var;
+		}
+		if(preg_match('/true|false|null/i', $var)) {
 			return $var;
 		}
 	

@@ -50,13 +50,17 @@
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
 			<?php foreach($mainmenu as $menu_id => $menu): ?>
-				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == TRUE) { echo 'selected'; } ?>" title="<?php echo $menu['title']; ?>"><a href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
+				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == TRUE) { echo 'selected'; } ?><?php if(isset($menu['submenu'])): ?> submenu<?php endif; ?>" title="<?php echo $menu['title']; ?>"><a class="top" href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?> 
 				<?php if(isset($menu['hotkey']) && $menu['hotkey'] != ''): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
 				</a>
 				<?php if(isset($menu['submenu'])): ?>
-				<ul>
-					<li><a href="#"><?php _e('Submenu'); ?></a></li>
-				</ul>
+				<ul class="submenu">
+				 <?php foreach($menu['submenu'] as $submenu_id => $submenu_item): ?> 
+				 	<li id="link-<?php echo $submenu_id ?>" title="<?php echo $submenu_item['title']; ?>"><a href="<?php echo $submenu_item['url']; ?>"><?php echo $submenu_item['text']; ?> 
+				 	<?php if(isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != ''): ?><span class="hotkey"><?php echo $submenu_item['hotkey']; ?></span><?php endif; ?> 
+				 	</a></li> 
+				 <?php endforeach; ?> 
+				 </ul>
 				<?php endif; ?>
 				</li>
 			<?php endforeach; ?>
