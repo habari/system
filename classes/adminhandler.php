@@ -2372,14 +2372,25 @@ class AdminHandler extends ActionHandler
 		// These need to be replaced with submenus, but access to them is provided temporarily
 		$createmenu = array();
 		$managemenu = array();
+		
+		$i= 1;
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
 				continue;
 			}
+			
+			if($i == 10) {
+				$hotkey= 0;
+			} elseif($i > 10) {
+				$hotkey= FALSE;
+			} else {
+				$hotkey= $i;
+			}
+			
 			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
 			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
-			$createmenu['create_' . $typeint]['hotkey']= $typeint;
-			$managemenu['manage_' . $typeint]['hotkey']= count(Post::list_active_post_types()) - 1 + $typeint;
+			$createmenu['create_' . $typeint]['hotkey']= $hotkey;
+			$managemenu['manage_' . $typeint]['hotkey']= $hotkey;
 
 			if( $page == 'publish' && isset($this->handler_vars['content_type']) && $this->handler_vars['content_type'] == $type ) {
 				$createmenu['create_' . $typeint]['selected'] = TRUE;
@@ -2387,6 +2398,7 @@ class AdminHandler extends ActionHandler
 			if( $page == 'posts' && isset($this->handler_vars['type']) && $this->handler_vars['type'] == $typeint ) {
 				$managemenu['manage_' . $typeint]['selected'] = TRUE;
 			}
+			$i++;
 		}
 
 		$adminmenu = array(

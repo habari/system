@@ -959,7 +959,15 @@ var theMenu = {
 
 		// Down arrow
 		$.hotkeys.add('down', {propagate:false, disableInInput: true}, function() {
-			if(($('#menu').hasClass('hovering') == true)) {
+			if($('#menulist .carrot ul li.carrot').length != 0) {
+				if ($('#menulist .carrot ul li:last').hasClass('carrot')) {
+					// Move to top if at bottom
+					$('#menulist .carrot ul li:last').removeClass('carrot');
+					$('#menulist .carrot ul li:first').addClass('carrot');
+				} else {
+					$('#menulist .carrot ul li.carrot').removeClass('carrot').next().addClass('carrot');
+				}
+			} else if(($('#menu').hasClass('hovering') == true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:first').addClass('carrot')
@@ -975,10 +983,23 @@ var theMenu = {
 			}
 			return false;
 		});
+		
+		// Left arrow
+		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
+			$('.carrot ul li.carrot').removeClass('carrot');
+		});
 
 		// Up arrow
 		$.hotkeys.add('up', {propagate:true, disableInInput: true}, function(){
-			if ($('#menu').hasClass('hovering') == true) {
+			if($('#menulist .carrot ul li.carrot').length != 0) {
+				if ($('#menulist .carrot ul li:first').hasClass('carrot')) {
+					$('#menulist .carrot ul li:first').removeClass('carrot');
+					$('#menulist .carrot ul li:last').addClass('carrot');
+				// If carrot exists, move it up
+				} else {
+					$('#menulist .carrot ul li.carrot').removeClass('carrot').prev().addClass('carrot');
+				}
+			} else if ($('#menu').hasClass('hovering') == true) {
 				// If carrot doesn't exist, select last item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:last').addClass('carrot')
@@ -1002,6 +1023,11 @@ var theMenu = {
 				return false;
 			}
 		});
+		
+		// Left arrow
+		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
+			$('.carrot ul li.carrot').removeClass('carrot');
+		});
 
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
@@ -1019,14 +1045,26 @@ var theMenu = {
 			var href = $('a', this).attr('href');
 			var owner = $(this);
 			var blinkSpeed = 100;
-
+						
 			if (hotkey) {
 				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
 					if ($('#menu').hasClass('hovering') == true) {
 						if (owner.hasClass('submenu')) {
-							
 							$('.carrot').removeClass('carrot');
 							owner.addClass('carrot');
+						} else if(owner.hasClass('sub')) {
+							// Exists in a submenu
+							if($('#menu li.carrot li.hotkey-' + hotkey).length != 0) {
+								// Hotkey exists in an active menu, use that
+								location = $('#menu li.carrot li.hotkey-' + hotkey + ' a').attr('href');
+								theMenu.blinkCarrot($('#menu li.carrot li.hotkey-' + hotkey));
+							} else {
+								// Use the first occurance of hotkey, but expand the parent first
+								user= $('#menu li li.hotkey-' + hotkey).eq(0);
+								user.parent().parent().addClass('carrot');
+								location = $('a', user).attr('href');
+								theMenu.blinkCarrot(user);
+							}
 						} else {
 							location = href;
 							theMenu.blinkCarrot(owner);
