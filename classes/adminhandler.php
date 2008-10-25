@@ -201,17 +201,17 @@ class AdminHandler extends ActionHandler
 				'label' => _t('Time Zone'),
 				'type' => 'select',
 				'selectarray' => $timezones,
-				'helptext' => 'Adjusts server time to 21.44',
+				'helptext' => 'Current Date Time: ' . HabariDateTime::date_create()->format(),
 				),
 			'dateformat' => array(
 				'label' => _t('Date Format'),
 				'type' => 'text',
-				'helptext' => 'Tuesday, Jan 15th, 2008',
+				'helptext' => 'Current Date: ' . HabariDateTime::date_create()->date
 				),
 			'timeformat' => array(
 				'label' => _t('Time Format'),
 				'type' => 'text',
-				'helptext' => '21:44',
+				'helptext' => 'Current Time: ' . HabariDateTime::date_create()->time,
 				)
 			);
 
@@ -262,7 +262,14 @@ class AdminHandler extends ActionHandler
 				$field->class = 'item clear';
 				if ( $option['type'] == 'select' && isset( $option['selectarray'] ) ) {
 					$field->options = $option['selectarray'];
-			}
+				}
+				$field->helptext = $option['helptext'];
+				if ( isset( $option['helptext'] ) ) {
+					$field->helptext = $option['helptext'];
+				}
+				else {
+					$field->helptext = '';
+				}
 				// @todo: do something with helptext
 		}
 			}
