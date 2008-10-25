@@ -1,6 +1,6 @@
 <div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
 	<span class="pct25"><label for="<?php echo $field ?>"><?php echo $this->caption; ?></label></span>
-	<span class="pct25"><select name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ) ?>>
+	<span class="pct25"><select name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ) ?> <?php echo isset($tabindex) ? ' tabindex="' . $tabindex . '"' : ''?>>
 	<?php foreach($options as $opts_key => $opts_val) : ?>
 		<?php if (is_array($opts_val)) : ?>
 			<optgroup label="<?php echo $opts_key; ?>">
