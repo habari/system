@@ -131,6 +131,22 @@ a img {
 	display: block;
 }
 
+#menu.hovering #menulist li li, #menu:hover #menulist li li { 
+	display:none; 
+} 
+
+#menu:hover #menulist li:hover li, #menu #menulist li.carrot li { 
+	display:block; 
+} 
+
+#menu li ul { 
+	position:absolute;
+	left:100%; 
+	top:0; 
+	width:100%; 
+	background:#2b2b2b;
+}
+
 #menulist li {
 	position: relative;
 	background: #2b2b2b;
@@ -147,8 +163,12 @@ a img {
 	overflow: hidden;
 }
 
-#menulist li.carrot a, #menulist li a:hover {
-	background: #444;
+#menulist li.submenu a.top {
+	background: url('../images/arrowright.png') 163px center no-repeat;	
+}
+
+#menulist li.carrot a.top, #menulist li:hover a.top, #menulist li a:hover, #menulist li li.carrot a {
+	background-color: #444;
 }
 
 #menulist li.selected a {
@@ -158,6 +178,8 @@ a img {
 #menulist li.selected a:hover, #menulist li.selected.carrot a {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 }
+
+
 
 #menulist li#link-tags, #menulist li#link-logs {
 	padding-bottom: 5px;

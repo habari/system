@@ -500,7 +500,8 @@ class Theme extends Pluggable
 		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
 			$this->template_engine->assign( $key, $value );
 		}
-
+/*
+*/
 		$this->template_engine->assign( 'theme', $this );
 		$this->template_engine->display( $template_name );
 	}

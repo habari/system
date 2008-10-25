@@ -993,6 +993,15 @@ var theMenu = {
 				return false;
 			}
 		});
+		
+		// Right arrow
+		$.hotkeys.add('right', {propagate:true, disableInInput: true}, function(){
+			if ($('.carrot').hasClass('submenu') == true) {
+				$('.carrot ul li:first').addClass('carrot');
+			} else {
+				return false;
+			}
+		});
 
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
@@ -1006,16 +1015,23 @@ var theMenu = {
 
 		// Page hotkeys
 		$('#menu ul li').each(function() {
-			var hotkey = $('a span.hotkey', this).text();
+			var hotkey = $('a span.hotkey', this).eq(0).text();
 			var href = $('a', this).attr('href');
-			var owner = this;
+			var owner = $(this);
 			var blinkSpeed = 100;
 
 			if (hotkey) {
 				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
 					if ($('#menu').hasClass('hovering') == true) {
-						location = href;
-						theMenu.blinkCarrot(owner)
+						if (owner.hasClass('submenu')) {
+							
+							$('.carrot').removeClass('carrot');
+							owner.addClass('carrot');
+						} else {
+							location = href;
+							theMenu.blinkCarrot(owner);
+						}
+						
 					} else {
 						return false;
 					}
