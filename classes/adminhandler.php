@@ -229,6 +229,14 @@ class AdminHandler extends ActionHandler
 			),
 		);
 
+		$option_items[_t('Logging')] = array(
+			'log_backtraces' => array(
+				'label' => _t( 'Log Backtraces' ),
+				'type' => 'checkbox',
+				'helptext' => _t( 'Logs error backtraces to the log tables\' data column. Can drastically increase log size!' ),
+			),
+		);
+
 			/*$option_items[_t('Presentation')] = array(
 			'encoding' => array(
 				'label' => _t('Encoding'),
@@ -1310,19 +1318,19 @@ class AdminHandler extends ActionHandler
 				Plugins::act( 'admin_moderate_comments', $action, $to_update, $this );
 
 				switch ( $action ) {
-					
+
 					case 'delete':
 						// This comment was marked for deletion
 						Comments::delete_these( $to_update );
 						$modstatus['Deleted %d comments'] = count( $to_update );
 						break;
-						
+
 					case 'spam':
 							// This comment was marked as spam
 						Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
 						$modstatus['Marked %d comments as spam'] = count( $to_update );
 						break;
-						
+
 					case 'approve':
 						// Comments marked for approval
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
@@ -1331,13 +1339,13 @@ class AdminHandler extends ActionHandler
 									$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
 						}
 						break;
-						
+
 					case 'unapprove':
 						// This comment was marked for unapproval
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
 						$modstatus['Unapproved %d comments'] = count ( $to_update );
 						break;
-						
+
 					case 'edit':
 						foreach ( $to_update as $comment ) {
 							// This comment was edited
@@ -1356,20 +1364,20 @@ class AdminHandler extends ActionHandler
 						}
 						$modstatus['Edited %d comments'] = count( $to_update );
 						break;
-						
+
 				}
-				
+
 				foreach ( $modstatus as $key => $value ) {
 					if ( $value ) {
 						Session::notice( sprintf( _t( $key ), $value ) );
 					}
 				}
-				
+
 			}
-			
+
 			Utils::redirect();
 			die();
-			
+
 		}
 
 		// we load the WSSE tokens
@@ -1392,7 +1400,7 @@ class AdminHandler extends ActionHandler
 		else {
 			$this->theme->search_args = 'type:' . Comment::type_name( $type ) . ' ';
 		}
-		
+
 		if ( $status == 'All') {
 			unset ( $arguments['status'] );
 		}
@@ -1974,25 +1982,25 @@ class AdminHandler extends ActionHandler
 			'do_search' => false,
 			'index' => 1,
 		);
-		
+
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
 		}
-		
+
 		if ( $do_delete && isset( $log_ids ) ) {
 			$okay = true;
-			
+
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
 				$okay = false;
 			}
-			
+
 			$wsse = Utils::WSSE( $nonce, $timestamp );
-			
+
 			if ( $PasswordDigest != $wsse['digest'] ) {
 				$okay = false;
 			}
-			
+
 			if ( $okay ) {
 				foreach ( $log_ids as $id ) {
 					$ids[] = array( 'id' => $id );
@@ -2009,12 +2017,12 @@ class AdminHandler extends ActionHandler
 					}
 				}
 			}
-			
+
 			Utils::redirect();
 			die();
-			
+
 		}
-		
+
 		$this->theme->severities = LogEntry::list_severities();
 		$any = array( '0' => 'Any' );
 
@@ -2099,23 +2107,23 @@ class AdminHandler extends ActionHandler
 
 		$monthcts = EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
 		foreach( $monthcts as $month ) {
-			
+
 			if ( isset($years[$month->year]) ) {
 				$years[$month->year][] = $month;
 			}
 			else {
 				$years[$month->year] = array( $month );
 			}
-			
+
 		}
-		
+
 		if ( isset($years) ) {
 			$this->theme->years = $years;
 		}
 		else {
 			$this->theme->years = array();
 		}
-		
+
 	}
 
 	/**
@@ -2361,9 +2369,9 @@ class AdminHandler extends ActionHandler
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) ); 
-			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) ); 
-			$createmenu['create_' . $typeint]['hotkey']= $typeint; 
+			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
+			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
+			$createmenu['create_' . $typeint]['hotkey']= $typeint;
 			$managemenu['manage_' . $typeint]['hotkey']= count(Post::list_active_post_types()) - 1 + $typeint;
 
 			if( $page == 'publish' && isset($this->handler_vars['content_type']) && $this->handler_vars['content_type'] == $type ) {
@@ -2375,7 +2383,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		$adminmenu = array(
-			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu ), 
+			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu ),
 			'manage' => array( 'url' => URL::get( 'admin', 'page=posts' ), 'title' => _t('Manage content'), 'text' => _t('Manage'), 'hotkey' => 'M', 'submenu' => $managemenu ),
 			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C' ),
 			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A' ),
