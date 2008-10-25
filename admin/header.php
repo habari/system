@@ -56,7 +56,7 @@
 				<?php if(isset($menu['submenu'])): ?>
 				<ul class="submenu">
 				 <?php foreach($menu['submenu'] as $submenu_id => $submenu_item): ?> 
-				 	<li id="link-<?php echo $submenu_id ?>" title="<?php echo $submenu_item['title']; ?>"><a href="<?php echo $submenu_item['url']; ?>"><?php echo $submenu_item['text']; ?> 
+				 	<li id="link-<?php echo $submenu_id ?>" title="<?php echo $submenu_item['title']; ?>" class="sub<?php if(isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != ''): ?> hotkey-<?php echo $submenu_item['hotkey']; ?><?php endif; ?>"><a href="<?php echo $submenu_item['url']; ?>"><?php echo $submenu_item['text']; ?> 
 				 	<?php if(isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != ''): ?><span class="hotkey"><?php echo $submenu_item['hotkey']; ?></span><?php endif; ?> 
 				 	</a></li> 
 				 <?php endforeach; ?> 
