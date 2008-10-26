@@ -1,7 +1,7 @@
 <?php if(count($comments) != 0) :
 	foreach( $comments as $comment ) : ?>
 
-<div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>">
+<div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
 	<div class="head clear">
 		<span class="checkbox title pct25">
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
@@ -16,20 +16,30 @@
 	    <span class="time pct10 dim"><?php _e('at'); ?> <span class="edit-time"><?php $comment->date->out('H:i');?></span></span>
 
 		<ul class="dropbutton">
-		<?php if ( $comment->status != Comment::STATUS_APPROVED ) : ?>
-			<li><a href="#" onclick="itemManage.update( 'approve', <?php echo $comment->id; ?> );return false;" title="<?php _e('Approve this comment') ?>"><?php _e('Approve'); ?></a></li>
-		<?php endif; ?>
-		<?php if ( $comment->status != Comment::STATUS_UNAPPROVED ) : ?>
-			<li><a href="#" onclick="itemManage.update( 'unapprove', <?php echo $comment->id; ?> );return false;" title="<?php _e('Unapprove this comment') ?>"><?php _e('Unapprove'); ?></a></li>
-		<?php endif; ?>
-		<?php if ( $comment->status != Comment::STATUS_SPAM ) :?>
-			<li><a href="#" onclick="itemManage.update( 'spam', <?php echo $comment->id; ?> );return false;" title="<?php _e('Spam this comment') ?>"><?php _e('Spam'); ?></a></li>
-		<?php endif; ?>
-			<li><a href="#" onclick="itemManage.update( 'delete', <?php echo $comment->id; ?> );return false;" title="<?php _e('Delete this Comment') ?>"><?php _e('Delete'); ?></a></li>
-			<li class="submit nodisplay"><a href="#" onclick="inEdit.update(); return false;" title="<?php _e('Submit changes') ?>"><?php _e('Update'); ?></a></li>
-			<li class="cancel nodisplay" class="nodisplay"><a href="#" onclick="inEdit.deactivate(); return false;" title="<?php _e('Cancel changes') ?>"><?php _e('Cancel'); ?></a></li>
+			<?php
+			$actions = array();
+			if ( $comment->status != Comment::STATUS_APPROVED ) {
+				$actions['approve']= array('url' => 'javascript:itemManage.update(\'approve\',' . $comment->id . ');', 'title' => _t('Approve this comment'), 'label' => _t('Approve'));
+			}
+			if ( $comment->status != Comment::STATUS_UNAPPROVED ) {
+				$actions['unapprove']= array('url' => 'javascript:itemManage.update(\'unapprove\',' . $comment->id . ');', 'title' => _t('Unapprove this comment'), 'label' => _t('Unapprove'));
+			}
+			if ( $comment->status != Comment::STATUS_SPAM ) {
+				$actions['spam']= array('url' => 'javascript:itemManage.update(\'spam\',' . $comment->id . ');', 'title' => _t('Spam this comment'), 'label' => _t('Spam'));
+			}
+			$actions['delete']= array('url' => 'javascript:itemManage.update(\'delete\',' . $comment->id . ');', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
+
+			$actions['edit']= array('url' => URL::get('admin', 'page=comment&id=' . $comment->id), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
+
+			$actions['submit']= array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
+			$actions['cancel']= array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
+
+			$actions = Plugins::filter('comment_actions', $actions, $comment);
+			foreach($actions as $act_id => $action):
+			?>
+			<li class="<?php echo $act_id; if(isset($action['nodisplay']) && $action['nodisplay'] == true) { echo ' nodisplay'; } ?>"><a href="<?php echo $action['url']; ?>" title="<?php echo $action['title']; ?>"><?php echo $action['label']; ?></a></li>
+			<?php endforeach; ?>
 			<?php $theme->admin_comment_actions($comment); ?>
-			<li><a href="<?php echo URL::get('admin', 'page=comment&id=' . $comment->id); ?>"><?php _e('Edit'); ?></a></li>
 		</ul>
 	</div>
 
@@ -50,6 +60,8 @@
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
 				<p><?php _e('Marked as spam'); ?></p>
 			<?php endif; ?>
+			
+			<?php Plugins::act('comment_info', $comment); ?>
 
 		</span>
 		<span class="content edit-content area pct75"><?php echo htmlspecialchars( $comment->content ); ?></span>
