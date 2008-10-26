@@ -1488,6 +1488,22 @@ body.page-Manage .state {
 	font-style: italic;
 }
 
+.authorinfo .keyval .label, .authorinfo .keyval strong {
+	float:left;	
+}
+
+.authorinfo .keyval .label {
+	width:60%;
+}
+
+.authorinfo .keyval strong {
+	width:40%;
+}
+
+.authorinfo .spam strong {
+	color:#FF0000;
+}
+
 /*- EDIT COMMENT PAGE */
 .page-comment .overview .textual a, .page-comment .overview .textual strong {
 	color: #000;
