@@ -295,6 +295,7 @@ class AdminHandler extends ActionHandler
 		Session::notice( _t( 'Successfully updated options' ) );
 		$form->save();
 		Utils::redirect();
+		die();
 	}
 
 	/**
