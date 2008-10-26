@@ -312,5 +312,21 @@ class Pingback extends Plugin
 			}
 		}
 	}
+	
+	/**
+	 * Add the pingback options to the options page
+	 * @param array $items The array of option on the options page
+	 * @return array The array of options including new options for pingback	  	 	
+	 */	 
+	public function filter_admin_option_items($items) 
+	{
+		$items[_t('Publishing')]['pingback_send'] = array(
+			'label' => _t('Send Pingbacks to Links'),
+			'type' => 'checkbox',
+			'helptext' => '',
+		);
+
+		return $items;		
+	}
 }
 ?>

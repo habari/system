@@ -176,11 +176,6 @@ class AdminHandler extends ActionHandler
 				'type' => 'text',
 				'helptext' => '',
 				),
-			'pingback_send' => array(
-				'label' => _t('Send Pingbacks to Links'),
-				'type' => 'checkbox',
-				'helptext' => '',
-				),
 			'comments_require_id' => array(
 				'label' => _t('Require Comment Author Info'),
 				'type' => 'checkbox',
