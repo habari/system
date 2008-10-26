@@ -360,6 +360,7 @@ class Comment extends QueryRecord implements IsContent
 			self::STATUS_SPAM => 'spam',
 			// 'STATUS_DELETED' => self::STATUS_DELETED, // Not supported
 		);
+		self::$comment_status_list = Plugins::filter('list_comment_statuses', self::$comment_status_list);
 		return self::$comment_status_list;
 	}
 
