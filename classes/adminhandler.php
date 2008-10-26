@@ -1435,6 +1435,35 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$this->theme->years = $years;
+		
+		$baseactions = array();
+		
+		/* Standard actions */		
+		$baseactions['delete']= array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
+		$baseactions['edit']= array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
+
+		/* Actions for inline edit */
+		$baseactions['submit']= array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
+		$baseactions['cancel']= array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
+		
+		/* Per-status actions */
+		$actions=array();
+		$statuses = array_reverse(Comment::list_comment_statuses());
+		foreach($statuses as $statusname) {
+			$actions[$statusname] = $baseactions;
+			foreach($statuses as $newstatusname) {
+				if($newstatusname != $statusname) {
+					array_unshift(
+						$actions[$statusname], 
+						array('url' => 'javascript:itemManage.update(\'' . $newstatusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($newstatusname)), 'label' => _t('Mark as %s', array($newstatusname)))
+					);
+				}
+			}
+		}
+		
+		/* Allow plugins to apply actions */
+		$actions = Plugins::filter('comment_actions', $actions, $this->theme->comments);
+		$this->theme->actions = $actions;
 	}
 
 	/**
@@ -1918,7 +1947,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], $comments, $this );
-		$status_msg = _t('Unknown action');
+		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
 
 		switch ( $handler_vars['action'] ) {
 		case 'delete':
@@ -1931,12 +1960,12 @@ class AdminHandler extends ActionHandler
 			Comments::moderate_these( $comments, Comment::STATUS_SPAM );
 			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 			break;
-		case 'approve':
+		case 'approved':
 			// Comments marked for approval
 			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
 			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 			break;
-		case 'unapprove':
+		case 'unapproved':
 			// Comments marked for unapproval
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
 			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
