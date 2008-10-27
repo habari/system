@@ -959,7 +959,15 @@ var theMenu = {
 
 		// Down arrow
 		$.hotkeys.add('down', {propagate:false, disableInInput: true}, function() {
-			if(($('#menu').hasClass('hovering') == true)) {
+			if($('#menulist .carrot ul li.carrot').length != 0) {
+				if ($('#menulist .carrot ul li:last').hasClass('carrot')) {
+					// Move to top if at bottom
+					$('#menulist .carrot ul li:last').removeClass('carrot');
+					$('#menulist .carrot ul li:first').addClass('carrot');
+				} else {
+					$('#menulist .carrot ul li.carrot').removeClass('carrot').next().addClass('carrot');
+				}
+			} else if(($('#menu').hasClass('hovering') == true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:first').addClass('carrot')
@@ -975,10 +983,23 @@ var theMenu = {
 			}
 			return false;
 		});
+		
+		// Left arrow
+		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
+			$('.carrot ul li.carrot').removeClass('carrot');
+		});
 
 		// Up arrow
 		$.hotkeys.add('up', {propagate:true, disableInInput: true}, function(){
-			if ($('#menu').hasClass('hovering') == true) {
+			if($('#menulist .carrot ul li.carrot').length != 0) {
+				if ($('#menulist .carrot ul li:first').hasClass('carrot')) {
+					$('#menulist .carrot ul li:first').removeClass('carrot');
+					$('#menulist .carrot ul li:last').addClass('carrot');
+				// If carrot exists, move it up
+				} else {
+					$('#menulist .carrot ul li.carrot').removeClass('carrot').prev().addClass('carrot');
+				}
+			} else if ($('#menu').hasClass('hovering') == true) {
 				// If carrot doesn't exist, select last item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:last').addClass('carrot')
@@ -993,6 +1014,20 @@ var theMenu = {
 				return false;
 			}
 		});
+		
+		// Right arrow
+		$.hotkeys.add('right', {propagate:true, disableInInput: true}, function(){
+			if ($('.carrot').hasClass('submenu') == true) {
+				$('.carrot ul li:first').addClass('carrot');
+			} else {
+				return false;
+			}
+		});
+		
+		// Left arrow
+		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
+			$('.carrot ul li.carrot').removeClass('carrot');
+		});
 
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
@@ -1006,16 +1041,35 @@ var theMenu = {
 
 		// Page hotkeys
 		$('#menu ul li').each(function() {
-			var hotkey = $('a span.hotkey', this).text();
+			var hotkey = $('a span.hotkey', this).eq(0).text();
 			var href = $('a', this).attr('href');
-			var owner = this;
+			var owner = $(this);
 			var blinkSpeed = 100;
-
+						
 			if (hotkey) {
 				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
 					if ($('#menu').hasClass('hovering') == true) {
-						location = href;
-						theMenu.blinkCarrot(owner)
+						if (owner.hasClass('submenu')) {
+							$('.carrot').removeClass('carrot');
+							owner.addClass('carrot');
+						} else if(owner.hasClass('sub')) {
+							// Exists in a submenu
+							if($('#menu li.carrot li.hotkey-' + hotkey).length != 0) {
+								// Hotkey exists in an active menu, use that
+								location = $('#menu li.carrot li.hotkey-' + hotkey + ' a').attr('href');
+								theMenu.blinkCarrot($('#menu li.carrot li.hotkey-' + hotkey));
+							} else {
+								// Use the first occurance of hotkey, but expand the parent first
+								user= $('#menu li li.hotkey-' + hotkey).eq(0);
+								user.parent().parent().addClass('carrot');
+								location = $('a', user).attr('href');
+								theMenu.blinkCarrot(user);
+							}
+						} else {
+							location = href;
+							theMenu.blinkCarrot(owner);
+						}
+						
 					} else {
 						return false;
 					}
@@ -1419,6 +1473,16 @@ $(document).ready(function(){
 
 	// Init shift-click for range select on checkboxes
 	$('input.checkbox').rangeSelect();
+	
+	// #TB_inline?height=155&width=300&inlineId=hiddenModalContent&modal=true
+	$('span[id^="less-"]').click(function(){
+		var t = $(this).html();
+		var a = '#TB_inline?inlineId=more-' +  this.id.substring(5);
+		var g = this.rel || false;
+		tb_show(t,a,g);
+		this.blur();
+		return false;
+		});
 });
 
 function resetTags() {

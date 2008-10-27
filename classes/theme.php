@@ -383,6 +383,7 @@ class Theme extends Pluggable
 			'content_type' => Post::type( 'entry' ),
 		);
 
+		$this->assign( 'tag', htmlentities( Controller::get_var( 'tag' ), ENT_QUOTES, 'UTF-8' ) );
 		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
 
 		return $this->act_display( $paramarray );
@@ -450,6 +451,10 @@ class Theme extends Pluggable
 			$paramarray['user_filters']['content_type']= Post::type( 'entry' );
 		}
 
+		$this->assign( 'year' , $y ? (int)Controller::get_var( 'year' ) : NULL );
+		$this->assign( 'month' , $m ? (int)Controller::get_var( 'month' ) : NULL );
+		$this->assign( 'day' , $d ? (int)Controller::get_var( 'day' ) : NULL );
+
 		return $this->act_display( $paramarray );
 	}
 
@@ -465,7 +470,8 @@ class Theme extends Pluggable
 		);
 
 		$paramarray['user_filters']= $user_filters;
-
+		
+		$this->assign( 'criteria', htmlentities( Controller::get_var('criteria'), ENT_QUOTES, 'UTF-8' ) );
 		return $this->act_display( $paramarray );
 	}
 
@@ -494,14 +500,9 @@ class Theme extends Pluggable
 		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
 			$this->template_engine->assign( $key, $value );
 		}
-
-		if ( isset( Controller::get_handler()->handler_vars ) ) {
-			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
-				$this->template_engine->assign( $key, $value );
-			}
-		}
+/*
+*/
 		$this->template_engine->assign( 'theme', $this );
-
 		$this->template_engine->display( $template_name );
 	}
 
@@ -520,11 +521,6 @@ class Theme extends Pluggable
 
 		$this->add_template_vars();
 
-		if ( isset( Controller::get_handler()->handler_vars ) ) {
-			foreach ( Controller::get_handler()->handler_vars as $key => $value ) {
-				$this->assign( $key, $value );
-			}
-		}
 		$this->assign( 'theme', $this );
 
 		$return = $this->fetch_unassigned( $template_name );

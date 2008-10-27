@@ -1,4 +1,7 @@
 <?php
+/**
+ * LOG SESSION MESSAGES, ERRORS, ETC...
+ */
 
 /**
  * Contains error-related functions and Habari's error handler.
@@ -58,10 +61,32 @@ class Error extends Exception
 		__autoload('habariexceptionhandler');
 	}
 	
+	/**
+	 * Capture and handle errors `set_error_handler()` can't capture.
+	 *
+	 * The following error types cannot be handled with a user defined function:
+	 * E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING, and
+	 * most of E_STRICT raised in the file where set_error_handler() is called.
+	 *
+	 * Shortcomings of this method:
+	 *
+	 * E_PARSE errors on the include that builds out the shutdown structure will not be caught,
+	 * as the interpreter can’t get beyond the parse error to put it into place.
+	 *
+	 * E_CORE_ERROR errors? These are environmental errors caught when PHP itself is
+	 * bootstrapping — pre-script interpretation. No dice.
+	 *
+	 * When using output buffering in combination with the ob_gzhandler, take care when cleaning the buffer.
+	 * Chances are the Content-Encoding: gzip header was already set and you will need to follow suit.
+ 	 *
+	 * If your output buffer has already been flushed before hitting a fatal error and the shutdown function,
+	 * your content to that point is already gone. Check ob_get_status to see if that is the case.
+	 */
 	public static function handle_shutdown()
 	{
 		if ($error = error_get_last()) {
-			if (isset($error['type']) && ($error['type'] == E_ERROR || $error['type'] == E_PARSE || $error['type'] == E_COMPILE_ERROR)) {
+			$uncapturable= array(E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING, E_STRICT);
+			if (isset($error['type']) && (in_array($error['type'],$uncapturable))) {
 	            ob_end_clean();
 
 	            /* if (!headers_sent()) {
@@ -93,13 +118,20 @@ class Error extends Exception
 			$exception->getMessage(),
 			$exception->file,
 			$exception->line
-		);
+		);*/
 
 		if ( DEBUG ) {
 			self::print_backtrace( $exception->getTrace() );
-		} */
-		
-		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, get_class( $exception ), 'default', null, print_r( debug_backtrace(), true ) );
+		}
+
+		if ( Options::get( 'log_backtraces' ) || DEBUG ) {
+			$backtrace = print_r( $exception->getTrace(), true );
+		}
+		else {
+			$backtrace = null;
+		}
+
+		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, get_class( $exception ), 'default', null, $backtrace );
 	}
 	
 	public static function handle_error( $errno, $errstr, $errfile, $errline, $errcontext )
@@ -161,13 +193,21 @@ class Error extends Exception
 				$errfile,
 				$errline
 			);
+			
 			if( DEBUG ) {
 				Error::print_backtrace();
 			}
+			
+			if ( Options::get( 'log_backtraces' ) || DEBUG ) {
+				$backtrace = print_r( debug_backtrace(), true );
+			}
+			else {
+				$backtrace = null;
+			}
 		}
-		
-		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, $error_names[ $errno ], 'default', null, print_r( debug_backtrace(), true ) );
-		
+	         
+        EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, $error_names[ $errno ], 'default', null, $backtrace );
+
 		// throwing an Error make every error fatal!
 		//throw new Error($errstr, 0, true);
 	}

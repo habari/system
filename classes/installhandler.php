@@ -1189,6 +1189,25 @@ class InstallHandler extends ActionHandler {
 		// @TODO: Decide on a set of default admin permissions and give them to the admin group
 		return true;
 	}
+	
+	private function upgrade_db_post_2707 ( ) {
+		
+		// sets a default timezone and date / time formats for the options page
+		if ( !Options::get( 'timezone' ) ) {
+			Options::set('timezone', 'UTC');
+		}
+		
+		if ( !Options::get( 'dateformat' ) ) {
+			Options::set('dateformat', 'Y-m-d');
+		}
+		
+		if ( !Options::get( 'timeformat' ) ) {
+			Options::set('timeformat', 'H:i:s');
+		}
+		
+		return true;
+		
+	}
 
 	/**
 	 * Validate database credentials for MySQL

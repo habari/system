@@ -15,7 +15,8 @@
 		<span class="module pct10 minor"><span><?php echo $log->module; ?></span></span>
 		<span class="type pct10 minor"><span><?php echo $log->type; ?></span></span>
 		<span class="severity pct5 minor"><span><?php echo $log->severity; ?></span></span>
-		<span class="message pct30 minor less"><span><?php echo Utils::truncate($log->message, 40, false); ?></span></span>
-		<span class="message pct30 minor more"><span><?php echo $log->message; ?></span></span>
+		<!-- <span class="message pct30 minor" id="less-<?php echo $log->id; ?>"><span><a href="#TB_inline?height=155&width=300&inlineId=more-<?php echo $log->id; ?>" class="thickbox">Data</a> <?php echo Utils::truncate($log->message, 40, false); ?></span></span> -->
+		<span class="message pct30 minor" id="less-<?php echo $log->id; ?>"><span><?php echo Utils::truncate($log->message, 40, false); ?></span></span>
+		<span class="message pct30 minor" id="more-<?php echo $log->id; ?>" style="display:none;"><span><?php echo $log->message; ?></span></span>
 </div>
 <?php endforeach; ?>
