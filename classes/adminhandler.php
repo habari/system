@@ -382,7 +382,7 @@ class AdminHandler extends ActionHandler
 		$modules = Modules::get_active();
 
 		// append the 'Add Item' module
-		$modules['nosort'] = 'Add Item';
+		$modules['nosort'] = _t('Add Item');
 
 		// register the 'Add Item' filter
 		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
