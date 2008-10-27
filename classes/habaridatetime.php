@@ -12,6 +12,8 @@ class HabariDateTime extends DateTime
 {
 	private static $default_timezone;
 	private static $default_datetime_format = 'c';
+	private static $default_date_format;
+	private static $default_time_format;
 	
 	/**
 	 * Set default timezone to system default on init.
@@ -21,6 +23,9 @@ class HabariDateTime extends DateTime
 	public static function __static()
 	{
 		self::$default_timezone = date_default_timezone_get();
+		
+		self::$default_date_format = Options::get('dateformat');
+		self::$default_time_format = Options::get('timeformat');
 	}
 	
 	/**
@@ -250,6 +255,14 @@ class HabariDateTime extends DateTime
 			case 'int':
 				return intval( $this->format('U') );
 				break;
+				
+			case 'time':
+				return $this->format( self::get_default_time_format() );
+				break;
+				
+			case 'date':
+				return $this->format( self::get_default_date_format() );
+				break;
 
 			default:
 				$info = getdate($this->format('U'));
@@ -260,6 +273,18 @@ class HabariDateTime extends DateTime
 				}
 				return $this->$property;
 		}
+	}
+	
+	public static function get_default_date_format ( ) {
+		
+		return self::$default_date_format;
+		
+	}
+	
+	public static function get_default_time_format ( ) {
+		
+		return self::$default_time_format;
+		
 	}
 	
 	/**

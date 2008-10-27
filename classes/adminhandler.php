@@ -176,11 +176,6 @@ class AdminHandler extends ActionHandler
 				'type' => 'text',
 				'helptext' => '',
 				),
-			'pingback_send' => array(
-				'label' => _t('Send Pingbacks to Links'),
-				'type' => 'checkbox',
-				'helptext' => '',
-				),
 			'comments_require_id' => array(
 				'label' => _t('Require Comment Author Info'),
 				'type' => 'checkbox',
@@ -201,17 +196,17 @@ class AdminHandler extends ActionHandler
 				'label' => _t('Time Zone'),
 				'type' => 'select',
 				'selectarray' => $timezones,
-				'helptext' => 'Adjusts server time to 21.44',
+				'helptext' => 'Current Date Time: ' . HabariDateTime::date_create()->format(),
 				),
 			'dateformat' => array(
 				'label' => _t('Date Format'),
 				'type' => 'text',
-				'helptext' => 'Tuesday, Jan 15th, 2008',
+				'helptext' => 'Current Date: ' . HabariDateTime::date_create()->date
 				),
 			'timeformat' => array(
 				'label' => _t('Time Format'),
 				'type' => 'text',
-				'helptext' => '21:44',
+				'helptext' => 'Current Time: ' . HabariDateTime::date_create()->time,
 				)
 			);
 
@@ -229,6 +224,14 @@ class AdminHandler extends ActionHandler
 			),
 		);
 
+		$option_items[_t('Logging')] = array(
+			'log_backtraces' => array(
+				'label' => _t( 'Log Backtraces' ),
+				'type' => 'checkbox',
+				'helptext' => _t( 'Logs error backtraces to the log tables\' data column. Can drastically increase log size!' ),
+			),
+		);
+
 			/*$option_items[_t('Presentation')] = array(
 			'encoding' => array(
 				'label' => _t('Encoding'),
@@ -243,7 +246,7 @@ class AdminHandler extends ActionHandler
 		$option_items = Plugins::filter( 'admin_option_items', $option_items );
 
 		$form = new FormUI('Admin Options');
-
+		$tab_index = 3;
 		foreach ( $option_items as $name => $option_fields ) {
 			$fieldset = $form->append( 'wrapper', Utils::slugify( $name ), $name );
 			$fieldset->class = 'container settings';
@@ -254,7 +257,16 @@ class AdminHandler extends ActionHandler
 				$field->class = 'item clear';
 				if ( $option['type'] == 'select' && isset( $option['selectarray'] ) ) {
 					$field->options = $option['selectarray'];
-			}
+				}
+				$field->tabindex = $tab_index;
+				$tab_index++;
+				$field->helptext = $option['helptext'];
+				if ( isset( $option['helptext'] ) ) {
+					$field->helptext = $option['helptext'];
+				}
+				else {
+					$field->helptext = '';
+				}
 				// @todo: do something with helptext
 		}
 			}
@@ -264,7 +276,8 @@ class AdminHandler extends ActionHandler
 		 * the form controls, or we could create something different
 		 */
 
-		$form->append( 'submit', 'apply', _t('Apply'), 'admincontrol_submit' );
+		$submit = $form->append( 'submit', 'apply', _t('Apply'), 'admincontrol_submit' );
+		$submit->tabindex = $tab_index;
 		$form->on_success( array( $this, 'form_options_success' ) );
 
 		$this->theme->form = $form->get();
@@ -282,6 +295,7 @@ class AdminHandler extends ActionHandler
 		Session::notice( _t( 'Successfully updated options' ) );
 		$form->save();
 		Utils::redirect();
+		die();
 	}
 
 	/**
@@ -1310,19 +1324,19 @@ class AdminHandler extends ActionHandler
 				Plugins::act( 'admin_moderate_comments', $action, $to_update, $this );
 
 				switch ( $action ) {
-					
+
 					case 'delete':
 						// This comment was marked for deletion
 						Comments::delete_these( $to_update );
 						$modstatus['Deleted %d comments'] = count( $to_update );
 						break;
-						
+
 					case 'spam':
 							// This comment was marked as spam
 						Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
 						$modstatus['Marked %d comments as spam'] = count( $to_update );
 						break;
-						
+
 					case 'approve':
 						// Comments marked for approval
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
@@ -1331,13 +1345,13 @@ class AdminHandler extends ActionHandler
 									$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
 						}
 						break;
-						
+
 					case 'unapprove':
 						// This comment was marked for unapproval
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
 						$modstatus['Unapproved %d comments'] = count ( $to_update );
 						break;
-						
+
 					case 'edit':
 						foreach ( $to_update as $comment ) {
 							// This comment was edited
@@ -1356,20 +1370,20 @@ class AdminHandler extends ActionHandler
 						}
 						$modstatus['Edited %d comments'] = count( $to_update );
 						break;
-						
+
 				}
-				
+
 				foreach ( $modstatus as $key => $value ) {
 					if ( $value ) {
 						Session::notice( sprintf( _t( $key ), $value ) );
 					}
 				}
-				
+
 			}
-			
+
 			Utils::redirect();
 			die();
-			
+
 		}
 
 		// we load the WSSE tokens
@@ -1392,7 +1406,7 @@ class AdminHandler extends ActionHandler
 		else {
 			$this->theme->search_args = 'type:' . Comment::type_name( $type ) . ' ';
 		}
-		
+
 		if ( $status == 'All') {
 			unset ( $arguments['status'] );
 		}
@@ -1417,6 +1431,29 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$this->theme->years = $years;
+		
+		$baseactions = array();
+		$statuses = Comment::list_comment_statuses();
+		foreach($statuses as $statusid => $statusname) {
+			$baseactions[$statusname]= array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
+		}
+		
+		/* Standard actions */		
+		$baseactions['delete']= array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
+		$baseactions['edit']= array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
+
+		/* Actions for inline edit */
+		$baseactions['submit']= array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
+		$baseactions['cancel']= array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
+		
+		/* Allow plugins to apply actions */
+		$actions = Plugins::filter('comments_actions', $baseactions, $this->theme->comments);
+ 
+		foreach($this->theme->comments as $comment) {
+			$menu= $actions;
+			unset($menu[Comment::status_name($comment->status)]);
+			$comment->menu= Plugins::filter('comment_actions', $menu, $comment);
+		}
 	}
 
 	/**
@@ -1900,7 +1937,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], $comments, $this );
-		$status_msg = _t('Unknown action');
+		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
 
 		switch ( $handler_vars['action'] ) {
 		case 'delete':
@@ -1913,12 +1950,12 @@ class AdminHandler extends ActionHandler
 			Comments::moderate_these( $comments, Comment::STATUS_SPAM );
 			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 			break;
-		case 'approve':
+		case 'approved':
 			// Comments marked for approval
 			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
 			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 			break;
-		case 'unapprove':
+		case 'unapproved':
 			// Comments marked for unapproval
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
 			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
@@ -1974,25 +2011,25 @@ class AdminHandler extends ActionHandler
 			'do_search' => false,
 			'index' => 1,
 		);
-		
+
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : $default;
 			$this->theme->{$varname}= $$varname;
 		}
-		
+
 		if ( $do_delete && isset( $log_ids ) ) {
 			$okay = true;
-			
+
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
 				$okay = false;
 			}
-			
+
 			$wsse = Utils::WSSE( $nonce, $timestamp );
-			
+
 			if ( $PasswordDigest != $wsse['digest'] ) {
 				$okay = false;
 			}
-			
+
 			if ( $okay ) {
 				foreach ( $log_ids as $id ) {
 					$ids[] = array( 'id' => $id );
@@ -2009,12 +2046,12 @@ class AdminHandler extends ActionHandler
 					}
 				}
 			}
-			
+
 			Utils::redirect();
 			die();
-			
+
 		}
-		
+
 		$this->theme->severities = LogEntry::list_severities();
 		$any = array( '0' => 'Any' );
 
@@ -2099,23 +2136,23 @@ class AdminHandler extends ActionHandler
 
 		$monthcts = EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
 		foreach( $monthcts as $month ) {
-			
+
 			if ( isset($years[$month->year]) ) {
 				$years[$month->year][] = $month;
 			}
 			else {
 				$years[$month->year] = array( $month );
 			}
-			
+
 		}
-		
+
 		if ( isset($years) ) {
 			$this->theme->years = $years;
 		}
 		else {
 			$this->theme->years = array();
 		}
-		
+
 	}
 
 	/**
@@ -2357,39 +2394,40 @@ class AdminHandler extends ActionHandler
 		// These need to be replaced with submenus, but access to them is provided temporarily
 		$createmenu = array();
 		$managemenu = array();
+
+		$i= 1;
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
 				continue;
 			}
-			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => sprintf( _t( 'Create %s' ), ucwords( $type ) ) );
-			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ) );
-			switch($type) {
-				case 'entry':
-					$createmenu['create_' . $typeint]['hotkey']= '1';
-					$managemenu['manage_' . $typeint]['hotkey']= '3';
-					break;
-				case 'page':
-					$createmenu['create_' . $typeint]['hotkey']= '2';
-					$managemenu['manage_' . $typeint]['hotkey']= '4';
-					break;
-				default:
-					$createmenu['create_' . $typeint]['hotkey']= '';
-					$managemenu['manage_' . $typeint]['hotkey']= '';
-					break;
+
+			if($i == 10) {
+				$hotkey= 0;
+			} elseif($i > 10) {
+				$hotkey= FALSE;
+			} else {
+				$hotkey= $i;
 			}
+
+			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
+			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
+			$createmenu['create_' . $typeint]['hotkey']= $hotkey;
+			$managemenu['manage_' . $typeint]['hotkey']= $hotkey;
 
 			if( $page == 'publish' && isset($this->handler_vars['content_type']) && $this->handler_vars['content_type'] == $type ) {
 				$createmenu['create_' . $typeint]['selected'] = TRUE;
-		}
+			}
 			if( $page == 'posts' && isset($this->handler_vars['type']) && $this->handler_vars['type'] == $typeint ) {
 				$managemenu['manage_' . $typeint]['selected'] = TRUE;
 			}
+			$i++;
 		}
 
 		$adminmenu = array(
-//		'create' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t('Content'), 'text' => _t('Comments'), 'submenu' => array($createmenu) ),
-			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => '5' ),
-			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => '6' ),
+			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu ),
+			'manage' => array( 'url' => URL::get( 'admin', 'page=posts' ), 'title' => _t('Manage content'), 'text' => _t('Manage'), 'hotkey' => 'M', 'submenu' => $managemenu ),
+			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C' ),
+			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A' ),
 			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D' ),
 			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure blog options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O' ),
 			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T' ),
@@ -2401,13 +2439,13 @@ class AdminHandler extends ActionHandler
 			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
 		);
 
-		$mainmenus = array_merge( $createmenu, $managemenu, $adminmenu );
+		$mainmenus = array_merge( $adminmenu );
 
 		foreach( $mainmenus as $menu_id => $menu ) {
 			// Change this to set the correct menu as the active menu
 			if( !isset( $mainmenus[$menu_id]['selected'] ) ) {
 				$mainmenus[$menu_id]['selected'] = false;
-		}
+			}
 		}
 
 		$mainmenus = Plugins::filter( 'adminhandler_post_loadplugins_main_menu', $mainmenus );
