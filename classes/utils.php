@@ -27,7 +27,7 @@ class Utils
 	public static function get_params( $params )
 	{
 		if( is_array( $params ) ) return $params;
-		$paramarray= array();
+		$paramarray = array();
 		parse_str( $params, $paramarray );
 		return $paramarray;
 	}
@@ -97,14 +97,14 @@ class Utils
 	{
 		if ( '' === $nonce )
 		{
-			$nonce= Utils::crypt( Options::get('GUID') . Utils::nonce() );
+			$nonce = Utils::crypt( Options::get('GUID') . Utils::nonce() );
 		}
 		if ( '' === $timestamp )
 		{
-			$timestamp= date('c');
+			$timestamp = date('c');
 		}
-		$user= User::identify();
-		$wsse= array(
+		$user = User::identify();
+		$wsse = array(
 			'nonce' => $nonce,
 			'timestamp' => $timestamp,
 			'digest' => base64_encode(pack('H*', sha1($nonce . $timestamp .  $user->password)))
@@ -147,7 +147,7 @@ class Utils
 		if ( ! is_array( $parsed ) ) {
 			return false;
 		}
-		$uri= isset( $parsed['scheme'] )
+		$uri = isset( $parsed['scheme'] )
 			? $parsed['scheme'] . ':' . ( ( strtolower( $parsed['scheme'] ) == 'mailto' ) ? '' : '//' )
 			: '';
 		$uri.= isset( $parsed['user'] )
@@ -271,8 +271,8 @@ class Utils
 	 **/
 	public static function debug()
 	{
-		$debugid= md5(microtime());
-		$tracect= 0;
+		$debugid = md5(microtime());
+		$tracect = 0;
 
 		$fooargs = func_get_args();
 		echo "<div class=\"utils__debugger\">";
@@ -305,7 +305,7 @@ class Utils
 			$tracect = 0;
 			foreach($backtrace as $trace) {
 				$file = $line = $class = $type = $function = '';
-				$args= array();
+				$args = array();
 				extract($trace);
 				if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
 				if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
@@ -365,7 +365,7 @@ class Utils
 		$output .= "console.group(\"%s(%s):  %s(...)\", \"".basename($file)."\", \"{$line}\", \"{$fname}\");\n";
 		foreach($backtrace as $trace) {
 			$file = $line = $class = $type = $function = '';
-			$args= array();
+			$args = array();
 			extract($trace);
 			if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
 			if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
@@ -397,7 +397,7 @@ class Utils
 	 * @param string $hash (optional) if given, verify $password against $hash
 	 * @return crypted password, or boolean for verification
 	 */
-	public static function crypt( $password, $hash= NULL )
+	public static function crypt( $password, $hash = NULL )
 	{
 		if ( $hash == NULL ) {
 			// encrypt
@@ -412,7 +412,7 @@ class Utils
 			// verify
 			if ( $hash{0} == '{' ) {
 				// new hash from the block
-				$algo= strtolower( substr( $hash, 1, strpos( $hash, '}', 1 ) - 1 ) );
+				$algo = strtolower( substr( $hash, 1, strpos( $hash, '}', 1 ) - 1 ) );
 				switch ( $algo ) {
 					case 'sha1':
 					case 'ssha':
@@ -439,8 +439,8 @@ class Utils
 	 *
 	 * Passwords should not be stored using this method, but legacy systems might require it.
 	 */
-	public static function sha1( $password, $hash= NULL ) {
-		$marker= '{SHA1}';
+	public static function sha1( $password, $hash = NULL ) {
+		$marker = '{SHA1}';
 		if ( $hash == NULL ) {
 			return $marker . sha1( $password );
 		}
@@ -454,8 +454,8 @@ class Utils
 	 *
 	 * Passwords should not be stored using this method, but legacy systems might require it.
 	 */
-	public static function md5( $password, $hash= NULL ) {
-		$marker= '{MD5}';
+	public static function md5( $password, $hash = NULL ) {
+		$marker = '{MD5}';
 		if ( $hash == NULL ) {
 			return $marker . md5( $password );
 		}
@@ -472,17 +472,17 @@ class Utils
 	 * @param string $hash (optional) if given, verify $password against $hash
 	 * @return crypted password, or boolean for verification
 	 */
-	public static function ssha( $password, $hash= NULL )
+	public static function ssha( $password, $hash = NULL )
 	{
-		$marker= '{SSHA}';
+		$marker = '{SSHA}';
 		if ( $hash == NULL ) { // encrypt
 			// create salt (4 byte)
-			$salt= '';
-			for ( $i= 0; $i < 4; $i++ ) {
+			$salt = '';
+			for ( $i = 0; $i < 4; $i++ ) {
 				$salt.= chr( mt_rand( 0, 255 ) );
 			}
 			// get digest
-			$digest= sha1( $password . $salt, TRUE );
+			$digest = sha1( $password . $salt, TRUE );
 			// b64 for storage
 			return $marker . base64_encode( $digest . $salt );
 		}
@@ -493,12 +493,12 @@ class Utils
 				return FALSE;
 			}
 			// cut off {SSHA} marker
-			$hash= substr( $hash, strlen( $marker ) );
+			$hash = substr( $hash, strlen( $marker ) );
 			// b64 decode
-			$hash= base64_decode( $hash );
+			$hash = base64_decode( $hash );
 			// split up
-			$digest= substr( $hash, 0, 20 );
-			$salt= substr( $hash, 20 );
+			$digest = substr( $hash, 0, 20 );
+			$salt = substr( $hash, 20 );
 			// compare
 			return ( sha1( $password . $salt, TRUE ) == $digest );
 		}
@@ -515,15 +515,15 @@ class Utils
 	 * @param string $hash (optional) if given, verify $password against $hash
 	 * @return crypted password, or boolean for verification
 	 */
-	public static function ssha512( $password, $hash= NULL )
+	public static function ssha512( $password, $hash = NULL )
 	{
-		$marker= '{SSHA512}';
+		$marker = '{SSHA512}';
 		if ( $hash == NULL ) { // encrypt
-			$salt= '';
-			for ( $i= 0; $i < 4; $i++ ) {
+			$salt = '';
+			for ( $i = 0; $i < 4; $i++ ) {
 				$salt.= chr( mt_rand( 0, 255 ) );
 			}
-			$digest= hash( 'sha512', $password . $salt, TRUE );
+			$digest = hash( 'sha512', $password . $salt, TRUE );
 			return $marker . base64_encode( $digest . $salt );
 		}
 		else { // verify
@@ -531,10 +531,10 @@ class Utils
 				Error::raise( _t('Invalid hash') );
 				return FALSE;
 			}
-			$hash= substr( $hash, strlen( $marker ) );
-			$hash= base64_decode( $hash );
-			$digest= substr( $hash, 0, 64 );
-			$salt= substr( $hash, 64 );
+			$hash = substr( $hash, strlen( $marker ) );
+			$hash = base64_decode( $hash );
+			$digest = substr( $hash, 0, 64 );
+			$salt = substr( $hash, 64 );
 			return ( hash( 'sha512', $password . $salt, TRUE ) == $digest );
 		}
 	}
@@ -547,7 +547,7 @@ class Utils
 	 */
 	public static function getdate($timestamp)
 	{
-		$info= getdate($timestamp);
+		$info = getdate($timestamp);
 		$info['mon0']= substr('0' . $info['mon'], -2, 2);
 		$info['mday0']= substr('0' . $info['mday'], -2, 2);
 		return $info;
@@ -561,8 +561,8 @@ class Utils
 	 **/
 	public static function locale_date($format, $timestamp)
 	{
-		$matches= preg_split( '/((?<!\\\\)%[a-z]\\s*)/i', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-		$output= '';
+		$matches = preg_split( '/((?<!\\\\)%[a-z]\\s*)/i', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		$output = '';
 		foreach( $matches as $match ) {
 			if( $match{0} == '%' ) {
 				$output.= strftime($match, $timestamp);
@@ -586,10 +586,10 @@ class Utils
 		// Note that multiple separators are collapsed automatically by the preg_replace.
 		// Convert all characters to lowercase.
 		// Trim spaces on both sides.
-		$slug= rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}%_\-]+/u', $separator, $string ) ), $separator );
+		$slug = rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}%_\-]+/u', $separator, $string ) ), $separator );
 
 		// Let people change the behavior.
-		$slug= Plugins::filter('slugify', $slug, $string);
+		$slug = Plugins::filter('slugify', $slug, $string);
 
 		return $slug;
 	}
@@ -605,7 +605,7 @@ class Utils
 	 */
 	public static function html_select( $name, $options, $current = null, $properties = array())
 	{
-		$output= '<select id="' . $name . '" name="' . $name . '"';
+		$output = '<select id="' . $name . '" name="' . $name . '"';
 		foreach($properties as $key => $value) {
 			$output.= " {$key}=\"{$value}\"";
 		}
@@ -633,10 +633,10 @@ class Utils
 	**/
 	public static function html_checkboxes( $name, $options )
 	{
-		$output= '';
-		$multi= false;
+		$output = '';
+		$multi = false;
 		if ( count( $options > 1 ) ) {
-			$multi= true;
+			$multi = true;
 		}
 		foreach ( $options as $option ) {
 			$output.= '<input type="checkbox" id="' . $option['name'] . '" name="' . $option['name'];
@@ -661,14 +661,14 @@ class Utils
 	 *	at the end (false)
 	 * @return string The truncated string
 	**/
-	public static function truncate($str, $len=10, $middle=true)
+	public static function truncate($str, $len =10, $middle =true)
 	{
 	        // make sure $len is a positive integer
 	        if ( ! is_numeric($len) || ( 0 > $len ) ) {
 	                return $str;
 	        }
 	        // if the string is less than the length specified, bail out
-	        if ( iconv_strlen($str) <= $len ) {
+	        if ( MultiByte::strlen($str) <= $len ) {
 	                return $str;
 	        }
 
@@ -677,11 +677,11 @@ class Utils
 	                // yes, so compute the size of each half of the string
 	                $len = round(($len-3)/2);
 	                // and place an ellipse in between the pieces
-	                return iconv_substr($str, 0, $len) . '...' . substr($str, -$len);
+	                return MultiByte::substr($str, 0, $len) . '...' . MultiByte::substr($str, -$len);
 	        } else {
 	                // no, the ellipse goes at the end
-	                $len= $len-3;
-	                return iconv_substr($str, 0, $len ) . '...';
+	                $len = $len-3;
+	                return MultiByte::substr($str, 0, $len ) . '...';
 	        }
 	}
 
@@ -694,11 +694,11 @@ class Utils
 	 */
 	public static function php_check_syntax( $code, &$error = null )
 	{
-		$b= 0;
+		$b = 0;
 
 		foreach ( token_get_all( $code ) as $token ) {
 			if ( is_array( $token ) ) {
-				$token= token_name( $token[0] );
+				$token = token_name( $token[0] );
 			}
 			switch ( $token ) {
 				case 'T_CURLY_OPEN':
@@ -719,8 +719,8 @@ class Utils
 		}
 		else {
 			ob_start(); // Catch potential parse error messages
-			$display_errors= ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
-			$error_reporting= error_reporting( E_ALL ^ E_NOTICE );
+			$display_errors = ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
+			$error_reporting = error_reporting( E_ALL ^ E_NOTICE );
 			$code = eval( ' if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
 			ini_set( 'display_errors', $display_errors ); // be a good citizen
 			error_reporting($error_reporting);
@@ -738,7 +738,7 @@ class Utils
 	public static function php_check_file_syntax( $file, &$error = null )
 	{
 		// Prepend and append PHP opening tags to prevent eval() failures.
-		$code= ' ?>' . file_get_contents( $file ) . '<?php ';
+		$code = ' ?>' . file_get_contents( $file ) . '<?php ';
 
 		return self::php_check_syntax( $code, $error );
 	}
@@ -754,27 +754,27 @@ class Utils
 	{
 		if ( ! defined( 'GLOB_NOBRACE' ) || ! ( ( $flags & GLOB_BRACE ) == GLOB_BRACE ) ) {
 			// this platform supports GLOB_BRACE out of the box or GLOB_BRACE wasn't requested
-			$results= glob( $pattern, $flags );
+			$results = glob( $pattern, $flags );
 		}
 		elseif ( ! preg_match_all( '/\{.*?\}/', $pattern, $m ) ) {
 			// GLOB_BRACE used, but this pattern doesn't even use braces
-			$results= glob( $pattern, $flags ^ GLOB_BRACE );
+			$results = glob( $pattern, $flags ^ GLOB_BRACE );
 		}
 		else {
 			// pattern uses braces, but platform doesn't support GLOB_BRACE
-			$braces= array();
+			$braces = array();
 			foreach ( $m[0] as $raw_brace ) {
 				$braces[ preg_quote( $raw_brace ) ] = '(?:' . str_replace( ',', '|', preg_quote( substr( $raw_brace, 1, -1 ), '/' ) ) . ')';
 			}
-			$new_pattern= preg_replace( '/\{.*?\}/', '*', $pattern );
-			$pattern= preg_quote( $pattern, '/' );
-			$pattern= str_replace( '\\*', '.*', $pattern );
-			$pattern= str_replace( '\\?', '.', $pattern );
-			$regex= '/' . str_replace( array_keys( $braces ), array_values( $braces ), $pattern ) . '/';
-			$results= preg_grep( $regex, Utils::glob( $new_pattern, $flags ^ GLOB_BRACE) );
+			$new_pattern = preg_replace( '/\{.*?\}/', '*', $pattern );
+			$pattern = preg_quote( $pattern, '/' );
+			$pattern = str_replace( '\\*', '.*', $pattern );
+			$pattern = str_replace( '\\?', '.', $pattern );
+			$regex = '/' . str_replace( array_keys( $braces ), array_values( $braces ), $pattern ) . '/';
+			$results = preg_grep( $regex, Utils::glob( $new_pattern, $flags ^ GLOB_BRACE) );
 		}
 
-		if ( $results === false ) $results= array();
+		if ( $results === false ) $results = array();
 		return $results;
 	}
 
@@ -807,7 +807,8 @@ class Utils
 
 	public static function truncate_log() {
 		// Truncate the log table
-		return DB::exec( 'DELETE FROM {log} WHERE timestamp < DATE_SUB(NOW(), INTERVAL 14 DAY)' );
+		$date = HabariDateTime::date_create()->modify( '-14 days' );
+		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
 	}
 
 	/**
@@ -832,26 +833,40 @@ class Utils
 	 */
 	public static function mimetype( $filename )
 	{
-		$mimetype=null;
+		$mimetype =null;
 		if(function_exists('finfo_open')) {
 			$finfo = finfo_open(FILEINFO_MIME);
 			$mimetype = finfo_file($finfo, $filename);
 			finfo_close($finfo);
 		}
-		else if(function_exists('mime_content_type')) {
-			$mimetype = mime_content_type( $filename );
-		}
+		
 		if( empty( $mimetype ) ) {
 			$pi = pathinfo($filename);
 			switch(strtolower($pi['extension'])) {
 				// hacky, hacky, kludge, kludge...
-				case 'jpg': $mimetype = 'image/jpeg'; break;
-				case 'gif': $mimetype = 'image/gif'; break;
-				case 'png': $mimetype = 'image/png'; break;
-				case 'mp3': $mimetype = 'audio/mpeg3'; break;
-				case 'wav': $mimetype = 'audio/wav'; break;
-				case 'mpg': $mimetype = 'video/mpeg'; break;
-				case 'swf': $mimetype = 'application/x-shockwave-flash'; break;
+				case 'jpg':
+				case 'jpeg':
+					$mimetype = 'image/jpeg';
+					break;
+				case 'gif':
+					$mimetype = 'image/gif';
+					break;
+				case 'png':
+					$mimetype = 'image/png';
+					break;
+				case 'mp3':
+					$mimetype = 'audio/mpeg3';
+					break;
+				case 'wav':
+					$mimetype = 'audio/wav';
+					break;
+				case 'mpg':
+				case 'mpeg':
+					$mimetype = 'video/mpeg';
+					break;
+				case 'swf':
+					$mimetype = 'application/x-shockwave-flash';
+					break;
 			}
 		}
 		$mimetype = Plugins::filter('get_mime_type', $mimetype, $filename);

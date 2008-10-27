@@ -13,7 +13,7 @@ class RewriteRules extends ArrayObject {
 	 */
 	public static function add_system_rules($rules)
 	{
-		$default_rules= array(
+		$default_rules = array(
 			// Display content
 			array( 'name' => 'display_home', 'parse_regex' => '%^(?:page/(?P<page>0|1))?/?$%', 'build_str' => '(page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_home', 'priority' => 1000, 'description' => 'Homepage (index) display' ),
 			array( 'name' => 'display_entries', 'parse_regex' => '%^(?:page/(?P<page>[2-9]|[1-9][0-9]+))/?$%', 'build_str' => '(page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_entries', 'priority' => 999, 'description' => 'Display multiple entries' ),
@@ -23,6 +23,7 @@ class RewriteRules extends ArrayObject {
 			array( 'name' => 'display_page', 'parse_regex' => '%^(?P<slug>[^/]+)(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_post', 'priority' => 100, 'description' => 'Return page matching specified slug' ),
 			array( 'name' => 'display_search', 'parse_regex' => '%^search(?:/(?P<criteria>[^/]+))?(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => 'search(/{$criteria})(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'search', 'priority' => 8, 'description' => 'Searches posts' ),
 			array( 'name' => 'display_404', 'parse_regex' => '%^.*$%', 'build_str' => '', 'handler' => 'UserThemeHandler', 'action' => 'display_404', 'priority' => 9999, 'description' => 'Displays an error page when a URL is not matched.' ),
+			array( 'name' => 'display_post', 'parse_regex' => '%^(?P<slug>[^/]+)(?:/page/(?P<page>\d+))?/?$%i', 'build_str' => '{$slug}(/page/{$page})', 'handler' => 'UserThemeHandler', 'action' => 'display_post', 'priority' => 9998, 'description' => 'Fallback to return post matching specified slug if no content_type match' ),
 
 			// Form actions
 			array( 'name' => 'submit_feedback', 'parse_regex' => '%^(?P<id>[0-9]+)/feedback/?$%i', 'build_str' => '{$id}/feedback', 'handler' => 'FeedbackHandler', 'action' => 'add_comment', 'priority' => 8, 'description' => 'Adds a comment to a post' ),
@@ -55,12 +56,12 @@ class RewriteRules extends ArrayObject {
 			// XMLRPC requests
 			array( 'name' => 'xmlrpc', 'parse_regex' => '%^xmlrpc/?$%i', 'build_str' => 'xmlrpc', 'handler' => 'XMLRPCServer', 'action' => 'xmlrpc_call', 'priority' => 8, 'description' => 'Handle incoming XMLRPC requests.' ),
 		);
-		$default_rules= Plugins::filter('default_rewrite_rules', $default_rules);
-		$default_rules_properties= array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );
-		$rule_names= array_flip( array_map( create_function( '$a', 'return $a->name;' ), $rules ) );
+		$default_rules = Plugins::filter('default_rewrite_rules', $default_rules);
+		$default_rules_properties = array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );
+		$rule_names = array_flip( array_map( create_function( '$a', 'return $a->name;' ), $rules ) );
 		foreach( $default_rules as $default_rule ) {
 			if( !isset( $rule_names[$default_rule['name']] ) ) {
-				$rule_properties= array_merge( $default_rule, $default_rules_properties );
+				$rule_properties = array_merge( $default_rule, $default_rules_properties );
 				$rules[]= new RewriteRule( $rule_properties );
 			}
 		}
@@ -77,18 +78,18 @@ class RewriteRules extends ArrayObject {
 		static $system_rules;
 
 		if(!isset($system_rules)) {
-			$sql= "
-				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority
+			$sql = "
+				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority, rr.parameters
 				FROM " . DB::table( 'rewrite_rules' ) . " AS rr
 				WHERE rr.is_active= 1
 				ORDER BY rr.priority";
-			$db_rules= DB::get_results( $sql, array(), 'RewriteRule' );
+			$db_rules = DB::get_results( $sql, array(), 'RewriteRule' );
 
-			$system_rules= self::add_system_rules( $db_rules );
+			$system_rules = self::add_system_rules( $db_rules );
 		}
-		$rewrite_rules= Plugins::filter('rewrite_rules', $system_rules);
+		$rewrite_rules = Plugins::filter('rewrite_rules', $system_rules);
 
-		$rewrite_rules= self::sort_rules($rewrite_rules);
+		$rewrite_rules = self::sort_rules($rewrite_rules);
 
 		$c = __CLASS__;
 		return new $c ( $rewrite_rules );
@@ -131,11 +132,11 @@ class RewriteRules extends ArrayObject {
 	 **/
 	public static function by_name( $name )
 	{
-		static $named= null; 
-	
+		static $named = null;
+
 		if( $named == null ) {
-			$named= array();
-			$rules= self::get_active();
+			$named = array();
+			$rules = self::get_active();
 			foreach($rules as $rule) {
 				$named[$rule->name][] = $rule;
 			}

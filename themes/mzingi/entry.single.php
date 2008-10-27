@@ -5,10 +5,10 @@
 		<div id="primaryContent" class="span-15 append-2">
 			<!--begin single post navigation-->
 			<div id="post-nav">
-				<?php if ( $previous= $post->ascend() ): ?>
+				<?php if ( $previous = $post->ascend() ): ?>
 				<span class="left"> &laquo; <a href="<?php echo $previous->permalink ?>" title="<?php echo $previous->slug ?>"><?php echo $previous->title ?></a></span>
 				<?php endif; ?>
-				<?php if ( $next= $post->descend() ): ?>
+				<?php if ( $next = $post->descend() ): ?>
 				<span class="right"><a href="<?php echo $next->permalink ?>" title="<?php echo $next->slug ?>"><?php echo $next->title ?></a> &raquo;</span>
 				<?php endif; ?>
 			</div>
@@ -16,7 +16,7 @@
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 						<div class="cal">
-							<?php $date= Utils::getdate( strtotime( $post->pubdate ) ); ?> <span class="calyear"><?php echo $date['year']; ?></span><br><span class="calday"><?php echo $date['mday']; ?></span><br><span class="calmonth"><?php echo $date['month']; ?></span>
+							<span class="calyear"><?php $post->pubdate->out('Y'); ?></span><br><span class="calday"><?php $post->pubdate->out('j'); ?></span><br><span class="calmonth"><?php $post->pubdate->out('F'); ?></span>
 						</div>	
 						<div class="entry">
 						<?php echo $post->content_out; ?>
@@ -27,7 +27,7 @@
 						<?php } ?>
 					</div><br>
 						<?php if ( $user ) { ?>
-						<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
+						<a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 						<?php } ?>
 					
 				</div>

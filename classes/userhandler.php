@@ -8,24 +8,24 @@
 class UserHandler extends ActionHandler
 {
 	// The active user theme
-	private $theme= null;
+	private $theme = null;
 
 	/**
 	 * Checks a user's credentials, and creates a session for them
 	 */
 	public function act_login()
 	{
-		$name= InputFilter::filter( Controller::get_var( 'habari_username' ) );
-		$pass= InputFilter::filter( Controller::get_var( 'habari_password' ) );
+		$name = InputFilter::filter( Controller::get_var( 'habari_username' ) );
+		$pass = InputFilter::filter( Controller::get_var( 'habari_password' ) );
 		
 		
 		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
-			$user= User::authenticate( $name, $pass );
+			$user = User::authenticate( $name, $pass );
 
 			if ( ( $user instanceOf User ) && ( FALSE != $user ) ) {
 				/* Successfully authenticated. */
 				// Timestamp last login date and time.
-				$user->info->authenticate_time= date( 'Y-m-d H:i:s' );
+				$user->info->authenticate_time = date( 'Y-m-d H:i:s' );
 				$user->update();
 				
 				// Remove left over expired session error message.
@@ -33,7 +33,7 @@ class UserHandler extends ActionHandler
 					Session::remove_error( 'expired_session' );
 				}
 
-				$login_session= Session::get_set( 'login' );
+				$login_session = Session::get_set( 'login' );
 				if ( ! empty( $login_session ) ) {
 					/* Now that we know we're dealing with the same user, transfer the form data so he does not lose his request */
 					if ( ! empty( $login_session['post_data'] ) ) {
@@ -44,7 +44,7 @@ class UserHandler extends ActionHandler
 					}
 					
 					/* Redirect to the correct admin page */
-					$dest= explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
+					$dest = explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
 					if ( '' == $dest[0] ) {
 						Utils::redirect( Site::get_url( 'admin' ) );
 					}
@@ -68,16 +68,17 @@ class UserHandler extends ActionHandler
 		}
 
 		// Display the login form.
-		$this->theme= Themes::create();
+		$this->theme = Themes::create();
 		if ( !$this->theme->template_exists( 'login' ) ) {
-			$this->theme= Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
+			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
 			$this->theme->assign( 'admin_page', 'login' );
 		}
-		$request= new StdClass();
+		$request = new StdClass();
 		foreach ( RewriteRules::get_active() as $rule ) {
 			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
 		}
 		$this->theme->assign( 'request', $request );
+		$this->theme->assign( 'habari_username', $name );
 		$this->display( 'login' );
 		return TRUE;
 	}
@@ -95,7 +96,7 @@ class UserHandler extends ActionHandler
 			Plugins::act( 'user_logout', $user );
 			// delete the cookie, and destroy the object
 			$user->forget();
-			$user= null;
+			$user = null;
 		}
 		Utils::redirect(Site::get_url('habari'));
 	}
@@ -108,13 +109,6 @@ class UserHandler extends ActionHandler
    */
 	protected function display( $template_name )
 	{
-    /*
-     * Assign internal variables into the theme (and therefore into the theme's template
-     * engine.  See Theme::assign().
-     */
-		foreach ( $this->handler_vars as $key=>$value ) {
-			$this->theme->assign($key, $value);
-		}
 		$this->theme->display($template_name);
 	}
 

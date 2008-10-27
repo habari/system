@@ -6,28 +6,28 @@
  */
 class HTMLTokenizer
 {
-	const NODE_TYPE_TEXT= 1;
-	const NODE_TYPE_ELEMENT_OPEN= 2;
-	const NODE_TYPE_ELEMENT_CLOSE= 3;
-	const NODE_TYPE_PI= 4;
-	const NODE_TYPE_COMMENT= 5;
-	const NODE_TYPE_CDATA_SECTION= 6;
-	const NODE_TYPE_STATEMENT= 7;
+	const NODE_TYPE_TEXT = 1;
+	const NODE_TYPE_ELEMENT_OPEN = 2;
+	const NODE_TYPE_ELEMENT_CLOSE = 3;
+	const NODE_TYPE_PI = 4;
+	const NODE_TYPE_COMMENT = 5;
+	const NODE_TYPE_CDATA_SECTION = 6;
+	const NODE_TYPE_STATEMENT = 7;
 
 	/* States of the Machine ;p */	
-	private static $STATE_FINISHED= -1; 
-	private static $STATE_START= 0;
-	private static $STATE_TAG= 1;
-	private static $STATE_ELEMENT_OPEN= 2;
-	private static $STATE_ELEMENT_CLOSE= 3;
-	private static $STATE_STATEMENT= 4;
-	private static $STATE_PI= 5;
+	private static $STATE_FINISHED = -1; 
+	private static $STATE_START = 0;
+	private static $STATE_TAG = 1;
+	private static $STATE_ELEMENT_OPEN = 2;
+	private static $STATE_ELEMENT_CLOSE = 3;
+	private static $STATE_STATEMENT = 4;
+	private static $STATE_PI = 5;
 	
 	/* Character Ranges */
-	private static $CHR_TAG_BEGIN= '<';
-	private static $CHR_TAG_END= '/>';
-	private static $CHR_ATTRNAME_END= '=';
-	private static $CHR_WHITESPACE= " \t\r\n"; // SP, TAB, CR, LF
+	private static $CHR_TAG_BEGIN = '<';
+	private static $CHR_TAG_END = '/>';
+	private static $CHR_ATTRNAME_END = '=';
+	private static $CHR_WHITESPACE = " \t\r\n"; // SP, TAB, CR, LF
 	
 	private $html;
 	private $pos;
@@ -39,12 +39,12 @@ class HTMLTokenizer
 
 	public function __construct( $html )
 	{
-		$this->html= $html;
-		$this->len= strlen( $html );
-		$this->pos= 0;
-		$this->nodes= array();
+		$this->html = $html;
+		$this->len = strlen( $html );
+		$this->pos = 0;
+		$this->nodes = new HTMLTokenSet;
 
-		$this->state= self::$STATE_START;
+		$this->state = self::$STATE_START;
 	}
 
 	public function parse()
@@ -53,26 +53,26 @@ class HTMLTokenizer
 		{
 			switch ( $this->state ) {
 				case self::$STATE_START:
-					$this->state= $this->parse_start();
+					$this->state = $this->parse_start();
 					break;
 				case self::$STATE_TAG:
-					$this->state= $this->parse_tag();
+					$this->state = $this->parse_tag();
 					break;
 				case self::$STATE_ELEMENT_OPEN:
-					$this->state= $this->parse_element_open();
+					$this->state = $this->parse_element_open();
 					break;
 				case self::$STATE_ELEMENT_CLOSE:
-					$this->state= $this->parse_element_close();
+					$this->state = $this->parse_element_close();
 					break;
 				case self::$STATE_STATEMENT:
-					$this->state= $this->parse_statement();
+					$this->state = $this->parse_statement();
 					break;
 				case self::$STATE_PI:
-					$this->state= $this->parse_pi();
+					$this->state = $this->parse_pi();
 					break;
 				default:
 					Error::raise( sprintf( _t('Invalid state %d in %s->parse()'), $this->state, __CLASS__ ) );
-					$this->state= self::$STATE_FINISHED;
+					$this->state = self::$STATE_FINISHED;
 					break;
 			}
 		}
@@ -95,12 +95,12 @@ class HTMLTokenizer
 		);
 	}
 	
-	private function dec( $n= 1 )
+	private function dec( $n = 1 )
 	{
 		$this->pos-= $n;
 	}
 
-	private function inc( $n= 1 )
+	private function inc( $n = 1 )
 	{
 		$this->pos+= $n;
 	}
@@ -121,11 +121,11 @@ class HTMLTokenizer
 
 	private function up_to_str( $str )
 	{
-		$pos= $this->pos;
-		$this->pos= strpos( $this->html, $str, $pos );
+		$pos = $this->pos;
+		$this->pos = strpos( $this->html, $str, $pos );
 		if ( $this->pos === FALSE ) {
 			// finish
-			$this->pos= $this->len;
+			$this->pos = $this->len;
 		}
 		
 		return substr( $this->html, $pos, $this->pos - $pos );
@@ -133,8 +133,8 @@ class HTMLTokenizer
 
 	private function up_to_chr( $chr )
 	{
-		$pos= $this->pos;
-		$seg_len= strcspn( $this->html, $chr, $pos );
+		$pos = $this->pos;
+		$seg_len = strcspn( $this->html, $chr, $pos );
 		$this->pos+= $seg_len;
 		
 		return substr( $this->html, $pos, $seg_len );
@@ -148,7 +148,7 @@ class HTMLTokenizer
 	//
     private function parse_start()
     {
-        $data= $this->up_to_str( self::$CHR_TAG_BEGIN );
+        $data = $this->up_to_str( self::$CHR_TAG_BEGIN );
         $this->inc();
         if ( $data != '' ) {
         	$this->node( self::NODE_TYPE_TEXT, '#text', $data, NULL );
@@ -159,41 +159,41 @@ class HTMLTokenizer
     
     private function parse_attributes()
     {
-        $attr= array();
-        $name= '';
+        $attr = array();
+        $name = '';
         
         $this->skip_whitespace();
     
       	// read attribute name
-        while ( $name= $this->up_to_chr( self::$CHR_ATTRNAME_END . self::$CHR_TAG_END . self::$CHR_WHITESPACE ) ) {
-            $name= strtolower( $name );
+        while ( $name = $this->up_to_chr( self::$CHR_ATTRNAME_END . self::$CHR_TAG_END . self::$CHR_WHITESPACE ) ) {
+            $name = strtolower( $name );
 	        // skip any whitespace
             $this->skip_whitespace();
             // first non-ws char
-            $char= $this->get();
+            $char = $this->get();
             if ($char == '=') {
             	// attribute value follows
                 $this->skip_whitespace();
-                $char= $this->get();
+                $char = $this->get();
                 if ($char == '"') {
                 	// double-quoted
-                    $value= $this->up_to_str( '"' );
+                    $value = $this->up_to_str( '"' );
                     $this->inc();
                 }
                 elseif ($char == '\'') {
                 	// single-quoted
-                    $value= $this->up_to_str( '\'' );
+                    $value = $this->up_to_str( '\'' );
                     $this->inc();
                 }
                 else {
                 	// bad, bad, bad
                     $this->dec();
-                    $value= $this->up_to_chr( self::$CHR_WHITESPACE . '>' );
+                    $value = $this->up_to_chr( self::$CHR_WHITESPACE . '>' );
                 }
             }
             elseif ( $char !== NULL ) {
             	// TODO HTMLParser should handle #IMPLIED attrs
-                $value= NULL;
+                $value = NULL;
                 $this->dec();
             }
             $attr[$name]= $value;
@@ -225,10 +225,10 @@ class HTMLTokenizer
 
     private function parse_element_open()
     {
-        $tag= $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
+        $tag = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
         if ( $tag != '' ) {
-            $attr= $this->parse_attributes();
-            $char= $this->get();
+            $attr = $this->parse_attributes();
+            $char = $this->get();
             if ( $char == '/' && $this->peek() == '>' ) {
             	$this->inc(); // skip peeked '>'
                 // empty tag in collapsed form (<br />)
@@ -245,10 +245,10 @@ class HTMLTokenizer
 
     private function parse_element_close()
     {
-        $tag= $this->up_to_chr( self::$CHR_TAG_END );
+        $tag = $this->up_to_chr( self::$CHR_TAG_END );
         
         if ( $tag != '' ) {
-            $char= $this->get();
+            $char = $this->get();
             if ( $char == '/' && $this->peek() == '>' ) {
             	$this->inc();
             }
@@ -262,30 +262,30 @@ class HTMLTokenizer
     private function parse_statement()
     {
     	// everything starting with <!
-    	$nodeName= '#statement';
-    	$nodeType= self::NODE_TYPE_STATEMENT;
+    	$nodeName = '#statement';
+    	$nodeType = self::NODE_TYPE_STATEMENT;
     	
-        $char= $this->get();
+        $char = $this->get();
         if ( $char == '[' ) {
         	// CDATA
             // <http://www.w3.org/TR/DOM-Level-2-Core/core.html>
-            $nodeName= '#cdata-section';
-            $nodeType= self::NODE_TYPE_CDATA_SECTION;
+            $nodeName = '#cdata-section';
+            $nodeType = self::NODE_TYPE_CDATA_SECTION;
             
             $this->inc( 6 ); // strlen( 'CDATA[' )
-            $data= $this->up_to_str( ']]>' );
+            $data = $this->up_to_str( ']]>' );
             $this->inc( 2 ); // strlen( ']]' )
         }
         elseif ( $char == '-' && $this->peek() == '-' ) {
         	// comment
-            $nodeName= '#comment';
-            $nodeType= self::NODE_TYPE_COMMENT;
+            $nodeName = '#comment';
+            $nodeType = self::NODE_TYPE_COMMENT;
             
             // skip peeked -
         	$this->inc();
             // consume text
-            $data= $this->up_to_str( '-->' );
-            $data= $data; // should trim() upstream
+            $data = $this->up_to_str( '-->' );
+            $data = $data; // should trim() upstream
             // skip over final --
             $this->inc( 2 );
         }
@@ -295,8 +295,8 @@ class HTMLTokenizer
         }
         
         if ( $nodeType == self::NODE_TYPE_STATEMENT ) {
-        	$data= '';
-			$nodeName= $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
+        	$data = '';
+			$nodeName = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
 			if ( $this->peek() != '>' ) {
 				// there be data or something
 				$this->skip_whitespace();
@@ -322,8 +322,8 @@ class HTMLTokenizer
 
     private function parse_pi() 
     {
-        $target= $this->up_to_chr( self::$CHR_WHITESPACE );
-        $data= $this->up_to_str( '?>' );
+        $target = $this->up_to_chr( self::$CHR_WHITESPACE );
+        $data = $this->up_to_str( '?>' );
         // skip over closing tag
         $this->inc( 2 );
         

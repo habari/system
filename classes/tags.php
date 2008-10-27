@@ -20,7 +20,7 @@ class Tags extends ArrayObject
 		 * which are not related (yet) to any post itself.  These
 		 * tags are essentially lost to the world.
 		 */
-		$tags= DB::get_results( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id GROUP BY id, tag, slug ORDER BY tag ASC' );
+		$tags = DB::get_results( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id GROUP BY id, tag, slug ORDER BY tag ASC' );
 		return $tags;
 	}
 
@@ -59,10 +59,10 @@ class Tags extends ArrayObject
 	public static function rename($master, $tags)
 	{
 		if ( !is_array( $tags ) ) {
-			$tags= array( $tags );
+			$tags = array( $tags );
 		}
 
-		$tag_names= array();
+		$tag_names = array();
 
 		// get array of existing tags first to make sure we don't conflict with a new master tag
 		foreach ( $tags as $tag ) {
@@ -87,19 +87,19 @@ class Tags extends ArrayObject
 		}
 		
 		// get the master tag
-		$master_tag= Tags::get_one($master);
+		$master_tag = Tags::get_one($master);
 		
 		if ( !isset($master_tag->slug) ) {
 			// it didn't exist, so we assume it's tag text and create it
-			$master_tag= Tag::create(array('tag_slug' => Utils::slugify($master), 'tag_text' => $master));
+			$master_tag = Tag::create(array('tag_slug' => Utils::slugify($master), 'tag_text' => $master));
 			
-			$master_ids= array();
+			$master_ids = array();
 		}
 		else {
 			// get the posts the tag is already on so we don't duplicate them
-			$master_posts= DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $master_tag->id ) );
+			$master_posts = DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $master_tag->id ) );
 			
-			$master_ids= array();
+			$master_ids = array();
 			
 			foreach ( $master_posts as $master_post ) {				
 				$master_ids[]= $master_post->post_id;
@@ -110,7 +110,7 @@ class Tags extends ArrayObject
 		if ( count( $post_ids ) > 0 ) {
 			
 			// only try and add the master tag to posts it's not already on
-			$post_ids= array_diff( $post_ids, $master_ids );
+			$post_ids = array_diff( $post_ids, $master_ids );
 			
 			// link the master tag to each distinct post we removed tags from
 			foreach ( $post_ids as $post_id ) {
@@ -146,10 +146,10 @@ class Tags extends ArrayObject
 	 **/
 	public static function post_count($tag) {
 		if ( is_int( $tag ) ) {
-			$tag= Tags::get_by_id( $tag );
+			$tag = Tags::get_by_id( $tag );
 		}
 		else if ( is_string( $tag ) ) {
-			$tag= Tags::get_by_slug( Utils::slugify($tag) );
+			$tag = Tags::get_by_slug( Utils::slugify($tag) );
 		}
 
 		return DB::get_row( 'SELECT COUNT(tag_id) AS count FROM {tag2post} WHERE tag_id = ?', array($tag->id) );

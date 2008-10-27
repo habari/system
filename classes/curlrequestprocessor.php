@@ -5,37 +5,37 @@
  */
 class CURLRequestProcessor implements RequestProcessor
 {
-	private $response_body= '';
-	private $response_headers= '';
-	private $executed= false;
+	private $response_body = '';
+	private $response_headers = '';
+	private $executed = false;
 	
-	private $can_followlocation= true;
+	private $can_followlocation = true;
 	
 	/**
 	 * Maximum number of redirects to follow.
 	 */
-	private $max_redirs= 5;
+	private $max_redirs = 5;
 	
 	/**
 	 * Temporary buffer for headers.
 	 */
-	private $_headers= '';
+	private $_headers = '';
 	
 	public function __construct()
 	{
 		if ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) {
-			$this->can_followlocation= false;
+			$this->can_followlocation = false;
 		}
 	}
 	
 	public function execute( $method, $url, $headers, $body, $timeout )
 	{
-		$merged_headers= array();
+		$merged_headers = array();
 		foreach ( $headers as $k => $v ) {
 			$merged_headers[]= $k . ': ' . $v;
 		}
 		
-		$ch= curl_init();
+		$ch = curl_init();
 		
 		curl_setopt( $ch, CURLOPT_URL, $url ); // The URL.
 		curl_setopt( $ch, CURLOPT_HEADERFUNCTION, array(&$this, '_headerfunction' ) ); // The header of the response.
@@ -54,7 +54,7 @@ class CURLRequestProcessor implements RequestProcessor
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, $body );
 		}
 		
-		$body= curl_exec( $ch );
+		$body = curl_exec( $ch );
 		
 		if ( curl_errno( $ch ) !== 0 ) {
 			return Error::raise( sprintf( _t('%s: CURL Error %d: %s'), __CLASS__, curl_errno( $ch ), curl_error( $ch ) ),
@@ -72,11 +72,11 @@ class CURLRequestProcessor implements RequestProcessor
 		curl_close( $ch );
 		
 		// this fixes an E_NOTICE in the array_pop
-		$tmp_headers= explode("\r\n\r\n", substr( $this->_headers, 0, -4 ) );
+		$tmp_headers = explode("\r\n\r\n", substr( $this->_headers, 0, -4 ) );
 		
-		$this->response_headers= array_pop( $tmp_headers );
-		$this->response_body= $body;
-		$this->executed= true;
+		$this->response_headers = array_pop( $tmp_headers );
+		$this->response_body = $body;
+		$this->executed = true;
 		
 		return true;
 	}

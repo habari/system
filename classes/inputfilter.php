@@ -10,7 +10,7 @@ class InputFilter
 	/**
 	 * Allowed elements.
 	 */
-	private static $whitelist_elements= array(
+	private static $whitelist_elements = array(
 		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.4
 		'div', 'span',
 		// http://www.w3.org/TR/html4/struct/links.html#h-12.2
@@ -40,7 +40,7 @@ class InputFilter
 	/**
 	 * Allowed attributes and values.
 	 */
-	private static $whitelist_attributes= array(
+	private static $whitelist_attributes = array(
 		// attributes that are valid for ALL elements (a subset of coreattrs)
 		// elements that only take coreattrs don't need to be listed separately
 		'*' => array(
@@ -62,21 +62,21 @@ class InputFilter
 	/**
 	 * #EMPTY elements.
 	 */
-	private static $elements_empty= array(
+	private static $elements_empty = array(
 		'img',
 	);
 	
 	/**
 	 * Protocols that are ok for use in URIs.
 	 */
-	private static $whitelist_protocols= array(
+	private static $whitelist_protocols = array(
 		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto',
 	);
 	
 	/**
 	 * List of all defined named character entities in HTML 4.01 and XHTML.
 	 */
-	private static $character_entities= array(
+	private static $character_entities = array(
 		'nbsp', 'iexcl', 'cent', 'pound', 'curren', 'yen', 'brvbar', 'sect', 'uml', 
 		'copy', 'ordf', 'laquo', 'not', 'shy', 'reg', 'macr', 'deg', 'plusmn', 
 		'sup2', 'sup3', 'acute', 'micro', 'para', 'middot', 'cedil', 'sup1', 'ordm', 
@@ -108,9 +108,9 @@ class InputFilter
 		'sbquo', 'ldquo', 'rdquo', 'bdquo', 'dagger', 'Dagger', 'permil', 'lsaquo', 
 		'rsaquo', 'euro',
 	);
-	private static $character_entities_re= '';
+	private static $character_entities_re = '';
 	
-	private static $scheme_ports= array(
+	private static $scheme_ports = array(
 		'ftp' => 21,
 		'ssh' => 22,
 		'telnet' => 23,
@@ -133,16 +133,16 @@ class InputFilter
 	 */
 	public static function filter( $str )
 	{
-		$str= self::strip_nulls( $str );
-		$str= self::strip_illegal_entities( $str );
-		$str= self::filter_html_elements( $str );
+		$str = self::strip_nulls( $str );
+		$str = self::strip_illegal_entities( $str );
+		$str = self::filter_html_elements( $str );
 		
 		return $str;
 	}
 	
 	public static function strip_nulls( $str )
 	{
-		$str= preg_replace( '/\0+/', '', $str );
+		$str = preg_replace( '/\0+/', '', $str );
 		
 		return $str;
 	}
@@ -154,7 +154,7 @@ class InputFilter
 	 */	
 	public static function _validate_entity( $m )
 	{
-		$is_valid= FALSE;
+		$is_valid = FALSE;
 		
 		// valid entity references have the form
 		//   /&named([;<\n\r])/
@@ -162,43 +162,43 @@ class InputFilter
 		//   /&#(\d{1,5}|[xX][0-9a-fA-F]{1,4})([;<\n\r])/
 		// for numeric character references
 		
-		$e= trim( $m[1] );
-		$r= $m[2];
+		$e = trim( $m[1] );
+		$r = $m[2];
 		if ( $r == ';' ) {
-			$r= '';
+			$r = '';
 		}
 		
 		if ( $e{0} == '#' ) {
-			$e= strtolower( $e );
+			$e = strtolower( $e );
 			if ( $e{1} == 'x' ) {
-				$e= hexdec( substr( $e, 2 ) );
+				$e = hexdec( substr( $e, 2 ) );
 			}
 			else {
-				$e= substr( $e, 1 );
+				$e = substr( $e, 1 );
 			}
 			
 			// numeric character references may only have values in the range 0-65535 (16 bit)
 			// we strip null, though, just for kicks
-			$is_valid= ( intval( $e ) > 0 && intval( $e ) <= 65535 );
+			$is_valid = ( intval( $e ) > 0 && intval( $e ) <= 65535 );
 			
 			if ( $is_valid ) {
 				// normalize to decimal form
-				$e= '#' . intval( $e ) . ';';
+				$e = '#' . intval( $e ) . ';';
 			}
 		}
 		else {
 			if ( self::$character_entities_re == '' ) {
-				self::$character_entities_re= ';(' . implode( '|', self::$character_entities ) . ');';
+				self::$character_entities_re = ';(' . implode( '|', self::$character_entities ) . ');';
 			}
 			
 			// named entities must be known
-			$is_valid= preg_match( self::$character_entities_re, $e, $matches );
+			$is_valid = preg_match( self::$character_entities_re, $e, $matches );
 			
 			// XXX should we map named entities to their numeric equivalents?
 			
 			if ( $is_valid ) {
 				// normalize to name and nothing but the name... eh.
-				$e= $matches[1] . ';';
+				$e = $matches[1] . ';';
 			}
 		}
 		
@@ -207,7 +207,7 @@ class InputFilter
 	
 	public static function strip_illegal_entities( $str )
 	{
-		$str= preg_replace_callback( "/&([^;<\n\r]+)([;<\n\r])/", array( __CLASS__, '_validate_entity' ), $str );
+		$str = preg_replace_callback( "/&([^;<\n\r]+)([;<\n\r])/", array( __CLASS__, '_validate_entity' ), $str );
 		
 		return $str;
 	}
@@ -218,7 +218,7 @@ class InputFilter
 	public static function parse_url( $url )
 	{
 		// result array
-		$r= array(
+		$r = array(
 			'scheme' => '',
 			'host' => '',
 			'port' => '',
@@ -236,7 +236,7 @@ class InputFilter
 		);
 		
 		// TODO normalize etc., make re tighter (ips)
-		$re= '@^' // delimiter + anchor
+		$re = '@^' // delimiter + anchor
 			// scheme, address, port are optional for relative urls ...
 			. '(?:'
 				// scheme
@@ -272,11 +272,11 @@ class InputFilter
 			. '@'
 			;
 		
-		$t= preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
+		$t = preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
 		if ( ! $t ) // TODO better error handling
 			return $r;
 		
-		$matches= $matches[0];
+		$matches = $matches[0];
 		if ( ! isset( $matches['full_address'] ) )
 			$matches['full_address']= '';
 		
@@ -359,7 +359,7 @@ class InputFilter
 			switch ( $type ) {
 				case 'uri':
 					// RfC 2396 <http://www.ietf.org/rfc/rfc2396.txt>
-					$bits= self::parse_url( $v );
+					$bits = self::parse_url( $v );
 					return $bits['is_relative'] || in_array( $bits['scheme'], self::$whitelist_protocols );
 					break;
 				case 'language-code':
@@ -392,20 +392,20 @@ class InputFilter
 	 */
 	public static function filter_html_elements( $str )
 	{
-		$tokenizer= new HTMLTokenizer( $str );
+		$tokenizer = new HTMLTokenizer( $str );
 		
 		// tokenize, baby
-		$tokens= $tokenizer->parse();
+		$tokens = $tokenizer->parse();
 		
 		// filter token stream
-		$filtered= array();
-		$stack= array();
+		$filtered = new HTMLTokenSet;
+		$stack = array();
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_TEXT:
 					if ( sizeof( $stack ) > 0 && ! in_array( strtolower( $stack[sizeof( $stack )-1] ), self::$whitelist_elements ) ) {
 						// skip node if filtered element is still open
-						$node= NULL;
+						$node = NULL;
 					}
 					else {
 						// XXX use blog charset setting
@@ -418,12 +418,12 @@ class InputFilter
 						if ( ! in_array( strtolower( $node['name'] ), self::$elements_empty ) ) {
 							array_push( $stack, $node['name'] );
 						}
-						$node= NULL;
+						$node = NULL;
 					}
 					else {
 						// check attributes
 						foreach ( $node['attrs'] as $k => $v ) {
-							$attr_ok= (
+							$attr_ok = (
 								( 
 									   in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
 									|| ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) &&
@@ -439,18 +439,18 @@ class InputFilter
 					break; 
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
 					if ( ! in_array( strtolower( $node['name'] ), self::$whitelist_elements ) ) {
-						if ( strtolower( $temp= array_pop( $stack ) ) !== strtolower( $node['name'] ) ) {
+						if ( strtolower( $temp = array_pop( $stack ) ) !== strtolower( $node['name'] ) ) {
 							// something weird happened (Luke, use the DOM!)
 							array_push( $stack, $temp );
 						}
-						$node= NULL;
+						$node = NULL;
 					} 
 					break;
 				case HTMLTokenizer::NODE_TYPE_PI:
 				case HTMLTokenizer::NODE_TYPE_COMMENT:
 				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
 				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					$node= NULL;
+					$node = NULL;
 					break;
 				default:
 			}
@@ -461,45 +461,7 @@ class InputFilter
 		}
 		
 		// rebuild our output string
-		$str= '';
-		foreach ( $filtered as $node ) {
-			switch ( $node['type'] ) {
-				case HTMLTokenizer::NODE_TYPE_TEXT:
-					$str.= $node['value'];
-					break;
-				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
-					$str.= '<';
-					$str.= $node['name'];
-					if ( $node['attrs'] ) {
-						foreach ( $node['attrs'] as $k => $v ) {
-							$str.= ' ';
-							$str.= $k;
-							$str.= '="';
-							$str.= htmlspecialchars( html_entity_decode( $v, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
-							$str.= '"';
-						}
-					}
-					$str.= '>';
-					break;
-				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
-					$str.= '</';
-					$str.= $node['name'];
-					$str.= '>';
-					break;
-				case HTMLTokenizer::NODE_TYPE_PI:
-				case HTMLTokenizer::NODE_TYPE_COMMENT:
-				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
-				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					Error::raise( sprintf( _t('Undead token "%s" (%d) in %s'), $node['name'], $node['type'], __CLASS__ ) ); 
-					break;
-				default:
-			}
-		}
-		// $document->toString() is so much easier :~
-		
-		$str= preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', $str ); 
-		
-		return $str;
+		return preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', (string) $filtered ); 
 	}
 }
 

@@ -47,10 +47,10 @@ class Site
 		case isset ( $scriptname ):
 			break;
 		case isset( $_SERVER['SCRIPT_NAME'] ):
-			$scriptname= $_SERVER['SCRIPT_NAME'];
+			$scriptname = $_SERVER['SCRIPT_NAME'];
 			break;
 		case isset( $_SERVER['PHP_SELF'] ):
-			$scriptname= $_SERVER['PHP_SELF'];
+			$scriptname = $_SERVER['PHP_SELF'];
 			break;
 		default:
 			Error::raise(_t('Could not determine script name.'));
@@ -120,73 +120,74 @@ class Site
 	 */
 	public static function get_url( $name, $trail = false )
 	{
-		$url= '';
+		$url = '';
 
 		switch( strtolower( $name ) )
 		{
 			case 'host':
-				$protocol= 'http';
+				$protocol = 'http';
 				// If we're running on a port other than 80, i
 				// add the port number to the value returned
 				// from host_url
-				$port= 80; // Default in case not set.
+				$port = 80; // Default in case not set.
 				if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-					$port= $_SERVER['SERVER_PORT'];
+					$port = $_SERVER['SERVER_PORT'];
 				}
-				$portpart= '';
-				$host= $_SERVER['HTTP_HOST'];
+				$portpart = '';
+				$host = Site::get_url('hostname');
 				// if the port isn't a standard port, and isn't part of $host already, add it
 				if ( ( $port != 80 ) && ( $port != 443 ) && ( substr($host, strlen($host) - strlen($port) ) != $port ) ) {
-					$portpart= ':' . $port;
+					$portpart = ':' . $port;
 				}
 				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
-					$protocol= 'https';
+					$protocol = 'https';
 				}
-				$url= $protocol . '://' . $host . $portpart;
+				$url = $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
-				$url= Site::get_url( 'host' );
-				$path= trim( dirname( Site::script_name() ), '/\\' );
+				$url = Site::get_url( 'host' );
+				$path = trim( dirname( Site::script_name() ), '/\\' );
 				if ( '' != $path ) {
-					$url.= '/' . $path;
+					$url .= '/' . $path;
 				}
 				break;
 			case 'user':
-				$url= Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
+				$url = Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
 				break;
 			case 'theme':
-				$theme= Options::get( 'theme_dir');
+				$theme = Options::get( 'theme_dir');
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-					$url= Site::get_url( 'user' ) .  '/themes/' . $theme;
+					$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
-					$url= Site::get_url( 'habari' ) . '/user/themes/' . $theme;
+					$url = Site::get_url( 'habari' ) . '/user/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url= Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+					$url = Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
 				}
 				else {
-					$url= Site::get_url( 'habari' ) . '/system/themes/' . $theme;
+					$url = Site::get_url( 'habari' ) . '/system/themes/' . $theme;
 				}
 				break;
 			case 'admin':
-				$url= Site::get_url( 'habari' ) . '/admin';
+				$url = Site::get_url( 'habari' ) . '/admin';
 				break;
 			case 'admin_theme':
-				$url= Site::get_url( 'habari' ) . '/system/admin';
+				$url = Site::get_url( 'habari' ) . '/system/admin';
 				break;
 			case 'system':
-				$url= Site::get_url( 'habari' ) . '/system';
+				$url = Site::get_url( 'habari' ) . '/system';
 				break;
 			case 'scripts':
-				$url= Site::get_url( 'habari' ) . '/scripts';
+				$url = Site::get_url( 'habari' ) . '/scripts';
 				break;
 			case 'hostname':
-				$url= $_SERVER['HTTP_HOST'];
+				// HTTP_HOST is not set for HTTP/1.0 requests
+				$url = ( $_SERVER['SERVER_PROTOCOL'] == 'HTTP/1.0' || !isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
 				break;
 		}
-		$url.= ( $trail ) ? '/' : '';
-		$url= Plugins::filter( 'site_url_' . $name, $url );
+		$url .= ( $trail ) ? '/' : '';
+		$url = Plugins::filter( 'site_url_' . $name, $url );
 		return $url;
 	}
 
@@ -204,40 +205,40 @@ class Site
 	**/
 	public static function get_path( $name, $tail = false )
 	{
-		$path= '';
+		$path = '';
 		switch ( strtolower( $name ) )
 		{
 			case 'base':
-				$path= rtrim(dirname(Site::script_name()),'/\\');
+				$path = rtrim(dirname(Site::script_name()),'/\\');
 				break;
 			case 'user':
 				if ( Site::is('main') )
 				{
-					$path= 'user';
+					$path = 'user';
 				}
 				else
 				{
-					$path= ltrim( str_replace ( HABARI_PATH, '', Site::get_dir('config') ), '/' );
+					$path = ltrim( str_replace ( HABARI_PATH, '', Site::get_dir('config') ), '/' );
 				}
 				break;
 			case 'theme':
-				$theme= Options::get('theme_dir');
+				$theme = Options::get('theme_dir');
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-					$path= Site::get_path('user') . '/themes/' . $theme;
+					$path = Site::get_path('user') . '/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url= Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+					$url = Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
 				}
 				else {
-					$path= Site::get_path('base') . '/user/themes/' . $theme;
+					$path = Site::get_path('base') . '/user/themes/' . $theme;
 				}
 				break;
 		}
 		$path.= ( $tail ) ? '/' : '';
 		// if running Habari in docroot, get_url('base') will return
 		// a double slash.  Let's fix that.
-		$path= str_replace( '//', '/', $path);
-		$path= Plugins::filter( 'site_path_' . $name, $path );
+		$path = str_replace( '//', '/', $path);
+		$path = Plugins::filter( 'site_path_' . $name, $path );
 		return $path;
 	}
 
@@ -253,75 +254,75 @@ class Site
 	 */
 	public static function get_dir( $name, $trail = false )
 	{
-		$path= '';
+		$path = '';
 
 		switch ( strtolower( $name ) )
 		{
 			case 'config_file':
-				$path= Site::get_dir('config') . '/config.php';
+				$path = Site::get_dir('config') . '/config.php';
 				break;
 			case 'config':
 				if ( self::$config_path ) {
 					return self::$config_path;
 				}
 
-				self::$config_path= HABARI_PATH;
+				self::$config_path = HABARI_PATH;
 
-				$config_dirs= preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', Utils::glob( HABARI_PATH . '/user/sites/*/config.php' ) );
+				$config_dirs = preg_replace( '/^' . preg_quote( HABARI_PATH, '/' ) . '\/user\/sites\/(.*)\/config.php/', '$1', Utils::glob( HABARI_PATH . '/user/sites/*/config.php' ) );
 
 				if ( empty( $config_dirs ) ) {
 					return self::$config_path;
 				}
 
-				$server= InputFilter::parse_url( Site::get_url('habari') ) ;
-				$server= ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
+				$server = InputFilter::parse_url( Site::get_url('habari') ) ;
+				$server = ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
 
-				$request= explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
-				$match= trim( $server, '.' );
+				$request = explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
+				$match = trim( $server, '.' );
 				$x = count( $request );
 				do {
 					if ( in_array( $match, $config_dirs ) ) {
-						self::$config_dir= $match;
-						self::$config_path= HABARI_PATH . '/user/sites/' . self::$config_dir;
-						self::$config_type= ($x > 0) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
+						self::$config_dir = $match;
+						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
+						self::$config_type = ($x > 0) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
 						break;
 					}
 
-					$match=substr($match, strpos($match, '.') + 1);
+					$match =substr($match, strpos($match, '.') + 1);
 					$x--;
 				} while(strpos($match,'.') !== false);
 
-				$path= self::$config_path;
+				$path = self::$config_path;
 				break;
 			case 'user':
 				if ( Site::get_dir('config') == HABARI_PATH ) {
-					$path= HABARI_PATH . '/user';
+					$path = HABARI_PATH . '/user';
 				}
 				else {
-					$path= Site::get_dir('config');
+					$path = Site::get_dir('config');
 				}
 				break;
 			case 'theme':
-				$theme= Options::get('theme_dir');
+				$theme = Options::get('theme_dir');
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-					$path= Site::get_dir('user') . '/themes/' . $theme;
+					$path = Site::get_dir('user') . '/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
-					$path= HABARI_PATH . '/user/themes/' . $theme;
+					$path = HABARI_PATH . '/user/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url= Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+					$url = Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
 				}
 				else {
-					$path= HABARI_PATH . '/system/themes/' . $theme;
+					$path = HABARI_PATH . '/system/themes/' . $theme;
 				}
 				break;
 			case 'admin_theme':
-				$path= HABARI_PATH . '/system/admin';
+				$path = HABARI_PATH . '/system/admin';
 				break;
 		}
 		$path.= ($trail) ? '/' : '';
-		$path= Plugins::filter( 'site_dir_' . $name, $path );
+		$path = Plugins::filter( 'site_dir_' . $name, $path );
 		return $path;
 	}
 
@@ -330,7 +331,7 @@ class Site
 	 * @param string the URL to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
 	**/
-	public static function out_url( $url, $trail= false )
+	public static function out_url( $url, $trail = false )
 	{
 		echo Site::get_url( $url, $trail );
 	}
@@ -340,7 +341,7 @@ class Site
 	 * @param string the URL path to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
 	**/
-	public static function out_path( $path, $trail= false )
+	public static function out_path( $path, $trail = false )
 	{
 		echo Site::get_path( $path, $trail );
 	}
@@ -350,7 +351,7 @@ class Site
 	 * @param string the filesystem directory to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
 	**/
-	public static function out_dir( $dir, $trail= false )
+	public static function out_dir( $dir, $trail = false )
 	{
 		echo Site::get_dir( $dir, $trail );
 	}

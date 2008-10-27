@@ -18,20 +18,20 @@ class XMLRPCServer extends ActionHandler
 			$exception = new XMLRPCException(1);
 			$exception->output_fault_xml(); // dies here
 		}
-		$input= file_get_contents( 'php://input' );
+		$input = file_get_contents( 'php://input' );
 
-		$xml= new SimpleXMLElement( $input );
+		$xml = new SimpleXMLElement( $input );
 
 		$function = $xml->methodName;
-		$params= array();
-		$foundParams= $xml->xpath( '//params/param/value' );
+		$params = array();
+		$foundParams = $xml->xpath( '//params/param/value' );
 		if ( is_array( $foundParams ) ) {
 			foreach( $foundParams as $param ) {
 				$params[]= XMLRPCUtils::decode_args( $param );
 			}
 		}
 
-		$returnvalue= false;
+		$returnvalue = false;
 
 		Plugins::register(array($this, 'system_listMethods'), 'xmlrpc', 'system.listMethods');
 		$returnvalue = Plugins::xmlrpc("{$function}", $returnvalue, $params, $this);

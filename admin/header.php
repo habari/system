@@ -1,8 +1,8 @@
  	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/ui.core.js" type="text/javascript"></script>
@@ -50,13 +50,17 @@
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
 			<?php foreach($mainmenu as $menu_id => $menu): ?>
-				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == TRUE) { echo 'selected'; } ?>" title="<?php echo $menu['title']; ?>"><a href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
+				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == TRUE) { echo 'selected'; } ?><?php if(isset($menu['submenu'])): ?> submenu<?php endif; ?>" title="<?php echo $menu['title']; ?>"><a class="top" href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?> 
 				<?php if(isset($menu['hotkey']) && $menu['hotkey'] != ''): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
 				</a>
 				<?php if(isset($menu['submenu'])): ?>
-				<ul>
-					<li><a href="#"><?php _e('Submenu'); ?></a></li>
-				</ul>
+				<ul class="submenu">
+				 <?php foreach($menu['submenu'] as $submenu_id => $submenu_item): ?> 
+				 	<li id="link-<?php echo $submenu_id ?>" title="<?php echo $submenu_item['title']; ?>" class="sub<?php if(isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != ''): ?> hotkey-<?php echo $submenu_item['hotkey']; ?><?php endif; ?>"><a href="<?php echo $submenu_item['url']; ?>"><?php echo $submenu_item['text']; ?> 
+				 	<?php if(isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != ''): ?><span class="hotkey"><?php echo $submenu_item['hotkey']; ?></span><?php endif; ?> 
+				 	</a></li> 
+				 <?php endforeach; ?> 
+				 </ul>
 				<?php endif; ?>
 				</li>
 			<?php endforeach; ?>

@@ -18,7 +18,7 @@
 		<?php 
 	          foreach($asides as $post):
               echo '<li><span class="date">';
-              echo $post->pubdate_out . ' - ' . '</span>';
+              echo $post->pubdate->out('F j, Y') . ' - ' . '</span>';
               echo '<a href="' . $post->permalink .'">' . $post->title_out . '</a>'. $post->content_out;
               echo '</li>';
 

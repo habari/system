@@ -39,7 +39,7 @@ a img {
 	top: 0;
 	left: 0;
 	z-index: 1000;
-	opacity: .98;
+	opacity: 1; /* was .98 - see issue #588 */
 }
 
 #menubar a {
@@ -116,7 +116,7 @@ a img {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	padding: 5px 0;
-	opacity: .99;
+	opacity: 1; /* was .99 - see issue #588 */
 	display: none;
 	-webkit-box-shadow: 0px 2px 20px #111;
 }
@@ -129,6 +129,22 @@ a img {
 
 #menu.hovering #menulist, #menu:hover #menulist {
 	display: block;
+}
+
+#menu.hovering #menulist li li, #menu:hover #menulist li li { 
+	display:none; 
+} 
+
+#menu:hover #menulist li:hover li, #menu #menulist li.carrot li { 
+	display:block; 
+} 
+
+#menu li ul { 
+	position:absolute;
+	left:100%; 
+	top:0; 
+	width:100%; 
+	background:#2b2b2b;
 }
 
 #menulist li {
@@ -147,8 +163,12 @@ a img {
 	overflow: hidden;
 }
 
-#menulist li.carrot a, #menulist li a:hover {
-	background: #444;
+#menulist li.submenu a.top {
+	background: url('../images/arrowright.png') 163px center no-repeat;	
+}
+
+#menulist li.carrot a.top, #menulist li:hover a.top, #menulist li a:hover, #menulist li li.carrot a {
+	background-color: #444;
 }
 
 #menulist li.selected a {
@@ -158,6 +178,8 @@ a img {
 #menulist li.selected a:hover, #menulist li.selected.carrot a {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 }
+
+
 
 #menulist li#link-tags, #menulist li#link-logs {
 	padding-bottom: 5px;
@@ -1105,6 +1127,18 @@ body.page-logs .item input[type=checkbox] {
 	margin-left: 10px;
 }
 
+body.page-logs .item .message {
+	cursor: help;
+}
+
+body.page-logs .item .more, body.page-logs .item.expanded .less {
+	display:none;
+}
+
+body.page-logs .item.expanded .more {
+	display:block;
+}
+
 
 /*- USERS & GROUPS PAGES */
 
@@ -1249,6 +1283,10 @@ body.page-options .item {
 	margin-bottom: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+}
+
+.plugins #pluginconfigure select {
+	width:30%;
 }
 
 
@@ -1446,6 +1484,144 @@ body.page-Manage .state {
 	overflow: hidden;
 }
 
+.authorinfo .empty {
+	font-style: italic;
+}
+
+.authorinfo .keyval .label, .authorinfo .keyval strong {
+	float:left;	
+}
+
+.authorinfo .keyval .label {
+	width:60%;
+}
+
+.authorinfo .keyval strong {
+	width:40%;
+}
+
+.authorinfo .spam strong {
+	color:#FF0000;
+}
+
+/*- EDIT COMMENT PAGE */
+.page-comment .overview .textual a, .page-comment .overview .textual strong {
+	color: #000;
+	font-weight: bold;
+}
+
+.page-comment .overview .textual {
+	text-align: center;
+	font: 1.1em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
+	color: #333;
+}
+
+.page-comment .overview .buttons {
+	float:left;
+}
+
+#page .form.comment #content_wrapper {
+	margin-top: 30px;
+}
+
+#page .form.comment #content_wrapper .container, #page .form.comment .container.pagesplitter, #page .form.comment .container.pagesplitter .container {
+	background: transparent none repeat scroll 0% 0%;
+	overflow: visible;
+	padding: 0px;
+	-webkit-box-shadow: none;
+	border:none;
+}
+
+#page .form.comment .buttons .status, #page .form.comment .buttons .button, #page .form.comment .buttons .button input {
+	float: left;
+	width: 130px;
+}
+
+#page .form.comment .buttons .status {
+	text-align: center;
+	-moz-border-radius: 9px;
+	-webkit-border-radius: 9px;
+	padding:3px 0;
+	line-height:18px;
+}
+
+#page .form.comment .buttons .delete {
+	margin-left: 0;
+	margin-right: 20px;
+}
+
+#page .form.comment .buttons .spam {
+	margin-left: 25px;
+	margin-right: 0;
+}
+
+#page .form.comment .buttons .status.spam {
+	background: #f8595f;
+	color: #FFF;
+}
+
+#page .form.comment .buttons .unapprove {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+#page .form.comment .buttons .status.unapprove {
+	background: #fcd915;
+	color: #333;
+}
+
+#page .form.comment .buttons .approve {
+	margin-left: 0;
+	margin-right: 15px;
+}
+
+#page .form.comment .buttons .status.approve {
+	background: #34DB15;
+	color: #000;
+}
+
+#page .form.comment .buttons .save {
+	margin-left: 20px;
+	margin-right: 0;
+}
+
+#page .comments .button
+{
+	margin-left: 0!important;
+}
+
+#page .comments .buttons span{
+	padding-bottom: 5px;
+	margin-left: 10px;
+}
+
+#page .comment .buttons div{
+	padding-bottom: 1px;
+}
+
+#page .comments .buttons span.delete{
+	border-bottom:2px black solid;
+}
+
+#page .comments .buttons span.approve,
+#page .comment .buttons div.approve{
+	border-bottom:2px #339933 solid;
+}
+
+#page .comments .buttons span.unapprove,
+#page .comment .buttons div.unapprove{
+	border-bottom:2px #fcd915 solid;
+}
+
+#page .comments .buttons span.spam,
+#page .comment .buttons div.spam{
+	border-bottom:2px #f8595f solid;
+}
+
+#page .comment .buttons div.active {
+	border-bottom-color:#CCC;
+}
+
 /* Inline Comments Editor */
 
 
@@ -1628,7 +1804,7 @@ body.page-tags .container span {
 	white-space: nowrap;
 	}
 
-body.page-tags .container .selected {
+body.page-tags .container .selected label {
 	color: #fb430f;
 }
 
@@ -1638,8 +1814,19 @@ body.page-tags .container sup {
 	margin-left: 2px;
 }
 
-body.page-tags a.tag:hover {
-	color: orange;
+body.page-tags #tag_collection input {
+	display:none;
+}
+
+body.page-tags #tag_collection .item {
+	background: transparent !important;
+	border: none;
+	margin:0;
+	padding:0;
+}
+
+body.page-tags .item.tag label:hover {
+	color: orange !important;
 	text-decoration: none;
 }
 

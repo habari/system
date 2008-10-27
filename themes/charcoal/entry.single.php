@@ -3,10 +3,10 @@
 			<div id="main-posts">
 			<?php if ($show_post_nav) : ?>
 				<div class="post-nav">
-				<?php if ( $previous= $post->descend() ): ?>
+				<?php if ( $previous = $post->descend() ): ?>
 					<div class="left"> &laquo; <a href="<?php echo $previous->permalink ?>" title="<?php echo $previous->slug ?>"><?php echo $previous->title ?></a></div>
 				<?php endif; ?>
-				<?php if ( $next= $post->ascend() ): ?>
+				<?php if ( $next = $post->ascend() ): ?>
 					<div class="right"><a href="<?php echo $next->permalink ?>" title="<?php echo $next->slug ?>"><?php echo $next->title ?></a> &raquo;</div>
 				<?php endif; ?>
 					<div class="clear"></div>
@@ -24,7 +24,7 @@
 						</h3>
 					</div>
 					<div class="post-sup">
-						<span class="post-date"><?php echo $post->pubdate_out; ?></span>
+						<span class="post-date"><?php $post->pubdate->out( 'F j, Y g:ia' ); ?></span>
 						<span class="post-comments-link">
 							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('%s Comment'), _t('%s Comments') ); ?></a>
 						</span>
@@ -36,7 +36,7 @@
 					<div class="post-footer">
 					<?php if ( $user ) : ?>
 						<span class="post-edit">
-							<a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>"title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
+							<a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>"title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
 						</span>
 					<?php endif; ?>
 					</div>

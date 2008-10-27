@@ -45,7 +45,6 @@
 					</p>
 					<?php Plugins::act( 'theme_loginform_controls' ); ?>
 					<p>
-						<!--<span class="remember"><input type="checkbox" name="remember"><label for="remember"><?php _e('Remember Me'); ?></label></span>-->
 						<input class="submit" type="submit" value="<?php _e('Login'); ?>">
 					</p>
 

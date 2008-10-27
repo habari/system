@@ -70,8 +70,8 @@ class Undelete extends Plugin
 		// it in a postinfo record, so that undelete can restore
 		// it to that status
 		if($post->status != Post::status('deleted')) {
-			$post->info->prior_status= $post->status;
-			$post->status= Post::status('deleted');
+			$post->info->prior_status = $post->status;
+			$post->status = Post::status('deleted');
 			$post->update();
 			return false;
 		} else {
@@ -95,8 +95,8 @@ class Undelete extends Plugin
 	**/
 	function undelete_post( $post_id )
 	{
-		$post= Post::get( array( 'id' => $post_id ) );
-		$post->status= $post->info->prior_status;
+		$post = Post::get( array( 'id' => $post_id ) );
+		$post->status = $post->info->prior_status;
 		unset( $post->info->prior_status );
 		$post->update();
 	}
@@ -121,7 +121,7 @@ class Undelete extends Plugin
 		if ( $plugin_id == $this->plugin_id() ) {
 			switch ( $action ) {
 			case _t( 'Configure' ):
-				$ui= new FormUI( strtolower( get_class( $this ) ) );
+				$ui = new FormUI( strtolower( get_class( $this ) ) );
 				$ui->append( 'text', 'style', 'option:undelete__style', _t( 'Style declaration for deleted content:' ) );
 				$ui->append( 'submit', 'save', 'Save' );
 				$ui->on_success( array( $this, 'updated_config' ) );
@@ -129,7 +129,7 @@ class Undelete extends Plugin
 				break;
 				
 			case _t( 'Empty Trash' ):
-				$ui= new FormUI( strtolower( get_class( $this ) ) );
+				$ui = new FormUI( strtolower( get_class( $this ) ) );
 				$ui->append( 'static', 'explanation', _t('Pressing this button will permanently delete all posts from the virtual trash can. You cannot undo this.') );
 				$ui->append( 'submit', 'delete', 'Delete All' );
 				$ui->on_success( array( $this, 'deleted_all' ) );
@@ -148,7 +148,7 @@ class Undelete extends Plugin
 	
 	public function deleted_all( $ui )
 	{
-		$count= self::delete_all();
+		$count = self::delete_all();
 		
 		Session::notice(sprintf( _t('Permanently deleted %d posts'), $count));
 		return false;
@@ -156,9 +156,9 @@ class Undelete extends Plugin
 	
 	// This method will permanently delete all posts stored in the trash can
 	function delete_all() {
-		$posts= Posts::get(array('status' => Post::status('deleted'), 'nolimit' => TRUE));
+		$posts = Posts::get(array('status' => Post::status('deleted'), 'nolimit' => TRUE));
 		
-		$count= 0;
+		$count = 0;
 		
 		foreach($posts as $post) {
 			$post->delete();

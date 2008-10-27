@@ -230,7 +230,7 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.page-users, .page-options, .page-user').length != 0) {
+		if($('.page-users, .page-options, .page-user, .page-tags').length != 0) {
 			$("input#search").keyup(function (e) {
 				var str= $('input#search').val();
 				itemManage.simpleFilter(str);
@@ -258,6 +258,10 @@ var itemManage = {
 				return false;
 			});
 		}
+		
+		$('.item.controls input.rename.button').click(function() { 
+		 	itemManage.rename(); 
+		});
 	},
 	initItems: function() {
 		$('.item:not(.ignore) .checkbox input[type=checkbox]').change(function () {
@@ -270,7 +274,22 @@ var itemManage = {
 				this.checked = 1;
 			}
 		});
+		$('.item .less').click(function() {
+			itemManage.expand($(this).parent());
+		});
 		itemManage.changeItem();
+	},
+	expand: function(item) {
+		$('.item').removeClass('expanded');
+		
+		item.addClass('expanded');
+		
+		$('.more', item).click(function() {
+			itemManage.contract($(this).parent());
+		});
+	},
+	contract: function(item) {
+		item.removeClass('expanded');
 	},
 	selected: [],
 	searchCache: [],
@@ -280,7 +299,7 @@ var itemManage = {
 		
 		// cache search items on first call
 		if ( itemManage.searchCache.length == 0 ) {
-			itemManage.searchRows = $('li.item, a.tag, div.settings');
+			itemManage.searchRows = $('li.item, .item.tag, div.settings');
 			itemManage.searchCache = itemManage.searchRows.map(function() {
 				return $(this).text().toLowerCase();
 			});
@@ -311,14 +330,18 @@ var itemManage = {
 		}
 
 		$('.item:not(.ignore) .checkbox input[type=checkbox]:checked').each(function() {
-			id = $(this).attr('id');
+			check= $(this);
+			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 1;
+			check.parent().parent().addClass('selected');
 		});
 		$('.item:not(.ignore) .checkbox input[type=checkbox]:not(:checked)').each(function() {
-			id = $(this).attr('id');
+			check= $(this);
+			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
+			check.parent().parent().removeClass('selected');
 		});
 
 		itemManage.selected = selected;
@@ -427,6 +450,7 @@ var itemManage = {
 			'json'
 			);
 	},
+	rename: null,
 	remove: function( id ) {
 		itemManage.update( 'delete', id );
 	},
@@ -473,53 +497,6 @@ var itemManage = {
 				
 			}
 		});
-	}
-}
-
-// Tag Management
-var tagManage = {
-	init: function() {
-		// Return if we're not on the tags page
-		if(!$('.page-tags').length) return;
-
-		$('.tag').click(function() {
-				$(this).toggleClass('selected');
-				tagManage.changeTag();
-				return false;
-			}
-		);
-
-		$('.controls input.delete.button').click(function () {
-			tagManage.remove();
-		});
-		$('.controls input.rename.button').click(function () {
-			tagManage.rename();
-		});
-
-		$("input#search").keyup(function (e) {
-			var str= $('input#search').val();
-			itemManage.simpleFilter(str);
-			tagManage.changeTag();
-		});
-	},
-	changeTag: function() {
-		count = $('.tag.selected').length;
-
-		visible = $('.tag.selected:not(.hidden)').length;
-
-		if(count == 0) {
-			$('.controls label.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if (visible == $('.tag:not(.hidden)').length) {
-			$('.controls label.selectedtext').removeClass('none').addClass('all').text('All selected');
-			if(visible != count) {
-				$('.controls label.selectedtext').text('All visible selected (' + count + ' total)');
-			}
-		} else {
-			$('.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
-			if(visible != count) {
-				$('.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
-			}
-		}
 	}
 }
 
@@ -982,7 +959,15 @@ var theMenu = {
 
 		// Down arrow
 		$.hotkeys.add('down', {propagate:false, disableInInput: true}, function() {
-			if(($('#menu').hasClass('hovering') == true)) {
+			if($('#menulist .carrot ul li.carrot').length != 0) {
+				if ($('#menulist .carrot ul li:last').hasClass('carrot')) {
+					// Move to top if at bottom
+					$('#menulist .carrot ul li:last').removeClass('carrot');
+					$('#menulist .carrot ul li:first').addClass('carrot');
+				} else {
+					$('#menulist .carrot ul li.carrot').removeClass('carrot').next().addClass('carrot');
+				}
+			} else if(($('#menu').hasClass('hovering') == true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:first').addClass('carrot')
@@ -998,10 +983,23 @@ var theMenu = {
 			}
 			return false;
 		});
+		
+		// Left arrow
+		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
+			$('.carrot ul li.carrot').removeClass('carrot');
+		});
 
 		// Up arrow
 		$.hotkeys.add('up', {propagate:true, disableInInput: true}, function(){
-			if ($('#menu').hasClass('hovering') == true) {
+			if($('#menulist .carrot ul li.carrot').length != 0) {
+				if ($('#menulist .carrot ul li:first').hasClass('carrot')) {
+					$('#menulist .carrot ul li:first').removeClass('carrot');
+					$('#menulist .carrot ul li:last').addClass('carrot');
+				// If carrot exists, move it up
+				} else {
+					$('#menulist .carrot ul li.carrot').removeClass('carrot').prev().addClass('carrot');
+				}
+			} else if ($('#menu').hasClass('hovering') == true) {
 				// If carrot doesn't exist, select last item
 				if (!$('#menulist li').hasClass('carrot'))
 					$('#menulist li:last').addClass('carrot')
@@ -1016,6 +1014,20 @@ var theMenu = {
 				return false;
 			}
 		});
+		
+		// Right arrow
+		$.hotkeys.add('right', {propagate:true, disableInInput: true}, function(){
+			if ($('.carrot').hasClass('submenu') == true) {
+				$('.carrot ul li:first').addClass('carrot');
+			} else {
+				return false;
+			}
+		});
+		
+		// Left arrow
+		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
+			$('.carrot ul li.carrot').removeClass('carrot');
+		});
 
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
@@ -1029,21 +1041,45 @@ var theMenu = {
 
 		// Page hotkeys
 		$('#menu ul li').each(function() {
-			var hotkey = $('a span.hotkey', this).text();
+			var hotkey = $('a span.hotkey', this).eq(0).text();
 			var href = $('a', this).attr('href');
-			var owner = this;
+			var owner = $(this);
 			var blinkSpeed = 100;
-
+						
 			if (hotkey) {
 				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
 					if ($('#menu').hasClass('hovering') == true) {
-						location = href;
-						theMenu.blinkCarrot(owner)
+						if (owner.hasClass('submenu')) {
+							$('.carrot').removeClass('carrot');
+							owner.addClass('carrot');
+						} else if(owner.hasClass('sub')) {
+							// Exists in a submenu
+							if($('#menu li.carrot li.hotkey-' + hotkey).length != 0) {
+								// Hotkey exists in an active menu, use that
+								location = $('#menu li.carrot li.hotkey-' + hotkey + ' a').attr('href');
+								theMenu.blinkCarrot($('#menu li.carrot li.hotkey-' + hotkey));
+							} else {
+								// Use the first occurance of hotkey, but expand the parent first
+								user= $('#menu li li.hotkey-' + hotkey).eq(0);
+								user.parent().parent().addClass('carrot');
+								location = $('a', user).attr('href');
+								theMenu.blinkCarrot(user);
+							}
+						} else {
+							location = href;
+							theMenu.blinkCarrot(owner);
+						}
+						
 					} else {
 						return false;
 					}
 				});
 			}
+		});
+		
+		// View blog hotkey
+		$.hotkeys.add('v', { propagate: true, disableInInput: true }, function() {
+			location = $('#site').attr('href');
 		});
 
 		// Display hotkeys
@@ -1319,7 +1355,6 @@ $(document).ready(function(){
 	dashboard.init();
 	inEdit.init();
 	itemManage.init();
-	tagManage.init();
 	pluginManage.init();
 	liveSearch.init();
 	findChildren();

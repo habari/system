@@ -11,19 +11,27 @@
 
 <body id="installer">
 
+<?php $tab = 1; ?>
+
 	<div id="wrapper">
 
 		<div id="masthead">
 			<h1>Habari</h1>
 			<div id="footer">
-				<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="<?php _e('Read the user manual'); ?>"><?php _e('Manual'); ?></a> &middot;
-					<a href="http://wiki.habariproject.org/" title="<?php _e('Read the Habari wiki'); ?>">Wiki</a> &middot;
-					<a href="http://groups.google.com/group/habari-users" title="<?php _e('Ask the community'); ?>"><?php _e('Mailing List'); ?></a>
+				<p class="left"><a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="<?php _e('Read the user manual'); ?>" tabindex="<?php echo $tab++ ?>"><?php _e('Manual'); ?></a> &middot;
+					<a href="http://wiki.habariproject.org/" title="<?php _e('Read the Habari wiki'); ?>" tabindex="<?php echo $tab++ ?>">Wiki</a> &middot;
+					<a href="http://groups.google.com/group/habari-users" title="<?php _e('Ask the community'); ?>" tabindex="<?php echo $tab++ ?>"><?php _e('Mailing List'); ?></a>
 				</p>
 			</div>
 		</div>
 
+		<?php include "locale_dropdown.php"; ?>
+
 		<form action="" method="post" id="installform">
+		<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
+		
+		
+		
 		<div class="installstep ready" id="databasesetup">
 			<h2><?php _e('Database Setup'); ?></h2>
 			<a href="#" class="help-me"><?php _e('Help'); ?></a>
@@ -31,7 +39,20 @@
 
 				<div class="inputfield">
 					<label for="db_type"><?php _e('Database Type'); ?> <strong>*</strong></label>
-					<?php echo Utils::html_select( 'db_type', $pdo_drivers, $db_type ); ?>
+					<select id="db_type" name="db_type" tabindex="<?php echo $tab++; ?>">
+					<?php
+						foreach($pdo_drivers as $value => $text){
+							echo '<option value="'.$value.'"';
+							if($db_type == (string)$value) {
+								echo ' selected';
+							}
+							echo '>' . $text . "</option>\n";
+						}
+						foreach($pdo_missing_drivers as $value => $text){
+							echo '<optgroup label="' . _t('%1$s - missing PDO driver, see help', array($text)) . '"></optgroup>';
+						}
+					?>					
+					</select>
 					<div class="help">
 						<?php _e('<strong>Database Type</strong> specifies the type of database to which
 						Habari will connect.  Changing this setting may affect the other fields
@@ -45,7 +66,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
-					<input type="text" id="mysqldatabasehost" name="mysql_db_host" value="<?php echo $db_host; ?>">
+					<input type="text" id="mysqldatabasehost" name="mysql_db_host" value="<?php echo $db_host; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -59,7 +80,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
-					<input type="text" id="mysqldatabaseuser" name="mysql_db_user" value="<?php echo $db_user; ?>">
+					<input type="text" id="mysqldatabaseuser" name="mysql_db_user" value="<?php echo $db_user; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -70,7 +91,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasepass"><?php _e('Password'); ?> <strong>*</strong></label>
-					<input type="password" id="mysqldatabasepass" name="mysql_db_pass" value="<?php /* echo $db_pass; */ ?>">
+					<input type="password" id="mysqldatabasepass" name="mysql_db_pass" value="<?php /* echo $db_pass; */ ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -81,7 +102,7 @@
 
 				<div class="inputfield formysql">
 					<label for="databasetype"><?php _e('Database Name'); ?> <strong>*</strong></label>
-					<input type="text" id="mysqldatabasename" name="mysql_db_schema" value="<?php echo $db_schema; ?>">
+					<input type="text" id="mysqldatabasename" name="mysql_db_schema" value="<?php echo $db_schema; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -95,7 +116,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
-					<input type="text" id="pgsqldatabasehost" name="pgsql_db_host" value="<?php echo $db_host; ?>">
+					<input type="text" id="pgsqldatabasehost" name="pgsql_db_host" value="<?php echo $db_host; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -109,7 +130,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
-					<input type="text" id="pgsqldatabaseuser" name="pgsql_db_user" value="<?php echo $db_user; ?>">
+					<input type="text" id="pgsqldatabaseuser" name="pgsql_db_user" value="<?php echo $db_user; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -120,7 +141,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databasepass"><?php _e('Password'); ?> <strong>*</strong></label>
-					<input type="password" id="pgsqldatabasepass" name="pgsql_db_pass" value="<?php /* echo $db_pass; */ ?>">
+					<input type="password" id="pgsqldatabasepass" name="pgsql_db_pass" value="<?php /* echo $db_pass; */ ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -131,7 +152,7 @@
 
 				<div class="inputfield forpgsql">
 					<label for="databasetype"><?php _e('Database Name'); ?> <strong>*</strong></label>
-					<input type="text" id="pgsqldatabasename" name="pgsql_db_schema" value="<?php echo $db_schema; ?>">
+					<input type="text" id="pgsqldatabasename" name="pgsql_db_schema" value="<?php echo $db_schema; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -145,7 +166,7 @@
 
 				<div class="inputfield forsqlite">
 					<label for="databasefile"><?php _e('Data file'); ?> <strong>*</strong></label>
-					<input type="text" id="databasefile" name="db_file" value="<?php echo $db_file; ?>">
+					<input type="text" id="databasefile" name="db_file" value="<?php echo $db_file; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -159,7 +180,7 @@
 
 				<div class="inputfield">
 					<label for="databasetype"><?php _e('Table Prefix'); ?></label>
-					<input type="text" id="tableprefix" name="table_prefix" value="<?php echo $table_prefix; ?>" alt="">
+					<input type="text" id="tableprefix" name="table_prefix" value="<?php echo $table_prefix; ?>" alt="" tabindex="<?php echo $tab++ ?>">
 					<div class="warning"></div>
 					<div class="help">
 						<?php _e('<strong>Table Prefix</strong> is a prefix that will be appended to
@@ -182,7 +203,7 @@
 
 				<div class="inputfield">
 					<label for="sitename"><?php _e('Site Name'); ?> <strong>*</strong></label>
-					<input type="text" id="sitename" name="blog_title" value="<?php echo $blog_title; ?>">
+					<input type="text" id="sitename" name="blog_title" value="<?php echo $blog_title; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -193,7 +214,7 @@
 
 				<div class="inputfield">
 					<label for="adminuser"><?php _e('Username'); ?> <strong>*</strong></label>
-					<input type="text" id="adminuser" name="admin_username" value="<?php echo $admin_username; ?>">
+					<input type="text" id="adminuser" name="admin_username" value="<?php echo $admin_username; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -203,9 +224,9 @@
 
 				<div class="inputfield">
 					<label for="adminpass1"><?php _e('Password'); ?> <strong>*</strong></label>
-					<input type="password" id="adminpass1" name="admin_pass1" value="<?php echo $admin_pass1; ?>">
+					<input type="password" id="adminpass1" name="admin_pass1" value="<?php echo $admin_pass1; ?>" tabindex="<?php echo $tab++ ?>">
 					<label for="adminpass2"><?php _e('Password (again)'); ?> <strong>*</strong></label>
-					<input type="password" id="adminpass2" name="admin_pass2" value="<?php echo $admin_pass2; ?>">
+					<input type="password" id="adminpass2" name="admin_pass2" value="<?php echo $admin_pass2; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -215,7 +236,7 @@
 
 				<div class="inputfield">
 					<label for="adminemail"><?php _e('Admin Email'); ?> <strong>*</strong></label>
-					<input type="text" id="adminemail" name="admin_email" value="<?php echo $admin_email; ?>">
+					<input type="text" id="adminemail" name="admin_email" value="<?php echo $admin_email; ?>" tabindex="<?php echo $tab++ ?>">
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
@@ -238,7 +259,7 @@
 				<?php foreach($plugins as $plugin) { ?>
 				<div class="item clear">
 					<div class="head">
-						<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>" id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked'; ?>></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
+						<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>" id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked'; ?> tabindex="<?php echo $tab++ ?>"></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
 					</div>
 					
 					<div class="help"><?php echo $plugin['info']->description; ?></div>
@@ -247,7 +268,7 @@
 				<?php } ?>
 				
 				<div class="controls item">
-					<span class="checkbox"><input type="checkbox" name="checkbox_controller" id="checkbox_controller"></span>
+					<span class="checkbox"><input type="checkbox" name="checkbox_controller" id="checkbox_controller" tabindex="<?php echo $tab++ ?>"></span>
 					<label for="checkbox_controller">None Selected</label>
 				</div>
 			</div>
@@ -263,7 +284,7 @@
 
 				<div class="inputfield submit">
 					<p><?php _e('Habari now has all of the information needed to install itself on your server.'); ?></p>
-					<input type="submit" name="submit" value="<?php _e('Install Habari'); ?>" id="submitinstall">
+					<input type="submit" name="submit" value="<?php _e('Install Habari'); ?>" id="submitinstall" tabindex="<?php echo $tab++ ?>">
 				</div>
 
 			</div>

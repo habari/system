@@ -10,7 +10,7 @@
 
 abstract class Pluggable
 {
-	private $_class_name= null;
+	private $_class_name = null;
 	public $info;
 	public $plugin_id;
 
@@ -22,8 +22,8 @@ abstract class Pluggable
 	 * which is executed immediately after the plugin is loaded during normal execution.
 	 **/
 	public function __construct(){
-		$this->info= new InfoObject( $this->info() );
-		$this->plugin_id= $this->plugin_id();
+		$this->info = new InfoObject( $this->info() );
+		$this->plugin_id = $this->plugin_id();
 	}
 
 	/**
@@ -34,7 +34,7 @@ abstract class Pluggable
 	{
 		if(empty($this->_class_name)) {
 			$class = new ReflectionClass( get_class( $this ) );
-			$this->_class_name= $class->getFileName();
+			$this->_class_name = $class->getFileName();
 		}
 		return $this->_class_name;
 	}
@@ -76,7 +76,7 @@ abstract class Pluggable
 	 */
 	public function load_text_domain( $domain )
 	{
-		$base_dir= realpath(dirname( $this->get_file() ));
+		$base_dir = realpath(dirname( $this->get_file() ));
 		
 		return Locale::load_pluggable_domain( $domain, $base_dir );
 	}

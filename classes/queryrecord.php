@@ -63,7 +63,7 @@ class QueryRecord implements URLProperties
 		else {
 			$this->fields[$name] = $value;
 		}
-		return $this->__get($name);
+		return $value;
 	}
 
 	/**

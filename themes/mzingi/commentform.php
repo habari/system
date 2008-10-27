@@ -32,7 +32,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 		<?php 
 		if ( $post->comments->moderated->count ) {
 			foreach ( $post->comments->moderated as $comment ) {
-			$class= 'class="comment';
+			$class = 'class="comment';
 			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
 				$class.= '-unapproved';
 			}
@@ -45,7 +45,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 		       </div>
 			<div class="comment-meta">#<a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a> | 
 		       <span class="commentauthor"><?php _e('Comment by'); ?> <a href="<?php echo $comment->url; ?>"><?php echo $comment->name; ?></a></span>
-		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php echo $comment->date_out; ?></a></span><h5><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
+		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php $comment->date->out('M j, Y h:ia'); ?></a></span><h5><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
 		      </li>
 	
 		

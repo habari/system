@@ -29,6 +29,8 @@ class User extends QueryRecord
 	private $info = null;
 
 	private $group_list = null;
+	
+	protected $url_args;
 
 	/**
 	 * Get default fields for this record.
@@ -136,6 +138,7 @@ class User extends QueryRecord
 		Plugins::act('user_update_before', $this);
 		$this->info->commit();
 		$result = parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
+		EventLog::log( _t( 'User %s: Information updated.', array( $this->username ) ), 'notice', 'user', 'habari' );
 		Plugins::act('user_update_after', $this);
 		return $result;
 	}
@@ -154,6 +157,10 @@ class User extends QueryRecord
 		if(isset($this->info)) {
 			$this->info->delete_all();
 		}
+		// remove all this user's permissions
+		DB::query( 'DELETE FROM {user_token_permissions} WHERE user_id=?', array( $this->id ) );
+		// remove user from any groups
+		DB::query( 'DELETE FROM {users_groups} WHERE user_id=?', array( $this->id ) );
 		EventLog::log( sprintf(_t('User deleted: %s'), $this->username), 'info', 'default', 'habari' );
 		$result = parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
 		Plugins::act('user_delete_after', $this);
@@ -268,7 +275,7 @@ class User extends QueryRecord
 	 */
 	public static function get( $who )
 	{
-		if ( is_int( $who ) ) {
+		if ( is_numeric( $who ) ) {
 			// Got a User ID
 			$user = self::get_by_id( $who );
 		}
@@ -401,11 +408,52 @@ class User extends QueryRecord
 	 * Determine if a user has a specific permission
 	 *
 	 * @param string $permission The name of the permission to detect
+	 * @param string $access The type of access to check for (read, write, full, etc.)
 	 * @return boolean True if this user has the requested permission, false if not
 	 */
-	public function can( $permission )
+	public function can( $permission, $access = 'full' )
 	{
-		return ACL::user_can( $this, $permission );
+		return ACL::user_can( $this, $permission, $access );
+	}
+
+	/**
+	 * Assign one or more new permissions to this user
+	 * @param mixed A permission token ID, name, or array of the same
+	**/
+	public function grant( $permissions, $access = 'full' )
+	{
+		$permissions = Utils::single_array( $permissions );
+		// Use ids internally for all permissions
+		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+
+		foreach ( $permissions as $permission ) {
+			ACL::grant_user( $this->id, $permission, $access );
+			EventLog::log( _t( 'User %1$s: Access to %2$s changed to %3$s', array( $this->username, ACL::token_name( $permission ), $access ) ), 'notice', 'user', 'habari' );
+		}
+	}
+
+	/**
+	 * Deny one or more permissions to this user
+	 * @param mixed The permission ID or name to be denied, or an array of the same
+	**/
+	public function deny( $permissions )
+	{
+		$this->grant( $permissions, 'deny' );
+	}
+
+	/**
+	 * Remove one or more permissions from a user
+	 * @param mixed a permission ID, name, or array of the same
+	**/
+	public function revoke( $permissions )
+	{
+		$permissions = Utils::single_array( $permissions );
+		// get token IDs
+		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+		foreach ( $permissions as $permission ) {
+			ACL::revoke_user_permission( $this->id, $permission );
+			EventLog::log( _t( 'User %1$s: Permission to %2$s revoked.', array( $this->username, ACL::token_name( $permission ) ) ), 'notice', 'user', 'habari' );
+		}
 	}
 
 	/**
@@ -440,7 +488,11 @@ class User extends QueryRecord
 	**/
 	public function add_to_group( $group )
 	{
-		UserGroup::add( $group, $this->id );
+		$group = UserGroup::get( $group );
+		if ( $group instanceOf UserGroup ) {
+			$group->add( $this->id );
+			EventLog::log( _t( ' User %1$s: Added to %2$s group.', array( $this->username, $group->name ) ), 'notice', 'user', 'habari' );
+		}
 	}
 
 	/**
@@ -451,6 +503,7 @@ class User extends QueryRecord
 	public function remove_from_group( $group )
 	{
 		UserGroup::remove( $group, $this->id );
+		EventLog::log( _t( 'User %1$s: Removed from group %2$s.', array( $this->username, $group->name ) ), 'notice', 'user', 'habari' );
 	}
 
 	/**
@@ -487,7 +540,10 @@ class User extends QueryRecord
 	 */
 	public function get_url_args()
 	{
-		return array_merge( URL::extract_args( $this->info, 'info_' ), $this->to_array() );
+		if ( !$this->url_args ) {
+			$this->url_args = array_merge( URL::extract_args( $this->info, 'info_' ), $this->to_array() );
+		}
+		return $this->url_args;
 	}
 
 }

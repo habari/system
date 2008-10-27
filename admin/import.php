@@ -6,8 +6,8 @@
 		<form method="post" action="">
 			<?php
 			if(empty($_POST['importer'])) :
-				$import_names= array();
-				$import_names= Plugins::filter('import_names', $import_names);
+				$import_names = array();
+				$import_names = Plugins::filter('import_names', $import_names);
 				if(count($import_names) == 0):
 				?>
 				<p><?php _e('You do not currently have any import plugins installed.'); ?></p>

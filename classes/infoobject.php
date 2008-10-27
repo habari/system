@@ -6,7 +6,7 @@ class InfoObject extends InfoRecords {
 	{
 		// Don't call the parent constructor if this is read-only
 		foreach ( $params as $key => $value ) {
-			$this->$key= $value;
+			$this->$key = $value;
 		}
 	}		
 }

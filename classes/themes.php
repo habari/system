@@ -24,9 +24,9 @@ class Themes
 				$themes = array_merge( $themes, Utils::glob( $dir, GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 
-			$themes= array_filter( $themes, create_function('$a', 'return file_exists($a . "/theme.xml");') );
-			$themefiles= array_map('basename', $themes);
-			self::$all_themes= array_combine($themefiles, $themes);
+			$themes = array_filter( $themes, create_function('$a', 'return file_exists($a . "/theme.xml");') );
+			$themefiles = array_map('basename', $themes);
+			self::$all_themes = array_combine($themefiles, $themes);
 		}
 		return self::$all_themes;
 	}
@@ -45,8 +45,8 @@ class Themes
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
 
-				if ( $screenshot= Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
-					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/" . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
+				if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
+					$themedata['screenshot'] = Site::get_url( 'habari' ) . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
 				}
 				else {
 					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/system/admin/images/screenshot_default.png";
@@ -64,17 +64,17 @@ class Themes
 	 */
 	private static function get_active_theme_dir()
 	{
-		$theme_dir= Options::get('theme_dir');
-		$themes= Themes::get_all();
+		$theme_dir = Options::get('theme_dir');
+		$themes = Themes::get_all();
 
 		if (!isset($themes[$theme_dir]))
 		{
-			$theme_exists= false;
+			$theme_exists = false;
 			foreach ($themes as $themedir) {
 				if (file_exists(Utils::end_in_slash($themedir) . 'theme.xml')) {
-					$theme_dir= basename($themedir);
+					$theme_dir = basename($themedir);
 					Options::set('theme_dir', basename($themedir));
-					$theme_exists= true;
+					$theme_exists = true;
 					break;
 				}
 			}
@@ -91,12 +91,12 @@ class Themes
 	 **/
 	public static function get_active()
 	{
-		$theme= new QueryRecord();
-		$theme->theme_dir= Themes::get_active_theme_dir();
+		$theme = new QueryRecord();
+		$theme->theme_dir = Themes::get_active_theme_dir();
 
-		$data= simplexml_load_file( Utils::end_in_slash($theme->theme_dir) . 'theme.xml' );
+		$data = simplexml_load_file( Utils::end_in_slash($theme->theme_dir) . 'theme.xml' );
 		foreach ( $data as $name=>$value) {
-			$theme->$name= (string) $value;
+			$theme->$name = (string) $value;
 		}
 		return $theme;
 	}
@@ -107,9 +107,9 @@ class Themes
 	 */
 	public static function get_active_data()
 	{
-		$all_data= Themes::get_all_data();
-		$active_theme_dir= basename(Themes::get_active_theme_dir());
-		$active_data= $all_data[$active_theme_dir];
+		$all_data = Themes::get_all_data();
+		$active_theme_dir = basename(Themes::get_active_theme_dir());
+		$active_data = $all_data[$active_theme_dir];
 		return $active_data;
 	}
 
@@ -123,6 +123,7 @@ class Themes
 	{
 		Options::set( 'theme_name', $theme_name );
 		Options::set( 'theme_dir', $theme_dir );
+		EventLog::log( _t( 'Activated Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
 	}
 
 	/**
@@ -136,7 +137,7 @@ class Themes
 	 * @param template_engine ( optional ) specify a template engine
 	 * @param theme_dir       ( optional ) specify a theme directory
 	 **/
-	public static function create( $name= '', $template_engine= '', $theme_dir= '' )
+	public static function create( $name = '', $template_engine = '', $theme_dir = '' )
 	{
 		if ( $name != '' ) {
 			/*
@@ -147,42 +148,42 @@ class Themes
 			if ( $template_engine != '' ) {
 				/* we load template engine from specified args, not DB */
 				$themedata = new QueryRecord();
-				$themedata->name= func_get_arg( 0 );
-				$themedata->template_engine= $template_engine;
+				$themedata->name = func_get_arg( 0 );
+				$themedata->template_engine = $template_engine;
 				$themedata->theme_dir = $themedata->name;
 				$themedata->version = 0;
 				if( $theme_dir != '' ) {
-					$themedata->theme_dir= $theme_dir;
+					$themedata->theme_dir = $theme_dir;
 				}
 				else {
-					$themedata->theme_dir= HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
+					$themedata->theme_dir = HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
 				}
 			}
 			else {
 				/* lookup in DB for template engine info. */
-				$themedata= self::get_by_name( $name );
+				$themedata = self::get_by_name( $name );
 				if ( empty( $themedata ) ) {
 					die( _t('Theme not installed.') );
 				}
-				$themedata->theme_dir= HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
+				$themedata->theme_dir = HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
 			}
 		}
 		else {
 			// Grab the theme from the database
-			$themedata= self::get_active();
+			$themedata = self::get_active();
 			if ( empty( $themedata ) ) {
 				die( _t('Theme not installed.') );
 			}
 		}
 
-		$classname= 'Theme';
+		$classname = 'Theme';
 		/**
 		 * @todo Should we include_once a theme's theme.php file here?
 		 **/
 		if( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
 			include_once( $themedata->theme_dir . 'theme.php' );
 			if( defined('THEME_CLASS') ) {
-				$classname= THEME_CLASS;
+				$classname = THEME_CLASS;
 			}
 		}
 

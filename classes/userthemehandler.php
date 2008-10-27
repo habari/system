@@ -6,7 +6,7 @@
  */
 class UserThemeHandler extends ActionHandler
 {
-	private $theme= null;
+	private $theme = null;
 
 	/**
 	 * Constructor for the default theme handler.  Here, we
@@ -15,7 +15,7 @@ class UserThemeHandler extends ActionHandler
 	 */
 	public function __construct()
 	{
-		$this->theme= Themes::create();
+		$this->theme = Themes::create();
 	}
 
 	/**
@@ -29,18 +29,18 @@ class UserThemeHandler extends ActionHandler
 	 */
 	public function act( $action )
 	{
-		$this->action= $action;
+		$this->action = $action;
 		$this->theme->assign('matched_rule', URL::get_matched_rule());
-		$request= new StdClass();
+		$request = new StdClass();
 		foreach(RewriteRules::get_active() as $rule) {
 			$request->{$rule->name}= false;
 		}
 		$request->{$this->theme->matched_rule->name}= true;
 		$this->theme->assign('request', $request);
 
-		$action_method= 'act_' . $action;
-		$before_action_method= 'before_' . $action_method;
-		$after_action_method= 'after_' . $action_method;
+		$action_method = 'act_' . $action;
+		$before_action_method = 'before_' . $action_method;
+		$after_action_method = 'after_' . $action_method;
 
 		$this->theme->$before_action_method();
 		try {

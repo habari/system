@@ -10,7 +10,7 @@
 abstract class InfoRecords implements URLProperties
 {	
 	// the info array
-	protected $__inforecord_array= array();
+	protected $__inforecord_array = array();
 	// table which contains the info records
 	protected $_table_name;
 	// name of the primary key in the info record table
@@ -18,7 +18,9 @@ abstract class InfoRecords implements URLProperties
 	// value of the primary key - the master record
 	protected $_key_value;
 	// set to TRUE only when the inforecords have been loaded
-	protected $_loaded= FALSE;
+	protected $_loaded = FALSE;
+	
+	protected $url_args;
 
 	/**
 	 * Takes three parameters. The table of the options table, the name of the master key  and the record_id for which options are managed.
@@ -32,12 +34,12 @@ abstract class InfoRecords implements URLProperties
 	 * @param mixed $key_value (optional) the master record key value (for example, info for post_id = 1 managed by setting this param to 1). Use 
 	 *		set_key method if not set here.
 	 **/
-	public function __construct( $table_name, $key_name, $key_value= NULL ) 
+	public function __construct( $table_name, $key_name, $key_value = NULL ) 
 	{	
-		$this->_table_name= $table_name;
-		$this->_key_name= $key_name;
-		$this->_key_value= $key_value;
-		$this->_loaded= FALSE;
+		$this->_table_name = $table_name;
+		$this->_key_name = $key_name;
+		$this->_key_value = $key_value;
+		$this->_loaded = FALSE;
 	}
 	
 	/**
@@ -59,7 +61,7 @@ abstract class InfoRecords implements URLProperties
 	 **/
 	public function set_key( $metadata_key )
 	{
-		$this->_key_value= $metadata_key;
+		$this->_key_value = $metadata_key;
 	}
 	
 	/**
@@ -81,7 +83,7 @@ abstract class InfoRecords implements URLProperties
 			return;
 		}
 		 
-		$result= DB::get_results( '
+		$result = DB::get_results( '
 			SELECT name, value, type
 			FROM ' . $this->_table_name . '
 			WHERE ' . $this->_key_name . ' = ?',
@@ -98,7 +100,7 @@ abstract class InfoRecords implements URLProperties
 			}
 		}
 		
-		$this->_loaded= TRUE;
+		$this->_loaded = TRUE;
 	}
 
 	/**
@@ -158,13 +160,16 @@ abstract class InfoRecords implements URLProperties
 	}	
 
 	/**
-	 * Returns an array with the current field settings
-	 * @return array The field settings as they would be saved
+	 * Returns a set of properties used by URL::get to create URLs
+	 * @return array Properties of this post used to build a URL
 	 **/
 	public function get_url_args()
 	{
-		$this->_load();
-		return array_map( create_function( '$a', 'return $a["value"];' ), $this->__inforecord_array );
+		if ( !$this->url_args ) {
+			$this->_load();
+			$this->url_args = array_map( create_function( '$a', 'return $a["value"];' ), $this->__inforecord_array );
+		}
+		return $this->url_args;
 	}
 	
 	/**
@@ -179,7 +184,7 @@ abstract class InfoRecords implements URLProperties
 		if(empty($this->_table_name)) {
 			return;
 		}
-		$result= DB::query( '
+		$result = DB::query( '
 			DELETE FROM ' . $this->_table_name . '
 			WHERE ' . $this->_key_name . ' = ?',
 			array( $this->_key_value )
@@ -201,7 +206,7 @@ abstract class InfoRecords implements URLProperties
 	public function commit( $metadata_key = null )
 	{
 		if ( isset( $metadata_key ) ) {
-			$this->_key_value= $metadata_key;
+			$this->_key_value = $metadata_key;
 		}
 		// If the info is not already loaded, and the key value is empty, 
 		// then we don't have enough info to do the commit
@@ -213,7 +218,7 @@ abstract class InfoRecords implements URLProperties
 			if( isset( $record['changed'] ) && $record['changed'] ) {
 				$value = $record['value'];
 				if ( is_array( $value ) || is_object( $value ) ) {
-					$result= DB::update( 
+					$result = DB::update( 
 						$this->_table_name, 
 						array(
 							$this->_key_name=>$this->_key_value, 
@@ -225,7 +230,7 @@ abstract class InfoRecords implements URLProperties
 					); 
 				}			
 				else {
-					$result= DB::update( 
+					$result = DB::update( 
 						$this->_table_name, 
 						array(
 							$this->_key_name=>$this->_key_value, 

@@ -30,10 +30,9 @@
 	</span>
 </div>
 
-
 <form method="post" action="">
 <div class="container users">
-	<form method="post" action="">
+	
 	<div class="addnewuser item">
 
 		<label for="new_username" class="incontent">Username</label>
@@ -48,15 +47,12 @@
 			<label for="new_pass2" class="incontent">Password Again</label>
 			<input type="password" name="new_pass2" id="new_pass2" class="border">
 
-		<input type="hidden" name="action" value="newuser">
-		<input type="submit" value="<?php _e('Add User'); ?>">
+		<input type="submit" name="newuser" value="<?php _e('Add User'); ?>">
 
 	</div>
-	</form>
 
 	<?php $theme->display('users_items'); ?>
 </div>
-
 
 <div class="container transparent">
 	<div class="controls item">
@@ -65,14 +61,13 @@
 			<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 		</span>
 
-		<input type="hidden" name="action" value="delete">
 		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 	
 		<span class="reassign minor">
 			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
-			<input type="submit" value="<?php _e('Delete Selected'); ?>">
+			<input type="submit" name="delete" value="<?php _e('Delete Selected'); ?>">
 		</span>
 	</div>
 </div>

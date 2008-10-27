@@ -6,7 +6,7 @@ function handleAjaxError(msg, status, err)
 	}
 	$('#installerror').html(
 		'<strong>Installation Issue</strong>'+
-		'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="noVerify();">continue without verification</a>.</p>' +
+		'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="doc/manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="noVerify();">continue without verification</a>.</p>' +
 //		'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
 		'<strong>Server Response</strong>'+
 		'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
@@ -290,7 +290,7 @@ $(document).ready(function() {
 	$('.help-me').click(function(){$(this).parents('.installstep').find('.help').slideToggle();return false;});
 	$('.help').hide();
 	$('.installstep').removeClass('ready');
-	$('.installstep:first').addClass('ready');
+	$('.installstep:eq(0), .installstep:eq(1)').addClass('ready');
 	$('.javascript-disabled').hide();
 	$('#installform').before('<div class="installerror error" id="installerror"></div>');
 	$('#installerror').hide();
@@ -302,5 +302,7 @@ $(document).ready(function() {
 	$('#db_type').change(setDatabaseType);
 	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
 	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
-	$('#databaseuser').focus()
+	$('#locale').focus().change(function() {
+		$('#locale-form').submit();
+	});
 });

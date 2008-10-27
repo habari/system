@@ -7,15 +7,15 @@
  **/
 class Error extends Exception
 {
-	protected $message= '';
+	protected $message = '';
 	protected $is_error = false;
-	
+
 	/**
 	 * Constructor for the Error class
-	 * 
+	 *
 	 * @param string $message Exception to display
 	 * @param integer $code Code of the exception
-	 * @param boolean $is_error true if the exception represents an error handled by the Error class 
+	 * @param boolean $is_error true if the exception represents an error handled by the Error class
 	 */
 	public function __construct($message = 'Generic Habari Error', $code = 0, $is_error = false)
 	{
@@ -53,8 +53,17 @@ class Error extends Exception
 		if ( DEBUG ) {
 			self::print_backtrace( $exception->getTrace() );
 		}
+
+		if ( Options::get( 'log_backtraces' ) || DEBUG ) {
+			$backtrace = print_r( $exception->getTrace(), true );
+		}
+		else {
+			$backtrace = null;
+		}
+
+		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, get_class( $exception ), 'default', null, $backtrace );
 	}
-	
+
 	/**
 	 * Get the error text, file, and line number from the backtrace, which is more accurate
 	 *
@@ -62,12 +71,12 @@ class Error extends Exception
 	 */
 	public function humane_error()
 	{
-		$trace= $this->getTrace();
-		$trace1= reset($trace);
-		
-		$file= isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
-		$line= isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
-		
+		$trace = $this->getTrace();
+		$trace1 = reset($trace);
+
+		$file = isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
+		$line = isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
+
 		return sprintf(_t('%1$s in %2$s line %3$s on request of "%4$s"'), $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI']);
 	}
 
@@ -81,7 +90,7 @@ class Error extends Exception
 		}
 
 		// Don't be fooled, we can't actually handle most of these.
-		$error_names= array(
+		$error_names = array(
 			E_ERROR => 'Error',
 			E_WARNING => 'Warning',
 			E_PARSE => 'Parse Error',
@@ -98,32 +107,44 @@ class Error extends Exception
 		);
 
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
-			$errfile= substr( $errfile, strlen( HABARI_PATH ) + 1 );
+			$errfile = substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
 
-		printf(
-			"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
-			$error_names[$errno],
-			$errstr,
-			$errfile,
-			$errline
-		);
-		if( DEBUG ) {
-			Error::print_backtrace();
+		if ( ini_get('display_errors') || DEBUG ) {
+			printf(
+				"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
+				$error_names[$errno],
+				$errstr,
+				$errfile,
+				$errline
+			);
+			if( DEBUG ) {
+				Error::print_backtrace();
+			}
+
+			if ( Options::get( 'log_backtraces' ) || DEBUG ) {
+				$backtrace = print_r( debug_backtrace(), true );
+			}
+			else {
+				$backtrace = null;
+			}
 		}
-		
-		throw new Error($errstr, 0, true);
+
+		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, $error_names[ $errno ], 'default', null, $backtrace );
+
+		// throwing an Error make every error fatal!
+		//throw new Error($errstr, 0, true);
 	}
 
 	/**
 	 * Print a backtrace in a format that looks reasonable in both rendered HTML and text
-	 * 
+	 *
 	 * @param array $trace An optional array of trace data
 	 */
-	private static function print_backtrace( $trace= null )
+	private static function print_backtrace( $trace = null )
 	{
 		if ( !isset($trace) ) {
-			$trace= debug_backtrace();
+			$trace = debug_backtrace();
 		}
 		print "<pre class=\"backtrace\">\n";
 		$defaults = array(
@@ -136,17 +157,17 @@ class Error extends Exception
 
 		foreach ( $trace as $n => $a ) {
 			$a = array_merge($defaults, $a);
-			
+
 			if($a['class'] == 'Error') {
 				continue;
 			}
-		
+
 			if ( strpos( $a['file'], HABARI_PATH ) === 0 ) {
 				$a['file']= substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
 
 			if(defined('DEBUG_ARGS')) {
-				$args= array();
+				$args = array();
 				foreach ( $a['args'] as $arg ) {
 					$args[]= htmlentities( str_replace(
 						array( "\n", "\r" ),
@@ -154,19 +175,19 @@ class Error extends Exception
 						var_export( $arg, true )
 					) );
 				}
-				$args= implode( ",    ", $args );
+				$args = implode( ",    ", $args );
 				if ( strlen( $args ) > 1024 ) {
-					$args= substr( $args, 0, 1021 ) . '...';
+					$args = substr( $args, 0, 1021 ) . '...';
 				}
 			}
 			else {
 				$args = count($a['args']) == 0 ? ' ' : sprintf(_n(' ...%d arg... ', ' ...%d args... ', count($a['args'])), $a['args']);
 			}
 
-			printf( 
+			printf(
 				_t("%s line %d:\n  %s(%s)\n"),
-				$a['file'], 
-				$a['line'], 
+				$a['file'],
+				$a['line'],
 				$a['class'].$a['type'].$a['function'],
 				$args
 			);

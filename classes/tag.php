@@ -25,10 +25,10 @@ class Tag extends QueryRecord
 	 * Constructor for the Tag class.
 	 * @param array $paramarray an associative array of initial Tag field values.
 	 **/
-	public function __construct( $paramarray= array() )
+	public function __construct( $paramarray = array() )
 	{
 		// Defaults
-		$this->fields= array_merge(
+		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields,
 			$this->newfields
@@ -48,10 +48,10 @@ class Tag extends QueryRecord
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return Tag The first tag that matched the given criteria
 	 **/
-	static function get( $paramarray= array() )
+	static function get( $paramarray = array() )
 	{
 		// Defaults
-		$defaults= array ('where' => array(),	'fetch_fn' => 'get_row');
+		$defaults = array ('where' => array(),	'fetch_fn' => 'get_row');
 		foreach ( $defaults['where'] as $index => $where ) {
 			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
 		}
@@ -69,7 +69,7 @@ class Tag extends QueryRecord
 	 **/
 	static function create( $paramarray )
 	{
-		$tag= new Tag( $paramarray );
+		$tag = new Tag( $paramarray );
 		$tag->insert();
 		return $tag;
 	}
@@ -83,11 +83,11 @@ class Tag extends QueryRecord
 	 */
 	public static function attach_to_post( $tag_id, $post_id ) 
 	{
-		$result= TRUE;
+		$result = TRUE;
 		Plugins::act( 'tag_attach_to_post_before', $tag_id, $post_id );
 		if (0 == (int) DB::get_value( "SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?", array( $tag_id, $post_id ) ) ) {
-			$sql= "INSERT INTO {tag2post} (tag_id, post_id) VALUES (?,?)";
-			$result= DB::query( $sql, array( $tag_id, $post_id ) );
+			$sql = "INSERT INTO {tag2post} (tag_id, post_id) VALUES (?,?)";
+			$result = DB::query( $sql, array( $tag_id, $post_id ) );
 		}
 		Plugins::act( 'tag_attach_to_post_after', $tag_id, $post_id );
 		return $result;
@@ -103,24 +103,24 @@ class Tag extends QueryRecord
 		// determine the base value from:
 		// - the new slug
 		if ( isset( $this->newfields['tag_slug']) && $this->newfields['tag_slug'] != '' ) {
-			$value= $this->newfields['tag_slug'];
+			$value = $this->newfields['tag_slug'];
 		}
 		// - the existing slug
 		elseif ( $this->fields['tag_slug'] != '' ) {
-			$value= $this->fields['tag_slug'];
+			$value = $this->fields['tag_slug'];
 		}
 		// - the new tag's text
 		elseif ( isset( $this->newfields['tag_text'] ) && $this->newfields['tag_text'] != '' ) {
-			$value= $this->newfields['tag_text'];
+			$value = $this->newfields['tag_text'];
 		}
 		// - the existing tag text 
 		elseif ( $this->fields['tag_text'] != '' ) {
-			$value= $this->fields['tag_text'];
+			$value = $this->fields['tag_text'];
 		}
 
 		// make sure our slug is unique
-		$slug= Plugins::filter( 'tag_setslug', $value );
-		$slug= Utils::slugify( $slug );
+		$slug = Plugins::filter( 'tag_setslug', $value );
+		$slug = Utils::slugify( $slug );
 		return $this->newfields['tag_slug']= $slug;
 	}
 
@@ -132,8 +132,8 @@ class Tag extends QueryRecord
 	{
 		$this->setslug();
 
-		$allow= true;
-		$allow= Plugins::filter( 'tag_insert_allow', $allow, $this );
+		$allow = true;
+		$allow = Plugins::filter( 'tag_insert_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
@@ -144,10 +144,10 @@ class Tag extends QueryRecord
 			Plugins::act( 'tag_update_' . $fieldname, $this, ( $this->id == 0 ) ? null : $value, $this->$fieldname );
 		}
 
-		$result= parent::insertRecord( DB::table( 'tags' ) );
+		$result = parent::insertRecord( DB::table( 'tags' ) );
 		$this->newfields['id']= DB::last_insert_id(); // Make sure the id is set in the Tag object to match the row id
-		$this->fields= array_merge( $this->fields, $this->newfields );
-		$this->newfields= array();
+		$this->fields = array_merge( $this->fields, $this->newfields );
+		$this->newfields = array();
 		EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
 		Plugins::act( 'tag_insert_after', $this );
 
@@ -161,8 +161,8 @@ class Tag extends QueryRecord
 	public function update()
 	{
 
-		$allow= true;
-		$allow= Plugins::filter( 'tag_update_allow', $allow, $this );
+		$allow = true;
+		$allow = Plugins::filter( 'tag_update_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
@@ -182,10 +182,10 @@ class Tag extends QueryRecord
 			Plugins::act( 'tag_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
 		}
 
-		$result= parent::updateRecord( DB::table( 'tags' ), array( 'id' => $this->id ) );
+		$result = parent::updateRecord( DB::table( 'tags' ), array( 'id' => $this->id ) );
 
-		$this->fields= array_merge( $this->fields, $this->newfields );
-		$this->newfields= array();
+		$this->fields = array_merge( $this->fields, $this->newfields );
+		$this->newfields = array();
 		Plugins::act( 'tag_update_after', $this );
 		return $result;
 	}
@@ -196,8 +196,8 @@ class Tag extends QueryRecord
 	 */
 	public function delete()
 	{
-		$allow= true;
-		$allow= Plugins::filter( 'tag_delete_allow', $allow, $this );
+		$allow = true;
+		$allow = Plugins::filter( 'tag_delete_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
@@ -205,11 +205,11 @@ class Tag extends QueryRecord
 		Plugins::act( 'tag_delete_before', $this );
 
 		// Delete all tag2post records associated with this tag
-		$sql= "DELETE FROM {tag2post} WHERE tag_id = ?";
+		$sql = "DELETE FROM {tag2post} WHERE tag_id = ?";
 		DB::query( $sql, array( $this->id ) );
 
 		// Delete the parent tags record
-		$result= parent::deleteRecord( DB::table( 'tags' ), array( 'id'=>$this->id ) );
+		$result = parent::deleteRecord( DB::table( 'tags' ), array( 'id'=>$this->id ) );
 		EventLog::log( sprintf(_t('Tag %1$s (%2$s) deleted.'), $this->id, $this->tag_text), 'info', 'content', 'habari' );
 
 		Plugins::act( 'tag_delete_after', $this );

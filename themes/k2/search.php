@@ -3,18 +3,18 @@
   <div class="content">
    <div id="primary">
     <div id="primarycontent" class="hfeed">
-     <h2><?php printf( _t("Search results for '%s'"), htmlspecialchars( $criteria ) ); ?></h2>
+     <h2><?php _e('Search results for %s', array( htmlspecialchars( $criteria ) ) ); ?></h2>
 <?php foreach ( $posts as $post ) { ?>
      <div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 
       <div class="entry-head">
        <h3 class="entry-title"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h3>
        <small class="entry-meta">
-        <span class="chronodata"><abbr class="published"><?php echo $post->pubdate_out; ?></abbr></span><?php if ( $show_author ) { ?> <?php _e('by'); ?> <?php echo $post->author->displayname; ?> <?php } ?>
+        <span class="chronodata"><abbr class="published"><?php $post->pubdate->out('F j, Y g:ia'); ?></abbr></span> <?php if ( $show_author ) { _e( 'by %s', array( $post->author->displayname ) ); } ?>
         <span class="commentslink"><a href="<?php echo $post->permalink; ?>#comments" title="<?php _e('Comments to this post'); ?>"><?php echo $post->comments->approved->count; ?>
 		<?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></span>
-<?php if ( $user ) { ?>
-        <span class="entry-edit"><a href="<?php URL::out( 'admin', 'page=publish&slug=' . $post->slug); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
+<?php if ( $user instanceof User ) { ?>
+        <span class="entry-edit"><a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
 <?php } ?>
 <?php if ( is_array( $post->tags ) ) { ?>
         <span class="entry-tags"><?php echo $post->tags_out; ?></span>

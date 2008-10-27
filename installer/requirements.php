@@ -5,10 +5,12 @@
     <meta http-equiv="Content-Language" content="en"/>
     <meta name="robots" content="no index,no follow" />
     <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="stylesheet" type="text/css" media="all" href="system/installer/style.css" />
+    <link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.js"></script>
 	  <title><?php _e('Install Habari'); ?></title>
   </head>
-  <body>
+<body id="installer">
+<?php include "locale_dropdown.php"; ?>
     <div id="container">
       <div id="header">
         <h1><?php _e('Before you install'); ?> <em>Habari</em>...</h1>
@@ -74,7 +76,7 @@
 	 	foreach ($missing_extensions as $ext_name => $ext_url) {
 			$missing_ext_html[]= '<a href="' . $ext_url . '">' . $ext_name . '</a>';
 		}
-		$missing_ext_html= implode( ', ', $missing_ext_html );
+		$missing_ext_html = implode( ', ', $missing_ext_html );
 		?>
           <h2><?php _e('Missing Extensions'); ?></h2>
           <p class="instructions">

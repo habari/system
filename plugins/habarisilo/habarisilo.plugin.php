@@ -8,12 +8,12 @@
 
 class HabariSilo extends Plugin implements MediaSilo
 {
-	protected $root= null;
-	protected $url= null;
+	protected $root = null;
+	protected $url = null;
 
-	const SILO_NAME= 'Habari';
+	const SILO_NAME = 'Habari';
 
-	const DERIV_DIR= '.deriv';
+	const DERIV_DIR = '.deriv';
 
 	/**
 	 * Provide plugin info to the system
@@ -37,9 +37,9 @@ class HabariSilo extends Plugin implements MediaSilo
 	 */
 	public function action_init()
 	{
-		$user_path= HABARI_PATH . '/' . Site::get_path('user', true);
-		$this->root= $user_path . 'files'; //Options::get('simple_file_root');
-		$this->url= Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
+		$user_path = HABARI_PATH . '/' . Site::get_path('user', true);
+		$this->root = $user_path . 'files'; //Options::get('simple_file_root');
+		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
 		
 		if (! $this->check_files()) {
 			Session::error( "Web server does not have permission to create 'files' directory for SimpleFile Media Silo." );
@@ -52,9 +52,9 @@ class HabariSilo extends Plugin implements MediaSilo
 	 * Checks if files directory is usable
 	 */
 	private function check_files() {
-		$user_path= HABARI_PATH . '/' . Site::get_path('user', true);
-		$this->root= $user_path . 'files'; //Options::get('simple_file_root');
-		$this->url= Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
+		$user_path = HABARI_PATH . '/' . Site::get_path('user', true);
+		$this->root = $user_path . 'files'; //Options::get('simple_file_root');
+		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
 		
 		if ( ! is_dir( $this->root ) ) {
 			if ( is_writable( $user_path ) ) {
@@ -91,10 +91,10 @@ class HabariSilo extends Plugin implements MediaSilo
 			return array();
 		}
 
-		$path= preg_replace('%\.{2,}%', '.', $path);
-		$results= array();
+		$path = preg_replace('%\.{2,}%', '.', $path);
+		$results = array();
 
-		$dir= glob($this->root . ( $path == '' ? '' : '/' ) . $path . '/*');
+		$dir = glob($this->root . ( $path == '' ? '' : '/' ) . $path . '/*');
 
 
 		foreach( $dir as $item ) {
@@ -110,8 +110,8 @@ class HabariSilo extends Plugin implements MediaSilo
 				'title' => basename( $item ),
 			);
 			if( ! is_dir( $item ) ) {
-				$thumbnail_suffix= HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
-				$thumbnail_url= $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
+				$thumbnail_suffix = HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
+				$thumbnail_url = $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
 
 				if( ! file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
 					if( ! $this->create_thumbnail( $item ) ) {
@@ -151,12 +151,12 @@ class HabariSilo extends Plugin implements MediaSilo
 			return false;
 		}
 
-		$path= preg_replace('%\.{2,}%', '.', $path);
+		$path = preg_replace('%\.{2,}%', '.', $path);
 
-		$file= $this->root . '/' . $path;
+		$file = $this->root . '/' . $path;
 
 		if( file_exists( $file ) ) {
-			$asset= new MediaAsset( self::SILO_NAME . '/' . $path );
+			$asset = new MediaAsset( self::SILO_NAME . '/' . $path );
 			$asset->set( file_get_contents( $file ) );
 			return $asset;
 		}
@@ -207,22 +207,22 @@ class HabariSilo extends Plugin implements MediaSilo
     }
 
     // Calculate the output size based on the original's aspect ratio
-		$y_displacement= 0;
+		$y_displacement = 0;
     if ( $src_width / $src_height > $max_width / $max_height ) {
-      $thumb_w= $max_width;
-      $thumb_h= $src_height * $max_width / $src_width;
+      $thumb_w = $max_width;
+      $thumb_h = $src_height * $max_width / $src_width;
 
 	  // thumbnail is not full height, position it down so that it will be padded on the
 	  // top and bottom with black
-	  $y_displacement= ($max_height - $thumb_h) / 2;
+	  $y_displacement = ($max_height - $thumb_h) / 2;
     }
     else {
-      $thumb_w= $src_width * $max_height / $src_height;
-      $thumb_h= $max_height;
+      $thumb_w = $src_width * $max_height / $src_height;
+      $thumb_h = $max_height;
     }
 
     // Create the output image and copy to source to it
-    $dst_img= ImageCreateTrueColor( $thumb_w, $max_height );
+    $dst_img = ImageCreateTrueColor( $thumb_w, $max_height );
     imagecopyresampled( $dst_img, $src_img, 0, $y_displacement, 0, 0, $thumb_w, $thumb_h, $src_width, $src_height );
 
     /* Sharpen before save?
@@ -262,8 +262,8 @@ class HabariSilo extends Plugin implements MediaSilo
 	 **/
 	public function silo_put( $path, $filedata )
 	{
-		$path= preg_replace('%\.{2,}%', '.', $path);
-		$file= $this->root . '/' . $path;
+		$path = preg_replace('%\.{2,}%', '.', $path);
+		$file = $this->root . '/' . $path;
 
 		return $filedata->save( $file );
 	}
@@ -375,30 +375,30 @@ class HabariSilo extends Plugin implements MediaSilo
 			switch( $panelname ) {
 				case 'mkdir':
 
-					$fullpath= self::SILO_NAME . '/' . $path;
+					$fullpath = self::SILO_NAME . '/' . $path;
 
-					$form= new FormUI( 'habarisilomkdir' );
+					$form = new FormUI( 'habarisilomkdir' );
 					$form->append( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>" );
 
 					// add the parent directory as a hidden input for later validation
 					$form->append( 'hidden', 'path', 'null:unused', '', $path );
-					$dir_text_control= $form->append( 'text', 'directory', 'null:unused', _t('Enter the name of the new directory to create here') );
+					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('Enter the name of the new directory to create here') );
 					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
 					$form->append( 'submit', 'submit', _t('Submit') );
 					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
 					$form->on_success( array( $this, 'mkdir_success' ) );
-					$panel= $form->get(); /* form submission magicallly happens here */
+					$panel = $form->get(); /* form submission magicallly happens here */
 
 					return $panel;
 
 					break;
 				case 'upload':
 					if( isset( $_FILES['file'] ) ) {
-						$size= Utils::human_size($_FILES['file']['size']);
+						$size = Utils::human_size($_FILES['file']['size']);
 						$panel.= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>File Uploaded: {$_FILES['file']['name']} ($size)</p>";
 
-						$path= self::SILO_NAME . '/' . preg_replace('%\.{2,}%', '.', $path). '/' . $_FILES['file']['name'];
-						$asset= new MediaAsset($path, false);
+						$path = self::SILO_NAME . '/' . preg_replace('%\.{2,}%', '.', $path). '/' . $_FILES['file']['name'];
+						$asset = new MediaAsset($path, false);
 						$asset->upload( $_FILES['file'] );
 
 						if( $asset->put() ) {
@@ -412,8 +412,8 @@ class HabariSilo extends Plugin implements MediaSilo
 					}
 					else {
 
-						$fullpath= self::SILO_NAME . '/' . $path;
-						$form_action= URL::get('admin_ajax', array('context' => 'media_panel'));
+						$fullpath = self::SILO_NAME . '/' . $path;
+						$form_action = URL::get('admin_ajax', array('context' => 'media_panel'));
 						$panel.= <<< UPLOAD_FORM
 <form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="{$form_action}" class="span-10" style="margin:0px auto;text-align: center">
 	<p style="padding-top:30px;">Upload to: <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
@@ -450,8 +450,8 @@ UPLOAD_FORM;
 	public function mkdir($form, $panel, $silo, $path)
 	{
 		/* check that the regular expression is required for this case */
-		$path= preg_replace('%\.{2,}%', '.', $path);
-		$dir= $this->root . '/' . $path;
+		$path = preg_replace('%\.{2,}%', '.', $path);
+		$dir = $this->root . '/' . $path;
 		return mkdir( $dir );
 	}
 
@@ -465,9 +465,9 @@ UPLOAD_FORM;
 	 */
 	public function mkdir_validator( $dir, $control, $form )
 	{
-		$dir= preg_replace( '%\.{2,}%', '.', $dir );
-		$path= preg_replace( '%\.{2,}%', '.', $form->path->value );
-		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
+		$dir = preg_replace( '%\.{2,}%', '.', $dir );
+		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
+		$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 
 		if ( ! is_writable( $this->root . '/' . $path ) ) {
 			return array(_t("Webserver does not have permission to create directory: {$dir}."));
@@ -485,10 +485,10 @@ UPLOAD_FORM;
 	 */
 	public function mkdir_success ( $form )
 	{
-		$dir= preg_replace( '%\.{2,}%', '.', $form->directory->value );
-		$path= preg_replace( '%\.{2,}%', '.', $form->path->value );
+		$dir = preg_replace( '%\.{2,}%', '.', $form->directory->value );
+		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
 
-		$dir= $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
+		$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 		mkdir( $dir, 0755 );
 
 		return "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>". _t('Directory Created:') ." {$form->directory->value}</p>";

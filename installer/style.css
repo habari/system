@@ -2,6 +2,8 @@
 
 body {
 	font-family: Helvetica Neue, Helvetica, Arial, Sans-Serif;
+	padding: 0;
+	margin: 0;
 	}
 
 #installer {
@@ -32,7 +34,7 @@ a {
 	}
 
 #masthead p {
-	font-size: 12px;
+	font-size: 11px;
 	text-transform: lowercase;
 	color: #666;
 	margin: 0px;
@@ -267,4 +269,11 @@ div.javascript-disabled {
 
 .items .controls label {
 	color:#888888;
+}
+
+optgroup {
+	font-style: normal;
+	color: #aaaaaa;
+	font-weight: normal;
+	padding-left: 3px;
 }

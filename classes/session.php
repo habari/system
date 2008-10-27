@@ -59,43 +59,43 @@ class Session
 	static function read( $session_id )
 	{
 		// for offline testing
-		$remote_address= isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 		// not always set, even by real browsers
-		$user_agent= isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$session= DB::get_row( 'SELECT * FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?', array( $session_id ) );
+		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		$session = DB::get_row( 'SELECT * FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?', array( $session_id ) );
 
 		// Verify session exists
 		if ( !$session ) {
 			return false;
 		}
 
-		$dodelete= false;
+		$dodelete = false;
 
 		if ( !defined( 'SESSION_SKIP_SUBNET' ) || SESSION_SKIP_SUBNET != true ) {
 			// Verify on the same subnet
-			$subnet= self::get_subnet( $remote_address );
+			$subnet = self::get_subnet( $remote_address );
 			if ( $session->subnet != $subnet ) {
-				$dodelete= true;
+				$dodelete = true;
 			}
 		}
 
 		// Verify expiry
-		if ( time() > $session->expires ) {
-			$dodelete= true;
+		if ( HabariDateTime::date_create( time() )->int > $session->expires ) {
+			$dodelete = true;
 		}
 
 		// Verify User Agent
 		if ( $user_agent != $session->ua ) {
-			$dodelete= true;
+			$dodelete = true;
 		}
 
 		// Let plugins ultimately decide
-		$dodelete= Plugins::filter( 'session_read', $dodelete, $session, $session_id );
+		$dodelete = Plugins::filter( 'session_read', $dodelete, $session, $session_id );
 
 		if ( $dodelete ) {
-			$sql= 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
-			$args= array( $session_id );
-			$sql= Plugins::filter( 'sessions_clean', $sql, 'read', $args );
+			$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
+			$args = array( $session_id );
+			$sql = Plugins::filter( 'sessions_clean', $sql, 'read', $args );
 			DB::query( $sql, $args );
 			return false;
 		}
@@ -120,19 +120,19 @@ class Session
 	static function write( $session_id, $data )
 	{
 		// for offline testing
-		$remote_address= isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 		// not always set, even by real browsers
-		$user_agent= isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
 		// Should we write this data?  Don't bother for search spiders, for example.
-		$dowrite= true;
-		$dowrite= Plugins::filter( 'session_write', $dowrite, $session_id, $data );
+		$dowrite = true;
+		$dowrite = Plugins::filter( 'session_write', $dowrite, $session_id, $data );
 
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
-			$record= array(
+			$record = array(
 				'subnet' => self::get_subnet( $remote_address ),
-				'expires' => time() + ini_get('session.gc_maxlifetime'),
+				'expires' => HabariDateTime::date_create( time() )->int + ini_get('session.gc_maxlifetime'),
 				'ua' => $user_agent,
 				'data' => $data,
 			);
@@ -152,9 +152,9 @@ class Session
 	 */
 	static function destroy( $session_id )
 	{
-		$sql= 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
-		$args= array( $session_id );
-		$sql= Plugins::filter( 'sessions_clean', $sql, 'destroy', $args );
+		$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
+		$args = array( $session_id );
+		$sql = Plugins::filter( 'sessions_clean', $sql, 'destroy', $args );
 		DB::query( $sql, $args );
 		return true;
 	}
@@ -162,13 +162,13 @@ class Session
 	/**
 	 * Session garbage collection deletes expired sessions
 	 *
-	 * @param mixed $max_lifetime Unused
+	 * @param mixed $max_lifetime Unused - The session expiration time, in seconds.
 	 */
 	static function gc( $max_lifetime )
 	{
-		$sql= 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE expires < ?';
-		$args= array( time() );
-		$sql= Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
+		$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE expires < ?';
+		$args = array( HabariDateTime::date_create( time() )->int );
+		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
 		return true;
 	}
@@ -201,7 +201,7 @@ class Session
 	 * @param mixed $value value to store
 	 * @param string $key Optional unique key for the set under which to store the value
 	 */
-	static function add_to_set( $set, $value, $key= null )
+	static function add_to_set( $set, $value, $key = null )
 	{
 		if ( !isset( $_SESSION[$set] ) ) {
 			$_SESSION[$set]= array();
@@ -220,7 +220,7 @@ class Session
 	 * @param string $notice The notice message
 	 * @param string $key An optional id that would guarantee a single unique message for this key
 	 */
-	static function notice( $notice, $key= null )
+	static function notice( $notice, $key = null )
 	{
 		self::add_to_set( 'notices', $notice, $key );
 	}
@@ -231,7 +231,7 @@ class Session
 	 * @param string $error The error message
 	 * @param string $key An optional id that would guarantee a single unique message for this key
 	 */
-	static function error( $error, $key= null )
+	static function error( $error, $key = null )
 	{
 		self::add_to_set( 'errors', $error, $key );
 	}
@@ -243,13 +243,13 @@ class Session
 	 * @param boolean $clear true to clear the messages from the session upon receipt
 	 * @return array An array of message strings
 	 */
-	static function get_set( $set, $clear= true )
+	static function get_set( $set, $clear = true )
 	{
 		if ( !isset( $_SESSION[$set] ) ) {
-			$set_array= array();
+			$set_array = array();
 		}
 		else {
-			$set_array= $_SESSION[$set];
+			$set_array = $_SESSION[$set];
 		}
 		if ( $clear ) {
 			unset( $_SESSION[$set] );
@@ -263,7 +263,7 @@ class Session
 	 * @param boolean $clear true to clear the messages from the session upon receipt
 	 * @return array And array of notice messages
 	 */
-	static function get_notices( $clear= true )
+	static function get_notices( $clear = true )
 	{
 		return self::get_set( 'notices', $clear );
 	}
@@ -275,11 +275,11 @@ class Session
 	 * @param boolean $clear true to clear the notice from the session upon receipt
 	 * @return string Return the notice message
 	 */
-	static function get_notice( $key, $clear= true )
+	static function get_notice( $key, $clear = true )
 	{
-		$notices= self::get_notices( false );
+		$notices = self::get_notices( false );
 		if ( isset( $notices[$key] ) ) {
-			$notice= $notices[$key];
+			$notice = $notices[$key];
 			if ( $clear ) {
 				self::remove_notice( $key );
 			}
@@ -293,7 +293,7 @@ class Session
 	 * @param boolean $clear true to clear the messages from the session upon receipt
 	 * @return array And array of error messages
 	 */
-	static function get_errors( $clear= true )
+	static function get_errors( $clear = true )
 	{
 		return self::get_set( 'errors', $clear );
 	}
@@ -305,11 +305,11 @@ class Session
 	 * @param boolean $clear true to clear the error from the session upon receipt
 	 * @return string Return the error message
 	 */
-	static function get_error( $key, $clear= true )
+	static function get_error( $key, $clear = true )
 	{
-		$errors= self::get_errors( false );
+		$errors = self::get_errors( false );
 		if ( isset( $errors[$key] ) ) {
-			$error= $errors[$key];
+			$error = $errors[$key];
 			if ( $clear ) {
 				self::remove_error( $key );
 			}
@@ -350,8 +350,8 @@ class Session
 	 */
 	static function messages_get( $clear = true, $callback = null )
 	{
-		$errors= self::get_errors( $clear );
-		$notices= self::get_notices( $clear );
+		$errors = self::get_errors( $clear );
+		$notices = self::get_notices( $clear );
 
 		// if callback is 'array', then just return the raw data
 		if ( $callback == 'array' ) {
@@ -398,7 +398,7 @@ class Session
 	 * @param string $key Optional key of the unique error message
 	 * @return boolean true if there are errors, false if not
 	 */
-	static function has_errors( $key= null )
+	static function has_errors( $key = null )
 	{
 		if ( isset( $key ) ) {
 			return isset( $_SESSION['errors'][$key] );
