@@ -37,6 +37,7 @@ class Comment extends QueryRecord implements IsContent
 	// static variables to hold comment status and comment type values
 	static $comment_status_list = array();
 	static $comment_type_list = array();
+	static $comment_status_actions = array();
 
 	/**
 	* static function default_fields
@@ -362,6 +363,32 @@ class Comment extends QueryRecord implements IsContent
 		);
 		self::$comment_status_list = Plugins::filter('list_comment_statuses', self::$comment_status_list);
 		return self::$comment_status_list;
+	}
+
+	/**
+	 * returns the action name of the comment status
+	 * @param mixed a comment status value, or name
+	 * @return string a string of the status action, or null
+	**/
+	public static function status_action( $status )
+	{
+		if ( empty( self::$comment_status_actions ) ) {
+			self::$comment_status_actions = array(
+				self::STATUS_UNAPPROVED => _t('Unapprove'),
+				self::STATUS_APPROVED => _t('Approve'),
+				self::STATUS_SPAM => _t('Spam'),
+			);
+			self::$comment_status_actions = Plugins::filter('list_comment_actions', self::$comment_status_actions);
+		}
+		if ( is_numeric( $status ) && isset( self::$comment_status_actions[$status] ) ) {
+			return self::$comment_status_actions[$status];
+		}
+		$statuses = array_flip( Comment::list_comment_statuses() );
+		if ( isset($statuses[$name]) ) {
+			return self::$comment_status_actions[$statuses[$name]];
+		}
+		
+		return '';
 	}
 
 

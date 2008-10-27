@@ -1433,6 +1433,10 @@ class AdminHandler extends ActionHandler
 		$this->theme->years = $years;
 		
 		$baseactions = array();
+		$statuses = Comment::list_comment_statuses();
+		foreach($statuses as $statusid => $statusname) {
+			$baseactions[$statusname]= array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
+		}
 		
 		/* Standard actions */		
 		$baseactions['delete']= array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
@@ -1442,24 +1446,14 @@ class AdminHandler extends ActionHandler
 		$baseactions['submit']= array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
 		$baseactions['cancel']= array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
 		
-		/* Per-status actions */
-		$actions=array();
-		$statuses = array_reverse(Comment::list_comment_statuses());
-		foreach($statuses as $statusname) {
-			$actions[$statusname] = $baseactions;
-			foreach($statuses as $newstatusname) {
-				if($newstatusname != $statusname) {
-					array_unshift(
-						$actions[$statusname], 
-						array('url' => 'javascript:itemManage.update(\'' . $newstatusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($newstatusname)), 'label' => _t('Mark as %s', array($newstatusname)))
-					);
-				}
-			}
-		}
-		
 		/* Allow plugins to apply actions */
-		$actions = Plugins::filter('comment_actions', $actions, $this->theme->comments);
-		$this->theme->actions = $actions;
+		$actions = Plugins::filter('comments_actions', $baseactions, $this->theme->comments);
+ 
+		foreach($this->theme->comments as $comment) {
+			$menu= $actions;
+			unset($menu[Comment::status_name($comment->status)]);
+			$comment->menu= Plugins::filter('comment_actions', $menu, $comment);
+		}
 	}
 
 	/**
