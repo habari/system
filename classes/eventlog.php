@@ -244,6 +244,7 @@ class EventLog extends ArrayObject
 
 				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
 			}
+		}
 
 		if ( isset( $page ) && is_numeric( $page ) ) {
 			$offset = ( intval( $page ) - 1 ) * intval( $limit );
@@ -304,7 +305,6 @@ class EventLog extends ArrayObject
 			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
-	}
 	}
 
 }
