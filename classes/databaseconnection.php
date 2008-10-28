@@ -714,7 +714,8 @@ class DatabaseConnection
 		// Put the upgrade files into an array using the 0-padded revision + '_0' as the key
 		$upgrades = array();
 		foreach( $upgrade_files as $file ) {
-			if( intval( basename( $file, '.sql' ) ) >= $old_version) {
+//			if( intval( basename( $file, '.sql' ) ) >= $old_version) {
+			if( intval( basename( $file, '.sql' ) ) > $old_version) {
 				$upgrades[ sprintf( '%010s_0', basename( $file, '.sql' ) )] = $file;
 			}
 		}
