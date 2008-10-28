@@ -88,7 +88,7 @@ class Error extends Exception
 		if ( ( $errno & error_reporting() ) === 0 ) {
 			return;
 		}
-
+		
 		// Don't be fooled, we can't actually handle most of these.
 		$error_names = array(
 			E_ERROR => 'Error',
@@ -121,7 +121,7 @@ class Error extends Exception
 			if( DEBUG ) {
 				Error::print_backtrace();
 			}
-
+			
 			if ( Options::get( 'log_backtraces' ) || DEBUG ) {
 				$backtrace = print_r( debug_backtrace(), true );
 			}
@@ -129,7 +129,11 @@ class Error extends Exception
 				$backtrace = null;
 			}
 		}
-
+		
+		if( !isset( $backtrace) ) {
+			$backtrace= null;
+		}
+		
 		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, $error_names[ $errno ], 'default', null, $backtrace );
 
 		// throwing an Error make every error fatal!
