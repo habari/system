@@ -343,6 +343,9 @@ class AdminHandler extends ActionHandler
 				// cache the set of plugins we just used to check for
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
 			}
+			else {
+				$this->theme->updates = '';
+			}
 		}
 
 		$this->theme->stats = array(
