@@ -117,6 +117,9 @@
 					elseif ( in_array( 'feature', $update['severity'] ) ) {
 						$update_text = _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
 					}
+					else {
+						$update_text = _t( '<a href="%1s">%2s %3s</a> is a new release.' );
+					}
 
 					$update_text = sprintf( $update_text, $update['url'], $update['name'], $update['latest_version'] );
 					echo "<p class='{$class}'>{$update_text}</p>";
