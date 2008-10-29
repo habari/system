@@ -21,7 +21,6 @@ class AdminHandler extends ActionHandler
 	{
 		$user = User::identify();
 		if ( !$user ) {
-			Session::error( _t('Your session expired.'), 'expired_session' );
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
 			if( URL::get_matched_rule()->name == 'admin_ajax' ) {
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
@@ -1434,24 +1433,24 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$this->theme->years = $years;
-		
+
 		$baseactions = array();
 		$statuses = Comment::list_comment_statuses();
 		foreach($statuses as $statusid => $statusname) {
 			$baseactions[$statusname]= array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
 		}
-		
-		/* Standard actions */		
+
+		/* Standard actions */
 		$baseactions['delete']= array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
 		$baseactions['edit']= array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
 
 		/* Actions for inline edit */
 		$baseactions['submit']= array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
 		$baseactions['cancel']= array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
-		
+
 		/* Allow plugins to apply actions */
 		$actions = Plugins::filter('comments_actions', $baseactions, $this->theme->comments);
- 
+
 		foreach($this->theme->comments as $comment) {
 			$menu= $actions;
 			unset($menu[Comment::status_name($comment->status)]);
