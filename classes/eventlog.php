@@ -128,7 +128,7 @@ class EventLog extends ArrayObject
 				: ', ' . DB::table( 'log' ) . ".$field";
 		}
 		// Default parameters.
-		$orderby = 'ORDER BY timestamp DESC';
+		$orderby = 'ORDER BY timestamp DESC, id DESC';
 		$limit = Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
