@@ -380,6 +380,12 @@ class AdminHandler extends ActionHandler
 	 */
 	public function fetch_dashboard_modules()
 	{
+
+		if ( count( Modules::get_all() ) == 0 ) {
+			$this->theme->modules = array();
+			return;
+		}
+
 		// get the active module list
 		$modules = Modules::get_active();
 
