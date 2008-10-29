@@ -208,7 +208,7 @@ class ACL {
 			return $name;
 		}
 		$name = self::normalize_permission( $name );
-		return DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) );
+		return (int) DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) );
 	}
 
 	/**

@@ -81,6 +81,7 @@ class Session
 
 		// Verify expiry
 		if ( HabariDateTime::date_create( time() )->int > $session->expires ) {
+			Session::error( _t('Your session expired.'), 'expired_session' );
 			$dodelete = true;
 		}
 
@@ -370,7 +371,7 @@ class Session
 	}
 
 	/**
-	 * Output notice and error messages 
+	 * Output notice and error messages
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
 	 * @param boolean $use_humane_msg true to use the humane messages system, false
@@ -407,11 +408,11 @@ class Session
 			return count( self::get_errors( false ) ) ? true : false;
 		}
 	}
-	
+
 	protected static function get_subnet( $remote_address = '' ) {
-		
+
 		$long_addr = ip2long( $remote_address );
-		
+
 		if ( $long_addr >= ip2long('0.0.0.0') && $long_addr <= ip2long('127.255.255.255') ) {
 			// class A
 			return sprintf("%u", $long_addr) >> 24;
@@ -424,7 +425,7 @@ class Session
 			// class C, D, or something we missed
 			return sprintf("%u", $long_addr) >> 8;
 		}
-		
+
 	}
 
 }
