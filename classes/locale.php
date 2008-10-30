@@ -131,11 +131,11 @@ class Locale
 	 */
 	private static function load_file( $domain, $file ) {
 		if ( ! file_exists( $file ) ) {
-			Error::raise( sprintf( _t('No translations found for locale %s, domain %s!'), self::$locale, $domain ) );
+			trigger_error( sprintf( _t('No translations found for locale %s, domain %s!'), self::$locale, $domain ) );
 			return FALSE;
 		}
 		if ( filesize( $file ) < 24 ) {
-			Error::raise( sprintf( _t('Invalid .MO file for locale %s, domain %s!'), self::$locale, $domain ) );
+			trigger_error( sprintf( _t('Invalid .MO file for locale %s, domain %s!'), self::$locale, $domain ) );
 			return FALSE;
 		}
 
@@ -155,13 +155,13 @@ class Locale
 				$little_endian = FALSE;
 				break;
 			default:
-				Error::raise( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ) );
+				trigger_error( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ) );
 				return FALSE;
 		}
 
 		$revision = substr( $data, 4, 4 );
 		if ( $revision != 0 ) {
-			Error::raise( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ) );
+			trigger_error( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ) );
 			return FALSE;
 		}
 
@@ -172,7 +172,7 @@ class Locale
 			$header = unpack( "{$l}1msgcount/{$l}1msgblock/{$l}1transblock", $header );
 
 			if ( $header['msgblock'] + ($header['msgcount'] - 1 ) * 8 > filesize( $file ) ) {
-				Error::raise( sprintf( _t('Message count (%d) out of bounds in %s!'), $header['msgcount'], $file ) );
+				trigger_error( sprintf( _t('Message count (%d) out of bounds in %s!'), $header['msgcount'], $file ) );
 				return FALSE;
 			}
 

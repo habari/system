@@ -1,8 +1,20 @@
 <?php
-class HabariExceptionHandler {}
+class HabariExceptionHandler {
+	
+	public static function handle_exception($exception) {
+		$message = sprintf( _t( '%s in %s:%s' ), $exception->getMessage(), $exception->getFile(), $exception->getLine() );
+		EventLog::log( $message, 'E_USER_ERROR', get_class( $exception ), null, serialize($exception->getTrace()) );
+	}
+	
+}
+
+// You can't handle the truth!
+// We need to wrap default Exception and ErrorException because of third party libraries.
+class ExceptionHandler extends HabariExceptionHandler {}
+class ErrorExceptionHandler extends HabariExceptionHandler {}
 
 class PDOExceptionHandler extends HabariExceptionHandler {
-	public function handle_exception ($exception) {
+	public static function handle_exception($exception) {
 		list($engine) = explode(':', $GLOBALS['db_connection']['connection_string']);
 		
 		if (!class_exists($engine.'exceptionhandler')) {
