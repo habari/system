@@ -131,11 +131,11 @@ class Locale
 	 */
 	private static function load_file( $domain, $file ) {
 		if ( ! file_exists( $file ) ) {
-			trigger_error( sprintf( _t('No translations found for locale %s, domain %s!'), self::$locale, $domain ) );
+			Error::trigger_error( sprintf( _t('No translations found for locale %s, domain %s!'), self::$locale, $domain ), E_USER_WARNING );
 			return FALSE;
 		}
 		if ( filesize( $file ) < 24 ) {
-			trigger_error( sprintf( _t('Invalid .MO file for locale %s, domain %s!'), self::$locale, $domain ) );
+			Error::trigger_error( sprintf( _t('Invalid .MO file for locale %s, domain %s!'), self::$locale, $domain ), E_USER_WARNING );
 			return FALSE;
 		}
 
@@ -155,13 +155,13 @@ class Locale
 				$little_endian = FALSE;
 				break;
 			default:
-				trigger_error( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ) );
+				Error::trigger_error( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ), E_USER_WARNING );
 				return FALSE;
 		}
 
 		$revision = substr( $data, 4, 4 );
 		if ( $revision != 0 ) {
-			trigger_error( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ) );
+			Error::trigger_error( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ), E_USER_WARNING );
 			return FALSE;
 		}
 

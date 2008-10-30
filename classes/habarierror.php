@@ -12,6 +12,22 @@ class HabariError extends ErrorException {
 		return $this->context;
 	}
 	
+	public function setCode($code) {
+		$this->code = $code;
+	}
+	
+	public function setFile($filename) {
+		$this->file = $filename;
+	}
+	
+	public function setLine($lineno) {
+		$this->line = $lineno;
+	}
+	
+	public function setContext($context) {
+		$this->context = $context;
+	}
+	
 }
 
 /*

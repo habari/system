@@ -184,17 +184,16 @@ abstract class InfoRecords implements URLProperties
 		if(empty($this->_table_name)) {
 			return;
 		}
+
 		$result = DB::query( '
 			DELETE FROM ' . $this->_table_name . '
 			WHERE ' . $this->_key_name . ' = ?',
 			array( $this->_key_value )
 		);
-		if ( Error::is_error( $result ) ) {
-			$result->out();
-			return false;
-		} 
+	
 		$this->__inforecord_array = array();
 		return true;
+
 	}
 	
 	/**
@@ -242,9 +241,6 @@ abstract class InfoRecords implements URLProperties
 					); 
 				}
 				
-				if ( Error::is_error( $result ) ) {
-					$result->out();
-				}
 				$this->__inforecord_array[$name] = array('value'=>$value);	
 			}
 		}

@@ -420,8 +420,7 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						Error::raise( sprintf(_t('Unsupported digest algorithm "%s"'), $algo) );
-						return FALSE;
+						throw new HabariException( sprintf(_t('Unsupported digest algorithm "%s"'), $algo) );
 				}
 			}
 			else {
@@ -430,7 +429,7 @@ class Utils
 			}
 		}
 		else {
-			Error::raise( _t('Invalid hash') );
+			throw new HabariException( _t('Invalid hash') );
 		}
 	}
 
@@ -489,8 +488,7 @@ class Utils
 		else { // verify
 			// is this a SSHA hash?
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( _t('Invalid hash') );
-				return FALSE;
+				throw new HabariException( _t('Invalid hash') );
 			}
 			// cut off {SSHA} marker
 			$hash = substr( $hash, strlen( $marker ) );
@@ -528,8 +526,7 @@ class Utils
 		}
 		else { // verify
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( _t('Invalid hash') );
-				return FALSE;
+				throw new HabariException( _t('Invalid hash') );
 			}
 			$hash = substr( $hash, strlen( $marker ) );
 			$hash = base64_decode( $hash );

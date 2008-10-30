@@ -106,7 +106,7 @@ class RemoteRequest
 	public function set_body( $body )
 	{
 		if ( $this->method !== 'POST' )
-			return Error::raise( _t('Trying to add a request body to a non-POST request'), E_USER_WARNING );
+			throw new HabariException( _t('Trying to add a request body to a non-POST request') );
 		
 		$this->body = $body;
 	}
@@ -160,23 +160,19 @@ class RemoteRequest
 	 */
 	public function execute()
 	{
-		$this->prepare();
-		$result = $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
-		
-		if ( $result && ! Error::is_error( $result ) ) { // XXX exceptions?
+		try {
+			$this->prepare();
+			$this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
 			$this->response_headers = $this->processor->get_response_headers();
 			$this->response_body = $this->processor->get_response_body();
 			$this->executed = TRUE;
-			
+		
 			return TRUE;
-		}
-		else {
-			// actually, processor->execute should throw an Error which would bubble up
-			// we need a new Error class and error handler for that, though
+		} catch(Exception $e) {
 			$this->executed = FALSE;
-			
-			return $result;
+			throw $e;
 		}
+
 	}
 	
 	public function executed() {
@@ -188,8 +184,9 @@ class RemoteRequest
 	 */
 	public function get_response_headers()
 	{
-		if ( !$this->executed )
-			return Error::raise( _t('Trying to fetch response headers for a pending request.'), E_USER_WARNING );
+		if ( !$this->executed ) {
+			throw new HabariException( _t('Trying to fetch response headers for a pending request.') );
+		}
 		
 		return $this->response_headers;
 	}
@@ -199,8 +196,9 @@ class RemoteRequest
 	 */
 	public function get_response_body()
 	{
-		if ( !$this->executed )
-			return Error::raise( _t('Trying to fetch response body for a pending request.'), E_USER_WARNING );
+		if ( !$this->executed ) {
+			throw new HabariException( _t('Trying to fetch response body for a pending request.') );
+		}
 		
 		return $this->response_body;
 	}

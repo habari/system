@@ -156,10 +156,6 @@ class Options extends Singleton
 		else {
 			$result = DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => $value, 'type' => 0 ), array( 'name' => $name ) );
 		}
-		if ( Error::is_error( $result ) ) {
-			$result->out();
-			die();
-		}
 	}
 
 	/**

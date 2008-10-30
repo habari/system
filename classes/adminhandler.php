@@ -328,24 +328,24 @@ class AdminHandler extends ActionHandler
 		/*
 		 * Check for updates to core and any hooked plugins
 		 * cache the output so we don't make a request every load but can still display updates
-		 */
+		 		
 		if ( Cache::has( 'dashboard_updates' ) ) {
 			$this->theme->updates = Cache::get( 'dashboard_updates' );
 		}
-		else {
-			$updates = Update::check();
+		else { */
+			// Needs more work, use custom exception/handler to return null values
+			try {
+				$updates = Update::check();
 
-			if ( !Error::is_error( $updates ) ) {
 				Cache::set( 'dashboard_updates', $updates );
 				$this->theme->updates = $updates;
 
 				// cache the set of plugins we just used to check for
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
-			}
-			else {
+			} catch(HabariException $e) {
 				$this->theme->updates = '';
 			}
-		}
+		//}
 
 		$this->theme->stats = array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),

@@ -32,6 +32,13 @@ class PDOExceptionHandler extends HabariExceptionHandler {
 	}
 }
 
+class UpdateExceptionHandler extends HabariExceptionHandler {
+	public static function handle_exception($exception) {
+		
+	}
+}
+
+class LocaleExceptionHandler extends HabariExceptionHandler {}
 class DBExceptionHandler extends HabariExceptionHandler {}
 class PluginExceptionHandler extends HabariExceptionHandler {}
 class QueryExceptionHandler extends HabariExceptionHandler {}

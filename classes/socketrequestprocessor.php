@@ -20,17 +20,12 @@ class SocketRequestProcessor implements RequestProcessor
 	{
 		$result = $this->_request( $method, $url, $headers, $body, $timeout );
 		
-		if ( $result && ! Error::is_error( $result ) ) {
-			list( $response_headers, $response_body )= $result;
-			$this->response_headers = $response_headers;
-			$this->response_body = $response_body;
-			$this->executed = TRUE;
-			
-			return TRUE;
-		}
-		else {
-			return $result;
-		}
+		list( $response_headers, $response_body )= $result;
+		$this->response_headers = $response_headers;
+		$this->response_body = $response_body;
+		$this->executed = TRUE;
+		
+		return TRUE;
 	}
 	
 	private function _request( $method, $url, $headers, $body, $timeout )
@@ -55,8 +50,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$fp = @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
 		if ( $fp === FALSE ) {
-			return Error::raise( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
-				E_USER_WARNING );
+			throw new HabariException( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) );
 		}
 		
 		// timeout to fsockopen() only applies for connecting
@@ -93,7 +87,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$out = implode( "\r\n", $request );
 		
 		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
-			return Error::raise( _t('Error writing to socket.') );
+			throw new HabariException( _t('Error writing to socket.') );
 		}
 		
 		$in = '';
@@ -125,13 +119,13 @@ class SocketRequestProcessor implements RequestProcessor
 				$this->redir_count++;
 				
 				if ( $this->redir_count > $this->max_redirs ) {
-					return Error::raise( _t('Maximum number of redirections exceeded.') );
+					throw new HabariException( _t('Maximum number of redirections exceeded.') );
 				}
 				
 				return $this->_work( $method, $redirect_urlbits, $headers, $body, $timeout );
 			}
 			else {
-				return Error::raise( _t('Redirection response without Location: header.') );
+				throw new HabariException( _t('Redirection response without Location: header.') );
 			}
 		}
 		
@@ -167,7 +161,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
+			throw new HabariException( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_body;
@@ -176,7 +170,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
+			throw new HabariException( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_headers;

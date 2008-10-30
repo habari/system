@@ -380,8 +380,7 @@ class InputFilter
 					return preg_match( '/^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:Z|[\+-][0-2][0-9]:[0-5][0-9])$/', $v );
 					break;
 				default:
-					Error::raise( sprintf( _t('Unkown attribute type "%s" in %s'), $type, __CLASS__ ) );
-					return FALSE;
+					throw new HabariException( sprintf( _t('Unkown attribute type "%s" in %s'), $type, __CLASS__ ) );
 			}
 		}
 	}

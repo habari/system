@@ -24,7 +24,7 @@ class Error
 		E_ALL => 'E_ALL',
 		E_DEPRECATED => 'E_DEPRECATED',
 		E_USER_DEPRECATED => 'E_USER_DEPRECATED',
-		E_DEBUG => 'E_DEBUG',
+		E_USER_DEBUG => 'E_USER_DEBUG',
 		);
 
 	/**
@@ -65,15 +65,17 @@ class Error
 	 */
 	public static function handle_shutdown()
 	{
-		if ($error = error_get_last()) {			
-			$uncapturable= array(E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING, E_STRICT);
-			if (isset($error['type']) && (in_array($error['type'],$uncapturable))) {
+		// @TODO: ob_gzhandler handling
+		if ($error = error_get_last()) {
+			$uncapturable= ( E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_STRICT );
+			if (isset($error['type']) && ($error['type'] & $uncapturable)) {
 				// We refuse PHP's reality and substitute it with our own!
 				// Note: No output is lost, what has been constructed so far is made available to handlers.
 				$out= ob_get_contents();
 				ob_end_clean();
 
-	            /* if (!headers_sent()) {
+	            /* Do we want to send 500?
+				if (!headers_sent()) {
 	                header('HTTP/1.1 500 Internal Server Error');
 	            } */
 				EventLog::log( $error['message'] . ' in ' . $error['file'] . ':' . $error['line'], self::$error_severities[$error['type']], 'default' );
@@ -100,34 +102,73 @@ class Error
 	 * @see HabariError
 	 */
 	public static function handle_error( $errno, $errstr, $errfile, $errline, $errcontext )
-	{
-		// Sorted in descending order of integer value
-		switch ($errno) {
-			case E_ERROR: // Fatal and can't be handled here
-			case E_WARNING:
-			case E_PARSE: // Fatal and can't be handled here
-			case E_NOTICE:
-			case E_CORE_ERROR: // Fatal and can't be handled here
-			case E_CORE_WARNING:
-			case E_COMPILE_ERROR: // Fatal and can't be handled here
-			case E_COMPILE_WARNING: // Can't be handled here
-			case E_USER_ERROR:
-			case E_USER_WARNING:
-			case E_USER_NOTICE:
-			case E_STRICT:
-			case E_RECOVERABLE_ERROR: // Fatal
-			case E_ALL:
-			case E_DEPRECATED:
-			case E_USER_DEPRECATED:
-			case E_DEBUG:
-			default:
-			break;
-		}
-		
+	{	
 		// Can't throw exceptions from here, causes:
 		// Fatal error: Exception thrown without a stack frame in Unknown on line 0
 		$exception = new HabariError($errstr, 0, $errno, $errfile, $errline, $errcontext);
 		self::handle_exception( $exception );
+	}
+	
+	/**
+	 * Replace PHP's trigger_error so we can use any error constant (i.e: E_USER_DEBUG)
+	 *
+	 * To reduce risk of exceptions/errors within the error class, don't translate fail-safes
+	 */
+	public static function trigger_error( $error_msg, $error_type )
+	{
+		$supported_error_types = ( E_USER_ERROR | E_USER_NOTICE | E_USER_WARNING | E_USER_DEBUG );
+		if ( !($error_type & $supported_error_types) ) {
+			throw new HabariException('Invalid error type specified'); // Do not translate
+		}
+		
+		/* This is a supported error type, let's build the error */
+		$exception = new HabariError($error_msg, 0, $error_type);
+		$backtrace = $exception->getTrace();
+		
+		if ( $last_trace = reset($backtrace) ) {
+			if ( isset($last_trace['file']) ) {
+				$exception->setFile($last_trace['file']);
+			}
+			else {
+				$exception->setFile('Unknown'); // Do not translate
+			}
+			if ( isset($last_trace['line']) ) {
+				$exception->setLine($last_trace['line']);
+			}
+			else {
+				$exception->setLine(0);
+			}
+			if ( isset($last_trace['args']) ) {
+				$exception->setContext($last_trace['args']);
+			}
+		}
+
+		// Unhandleable errors will be caught by Error::handle_shutdown()
+		switch ($error_type) {
+			/* Fatal errors */
+			case E_ERROR: // Can't be handled here
+			case E_PARSE: // Can't be handled here
+			case E_CORE_ERROR: // Can't be handled here
+			case E_COMPILE_ERROR: // Can't be handled here
+			case E_RECOVERABLE_ERROR:
+			case E_USER_ERROR:
+				throw $exception;
+			/* Non-fatal errors */
+			case E_WARNING:
+			case E_NOTICE:
+			case E_CORE_WARNING:
+			case E_COMPILE_WARNING: // Can't be handled here
+			case E_USER_WARNING:
+			case E_USER_NOTICE:
+			case E_STRICT:
+			case E_ALL:
+			case E_DEPRECATED:
+			case E_USER_DEPRECATED:
+			case E_USER_DEBUG:
+			default:
+				self::handle_exception( $exception );
+			break;
+		}
 	}
 	
 }
