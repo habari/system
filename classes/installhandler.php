@@ -31,7 +31,7 @@ class InstallHandler extends ActionHandler {
 		else {
 			Locale::set( 'en-us' );
 			$this->theme->locale = 'en-us';
-			$this->handler_vars['locale'] = 'en_us';
+			$this->handler_vars['locale'] = 'en-us';
 		}
 
 		/*
