@@ -33,7 +33,7 @@ class Locale
 	 * Set system locale.
 	 *
 	 * The problem is that every platform has its own way to designate a locale,
-	 * so for German you could have 'de', 'de_DE', 'de_DE.UTF-8', 'de_DE.UTF-8@euro'
+	 * so for German you could have 'de', 'de-DE', 'de-DE.UTF-8', 'de-DE.UTF-8@euro'
 	 * (Linux) or 'DEU' (Windows), etc.
 	 *
 	 * @todo: This setting should probably be stored in the language files.
@@ -155,13 +155,13 @@ class Locale
 				$little_endian = FALSE;
 				break;
 			default:
-				Error::trigger_error( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ), E_USER_WARNING );
+				trigger_error( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ), E_USER_WARNING );
 				return FALSE;
 		}
 
 		$revision = substr( $data, 4, 4 );
 		if ( $revision != 0 ) {
-			Error::trigger_error( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ), E_USER_WARNING );
+			trigger_error( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ), E_USER_WARNING );
 			return FALSE;
 		}
 
@@ -172,7 +172,7 @@ class Locale
 			$header = unpack( "{$l}1msgcount/{$l}1msgblock/{$l}1transblock", $header );
 
 			if ( $header['msgblock'] + ($header['msgcount'] - 1 ) * 8 > filesize( $file ) ) {
-				trigger_error( sprintf( _t('Message count (%d) out of bounds in %s!'), $header['msgcount'], $file ) );
+				trigger_error( sprintf( _t('Message count (%d) out of bounds in %s!'), $header['msgcount'], $file ), E_USER_WARNING );
 				return FALSE;
 			}
 

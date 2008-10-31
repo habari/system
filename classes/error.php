@@ -24,7 +24,6 @@ class Error
 		E_ALL => 'E_ALL',
 		E_DEPRECATED => 'E_DEPRECATED',
 		E_USER_DEPRECATED => 'E_USER_DEPRECATED',
-		E_USER_DEBUG => 'E_USER_DEBUG',
 		);
 
 	/**
@@ -44,24 +43,6 @@ class Error
 	
 	/**
 	 * Capture and handle errors `set_error_handler()` can't capture.
-	 *
-	 * The following error types cannot be handled with a user defined function:
-	 * E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING, and
-	 * most of E_STRICT raised in the file where set_error_handler() is called.
-	 *
-	 * Shortcomings of this method:
-	 *
-	 * E_PARSE errors on the include that builds out the shutdown structure will not be caught,
-	 * as the interpreter can’t get beyond the parse error to put it into place.
-	 *
-	 * E_CORE_ERROR errors? These are environmental errors caught when PHP itself is
-	 * bootstrapping — pre-script interpretation. No dice.
-	 *
-	 * When using output buffering in combination with the ob_gzhandler, take care when cleaning the buffer.
-	 * Chances are the Content-Encoding: gzip header was already set and you will need to follow suit.
- 	 *
-	 * If your output buffer has already been flushed before hitting a fatal error and the shutdown function,
-	 * your content to that point is already gone. Check ob_get_status to see if that is the case.
 	 */
 	public static function handle_shutdown()
 	{
@@ -108,68 +89,5 @@ class Error
 		$exception = new HabariError($errstr, 0, $errno, $errfile, $errline, $errcontext);
 		self::handle_exception( $exception );
 	}
-	
-	/**
-	 * Replace PHP's trigger_error so we can use any error constant (i.e: E_USER_DEBUG)
-	 *
-	 * To reduce risk of exceptions/errors within the error class, don't translate fail-safes
-	 */
-	public static function trigger_error( $error_msg, $error_type )
-	{
-		$supported_error_types = ( E_USER_ERROR | E_USER_NOTICE | E_USER_WARNING | E_USER_DEBUG );
-		if ( !($error_type & $supported_error_types) ) {
-			throw new HabariException('Invalid error type specified'); // Do not translate
-		}
-		
-		/* This is a supported error type, let's build the error */
-		$exception = new HabariError($error_msg, 0, $error_type);
-		$backtrace = $exception->getTrace();
-		
-		if ( $last_trace = reset($backtrace) ) {
-			if ( isset($last_trace['file']) ) {
-				$exception->setFile($last_trace['file']);
-			}
-			else {
-				$exception->setFile('Unknown'); // Do not translate
-			}
-			if ( isset($last_trace['line']) ) {
-				$exception->setLine($last_trace['line']);
-			}
-			else {
-				$exception->setLine(0);
-			}
-			if ( isset($last_trace['args']) ) {
-				$exception->setContext($last_trace['args']);
-			}
-		}
-
-		// Unhandleable errors will be caught by Error::handle_shutdown()
-		switch ($error_type) {
-			/* Fatal errors */
-			case E_ERROR: // Can't be handled here
-			case E_PARSE: // Can't be handled here
-			case E_CORE_ERROR: // Can't be handled here
-			case E_COMPILE_ERROR: // Can't be handled here
-			case E_RECOVERABLE_ERROR:
-			case E_USER_ERROR:
-				throw $exception;
-			/* Non-fatal errors */
-			case E_WARNING:
-			case E_NOTICE:
-			case E_CORE_WARNING:
-			case E_COMPILE_WARNING: // Can't be handled here
-			case E_USER_WARNING:
-			case E_USER_NOTICE:
-			case E_STRICT:
-			case E_ALL:
-			case E_DEPRECATED:
-			case E_USER_DEPRECATED:
-			case E_USER_DEBUG:
-			default:
-				self::handle_exception( $exception );
-			break;
-		}
-	}
-	
 }
 ?>

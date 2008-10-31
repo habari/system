@@ -137,7 +137,7 @@ class Controller extends Singleton {
 		$controller->stub = $start_url;
 
 		/* Grab the URL filtering rules from DB */
-		$matched_rule = URL::parse($controller->stub);
+		$matched_rule = URL::parse($controller->stub); // Throw a 404 exception?
 
 		if ($matched_rule === FALSE) {
 			$matched_rule = URL::set_404();
