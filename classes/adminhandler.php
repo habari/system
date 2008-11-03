@@ -671,12 +671,18 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_user()
 	{
-
+		extract( $this->handler_vars );
+		
+		$wsse = Utils::WSSE( $nonce, $timestamp );
+		if ( $digest != $wsse['digest'] ) {
+			Utils::redirect( URL::get( 'admin', 'page=users' ) );
+		}
+		
 		// Keep track of whether we actually need to update any fields
 		$update = FALSE;
 		$results = array( 'page' => 'user' );
 		$currentuser = User::identify();
-		extract( $this->handler_vars );
+		
 		$fields = array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL, 'locale_tz' => 'locale_tz', 'locale_date_format' => 'locale_date_format', 'locale_time_format' => 'locale_time_format' );
 		$fields = Plugins::filter( 'adminhandler_post_user_fields', $fields );
 		$posted_fields = array_intersect_key( $this->handler_vars, $fields );
