@@ -343,7 +343,7 @@ class AdminHandler extends ActionHandler
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
 			}
 			else {
-				$this->theme->updates = '';
+				$this->theme->updates = array();
 			}
 		}
 
