@@ -208,7 +208,7 @@ class ACL {
 			return $name;
 		}
 		$name = self::normalize_permission( $name );
-		return (int) DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) );
+		return DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) );
 	}
 
 	/**
@@ -285,7 +285,7 @@ class ACL {
 		 * Do we allow perms that don't exist?
 		 * When ACL is functional ACCESS_NONEXISTANT_PERMISSION should be false by default.
 		 */
-		if ( is_null( $permission ) ) {
+		if ( is_null( $permission) ) {
 			return self::ACCESS_NONEXISTANT_PERMISSION;
 		}
 
