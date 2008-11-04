@@ -1967,11 +1967,13 @@ class AdminHandler extends ActionHandler
 			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 			break;
 		case 'approve':
+		case 'approved':
 			// Comments marked for approval
 			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
 			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 			break;
 		case 'unapprove':
+		case 'unapproved':
 			// Comments marked for unapproval
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
 			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
