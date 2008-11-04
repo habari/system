@@ -1352,6 +1352,7 @@ class AdminHandler extends ActionHandler
 						break;
 
 					case 'approve':
+					case 'approved':
 						// Comments marked for approval
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
 						$modstatus['Approved %d comments'] = count( $to_update );
@@ -1361,6 +1362,7 @@ class AdminHandler extends ActionHandler
 						break;
 
 					case 'unapprove':
+					case 'unapproved':
 						// This comment was marked for unapproval
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
 						$modstatus['Unapproved %d comments'] = count ( $to_update );
@@ -1964,12 +1966,12 @@ class AdminHandler extends ActionHandler
 			Comments::moderate_these( $comments, Comment::STATUS_SPAM );
 			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 			break;
-		case 'approved':
+		case 'approve':
 			// Comments marked for approval
 			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
 			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 			break;
-		case 'unapproved':
+		case 'unapprove':
 			// Comments marked for unapproval
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
 			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
