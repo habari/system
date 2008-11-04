@@ -385,6 +385,7 @@ class FormUI extends FormContainer
 	public $properties = array(
 		'action' => '',
 		'onsubmit' => '',
+		'enctype' => 'application/x-www-form-urlencoded',
 	);
 
 	/**
