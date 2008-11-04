@@ -36,7 +36,7 @@ class RewriteRules extends ArrayObject {
 			// AJAX requests
 			array( 'name' => 'ajax', 'parse_regex' => '%^ajax/(?P<context>[^/]+)/?$%i', 'build_str' => 'ajax/{$context}', 'callback' => array( 'AjaxHandler', 'ajax' ), 'priority' => 8, 'description' => 'Ajax handling' ),
 			array( 'name' => 'auth_ajax', 'parse_regex' => '%^auth_ajax/(?P<context>[^/]+)/?$%i', 'build_str' => 'auth_ajax/{$context}', 'callback' => array( 'AjaxHandler', 'auth_ajax' ), 'priority' => 8, 'description' => 'Authenticated ajax handling' ),
-			array( 'name' => 'admin_ajax', 'parse_regex' => '%^admin_ajax/(?P<context>[^/]+)/?$%i', 'build_str' => 'admin_ajax/{$context}', 'callback' => array( 'AdminHandler', 'admin_ajax' ), 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
+			array( 'name' => 'admin_ajax', 'parse_regex' => '%^admin_ajax/(?P<context>[^/]+)/?$%i', 'build_str' => 'admin_ajax/{$context}', 'callback' => array( 'AjaxAdminHandler', 'admin_ajax' ), 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
 
 			// Atom Syndication Format
 			array( 'name' => 'rsd', 'parse_regex' => '%^rsd$%i', 'build_str' => 'rsd', 'callback' => array( 'AtomHandler', 'rsd' ), 'priority' => 1, 'description' => 'RSD output' ),
