@@ -71,6 +71,8 @@ class AdminHandler extends ActionHandler
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		
+		// Add some default js
+		$this->setup_stacks();
 		// Add some default stylesheets
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
 
