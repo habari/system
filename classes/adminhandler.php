@@ -2585,7 +2585,7 @@ class AdminHandler extends ActionHandler
 	 * from plugins, etc. This is not an ideal solution, but works for now.
 	 *
 	 */
-	public function setup_stacks() {
+	public static function setup_stacks() {
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js" );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js" );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js" );
