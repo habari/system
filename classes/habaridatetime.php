@@ -26,15 +26,15 @@ class HabariDateTime extends DateTime
 		if ( Options::get( 'timezone' ) ) {
 			self::set_default_timezone( Options::get( 'timezone' ) );
 		}
-		
-		if ( Options::get( 'default_datetime_format' ) ) {
-			self::set_default_datetime_format( Options::get( 'default_datetime_format' ) );
-		}
-		
+				
 		self::$default_timezone = date_default_timezone_get();
 		
 		self::$default_date_format = Options::get('dateformat');
 		self::$default_time_format = Options::get('timeformat');
+
+		if ( self::$default_date_format || self::$default_time_format ) {
+			self::set_default_datetime_format( self::$default_date_format . ' ' . self::$default_time_format );
+		}
 	}
 	
 	/**
