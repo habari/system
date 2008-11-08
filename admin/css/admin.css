@@ -1369,7 +1369,7 @@ body.page-options #title input {
 	color: #555;
 }
 
-.container .item .helptext span {
+.container .item span.helptext {
 	margin-left: 10px;
 	color: #888;
 	font-size: 11px;
