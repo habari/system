@@ -366,12 +366,6 @@ class Posts extends ArrayObject
 					$where[]= 'pubdate < ?';
 					$params[]= HabariDateTime::date_create( $paramset['before'] )->sql;
 				}
-				
-				// Include posts with deactivated content types, excluded by default
-				if ( !isset( $paramset['include_inactive'] ) || ( isset( $paramset['include_inactive'] ) && !$paramset['include_inactive'] ) ) {
-					$joins['active_content_types'] = ' JOIN {posttype} ON {posts}.content_type= {posttype}.id';
-					$where[] = '{posttype}.active= 1';
-				}
 
 				// Concatenate the WHERE clauses
 				if ( count( $where ) > 0 ) {
