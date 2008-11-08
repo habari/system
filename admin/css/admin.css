@@ -1599,10 +1599,6 @@ body.page-Manage .state {
 	padding-bottom: 1px;
 }
 
-#page .comments .buttons span.delete{
-	border-bottom:2px black solid;
-}
-
 #page .comments .buttons span.approve,
 #page .comment .buttons div.approve{
 	border-bottom:2px #339933 solid;
