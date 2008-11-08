@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title><?php Options::out('title'); ?> &middot; <?php echo $admin_title; ?></title>
-	<?php Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" ); ?>
 	<script type="text/javascript">
 	var habari = {
 		url: {
@@ -18,6 +17,7 @@
 	};
 	</script>
 	<?php
+		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 		Plugins::act( 'admin_header', $this );
 		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 	?>
