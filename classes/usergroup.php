@@ -57,7 +57,7 @@ class UserGroup extends QueryRecord
 			return $usergroup;
 		}
 		else {
-			return $false;
+			return false;
 		}
 	}
 
@@ -177,7 +177,7 @@ class UserGroup extends QueryRecord
 		// List each group member exactly once
 		$this->member_ids = array_unique($this->member_ids);
 
-		EventLog::log( _t( 'User Group %1$s: Users were added to the group.', array( $this->name ) ), 'notice', 'user', 'habari' ); 
+		EventLog::log( _t( 'User Group %1$s: Users were added to the group.', array( $this->name ) ), 'notice', 'user', 'habari' );
 	}
 
 	/**
@@ -255,7 +255,7 @@ class UserGroup extends QueryRecord
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Clear permissions cache.
 	 */
@@ -264,7 +264,7 @@ class UserGroup extends QueryRecord
 		//unset( $this->permissions );
 		$this->permissions = NULL;
 	}
-	
+
 	/**
 	 * Load permissions cache.
 	 */

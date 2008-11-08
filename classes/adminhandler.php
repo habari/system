@@ -21,7 +21,6 @@ class AdminHandler extends ActionHandler
 	{
 		$user = User::identify();
 		if ( !$user ) {
-			Session::error( _t('Your session expired.'), 'expired_session' );
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
 			if( URL::get_matched_rule()->name == 'admin_ajax' ) {
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
@@ -71,7 +70,9 @@ class AdminHandler extends ActionHandler
 		$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
+		
+		// Add some default js
+		$this->setup_stacks();
 		// Add some default stylesheets
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
 
@@ -343,6 +344,9 @@ class AdminHandler extends ActionHandler
 				// cache the set of plugins we just used to check for
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
 			}
+			else {
+				$this->theme->updates = array();
+			}
 		}
 
 		$this->theme->stats = array(
@@ -378,11 +382,17 @@ class AdminHandler extends ActionHandler
 	 */
 	public function fetch_dashboard_modules()
 	{
+
+		if ( count( Modules::get_all() ) == 0 ) {
+			$this->theme->modules = array();
+			return;
+		}
+
 		// get the active module list
 		$modules = Modules::get_active();
 
 		// append the 'Add Item' module
-		$modules['nosort'] = 'Add Item';
+		$modules['nosort'] = _t('Add Item');
 
 		// register the 'Add Item' filter
 		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
@@ -663,12 +673,18 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_user()
 	{
-
+		extract( $this->handler_vars );
+		
+		$wsse = Utils::WSSE( $nonce, $timestamp );
+		if ( $digest != $wsse['digest'] ) {
+			Utils::redirect( URL::get( 'admin', 'page=users' ) );
+		}
+		
 		// Keep track of whether we actually need to update any fields
 		$update = FALSE;
 		$results = array( 'page' => 'user' );
 		$currentuser = User::identify();
-		extract( $this->handler_vars );
+		
 		$fields = array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL, 'locale_tz' => 'locale_tz', 'locale_date_format' => 'locale_date_format', 'locale_time_format' => 'locale_time_format' );
 		$fields = Plugins::filter( 'adminhandler_post_user_fields', $fields );
 		$posted_fields = array_intersect_key( $this->handler_vars, $fields );
@@ -1338,6 +1354,7 @@ class AdminHandler extends ActionHandler
 						break;
 
 					case 'approve':
+					case 'approved':
 						// Comments marked for approval
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
 						$modstatus['Approved %d comments'] = count( $to_update );
@@ -1347,6 +1364,7 @@ class AdminHandler extends ActionHandler
 						break;
 
 					case 'unapprove':
+					case 'unapproved':
 						// This comment was marked for unapproval
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
 						$modstatus['Unapproved %d comments'] = count ( $to_update );
@@ -1431,24 +1449,24 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$this->theme->years = $years;
-		
+
 		$baseactions = array();
 		$statuses = Comment::list_comment_statuses();
 		foreach($statuses as $statusid => $statusname) {
 			$baseactions[$statusname]= array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
 		}
-		
-		/* Standard actions */		
+
+		/* Standard actions */
 		$baseactions['delete']= array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
 		$baseactions['edit']= array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
 
 		/* Actions for inline edit */
 		$baseactions['submit']= array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
 		$baseactions['cancel']= array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
-		
+
 		/* Allow plugins to apply actions */
 		$actions = Plugins::filter('comments_actions', $baseactions, $this->theme->comments);
- 
+
 		foreach($this->theme->comments as $comment) {
 			$menu= $actions;
 			unset($menu[Comment::status_name($comment->status)]);
@@ -1950,11 +1968,13 @@ class AdminHandler extends ActionHandler
 			Comments::moderate_these( $comments, Comment::STATUS_SPAM );
 			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 			break;
+		case 'approve':
 		case 'approved':
 			// Comments marked for approval
 			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
 			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 			break;
+		case 'unapprove':
 		case 'unapproved':
 			// Comments marked for unapproval
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
@@ -2559,6 +2579,25 @@ class AdminHandler extends ActionHandler
 		// return false to redisplay the form
 		return false;
 	}
+	
+	/**
+	 * Setup the default admin javascript stack here so that it can be called
+	 * from plugins, etc. This is not an ideal solution, but works for now.
+	 *
+	 */
+	public static function setup_stacks() {
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.spinner.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js" );
+	}
 }
-
 ?>

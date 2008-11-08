@@ -1369,7 +1369,7 @@ body.page-options #title input {
 	color: #555;
 }
 
-.container .item .helptext span {
+.container .item span.helptext {
 	margin-left: 10px;
 	color: #888;
 	font-size: 11px;
@@ -1597,10 +1597,6 @@ body.page-Manage .state {
 
 #page .comment .buttons div{
 	padding-bottom: 1px;
-}
-
-#page .comments .buttons span.delete{
-	border-bottom:2px black solid;
 }
 
 #page .comments .buttons span.approve,
