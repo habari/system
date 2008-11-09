@@ -664,6 +664,8 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->currentuser = User::identify();
 
+		$this->theme->wsse = Utils::WSSE();
+
 		$this->theme->display('user');
 
 	}
@@ -676,7 +678,7 @@ class AdminHandler extends ActionHandler
 		extract( $this->handler_vars );
 		
 		$wsse = Utils::WSSE( $nonce, $timestamp );
-		if ( $digest != $wsse['digest'] ) {
+		if ( $PasswordDigest != $wsse['digest'] ) {
 			Utils::redirect( URL::get( 'admin', 'page=users' ) );
 		}
 		
