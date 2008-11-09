@@ -194,6 +194,11 @@
 	<span class="pct20">
 		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
 	</span>
+
+	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+
 </div>
 </form>
 
