@@ -1289,6 +1289,14 @@ body.page-options .item {
 	width:30%;
 }
 
+#pluginconfigure .formcontrol {
+	padding: 6px 0;
+}
+
+#pluginconfigure .formui input, #pluginconfigure .formui select {
+	margin-left: 8px;
+}
+
 
 /*- THEMES PAGE */
 
