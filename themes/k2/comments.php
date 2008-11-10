@@ -14,11 +14,18 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 <?php 
 if ( $post->comments->moderated->count ) {
 	foreach ( $post->comments->moderated as $comment ) {
+		
+		if ( $comment->url_out == '' ) {
+			$comment_url = $comment->name_out;
+		}
+		else {
+			$comment_url = '<a href="' . $comment->url_out . '" rel="external">' . $comment->name_out . '</a>';
+		}
 
 ?>
       <li id="comment-<?php echo $comment->id; ?>" <?php echo $theme->k2_comment_class( $comment, $post ); ?>>
        <a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a>
-       <span class="commentauthor"><a href="<?php echo $comment->url_out; ?>" rel="external"><?php echo $comment->name; ?></a></span>
+       <span class="commentauthor"><?php echo $comment_url; ?></span>
        <small class="comment-meta"><a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this Comment'); ?>"><?php $comment->date->out('F j, Y g:ia'); ?></a><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></small>
        
        <div class="comment-content">
