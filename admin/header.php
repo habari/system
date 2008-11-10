@@ -17,8 +17,8 @@
 	};
 	</script>
 	<?php
-		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 		Plugins::act( 'admin_header', $this );
+		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 	?>
 	<!--[if IE 7]>
