@@ -147,6 +147,16 @@ a img {
 	background:#2b2b2b;
 }
 
+#menu li ul, #menulist li ul li.first-child, #menulist li ul li.first-child a {
+	-moz-border-radius-topright: 5px; 
+	-webkit-border-top-right-radius: 5px; 
+}
+
+#menu li ul, #menulist li ul li.last-child, #menulist li ul li.last-child a {
+	-moz-border-radius-bottomright: 5px; 
+	-webkit-border-bottom-right-radius: 5px; 
+}
+
 #menulist li {
 	position: relative;
 	background: #2b2b2b;
@@ -178,8 +188,6 @@ a img {
 #menulist li.selected a:hover, #menulist li.selected.carrot a {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 }
-
-
 
 #menulist li#link-tags, #menulist li#link-logs {
 	padding-bottom: 5px;
