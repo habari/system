@@ -9,7 +9,7 @@ class SuperGlobal extends ArrayObject
 {
 	protected $values = array();
 
-	function SuperGlobal($array)
+	function __construct(array $array)
 	{
 		$values['default'] = array();
 		parent::__construct($array);
@@ -24,20 +24,27 @@ class SuperGlobal extends ArrayObject
 	{
 		/* We should only revert the magic quotes once per page hit */
 		static $revert = true;
-		if ( get_magic_quotes_gpc() && $revert) {
+		
+		if (!$revert) {
+			// our work has already been done
+			return;
+		}
+		
+		if ( get_magic_quotes_gpc() ) {
 			$_GET = Utils::stripslashes($_GET);
 			$_POST = Utils::stripslashes($_POST);
 			$_COOKIE = Utils::stripslashes($_COOKIE);
-			$revert = false;
 		}
 
 		$_GET = new SuperGlobal($_GET);
 		$_POST = new SuperGlobal($_POST);
 		$_COOKIE = new SuperGlobal($_COOKIE);
 		unset($_REQUEST);
+
+		$revert = false;
 	}
 
-	function offsetGet($index)
+	public function offsetGet($index)
 	{
 		$cp = $this->getArrayCopy();
 		if(isset($cp[$index])) {
@@ -59,7 +66,7 @@ class SuperGlobal extends ArrayObject
 	 * @param mixed One or more array-like structures to merge into this array.
 	 * @return SuperGlobal The merged array
 	 */
-	function merge()
+	public function merge()
 	{
 		$args = func_get_args();
 		$cp = $this->getArrayCopy();
@@ -98,7 +105,7 @@ class SuperGlobal extends ArrayObject
 	 * @param mixed An array of key values that should be returned, or a string of a key value to be returned
 	 * @return SuperGlobal The values from this array that match the supplied keys
 	 */
-	function filter_keys()
+	public function filter_keys()
 	{
 		$keys = array();
 		$args = func_get_args();
