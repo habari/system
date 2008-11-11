@@ -54,6 +54,9 @@ class Utils
 			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
 		header('Location: ' . $url, true, 302);
+		
+		// prevent the rest of the page from loading - we've moved on
+		exit();
 	}
 
 	/**
