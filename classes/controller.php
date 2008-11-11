@@ -118,19 +118,6 @@ class Controller extends Singleton {
 		/* Trim off any leading or trailing slashes */
 		$start_url = trim($start_url, '/');
 
-		/* Remove the querystring from the URL */
-		if ( strpos($start_url, '?') !== FALSE ) {
-			list($start_url, $query_string)= explode('?', $start_url);
-		}
-
-		/* Return $_GET values to their proper place */
-		if( !empty($query_string) ) {
-			parse_str($query_string, $_GET);
-		}
-
-		/* Undo what magic_quotes_gpc might have wrought */
-		Utils::revert_magic_quotes_gpc();
-
 		/* Allow plugins to rewrite the stub before it's passed through the rules */
 		$start_url = Plugins::filter('rewrite_request', $start_url);
 
@@ -153,7 +140,9 @@ class Controller extends Singleton {
 		}
 
 		/* Also, we musn't forget to add the GET and POST vars into the action's settings array */
-		$controller->handler->handler_vars = array_merge($controller->handler->handler_vars, $_GET, $_POST);
+		$handler_vars = new SuperGlobal($controller->handler->handler_vars);
+		$handler_vars->merge($_GET, $_POST);
+		$controller->handler->handler_vars = $handler_vars;
 		return true;
 	}
 
