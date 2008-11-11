@@ -92,6 +92,30 @@ class Tag extends QueryRecord
 		Plugins::act( 'tag_attach_to_post_after', $tag_id, $post_id );
 		return $result;
 	}
+	
+	public static function detatch_from_post( $tag_id, $post_id ) {
+		
+		Plugins::act( 'tag_detatch_from_post_before', $tag_id, $post_id );
+		
+		$result = DB::query( 'DELETE FROM {tag2post} WHERE tag_id = ? AND post_id = ?', array( $tag_id, $post_id ) );
+		
+		// should we delete the tag if it's the only one left?
+		$count = DB::get_value( 'SELECT COUNT(tag_id) FROM {tag2post} WHERE tag_id = ?', array( $tag_id ) );
+		
+		if ( $count == 0 ) {
+			$delete = true;
+			$delete = Plugins::filter( 'tag_detach_from_post_delete_empty_tag', $delete, $tag_id );
+			
+			if ( $delete ) {
+				DB::query( 'DELETE FROM {tags} WHERE id = ?', array( $tag_id ) );
+			}
+		}
+		
+		Plugins::act( 'tag_detatch_from_post_after', $tag_id, $post_id, $result );
+		
+		return $result;
+		
+	}
 
 	/**
 	 * Generate a new slug for the tag.

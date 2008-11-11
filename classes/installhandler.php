@@ -1211,6 +1211,18 @@ class InstallHandler extends ActionHandler {
 		return true;
 		
 	}
+	
+	private function upgrade_db_post_2786 ( ) {
+		
+		// fixes all the bad post2tag fields that didn't get deleted when a post was deleted
+		DB::query( 'DELETE FROM {tag2post} WHERE post_id NOT IN ( SELECT DISTINCT id FROM {posts} )' );
+		
+		// now, delete any tags that have no posts left
+		DB::query( 'DELETE FROM {tags} WHERE id NOT IN ( SELECT DISTINCT tag_id FROM {tag2post} )' );
+		
+		return true;
+		
+	}
 
 	/**
 	 * Validate database credentials for MySQL
