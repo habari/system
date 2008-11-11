@@ -9,7 +9,7 @@ class SuperGlobal extends ArrayObject
 {
 	protected $values = array();
 
-	function __construct(array $array)
+	public function __construct(array $array)
 	{
 		$values['default'] = array();
 		parent::__construct($array);
