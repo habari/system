@@ -2336,6 +2336,10 @@ class AdminHandler extends ActionHandler
 	public function get_tags()
 	{
 		$this->theme->wsse = Utils::WSSE(); /* @TODO: What the heck is this doing here? */
+		
+		$this->theme->tags = Tags::get();
+		$this->theme->max = Tags::max_count();
+		
 		$this->display( 'tags' );
 	}
 
