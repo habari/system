@@ -107,11 +107,7 @@ a img {
 	text-transform: uppercase;
 }
 
-
-#menulist {
-	position: absolute;
-	top: 28px;
-	width: 100%;
+#menu #menulist ul {
 	background: #2b2b2b;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -119,15 +115,19 @@ a img {
 	opacity: 1; /* was .99 - see issue #588 */
 	display: none;
 	-webkit-box-shadow: 0px 2px 20px #111;
-}
-
-#menulist ul {
 	list-style-type: none;
 	list-style-position: outside;
 	margin-bottom: 0;
+	top:-5px;
 }
 
-#menu.hovering #menulist, #menu:hover #menulist {
+#menu #menulist > ul {
+	position: absolute;
+	top: 28px;
+	width: 100%;
+}
+
+#menu.hovering #menulist, #menu:hover #menulist > ul, #menu:hover #menulist > ul li.submenu:hover ul.submenu {
 	display: block;
 }
 
@@ -147,15 +147,13 @@ a img {
 	background:#2b2b2b;
 }
 
-#menu li ul, #menulist li ul li.first-child, #menulist li ul li.first-child a {
+#nu li ul {
 	-moz-border-radius-topright: 5px; 
 	-webkit-border-top-right-radius: 5px; 
+        -moz-border-radius-bottomright: 5px;
+        -webkit-border-bottom-right-radius: 5px;
 }
 
-#menu li ul, #menulist li ul li.last-child, #menulist li ul li.last-child a {
-	-moz-border-radius-bottomright: 5px; 
-	-webkit-border-bottom-right-radius: 5px; 
-}
 
 #menulist li {
 	position: relative;
