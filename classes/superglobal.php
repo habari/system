@@ -54,21 +54,23 @@ class SuperGlobal extends ArrayObject
 	}
 
 	/**
-	 * Merges the contents of one or more arrays or ArrayObjects into this SuperGlobal
+	 * Merges the contents of one or more arrays or ArrayObjects with this SuperGlobal
 	 *
 	 * @param mixed One or more array-like structures to merge into this array.
+	 * @return SuperGlobal The merged array
 	 */
 	function merge()
 	{
 		$args = func_get_args();
+		$cp = $this->getArrayCopy();
 		foreach($args as $ary) {
 			if(is_array($ary)) {
 				foreach($ary as $key => $value) {
 					if(is_numeric($key)) {
-						$this[] = $value;
+						$cp[] = $value;
 					}
 					else {
-						$this[$key] = $value;
+						$cp[$key] = $value;
 					}
 				}
 			}
@@ -76,17 +78,39 @@ class SuperGlobal extends ArrayObject
 				$arycp = $ary->getArrayCopy();  // Don't trigger offsetGet for ArrayObject
 				foreach($ary as $key => $value) {
 					if(is_numeric($key)) {
-						$this[] = $value;
+						$cp[] = $value;
 					}
 					else {
-						$this[$key] = $value;
+						$cp[$key] = $value;
 					}
 				}
 			}
 			else {
-				$this[] = $ary;
+				$cp[] = $ary;
 			}
 		}
+		return new SuperGlobal($cp);
+	}
+
+	/**
+	 * Filters this SuperGlobal based on an array or arrays of keys
+	 *
+	 * @param mixed An array of key values that should be returned, or a string of a key value to be returned
+	 * @return SuperGlobal The values from this array that match the supplied keys
+	 */
+	function filter_keys()
+	{
+		$keys = array();
+		$args = func_get_args();
+		foreach($args as $ary) {
+			if(!is_array($ary)) {
+				$ary = array($ary);
+			}
+			$keys = array_merge($keys, array_values($ary));
+		}
+		$cp = $this->getArrayCopy();
+		$cp = array_intersect_key($cp, array_flip($keys));
+		return new SuperGlobal($cp);
 	}
 }
 

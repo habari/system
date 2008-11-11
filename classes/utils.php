@@ -26,7 +26,7 @@ class Utils
 	 **/
 	public static function get_params( $params )
 	{
-		if( is_array( $params ) ) return $params;
+		if( is_array( $params ) || $params instanceof ArrayObject ) return $params;
 		$paramarray = array();
 		parse_str( $params, $paramarray );
 		return $paramarray;

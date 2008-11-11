@@ -141,7 +141,7 @@ class Controller extends Singleton {
 
 		/* Also, we musn't forget to add the GET and POST vars into the action's settings array */
 		$handler_vars = new SuperGlobal($controller->handler->handler_vars);
-		$handler_vars->merge($_GET, $_POST);
+		$handler_vars = $handler_vars->merge($_GET, $_POST);
 		$controller->handler->handler_vars = $handler_vars;
 		return true;
 	}
