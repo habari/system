@@ -131,7 +131,7 @@ class Site
 				// from host_url
 				$port = 80; // Default in case not set.
 				if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-					$port = $_SERVER['SERVER_PORT'];
+					$port = (string) $_SERVER['SERVER_PORT'];
 				}
 				$portpart = '';
 				$host = Site::get_url('hostname');
