@@ -13,9 +13,6 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function act_begin_install()
 	{
-		// Revert magic quotes, normally Controller calls this.
-		Utils::revert_magic_quotes_gpc();
-
 		// Create a new theme to handle the display of the installer
 		$this->theme = Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
 		
@@ -118,7 +115,7 @@ class InstallHandler extends ActionHandler {
 
 		// now merge in any HTTP POST values that might have been sent
 		// these will override the defaults and the config.php values
-		$this->handler_vars = array_merge($this->handler_vars, $_POST);
+		$this->handler_vars = $this->handler_vars->merge($_POST);
 
 		// we need details for the admin user to install
 		if ( ( '' == $this->handler_vars['admin_username'] )
@@ -141,7 +138,7 @@ class InstallHandler extends ActionHandler {
 		// we got here, so we have all the info we need to install
 
 		// make sure the admin password is correct
-		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
+		if ( (string)$this->handler_vars['admin_pass1'] !== (string)$this->handler_vars['admin_pass2'] ) {
 			$this->theme->assign( 'form_errors', array('password_mismatch'=>_t('Password mis-match.')) );
 			$this->display('db_setup');
 		}
@@ -517,7 +514,7 @@ class InstallHandler extends ActionHandler {
 		$admin_email = $this->handler_vars['admin_email'];
 		$admin_pass = $this->handler_vars['admin_pass1'];
 
-		if ($admin_pass{0} == '{') {
+		if ($admin_pass[0] == '{') {
 			// looks like we might have a crypted password
 			$password = $admin_pass;
 
@@ -676,9 +673,17 @@ class InstallHandler extends ActionHandler {
 		if (! ($file_contents = file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
 			return false;
 		}
-		$vars = array_map('addslashes', $this->handler_vars);
+		
+		$vars = array();
+		foreach ($this->handler_vars as $k => $v) {
+			$vars[$k] = addslashes($v);
+		}
+		$keys = array();
+		foreach (array_keys($vars) as $v) {
+			$keys[] = Utils::map_array($v);
+		}
 		$file_contents = str_replace(
-			array_map(array('Utils', 'map_array'), array_keys($vars)),
+			$keys,
 			$vars,
 			$file_contents
 		);

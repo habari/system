@@ -7,7 +7,7 @@
  *
  */
 
-class String
+class String implements ArrayAccess
 {
 	protected $string;
 	protected $filters = array();
@@ -89,6 +89,21 @@ class String
 		array_unshift($args, $this->string);
 
 		return new String(call_user_func_array(array('Plugins', $filter), $args));
+	}
+	
+	// ArrayAccess Implementation for (e.g.) $string[0]
+	
+	public function offsetExists($offset) {
+		return $offset >= 0 && $offset < strlen($this->string);
+	}
+	public function offsetGet($offset) {
+		return $this->string[$offset];
+	}
+	public function offsetSet($offset, $value) {
+		$this->string[$offset] = $value[0];
+	}
+	public function offsetUnset ($offset) {
+		throw new Exception('Cannot unset String offsets');
 	}
 }
 

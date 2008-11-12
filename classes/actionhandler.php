@@ -19,9 +19,18 @@ class ActionHandler
 	/**
 	 * Internal array of handler variables (state info)
 	 * 
-	 * @var array
+	 * @var SuperGlobal
 	 */
-	public $handler_vars = array();
+	public $handler_vars;
+	
+	/**
+	 * Constructor
+	 *
+	 * Initializes handler_vars
+	 */
+	public function __construct() {
+		$this->handler_vars = new SuperGlobal(array());
+	}
 
 	/**
 	 * All handlers must implement act() to conform to handler API.
@@ -75,7 +84,7 @@ class ActionHandler
 	 * @param array $args function arguments
 	 */
 	public function __call($function, $args) {
-		$this->handler_vars = array_merge($this->handler_vars, $args);
+		$this->handler_vars = $this->handler_vars->merge($args);
 		return $this->act($function);
 	}
 	
