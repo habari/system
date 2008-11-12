@@ -9,18 +9,21 @@ class SuperGlobal extends ArrayObject
 {
 	protected $values = array();
 
-	public function __construct(array $array)
+	public function __construct($array)
 	{
+		if (!is_array($array) && !$array instanceof SuperGlobal) {
+			throw new Exception('Parameter must be array or SuperGlobal');
+		}
 		$values['default'] = array();
 		parent::__construct($array);
 	}
 
 	/**
-	 * Convert $_GET, $_POST, and $_COOKIE into SuperGlobal instances, also kill $_REQUEST
+	 * Convert $_GET, $_POST, $_COOKIE and $_SERVER into SuperGlobal instances, also kill $_REQUEST
 	 *
 	 * @return
 	 */
-	public static function process_gpc()
+	public static function process_gpcs()
 	{
 		/* We should only revert the magic quotes once per page hit */
 		static $revert = true;
@@ -39,6 +42,7 @@ class SuperGlobal extends ArrayObject
 		$_GET = new SuperGlobal($_GET);
 		$_POST = new SuperGlobal($_POST);
 		$_COOKIE = new SuperGlobal($_COOKIE);
+		$_SERVER = new SuperGlobal($_SERVER);
 		unset($_REQUEST);
 
 		$revert = false;
