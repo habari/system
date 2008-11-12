@@ -26,15 +26,15 @@ class AdminHandler extends ActionHandler
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
 			}
 			else {
-			if ( !empty( $_POST ) ) {
-				Session::add_to_set( 'last_form_data', $_POST, 'post' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
-			}
-			if ( !empty( $_GET ) ) {
-				Session::add_to_set( 'last_form_data', $_GET, 'get' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
-			}
-			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
+				if ( !empty( $_POST ) ) {
+					Session::add_to_set( 'last_form_data', $_POST, 'post' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				if ( !empty( $_GET ) ) {
+					Session::add_to_set( 'last_form_data', $_GET, 'get' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			}
 			exit;
 		}
