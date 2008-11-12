@@ -55,7 +55,6 @@ class FeedbackHandler extends ActionHandler
 			Session::add_to_set('comment', $this->handler_vars['content'], 'content');
 			// now send them back to the form
 			Utils::redirect( $post->permalink . '#respond' );
-			exit();
 		}
 
 		if ( $post->info->comments_disabled ) {
@@ -63,7 +62,6 @@ class FeedbackHandler extends ActionHandler
 			// them back to the post's permalink
 			Session::error( _t( 'Comments on this post are disabled!' ) );
 			Utils::redirect( $post->permalink );
-			exit();
 		}
 
 		/* Sanitize data */
@@ -100,7 +98,6 @@ class FeedbackHandler extends ActionHandler
 		if ( preg_match( '/^\p{Z}*$/u', $this->handler_vars['content'] ) ) {
 			Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
 			Utils::redirect( $post->permalink );
-			exit();
 		}
 
 		/* Create comment object*/

@@ -26,15 +26,15 @@ class AdminHandler extends ActionHandler
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
 			}
 			else {
-			if ( !empty( $_POST ) ) {
-				Session::add_to_set( 'last_form_data', $_POST, 'post' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
-			}
-			if ( !empty( $_GET ) ) {
-				Session::add_to_set( 'last_form_data', $_GET, 'get' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
-			}
-			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
+				if ( !empty( $_POST ) ) {
+					Session::add_to_set( 'last_form_data', $_POST, 'post' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				if ( !empty( $_GET ) ) {
+					Session::add_to_set( 'last_form_data', $_GET, 'get' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			}
 			exit;
 		}
@@ -296,7 +296,6 @@ class AdminHandler extends ActionHandler
 		Session::notice( _t( 'Successfully updated options' ) );
 		$form->save();
 		Utils::redirect();
-		die();
 	}
 
 	/**
@@ -778,7 +777,6 @@ class AdminHandler extends ActionHandler
 		}
 
 		Utils::redirect( URL::get( 'admin', $results ) );
-
 	}
 
 	/**
@@ -1055,7 +1053,6 @@ class AdminHandler extends ActionHandler
 	{
 		if ( !isset( $_REQUEST['importer'] ) ) {
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
-			exit;
 		}
 
 		$this->display( 'import' );
@@ -1183,7 +1180,6 @@ class AdminHandler extends ActionHandler
 						if ( $action == 'delete' ) {
 							$comment->delete();
 							Utils::redirect(URL::get('admin', 'page=comments'));
-							exit();
 						}
 						if ( $action != 'save' ) {
 							foreach ( Comment::list_comment_statuses() as $status ) {
@@ -1299,14 +1295,12 @@ class AdminHandler extends ActionHandler
 			$result = DB::query('OPTIMIZE TABLE {comments}');
 			Session::notice( _t( 'Deleted all spam comments' ) );
 			Utils::redirect();
-			die();
 		}
 		elseif ( isset( $mass_delete ) && $status == Comment::STATUS_UNAPPROVED ) {
 			// Delete all comments that are unapproved.
 			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
 			Session::notice( _t( 'Deleted all unapproved comments' ) );
 			Utils::redirect();
-			die();
 		}
 		// if we're updating posts, let's do so:
 		elseif ( ( $do_delete || $do_spam || $do_approve || $do_unapprove ) && isset( $comment_ids )) {
@@ -1402,7 +1396,6 @@ class AdminHandler extends ActionHandler
 			}
 
 			Utils::redirect();
-			die();
 
 		}
 
@@ -1875,7 +1868,7 @@ class AdminHandler extends ActionHandler
 		$ids = array();
 		foreach($_POST as $id => $delete) {
 			// skip POST elements which are not post ids
-			if ( preg_match( '/^p\d+/', $id )  && $delete ) {
+			if ( preg_match( '/^p\d+/', $id ) && $delete ) {
 				$ids[] = substr($id, 1);
 			}
 		}
@@ -2070,8 +2063,6 @@ class AdminHandler extends ActionHandler
 			}
 
 			Utils::redirect();
-			die();
-
 		}
 
 		$this->theme->severities = LogEntry::list_severities();
