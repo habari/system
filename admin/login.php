@@ -64,11 +64,13 @@
 		<?php Session::messages_out( true, array( 'Format', 'humane_messages' ) ); ?>
 		password_label = $('label[for=habari_password]');
 		// to fix autofill issues, we need to check the password field on every keyup
-		$('#habari_username').keyup( function(){
+		$('#habari_username').keyup( function() {
 			setTimeout( "labeler.check( password_label );", 10 ); 
-		} ).click( function(){
-			setTimeout( "labeler.check( password_label );", 10 ); 
+		} ).click( function() {
+			setTimeout( "labeler.check( password_label );", 50 ); 
 		} );
+		// for autofill without user input
+		setTimeout( function(){ labeler.check( password_label ); }, 10 );
 	})
   </script>
 <?php
