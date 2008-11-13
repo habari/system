@@ -107,6 +107,10 @@ a img {
 	text-transform: uppercase;
 }
 
+#menulist {
+	display:none;
+}
+
 #menu #menulist ul {
 	background: #2b2b2b;
 	-webkit-border-radius: 5px;
@@ -127,7 +131,7 @@ a img {
 	width: 100%;
 }
 
-#menu.hovering #menulist, #menu:hover #menulist > ul, #menu:hover #menulist > ul li.submenu:hover ul.submenu {
+#menu.hovering #menulist, #menu.hovering #menulist > ul, #menu:hover #menulist > ul, #menu:hover #menulist > ul li.submenu:hover ul.submenu, #menu.hovering #menulist > ul li.submenu.carrot ul.submenu {
 	display: block;
 }
 
