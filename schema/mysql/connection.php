@@ -248,6 +248,18 @@ class MySQLConnection extends DatabaseConnection
 	}
 
 	/**
+	 * Execute a stored procedure
+	 *
+	 * @param   procedure   name of the stored procedure
+	 * @param   args        arguments for the procedure
+	 * @return  mixed       whatever the procedure returns...
+	 */
+	public function execute_procedure( $procedure, $args = array() )
+	{
+		return parent::execute_procedure( $procedure, $args );
+	}
+
+	/**
 	 * Run all of the upgrades since the last database revision.
 	 *
 	 * @param integer $old_version The current version of the database that is being upgraded
