@@ -59,6 +59,9 @@ class AdminHandler extends ActionHandler
 
 		// Create an instance of the active public theme so that its plugin functions are implemented
 		$this->active_theme = Themes::create();
+
+		// setup the stacks for javascript in the admin - it's a method so a plugin can call it externally
+		self::setup_stacks();
 	}
 
 	/**
@@ -70,13 +73,11 @@ class AdminHandler extends ActionHandler
 		$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-		
-		// Add some default js
-		$this->setup_stacks();
+
 		// Add some default stylesheets
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
 
-	  // Add some default template variables
+	  	// Add some default template variables
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_type = $type;
 		$this->theme->admin_page = $page;
@@ -675,17 +676,17 @@ class AdminHandler extends ActionHandler
 	public function post_user()
 	{
 		extract( $this->handler_vars );
-		
+
 		$wsse = Utils::WSSE( $nonce, $timestamp );
 		if ( $PasswordDigest != $wsse['digest'] ) {
 			Utils::redirect( URL::get( 'admin', 'page=users' ) );
 		}
-		
+
 		// Keep track of whether we actually need to update any fields
 		$update = FALSE;
 		$results = array( 'page' => 'user' );
 		$currentuser = User::identify();
-		
+
 		$fields = array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL, 'locale_tz' => 'locale_tz', 'locale_date_format' => 'locale_date_format', 'locale_time_format' => 'locale_time_format' );
 		$fields = Plugins::filter( 'adminhandler_post_user_fields', $fields );
 		$posted_fields = array_intersect_key( $this->handler_vars, $fields );
@@ -2327,10 +2328,10 @@ class AdminHandler extends ActionHandler
 	public function get_tags()
 	{
 		$this->theme->wsse = Utils::WSSE(); /* @TODO: What the heck is this doing here? */
-		
+
 		$this->theme->tags = Tags::get();
 		$this->theme->max = Tags::max_count();
-		
+
 		$this->display( 'tags' );
 	}
 
@@ -2576,7 +2577,7 @@ class AdminHandler extends ActionHandler
 		// return false to redisplay the form
 		return false;
 	}
-	
+
 	/**
 	 * Setup the default admin javascript stack here so that it can be called
 	 * from plugins, etc. This is not an ideal solution, but works for now.
