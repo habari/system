@@ -143,6 +143,19 @@ class SQLiteConnection extends DatabaseConnection
 	}
 
 	/**
+	 * Execute a stored procedure
+	 *
+	 * @param   procedure   name of the stored procedure
+	 * @param   args        arguments for the procedure
+	 * @return  mixed       whatever the procedure returns...
+	 * Not supported with SQLite
+	 */
+	public function execute_procedure( $procedure, $args = array() )
+	{
+		die( _t( 'not yet supported on SQLite' ) );
+	}
+
+	/**
 	 * Run all of the upgrades since the last database revision.
 	 *
 	 * @param integer $old_version The current version of the database that is being upgraded
