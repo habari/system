@@ -143,12 +143,16 @@ a img {
 	display:block; 
 } 
 
-#menu li ul { 
+#menu li ul {
 	position:absolute;
 	left:100%; 
 	top:0; 
 	width:100%; 
 	background:#2b2b2b;
+	-moz-border-radius-topleft: 0 !important;
+	-moz-border-radius-bottomleft: 0 !important;
+	-webkit-border-bottom-left-radius: 0 !important;
+	-webkit-border-top-left-radius: 0 !important;
 }
 
 #menulist li {
