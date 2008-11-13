@@ -1032,8 +1032,14 @@ var theMenu = {
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
 			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
-				location = $('.carrot a').attr('href')
-				theMenu.blinkCarrot($('.carrot a').parent())
+				if ($('.carrot').hasClass('submenu') == true) {
+					location = $('.carrot ul li.carrot a').attr('href')
+					theMenu.blinkCarrot($('.carrot ul li.carrot a').parent())
+				}
+				else {
+					location = $('.carrot a').attr('href')
+					theMenu.blinkCarrot($('.carrot a').parent())
+				}
 			} else {
 				return false;
 			}
