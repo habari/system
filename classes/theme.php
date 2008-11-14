@@ -470,7 +470,7 @@ class Theme extends Pluggable
 		);
 
 		$paramarray['user_filters']= $user_filters;
-		
+
 		$this->assign( 'criteria', htmlentities( Controller::get_var('criteria'), ENT_QUOTES, 'UTF-8' ) );
 		return $this->act_display( $paramarray );
 	}
@@ -558,6 +558,7 @@ class Theme extends Pluggable
 		Plugins::act( 'template_header', $theme );
 		$output = Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 		$output.= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+		Plugins::act( 'template_header_after', $theme );
 		return $output;
 	}
 
