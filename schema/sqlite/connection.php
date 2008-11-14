@@ -129,7 +129,11 @@ class SQLiteConnection extends DatabaseConnection
 			}
 		}
 
-		$allqueries = array_merge($allqueries, $indexqueries, $iqueries);
+		$allqueries = array_merge( $allqueries, $indexqueries );
+		if( $doinserts ) {
+			$allqueries = array_merge( $allqueries, $iqueries );
+		}
+
 		if ( $execute ) {
 			foreach ( $allqueries as $query ) {
 				if ( !$this->query( $query ) ) {
