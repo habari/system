@@ -560,6 +560,10 @@ class InstallHandler extends ActionHandler {
 		Options::set( 'theme_dir' , 'k2' );
 		Options::set( 'comments_require_id', 1 );
 		Options::set( 'locale', $this->handler_vars['locale'] );
+		Options::set('timezone', 'UTC');
+		Options::set('dateformat', 'Y-m-d');
+		Options::set('timeformat', 'g:i a');
+
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
