@@ -17,6 +17,7 @@
 	};
 	</script>
 	<?php
+		Plugins::act( 'admin_header', $this );
 		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
 		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 	?>
@@ -25,7 +26,7 @@
 	<![endif]-->
 
 	<?php
-		Plugins::act( 'admin_header', $this );
+		Plugins::act( 'admin_header_after', $this );
 	?>
 
 </head>
