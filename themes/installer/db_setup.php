@@ -2,11 +2,12 @@
 <html>
 <head>
 	<title><?php _e('Install Habari'); ?></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="robots" content="noindex,nofollow">
 	<link href="<?php Site::out_url('habari'); ?>/system/themes/installer/style.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.js"></script>
 	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/system/themes/installer/script.js"></script>
+	<?php Stack::out( 'installer_javascript', '<script type="text/javascript" src="%s"></script>'."\r\n" ) ?>
 </head>
 
 <body id="installer">

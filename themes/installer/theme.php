@@ -45,7 +45,7 @@ class DefaultInstaller extends Theme
 		// Options
 		$form->databasesetup->append('wrapper', 'databasesetup_options', null, 'installer_options');
 		// Database Type
-		$form->databasesetup_options->append('select', 'db_type', 'null:null', _t('Database Type'), $this->pdo_drivers);
+		$form->databasesetup_options->append('select', 'db_type', 'null:null', _t('Database Type'));
 		$form->db_type->selected = $this->db_type;
 		$form->db_type->required = true;
 		$form->db_type->help = _t('<strong>Database Type</strong> specifies the type of database to which

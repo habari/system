@@ -1,3 +1,67 @@
+var habari = {};
+habari.installer = {
+	schemas : new Array(),
+	
+	registerSchema: function(schema) {
+		var i = habari.installer.schemas.length + 1;
+		habari.installer.schemas[i] = schema;
+	},
+	
+	setDatabaseType: function () {
+		for ( var i in habari.installer.schemas ) {
+			// May use some function per schema (in their class) to show/hide themselves
+			if (habari.installer.schemas[i] != $('#db_type').val()) {
+				$("fieldset[id*='" + habari.installer.schemas[i] + "settings']").hide();
+			}
+			else {
+				$("fieldset[id*='" + habari.installer.schemas[i] + "settings']").show();
+			}
+		}
+	},
+	
+	checkDBCredentials: {},
+	
+	checkSiteConfiguration: function () {
+		var warned = false;
+		var installok = true;
+		if ( ( $('#blog_title').val() != '' ) && ( $('#admin_username').val() != '' ) && ( $('#admin_pass1').val() != '' ) && ( $('#admin_pass2').val() != '' ) ) {
+			//Checking fields is ok
+			if ( $('#admin_pass1').val() != $('#admin_pass2').val() ) {
+				warningtext= 'The passwords do not match, try typing them again.';
+				$('#install').children('.options').fadeOut().removeClass('ready');
+				$('#admin_pass1').parents('.installstep').removeClass('done');
+				$('#admin_pass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
+				warned = true;
+				installok = false;
+			}
+		}
+		if($('#admin_email').val() == '' ) {
+			installok = false;
+		}
+		if(!warned) {
+			ida= new Array( '#blog_title', '#admin_username', '#admin_pass1', '#admin_pass2', '#admin_email' );
+			$(ida).each(function(id) {
+				ido= $(ida).get(id);
+				$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
+				if($(ido).val() != '') {
+					$(ido).addClass('valid');
+				}
+			});
+		}
+		if(installok) {
+			$('#siteconfiguration').addClass('done');
+			$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
+			$('#pluginactivation').children('.options').fadeIn().addClass('ready').addClass('done');
+			$('#pluginactivation').children('.help-me').show();
+			$('#submitinstall').removeAttr( 'disabled' );
+		}
+		else {
+			$('#siteconfiguration').removeClass('done');
+			$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
+		}
+	}
+};
+
 function handleAjaxError(msg, status, err)
 {
 	error_msg= '';
@@ -11,28 +75,6 @@ function handleAjaxError(msg, status, err)
 		'<strong>Server Response</strong>'+
 		'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
 	).fadeIn();
-}
-
-function setDatabaseType()
-{
-	switch($('#db_type').val()) {
-		case 'mysql':
-			$('.forpgsql').hide();
-			$('.forsqlite').hide();
-			$('.formysql').show();
-			break;
-		case 'pgsql':
-			$('.formysql').hide();
-			$('.forsqlite').hide();
-			$('.forpgsql').show();
-			break;
-		case 'sqlite':
-			$('.formysql').hide();
-			$('.forpgsql').hide();
-			$('.forsqlite').show();
-			checkDBCredentials();
-			break;
-	}
 }
 
 function checkDBCredentials()
@@ -158,43 +200,7 @@ function checkDBCredentials()
 }
 
 function checkSiteConfigurationCredentials() {
-	var warned = false;
-	var installok = true;
-	if ( ( $('#blog_title').val() != '' ) && ( $('#admin_username').val() != '' ) && ( $('#admin_pass1').val() != '' ) && ( $('#admin_pass2').val() != '' ) ) {
-		//Checking fields is ok
-		if ( $('#admin_pass1').val() != $('#admin_pass2').val() ) {
-			warningtext= 'The passwords do not match, try typing them again.';
-			$('#install').children('.options').fadeOut().removeClass('ready');
-			$('#admin_pass1').parents('.installstep').removeClass('done');
-			$('#admin_pass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
-			warned = true;
-			installok = false;
-		}
-	}
-	if($('#admin_email').val() == '' ) {
-		installok = false;
-	}
-	if(!warned) {
-		ida= new Array( '#blog_title', '#admin_username', '#admin_pass1', '#admin_pass2', '#admin_email' );
-		$(ida).each(function(id) {
-			ido= $(ida).get(id);
-			$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
-			if($(ido).val() != '') {
-				$(ido).addClass('valid');
-			}
-		});
-	}
-	if(installok) {
-		$('#siteconfiguration').addClass('done');
-		$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
-		$('#pluginactivation').children('.options').fadeIn().addClass('ready').addClass('done');
-		$('#pluginactivation').children('.help-me').show();
-		$('#submitinstall').removeAttr( 'disabled' );
-	}
-	else {
-		$('#siteconfiguration').removeClass('done');
-		$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-	}
+
 }
 
 var checktimer = null;
@@ -296,10 +302,10 @@ $(document).ready(function() {
 	$('#installerror').hide();
 	$('form').attr('autocomplete', 'off');
 	itemManage.init();
-	setDatabaseType();
+	habari.installer.setDatabaseType();
 	checkDBCredentials();
 	checkSiteConfigurationCredentials();
-	$('#db_type').change(setDatabaseType);
+	$('#db_type').change(function(){habari.installer.setDatabaseType()});
 	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
 	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
 	$('#locale').focus().change(function() {

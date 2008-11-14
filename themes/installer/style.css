@@ -277,3 +277,7 @@ optgroup {
 	font-weight: normal;
 	padding-left: 3px;
 }
+
+/* New stuff for handlers branch */
+.options fieldset {border:0;padding:0;margin:0;}
+.options fieldset legend {display:none;}

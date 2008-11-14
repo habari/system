@@ -284,9 +284,9 @@ class InstallHandler extends ActionHandler {
 		
 		// Load available schemas' install script
 		foreach ($pdo_drivers as $pdo_driver) {
-			$file_path = HABARI_PATH . '/system/schema/' . $pdo_driver . '/install.php';
-			if (file_exists($file_path)) {
-				include_once($file_path);
+			$install_file = HABARI_PATH . '/system/schema/' . $pdo_driver . '/install/install.php';
+			if (file_exists($install_file)) {
+				include_once($install_file);
 			}
 			$classname = $pdo_driver.'Install';
 			if (class_exists($pdo_driver.'Install')) {

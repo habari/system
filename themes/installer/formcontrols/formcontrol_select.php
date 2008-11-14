@@ -1,4 +1,4 @@
-<div class="inputfield<?php echo ($class) ? ' ' . $class : ''; ?>"<?php echo ($id) ? ' id="' . $id . '"' : ''?>>
+<div class="inputfield<?php echo ($class) ? ' ' . $class : ''; ?>">
 	<label for="<?php echo $id; ?>"><?php echo $this->caption; ?><?php echo (isset($required) && $required) ? ' <strong>*</strong>' : ''?></label>
 	<select id="<?php echo $id; ?>" name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ) ?>>
 	<?php foreach($options as $opts_key => $opts_val) : ?>

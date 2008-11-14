@@ -6,10 +6,21 @@ class SQLiteInstall extends InstallSchema {
 	{
 		return array();
 	}
+	
+	public function __construct()
+	{
+		parent::__construct(func_get_args());
+		Stack::add('installer_javascript', array($this->get_url().'/install.js'));
+	}
 
 	public function action_install_form_installform( $form, $theme )
 	{
-		$form->databasesetup_options->append('text', 'databasefile', 'null:null', _t('Data file'));
+		$form->db_type->options['sqlite'] = 'SQLite';
+		$form->db_type->selected = 'sqlite';
+		
+		$form->databasesetup_options->append('fieldset', 'sqlitesettings', _t('SQLite Settings'));
+		
+		$form->sqlitesettings->append('text', 'databasefile', 'null:null', _t('Data file'));
 		$form->databasefile->value = $theme->databasefile;
 		$form->databasefile->required = true;
 		$form->databasefile->help = _t('<strong>Data file</strong> is the SQLite file that will store 
