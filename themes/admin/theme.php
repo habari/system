@@ -1,5 +1,5 @@
 <?php
-define( 'ADMIN_CLASS', 'Monolith' );
+define( 'THEME_CLASS', 'Monolith' );
 
 class Monolith extends Theme
 {
@@ -303,6 +303,19 @@ class Monolith extends Theme
 		Plugins::act('form_comment_edit', $form, $comment);
 
 		return $form;
+	}
+	
+	/**
+	 * Adds a module to the user's dashboard
+	 * @param object form FormUI object
+	 */
+	public function dash_additem( $form )
+	{
+		$new_module = $form->module->value;
+		Modules::add( $new_module );
+
+		// return false to redisplay the form
+		return false;
 	}
 }
 ?>

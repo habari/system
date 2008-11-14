@@ -21,7 +21,7 @@ class FormContainer
 	protected $theme_obj = null;
 	protected $checksum;
 	public $template = 'formcontainer';
-	public $properties = array();
+	protected $properties = array();
 
 	/**
 	 * Constructor for FormContainer prevents construction of this class directly
@@ -157,14 +157,17 @@ class FormContainer
 		foreach ( $this->controls as $control ) {
 			$contents.= $control->get($forvalidation);
 		}
-		$theme->contents = $contents;
-		// Do not move before $contents
-		// Else, these variables will contain the last control's values
-		$theme->class = $this->class;
-		$theme->id = $this->name;
-		$theme->caption = $this->caption;
-
-		return $theme->fetch( $this->template );
+		
+		foreach($this->properties as $prop => $value) {
+			$theme->assign($prop, $value);
+		}
+		
+		$theme->assign('contents', $contents);
+		$theme->assign('class', $this->class);
+		$theme->assign('id', $this->name);
+		$theme->assign('caption', $this->caption);
+		
+		return $theme->fetch( $this->template, true );
 	}
 
 	/**
@@ -180,18 +183,19 @@ class FormContainer
 			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
 			$this->theme_obj = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		}
-		if($control instanceof FormControl) {
-			// PHP doesn't allow __get() to return pointers, and passing this array to foreach directly generates an error.
-			$properties = $control->properties;
-			foreach($properties as $name => $value) {
-				$this->theme_obj->$name = $value;
+		if($control instanceof FormControl) {	
+			$this->theme_obj->start_buffer();
+			
+			foreach($control->properties as $name => $value) {
+				$this->theme_obj->assign($name, $value);
 			}
-			$this->theme_obj->field = $control->field;
-			$this->theme_obj->value = $control->value;
-			$this->theme_obj->caption = $control->caption;
-			$this->theme_obj->id = (string) $control->id;
+			
+			$this->theme_obj->assign('field', $control->field);
+			$this->theme_obj->assign('value', $control->value);
+			$this->theme_obj->assign('caption', $control->caption);
+			$this->theme_obj->assign('id', (string) $control->id);
+			
 			$class = $control->class;
-
 			$message = '';
 			if($forvalidation) {
 				$validate = $control->validate();
@@ -200,8 +204,9 @@ class FormContainer
 					$message = implode('<br>', (array) $validate);
 				}
 			}
-			$this->theme_obj->class = implode( ' ', (array) $class );
-			$this->theme_obj->message = $message;
+			
+			$this->theme_obj->assign('class', implode( ' ', (array) $class ));
+			$this->theme_obj->assign('message', $message);
 		}
 		return $this->theme_obj;
 	}
@@ -314,6 +319,32 @@ class FormContainer
 			}
 		}
 	}
+	
+	/**
+	 * Magic property setter for FormContainer and its descendants
+	 *
+	 * @param string $name The name of the property
+	 * @param mixed $value The value to set the property to
+	 */
+	public function __set($name, $value)
+	{
+		switch($name) {
+			case 'contents':
+			case 'class':
+			case 'id':
+			case 'caption':
+			case 'template':
+			case 'controls':
+			case 'checksum':
+			case 'container':
+			case 'theme_obj':
+				$this->$name = $value;
+				break;
+			default:
+				$this->properties[$name] = $value;
+				break;
+		}
+	}
 
 	/**
 	 * Return the HTML/script required for all contained controls.  Do it only once.
@@ -404,7 +435,8 @@ class FormUI extends FormContainer
 	 */
 	public function salted_name()
 	{
-		return md5(Options::get('secret') . 'added salt, for taste' . $this->checksum());
+		//return md5(Options::get('secret') . 'added salt, for taste' . $this->checksum());
+		return md5('added salt, for taste' . $this->checksum());
 	}
 
 	/**
@@ -418,8 +450,8 @@ class FormUI extends FormContainer
 		$forvalidation = false;
 
 		$theme = $this->get_theme($forvalidation, $this);
-		$theme->start_buffer();
-		$theme->success = false;
+		
+		$theme->assign('success', false);
 
 		// Should we be validating?
 		if(isset($_POST['FormUI']) && $_POST['FormUI'] == $this->salted_name()) {
@@ -431,33 +463,27 @@ class FormUI extends FormContainer
 						return $result;
 					}
 				}
-				$theme->success = true;
-				$theme->message = $this->options['success_message'];
+				$theme->assign('success', true);
+				$theme->assign('message', $this->options['success_message']);
 			}
 			else {
 				$forvalidation = true;
 			}
 		}
 
-		$out = '';
-
-		$theme->controls = $this->output_controls($forvalidation);
-
+		$theme->assign('controls', $this->output_controls($forvalidation));
+		$theme->assign('id', Utils::slugify($this->name));
+		$theme->assign('class', implode( " ", (array) $this->class ));
+		$theme->assign('action', $this->options['form_action']);
+		$theme->assign('onsubmit', ($this->properties['onsubmit'] == '') ? '' : "onsubmit=\"{$this->properties['onsubmit']}\"");
+		$theme->assign('salted_name', $this->salted_name());
+		$theme->assign('pre_out', $this->pre_out_controls());
+		
 		foreach($this->properties as $prop => $value) {
-			$theme->$prop = $value;
+			$theme->assign($prop, $value);
 		}
-
-		$theme->id = Utils::slugify($this->name);
-		$theme->class = implode( " ", (array) $this->class );
-		$theme->action = $this->options['form_action'];
-		$theme->onsubmit = ($this->properties['onsubmit'] == '') ? '' : "onsubmit=\"{$this->properties['onsubmit']}\"";
-		$theme->salted_name = $this->salted_name();
-		$theme->pre_out = $this->pre_out_controls();
-
-		$out = $theme->fetch($this->options['template']);
-		$theme->end_buffer();
-
-		return $out;
+		
+		return $theme->fetch($this->options['template'], true);
 	}
 
 	/**
@@ -479,11 +505,9 @@ class FormUI extends FormContainer
 	public function output_controls( $forvalidation = false )
 	{
 		$out = '';
-		$this->get_theme( $forvalidation )->start_buffer();
 		foreach($this->controls as $control) {
 			$out.= $control->get( $forvalidation );
 		}
-		$this->get_theme( $forvalidation )->end_buffer();
 		return $out;
 	}
 
@@ -828,17 +852,16 @@ class FormControl
 	public function get($forvalidation = true)
 	{
 		$theme = $this->get_theme($forvalidation);
-		$theme->start_buffer();
 
-		foreach($this->properties as $prop => $value) {
-			$theme->$prop = $value;
+		foreach($this->properties as $prop => $value) {			
+			$theme->assign($prop, $value);
 		}
-
-		$theme->caption = $this->caption;
-		$theme->id = $this->name;
-		$theme->value = $this->value;
-
-		return $theme->fetch( $this->get_template(), true );
+		
+		$theme->assign('caption', $this->caption);
+		$theme->assign('id', $this->name);
+		$theme->assign('value', $this->value);
+					
+		return $theme->fetch( $this->get_template() );
 	}
 
 	/**
@@ -1007,11 +1030,7 @@ class FormControl
 	 */
 	protected function get_theme($forvalidation)
 	{
-		$theme = $this->container->get_theme($forvalidation, $this);
-		foreach($this->properties as $name => $value) {
-			$theme->name = $value;
-		}
-		return $theme;
+		return $this->container->get_theme($forvalidation, $this);
 	}
 
 
@@ -1153,6 +1172,8 @@ class FormControlStatic extends FormControlNoSave
  */
 class FormControlTag extends FormContainer
 {
+	public $tag;
+	
 	/**
 	 * Override the FormControl constructor to support more parameters
 	 *
@@ -1183,13 +1204,13 @@ class FormControlTag extends FormContainer
 		
 		$tag = $this->tag;
 		
-		$theme->class = 'tag_'.$tag->slug;
-		$theme->id = $tag->id;
-		$theme->weight = $max > 0 ? round(($tag->count * 10)/$max) : 0;
-		$theme->caption = $tag->tag;
-		$theme->count = $tag->count;
-				
-		return $theme->fetch( 'tabcontrol_tag' );
+		$theme->assign('class', 'tag_'.$tag->slug);
+		$theme->assign('id', $tag->id);
+		$theme->assign('weight', $max > 0 ? round(($tag->count * 10)/$max) : 0);
+		$theme->assign('caption', $tag->tag);
+		$theme->assign('count', $tag->count);
+		
+		return $theme->fetch( 'tabcontrol_tag', true );
 	}
 
 }
@@ -1209,9 +1230,11 @@ class FormControlPassword extends FormControlText
 	public function get($forvalidation = true)
 	{
 		$theme = $this->get_theme($forvalidation);
-		$theme->outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
 
-		return $theme->fetch( $this->get_template() );
+		$theme->assign('id', $this->name);
+		$theme->assign('outvalue', $this->value == '' ? '' : substr(md5($this->value), 0, 8));
+		
+		return $theme->fetch( $this->get_template(), true );
 	}
 
 	/**
@@ -1323,12 +1346,13 @@ class FormControlSelect extends FormControl
 	public function get($forvalidation = true)
 	{
 		$theme = $this->get_theme($forvalidation);
-		$theme->options = $this->options;
-		$theme->multiple = $this->multiple;
-		$theme->size = $this->size;
-		$theme->id = $this->name;
 
-		return $theme->fetch( $this->get_template() );
+		$theme->assign('options', $this->options);
+		$theme->assign('multiple', $this->multiple);
+		$theme->assign('size', $this->size);
+		$theme->assign('id', $this->name);
+	
+		return $theme->fetch( $this->get_template(), true );
 	}
 }
 
@@ -1346,10 +1370,11 @@ class FormControlCheckboxes extends FormControlSelect
 	public function get($forvalidation = true)
 	{
 		$theme = $this->get_theme($forvalidation);
-		$theme->options = $this->options;
-		$theme->id = $this->name;
+		
+		$theme->assign('options', $this->options);
+		$theme->assign('id', $this->name);
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 	
 	/**
@@ -1501,8 +1526,7 @@ class FormControlLabel extends FormControlNoSave
 	 */
 	function get( $forvalidation = true )
 	{
-		$out = '<div' . (($this->class) ? ' class="' . implode( " ", (array) $this->class ) . '"' : '') . (($this->id) ? ' id="' . $this->id . '"' : '') .'><label for="' . $this->name . '">' . $this->caption . '</label></div>';
-		return $out;
+		return '<div' . (($this->class) ? ' class="' . implode( " ", (array) $this->class ) . '"' : '') . (($this->id) ? ' id="' . $this->id . '"' : '') .'><label for="' . $this->name . '">' . $this->caption . '</label></div>';
 	}
 
 }
@@ -1566,14 +1590,13 @@ class FormControlTabs extends FormContainer
 				$controls[$control->caption] = $content;
 			}
 		}
-		$theme->controls = $controls;
-		// Do not move before $contents
-		// Else, these variables will contain the last control's values
-		$theme->class = $this->class;
-		$theme->id = $this->name;
-		$theme->caption = $this->caption;
+		$theme->assign('controls', $controls);
 
-		return $theme->fetch( $this->template );
+		$theme->assign('class', $this->class);
+		$theme->assign('id', $this->name);
+		$theme->assign('caption', $this->caption);
+		
+		return $theme->fetch( $this->template, true );
 	}
 
 }

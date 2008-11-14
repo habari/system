@@ -1,0 +1,2 @@
+	<label for="<?php echo $id; ?>"><?php echo $this->caption; ?><?php echo (isset($required) && $required) ? ' <strong>*</strong>' : ''?></label>
+	<input type="password" id="<?php echo $id; ?>" name="<?php echo $field; ?>" value="<?php echo $outvalue; ?>">

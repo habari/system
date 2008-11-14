@@ -506,5 +506,27 @@ class AjaxAdminHandler extends ActionHandler
 		header( 'content-type:text/javascript' );
 		echo json_encode( $output );
 	}
+	
+	/**
+	 * Function used to set theme variables to the add module dashboard widget
+	 */
+	public function ajax_dash_module_add_item( $module, $id, $theme )
+	{
+		$modules = Modules::get_all();
+		if ( $modules ) {
+			$modules = array_combine( array_values( $modules ), array_values( $modules ) );
+		}
+
+		$form = new FormUI( 'dash_additem' );
+		$form->append( 'select', 'module', 'null:unused' );
+		$form->module->options = $modules;
+		$form->append( 'submit', 'submit', _t('+') );
+		//$form->on_success( array( $this, 'dash_additem' ) );
+		$form->properties['onsubmit'] = "dashboard.add(); return false;";
+		$theme->additem_form = $form->get();
+
+		$module['content'] = $theme->fetch( 'dash_additem' );
+		return $module;
+	}
 }
 ?>

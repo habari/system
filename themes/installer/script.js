@@ -160,22 +160,22 @@ function checkDBCredentials()
 function checkSiteConfigurationCredentials() {
 	var warned = false;
 	var installok = true;
-	if ( ( $('#sitename').val() != '' ) && ( $('#adminuser').val() != '' ) && ( $('#adminpass1').val() != '' ) && ( $('#adminpass2').val() != '' ) ) {
+	if ( ( $('#blog_title').val() != '' ) && ( $('#admin_username').val() != '' ) && ( $('#admin_pass1').val() != '' ) && ( $('#admin_pass2').val() != '' ) ) {
 		//Checking fields is ok
-		if ( $('#adminpass1').val() != $('#adminpass2').val() ) {
+		if ( $('#admin_pass1').val() != $('#admin_pass2').val() ) {
 			warningtext= 'The passwords do not match, try typing them again.';
 			$('#install').children('.options').fadeOut().removeClass('ready');
-			$('#adminpass1').parents('.installstep').removeClass('done');
-			$('#adminpass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
+			$('#admin_pass1').parents('.installstep').removeClass('done');
+			$('#admin_pass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
 			warned = true;
 			installok = false;
 		}
 	}
-	if($('#adminemail').val() == '' ) {
+	if($('#admin_email').val() == '' ) {
 		installok = false;
 	}
 	if(!warned) {
-		ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
+		ida= new Array( '#blog_title', '#admin_username', '#admin_pass1', '#admin_pass2', '#admin_email' );
 		$(ida).each(function(id) {
 			ido= $(ida).get(id);
 			$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
@@ -217,7 +217,7 @@ function noVerify() {
 	});
 	$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
 
-	ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
+	ida= new Array( '#blog_title', '#admin_username', '#admin_pass1', '#admin_pass2', '#admin_email' );
 	$(ida).each(function(id) {
 		ido= $(ida).get(id);
 		$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();

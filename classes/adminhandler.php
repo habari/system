@@ -1756,41 +1756,6 @@ class AdminHandler extends ActionHandler
 		$this->display( 'tags' );
 	}
 
-	/**
-	 * Function used to set theme variables to the add module dashboard widget
-	 * TODO make this form use an AJAX call instead of reloading the page
-	 */
-	public function filter_dash_module_add_item( $module, $id, $theme )
-	{
-		$modules = Modules::get_all();
-		if ( $modules ) {
-			$modules = array_combine( array_values( $modules ), array_values( $modules ) );
-		}
-
-		$form = new FormUI( 'dash_additem' );
-		$form->append( 'select', 'module', 'null:unused' );
-		$form->module->options = $modules;
-		$form->append( 'submit', 'submit', _t('+') );
-		//$form->on_success( array( $this, 'dash_additem' ) );
-		$form->properties['onsubmit'] = "dashboard.add(); return false;";
-		$theme->additem_form = $form->get();
-
-		$module['content'] = $theme->fetch( 'dash_additem' );
-		return $module;
-	}
-
-	/**
-	 * Adds a module to the user's dashboard
-	 * @param object form FormUI object
-	 */
-	public function dash_additem( $form )
-	{
-		$new_module = $form->module->value;
-		Modules::add( $new_module );
-
-		// return false to redisplay the form
-		return false;
-	}
 }
 
 ?>

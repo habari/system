@@ -108,6 +108,13 @@ abstract class TemplateEngine
 	public function set_template_dir( $dir ) {
 		$this->template_dir = $dir;
 	}
+	
+	/**
+	 * Clears the engine_vars array to provide a clean sleigh
+	 */
+	public function clear_vars() {
+		$this->engine_vars = array();
+	}
 }
 
 ?>

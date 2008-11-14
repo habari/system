@@ -5,6 +5,11 @@ define('MIN_PHP_VERSION', '5.2.0');
  * The class which responds to installer actions
  */
 class InstallHandler extends ActionHandler {
+	
+	// Cached theme object for handling templates and presentation
+	private $theme = NULL;
+	// Cached schema object for db-specific install steps
+	private $schemas = array();
 
 	/**
 	 * Entry point for installation.  The reason there is a begin_install
@@ -17,7 +22,7 @@ class InstallHandler extends ActionHandler {
 		Utils::revert_magic_quotes_gpc();
 
 		// Create a new theme to handle the display of the installer
-		$this->theme = Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
+		$this->theme = Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/themes/installer/');
 		
 		/**
 		 * Set user selected Locale or default
@@ -42,35 +47,12 @@ class InstallHandler extends ActionHandler {
 			$this->display('htaccess');
 		}
 
-		// Dispatch AJAX requests.
-		if ( isset( $_POST['ajax_action'] ) ) {
-			switch ( $_POST['ajax_action'] ) {
-				case 'check_mysql_credentials':
-					self::ajax_check_mysql_credentials();
-					exit;
-					break;
-				case 'check_pgsql_credentials':
-					self::ajax_check_pgsql_credentials();
-					exit;
-					break;
-				case 'check_sqlite_credentials':
-					self::ajax_check_sqlite_credentials();
-					exit;
-					break;
-			}
-		}
 		// set the default values now, which will be overriden as we go
 		$this->form_defaults();
 
 		if (! $this->meets_all_requirements()) {
 			$this->display('requirements');
 		}
-
-		/*
-		 * Add the AJAX hooks
-		 */
-		Plugins::register( array('InstallHandler', 'ajax_check_mysql_credentials'), 'ajax_', 'check_mysql_credentials' );
-		Plugins::register( array('InstallHandler', 'ajax_check_pgsql_credentials'), 'ajax_', 'check_pgsql_credentials' );
 
 		/*
 		 * Let's check the config.php file if no POST data was submitted
@@ -85,23 +67,7 @@ class InstallHandler extends ActionHandler {
 			include( Site::get_dir('config_file') );
 			if ( isset( $db_connection ) ) {
 				list( $this->handler_vars['db_type'], $remainder )= explode( ':', $db_connection['connection_string'] );
-				switch( $this->handler_vars['db_type'] ) {
-				case 'sqlite':
-					// SQLite uses less info.
-					// we stick the path in db_host
-					$this->handler_vars['db_file']= $remainder;
-					break;
-				case 'mysql':
-					list($host,$name)= explode(';', $remainder);
-					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
-					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
-					break;
-				case 'pgsql':
-					list($host,$name)= explode(' ', $remainder);
-					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
-					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
-					break;
-				}
+				Plugins::act( 'install_existing_config', $this, $remainder );
 				$this->handler_vars['db_user']= $db_connection['username'];
 				$this->handler_vars['db_pass']= $db_connection['password'];
 				$this->handler_vars['table_prefix']= $db_connection['prefix'];
@@ -130,6 +96,7 @@ class InstallHandler extends ActionHandler {
 			$this->display('db_setup');
 		}
 
+		// This will use formUI
 		$db_type = $this->handler_vars['db_type'];
 		if ( $db_type == 'mysql' || $db_type == 'pgsql' ) {
 			$this->handler_vars['db_host']= $_POST["{$db_type}_db_host"];
@@ -164,15 +131,8 @@ class InstallHandler extends ActionHandler {
 			$this->activate_plugins();
 		}
 
-		
-
 		// Installation complete. Secure sqlite if it was chosen as the database type to use
-		if ( $db_type == 'sqlite' ) {
-			if ( !$this->secure_sqlite() ) {
-				$this->handler_vars['sqlite_contents'] = implode( "\n", $this->sqlite_contents() );
-				$this->display( 'sqlite' );
-			}
-		}
+		Plugins::act('install_complete', $this);
 
 		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
 		return true;
@@ -321,7 +281,21 @@ class InstallHandler extends ActionHandler {
 				$pdo_drivers
 			);
 		}
-
+		
+		// Load available schemas' install script
+		foreach ($pdo_drivers as $pdo_driver) {
+			$file_path = HABARI_PATH . '/system/schema/' . $pdo_driver . '/install.php';
+			if (file_exists($file_path)) {
+				include_once($file_path);
+			}
+			$classname = $pdo_driver.'Install';
+			if (class_exists($pdo_driver.'Install')) {
+				$this->schemas[$pdo_driver] = new $classname();
+				// Register plugin hooks
+				$this->schemas[$pdo_driver]->load();
+			}
+		}
+						
 		$pdo_drivers_ok = count( $pdo_drivers );
 		$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
 		$this->theme->assign( 'pdo_drivers', $pdo_drivers );
@@ -904,68 +878,6 @@ class InstallHandler extends ActionHandler {
 
 		return true;
 	}
-
-	/**
-	 * returns an array of Files declarations used by Habari
-	 */
-	public function sqlite_contents()
-	{
-		$db_file = basename( $this->handler_vars['db_file'] );
-		$contents = array(
-			'### HABARI SQLITE START',
-			'<Files "' . $db_file . '">',
-			'Order deny,allow',
-			'deny from all',
-			'</Files>',
-			'### HABARI SQLITE END'
-		);
-
-		return $contents;
-	}
-
-	/**
-	 * attempts to write the Files clause to the .htaccess file 
-	 * if the clause for this sqlite doesn't exist.
-	 * @return bool success or failure
-	**/
-	public function secure_sqlite()
-	{
-		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
-			// .htaccess is only needed on Apache
-			return false;
-		}
-		if ( !file_exists( HABARI_PATH . '/.htaccess') ) {
-			// no .htaccess to write to
-			return false;
-		}
-		if ( !is_writable( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess' ) ) {
-			// we can't update the file
-			return false;
-		}
-
-		// Get the files clause
-		$sqlite_contents = $this->sqlite_contents();
-		$files_contents = "\n" . implode( "\n", $sqlite_contents ) . "\n";
-
-		// See if it already exists
-		$current_files_contents = file_get_contents( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess');
-		if ( FALSE === strpos( $current_files_contents, $files_contents ) ) {
-			// If not, append the files clause to the .htaccess file
-			if ( $fh = fopen( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess', 'a' ) ) {
-				if ( FALSE === fwrite( $fh, $files_contents ) ) {
-					// Can't write to the file
-					return false;
-				}
-				fclose( $fh );
-			}
-			else {
-				// Can't open the file
-				return false;
-			}
-		}
-		// Success!
-		return true;
-	}
 	
 	private function upgrade_db_pre ( $current_version ) {
 		
@@ -1207,193 +1119,6 @@ class InstallHandler extends ActionHandler {
 		
 		return true;
 		
-	}
-
-	/**
-	 * Validate database credentials for MySQL
-	 * Try to connect and verify if database name exists
-	 */
-	public function ajax_check_mysql_credentials() {
-		$xml = new SimpleXMLElement('<response></response>');
-		// Missing anything?
-		if ( !isset( $_POST['host'] ) ) {
-			$xml->addChild( 'status', 0 );
-			$xml_error = $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#mysqldatabasehost' );
-			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
-		}
-		if ( !isset( $_POST['database'] ) ) {
-			$xml->addChild( 'status', 0 );
-			$xml_error = $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#mysqldatabasename' );
-			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
-		}
-		if ( !isset( $_POST['user'] ) ) {
-			$xml->addChild( 'status', 0 );
-			$xml_error = $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#mysqldatabaseuser' );
-			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
-		}
-		if ( !isset( $xml_error ) ) {
-			// Can we connect to the DB?
-			$pdo = 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
-			try {
-				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
-				$xml->addChild( 'status', 1 );
-			}
-			catch(Exception $e) {
-				$xml->addChild( 'status', 0 );
-				$xml_error = $xml->addChild( 'error' );
-				if ( strpos( $e->getMessage(), '[1045]' ) ) {
-					$xml_error->addChild( 'id', '#mysqldatabaseuser' );
-					$xml_error->addChild( 'id', '#mysqldatabasepass' );
-					$xml_error->addChild( 'message', _t('Access denied. Make sure these credentials are valid.') );
-				}
-				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
-					$xml_error->addChild( 'id', '#mysqldatabasename' );
-					$xml_error->addChild( 'message', _t('That database does not exist.') );
-				}
-				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
-					$xml_error->addChild( 'id', '#mysqldatabasehost' );
-					$xml_error->addChild( 'message', _t('Could not connect to host.') );
-				}
-				else {
-					$xml_error->addChild( 'id', '#mysqldatabaseuser' );
-					$xml_error->addChild( 'id', '#mysqldatabasepass' );
-					$xml_error->addChild( 'id', '#mysqldatabasename' );
-					$xml_error->addChild( 'id', '#mysqldatabasehost' );
-					$xml_error->addChild( 'message', $e->getMessage() );
-				}
-			}
-		}
-		$xml = $xml->asXML();
-		ob_clean();
-		header("Content-type: text/xml");
-		header("Cache-Control: no-cache");
-		print $xml;
-	}
-
-	/**
-	 * Validate database credentials for PostgreSQL
-	 * Try to connect and verify if database name exists
-	 */
-	public function ajax_check_pgsql_credentials() {
-		$xml = new SimpleXMLElement('<response></response>');
-		// Missing anything?
-		if ( !isset( $_POST['host'] ) ) {
-			$xml->addChild( 'status', 0 );
-			$xml_error = $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#pgsqldatabasehost' );
-			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
-		}
-		if ( !isset( $_POST['database'] ) ) {
-			$xml->addChild( 'status', 0 );
-			$xml_error = $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#pgsqldatabasename' );
-			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
-		}
-		if ( !isset( $_POST['user'] ) ) {
-			$xml->addChild( 'status', 0 );
-			$xml_error = $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
-			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
-		}
-		if ( !isset( $xml_error ) ) {
-			// Can we connect to the DB?
-			$pdo = 'pgsql:host=' . $_POST['host'] . ' dbname=' . $_POST['database'];
-			try {
-				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
-				$xml->addChild( 'status', 1 );
-			}
-			catch(Exception $e) {
-				$xml->addChild( 'status', 0 );
-				$xml_error = $xml->addChild( 'error' );
-				if ( strpos( $e->getMessage(), '[1045]' ) ) {
-					$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
-					$xml_error->addChild( 'id', '#pgsqldatabasepass' );
-					$xml_error->addChild( 'message', _t('Access denied. Make sure these credentials are valid.') );
-				}
-				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
-					$xml_error->addChild( 'id', '#pgsqldatabasename' );
-					$xml_error->addChild( 'message', _t('That database does not exist.') );
-				}
-				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
-					$xml_error->addChild( 'id', '#pgsqldatabasehost' );
-					$xml_error->addChild( 'message', _t('Could not connect to host.') );
-				}
-				else {
-					$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
-					$xml_error->addChild( 'id', '#pgsqldatabasepass' );
-					$xml_error->addChild( 'id', '#pgsqldatabasename' );
-					$xml_error->addChild( 'id', '#pgsqldatabasehost' );
-					$xml_error->addChild( 'message', $e->getMessage() );
-				}
-			}
-		}
-		$xml = $xml->asXML();
-		ob_clean();
-		header("Content-type: text/xml");
-		header("Cache-Control: no-cache");
-		print $xml;
-	}
-
-	/**
-	 * Validate database credentials for SQLite
-	 * Try to connect and verify if database name exists
-	 */
-	public function ajax_check_sqlite_credentials() {
-		$db_file = $_POST['file'];
-		$xml = new SimpleXMLElement('<response></response>');
-		// Missing anything?
-		if ( !isset( $db_file ) ) {
-			$xml->addChild( 'status', 0 );
-			$xml_error = $xml->addChild( 'error' );
-			$xml_error->addChild( 'id', '#databasefile' );
-			$xml_error->addChild( 'message', _t('The database file was left empty.') );
-		}
-		if ( !isset( $xml_error ) ) {
-			if ( ! is_writable( dirname( $db_file ) ) ) {
-				$xml->addChild( 'status', 0 );
-				$xml_error = $xml->addChild( 'error' );
-				$xml_error->addChild( 'id', '#databasefile' );
-				$xml_error->addChild( 'message', _t('SQLite requires that the directory that holds the DB file be writable by the web server.') );
-			} elseif ( file_exists( $db_file ) && ( ! is_writable( $db_file ) ) ) {
-				$xml->addChild( 'status', 0 );
-				$xml_error = $xml->addChild( 'error' );
-				$xml_error->addChild( 'id', '#databasefile' );
-
-				$xml_error->addChild( 'message', _t('The SQLite data file is not writable by the web server.') );
-			} else {
-				// Can we connect to the DB?
-				$pdo = 'sqlite:' . $db_file;
-				$connect = DB::connect( $pdo, null, null );
-
-				// Don't leave empty files laying around
-				DB::disconnect();
-				if ( file_exists( $db_file ) ) {
-					unlink($db_file);
-				}
-
-				switch ($connect) {
-					case true:
-						// We were able to connect to an existing database file.
-						$xml->addChild( 'status', 1 );
-						break;
-					default:
-						// We can't create the database file, send an error message.
-						$xml->addChild( 'status', 0 );
-						$xml_error = $xml->addChild( 'error' );
-						// TODO: Add error codes handling for user-friendly messages
-						$xml_error->addChild( 'id', '#databasefile' );
-						$xml_error->addChild( 'message', $connect->getMessage() );
-				}
-			}
-		}
-		$xml = $xml->asXML();
-		ob_clean();
-		header("Content-type: text/xml");
-		header("Cache-Control: no-cache");
-		print $xml;
 	}
 
 }

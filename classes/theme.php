@@ -821,6 +821,7 @@ class Theme extends Pluggable
 	{
 		unset($this->var_stack[$this->current_var_stack]);
 		$this->current_var_stack--;
+		$this->template_engine->clear_vars();
 	}
 
 	/**

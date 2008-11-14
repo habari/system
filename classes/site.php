@@ -173,7 +173,7 @@ class Site
 				$url = Site::get_url( 'habari' ) . '/admin';
 				break;
 			case 'admin_theme':
-				$url = Site::get_url( 'habari' ) . '/system/admin';
+				$url = Site::get_url( 'habari' ) . '/system/themes/admin';
 				break;
 			case 'system':
 				$url = Site::get_url( 'habari' ) . '/system';
@@ -318,7 +318,7 @@ class Site
 				}
 				break;
 			case 'admin_theme':
-				$path = HABARI_PATH . '/system/admin';
+				$path = HABARI_PATH . '/system/themes/admin';
 				break;
 		}
 		$path.= ($trail) ? '/' : '';
