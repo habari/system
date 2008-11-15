@@ -230,7 +230,7 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.page-users, .page-options, .page-user, .page-tags').length != 0) {
+		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins').length != 0) {
 			$("input#search").keyup(function (e) {
 				var str= $('input#search').val();
 				itemManage.simpleFilter(str);
@@ -296,10 +296,10 @@ var itemManage = {
 	searchRows: [],
 	simpleFilter: function( search ) {
 		search = $.trim( search.toLowerCase() );
-		
+				
 		// cache search items on first call
 		if ( itemManage.searchCache.length == 0 ) {
-			itemManage.searchRows = $('li.item, .item.tag, div.settings');
+			itemManage.searchRows = $('li.item, .item.plugin, .item.tag, div.settings, .container.plugins');
 			itemManage.searchCache = itemManage.searchRows.map(function() {
 				return $(this).text().toLowerCase();
 			});
@@ -313,7 +313,7 @@ var itemManage = {
 			}
 		});
 		
-		if($('div.settings').length != 0) {
+		if($('div.settings').length != 0 || $('.container.plugins:visible').length > 1) {
 			$('select[name=navigationdropdown]').val('all');
 		}
 		
@@ -884,11 +884,11 @@ var navigationDropdown = {
 		var selected = $('select[name=navigationdropdown]').val();
 		
 		if ( selected == 'all' ) {
-			$('.settings').removeClass('hidden');
+			$('.settings, .container.plugins').removeClass('hidden');
 		}
 		else {
-			$('.settings:not(#' + selected + ')').addClass('hidden');
-			$('.settings#' + selected).removeClass('hidden');
+			$('.settings:not(#' + selected + '), .container.plugins:not(#' + selected + ')').addClass('hidden');
+			$('.settings#' + selected + ', .container.plugins#' + selected ).removeClass('hidden');
 		}
 	}
 }
