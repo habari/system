@@ -1,16 +1,16 @@
 <?php
 
-class SQLiteInstall extends InstallSchema {
+class SQLiteInstall extends Plugin {
 	
 	public function info()
 	{
 		return array();
 	}
 	
-	public function __construct()
+	public function load()
 	{
-		parent::__construct(func_get_args());
-		Stack::add('installer_javascript', array($this->get_url().'/install.js'));
+		Stack::add('installer_javascript', array($this->get_url().'/sqliteinstall.js'));
+		parent::load();
 	}
 
 	public function action_install_form_installform( $form, $theme )
@@ -111,7 +111,7 @@ class SQLiteInstall extends InstallSchema {
 	 * Validate database credentials for SQLite
 	 * Try to connect and verify if database name exists
 	 */
-	public function ajax_check_sqlite_credentials() {
+	public function action_ajax_check_sqlite_credentials() {
 		$db_file = $_POST['file'];
 		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
@@ -137,7 +137,7 @@ class SQLiteInstall extends InstallSchema {
 				// Can we connect to the DB?
 				$pdo = 'sqlite:' . $db_file;
 				$connect = DB::connect( $pdo, null, null );
-
+				
 				// Don't leave empty files laying around
 				DB::disconnect();
 				if ( file_exists( $db_file ) ) {

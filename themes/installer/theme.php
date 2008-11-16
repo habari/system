@@ -94,7 +94,7 @@ class DefaultInstaller extends Theme
 		$form->admin_pass_wrapper->help = _t('<strong>Password</strong> is the password of the initial user in 
 		Habari.') . ' <a href="#">' . _t('Learn More...') . '</a>';
 		// Admin Email
-		$form->siteconfiguration_options->append('text', 'admin_email', 'null:null', _t('Username'));
+		$form->siteconfiguration_options->append('text', 'admin_email', 'null:null', _t('E-mail'));
 		$form->admin_email->value = $this->admin_email;
 		$form->admin_email->required = true;
 		$form->admin_email->help = _t('<strong>Admin Email</strong> is the email address of the first user

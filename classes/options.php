@@ -125,14 +125,20 @@ class Options extends Singleton
 		$this->options = array(
 			'pagination' => 10,
 			'comments_require_id' => false,
+			'locale' => 'en-us',
+			/* Installer */
+			'next_cron' => date('U') + strtotime('1 year'), // Skip Crontab
+			'db_version' => Version::DB_VERSION, // Skip DB Upgrades
 		);
-		$results = DB::get_results( 'SELECT name, value, type FROM ' . DB::table( 'options' ), array(), 'QueryRecord' );
-		foreach($results as $result) {
-			if ( $result->type == 1 ) {
-				$this->options[$result->name]= unserialize( $result->value );
-			}
-			else {
-				$this->options[$result->name]= $result->value;
+		if (DB::is_connected()) {
+			$results = DB::get_results( 'SELECT name, value, type FROM ' . DB::table( 'options' ), array(), 'QueryRecord' );
+			foreach($results as $result) {
+				if ( $result->type == 1 ) {
+					$this->options[$result->name]= unserialize( $result->value );
+				}
+				else {
+					$this->options[$result->name]= $result->value;
+				}
 			}
 		}
 	}

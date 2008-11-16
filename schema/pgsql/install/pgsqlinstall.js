@@ -15,14 +15,15 @@ habari.installer.pgsql = {
 				success: function(xml) {
 					$('#installerror').fadeOut();
 					switch($('status',xml).text()) {
+					default:
 					case '0': // Show warning, fade the borders and hide the next step
 						$('id',xml).each(function(id) {
-						ido= $('id',xml).get(id);
-						warningtext= $('message',xml).text();
-						$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
-						$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-						$($(ido).text()).parents('.installstep').removeClass('done');
-						$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
+							ido= $('id',xml).get(id);
+							warningtext= $('message',xml).text();
+							$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
+							$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
+							$($(ido).text()).parents('.installstep').removeClass('done');
+							$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
 						});
 						break;
 					case '1': // Hide the warnings, highlight the borders and show the next step
@@ -33,12 +34,17 @@ habari.installer.pgsql = {
 							$(ido).parents('.installstep').addClass('done')
 						});
 						$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
-						$('#sitename').focus()
+						$('#sitename').focus();
 						break;
 					}
 				},
 				error: handleAjaxError
 			});
+		}
+		else {
+			$('#databasesetup').removeClass('done');
+			$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
+			$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
 		}
 	}
 };

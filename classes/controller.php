@@ -143,6 +143,14 @@ class Controller extends Singleton {
 			$matched_rule = URL::set_404();
 		}
 
+		if (defined('NOT_INSTALLED') && $matched_rule->name != 'ajax') {
+			$matched_rule->handler = 'installhandler';
+			$matched_rule->action = 'begin_install';
+		}
+		else {
+			Installer::load_schema_install();
+		}
+		
 		/* OK, we have a matching rule.  Set the action and create a handler */
 		$controller->action = $matched_rule->action;
 		$controller->handler = new $matched_rule->handler();

@@ -9,23 +9,21 @@ habari.installer = {
 	
 	setDatabaseType: function () {
 		for ( var i in habari.installer.schemas ) {
-			// May use some function per schema (in their class) to show/hide themselves
+			// Any better way of doing this?
 			if (habari.installer.schemas[i] != $('#db_type').val()) {
-				$("fieldset[id*='" + habari.installer.schemas[i] + "settings']").hide();
+				$('#' + habari.installer.schemas[i] + 'settings').hide();
 			}
 			else {
-				$("fieldset[id*='" + habari.installer.schemas[i] + "settings']").show();
+				$('#' + habari.installer.schemas[i] + 'settings').show();
 			}
 		}
+		habari.installer.checkDBCredentials();
 	},
 	
 	checkDBCredentials: function() {
 		var toCall = 'habari.installer.' + $('#db_type').val() + '.checkDBCredentials()';
-		if (eval(toCall)) {
-			$('.installstep:first').removeClass('done');
-			$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
-			$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-		}
+		toCall = new Function(toCall);
+		toCall();
 	},
 	
 	checkSiteConfiguration: function () {
@@ -89,7 +87,7 @@ function queueTimer(timer){
 	if(checktimer != null) {
 		clearTimeout(checktimer);
 	}
-	checktimer = setTimeout(timer, 500);
+	checktimer = setTimeout(timer, 800);
 }
 
 function noVerify() {
@@ -184,7 +182,6 @@ $(document).ready(function() {
 	$('form').attr('autocomplete', 'off');
 	itemManage.init();
 	habari.installer.setDatabaseType();
-	habari.installer.checkDBCredentials();
 	habari.installer.checkSiteConfiguration();
 	$('#db_type').change(function(){habari.installer.setDatabaseType()});
 	$('#databasesetup input').keyup(function(){queueTimer(habari.installer.checkDBCredentials)});

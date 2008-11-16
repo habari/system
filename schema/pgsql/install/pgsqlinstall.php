@@ -1,16 +1,16 @@
 <?php
 
-class pgSQLInstall extends InstallSchema {
+class pgSQLInstall extends Plugin {
 	
 	public function info()
 	{
 		return array();
 	}
 	
-	public function __construct()
+	public function load()
 	{
-		parent::__construct(func_get_args());
-		Stack::add('installer_javascript', array($this->get_url().'/install.js'));
+		Stack::add('installer_javascript', array($this->get_url().'/pgsqlinstall.js'));
+		parent::load();
 	}
 	
 	public function action_install_form_installform( $form, $theme )
@@ -53,9 +53,9 @@ class pgSQLInstall extends InstallSchema {
 		list($host,$name)= explode(' ', $remainder);
 		list($discard, $theme->handler_vars['db_host'])= explode('=', $host);
 		list($discard, $theme->handler_vars['db_schema'])= explode('=', $name);
-	}
+	} */
 
-	public function ajax_check_pgsql_credentials() {
+	public function action_ajax_check_pgsql_credentials() {
 		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
@@ -113,6 +113,6 @@ class pgSQLInstall extends InstallSchema {
 		header("Content-type: text/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
-	}*/
+	}
 }
 ?>

@@ -47,18 +47,28 @@ class DB extends Singleton
 			$db_pass = func_get_arg( 2 );
 		}
 		else {
-			/* We use the config.php variables */
-			$connect_string = $GLOBALS['db_connection']['connection_string'];
-			$db_user = $GLOBALS['db_connection']['username'];
-			$db_pass = $GLOBALS['db_connection']['password'];
+			// Retrieve the configuration file's path.
+			$config = Site::get_dir( 'config_file' );
+			if ( file_exists( $config ) ) {
+				require_once $config;
+				if ( isset($db_connection) ) {
+					/* We use the config.php variables */
+					$connect_string = $db_connection['connection_string'];
+					$db_user = $db_connection['username'];
+					$db_pass = $db_connection['password'];
+				}
+			}
 		}
-		DB::instance()->connection = DatabaseConnection::ConnectionFactory( $connect_string );
+		if (isset($connect_string)) {
+			DB::instance()->connection = DatabaseConnection::ConnectionFactory( $connect_string );
+		}
 		if ( NULL != DB::instance()->connection ) {
 			return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
 		}
 		else {
 			// do some error handling here. The connect string does not have a corresponding DB connection object
-			print _t('Panic! No database connection class appears to be found for the connection string specified. Please check config.php');
+			//print _t('Panic! No database connection class appears to be found for the connection string specified. Please check config.php');
+			define('NOT_INSTALLED', true);
 		}
 	}
 
@@ -78,7 +88,10 @@ class DB extends Singleton
 	 */
 	public static function table( $name )
 	{
-		return DB::instance()->connection->table( $name );
+		if ( NULL != DB::instance()->connection ) {
+			echo $name;
+			return DB::instance()->connection->table( $name );
+		}
 	}
 
 	/**
@@ -90,7 +103,9 @@ class DB extends Singleton
 	**/
 	public static function register_table( $name )
 	{
-		DB::instance()->connection->register_table( $name );
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->register_table( $name );
+		}
 	}
 
 	/**
@@ -100,7 +115,9 @@ class DB extends Singleton
 	 */
 	public static function set_fetch_mode( $mode )
 	{
-		DB::instance()->connection->set_fetch_mode( $mode );
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->set_fetch_mode( $mode );
+		}
 	}
 
 	/**
@@ -110,12 +127,16 @@ class DB extends Singleton
 	 */
 	public static function set_fetch_class( $class_name )
 	{
-		DB::instance()->connection->set_fetch_class( $class_name );
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->set_fetch_class( $class_name );
+		}
 	}
 
 	public static function exec( $query )
 	{
-		return DB::instance()->connection->exec( $query );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->exec( $query );
+		}
 	}
 
 	/**
@@ -127,7 +148,9 @@ class DB extends Singleton
 	 */
 	public static function query( $query, $args = array() )
 	{
-		 return DB::instance()->connection->query( $query, $args );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->query( $query, $args );
+		}
 	}
 
 	/**
@@ -141,7 +164,9 @@ class DB extends Singleton
 	 */
 	public static function execute_procedure( $procedure, $args = array() )
 	{
-		return DB::instance()->connection->execute_procedure( $procedure, $args );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->execute_procedure( $procedure, $args );
+		}
 	}
 
 	/**
@@ -150,7 +175,9 @@ class DB extends Singleton
 	 */
 	public static function begin_transaction()
 	{
-		DB::instance()->connection->begin_transaction();
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->begin_transaction();
+		}
 	}
 
 	/**
@@ -160,14 +187,18 @@ class DB extends Singleton
 	 */
 	public static function rollback()
 	{
-		DB::instance()->connection->rollback();
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->rollback();
+		}
 	}
 
 	/**
 	 * Commit a currently running transaction
 	 */
 	public static function commit() {
-		DB::instance()->connection->commit();
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->commit();
+		}
 	}
 
 	/**
@@ -177,7 +208,9 @@ class DB extends Singleton
 	 */
 	public static function get_profiles()
 	{
-		return DB::instance()->connection->get_profiles();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->get_profiles();
+		}
 	}
 
 	/**
@@ -187,7 +220,9 @@ class DB extends Singleton
 	 */
 	private static function add_error( $error )
 	{
-		DB::instance()->connection->add_error( $error );
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->add_error( $error );
+		}
 	}
 
 	/**
@@ -196,7 +231,9 @@ class DB extends Singleton
 	 */
 	public static function get_errors()
 	{
-		return DB::instance()->connection->get_errors();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->get_errors();
+		}
 	}
 
 	/**
@@ -205,7 +242,9 @@ class DB extends Singleton
 	 **/
 	public static function has_errors()
 	{
-		return DB::instance()->connection->has_errors();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->has_errors();
+		}
 	}
 
 	/**
@@ -213,7 +252,9 @@ class DB extends Singleton
 	 **/
 	public static function clear_errors()
 	{
-		DB::instance()->connection->clear_errors();
+		if ( NULL != DB::instance()->connection ) {
+			DB::instance()->connection->clear_errors();
+		}
 	}
 
 	/**
@@ -222,7 +263,9 @@ class DB extends Singleton
 	 **/
 	public static function get_last_error()
 	{
-		return DB::instance()->connection->get_last_error();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->get_last_error();
+		}
 	}
 
 	/**
@@ -235,12 +278,14 @@ class DB extends Singleton
 	 **/
 	public static function get_results( $query, $args = array() )
 	{
-		if ( func_num_args() == 3 ) {
-			$class_name = func_get_arg( 2 );
-			return DB::instance()->connection->get_results( $query, $args, $class_name );
-		}
-		else {
-			return DB::instance()->connection->get_results( $query, $args );
+		if ( NULL != DB::instance()->connection ) {
+			if ( func_num_args() == 3 ) {
+				$class_name = func_get_arg( 2 );
+				return DB::instance()->connection->get_results( $query, $args, $class_name );
+			}
+			else {
+				return DB::instance()->connection->get_results( $query, $args );
+			}
 		}
 	}
 
@@ -254,12 +299,14 @@ class DB extends Singleton
 	 **/
 	public static function get_row( $query, $args = array() )
 	{
-		if ( func_num_args() == 3 ) {
-			$class_name = func_get_arg( 2 );
-			return DB::instance()->connection->get_row( $query, $args, $class_name );
-		}
-		else {
-			return DB::instance()->connection->get_row( $query, $args );
+		if ( NULL != DB::instance()->connection ) {
+			if ( func_num_args() == 3 ) {
+				$class_name = func_get_arg( 2 );
+				return DB::instance()->connection->get_row( $query, $args, $class_name );
+			}
+			else {
+				return DB::instance()->connection->get_row( $query, $args );
+			}
 		}
 	}
 
@@ -273,7 +320,9 @@ class DB extends Singleton
 	 **/
 	public static function get_column( $query, $args = array() )
 	{
-		 return DB::instance()->connection->get_column( $query, $args );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->get_column( $query, $args );
+		}
 	}
 
 	/**
@@ -285,7 +334,9 @@ class DB extends Singleton
 	**/
 	public static function get_value( $query, $args = array() )
 	{
-		return DB::instance()->connection->get_value( $query,  $args );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->get_value( $query,  $args );
+		}
 	}
 
 	/**
@@ -298,7 +349,9 @@ class DB extends Singleton
 	 **/
 	public static function get_keyvalue( $query, $args = array() )
 	{
-		 return DB::instance()->connection->get_keyvalue( $query, $args );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->get_keyvalue( $query, $args );
+		}
 	}
 
 	/**
@@ -310,7 +363,9 @@ class DB extends Singleton
 	 **/
 	public static function insert( $table, $fieldvalues )
 	{
-		return DB::instance()->connection->insert( $table, $fieldvalues );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->insert( $table, $fieldvalues );
+		}
 	}
 
 	/**
@@ -322,7 +377,9 @@ class DB extends Singleton
 	 **/
 	public static function exists( $table, $keyfieldvalues )
 	{
-		return DB::instance()->connection->exists( $table, $keyfieldvalues );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->exists( $table, $keyfieldvalues );
+		}
 	}
 
 	/**
@@ -337,7 +394,9 @@ class DB extends Singleton
 	 **/
 	public static function update( $table, $fieldvalues, $keyfields )
 	{
-		 return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );
+		}
 	}
 
 	/**
@@ -349,7 +408,9 @@ class DB extends Singleton
 	 */
 	public static function delete( $table, $keyfields )
 	{
-		return DB::instance()->connection->delete( $table, $keyfields );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->delete( $table, $keyfields );
+		}
 	}
 
 	/**
@@ -363,7 +424,9 @@ class DB extends Singleton
 	 */
 	public static function last_insert_id()
 	{
-		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
+		}
 	}
 	
 	/**
@@ -373,7 +436,9 @@ class DB extends Singleton
 	 */
 	public static function row_count()
 	{
-		return DB::instance()->connection->row_count();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->row_count();
+		}
 	}
 
 	/**
@@ -386,7 +451,9 @@ class DB extends Singleton
 	 */
 	public static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
-		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
+		}
 	}
 
 	/**
@@ -396,12 +463,16 @@ class DB extends Singleton
 	 */
 	public static function upgrade( $old_version )
 	{
-		 return DB::instance()->connection->upgrade( $old_version );
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->upgrade( $old_version );
+		}
 	}
 	
 	public static function get_driver_name()
 	{
-		return DB::instance()->connection->get_driver_name();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->get_driver_name();
+		}
 	}
 	
 	/**
@@ -411,7 +482,9 @@ class DB extends Singleton
 	 */
 	public static function list_tables()
 	{
-		return DB::instance()->connection->list_tables();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->list_tables();
+		}
 	}
 	
 	/**
@@ -421,7 +494,9 @@ class DB extends Singleton
 	 */
 	public static function is_connected()
 	{
-		return DB::instance()->connection->is_connected();
+		if (isset(DB::instance()->connection)) {
+			return DB::instance()->connection->is_connected();
+		}
 	}
 	
 	/**
@@ -431,7 +506,9 @@ class DB extends Singleton
 	 */
 	public static function in_transaction()
 	{
-		return DB::instance()->connection->in_transaction();
+		if ( NULL != DB::instance()->connection ) {
+			return DB::instance()->connection->in_transaction();
+		}
 	}
 }
 
