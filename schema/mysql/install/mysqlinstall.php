@@ -21,7 +21,7 @@ class MySQLInstall extends Plugin {
 		$form->databasesetup_options->append('fieldset', 'mysqlsettings', _t('MySQL Settings'));
 		
 		$form->mysqlsettings->append('text', 'mysqldatabasehost', 'null:null', _t('Database Host'));
-		$form->mysqldatabasehost->value = $theme->mysqldatabasehost;
+		$form->mysqldatabasehost->value = 'localhost';
 		$form->mysqldatabasehost->required = true;
 		$form->mysqldatabasehost->help = _t('<strong>Database Host</strong> is the host (domain) name or server IP
 		address of the server that runs the MySQL database to
@@ -30,19 +30,17 @@ class MySQLInstall extends Plugin {
 		for this field.') . ' <a href="#"> '. _t('Learn More...') . '</a>';
 		
 		$form->mysqlsettings->append('text', 'mysqldatabaseuser', 'null:null', _t('Username'));
-		$form->mysqldatabaseuser->value = $theme->mysqldatabaseuser;
 		$form->mysqldatabaseuser->required = true;
 		$form->mysqldatabaseuser->help = _t('<strong>Database User</strong> is the username used to connect Habari
 		to the MySQL database.') . ' <a href="#"> '. _t('Learn More...') . '</a>';
 		
 		$form->mysqlsettings->append('text', 'mysqldatabasepass', 'null:null', _t('Password'));
-		$form->mysqldatabasepass->value = $theme->mysqldatabasepass;
 		$form->mysqldatabasepass->required = true;
 		$form->mysqldatabasepass->help = _t('<strong>Database Password</strong> is the password used to connect
 		the specified user to the MySQL database.') . ' <a href="#"> '. _t('Learn More...') . '</a>';
 		
 		$form->mysqlsettings->append('text', 'mysqldatabasename', 'null:null', _t('Database Name'));
-		$form->mysqldatabasename->value = $theme->mysqldatabasename;
+		$form->mysqldatabasename->value = 'habari';
 		$form->mysqldatabasename->required = true;
 		$form->mysqldatabasename->help = _t('<strong>Database Name</strong> is the name of the MySQL database to
 		which Habari will connect.') . ' <a href="#"> '. _t('Learn More...') . '</a>';

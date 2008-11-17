@@ -21,7 +21,7 @@ class pgSQLInstall extends Plugin {
 		$form->databasesetup_options->append('fieldset', 'pgsqlsettings', _t('PostgreSQL Settings'));
 		
 		$form->pgsqlsettings->append('text', 'pgsqldatabasehost', 'null:null', _t('Database Host'));
-		$form->pgsqldatabasehost->value = $theme->pgsqldatabasehost;
+		$form->pgsqldatabasehost->value = 'localhost';
 		$form->pgsqldatabasehost->required = true;
 		$form->pgsqldatabasehost->help = _t('<strong>Database Host</strong> is the host (domain) name or server IP
 		address of the server that runs the PostgreSQL database to
@@ -30,19 +30,17 @@ class pgSQLInstall extends Plugin {
 		for this field.') . ' <a href="#"> '. _t('Learn More...') . '</a>';
 		
 		$form->pgsqlsettings->append('text', 'pgsqldatabaseuser', 'null:null', _t('Username'));
-		$form->pgsqldatabaseuser->value = $theme->pgsqldatabaseuser;
 		$form->pgsqldatabaseuser->required = true;
 		$form->pgsqldatabaseuser->help = _t('<strong>Database User</strong> is the username used to connect Habari
 		to the PostgreSQL database.') . ' <a href="#"> '. _t('Learn More...') . '</a>';
 		
 		$form->pgsqlsettings->append('text', 'pgsqldatabasepass', 'null:null', _t('Password'));
-		$form->pgsqldatabasepass->value = $theme->pgsqldatabasepass;
 		$form->pgsqldatabasepass->required = true;
 		$form->pgsqldatabasepass->help = _t('<strong>Database Password</strong> is the password used to connect
 		the specified user to the PostgreSQL database.') . ' <a href="#"> '. _t('Learn More...') . '</a>';
 		
 		$form->pgsqlsettings->append('text', 'pgsqldatabasename', 'null:null', _t('Database Name'));
-		$form->pgsqldatabasename->value = $theme->pgsqldatabasename;
+		$form->pgsqldatabasename->value = 'habari';
 		$form->pgsqldatabasename->required = true;
 		$form->pgsqldatabasename->help = _t('<strong>Database Name</strong> is the name of the PostgreSQL database to
 		which Habari will connect.') . ' <a href="#"> '. _t('Learn More...') . '</a>';

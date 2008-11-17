@@ -1,6 +1,4 @@
 <?php
-define('MIN_PHP_VERSION', '5.2.0');
-
 /**
  * The class which responds to installer actions
  */
@@ -27,16 +25,10 @@ class InstallHandler extends ActionHandler {
 		/**
 		 * Set user selected Locale or default
 		 */
-		$this->theme->locales = Locale::list_all();
 		if ( isset($_POST['locale']) && $_POST['locale'] != null ) {
 			Locale::set($_POST['locale']);
 			$this->theme->locale = $_POST['locale'];
 			$this->handler_vars['locale'] = $_POST['locale'];
-		}
-		else {
-			Locale::set( 'en-us' );
-			$this->theme->locale = 'en-us';
-			$this->handler_vars['locale'] = 'en_us';
 		}
 
 		/*
@@ -136,51 +128,6 @@ class InstallHandler extends ActionHandler {
 
 		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
 		return true;
-	}
-	
-	/*
-	 * Helper function to grab list of plugins
-	 */
-	public function get_plugins() {
-		$all_plugins = Plugins::list_all();
-		$recommended_list = array(
-			'coredashmodules.plugin.php',
-			'habarisilo.plugin.php',
-			'pingback.plugin.php',
-			'spamchecker.plugin.php',
-			'undelete.plugin.php'
-		);
-
-		foreach ( $all_plugins as $file ) {
-			$plugin = array();
-			$plugin_id = Plugins::id_from_file( $file );
-			$plugin['plugin_id']= $plugin_id;
-			$plugin['file']= $file;
-
-			$error = '';
-			if ( Utils::php_check_file_syntax( $file, $error ) ) {
-				$plugin['debug']= false;
-				// instantiate this plugin
-				// in order to get its info()
-				include_once( $file );
-				Plugins::get_plugin_classes();
-				$pluginobj = Plugins::load( $file, false );
-				$plugin['active']= false;
-				$plugin['verb']= _t( 'Activate' );
-				$plugin['actions']= array();
-				$plugin['info']= $pluginobj->info;
-				$plugin['recommended'] = in_array( basename($file), $recommended_list );
-			}
-			else {
-				$plugin['debug']= true;
-				$plugin['error']= $error;
-				$plugin['active']= false;
-			}
-			
-			$plugins[$plugin_id]= $plugin;
-		}
-		
-		return $plugins;
 	}
 	
 	/**

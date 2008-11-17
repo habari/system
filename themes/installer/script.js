@@ -55,8 +55,8 @@ habari.installer = {
 		}
 		if(installok) {
 			$('#siteconfiguration').addClass('done');
-			$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
-			$('#pluginactivation').children('.options').fadeIn().addClass('ready').addClass('done');
+			$('#install').children('.options').fadeIn().parent().addClass('ready').addClass('done');
+			$('#pluginactivation').children('.options').fadeIn().parent().addClass('ready').addClass('done');
 			$('#pluginactivation').children('.help-me').show();
 			$('#submitinstall').removeAttr( 'disabled' );
 		}

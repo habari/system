@@ -21,7 +21,7 @@ class SQLiteInstall extends Plugin {
 		$form->databasesetup_options->append('fieldset', 'sqlitesettings', _t('SQLite Settings'));
 		
 		$form->sqlitesettings->append('text', 'databasefile', 'null:null', _t('Data file'));
-		$form->databasefile->value = $theme->databasefile;
+		$form->databasefile->value = 'habari.db';
 		$form->databasefile->required = true;
 		$form->databasefile->help = _t('<strong>Data file</strong> is the SQLite file that will store 
 		your Habari data.  This should be the complete path to where your data file 
@@ -44,6 +44,42 @@ class SQLiteInstall extends Plugin {
 		// we stick the path in db_host
 		$theme->handler_vars['db_file']= $remainder;
 	}
+	
+	/**
+	 * Checks for the existance of a SQLite datafile
+	 * tries to create it if it does not exist
+	**/
+	private function check_sqlite() {
+		$db_file = $this->db_file;
+		if ( file_exists( $db_file ) && is_writable( $db_file ) && is_writable( dirname( $db_file ) ) ) {
+			// the file exists, and is writable.  We're all set
+			return true;
+		}
+
+		// try to figure out what the problem is.
+		if ( file_exists( $db_file ) ) {
+			// the DB file exists, why can't we access it?
+			if ( ! is_writable( $db_file ) ) {
+				$this->assign('form_errors', array('db_file'=>_t('The SQLite data file is not writable by the web server.') ) );
+				return false;
+			}
+			if ( ! is_writable( dirname( $db_file ) ) ) {
+				$this->assign('form_errors', array('db_file'=>_t('SQLite requires that the directory that holds the DB file be writable by the web server.') ) );
+				return false;
+			}
+		}
+
+		if ( ! file_exists( $db_file ) ) {
+			// let's see if the directory is writable
+			// so that we could create the file
+			if ( ! is_writable( dirname( $db_file ) ) ) {
+				$this->assign('form_errors', array('db_file'=>_t('The SQLite data file does not exist, and it cannot be created in the specified directory.  SQLite requires that the directory containing the database file be writable by the web server.')) );
+				return false;
+			}
+		}
+		return true;
+	}
+	
 
 	/**
 	 * returns an array of Files declarations used by Habari
