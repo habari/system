@@ -76,7 +76,7 @@ class Comments extends ArrayObject
 					if(is_array( $paramset['status'] )) {
 						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
 						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Comment::status( $a );' ) );
-						$where[] = "type IN (" . Utils::placeholder_string( count( $paramset['status'] ) ) . ")";
+						$where[] = "status IN (" . Utils::placeholder_string( count( $paramset['status'] ) ) . ")";
 						$params = array_merge( $params, $paramset['status'] );
 					}
 					else {
