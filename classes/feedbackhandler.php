@@ -148,7 +148,6 @@ class FeedbackHandler extends ActionHandler
 				)
 			)
 			{
-				Session::notice(_t('Setting the cookie.'), 'comment_' . $comment->id );
 				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
 				$site_url = Site::get_path('base',true);
 				setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );
