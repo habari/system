@@ -56,6 +56,15 @@ class SQLiteConnection extends DatabaseConnection
 	public function connect( $connect_string, $db_user, $db_pass )
 	{
 		list( $type, $file )= explode( ':', $connect_string, 2 );
+		if( $file == basename( $file ) ) {
+			if( file_exists( HABARI_PATH . '/' . $file ) ) {
+				$file = HABARI_PATH . '/' . $file;
+			}
+			else {
+				$file = HABARI_PATH . '/' . Site::get_path( 'user', TRUE ) . $file;
+			}
+			$connect_string = implode( ':', array( $type, $file ) );
+		}
 		return parent::connect( $connect_string, $db_user, $db_pass );
 	}
 
