@@ -6,17 +6,17 @@
 <?php include 'loginform.php'; ?>
 <?php Plugins::act( 'theme_login' ); ?>
     </div>
- 
+
    </div>
- 
+
    <hr>
- 
+
    <div class="secondary">
- 
+
 <?php include 'sidebar.php'; ?>
 
    </div>
- 
+
    <div class="clear"></div>
   </div>
 <!-- /login -->

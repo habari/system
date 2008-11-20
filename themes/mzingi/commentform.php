@@ -14,7 +14,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 				<ul id="pings-list">
 					<?php foreach ( $post->comments->pingbacks->approved as $pingback ) : ?>
 						<li id="ping-<?php echo $pingback->id; ?>">
-								
+
 								<div class="comment-content">
 								<?php echo $pingback->content; ?>
 								</div>
@@ -24,12 +24,12 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 				</ul>
 			</div>
 		<?php endif; ?>
-		
+
 
 	<h4 class="commentheading"><?php echo $post->comments->comments->approved->count; ?> <?php echo _n( 'Response', 'Responses', $post->comments->comments->approved->count ); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h4>
 	<ul id="commentlist">
-	
-		<?php 
+
+		<?php
 		if ( $post->comments->moderated->count ) {
 			foreach ( $post->comments->moderated as $comment ) {
 			$class = 'class="comment';
@@ -38,20 +38,20 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 			}
 			$class.= '"';
 		?>
-		
+
 			<li id="comment-<?php echo $comment->id; ?>" <?php echo $class; ?>>
  				<div class="comment-content">
 		        <?php echo $comment->content_out; ?>
 		       </div>
-			<div class="comment-meta">#<a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a> | 
+			<div class="comment-meta">#<a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a> |
 		       <span class="commentauthor"><?php _e('Comment by'); ?> <a href="<?php echo $comment->url; ?>"><?php echo $comment->name; ?></a></span>
 		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php $comment->date->out('M j, Y h:ia'); ?></a></span><h5><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
 		      </li>
-	
-		
 
 
-		<?php 
+
+
+		<?php
 			}
 		}
 		else {
@@ -60,7 +60,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 		?>
 	</ul>
 	<div class="comments">
-		
+
 		<br>
 		<form id="comments_form" action="<?php URL::out( 'submit_feedback', array( 'id' => $post->id ) ); ?>" method="post">
 
@@ -82,7 +82,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 			</p>
 			<p><em><small><?php _e('Email address is not published'); ?></small></em></p>
 		</fieldset>
-		
+
 		<fieldset>
 			<legend><?php _e('Add to the Discussion'); ?></legend>
 			<p>
@@ -90,10 +90,10 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 			<textarea name="content" id="commentContent" cols="20" rows="10"></textarea>
 			</p>
 		</fieldset>
-		
+
 		<p><input id="submit" class="submit" name="submit" value="<?php _e('Submit'); ?>" type="submit"></p>
 		</form>
 	</div>
-	 
+
 
 </div>
