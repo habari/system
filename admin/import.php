@@ -1,8 +1,7 @@
 <?php include('header.php'); ?>
 <div class="container">
-<hr>
 	<div class="">
-		<h1><?php _e('Import'); ?></h1>
+		<h2><?php _e('Import'); ?></h2>
 		<form method="post" action="">
 			<?php
 			if(empty($_POST['importer'])) :

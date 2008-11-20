@@ -47,13 +47,16 @@ class Utils
 	 * function redirect
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
+	 * @param boolean $continue Whether to continue processing the script (default false for security reasons, cf. #749)
 	 **/
-	public static function redirect( $url = '' )
+	public static function redirect( $url = '', $continue = false )
 	{
 		if($url == '') {
 			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
 		header('Location: ' . $url, true, 302);
+		
+		if (!$continue) exit;
 	}
 
 	/**

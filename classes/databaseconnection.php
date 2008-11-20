@@ -292,6 +292,9 @@ class DatabaseConnection
 	 * @return  mixed       whatever the procedure returns...
 	 * @experimental
 	 * @todo  EVERYTHING... :)
+	 * Implemented in child classes. Most RDBMS use ANSI-92 syntax, 
+	 * ( CALL procname ( param1, param2, ... ), 
+	 * so they return the call to here. Those that don't, handle the call individually
 	 */
 	public function execute_procedure( $procedure, $args = array() )
 	{
@@ -303,32 +306,13 @@ class DatabaseConnection
 			$pdo_statement->closeCursor();
 		}
 
-		/*
-		 * Since RDBMS handle the calling of procedures
-		 * differently, we need a simple abstraction
-		 * mechanism here to build the appropriate SQL
-		 * commands to call the procedure...
-		 */
-		$driver = $pdo->getAttribute( PDO::ATTR_DRIVER_NAME );
-		switch ( $driver ) {
-			case 'mysql':
-			case 'pgsql':
-			case 'db2':
-				/*
-				 * These databases use ANSI-92 syntax for procedure calling:
-				 * CALL procname ( param1, param2, ... );
-				 */
-				$query = 'CALL ' . $procedure . '( ';
-				if ( count( $args ) > 0 ) {
-					$query.= str_repeat( '?,', count( $args ) ); // Add the placeholders
-					$query = substr( $query, 0, strlen( $query ) - 1 ); // Strip the last comma
-				}
-				$query.= ' )';
-				break;
-			case 'oracle':
-				die( sprinf(_t('not yet supported on %s'), $driver) );
-				break;
+		$query = 'CALL ' . $procedure . '( ';
+		if ( count( $args ) > 0 ) {
+			$query.= str_repeat( '?,', count( $args ) ); // Add the placeholders
+			$query = substr( $query, 0, strlen( $query ) - 1 ); // Strip the last comma
 		}
+		$query.= ' )';
+		$query = $this->sql_t( $query, $args );
 
 		if ( $pdo_statement = $pdo->prepare( $query ) ) {
 			/* If we are profiling, then time the query */
@@ -714,11 +698,10 @@ class DatabaseConnection
 		// Put the upgrade files into an array using the 0-padded revision + '_0' as the key
 		$upgrades = array();
 		foreach( $upgrade_files as $file ) {
-			if( intval( basename( $file, '.sql' ) ) >= $old_version) {
+			if( intval( basename( $file, '.sql' ) ) > $old_version) {
 				$upgrades[ sprintf( '%010s_0', basename( $file, '.sql' ) )] = $file;
 			}
 		}
-
 		// Put the upgrade functions into an array using the 0-padded revision + '_1' as the key
 		$upgrade_functions = get_class_methods($this);
 		foreach($upgrade_functions as $fn) {

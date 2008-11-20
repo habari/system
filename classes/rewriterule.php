@@ -85,6 +85,7 @@ class RewriteRule extends QueryRecord
 			/* Parse the callback in an action and handler */
 			// What if there is no callback for a REQUEST_METHOD? Throw an exception now or later?
 			if ( isset($this->callback) ) {
+				echo 'hello';
 				if ( isset( $this->callback[$_SERVER['REQUEST_METHOD']] ) && is_callable( $this->callback[$_SERVER['REQUEST_METHOD']], true ) ) {
 					$this->handler = $this->callback[$_SERVER['REQUEST_METHOD']][0];
 					if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->callback[$_SERVER['REQUEST_METHOD']][1], $matches ) > 0 ) {

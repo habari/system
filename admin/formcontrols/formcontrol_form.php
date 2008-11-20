@@ -3,6 +3,7 @@
 	method="post"
 	action="<?php echo $action; ?>"
 	class="<?php echo $class; ?>"
+	enctype="<?php echo $enctype; ?>"
 	<?php echo $onsubmit; ?>
 >
 <?php if(isset($message) && $message != ''): ?>

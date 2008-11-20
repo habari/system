@@ -138,7 +138,6 @@ class User extends QueryRecord
 		Plugins::act('user_update_before', $this);
 		$this->info->commit();
 		$result = parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
-		EventLog::log( _t( 'User %s: Information updated.', array( $this->username ) ), 'notice', 'user', 'habari' );
 		Plugins::act('user_update_after', $this);
 		return $result;
 	}
@@ -187,14 +186,12 @@ class User extends QueryRecord
 			// the user
 			unset( $_SESSION['sudo'] );
 			Utils::redirect( Site::get_url( 'admin' ) );
-			exit;
 		}
 		Plugins::act( 'user_forget', $this );
 		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
 		$home = Options::get('base_url');
 		Utils::redirect( Site::get_url( 'habari' ) );
-		exit;
 	}
 
 	/**

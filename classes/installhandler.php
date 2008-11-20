@@ -31,7 +31,7 @@ class InstallHandler extends ActionHandler {
 		else {
 			Locale::set( 'en-us' );
 			$this->theme->locale = 'en-us';
-			$this->handler_vars['locale'] = 'en_us';
+			$this->handler_vars['locale'] = 'en-us';
 		}
 
 		/*
@@ -304,30 +304,33 @@ class InstallHandler extends ActionHandler {
 			}
 		}
 		$this->theme->assign('missing_extensions',  $missing_extensions);
-		/* Check for PDO drivers */
-		$pdo_drivers = PDO::getAvailableDrivers();
-		if ( ! empty( $pdo_drivers ) ) {
-			$pdo_drivers = array_combine( $pdo_drivers, $pdo_drivers );
-			// Include only those drivers that we include database support for
-			$pdo_schemas = array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
-			$pdo_schemas = array_combine( $pdo_schemas, $pdo_schemas );
+		
+		if ( extension_loaded('pdo') ) {
+			/* Check for PDO drivers */
+			$pdo_drivers = PDO::getAvailableDrivers();
+			if ( ! empty( $pdo_drivers ) ) {
+				$pdo_drivers = array_combine( $pdo_drivers, $pdo_drivers );
+				// Include only those drivers that we include database support for
+				$pdo_schemas = array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
+				$pdo_schemas = array_combine( $pdo_schemas, $pdo_schemas );
 
-			$pdo_drivers = array_intersect_key(
-				$pdo_drivers,
-				$pdo_schemas
-			);
-			$pdo_missing_drivers = array_diff(
-				$pdo_schemas,
-				$pdo_drivers
-			);
-		}
+				$pdo_drivers = array_intersect_key(
+					$pdo_drivers,
+					$pdo_schemas
+				);
+				$pdo_missing_drivers = array_diff(
+					$pdo_schemas,
+					$pdo_drivers
+				);
+			}
 
-		$pdo_drivers_ok = count( $pdo_drivers );
-		$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
-		$this->theme->assign( 'pdo_drivers', $pdo_drivers );
-		$this->theme->assign( 'pdo_missing_drivers', $pdo_missing_drivers );
-		if ( ! $pdo_drivers_ok ) {
-			$requirements_met = false;
+			$pdo_drivers_ok = count( $pdo_drivers );
+			$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
+			$this->theme->assign( 'pdo_drivers', $pdo_drivers );
+			$this->theme->assign( 'pdo_missing_drivers', $pdo_missing_drivers );
+			if ( ! $pdo_drivers_ok ) {
+				$requirements_met = false;
+			}
 		}
 		
 		/**
@@ -414,12 +417,19 @@ class InstallHandler extends ActionHandler {
 			}
 		}
 
-		// Let's setup the admin user now.
+		// Let's setup the admin user and group now.
 		// But first, let's make sure that no users exist
 		$all_users = Users::get_all();
 		if ( count( $all_users ) < 1 ) {
-			if (! $this->create_admin_user()) {
+			$user = $this->create_admin_user();
+			if (! $user ) {
 				$this->theme->assign('form_errors', array('admin_user'=>_t('Problem creating admin user.')));
+				DB::rollback();
+				return false;
+			}
+			$admin_group = $this->create_admin_group( $user );
+			if( ! $admin_group ) {
+				$this->theme->assign('form_errors', array('admin_user'=>_t('Problem creating admin group.')));
 				DB::rollback();
 				return false;
 			}
@@ -506,7 +516,7 @@ class InstallHandler extends ActionHandler {
 	/**
 	 * Creates the administrator user from form information
 	 *
-	 * @return  bool  Creation successful?
+	 * @return  mixed. the user on success, false on failure
 	 */
 	private function create_admin_user()
 	{
@@ -531,13 +541,30 @@ class InstallHandler extends ActionHandler {
 		}
 
 		// Insert the admin user
-		User::create(array (
+		$user = User::create(array (
 			'username'=>$admin_username,
 			'email'=>$admin_email,
 			'password'=>$password
 		));
 
-		return true;
+		return $user;
+	}
+
+	/**
+	 * Creates the admin group using the created user
+	 *
+	 * @param $user User the administrative user who is installing
+	 * @return  mixed  the user group on success, false on failure
+	 */
+	private function create_admin_group( $user )
+	{
+		// Create the admin group
+		$group = UserGroup::create( array( 'name' => 'admin' ) );
+		if( ! $group ) {
+			return false;
+		}
+		$group->add( $user->id );
+		return $group;
 	}
 
 	/**
@@ -557,6 +584,10 @@ class InstallHandler extends ActionHandler {
 		Options::set( 'theme_dir' , 'k2' );
 		Options::set( 'comments_require_id', 1 );
 		Options::set( 'locale', $this->handler_vars['locale'] );
+		Options::set('timezone', 'UTC');
+		Options::set('dateformat', 'Y-m-d');
+		Options::set('timeformat', 'g:i a');
+
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
@@ -1184,7 +1215,6 @@ class InstallHandler extends ActionHandler {
 			$ids[] = $user->id;
 		}
 		$admin_group->add( $ids );
-		$admin_group->update();
 
 		// @TODO: Decide on a set of default admin permissions and give them to the admin group
 		return true;
@@ -1204,6 +1234,18 @@ class InstallHandler extends ActionHandler {
 		if ( !Options::get( 'timeformat' ) ) {
 			Options::set('timeformat', 'H:i:s');
 		}
+		
+		return true;
+		
+	}
+	
+	private function upgrade_db_post_2786 ( ) {
+		
+		// fixes all the bad post2tag fields that didn't get deleted when a post was deleted
+		DB::query( 'DELETE FROM {tag2post} WHERE post_id NOT IN ( SELECT DISTINCT id FROM {posts} )' );
+		
+		// now, delete any tags that have no posts left
+		DB::query( 'DELETE FROM {tags} WHERE id NOT IN ( SELECT DISTINCT tag_id FROM {tag2post} )' );
 		
 		return true;
 		

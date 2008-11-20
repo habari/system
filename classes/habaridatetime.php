@@ -22,10 +22,19 @@ class HabariDateTime extends DateTime
 	 */
 	public static function __static()
 	{
+		
+		if ( Options::get( 'timezone' ) ) {
+			self::set_default_timezone( Options::get( 'timezone' ) );
+		}
+				
 		self::$default_timezone = date_default_timezone_get();
 		
 		self::$default_date_format = Options::get('dateformat');
 		self::$default_time_format = Options::get('timeformat');
+
+		if ( self::$default_date_format || self::$default_time_format ) {
+			self::set_default_datetime_format( self::$default_date_format . ' ' . self::$default_time_format );
+		}
 	}
 	
 	/**

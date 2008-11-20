@@ -107,11 +107,11 @@ a img {
 	text-transform: uppercase;
 }
 
-
 #menulist {
-	position: absolute;
-	top: 28px;
-	width: 100%;
+	display:none;
+}
+
+#menu #menulist ul {
 	background: #2b2b2b;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -119,15 +119,19 @@ a img {
 	opacity: 1; /* was .99 - see issue #588 */
 	display: none;
 	-webkit-box-shadow: 0px 2px 20px #111;
-}
-
-#menulist ul {
 	list-style-type: none;
 	list-style-position: outside;
 	margin-bottom: 0;
+	top:-5px;
 }
 
-#menu.hovering #menulist, #menu:hover #menulist {
+#menu #menulist > ul {
+	position: absolute;
+	top: 28px;
+	width: 100%;
+}
+
+#menu.hovering #menulist, #menu.hovering #menulist > ul, #menu:hover #menulist > ul, #menu:hover #menulist > ul li.submenu:hover ul.submenu, #menu.hovering #menulist > ul li.submenu.carrot ul.submenu {
 	display: block;
 }
 
@@ -139,12 +143,16 @@ a img {
 	display:block; 
 } 
 
-#menu li ul { 
+#menu li ul {
 	position:absolute;
 	left:100%; 
 	top:0; 
 	width:100%; 
 	background:#2b2b2b;
+	-moz-border-radius-topleft: 0 !important;
+	-moz-border-radius-bottomleft: 0 !important;
+	-webkit-border-bottom-left-radius: 0 !important;
+	-webkit-border-top-left-radius: 0 !important;
 }
 
 #menulist li {
@@ -178,8 +186,6 @@ a img {
 #menulist li.selected a:hover, #menulist li.selected.carrot a {
 	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
 }
-
-
 
 #menulist li#link-tags, #menulist li#link-logs {
 	padding-bottom: 5px;
@@ -1289,6 +1295,14 @@ body.page-options .item {
 	width:30%;
 }
 
+#pluginconfigure .formcontrol {
+	padding: 6px 0;
+}
+
+#pluginconfigure .formui input, #pluginconfigure .formui select {
+	margin-left: 8px;
+}
+
 
 /*- THEMES PAGE */
 
@@ -1369,7 +1383,7 @@ body.page-options #title input {
 	color: #555;
 }
 
-.container .item .helptext span {
+.container .item span.helptext {
 	margin-left: 10px;
 	color: #888;
 	font-size: 11px;
@@ -1597,10 +1611,6 @@ body.page-Manage .state {
 
 #page .comment .buttons div{
 	padding-bottom: 1px;
-}
-
-#page .comments .buttons span.delete{
-	border-bottom:2px black solid;
 }
 
 #page .comments .buttons span.approve,

@@ -680,6 +680,12 @@ class Post extends QueryRecord implements IsContent
 		}
 		// invoke plugins
 		Plugins::act( 'post_delete_before', $this );
+		
+		// delete all the tags associated with this post
+		foreach ( $this->get_tags() as $tag_slug => $tag_text ) {
+			$tag = Tags::get_by_slug( $tag_slug );
+			Tag::detatch_from_post( $tag->id, $this->id );
+		}
 
 		// Delete all comments associated with this post
 		if ( $this->comments->count() > 0 ) {
