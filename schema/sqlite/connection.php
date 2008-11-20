@@ -56,6 +56,15 @@ class SQLiteConnection extends DatabaseConnection
 	public function connect( $connect_string, $db_user, $db_pass )
 	{
 		list( $type, $file )= explode( ':', $connect_string, 2 );
+		if( $file == basename( $file ) ) {
+			if( file_exists( HABARI_PATH . '/' . $file ) ) {
+				$file = HABARI_PATH . '/' . $file;
+			}
+			else {
+				$file = HABARI_PATH . '/' . Site::get_path( 'user', TRUE ) . $file;
+			}
+			$connect_string = implode( ':', array( $type, $file ) );
+		}
 		return parent::connect( $connect_string, $db_user, $db_pass );
 	}
 
@@ -129,7 +138,11 @@ class SQLiteConnection extends DatabaseConnection
 			}
 		}
 
-		$allqueries = array_merge($allqueries, $indexqueries, $iqueries);
+		$allqueries = array_merge( $allqueries, $indexqueries );
+		if( $doinserts ) {
+			$allqueries = array_merge( $allqueries, $iqueries );
+		}
+
 		if ( $execute ) {
 			foreach ( $allqueries as $query ) {
 				if ( !$this->query( $query ) ) {
@@ -140,6 +153,19 @@ class SQLiteConnection extends DatabaseConnection
 		}
 
 		return $allqueries;
+	}
+
+	/**
+	 * Execute a stored procedure
+	 *
+	 * @param   procedure   name of the stored procedure
+	 * @param   args        arguments for the procedure
+	 * @return  mixed       whatever the procedure returns...
+	 * Not supported with SQLite
+	 */
+	public function execute_procedure( $procedure, $args = array() )
+	{
+		die( _t( 'not yet supported on SQLite' ) );
 	}
 
 	/**

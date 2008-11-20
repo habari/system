@@ -47,13 +47,16 @@ class Utils
 	 * function redirect
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
+	 * @param boolean $continue Whether to continue processing the script (default false for security reasons, cf. #749)
 	 **/
-	public static function redirect( $url = '' )
+	public static function redirect( $url = '', $continue = false )
 	{
 		if($url == '') {
 			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
 		header('Location: ' . $url, true, 302);
+		
+		if (!$continue) exit;
 	}
 
 	/**
@@ -420,7 +423,8 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						throw new HabariException( sprintf(_t('Unsupported digest algorithm "%s"'), $algo) );
+						trigger_error( sprintf(_t('Unsupported digest algorithm "%s"'), $algo), E_USER_WARNING );
+						return FALSE;
 				}
 			}
 			else {
@@ -429,7 +433,8 @@ class Utils
 			}
 		}
 		else {
-			throw new HabariException( _t('Invalid hash') );
+			trigger_error( _t('Invalid hash'), E_USER_WARNING );
+			return FALSE;
 		}
 	}
 
@@ -488,7 +493,7 @@ class Utils
 		else { // verify
 			// is this a SSHA hash?
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				throw new HabariException( _t('Invalid hash') );
+				trigger_error( _t('Invalid hash'), E_USER_WARNING );
 			}
 			// cut off {SSHA} marker
 			$hash = substr( $hash, strlen( $marker ) );
@@ -526,7 +531,8 @@ class Utils
 		}
 		else { // verify
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				throw new HabariException( _t('Invalid hash') );
+				trigger_error( _t('Invalid hash'), E_USER_WARNING );
+				return FALSE;
 			}
 			$hash = substr( $hash, strlen( $marker ) );
 			$hash = base64_decode( $hash );

@@ -23,7 +23,7 @@
 
    <ul class="menu">
     <li <?php if($request->display_home) { ?>
-	class="current_page_item"<?php } ?>><a href="<?php Site::out_url( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
+	class="current_page_item"<?php } ?>><a href="<?php Site::outurl( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
 <?php
 // Menu tabs
 foreach ( $pages as $tab ) {

@@ -13,7 +13,9 @@
 		<?php endif; ?>
 	<?php endforeach; ?>
 	</select></span>
-	<span class="pct50 helptext"><?php echo $helptext; ?></span>
+	<?php if(!empty($helptext)) : ?>
+	<span class="pct40 helptext"><?php echo $helptext; ?></span>
+	<?php endif; ?>
 	<?php if($message != '') : ?>
 	<p class="error"><?php echo $message; ?></p>
 	<?php endif; ?>

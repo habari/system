@@ -7,5 +7,5 @@
     <template_engine>rawphpengine</template_engine>
 	<description>Mzingi, Swahili for foundation, is intended as a clean, simple design that can be used
 		as a framework for customization and theme development.</description>
-	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license> 
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
 </theme>

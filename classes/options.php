@@ -53,7 +53,7 @@ class Options extends Singleton
 	public static function get_group( $prefix )
 	{
 		$results = array();
-		if( substr($prefix, -1) != '__' ) {
+		if( substr( $prefix, -2 ) != '__' ) {
 			$prefix .= '__';
 		}
 		foreach( self::instance()->options as $key => $value ) {

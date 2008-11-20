@@ -28,7 +28,8 @@ class ColorUtils
 	{
 		$hex_string = ltrim( $hex_string, '#' );
 		if ( ! preg_match('/^[0-9a-f]+$/i', $hex_string ) ) {
-			throw new HabariException( _t('Not a valid hex color.') );
+			trigger_error( _t('Not a valid hex color.'), E_USER_WARNING );
+			return FALSE;
 		}
 		
 		$normalized = '';
@@ -50,7 +51,8 @@ class ColorUtils
 				$normalized = $hex_string . str_repeat( '0', 6 - strlen( $hex_string ) );
 				break;
 			default:
-				throw new HabariException( _t('Not a valid color format.') );
+				trigger_error( _t('Not a valid color format.'), E_USER_WARNING );
+				return FALSE;
 		}
 		
 		return self::rgb_rgbarr(
@@ -101,7 +103,7 @@ class ColorUtils
 				$H = 4 + ( $rgb_arr['r'] - $rgb_arr['g'] ) / $d;
 			}
 			else {
-				throw new HabariException( _t('Something went terribly wrong here.') );
+				throw new HabariException( _t('Invalid HSV coordinates') );
 			}
 			
 			$H*= 60; // convert to deg

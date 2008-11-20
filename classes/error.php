@@ -25,14 +25,18 @@ class Error
 		E_DEPRECATED => 'E_DEPRECATED',
 		E_USER_DEPRECATED => 'E_USER_DEPRECATED',
 		);
-
+	
 	/**
 	 * Configures the Error class to handle all errors and exceptions.
 	 */
 	public static function prepare_handlers()
 	{
+		// Replace PHP's handlers
 		set_error_handler( array( 'Error', 'handle_error' ) );
 		set_exception_handler( array( 'Error', 'handle_exception' ) );
+		
+		// Handle uncapturable errors
+		register_shutdown_function(array('Error','handle_shutdown'));
 		
 		// Preload default handlers
 		spl_autoload_call('habarierror');
@@ -50,30 +54,41 @@ class Error
 		if ($error = error_get_last()) {
 			$uncapturable= ( E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_STRICT );
 			if (isset($error['type']) && ($error['type'] & $uncapturable)) {
+				EventLog::log( $error['message'] . ' in ' . $error['file'] . ':' . $error['line'], self::$error_severities[$error['type']], 'default' );
+				
 				// We refuse PHP's reality and substitute it with our own!
-				// Note: No output is lost, what has been constructed so far is made available to handlers.
-				$out= ob_get_contents();
+				// Current buffer isn't saved because it contains the error message (security)
 				ob_end_clean();
-
-	            /* Do we want to send 500?
+				
 				if (!headers_sent()) {
 	                header('HTTP/1.1 500 Internal Server Error');
-	            } */
-				EventLog::log( $error['message'] . ' in ' . $error['file'] . ':' . $error['line'], self::$error_severities[$error['type']], 'default' );
+	            }
+				
+				$fatal_path = HABARI_PATH . '/system/admin/fatal.php';
+				if ( file_exists($fatal_path) ) {
+					include($fatal_path);
+				}
+				else {
+					echo 'hello world';
+				}
 	        }
 		}
 	}
-
+	
 	/**
 	 * Handle all exceptions and dispatch to available handlers
 	 */
 	public static function handle_exception( $exception )
 	{
+		$handler = array( 'HabariExceptionHandler', 'handle_exception' );
+		
 		if (class_exists(get_class($exception) . 'Handler')) {
 			if (method_exists(get_class($exception) . 'Handler', 'handle_exception')) {
-				call_user_func( array( get_class($exception) . 'Handler', 'handle_exception' ), $exception );				
+				$handler = array( get_class($exception) . 'Handler', 'handle_exception' );
 			}
 		}
+		
+		call_user_func( $handler, $exception );
 	}
 	
 	/**
@@ -89,5 +104,6 @@ class Error
 		$exception = new HabariError($errstr, 0, $errno, $errfile, $errline, $errcontext);
 		self::handle_exception( $exception );
 	}
+	
 }
 ?>

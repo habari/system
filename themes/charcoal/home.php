@@ -17,7 +17,7 @@
 					</div>
 					<div class="post-sup">
 						<span class="post-date">
-							<?php $post->pubdate->out('F j, Y g:ia e'); ?>
+							<?php $post->pubdate->out(); ?>
 						</span>
 						<span class="post-comments-link">
 							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('%s Comment'), _t('%s Comments') ); ?></a>
@@ -30,7 +30,7 @@
 					<div class="post-footer">
 						<?php if ( $user ) : ?>
 							<span class="post-edit">
-								<a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>"title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
+								<a href="<?php echo $post->editlink; ?>" title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
 							</span>
 						<?php endif; ?>
 					</div>

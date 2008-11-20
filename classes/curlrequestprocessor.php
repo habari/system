@@ -57,11 +57,11 @@ class CURLRequestProcessor implements RequestProcessor
 		$body = curl_exec( $ch );
 		
 		if ( curl_errno( $ch ) !== 0 ) {
-			throw new HabariException( sprintf( _t('%s: CURL Error %d: %s'), __CLASS__, curl_errno( $ch ), curl_error( $ch ) ) );
+			throw new CURLException( sprintf( _t('%s: CURL Error %d: %s'), __CLASS__, curl_errno( $ch ), curl_error( $ch ) ) );
 		}
 		
 		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
-			throw new HabariException( sprintf( _t('Bad return code (%1$d) for: %2$s'), curl_getinfo( $ch, CURLINFO_HTTP_CODE ), $url ) );
+			throw new CURLException( sprintf( _t('Bad return code (%1$d) for: %2$s'), curl_getinfo( $ch, CURLINFO_HTTP_CODE ), $url ) );
 		}
 		
 		curl_close( $ch );
@@ -86,7 +86,7 @@ class CURLRequestProcessor implements RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			throw new HabariException( _t('Request did not yet execute.') );
+			throw new CURLException( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_body;
@@ -95,7 +95,7 @@ class CURLRequestProcessor implements RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			throw new HabariException( _t('Request did not yet execute.') );
+			throw new CURLException( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_headers;

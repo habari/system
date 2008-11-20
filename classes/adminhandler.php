@@ -26,15 +26,15 @@ class AdminHandler extends ActionHandler
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
 			}
 			else {
-			if ( !empty( $_POST ) ) {
-				Session::add_to_set( 'last_form_data', $_POST, 'post' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
-			}
-			if ( !empty( $_GET ) ) {
-				Session::add_to_set( 'last_form_data', $_GET, 'get' );
-				Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
-			}
-			Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
+				if ( !empty( $_POST ) ) {
+					Session::add_to_set( 'last_form_data', $_POST, 'post' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				if ( !empty( $_GET ) ) {
+					Session::add_to_set( 'last_form_data', $_GET, 'get' );
+					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
+				}
+				Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
 			}
 			exit;
 		}
@@ -59,6 +59,9 @@ class AdminHandler extends ActionHandler
 
 		// Create an instance of the active public theme so that its plugin functions are implemented
 		$this->active_theme = Themes::create();
+
+		// setup the stacks for javascript in the admin - it's a method so a plugin can call it externally
+		self::setup_stacks();
 	}
 
 	/**
@@ -74,7 +77,7 @@ class AdminHandler extends ActionHandler
 		// Add some default stylesheets
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
 
-	  // Add some default template variables
+	  	// Add some default template variables
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_type = $type;
 		$this->theme->admin_page = $page;
@@ -294,7 +297,6 @@ class AdminHandler extends ActionHandler
 		Session::notice( _t( 'Successfully updated options' ) );
 		$form->save();
 		Utils::redirect();
-		die();
 	}
 
 	/**
@@ -343,7 +345,7 @@ class AdminHandler extends ActionHandler
 				// cache the set of plugins we just used to check for
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
 			} catch(HabariException $e) {
-				$this->theme->updates = '';
+				$this->theme->updates = array();
 			}
 		//}
 
@@ -662,6 +664,8 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->currentuser = User::identify();
 
+		$this->theme->wsse = Utils::WSSE();
+
 		$this->theme->display('user');
 
 	}
@@ -671,12 +675,18 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_user()
 	{
+		extract( $this->handler_vars );
+
+		$wsse = Utils::WSSE( $nonce, $timestamp );
+		if ( $PasswordDigest != $wsse['digest'] ) {
+			Utils::redirect( URL::get( 'admin', 'page=users' ) );
+		}
 
 		// Keep track of whether we actually need to update any fields
 		$update = FALSE;
 		$results = array( 'page' => 'user' );
 		$currentuser = User::identify();
-		extract( $this->handler_vars );
+
 		$fields = array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL, 'locale_tz' => 'locale_tz', 'locale_date_format' => 'locale_date_format', 'locale_time_format' => 'locale_time_format' );
 		$fields = Plugins::filter( 'adminhandler_post_user_fields', $fields );
 		$posted_fields = array_intersect_key( $this->handler_vars, $fields );
@@ -768,7 +778,6 @@ class AdminHandler extends ActionHandler
 		}
 
 		Utils::redirect( URL::get( 'admin', $results ) );
-
 	}
 
 	/**
@@ -1045,7 +1054,6 @@ class AdminHandler extends ActionHandler
 	{
 		if ( !isset( $_REQUEST['importer'] ) ) {
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
-			exit;
 		}
 
 		$this->display( 'import' );
@@ -1173,7 +1181,6 @@ class AdminHandler extends ActionHandler
 						if ( $action == 'delete' ) {
 							$comment->delete();
 							Utils::redirect(URL::get('admin', 'page=comments'));
-							exit();
 						}
 						if ( $action != 'save' ) {
 							foreach ( Comment::list_comment_statuses() as $status ) {
@@ -1289,14 +1296,12 @@ class AdminHandler extends ActionHandler
 			$result = DB::query('OPTIMIZE TABLE {comments}');
 			Session::notice( _t( 'Deleted all spam comments' ) );
 			Utils::redirect();
-			die();
 		}
 		elseif ( isset( $mass_delete ) && $status == Comment::STATUS_UNAPPROVED ) {
 			// Delete all comments that are unapproved.
 			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
 			Session::notice( _t( 'Deleted all unapproved comments' ) );
 			Utils::redirect();
-			die();
 		}
 		// if we're updating posts, let's do so:
 		elseif ( ( $do_delete || $do_spam || $do_approve || $do_unapprove ) && isset( $comment_ids )) {
@@ -1346,6 +1351,7 @@ class AdminHandler extends ActionHandler
 						break;
 
 					case 'approve':
+					case 'approved':
 						// Comments marked for approval
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
 						$modstatus['Approved %d comments'] = count( $to_update );
@@ -1355,6 +1361,7 @@ class AdminHandler extends ActionHandler
 						break;
 
 					case 'unapprove':
+					case 'unapproved':
 						// This comment was marked for unapproval
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
 						$modstatus['Unapproved %d comments'] = count ( $to_update );
@@ -1390,7 +1397,6 @@ class AdminHandler extends ActionHandler
 			}
 
 			Utils::redirect();
-			die();
 
 		}
 
@@ -1863,7 +1869,7 @@ class AdminHandler extends ActionHandler
 		$ids = array();
 		foreach($_POST as $id => $delete) {
 			// skip POST elements which are not post ids
-			if ( preg_match( '/^p\d+/', $id )  && $delete ) {
+			if ( preg_match( '/^p\d+/', $id ) && $delete ) {
 				$ids[] = substr($id, 1);
 			}
 		}
@@ -1958,11 +1964,13 @@ class AdminHandler extends ActionHandler
 			Comments::moderate_these( $comments, Comment::STATUS_SPAM );
 			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
 			break;
+		case 'approve':
 		case 'approved':
 			// Comments marked for approval
 			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
 			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
 			break;
+		case 'unapprove':
 		case 'unapproved':
 			// Comments marked for unapproval
 			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
@@ -2058,8 +2066,6 @@ class AdminHandler extends ActionHandler
 			}
 
 			Utils::redirect();
-			die();
-
 		}
 
 		$this->theme->severities = LogEntry::list_severities();
@@ -2324,6 +2330,10 @@ class AdminHandler extends ActionHandler
 	public function get_tags()
 	{
 		$this->theme->wsse = Utils::WSSE(); /* @TODO: What the heck is this doing here? */
+
+		$this->theme->tags = Tags::get();
+		$this->theme->max = Tags::max_count();
+
 		$this->display( 'tags' );
 	}
 
@@ -2569,6 +2579,25 @@ class AdminHandler extends ActionHandler
 		// return false to redisplay the form
 		return false;
 	}
-}
 
+	/**
+	 * Setup the default admin javascript stack here so that it can be called
+	 * from plugins, etc. This is not an ideal solution, but works for now.
+	 *
+	 */
+	public static function setup_stacks() {
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.spinner.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js" );
+	}
+}
 ?>

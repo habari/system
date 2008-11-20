@@ -12,10 +12,10 @@
 		}
 		?>
 	</ul>
-	
+
 	<h2 id="aside"><?php _e('Asides'); ?></h2>
 	<ul id="asides">
-		<?php 
+		<?php
 	          foreach($asides as $post):
               echo '<li><span class="date">';
               echo $post->pubdate->out('F j, Y') . ' - ' . '</span>';
@@ -34,18 +34,18 @@
 				echo '<a href="' . $post->permalink .'">' . $post->title_out . '</a>';
 				echo '</li>';
 				?>
-			<?php endforeach; ?>					
+			<?php endforeach; ?>
 		</ul>
-		
+
 	<h2 id="commentheading"><?php _e('Recent Comments'); ?></h2>
 	<ul id="recentcomments">
-		
+
 	<?php foreach($recent_comments as $comment): ?>
 	<li><a href="<?php echo $comment->url ?>"><?php echo $comment->name ?></a> <?php _e('on'); ?> <a href="<?php echo $comment->post->permalink; ?>"><?php echo $comment->post->title; ?></a></li>
 	<?php endforeach; ?>
 	</ul>
 	<h2 id="loginheading"><?php _e('User Login'); ?></h2>
-	<?php $theme->display ( 'loginform' ); ?> 
+	<?php $theme->display ( 'loginform' ); ?>
 
 	</div>
 	<!--end secondary content-->

@@ -8,11 +8,6 @@ class HabariExceptionHandler {
 	
 }
 
-// You can't handle the truth!
-// We need to wrap default Exception and ErrorException because of third party libraries.
-class ExceptionHandler extends HabariExceptionHandler {}
-class ErrorExceptionHandler extends HabariExceptionHandler {}
-
 class PDOExceptionHandler extends HabariExceptionHandler {
 	public static function handle_exception($exception) {
 		list($engine) = explode(':', $GLOBALS['db_connection']['connection_string']);
@@ -31,17 +26,4 @@ class PDOExceptionHandler extends HabariExceptionHandler {
 		}
 	}
 }
-
-class UpdateExceptionHandler extends HabariExceptionHandler {
-	public static function handle_exception($exception) {
-		
-	}
-}
-
-class LocaleExceptionHandler extends HabariExceptionHandler {}
-class DBExceptionHandler extends HabariExceptionHandler {}
-class PluginExceptionHandler extends HabariExceptionHandler {}
-class QueryExceptionHandler extends HabariExceptionHandler {}
-class SessionExceptionHandler extends HabariExceptionHandler {}
-class ThemeExceptionHandler extends HabariExceptionHandler {}
 ?>

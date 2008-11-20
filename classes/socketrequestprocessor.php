@@ -50,7 +50,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$fp = @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
 		if ( $fp === FALSE ) {
-			throw new HabariException( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) );
+			throw new SocketException( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) );
 		}
 		
 		// timeout to fsockopen() only applies for connecting
@@ -87,7 +87,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$out = implode( "\r\n", $request );
 		
 		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
-			throw new HabariException( _t('Error writing to socket.') );
+			throw new SocketException( _t('Error writing to socket.') );
 		}
 		
 		$in = '';
@@ -119,13 +119,13 @@ class SocketRequestProcessor implements RequestProcessor
 				$this->redir_count++;
 				
 				if ( $this->redir_count > $this->max_redirs ) {
-					throw new HabariException( _t('Maximum number of redirections exceeded.') );
+					throw new SocketException( _t('Maximum number of redirections exceeded.') );
 				}
 				
 				return $this->_work( $method, $redirect_urlbits, $headers, $body, $timeout );
 			}
 			else {
-				throw new HabariException( _t('Redirection response without Location: header.') );
+				throw new SocketException( _t('Redirection response without Location: header.') );
 			}
 		}
 		
@@ -161,7 +161,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			throw new HabariException( _t('Request did not yet execute.') );
+			throw new SocketException( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_body;
@@ -170,7 +170,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			throw new HabariException( _t('Request did not yet execute.') );
+			throw new SocketException( _t('Request did not yet execute.') );
 		}
 		
 		return $this->response_headers;

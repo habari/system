@@ -24,8 +24,8 @@ class XMLRPCUtils
 				self::encode_arg($data, $element);
 			}
 			break;
-		case ($arg instanceof XMLRPCDate):
-			$params->addchild('value')->addchild('dateTime.iso8601', date('c', strtotime($arg->date)));
+		case ( $arg instanceof XMLRPCDate ):
+			$params->addchild( 'value' )->addchild( 'dateTime.iso8601', date( 'c', $arg->date ) );
 			break;
 		case ($arg instanceof XMLRPCBinary):
 			$params->addchild('value')->addchild('base64', base64_encode($arg->data));

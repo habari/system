@@ -12,7 +12,7 @@
 				foreach($locales as $loc):
 					$locs[$loc]= $loc;
 				endforeach;
-				
+				$tab= 1;
 				echo Utils::html_select( 'locale', $locs, $locale, array( 'tabindex' => $tab++ ) ); ?>
 			</div>
 			
