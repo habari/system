@@ -4,7 +4,6 @@
 	$currentuser = User::identify();
 	if ( ! $currentuser ) {
 		Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
-		exit;
 	}
 	// are we looking at the current user's profile, or someone else's?
 	// $user will contain the username specified on the URL

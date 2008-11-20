@@ -87,7 +87,6 @@ class ActionHandler
 	{
 		$vars = isset($_SERVER['QUERY_STRING']) ? Utils::get_params($_SERVER['QUERY_STRING']) : array();
 		Utils::redirect( URL::get(null, $vars) );
-		exit;
 	}
 }
 
