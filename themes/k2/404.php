@@ -14,15 +14,15 @@
 
     </div>
    </div>
-   
+
    <hr>
-   
+
    <div class="secondary">
-  
+
 <?php $theme->display ( 'sidebar' ); ?>
 
    </div>
-   
+
    <div class="clear"></div>
   </div>
 <!-- /error -->
