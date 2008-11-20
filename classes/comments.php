@@ -81,7 +81,7 @@ class Comments extends ArrayObject
 					}
 					else {
 						$where[] = "status= ?";
-						$params[] = Comment::type( $paramset['status'] );
+						$params[] = Comment::status( $paramset['status'] );
 					}
 				}
 				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
@@ -115,7 +115,8 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['ip'] ) ) {
 					$where[] = "ip= ?";
 					$params[] = $paramset['ip'];
-				}				/* do searching */
+				}
+				/* do searching */
 				if ( isset( $paramset['post_author'] ) ) {
 					$joins['posts']= ' INNER JOIN {posts} ON {comments}.post_id = {posts}.id';
 					if ( is_array( $paramset['post_author'] ) ) {
@@ -242,7 +243,6 @@ class Comments extends ArrayObject
 		}
 		$query .= ( $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Comment' );
