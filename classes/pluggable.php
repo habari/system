@@ -98,7 +98,7 @@ abstract class Pluggable
 		}
 		// get the aliases.
 		if ( method_exists( $this, 'alias' ) ) {
-			$methods = array_merge( $methods, $this->alias() );
+			$methods = array_merge_recursive( $methods, $this->alias() );
 		}
 		// loop over all the methods in this class
 		foreach ( $methods as $fn => $hooks ) {
