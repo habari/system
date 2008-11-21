@@ -125,6 +125,14 @@ class ACL {
 			// if it didn't work, don't bother trying to log it
 			return false;
 		}
+
+		// Add the permission to the admin group
+		$perm = ACL::token_id( $name );
+		$admin = UserGroup::get( 'admin');
+		if( $admin ) {
+			ACL::grant_group( $admin->id, $perm );
+		}
+
 		EventLog::log('New permission created: ' . $name, 'info', 'default', 'habari');
 		Plugins::act('permission_create_after', $name, $description );
 		return $result;
