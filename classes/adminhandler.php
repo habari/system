@@ -1055,6 +1055,11 @@ class AdminHandler extends ActionHandler
 		if ( !isset( $_REQUEST['importer'] ) ) {
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
 		}
+		
+		$importer = isset( $_POST['importer'] ) ? $_POST['importer'] : '';
+		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '';
+		
+		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage );
 
 		$this->display( 'import' );
 	}
