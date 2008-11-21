@@ -2,9 +2,7 @@
 <div class="container">
 	<div class="">
 		<h2><?php _e('Import'); ?></h2>
-		<?php $enctype = Plugins::filter('import_form_enctype', 'application/x-www-form-urlencoded', @$_POST['importer'], @$_POST['stage']); ?>
-		<form method="post" action="" enctype="<?php echo $enctype; ?>">
-
+		<form method="post" action="">
 			<?php
 			if(empty($_POST['importer'])) :
 				$import_names = array();
