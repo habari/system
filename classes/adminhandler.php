@@ -2397,6 +2397,8 @@ class AdminHandler extends ActionHandler
 						), implode($tag_names, ', '), $master
 					);
 					Session::notice( $msg_status );
+					$this->theme->tags = Tags::get();
+					$this->theme->max = Tags::max_count();
 					echo json_encode( array(
 						'msg' => Session::messages_get( true, 'array' ),
 						'tags' => $this->theme->fetch( 'tag_collection' ),
