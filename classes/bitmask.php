@@ -4,20 +4,24 @@
  */
 class Bitmask {
   public $flags = array();  // set of flag bit masks
-  private $value = 0;        // internal integer value of the bitmask
+  protected $value = 0;        // internal integer value of the bitmask
 
   /**
    * Constructor.  Takes an optional array parameter
    * of bit flags to mask on.
    *
-   * @param (optional)  an array of integer flags
-   */
-  public function __construct() {
-		$flags = func_get_arg(0);
+   * @param array $flags An array of flag names
+	 * @param integer $value (optional) a combined bitmask value
+	 */
+  public function __construct($flags = null, $value = null) {
 		if (! is_array($flags))
 			throw new InvalidArgumentException(_t('Bitmask constructor expects either no arguments or an array as a first argument'));
 
 		$this->flags = $flags;
+		if(!is_null($value)) {
+			$this->value = $value;
+		}
+
   }
 
   /**
@@ -27,18 +31,27 @@ class Bitmask {
    * @param on    on or off?
    */
   public function __set($bit, $on) {
-    if ($bit == 'value') {
-      // To set the actual value of the bitmask (i.e. from the DB)
-      $this->value = $on;
-      return true;
-    }
-    if (!is_bool($on)) 
-      return false;
-    if ($on)
-      $this->value |= $this->flags[$bit]; // Turn the bit ON
-    else
-      $this->value &= ~$this->flags[$bit]; // Turn the bit OFF
-    return true;
+		switch($bit) {
+			case 'value':
+				$this->value = $on;
+				break;
+			default:
+				if (! is_bool($flags))
+					throw new InvalidArgumentException(_t('Bitmask values must be boolean'));
+				if( is_string($bit) ) {
+					$bit = array_search($bit, $this->value);
+				}
+				if( !is_int($bit))
+					throw new InvalidArgumentException(_t('Bitmask names must be pre-defined strings or bitmask indexes'));
+				if($on) {
+					$this->value |= pow(2, $bit);
+				}
+				else {
+					$this->value &= ~pow(2, $bit);
+				}
+				break;
+		}
+    return $on;
   }
 
   /**
@@ -48,10 +61,16 @@ class Bitmask {
    * @return boolean
    */
   public function __get($bit) {
-    if (!isset($this->flags[$bit]))
+  	if ( is_int($bit) ) {
+  		$flags = array_values($this->flags);
+  	}
+		else {
+			$flags = $this->flags;
+		}
+    if (!isset($flags[$bit]))
       return false;
     return (($this->value & $this->flags[$bit]) == $this->flags[$bit]);
   }
-    
+
 }
 ?>
