@@ -3,74 +3,76 @@
  * Class to wrap around bitmap field functionality
  */
 class Bitmask {
-  public $flags = array();  // set of flag bit masks
-  protected $value = 0;        // internal integer value of the bitmask
+	public $flags = array();  // set of flag bit masks
+	protected $value = 0;        // internal integer value of the bitmask
 
-  /**
-   * Constructor.  Takes an optional array parameter
-   * of bit flags to mask on.
-   *
-   * @param array $flags An array of flag names
+	/**
+	 * Constructor.  Takes an optional array parameter
+	 * of bit flags to mask on.
+	 *
+	 * @param array $flags An array of flag names
 	 * @param integer $value (optional) a combined bitmask value
 	 */
-  public function __construct($flags = null, $value = null) {
-		if (! is_array($flags))
+	public function __construct( $flags = null, $value = null ) {
+		if ( ! is_array( $flags ) ) {
 			throw new InvalidArgumentException(_t('Bitmask constructor expects either no arguments or an array as a first argument'));
+		}
 
 		$this->flags = $flags;
-		if(!is_null($value)) {
+		if( ! is_null( $value ) ) {
 			$this->value = $value;
 		}
 
-  }
+	}
 
-  /**
-   * Magic setter method for flag values.
-   *
-   * @param bit   integer representing the mask bit
-   * @param on    on or off?
-   */
-  public function __set($bit, $on) {
-		switch($bit) {
+	/**
+	 * Magic setter method for flag values.
+	 *
+	 * @param bit   integer representing the mask bit
+	 * @param on    on or off?
+	 */
+	public function __set( $bit, $on ) {
+		switch( $bit ) {
 			case 'value':
 				$this->value = $on;
 				break;
 			default:
-				if (! is_bool($flags))
+				if ( ! is_bool( $flags ) )
 					throw new InvalidArgumentException(_t('Bitmask values must be boolean'));
-				if( is_string($bit) ) {
-					$bit = array_search($bit, $this->value);
+				if( is_string( $bit ) ) {
+					$bit = array_search( $bit, $this->value );
 				}
-				if( !is_int($bit))
+				if( !is_int( $bit ) )
 					throw new InvalidArgumentException(_t('Bitmask names must be pre-defined strings or bitmask indexes'));
-				if($on) {
-					$this->value |= pow(2, $bit);
+				if( $on ) {
+					$this->value |= pow( 2, $bit );
 				}
 				else {
-					$this->value &= ~pow(2, $bit);
+					$this->value &= ~pow( 2, $bit );
 				}
 				break;
 		}
     return $on;
   }
 
-  /**
-   * Magic getter method for flag status
-   *
-   * @param bit   integer representing th emask bit to test
-   * @return boolean
-   */
-  public function __get($bit) {
-  	if ( is_int($bit) ) {
-  		$flags = array_values($this->flags);
-  	}
+	/**
+	 * Magic getter method for flag status
+	 *
+	 * @param bit   integer representing th emask bit to test
+	 * @return boolean
+	 */
+	public function __get( $bi t) {
+		if ( is_int( $bit ) ) {
+			$flags = array_values( $this->flags );
+		}
 		else {
 			$flags = $this->flags;
 		}
-    if (!isset($flags[$bit]))
-      return false;
-    return (($this->value & $this->flags[$bit]) == $this->flags[$bit]);
-  }
+		if ( ! isset( $flags[$bit] ) ) {
+			return false;
+		}
+		return ( ( $this->value & $this->flags[$bit] ) == $this->flags[$bit] );
+	}
 
 }
 ?>
