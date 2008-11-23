@@ -351,17 +351,18 @@ a img {
 
 
 #page input[type="button"], #page input[type="submit"]{
-	background-color: #2B2B2B;
-	color: #FFF;
-	border: none;
 	padding: 2px 4px 2px 4px;
 	cursor: pointer;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	font-size: 10px;
+	background: transparent url('../images/button_gradient.png') repeat-x;
+	border: 1px solid #999;
 }
 
 #page input[type="button"]:hover, #page input[type="submit"]:hover{
-	background-color: #444;
+	background: url('../images/button_gradient_hover.png') repeat-x;
+	border: 1px solid #555;
 }
 
 .item {
