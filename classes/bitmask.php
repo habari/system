@@ -4,7 +4,7 @@
  */
 class Bitmask {
 	public $flags = array();  // set of flag bit masks
-	protected $value = 0;        // internal integer value of the bitmask
+	public $value = 0;        // internal integer value of the bitmask
 
 	/**
 	 * Constructor.  Takes an optional array parameter
