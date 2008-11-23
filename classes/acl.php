@@ -31,16 +31,18 @@ class ACL {
 	 */
 	public static function __static()
 	{
-		self::$access_ids = DB::get_keyvalue( 'SELECT name, id FROM {permissions};' );
+		/*self::$access_ids = DB::get_keyvalue( 'SELECT name, id FROM {permissions};' );
 
 		if ( ! isset(self::$access_ids) ) {
 			self::$access_ids = array();
 		}
+		*/
+		self::$access_ids = array( 0 => 'read', 1 => 'write', 2 => 'deny' );
 		self::$access_names = array_flip( self::$access_ids );
 	}
 
 	/**
-	 * Convert a permission access name (read, write, full, denied) into an ID
+	 * Convert a permission access name (read, write, denied) into an ID
 	 * @param string The access name
 	 * @return mixed the ID of the permission, or boolean FALSE if it does not exist
 	 **/
@@ -347,6 +349,29 @@ SQL;
 		// either the permission hasn't been granted, or it's been
 		// explicitly denied.
 		return false;
+	}
+
+	/**
+	 * Get all the tokens for a given user with a particular kind of access
+	 * @param mixed $user A user object, user ID or a username
+	 * @param string $access Check for 'read', 'write', or 'full' access
+	 * @return array of token IDs
+	**/
+	public static function user_tokens( $user, $access = 'write' )
+	{
+		// convert $user and $access to IDs
+		if ( is_numeric( $user ) ) {
+			$user_id = $user;
+		} else {
+			if ( ! $user instanceof User ) {
+				$user = User::get( $user );
+			}
+			$user_id = $user->id;
+		}
+		$access_id = self::access_id( $access );
+		
+		$tokens = DB::get_results( 'SELECT token_id FROM {user_token_permissions} WHERE user_id = ? AND permission_id = ?', array( $user_id, $access_id) );
+		return $tokens;
 	}
 
 	/**
