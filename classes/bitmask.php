@@ -37,14 +37,15 @@ class Bitmask {
 				$this->value = $on;
 				break;
 			default:
-				if ( ! is_bool( $flags ) )
+				if ( ! is_bool( $on ) )
 					throw new InvalidArgumentException(_t('Bitmask values must be boolean'));
 				if( is_string( $bit ) ) {
-					$bit = array_search( $bit, $this->value );
+					$bit = array_search( $bit, $this->flags );
 				}
-				if( !is_int( $bit ) )
+				else if( ! is_int( $bit ) ) {
 					throw new InvalidArgumentException(_t('Bitmask names must be pre-defined strings or bitmask indexes'));
-				if( $on ) {
+				}
+				if ( $on ) {
 					$this->value |= pow( 2, $bit );
 				}
 				else {
@@ -58,10 +59,10 @@ class Bitmask {
 	/**
 	 * Magic getter method for flag status
 	 *
-	 * @param bit   integer representing th emask bit to test
+	 * @param bit integer representing the mask bit to test
 	 * @return boolean
 	 */
-	public function __get( $bi t) {
+	public function __get( $bit ) {
 		if ( is_int( $bit ) ) {
 			$flags = array_values( $this->flags );
 		}
