@@ -548,25 +548,6 @@ class AdminHandler extends ActionHandler
 		// Create the splitter
 		$publish_controls = $form->append('tabs', 'publish_controls');
 
-		// Create the tags selector
-		$tagselector = $publish_controls->append('fieldset', 'tagselector', _t('Tags'));
-
-		$tags_buttons = $tagselector->append('wrapper', 'tags_buttons');
-		$tags_buttons->class = 'container';
-		$tags_buttons->append('static', 'clearbutton', '<p class="span-5"><input type="button" value="'._t('Clear').'" id="clear"></p>');
-
-		$tags_list = $tagselector->append('wrapper', 'tags_list');
-		$tags_list->class = ' container';
-		$tags_list->append('static', 'tagsliststart', '<ul id="tag-list" class="span-19">');
-
-		$tags = Tags::get();
-		$max = Tags::max_count();
-		foreach ($tags as $tag) {
-			$tags_list->append('tag', 'tag_'.$tag->slug, $tag, 'tabcontrol_text');
-		}
-
-		$tags_list->append('static', 'tagslistend', '</ul>');
-
 		// Create the publishing controls
 		// pass "false" to list_post_statuses() so that we don't include internal post statuses
 		$statuses = Post::list_post_statuses( false );
