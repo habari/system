@@ -1036,10 +1036,10 @@ class AdminHandler extends ActionHandler
 		if ( !isset( $_REQUEST['importer'] ) ) {
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
 		}
-		
+
 		$importer = isset( $_POST['importer'] ) ? $_POST['importer'] : '';
 		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '';
-		
+
 		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage );
 
 		$this->display( 'import' );
@@ -2401,6 +2401,8 @@ class AdminHandler extends ActionHandler
 		$createmenu = array();
 		$managemenu = array();
 
+	  Plugins::register(array($this, 'default_post_type_display'), 'filter', 'post_type_display', 4);
+
 		$i= 1;
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
 			if ( $typeint == 0 ) {
@@ -2414,18 +2416,12 @@ class AdminHandler extends ActionHandler
 			} else {
 				$hotkey= $i;
 			}
-			
-			// this is a bad fix, but until we make this sytem more flexible, it is the fastest.
-			if( $type == 'entry' ) {
-				$plural= 'entries';
-			} elseif( $type == 'page') {
-				$plural= 'pages';
-			} else {
-				$plural= $type;
-			}
-			
-			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => ucwords( $type ) );
-			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => ucwords( $plural ) );
+
+			$plural = Plugins::filter('post_type_display', $type, 'plural');
+			$singular = Plugins::filter('post_type_display', $type, 'singular');
+
+			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular );
+			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural );
 			$createmenu['create_' . $typeint]['hotkey']= $hotkey;
 			$managemenu['manage_' . $typeint]['hotkey']= $hotkey;
 
@@ -2472,6 +2468,21 @@ class AdminHandler extends ActionHandler
 		}
 
 		$theme->assign( 'mainmenu', $mainmenus );
+	}
+
+	public function default_post_type_display($type, $foruse)
+	{
+		$names = array(
+			'entry' => array(
+				'singular' => _t('Entry'),
+				'plural' => _t('Entries'),
+			),
+			'page' => array(
+				'singular' => _t('Page'),
+				'plural' => _t('Pages'),
+			),
+		);
+		return isset($names[$type][$foruse]) ? $names[$type][$foruse] : $type;
 	}
 
 	/**
