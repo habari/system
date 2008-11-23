@@ -256,7 +256,7 @@ a img {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	font-size: 9px;
-	font-family: 'Helvetica Neue', Helvetica, ´'Lucida Grande', Arial, Verdana, Sans-Serif;
+	font-family: 'Helvetica Neue', Helvetica, 'Lucida Grande', Arial, Verdana, Sans-Serif;
 	padding-left: 0px;
 	outline: none;
 }
@@ -2280,3 +2280,21 @@ body.login .humanMsg {
 .pct90 { width: 90% !important; }
 .pct95 { width: 95% !important; }
 .pct100 { width: 100% !important; }
+
+
+.page-logs .item .info span {
+	height: 13px;
+	width: 13px;
+	background: url('../images/info.png') no-repeat;
+	display: block;
+	cursor: pointer;
+}
+
+.page-logs .item .info span:hover {
+	background: url('../images/info_hover.png') no-repeat;
+}
+
+#pop {
+	border: 1px solid #efefef;
+	overflow: auto;
+}
