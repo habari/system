@@ -78,7 +78,7 @@
 		<?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ) { ?>
 		<div id="pluginconfigure">
 			<?php Plugins::act( 'plugin_ui', $configure, $configaction ); ?>
-			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('close'); ?></a>
+			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('Close'); ?></a>
 		</div>
 		<?php } ?>
 
