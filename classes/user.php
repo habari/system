@@ -410,7 +410,7 @@ class User extends QueryRecord
 	 * @param string $access The type of access to check for (read, write, full, etc.)
 	 * @return boolean True if this user has the requested permission, false if not
 	 */
-	public function can( $permission, $access = 'full' )
+	public function can( $permission, $access = 'any' )
 	{
 		return ACL::user_can( $this, $permission, $access );
 	}

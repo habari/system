@@ -67,7 +67,12 @@ class Bitmask {
 	public function __get( $bit )
 	{
 		if ( is_string( $bit ) ) {
-			$bit = array_search( $bit, $this->flags );
+			if($bit == 'full') {
+				return (1 << (count($this->flags) - 1)) - 1;
+			}
+			else {
+				$bit = array_search( $bit, $this->flags );
+			}
 		}
 		if ( $bit === false )
 			return false;
@@ -76,4 +81,3 @@ class Bitmask {
 
 }
 ?>
-
