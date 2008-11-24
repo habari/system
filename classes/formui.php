@@ -698,6 +698,7 @@ class FormControl
 	public $name;
 	protected $properties = array();
 	protected $template = null;
+	protected $raw = false;
 
 	/**
 	 * FormControl constructor - set initial settings of the control
@@ -921,7 +922,7 @@ class FormControl
 				return isset($this->id) ? $this->id : sprintf('%x', crc32($this->name));
 			case 'value':
 				if(isset($_POST[$this->field])) {
-					return $_POST[$this->field];
+					return $this->raw ? $_POST->raw($this->field) : $_POST[$this->field];
 				}
 				else {
 					return $this->get_default();
@@ -993,6 +994,9 @@ class FormControl
 				break;
 			case 'template':
 				$this->template = $value;
+				break;
+			case 'raw':
+				$this->raw = $value;
 				break;
 			default:
 				$this->properties[$name] = $value;
@@ -1074,7 +1078,7 @@ class FormControl
 	{
 		$this->container->move_after( $this, $target );
 	}
-	
+
 	/**
 	 * Remove this controls from the form
 	 */
@@ -1181,15 +1185,15 @@ class FormControlTag extends FormContainer
 	{
 		$theme = $this->get_theme($forvalidation, $this);
 		$max = Tags::max_count();
-		
+
 		$tag = $this->tag;
-		
+
 		$theme->class = 'tag_'.$tag->slug;
 		$theme->id = $tag->id;
 		$theme->weight = $max > 0 ? round(($tag->count * 10)/$max) : 0;
 		$theme->caption = $tag->tag;
 		$theme->count = $tag->count;
-				
+
 		return $theme->fetch( 'tabcontrol_tag' );
 	}
 
@@ -1352,7 +1356,7 @@ class FormControlCheckboxes extends FormControlSelect
 
 		return $theme->fetch( $this->get_template() );
 	}
-	
+
 	/**
 	 * Magic __get method for returning property values
 	 * Override the handling of the value property to properly return the setting of the checkbox.
@@ -1378,7 +1382,7 @@ class FormControlCheckboxes extends FormControlSelect
 		}
 		return parent::__get($name);
 	}
-	
+
 }
 
 

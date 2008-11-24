@@ -27,7 +27,7 @@ class Post extends QueryRecord implements IsContent
 	private $author_object = null;
 
 	private $info = null;
-	
+
 	protected $url_args;
 
 	/**
@@ -324,7 +324,7 @@ class Post extends QueryRecord implements IsContent
 			);
 		}
 		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
+			$defaults['where'][$index]= array_merge( $where, Utils::get_params( $paramarray ) );
 		}
 		// make sure we get at most one result
 		$defaults['limit']= 1;
@@ -519,7 +519,7 @@ class Post extends QueryRecord implements IsContent
 		 */
 		foreach ( $clean_tags as $new_tag_text=>$new_tag_slug ) {
 			$sql_tag_new = 'INSERT INTO {tags} (tag_text, tag_slug) VALUES (?, ?)';
-			
+
 			if (FALSE !== ($insert = DB::query( $sql_tag_new, array( $new_tag_text, $new_tag_slug ) ) ) )
 				$tag_ids_to_post[]= DB::last_insert_id();
 			$result&= $insert;
@@ -680,7 +680,7 @@ class Post extends QueryRecord implements IsContent
 		}
 		// invoke plugins
 		Plugins::act( 'post_delete_before', $this );
-		
+
 		// delete all the tags associated with this post
 		foreach ( $this->get_tags() as $tag_slug => $tag_text ) {
 			$tag = Tags::get_by_slug( $tag_slug );

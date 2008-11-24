@@ -46,12 +46,12 @@ class AdminHandler extends ActionHandler
 		$last_form_data = Session::get_set( 'last_form_data' ); // This was saved in the "if ( !$user )" above, UserHandler transferred it properly.
 		/* At this point, Controller has not created handler_vars, so we have to modify $_POST/$_GET. */
 		if ( isset( $last_form_data['post'] ) ) {
-			$_POST = array_merge( $_POST, $last_form_data['post'] );
+			$_POST = $_POST->merge( $last_form_data['post'] );
 			$_SERVER['REQUEST_METHOD']= 'POST'; // This will trigger the proper act_admin switches.
 			Session::remove_error( 'expired_form_submission' );
 		}
 		if ( isset( $last_form_data['get'] ) ) {
-			$_GET = array_merge( $_GET, $last_form_data['get'] );
+			$_GET = $_GET->merge( $last_form_data['get'] );
 			Session::remove_error( 'expired_form_submission' );
 			// No need to change REQUEST_METHOD since GET is the default.
 		}
@@ -419,8 +419,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_publish()
 	{
-		extract( $this->handler_vars );
-
 		$form = $this->form_publish( new Post(), false );
 
 		// check to see if we are updating or creating a new post
@@ -485,7 +483,11 @@ class AdminHandler extends ActionHandler
 
 	public function get_publish( $template = 'publish')
 	{
-		extract( $this->handler_vars );
+		$extract = $this->handler_vars->filter_keys('id', 'content_type');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
+
 		if ( isset( $id ) ) {
 			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 			$this->theme->post = $post;
@@ -539,6 +541,7 @@ class AdminHandler extends ActionHandler
 		$form->content->class[] = 'resizable';
 		$form->content->tabindex = 2;
 		$form->content->value = $post->content;
+		$form->content->raw = true;
 
 		// Create the tags field
 		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
@@ -615,7 +618,11 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_delete_post()
 	{
-		extract( $this->handler_vars );
+		$extract = $this->handler_vars->filter_keys('id', 'nonce', 'timestamp', 'PasswordDigest');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
+
 		$okay = TRUE;
 		if ( empty( $id ) || empty( $nonce ) || empty( $timestamp ) || empty( $PasswordDigest ) ) {
 			$okay = FALSE;
@@ -656,7 +663,10 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_user()
 	{
-		extract( $this->handler_vars );
+		$extract = $this->handler_vars->filter_keys('nonce', 'timestamp', 'PasswordDigest');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
 
 		$wsse = Utils::WSSE( $nonce, $timestamp );
 		if ( $PasswordDigest != $wsse['digest'] ) {
@@ -670,7 +680,7 @@ class AdminHandler extends ActionHandler
 
 		$fields = array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL, 'locale_tz' => 'locale_tz', 'locale_date_format' => 'locale_date_format', 'locale_time_format' => 'locale_time_format' );
 		$fields = Plugins::filter( 'adminhandler_post_user_fields', $fields );
-		$posted_fields = array_intersect_key( $this->handler_vars, $fields );
+		$posted_fields = $this->handler_vars->filter_keys( array_keys( $fields ) );
 
 		// Editing someone else's profile? If so, load that user's profile
 		if ( isset($user_id) && ($currentuser->id != $user_id) ) {
@@ -742,8 +752,8 @@ class AdminHandler extends ActionHandler
 					}
 					break;
 				default:
-					if ( isset( ${$fields[$posted_field]} ) && ( $user->info->$fields[$posted_field] != ${$fields[$posted_field]} ) ) {
-						$user->info->$fields[$posted_field]= ${$fields[$posted_field]};
+					if ( isset( $this->handler_vars[$fields[$posted_field]] ) && ( $user->info->$fields[$posted_field] != $this->handler_vars[$fields[$posted_field]] ) ) {
+						$user->info->$fields[$posted_field]= $this->handler_vars[$fields[$posted_field]];
 						Session::notice( _t( 'Userinfo updated!' ) );
 						$update = TRUE;
 					}
@@ -874,11 +884,15 @@ class AdminHandler extends ActionHandler
 	{
 		$this->fetch_users();
 
-		extract( $this->handler_vars );
+		$extract = $this->handler_vars->filter_keys('newuser', 'delete', 'new_pass1', 'new_pass2', 'new_email', 'new_username');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
 
 		if(isset($newuser)) {
 			$action = 'newuser';
-		} elseif(isset($delete)) {
+		}
+		elseif(isset($delete)) {
 			$action = 'delete';
 		}
 
@@ -935,7 +949,11 @@ class AdminHandler extends ActionHandler
 	 */
 	public function get_plugin_toggle()
 	{
-		extract( $this->handler_vars );
+		$extract = $this->handler_vars->filter_keys('plugin_id', 'action');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
+
 		$plugins = Plugins::list_all();
 		foreach($plugins as $file) {
 			if(Plugins::id_from_file($file) == $plugin_id) {
@@ -1019,7 +1037,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function get_activate_theme()
 	{
-		extract( $this->handler_vars );
+		$theme_name = $this->handler_vars['theme_name'];
+		$theme_dir = $this->handler_vars['theme_dir'];
 		if ( isset($theme_name)  && isset($theme_dir) ) {
 			Themes::activate_theme( $theme_name,  $theme_dir );
 		}

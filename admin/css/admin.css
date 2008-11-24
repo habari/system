@@ -1820,7 +1820,7 @@ body.page-tags .container a {
 }
 
 body.page-tags .container span {
-	white-space: nowrap;
+	display: inline-block;
 }
 
 body.page-tags .container .selected label {
