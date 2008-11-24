@@ -35,10 +35,14 @@ class ACL {
 	{
 		$bitmask = new Bitmask( self::$access_names, $permission );
 
-		if ( $access == 'full' ) {
-			return $bitmask->read && $bitmask->write;
+		switch($access) {
+			case 'full':
+				return $bitmask->value == $bitmask->full;
+			case 'any':
+				return $bitmask->value != 0;
+			default:
+				return $bitmask->$access;
 		}
-		return $bitmask->$access;
 	}
 
 	/**
