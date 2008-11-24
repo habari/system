@@ -351,7 +351,7 @@ a img {
 	font-weight: bold;
 }
 
-#page input[type="button"], #page input[type="submit"] {
+#page input[type="button"], #page input[type="submit"], #page button {
 	padding: 2px 4px 2px 4px;
 	cursor: pointer;
 	-webkit-border-radius: 9px;		/* Webkit only supports up to 9px at present */
@@ -361,7 +361,7 @@ a img {
 	border: 1px solid #999;
 }
 
-#page input[type="button"]:hover, #page input[type="submit"]:hover {
+#page input[type="button"]:hover, #page input[type="submit"]:hover, #page button:hover {
 	background: url('../images/button_gradient_hover.png') repeat-x;
 	border: 1px solid #555;
 }
@@ -505,7 +505,7 @@ p:hover > label.abovecontent {
 
 /*-- FORM BUTTONS  */
 
-.button, #save input {
+.button, #save input, button {
 	min-width: 110px;
 	margin-left: 10px;
 }
