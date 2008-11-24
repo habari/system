@@ -15,14 +15,14 @@ class FeedbackHandler extends ActionHandler
 	*/
 	public function act_add_comment()
 	{
-		
+
 		$defaults = array(
 			'name' => '',
 			'email' => '',
 			'url' => '',
 			'content' => ''
 		);
-		
+
 		// We need to get the post anyway to redirect back to the post page.
 		$post = Post::get( array( 'id'=>$this->handler_vars['id'] ) );
 		if( !$post ) {
@@ -30,7 +30,7 @@ class FeedbackHandler extends ActionHandler
 			header('HTTP/1.1 403 Forbidden', true, 403);
 			die();
 		}
-		
+
 		// make sure all our default values are set so we don't throw undefined index errors
 		foreach ( $defaults as $k => $v ) {
 			if ( !isset( $this->handler_vars[ $k ] ) ) {
@@ -115,7 +115,8 @@ class FeedbackHandler extends ActionHandler
 
 		// Should this really be here or in a default filter?
 		// In any case, we should let plugins modify the status after we set it here.
-		if( ( $user = User::identify() ) && ( $comment->email == $user->email ) ) {
+		$user = User::identify();
+		if( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
 			$comment->status = Comment::STATUS_APPROVED;
 		}
 

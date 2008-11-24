@@ -29,7 +29,7 @@ class User extends QueryRecord
 	private $info = null;
 
 	private $group_list = null;
-	
+
 	protected $url_args;
 
 	/**
@@ -86,7 +86,9 @@ class User extends QueryRecord
 				return $user;
 			}
 		}
-		return false;
+		$anonymous = new User();
+		Plugins::act('create_anonymous_user', $anonymous);
+		return $anonymous;
 	}
 
 	/**
@@ -414,6 +416,17 @@ class User extends QueryRecord
 	}
 
 	/**
+	 * Determine if a user has been denied a specific permission
+	 *
+	 * @param string $permission The name of the permission to detect
+	 * @return boolean True if this user has the requested permission, false if not
+	 */
+	public function cannot( $permission )
+	{
+		return ACL::user_cannot( $this, $permission );
+	}
+
+	/**
 	 * Assign one or more new permissions to this user
 	 * @param mixed A permission token ID, name, or array of the same
 	**/
@@ -526,6 +539,8 @@ class User extends QueryRecord
 				return $this->list_groups();
 			case 'displayname':
 				return ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
+			case 'loggedin':
+				return $this->id != 0;
 			default:
 				return parent::__get( $name );
 		}

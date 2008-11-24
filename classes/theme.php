@@ -106,6 +106,10 @@ class Theme extends Pluggable
 			$this->assign('user', User::identify() );
 		}
 
+		if( !$this->template_engine->assigned( 'loggedin' ) ) {
+			$this->assign('loggedin', User::identify()->loggedin );
+		}
+
 		if( !$this->template_engine->assigned( 'page' ) ) {
 			$this->assign('page', isset( $this->page ) ? $this->page : 1 );
 		}
@@ -164,7 +168,7 @@ class Theme extends Pluggable
 			$where_filters['tag_slug']= Utils::slugify($where_filters['tag']);
 			unset( $where_filters['tag'] );
 		}
-		if ( User::identify() ) {
+		if ( User::identify()->loggedin ) {
 			$where_filters['status']= isset( $_GET['preview'] ) ? Post::status( 'any' ) : Post::status( 'published' );
 		}
 		else {
@@ -220,7 +224,7 @@ class Theme extends Pluggable
 		foreach($extract as $key => $value) {
 			$$key = $value;
 		}
-		
+
 		$this->assign( 'page', isset($page)? $page:1 );
 
 		if ( !isset( $fallback ) ) {

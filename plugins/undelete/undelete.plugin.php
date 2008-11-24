@@ -2,7 +2,7 @@
 
 /**
  * Undelete Class
- * 
+ *
  * This class provides undelete functionality for posts and comments, and
  * provides a trashcan interface for restoring items.
  *
@@ -40,7 +40,7 @@ class Undelete extends Plugin
 			Options::set( 'undelete__style', '#primarycontent .deleted { background-color: #933; text-decoration: line-through; }' );
 		}
 	}
-	
+
 	/**
 	 * function actions_plugins_loaded
 	 * Executes after all plugins are loaded
@@ -52,7 +52,7 @@ class Undelete extends Plugin
 
 	/**
 	 * function filter_allow_post_delete
-	 * This function is executed when the filter "before_post_delete" is 
+	 * This function is executed when the filter "before_post_delete" is
 	 * called just before a post is to be deleted.
 	 * This filter should return a boolean value to indicate whether
 	 * the post should be deleted or not.
@@ -78,13 +78,13 @@ class Undelete extends Plugin
 			return true;
 		}
 	}
-	
+
 	function filter_post_actions($actions, $post) {
 		if($post->status == Post::status('deleted')) {
 			$actions['remove']['label']= _t('Delete forever');
 			$actions['remove']['title']= _t('Permanently delete this post');
 		}
-		
+
 		return $actions;
 	}
 
@@ -127,7 +127,7 @@ class Undelete extends Plugin
 				$ui->on_success( array( $this, 'updated_config' ) );
 				$ui->out();
 				break;
-				
+
 			case _t( 'Empty Trash' ):
 				$ui = new FormUI( strtolower( get_class( $this ) ) );
 				$ui->append( 'static', 'explanation', _t('Pressing this button will permanently delete all posts from the virtual trash can. You cannot undo this.') );
@@ -136,7 +136,7 @@ class Undelete extends Plugin
 				$ui->out();
 				break;
 			}
-			
+
 		}
 	}
 
@@ -145,35 +145,35 @@ class Undelete extends Plugin
 		$ui->save();
 		return false;
 	}
-	
+
 	public function deleted_all( $ui )
 	{
 		$count = self::delete_all();
-		
+
 		Session::notice(sprintf( _t('Permanently deleted %d posts'), $count));
 		return false;
 	}
-	
+
 	// This method will permanently delete all posts stored in the trash can
 	function delete_all() {
 		$posts = Posts::get(array('status' => Post::status('deleted'), 'nolimit' => TRUE));
-		
+
 		$count = 0;
-		
+
 		foreach($posts as $post) {
 			$post->delete();
 			$count++;
 		}
-		
+
 		return $count;
 	}
-	
+
 	// this method will inject some CSS into the <head>
 	// so that deleted posts will show up differently
 	function action_template_header()
 	{
 		// only show the style to logged in users
-		if ( User::identify() !== false ) {
+		if ( User::identify()->loggedin ) {
 			echo '<style type="text/css">';
 			Options::out( 'undelete__style' );
 			echo '</style>';
