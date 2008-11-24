@@ -46,15 +46,15 @@ class Bitmask {
 					throw new InvalidArgumentException(_t('Bitmask names must be pre-defined strings or bitmask indexes'));
 				}
 				if ( $on ) {
-					$this->value |= pow( 2, $bit );
+					$this->value |= 1 << $bit;
 				}
 				else {
-					$this->value &= ~pow( 2, $bit );
+					$this->value &= ~(1 << $bit);
 				}
 				break;
-		}
-    return $on;
-  }
+			}
+		return $on;
+	}
 
 	/**
 	 * Magic getter method for flag status
@@ -68,7 +68,7 @@ class Bitmask {
 		}
 		if ( $bit === false )
 			return false;
-		return $this->value & pow(2, $bit);
+		return $this->value & (1 << $bit );
 	}
 
 }
