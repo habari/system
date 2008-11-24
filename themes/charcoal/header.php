@@ -44,7 +44,7 @@
 						<?php endforeach; ?>
 						<?php if ($display_login): ?>
 							<li class="login">
-							<?php if ( isset( $user ) && is_object( $user ) ) : ?>
+							<?php if ( $loggedin ) : ?>
 								<a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e( "Admin area" ); ?>"><?php _e( "Admin" ); ?></a>
 							<?php else: ?>
 								<a href="<?php Site::out_url( 'habari' ); ?>/user/login" title="<?php _e( "Login" ); ?>"><?php _e( "Login" ); ?></a>

@@ -318,7 +318,8 @@ class Post extends QueryRecord implements IsContent
 			),
 			'fetch_fn' => 'get_row',
 		);
-		if ( $user = User::identify() ) {
+		$user = User::identify();
+		if ( $user->loggedin ) {
 			$defaults['where'][]= array(
 				'user_id' => $user->id,
 			);

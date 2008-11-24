@@ -13,7 +13,8 @@ class Bitmask {
 	 * @param array $flags An array of flag names
 	 * @param integer $value (optional) a combined bitmask value
 	 */
-	public function __construct( $flags = null, $value = null ) {
+	public function __construct( $flags = null, $value = null )
+	{
 		if ( ! is_array( $flags ) ) {
 			throw new InvalidArgumentException(_t('Bitmask constructor expects either no arguments or an array as a first argument'));
 		}
@@ -31,7 +32,8 @@ class Bitmask {
 	 * @param bit   integer representing the mask bit
 	 * @param on    on or off?
 	 */
-	public function __set( $bit, $on ) {
+	public function __set( $bit, $on )
+	{
 		switch( $bit ) {
 			case 'value':
 				$this->value = $on;
@@ -62,7 +64,8 @@ class Bitmask {
 	 * @param bit integer representing the mask bit to test
 	 * @return boolean
 	 */
-	public function __get( $bit ) {
+	public function __get( $bit )
+	{
 		if ( is_string( $bit ) ) {
 			$bit = array_search( $bit, $this->flags );
 		}

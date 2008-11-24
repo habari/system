@@ -64,7 +64,7 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		}
 		parent::add_template_vars();
 
-		if ( User::identify() != FALSE ) {
+		if ( User::identify()->loggedin ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
 		}
 	}

@@ -6,7 +6,7 @@ if ( isset( $error ) && ( $error == 'Bad credentials' ) ) {
 
 <?php
 }
-if ( isset( $user ) && ( $user instanceOf User ) ) {
+if ( $loggedin ) {
 ?>
      <p><?php _e('You are logged in as'); ?> <a href="<?php URL::out( 'admin', 'page=user&user=' . $user->username ) ?>" title="<?php _e('Edit Your Profile'); ?>"><?php echo $user->username; ?></a>.</p>
      <p><?php _e('Want to'); ?> <a href="<?php Site::out_url( 'habari' ); ?>/user/logout"><?php _e('log out'); ?></a>?</p>

@@ -272,8 +272,7 @@ class Comment extends QueryRecord implements IsContent
 	**/
 	private function get_post( $use_cache = TRUE )
 	{
-		if ( ! isset( $this->post_object ) || ( ! $use_cache)  )
-		{
+		if ( ! isset( $this->post_object ) || ( ! $use_cache)  ) {
 			$this->post_object = Posts::get( array('id' => $this->post_id, 'fetch_fn' => 'get_row') );
 		}
 		return $this->post_object;
@@ -387,7 +386,7 @@ class Comment extends QueryRecord implements IsContent
 		if ( isset($statuses[$name]) ) {
 			return self::$comment_status_actions[$statuses[$name]];
 		}
-		
+
 		return '';
 	}
 

@@ -1,5 +1,5 @@
 <?php
-if (! isset($_GET['db_profile']) ||  ( User::identify() == FALSE ) )
+if (! isset($_GET['db_profile']) ||  ( !User::identify()->loggedin ) )
 {
 	return;
 }
@@ -49,7 +49,7 @@ foreach ($profiles as $profile) {
 <pre style="text-align: left;"><strong><?php _e('BACKTRACE:'); ?></strong><br><?php print_r($profile->backtrace);?></pre>
 <?php }?>
 </div>
-<?php  
+<?php
   $total_time_querying+= $profile->total_time;
 }
 ?>

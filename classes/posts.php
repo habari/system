@@ -368,12 +368,19 @@ class Posts extends ArrayObject
 				}
 
 				// Only show posts to which the current user has permission
-				/*
-				if( !isset( $paramset['ignore_permissions'] ) ) {
-					$token_id_list = User::identify();
-					$joins['post_tokens__posts']= ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND {post_tokens}.token_id IN ()';
+				$paramset['ignore_permissions'] = true;
+				if(!isset($paramset['ignore_permissions'])) {
+					$permission_token_ids = isset($paramset['override_permissions']) ? $paramset['override_permissions'] : ACL::user_tokens(User::identify(), 'read');
+					if(User::identify()->can('own_posts', 'read')) {
+
+					}
+					foreach(Post::list_active_post_types() as $name => $posttype) {
+						if(User::identify()->can(Utils::slugify($name) . '_post_type', 'read')) {
+
+						}
+					}
+					$joins['post_tokens__posts']= ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND ({post_tokens}.token_id IN ('.implode(',', $permission_token_ids).'))';
 				}
-				*/
 
 				// Concatenate the WHERE clauses
 				if ( count( $where ) > 0 ) {

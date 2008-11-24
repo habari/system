@@ -23,7 +23,7 @@ class ACL {
 	 **/
 	const ACCESS_NONEXISTANT_PERMISSION = true;
 
-	private static $access_names = array( 'read', 'write' );
+	private static $access_names = array( 'read', 'write', 'delete' );
 
 	/**
 	 * Check the permission bitmask for a particular access type.
@@ -32,9 +32,9 @@ class ACL {
 	 * @return bool Returns true if the given access meets exceeds the access to check against
 	 */
 	public static function access_check( $permission, $access )
-	{		
+	{
 		$bitmask = new Bitmask( self::$access_names, $permission );
-		
+
 		if ( $access == 'full' ) {
 			return $bitmask->read && $bitmask->write;
 		}
@@ -222,20 +222,62 @@ class ACL {
 	/**
 	 * Determine whether a user can perform a specific action
 	 * @param mixed $user A user object, user ID or a username
-	 * @param mixed $permission A permission ID or name
+	 * @param mixed $token A permission ID or name
 	 * @param string $access Check for 'read', 'write', or 'delete' access
 	 * @return bool Whether the user can perform the action
 	**/
-	public static function user_can( $user, $permission, $access = 'write' )
+	public static function user_can( $user, $token, $access = 'read' )
+	{
+
+		$result = self::get_user_token_permissions( $user, $token );
+
+		if ( isset( $result ) && self::access_check( $result, $access ) ) {
+			return true;
+		}
+
+		// either the permission hasn't been granted, or it's been
+		// explicitly denied.
+		return false;
+	}
+
+	/**
+	 * Determine whether a user is denied permission to perform a specific action
+	 * @param mixed $user A user object, user ID or a username
+	 * @param mixed $token A permission ID or name
+	 * @return bool Whether the user can perform the action
+	 **/
+	public static function user_cannot( $user, $token )
+	{
+
+		$result = self::get_user_token_permissions( $user, $token );
+
+		if ( isset( $result ) && $result == 0 ) {
+			return true;
+		}
+
+		// either the permission hasn't been granted, or it's been
+		// explicitly denied.
+		return false;
+	}
+
+
+	/**
+	 * Return the permission to a specific token for a specific user
+	 *
+	 * @param mixed $user A User object instance or user id
+	 * @param mixed $token A token string or if
+	 * @return integer A permission bitmask integer
+	 */
+	public static function get_user_token_permissions( $user, $token )
 	{
 		// Use only numeric ids internally
-		$permission = self::token_id( $permission );
+		$token = self::token_id( $token );
 
 		/**
 		 * Do we allow perms that don't exist?
 		 * When ACL is functional ACCESS_NONEXISTANT_PERMISSION should be false by default.
 		 */
-		if ( is_null( $permission) ) {
+		if ( is_null( $token) ) {
 			return self::ACCESS_NONEXISTANT_PERMISSION;
 		}
 
@@ -282,15 +324,9 @@ SELECT gp.permission_id
   ORDER BY permission_id ASC
   LIMIT 1;
 SQL;
-		$result = DB::get_value( $sql, array( ':user_id' => $user_id, ':token_id' => $permission ) );
+		$result = DB::get_value( $sql, array( ':user_id' => $user_id, ':token_id' => $token ) );
 
-		if ( isset( $result ) && self::access_check( $result, $access ) ) {
-			return true;
-		}
-
-		// either the permission hasn't been granted, or it's been
-		// explicitly denied.
-		return false;
+		return $result;
 	}
 
 	/**
@@ -304,15 +340,29 @@ SQL;
 		// convert $user to an ID
 		if ( is_numeric( $user ) ) {
 			$user_id = $user;
-		} else {
+		}
+		else {
 			if ( ! $user instanceof User ) {
 				$user = User::get( $user );
 			}
 			$user_id = $user->id;
 		}
-		
-		$result = DB::get_results( 'SELECT token_id, permission_id FROM {user_token_permissions} WHERE user_id = ?', array( $user_id ) );
-		$bitmask = new Bitmask ( self::$access_names );
+
+		$sql = <<<SQL
+SELECT token_id, permission_id
+  FROM user_token_permissions
+  WHERE user_id = :user_id
+UNION ALL
+SELECT gp.token_id, gp.permission_id
+  FROM users_groups ug
+  INNER JOIN group_token_permissions gp
+  ON ug.group_id = gp.group_id
+  AND ug.user_id = :user_id
+  ORDER BY token_id ASC
+SQL;
+		$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
+
+		$bitmask = new Bitmask ( self::$access_names, $access );
 		$tokens = array();
 
 		foreach ( $result as $token ) {
@@ -338,9 +388,9 @@ SQL;
 		if ( $permission_id ===  false ) {
 			$permission_id = 0; // default is 'deny' (bitmask 0)
 		}
-		
+
 		$bitmask = new Bitmask( self::$access_names, $permission_id );
-		
+
 		if ( $access == 'full' || $access == 'deny' ) {
 			if ( $access == 'full' ) {
 				$access = true;
@@ -383,9 +433,9 @@ SQL;
 		if ( $permission_id ===  false ) {
 			$permission_id = 0; // default is 'deny' (bitmask 0)
 		}
-		
+
 		$bitmask = new Bitmask( self::$access_names, $permission_id );
-		
+
 		if ( $access == 'full' || $access == 'deny' ) {
 			if ( $access == 'full' ) {
 				$access = true;

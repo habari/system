@@ -85,7 +85,8 @@ class EventLog extends ArrayObject
 			'data' => $data,
 			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 		) );
-		if ( $user = User::identify() ) {
+		$user = User::identify();
+		if ( $user->loggedin ) {
 			$log->user_id = $user->id;
 		}
 		$log->insert();
@@ -133,7 +134,7 @@ class EventLog extends ArrayObject
 
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );
-		 
+
 		// Get any full-query parameters
 		extract( $paramarray );
 

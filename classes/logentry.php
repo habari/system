@@ -215,7 +215,8 @@ class LogEntry extends QueryRecord
 		$defaults = array (
 			'fetch_fn' => 'get_row',
 		);
-		if ( $user = User::identify() ) {
+		$user = User::identify();
+		if ( $user->loggedin ) {
 			$defaults['where'][]= array(
 				'user_id' => $user->id,
 			);
@@ -272,7 +273,7 @@ class LogEntry extends QueryRecord
 	{
 		$allow = true;
 		$allow = Plugins::filter( 'logentry_delete_allow', $allow, $this );
-		if ( ! $allow ) { 
+		if ( ! $allow ) {
 			return;
 		}
 		Plugins::act( 'logentry_delete_before', $this );
