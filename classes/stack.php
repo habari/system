@@ -120,6 +120,7 @@ class Stack
 	 * @param string $stack_name The name of the stack
 	 * @param mixed $value The value to add
 	 * @param string $value_name The name of the value to add
+	 * @param string $after The name of the stack element to insert this new element after
 	 * @return array The stack that was added to
 	 **/
 	public static function add( $stack_name, $value, $value_name = null, $after = null )
@@ -204,6 +205,12 @@ class Stack
 		echo self::get( $stack_name, $format );
 	}
 
+	/**
+	 * A callback for Stack::get() that outputs scripts as reference or inline depending on their content
+	 *
+	 * @param string $element The script element in the stack
+	 * @return string The resulting script tag
+	 */
 	public static function scripts( $element )
 	{
 		if(strpos($element, 'http://') === 0 && strpos($element, "\n") === FALSE) {
@@ -215,6 +222,13 @@ class Stack
 		return $output;
 	}
 
+	/**
+	 * A callback for Stack::get() that outputs styles as link or inline style tags depending on their content
+	 *
+	 * @param string $element The style element in the stack
+	 * @param string $typename The media disposition of the content
+	 * @return string The resulting style or link tag
+	 */
 	public static function styles( $element, $typename )
 	{
 		if(strpos($element, 'http://') === 0 && strpos($element, "\n") === FALSE) {
