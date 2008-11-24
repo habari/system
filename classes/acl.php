@@ -28,13 +28,16 @@ class ACL {
 	/**
 	 * Check the permission bitmask for a particular access type.
 	 * @param mixed $permission The permission bitmask
-	 * @param mixed $access The name of the access to check against (read, write, delete)
+	 * @param mixed $access The name of the access to check against (read, write, full)
 	 * @return bool Returns true if the given access meets exceeds the access to check against
 	 */
-	public static function access_check( $permission_flag, $access )
+	public static function access_check( $permission, $access )
 	{		
 		$bitmask = new Bitmask( self::$access_names, $permission );
 		
+		if ( $access == 'full' ) {
+			return $bitmask->read && $bitmask->write;
+		}
 		return $bitmask->$access;
 	}
 
@@ -276,7 +279,7 @@ SELECT gp.permission_id
   ON ug.group_id = gp.group_id
   AND ug.user_id = :user_id
   AND gp.token_id = :token_id
-  ORDER BY gp.permission_id
+  ORDER BY permission_id ASC
   LIMIT 1;
 SQL;
 		$result = DB::get_value( $sql, array( ':user_id' => $user_id, ':token_id' => $permission ) );
@@ -375,7 +378,7 @@ SQL;
 	 **/
 	public static function grant_user( $user_id, $token_id, $access = 'full' )
 	{
-		$permission_id = DB::get_value( 'SELECT permission_id FROM {user_token_permissions} WHERE group_id=? AND token_id=?',
+		$permission_id = DB::get_value( 'SELECT permission_id FROM {user_token_permissions} WHERE user_id=? AND token_id=?',
 			array( $user_id, $token_id ) );
 		if ( $permission_id ===  false ) {
 			$permission_id = 0; // default is 'deny' (bitmask 0)
