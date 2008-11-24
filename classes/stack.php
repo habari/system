@@ -27,6 +27,8 @@
 class Stack
 {
 	private static $stacks = array();
+	private static $stack_sort = array();
+	private static $sorting;
 
 	/**
 	 * Private constructor for Stack.
@@ -111,6 +113,7 @@ class Stack
 		if ( empty( self::$stacks[$stack_name] ) ) {
 			$stack = array();
 			self::$stacks[$stack_name] = $stack;
+			self::$stack_sort[$stack_name] = array();
 		}
 		return self::$stacks[$stack_name];
 	}
@@ -131,26 +134,17 @@ class Stack
 			if(!is_array($after)) {
 				$after = array($after);
 			}
-			$newstack = array();
-			foreach($stack as $k => $v) {
-				$newstack[$k] = $v;
-				$inserted = false;
-				if(in_array($k, $after)) {
-					unset($after[array_search($k, $after)]);
-					if(count($after) == 0) {
-						$newstack[$value_name] = $value;
-						$inserted = true;
-					}
+			foreach($after as $a) {
+				if(!isset(self::$stack_sort[$stack_name])) {
+					self::$stack_sort[$stack_name] = array();
 				}
+				if(!isset(self::$stack_sort[$stack_name][$a])) {
+					self::$stack_sort[$stack_name][$a] = array();
+				}
+				self::$stack_sort[$stack_name][$a][$value_name] = $value_name;
 			}
-			if(!$inserted) {
-				$newstack[$value_name] = $value;
-			}
-			$stack = $newstack;
 		}
-		else {
-			$stack[$value_name]= $value;
-		}
+		$stack[$value_name]= $value;
 		self::$stacks[$stack_name]= $stack;
 		return $stack;
 	}
@@ -171,6 +165,37 @@ class Stack
 		return $stack;
 	}
 
+	public static function get_sorted_stack( $stack_name )
+	{
+		self::$sorting = $stack_name;
+		$stack = self::get_named_stack($stack_name);
+
+		uksort($stack, array('Stack', 'sort_stack_cmp'));
+		return $stack;
+	}
+
+	public static function sort_stack_cmp( $a, $b )
+	{
+		$aa = isset(self::$stack_sort[self::$sorting][$a]) ? self::$stack_sort[self::$sorting][$a] : array();
+		$ba = isset(self::$stack_sort[self::$sorting][$b]) ? self::$stack_sort[self::$sorting][$b] : array();
+		$acb = isset($aa[$b]);
+		$bca = isset($ba[$a]);
+		$ac = count($aa);
+		$bc = count($ba);
+		if(($acb && $bca) || !($acb || $bca)) {
+			if($ac == $bc) {
+				return 0;
+			}
+			return $ac > $bc ? -1 : 1;
+		}
+		elseif($acb) {
+			return -1;
+		}
+		elseif($bca) {
+			return 1;
+		}
+	}
+
 	/**
 	 * Returns all of the values of the stack
 	 * @param string $stack_name The name of the stack to output
@@ -179,7 +204,7 @@ class Stack
 	public static function get( $stack_name, $format = null)
 	{
 		$out = '';
-		$stack = self::get_named_stack( $stack_name );
+		$stack = self::get_sorted_stack( $stack_name );
 		$stack = Plugins::filter( 'stack_out', $stack, $stack_name );
 		foreach( $stack as $element ) {
 			if ( is_callable($format) ) {
