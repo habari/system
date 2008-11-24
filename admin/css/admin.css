@@ -124,6 +124,8 @@ a img {
 	list-style-position: outside;
 	margin-bottom: 0;
 	top: -5px;
+	
+	z-index: -1; /* Even with the main menu (its parent), so shadows don't get messed up */
 }
 
 #menu #menulist > ul {
@@ -352,8 +354,8 @@ a img {
 #page input[type="button"], #page input[type="submit"] {
 	padding: 2px 4px 2px 4px;
 	cursor: pointer;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
+	-webkit-border-radius: 9px;		/* Webkit only supports up to 9px at present */
+	-moz-border-radius: 9px;
 	font-size: 10px;
 	background: transparent url('../images/button_gradient.png') repeat-x;
 	border: 1px solid #999;
