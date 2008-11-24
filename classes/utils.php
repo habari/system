@@ -26,7 +26,7 @@ class Utils
 	 **/
 	public static function get_params( $params )
 	{
-		if( is_array( $params ) ) return $params;
+		if( is_array( $params ) || $params instanceof ArrayObject ) return $params;
 		$paramarray = array();
 		parse_str( $params, $paramarray );
 		return $paramarray;
@@ -55,7 +55,7 @@ class Utils
 			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
 		header('Location: ' . $url, true, 302);
-		
+
 		if (!$continue) exit;
 	}
 
@@ -842,7 +842,7 @@ class Utils
 			$mimetype = finfo_file($finfo, $filename);
 			finfo_close($finfo);
 		}
-		
+
 		if( empty( $mimetype ) ) {
 			$pi = pathinfo($filename);
 			switch(strtolower($pi['extension'])) {

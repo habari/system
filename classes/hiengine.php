@@ -236,6 +236,13 @@ class HiEngineParser
 					return '<?php Site::out_url( \'' . $cmd_matches[2] . '\' ); ?>';
 				case 'url':
 					return '<?php URL::out( \'' . $cmd_matches[2] . '\' ); ?>';
+				case 'session':
+					switch($cmd_matches[2]) {
+						case 'messages':
+							return '<?php if(Session::has_messages()){Session::messages_out();} ?>';
+						case 'errors':
+							return '<?php if(Session::has_errors()){Session::messages_out();} ?>';
+					}
 			}
 		}
 

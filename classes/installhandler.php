@@ -13,12 +13,9 @@ class InstallHandler extends ActionHandler {
 	 */
 	public function act_begin_install()
 	{
-		// Revert magic quotes, normally Controller calls this.
-		Utils::revert_magic_quotes_gpc();
-
 		// Create a new theme to handle the display of the installer
 		$this->theme = Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
-		
+
 		/**
 		 * Set user selected Locale or default
 		 */
@@ -118,7 +115,7 @@ class InstallHandler extends ActionHandler {
 
 		// now merge in any HTTP POST values that might have been sent
 		// these will override the defaults and the config.php values
-		$this->handler_vars = array_merge($this->handler_vars, $_POST);
+		$this->handler_vars = $this->handler_vars->merge($_POST);
 
 		// we need details for the admin user to install
 		if ( ( '' == $this->handler_vars['admin_username'] )
@@ -164,7 +161,7 @@ class InstallHandler extends ActionHandler {
 			$this->activate_plugins();
 		}
 
-		
+
 
 		// Installation complete. Secure sqlite if it was chosen as the database type to use
 		if ( $db_type == 'sqlite' ) {
@@ -177,7 +174,7 @@ class InstallHandler extends ActionHandler {
 		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
 		return true;
 	}
-	
+
 	/*
 	 * Helper function to grab list of plugins
 	 */
@@ -216,13 +213,13 @@ class InstallHandler extends ActionHandler {
 				$plugin['error']= $error;
 				$plugin['active']= false;
 			}
-			
+
 			$plugins[$plugin_id]= $plugin;
 		}
-		
+
 		return $plugins;
 	}
-	
+
 	/**
 	 * Helper function to remove code repetition
 	 *
@@ -233,9 +230,9 @@ class InstallHandler extends ActionHandler {
 		foreach ($this->handler_vars as $key=>$value) {
 			$this->theme->assign($key, $value);
 		}
-		
+
 		$this->theme->assign('plugins', $this->get_plugins());
-		
+
 		$this->theme->display($template_name);
 		exit;
 	}
@@ -304,7 +301,7 @@ class InstallHandler extends ActionHandler {
 			}
 		}
 		$this->theme->assign('missing_extensions',  $missing_extensions);
-		
+
 		if ( extension_loaded('pdo') ) {
 			/* Check for PDO drivers */
 			$pdo_drivers = PDO::getAvailableDrivers();
@@ -332,7 +329,7 @@ class InstallHandler extends ActionHandler {
 				$requirements_met = false;
 			}
 		}
-		
+
 		/**
 		 * $local_writable is used in the template, but never set in Habari
 		 * Won't remove the template code since it looks like it should be there
@@ -340,7 +337,7 @@ class InstallHandler extends ActionHandler {
 		 * This will only meet the requirement so there's no "undefined variable" exception
 		 */
 		$this->theme->assign( 'local_writable', true );
-		
+
 		return $requirements_met;
 	}
 
@@ -448,7 +445,7 @@ class InstallHandler extends ActionHandler {
 		if (!DB::in_transaction()) {
 			DB::begin_transaction();
 		}
-		
+
 		/* Store current DB version so we don't immediately run dbdelta. */
 		Version::save_dbversion();
 
@@ -823,6 +820,7 @@ class InstallHandler extends ActionHandler {
 			'rewrite_cond_d' => 'RewriteCond %{REQUEST_FILENAME} !-d',
 			'rewrite_base' => '#RewriteBase /',
 			'rewrite_rule' => 'RewriteRule . index.php [PT]',
+			'hide_habari' => 'RewriteRule ^(system/(classes|locale|schema|$)) index.php [PT]',
 			'close_block' => '### HABARI END',
 		);
 		$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
@@ -955,7 +953,7 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
-	 * attempts to write the Files clause to the .htaccess file 
+	 * attempts to write the Files clause to the .htaccess file
 	 * if the clause for this sqlite doesn't exist.
 	 * @return bool success or failure
 	**/
@@ -997,106 +995,106 @@ class InstallHandler extends ActionHandler {
 		// Success!
 		return true;
 	}
-	
+
 	private function upgrade_db_pre ( $current_version ) {
-		
+
 		// this is actually a stripped-down version of DatabaseConnection::upgrade() - it doesn't support files
-		
+
 		$upgrade_functions = get_class_methods( $this );
-		
+
 		$upgrades = array();
-		
+
 		foreach ( $upgrade_functions as $fn ) {
-			
+
 			// match all methods named "upgrade_db_pre_<rev#>"
 			if ( preg_match( '%^upgrade_db_pre_([0-9]+)$%i', $fn, $matches ) ) {
-				
+
 				$upgrade_version = intval( $matches[1] );
-				
+
 				if ( $upgrade_version > $current_version ) {
-					
+
 					$upgrades[ sprintf( '%010s_1', $upgrade_version ) ] = $fn;
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		// sort the upgrades by revision, ascending
 		ksort( $upgrades );
-				
-		
+
+
 		foreach ( $upgrades as $upgrade ) {
-			
+
 			$result =& call_user_func( array( $this, $upgrade ) );
-			
+
 			// if we failed, abort
 			if ( $result === false ) {
 				break;
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	private function upgrade_db_post ( $current_version ) {
-		
+
 		// this is actually a stripped-down version of DatabaseConnection::upgrade() - it doesn't support files
-		
+
 		$upgrade_functions = get_class_methods( $this );
-		
+
 		$upgrades = array();
-		
+
 		foreach ( $upgrade_functions as $fn ) {
-			
+
 			// match all methods named "upgrade_db_post_<rev#>"
 			if ( preg_match( '%^upgrade_db_post_([0-9]+)$%i', $fn, $matches ) ) {
-				
+
 				$upgrade_version = intval( $matches[1] );
-				
+
 				if ( $upgrade_version > $current_version ) {
-					
+
 					$upgrades[ sprintf( '%010s_1', $upgrade_version ) ] = $fn;
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		// sort the upgrades by revision, ascending
 		ksort( $upgrades );
-		
+
 		foreach ( $upgrades as $upgrade ) {
-			
+
 			$result = call_user_func( array( $this, $upgrade ) );
-			
+
 			// if we failed, abort
 			if ( $result === false ) {
 				break;
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	private function upgrade_db_pre_1345 ( ) {
-		
+
 		// fix duplicate tag_slug's
-				
+
 		// first, get all the tags with duplicate entries
 		$query = 'select id, tag_slug, tag_text from ' . DB::table( 'tags' ) . ' where tag_slug in ( select tag_slug from ' . DB::table( 'tags' ) . ' group by tag_slug having count(*) > 1 ) order by id';
 		$tags = DB::get_results( $query );
-		
+
 		// assuming we got some tags to fix...
 		if ( count( $tags ) > 0 ) {
-			
+
 			$slug_to_id = array();
 			$fix_tags = array();
-			
+
 			foreach ( $tags as $tag_row ) {
-				
+
 				// skip the first tag text so we end up with something, presumably the first tag entered (it had the lowest ID in the db)
 				if ( !isset( $fix_tags[ $tag_row->tag_slug ] ) ) {
 					$slug_to_id[ $tag_row->tag_slug ]= $tag_row->id;		// collect the slug => id so we can rename with an absolute id later
@@ -1105,19 +1103,19 @@ class InstallHandler extends ActionHandler {
 				else {
 					$fix_tags[ $tag_row->tag_slug ][ $tag_row->id ]= $tag_row->tag_text;
 				}
-				
+
 			}
-			
+
 			foreach ( $fix_tags as $tag_slug => $tag_texts ) {
-				
+
 				Tags::rename( $slug_to_id[ $tag_slug ], array_keys( $tag_texts ) );
-				
+
 			}
-			
+
 		}
-		
+
 		return true;
-		
+
 	}
 
 	/**
@@ -1143,10 +1141,10 @@ class InstallHandler extends ActionHandler {
 			list($discard, $db_name)= explode('=', $name);
 			break;
 		}
-		
+
 		// get the current db version
 		$version = Options::get('db_version');
-		
+
 		// do some pre-dbdelta ad-hoc hacky hack code
 		$this->upgrade_db_pre( $version );
 
@@ -1159,31 +1157,31 @@ class InstallHandler extends ActionHandler {
 
 		// Apply data changes to the database based on version, call the db-specific upgrades, too.
 		$this->upgrade_db_post( $version );
-		
+
 		Version::save_dbversion();
 	}
-	
+
 	private function upgrade_db_post_1310 ( ) {
-		
+
 		// Auto-truncate the log table
 		if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
 			CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
 		}
-		
+
 		return true;
-		
+
 	}
-	
+
 	private function upgrade_db_post_1794 ( ) {
-		
+
 		Post::add_new_status( 'scheduled', true );
-		
+
 		return true;
-		
+
 	}
-	
+
 	private function upgrade_db_post_1845 ( ) {
-		
+
 		// Strip the base path off active plugins
 		$base_path = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
 		$activated = Options::get( 'active_plugins' );
@@ -1195,11 +1193,11 @@ class InstallHandler extends ActionHandler {
 			}
 			Options::set( 'active_plugins', $activated );
 		}
-		
+
 		return true;
-		
+
 	}
-	
+
 	private function upgrade_db_post_2264()
 	{
 		// create admin group
@@ -1207,7 +1205,7 @@ class InstallHandler extends ActionHandler {
 		if ( ! ( $admin_group instanceOf UserGroup ) ) {
 			$admin_group = UserGroup::create( array( 'name' => 'admin' ) );
 		}
-		
+
 		// add all users to the admin group
 		$users = Users::get_all();
 		$ids = array();
@@ -1219,36 +1217,36 @@ class InstallHandler extends ActionHandler {
 		// @TODO: Decide on a set of default admin permissions and give them to the admin group
 		return true;
 	}
-	
+
 	private function upgrade_db_post_2707 ( ) {
-		
+
 		// sets a default timezone and date / time formats for the options page
 		if ( !Options::get( 'timezone' ) ) {
 			Options::set('timezone', 'UTC');
 		}
-		
+
 		if ( !Options::get( 'dateformat' ) ) {
 			Options::set('dateformat', 'Y-m-d');
 		}
-		
+
 		if ( !Options::get( 'timeformat' ) ) {
 			Options::set('timeformat', 'H:i:s');
 		}
-		
+
 		return true;
-		
+
 	}
-	
+
 	private function upgrade_db_post_2786 ( ) {
-		
+
 		// fixes all the bad post2tag fields that didn't get deleted when a post was deleted
 		DB::query( 'DELETE FROM {tag2post} WHERE post_id NOT IN ( SELECT DISTINCT id FROM {posts} )' );
-		
+
 		// now, delete any tags that have no posts left
 		DB::query( 'DELETE FROM {tags} WHERE id NOT IN ( SELECT DISTINCT tag_id FROM {tag2post} )' );
-		
+
 		return true;
-		
+
 	}
 
 	/**

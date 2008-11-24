@@ -158,7 +158,7 @@ class Theme extends Pluggable
 		extract( $paramarray );
 
 		$where_filters = array();
-		$where_filters = array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $this->valid_filters ) );
+		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
 		//$where_filters['status']= Post::status( 'published' );
 		if ( array_key_exists( 'tag', $where_filters ) ) {
 			$where_filters['tag_slug']= Utils::slugify($where_filters['tag']);
@@ -174,7 +174,7 @@ class Theme extends Pluggable
 		if ( !isset( $posts ) ) {
 			$user_filters = Plugins::filter( 'template_user_filters', $user_filters );
 			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
-			$where_filters = array_merge( $where_filters, $user_filters );
+			$where_filters = $where_filters->merge( $user_filters );
 			$where_filters = Plugins::filter( 'template_where_filters', $where_filters );
 
 			$posts = Posts::get( $where_filters );
@@ -216,7 +216,11 @@ class Theme extends Pluggable
 			}
 		}
 
-		extract( $where_filters );
+		$extract = $where_filters->filter_keys('page','type','id','slug','posttag','year','month','day','tag','tag_slug');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
+		
 		$this->assign( 'page', isset($page)? $page:1 );
 
 		if ( !isset( $fallback ) ) {
