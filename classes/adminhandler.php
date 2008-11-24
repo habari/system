@@ -2201,19 +2201,68 @@ class AdminHandler extends ActionHandler
 		);
 		echo json_encode($output);
 	}
-
-	public function get_groups()
+	
+	public function ajax_update_groups($handler_vars)
 	{
-		$this->post_groups();
+		echo json_encode( $this->update_groups( $handler_vars ) );
 	}
 
-	public function post_groups()
+	public function ajax_groups($handler_vars)
 	{
-		$this->theme->groups = UserGroups::get_all();
-		if ( isset( $this->handler_vars['add_group'] ) ) {
-			$name = $this->handler_vars['add_group'];
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+		$output= '';
+
+		foreach(UserGroups::get_all() as $group) {
+			$this->theme->group= $group;
+
+			$group= UserGroup::get_by_id($group->id);
+			$users= array();
+			foreach($group->members as $id) {
+				$user= User::get_by_id($id);
+				$users[]= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+			}
+
+			$this->theme->users= $users;
+
+			$output .= $this->theme->fetch('groups_item');
+		}
+
+		echo json_encode(array(
+			'items' => $output
+		));
+	}
+
+	public function update_groups($handler_vars, $ajax = TRUE) {
+		if($ajax) {
+			$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+			if ( isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest'] ) {
+				Session::error( _t('WSSE authentication failed.') );
+				return Session::messages_get( true, 'array' );
+			}
+		}
+
+		if(( isset($handler_vars['action']) && $handler_vars['action'] == 'add') || isset($handler_vars['newgroup'])) {
+			if(isset($handler_vars['newgroup'])) {
+				$name= $handler_vars['new_groupname'];
+			}
+			else {
+				$name= $handler_vars['name'];
+			}
+
+			$settings= array('name' => $name);
+
+			$this->theme->addform= $settings;
+
 			if ( UserGroup::exists($name) ) {
 				Session::notice( sprintf(_t( 'The group %s already exists'), $name ) );
+				if($ajax) {
+					return Session::messages_get( true, 'array' );
+				}
+				else {
+					return;
+				}
 			}
 			else {
 				$groupdata = array(
@@ -2223,8 +2272,81 @@ class AdminHandler extends ActionHandler
 				Session::notice( sprintf(_t( 'Added group %s'), $name ) );
 				// reload the groups
 				$this->theme->groups = UserGroups::get_all();
+
+				$this->theme->addform= array();
 			}
+
+			if($ajax) {
+				return Session::messages_get( true, 'array' );
+			}
+			else {
+				if(!$ajax) {
+					Utils::redirect();
+					exit;
+				}
+			}
+
 		}
+
+		if( isset($handler_vars['action']) && $handler_vars['action'] == 'delete' && $ajax = true) {
+
+
+
+			$ids= array();
+
+			foreach ( $_POST as $id => $delete ) {
+
+				// skip POST elements which are not log ids
+				if ( preg_match( '/^p\d+/', $id ) && $delete ) {
+					$id = substr($id, 1);
+
+					$ids[] = array( 'id' => $id );
+
+				}
+
+			}
+
+			$count = 0;
+
+			if( !isset($ids) ) {
+				Session::notice( _t('No groups deleted.') );
+				return Session::messages_get( true, 'array' );
+			}
+
+			foreach ( $ids as $id ) {
+				$id = $id['id'];
+				$group = UserGroup::get_by_id( $id );
+
+				$group->delete();
+
+				$count++;
+			}
+
+			if ( !isset($msg_status) ) {
+				$msg_status = sprintf( _t('Deleted %d groups.'), $count );
+			}
+
+			Session::notice( $msg_status );
+
+			return Session::messages_get( true, 'array' );
+		}
+
+	}
+
+	public function get_groups()
+	{
+		$this->post_groups();
+	}
+
+	public function post_groups()
+	{
+
+		// prepare the WSSE tokens
+		$this->theme->wsse = Utils::WSSE();
+
+		$this->theme->groups = UserGroups::get_all();
+
+		$this->update_groups($this->handler_vars, false);
 
 		if ( isset( $this->handler_vars['delete_group'] ) ) {
 			$name = $this->handler_vars['group'];
@@ -2325,6 +2447,85 @@ class AdminHandler extends ActionHandler
 		}
 
 		$this->display( 'groups' );
+	}
+
+	public function get_group()
+	{
+		$this->post_group();
+	}
+
+	public function post_group()
+	{
+
+		$group= UserGroup::get_by_id($this->handler_vars['id']);
+
+		if(isset($this->handler_vars['nonce'])) {
+			$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
+
+			if ( isset($this->handler_vars['digest']) && $this->handler_vars['digest'] != $wsse['digest'] ) {
+				Session::error( _t('WSSE authentication failed.') );
+			}
+
+
+			if(isset($this->handler_vars['delete'])) {
+				$group->delete();
+				Utils::redirect(URL::get('admin', 'page=groups'));
+				exit;
+			}
+
+			if(isset($this->handler_vars['user'])) {
+				foreach($this->handler_vars['user'] as $user => $status) {
+					if($status == 1) {
+						$group->add($user);
+					}
+					else {
+						$group->remove($user);
+					}
+				}
+
+				Utils::redirect(URL::get('admin', 'page=group&id=' . $group->id));
+			}
+
+		}
+
+		$group= UserGroup::get_by_id($this->handler_vars['id']);
+
+
+
+		$potentials= array();
+		$users= Users::get_all();
+		$members= $group->members;
+		foreach($users as $user) {			
+			if(in_array($user->id, $members)) {
+				$user->membership= TRUE;
+			}
+			else {
+				$potentials[$user->id]= $user->displayname;
+				$user->membership= FALSE;
+			}
+
+		}
+		$this->theme->potentials= $potentials;
+		$this->theme->users = $users;
+		$this->theme->members = $members;
+
+		$permissions= ACL::all_permissions();
+
+		foreach($permissions as $permission) {
+			if($level= ACL::group_can($group->id, $permission->id)) {
+				$permission->access= $level;
+			}
+		}
+
+		$this->theme->permissions= $permissions;
+
+		$this->theme->groups= UserGroups::get_all();
+		$this->theme->group= $group;
+		$this->theme->id= $group->id;
+
+		$this->theme->wsse = Utils::WSSE();
+
+		$this->display('group');
 	}
 
 	/**

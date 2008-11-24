@@ -1185,9 +1185,12 @@ body.page-users .item .user a {
 	color: #444;
 }
 
+body.page-groups .allgroups .users, body.page-users .item .aka, body.page-users .item .userlogin {
+	color: #999;
+}
+
 body.page-users .item .aka, body.page-users .item .userlogin {
 	font-size: 11px;
-	color: #999;
 }
 
 body.page-users .item strong {
@@ -1246,13 +1249,37 @@ body.page-users .addnewuser {
 
 /*-- USER */
 
-body.page-user .userstats {
+body.page-user .userstats, body.page-group .groupstats {
 	font: 1.5em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
 	text-align: center;
 	color: #333;
 	padding: 10px !important;
 }
 
+/*-- GROUPS */
+body.page-groups .allgroups .users strong, body.page-groups .allgroups .users strong a {
+	color:#444;
+}
+
+body.page-groups .container.addgroup .item.submit input {
+	margin-left:10px;
+}
+
+/*-- GROUP */
+body.page-group .container.groupmembers #currentusers a.user {
+	margin-right:1em;
+	padding-right:14px;
+	line-height:14px;
+	background:url('../images/closebutton.png') no-repeat right center;
+}
+
+body.page-group .container.groupmembers #currentusers a.user:hover, body.page-group .container.groupmembers #currentusers a.user:focus {
+	background-image:url('../images/minusbutton.png');
+}
+
+body.page-group .container.groupmembers #currentusers a.user.template, body.page-group .container.groupmembers #currentusers a.user .id {
+	display:none;
+}
 
 /*- OPTIONS PAGE */
 
@@ -1412,8 +1439,13 @@ body.page-options #title input {
 	padding: 2px 1px;
 }
 
-.container input.big {
-	font-size: 1.9em !important;
+.container input.big, .container .item.big input {
+	font-size: 1.8em !important;
+}
+
+.container .item.big label {
+	font-size:1.5em;
+	line-height:1.2em;
 }
 
 .humanepathspreview {

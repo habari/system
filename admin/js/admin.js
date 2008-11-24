@@ -230,7 +230,7 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins').length != 0) {
+		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins, .page-groups').length != 0) {
 			$("input#search").keyup(function (e) {
 				var str= $('input#search').val();
 				itemManage.simpleFilter(str);
@@ -299,7 +299,7 @@ var itemManage = {
 				
 		// cache search items on first call
 		if ( itemManage.searchCache.length == 0 ) {
-			itemManage.searchRows = $('li.item, .item.plugin, .item.tag, div.settings, .container.plugins');
+			itemManage.searchRows = $('li.item, .item.plugin, .item.tag, div.settings, .container.plugins, .item.group');
 			itemManage.searchCache = itemManage.searchRows.map(function() {
 				return $(this).text().toLowerCase();
 			});
@@ -425,6 +425,12 @@ var itemManage = {
 			query['reassign'] = $('select#reassign').attr('value');
 		}
 
+		elItem= $('#item-' + id)
+
+		if(elItem.length > 0 || action == 'delete') {
+			elItem.fadeOut();
+		}
+
 		$.post(
 			itemManage.updateURL,
 			query,
@@ -512,6 +518,52 @@ var pluginManage = {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '');
       }
 		);
+	}
+}
+
+// Group Management
+var groupManage = {
+	init: function() {
+		// Return if we're not on the group page
+		if(!$('.page-group').length) return;
+				
+		groupManage.potentials= $('body.page-group .container.groupmembers #assign_user');
+		groupManage.addButton= $('body.page-group .container.groupmembers input.add');
+		groupManage.addUsers= $('body.page-group .container.groupmembers #addusers');
+		
+		groupManage.addButton.click(function() {
+			groupManage.addMember(groupManage.potentials.val());
+		});
+		
+		console.log($('body.page-group .container.groupmembers #currentusers a.user'));
+				
+		$('body.page-group .container.groupmembers #currentusers a.user').click(function() {
+			groupManage.removeMember($(this));
+			return false;
+		});
+	},
+	removeMember: function(member) {
+		id= $('.id', member).text();
+		name= $('.name', member).text();
+		
+		$('<option value="' + id + '">' + name + '</option>').appendTo(groupManage.potentials);
+		
+		groupManage.addUsers.show();
+		
+		$('#user_' + id).val('0');
+		
+		member.hide();
+	},
+	addMember: function(id) {		
+		$('option[value=' + id + ']', groupManage.potentials).remove();
+		
+		if(groupManage.potentials.children().length < 1) {
+			groupManage.addUsers.hide();
+		}
+		
+		$('#user_' + id).val('1');
+		
+		$('body.page-group .container.groupmembers #currentusers a.user.id-' + id).show();
 	}
 }
 
@@ -875,9 +927,13 @@ var navigationDropdown = {
 		});
 	},
 	changePage: function(location) {
-		nextPage = location.options[location.selectedIndex].value
-
-		if (nextPage != "")
+		if(location == null) {
+			nextPage= $('select[name=navigationdropdown]').val();
+		} else {
+			nextPage = location.options[location.selectedIndex].value;
+		}
+		
+		if (nextPage != "" && nextPage != document.location.href)
 			document.location.href = nextPage
 	},
 	filter: function() {
@@ -1366,6 +1422,7 @@ $(document).ready(function(){
 	findChildren();
 	navigationDropdown.init();
 	labeler.init();
+	groupManage.init();
 
 	// Alternate the rows' styling.
 	$("table").each( function() {
