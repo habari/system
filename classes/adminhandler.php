@@ -2235,100 +2235,101 @@ class AdminHandler extends ActionHandler
 	}
 
 	public function update_groups($handler_vars, $ajax = TRUE) {
-		if($ajax) {
-			$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-			if ( isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest'] ) {
-				Session::error( _t('WSSE authentication failed.') );
-				return Session::messages_get( true, 'array' );
-			}
+		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
+		if ( (isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest']) || (isset($handler_vars['PasswordDigest']) && $handler_vars['PasswordDigest'] != $wsse['digest']) ) {
+			Session::error( _t('WSSE authentication failed.') );
+			return Session::messages_get( true, 'array' );
 		}
+						
+		if(isset($handler_vars['PasswordDigest']) || isset($handler_vars['digest'])) {
+			
+			if(( isset($handler_vars['action']) && $handler_vars['action'] == 'add') || isset($handler_vars['newgroup'])) {
+				if(isset($handler_vars['newgroup'])) {
+					$name= $handler_vars['new_groupname'];
+				}
+				else {
+					$name= $handler_vars['name'];
+				}
 
-		if(( isset($handler_vars['action']) && $handler_vars['action'] == 'add') || isset($handler_vars['newgroup'])) {
-			if(isset($handler_vars['newgroup'])) {
-				$name= $handler_vars['new_groupname'];
-			}
-			else {
-				$name= $handler_vars['name'];
-			}
+				$settings= array('name' => $name);
 
-			$settings= array('name' => $name);
+				$this->theme->addform= $settings;
 
-			$this->theme->addform= $settings;
+				if ( UserGroup::exists($name) ) {
+					Session::notice( sprintf(_t( 'The group %s already exists'), $name ) );
+					if($ajax) {
+						return Session::messages_get( true, 'array' );
+					}
+					else {
+						return;
+					}
+				}
+				else {
+					$groupdata = array(
+						'name' => $name
+					);
+					$group = UserGroup::create($groupdata);
+					Session::notice( sprintf(_t( 'Added group %s'), $name ) );
+					// reload the groups
+					$this->theme->groups = UserGroups::get_all();
 
-			if ( UserGroup::exists($name) ) {
-				Session::notice( sprintf(_t( 'The group %s already exists'), $name ) );
+					$this->theme->addform= array();
+				}
+
 				if($ajax) {
 					return Session::messages_get( true, 'array' );
 				}
 				else {
-					return;
+					if(!$ajax) {
+						Utils::redirect(URL::get('admin', 'page=groups'));
+						exit;
+					}
 				}
-			}
-			else {
-				$groupdata = array(
-					'name' => $name
-				);
-				$group = UserGroup::create($groupdata);
-				Session::notice( sprintf(_t( 'Added group %s'), $name ) );
-				// reload the groups
-				$this->theme->groups = UserGroups::get_all();
 
-				$this->theme->addform= array();
 			}
 
-			if($ajax) {
+			if( isset($handler_vars['action']) && $handler_vars['action'] == 'delete' && $ajax = true) {
+
+
+
+				$ids= array();
+
+				foreach ( $_POST as $id => $delete ) {
+
+					// skip POST elements which are not log ids
+					if ( preg_match( '/^p\d+/', $id ) && $delete ) {
+						$id = substr($id, 1);
+
+						$ids[] = array( 'id' => $id );
+
+					}
+
+				}
+
+				$count = 0;
+
+				if( !isset($ids) ) {
+					Session::notice( _t('No groups deleted.') );
+					return Session::messages_get( true, 'array' );
+				}
+
+				foreach ( $ids as $id ) {
+					$id = $id['id'];
+					$group = UserGroup::get_by_id( $id );
+
+					$group->delete();
+
+					$count++;
+				}
+
+				if ( !isset($msg_status) ) {
+					$msg_status = sprintf( _t('Deleted %d groups.'), $count );
+				}
+
+				Session::notice( $msg_status );
+
 				return Session::messages_get( true, 'array' );
 			}
-			else {
-				if(!$ajax) {
-					Utils::redirect();
-					exit;
-				}
-			}
-
-		}
-
-		if( isset($handler_vars['action']) && $handler_vars['action'] == 'delete' && $ajax = true) {
-
-
-
-			$ids= array();
-
-			foreach ( $_POST as $id => $delete ) {
-
-				// skip POST elements which are not log ids
-				if ( preg_match( '/^p\d+/', $id ) && $delete ) {
-					$id = substr($id, 1);
-
-					$ids[] = array( 'id' => $id );
-
-				}
-
-			}
-
-			$count = 0;
-
-			if( !isset($ids) ) {
-				Session::notice( _t('No groups deleted.') );
-				return Session::messages_get( true, 'array' );
-			}
-
-			foreach ( $ids as $id ) {
-				$id = $id['id'];
-				$group = UserGroup::get_by_id( $id );
-
-				$group->delete();
-
-				$count++;
-			}
-
-			if ( !isset($msg_status) ) {
-				$msg_status = sprintf( _t('Deleted %d groups.'), $count );
-			}
-
-			Session::notice( $msg_status );
-
-			return Session::messages_get( true, 'array' );
 		}
 
 	}
@@ -2347,104 +2348,6 @@ class AdminHandler extends ActionHandler
 		$this->theme->groups = UserGroups::get_all();
 
 		$this->update_groups($this->handler_vars, false);
-
-		if ( isset( $this->handler_vars['delete_group'] ) ) {
-			$name = $this->handler_vars['group'];
-			if ( !UserGroup::exists($name) ) {
-				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
-			}
-			else {
-				$group = UserGroup::get($name);
-				$group->delete();
-				Session::notice( sprintf( _t( 'Removed group %s' ), $name ) );
-				// reload the groups
-				$this->theme->groups = UserGroups::get_all();
-			}
-		}
-
-		if ( isset( $this->handler_vars['edit_group'] ) ) {
-			$name = $this->handler_vars['group'];
-			if ( !UserGroup::exists($name) ) {
-				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
-			}
-			else {
-				$group = UserGroup::get($name);
-				$this->theme->group_edit = $group;
-				$this->theme->members = $group->members;
-				$this->theme->users = Users::get_all();
-				$this->theme->permissions = ACL::all_permissions( 'description' );
-				$this->theme->permissions_granted = $group->permissions;
-			}
-		}
-
-		if ( isset( $this->handler_vars['users'] ) ) {
-			$name = $this->handler_vars['group'];
-			if ( ! UserGroup::exists($name) ) {
-				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
-			}
-			else {
-				$group = UserGroup::get($name);
-				$add_users = array();
-				$remove_users = array();
-				$form_users = array();
-				if ( isset( $this->handler_vars['user_id'] ) ) {
-					$form_users = $this->handler_vars['user_id'];
-				}
-				foreach ( Users::get_all() as $user ) {
-					if ( in_array( $user->id, $form_users ) ) {
-						$add_users[]= (int) $user->id;
-					}
-					else {
-						$remove_users[]= (int) $user->id;
-					}
-				}
-				if ( ! empty( $add_users ) ) {
-					$group->add( $add_users );
-				}
-				if ( ! empty( $remove_users ) ) {
-					$group->remove( $remove_users );
-				}
-				$group->update();
-				Session::notice( sprintf(_t( 'Modified membership of group %s'), $name ) );
-				// reload the groups
-				$this->theme->groups = UserGroups::get_all();
-			}
-		}
-
-		if ( isset( $this->handler_vars['permissions'] ) ) {
-			$group_name = $this->handler_vars['group'];
-			if ( !UserGroup::exists( $group_name ) ) {
-				Session::notice( sprintf(_t( 'The group %s does not exist'), $name ) );
-			}
-			else {
-				$grant = array();
-				$revoke = array();
-				$group = UserGroup::get( $group_name );
-
-				foreach( ACL::all_permissions() as $permission ) {
-					// grab the type of access for each permission
-					if ( isset( $this->handler_vars['perm' + $permission->id] ) ) {
-						$grant[$permission->id] = $this->handler_vars['perm' + $permission->id];
-					}
-					// if it isn't set, then revoke it
-					else {
-						$revoke[] = (int) $permission->id;
-					}
-				}
-				if ( ! empty( $grant ) ) {
-					/* the following call does not yet work as used
-					 * need to re-write UserGroup::grant() */
-					$group->grant( $grant );
-				}
-				if ( ! empty( $revoke ) ) {
-					$group->revoke( $revoke );
-				}
-				$group->update();
-				Session::notice( sprintf(_t( 'Granted the permission to group %s'), $group_name ) );
-				// reload the groups
-				$this->theme->groups = UserGroups::get_all();
-			}
-		}
 
 		$this->display( 'groups' );
 	}

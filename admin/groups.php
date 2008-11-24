@@ -44,6 +44,10 @@
 		</span>
 	</div>
 	
+	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	
 	<div class="item submit clear">
 		<span class="pct25">
 			<input type="submit" name="newgroup" value="<?php _e('Add Group'); ?>">
@@ -51,26 +55,6 @@
 	</div>
 
 	
-</div>
-</form>
-
-
-<div class="container hidden">
-	<div class="controls item">
-		<span class="checkboxandselected pct25">
-			<input type="checkbox" id="master_checkbox" name="master_checkbox">
-			<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
-		</span>
-
-		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-	
-		<span class="reassign minor">
-			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
-			<input type="submit" name="delete" value="<?php _e('Delete Selected'); ?>">
-		</span>
-	</div>
 </div>
 </form>
 
