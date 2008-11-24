@@ -19,9 +19,9 @@ class ActionHandler
 	/**
 	 * Internal array of handler variables (state info)
 	 *
-	 * @var array
+	 * @var SuperGlobal
 	 */
-	public $handler_vars = array();
+	public $handler_vars = null;
 
 	/**
 	 * All handlers must implement act() to conform to handler API.
@@ -32,6 +32,9 @@ class ActionHandler
 	 * @param string $action the action that was in the URL rule
 	 */
 	public function act($action) {
+		if (null === $this->handler_vars) {
+			$this->handler_vars = new SuperGlobal(array());
+		}
 		$this->action = $action;
 
 		$action_method = 'act_' . $action;

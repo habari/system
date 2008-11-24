@@ -701,9 +701,18 @@ class InstallHandler extends ActionHandler {
 		if (! ($file_contents = file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php"))) {
 			return false;
 		}
-		$vars = array_map('addslashes', $this->handler_vars);
+
+		$vars = array();
+		foreach ($this->handler_vars as $k => $v) {
+			$vars[$k] = addslashes($v);
+		}
+		$keys = array();
+		foreach (array_keys($vars) as $v) {
+			$keys[] = Utils::map_array($v);
+		}
+
 		$file_contents = str_replace(
-			array_map(array('Utils', 'map_array'), array_keys($vars)),
+			$keys,
 			$vars,
 			$file_contents
 		);
