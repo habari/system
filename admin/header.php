@@ -19,8 +19,8 @@
 	</script>
 	<?php
 		Plugins::act( 'admin_header', $this );
-		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
-		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
+		Stack::out( 'admin_header_javascript', array('Stack', 'scripts') );
+		Stack::out( 'admin_stylesheet', array('Stack', 'styles') );
 	?>
 	<!--[if IE 7]>
 	<link rel="stylesheet" type="text/css" href="<?php Site::out_url('admin_theme'); ?>/css/ie.css" media="screen">
@@ -68,4 +68,3 @@
 <div id="page">
 
 <?php Plugins::act('admin_info', $theme, $page); ?>
-
