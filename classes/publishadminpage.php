@@ -100,7 +100,7 @@ class PublishAdminPage extends AdminPage
 		$this->display( $template );
 	}
 
-	public function form_publish($post, $newpost = true)
+	public function form_publish( Post $post, $newpost = true)
 	{
 		$form = new FormUI('create-content');
 		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );

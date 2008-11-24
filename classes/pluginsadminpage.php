@@ -2,15 +2,15 @@
 
 class PluginsAdminPage extends AdminPage
 {
-		/**
+	/**
 	 * A POST handler for the admin plugins page that simply passes those options through.
 	 */
-	public function post_plugins()
+	public function act_request_post()
 	{
-		return $this->get_plugins();
+		return $this->act_request_get();
 	}
 
-	public function get_plugins()
+	public function act_request_get()
 	{
 		$all_plugins = Plugins::list_all();
 		$active_plugins = Plugins::get_active();
@@ -68,54 +68,7 @@ class PluginsAdminPage extends AdminPage
 		$this->display( 'plugins' );
 	}
 	
-		/**
-	 * Handles plugin activation or deactivation.
-	 */
-	public function get_plugin_toggle()
-	{
-		$extract = $this->handler_vars->filter_keys('plugin_id', 'action');
-		foreach($extract as $key => $value) {
-			$$key = $value;
-		}
-
-		$plugins = Plugins::list_all();
-		foreach($plugins as $file) {
-			if(Plugins::id_from_file($file) == $plugin_id) {
-				switch ( strtolower($action) ) {
-					case 'activate':
-						if ( Plugins::activate_plugin($file) ) {
-							$plugins = Plugins::get_active();
-							Session::notice(
-								_t( "Activated plugin '%s'", array($plugins[Plugins::id_from_file( $file )]->info->name) ),
-								$plugins[Plugins::id_from_file($file)]->plugin_id
-							);
-						}
-					break;
-					case 'deactivate':
-						if ( Plugins::deactivate_plugin($file) ) {
-							$plugins = Plugins::get_active();
-							Session::notice(
-								_t( "Deactivated plugin '%s'", array($plugins[Plugins::id_from_file( $file )]->info->name) ),
-								$plugins[Plugins::id_from_file($file)]->plugin_id
-							);
-						}
-					break;
-					default:
-						Plugins::act(
-							'adminhandler_get_plugin_toggle_action',
-							$action,
-							$file,
-							$plugin_id,
-							$plugins
-						);
-					break;
-				}
-			}
-		}
-		Utils::redirect( URL::get( 'admin', 'page=plugins' ) );
-	}
-	
-		/**
+	/**
 	 * Handles plugin activation or deactivation.
 	 */
 	public function get_plugin_toggle()

@@ -89,8 +89,8 @@ class AdminHandler extends ActionHandler
 		Plugins::act("admin_theme_{$request_method}_{$page}", $this, $this->theme);
 		if ( class_exists($admin_page) ) {
 			$admin_page = new $admin_page( $request_method, $this, $this->theme );
-			$fn = 'act_request_' . strtolower($request_method);
-			$admin_page->$fn();
+			$action = isset($this->handler_vars['action']) ? $this->handler_vars['action'] : 'request';
+			$admin_page->act( $action, $request_method );
 		}
 		else {
 			header( 'HTTP/1.1 404 Not Found', true, 404 );
@@ -109,8 +109,8 @@ class AdminHandler extends ActionHandler
 		
 		if ( class_exists($admin_page) ) {
 			$admin_page = new $admin_page( $request_method, $this );
-			$fn = 'act_ajax_' . strtolower($request_method);
-			$admin_page->$fn( $this->handler_vars );
+			$action = isset($this->handler_vars['action']) ? $this->handler_vars['action'] : 'request';
+			$admin_page->act_ajax( $action, $request_method );
 		}
 		else {
 			header( 'HTTP/1.1 404 Not Found', true, 404 );

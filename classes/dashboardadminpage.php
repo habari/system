@@ -129,52 +129,6 @@ class DashboardAdminPage extends AdminPage
 	}
 	
 	/**
-	 * Handles ajax requests from the dashboard
-	 */
-	public function act_ajax_post( $handler_vars )
-	{
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
-		switch ( $handler_vars['action'] ) {
-		case 'updateModules':
-			$modules = array();
-			foreach($_POST as $key => $module ) {
-				// skip POST elements which are not module names
-				if ( preg_match( '/^module\d+$/', $key ) ) {
-					list( $module_id, $module_name ) = split( ':', $module, 2 );
-					// remove non-sortable modules from the list
-					if ( $module_id != 'nosort' ) {
-						$modules[$module_id] = $module_name;
-					}
-				}
-			}
-
-			Modules::set_active( $modules );
-			echo json_encode( true );
-			break;
-		case 'addModule':
-			$id = Modules::add( $handler_vars['module_name'] );
-			$this->fetch_dashboard_modules();
-			$result = array(
-				'message' => "Added module {$handler_vars['module_name']}.",
-				'modules' => $this->theme->fetch( 'dashboard_modules' ),
-			);
-			echo json_encode( $result );
-			break;
-		case 'removeModule':
-			Modules::remove( $handler_vars['moduleid'] );
-			$this->fetch_dashboard_modules();
-			$result = array(
-				'message' => 'Removed module',
-				'modules' => $this->theme->fetch( 'dashboard_modules' ),
-			);
-			echo json_encode( $result );
-			break;
-		}
-	}
-	
-	/**
 	 * Adds a module to the user's dashboard
 	 * @param object form FormUI object
 	 */
@@ -185,5 +139,55 @@ class DashboardAdminPage extends AdminPage
 
 		// return false to redisplay the form
 		return false;
+	}
+	
+	// AJAX Methods
+	
+	public function act_ajax( $action, $method )
+	{
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		
+		parent::act_ajax( $action, $method );
+	}
+	
+	public function act_ajax_updateModules_post()
+	{
+		$modules = array();
+		foreach($_POST as $key => $module ) {
+			// skip POST elements which are not module names
+			if ( preg_match( '/^module\d+$/', $key ) ) {
+				list( $module_id, $module_name ) = split( ':', $module, 2 );
+				// remove non-sortable modules from the list
+				if ( $module_id != 'nosort' ) {
+					$modules[$module_id] = $module_name;
+				}
+			}
+		}
+
+		Modules::set_active( $modules );
+		echo json_encode( true );
+	}
+	
+	public function act_ajax_addModule_post()
+	{
+		$id = Modules::add( $this->handler_vars['module_name'] );
+		$this->fetch_dashboard_modules();
+		$result = array(
+			'message' => "Added module {$this->handler_vars['module_name']}.",
+			'modules' => $this->theme->fetch( 'dashboard_modules' ),
+		);
+		echo json_encode( $result );
+	}
+	
+	public function act_ajax_removeModule_post()
+	{
+		Modules::remove( $this->handler_vars['moduleid'] );
+		$this->fetch_dashboard_modules();
+		$result = array(
+			'message' => 'Removed module',
+			'modules' => $this->theme->fetch( 'dashboard_modules' ),
+		);
+		echo json_encode( $result );
 	}
 }
