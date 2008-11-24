@@ -11,6 +11,7 @@
 			ajaxDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_entries')); ?>',
 			ajaxLogDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_logs')); ?>',
 			ajaxUpdateUsers: '<?php echo URL::get('admin_ajax', array('context' => 'update_users')); ?>',
+			ajaxUpdateGroups: '<?php echo URL::get('admin_ajax', array('context' => 'update_groups')); ?>',
 			ajaxUpdateComment: '<?php echo URL::get('admin_ajax', array('context' => 'update_comment')); ?>',
 			ajaxInEdit: '<?php echo URL::get('admin_ajax', array('context' => 'in_edit')); ?>'
 		}
