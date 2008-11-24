@@ -2240,9 +2240,9 @@ class AdminHandler extends ActionHandler
 			Session::error( _t('WSSE authentication failed.') );
 			return Session::messages_get( true, 'array' );
 		}
-						
+
 		if(isset($handler_vars['PasswordDigest']) || isset($handler_vars['digest'])) {
-			
+
 			if(( isset($handler_vars['action']) && $handler_vars['action'] == 'add') || isset($handler_vars['newgroup'])) {
 				if(isset($handler_vars['newgroup'])) {
 					$name= $handler_vars['new_groupname'];
@@ -2716,17 +2716,17 @@ class AdminHandler extends ActionHandler
 	 */
 	public static function setup_stacks() {
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js", 'ui.core' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js", 'ui.slider' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js", 'ui.tabs' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js", 'ui.sortable' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js", 'ui.resizable' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.spinner.js", 'jquery.spinner' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color' );
-		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg' );
-		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys' );
-		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js", 'media' );
-		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js", 'admin' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js", 'ui.core', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js", 'ui.slider', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js", 'ui.tabs', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js", 'ui.sortable', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js", 'ui.resizable', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.spinner.js", 'jquery.spinner', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js", 'media', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js", 'admin', 'jquery' );
 	}
 }
 ?>
