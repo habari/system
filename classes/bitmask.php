@@ -63,17 +63,14 @@ class Bitmask {
 	 * @return boolean
 	 */
 	public function __get( $bit ) {
-		if ( is_int( $bit ) ) {
-			$flags = array_values( $this->flags );
+		if ( is_string( $bit ) ) {
+			$bit = array_search( $bit, $this->flags );
 		}
-		else {
-			$flags = $this->flags;
-		}
-		if ( ! isset( $flags[$bit] ) ) {
+		if ( $bit === false )
 			return false;
-		}
-		return ( ( $this->value & $this->flags[$bit] ) == $this->flags[$bit] );
+		return $this->value & pow(2, $bit);
 	}
 
 }
 ?>
+
