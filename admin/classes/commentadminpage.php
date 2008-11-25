@@ -2,7 +2,8 @@
 
 class CommentAdminPage extends AdminPage
 {
-	public function act_request_get($update = FALSE) {
+	public function act_request_get($update = FALSE)
+	{
 		if ( isset( $this->handler_vars['id'] ) && $comment = Comment::get( $this->handler_vars['id'] ) ) {
 			$this->theme->comment = $comment;
 
@@ -66,11 +67,12 @@ class CommentAdminPage extends AdminPage
 		}
 	}
 
-	public function act_request_post() {
+	public function act_request_post()
+	{
 		$this->act_request_get(true);
 	}
 	
-		public function ajax_update_comment( $handler_vars )
+	public function act_ajax_update_comment( $handler_vars )
 	{
 		// check WSSE authentication
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );

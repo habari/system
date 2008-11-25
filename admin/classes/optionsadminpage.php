@@ -3,7 +3,8 @@
 class OptionsAdminPage extends AdminPage
 {
 	/**
-	 * Handles get requests from the options admin page
+	 * Handles get requests from the options admin page.
+	 * Send all POST request to GET so FormUI can proccess them.
 	 */
 	public function act_request_post()
 	{
@@ -157,14 +158,16 @@ class OptionsAdminPage extends AdminPage
 	 *
 	 * @param FormUI $form The successfully submitted form
 	 */
-	public function form_options_success($form)
+	public function form_options_success( FormUI $form )
 	{
 		$wsse = Utils::WSSE( $form->nonce->value, $form->timestamp->value );
 		if ( isset($form->digest) && $form->digest->value == $wsse['digest'] ) {
 			Session::notice( _t( 'Successfully updated options' ) );
 			$form->save();
 		}
-		Session::error( _t('WSSE Authentication Failed') );
+		else {
+			Session::error( _t('WSSE authentication failed. Could not update options.') );
+		}
 	}
 }
 ?>

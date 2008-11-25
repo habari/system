@@ -69,24 +69,13 @@ class AdminHandler extends ActionHandler
 	 */
 	public function act_admin()
 	{
-		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
-		$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
-		// Add some default stylesheets
-		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
-
-	  	// Add some default template variables
-		$this->set_admin_template_vars( $this->theme );
-		$this->theme->admin_type = $type;
-		$this->theme->admin_page = $page;
-		$this->theme->page = $page;
-		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+		$page = ( !empty($this->handler_vars['page']) ) ? $this->handler_vars['page'] : 'dashboard';
+		$this->theme = $this->get_admin_theme($page);
 		
 		$request_method = strtolower($_SERVER['REQUEST_METHOD']);
 		$admin_page = $page . 'AdminPage';
 		Plugins::act("admin_theme_{$request_method}_{$page}", $this, $this->theme);
+		
 		if ( class_exists($admin_page) ) {
 			$admin_page = new $admin_page( $request_method, $this, $this->theme );
 			$action = isset($this->handler_vars['action']) ? $this->handler_vars['action'] : 'request';
@@ -116,6 +105,25 @@ class AdminHandler extends ActionHandler
 			header( 'HTTP/1.1 404 Not Found', true, 404 );
 			_e('Page Not Found');
 		}
+	}
+	
+	protected function get_admin_theme( $page )
+	{
+		$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+		// Add some default stylesheets
+		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
+
+	  	// Add some default template variables
+		$this->get_main_menu( $theme );
+		$theme->admin_type = $type;
+		$theme->admin_page = $page;
+		$theme->page = $page;
+		$theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+		
+		return $theme;
 	}
 
 	/**
@@ -215,31 +223,23 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Assigns the main menu to $mainmenu into the theme.
-		*/
-	protected function set_admin_template_vars( $theme )
-	{
-		$this->get_main_menu( $theme );
-	}
-
-	/**
 	 * Setup the default admin javascript stack here so that it can be called
 	 * from plugins, etc. This is not an ideal solution, but works for now.
 	 *
 	 */
 	public static function setup_stacks() {
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.spinner.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js" );
-		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js" );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js", 'ui.core', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js", 'ui.slider', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js", 'ui.tabs', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js", 'ui.sortable', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js", 'ui.resizable', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.spinner.js", 'jquery.spinner', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js", 'media', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js", 'admin', 'jquery' );
 	}
 }
 ?>
