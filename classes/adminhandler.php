@@ -618,13 +618,13 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_delete_post()
 	{
-		$extract = $this->handler_vars->filter_keys('id', 'nonce', 'timestamp', 'PasswordDigest');
+		$extract = $this->handler_vars->filter_keys('id', 'nonce', 'timestamp', 'digest');
 		foreach($extract as $key => $value) {
 			$$key = $value;
 		}
 
 		$okay = TRUE;
-		if ( empty( $id ) || empty( $nonce ) || empty( $timestamp ) || empty( $PasswordDigest ) ) {
+		if ( empty( $id ) || empty( $nonce ) || empty( $timestamp ) || empty( $digest ) ) {
 			$okay = FALSE;
 		}
 		$wsse = Utils::WSSE( $nonce, $timestamp );
