@@ -19,7 +19,7 @@ $(document).ready(function(){
 	<?php endif; ?>
 
 	<?php if(isset($statuses['published']) && $post->status != $statuses['published']) : ?>
-	$('.container.buttons').prepend($('<input type="button" name="submit" id="publish" class="button publish" tabindex="5" value="<?php _e('Publish'); ?>">'));
+	$('.container.buttons').prepend($('<input type="submit" name="submit" id="publish" class="button publish" tabindex="5" value="<?php _e('Publish'); ?>">'));
 	$('#publish').click( function() {
 		$('#status').val(<?php echo $statuses['published']; ?>);
 	});
