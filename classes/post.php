@@ -474,11 +474,11 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		/* Now, let's insert any *new* tag texts or slugs into the tags table */
-		$repeat_questions = Utils::placeholder_string( count($clean_tags) );
+		$placeholders = Utils::placeholder_string( count($clean_tags) );
 		$sql_tags_exist = "SELECT id, tag_text, tag_slug
 			FROM {tags}
-			WHERE tag_text IN ({$repeat_questions})
-			OR tag_slug IN ({$repeat_questions})";
+			WHERE tag_text IN ({$placeholders})
+			OR tag_slug IN ({$placeholders})";
 		$params = array_merge( array_keys( $clean_tags ), array_values( $clean_tags ) );
 		$existing_tags = DB::get_results( $sql_tags_exist, $params );
 		if ( count( $existing_tags ) > 0 ) {
