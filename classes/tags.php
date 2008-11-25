@@ -10,6 +10,7 @@ class Tags extends ArrayObject
 	 * Returns all tags
 	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
 	 *
+	 * @todo cache all query results
 	 * @return array An array of Tag objects
 	 **/
 	public static function get()
