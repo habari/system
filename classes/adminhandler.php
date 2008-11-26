@@ -232,11 +232,6 @@ class AdminHandler extends ActionHandler
 				'type' => 'checkbox',
 				'helptext' => _t( 'Logs error backtraces to the log tables\' data column. Can drastically increase log size!' ),
 			),
-			'enable_strict' => array(
-				'label' => _t( 'Enable Strict Checks' ),
-				'type' => 'checkbox',
-				'helptext' => _t( 'Adds strict error checking. Useful for development and troubleshooting.' ),
-			),
 		);
 
 			/*$option_items[_t('Presentation')] = array(
