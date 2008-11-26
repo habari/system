@@ -238,7 +238,7 @@ class Stack
 	 */
 	public static function scripts( $element )
 	{
-		if(strpos($element, 'http://') === 0 && strpos($element, "\n") === FALSE) {
+		if( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE) {
 			$output = sprintf( '<script src="%s" type="text/javascript"></script>'."\r\n", $element);
 		}
 		else {
@@ -256,7 +256,7 @@ class Stack
 	 */
 	public static function styles( $element, $typename )
 	{
-		if(strpos($element, 'http://') === 0 && strpos($element, "\n") === FALSE) {
+		if( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE) {
 			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename);
 		}
 		else {
