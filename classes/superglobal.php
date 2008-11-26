@@ -5,7 +5,7 @@
  *
  */
 
-class SuperGlobal extends ArrayObject
+class SuperGlobal extends ArrayIterator
 {
 	protected $values = array();
 	protected $raw_values = array();
@@ -86,6 +86,22 @@ class SuperGlobal extends ArrayObject
 			return $this->raw_values[$index];
 		}
 	}
+	
+	/**
+	 * Return a copy of the filtered array. Implments ArrayIterator::getArrayCopy()
+	 */
+	public function getArrayCopy()
+	{
+		return array_map( array( $this, 'base_filter'), parent::getArrayCopy() );
+	}
+	
+	/**
+	 * Return the current array element, filtered. Implements ArrayIterator::current()
+	 */
+	public function current()
+	{
+		return $this->offsetGet(parent::key());
+	}
 
 	/**
 	 * Return the value of an array offset.  Allows the values to be filtered
@@ -104,7 +120,7 @@ class SuperGlobal extends ArrayObject
 			return $this->values[$index];
 		}
 	}
-
+	
 	/**
 	 * Set the value of the array, clear caches for that index
 	 *
@@ -158,9 +174,9 @@ class SuperGlobal extends ArrayObject
 					}
 				}
 			}
-			elseif($ary instanceof ArrayObject) {
+			elseif($ary instanceof ArrayObject || $ary instanceof ArrayIterator) {
 				$arycp = $ary->getArrayCopy();  // Don't trigger offsetGet for ArrayObject
-				foreach($ary as $key => $value) {
+				foreach($arycp as $key => $value) {
 					if(is_numeric($key)) {
 						$cp[] = $value;
 					}
