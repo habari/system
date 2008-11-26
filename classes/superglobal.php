@@ -80,7 +80,7 @@ class SuperGlobal extends ArrayIterator
 		if(isset($this->raw_values[$index])) {
 			return $this->raw_values[$index];
 		}
-		$cp = $this->getArrayCopy();
+		$cp = $this->get_array_copy_raw();
 		if(isset($cp[$index])) {
 			$this->raw_values[$index] = $cp[$index];
 			return $this->raw_values[$index];
@@ -93,6 +93,14 @@ class SuperGlobal extends ArrayIterator
 	public function getArrayCopy()
 	{
 		return array_map( array( $this, 'base_filter'), parent::getArrayCopy() );
+	}
+	
+	/**
+	 * Return a copy of the unfiltered array.
+	 */
+	protected function get_array_copy_raw()
+	{
+		return parent::getArrayCopy();
 	}
 	
 	/**
@@ -114,7 +122,7 @@ class SuperGlobal extends ArrayIterator
 		if(isset($this->values[$index])) {
 			return $this->values[$index];
 		}
-		$cp = $this->getArrayCopy();
+		$cp = $this->get_array_copy_raw();
 		if(isset($cp[$index])) {
 			$this->values[$index] = $this->base_filter($cp[$index]);
 			return $this->values[$index];
@@ -162,7 +170,7 @@ class SuperGlobal extends ArrayIterator
 	public function merge()
 	{
 		$args = func_get_args();
-		$cp = $this->getArrayCopy();
+		$cp = $this->get_array_copy_raw();
 		foreach($args as $ary) {
 			if(is_array($ary)) {
 				foreach($ary as $key => $value) {
@@ -172,6 +180,18 @@ class SuperGlobal extends ArrayIterator
 					else {
 						$cp[$key] = $value;
 					}
+				}
+			}
+			elseif($ary instanceof SuperGlobal) {
+				// loop to get raw data.
+				while( $ary->valid() ) {
+					if( is_numeric($ary->key()) ) {
+						$cp[] = $ary->raw($ary->key());
+					}
+					else {
+						$cp[$ary->key()] = $ary->raw($ary->key());
+					}
+					$ary->next();
 				}
 			}
 			elseif($ary instanceof ArrayObject || $ary instanceof ArrayIterator) {
@@ -208,7 +228,7 @@ class SuperGlobal extends ArrayIterator
 			}
 			$keys = array_merge($keys, array_values($ary));
 		}
-		$cp = $this->getArrayCopy();
+		$cp = $this->get_array_copy_raw();
 		$cp = array_intersect_key($cp, array_flip($keys));
 		return new SuperGlobal($cp);
 	}
