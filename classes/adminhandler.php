@@ -226,11 +226,16 @@ class AdminHandler extends ActionHandler
 			),
 		);
 
-		$option_items[_t('Logging')] = array(
+		$option_items[_t('Troubleshooting')] = array(
 			'log_backtraces' => array(
 				'label' => _t( 'Log Backtraces' ),
 				'type' => 'checkbox',
 				'helptext' => _t( 'Logs error backtraces to the log tables\' data column. Can drastically increase log size!' ),
+			),
+			'enable_strict' => array(
+				'label' => _t( 'Enable Strict Checks' ),
+				'type' => 'checkbox',
+				'helptext' => _t( 'Adds strict error checking. Useful for development and troubleshooting.' ),
 			),
 		);
 
