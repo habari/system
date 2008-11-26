@@ -12,7 +12,7 @@
 						<?php echo $post->content_out; ?>
 					</div>
 					<div class="entryMeta">
-						<?php if ( $user ) { ?>
+						<?php if ( $loggedin ) { ?>
 						<a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 						<?php } ?>
 					</div>

@@ -26,7 +26,7 @@
 						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
 					</div><br>
-						<?php if ( $user ) { ?>
+						<?php if ( $loggedin ) { ?>
 						<a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 						<?php } ?>
 
