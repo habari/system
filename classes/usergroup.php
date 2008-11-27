@@ -152,7 +152,7 @@ class UserGroup extends QueryRecord
 	{
 		switch ( $param ) {
 			case 'members':
-				return $this->member_ids;
+				return (array) $this->member_ids;
 				break;
 			case 'permissions':
 				return $this->permissions;
