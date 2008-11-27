@@ -184,7 +184,8 @@ class Stack
 		$bc = count($ba);
 		if(($acb && $bca) || !($acb || $bca)) {
 			if($ac == $bc) {
-				return 0;
+				// they are equal in 'bias', so go with the order in which they were added.
+				return 1;
 			}
 			return $ac > $bc ? -1 : 1;
 		}
