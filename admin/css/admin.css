@@ -348,6 +348,21 @@ a img {
 	font-weight: bold;
 }
 
+#page input[type=button], #page input[type=submit], #page button {
+	padding: 2px 4px 2px 4px;
+	cursor: pointer;
+	-webkit-border-radius: 9px;		/* Webkit only supports up to 9px at present */
+	-moz-border-radius: 9px;
+	font-size: 10px;
+	background: transparent url('../images/button_gradient.png') repeat-x;
+	border: 1px solid #999;
+}
+
+#page input[type=button]:hover, #page input[type=submit]:hover, #page button:hover {
+	background: url('../images/button_gradient_hover.png') repeat-x;
+	border: 1px solid #555;
+}
+
 .item {
 	position: relative;
 	padding: 10px 0 10px;
