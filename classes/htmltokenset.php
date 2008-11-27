@@ -13,12 +13,12 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	public function __tostring() {
 		$out = '';
 		foreach ( $this->tokens as $token ) {
-			$out .= $this->token_to_string($token);
+			$out .= self::token_to_string($token);
 		}
 		return $out;
 	}
 	
-	protected function token_to_string( array $token ) {
+	public static function token_to_string( array $token ) {
 		switch ($token['type']) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
 				return $token['value'];
