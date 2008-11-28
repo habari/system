@@ -239,4 +239,6 @@ $(document).ready(function(){
 			return true;
 		}
 	});
+	$('.mediasplitter').removeClass('hidden');
+	$('#mediatabs').removeClass('hidden');
 });
