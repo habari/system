@@ -261,7 +261,7 @@ class Stack
 			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename);
 		}
 		else {
-			$output = sprintf( '<style type="text/stylesheet" media="%s">%s</style>'."\r\n", $typename, $element);
+			$output = sprintf( '<style type="text/css" media="%s">%s</style>'."\r\n", $typename, $element);
 		}
 		return $output;
 	}
