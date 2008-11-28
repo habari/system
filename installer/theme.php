@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * InstallerTheme is a custom Theme class for the installer.
+ *
+ * @package Habari
+ */
+
+// We must tell Habari to use MyTheme as the custom theme class:
+define( 'THEME_CLASS', 'InstallerTheme' );
+
+/**
+ * A custom theme for the installer
+ */
+class InstallerTheme extends Theme
+{
+
+/**
+	 * Add additional template variables to the template output.
+	 * For the installer, we don't want any extra template variables added.
+	 *
+	 */
+	public function add_template_vars()
+	{
+
+	}
+
+}
+
+?>
