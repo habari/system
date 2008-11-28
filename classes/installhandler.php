@@ -172,7 +172,7 @@ class InstallHandler extends ActionHandler {
 		}
 
 		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
-		return true;
+		Utils::redirect(Site::get_url( 'habari' ) );
 	}
 
 	/*
