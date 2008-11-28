@@ -479,7 +479,8 @@ class AdminHandler extends ActionHandler
 
 		$post->update( $form->minor_edit->value );
 
-		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, $post->title), Post::status_name( $post->status ) ) );
+		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
+		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, $post->title), Post::status_name( $post->status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
@@ -522,7 +523,8 @@ class AdminHandler extends ActionHandler
 
 		if( isset( $this->handler_vars['id'] ) ) {
 			$post_links = $form->append('wrapper', 'post_links');
-			$post_links->append('static', 'post_permalink', '<a href="'.$post->permalink.( $post->statusname == 'draft' ? '?preview=1' : '' ).'" class="viewpost" onclick="$(this).attr(\'target\', \'preview\');">'.( $post->statusname == 'draft' ? _t('Preview Post') : _t('View Post') ).'</a>');
+			$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
+			$post_links->append('static', 'post_permalink', '<a href="'. $permalink .'" class="viewpost" onclick="$(this).attr(\'target\', \'preview\');">'.( $post->status != Post::status('published') ? _t('Preview Post') : _t('View Post') ).'</a>');
 			$post_links->class ='container';
 		}
 
