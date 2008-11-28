@@ -98,7 +98,7 @@ class SuperGlobal extends ArrayIterator
 	/**
 	 * Return a copy of the unfiltered array.
 	 */
-	protected function get_array_copy_raw()
+	public function get_array_copy_raw()
 	{
 		return parent::getArrayCopy();
 	}
