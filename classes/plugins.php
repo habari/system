@@ -309,8 +309,8 @@ class Plugins
 	{
 		$class = Plugins::class_from_filename( $file );
 		$plugin = new $class;
-		self::$plugins[$plugin->plugin_id]= $plugin;
 		if($activate) {
+			self::$plugins[$plugin->plugin_id]= $plugin;
 			$plugin->load();
 		}
 		return $plugin;
