@@ -230,7 +230,7 @@ a img {
 }
 
  #page .dropbutton.alert {
-	background: orangered;
+	background: #FF4500;
 }
 
 #page .dropbutton li {
@@ -2245,7 +2245,7 @@ body.login .humanMsg {
 }
 
 #humanMsgLog ul li .error {
-	color: orangered;
+	color: #FF4500;
 }
 
 #humanMsgLog ul li .indent {
