@@ -314,6 +314,27 @@ class FormContainer
 			}
 		}
 	}
+	
+	/**
+	 * Magic property isset, returns if the specified control exists
+	 *
+	 * @param string $name The name of the control
+	 * @return bool If the control object is set
+	 */
+	function __isset($name)
+	{
+		if(isset($this->controls[$name])) {
+			return true;
+		}
+		foreach($this->controls as $control) {
+			if($control instanceof FormContainer) {
+				if($ctrl = $control->$name) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Return the HTML/script required for all contained controls.  Do it only once.
