@@ -232,6 +232,31 @@ class SuperGlobal extends ArrayIterator
 		$cp = array_intersect_key($cp, array_flip($keys));
 		return new SuperGlobal($cp);
 	}
+	
+	/**
+	 * Apply a map function to this array, like array_map()	
+	 * @param callback $fn the name of the function to map through
+	 * @return SuperGlobal the result of the mapping
+	 **/	 	 	 	 
+	public function map($fn)
+	{
+		return new SuperGlobal(array_map($fn, $this->get_array_copy_raw()));
+	}
+	
+	/**
+	 * Use a regular expression replacement to change the keys in an array
+	 * @param string $replacement (optional) The regex replacement value
+	 * @param string $search_regex (optional) The regex search value
+	 * @return SuperGlobal The re-keyed array
+	 **/	 	 	 	 	
+	public function rekey($replacement = '{\$$0}', $search_regex = '%^.*$%')
+	{
+		$output = array();
+		foreach($this->get_array_copy_raw() as $k => $v) {
+			$output[preg_replace($search_regex, $replacement, $k)] = $v;
+		}
+		return new SuperGlobal($output);
+	}
 }
 
 ?>
