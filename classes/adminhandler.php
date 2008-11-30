@@ -1049,6 +1049,18 @@ class AdminHandler extends ActionHandler
 		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
+	
+	public function get_import()
+	{
+				
+		$importer = isset( $_POST['importer'] ) ? $_POST['importer'] : '';
+		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '';
+
+		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage );
+
+		$this->display( 'import' );
+		
+	}
 
 	/**
 	 * Handles the submission of the import form, importing data from a WordPress database.
@@ -1056,7 +1068,7 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_import()
 	{
-		if ( !isset( $_REQUEST['importer'] ) ) {
+		if ( !isset( $_POST['importer'] ) ) {
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
 		}
 
