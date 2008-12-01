@@ -101,21 +101,26 @@ class CronTab extends ActionHandler
 	}
 
 	/**
-	 * Get a Cron Job by name from the Database.
+	 * Get a Cron Job by name or id from the Database.
 	 *
-	 * @param string $name The name of the cron job to retreive.
+	 * @param mixed $name The name or id of the cron job to retreive.
 	 * @return CronJob The cron job retreived from the DB
 	 */
 	static function get_cronjob( $name )
 	{
-		$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE name = ?', array( $name ), 'CronJob' );
+		if ( is_int($name) ) {
+			$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE cron_id = ?', array( $name ), 'CronJob' );
+		}
+		else {
+			$cron = DB::get_row( 'SELECT * FROM {crontab} WHERE name = ?', array( $name ), 'CronJob' );
+		}
 		return $cron;
 	}
 
 	/**
-	 * Delete a Cron Job by name from the Database.
+	 * Delete a Cron Job by name or id from the Database.
 	 *
-	 * @param string $name The name of the cron job to delete.
+	 * @param mixed $name The name or id of the cron job to delete.
 	 * @return bool Wheather or not the delete was successfull
 	 */
 	static function delete_cronjob( $name )
