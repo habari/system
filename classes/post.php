@@ -577,7 +577,6 @@ class Post extends QueryRecord implements IsContent
 	{
 		$this->newfields['updated']= HabariDateTime::date_create();
 		$this->newfields['modified'] = $this->newfields['updated'];
-		$this->setslug();
 		$this->setguid();
 
 		$allow = true;
