@@ -591,8 +591,7 @@ class Utils
 		// Note that multiple separators are collapsed automatically by the preg_replace.
 		// Convert all characters to lowercase.
 		// Trim spaces on both sides.
-		$slug = rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}%_]+/u', $separator, $string ) ), $separator );
-
+		$slug = rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}%_]+/u', $separator, preg_replace( '/\p{Po}/u', '', $string ) ) ), $separator );
 		// Let people change the behavior.
 		$slug = Plugins::filter('slugify', $slug, $string);
 
