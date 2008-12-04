@@ -31,7 +31,7 @@
 	?>
 
 </head>
-<body class="page-<?php echo $admin_page; ?>">
+<body class="page-<?php echo $page; ?>">
 
 <div id="menubar">
 
