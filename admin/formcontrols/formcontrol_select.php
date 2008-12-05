@@ -1,5 +1,6 @@
 <div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
-<label><?php echo $this->caption; ?><select name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ) ?>>
+<label><?php echo $this->caption; ?></label>
+<select name="<?php echo $field . ( $multiple ? '[]' : '' ); ?>"<?php echo ( $multiple ? ' multiple="multiple" size="' . intval($size) . '"' : '' ) ?>>
 <?php foreach($options as $opts_key => $opts_val) : ?>
 	<?php if (is_array($opts_val)) : ?>
 		<optgroup label="<?php echo $opts_key; ?>">
@@ -11,7 +12,7 @@
 		<option value="<?php echo $opts_key; ?>"<?php echo ( in_array( $opts_key, (array) $value ) ? ' selected' : '' ); ?>><?php echo htmlspecialchars($opts_val); ?></option>
 	<?php endif; ?>
 <?php endforeach; ?>
-</select></label>
+</select>
 <?php if($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>

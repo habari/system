@@ -9,7 +9,7 @@ if(!is_array($value)) {
 }
 foreach($value as $value_1) :
 ?>
-	<label><input type="text" name="<?php echo $field; ?>[]" value="<?php echo htmlspecialchars($value_1); ?>"> <a href="#" onclick="return controls.textmulti.remove(this);">[<?php _e('remove'); ?>]</a></label>
+	<input type="text" name="<?php echo $field; ?>[]" value="<?php echo htmlspecialchars($value_1); ?>"> <label><a href="#" onclick="return controls.textmulti.remove(this);">[<?php _e('remove'); ?>]</a></label>
 <?php
 endforeach;
 ?>
