@@ -182,6 +182,7 @@ class AtomHandler extends ActionHandler
 
 			$entry_author = $feed_entry->addChild( 'author' );
 			$author_name = $entry_author->addChild( 'name', $user->displayname );
+			$author_uri = $entry_author->addChild( 'uri', Site::get_url('habari') );
 
 			$entry_id = $feed_entry->addChild( 'id', $post->guid );
 
@@ -220,6 +221,7 @@ class AtomHandler extends ActionHandler
 
 			$author = $item->addChild( 'author' );
 			$author_name = $author->addChild( 'name', htmlspecialchars( $comment->name ) );
+			$author_uri = $author->addChild( 'uri', htmlspecialchars( $comment->url ) );
 
 			$id = $item->addChild( 'id', $comment->post->guid . '/' . $comment->id );
 
