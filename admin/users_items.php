@@ -10,7 +10,7 @@
 
 	<li class="item clear">
 		<div class="clear">
-			<span class="checkbox pct5"><span><input type="checkbox" name="checkbox_ids[<?php echo $user->id; ?>]" id="checkbox_ids[<?php echo $user->id; ?>]"></span></span>
+			<span class="checkbox pct5"><span><input type="checkbox" class="checkbox" name="checkbox_ids[<?php echo $user->id; ?>]" id="checkbox_ids[<?php echo $user->id; ?>]"></span></span>
 			<span class="user pct95"><a href="<?php echo $url ?>" title="<?php printf( _t('Open %s\'s user page'), $user->displayname ) ?>"><?php echo $user->displayname ?></a></span>
 		</div>
 

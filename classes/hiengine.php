@@ -41,7 +41,10 @@ class HiEngine extends RawPHPEngine {
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			$template_file = 'hi://' . $template_file;
-//Utils::debug(file_get_contents($template_file));
+			if($template == 'comments') {
+//				Utils::debug(file_get_contents($template_file));
+	//			die();
+			}
 			include ($template_file);
 		}
 	}
@@ -166,11 +169,11 @@ class HiEngineParser
 				return false;
 		}
 	}
-	
+
 	/**
 	 * Return fstat() info as required when calling stats on the stream
 	 * @return array An array of stat info
-	 */	 	  	
+	 */
 	function stream_stat()
 	{
 		return array();
@@ -184,8 +187,9 @@ class HiEngineParser
 	 */
 	function process( $template )
 	{
-		$template = preg_replace_callback('%\{hi:([^\?]+?)\}(.+?){/hi:\1}%ism', array($this, 'hi_loop'), $template);
-		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?){/hi:\?}%ism', array($this, 'hi_if'), $template);
+		$template = preg_replace_callback('/\{hi:(".+?")((?:\s*[\w\.]+){0,2})\s*\}/sm', array($this, 'hi_quote'), $template);
+		$template = preg_replace_callback('%\{hi:([^\?]+?)\}(.+?)\{/hi:\1\}%ism', array($this, 'hi_loop'), $template);
+		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?)\{/hi:\?\}%ism', array($this, 'hi_if'), $template);
 		$template = preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_command'), $template);
 		return $template;
 	}
@@ -205,7 +209,7 @@ class HiEngineParser
 			$cmd = str_replace('.', '->', $cmd);
 			if(count($this->contexts)) {
 				// Build a conditional that checks for the most specific, then the least
-				// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x 
+				// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
 				$ctx = $this->contexts;
 				$prefixes = array();
 				foreach($ctx as $void) {
@@ -236,6 +240,16 @@ class HiEngineParser
 					return '<?php Site::out_url( \'' . $cmd_matches[2] . '\' ); ?>';
 				case 'url':
 					return '<?php URL::out( \'' . $cmd_matches[2] . '\' ); ?>';
+				case 'session':
+					switch($cmd_matches[2]) {
+						case 'messages':
+							return '<?php if(Session::has_messages()){Session::messages_out();} ?>';
+						case 'errors':
+							return '<?php if(Session::has_errors()){Session::messages_out();} ?>';
+					}
+				// this is an internal match
+				case 'context':
+					return $this->hi_to_var($cmd_matches[2]);
 			}
 		}
 
@@ -247,7 +261,7 @@ class HiEngineParser
 		// Didn't match anything we support so far
 		return $matches[0];
 	}
-	
+
 	/**
 	 * Replace a loop tag section with its PHP counterpart, and add the context to the stack
 	 *
@@ -256,33 +270,43 @@ class HiEngineParser
 	 */
 	function hi_loop($matches)
 	{
-		$output = '<?php foreach($' . $matches[1] . ' as $' . $matches[1] . '_index => $' . $matches[1] . '_1): ?>';
-		$this->contexts[] = "{$matches[1]}_1";
+		$hivar = $matches[1];
+		$phpvar = $this->hi_to_var($hivar);
+		$iterator = strpos($hivar, '.') ? substr($hivar, strrpos($hivar, '.') + 1) : $hivar;
+		$output = '<?php foreach(' . $phpvar . ' as $' . $iterator . '_index => $' . $iterator . '_1): ?>';
+		$this->contexts[] = "{$iterator}_1";
 		$output .= $this->process($matches[2]);
 		$output .= '<?php endforeach; ?>';
 		array_pop($this->contexts);
 		return $output;
 	}
-	
+
 	/**
 	 * Replace variables in the hiengine syntax with PHP varaibles
 	 * @param array $matches The match array found in hi_if()
 	 * @returns string A PHP variable string to use as the replacement
-	 */	 	 	 
+	 */
 	function var_replace($matches)
 	{
-		$var = $matches[0];
+		$var = $matches[1];
 		if(is_callable($var)) {
 			return $var;
 		}
 		if(preg_match('/true|false|null/i', $var)) {
 			return $var;
 		}
-	
-		$var = str_replace('.', '->', $var);
+
+		$var = $this->hi_to_var($var);
+
+		return $var;
+	}
+
+	function hi_to_var($hisyntax)
+	{
+		$var = str_replace('.', '->', $hisyntax);
 		if(count($this->contexts)) {
 			// Build a conditional that checks for the most specific, then the least
-			// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x 
+			// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
 			$ctx = $this->contexts;
 			$prefixes = array();
 			foreach($ctx as $void) {
@@ -300,19 +324,19 @@ class HiEngineParser
 			return '$'. $var;
 		}
 	}
-	
+
 	/**
 	 * Creates a table of static strings in hiengine expressions to be replaced in later
 	 * @param array $matches The match found in hi_if()
 	 * @returns string An uncommon string index for the stored static string.
-	 */	 	 	 	
+	 */
 	function string_stack($matches)
 	{
 		$key = chr(0) . count($this->strings) . chr(1);
 		$this->strings[$key] = $matches[0];
 		return $key;
 	}
-	
+
 	/**
 	 * Replace an if tag section with its PHP counterpart
 	 *
@@ -324,15 +348,63 @@ class HiEngineParser
 		list($void, $eval, $context) = $matches;
 
 		$eval = preg_replace_callback('/([\'"]).*?(?<!\\\\)\1/i', array($this, 'string_stack'), $eval);
-		$eval = preg_replace_callback('/\b(?<!::)[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*(?!::)\b/i', array($this, 'var_replace'), $eval);
+		$eval = preg_replace_callback('/\b((?<!::)[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*(?!::))\b/i', array($this, 'var_replace'), $eval);
 		$eval = preg_replace('/(?<!=)=(?!=)/i', '==', $eval);
 		$eval = str_replace(array_keys($this->strings), $this->strings, $eval);
-		
+
 		$context = preg_replace('/\{hi:\?else\?\}/i', '<?php else: ?>', $context);
 
 		$output = '<?php if(' . $eval . '): ?>';
 		$output .= $this->process($context);
 		$output .= '<?php endif; ?>';
+		return $output;
+	}
+
+	/**
+	* Prepare strings for translation
+	* @param array $matches Matches in HiEngineParser::process()
+	* @param string The PHP replacement for the template tag
+	*/
+	function hi_quote($matches)
+	{
+		$args = preg_split('%\s+%', trim($matches[2]));
+
+		preg_match_all('/"(.+?)(?<!\\\\)"/', $matches[1], $quotes);
+		$count = 0;
+		$all_vars = array();
+		foreach($quotes[1] as $index => $quote) {
+			preg_match_all('%{hi:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)}%', $quote, $vars, PREG_SET_ORDER);
+			foreach($vars as $var) {
+				$count++;
+				$quote = str_replace($var[0], '%'.$count.'\$s', $quote);
+				$all_vars[] = '{hi:context:' . $var[1] . '}';  //$this->hi_to_var($var[1]);
+			}
+			$quotes[1][$index] = $quote;
+		}
+		if(count($quotes[1]) > 1) {
+			$output = '<?php printf(_n("'.$quotes[1][0].'", "'.$quotes[1][1].'", {hi:context:'.$args[0].'})';
+			// Add vars
+			if(count($all_vars) > 0) {
+				$output .= ', ' . implode(', ', $all_vars);
+			}
+			array_shift($args);
+		}
+		else {
+			$output = '<?php _e("'.$quotes[1][0].'"';
+			// Add vars
+			if(count($all_vars) > 0) {
+				$output .= ', array(' . implode(', ', $all_vars) . ')';
+			}
+		}
+
+		// Add the domain, if any
+		if(isset($args[0])) {
+			$output .= ', "'.$args[0].'"';
+		}
+
+		// Close the tag
+		$output .= '); ?>';
+
 		return $output;
 	}
 }

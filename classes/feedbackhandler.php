@@ -15,14 +15,14 @@ class FeedbackHandler extends ActionHandler
 	*/
 	public function act_add_comment()
 	{
-		
+
 		$defaults = array(
 			'name' => '',
 			'email' => '',
 			'url' => '',
 			'content' => ''
 		);
-		
+
 		// We need to get the post anyway to redirect back to the post page.
 		$post = Post::get( array( 'id'=>$this->handler_vars['id'] ) );
 		if( !$post ) {
@@ -30,7 +30,7 @@ class FeedbackHandler extends ActionHandler
 			header('HTTP/1.1 403 Forbidden', true, 403);
 			die();
 		}
-		
+
 		// make sure all our default values are set so we don't throw undefined index errors
 		foreach ( $defaults as $k => $v ) {
 			if ( !isset( $this->handler_vars[ $k ] ) ) {
@@ -55,7 +55,6 @@ class FeedbackHandler extends ActionHandler
 			Session::add_to_set('comment', $this->handler_vars['content'], 'content');
 			// now send them back to the form
 			Utils::redirect( $post->permalink . '#respond' );
-			exit();
 		}
 
 		if ( $post->info->comments_disabled ) {
@@ -63,7 +62,6 @@ class FeedbackHandler extends ActionHandler
 			// them back to the post's permalink
 			Session::error( _t( 'Comments on this post are disabled!' ) );
 			Utils::redirect( $post->permalink );
-			exit();
 		}
 
 		/* Sanitize data */
@@ -100,7 +98,6 @@ class FeedbackHandler extends ActionHandler
 		if ( preg_match( '/^\p{Z}*$/u', $this->handler_vars['content'] ) ) {
 			Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
 			Utils::redirect( $post->permalink );
-			exit();
 		}
 
 		/* Create comment object*/
@@ -118,7 +115,8 @@ class FeedbackHandler extends ActionHandler
 
 		// Should this really be here or in a default filter?
 		// In any case, we should let plugins modify the status after we set it here.
-		if( ( $user = User::identify() ) && ( $comment->email == $user->email ) ) {
+		$user = User::identify();
+		if( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
 			$comment->status = Comment::STATUS_APPROVED;
 		}
 
@@ -151,7 +149,6 @@ class FeedbackHandler extends ActionHandler
 				)
 			)
 			{
-				Session::notice(_t('Setting the cookie.'), 'comment_' . $comment->id );
 				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
 				$site_url = Site::get_path('base',true);
 				setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );

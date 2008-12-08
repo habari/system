@@ -29,7 +29,7 @@ class User extends QueryRecord
 	private $info = null;
 
 	private $group_list = null;
-	
+
 	protected $url_args;
 
 	/**
@@ -86,7 +86,9 @@ class User extends QueryRecord
 				return $user;
 			}
 		}
-		return false;
+		$anonymous = new User();
+		Plugins::act('create_anonymous_user', $anonymous);
+		return $anonymous;
 	}
 
 	/**
@@ -138,7 +140,6 @@ class User extends QueryRecord
 		Plugins::act('user_update_before', $this);
 		$this->info->commit();
 		$result = parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
-		EventLog::log( _t( 'User %s: Information updated.', array( $this->username ) ), 'notice', 'user', 'habari' );
 		Plugins::act('user_update_after', $this);
 		return $result;
 	}
@@ -187,14 +188,12 @@ class User extends QueryRecord
 			// the user
 			unset( $_SESSION['sudo'] );
 			Utils::redirect( Site::get_url( 'admin' ) );
-			exit;
 		}
 		Plugins::act( 'user_forget', $this );
 		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
 		$home = Options::get('base_url');
 		Utils::redirect( Site::get_url( 'habari' ) );
-		exit;
 	}
 
 	/**
@@ -411,9 +410,20 @@ class User extends QueryRecord
 	 * @param string $access The type of access to check for (read, write, full, etc.)
 	 * @return boolean True if this user has the requested permission, false if not
 	 */
-	public function can( $permission, $access = 'full' )
+	public function can( $permission, $access = 'any' )
 	{
 		return ACL::user_can( $this, $permission, $access );
+	}
+
+	/**
+	 * Determine if a user has been denied a specific permission
+	 *
+	 * @param string $permission The name of the permission to detect
+	 * @return boolean True if this user has the requested permission, false if not
+	 */
+	public function cannot( $permission )
+	{
+		return ACL::user_cannot( $this, $permission );
 	}
 
 	/**
@@ -529,6 +539,8 @@ class User extends QueryRecord
 				return $this->list_groups();
 			case 'displayname':
 				return ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
+			case 'loggedin':
+				return $this->id != 0;
 			default:
 				return parent::__get( $name );
 		}

@@ -15,10 +15,9 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
-		$name = InputFilter::filter( Controller::get_var( 'habari_username' ) );
-		$pass = InputFilter::filter( Controller::get_var( 'habari_password' ) );
-		
-		
+		$name = $this->handler_vars['habari_username'];
+		$pass = $this->handler_vars['habari_password'];
+
 		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
 			$user = User::authenticate( $name, $pass );
 
@@ -27,7 +26,7 @@ class UserHandler extends ActionHandler
 				// Timestamp last login date and time.
 				$user->info->authenticate_time = date( 'Y-m-d H:i:s' );
 				$user->update();
-				
+
 				// Remove left over expired session error message.
 				if ( Session::has_errors( 'expired_session' ) ) {
 					Session::remove_error( 'expired_session' );
@@ -42,7 +41,7 @@ class UserHandler extends ActionHandler
 					if ( ! empty( $login_session['get_data'] ) ) {
 						Session::add_to_set( 'last_form_data', $last_form_data['get'], 'get' );
 					}
-					
+
 					/* Redirect to the correct admin page */
 					$dest = explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
 					if ( '' == $dest[0] ) {
@@ -92,7 +91,8 @@ class UserHandler extends ActionHandler
 	public function act_logout()
 	{
 		// get the user from their cookie
-		if ( $user = User::identify() ) {
+		$user = User::identify();
+		if ( $user->loggedin ) {
 			Plugins::act( 'user_logout', $user );
 			// delete the cookie, and destroy the object
 			$user->forget();

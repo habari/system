@@ -23,80 +23,26 @@ class ACL {
 	 **/
 	const ACCESS_NONEXISTANT_PERMISSION = true;
 
-	private static $access_ids = array();
-	private static $access_names = array();
+	private static $access_names = array( 'read', 'write', 'delete' );
 
 	/**
-	 * Static initializer to fill the $access_ids array
-	 */
-	public static function __static()
-	{
-		self::$access_ids = DB::get_keyvalue( 'SELECT name, id FROM {permissions};' );
-
-		if ( ! isset(self::$access_ids) ) {
-			self::$access_ids = array();
-		}
-		self::$access_names = array_flip( self::$access_ids );
-	}
-
-	/**
-	 * Convert a permission access name (read, write, full, denied) into an ID
-	 * @param string The access name
-	 * @return mixed the ID of the permission, or boolean FALSE if it does not exist
-	 **/
-	public static function access_id( $name )
-	{
-		// if $name is numeric, assume it is already an access ID
-		if ( is_numeric( $name ) ) {
-			return $name;
-		}
-		return isset( self::$access_ids[$name] ) ? self::$access_ids[$name] : FALSE;
-	}
-
-	/**
-	 * Convert a permission access ID into a name
-	 * @param ID The access ID
-	 * @return mixed the name of the permission, or boolean FALSE if it does not exist
-	 **/
-	public static function access_name( $id )
-	{
-		// if $id is not numeric, assume it is already an access name
-		if ( ! is_numeric( $id ) ) {
-			return $id;
-		}
-		return isset( self::$access_names[$id] ) ? self::$access_names[$id] : FALSE;
-	}
-
-	/**
-	 * Check access. Implements hierarchy of access terms.
-	 * @param mixed $access_given The ID or name of the access given
-	 * @param mixed $access_check The ID or name of the access to check against
+	 * Check the permission bitmask for a particular access type.
+	 * @param mixed $permission The permission bitmask
+	 * @param mixed $access The name of the access to check against (read, write, full)
 	 * @return bool Returns true if the given access meets exceeds the access to check against
 	 */
-	public static function access_check( $access_given, $access_check )
+	public static function access_check( $permission, $access )
 	{
-		$access_given = self::access_name( $access_given );
-		$access_check = self::access_name( $access_check );
+		$bitmask = new Bitmask( self::$access_names, $permission );
 
-		if ( $access_given == 'deny' ) {
-			return false;
+		switch($access) {
+			case 'full':
+				return $bitmask->value == $bitmask->full;
+			case 'any':
+				return $bitmask->value != 0;
+			default:
+				return $bitmask->$access;
 		}
-		if ( $access_given == 'full' ) {
-			return true;
-		}
-		if ( $access_given == 'read' || $access_given == 'write' ) {
-			if ( $access_check == 'full' ) {
-				return false;
-			}
-			if ( $access_given == $access_check ) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		// unknown access
-		return false;
 	}
 
 	/**
@@ -125,6 +71,14 @@ class ACL {
 			// if it didn't work, don't bother trying to log it
 			return false;
 		}
+
+		// Add the permission to the admin group
+		$perm = ACL::token_id( $name );
+		$admin = UserGroup::get( 'admin');
+		if ( $admin ) {
+			ACL::grant_group( $admin->id, $perm, 'full' );
+		}
+
 		EventLog::log('New permission created: ' . $name, 'info', 'default', 'habari');
 		Plugins::act('permission_create_after', $name, $description );
 		return $result;
@@ -248,10 +202,10 @@ class ACL {
 	 * Determine whether a group can perform a specific action
 	 * @param mixed $group A group ID or name
 	 * @param mixed $permission An action ID or name
-	 * @param string $access Check for 'read', 'write', or 'full' access
+	 * @param string $access Check for 'read', 'write', or 'delete' access
 	 * @return bool Whether the group can perform the action
 	**/
-	public static function group_can( $group, $permission, $access = 'full' )
+	public static function group_can( $group, $permission, $access = 'write' )
 	{
 		// Use only numeric ids internally
 		$group = UserGroup::id( $group );
@@ -272,20 +226,62 @@ class ACL {
 	/**
 	 * Determine whether a user can perform a specific action
 	 * @param mixed $user A user object, user ID or a username
-	 * @param mixed $permission A permission ID or name
-	 * @param string $access Check for 'read', 'write', or 'full' access
+	 * @param mixed $token A permission ID or name
+	 * @param string $access Check for 'read', 'write', or 'delete' access
 	 * @return bool Whether the user can perform the action
 	**/
-	public static function user_can( $user, $permission, $access = 'full' )
+	public static function user_can( $user, $token, $access = 'read' )
+	{
+
+		$result = self::get_user_token_permissions( $user, $token );
+
+		if ( isset( $result ) && self::access_check( $result, $access ) ) {
+			return true;
+		}
+
+		// either the permission hasn't been granted, or it's been
+		// explicitly denied.
+		return false;
+	}
+
+	/**
+	 * Determine whether a user is denied permission to perform a specific action
+	 * @param mixed $user A user object, user ID or a username
+	 * @param mixed $token A permission ID or name
+	 * @return bool Whether the user can perform the action
+	 **/
+	public static function user_cannot( $user, $token )
+	{
+
+		$result = self::get_user_token_permissions( $user, $token );
+
+		if ( isset( $result ) && $result == 0 ) {
+			return true;
+		}
+
+		// either the permission hasn't been granted, or it's been
+		// explicitly denied.
+		return false;
+	}
+
+
+	/**
+	 * Return the permission to a specific token for a specific user
+	 *
+	 * @param mixed $user A User object instance or user id
+	 * @param mixed $token A token string or if
+	 * @return integer A permission bitmask integer
+	 */
+	public static function get_user_token_permissions( $user, $token )
 	{
 		// Use only numeric ids internally
-		$permission = self::token_id( $permission );
+		$token = self::token_id( $token );
 
 		/**
 		 * Do we allow perms that don't exist?
 		 * When ACL is functional ACCESS_NONEXISTANT_PERMISSION should be false by default.
 		 */
-		if ( is_null( $permission) ) {
+		if ( is_null( $token) ) {
 			return self::ACCESS_NONEXISTANT_PERMISSION;
 		}
 
@@ -328,17 +324,58 @@ SELECT gp.permission_id
   INNER JOIN {group_token_permissions} gp
   ON ug.group_id = gp.group_id
   AND ug.user_id = :user_id
-  AND gp.token_id = :token_id;
+  AND gp.token_id = :token_id
+  ORDER BY permission_id ASC
+  LIMIT 1;
 SQL;
-		$result = DB::get_value( $sql, array( ':user_id' => $user_id, ':token_id' => $permission ) );
+		$result = DB::get_value( $sql, array( ':user_id' => $user_id, ':token_id' => $token ) );
 
-		if ( isset( $result ) && self::access_check( $result, $access ) ) {
-			return true;
+		return $result;
+	}
+
+	/**
+	 * Get all the tokens for a given user with a particular kind of access
+	 * @param mixed $user A user object, user ID or a username
+	 * @param string $access Check for 'read' or 'write' access
+	 * @return array of token IDs
+	**/
+	public static function user_tokens( $user, $access = 'write' )
+	{
+		// convert $user to an ID
+		if ( is_numeric( $user ) ) {
+			$user_id = $user;
+		}
+		else {
+			if ( ! $user instanceof User ) {
+				$user = User::get( $user );
+			}
+			$user_id = $user->id;
 		}
 
-		// either the permission hasn't been granted, or it's been
-		// explicitly denied.
-		return false;
+		$sql = <<<SQL
+SELECT token_id, permission_id
+  FROM user_token_permissions
+  WHERE user_id = :user_id
+UNION ALL
+SELECT gp.token_id, gp.permission_id
+  FROM users_groups ug
+  INNER JOIN group_token_permissions gp
+  ON ug.group_id = gp.group_id
+  AND ug.user_id = :user_id
+  ORDER BY token_id ASC
+SQL;
+		$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
+
+		$bitmask = new Bitmask ( self::$access_names, $access );
+		$tokens = array();
+
+		foreach ( $result as $token ) {
+			$bitmask->value = $token->permission_id;
+			if ( $bitmask->$access ) {
+				$tokens[] = $token->token_id;
+			}
+		}
+		return $tokens;
 	}
 
 	/**
@@ -350,10 +387,33 @@ SQL;
 	 **/
 	public static function grant_group( $group_id, $token_id, $access = 'full' )
 	{
+		$permission_id = DB::get_value( 'SELECT permission_id FROM {group_token_permissions} WHERE group_id=? AND token_id=?',
+			array( $group_id, $token_id ) );
+		if ( $permission_id ===  false ) {
+			$permission_id = 0; // default is 'deny' (bitmask 0)
+		}
+
+		$bitmask = new Bitmask( self::$access_names, $permission_id );
+
+		if ( $access == 'full' || $access == 'deny' ) {
+			if ( $access == 'full' ) {
+				$access = true;
+			}
+			else {
+				$access = false;
+			}
+			foreach ( self::$access_names as $access_name ) {
+				$bitmask->$access_name = $access;
+			}
+		}
+		else {
+			$bitmask->$access = true;
+		}
+
 		// DB::update will insert if the token is not already in the group tokens table
 		$result = DB::update(
 			'{group_token_permissions}',
-			array( 'permission_id' => self::$access_ids[$access] ),
+			array( 'permission_id' => $bitmask->value ),
 			array( 'group_id' => $group_id, 'token_id' => self::token_id( $token_id ) )
 		);
 
@@ -372,9 +432,32 @@ SQL;
 	 **/
 	public static function grant_user( $user_id, $token_id, $access = 'full' )
 	{
+		$permission_id = DB::get_value( 'SELECT permission_id FROM {user_token_permissions} WHERE user_id=? AND token_id=?',
+			array( $user_id, $token_id ) );
+		if ( $permission_id ===  false ) {
+			$permission_id = 0; // default is 'deny' (bitmask 0)
+		}
+
+		$bitmask = new Bitmask( self::$access_names, $permission_id );
+
+		if ( $access == 'full' || $access == 'deny' ) {
+			if ( $access == 'full' ) {
+				$access = true;
+			}
+			else {
+				$access = false;
+			}
+			foreach ( self::$access_names as $access_name ) {
+				$bitmask->$access_name = $access;
+			}
+		}
+		else {
+			$bitmask->$access = true;
+		}
+
 		$result = DB::update(
 			'{user_token_permissions}',
-			array( 'permission_id' => self::$access_ids[$access] ),
+			array( 'permission_id' => $bitmask->value ),
 			array( 'user_id' => $user_id, 'token_id' => self::token_id( $token_id ) )
 		);
 

@@ -27,7 +27,7 @@ class Post extends QueryRecord implements IsContent
 	private $author_object = null;
 
 	private $info = null;
-	
+
 	protected $url_args;
 
 	/**
@@ -318,13 +318,14 @@ class Post extends QueryRecord implements IsContent
 			),
 			'fetch_fn' => 'get_row',
 		);
-		if ( $user = User::identify() ) {
+		$user = User::identify();
+		if ( $user->loggedin ) {
 			$defaults['where'][]= array(
 				'user_id' => $user->id,
 			);
 		}
 		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
+			$defaults['where'][$index]= array_merge( $where, Utils::get_params( $paramarray ) );
 		}
 		// make sure we get at most one result
 		$defaults['limit']= 1;
@@ -473,11 +474,11 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		/* Now, let's insert any *new* tag texts or slugs into the tags table */
-		$repeat_questions = Utils::placeholder_string( count($clean_tags) );
+		$placeholders = Utils::placeholder_string( count($clean_tags) );
 		$sql_tags_exist = "SELECT id, tag_text, tag_slug
 			FROM {tags}
-			WHERE tag_text IN ({$repeat_questions})
-			OR tag_slug IN ({$repeat_questions})";
+			WHERE tag_text IN ({$placeholders})
+			OR tag_slug IN ({$placeholders})";
 		$params = array_merge( array_keys( $clean_tags ), array_values( $clean_tags ) );
 		$existing_tags = DB::get_results( $sql_tags_exist, $params );
 		if ( count( $existing_tags ) > 0 ) {
@@ -519,7 +520,7 @@ class Post extends QueryRecord implements IsContent
 		 */
 		foreach ( $clean_tags as $new_tag_text=>$new_tag_slug ) {
 			$sql_tag_new = 'INSERT INTO {tags} (tag_text, tag_slug) VALUES (?, ?)';
-			
+
 			if (FALSE !== ($insert = DB::query( $sql_tag_new, array( $new_tag_text, $new_tag_slug ) ) ) )
 				$tag_ids_to_post[]= DB::last_insert_id();
 			$result&= $insert;
@@ -576,7 +577,6 @@ class Post extends QueryRecord implements IsContent
 	{
 		$this->newfields['updated']= HabariDateTime::date_create();
 		$this->newfields['modified'] = $this->newfields['updated'];
-		$this->setslug();
 		$this->setguid();
 
 		$allow = true;
@@ -680,6 +680,12 @@ class Post extends QueryRecord implements IsContent
 		}
 		// invoke plugins
 		Plugins::act( 'post_delete_before', $this );
+
+		// delete all the tags associated with this post
+		foreach ( $this->get_tags() as $tag_slug => $tag_text ) {
+			$tag = Tags::get_by_slug( $tag_slug );
+			Tag::detatch_from_post( $tag->id, $this->id );
+		}
 
 		// Delete all comments associated with this post
 		if ( $this->comments->count() > 0 ) {

@@ -1,76 +1,68 @@
 <?php include('header.php'); ?>
-<div class="container">
-<hr>
-<?php
-$currentuser = User::identify();
-?>
-<h3><?php _e('Group Management'); ?></h3>
-<div class="span-8">
-<p><?php _e('Groups'); ?></p>
-<form method="post" action="">
-<input type="textarea" size="20" name="add_group" />
-<input type="submit" value="<?php _e('Add'); ?>">
+<div class="container navigation">
+	<span class="pct40">
+		<select name="navigationdropdown" onchange="navigationDropdown.changePage();" tabindex="1">
+			<option value="all"><?php _e('All Groups'); ?></option>
+			<?php foreach($groups as $group): ?>
+				<option value="<?php echo URL::get('admin', 'page=group&id=' . $group->id); ?>"><?php echo $group->name; ?></option>
+			<?php endforeach; ?>
+		</select>
+	</span>
+	<span class="or pct20">
+		<?php _e('or'); ?>
+	</span>
+	<span class="pct40">
+		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" autosave="habarisettings" results="10" tabindex="2">
+	</span>
+</div>
+
+<form method="post" action="" id="groupform">
+<div class="container groups allgroups">
+	<h2><?php _e('Group Management'); ?></h2>
+	<div id="groups">
+		<?php foreach($groups as $group):
+			$group= UserGroup::get_by_id($group->id);
+			$users= array();
+			foreach($group->members as $id) {
+				$user= User::get_by_id($id);
+				$users[]= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+			}
+			include('groups_item.php');
+		endforeach; ?>
+	</div>
+</div>
+
+<div class="container addgroup">
+	<h2><?php _e('Add Group'); ?></h2>
+	
+	<div class="item clear">
+		<span class="pct25">
+			<label for="new_groupname">Group Name</label>
+		</span>
+		<span class="pct25">
+			<input type="text" name="new_groupname" id="new_groupname" value="<?php echo ( isset( $addform['name'] ) ) ? $addform['name'] : ''; ?>" class="border">
+		</span>
+	</div>
+	
+	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	
+	<div class="item submit clear">
+		<span class="pct25">
+			<input type="submit" name="newgroup" value="<?php _e('Add Group'); ?>">
+		</span>
+	</div>
+
+	
+</div>
 </form>
-<ul>
-<?php
-foreach ( $groups as $group ) {
-	echo '<li>';
-	echo '<form method="post" action=""><input type="hidden" name="group" value="' . $group->name . '"><input type="submit" name="delete_group" value="' . _t('Delete') . '"> ';
-	echo '<input type="submit" name="edit_group" value="' . _t('Edit') . '"> ';
-	echo $group->name . '</form>';
-	echo '</li>';
-}
-?>
-</ul>
-</div>
-<div class="span-8">
-<p><?php _e('Members'); ?></p>
-<?php
-if ( isset( $group_edit ) ) {
-	if ( isset( $users) && ( ! empty( $users ) ) ) {
-		echo '<p>' . _t('Editing members of ') . $group_edit->name . '</p>';
-		echo '<form method="post" action="">';
-		echo '<input type="hidden" name="group" value="' . $group_edit->name . '">';
-		foreach ( $users as $user ) {
-			echo '<input type="checkbox" name="user_id[]" value="' . $user->id . '"';
-			if ( in_array( $user->id, $group_edit->members ) ) {
-				echo ' checked';
-			}
-			echo '"> ' . $user->username . '<br>';
-		}
-		echo '<input type="submit" name="users" value="' . _t('Submit') . '"></form>';
-	} else {
-		echo '<p>' . _t('No members.') . '</p>';
-	}
-}
-?>
-</div>
-<div class="span-8 last">
-<p><?php _e('Permissions'); ?></p>
-<?php
-if ( isset( $group_edit ) ) {
-	if ( isset( $permissions) && ( ! empty( $permissions ) ) ) {
-		echo '<p>' . _t('Editing Permissions of ') . $group_edit->name . '</p>';
-		echo '<form method="post" action="">';
-		echo '<input type="hidden" name="group" value="' . $group_edit->name . '">';
-		echo '<table><tr><th>' . _t('Permission') . '</th><th>' . _t('Denied') . '</th><th>' . _t('Read') . '</th><th>' . _t('Write') . '</th><th>' . _t('Full') . '</th></tr>';
-		foreach( $permissions as $perm ) {
-			echo "<tr><td> {$perm->description} </td>";
-			foreach ( ACL::permission_ids() as $access_name => $access_id ) {
-				echo "<td><input type='checkbox' name='perm_{$perm->id}' value='{$access_name}'";
-				if ( isset( $permissions_granted[$perm->id] ) && $permissions_granted[$perm->id] == $access_id ) {
-					echo ' checked';
-				}
-				echo "></td><td>";
-			}
-		}
-		echo '<tr><td colspan="3"><input type="submit" name="permissions" value="' . _t('Submit') . '"></td>';
-		echo '</table></form>';
-	} else {
-		echo '<p>' . _t('No permissions.') . '</p>';
-	}
-}
-?>
-</div>
-</div>
+
+<script type="text/javascript">
+	itemManage.updateURL = habari.url.ajaxUpdateGroups;
+	itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'groups')) ?>";
+	itemManage.fetchReplace = $('#groups');
+	itemManage.inEdit = false;
+</script>
+
 <?php include('footer.php');?>

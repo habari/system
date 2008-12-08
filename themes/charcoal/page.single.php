@@ -16,9 +16,9 @@
 						<?php echo $post->content_out; ?>
 					</div>
 					<div class="post-footer">
-					<?php if ( $user ) : ?>
+					<?php if ( $loggedin ) : ?>
 						<span class="post-edit">
-						<a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>" title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
+						<a href="<?php echo $post->editlink; ?>" title="<?php _e( "Edit post" ); ?>"><?php _e( "Edit" ); ?></a>
 						</span>
 					<?php endif;?>
 					</div>

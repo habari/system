@@ -230,7 +230,7 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.page-users, .page-options, .page-user, .page-tags').length != 0) {
+		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins, .page-groups').length != 0) {
 			$("input#search").keyup(function (e) {
 				var str= $('input#search').val();
 				itemManage.simpleFilter(str);
@@ -296,10 +296,10 @@ var itemManage = {
 	searchRows: [],
 	simpleFilter: function( search ) {
 		search = $.trim( search.toLowerCase() );
-		
+				
 		// cache search items on first call
 		if ( itemManage.searchCache.length == 0 ) {
-			itemManage.searchRows = $('li.item, .item.tag, div.settings');
+			itemManage.searchRows = $('li.item, .item.plugin, .item.tag, div.settings, .container.plugins, .item.group');
 			itemManage.searchCache = itemManage.searchRows.map(function() {
 				return $(this).text().toLowerCase();
 			});
@@ -313,7 +313,7 @@ var itemManage = {
 			}
 		});
 		
-		if($('div.settings').length != 0) {
+		if($('div.settings').length != 0 || $('.container.plugins:visible').length > 1) {
 			$('select[name=navigationdropdown]').val('all');
 		}
 		
@@ -425,6 +425,12 @@ var itemManage = {
 			query['reassign'] = $('select#reassign').attr('value');
 		}
 
+		elItem= $('#item-' + id)
+
+		if(elItem.length > 0 || action == 'delete') {
+			elItem.fadeOut();
+		}
+
 		$.post(
 			itemManage.updateURL,
 			query,
@@ -512,6 +518,52 @@ var pluginManage = {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '');
       }
 		);
+	}
+}
+
+// Group Management
+var groupManage = {
+	init: function() {
+		// Return if we're not on the group page
+		if(!$('.page-group').length) return;
+				
+		groupManage.potentials= $('body.page-group .container.groupmembers #assign_user');
+		groupManage.addButton= $('body.page-group .container.groupmembers input.add');
+		groupManage.addUsers= $('body.page-group .container.groupmembers #addusers');
+		
+		groupManage.addButton.click(function() {
+			groupManage.addMember(groupManage.potentials.val());
+		});
+		
+		console.log($('body.page-group .container.groupmembers #currentusers a.user'));
+				
+		$('body.page-group .container.groupmembers #currentusers a.user').click(function() {
+			groupManage.removeMember($(this));
+			return false;
+		});
+	},
+	removeMember: function(member) {
+		id= $('.id', member).text();
+		name= $('.name', member).text();
+		
+		$('<option value="' + id + '">' + name + '</option>').appendTo(groupManage.potentials);
+		
+		groupManage.addUsers.show();
+		
+		$('#user_' + id).val('0');
+		
+		member.hide();
+	},
+	addMember: function(id) {		
+		$('option[value=' + id + ']', groupManage.potentials).remove();
+		
+		if(groupManage.potentials.children().length < 1) {
+			groupManage.addUsers.hide();
+		}
+		
+		$('#user_' + id).val('1');
+		
+		$('body.page-group .container.groupmembers #currentusers a.user.id-' + id).show();
 	}
 }
 
@@ -875,20 +927,24 @@ var navigationDropdown = {
 		});
 	},
 	changePage: function(location) {
-		nextPage = location.options[location.selectedIndex].value
-
-		if (nextPage != "")
+		if(location == null) {
+			nextPage= $('select[name=navigationdropdown]').val();
+		} else {
+			nextPage = location.options[location.selectedIndex].value;
+		}
+		
+		if (nextPage != "" && nextPage != document.location.href)
 			document.location.href = nextPage
 	},
 	filter: function() {
 		var selected = $('select[name=navigationdropdown]').val();
 		
 		if ( selected == 'all' ) {
-			$('.settings').removeClass('hidden');
+			$('.settings, .container.plugins').removeClass('hidden');
 		}
 		else {
-			$('.settings:not(#' + selected + ')').addClass('hidden');
-			$('.settings#' + selected).removeClass('hidden');
+			$('.settings:not(#' + selected + '), .container.plugins:not(#' + selected + ')').addClass('hidden');
+			$('.settings#' + selected + ', .container.plugins#' + selected ).removeClass('hidden');
 		}
 	}
 }
@@ -1032,8 +1088,14 @@ var theMenu = {
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
 			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
-				location = $('.carrot a').attr('href')
-				theMenu.blinkCarrot($('.carrot a').parent())
+				if ($('.carrot').hasClass('submenu') == true) {
+					location = $('.carrot ul li.carrot a').attr('href')
+					theMenu.blinkCarrot($('.carrot ul li.carrot a').parent())
+				}
+				else {
+					location = $('.carrot a').attr('href')
+					theMenu.blinkCarrot($('.carrot a').parent())
+				}
 			} else {
 				return false;
 			}
@@ -1360,6 +1422,7 @@ $(document).ready(function(){
 	findChildren();
 	navigationDropdown.init();
 	labeler.init();
+	groupManage.init();
 
 	// Alternate the rows' styling.
 	$("table").each( function() {
@@ -1384,69 +1447,6 @@ $(document).ready(function(){
 
 	/* Init Tabs, using jQuery UI Tabs */
 	$('.tabcontrol').tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: null, unselect: true })
-
-	// Tag Drawer: Add tag via click
-	$('#tag-list li').click(function() {
-		// here we set the current text of #tags to current for later examination
-		var current = $('#tags').val();
-		
-		// create a regex that finds the clicked tag in the input field
-		var replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
-
-		// check to see if the tag item we clicked has been clicked before...
-		if( $( this ).hasClass('clicked') ) {
-			// remove that tag from the input field
-			$( '#tags' ).val( current.replace(replstr, '') );
-			// unhighlight that tag
-			$(this).removeClass( 'clicked' );
-		}
-		else {
-			// if it hasn't been clicked, go ahead and add the clicked class
-			$(this).addClass( 'clicked' );
-			// be sure that the option wasn't already in the input field
-			if(!current.match(replstr) || $( '#tags.islabeled' ).size() > 0) {
-				// check to see if current is the default text
-				if( $( '#tags').val().length == 0 ) {
-					// and if it is, replace it with whatever we clicked
-					$( '#tags' ).removeClass('islabeled').val( $( this ).text() );
-					$('label[for=tags]').removeClass('overcontent').addClass('abovecontent').hide();
-				} else {
-					// else if we already have tag content, just append the new tag
-					if( $('#tags' ).val() != '' ) {
-						$( '#tags' ).val( current + "," + $( this ).text() );
-					} else {
-						$( '#tags' ).val( $( this ).text() );
-					}
-				}
-			}
-		}
-
-		// replace unneccessary commas
-		$( '#tags' ).val( $( '#tags' ).val().replace(new RegExp('^\\s*,\\s*|\\s*,\\s*$', "gi"), ''));
-		$( '#tags' ).val( $( '#tags' ).val().replace(new RegExp('\\s*,(\\s*,)+\\s*', "gi"), ', '));
-		
-		resetTags();
-	});
-
-	$( '#tags' ).keyup(function(){
-		clearTimeout(tagskeyup);
-		tagskeyup = setTimeout(resetTags, 500);
-	});
-	
-	$('#tags').focus(function() {
-		$('#tags').addClass('focus');
-		}).blur(function() {
-			$('#tags').removeClass('focus');
-		});
-
-	// Tag Drawer: Remove all tags.
-	$('#clear').click( function() {
-		// so we nuke all the tags in the tag text field
-		$(' #tags ').val( '' );
-		$('label[for=tags]').removeClass('abovecontent').addClass('overcontent').show();
-		// and remove the clicked class from the tags in the manager
-		$( '#tag-list li' ).removeClass( 'clicked' );
-	});
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();

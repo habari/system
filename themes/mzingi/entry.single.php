@@ -12,26 +12,26 @@
 				<span class="right"><a href="<?php echo $next->permalink ?>" title="<?php echo $next->slug ?>"><?php echo $next->title ?></a> &raquo;</span>
 				<?php endif; ?>
 			</div>
-			<!--begin loop-->			
+			<!--begin loop-->
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
 						<div class="cal">
 							<span class="calyear"><?php $post->pubdate->out('Y'); ?></span><br><span class="calday"><?php $post->pubdate->out('j'); ?></span><br><span class="calmonth"><?php $post->pubdate->out('F'); ?></span>
-						</div>	
+						</div>
 						<div class="entry">
 						<?php echo $post->content_out; ?>
 					</div>
-					<div class="entryMeta">	
+					<div class="entryMeta">
 						<?php if ( is_array( $post->tags ) ) { ?>
 						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
 					</div><br>
-						<?php if ( $user ) { ?>
-						<a href="<?php URL::out( 'admin', 'page=publish&id=' . $post->id); ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
+						<?php if ( $loggedin ) { ?>
+						<a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>
 						<?php } ?>
-					
+
 				</div>
-				
+
 			<!--end loop-->
 			<?php include 'commentform.php'; ?>
 			</div>

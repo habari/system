@@ -26,7 +26,9 @@ class Utils
 	 **/
 	public static function get_params( $params )
 	{
-		if( is_array( $params ) ) return $params;
+		if( is_array( $params ) || $params instanceof ArrayObject || $params instanceof ArrayIterator ) {
+			return $params;
+		}
 		$paramarray = array();
 		parse_str( $params, $paramarray );
 		return $paramarray;
@@ -47,13 +49,16 @@ class Utils
 	 * function redirect
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
+	 * @param boolean $continue Whether to continue processing the script (default false for security reasons, cf. #749)
 	 **/
-	public static function redirect( $url = '' )
+	public static function redirect( $url = '', $continue = false )
 	{
 		if($url == '') {
 			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
 		header('Location: ' . $url, true, 302);
+
+		if (!$continue) exit;
 	}
 
 	/**
@@ -586,8 +591,7 @@ class Utils
 		// Note that multiple separators are collapsed automatically by the preg_replace.
 		// Convert all characters to lowercase.
 		// Trim spaces on both sides.
-		$slug = rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}%_\-]+/u', $separator, $string ) ), $separator );
-
+		$slug = rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}%_]+/u', $separator, preg_replace( '/\p{Po}/u', '', $string ) ) ), $separator );
 		// Let people change the behavior.
 		$slug = Plugins::filter('slugify', $slug, $string);
 
@@ -839,7 +843,7 @@ class Utils
 			$mimetype = finfo_file($finfo, $filename);
 			finfo_close($finfo);
 		}
-		
+
 		if( empty( $mimetype ) ) {
 			$pi = pathinfo($filename);
 			switch(strtolower($pi['extension'])) {

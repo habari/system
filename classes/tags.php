@@ -10,6 +10,7 @@ class Tags extends ArrayObject
 	 * Returns all tags
 	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
 	 *
+	 * @todo cache all query results
 	 * @return array An array of Tag objects
 	 **/
 	public static function get()
@@ -20,7 +21,14 @@ class Tags extends ArrayObject
 		 * which are not related (yet) to any post itself.  These
 		 * tags are essentially lost to the world.
 		 */
-		$tags = DB::get_results( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id GROUP BY id, tag, slug ORDER BY tag ASC' );
+		$tags = DB::get_results( 'SELECT t.id AS id, 
+			t.tag_text AS tag, 
+			t.tag_slug AS slug, 
+			COUNT(tp.tag_id) AS count 
+			FROM {tags} t 
+			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id 
+			GROUP BY id, tag, slug 
+			ORDER BY tag ASC' );
 		return $tags;
 	}
 
@@ -31,7 +39,14 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_one($tag)
 	{
- 		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_slug = ? OR t.id = ? GROUP BY id, tag, slug', array( Utils::slugify( $tag ), $tag ) );
+ 		return DB::get_row( 'SELECT t.id AS id, 
+			t.tag_text AS tag, 
+			t.tag_slug AS slug,
+			COUNT(tp.tag_id) AS count 
+			FROM {tags} t 
+			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id 
+			WHERE tag_slug = ? OR t.id = ? 
+			GROUP BY id, tag, slug', array( Utils::slugify( $tag ), $tag ) );
 	}
 
 	/**

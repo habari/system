@@ -48,7 +48,7 @@
 		</pre>
 		<?php } ?>
 	</div>
-	<?php  
+	<?php
 			$total_time_querying+= $profile->total_time;
 	}
 	?>

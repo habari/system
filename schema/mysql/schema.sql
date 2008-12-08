@@ -13,7 +13,7 @@ CREATE TABLE {$prefix}posts (
   modified INT UNSIGNED NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY slug (slug(80))
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}postinfo  (
   post_id INT UNSIGNED NOT NULL,
@@ -21,28 +21,28 @@ CREATE TABLE  {$prefix}postinfo  (
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT,
   PRIMARY KEY (post_id,name)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}posttype (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   active TINYINT(1) DEFAULT 1,
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}poststatus (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   internal TINYINT(1),
   PRIMARY KEY (id)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}options (
   name VARCHAR(255) NOT NULL,
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT,
   PRIMARY KEY (name)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}users (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -51,7 +51,7 @@ CREATE TABLE  {$prefix}users (
   password VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}userinfo (
   user_id SMALLINT UNSIGNED NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE  {$prefix}userinfo (
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT,
   PRIMARY KEY (user_id,name)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}tags (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -74,7 +74,7 @@ CREATE TABLE  {$prefix}tag2post (
   post_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (tag_id,post_id),
   KEY post_id (post_id)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}comments (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -89,7 +89,7 @@ CREATE TABLE  {$prefix}comments (
   type SMALLINT UNSIGNED NOT NULL,
   PRIMARY KEY (id),
   KEY post_id (post_id)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE  {$prefix}commentinfo (
   comment_id INT UNSIGNED NOT NULL,
@@ -97,7 +97,7 @@ CREATE TABLE  {$prefix}commentinfo (
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT NULL,
   PRIMARY KEY (comment_id,name)
-);
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE {$prefix}rewrite_rules (
   rule_id INT UNSIGNED NOT NULL AUTO_INCREMENT,

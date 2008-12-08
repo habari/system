@@ -179,17 +179,17 @@ class Posts extends ArrayObject
 						}
 					}
 				}
-				
+
 				if ( isset( $paramset['all:tag'] ) ) {
-					
+
 					$select = 'DISTINCT ' . $select;
 					$joins['tag2post_posts']= ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
 					$joins['tags_tag2post']= ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
-					
+
 					if ( is_array( $paramset['all:tag'] ) ) {
 						$where[] = 'tag_text IN (' . implode( ',', array_fill( 0, count( $paramset['all:tag'] ), '?' ) ) . ')';
 						$params = array_merge( $params, $paramset['all:tag'] );
-						
+
 						$groupby = '{posts}.id';
 						$having = 'count(*) = ' . count( $paramset['all:tag'] );
 					}
@@ -198,7 +198,7 @@ class Posts extends ArrayObject
 						$where[] = 'tag_text = ?';
 						$params[] = $paramset['all:tag'];
 					}
-					
+
 				}
 
 				if ( isset( $paramset['not:tag'] ) ) {
@@ -367,6 +367,21 @@ class Posts extends ArrayObject
 					$params[]= HabariDateTime::date_create( $paramset['before'] )->sql;
 				}
 
+				// Only show posts to which the current user has permission
+				$paramset['ignore_permissions'] = true;
+				if(!isset($paramset['ignore_permissions'])) {
+					$permission_token_ids = isset($paramset['override_permissions']) ? $paramset['override_permissions'] : ACL::user_tokens(User::identify(), 'read');
+					if(User::identify()->can('own_posts', 'read')) {
+
+					}
+					foreach(Post::list_active_post_types() as $name => $posttype) {
+						if(User::identify()->can(Utils::slugify($name) . '_post_type', 'read')) {
+
+						}
+					}
+					$joins['post_tokens__posts']= ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND ({post_tokens}.token_id IN ('.implode(',', $permission_token_ids).'))';
+				}
+
 				// Concatenate the WHERE clauses
 				if ( count( $where ) > 0 ) {
 					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
@@ -376,7 +391,11 @@ class Posts extends ArrayObject
 
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
-		extract( $paramarray );
+		$paramarray = new SuperGlobal($paramarray);
+		$extract = $paramarray->filter_keys('page', 'limit', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
 
 		// Calculate the OFFSET based on the page number
 		if ( isset( $page ) && is_numeric( $page ) ) {
@@ -410,7 +429,7 @@ class Posts extends ArrayObject
 			$orderby = '';
 			$groupby = '';
 		}
-		
+
 		// If the month counts are requested, replaced the select clause
 		if( isset( $paramset['month_cts'] ) ) {
 			if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] ))
@@ -420,7 +439,7 @@ class Posts extends ArrayObject
 			$groupby = 'year, month';
 			$orderby = 'year, month';
 		}
-		
+
 
 		// Define the LIMIT and add the OFFSET if it exists
 		if ( isset( $limit ) ) {
@@ -708,7 +727,7 @@ class Posts extends ArrayObject
 	{
 		return array_search( $needle, $this->getArrayCopy() );
 	}
-	
+
 	/**
 	 * Parses a search string for status, type, author, and tag keywords. Returns
 	 * an associative array which can be passed to Posts::get(). If multiple
@@ -730,9 +749,9 @@ class Posts extends ArrayObject
 						'tag' => array()
 						);
 		$criteria = '';
-		
+
 		$tokens = explode( ' ', $search_string );
-		
+
 		foreach( $tokens as $token ) {
 			// check for a keyword:value pair
 			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
@@ -780,7 +799,7 @@ class Posts extends ArrayObject
 		if ( $criteria != '' ) {
 			$arguments['criteria']= $criteria;
 		}
-		
+
 		return $arguments;
 	}
 

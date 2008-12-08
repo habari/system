@@ -106,6 +106,10 @@ class Theme extends Pluggable
 			$this->assign('user', User::identify() );
 		}
 
+		if( !$this->template_engine->assigned( 'loggedin' ) ) {
+			$this->assign('loggedin', User::identify()->loggedin );
+		}
+
 		if( !$this->template_engine->assigned( 'page' ) ) {
 			$this->assign('page', isset( $this->page ) ? $this->page : 1 );
 		}
@@ -158,13 +162,13 @@ class Theme extends Pluggable
 		extract( $paramarray );
 
 		$where_filters = array();
-		$where_filters = array_intersect_key( Controller::get_handler()->handler_vars, array_flip( $this->valid_filters ) );
+		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
 		//$where_filters['status']= Post::status( 'published' );
 		if ( array_key_exists( 'tag', $where_filters ) ) {
 			$where_filters['tag_slug']= Utils::slugify($where_filters['tag']);
 			unset( $where_filters['tag'] );
 		}
-		if ( User::identify() ) {
+		if ( User::identify()->loggedin ) {
 			$where_filters['status']= isset( $_GET['preview'] ) ? Post::status( 'any' ) : Post::status( 'published' );
 		}
 		else {
@@ -174,7 +178,7 @@ class Theme extends Pluggable
 		if ( !isset( $posts ) ) {
 			$user_filters = Plugins::filter( 'template_user_filters', $user_filters );
 			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
-			$where_filters = array_merge( $where_filters, $user_filters );
+			$where_filters = $where_filters->merge( $user_filters );
 			$where_filters = Plugins::filter( 'template_where_filters', $where_filters );
 
 			$posts = Posts::get( $where_filters );
@@ -216,7 +220,11 @@ class Theme extends Pluggable
 			}
 		}
 
-		extract( $where_filters );
+		$extract = $where_filters->filter_keys('page','type','id','slug','posttag','year','month','day','tag','tag_slug');
+		foreach($extract as $key => $value) {
+			$$key = $value;
+		}
+
 		$this->assign( 'page', isset($page)? $page:1 );
 
 		if ( !isset( $fallback ) ) {
@@ -470,7 +478,7 @@ class Theme extends Pluggable
 		);
 
 		$paramarray['user_filters']= $user_filters;
-		
+
 		$this->assign( 'criteria', htmlentities( Controller::get_var('criteria'), ENT_QUOTES, 'UTF-8' ) );
 		return $this->act_display( $paramarray );
 	}
@@ -558,6 +566,7 @@ class Theme extends Pluggable
 		Plugins::act( 'template_header', $theme );
 		$output = Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
 		$output.= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+		Plugins::act( 'template_header_after', $theme );
 		return $output;
 	}
 

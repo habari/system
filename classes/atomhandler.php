@@ -51,7 +51,8 @@ class AtomHandler extends ActionHandler
 				User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
 			}
 
-			if ( ( $force != FALSE ) && ( !$this->user = User::identify() ) ) {
+			$this->user = User::identify();
+			if ( ( $force != FALSE ) && ( !$this->user->loggedin ) ) {
 				header( 'HTTP/1.1 401 Unauthorized' );
 				header( 'Status: 401 Unauthorized' );
 				header( 'WWW-Authenticate: Basic realm="Habari"' );
@@ -181,6 +182,7 @@ class AtomHandler extends ActionHandler
 
 			$entry_author = $feed_entry->addChild( 'author' );
 			$author_name = $entry_author->addChild( 'name', $user->displayname );
+			$author_uri = $entry_author->addChild( 'uri', Site::get_url('habari') );
 
 			$entry_id = $feed_entry->addChild( 'id', $post->guid );
 
@@ -219,6 +221,7 @@ class AtomHandler extends ActionHandler
 
 			$author = $item->addChild( 'author' );
 			$author_name = $author->addChild( 'name', htmlspecialchars( $comment->name ) );
+			$author_uri = $author->addChild( 'uri', htmlspecialchars( $comment->url ) );
 
 			$id = $item->addChild( 'id', $comment->post->guid . '/' . $comment->id );
 
@@ -488,13 +491,13 @@ class AtomHandler extends ActionHandler
 			$alternate = URL::get( 'atom_entry' );
 			$self = URL::get( 'atom_entry' );
 			$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_entry';
-			
+
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
-			
+
 			$xml = $this->create_atom_wrapper( $alternate, $self, $id );
-			
+
 			$entry = $xml->addChild('entry');
 			$entry->addAttribute( 'xmlns', 'http://www.w3.org/2005/Atom' );
 			$entry_title = $entry->addChild( 'title', $title );
