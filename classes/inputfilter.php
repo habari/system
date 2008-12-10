@@ -61,6 +61,14 @@ class InputFilter
 		'tt', 'i', 'b', 'big', 'small',
 		// http://www.w3.org/TR/html4/present/graphics.html#h-15.3
 		'hr',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.2.1
+		'frameset',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.2.2
+		'frame',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.4.1
+		'noframes',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.5
+		'iframe',
 
 
 	);
