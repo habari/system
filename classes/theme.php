@@ -597,8 +597,8 @@ class Theme extends Pluggable
 			$content_type = $object->content_type();
 			array_unshift($fallback, $content_type);
 		}
-		$theme->content = $object;
-		$this->display_fallback( $fallback, 'fetch_unassigned' );
+		$this->content = $object;
+		return $this->display_fallback( $fallback, 'fetch' );
 	}
 
 	/**
