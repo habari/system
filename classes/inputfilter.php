@@ -39,6 +39,30 @@ class InputFilter
 		'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.6
 		'address',
+		// http://www.w3.org/TR/html4/struct/dirlang.html#h-8.2.4
+		'bdo',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.1
+		'table',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.2
+		'caption',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3
+		'thead', 'tfoot', 'tbody',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.4
+		'colgroup', 'col',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.5
+		'tr',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.6
+		'th', 'td',
+		// http://www.w3.org/TR/html4/struct/objects.html#h-13.2
+		'img',
+		// http://www.w3.org/TR/html4/struct/objects.html#h-13.6.1
+		'map', 'area',
+		// http://www.w3.org/TR/html4/present/graphics.html#h-15.2.1 (the non-deprecated ones)
+		'tt', 'i', 'b', 'big', 'small',
+		// http://www.w3.org/TR/html4/present/graphics.html#h-15.3
+		'hr',
+
+
 	);
 
 	/**
