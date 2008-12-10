@@ -37,6 +37,8 @@ class InputFilter
 		'b', 'i', 'u', 's', 'tt',
 		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.5
 		'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.6
+		'address',
 	);
 
 	/**
