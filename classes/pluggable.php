@@ -118,7 +118,7 @@ abstract class Pluggable
 					( isset($priorities[$fn]) ? $priorities[$fn] : 8 );
 				$type = substr( $hook, 0, strpos( $hook, '_' ) );
 				$hook = substr( $hook, strpos( $hook, '_' ) + 1 );
-				if ( 0 === strpos( $hook, 'xmlrpc_' ) ) {
+				if ( $type === 'xmlrpc' ) {
 					$hook = str_replace('__', '.', $hook);
 				}
 				Plugins::register( array($this, $fn), $type, $hook, $priority );
