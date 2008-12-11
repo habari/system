@@ -101,7 +101,7 @@ class Format
 
 	/**
 	 * function autop
-	 * Converts non-HTML paragraphs separated with 2 or more new lines into HTML paragraphs 
+	 * Converts non-HTML paragraphs separated with 2 or more new lines into HTML paragraphs
 	 * while preserving any internal HTML.
 	 * New lines within the text of block elements are converted to linebreaks.
 	 * New lines before and after tags are stripped.
@@ -112,7 +112,7 @@ class Format
 	{
 		$regex = '/(<\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
 
-		// First, clean out any windows line endings 
+		// First, clean out any windows line endings
 		$target = str_replace( "\r\n", "\n", $value );
 
 		// Then, find any of the approved tags above, and split the content on them
@@ -120,7 +120,7 @@ class Format
 		preg_match_all( $regex, $target, $cd, PREG_SET_ORDER );
 
 		/**
-		 * Loop through each content block, turning two newlines in a row into </p><p>'s and 
+		 * Loop through each content block, turning two newlines in a row into </p><p>'s and
 		 * single newlines into <br>'s
 		 **/
 		$output = '';
@@ -140,7 +140,7 @@ class Format
 
 		/**
 		 * Now filter out any erroneous paragraph or break tags, like ones that would occur in nested lists.
-		 * There may very well be more cases for this: table td's, etc? 
+		 * There may very well be more cases for this: table td's, etc?
 		 **/
 		$cleanNestedRegex = '<\/?\s*(ul|ol|li|dl|dt|dd)[^>]*>';
 
@@ -208,6 +208,32 @@ class Format
 		$out = implode($between, $array);
 		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
+	}
+
+	/**
+	 * Format a date using a specially formatted string
+	 * Useful for using a single string to format multiple date components.
+	 * Example:
+	 *  If $dt is a HabariDateTime for December 10, 2008...
+	 *  echo $dt->format_date('<div><span class="month">{F}</span> {j}, {Y}</div>');
+	 *  // Output: <div><span class="month">December</span> 10, 2008</div>
+	 *
+	 * @param HabariDateTime $date The date to format
+	 * @param string $format A string with date()-like letters within braces to replace with date components
+	 * @return string The formatted string
+	 */
+	public static function format_date($date, $format)
+	{
+		if ( !( $date instanceOf HabariDateTime ) ) {
+			$date = HabariDateTime::date_create( $date );
+		}
+		preg_match_all('%\{(\w)\}%i', $format, $matches);
+
+		$components = array();
+		foreach($matches[1] as $format_component) {
+			$components['{'.$format_component.'}'] = $date->format($format_component);
+		}
+		return strtr($format, $components);
 	}
 
 	/**
@@ -352,7 +378,7 @@ class Format
     }
     return $content;
 	}
-	
+
 	/**
 	 * html_messages
 	 * Creates an HTML unordered list of an array of messages
@@ -377,7 +403,7 @@ class Format
 			}
 			$output.= '</ul>';
 		}
-		
+
 		return $output;
 	}
 
@@ -403,7 +429,7 @@ class Format
 				$output.= "humanMsg.displayMsg('{$notice}');";
 			}
 		}
-		
+
 		return $output;
 	}
 
