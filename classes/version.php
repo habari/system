@@ -59,7 +59,7 @@ class Version
 	 */
 	public static function is_devel()
 	{
-		return strpos(HABARI_SVN_HEAD_URL, '/trunk/') !== false && strpos(HABARI_SVN_HEAD_URL, '/branches/') !== false;
+		return strpos(Version::HABARI_SVN_HEAD_URL, '/trunk/') !== false || strpos(Version::HABARI_SVN_HEAD_URL, '/branches/') !== false;
 	}
 
 	/**
