@@ -39,6 +39,9 @@
 					} else {
 						echo '<li class="empty">no email provided</li>';
 					} ?>
+				<?php if ( $comment->ip ): ?>
+					<li><?php echo long2ip($comment->ip); ?></li>
+				<?php endif; ?>
 			</ul>
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
 				<p><?php _e('Marked as spam'); ?></p>
@@ -47,7 +50,7 @@
 			<?php Plugins::act('comment_info', $comment); ?>
 
 		</span>
-		<span class="content edit-content area pct75"><?php echo htmlspecialchars( $comment->content ); ?></span>
+		<span class="content edit-content area pct75"><?php echo nl2br( htmlspecialchars( $comment->content ) ); ?></span>
 	</div>
 </div>
 
