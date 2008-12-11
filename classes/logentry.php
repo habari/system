@@ -222,7 +222,7 @@ class LogEntry extends QueryRecord
 			);
 		}
 		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
+			$defaults['where'][$index]= array_merge( $where, Utils::get_params( $paramarray ) );
 		}
 		// Make sure we fetch only a single event. (LIMIT 1)
 		$defaults['limit']= 1;
