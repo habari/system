@@ -36,12 +36,8 @@
 			<?php printf(_t('Your <b>.htaccess</b> file is not writable. In order to secure your SQLite database, please paste the following into <b>%s</b>:'), HABARI_PATH . '/.htaccess'); ?><br />
 			<textarea class="config"><?php echo $sqlite_contents; ?></textarea>
 			<div class="help">
-				<?php _e('Your SQLite database is a file on your server like
-				any other file. You can enhance it\'s security by including a section
-				in your .htaccess file that disallows access to it by readers on the web.
-				Habari is not able to write this section in your .htaccess file
-				automatically, so you must add this section yourself to gain the enhanced
-				security it offers you.'); ?>  <a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
+				<?php _e('Your SQLite database is a file on your server like any other file. You can enhance it\'s security by including a section in your .htaccess file that disallows access to it by readers on the web. Habari is not able to write this section in your .htaccess file automatically, so you must add this section yourself to gain the enhanced security it offers you.'); ?>
+				<a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
 			</div>
     </div>
 	</div>

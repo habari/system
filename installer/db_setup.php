@@ -54,10 +54,8 @@
 					?>					
 					</select>
 					<div class="help">
-						<?php _e('<strong>Database Type</strong> specifies the type of database to which
-						Habari will connect.  Changing this setting may affect the other fields
-						that are available here.  If the database engine that you wanted to use
-						is not in this list, you may need to install a PDO driver to enable it.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database Type</strong> specifies the type of database to which Habari will connect.  Changing this setting may affect the other fields that are available here.  If the database engine that you wanted to use is not in this list, you may need to install a PDO driver to enable it.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -70,11 +68,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP
-						address of the server that runs the MySQL database to
-						which Habari will connect.  If MySQL is running on your web server,
-						and most of the time it is, "localhost" is usually a good value
-						for this field.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the MySQL database to which Habari will connect.  If MySQL is running on your web server, and most of the time it is, "localhost" is usually a good value for this field.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -84,8 +79,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database User</strong> is the username used to connect Habari
-						to the MySQL database.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database User</strong> is the username used to connect Habari to the MySQL database.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -95,8 +90,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database Password</strong> is the password used to connect
-						the specified user to the MySQL database.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database Password</strong> is the password used to connect the specified user to the MySQL database.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -106,8 +101,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database Name</strong> is the name of the MySQL database to
-						which Habari will connect.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database Name</strong> is the name of the MySQL database to which Habari will connect.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -120,11 +115,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP
-						address of the server that runs the PostgreSQL database to
-						which Habari will connect.  If PostgreSQL is running on your web server,
-						and most of the time it is, "localhost" is usually a good value
-						for this field.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the PostgreSQL database to which Habari will connect.  If PostgreSQL is running on your web server, and most of the time it is, "localhost" is usually a good value for this field.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -134,8 +126,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database User</strong> is the username used to connect Habari
-						to the PostgreSQL database.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database User</strong> is the username used to connect Habari to the PostgreSQL database.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -145,8 +137,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database Password</strong> is the password used to connect
-						the specified user to the PostgreSQL database.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database Password</strong> is the password used to connect the specified user to the PostgreSQL database.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -156,8 +148,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Database Name</strong> is the name of the PostgreSQL database to
-						which Habari will connect.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Database Name</strong> is the name of the PostgreSQL database to which Habari will connect.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -183,10 +175,8 @@
 					<input type="text" id="tableprefix" name="table_prefix" value="<?php echo $table_prefix; ?>" alt="" tabindex="<?php echo $tab++ ?>">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Table Prefix</strong> is a prefix that will be appended to
-						each table that Habari creates in the database, making it easy to
-						distinguish those tables in the database from those of other
-						installations.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Table Prefix</strong> is a prefix that will be appended to each table that Habari creates in the database, making it easy to distinguish those tables in the database from those of other installations.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 
@@ -240,8 +230,8 @@
 					<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 					<div class="warning"></div>
 					<div class="help">
-						<?php _e('<strong>Admin Email</strong> is the email address of the first user
-						account.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>Admin Email</strong> is the email address of the first user account.'); ?>
+						<a href="#"><?php _e('Learn More...'); ?></a>
 					</div>
 				</div>
 

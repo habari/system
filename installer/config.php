@@ -36,10 +36,8 @@
 			<?php _e('Your <strong>config.php</strong> file is not writable. In order to successfully install Habari, please paste the following into'); ?> <strong><?php echo $config_file; ?></strong>:<br />
 			<textarea class="config"><?php echo $file_contents; ?></textarea>
 			<div class="help">
-				<?php _e('<strong>config.php</strong> is a file that tells Habari how to connect
-				to your database. Habari is not able to write this file to your server
-				automatically, so you must create this file yourself to continute
-				the installation.'); ?> <a href="#"><?php _e('Learn More...'); ?></a>
+				<?php _e('<strong>config.php</strong> is a file that tells Habari how to connect to your database. Habari is not able to write this file to your server automatically, so you must create this file yourself to continute the installation.'); ?>
+				<a href="#"><?php _e('Learn More...'); ?></a>
 			</div>
     </div>
 	</div>
