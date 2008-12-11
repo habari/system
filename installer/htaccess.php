@@ -43,11 +43,8 @@
 					<?php _e('Your <strong>.htaccess</strong> file is not writable. In order to successfully install Habari, please paste the following into'); ?> <strong><?php echo HABARI_PATH . '/.htaccess'; ?></strong>:<br>
 					<textarea class="config" tabindex="<?php echo $tab++ ?>"><?php echo $file_contents; ?></textarea>
 					<div class="help">
-						<strong>.htaccess</strong> <?php _e('is a file that tells your Apache web server
-						to send requests to Habari for handling.
-						Habari is not able to write this file to your server
-						automatically, so you must create this file yourself to continue
-						the installation.'); ?>  <a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
+						<?php _e('<strong>.htaccess</strong> is a file that tells your Apache web server to send requests to Habari for handling. Habari is not able to write this file to your server automatically, so you must create this file yourself to continue the installation.'); ?>
+						<a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
 					</div>
 			    </div>
 			</div>

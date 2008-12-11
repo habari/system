@@ -13,23 +13,17 @@
 <?php include "locale_dropdown.php"; ?>
     <div id="container">
       <div id="header">
-        <h1><?php _e('Before you install'); ?> <em>Habari</em>...</h1>
+        <h1><?php _e('Before you install <em>Habari</em>...'); ?></h1>
       </div>
       <div id="page">
         <?php if (! $local_writable) {?>
           <h2><?php _e('Writable directory needed'); ?>...</h2>
           <?php if ($PHP_OS != 'WIN') {?>
             <p class="instructions">
-              <?php _e('Before you can install habari, you first need to make the install
-              directory writable by php, so that the installation script can
-              write your configuration information properly. The exact process of
-              doing this will vary depending on the configuration of your web
-              server and the ownership of the directory.'); ?>
+              <?php _e('Before you can install Habari, you first need to make the install directory writable by php, so that the installation script can write your configuration information properly. The exact process of server and the ownership of the directory.'); ?>
             </p>
             <p>
-              <?php _e('If your webserver is part of the group which owns the
-              directory, you\'ll need to add group write permissions to
-              the directory. The procedure for this is as follows:'); ?>
+              <?php _e('If your webserver is part of the group which owns the directory, you\'ll need to add group write permissions to the directory. The procedure for this is as follows:'); ?>
             </p>
             <ol>
               <li>
@@ -41,15 +35,12 @@
                 <pre><strong>$&gt;</strong> chmod g+w .</pre><br />
                 <pre><strong>$&gt;</strong> chmod g+x .</pre>
                 <p class="note">
-                  <em><?php _e('Note'); ?></em>: <?php _e('You may need to use'); ?> <strong>sudo</strong> <?php _e('and enter
-                  an administrator password if you do not own the directory.'); ?>
+                  <?php _e('<em>Note</em>: You may need to use <strong>sudo</strong> and enter an administrator password if you do not own the directory.'); ?>
                 </p>
               </li>
             </ol>
             <p>
-              <?php _e('If the webserver is not part of the group which owns the
-              directory, you will need to <strong>temporarily</strong>
-              grant world write permissions to the directory:'); ?>
+              <?php _e('If the webserver is not part of the group which owns the directory, you will need to <strong>temporarily</strong> grant world write permissions to the directory:'); ?>
             </p>
             <ol>
             <li>
@@ -58,8 +49,7 @@
             </li>
             </ol>
             <p>
-              <strong><?php _e('Be sure to remove the write permissions on the directory
-              as soon as the installation is completed.'); ?></strong>
+              <strong><?php _e('Be sure to remove the write permissions on the directory as soon as the installation is completed.'); ?></strong>
             </p>
           <?php } else {?>
             <strong>@todo Windows instructions</strong>
@@ -68,7 +58,7 @@
         <?php if (! $php_version_ok) {?>
           <h2><?php _e('PHP Upgrade needed...'); ?></h2>
           <p class="instructions">
-            <em>Habari</em> <?php _e('requires PHP 5.2 or newer. Your current PHP version is'); ?> <?php echo $PHP_VERSION;?>.
+            <em>Habari</em> <?php printf(_t('requires PHP 5.2 or newer. Your current PHP version is %s.'), PHP_VERSION); ?>
           </p>
           <strong>@todo Upgrading PHP instructions</strong>
         <?php }?>
