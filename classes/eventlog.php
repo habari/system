@@ -123,7 +123,14 @@ class EventLog extends ArrayObject
 		$fns = array( 'get_results', 'get_row', 'get_value' );
 		$select = '';
 
-		foreach ( LogEntry::default_fields() as $field => $value ) {
+		// Put incoming parameters into the local scope
+		$paramarray = Utils::get_params( $paramarray );
+
+		$select_fields = LogEntry::default_fields();
+		if(!isset($paramarray['return_data'])) {
+			unset($select_fields['data']);
+		}
+		foreach ( $select_fields as $field => $value ) {
 			$select.= ( '' == $select )
 				? DB::table( 'log' ) . ".$field"
 				: ', ' . DB::table( 'log' ) . ".$field";
@@ -132,9 +139,6 @@ class EventLog extends ArrayObject
 		$orderby = 'ORDER BY timestamp DESC, id DESC';
 		$limit = Options::get( 'pagination' );
 
-		// Put incoming parameters into the local scope
-		$paramarray = Utils::get_params( $paramarray );
-
 		// Get any full-query parameters
 		extract( $paramarray );
 
@@ -142,10 +146,6 @@ class EventLog extends ArrayObject
 			if ( 'orderby' == $key ) {
 				$orderby = ' ORDER BY ' . $value;
 				continue;
-			}
-
-			if ( 'limit' == $key ) {
-				$limit = " LIMIT " . $value;
 			}
 		}
 
@@ -266,6 +266,7 @@ class EventLog extends ArrayObject
 			$orderby = '';
 		}
 		if ( isset( $limit ) ) {
+			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
 				$limit.= " OFFSET $offset";
 			}
