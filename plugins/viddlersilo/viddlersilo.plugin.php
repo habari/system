@@ -598,7 +598,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	public function action_init()
 	{
 		// add some js to the admin header
-		Stack::add( 'admin_header_javascript', '/system/plugins/viddlersilo/vidfuncs.js', 'viddlerjs' );
+		Stack::add( 'admin_header_javascript',  $this->get_url(true) . 'vidfuncs.js', 'viddlerjs', 'jquery' );
 		$this->viddler = new Phpviddler();
 	}
 
