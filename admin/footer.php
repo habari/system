@@ -1,8 +1,8 @@
 <div id="footer">
 	<p>
-		<span><a href="http://habariproject.org/" title="<?php _e('Go to the Habari site'); ?>">Habari <?php echo version::get_habariversion() ?></a></span> <span class="middot">&middot;</span>
+		<span><a href="http://habariproject.org/" title="<?php _e('Go to the Habari site'); ?>">Habari <?php echo Version::get_habariversion(); if(Version::is_devel()) echo ' r' . preg_replace('%[^0-9]%', '', Version::HABARI_SVN_REV); ?> </a></span> <span class="middot">&middot;</span>
 		<span><?php _e('Logged in as'); ?></span> <a href="<?php Site::out_url( 'habari' ); ?>/admin/user" title="<?php _e('Go to your user page'); ?>"><?php echo User::identify()->displayname ?></a> <span class="middot">&middot;</span>
-		<span><a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="<?php _e('Open the Habari manual in a new window'); ?>"><?php _e('Manual'); ?></a></span> 
+		<span><a href="<?php Site::out_url( 'habari' ); ?>/doc/manual/index.html" onclick="popUp(this.href); return false;" title="<?php _e('Open the Habari manual in a new window'); ?>"><?php _e('Manual'); ?></a></span>
 	</p>
 </div>
 
