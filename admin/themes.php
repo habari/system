@@ -25,7 +25,7 @@
 
 			<p class="description pct80"><?php echo $active_theme['info']->description; ?></p>
 			<?php if($active_theme['info']->license != ''): ?>
-			<p class="description pct80"><?php echo $active_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <a href=" <?php echo $active_theme['info']->license['url']; ?>"><?php echo $active_theme['info']->license; ?></a></p>
+			<p class="description pct80"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
 		</div>
 
@@ -61,7 +61,7 @@ foreach($all_themes as $inactive_theme):
 
 			<p class="description pct80"><?php echo $inactive_theme['info']->description; ?></p>
 			<?php if($inactive_theme['info']->license != ''): ?>
-			<p class="description pct80"><?php echo $inactive_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <a href=" <?php echo $active_theme['info']->license['url']; ?>"><?php echo $inactive_theme['info']->license; ?></a></p>
+			<p class="description pct80"><?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, '<a href="' . $inactive_theme['info']->license['url'] . '">' . $inactive_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
 		</div>
 	</div>
