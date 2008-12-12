@@ -123,7 +123,7 @@ a img {
 	list-style-position: outside;
 	margin-bottom: 0;
 	top: -5px;
-	
+
 	z-index: -1; /* Even with the main menu (its parent), so shadows don't get messed up */
 }
 
@@ -669,7 +669,7 @@ body.page-publish .buttons input {
 .media_controls ul {
 	position: absolute;
 	top: 18px;
-	left: 300px;
+	left: 10px;
 }
 
 .media_controls li {
@@ -1994,9 +1994,14 @@ ul.tabs li.ui-tabs-selected.last-child {
 .splitter select, .splitter input[type=text] {
 	width: 150px;
 	margin: 0;
+	margin-top: -3px;
 }
 
-.splitter p, .splitter ul, .splitter label {
+.splitter .media_controls label {
+	margin-left: 10px;
+}
+
+.splitter p, .splitter ul, .splitter .media_browser label {
 	margin: 0;
 }
 

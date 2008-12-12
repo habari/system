@@ -1049,17 +1049,17 @@ class AdminHandler extends ActionHandler
 		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
-	
+
 	public function get_import()
 	{
-				
+
 		$importer = isset( $_POST['importer'] ) ? $_POST['importer'] : '';
 		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '';
 
 		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage );
 
 		$this->display( 'import' );
-		
+
 	}
 
 	/**
@@ -2661,9 +2661,19 @@ class AdminHandler extends ActionHandler
 				$output['files'][$asset->basename]= $asset->get_props();
 			}
 		}
-		$controls = array();
+		$rootpath = strpos($path, '/') !== false ? substr($path, 0, strpos($path, '/')) : $path;
+		$controls = array('root' => '<a href="#" onclick="habari.media.fullReload();habari.media.showdir(\''. $rootpath . '\');return false;">' . _t('Root') . '</a>');
 		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, '' );
-		$output['controls']= '<li>' . implode( '</li><li>', $controls ) . '</li>';
+		$controls_out = '';
+		foreach($controls as $k => $v) {
+			if(is_numeric($k)) {
+				$controls_out .= "<li>{$v}</li>";
+			}
+			else {
+				$controls_out .= "<li class=\"{$k}\">{$v}</li>";
+			}
+		}
+		$output['controls']= $controls_out;
 
 		echo json_encode( $output );
 	}
@@ -2677,11 +2687,20 @@ class AdminHandler extends ActionHandler
 
 		$panel = '';
 		$panel = Plugins::filter( 'media_panels', $panel, $silo, $rpath, $panelname );
-		$controls = array();
+		$rootpath = strpos($path, '/') !== false ? substr($path, 0, strpos($path, '/')) : $path;
+		$controls = array('root' => '<a href="#" onclick="habari.media.fullReload();habari.media.showdir(\''. $rootpath . '\');return false;">' . _t('Root') . '</a>');
 		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, $panelname );
-		$controls = '<li>' . implode( '</li><li>', $controls ) . '</li>';
+		$controls_out = '';
+		foreach($controls as $k => $v) {
+			if(is_numeric($k)) {
+				$controls_out .= "<li>{$v}</li>";
+			}
+			else {
+				$controls_out .= "<li class=\"{$k}\">{$v}</li>";
+			}
+		}
 		$output = array(
-			'controls' => $controls,
+			'controls' => $controls_out,
 			'panel' => $panel,
 		);
 
