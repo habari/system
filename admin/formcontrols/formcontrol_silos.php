@@ -9,9 +9,7 @@
 			<div class="splitterinside">
 				<div id="mediaspinner"></div>
 				<div class="media_controls">
-					<input type="search" placeholder="<?php _e('Search descriptions, names and tags'); ?>" autosave="habarisettings" results="10">
 					<ul>
-						<li><a href="#" onclick="habari.media.showdir('<?php echo $silodir->path; ?>');return false;"><?php _e('Root'); ?></a></li>
 					</ul>
 					<?php /*<div class="upload"><input type="file"><input type="submit" value="<?php _e('Upload'); ?>"></div>*/ ?>
 				</div>
