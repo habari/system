@@ -22,8 +22,8 @@
 
 	<?php
 		Plugins::act( 'admin_header', $this );
-		Stack::out( 'admin_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
-		Stack::out( 'admin_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+		Stack::out( 'admin_header_javascript', array('Stack', 'scripts') );
+		Stack::out( 'admin_stylesheet', array('Stack', 'styles') );
 	?>
 
 </head>
@@ -65,9 +65,9 @@
 		password_label = $('label[for=habari_password]');
 		// to fix autofill issues, we need to check the password field on every keyup
 		$('#habari_username').keyup( function() {
-			setTimeout( "labeler.check( password_label );", 10 ); 
+			setTimeout( "labeler.check( password_label );", 10 );
 		} ).click( function() {
-			setTimeout( "labeler.check( password_label );", 50 ); 
+			setTimeout( "labeler.check( password_label );", 50 );
 		} );
 		// for autofill without user input
 		setTimeout( function(){ labeler.check( password_label ); }, 10 );
