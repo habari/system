@@ -1,6 +1,6 @@
 <div class="group item clear" id="item-<?php echo $group->id; ?>">
 	<div class="head">
-		<h4><a href="#" title="Edit group"><?php echo $group->name; ?></a></h4>
+		<h4><a href="#" title="<?php _e('Edit group'); ?>"><?php echo $group->name; ?></a></h4>
 		<ul class="dropbutton">
 			<?php $actions = array(
 				'edit' => array('url' => URL::get('admin', 'page=group&id=' . $group->id), 'title' => _t('Edit group'), 'label' => _t('Edit')),
