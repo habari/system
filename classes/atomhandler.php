@@ -59,8 +59,7 @@ class AtomHandler extends ActionHandler
 				die();
 			}
 		}
-
-		return $this->user;
+		return $this->user->loggedin;
 	}
 
 
@@ -543,7 +542,7 @@ class AtomHandler extends ActionHandler
 	{
 		$params = array();
 
-		$user = $this->is_auth( TRUE );
+		$this->is_auth( TRUE );
 		$bxml = file_get_contents( 'php://input' );
 
 		$params['slug']= $slug;
@@ -570,7 +569,7 @@ class AtomHandler extends ActionHandler
 			}
 
 			$post->status = Post::status('published');
-			$post->user_id = $user->id;
+			$post->user_id = $this->user->id;
 			$post->update();
 		}
 	}
@@ -665,7 +664,7 @@ class AtomHandler extends ActionHandler
 		*/
 	public function post_collection()
 	{
-		if ( $user = $this->is_auth( TRUE ) ) {
+		if ( $this->is_auth( TRUE ) ) {
 			$bxml = file_get_contents( 'php://input' );
 		}
 
@@ -713,7 +712,7 @@ class AtomHandler extends ActionHandler
 			$post->status = Post::status('published');
 		}
 
-		$post->user_id = $user->id;
+		$post->user_id = $this->user->id;
 		$post->insert();
 
 		header('HTTP/1.1 201 Created');
