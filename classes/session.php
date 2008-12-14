@@ -14,6 +14,12 @@ class Session
 	 */
 	static function init()
 	{
+		// If https request only set secure cookie
+		// IIS sets the value of HTTPS to 'off' if not https
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') {
+			session_set_cookie_params(null, null, null, true);
+		}
+
 		session_set_save_handler(
 			array( 'Session', 'open' ),
 			array( 'Session', 'close' ),
@@ -23,7 +29,8 @@ class Session
 			array( 'Session', 'gc' )
 		);
 		register_shutdown_function( 'session_write_close' );
-		if ( ! isset( $_SESSION ) ) {
+
+		if ( ! isset($_SESSION) ) {
 			session_start();
 		}
 		return true;
