@@ -7,9 +7,7 @@
 			<?php foreach ( $posts as $post ) { ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
-							<div class="cal">
-								<span class="calyear"><?php echo $post->pubdate->year; ?></span><br><span class="calday"><?php echo $post->pubdate->mday; ?></span><br><span class="calmonth"><?php echo $post->pubdate->month; ?></span>
-							</div>
+							<div class="cal"><?php echo $post->pubdate_out; ?></div>
 					<!--display content-->
 					<div class="entry">
 						<?php echo $post->content_out; ?>
