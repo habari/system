@@ -558,14 +558,14 @@ class Theme extends Pluggable
 		$this->var_stack[$this->current_var_stack][$key] = $value;
 	}
 
- 	/**
+	/**
 	 * Aggregates and echos the additional header code by combining Plugins and Stack calls.
 	 */
 	public function theme_header( $theme )
 	{
 		Plugins::act( 'template_header', $theme );
-		$output = Stack::get( 'template_stylesheet', '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n" );
-		$output.= Stack::get( 'template_header_javascript', '<script src="%s" type="text/javascript"></script>'."\r\n" );
+		$output = Stack::get( 'template_stylesheet', array('Stack', 'styles') );
+		$output.= Stack::get( 'template_header_javascript', array('Stack', 'scripts') );
 		Plugins::act( 'template_header_after', $theme );
 		return $output;
 	}
@@ -576,7 +576,7 @@ class Theme extends Pluggable
 	public function theme_footer( $theme )
 	{
 		Plugins::act( 'template_footer', $theme );
-		$output = Stack::get( 'template_footer_javascript', ' <script src="%s" type="text/javascript"></script>'."\r\n" );
+		$output = Stack::get( 'template_footer_javascript', array('Stack', 'scripts') );
 		return $output;
 	}
 
