@@ -20,7 +20,8 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 Format::apply_with_hook_params( 'more', 'post_content_out', 'more' );
 // Creates an excerpt option. echo $post->content_excerpt;
 Format::apply_with_hook_params( 'more', 'post_content_excerpt', 'more', 60, 1 );
-
+//Format the calendar like date for home, entry.single and entry.multiple templates
+Format::apply( 'format_date', 'post_pubdate_out','<span class="calyear">{Y}</span><br><span class="calday">{j}</span><br><span  class="calmonth">{F}</span>' );
 
 // We must tell Habari to use MyTheme as the custom theme class:
 define( 'THEME_CLASS', 'CornerStone' );
