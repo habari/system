@@ -104,29 +104,26 @@ class Post extends QueryRecord implements IsContent
 
 	/**
 	 * returns an associative array of post statuses
-	 * @param bool whether to force a refresh of the cached values
+	 * @param mixed $all true to list all statuses, not just external ones, Post to list external and any that match the Post status
+	 * @param boolean $refresh true to force a refresh of the cached values
 	 * @return array An array of post statuses names => interger values
 	**/
 	public static function list_post_statuses( $all = true, $refresh = false )
 	{
 		$statuses = array();
 		$statuses['any']= 0;
-		if ( ( ! $refresh ) && ( ! empty( self::$post_status_list ) ) ) {
-			foreach ( self::$post_status_list as $status ) {
-				if ( $all ) {
-					$statuses[$status->name]= $status->id;
-				}
-				elseif ( ! $status->internal ) {
+		if ( $refresh || empty( self::$post_status_list ) ) {
+			$sql = 'SELECT * FROM ' . DB::table( 'poststatus' ) . ' ORDER BY id ASC';
+			$results = DB::get_results( $sql );
+			self::$post_status_list = $results;
+		}
+		foreach ( self::$post_status_list as $status ) {
+			if ( $all instanceof Post ) {
+				if( ! $status->internal || $status->id == $all->status ) {
 					$statuses[$status->name]= $status->id;
 				}
 			}
-			return $statuses;
-		}
-		$sql = 'SELECT * FROM ' . DB::table( 'poststatus' ) . ' ORDER BY id ASC';
-		$results = DB::get_results( $sql );
-		self::$post_status_list = $results;
-		foreach ( self::$post_status_list as $status ) {
-			if ( $all ) {
+			elseif ( $all ) {
 				$statuses[$status->name]= $status->id;
 			}
 			elseif ( ! $status->internal ) {

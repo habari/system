@@ -557,7 +557,7 @@ class AdminHandler extends ActionHandler
 
 		// Create the publishing controls
 		// pass "false" to list_post_statuses() so that we don't include internal post statuses
-		$statuses = Post::list_post_statuses( false );
+		$statuses = Post::list_post_statuses( $post );
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses = Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
