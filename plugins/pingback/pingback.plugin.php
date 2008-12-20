@@ -145,7 +145,8 @@ class Pingback extends Plugin
 
 			// Retrieve source contents
 			$rr = new RemoteRequest( $source_uri );
-			if ( ! $rr->execute() ) {
+			$rr->execute();
+			if ( ! $rr->executed() ) {
 				throw new XMLRPCException( 16 );
 			}
 			$source_contents = $rr->get_response_body();
@@ -312,12 +313,12 @@ class Pingback extends Plugin
 			}
 		}
 	}
-	
+
 	/**
 	 * Add the pingback options to the options page
 	 * @param array $items The array of option on the options page
-	 * @return array The array of options including new options for pingback	  	 	
-	 */	 
+	 * @return array The array of options including new options for pingback
+	 */
 	public function filter_admin_option_items($items) 
 	{
 		$items[_t('Publishing')]['pingback_send'] = array(
@@ -326,7 +327,7 @@ class Pingback extends Plugin
 			'helptext' => '',
 		);
 
-		return $items;		
+		return $items;
 	}
 }
 ?>
