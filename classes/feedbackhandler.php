@@ -141,7 +141,7 @@ class FeedbackHandler extends ActionHandler
 			// if no cookie exists, we should set one
 			// but only if the user provided some details
 			$cookie = 'comment_' . Options::get('GUID');
-			if ( ( ! User::identify() )
+			if ( ( ! $user->loggedin )
 				&& ( ! isset( $_COOKIE[$cookie] ) )
 				&& ( ! empty( $this->handler_vars['name'] )
 					|| ! empty( $this->handler_vars['email'] )
