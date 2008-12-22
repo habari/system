@@ -398,6 +398,7 @@ span.dim {
 
 .item .description, .item .content, .item .type {
 	color: #555;
+	overflow-x: auto;
 }
 
 a, a:visited, a:hover {
