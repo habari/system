@@ -451,6 +451,11 @@ var itemManage = {
 					itemManage.fetch( 0, 20, false );
 				}
 				
+				// if we deleted stuff, scroll to the top of the new page
+				if ( action == 'delete' ) {
+					window.scroll(0,0);
+				}
+				
 				itemManage.selected = [];
 			},
 			'json'
