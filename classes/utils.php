@@ -877,5 +877,22 @@ class Utils
 		return $mimetype;
 	}
 
+	/**
+	 * Returns a trailing slash or a string, depending on the value passed in
+	 *
+	 * @param mixed $value A trailing string value
+	 * @return string A slash if true, the value if value passed, emptystring if false
+	 */
+	public static function trail( $value = false )
+	{
+		if($value === true) {
+			return '/';
+		}
+		elseif($value) {
+			return $value;
+		}
+		return '';
+	}
+
 }
 ?>

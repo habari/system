@@ -186,7 +186,7 @@ class Site
 				$url = ( $_SERVER['SERVER_PROTOCOL'] == 'HTTP/1.0' || !isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
 				break;
 		}
-		$url .= ( $trail ) ? '/' : '';
+		$url .= Utils::trail( $trail );
 		$url = Plugins::filter( 'site_url_' . $name, $url );
 		return $url;
 	}
@@ -203,7 +203,7 @@ class Site
 	 * @param string the name of the path to return
 	 * @param bool whether to include a trailing slash.  Default: No
 	**/
-	public static function get_path( $name, $tail = false )
+	public static function get_path( $name, $trail = false )
 	{
 		$path = '';
 		switch ( strtolower( $name ) )
@@ -234,7 +234,7 @@ class Site
 				}
 				break;
 		}
-		$path.= ( $tail ) ? '/' : '';
+		$path.= Utils::trail( $trail );
 		// if running Habari in docroot, get_url('base') will return
 		// a double slash.  Let's fix that.
 		$path = str_replace( '//', '/', $path);
@@ -321,7 +321,7 @@ class Site
 				$path = HABARI_PATH . '/system/admin';
 				break;
 		}
-		$path.= ($trail) ? '/' : '';
+		$path.= Utils::trail( $trail );
 		$path = Plugins::filter( 'site_dir_' . $name, $path );
 		return $path;
 	}
