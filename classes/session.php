@@ -4,7 +4,7 @@
  * Habari Session class
  * Manages sessions for the PHP session routines
  *
- * @package habari
+ * @package Habari
  */
 
 class Session
