@@ -36,7 +36,7 @@
 <div id="menubar">
 
 	<div id="menu" class="dropbutton">
-		<h1 id="menubutton"><a href=""><?php echo $admin_page; ?> <span class="hotkey">Q</span></a></h1>
+		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><?php echo $admin_page; ?> <span class="hotkey">Q</span></a></h1>
 
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
