@@ -83,6 +83,7 @@ class AdminHandler extends ActionHandler
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_type = $type;
 		$this->theme->admin_page = $page;
+		$this->theme->admin_page_url = ( $page == 'dashboard' ) ? URL::get( 'admin', 'page=' ) : URL::get( 'admin', 'page=' . $page );
 		$this->theme->page = $page;
 		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
 		switch( $_SERVER['REQUEST_METHOD'] ) {
@@ -2540,7 +2541,7 @@ class AdminHandler extends ActionHandler
 		$createmenu = array();
 		$managemenu = array();
 
-	  Plugins::register(array($this, 'default_post_type_display'), 'filter', 'post_type_display', 4);
+		Plugins::register(array($this, 'default_post_type_display'), 'filter', 'post_type_display', 4);
 
 		$i= 1;
 		foreach( Post::list_active_post_types() as $type => $typeint ) {
