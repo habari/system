@@ -224,6 +224,7 @@ class User extends QueryRecord
 			return self::$identity;
 		}
 		elseif(!is_object($user)) {
+			Plugins::act( 'user_authenticate_failure', 'plugin' );
 			EventLog::log( sprintf(_t('Login attempt (via authentication plugin) for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
 			Session::error('Invalid username/password');
 			self::$identity = null;
@@ -240,6 +241,7 @@ class User extends QueryRecord
 
 		if ( ! $user ) {
 			// No such user.
+			Plugins::act( 'user_authenticate_failure', 'non-existent' );
 			EventLog::log( sprintf(_t('Login attempt for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
 			Session::error('Invalid username/password');
 			self::$identity = null;
@@ -257,6 +259,7 @@ class User extends QueryRecord
 		}
 		else {
 			// Wrong password.
+			Plugins::act( 'user_authenticate_failure', 'bad_pass' );
 			EventLog::log( sprintf(_t('Wrong password for user %s'), $user->username), 'warning', 'authentication', 'habari' );
 			Session::error('Invalid username/password');
 			self::$identity = null;
