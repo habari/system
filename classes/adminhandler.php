@@ -525,7 +525,7 @@ class AdminHandler extends ActionHandler
 		if( isset( $this->handler_vars['id'] ) ) {
 			$post_links = $form->append('wrapper', 'post_links');
 			$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-			$post_links->append('static', 'post_permalink', '<a href="'. $permalink .'" class="viewpost" onclick="$(this).attr(\'target\', \'preview\');">'.( $post->status != Post::status('published') ? _t('Preview Post') : _t('View Post') ).'</a>');
+			$post_links->append('static', 'post_permalink', '<a href="'. $permalink .'" class="viewpost" >'.( $post->status != Post::status('published') ? _t('Preview Post') : _t('View Post') ).'</a>');
 			$post_links->class ='container';
 		}
 
