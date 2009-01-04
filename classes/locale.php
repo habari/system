@@ -7,7 +7,7 @@
  *
  * @package Habari
  */
-class Locale
+class HabariLocale
 {
 	private static $uselocale = FALSE;
 	private static $messages = array();
@@ -283,7 +283,7 @@ class Locale
 	public static function _e( )
 	{
 		$args = func_get_args();
-		echo call_user_func_array(array('Locale', '_t'), $args);
+		echo call_user_func_array(array('HabariLocale', '_t'), $args);
 	}
 
 	/**
@@ -352,37 +352,37 @@ class Locale
 }
 
 /**
- * Echo a version of the string translated into the current locale, alias for Locale::_e()
+ * Echo a version of the string translated into the current locale, alias for HabariLocale::_e()
  *
  * @param string $text The text to translate
  **/
 function _e( $text, $args = array(), $domain = 'habari' )
 {
-	return Locale::_e( $text, $args, $domain );
+	return HabariLocale::_e( $text, $args, $domain );
 }
 
 /**
  * function _ne
  * Echo singular or plural version of the string, translated into the current locale, based on the count provided,
- * alias for Locale::_ne()
+ * alias for HabariLocale::_ne()
  * @param string $singular The singular form
  * @param string $plural The plural form
  * @param string $count The count
  **/
 function _ne( $singular, $plural, $count, $domain = 'habari' )
 {
-	return Locale::_ne( $singular, $plural, $count, $domain );
+	return HabariLocale::_ne( $singular, $plural, $count, $domain );
 }
 
 /**
- * Return a version of the string translated into the current locale, alias for Locale::_t()
+ * Return a version of the string translated into the current locale, alias for HabariLocale::_t()
  *
  * @param string $text The text to translate
  * @return string The translated string
  **/
 function _t( $text, $args = array(), $domain = 'habari' )
 {
-	return Locale::_t( $text, $args, $domain );
+	return HabariLocale::_t( $text, $args, $domain );
 }
 
 /**
@@ -395,7 +395,7 @@ function _t( $text, $args = array(), $domain = 'habari' )
  **/
 function _n( $singular, $plural, $count, $domain = 'habari' )
 {
-	return Locale::_n( $singular, $plural, $count, $domain );
+	return HabariLocale::_n( $singular, $plural, $count, $domain );
 }
 
 ?>

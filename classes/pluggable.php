@@ -78,7 +78,7 @@ abstract class Pluggable
 	{
 		$base_dir = realpath(dirname( $this->get_file() ));
 		
-		return Locale::load_pluggable_domain( $domain, $base_dir );
+		return HabariLocale::load_pluggable_domain( $domain, $base_dir );
 	}
 
 	/**
