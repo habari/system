@@ -19,14 +19,14 @@ class InstallHandler extends ActionHandler {
 		/**
 		 * Set user selected Locale or default
 		 */
-		$this->theme->locales = Locale::list_all();
+		$this->theme->locales = HabariLocale::list_all();
 		if ( isset($_POST['locale']) && $_POST['locale'] != null ) {
-			Locale::set($_POST['locale']);
+			HabariLocale::set($_POST['locale']);
 			$this->theme->locale = $_POST['locale'];
 			$this->handler_vars['locale'] = $_POST['locale'];
 		}
 		else {
-			Locale::set( 'en-us' );
+			HabariLocale::set( 'en-us' );
 			$this->theme->locale = 'en-us';
 			$this->handler_vars['locale'] = 'en-us';
 		}

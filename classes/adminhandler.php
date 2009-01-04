@@ -219,7 +219,7 @@ class AdminHandler extends ActionHandler
 			'locale' => array(
 				'label' => _t( 'Locale' ),
 				'type' => 'select',
-				'selectarray' => array_merge( array( '' => 'default' ), array_combine( Locale::list_all(), Locale::list_all() ) ),
+				'selectarray' => array_merge( array( '' => 'default' ), array_combine( HabariLocale::list_all(), HabariLocale::list_all() ) ),
 				'helptext' => 'International language code',
 			),
 			'system_locale' => array(
