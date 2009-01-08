@@ -329,6 +329,11 @@ class InstallHandler extends ActionHandler {
 				$requirements_met = false;
 			}
 		}
+		else {
+			$this->theme->assign( 'pdo_drivers_ok', false );
+			$this->theme->assign( 'pdo_drivers', array() );
+			$requirements_met = false;
+		}
 
 		/**
 		 * $local_writable is used in the template, but never set in Habari
