@@ -19,11 +19,11 @@
 class ACL {
 	/**
 	 * How to handle a permission request for a permission that is not in the permission list.
-	 * For example, if you request $user->can('some non-existant permission') then this value is returned.
+	 * For example, if you request $user->can('some non-existent permission') then this value is returned.
 	 * It's true at the moment because that allows access to all features for upgrading users.
 	 * @todo Decide if this is a setting we need or want to change, or perhaps it should be an option.
 	 **/
-	const ACCESS_NONEXISTANT_PERMISSION = true;
+	const ACCESS_NONEXISTENT_PERMISSION = true;
 
 	private static $access_names = array( 'read', 'write', 'delete' );
 
@@ -281,10 +281,10 @@ class ACL {
 
 		/**
 		 * Do we allow perms that don't exist?
-		 * When ACL is functional ACCESS_NONEXISTANT_PERMISSION should be false by default.
+		 * When ACL is functional ACCESS_NONEXISTENT_PERMISSION should be false by default.
 		 */
 		if ( is_null( $token) ) {
-			return self::ACCESS_NONEXISTANT_PERMISSION;
+			return self::ACCESS_NONEXISTENT_PERMISSION;
 		}
 
 		// if we were given a user ID, use that to fetch the group membership from the DB
