@@ -1,13 +1,16 @@
 <?php
 /**
- * Habari Utility Class
- *
  * @package Habari
+ *
  */
 
+/**
+ * Habari Utility Class
+ *
+ */
 class Utils
 {
-    public static $debug_defined = false;
+	public static $debug_defined = false;
 
 	/**
 	 * Utils constructor
@@ -662,31 +665,32 @@ class Utils
 	 * @param string The string to truncate
 	 * @param integer The length of the returned string
 	 * @param bool Whether to place the ellipsis in the middle (true) or
-	 *	at the end (false)
+	 * at the end (false)
 	 * @return string The truncated string
-	**/
+	 **/
 	public static function truncate($str, $len =10, $middle =true)
 	{
-	        // make sure $len is a positive integer
-	        if ( ! is_numeric($len) || ( 0 > $len ) ) {
-	                return $str;
-	        }
-	        // if the string is less than the length specified, bail out
-	        if ( MultiByte::strlen($str) <= $len ) {
-	                return $str;
-	        }
+		// make sure $len is a positive integer
+		if ( ! is_numeric($len) || ( 0 > $len ) ) {
+			return $str;
+		}
+		// if the string is less than the length specified, bail out
+		if ( MultiByte::strlen($str) <= $len ) {
+			return $str;
+		}
 
-	        // okay.  Shuold we place the ellipse in the middle?
-	        if ($middle) {
-	                // yes, so compute the size of each half of the string
-	                $len = round(($len-3)/2);
-	                // and place an ellipse in between the pieces
-	                return MultiByte::substr($str, 0, $len) . '...' . MultiByte::substr($str, -$len);
-	        } else {
-	                // no, the ellipse goes at the end
-	                $len = $len-3;
-	                return MultiByte::substr($str, 0, $len ) . '...';
-	        }
+		// okay.  Shuold we place the ellipse in the middle?
+		if ($middle) {
+			// yes, so compute the size of each half of the string
+			$len = round(($len-3)/2);
+			// and place an ellipse in between the pieces
+			return MultiByte::substr($str, 0, $len) . '...' . MultiByte::substr($str, -$len);
+		}
+		else {
+			// no, the ellipse goes at the end
+			$len = $len-3;
+			return MultiByte::substr($str, 0, $len ) . '...';
+		}
 	}
 
 	/**

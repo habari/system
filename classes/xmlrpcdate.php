@@ -1,12 +1,14 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * XMLRPC Date type
  * Used to hold dates for transmission in XMLRPC calls.
  *
- * @package Habari
  */
-
 class XMLRPCDate
 {
 	private $rpcdate;
@@ -19,7 +21,7 @@ class XMLRPCDate
 				$this->rpcdate = $value;
 			}
 			else {
-				$this->rpcdate = strtotime($value); 
+				$this->rpcdate = strtotime($value);
 			}
 		}
 	}

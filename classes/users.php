@@ -1,17 +1,20 @@
 <?php
 /**
- * Habari Users Class
- *
  * @package Habari
+ *
  */
 
+/**
+ * Habari Users Class
+ *
+ */
 class Users extends ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
 	/**
 	 * Returns a user or users based on supplied parameters.
-	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
+	 * @todo This class should cache query results!
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of User objects, or a single User object, depending on request
@@ -44,7 +47,7 @@ class Users extends ArrayObject
 		$wheres = array();
 		$join = '';
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[]= $paramarray['where'];
+			$wheres[] = $paramarray['where'];
 		}
 		else {
 			foreach( $wheresets as $paramset ) {
@@ -63,22 +66,22 @@ class Users extends ArrayObject
 								continue;
 							}
 						default:
-							$where[]= "{$field}= ?";
-							$params[]= $paramset[$field];
+							$where[] = "{$field}= ?";
+							$params[] = $paramset[$field];
 					}
 				}
 				
 				if ( isset( $paramset['info'] ) && is_array( $paramset['info'] ) ) {
 					$join.= 'INNER JOIN ' . DB::table( 'userinfo' ) . ' ON ' . DB::table( 'users' ) . '.id = ' . DB::table( 'userinfo' ) . '.user_id';
 					foreach ( $paramset['info'] as $info_name => $info_value ) {
-						$where[]= DB::table( 'userinfo' ) . '.name = ? AND ' . DB::table( 'userinfo' ) . '.value = ?';
-						$params[]= $info_name;
-						$params[]= $info_value;
+						$where[] = DB::table( 'userinfo' ) . '.name = ? AND ' . DB::table( 'userinfo' ) . '.value = ?';
+						$params[] = $info_name;
+						$params[] = $info_value;
 					}
 				}
 				
 				if(count($where) > 0) {
-					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
 		}
@@ -149,7 +152,7 @@ class Users extends ArrayObject
 		// If no value was specified, check if several info were passed
 		if ( NULL === $value ) {
 			if ( is_array( $key ) ) {
-				$params['info']= $key;
+				$params['info'] = $key;
 			}
 			else {
 				// We need a value to compare to
@@ -157,7 +160,7 @@ class Users extends ArrayObject
 			}
 		}
 		else {
-			$params['info']= array( $key => $value );
+			$params['info'] = array( $key => $value );
 		}
 		
 		return self::get( $params );

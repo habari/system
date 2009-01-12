@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * IsContent Interface for Habari
@@ -7,10 +11,8 @@
  * @version $Id$
  * @copyright 2008
  */
-
 interface IsContent
 {
-
 
 	/**
 	 * Returns the content type of the object instance

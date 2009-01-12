@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari TemplateEngine abstract base class
  *
- * @package Habari
  *
  * The TemplateEngine is an abstract base class to allow any template
  * engine to supply templates for the UI.  For an example

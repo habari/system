@@ -1,10 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * MediaAsset represents a file or directory in the media system
  *
  */
-
 class MediaAsset
 {
 	const MODE_NONE = 0;

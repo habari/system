@@ -2,13 +2,12 @@
 /**
  * @package Habari
  *
- * Contains the abstract Cache class.
  */
 
 /**
  * Habari Cache Class
  *
- * Base class for caching computationally expensive or bandwidth intensive data
+ * Base abstract class for caching computationally expensive or bandwidth intensive data
  */
 abstract class Cache
 {

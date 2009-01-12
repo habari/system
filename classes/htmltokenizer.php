@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Tokenizer for HTML.
@@ -87,7 +91,7 @@ class HTMLTokenizer
 	
 	private function node( $type, $name, $value, $attrs )
 	{
-		$this->nodes[]= array(
+		$this->nodes[] = array(
 			'type' => $type,
 			'name' => $name,
 			'value' => $value,
@@ -196,7 +200,7 @@ class HTMLTokenizer
                 $value = NULL;
                 $this->dec();
             }
-            $attr[$name]= $value;
+            $attr[$name] = $value;
             $this->skip_whitespace();
         }
         

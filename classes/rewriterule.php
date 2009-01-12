@@ -1,8 +1,11 @@
 <?php
 /**
- * Habari RewriteRule Class
- *
  * @package Habari
+ *
+ */
+
+/**
+ * Habari RewriteRule Class
  *
  * Helper class to encapsulate rewrite rule data
  *
@@ -76,7 +79,7 @@ class RewriteRule extends QueryRecord
 			foreach ( $named_args as $keys ) {
 				foreach ( $keys as $key ) {
 					if ( !empty( $pattern_matches[$key] ) ) {
-						$this->named_arg_values[$key]= urldecode( str_replace( '%252F', '%2F', $pattern_matches[$key] ) );
+						$this->named_arg_values[$key] = urldecode( str_replace( '%252F', '%2F', $pattern_matches[$key] ) );
 					}
 				}
 			}
@@ -110,18 +113,18 @@ class RewriteRule extends QueryRecord
 		foreach ( $named_args as $keys ) {
 			foreach ( $keys as $key ) {
 				if ( !empty( $args[$key] ) ) {
-					$searches[]= '/{\$'.$key.'}/';
-					$replacements[]= str_replace( '%2F', '%252F', urlencode( $args[$key] ) );
+					$searches[] = '/{\$'.$key.'}/';
+					$replacements[] = str_replace( '%2F', '%252F', urlencode( $args[$key] ) );
 				}
 			}
 		}
 
 		// Remove undefined arguments
-		$searches[]= '/\([^\(\)]*\$+[^\(\)]*\)/';
-		$replacements[]= '';
+		$searches[] = '/\([^\(\)]*\$+[^\(\)]*\)/';
+		$replacements[] = '';
 		// Remove parens left from defined optional arguments
-		$searches[]= '/\(|\)/';
-		$replacements[]= '';
+		$searches[] = '/\(|\)/';
+		$replacements[] = '';
 
 		$return_url = preg_replace( $searches, $replacements, $this->build_str );
 
@@ -171,8 +174,8 @@ class RewriteRule extends QueryRecord
 				if( empty( $this->m_named_args ) ) {
 					preg_match_all( '/(?<!\()\{\$(\w+?)\}(?!\))/', $this->build_str, $required );
 					preg_match_all( '/(?<=\()[^\(\)]*\{\$(\\w+?)\}[^\(\)]*(?=\))/', $this->build_str, $optional );
-					$this->m_named_args['required']= $required[1];
-					$this->m_named_args['optional']= $optional[1];
+					$this->m_named_args['required'] = $required[1];
+					$this->m_named_args['optional'] = $optional[1];
 				}
 				return $this->m_named_args;
 			default:
@@ -215,16 +218,16 @@ class RewriteRule extends QueryRecord
 	{
 		$arr = split( '/', $build_str );
 
-		$searches[]= '/^([^"\']+)$/';
-		$searches[]= '/^["\'](.+)["\']$/';
-		$replacements[]= '(.+)';
-		$replacements[]= '\1';
+		$searches[] = '/^([^"\']+)$/';
+		$searches[] = '/^["\'](.+)["\']$/';
+		$replacements[] = '(.+)';
+		$replacements[] = '\1';
 		$re_arr = preg_replace( $searches, $replacements, $arr );
 
-		$searches[]= '/^([^"\']+)$/';
-		$searches[]= '/^["\'](.+)["\']$/';
-		$replacements[]= '{$\1}';
-		$replacements[]= '\1';
+		$searches[] = '/^([^"\']+)$/';
+		$searches[] = '/^["\'](.+)["\']$/';
+		$replacements[] = '{$\1}';
+		$replacements[] = '\1';
 		$str_arr = preg_replace( $searches, $replacements, $arr );
 
 		$regex = '/^' . implode( '\/', $re_arr ) . '\/?$/i';

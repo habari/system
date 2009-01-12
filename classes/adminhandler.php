@@ -1,12 +1,15 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari AdminHandler Class
  * Backbone of the admin area, handles requests and functionality.
  *
- * @package Habari
  * @todo Clean this mess up
  */
-
 class AdminHandler extends ActionHandler
 {
 	/** Cached theme object for handling templates and presentation */

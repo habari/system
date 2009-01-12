@@ -1,12 +1,15 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
 	* Habari AtomHandler class
 	* Produces Atom feeds and accepts Atom Publishing Protocol input
 	*
-	* @package Habari
 	* @todo Apply system error handling
 	*/
-
 class AtomHandler extends ActionHandler
 {
 

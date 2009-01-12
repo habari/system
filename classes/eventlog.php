@@ -1,11 +1,14 @@
 <?php
 /**
- * Habari EventLog class
- *
  * @package Habari
- * @todo Apply system error handling
+ *
  */
 
+/**
+ * Habari EventLog class
+ *
+ * @todo Apply system error handling
+ */
 class EventLog extends ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
@@ -160,7 +163,7 @@ class EventLog extends ArrayObject
 		$wheres = array();
 		$join = '';
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[]= $paramarray['where'];
+			$wheres[] = $paramarray['where'];
 		}
 		else {
 			foreach ( $wheresets as $paramset ) {
@@ -169,40 +172,40 @@ class EventLog extends ArrayObject
 				$paramset = array_merge( ( array ) $paramarray, ( array ) $paramset );
 
 				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
-					$where[]= "id= ?";
-					$params[]= $paramset['id'];
+					$where[] = "id= ?";
+					$params[] = $paramset['id'];
 				}
 				if ( isset( $paramset['user_id'] ) ) {
-					$where[]= "user_id= ?";
-					$params[]= $paramset['user_id'];
+					$where[] = "user_id= ?";
+					$params[] = $paramset['user_id'];
 				}
 				if ( isset( $paramset['severity'] ) && ( 'any' != LogEntry::severity_name( $paramset['severity'] ) ) ) {
-					$where[]= "severity_id= ?";
-					$params[]= LogEntry::severity( $paramset['severity'] );
+					$where[] = "severity_id= ?";
+					$params[] = LogEntry::severity( $paramset['severity'] );
 				}
 				if ( isset( $paramset['type_id'] ) ) {
 					if ( is_array( $paramset['type_id'] ) ) {
 						$types = array_filter( $paramset['type_id'], 'is_numeric' );
 						if ( count( $types ) ) {
-							$where[]= 'type_id IN (' . implode( ',', $types ) . ')';
+							$where[] = 'type_id IN (' . implode( ',', $types ) . ')';
 						}
 					}
 					else {
-						$where[]= 'type_id = ?';
-						$params[]= $paramset['type_id'];
+						$where[] = 'type_id = ?';
+						$params[] = $paramset['type_id'];
 					}
 				}
 				if ( isset( $paramset['ip'] ) ) {
-					$where[]= 'ip = ?';
-					$params[]= $paramset['ip'];
+					$where[] = 'ip = ?';
+					$params[] = $paramset['ip'];
 				}
 
 				/* do searching */
 				if ( isset( $paramset['criteria'] ) ) {
 					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[].= "(message LIKE CONCAT('%',?,'%'))";
-						$params[]= $word;
+						$where[] .= "(message LIKE CONCAT('%',?,'%'))";
+						$params[] = $word;
 					}
 				}
 
@@ -216,34 +219,34 @@ class EventLog extends ArrayObject
 				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')
 				 */
 				if ( isset( $paramset['day'] ) ) {
-					$where[]= 'timestamp BETWEEN ? AND ?';
+					$where[] = 'timestamp BETWEEN ? AND ?';
 					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
 					$startDate = HabariDateTime::date_create( $startDate );
-					$params[]= $startDate->sql;
-					$params[]= $startDate->modify( '+1 day' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 day' )->sql;
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
-					$where[]= 'timestamp BETWEEN ? AND ?';
+					$where[] = 'timestamp BETWEEN ? AND ?';
 					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
 					$startDate = HabariDateTime::date_create( $startDate );
-					$params[]= $startDate->sql;
-					$params[]= $startDate->modify( '+1 month' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 month' )->sql;
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
-					$where[]= 'timestamp BETWEEN ? AND ?';
+					$where[] = 'timestamp BETWEEN ? AND ?';
 					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
 					$startDate = HabariDateTime::date_create( $startDate );
-					$params[]= $startDate->sql;
-					$params[]= $startDate->modify( '+1 year' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 year' )->sql;
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
-				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+				$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 			}
 		}
 

@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  *
  * Habari HiEngine class
- * @package Habari
  *
  * The HiEngine is a subclass of the RawPHPEngine class
  * which is intended for those theme designers who want to use

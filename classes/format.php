@@ -1,11 +1,15 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Format Class
  *
  * Provides formatting functions for use in themes.  Extendable.
- * @package Habari
+ *
  */
-
 class Format
 {
 	private static $formatters = null;
@@ -316,8 +320,8 @@ class Format
 			}
 			elseif( $word[0] == '<' ) {
 				// If the tag begins, push it on the stack
-				$stack[]= $word;
-				$output.= $word;
+				$stack[] = $word;
+				$output .= $word;
 			}
 			else {
 				$output.= $word;

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * HTML Token Set (created by @see HTMLTokenizer)

@@ -1,5 +1,10 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Stack Class
  *
  * This class allows Habari to accumulate a group of unique values that
@@ -21,9 +26,7 @@
  * Stack::out( 'template_stylesheet', '<link rel="stylesheet" type="text/css"  href="%s" media="%s">' );
  * </code>
  *
- * @package Habari
  */
-
 class Stack
 {
 	private static $stacks = array();
@@ -144,8 +147,8 @@ class Stack
 				self::$stack_sort[$stack_name][$a][$value_name] = $value_name;
 			}
 		}
-		$stack[$value_name]= $value;
-		self::$stacks[$stack_name]= $stack;
+		$stack[$value_name] = $value;
+		self::$stacks[$stack_name] = $stack;
 		return $stack;
 	}
 
@@ -161,7 +164,7 @@ class Stack
 		if ( isset( $stack[$value_name] ) ) {
 			unset( $stack[$value_name] );
 		}
-		self::$stacks[$stack_name]= $stack;
+		self::$stacks[$stack_name] = $stack;
 		return $stack;
 	}
 

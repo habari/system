@@ -1,21 +1,24 @@
 <?php
 /**
- * Habari UserGroups Class
- *
  * @package Habari
+ *
  */
 
+/**
+ * Habari UserGroups Class
+ *
+ */
 class UserGroups extends ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
 	/**
 	 * Returns a group or grops based on supplied parameters.
-	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
+	 * @todo This class should cache query results!
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of UserGroup objects, or a single UserGroup object, depending on request
-	 **/
+	 */
 	public static function get( $paramarray = array() ) {
 		$params = array();
 		$fns = array( 'get_results', 'get_row', 'get_value' );
@@ -44,7 +47,7 @@ class UserGroups extends ArrayObject
 		$wheres = array();
 		$join = '';
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[]= $paramarray['where'];
+			$wheres[] = $paramarray['where'];
 		}
 		else {
 			foreach( $wheresets as $paramset ) {
@@ -63,13 +66,13 @@ class UserGroups extends ArrayObject
 								continue;
 							}
 						default:
-							$where[]= "{$field}= ?";
-							$params[]= $paramset[$field];
+							$where[] = "{$field}= ?";
+							$params[] = $paramset[$field];
 					}
 				}
 				
 				if(count($where) > 0) {
-					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
 		}

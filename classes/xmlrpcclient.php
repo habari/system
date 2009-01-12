@@ -1,25 +1,27 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Create an XMLRPC client connection
- * 
+ *
  * To Use:
  * <code>
  * // Create the object using the XMLRPC entrypoint and scope.
  * $rpc= new XMLRPCClient('http://rpc.pingomatic.com', 'weblogUpdates');
  * // Make a weblogUpdates.ping call on the client.
  * $result= $rpc->ping('Blog name', 'http://example.com');
- * 
+ *
  * // Change the scope on the existing client object.
  * $rpc->set_scope('system');
  * // Make a system.listMethods call on the client.
  * $methods= $rpc->listMethods();
  * </code>
  *
- * @package Habari
- * @todo Handle XMLRPC fault results by returning some error value. 
+ * @todo Handle XMLRPC fault results by returning some error value.
  */
-
 class XMLRPCClient
 {
 	private $entrypoint;
@@ -27,10 +29,10 @@ class XMLRPCClient
 
 	/**
 	 * Create the XMLRPCClient
-	 * 
+	 *
 	 * @param string $xmlrpc_entrypoint The entrypoint of the remote server
 	 */
-	public function __construct($xmlrpc_entrypoint, $scope = null) 
+	public function __construct($xmlrpc_entrypoint, $scope = null)
 	{
 		$this->entrypoint = $xmlrpc_entrypoint;
 		if(isset($scope)) {
@@ -41,10 +43,10 @@ class XMLRPCClient
 	/**
 	 * Set the scope of any subsequent function calls
 	 * The default scope is 'system'.
-	 * 
+	 *
 	 * @param string $scope The scope to use
 	 */
-	public function set_scope($scope) 
+	public function set_scope($scope)
 	{
 		$this->scope = $scope;
 	}
@@ -53,12 +55,12 @@ class XMLRPCClient
 	 * Allow method overloading for this class.
 	 * This method allows any method name to be called on this object.  The method
 	 * called is the method called via RPC, within the scope defined in $this->scope.
-	 * 
+	 *
 	 * @param string $fname The function name to call
 	 * @param array $args An array of arguments that were called with the function
-	 * @return array The result array 
+	 * @return array The result array
 	 */
-	public function __call($fname, $args) 
+	public function __call($fname, $args)
 	{
 		if($this->scope != '') {
 			$rpc_method = "{$this->scope}.{$fname}";
@@ -116,7 +118,7 @@ class XMLRPCClient
 	 * // Call weblogUpdates.ping RPC call
 	 * $rpc->weblogUpdates->ping('Blog name', 'http://example.com');
 	 * </code>
-	 * 
+	 *
 	 * @param string $scope The scope to set this object to.
 	 * @return XMLRPCClient This object instance
 	 **/

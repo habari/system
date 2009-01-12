@@ -1,4 +1,8 @@
 <?php
+/*
+ * @package Habari
+ *
+ */
 
 /*
  * Habari MultiByte Class
@@ -7,8 +11,7 @@
  * a necessity since all of Habari's internal string
  * manipulations are done in UTF-8. Currently
  * this class is a wrapper around mbstring functions.
- * 
- * @package Habari
+ *
  */
 class MultiByte
 {
@@ -37,10 +40,10 @@ class MultiByte
 	/*
 	* function hab_encoding
 	*
-	* Sets and returns the internal encoding. 
+	* Sets and returns the internal encoding.
 	*
 	* @param $use_enc string. The encoding to be used
-	^
+	*
 	* @return string. If $enc is null, returns the current
 	* encoding. If $enc is not null, returns the old encoding
 	*/
@@ -49,7 +52,7 @@ class MultiByte
 		if ( $use_enc === null ) {
 			return self::$hab_enc;
 		}
-		else{
+		else {
 			$old_enc = self::$hab_enc;
 			self::$hab_enc = $use_enc;
 			return $old_enc;
@@ -61,7 +64,7 @@ class MultiByte
 	*
 	* Sets and returns the multibyte library being used internally
 	*
-	* @param $int The new library to use. 
+	* @param $int The new library to use.
 	*
 	* @return mixed  If $new_library is null, returns the current library
 	* being used. If $new_library has a valid value, returns the old library,
@@ -88,10 +91,10 @@ class MultiByte
 	*
 	* Converts a string's encoding to a new encoding
 	*
-	* @param $str string. The string who's encoding is being changed. 
+	* @param $str string. The string who's encoding is being changed.
 	* @param $use_enc string. The encoding to convert to. If not set,
 	* the internal encoding will be used.
-	* @param $from_enc string. encoding before conversion. If not set, 
+	* @param $from_enc string. encoding before conversion. If not set,
  	* encoding is detected automatically.
 	*
 	* @return mixed  The  source string in the new encoding or boolean false.
@@ -122,7 +125,7 @@ class MultiByte
 	*
 	* Detects the encoding being used for a string
 	*
-	* @param $str string. The string who's encoding is being detected 
+	* @param $str string. The string who's encoding is being detected
 	*
 	* @return mixed The  source string's detected encoding, or boolean false.
 	*/
@@ -157,12 +160,12 @@ class MultiByte
 	* @param $len integer. How long the returned string should be. If $len is
 	* not set, the section of the string from $begin to the end of the string is
 	* returned.
-	* @param $use_enc string. The encoding to be used. If not set, 
+	* @param $use_enc string. The encoding to be used. If not set,
 	* the internal encoding will be used.
 	*
 	* @return mixed The  section of the source string requested in the encoding requested or false.
 	* If $len is not set, returns substring from $begin to end of string.
-	*  
+	*
 	*/
 	public static function substr( $str, $begin, $len = null, $use_enc = null )
 	{
@@ -189,11 +192,11 @@ class MultiByte
 	*
 	* Gets the length of a string in characters
 	*
-	* @param $str string. The string who's length is being returned. 
-	* @param $use_enc string. The encoding to be used. If not set, 
+	* @param $str string. The string who's length is being returned.
+	* @param $use_enc string. The encoding to be used. If not set,
 	* the internal encoding will be used.
 	*
-	* @return integer. The length in characters of the string, or the length in bytes if a valid 
+	* @return integer. The length in characters of the string, or the length in bytes if a valid
 	* multibyte library isn't loaded.
 	*/
 	public static function strlen( $str, $use_enc = null )
@@ -224,7 +227,7 @@ class MultiByte
 	* isn't loaded, strtolower() will be used, which can lead to unexpected results.
 	 *
 	 * @param $str string. The string to lowercase
-	* @param $use_enc string. The encoding to be used. If not set, 
+	* @param $use_enc string. The encoding to be used. If not set,
 	* the internal encoding will be used.
 	 *
 	 * @return string. The lowercased string.
@@ -253,7 +256,7 @@ class MultiByte
 	* isn't loaded, strtoupper() will be used, which can lead to unexpected results.
 	*
 	* @param $str string. The string to uppercase
-	* @param $use_enc string. The encoding to be used. If not set, 
+	* @param $use_enc string. The encoding to be used. If not set,
 	* the internal encoding will be used.
 	*
 	* @return string. The uppercased string.

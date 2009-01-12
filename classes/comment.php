@@ -1,9 +1,11 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari CommentRecord Class
- *
- * @package Habari
  *
  * Includes an instance of the CommentInfo class; for holding inforecords about the comment
  * If the Comment object describes an existing user; use the internal info object to get, set, unset and test for existence (isset) of
@@ -301,7 +303,7 @@ class Comment extends QueryRecord implements IsContent
  	private function setstatus($value)
  	{
  		if ( is_numeric( $value ) ) {
- 			$this->newfields['status']= $value;
+ 			$this->newfields['status'] = $value;
 		}
  		else {
  			switch(strtolower($value))
@@ -309,17 +311,17 @@ class Comment extends QueryRecord implements IsContent
  				case "approved":
  				case "approve":
  				case "ham":
- 					$this->newfields['status']= self::STATUS_APPROVED;
+ 					$this->newfields['status'] = self::STATUS_APPROVED;
  					break;
  				case "unapproved":
  				case "unapprove":
- 					$this->newfields['status']= self::STATUS_UNAPPROVED;
+ 					$this->newfields['status'] = self::STATUS_UNAPPROVED;
  					break;
  				case "spam":
- 					$this->newfields['status']= self::STATUS_SPAM;
+ 					$this->newfields['status'] = self::STATUS_SPAM;
  					break;
  				case "deleted":
- 					$this->newfields['status']= self::STATUS_DELETED;
+ 					$this->newfields['status'] = self::STATUS_DELETED;
  					break;
  			}
  		}

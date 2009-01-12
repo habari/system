@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Access Control List class
@@ -11,9 +15,7 @@
  * that permission denies the user that permission, even if another group
  * grants that permission.
  *
- * @package Habari
  **/
-
 class ACL {
 	/**
 	 * How to handle a permission request for a permission that is not in the permission list.

@@ -1,10 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * A base class handler for URL-based actions. All ActionHandlers must
  * extend this class for the Controller to call their actions.
  *
- * @package Habari
  */
 class ActionHandler
 {

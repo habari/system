@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Static class to build and read cron entries
  *
- * @package Habari
  */
-
 class CronTab extends ActionHandler
 {
 	/**

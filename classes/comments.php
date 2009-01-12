@@ -1,10 +1,13 @@
 <?php
 /**
- * Habari Comments Class
- *
  * @package Habari
+ *
  */
 
+/**
+ * Habari Comments Class
+ *
+ */
 class Comments extends ArrayObject
 {
 	private $sort;
@@ -92,8 +95,8 @@ class Comments extends ArrayObject
 						$params = array_merge( $params, $paramset['type'] );
 					}
 					else {
-						$where[]= "type= ?";
-						$params[]= Comment::type( $paramset['type'] );
+						$where[] = "type= ?";
+						$params[] = Comment::type( $paramset['type'] );
 					}
 				}
 				if ( isset( $paramset['name'] ) ) {
@@ -118,7 +121,7 @@ class Comments extends ArrayObject
 				}
 				/* do searching */
 				if ( isset( $paramset['post_author'] ) ) {
-					$joins['posts']= ' INNER JOIN {posts} ON {comments}.post_id = {posts}.id';
+					$joins['posts'] = ' INNER JOIN {posts} ON {comments}.post_id = {posts}.id';
 					if ( is_array( $paramset['post_author'] ) ) {
 						$where[] = "{posts}.user_id IN (" . implode( ',', array_fill( 0, count( $paramset['post_author'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['post_author'] );
@@ -132,7 +135,7 @@ class Comments extends ArrayObject
 					if ( isset( $paramset['criteria_fields'] ) ) {
 						// Support 'criteria_fields' => 'author,ip' rather than 'criteria_fields' => array( 'author', 'ip' )
 						if ( !is_array( $paramset['criteria_fields'] ) && is_string( $paramset['criteria_fields'] ) ) {
-							$paramset['criteria_fields']= explode( ',', $paramset['criteria_fields'] );
+							$paramset['criteria_fields'] = explode( ',', $paramset['criteria_fields'] );
 						}
 					}
 					else {
@@ -168,8 +171,8 @@ class Comments extends ArrayObject
 					$startDate = HabariDateTime::date_create( $startDate );
 					$params[] = $startDate->sql;
 					$params[] = $startDate->modify( '+1 day' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[] = 'date BETWEEN ? AND ?';
@@ -177,8 +180,8 @@ class Comments extends ArrayObject
 					$startDate = HabariDateTime::date_create( $startDate );
 					$params[] = $startDate->sql;
 					$params[] = $startDate->modify( '+1 month' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'date BETWEEN ? AND ?';
@@ -186,8 +189,8 @@ class Comments extends ArrayObject
 					$startDate = HabariDateTime::date_create( $startDate );
 					$params[] = $startDate->sql;
 					$params[] = $startDate->modify( '+1 year' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
 				$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
@@ -560,7 +563,7 @@ class Comments extends ArrayObject
 	{
 		$params = array( 'email' => $email, 'count' => 'email');
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
@@ -576,7 +579,7 @@ class Comments extends ArrayObject
 	{
 		$params = array( 'url' => $url, 'count' => 'url');
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
@@ -607,7 +610,7 @@ class Comments extends ArrayObject
 	{
 		$params = array( 'post_slug' => $slug, 'count' => 'id');
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
@@ -623,7 +626,7 @@ class Comments extends ArrayObject
 	 {
 	 	$params = array( 'post_id' => $id, 'count' => 'id' );
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	 }

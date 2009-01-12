@@ -1,12 +1,15 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
 * Habari Version Class
 *
 * Base class for managing metadata about various Habari objects
 *
-* @package Habari
 */
-
 class Version
 {
 	// DB and API versions are aligned with the SVN revision

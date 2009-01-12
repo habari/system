@@ -1,21 +1,23 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari DatabaseConnection Class
  *
- * @package Habari
+ * Actual database connection.
  */
-
-
 class DatabaseConnection
 {
 	private $fetch_mode = PDO::FETCH_CLASS;          // PDO Fetch mode
-	private $fetch_class_name = 'QueryRecord';    	// The default class name for fetching classes
-	private $driver;								// PDO driver name
+	private $fetch_class_name = 'QueryRecord';       // The default class name for fetching classes
+	private $driver;                                 // PDO driver name
 	private $keep_profile = DEBUG;                   // keep profiling and timing information?
-	protected $pdo = NULL;                             // handle to the PDO interface
+	protected $pdo = NULL;                           // handle to the PDO interface
 	private $pdo_statement = NULL;                   // handle for a PDOStatement
-	private $pdo_transaction = FALSE;					// handle for transaction status
+	private $pdo_transaction = FALSE;                // handle for transaction status
 
 	/**
 	 * @var array tables Habari knows about
@@ -56,9 +58,9 @@ class DatabaseConnection
 	private $sql_tables = array();
 	private $sql_tables_repl = array();
 	private $errors = array();                       // an array of errors related to queries
-	private $profiles = array();                     	// an array of query profiles
+	private $profiles = array();                     // an array of query profiles
 
-	protected $prefix = '';								// class protected storage of the database table prefix, defaults to ''
+	protected $prefix = '';                          // class protected storage of the database table prefix, defaults to ''
 	private $current_table;
 
 	/**
@@ -84,17 +86,19 @@ class DatabaseConnection
 	{
 		if ( isset ( $GLOBALS['db_connection']['prefix'] ) ) {
 			$prefix = $GLOBALS['db_connection']['prefix'];
-		} else if ( isset( $_POST['table_prefix'] ) ) {
+		}
+		else if ( isset( $_POST['table_prefix'] ) ) {
 			$prefix = $_POST['table_prefix'];
-		} else {
+		}
+		else {
 			$prefix = $this->prefix;
 		}
 		$this->prefix = $prefix;
 
 		// build the mapping with prefixes
 		foreach ( $this->tables as $t ) {
-			$this->sql_tables[$t]= $prefix . $t;
-			$this->sql_tables_repl[$t]= '{' . $t . '}';
+			$this->sql_tables[$t] = $prefix . $t;
+			$this->sql_tables_repl[$t] = '{' . $t . '}';
 		}
 	}
 
@@ -171,7 +175,7 @@ class DatabaseConnection
 	**/
 	public function register_table( $name )
 	{
-		$this->tables[]= $name;
+		$this->tables[] = $name;
 		$this->load_tables();
 	}
 
@@ -271,7 +275,7 @@ class DatabaseConnection
 			}
 			if ( $this->keep_profile ) {
 				$profile->stop();
-				$this->profiles[]= $profile;
+				$this->profiles[] = $profile;
 			}
 			return true;
 		}
@@ -326,7 +330,7 @@ class DatabaseConnection
 			}
 			if ( $this->keep_profile ) {
 				$profile->stop();
-				$this->profiles[]= $profile;
+				$this->profiles[] = $profile;
 			}
 			return true;
 		}
@@ -388,9 +392,9 @@ class DatabaseConnection
 		$backtrace1 = debug_backtrace();
 		$backtrace = array();
 		foreach($backtrace1 as $trace) {
-			$backtrace[]= array_intersect_key( $trace, array('file'=>1, 'line'=>1, 'function'=>1, 'class'=>1) );
+			$backtrace[] = array_intersect_key( $trace, array('file'=>1, 'line'=>1, 'function'=>1, 'class'=>1) );
 		}
-		$this->errors[]= array_merge($error, array('backtrace'=> $backtrace)) ;
+		$this->errors[] = array_merge($error, array('backtrace'=> $backtrace)) ;
 	}
 
 	/**
@@ -561,7 +565,7 @@ class DatabaseConnection
 		foreach( $fieldvalues as $field => $value ) {
 			$query.= $comma . $field;
 			$comma = ', ';
-			$values[]= $value;
+			$values[] = $value;
 		}
 		$query.= ' ) VALUES ( ' . trim( str_repeat( '?,', count( $fieldvalues ) ), ',' ) . ' );';
 
@@ -585,7 +589,7 @@ class DatabaseConnection
 		$values = array();
 		foreach( $keyfieldvalues as $keyfield => $keyvalue ) {
 			$qry.= " AND {$keyfield}= ? ";
-			$values[]= $keyvalue;
+			$values[] = $keyvalue;
 		}
 		$result = $this->get_row( $qry, $values );
 		return ( $result !== false );
@@ -609,10 +613,10 @@ class DatabaseConnection
 		$keyfieldvalues = array();
 		foreach( $keyfields as $keyfield => $keyvalue ) {
 			if( is_numeric( $keyfield ) ) {
-				$keyfieldvalues[$keyvalue]= $fieldvalues[$keyvalue];
+				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];
 			}
 			else {
-				$keyfieldvalues[$keyfield]= $keyvalue;
+				$keyfieldvalues[$keyfield] = $keyvalue;
 			}
 		}
 		if( $this->exists( $table, $keyfieldvalues ) ) {
@@ -621,14 +625,14 @@ class DatabaseConnection
 			$comma = '';
 			foreach( $fieldvalues as $fieldname => $fieldvalue ) {
 				$qry.= $comma . " {$fieldname}= ?";
-				$values[]= $fieldvalue;
+				$values[] = $fieldvalue;
 				$comma = ' ,';
 			}
 			$qry.= ' WHERE 1=1 ';
 
 			foreach( $keyfields as $keyfield => $keyvalue ) {
 				$qry.= "AND {$keyfield}= ? ";
-				$values[]= $keyvalue;
+				$values[] = $keyvalue;
 			}
 			return $this->query( $qry, $values );
 		}
@@ -652,7 +656,7 @@ class DatabaseConnection
 		$qry = "DELETE FROM {$table} WHERE 1=1 ";
 		foreach ( $keyfields as $keyfield => $keyvalue ) {
 			$qry.= "AND {$keyfield}= ? ";
-			$values[]= $keyvalue;
+			$values[] = $keyvalue;
 		}
 
 		return $this->query( $qry, $values );

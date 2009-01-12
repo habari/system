@@ -1,11 +1,14 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari Locale Class
  *
  * Provides translation services.
  *
- * @package Habari
  */
 class HabariLocale
 {
@@ -183,7 +186,7 @@ class HabariLocale
 				$msgids = explode( "\0", substr( $data, $msginfo['offset'], $msginfo['length'] ) );
 				$transinfo = unpack( $lo, substr( $data, $header['transblock'] + $msgindex * 8, 8 ) );
 				$transids = explode( "\0", substr( $data, $transinfo['offset'], $transinfo['length'] ) );
-				self::$messages[$domain][$msgids[0]]= array(
+				self::$messages[$domain][$msgids[0]] = array(
 					$msgids,
 					$transids,
 				);

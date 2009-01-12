@@ -1,9 +1,14 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Site class
+ *
  * Contains functions for getting details about the site directories and URLs.
  *
- * @package Habari
  */
 class Site
 {
@@ -40,7 +45,7 @@ class Site
 	 * script_name is a helper function to determine the name of the script
 	 * not all PHP installations return the same values for $_SERVER['SCRIPT_URL']
 	 * and $_SERVER['SCRIPT_NAME']
-	**/
+	 */
 	public static function script_name()
 	{
 		switch ( true ) {

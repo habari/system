@@ -1,12 +1,12 @@
 <?php
-
 /**
  * @package Habari
  *
- * Contains the FileCache class
  */
 
 /**
+ * Contains the FileCache class
+ *
  * Stores cache data in local files
  */
 class FileCache extends Cache
@@ -96,7 +96,7 @@ class FileCache extends Cache
 				}
 			}
 			else {
-				$this->cache_data[$group]= array();
+				$this->cache_data[$group] = array();
 			}
 		}
 		return $this->cache_data[$group];
@@ -118,10 +118,10 @@ class FileCache extends Cache
 
 		if ( !isset( $this->cache_data[$group][$name] ) ) {
 			if ( isset( $this->cache_files[$ghash][$hash] ) && $this->cache_files[$ghash][$hash]['expires'] > time() && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
-				$this->cache_data[$group][$name]= unserialize( file_get_contents( $this->cache_files[$ghash][$hash]['file'] ) );
+				$this->cache_data[$group][$name] = unserialize( file_get_contents( $this->cache_files[$ghash][$hash]['file'] ) );
 			}
 			else {
-				$this->cache_data[$group][$name]= null;
+				$this->cache_data[$group][$name] = null;
 			}
 		}
 		return $this->cache_data[$group][$name];
@@ -135,10 +135,10 @@ class FileCache extends Cache
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
-		$this->cache_data[$group][$name]= $value;
+		$this->cache_data[$group][$name] = $value;
 
 		file_put_contents( $this->cache_location . $ghash . $hash, serialize( $value ) );
-		$this->cache_files[$ghash][$hash]= array( 'file' => $this->cache_location . $ghash . $hash, 'expires' => time() + $expiry, 'name' => $name );
+		$this->cache_files[$ghash][$hash] = array( 'file' => $this->cache_location . $ghash . $hash, 'expires' => time() + $expiry, 'name' => $name );
 		$this->clear_expired();
 		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
@@ -225,7 +225,7 @@ class FileCache extends Cache
 	private function clear_expired()
 	{
 		foreach ( $this->cache_files as $ghash => $records ) {
-			$this->cache_files[$ghash]= array_filter( $records, array( $this, 'record_fresh' ) );
+			$this->cache_files[$ghash] = array_filter( $records, array( $this, 'record_fresh' ) );
 		}
 	}
 

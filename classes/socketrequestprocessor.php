@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * RequestProcessor using sockets (fsockopen).
@@ -49,7 +53,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$_errstr = '';
 		
 		if ( !isset( $urlbits['port'] ) || $urlbits['port'] == 0 ) {
-			$urlbits['port']= 80;
+			$urlbits['port'] = 80;
 		}
 		
 		$fp = @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
@@ -63,13 +67,13 @@ class SocketRequestProcessor implements RequestProcessor
 		stream_set_timeout( $fp, $timeout );
 		
 		// fix headers
-		$headers['Host']= $urlbits['host'];
-		$headers['Connection']= 'close';
+		$headers['Host'] = $urlbits['host'];
+		$headers['Connection'] = 'close';
 		
 		// merge headers into a list
 		$merged_headers = array();
 		foreach ( $headers as $k => $v ) {
-			$merged_headers[]= $k . ': ' . $v;
+			$merged_headers[] = $k . ': ' . $v;
 		}
 		
 		// build the request
@@ -77,18 +81,18 @@ class SocketRequestProcessor implements RequestProcessor
 		$resource = $urlbits['path'];
 		if ( isset( $urlbits['query'] ) ) {
 			$resource.= '?' . $urlbits['query'];
-		} 
-		
-		$request[]= "{$method} {$resource} HTTP/1.1";
-		$request = array_merge( $request, $merged_headers );
-		
-		$request[]= '';
-		
-		if ( $method === 'POST' ) {
-			$request[]= $body;
 		}
 		
-		$request[]= '';
+		$request[] = "{$method} {$resource} HTTP/1.1";
+		$request = array_merge( $request, $merged_headers );
+		
+		$request[] = '';
+		
+		if ( $method === 'POST' ) {
+			$request[] = $body;
+		}
+		
+		$request[] = '';
 		
 		$out = implode( "\r\n", $request );
 		
@@ -119,7 +123,7 @@ class SocketRequestProcessor implements RequestProcessor
 				$redirect_urlbits = InputFilter::parse_url( $redirect_url );
 				
 				if ( !isset( $redirect_url['host'] ) ) {
-					$redirect_urlbits['host']= $urlbits['host'];
+					$redirect_urlbits['host'] = $urlbits['host'];
 				}
 				
 				$this->redir_count++;
@@ -149,14 +153,14 @@ class SocketRequestProcessor implements RequestProcessor
 		$chunk_size = 0;
 		
 		do {
-			$chunk = explode( "\r\n", $body, 2 ); 
-			list( $chunk_size_str, )= explode( ';', $chunk[0], 2 ); 
+			$chunk = explode( "\r\n", $body, 2 );
+			list( $chunk_size_str, )= explode( ';', $chunk[0], 2 );
 			$chunk_size = hexdec( $chunk_size_str );
 			
 			if ( $chunk_size > 0 ) {
 				$result.= substr( $chunk[1], 0, $chunk_size );
 				$body = substr( $chunk[1], $chunk_size+1 );
-			} 
+			}
 		}
 		while ( $chunk_size > 0 );
 		// this ignores trailing header fields

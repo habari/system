@@ -1,8 +1,12 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
 * Habari Tags Class
 *
-* @package Habari
 */
 class Tags extends ArrayObject
 {
@@ -17,17 +21,17 @@ class Tags extends ArrayObject
 	{
 		/*
 		 * A LEFT JOIN is needed here in order to accomodate tags,
-		 * such as the default "habari" tag added to the database, 
+		 * such as the default "habari" tag added to the database,
 		 * which are not related (yet) to any post itself.  These
 		 * tags are essentially lost to the world.
 		 */
-		$tags = DB::get_results( 'SELECT t.id AS id, 
-			t.tag_text AS tag, 
-			t.tag_slug AS slug, 
-			COUNT(tp.tag_id) AS count 
-			FROM {tags} t 
-			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id 
-			GROUP BY id, tag, slug 
+		$tags = DB::get_results( 'SELECT t.id AS id,
+			t.tag_text AS tag,
+			t.tag_slug AS slug,
+			COUNT(tp.tag_id) AS count
+			FROM {tags} t
+			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id
+			GROUP BY id, tag, slug
 			ORDER BY tag ASC' );
 		return $tags;
 	}
@@ -39,13 +43,13 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_one($tag)
 	{
- 		return DB::get_row( 'SELECT t.id AS id, 
-			t.tag_text AS tag, 
+ 		return DB::get_row( 'SELECT t.id AS id,
+			t.tag_text AS tag,
 			t.tag_slug AS slug,
-			COUNT(tp.tag_id) AS count 
-			FROM {tags} t 
-			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id 
-			WHERE tag_slug = ? OR t.id = ? 
+			COUNT(tp.tag_id) AS count
+			FROM {tags} t
+			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id
+			WHERE tag_slug = ? OR t.id = ?
 			GROUP BY id, tag, slug', array( Utils::slugify( $tag ), $tag ) );
 	}
 
@@ -90,7 +94,7 @@ class Tags extends ArrayObject
 			$posts = DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $tag->id ) );
 
 			if ( count( $posts ) > 0 ) {
-								
+
 				// build a list of all the post_id's we need for the new tag
 				foreach ( $posts as $post ) {
 					$post_ids[] = $post->post_id;
@@ -116,8 +120,8 @@ class Tags extends ArrayObject
 			
 			$master_ids = array();
 			
-			foreach ( $master_posts as $master_post ) {				
-				$master_ids[]= $master_post->post_id;
+			foreach ( $master_posts as $master_post ) {
+				$master_ids[] = $master_post->post_id;
 			}
 			
 		}

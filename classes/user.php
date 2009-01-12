@@ -1,9 +1,11 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari UserRecord Class
- *
- * @package Habari
  *
  * @todo TODO Fix this documentation!
  *
@@ -11,7 +13,7 @@
  * If the User object describes an existing user; use the internal info object to get, set, unset and test for existence (isset) of
  * info records
  * <code>
- *	$this->info = new UserInfo ( 1 );  // Info records of user with id = 1
+ * $this->info = new UserInfo ( 1 );  // Info records of user with id = 1
  * $this->info->option1 = "blah"; // set info record with name "option1" to value "blah"
  * $info_value = $this->info->option1; // get value of info record with name "option1" into variable $info_value
  * if ( isset ($this->info->option1) )  // test for existence of "option1"

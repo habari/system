@@ -1,11 +1,14 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * URL class which handles creation of URLs based on the rewrite
  * rules in the database.  Uses rules to construct pretty URLs for use
  * by the system and especially the theme's template engine
  *
- * @package Habari
  */
 class URL extends Singleton
 {
@@ -187,7 +190,8 @@ class URL extends Singleton
 			$return_url = $selectedrule->build( $args, $useall, $noamp );
 			if ( $prepend_site ) {
 				return Site::get_url( 'habari', true ) . $return_url;
-			} else {
+			}
+			else {
 				return $return_url;
 			}
 		}

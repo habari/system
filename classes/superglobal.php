@@ -1,10 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * SuperGlobals class
  *
  */
-
 class SuperGlobal extends ArrayIterator
 {
 	protected $values = array();
@@ -234,10 +237,10 @@ class SuperGlobal extends ArrayIterator
 	}
 	
 	/**
-	 * Apply a map function to this array, like array_map()	
+	 * Apply a map function to this array, like array_map()
 	 * @param callback $fn the name of the function to map through
 	 * @return SuperGlobal the result of the mapping
-	 **/	 	 	 	 
+	 **/
 	public function map($fn)
 	{
 		return new SuperGlobal(array_map($fn, $this->get_array_copy_raw()));
@@ -248,7 +251,7 @@ class SuperGlobal extends ArrayIterator
 	 * @param string $replacement (optional) The regex replacement value
 	 * @param string $search_regex (optional) The regex search value
 	 * @return SuperGlobal The re-keyed array
-	 **/	 	 	 	 	
+	 **/
 	public function rekey($replacement = '{\$$0}', $search_regex = '%^.*$%')
 	{
 		$output = array();

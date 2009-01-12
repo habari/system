@@ -1,10 +1,14 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Class which handles incoming requests and drives the
  * MVC strategy for building the model and assigning to
  * a view.
  *
- * @package Habari
  */
 class Controller extends Singleton {
 	public $base_url = '';        // base url for site
@@ -134,9 +138,9 @@ class Controller extends Singleton {
 		$controller->action = $matched_rule->action;
 		$controller->handler = new $matched_rule->handler();
 		/* Insert the regexed submatches as the named parameters */
-		$controller->handler->handler_vars['entire_match']= $matched_rule->entire_match; // The entire matched string is returned at index 0
+		$controller->handler->handler_vars['entire_match'] = $matched_rule->entire_match; // The entire matched string is returned at index 0
 		foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value) {
-			$controller->handler->handler_vars[$named_arg_key]= $named_arg_value;
+			$controller->handler->handler_vars[$named_arg_key] = $named_arg_value;
 		}
 
 		/* Also, we musn't forget to add the GET and POST vars into the action's settings array */

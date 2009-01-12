@@ -1,14 +1,18 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * XMLRPC Client
  */
 class RPCClient {
-    private $url;
-    private $method;
-    private $params;
-    private $request_body;
-    private $result = FALSE;
+	private $url;
+	private $method;
+	private $params;
+	private $request_body;
+	private $result = FALSE;
 
 	/**
 	 * @param string URL
@@ -44,7 +48,7 @@ class RPCClient {
 	}
 	
 	/**
-	 * Return the (decoded) result of the request, or FALSE if the result was invalid. 
+	 * Return the (decoded) result of the request, or FALSE if the result was invalid.
 	 */
 	public function get_result()
 	{
