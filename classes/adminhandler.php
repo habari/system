@@ -724,30 +724,30 @@ class AdminHandler extends ActionHandler
 					Utils::redirect( URL::get( 'admin', $results ) );
 					break;
 				case 'username': // Changing username
-					if ( isset( $username ) && ( $user->username != $username ) ) {
+					if ( NULL != $posted_value && $user->username != $posted_value ) {
 						// make sure the name isn't already used
-						if ( $test = User::get_by_name( $username ) ) {
+						if ( User::get_by_name( $posted_value ) ) {
 							Session::error( _t( 'That username is already in use!' ) );
 							break;
 						}
 						$old_name = $user->username;
-						$user->username = $username;
-						Session::notice( sprintf( _t( '%1$s has been renamed to %2$s.' ), $old_name, $username ) );
-						$results['user']= $username;
+						$user->username = $posted_value;
+						Session::notice( sprintf( _t( '%1$s has been renamed to %2$s.' ), $old_name, $posted_value ) );
+						$results['user']= $posted_value;
 						$update = TRUE;
 					}
 					break;
 				case 'email': // Changing e-mail address
-					if ( isset( $email ) && ( $user->email != $email ) ) {
-						$user->email = $email;
-						Session::notice( sprintf( _t( '%1$s email has been changed to %2$s' ), $user->username, $email ) );
+					if ( NULL != $posted_value && $user->email != $posted_value ) {
+						$user->email = $posted_value;
+						Session::notice( sprintf( _t( '%1$s email has been changed to %2$s' ), $user->username, $posted_value ) );
 						$update = TRUE;
 					}
 					break;
 				case 'pass1': // Changing password
-					if ( isset( $pass1 ) && ( !empty( $pass1 ) ) ) {
-						if ( isset( $pass2 ) && ( $pass1 == $pass2 ) ) {
-							$user->password = Utils::crypt( $pass1 );
+					if ( NULL != $posted_value ) {
+						if ( NULL != $_POST['pass2'] && $posted_value == $_POST['pass2'] ) {
+							$user->password = Utils::crypt( $posted_value );
 							if ( $user == $currentuser ) {
 								$user->remember();
 							}
