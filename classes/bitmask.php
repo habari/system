@@ -1,5 +1,10 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Class to wrap around bitmap field functionality
  */
 class Bitmask {

@@ -1,17 +1,20 @@
 <?php
-
 /**
  * @package Habari
  *
- * Class which describes a single Tag object
  */
-class Tag extends QueryRecord 
+
+/**
+ * Class which describes a single Tag object
+ *
+ */
+class Tag extends QueryRecord
 {
 
 	/**
 	 * Return the defined database columns for a Tag.
 	 * @return array Array of columns in the tags table
-   */
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -53,10 +56,10 @@ class Tag extends QueryRecord
 		// Defaults
 		$defaults = array ('where' => array(),	'fetch_fn' => 'get_row');
 		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
+			$defaults['where'][$index] = array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
 		}
 		// make sure we get at most one result
-		$defaults['limit']= 1;
+		$defaults['limit'] = 1;
 
 		return Tags::get( $defaults );
 	}
@@ -81,7 +84,7 @@ class Tag extends QueryRecord
 	 * @param		post_id		The ID of the post
 	 * @return	TRUE or FALSE depending if relation was created.
 	 */
-	public static function attach_to_post( $tag_id, $post_id ) 
+	public static function attach_to_post( $tag_id, $post_id )
 	{
 		$result = TRUE;
 		Plugins::act( 'tag_attach_to_post_before', $tag_id, $post_id );
@@ -137,7 +140,7 @@ class Tag extends QueryRecord
 		elseif ( isset( $this->newfields['tag_text'] ) && $this->newfields['tag_text'] != '' ) {
 			$value = $this->newfields['tag_text'];
 		}
-		// - the existing tag text 
+		// - the existing tag text
 		elseif ( $this->fields['tag_text'] != '' ) {
 			$value = $this->fields['tag_text'];
 		}
@@ -145,7 +148,7 @@ class Tag extends QueryRecord
 		// make sure our slug is unique
 		$slug = Plugins::filter( 'tag_setslug', $value );
 		$slug = Utils::slugify( $slug );
-		return $this->newfields['tag_slug']= $slug;
+		return $this->newfields['tag_slug'] = $slug;
 	}
 
 	/**
@@ -169,7 +172,7 @@ class Tag extends QueryRecord
 		}
 
 		$result = parent::insertRecord( DB::table( 'tags' ) );
-		$this->newfields['id']= DB::last_insert_id(); // Make sure the id is set in the Tag object to match the row id
+		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the Tag object to match the row id
 		$this->fields = array_merge( $this->fields, $this->newfields );
 		$this->newfields = array();
 		EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
@@ -243,9 +246,9 @@ class Tag extends QueryRecord
 	/**
 	 * Handle calls to this Tag object that are implemented by plugins
 	 * @param string $name The name of the function called
-	 * @param array $args Arguments passed to the function call	 
-	 * @return mixed The value returned from any plugin filters, null if no value is returned	 
-	 **/	 
+	 * @param array $args Arguments passed to the function call
+	 * @return mixed The value returned from any plugin filters, null if no value is returned
+	 **/
 	public function __call( $name, $args )
 	{
 		array_unshift($args, 'tag_call_' . $name, null, $this);

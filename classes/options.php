@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari Options Class
  *
- * @package Habari
  */
 class Options extends Singleton
 {
@@ -129,10 +132,10 @@ class Options extends Singleton
 		$results = DB::get_results( 'SELECT name, value, type FROM ' . DB::table( 'options' ), array(), 'QueryRecord' );
 		foreach($results as $result) {
 			if ( $result->type == 1 ) {
-				$this->options[$result->name]= unserialize( $result->value );
+				$this->options[$result->name] = unserialize( $result->value );
 			}
 			else {
-				$this->options[$result->name]= $result->value;
+				$this->options[$result->name] = $result->value;
 			}
 		}
 	}
@@ -148,7 +151,7 @@ class Options extends Singleton
 			$this->get_all_options();
 		}
 		$value = Plugins::filter( 'option_set_value', $value, $name, isset($this->options[$name]) ? $this->options[$name] : null );
-		$this->options[$name]= $value;
+		$this->options[$name] = $value;
 
 		if ( is_array( $value ) || is_object( $value ) ) {
 			$result = DB::update( DB::table( 'options' ), array( 'name' => $name, 'value' => serialize( $value ), 'type' => 1 ), array( 'name' => $name ) );

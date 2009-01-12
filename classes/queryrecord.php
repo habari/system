@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari QueryRecord Class
  *
- * @package Habari
  */
-
 class QueryRecord implements URLProperties
 {
 	protected $fields = array();  // Holds field values from db
@@ -17,7 +19,7 @@ class QueryRecord implements URLProperties
 	 * constructor __construct
 	 * Constructor for the QueryRecord class.
 	 * @param array an associative array of initial field values.
-	 **/	 	 	 	
+	 **/
 	public function __construct($paramarray = array())
 	{
 		$this->loaded = true;
@@ -34,7 +36,7 @@ class QueryRecord implements URLProperties
 	 * Handles getting virtual properties for this class
 	 * @param string Name of the property
 	 * @return mixed The set value or NULL if none exists
-	 **/	 
+	 **/
 	public function __get($name)
 	{
 		if ( isset( $this->newfields[$name] ) ) {
@@ -52,9 +54,9 @@ class QueryRecord implements URLProperties
 	 * function __set
 	 * Handles setting virtual properties for this class
 	 * @param string Name of the property
-	 * @param mixed Value to set it to	 
-	 * @return mixed The set value 
-	 **/	 
+	 * @param mixed Value to set it to
+	 * @return mixed The set value
+	 **/
 	public function __set($name, $value)
 	{
 		if($this->loaded) {
@@ -70,7 +72,7 @@ class QueryRecord implements URLProperties
 	* Magic isset for QueryRecord, returns whether a property value is set.
 	* @param string $name The name of the parameter
 	* @return boolean True if the value is set, false if not
-	*/	 	 	 	
+	*/
 	public function __isset($name)
 	{
 		return ( isset( $this->newfields[$name] ) || isset( $this->fields[$name] ) );
@@ -82,7 +84,7 @@ class QueryRecord implements URLProperties
 	*/
 	public function exclude_fields( $fields )
 	{
-		if(is_array($fields)) 
+		if(is_array($fields))
 		{
 			$this->unsetfields = array_flip($fields);
 		}
@@ -112,7 +114,7 @@ class QueryRecord implements URLProperties
 	 * function insertRecord(
 	 * Inserts this record's fields as a new row
 	 * @param string Table to update
-	 * @return boolean True on success, false if not 
+	 * @return boolean True on success, false if not
 	 **/
 	/*
 	 * Again, the parent class's method's signature must match that of the
@@ -132,7 +134,7 @@ class QueryRecord implements URLProperties
 	public function to_array()
 	{
 		return array_merge($this->fields, $this->newfields);
-	}	 
+	}
 
 	/**
 	 * Returns an array with the current field settings
@@ -152,9 +154,9 @@ class QueryRecord implements URLProperties
 	 * function updateRecord
 	 * Updates this record's fields using the new data
 	 * @param string Table to update
-	 * @param array An associative array of field data to match	 	 	 		
-	 * @return boolean True on success, false if not 
-	 **/	 
+	 * @param array An associative array of field data to match
+	 * @return boolean True on success, false if not
+	 **/
 	protected function updateRecord($table, $updatekeyfields = array() )
 	{
 		$merge = array_merge($this->fields, $this->newfields);
@@ -171,9 +173,9 @@ class QueryRecord implements URLProperties
 	 * function deleteRecord
 	 * Deletes a record based on the match array
 	 * @param string Table to delete from
-	 * @param array An associative array of field data to match	 	 	 		
-	 * @return boolean True on success, false if not 
-	 **/	 
+	 * @param array An associative array of field data to match
+	 * @return boolean True on success, false if not
+	 **/
 	protected function deleteRecord($table, $updatekeyfields)
 	{
 		return DB::delete($table, $updatekeyfields);

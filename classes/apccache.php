@@ -1,11 +1,13 @@
 <?php
-
 /**
  * @package Habari
  *
- * Contains the APCCache class
  */
 
+/**
+ *
+ * Contains the APCCache class
+ */
 class APCCache extends Cache
 {
 	protected $enabled = false;

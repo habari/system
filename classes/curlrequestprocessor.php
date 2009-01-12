@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * RequestProcessor using CURL.
@@ -32,7 +36,7 @@ class CURLRequestProcessor implements RequestProcessor
 	{
 		$merged_headers = array();
 		foreach ( $headers as $k => $v ) {
-			$merged_headers[]= $k . ': ' . $v;
+			$merged_headers[] = $k . ': ' . $v;
 		}
 		
 		$ch = curl_init();

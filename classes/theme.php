@@ -1,8 +1,11 @@
 <?php
 /**
- * Habari Theme Class
- *
  * @package Habari
+ *
+ */
+
+/**
+ * Habari Theme Class
  *
  * The Theme class is the behind-the-scenes representation of
  * of a set of UI files that compose the visual theme of the blog
@@ -90,7 +93,7 @@ class Theme extends Pluggable
 						$this->$key = $value;
 					}
 					else {
-						$this->config_vars[$key]= $value;
+						$this->config_vars[$key] = $value;
 					}
 				}
 			}
@@ -163,16 +166,16 @@ class Theme extends Pluggable
 
 		$where_filters = array();
 		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
-		//$where_filters['status']= Post::status( 'published' );
+		//$where_filters['status'] = Post::status( 'published' );
 		if ( array_key_exists( 'tag', $where_filters ) ) {
-			$where_filters['tag_slug']= Utils::slugify($where_filters['tag']);
+			$where_filters['tag_slug'] = Utils::slugify($where_filters['tag']);
 			unset( $where_filters['tag'] );
 		}
 		if ( User::identify()->loggedin ) {
-			$where_filters['status']= isset( $_GET['preview'] ) ? Post::status( 'any' ) : Post::status( 'published' );
+			$where_filters['status'] = isset( $_GET['preview'] ) ? Post::status( 'any' ) : Post::status( 'published' );
 		}
 		else {
-			$where_filters['status']= Post::status( 'published' );
+			$where_filters['status'] = Post::status( 'published' );
 		}
 
 		if ( !isset( $posts ) ) {
@@ -209,7 +212,8 @@ class Theme extends Pluggable
 			$this->request->{URL::get_matched_rule()->name}= false;
 			$this->request->{URL::set_404()->name}= true;
 			$this->matched_rule = URL::get_matched_rule();
-			} else {
+			}
+			else {
 				$this->display('header');
 				echo '<h2>';
 				 _e( "Whoops! 404. The page you were trying to access is not really there. Please try again." );
@@ -231,12 +235,12 @@ class Theme extends Pluggable
 			// Default fallbacks based on the number of posts
 			$fallback = array( '{$type}.{$id}', '{$type}.{$slug}', '{$type}.tag.{$posttag}' );
 			if ( count( $posts ) > 1 ) {
-				$fallback[]= '{$type}.multiple';
-				$fallback[]= 'multiple';
+				$fallback[] = '{$type}.multiple';
+				$fallback[] = 'multiple';
 			}
 			else {
-				$fallback[]= '{$type}.single';
-				$fallback[]= 'single';
+				$fallback[] = '{$type}.single';
+				$fallback[] = 'single';
 			}
 		}
 
@@ -250,7 +254,7 @@ class Theme extends Pluggable
 			isset( $type ) ? $type : '-',
 			isset( $tag_slug ) ? $tag_slug : '-',
 		);
-		$fallback[]= 'home';
+		$fallback[] = 'home';
 		$fallback = Plugins::filter( 'template_fallback', $fallback );
 		$fallback = array_unique( str_replace( $searches, $replacements, $fallback ) );
 		for ( $z = 0; $z < count( $fallback ); $z++ ) {
@@ -258,7 +262,7 @@ class Theme extends Pluggable
 				$replacements = array();
 				if ( $alltags = $post->tags ) {
 					foreach ( $alltags as $tag_slug => $tag_text ) {
-						$replacements[]= str_replace( '{$posttag}', $tag_slug, $fallback[$z] );
+						$replacements[] = str_replace( '{$posttag}', $tag_slug, $fallback[$z] );
 					}
 					array_splice( $fallback, $z, 1, $replacements );
 				}
@@ -277,7 +281,7 @@ class Theme extends Pluggable
 	 */
 	public function act_display_home( $user_filters = array() )
 	{
-		$paramarray['fallback']= array(
+		$paramarray['fallback'] = array(
 			'home',
 			'multiple',
 		);
@@ -287,7 +291,7 @@ class Theme extends Pluggable
 			'content_type' => Post::type( 'entry' ),
 		);
 
-		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		return $this->act_display( $paramarray );
 	}
@@ -298,7 +302,7 @@ class Theme extends Pluggable
 	 */
 	public function act_display_entries( $user_filters = array() )
 	{
-		$paramarray['fallback']= array(
+		$paramarray['fallback'] = array(
 		 	'{$type}.multiple',
 			'multiple',
 		);
@@ -308,7 +312,7 @@ class Theme extends Pluggable
 			'content_type' => Post::type( 'entry' ),
 		);
 
-		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		return $this->act_display( $paramarray );
 	}
@@ -319,7 +323,7 @@ class Theme extends Pluggable
 	 */
 	public function act_display_post( $user_filters = array() )
 	{
-		$paramarray['fallback']= array(
+		$paramarray['fallback'] = array(
 		 '{$type}.{$id}',
 		 '{$type}.{$slug}',
 		 '{$type}.tag.{$posttag}',
@@ -339,7 +343,7 @@ class Theme extends Pluggable
 		$page_key = array_search( 'page', $this->valid_filters );
 		unset( $this->valid_filters[$page_key] );
 
-		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		// Handle comment submissions and default commenter id values
 		$cookie = 'comment_' . Options::get( 'GUID' );
@@ -380,7 +384,7 @@ class Theme extends Pluggable
 	 */
 	public function act_display_tag( $user_filters = array() )
 	{
-		$paramarray['fallback']= array(
+		$paramarray['fallback'] = array(
 			'tag.{$tag}',
 			'tag',
 			'multiple',
@@ -392,7 +396,7 @@ class Theme extends Pluggable
 		);
 
 		$this->assign( 'tag', htmlentities( Controller::get_var( 'tag' ), ENT_QUOTES, 'UTF-8' ) );
-		$paramarray['user_filters']= array_merge( $default_filters, $user_filters );
+		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		return $this->act_display( $paramarray );
 	}
@@ -409,54 +413,54 @@ class Theme extends Pluggable
 		$d = isset( $handler_vars['day'] );
 
 		if ( $y && $m && $d ) {
-			$paramarray['fallback'][]= 'year.{$year}.month.{$month}.day.{$day}';
+			$paramarray['fallback'][] = 'year.{$year}.month.{$month}.day.{$day}';
 		}
 		if ( $y && $m && $d) {
-			$paramarray['fallback'][]= 'year.month.day';
+			$paramarray['fallback'][] = 'year.month.day';
 		}
 		if ( $m && $d ) {
-			$paramarray['fallback'][]= 'month.{$month}.day.{$day}';
+			$paramarray['fallback'][] = 'month.{$month}.day.{$day}';
 		}
 		if ( $y && $m ) {
-			$paramarray['fallback'][]= 'year.{$year}.month.{$month}';
+			$paramarray['fallback'][] = 'year.{$year}.month.{$month}';
 		}
 		if ( $y && $d ) {
-			$paramarray['fallback'][]= 'year.{$year}.day.{$day}';
+			$paramarray['fallback'][] = 'year.{$year}.day.{$day}';
 		}
 		if ( $m && $d ) {
-			$paramarray['fallback'][]= 'month.day';
+			$paramarray['fallback'][] = 'month.day';
 		}
 		if ( $y && $d ) {
-			$paramarray['fallback'][]= 'year.day';
+			$paramarray['fallback'][] = 'year.day';
 		}
 		if ( $y && $m ) {
-			$paramarray['fallback'][]= 'year.month';
+			$paramarray['fallback'][] = 'year.month';
 		}
 		if ( $m ) {
-			$paramarray['fallback'][]= 'month.{$month}';
+			$paramarray['fallback'][] = 'month.{$month}';
 		}
 		if ( $d ) {
-			$paramarray['fallback'][]= 'day.{$day}';
+			$paramarray['fallback'][] = 'day.{$day}';
 		}
 		if ( $y ) {
-			$paramarray['fallback'][]= 'year.{$year}';
+			$paramarray['fallback'][] = 'year.{$year}';
 		}
 		if ( $y ) {
-			$paramarray['fallback'][]= 'year';
+			$paramarray['fallback'][] = 'year';
 		}
 		if ( $m ) {
-			$paramarray['fallback'][]= 'month';
+			$paramarray['fallback'][] = 'month';
 		}
 		if ( $d ) {
-			$paramarray['fallback'][]= 'day';
+			$paramarray['fallback'][] = 'day';
 		}
-		$paramarray['fallback'][]= 'date';
-		$paramarray['fallback'][]= 'multiple';
-		$paramarray['fallback'][]= 'home';
+		$paramarray['fallback'][] = 'date';
+		$paramarray['fallback'][] = 'multiple';
+		$paramarray['fallback'][] = 'home';
 
-		$paramarray['user_filters']= $user_filters;
+		$paramarray['user_filters'] = $user_filters;
 		if ( !isset( $paramarray['user_filters']['content_type'] ) ) {
-			$paramarray['user_filters']['content_type']= Post::type( 'entry' );
+			$paramarray['user_filters']['content_type'] = Post::type( 'entry' );
 		}
 
 		$this->assign( 'year' , $y ? (int)Controller::get_var( 'year' ) : NULL );
@@ -472,12 +476,12 @@ class Theme extends Pluggable
 		*/
 	public function act_search( $user_filters = array() )
 	{
-		$paramarray['fallback']= array(
+		$paramarray['fallback'] = array(
 			'search',
 			'multiple',
 		);
 
-		$paramarray['user_filters']= $user_filters;
+		$paramarray['user_filters'] = $user_filters;
 
 		$this->assign( 'criteria', htmlentities( Controller::get_var('criteria'), ENT_QUOTES, 'UTF-8' ) );
 		return $this->act_display( $paramarray );
@@ -490,10 +494,10 @@ class Theme extends Pluggable
 	 */
 	public function act_display_404( $user_filters = array() )
 	{
-		$paramarray['fallback']= array(
+		$paramarray['fallback'] = array(
 			'404',
 		);
-		$paramarray['user_filters']= $user_filters;
+		$paramarray['user_filters'] = $user_filters;
 		return $this->act_display( $paramarray );
 	}
 
@@ -677,16 +681,16 @@ class Theme extends Pluggable
 		$rightSide = isset( $settings['rightSide'] ) ? $settings['rightSide'] : 1;
 
 		// Add the page '1'.
-		$pages[]= 1;
+		$pages[] = 1;
 
 		// Add the pages to display on each side of the current page, based on $leftSide and $rightSide.
 		for ( $i = max( $current - $leftSide, 2 ); $i < $total && $i <= $current + $rightSide; $i++ ) {
-			$pages[]= $i;
+			$pages[] = $i;
 		}
 
 		// Add the last page if there is more than one page.
 		if ( $total > 1 ) {
-			$pages[]= (int) $total;
+			$pages[] = (int) $total;
 		}
 
 		// Sort the array by natural order.
@@ -698,7 +702,7 @@ class Theme extends Pluggable
 		$out = '';
 
 		foreach ( $pages as $page ) {
-			$settings['page']= $page;
+			$settings['page'] = $page;
 
 			// Add ... if the gap between the previous page is higher than 1.
 			if ( ($page - $prevpage) > 1 ) {
@@ -727,7 +731,7 @@ class Theme extends Pluggable
 		$settings = array();
 
 		// If there's no previous page, skip and return null
-		$settings['page']= (int) ( $theme->page - 1);
+		$settings['page'] = (int) ( $theme->page - 1);
 		if ($settings['page'] < 1) {
 			return null;
 		}
@@ -750,7 +754,7 @@ class Theme extends Pluggable
 		$settings = array();
 
 		// If there's no next page, skip and return null
-		$settings['page']= (int) ( $theme->page + 1);
+		$settings['page'] = (int) ( $theme->page + 1);
 		$items_per_page = isset($theme->posts->get_param_cache['limit']) ?
 			$theme->posts->get_param_cache['limit'] :
 			Options::get('pagination');

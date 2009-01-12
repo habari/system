@@ -1,5 +1,10 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * FormUI Library - Create interfaces for plugins
  *
  * FormUI			This is the main class, it generates the form itself;
@@ -8,10 +13,7 @@
  * FormControl		Parent class to controls, it contains basic functionalities overrode in each control's class;
  * FormControl*		Every control needs a FormControl* class, FormUI literally looks for example, FormControlCheckbox.
  *
- * @version $Id$
- * @package Habari
  */
-
 class FormContainer
 {
 	public $name = '';
@@ -57,7 +59,7 @@ class FormContainer
 		}
 		if($control) {
 			$control->container = $this;
-			$this->controls[$name]= $control;
+			$this->controls[$name] = $control;
 		}
 		return $control;
 	}
@@ -119,7 +121,7 @@ class FormContainer
 				$values = array_merge($values, $control->get_values());
 			}
 			else {
-				$values[$control->name]= $control->value;
+				$values[$control->name] = $control->value;
 			}
 		}
 		return $values;
@@ -138,7 +140,7 @@ class FormContainer
 				$controls = array_merge($controls, $control->get_controls());
 			}
 			else {
-				$controls[$control->name]= $control;
+				$controls[$control->name] = $control;
 			}
 		}
 		return $controls;
@@ -196,7 +198,7 @@ class FormContainer
 			if($forvalidation) {
 				$validate = $control->validate();
 				if(count($validate) != 0) {
-					$class[]= 'invalid';
+					$class[] = 'invalid';
 					$message = implode('<br>', (array) $validate);
 				}
 			}
@@ -360,7 +362,7 @@ class FormContainer
 		$results = array();
 		foreach($this->controls as $control) {
 			if ($result = $control->validate()) {
-				$results[]= $result;
+				$results[] = $result;
 			}
 		}
 		return $results;
@@ -1058,7 +1060,7 @@ class FormControl
 		else {
 			$index = $validator;
 		}
-		$this->validators[$index]= $args;
+		$this->validators[$index] = $args;
 		return $this;
 	}
 

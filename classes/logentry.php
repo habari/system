@@ -1,12 +1,16 @@
 <?php
 /**
- * Habari LogEntry class
-	* Represents a log entry
- *
  * @package Habari
- * @todo Apply system error handling
+ *
  */
 
+/**
+ * Habari LogEntry class
+ *
+ * Represents a log entry
+ *
+ * @todo Apply system error handling
+ */
 class LogEntry extends QueryRecord
 {
 
@@ -59,13 +63,13 @@ class LogEntry extends QueryRecord
 
 		parent::__construct( $paramarray );
 		if ( !isset( $this->fields['module'] ) ) {
-			$this->fields['module']= 'habari';
+			$this->fields['module'] = 'habari';
 		}
 		if ( !isset( $this->fields['type'] ) ) {
-			$this->fields['type']= 'default';
+			$this->fields['type'] = 'default';
 		}
 		if ( !isset( $this->fields['severity'] ) ) {
-			$this->fields['severity']= 'info';
+			$this->fields['severity'] = 'info';
 		}
 		if ( isset( $this->fields['timestamp'] ) ) {
 			$this->fields['timestamp'] = HabariDateTime::date_create( $this->fields['timestamp'] );
@@ -85,7 +89,7 @@ class LogEntry extends QueryRecord
 			self::$types = array();
 			$res = DB::get_results( 'SELECT id, module, type FROM {log_types}' );
 			foreach ( $res as $x ) {
-				self::$types[ $x->module ][ $x->type ]= $x->id;
+				self::$types[ $x->module ][ $x->type ] = $x->id;
 			}
 		}
 		return self::$types;
@@ -101,7 +105,7 @@ class LogEntry extends QueryRecord
 			if ( 'none' == $name ) {
 				continue;
 			}
-			$results[$id]= $name;
+			$results[$id] = $name;
 		}
 		return $results;
 	}
@@ -115,7 +119,7 @@ class LogEntry extends QueryRecord
 	{
 		$types = self::list_logentry_types( $refresh );
 		foreach ( $types as $module => $types ) {
-			$modules[]= $module;
+			$modules[] = $module;
 		}
 	}
 
@@ -217,15 +221,15 @@ class LogEntry extends QueryRecord
 		);
 		$user = User::identify();
 		if ( $user->loggedin ) {
-			$defaults['where'][]= array(
+			$defaults['where'][] = array(
 				'user_id' => $user->id,
 			);
 		}
 		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( $where, Utils::get_params( $paramarray ) );
+			$defaults['where'][$index] = array_merge( $where, Utils::get_params( $paramarray ) );
 		}
 		// Make sure we fetch only a single event. (LIMIT 1)
-		$defaults['limit']= 1;
+		$defaults['limit'] = 1;
 
 		return EventLog::get( $defaults );
 	}

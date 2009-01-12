@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Input filtering functions.
  *
- * @package Habari
  */
 class InputFilter
 {
@@ -314,16 +317,16 @@ class InputFilter
 
 		$matches = $matches[0];
 		if ( ! isset( $matches['full_address'] ) )
-			$matches['full_address']= '';
+			$matches['full_address'] = '';
 
-		$r['is_error']= FALSE;
-		$r['is_relative']= empty( $matches['full_address'] );
-		$r['is_pseudo']= ! array_key_exists( 'host', $matches );
-		$r['pseudo_args']= $r['is_pseudo'] ? $matches['full_address'] : '';
+		$r['is_error'] = FALSE;
+		$r['is_relative'] = empty( $matches['full_address'] );
+		$r['is_pseudo'] = ! array_key_exists( 'host', $matches );
+		$r['pseudo_args'] = $r['is_pseudo'] ? $matches['full_address'] : '';
 
 		foreach ( array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment' ) as $k ) {
 			if ( array_key_exists( $k, $matches ) ) {
-				$r[$k]= $matches[$k];
+				$r[$k] = $matches[$k];
 			}
 		}
 
@@ -445,7 +448,7 @@ class InputFilter
 					}
 					else {
 						// XXX use blog charset setting
-						$node['value']= html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
+						$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
 					}
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
@@ -492,7 +495,7 @@ class InputFilter
 			}
 
 			if ( $node != NULL ) {
-				$filtered[]= $node;
+				$filtered[] = $node;
 			}
 		}
 

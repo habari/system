@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
+
 define('MIN_PHP_VERSION', '5.2.0');
 
 /**
@@ -35,7 +40,7 @@ class InstallHandler extends ActionHandler {
 		 * Check .htaccess first because ajax doesn't work without it.
 		*/
 		if ( ! $this->check_htaccess() ) {
-			$this->handler_vars['file_contents']= implode( "\n", $this->htaccess() );
+			$this->handler_vars['file_contents'] = implode( "\n", $this->htaccess() );
 			$this->display('htaccess');
 		}
 
@@ -86,29 +91,29 @@ class InstallHandler extends ActionHandler {
 				case 'sqlite':
 					// SQLite uses less info.
 					// we stick the path in db_host
-					$this->handler_vars['db_file']= $remainder;
+					$this->handler_vars['db_file'] = $remainder;
 					break;
 				case 'mysql':
 					list($host,$name)= explode(';', $remainder);
-					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
-					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
+					list($discard, $this->handler_vars['db_host']) = explode('=', $host);
+					list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
 					break;
 				case 'pgsql':
 					list($host,$name)= explode(' ', $remainder);
-					list($discard, $this->handler_vars['db_host'])= explode('=', $host);
-					list($discard, $this->handler_vars['db_schema'])= explode('=', $name);
+					list($discard, $this->handler_vars['db_host']) = explode('=', $host);
+					list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
 					break;
 				}
-				$this->handler_vars['db_user']= $db_connection['username'];
-				$this->handler_vars['db_pass']= $db_connection['password'];
-				$this->handler_vars['table_prefix']= $db_connection['prefix'];
+				$this->handler_vars['db_user'] = $db_connection['username'];
+				$this->handler_vars['db_pass'] = $db_connection['password'];
+				$this->handler_vars['table_prefix'] = $db_connection['prefix'];
 			}
 			// if a $blog_data array exists in config.php, use it
 			// to pre-load values for the installer
 			// ** this is completely optional **
 			if ( isset( $blog_data ) ) {
 				foreach ( $blog_data as $blog_datum => $value ) {
-					$this->handler_vars[$blog_datum]= $value;
+					$this->handler_vars[$blog_datum] = $value;
 				}
 			}
 		}
@@ -129,10 +134,10 @@ class InstallHandler extends ActionHandler {
 
 		$db_type = $this->handler_vars['db_type'];
 		if ( $db_type == 'mysql' || $db_type == 'pgsql' ) {
-			$this->handler_vars['db_host']= $_POST["{$db_type}_db_host"];
-			$this->handler_vars['db_user']= $_POST["{$db_type}_db_user"];
-			$this->handler_vars['db_pass']= $_POST["{$db_type}_db_pass"];
-			$this->handler_vars['db_schema']= $_POST["{$db_type}_db_schema"];
+			$this->handler_vars['db_host'] = $_POST["{$db_type}_db_host"];
+			$this->handler_vars['db_user'] = $_POST["{$db_type}_db_user"];
+			$this->handler_vars['db_pass'] = $_POST["{$db_type}_db_pass"];
+			$this->handler_vars['db_schema'] = $_POST["{$db_type}_db_schema"];
 		}
 
 		// we got here, so we have all the info we need to install
@@ -191,30 +196,30 @@ class InstallHandler extends ActionHandler {
 		foreach ( $all_plugins as $file ) {
 			$plugin = array();
 			$plugin_id = Plugins::id_from_file( $file );
-			$plugin['plugin_id']= $plugin_id;
-			$plugin['file']= $file;
+			$plugin['plugin_id'] = $plugin_id;
+			$plugin['file'] = $file;
 
 			$error = '';
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
-				$plugin['debug']= false;
+				$plugin['debug'] = false;
 				// instantiate this plugin
 				// in order to get its info()
 				include_once( $file );
 				Plugins::get_plugin_classes();
 				$pluginobj = Plugins::load( $file, false );
-				$plugin['active']= false;
-				$plugin['verb']= _t( 'Activate' );
-				$plugin['actions']= array();
-				$plugin['info']= $pluginobj->info;
+				$plugin['active'] = false;
+				$plugin['verb'] = _t( 'Activate' );
+				$plugin['actions'] = array();
+				$plugin['info'] = $pluginobj->info;
 				$plugin['recommended'] = in_array( basename($file), $recommended_list );
 			}
 			else {
-				$plugin['debug']= true;
-				$plugin['error']= $error;
-				$plugin['active']= false;
+				$plugin['debug'] = true;
+				$plugin['error'] = $error;
+				$plugin['active'] = false;
 			}
 
-			$plugins[$plugin_id]= $plugin;
+			$plugins[$plugin_id] = $plugin;
 		}
 
 		return $plugins;
@@ -296,7 +301,7 @@ class InstallHandler extends ActionHandler {
 		$missing_extensions = array();
 		foreach ($required_extensions as $ext_name => $ext_url) {
 			if (!extension_loaded($ext_name)) {
-				$missing_extensions[$ext_name]= $ext_url;
+				$missing_extensions[$ext_name] = $ext_url;
 				$requirements_met = false;
 			}
 		}
@@ -682,13 +687,13 @@ class InstallHandler extends ActionHandler {
 		$queries = array();
 		switch ($db_type) {
 			case 'mysql':
-				$queries[]= 'CREATE DATABASE ' . $db_schema . ';';
-				$queries[]= 'GRANT ALL ON ' . $db_schema . '.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' .
+				$queries[] = 'CREATE DATABASE ' . $db_schema . ';';
+				$queries[] = 'GRANT ALL ON ' . $db_schema . '.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' .
 				'IDENTIFIED BY \'' . $db_pass . '\';';
 				break;
 			case 'pgsql':
-				$queries[]= 'CREATE DATABASE ' . $db_schema . ';';
-				$queries[]= 'GRANT ALL ON DATABASE ' . $db_schema . ' TO ' . $db_user . ';';
+				$queries[] = 'CREATE DATABASE ' . $db_schema . ';';
+				$queries[] = 'GRANT ALL ON DATABASE ' . $db_schema . ' TO ' . $db_user . ';';
 				break;
 			default:
 				die( _t('currently unsupported.') );
@@ -782,8 +787,8 @@ class InstallHandler extends ActionHandler {
 					return true;
 				}
 			}
-			$this->handler_vars['config_file']= Site::get_dir('config_file');
-			$this->handler_vars['file_contents']= htmlspecialchars($file_contents);
+			$this->handler_vars['config_file'] = Site::get_dir('config_file');
+			$this->handler_vars['file_contents'] = htmlspecialchars($file_contents);
 			$this->display('config');
 			return false;
 		}
@@ -839,7 +844,7 @@ class InstallHandler extends ActionHandler {
 		);
 		$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
 		if ( $rewrite_base != '' ) {
-			$htaccess['rewrite_base']= 'RewriteBase /' . $rewrite_base;
+			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
 		}
 
 		return $htaccess;
@@ -906,7 +911,7 @@ class InstallHandler extends ActionHandler {
 		$htaccess = $this->htaccess();
 		if($rewritebase) {
 			$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
-			$htaccess['rewrite_base']= 'RewriteBase /' . $rewrite_base;
+			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
 		}
 		$file_contents = "\n" . implode( "\n", $htaccess ) . "\n";
 
@@ -1111,11 +1116,11 @@ class InstallHandler extends ActionHandler {
 
 				// skip the first tag text so we end up with something, presumably the first tag entered (it had the lowest ID in the db)
 				if ( !isset( $fix_tags[ $tag_row->tag_slug ] ) ) {
-					$slug_to_id[ $tag_row->tag_slug ]= $tag_row->id;		// collect the slug => id so we can rename with an absolute id later
-					$fix_tags[ $tag_row->tag_slug ]= array();
+					$slug_to_id[ $tag_row->tag_slug ] = $tag_row->id;		// collect the slug => id so we can rename with an absolute id later
+					$fix_tags[ $tag_row->tag_slug ] = array();
 				}
 				else {
-					$fix_tags[ $tag_row->tag_slug ][ $tag_row->id ]= $tag_row->tag_text;
+					$fix_tags[ $tag_row->tag_slug ][ $tag_row->id ] = $tag_row->tag_text;
 				}
 
 			}
@@ -1203,7 +1208,7 @@ class InstallHandler extends ActionHandler {
 			foreach( $activated as $plugin ) {
 				$index = array_search( $plugin, $activated );
 				$plugin = str_replace( $base_path, '', $plugin );
-				$activated[$index]= $plugin;
+				$activated[$index] = $plugin;
 			}
 			Options::set( 'active_plugins', $activated );
 		}

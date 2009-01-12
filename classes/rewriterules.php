@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Class for storing and retrieving rewrite rules from the DB.
@@ -62,7 +66,7 @@ class RewriteRules extends ArrayObject {
 		foreach( $default_rules as $default_rule ) {
 			if( !isset( $rule_names[$default_rule['name']] ) ) {
 				$rule_properties = array_merge( $default_rule, $default_rules_properties );
-				$rules[]= new RewriteRule( $rule_properties );
+				$rules[] = new RewriteRule( $rule_properties );
 			}
 		}
 		return $rules;

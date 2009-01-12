@@ -1,12 +1,15 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari Session class
+ *
  * Manages sessions for the PHP session routines
  *
- * @package Habari
  */
-
 class Session
 {
 	/**
@@ -213,13 +216,13 @@ class Session
 	static function add_to_set( $set, $value, $key = null )
 	{
 		if ( !isset( $_SESSION[$set] ) ) {
-			$_SESSION[$set]= array();
+			$_SESSION[$set] = array();
 		}
 		if ( $key ) {
-			$_SESSION[$set][$key]= $value;
+			$_SESSION[$set][$key] = $value;
 		}
 		else {
-			$_SESSION[$set][]= $value;
+			$_SESSION[$set][] = $value;
 		}
 	}
 

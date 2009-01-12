@@ -1,8 +1,11 @@
 <?php
 /**
- * HabariDateTime class to wrap dates in.
- *
  * @package Habari
+ *
+ */
+
+/**
+ * HabariDateTime class to wrap dates in.
  *
  * @property-read HabariDateTime $clone Returns a clonned object.
  * @property-read string $sql Returns a unix timestamp for inserting into DB.

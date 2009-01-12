@@ -1,7 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
- * @todo TODO document
+ * Habari UserInfo class
+ *
+ * User metadata
  */
 class UserInfo extends InfoRecords
 {

@@ -1,12 +1,16 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 define('UPDATE_URL', 'http://www.habariproject.org/beacon/');
 
 /**
- * Update class
+ * Habari Update class
+ *
  * Checks for updates to Habari and its libraries
  *
- * @package Habari
  * @access public
  */
 class Update extends Singleton
@@ -33,7 +37,7 @@ class Update extends Singleton
 	 */
 	public static function add($name, $beaconid, $current_version)
 	{
-		self::instance()->beacons[$beaconid]= array('name'=>$name, 'version'=>$current_version);
+		self::instance()->beacons[$beaconid] = array('name'=>$name, 'version'=>$current_version);
 	}
 
 	/**

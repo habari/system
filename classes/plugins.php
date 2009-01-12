@@ -1,11 +1,14 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Plugins Class
  *
  * Provides an interface for the code to access plugins
- * @package Habari
  */
-
 class Plugins
 {
 	private static $hooks = array();
@@ -226,7 +229,7 @@ class Plugins
 		$plugindirs = array( HABARI_PATH . '/system/plugins/', HABARI_PATH . '/3rdparty/plugins/', HABARI_PATH . '/user/plugins/' );
 		if ( Site::CONFIG_LOCAL != Site::$config_type ) {
 			// include site-specific plugins
-			$plugindirs[]= Site::get_dir( 'config' ) . '/plugins/';
+			$plugindirs[] = Site::get_dir( 'config' ) . '/plugins/';
 		}
 		$dirs = array();
 		foreach ( $plugindirs as $plugindir ) {
@@ -287,7 +290,8 @@ class Plugins
 		if ($check_realpath) {
 			// really can't find it
 			return false;
-		} else {
+		}
+		else {
 			return self::class_from_filename( $file, true );
 		}
 	}
@@ -310,7 +314,7 @@ class Plugins
 		$class = Plugins::class_from_filename( $file );
 		$plugin = new $class;
 		if($activate) {
-			self::$plugins[$plugin->plugin_id]= $plugin;
+			self::$plugins[$plugin->plugin_id] = $plugin;
 			$plugin->load();
 		}
 		return $plugin;
@@ -469,7 +473,7 @@ class Plugins
 			$error = '';
 			if ( !Utils::php_check_file_syntax( $file, $error ) ) {
 				Session::error(sprintf( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>' ), basename( $file ), $error ));
-				$failed_plugins[]= $file;
+				$failed_plugins[] = $file;
 			}
 		}
 

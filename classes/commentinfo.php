@@ -1,5 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
+/**
+ * Comment metadata
+ */
 class CommentInfo extends InfoRecords {
 
 	function __construct ( $comment_id ) {

@@ -1,11 +1,14 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari FeedbackHandler Class
  * Deals with feedback mechnisms: Commenting, Pingbacking, and the like.
  *
- * @package Habari
  */
-
 class FeedbackHandler extends ActionHandler
 {
 	/**

@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Contains error-related functions and Habari's error handler.
  *
- * @package Habari
  **/
 class Error extends Exception
 {
@@ -167,13 +170,13 @@ class Error extends Exception
 			}
 
 			if ( strpos( $a['file'], HABARI_PATH ) === 0 ) {
-				$a['file']= substr( $a['file'], strlen( HABARI_PATH ) + 1 );
+				$a['file'] = substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
 
 			if(defined('DEBUG_ARGS')) {
 				$args = array();
 				foreach ( $a['args'] as $arg ) {
-					$args[]= htmlentities( str_replace(
+					$args[] = htmlentities( str_replace(
 						array( "\n", "\r" ),
 						array( "\n   ", '' ),
 						var_export( $arg, true )

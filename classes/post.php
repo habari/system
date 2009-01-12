@@ -1,7 +1,10 @@
 <?php
-
 /**
  * @package Habari
+ *
+ */
+
+/**
  *
  * Includes an instance of the PostInfo class; for holding inforecords about a Post
  * If the Post object describes an existing post; use the internal info object to
@@ -40,11 +43,11 @@ class Post extends QueryRecord implements IsContent
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_active ) ) ) {
 			return self::$post_type_list_active;
 		}
-		self::$post_type_list_active['any']= 0;
+		self::$post_type_list_active['any'] = 0;
 		$sql = 'SELECT * FROM ' . DB::table( 'posttype' ) . ' WHERE active = 1 ORDER BY id ASC';
 		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
-			self::$post_type_list_active[$result->name]= $result->id;
+			self::$post_type_list_active[$result->name] = $result->id;
 		}
 		return self::$post_type_list_active;
 	}
@@ -59,11 +62,11 @@ class Post extends QueryRecord implements IsContent
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_all ) ) ) {
 			return self::$post_type_list_all;
 		}
-		self::$post_type_list_all['any']= 0;
+		self::$post_type_list_all['any'] = 0;
 		$sql = 'SELECT * FROM ' . DB::table( 'posttype' ) . ' ORDER BY id ASC';
 		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
-			self::$post_type_list_all[$result->name]= array(
+			self::$post_type_list_all[$result->name] = array(
 				'id' => $result->id,
 				'active' => $result->active
 				);
@@ -111,7 +114,7 @@ class Post extends QueryRecord implements IsContent
 	public static function list_post_statuses( $all = true, $refresh = false )
 	{
 		$statuses = array();
-		$statuses['any']= 0;
+		$statuses['any'] = 0;
 		if ( $refresh || empty( self::$post_status_list ) ) {
 			$sql = 'SELECT * FROM ' . DB::table( 'poststatus' ) . ' ORDER BY id ASC';
 			$results = DB::get_results( $sql );
@@ -120,14 +123,14 @@ class Post extends QueryRecord implements IsContent
 		foreach ( self::$post_status_list as $status ) {
 			if ( $all instanceof Post ) {
 				if( ! $status->internal || $status->id == $all->status ) {
-					$statuses[$status->name]= $status->id;
+					$statuses[$status->name] = $status->id;
 				}
 			}
 			elseif ( $all ) {
-				$statuses[$status->name]= $status->id;
+				$statuses[$status->name] = $status->id;
 			}
 			elseif ( ! $status->internal ) {
-				$statuses[$status->name]= $status->id;
+				$statuses[$status->name] = $status->id;
 			}
 		}
 		return $statuses;
@@ -317,15 +320,15 @@ class Post extends QueryRecord implements IsContent
 		);
 		$user = User::identify();
 		if ( $user->loggedin ) {
-			$defaults['where'][]= array(
+			$defaults['where'][] = array(
 				'user_id' => $user->id,
 			);
 		}
 		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( $where, Utils::get_params( $paramarray ) );
+			$defaults['where'][$index] = array_merge( $where, Utils::get_params( $paramarray ) );
 		}
 		// make sure we get at most one result
-		$defaults['limit']= 1;
+		$defaults['limit'] = 1;
 
 		return Posts::get( $defaults );
 	}
@@ -387,7 +390,7 @@ class Post extends QueryRecord implements IsContent
 			}
 		} while ( $slugcount->ct != 0 );
 
-		return $this->newfields['slug']= $slug . $postfix;
+		return $this->newfields['slug'] = $slug . $postfix;
 	}
 
 	/**
@@ -400,7 +403,7 @@ class Post extends QueryRecord implements IsContent
 			|| ( $this->newfields['guid'] == '//?p=' ) // GUID created by WP was erroneous (as is too common)
 		) {
 			$result = 'tag:' . Site::get_url( 'hostname' ) . ',' . date( 'Y' ) . ':' . $this->setslug() . '/' . time();
-			$this->newfields['guid']= $result;
+			$this->newfields['guid'] = $result;
 		}
 		return $this->newfields['guid'];
 	}
@@ -415,10 +418,10 @@ class Post extends QueryRecord implements IsContent
 	{
 		$statuses = Post::list_post_statuses();
 		if ( is_numeric( $value ) && in_array( $value, $statuses ) ) {
-			return $this->newfields['status']= $value;
+			return $this->newfields['status'] = $value;
 		}
 		elseif ( array_key_exists( $value, $statuses ) ) {
-			return $this->newfields['status']= Post::status( 'publish' );
+			return $this->newfields['status'] = Post::status( 'publish' );
 		}
 
 		return false;
@@ -463,7 +466,7 @@ class Post extends QueryRecord implements IsContent
 		foreach ( ( array ) $this->tags as $tag )
 			if ( ! in_array( $tag, array_keys( $clean_tags ) ) )
 				if ( ! in_array( $slug = Utils::slugify( $tag ), array_values( $clean_tags ) ) )
-					$clean_tags[$tag]= $slug;
+					$clean_tags[$tag] = $slug;
 
 		if ( count( $this->tags ) == 0) {
 			DB::query("DELETE FROM {tag2post} WHERE post_id = ?", array( $this->fields['id'] ) );
@@ -486,7 +489,7 @@ class Post extends QueryRecord implements IsContent
 					 * Tag text exists.
 					 * Add the ID to the list of Tag IDs to add to the tag2post table
 					 */
-					$tag_ids_to_post[]= $existing_tag->id;
+					$tag_ids_to_post[] = $existing_tag->id;
 					/*
 					 * We remove it from the clean_tags collection as we only
 					 * want to add to the tags table those tags which don't already exist
@@ -494,7 +497,7 @@ class Post extends QueryRecord implements IsContent
 					unset( $clean_tags[$existing_tag->tag_text] );
 				}
 				if ( in_array( $existing_tag->tag_slug, array_values( $clean_tags ) ) ) {
-					$tag_ids_to_post[]= $existing_tag->id;
+					$tag_ids_to_post[] = $existing_tag->id;
 					foreach ( $clean_tags as $text=>$slug ) {
 						if ( $slug == $existing_tag->tag_slug ) {
 							unset( $clean_tags[$text] );
@@ -519,7 +522,7 @@ class Post extends QueryRecord implements IsContent
 			$sql_tag_new = 'INSERT INTO {tags} (tag_text, tag_slug) VALUES (?, ?)';
 
 			if (FALSE !== ($insert = DB::query( $sql_tag_new, array( $new_tag_text, $new_tag_slug ) ) ) )
-				$tag_ids_to_post[]= DB::last_insert_id();
+				$tag_ids_to_post[] = DB::last_insert_id();
 			$result&= $insert;
 		}
 
@@ -572,7 +575,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function insert()
 	{
-		$this->newfields['updated']= HabariDateTime::date_create();
+		$this->newfields['updated'] = HabariDateTime::date_create();
 		$this->newfields['modified'] = $this->newfields['updated'];
 		$this->setguid();
 
@@ -591,7 +594,7 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_status_' . self::status_name( $this->status ), $this, null );
 
 		$result = parent::insertRecord( DB::table( 'posts' ) );
-		$this->newfields['id']= DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
+		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the post object to match the row id
 		$this->fields = array_merge( $this->fields, $this->newfields );
 		$this->newfields = array();
 		$this->info->commit( DB::last_insert_id() );
@@ -886,7 +889,7 @@ class Post extends QueryRecord implements IsContent
 			$result = DB::get_results( $sql, array( $this->fields['id'] ) );
 			if ( $result ) {
 				foreach ( $result as $t ) {
-					$this->tags[$t->tag_slug]= $t->tag_text;
+					$this->tags[$t->tag_slug] = $t->tag_text;
 				}
 			}
 		}

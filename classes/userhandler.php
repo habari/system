@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari UserHandler Class
  *
- * @package Habari
  */
 class UserHandler extends ActionHandler
 {
@@ -50,7 +53,7 @@ class UserHandler extends ActionHandler
 					else {
 						// Replace '?' with '&' in $dest[1] before call URL::get()
 						// Therefore calling URL::get() with a query string
-						$dest[1]= str_replace( '?', '&', $dest[1] );
+						$dest[1] = str_replace( '?', '&', $dest[1] );
 						Utils::redirect( URL::get( 'admin', 'page=' . $dest[1] ) );
 					}
 				}
@@ -62,8 +65,8 @@ class UserHandler extends ActionHandler
 
 			/* Authentication failed. */
 			// Remove submitted password, see, we're secure!
-			$this->handler_vars['habari_password']= '';
-			$this->handler_vars['error']= _t('Bad credentials');
+			$this->handler_vars['habari_password'] = '';
+			$this->handler_vars['error'] = _t('Bad credentials');
 		}
 
 		// Display the login form.

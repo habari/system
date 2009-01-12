@@ -1,15 +1,15 @@
 <?php
 /**
- * Holds the basic RemoteRequest functionality.
- * 
  * @package Habari
+ *
  */
 
 /**
+ * Holds the basic RemoteRequest functionality.
+ *
  * Interface for Request Processors. RemoteRequest uses a RequestProcessor to
  * do the actual work.
- * 
- * @package Habari
+ *
  */
 interface RequestProcessor
 {
@@ -21,8 +21,7 @@ interface RequestProcessor
 
 /**
  * Generic class to make outgoing HTTP requests.
- * 
- * @package Habari
+ *
  */
 class RemoteRequest
 {
@@ -38,7 +37,7 @@ class RemoteRequest
 	private $response_body = '';
 	private $response_headers = '';
 	
-	private $user_agent = 'Habari'; // TODO add version to that (Habari/0.1.4) 
+	private $user_agent = 'Habari'; // TODO add version to that (Habari/0.1.4)
 	
 	/**
 	 * @param string $url URL to request
@@ -83,7 +82,7 @@ class RemoteRequest
 		}
 		else {
 			list( $k, $v )= explode( ': ', $header );
-			$this->headers[$k]= $v;
+			$this->headers[$k] = $v;
 		}
 	}
 	
@@ -231,24 +230,24 @@ class RemoteRequest
 		$urlparts = InputFilter::parse_url( $url );
 		
 		if ( ! isset( $urlparts['query'] ) ) {
-			$urlparts['query']= '';
+			$urlparts['query'] = '';
 		}
 		
 		if ( ! is_array( $params ) ) {
 			parse_str( $params, $params );
 		}
 		
-		$urlparts['query']= http_build_query( array_merge( Utils::get_params( $urlparts['query'] ), $params ), '', '&' );
+		$urlparts['query'] = http_build_query( array_merge( Utils::get_params( $urlparts['query'] ), $params ), '', '&' );
 		
 		return InputFilter::glue_url( $urlparts );
 	}
 	
 	/**
 	 * Static helper function to quickly fetch an URL, with semantics similar to
-	 * PHP's file_get_contents. Does not support 
-	 * 
+	 * PHP's file_get_contents. Does not support
+	 *
 	 * Returns the content on success or FALSE if an error occurred.
-	 * 
+	 *
 	 * @param string $url The URL to fetch
 	 * @param bool $use_include_path whether to search the PHP include path first (unsupported)
 	 * @param resource $context a stream context to use (unsupported)

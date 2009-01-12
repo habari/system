@@ -1,7 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
- * @todo document
+ * Habari Themes class
+ *
  */
 class Themes
 {

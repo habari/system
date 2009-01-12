@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * A custom exception for XMLRPC failure results
@@ -7,10 +11,10 @@ class XMLRPCException extends Exception
 {
 	/**
 	 * The exception constructor, called to create this excpetion
-	 * @param integer $code The error code to produce     
-	 * @param string $message Optional The message to display with the error     
-	 **/		     
-	public function __construct($code, $message = null) 
+	 * @param integer $code The error code to produce
+	 * @param string $message Optional The message to display with the error
+	 **/
+	public function __construct($code, $message = null)
 	{
 		// make sure everything is assigned properly
 		if(empty($message)) {
@@ -22,8 +26,8 @@ class XMLRPCException extends Exception
 	/**
 	 * Return a test-based error description for a numeric error code
 	 * @param integer $code The error code to search for
-	 * @return string A localized text-based error message.	 
-	 **/	 	
+	 * @return string A localized text-based error message.
+	 **/
 	private function get_message($code)
 	{
 		switch ( $code ) {
@@ -73,19 +77,19 @@ class XMLRPCException extends Exception
 		default:
 			return Plugins::filter( 'xmlrpcexception_get_message', _t('Unknown XMLRPC Exception'), $code );
 		}
-	} 
+	}
 	
 	/**
 	 * Represent this exception as a string
-	 **/     
-	public function __toString() 
+	 **/
+	public function __toString()
 	{
 		return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
 	}
 
 	/**
 	 * Send an XML-RPC fault output and quit.
-	 **/	 	 	 	
+	 **/
 	public function output_fault_xml()
 	{
 		$xmltext = '<?xml version="1.0"?'.'><methodResponse><fault><value><struct><member><name>faultCode</name><value><int>' . $this->code . '</int></value></member><member><name>faultString</name><value><string>' . $this->message . '</string></value></member></struct></value></fault></methodResponse>';
@@ -93,6 +97,6 @@ class XMLRPCException extends Exception
 		header('Content-Type: text/xml');
 		echo trim($xmltext);
 		exit;
-	}	
+	}
 }
 ?>

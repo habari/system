@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Pluggable class
@@ -7,7 +11,6 @@
  * @version $Id$
  * @copyright 2008
  */
-
 abstract class Pluggable
 {
 	private $_class_name = null;

@@ -1,14 +1,17 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Plugin Class
  *
  * Template plugin object which specific plugin objects should extend
  * This object provides the basic constructor used to ensure that
  * plugin actions are registered against the appropriate dispatcher
  *
- * @package Habari
  */
-
 abstract class Plugin extends Pluggable
 {
 	private $_added_templates = array();

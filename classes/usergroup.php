@@ -1,8 +1,13 @@
 <?php
 /**
-* Habari UserGroup Class
-* @package Habari
-**/
+ * @package Habari
+ *
+ */
+
+/**
+ * Habari UserGroup Class
+ *
+ */
 class UserGroup extends QueryRecord
 {
 	// These arrays hold the current membership and permission settings for this group
@@ -13,7 +18,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * get default fields for this record
 	 * @return array an array of the fields used in the UserGroup table
-	**/
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -25,7 +30,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Constructor for the UserGroup class
 	 * @param array $paramarray an associative array of UserGroup fields
-	**/
+	 */
 	public function __construct( $paramarray = array() )
 	{
 		$this->fields = array_merge(
@@ -49,7 +54,7 @@ class UserGroup extends QueryRecord
 	 * Create a new UserGroup object and save it to the database
 	 * @param array $paramarray An associative array of UserGroup fields
 	 * @return UserGroup the UserGroup that was created
-	**/
+	 */
 	public static function create( $paramarray )
 	{
 		$usergroup = new UserGroup( $paramarray );
@@ -63,7 +68,7 @@ class UserGroup extends QueryRecord
 
 	/**
 	 * Save a new UserGroup to the UserGroup table
-	**/
+	 */
 	public function insert()
 	{
 		$allow = true;
@@ -75,7 +80,7 @@ class UserGroup extends QueryRecord
 		Plugins::act('usergroup_insert_before', $this);
 		$this->exclude_fields('id');
 		$result = parent::insertRecord( DB::table('groups') );
-		$this->fields['id']= DB::last_insert_id();
+		$this->fields['id'] = DB::last_insert_id();
 
 		$this->set_member_list();
 
@@ -86,7 +91,7 @@ class UserGroup extends QueryRecord
 
 	/**
 	 * Updates an existing UserGroup in the DB
-	**/
+	 */
 	public function update()
 	{
 		$allow = true;
@@ -119,7 +124,7 @@ class UserGroup extends QueryRecord
 
 	/**
 	 * Delete a UserGroup
-	**/
+	 */
 	public function delete()
 	{
 		$allow = true;
@@ -147,7 +152,7 @@ class UserGroup extends QueryRecord
 	 * magic get function for returning virtual properties of the class
 	 * @param mixed the property to get
 	 * @return mixed the property
-	**/
+	 */
 	public function __get( $param )
 	{
 		switch ( $param ) {
@@ -166,7 +171,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Add one or more users to this group
 	 * @param mixed $users a user ID or name, or an array of the same
-	**/
+	 */
 	public function add( $users )
 	{
 		$users = Utils::single_array( $users );
@@ -184,7 +189,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Remove one or more user from this group
 	 * @param mixed $users A user ID or name, or an array of the same
-	**/
+	 */
 	public function remove( $users )
 	{
 		$users = Utils::single_array( $users );
@@ -200,7 +205,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Assign one or more new permissions to this group
 	 * @param mixed A permission token ID, name, or array of the same
-	**/
+	 */
 	public function grant( $permissions, $access = 'full' )
 	{
 		$permissions = Utils::single_array( $permissions );
@@ -217,7 +222,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Deny one or more permissions to this group
 	 * @param mixed The permission ID or name to be denied, or an array of the same
-	**/
+	 */
 	public function deny( $permissions )
 	{
 		$this->grant( $permissions, 'deny' );
@@ -226,7 +231,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Remove one or more permissions from a group
 	 * @param mixed a permission ID, name, or array of the same
-	**/
+	 */
 	public function revoke( $permissions )
 	{
 		$permissions = Utils::single_array( $permissions );
@@ -245,7 +250,7 @@ class UserGroup extends QueryRecord
 	 * @return boolean If this group has been granted and not denied this permission, return true.  Otherwise, return false.
 	 * @see ACL::group_can()
 	 * @see ACL::user_can()
-	**/
+	 */
 	public function can( $permission, $access = 'full' )
 	{
 		$permission = ACL::token_id( $permission );
@@ -284,7 +289,7 @@ class UserGroup extends QueryRecord
 	 * This is a wrapper for get_by_id() and get_by_name()
 	 * @param mixed $group A group ID or name
 	 * @return mixed UserGroup object, or boolean FALSE
-	*/
+	 */
 	public static function get( $group )
 	{
 		if ( is_numeric( $group ) ) {
@@ -299,7 +304,7 @@ class UserGroup extends QueryRecord
 	 * Select a group from the DB by its ID
 	 * @param int A group ID
 	 * @return mixed A UserGroup object, or boolean FALSE
-	**/
+	 */
 	public static function get_by_id( $id )
 	{
 		return DB::get_row( 'SELECT * FROM {groups} WHERE id=?', array( $id ), 'UserGroup' );
@@ -309,7 +314,7 @@ class UserGroup extends QueryRecord
 	 * Select a group from the DB by its name
 	 * @param string A group name
 	 * @return mixed A UserGroup object, or boolean FALSE
-	**/
+	 */
 	public static function get_by_name( $name )
 	{
 		return DB::get_row( 'SELECT * FROM {groups} WHERE name=?', array( $name ), 'UserGroup' );
@@ -319,7 +324,7 @@ class UserGroup extends QueryRecord
 	 * Determine whether a group exists
 	 * @param mixed The name or ID of the group
 	 * @return bool Whether the group exists or not
-	**/
+	 */
 	public static function exists( $group )
 	{
 		return self::id($group) !== null;
@@ -329,7 +334,7 @@ class UserGroup extends QueryRecord
 	 * Given a group's ID, return its friendly name
 	 * @param int a group's ID
 	 * @return string the group's name
-	**/
+	 */
 	public static function name( $id )
 	{
 		$check_field = is_numeric( $id ) ? 'id' : 'name';
@@ -341,7 +346,7 @@ class UserGroup extends QueryRecord
 	 * Given a group's name, return its ID
 	 * @param string a group's name
 	 * @return int the group's ID
-	**/
+	 */
 	public static function id( $name )
 	{
 		if( is_numeric($name) ) {
@@ -355,7 +360,7 @@ class UserGroup extends QueryRecord
 	 * Determine whether the specified user is a member of the group
 	 * @param mixed A user ID or name
 	 * @return bool True if the user is in the group, otherwise false
-	**/
+	 */
 	public function member( $user_id )
 	{
 		if ( ! is_numeric( $user_id ) ) {

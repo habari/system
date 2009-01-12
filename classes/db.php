@@ -1,11 +1,15 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari DB Class
  *
- * @package Habari
+ * Singleton class for database connection and manipulation
+ *
  */
-
 class DB extends Singleton
 {
 	private $connection = null;
@@ -377,7 +381,7 @@ class DB extends Singleton
 	}
 
 	/**
-	 * Automatic datbase diffing function, used for determining required database upgrades.
+	 * Automatic database diffing function, used for determining required database upgrades.
 	 *
 	 * @param queries array of create table and insert statements which constitute a fresh install
 	 * @param (optional)  execute should the queries be executed against the database or just simulated. default = true

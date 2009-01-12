@@ -1,5 +1,10 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Class for handling default user theme actions.
  *
  * @note Any theme will be able to override these default actions by registering an override function with Theme->act_some_function()
