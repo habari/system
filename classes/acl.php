@@ -341,7 +341,7 @@ SQL;
 	 * @param string $access Check for 'read' or 'write' access
 	 * @return array of token IDs
 	**/
-	public static function user_tokens( $user, $access = 'write' )
+	public static function user_tokens( $user, $access = 'write', $posts_only = false )
 	{
 		// convert $user to an ID
 		if ( is_numeric( $user ) ) {
@@ -356,24 +356,27 @@ SQL;
 
 		$sql = <<<SQL
 SELECT token_id, permission_id
-  FROM user_token_permissions
-  WHERE user_id = :user_id
+	FROM {user_token_permissions}
+	WHERE user_id = :user_id
 UNION ALL
 SELECT gp.token_id, gp.permission_id
-  FROM users_groups ug
-  INNER JOIN group_token_permissions gp
+  FROM {users_groups} ug
+  INNER JOIN {group_token_permissions} gp
   ON ug.group_id = gp.group_id
   AND ug.user_id = :user_id
   ORDER BY token_id ASC
 SQL;
 		$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
+		if($posts_only) {
+			$post_tokens = DB::get_column('SELECT token_id FROM {post_tokens} GROUP BY token_id');
+		}
 
 		$bitmask = new Bitmask ( self::$access_names, $access );
 		$tokens = array();
 
 		foreach ( $result as $token ) {
 			$bitmask->value = $token->permission_id;
-			if ( $bitmask->$access ) {
+			if ( $bitmask->$access && (!$posts_only || in_array($token->id, $post_tokens))) {
 				$tokens[] = $token->token_id;
 			}
 		}
