@@ -21,7 +21,7 @@ class CoreDashModules extends Plugin
 			'author' => 'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'version' => '1.0',
-			'description' => 'Provides a core set of dashboard modules for the dashboard.',
+			'description' => 'Provides a core set of modules for the dashboard. The modules include latest comments, latest posts, and latest log entries.',
 			'license' => 'Apache License 2.0',
 		);
 	}

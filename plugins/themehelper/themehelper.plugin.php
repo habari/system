@@ -19,7 +19,7 @@ class ThemeHelper extends Plugin
 			'author' => 'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'version' => '1.0',
-			'description' => 'Provides additional functions that may be useful to some themes.',
+			'description' => 'Provides additional functions that may be useful to some themes. These include functions to<br> a. insert a link to an entry\'s comments in the theme template,<br> b. get a formatted version of a post\'s comment count,<br> c. time site performance,<br> d. insert a commenter\'s name or url link into a template,<br> e. insert a comment form in a template with one function call.',
 			'license' => 'Apache License 2.0',
 		);
 	}
