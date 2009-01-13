@@ -162,7 +162,7 @@ class InstallHandler extends ActionHandler {
 		}
 
 		// activate plugins on POST
-		if ( !empty( $_POST ) ) {
+		if ( count( $_POST ) > 0 ) {
 			$this->activate_plugins();
 		}
 
@@ -440,6 +440,8 @@ class InstallHandler extends ActionHandler {
 				DB::rollback();
 				return false;
 			}
+			// create default permissions 
+			$this->create_default_permissions();
 		}
 
 		// create a first post, if none exists
@@ -574,6 +576,55 @@ class InstallHandler extends ActionHandler {
 		return $group;
 	}
 
+	/** 
+	 * Creates the default set of permissions. 
+	 * This list includes: 
+	 * Create Entry 
+	 * Create Page 
+	 * Manage Entries 
+	 *   Own entries 
+	 *   Others' entries 
+	 * Manage Pages: 
+	 *     Own pages 
+	 *     Others' pages 
+	 * Comments 
+	 *     Comments on own posts. 
+	 *     Comments on others' posts. 
+	 * Tags 
+	 * Options 
+	 * Themes 
+	 *     Change theme 
+	 *     Configure active theme 
+	 * Plugins 
+	 *     Activate/deactivate plugins 
+	 *     Configure active plugins 
+	 * Import 
+	 * Users 
+	 * Groups 
+	 * Logs  
+	 *  
+	 */ 
+	private function create_default_permissions() 
+	{ 
+		foreach ( Post::list_active_post_types() as $name => $posttype ) { 
+			ACL::create_permission( 'create_' . $name, 'Create ' . $name  ); 
+			ACL::create_permission( 'manage_all_' . $name, 'Manage all ' . $name ); 
+			ACL::create_permission( 'manage_own_' . $name, 'Manage own ' . $name ); 
+		} 
+		ACL::create_permission( 'manage_all_comments', 'Manage comments on all posts' ); 
+		ACL::create_permission( 'manage_own_comments', 'Manage comments on own posts' ); 
+		ACL::create_permission( 'manage_tags', 'Manage tags' ); 
+		ACL::create_permission( 'manage_options', 'Manage options' ); 
+		ACL::create_permission( 'change_theme', 'Change theme' ); 
+		ACL::create_permission( 'configure_active_theme', 'Configure the active theme' ); 
+		ACL::create_permission( 'manage_plugins', 'Activate/deactivate plugins' ); 
+		ACL::create_permission( 'configure_active_plugins', 'Configure active plugins' ); 
+		ACL::create_permission( 'import', 'Use the importer' ); 
+		ACL::create_permission( 'manage_users', 'Add, remove, and edit users' ); 
+		ACL::create_permission( 'manage_groups', 'Manage groups and permissions' ); 
+		ACL::create_permission( 'manage_logs', 'Manage logs' ); 
+	}
+	
 	/**
 	 * Write the default options
 	 */
@@ -1266,6 +1317,11 @@ class InstallHandler extends ActionHandler {
 
 		return true;
 
+	}
+
+	private function upgrade_db_post_2958()
+	{
+		$this->create_default_permissions();
 	}
 
 	/**
