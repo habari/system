@@ -208,6 +208,16 @@ class HabariDateTime extends DateTime
 		}
 		return parent::format($format);
 	}
+
+	public function text_format($format) 
+	{ 
+		return preg_replace_callback('%\{(\w)\}%i', array($this, 'text_format_callback'), $format); 
+	} 
+	
+	private function text_format_callback($matches) 
+	{ 
+		return $this->format($matches[1]); 
+	}
 	
 	/**
 	 * Alters the timestamp
