@@ -570,7 +570,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 			'author' => 'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'license' => 'Apache License 2.0',
-			'description' => 'Implements basic Viddler integration',
+			'description' => 'Implements basic Viddler integration with Habari, allowing you to easily upload videos to your account and insert them into your posts.',
 			'copyright' => '2007',
 			);
 	}

@@ -27,7 +27,7 @@ class HabariSilo extends Plugin implements MediaSilo
 			'author' =>	'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'license' => 'Apache License 2.0',
-			'description' => 'Provides simple file uploading and embedding functionality',
+			'description' => 'Provides simple file uploading and embedding functionality, allowing you to upload media files and easily insert them into posts.',
 			'copyright' => '2008',
 		);
 	}
