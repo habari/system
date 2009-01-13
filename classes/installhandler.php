@@ -1411,12 +1411,12 @@ class InstallHandler extends ActionHandler {
 			$xml_error->addChild( 'message', _t('The database file was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
-			if ( ! is_writable( dirname( $db_file ) ) ) {
+			if ( ! is_writable( dirname( Site::get_path( 'user', TRUE ) . $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
 				$xml_error->addChild( 'message', _t('SQLite requires that the directory that holds the DB file be writable by the web server.') );
-			} elseif ( file_exists( $db_file ) && ( ! is_writable( $db_file ) ) ) {
+			} elseif ( file_exists ( Site::get_path( 'user', TRUE ) . $db_file ) && ( ! is_writable( Site::get_path( 'user', TRUE ) . $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
