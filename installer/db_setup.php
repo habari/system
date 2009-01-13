@@ -133,7 +133,7 @@
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
 			<div class="help">
-				<?php _e('<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the complete path to where your data file resides.'); ?> <a href="#"><?php _e('Learn More...'); ?></a>
+				<?php _e('<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the path to where your data file resides, relative to the Habari user directory.'); ?> <a href="#"><?php _e('Learn More...'); ?></a>
 			</div>
 		</div>
 	</div>
