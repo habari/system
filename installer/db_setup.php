@@ -34,7 +34,7 @@
 		<div class="javascript-disabled"><?php _e('Use the settings below only if you have selected MySQL as your database engine.'); ?></div>
 
 		<div class="inputfield formysql">
-			<label for="databasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
+			<label for="mysqldatabasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
 			<input type="text" id="mysqldatabasehost" name="mysql_db_host" value="<?php echo $db_host; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -45,7 +45,7 @@
 		</div>
 
 		<div class="inputfield formysql">
-			<label for="databaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
+			<label for="mysqldatabaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
 			<input type="text" id="mysqldatabaseuser" name="mysql_db_user" value="<?php echo $db_user; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -56,7 +56,7 @@
 		</div>
 
 		<div class="inputfield formysql">
-			<label for="databasepass"><?php _e('Password'); ?> <strong>*</strong></label>
+			<label for="mysqldatabasepass"><?php _e('Password'); ?> <strong>*</strong></label>
 			<input type="password" id="mysqldatabasepass" name="mysql_db_pass" value="<?php /* echo $db_pass; */ ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -67,7 +67,7 @@
 		</div>
 
 		<div class="inputfield formysql">
-			<label for="databasetype"><?php _e('Database Name'); ?> <strong>*</strong></label>
+			<label for="mysqldatabasename"><?php _e('Database Name'); ?> <strong>*</strong></label>
 			<input type="text" id="mysqldatabasename" name="mysql_db_schema" value="<?php echo $db_schema; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -81,7 +81,7 @@
 		<div class="javascript-disabled"><?php _e('Use the settings below only if you have selected PostgreSQL as your database engine.'); ?></div>
 
 		<div class="inputfield forpgsql">
-			<label for="databasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
+			<label for="pgsqldatabasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
 			<input type="text" id="pgsqldatabasehost" name="pgsql_db_host" value="<?php echo $db_host; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -92,7 +92,7 @@
 		</div>
 
 		<div class="inputfield forpgsql">
-			<label for="databaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
+			<label for="pgsqldatabaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
 			<input type="text" id="pgsqldatabaseuser" name="pgsql_db_user" value="<?php echo $db_user; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -103,7 +103,7 @@
 		</div>
 
 		<div class="inputfield forpgsql">
-			<label for="databasepass"><?php _e('Password'); ?> <strong>*</strong></label>
+			<label for="pgsqldatabasepass"><?php _e('Password'); ?> <strong>*</strong></label>
 			<input type="password" id="pgsqldatabasepass" name="pgsql_db_pass" value="<?php /* echo $db_pass; */ ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -114,7 +114,7 @@
 		</div>
 
 		<div class="inputfield forpgsql">
-			<label for="databasetype"><?php _e('Database Name'); ?> <strong>*</strong></label>
+			<label for="pgsqldatabasename"><?php _e('Database Name'); ?> <strong>*</strong></label>
 			<input type="text" id="pgsqldatabasename" name="pgsql_db_schema" value="<?php echo $db_schema; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
@@ -140,8 +140,9 @@
 
 	<div class="advanced-options">
 		<div class="inputfield">
-			<label for="databasetype"><?php _e('Table Prefix'); ?></label>
+			<label for="tableprefix"><?php _e('Table Prefix'); ?></label>
 			<input type="text" id="tableprefix" name="table_prefix" value="<?php echo $table_prefix; ?>" alt="" tabindex="<?php echo $tab++ ?>">
+			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"></div>
 			<div class="help">
 				<?php _e('<strong>Table Prefix</strong> is a prefix that will be appended to each table that Habari creates in the database, making it easy to distinguish those tables in the database from those of other installations.'); ?>
@@ -155,7 +156,8 @@
 <div class="next-section"></div>
 
 <div class="installstep ready" id="siteconfiguration">
-	<h2><?php _e('Site Configuration'); ?><a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
+	<h2><?php _e('Site Configuration'); ?></h2>
+	<a href="#" class="help-me"><?php _e('Help'); ?></a>
 	<div class="options">
 
 		<div class="inputfield">
@@ -209,7 +211,7 @@
 <div class="next-section"></div>
 
 <div class="installstep ready" id="pluginactivation">
-	<h2><?php _e('Plugin Activation'); ?><a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
+	<h2><?php _e('Plugin Activation'); ?></h2>
 	<a href="#" class="help-me"><?php _e('Help'); ?></a>
 	<div class="options items">
 		<?php foreach($plugins as $plugin) { ?>
