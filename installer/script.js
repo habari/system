@@ -1,202 +1,277 @@
-function handleAjaxError(msg, status, err)
-{
-	error_msg= '';
-	if (msg.responseText != '') {
-		error_msg= msg.responseText;
-	}
-	$('#installerror').html(
-		'<strong>Installation Issue</strong>'+
-		'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="doc/manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="noVerify();">continue without verification</a>.</p>' +
-//		'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
-		'<strong>Server Response</strong>'+
-		'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
-	).fadeIn();
-}
-
-function setDatabaseType()
-{
-	switch($('#db_type').val()) {
-		case 'mysql':
-			$('.forpgsql').hide();
-			$('.forsqlite').hide();
-			$('.formysql').show();
-			break;
-		case 'pgsql':
-			$('.formysql').hide();
-			$('.forsqlite').hide();
-			$('.forpgsql').show();
-			break;
-		case 'sqlite':
-			$('.formysql').hide();
-			$('.forpgsql').hide();
-			$('.forsqlite').show();
-			checkDBCredentials();
-			break;
-	}
-}
-
-function checkDBCredentials()
-{
-	if ( ( $('#db_type').val() == 'mysql' ) && ( $('#mysqldatabasehost').val() != '' ) && ( $('#mysqldatabaseuser').val() != '' ) && ( $('#mysqldatabasename').val() != '' ) ) {
-		$.ajax({
-			type: 'POST',
-			url: 'ajax/check_mysql_credentials',
-			data: { // Ask InstallHandler::ajax_check_mysql_credentials to check the credentials
-				ajax_action: 'check_mysql_credentials',
-				host: $('#mysqldatabasehost').val(),
-				database: $('#mysqldatabasename').val(),
-				user: $('#mysqldatabaseuser').val(),
-				pass: $('#mysqldatabasepass').val()
-			},
-			success: function(xml) {
-				$('#installerror').fadeOut();
-				switch($('status',xml).text()) {
-				case '0': // Show warning, fade the borders and hide the next step
-					$('id',xml).each(function(id) {
-					ido= $('id',xml).get(id);
-					warningtext= $('message',xml).text();
-					$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$($(ido).text()).parents('.installstep').removeClass('done');
-					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
-					});
-					break;
-				case '1': // Hide the warnings, highlight the borders and show the next step
-					ida= new Array( '#mysqldatabasename', '#mysqldatabasehost', '#mysqldatabasepass', '#mysqldatabaseuser' );
-					$(ida).each(function(id) {
-						ido= $(ida).get(id);
-						$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-						$(ido).parents('.installstep').addClass('done')
-					});
-					$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
-					$('#sitename').focus()
-					break;
-				}
-			},
-			error: handleAjaxError
-		});
-	}
-	else if ( ( $('#db_type').val() == 'pgsql' ) && ( $('#pgsqldatabasehost').val() != '' ) && ( $('#pgsqldatabaseuser').val() != '' ) && ( $('#pgsqldatabasename').val() != '' ) ) {
-		$.ajax({
-			type: 'POST',
-			url: 'ajax/check_pgsql_credentials',
-			data: { // Ask InstallHandler::ajax_check_pgsql_credentials to check the credentials
-				ajax_action: 'check_pgsql_credentials',
-				host: $('#pgsqldatabasehost').val(),
-				database: $('#pgsqldatabasename').val(),
-				user: $('#pgsqldatabaseuser').val(),
-				pass: $('#pgsqldatabasepass').val()
-			},
-			success: function(xml) {
-				$('#installerror').fadeOut();
-				switch($('status',xml).text()) {
-				case '0': // Show warning, fade the borders and hide the next step
-					$('id',xml).each(function(id) {
-					ido= $('id',xml).get(id);
-					warningtext= $('message',xml).text();
-					$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$($(ido).text()).parents('.installstep').removeClass('done');
-					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
-					});
-					break;
-				case '1': // Hide the warnings, highlight the borders and show the next step
-					ida= new Array( '#pgsqldatabasename', '#pgsqldatabasehost', '#pgsqldatabasepass', '#pgsqldatabaseuser' );
-					$(ida).each(function(id) {
-					ido= $(ida).get(id);
-					$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-					$(ido).parents('.installstep').addClass('done')
-					});
-					$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
-					$('#sitename').focus()
-					break;
-				}
-			},
-			error: handleAjaxError
-		});
-	}
-	else if ( ( $('#db_type').val() == 'sqlite' ) && ( $('#databasefile').val() != '' ) ) {
-		$.ajax({
-			type: 'POST',
-			url: 'ajax/check_sqlite_credentials',
-			data: { // Ask InstallHandler::ajax_check_sqlite_credentials to check the credentials
-				ajax_action: 'check_sqlite_credentials',
-				file: $('#databasefile').val()
-			},
-			success: function(xml) {
-				$('#installerror').fadeOut();
-				switch($('status',xml).text()) {
-				case '0': // Show warning, fade the borders and hide the next step
-					$('id',xml).each(function(id) {
-					ido= $('id',xml).get(id);
-					warningtext= $('message',xml).text();
-					$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-					$($(ido).text()).parents('.installstep').removeClass('done');
-					$($(ido).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
-					});
-					break;
-				case '1': // Hide the warnings, highlight the borders and show the next step
-					ida= new Array( '#databasefile' );
-					$(ida).each(function(id) {
-					ido= $(ida).get(id);
-						$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-						$(ido).parents('.installstep').addClass('done')
-					});
-					$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
-					break;
-				}
-			},
-			error: handleAjaxError
-		});
-	}
-	else {
-		$('.installstep:first').removeClass('done');
-		$('#siteconfiguration').children('.options').fadeOut().removeClass('ready').removeClass('done');
-		$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
-	}
-}
-
-function checkSiteConfigurationCredentials() {
-	var warned = false;
-	var installok = true;
-	if ( ( $('#sitename').val() != '' ) && ( $('#adminuser').val() != '' ) && ( $('#adminpass1').val() != '' ) && ( $('#adminpass2').val() != '' ) ) {
-		//Checking fields is ok
-		if ( $('#adminpass1').val() != $('#adminpass2').val() ) {
-			warningtext= 'The passwords do not match, try typing them again.';
-			$('#install').children('.options').fadeOut().removeClass('ready');
-			$('#adminpass1').parents('.installstep').removeClass('done');
-			$('#adminpass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
-			warned = true;
-			installok = false;
+var installer = {
+	verifyDB: true,
+	
+	handleAjaxError: function(msg, status, err) {
+		error_msg= '';
+		if (msg.responseText != '') {
+			error_msg= msg.responseText;
 		}
-	}
-	if($('#adminemail').val() == '' ) {
-		installok = false;
-	}
-	if(!warned) {
-		ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
-		$(ida).each(function(id) {
-			ido= $(ida).get(id);
-			$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
-			if($(ido).val() != '') {
-				$(ido).addClass('valid');
+		$('#installerror').html(
+			'<strong>Installation Issue</strong>'+
+			'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="doc/manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="installer.noVerify();">continue without database verification</a>.</p>' +
+//			'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
+			'<strong>Server Response</strong>'+
+			'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
+		).fadeIn();
+	},
+	
+	setDatabaseType: function() {
+		switch($('#db_type').val()) {
+			case 'mysql':
+				$('.forpgsql').hide();
+				$('.forsqlite').hide();
+				$('.formysql').show();
+				break;
+			case 'pgsql':
+				$('.formysql').hide();
+				$('.forsqlite').hide();
+				$('.forpgsql').show();
+				break;
+			case 'sqlite':
+				$('.formysql').hide();
+				$('.forpgsql').hide();
+				$('.forsqlite').show();
+				break;
+		}
+		installer.checkDBCredentials();
+	},
+	
+	checkDBCredentials: function() {
+		switch ($('#db_type').val()) {
+			case 'mysql':
+				installer.mysql.checkDBCredentials();
+				break;
+			case 'pgsql':
+				installer.pgsql.checkDBCredentials();
+				break;
+			case 'sqlite':
+				installer.sqlite.checkDBCredentials();
+				break;
+		}
+	},
+	
+	checkSiteConfigurationCredentials: function() {
+		var warned = false;
+		var emptyfields = false;
+		var installok = true;
+		// Do not change the order, else installok var will be incorrect
+		$('#sitename, #adminuser, #adminpass1, #adminpass2, #adminemail').each(function(){
+			if ($(this).val() != '') {
+				$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			}
+			else {
+				$(this).parents('.inputfield').removeClass('valid');
+				emptyfields = true;
 			}
 		});
+		if(!emptyfields) {
+			if ( $('#adminpass1').val() != $('#adminpass2').val() ) {
+				warningtext= 'The passwords do not match, try typing them again.';
+				$('#adminpass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
+				warned = true;
+				installok = false;
+				$('#siteconfiguration').removeClass('done');
+				$('#pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+				$('#pluginactivation').children('.help-me').hide();
+			}
+		}
+		else {
+			installok = false;
+		}
+		if (installok) {
+			$('#adminpass1').parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			if(!warned) {
+				$('#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail').each(function() {
+					$(this).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
+					if($(this).val() != '') {
+						$(this).addClass('valid');
+					}
+				});
+			}
+			$('#siteconfiguration, #pluginactivation, #install').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			$('#pluginactivation').children('.help-me').show();
+			$('#submitinstall').removeAttr( 'disabled' );
+		}
+		else {
+			$('#siteconfiguration').removeClass('done');
+			$('#pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#pluginactivation').children('.help-me').hide();
+		}
+	},
+	
+	noVerify: function() {
+		installer.verifyDB = false;
+		$('#installerror').html('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify the database settings.</p>' + $('#installerror').html());
 	}
-	if(installok) {
-		$('#siteconfiguration').addClass('done');
-		$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
-		$('#pluginactivation').children('.options').fadeIn().addClass('ready').addClass('done');
-		$('#pluginactivation').children('.help-me').show();
-		$('#submitinstall').removeAttr( 'disabled' );
-	}
-	else {
-		$('#siteconfiguration').removeClass('done');
-		$('#install').children('.options').fadeOut().removeClass('ready').removeClass('done');
+	
+}
+
+installer.mysql = {
+	checkDBCredentials : function() {
+		if ( ( $('#mysqldatabasehost').val() != '' ) && ( $('#mysqldatabaseuser').val() != '' ) && ( $('#mysqldatabasename').val() != '' ) ) {
+			if (installer.verifyDB) {
+				$.ajax({
+					type: 'POST',
+					url: 'ajax/check_mysql_credentials',
+					data: { // Ask InstallHandler::ajax_check_mysql_credentials to check the credentials
+						ajax_action: 'check_mysql_credentials',
+						host: $('#mysqldatabasehost').val(),
+						database: $('#mysqldatabasename').val(),
+						user: $('#mysqldatabaseuser').val(),
+						pass: $('#mysqldatabasepass').val()
+					},
+					success: function(xml) {
+						$('#installerror').fadeOut();
+						switch($('status',xml).text()) {
+						case '0': // Show warning, fade the borders and hide the next step
+							warningtext= $('message',xml).text();
+							$('id',xml).each(function() {
+								$($(this).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
+								$($(this).text()).parents('.installstep').removeClass('done')
+							});
+							$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+							$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+							break;
+						case '1': // Hide the warnings, highlight the borders and show the next step
+							installer.mysql.validDBCredentials();
+							break;
+						}
+					},
+					error: installer.handleAjaxError
+				});
+			} else {
+				installer.mysql.validDBCredentials();
+			}
+		} else {
+			$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser').each(function() {
+				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
+			});
+			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+		}
+	},
+	
+	validDBCredentials: function() {
+		$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser').each(function() {
+			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			$(this).parents('.installstep').addClass('done')
+		});
+		$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
+		$('#siteconfiguration').children('.help-me').show();
+		installer.checkSiteConfigurationCredentials();
 	}
 }
 
+installer.pgsql = {
+	checkDBCredentials : function() {
+		if ( ( $('#pgsqldatabasehost').val() != '' ) && ( $('#pgsqldatabaseuser').val() != '' ) && ( $('#pgsqldatabasename').val() != '' ) ) {
+			if (installer.verifyDB) {
+				$.ajax({
+					type: 'POST',
+					url: 'ajax/check_pgsql_credentials',
+					data: { // Ask InstallHandler::ajax_check_pgsql_credentials to check the credentials
+						ajax_action: 'check_pgsql_credentials',
+						host: $('#pgsqldatabasehost').val(),
+						database: $('#pgsqldatabasename').val(),
+						user: $('#pgsqldatabaseuser').val(),
+						pass: $('#pgsqldatabasepass').val()
+					},
+					success: function(xml) {
+						$('#installerror').fadeOut();
+						switch($('status',xml).text()) {
+						case '0': // Show warning, fade the borders and hide the next step
+							warningtext= $('message',xml).text();
+							$('id',xml).each(function() {
+								$($(this).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
+								$($(this).text()).parents('.installstep').removeClass('done')
+							});
+							$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+							$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+							break;
+						case '1': // Hide the warnings, highlight the borders and show the next step
+							installer.pgsql.validDBCredentials();
+							break;
+						}
+					},
+					error: installer.handleAjaxError
+				});
+			} else {
+				installer.pgsql.validDBCredentials();
+			}
+		} else {
+			$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser').each(function() {
+				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
+			});
+			$('.installstep:eq(1)').removeClass('done');
+			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+		}
+	},
+	
+	validDBCredentials: function() {
+		$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser').each(function() {
+			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			$(this).parents('.installstep').addClass('done')
+		});
+		$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
+		$('#siteconfiguration').children('.help-me').show();
+		installer.checkSiteConfigurationCredentials();
+	}
+}
+
+installer.sqlite = {
+	checkDBCredentials : function() {
+		if ( $('#databasefile').val() != '' ) {
+			if (installer.verifyDB) {
+				$.ajax({
+					type: 'POST',
+					url: 'ajax/check_sqlite_credentials',
+					data: { // Ask InstallHandler::ajax_check_sqlite_credentials to check the credentials
+						ajax_action: 'check_sqlite_credentials',
+						file: $('#databasefile').val()
+					},
+					success: function(xml) {
+						$('#installerror').fadeOut();
+						switch($('status',xml).text()) {
+						case '0': // Show warning, fade the borders and hide the next step
+							warningtext= $('message',xml).text();
+							$('id',xml).each(function() {
+								$($(this).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
+								$($(this).text()).parents('.installstep').removeClass('done')
+							});
+							$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+							$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+							break;
+						case '1': // Hide the warnings, highlight the borders and show the next step
+							installer.sqlite.validDBCredentials();
+							break;
+						}
+					},
+					error: installer.handleAjaxError
+				});
+			} else {
+				installer.sqlite.validDBCredentials();
+			}
+		} else {
+			$('#databasefile').parents('.inputfield').removeClass('valid');
+			$('.installstep:eq(1)').removeClass('done');
+			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+		}
+	},
+	
+	validDBCredentials: function() {
+		$('#databasefile').each(function() {
+			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+			$(this).parents('.installstep').addClass('done')
+		});
+		$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
+		$('#siteconfiguration').children('.help-me').show();
+		installer.checkSiteConfigurationCredentials();
+	}
+}
+
+/* Handles the timers for verification */
 var checktimer = null;
 function queueTimer(timer){
 	if(checktimer != null) {
@@ -205,33 +280,7 @@ function queueTimer(timer){
 	checktimer = setTimeout(timer, 500);
 }
 
-function noVerify() {
-	$('#databasesetup input').unbind();
-	$('#siteconfiguration input').unbind();
-
-	ida= new Array( '#databasefile' );
-	$(ida).each(function(id) {
-	ido= $(ida).get(id);
-		$(ido).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-		$(ido).parents('.installstep').addClass('done')
-	});
-	$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
-
-	ida= new Array( '#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail' );
-	$(ida).each(function(id) {
-		ido= $(ida).get(id);
-		$(ido).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
-		if($(ido).val() != '') {
-			$(ido).addClass('valid');
-		}
-	});
-	$('#siteconfiguration').addClass('done');
-	$('#install').children('.options').fadeIn().addClass('ready').addClass('done');
-	$('#submitinstall').removeAttr( 'disabled' );
-
-	$('#installerror').html('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify your installation details.</p>' + $('#installerror').html());
-}
-
+/* Manages Plugin Activation Items */
 var itemManage = {
 	init: function() {
 		if(!$('.item.controls input[type=checkbox]')) return;
@@ -291,17 +340,19 @@ $(document).ready(function() {
 	$('.help').hide();
 	$('.installstep').removeClass('ready');
 	$('.installstep:eq(0), .installstep:eq(1)').addClass('ready');
+	// Table Prefix is optional, it is always OK
+	$('#tableprefix').parents('.inputfield').addClass('valid');
 	$('.javascript-disabled').hide();
 	$('#installform').before('<div class="installerror error" id="installerror"></div>');
 	$('#installerror').hide();
 	$('form').attr('autocomplete', 'off');
 	itemManage.init();
-	setDatabaseType();
-	checkDBCredentials();
-	checkSiteConfigurationCredentials();
-	$('#db_type').change(setDatabaseType);
-	$('#databasesetup input').keyup(function(){queueTimer(checkDBCredentials)});
-	$('#siteconfiguration input').keyup(function(){queueTimer(checkSiteConfigurationCredentials)});
+	installer.setDatabaseType();
+	installer.checkDBCredentials();
+	installer.checkSiteConfigurationCredentials();
+	$('#db_type').change(installer.setDatabaseType);
+	$('#databasesetup input').keyup(function(){queueTimer(installer.checkDBCredentials)});
+	$('#siteconfiguration input').keyup(function(){queueTimer(installer.checkSiteConfigurationCredentials)});
 	$('#locale').focus().change(function() {
 		$('#locale-form').submit();
 	});
