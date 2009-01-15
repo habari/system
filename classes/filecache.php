@@ -57,7 +57,7 @@ class FileCache extends Cache
 
 		return isset( $this->cache_files[$ghash][$hash] ) && $this->cache_files[$ghash][$hash]['expires'] > time() && file_exists( $this->cache_files[$ghash][$hash]['file'] );
 	}
-	
+
 	/**
 	 * Is group in the cache?
 	 *
@@ -88,7 +88,7 @@ class FileCache extends Cache
 		$ghash = $this->get_group_hash( $group );
 
 		if ( !isset( $this->cache_data[$group] ) ) {
-			if ( isset( $this->cache_files[$ghash] ) && count($this->cache_files[$ghash]) > 1 ) {
+			if ( isset( $this->cache_files[$ghash] ) ) {
 				foreach ( $this->cache_files[$ghash] as $hash => $record ) {
 					$this->cache_data[$group][$record['name']] = unserialize(
 						file_get_contents( $record['file'] )
@@ -101,7 +101,7 @@ class FileCache extends Cache
 		}
 		return $this->cache_data[$group];
 	}
-	
+
 	/**
 	 * Returns the named value from the cache.
 	 *
@@ -155,7 +155,7 @@ class FileCache extends Cache
 		}
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
-		
+
 		if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
 			unlink( $this->cache_files[$ghash][$hash]['file'] );
 			unset( $this->cache_files[$ghash][$hash] );
@@ -177,7 +177,7 @@ class FileCache extends Cache
 		}
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
-		
+
 		if ( isset( $this->cache_files[$ghash][$hash] ) ) {
 			$this->cache_files[$ghash][$hash]['expires'] = time() + $expiry;
 			$this->clear_expired();
@@ -194,7 +194,7 @@ class FileCache extends Cache
 	{
 		return md5( $name . Options::get( 'GUID' ) ) . '.cache';
 	}
-	
+
 	/**
 	 * Get the unique hash for a given key.
 	 *
