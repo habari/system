@@ -729,7 +729,7 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_publish_before', $this );
 
 		if ( $this->status != Post::status( 'scheduled' ) )  {
-			$this->pubdate = HabariDateTime::create_date();
+			$this->pubdate = HabariDateTime::date_create();
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
