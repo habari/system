@@ -311,7 +311,7 @@ WP_IMPORT_STAGE2;
 				}
 
 				// we want to include the Ultimate Tag Warrior in that list of tags
-				if ( $utw_import == 1 ) {
+				if ( $utw_import == 1 && count( DB::get_results( "show tables like 'post2tag'" ) ) ) {
 					$utw_tags = $wpdb->get_column(
 					"SELECT tag
 					FROM {$db_prefix}post2tag
