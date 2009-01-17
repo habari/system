@@ -24,17 +24,4 @@ ALTER TABLE {$prefix}crontab MODIFY COLUMN end_time INT UNSIGNED;
 UPDATE {$prefix}crontab SET last_run=NULL WHERE last_run=0;
 UPDATE {$prefix}crontab SET end_time=NULL WHERE end_time=0;
 
-DROP TABLE {$prefix}permissions;
 DROP TABLE {$prefix}groups_permissions;
-
-CREATE TABLE {$prefix}permissions (
-  id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('denied'),
-  ('read'),
-  ('write'),
-  ('full');

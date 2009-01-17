@@ -165,19 +165,4 @@ CREATE TABLE {$prefix}rewrite_rules (
 
 INSERT INTO {$prefix}rewrite_rules SELECT * FROM rewrite_rules_tmp;
 
-DROP TABLE {$prefix}permissions;
 DROP TABLE {$prefix}groups_permissions;
-
-CREATE TABLE {$prefix}permissions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  name VARCHAR(255) NOT NULL
-);
-
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('denied');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('read');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('write');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('full');

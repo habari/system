@@ -25,19 +25,4 @@ ALTER TABLE {$prefix}crontab ALTER COLUMN end_time TYPE INT USING CASE WHEN end_
 UPDATE {$prefix}crontab SET last_run = NULL WHERE last_run = 0;
 UPDATE {$prefix}crontab SET end_time = NULL WHERE end_time = 0;
 
-DROP TABLE {$prefix}permissions;
 DROP TABLE {$prefix}groups_permissions;
-
-CREATE SEQUENCE {$prefix}permissions_pkey_seq;
-CREATE TABLE {$prefix}permissions (
-  id INTEGER NOT NULL DEFAULT nextval('{$prefix}permissions_pkey_seq'),
-  name VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-ALTER SEQUENCE {$prefix}permissions_pkey_seq OWNED BY {$prefix}permissions.id;
-
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('denied'),
-  ('read'),
-  ('write'),
-  ('full');
