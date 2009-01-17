@@ -517,9 +517,9 @@ class Posts extends ArrayObject implements IsContent
 		/**
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
 		 */
-		print_R('<pre>'.$query.'</pre>');
-		Utils::debug( $paramarray, $fetch_fn, $query, $params );
-		Session::notice($query);
+		//print_R('<pre>'.$query.'</pre>');
+		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
+		//Session::notice($query);
 
 		/**
 		 * Execute the SQL statement using the PDO extension
