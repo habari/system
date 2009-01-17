@@ -89,6 +89,7 @@ class User extends QueryRecord
 			}
 		}
 		$anonymous = new User();
+		$anonymous->id = 0;
 		Plugins::act('create_anonymous_user', $anonymous);
 		return $anonymous;
 	}
