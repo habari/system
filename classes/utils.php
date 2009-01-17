@@ -927,7 +927,11 @@ class Utils
 		else {
 			$additional_headers = array();
 			foreach($headers as $header_key => $header_value) {
-				$additional_headers[] = "{$header_key}: {$header_value}";
+				$header_key = trim($header_key);
+				$header_value = trim($header_value);
+				if(strpos($header_key.$header_value, "\n") === false) {
+					$additional_headers[] = "{$header_key}: {$header_value}";
+				}
 			}
 			$additional_headers = implode("\r\n", $additional_headers);
 		}
