@@ -1294,7 +1294,7 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post_2987()
+	private function upgrade_db_post_2988()
 	{
 		// Add the default tokens
 		$this->create_default_permissions();
@@ -1317,6 +1317,18 @@ class InstallHandler extends ActionHandler {
 		foreach($all_users as $user) {
 			$group->add( $user );
 		}
+
+		// Create the anonymous group
+		$group = UserGroup::create( array( 'name' => 'anonymous' ) );
+		if( ! $group ) {
+			return false;
+		}
+		$group->grant('post_entry', 'read');
+		$group->grant('post_page', 'read');
+
+		// Give the anonymous user access to the anonymous group
+		$group->add( 0 );
+
 	}
 
 	/**

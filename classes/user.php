@@ -371,6 +371,9 @@ class User extends QueryRecord
 	 */
 	public static function get_id( $user )
 	{
+		if( is_int( $user ) ) {
+			return $user;
+		}
 		$user = self::get( $user );
 		return $user->id;
 	}
