@@ -753,6 +753,17 @@ class Posts extends ArrayObject
 		$tokens = explode( ' ', $search_string );
 
 		foreach( $tokens as $token ) {
+			//check for triple combination
+			if ( preg_match( '/^\w+:[^:\s]*:\S+$/', $token ) ){
+				list( $keyword, $infokey, $infovalue )= explode( ':', $token );
+				$keyword = strtolower( $keyword );
+				switch($keyword){
+					case 'info':
+						$arguments['info'][]= array($infokey=>$infovalue);
+					break;
+				}
+			}
+
 			// check for a keyword:value pair
 			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
 				list( $keyword, $value )= explode( ':', $token );
