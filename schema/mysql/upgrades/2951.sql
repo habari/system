@@ -8,7 +8,6 @@ ALTER TABLE {$prefix}log_types CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicod
 ALTER TABLE {$prefix}object_terms CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 ALTER TABLE {$prefix}object_types CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 ALTER TABLE {$prefix}options CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-ALTER TABLE {$prefix}permissions CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 ALTER TABLE {$prefix}post_tokens CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 ALTER TABLE {$prefix}postinfo CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 ALTER TABLE {$prefix}posts CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;

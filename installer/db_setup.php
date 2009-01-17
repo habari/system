@@ -217,7 +217,8 @@
 		<?php foreach($plugins as $plugin) { ?>
 		<div class="item clear">
 			<div class="head">
-				<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>" id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked'; ?> tabindex="<?php echo $tab++ ?>"></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
+				<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>"
+				 id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked'; ?> tabindex="<?php echo $tab++ ?>"></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
 			</div>
 			<div class="help"><?php echo $plugin['info']->description; ?></div>
 		</div>

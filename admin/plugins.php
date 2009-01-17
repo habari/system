@@ -42,7 +42,9 @@
 	<div class="item plugin clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
 			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
-
+			<?php if($plugin['help'] != ''): ?>
+			<a class="help" href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&configaction=' . $plugin['help'] ); ?>#plugin_<?php echo $plugin['plugin_id']; ?>">?</a>
+			<?php endif; ?>
 			<ul class="dropbutton">
 
 				<?php
@@ -50,7 +52,7 @@
 					$plugin_actions = array();
 					$plugin_actions = Plugins::filter( 'plugin_config', $plugin_actions, $plugin['plugin_id'] );
 					foreach( $plugin['actions'] as $plugin_action => $plugin_action_caption ) {
-						if( isset($configure) && ($configure == $plugin['plugin_id']) && ($configaction == $plugin_action) )
+						if( isset($configure) && ($configure == $plugin['plugin_id']) && ($configaction == (string)$plugin_action) )
 							continue;
 
 						if ( is_numeric( $plugin_action ) )

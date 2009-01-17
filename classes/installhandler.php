@@ -214,9 +214,9 @@ class InstallHandler extends ActionHandler {
 				$plugin['recommended'] = in_array( basename($file), $recommended_list );
 			}
 			else {
-				$plugin['debug'] = true;
-				$plugin['error'] = $error;
-				$plugin['active'] = false;
+				// We can't get the plugin info due to an error
+				// This will show up in the plugin panel, just continue through install
+				continue;
 			}
 
 			$plugins[$plugin_id] = $plugin;
@@ -424,6 +424,13 @@ class InstallHandler extends ActionHandler {
 			}
 		}
 
+		// Create the standard post types and statuses
+		if(! $this->create_base_post_types()) {
+			$this->theme->assign('form_errors', array('options'=>_t('Problem creating base post types')));
+			DB::rollback();
+			return false;
+		}
+
 		// Let's setup the admin user and group now.
 		// But first, let's make sure that no users exist
 		$all_users = Users::get_all();
@@ -440,8 +447,12 @@ class InstallHandler extends ActionHandler {
 				DB::rollback();
 				return false;
 			}
-			// create default permissions 
+			// create default permissions
 			$this->create_default_permissions();
+			// Make the admin group all superusers
+			$admin_group->grant('super_user');
+			// Create the anonymous group for visitor permissions
+			$this->create_anonymous_group();
 		}
 
 		// create a first post, if none exists
@@ -576,55 +587,42 @@ class InstallHandler extends ActionHandler {
 		return $group;
 	}
 
-	/** 
-	 * Creates the default set of permissions. 
-	 * This list includes: 
-	 * Create Entry 
-	 * Create Page 
-	 * Manage Entries 
-	 *   Own entries 
-	 *   Others' entries 
-	 * Manage Pages: 
-	 *     Own pages 
-	 *     Others' pages 
-	 * Comments 
-	 *     Comments on own posts. 
-	 *     Comments on others' posts. 
-	 * Tags 
-	 * Options 
-	 * Themes 
-	 *     Change theme 
-	 *     Configure active theme 
-	 * Plugins 
-	 *     Activate/deactivate plugins 
-	 *     Configure active plugins 
-	 * Import 
-	 * Users 
-	 * Groups 
-	 * Logs  
-	 *  
-	 */ 
-	private function create_default_permissions() 
-	{ 
-		foreach ( Post::list_active_post_types() as $name => $posttype ) { 
-			ACL::create_permission( 'create_' . $name, 'Create ' . $name  ); 
-			ACL::create_permission( 'manage_all_' . $name, 'Manage all ' . $name ); 
-			ACL::create_permission( 'manage_own_' . $name, 'Manage own ' . $name ); 
-		} 
-		ACL::create_permission( 'manage_all_comments', 'Manage comments on all posts' ); 
-		ACL::create_permission( 'manage_own_comments', 'Manage comments on own posts' ); 
-		ACL::create_permission( 'manage_tags', 'Manage tags' ); 
-		ACL::create_permission( 'manage_options', 'Manage options' ); 
-		ACL::create_permission( 'change_theme', 'Change theme' ); 
-		ACL::create_permission( 'configure_active_theme', 'Configure the active theme' ); 
-		ACL::create_permission( 'manage_plugins', 'Activate/deactivate plugins' ); 
-		ACL::create_permission( 'configure_active_plugins', 'Configure active plugins' ); 
-		ACL::create_permission( 'import', 'Use the importer' ); 
-		ACL::create_permission( 'manage_users', 'Add, remove, and edit users' ); 
-		ACL::create_permission( 'manage_groups', 'Manage groups and permissions' ); 
-		ACL::create_permission( 'manage_logs', 'Manage logs' ); 
+	private function create_anonymous_group()
+	{
+		// Create the anonymous group
+		$group = UserGroup::create( array( 'name' => 'anonymous' ) );
+		if( ! $group ) {
+			return false;
+		}
+		$group->grant('post_entry', 'read');
+		$group->grant('post_page', 'read');
+
+		// Give the anonymous user access to the anonymous group
+		$group->add( 0 );
 	}
-	
+
+	/**
+	 * Creates the default set of permissions.
+	 */
+	private function create_default_permissions()
+	{
+		ACL::create_permission( 'super_user', 'Permissions for super users' );
+
+		ACL::create_permission( 'own_posts', 'Permissions on one\'s own posts' );
+		ACL::create_permission( 'manage_all_comments', 'Manage comments on all posts' );
+		ACL::create_permission( 'manage_own_post_comments', 'Manage comments on one\'s own posts' );
+		ACL::create_permission( 'manage_tags', 'Manage tags' );
+		ACL::create_permission( 'manage_options', 'Manage options' );
+		ACL::create_permission( 'manage_theme', 'Change theme' );
+		ACL::create_permission( 'manage_theme_config', 'Configure the active theme' );
+		ACL::create_permission( 'manage_plugins', 'Activate/deactivate plugins' );
+		ACL::create_permission( 'manage_plugins_config', 'Configure active plugins' );
+		ACL::create_permission( 'manage_import', 'Use the importer' );
+		ACL::create_permission( 'manage_users', 'Add, remove, and edit users' );
+		ACL::create_permission( 'manage_groups', 'Manage groups and permissions' );
+		ACL::create_permission( 'manage_logs', 'Manage logs' );
+	}
+
 	/**
 	 * Write the default options
 	 */
@@ -665,9 +663,9 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
-	 * Create the first post
-	**/
-	private function create_first_post()
+	 * Add the standard post types and statuses to the database
+	 */
+	private function create_base_post_types()
 	{
 		// first, let's create our default post types of
 		// "entry" and "page"
@@ -681,7 +679,14 @@ class InstallHandler extends ActionHandler {
 		Post::add_new_status('published');
 		Post::add_new_status( 'scheduled', true );
 
-		// Now create the first post
+		return true;
+	}
+
+	/**
+	 * Create the first post
+	**/
+	private function create_first_post()
+	{
 		Post::create(array(
 			'title' => 'Habari',
 			'content' => _t('This site is running <a href="http://habariproject.org/">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href="http://habariproject.org/">http://habariproject.org/</a> to find out more!'),
@@ -1319,9 +1324,32 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post_2958()
+	private function upgrade_db_post_2988()
 	{
+		// Add the default tokens
 		$this->create_default_permissions();
+
+		// Add tokens for each existing post type, which is done in the installer when the type is created.
+		foreach ( Post::list_active_post_types() as $name => $posttype ) {
+			ACL::create_permission( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ) );
+			ACL::create_permission( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ) );
+		}
+
+		// Create the admin group
+		$group = UserGroup::create( array( 'name' => 'admin' ) );
+		if( ! $group ) {
+			return false;
+		}
+		$group->grant('super_user');
+
+		// Until now, all users were admins, restore that
+		$all_users = Users::get_all();
+		foreach($all_users as $user) {
+			$group->add( $user );
+		}
+
+		// Create the anonymous group
+		$this->create_anonymous_group();
 	}
 
 	/**

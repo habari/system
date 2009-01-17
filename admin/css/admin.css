@@ -2022,6 +2022,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 	border-bottom: 1px solid #424242;
 	margin: 0 auto;
 	width: 770px;
+	border: none;
 }
 
 .styledformelement {
