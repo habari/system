@@ -280,7 +280,10 @@ class User extends QueryRecord
 	 */
 	public static function get( $who )
 	{
-		if ( is_numeric( $who ) ) {
+		if( $who instanceof User ) {
+			$user = $who;
+		}
+		elseif ( is_numeric( $who ) ) {
 			// Got a User ID
 			$user = self::get_by_id( $who );
 		}

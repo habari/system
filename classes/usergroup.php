@@ -54,6 +54,7 @@ class UserGroup extends QueryRecord
 	 * Create a new UserGroup object and save it to the database
 	 * @param array $paramarray An associative array of UserGroup fields
 	 * @return UserGroup the UserGroup that was created
+	 * @todo Make this function accept only a name, since you can't set an id into an autoincrement field, and we don't try.
 	 */
 	public static function create( $paramarray )
 	{
@@ -62,6 +63,13 @@ class UserGroup extends QueryRecord
 			return $usergroup;
 		}
 		else {
+			// Does the group already exist?
+			if(isset($paramarray['name'])) {
+				$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($paramarray['name']));
+				if($exists) {
+					return UserGroup::get_by_name($paramarray['name']);
+				}
+			}
 			return false;
 		}
 	}
@@ -71,6 +79,11 @@ class UserGroup extends QueryRecord
 	 */
 	public function insert()
 	{
+		$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($this->name));
+		if($exists) {
+			return false;
+		}
+
 		$allow = true;
 		// plugins have the opportunity to prevent insertion
 		$allow = Plugins::filter('usergroup_insert_allow', $allow, $this);
@@ -176,9 +189,9 @@ class UserGroup extends QueryRecord
 	{
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
-		$users = array_map(array('User', 'get_id'), $users);
+		$user_ids = array_map(array('User', 'get_id'), $users);
 		// Remove users from group membership
-		$this->member_ids = array_merge( (array) $this->member_ids, (array) $users);
+		$this->member_ids = array_merge( (array) $this->member_ids, (array) $user_ids);
 		// List each group member exactly once
 		$this->member_ids = array_unique($this->member_ids);
 		$this->update();

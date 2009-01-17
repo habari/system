@@ -440,8 +440,10 @@ class InstallHandler extends ActionHandler {
 				DB::rollback();
 				return false;
 			}
-			// create default permissions 
+			// create default permissions
 			$this->create_default_permissions();
+			// Make the admin group all superusers
+			$admin_group->grant('super_user');
 		}
 
 		// create a first post, if none exists
@@ -576,56 +578,28 @@ class InstallHandler extends ActionHandler {
 		return $group;
 	}
 
-	/** 
-	 * Creates the default set of permissions. 
-	 * This list includes: 
-	 * Create Entry 
-	 * Create Page 
-	 * Manage Entries 
-	 *   Own entries 
-	 *   Others' entries 
-	 * Manage Pages: 
-	 *     Own pages 
-	 *     Others' pages 
-	 * Comments 
-	 *     Comments on own posts. 
-	 *     Comments on others' posts. 
-	 * Tags 
-	 * Options 
-	 * Themes 
-	 *     Change theme 
-	 *     Configure active theme 
-	 * Plugins 
-	 *     Activate/deactivate plugins 
-	 *     Configure active plugins 
-	 * Import 
-	 * Users 
-	 * Groups 
-	 * Logs  
-	 *  
-	 */ 
-	private function create_default_permissions() 
-	{ 
-		foreach ( Post::list_active_post_types() as $name => $posttype ) { 
-			ACL::create_permission( 'create_' . $name, 'Create ' . $name  ); 
-			ACL::create_permission( 'manage_all_' . $name, 'Manage all ' . $name ); 
-			ACL::create_permission( 'manage_own_' . $name, 'Manage own ' . $name ); 
-			ACL::create_permission( 'post_' . $name, $name );
-		} 
-		ACL::create_permission( 'manage_all_comments', 'Manage comments on all posts' ); 
-		ACL::create_permission( 'manage_own_comments', 'Manage comments on own posts' ); 
-		ACL::create_permission( 'manage_tags', 'Manage tags' ); 
-		ACL::create_permission( 'manage_options', 'Manage options' ); 
-		ACL::create_permission( 'change_theme', 'Change theme' ); 
-		ACL::create_permission( 'configure_active_theme', 'Configure the active theme' ); 
-		ACL::create_permission( 'manage_plugins', 'Activate/deactivate plugins' ); 
-		ACL::create_permission( 'configure_active_plugins', 'Configure active plugins' ); 
-		ACL::create_permission( 'import', 'Use the importer' ); 
-		ACL::create_permission( 'manage_users', 'Add, remove, and edit users' ); 
-		ACL::create_permission( 'manage_groups', 'Manage groups and permissions' ); 
-		ACL::create_permission( 'manage_logs', 'Manage logs' ); 
+	/**
+	 * Creates the default set of permissions.
+	 */
+	private function create_default_permissions()
+	{
+		ACL::create_permission( 'super_user', 'Permissions for super users' );
+
+		ACL::create_permission( 'own_posts', 'Permissions on one\'s own posts' );
+		ACL::create_permission( 'manage_all_comments', 'Manage comments on all posts' );
+		ACL::create_permission( 'manage_own_post_comments', 'Manage comments on one\'s own posts' );
+		ACL::create_permission( 'manage_tags', 'Manage tags' );
+		ACL::create_permission( 'manage_options', 'Manage options' );
+		ACL::create_permission( 'manage_theme', 'Change theme' );
+		ACL::create_permission( 'manage_theme_config', 'Configure the active theme' );
+		ACL::create_permission( 'manage_plugins', 'Activate/deactivate plugins' );
+		ACL::create_permission( 'manage_plugins_config', 'Configure active plugins' );
+		ACL::create_permission( 'manage_import', 'Use the importer' );
+		ACL::create_permission( 'manage_users', 'Add, remove, and edit users' );
+		ACL::create_permission( 'manage_groups', 'Manage groups and permissions' );
+		ACL::create_permission( 'manage_logs', 'Manage logs' );
 	}
-	
+
 	/**
 	 * Write the default options
 	 */
@@ -1320,9 +1294,29 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post_2958()
+	private function upgrade_db_post_2987()
 	{
+		// Add the default tokens
 		$this->create_default_permissions();
+
+		// Add tokens for each existing post type, which is done in the installer when the type is created.
+		foreach ( Post::list_active_post_types() as $name => $posttype ) {
+			ACL::create_permission( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ) );
+			ACL::create_permission( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ) );
+		}
+
+		// Create the admin group
+		$group = UserGroup::create( array( 'name' => 'admin' ) );
+		if( ! $group ) {
+			return false;
+		}
+		$group->grant('super_user');
+
+		// Until now, all users were admins, restore that
+		$all_users = Users::get_all();
+		foreach($all_users as $user) {
+			$group->add( $user );
+		}
 	}
 
 	/**
