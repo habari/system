@@ -400,11 +400,6 @@ class Posts extends ArrayObject implements IsContent
 						$perm_where[] = '{post_tokens}.token_id IN ('.implode(',', $read_tokens).')';
 					}
 
-					// If a user can read posts without tokens, let him
-					if(User::identify()->can('null_token', 'read')) {
-						$perm_where[] = '{post_tokens}.token_id IS NULL';
-					}
-
 					// If there are granted permissions to check, add them to the where clause
 					if(count($perm_where) == 0) {
 						$where[] = '0';
