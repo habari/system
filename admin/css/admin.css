@@ -107,10 +107,6 @@ a img {
 	text-transform: uppercase;
 }
 
-#menulist {
-	display: none;
-}
-
 #menu #menulist ul {
 	background: #2b2b2b;
 	-webkit-border-radius: 5px;
