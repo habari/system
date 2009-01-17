@@ -141,7 +141,7 @@ a img {
 	display: block;
 }
 
-#menu li ul {
+#menu #menulist li ul {
 	position: absolute;
 	left: 100%;
 	top: 0;
@@ -151,6 +151,8 @@ a img {
 	-moz-border-radius-bottomleft: 0 !important;
 	-webkit-border-bottom-left-radius: 0 !important;
 	-webkit-border-top-left-radius: 0 !important;
+	padding-top:0 !important;
+	padding-bottom:0 !important;
 }
 
 #menulist li {
@@ -171,6 +173,14 @@ a img {
 
 #menulist li.submenu a.top {
 	background: url('../images/arrowright.png') 163px center no-repeat;
+}
+
+#menulist li.submenu li:first-child, #menulist li.submenu li:first-child a {
+	-moz-border-radius-topright: 5px !important;
+}
+
+#menulist li.submenu li:last-child, #menulist li.submenu li:last-child a {
+	-moz-border-radius-bottomright: 5px !important;
 }
 
 #menulist li.carrot a.top, #menulist li:hover a.top, #menulist li a:hover, #menulist li li.carrot a {
