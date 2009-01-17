@@ -938,5 +938,22 @@ class Utils
 		return mail($to, $subject,$message, $additional_headers, $parameters);
 	}
 
+	/**
+	 * Create a random password of a specific length
+	 *
+	 * @param integer $length Length of the password, if not provded, 10
+	 * @return string A random password
+	 */
+	public static function random_password($length = 10)
+	{
+		$password = '';
+		$data = str_split('1234567890!@#$^*qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVNBM');
+		$rand = array_rand($data, $length);
+		foreach($rand as $index) {
+			$password .= $data[$index];
+		}
+		return $password;
+	}
+
 }
 ?>

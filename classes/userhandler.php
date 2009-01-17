@@ -70,19 +70,7 @@ class UserHandler extends ActionHandler
 		}
 
 		// Display the login form.
-		$this->theme = Themes::create();
-		if ( !$this->theme->template_exists( 'login' ) ) {
-			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
-			$this->theme->assign( 'admin_page', 'login' );
-		}
-		$request = new StdClass();
-		foreach ( RewriteRules::get_active() as $rule ) {
-			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
-		}
-		$this->theme->assign( 'request', $request );
-		$this->theme->assign( 'habari_username', htmlentities($name, ENT_QUOTES, 'UTF-8') );
-		$this->display( 'login' );
-		return TRUE;
+		$this->login_form($name);
 	}
 
 	/**
@@ -104,6 +92,29 @@ class UserHandler extends ActionHandler
 		Utils::redirect(Site::get_url('habari'));
 	}
 
+	/**
+	 * Display the login form
+	 *
+	 * @param string $name Pre-fill the name field with this name
+	 */
+	protected function login_form($name)
+	{
+		// Display the login form.
+		$this->theme = Themes::create();
+		if ( !$this->theme->template_exists( 'login' ) ) {
+			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
+			$this->theme->assign( 'admin_page', 'login' );
+		}
+		$request = new StdClass();
+		foreach ( RewriteRules::get_active() as $rule ) {
+			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
+		}
+		$this->theme->assign( 'request', $request );
+		$this->theme->assign( 'habari_username', htmlentities($name, ENT_QUOTES, 'UTF-8') );
+		$this->display( 'login' );
+		return TRUE;
+	}
+
   /**
    * Helper function which automatically assigns all handler_vars
    * into the theme and displays a theme template
@@ -113,6 +124,66 @@ class UserHandler extends ActionHandler
 	protected function display( $template_name )
 	{
 		$this->theme->display($template_name);
+	}
+
+	/**
+	 * Handle requests for a password reset
+	 */
+	public function act_password_request()
+	{
+		$name = $this->handler_vars['username'];
+		if( !is_numeric($name) && $user = User::get($name) ) {
+			$hash = Utils::random_password();
+
+			$user->info->password_reset = md5($hash);
+			$user->info->commit();
+			$message = _t('Please visit %1$s to reset your password.', array(URL::get('user', array('page' => 'password_reset', 'id' => $user->id, 'hash' => $hash))));
+
+			Utils::mail($user->email, _t('[%1$s] Password reset request for %2$s', array(Options::get('title'), $user->displayname)), $message);
+		}
+		// Moving this inside the check for user existence would allow attackers to test usernames, so don't
+		Session::notice(_t('A password reset request has been sent to the user.'));
+		// Display the login form.
+		$this->login_form($name);
+	}
+
+	/**
+	 * Handle password reset confirmations
+	 */
+	public function act_password_reset()
+	{
+		$id = $this->handler_vars['id'];
+		$hash = $this->handler_vars['hash'];
+		$name = '';
+
+		if( $user = User::get($id) ) {
+			if( $user->info->password_reset == md5($hash)) {
+				// Send a new random password
+				$password = Utils::random_password();
+
+				$user->password = Utils::crypt( $password );
+				if( $user->update() ) {
+					$message = _t("Your password for %1\$s has been reset.  Your credentials are as follows---\r\nUsername: %2\$s\r\nPassword: %3\$s", array(Site::get_url('habari'), $user->username, $password));
+
+					Utils::mail($user->email, _t('[%1$s] Password has been reset for %2$s', array(Options::get('title'), $user->displayname)), $message);
+					Session::notice(_t('A new password has been sent to the user.'));
+				}
+				else {
+					Session::notice(_t('There was a problem resetting the password.  It was not reset.'));
+				}
+
+				// Clear the request - it should only work once
+				unset($user->info->password_reset);
+				$user->info->commit();
+
+				$name = $user->username;
+			}
+			else {
+				Session::notice(_t('The supplied password reset token has expired or is invalid.'));
+			}
+		}
+		// Display the login form.
+		$this->login_form($name);
 	}
 
 }

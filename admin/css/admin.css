@@ -2114,6 +2114,13 @@ body.login input[type=submit] {
 	margin-right: -1px;
 }
 
+body.login #password_utils {
+	text-align: right;
+	font-size: 0.8em;
+	clear: right;
+	padding-top: 10px;
+}
+
 
 /*- FOOTER */
 
