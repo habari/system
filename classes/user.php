@@ -64,7 +64,19 @@ class User extends QueryRecord
 		 /* $this->fields['id'] could be null in case of a new user. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 
 	}
-
+	
+	/**
+	 * Build and return the anonymous user
+	 * @return object user object
+	 */
+	public static function anonymous()
+	{
+		$anonymous = new User();
+		$anonymous->id = 0;
+		Plugins::act('create_anonymous_user', $anonymous);
+		return $anonymous;
+	}
+	
 	/**
 	 * Check for the existence of a cookie, and return a user object of the user, if successful
 	 * @return object user object, or false if no valid cookie exists
@@ -88,10 +100,7 @@ class User extends QueryRecord
 				return $user;
 			}
 		}
-		$anonymous = new User();
-		$anonymous->id = 0;
-		Plugins::act('create_anonymous_user', $anonymous);
-		return $anonymous;
+		return self::anonymous();
 	}
 
 	/**
