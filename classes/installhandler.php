@@ -214,9 +214,9 @@ class InstallHandler extends ActionHandler {
 				$plugin['recommended'] = in_array( basename($file), $recommended_list );
 			}
 			else {
-				$plugin['debug'] = true;
-				$plugin['error'] = $error;
-				$plugin['active'] = false;
+				// We can't get the plugin info due to an error
+				// This will show up in the plugin panel, just continue through install
+				continue;
 			}
 
 			$plugins[$plugin_id] = $plugin;
@@ -424,6 +424,13 @@ class InstallHandler extends ActionHandler {
 			}
 		}
 
+		// Create the standard post types and statuses
+		if(! $this->create_base_post_types()) {
+			$this->theme->assign('form_errors', array('options'=>_t('Problem creating base post types')));
+			DB::rollback();
+			return false;
+		}
+
 		// Let's setup the admin user and group now.
 		// But first, let's make sure that no users exist
 		$all_users = Users::get_all();
@@ -444,6 +451,8 @@ class InstallHandler extends ActionHandler {
 			$this->create_default_permissions();
 			// Make the admin group all superusers
 			$admin_group->grant('super_user');
+			// Create the anonymous group for visitor permissions
+			$this->create_anonymous_group();
 		}
 
 		// create a first post, if none exists
@@ -578,6 +587,20 @@ class InstallHandler extends ActionHandler {
 		return $group;
 	}
 
+	private function create_anonymous_group()
+	{
+		// Create the anonymous group
+		$group = UserGroup::create( array( 'name' => 'anonymous' ) );
+		if( ! $group ) {
+			return false;
+		}
+		$group->grant('post_entry', 'read');
+		$group->grant('post_page', 'read');
+
+		// Give the anonymous user access to the anonymous group
+		$group->add( 0 );
+	}
+
 	/**
 	 * Creates the default set of permissions.
 	 */
@@ -640,9 +663,9 @@ class InstallHandler extends ActionHandler {
 	}
 
 	/**
-	 * Create the first post
-	**/
-	private function create_first_post()
+	 * Add the standard post types and statuses to the database
+	 */
+	private function create_base_post_types()
 	{
 		// first, let's create our default post types of
 		// "entry" and "page"
@@ -656,7 +679,14 @@ class InstallHandler extends ActionHandler {
 		Post::add_new_status('published');
 		Post::add_new_status( 'scheduled', true );
 
-		// Now create the first post
+		return true;
+	}
+
+	/**
+	 * Create the first post
+	**/
+	private function create_first_post()
+	{
 		Post::create(array(
 			'title' => 'Habari',
 			'content' => _t('This site is running <a href="http://habariproject.org/">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href="http://habariproject.org/">http://habariproject.org/</a> to find out more!'),
@@ -1319,16 +1349,7 @@ class InstallHandler extends ActionHandler {
 		}
 
 		// Create the anonymous group
-		$group = UserGroup::create( array( 'name' => 'anonymous' ) );
-		if( ! $group ) {
-			return false;
-		}
-		$group->grant('post_entry', 'read');
-		$group->grant('post_page', 'read');
-
-		// Give the anonymous user access to the anonymous group
-		$group->add( 0 );
-
+		$this->create_anonymous_group();
 	}
 
 	/**
