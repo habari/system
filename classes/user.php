@@ -89,6 +89,7 @@ class User extends QueryRecord
 			}
 		}
 		$anonymous = new User();
+		$anonymous->id = 0;
 		Plugins::act('create_anonymous_user', $anonymous);
 		return $anonymous;
 	}
@@ -279,7 +280,10 @@ class User extends QueryRecord
 	 */
 	public static function get( $who )
 	{
-		if ( is_numeric( $who ) ) {
+		if( $who instanceof User ) {
+			$user = $who;
+		}
+		elseif ( is_numeric( $who ) ) {
 			// Got a User ID
 			$user = self::get_by_id( $who );
 		}
@@ -367,6 +371,9 @@ class User extends QueryRecord
 	 */
 	public static function get_id( $user )
 	{
+		if( is_int( $user ) ) {
+			return $user;
+		}
 		$user = self::get( $user );
 		return $user->id;
 	}

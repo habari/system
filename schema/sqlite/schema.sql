@@ -224,17 +224,3 @@ CREATE TABLE {$prefix}user_token_permissions (
   permission_id TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (user_id, token_id)
 );
-
-CREATE TABLE {$prefix}permissions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  name VARCHAR(255) NOT NULL
-);
-
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('denied');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('read');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('write');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('full');

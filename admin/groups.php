@@ -25,7 +25,9 @@
 			$users= array();
 			foreach($group->members as $id) {
 				$user= User::get_by_id($id);
-				$users[]= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				if ( $user instanceof User ){
+					$users[]= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				}
 			}
 			include('groups_item.php');
 		endforeach; ?>

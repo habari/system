@@ -23,7 +23,7 @@ class ACL {
 	 * It's true at the moment because that allows access to all features for upgrading users.
 	 * @todo Decide if this is a setting we need or want to change, or perhaps it should be an option.
 	 **/
-	const ACCESS_NONEXISTENT_PERMISSION = true;
+	const ACCESS_NONEXISTENT_PERMISSION = false;
 
 	private static $access_names = array( 'read', 'write', 'delete' );
 
@@ -241,6 +241,11 @@ class ACL {
 			return true;
 		}
 
+		$super_user = self::get_user_token_permissions( $user, 'super_user' );
+		if ( isset( $super_user ) && self::access_check( $super_user, 'any' ) ) {
+			return true;
+		}
+
 		// either the permission hasn't been granted, or it's been
 		// explicitly denied.
 		return false;
@@ -343,18 +348,26 @@ SQL;
 	**/
 	public static function user_tokens( $user, $access = 'write', $posts_only = false )
 	{
-		// convert $user to an ID
-		if ( is_numeric( $user ) ) {
-			$user_id = $user;
+		$bitmask = new Bitmask ( self::$access_names, $access );
+		$tokens = array();
+
+		$super_user = self::get_user_token_permissions( $user, 'super_user' );
+		if ( isset( $super_user ) && self::access_check( $super_user, 'any' ) ) {
+			$result = DB::get_results('SELECT id, ? as permission_id FROM {tokens}', array($bitmask->full));
 		}
 		else {
-			if ( ! $user instanceof User ) {
-				$user = User::get( $user );
+			// convert $user to an ID
+			if ( is_numeric( $user ) ) {
+				$user_id = $user;
 			}
-			$user_id = $user->id;
-		}
+			else {
+				if ( ! $user instanceof User ) {
+					$user = User::get( $user );
+				}
+				$user_id = $user->id;
+			}
 
-		$sql = <<<SQL
+			$sql = <<<SQL
 SELECT token_id, permission_id
 	FROM {user_token_permissions}
 	WHERE user_id = :user_id
@@ -366,13 +379,12 @@ SELECT gp.token_id, gp.permission_id
   AND ug.user_id = :user_id
   ORDER BY token_id ASC
 SQL;
-		$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
+			$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
+		}
+
 		if($posts_only) {
 			$post_tokens = DB::get_column('SELECT token_id FROM {post_tokens} GROUP BY token_id');
 		}
-
-		$bitmask = new Bitmask ( self::$access_names, $access );
-		$tokens = array();
 
 		foreach ( $result as $token ) {
 			$bitmask->value = $token->permission_id;

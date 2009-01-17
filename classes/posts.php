@@ -18,7 +18,7 @@
  * and to have properties that can be accessed that describe the results
  * (for example, $posts->onepost).
  **/
-class Posts extends ArrayObject
+class Posts extends ArrayObject implements IsContent
 {
 	public $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
@@ -368,18 +368,57 @@ class Posts extends ArrayObject
 				}
 
 				// Only show posts to which the current user has permission
-				$paramset['ignore_permissions'] = true;
+				//$paramset['ignore_permissions'] = true;
 				if(!isset($paramset['ignore_permissions'])) {
-					$permission_token_ids = isset($paramset['override_permissions']) ? $paramset['override_permissions'] : ACL::user_tokens(User::identify(), 'read');
+					// This set of wheres will be used to generate a list of post_ids that this user can read
+					$perm_where = array();
+
+					// Get the tokens that this user is granted or denied access to read
+					$read_tokens = isset($paramset['read_tokens']) ? $paramset['read_tokens'] : ACL::user_tokens(User::identify(), 'read', true);
+					$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
+
+					// If a user can read his own posts, let him
 					if(User::identify()->can('own_posts', 'read')) {
-
+						$perm_where[] = '{posts}.user_id = ?';
+						$params[] = User::identify()->id;
 					}
-					foreach(Post::list_active_post_types() as $name => $posttype) {
-						if(User::identify()->can(Utils::slugify($name) . '_post_type', 'read')) {
 
+					// If a user can read specific post types, let him
+					$permitted_post_types = array();
+					foreach(Post::list_active_post_types() as $name => $posttype) {
+						if(User::identify()->can('post_' . Utils::slugify($name), 'read')) {
+							$permitted_post_types[] = $posttype;
 						}
 					}
-					$joins['post_tokens__posts'] = ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND ({post_tokens}.token_id IN ('.implode(',', $permission_token_ids).'))';
+					if(count($permitted_post_types) > 0) {
+						$perm_where[] = '{posts}.content_type IN (' . implode(',', $permitted_post_types) . ')';
+					}
+
+					// If a user can read posts with specific tokens, let him
+					if(count($read_tokens) > 0) {
+						//$joins['post_tokens__posts'] = ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND ({post_tokens}.token_id IN ('.implode(',', $read_tokens).'))';
+						$perm_where[] = '{post_tokens}.token_id IN ('.implode(',', $read_tokens).')';
+					}
+
+					// If there are granted permissions to check, add them to the where clause
+					if(count($perm_where) == 0) {
+						$where[] = '0';
+					}
+					else {
+						$where[] = '
+							{posts}.id IN (
+							SELECT {posts}.id FROM {posts}
+							LEFT JOIN {post_tokens} ON {posts}.id = {post_tokens}.post_id
+							WHERE (' . implode(' OR ', $perm_where) . ')
+							GROUP BY {posts}.id)
+						';
+					}
+
+					if(count($deny_tokens) > 0) {
+						//	$joins['post_tokens__posts'] = ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND ({post_tokens}.token_id IN ('.implode(',', $permission_token_ids).'))';
+					}
+
+
 				}
 
 				// Concatenate the WHERE clauses
@@ -473,8 +512,9 @@ class Posts extends ArrayObject
 		/**
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
 		 */
-		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
-		// Session::notice($query);
+		//print_R('<pre>'.$query.'</pre>');
+		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
+		//Session::notice($query);
 
 		/**
 		 * Execute the SQL statement using the PDO extension
@@ -814,5 +854,18 @@ class Posts extends ArrayObject
 		return $arguments;
 	}
 
+
+	/**
+	 * Return the type of the content represented by this object
+	 *
+	 * @return string The name of the content representedt by this object
+	 */
+	function content_type ()
+	{
+		if(isset($this->preset)) {
+			return 'posts.' . $this->preset;
+		}
+		return 'posts';
+	}
 }
 ?>
