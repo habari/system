@@ -147,14 +147,12 @@
 	<div class="item clear" id="date_format">
 		<span class="pct20">
 			<label for="date_format">Date Format</label>
-            <em>Use a date format string usable by the php date()
-            function. See <a href="http://php.net/date">php.net/date</a> for
-            details</em>
 		</span>
 		<span class="pct20">
 			<input type="text" name="locale_date_format" class="border" value="<?php echo $user->info->locale_date_format ?>">
 		</span>
-		<span class="pct80 helptext">
+		<span class="pct50 helptext">
+			<span>Use a date format string usable by the php date() function. See <a href="http://php.net/date">php.net/date</a> for details</span>
 			<span><?php HabariDateTime::date_create()->out($user->info->locale_date_format) ?></span>
 		</span>
 	</div>
@@ -163,14 +161,12 @@
 	<div class="item clear" id="time_format">
 		<span class="pct20">
 			<label for="time_format">Time Format</label>
-            <em>Use a date format string usable by the php date()
-            function. See <a href="http://php.net/date">php.net/date</a> for
-            details</em>
 		</span>
 		<span class="pct20">
 			<input type="text" name="locale_time_format" class="border" value="<?php echo $user->info->locale_time_format ?>">
 		</span>
-		<span class="pct80 helptext">
+		<span class="pct50 helptext">
+			<span>Use a date format string usable by the php date() function. See <a href="http://php.net/date">php.net/date</a> for details</span>
 			<span><?php HabariDateTime::date_create()->out($user->info->locale_time_format) ?></span>
 		</span>
 	</div>
