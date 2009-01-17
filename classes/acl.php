@@ -46,6 +46,25 @@ class ACL {
 				return $bitmask->$access;
 		}
 	}
+	
+	/**
+	 * Check the permission bitmask to find the access type
+	 * @param mixed $permission The permission bitmask
+	 * @return mixed The permission level granted, or false for none
+	 */
+	public static function access_level( $permission )
+	{
+		$bitmask = new Bitmask( self::$access_names, $permission );
+						
+		if($bitmask->value == $bitmask->full) {
+			return 'full';
+		} elseif(isset($bitmask->flags[$bitmask->value])) {
+			return $bitmask->flags[$bitmask->value];
+		} else {
+			return false;
+		}
+		
+	}
 
 	/**
 	 * Create a new permission, and save it to the permission tokens table
@@ -393,6 +412,28 @@ SQL;
 			}
 		}
 		return $tokens;
+	}
+	
+	/**
+	 * Get the permission of a group for a specific token
+	 * @param integer $group The group ID
+	 * @param mixed $token The ID of the permission token
+	 * @return the result of the DB query
+	 **/
+	public static function get_group_permission( $group, $token )
+	{
+		// Use only numeric ids internally
+		$group = UserGroup::id( $group );
+		$token = self::token_id( $token );
+		$sql = 'SELECT permission_id FROM {group_token_permissions} WHERE
+			group_id=? AND token_id=?;';
+			
+		$result = DB::get_value( $sql, array( $group, $token) );
+				
+		if ( isset( $result ) ) {
+			return self::access_level($result);
+		}
+		return false;
 	}
 
 	/**

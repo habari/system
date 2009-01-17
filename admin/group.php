@@ -54,7 +54,7 @@
 		<span class="pct80">
 			<ul id="permissions">
 			<?php foreach($permissions as $permission): ?>
-				<li class="permission"><?php echo $permission->name; ?></li>
+				<li class="permission"><?php echo Utils::html_select('permission_' . $permission->id, $access_levels, $permission->access); ?><?php echo $permission->name; ?></li>
 			<?php endforeach; ?>
 			</ul>
 		</span>
