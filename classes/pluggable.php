@@ -132,6 +132,11 @@ abstract class Pluggable
 			Plugins::register( array($this, '_help_plugin_config'), 'filter', 'plugin_config', 8);
 			Plugins::register( array($this, '_help_plugin_ui'), 'action', 'plugin_ui', 8);
 		}
+		// look for a basic configure method
+		if( method_exists( $this, 'configure') ) {
+			Plugins::register( array($this, '_configure_plugin_config'), 'filter', 'plugin_config', 8);
+			Plugins::register( array($this, '_configure_plugin_ui'), 'action', 'plugin_ui', 8);
+		}
 	}
 
 	/**
@@ -159,7 +164,46 @@ abstract class Pluggable
 	{
 		if ( $plugin_id == $this->plugin_id() && $action == '_help' ) {
 			$output = $this->help();
-			echo "<div class=\"help\">{$output}</div>";
+			if($output instanceof FormUI) {
+				$output->out();
+			}
+			else {
+				echo "<div class=\"help\">{$output}</div>";
+			}
+		}
+	}
+
+	/**
+	 * Registered to the plugin_config hook to supply a config via a plugin's configure() method
+	 *
+	 * @param array $actions An array of actions applicable to this plugin
+	 * @param string $plugin_id The plugin id to which the actions belong
+	 * @return array The modified array of actions
+	 */
+	public function _configure_plugin_config( $actions, $plugin_id )
+	{
+		if ( $plugin_id == $this->plugin_id() ) {
+			$actions['_configure']= _t( 'Configure' );
+		}
+		return $actions;
+	}
+
+	/**
+	 * Registered to the plugin_ui hook to supply a config via a plugin's configure() method
+	 *
+	 * @param string $plugin_id The id of the plugin whose action was triggered
+	 * @param string $action The action triggered
+	 */
+	public function _configure_plugin_ui( $plugin_id, $action )
+	{
+		if ( $plugin_id == $this->plugin_id() && $action == '_configure' ) {
+			$output = $this->configure();
+			if($output instanceof FormUI) {
+				$output->out();
+			}
+			else {
+				echo $output;
+			}
 		}
 	}
 
