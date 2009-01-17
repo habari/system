@@ -129,7 +129,7 @@ class Theme extends Pluggable
 	 */
 	public function display_fallback( $template_list, $display_function = 'display' )
 	{
-		foreach ( $template_list as $template ) {
+		foreach ( (array)$template_list as $template ) {
 			if ( $this->template_exists( $template ) ) {
 				return $this->$display_function( $template );
 			}
@@ -189,14 +189,14 @@ class Theme extends Pluggable
 
 		$this->assign( 'posts', $posts );
 		/*
-		if( !isset( $this->page ) ) {
-			if( isset( $page ) ) {
-				$this->assign( 'page', $page );
-			}
-			elseif( isset( Controller::get_handler()->handler_vars['page'] ) ) {
-				$this->assign( 'page', Controller::get_handler()->handler_vars['page'] );
-			}
-		}*/
+		   if( !isset( $this->page ) ) {
+		   if( isset( $page ) ) {
+		   $this->assign( 'page', $page );
+		   }
+		   elseif( isset( Controller::get_handler()->handler_vars['page'] ) ) {
+		   $this->assign( 'page', Controller::get_handler()->handler_vars['page'] );
+		   }
+		   }*/
 
 		if ( $posts !== false && count( $posts ) > 0 ) {
 			$post = ( count( $posts ) > 1 ) ? $posts[0] : $posts;
@@ -206,17 +206,17 @@ class Theme extends Pluggable
 		}
 		elseif ( $posts === false ) {
 			if ($this->template_exists('404')) {
-			$fallback = array( '404' );
-			header( 'HTTP/1.0 404 Not Found' );
-			// Replace template variables with the 404 rewrite rule
-			$this->request->{URL::get_matched_rule()->name}= false;
-			$this->request->{URL::set_404()->name}= true;
-			$this->matched_rule = URL::get_matched_rule();
+				$fallback = array( '404' );
+				header( 'HTTP/1.0 404 Not Found' );
+				// Replace template variables with the 404 rewrite rule
+				$this->request->{URL::get_matched_rule()->name}= false;
+				$this->request->{URL::set_404()->name}= true;
+				$this->matched_rule = URL::get_matched_rule();
 			}
 			else {
 				$this->display('header');
 				echo '<h2>';
-				 _e( "Whoops! 404. The page you were trying to access is not really there. Please try again." );
+				_e( "Whoops! 404. The page you were trying to access is not really there. Please try again." );
 				echo '</h2>';
 				header( 'HTTP/1.0 404 Not Found' );
 				$this->display('footer');
@@ -471,9 +471,9 @@ class Theme extends Pluggable
 	}
 
 	/**
-		* Helper function: Display the posts for a specific criteria
-		* @param array $user_filters Additional arguments used to get the page content
-		*/
+	 * Helper function: Display the posts for a specific criteria
+	 * @param array $user_filters Additional arguments used to get the page content
+	 */
 	public function act_search( $user_filters = array() )
 	{
 		$paramarray['fallback'] = array(
@@ -512,8 +512,8 @@ class Theme extends Pluggable
 		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
 			$this->template_engine->assign( $key, $value );
 		}
-/*
-*/
+		/*
+		*/
 		$this->template_engine->assign( 'theme', $this );
 		$this->template_engine->display( $template_name );
 	}
@@ -722,10 +722,10 @@ class Theme extends Pluggable
 	}
 
 	/**
-	*Provides a link to the previous page
-	*
-	* @param string $text text to display for link
-	*/
+	 *Provides a link to the previous page
+	 *
+	 * @param string $text text to display for link
+	 */
 	public function theme_prev_page_link( $theme, $text = NULL )
 	{
 		$settings = array();
@@ -745,10 +745,10 @@ class Theme extends Pluggable
 	}
 
 	/**
-	*Provides a link to the next page
-	*
-	* @param string $text text to display for link
-	*/
+	 *Provides a link to the next page
+	 *
+	 * @param string $text text to display for link
+	 */
 	public function theme_next_page_link( $theme, $text = NULL )
 	{
 		$settings = array();
