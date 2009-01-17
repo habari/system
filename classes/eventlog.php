@@ -202,10 +202,16 @@ class EventLog extends ArrayObject
 
 				/* do searching */
 				if ( isset( $paramset['criteria'] ) ) {
-					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
+					preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= "(message LIKE CONCAT('%',?,'%'))";
-						$params[] = $word;
+						if(preg_match('%^id:(\d+)$%i', $word, $special_crit)) {
+							$where[] .= '(id = ?)';
+							$params[] = $special_crit[1];
+						}
+						else {
+							$where[] .= "(message LIKE CONCAT('%',?,'%'))";
+							$params[] = $word;
+						}
 					}
 				}
 
