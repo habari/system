@@ -153,7 +153,7 @@ CREATE TABLE {$prefix}log (
   message VARCHAR(255) NOT NULL,
   data BYTEA NULL,
   timestamp INT NOT NULL,
-  ip BIGINT NOT NULL DEFAULT 0, 
+  ip BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
@@ -258,15 +258,3 @@ CREATE TABLE {$prefix}user_token_permissions (
   permission_id SMALLINT NOT NULL,
   PRIMARY KEY (user_id, token_id)
 );
-
-CREATE SEQUENCE {$prefix}permissions_pkey_seq;
-CREATE TABLE {$prefix}permissions (
-  id INTEGER NOT NULL DEFAULT nextval('{$prefix}permissions_pkey_seq'),
-  name VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-
-INSERT INTO {$prefix}permissions (name) VALUES ('denied');
-INSERT INTO {$prefix}permissions (name) VALUES ('read');
-INSERT INTO {$prefix}permissions (name) VALUES ('write');
-INSERT INTO {$prefix}permissions (name) VALUES ('full');

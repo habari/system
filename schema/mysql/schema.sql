@@ -138,7 +138,7 @@ CREATE TABLE {$prefix}log (
   message VARCHAR(255) NOT NULL,
   data BLOB NULL,
   timestamp INT UNSIGNED NOT NULL,
-  ip INT UNSIGNED NOT NULL, 
+  ip INT UNSIGNED NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -238,16 +238,3 @@ CREATE TABLE {$prefix}user_token_permissions (
   permission_id TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (user_id, token_id)
 );
-
-CREATE TABLE {$prefix}permissions (
-  id TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id)
-);
-
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('denied'),
-  ('read'),
-  ('write'),
-  ('full');
-
