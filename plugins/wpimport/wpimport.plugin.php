@@ -29,7 +29,7 @@ class WPImport extends Plugin implements Importer
 	{
 		return array(
 			'name' => 'WordPress Importer',
-			'version' => '1.0',
+			'version' => '1.0.1',
 			'url' => 'http://habariproject.org/',
 			'author' =>	'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
@@ -71,9 +71,9 @@ class WPImport extends Plugin implements Importer
 		// Validate input from various stages...
 		switch( $stage ) {
 		case 1:
-			if( isset( $_POST ) ) {
+			if( count( $_POST ) ) {
 				$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix', 'category_import', 'utw_import' );
-				$inputs = array_intersect_key( $_POST, array_flip( $valid_fields ) );
+				$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
 				if( $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'], $inputs['db_prefix'] ) ) {
 					$stage = 2;
 				}
@@ -225,7 +225,7 @@ WP_IMPORT_STAGE2;
 	public function action_auth_ajax_wp_import_posts( $handler )
 	{
 		$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix','postindex', 'category_import', 'utw_import' );
-		$inputs = array_intersect_key( $_POST, array_flip( $valid_fields ) );
+		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
 		extract( $inputs );
 		if ( ! isset( $inputs['category_import'] ) ) {
 			$inputs['category_import']= 0;
@@ -448,7 +448,7 @@ WP_IMPORT_AJAX2;
 	public function action_auth_ajax_wp_import_users( $handler )
 	{
 		$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix','userindex', 'category_import', 'utw_import' );
-		$inputs = array_intersect_key( $_POST, array_flip( $valid_fields ) );
+		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
 		extract( $inputs );
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
 		if( $wpdb ) {
@@ -539,7 +539,7 @@ WP_IMPORT_USERS1;
 	public function action_auth_ajax_wp_import_comments( $handler )
 	{
 		$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix','commentindex', 'category_import', 'utw_import' );
-		$inputs = array_intersect_key( $_POST, array_flip( $valid_fields ) );
+		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
 		extract( $inputs );
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
 		if( $wpdb ) {
