@@ -2422,10 +2422,11 @@ class AdminHandler extends ActionHandler
 
 		$group= UserGroup::get_by_id($this->handler_vars['id']);
 
-
-
 		$potentials= array();
+		
 		$users= Users::get_all();
+		$users[]= User::anonymous();
+				
 		$members= $group->members;
 		foreach($users as $user) {
 			if(in_array($user->id, $members)) {
@@ -2442,13 +2443,18 @@ class AdminHandler extends ActionHandler
 		$this->theme->members = $members;
 
 		$permissions= ACL::all_permissions();
-
+		$access_levels= array('read' => _t('Read'), 'write' => _t('Write'), 'full' => _t('Full'), 'delete' => _t('Deny'), 'unset' => _t('None'));
+		
 		foreach($permissions as $permission) {
-			if($level= ACL::group_can($group->id, $permission->id)) {
+			$level= ACL::get_group_permission($group->id, $permission->id);
+			if(isset($access_levels[$level])) {
 				$permission->access= $level;
+			} else {
+				$permission->access= 'unset';
 			}
 		}
-
+		
+		$this->theme->access_levels= $access_levels;
 		$this->theme->permissions= $permissions;
 
 		$this->theme->groups= UserGroups::get_all();
