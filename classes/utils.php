@@ -898,5 +898,41 @@ class Utils
 		return '';
 	}
 
+	/**
+	 * Send email
+	 *
+	 * @param string $to The destination address
+	 * @param string $subject The subject of the message
+	 * @param string $message The message itself
+	 * @param array $headers An array of key=>value pairs for additional email headers
+	 * @param string $parameters Additional parameters to mail()
+	 * @return boolean True if sending the message succeeded
+	 */
+	public static function mail($to, $subject, $message, $headers = array(), $parameters = '')
+	{
+		$mail = array(
+			'to' => $to,
+			'subject' => $subject,
+			'message' => $message,
+			'headers' => $headers,
+			'parameters' => $parameters,
+		);
+		$mail = Plugins::filter('mail', $mail);
+
+		$handled = false;
+		$handled = Plugins::filter('send_mail', $handled, $mail);
+		if($handled) {
+			return true;
+		}
+		else {
+			$additional_headers = array();
+			foreach($headers as $header_key => $header_value) {
+				$additional_headers[] = "{$header_key}: {$header_value}";
+			}
+			$additional_headers = implode("\r\n", $additional_headers);
+		}
+		return mail($to, $subject,$message, $additional_headers, $parameters);
+	}
+
 }
 ?>
