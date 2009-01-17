@@ -7,7 +7,5 @@
 <?php endforeach; ?>
 </ul>
 <input type="hidden" name="<?php echo $field; ?>_submitted" value="1">
-<?php if($message != '') : ?>
-<p class="error"><?php echo $message; ?></p>
-<?php endif; ?>
+<?php $control->errors_out('<li>%s</li>', '<ul class="error">%s</ul>'); ?>
 </div>

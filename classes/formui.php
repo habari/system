@@ -316,7 +316,7 @@ class FormContainer
 			}
 		}
 	}
-	
+
 	/**
 	 * Magic property isset, returns if the specified control exists
 	 *
@@ -380,6 +380,50 @@ class FormContainer
 		}
 	}
 
+	/**
+	 * Explicitly assign the theme object to be used with this container
+	 *
+	 * @param Theme $theme The theme object to use to output this container
+	 */
+	function set_theme($theme)
+	{
+		$this->theme_obj = $theme;
+	}
+
+	/**
+	 * Output any validation errors on any controls in this container using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_out($format, $wrap = '%s')
+	{
+		echo $this->errors_get($format, $wrap);
+	}
+
+	/**
+	 * Return any validation errors on any controls in this container using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_get($format, $wrap = '%s')
+	{
+		$out = '';
+		foreach($this->get_controls() as $control) {
+			foreach($control->errors as $error) {
+				$out .= sprintf($format, $error);
+			}
+		}
+		if($out != '') {
+			$out = sprintf($wrap, $out);
+		}
+		return $out;
+	}
 }
 
 
@@ -393,6 +437,8 @@ class FormUI extends FormContainer
 {
 	private $success_callback;
 	private $success_callback_params = array();
+	public $success = false;
+	public $submitted = false;
 	private static $outpre = false;
 	private $options = array(
 		'save_button' => true,
@@ -404,6 +450,7 @@ class FormUI extends FormContainer
 	);
 	public $class = array( 'formui' );
 	public $id = null;
+	public $formtype = '';
 
 	public $properties = array(
 		'action' => '',
@@ -415,10 +462,17 @@ class FormUI extends FormContainer
 	 * FormUI's constructor, called on instantiation.
 	 *
 	 * @param string $name The name of the form, used to differentiate multiple forms.
+	 * @param string $formtype The type of the form, used to classify form types for plugin modification
 	 */
-	public function __construct( $name )
+	public function __construct( $name, $formtype = null )
 	{
 		$this->name = $name;
+		if(isset($formtype)) {
+			$this->formtype = $formtype;
+		}
+		else {
+			$this->formtype = $name;
+		}
 	}
 
 	/**
@@ -437,16 +491,27 @@ class FormUI extends FormContainer
 	 * @param boolean $process_for_success Set to true to display the form as it would look if the submission succeeded, but do not execute success methods.
 	 * @return string HTML form generated from all controls assigned to this form
 	 */
-	public function get($process_for_success = true)
+	public function get($use_theme = null, $process_for_success = true)
 	{
 		$forvalidation = false;
 
-		$theme = $this->get_theme($forvalidation, $this);
+		Plugins::act('modify_form_' . $this->formtype, $this);
+		Plugins::act('modify_form', $this);
+
+		if(isset($use_theme)) {
+			$theme = $use_theme;
+		}
+		else {
+			$theme = $this->get_theme($forvalidation, $this);
+		}
 		$theme->start_buffer();
 		$theme->success = false;
+		$this->success = false;
+		$this->submitted = false;
 
 		// Should we be validating?
 		if(isset($_POST['FormUI']) && $_POST['FormUI'] == $this->salted_name()) {
+			$this->submitted = true;
 			$validate = $this->validate();
 			if(count($validate) == 0) {
 				if($process_for_success) {
@@ -456,6 +521,7 @@ class FormUI extends FormContainer
 					}
 				}
 				$theme->success = true;
+				$this->success = true;
 				$theme->message = $this->options['success_message'];
 			}
 			else {
@@ -466,6 +532,7 @@ class FormUI extends FormContainer
 		$out = '';
 
 		$theme->controls = $this->output_controls($forvalidation);
+		$theme->form = $this;
 
 		foreach($this->properties as $prop => $value) {
 			$theme->$prop = $value;
@@ -478,7 +545,7 @@ class FormUI extends FormContainer
 		$theme->salted_name = $this->salted_name();
 		$theme->pre_out = $this->pre_out_controls();
 
-		$out = $theme->fetch($this->options['template']);
+		$out = $theme->display_fallback($this->options['template'], 'fetch');
 		$theme->end_buffer();
 
 		return $out;
@@ -610,6 +677,17 @@ class FormUI extends FormContainer
 	}
 
 	/**
+	 * Get a form option
+	 *
+	 * @param string $option The name of the option to get
+	 * @return mixed The value of the named option if set, null if not set
+	 */
+	public function get_option( $option )
+	{
+		return isset($this->options[$option]) ? $this->options[$option] : null;
+	}
+
+	/**
 	 * Configure all the options necessary to make this form work inside a media bar panel
 	 * @param string $path Identifies the silo
 	 * @param string $panel The panel in the silo to submit to
@@ -636,13 +714,17 @@ class FormValidators
 	 * A validation function that returns an error if the value passed in is not a valid URL.
 	 *
 	 * @param string $text A string to test if it is a valid URL
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $warning An optional error message
 	 * @return array An empty array if the string is a valid URL, or an array with strings describing the errors
 	 */
-	public static function validate_url( $text )
+	public static function validate_url( $text, $control, $form, $warning = null )
 	{
 		if ( !empty( $text ) ) {
 			if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
-				return array(_t('Value must be a valid URL.'));
+				$warning = empty($warning) ? _t('Value must be a valid URL.') : $warning;
+				return array($warning);
 			}
 		}
 		return array();
@@ -653,12 +735,16 @@ class FormValidators
 	 * as per RFC2822 and RFC2821.
 	 *
 	 * @param string $text A string to test if it is a valid Email Address
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $warning An optional error message
 	 * @return array An empty array if the string is a valid Email Address, or an array with strings describing the errors
 	 */
-	public static function validate_email( $text )
+	public static function validate_email( $text, $control, $form, $warning = null )
 	{
 		if( !preg_match("@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
-			return array(_t('Value must be a valid Email Address.'));
+			$warning = empty($warning) ? _t('Value must be a valid Email Address.') : $warning;
+			return array($warning);
 		}
 		return array();
 	}
@@ -667,12 +753,16 @@ class FormValidators
 	 * A validation function that returns an error if the value passed in is not set.
 	 *
 	 * @param string $text A value to test if it is empty
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $warning An optional error message
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
-	public static function validate_required( $value )
+	public static function validate_required( $value, $control, $form, $warning = null )
 	{
 		if(empty($value) || $value == '') {
-			return array(_t('A value for this field is required.'));
+			$warning = empty($warning) ? _t('A value for this field is required.') : $warning;
+			return array($warning);
 		}
 		return array();
 	}
@@ -695,9 +785,6 @@ class FormValidators
 		else {
 			if ($warning == NULL) {
 				$warning = _t('The value does not meet submission requirements');
-			}
-			else {
-				$warning = _t($warning);
 			}
 			return array($warning);
 		}
@@ -722,6 +809,7 @@ class FormControl
 	protected $properties = array();
 	protected $template = null;
 	protected $raw = false;
+	public $errors = array();
 
 	/**
 	 * FormControl constructor - set initial settings of the control
@@ -862,6 +950,7 @@ class FormControl
 		$theme->caption = $this->caption;
 		$theme->id = $this->name;
 		$theme->value = $this->value;
+		$theme->control = $this;
 
 		return $theme->fetch( $this->get_template(), true );
 	}
@@ -925,7 +1014,41 @@ class FormControl
 				$valid = array_merge($valid, call_user_func_array( array('Plugins', 'filter'), $params ) );
 			}
 		}
+		$this->errors = $valid;
 		return $valid;
+	}
+
+	/**
+	 * Output any validation errors on this control using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_out($format, $wrap = '%s')
+	{
+		echo $this->errors_get($format, $wrap);
+	}
+
+	/**
+	* Return any validation errors on this control using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_get($format, $wrap = '%s')
+	{
+		$out = '';
+		foreach($this->errors as $error) {
+			$out .= sprintf($format, $error);
+		}
+		if($out != '') {
+			$out = sprintf($wrap, $out);
+		}
+		return $out;
 	}
 
 	/**
@@ -1586,7 +1709,9 @@ class FormControlTabs extends FormContainer
 			if($control instanceof FormContainer) {
 				$content = '';
 				foreach( $control->controls as $subcontrol) {
-					if($content != '') {
+					// There should be a better way to know if a control will produce actual output,
+					// but this instanceof is ok for now:
+					if($content != '' && !( $subcontrol instanceof FormControlHidden )) {
 						$content .= '<hr>';
 					}
 					$content .= $subcontrol->get($forvalidation);
