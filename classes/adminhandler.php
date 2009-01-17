@@ -481,7 +481,7 @@ class AdminHandler extends ActionHandler
 
 		Plugins::act('publish_post', $post, $form);
 
-		$post->update( $form->minor_edit->value );
+		$post->update( $minor );
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
 		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, $post->title), Post::status_name( $post->status ) ) );
@@ -1526,6 +1526,14 @@ class AdminHandler extends ActionHandler
 					$plugin['active']= true;
 					$plugin_actions = array();
 					$plugin['actions']= Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
+					if( in_array('?', $plugin['actions'] ) ) {
+						$help_key = array_search('?', $plugin['actions']);
+						$plugin['help'] = $help_key;
+						unset($plugin['actions'][$help_key]);
+					}
+					else {
+						$plugin['help'] = '';
+					}
 				}
 				else {
 					// instantiate this plugin
