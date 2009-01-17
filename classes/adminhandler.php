@@ -455,7 +455,7 @@ class AdminHandler extends ActionHandler
 			else {
 				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
 			}
-
+			$minor = $form->minor_edit->value && ($post->status != Post::status('draft'));
 			$post->status = $form->status->value;
 		}
 		else {
@@ -469,6 +469,7 @@ class AdminHandler extends ActionHandler
 				'status' => $form->status->value,
 				'content_type' => $form->content_type->value,
 			);
+			$minor = $false;
 
 			$post = Post::create( $postdata );
 		}
