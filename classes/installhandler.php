@@ -610,6 +610,7 @@ class InstallHandler extends ActionHandler {
 			ACL::create_permission( 'create_' . $name, 'Create ' . $name  ); 
 			ACL::create_permission( 'manage_all_' . $name, 'Manage all ' . $name ); 
 			ACL::create_permission( 'manage_own_' . $name, 'Manage own ' . $name ); 
+			ACL::create_permission( 'post_' . $name, $name );
 		} 
 		ACL::create_permission( 'manage_all_comments', 'Manage comments on all posts' ); 
 		ACL::create_permission( 'manage_own_comments', 'Manage comments on own posts' ); 
