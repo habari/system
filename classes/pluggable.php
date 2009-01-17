@@ -72,7 +72,7 @@ abstract class Pluggable
 	{
 		return Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
 	}
-	
+
 	/**
 	 * Load a translation domain/file for this pluggable
 	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
@@ -80,7 +80,7 @@ abstract class Pluggable
 	public function load_text_domain( $domain )
 	{
 		$base_dir = realpath(dirname( $this->get_file() ));
-		
+
 		return HabariLocale::load_pluggable_domain( $domain, $base_dir );
 	}
 
@@ -127,7 +127,42 @@ abstract class Pluggable
 				Plugins::register( array($this, $fn), $type, $hook, $priority );
 			}
 		}
+		// look for help with this
+		if( method_exists( $this, 'help') ) {
+			Plugins::register( array($this, '_help_plugin_config'), 'filter', 'plugin_config', 8);
+			Plugins::register( array($this, '_help_plugin_ui'), 'action', 'plugin_ui', 8);
+		}
 	}
+
+	/**
+	 * Registered to the plugin_config hook to supply help via a plugin's help() method
+	 *
+	 * @param array $actions An array of actions applicable to this plugin
+	 * @param string $plugin_id The plugin id to which the actions belong
+	 * @return array The modified array of actions
+	 */
+	public function _help_plugin_config( $actions, $plugin_id )
+	{
+		if ( $plugin_id == $this->plugin_id() ) {
+			$actions['_help']= _t( '?' );
+		}
+		return $actions;
+	}
+
+	/**
+	 * Registered to the plugin_ui hook to supply help via a plugin's help() method
+	 *
+	 * @param string $plugin_id The id of the plugin whose action was triggered
+	 * @param string $action The action triggered
+	 */
+	public function _help_plugin_ui( $plugin_id, $action )
+	{
+		if ( $plugin_id == $this->plugin_id() && $action == '_help' ) {
+			$output = $this->help();
+			echo "<div class=\"help\">{$output}</div>";
+		}
+	}
+
 }
 
 ?>
