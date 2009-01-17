@@ -1314,6 +1314,19 @@ body.page-options .item {
 	width: 80%;
 }
 
+.plugins .item a.help {
+	text-indent: -10000px;
+	background: transparent url('../images/help_icon.png') scroll no-repeat;
+	width: 15px;
+	height: 15px;
+	display: inline-block;
+	outline: none;
+}
+
+.plugins .item a.help:hover {
+	background-image: url('../images/help_icon_over.png');
+}
+
 .plugins #pluginconfigure {
 	clear: both;
 }
