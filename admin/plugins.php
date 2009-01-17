@@ -52,7 +52,7 @@
 					$plugin_actions = array();
 					$plugin_actions = Plugins::filter( 'plugin_config', $plugin_actions, $plugin['plugin_id'] );
 					foreach( $plugin['actions'] as $plugin_action => $plugin_action_caption ) {
-						if( isset($configure) && ($configure == $plugin['plugin_id']) && ($configaction == $plugin_action) )
+						if( isset($configure) && ($configure == $plugin['plugin_id']) && ($configaction == (string)$plugin_action) )
 							continue;
 
 						if ( is_numeric( $plugin_action ) )
