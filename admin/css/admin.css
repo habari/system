@@ -1283,6 +1283,24 @@ body.page-group .container.groupmembers #currentusers a.user.template, body.page
 	display:none;
 }
 
+body.page-group .container.groupacl li.permission {
+	clear:both;
+	float:left;
+	width:100%;
+	margin:2px 0;
+}
+
+body.page-group .container.groupacl li.permission select {
+	width:20%;
+	float:left;
+	margin-right:2%;
+}
+
+body.page-group .container.groupacl li.permission p {
+	width:75%;
+	float:left;
+}
+
 /*- OPTIONS PAGE */
 
 body.page-options .item {
