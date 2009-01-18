@@ -73,7 +73,6 @@ class User extends QueryRecord
 	{
 		$anonymous = new User();
 		$anonymous->id = 0;
-		$anonymous->username= _t('anonymous');
 		Plugins::act('create_anonymous_user', $anonymous);
 		return $anonymous;
 	}
@@ -319,7 +318,7 @@ class User extends QueryRecord
 	public static function get_by_id( $id )
 	{
 		if ( 0 == $id ) {
-			return User::anonymous();
+			return false;
 		}
 
 		$params = array(
