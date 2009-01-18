@@ -25,7 +25,7 @@ class ACL {
 	 **/
 	const ACCESS_NONEXISTENT_PERMISSION = false;
 
-	private static $access_names = array( 'read', 'write', 'delete' );
+	private static $access_names = array( 'read', 'edit', 'delete', 'create' );
 
 	/**
 	 * Check the permission bitmask for a particular access type.
@@ -46,21 +46,19 @@ class ACL {
 				return $bitmask->$access;
 		}
 	}
-	
+
 	/**
 	 * Check the permission bitmask to find the access type
 	 * @param mixed $permission The permission bitmask
 	 * @return mixed The permission level granted, or false for none
 	 */
 	public static function access_level( $permission )
-	{		
+	{
 		$bitmask = new Bitmask( self::$access_names, $permission );
-		
-									
+
+
 		if($bitmask->value == $bitmask->full) {
 			return 'full';
-		} elseif($bitmask->value == $bitmask->delete) {
-			return 'delete';
 		} else {
 			foreach($bitmask->flags as $flag) {
 				if($bitmask->$flag) {
@@ -69,7 +67,7 @@ class ACL {
 			}
 		}
 		return false;
-		
+
 	}
 
 	/**
@@ -303,17 +301,18 @@ class ACL {
 	 * @param mixed $user A User object instance or user id
 	 * @param mixed $token A token string or if
 	 * @return integer A permission bitmask integer
+	 * @todo Implement cache on these permissions
 	 */
 	public static function get_user_token_permissions( $user, $token )
 	{
 		// Use only numeric ids internally
-		$token = self::token_id( $token );
+		$token_id = self::token_id( $token );
 
 		/**
 		 * Do we allow perms that don't exist?
 		 * When ACL is functional ACCESS_NONEXISTENT_PERMISSION should be false by default.
 		 */
-		if ( is_null( $token) ) {
+		if ( is_null( $token_id ) ) {
 			return self::ACCESS_NONEXISTENT_PERMISSION;
 		}
 
@@ -328,6 +327,8 @@ class ACL {
 			}
 			$user_id = $user->id;
 		}
+
+		// Implement cache RIGHT HERE
 
 		/**
 		 * Jay Pipe's explanation of the following SQL
@@ -358,9 +359,19 @@ SELECT gp.permission_id
   AND ug.user_id = :user_id
   AND gp.token_id = :token_id
   ORDER BY permission_id ASC
-  LIMIT 1;
 SQL;
-		$result = DB::get_value( $sql, array( ':user_id' => $user_id, ':token_id' => $token ) );
+		$accesses = DB::get_column( $sql, array( ':user_id' => $user_id, ':token_id' => $token_id ) );
+
+		$result = 0;
+		foreach($accesses as $access) {
+			if($access == 0) {
+				$result = 0;
+				break;
+			}
+			else {
+				$result |= $access;
+			}
+		}
 
 		return $result;
 	}
@@ -419,7 +430,7 @@ SQL;
 		}
 		return $tokens;
 	}
-	
+
 	/**
 	 * Get the permission of a group for a specific token
 	 * @param integer $group The group ID
@@ -433,9 +444,9 @@ SQL;
 		$token = self::token_id( $token );
 		$sql = 'SELECT permission_id FROM {group_token_permissions} WHERE
 			group_id=? AND token_id=?;';
-			
+
 		$result = DB::get_value( $sql, array( $group, $token) );
-				
+
 		if ( isset( $result ) ) {
 			return self::access_level($result);
 		}
@@ -458,14 +469,12 @@ SQL;
 		}
 
 		$bitmask = new Bitmask( self::$access_names, $permission_id );
-				
-		if ( $access == 'full' || $access == 'deny' ) {
-			if ( $access == 'full' ) {
-				$bitmask->value= $bitmask->full;
-			}
-			else {
-				$bitmask->value= 0;
-			}
+
+		if ( $access == 'full' ) {
+			$bitmask->value= $bitmask->full;
+		}
+		elseif( $access == 'deny' ) {
+			$bitmask->value= 0;
 		}
 		else {
 			$bitmask->$access = true;
