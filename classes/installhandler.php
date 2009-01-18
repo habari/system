@@ -1327,7 +1327,7 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post_2988()
+	private function upgrade_db_post_3030()
 	{
 		// Add the default tokens
 		$this->create_default_permissions();
