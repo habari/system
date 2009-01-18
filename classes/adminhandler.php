@@ -1723,7 +1723,7 @@ class AdminHandler extends ActionHandler
 		);
 		$this->theme->admin_page = _t('Manage Posts');
 		$this->theme->admin_title = _t('Manage Posts');
-		$this->theme->special_searches = array_merge($statuses, $types);
+		$this->theme->special_searches = Plugins::filter('special_searches',array_merge($statuses, $types));
 		$this->display( 'posts' );
 	}
 
@@ -2391,6 +2391,18 @@ class AdminHandler extends ActionHandler
 
 		$group= UserGroup::get_by_id($this->handler_vars['id']);
 
+		$permissions= ACL::all_permissions();
+		$access_levels= array('read' => _t('Read'), 'write' => _t('Write'), 'full' => _t('Full'), 'delete' => _t('Deny'), 'unset' => _t('None'));
+		
+		foreach($permissions as $permission) {
+			$level= ACL::get_group_permission($group->id, $permission->id);
+			if($level) {
+				$permission->access= $level;
+			} else {
+				$permission->access= 'unset';
+			}
+		}
+
 		if(isset($this->handler_vars['nonce'])) {
 			$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
 
@@ -2414,18 +2426,35 @@ class AdminHandler extends ActionHandler
 						$group->remove($user);
 					}
 				}
-
+				
+				foreach($permissions as $permission) {
+					if(isset($this->handler_vars['permission_' . $permission->id]) && $permission->access != $this->handler_vars['permission_' . $permission->id]) {
+						
+						if($this->handler_vars['permission_' . $permission->id] == 'unset') {
+							$group->revoke($permission->id);
+						} elseif($this->handler_vars['permission_' . $permission->id] == 'deny') {
+							$group->deny($permission->id);
+						} else {
+							$group->revoke($permission->id);
+							$group->grant($permission->id, $this->handler_vars['permission_' . $permission->id]);
+						}
+					}
+				}
+				
 				Utils::redirect(URL::get('admin', 'page=group&id=' . $group->id));
+				exit;
 			}
+			
 
 		}
 
 		$group= UserGroup::get_by_id($this->handler_vars['id']);
 
-
-
 		$potentials= array();
+		
 		$users= Users::get_all();
+		$users[]= User::anonymous();
+				
 		$members= $group->members;
 		foreach($users as $user) {
 			if(in_array($user->id, $members)) {
@@ -2440,15 +2469,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->potentials= $potentials;
 		$this->theme->users = $users;
 		$this->theme->members = $members;
-
-		$permissions= ACL::all_permissions();
-
-		foreach($permissions as $permission) {
-			if($level= ACL::group_can($group->id, $permission->id)) {
-				$permission->access= $level;
-			}
-		}
-
+		
+		$this->theme->access_levels= $access_levels;
 		$this->theme->permissions= $permissions;
 
 		$this->theme->groups= UserGroups::get_all();

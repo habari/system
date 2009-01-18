@@ -43,21 +43,19 @@
 	
 </div>
 
-<div class="container settings group grouppermissions" id="grouppermissions">
+<div class="container settings group groupacl" id="groupacl">
 
 	<h2><?php _e('Group Permissions'); ?></h2>
 	
-	<div class="item clear grouppermissions">
-		<span class="pct20">
-			<label><?php _e('Available Permissions'); ?></label>
-		</span>
-		<span class="pct80">
-			<ul id="permissions">
-			<?php foreach($permissions as $permission): ?>
-				<li class="permission"><?php echo $permission->name; ?></li>
-			<?php endforeach; ?>
-			</ul>
-		</span>
+	<div class="item clear groupacl">
+		<ul id="permissions">
+		<?php foreach($permissions as $permission): ?>
+			<li class="permission">
+				<?php echo Utils::html_select('permission_' . $permission->id, $access_levels, $permission->access); ?>
+				<p><strong><?php echo $permission->name; ?></strong>: <?php echo $permission->description; ?></p>
+			</li>
+		<?php endforeach; ?>
+		</ul>
 	</div>
 	
 </div>

@@ -46,6 +46,31 @@ class ACL {
 				return $bitmask->$access;
 		}
 	}
+	
+	/**
+	 * Check the permission bitmask to find the access type
+	 * @param mixed $permission The permission bitmask
+	 * @return mixed The permission level granted, or false for none
+	 */
+	public static function access_level( $permission )
+	{		
+		$bitmask = new Bitmask( self::$access_names, $permission );
+		
+									
+		if($bitmask->value == $bitmask->full) {
+			return 'full';
+		} elseif($bitmask->value == $bitmask->delete) {
+			return 'delete';
+		} else {
+			foreach($bitmask->flags as $flag) {
+				if($bitmask->$flag) {
+					return $flag;
+				}
+			}
+		}
+		return false;
+		
+	}
 
 	/**
 	 * Create a new permission, and save it to the permission tokens table
@@ -394,6 +419,28 @@ SQL;
 		}
 		return $tokens;
 	}
+	
+	/**
+	 * Get the permission of a group for a specific token
+	 * @param integer $group The group ID
+	 * @param mixed $token The ID of the permission token
+	 * @return the level granted
+	 **/
+	public static function get_group_permission( $group, $token )
+	{
+		// Use only numeric ids internally
+		$group = UserGroup::id( $group );
+		$token = self::token_id( $token );
+		$sql = 'SELECT permission_id FROM {group_token_permissions} WHERE
+			group_id=? AND token_id=?;';
+			
+		$result = DB::get_value( $sql, array( $group, $token) );
+				
+		if ( isset( $result ) ) {
+			return self::access_level($result);
+		}
+		return null;
+	}
 
 	/**
 	 * Grant a permission to a group
@@ -411,16 +458,13 @@ SQL;
 		}
 
 		$bitmask = new Bitmask( self::$access_names, $permission_id );
-
+				
 		if ( $access == 'full' || $access == 'deny' ) {
 			if ( $access == 'full' ) {
-				$access = true;
+				$bitmask->value= $bitmask->full;
 			}
 			else {
-				$access = false;
-			}
-			foreach ( self::$access_names as $access_name ) {
-				$bitmask->$access_name = $access;
+				$bitmask->value= 0;
 			}
 		}
 		else {
@@ -449,10 +493,10 @@ SQL;
 	 **/
 	public static function grant_user( $user_id, $token_id, $access = 'full' )
 	{
-		$permission_id = DB::get_value( 'SELECT permission_id FROM {user_token_permissions} WHERE user_id=? AND token_id=?',
+		$permission_bit = DB::get_value( 'SELECT permission_id FROM {user_token_permissions} WHERE user_id=? AND token_id=?',
 			array( $user_id, $token_id ) );
-		if ( $permission_id ===  false ) {
-			$permission_id = 0; // default is 'deny' (bitmask 0)
+		if ( $permission_bit ===  false ) {
+			$permission_bit = 0; // default is 'deny' (bitmask 0)
 		}
 
 		$bitmask = new Bitmask( self::$access_names, $permission_id );

@@ -1002,10 +1002,10 @@ var theMenu = {
 
 		// Open menu on Q
 		$.hotkeys.add('q', {propagate:true, disableInInput: true}, function(){
-			if ($('#menu #menulist').css('display') != 'block') {
+			if ($('#menu #menulist > ul').css('display') != 'block') {
 				dropButton.currentDropButton = $('#menu');
 				dropButton.showMenu();
-			} else if ($('#menu #menulist').css('display') == 'block') {
+			} else if ($('#menu #menulist > ul').css('display') == 'block') {
 				dropButton.hideMenu();
 			} else {
 				return false;
@@ -1094,12 +1094,12 @@ var theMenu = {
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
 			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
 				if ($('.carrot').hasClass('submenu') == true) {
-					location = $('.carrot ul li.carrot a').attr('href')
-					theMenu.blinkCarrot($('.carrot ul li.carrot a').parent())
+					theMenu.blinkCarrot($('.carrot ul li.carrot a').parent());
+					location = $('.carrot ul li.carrot a').attr('href');
 				}
 				else {
-					location = $('.carrot a').attr('href')
 					theMenu.blinkCarrot($('.carrot a').parent())
+					location = $('.carrot a').attr('href');
 				}
 			} else {
 				return false;
@@ -1154,7 +1154,7 @@ var theMenu = {
 
 		$('#menu ul li a').click( function() {
 			theMenu.blinkCarrot(this);
-		})
+		});
 
 		// If menu is open and mouse is clicked outside menu, close menu.
 		$('html').click(function() {
@@ -1166,7 +1166,7 @@ var theMenu = {
 	blinkCarrot: function(owner) {
 		spinner.start()
 		var blinkSpeed = 100;
-		$(owner).addClass('carrot').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed, function() {
+		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed, function() {
 			dropButton.hideMenu();
 		});
 	}
