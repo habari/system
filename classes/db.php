@@ -8,7 +8,28 @@
 
 class DB extends Singleton
 {
+	static $db_connection = array();
 	private $connection = null;
+
+	/**
+	 * Get the database connection details.
+	 * 
+	 * @return array The connection details.
+	 **/
+	public static function get_connection_details()
+	{
+		return self::$db_connection;
+	}
+
+	/**
+	 * Set the database connection details.
+	 * 
+	 * @param array The connection details to set.
+	 **/
+	public static function set_connection_details( $db_connection )
+	{
+		self::$db_connection = $db_connection;
+	}
 
 	/**
 	 * Enables singleton working properly
@@ -48,9 +69,10 @@ class DB extends Singleton
 		}
 		else {
 			/* We use the config.php variables */
-			$connect_string = $GLOBALS['db_connection']['connection_string'];
-			$db_user = $GLOBALS['db_connection']['username'];
-			$db_pass = $GLOBALS['db_connection']['password'];
+			$db_connection = DB::get_connection_details();
+			$connect_string = $db_connection['connection_string'];
+			$db_user = $db_connection['username'];
+			$db_pass = $db_connection['password'];
 		}
 		DB::instance()->connection = DatabaseConnection::ConnectionFactory( $connect_string );
 		if ( NULL != DB::instance()->connection ) {
