@@ -483,6 +483,9 @@ class InstallHandler extends ActionHandler {
 	**/
 	private function check_sqlite() {
 		$db_file = $this->handler_vars['db_file'];
+		if($db_file == basename($db_file)) { // The filename was given without a path
+			$db_file = Site::get_path( 'user', TRUE ) . $db_file;
+		}
 		if ( file_exists( $db_file ) && is_writable( $db_file ) && is_writable( dirname( $db_file ) ) ) {
 			// the file exists, and is writable.  We're all set
 			return true;
@@ -1495,7 +1498,10 @@ class InstallHandler extends ActionHandler {
 			$xml_error->addChild( 'message', _t('The database file was left empty.') );
 		}
 		if ( !isset( $xml_error ) ) {
-			if ( ! is_writable( dirname( Site::get_path( 'user', TRUE ) . $db_file ) ) ) {
+			if($db_file == basename($db_file)) { // The filename was given without a path
+				$db_file = Site::get_path( 'user', TRUE ) . $db_file;
+			}
+			if ( ! is_writable( dirname( $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
