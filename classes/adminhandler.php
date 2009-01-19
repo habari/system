@@ -659,9 +659,20 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->authors = $authors;
 
-		$this->theme->currentuser = User::identify();
+		if ( $this->handler_vars['user'] == '' ) {
+			$edit_user = User::identify();
+		}
+		else {
+			$edit_user = User::get_by_name($this->handler_vars['user']);
+		}
 
-		$this->theme->edit_user = $this->handler_vars['user'];
+		// Redirect to the users management page if we're trying to edit a non-existent user
+		if ( !$edit_user ) {
+			Session::error( _t( 'No such user!' ) );
+			Utils::redirect( URL::get( 'admin', 'page=users' ) );
+		}
+
+		$this->theme->edit_user = $edit_user;
 
 		$this->theme->wsse = Utils::WSSE();
 
@@ -693,8 +704,14 @@ class AdminHandler extends ActionHandler
 		$fields = Plugins::filter( 'adminhandler_post_user_fields', $fields );
 		$posted_fields = $this->handler_vars->filter_keys( array_keys( $fields ) );
 
+		// user_id should always be sent
+		$user_id = isset($posted_fields['user_id']) ? $posted_fields['user_id'] : NULL;
+		if ( NULL == $user_id ) {
+			Utils::redirect( URL::get( 'admin', 'page=users' ) );
+		}
+
 		// Editing someone else's profile? If so, load that user's profile
-		if ( isset($user_id) && ($currentuser->id != $user_id) ) {
+		if ( $currentuser->id != intval($user_id) ) {
 			$user = User::get_by_id( $user_id );
 			$results['user']= $user->username;
 		}
@@ -705,23 +722,26 @@ class AdminHandler extends ActionHandler
 		foreach ( $posted_fields as $posted_field => $posted_value ) {
 			switch ( $posted_field ) {
 				case 'delete': // Deleting a user
-						if ( isset( $user_id ) && ( $currentuser->id != intval( $user_id ) ) ) {
-							$username = $user->username;
-							$posts = Posts::get( array( 'user_id' => $user_id, 'nolimit' => 1 ) );
-							if ( isset( $reassign ) && ( 1 === intval( $reassign ) ) ) {
-								// we're going to re-assign all of this user's posts
-								$newauthor = isset( $author ) ? intval( $author ) : 1;
-								Posts::reassign( $newauthor, $posts );
-							}
-							else {
-								// delete posts
-								foreach ( $posts as $post ) {
-									$post->delete();
-								}
-							}
-							$user->delete();
-							Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
+					// Can't delete yourself
+					if ( $currentuser->id != intval( $user_id ) ) {
+
+						// We're going to delete the user before we need it, so store the username
+						$username = $user->username;
+						$posts = Posts::get( array( 'user_id' => $user_id, 'nolimit' => 1 ) );
+						if ( isset( $reassign ) && ( 1 === intval( $reassign ) ) ) {
+							// we're going to re-assign all of this user's posts
+							$newauthor = isset( $author ) ? intval( $author ) : 1;
+							Posts::reassign( $newauthor, $posts );
 						}
+						else {
+							// delete posts
+							foreach ( $posts as $post ) {
+								$post->delete();
+							}
+						}
+						$user->delete();
+						Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
+					}
 					// redirect to main user list
 					$results = array( 'page' => 'users' );
 					Utils::redirect( URL::get( 'admin', $results ) );
