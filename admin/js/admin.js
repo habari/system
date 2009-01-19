@@ -16,11 +16,11 @@ var dashboard = {
 				$(this).parents('li').removeClass('viewingoptions')
 			});
 
-		$('.close', '.modules').click( function() { 
-		    // grab the module ID from the parent DIV id attribute. 
-		    matches = $(this).parents('.module').attr('id').split( ':', 2 ); 
-		    dashboard.remove( matches[0] ); 
-		}); 
+		$('.close', '.modules').click( function() {
+		    // grab the module ID from the parent DIV id attribute.
+		    matches = $(this).parents('.module').attr('id').split( ':', 2 );
+		    dashboard.remove( matches[0] );
+		});
 		findChildren();
 	},
 	update: function() {
@@ -30,7 +30,7 @@ var dashboard = {
 		var query = {};
 		$('.module', '.modules').not('.ui-sortable-helper').each( function(i) {
 			query['module' + i] = this.getAttribute('id');
-		} );	
+		} );
 		query['action'] = 'updateModules';
 		$.post(
 			habari.url.ajaxDashboard,
@@ -43,7 +43,7 @@ var dashboard = {
 	updateModule: function() {
 		//spinner.start();
 		// disable dragging and dropping while we update
-		// here we would update the modules options then 
+		// here we would update the modules options then
 		// reload the modules
 	},
 	add: function() {
@@ -91,12 +91,12 @@ var dashboard = {
 // Inline edit
 var inEdit = {
 	init: function() {
-		inEdit.editables= '.date a.edit-date, .title a.author.edit-author, .authorinfo a.edit-url, .authorinfo a.edit-email, .time span.edit-time, .content.edit-content';
-		
+		inEdit.editables = '.date a.edit-date, .title a.author.edit-author, .authorinfo a.edit-url, .authorinfo a.edit-email, .time span.edit-time, .content.edit-content';
+
 		if($('#comments').length == 0) { // Only works for comments, presently
 			return;
 		}
-		
+
 		$(inEdit.editables, $('.item')).filter(':not(a)').each(function() {
 			$(this).addClass('editable');
 			$(this).click(function() {
@@ -111,49 +111,49 @@ var inEdit = {
 	activated: false,
 	editables: null,
 	getDestination: function( classes ) {
-		classes= classes.split(" ");
-		
-		var clas= null;
-		
+		classes = classes.split(" ");
+
+		var clas = null;
+
 		var key = 0;
 		for (var key in classes) {
-			clas= classes[key];
+			clas = classes[key];
 			if(clas.search('edit-') != -1) {
-				destination= clas.substring(clas.search('edit-') + 5);
+				destination = clas.substring(clas.search('edit-') + 5);
 				return destination;
 			}
 		}
-		
+
 		return false;
-				
+
 	},
-	activate: function( parent ) {		
+	activate: function( parent ) {
 		$(parent).hide().addClass('ignore');
-		
-		parent= $(parent).clone().addClass('clone').removeClass('ignore').show().insertAfter(parent);
-		
+
+		parent = $(parent).clone().addClass('clone').removeClass('ignore').show().insertAfter(parent);
+
 		editables = $(inEdit.editables, parent);
-				
-		inEdit.activated= $(parent).attr('id').substring(8);
+
+		inEdit.activated = $(parent).attr('id').substring(8);
 		var form = $('<form action="#"></form>').addClass('inEdit');
 		parent.wrap(form);
-		
+
 		editables.each(function() {
-			var classes= $(this).attr('class');
-			destination= inEdit.getDestination(classes);
-			var val= $(this).html();
-			var width= $(this).width();
-			
+			var classes = $(this).attr('class');
+			destination = inEdit.getDestination(classes);
+			var val = $(this).html();
+			var width = $(this).width();
+
 			$(this).hide();
-			
+
 			if($(this).hasClass('area')) {
-				var field= $('<textarea></textarea>');
+				var field = $('<textarea></textarea>');
 				field.height(100)
 					.attr('class', classes)
 					.removeClass('pct75')
 					.width(width - 13);
 			} else {
-				var field= $('<input></input>');
+				var field = $('<input></input>');
 				field.attr('class', classes)
 					.width(width + 5);
 			}
@@ -161,7 +161,7 @@ var inEdit = {
 				.val(val)
 				.insertAfter($(this));
 		});
-		
+
 		$('ul.dropbutton li:not(.cancel):not(.submit)', parent).remove();
 		$('ul.dropbutton li.cancel, ul.dropbutton li.submit', parent).removeClass('nodisplay');
 		$('ul.dropbutton li.submit', parent).addClass('first-child');
@@ -169,35 +169,35 @@ var inEdit = {
 		dropButton.init();
 
 		dropButton.init();
-		var submit= $('<input type="submit"></input>')
+		var submit = $('<input type="submit"></input>')
 						.addClass('inEditSubmit')
 						.val('Update')
 						.hide()
 						.appendTo(parent);
-		
+
 		$("form").submit(function() {
 			inEdit.update();
 			return false;
 		});
-		
+
 		itemManage.initItems();
 		itemManage.changeItem();
-		
+
 	},
 	update: function() {
 		spinner.start();
-		
-		query= {};
-		
+
+		query = {};
+
 		$('.editor').each(function() {
 			query[inEdit.getDestination($(this).attr('class'))]= $(this).val();
 		});
-		
+
 		query['id']= inEdit.activated;
 		query['timestamp']= $('input#timestamp').attr('value');
 		query['nonce']= $('input#nonce').attr('value');
 		query['digest']= $('input#PasswordDigest').attr('value');
-		
+
 		$.ajax({
 			type: 'POST',
 				url: habari.url.ajaxInEdit,
@@ -214,16 +214,16 @@ var inEdit = {
 					itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 				}
 		});
-		
+
 	},
 	deactivate: function() {
 		inEdit.activated = false;
-		
+
 		$('.item').show().removeClass('ignore');
 		$('form.inEdit').remove();
-		
+
 		itemManage.changeItem();
-		
+
 	}
 }
 
@@ -232,13 +232,13 @@ var itemManage = {
 	init: function() {
 		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins, .page-groups').length != 0) {
 			$("input#search").keyup(function (e) {
-				var str= $('input#search').val();
+				var str = $('input#search').val();
 				itemManage.simpleFilter(str);
 			});
 		}
-		
+
 		if(!$('.item.controls input[type=checkbox]')) return;
-		
+
 		itemManage.initItems();
 
 		$('.item.controls input[type=checkbox]').change(function () {
@@ -248,7 +248,7 @@ var itemManage = {
 				itemManage.checkAll();
 			}
 		});
-		
+
 		/* for all manage pages except for comments, add an ajax call to the
 		 * delete button
 		 */
@@ -258,9 +258,9 @@ var itemManage = {
 				return false;
 			});
 		}
-		
-		$('.item.controls input.rename.button').click(function() { 
-		 	itemManage.rename(); 
+
+		$('.item.controls input.rename.button').click(function() {
+		 	itemManage.rename();
 		});
 	},
 	initItems: function() {
@@ -281,9 +281,9 @@ var itemManage = {
 	},
 	expand: function(item) {
 		$('.item').removeClass('expanded');
-		
+
 		item.addClass('expanded');
-		
+
 		$('.more', item).click(function() {
 			itemManage.contract($(this).parent());
 		});
@@ -296,7 +296,7 @@ var itemManage = {
 	searchRows: [],
 	simpleFilter: function( search ) {
 		search = $.trim( search.toLowerCase() );
-				
+
 		// cache search items on first call
 		if ( itemManage.searchCache.length == 0 ) {
 			itemManage.searchRows = $('li.item, .item.plugin, .item.tag, div.settings, .container.plugins, .item.group');
@@ -312,11 +312,11 @@ var itemManage = {
 				$(itemManage.searchRows[i]).removeClass('hidden');
 			}
 		});
-		
+
 		if($('div.settings').length != 0 || $('.container.plugins:visible').length > 1) {
 			$('select[name=navigationdropdown]').val('all');
 		}
-		
+
 		/*
 		if($('li.item').length != 0) {
 			itemManage.changeItem();
@@ -330,14 +330,14 @@ var itemManage = {
 		}
 
 		$('.item:not(.ignore) .checkbox input[type=checkbox]:checked').each(function() {
-			check= $(this);
+			check = $(this);
 			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 1;
 			check.parent().parent().addClass('selected');
 		});
 		$('.item:not(.ignore) .checkbox input[type=checkbox]:not(:checked)').each(function() {
-			check= $(this);
+			check = $(this);
 			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
@@ -347,9 +347,9 @@ var itemManage = {
 		itemManage.selected = selected;
 
 		visible = $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]:checked').length;
-		
-		total= $('.currentposition .total').text();
-		
+
+		total = $('.currentposition .total').text();
+
 		count = 0;
 		for (var id in itemManage.selected)	{
 			if(itemManage.selected[id] == 1) {
@@ -367,16 +367,16 @@ var itemManage = {
 				this.checked = 1;
 			});
 			$('.item.controls label.selectedtext').removeClass('none').addClass('all').html('All ' + count + ' visible selected (<a href="#all" class="everything">Select all ' + total + '</a>)');
-			
+
 			$('.item.controls label.selectedtext .everything').click(function() {
 				itemManage.checkEverything();
 				return false;
 			});
-			
+
 			if(visible != count) {
 				$('.item.controls label.selectedtext').text('All visible selected (' + count + ' total)');
 			}
-			
+
 			if((total == count) || $('.currentposition .total').length == 0) {
 				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html('All ' + total + ' selected');
 			}
@@ -385,7 +385,7 @@ var itemManage = {
 				this.checked = 0;
 			});
 			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
-			
+
 			if(visible != count) {
 				$('.item.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
@@ -409,7 +409,7 @@ var itemManage = {
 	},
 	update: function( action, id ) {
 		spinner.start();
-		var query= {};
+		var query = {};
 		if ( id == null ) {
 			query = itemManage.selected;
 		}
@@ -425,7 +425,7 @@ var itemManage = {
 			query['reassign'] = $('select#reassign').attr('value');
 		}
 
-		elItem= $('#item-' + id)
+		elItem = $('#item-' + id)
 
 		if(elItem.length > 0 || action == 'delete') {
 			elItem.fadeOut();
@@ -450,12 +450,12 @@ var itemManage = {
 				else {
 					itemManage.fetch( 0, 20, false );
 				}
-				
+
 				// if we deleted stuff, scroll to the top of the new page
 				if ( action == 'delete' ) {
 					window.scroll(0,0);
 				}
-				
+
 				itemManage.selected = [];
 			},
 			'json'
@@ -478,7 +478,7 @@ var itemManage = {
 			dataType: 'json',
 			success: function(json) {
 				if(silent) {
-					itemManage.selected= json.item_ids;
+					itemManage.selected = json.item_ids;
 					itemManage.initItems();
 				} else {
 					itemManage.fetchReplace.html(json.items);
@@ -503,9 +503,9 @@ var itemManage = {
 					}
 					findChildren();
 				}
-				
+
 				spinner.stop();
-				
+
 			}
 		});
 	}
@@ -531,43 +531,43 @@ var groupManage = {
 	init: function() {
 		// Return if we're not on the group page
 		if(!$('.page-group').length) return;
-				
-		groupManage.potentials= $('body.page-group .container.groupmembers #assign_user');
-		groupManage.addButton= $('body.page-group .container.groupmembers input.add');
-		groupManage.addUsers= $('body.page-group .container.groupmembers #addusers');
-		
+
+		groupManage.potentials = $('body.page-group .container.groupmembers #assign_user');
+		groupManage.addButton = $('body.page-group .container.groupmembers input.add');
+		groupManage.addUsers = $('body.page-group .container.groupmembers #addusers');
+
 		groupManage.addButton.click(function() {
 			groupManage.addMember(groupManage.potentials.val());
 		});
-		
+
 		console.log($('body.page-group .container.groupmembers #currentusers a.user'));
-				
+
 		$('body.page-group .container.groupmembers #currentusers a.user').click(function() {
 			groupManage.removeMember($(this));
 			return false;
 		});
 	},
 	removeMember: function(member) {
-		id= $('.id', member).text();
-		name= $('.name', member).text();
-		
+		id = $('.id', member).text();
+		name = $('.name', member).text();
+
 		$('<option value="' + id + '">' + name + '</option>').appendTo(groupManage.potentials);
-		
+
 		groupManage.addUsers.show();
-		
+
 		$('#user_' + id).val('0');
-		
+
 		member.hide();
 	},
-	addMember: function(id) {		
+	addMember: function(id) {
 		$('option[value=' + id + ']', groupManage.potentials).remove();
-		
+
 		if(groupManage.potentials.children().length < 1) {
 			groupManage.addUsers.hide();
 		}
-		
+
 		$('#user_' + id).val('1');
-		
+
 		$('body.page-group .container.groupmembers #currentusers a.user.id-' + id).show();
 	}
 }
@@ -617,7 +617,7 @@ var timeline = {
 		 * trigger the 'stop' event. We also don't need to do a search on initial page load, so
 		 * set do_search to false until after slider initialization */
 		timelineHandle.init( handleWidth );
-		timeline.do_search= false;
+		timeline.do_search = false;
 
 		$('.track')
 			.width( $('.years').width() - timeline.overhang )
@@ -661,7 +661,7 @@ var timeline = {
 			.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
 
 		// update the do_search state variable
-		timeline.do_search= true;
+		timeline.do_search = true;
 	},
 	skipLoupeLeft: function(e) {
 		if (timeline.noJump == true) {
@@ -696,20 +696,20 @@ var timeline = {
 			$('.years').css( 'right', Math.max( parseInt($('.years').css('right')) - timeline.handle.width(), 0 - timeline.overhang ) );
 			/*$('.years').stop().animate( {
 				right: Math.max( parseInt($('.years').css('right')) - 2*timeline.handle.width(), 0 - timeline.overhang )
-				}, function() { timeline.sliding= false; } );*/
+				}, function() { timeline.sliding = false; } );*/
 		}
 		else if ( timeline.handle.offset().left + timeline.handle.width() + 5 >= timeline.view.offset().left + timeline.view.width() ) {
 			// slide the timeline to the left
 			$('.years').css( 'right', Math.min( parseInt($('.years').css('right')) + timeline.handle.width(), 0 ) );
 			/*$('.years').stop().animate( {
 				right: Math.min( parseInt($('.years').css('right')) + 2*timeline.handle.width(), 0 )
-				}, function() { timeline.sliding= false; } );*/
+				}, function() { timeline.sliding = false; } );*/
 		}
 	},
 	indexFromPosition: function(pos) {
-		var monthBoundary= 0;
-		var monthIndex= 1;
-		var month= 0;
+		var monthBoundary = 0;
+		var monthIndex = 1;
+		var month = 0;
 		var i;
 
 		// get the index of the first post in the month that the handle is over
@@ -717,41 +717,41 @@ var timeline = {
 		for ( i = 0; i < timeline.monthWidths.length && monthBoundary + timeline.monthWidths[i] < pos; i++ ) {
 			monthBoundary += timeline.monthWidths[i];
 			monthIndex += timeline.monthData[i];
-			month= i + 1;
+			month = i + 1;
 		}
 
 		// the index is the offset from this boundary, but it cannot be greater than
 		// the number of posts in the month (the month has some extra padding which
 		// increases its width).
-		var padding= parseInt( $('.years span').css('margin-left') );
-		padding= padding ? padding : 0;
+		var padding = parseInt( $('.years span').css('margin-left') );
+		padding = padding ? padding : 0;
 		return monthIndex + Math.min(
 						Math.max( pos - ( monthBoundary + padding ), 0 ),
 						timeline.monthData[month] - 1 );
 	},
 	/* the reverse of the above function */
 	positionFromIndex: function(index) {
-		var month= 0;
-		var position= 0;
-		var positionIndex= 1;
+		var month = 0;
+		var position = 0;
+		var positionIndex = 1;
 
 		if ( index < 1 ) return 0;
 
 		for ( i = 0; i < timeline.monthWidths.length && positionIndex + timeline.monthData[i] < index; i++ ) {
 			position+= timeline.monthWidths[i];
 			positionIndex+= timeline.monthData[i];
-			month= i + 1;
+			month = i + 1;
 		}
 
-		var padding= parseInt( $('.years .months span').css('margin-left') );
-		padding= padding ? padding : 0;
+		var padding = parseInt( $('.years .months span').css('margin-left') );
+		padding = padding ? padding : 0;
 		return position + padding + ( index - positionIndex );
 	},
 	reset: function () {
 		// update the arrays of posts per month
-		timeline.monthData= [0];
-		timeline.monthWidths= [0];
-		timeline.totalCount= 0;
+		timeline.monthData = [0];
+		timeline.monthWidths = [0];
+		timeline.totalCount = 0;
 		$('.years .months span').each( function(i) {
 			timeline.monthData[i] = $(this).width();
 			timeline.monthWidths[i] = $(this).parent().width() + 1; // 1px border
@@ -769,14 +769,14 @@ var timeline = {
 		}
 
 		// check for a timeline larger than its view
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
-		var viewWidth= $('.timeline').width();
-		timeline.overhang= ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0
+		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		var viewWidth = $('.timeline').width();
+		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0
 
 		// find the width which makes the loupe select 20 items
-		var handleWidth= timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
+		var handleWidth = timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
 		// make the slider bounded by the view
-		var maxSliderValue= Math.min( viewWidth, timelineWidth ) - handleWidth;
+		var maxSliderValue = Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		// reset the widths
 		$('.track').width( $('.years').width() - timeline.overhang );
@@ -791,9 +791,9 @@ var timeline = {
 		$('.track').slider( 'setData', 'max', Math.max( 1, maxSliderValue ) );
 
 		// move the handle without triggering a search
-		timeline.do_search= false;
+		timeline.do_search = false;
 		$('.track').slider( 'moveTo', maxSliderValue );
-		timeline.do_search= true;
+		timeline.do_search = true;
 	}
 }
 
@@ -803,7 +803,7 @@ var timelineHandle = {
 	init: function( handleWidth ) {
 		timeline.handle.css('width', handleWidth + 'px');
 
-		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the 
+		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the
 		 * right side of the handle */
 		timeline.handle.css( 'right', 'auto' )
 
@@ -869,8 +869,8 @@ var timelineHandle = {
 		var cur_overhang = $('.track').offset().left - $('.years').offset().left;
 		var loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + cur_overhang);
 		var loupeWidth = $('.handle').width();
-		var loupeEndPosition= timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth + cur_overhang );
-		
+		var loupeEndPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth + cur_overhang );
+
 		var loupeInfo = {
 			start: loupeStartPosition,
 			end: loupeEndPosition,
@@ -884,7 +884,7 @@ var timelineHandle = {
 
 		$('.currentposition').html( loupeInfo.start +'-'+ loupeInfo.end +' of <span class="total inline">'+ timeline.totalCount + '</span>');
 		if ($('.currentposition').css('opacity')) $('.currentposition').animate({opacity: 1}, 500)
-		
+
 		// Hide 'newer' and 'older' links as necessary
 		if (loupeInfo.start == 1) $('.navigator .older').animate({opacity: '0'}, 200); else $('.navigator .older').animate({opacity: '1'}, 200);
 		if (loupeInfo.end == timeline.totalCount) $('.navigator .newer').animate({opacity: '0'}, 200); else $('.navigator .newer').animate({opacity: '1'}, 200);
@@ -926,24 +926,24 @@ var navigationDropdown = {
 		if($('.page-user').length == 0) {
 			return;
 		}
-		
+
 		$('.container.settings').each(function() {
 			$('<option></option>').attr('value', $(this).attr('id')).text($('h2', this).text()).appendTo($('select[name=navigationdropdown]'));
 		});
 	},
 	changePage: function(location) {
 		if(location == null) {
-			nextPage= $('select[name=navigationdropdown]').val();
+			nextPage = $('select[name=navigationdropdown]').val();
 		} else {
 			nextPage = location.options[location.selectedIndex].value;
 		}
-		
+
 		if (nextPage != "" && nextPage != document.location.href)
 			document.location.href = nextPage
 	},
 	filter: function() {
 		var selected = $('select[name=navigationdropdown]').val();
-		
+
 		if ( selected == 'all' ) {
 			$('.settings, .container.plugins').removeClass('hidden');
 		}
@@ -1044,7 +1044,7 @@ var theMenu = {
 			}
 			return false;
 		});
-		
+
 		// Left arrow
 		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
 			$('.carrot ul li.carrot').removeClass('carrot');
@@ -1075,7 +1075,7 @@ var theMenu = {
 				return false;
 			}
 		});
-		
+
 		// Right arrow
 		$.hotkeys.add('right', {propagate:true, disableInInput: true}, function(){
 			if ($('.carrot').hasClass('submenu') == true) {
@@ -1084,7 +1084,7 @@ var theMenu = {
 				return false;
 			}
 		});
-		
+
 		// Left arrow
 		$.hotkeys.add('left', {propagate:true, disableInInput: true}, function(){
 			$('.carrot ul li.carrot').removeClass('carrot');
@@ -1112,7 +1112,7 @@ var theMenu = {
 			var href = $('a', this).attr('href');
 			var owner = $(this);
 			var blinkSpeed = 100;
-						
+
 			if (hotkey) {
 				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
 					if ($('#menu').hasClass('hovering') == true) {
@@ -1127,7 +1127,7 @@ var theMenu = {
 								theMenu.blinkCarrot($('#menu li.carrot li.hotkey-' + hotkey));
 							} else {
 								// Use the first occurance of hotkey, but expand the parent first
-								user= $('#menu li li.hotkey-' + hotkey).eq(0);
+								user = $('#menu li li.hotkey-' + hotkey).eq(0);
 								user.parent().parent().addClass('carrot');
 								location = $('a', user).attr('href');
 								theMenu.blinkCarrot(user);
@@ -1136,14 +1136,14 @@ var theMenu = {
 							location = href;
 							theMenu.blinkCarrot(owner);
 						}
-						
+
 					} else {
 						return false;
 					}
 				});
 			}
 		});
-		
+
 		// View blog hotkey
 		$.hotkeys.add('v', { propagate: true, disableInInput: true }, function() {
 			location = $('#site').attr('href');
@@ -1311,10 +1311,10 @@ var labeler = {
 		});
 
 		$('.islabeled').focus( function() {
-			labeler.focus= $(this);
+			labeler.focus = $(this);
 			labeler.aboveLabel($(this));
 		}).blur(function(){
-			labeler.focus= null;
+			labeler.focus = null;
 			labeler.check($('label[for='+$(this).attr('id')+']'));
 		});
 	},
@@ -1335,7 +1335,7 @@ var labeler = {
 	},
 	aboveLabel: function(el) {
 		$(el).addClass('islabeled');
-		$('label[for=' + $(el).attr('id') + ']').removeClass('overcontent').removeClass('hidden').addClass('abovecontent');	
+		$('label[for=' + $(el).attr('id') + ']').removeClass('overcontent').removeClass('hidden').addClass('abovecontent');
 	},
 	overLabel: function(el) {
 		$(el).addClass('islabeled');
@@ -1492,7 +1492,7 @@ function resetTags() {
 			$(this).removeClass('clicked');
 		}
 	});
-	
+
 	if(current.length == 0 && !$('#tags').hasClass('focus')) {
 		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
 	}
