@@ -7,7 +7,7 @@
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
 
 <div id="tag_collection" class="container items">
-  	<?php $theme->display( 'tag_collection' ); ?>
+	<?php $theme->display( 'tag_collection' ); ?>
 </div>
 
 
@@ -15,14 +15,14 @@
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-	
+
 	<span class="checkboxandselected pct20">
 		<input type="checkbox" id="master_checkbox" name="master_checkbox">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 
 	<span class="renamecontrols pct35"><input type="text" class="renametext"></span>
-	
+
 	<span class="pct15 buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
 
 	<span class="or pct10"><?php _e('or'); ?></span>
@@ -35,7 +35,7 @@
 </div>
 
 <script type="text/javascript">
-itemManage.update = function( action, id ) { 
+itemManage.update = function( action, id ) {
 	spinner.start();
 
 	selected = $('.tag.selected');
@@ -62,20 +62,20 @@ itemManage.update = function( action, id ) {
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
 			selected.remove();
-			itemManage.selected = {}; 
-			itemManage.changeItem(); 
+			itemManage.selected = {};
+			itemManage.changeItem();
 			itemManage.initItems();
 			jQuery.each( msg, function( index, value ) {
 				humanMsg.displayMsg( value );
 			});
 		},
 		'json'
- 	    );
+	);
 };
 
-itemManage.rename= function() {
+itemManage.rename = function() {
 	master = $('.controls input.renametext').val();
-		
+
 	// Unselect the master, if it's selected
 	$('.tag:contains(' + master + ')').each(function() {
 		if ($(this).find('span').text() == master) {
@@ -118,10 +118,10 @@ itemManage.rename= function() {
 			jQuery.each( result['msg'], function( index, value ) {
 				humanMsg.displayMsg( value );
 			});
-			
-			itemManage.selected = {}; 
-			
-			itemManage.initItems(); 
+
+			itemManage.selected = {};
+
+			itemManage.initItems();
 		},
 		'json'
 	);
