@@ -661,6 +661,8 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->currentuser = User::identify();
 
+		$this->theme->edit_user = $this->handler_vars['user'];
+
 		$this->theme->wsse = Utils::WSSE();
 
 		$this->theme->display('user');
