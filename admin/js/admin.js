@@ -17,9 +17,9 @@ var dashboard = {
 			});
 
 		$('.close', '.modules').click( function() {
-		    // grab the module ID from the parent DIV id attribute.
-		    matches = $(this).parents('.module').attr('id').split( ':', 2 );
-		    dashboard.remove( matches[0] );
+			// grab the module ID from the parent DIV id attribute.
+			matches = $(this).parents('.module').attr('id').split( ':', 2 );
+			dashboard.remove( matches[0] );
 		});
 		findChildren();
 	},
@@ -36,7 +36,7 @@ var dashboard = {
 			habari.url.ajaxDashboard,
 			query,
 			function() {
-		     	spinner.stop();
+				spinner.stop();
 				$('.modules').sortable('enable');
 			});
 	},
@@ -57,7 +57,7 @@ var dashboard = {
 			habari.url.ajaxDashboard,
 			query,
 			function( json ) {
-		     	spinner.stop();
+				spinner.stop();
 				$('.modules').html( json.modules );
 				dashboard.init();
 				//$('.modules').sortable('enable');
@@ -77,7 +77,7 @@ var dashboard = {
 			habari.url.ajaxDashboard,
 			query,
 			function( json ) {
-		     	spinner.stop();
+				spinner.stop();
 				$('.modules').html( json.modules );
 				dashboard.init();
 				//$('.modules').sortable('enable');
@@ -260,7 +260,7 @@ var itemManage = {
 		}
 
 		$('.item.controls input.rename.button').click(function() {
-		 	itemManage.rename();
+			itemManage.rename();
 		});
 	},
 	initItems: function() {
@@ -514,7 +514,7 @@ var itemManage = {
 // Plugin Management
 var pluginManage = {
 	init: function() {
-		// Return if we're not on the tags page
+		// Return if we're not on the plugins page
 		if(!$('.page-plugins').length) return;
 
 		$('.plugins .item').hover( function() {
