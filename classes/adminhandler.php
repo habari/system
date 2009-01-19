@@ -469,7 +469,7 @@ class AdminHandler extends ActionHandler
 				'status' => $form->status->value,
 				'content_type' => $form->content_type->value,
 			);
-			$minor = $false;
+			$minor = false;
 
 			$post = Post::create( $postdata );
 		}
@@ -2415,7 +2415,7 @@ class AdminHandler extends ActionHandler
 
 		$permissions= ACL::all_permissions();
 		$access_levels= array('read' => _t('Read'), 'write' => _t('Write'), 'full' => _t('Full'), 'delete' => _t('Deny'), 'unset' => _t('None'));
-		
+
 		foreach($permissions as $permission) {
 			$level= ACL::get_group_permission($group->id, $permission->id);
 			if($level) {
@@ -2448,10 +2448,10 @@ class AdminHandler extends ActionHandler
 						$group->remove($user);
 					}
 				}
-				
+
 				foreach($permissions as $permission) {
 					if(isset($this->handler_vars['permission_' . $permission->id]) && $permission->access != $this->handler_vars['permission_' . $permission->id]) {
-						
+
 						if($this->handler_vars['permission_' . $permission->id] == 'unset') {
 							$group->revoke($permission->id);
 						} elseif($this->handler_vars['permission_' . $permission->id] == 'deny') {
@@ -2462,21 +2462,21 @@ class AdminHandler extends ActionHandler
 						}
 					}
 				}
-				
+
 				Utils::redirect(URL::get('admin', 'page=group&id=' . $group->id));
 				exit;
 			}
-			
+
 
 		}
 
 		$group= UserGroup::get_by_id($this->handler_vars['id']);
 
 		$potentials= array();
-		
+
 		$users= Users::get_all();
 		$users[]= User::anonymous();
-				
+
 		$members= $group->members;
 		foreach($users as $user) {
 			if(in_array($user->id, $members)) {
@@ -2491,7 +2491,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->potentials= $potentials;
 		$this->theme->users = $users;
 		$this->theme->members = $members;
-		
+
 		$this->theme->access_levels= $access_levels;
 		$this->theme->permissions= $permissions;
 
