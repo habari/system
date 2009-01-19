@@ -1359,10 +1359,11 @@ body.page-options .item {
 	clear: both;
 }
 
-.plugins #pluginconfigure form {
+.plugins #pluginconfigure form, #pluginconfigure .help {
 	background-color: #f8f8f8;
 	border: #bbb 1px solid;
 	padding: 12px;
+	margin-top:3px;
 	margin-bottom: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1380,6 +1381,71 @@ body.page-options .item {
 	margin-left: 8px;
 }
 
+/*-- PLUGINS HELP */
+#pluginconfigure .help {
+	line-height:1.5em;
+}
+
+#pluginconfigure .help p {
+	margin-bottom:5px;
+}
+
+#pluginconfigure .help h3 {
+	margin-top:10px;
+	margin-bottom:5px;
+	font-size:160%;
+	font-weight:bold;
+}
+
+#pluginconfigure .help h4 {
+	margin-top:7px;
+	margin-bottom:3px;
+	font-size:110%;
+	font-style:italic;
+}
+
+
+#pluginconfigure .help em {
+	font-style:italic;
+}
+
+#pluginconfigure .help strong {
+	font-weight:bold;
+}
+
+#pluginconfigure .help a, #pluginconfigure .help a:visited {
+	color:#555;
+	text-decoration:underline;
+}
+
+#pluginconfigure .help a:hover, #pluginconfigure .help a:focus {
+	color:#000;
+}
+
+#pluginconfigure .help ol, #pluginconfigure .help ul {
+	margin:5px 20px !important;
+}
+
+#pluginconfigure .help ol, #pluginconfigure .help ul ol {
+	list-style:decimal;
+}
+
+#pluginconfigure .help ol ol {
+	list-style:lower-latin;
+}
+
+#pluginconfigure .help ul, #pluginconfigure .help ol ul {
+	list-style:disc;
+}
+
+#pluginconfigure .help ul ul {
+	list-style:circle;
+}
+
+#pluginconfigure .help ol ol, #pluginconfigure .help ul ul, #pluginconfigure .help ul ol, #pluginconfigure .help ol ul {
+	margin-top:0 !important;
+	margin-bottom:0 !important;
+}
 
 /*- THEMES PAGE */
 
