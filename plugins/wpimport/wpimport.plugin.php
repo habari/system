@@ -29,7 +29,7 @@ class WPImport extends Plugin implements Importer
 	{
 		return array(
 			'name' => 'WordPress Importer',
-			'version' => '1.0.1',
+			'version' => '1.1',
 			'url' => 'http://habariproject.org/',
 			'author' =>	'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
@@ -168,27 +168,32 @@ WP_IMPORT_STAGE1;
 		EventLog::log(sprintf(_t('Starting import from "%s"'), $db_name));
 		Options::set('import_errors', array());
 
+		$inputs = array_map( 'addslashes', $inputs );
+		extract( $inputs );
+
+		$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
+
 		$output = <<< WP_IMPORT_STAGE2
-			<p>Import In Progress</p>
-			<div id="import_progress">Starting Import...</div>
-			<script type="text/javascript">
-			// A lot of ajax stuff goes here.
-			$( document ).ready( function(){
-				$( '#import_progress' ).load(
-					"{$ajax_url}",
-					{
-						db_host: "{$db_host}",
-						db_name: "{$db_name}",
-						db_user: "{$db_user}",
-						db_pass: "{$db_pass}",
-						db_prefix: "{$db_prefix}",
-						category_import: "{$category_import}",
-						utw_import: "{$utw_import}",
-						postindex: 0
-					}
-				 );
-			} );
-			</script>
+		<p>Import In Progress</p>
+		<div id="import_progress">Starting Import...</div>
+		<script type="text/javascript">
+		// A lot of ajax stuff goes here.
+		$( document ).ready( function(){
+			$( '#import_progress' ).load(
+				"{$ajax_url}",
+				{
+					db_host: "{$vars['host']}",
+					db_name: "{$vars['name']}",
+					db_user: "{$vars['user']}",
+					db_pass: "{$vars['pass']}",
+					db_prefix: "{$vars['prefix']}",
+					category_import: "{$category_import}",
+					utw_import: "{$utw_import}",
+					postindex: 0
+				}
+			 );
+		} );
+		</script>
 WP_IMPORT_STAGE2;
 		return $output;
 	}
@@ -236,6 +241,8 @@ WP_IMPORT_STAGE2;
 
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
 		if( $wpdb ) {
+			if( !DB::in_transaction() ) DB::begin_transaction();
+
 			$has_taxonomy = count($wpdb->get_column( "SHOW TABLES LIKE '{$db_prefix}term_taxonomy';" ));
 
 			$postcount = $wpdb->get_value( "SELECT count( id ) FROM {$db_prefix}posts;" );
@@ -248,7 +255,6 @@ WP_IMPORT_STAGE2;
 			foreach( $user_info as $info ) {
 				$user_map[$info->value]= $info->user_id;
 			}
-
 			echo "<p>Importing posts {$min}-{$max} of {$postcount}.</p>";
 			$posts = $wpdb->get_results( "
 				SELECT
@@ -384,20 +390,24 @@ WP_IMPORT_STAGE2;
 				}
 			}
 
+			if( DB::in_transaction() ) DB::commit();
+
 			if( $max < $postcount ) {
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
 				$postindex++;
+
+				$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
 
 				echo <<< WP_IMPORT_AJAX1
 					<script type="text/javascript">
 					$( '#import_progress' ).load(
 						"{$ajax_url}",
 						{
-							db_host: "{$db_host}",
-							db_name: "{$db_name}",
-							db_user: "{$db_user}",
-							db_pass: "{$db_pass}",
-							db_prefix: "{$db_prefix}",
+							db_host: "{$vars['host']}",
+							db_name: "{$vars['name']}",
+							db_user: "{$vars['user']}",
+							db_pass: "{$vars['pass']}",
+							db_prefix: "{$vars['prefix']}",
 							category_import: "{$category_import}",
 							utw_import: "{$utw_import}",
 							postindex: {$postindex}
@@ -410,16 +420,18 @@ WP_IMPORT_AJAX1;
 			else {
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
 
+				$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
+
 				echo <<< WP_IMPORT_AJAX2
 					<script type="text/javascript">
 					$( '#import_progress' ).load(
 						"{$ajax_url}",
 						{
-							db_host: "{$db_host}",
-							db_name: "{$db_name}",
-							db_user: "{$db_user}",
-							db_pass: "{$db_pass}",
-							db_prefix: "{$db_prefix}",
+							db_host: "{$vars['host']}",
+							db_name: "{$vars['name']}",
+							db_user: "{$vars['user']}",
+							db_pass: "{$vars['pass']}",
+							db_prefix: "{$vars['prefix']}",
 							category_import: "{$category_import}",
 							utw_import: "{$utw_import}",
 							commentindex: 0
@@ -452,6 +464,7 @@ WP_IMPORT_AJAX2;
 		extract( $inputs );
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
 		if( $wpdb ) {
+			if( !DB::in_transaction() ) DB::begin_transaction();
 			$wp_users = $wpdb->get_results(
 				"
 					SELECT
@@ -500,8 +513,12 @@ WP_IMPORT_AJAX2;
 					}
 				}
 			}
+			if( DB::in_transaction()) DB::commit();
 
 			$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
+
+			$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
+
 			echo <<< WP_IMPORT_USERS1
 			<script type="text/javascript">
 			// A lot of ajax stuff goes here.
@@ -509,11 +526,11 @@ WP_IMPORT_AJAX2;
 				$( '#import_progress' ).load(
 					"{$ajax_url}",
 					{
-						db_host: "{$db_host}",
-						db_name: "{$db_name}",
-						db_user: "{$db_user}",
-						db_pass: "{$db_pass}",
-						db_prefix: "{$db_prefix}",
+						db_host: "{$vars['host']}",
+						db_name: "{$vars['name']}",
+						db_user: "{$vars['user']}",
+						db_pass: "{$vars['pass']}",
+						db_prefix: "{$vars['prefix']}",
 						category_import: "{$category_import}",
 						utw_import: "{$utw_import}",
 						postindex: 0
@@ -541,8 +558,11 @@ WP_IMPORT_USERS1;
 		$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix','commentindex', 'category_import', 'utw_import' );
 		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
 		extract( $inputs );
+
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
 		if( $wpdb ) {
+			if( !DB::in_transaction() ) DB::begin_transaction();
+
 			$commentcount = $wpdb->get_value( "SELECT count( comment_ID ) FROM {$db_prefix}comments;" );
 			$min = $commentindex * IMPORT_BATCH + 1;
 			$max = min( ( $commentindex + 1 ) * IMPORT_BATCH, $commentcount );
@@ -597,10 +617,8 @@ WP_IMPORT_USERS1;
 					$carray['status']= Comment::STATUS_SPAM;
 					break;
 				}
-				if ( !isset( $post_map[$carray['wp_post_id']] ) ) {
-					Utils::debug( $carray );
-				}
-				else {
+
+				if( isset( $post_map[$carray['wp_post_id']] ) ) {
 					$carray['post_id']= $post_map[$carray['wp_post_id']];
 					unset( $carray['wp_post_id'] );
 
@@ -618,21 +636,24 @@ WP_IMPORT_USERS1;
 					}
 				}
 			}
+			if( DB::in_transaction() ) DB::commit();
 
 			if( $max < $commentcount ) {
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
 				$commentindex++;
+
+				$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
 
 				echo <<< WP_IMPORT_AJAX1
 					<script type="text/javascript">
 					$( '#import_progress' ).load(
 						"{$ajax_url}",
 						{
-							db_host: "{$db_host}",
-							db_name: "{$db_name}",
-							db_user: "{$db_user}",
-							db_pass: "{$db_pass}",
-							db_prefix: "{$db_prefix}",
+							db_host: "{$vars['host']}",
+							db_name: "{$vars['name']}",
+							db_user: "{$vars['user']}",
+							db_pass: "{$vars['pass']}",
+							db_prefix: "{$vars['prefix']}",
 							category_import: "{$category_import}",
 							utw_import: "{$utw_import}",
 							commentindex: {$commentindex}
