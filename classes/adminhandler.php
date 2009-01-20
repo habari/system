@@ -364,6 +364,7 @@ class AdminHandler extends ActionHandler
 			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'unapproved_comment_count' => Comments::count_total( Comment::STATUS_UNAPPROVED, FALSE ),
+			'spam_comment_count' => Comments::count_total( Comment::STATUS_SPAM, FALSE ),
 			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
 		);
 
