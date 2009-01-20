@@ -424,13 +424,13 @@ class Format
 		if ( count( $errors ) ) {
 			foreach ( $errors as $error ) {
 				$error = addslashes($error);
-				$output.= "humanMsg.displayMsg('{$error}');";
+				$output .= "humanMsg.displayMsg(\"{$error}\");";
 			}
 		}
 		if ( count( $notices ) ) {
 			foreach ( $notices as $notice ) {
 				$notice = addslashes($notice);
-				$output.= "humanMsg.displayMsg('{$notice}');";
+				$output .= "humanMsg.displayMsg(\"{$notice}\");";
 			}
 		}
 
