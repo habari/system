@@ -168,9 +168,6 @@ WP_IMPORT_STAGE1;
 		EventLog::log(sprintf(_t('Starting import from "%s"'), $db_name));
 		Options::set('import_errors', array());
 
-		$inputs = array_map( 'addslashes', $inputs );
-		extract( $inputs );
-
 		$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
 
 		$output = <<< WP_IMPORT_STAGE2
