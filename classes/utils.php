@@ -135,6 +135,21 @@ class Utils
 	}
 
 	/**
+	 * function addslashes
+	 * Adds slashes to escape strings, including strings in arrays
+	 **/
+	public static function addslashes( $value )
+	{
+		if( is_array( $value ) ) {
+			$value = array_map( array( 'Utils', 'addslashes' ), $value );
+		}
+		else if ( !empty( $value ) && is_string( $value ) ) {
+			$value = addslashes( $value );
+		}
+		return $value;
+	}
+
+	/**
 	 * function de_amp
 	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
 	 * @param string $value A URL, maybe with a querystring
