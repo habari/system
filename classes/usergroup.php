@@ -277,6 +277,24 @@ class UserGroup extends QueryRecord
 	}
 
 	/**
+	 * Return the access bitmask for a specific token for this group.
+	 *
+	 * @param string $token The
+	 * @return
+	 */
+	public function get_access( $token )
+	{
+		$token = ACL::token_id( $token );
+		if ( is_null( $this->permissions ) ) {
+			$this->load_permissions_cache();
+		}
+		if ( isset( $this->permissions[$token] ) ) {
+			return ACL::get_bitmask( $this->permissions[$token]);
+		}
+		return false;
+	}
+
+	/**
 	 * Clear permissions cache.
 	 */
 	public function clear_permissions_cache()

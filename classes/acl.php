@@ -14,6 +14,7 @@
  * means you have that permission.  Membership in any group that denies
  * that permission denies the user that permission, even if another group
  * grants that permission.
+ * @todo Rename all functions and variables to normalize conventions: Users and groups have "access" to a "token".  The access applied to a token is a "permission".  A "token" alone is not a "permission".
  *
  **/
 class ACL {
@@ -25,7 +26,7 @@ class ACL {
 	 **/
 	const ACCESS_NONEXISTENT_PERMISSION = false;
 
-	private static $access_names = array( 'read', 'edit', 'delete', 'create' );
+	public static $access_names = array( 'read', 'edit', 'delete', 'create' );
 
 	/**
 	 * Check the permission bitmask for a particular access type.
@@ -48,7 +49,22 @@ class ACL {
 	}
 
 	/**
+	 * Get a Bitmask object representing the supplied access integer
+	 *
+	 * @param integer $access The access mask, usually stored in the database
+	 * @return Bitmask An object representing the access value
+	 */
+	public static function get_bitmask( $access )
+	{
+		$bitmask = new Bitmask( self::$access_names, $permission );
+		return $bitmask;
+	}
+
+	/**
 	 * Check the permission bitmask to find the access type
+	 * <em>This function is horribly, horribly broken, and shouldn't be used.  
+	 * For example, it will return that a permission is only "read" when it is actually "read+write".</em>
+	 * Use get_bitmask() to retrieve a Btimask instead, and use its properties for testing values.
 	 * @param mixed $permission The permission bitmask
 	 * @return mixed The permission level granted, or false for none
 	 */
