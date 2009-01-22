@@ -112,10 +112,27 @@ class DatabaseConnection
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{
-		$this->pdo = new PDO( $connect_string, $db_user, $db_pass );
-		$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
-		$this->load_tables();
-		return true;
+		try {
+			$this->pdo = new PDO( $connect_string, $db_user, $db_pass );
+			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+			$this->load_tables();
+			return true;
+		}
+		catch( PDOException $e ) {
+			// Error template. 
+			$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>"; 
+
+			// Format page with localized messages. 
+			$error_page = sprintf($error_template, 
+			_t("Habari General Error"), # page title 
+			_t("An error occurred"), # H1 tag 
+			_t("Unable to connect to database.") # Error message. 
+			); 
+
+			// Set correct HTTP header and die. 
+			header('HTTP/1.1 500 Internal Server Error'); 
+			die($error_page);
+		}
 	}
 
 	/**
