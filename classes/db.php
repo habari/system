@@ -408,6 +408,11 @@ class DB extends Singleton
 		return DB::instance()->connection->get_driver_name();
 	}
 	
+	public static function get_driver_version()
+	{
+		return DB::instance()->connection->get_driver_version();
+	}
+	
 	/**
 	 * Returns a list of tables the DB currently knows about.
 	 *

@@ -810,6 +810,11 @@ class DatabaseConnection
 		return $this->driver;
 	}
 	
+	public function get_driver_version()
+	{
+		return $this->pdo->getAttribute( PDO::ATTR_SERVER_VERSION );
+	}
+	
 	/**
 	 * Returns number of rows affected by the last DELETE, INSERT, or UPDATE
 	 *
