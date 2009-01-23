@@ -923,11 +923,11 @@ var spinner = {
 // NAVIGATION DROPDOWNS
 var navigationDropdown = {
 	init: function() {
-		if($('.page-user').length == 0) {
+		if($('.page-user').length == 0 && $('.page-options').length == 0) {
 			return;
 		}
 
-		$('.container.settings').each(function() {
+		$('.container.settings, .optiongroup').each(function() {
 			$('<option></option>').attr('value', $(this).attr('id')).text($('h2', this).text()).appendTo($('select[name=navigationdropdown]'));
 		});
 	},
@@ -945,11 +945,11 @@ var navigationDropdown = {
 		var selected = $('select[name=navigationdropdown]').val();
 
 		if ( selected == 'all' ) {
-			$('.settings, .container.plugins').removeClass('hidden');
+			$('.settings, .container.plugins, .optiongroup').removeClass('hidden');
 		}
 		else {
-			$('.settings:not(#' + selected + '), .container.plugins:not(#' + selected + ')').addClass('hidden');
-			$('.settings#' + selected + ', .container.plugins#' + selected ).removeClass('hidden');
+			$('.settings:not(#' + selected + '), .container.plugins:not(#' + selected + '), .optiongroup:not(#' + selected + ')').addClass('hidden');
+			$('.settings#' + selected + ', .container.plugins#' + selected + ', .optiongroup#' + selected ).removeClass('hidden');
 		}
 	}
 }

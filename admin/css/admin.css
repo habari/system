@@ -474,7 +474,7 @@ textarea {
 }
 
 select {
-	width: 100%;
+	width: 98%;
 }
 
 label.abovecontent {
@@ -513,7 +513,7 @@ p:hover > label.abovecontent {
 	margin-left: 10px;
 }
 
-.button.delete {
+.button.delete, .formcontrol.delete input {
 	float: right;
 	}
 
@@ -1526,16 +1526,13 @@ body.page-options #title input {
 }
 
 .container .item span.helptext {
-	margin-left: 10px;
 	color: #888;
 	font-size: 11px;
 }
 
 .container.settings input[type=text], .container.settings input[type=password] {
-	width: 100%;
-	font: 1em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
+	width: 95%;
 	color: #444;
-	padding: 2px 1px;
 }
 
 .container input.big, .container .item.big input {
