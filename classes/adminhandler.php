@@ -2661,6 +2661,55 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	* Handles post requests for the system information page
+	*/
+	public function post_sysinfo()
+	{
+		$sysinfo = array();
+		$siteinfo = array();
+
+		$siteinfo[ _t( 'Habari Version' ) ] = Version::get_habariversion();
+		if ( Version::is_devel() ) {
+			$siteinfo[ _t( 'Habari Version' ) ] .= " r" . Version::get_svn_revision();
+		}
+
+		$siteinfo[ _t( 'Habari API Version' ) ] = Version::get_apiversion();
+		$siteinfo[ _t( 'Habari DB Version' ) ] = Version::get_dbversion();
+		$siteinfo[ _t( 'Active Theme' ) ] = Options::get( 'theme_name' );
+		$siteinfo[ _t( 'Site Language' ) ] =  strlen( Options::get( 'system_locale' ) ) ? Options::get( 'system_locale' ) : 'en-us';
+
+		$sysinfo[ _t( 'PHP Version' ) ] = phpversion();
+		$sysinfo[ _t( 'Server Software' ) ] = $_SERVER['SERVER_SOFTWARE'];
+		$sysinfo[ _t( 'Database' ) ] = DB::get_driver_name() . ' - ' . DB::get_driver_version();
+		$sysinfo[ _t( 'PHP Extensions' ) ] = implode( ', ', get_loaded_extensions() );
+		if ( defined( 'PCRE_VERSION' ) ) {
+			$sysinfo[ _t( 'PCRE Version' ) ] = PCRE_VERSION;
+		}
+		else {
+			// probably PHP < 5.2.4
+			ob_start();
+			phpinfo( 8 );
+			$phpinfo = ob_get_contents();
+			ob_end_clean();
+			preg_match( '/PCRE Library Version.*class="v">(.*)$/mi', $phpinfo, $matches );
+			$sysinfo[ _t( 'PCRE Version' ) ] = $matches[ 1 ];
+		}
+		$sysinfo[ _t( 'Browser' ) ] = $_SERVER[ 'HTTP_USER_AGENT' ];
+
+		$this->theme->sysinfo = $sysinfo;
+		$this->theme->siteinfo = $siteinfo;
+		$this->display( 'sysinfo' );
+	}
+
+	/**
+	* Send get requests for the system information page to post_sysinfo()
+	*/
+	public function get_sysinfo()
+	{
+		$this->post_sysinfo();
+	}
+
+	/**
 	 * Assembles the main menu for the admin area.
 	 * @param Theme $theme The theme to add the menu to
 	 */
