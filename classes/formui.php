@@ -766,6 +766,48 @@ class FormValidators
 		}
 		return array();
 	}
+	
+	/**
+	 * A validation function that returns an error if the the passed username is unavailable
+	 *
+	 * @param string $text A value to test as username
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $allowed_name An optional name which overrides the check and is always allowed
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value exists, or an array with strings describing the errors
+	 */
+	public static function validate_username( $value, $control, $form, $allowed_name = null, $warning = null )
+	{
+		if(isset($allowed_name) && ($value == $allowed_name)) {
+			return array();
+		}
+		if( User::get_by_name( $value ) ) {
+			$warning = empty($warning) ? _t('That username is already in use!') : $warning;
+			return array($warning);
+		}
+		return array();
+	}
+	
+	
+	/**
+	 * A validation function that returns an error if the passed control values do not match
+	 *
+	 * @param string $text A value to test for similarity
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param FormControl $matcher The control which should have a matching value
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value exists, or an array with strings describing the errors
+	 */
+	public static function validate_same( $value, $control, $form, $matcher, $warning = null )
+	{
+		if($value != $matcher->value) {
+			$warning = empty($warning) ? _t('The value of this field must match the value of %s.', array($matcher->caption)) : $warning;
+			return array($warning);
+		}
+		return array();
+	}
 
 	/**
 	 * A validation function that returns an error if the value passed does not match the regex specified.

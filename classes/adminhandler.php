@@ -652,21 +652,33 @@ class AdminHandler extends ActionHandler
 
 	public function get_user()
 	{
+
+		$edit_user = User::identify();
+		
+		if ( ($this->handler_vars['user'] == '') || (User::get_by_name($this->handler_vars['user']) == $edit_user) ) {
+			$who = _t("You");
+			$possessive = _t("Your User Information");
+		}
+		else {
+			$edit_user = User::get_by_name($this->handler_vars['user']);
+			$who = $edit_user->username;
+			$possessive = sprintf( _t("%s's User Information"), $who );
+		}
+		
 		// Get author list
 		$author_list = Users::get_all();
 		$authors[0] = _t('nobody');
 		foreach ( $author_list as $author ) {
-			$authors[ $author->id ]= $author->displayname;
+			$authors[ $author->id ] = $author->displayname;
 		}
+		
+		unset($authors[ $edit_user->id ]); // We can't reassign posts to ourself
+		
 		$this->theme->authors = $authors;
-
-		if ( $this->handler_vars['user'] == '' ) {
-			$edit_user = User::identify();
-		}
-		else {
-			$edit_user = User::get_by_name($this->handler_vars['user']);
-		}
-
+		$this->theme->edit_user = $edit_user;
+		$this->theme->who = $who;
+		$this->theme->possessive = $possessive;
+		
 		// Redirect to the users management page if we're trying to edit a non-existent user
 		if ( !$edit_user ) {
 			Session::error( _t( 'No such user!' ) );
@@ -674,133 +686,191 @@ class AdminHandler extends ActionHandler
 		}
 
 		$this->theme->edit_user = $edit_user;
+		
+		$field_sections= array(
+			'user_info' => $possessive,
+			'change_password' => _t('Change Password'),
+			'regional_settings' => _t('Regional Settings')
+		);
 
-		$this->theme->wsse = Utils::WSSE();
-
+		$form = new FormUI('User Options');
+		
+		// Create a tracker for who we are dealing with
+		$form->append('hidden', 'edit_user', 'edit_user');
+		$form->edit_user->value = $edit_user->id;
+		
+		// Generate sections
+		foreach($field_sections as $key => $name) {
+			$fieldset = $form->append( 'wrapper', $key, $name );
+			$fieldset->class = 'container settings';
+			$fieldset->append( 'static', $key, '<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>' );
+		}
+		
+		// User Info
+		$displayname = $form->user_info->append('text', 'displayname', 'null:null',  _t('Display Name'), 'optionscontrol_text');
+		$displayname->class[] = 'important item clear';
+		$displayname->value = $edit_user->displayname;
+		
+		$username = $form->user_info->append('text', 'username', 'null:null',  _t('User Name'), 'optionscontrol_text');
+		$username->class[] = 'item clear';
+		$username->value = $edit_user->username;
+		$username->add_validator('validate_username', $edit_user->username);
+		
+		$email = $form->user_info->append('text', 'email', 'null:null',  _t('Email'), 'optionscontrol_text');
+		$email->class[] = 'item clear';
+		$email->value = $edit_user->email;
+		$email->add_validator('validate_email');
+		
+		$imageurl = $form->user_info->append('text', 'imageurl', 'null:null',  _t('Portrait URL'), 'optionscontrol_text');
+		$imageurl->class[] = 'item clear';
+		$imageurl->value= $edit_user->info->imageurl;
+		
+		// Change Password
+		$password1 = $form->change_password->append('text', 'password1', 'null:null',  _t('New Password'), 'optionscontrol_text');
+		$password1->class[] = 'item clear';
+		$password1->type = 'password';
+		$password1->value = '';
+		
+		$password2 = $form->change_password->append('text', 'password2', 'null:null',  _t('New Password Again'), 'optionscontrol_text');
+		$password2->class[] = 'item clear';
+		$password2->type = 'password';
+		$password2->value = '';
+		$password2->add_validator('validate_same', $password1, _t('Passwords must match.'));
+		
+		// Regional settings
+		$timezones = DateTimeZone::listIdentifiers();
+		$timezones = array_merge( array_combine( array_values( $timezones ), array_values( $timezones ) ) );
+		$locale_tz = $form->regional_settings->append('text', 'locale_tz', 'null:null',  _t('Timezone'), 'optionscontrol_select');
+		$locale_tz->class[] = 'item clear';
+		$locale_tz->value = $edit_user->info->locale_tz;
+		$locale_tz->options = $timezones;
+		$locale_tz->multiple = false;
+		
+		$locale_date_format = $form->regional_settings->append('text', 'locale_date_format', 'null:null',  _t('Date Format'), 'optionscontrol_text');
+		$locale_date_format->class[] = 'item clear';
+		$locale_date_format->value = $edit_user->info->locale_date_format;
+		if(isset($edit_user->info->locale_date_format) && $edit_user->info->locale_date_format != '') {
+			$current = HabariDateTime::date_create()->get($edit_user->info->locale_date_format);
+		}
+		else {
+			$current = HabariDateTime::date_create()->date;
+		}
+		$locale_date_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
+		
+		$locale_time_format = $form->regional_settings->append('text', 'locale_time_format', 'null:null',  _t('Time Format'), 'optionscontrol_text');
+		$locale_time_format->class[] = 'item clear';
+		$locale_time_format->value = $edit_user->info->locale_time_format;
+		if(isset($edit_user->info->locale_time_format) && $edit_user->info->locale_time_format != '') {
+			$current = HabariDateTime::date_create()->get($edit_user->info->locale_time_format);
+		}
+		else {
+			$current = HabariDateTime::date_create()->time;
+		}
+		$locale_time_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
+		
+		// Controls
+		$controls = $form->append( 'wrapper', 'controls' );
+		$controls->class = 'container controls transparent';
+		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
+		$submit->class[] = 'pct25';
+		
+		$controls->append( 'static', 'reassign', '<span class="pct40 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct10 conjunction">' . _t('and') . '</span><span class="pct20"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');	
+		
+		$form->on_success( array( $this, 'form_user_success' ) );
+		
+		// Let plugins alter this form
+		Plugins::act('form_user', $form, $edit_user);
+		
+		$this->theme->form = $form->get();
+		
 		$this->theme->display('user');
 
 	}
-
+	
+	public function form_user_success($form) {
+		$edit_user = User::get_by_id($form->edit_user->value);
+		$current_user = User::identify();
+	
+		
+		// Let's check for deletion
+		if(Controller::get_var('delete') != NULL) {
+			if ( $current_user->id != $edit_user->id ) {
+				
+				// We're going to delete the user before we need it, so store the username
+				$username = $edit_user->username;
+				
+				$posts = Posts::get( array( 'user_id' => $edit_user->id, 'nolimit' => true ) );
+				
+				if ( ( Controller::get_var('reassign') != NULL ) && (Controller::get_var('reassign') != 0) && (Controller::get_var('reassign') != $edit_user->id)) {
+					// we're going to re-assign all of this user's posts
+					$newauthor = Controller::get_var('reassign');
+					Posts::reassign( $newauthor, $posts );
+				}
+				else {
+					// delete posts
+					foreach ( $posts as $post ) {
+						$post->delete();
+					}
+				}
+				
+				$edit_user->delete();
+				Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
+				
+				Utils::redirect(URL::get('admin', array('page' => 'users')));
+			}
+			else {
+				Session::notice( _t( 'You cannot delete yourself.') );
+			}
+		}
+							
+		$update= false;
+		
+		// Change username
+		if(isset($form->username) && $edit_user->username != $form->username->value) {
+			Session::notice( _t( '%1$s has been renamed to %2$s.', array($edit_user->username, $form->username->value) ) );
+			$edit_user->username = $form->username->value;
+			$update= true;
+		}
+		
+		// Change email
+		if(isset($form->email) && $edit_user->email != $form->email->value) {
+			$edit_user->email = $form->email->value;
+			$update= true;
+		}
+		
+		// Change password
+		if(isset($form->password1) && !(Utils::crypt($form->password1->value, $edit_user->password)) && ($form->password1->value != '')) {
+			Session::notice( _t( 'Password changed.' ) );
+			$edit_user->password = Utils::crypt( $form->password1->value );
+			$edit_user->update();
+		}
+		
+		// Set various info fields
+		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format');
+		foreach($info_fields as $info_field) {
+			if(isset($form->{$info_field}) && ($edit_user->info->{$info_field} != $form->{$info_field}->value)) {
+				$edit_user->info->{$info_field} = $form->$info_field->value;
+				$update = true;
+			}
+		}
+		
+		// Let plugins tell us to update
+		$update= Plugins::filter( 'form_user_update', $update, $form, $edit_user );
+		
+		if($update) {
+			$edit_user->update();
+			Session::notice( _t('User updated.') );
+		}
+		
+		Utils::redirect(URL::get('admin', array('page' => 'user', 'user' => $edit_user->username)));
+	}
+	
 	/**
 	 * Handles post requests from the user profile page.
 	 */
 	public function post_user()
 	{
-		$extract = $this->handler_vars->filter_keys('nonce', 'timestamp', 'PasswordDigest');
-		foreach($extract as $key => $value) {
-			$$key = $value;
-		}
-
-		$wsse = Utils::WSSE( $nonce, $timestamp );
-		if ( $PasswordDigest != $wsse['digest'] ) {
-			Utils::redirect( URL::get( 'admin', 'page=users' ) );
-		}
-
-		// Keep track of whether we actually need to update any fields
-		$update = FALSE;
-		$results = array( 'page' => 'user' );
-		$currentuser = User::identify();
-
-		$fields = array( 'user_id' => 'id', 'delete' => NULL, 'username' => 'username', 'displayname' => 'displayname', 'email' => 'email', 'imageurl' => 'imageurl', 'pass1' => NULL, 'locale_tz' => 'locale_tz', 'locale_date_format' => 'locale_date_format', 'locale_time_format' => 'locale_time_format' );
-		$fields = Plugins::filter( 'adminhandler_post_user_fields', $fields );
-		$posted_fields = $this->handler_vars->filter_keys( array_keys( $fields ) );
-
-		// user_id should always be sent
-		$user_id = isset($posted_fields['user_id']) ? $posted_fields['user_id'] : NULL;
-		if ( NULL == $user_id ) {
-			Utils::redirect( URL::get( 'admin', 'page=users' ) );
-		}
-
-		// Editing someone else's profile? If so, load that user's profile
-		if ( $currentuser->id != intval($user_id) ) {
-			$user = User::get_by_id( $user_id );
-			$results['user']= $user->username;
-		}
-		else {
-			$user = $currentuser;
-		}
-
-		foreach ( $posted_fields as $posted_field => $posted_value ) {
-			switch ( $posted_field ) {
-				case 'delete': // Deleting a user
-					// Can't delete yourself
-					if ( $currentuser->id != intval( $user_id ) ) {
-
-						// We're going to delete the user before we need it, so store the username
-						$username = $user->username;
-						$posts = Posts::get( array( 'user_id' => $user_id, 'nolimit' => 1 ) );
-						if ( isset( $reassign ) && ( 1 === intval( $reassign ) ) ) {
-							// we're going to re-assign all of this user's posts
-							$newauthor = isset( $author ) ? intval( $author ) : 1;
-							Posts::reassign( $newauthor, $posts );
-						}
-						else {
-							// delete posts
-							foreach ( $posts as $post ) {
-								$post->delete();
-							}
-						}
-						$user->delete();
-						Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
-					}
-					// redirect to main user list
-					$results = array( 'page' => 'users' );
-					Utils::redirect( URL::get( 'admin', $results ) );
-					break;
-				case 'username': // Changing username
-					if ( NULL != $posted_value && $user->username != $posted_value ) {
-						// make sure the name isn't already used
-						if ( User::get_by_name( $posted_value ) ) {
-							Session::error( _t( 'That username is already in use!' ) );
-							break;
-						}
-						$old_name = $user->username;
-						$user->username = $posted_value;
-						Session::notice( sprintf( _t( '%1$s has been renamed to %2$s.' ), $old_name, $posted_value ) );
-						$results['user']= $posted_value;
-						$update = TRUE;
-					}
-					break;
-				case 'email': // Changing e-mail address
-					if ( NULL != $posted_value && $user->email != $posted_value ) {
-						$user->email = $posted_value;
-						Session::notice( sprintf( _t( '%1$s email has been changed to %2$s' ), $user->username, $posted_value ) );
-						$update = TRUE;
-					}
-					break;
-				case 'pass1': // Changing password
-					if ( NULL != $posted_value ) {
-						if ( NULL != $_POST['pass2'] && $posted_value == $_POST['pass2'] ) {
-							$user->password = Utils::crypt( $posted_value );
-							if ( $user == $currentuser ) {
-								$user->remember();
-							}
-							Session::notice( _t( 'Password changed successfully.' ) );
-							$update = TRUE;
-						}
-						else {
-							Session::error( _t( 'The passwords did not match, and were not changed.' ) );
-						}
-					}
-					break;
-				default:
-					if ( isset( $this->handler_vars[$fields[$posted_field]] ) && ( $user->info->$fields[$posted_field] != $this->handler_vars[$fields[$posted_field]] ) ) {
-						$user->info->$fields[$posted_field]= $this->handler_vars[$fields[$posted_field]];
-						Session::notice( _t( 'Userinfo updated!' ) );
-						$update = TRUE;
-					}
-					break;
-			}
-		}
-
-		if ( $update == TRUE ) {
-			$user->update();
-		}
-		else {
-			Session::notice( 'Nothing changed.' );
-		}
-
-		Utils::redirect( URL::get( 'admin', $results ) );
+		$this->get_user();
 	}
 
 	/**
