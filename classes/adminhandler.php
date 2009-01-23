@@ -805,15 +805,19 @@ class AdminHandler extends ActionHandler
 					// we're going to re-assign all of this user's posts
 					$newauthor = Controller::get_var('reassign');
 					Posts::reassign( $newauthor, $posts );
+					$edit_user->delete();
 				}
 				else {
+					// delete user, then delete posts
+					$edit_user->delete();
+					
 					// delete posts
 					foreach ( $posts as $post ) {
 						$post->delete();
 					}
 				}
 				
-				$edit_user->delete();
+				
 				Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
 				
 				Utils::redirect(URL::get('admin', array('page' => 'users')));

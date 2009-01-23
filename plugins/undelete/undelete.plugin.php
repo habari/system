@@ -69,12 +69,13 @@ class Undelete extends Plugin
 		// However, we should capture the current status and save
 		// it in a postinfo record, so that undelete can restore
 		// it to that status
-		if($post->status != Post::status('deleted')) {
+		if( $post->status != Post::status( 'deleted' ) && is_object( User::get_by_id( $post->user_id ) ) ) {
 			$post->info->prior_status = $post->status;
-			$post->status = Post::status('deleted');
+			$post->status = Post::status( 'deleted' );
 			$post->update();
 			return false;
-		} else {
+		} 
+		else {
 			return true;
 		}
 	}
