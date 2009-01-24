@@ -209,7 +209,7 @@ class Stack
 	{
 		$out = '';
 		$stack = self::get_sorted_stack( $stack_name );
-		$stack = Plugins::filter( 'stack_out', $stack, $stack_name );
+		$stack = Plugins::filter( 'stack_out', $stack, $stack_name, $format );
 		foreach( $stack as $element ) {
 			if ( is_callable($format) ) {
 				$out.= call_user_func_array( $format, (array) $element );
