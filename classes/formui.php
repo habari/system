@@ -766,7 +766,7 @@ class FormValidators
 		}
 		return array();
 	}
-	
+
 	/**
 	 * A validation function that returns an error if the the passed username is unavailable
 	 *
@@ -788,8 +788,8 @@ class FormValidators
 		}
 		return array();
 	}
-	
-	
+
+
 	/**
 	 * A validation function that returns an error if the passed control values do not match
 	 *
@@ -1520,8 +1520,9 @@ class FormControlSelect extends FormControl
 		$theme->multiple = $this->multiple;
 		$theme->size = $this->size;
 		$theme->id = $this->name;
+		$theme->control = $this;
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 }
 
@@ -1541,6 +1542,7 @@ class FormControlCheckboxes extends FormControlSelect
 		$theme = $this->get_theme($forvalidation);
 		$theme->options = $this->options;
 		$theme->id = $this->name;
+		$theme->control = $this;
 
 		return $theme->fetch( $this->get_template() );
 	}

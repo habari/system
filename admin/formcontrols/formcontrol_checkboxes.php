@@ -2,7 +2,7 @@
 <ul>
 <?php foreach($options as $key => $text) : ?>
 	<li>
-		<input type="checkbox" name="<?php echo $field; ?>[]" value="<?php echo $key; ?>"<?php echo ( in_array( $key, (array) $value ) ? ' checked' : '' ); ?>><label><?php echo htmlspecialchars($text); ?></label>
+		<label><input type="checkbox" name="<?php echo $field; ?>[]" value="<?php echo $key; ?>"<?php echo ( in_array( $key, (array) $value ) ? ' checked' : '' ); ?>><?php echo htmlspecialchars($text); ?></label>
 	</li>
 <?php endforeach; ?>
 </ul>
