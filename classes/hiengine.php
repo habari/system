@@ -44,11 +44,9 @@ class HiEngine extends RawPHPEngine {
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			$template_file = 'hi://' . $template_file;
-			if($template == 'comments') {
-//				Utils::debug(file_get_contents($template_file));
-	//			die();
-			}
-			include ($template_file);
+			$fc = file_get_contents($template_file);
+			eval('?>' . $fc);
+			//include $template_file;  // stopped working properly in PHP 5.2.8 
 		}
 	}
 }
@@ -94,6 +92,9 @@ class HiEngineParser
 	 */
 	function stream_read($count)
 	{
+		if($this->stream_eof()) {
+			return false;
+		}
 		$ret = substr($this->file, $this->position, $count);
 		$this->position += strlen($ret);
 		return $ret;
@@ -171,6 +172,7 @@ class HiEngineParser
 			default:
 				return false;
 		}
+		
 	}
 
 	/**
@@ -221,7 +223,7 @@ class HiEngineParser
 				}
 				$output = '<?php echo ';
 				foreach($prefixes as $prefix) {
-					$output .= '!is_null($' . $prefix . '->' . $cmd . ') ? $' . $prefix . '->' . $cmd . ' : ';
+					$output .= '!'.'is_null($' . $prefix . '->' . $cmd . ') ? $' . $prefix . '->' . $cmd . ' : ';
 				}
 				$output .= '$' . $cmd . '; ?>';
 				return $output;
