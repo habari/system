@@ -2661,13 +2661,14 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	* Handles post requests for the system information page
+	* Handles get requests for the system information page
 	*/
-	public function post_sysinfo()
+	public function get_sysinfo()
 	{
 		$sysinfo = array();
 		$siteinfo = array();
 
+		// Assemble Site Info
 		$siteinfo[ _t( 'Habari Version' ) ] = Version::get_habariversion();
 		if ( Version::is_devel() ) {
 			$siteinfo[ _t( 'Habari Version' ) ] .= " r" . Version::get_svn_revision();
@@ -2677,7 +2678,9 @@ class AdminHandler extends ActionHandler
 		$siteinfo[ _t( 'Habari DB Version' ) ] = Version::get_dbversion();
 		$siteinfo[ _t( 'Active Theme' ) ] = Options::get( 'theme_name' );
 		$siteinfo[ _t( 'Site Language' ) ] =  strlen( Options::get( 'system_locale' ) ) ? Options::get( 'system_locale' ) : 'en-us';
+		$this->theme->siteinfo = $siteinfo;
 
+		// Assemble System Info
 		$sysinfo[ _t( 'PHP Version' ) ] = phpversion();
 		$sysinfo[ _t( 'Server Software' ) ] = $_SERVER['SERVER_SOFTWARE'];
 		$sysinfo[ _t( 'Database' ) ] = DB::get_driver_name() . ' - ' . DB::get_driver_version();
@@ -2695,18 +2698,28 @@ class AdminHandler extends ActionHandler
 			$sysinfo[ _t( 'PCRE Version' ) ] = $matches[ 1 ];
 		}
 		$sysinfo[ _t( 'Browser' ) ] = $_SERVER[ 'HTTP_USER_AGENT' ];
-
 		$this->theme->sysinfo = $sysinfo;
-		$this->theme->siteinfo = $siteinfo;
-		$this->display( 'sysinfo' );
-	}
 
-	/**
-	* Send get requests for the system information page to post_sysinfo()
-	*/
-	public function get_sysinfo()
-	{
-		$this->post_sysinfo();
+		// Assemble Class Info
+		$classinfo = glob( HABARI_PATH . "/user/classes/*.php");
+		$classinfo = array_map('realpath', $classinfo);
+		$this->theme->classinfo = $classinfo;
+
+		// Assemble Plugin Info
+		$raw_plugins = Plugins::get_active();
+		$plugins = array('system'=>array(), 'user'=>array(), '3rdparty'=>array(), 'other'=>array());
+		foreach($raw_plugins as $plugin) {
+			$file = $plugin->get_file();
+			if(preg_match('%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches)) {
+				$plugins[strtolower($matches[1])][$plugin->info->name] = $file;
+			}
+			else {
+				$plugins['other'][$plugin->info->name] = $file;
+			}
+		}
+		$this->theme->plugins = $plugins;
+
+		$this->display( 'sysinfo' );
 	}
 
 	/**
