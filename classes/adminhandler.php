@@ -1689,7 +1689,7 @@ class AdminHandler extends ActionHandler
 			'search' => '',
 		);
 		foreach ( $locals as $varname => $default ) {
-			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[varname] : $default);
+			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[$varname] : $default);
 			$this->theme->{$varname}= $$varname;
 		}
 
@@ -2408,13 +2408,12 @@ class AdminHandler extends ActionHandler
 				else {
 					if(!$ajax) {
 						Utils::redirect(URL::get('admin', 'page=groups'));
-						exit;
 					}
 				}
 
 			}
 
-			if( isset($handler_vars['action']) && $handler_vars['action'] == 'delete' && $ajax = true) {
+			if( isset( $handler_vars['action'] ) && $handler_vars['action'] == 'delete' && $ajax == true) {
 
 
 
@@ -2511,7 +2510,6 @@ class AdminHandler extends ActionHandler
 			if(isset($this->handler_vars['delete'])) {
 				$group->delete();
 				Utils::redirect(URL::get('admin', 'page=groups'));
-				exit;
 			}
 
 			if(isset($this->handler_vars['user'])) {
@@ -2539,7 +2537,6 @@ class AdminHandler extends ActionHandler
 				}
 
 				Utils::redirect(URL::get('admin', 'page=group&id=' . $group->id));
-				exit;
 			}
 
 
