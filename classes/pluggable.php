@@ -16,6 +16,7 @@ abstract class Pluggable
 	private $_class_name = null;
 	public $info;
 	public $plugin_id;
+	private $_new_rules = array();
 
 	/**
 	 * Pluggable constructor.
@@ -207,6 +208,37 @@ abstract class Pluggable
 		}
 	}
 
+
+	/**
+	 * Add a rewrite rule that dispatches entirely to a plugin hook
+	 *
+	 * @param mixed $rule An old-style rewrite rule string, where quoted segments are literals and unquoted segments are variable names, OR a RewriteRule object
+	 * @param string $hook The suffix of the hook function: action_plugin_act_{$suffix}
+	 */
+	public function add_rule($rule, $hook)
+	{
+		if( count($this->_new_rules) == 0 ) {
+			Plugins::register( array($this, '_filter_rewrite_rules'), 'filter', 'rewrite_rules', 7);
+		}
+		if( $rule instanceof RewriteRule ) {
+			$this->_new_rules[] = $rule;
+		}
+		else {
+			$this->_new_rules[] = RewriteRule::create_url_rule($rule, 'PluginHandler', $hook);
+		}
+	}
+
+	/**
+	 * Add the rewrite rules queued by add_rule() to the full rule set
+	 *
+	 * @param array $rules The array of current RewriteRules
+	 * @return array The appended array of RewriteRules
+	 */
+	public function _filter_rewrite_rules( $rules )
+	{
+		$rules = array_merge( $rules, $this->_new_rules);
+		return $rules;
+	}
 }
 
 ?>
