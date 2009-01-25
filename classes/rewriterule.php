@@ -218,16 +218,12 @@ class RewriteRule extends QueryRecord
 	{
 		$arr = split( '/', $build_str );
 
-		$searches[] = '/^([^"\']+)$/';
-		$searches[] = '/^["\'](.+)["\']$/';
-		$replacements[] = '(.+)';
-		$replacements[] = '\1';
+		$searches = array('/^([^"\']+)$/', '/^["\'](.+)["\']$/');
+		$replacements = array('(?P<\1>.+)', '\1');
 		$re_arr = preg_replace( $searches, $replacements, $arr );
 
-		$searches[] = '/^([^"\']+)$/';
-		$searches[] = '/^["\'](.+)["\']$/';
-		$replacements[] = '{$\1}';
-		$replacements[] = '\1';
+		$searches = array('/^([^"\']+)$/', '/^["\'](.+)["\']$/');
+		$replacements = array('{$\1}', '\1');
 		$str_arr = preg_replace( $searches, $replacements, $arr );
 
 		$regex = '/^' . implode( '\/', $re_arr ) . '\/?$/i';
