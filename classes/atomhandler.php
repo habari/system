@@ -243,6 +243,7 @@ class AtomHandler extends ActionHandler
 	{
 		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
 			case 'get':
+			case 'head':
 				$this->get_collection();
 				break;
 			case 'post':
@@ -259,6 +260,7 @@ class AtomHandler extends ActionHandler
 	{
 		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
 			case 'get':
+			case 'head':
 				$this->get_entry( $this->handler_vars['slug'] );
 				break;
 			case 'put':
