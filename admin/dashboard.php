@@ -92,13 +92,6 @@
 			$message_bits[]= $message;
 		}
 		
-		if ( ! empty(  $stats['spam_comment_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
-			$message.= '</a>';
-			$message_bits[]= $message;
-		}
-
 		if ( !empty( $message_bits ) ) {
 			_e('You have %s', array(Format::and_list( $message_bits)) );
 		}
