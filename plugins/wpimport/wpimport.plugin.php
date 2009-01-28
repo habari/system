@@ -209,8 +209,8 @@ WP_IMPORT_STAGE2;
 	{
 		// Connect to the database or return false
 		try {
-			$wpdb = new DatabaseConnection();
-			$wpdb->connect( "mysql:host={$db_host};dbname={$db_name}", $db_user, $db_pass, $db_prefix );
+			$wpdb = DatabaseConnection::ConnectionFactory( "mysql:host={$db_host};dbname={$db_name}" );;
+			$wpdb->connect( "mysql:host={$db_host};dbname={$db_name}", $db_user, $db_pass );
 			return $wpdb;
 		}
 		catch( Exception $e ) {
