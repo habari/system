@@ -67,32 +67,32 @@
 
 		<p><?php
 		$message_bits = array();
-		if ( ! empty( $stats['entry_draft_count'] ) ) {
+		if ( !empty( $stats['entry_draft_count'] ) ) {
 			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'entry draft' ), '%d ' . _t( 'entry drafts' ), $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
-		if ( ! empty( $stats['user_entry_scheduled_count'] ) ) {
+		if ( !empty( $stats['user_entry_scheduled_count'] ) ) {
 			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'status' => Post::status( 'scheduled' ) ) ) . '">';
 			$message.= sprintf( _n( '%d scheduled post' , '%d scheduled posts' , $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
-		if ( ! empty( $stats['page_draft_count'] ) ) {
+		if ( !empty( $stats['page_draft_count'] ) ) {
 			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'page draft' ), '%d ' . _t( 'page drafts' ), $stats['page_draft_count'] ), $stats['page_draft_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
-		if ( ! empty(  $stats['unapproved_comment_count'] ) ) {
+		if ( !empty(  $stats['unapproved_comment_count'] ) ) {
 			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'comment awaiting approval' ), '%d ' . _t( 'comments awaiting approval' ), $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
 		
-		if ( ! empty(  $stats['spam_comment_count'] ) ) {
+		if ( !empty(  $stats['spam_comment_count'] ) && Options::get( 'dashboard__hide_spam_count' ) != true ) {
 			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) . '">';
 			$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
 			$message.= '</a>';

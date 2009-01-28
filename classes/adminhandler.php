@@ -231,6 +231,14 @@ class AdminHandler extends ActionHandler
 				'helptext' => 'The appropriate locale code for your server',
 			),
 		);
+		
+		$option_items[_t('Dashboard')] = array(
+			'dashboard__hide_spam_count' => array(
+				'label' => _t( 'Hide Spam Count' ),
+				'type' => 'checkbox',
+				'helptext' => _t( 'Hide the number of SPAM comments on your dashboard.' ),
+			),
+		);
 
 		$option_items[_t('Troubleshooting')] = array(
 			'log_backtraces' => array(
