@@ -241,12 +241,12 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_collection()
 	{
-		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
-			case 'get':
-			case 'head':
+		switch( $_SERVER['REQUEST_METHOD'] ) {
+			case 'GET':
+			case 'HEAD':
 				$this->get_collection();
 				break;
-			case 'post':
+			case 'POST':
 				$this->post_collection();
 				break;
 		}
@@ -258,15 +258,15 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_entry()
 	{
-		switch( strtolower( $_SERVER['REQUEST_METHOD'] ) ) {
-			case 'get':
-			case 'head':
+		switch( $_SERVER['REQUEST_METHOD'] ) {
+			case 'GET':
+			case 'HEAD':
 				$this->get_entry( $this->handler_vars['slug'] );
 				break;
-			case 'put':
+			case 'PUT':
 				$this->put_entry( $this->handler_vars['slug'] );
 				break;
-			case 'delete':
+			case 'DELETE':
 				$this->delete_entry( $this->handler_vars['slug'] );
 				break;
 		}
