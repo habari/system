@@ -2368,16 +2368,17 @@ class AdminHandler extends ActionHandler
 		));
 	}
 
-	public function update_groups($handler_vars, $ajax = TRUE) {
+	public function update_groups($handler_vars, $ajax = TRUE)
+	{
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( (isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest']) || (isset($handler_vars['PasswordDigest']) && $handler_vars['PasswordDigest'] != $wsse['digest']) ) {
 			Session::error( _t('WSSE authentication failed.') );
 			return Session::messages_get( true, 'array' );
 		}
 
-		if(isset($handler_vars['PasswordDigest']) || isset($handler_vars['digest'])) {
+		if ( isset($handler_vars['PasswordDigest']) || isset($handler_vars['digest']) ) {
 
-			if(( isset($handler_vars['action']) && $handler_vars['action'] == 'add') || isset($handler_vars['newgroup'])) {
+			if ( ( isset($handler_vars['action']) && $handler_vars['action'] == 'add') || isset($handler_vars['newgroup']) ) {
 				if(isset($handler_vars['newgroup'])) {
 					$name= $handler_vars['new_groupname'];
 				}
@@ -2410,20 +2411,18 @@ class AdminHandler extends ActionHandler
 					$this->theme->addform= array();
 				}
 
-				if($ajax) {
+				if ($ajax) {
 					return Session::messages_get( true, 'array' );
 				}
 				else {
-					if(!$ajax) {
+					if (!$ajax) {
 						Utils::redirect(URL::get('admin', 'page=groups'));
 					}
 				}
 
 			}
 
-			if( isset( $handler_vars['action'] ) && $handler_vars['action'] == 'delete' && $ajax == true) {
-
-
+			if ( isset( $handler_vars['action'] ) && $handler_vars['action'] == 'delete' && $ajax == true) {
 
 				$ids= array();
 
@@ -2441,7 +2440,7 @@ class AdminHandler extends ActionHandler
 
 				$count = 0;
 
-				if( !isset($ids) ) {
+				if ( !isset($ids) ) {
 					Session::notice( _t('No groups deleted.') );
 					return Session::messages_get( true, 'array' );
 				}
@@ -2493,36 +2492,33 @@ class AdminHandler extends ActionHandler
 	public function post_group()
 	{
 
-		$group= UserGroup::get_by_id($this->handler_vars['id']);
+		$group = UserGroup::get_by_id($this->handler_vars['id']);
 
-		$permissions= ACL::all_permissions();
-		$access_levels= array('read' => _t('Read'), 'write' => _t('Write'), 'full' => _t('Full'), 'delete' => _t('Deny'), 'unset' => _t('None'));
+		$permissions = ACL::all_permissions();
+		//$access_levels= array('create' => _t('Create'), 'read' => _t('Read'), 'update' => _t('Update'), 'delete' => _t('Delete'), 'full' => _t('Full') );
+		$access_names = ACL::$access_names;
+		$access_names []= 'full';
+		$access_names []= 'deny';
 
-		foreach($permissions as $permission) {
-			$level= ACL::get_group_permission($group->id, $permission->id);
-			if($level) {
-				$permission->access= $level;
-			} else {
-				$permission->access= 'unset';
-			}
+		foreach ($permissions as $permission) {
+			$permission->access = ACL::get_group_permission($group->id, $permission->id);
 		}
 
-		if(isset($this->handler_vars['nonce'])) {
+		if ( isset($this->handler_vars['nonce']) ) {
 			$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
 
 			if ( isset($this->handler_vars['digest']) && $this->handler_vars['digest'] != $wsse['digest'] ) {
 				Session::error( _t('WSSE authentication failed.') );
 			}
 
-
-			if(isset($this->handler_vars['delete'])) {
+			if ( isset($this->handler_vars['delete']) ) {
 				$group->delete();
 				Utils::redirect(URL::get('admin', 'page=groups'));
 			}
 
-			if(isset($this->handler_vars['user'])) {
-				foreach($this->handler_vars['user'] as $user => $status) {
-					if($status == 1) {
+			if ( isset($this->handler_vars['user']) ) {
+				foreach ( $this->handler_vars['user'] as $user => $status ) {
+					if ( $status == 1 ) {
 						$group->add($user);
 					}
 					else {
@@ -2530,12 +2526,13 @@ class AdminHandler extends ActionHandler
 					}
 				}
 
-				foreach($permissions as $permission) {
-					if(isset($this->handler_vars['permission_' . $permission->id]) && $permission->access != $this->handler_vars['permission_' . $permission->id]) {
+				foreach ( $permissions as $permission ) {
+					foreach ( $access_names as $name )
+					if ( isset($this->handler_vars['permission_' . $permission->id]) && $permission->access != $this->handler_vars['permission_' . $permission->id] ) {
 
-						if($this->handler_vars['permission_' . $permission->id] == 'unset') {
+						if ( $this->handler_vars['permission_' . $permission->id] == 'unset' ) {
 							$group->revoke($permission->id);
-						} elseif($this->handler_vars['permission_' . $permission->id] == 'deny') {
+						} elseif ( $this->handler_vars['permission_' . $permission->id] == 'deny' ) {
 							$group->deny($permission->id);
 						} else {
 							$group->revoke($permission->id);
@@ -2554,30 +2551,30 @@ class AdminHandler extends ActionHandler
 
 		$potentials= array();
 
-		$users= Users::get_all();
-		$users[]= User::anonymous();
+		$users = Users::get_all();
+		$users []= User::anonymous();
 
-		$members= $group->members;
-		foreach($users as $user) {
-			if(in_array($user->id, $members)) {
-				$user->membership= TRUE;
+		$members = $group->members;
+		foreach ( $users as $user ) {
+			if ( in_array($user->id, $members) ) {
+				$user->membership = TRUE;
 			}
 			else {
-				$potentials[$user->id]= $user->displayname;
-				$user->membership= FALSE;
+				$potentials[$user->id] = $user->displayname;
+				$user->membership = FALSE;
 			}
 
 		}
-		$this->theme->potentials= $potentials;
+		$this->theme->potentials = $potentials;
 		$this->theme->users = $users;
 		$this->theme->members = $members;
 
-		$this->theme->access_levels= $access_levels;
-		$this->theme->permissions= $permissions;
+		$this->theme->access_names= $access_names;
+		$this->theme->permissions = $permissions;
 
-		$this->theme->groups= UserGroups::get_all();
-		$this->theme->group= $group;
-		$this->theme->id= $group->id;
+		$this->theme->groups = UserGroups::get_all();
+		$this->theme->group = $group;
+		$this->theme->id = $group->id;
 
 		$this->theme->wsse = Utils::WSSE();
 
