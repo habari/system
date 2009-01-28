@@ -451,7 +451,7 @@ SQL;
 	 * Get the access bitmask of a group for a specific permission
 	 * @param integer $group The group ID
 	 * @param mixed $token_id A permission name or ID
-	 * @return the level granted
+	 * @return an access bitmask
 	 **/
 	public static function get_group_permission( $group, $token_id )
 	{
@@ -491,7 +491,7 @@ SQL;
 			$bitmask->value= $bitmask->full;
 		}
 		elseif ( $access == 'deny' ) {
-			$bitmask->value= 0;
+			$bitmask->value = 0;
 		}
 		else {
 			$bitmask->$access = true;

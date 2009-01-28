@@ -17,17 +17,17 @@
 </div>
 
 <div class="container transparent groupstats">
-<p><strong><?php echo $group->name; ?></strong> gives <strong>0</strong> permissions to <strong><?php echo count($members); ?></strong> users</p>
+<p>Group <strong><?php echo $group->name; ?></strong> has <strong><?php echo count($members); ?></strong> member(s)</p>
 </div>
 
 <form name="update-group" id="update-group" action="<?php URL::out('admin', 'page=group'); ?>" method="post">
 <div class="container settings group groupmembers" id="groupmembers">
 
-	<h2><?php _e('Group Members'); ?></h2>
+	<h2><?php _e('Group Information'); ?></h2>
 	
 	<div class="item clear assignedusers">
 		<span class="pct20">
-			<label><?php _e('Assigned Users'); ?></label>
+			<label><strong><?php _e('Members'); ?></strong></label>
 		</span>
 		<span class="pct80">
 			<span class="pct100" id="currentusers"><?php foreach($users as $user): ?><a class="user id-<?php echo $user->id; ?>"<?php if(!$user->membership): ?> style="display:none;"<?php endif; ?> href="#remove" title="Remove member"><span class="id"><?php echo $user->id; ?></span><span class="name"><?php echo $user->displayname; ?></span></a><?php endforeach; ?></span>
@@ -48,14 +48,30 @@
 	<h2><?php _e('Group Permissions'); ?></h2>
 	
 	<div class="item clear groupacl">
-		<ul id="permissions">
-		<?php foreach($permissions as $permission): ?>
-			<li class="permission">
-				<?php echo Utils::html_select('permission_' . $permission->id, $access_levels, $permission->access); ?>
-				<p><strong><?php echo $permission->name; ?></strong>: <?php echo $permission->description; ?></p>
-			</li>
+		<table id="permissions">
+			<tr>
+				<th>Description</th>
+				<?php foreach ( $access_names as $name ): ?>
+				<th><?php echo _t($name); ?></th>
+				<?php endforeach; ?>
+			</tr>
+		<?php foreach ( $permissions as $permission ): ?>
+			<tr>
+				<td class="permission_description"><strong><?php echo $permission->description; ?></strong></td>
+				<?php 
+				foreach ( $access_names as $name ):
+					if ( $name == 'deny' ) {
+						$name = 0;
+					}
+					$checked = ( $permission->access && $permission->access->$name ) ? ' checked' : '';
+				?>
+					<td class="permission_access">
+						<input type="checkbox" id="permission_<?php echo $permission->id . '_' . $name; ?>" <?php echo $checked; ?>>
+					</td>
+				<?php endforeach; ?>
+			</tr>
 		<?php endforeach; ?>
-		</ul>
+		</table>
 	</div>
 	
 </div>
