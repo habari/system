@@ -62,7 +62,7 @@ class ACL {
 
 	/**
 	 * Check the permission bitmask to find the access type
-	 * <em>This function is horribly, horribly broken, and shouldn't be used.  
+	 * <em>This function is horribly, horribly broken, and shouldn't be used.
 	 * For example, it will return that a permission is only "read" when it is actually "read+write".</em>
 	 * Use get_bitmask() to retrieve a Btimask instead, and use its properties for testing values.
 	 * @param mixed $mask The access bitmask
@@ -485,7 +485,7 @@ SQL;
 			$access_mask = 0; // default is 'deny' (bitmask 0)
 		}
 
-		$bitmask = self::get_mask( $access_mask );
+		$bitmask = self::get_bitmask( $access_mask );
 
 		if ( $access == 'full' ) {
 			$bitmask->value= $bitmask->full;
@@ -526,7 +526,7 @@ SQL;
 			$permission_bit = 0; // default is 'deny' (bitmask 0)
 		}
 
-		$bitmask = self::get_mask( $access_mask );
+		$bitmask = self::get_bitmask( $access_mask );
 
 		if ( $access == 'full' || $access == 'deny' ) {
 			if ( $access == 'full' ) {
