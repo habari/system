@@ -55,18 +55,18 @@
 				<th><?php echo _t($name); ?></th>
 				<?php endforeach; ?>
 			</tr>
-		<?php foreach ( $permissions as $permission ): ?>
+		<?php foreach ( $tokens as $token ): ?>
 			<tr>
-				<td class="permission_description"><strong><?php echo $permission->description; ?></strong></td>
+				<td class="token_description"><strong><?php echo $token->description; ?></strong></td>
 				<?php 
 				foreach ( $access_names as $name ):
 					if ( $name == 'deny' ) {
 						$name = 0;
 					}
-					$checked = ( $permission->access && $permission->access->$name ) ? ' checked' : '';
+					$checked = ( $token->access && $token->access->$name ) ? ' checked' : '';
 				?>
-					<td class="permission_access">
-						<input type="checkbox" id="permission_<?php echo $permission->id . '_' . $name; ?>" <?php echo $checked; ?>>
+					<td class="token_access">
+						<input type="checkbox" id="permission_<?php echo $token->id . '_' . $name; ?>" <?php echo $checked; ?>>
 					</td>
 				<?php endforeach; ?>
 			</tr>

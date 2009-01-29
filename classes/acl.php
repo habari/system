@@ -87,25 +87,25 @@ class ACL {
 	}
 
 	/**
-	 * Create a new permission, and save it to the permission tokens table
+	 * Create a new permission token, and save it to the permission tokens table
 	 * @param string $name The name of the permission
 	 * @param string $description The description of the permission
 	 * @return mixed the ID of the newly created permission, or boolean FALSE
 	**/
-	public static function create_permission( $name, $description )
+	public static function create_token( $name, $description )
 	{
-		$name = self::normalize_permission( $name );
+		$name = self::normalize_token( $name );
 		// first, make sure this isn't a duplicate
 		if ( ACL::token_exists( $name ) ) {
 			return false;
 		}
 		$allow = true;
-		// Plugins have the opportunity to prevent adding this permission
-		$allow = Plugins::filter('permission_create_allow', $allow, $name, $description );
+		// Plugins have the opportunity to prevent adding this token
+		$allow = Plugins::filter('token_create_allow', $allow, $name, $description );
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('permission_create_before', $name, $description);
+		Plugins::act('token_create_before', $name, $description);
 		$result = DB::query('INSERT INTO {tokens} (name, description) VALUES (?, ?)', array( $name, $description) );
 
 		if ( ! $result ) {
@@ -113,11 +113,11 @@ class ACL {
 			return false;
 		}
 
-		// Add the permission to the admin group
-		$perm = ACL::token_id( $name );
+		// Add the token to the admin group
+		$token = ACL::token_id( $name );
 		$admin = UserGroup::get( 'admin');
 		if ( $admin ) {
-			ACL::grant_group( $admin->id, $perm, 'full' );
+			ACL::grant_group( $admin->id, $token, 'full' );
 		}
 
 		EventLog::log('New permission created: ' . $name, 'info', 'default', 'habari');
@@ -126,56 +126,56 @@ class ACL {
 	}
 
 	/**
-	 * Remove a permission, and any assignments of it
+	 * Remove a permission token, and any assignments of it
 	 * @param mixed $permission a permission ID or name
 	 * @return bool whether the permission was deleted or not
 	**/
-	public static function destroy_permission( $permission )
+	public static function destroy_token( $token )
 	{
 		// make sure the permission exists, first
-		if ( ! self::token_exists( $permission ) ) {
+		if ( ! self::token_exists( $token ) ) {
 			return false;
 		}
 
 		// grab token ID
-		$token_id = self::token_id( $permission );
+		$token_id = self::token_id( $token );
 
 		$allow = true;
 		// plugins have the opportunity to prevent deletion
-		$allow = Plugins::filter('permission_destroy_allow', $allow, $token_id);
+		$allow = Plugins::filter('token_destroy_allow', $allow, $token_id);
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('permission_destroy_before', $token_id );
-		// capture the permission token name
+		Plugins::act('token_destroy_before', $token_id );
+		// capture the token name
 		$name = DB::get_value( 'SELECT name FROM {tokens} WHERE id=?', array( $token_id ) );
 		// remove all references to this permissions
 		$result = DB::query( 'DELETE FROM {group_token_permissions} WHERE token_id=?', array( $token_id ) );
 		$result = DB::query( 'DELETE FROM {user_token_permissions} WHERE token_id=?', array( $token_id ) );
-		// remove this permission
+		// remove this token
 		$result = DB::query( 'DELETE FROM {tokens} WHERE id=?', array( $token_id ) );
 		if ( ! $result ) {
 			// if it didn't work, don't bother trying to log it
 			return false;
 		}
-		EventLog::log( sprintf(_t('Permission deleted: %s'), $name), 'info', 'default', 'habari');
-		Plugins::act('permission_destroy_after', $token_id );
+		EventLog::log( sprintf(_t('Permission token deleted: %s'), $name), 'info', 'default', 'habari');
+		Plugins::act('token_destroy_after', $token_id );
 		return $result;
 	}
 
 	/**
-	 * Get an array of QueryRecord objects containing all permissions
+	 * Get an array of QueryRecord objects containing all permission tokens
 	 * @param string $order the order in which to sort the returning array
-	 * @return array an array of QueryRecord objects containing all permissions
+	 * @return array an array of QueryRecord objects containing all tokens
 	**/
-	public static function all_permissions( $order = 'id' )
+	public static function all_tokens( $order = 'id' )
 	{
 		$order = strtolower( $order );
 		if ( ( 'id' != $order ) && ( 'name' != $order ) && ( 'description' != $order ) ) {
 			$order = 'id';
 		}
-		$permissions = DB::get_results( 'SELECT id, name, description FROM {tokens} ORDER BY ' . $order );
-		return $permissions ? $permissions : array();
+		$tokens = DB::get_results( 'SELECT id, name, description FROM {tokens} ORDER BY ' . $order );
+		return $tokens ? $tokens : array();
 	}
 
 	/**
@@ -202,7 +202,7 @@ class ACL {
 		if( is_numeric($name) ) {
 			return $name;
 		}
-		$name = self::normalize_permission( $name );
+		$name = self::normalize_token( $name );
 		return DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) );
 	}
 
@@ -217,7 +217,7 @@ class ACL {
 			$query = 'id';
 		} else {
 			$query = 'name';
-			$permission = self::normalize_permission( $permission );
+			$permission = self::normalize_token( $permission );
 		}
 		return DB::get_value( "SELECT description FROM {tokens} WHERE $query=?", array( $permission ) );
 	}
@@ -234,7 +234,7 @@ class ACL {
 		}
 		else {
 			$query = 'name';
-			$permission = self::normalize_permission( $permission );
+			$permission = self::normalize_token( $permission );
 		}
 		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {tokens} WHERE $query=?", array( $permission ) ) > 0 );
 	}
@@ -395,10 +395,10 @@ SQL;
 	/**
 	 * Get all the tokens for a given user with a particular kind of access
 	 * @param mixed $user A user object, user ID or a username
-	 * @param string $access Check for 'read' or 'write' access
+	 * @param string $access Check for 'create' or 'read', 'update', or 'delete' access
 	 * @return array of token IDs
 	**/
-	public static function user_tokens( $user, $access = 'write', $posts_only = false )
+	public static function user_tokens( $user, $access = 'full', $posts_only = false )
 	{
 		$bitmask = new Bitmask ( self::$access_names, $access );
 		$tokens = array();
@@ -440,7 +440,7 @@ SQL;
 
 		foreach ( $result as $token ) {
 			$bitmask->value = $token->permission_id;
-			if($access == 'deny' && $bitmask->value == 0) {
+			if ( $access == 'deny' && $bitmask->value == 0 ) {
 				$tokens[] = $token->token_id;
 			}
 			else {
@@ -453,12 +453,12 @@ SQL;
 	}
 
 	/**
-	 * Get the access bitmask of a group for a specific permission
+	 * Get the access bitmask of a group for a specific permission token
 	 * @param integer $group The group ID
 	 * @param mixed $token_id A permission name or ID
 	 * @return an access bitmask
 	 **/
-	public static function get_group_permission( $group, $token_id )
+	public static function get_group_token( $group, $token_id )
 	{
 		// Use only numeric ids internally
 		$group = UserGroup::id( $group );
@@ -580,12 +580,12 @@ SQL;
 	}
 
 	/**
-	 * Remove a permission from the group permissions table
+	 * Remove a permission token from the group permissions table
 	 * @param integer $group_id The group ID
 	 * @param mixed $token_id The name or ID of the permission token
 	 * @return the result of the DB query
 	 **/
-	public static function revoke_group_permission( $group_id, $token_id )
+	public static function revoke_group_token( $group_id, $token_id )
 	{
 		$token_id = self::token_id( $token_id );
 		$result = DB::delete( '{group_token_permissions}',
@@ -598,12 +598,12 @@ SQL;
 	}
 
 	/**
-	 * Remove a permission from the user permissions table
+	 * Remove a permission token from the user permissions table
 	 * @param integer $user_id The user ID
 	 * @param mixed $token_id The name or ID of the permission token
 	 * @return the result of the DB query
 	 **/
-	public static function revoke_user_permission( $user_id, $token_id )
+	public static function revoke_user_token( $user_id, $token_id )
 	{
 		$token_id = self::token_id( $token_id );
 		$result = DB::delete( '{user_token_permissions}',
@@ -613,12 +613,12 @@ SQL;
 	}
 
 	/**
-	 * Convert a permission name into a valid format
+	 * Convert a token name into a valid format
 	 *
 	 * @param string $name The name of a permission
 	 * @return string The permission with spaces converted to underscores and all lowercase
 	 */
-	public static function normalize_permission( $name )
+	public static function normalize_token( $name )
 	{
 		return strtolower( preg_replace( '/\s+/', '_', trim($name) ) );
 	}

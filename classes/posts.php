@@ -357,19 +357,19 @@ class Posts extends ArrayObject implements IsContent
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
-				if( isset( $paramset['after'] ) ) {
+				if ( isset( $paramset['after'] ) ) {
 					$where[] = 'pubdate > ?';
 					$params[] = HabariDateTime::date_create( $paramset['after'] )->sql;
 				}
 
-				if( isset( $paramset['before'] ) ) {
+				if ( isset( $paramset['before'] ) ) {
 					$where[] = 'pubdate < ?';
 					$params[] = HabariDateTime::date_create( $paramset['before'] )->sql;
 				}
 
 				// Only show posts to which the current user has permission
 				//$paramset['ignore_permissions'] = true;
-				if(!isset($paramset['ignore_permissions'])) {
+				if ( !isset($paramset['ignore_permissions']) ) {
 					// This set of wheres will be used to generate a list of post_ids that this user can read
 					$perm_where = array();
 
@@ -385,23 +385,22 @@ class Posts extends ArrayObject implements IsContent
 
 					// If a user can read specific post types, let him
 					$permitted_post_types = array();
-					foreach(Post::list_active_post_types() as $name => $posttype) {
-						if(User::identify()->can('post_' . Utils::slugify($name), 'read')) {
+					foreach ( Post::list_active_post_types() as $name => $posttype ) {
+						if ( User::identify()->can( 'post_' . Utils::slugify($name), 'read' ) ) {
 							$permitted_post_types[] = $posttype;
 						}
 					}
-					if(count($permitted_post_types) > 0) {
+					if ( count($permitted_post_types) > 0 ) {
 						$perm_where[] = '{posts}.content_type IN (' . implode(',', $permitted_post_types) . ')';
 					}
 
 					// If a user can read posts with specific tokens, let him
-					if(count($read_tokens) > 0) {
-						$joins['post_tokens__posts'] = ' LEFT JOIN {post_tokens} pt ON {posts}.id= pt.post_id';
-						$perm_where['by_token'] = 'pt.token_id IN ('.implode(',', $read_tokens).')';
+					if ( count($read_tokens) > 0 ) {
+						$joins['post_tokens__posts'] = ' INNER JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
 					}
 
 					// If there are granted permissions to check, add them to the where clause
-					if(count($perm_where) == 0) {
+					if ( count($perm_where) == 0 && !isset($joins['post_tokens__posts']) ) {
 						// You have no grants.  You get no posts.
 						$where[] = '0';
 					}
@@ -411,8 +410,9 @@ class Posts extends ArrayObject implements IsContent
 						';
 					}
 
-					if(count($deny_tokens) > 0) {
-						//	$joins['post_tokens__posts'] = ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND ({post_tokens}.token_id IN ('.implode(',', $permission_token_ids).'))';
+					if ( count($deny_tokens) > 0 ) {
+						$joins['post_tokens__posts'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
+						$where[] = 'pt_denied.post_id IS NULL';
 					}
 
 
@@ -496,7 +496,7 @@ class Posts extends ArrayObject implements IsContent
 		 * Build the final SQL statement
 		 */
 		$query = '
-			SELECT ' . $select . '
+			SELECT DISTINCT ' . $select . '
 			FROM {posts} ' . implode(' ', $joins);
 
 		if ( count( $wheres ) > 0 ) {

@@ -2524,14 +2524,14 @@ class AdminHandler extends ActionHandler
 
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
 
-		$permissions = ACL::all_permissions();
+		$tokens = ACL::all_tokens();
 		//$access_levels= array('create' => _t('Create'), 'read' => _t('Read'), 'update' => _t('Update'), 'delete' => _t('Delete'), 'full' => _t('Full') );
 		$access_names = ACL::$access_names;
 		$access_names []= 'full';
 		$access_names []= 'deny';
 
-		foreach ($permissions as $permission) {
-			$permission->access = ACL::get_group_permission($group->id, $permission->id);
+		foreach ($tokens as $token) {
+			$token->access = ACL::get_group_token($group->id, $token->id);
 		}
 
 		if ( isset($this->handler_vars['nonce']) ) {
@@ -2556,17 +2556,17 @@ class AdminHandler extends ActionHandler
 					}
 				}
 
-				foreach ( $permissions as $permission ) {
+				foreach ( $tokens as $token ) {
 					foreach ( $access_names as $name )
-					if ( isset($this->handler_vars['permission_' . $permission->id]) && $permission->access != $this->handler_vars['permission_' . $permission->id] ) {
+					if ( isset($this->handler_vars['token_' . $token->id]) && $token->access != $this->handler_vars['token_' . $token->id] ) {
 
-						if ( $this->handler_vars['permission_' . $permission->id] == 'unset' ) {
-							$group->revoke($permission->id);
-						} elseif ( $this->handler_vars['permission_' . $permission->id] == 'deny' ) {
-							$group->deny($permission->id);
+						if ( $this->handler_vars['token_' . $token->id] == 'unset' ) {
+							$group->revoke($token->id);
+						} elseif ( $this->handler_vars['token_' . $token->id] == 'deny' ) {
+							$group->deny($token->id);
 						} else {
-							$group->revoke($permission->id);
-							$group->grant($permission->id, $this->handler_vars['permission_' . $permission->id]);
+							$group->revoke($token->id);
+							$group->grant($token->id, $this->handler_vars['token_' . $token->id]);
 						}
 					}
 				}
@@ -2600,7 +2600,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->members = $members;
 
 		$this->theme->access_names= $access_names;
-		$this->theme->permissions = $permissions;
+		$this->theme->tokens = $tokens;
 
 		$this->theme->groups = UserGroups::get_all();
 		$this->theme->group = $group;
