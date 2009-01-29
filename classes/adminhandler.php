@@ -1631,15 +1631,29 @@ class AdminHandler extends ActionHandler
 					$pluginobj = $active_plugins[$plugin_id];
 					$plugin['active']= true;
 					$plugin_actions = array();
-					$plugin['actions']= Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
-					if( in_array('?', $plugin['actions'] ) ) {
-						$help_key = array_search('?', $plugin['actions']);
-						$plugin['help'] = $help_key;
-						unset($plugin['actions'][$help_key]);
+					$plugin_actions = Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
+					$plugin['actions'] = array();
+					foreach($plugin_actions as $plugin_action => $plugin_action_caption) {
+						if( is_numeric($plugin_action) ) {
+							$plugin_action = $plugin_action_caption;
+						}
+						$action = array(
+							'url' => URL::get( 'admin', 'page=plugins&configure=' . $plugin_id . '&configaction=' . $plugin_action ),
+							'caption' => $plugin_action_caption,
+							'action' => $plugin_action,
+						);
+						if($action['caption'] == '?') {
+							$plugin['help'] = $action;
+						}
+						else {
+							$plugin['actions'][$plugin_action] = $action;
+						}
 					}
-					else {
-						$plugin['help'] = '';
-					}
+					$plugin['actions']['deactivate'] = array(
+						'url' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=deactivate'),
+						'caption' => _t('Deactivate'),
+						'action' => 'Deactivate',
+					);
 				}
 				else {
 					// instantiate this plugin
@@ -1649,7 +1663,13 @@ class AdminHandler extends ActionHandler
 					$pluginobj = Plugins::load( $file, false );
 					$plugin['active']= false;
 					$plugin['verb']= _t( 'Activate' );
-					$plugin['actions']= array();
+					$plugin['actions'] = array(
+						'activate' => array(
+							'url' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=activate'),
+							'caption' => _t('Activate'),
+							'action' => 'activate',
+						),
+					);
 				}
 				$plugin['info']= $pluginobj->info;
 			}
@@ -1658,11 +1678,21 @@ class AdminHandler extends ActionHandler
 				$plugin['error']= $error;
 				$plugin['active']= false;
 			}
-			if ($plugin['active']) {
-				$sort_active_plugins[$plugin_id]= $plugin;
+			if ( isset( $this->handler_vars['configure'] ) && ( $this->handler_vars['configure'] == $plugin['plugin_id'] ) ) {
+				if(isset($plugin['help']) && Controller::get_var('configaction') == $plugin['help']['action']) {
+					$this->theme->config_plugin_caption = _t('Help');
+				}
+				else {
+					$this->theme->config_plugin_caption = $plugin['actions'][Controller::get_var('configaction')]['caption'];
+				}
+				unset($plugin['actions'][Controller::get_var('configaction')]);
+				$this->theme->config_plugin = $plugin;
+			}
+			else if ($plugin['active']) {
+				$sort_active_plugins[$plugin_id] = $plugin;
 			}
 			else {
-				$sort_inactive_plugins[$plugin_id]= $plugin;
+				$sort_inactive_plugins[$plugin_id] = $plugin;
 			}
 		}
 

@@ -237,6 +237,7 @@ a img {
 
 #page .dropbutton.alert {
 	background: #FF4500;
+	top: 30px important;
 }
 
 #page .dropbutton li {
