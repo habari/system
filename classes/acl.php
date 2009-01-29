@@ -440,8 +440,13 @@ SQL;
 
 		foreach ( $result as $token ) {
 			$bitmask->value = $token->permission_id;
-			if ( $bitmask->$access && ( !$posts_only || in_array($token->id, $post_tokens) ) ) {
+			if($access == 'deny' && $bitmask->value == 0) {
 				$tokens[] = $token->token_id;
+			}
+			else {
+				if ( $bitmask->$access && ( !$posts_only || in_array($token->token_id, $post_tokens) ) ) {
+					$tokens[] = $token->token_id;
+				}
 			}
 		}
 		return $tokens;
