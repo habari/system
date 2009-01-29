@@ -396,21 +396,18 @@ class Posts extends ArrayObject implements IsContent
 
 					// If a user can read posts with specific tokens, let him
 					if(count($read_tokens) > 0) {
-						//$joins['post_tokens__posts'] = ' JOIN {post_tokens} ON {posts}.id= {post_tokens}.post_id AND ({post_tokens}.token_id IN ('.implode(',', $read_tokens).'))';
-						$perm_where[] = '{post_tokens}.token_id IN ('.implode(',', $read_tokens).')';
+						$joins['post_tokens__posts'] = ' LEFT JOIN {post_tokens} pt ON {posts}.id= pt.post_id';
+						$perm_where['by_token'] = 'pt.token_id IN ('.implode(',', $read_tokens).')';
 					}
 
 					// If there are granted permissions to check, add them to the where clause
 					if(count($perm_where) == 0) {
+						// You have no grants.  You get no posts.
 						$where[] = '0';
 					}
 					else {
 						$where[] = '
-							{posts}.id IN (
-							SELECT {posts}.id FROM {posts}
-							LEFT JOIN {post_tokens} ON {posts}.id = {post_tokens}.post_id
-							WHERE (' . implode(' OR ', $perm_where) . ')
-							GROUP BY {posts}.id)
+							(' . implode(' OR ', $perm_where) . ')
 						';
 					}
 
