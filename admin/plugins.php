@@ -20,6 +20,50 @@
 	</span>
 </div>
 
+
+<?php
+if(isset($config_plugin)):
+?>
+
+<div class="container plugins activeplugins" id="configureplugin">
+
+	<h2><?php echo $config_plugin['info']->name; ?> &middot; <?php echo $config_plugin_caption; ?></h2>
+
+	<div class="item plugin clear" id="plugin_<?php echo $config_plugin['plugin_id']; ?>">
+		<div class="head">
+			<a href="<?php echo $config_plugin['info']->url; ?>" class="plugin"><?php echo $config_plugin['info']->name; ?> <span class="version"><?php echo $config_plugin['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <?php echo empty( $config_plugin['info']->authorurl ) ? $config_plugin['info']->author : '<a href="' . $config_plugin['info']->authorurl . '">' . $config_plugin['info']->author . '</a>'; ?>
+			<?php if( isset($config_plugin['help']) ): ?>
+			<a class="help" href="<?php echo $config_plugin['help']['url']; ?>">?</a>
+			<?php endif; ?>
+			<ul class="dropbutton">
+
+<?php foreach( $config_plugin['actions'] as $plugin_action => $action ) : ?>
+						<li><a href="<?php echo $action['url']; ?>"><?php echo $action['caption']; ?></a></li>
+<?php endforeach; ?>
+
+			</ul>
+
+
+			<?php if( isset( $config_plugin['update'] ) ) { ?>
+			<ul class="dropbutton alert">
+				<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
+			</ul>
+			<?php } ?>
+
+		</div>
+
+		<p class="description"><?php echo $config_plugin['info']->description; ?></p>
+
+		<div id="pluginconfigure">
+			<?php Plugins::act( 'plugin_ui', $configure, $configaction ); ?>
+			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('Close'); ?></a>
+		</div>
+
+	</div>
+</div>
+<?php endif; ?>
+
+
 <?php if ( count($active_plugins) > 0 ): ?>
 
 <div class="container plugins activeplugins" id="activeplugins">
@@ -42,32 +86,20 @@
 	<div class="item plugin clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
 			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
-			<?php if($plugin['help'] != ''): ?>
-			<a class="help" href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&configaction=' . $plugin['help'] ); ?>#plugin_<?php echo $plugin['plugin_id']; ?>">?</a>
+			<?php if( isset($plugin['help']) ): ?>
+			<a class="help" href="<?php echo $plugin['help']['url']; ?>">?</a>
 			<?php endif; ?>
 			<ul class="dropbutton">
 
-				<?php
-				if ( $plugin['active'] ) {
-					$plugin_actions = array();
-					$plugin_actions = Plugins::filter( 'plugin_config', $plugin_actions, $plugin['plugin_id'] );
-					foreach( $plugin['actions'] as $plugin_action => $plugin_action_caption ) {
-						if( isset($configure) && ($configure == $plugin['plugin_id']) && ($configaction == (string)$plugin_action) )
-							continue;
+<?php foreach( $plugin['actions'] as $plugin_action => $action ) : ?>
+						<li><a href="<?php echo $action['url']; ?>"><?php echo $action['caption']; ?></a></li>
+<?php endforeach; ?>
 
-						if ( is_numeric( $plugin_action ) )
-							$plugin_action = $plugin_action_caption;
-				?>
-						<li><a href="<?php URL::out( 'admin', 'page=plugins&configure=' . $plugin['plugin_id'] . '&configaction=' . $plugin_action ); ?>#plugin_<?php echo $plugin['plugin_id']; ?>"><?php echo $plugin_action_caption; ?></a></li>
-				<?php } } ?>
-
-
-				<li><a href="<?php URL::out( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=deactivate'); ?>"><?php echo $plugin['verb']; ?></a></li>
 
 			</ul>
 
 
-			<?php if( isset( $updates ) ) { ?>
+			<?php if( isset( $plugin['update'] ) ) { ?>
 			<ul class="dropbutton alert">
 				<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
 			</ul>
@@ -114,7 +146,9 @@
 			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
 
 			<ul class="dropbutton">
-				<li><a href="<?php URL::out( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=activate'); ?>"><?php echo $plugin['verb']; ?></a></li>
+<?php foreach( $plugin['actions'] as $plugin_action => $action ) : ?>
+						<li><a href="<?php echo $action['url']; ?>"><?php echo $action['caption']; ?></a></li>
+<?php endforeach; ?>
 			</ul>
 
 			<?php if( isset( $updates ) ) { ?>
