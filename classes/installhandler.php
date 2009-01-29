@@ -609,21 +609,21 @@ class InstallHandler extends ActionHandler {
 	 */
 	private function create_default_permissions()
 	{
-		ACL::create_permission( 'super_user', 'Permissions for super users' );
+		ACL::create_token( 'super_user', 'Permissions for super users' );
 
-		ACL::create_permission( 'own_posts', 'Permissions on one\'s own posts' );
-		ACL::create_permission( 'manage_all_comments', 'Manage comments on all posts' );
-		ACL::create_permission( 'manage_own_post_comments', 'Manage comments on one\'s own posts' );
-		ACL::create_permission( 'manage_tags', 'Manage tags' );
-		ACL::create_permission( 'manage_options', 'Manage options' );
-		ACL::create_permission( 'manage_theme', 'Change theme' );
-		ACL::create_permission( 'manage_theme_config', 'Configure the active theme' );
-		ACL::create_permission( 'manage_plugins', 'Activate/deactivate plugins' );
-		ACL::create_permission( 'manage_plugins_config', 'Configure active plugins' );
-		ACL::create_permission( 'manage_import', 'Use the importer' );
-		ACL::create_permission( 'manage_users', 'Add, remove, and edit users' );
-		ACL::create_permission( 'manage_groups', 'Manage groups and permissions' );
-		ACL::create_permission( 'manage_logs', 'Manage logs' );
+		ACL::create_token( 'own_posts', 'Permissions on one\'s own posts' );
+		ACL::create_token( 'manage_all_comments', 'Manage comments on all posts' );
+		ACL::create_token( 'manage_own_post_comments', 'Manage comments on one\'s own posts' );
+		ACL::create_token( 'manage_tags', 'Manage tags' );
+		ACL::create_token( 'manage_options', 'Manage options' );
+		ACL::create_token( 'manage_theme', 'Change theme' );
+		ACL::create_token( 'manage_theme_config', 'Configure the active theme' );
+		ACL::create_token( 'manage_plugins', 'Activate/deactivate plugins' );
+		ACL::create_token( 'manage_plugins_config', 'Configure active plugins' );
+		ACL::create_token( 'manage_import', 'Use the importer' );
+		ACL::create_token( 'manage_users', 'Add, remove, and edit users' );
+		ACL::create_token( 'manage_groups', 'Manage groups and permissions' );
+		ACL::create_token( 'manage_logs', 'Manage logs' );
 	}
 
 	/**
@@ -1334,8 +1334,8 @@ class InstallHandler extends ActionHandler {
 
 		// Add tokens for each existing post type, which is done in the installer when the type is created.
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-			ACL::create_permission( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ) );
-			ACL::create_permission( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ) );
+			ACL::create_token( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ) );
+			ACL::create_token( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ) );
 		}
 
 		// Create the admin group
@@ -1347,7 +1347,7 @@ class InstallHandler extends ActionHandler {
 
 		// Until now, all users were admins, restore that
 		$all_users = Users::get_all();
-		foreach($all_users as $user) {
+		foreach ( $all_users as $user ) {
 			$group->add( $user );
 		}
 
