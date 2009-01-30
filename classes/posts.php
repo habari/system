@@ -154,7 +154,6 @@ class Posts extends ArrayObject implements IsContent
 					}
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
-					$select = 'DISTINCT ' . $select;
 					$joins['tag2post_posts'] = ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
 					$joins['tags_tag2post'] = ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 
@@ -182,7 +181,6 @@ class Posts extends ArrayObject implements IsContent
 
 				if ( isset( $paramset['all:tag'] ) ) {
 
-					$select = 'DISTINCT ' . $select;
 					$joins['tag2post_posts'] = ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
 					$joins['tags_tag2post'] = ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
 
