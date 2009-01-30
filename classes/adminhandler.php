@@ -2525,9 +2525,8 @@ class AdminHandler extends ActionHandler
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
 
 		$tokens = ACL::all_tokens();
-		//$access_levels= array('create' => _t('Create'), 'read' => _t('Read'), 'update' => _t('Update'), 'delete' => _t('Delete'), 'full' => _t('Full') );
 		$access_names = ACL::$access_names;
-		$access_names []= 'full';
+		//$access_names []= 'full';
 		$access_names []= 'deny';
 
 		foreach ($tokens as $token) {
@@ -2557,23 +2556,24 @@ class AdminHandler extends ActionHandler
 				}
 
 				foreach ( $tokens as $token ) {
-					foreach ( $access_names as $name )
-					if ( isset($this->handler_vars['token_' . $token->id]) && $token->access != $this->handler_vars['token_' . $token->id] ) {
-
-						if ( $this->handler_vars['token_' . $token->id] == 'unset' ) {
-							$group->revoke($token->id);
-						} elseif ( $this->handler_vars['token_' . $token->id] == 'deny' ) {
-							$group->deny($token->id);
-						} else {
-							$group->revoke($token->id);
-							$group->grant($token->id, $this->handler_vars['token_' . $token->id]);
+					$access_count = 0;
+					foreach ( $access_names as $name ) {
+						if ( isset($this->handler_vars['token_' . $token->id . '_' . $name]) ) {
+							$group->grant( $token->id, $name );
+							$access_count++;
 						}
 					}
+
+					/**  if the group previously had access to a token, and no access boxes are checked,
+					 *   then revoke access to the token
+					 */
+					if ( $access_count == 0 && isset( $token->access) ) {
+						Utils::debug( $token->access, 'Revoking access to token ' . $token->id );
+						$group->revoke( $token->id );
+					}
+					$token->access = ACL::get_group_token_access($group->id, $token->id);
 				}
-
-				Utils::redirect(URL::get('admin', 'page=group&id=' . $group->id));
 			}
-
 
 		}
 
