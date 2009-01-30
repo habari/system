@@ -2531,7 +2531,7 @@ class AdminHandler extends ActionHandler
 		$access_names []= 'deny';
 
 		foreach ($tokens as $token) {
-			$token->access = ACL::get_group_token($group->id, $token->id);
+			$token->access = ACL::get_group_token_access($group->id, $token->id);
 		}
 
 		if ( isset($this->handler_vars['nonce']) ) {
