@@ -2568,7 +2568,6 @@ class AdminHandler extends ActionHandler
 					 *   then revoke access to the token
 					 */
 					if ( $access_count == 0 && isset( $token->access) ) {
-						Utils::debug( $token->access, 'Revoking access to token ' . $token->id );
 						$group->revoke( $token->id );
 					}
 					$token->access = ACL::get_group_token_access($group->id, $token->id);
