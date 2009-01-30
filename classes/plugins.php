@@ -74,7 +74,6 @@ class Plugins
 	}
 
 	/**
-	 * function filter
 	 * Call to execute a plugin filter
 	 * @param string The name of the filter to execute
 	 * @param mixed The value to filter.
@@ -352,7 +351,9 @@ class Plugins
 				include_once($file);
 				Plugins::get_plugin_classes();
 				$plugin = Plugins::load($file);
-				Plugins::act('plugin_activation', $file); // For the plugin to install itself
+				if(method_exists($plugin, 'action_plugin_activation')) {
+					$plugin->action_plugin_activation( $file ); // For the plugin to install itself
+				}
 				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
 				EventLog::log( _t( 'Activated Plugin: %s', array( self::$plugins[Plugins::id_from_file( $file )]->info->name ) ), 'notice', 'plugin', 'habari' );
 			}
@@ -379,7 +380,9 @@ class Plugins
 				// Get plugin name for logging
 				$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
 
-				Plugins::act('plugin_deactivation', $file);  // For the plugin to uninstall itself
+				if(method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation')) {
+					self::$plugins[Plugins::id_from_file( $file )]->action_plugin_deactivation( $file ); // For the plugin to uninstall itself
+				}
 				unset($activated[$index]);
 				Options::set( 'active_plugins', $activated );
 				Plugins::act('plugin_deactivated', $file);  // For other plugins to react to a plugin uninstallation
