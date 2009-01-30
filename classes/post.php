@@ -28,6 +28,7 @@ class Post extends QueryRecord implements IsContent
 	private $tags = null;
 	private $comments_object = null;
 	private $author_object = null;
+	private $tokens = null;
 
 	private $info = null;
 
@@ -973,31 +974,96 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * Creates default permissions on a post
+	 * Adds the default tokens to this post when it's saved
 	 */
-	public function create_default_permissions()
+	public function create_default_tokens()
 	{
-		$this->add_permission( $this->content_type() );
+		$tokens = array();
+		$tokens = Plugins::filter('post_tokens', $tokens, $this);
+		$this->add_tokens( $this->content_type() );
+	}
+	
+
+	/**
+	 * Checks if this post has one or more tokens
+	 * 
+	 * @param mixed $tokens A single token string or an array of tokens
+	 * @return mixed false if no tokens match, an array of matching token ids if any match
+	 */
+	public function has_tokens( $tokens )
+	{
+		$this->get_tokens();
+		$tokens = Utils::single_array( $tokens );
+		$tokens = array_map(array('ACL', 'token_id'), $tokens);
+		$tokens = array_intersect($tokens, $this->tokens);
+		if(count($tokens) == 0) {
+			return false;
+		}
+		return $tokens;
 	}
 
 	/**
-	 * Add a permission to a post
-	 * @param string $permission The name of the permission to add
+	 * Add a token to a post
+	 * @param mixed $token The name of the permission to add, or an array of permissions to add
 	 **/
-	public function add_permission( $permission )
+	public function add_tokens( $tokens )
 	{
-		$token_id = ACL::token_id( $permission );
-		if ( isset( $token_id ) ) {
+		$this->get_tokens();
+		$tokens = Utils::single_array( $tokens );
+		$tokens = array_map(array('ACL', 'token_id'), $tokens);
+		$add_tokens = array_diff($tokens, $this->tokens);
+		$add_tokens = array_unique($add_tokens);
+		foreach($add_tokens as $token_id) {
 			DB::insert( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
 		}
+		$this->tokens = array_merge($this->tokens, $add_tokens);
+		$this->tokens = array_unique($this->tokens);
 	}
 
 	/**
-	 * Deletes permissions on a post
+	 * Deletes tokens from a post
+	 * @param mixed $token The name of the permission to remove, or an array of permissions to remove
 	 */
-	public function delete_permissions()
+	public function remove_tokens( $tokens )
 	{
+		$this->get_tokens();
+		$tokens = Utils::single_array( $tokens );
+		$tokens = array_map(array('ACL', 'token_id'), $tokens);
+		$remove_tokens = array_intersect($tokens, $this->tokens);
+		foreach($remove_tokens as $token_id) {
+			DB::delete( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
+		}
+		$this->tokens = array_diff($this->tokens, $remove_tokens);
+	}
+	
+	/**
+	 * Applies a new set of specific tokens to a post
+	 * @param mixed $tokens A string token, or an array of tokens to apply to this post
+	 */
+	public function set_tokens( $tokens )
+	{
+		$tokens = Utils::single_array( $tokens );
+		$new_tokens = array_map(array('ACL', 'token_id'), $tokens);
+		$new_tokens = array_unique($new_tokens);
 		DB::delete( '{post_tokens}', array( 'post_id' => $this->id ) );
+		foreach($new_tokens as $token_id) {
+			DB::insert( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
+		}
+		$this->tokens = $new_tokens;
+	}
+	
+	/**
+	 * Returns an array of token ids that are associated with this post
+	 * Also initializes the internal token array for use by other token operations
+	 * 
+	 * @return array An array of token ids
+	 */
+	public function get_tokens()
+	{
+		if(empty($this->tokens)) {
+			$this->tokens = DB::get_column( 'SELECT token_id FROM {post_tokens} WHERE post_id = ?', array($this->id) );
+		}
+		return $this->tokens;
 	}
 }
 ?>
