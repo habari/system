@@ -378,7 +378,7 @@ class Posts extends ArrayObject implements IsContent
 					$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
 
 					// If a user can read his own posts, let him
-					if(User::identify()->can('own_posts', 'read')) {
+					if ( User::identify()->can('own_posts', 'read') ) {
 						$perm_where[] = '{posts}.user_id = ?';
 						$params[] = User::identify()->id;
 					}
@@ -396,22 +396,22 @@ class Posts extends ArrayObject implements IsContent
 
 					// If a user can read posts with specific tokens, let him
 					if ( count($read_tokens) > 0 ) {
-						$joins['post_tokens__posts'] = ' INNER JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
+						$joins['post_tokens__allowed'] = ' INNER JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
 					}
 
 					// If there are granted permissions to check, add them to the where clause
-					if ( count($perm_where) == 0 && !isset($joins['post_tokens__posts']) ) {
+					if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
 						// You have no grants.  You get no posts.
 						$where[] = '0';
 					}
-					else {
+					elseif ( count($perm_where) > 0 ) {
 						$where[] = '
 							(' . implode(' OR ', $perm_where) . ')
 						';
 					}
 
 					if ( count($deny_tokens) > 0 ) {
-						$joins['post_tokens__posts'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
+						$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
 						$where[] = 'pt_denied.post_id IS NULL';
 					}
 
