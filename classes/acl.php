@@ -21,28 +21,26 @@ class ACL {
 	/**
 	 * How to handle a permission request for a permission that is not in the permission list.
 	 * For example, if you request $user->can('some non-existent permission') then this value is returned.
-	 * It's true at the moment because that allows access to all features for upgrading users.
-	 * @todo Decide if this is a setting we need or want to change, or perhaps it should be an option.
 	 **/
-	const ACCESS_NONEXISTENT_PERMISSION = false;
+	const ACCESS_NONEXISTENT_PERMISSION = 0;
 
 	public static $access_names = array( 'read', 'edit', 'delete', 'create' );
 
 	/**
 	 * Check a permission bitmask for a particular access type.
-	 * @param mixed $mask The permission bitmask
+	 * @param Bitmask $bitmask The permission bitmask
 	 * @param mixed $access The name of the access to check against (read, write, full)
 	 * @return bool Returns true if the given access meets exceeds the access to check against
 	 */
-	public static function access_check( $mask, $access )
+	public static function access_check( $bitmask, $access )
 	{
-		$bitmask = new Bitmask( self::$access_names, $mask );
-
 		switch($access) {
 			case 'full':
 				return $bitmask->value == $bitmask->full;
 			case 'any':
 				return $bitmask->value != 0;
+			case 'deny':
+				return $bitmask->value == 0;
 			default:
 				return $bitmask->$access;
 		}
@@ -248,14 +246,9 @@ class ACL {
 	**/
 	public static function group_can( $group, $token_id, $access = 'full' )
 	{
-		// Use only numeric ids internally
-		$group = UserGroup::id( $group );
-		$token_id = self::token_id( $token_id );
-		$sql = 'SELECT permission_id FROM {group_token_permissions} WHERE
-			group_id=? AND token_id=?;';
+		$bitmask = get_group_token_access( $group, $token_id );
 
-		$result = DB::get_value( $sql, array( $group, $token_id) );
-		if ( isset( $result ) && self::access_check( $result, $access ) ) {
+		if ( isset( $bitmask ) && self::access_check( $bitmask, $access ) ) {
 			// the permission has been granted to this group
 			return true;
 		}
@@ -301,7 +294,7 @@ class ACL {
 
 		$result = self::get_user_token_access( $user, $token_id );
 
-		if ( isset( $result ) && $result == 0 ) {
+		if ( isset( $result ) && self::access_check( $result, 'deny' ) ) {
 			return true;
 		}
 
@@ -329,7 +322,7 @@ class ACL {
 		 * When ACL is functional ACCESS_NONEXISTENT_PERMISSION should be false by default.
 		 */
 		if ( is_null( $token_id ) ) {
-			return self::ACCESS_NONEXISTENT_PERMISSION;
+			return self::get_bitmask( self::ACCESS_NONEXISTENT_PERMISSION );
 		}
 
 		// if we were given a user ID, use that to fetch the group membership from the DB
@@ -389,7 +382,7 @@ SQL;
 			}
 		}
 
-		return $result;
+		return self::get_bitmask( $result );
 	}
 
 	/**
@@ -458,7 +451,7 @@ SQL;
 	 * @param mixed $token_id A permission name or ID
 	 * @return an access bitmask
 	 **/
-	public static function get_group_token( $group, $token_id )
+	public static function get_group_token_access( $group, $token_id )
 	{
 		// Use only numeric ids internally
 		$group = UserGroup::id( $group );
@@ -533,16 +526,11 @@ SQL;
 
 		$bitmask = self::get_bitmask( $access_mask );
 
-		if ( $access == 'full' || $access == 'deny' ) {
-			if ( $access == 'full' ) {
-				$access = true;
-			}
-			else {
-				$access = false;
-			}
-			foreach ( self::$access_names as $access_name ) {
-				$bitmask->$access_name = $access;
-			}
+		if ( $access == 'full' ) {
+			$bitmask->value= $bitmask->full;
+		}
+		elseif ( $access == 'deny' ) {
+			$bitmask->value = 0;
 		}
 		else {
 			$bitmask->$access = true;

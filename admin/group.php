@@ -60,10 +60,7 @@
 				<td class="token_description"><strong><?php echo $token->description; ?></strong></td>
 				<?php 
 				foreach ( $access_names as $name ):
-					if ( $name == 'deny' ) {
-						$name = 0;
-					}
-					$checked = ( $token->access && $token->access->$name ) ? ' checked' : '';
+					$checked = ( isset($token->access) && ACL::access_check( $token->access, $name ) ) ? ' checked' : '';
 				?>
 					<td class="token_access">
 						<input type="checkbox" id="permission_<?php echo $token->id . '_' . $name; ?>" <?php echo $checked; ?>>
