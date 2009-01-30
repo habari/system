@@ -216,43 +216,43 @@ class UserGroup extends QueryRecord
 	}
 
 	/**
-	 * Assign one or more new permissions to this group
+	 * Assign one or more new permission tokens to this group
 	 * @param mixed A permission token ID, name, or array of the same
 	 */
-	public function grant( $permissions, $access = 'full' )
+	public function grant( $tokens, $access = 'full' )
 	{
-		$permissions = Utils::single_array( $permissions );
-		// Use ids internally for all permissions
-		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+		$tokens = Utils::single_array( $tokens );
+		// Use ids internally for all tokens
+		$tokens = array_map(array('ACL', 'token_id'), $tokens);
 
 		// grant the new permissions
-		foreach ( $permissions as $permission ) {
-			ACL::grant_group( $this->id, $permission, $access );
-			EventLog::log( _t( 'Group %1$s: Access to %2$s changed to %3$s', array( $this->name, ACL::token_name( $permission ), $access ) ), 'notice', 'user', 'habari' );
+		foreach ( $tokens as $token ) {
+			ACL::grant_group( $this->id, $token, $access );
+			EventLog::log( _t( 'Group %1$s: Access to %2$s changed to %3$s', array( $this->name, ACL::token_name( $token ), $access ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
 	/**
-	 * Deny one or more permissions to this group
+	 * Deny one or more permission tokens to this group
 	 * @param mixed The permission ID or name to be denied, or an array of the same
 	 */
-	public function deny( $permissions )
+	public function deny( $tokens )
 	{
-		$this->grant( $permissions, 'deny' );
+		$this->grant( $tokens, 'deny' );
 	}
 
 	/**
 	 * Remove one or more permissions from a group
 	 * @param mixed a permission ID, name, or array of the same
 	 */
-	public function revoke( $permissions )
+	public function revoke( $tokens )
 	{
-		$permissions = Utils::single_array( $permissions );
-		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+		$tokens = Utils::single_array( $tokens );
+		$tokens = array_map(array('ACL', 'token_id'), $tokens);
 
-		foreach ( $permissions as $permission ) {
-			ACL::revoke_group_permission( $this->id, $permission );
-			EventLog::log( _t( 'Group %1$s: Permission to %2$s revoked.', array( $this->name, ACL::token_name( $permission ) ) ), 'notice', 'user', 'habari' );
+		foreach ( $tokens as $token ) {
+			ACL::revoke_group_token( $this->id, $token );
+			EventLog::log( _t( 'Group %1$s: Permission to %2$s revoked.', array( $this->name, ACL::token_name( $token ) ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
@@ -264,13 +264,13 @@ class UserGroup extends QueryRecord
 	 * @see ACL::group_can()
 	 * @see ACL::user_can()
 	 */
-	public function can( $permission, $access = 'full' )
+	public function can( $token, $access = 'full' )
 	{
-		$permission = ACL::token_id( $permission );
+		$token = ACL::token_id( $token );
 		if ( is_null( $this->permissions ) ) {
 			$this->load_permissions_cache();
 		}
-		if ( isset( $this->permissions[$permission] ) && ACL::access_check( $this->permissions[$permission], $access ) ) {
+		if ( isset( $this->permissions[$token] ) && ACL::access_check( $this->permissions[$token], $access ) ) {
 			return true;
 		}
 		return false;

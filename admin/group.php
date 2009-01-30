@@ -63,7 +63,7 @@
 					$checked = ( isset($token->access) && ACL::access_check( $token->access, $name ) ) ? ' checked' : '';
 				?>
 					<td class="token_access">
-						<input type="checkbox" id="permission_<?php echo $token->id . '_' . $name; ?>" <?php echo $checked; ?>>
+						<input type="checkbox" id="token_<?php echo $token->id . '_' . $name; ?>" name="token_<?php echo $token->id . '_' . $name; ?>" <?php echo $checked; ?>>
 					</td>
 				<?php endforeach; ?>
 			</tr>
