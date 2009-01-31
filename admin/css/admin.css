@@ -1136,8 +1136,11 @@ body.page-publish .buttons input {
 /* Dashmodules Tables */
 
 .modules table  {
-	margin-left: 15px;
 	width: 100%;
+}
+
+.modules table th {
+	padding-left: 15px;
 }
 
 .modules table th, .modules table td {
