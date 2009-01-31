@@ -2556,19 +2556,23 @@ class AdminHandler extends ActionHandler
 				}
 
 				foreach ( $tokens as $token ) {
-					$access_count = 0;
-					foreach ( $access_names as $name ) {
-						if ( isset($this->handler_vars['token_' . $token->id . '_' . $name]) ) {
-							$group->grant( $token->id, $name );
-							$access_count++;
-						}
+					$bitmask = new Bitmask(ACL::$access_names);
+					if (isset($this->handler_vars['tokens'][$token->id]['deny']) ) {
+						$bitmask->value = 0;
+						$group->deny( $token->id );
 					}
-
-					/**  if the group previously had access to a token, and no access boxes are checked,
-					 *   then revoke access to the token
-					 */
-					if ( $access_count == 0 && isset( $token->access) ) {
-						$group->revoke( $token->id );
+					else {
+						foreach ( ACL::$access_names as $name ) {
+							if ( isset($this->handler_vars['tokens'][$token->id][$name]) ) {
+								$bitmask->$name = true;
+							}
+						}
+						if ( $bitmask->value != 0) {
+							$group->grant( $token->id, $bitmask );
+						}
+						else {
+							$group->revoke( $token->id );
+						}
 					}
 					$token->access = ACL::get_group_token_access($group->id, $token->id);
 				}
