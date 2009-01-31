@@ -447,8 +447,8 @@ class InstallHandler extends ActionHandler {
 				DB::rollback();
 				return false;
 			}
-			// create default permissions
-			$this->create_default_permissions();
+			// create default tokens
+			ACL::create_default_tokens();
 			// Make the admin group all superusers
 			$admin_group->grant('super_user');
 			// Create the anonymous group for visitor permissions
@@ -1308,7 +1308,7 @@ class InstallHandler extends ActionHandler {
 	private function upgrade_db_post_3030()
 	{
 		// Add the default tokens
-		ACL::create_default_permissions();
+		ACL::create_default_tokens();
 
 		// Add tokens for each existing post type, which is done in the installer when the type is created.
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
