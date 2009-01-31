@@ -534,8 +534,11 @@ class User extends QueryRecord
 	**/
 	public function remove_from_group( $group )
 	{
-		UserGroup::remove( $group, $this->id );
-		EventLog::log( _t( 'User %1$s: Removed from group %2$s.', array( $this->username, $group->name ) ), 'notice', 'user', 'habari' );
+		$group = UserGroup::get( $group );
+		if ( $group instanceOf UserGroup ) {
+			$group->remove( $this->id );
+			EventLog::log( _t( ' User %1$s: Removed from %2$s group.', array( $this->username, $group->name ) ), 'notice', 'user', 'habari' );
+		}
 	}
 
 	/**
