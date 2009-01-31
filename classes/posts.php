@@ -60,8 +60,8 @@ class Posts extends ArrayObject implements IsContent
 		// Default fields to select, everything by default
 		foreach ( Post::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
-				? DB::table( 'posts' ) . ".$field AS $field"
-				: ', ' . DB::table( 'posts' ) . ".$field AS $field";
+				? " {posts}.$field AS $field"
+				: ', ' . " {posts}.$field AS $field";
 		}
 
 		// Default parameters
@@ -102,7 +102,7 @@ class Posts extends ArrayObject implements IsContent
 						$params = array_merge( $params, $paramset['id'] );
 					}
 					else {
-						$where[] = "id= ?";
+						$where[] = "id = ?";
 						$params[] = (int) $paramset['id'];
 					}
 				}
@@ -115,7 +115,7 @@ class Posts extends ArrayObject implements IsContent
 						$params = array_merge( $params, $paramset['status'] );
 					}
 					else {
-						$where[] = "status= ?";
+						$where[] = "status = ?";
 						$params[] = (int) Post::status( $paramset['status'] );
 					}
 				}
@@ -128,7 +128,7 @@ class Posts extends ArrayObject implements IsContent
 						$params = array_merge( $params, $paramset['content_type'] );
 					}
 					else {
-						$where[] = "content_type= ?";
+						$where[] = "content_type = ?";
 						$params[] = (int) Post::type( $paramset['content_type'] );
 					}
 				}
@@ -138,7 +138,7 @@ class Posts extends ArrayObject implements IsContent
 						$params = array_merge( $params, $paramset['slug'] );
 					}
 					else {
-						$where[] = "slug= ?";
+						$where[] = "slug = ?";
 						$params[] = (string) $paramset['slug'];
 					}
 				}
@@ -149,13 +149,13 @@ class Posts extends ArrayObject implements IsContent
 						$params = array_merge( $params, $paramset['user_id'] );
 					}
 					else {
-						$where[] = "user_id= ?";
+						$where[] = "user_id = ?";
 						$params[] = (int) $paramset['user_id'];
 					}
 				}
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
-					$joins['tag2post_posts'] = ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
-					$joins['tags_tag2post'] = ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
+					$joins['tag2post_posts'] = ' JOIN {tag2post} ON {posts}.id = {tag2post}.post_id';
+					$joins['tags_tag2post'] = ' JOIN {tags} ON {tag2post}.tag_id = {tags}.id';
 
 					if ( isset( $paramset['tag'] ) ) {
 						if ( is_array( $paramset['tag'] ) ) {
@@ -163,7 +163,7 @@ class Posts extends ArrayObject implements IsContent
 							$params = array_merge( $params, $paramset['tag'] );
 						}
 						else {
-							$where[] = 'tag_text= ?';
+							$where[] = 'tag_text = ?';
 							$params[] = (string) $paramset['tag'];
 						}
 					}
@@ -181,8 +181,8 @@ class Posts extends ArrayObject implements IsContent
 
 				if ( isset( $paramset['all:tag'] ) ) {
 
-					$joins['tag2post_posts'] = ' JOIN {tag2post} ON ' . DB::table( 'posts' ) . '.id= ' . DB::table( 'tag2post' ) . '.post_id';
-					$joins['tags_tag2post'] = ' JOIN {tags} ON ' . DB::table( 'tag2post' ) . '.tag_id= ' . DB::table( 'tags' ) . '.id';
+					$joins['tag2post_posts'] = ' JOIN {tag2post} ON {posts}.id = {tag2post}.post_id';
+					$joins['tags_tag2post'] = ' JOIN {tags} ON {tag2post}.tag_id = {tags}.id';
 
 					if ( is_array( $paramset['all:tag'] ) ) {
 						$where[] = 'tag_text IN (' . implode( ',', array_fill( 0, count( $paramset['all:tag'] ), '?' ) ) . ')';
@@ -203,10 +203,10 @@ class Posts extends ArrayObject implements IsContent
 					$nottag = is_array( $paramset['not:tag'] ) ? array_values( $paramset['not:tag'] ) : array( $paramset['not:tag'] );
 
 					$where[] = 'NOT EXISTS (SELECT 1
-						FROM ' . DB::table( 'tag2post' ) . '
-						INNER JOIN ' . DB::table( 'tags' ) . ' ON ' . DB::table( 'tags' ) . '.id = ' . DB::table( 'tag2post' ) . '.tag_id
-						WHERE ' . DB::table( 'tags' ) . '.tag_slug IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
-						AND ' . DB::table( 'tag2post' ) . '.post_id = ' . DB::table( 'posts' ) . '.id)
+						FROM {tag2post} 
+						INNER JOIN {tags} ON {tags}.id = {tag2post}.tag_id
+						WHERE {tags}.tag_slug IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
+						AND {tag2post}.post_id = {posts}.id)
 					';
 					$params = array_merge( $params, $nottag );
 				}
