@@ -198,10 +198,10 @@ class ACL {
 	public static function token_id( $name )
 	{
 		if( is_numeric($name) ) {
-			return $name;
+			return intval( $name );
 		}
 		$name = self::normalize_token( $name );
-		return DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) );
+		return intval( DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) ) );
 	}
 
 	/**
