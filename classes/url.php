@@ -131,7 +131,7 @@ class URL extends Singleton
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 * @param boolean $prepend_site If true (default), a full URL is returned, if false, only the path part of the URL is returned
 	 */
-	public static function get( $rule_names, $args = array(), $useall = true, $noamp = false, $prepend_site = true )
+	public static function get( $rule_names='', $args = array(), $useall = true, $noamp = false, $prepend_site = true )
 	{
 		$args = self::extract_args( $args );
 
