@@ -484,9 +484,13 @@ SQL;
 		}
 
 		$bitmask = self::get_bitmask( $access_mask );
+		$orig_value = $bitmask->value;
 
-		if ( $access == 'full' ) {
-			$bitmask->value= $bitmask->full;
+		if ( $access instanceof Bitmask ) {
+			$bitmask->value = $access->value;
+		}
+		elseif ( $access == 'full' ) {
+			$bitmask->value = $bitmask->full;
 		}
 		elseif ( $access == 'deny' ) {
 			$bitmask->value = 0;
@@ -495,15 +499,21 @@ SQL;
 			$bitmask->$access = true;
 		}
 
-		// DB::update will insert if the token is not already in the group tokens table
-		$result = DB::update(
-			'{group_token_permissions}',
-			array( 'permission_id' => $bitmask->value ),
-			array( 'group_id' => $group_id, 'token_id' => $token_id )
-		);
+		// Only update if the value is changed
+		if ( $orig_value != $bitmask->value ) {
+			// DB::update will insert if the token is not already in the group tokens table
+			$result = DB::update(
+				'{group_token_permissions}',
+				array( 'permission_id' => $bitmask->value ),
+				array( 'group_id' => $group_id, 'token_id' => $token_id )
+			);
 
-		$ug = UserGroup::get_by_id( $group_id );
-		$ug->clear_permissions_cache();
+			$ug = UserGroup::get_by_id( $group_id );
+			$ug->clear_permissions_cache();
+		}
+		else {
+			$result = true;
+		}
 
 		return $result;
 	}
@@ -614,7 +624,7 @@ SQL;
 	/**
 	 * Creates the default set of permissions.
 	 */
-	public static function create_default_permissions()
+	public static function create_default_tokens()
 	{
 		self::create_token( 'super_user', 'Permissions for super users' );
 		self::create_token( 'own_posts', 'Permissions on one\'s own posts' );
@@ -631,5 +641,38 @@ SQL;
 		self::create_token( 'manage_groups', 'Manage groups and permissions' );
 		self::create_token( 'manage_logs', 'Manage logs' );
 	}
+	
+	public static function rebuild_permissions( $user = null )
+	{
+		// Clear out all permission-related values
+		DB::query('DELETE FROM {tokens}');
+		DB::query('DELETE FROM {group_token_permissions}');
+		DB::query('DELETE FROM {groups}');
+		DB::query('DELETE FROM {post_tokens}');
+		DB::query('DELETE FROM {user_token_permissions}');
+		DB::query('DELETE FROM {users_groups}');
+		
+		// Create initial groups		
+		$admin_group = UserGroup::create( array( 'name' => _t('admin') ) );
+		$anonymous_group = UserGroup::create( array( 'name' => _t('anonymous') ) );
+
+		// Add the current user or the passed user to the admin group
+		if(empty($user)) {
+			$user = User::identify();
+		}
+		$admin_group->add($user);
+		
+		// create default permissions
+		self::create_default_tokens();
+		// Make the admin group all superusers
+		$admin_group->grant('super_user');
+		// Add entry and page read access to the anonymous group
+		$anonymous_group->grant('post_entry', 'read');
+		$anonymous_group->grant('post_page', 'read');
+
+		// Add the anonumous user to the anonymous group
+		$anonymous_group->add( 0 );
+	}
+	
 }
 ?>

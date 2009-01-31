@@ -41,7 +41,7 @@
 
 <div class="container transparent item comments controls">
 	<span class="checkboxandselected pct30">
-		<input type="checkbox" id="master_checkbox" name="master_checkbox">
+		<input type="checkbox" id="master_checkbox" name="master_checkbox" class="select_all">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 	<span class="buttons">
@@ -61,7 +61,7 @@
 
 <div class="container transparent item comments controls">
 	<span class="checkboxandselected pct30">
-		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
+		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2" class="select_all">
 		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
 	</span>
 	<span class="buttons">
