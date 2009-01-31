@@ -228,7 +228,6 @@ class UserGroup extends QueryRecord
 		// grant the new permissions
 		foreach ( $tokens as $token ) {
 			ACL::grant_group( $this->id, $token, $access );
-			EventLog::log( _t( 'Group %1$s: Access to %2$s changed to %3$s', array( $this->name, ACL::token_name( $token ), $access ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
@@ -252,7 +251,6 @@ class UserGroup extends QueryRecord
 
 		foreach ( $tokens as $token ) {
 			ACL::revoke_group_token( $this->id, $token );
-			EventLog::log( _t( 'Group %1$s: Permission to %2$s revoked.', array( $this->name, ACL::token_name( $token ) ) ), 'notice', 'user', 'habari' );
 		}
 	}
 

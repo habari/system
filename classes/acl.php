@@ -510,6 +510,8 @@ SQL;
 
 			$ug = UserGroup::get_by_id( $group_id );
 			$ug->clear_permissions_cache();
+			$msg = _t( 'Group %1$s: Access to %2$s changed to %3$s', array( $ug->name, ACL::token_name( $token_id ), $bitmask ) );
+			EventLog::log( $msg, 'notice', 'user', 'habari' );
 		}
 		else {
 			$result = true;
@@ -586,10 +588,19 @@ SQL;
 	public static function revoke_group_token( $group_id, $token_id )
 	{
 		$token_id = self::token_id( $token_id );
-		$result = DB::delete( '{group_token_permissions}',
-			array( 'group_id' => $group_id, 'token_id' => $token_id ) );
-
 		$ug = UserGroup::get_by_id( $group_id );
+		
+		$access = self::get_group_token_access($group_id, $token_id);
+		
+		if(empty($access)) {
+			$result = true;
+		}
+		else {
+			$result = DB::delete( '{group_token_permissions}',
+				array( 'group_id' => $group_id, 'token_id' => $token_id ) );
+			EventLog::log( _t( 'Group %1$s: Permission to %2$s revoked.', array( $ug->name, ACL::token_name( $token_id ) ) ), 'notice', 'user', 'habari' );
+		}
+
 		$ug->clear_permissions_cache();
 
 		return $result;
