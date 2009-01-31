@@ -224,8 +224,8 @@ class Post extends QueryRecord implements IsContent
 			// Isn't active so we activate it
 			self::activate_post_type( $type );
 		}
-		ACL::create_permission( 'post_' . Utils::slugify($type), _t('Permissions to posts of type "%s"', array($type) ) );
-		ACL::create_permission( 'own_post_' . Utils::slugify($type), _t('Permissions to one\'s own posts of type "%s"', array($type) ) );
+		ACL::create_token( 'post_' . Utils::slugify($type), _t('Permissions to posts of type "%s"', array($type) ) );
+		ACL::create_token( 'own_post_' . Utils::slugify($type), _t('Permissions to one\'s own posts of type "%s"', array($type) ) );
 
 		// now force a refresh of the caches, so the new/activated type
 		// is available for immediate use
