@@ -83,6 +83,23 @@ class Bitmask {
 			return false;
 		return $this->value & (1 << $bit );
 	}
+	
+	public function __tostring()
+	{
+		if($this->value == $this->full) {
+			return _t('full');
+		}
+		$output = array();
+		foreach($this->flags as $flag) {
+			if($this->$flag) {
+				$output [] = $flag;
+			}
+		}
+		if(count($output) == 0) {
+			return _t('none');
+		}
+		return implode(',', $output);
+	}
 
 }
 ?>
