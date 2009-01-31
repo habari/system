@@ -610,5 +610,26 @@ SQL;
 	{
 		return strtolower( preg_replace( '/\s+/', '_', trim($name) ) );
 	}
+
+	/**
+	 * Creates the default set of permissions.
+	 */
+	public static function create_default_permissions()
+	{
+		ACL::create_token( 'super_user', 'Permissions for super users' );
+		ACL::create_token( 'own_posts', 'Permissions on one\'s own posts' );
+		ACL::create_token( 'manage_all_comments', 'Manage comments on all posts' );
+		ACL::create_token( 'manage_own_post_comments', 'Manage comments on one\'s own posts' );
+		ACL::create_token( 'manage_tags', 'Manage tags' );
+		ACL::create_token( 'manage_options', 'Manage options' );
+		ACL::create_token( 'manage_theme', 'Change theme' );
+		ACL::create_token( 'manage_theme_config', 'Configure the active theme' );
+		ACL::create_token( 'manage_plugins', 'Activate/deactivate plugins' );
+		ACL::create_token( 'manage_plugins_config', 'Configure active plugins' );
+		ACL::create_token( 'manage_import', 'Use the importer' );
+		ACL::create_token( 'manage_users', 'Add, remove, and edit users' );
+		ACL::create_token( 'manage_groups', 'Manage groups and permissions' );
+		ACL::create_token( 'manage_logs', 'Manage logs' );
+	}
 }
 ?>

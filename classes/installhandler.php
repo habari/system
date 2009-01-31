@@ -600,30 +600,8 @@ class InstallHandler extends ActionHandler {
 		$group->grant('post_entry', 'read');
 		$group->grant('post_page', 'read');
 
-		// Give the anonymous user access to the anonymous group
+		// Add the anonumous user to the anonymous group
 		$group->add( 0 );
-	}
-
-	/**
-	 * Creates the default set of permissions.
-	 */
-	private function create_default_permissions()
-	{
-		ACL::create_token( 'super_user', 'Permissions for super users' );
-
-		ACL::create_token( 'own_posts', 'Permissions on one\'s own posts' );
-		ACL::create_token( 'manage_all_comments', 'Manage comments on all posts' );
-		ACL::create_token( 'manage_own_post_comments', 'Manage comments on one\'s own posts' );
-		ACL::create_token( 'manage_tags', 'Manage tags' );
-		ACL::create_token( 'manage_options', 'Manage options' );
-		ACL::create_token( 'manage_theme', 'Change theme' );
-		ACL::create_token( 'manage_theme_config', 'Configure the active theme' );
-		ACL::create_token( 'manage_plugins', 'Activate/deactivate plugins' );
-		ACL::create_token( 'manage_plugins_config', 'Configure active plugins' );
-		ACL::create_token( 'manage_import', 'Use the importer' );
-		ACL::create_token( 'manage_users', 'Add, remove, and edit users' );
-		ACL::create_token( 'manage_groups', 'Manage groups and permissions' );
-		ACL::create_token( 'manage_logs', 'Manage logs' );
 	}
 
 	/**
@@ -1330,7 +1308,7 @@ class InstallHandler extends ActionHandler {
 	private function upgrade_db_post_3030()
 	{
 		// Add the default tokens
-		$this->create_default_permissions();
+		ACL::create_default_permissions();
 
 		// Add tokens for each existing post type, which is done in the installer when the type is created.
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
