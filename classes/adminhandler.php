@@ -2516,12 +2516,6 @@ class AdminHandler extends ActionHandler
 
 	public function get_group()
 	{
-		$this->post_group();
-	}
-
-	public function post_group()
-	{
-
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
 
 		$tokens = ACL::all_tokens();
@@ -2532,6 +2526,49 @@ class AdminHandler extends ActionHandler
 		foreach ($tokens as $token) {
 			$token->access = ACL::get_group_token_access($group->id, $token->id);
 		}
+
+		// post would happen here
+		
+		$group= UserGroup::get_by_id($this->handler_vars['id']);
+
+		$potentials= array();
+
+		$users = Users::get_all();
+		$users []= User::anonymous();
+
+		$members = $group->members;
+		foreach ( $users as $user ) {
+			if ( in_array($user->id, $members) ) {
+				$user->membership = TRUE;
+			}
+			else {
+				$potentials[$user->id] = $user->displayname;
+				$user->membership = FALSE;
+			}
+
+		}
+		$this->theme->potentials = $potentials;
+		$this->theme->users = $users;
+		$this->theme->members = $members;
+
+		$this->theme->access_names= $access_names;
+		$this->theme->tokens = $tokens;
+
+		$this->theme->groups = UserGroups::get_all();
+		$this->theme->group = $group;
+		$this->theme->id = $group->id;
+
+		$this->theme->wsse = Utils::WSSE();
+
+		$this->display('group');
+		
+	}
+
+	public function post_group()
+	{
+		$group = UserGroup::get_by_id($this->handler_vars['id']);
+		$tokens = ACL::all_tokens();
+		$access_names = ACL::$access_names;
 
 		if ( isset($this->handler_vars['nonce']) ) {
 			$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
@@ -2574,44 +2611,15 @@ class AdminHandler extends ActionHandler
 							$group->revoke( $token->id );
 						}
 					}
-					$token->access = ACL::get_group_token_access($group->id, $token->id);
 				}
 			}
 
 		}
 
-		$group= UserGroup::get_by_id($this->handler_vars['id']);
-
-		$potentials= array();
-
-		$users = Users::get_all();
-		$users []= User::anonymous();
-
-		$members = $group->members;
-		foreach ( $users as $user ) {
-			if ( in_array($user->id, $members) ) {
-				$user->membership = TRUE;
-			}
-			else {
-				$potentials[$user->id] = $user->displayname;
-				$user->membership = FALSE;
-			}
-
-		}
-		$this->theme->potentials = $potentials;
-		$this->theme->users = $users;
-		$this->theme->members = $members;
-
-		$this->theme->access_names= $access_names;
-		$this->theme->tokens = $tokens;
-
-		$this->theme->groups = UserGroups::get_all();
-		$this->theme->group = $group;
-		$this->theme->id = $group->id;
-
-		$this->theme->wsse = Utils::WSSE();
-
-		$this->display('group');
+		Session::notice(_t('Updated permissions.'), 'permissions');
+		
+		Utils::redirect(URL::get('admin', 'page=group') . '?id=' . $group->id);
+		
 	}
 
 	/**
@@ -2768,7 +2776,9 @@ class AdminHandler extends ActionHandler
 		// These need to be replaced with submenus, but access to them is provided temporarily
 		$createmenu = array();
 		$managemenu = array();
-
+		$createperms = array();
+		$manageperms = array();
+	
 		Plugins::register(array($this, 'default_post_type_display'), 'filter', 'post_type_display', 4);
 
 		$i= 1;
@@ -2788,8 +2798,14 @@ class AdminHandler extends ActionHandler
 			$plural = Plugins::filter('post_type_display', $type, 'plural');
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
-			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular );
-			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural );
+			$createperm = array( 'post_' . $type => ACL::get_bitmask('create') );
+			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular, 'access'=>$createperm );
+			$createperms = array_merge($createperms, $createperm);
+			
+			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
+			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural, 'access'=>$manageperm );
+			$manageperms = array_merge($manageperms, $manageperm);
+			
 			$createmenu['create_' . $typeint]['hotkey']= $hotkey;
 			$managemenu['manage_' . $typeint]['hotkey']= $hotkey;
 
@@ -2803,18 +2819,18 @@ class AdminHandler extends ActionHandler
 		}
 
 		$adminmenu = array(
-			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu ),
-			'manage' => array( 'url' => URL::get( 'admin', 'page=posts' ), 'title' => _t('Manage content'), 'text' => _t('Manage'), 'hotkey' => 'M', 'submenu' => $managemenu ),
-			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C' ),
-			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A' ),
-			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D' ),
-			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure blog options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O' ),
-			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T' ),
-			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P' ),
-			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t( 'Import content from another blog' ), 'text' => _t( 'Import' ), 'hotkey' => 'I' ),
-			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U' ),
-			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G' ),
-			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L') ,
+			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu, 'access' => $createperms ),
+			'manage' => array( 'url' => URL::get( 'admin', 'page=posts' ), 'title' => _t('Manage content'), 'text' => _t('Manage'), 'hotkey' => 'M', 'submenu' => $managemenu, 'access' => $manageperms ),
+			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C', 'access' => array('manage_all_comments' => true, 'manage_own_post_comments' => true) ),
+			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array('manage_tags'=>true) ),
+			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D', 'access'=>array('manage_logs'=>true) ),
+			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure blog options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O', 'access'=>array('manage_options'=>true) ),
+			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T', 'access'=>array('manage_theme'=>true) ),
+			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P', 'access'=>array('manage_plugins'=>true, 'manage_plugins_config' => true) ),
+			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t( 'Import content from another blog' ), 'text' => _t( 'Import' ), 'hotkey' => 'I', 'access'=>array('manage_import'=>true) ),
+			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U', 'access'=>array('manage_users'=>true) ),
+			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array('manage_groups'=>true) ),
+			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array('manage_logs'=>true) ) ,
 			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
 		);
 
@@ -2834,9 +2850,48 @@ class AdminHandler extends ActionHandler
 				$mainmenus[$key]['selected'] = true;
 			}
 		}
-
+		
+		$mainmenus = $this->filter_menus_by_permission( $mainmenus );
+		
 		$theme->assign( 'mainmenu', $mainmenus );
 	}
+	
+	protected function filter_menus_by_permission($menuarray)
+	{
+		foreach( $menuarray as $key => $attrs ) {
+			if(isset($attrs['access'])) {
+				$attrs['access'] = Utils::single_array($attrs['access']);
+				$pass = false;
+				foreach($attrs['access'] as $token => $masks) {
+					$masks = Utils::single_array($masks);
+					foreach($masks as $mask) {
+						if(is_bool($mask) && User::identify()->can($token) ) {
+							$pass = true;
+							break 2;
+						}
+						elseif( User::identify()->can($token, $mask) ) {
+							$pass = true;
+							break 2;
+						}
+					}
+				}
+				if(!$pass) {
+					unset($menuarray[$key]);
+				}
+			}
+			if(isset($attrs['submenu']) && count($attrs['submenu']) > 0) {
+				$menuarray[$key]['submenu'] = $this->filter_menus_by_permission($attrs['submenu']);
+				if(count($menuarray[$key]['submenu']) == 0) {
+					unset($menuarray[$key]['submenu']);
+				}
+			}
+			if(isset($menuarray[$key]) && count($menuarray[$key]) == 0) {
+				unset($menuarray[$key]);
+			}
+		}
+		return $menuarray;
+	}
+	
 
 	public function default_post_type_display($type, $foruse)
 	{

@@ -26,7 +26,12 @@ class Bitmask {
 
 		$this->flags = $flags;
 		if( ! is_null( $value ) ) {
-			$this->value = $value;
+			if( is_numeric( $value )) {
+				$this->value = $value;
+			}
+			elseif( is_string( $value ) ) {
+				$this->$value = true;
+			} 
 		}
 
 	}
