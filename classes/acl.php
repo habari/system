@@ -485,10 +485,11 @@ SQL;
 	public static function grant_group( $group_id, $token_id, $access = 'full' )
 	{
 		$token_id = self::token_id( $token_id );
-		$access_mask = DB::get_value( 'SELECT permission_id FROM {group_token_permissions} WHERE group_id=? AND token_id=?',
-			array( $group_id, $token_id ) );
+		$row = DB::get_row( 'SELECT permission_id as mask, count(permission_id) as granted FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
+		$access_mask = $row->mask;
+		$row_exists = $row->granted != 0;
 		if ( $access_mask ===  false ) {
-			$access_mask = 0; // default is 'deny' (bitmask 0)
+			$access_mask = 0; // default is 'not granted' (bitmask 0)
 		}
 
 		$bitmask = self::get_bitmask( $access_mask );
@@ -508,7 +509,7 @@ SQL;
 		}
 
 		// Only update if the value is changed
-		if ( $orig_value != $bitmask->value ) {
+		if ( $orig_value != $bitmask->value || ( $orig_value == 0 && !$row_exists && $bitmask->value == 0 ) ) {
 			// DB::update will insert if the token is not already in the group tokens table
 			$result = DB::update(
 				'{group_token_permissions}',
