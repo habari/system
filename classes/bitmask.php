@@ -31,7 +31,7 @@ class Bitmask {
 			}
 			elseif( is_string( $value ) ) {
 				$this->$value = true;
-			} 
+			}
 		}
 
 	}
@@ -88,7 +88,7 @@ class Bitmask {
 			return false;
 		return $this->value & (1 << $bit );
 	}
-	
+
 	public function __tostring()
 	{
 		if($this->value == $this->full) {
@@ -97,7 +97,7 @@ class Bitmask {
 		$output = array();
 		foreach($this->flags as $flag) {
 			if($this->$flag) {
-				$output [] = $flag;
+				$output[] = $flag;
 			}
 		}
 		if(count($output) == 0) {
