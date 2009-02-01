@@ -34,6 +34,10 @@ class ACL {
 	 */
 	public static function access_check( $bitmask, $access )
 	{
+		if($access instanceof Bitmask) {
+			return ($bitmask->value & $access->value) == $access->value;
+		}
+		
 		switch($access) {
 			case 'full':
 				return $bitmask->value == $bitmask->full;
