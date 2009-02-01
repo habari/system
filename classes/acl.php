@@ -37,7 +37,7 @@ class ACL {
 		if($access instanceof Bitmask) {
 			return ($bitmask->value & $access->value) == $access->value;
 		}
-		
+
 		switch($access) {
 			case 'full':
 				return $bitmask->value == $bitmask->full;
@@ -77,7 +77,8 @@ class ACL {
 
 		if ( $bitmask->value == $bitmask->full ) {
 			return 'full';
-		} else {
+		}
+		else {
 			foreach ( $bitmask->flags as $flag ) {
 				if ( $bitmask->$flag ) {
 					return $flag;
@@ -189,7 +190,8 @@ class ACL {
 	{
 		if ( ! is_int( $id ) ) {
 			return false;
-		} else {
+		}
+		else {
 			return DB::get_value( 'SELECT name FROM {tokens} WHERE id=?', array( $id ) );
 		}
 	}
@@ -217,7 +219,8 @@ class ACL {
 	{
 		if ( is_int( $permission) ) {
 			$query = 'id';
-		} else {
+		}
+		else {
 			$query = 'name';
 			$permission = self::normalize_token( $permission );
 		}
@@ -332,7 +335,8 @@ class ACL {
 		// if we were given a user ID, use that to fetch the group membership from the DB
 		if ( is_numeric( $user ) ) {
 			$user_id = $user;
-		} else {
+		}
+		else {
 			// otherwise, make sure we have a User object, and get
 			// the groups from that
 			if ( ! $user instanceof User ) {
@@ -593,9 +597,9 @@ SQL;
 	{
 		$token_id = self::token_id( $token_id );
 		$ug = UserGroup::get_by_id( $group_id );
-		
+
 		$access = self::get_group_token_access($group_id, $token_id);
-		
+
 		if(empty($access)) {
 			$result = true;
 		}
@@ -662,7 +666,7 @@ SQL;
 		self::create_token( 'post_page', 'Permissions to posts of type "page"' );
 		self::create_token( 'own_post_page', 'Permissions to one\'s own posts of type "page"' );
 	}
-	
+
 	public static function rebuild_permissions( $user = null )
 	{
 		// Clear out all permission-related values
@@ -672,8 +676,8 @@ SQL;
 		DB::query('DELETE FROM {post_tokens}');
 		DB::query('DELETE FROM {user_token_permissions}');
 		DB::query('DELETE FROM {users_groups}');
-		
-		// Create initial groups		
+
+		// Create initial groups
 		$admin_group = UserGroup::create( array( 'name' => _t('admin') ) );
 		$anonymous_group = UserGroup::create( array( 'name' => _t('anonymous') ) );
 
@@ -682,7 +686,7 @@ SQL;
 			$user = User::identify();
 		}
 		$admin_group->add($user);
-		
+
 		// create default permissions
 		self::create_default_tokens();
 		// Make the admin group all superusers
@@ -694,6 +698,6 @@ SQL;
 		// Add the anonumous user to the anonymous group
 		$anonymous_group->add( 0 );
 	}
-	
+
 }
 ?>

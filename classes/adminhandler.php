@@ -52,7 +52,7 @@ class AdminHandler extends ActionHandler
 		/* At this point, Controller has not created handler_vars, so we have to modify $_POST/$_GET. */
 		if ( isset( $last_form_data['post'] ) ) {
 			$_POST = $_POST->merge( $last_form_data['post'] );
-			$_SERVER['REQUEST_METHOD']= 'POST'; // This will trigger the proper act_admin switches.
+			$_SERVER['REQUEST_METHOD'] = 'POST'; // This will trigger the proper act_admin switches.
 			Session::remove_error( 'expired_form_submission' );
 		}
 		if ( isset( $last_form_data['get'] ) ) {
@@ -231,7 +231,7 @@ class AdminHandler extends ActionHandler
 				'helptext' => 'The appropriate locale code for your server',
 			),
 		);
-		
+
 		$option_items[_t('Dashboard')] = array(
 			'dashboard__hide_spam_count' => array(
 				'label' => _t( 'Hide Spam Count' ),
@@ -617,7 +617,8 @@ class AdminHandler extends ActionHandler
 		$form->post_id->id = 'id';
 		if ( $newpost ) {
 			$form->post_id->value= 0;
-		} else {
+		}
+		else {
 			$form->post_id->value= $this->handler_vars['id'];
 		}
 		$form->append('hidden', 'slug', 'null:null');
@@ -662,7 +663,7 @@ class AdminHandler extends ActionHandler
 	{
 
 		$edit_user = User::identify();
-		
+
 		if ( ($this->handler_vars['user'] == '') || (User::get_by_name($this->handler_vars['user']) == $edit_user) ) {
 			$who = _t("You");
 			$possessive = _t("Your User Information");
@@ -672,21 +673,21 @@ class AdminHandler extends ActionHandler
 			$who = $edit_user->username;
 			$possessive = sprintf( _t("%s's User Information"), $who );
 		}
-		
+
 		// Get author list
 		$author_list = Users::get_all();
 		$authors[0] = _t('nobody');
 		foreach ( $author_list as $author ) {
 			$authors[ $author->id ] = $author->displayname;
 		}
-		
+
 		unset($authors[ $edit_user->id ]); // We can't reassign posts to ourself
-		
+
 		$this->theme->authors = $authors;
 		$this->theme->edit_user = $edit_user;
 		$this->theme->who = $who;
 		$this->theme->possessive = $possessive;
-		
+
 		// Redirect to the users management page if we're trying to edit a non-existent user
 		if ( !$edit_user ) {
 			Session::error( _t( 'No such user!' ) );
@@ -694,7 +695,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		$this->theme->edit_user = $edit_user;
-		
+
 		$field_sections= array(
 			'user_info' => $possessive,
 			'change_password' => _t('Change Password'),
@@ -702,49 +703,49 @@ class AdminHandler extends ActionHandler
 		);
 
 		$form = new FormUI('User Options');
-		
+
 		// Create a tracker for who we are dealing with
 		$form->append('hidden', 'edit_user', 'edit_user');
 		$form->edit_user->value = $edit_user->id;
-		
+
 		// Generate sections
 		foreach($field_sections as $key => $name) {
 			$fieldset = $form->append( 'wrapper', $key, $name );
 			$fieldset->class = 'container settings';
 			$fieldset->append( 'static', $key, '<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>' );
 		}
-		
+
 		// User Info
 		$displayname = $form->user_info->append('text', 'displayname', 'null:null',  _t('Display Name'), 'optionscontrol_text');
 		$displayname->class[] = 'important item clear';
 		$displayname->value = $edit_user->displayname;
-		
+
 		$username = $form->user_info->append('text', 'username', 'null:null',  _t('User Name'), 'optionscontrol_text');
 		$username->class[] = 'item clear';
 		$username->value = $edit_user->username;
 		$username->add_validator('validate_username', $edit_user->username);
-		
+
 		$email = $form->user_info->append('text', 'email', 'null:null',  _t('Email'), 'optionscontrol_text');
 		$email->class[] = 'item clear';
 		$email->value = $edit_user->email;
 		$email->add_validator('validate_email');
-		
+
 		$imageurl = $form->user_info->append('text', 'imageurl', 'null:null',  _t('Portrait URL'), 'optionscontrol_text');
 		$imageurl->class[] = 'item clear';
 		$imageurl->value= $edit_user->info->imageurl;
-		
+
 		// Change Password
 		$password1 = $form->change_password->append('text', 'password1', 'null:null',  _t('New Password'), 'optionscontrol_text');
 		$password1->class[] = 'item clear';
 		$password1->type = 'password';
 		$password1->value = '';
-		
+
 		$password2 = $form->change_password->append('text', 'password2', 'null:null',  _t('New Password Again'), 'optionscontrol_text');
 		$password2->class[] = 'item clear';
 		$password2->type = 'password';
 		$password2->value = '';
 		$password2->add_validator('validate_same', $password1, _t('Passwords must match.'));
-		
+
 		// Regional settings
 		$timezones = DateTimeZone::listIdentifiers();
 		$timezones = array_merge( array_combine( array_values( $timezones ), array_values( $timezones ) ) );
@@ -753,7 +754,7 @@ class AdminHandler extends ActionHandler
 		$locale_tz->value = $edit_user->info->locale_tz;
 		$locale_tz->options = $timezones;
 		$locale_tz->multiple = false;
-		
+
 		$locale_date_format = $form->regional_settings->append('text', 'locale_date_format', 'null:null',  _t('Date Format'), 'optionscontrol_text');
 		$locale_date_format->class[] = 'item clear';
 		$locale_date_format->value = $edit_user->info->locale_date_format;
@@ -764,7 +765,7 @@ class AdminHandler extends ActionHandler
 			$current = HabariDateTime::date_create()->date;
 		}
 		$locale_date_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
-		
+
 		$locale_time_format = $form->regional_settings->append('text', 'locale_time_format', 'null:null',  _t('Time Format'), 'optionscontrol_text');
 		$locale_time_format->class[] = 'item clear';
 		$locale_time_format->value = $edit_user->info->locale_time_format;
@@ -775,40 +776,39 @@ class AdminHandler extends ActionHandler
 			$current = HabariDateTime::date_create()->time;
 		}
 		$locale_time_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
-		
+
 		// Controls
 		$controls = $form->append( 'wrapper', 'controls' );
 		$controls->class = 'container controls transparent';
 		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
 		$submit->class[] = 'pct25';
-		
-		$controls->append( 'static', 'reassign', '<span class="pct40 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct10 conjunction">' . _t('and') . '</span><span class="pct20"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');	
-		
+
+		$controls->append( 'static', 'reassign', '<span class="pct40 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct10 conjunction">' . _t('and') . '</span><span class="pct20"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
+
 		$form->on_success( array( $this, 'form_user_success' ) );
-		
+
 		// Let plugins alter this form
 		Plugins::act('form_user', $form, $edit_user);
-		
+
 		$this->theme->form = $form->get();
-		
+
 		$this->theme->display('user');
 
 	}
-	
+
 	public function form_user_success($form) {
 		$edit_user = User::get_by_id($form->edit_user->value);
 		$current_user = User::identify();
-	
-		
+
 		// Let's check for deletion
 		if(Controller::get_var('delete') != NULL) {
 			if ( $current_user->id != $edit_user->id ) {
-				
+
 				// We're going to delete the user before we need it, so store the username
 				$username = $edit_user->username;
-				
+
 				$posts = Posts::get( array( 'user_id' => $edit_user->id, 'nolimit' => true ) );
-				
+
 				if ( ( Controller::get_var('reassign') != NULL ) && (Controller::get_var('reassign') != 0) && (Controller::get_var('reassign') != $edit_user->id)) {
 					// we're going to re-assign all of this user's posts
 					$newauthor = Controller::get_var('reassign');
@@ -818,45 +818,44 @@ class AdminHandler extends ActionHandler
 				else {
 					// delete user, then delete posts
 					$edit_user->delete();
-					
+
 					// delete posts
 					foreach ( $posts as $post ) {
 						$post->delete();
 					}
 				}
-				
-				
+
 				Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
-				
+
 				Utils::redirect(URL::get('admin', array('page' => 'users')));
 			}
 			else {
 				Session::notice( _t( 'You cannot delete yourself.') );
 			}
 		}
-							
+
 		$update= false;
-		
+
 		// Change username
 		if(isset($form->username) && $edit_user->username != $form->username->value) {
 			Session::notice( _t( '%1$s has been renamed to %2$s.', array($edit_user->username, $form->username->value) ) );
 			$edit_user->username = $form->username->value;
 			$update= true;
 		}
-		
+
 		// Change email
 		if(isset($form->email) && $edit_user->email != $form->email->value) {
 			$edit_user->email = $form->email->value;
 			$update= true;
 		}
-		
+
 		// Change password
 		if(isset($form->password1) && !(Utils::crypt($form->password1->value, $edit_user->password)) && ($form->password1->value != '')) {
 			Session::notice( _t( 'Password changed.' ) );
 			$edit_user->password = Utils::crypt( $form->password1->value );
 			$edit_user->update();
 		}
-		
+
 		// Set various info fields
 		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format');
 		foreach($info_fields as $info_field) {
@@ -865,18 +864,18 @@ class AdminHandler extends ActionHandler
 				$update = true;
 			}
 		}
-		
+
 		// Let plugins tell us to update
 		$update= Plugins::filter( 'form_user_update', $update, $form, $edit_user );
-		
+
 		if($update) {
 			$edit_user->update();
 			Session::notice( _t('User updated.') );
 		}
-		
+
 		Utils::redirect(URL::get('admin', array('page' => 'user', 'user' => $edit_user->username)));
 	}
-	
+
 	/**
 	 * Handles post requests from the user profile page.
 	 */
@@ -953,7 +952,8 @@ class AdminHandler extends ActionHandler
 					}
 
 					$user->delete();
-				} else {
+				}
+				else {
 					$msg_status = _t('You cannot delete yourself.');
 				}
 
@@ -981,7 +981,7 @@ class AdminHandler extends ActionHandler
 		$author_list = Users::get_all();
 		$authors[0] = _t('nobody');
 		foreach ( $author_list as $author ) {
-			$authors[ $author->id ]= $author->displayname;
+			$authors[ $author->id ] = $author->displayname;
 		}
 		$this->theme->authors = $authors;
 	}
@@ -1049,7 +1049,8 @@ class AdminHandler extends ActionHandler
 				}
 				$this->theme->assign( 'settings', $settings );
 			}
-		} else if ( isset( $action ) && ( 'delete' == $action ) ) {
+		}
+		else if ( isset( $action ) && ( 'delete' == $action ) ) {
 
 			$this->update_users($this->handler_vars);
 
@@ -1212,7 +1213,8 @@ class AdminHandler extends ActionHandler
 			if(Comment::status_name($comment->status) == $status) {
 				$buttons_1->$id->class = 'button active ' . $action;
 				$buttons_1->$id->disabled = true;
-			} else {
+			}
+			else {
 				$buttons_1->$id->disabled = false;
 			}
 		}
@@ -1278,7 +1280,8 @@ class AdminHandler extends ActionHandler
 			if(Comment::status_name($comment->status) == $status) {
 				$buttons_2->$id->class = 'button active ' . $action;
 				$buttons_2->$id->disabled = true;
-			} else {
+			}
+			else {
 				$buttons_2->$id->disabled = false;
 			}
 		}
@@ -1348,7 +1351,8 @@ class AdminHandler extends ActionHandler
 			$this->theme->form = $form;
 
 			$this->display('comment');
-		} else {
+		}
+		else {
 			Utils::redirect(URL::get('admin', 'page=comments'));
 		}
 	}
@@ -1460,7 +1464,7 @@ class AdminHandler extends ActionHandler
 				$ids = array();
 				foreach ( $comment_ids as $id => $id_value ) {
 					if ( ! isset( ${'$comment_ids['.$id.']'} ) ) { // Skip unmoderated submitted comment_ids
-						$ids[]= $id;
+						$ids[] = $id;
 					}
 				}
 				$to_update = Comments::get( array( 'id' => $ids ) );
@@ -1487,7 +1491,7 @@ class AdminHandler extends ActionHandler
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
 						$modstatus['Approved %d comments'] = count( $to_update );
 						foreach( $to_update as $comment ) {
-									$modstatus['Approved comments on these posts: %s']= (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+									$modstatus['Approved comments on these posts: %s'] = (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
 						}
 						break;
 
@@ -1568,11 +1572,11 @@ class AdminHandler extends ActionHandler
 		$years = array();
 		foreach( $monthcts as $month ) {
 			if ( isset($years[$month->year]) ) {
-				$years[$month->year][]= $month;
+				$years[$month->year][] = $month;
 			}
 			else
 			{
-				$years[$month->year]= array( $month );
+				$years[$month->year] = array( $month );
 			}
 		}
 		$this->theme->years = $years;
@@ -1580,16 +1584,16 @@ class AdminHandler extends ActionHandler
 		$baseactions = array();
 		$statuses = Comment::list_comment_statuses();
 		foreach($statuses as $statusid => $statusname) {
-			$baseactions[$statusname]= array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
+			$baseactions[$statusname] = array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
 		}
 
 		/* Standard actions */
-		$baseactions['delete']= array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
-		$baseactions['edit']= array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
+		$baseactions['delete'] = array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
+		$baseactions['edit'] = array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
 
 		/* Actions for inline edit */
-		$baseactions['submit']= array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
-		$baseactions['cancel']= array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
+		$baseactions['submit'] = array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
+		$baseactions['cancel'] = array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
 
 		/* Allow plugins to apply actions */
 		$actions = Plugins::filter('comments_actions', $baseactions, $this->theme->comments);
@@ -1620,16 +1624,16 @@ class AdminHandler extends ActionHandler
 		foreach ( $all_plugins as $file ) {
 			$plugin = array();
 			$plugin_id = Plugins::id_from_file( $file );
-			$plugin['plugin_id']= $plugin_id;
-			$plugin['file']= $file;
+			$plugin['plugin_id'] = $plugin_id;
+			$plugin['file'] = $file;
 
 			$error = '';
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
-				$plugin['debug']= false;
+				$plugin['debug'] = false;
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
-					$plugin['verb']= _t( 'Deactivate' );
+					$plugin['verb'] = _t( 'Deactivate' );
 					$pluginobj = $active_plugins[$plugin_id];
-					$plugin['active']= true;
+					$plugin['active'] = true;
 					$plugin_actions = array();
 					$plugin_actions = Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
 					$plugin['actions'] = array();
@@ -1661,8 +1665,8 @@ class AdminHandler extends ActionHandler
 					include_once( $file );
 					Plugins::get_plugin_classes( true );
 					$pluginobj = Plugins::load( $file, false );
-					$plugin['active']= false;
-					$plugin['verb']= _t( 'Activate' );
+					$plugin['active'] = false;
+					$plugin['verb'] = _t( 'Activate' );
 					$plugin['actions'] = array(
 						'activate' => array(
 							'url' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=activate'),
@@ -1671,12 +1675,12 @@ class AdminHandler extends ActionHandler
 						),
 					);
 				}
-				$plugin['info']= $pluginobj->info;
+				$plugin['info'] = $pluginobj->info;
 			}
 			else {
-				$plugin['debug']= true;
-				$plugin['error']= $error;
-				$plugin['active']= false;
+				$plugin['debug'] = true;
+				$plugin['error'] = $error;
+				$plugin['active'] = false;
 			}
 			if ( isset( $this->handler_vars['configure'] ) && ( $this->handler_vars['configure'] == $plugin['plugin_id'] ) ) {
 				if(isset($plugin['help']) && Controller::get_var('configaction') == $plugin['help']['action']) {
@@ -1753,7 +1757,7 @@ class AdminHandler extends ActionHandler
 			}
 			if ( $okay ) {
 				foreach ( $post_ids as $id ) {
-					$ids[]= array( 'id' => $id );
+					$ids[] = array( 'id' => $id );
 				}
 				$to_update = Posts::get( array( 'where' => $ids, 'nolimit' => 1 ) );
 				foreach ( $to_update as $post ) {
@@ -1807,10 +1811,10 @@ class AdminHandler extends ActionHandler
 		$years = array();
 		foreach( $monthcts as $month ) {
 			if ( isset($years[$month->year]) ) {
-				$years[$month->year][]= $month;
+				$years[$month->year][] = $month;
 	}
 			else {
-				$years[$month->year]= array( $month );
+				$years[$month->year] = array( $month );
 			}
 		}
 		if(isset($years)) {
@@ -1925,7 +1929,7 @@ class AdminHandler extends ActionHandler
 		$item_ids = array();
 
 		foreach($this->theme->posts as $post) {
-			$item_ids['p' . $post->id]= 1;
+			$item_ids['p' . $post->id] = 1;
 		}
 
 		$output = array(
@@ -1954,7 +1958,7 @@ class AdminHandler extends ActionHandler
 		$item_ids = array();
 
 		foreach($this->theme->comments as $comment) {
-			$item_ids['p' . $comment->id]= 1;
+			$item_ids['p' . $comment->id] = 1;
 		}
 
 		$output = array(
@@ -2071,7 +2075,7 @@ class AdminHandler extends ActionHandler
 			if ( preg_match( '/^p\d+/', $id ) && $delete ) {
 				$id = substr($id, 1);
 
-				$ids[]= array( 'id' => $id );
+				$ids[] = array( 'id' => $id );
 
 			}
 		}
@@ -2355,7 +2359,7 @@ class AdminHandler extends ActionHandler
 		$item_ids = array();
 
 		foreach($this->theme->logs as $log) {
-			$item_ids['p' . $log->id]= 1;
+			$item_ids['p' . $log->id] = 1;
 		}
 
 		$output = array(
@@ -2385,7 +2389,7 @@ class AdminHandler extends ActionHandler
 			$users= array();
 			foreach($group->members as $id) {
 				$user= User::get_by_id($id);
-				$users[]= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				$users[] = '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
 			}
 
 			$this->theme->users= $users;
@@ -2520,21 +2524,21 @@ class AdminHandler extends ActionHandler
 
 		$tokens = ACL::all_tokens();
 		$access_names = ACL::$access_names;
-		//$access_names []= 'full';
-		$access_names []= 'deny';
+		//$access_names[] = 'full';
+		$access_names[] = 'deny';
 
 		foreach ($tokens as $token) {
 			$token->access = ACL::get_group_token_access($group->id, $token->id);
 		}
 
 		// post would happen here
-		
+
 		$group= UserGroup::get_by_id($this->handler_vars['id']);
 
 		$potentials= array();
 
 		$users = Users::get_all();
-		$users []= User::anonymous();
+		$users[] = User::anonymous();
 
 		$members = $group->members;
 		foreach ( $users as $user ) {
@@ -2561,7 +2565,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->wsse = Utils::WSSE();
 
 		$this->display('group');
-		
+
 	}
 
 	public function post_group()
@@ -2617,9 +2621,9 @@ class AdminHandler extends ActionHandler
 		}
 
 		Session::notice(_t('Updated permissions.'), 'permissions');
-		
+
 		Utils::redirect(URL::get('admin', 'page=group') . '?id=' . $group->id);
-		
+
 	}
 
 	/**
@@ -2657,7 +2661,7 @@ class AdminHandler extends ActionHandler
 					if ( preg_match( '/^tag_\d+/', $id ) && $delete ) {
 						$id = substr($id, 4);
 						$tag = Tags::get_by_id($id);
-						$tag_names[]= $tag->tag;
+						$tag_names[] = $tag->tag;
 						Tags::delete($tag);
 					}
 				}
@@ -2681,7 +2685,7 @@ class AdminHandler extends ActionHandler
 						if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
 							$id = substr($id, 4);
 							$tag = Tags::get_by_id($id);
-							$tag_names[]= $tag->tag;
+							$tag_names[] = $tag->tag;
 						}
 					}
 					Tags::rename($master, $tag_names);
@@ -2778,7 +2782,7 @@ class AdminHandler extends ActionHandler
 		$managemenu = array();
 		$createperms = array();
 		$manageperms = array();
-	
+
 		Plugins::register(array($this, 'default_post_type_display'), 'filter', 'post_type_display', 4);
 
 		$i= 1;
@@ -2789,9 +2793,11 @@ class AdminHandler extends ActionHandler
 
 			if($i == 10) {
 				$hotkey= 0;
-			} elseif($i > 10) {
+			}
+			elseif($i > 10) {
 				$hotkey= FALSE;
-			} else {
+			}
+			else {
 				$hotkey= $i;
 			}
 
@@ -2799,15 +2805,15 @@ class AdminHandler extends ActionHandler
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
 			$createperm = array( 'post_' . $type => ACL::get_bitmask('create') );
-			$createmenu['create_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular, 'access'=>$createperm );
+			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular, 'access'=>$createperm );
 			$createperms = array_merge($createperms, $createperm);
-			
+
 			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
-			$managemenu['manage_' . $typeint]= array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural, 'access'=>$manageperm );
+			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural, 'access'=>$manageperm );
 			$manageperms = array_merge($manageperms, $manageperm);
-			
-			$createmenu['create_' . $typeint]['hotkey']= $hotkey;
-			$managemenu['manage_' . $typeint]['hotkey']= $hotkey;
+
+			$createmenu['create_' . $typeint]['hotkey'] = $hotkey;
+			$managemenu['manage_' . $typeint]['hotkey'] = $hotkey;
 
 			if( $page == 'publish' && isset($this->handler_vars['content_type']) && $this->handler_vars['content_type'] == $type ) {
 				$createmenu['create_' . $typeint]['selected'] = TRUE;
@@ -2850,12 +2856,12 @@ class AdminHandler extends ActionHandler
 				$mainmenus[$key]['selected'] = true;
 			}
 		}
-		
+
 		$mainmenus = $this->filter_menus_by_permission( $mainmenus );
-		
+
 		$theme->assign( 'mainmenu', $mainmenus );
 	}
-	
+
 	protected function filter_menus_by_permission($menuarray)
 	{
 		foreach( $menuarray as $key => $attrs ) {
@@ -2891,7 +2897,6 @@ class AdminHandler extends ActionHandler
 		}
 		return $menuarray;
 	}
-	
 
 	public function default_post_type_display($type, $foruse)
 	{
@@ -2939,10 +2944,10 @@ class AdminHandler extends ActionHandler
 		);
 		foreach ( $assets as $asset ) {
 			if ( $asset->is_dir ) {
-				$output['dirs'][$asset->basename]= $asset->get_props();
+				$output['dirs'][$asset->basename] = $asset->get_props();
 			}
 			else {
-				$output['files'][$asset->basename]= $asset->get_props();
+				$output['files'][$asset->basename] = $asset->get_props();
 			}
 		}
 		$rootpath = strpos($path, '/') !== false ? substr($path, 0, strpos($path, '/')) : $path;
@@ -2957,7 +2962,7 @@ class AdminHandler extends ActionHandler
 				$controls_out .= "<li class=\"{$k}\">{$v}</li>";
 			}
 		}
-		$output['controls']= $controls_out;
+		$output['controls'] = $controls_out;
 
 		echo json_encode( $output );
 	}
