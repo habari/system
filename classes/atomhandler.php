@@ -65,9 +65,13 @@ class AtomHandler extends ActionHandler
 		return $this->user->loggedin;
 	}
 
-
 	/**
 	 * Creates a basic Atom-format XML structure
+	 *
+	 * @param string $alternate the IRI of an alternate version.
+	 * @param string $self The preferred URI for retrieving Atom Feed Documents representing this Atom feed.
+	 * @param string $id a permanent, universally unique identifier for an the feed.
+	 *
 	 * @return SimpleXMLElement The requested Atom document
 	 */
 	public function create_atom_wrapper( $alternate, $self, $id )
@@ -88,6 +92,12 @@ class AtomHandler extends ActionHandler
 
 		$xml = new SimpleXMLElement( '<feed ' . $namespaces . '></feed>' );
 
+		$feed_generator = $xml->addChild( 'generator', 'Habari' );
+		$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
+		$feed_generator->addAttribute( 'version', Version::get_habariversion() );
+
+		$feed_id = $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . $id . '/' . Options::get( 'GUID' ) );
+
 		$feed_title = $xml->addChild( 'title', htmlspecialchars( Options::get( 'title' ) ) );
 
 		if ( $tagline = Options::get( 'tagline' ) ) {
@@ -105,15 +115,33 @@ class AtomHandler extends ActionHandler
 		$feed_link->addAttribute( 'rel', 'self' );
 		$feed_link->addAttribute( 'href', $self );
 
+		Plugins::act( 'atom_create_wrapper', $xml );
+		return $xml;
+	}
+
+	/**
+	 * Adds pagination link rels to feeds
+	 *
+	 * @param SimpleXMLElement $xml The Atom feed.
+	 * @param int $count The total number of items of the type in the feed.
+	 * @return The altered XML feed.
+	 */
+	public function add_pagination_links( $xml, $count )
+	{
+		// Retrieve the current matched rule and store its name and argument values.
+		$rr = URL::get_matched_rule();
+		$rr_name = $rr->name;
+		$rr_args = $rr->named_arg_values;
+
 		$page = ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
 		$firstpage = 1;
-		$lastpage = ceil( Posts::count_total( Post::status('published') ) / Options::get( 'pagination' ) );
+		$lastpage = ceil( $count / Options::get( 'pagination' ) );
 
 		if ( $lastpage > 1 ) {
 			$nextpage = intval( $page ) + 1;
 			$prevpage = intval( $page ) - 1;
 
-			$rr_args['page']= $firstpage;
+			$rr_args['page'] = $firstpage;
 			$feed_link = $xml->addChild( 'link' );
 			$feed_link->addAttribute( 'rel', 'first' );
 			$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
@@ -130,7 +158,7 @@ class AtomHandler extends ActionHandler
 			}
 
 			if ( $nextpage <= $lastpage ) {
-				$rr_args['page']= $nextpage;
+				$rr_args['page'] = $nextpage;
 				$feed_link = $xml->addChild( 'link' );
 				$feed_link->addAttribute( 'rel', 'next' );
 				$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
@@ -138,7 +166,7 @@ class AtomHandler extends ActionHandler
 				$feed_link->addAttribute( 'title', _t('Next Page') );
 			}
 
-			$rr_args['page']= $lastpage;
+			$rr_args['page'] = $lastpage;
 			$feed_link = $xml->addChild( 'link' );
 			$feed_link->addAttribute( 'rel', 'last' );
 			$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
@@ -146,15 +174,6 @@ class AtomHandler extends ActionHandler
 			$feed_link->addAttribute( 'title', _t('Last Page') );
 		}
 
-		$rr_args['page']= $page;
-
-		$feed_generator = $xml->addChild( 'generator', 'Habari' );
-		$feed_generator->addAttribute( 'uri', 'http://www.habariproject.org/' );
-		$feed_generator->addAttribute( 'version', Version::get_habariversion() );
-
-		$feed_id = $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . $id . '/' . Options::get( 'GUID' ) );
-
-		Plugins::act( 'atom_create_wrapper', $xml );
 		return $xml;
 	}
 
@@ -441,7 +460,8 @@ class AtomHandler extends ActionHandler
 		*/
 	function get_comments( $params = array() )
 	{
-		$comments = '';
+		$comments = null;
+		$comments_count = null;
 
 		// Assign alternate link.
 		$alternate = URL::get( 'atom_feed_comments' );
@@ -457,6 +477,7 @@ class AtomHandler extends ActionHandler
 				$post = Post::get( array( 'id' => $params['id'] ) );
 				$comments = $post->comments->approved;
 			}
+			$comments_count = count( $comments );
 			$content_type = Post::type_name( $post->content_type );
 			$self = URL::get( "atom_feed_{$content_type}_comments", $post, false );
 		}
@@ -464,13 +485,16 @@ class AtomHandler extends ActionHandler
 			$self = URL::get( 'atom_feed_comments' );
 			$params['status'] = Comment::STATUS_APPROVED;
 			$comments = Comments::get( $params );
+			$comments_count = Comments::count_total( Comment::status('approved') );
 		}
 
 		$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_comments';
 
 		$xml = $this->create_atom_wrapper( $alternate, $self, $id );
 
-		$xml = $this->add_comments($xml, $comments );
+		$xml = $this->add_pagination_links( $xml, $comments_count );
+
+		$xml = $this->add_comments( $xml, $comments );
 
 		Plugins::act( 'atom_get_comments', $xml, $params, $this->handler_vars );
 		$xml = $xml->asXML();
@@ -630,6 +654,8 @@ class AtomHandler extends ActionHandler
 		$id = isset( $rr_args_values['tag'] ) ? $rr_args_values['tag'] : 'atom';
 
 		$xml = $this->create_atom_wrapper( $alternate, $self, $id );
+
+		$xml = $this->add_pagination_links( $xml, Posts::count_total( Post::status('published') ) );
 
 		// Get posts to put in the feed
 		$page = ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
