@@ -651,6 +651,12 @@ SQL;
 		self::create_token( 'manage_users', 'Add, remove, and edit users' );
 		self::create_token( 'manage_groups', 'Manage groups and permissions' );
 		self::create_token( 'manage_logs', 'Manage logs' );
+		self::create_token( 'post_any', 'Permissions to posts of type "any"' );
+		self::create_token( 'own_post_any', 'Permissions to one\'s own posts of type "any"' );
+		self::create_token( 'post_entry', 'Permissions to posts of type "entry"' );
+		self::create_token( 'own_post_entry', 'Permissions to one\'s own posts of type "entry"' );
+		self::create_token( 'post_page', 'Permissions to posts of type "page"' );
+		self::create_token( 'own_post_page', 'Permissions to one\'s own posts of type "page"' );
 	}
 	
 	public static function rebuild_permissions( $user = null )
