@@ -3,7 +3,7 @@
 <?php include_once( 'header.php' ); ?>
 
 <div class="container">
-	<h2><?php _e( "SYSTEM INFORMATION" ); ?></h2>
+	<h2><?php _e( "System Information" ); ?></h2>
 	<?php $plaintext_output = _t( "SYSTEM INFORMATION\n" ); ?>
 
 	<div class="manage">
@@ -20,7 +20,7 @@
 </div>
 
 <div class="container">
-	<h2><?php _e( "SITE INFORMATION" ); ?></h2>
+	<h2><?php _e( "Site Information" ); ?></h2>
 	<?php $plaintext_output .= _t( "\nSITE INFORMATION\n" ); ?>
 
 	<div class="manage">
@@ -37,7 +37,7 @@
 </div>
 
 <div class="container">
-	<h2><?php _e( "USER CLASSES" ); ?></h2>
+	<h2><?php _e( "User Classes" ); ?></h2>
 	<?php $plaintext_output .= _t( "\nUSER CLASSES\n" ); ?>
 
 	<div class="manage">
@@ -56,7 +56,7 @@
 </div>
 
 <div class="container">
-	<h2><?php _e( "PLUGIN INFORMATION" ); ?></h2>
+	<h2><?php _e( "Plugin Information" ); ?></h2>
 	<?php $plaintext_output .= _t( "\nPLUGIN INFORMATION" ); ?>
 
 	<?php foreach($plugins as $section => $sec_plugins): ?>
@@ -82,10 +82,8 @@
 </div>
 
 <div class="container">
-	<h2><?php _e( "ALL RESULTS" ); ?></h2>
-	<textarea rows = "<?php echo substr_count( $plaintext_output, "\n" ); ?>">
-	<?php 	echo $plaintext_output; ?>
-	</textarea>
+	<h2><?php _e( "All Results" ); ?></h2>
+	<textarea rows = "<?php echo substr_count( $plaintext_output, "\n" ); ?>"><?php echo $plaintext_output; ?></textarea>
 </div>
 
 <?php include('footer.php'); ?>
