@@ -18,8 +18,8 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
-		$name = $this->handler_vars['habari_username'];
-		$pass = $this->handler_vars['habari_password'];
+		$name = $_POST['habari_username'];
+		$pass = $_POST['habari_password'];
 
 		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
 			$user = User::authenticate( $name, $pass );
@@ -65,7 +65,7 @@ class UserHandler extends ActionHandler
 
 			/* Authentication failed. */
 			// Remove submitted password, see, we're secure!
-			$this->handler_vars['habari_password'] = '';
+			$_POST['habari_password'] = '';
 			$this->handler_vars['error'] = _t('Bad credentials');
 		}
 
