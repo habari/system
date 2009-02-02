@@ -3,13 +3,16 @@
 <?php include_once( 'header.php' ); ?>
 
 <div class="container">
-	<h2>SYSTEM INFORMATION</h2>
+	<h2><?php _e( "SYSTEM INFORMATION" ); ?></h2>
+	<?php $plaintext_output = _t( "SYSTEM INFORMATION\n" ); ?>
 
 	<div class="manage">
 	<?php foreach( $sysinfo as $key => $value ) : ?>
 		<div class="item clear">
-			<span class="pct25"><?php echo $key; ?></span>
-			<span class="message pct75 minor"><span><?php echo $value; ?></span></span>
+			<span class="pct25"><?php echo $key; 
+				$plaintext_output .= $key; ?></span>
+			<span class="message pct75 minor"><span><?php echo $value; 
+				$plaintext_output .= ": $value\n"; ?></span></span>
 		</div>
 	<?php endforeach; ?>
 	</div>
@@ -17,13 +20,16 @@
 </div>
 
 <div class="container">
-	<h2>SITE INFORMATION</h2>
+	<h2><?php _e( "SITE INFORMATION" ); ?></h2>
+	<?php $plaintext_output .= _t( "\nSITE INFORMATION\n" ); ?>
 
 	<div class="manage">
 	<?php foreach( $siteinfo as $key => $value ) : ?>
 		<div class="item clear">
-			<span class="pct25"><?php echo $key; ?></span>
-			<span class="message pct75 minor"><span><?php echo $value; ?></span></span>
+			<span class="pct25"><?php echo $key; 
+				$plaintext_output .= $key; ?></span>
+			<span class="message pct75 minor"><span><?php echo $value; 
+				$plaintext_output .= ": $value\n"; ?></span></span>
 		</div>
 	<?php endforeach; ?>
 	</div>
@@ -31,41 +37,55 @@
 </div>
 
 <div class="container">
-	<h2>USER CLASSES</h2>
+	<h2><?php _e( "USER CLASSES" ); ?></h2>
+	<?php $plaintext_output .= _t( "\nUSER CLASSES\n" ); ?>
 
 	<div class="manage">
 	<?php foreach( $classinfo as $fullpath ) : ?>
 		<div class="item clear">
-			<span class="pct100"><?php echo $fullpath; ?></span>
+			<span class="pct100"><?php echo $fullpath; 
+				$plaintext_output .= "$fullpath\n"; ?></span>
 		</div>
 
 	<?php endforeach; ?>
 	<?php if ( empty( $fullpath ) ) : ?>
-		<div class="item clear"><span class="pct100"><?php _e( "None found" ); ?></span></div>
+		<div class="item clear"><span class="pct100"><?php _e( "None found" ); 
+			$plaintext_output .= _t( "None found\n" ); ?></span></div>
 	<?php endif; ?>
 	</div>
 </div>
 
 <div class="container">
-	<h2>PLUGIN INFORMATION</h2>
+	<h2><?php _e( "PLUGIN INFORMATION" ); ?></h2>
+	<?php $plaintext_output .= _t( "\nPLUGIN INFORMATION" ); ?>
 
 	<?php foreach($plugins as $section => $sec_plugins): ?>
 
-	<h3><?php echo $section; ?></h3>
+	<h3><?php echo $section; 
+		$plaintext_output .= "\n/$section/plugins:\n"; ?></h3>
 	<div class="manage">
 	<?php foreach( $sec_plugins as $name => $pluginfile ) : ?>
 		<div class="item clear">
-			<span class="pct25"><?php echo $name; ?></span>
-			<span class="message pct75 minor"><span><?php echo $pluginfile; ?></span></span>
+			<span class="pct25"><?php echo $name; 
+				$plaintext_output .= $name; ?></span>
+			<span class="message pct75 minor"><span><?php echo $pluginfile; 
+				$plaintext_output .= ": $pluginfile\n"; ?></span></span>
 		</div>
 
 	<?php endforeach; ?>
 	<?php if ( count($sec_plugins) == 0 ) : ?>
-		<div class="item clear"><span class="pct100"><?php _e( "None found" ); ?></span></div>
+		<div class="item clear"><span class="pct100"><?php _e( "None found" ); 
+			$plaintext_output .= _t( "None found\n" ); ?></span></div>
 	<?php endif; ?>
 	</div>
 	<?php endforeach; ?>
 </div>
 
+<div class="container">
+	<h2><?php _e( "ALL RESULTS" ); ?></h2>
+	<textarea rows = "<?php echo substr_count( $plaintext_output, "\n" ); ?>">
+	<?php 	echo $plaintext_output; ?>
+	</textarea>
+</div>
 
 <?php include('footer.php'); ?>
