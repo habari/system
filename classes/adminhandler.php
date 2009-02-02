@@ -2587,7 +2587,8 @@ class AdminHandler extends ActionHandler
 			}
 
 			if ( isset($this->handler_vars['user']) ) {
-				foreach ( $this->handler_vars['user'] as $user => $status ) {
+				$users = $this->handler_vars['user'];
+				foreach ( $users as $user => $status ) {
 					if ( $status == 1 ) {
 						$group->add($user);
 					}
