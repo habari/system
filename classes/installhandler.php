@@ -1270,7 +1270,6 @@ class InstallHandler extends ActionHandler {
 		}
 		$admin_group->add( $ids );
 
-		// @TODO: Decide on a set of default admin permissions and give them to the admin group
 		return true;
 	}
 
@@ -1307,6 +1306,12 @@ class InstallHandler extends ActionHandler {
 
 	private function upgrade_db_post_3030()
 	{
+		// Create the admin group
+		$group = UserGroup::create( array( 'name' => 'admin' ) );
+		if( ! $group ) {
+			return false;
+		}
+
 		// Add the default tokens
 		ACL::create_default_tokens();
 
@@ -1316,11 +1321,7 @@ class InstallHandler extends ActionHandler {
 			ACL::create_token( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ) );
 		}
 
-		// Create the admin group
-		$group = UserGroup::create( array( 'name' => 'admin' ) );
-		if( ! $group ) {
-			return false;
-		}
+		// Give admin group access to the super_user token
 		$group->grant('super_user');
 
 		// Until now, all users were admins, restore that

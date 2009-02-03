@@ -355,27 +355,27 @@ class ACL {
 		 *
 		 * 2) Look into the group_permissions joined to
 		 * users_groups for the user and the token.  Order the results
-		 * by the permission_id flag. The lower the flag value, the
+		 * by the access bitmask. The lower the mask value, the
 		 * fewest permissions that group has. Use the first record's
-		 * permission flag to check the ACL.
+		 * access mask to check the ACL.
 		 *
 		 * This gives the system very fine grained control and grabbing
 		 * the permission flag and can be accomplished in a single SQL
 		 * call.
 		 */
 		$sql = <<<SQL
-SELECT permission_id
+SELECT access_mask
   FROM {user_token_permissions}
   WHERE user_id = :user_id
   AND token_id = :token_id
 UNION ALL
-SELECT gp.permission_id
+SELECT gp.access_mask
   FROM {users_groups} ug
   INNER JOIN {group_token_permissions} gp
   ON ug.group_id = gp.group_id
   AND ug.user_id = :user_id
   AND gp.token_id = :token_id
-  ORDER BY permission_id ASC
+  ORDER BY access_mask ASC
 SQL;
 		$accesses = DB::get_column( $sql, array( ':user_id' => $user_id, ':token_id' => $token_id ) );
 
@@ -406,7 +406,7 @@ SQL;
 
 		$super_user_access = self::get_user_token_access( $user, 'super_user' );
 		if ( isset( $super_user_access ) && self::access_check( $super_user_access, 'any' ) ) {
-			$result = DB::get_results('SELECT id, ? as permission_id FROM {tokens}', array($bitmask->full) );
+			$result = DB::get_results('SELECT id, ? as access_mask FROM {tokens}', array($bitmask->full) );
 		}
 		else {
 			// convert $user to an ID
@@ -421,11 +421,11 @@ SQL;
 			}
 
 			$sql = <<<SQL
-SELECT token_id, permission_id
+SELECT token_id, access_mask
 	FROM {user_token_permissions}
 	WHERE user_id = :user_id
 UNION ALL
-SELECT gp.token_id, gp.permission_id
+SELECT gp.token_id, gp.access_mask
   FROM {users_groups} ug
   INNER JOIN {group_token_permissions} gp
   ON ug.group_id = gp.group_id
@@ -440,7 +440,7 @@ SQL;
 		}
 
 		foreach ( $result as $token ) {
-			$bitmask->value = $token->permission_id;
+			$bitmask->value = $token->access_mask;
 			if ( $access == 'deny' && $bitmask->value == 0 ) {
 				$tokens[] = $token->token_id;
 			}
@@ -464,7 +464,7 @@ SQL;
 		// Use only numeric ids internally
 		$group = UserGroup::id( $group );
 		$token_id = self::token_id( $token_id );
-		$sql = 'SELECT permission_id FROM {group_token_permissions} WHERE
+		$sql = 'SELECT access_mask FROM {group_token_permissions} WHERE
 			group_id=? AND token_id=?;';
 
 		$result = DB::get_value( $sql, array( $group, $token_id) );
@@ -485,8 +485,8 @@ SQL;
 	public static function grant_group( $group_id, $token_id, $access = 'full' )
 	{
 		$token_id = self::token_id( $token_id );
-		$row = DB::get_row( 'SELECT permission_id as mask, count(permission_id) as granted FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
-		$access_mask = $row->mask;
+		$row = DB::get_row( 'SELECT access_mask, count(access_mask) as granted FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
+		$access_mask = $row->access_mask;
 		$row_exists = $row->granted != 0;
 		if ( $access_mask ===  false ) {
 			$access_mask = 0; // default is 'not granted' (bitmask 0)
@@ -513,7 +513,7 @@ SQL;
 			// DB::update will insert if the token is not already in the group tokens table
 			$result = DB::update(
 				'{group_token_permissions}',
-				array( 'permission_id' => $bitmask->value ),
+				array( 'access_mask' => $bitmask->value ),
 				array( 'group_id' => $group_id, 'token_id' => $token_id )
 			);
 
@@ -539,7 +539,7 @@ SQL;
 	public static function grant_user( $user_id, $token_id, $access = 'full' )
 	{
 		$token_id = self::token_id( $token_id );
-		$access_mask = DB::get_value( 'SELECT permission_id FROM {user_token_permissions} WHERE user_id=? AND token_id=?',
+		$access_mask = DB::get_value( 'SELECT access_mask FROM {user_token_permissions} WHERE user_id=? AND token_id=?',
 			array( $user_id, $token_id ) );
 		if ( $access_mask ===  false ) {
 			$permission_bit = 0; // default is 'deny' (bitmask 0)
@@ -559,7 +559,7 @@ SQL;
 
 		$result = DB::update(
 			'{user_token_permissions}',
-			array( 'permission_id' => $bitmask->value ),
+			array( 'access_mask' => $bitmask->value ),
 			array( 'user_id' => $user_id, 'token_id' => $token_id )
 		);
 
@@ -683,7 +683,7 @@ SQL;
 		$anonymous_group = UserGroup::create( array( 'name' => _t('anonymous') ) );
 
 		// Add the current user or the passed user to the admin group
-		if(empty($user)) {
+		if ( empty($user) ) {
 			$user = User::identify();
 		}
 		$admin_group->add($user);
