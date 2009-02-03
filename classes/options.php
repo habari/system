@@ -129,7 +129,7 @@ class Options extends Singleton
 			'pagination' => 10,
 			'comments_require_id' => false,
 		);
-		$results = DB::get_results( 'SELECT name, value, type FROM ' . DB::table( 'options' ), array(), 'QueryRecord' );
+		$results = DB::get_results( 'SELECT name, value, type FROM {options}', array(), 'QueryRecord' );
 		foreach($results as $result) {
 			if ( $result->type == 1 ) {
 				$this->options[$result->name] = unserialize( $result->value );

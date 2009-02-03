@@ -44,7 +44,7 @@ class EventLog extends ArrayObject
 	public static function register_type( $type = 'default', $module = null )
 	{
 		try {
-			DB::query( 'INSERT INTO ' . DB::Table('log_types') . ' (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
+			DB::query( 'INSERT INTO {log_types} (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
 		}
 		catch( Exception $e ) {
 			// Don't really care if there's a duplicate.
@@ -135,8 +135,8 @@ class EventLog extends ArrayObject
 		}
 		foreach ( $select_fields as $field => $value ) {
 			$select.= ( '' == $select )
-				? DB::table( 'log' ) . ".$field"
-				: ', ' . DB::table( 'log' ) . ".$field";
+				? "{log}.$field"
+				: ", {log}.$field";
 		}
 		// Default parameters.
 		$orderby = 'ORDER BY timestamp DESC, id DESC';

@@ -93,7 +93,7 @@ class Comment extends QueryRecord implements IsContent
 		if ( ! $ID ) {
 			return false;
 		}
-		return DB::get_row( 'SELECT * FROM ' . DB::table('comments') . ' WHERE id = ?', array( $ID ), 'Comment' );
+		return DB::get_row( 'SELECT * FROM {comments} WHERE id = ?', array( $ID ), 'Comment' );
 	}
 
 	/**

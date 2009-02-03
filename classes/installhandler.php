@@ -1140,7 +1140,7 @@ class InstallHandler extends ActionHandler {
 		// fix duplicate tag_slug's
 
 		// first, get all the tags with duplicate entries
-		$query = 'select id, tag_slug, tag_text from ' . DB::table( 'tags' ) . ' where tag_slug in ( select tag_slug from ' . DB::table( 'tags' ) . ' group by tag_slug having count(*) > 1 ) order by id';
+		$query = 'select id, tag_slug, tag_text from {tags} where tag_slug in ( select tag_slug from {tags} group by tag_slug having count(*) > 1 ) order by id';
 		$tags = DB::get_results( $query );
 
 		// assuming we got some tags to fix...

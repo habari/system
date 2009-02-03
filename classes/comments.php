@@ -32,8 +32,8 @@ class Comments extends ArrayObject
 		// what to select -- by default, everything
 		foreach ( Comment::default_fields() as $field => $value ) {
 			$select .= ( '' == $select )
-				? DB::table( 'comments' ) . ".$field"
-				: ', ' . DB::table( 'comments' ) . ".$field";
+				? "{comments}.$field"
+				: ", {comments}.$field";
 		}
 		// defaults
 		$orderby = 'date DESC';
@@ -237,9 +237,9 @@ class Comments extends ArrayObject
 		}
 
 		$query = '
-			SELECT ' . $select . '
-			FROM ' . DB::table( 'comments' ) .
-			' ' . implode(' ', $joins);
+			SELECT ' . $select .
+			' FROM {comments} ' .
+			implode(' ', $joins);
 
 		if ( count( $wheres ) > 0 ) {
 			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
