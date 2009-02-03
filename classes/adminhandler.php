@@ -2246,7 +2246,7 @@ class AdminHandler extends ActionHandler
 		$modules = array();
 		$types = array();
 		$addresses = $any;
-		$ips = DB::get_column( 'SELECT DISTINCT(ip) FROM ' . DB::table( 'log' ) );
+		$ips = DB::get_column( 'SELECT DISTINCT(ip) FROM {log}' );
 		foreach ( $ips as $ip ) {
 			$addresses[$ip] = long2ip( $ip );
 		}

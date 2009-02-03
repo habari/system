@@ -245,7 +245,7 @@ class LogEntry extends QueryRecord
 	 * @return string Human-readable event type
 	 */
 	public function get_event_type() {
-		$type = DB::get_value( 'SELECT type FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
+		$type = DB::get_value( 'SELECT type FROM {log_types} WHERE id=' . $this->type_id );
 		return $type ? $type : _t( 'Unknown' );
 	}
 
@@ -257,7 +257,7 @@ class LogEntry extends QueryRecord
 	 * @return string Human-readable event module
 	 */
 	public function get_event_module() {
-		$module = DB::get_value( 'SELECT module FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
+		$module = DB::get_value( 'SELECT module FROM {log_types} WHERE id=' . $this->type_id );
 		return $module ? $module : _t( 'Unknown' );
 	}
 
