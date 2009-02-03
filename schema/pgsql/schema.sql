@@ -235,6 +235,8 @@ CREATE TABLE {$prefix}tokens (
   id INTEGER NOT NULL DEFAULT nextval('{$prefix}tokens_pkey_seq'),
   name VARCHAR(255) NOT NULL,
   description VARCHAR(255) NULL,
+  token_type INT UNSIGNED NOT NULL DEFAULT 0,
+  token_group VARCHAR(255) NULL,
   PRIMARY KEY (id),
   UNIQUE (name)
 );
@@ -248,13 +250,13 @@ CREATE TABLE {$prefix}post_tokens (
 CREATE TABLE {$prefix}group_token_permissions (
   group_id INTEGER NOT NULL,
   token_id INTEGER NOT NULL,
-  permission_flag SMALLINT NOT NULL,
+  access_mask SMALLINT NOT NULL,
   PRIMARY KEY (group_id, token_id)
 );
 
 CREATE TABLE {$prefix}user_token_permissions (
   user_id INTEGER NOT NULL,
   token_id INTEGER NOT NULL,
-  permission_id SMALLINT NOT NULL,
+  access_mask SMALLINT NOT NULL,
   PRIMARY KEY (user_id, token_id)
 );

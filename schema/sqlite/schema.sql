@@ -200,7 +200,9 @@ INSERT INTO {$prefix}object_types (name) VALUES
 CREATE TABLE {$prefix}tokens (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
-  description VARCHAR(255) NULL
+  description VARCHAR(255) NULL,
+  token_type INT UNSIGNED NOT NULL DEFAULT 0,
+  token_group VARCHAR(255) NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS name ON {$prefix}tokens(name);
 
@@ -213,7 +215,7 @@ CREATE TABLE {$prefix}post_tokens (
 CREATE TABLE {$prefix}group_token_permissions (
   group_id INTEGER NOT NULL,
   token_id INTEGER NOT NULL,
-  permission_id TINYINT UNSIGNED NOT NULL,
+  access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (group_id, token_id)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS group_permission ON {$prefix}group_token_permissions(group_id,token_id);
@@ -221,6 +223,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS group_permission ON {$prefix}group_token_permi
 CREATE TABLE {$prefix}user_token_permissions (
   user_id INTEGER NOT NULL,
   token_id INTEGER NOT NULL,
-  permission_id TINYINT UNSIGNED NOT NULL,
+  access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (user_id, token_id)
 );
