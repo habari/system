@@ -73,7 +73,7 @@ class Session
 		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$session = DB::get_row( 'SELECT * FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?', array( $session_id ) );
+		$session = DB::get_row( 'SELECT * FROM {sessions} WHERE token = ?', array( $session_id ) );
 
 		// Verify session exists
 		if ( !$session ) {
@@ -105,7 +105,7 @@ class Session
 		$dodelete = Plugins::filter( 'session_read', $dodelete, $session, $session_id );
 
 		if ( $dodelete ) {
-			$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
+			$sql = 'DELETE FROM {sessions} WHERE token = ?';
 			$args = array( $session_id );
 			$sql = Plugins::filter( 'sessions_clean', $sql, 'read', $args );
 			DB::query( $sql, $args );
@@ -164,7 +164,7 @@ class Session
 	 */
 	static function destroy( $session_id )
 	{
-		$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
+		$sql = 'DELETE FROM {sessions} WHERE token = ?';
 		$args = array( $session_id );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'destroy', $args );
 		DB::query( $sql, $args );
@@ -178,7 +178,7 @@ class Session
 	 */
 	static function gc( $max_lifetime )
 	{
-		$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE expires < ?';
+		$sql = 'DELETE FROM {sessions} WHERE expires < ?';
 		$args = array( HabariDateTime::date_create( time() )->int );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
@@ -192,7 +192,7 @@ class Session
 	 */
 	static function set_userid( $user_id )
 	{
-		DB::query( 'UPDATE ' . DB::table( 'sessions' ) . ' SET user_id = ? WHERE token = ?', array( $user_id, session_id() ) );
+		DB::query( 'UPDATE {sessions} SET user_id = ? WHERE token = ?', array( $user_id, session_id() ) );
 	}
 
 
@@ -202,8 +202,8 @@ class Session
 	 */
 	static function clear_userid( $user_id )
 	{
-		DB::query( 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE user_id = ? AND token <> ?', array( $user_id, session_id() ) );
-		DB::query( 'UPDATE ' . DB::table( 'sessions' ) . ' SET user_id = NULL WHERE token = ?', array( session_id() ) );
+		DB::query( 'DELETE FROM {sessions} WHERE user_id = ? AND token <> ?', array( $user_id, session_id() ) );
+		DB::query( 'UPDATE {sessions} SET user_id = NULL WHERE token = ?', array( session_id() ) );
 	}
 
 	/**

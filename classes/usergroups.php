@@ -26,8 +26,8 @@ class UserGroups extends ArrayObject
 		// what to select -- by default, everything
 		foreach ( UserGroup::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
-				? DB::table( 'groups' ) . ".$field"
-				: ', ' . DB::table( 'groups' ) . ".$field";
+				? "{groups}.$field"
+				: ", {groups}.$field";
 		}
 		// defaults
 		$orderby = 'id ASC';
@@ -108,10 +108,7 @@ class UserGroups extends ArrayObject
 			$limit = '';
 		}
 
-		$query = '
-			SELECT ' . $select . '
-			FROM ' . DB::table('groups') .
-			' ' . $join;
+		$query = ' SELECT ' . $select . ' FROM {groups} ' . $join;
 
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );

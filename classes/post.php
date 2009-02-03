@@ -45,7 +45,7 @@ class Post extends QueryRecord implements IsContent
 			return self::$post_type_list_active;
 		}
 		self::$post_type_list_active['any'] = 0;
-		$sql = 'SELECT * FROM ' . DB::table( 'posttype' ) . ' WHERE active = 1 ORDER BY id ASC';
+		$sql = 'SELECT * FROM {posttype} WHERE active = 1 ORDER BY id ASC';
 		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
 			self::$post_type_list_active[$result->name] = $result->id;
@@ -64,7 +64,7 @@ class Post extends QueryRecord implements IsContent
 			return self::$post_type_list_all;
 		}
 		self::$post_type_list_all['any'] = 0;
-		$sql = 'SELECT * FROM ' . DB::table( 'posttype' ) . ' ORDER BY id ASC';
+		$sql = 'SELECT * FROM {posttype} ORDER BY id ASC';
 		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
 			self::$post_type_list_all[$result->name] = array(
@@ -83,7 +83,7 @@ class Post extends QueryRecord implements IsContent
 		if ( array_key_exists( $type, $all_post_types ) ) {
 			if ( ! $all_post_types[$type]['active'] == 1 ) {
 				// Activate it
-				$sql = 'UPDATE ' . DB::table( 'posttype' ) . ' SET active = 1 WHERE id = ' . $all_post_types[$type]['id'];
+				$sql = 'UPDATE {posttype} SET active = 1 WHERE id = ' . $all_post_types[$type]['id'];
 				DB::query( $sql );
 			}
 			return true;
@@ -99,7 +99,7 @@ class Post extends QueryRecord implements IsContent
 
 		if ( array_key_exists( $type, $active_post_types ) ) {
 			// $type is active so we'll deactivate it
-			$sql = 'UPDATE ' . DB::table( 'posttype' ) . ' SET active = 0 WHERE id = ' . $active_post_types[$type];
+			$sql = 'UPDATE {posttype} SET active = 0 WHERE id = ' . $active_post_types[$type];
 			DB::query( $sql );
 			return true;
 		}
@@ -117,7 +117,7 @@ class Post extends QueryRecord implements IsContent
 		$statuses = array();
 		$statuses['any'] = 0;
 		if ( $refresh || empty( self::$post_status_list ) ) {
-			$sql = 'SELECT * FROM ' . DB::table( 'poststatus' ) . ' ORDER BY id ASC';
+			$sql = 'SELECT * FROM {poststatus} ORDER BY id ASC';
 			$results = DB::get_results( $sql );
 			self::$post_status_list = $results;
 		}
@@ -218,7 +218,7 @@ class Post extends QueryRecord implements IsContent
 
 		if ( ! array_key_exists( $type, $types ) ) {
 			// Doesn't exist in DB.. add it and activate it.
-			DB::query( 'INSERT INTO ' . DB::table( 'posttype' ) . ' (name, active) VALUES (?, ?)', array( $type, $active ) );
+			DB::query( 'INSERT INTO {posttype} (name, active) VALUES (?, ?)', array( $type, $active ) );
 		}
 		elseif ( $types[$type]['active'] == 0 ) {
 			// Isn't active so we activate it
@@ -247,7 +247,7 @@ class Post extends QueryRecord implements IsContent
 		if ( ! array_key_exists( $status, $statuses ) ) {
 			// let's make sure we only insert an integer
 			$internal = intval( $internal );
-			DB::query( 'INSERT INTO ' . DB::table( 'poststatus' ) . ' (name, internal) VALUES (?, ?)', array( $status, $internal ) );
+			DB::query( 'INSERT INTO {poststatus} (name, internal) VALUES (?, ?)', array( $status, $internal ) );
 			// force a refresh of the cache, so the new status
 			// is available for immediate use
 			$statuses = self::list_post_statuses( true, true );
@@ -384,7 +384,7 @@ class Post extends QueryRecord implements IsContent
 		$postfix = '';
 		$postfixcount = 0;
 		do {
-			if ( ! $slugcount = DB::get_row( 'SELECT COUNT(slug) AS ct FROM ' . DB::table( 'posts' ) . ' WHERE slug = ?;', array( $slug . $postfix ) ) ) {
+			if ( ! $slugcount = DB::get_row( 'SELECT COUNT(slug) AS ct FROM {posts} WHERE slug = ?;', array( $slug . $postfix ) ) ) {
 				Utils::debug( DB::get_errors() );
 				exit;
 			}
@@ -851,8 +851,8 @@ class Post extends QueryRecord implements IsContent
 		if ( empty( $this->tags ) ) {
 			$sql = "
 				SELECT t.tag_text, t.tag_slug
-				FROM " . DB::table( 'tags' ) . " t
-				INNER JOIN " . DB::table( 'tag2post' ) . " t2p
+				FROM {tags} t
+				INNER JOIN {tag2post} t2p
 				ON t.id = t2p.tag_id
 				WHERE t2p.post_id = ?
 				ORDER BY t.tag_slug ASC";

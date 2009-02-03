@@ -497,7 +497,7 @@ class User extends QueryRecord
 	private function list_groups( $refresh = false )
 	{
 		if ( ( empty( $this->group_list ) ) || $refresh ) {
-			$this->group_list = DB::get_column( 'SELECT group_id FROM ' . DB::table('users_groups') . ' WHERE user_id=?', array( $this->id ) );
+			$this->group_list = DB::get_column( 'SELECT group_id FROM {users_groups} WHERE user_id=?', array( $this->id ) );
 		}
 		return $this->group_list;
 	}
