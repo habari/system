@@ -26,8 +26,8 @@ class Users extends ArrayObject
 		// what to select -- by default, everything
 		foreach ( User::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
-				? DB::table( 'users' ) . ".$field"
-				: ', ' . DB::table( 'users' ) . ".$field";
+				? "{users}.$field"
+				: ", {users}.$field";
 		}
 		// defaults
 		$orderby = 'id ASC';
@@ -72,9 +72,9 @@ class Users extends ArrayObject
 				}
 				
 				if ( isset( $paramset['info'] ) && is_array( $paramset['info'] ) ) {
-					$join.= 'INNER JOIN ' . DB::table( 'userinfo' ) . ' ON ' . DB::table( 'users' ) . '.id = ' . DB::table( 'userinfo' ) . '.user_id';
+					$join.= 'INNER JOIN {userinfo} ON {users}.id = {userinfo}.user_id';
 					foreach ( $paramset['info'] as $info_name => $info_value ) {
-						$where[] = DB::table( 'userinfo' ) . '.name = ? AND ' . DB::table( 'userinfo' ) . '.value = ?';
+						$where[] = '{userinfo}.name = ? AND {userinfo}.value = ?';
 						$params[] = $info_name;
 						$params[] = $info_value;
 					}
@@ -115,9 +115,9 @@ class Users extends ArrayObject
 		}
 
 		$query = '
-			SELECT ' . $select . '
-			FROM ' . DB::table('users') .
-			' ' . $join;
+			SELECT ' . $select
+			. ' FROM {users} '
+			. $join;
 
 		if ( count( $wheres ) > 0 ) {
 			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
