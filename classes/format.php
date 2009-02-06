@@ -139,7 +139,7 @@ class Format
 
 		$output = preg_replace( '%>\s*\n%i', '>', $output );
 		$output = preg_replace( '%\n\s*<%i', '<', $output );
-		$output = preg_replace( '%\n%i', '<br />', $output );
+		$output = preg_replace( '%\n%i', '<br>', $output );
 
 
 		/**
