@@ -62,3 +62,11 @@
 .mediaphotos li.media .mediatitle {
 	overflow: hidden;
 }
+
+/* Fix delete button spacing */
+
+*+html .comments .button.delete {
+	margin: -22px 0 6px 0; 
+	float: right !important;
+}
+
