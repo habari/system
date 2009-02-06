@@ -67,6 +67,6 @@
 
 *+html .comments .button.delete {
 	margin: -22px 0 6px 0; 
-	float: right !important;
+	float: right;
 }
 
