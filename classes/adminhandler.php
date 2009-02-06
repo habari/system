@@ -937,20 +937,24 @@ class AdminHandler extends ActionHandler
 				$user = User::get_by_id( $id );
 
 				if ( $currentuser != $user ) {
-					if ( $handler_vars['reassign'] != 0 ) {
-						$assign = intval($handler_vars['reassign']);
+					$assign = intval( $handler_vars['reassign'] );
 
-						if ( $user->id == $assign ) {
-							return;
+					if ( $user->id == $assign ) {
+						return;
+					}
+
+					$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
+
+					if ( isset($posts[0]) ) {
+						if( 0 == $assign ) {
+							foreach( $posts as $post ) {
+								$post->delete();
+							}
 						}
-
-						$posts = Posts::get( array( 'user_id' => $user->id, 'nolimit' => 1) );
-
-						if ( isset($posts[0]) ) {
+						else {
 							Posts::reassign( $assign, $posts );
 						}
 					}
-
 					$user->delete();
 				}
 				else {
