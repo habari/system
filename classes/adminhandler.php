@@ -918,7 +918,8 @@ class AdminHandler extends ActionHandler
 			}
 
 			if ( isset( $handler_vars['checkbox_ids'] ) ) {
-				foreach ( $handler_vars['checkbox_ids'] as $id => $delete ) {
+				$checkbox_ids = $handler_vars['checkbox_ids'];
+				foreach ( $checkbox_ids as $id => $delete ) {
 					if ( $delete ) {
 						$ids[] = array( 'id' => $id );
 					}
