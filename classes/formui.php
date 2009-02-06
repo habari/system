@@ -831,6 +831,36 @@ class FormValidators
 			return array($warning);
 		}
 	}
+	
+	/**
+	 * A validation function that returns an error if the value passed is not within a specified range
+	 * 
+	 * @param string $value A value to test if it is empty
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $container The container that holds the control
+	 * @param float $min The minimum value, inclusive
+	 * @param float $max The maximum value, inclusive
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value is value, or an array with strings describing the errors
+	 */
+	public static function validate_range( $value, $control, $container, $min, $max, $warning = NULL )
+	{
+		if($value < $min) {
+			if ($warning == NULL) {
+				$warning = _t('The value entered is lesser than the minimum of %d.', array($min));
+			}
+			return array($warning);
+		}
+		elseif($value > $max) {
+			if ($warning == NULL) {
+				$warning = _t('The value entered is greater than the maximum of %d.', array($max));
+			}
+			return array($warning);
+		}
+		else {
+			return array();
+		}
+	}
 }
 
 /**
