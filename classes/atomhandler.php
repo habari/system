@@ -195,7 +195,7 @@ class AtomHandler extends ActionHandler
 
 			$entry_link = $feed_entry->addChild( 'link' );
 			$entry_link->addAttribute( 'rel', 'alternate' );
-			$entry_link->addAttribute( 'href', $post->permalink );
+			$entry_link->addAttribute( 'href', $post->permalink_atom );
 
 			$entry_link = $feed_entry->addChild( 'link' );
 			$entry_link->addAttribute( 'rel', 'edit' );
