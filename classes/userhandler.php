@@ -163,7 +163,7 @@ class UserHandler extends ActionHandler
 
 				$user->password = Utils::crypt( $password );
 				if( $user->update() ) {
-					$message = _t("Your password for %1\$s has been reset.  Your credentials are as follows---\r\nUsername: %2\$s\r\nPassword: %3\$s", array(Site::get_url('habari'), $user->username, $password));
+					$message = _t("Your password for %1\$s has been reset.  Your credentials are as follows---\nUsername: %2\$s\nPassword: %3\$s", array(Site::get_url('habari'), $user->username, $password));
 
 					Utils::mail($user->email, _t('[%1$s] Password has been reset for %2$s', array(Options::get('title'), $user->displayname)), $message);
 					Session::notice(_t('A new password has been sent to the user.'));
