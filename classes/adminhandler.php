@@ -2527,16 +2527,20 @@ class AdminHandler extends ActionHandler
 	{
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
 
-		$tokens = ACL::all_tokens();
+		$tokens = ACL::all_tokens( 'id');
 		$access_names = ACL::$access_names;
-		//$access_names[] = 'full';
 		$access_names[] = 'deny';
 
-		foreach ($tokens as $token) {
+		// attach access bitmasks to the tokens
+		foreach ( $tokens as $token ) {
 			$token->access = ACL::get_group_token_access($group->id, $token->id);
 		}
 
-		// post would happen here
+		// separate tokens into groups
+		$grouped_tokens = array();
+		foreach ( $tokens as $token ) {
+			$grouped_tokens[$token->token_group][($token->token_type) ? 'crud' : 'bool'][] = $token;
+		}
 
 		$group= UserGroup::get_by_id($this->handler_vars['id']);
 
@@ -2561,7 +2565,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->members = $members;
 
 		$this->theme->access_names= $access_names;
-		$this->theme->tokens = $tokens;
+		$this->theme->grouped_tokens = $grouped_tokens;
 
 		$this->theme->groups = UserGroups::get_all();
 		$this->theme->group = $group;
@@ -2578,6 +2582,7 @@ class AdminHandler extends ActionHandler
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
 		$tokens = ACL::all_tokens();
 		$access_names = ACL::$access_names;
+		$access_names []= 'full';
 
 		if ( isset($this->handler_vars['nonce']) ) {
 			$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
@@ -2609,7 +2614,7 @@ class AdminHandler extends ActionHandler
 						$group->deny( $token->id );
 					}
 					else {
-						foreach ( ACL::$access_names as $name ) {
+						foreach ( $access_names as $name ) {
 							if ( isset($this->handler_vars['tokens'][$token->id][$name]) ) {
 								$bitmask->$name = true;
 							}

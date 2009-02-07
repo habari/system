@@ -3,7 +3,7 @@
 	<span class="pct40">
 		<select name="navigationdropdown" onchange="navigationDropdown.changePage();" tabindex="1">
 			<option value="<?php echo URL::get('admin', 'page=groups'); ?>"><?php _e('All Groups'); ?></option>
-			<?php foreach($groups as $group_nav): ?>
+			<?php foreach ( $groups as $group_nav ): ?>
 				<option value="<?php echo URL::get('admin', 'page=group&id=' . $group_nav->id); ?>"<?php if($group_nav->id == $id): ?> selected="selected"<?php endif; ?>><?php echo $group_nav->name; ?></option>
 			<?php endforeach; ?>
 		</select>
@@ -46,31 +46,61 @@
 <div class="container settings group groupacl" id="groupacl">
 
 	<h2><?php _e('Group Permissions'); ?></h2>
-	
-	<div class="item clear groupacl">
-		<table id="permissions">
-			<tr>
-				<th>Description</th>
-				<?php foreach ( $access_names as $name ): ?>
-				<th><?php echo _t($name); ?></th>
+
+	<?php
+	foreach ( $grouped_tokens as $group_name => $token_group ):
+		$crud_tokens = ( isset($token_group['crud']) ) ? $token_group['crud'] : array();
+		$bool_tokens = ( isset($token_group['bool']) ) ? $token_group['bool'] : array();
+	?>
+	<div class="item clear permission-group">
+		<h3><?php echo $group_name; ?></h3>
+		<?php if ( !empty( $crud_tokens ) ): ?>
+			<table id="<?php echo $group_name; ?>-crud-permissions" class="pct100">
+				<tr class="head">
+					<th class="pct40">Token Description</th>
+					<?php foreach ( $access_names as $name ): ?>
+					<th class="pct10"><?php echo $name; ?></th>
+					<?php endforeach; ?>
+				</tr>
+				<?php foreach ( $crud_tokens as $token ): ?>
+				<tr>
+					<td class="token_description pct40"><strong><?php echo $token->description; ?></strong></td>
+					<?php 
+					foreach ( $access_names as $name ):
+						$checked = ( isset($token->access) && ACL::access_check( $token->access, $name ) ) ? ' checked' : '';
+					?>
+						<td class="token_access pct10">
+							<input type="checkbox" id="token_<?php echo $token->id . '_' . $name; ?>" name="tokens[<?php echo $token->id . '][' . $name; ?>]" <?php echo $checked; ?>>
+						</td>
+					<?php endforeach; ?>
+				</tr>
 				<?php endforeach; ?>
-			</tr>
-		<?php foreach ( $tokens as $token ): ?>
-			<tr>
-				<td class="token_description"><strong><?php echo $token->description; ?></strong></td>
-				<?php 
-				foreach ( $access_names as $name ):
-					$checked = ( isset($token->access) && ACL::access_check( $token->access, $name ) ) ? ' checked' : '';
-				?>
-					<td class="token_access">
-						<input type="checkbox" id="token_<?php echo $token->id . '_' . $name; ?>" name="tokens[<?php echo $token->id . '][' . $name; ?>]" <?php echo $checked; ?>>
+			</table>
+		<?php elseif ( !empty( $bool_tokens ) ): ?>
+			<table id="<?php echo $group_name; ?>-bool-permissions" class="pct100">
+				<tr class="head">
+					<th class="pct40">Token Description</th>
+					<th class="pct10">allow</th>
+					<th class="pct10">deny</th>
+				</tr>
+				<?php foreach ( $bool_tokens as $token ): ?>
+				<tr>
+					<td class="token_description pct40"><strong><?php echo $token->description; ?></strong></td>
+					<?php $checked = ( isset($token->access) && ACL::access_check( $token->access, 'any' ) ) ? ' checked' : '';?>
+					<td class="token_access pct10">
+						<input type="checkbox" id="token_<?php echo $token->id . '_full'; ?>" name="tokens[<?php echo $token->id; ?>][full]" <?php echo $checked; ?>>
 					</td>
+					<?php $checked = ( isset($token->access) && ACL::access_check( $token->access, 'deny' ) ) ? ' checked' : '';?>
+					<td class="token_access pct10">
+						<input type="checkbox" id="token_<?php echo $token->id . '_deny'; ?>" name="tokens[<?php echo $token->id; ?>][deny]" <?php echo $checked; ?>>
+					</td>
+				</tr>
 				<?php endforeach; ?>
-			</tr>
-		<?php endforeach; ?>
-		</table>
+			</table>
+		<?php endif; ?>
 	</div>
-	
+	<?php endforeach; ?>
+
 </div>
 
 <div class="container controls transparent">
