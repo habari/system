@@ -70,3 +70,6 @@
 	float: right;
 }
 
+#menubutton a:first-letter{
+	color: inherit;
+}
