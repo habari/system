@@ -778,7 +778,7 @@ class AdminHandler extends ActionHandler
 		$locale_time_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
 
 		// Controls
-		$controls = $form->append( 'wrapper', 'controls' );
+		$controls = $form->append( 'wrapper', 'page_controls' );
 		$controls->class = 'container controls transparent';
 		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
 		$submit->class[] = 'pct25';
