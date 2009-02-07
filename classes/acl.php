@@ -367,6 +367,22 @@ class ACL {
 		 * the permission flag and can be accomplished in a single SQL
 		 * call.
 		 */
+		
+		$exceptions = '';
+		$default_groups = array();
+		$default_groups = Plugins::filter( 'user_default_groups', $default_groups, $user_id );
+		$default_groups = array_filter(array_map('intval', $default_groups));
+		switch(count($default_groups)) {
+			case 0: // do nothing
+				break;
+			case 1: // single argument
+				$exceptions = 'OR ug.group_id = ' . reset($default_groups);
+				break;
+			default: // multiple arguments
+				$exceptions = 'OR ug.group_id IN (' . implode(',', $default_groups) . ')';
+				break;
+		}
+
 		$sql = <<<SQL
 SELECT access_mask
   FROM {user_token_permissions}
@@ -376,12 +392,15 @@ UNION ALL
 SELECT gp.access_mask
   FROM {users_groups} ug
   INNER JOIN {group_token_permissions} gp
-  ON ug.group_id = gp.group_id
-  AND ug.user_id = :user_id
+  ON ((ug.group_id = gp.group_id
+  AND ug.user_id = :user_id)
+	{$exceptions})
   AND gp.token_id = :token_id
   ORDER BY access_mask ASC
 SQL;
 		$accesses = DB::get_column( $sql, array( ':user_id' => $user_id, ':token_id' => $token_id ) );
+		
+		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
 		$result = 0;
 		foreach ( $accesses as $access ) {
