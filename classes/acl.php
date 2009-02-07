@@ -34,11 +34,11 @@ class ACL {
 	 */
 	public static function access_check( $bitmask, $access )
 	{
-		if($access instanceof Bitmask) {
+		if ( $access instanceof Bitmask ) {
 			return ($bitmask->value & $access->value) == $access->value;
 		}
 
-		switch($access) {
+		switch ( $access ) {
 			case 'full':
 				return $bitmask->value == $bitmask->full;
 			case 'any':
@@ -93,23 +93,27 @@ class ACL {
 	 * Create a new permission token, and save it to the permission tokens table
 	 * @param string $name The name of the permission
 	 * @param string $description The description of the permission
+	 * @param string $group The token group for organizational purposes
+	 * @param bool $crud Indicates if the token is a CRUD or boolean type token (default is boolean)
 	 * @return mixed the ID of the newly created permission, or boolean FALSE
 	**/
-	public static function create_token( $name, $description )
+	public static function create_token( $name, $description, $group, $crud = false )
 	{
 		$name = self::normalize_token( $name );
+		$crud = ( $crud ) ? 1 : 0;
 		// first, make sure this isn't a duplicate
 		if ( ACL::token_exists( $name ) ) {
 			return false;
 		}
 		$allow = true;
 		// Plugins have the opportunity to prevent adding this token
-		$allow = Plugins::filter('token_create_allow', $allow, $name, $description );
+		$allow = Plugins::filter('token_create_allow', $allow, $name, $description, $group, $crud );
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('token_create_before', $name, $description);
-		$result = DB::query('INSERT INTO {tokens} (name, description) VALUES (?, ?)', array( $name, $description) );
+		Plugins::act('token_create_before', $name, $description, $group, $crud );
+
+		$result = DB::query('INSERT INTO {tokens} (name, description, token_group, token_type) VALUES (?, ?, ?, ?)', array( $name, $description, $group, $crud) );
 
 		if ( ! $result ) {
 			// if it didn't work, don't bother trying to log it
@@ -123,8 +127,8 @@ class ACL {
 			ACL::grant_group( $admin->id, $token, 'full' );
 		}
 
-		EventLog::log('New permission created: ' . $name, 'info', 'default', 'habari');
-		Plugins::act('permission_create_after', $name, $description );
+		EventLog::log('New permission token created: ' . $name, 'info', 'default', 'habari');
+		Plugins::act('permission_create_after', $name, $description, $group, $crud );
 		return $result;
 	}
 
@@ -177,7 +181,7 @@ class ACL {
 		if ( ( 'id' != $order ) && ( 'name' != $order ) && ( 'description' != $order ) ) {
 			$order = 'id';
 		}
-		$tokens = DB::get_results( 'SELECT id, name, description FROM {tokens} ORDER BY ' . $order );
+		$tokens = DB::get_results( 'SELECT id, name, description, token_group, token_type FROM {tokens} ORDER BY ' . $order );
 		return $tokens ? $tokens : array();
 	}
 
@@ -646,26 +650,33 @@ SQL;
 	 */
 	public static function create_default_tokens()
 	{
-		self::create_token( 'super_user', 'Permissions for super users' );
-		self::create_token( 'own_posts', 'Permissions on one\'s own posts' );
-		self::create_token( 'manage_all_comments', 'Manage comments on all posts' );
-		self::create_token( 'manage_own_post_comments', 'Manage comments on one\'s own posts' );
-		self::create_token( 'manage_tags', 'Manage tags' );
-		self::create_token( 'manage_options', 'Manage options' );
-		self::create_token( 'manage_theme', 'Change theme' );
-		self::create_token( 'manage_theme_config', 'Configure the active theme' );
-		self::create_token( 'manage_plugins', 'Activate/deactivate plugins' );
-		self::create_token( 'manage_plugins_config', 'Configure active plugins' );
-		self::create_token( 'manage_import', 'Use the importer' );
-		self::create_token( 'manage_users', 'Add, remove, and edit users' );
-		self::create_token( 'manage_groups', 'Manage groups and permissions' );
-		self::create_token( 'manage_logs', 'Manage logs' );
-		self::create_token( 'post_any', 'Permissions to posts of type "any"' );
-		self::create_token( 'own_post_any', 'Permissions to one\'s own posts of type "any"' );
-		self::create_token( 'post_entry', 'Permissions to posts of type "entry"' );
-		self::create_token( 'own_post_entry', 'Permissions to one\'s own posts of type "entry"' );
-		self::create_token( 'post_page', 'Permissions to posts of type "page"' );
-		self::create_token( 'own_post_page', 'Permissions to one\'s own posts of type "page"' );
+		// super user token
+		self::create_token( 'super_user', 'Permissions for super users', 'Super User' );
+
+		// admin tokens
+		self::create_token( 'manage_all_comments', 'Manage comments on all posts', 'Administration' );
+		self::create_token( 'manage_own_post_comments', 'Manage comments on one\'s own posts', 'Administration' );
+		self::create_token( 'manage_tags', 'Manage tags', 'Administration' );
+		self::create_token( 'manage_options', 'Manage options', 'Administration' );
+		self::create_token( 'manage_theme', 'Change theme', 'Administration' );
+		self::create_token( 'manage_theme_config', 'Configure the active theme', 'Administration' );
+		self::create_token( 'manage_plugins', 'Activate/deactivate plugins', 'Administration' );
+		self::create_token( 'manage_plugins_config', 'Configure active plugins', 'Administration' );
+		self::create_token( 'manage_import', 'Use the importer', 'Administration' );
+		self::create_token( 'manage_users', 'Add, remove, and edit users', 'Administration' );
+		self::create_token( 'manage_groups', 'Manage groups and permissions', 'Administration' );
+		self::create_token( 'manage_logs', 'Manage logs', 'Administration' );
+
+		// content tokens
+		self::create_token( 'own_posts_any', 'Permissions on one\'s own posts', 'Content', true );
+		self::create_token( 'post_any', 'Permissions to all posts', 'Content', true );
+		foreach ( Post::list_active_post_types() as $name => $posttype ) {
+			self::create_token( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ), 'Content', true );
+			self::create_token( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ), 'Content', true );
+		}
+
+		// comments tokens
+		self::create_token( 'comment', 'Make comments on any post', 'Comments' );
 	}
 
 	public static function rebuild_permissions( $user = null )
@@ -673,20 +684,34 @@ SQL;
 		// Clear out all permission-related values
 		DB::query('DELETE FROM {tokens}');
 		DB::query('DELETE FROM {group_token_permissions}');
-		DB::query('DELETE FROM {groups}');
+		//DB::query('DELETE FROM {groups}');
 		DB::query('DELETE FROM {post_tokens}');
 		DB::query('DELETE FROM {user_token_permissions}');
-		DB::query('DELETE FROM {users_groups}');
+		//DB::query('DELETE FROM {users_groups}');
 
-		// Create initial groups
-		$admin_group = UserGroup::create( array( 'name' => _t('admin') ) );
-		$anonymous_group = UserGroup::create( array( 'name' => _t('anonymous') ) );
-
-		// Add the current user or the passed user to the admin group
-		if ( empty($user) ) {
-			$user = User::identify();
+		// Create initial groups if they don't already exist
+		$admin_group = UserGroup::get_by_name( _t('admin') );
+		if ( ! $admin_group instanceof UserGroup ) {
+			$admin_group = UserGroup::create( array( 'name' => _t('admin') ) );
 		}
-		$admin_group->add($user);
+
+		$anonymous_group = UserGroup::get_by_name( _t('anonymous') );
+		if ( ! $anonymous_group instanceof UserGroup ) {
+			$anonymous_group = UserGroup::create( array( 'name' => _t('anonymous') ) );
+		}
+
+		// Add all users or the passed user to the admin group
+		if ( empty($user) ) {
+			$users = Users::get_all();
+			$ids = array();
+			foreach ( $users as $user ) {
+				$ids[] = $user->id;
+			}
+			$admin_group->add( $ids );
+		}
+		else {
+			$admin_group->add($user);
+		}
 
 		// create default permissions
 		self::create_default_tokens();
@@ -695,6 +720,7 @@ SQL;
 		// Add entry and page read access to the anonymous group
 		$anonymous_group->grant('post_entry', 'read');
 		$anonymous_group->grant('post_page', 'read');
+		$anonymous_group->grant( 'comment' );
 
 		// Add the anonumous user to the anonymous group
 		$anonymous_group->add( 0 );

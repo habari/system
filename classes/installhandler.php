@@ -1316,12 +1316,6 @@ class InstallHandler extends ActionHandler {
 		// Add the default tokens
 		ACL::create_default_tokens();
 
-		// Add tokens for each existing post type, which is done in the installer when the type is created.
-		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-			ACL::create_token( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ) );
-			ACL::create_token( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ) );
-		}
-
 		// Give admin group access to the super_user token
 		$group->grant('super_user');
 
@@ -1333,6 +1327,11 @@ class InstallHandler extends ActionHandler {
 
 		// Create the anonymous group
 		$this->create_anonymous_group();
+	}
+
+	private function upgrade_db_post_3124()
+	{
+		ACL::rebuild_permissions();
 	}
 
 	/**
