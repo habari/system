@@ -2581,8 +2581,6 @@ class AdminHandler extends ActionHandler
 	{
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
 		$tokens = ACL::all_tokens();
-		$access_names = ACL::$access_names;
-		$access_names []= 'full';
 
 		if ( isset($this->handler_vars['nonce']) ) {
 			$wsse = Utils::WSSE( $this->handler_vars['nonce'], $this->handler_vars['timestamp'] );
@@ -2614,10 +2612,13 @@ class AdminHandler extends ActionHandler
 						$group->deny( $token->id );
 					}
 					else {
-						foreach ( $access_names as $name ) {
+						foreach ( ACL::$access_names as $name ) {
 							if ( isset($this->handler_vars['tokens'][$token->id][$name]) ) {
 								$bitmask->$name = true;
 							}
+						}
+						if ( isset($this->handler_vars['tokens'][$token->id]['full'] ) ) {
+							$bitmask->value = $bitmask->full;
 						}
 						if ( $bitmask->value != 0) {
 							$group->grant( $token->id, $bitmask );
