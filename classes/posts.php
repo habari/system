@@ -366,7 +366,6 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				// Only show posts to which the current user has permission
-				//$paramset['ignore_permissions'] = true;
 				if ( !isset($paramset['ignore_permissions']) ) {
 					// This set of wheres will be used to generate a list of post_ids that this user can read
 					$perm_where = array();
@@ -376,7 +375,7 @@ class Posts extends ArrayObject implements IsContent
 					$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
 
 					// If a user can read his own posts, let him
-					if ( User::identify()->can('own_posts', 'read') ) {
+					if ( User::identify()->can('own_posts_any', 'read') ) {
 						$perm_where[] = '{posts}.user_id = ?';
 						$params[] = User::identify()->id;
 					}
