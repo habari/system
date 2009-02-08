@@ -429,7 +429,7 @@ SQL;
 
 		$super_user_access = self::get_user_token_access( $user, 'super_user' );
 		if ( isset( $super_user_access ) && self::access_check( $super_user_access, 'any' ) ) {
-			$result = DB::get_results('SELECT id, ? as access_mask FROM {tokens}', array($bitmask->full) );
+			$result = DB::get_results('SELECT id as token_id, ? as access_mask FROM {tokens}', array($bitmask->full) );
 		}
 		else {
 			// convert $user to an ID
