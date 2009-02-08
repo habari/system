@@ -261,7 +261,7 @@ class Comments extends ArrayObject
 
 		// is a count being request?
 		if ( isset( $count ) ) {
-			$select = "COUNT( $count )";
+			$select = "COUNT( 1 )";
 			$fetch_fn = 'get_value';
 			$orderby = '';
 		}
