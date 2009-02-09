@@ -2816,13 +2816,13 @@ class AdminHandler extends ActionHandler
 			$plural = Plugins::filter('post_type_display', $type, 'plural');
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
-			$createperm = array( 'post_' . $type => ACL::get_bitmask('create') );
-			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular, 'access'=>$createperm );
-			$createperms = array_merge($createperms, $createperm);
+			$createperm = array( 'own_post_' . $type => ACL::get_bitmask('create'), 'post_' . $type => ACL::get_bitmask('create') );
+			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular, 'access' => $createperm );
+			$createperms = array_merge( $createperms, $createperm );
 
-			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
-			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural, 'access'=>$manageperm );
-			$manageperms = array_merge($manageperms, $manageperm);
+			$manageperm = array( 'own_post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
+			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural, 'access'=> $manageperm );
+			$manageperms = array_merge( $manageperms, $manageperm );
 
 			$createmenu['create_' . $typeint]['hotkey'] = $hotkey;
 			$managemenu['manage_' . $typeint]['hotkey'] = $hotkey;
@@ -2841,7 +2841,7 @@ class AdminHandler extends ActionHandler
 			'manage' => array( 'url' => URL::get( 'admin', 'page=posts' ), 'title' => _t('Manage content'), 'text' => _t('Manage'), 'hotkey' => 'M', 'submenu' => $managemenu, 'access' => $manageperms ),
 			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C', 'access' => array('manage_all_comments' => true, 'manage_own_post_comments' => true) ),
 			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array('manage_tags'=>true) ),
-			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D', 'access'=>array('manage_logs'=>true) ),
+			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D' ),
 			'options' => array( 'url' => URL::get( 'admin', 'page=options' ), 'title' => _t( 'View and configure blog options' ), 'text' => _t( 'Options' ), 'hotkey' => 'O', 'access'=>array('manage_options'=>true) ),
 			'themes' => array( 'url' => URL::get( 'admin', 'page=themes' ), 'title' => _t( 'Preview and activate themes' ), 'text' => _t( 'Themes' ), 'hotkey' => 'T', 'access'=>array('manage_theme'=>true) ),
 			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P', 'access'=>array('manage_plugins'=>true, 'manage_plugins_config' => true) ),
