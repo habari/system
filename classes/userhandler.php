@@ -48,18 +48,25 @@ class UserHandler extends ActionHandler
 					/* Redirect to the correct admin page */
 					$dest = explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
 					if ( '' == $dest[0] ) {
-						Utils::redirect( Site::get_url( 'admin' ) );
+						$login_dest = Site::get_url( 'admin' );
 					}
 					else {
 						// Replace '?' with '&' in $dest[1] before call URL::get()
 						// Therefore calling URL::get() with a query string
 						$dest[1] = str_replace( '?', '&', $dest[1] );
-						Utils::redirect( URL::get( 'admin', 'page=' . $dest[1] ) );
+						$login_dest = URL::get( 'admin', 'page=' . $dest[1] );
 					}
 				}
 				else {
-					Utils::redirect( Site::get_url( 'admin' ) );
+					$login_dest = Site::get_url( 'admin' );
 				}
+
+				// filter the destination
+				$login_dest = Plugins::filter( 'login_redirect_dest', $login_dest, $user );
+
+				// finally, redirect to the destination
+				Utils::redirect( $login_dest );
+
 				return TRUE;
 			}
 
