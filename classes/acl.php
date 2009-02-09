@@ -295,22 +295,21 @@ class ACL {
 	}
 
 	/**
-	 * Determine whether a user is denied permission to perform a specific action
+	 * Determine whether a user is explicitly denied permission to perform a specific action
+	 * This function does not return true if the user is merely not granted a permission
 	 * @param mixed $user A User object, user ID or a username
 	 * @param mixed $token_id A permission ID or name
-	 * @return bool Whether the user can perform the action
+	 * @return bool True if access to the token is denied to the user
 	 **/
 	public static function user_cannot( $user, $token_id )
 	{
 
 		$result = self::get_user_token_access( $user, $token_id );
-
 		if ( isset( $result ) && self::access_check( $result, 'deny' ) ) {
 			return true;
 		}
 
-		// either the permission hasn't been granted, or it's been
-		// explicitly denied.
+		// The permission has been granted, or it hasn't been explicitly denied.
 		return false;
 	}
 
@@ -402,18 +401,23 @@ SQL;
 		
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
-		$result = 0;
-		foreach ( $accesses as $access ) {
-			if ( $access == 0 ) {
-				$result = 0;
-				break;
-			}
-			else {
-				$result |= $access;
-			}
+		if(count($accesses) == 0){
+			return null;
 		}
-
-		return self::get_bitmask( $result );
+		else {
+			$result = 0;
+			foreach ( $accesses as $access ) {
+				if ( $access == 0 ) {
+					$result = 0;
+					break;
+				}
+				else {
+					$result |= $access;
+				}
+			}
+			
+			return self::get_bitmask( $result );
+		}
 	}
 
 	/**
