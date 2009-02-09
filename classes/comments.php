@@ -112,7 +112,7 @@ class Comments extends ArrayObject
 					$params[] = $paramset['url'];
 				}
 				if ( isset( $paramset['post_id'] ) ) {
-					$where[] = "post_id= ?";
+					$where[] = "{comments}.post_id= ?";
 					$params[] = $paramset['post_id'];
 				}
 				if ( isset( $paramset['ip'] ) ) {
