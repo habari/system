@@ -2419,10 +2419,10 @@ class AdminHandler extends ActionHandler
 
 			if ( ( isset($handler_vars['action']) && $handler_vars['action'] == 'add') || isset($handler_vars['newgroup']) ) {
 				if(isset($handler_vars['newgroup'])) {
-					$name= $handler_vars['new_groupname'];
+					$name= trim ( $handler_vars['new_groupname'] );
 				}
 				else {
-					$name= $handler_vars['name'];
+					$name= trim( $handler_vars['name'] );
 				}
 
 				$settings= array('name' => $name);
@@ -2433,6 +2433,15 @@ class AdminHandler extends ActionHandler
 					Session::notice( sprintf(_t( 'The group %s already exists'), $name ) );
 					if($ajax) {
 						return Session::messages_get( true, 'array' );
+					}
+					else {
+						return;
+					}
+				}
+				elseif( empty( $name ) ) {
+					Session::notice( _t( 'The group must have a name') );
+					if( $ajax ) {
+						return Session::message_get( true, 'array' );
 					}
 					else {
 						return;
