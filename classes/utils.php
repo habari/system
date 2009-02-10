@@ -174,7 +174,7 @@ class Utils
 			? $parsed['scheme'] . ':' . ( ( strtolower( $parsed['scheme'] ) == 'mailto' ) ? '' : '//' )
 			: '';
 		$uri.= isset( $parsed['user'] )
-			? $parsed['user'].( $parsed['pass'] ? ':' . $parsed['pass'] : '' ) . '@'
+			? $parsed['user'].( isset( $parsed['pass'] ) ? ':' . $parsed['pass'] : '' ) . '@'
 			: '';
 		$uri.= isset( $parsed['host'] ) ? $parsed['host'] : '';
 		$uri.= isset( $parsed['port'] ) ? ':'.$parsed['port'] : '';
