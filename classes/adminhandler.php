@@ -2200,6 +2200,7 @@ class AdminHandler extends ActionHandler
 			'PasswordDigest' => '',
 			'change' => '',
 			'limit' => 20,
+			'offset' => 0,
 			'user' => 0,
 			'date' => 'any',
 			'module' => '0',
@@ -2295,7 +2296,7 @@ class AdminHandler extends ActionHandler
 		$arguments = array(
 			'severity' => LogEntry::severity( $severity ),
 			'limit' => $limit,
-			'offset' => ( $index - 1) * $limit,
+			'offset' => $offset,
 		);
 
 		// deduce type_id from module and type
@@ -2360,7 +2361,7 @@ class AdminHandler extends ActionHandler
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		$params = $_POST->getArrayCopy();
+		$params = $_POST;
 
 		$this->fetch_logs( $params );
 		$items = $this->theme->fetch( 'logs_items' );
