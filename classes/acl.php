@@ -513,13 +513,20 @@ SQL;
 	public static function grant_group( $group_id, $token_id, $access = 'full' )
 	{
 		$token_id = self::token_id( $token_id );
-		$row = DB::get_row( 'SELECT access_mask, count(access_mask) as granted FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
-		$access_mask = $row->access_mask;
-		$row_exists = $row->granted != 0;
-		if ( $access_mask ===  false ) {
-			$access_mask = 0; // default is 'not granted' (bitmask 0)
+		$results = DB::get_results( 'SELECT access_mask, access_mask as granted FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
+		$access_mask = 0;
+		$row_exists = false;
+		if($results) {
+			$row_exists = true;
+			foreach($results as $row) {
+				if($row->access_mask == 0) {
+					$access_mask = 0;
+					break;
+				}
+				$access_mask |= $row->access_mask;
+			}
 		}
-
+		
 		$bitmask = self::get_bitmask( $access_mask );
 		$orig_value = $bitmask->value;
 
