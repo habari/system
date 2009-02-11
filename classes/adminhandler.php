@@ -2977,6 +2977,7 @@ class AdminHandler extends ActionHandler
 				$require_any = array('manage_options'=>true);
 				break;
 			case 'themes':
+			case 'activate_theme':
 				$require_any = array('manage_themes'=>true, 'manage_theme_config'=>true);
 				break;
 			case 'plugins':
