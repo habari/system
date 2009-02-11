@@ -370,95 +370,95 @@ class Posts extends ArrayObject implements IsContent
 					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
-			
-			// Only show posts to which the current user has permission
-			if ( isset($paramset['ignore_permissions']) ) {
-				$master_perm_where = '';
+		}
+		
+		// Only show posts to which the current user has permission
+		if ( isset($paramset['ignore_permissions']) ) {
+			$master_perm_where = '';
+		}
+		else {
+			// This set of wheres will be used to generate a list of post_ids that this user can read
+			$perm_where = array();
+			$perm_where_denied = array();
+			$params_where = array();
+			$where = array();
+
+			// Get the tokens that this user is granted or denied access to read
+			$read_tokens = isset($paramset['read_tokens']) ? $paramset['read_tokens'] : ACL::user_tokens(User::identify(), 'read', true);
+			$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
+
+			// If a user can read his own posts, let him
+			if ( User::identify()->can('own_posts_any', 'read') ) {
+				$perm_where['own_posts_id'] = '{posts}.user_id = :own_posts_id';
+				$params_where['own_posts_id'] = User::identify()->id;
+			}
+
+			// If a user can read any post type, let him
+			if( User::identify()->can( 'post_any', 'read' ) ) {
+				$perm_where = array('post_any' => 1);
+				$params_where = array();
 			}
 			else {
-				// This set of wheres will be used to generate a list of post_ids that this user can read
-				$perm_where = array();
-				$perm_where_denied = array();
-				$params_where = array();
-				$where = array();
-
-				// Get the tokens that this user is granted or denied access to read
-				$read_tokens = isset($paramset['read_tokens']) ? $paramset['read_tokens'] : ACL::user_tokens(User::identify(), 'read', true);
-				$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
-
-				// If a user can read his own posts, let him
-				if ( User::identify()->can('own_posts_any', 'read') ) {
-					$perm_where['own_posts_id'] = '{posts}.user_id = :own_posts_id';
-					$params_where['own_posts_id'] = User::identify()->id;
-				}
-
-				// If a user can read any post type, let him
-				if( User::identify()->can( 'post_any', 'read' ) ) {
-					$perm_where = array('post_any' => 1);
-					$params_where = array();
-				}
-				else {
-					// If a user can read specific post types, let him
-					$permitted_post_types = array();
-					foreach ( Post::list_active_post_types() as $name => $posttype ) {
-						if ( User::identify()->can( 'post_' . Utils::slugify($name), 'read' ) ) {
-							$permitted_post_types[] = $posttype;
-						}
-					}
-					if ( count($permitted_post_types) > 0 ) {
-						$perm_where[] = '{posts}.content_type IN (' . implode(',', $permitted_post_types) . ')';
+				// If a user can read specific post types, let him
+				$permitted_post_types = array();
+				foreach ( Post::list_active_post_types() as $name => $posttype ) {
+					if ( User::identify()->can( 'post_' . Utils::slugify($name), 'read' ) ) {
+						$permitted_post_types[] = $posttype;
 					}
 				}
-
-				// If a user is denied access to all posts, do so
-				if( User::identify()->cannot( 'post_any' ) ) {
-					$perm_where_denied = array('0');
+				if ( count($permitted_post_types) > 0 ) {
+					$perm_where[] = '{posts}.content_type IN (' . implode(',', $permitted_post_types) . ')';
 				}
-				else {
-					// If a user is denied read access to specific post types, deny him
-					$denied_post_types = array();
-					foreach ( Post::list_active_post_types() as $name => $posttype ) {
-						if ( User::identify()->cannot( 'post_' . Utils::slugify($name) ) ) {
-							$denied_post_types[] = $posttype;
-						}
-					}
-					if ( count($denied_post_types) > 0 ) {
-						$perm_where_denied[] = '{posts}.content_type NOT IN (' . implode(',', $denied_post_types) . ')';
-					}
-				}
-					
-					
-				// If a user can read posts with specific tokens, let him
-				if ( count($read_tokens) > 0 ) {
-					$joins['post_tokens__allowed'] = ' INNER JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
-				}
-
-				// If there are granted permissions to check, add them to the where clause
-				if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
-					// You have no grants.  You get no posts.
-					$where['perms_granted'] = '0';
-				}
-				elseif ( count($perm_where) > 0 ) {
-					$where['perms_granted'] = '
-						(' . implode(' OR ', $perm_where) . ')
-					';
-					$params = $params + $params_where;
-				}
-
-				// If there are granted permissions to check, add them to the where clause
-				if ( count($perm_where_denied) > 0 ) {
-					$where['perms_denied'] = '
-						(' . implode(' AND ', $perm_where_denied) . ')
-					';
-				}
-					
-				if ( count($deny_tokens) > 0 ) {
-					$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
-					$where['perms_denied_join_null'] = 'pt_denied.post_id IS NULL';
-				}
-
-				$master_perm_where = implode( ' AND ', $where );
 			}
+
+			// If a user is denied access to all posts, do so
+			if( User::identify()->cannot( 'post_any' ) ) {
+				$perm_where_denied = array('0');
+			}
+			else {
+				// If a user is denied read access to specific post types, deny him
+				$denied_post_types = array();
+				foreach ( Post::list_active_post_types() as $name => $posttype ) {
+					if ( User::identify()->cannot( 'post_' . Utils::slugify($name) ) ) {
+						$denied_post_types[] = $posttype;
+					}
+				}
+				if ( count($denied_post_types) > 0 ) {
+					$perm_where_denied[] = '{posts}.content_type NOT IN (' . implode(',', $denied_post_types) . ')';
+				}
+			}
+					
+					
+			// If a user can read posts with specific tokens, let him
+			if ( count($read_tokens) > 0 ) {
+				$joins['post_tokens__allowed'] = ' INNER JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
+			}
+
+			// If there are granted permissions to check, add them to the where clause
+			if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
+				// You have no grants.  You get no posts.
+				$where['perms_granted'] = '0';
+			}
+			elseif ( count($perm_where) > 0 ) {
+				$where['perms_granted'] = '
+					(' . implode(' OR ', $perm_where) . ')
+				';
+				$params = $params + $params_where;
+			}
+
+			// If there are granted permissions to check, add them to the where clause
+			if ( count($perm_where_denied) > 0 ) {
+				$where['perms_denied'] = '
+					(' . implode(' AND ', $perm_where_denied) . ')
+				';
+			}
+					
+			if ( count($deny_tokens) > 0 ) {
+				$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
+				$where['perms_denied_join_null'] = 'pt_denied.post_id IS NULL';
+			}
+
+			$master_perm_where = implode( ' AND ', $where );
 		}
 
 		// Extract the remaining parameters which will be used onwards
