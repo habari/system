@@ -540,8 +540,6 @@ var groupManage = {
 			groupManage.addMember(groupManage.potentials.val());
 		});
 
-		console.log($('body.page-group .container.groupmembers #currentusers a.user'));
-
 		$('body.page-group .container.groupmembers #currentusers a.user').click(function() {
 			groupManage.removeMember($(this));
 			return false;
