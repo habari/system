@@ -162,7 +162,13 @@ class Theme extends Pluggable
 	 */
 	public function act_display( $paramarray = array( 'user_filters'=> array() ) )
 	{
-		extract( $paramarray );
+		// Get any full-query parameters
+		$possible = array( 'user_filters', 'fallback', 'posts', 'post', 'content_type' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
 
 		$where_filters = array();
 		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
