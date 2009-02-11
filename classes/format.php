@@ -114,7 +114,7 @@ class Format
 	 **/
 	public static function autop($value)
 	{
-		$regex = '/(<\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
+		$regex = '/(<\s*(address|code|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
 
 		// First, clean out any windows line endings
 		$target = str_replace( "\r\n", "\n", $value );
