@@ -1692,7 +1692,12 @@ class AdminHandler extends ActionHandler
 					$this->theme->config_plugin_caption = _t('Help');
 				}
 				else {
-					$this->theme->config_plugin_caption = $plugin['actions'][Controller::get_var('configaction')]['caption'];
+					if(isset($plugin['actions'][Controller::get_var('configaction')])) {
+						$this->theme->config_plugin_caption = $plugin['actions'][Controller::get_var('configaction')]['caption'];
+					}
+					else {
+						$this->theme->config_plugin_caption = Controller::get_var('configaction');
+					}
 				}
 				unset($plugin['actions'][Controller::get_var('configaction')]);
 				$this->theme->config_plugin = $plugin;
@@ -2825,7 +2830,7 @@ class AdminHandler extends ActionHandler
 			$plural = Plugins::filter('post_type_display', $type, 'plural');
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
-			$createperm = array( 'own_post_' . $type => ACL::get_bitmask('create'), 'post_' . $type => ACL::get_bitmask('create') );
+			$createperm = array( 'own_post_' . $type => array(ACL::get_bitmask('create')), 'post_' . $type => ACL::get_bitmask('create') );
 			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular, 'access' => $createperm );
 			$createperms = array_merge( $createperms, $createperm );
 
@@ -2844,6 +2849,9 @@ class AdminHandler extends ActionHandler
 			}
 			$i++;
 		}
+
+		$createperms = array_merge($createperms, array('own_posts_any'=>array(ACL::get_bitmask('create'))));
+		$manageperms = array_merge($manageperms, array('own_posts_any'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete'))));
 
 		$adminmenu = array(
 			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu, 'access' => $createperms ),

@@ -321,12 +321,6 @@ class Post extends QueryRecord implements IsContent
 			),
 			'fetch_fn' => 'get_row',
 		);
-		$user = User::identify();
-		if ( $user->loggedin ) {
-			$defaults['where'][] = array(
-				'user_id' => $user->id,
-			);
-		}
 		foreach ( $defaults['where'] as $index => $where ) {
 			$defaults['where'][$index] = array_merge( $where, Utils::get_params( $paramarray ) );
 		}
