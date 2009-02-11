@@ -528,45 +528,78 @@ var pluginManage = {
 
 // Group Management
 var groupManage = {
-	init: function() {
-		// Return if we're not on the group page
-		if(!$('.page-group').length) return;
+	init: function(users) {
+		this.users = users;
+	
+		for(var z in this.users) {
+			$('#assign_user').append($('<option value="' + this.users[z].id + '">' + this.users[z].username + '</option>'));
+			if(this.users[z].member) {
+				this.addMember(this.users[z].id);
+			}
+		}
+		
+		this.userscanAll();
 
-		groupManage.potentials = $('body.page-group .container.groupmembers #assign_user');
-		groupManage.addButton = $('body.page-group .container.groupmembers input.add');
-		groupManage.addUsers = $('body.page-group .container.groupmembers #addusers');
-
-		groupManage.addButton.click(function() {
-			groupManage.addMember(groupManage.potentials.val());
+		$('#add_user').click(function() {
+			groupManage.addMember($('#assign_user').val());
 		});
 
-		$('body.page-group .container.groupmembers #currentusers a.user').click(function() {
-			groupManage.removeMember($(this));
-			return false;
-		});
 	},
-	removeMember: function(member) {
-		id = $('.id', member).text();
-		name = $('.name', member).text();
+	removeMember: function(member, id) {
+		name = this.users[id].username;
 
-		$('<option value="' + id + '">' + name + '</option>').appendTo(groupManage.potentials);
+		if(this.users[id].member) {
+			if($('#user_' + id).val() == 0) {
+				$('#user_' + id).val('1');
+				$('#currentusers .memberlist').append('<a href="#" onclick="groupManage.removeMember(this,'+id+');" class="user">' + this.users[id].username + '</a>');
+			}
+			else {
+				$('#removedusers .memberlist').append('<a href="#" onclick="groupManage.removeMember(this,'+id+');" class="user">' + this.users[id].username + '</a>');
+				$('#user_' + id).val('0');
+			}
+		}
+		else {
+			$('#assign_user').append($('<option value="' + id + '">' + name + '</option>'));
+			$('#add_users').show();
+			$('#user_' + id).val('0');
+		}
 
-		groupManage.addUsers.show();
+		$(member).remove();
 
-		$('#user_' + id).val('0');
-
-		member.hide();
+		this.userscanAll();
+		return false;
 	},
 	addMember: function(id) {
-		$('option[value=' + id + ']', groupManage.potentials).remove();
-
-		if(groupManage.potentials.children().length < 1) {
-			groupManage.addUsers.hide();
-		}
+		$('#assign_user option[value=' + id + ']').remove();
 
 		$('#user_' + id).val('1');
 
-		$('body.page-group .container.groupmembers #currentusers a.user.id-' + id).show();
+		if(this.users[id].member) {
+			$('#currentusers .memberlist').append('<a href="#" onclick="groupManage.removeMember(this,'+id+');" class="user">' + this.users[id].username + '</a>');
+		}
+		else {
+			$('#newusers .memberlist').append('<a href="#" onclick="groupManage.removeMember(this,'+id+');" class="user">' + this.users[id].username + '</a>');
+		}
+		this.userscanAll();
+	},
+	userscanAll: function() {
+		this.userscan('#currentusers');
+		this.userscan('#removedusers');
+		this.userscan('#newusers');
+		if($('#add_users option').length > 0) {
+			$('#add_users').show();
+		}
+		else {
+			$('#add_users').hide();
+		}
+	},
+	userscan: function(div) {
+		if($(div + ' .user').length > 0) {
+			$(div).show();
+		}
+		else {
+			$(div).hide();
+		}
 	}
 }
 
@@ -1425,7 +1458,6 @@ $(document).ready(function(){
 	findChildren();
 	navigationDropdown.init();
 	labeler.init();
-	groupManage.init();
 
 	// Alternate the rows' styling.
 	$("table").each( function() {
