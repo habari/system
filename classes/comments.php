@@ -244,7 +244,12 @@ class Comments extends ArrayObject
 		}
 
 		// Get any full-query parameters
-		extract( $paramarray );
+		$possible = array( 'page', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'limit', 'offset' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
 
 		if ( isset( $page ) && is_numeric( $page ) ) {
 			$offset = ( intval( $page ) - 1 ) * intval( $limit );
