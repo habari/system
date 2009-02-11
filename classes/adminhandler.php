@@ -2977,12 +2977,16 @@ class AdminHandler extends ActionHandler
 				$require_any = array('manage_options'=>true);
 				break;
 			case 'themes':
-			case 'activate_theme':
 				$require_any = array('manage_themes'=>true, 'manage_theme_config'=>true);
 				break;
+			case 'activate_theme':
+				$require_any = array('manage_themes'=>true);
+				break;
 			case 'plugins':
-			case 'plugin_toggle':
 				$require_any = array('manage_plugins'=>true, 'manage_plugins_config'=>true);
+				break;
+			case 'plugin_toggle':
+				$require_any = array('manage_plugins'=>true);
 				break;
 			case 'import':
 				$require_any = array('manage_import'=>true);
