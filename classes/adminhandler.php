@@ -2355,7 +2355,7 @@ class AdminHandler extends ActionHandler
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		$params = $_POST;
+		$params = $_POST->getArrayCopy();
 
 		$this->fetch_logs( $params );
 		$items = $this->theme->fetch( 'logs_items' );
