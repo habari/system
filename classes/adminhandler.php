@@ -521,7 +521,7 @@ class AdminHandler extends ActionHandler
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost = true;
 		}
-		
+
 		if(!$post) {
 			Session::error(_t('Access to that post id is denied'));
 			$this->get_blank();
@@ -2805,19 +2805,19 @@ class AdminHandler extends ActionHandler
 
 		$this->display( 'sysinfo' );
 	}
-	
-	
+
+
 	/**
 	 * Display a blank admin page with appropriate navigation
 	 * This function terminates execution before returning.
 	 * Useful for displaying errors when permission is denied for viewing
-	 * 
+	 *
 	 * @param string $content Optional default content to display
 	 */
 	public function get_blank($content = '')
 	{
 		$this->theme->content = Plugins::filter('admin_blank_content', $content);
-		
+
 		$this->display('blank');
 		exit();
 	}
@@ -2920,7 +2920,7 @@ class AdminHandler extends ActionHandler
 
 	/**
 	 * Remove menus for which the user does not have qualifying permissions
-	 * 
+	 *
 	 * @param array $menuarray The master array of admin menu items
 	 * @return array The modified array of admin menu items
 	 */
@@ -2980,6 +2980,7 @@ class AdminHandler extends ActionHandler
 				$require_any = array('manage_themes'=>true, 'manage_theme_config'=>true);
 				break;
 			case 'plugins':
+			case 'plugin_toggle':
 				$require_any = array('manage_plugins'=>true, 'manage_plugins_config'=>true);
 				break;
 			case 'import':
@@ -3022,8 +3023,8 @@ class AdminHandler extends ActionHandler
 		}
 
 		$require_any = Plugins::filter('admin_access_tokens', $require_any, $page, $type);
-		
-		
+
+
 		foreach($require_any as $token => $access) {
 			$access = Utils::single_array($access);
 			foreach($access as $mask) {
