@@ -134,7 +134,7 @@ class EventLog extends ArrayObject
 			unset($select_fields['data']);
 		}
 		foreach ( $select_fields as $field => $value ) {
-			$select.= ( '' == $select )
+			$select .= ( '' == $select )
 				? "{log}.$field"
 				: ", {log}.$field";
 		}
@@ -143,7 +143,12 @@ class EventLog extends ArrayObject
 		$limit = Options::get( 'pagination' );
 
 		// Get any full-query parameters
-		extract( $paramarray );
+		$possible = array( 'orderby', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'index', 'limit', 'offset' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
 
 		foreach ( $paramarray as $key => $value ) {
 			if ( 'orderby' == $key ) {
@@ -256,8 +261,8 @@ class EventLog extends ArrayObject
 			}
 		}
 
-		if ( isset( $page ) && is_numeric( $page ) ) {
-			$offset = ( intval( $page ) - 1 ) * intval( $limit );
+		if ( isset( $index ) && is_numeric( $index ) ) {
+			$offset = ( intval( $index ) - 1 ) * intval( $limit );
 		}
 
 		if ( isset( $fetch_fn ) ) {
@@ -277,7 +282,7 @@ class EventLog extends ArrayObject
 		if ( isset( $limit ) ) {
 			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
-				$limit.= " OFFSET $offset";
+				$limit .= " OFFSET $offset";
 			}
 		}
 		// If the month counts are requested, replace the select clause
@@ -295,10 +300,10 @@ class EventLog extends ArrayObject
 			FROM {log} ' . $join;
 
 		if ( count( $wheres ) > 0 ) {
-			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
+			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query.= $orderby . $limit;
+		$query .= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query .= $orderby . $limit;
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
