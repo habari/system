@@ -1295,18 +1295,18 @@ body.page-groups .container.addgroup .item.submit input {
 }
 
 /*-- GROUP */
-body.page-group .container.groupmembers #currentusers a.user {
+body.page-group .container.groupmembers a.user {
 	margin-right:1em;
 	padding-right:14px;
 	line-height:14px;
 	background:url('../images/closebutton.png') no-repeat right center;
 }
 
-body.page-group .container.groupmembers #currentusers a.user:hover, body.page-group .container.groupmembers #currentusers a.user:focus {
+body.page-group .container.groupmembers a.user:hover, body.page-group .container.groupmembers #currentusers a.user:focus {
 	background-image:url('../images/minusbutton.png');
 }
 
-body.page-group .container.groupmembers #currentusers a.user.template, body.page-group .container.groupmembers #currentusers a.user .id {
+body.page-group .container.groupmembers a.user.template, body.page-group .container.groupmembers #currentusers a.user .id {
 	display:none;
 }
 

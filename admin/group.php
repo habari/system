@@ -25,21 +25,38 @@
 
 	<h2><?php _e('Group Information'); ?></h2>
 	
-	<div class="item clear assignedusers">
-		<span class="pct20">
-			<label><strong><?php _e('Members'); ?></strong></label>
-		</span>
-		<span class="pct80">
-			<span class="pct100" id="currentusers"><?php foreach($users as $user): ?><a class="user id-<?php echo $user->id; ?>"<?php if(!$user->membership): ?> style="display:none;"<?php endif; ?> href="#remove" title="Remove member"><span class="id"><?php echo $user->id; ?></span><span class="name"><?php echo $user->displayname; ?></span></a><?php endforeach; ?></span>
-			<span class="pct100" id="addusers"<?php if(count($potentials) < 1): ?> style="display:none;"<?php endif; ?>>
-				<span class="pct40"><?php echo Utils::html_select('assign_user', $potentials); ?></span>
-				<span class="pct60"><input type="button" value="<?php _e('Add'); ?>" class="button add"></span>
+	<div class="item clear" id="assignedusers">
+		<span class="pct100" id="currentusers">
+			<span class="pct20">
+				<label><strong><?php _e('Members'); ?></strong></label>
 			</span>
-			<?php foreach($users as $user): ?>
-				<input type="hidden" name="user[<?php echo $user->id; ?>]" value="<?php if($user->membership): ?>1<?php else: ?>0<?php endif; ?>" id="user_<?php echo $user->id; ?>">
-			<?php endforeach; ?>
+			<span class="pct80 memberlist"></span>
+		</span>
+		<span class="pct100" id="newusers">
+			<span class="pct20">
+				<label><strong><?php _e('Members To Add'); ?></strong></label>
+			</span>
+			<span class="pct80 memberlist"></span>
 		</span>
 	</div>
+	<div class="item clear">
+		<span class="pct100">
+			<span class="pct20">&nbsp;</span>
+			<span class="pct80" id="add_users" >
+				<span class="pct40"><select name="assign_user" id="assign_user"></select></span>
+				<span class="pct60"><input type="button" id="add_user" value="<?php _e('Add'); ?>" class="button add"></span>
+			</span>
+		</span>
+		<span class="pct100" id="removedusers">
+			<span class="pct20">
+				<label><strong><?php _e('Members To Remove'); ?></strong></label>
+			</span>
+			<span class="pct80 memberlist"></span>
+		</span>
+	</div>
+		<?php foreach($users as $user): ?>
+			<input type="hidden" name="user[<?php echo $user->id; ?>]" value="<?php echo ($user->membership) ? '1' : 0; ?>" id="user_<?php echo $user->id; ?>">
+		<?php endforeach; ?>
 	
 </div>
 

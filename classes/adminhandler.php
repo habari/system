@@ -2575,20 +2575,24 @@ class AdminHandler extends ActionHandler
 		$users[] = User::anonymous();
 
 		$members = $group->members;
+		$jsusers = array();
 		foreach ( $users as $user ) {
-			if ( in_array($user->id, $members) ) {
-				$user->membership = TRUE;
-			}
-			else {
-				$potentials[$user->id] = $user->displayname;
-				$user->membership = FALSE;
-			}
-
+			$jsuser = new StdClass();
+			$jsuser->id = $user->id;
+			$jsuser->username = $user->username;
+			$jsuser->member = in_array($user->id, $members);
+			
+			$jsusers[$user->id] = $jsuser;
 		}
+
 		$this->theme->potentials = $potentials;
 		$this->theme->users = $users;
 		$this->theme->members = $members;
 
+		$js = '$(function(){groupManage.init(' . json_encode($jsusers) . ');});';
+		
+		Stack::add('admin_header_javascript', $js, 'groupmanage', 'admin');
+		
 		$this->theme->access_names= $access_names;
 		$this->theme->grouped_tokens = $grouped_tokens;
 
