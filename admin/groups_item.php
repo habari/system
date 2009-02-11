@@ -13,5 +13,9 @@
 			<?php endforeach; ?>
 		</ul>
 	</div>
-	<p class="users">gives <strong>0</strong> permissions<?php if(count($users) > 0): ?> to <?php echo Format::and_list($users); endif; ?></p>
+	<?php if(count($users) > 0): ?>
+		<p class="users"><?php echo _t('Members: ') . Format::and_list($users); ?></p>
+	<?php else: ?>
+		<p class="users"><?php echo _t('No members'); ?></p>
+	<?php endif; ?>
 </div>

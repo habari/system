@@ -388,7 +388,7 @@ class Posts extends ArrayObject implements IsContent
 			$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
 
 			// If a user can read his own posts, let him
-			if ( User::identify()->can('own_posts_any', 'read') ) {
+			if ( User::identify()->can('own_posts', 'read') ) {
 				$perm_where['own_posts_id'] = '{posts}.user_id = :own_posts_id';
 				$params_where['own_posts_id'] = User::identify()->id;
 			}

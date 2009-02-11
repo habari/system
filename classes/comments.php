@@ -200,7 +200,7 @@ class Comments extends ArrayObject
 					$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
 
 					// If a user can read his own posts, let him see the comments on those posts
-					if ( User::identify()->can('own_posts_any', 'read') ) {
+					if ( User::identify()->can('own_posts', 'read') ) {
 						$perm_where[] = '{posts}.user_id = ?';
 						$params[] = User::identify()->id;
 					}

@@ -20,13 +20,13 @@
 <div class="container groups allgroups">
 	<h2><?php _e('Group Management'); ?></h2>
 	<div id="groups">
-		<?php foreach($groups as $group):
-			$group= UserGroup::get_by_id($group->id);
-			$users= array();
-			foreach($group->members as $id) {
-				$user= User::get_by_id($id);
+		<?php foreach ( $groups as $group ):
+			$group = UserGroup::get_by_id($group->id);
+			$users = array();
+			foreach ( $group->members as $id ) {
+				$user = User::get_by_id($id);
 				if ( $user instanceof User ){
-					$users[]= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+					$users []= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
 				}
 			}
 			include('groups_item.php');

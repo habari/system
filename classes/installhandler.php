@@ -1334,6 +1334,17 @@ class InstallHandler extends ActionHandler {
 		ACL::rebuild_permissions();
 	}
 
+	private function upgrade_db_post_3158()
+	{
+		// delete own_post_typeX tokens rather than rebuild the whole default token set
+		foreach ( Post::list_active_post_types() as $name => $posttype ) {
+				ACL::destroy_token( 'own_post_' . Utils::slugify($name) );
+		}
+		
+		ACL::destroy_token( 'own_posts_any' );
+		ACL::create_token( 'own_posts', _t('Permissions on one\'s own posts'), 'Content', true );
+	}
+
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists

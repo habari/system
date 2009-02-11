@@ -225,7 +225,6 @@ class Post extends QueryRecord implements IsContent
 			self::activate_post_type( $type );
 		}
 		ACL::create_token( 'post_' . Utils::slugify($type), _t('Permissions to posts of type "%s"', array($type) ), TRUE );
-		ACL::create_token( 'own_post_' . Utils::slugify($type), _t('Permissions to one\'s own posts of type "%s"', array($type) ), TRUE );
 
 		// now force a refresh of the caches, so the new/activated type
 		// is available for immediate use

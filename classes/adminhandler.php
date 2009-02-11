@@ -2877,8 +2877,8 @@ class AdminHandler extends ActionHandler
 			$i++;
 		}
 
-		$createperms = array_merge($createperms, array('own_posts_any'=>array(ACL::get_bitmask('create'))));
-		$manageperms = array_merge($manageperms, array('own_posts_any'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete'))));
+		$createperms = array_merge($createperms, array('own_posts'=>array(ACL::get_bitmask('create'))));
+		$manageperms = array_merge($manageperms, array('own_posts'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete'))));
 
 		$adminmenu = array(
 			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu, 'access' => $createperms ),
@@ -3007,8 +3007,7 @@ class AdminHandler extends ActionHandler
 				$require_any = array(
 					'post_any' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
 					'post_' . $type => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
-					'own_posts_any' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
-					'own_posts_' . $type => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+					'own_posts' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
 				);
 				break;
 			case 'posts':
@@ -3017,7 +3016,6 @@ class AdminHandler extends ActionHandler
 				);
 				foreach(Post::list_active_post_types() as $type => $type_id) {
 					$require_any['post_' . $type] = array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit'));
-					$require_any['own_posts_' . $type] = array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit'));
 				}
 				break;
 			case 'dashboard':

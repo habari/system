@@ -685,25 +685,24 @@ SQL;
 		self::create_token( 'super_user', 'Permissions for super users', 'Super User' );
 
 		// admin tokens
-		self::create_token( 'manage_all_comments', 'Manage comments on all posts', 'Administration' );
-		self::create_token( 'manage_own_post_comments', 'Manage comments on one\'s own posts', 'Administration' );
-		self::create_token( 'manage_tags', 'Manage tags', 'Administration' );
-		self::create_token( 'manage_options', 'Manage options', 'Administration' );
-		self::create_token( 'manage_theme', 'Change theme', 'Administration' );
-		self::create_token( 'manage_theme_config', 'Configure the active theme', 'Administration' );
-		self::create_token( 'manage_plugins', 'Activate/deactivate plugins', 'Administration' );
-		self::create_token( 'manage_plugins_config', 'Configure active plugins', 'Administration' );
-		self::create_token( 'manage_import', 'Use the importer', 'Administration' );
-		self::create_token( 'manage_users', 'Add, remove, and edit users', 'Administration' );
-		self::create_token( 'manage_groups', 'Manage groups and permissions', 'Administration' );
-		self::create_token( 'manage_logs', 'Manage logs', 'Administration' );
+		self::create_token( 'manage_all_comments', _t('Manage comments on all posts'), 'Administration' );
+		self::create_token( 'manage_own_post_comments', _t('Manage comments on one\'s own posts'), 'Administration' );
+		self::create_token( 'manage_tags', _t('Manage tags'), 'Administration' );
+		self::create_token( 'manage_options', _t('Manage options'), 'Administration' );
+		self::create_token( 'manage_theme', _t('Change theme'), 'Administration' );
+		self::create_token( 'manage_theme_config', _t('Configure the active theme'), 'Administration' );
+		self::create_token( 'manage_plugins', _t('Activate/deactivate plugins'), 'Administration' );
+		self::create_token( 'manage_plugins_config', _t('Configure active plugins'), 'Administration' );
+		self::create_token( 'manage_import', _t('Use the importer'), 'Administration' );
+		self::create_token( 'manage_users', _t('Add, remove, and edit users'), 'Administration' );
+		self::create_token( 'manage_groups', _t('Manage groups and permissions'), 'Administration' );
+		self::create_token( 'manage_logs', _t('Manage logs'), 'Administration' );
 
 		// content tokens
-		self::create_token( 'own_posts_any', 'Permissions on one\'s own posts', 'Content', true );
-		self::create_token( 'post_any', 'Permissions to all posts', 'Content', true );
+		self::create_token( 'own_posts', _t('Permissions on one\'s own posts'), 'Content', true );
+		self::create_token( 'post_any', _t('Permissions to all posts'), 'Content', true );
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
 			self::create_token( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ), 'Content', true );
-			self::create_token( 'own_post_' . Utils::slugify($name), _t('Permissions to one\'s own posts of type "%s"', array($name) ), 'Content', true );
 		}
 
 		// comments tokens
