@@ -89,6 +89,13 @@ class AdminHandler extends ActionHandler
 		$this->theme->admin_page_url = ( $page == 'dashboard' ) ? URL::get( 'admin', 'page=' ) : URL::get( 'admin', 'page=' . $page );
 		$this->theme->page = $page;
 		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+
+		// Access check to see if the user is allowed the requested page
+		if( !$this->access_allowed( $page, $type ) ) {
+			Session::error(_t('Access to that page has been denied by the administrator.'));
+			$this->get_blank();
+		}
+
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
 				// Let plugins try to handle the page
@@ -120,9 +127,7 @@ class AdminHandler extends ActionHandler
 				else {
 					// The requested console page doesn't exist
 					header( 'HTTP/1.0 404 Not Found' );
-					$this->header();
-					_e( 'Whooops!' );
-					$this->footer();
+					$this->get_blank(_t('The page you were looking for was not found.'));
 				}
 				break;
 		}
@@ -515,6 +520,11 @@ class AdminHandler extends ActionHandler
 			$this->theme->post = $post;
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 			$this->theme->newpost = true;
+		}
+		
+		if(!$post) {
+			Session::error(_t('Access to that post id is denied'));
+			$this->get_blank();
 		}
 
 		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
@@ -2795,6 +2805,22 @@ class AdminHandler extends ActionHandler
 
 		$this->display( 'sysinfo' );
 	}
+	
+	
+	/**
+	 * Display a blank admin page with appropriate navigation
+	 * This function terminates execution before returning.
+	 * Useful for displaying errors when permission is denied for viewing
+	 * 
+	 * @param string $content Optional default content to display
+	 */
+	public function get_blank($content = '')
+	{
+		$this->theme->content = Plugins::filter('admin_blank_content', $content);
+		
+		$this->display('blank');
+		exit();
+	}
 
 	/**
 	 * Assembles the main menu for the admin area.
@@ -2892,6 +2918,12 @@ class AdminHandler extends ActionHandler
 		$theme->assign( 'mainmenu', $mainmenus );
 	}
 
+	/**
+	 * Remove menus for which the user does not have qualifying permissions
+	 * 
+	 * @param array $menuarray The master array of admin menu items
+	 * @return array The modified array of admin menu items
+	 */
 	protected function filter_menus_by_permission($menuarray)
 	{
 		foreach( $menuarray as $key => $attrs ) {
@@ -2926,6 +2958,89 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		return $menuarray;
+	}
+
+	private function access_allowed( $page, $type )
+	{
+		$user = User::identify();
+		$require_any = array();
+		$result = false;
+
+		switch( $page ) {
+			case 'comments':
+				$require_any = array('manage_all_comments'=>true, 'manage_own_post_comments'=>true);
+				break;
+			case 'tags':
+				$require_any = array('manage_tags'=>true);
+				break;
+			case 'options':
+				$require_any = array('manage_options'=>true);
+				break;
+			case 'themes':
+				$require_any = array('manage_themes'=>true, 'manage_theme_config'=>true);
+				break;
+			case 'plugins':
+				$require_any = array('manage_plugins'=>true, 'manage_plugins_config'=>true);
+				break;
+			case 'import':
+				$require_any = array('manage_import'=>true);
+				break;
+			case 'users':
+			case 'user':
+				$require_any = array('manage_users'=>true);
+				break;
+			case 'groups':
+			case 'group':
+				$require_any = array('manage_groups'=>true);
+				break;
+			case 'logs':
+				$require_any = array('manage_logs'=>true);
+				break;
+			case 'publish':
+				$type = Post::type_name($type);
+				$require_any = array(
+					'post_any' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+					'post_' . $type => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+					'own_posts_any' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+					'own_posts_' . $type => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+				);
+				break;
+			case 'posts':
+				$require_any = array(
+					'post_any' => array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit')),
+				);
+				foreach(Post::list_active_post_types() as $type => $type_id) {
+					$require_any['post_' . $type] = array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit'));
+					$require_any['own_posts_' . $type] = array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit'));
+				}
+				break;
+			case 'dashboard':
+				$result = true;
+				break;
+			default:
+				break;
+		}
+
+		$require_any = Plugins::filter('admin_access_tokens', $require_any, $page, $type);
+		
+		
+		foreach($require_any as $token => $access) {
+			$access = Utils::single_array($access);
+			foreach($access as $mask) {
+				if(is_bool($mask) && $user->can($token)) {
+					$result = true;
+					break;
+				}
+				elseif($user->can($token, $mask)) {
+					$result = true;
+					break 2;
+				}
+			}
+		}
+
+		$result = Plugins::filter('admin_access', $result, $page, $type);
+
+		return $result;
 	}
 
 	public function default_post_type_display($type, $foruse)
