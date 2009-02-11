@@ -159,6 +159,7 @@ class ACL {
 		// remove all references to this permissions
 		$result = DB::query( 'DELETE FROM {group_token_permissions} WHERE token_id=?', array( $token_id ) );
 		$result = DB::query( 'DELETE FROM {user_token_permissions} WHERE token_id=?', array( $token_id ) );
+		$result = DB::query( 'DELETE FROM {post_tokens} WHERE token_id=?', array( $token_id ) );
 		// remove this token
 		$result = DB::query( 'DELETE FROM {tokens} WHERE id=?', array( $token_id ) );
 		if ( ! $result ) {
