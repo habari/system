@@ -78,7 +78,12 @@ class UserGroups extends ArrayObject
 		}
 
 		// Get any full-query parameters
-		extract( $paramarray );
+		$possible = array( 'fetch_fn', 'count', 'nolimit', 'limit', 'offset' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
 
 		if ( isset( $fetch_fn ) ) {
 			if ( ! in_array( $fetch_fn, $fns ) ) {
@@ -101,7 +106,7 @@ class UserGroups extends ArrayObject
 			$single = ($limit == 1);
 			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
-				$limit.= " OFFSET $offset";
+				$limit .= " OFFSET $offset";
 			}
 		}
 		if ( isset( $nolimit ) ) {
@@ -111,10 +116,9 @@ class UserGroups extends ArrayObject
 		$query = ' SELECT ' . $select . ' FROM {groups} ' . $join;
 
 		if ( count( $wheres ) > 0 ) {
-			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
+			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug($paramarray, $fetch_fn, $query, $params);
+		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		DB::set_fetch_mode(PDO::FETCH_CLASS);
 		// Adjust the return type
