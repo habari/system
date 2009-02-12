@@ -859,15 +859,31 @@ body.page-publish .buttons input {
 
 .mediaactions.dropbutton-media {
 	position: relative;
-	right: 0px;
 	opacity: .8;
 	white-space: nowrap;
 	background: #333;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	font-size: 12px;
-	list-style: none outside;
-	margin: 0 0 0 10px;
+	width: 70px;
+	list-style: none;
+	margin: 6px 0 0 0;
+}
+
+.mediaphotos ul .media .mediaactions li.first-child {
+	border-right: none;
+	padding: 3px 6px;
+	margin: 0;
+}
+
+.mediaphotos ul .media .mediaactions li.first-child a:hover {
+	background: #333;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	text-decoration: none;
+	margin: 0;
+	padding: 3px;
+
 }
 
 .mediastats {
