@@ -1081,8 +1081,7 @@ class Post extends QueryRecord implements IsContent
 			ACL::get_user_token_access( 'post_' . $this->content_type() ),
 		);
 
-		$post_tokens = DB::get_column( 'SELECT token_id FROM {post_tokens} WHERE post_id=?', array( $this->id ) );
-		foreach ( $post_tokens as $token ) {
+		foreach ( $this->get_tokens() as $token ) {
 			$token_accesses []= ACL::get_user_token_access( $token );
 		}
 
