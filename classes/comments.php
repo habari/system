@@ -729,7 +729,8 @@ class Comments extends ArrayObject
 	 * @param string $search_string The search string
 	 * @return array An associative array which can be passed to Comments::get()
 	 */
-	public static function search_to_get( $search_string ) {
+	public static function search_to_get( $search_string )
+	{
 		$keywords = array( 'author' => 1, 'status' => 1, 'type' => 1 );
 		// Comments::list_comment_statuses and list_comment_types return associative arrays with key/values
 		// in the opposite order of the equivalent functions in Posts. Maybe we should change this?
@@ -745,7 +746,7 @@ class Comments extends ArrayObject
 
 		$tokens = explode( ' ', $search_string );
 
-		foreach( $tokens as $token ) {
+		foreach ( $tokens as $token ) {
 			// check for a keyword:value pair
 			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
 				list( $keyword, $value ) = explode( ':', $token );

@@ -178,7 +178,8 @@ class RemoteRequest
 		}
 	}
 	
-	public function executed() {
+	public function executed()
+	{
 		return $this->executed;
 	}
 	

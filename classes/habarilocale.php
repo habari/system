@@ -82,7 +82,7 @@ class HabariLocale
 	{
 		$file_end = self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
 
-		if (file_exists( Site::get_dir( 'config' ) . '/locale/' . $file_end ) ) {
+		if ( file_exists( Site::get_dir( 'config' ) . '/locale/' . $file_end ) ) {
 			$file = Site::get_dir( 'config' ) . '/locale/' . $file_end;
 		}
 		else if (file_exists( HABARI_PATH . '/user/locale/' . $file_end ) ) {
@@ -132,7 +132,8 @@ class HabariLocale
 	 * @param string $file the file name
 	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
 	 */
-	private static function load_file( $domain, $file ) {
+	private static function load_file( $domain, $file )
+	{
 		if ( ! file_exists( $file ) ) {
 			Error::raise( sprintf( _t('No translations found for locale %s, domain %s!'), self::$locale, $domain ) );
 			return FALSE;
@@ -202,7 +203,7 @@ class HabariLocale
 
 	private static function get_plural_function( $header )
 	{
-		if (preg_match('/plural-forms: (.*?)$/i', $header, $matches) && preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/', $matches[1], $matches)) {
+		if ( preg_match('/plural-forms: (.*?)$/i', $header, $matches) && preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/', $matches[1], $matches) ) {
 			// sanitize
 			$nplurals = preg_replace( '@[^0-9]@', '', $matches[1] );
 			$plural = preg_replace( '@[^n0-9:\(\)\?\|\&=!<>+*/\%-]@', '', $matches[2] );
@@ -215,10 +216,10 @@ class HabariLocale
 
 			// add parens
 			// important since PHP's ternary evaluates from left to right
-			$body.= ';';
+			$body .= ';';
 			$res = '';
 			$p = 0;
-			for ($i = 0; $i < strlen($body); $i++) {
+			for ( $i = 0; $i < strlen($body); $i++ ) {
 				$ch = $body[$i];
 				switch ($ch) {
 					case '?':
@@ -262,7 +263,7 @@ class HabariLocale
 	{
 		$fn = self::get_plural_function( $header );
 		$res = '';
-		for ($n = 0; $n < 200; $n++) {
+		for ( $n = 0; $n < 200; $n++ ) {
 			$res.= $fn($n);
 		}
 
@@ -298,7 +299,7 @@ class HabariLocale
 	 **/
 	public static function _t($text, $args = array(), $domain = 'habari')
 	{
-		if( is_string($args) ) {
+		if ( is_string($args) ) {
 			$domain = $args;
 		}
 
@@ -309,7 +310,7 @@ class HabariLocale
 			$t = $text;
 		}
 
-		if(!empty($args) && is_array($args)) {
+		if ( !empty($args) && is_array($args) ) {
 			array_unshift($args, $t);
 			$t = call_user_func_array('sprintf', $args);
 		}

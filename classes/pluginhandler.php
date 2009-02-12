@@ -40,7 +40,8 @@ class PluginHandler
 	 *
 	 * @param string $action the action that was in the URL rule
 	 */
-	public function act($action) {
+	public function act($action)
+	{
 		if (null === $this->handler_vars) {
 			$this->handler_vars = new SuperGlobal(array());
 		}

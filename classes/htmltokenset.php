@@ -14,7 +14,8 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	protected $sliceOffsetBegin  = null;
 	protected $sliceOffsetLength = null;
 	
-	public function __tostring() {
+	public function __tostring()
+	{
 		$out = '';
 		foreach ( $this->tokens as $token ) {
 			$out .= self::token_to_string($token);
@@ -22,7 +23,8 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $out;
 	}
 	
-	public static function token_to_string( array $token ) {
+	public static function token_to_string( array $token )
+	{
 		switch ($token['type']) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
 				return $token['value'];
@@ -63,14 +65,16 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $out;
 	}
 	
-	public function get_end_offset() {
+	public function get_end_offset()
+	{
 		return $this->sliceOffsetBegin + $this->sliceOffsetLength;
 	}
 	
 	/**
 	 * Fetch a section of the tokens, based on passed criteria
 	 */
-	public function slice( $name, array $attr =null ) {
+	public function slice( $name, array $attr = null )
+	{
 		$offset = 0;
 		$slices = array();
 		while ( $slice = $this->find_slice( $offset, $name, $attr ) ) {
@@ -83,7 +87,8 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return array_reverse( $slices );
 	}
 	
-	protected function find_slice( $offset, $name, array $attr) {
+	protected function find_slice( $offset, $name, array $attr)
+	{
 		// find start:
 		$foundStart = false;
 		for ( ; $offset < count($this->tokens); $offset++) {
@@ -152,11 +157,13 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $slice;
 	}
 	
-	public function trim_container() {
+	public function trim_container()
+	{
 		$this->tokens = array_slice($this->tokens, 1, -1);
 	}
 	
-	public function replace_slice( HTMLTokenSet $slice ) {
+	public function replace_slice( HTMLTokenSet $slice )
+	{
 		array_splice(
 			$this->tokens,
 			$slice->sliceOffsetBegin,
@@ -165,7 +172,8 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		);
 	}
 	
-	public function tokenize_replace( $source ) {
+	public function tokenize_replace( $source )
+	{
 		$ht = new HTMLTokenizer( $source );
 		$this->tokens = $ht->parse()->tokens;
 		return $this->tokens;
@@ -175,37 +183,45 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	
 	// Iterator implemetation:
 	
-	public function rewind() {
+	public function rewind()
+	{
 		reset( $this->tokens );
 	}
 	
-	public function current() {
+	public function current()
+	{
 		return current( $this->tokens );
 	}
 	
-	public function key() {
+	public function key()
+	{
 		return key( $this->tokens );
 	}
 	
-	public function next() {
+	public function next()
+	{
 		return next( $this->tokens );
 	}
 	
-	public function valid() {
+	public function valid()
+	{
 		return $this->current() !== false;
 	}
 	
 	// ArrayAccess implementation
 	
-	public function offsetExists( $offset ) {
+	public function offsetExists( $offset )
+	{
 		return isset( $this->tokens[ $offset ] );
 	}
 	
-	public function offsetGet( $offset ) {
+	public function offsetGet( $offset )
+	{
 		return $this->tokens[ $offset ];
 	}
 	
-	public function offsetSet( $offset, $value ) {
+	public function offsetSet( $offset, $value )
+	{
 		if ( $offset === null) {
 			$this->tokens[] = $value;
 		} else {
@@ -213,7 +229,8 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		}
 	}
 	
-	public function offsetUnset( $offset ) {
+	public function offsetUnset( $offset )
+	{
 		unset( $this->tokens[ $offset ] );
 	}
 }

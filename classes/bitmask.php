@@ -7,7 +7,8 @@
 /**
  * Class to wrap around bitmap field functionality
  */
-class Bitmask {
+class Bitmask
+{
 	public $flags = array();  // set of flag bit masks
 	public $value = 0;        // internal integer value of the bitmask
 
@@ -25,11 +26,11 @@ class Bitmask {
 		}
 
 		$this->flags = $flags;
-		if( ! is_null( $value ) ) {
-			if( is_numeric( $value )) {
+		if ( ! is_null( $value ) ) {
+			if ( is_numeric( $value ) ) {
 				$this->value = $value;
 			}
-			elseif( is_string( $value ) ) {
+			elseif ( is_string( $value ) ) {
 				$this->$value = true;
 			}
 		}
@@ -91,16 +92,16 @@ class Bitmask {
 
 	public function __tostring()
 	{
-		if($this->value == $this->full) {
+		if ( $this->value == $this->full ) {
 			return _t('full');
 		}
 		$output = array();
-		foreach($this->flags as $flag) {
-			if($this->$flag) {
+		foreach ( $this->flags as $flag ) {
+			if ( $this->$flag ) {
 				$output[] = $flag;
 			}
 		}
-		if(count($output) == 0) {
+		if ( count($output) == 0 ) {
 			return _t('none');
 		}
 		return implode(',', $output);

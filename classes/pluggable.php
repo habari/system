@@ -25,7 +25,8 @@ abstract class Pluggable
 	 * to extract plugin info.  Instead, include a sink for a "init" hook
 	 * which is executed immediately after the plugin is loaded during normal execution.
 	 **/
-	public function __construct(){
+	public function __construct()
+	{
 		$this->info = new InfoObject( $this->info() );
 		$this->plugin_id = $this->plugin_id();
 	}

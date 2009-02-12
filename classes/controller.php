@@ -10,7 +10,8 @@
  * a view.
  *
  */
-class Controller extends Singleton {
+class Controller extends Singleton
+{
 	public $base_url = '';        // base url for site
 	private $stub = '';            // stub supplied by rewriter
 	private $action = '';          // action name (string)
@@ -21,7 +22,8 @@ class Controller extends Singleton {
 	 *
 	 * @see singleton.php
 	 */
-	protected static function instance() {
+	protected static function instance()
+	{
 		return self::getInstanceOf(get_class());
 	}
 
@@ -30,7 +32,8 @@ class Controller extends Singleton {
 	 *
 	 * @return string base URL
 	 */
-	public static function get_base_url() {
+	public static function get_base_url()
+	{
 		return Controller::instance()->base_url;
 	}
 
@@ -39,7 +42,8 @@ class Controller extends Singleton {
 	 *
 	 * @return  string  the URL incoming stub
 	 */
-	public static function get_stub() {
+	public static function get_stub()
+	{
 		return Controller::instance()->stub;
 	}
 
@@ -48,7 +52,8 @@ class Controller extends Singleton {
 	 *
 	 * @return string The full requested URL
 	 */
-	public static function get_full_url() {
+	public static function get_full_url()
+	{
 		return self::get_base_url() . self::get_stub();
 	}
 
@@ -57,7 +62,8 @@ class Controller extends Singleton {
 	 *
 	 * @return  string name of action
 	 */
-	public static function get_action() {
+	public static function get_action()
+	{
 		return Controller::instance()->action;
 	}
 
@@ -66,7 +72,8 @@ class Controller extends Singleton {
 	 *
 	 * @return  object  handler object
 	 */
-	public static function get_handler() {
+	public static function get_handler()
+	{
 		return Controller::instance()->handler;
 	}
 
@@ -75,7 +82,8 @@ class Controller extends Singleton {
 	 *
 	 * @return  array  variables used by handler
 	 */
-	public static function get_handler_vars() {
+	public static function get_handler_vars()
+	{
 		return Controller::instance()->handler->handler_vars;
 	}
 
@@ -86,7 +94,8 @@ class Controller extends Singleton {
 	 * @param string $name The name of the variable to return.
 	 * @return mixed The value of that variable in the handler
 	 */
-	public static function get_var( $name ) {
+	public static function get_var( $name )
+	{
 		return isset( Controller::instance()->handler->handler_vars[ $name ] ) ? Controller::instance()->handler->handler_vars[ $name ] : NULL;
 	}
 
@@ -95,7 +104,8 @@ class Controller extends Singleton {
 	 * translates URLs coming in from mod_rewrite and parses
 	 * out any action and parameters in the slug.
 	 */
-	public static function parse_request() {
+	public static function parse_request()
+	{
 		/* Local scope variable caching */
 		$controller = Controller::instance();
 
@@ -115,7 +125,7 @@ class Controller extends Singleton {
 
 		/* Strip out the base URL from the requested URL */
 		/* but only if the base URL isn't / */
-		if ( '/' != $controller->base_url) {
+		if ( '/' != $controller->base_url ) {
 			$start_url = str_replace($controller->base_url, '', $start_url);
 		}
 
@@ -130,7 +140,7 @@ class Controller extends Singleton {
 		/* Grab the URL filtering rules from DB */
 		$matched_rule = URL::parse($controller->stub);
 
-		if ($matched_rule === FALSE) {
+		if ( $matched_rule === FALSE ) {
 			$matched_rule = URL::set_404();
 		}
 
@@ -139,7 +149,7 @@ class Controller extends Singleton {
 		$controller->handler = new $matched_rule->handler();
 		/* Insert the regexed submatches as the named parameters */
 		$controller->handler->handler_vars['entire_match'] = $matched_rule->entire_match; // The entire matched string is returned at index 0
-		foreach ($matched_rule->named_arg_values as $named_arg_key=>$named_arg_value) {
+		foreach ( $matched_rule->named_arg_values as $named_arg_key=>$named_arg_value ) {
 			$controller->handler->handler_vars[$named_arg_key] = $named_arg_value;
 		}
 
@@ -153,10 +163,11 @@ class Controller extends Singleton {
 	/**
 	 * Handle the requested action by firing off the matched handler action(s)
 	 */
-	public static function dispatch_request() {
+	public static function dispatch_request()
+	{
 		/* OK, set the wheels in motion... */
 		Plugins::act('handler_' . Controller::instance()->action, Controller::get_handler_vars());
-		if(method_exists(Controller::instance()->handler, 'act')) {
+		if ( method_exists(Controller::instance()->handler, 'act') ) {
 			Controller::instance()->handler->act(Controller::instance()->action);
 		}
 	}

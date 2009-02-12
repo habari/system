@@ -14,7 +14,7 @@ class QueryRecord implements URLProperties
 	protected $newfields = array(); // Holds updated field values to commit to db
 	protected $unsetfields = array(); // Holds field names to remove when committing to the db
 	private $loaded = false;  // Set to true after the constructor executes, is false when PDO fills data fields
-	
+
 	/**
 	 * constructor __construct
 	 * Constructor for the QueryRecord class.
@@ -30,7 +30,7 @@ class QueryRecord implements URLProperties
 			Utils::get_params($paramarray)
 		);
 	}
-	
+
 	/**
 	 * function __get
 	 * Handles getting virtual properties for this class
@@ -88,8 +88,7 @@ class QueryRecord implements URLProperties
 		{
 			$this->unsetfields = array_flip($fields);
 		}
-		else
-		{
+		else {
 			$this->unsetfields[$fields] = $fields;
 		}
 	}
@@ -106,8 +105,9 @@ class QueryRecord implements URLProperties
 	/**
 	 * This is the public interface that inserts a record
 	 */
-	public function insert() {
-	    return null;
+	public function insert()
+	{
+		return null;
 	}
 	
 	/**
@@ -147,8 +147,9 @@ class QueryRecord implements URLProperties
 	/**
 	 * This is the public interface that updates a record
 	 */
-	public function update() {
-	    return null;
+	public function update()
+	{
+		return null;
 	}
 	/**
 	 * function updateRecord
@@ -166,8 +167,9 @@ class QueryRecord implements URLProperties
 	/**
 	 * This is the public interface that deletes a record
 	 */
-	public function delete() {
-	    return null;
+	public function delete()
+	{
+		return null;
 	}
 	/**
 	 * function deleteRecord

@@ -448,7 +448,8 @@ class Plugins
 	 * @param string $version Optional minimal version of the plugin.
 	 * @return bool Returns true if name is found and version is equal or higher than required.
 	 */
-	public static function is_loaded( $name, $version = NULL ) {
+	public static function is_loaded( $name, $version = NULL )
+	{
 		foreach ( self::$plugins as $plugin ) {
 			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || strtolower($plugin->info->guid) == strtolower($name)) {
 				if ( isset( $version ) ) {
@@ -468,7 +469,8 @@ class Plugins
 	 * @see Utils::check_php_file_syntax()
 	 * @return bool Returns true if all plugins were valid, return false if a plugin (or more) failed.
 	 */
-	public function check_every_plugin_syntax() {
+	public function check_every_plugin_syntax()
+	{
 		$failed_plugins = array();
 		$all_plugins = self::list_all();
 

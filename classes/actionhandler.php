@@ -34,8 +34,9 @@ class ActionHandler
 	 *
 	 * @param string $action the action that was in the URL rule
 	 */
-	public function act($action) {
-		if (null === $this->handler_vars) {
+	public function act($action)
+	{
+		if ( null === $this->handler_vars ) {
 			$this->handler_vars = new SuperGlobal(array());
 		}
 		$this->action = $action;
@@ -67,7 +68,7 @@ class ActionHandler
 			 * @action before_act_{$action}
 			 */
 			Plugins::act( $after_action_method );
-			if (method_exists($this, $after_action_method)) {
+			if ( method_exists($this, $after_action_method) ) {
 				$this->$after_action_method();
 			}
 		}
@@ -80,7 +81,8 @@ class ActionHandler
 	 * @param string $function function name
 	 * @param array $args function arguments
 	 */
-	public function __call($function, $args) {
+	public function __call($function, $args)
+	{
 		return $this->act($function);
 	}
 

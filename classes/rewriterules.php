@@ -7,7 +7,8 @@
 /**
  * Class for storing and retrieving rewrite rules from the DB.
  */
-class RewriteRules extends ArrayObject {
+class RewriteRules extends ArrayObject
+{
 
 	/**
 	 * Add pre-defined rules to an array of rules only if rules with their names don't already exist
@@ -63,8 +64,8 @@ class RewriteRules extends ArrayObject {
 		$default_rules = Plugins::filter('default_rewrite_rules', $default_rules);
 		$default_rules_properties = array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );
 		$rule_names = array_flip( array_map( create_function( '$a', 'return $a->name;' ), $rules ) );
-		foreach( $default_rules as $default_rule ) {
-			if( !isset( $rule_names[$default_rule['name']] ) ) {
+		foreach ( $default_rules as $default_rule ) {
+			if ( !isset( $rule_names[$default_rule['name']] ) ) {
 				$rule_properties = array_merge( $default_rule, $default_rules_properties );
 				$rules[] = new RewriteRule( $rule_properties );
 			}
@@ -81,7 +82,7 @@ class RewriteRules extends ArrayObject {
 	{
 		static $system_rules;
 
-		if(!isset($system_rules)) {
+		if ( !isset($system_rules) ) {
 			$sql = "
 				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority, rr.parameters
 				FROM {rewrite_rules} AS rr
@@ -113,14 +114,14 @@ class RewriteRules extends ArrayObject {
 	{
 		$pr = array();
 		$max_priority = 0;
-		foreach($rewrite_rules as $r) {
+		foreach ( $rewrite_rules as $r ) {
 			$priority = $r->priority;
 			$pr[$priority][] = $r;
 			$max_priority = max($max_priority, $priority);
 		}
 		$rewrite_rules = array();
-		for($z = 0; $z <= $max_priority; $z++) {
-			if(isset($pr[$z])) {
+		for ( $z = 0; $z <= $max_priority; $z++ ) {
+			if ( isset($pr[$z]) ) {
 				$rewrite_rules = array_merge($rewrite_rules, $pr[$z]);
 			}
 		}
@@ -138,10 +139,10 @@ class RewriteRules extends ArrayObject {
 	{
 		static $named = null;
 
-		if( $named == null ) {
+		if ( $named == null ) {
 			$named = array();
 			$rules = self::get_active();
-			foreach($rules as $rule) {
+			foreach ( $rules as $rule ) {
 				$named[$rule->name][] = $rule;
 			}
 		}

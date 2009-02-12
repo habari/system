@@ -9,7 +9,8 @@ define('MIN_PHP_VERSION', '5.2.0');
 /**
  * The class which responds to installer actions
  */
-class InstallHandler extends ActionHandler {
+class InstallHandler extends ActionHandler
+{
 
 	/**
 	 * Entry point for installation.  The reason there is a begin_install
@@ -183,7 +184,8 @@ class InstallHandler extends ActionHandler {
 	/*
 	 * Helper function to grab list of plugins
 	 */
-	public function get_plugins() {
+	public function get_plugins()
+	{
 		$all_plugins = Plugins::list_all();
 		$recommended_list = array(
 			'coredashmodules.plugin.php',
@@ -482,7 +484,8 @@ class InstallHandler extends ActionHandler {
 	 * Checks for the existance of a SQLite datafile
 	 * tries to create it if it does not exist
 	**/
-	private function check_sqlite() {
+	private function check_sqlite()
+	{
 		$db_file = $this->handler_vars['db_file'];
 		if($db_file == basename($db_file)) { // The filename was given without a path
 			$db_file = Site::get_path( 'user', TRUE ) . $db_file;
@@ -1053,7 +1056,8 @@ class InstallHandler extends ActionHandler {
 		return true;
 	}
 
-	private function upgrade_db_pre ( $current_version ) {
+	private function upgrade_db_pre ( $current_version )
+	{
 
 		// this is actually a stripped-down version of DatabaseConnection::upgrade() - it doesn't support files
 
@@ -1095,7 +1099,8 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post ( $current_version ) {
+	private function upgrade_db_post ( $current_version )
+	{
 
 		// this is actually a stripped-down version of DatabaseConnection::upgrade() - it doesn't support files
 
@@ -1136,7 +1141,8 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_pre_1345 ( ) {
+	private function upgrade_db_pre_1345 ()
+	{
 
 		// fix duplicate tag_slug's
 
@@ -1218,7 +1224,8 @@ class InstallHandler extends ActionHandler {
 		Version::save_dbversion();
 	}
 
-	private function upgrade_db_post_1310 ( ) {
+	private function upgrade_db_post_1310 ()
+	{
 
 		// Auto-truncate the log table
 		if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
@@ -1229,7 +1236,8 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post_1794 ( ) {
+	private function upgrade_db_post_1794 ()
+	{
 
 		Post::add_new_status( 'scheduled', true );
 
@@ -1237,7 +1245,8 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post_1845 ( ) {
+	private function upgrade_db_post_1845 ()
+	{
 
 		// Strip the base path off active plugins
 		$base_path = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), array( HABARI_PATH ) );
@@ -1274,7 +1283,8 @@ class InstallHandler extends ActionHandler {
 		return true;
 	}
 
-	private function upgrade_db_post_2707 ( ) {
+	private function upgrade_db_post_2707 ()
+	{
 
 		// sets a default timezone and date / time formats for the options page
 		if ( !Options::get( 'timezone' ) ) {
@@ -1293,7 +1303,8 @@ class InstallHandler extends ActionHandler {
 
 	}
 
-	private function upgrade_db_post_2786 ( ) {
+	private function upgrade_db_post_2786 ()
+	{
 
 		// fixes all the bad post2tag fields that didn't get deleted when a post was deleted
 		DB::query( 'DELETE FROM {tag2post} WHERE post_id NOT IN ( SELECT DISTINCT id FROM {posts} )' );
@@ -1349,7 +1360,8 @@ class InstallHandler extends ActionHandler {
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
 	 */
-	public function ajax_check_mysql_credentials() {
+	public function ajax_check_mysql_credentials()
+	{
 		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
@@ -1413,7 +1425,8 @@ class InstallHandler extends ActionHandler {
 	 * Validate database credentials for PostgreSQL
 	 * Try to connect and verify if database name exists
 	 */
-	public function ajax_check_pgsql_credentials() {
+	public function ajax_check_pgsql_credentials()
+	{
 		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
@@ -1477,7 +1490,8 @@ class InstallHandler extends ActionHandler {
 	 * Validate database credentials for SQLite
 	 * Try to connect and verify if database name exists
 	 */
-	public function ajax_check_sqlite_credentials() {
+	public function ajax_check_sqlite_credentials()
+	{
 		$db_file = $_POST['file'];
 		$xml = new SimpleXMLElement('<response></response>');
 		// Missing anything?
