@@ -24,8 +24,10 @@ class ACL
 	 * For example, if you request $user->can('some non-existent permission') then this value is returned.
 	 **/
 	const ACCESS_NONEXISTENT_PERMISSION = 0;
+	const CACHE_NULL = -1;
 
 	public static $access_names = array( 'read', 'edit', 'delete', 'create' );
+	private static $token_cache = null;
 
 	/**
 	 * Check a permission bitmask for a particular access type.
@@ -161,6 +163,7 @@ class ACL
 		$result = DB::query( 'DELETE FROM {group_token_permissions} WHERE token_id=?', array( $token_id ) );
 		$result = DB::query( 'DELETE FROM {user_token_permissions} WHERE token_id=?', array( $token_id ) );
 		$result = DB::query( 'DELETE FROM {post_tokens} WHERE token_id=?', array( $token_id ) );
+		ACL::clear_caches();
 		// remove this token
 		$result = DB::query( 'DELETE FROM {tokens} WHERE id=?', array( $token_id ) );
 		if ( ! $result ) {
@@ -189,7 +192,7 @@ class ACL
 
 	/**
 	 * Get a permission token's name by its ID
-	 * @param int $id a permission ID
+	 * @param int $id a token ID
 	 * @return string the name of the permission, or boolean FALSE
 	**/
 	public static function token_name( $id )
@@ -198,8 +201,17 @@ class ACL
 			return false;
 		}
 		else {
-			return DB::get_value( 'SELECT name FROM {tokens} WHERE id=?', array( $id ) );
+			$tokens = ACL::cache_tokens();
+			return isset($tokens[$id]) ? $tokens[$id] : false;
 		}
+	}
+	
+	private static function cache_tokens()
+	{
+		if(ACL::$token_cache == null) {
+			ACL::$token_cache = DB::get_keyvalue( 'SELECT id, name FROM {tokens}' );
+		}
+		return ACL::$token_cache;
 	}
 
 	/**
@@ -213,7 +225,8 @@ class ACL
 			return intval( $name );
 		}
 		$name = self::normalize_token( $name );
-		return intval( DB::get_value( 'SELECT id FROM {tokens} WHERE name=?', array( $name ) ) );
+		$tokens = array_flip(ACL::cache_tokens());
+		return isset($tokens[$name]) ? $tokens[$name] : false;
 	}
 
 	/**
@@ -324,10 +337,10 @@ class ACL
 	 * @return integer An access bitmask
 	 * @todo Implement cache on these permissions
 	 */
-	public static function get_user_token_access( $user, $token_id )
+	public static function get_user_token_access( $user, $token )
 	{
 		// Use only numeric ids internally
-		$token_id = self::token_id( $token_id );
+		$token_id = self::token_id( $token );
 
 		/**
 		 * Do we allow perms that don't exist?
@@ -351,6 +364,15 @@ class ACL
 		}
 
 		// Implement cache RIGHT HERE
+		if(isset($_SESSION['user_token_access'][$token_id])) {
+//			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
+			if($_SESSION['user_token_access'][$token_id] == ACL::CACHE_NULL) {
+				return NULL;
+			}
+			else {
+				return self::get_bitmask( $_SESSION['user_token_access'][$token_id] );
+			}
+		}
 
 		/**
 		 * Jay Pipe's explanation of the following SQL
@@ -404,6 +426,7 @@ SQL;
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
 		if(count($accesses) == 0){
+			$_SESSION['user_token_access'][$token_id] = ACL::CACHE_NULL;
 			return null;
 		}
 		else {
@@ -418,6 +441,7 @@ SQL;
 				}
 			}
 			
+			$_SESSION['user_token_access'][$token_id] = $result;
 			return self::get_bitmask( $result );
 		}
 	}
@@ -552,6 +576,7 @@ SQL;
 				array( 'access_mask' => $bitmask->value ),
 				array( 'group_id' => $group_id, 'token_id' => $token_id )
 			);
+			ACL::clear_caches();
 
 			$ug = UserGroup::get_by_id( $group_id );
 			$ug->clear_permissions_cache();
@@ -598,6 +623,8 @@ SQL;
 			array( 'access_mask' => $bitmask->value ),
 			array( 'user_id' => $user_id, 'token_id' => $token_id )
 		);
+		
+		ACL::clear_caches();
 
 		return $result;
 	}
@@ -647,6 +674,7 @@ SQL;
 		}
 
 		$ug->clear_permissions_cache();
+		ACL::clear_caches();
 
 		return $result;
 	}
@@ -663,6 +691,8 @@ SQL;
 		$result = DB::delete( '{user_token_permissions}',
 			array( 'user_id' => $user_id, 'token_id' => $token_id ) );
 
+		ACL::clear_caches();
+
 		return $result;
 	}
 
@@ -675,6 +705,15 @@ SQL;
 	public static function normalize_token( $name )
 	{
 		return strtolower( preg_replace( '/\s+/', '_', trim($name) ) );
+	}
+	
+	/**
+	 * Clears all caches used to hold permissions
+	 * 
+	 */
+	public static function clear_caches()
+	{
+		unset($_SESSION['user_token_access']);
 	}
 
 	/**
