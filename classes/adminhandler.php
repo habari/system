@@ -2975,6 +2975,7 @@ class AdminHandler extends ActionHandler
 		$result = false;
 
 		switch( $page ) {
+			case 'comment':
 			case 'comments':
 				$require_any = array('manage_all_comments'=>true, 'manage_own_post_comments'=>true);
 				break;

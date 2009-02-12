@@ -454,6 +454,10 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
+		// no tags? then let's get out'a'here
+		if (count($this->tags) == 0) {
+			return true;
+		}
 		/*
 		 * First, let's clean the incoming tag text array, ensuring we have
 		 * a unique set of tag texts and slugs.
@@ -975,11 +979,11 @@ class Post extends QueryRecord implements IsContent
 		$tokens = Plugins::filter('post_tokens', $tokens, $this);
 		$this->add_tokens( $this->content_type() );
 	}
-	
+
 
 	/**
 	 * Checks if this post has one or more tokens
-	 * 
+	 *
 	 * @param mixed $tokens A single token string or an array of tokens
 	 * @return mixed false if no tokens match, an array of matching token ids if any match
 	 */
@@ -1028,7 +1032,7 @@ class Post extends QueryRecord implements IsContent
 		}
 		$this->tokens = array_diff($this->tokens, $remove_tokens);
 	}
-	
+
 	/**
 	 * Applies a new set of specific tokens to a post
 	 * @param mixed $tokens A string token, or an array of tokens to apply to this post
@@ -1044,11 +1048,11 @@ class Post extends QueryRecord implements IsContent
 		}
 		$this->tokens = $new_tokens;
 	}
-	
+
 	/**
 	 * Returns an array of token ids that are associated with this post
 	 * Also initializes the internal token array for use by other token operations
-	 * 
+	 *
 	 * @return array An array of token ids
 	 */
 	public function get_tokens()
