@@ -1057,10 +1057,42 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function get_tokens()
 	{
-		if(empty($this->tokens)) {
+		if ( empty( $this->tokens ) ) {
 			$this->tokens = DB::get_column( 'SELECT token_id FROM {post_tokens} WHERE post_id = ?', array($this->id) );
 		}
 		return $this->tokens;
 	}
+
+	/**
+	 * Returns an access Bitmask for the given user on this post
+	 * @param User $user The user mask to fetch
+	 * @return Bitmask
+	 */
+	public function get_access( $user = null )
+	{
+		if ( ! $user instanceof User ) {
+			$user = User::identify();
+		}
+
+		// collect all possible token accesses on the given post
+		$token_accesses = array(
+			ACL::get_user_token_access( 'own_posts' ),
+			ACL::get_user_token_access( 'post_any' ),
+			ACL::get_user_token_access( 'post_' . $this->content_type() ),
+		);
+
+		$post_tokens = DB::get_column( 'SELECT token_id FROM {post_tokens} WHERE post_id=?', array( $this->id ) );
+		foreach ( $post_tokens as $token ) {
+			$token_accesses []= ACL::get_user_token_access( $token );
+		}
+
+		// now that we have all the accesses, loop through them to build the access to the particular post
+		if ( in_array( 0, $token_accesses ) ) {
+			return ACL::get_bitmask( 0 );
+		}
+
+		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
+	}
+
 }
 ?>

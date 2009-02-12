@@ -970,5 +970,23 @@ class Utils
 		return $password;
 	}
 
+	/**
+	 * Does a bitwise OR of all the numbers in an array
+	 * @param array $input An array of integers
+	 * @return int The bitwise OR of the input array
+	 */
+	public static function array_or( $input )
+	{
+		return array_reduce( $input, array( 'Utils', 'ror' ), 0 );
+	}
+
+	/**
+	 * Helper function for array_or
+	 */
+	public static function ror( $v, $w )
+	{
+		return $v |= $w;
+	}
+
 }
 ?>
