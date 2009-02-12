@@ -1,0 +1,3 @@
+.posts .item.deleted span, .posts .item.deleted span * {
+	color: #999 !important;
+}
