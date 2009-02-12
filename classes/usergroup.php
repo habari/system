@@ -12,7 +12,7 @@ class UserGroup extends QueryRecord
 {
 	// These arrays hold the current membership and permission settings for this group
 	// $member_ids is not NOT matched key and value pairs ( like array('foo'=>'foo') )
-	private $member_ids = array();
+	private $member_ids = null;
 	private $permissions;
 
 	/**
@@ -38,13 +38,6 @@ class UserGroup extends QueryRecord
 			$this->fields
 		);
 		parent::__construct( $paramarray );
-
-		// if we have an ID, load this UserGroup's members & permissions
-		if ( $this->id ) {
-			if ( $result = DB::get_column( 'SELECT user_id FROM {users_groups} WHERE group_id= ?', array( $this->id ) ) ) {
-				$this->member_ids = $result;
-			}
-		}
 
 		// exclude field keys from the $this->fields array that should not be updated in the database on insert/update
 		$this->exclude_fields( array( 'id' ) );
@@ -126,6 +119,8 @@ class UserGroup extends QueryRecord
 	 */
 	protected function set_member_list()
 	{
+		$this->load_member_cache();
+		
 		// Remove all users from this group in preparation for adding the current list
 		DB::query('DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
 		// Add the current list of users into the group
@@ -170,9 +165,18 @@ class UserGroup extends QueryRecord
 	{
 		switch ( $param ) {
 			case 'members':
+				$this->load_member_cache();
 				return (array) $this->member_ids;
 				break;
+			case 'users':
+				$this->load_member_cache();
+				$results = DB::get_results( 'SELECT u.* FROM {users} u INNER JOIN {users_groups} ug ON ug.user_id = u.id WHERE ug.group_id= ?', array( $this->id ), 'User' );
+				if(in_array(0, $this->member_ids)) {
+					$results[] = User::anonymous();
+				}
+				return $results;
 			case 'permissions':
+				$this->load_member_cache();
 				return $this->permissions;
 				break;
 			default:
@@ -187,6 +191,7 @@ class UserGroup extends QueryRecord
 	 */
 	public function add( $users )
 	{
+		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
 		$user_ids = array_map(array('User', 'get_id'), $users);
@@ -205,6 +210,7 @@ class UserGroup extends QueryRecord
 	 */
 	public function remove( $users )
 	{
+		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
 		$users = array_map(array('User', 'get_id'), $users);
@@ -265,9 +271,7 @@ class UserGroup extends QueryRecord
 	public function can( $token, $access = 'full' )
 	{
 		$token = ACL::token_id( $token );
-		if ( is_null( $this->permissions ) ) {
-			$this->load_permissions_cache();
-		}
+		$this->load_permissions_cache();
 		if ( isset( $this->permissions[$token] ) && ACL::access_check( $this->permissions[$token], $access ) ) {
 			return true;
 		}
@@ -283,9 +287,7 @@ class UserGroup extends QueryRecord
 	public function get_access( $token )
 	{
 		$token = ACL::token_id( $token );
-		if ( is_null( $this->permissions ) ) {
-			$this->load_permissions_cache();
-		}
+		$this->load_permissions_cache();
 		if ( isset( $this->permissions[$token] ) ) {
 			return ACL::get_bitmask( $this->permissions[$token]);
 		}
@@ -306,9 +308,11 @@ class UserGroup extends QueryRecord
 	 */
 	public function load_permissions_cache()
 	{
-		if ( $results = DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
-			foreach ( $results as $result ) {
-				$this->permissions[$result->token_id] = $result->permission_id;
+		if ( is_null( $this->permissions ) ) {
+			if ( $results = DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
+				foreach ( $results as $result ) {
+					$this->permissions[$result->token_id] = $result->permission_id;
+				}
 			}
 		}
 	}
@@ -401,6 +405,19 @@ class UserGroup extends QueryRecord
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Cache the member ids that belong to this group
+	 * 
+	 * @param boolean $refresh Optional. If true, refresh the cache
+	 */
+	protected function load_member_cache( $refresh = false )
+	{
+		// if we have an ID, load this UserGroup's members & permissions
+		if ( $this->id && ( $refresh || !isset( $this->member_ids ) ) ) {
+			$this->member_ids = DB::get_column( 'SELECT user_id FROM {users_groups} WHERE group_id= ?', array( $this->id ) );
+		}
 	}
 }
 ?>

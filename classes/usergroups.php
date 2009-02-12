@@ -121,14 +121,8 @@ class UserGroups extends ArrayObject
 		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		DB::set_fetch_mode(PDO::FETCH_CLASS);
-		// Adjust the return type
-		if ( $single ) {
-			DB::set_fetch_class('UserGroup');
-		}
-		else {
-			DB::set_fetch_class('UserGroups');
-		}
-		$results = DB::$fetch_fn( $query, $params );
+
+		$results = DB::$fetch_fn( $query, $params, 'UserGroup' );
 
 		if ( 'get_results' != $fetch_fn ) {
 			// return the results
