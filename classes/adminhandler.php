@@ -281,16 +281,14 @@ class AdminHandler extends ActionHandler
 				}
 				$field->tabindex = $tab_index;
 				$tab_index++;
-				$field->helptext = $option['helptext'];
 				if ( isset( $option['helptext'] ) ) {
 					$field->helptext = $option['helptext'];
 				}
 				else {
 					$field->helptext = '';
 				}
-				// @todo: do something with helptext
-		}
 			}
+		}
 
 		/* @todo: filter for additional options from plugins
 		 * We could either use existing config forms and simply extract
@@ -2585,7 +2583,7 @@ class AdminHandler extends ActionHandler
 			$jsuser->id = $user->id;
 			$jsuser->username = $user->username;
 			$jsuser->member = in_array($user->id, $members);
-			
+
 			$jsusers[$user->id] = $jsuser;
 		}
 
