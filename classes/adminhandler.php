@@ -1434,6 +1434,7 @@ class AdminHandler extends ActionHandler
 			'offset' => 0,
 			'search' => '',
 			'status' => 'All',
+			'orderby' => 'DESC',
 		);
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[$varname] : $default);
@@ -1561,6 +1562,7 @@ class AdminHandler extends ActionHandler
 			'status' => $status,
 			'limit' => $limit,
 			'offset' => $offset,
+			'orderby' => $orderby,
 		);
 
 		// there is no explicit 'all' type/status for comments, so we need to unset these arguments
