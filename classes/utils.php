@@ -29,7 +29,7 @@ class Utils
 	 **/
 	public static function get_params( $params )
 	{
-		if( is_array( $params ) || $params instanceof ArrayObject || $params instanceof ArrayIterator ) {
+		if ( is_array( $params ) || $params instanceof ArrayObject || $params instanceof ArrayIterator ) {
 			return $params;
 		}
 		$paramarray = array();
@@ -56,7 +56,7 @@ class Utils
 	 **/
 	public static function redirect( $url = '', $continue = false )
 	{
-		if($url == '') {
+		if ( $url == '' ) {
 			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
 		header('Location: ' . $url, true, 302);
@@ -140,7 +140,7 @@ class Utils
 	 **/
 	public static function addslashes( $value )
 	{
-		if( is_array( $value ) ) {
+		if ( is_array( $value ) ) {
 			$value = array_map( array( 'Utils', 'addslashes' ), $value );
 		}
 		else if ( !empty( $value ) && is_string( $value ) ) {
@@ -280,7 +280,7 @@ class Utils
 	public static function debug_reveal($show, $hide, $debugid, $close = false)
 	{
 		$reshow = $restyle = $restyle2 = '';
-		if($close) {
+		if ( $close ) {
 			$reshow = "onclick=\"debugtoggle('debugshow-{$debugid}');debugtoggle('debughide-{$debugid}');return false;\"";
 			$restyle = "<span class=\"utils__block\">";
 			$restyle2 = "</span>";
@@ -299,7 +299,7 @@ class Utils
 
 		$fooargs = func_get_args();
 		echo "<div class=\"utils__debugger\">";
-		if(!self::$debug_defined) {
+		if ( !self::$debug_defined ) {
 			$output = "<script type=\"text/javascript\">
 				debuggebi = function(id) {return document.getElementById(id);}
 				debugtoggle = function(id) {debuggebi(id).style.display = debuggebi(id).style.display=='none'?'inline':'none';}
@@ -321,7 +321,7 @@ class Utils
 			echo $output;
 			self::$debug_defined = true;
 		}
-		if(function_exists('debug_backtrace')) {
+		if ( function_exists('debug_backtrace') ) {
 			$output = "<table>";
 			$backtrace = array_reverse(debug_backtrace(), true);
 			$odd = '';
@@ -330,8 +330,8 @@ class Utils
 				$file = $line = $class = $type = $function = '';
 				$args = array();
 				extract($trace);
-				if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
-				if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
+				if ( isset($class) ) $fname = $class . $type . $function; else	$fname = $function;
+				if ( !isset($file) || $file=='' ) $file = '[Internal PHP]'; else $file = basename($file);
 				$odd = $odd == '' ? 'class="utils__odd"' : '';
 				$output .= "<tr {$odd}><td>{$file} ({$line}):</td><td>{$fname}(";
 				$comma = '';
@@ -383,15 +383,15 @@ class Utils
 	{
 		$output = '';
 		extract(end($backtrace));
-		if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
-		if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
+		if ( isset($class) ) $fname = $class . $type . $function; else	$fname = $function;
+		if ( !isset($file) || $file=='' ) $file = '[Internal PHP]'; else $file = basename($file);
 		$output .= "console.group(\"%s(%s):  %s(...)\", \"".basename($file)."\", \"{$line}\", \"{$fname}\");\n";
-		foreach($backtrace as $trace) {
+		foreach ( $backtrace as $trace ) {
 			$file = $line = $class = $type = $function = '';
 			$args = array();
 			extract($trace);
-			if(isset($class))	$fname = $class . $type . $function; else	$fname = $function;
-			if(!isset($file) || $file=='') $file = '[Internal PHP]'; else $file = basename($file);
+			if ( isset($class) ) $fname = $class . $type . $function; else	$fname = $function;
+			if ( !isset($file) || $file=='' ) $file = '[Internal PHP]'; else $file = basename($file);
 
 			$output .= "console.group(\"%s(%s):  %s(%s)\", \"{$file}\", \"{$line}\", \"{$fname}\", \"";
 
@@ -462,7 +462,8 @@ class Utils
 	 *
 	 * Passwords should not be stored using this method, but legacy systems might require it.
 	 */
-	public static function sha1( $password, $hash = NULL ) {
+	public static function sha1( $password, $hash = NULL )
+	{
 		$marker = '{SHA1}';
 		if ( $hash == NULL ) {
 			return $marker . sha1( $password );
@@ -477,7 +478,8 @@ class Utils
 	 *
 	 * Passwords should not be stored using this method, but legacy systems might require it.
 	 */
-	public static function md5( $password, $hash = NULL ) {
+	public static function md5( $password, $hash = NULL )
+	{
 		$marker = '{MD5}';
 		if ( $hash == NULL ) {
 			return $marker . md5( $password );
@@ -587,7 +589,7 @@ class Utils
 		$matches = preg_split( '/((?<!\\\\)%[a-z]\\s*)/i', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 		$output = '';
 		foreach( $matches as $match ) {
-			if( $match{0} == '%' ) {
+			if ( $match{0} == '%' ) {
 				$output.= strftime($match, $timestamp);
 			}
 			else {
@@ -634,7 +636,7 @@ class Utils
 		$output.= ">\n";
 		foreach($options as $value => $text){
 			$output.= '<option value="'.$value.'"';
-			if($current == (string)$value) {
+			if ( $current == (string)$value ) {
 				$output.= ' selected';
 			}
 			$output.= '>' . $text . "</option>\n";
@@ -828,7 +830,8 @@ class Utils
 		return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
 	}
 
-	public static function truncate_log() {
+	public static function truncate_log()
+	{
 		// Truncate the log table
 		$date = HabariDateTime::date_create()->modify( '-14 days' );
 		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
@@ -842,7 +845,7 @@ class Utils
 	 */
 	public static function single_array( $element )
 	{
-		if(!is_array($element)) {
+		if ( !is_array($element) ) {
 			return array($element);
 		}
 		return $element;
@@ -857,13 +860,13 @@ class Utils
 	public static function mimetype( $filename )
 	{
 		$mimetype =null;
-		if(function_exists('finfo_open')) {
+		if ( function_exists('finfo_open') ) {
 			$finfo = finfo_open(FILEINFO_MIME);
 			$mimetype = finfo_file($finfo, $filename);
 			finfo_close($finfo);
 		}
 
-		if( empty( $mimetype ) ) {
+		if ( empty( $mimetype ) ) {
 			$pi = pathinfo($filename);
 			switch(strtolower($pi['extension'])) {
 				// hacky, hacky, kludge, kludge...
@@ -904,10 +907,10 @@ class Utils
 	 */
 	public static function trail( $value = false )
 	{
-		if($value === true) {
+		if ( $value === true ) {
 			return '/';
 		}
-		elseif($value) {
+		elseif ( $value ) {
 			return $value;
 		}
 		return '';
@@ -936,7 +939,7 @@ class Utils
 
 		$handled = false;
 		$handled = Plugins::filter('send_mail', $handled, $mail);
-		if($handled) {
+		if ( $handled ) {
 			return true;
 		}
 		else {
@@ -944,7 +947,7 @@ class Utils
 			foreach($headers as $header_key => $header_value) {
 				$header_key = trim($header_key);
 				$header_value = trim($header_value);
-				if(strpos($header_key.$header_value, "\n") === false) {
+				if ( strpos($header_key.$header_value, "\n") === false ) {
 					$additional_headers[] = "{$header_key}: {$header_value}";
 				}
 			}

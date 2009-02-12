@@ -170,7 +170,8 @@ class DB extends Singleton
 	/**
 	 * Commit a currently running transaction
 	 */
-	public static function commit() {
+	public static function commit()
+	{
 		DB::instance()->connection->commit();
 	}
 
@@ -302,7 +303,7 @@ class DB extends Singleton
 	 **/
 	public static function get_keyvalue( $query, $args = array() )
 	{
-		 return DB::instance()->connection->get_keyvalue( $query, $args );
+		return DB::instance()->connection->get_keyvalue( $query, $args );
 	}
 
 	/**
@@ -341,7 +342,7 @@ class DB extends Singleton
 	 **/
 	public static function update( $table, $fieldvalues, $keyfields )
 	{
-		 return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );
+		return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );
 	}
 
 	/**
@@ -390,7 +391,7 @@ class DB extends Singleton
 	 */
 	public static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
-		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
+		return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
 	}
 
 	/**
@@ -400,7 +401,7 @@ class DB extends Singleton
 	 */
 	public static function upgrade( $old_version )
 	{
-		 return DB::instance()->connection->upgrade( $old_version );
+		return DB::instance()->connection->upgrade( $old_version );
 	}
 	
 	public static function get_driver_name()

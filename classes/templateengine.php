@@ -108,7 +108,8 @@ abstract class TemplateEngine
 	 *
 	 * @param mixed Directory path as string or array.  Earlier elements override later elements.
 	 */
-	public function set_template_dir( $dir ) {
+	public function set_template_dir( $dir )
+	{
 		$this->template_dir = $dir;
 	}
 }

@@ -19,7 +19,8 @@ class UserGroups extends ArrayObject
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of UserGroup objects, or a single UserGroup object, depending on request
 	 */
-	public static function get( $paramarray = array() ) {
+	public static function get( $paramarray = array() )
+	{
 		$params = array();
 		$fns = array( 'get_results', 'get_row', 'get_value' );
 		$select = '';
@@ -141,8 +142,9 @@ class UserGroups extends ArrayObject
 	 *
 	 * @return Groups
 	 */
-	public static function get_all() {
-		
+	public static function get_all()
+	{
+
 		$params = array(
 			'orderby' => 'name ASC'
 			);

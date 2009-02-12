@@ -8,7 +8,8 @@
  * Object metadata
  *
  */
-class InfoObject extends InfoRecords {
+class InfoObject extends InfoRecords
+{
 
 	function __construct ( $params )
 	{

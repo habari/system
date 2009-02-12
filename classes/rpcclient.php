@@ -7,7 +7,8 @@
 /**
  * XMLRPC Client
  */
-class RPCClient {
+class RPCClient
+{
 	private $url;
 	private $method;
 	private $params;

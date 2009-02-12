@@ -21,7 +21,8 @@ abstract class Singleton
 	 *
 	 * @return object instance
 	 */
-	protected static function instance() {
+	protected static function instance()
+	{
 		/*
 		 * It is important to note that subclasses MUST override this
 		 * method, as get_class will ALWAYS return 'Singleton' when

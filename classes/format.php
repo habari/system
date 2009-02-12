@@ -21,16 +21,16 @@ class Format
 	 **/
 	public static function apply($format, $onwhat)
 	{
-		if( self::$formatters == null ) {
+		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
-		foreach(self::$formatters as $formatobj) {
-			if( method_exists($formatobj, $format) ) {
+		foreach ( self::$formatters as $formatobj ) {
+			if ( method_exists($formatobj, $format) ) {
 				$index = array_search($formatobj, self::$formatters);
 				$func = '$o = Format::by_index(' . $index . ');return $o->' . $format . '($a';
 				$args = func_get_args();
-				if( count($args) > 2) {
+				if ( count($args) > 2) {
 					$func.= ', ';
 					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
 					$func .= implode(', ', $args);
@@ -50,16 +50,16 @@ class Format
 	 **/
 	public static function apply_with_hook_params($format, $onwhat)
 	{
-		if( self::$formatters == null ) {
+		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
-		foreach(self::$formatters as $formatobj) {
-			if( method_exists($formatobj, $format) ) {
+		foreach ( self::$formatters as $formatobj ) {
+			if ( method_exists($formatobj, $format) ) {
 				$index = array_search($formatobj, self::$formatters);
 				$func = '$o= Format::by_index(' . $index . '); $args= func_get_args(); return call_user_func_array(array($o, "' . $format . '"), array_merge($args';
 				$args = func_get_args();
-				if( count($args) > 2) {
+				if ( count($args) > 2 ) {
 					$func.= ', array( ';
 					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
 					$func .= implode(', ', $args) . ')';
@@ -92,8 +92,8 @@ class Format
 	{
 		self::$formatters = array();
 		$classes = get_declared_classes();
-		foreach( $classes as $class ) {
-			if( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
+		foreach ( $classes as $class ) {
+			if ( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
 				self::$formatters[] = new $class();
 			}
 		}
@@ -177,7 +177,7 @@ class Format
 			$array = array( $array );
 		}
 
-		if( $between_last === NULL ) {
+		if ( $between_last === NULL ) {
 			$between_last = _t( ' and ' );
 		}
 
@@ -234,7 +234,7 @@ class Format
 		preg_match_all('%\{(\w)\}%i', $format, $matches);
 
 		$components = array();
-		foreach($matches[1] as $format_component) {
+		foreach ( $matches[1] as $format_component ) {
 			$components['{'.$format_component.'}'] = $date->format($format_component);
 		}
 		return strtr($format, $components);
@@ -285,7 +285,7 @@ class Format
 		$words = preg_split( '/(<(?:\\s|".*?"|[^>])+>|\\s+)/', $text, $count + 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
 
 		$ellipsis = '';
-		if( count( $words ) > $count * 2 ) {
+		if ( count( $words ) > $count * 2 ) {
 			array_pop( $words );
 			$ellipsis = '...';
 		}
@@ -294,12 +294,12 @@ class Format
 		$paragraphs = 0;
 
 		$stack = array();
-		foreach( $words as $word ) {
+		foreach ( $words as $word ) {
 			if ( preg_match( '/<.*\/\\s*>$/', $word ) ) {
 				// If the tag self-closes, do nothing.
 				$output.= $word;
 			}
-			elseif( preg_match( '/<[\\s\/]+/', $word )) {
+			elseif ( preg_match( '/<[\\s\/]+/', $word ) ) {
 				// If the tag ends, pop one off the stack (cheatingly assuming well-formed!)
 				array_pop( $stack );
 				preg_match( '/<\s*\/\s*(\\w+)/', $word, $tagn );
@@ -310,7 +310,7 @@ class Format
 				case 'ol':
 				case 'ul':
 					$paragraphs++;
-					if( $paragraphs >= $maxparagraphs ) {
+					if ( $paragraphs >= $maxparagraphs ) {
 						$output.= '...' . $word;
 						$ellipsis = '';
 						break 2;
@@ -318,7 +318,7 @@ class Format
 				}
 				$output.= $word;
 			}
-			elseif( $word[0] == '<' ) {
+			elseif ( $word[0] == '<' ) {
 				// If the tag begins, push it on the stack
 				$stack[] = $word;
 				$output .= $word;
@@ -337,7 +337,7 @@ class Format
 				$output.= '</' . $tagn[1] . '>';
 			}
 		}
-		foreach( $scripts[0] as $script ) {
+		foreach ( $scripts[0] as $script ) {
 			$output.= $script;
 		}
 
@@ -360,19 +360,19 @@ class Format
 	public static function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null)
 	{
 		// If the post requested is the post under consideration, always return the full post
-		if( $post->slug == Controller::get_var('slug') ) {
+		if ( $post->slug == Controller::get_var('slug') ) {
 			return $content;
 		}
 		else {
 			$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
-			if(count($matches) > 1) {
+			if ( count($matches) > 1 ) {
 				return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
 			}
-			elseif (isset($max_words) || isset($max_paragraphs)) {
+			elseif ( isset($max_words) || isset($max_paragraphs) ) {
 				$max_words = empty($max_words) ? 9999999 : intval($max_words);
 				$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
 				$summary = Format::summarize($content, $max_words, $max_paragraphs);
-				if(strlen($summary) >= strlen($content)) {
+				if ( strlen($summary) >= strlen($content) ) {
 					return $content;
 				}
 				else {

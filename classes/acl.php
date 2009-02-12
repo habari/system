@@ -17,7 +17,8 @@
  * @todo Rename all functions and variables to normalize conventions: Users and groups have "access" to a "token".  The access applied to a token is a "permission".  A "token" alone is not a "permission".
  *
  **/
-class ACL {
+class ACL
+{
 	/**
 	 * How to handle a permission request for a permission that is not in the permission list.
 	 * For example, if you request $user->can('some non-existent permission') then this value is returned.
