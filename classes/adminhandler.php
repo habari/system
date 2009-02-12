@@ -1434,7 +1434,7 @@ class AdminHandler extends ActionHandler
 			'offset' => 0,
 			'search' => '',
 			'status' => 'All',
-			'orderby' => 'DESC',
+			'orderby' => 'date DESC',
 		);
 		foreach ( $locals as $varname => $default ) {
 			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[$varname] : $default);
