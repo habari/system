@@ -187,6 +187,7 @@ class User extends QueryRecord
 	public function remember()
 	{
 		$_SESSION['user_id'] = $this->id;
+		ACL::clear_caches();
 		Session::set_userid($this->id);
 	}
 
@@ -202,6 +203,7 @@ class User extends QueryRecord
 			unset( $_SESSION['sudo'] );
 			Utils::redirect( Site::get_url( 'admin' ) );
 		}
+		ACL::clear_caches();
 		Plugins::act( 'user_forget', $this );
 		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
