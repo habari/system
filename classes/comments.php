@@ -36,7 +36,7 @@ class Comments extends ArrayObject
 				: ", {comments}.$field";
 		}
 		// defaults
-		$orderby = 'date ASC';
+		$orderby = 'date DESC';
 		$limit = Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
@@ -244,7 +244,7 @@ class Comments extends ArrayObject
 		}
 
 		// Get any full-query parameters
-		$possible = array( 'page', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'limit', 'offset' );
+		$possible = array( 'page', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'limit', 'offset', 'orderby' );
 		foreach ( $possible as $varname ) {
 			if ( isset( $paramarray[$varname] ) ) {
 				$$varname = $paramarray[$varname];
