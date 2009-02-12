@@ -36,7 +36,7 @@ class Comments extends ArrayObject
 				: ", {comments}.$field";
 		}
 		// defaults
-		$orderby = 'date DESC';
+		$orderby = 'date ASC';
 		$limit = Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
@@ -682,7 +682,7 @@ class Comments extends ArrayObject
 		}
 		return self::get( $params );
 	 }
-	
+
 	/**
 	 * static set
 	 * returns the number of document
@@ -703,7 +703,7 @@ class Comments extends ArrayObject
 		}
 		return null;
 	}
-	
+
 	/**
 	 * static delete_by_status
 	 * delete all the comments and commentinfo for comments with this status
