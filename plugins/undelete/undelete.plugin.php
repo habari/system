@@ -42,15 +42,6 @@ class Undelete extends Plugin
 	}
 
 	/**
-	 * function actions_plugins_loaded
-	 * Executes after all plugins are loaded
-	 **/
-	public function action_plugins_loaded()
-	{
-		//Utils::debug('ok');
-	}
-
-	/**
 	 * function filter_allow_post_delete
 	 * This function is executed when the filter "before_post_delete" is
 	 * called just before a post is to be deleted.
@@ -74,7 +65,7 @@ class Undelete extends Plugin
 			$post->status = Post::status( 'deleted' );
 			$post->update();
 			return false;
-		} 
+		}
 		else {
 			return true;
 		}
@@ -123,7 +114,7 @@ class Undelete extends Plugin
 			switch ( $action ) {
 			case _t( 'Configure' ):
 				$ui = new FormUI( strtolower( get_class( $this ) ) );
-				$ui->append( 'text', 'style', 'option:undelete__style', _t( 'Style declaration for deleted content:' ) );
+				$ui->append( 'textarea', 'style', 'option:undelete__style', _t( 'Style declaration for deleted content:' ) );
 				$ui->append( 'submit', 'save', 'Save' );
 				$ui->on_success( array( $this, 'updated_config' ) );
 				$ui->out();
@@ -178,6 +169,13 @@ class Undelete extends Plugin
 			echo '<style type="text/css">';
 			Options::out( 'undelete__style' );
 			echo '</style>';
+		}
+	}
+
+	public function action_admin_header( $theme )
+	{
+		if ( $theme->page == 'posts' ) {
+			Stack::add( 'admin_stylesheet', array($this->get_url() . '/undelete.css', 'screen') );
 		}
 	}
 }
