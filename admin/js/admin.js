@@ -1508,6 +1508,18 @@ $(document).ready(function(){
 
 	// Init shift-click for range select on checkboxes
 	$('input.checkbox').rangeSelect();
+	
+	// add checked class to selected items
+	$('.item input.checkbox').each(function(){
+		$(this).click(function(){
+			if($(this).parents('.item').hasClass('checked')) {
+				$(this).parents('.item').removeClass('checked');
+			}
+			else {
+				$(this).parents('.item').addClass('checked');
+			}
+		});
+	});
 });
 
 function resetTags() {
