@@ -381,7 +381,7 @@ a img {
 }
 
 .item.checked {
-    background-color:#e5eef3;
+    background-color:#fffde2;
 }
 
 .item.hide {
@@ -1615,6 +1615,10 @@ body.page-options #title input {
 
 .container .item:hover {
 	background: #f3f3f3;
+}
+
+.container .item.checked:hover {
+	background: #faf8dd;
 }
 
 body.page-Manage .item .head > span {
