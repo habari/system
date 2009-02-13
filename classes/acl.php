@@ -349,7 +349,7 @@ class ACL
 		if ( is_null( $token_id ) ) {
 			return self::get_bitmask( self::ACCESS_NONEXISTENT_PERMISSION );
 		}
-
+		
 		// if we were given a user ID, use that to fetch the group membership from the DB
 		if ( is_numeric( $user ) ) {
 			$user_id = $user;
@@ -361,6 +361,13 @@ class ACL
 				$user = User::get( $user );
 			}
 			$user_id = $user->id;
+		}
+
+		if( defined( 'LOCKED_OUT_SUPER_USER' ) && $token == 'super_user' ) {
+			$su = User::get( LOCKED_OUT_SUPER_USER );
+			if ( $su->id == $user_id ) {
+				return new Bitmask( self::$access_names, 'read');
+			}
 		}
 
 		// Implement cache RIGHT HERE
