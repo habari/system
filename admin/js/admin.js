@@ -397,6 +397,7 @@ var itemManage = {
 	uncheckAll: function() {
 		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 0;
+			$(this).trigger('highlight');
 		});
 		itemManage.selected = [];
 		itemManage.changeItem();
@@ -404,6 +405,7 @@ var itemManage = {
 	checkAll: function() {
 		$('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			this.checked = 1;
+			$(this).trigger('highlight');
 		});
 		itemManage.changeItem();
 	},
@@ -1314,7 +1316,7 @@ $.fn.rangeSelect = function() {
 			$spec.slice(
 				Math.min($spec.index(lastCheckbox), $spec.index(e.target)),
 				Math.max($spec.index(lastCheckbox), $spec.index(e.target)) + 1
-			).attr({checked: e.target.checked ? "checked" : ""});
+			).attr({checked: e.target.checked ? "checked" : ""}).trigger('highlight');
 		}
 		lastCheckbox = e.target;
 	});
@@ -1510,16 +1512,15 @@ $(document).ready(function(){
 	$('input.checkbox').rangeSelect();
 	
 	// add checked class to selected items
-/*	$('.item input.checkbox').each(function(){
-		$(this).click(function(){
-			if($(this).parents('.item').hasClass('checked')) {
-				$(this).parents('.item').removeClass('checked');
-			}
-			else {
-				$(this).parents('.item').addClass('checked');
-			}
-		});
-	});*/
+	$('.item input.checkbox').click(function(){$(this).trigger('highlight')});
+	$('.item input.checkbox').bind('highlight', function(){
+		if(!this.checked) {
+			$(this).parents('.item').removeClass('checked');
+		}
+		else {
+			$(this).parents('.item').addClass('checked');
+		}
+	});
 });
 
 function resetTags() {
