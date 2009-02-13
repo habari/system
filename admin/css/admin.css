@@ -380,7 +380,7 @@ a img {
 	padding-right: 40px;
 }
 
-.item.checked {
+.item.selected {
     background-color:#fffde2;
 }
 
@@ -1617,7 +1617,7 @@ body.page-options #title input {
 	background: #f3f3f3;
 }
 
-.container .item.checked:hover {
+.container .item.selected:hover {
 	background: #faf8dd;
 }
 
