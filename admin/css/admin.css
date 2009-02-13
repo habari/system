@@ -380,6 +380,10 @@ a img {
 	padding-right: 40px;
 }
 
+.item.checked {
+    background-color:#e5eef3;
+}
+
 .item.hide {
 	display: none;
 }
