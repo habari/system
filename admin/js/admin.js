@@ -1510,7 +1510,7 @@ $(document).ready(function(){
 	$('input.checkbox').rangeSelect();
 	
 	// add checked class to selected items
-	$('.item input.checkbox').each(function(){
+/*	$('.item input.checkbox').each(function(){
 		$(this).click(function(){
 			if($(this).parents('.item').hasClass('checked')) {
 				$(this).parents('.item').removeClass('checked');
@@ -1519,7 +1519,7 @@ $(document).ready(function(){
 				$(this).parents('.item').addClass('checked');
 			}
 		});
-	});
+	});*/
 });
 
 function resetTags() {
