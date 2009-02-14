@@ -336,7 +336,6 @@ class ACL
 	 * @param mixed $user A User object instance or user id
 	 * @param mixed $token_id A permission token name or token ID
 	 * @return integer An access bitmask
-	 * @todo Implement cache on these permissions
 	 */
 	public static function get_user_token_access( $user, $token )
 	{
@@ -371,7 +370,7 @@ class ACL
 			}
 		}
 
-		// Implement cache RIGHT HERE
+		// check the cache first for the user's access_mask on the token
 		if ( isset($_SESSION['user_token_access'][$token_id]) ) {
 //			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
 			if ( $_SESSION['user_token_access'][$token_id] == ACL::CACHE_NULL ) {
@@ -546,7 +545,7 @@ SQL;
 	public static function grant_group( $group_id, $token_id, $access = 'full' )
 	{
 		$token_id = self::token_id( $token_id );
-		$results = DB::get_results( 'SELECT access_mask, access_mask as granted FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
+		$results = DB::get_column( 'SELECT access_mask FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
 		$access_mask = 0;
 		$row_exists = false;
 		if ( $results ) {
