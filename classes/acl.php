@@ -551,7 +551,7 @@ SQL;
 		$row_exists = false;
 		if ( $results ) {
 			$row_exists = true;
-			if ( in_array( 0, $results ) {
+			if ( in_array( 0, $results ) ) {
 				$access_mask = 0;
 			}
 			else {
@@ -720,7 +720,10 @@ SQL;
 	 */
 	public static function clear_caches()
 	{
-		unset($_SESSION['user_token_access']);
+		if ( isset($_SESSION['user_token_access']) ) {
+			unset($_SESSION['user_token_access']);
+		}
+		self::$token_cache = null;
 	}
 
 	/**
