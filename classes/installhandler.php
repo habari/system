@@ -450,13 +450,7 @@ class InstallHandler extends ActionHandler
 				DB::rollback();
 				return false;
 			}
-			/*
 			// create default tokens
-			ACL::create_default_tokens();
-			// Make the admin group all superusers
-			$admin_group->grant('super_user');
-			// Create the anonymous group for visitor permissions
-			$this->create_anonymous_group();*/
 			ACL::rebuild_permissions( $user );
 		}
 
