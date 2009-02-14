@@ -14,7 +14,6 @@
  * means you have that permission.  Membership in any group that denies
  * that permission denies the user that permission, even if another group
  * grants that permission.
- * @todo Rename all functions and variables to normalize conventions: Users and groups have "access" to a "token".  The access applied to a token is a "permission".  A "token" alone is not a "permission".
  *
  **/
 class ACL
@@ -123,6 +122,8 @@ class ACL
 			return false;
 		}
 
+		self::clear_caches();
+
 		// Add the token to the admin group
 		$token = ACL::token_id( $name );
 		$admin = UserGroup::get( 'admin');
@@ -208,7 +209,7 @@ class ACL
 	
 	private static function cache_tokens()
 	{
-		if(ACL::$token_cache == null) {
+		if ( ACL::$token_cache == null ) {
 			ACL::$token_cache = DB::get_keyvalue( 'SELECT id, name FROM {tokens}' );
 		}
 		return ACL::$token_cache;
@@ -221,11 +222,11 @@ class ACL
 	**/
 	public static function token_id( $name )
 	{
-		if( is_numeric($name) ) {
+		if ( is_numeric($name) ) {
 			return intval( $name );
 		}
 		$name = self::normalize_token( $name );
-		$tokens = array_flip(ACL::cache_tokens());
+		$tokens = array_flip( ACL::cache_tokens() );
 		return isset($tokens[$name]) ? $tokens[$name] : false;
 	}
 
@@ -371,9 +372,9 @@ class ACL
 		}
 
 		// Implement cache RIGHT HERE
-		if(isset($_SESSION['user_token_access'][$token_id])) {
+		if ( isset($_SESSION['user_token_access'][$token_id]) ) {
 //			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
-			if($_SESSION['user_token_access'][$token_id] == ACL::CACHE_NULL) {
+			if ( $_SESSION['user_token_access'][$token_id] == ACL::CACHE_NULL ) {
 				return NULL;
 			}
 			else {
@@ -432,7 +433,7 @@ SQL;
 		
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
-		if(count($accesses) == 0){
+		if ( count($accesses) == 0 ) {
 			$_SESSION['user_token_access'][$token_id] = ACL::CACHE_NULL;
 			return null;
 		}
@@ -548,17 +549,16 @@ SQL;
 		$results = DB::get_results( 'SELECT access_mask, access_mask as granted FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
 		$access_mask = 0;
 		$row_exists = false;
-		if($results) {
+		if ( $results ) {
 			$row_exists = true;
-			foreach($results as $row) {
-				if($row->access_mask == 0) {
-					$access_mask = 0;
-					break;
-				}
-				$access_mask |= $row->access_mask;
+			if ( in_array( 0, $results ) {
+				$access_mask = 0;
+			}
+			else {
+				$access_mask = Utils::array_or( $results );
 			}
 		}
-		
+
 		$bitmask = self::get_bitmask( $access_mask );
 		$orig_value = $bitmask->value;
 
@@ -616,7 +616,7 @@ SQL;
 		$bitmask = self::get_bitmask( $access_mask );
 
 		if ( $access == 'full' ) {
-			$bitmask->value= $bitmask->full;
+			$bitmask->value = $bitmask->full;
 		}
 		elseif ( $access == 'deny' ) {
 			$bitmask->value = 0;
@@ -630,7 +630,7 @@ SQL;
 			array( 'access_mask' => $bitmask->value ),
 			array( 'user_id' => $user_id, 'token_id' => $token_id )
 		);
-		
+
 		ACL::clear_caches();
 
 		return $result;
@@ -746,14 +746,14 @@ SQL;
 		self::create_token( 'manage_logs', _t('Manage logs'), 'Administration' );
 
 		// content tokens
-		self::create_token( 'own_posts', _t('Permissions on one\'s own posts'), 'Content', true );
-		self::create_token( 'post_any', _t('Permissions to all posts'), 'Content', true );
+		self::create_token( 'own_posts', _t('Permissions on one\'s own posts'), _t('Content'), true );
+		self::create_token( 'post_any', _t('Permissions to all posts'), _t('Content'), true );
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-			self::create_token( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ), 'Content', true );
+			self::create_token( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ), _t('Content'), true );
 		}
 
 		// comments tokens
-		self::create_token( 'comment', 'Make comments on any post', 'Comments' );
+		self::create_token( 'comment', 'Make comments on any post', _t('Comments') );
 	}
 
 	public static function rebuild_permissions( $user = null )
@@ -787,7 +787,7 @@ SQL;
 			$admin_group->add( $ids );
 		}
 		else {
-			$admin_group->add($user);
+			$admin_group->add( $user );
 		}
 
 		// create default permissions
@@ -799,7 +799,7 @@ SQL;
 		$anonymous_group->grant('post_page', 'read');
 		$anonymous_group->grant( 'comment' );
 
-		// Add the anonumous user to the anonymous group
+		// Add the anonymous user to the anonymous group
 		$anonymous_group->add( 0 );
 	}
 

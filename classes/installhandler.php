@@ -450,12 +450,14 @@ class InstallHandler extends ActionHandler
 				DB::rollback();
 				return false;
 			}
+			/*
 			// create default tokens
 			ACL::create_default_tokens();
 			// Make the admin group all superusers
 			$admin_group->grant('super_user');
 			// Create the anonymous group for visitor permissions
-			$this->create_anonymous_group();
+			$this->create_anonymous_group();*/
+			ACL::rebuild_permissions( $user );
 		}
 
 		// create a first post, if none exists
@@ -586,7 +588,7 @@ class InstallHandler extends ActionHandler
 	private function create_admin_group( $user )
 	{
 		// Create the admin group
-		$group = UserGroup::create( array( 'name' => 'admin' ) );
+		$group = UserGroup::create( array( 'name' => _t('admin') ) );
 		if( ! $group ) {
 			return false;
 		}
@@ -597,7 +599,7 @@ class InstallHandler extends ActionHandler
 	private function create_anonymous_group()
 	{
 		// Create the anonymous group
-		$group = UserGroup::create( array( 'name' => 'anonymous' ) );
+		$group = UserGroup::create( array( 'name' => _t('anonymous') ) );
 		if( ! $group ) {
 			return false;
 		}
