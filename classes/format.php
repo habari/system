@@ -112,55 +112,81 @@ class Format
 	 * @param string $value The string to apply the formatting
 	 * @returns string The formatted string
 	 **/
-	public static function autop($value)
-	{
-		$regex = '/(<\s*(address|code|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
-
-		// First, clean out any windows line endings
-		$target = str_replace( "\r\n", "\n", $value );
-
-		// Then, find any of the approved tags above, and split the content on them
-		$cz = preg_split( $regex, $target );
-		preg_match_all( $regex, $target, $cd, PREG_SET_ORDER );
-
-		/**
-		 * Loop through each content block, turning two newlines in a row into </p><p>'s and
-		 * single newlines into <br>'s
-		 **/
-		$output = '';
-		for($z = 0; $z < count($cz); $z++) {
-			$pblock = preg_replace( '/\n{2,}/', "</p><p>", trim( $cz[$z] ) );
-			$pblock = ( $pblock == '' ) ? '' : "<p>{$pblock}</p>";
-
-			$tblock = isset( $cd[$z] ) ? $cd[$z][0] : '';
-			$output .= $pblock . $tblock;
+	public static function autop($value) {
+		$value = str_replace("\r\n", "\n", $value);
+		$value = trim($value);
+		$ht = new HtmlTokenizer($value);
+		$set = $ht->parse();
+		$value = '';
+		
+		// should never autop ANY content in these items
+		$noAutoP = array(
+			'pre','blockquote','code','ul'
+		);
+		
+		$blockElements = array(
+			'address','blockquote','center','dir','div','dl','fieldset','form',
+			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
+			'noscript','ol','p','pre','table','ul'
+		);
+		
+		$token = $set->current();
+		$openP = false;
+		do {
+			
+			if ($openP) {
+				if ($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array(strtolower($token['name']), $blockElements)) {
+					$value .= '</p>';
+					$openP = false;
+				}
+			}
+			
+			// no-autop, pass them through verbatim
+			if ($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array(strtolower($token['name']), $noAutoP)) {
+				$nestedToken = $token;
+				$count = 0;
+				do {
+					$value .= HtmlTokenSet::token_to_string($nestedToken);
+					if (
+						($nestedToken['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
+						 && strtolower($nestedToken['name']) == strtolower($token['name'])) // found closing element
+					) {
+						break;
+					}
+				} while ($nestedToken = $set->next());
+				continue;
+			}
+			
+			// anything that's not a text node should get passed through
+			if ($token['type'] != HTMLTokenizer::NODE_TYPE_TEXT) {
+				$value .= HtmlTokenSet::token_to_string($token);
+				continue;
+			}
+			
+			// if we get this far, token type is text
+			$localValue = $token['value'];
+			if (strlen($localValue)) {
+				// contains newlines:
+				if ($openP) {
+					$localValue = $localValue;
+				} else {
+					$localValue = "<p>{$localValue}";
+					$openP = true;
+				}
+				
+				$localValue = preg_replace('/\s*(\n\s*){2,}/', "</p><p>", $localValue); // at least two \n in a row (allow whitespace in between)
+				$localValue = str_replace("\n", "<br />\n", $localValue); // nl2br
+				$localValue = str_replace('</p>', "</p>\n", $localValue); // and replace the line break for legibility
+			}
+			$value .= $localValue;
+		} while ($token = $set->next());
+		
+		$value = preg_replace('!\s*<p></p>\s*!', "\n", $value); // replace <p></p>
+		if ($openP) {
+			$value .= '</p>';
 		}
-
-
-		$output = preg_replace( '%>\s*\n%i', '>', $output );
-		$output = preg_replace( '%\n\s*<%i', '<', $output );
-		$output = preg_replace( '%\n%i', '<br>', $output );
-
-
-		/**
-		 * Now filter out any erroneous paragraph or break tags, like ones that would occur in nested lists.
-		 * There may very well be more cases for this: table td's, etc?
-		 **/
-		$cleanNestedRegex = '<\/?\s*(ul|ol|li|dl|dt|dd)[^>]*>';
-
-		// Filter out paragraph tags
-		$output = preg_replace( "/<p>\s*($cleanNestedRegex)/", "$1", $output );
-		$output = preg_replace( "/($cleanNestedRegex)\s*<\/p>/", "$1", $output );
-
-		// Filter out br tags
-		$output = preg_replace( "/($cleanNestedRegex)\s*<br>/", "$1", $output );
-		$output = preg_replace( "/<br>\s*($cleanNestedRegex)/", '$1', $output );
-
-		// Finally, move misplaced p tags to after hr tags
-		$output = preg_replace( '%<p><hr\s*/*\s*>%', "<hr/><p>", $output );
-
-		return trim( $output );
-
+		
+		return $value;
 	}
 
 	/**
