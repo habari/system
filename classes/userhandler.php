@@ -58,11 +58,12 @@ class UserHandler extends ActionHandler
 					}
 				}
 				else {
+					$login_session = null;
 					$login_dest = Site::get_url( 'admin' );
 				}
 
 				// filter the destination
-				$login_dest = Plugins::filter( 'login_redirect_dest', $login_dest, $user );
+				$login_dest = Plugins::filter( 'login_redirect_dest', $login_dest, $user, $login_session );
 
 				// finally, redirect to the destination
 				Utils::redirect( $login_dest );
