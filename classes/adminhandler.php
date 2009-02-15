@@ -2990,54 +2990,55 @@ class AdminHandler extends ActionHandler
 		switch( $page ) {
 			case 'comment':
 			case 'comments':
-				$require_any = array('manage_all_comments'=>true, 'manage_own_post_comments'=>true);
+				$require_any = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
 				break;
 			case 'tags':
-				$require_any = array('manage_tags'=>true);
+				$require_any = array( 'manage_tags' => true );
 				break;
 			case 'options':
-				$require_any = array('manage_options'=>true);
+				$require_any = array( 'manage_options' => true );
 				break;
 			case 'themes':
-				$require_any = array('manage_themes'=>true, 'manage_theme_config'=>true);
+				$require_any = array( 'manage_themes' => true, 'manage_theme_config' => true );
 				break;
 			case 'activate_theme':
-				$require_any = array('manage_themes'=>true);
+				$require_any = array( 'manage_themes' => true );
 				break;
 			case 'plugins':
-				$require_any = array('manage_plugins'=>true, 'manage_plugins_config'=>true);
+				$require_any = array( 'manage_plugins' => true, 'manage_plugins_config' => true );
 				break;
 			case 'plugin_toggle':
-				$require_any = array('manage_plugins'=>true);
+				$require_any = array( 'manage_plugins' => true );
 				break;
 			case 'import':
-				$require_any = array('manage_import'=>true);
+				$require_any = array( 'manage_import' => true );
 				break;
 			case 'users':
 			case 'user':
-				$require_any = array('manage_users'=>true);
+				$require_any = array( 'manage_users' => true );
 				break;
 			case 'groups':
 			case 'group':
-				$require_any = array('manage_groups'=>true);
+				$require_any = array( 'manage_groups' => true );
 				break;
 			case 'logs':
-				$require_any = array('manage_logs'=>true);
+				$require_any = array( 'manage_logs' => true );
 				break;
 			case 'publish':
-				$type = Post::type_name($type);
+				$type = Post::type_name( $type );
 				$require_any = array(
-					'post_any' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
-					'post_' . $type => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
-					'own_posts' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+					'post_any' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
+					'post_' . $type => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
+					'own_posts' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
 				);
 				break;
 			case 'posts':
 				$require_any = array(
-					'post_any' => array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit')),
+					'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 				);
 				foreach ( Post::list_active_post_types() as $type => $type_id ) {
-					$require_any['post_' . $type] = array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit'));
+					$require_any['post_' . $type] = array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) );
 				}
 				break;
 			case 'dashboard':
@@ -3047,24 +3048,24 @@ class AdminHandler extends ActionHandler
 				break;
 		}
 
-		$require_any = Plugins::filter('admin_access_tokens', $require_any, $page, $type);
+		$require_any = Plugins::filter( 'admin_access_tokens', $require_any, $page, $type );
 
 
 		foreach ( $require_any as $token => $access ) {
-			$access = Utils::single_array($access);
+			$access = Utils::single_array( $access );
 			foreach ( $access as $mask ) {
-				if ( is_bool($mask) && $user->can($token) ) {
+				if ( is_bool( $mask ) && $user->can( $token ) ) {
 					$result = true;
 					break;
 				}
-				elseif ( $user->can($token, $mask) ) {
+				elseif ( $user->can( $token, $mask ) ) {
 					$result = true;
 					break 2;
 				}
 			}
 		}
 
-		$result = Plugins::filter('admin_access', $result, $page, $type);
+		$result = Plugins::filter( 'admin_access', $result, $page, $type );
 
 		return $result;
 	}
