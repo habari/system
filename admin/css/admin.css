@@ -463,10 +463,6 @@ ul {
 	z-index: 100;
 }
 
-.hidden {
-	display: none;
-}
-
 /*- FORMS */
 
 input, textarea {
@@ -2492,4 +2488,10 @@ body.login .humanMsg {
 #pop {
 	border: 1px solid #efefef;
 	overflow: auto;
+}
+
+
+
+.hidden {
+	display: none;
 }
