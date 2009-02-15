@@ -607,9 +607,12 @@ class Posts extends ArrayObject implements IsContent
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts of specified type ( published or draft )
 	**/
-	public static function count_total( $status )
+	public static function count_total( $status = FALSE )
 	{
-		$params = array( 'count' => 1, 'status' => $status );
+		$params = array( 'count' => 1 );
+		if( $status !== FALSE ) {
+			$params['status'] = $status;
+		}
 		return self::get( $params );
 	}
 
@@ -630,9 +633,9 @@ class Posts extends ArrayObject implements IsContent
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts by the specified author
 	**/
-	public static function count_by_author( $user_id = '', $status )
+	public static function count_by_author( $user_id, $status = FALSE )
 	{
-		$params = array( 'user_id' => $user_id, 'count' => 'id' );
+		$params = array( 'user_id' => $user_id, 'count' => 1 );
 		if ( FALSE !== $status ) {
 			$params['status'] = $status;
 		}
@@ -646,9 +649,9 @@ class Posts extends ArrayObject implements IsContent
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts with the specified tag
 	**/
-	public static function count_by_tag( $tag = '', $status )
+	public static function count_by_tag( $tag, $status = FALSE )
 	{
-		$params = array( 'tag' => $tag, 'count' => 'slug');
+		$params = array( 'tag' => $tag, 'count' => 1 );
 		if ( FALSE !== $status ) {
 			$params['status'] = $status;
 		}
