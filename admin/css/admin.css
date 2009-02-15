@@ -29,6 +29,56 @@ a img {
 }
 
 
+/*- OPACITY PERCENTAGES */
+.opa0 { opacity: 0; }
+.opa10 { opacity: .10; }
+.opa15 { opacity: .15; }
+.opa20 { opacity: .20; }
+.opa25 { opacity: .25; }
+.opa30 { opacity: .30; }
+.opa35 { opacity: .35; }
+.opa40 { opacity: .40; }
+.opa45 { opacity: .45; }
+.opa50 { opacity: .50; }
+.opa55 { opacity: .55; }
+.opa60 { opacity: .60; }
+.opa65 { opacity: .65; }
+.opa70 { opacity: .70; }
+.opa75 { opacity: .75; }
+.opa80 { opacity: .80; }
+.opa85 { opacity: .85; }
+.opa90 { opacity: .90; }
+.opa95 { opacity: .95; }
+.opa100 { opacity: 1; }
+
+
+/*- WIDTH PERCENTAGES */
+
+.pct5, .pct10, .pct15, .pct20, .pct25, .pct30, .pct35, .pct40, .pct45, .pct50, .pct55, .pct60, .pct65, .pct70, .pct75, .pct80, .pct85, .pct90, .pct95, .pct100 {
+	float: left;
+}
+.pct5 { width: 5%; }
+.pct10 { width: 10%; }
+.pct15 { width: 15%; }
+.pct20 { width: 20%; }
+.pct25 { width: 25%; }
+.pct30 { width: 30%; }
+.pct35 { width: 35%; }
+.pct40 { width: 40%; }
+.pct45 { width: 45%; }
+.pct50 { width: 50%; }
+.pct55 { width: 55%; }
+.pct60 { width: 60%; }
+.pct65 { width: 65%; }
+.pct70 { width: 70%; }
+.pct75 { width: 75%; }
+.pct80 { width: 80%; }
+.pct85 { width: 85%; }
+.pct90 { width: 90%; }
+.pct95 { width: 95%; }
+.pct100 { width: 100%; }
+
+
 /*- THE MENUBAR */
 
 #menubar {
@@ -2421,56 +2471,6 @@ body.login .humanMsg {
 	margin-right: 200px;
 	height: inherit;
 }
-
-
-/*- OPACITY PERCENTAGES */
-.opa0 { opacity: 0; }
-.opa10 { opacity: .10; }
-.opa15 { opacity: .15; }
-.opa20 { opacity: .20; }
-.opa25 { opacity: .25; }
-.opa30 { opacity: .30; }
-.opa35 { opacity: .35; }
-.opa40 { opacity: .40; }
-.opa45 { opacity: .45; }
-.opa50 { opacity: .50; }
-.opa55 { opacity: .55; }
-.opa60 { opacity: .60; }
-.opa65 { opacity: .65; }
-.opa70 { opacity: .70; }
-.opa75 { opacity: .75; }
-.opa80 { opacity: .80; }
-.opa85 { opacity: .85; }
-.opa90 { opacity: .90; }
-.opa95 { opacity: .95; }
-.opa100 { opacity: 1; }
-
-
-/*- WIDTH PERCENTAGES */
-
-.pct5, .pct10, .pct15, .pct20, .pct25, .pct30, .pct35, .pct40, .pct45, .pct50, .pct55, .pct60, .pct65, .pct70, .pct75, .pct80, .pct85, .pct90, .pct95, .pct100 {
-	float: left;
-}
-.pct5 { width: 5%; }
-.pct10 { width: 10%; }
-.pct15 { width: 15%; }
-.pct20 { width: 20%; }
-.pct25 { width: 25%; }
-.pct30 { width: 30%; }
-.pct35 { width: 35%; }
-.pct40 { width: 40%; }
-.pct45 { width: 45%; }
-.pct50 { width: 50%; }
-.pct55 { width: 55%; }
-.pct60 { width: 60%; }
-.pct65 { width: 65%; }
-.pct70 { width: 70%; }
-.pct75 { width: 75%; }
-.pct80 { width: 80%; }
-.pct85 { width: 85%; }
-.pct90 { width: 90%; }
-.pct95 { width: 95%; }
-.pct100 { width: 100%; }
 
 
 .page-logs .item .info span {
