@@ -182,7 +182,8 @@ class Format
 			$value .= $localValue;
 		} while ($token = $set->next());
 		
-		$value = preg_replace('!\s*<p></p>\s*!', "\n", $value); // replace <p></p>
+		$value = preg_replace('!\s*<p></p>\s*!', '', $value); // replace <p></p>
+		//$value = preg_replace('!\s*<p></p>\s*!', "\n", $value); // replace <p></p>
 		if ($openP) {
 			$value .= '</p>';
 		}
