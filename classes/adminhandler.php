@@ -339,8 +339,18 @@ class AdminHandler extends ActionHandler
 			'days' => round(($firstpostdate % 2629728) / 86400),
 		);
 
+		
+		// get the active theme, so we can check it
+		$active_theme = Themes::get_active();
+		$active_theme = $active_theme->name . ':' . $active_theme->version;
+
 		// if the active plugin list has changed, expire the updates cache
 		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_plugins' ) != Options::get( 'active_plugins' ) ) ) {
+			Cache::expire( 'dashboard_updates' );
+		}
+		
+		// if the theme version has changed, expire the updates cache
+		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_theme' ) != $active_theme ) ) {
 			Cache::expire( 'dashboard_updates' );
 		}
 
@@ -360,6 +370,9 @@ class AdminHandler extends ActionHandler
 
 				// cache the set of plugins we just used to check for
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
+				
+				// cache the active theme we just used to check for
+				Cache::set( 'dashboard_updates_theme', $active_theme );
 			}
 			else {
 				$this->theme->updates = array();
