@@ -428,65 +428,66 @@ class User extends QueryRecord
 	}
 
 	/**
-	 * Determine if a user has a specific permission
+	 * Determine if a user has a specific token permission
 	 *
-	 * @param string $permission The name of the permission to detect
+	 * @param string $token The name of the token for which to check permission
 	 * @param string $access The type of access to check for (read, write, full, etc.)
-	 * @return boolean True if this user has the requested permission, false if not
+	 * @return boolean True if this user has the requested access, false if not
 	 */
-	public function can( $permission, $access = 'any' )
+	public function can( $token, $access = 'any' )
 	{
-		return ACL::user_can( $this, $permission, $access );
+		return ACL::user_can( $this, $token, $access );
 	}
 
 	/**
-	 * Determine if a user has been denied a specific permission
+	 * Determine if a user has been denied access to a specific token
 	 *
-	 * @param string $permission The name of the permission to detect
-	 * @return boolean True if this user has the requested permission, false if not
+	 * @param string $token The name of the token to detect
+	 * @return boolean True if this user has been denied access to the requested token, false if not
 	 */
-	public function cannot( $permission )
+	public function cannot( $token )
 	{
-		return ACL::user_cannot( $this, $permission );
+		return ACL::user_cannot( $this, $token );
 	}
 
 	/**
-	 * Assign one or more new permissions to this user
-	 * @param mixed A permission token ID, name, or array of the same
+	 * Assign permissions to one or more new tokens to this user
+	 * @param mixed A token ID, name, or array of the same
+	 * @param string The access to grant
 	**/
-	public function grant( $permissions, $access = 'full' )
+	public function grant( $tokens, $access = 'full' )
 	{
-		$permissions = Utils::single_array( $permissions );
-		// Use ids internally for all permissions
-		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+		$tokens = Utils::single_array( $tokens );
+		// Use ids internally for all tokens
+		$tokens = array_map( array( 'ACL', 'token_id'), $tokens );
 
-		foreach ( $permissions as $permission ) {
-			ACL::grant_user( $this->id, $permission, $access );
-			EventLog::log( _t( 'User %1$s: Access to %2$s changed to %3$s', array( $this->username, ACL::token_name( $permission ), $access ) ), 'notice', 'user', 'habari' );
+		foreach ( $tokens as $token ) {
+			ACL::grant_user( $this->id, $token, $access );
+			EventLog::log( _t( 'User %1$s: Access to %2$s changed to %3$s', array( $this->username, ACL::token_name( $token ), $access ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
 	/**
-	 * Deny one or more permissions to this user
-	 * @param mixed The permission ID or name to be denied, or an array of the same
+	 * Deny permissions to one or more tokens to this user
+	 * @param mixed The token ID or name to be denied, or an array of the same
 	**/
-	public function deny( $permissions )
+	public function deny( $tokens )
 	{
-		$this->grant( $permissions, 'deny' );
+		$this->grant( $tokens, 'deny' );
 	}
 
 	/**
-	 * Remove one or more permissions from a user
-	 * @param mixed a permission ID, name, or array of the same
+	 * Remove permissions to one or more tokens from a user
+	 * @param mixed a token ID, name, or array of the same
 	**/
-	public function revoke( $permissions )
+	public function revoke( $tokens )
 	{
-		$permissions = Utils::single_array( $permissions );
+		$tokens = Utils::single_array( $tokens );
 		// get token IDs
-		$permissions = array_map(array('ACL', 'token_id'), $permissions);
-		foreach ( $permissions as $permission ) {
-			ACL::revoke_user_permission( $this->id, $permission );
-			EventLog::log( _t( 'User %1$s: Permission to %2$s revoked.', array( $this->username, ACL::token_name( $permission ) ) ), 'notice', 'user', 'habari' );
+		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		foreach ( $tokens as $token ) {
+			ACL::revoke_user_permission( $this->id, $token );
+			EventLog::log( _t( 'User %1$s: Permission to %2$s revoked.', array( $this->username, ACL::token_name( $token ) ) ), 'notice', 'user', 'habari' );
 		}
 	}
 
