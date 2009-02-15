@@ -175,8 +175,9 @@ class Format
 				}
 				
 				$localValue = preg_replace('/\s*(\n\s*){2,}/', "</p><p>", $localValue); // at least two \n in a row (allow whitespace in between)
-				$localValue = str_replace("\n", "<br />\n", $localValue); // nl2br
-				$localValue = str_replace('</p>', "</p>\n", $localValue); // and replace the line break for legibility
+				$localValue = str_replace("\n", "<br>", $localValue); // nl2br
+				//$localValue = str_replace("\n", "<br />\n", $localValue); // nl2br
+				//$localValue = str_replace('</p>', "</p>\n", $localValue); // and replace the line break for legibility
 			}
 			$value .= $localValue;
 		} while ($token = $set->next());
