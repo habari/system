@@ -13,8 +13,8 @@
  */
 class Theme extends Pluggable
 {
-	private $name = null;
-	private $version = null;
+	public $name = null;
+	public $version = null;
 	public $template_engine = null;
 	public $theme_dir = null;
 	public $config_vars = array();
