@@ -59,7 +59,7 @@ habari.media = {
 							output += habari.media.preview._(file, result.files[file]);
 						}
 
-						output += '<ul class="mediaactions dropbutton-media">'
+						output += '<ul class="mediaactions dropbutton">'
 						if (result.files[file].filetype && habari.media.output[result.files[file].filetype]) {
 							for (method in habari.media.output[result.files[file].filetype]) {
 								output += '<li><a href="#" onclick="habari.media.output.' + result.files[file].filetype + '.' + method + '(\'' + file +'\', habari.media.assets[\''+ file + '\']);return false;">' + method.replace('_', ' ', 'g') + '</a></li>';

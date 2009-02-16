@@ -907,33 +907,11 @@ body.page-publish .buttons input {
 
 /*-- MEDIA ACTION DROPBUTTONS */
 
-.mediaactions.dropbutton-media {
-	position: relative;
+.mediaactions.dropbutton {
+	position: relative !important; 
+	right: 0px !important; 
+	min-width: 100% !important;  
 	opacity: .8;
-	white-space: nowrap;
-	background: #333;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	font-size: 12px;
-	width: 70px;
-	list-style: none;
-	margin: 6px 0 0 0;
-}
-
-.mediaphotos ul .media .mediaactions li.first-child {
-	border-right: none;
-	padding: 3px 6px;
-	margin: 0;
-}
-
-.mediaphotos ul .media .mediaactions li.first-child a:hover {
-	background: #333;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	text-decoration: none;
-	margin: 0;
-	padding: 3px;
-
 }
 
 .mediastats {
@@ -1195,7 +1173,7 @@ body.page-publish .buttons input {
 }
 
 .dashboard .latest-comments-module .commentauthors a:hover {
-	opacity: 100;
+	opacity: 1;
 }
 
 .dashboard .latest-comments-module .comments {
