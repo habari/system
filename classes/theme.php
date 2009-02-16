@@ -213,18 +213,18 @@ class Theme extends Pluggable
 		elseif ( $posts === false ) {
 			if ($this->template_exists('404')) {
 				$fallback = array( '404' );
-				header( 'HTTP/1.0 404 Not Found' );
 				// Replace template variables with the 404 rewrite rule
 				$this->request->{URL::get_matched_rule()->name}= false;
 				$this->request->{URL::set_404()->name}= true;
 				$this->matched_rule = URL::get_matched_rule();
+				// 404 status header sent in act_display_404
 			}
 			else {
 				$this->display('header');
 				echo '<h2>';
 				_e( "Whoops! 404. The page you were trying to access is not really there. Please try again." );
 				echo '</h2>';
-				header( 'HTTP/1.0 404 Not Found' );
+				header( 'HTTP/1.1 404 Not Found' );
 				$this->display('footer');
 				die;
 			}
@@ -503,6 +503,8 @@ class Theme extends Pluggable
 		$paramarray['fallback'] = array(
 			'404',
 		);
+
+		header( 'HTTP/1.1 404 Not Found' );
 		$paramarray['user_filters'] = $user_filters;
 		return $this->act_display( $paramarray );
 	}

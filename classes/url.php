@@ -59,12 +59,6 @@ class URL extends Singleton
 			$rule = RewriteRules::by_name('display_404');
 			URL::instance()->matched_rule = reset($rule);
 			URL::instance()->matched_rule->match(self::$stub);
-			/*
-			 * Send a 404 status since no rule was matched. Plugins wanting to
-			 * intercept an unmatched rule will need to deal with this, if they
-			 * want to server content.
-			 */
-			header( 'HTTP/1.0 404 Not Found' );
 		}
 		return URL::instance()->matched_rule;
 	}
