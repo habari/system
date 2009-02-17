@@ -324,7 +324,19 @@ class Comments extends ArrayObject
 		if ( ! is_array( $comments ) && ! $comments instanceOf Comments ) {
 			$comments = array( $comments );
 		}
-
+		
+		$in= '';
+		$i= 0;
+		foreach( $comments as $comment ) {
+			if( $i > 0 ) {
+				$in .= ', ' . $comment->id;
+			} else {
+				$in .= $comment->id;
+			}
+		}
+		
+		echo $in; exit;				
+		
 		if ( count( $comments ) == 0 ) {
 			return true;
 		}
@@ -722,7 +734,7 @@ class Comments extends ArrayObject
 
 	/**
 	 * Parses a search string for status, type, author, and tag keywords. Returns
-	 * an associative array which can be passed to Comments::get(). If multiple
+	 * an associative array which can be passed to Comments::get(). If multiplee
 	 * authors, statuses, or types are specified, we assume an implicit OR
 	 * such that (e.g.) any author that matches would be returned.
 	 *
