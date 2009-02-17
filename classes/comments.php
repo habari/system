@@ -324,33 +324,40 @@ class Comments extends ArrayObject
 		if ( ! is_array( $comments ) && ! $comments instanceOf Comments ) {
 			$comments = array( $comments );
 		}
-		
-		$in = '';
-		$i = 0;
-		foreach ( $comments as $comment ) {
-			if ( $i > 0 ) {
-				$in .= ', ' . $comment->id;
-			}
-			else {
-				$in .= $comment->id;
-			}
-		}
-		
-		echo $in; exit;
-		
+
 		if ( count( $comments ) == 0 ) {
 			return true;
 		}
 
-		if ( $comments[0] instanceOf Comment ) {
-			// We were passed an array of comment objects. Use them directly.
+		if ( $comments instanceOf Comments ) {
+			// Delete all the comments directly
 			$result = $comments->delete();
 		}
-		else if ( is_numeric( $comments[0] ) ) {
-			// We were passed an array of ID's. Get their objects and delete them.
-			$comments = self::get( array( 'id' => $comments ) );
+		else if ( is_array( $comments ) ) {
+			// We have an array... of something
 
-			$result = $comments->delete();
+			if ( $comments[0] instanceOf Comment ) {
+
+				$result = true;
+				foreach( $comments as $comment ) {
+					$comment_result = $comment->delete();
+
+					if ( !$comment_result ) {
+						$result = false;
+					}
+				}
+
+			}
+			else if ( is_numeric( $comments[0] ) ) {
+				// We were passed an array of ID's. Get their objects and delete them.
+				$comments = self::get( array( 'id' => $comments ) );
+
+				$result = $comments->delete();
+			}
+			else {
+				$result = false;
+			}
+
 		}
 		else {
 			// We were passed a type we could not understand.
