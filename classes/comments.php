@@ -19,8 +19,8 @@ class Comments extends ArrayObject
 	 * @return array An array of Comment objects, one for each query result
 	 *
 	 * <code>
-	 * $comments= comments::get( array ( "author" => "skippy" ) );
-	 * $comments= comments::get( array ( "slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
+	 * $comments = comments::get( array ( "author" => "skippy" ) );
+	 * $comments = comments::get( array ( "slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
 	 * </code>
 	 *
 	 **/
@@ -76,7 +76,7 @@ class Comments extends ArrayObject
 					}
 				}
 				if ( isset( $paramset['status'] ) && FALSE !== $paramset['status'] ) {
-					if(is_array( $paramset['status'] )) {
+					if ( is_array( $paramset['status'] ) ) {
 						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
 						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Comment::status( $a );' ) );
 						$where[] = "{comments}.status IN (" . Utils::placeholder_string( count( $paramset['status'] ) ) . ")";
@@ -88,7 +88,7 @@ class Comments extends ArrayObject
 					}
 				}
 				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
-					if( is_array( $paramset['type'] ) ) {
+					if ( is_array( $paramset['type'] ) ) {
 						$paramset['type'] = array_diff( $paramset['type'], array( 'any' ) );
 						array_walk( $paramset['type'], create_function( '&$a,$b', '$a = Comment::type( $a );' ) );
 						$where[] = "type IN (" . Utils::placeholder_string( count( $paramset['type'] ) ) . ")";
@@ -151,7 +151,7 @@ class Comments extends ArrayObject
 							$params[] = $word;
 						}
 					}
-					if( count( $where_search ) > 0 ) {
+					if ( count( $where_search ) > 0 ) {
 						$where[] = '(' . implode( " \nOR\n ", $where_search ).')';
 					}
 				}
@@ -325,17 +325,18 @@ class Comments extends ArrayObject
 			$comments = array( $comments );
 		}
 		
-		$in= '';
-		$i= 0;
-		foreach( $comments as $comment ) {
-			if( $i > 0 ) {
+		$in = '';
+		$i = 0;
+		foreach ( $comments as $comment ) {
+			if ( $i > 0 ) {
 				$in .= ', ' . $comment->id;
-			} else {
+			}
+			else {
 				$in .= $comment->id;
 			}
 		}
 		
-		echo $in; exit;				
+		echo $in; exit;
 		
 		if ( count( $comments ) == 0 ) {
 			return true;
@@ -536,7 +537,7 @@ class Comments extends ArrayObject
 	/**
 	 * function only
 	 * returns all of the comments from the current Comments object of the specified type
-	 * <code>$tb= $comments->only( 'trackbacks' )</code>
+	 * <code>$tb = $comments->only( 'trackbacks' )</code>
 	 * @return array an array of Comment objects of the specified type
 	**/
 	public function only( $what = 'approved' )
@@ -686,7 +687,7 @@ class Comments extends ArrayObject
 	 * @param mixed A comment status value, or FALSE to not filter on status(default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments attached to the specified post
 	**/
-	 public static function count_by_id( $id= 0,  $status = Comment::STATUS_APPROVED )
+	 public static function count_by_id( $id = 0,  $status = Comment::STATUS_APPROVED )
 	 {
 	 	$params = array( 'post_id' => $id, 'count' => 'id' );
 		if ( FALSE !== $status ) {
@@ -734,7 +735,7 @@ class Comments extends ArrayObject
 
 	/**
 	 * Parses a search string for status, type, author, and tag keywords. Returns
-	 * an associative array which can be passed to Comments::get(). If multiplee
+	 * an associative array which can be passed to Comments::get(). If multiple
 	 * authors, statuses, or types are specified, we assume an implicit OR
 	 * such that (e.g.) any author that matches would be returned.
 	 *
