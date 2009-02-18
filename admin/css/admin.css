@@ -78,6 +78,10 @@ a img {
 .pct95 { width: 95%; }
 .pct100 { width: 100%; }
 
+.error {
+	color: #FF4500;
+}
+
 
 /*- THE MENUBAR */
 
