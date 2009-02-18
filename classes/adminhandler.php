@@ -880,6 +880,10 @@ class AdminHandler extends ActionHandler
 
 		// Set various info fields
 		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format');
+		
+		// let plugins easily specify other user info fields to pick
+		$info_fields = Plugins::filter( 'adminhandler_post_user_fields', $info_fields );
+				
 		foreach ( $info_fields as $info_field ) {
 			if ( isset($form->{$info_field}) && ($edit_user->info->{$info_field} != $form->{$info_field}->value) ) {
 				$edit_user->info->{$info_field} = $form->$info_field->value;
