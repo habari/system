@@ -3048,6 +3048,9 @@ class AdminHandler extends ActionHandler
 			case 'dashboard':
 				$result = true;
 				break;
+			case 'sysinfo':
+				$require_any = array( 'super_user' => true );
+				break;
 			default:
 				break;
 		}
