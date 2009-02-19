@@ -118,6 +118,7 @@ class Site
 	 *	'admin_theme' returns http://www.habariproject.org/system/admin
 	 *	'system' returns http://www.habariproject.org/system
 	 *	'scripts' returns http://www.habariproject.org/scripts
+	 *	'3rdparty' returns http://www.habariproject.org/3rdparty
 	 *	'hostname' returns www.habariproject.org
 	 * @param string the name of the URL to return
 	 * @param bool whether to include a trailing slash.  Default: No
@@ -185,6 +186,9 @@ class Site
 				break;
 			case 'scripts':
 				$url = Site::get_url( 'habari' ) . '/scripts';
+				break;
+			case '3rdparty':
+				$url = Site::get_url( 'habari' ) . '/3rdparty';
 				break;
 			case 'hostname':
 				// HTTP_HOST is not set for HTTP/1.0 requests
