@@ -209,7 +209,7 @@ class ACL
 	
 	private static function cache_tokens()
 	{
-		if ( ACL::$token_cache == null ) {
+		if(ACL::$token_cache == null) {
 			ACL::$token_cache = DB::get_keyvalue( 'SELECT id, name FROM {tokens}' );
 		}
 		return ACL::$token_cache;
@@ -222,11 +222,11 @@ class ACL
 	**/
 	public static function token_id( $name )
 	{
-		if ( is_numeric($name) ) {
+		if( is_numeric($name) ) {
 			return intval( $name );
 		}
 		$name = self::normalize_token( $name );
-		$tokens = array_flip( ACL::cache_tokens() );
+		$tokens = array_flip(ACL::cache_tokens());
 		return isset($tokens[$name]) ? $tokens[$name] : false;
 	}
 
@@ -371,13 +371,13 @@ class ACL
 		}
 
 		// check the cache first for the user's access_mask on the token
-		if ( isset($_SESSION['user_token_access'][$token_id]) ) {
+		if(isset($_SESSION['user_token_access'][$user_id][$token_id])) {
 //			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
-			if ( $_SESSION['user_token_access'][$token_id] == ACL::CACHE_NULL ) {
+			if($_SESSION['user_token_access'][$user_id][$token_id] == ACL::CACHE_NULL) {
 				return NULL;
 			}
 			else {
-				return self::get_bitmask( $_SESSION['user_token_access'][$token_id] );
+				return self::get_bitmask( $_SESSION['user_token_access'][$user_id][$token_id] );
 			}
 		}
 
@@ -432,8 +432,8 @@ SQL;
 		
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
-		if ( count($accesses) == 0 ) {
-			$_SESSION['user_token_access'][$token_id] = ACL::CACHE_NULL;
+		if(count($accesses) == 0){
+			$_SESSION['user_token_access'][$user_id][$token_id] = ACL::CACHE_NULL;
 			return null;
 		}
 		else {
@@ -448,7 +448,7 @@ SQL;
 				}
 			}
 			
-			$_SESSION['user_token_access'][$token_id] = $result;
+			$_SESSION['user_token_access'][$user_id][$token_id] = $result;
 			return self::get_bitmask( $result );
 		}
 	}
@@ -461,24 +461,32 @@ SQL;
 	**/
 	public static function user_tokens( $user, $access = 'full', $posts_only = false )
 	{
+		static $post_tokens = null;
+		
 		$bitmask = new Bitmask ( self::$access_names, $access );
 		$tokens = array();
 
+		// convert $user to an ID
+		if ( is_numeric( $user ) ) {
+			$user_id = $user;
+		}
+		else {
+			if ( ! $user instanceof User ) {
+				$user = User::get( $user );
+			}
+			$user_id = $user->id;
+		}
+
+		// Implement cache RIGHT HERE
+		if(isset($_SESSION['user_tokens'][$user_id][$bitmask->value])) {
+			return $_SESSION['user_tokens'][$user_id][$bitmask->value];
+		}
+		
 		$super_user_access = self::get_user_token_access( $user, 'super_user' );
 		if ( isset( $super_user_access ) && self::access_check( $super_user_access, 'any' ) ) {
 			$result = DB::get_results('SELECT id as token_id, ? as access_mask FROM {tokens}', array($bitmask->full) );
 		}
 		else {
-			// convert $user to an ID
-			if ( is_numeric( $user ) ) {
-				$user_id = $user;
-			}
-			else {
-				if ( ! $user instanceof User ) {
-					$user = User::get( $user );
-				}
-				$user_id = $user->id;
-			}
 
 			$sql = <<<SQL
 SELECT token_id, access_mask
@@ -495,7 +503,7 @@ SQL;
 			$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
 		}
 
-		if ( $posts_only ) {
+		if ( $posts_only && !isset($post_tokens)) {
 			$post_tokens = DB::get_column('SELECT token_id FROM {post_tokens} GROUP BY token_id');
 		}
 
@@ -510,6 +518,8 @@ SQL;
 				}
 			}
 		}
+		
+		$_SESSION['user_tokens'][$user_id][$bitmask->value] = $tokens;
 		return $tokens;
 	}
 
@@ -548,16 +558,16 @@ SQL;
 		$results = DB::get_column( 'SELECT access_mask FROM {group_token_permissions} WHERE group_id=? AND token_id=?', array( $group_id, $token_id ) );
 		$access_mask = 0;
 		$row_exists = false;
-		if ( $results ) {
+		if($results) {
 			$row_exists = true;
 			if ( in_array( 0, $results ) ) {
-				$access_mask = 0;
-			}
+					$access_mask = 0;
+				}
 			else {
 				$access_mask = Utils::array_or( $results );
 			}
 		}
-
+		
 		$bitmask = self::get_bitmask( $access_mask );
 		$orig_value = $bitmask->value;
 
@@ -615,7 +625,7 @@ SQL;
 		$bitmask = self::get_bitmask( $access_mask );
 
 		if ( $access == 'full' ) {
-			$bitmask->value = $bitmask->full;
+			$bitmask->value= $bitmask->full;
 		}
 		elseif ( $access == 'deny' ) {
 			$bitmask->value = 0;
@@ -629,7 +639,7 @@ SQL;
 			array( 'access_mask' => $bitmask->value ),
 			array( 'user_id' => $user_id, 'token_id' => $token_id )
 		);
-
+		
 		ACL::clear_caches();
 
 		return $result;
@@ -720,8 +730,8 @@ SQL;
 	public static function clear_caches()
 	{
 		if ( isset($_SESSION['user_token_access']) ) {
-			unset($_SESSION['user_token_access']);
-		}
+		unset($_SESSION['user_token_access']);
+	}
 		self::$token_cache = null;
 	}
 
@@ -789,7 +799,7 @@ SQL;
 			$admin_group->add( $ids );
 		}
 		else {
-			$admin_group->add( $user );
+			$admin_group->add($user);
 		}
 
 		// create default permissions
