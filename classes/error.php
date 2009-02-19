@@ -64,7 +64,7 @@ class Error extends Exception
 			$backtrace = null;
 		}
 
-		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, get_class( $exception ), 'default', null, $backtrace );
+		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, 'err', 'default', null, $backtrace );
 	}
 
 	/**
@@ -137,7 +137,7 @@ class Error extends Exception
 			$backtrace= null;
 		}
 		
-		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, $error_names[ $errno ], 'default', null, $backtrace );
+		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, 'err', 'default', null, $backtrace );
 
 		// throwing an Error make every error fatal!
 		//throw new Error($errstr, 0, true);
