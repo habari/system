@@ -72,7 +72,7 @@
 	<div class="item clear permission-group">
 		<h3><?php echo $group_name; ?></h3>
 		<?php if ( !empty( $crud_tokens ) ): ?>
-			<table id="<?php echo $group_name; ?>-crud-permissions" class="pct100">
+			<table id="<?php echo $group_name; ?>-crud-permissions" class="pct100 crud-permissions">
 				<tr class="head">
 					<th class="pct40">Token Description</th>
 					<?php foreach ( $access_names as $name ): ?>
@@ -87,14 +87,14 @@
 						$checked = ( isset($token->access) && ACL::access_check( $token->access, $name ) ) ? ' checked' : '';
 					?>
 						<td class="token_access pct10">
-							<input type="checkbox" id="token_<?php echo $token->id . '_' . $name; ?>" name="tokens[<?php echo $token->id . '][' . $name; ?>]" <?php echo $checked; ?>>
+							<input type="checkbox" id="token_<?php echo $token->id . '_' . $name; ?>" class="bitflag-<?php echo $name; ?>" name="tokens[<?php echo $token->id . '][' . $name; ?>]" <?php echo $checked; ?>>
 						</td>
 					<?php endforeach; ?>
 				</tr>
 				<?php endforeach; ?>
 			</table>
 		<?php elseif ( !empty( $bool_tokens ) ): ?>
-			<table id="<?php echo $group_name; ?>-bool-permissions" class="pct100">
+			<table id="<?php echo $group_name; ?>-bool-permissions" class="pct100 bool-permissions">
 				<tr class="head">
 					<th class="pct40">Token Description</th>
 					<th class="pct10">allow</th>
@@ -105,11 +105,11 @@
 					<td class="token_description pct40"><strong><?php echo $token->description; ?></strong></td>
 					<?php $checked = ( isset($token->access) && ACL::access_check( $token->access, 'any' ) ) ? ' checked' : '';?>
 					<td class="token_access pct10">
-						<input type="checkbox" id="token_<?php echo $token->id . '_full'; ?>" name="tokens[<?php echo $token->id; ?>][full]" <?php echo $checked; ?>>
+						<input type="checkbox" id="token_<?php echo $token->id . '_full'; ?>" class="bitflag-full" name="tokens[<?php echo $token->id; ?>][full]" <?php echo $checked; ?>>
 					</td>
 					<?php $checked = ( isset($token->access) && ACL::access_check( $token->access, 'deny' ) ) ? ' checked' : '';?>
 					<td class="token_access pct10">
-						<input type="checkbox" id="token_<?php echo $token->id . '_deny'; ?>" name="tokens[<?php echo $token->id; ?>][deny]" <?php echo $checked; ?>>
+						<input type="checkbox" id="token_<?php echo $token->id . '_deny'; ?>" class="bitflag-deny" name="tokens[<?php echo $token->id; ?>][deny]" <?php echo $checked; ?>>
 					</td>
 				</tr>
 				<?php endforeach; ?>

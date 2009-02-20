@@ -544,6 +544,18 @@ var groupManage = {
 			groupManage.addMember($('#assign_user').val());
 		});
 
+		// Apply permission deny/allow toggle rules
+		$('.bool-permissions input[type=checkbox],.crud-permissions input[type=checkbox]').change(function(){
+			if($(this).attr('checked')) {
+				if($(this).hasClass('bitflag-deny')) {
+					$('input[type=checkbox]', $(this).parents('tr')).filter(function(){return !$(this).hasClass('bitflag-deny');}).attr('checked', false);
+				}
+				else {
+					$('input[type=checkbox].bitflag-deny', $(this).parents('tr')).attr('checked', false);
+				}
+			}
+		});
+
 	},
 	removeMember: function(member, id) {
 		name = this.users[id].username;
