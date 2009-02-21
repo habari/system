@@ -3,8 +3,10 @@
 
 <div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
 	<div class="head clear">
-		<span class="checkbox title pct25">
+		<span class="checkbox title pct5">
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
+		</span>
+		<span class="checkbox title pct20">
 			<?php if($comment->url != ''): ?>
 			<a href="#" class="author edit-author" title="<?php echo htmlspecialchars( $comment->name ); ?>"><?php echo htmlspecialchars( $comment->name ); ?></a>
 			<?php else: ?>
