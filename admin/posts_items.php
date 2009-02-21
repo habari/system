@@ -2,8 +2,10 @@
 	foreach($posts as $post) : ?>
 <div class="item clear <?php echo $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
 	<div class="head clear">
-		<span class="checkbox title pct35">
+		<span class="checkbox title pct5">
 			<input type="checkbox" class="checkbox" name="checkbox_ids[<?php echo $post->id; ?>]" id="checkbox_ids[<?php echo $post->id; ?>]">
+		</span>
+		<span class="checkbox title pct30">
 			<a href="<?php echo URL::out('admin', 'page=publish&id=' . $post->id); ?>" class="title" title="<?php _e('Edit \'%s\'', array( $post->title ) ) ?>"><?php echo $post->title; ?></a>
 		</span>
 		<span class="state pct10"><a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'status' => $post->status ) ); ?>" title="<?php _e('Search for other %s items', array( $post->statusname ) ); ?>"><?php echo $post->statusname; ?></a></span>
