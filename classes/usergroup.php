@@ -360,7 +360,7 @@ class UserGroup extends QueryRecord
 	 */
 	public static function exists( $group )
 	{
-		return self::id($group) !== null;
+		return self::id($group) !== false;
 	}
 
 	/**
