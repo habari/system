@@ -452,7 +452,7 @@ class User extends QueryRecord
 	 * check for each of them.
 	 * @return boolean True if this user has the requested access, false if not
 	 */
-	public function user_can_any( $token_access = array() )
+	public function can_any( $token_access = array() )
 	{
 		$token_access = Utils::single_array( $token_access );
 
