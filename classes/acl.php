@@ -813,6 +813,16 @@ SQL;
 
 		// Add the anonymous user to the anonymous group
 		$anonymous_group->add( 0 );
+
+		// Create the default authenticated group
+		$authenticated_group = UserGroup::get_by_name( _t( 'authenticated' ) );
+		if ( ! $authenticate_group instanceof UserGroup ) {
+			$authenticated_group = UserGroup::create( array( 'name' => _t( 'authenticated' ) ) );
+		}
+		$authenticated_group->grant( 'post_entry', 'read' );
+		$authenticated_group->grant( 'post_page', 'read' );
+		$authenticated_group->grant( 'comment' );
+
 	}
 
 }

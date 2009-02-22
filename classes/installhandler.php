@@ -1352,6 +1352,23 @@ class InstallHandler extends ActionHandler
 		ACL::create_token( 'own_posts', _t('Permissions on one\'s own posts'), 'Content', true );
 	}
 
+	private function upgrade_db_post_3236()
+	{
+		// Add a default to the number of posts of a feed
+		$atom_entries = Options::get( 'atom_entries' );
+		if( empty( $atom_entries ) ) {
+			Options::set( 'atom_entries', '5' );
+		}
+		// Create the default authenticated group
+		$authenticated_group = UserGroup::get_by_name( _t('authenticated') );
+		if ( ! $authenticated_group instanceof UserGroup ) {
+			$authenticated_group = UserGroup::create( array( 'name' => _t('authenticated') ) );
+		}
+		$authenticated_group->grant('post_entry', 'read');
+		$authenticated_group->grant('post_page', 'read');
+		$authenticated_group->grant( 'comment' );
+
+	}
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists

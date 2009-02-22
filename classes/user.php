@@ -134,6 +134,12 @@ class User extends QueryRecord
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
 		// $this->info->option_default = "saved";
 		$this->info->commit();
+
+		// Add the user to the default authenticated group if it exists
+		if( $result && UserGroup::exists( 'authenticated' ) ) {
+			$this->add_to_group( 'authenticated' );
+		}
+
 		EventLog::log( sprintf(_t('New user created: %s'), $this->username), 'info', 'default', 'habari' );
 		Plugins::act('user_insert_after', $this);
 
@@ -437,6 +443,32 @@ class User extends QueryRecord
 	public function can( $token, $access = 'any' )
 	{
 		return ACL::user_can( $this, $token, $access );
+	}
+
+	/**
+	 * Determine if a user has any of a set of tokens
+	 *
+	 * @param array $token_access An array of tokens and the permissions to
+	 * check for each of them.
+	 * @return boolean True if this user has the requested access, false if not
+	 */
+	public function user_can_any( $token_access = array() )
+	{
+		$token_access = Utils::single_array( $token_access );
+
+		foreach( $token_access as $token => $access ) {
+			$access = Utils::single_array( $access );
+			foreach( $access as $mask ) {
+				if( is_bool( $mask ) && $user->can( $token ) ) {
+					return true;
+				}
+				elseif( $user->can( $token, $mask ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
