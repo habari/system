@@ -366,7 +366,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Given a group's ID, return its friendly name
 	 * @param int a group's ID
-	 * @return string the group's name
+	 * @return string the group's name or false if the group doesn't exist
 	 */
 	public static function name( $id )
 	{
@@ -378,14 +378,12 @@ class UserGroup extends QueryRecord
 	/**
 	 * Given a group's name, return its ID
 	 * @param string a group's name
-	 * @return int the group's ID
+	 * @return int the group's ID, or false if the group doesn't exist
 	 */
 	public static function id( $name )
 	{
-		if( is_numeric($name) ) {
-			return $name;
-		}
-		$id = DB::get_value( "SELECT id FROM {groups} WHERE name=?", array( $name ) );
+		$check_field = is_numeric( $name ) ? 'id' : 'name';
+		$id = DB::get_value( "SELECT id FROM {groups} WHERE {$check_field}=?", array( $name ) );
 		return $id; // get_value returns false if no record is returned
 	}
 
