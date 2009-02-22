@@ -210,22 +210,24 @@ class Theme extends Pluggable
 			$types = array_flip( Post::list_active_post_types() );
 			$type = $types[$post->content_type];
 		}
-		elseif ( $posts === false ) {
-			if ($this->template_exists('404')) {
+		else {
+			if ( $this->template_exists( '404' ) ) {
 				$fallback = array( '404' );
 				// Replace template variables with the 404 rewrite rule
-				$this->request->{URL::get_matched_rule()->name}= false;
-				$this->request->{URL::set_404()->name}= true;
+				$this->request->{URL::get_matched_rule()->name} = false;
+				$this->request->{URL::set_404()->name} = true;
 				$this->matched_rule = URL::get_matched_rule();
-				// 404 status header sent in act_display_404
+				// 404 status header sent in act_display_404, but we're past
+				// that, so send it now.
+				header( 'HTTP/1.1 404 Not Found' );
 			}
 			else {
-				$this->display('header');
+				$this->display( 'header' );
 				echo '<h2>';
 				_e( "Whoops! 404. The page you were trying to access is not really there. Please try again." );
 				echo '</h2>';
 				header( 'HTTP/1.1 404 Not Found' );
-				$this->display('footer');
+				$this->display( 'footer' );
 				die;
 			}
 		}
@@ -277,7 +279,6 @@ class Theme extends Pluggable
 				}
 			}
 		}
-
 		return $this->display_fallback( $fallback );
 	}
 
