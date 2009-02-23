@@ -1471,6 +1471,12 @@ body.page-options .item {
 	font-style:italic;
 }
 
+#pluginconfigure .help code {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	white-space: pre;
+	padding: 0.25em 0.5em 0;
+	background-color: #e3e3e3;
+}
 
 #pluginconfigure .help em {
 	font-style:italic;
