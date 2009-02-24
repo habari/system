@@ -1002,7 +1002,7 @@ body.page-publish .buttons input {
 	background: url('../images/dashboardh2bg.png') right center no-repeat;
 	padding-right: 10px;
 	position: absolute;
-	top: 14px;
+	top: 15px;
 	left: 20px;
 	font-size: 1.5em;
 	line-height: 22px;
@@ -1142,8 +1142,7 @@ body.page-publish .buttons input {
 /*-- DASHBOARD - LATEST COMMENTS MODULE */
 
 .dashboard .latest-comments-module .item {
-	padding-top: 2px;
-	padding-bottom: 2px;
+
 }
 
 .dashboard .latest-comments-module .item > span {
@@ -1183,7 +1182,7 @@ body.page-publish .buttons input {
 .dashboard .latest-comments-module .comments {
 	position: absolute;
 	right: 3%;
-	line-height: 37px;
+	line-height: 34px;
 	font-size: 24px;
 }
 
