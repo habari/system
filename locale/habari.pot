@@ -13,599 +13,599 @@ msgstr ""
 "X-Poedit-Basepath: /shares/natasha/habari/trunk-raw\n"
 "X-Poedit-SearchPath-0: /shares/natasha/habari/trunk-raw\n"
 
-#: /shares/natasha/habari/trunk-raw/system/admin/user.php:7
-#: /shares/natasha/habari/trunk-raw/system/admin/options.php:7
+#: system/admin/user.php:7
+#: system/admin/options.php:7
 msgid "All options"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/user.php:12
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:28
-#: /shares/natasha/habari/trunk-raw/system/admin/options.php:11
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:16
-#: /shares/natasha/habari/trunk-raw/system/admin/users.php:26
-#: /shares/natasha/habari/trunk-raw/system/admin/groups.php:12
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:12
+#: system/admin/user.php:12
+#: system/admin/tags.php:28
+#: system/admin/options.php:11
+#: system/admin/plugins.php:16
+#: system/admin/users.php:26
+#: system/admin/groups.php:12
+#: system/admin/group.php:12
 msgid "or"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/user.php:15
-#: /shares/natasha/habari/trunk-raw/system/admin/users.php:29
+#: system/admin/user.php:15
+#: system/admin/users.php:29
 msgid "search users"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/user.php:29
-#: /shares/natasha/habari/trunk-raw/system/admin/users_items.php:47
+#: system/admin/user.php:29
+#: system/admin/users_items.php:47
 msgid " post"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/user.php:29
-#: /shares/natasha/habari/trunk-raw/system/admin/users_items.php:47
+#: system/admin/user.php:29
+#: system/admin/users_items.php:47
 msgid " posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/user.php:35
+#: system/admin/user.php:35
 msgid "No published posts."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:9
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:18
+#: system/admin/posts_items.php:9
+#: system/admin/posts_items.php:18
 #, php-format
 msgid "Edit '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:11
+#: system/admin/posts_items.php:11
 #, php-format
 msgid "Search for other %s items"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:12
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:34
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:88
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:146
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:8
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:52
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/dash_latestentries.php:6
+#: system/admin/posts_items.php:12
+#: system/admin/plugins.php:34
+#: system/admin/plugins.php:88
+#: system/admin/plugins.php:146
+#: system/admin/themes.php:8
+#: system/admin/themes.php:52
+#: system/plugins/coredashmodules/dash_latestentries.php:6
 msgid "by"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:12
+#: system/admin/posts_items.php:12
 #, php-format
 msgid "Search for other items by %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:13
-#: /shares/natasha/habari/trunk-raw/system/admin/comments_items.php:17
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:44
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:48
+#: system/admin/posts_items.php:13
+#: system/admin/comments_items.php:17
+#: system/themes/mzingi/sidebar.php:44
+#: system/themes/mzingi/commentform.php:48
 msgid "on"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:13
+#: system/admin/posts_items.php:13
 #, php-format
 msgid "Search for other items from %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:14
-#: /shares/natasha/habari/trunk-raw/system/admin/comments_items.php:18
+#: system/admin/posts_items.php:14
+#: system/admin/comments_items.php:18
 msgid "at"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:18
-#: /shares/natasha/habari/trunk-raw/system/admin/groups_item.php:6
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1628
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/page.single.php:14
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/search.php:17
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/home.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/tag.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.multiple.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.single.php:25
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/page.single.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:33
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/entry.single.php:39
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/page.single.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/home.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.multiple.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.single.php:28
+#: system/admin/posts_items.php:18
+#: system/admin/groups_item.php:6
+#: system/classes/adminhandler.php:1628
+#: system/themes/k2/page.single.php:14
+#: system/themes/k2/search.php:17
+#: system/themes/k2/home.php:16
+#: system/themes/k2/tag.php:16
+#: system/themes/k2/entry.multiple.php:16
+#: system/themes/k2/entry.single.php:25
+#: system/themes/charcoal/page.single.php:21
+#: system/themes/charcoal/home.php:33
+#: system/themes/charcoal/entry.single.php:39
+#: system/themes/mzingi/page.single.php:16
+#: system/themes/mzingi/search.php:23
+#: system/themes/mzingi/home.php:23
+#: system/themes/mzingi/tag.php:23
+#: system/themes/mzingi/entry.multiple.php:21
+#: system/themes/mzingi/entry.single.php:28
 msgid "Edit"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:19
+#: system/admin/posts_items.php:19
 #, php-format
 msgid "View '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:19
+#: system/admin/posts_items.php:19
 msgid "View"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:20
+#: system/admin/posts_items.php:20
 msgid "Delete this item"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:20
-#: /shares/natasha/habari/trunk-raw/system/admin/publish.php:14
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:86
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:51
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:71
-#: /shares/natasha/habari/trunk-raw/system/admin/groups_item.php:7
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:128
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:807
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1627
+#: system/admin/posts_items.php:20
+#: system/admin/publish.php:14
+#: system/admin/logs.php:86
+#: system/admin/comments.php:51
+#: system/admin/comments.php:71
+#: system/admin/groups_item.php:7
+#: system/admin/group.php:128
+#: system/classes/adminhandler.php:807
+#: system/classes/adminhandler.php:1627
 msgid "Delete"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts_items.php:36
+#: system/admin/posts_items.php:36
 msgid "No posts could be found to match the query criteria."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:4
+#: system/admin/tags.php:4
 msgid "Type and wait to search tags"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:21
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:80
-#: /shares/natasha/habari/trunk-raw/system/admin/users.php:61
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:45
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:65
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:42
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:63
+#: system/admin/tags.php:21
+#: system/admin/logs.php:80
+#: system/admin/users.php:61
+#: system/admin/comments.php:45
+#: system/admin/comments.php:65
+#: system/admin/posts.php:42
+#: system/admin/posts.php:63
 msgid "None selected"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:26
+#: system/admin/tags.php:26
 msgid "Rename"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:30
-#: /shares/natasha/habari/trunk-raw/system/admin/users.php:70
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:44
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:65
+#: system/admin/tags.php:30
+#: system/admin/users.php:70
+#: system/admin/posts.php:44
+#: system/admin/posts.php:65
 msgid "Delete Selected"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:43
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:89
+#: system/admin/tags.php:43
+#: system/admin/tags.php:89
 msgid "Error: No tags selected."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/tags.php:93
+#: system/admin/tags.php:93
 msgid "Error: New name not specified."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/import.php:5
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2917
+#: system/admin/import.php:5
+#: system/classes/adminhandler.php:2917
 msgid "Import"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/import.php:13
+#: system/admin/import.php:13
 msgid "You do not currently have any import plugins installed."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/import.php:14
+#: system/admin/import.php:14
 #, php-format
 msgid "Please <a href=\"%1$s\">activate an import plugin</a> to enable importing."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/import.php:16
+#: system/admin/import.php:16
 msgid "Please choose the type of import to perform:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/import.php:24
+#: system/admin/import.php:24
 msgid "Select"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/options.php:14
-#: /shares/natasha/habari/trunk-raw/system/admin/groups.php:15
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:15
+#: system/admin/options.php:14
+#: system/admin/groups.php:15
+#: system/admin/group.php:15
 msgid "search settings"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:4
+#: system/admin/login.php:4
 #, php-format
 msgid "Login to %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:34
-#: /shares/natasha/habari/trunk-raw/system/admin/header.php:62
+#: system/admin/login.php:34
+#: system/admin/header.php:62
 msgid "Go to Site"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:41
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:132
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:17
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:11
+#: system/admin/login.php:41
+#: system/plugins/themehelper/themehelper.plugin.php:132
+#: system/themes/k2/commentform.php:17
+#: system/themes/charcoal/commentform.php:11
 msgid "Name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:41
+#: system/admin/login.php:41
 msgid "name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:44
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:59
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:106
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:185
+#: system/admin/login.php:44
+#: system/installer/db_setup.php:59
+#: system/installer/db_setup.php:106
+#: system/installer/db_setup.php:185
 msgid "Password"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:44
+#: system/admin/login.php:44
 msgid "password"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:48
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/header.php:50
+#: system/admin/login.php:48
+#: system/themes/charcoal/header.php:50
 msgid "Login"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/login.php:51
+#: system/admin/login.php:51
 msgid "Forgot your password?"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:6
+#: system/admin/plugins.php:6
 msgid "All plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:19
+#: system/admin/plugins.php:19
 msgid "search plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:49
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:104
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:156
+#: system/admin/plugins.php:49
+#: system/admin/plugins.php:104
+#: system/admin/plugins.php:156
 msgid "v1.1 Update Available Now"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:59
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:115
+#: system/admin/plugins.php:59
+#: system/admin/plugins.php:115
 msgid "Close"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:71
+#: system/admin/plugins.php:71
 msgid "Active Plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:76
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:135
+#: system/admin/plugins.php:76
+#: system/admin/plugins.php:135
 #, php-format
 msgid "The plugin file %s had syntax errors and could not load."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:79
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:138
+#: system/admin/plugins.php:79
+#: system/admin/plugins.php:138
 msgid "Show Error"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:130
+#: system/admin/plugins.php:130
 msgid "Inactive Plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:172
+#: system/admin/plugins.php:172
 msgid "Upload Plugin Package"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/plugins.php:175
+#: system/admin/plugins.php:175
 msgid "Upload"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/users_items.php:14
+#: system/admin/users_items.php:14
 #, php-format
 msgid "Open %s's user page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/users_items.php:24
+#: system/admin/users_items.php:24
 msgid "has not logged in yet"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/users_items.php:28
+#: system/admin/users_items.php:28
 #, php-format
 msgid "was last seen %1$s at %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/users_items.php:55
+#: system/admin/users_items.php:55
 #, php-format
 msgid "%1$s and currently has %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/publish.php:25
+#: system/admin/publish.php:25
 msgid "Publish"
 msgstr ""
 
 #. Note to translators: the 'new-line character' is an actual "\n" not a new-line character
-#: /shares/natasha/habari/trunk-raw/system/admin/publish.php:47
+#: system/admin/publish.php:47
 msgid ""
 "You did not save the changes you made. \\n"
 "Leaving this page will result in the lose of data."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/footer.php:3
+#: system/admin/footer.php:3
 msgid "Go to the Habari site"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/footer.php:10
+#: system/admin/footer.php:10
 msgid "Logged in as"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/footer.php:10
+#: system/admin/footer.php:10
 msgid "Go to your user page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/footer.php:11
+#: system/admin/footer.php:11
 msgid "Open the Habari manual in a new window"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/footer.php:11
-#: /shares/natasha/habari/trunk-raw/system/installer/header.php:18
+#: system/admin/footer.php:11
+#: system/installer/header.php:18
 msgid "Manual"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/footer.php:16
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:1
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:6
+#: system/admin/footer.php:16
+#: system/admin/sysinfo.php:1
+#: system/admin/sysinfo.php:6
 msgid "System Information"
 msgstr ""
 
 #. #-#-#-#-#  poeditEweDoV (PACKAGE VERSION)  #-#-#-#-#
 #. append the 'Add Item' module
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard_modules.php:4
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:426
+#: system/admin/dashboard_modules.php:4
+#: system/classes/adminhandler.php:426
 msgid "Add Item"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments_items.php:16
+#: system/admin/comments_items.php:16
 msgid "in"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments_items.php:16
+#: system/admin/comments_items.php:16
 #, php-format
 msgid "Go to %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments_items.php:17
+#: system/admin/comments_items.php:17
 msgid "Search for other comments from "
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments_items.php:49
+#: system/admin/comments_items.php:49
 msgid "Marked as spam"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments_items.php:62
+#: system/admin/comments_items.php:62
 msgid "No comments could be found to match the query criteria."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:8
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:4
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:5
+#: system/admin/logs.php:8
+#: system/admin/comments.php:4
+#: system/admin/posts.php:5
 msgid "Older"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:9
+#: system/admin/logs.php:9
 msgid "0-0 of 0"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:10
+#: system/admin/logs.php:10
 msgid "Type and wait to search any log entry component"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:12
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:16
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:17
+#: system/admin/logs.php:12
+#: system/admin/comments.php:16
+#: system/admin/posts.php:17
 msgid "Newer"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:35
+#: system/admin/logs.php:35
 msgid "Date &amp; Time"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:36
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/sidebar.php:15
+#: system/admin/logs.php:36
+#: system/themes/k2/sidebar.php:15
 msgid "User"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:37
+#: system/admin/logs.php:37
 msgid "IP"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:38
+#: system/admin/logs.php:38
 msgid "Module"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:39
+#: system/admin/logs.php:39
 msgid "Type"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:40
+#: system/admin/logs.php:40
 msgid "Severity"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:41
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:144
+#: system/admin/logs.php:41
+#: system/plugins/themehelper/themehelper.plugin.php:144
 msgid "Message"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:53
+#: system/admin/logs.php:53
 msgid "Filter"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/logs.php:67
+#: system/admin/logs.php:67
 msgid "There are no logs to be displayed at this time."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:8
+#: system/admin/dashboard.php:8
 msgid "year"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:8
+#: system/admin/dashboard.php:8
 msgid "years"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:8
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:12
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:16
+#: system/admin/dashboard.php:8
+#: system/admin/dashboard.php:12
+#: system/admin/dashboard.php:16
 #, php-format
 msgid "%1$d "
 msgid_plural "%1$d "
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:12
+#: system/admin/dashboard.php:12
 msgid "month"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:12
+#: system/admin/dashboard.php:12
 msgid "months"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:16
+#: system/admin/dashboard.php:16
 msgid "day"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:16
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:22
+#: system/admin/dashboard.php:16
+#: system/admin/dashboard.php:22
 msgid "days"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:20
+#: system/admin/dashboard.php:20
 #, php-format
 msgid "%1$s has been active for %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:30
+#: system/admin/dashboard.php:30
 msgid "page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:30
+#: system/admin/dashboard.php:30
 msgid "pages"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:30
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:36
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:44
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:50
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:72
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:84
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:90
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:97
+#: system/admin/dashboard.php:30
+#: system/admin/dashboard.php:36
+#: system/admin/dashboard.php:44
+#: system/admin/dashboard.php:50
+#: system/admin/dashboard.php:72
+#: system/admin/dashboard.php:84
+#: system/admin/dashboard.php:90
+#: system/admin/dashboard.php:97
 #, php-format
 msgid "%d "
 msgid_plural "%d "
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:36
+#: system/admin/dashboard.php:36
 msgid "entry"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:36
+#: system/admin/dashboard.php:36
 msgid "entries"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:44
+#: system/admin/dashboard.php:44
 msgid "comment"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:44
+#: system/admin/dashboard.php:44
 msgid "comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:50
+#: system/admin/dashboard.php:50
 msgid "tag"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:50
+#: system/admin/dashboard.php:50
 msgid "tags"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:55
+#: system/admin/dashboard.php:55
 #, php-format
 msgid "[You] have published %1$s%2$s"
 msgid_plural "The [%3$d authors] have published %1$s%2$s"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:57
+#: system/admin/dashboard.php:57
 msgid " with "
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:72
+#: system/admin/dashboard.php:72
 msgid "entry draft"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:72
+#: system/admin/dashboard.php:72
 msgid "entry drafts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:78
+#: system/admin/dashboard.php:78
 #, php-format
 msgid "%d scheduled post"
 msgid_plural "%d scheduled posts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:84
+#: system/admin/dashboard.php:84
 msgid "page draft"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:84
+#: system/admin/dashboard.php:84
 msgid "page drafts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:90
+#: system/admin/dashboard.php:90
 msgid "comment awaiting approval"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:90
+#: system/admin/dashboard.php:90
 msgid "comments awaiting approval"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:97
+#: system/admin/dashboard.php:97
 msgid "spam comment awaiting moderation"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:97
+#: system/admin/dashboard.php:97
 msgid "spam comments awaiting moderation"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:103
+#: system/admin/dashboard.php:103
 #, php-format
 msgid "You have %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:116
+#: system/admin/dashboard.php:116
 #, php-format
 msgid "<a href=\"%1s\">%2s %3s</a> is a critical update."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:119
+#: system/admin/dashboard.php:119
 #, php-format
 msgid "<a href=\"%1s\">%2s %3s</a> contains bug fixes and additional features."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:122
+#: system/admin/dashboard.php:122
 #, php-format
 msgid "<a href=\"%1s\">%2s %3s</a> contains bug fixes."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:125
+#: system/admin/dashboard.php:125
 #, php-format
 msgid "<a href=\"%1s\">%2s %3s</a> contains additional features."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:128
+#: system/admin/dashboard.php:128
 #, php-format
 msgid "<a href=\"%1s\">%2s %3s</a> is a new release."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:143
+#: system/admin/dashboard.php:143
 msgid "Welcome to Habari! We hope that you will jump right in and start exploring. If you get stuck or want to learn more about some of the advanced features, we encourage you to read the [manual], which is bundled with every Habari install. This link also appears at the bottom of every page in the admin area."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:144
+#: system/admin/dashboard.php:144
 msgid "Habari Manual"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/dashboard.php:150
+#: system/admin/dashboard.php:150
 msgid "This message will disappear next time you visit."
 msgstr ""
 
@@ -619,216 +619,216 @@ msgstr ""
 #. }
 #. echo '<option id="' . $user->id . '" value="' . $url . '">' . $user->displayname . '</option>';
 #. }
-#: /shares/natasha/habari/trunk-raw/system/admin/users.php:21
+#: system/admin/users.php:21
 msgid "Complete User List"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/users.php:50
+#: system/admin/users.php:50
 msgid "Add User"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/users.php:69
+#: system/admin/users.php:69
 #, php-format
 msgid "Reassign posts to %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:5
+#: system/admin/comments.php:5
 msgid "0 of 0"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:7
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:8
+#: system/admin/comments.php:7
+#: system/admin/posts.php:8
 msgid "Type and wait to search"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:12
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:13
+#: system/admin/comments.php:12
+#: system/admin/posts.php:13
 #, php-format
 msgid "Filter results for '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:48
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:68
-#: /shares/natasha/habari/trunk-raw/system/classes/comment.php:379
+#: system/admin/comments.php:48
+#: system/admin/comments.php:68
+#: system/classes/comment.php:379
 msgid "Approve"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:49
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:69
-#: /shares/natasha/habari/trunk-raw/system/classes/comment.php:378
+#: system/admin/comments.php:49
+#: system/admin/comments.php:69
+#: system/classes/comment.php:378
 msgid "Unapprove"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:50
-#: /shares/natasha/habari/trunk-raw/system/admin/comments.php:70
-#: /shares/natasha/habari/trunk-raw/system/classes/comment.php:380
+#: system/admin/comments.php:50
+#: system/admin/comments.php:70
+#: system/classes/comment.php:380
 msgid "Spam"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:7
+#: system/admin/sysinfo.php:7
 msgid "SYSTEM INFORMATION\n"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:23
+#: system/admin/sysinfo.php:23
 msgid "Site Information"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:24
+#: system/admin/sysinfo.php:24
 msgid ""
 "\n"
 "SITE INFORMATION\n"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:40
+#: system/admin/sysinfo.php:40
 msgid "User Classes"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:41
+#: system/admin/sysinfo.php:41
 msgid ""
 "\n"
 "USER CLASSES\n"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:52
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:77
+#: system/admin/sysinfo.php:52
+#: system/admin/sysinfo.php:77
 msgid "None found"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:53
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:78
+#: system/admin/sysinfo.php:53
+#: system/admin/sysinfo.php:78
 msgid "None found\n"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:59
+#: system/admin/sysinfo.php:59
 msgid "Plugin Information"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:60
+#: system/admin/sysinfo.php:60
 msgid ""
 "\n"
 "PLUGIN INFORMATION"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/sysinfo.php:85
+#: system/admin/sysinfo.php:85
 msgid "All Results"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/groups_item.php:3
-#: /shares/natasha/habari/trunk-raw/system/admin/groups_item.php:6
+#: system/admin/groups_item.php:3
+#: system/admin/groups_item.php:6
 msgid "Edit group"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/groups_item.php:7
+#: system/admin/groups_item.php:7
 msgid "Delete this group"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/groups_item.php:17
+#: system/admin/groups_item.php:17
 msgid "Members: "
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/groups_item.php:19
+#: system/admin/groups_item.php:19
 msgid "No members"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/db_profiling.php:39
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/db_profiling.php:31
+#: system/admin/db_profiling.php:39
+#: system/themes/k2/db_profiling.php:31
 msgid "DB Profiling"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/db_profiling.php:47
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/db_profiling.php:42
+#: system/admin/db_profiling.php:47
+#: system/themes/k2/db_profiling.php:42
 msgid "Time to Execute:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/db_profiling.php:49
+#: system/admin/db_profiling.php:49
 msgid "BACKTRACE:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/db_profiling.php:56
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/db_profiling.php:56
+#: system/admin/db_profiling.php:56
+#: system/themes/k2/db_profiling.php:56
 msgid "Total Time Executing Queries:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/posts.php:6
+#: system/admin/posts.php:6
 msgid "no results"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/groups.php:5
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:5
+#: system/admin/groups.php:5
+#: system/admin/group.php:5
 msgid "All Groups"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/groups.php:21
+#: system/admin/groups.php:21
 msgid "Group Management"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/groups.php:34
-#: /shares/natasha/habari/trunk-raw/system/admin/groups.php:51
+#: system/admin/groups.php:34
+#: system/admin/groups.php:51
 msgid "Add Group"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:5
+#: system/admin/themes.php:5
 msgid "Current Theme"
 msgstr ""
 
 #. #-#-#-#-#  poeditEweDoV (PACKAGE VERSION)  #-#-#-#-#
 #. Create the advanced settings
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:12
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:599
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1279
+#: system/admin/themes.php:12
+#: system/classes/adminhandler.php:599
+#: system/classes/adminhandler.php:1279
 msgid "Settings"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:18
+#: system/admin/themes.php:18
 msgid "v"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:18
+#: system/admin/themes.php:18
 msgid "Update Available"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:28
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:64
+#: system/admin/themes.php:28
+#: system/admin/themes.php:64
 #, php-format
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:35
+#: system/admin/themes.php:35
 msgid "close"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:46
+#: system/admin/themes.php:46
 msgid "Available Themes"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/themes.php:55
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1705
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1709
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:213
+#: system/admin/themes.php:55
+#: system/classes/adminhandler.php:1705
+#: system/classes/adminhandler.php:1709
+#: system/classes/installhandler.php:213
 msgid "Activate"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:26
+#: system/admin/group.php:26
 msgid "Group Information"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:31
+#: system/admin/group.php:31
 msgid "Members"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:37
+#: system/admin/group.php:37
 msgid "Members To Add"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:47
+#: system/admin/group.php:47
 msgid "Add"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:52
+#: system/admin/group.php:52
 msgid "Members To Remove"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:65
+#: system/admin/group.php:65
 msgid "Group Permissions"
 msgstr ""
 
@@ -837,862 +837,862 @@ msgstr ""
 #. * We could either use existing config forms and simply extract
 #. * the form controls, or we could create something different
 #.
-#: /shares/natasha/habari/trunk-raw/system/admin/group.php:125
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:298
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:804
+#: system/admin/group.php:125
+#: system/classes/adminhandler.php:298
+#: system/classes/adminhandler.php:804
 msgid "Apply"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/formcontrols/formcontrol_textmulti.php:12
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:1491
+#: system/admin/formcontrols/formcontrol_textmulti.php:12
+#: system/classes/formui.php:1491
 msgid "remove"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/admin/formcontrols/formcontrol_textmulti.php:16
+#: system/admin/formcontrols/formcontrol_textmulti.php:16
 msgid "add"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/dash_latestcomments.php:6
+#: system/plugins/coredashmodules/dash_latestcomments.php:6
 #, php-format
 msgid "%1$d comment"
 msgid_plural "%1$d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/dash_latestcomments.php:14
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/dash_latestentries.php:5
+#: system/plugins/coredashmodules/dash_latestcomments.php:14
+#: system/plugins/coredashmodules/dash_latestentries.php:5
 #, php-format
 msgid "Posted at %1$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/coredashmodules.plugin.php:97
+#: system/plugins/coredashmodules/coredashmodules.plugin.php:97
 msgid "Number of items"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/coredashmodules.plugin.php:98
-#: /shares/natasha/habari/trunk-raw/system/plugins/habarisilo/habarisilo.plugin.php:387
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:34
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:28
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:94
+#: system/plugins/coredashmodules/coredashmodules.plugin.php:98
+#: system/plugins/habarisilo/habarisilo.plugin.php:387
+#: system/themes/k2/commentform.php:34
+#: system/themes/charcoal/commentform.php:28
+#: system/themes/mzingi/commentform.php:94
 msgid "Submit"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/coredashmodules.plugin.php:101
+#: system/plugins/coredashmodules/coredashmodules.plugin.php:101
 msgid "Latest Log Activity"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/coredashmodules.plugin.php:117
+#: system/plugins/coredashmodules/coredashmodules.plugin.php:117
 msgid "Latest Entries"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/coredashmodules/coredashmodules.plugin.php:144
+#: system/plugins/coredashmodules/coredashmodules.plugin.php:144
 msgid "Latest Comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:20
+#: system/plugins/wpimport/wpimport.plugin.php:20
 msgid "WordPress Database"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:81
+#: system/plugins/wpimport/wpimport.plugin.php:81
 msgid "Could not connect to the WordPress database using the values supplied. Please correct them and try again."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:168
+#: system/plugins/wpimport/wpimport.plugin.php:168
 #, php-format
 msgid "Starting import from \"%s\""
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:368
+#: system/plugins/wpimport/wpimport.plugin.php:368
 #, php-format
 msgid "Post author id %s was not found in WP database, assigning post \"%s\" (WP post id #%d) to current user."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:444
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:541
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:681
+#: system/plugins/wpimport/wpimport.plugin.php:444
+#: system/plugins/wpimport/wpimport.plugin.php:541
+#: system/plugins/wpimport/wpimport.plugin.php:681
 #, php-format
 msgid "Failed to import from \"%s\""
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:446
+#: system/plugins/wpimport/wpimport.plugin.php:446
 msgid "The database connection details have failed to connect."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:481
+#: system/plugins/wpimport/wpimport.plugin.php:481
 msgid "<p>Importing users...</p>"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:543
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:683
+#: system/plugins/wpimport/wpimport.plugin.php:543
+#: system/plugins/wpimport/wpimport.plugin.php:683
 msgid "Failed to connect using the given database connection details."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:665
+#: system/plugins/wpimport/wpimport.plugin.php:665
 msgid "Import is complete."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/wpimport/wpimport.plugin.php:669
+#: system/plugins/wpimport/wpimport.plugin.php:669
 msgid "There were errors during import:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/s9yimport/s9yimport.plugin.php:42
+#: system/plugins/s9yimport/s9yimport.plugin.php:42
 msgid "Serendipity Database"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/s9yimport/s9yimport.plugin.php:1020
+#: system/plugins/s9yimport/s9yimport.plugin.php:1020
 msgid "succeeded"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/s9yimport/s9yimport.plugin.php:1024
+#: system/plugins/s9yimport/s9yimport.plugin.php:1024
 msgid "failed"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:44
+#: system/plugins/themehelper/themehelper.plugin.php:44
 msgid "Read Comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:132
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:144
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:17
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:70
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:75
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:89
+#: system/plugins/themehelper/themehelper.plugin.php:132
+#: system/plugins/themehelper/themehelper.plugin.php:144
+#: system/themes/k2/commentform.php:17
+#: system/themes/k2/commentform.php:21
+#: system/themes/mzingi/commentform.php:70
+#: system/themes/mzingi/commentform.php:75
+#: system/themes/mzingi/commentform.php:89
 msgid "Required"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:136
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:749
+#: system/plugins/themehelper/themehelper.plugin.php:136
+#: system/classes/adminhandler.php:749
 msgid "Email"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:136
+#: system/plugins/themehelper/themehelper.plugin.php:136
 msgid "Required - not published"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:140
+#: system/plugins/themehelper/themehelper.plugin.php:140
 msgid "Web Address"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/themehelper/themehelper.plugin.php:148
+#: system/plugins/themehelper/themehelper.plugin.php:148
 msgid "Say It"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/flickrsilo/flickrsilo.plugin.php:800
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:800
 msgid "This photo has no title"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/flickrsilo/flickrsilo.plugin.php:886
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:886
 msgid "Default size for images in Posts:"
 msgstr ""
 
 #. Create the Save button
-#: /shares/natasha/habari/trunk-raw/system/plugins/flickrsilo/flickrsilo.plugin.php:888
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:631
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:888
+#: system/classes/adminhandler.php:631
 msgid "Save"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/flickrsilo/flickrsilo.plugin.php:889
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:889
 msgid "Options saved"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/flickrsilo/flickrsilo.plugin.php:990
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:990
 msgid "Search for photos"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/viddlersilo/viddlersilo.plugin.php:870
+#: system/plugins/viddlersilo/viddlersilo.plugin.php:870
 msgid "The username and password you supplied failed to log in to Viddler."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/viddlersilo/viddlersilo.plugin.php:876
+#: system/plugins/viddlersilo/viddlersilo.plugin.php:876
 msgid "You have logged in to Viddler."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:75
+#: system/plugins/undelete/undelete.plugin.php:75
 msgid "Delete forever"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:76
+#: system/plugins/undelete/undelete.plugin.php:76
 msgid "Permanently delete this post"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:80
+#: system/plugins/undelete/undelete.plugin.php:80
 msgid "Restore this item"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:81
+#: system/plugins/undelete/undelete.plugin.php:81
 msgid "Restore"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:102
+#: system/plugins/undelete/undelete.plugin.php:102
 #, php-format
 msgid "Post %1$s (%2$s) restored."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:119
+#: system/plugins/undelete/undelete.plugin.php:119
 #, php-format
 msgid "Restored post %d"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:122
+#: system/plugins/undelete/undelete.plugin.php:122
 #, php-format
 msgid "Could not restore post %d"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:129
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:139
-#: /shares/natasha/habari/trunk-raw/system/classes/pluggable.php:188
+#: system/plugins/undelete/undelete.plugin.php:129
+#: system/plugins/undelete/undelete.plugin.php:139
+#: system/classes/pluggable.php:188
 msgid "Configure"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:130
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:147
+#: system/plugins/undelete/undelete.plugin.php:130
+#: system/plugins/undelete/undelete.plugin.php:147
 msgid "Empty Trash"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:141
+#: system/plugins/undelete/undelete.plugin.php:141
 msgid "Style declaration for deleted content:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:149
+#: system/plugins/undelete/undelete.plugin.php:149
 msgid "Pressing this button will permanently delete all posts from the virtual trash can. You cannot undo this."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/undelete/undelete.plugin.php:169
+#: system/plugins/undelete/undelete.plugin.php:169
 #, php-format
 msgid "Permanently deleted %d posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/pingback/pingback.plugin.php:312
+#: system/plugins/pingback/pingback.plugin.php:312
 #, php-format
 msgid "Sent pingbacks for \"%1$s\", target: %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/pingback/pingback.plugin.php:324
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:181
+#: system/plugins/pingback/pingback.plugin.php:324
+#: system/classes/adminhandler.php:181
 msgid "Publishing"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/pingback/pingback.plugin.php:325
+#: system/plugins/pingback/pingback.plugin.php:325
 msgid "Send Pingbacks to Links"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/habarisilo/habarisilo.plugin.php:381
+#: system/plugins/habarisilo/habarisilo.plugin.php:381
 msgid "Parent Directory:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/habarisilo/habarisilo.plugin.php:385
+#: system/plugins/habarisilo/habarisilo.plugin.php:385
 msgid "Enter the name of the new directory to create here"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/habarisilo/habarisilo.plugin.php:494
+#: system/plugins/habarisilo/habarisilo.plugin.php:494
 msgid "Directory Created:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:58
+#: system/plugins/spamchecker/spamchecker.plugin.php:58
 msgid "Commenters with numeric names are spammy."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:67
+#: system/plugins/spamchecker/spamchecker.plugin.php:67
 msgid "Comments that are only numeric are spammy."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:73
+#: system/plugins/spamchecker/spamchecker.plugin.php:73
 msgid "Comments that are only whitespace characters are spammy."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:79
+#: system/plugins/spamchecker/spamchecker.plugin.php:79
 msgid "Comments that are only \"array\" are spammy."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:85
+#: system/plugins/spamchecker/spamchecker.plugin.php:85
 msgid "Comments that consist of only the commenters name are spammy."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:92
+#: system/plugins/spamchecker/spamchecker.plugin.php:92
 msgid "Comments that start with strong text are spammy."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:98
+#: system/plugins/spamchecker/spamchecker.plugin.php:98
 msgid "There is a 3 URL limit in comments."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:104
+#: system/plugins/spamchecker/spamchecker.plugin.php:104
 msgid "There is a 3 URL-encoded character limit in comments."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:118
+#: system/plugins/spamchecker/spamchecker.plugin.php:118
 msgid "We do not accept BBCode here."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:126
+#: system/plugins/spamchecker/spamchecker.plugin.php:126
 msgid "Too much text that is a link compared to that which is not."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:135
+#: system/plugins/spamchecker/spamchecker.plugin.php:135
 #, php-format
 msgid "Too many existing spams from this IP: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:142
+#: system/plugins/spamchecker/spamchecker.plugin.php:142
 msgid "The commenter's session timed out."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/plugins/spamchecker/spamchecker.plugin.php:221
+#: system/plugins/spamchecker/spamchecker.plugin.php:221
 msgid "The selected action is forbidden."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/habarilocale.php:138
+#: system/classes/habarilocale.php:138
 #, php-format
 msgid "No translations found for locale %s, domain %s!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/habarilocale.php:142
+#: system/classes/habarilocale.php:142
 #, php-format
 msgid "Invalid .MO file for locale %s, domain %s!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/habarilocale.php:162
+#: system/classes/habarilocale.php:162
 #, php-format
 msgid "Invalid magic number 0x%08x in %s!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/habarilocale.php:168
+#: system/classes/habarilocale.php:168
 #, php-format
 msgid "Unknown revision number %d in %s!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/habarilocale.php:179
+#: system/classes/habarilocale.php:179
 #, php-format
 msgid "Message count (%d) out of bounds in %s!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:35
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:40
+#: system/classes/adminhandler.php:35
+#: system/classes/adminhandler.php:40
 msgid "We saved the last form you posted. Log back in to continue its submission."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:95
+#: system/classes/adminhandler.php:95
 msgid "Access to that page has been denied by the administrator."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:110
+#: system/classes/adminhandler.php:110
 #, php-format
 msgid "%1$s->%2$s() does not exist."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:130
+#: system/classes/adminhandler.php:130
 msgid "The page you were looking for was not found."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:168
+#: system/classes/adminhandler.php:168
 msgid "Name & Tagline"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:170
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:164
+#: system/classes/adminhandler.php:170
+#: system/installer/db_setup.php:164
 msgid "Site Name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:175
+#: system/classes/adminhandler.php:175
 msgid "Site Tagline"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:183
+#: system/classes/adminhandler.php:183
 msgid "Items per Page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:188
+#: system/classes/adminhandler.php:188
 msgid "Entries to show in Atom feed"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:193
+#: system/classes/adminhandler.php:193
 msgid "Require Comment Author Info"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:199
+#: system/classes/adminhandler.php:199
 msgid "Time & Date"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:209
+#: system/classes/adminhandler.php:209
 msgid "Time Zone"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:215
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:779
+#: system/classes/adminhandler.php:215
+#: system/classes/adminhandler.php:779
 msgid "Date Format"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:220
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:790
+#: system/classes/adminhandler.php:220
+#: system/classes/adminhandler.php:790
 msgid "Time Format"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:226
-#: /shares/natasha/habari/trunk-raw/system/installer/locale_dropdown.php:6
+#: system/classes/adminhandler.php:226
+#: system/installer/locale_dropdown.php:6
 msgid "Language"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:228
-#: /shares/natasha/habari/trunk-raw/system/installer/locale_dropdown.php:2
+#: system/classes/adminhandler.php:228
+#: system/installer/locale_dropdown.php:2
 msgid "Locale"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:234
+#: system/classes/adminhandler.php:234
 msgid "System Locale"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:240
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2913
+#: system/classes/adminhandler.php:240
+#: system/classes/adminhandler.php:2913
 msgid "Dashboard"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:242
+#: system/classes/adminhandler.php:242
 msgid "Hide Spam Count"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:244
+#: system/classes/adminhandler.php:244
 msgid "Hide the number of SPAM comments on your dashboard."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:248
+#: system/classes/adminhandler.php:248
 msgid "Troubleshooting"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:250
+#: system/classes/adminhandler.php:250
 msgid "Log Backtraces"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:252
+#: system/classes/adminhandler.php:252
 msgid "Logs error backtraces to the log tables' data column. Can drastically increase log size!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:314
+#: system/classes/adminhandler.php:314
 msgid "Successfully updated options"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:460
+#: system/classes/adminhandler.php:460
 msgid "A post slug cannot be empty. Keeping old slug."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:513
+#: system/classes/adminhandler.php:513
 #, php-format
 msgid "The post %1$s has been saved as %2$s."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:537
+#: system/classes/adminhandler.php:537
 msgid "Access to that post id is denied"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:541
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:571
+#: system/classes/adminhandler.php:541
+#: system/classes/adminhandler.php:571
 #, php-format
 msgid "Publish %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:562
+#: system/classes/adminhandler.php:562
 msgid "Preview Post"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:562
+#: system/classes/adminhandler.php:562
 msgid "View Post"
 msgstr ""
 
 #. Create the Title field
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:567
+#: system/classes/adminhandler.php:567
 msgid "Title"
 msgstr ""
 
 #. #-#-#-#-#  poeditEweDoV (PACKAGE VERSION)  #-#-#-#-#
 #. Create the Content field
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:579
-#: /shares/natasha/habari/trunk-raw/system/classes/post.php:227
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:761
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:762
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:764
+#: system/classes/adminhandler.php:579
+#: system/classes/post.php:227
+#: system/classes/acl.php:761
+#: system/classes/acl.php:762
+#: system/classes/acl.php:764
 msgid "Content"
 msgstr ""
 
 #. Create the tags field
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:586
+#: system/classes/adminhandler.php:586
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:601
+#: system/classes/adminhandler.php:601
 msgid "Content State"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:610
+#: system/classes/adminhandler.php:610
 msgid "Minor Edit"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:614
+#: system/classes/adminhandler.php:614
 msgid "Comments Allowed"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:617
+#: system/classes/adminhandler.php:617
 msgid "Publication Time"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:620
+#: system/classes/adminhandler.php:620
 msgid "Content Address"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:679
+#: system/classes/adminhandler.php:679
 #, php-format
 msgid "Deleted the %1$s titled \"%2$s\"."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:689
+#: system/classes/adminhandler.php:689
 msgid "You"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:690
+#: system/classes/adminhandler.php:690
 msgid "Your User Information"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:695
+#: system/classes/adminhandler.php:695
 #, php-format
 msgid "%s's User Information"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:700
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1013
+#: system/classes/adminhandler.php:700
+#: system/classes/adminhandler.php:1013
 msgid "nobody"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:714
+#: system/classes/adminhandler.php:714
 msgid "No such user!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:722
+#: system/classes/adminhandler.php:722
 msgid "Change Password"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:723
+#: system/classes/adminhandler.php:723
 msgid "Regional Settings"
 msgstr ""
 
 #. User Info
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:740
+#: system/classes/adminhandler.php:740
 msgid "Display Name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:744
+#: system/classes/adminhandler.php:744
 msgid "User Name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:754
+#: system/classes/adminhandler.php:754
 msgid "Portrait URL"
 msgstr ""
 
 #. Change Password
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:759
+#: system/classes/adminhandler.php:759
 msgid "New Password"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:764
+#: system/classes/adminhandler.php:764
 msgid "New Password Again"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:768
+#: system/classes/adminhandler.php:768
 msgid "Passwords must match."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:773
+#: system/classes/adminhandler.php:773
 msgid "Timezone"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:788
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:799
+#: system/classes/adminhandler.php:788
+#: system/classes/adminhandler.php:799
 #, php-format
 msgid "See <a href=\"%s\">php.net/date</a> for details. Current format: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:807
+#: system/classes/adminhandler.php:807
 #, php-format
 msgid "Reassign posts to: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:807
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/footer.php:11
+#: system/classes/adminhandler.php:807
+#: system/themes/k2/footer.php:11
 msgid "and"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:850
+#: system/classes/adminhandler.php:850
 #, php-format
 msgid "%s has been deleted"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:855
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:988
+#: system/classes/adminhandler.php:855
+#: system/classes/adminhandler.php:988
 msgid "You cannot delete yourself."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:863
+#: system/classes/adminhandler.php:863
 #, php-format
 msgid "%1$s has been renamed to %2$s."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:876
+#: system/classes/adminhandler.php:876
 msgid "Password changed."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:899
+#: system/classes/adminhandler.php:899
 msgid "User updated."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:930
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2039
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2078
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2109
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2146
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2451
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2639
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2712
+#: system/classes/adminhandler.php:930
+#: system/classes/adminhandler.php:2039
+#: system/classes/adminhandler.php:2078
+#: system/classes/adminhandler.php:2109
+#: system/classes/adminhandler.php:2146
+#: system/classes/adminhandler.php:2451
+#: system/classes/adminhandler.php:2639
+#: system/classes/adminhandler.php:2712
 msgid "WSSE authentication failed."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:958
+#: system/classes/adminhandler.php:958
 msgid "No users deleted."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:995
+#: system/classes/adminhandler.php:995
 #, php-format
 msgid "Deleted %d users."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1047
+#: system/classes/adminhandler.php:1047
 msgid "Password is required."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1050
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:148
+#: system/classes/adminhandler.php:1050
+#: system/classes/installhandler.php:148
 msgid "Password mis-match."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1053
+#: system/classes/adminhandler.php:1053
 msgid "Please supply a valid email address."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1056
+#: system/classes/adminhandler.php:1056
 msgid "Please supply a user name."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1061
+#: system/classes/adminhandler.php:1061
 msgid "That username is already assigned."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1066
+#: system/classes/adminhandler.php:1066
 #, php-format
 msgid "Added user '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1111
+#: system/classes/adminhandler.php:1111
 #, php-format
 msgid "Activated plugin '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1120
+#: system/classes/adminhandler.php:1120
 #, php-format
 msgid "Deactivated plugin '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1191
+#: system/classes/adminhandler.php:1191
 #, php-format
 msgid "Activated theme '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1256
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/page.single.php:12
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/search.php:15
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/home.php:14
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/tag.php:14
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.multiple.php:14
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.single.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/home.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.multiple.php:18
+#: system/classes/adminhandler.php:1256
+#: system/themes/k2/page.single.php:12
+#: system/themes/k2/search.php:15
+#: system/themes/k2/home.php:14
+#: system/themes/k2/tag.php:14
+#: system/themes/k2/entry.multiple.php:14
+#: system/themes/k2/entry.single.php:23
+#: system/themes/mzingi/search.php:20
+#: system/themes/mzingi/home.php:20
+#: system/themes/mzingi/tag.php:20
+#: system/themes/mzingi/entry.multiple.php:18
 msgid "Comment"
 msgstr ""
 
 #. Create the author info
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1264
+#: system/classes/adminhandler.php:1264
 msgid "Author"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1266
+#: system/classes/adminhandler.php:1266
 msgid "Author Name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1269
+#: system/classes/adminhandler.php:1269
 msgid "Author Email"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1272
+#: system/classes/adminhandler.php:1272
 msgid "Author URL"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1275
+#: system/classes/adminhandler.php:1275
 msgid "IP Address:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1281
+#: system/classes/adminhandler.php:1281
 msgid "Date:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1286
+#: system/classes/adminhandler.php:1286
 msgid "Post ID:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1291
+#: system/classes/adminhandler.php:1291
 msgid "Status"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1467
+#: system/classes/adminhandler.php:1467
 msgid "Deleted all spam comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1473
+#: system/classes/adminhandler.php:1473
 msgid "Deleted all unapproved comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1623
+#: system/classes/adminhandler.php:1623
 #, php-format
 msgid "Change this comment's status to %s"
 msgstr ""
 
 #. Standard actions
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1627
+#: system/classes/adminhandler.php:1627
 msgid "Delete this comment"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1628
+#: system/classes/adminhandler.php:1628
 msgid "Edit this comment"
 msgstr ""
 
 #. Actions for inline edit
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1631
+#: system/classes/adminhandler.php:1631
 msgid "Submit changes"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1631
+#: system/classes/adminhandler.php:1631
 msgid "Update"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1632
+#: system/classes/adminhandler.php:1632
 msgid "Cancel changes"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1632
+#: system/classes/adminhandler.php:1632
 msgid "Cancel"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1670
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1694
+#: system/classes/adminhandler.php:1670
+#: system/classes/adminhandler.php:1694
 msgid "Deactivate"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1723
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:8
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:160
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:215
+#: system/classes/adminhandler.php:1723
+#: system/installer/db_setup.php:8
+#: system/installer/db_setup.php:160
+#: system/installer/db_setup.php:215
 msgid "Help"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1904
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:1905
+#: system/classes/adminhandler.php:1904
+#: system/classes/adminhandler.php:1905
 msgid "Manage Posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2066
+#: system/classes/adminhandler.php:2066
 msgid "Updated 1 comment."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2095
+#: system/classes/adminhandler.php:2095
 #, php-format
 msgid "Deleted %d entries."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2137
+#: system/classes/adminhandler.php:2137
 #, php-format
 msgid "Deleted %d logs."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2162
+#: system/classes/adminhandler.php:2162
 msgid "No comments selected."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2168
+#: system/classes/adminhandler.php:2168
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2174
+#: system/classes/adminhandler.php:2174
 #, php-format
 msgid "Deleted %d comment"
 msgid_plural "Deleted %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2179
+#: system/classes/adminhandler.php:2179
 #, php-format
 msgid "Marked %d comment as spam"
 msgid_plural "Marked %d comments as spam"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2185
+#: system/classes/adminhandler.php:2185
 #, php-format
 msgid "Approved %d comment"
 msgid_plural "Approved %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2191
+#: system/classes/adminhandler.php:2191
 #, php-format
 msgid "Unapproved %d comment"
 msgid_plural "Unapproved %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2470
+#: system/classes/adminhandler.php:2470
 #, php-format
 msgid "The group %s already exists"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2479
+#: system/classes/adminhandler.php:2479
 msgid "The group must have a name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2492
+#: system/classes/adminhandler.php:2492
 #, php-format
 msgid "Added group %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2529
+#: system/classes/adminhandler.php:2529
 msgid "No groups deleted."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2543
+#: system/classes/adminhandler.php:2543
 #, php-format
 msgid "Deleted %d groups."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2685
+#: system/classes/adminhandler.php:2685
 msgid "Updated permissions."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2731
+#: system/classes/adminhandler.php:2731
 #, php-format
 msgid "Tag %s has been deleted."
 msgid_plural "Tags %s have been deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2755
-#: /shares/natasha/habari/trunk-raw/system/classes/tags.php:143
+#: system/classes/adminhandler.php:2755
+#: system/classes/tags.php:143
 #, php-format
 msgid "Tag %s has been renamed to %s."
 msgid_plural "Tags %s have been renamed to %s."
@@ -1700,436 +1700,436 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Assemble Site Info
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2781
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2783
+#: system/classes/adminhandler.php:2781
+#: system/classes/adminhandler.php:2783
 msgid "Habari Version"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2786
+#: system/classes/adminhandler.php:2786
 msgid "Habari API Version"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2787
+#: system/classes/adminhandler.php:2787
 msgid "Habari DB Version"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2788
+#: system/classes/adminhandler.php:2788
 msgid "Active Theme"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2789
+#: system/classes/adminhandler.php:2789
 msgid "Site Language"
 msgstr ""
 
 #. Assemble System Info
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2793
+#: system/classes/adminhandler.php:2793
 msgid "PHP Version"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2794
+#: system/classes/adminhandler.php:2794
 msgid "Server Software"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2795
+#: system/classes/adminhandler.php:2795
 msgid "Database"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2796
+#: system/classes/adminhandler.php:2796
 msgid "PHP Extensions"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2798
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2807
+#: system/classes/adminhandler.php:2798
+#: system/classes/adminhandler.php:2807
 msgid "PCRE Version"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2809
+#: system/classes/adminhandler.php:2809
 msgid "Browser"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2886
+#: system/classes/adminhandler.php:2886
 #, php-format
 msgid "Create a new %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2890
+#: system/classes/adminhandler.php:2890
 #, php-format
 msgid "Manage %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2909
+#: system/classes/adminhandler.php:2909
 msgid "Create content"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2909
+#: system/classes/adminhandler.php:2909
 msgid "New"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2910
+#: system/classes/adminhandler.php:2910
 msgid "Manage content"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2910
+#: system/classes/adminhandler.php:2910
 msgid "Manage"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2911
+#: system/classes/adminhandler.php:2911
 msgid "Manage blog comments"
 msgstr ""
 
 #. #-#-#-#-#  poeditSQC0st (PACKAGE VERSION)  #-#-#-#-#
 #. comments tokens
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2911
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:768
+#: system/classes/adminhandler.php:2911
+#: system/classes/acl.php:768
 msgid "Comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2912
+#: system/classes/adminhandler.php:2912
 msgid "Manage blog tags"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2912
+#: system/classes/adminhandler.php:2912
 msgid "Tags"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2913
+#: system/classes/adminhandler.php:2913
 msgid "View your user dashboard"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2914
+#: system/classes/adminhandler.php:2914
 msgid "View and configure blog options"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2914
+#: system/classes/adminhandler.php:2914
 msgid "Options"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2915
+#: system/classes/adminhandler.php:2915
 msgid "Preview and activate themes"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2915
+#: system/classes/adminhandler.php:2915
 msgid "Themes"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2916
+#: system/classes/adminhandler.php:2916
 msgid "Activate, deactivate, and configure plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2916
+#: system/classes/adminhandler.php:2916
 msgid "Plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2917
+#: system/classes/adminhandler.php:2917
 msgid "Import content from another blog"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2918
+#: system/classes/adminhandler.php:2918
 msgid "View and manage users"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2918
+#: system/classes/adminhandler.php:2918
 msgid "Users"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2919
+#: system/classes/adminhandler.php:2919
 msgid "View and manage groups"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2919
+#: system/classes/adminhandler.php:2919
 msgid "Groups"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2920
+#: system/classes/adminhandler.php:2920
 msgid "View system log messages"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2920
+#: system/classes/adminhandler.php:2920
 msgid "Logs"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2921
+#: system/classes/adminhandler.php:2921
 msgid "Log out of the administration interface"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:2921
+#: system/classes/adminhandler.php:2921
 msgid "Logout"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:3084
+#: system/classes/adminhandler.php:3084
 msgid "Entry"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:3085
+#: system/classes/adminhandler.php:3085
 msgid "Entries"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:3088
+#: system/classes/adminhandler.php:3088
 msgid "Page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:3089
+#: system/classes/adminhandler.php:3089
 msgid "Pages"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:3133
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:3159
+#: system/classes/adminhandler.php:3133
+#: system/classes/adminhandler.php:3159
 msgid "Root"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/adminhandler.php:3193
+#: system/classes/adminhandler.php:3193
 msgid "+"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/modules.php:220
-#: /shares/natasha/habari/trunk-raw/system/classes/modules.php:221
-#: /shares/natasha/habari/trunk-raw/system/classes/modules.php:222
+#: system/classes/modules.php:220
+#: system/classes/modules.php:221
+#: system/classes/modules.php:222
 msgid "System Status"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/atomhandler.php:149
+#: system/classes/atomhandler.php:149
 msgid "First Page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/atomhandler.php:157
+#: system/classes/atomhandler.php:157
 msgid "Previous Page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/atomhandler.php:166
+#: system/classes/atomhandler.php:166
 msgid "Next Page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/atomhandler.php:174
+#: system/classes/atomhandler.php:174
 msgid "Last Page"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/atomhandler.php:237
+#: system/classes/atomhandler.php:237
 #, php-format
 msgid "%1$s on \"%2$s\""
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:76
-#: /shares/natasha/habari/trunk-raw/system/classes/comment.php:199
+#: system/classes/user.php:76
+#: system/classes/comment.php:199
 msgid "Anonymous"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:143
+#: system/classes/user.php:143
 #, php-format
 msgid "New user created: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:184
+#: system/classes/user.php:184
 #, php-format
 msgid "User deleted: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:242
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:276
+#: system/classes/user.php:242
+#: system/classes/user.php:276
 #, php-format
 msgid "Successful login for %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:249
+#: system/classes/user.php:249
 #, php-format
 msgid "Login attempt (via authentication plugin) for non-existent user %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:266
+#: system/classes/user.php:266
 #, php-format
 msgid "Login attempt for non-existent user %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:284
+#: system/classes/user.php:284
 #, php-format
 msgid "Wrong password for user %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:498
+#: system/classes/user.php:498
 #, php-format
 msgid "User %1$s: Access to %2$s changed to %3$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:522
+#: system/classes/user.php:522
 #, php-format
 msgid "User %1$s: Permission to %2$s revoked."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:561
+#: system/classes/user.php:561
 #, php-format
 msgid " User %1$s: Added to %2$s group."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/user.php:575
+#: system/classes/user.php:575
 #, php-format
 msgid " User %1$s: Removed from %2$s group."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/htmltokenizer.php:78
+#: system/classes/htmltokenizer.php:78
 #, php-format
 msgid "Invalid state %d in %s->parse()"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/usergroup.php:93
+#: system/classes/usergroup.php:93
 #, php-format
 msgid "New group created: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/usergroup.php:113
+#: system/classes/usergroup.php:113
 #, php-format
 msgid "User Group updated: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/usergroup.php:130
+#: system/classes/usergroup.php:130
 #, php-format
 msgid "User Group %s: Member list reset"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/usergroup.php:154
+#: system/classes/usergroup.php:154
 #, php-format
 msgid "User Group %s: Group deleted."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/usergroup.php:204
+#: system/classes/usergroup.php:204
 #, php-format
 msgid "User Group %1$s: Users were added to the group."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/usergroup.php:221
+#: system/classes/usergroup.php:221
 #, php-format
 msgid "User Group %1$s: Users were removed from the group."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/error.php:83
+#: system/classes/error.php:83
 #, php-format
 msgid "%1$s in %2$s line %3$s on request of \"%4$s\""
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/error.php:191
+#: system/classes/error.php:191
 #, php-format
 msgid " ...%d arg... "
 msgid_plural " ...%d args... "
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/error.php:195
+#: system/classes/error.php:195
 #, php-format
 msgid ""
 "%s line %d:\n"
 "  %s(%s)\n"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/logentry.php:163
-#: /shares/natasha/habari/trunk-raw/system/classes/logentry.php:249
-#: /shares/natasha/habari/trunk-raw/system/classes/logentry.php:261
+#: system/classes/logentry.php:163
+#: system/classes/logentry.php:249
+#: system/classes/logentry.php:261
 msgid "Unknown"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/tags.php:65
+#: system/classes/tags.php:65
 #, php-format
 msgid "Tag deleted: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/url.php:209
+#: system/classes/url.php:209
 #, php-format
 msgid "Could not find a rule matching the following names: %s. File: %s (line %s)"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/socketrequestprocessor.php:62
+#: system/classes/socketrequestprocessor.php:62
 #, php-format
 msgid "%s: Error %d: %s while connecting to %s:%d"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/socketrequestprocessor.php:100
+#: system/classes/socketrequestprocessor.php:100
 msgid "Error writing to socket."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/socketrequestprocessor.php:132
+#: system/classes/socketrequestprocessor.php:132
 msgid "Maximum number of redirections exceeded."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/socketrequestprocessor.php:138
+#: system/classes/socketrequestprocessor.php:138
 msgid "Redirection response without Location: header."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/socketrequestprocessor.php:174
-#: /shares/natasha/habari/trunk-raw/system/classes/socketrequestprocessor.php:183
-#: /shares/natasha/habari/trunk-raw/system/classes/curlrequestprocessor.php:106
-#: /shares/natasha/habari/trunk-raw/system/classes/curlrequestprocessor.php:115
+#: system/classes/socketrequestprocessor.php:174
+#: system/classes/socketrequestprocessor.php:183
+#: system/classes/curlrequestprocessor.php:106
+#: system/classes/curlrequestprocessor.php:115
 msgid "Request did not yet execute."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/databaseconnection.php:127
+#: system/classes/databaseconnection.php:127
 msgid "Habari General Error"
 msgstr ""
 
 #. page title
-#: /shares/natasha/habari/trunk-raw/system/classes/databaseconnection.php:128
+#: system/classes/databaseconnection.php:128
 msgid "An error occurred"
 msgstr ""
 
 #. H1 tag
-#: /shares/natasha/habari/trunk-raw/system/classes/databaseconnection.php:129
+#: system/classes/databaseconnection.php:129
 msgid "Unable to connect to database."
 msgstr ""
 
 #. Die gracefully before the segfault occurs
-#: /shares/natasha/habari/trunk-raw/system/classes/databaseconnection.php:276
+#: system/classes/databaseconnection.php:276
 msgid "Attempt to fetch in class mode with a non-included class"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/rpcclient.php:26
+#: system/classes/rpcclient.php:26
 msgid "xmlrpc extension not found"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/inputfilter.php:422
+#: system/classes/inputfilter.php:422
 #, php-format
 msgid "Unkown attribute type \"%s\" in %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/site.php:61
+#: system/classes/site.php:61
 msgid "Could not determine script name."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/hiengine.php:31
+#: system/classes/hiengine.php:31
 msgid "Failed to register HiEngine stream protocol"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/pluggable.php:154
+#: system/classes/pluggable.php:154
 msgid "?"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/remoterequest.php:108
+#: system/classes/remoterequest.php:108
 msgid "Trying to add a request body to a non-POST request"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/remoterequest.php:192
+#: system/classes/remoterequest.php:192
 msgid "Trying to fetch response headers for a pending request."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/remoterequest.php:203
+#: system/classes/remoterequest.php:203
 msgid "Trying to fetch response body for a pending request."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:77
+#: system/classes/userhandler.php:77
 msgid "Bad credentials"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:148
+#: system/classes/userhandler.php:148
 #, php-format
 msgid "Please visit %1$s to reset your password."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:150
+#: system/classes/userhandler.php:150
 #, php-format
 msgid "[%1$s] Password reset request for %2$s"
 msgstr ""
 
 #. Moving this inside the check for user existence would allow attackers to test usernames, so don't
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:153
+#: system/classes/userhandler.php:153
 msgid "A password reset request has been sent to the user."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:174
+#: system/classes/userhandler.php:174
 #, php-format
 msgid ""
 "Your password for %1$s has been reset.  Your credentials are as follows---\n"
@@ -2137,285 +2137,285 @@ msgid ""
 "Password: %3$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:176
+#: system/classes/userhandler.php:176
 #, php-format
 msgid "[%1$s] Password has been reset for %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:177
+#: system/classes/userhandler.php:177
 msgid "A new password has been sent to the user."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:180
+#: system/classes/userhandler.php:180
 msgid "There was a problem resetting the password.  It was not reset."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/userhandler.php:190
+#: system/classes/userhandler.php:190
 msgid "The supplied password reset token has expired or is invalid."
 msgstr ""
 
 #. For other plugins to react to a plugin install
-#: /shares/natasha/habari/trunk-raw/system/classes/plugins.php:358
+#: system/classes/plugins.php:358
 #, php-format
 msgid "Activated Plugin: %s"
 msgstr ""
 
 #. For other plugins to react to a plugin uninstallation
-#: /shares/natasha/habari/trunk-raw/system/classes/plugins.php:389
+#: system/classes/plugins.php:389
 #, php-format
 msgid "Deactivated Plugin: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/plugins.php:480
+#: system/classes/plugins.php:480
 #, php-format
 msgid "Attempted to load the plugin file \"%s\", but it failed with syntax errors. <div class=\"reveal\">%s</div>"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/bitmask.php:25
+#: system/classes/bitmask.php:25
 msgid "Bitmask constructor expects either no arguments or an array as a first argument"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/bitmask.php:54
+#: system/classes/bitmask.php:54
 msgid "Bitmask values must be boolean"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/bitmask.php:59
+#: system/classes/bitmask.php:59
 msgid "Bitmask names must be pre-defined strings or bitmask indexes"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/bitmask.php:96
+#: system/classes/bitmask.php:96
 msgid "full"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/bitmask.php:105
+#: system/classes/bitmask.php:105
 msgid "none"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:726
+#: system/classes/formui.php:726
 msgid "Value must be a valid URL."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:746
+#: system/classes/formui.php:746
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:764
+#: system/classes/formui.php:764
 msgid "A value for this field is required."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:786
+#: system/classes/formui.php:786
 msgid "That username is already in use!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:806
+#: system/classes/formui.php:806
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:829
+#: system/classes/formui.php:829
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:850
+#: system/classes/formui.php:850
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:856
+#: system/classes/formui.php:856
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/formui.php:1495
+#: system/classes/formui.php:1495
 msgid "Remove this item?"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/tag.php:179
+#: system/classes/tag.php:179
 #, php-format
 msgid "New tag %1$s (%2$s);  Slug: %3$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/tag.php:241
+#: system/classes/tag.php:241
 #, php-format
 msgid "Tag %1$s (%2$s) deleted."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:37
+#: system/classes/xmlrpcexception.php:37
 msgid "parse error. not well formed"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:39
+#: system/classes/xmlrpcexception.php:39
 msgid "parse error. unsupported encoding"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:41
+#: system/classes/xmlrpcexception.php:41
 msgid "parse error. invalid character for encoding"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:43
+#: system/classes/xmlrpcexception.php:43
 msgid "server error. invalid xml-rpc. not conforming to spec."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:45
+#: system/classes/xmlrpcexception.php:45
 msgid "server error. requested method not found"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:47
+#: system/classes/xmlrpcexception.php:47
 msgid "server error. invalid method parameters"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:49
+#: system/classes/xmlrpcexception.php:49
 msgid "server error. internal xml-rpc error"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:51
+#: system/classes/xmlrpcexception.php:51
 msgid "application error"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:53
+#: system/classes/xmlrpcexception.php:53
 msgid "system error"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:55
+#: system/classes/xmlrpcexception.php:55
 msgid "transport error"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:59
+#: system/classes/xmlrpcexception.php:59
 msgid "The source URI does not exist."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:61
+#: system/classes/xmlrpcexception.php:61
 msgid "The source URI does not contain a link to the target URI, and so cannot be used as a source."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:63
+#: system/classes/xmlrpcexception.php:63
 msgid "The specified target URI does not exist."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:65
+#: system/classes/xmlrpcexception.php:65
 msgid "The specified target URI cannot be used as a target."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:67
+#: system/classes/xmlrpcexception.php:67
 msgid "The pingback has already been registered."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:69
+#: system/classes/xmlrpcexception.php:69
 msgid "Access denied."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:71
+#: system/classes/xmlrpcexception.php:71
 msgid "The server could not communicate with an upstream server, or received an error from an upstream server, and therefore could not complete the request."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:75
+#: system/classes/xmlrpcexception.php:75
 msgid "This XMLRPC server only accepts POST requests."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcexception.php:78
+#: system/classes/xmlrpcexception.php:78
 msgid "Unknown XMLRPC Exception"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/format.php:181
-#: /shares/natasha/habari/trunk-raw/system/classes/format.php:206
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/footer.php:9
+#: system/classes/format.php:181
+#: system/classes/format.php:206
+#: system/themes/charcoal/footer.php:9
 msgid " and "
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/colorutils.php:35
+#: system/classes/colorutils.php:35
 msgid "Not a valid hex color."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/colorutils.php:57
+#: system/classes/colorutils.php:57
 msgid "Not a valid color format."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/colorutils.php:108
+#: system/classes/colorutils.php:108
 msgid "Something went terribly wrong here."
 msgstr ""
 
 #. do some error handling here. The connect string does not have a corresponding DB connection object
-#: /shares/natasha/habari/trunk-raw/system/classes/db.php:65
+#: system/classes/db.php:65
 msgid "Panic! No database connection class appears to be found for the connection string specified. Please check config.php"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/apccache.php:22
-#: /shares/natasha/habari/trunk-raw/system/classes/apccache.php:23
+#: system/classes/apccache.php:22
+#: system/classes/apccache.php:23
 msgid "The APC Cache PHP module is not loaded - the cache is disabled."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/theme.php:227
+#: system/classes/theme.php:227
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/theme.php:750
+#: system/classes/theme.php:750
 msgid "Previous"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/theme.php:777
+#: system/classes/theme.php:777
 msgid "Next"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:154
+#: system/classes/installhandler.php:154
 msgid "Could not write config.php file..."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:180
+#: system/classes/installhandler.php:180
 msgid "Habari successfully installed."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:377
+#: system/classes/installhandler.php:377
 msgid "User is required."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:381
+#: system/classes/installhandler.php:381
 msgid "Name for database is required."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:385
+#: system/classes/installhandler.php:385
 msgid "Host is required."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:399
+#: system/classes/installhandler.php:399
 msgid "Problem connecting to supplied database credentials"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:415
+#: system/classes/installhandler.php:415
 #, php-format
 msgid "Could not create schema tables... %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:424
+#: system/classes/installhandler.php:424
 msgid "Problem creating default options"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:432
+#: system/classes/installhandler.php:432
 msgid "Problem creating base post types"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:443
+#: system/classes/installhandler.php:443
 msgid "Problem creating admin user."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:449
+#: system/classes/installhandler.php:449
 msgid "Problem creating admin group."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:460
+#: system/classes/installhandler.php:460
 msgid "Problem creating first post."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:498
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1531
+#: system/classes/installhandler.php:498
+#: system/classes/installhandler.php:1531
 msgid "The SQLite data file is not writable by the web server."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:502
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1525
+#: system/classes/installhandler.php:502
+#: system/classes/installhandler.php:1525
 msgid "SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:511
+#: system/classes/installhandler.php:511
 msgid "The SQLite data file does not exist, and it cannot be created in the specified directory.  SQLite requires that the directory containing the database file be writable by the web server."
 msgstr ""
 
@@ -2424,120 +2424,120 @@ msgstr ""
 #. #-#-#-#-#  poeditSQC0st (PACKAGE VERSION)  #-#-#-#-#
 #. DB::query('DELETE FROM {users_groups}');
 #. Create initial groups if they don't already exist
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:585
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:782
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:784
+#: system/classes/installhandler.php:585
+#: system/classes/acl.php:782
+#: system/classes/acl.php:784
 msgid "admin"
 msgstr ""
 
 #. #-#-#-#-#  poeditbUfZHX (PACKAGE VERSION)  #-#-#-#-#
 #. Create the anonymous group
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:596
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:787
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:789
+#: system/classes/installhandler.php:596
+#: system/classes/acl.php:787
+#: system/classes/acl.php:789
 msgid "anonymous"
 msgstr ""
 
 #. Add the cronjob to truncate the log so that it doesn't get too big
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:641
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1228
+#: system/classes/installhandler.php:641
+#: system/classes/installhandler.php:1228
 msgid "Truncate the log table"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:673
+#: system/classes/installhandler.php:673
 msgid "This site is running <a href=\"http://habariproject.org/\">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href=\"http://habariproject.org/\">http://habariproject.org/</a> to find out more!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:736
+#: system/classes/installhandler.php:736
 msgid "currently unsupported."
 msgstr ""
 
 #. #-#-#-#-#  poeditSQC0st (PACKAGE VERSION)  #-#-#-#-#
 #. content tokens
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1352
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:761
+#: system/classes/installhandler.php:1352
+#: system/classes/acl.php:761
 msgid "Permissions on one's own posts"
 msgstr ""
 
 #. Create the default authenticated group
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1363
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1365
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:818
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:820
+#: system/classes/installhandler.php:1363
+#: system/classes/installhandler.php:1365
+#: system/classes/acl.php:818
+#: system/classes/acl.php:820
 msgid "authenticated"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1384
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1449
+#: system/classes/installhandler.php:1384
+#: system/classes/installhandler.php:1449
 msgid "The database host field was left empty."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1390
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1455
+#: system/classes/installhandler.php:1390
+#: system/classes/installhandler.php:1455
 msgid "The database name field was left empty."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1396
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1461
+#: system/classes/installhandler.php:1396
+#: system/classes/installhandler.php:1461
 msgid "The database user field was left empty."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1411
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1476
+#: system/classes/installhandler.php:1411
+#: system/classes/installhandler.php:1476
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1415
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1480
+#: system/classes/installhandler.php:1415
+#: system/classes/installhandler.php:1480
 msgid "That database does not exist."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1419
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1484
+#: system/classes/installhandler.php:1419
+#: system/classes/installhandler.php:1484
 msgid "Could not connect to host."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/installhandler.php:1515
+#: system/classes/installhandler.php:1515
 msgid "The database file was left empty."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/post.php:227
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:764
+#: system/classes/post.php:227
+#: system/classes/acl.php:764
 #, php-format
 msgid "Permissions to posts of type \"%s\""
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/post.php:570
+#: system/classes/post.php:570
 #, php-format
 msgid "New post %1$s (%2$s);  Type: %3$s; Status: %4$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/post.php:669
+#: system/classes/post.php:669
 #, php-format
 msgid "Post %1$s (%2$s) deleted."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/post.php:704
+#: system/classes/post.php:704
 #, php-format
 msgid "Scheduled Post %1$s (%2$s) published at %3$s."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/post.php:707
+#: system/classes/post.php:707
 #, php-format
 msgid "Post %1$s (%2$s) published."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/comments.php:388
+#: system/classes/comments.php:388
 #, php-format
 msgid "Comment %1$s moderated from %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/comments.php:395
+#: system/classes/comments.php:395
 #, php-format
 msgid "Comment Moderated on %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/comments.php:591
+#: system/classes/comments.php:591
 #, php-format
 msgid "Comment %1$s deleted from %2$s"
 msgstr ""
@@ -2548,480 +2548,480 @@ msgstr ""
 #. * subclasses call this method through inheritance
 #. * return self::getInstanceOf( get_class() );
 #.
-#: /shares/natasha/habari/trunk-raw/system/classes/singleton.php:32
+#: system/classes/singleton.php:32
 msgid "Not implemented: instance"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/session.php:95
+#: system/classes/session.php:95
 msgid "Your session expired."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:174
+#: system/classes/acl.php:174
 #, php-format
 msgid "Permission token deleted: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:599
+#: system/classes/acl.php:599
 #, php-format
 msgid "Group %1$s: Access to %2$s changed to %3$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:689
+#: system/classes/acl.php:689
 #, php-format
 msgid "Group %1$s: Permission to %2$s revoked."
 msgstr ""
 
 #. admin tokens
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:747
+#: system/classes/acl.php:747
 msgid "Manage comments on all posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:748
+#: system/classes/acl.php:748
 msgid "Manage comments on one's own posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:749
+#: system/classes/acl.php:749
 msgid "Manage tags"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:750
+#: system/classes/acl.php:750
 msgid "Manage options"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:751
+#: system/classes/acl.php:751
 msgid "Change theme"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:752
+#: system/classes/acl.php:752
 msgid "Configure the active theme"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:753
+#: system/classes/acl.php:753
 msgid "Activate/deactivate plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:754
+#: system/classes/acl.php:754
 msgid "Configure active plugins"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:755
+#: system/classes/acl.php:755
 msgid "Use the importer"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:756
+#: system/classes/acl.php:756
 msgid "Add, remove, and edit users"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:757
+#: system/classes/acl.php:757
 msgid "Manage groups and permissions"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:758
+#: system/classes/acl.php:758
 msgid "Manage logs"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/acl.php:762
+#: system/classes/acl.php:762
 msgid "Permissions to all posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/xmlrpcclient.php:99
+#: system/classes/xmlrpcclient.php:99
 msgid "Invalid XML response."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/filecache.php:39
+#: system/classes/filecache.php:39
 #, php-format
 msgid "The cache directory '%s' is not writable - the cache is disabled. The user, or group, which your web server is running as, needs to have read, write, and execute permissions on this directory."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/filecache.php:40
+#: system/classes/filecache.php:40
 #, php-format
 msgid "The cache directory '%s' is not writable - the cache is disabled."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/themes.php:87
+#: system/classes/themes.php:87
 msgid "There is no valid theme currently installed."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/themes.php:131
+#: system/classes/themes.php:131
 #, php-format
 msgid "Activated Theme: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/themes.php:171
-#: /shares/natasha/habari/trunk-raw/system/classes/themes.php:180
+#: system/classes/themes.php:171
+#: system/classes/themes.php:180
 msgid "Theme not installed."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/curlrequestprocessor.php:72
+#: system/classes/curlrequestprocessor.php:72
 #, php-format
 msgid "%s: CURL Error %d: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/curlrequestprocessor.php:77
+#: system/classes/curlrequestprocessor.php:77
 #, php-format
 msgid "Bad return code (%1$d) for: %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/utils.php:446
+#: system/classes/utils.php:446
 #, php-format
 msgid "Unsupported digest algorithm \"%s\""
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/utils.php:456
-#: /shares/natasha/habari/trunk-raw/system/classes/utils.php:517
-#: /shares/natasha/habari/trunk-raw/system/classes/utils.php:556
+#: system/classes/utils.php:456
+#: system/classes/utils.php:517
+#: system/classes/utils.php:556
 msgid "Invalid hash"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/utils.php:742
+#: system/classes/utils.php:742
 msgid "Unbalanced braces."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/feedbackhandler.php:46
+#: system/classes/feedbackhandler.php:46
 msgid "Both name and e-mail address must be provided."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/feedbackhandler.php:50
+#: system/classes/feedbackhandler.php:50
 msgid "You did not provide any content for your comment!"
 msgstr ""
 
 #. comments are disabled, so let's just send
 #. them back to the post's permalink
-#: /shares/natasha/habari/trunk-raw/system/classes/feedbackhandler.php:66
+#: system/classes/feedbackhandler.php:66
 msgid "Comments on this post are disabled!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/feedbackhandler.php:102
+#: system/classes/feedbackhandler.php:102
 msgid "Comment contains only whitespace/empty comment"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/classes/feedbackhandler.php:141
+#: system/classes/feedbackhandler.php:141
 msgid "Your comment is pending moderation."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:4
+#: system/installer/requirements.php:4
 msgid "Before you install <em>Habari</em>..."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:7
+#: system/installer/requirements.php:7
 msgid "Writable directory needed"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:10
+#: system/installer/requirements.php:10
 msgid "Before you can install Habari, you first need to make the install directory writable by php, so that the installation script can write your configuration information properly. The exact process of server and the ownership of the directory."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:13
+#: system/installer/requirements.php:13
 msgid "If your webserver is part of the group which owns the directory, you'll need to add group write permissions to the directory. The procedure for this is as follows:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:17
+#: system/installer/requirements.php:17
 msgid "Open a terminal window, and then change to the installation directory:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:21
+#: system/installer/requirements.php:21
 msgid "Change the <em>mode</em> (permissions) of the current directory:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:25
+#: system/installer/requirements.php:25
 msgid "<em>Note</em>: You may need to use <strong>sudo</strong> and enter an administrator password if you do not own the directory."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:30
+#: system/installer/requirements.php:30
 msgid "If the webserver is not part of the group which owns the directory, you will need to <strong>temporarily</strong> grant world write permissions to the directory:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:39
+#: system/installer/requirements.php:39
 msgid "Be sure to remove the write permissions on the directory as soon as the installation is completed."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:47
+#: system/installer/requirements.php:47
 msgid "PHP Upgrade needed..."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:49
+#: system/installer/requirements.php:49
 #, php-format
 msgid "requires PHP 5.2 or newer. Your current PHP version is %s."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:60
+#: system/installer/requirements.php:60
 msgid "Missing Extensions"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:62
+#: system/installer/requirements.php:62
 msgid "requires that the following PHP extensions to be installed:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:62
+#: system/installer/requirements.php:62
 msgid "Please contact your web hosting provider if you do not have access to your server."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:67
+#: system/installer/requirements.php:67
 msgid "No PDO drivers enabled"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/requirements.php:68
+#: system/installer/requirements.php:68
 msgid "requires that at least one <a href=\"http://www.php.net/pdo\">PDO driver</a> be installed. Please ask your hosting provider to enable one of the PDO drivers supported by Habari."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/sqlite.php:7
-#: /shares/natasha/habari/trunk-raw/system/installer/config.php:7
-#: /shares/natasha/habari/trunk-raw/system/installer/htaccess.php:7
+#: system/installer/sqlite.php:7
+#: system/installer/config.php:7
+#: system/installer/htaccess.php:7
 msgid "help"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/sqlite.php:10
+#: system/installer/sqlite.php:10
 #, php-format
 msgid "Your <b>.htaccess</b> file is not writable. In order to secure your SQLite database, please paste the following into <b>%s</b>:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/sqlite.php:13
+#: system/installer/sqlite.php:13
 msgid "Your SQLite database is a file on your server like any other file. You can enhance it's security by including a section in your .htaccess file that disallows access to it by readers on the web. Habari is not able to write this section in your .htaccess file automatically, so you must add this section yourself to gain the enhanced security it offers you."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/sqlite.php:14
-#: /shares/natasha/habari/trunk-raw/system/installer/config.php:14
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:29
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:43
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:54
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:65
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:76
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:90
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:101
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:112
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:123
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:136
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:149
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:170
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:180
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:192
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:203
-#: /shares/natasha/habari/trunk-raw/system/installer/htaccess.php:14
+#: system/installer/sqlite.php:14
+#: system/installer/config.php:14
+#: system/installer/db_setup.php:29
+#: system/installer/db_setup.php:43
+#: system/installer/db_setup.php:54
+#: system/installer/db_setup.php:65
+#: system/installer/db_setup.php:76
+#: system/installer/db_setup.php:90
+#: system/installer/db_setup.php:101
+#: system/installer/db_setup.php:112
+#: system/installer/db_setup.php:123
+#: system/installer/db_setup.php:136
+#: system/installer/db_setup.php:149
+#: system/installer/db_setup.php:170
+#: system/installer/db_setup.php:180
+#: system/installer/db_setup.php:192
+#: system/installer/db_setup.php:203
+#: system/installer/htaccess.php:14
 msgid "Learn More..."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/sqlite.php:24
-#: /shares/natasha/habari/trunk-raw/system/installer/config.php:24
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:237
-#: /shares/natasha/habari/trunk-raw/system/installer/htaccess.php:24
+#: system/installer/sqlite.php:24
+#: system/installer/config.php:24
+#: system/installer/db_setup.php:237
+#: system/installer/htaccess.php:24
 msgid "Install"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/sqlite.php:27
-#: /shares/natasha/habari/trunk-raw/system/installer/htaccess.php:27
+#: system/installer/sqlite.php:27
+#: system/installer/htaccess.php:27
 msgid "When you have successfully placed the .htaccess file, run the installer again."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/sqlite.php:28
-#: /shares/natasha/habari/trunk-raw/system/installer/config.php:28
-#: /shares/natasha/habari/trunk-raw/system/installer/htaccess.php:28
+#: system/installer/sqlite.php:28
+#: system/installer/config.php:28
+#: system/installer/htaccess.php:28
 msgid "Restart Installer"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/config.php:10
+#: system/installer/config.php:10
 msgid "Your <strong>config.php</strong> file is not writable. In order to successfully install Habari, please paste the following into"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/config.php:13
+#: system/installer/config.php:13
 msgid "<strong>config.php</strong> is a file that tells Habari how to connect to your database. Habari is not able to write this file to your server automatically, so you must create this file yourself to continute the installation."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/config.php:27
+#: system/installer/config.php:27
 msgid "When you have successfully placed the config file, run the installer again."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:7
+#: system/installer/db_setup.php:7
 msgid "Database Setup"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:12
+#: system/installer/db_setup.php:12
 msgid "Database Type"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:23
+#: system/installer/db_setup.php:23
 #, php-format
 msgid "%1$s - missing PDO driver, see help"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:28
+#: system/installer/db_setup.php:28
 msgid "<strong>Database Type</strong> specifies the type of database to which Habari will connect.  Changing this setting may affect the other fields that are available here.  If the database engine that you wanted to use is not in this list, you may need to install a PDO driver to enable it."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:33
+#: system/installer/db_setup.php:33
 msgid "MySQL Settings"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:34
+#: system/installer/db_setup.php:34
 msgid "Use the settings below only if you have selected MySQL as your database engine."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:37
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:84
+#: system/installer/db_setup.php:37
+#: system/installer/db_setup.php:84
 msgid "Database Host"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:42
+#: system/installer/db_setup.php:42
 msgid "<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the MySQL database to which Habari will connect.  If MySQL is running on your web server, and most of the time it is, \"localhost\" is usually a good value for this field."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:48
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:95
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:175
+#: system/installer/db_setup.php:48
+#: system/installer/db_setup.php:95
+#: system/installer/db_setup.php:175
 msgid "Username"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:53
+#: system/installer/db_setup.php:53
 msgid "<strong>Database User</strong> is the username used to connect Habari to the MySQL database."
 msgstr ""
 
 #. echo $db_pass;
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:64
+#: system/installer/db_setup.php:64
 msgid "<strong>Database Password</strong> is the password used to connect the specified user to the MySQL database."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:70
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:117
+#: system/installer/db_setup.php:70
+#: system/installer/db_setup.php:117
 msgid "Database Name"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:75
+#: system/installer/db_setup.php:75
 msgid "<strong>Database Name</strong> is the name of the MySQL database to which Habari will connect."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:80
+#: system/installer/db_setup.php:80
 msgid "PostgreSQL Settings"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:81
+#: system/installer/db_setup.php:81
 msgid "Use the settings below only if you have selected PostgreSQL as your database engine."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:89
+#: system/installer/db_setup.php:89
 msgid "<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the PostgreSQL database to which Habari will connect.  If PostgreSQL is running on your web server, and most of the time it is, \"localhost\" is usually a good value for this field."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:100
+#: system/installer/db_setup.php:100
 msgid "<strong>Database User</strong> is the username used to connect Habari to the PostgreSQL database."
 msgstr ""
 
 #. echo $db_pass;
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:111
+#: system/installer/db_setup.php:111
 msgid "<strong>Database Password</strong> is the password used to connect the specified user to the PostgreSQL database."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:122
+#: system/installer/db_setup.php:122
 msgid "<strong>Database Name</strong> is the name of the PostgreSQL database to which Habari will connect."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:127
+#: system/installer/db_setup.php:127
 msgid "SQLite Settings"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:128
+#: system/installer/db_setup.php:128
 msgid "Use the settings below only if you have selected SQLite as your database engine."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:131
+#: system/installer/db_setup.php:131
 msgid "Data file"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:136
+#: system/installer/db_setup.php:136
 msgid "<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the path to where your data file resides, relative to the Habari user directory."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:143
+#: system/installer/db_setup.php:143
 msgid "Table Prefix"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:148
+#: system/installer/db_setup.php:148
 msgid "<strong>Table Prefix</strong> is a prefix that will be appended to each table that Habari creates in the database, making it easy to distinguish those tables in the database from those of other installations."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:159
+#: system/installer/db_setup.php:159
 msgid "Site Configuration"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:169
+#: system/installer/db_setup.php:169
 msgid ""
 "<strong>Site Name</strong> is the name of your site as it will appear\n"
 "\t\t\t\tto your visitors."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:180
+#: system/installer/db_setup.php:180
 msgid "<strong>Username</strong> is the username of the initial user in Habari."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:187
+#: system/installer/db_setup.php:187
 msgid "Password (again)"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:192
+#: system/installer/db_setup.php:192
 msgid "<strong>Password</strong> is the password of the initial user in Habari."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:197
+#: system/installer/db_setup.php:197
 msgid "Admin Email"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:202
+#: system/installer/db_setup.php:202
 msgid "<strong>Admin Email</strong> is the email address of the first user account."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:214
+#: system/installer/db_setup.php:214
 msgid "Plugin Activation"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:240
+#: system/installer/db_setup.php:240
 msgid "Habari now has all of the information needed to install itself on your server."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/db_setup.php:241
-#: /shares/natasha/habari/trunk-raw/system/installer/header.php:10
+#: system/installer/db_setup.php:241
+#: system/installer/header.php:10
 msgid "Install Habari"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/htaccess.php:10
+#: system/installer/htaccess.php:10
 msgid "Your <strong>.htaccess</strong> file is not writable. In order to successfully install Habari, please paste the following into"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/htaccess.php:13
+#: system/installer/htaccess.php:13
 msgid "<strong>.htaccess</strong> is a file that tells your Apache web server to send requests to Habari for handling. Habari is not able to write this file to your server automatically, so you must create this file yourself to continue the installation."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/header.php:18
+#: system/installer/header.php:18
 msgid "Read the user manual"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/header.php:19
+#: system/installer/header.php:19
 msgid "Read the Habari wiki"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/header.php:20
+#: system/installer/header.php:20
 msgid "Ask the community"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/installer/header.php:20
+#: system/installer/header.php:20
 msgid "Mailing List"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/sidebar.php:5
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/searchform.php:4
+#: system/themes/k2/sidebar.php:5
+#: system/themes/mzingi/searchform.php:4
 msgid "Search"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/sidebar.php:10
+#: system/themes/k2/sidebar.php:10
 msgid "About"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/404.php:8
+#: system/themes/k2/404.php:8
 msgid "Error!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/404.php:12
+#: system/themes/k2/404.php:12
 msgid "The requested post was not found."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/page.single.php:8
+#: system/themes/k2/page.single.php:8
 msgid "Page:"
 msgstr ""
 
@@ -3031,106 +3031,106 @@ msgstr ""
 #. 2.Uncomment the followng line
 #.
 #. include 'db_profiling.php';
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/page.single.php:10
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/search.php:13
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/home.php:12
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/tag.php:12
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.multiple.php:12
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.single.php:21
+#: system/themes/k2/page.single.php:10
+#: system/themes/k2/search.php:13
+#: system/themes/k2/home.php:12
+#: system/themes/k2/tag.php:12
+#: system/themes/k2/entry.multiple.php:12
+#: system/themes/k2/entry.single.php:21
 #, php-format
 msgid "by %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/page.single.php:11
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/search.php:14
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/home.php:13
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/tag.php:13
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.multiple.php:13
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.single.php:22
+#: system/themes/k2/page.single.php:11
+#: system/themes/k2/search.php:14
+#: system/themes/k2/home.php:13
+#: system/themes/k2/tag.php:13
+#: system/themes/k2/entry.multiple.php:13
+#: system/themes/k2/entry.single.php:22
 msgid "Comments to this post"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/page.single.php:14
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/search.php:17
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/home.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/tag.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.multiple.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/entry.single.php:25
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/page.single.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:33
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/entry.single.php:39
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/page.single.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/home.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.multiple.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.single.php:28
+#: system/themes/k2/page.single.php:14
+#: system/themes/k2/search.php:17
+#: system/themes/k2/home.php:16
+#: system/themes/k2/tag.php:16
+#: system/themes/k2/entry.multiple.php:16
+#: system/themes/k2/entry.single.php:25
+#: system/themes/charcoal/page.single.php:21
+#: system/themes/charcoal/home.php:33
+#: system/themes/charcoal/entry.single.php:39
+#: system/themes/mzingi/page.single.php:16
+#: system/themes/mzingi/search.php:23
+#: system/themes/mzingi/home.php:23
+#: system/themes/mzingi/tag.php:23
+#: system/themes/mzingi/entry.multiple.php:21
+#: system/themes/mzingi/entry.single.php:28
 msgid "Edit post"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/search.php:6
+#: system/themes/k2/search.php:6
 #, php-format
 msgid "Search results for %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:5
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/loginform.php:4
+#: system/themes/k2/loginform.php:5
+#: system/themes/mzingi/loginform.php:4
 msgid "That login is incorrect."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:11
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/loginform.php:9
+#: system/themes/k2/loginform.php:11
+#: system/themes/mzingi/loginform.php:9
 msgid "You are logged in as"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:11
+#: system/themes/k2/loginform.php:11
 msgid "Edit Your Profile"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:12
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/loginform.php:10
+#: system/themes/k2/loginform.php:12
+#: system/themes/mzingi/loginform.php:10
 msgid "Want to"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:12
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/loginform.php:10
+#: system/themes/k2/loginform.php:12
+#: system/themes/mzingi/loginform.php:10
 msgid "log out"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/loginform.php:18
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:70
+#: system/themes/k2/loginform.php:20
+#: system/themes/mzingi/loginform.php:18
+#: system/themes/mzingi/commentform.php:70
 msgid "Name:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:24
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/loginform.php:22
+#: system/themes/k2/loginform.php:24
+#: system/themes/mzingi/loginform.php:22
 msgid "Password:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/loginform.php:29
+#: system/themes/k2/loginform.php:29
 msgid "Sign in"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/footer.php:9
+#: system/themes/k2/footer.php:9
 msgid " is powered by"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/footer.php:9
+#: system/themes/k2/footer.php:9
 msgid "and a huge amount of"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/footer.php:10
+#: system/themes/k2/footer.php:10
 msgid "Caffeine"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/footer.php:11
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/footer.php:9
+#: system/themes/k2/footer.php:11
+#: system/themes/charcoal/footer.php:9
 msgid "Atom Entries"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/footer.php:11
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/footer.php:10
+#: system/themes/k2/footer.php:11
+#: system/themes/charcoal/footer.php:10
 msgid "Atom Comments"
 msgstr ""
 
@@ -3140,358 +3140,358 @@ msgstr ""
 #. Do not delete these lines
 #. #-#-#-#-#  poedit0PAOfx (PACKAGE VERSION)  #-#-#-#-#
 #. Do not delete these lines
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:3
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/comments.php:3
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:2
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/comments.php:2
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:2
+#: system/themes/k2/commentform.php:3
+#: system/themes/k2/comments.php:3
+#: system/themes/charcoal/commentform.php:2
+#: system/themes/charcoal/comments.php:2
+#: system/themes/mzingi/commentform.php:2
 msgid "Please do not load this page directly. Thanks!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:6
+#: system/themes/k2/commentform.php:6
 msgid "Leave a Reply"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:15
+#: system/themes/k2/commentform.php:21
+#: system/themes/charcoal/commentform.php:15
 msgid "Mail"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:21
+#: system/themes/k2/commentform.php:21
 msgid "will not be published"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/commentform.php:25
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:19
+#: system/themes/k2/commentform.php:25
+#: system/themes/charcoal/commentform.php:19
 msgid "Website"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/comments.php:8
+#: system/themes/k2/comments.php:8
 msgid "Responses to"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/comments.php:10
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:10
+#: system/themes/k2/comments.php:10
+#: system/themes/mzingi/commentform.php:10
 msgid "Feed for this Entry"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/comments.php:27
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:46
+#: system/themes/k2/comments.php:27
+#: system/themes/mzingi/commentform.php:46
 msgid "Permanent Link to this Comment"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/comments.php:29
+#: system/themes/k2/comments.php:29
 msgid "Time of this Comment"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/comments.php:29
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:48
+#: system/themes/k2/comments.php:29
+#: system/themes/mzingi/commentform.php:48
 msgid "In moderation"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/comments.php:41
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:58
+#: system/themes/k2/comments.php:41
+#: system/themes/mzingi/commentform.php:58
 msgid "There are currently no comments."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/searchform.php:4
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/searchform.php:4
+#: system/themes/k2/searchform.php:4
+#: system/themes/mzingi/searchform.php:4
 msgid "Go!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/header.php:36
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/header.php:48
+#: system/themes/k2/header.php:36
+#: system/themes/charcoal/header.php:48
 msgid "Admin area"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/k2/header.php:36
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/header.php:48
+#: system/themes/k2/header.php:36
+#: system/themes/charcoal/header.php:48
 msgid "Admin"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/sidebar.php:6
+#: system/themes/charcoal/sidebar.php:6
 msgid "{blog entries}"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/sidebar.php:7
+#: system/themes/charcoal/sidebar.php:7
 msgid "{comments}"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/sidebar.php:11
+#: system/themes/charcoal/sidebar.php:11
 msgid "Powered by Habari"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/404.php:6
+#: system/themes/charcoal/404.php:6
 msgid "Whoops! 404"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/404.php:9
+#: system/themes/charcoal/404.php:9
 msgid "The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/search.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/tag.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/multiple.php:19
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/entry.single.php:29
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/home.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.multiple.php:18
+#: system/themes/charcoal/search.php:21
+#: system/themes/charcoal/home.php:23
+#: system/themes/charcoal/tag.php:20
+#: system/themes/charcoal/multiple.php:19
+#: system/themes/charcoal/entry.single.php:29
+#: system/themes/mzingi/search.php:20
+#: system/themes/mzingi/home.php:20
+#: system/themes/mzingi/tag.php:20
+#: system/themes/mzingi/entry.multiple.php:18
 msgid "Comments on this post"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/search.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/tag.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/multiple.php:19
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/entry.single.php:29
+#: system/themes/charcoal/search.php:21
+#: system/themes/charcoal/home.php:23
+#: system/themes/charcoal/tag.php:20
+#: system/themes/charcoal/multiple.php:19
+#: system/themes/charcoal/entry.single.php:29
 msgid "No Comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/search.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/tag.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/multiple.php:19
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/entry.single.php:29
+#: system/themes/charcoal/search.php:21
+#: system/themes/charcoal/home.php:23
+#: system/themes/charcoal/tag.php:20
+#: system/themes/charcoal/multiple.php:19
+#: system/themes/charcoal/entry.single.php:29
 #, php-format
 msgid "%s Comment"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/search.php:21
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:23
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/tag.php:20
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/multiple.php:19
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/entry.single.php:29
+#: system/themes/charcoal/search.php:21
+#: system/themes/charcoal/home.php:23
+#: system/themes/charcoal/tag.php:20
+#: system/themes/charcoal/multiple.php:19
+#: system/themes/charcoal/entry.single.php:29
 #, php-format
 msgid "%s Comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/search.php:47
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:70
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/tag.php:39
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/multiple.php:40
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/home.php:31
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.multiple.php:27
+#: system/themes/charcoal/search.php:47
+#: system/themes/charcoal/home.php:70
+#: system/themes/charcoal/tag.php:39
+#: system/themes/charcoal/multiple.php:40
+#: system/themes/mzingi/home.php:31
+#: system/themes/mzingi/entry.multiple.php:27
 msgid "Newer Posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/search.php:48
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:71
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/tag.php:40
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/multiple.php:41
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/home.php:31
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.multiple.php:27
+#: system/themes/charcoal/search.php:48
+#: system/themes/charcoal/home.php:71
+#: system/themes/charcoal/tag.php:40
+#: system/themes/charcoal/multiple.php:41
+#: system/themes/mzingi/home.php:31
+#: system/themes/mzingi/entry.multiple.php:27
 msgid "Older Posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:39
+#: system/themes/charcoal/home.php:39
 msgid "No posts published, yet."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:63
+#: system/themes/charcoal/home.php:63
 #, php-format
 msgid "Continue reading %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/home.php:63
+#: system/themes/charcoal/home.php:63
 msgid "more"
 msgstr ""
 
 #. $theme->prevnext($page, Utils::archive_pages($posts->count_all()));
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/footer.php:7
+#: system/themes/charcoal/footer.php:7
 #, php-format
 msgid "%1$s is powered by %2$s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/tag.php:4
+#: system/themes/charcoal/tag.php:4
 #, php-format
 msgid "Displaying posts tagged: %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:11
+#: system/themes/charcoal/commentform.php:11
 msgid "(Required)"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:15
+#: system/themes/charcoal/commentform.php:15
 msgid "(will not be published - Required)"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/commentform.php:35
+#: system/themes/charcoal/commentform.php:35
 msgid "Comments are closed for this post"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/theme.php:117
+#: system/themes/charcoal/theme.php:117
 msgid "Search for "
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/theme.php:122
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/theme.php:128
+#: system/themes/charcoal/theme.php:122
+#: system/themes/charcoal/theme.php:128
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/theme.php:125
+#: system/themes/charcoal/theme.php:125
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/theme.php:125
+#: system/themes/charcoal/theme.php:125
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/theme.php:131
+#: system/themes/charcoal/theme.php:131
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/comments.php:20
+#: system/themes/charcoal/comments.php:20
 msgid "Your comment is awaiting moderation"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/comments.php:26
+#: system/themes/charcoal/comments.php:26
 msgid "Be the first to write a comment!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/searchform.php:2
+#: system/themes/charcoal/searchform.php:2
 #, php-format
 msgid "Search %s"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/charcoal/searchform.php:3
+#: system/themes/charcoal/searchform.php:3
 msgid "Go"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:4
+#: system/themes/mzingi/sidebar.php:4
 msgid "Subscribe to Feed"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:5
+#: system/themes/mzingi/sidebar.php:5
 msgid "Navigation"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:7
+#: system/themes/mzingi/sidebar.php:7
 msgid "Home"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:16
+#: system/themes/mzingi/sidebar.php:16
 msgid "Asides"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:29
+#: system/themes/mzingi/sidebar.php:29
 msgid "More Posts"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:40
+#: system/themes/mzingi/sidebar.php:40
 msgid "Recent Comments"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/sidebar.php:47
+#: system/themes/mzingi/sidebar.php:47
 msgid "User Login"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/404.php:7
+#: system/themes/mzingi/404.php:7
 msgid "It seems you couldn't find what you are looking for."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/404.php:7
+#: system/themes/mzingi/404.php:7
 msgid "Perhaps you can try searching."
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:7
+#: system/themes/mzingi/search.php:7
 msgid "Results for search of"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:18
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/home.php:18
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:18
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.multiple.php:16
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/entry.single.php:24
+#: system/themes/mzingi/search.php:18
+#: system/themes/mzingi/home.php:18
+#: system/themes/mzingi/tag.php:18
+#: system/themes/mzingi/entry.multiple.php:16
+#: system/themes/mzingi/entry.single.php:24
 msgid "Tagged:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:29
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:29
+#: system/themes/mzingi/search.php:29
+#: system/themes/mzingi/tag.php:29
 msgid "Newer Results"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:29
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:29
+#: system/themes/mzingi/search.php:29
+#: system/themes/mzingi/tag.php:29
 msgid "Older Results"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/search.php:31
+#: system/themes/mzingi/search.php:31
 msgid "No results for"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/loginform.php:27
+#: system/themes/mzingi/loginform.php:27
 msgid "GO!"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/footer.php:3
+#: system/themes/mzingi/footer.php:3
 msgid "is powered by"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/tag.php:8
+#: system/themes/mzingi/tag.php:8
 msgid "Posts Tagged with"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:13
+#: system/themes/mzingi/commentform.php:13
 msgid "Pingback"
 msgid_plural "Pingbacks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:13
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:29
+#: system/themes/mzingi/commentform.php:13
+#: system/themes/mzingi/commentform.php:29
 msgid "to"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:29
+#: system/themes/mzingi/commentform.php:29
 msgid "Response"
 msgid_plural "Responses"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:47
+#: system/themes/mzingi/commentform.php:47
 msgid "Comment by"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:48
+#: system/themes/mzingi/commentform.php:48
 msgid "Time of this comment"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:68
+#: system/themes/mzingi/commentform.php:68
 msgid "About You"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:75
+#: system/themes/mzingi/commentform.php:75
 msgid "Email Address:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:80
+#: system/themes/mzingi/commentform.php:80
 msgid "Web Address:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:83
+#: system/themes/mzingi/commentform.php:83
 msgid "Email address is not published"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:87
+#: system/themes/mzingi/commentform.php:87
 msgid "Add to the Discussion"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/themes/mzingi/commentform.php:89
+#: system/themes/mzingi/commentform.php:89
 msgid "Message:"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/schema/pgsql/connection.php:325
-#: /shares/natasha/habari/trunk-raw/system/schema/mysql/connection.php:244
+#: system/schema/pgsql/connection.php:325
+#: system/schema/mysql/connection.php:244
 msgid "No Upgrades"
 msgstr ""
 
-#: /shares/natasha/habari/trunk-raw/system/schema/sqlite/connection.php:168
+#: system/schema/sqlite/connection.php:168
 msgid "not yet supported on SQLite"
 msgstr ""
 
