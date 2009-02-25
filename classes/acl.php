@@ -816,7 +816,7 @@ SQL;
 
 		// Create the default authenticated group
 		$authenticated_group = UserGroup::get_by_name( _t( 'authenticated' ) );
-		if ( ! $authenticate_group instanceof UserGroup ) {
+		if ( ! $authenticated_group instanceof UserGroup ) {
 			$authenticated_group = UserGroup::create( array( 'name' => _t( 'authenticated' ) ) );
 		}
 		$authenticated_group->grant( 'post_entry', 'read' );
