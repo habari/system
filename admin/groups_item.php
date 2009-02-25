@@ -16,6 +16,6 @@
 	<?php if(count($users) > 0): ?>
 		<p class="users"><?php echo _t('Members: ') . Format::and_list($users); ?></p>
 	<?php else: ?>
-		<p class="users"><?php echo _t('No members'); ?></p>
+		<p class="users"><?php _e( 'No members' ); ?></p>
 	<?php endif; ?>
 </div>

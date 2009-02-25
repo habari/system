@@ -35,7 +35,7 @@
 	
 	<div class="item clear">
 		<span class="pct25">
-			<label for="new_groupname">Group Name</label>
+			<label for="new_groupname"><?php _e( 'Group Name' ); ?></label>
 		</span>
 		<span class="pct25">
 			<input type="text" name="new_groupname" id="new_groupname" value="<?php echo ( isset( $addform['name'] ) ) ? $addform['name'] : ''; ?>" class="border">
