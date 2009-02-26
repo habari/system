@@ -550,26 +550,6 @@ class Comment extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * returns an associative array of comment statuses
-	 * @param bool whether to force a refresh of the cached values
-	 * @return array An array of comment statuses names => interger values
-	**/
-	public static function list_comment_statuses( $refresh = false )
-	{
-		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) ) {
-			return self::$comment_status_list;
-		}
-		self::$comment_status_list = array(
-			self::STATUS_UNAPPROVED => 'unapproved',
-			self::STATUS_APPROVED => 'approved',
-			self::STATUS_SPAM => 'spam',
-			// 'STATUS_DELETED' => self::STATUS_DELETED, // Not supported
-		);
-		self::$comment_status_list = Plugins::filter('list_comment_statuses', self::$comment_status_list);
-		return self::$comment_status_list;
-	}
-
-	/**
 	 * returns the action name of the comment status
 	 * @param mixed a comment status value, or name
 	 * @return string a string of the status action, or null
