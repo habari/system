@@ -91,6 +91,20 @@ CREATE TABLE  {$prefix}comments (
   KEY post_id (post_id)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
+CREATE TABLE  {$prefix}commenttype (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  active TINYINT(1) DEFAULT 1,
+  PRIMARY KEY (id)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+CREATE TABLE  {$prefix}commentstatus (
+  id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  internal TINYINT(1),
+  PRIMARY KEY (id)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
 CREATE TABLE  {$prefix}commentinfo (
   comment_id INT UNSIGNED NOT NULL,
   name VARCHAR(255) NOT NULL,
