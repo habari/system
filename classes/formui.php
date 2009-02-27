@@ -1493,7 +1493,8 @@ class FormControlTextMulti extends FormControl
 					},
 					remove: function(e){
 						if(confirm("' . _t('Remove this item?') . '")) {
-							$(e).parents("label").remove();
+							$(e).parent().prev().remove();
+							$(e).parent().remove();
 						}
 						return false;
 					}
