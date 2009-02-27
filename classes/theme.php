@@ -599,17 +599,29 @@ class Theme extends Pluggable
 	 *
 	 * @param Theme $theme The theme used to display the object
 	 * @param object $object An object to display
+	 * @param string $context The context in which the object will be displayed	 
 	 * @return
 	 */
-	public function theme_content( $theme, $object )
+	public function theme_content( $theme, $object, $context = null )
 	{
-		$fallback = array(
-			"content",
-		);
+		$fallback = array();
+		$content_types = array();
 		if( $object instanceof IsContent ) {
-			$content_type = $object->content_type();
-			array_unshift($fallback, $content_type);
+			$content_types = Utils::single_array($object->content_type());
 		}
+		$content_types[] = 'content';
+		$content_types = array_flip($content_types);
+		foreach($content_types as $type) {
+			array_unshift($fallback, $type);
+		}
+		if(isset($context)) {
+			array_unshift($fallback, $context);
+			foreach($content_types as $type) {
+				$content_type = $context . $object->content_type();
+				array_unshift($fallback, $type);
+			}
+		}
+
 		$this->content = $object;
 		return $this->display_fallback( $fallback, 'fetch' );
 	}
