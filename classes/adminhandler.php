@@ -348,7 +348,7 @@ class AdminHandler extends ActionHandler
 		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_plugins' ) != Options::get( 'active_plugins' ) ) ) {
 			Cache::expire( 'dashboard_updates' );
 		}
-		
+
 		// if the theme version has changed, expire the updates cache
 		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_theme' ) != $active_theme ) ) {
 			Cache::expire( 'dashboard_updates' );
@@ -450,11 +450,17 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_publish()
 	{
-		$form = $this->form_publish( new Post(), false );
+		$post_id = 0;
+		if ( isset($this->handler_vars['id']) ) {
+			$post_id = $this->handler_vars['id'];
+		}
 
-		// check to see if we are updating or creating a new post
-		if ( $form->post_id->value != 0 ) {
-			$post = Post::get( array( 'id' => $form->post_id->value, 'status' => Post::status( 'any' ) ) );
+		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
+		if ( 0 !== $post_id) {
+			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
+			$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
+			$form = $post->get_form( 'admin' );
+
 			$post->title = $form->title->value;
 			if ( $form->newslug->value == '' ) {
 				Session::notice( _e('A post slug cannot be empty. Keeping old slug.') );
@@ -484,6 +490,10 @@ class AdminHandler extends ActionHandler
 			$post->status = $form->status->value;
 		}
 		else {
+			$post = new Post();
+			$form = $post->get_form( 'admin' );
+			$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
+
 			$postdata = array(
 				'slug' => $form->newslug->value,
 				'title' => $form->title->value,
@@ -523,19 +533,16 @@ class AdminHandler extends ActionHandler
 
 		if ( isset( $id ) ) {
 			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
+			if ( !$post ) {
+				Session::error(_t('Access to that post id is denied'));
+				$this->get_blank();
+			}
 			$this->theme->post = $post;
-			$this->theme->newpost = false;
 		}
 		else {
 			$post = new Post();
 			$this->theme->post = $post;
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
-			$this->theme->newpost = true;
-		}
-
-		if ( !$post ) {
-			Session::error(_t('Access to that post id is denied'));
-			$this->get_blank();
 		}
 
 		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
@@ -543,114 +550,14 @@ class AdminHandler extends ActionHandler
 		$statuses = Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
 
-		$this->theme->form = $this->form_publish($post, $this->theme->newpost );
+		$form = $post->get_form( 'admin' );
+		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
+
+		$this->theme->form = $form;
 
 		$this->theme->wsse = Utils::WSSE();
 
 		$this->display( $template );
-	}
-
-	public function form_publish($post, $newpost = true)
-	{
-		$form = new FormUI('create-content');
-		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
-		$form->class[] = 'create';
-
-		if ( isset( $this->handler_vars['id'] ) ) {
-			$post_links = $form->append('wrapper', 'post_links');
-			$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-			$post_links->append('static', 'post_permalink', '<a href="'. $permalink .'" class="viewpost" >'.( $post->status != Post::status('published') ? _t('Preview Post') : _t('View Post') ).'</a>');
-			$post_links->class ='container';
-		}
-
-		// Create the Title field
-		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
-		$form->title->class = 'important';
-		$form->title->tabindex = 1;
-		$form->title->value = $post->title;
-		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
-		// Create the silos
-		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
-			$form->append('silos', 'silos');
-			$form->silos->silos = Media::dir();
-		}
-
-		// Create the Content field
-		$form->append('textarea', 'content', 'null:null', _t('Content'), 'admincontrol_textarea');
-		$form->content->class[] = 'resizable';
-		$form->content->tabindex = 2;
-		$form->content->value = $post->content;
-		$form->content->raw = true;
-
-		// Create the tags field
-		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
-		$form->tags->tabindex = 3;
-		$form->tags->value = implode(', ', $post->tags);
-
-		// Create the splitter
-		$publish_controls = $form->append('tabs', 'publish_controls');
-
-		// Create the publishing controls
-		// pass "false" to list_post_statuses() so that we don't include internal post statuses
-		$statuses = Post::list_post_statuses( $post );
-		unset( $statuses[array_search( 'any', $statuses )] );
-		$statuses = Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
-
-		$settings = $publish_controls->append('fieldset', 'settings', _t('Settings'));
-
-		$settings->append('select', 'status', 'null:null', _t('Content State'), array_flip($statuses), 'tabcontrol_select');
-		$settings->status->value = $post->status;
-
-		if ( $newpost ) {
-			// hide the field
-			$settings->append('hidden', 'minor_edit', 'null:null');
-			$settings->minor_edit->value = false;
-		}
-		else {
-			$settings->append('checkbox', 'minor_edit', 'null:null', _t('Minor Edit'), 'tabcontrol_checkbox');
-			$settings->minor_edit->value = true;
-		}
-
-		$settings->append('checkbox', 'comments_enabled', 'null:null', _t('Comments Allowed'), 'tabcontrol_checkbox');
-		$settings->comments_enabled->value = $post->info->comments_disabled ? false : true;
-
-		$settings->append('text', 'pubdate', 'null:null', _t('Publication Time'), 'tabcontrol_text');
-		$settings->pubdate->value = $post->pubdate->format('Y-m-d H:i:s');
-
-		$settings->append('text', 'newslug', 'null:null', _t('Content Address'), 'tabcontrol_text');
-		$settings->newslug->value = $post->slug;
-
-		// Create the button area
-		$buttons = $form->append('fieldset', 'buttons');
-		$buttons->template = 'admincontrol_buttons';
-		$buttons->class[] = 'container';
-		$buttons->class[] = 'buttons';
-		$buttons->class[] = 'publish';
-
-		// Create the Save button
-		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
-		$buttons->save->tabindex = 4;
-
-		// Add required hidden controls
-		$form->append('hidden', 'content_type', 'null:null');
-		$form->content_type->value = $post->content_type;
-		$form->append('hidden', 'post_id', 'null:null');
-		$form->post_id->id = 'id';
-		if ( $newpost ) {
-			$form->post_id->value = 0;
-		}
-		else {
-			$form->post_id->value = $this->handler_vars['id'];
-		}
-		$form->append('hidden', 'slug', 'null:null');
-		$form->slug->value = $post->slug;
-
-		// Let plugins alter this form
-		Plugins::act('form_publish', $form, $post);
-
-		// Put the form into the theme
-		$this->theme->form = $form->get();
-		return $form;
 	}
 
 	/**
@@ -3031,55 +2938,55 @@ class AdminHandler extends ActionHandler
 		switch( $page ) {
 			case 'comment':
 			case 'comments':
-				$require_any = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
+				$require_any = array('manage_all_comments'=>true, 'manage_own_post_comments'=>true);
 				break;
 			case 'tags':
-				$require_any = array( 'manage_tags' => true );
+				$require_any = array('manage_tags'=>true);
 				break;
 			case 'options':
-				$require_any = array( 'manage_options' => true );
+				$require_any = array('manage_options'=>true);
 				break;
 			case 'themes':
-				$require_any = array( 'manage_themes' => true, 'manage_theme_config' => true );
+				$require_any = array('manage_themes'=>true, 'manage_theme_config'=>true);
 				break;
 			case 'activate_theme':
-				$require_any = array( 'manage_themes' => true );
+				$require_any = array('manage_themes'=>true);
 				break;
 			case 'plugins':
-				$require_any = array( 'manage_plugins' => true, 'manage_plugins_config' => true );
+				$require_any = array('manage_plugins'=>true, 'manage_plugins_config'=>true);
 				break;
 			case 'plugin_toggle':
-				$require_any = array( 'manage_plugins' => true );
+				$require_any = array('manage_plugins'=>true);
 				break;
 			case 'import':
-				$require_any = array( 'manage_import' => true );
+				$require_any = array('manage_import'=>true);
 				break;
 			case 'users':
 			case 'user':
-				$require_any = array( 'manage_users' => true );
+				$require_any = array('manage_users'=>true);
 				break;
 			case 'groups':
 			case 'group':
-				$require_any = array( 'manage_groups' => true );
+				$require_any = array('manage_groups'=>true);
 				break;
 			case 'logs':
-				$require_any = array( 'manage_logs' => true );
+				$require_any = array('manage_logs'=>true);
 				break;
 			case 'publish':
-				$type = Post::type_name( $type );
+				$type = Post::type_name($type);
 				$require_any = array(
-					'post_any' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
-					'post_' . $type => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
-					'own_posts' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
+					'post_any' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+					'post_' . $type => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
+					'own_posts' => array(ACL::get_bitmask('create'), ACL::get_bitmask('edit')),
 				);
 				break;
 			case 'posts':
 				$require_any = array(
-					'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+					'post_any' => array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit')),
 					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 				);
 				foreach ( Post::list_active_post_types() as $type => $type_id ) {
-					$require_any['post_' . $type] = array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) );
+					$require_any['post_' . $type] = array(ACL::get_bitmask('delete'), ACL::get_bitmask('edit'));
 				}
 				break;
 			case 'dashboard':
@@ -3092,24 +2999,24 @@ class AdminHandler extends ActionHandler
 				break;
 		}
 
-		$require_any = Plugins::filter( 'admin_access_tokens', $require_any, $page, $type );
+		$require_any = Plugins::filter('admin_access_tokens', $require_any, $page, $type);
 
 
 		foreach ( $require_any as $token => $access ) {
-			$access = Utils::single_array( $access );
+			$access = Utils::single_array($access);
 			foreach ( $access as $mask ) {
-				if ( is_bool( $mask ) && $user->can( $token ) ) {
+				if ( is_bool($mask) && $user->can($token) ) {
 					$result = true;
 					break;
 				}
-				elseif ( $user->can( $token, $mask ) ) {
+				elseif ( $user->can($token, $mask) ) {
 					$result = true;
 					break 2;
 				}
 			}
 		}
 
-		$result = Plugins::filter( 'admin_access', $result, $page, $type );
+		$result = Plugins::filter('admin_access', $result, $page, $type);
 
 		return $result;
 	}
