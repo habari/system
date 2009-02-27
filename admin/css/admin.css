@@ -622,9 +622,10 @@ p:hover > label.abovecontent {
 .create label.overcontent {
 	text-transform: lowercase;
 	color: #aeaeae;
+	width: 759px;
 }
 
-.create input.text, .create label.overcontent {
+create input.text, .create label.overcontent {
 	font-size: 1.1em;
 }
 
