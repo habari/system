@@ -1388,6 +1388,10 @@ body.page-options .item {
 
 /*- PLUGINS PAGE */
 
+.plugins p a {
+	text-decoration: underline;
+}
+
 .plugins .item {
 	padding-left: 40px;
 	padding-right: 40px;
