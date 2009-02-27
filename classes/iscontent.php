@@ -17,7 +17,7 @@ interface IsContent
 	/**
 	 * Returns the content type of the object instance
 	 *
-	 * @return string The content type of the object instance
+	 * @return array An array of content types that this object represents, starting with the most specific
 	 */
 	function content_type();
 
