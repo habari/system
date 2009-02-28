@@ -339,7 +339,7 @@ class AdminHandler extends ActionHandler
 			'days' => round(($firstpostdate % 2629728) / 86400),
 		);
 
-		
+
 		// get the active theme, so we can check it
 		$active_theme = Themes::get_active();
 		$active_theme = $active_theme->name . ':' . $active_theme->version;
@@ -370,7 +370,7 @@ class AdminHandler extends ActionHandler
 
 				// cache the set of plugins we just used to check for
 				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
-				
+
 				// cache the active theme we just used to check for
 				Cache::set( 'dashboard_updates_theme', $active_theme );
 			}
@@ -452,11 +452,11 @@ class AdminHandler extends ActionHandler
 	{
 		$post_id = 0;
 		if ( isset($this->handler_vars['id']) ) {
-			$post_id = $this->handler_vars['id'];
+			$post_id = intval($this->handler_vars['id']);
 		}
 
 		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
-		if ( 0 !== $post_id) {
+		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
 			$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 			$form = $post->get_form( 'admin' );
@@ -787,10 +787,10 @@ class AdminHandler extends ActionHandler
 
 		// Set various info fields
 		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format');
-		
+
 		// let plugins easily specify other user info fields to pick
 		$info_fields = Plugins::filter( 'adminhandler_post_user_fields', $info_fields );
-				
+
 		foreach ( $info_fields as $info_field ) {
 			if ( isset($form->{$info_field}) && ($edit_user->info->{$info_field} != $form->{$info_field}->value) ) {
 				$edit_user->info->{$info_field} = $form->$info_field->value;
