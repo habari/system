@@ -87,7 +87,7 @@ class Bitmask
 		}
 		if ( $bit === false )
 			return false;
-		return $this->value & (1 << $bit );
+		return (boolean)$this->value & (1 << $bit );
 	}
 
 	public function __tostring()
