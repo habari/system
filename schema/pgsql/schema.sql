@@ -235,7 +235,7 @@ CREATE TABLE {$prefix}tokens (
   id INTEGER NOT NULL DEFAULT nextval('{$prefix}tokens_pkey_seq'),
   name VARCHAR(255) NOT NULL,
   description VARCHAR(255) NULL,
-  token_type INT UNSIGNED NOT NULL DEFAULT 0,
+  token_type INT NOT NULL DEFAULT 0,
   token_group VARCHAR(255) NULL,
   PRIMARY KEY (id),
   UNIQUE (name)
