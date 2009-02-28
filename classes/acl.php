@@ -285,6 +285,25 @@ class ACL
 	}
 
 	/**
+	 * Determine whether a group is explicitly denied permission to perform a specific action
+	 * This function does not return true if the group is merely not granted a permission
+	 * @param mixed $user A group ID or a group name
+	 * @param mixed $token_id A permission ID or name
+	 * @return bool True if access to the token is denied to the group
+	 **/
+	public static function group_cannot( $group, $token_id )
+	{
+
+		$result = self::get_group_token_access( $group, $token_id );
+		if ( isset( $result ) && self::access_check( $result, 'deny' ) ) {
+			return true;
+		}
+
+		// The permission has been granted, or it hasn't been explicitly denied.
+		return false;
+	}
+
+	/**
 	 * Determine whether a user can perform a specific action
 	 * @param mixed $user A user object, user ID or a username
 	 * @param mixed $token_id A permission ID or name
@@ -328,7 +347,6 @@ class ACL
 		// The permission has been granted, or it hasn't been explicitly denied.
 		return false;
 	}
-
 
 	/**
 	 * Return the access bitmask to a specific token for a specific user
