@@ -23,7 +23,13 @@
 		<?php foreach ( $groups as $group ):
 			$users = array();
 			foreach ( $group->users as $user ) {
-				$users []= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				if ( $user->id == 0 ) {
+					$users []= '<strong>' . $user->displayname . '</strong>';
+				}
+				else {
+					$users []= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				}
+
 			}
 			include('groups_item.php');
 		endforeach; ?>
