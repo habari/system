@@ -334,14 +334,18 @@ var itemManage = {
 			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 1;
-			check.parent().parent().parent().addClass('selected');
+			check.parent().parent().filter('.item').addClass('selected');
+			check.parent().parent().parent().filter('.item').addClass('selected');
+			
 		});
 		$('.item:not(.ignore) .checkbox input[type=checkbox]:not(:checked)').each(function() {
 			check = $(this);
 			id = check.attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" );
 			selected['p' + id] = 0;
-			check.parent().parent().parent().removeClass('selected');
+			check.parent().parent().filter('.item').removeClass('selected');
+			check.parent().parent().parent().filter('.item').removeClass('selected');
+			
 		});
 
 		itemManage.selected = selected;

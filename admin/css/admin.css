@@ -2483,6 +2483,6 @@ body.login .humanMsg {
 
 
 
-.hidden {
+#page .hidden {
 	display: none;
 }
