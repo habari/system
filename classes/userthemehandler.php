@@ -11,16 +11,13 @@
  */
 class UserThemeHandler extends ActionHandler
 {
-	private $theme = null;
 
 	/**
-	 * Constructor for the default theme handler.  Here, we
-	 * automatically load the active theme for the installation,
-	 * and create a new Theme instance.
+	 * Constructor for the default theme handler.
 	 */
 	public function __construct()
 	{
-		$this->theme = Themes::create();
+		$this->setup_theme();
 	}
 
 	/**
@@ -35,13 +32,6 @@ class UserThemeHandler extends ActionHandler
 	public function act( $action )
 	{
 		$this->action = $action;
-		$this->theme->assign('matched_rule', URL::get_matched_rule());
-		$request = new StdClass();
-		foreach(RewriteRules::get_active() as $rule) {
-			$request->{$rule->name}= false;
-		}
-		$request->{$this->theme->matched_rule->name}= true;
-		$this->theme->assign('request', $request);
 
 		$action_method = 'act_' . $action;
 		$before_action_method = 'before_' . $action_method;

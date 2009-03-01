@@ -10,8 +10,6 @@
  */
 class UserHandler extends ActionHandler
 {
-	// The active user theme
-	private $theme = null;
 
 	/**
 	 * Checks a user's credentials, and creates a session for them

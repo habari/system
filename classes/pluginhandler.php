@@ -8,30 +8,18 @@
  * Habari PluginHandler Class
  *
  */
-class PluginHandler
+class PluginHandler extends ActionHandler
 {
+
 	/**
-	 * Name of action to trigger
-	 *
-	 * @var string
-	 * @see act()
+	 * Constructor for the pluggable theme handler.
 	 */
-	public $action = '';
-
-	/**
-	* Instance of the current theme
-	* @var string
-	* @see act()
-	*/
-	public $theme = null;
-
-	/**
-	 * Internal array of handler variables (state info)
-	 *
-	 * @var SuperGlobal
-	 */
-	public $handler_vars = null;
-
+	public function __construct()
+	{
+		$this->setup_theme();
+	}
+	
+	
 	/**
 	 * All handlers must implement act() to conform to handler API.
 	 * This is the default implementation of act(), which attempts
@@ -46,7 +34,15 @@ class PluginHandler
 			$this->handler_vars = new SuperGlobal(array());
 		}
 		$this->action = $action;
-		$this->theme = Themes::create();
+
+		$this->theme->assign('matched_rule', URL::get_matched_rule());
+		$request = new StdClass();
+		foreach(RewriteRules::get_active() as $rule) {
+			$request->{$rule->name}= false;
+		}
+		$request->{$this->theme->matched_rule->name}= true;
+		$this->theme->assign('request', $request);
+
 
 		$action_hook = 'plugin_act_' . $action;
 		$before_action_hook = 'before_' . $action_hook;
