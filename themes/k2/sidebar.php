@@ -1,20 +1,20 @@
 <!-- sidebar -->
 <?php Plugins::act( 'theme_sidebar_top' ); ?>
 
-    <div id="search">
-     <h2><?php _e('Search'); ?></h2>
+		<div id="search">
+		<h2><?php _e('Search'); ?></h2>
 <?php $theme->display ('searchform' ); ?>
-    </div>
+		</div>
 
-    <div class="sb-about">
-     <h2><?php _e('About'); ?></h2>
-     <p><?php Options::out('about'); ?></p>
-    </div>
+		<div class="sb-about">
+		<h2><?php _e('About'); ?></h2>
+		<p><?php Options::out('about'); ?></p>
+		</div>
 
-    <div class="sb-user">
-     <h2><?php _e('User'); ?></h2>
+		<div class="sb-user">
+		<h2><?php _e('User'); ?></h2>
 <?php $theme->display ( 'loginform' ); ?>
-    </div>
+		</div>
 
 <?php Plugins::act( 'theme_sidebar_bottom' ); ?>
 <!-- /sidebar -->

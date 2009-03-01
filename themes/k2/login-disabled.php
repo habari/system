@@ -1,23 +1,23 @@
 <?php include 'header.php'; ?>
 <!-- login -->
-  <div class="content">
-   <div id="primary">
-    <div id="primarycontent" class="hfeed">
+	<div class="content">
+	<div id="primary">
+		<div id="primarycontent" class="hfeed">
 <?php include 'loginform.php'; ?>
 <?php Plugins::act( 'theme_login' ); ?>
-    </div>
+		</div>
 
-   </div>
+	</div>
 
-   <hr>
+	<hr>
 
-   <div class="secondary">
+	<div class="secondary">
 
 <?php include 'sidebar.php'; ?>
 
-   </div>
+	</div>
 
-   <div class="clear"></div>
-  </div>
+	<div class="clear"></div>
+	</div>
 <!-- /login -->
 <?php include 'footer.php'; ?>
