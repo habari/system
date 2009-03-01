@@ -1,7 +1,7 @@
 <?php include('header.php'); ?>
 
 <div class="container">
-	<div class="">
+	
 		<h2><?php _e('Import'); ?></h2>
 		<form method="post" action="" enctype="<?php echo $enctype; ?>">
 			<?php
@@ -14,14 +14,14 @@
 							<p><?php printf( _t('Please <a href="%1$s">activate an import plugin</a> to enable importing.'), URL::get('admin', 'page=plugins') ); ?></p>
 							<?php else: ?>
 							<p><?php _e('Please choose the type of import to perform:'); ?></p>
-							<select name="importer">
+							<select name="importer" class="pct50">
 								<?php
 								foreach($import_names as $name) {
 									echo "<option>{$name}</option>";
 								}
 								?>
 							</select>
-							<p class="submit"><input type="submit" name="import" value="<?php _e('Select'); ?>"></p>
+							<p class="submit"><input type="submit" class="button" name="import" value="<?php _e('Select'); ?>"></p>
 						<?php
 					endif;
 				else:
@@ -34,7 +34,7 @@
 			?>
 		</form>
 
-	</div>
+	
 </div>
 
 <?php
