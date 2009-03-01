@@ -11,8 +11,7 @@
        <h3 class="entry-title"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h3>
        <small class="entry-meta">
         <span class="chronodata"><abbr class="published"><?php $post->pubdate->out(); ?></abbr></span> <?php if ( $show_author ) { _e( 'by %s', array( $post->author->displayname ) ); } ?>
-        <span class="commentslink"><a href="<?php echo $post->permalink; ?>#comments" title="<?php _e('Comments to this post'); ?>"><?php echo $post->comments->approved->count; ?>
-		<?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></span>
+       <?php $theme->comments_link($post); ?>
 <?php if ( $loggedin ) { ?>
         <span class="entry-edit"><a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
 <?php } ?>
