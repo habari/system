@@ -12,8 +12,6 @@
  */
 class AdminHandler extends ActionHandler
 {
-	/** Cached theme object for handling templates and presentation */
-	private $theme = NULL;
 	/** An instance of the active public theme, which allows plugin hooks to execute */
 	protected $active_theme = NULL;
 
@@ -2947,10 +2945,10 @@ class AdminHandler extends ActionHandler
 				$require_any = array('manage_options'=>true);
 				break;
 			case 'themes':
-				$require_any = array('manage_themes'=>true, 'manage_theme_config'=>true);
+				$require_any = array('manage_theme'=>true, 'manage_theme_config'=>true);
 				break;
 			case 'activate_theme':
-				$require_any = array('manage_themes'=>true);
+				$require_any = array('manage_theme'=>true);
 				break;
 			case 'plugins':
 				$require_any = array('manage_plugins'=>true, 'manage_plugins_config'=>true);

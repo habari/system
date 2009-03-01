@@ -27,6 +27,13 @@ class ActionHandler
 	public $handler_vars = null;
 
 	/**
+	 * Storage for the theme used, if created
+	 *
+	 * @var Theme $theme
+	 */
+	public $theme = null;
+	
+	/**
 	 * All handlers must implement act() to conform to handler API.
 	 * This is the default implementation of act(), which attempts
 	 * to call a class member method of $this->act_$action().  Any
@@ -94,6 +101,22 @@ class ActionHandler
 	{
 		$vars = isset($_SERVER['QUERY_STRING']) ? Utils::get_params($_SERVER['QUERY_STRING']) : array();
 		Utils::redirect( URL::get(null, $vars) );
+	}
+	
+	/**
+	 * Load the active theme and create a new Theme instance.
+	 * Also, assign the request variables.
+	 */
+	public function setup_theme()
+	{
+		$this->theme = Themes::create();
+		$this->theme->assign('matched_rule', URL::get_matched_rule());
+		$request = new StdClass();
+		foreach(RewriteRules::get_active() as $rule) {
+			$request->{$rule->name}= false;
+		}
+		$request->{$this->theme->matched_rule->name}= true;
+		$this->theme->assign('request', $request);
 	}
 }
 
