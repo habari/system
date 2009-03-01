@@ -1,9 +1,9 @@
-<?php include 'header.php'; ?>
+<?php $theme->display( 'header'); ?>
 <!-- login -->
 	<div class="content">
 	<div id="primary">
 		<div id="primarycontent" class="hfeed">
-<?php include 'loginform.php'; ?>
+<?php $theme->display( 'loginform'); ?>
 <?php Plugins::act( 'theme_login' ); ?>
 		</div>
 
@@ -13,11 +13,11 @@
 
 	<div class="secondary">
 
-<?php include 'sidebar.php'; ?>
+<?php $theme->display( 'sidebar'); ?>
 
 	</div>
 
 	<div class="clear"></div>
 	</div>
 <!-- /login -->
-<?php include 'footer.php'; ?>
+<?php $theme->display( 'footer'); ?>
