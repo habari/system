@@ -124,25 +124,37 @@ class WPImport extends Plugin implements Importer
 			<p>Habari will attempt to import from a WordPress Database.</p>
 			{$warning}
 			<p>Please provide the connection details for an existing WordPress database:</p>
-			<table>
-				<tr><td>Database Name</td><td><input type="text" name="db_name" value="{$db_name}"></td></tr>
-				<tr><td>Database Host</td><td><input type="text" name="db_host" value="{$db_host}"></td></tr>
-				<tr><td>Database User</td><td><input type="text" name="db_user" value="{$db_user}"></td></tr>
-				<tr><td>Database Password</td><td><input type="password" name="db_pass" value="{$db_pass}"></td></tr>
-				<tr><td>Table Prefix</td><td><input type="text" name="db_prefix" value="{$db_prefix}"></td></tr>
-				<tr><td>Import Category as Tag</td><td><input type="checkbox" name="category_import" value="1" checked></td></tr>
-			</table>
+			<div class="item clear">
+				<span class="pct25"><label for="db_name">Database Name</label></span><span class="pct40"><input type="text" name="db_name" value="{$db_name}" tab index="1"></span>
+			</div>
+			<div class="item clear">
+				<span class="pct25"><label for="db_host">Database Host</label></span><span class="pct40"><input type="text" name="db_host" value="{$db_host}" tab index="2"></span>
+			</div>
+			<div class="item clear">
+				<span class="pct25"><label for="db_user">Database User</label></span><span class="pct40"><input type="text" name="db_user" value="{$db_user}" tab index="3"></span>
+			</div>
+			<div class="item clear">
+				<span class="pct25"><label for="db_pass">Database Password</label></span><span class="pct40"><input type="password" name="db_pass" value="{$db_pass}" tab index="4"></span>
+			</div>
+			<div class="item clear">
+				<span class="pct25"><label for="db_prefix">Table Prefix</label></span><span class="pct40"><input type="text" name="db_prefix" value="{$db_prefix}" tab index="5"></span>
+			</div>
+			<div class="item clear">
+				<span class="pct40"><label for="category_import">Import Category as Tag</label></span><span class="pct25"><input type="checkbox" name="category_import" value="1" checked></span>
+			</div>
+				
+			<div class="clear"></div>
 			<input type="hidden" name="stage" value="1">
-			<p class="extras" style="border: solid 1px #ccc; padding: 5px;">
-				Extras - additional data from WordPress plugins
-				<table>
-				<tr><td>Import tags from Ultimate Tag Warrior</td>
-				<td><input type="checkbox" name="utw_import" value="1"></td>
-				</tr>
-				</table>
-			</p>
-			<p class="submit"><input type="submit" name="import" value="Import" /></p>
-
+			<p class="extras">Extras - additional data from WordPress plugins</p>
+			<div class="item clear">
+				<span class="pct40"><label for="utw_import">Import tags from Ultimate Tag Warrior</label></span>
+				<span class="pct25"><input type="checkbox" name="utw_import" value="1" tab index="6"></span>
+			</div>
+			</div>
+			<div
+			<div class="container transparent"
+			<input type="submit" class="button" name="import" value="Import" />
+			</div>
 WP_IMPORT_STAGE1;
 		return $output;
 	}
