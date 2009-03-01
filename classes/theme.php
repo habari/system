@@ -611,15 +611,15 @@ class Theme extends Pluggable
 		}
 		$content_types[] = 'content';
 		$content_types = array_flip($content_types);
-		foreach($content_types as $type) {
-			array_unshift($fallback, $type);
-		}
 		if(isset($context)) {
-			array_unshift($fallback, $context);
-			foreach($content_types as $type) {
+			foreach($content_types as $type => $type_id) {
 				$content_type = $context . $object->content_type();
-				array_unshift($fallback, $type);
+				$fallback[] = strtolower($context . '.' . $type);
 			}
+			$fallback[] = strtolower($context);
+		}
+		foreach($content_types as $type => $type_id) {
+			$fallback[] = strtolower($type);
 		}
 
 		$this->content = $object;
