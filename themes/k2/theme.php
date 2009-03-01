@@ -87,6 +87,18 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		return $class;
 	}
 
+/**
+ * If comments are enabled, or there are comments on the post already, output a link to the comments.
+ *
+ */
+	public function comments_link( $post )
+	{
+		if ( !$post->info->comments_disabled || $post->comments->approved->count > 0 ) {
+			$comment_count = $post->comments->approved->count;
+			echo "<span class=\"commentslink\"><a href=\"{$post->permalink}#comments\" title=\"" . _t('Comments on this post') . "\">{$comment_count} " . _n( 'Comment', 'Comments', $comment_count ) . "</a></span>";
+		}
+
+	}
 }
 
 ?>
