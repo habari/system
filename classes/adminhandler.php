@@ -23,7 +23,7 @@ class AdminHandler extends ActionHandler
 		$user = User::identify();
 		if ( !$user->loggedin ) {
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
-			if ( URL::get_matched_rule()->name == 'admin_ajax' ) {
+			if ( URL::get_matched_rule()->name == 'admin_ajax' && isset($_SERVER['HTTP_REFERER']) ) {
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
 			}
 			else {
