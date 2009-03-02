@@ -421,7 +421,7 @@ class AdminHandler extends ActionHandler
 		$modules = Modules::get_active();
 
 		// append the 'Add Item' module
-		$modules['nosort'] = _t('Add Item');
+		$modules['nosort'] = 'Add Item';
 
 		// register the 'Add Item' filter
 		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
@@ -3138,6 +3138,7 @@ class AdminHandler extends ActionHandler
 		$theme->additem_form = $form->get();
 
 		$module['content'] = $theme->fetch( 'dash_additem' );
+		$module['title'] = _t('Add Item');
 		return $module;
 	}
 
