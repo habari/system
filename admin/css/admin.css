@@ -1140,7 +1140,6 @@ body.page-publish .buttons input {
 
 
 /*-- DASHBOARD - LATEST COMMENTS MODULE */
-
 .dashboard .latest-comments-module .item {
 
 }
@@ -1179,9 +1178,11 @@ body.page-publish .buttons input {
 	opacity: 1;
 }
 
+.dashboard .latest-comments-module .item span.comments {
+	float: right;
+}
+
 .dashboard .latest-comments-module .comments {
-	position: absolute;
-	right: 3%;
 	line-height: 34px;
 	font-size: 24px;
 }
