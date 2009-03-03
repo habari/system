@@ -6,7 +6,7 @@
 	<?php foreach($silos as $ct => $silodir): ?>
 		<div id="silo_<?php echo $ct; ?>" class="splitter mediasplitter ui-tabs-hide">
 			<div class="toload pathstore" style="display:none;"><?php echo $silodir->path; ?></div>
-			<div class="splitterinside">
+			<div id="silo_<?php echo Utils::slugify($silodir->path); ?>" class="splitterinside">
 				<div id="mediaspinner"></div>
 				<div class="media_controls">
 					<ul>
