@@ -343,7 +343,6 @@ class Plugins
 		if($ok) {
 			// strip base path from stored path
 			$short_file = substr( $file, strlen( HABARI_PATH ) );
-
 			$activated = Options::get( 'active_plugins' );
 			if( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
 				$activated[] = $short_file;
@@ -370,6 +369,8 @@ class Plugins
 		$name = '';
 		$ok = Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
 		if($ok) {
+			// normalize directory separator
+			$file = str_replace( '\\', '/', $file );
 			// strip base path from stored path
 			$short_file = substr( $file, strlen( HABARI_PATH ) );
 
