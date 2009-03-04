@@ -192,7 +192,7 @@ class FormContainer
 			$this->theme_obj->value = $control->value;
 			$this->theme_obj->caption = $control->caption;
 			$this->theme_obj->id = (string) $control->id;
-			$class = $control->class;
+			$class = (array) $control->class;
 
 			$message = '';
 			if($forvalidation) {
