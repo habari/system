@@ -42,13 +42,25 @@ class HabariSilo extends Plugin implements MediaSilo
 		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
 		
 		if (! $this->check_files()) {
-			Session::error( "Web server does not have permission to create 'files' directory for SimpleFile Media Silo." );
-			Plugins::deactivate_plugin(__FILE__); //Deactivate plugin
-			Utils::redirect(); //Refresh page � unfortunately, if not done so then results don't appear
+			Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
+			Plugins::deactivate_plugin( __FILE__ ); //Deactivate plugin
+			Utils::redirect(); //Refresh page. Unfortunately, if not done so then results don't appear
 		}
 	}
-	
+
 	/**
+	 * Don't bother loading if the gd library isn't active
+	 */
+	public function action_plugin_activation( $file )
+	{
+		if ( !function_exists( 'imagecreatefromjpeg' ) ) {
+			Session::error( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ) );
+			Plugins::deactivate_plugin( __FILE__ );
+		}
+	}
+
+	/**
+	 *
 	 * Checks if files directory is usable
 	 */
 	private function check_files() {
