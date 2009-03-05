@@ -380,7 +380,6 @@ class Plugins
 			{
 				// Get plugin name for logging
 				$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
-
 				if(method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation')) {
 					self::$plugins[Plugins::id_from_file( $file )]->action_plugin_deactivation( $file ); // For the plugin to uninstall itself
 				}
@@ -467,10 +466,10 @@ class Plugins
 	/**
 	 * Check the PHP syntax of every plugin available, activated or not.
 	 *
-	 * @see Utils::check_php_file_syntax()
+	 * @see Utils::php_check_file_syntax()
 	 * @return bool Returns true if all plugins were valid, return false if a plugin (or more) failed.
 	 */
-	public function check_every_plugin_syntax()
+	public static function check_every_plugin_syntax()
 	{
 		$failed_plugins = array();
 		$all_plugins = self::list_all();
