@@ -434,19 +434,20 @@ class ACL
 		$sql = <<<SQL
 SELECT access_mask
   FROM {user_token_permissions}
-  WHERE user_id = :user_id
-  AND token_id = :token_id
+  WHERE user_id = ?
+  AND token_id = ?
 UNION ALL
 SELECT gp.access_mask
   FROM {users_groups} ug
   INNER JOIN {group_token_permissions} gp
   ON ((ug.group_id = gp.group_id
-  AND ug.user_id = :user_id)
+  AND ug.user_id = ?)
 	{$exceptions})
-  AND gp.token_id = :token_id
+  AND gp.token_id = ?
   ORDER BY access_mask ASC
 SQL;
-		$accesses = DB::get_column( $sql, array( ':user_id' => $user_id, ':token_id' => $token_id ) );
+
+		$accesses = DB::get_column( $sql, array( $user_id, $token_id, $user_id, $token_id ) );
 		
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
