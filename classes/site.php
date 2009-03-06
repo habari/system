@@ -27,11 +27,13 @@ class Site
 	 * @staticvar $config_dir Multisite directory to config.php
 	 * @staticvar $config_type Installation type (local, subdir, subdomain)
 	 * @staticvar $scriptname the name of the currently executing script (index.php)
+	 * @staticvar $habari_url fully-qualified URL to the habari directory
 	 */
 	static $config_path;
 	static $config_dir;
 	static $config_type = Site::CONFIG_LOCAL;
 	static $scriptname;
+	static $habari_url;
 
 	/**
 	 * Constructor
@@ -151,10 +153,16 @@ class Site
 				$url = $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
-				$url = Site::get_url( 'host' );
-				$path = trim( dirname( Site::script_name() ), '/\\' );
-				if ( '' != $path ) {
-					$url .= '/' . $path;
+				if ( NULL !== self::$habari_url ) {
+					$url = self::$habari_url;
+				}
+				else {
+					$url = Site::get_url( 'host' );
+					$path = trim( dirname( Site::script_name() ), '/\\' );
+					if ( '' != $path ) {
+						$url .= '/' . $path;
+					}
+					self::$habari_url = $url;
 				}
 				break;
 			case 'user':
