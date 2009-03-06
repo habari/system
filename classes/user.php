@@ -133,11 +133,19 @@ class User extends QueryRecord
 		$this->info->set_key( $this->id );
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
 		// $this->info->option_default = "saved";
+
+		// Set the default timezone, date format, and time format
+		$this->info->locale_tz = Options::get( 'timezone' );
+		$this->info->locale_date_format = Options::get( 'dateformat' );
+		$this->info->locale_time_format = Options::get( 'timeformat' );
+
 		$this->info->commit();
 
-		// Add the user to the default authenticated group if it exists
-		if( $result && UserGroup::exists( 'authenticated' ) ) {
-			$this->add_to_group( 'authenticated' );
+		if( $result ) {
+			// Add the user to the default authenticated group if it exists
+			if( UserGroup::exists( 'authenticated' ) ) {
+				$this->add_to_group( 'authenticated' );
+			}
 		}
 
 		EventLog::log( sprintf(_t('New user created: %s'), $this->username), 'info', 'default', 'habari' );
