@@ -7,10 +7,10 @@
 	<h2><?php _e('Writable directory needed'); ?>...</h2>
 	<?php if ($PHP_OS != 'WIN') {?>
 		<p class="instructions">
-			<?php _e('Before you can install Habari, you first need to make the install directory writable by php, so that the installation script can write your configuration information properly. The exact process of server and the ownership of the directory.'); ?>
+			<?php _e('Before you can install Habari, you first need to make the install directory writable by php, so that the installation script can write your configuration information properly. The exact process depends on the web server and the ownership of the directory.'); ?>
 		</p>
 		<p>
-			<?php _e('If your webserver is part of the group which owns the directory, you\'ll need to add group write permissions to the directory. The procedure for this is as follows:'); ?>
+			<?php _e('If your web server is part of the group which owns the directory, you\'ll need to add group write permissions to the directory. The procedure for this is as follows:'); ?>
 		</p>
 		<ol>
 			<li>
@@ -27,7 +27,7 @@
 			</li>
 		</ol>
 		<p>
-			<?php _e('If the webserver is not part of the group which owns the directory, you will need to <strong>temporarily</strong> grant world write permissions to the directory:'); ?>
+			<?php _e('If the web server is not part of the group which owns the directory, you will need to <strong>temporarily</strong> grant world write permissions to the directory:'); ?>
 		</p>
 		<ol>
 			<li>
@@ -59,7 +59,7 @@
 ?>
 	<h2><?php _e('Missing Extensions'); ?></h2>
 	<p class="instructions">
-		<em>Habari</em> <?php _e('requires that the following PHP extensions to be installed:'); ?> <?php echo $missing_ext_html; ?>. <?php _e('Please contact your web hosting provider if you do not have access to your server.'); ?>
+		<em>Habari</em> <?php _e('requires the following PHP extensions to be installed:'); ?> <?php echo $missing_ext_html; ?>. <?php _e('Please contact your web hosting provider if you do not have access to your server.'); ?>
 	</p>
 <?php }?>
 
