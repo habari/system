@@ -223,7 +223,7 @@ class HiEngineParser
 				}
 				$output = '<?php echo ';
 				foreach($prefixes as $prefix) {
-					$output .= '!'.'is_null($' . $prefix . '->' . $cmd . ') ? $' . $prefix . '->' . $cmd . ' : ';
+					$output .= '(is_object($' . $prefix . ') && !'.'is_null($' . $prefix . '->' . $cmd . ')) ? $' . $prefix . '->' . $cmd . ' : ';
 				}
 				$output .= '$' . $cmd . '; ?>';
 				return $output;
