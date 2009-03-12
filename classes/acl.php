@@ -497,7 +497,7 @@ SQL;
 		}
 
 		// Implement cache RIGHT HERE
-		if(isset($_SESSION['user_tokens'][$user_id][$bitmask->value])) {
+		if ( isset($_SESSION['user_tokens'][$user_id][$bitmask->value]) ) {
 			return $_SESSION['user_tokens'][$user_id][$bitmask->value];
 		}
 		
@@ -522,7 +522,7 @@ SQL;
 			$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
 		}
 
-		if ( $posts_only && !isset($post_tokens)) {
+		if ( $posts_only && !isset($post_tokens) ) {
 			$post_tokens = DB::get_column('SELECT token_id FROM {post_tokens} GROUP BY token_id');
 		}
 
@@ -532,10 +532,14 @@ SQL;
 				$tokens[] = $token->token_id;
 			}
 			else {
-				if ( $bitmask->$access && ( !$posts_only || in_array($token->token_id, $post_tokens) ) ) {
+				if ( $bitmask->$access ) {
 					$tokens[] = $token->token_id;
 				}
 			}
+		}
+
+		if ( $posts_only ) {
+			$tokens = array_intersect( $tokens, $post_tokens);
 		}
 		
 		$_SESSION['user_tokens'][$user_id][$bitmask->value] = $tokens;
