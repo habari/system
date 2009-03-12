@@ -481,7 +481,7 @@ SQL;
 	public static function user_tokens( $user, $access = 'full', $posts_only = false )
 	{
 		static $post_tokens = null;
-		
+
 		$bitmask = new Bitmask ( self::$access_names, $access );
 		$tokens = array();
 
@@ -497,8 +497,8 @@ SQL;
 		}
 
 		// Implement cache RIGHT HERE
-		if ( isset($_SESSION['user_tokens'][$user_id][$bitmask->value]) ) {
-			return $_SESSION['user_tokens'][$user_id][$bitmask->value];
+		if( isset($_SESSION['user_tokens'][$user_id][$access])) {
+			return $_SESSION['user_tokens'][$user_id][$access];
 		}
 		
 		$super_user_access = self::get_user_token_access( $user, 'super_user' );
@@ -522,7 +522,7 @@ SQL;
 			$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
 		}
 
-		if ( $posts_only && !isset($post_tokens) ) {
+		if ( $posts_only && !isset($post_tokens)) {
 			$post_tokens = DB::get_column('SELECT token_id FROM {post_tokens} GROUP BY token_id');
 		}
 
@@ -537,12 +537,12 @@ SQL;
 				}
 			}
 		}
-
+		
 		if ( $posts_only ) {
 			$tokens = array_intersect( $tokens, $post_tokens);
 		}
 		
-		$_SESSION['user_tokens'][$user_id][$bitmask->value] = $tokens;
+		$_SESSION['user_tokens'][$user_id][$access] = $tokens;
 		return $tokens;
 	}
 
@@ -753,8 +753,12 @@ SQL;
 	public static function clear_caches()
 	{
 		if ( isset($_SESSION['user_token_access']) ) {
-		unset($_SESSION['user_token_access']);
-	}
+			unset($_SESSION['user_token_access']);
+			
+		}
+		if (isset($_SESSION['user_tokens'])) {
+			unset($_SESSION['user_tokens']);
+		}
 		self::$token_cache = null;
 	}
 

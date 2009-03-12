@@ -409,6 +409,13 @@ class Posts extends ArrayObject implements IsContent
 				if ( count($permitted_post_types) > 0 ) {
 					$perm_where[] = '{posts}.content_type IN (' . implode(',', $permitted_post_types) . ')';
 				}
+
+				// If a user can read posts with specific tokens, let him
+				if ( count($read_tokens) > 0 ) {
+					$joins['post_tokens__allowed'] = ' LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
+					$perm_where['perms_join_null'] = 'pt_allowed.post_id IS NOT NULL';
+				}
+
 			}
 
 			// If a user is denied access to all posts, do so
@@ -428,12 +435,6 @@ class Posts extends ArrayObject implements IsContent
 				}
 			}
 					
-					
-			// If a user can read posts with specific tokens, let him
-			if ( count($read_tokens) > 0 ) {
-				$joins['post_tokens__allowed'] = ' INNER JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
-			}
-
 			// If there are granted permissions to check, add them to the where clause
 			if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
 				// You have no grants.  You get no posts.
@@ -445,19 +446,19 @@ class Posts extends ArrayObject implements IsContent
 				';
 				$params = $params + $params_where;
 			}
+					
+			if ( count($deny_tokens) > 0 ) {
+				$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
+				$perm_where_denied['perms_join_null'] = 'pt_denied.post_id IS NULL';
+			}
 
-			// If there are granted permissions to check, add them to the where clause
+			// If there are denied permissions to check, add them to the where clause
 			if ( count($perm_where_denied) > 0 ) {
 				$where['perms_denied'] = '
 					(' . implode(' AND ', $perm_where_denied) . ')
 				';
 			}
-					
-			if ( count($deny_tokens) > 0 ) {
-				$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
-				$where['perms_denied_join_null'] = 'pt_denied.post_id IS NULL';
-			}
-
+			
 			$master_perm_where = implode( ' AND ', $where );
 		}
 
