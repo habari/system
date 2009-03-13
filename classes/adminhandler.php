@@ -2996,6 +2996,9 @@ class AdminHandler extends ActionHandler
 					$require_any['post_' . $type] = array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) );
 				}
 				break;
+			case 'sysinfo': 
+				$require_any = array( 'super_user' => true ); 
+				break; 
 			case 'dashboard':
 				$result = true;
 				break;
