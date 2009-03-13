@@ -140,7 +140,7 @@ class AdminHandler extends ActionHandler
 		if ( method_exists( $this, 'ajax_' . $context ) ) {
 			$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 			// Access check to see if the user is allowed the requested page
-			if ( $this->access_allowed( $context, $type ) ) {
+			if ( $this->access_allowed( 'ajax_' . $context, $type ) ) {
 				call_user_func( array( $this, 'ajax_' . $context ), $this->handler_vars );
 			}
 		}
@@ -2940,9 +2940,12 @@ class AdminHandler extends ActionHandler
 		switch( $page ) {
 			case 'comment':
 			case 'comments':
+			case 'ajax_comments':
+			case 'ajax_in_edit':
 				$require_any = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
 				break;
 			case 'tags':
+			case 'ajax_tags':
 				$require_any = array( 'manage_tags' => true );
 				break;
 			case 'options':
@@ -2963,21 +2966,26 @@ class AdminHandler extends ActionHandler
 			case 'import':
 				$require_any = array( 'manage_import' => true );
 				break;
-			case 'update_users':
 			case 'users':
 			case 'user':
+			case 'ajax_update_users':
+			case 'ajax_users':
 				$require_any = array( 'manage_users' => true );
 				break;
-			case 'update_groups':
 			case 'groups':
 			case 'group':
+			case 'ajax_update_groups':
+			case 'ajax_groups':
 				$require_any = array( 'manage_groups' => true );
 				break;
-			case 'delete_logs':
 			case 'logs':
+			case 'ajax_delete_logs':
+			case 'ajax_logs':
 				$require_any = array( 'manage_logs' => true );
 				break;
 			case 'publish':
+			case 'ajax_media':
+			case 'ajax_media_panel':
 				$type = Post::type_name( $type );
 				$require_any = array(
 					'post_any' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
@@ -2985,9 +2993,9 @@ class AdminHandler extends ActionHandler
 					'own_posts' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
 				);
 				break;
-			case 'delete_entries':
-			case 'in_edit':
 			case 'posts':
+			case 'ajax_posts':
+			case 'ajax_delete_entries':
 				$require_any = array(
 					'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
@@ -3000,6 +3008,7 @@ class AdminHandler extends ActionHandler
 				$require_any = array( 'super_user' => true ); 
 				break; 
 			case 'dashboard':
+			case 'ajax_dashboard':
 				$result = true;
 				break;
 			default:
