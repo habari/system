@@ -37,8 +37,8 @@
 	<div id="wrapper-bottom">
 		<div id="bottom-primary">
 			<div id="prev-posts-footer">
-				<span class="nav-next"><?php $theme->prev_page_link( _t('Newer Posts') ); ?><img class="hidden" src="<?php Site::out_url('theme'); ?>/images/nav-right.png" /></span>
-				<span class="nav-prev"><img class="hidden" src="<?php Site::out_url('theme'); ?>/images/nav-left.png" /><?php $theme->next_page_link( _t('Older Posts') ); ?></span>
+				<span class="nav-next"><?php $theme->prev_page_link( _t('Newer Posts') ); ?><img class="hidden" src="<?php Site::out_url('theme'); ?>/images/nav-right.png" alt=""></span>
+				<span class="nav-prev"><img class="hidden" src="<?php Site::out_url('theme'); ?>/images/nav-left.png" alt=""><?php $theme->next_page_link( _t('Older Posts') ); ?></span>
 				<br class="clear">
 			</div>
 			<?php $theme->display_archives() ;?>
