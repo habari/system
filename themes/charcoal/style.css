@@ -1,9 +1,9 @@
 /* Default Elements */
 body {
-	margin: 0px;
-	font-family: 'myriad pro', helvetica, arial;
+	margin: 0;
+	font-family: 'myriad pro', helvetica, arial, sans-serif;
 	font-weight: normal;
-	color: #323232;
+	color: #333333;
 	font-size: 14px;
 	background-color: #ffffff;
 }
@@ -22,7 +22,7 @@ h1 {
 	font-weight: bold;
 	font-size: 3.8em;
 	color: #e5e5e5;
-	margin: 0px;
+	margin: 0;
 	line-height: 120%;
 	color: #f9f9f9;
 }
@@ -42,13 +42,13 @@ h3 {
 	font-weight: bold;
 	font-size: 2.4em;
 	color: #3f3f3e;
-	margin: 0px;
+	margin: 0;
 	line-height: 120%;
 }
 
 h3 a {
 	color: #3f3f3e;
-	margin: 0px;
+	margin: 0;
 	border: none;
 }
 
@@ -61,13 +61,13 @@ h2 {
 	font-weight: bold;
 	font-size: 1.7em;
 	color: #f9f9f9;
-	margin: 0px;
+	margin: 0;
 	line-height: 120%
 }
 
 h2 a {
 	color: #f9f9f9;
-	margin: 0px;
+	margin: 0;
 	line-height: 120%;
 	border: none;
 }
@@ -82,7 +82,7 @@ h4 {
 }
 
 p {
-	margin: 0px 0px 10px;
+	margin: 0 0 10px;
 	line-height: 130%;
 }
 
@@ -106,15 +106,15 @@ p {
 
 #header {
 	width: 930px;
-	min-height: 180px;
+	min-height: 160px;
 }
 
 #title {
 	width: 610px;
-	height: 120px;
-	margin-top: 50px;
+	height: 100px;
+	margin-top: 35px;
 	margin-left: 50px;
-	margin-bottom: 20px;
+	margin-bottom: 25px;
 	position: relative;
 }
 
@@ -140,12 +140,13 @@ p {
 	overflow: visible;
 	display: block;
 	margin-left: 50px;
+	z-index: 0;
 }
 
 #navbar ul {
 	font-size: 0.9em;
 	list-style: none;
-	padding: 0px;
+	padding: 0;
 	height: 48px;
 	display: block;
 	margin-bottom:5px;
@@ -305,8 +306,7 @@ li.login a:hover {
 }
 
 .post-entry pre {
-	overflow-x: auto;
-	overflow-y: hidden;
+	overflow: auto;
 	width: 100%;
 	background-color: #f7f7f7;
 }
@@ -321,6 +321,7 @@ li.login a:hover {
 	width: 315px;
 	background: url("images/sidebar_top.png") top center no-repeat;
 	float: right;
+	z-index: 1;
 }
 
 #search {
@@ -329,8 +330,8 @@ li.login a:hover {
 }
 
 #search-form {
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 }
 
 #search #search-box {
@@ -348,7 +349,7 @@ li.login a:hover {
 	height: 30px;
 	width: 31px;
 	border: none;
-	margin-top: 0px;
+	margin-top: 0;
 	float: right;
 	display: inline;
 	cursor: pointer;
@@ -382,8 +383,8 @@ li.login a:hover {
 }
 
 #habari-link {
-	margin-top: 0px;
-	margin-right: 0px;
+	margin-top: -10px;
+	margin-right: 0;
 	height: 58px;
 	text-align: right;
 }
@@ -404,11 +405,11 @@ li.login a:hover {
 #sidebar {
 	padding-left: 45px;
 	padding-right: 10px;
-	padding-top: 50px
+	padding-top: 30px;
 }
 
 #sidebar div {
-	margin-bottom: 25px
+	margin-bottom: 25px;
 }
 
 #sidebar div h2 {
@@ -433,7 +434,7 @@ li.login a:hover {
 
 /* The lower part of the page */
 #page-bottom {
-	margin: 0px;
+	margin: 0;
 	padding-top: 17px;
 	position: relative;
 	background: #3f3f3f url("images/page_bottom_bg.png") top repeat-x;
@@ -443,8 +444,8 @@ li.login a:hover {
 #wrapper-bottom {
 	position: relative;
 	width: 972px;
-	padding: 0px;
-	margin: 0px auto;
+	padding: 0;
+	margin: 0 auto;
 	background: url("images/secondary_bg.png") left repeat-y;
 }
 
@@ -455,7 +456,7 @@ li.login a:hover {
 
 #prev-posts {
 	min-height: 233px;
-	margin: 6px 0px 0px auto;
+	margin: 6px 0 0 auto;
 	background: url("images/prevposts_text.png") top left no-repeat;
 	padding-left: 120px;
 	padding-right: 20px;
@@ -481,7 +482,7 @@ li.login a:hover {
 
 #prev-posts-footer {
 	height: 25px;
-	bottom: 0px;
+	bottom: 0;
 	padding-left: 120px;
 	padding-right: 20px;
 	margin-bottom: 35px;
@@ -525,7 +526,7 @@ li.login a:hover {
 /* Comments section */
 #post-comments {
 	min-height: 180px;
-	margin: 6px 0px 35px auto;
+	margin: 6px 0 35px auto;
 	background: url("images/comments_text.png") top left no-repeat;
 	padding-left: 120px;
 	padding-right: 20px;
@@ -545,10 +546,6 @@ div.post-comments-title {
 	font-size: 1.5em;
 }
 
-.post-comment-commentor {
-
-}
-
 .post-comment-body {
 	padding-bottom: 20px;
 	text-align: justify;
@@ -556,6 +553,11 @@ div.post-comments-title {
 
 .post-comment-body p {
 	color: #e4e4e4;
+}
+
+.post-comment-body p a {
+	color: #e4e4e4;
+	border-color: #e4e4e4;
 }
 
 #post-comments-footer {
@@ -579,7 +581,7 @@ p.post-comment-link a:hover {
 /* Comments form */
 #comment-form {
 	min-height: 177px;
-	margin: 0px 0px auto;
+	margin: 0 0 auto;
 	background: url("images/postcomment_text.png") top left no-repeat;
 	padding-left: 120px;
 	padding-right: 20px;
@@ -623,13 +625,13 @@ p.post-comment-link a:hover {
 ul.archlist-left {
 	float: left;
 	padding: 0;
-	margin: 0px -50px 0px 0px; /*fixing an IE7 Bug */
+	margin: 0 -50px 0 0; /*fixing an IE7 Bug */
 }
 
 ul.archlist-right {
 	float: right;
 	padding: 0;
-	margin: 0px 0px 0px -50px; /*fixing an IE7 Bug */
+	margin: 0 0 0 -50px; /*fixing an IE7 Bug */
 }
 
 ul.archlist-left li {
@@ -646,7 +648,7 @@ ul.archlist-right li {
 
 ul.archlist-left li a,ul.archlist-right li a {
 	color: #f9f9f9;
-	margin: 0px;
+	margin: 0;
 	line-height: 140%;
 	border: none;
 	font-size: 1.6em;
@@ -668,10 +670,10 @@ ul.archlist-left li a:hover,ul.archlist-right li a:hover {
 #tags {
 	min-height: 160px;
 	background: url("images/tagcloud_text.png") top left no-repeat;
-	margin: 6px 0px 30px 15px;
+	margin: 6px 0 30px 15px;
 	padding-left: 40px;
 	padding-right: 40px;
-	padding-top: 0px;
+	padding-top: 0;
 	font-size: 100%;
 }
 
