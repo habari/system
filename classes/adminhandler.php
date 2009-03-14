@@ -2942,6 +2942,7 @@ class AdminHandler extends ActionHandler
 			case 'comments':
 			case 'ajax_comments':
 			case 'ajax_in_edit':
+			case 'ajax_update_comment':
 				$require_any = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
 				break;
 			case 'tags':
