@@ -86,8 +86,8 @@ class InstallHandler extends ActionHandler
 		// try to load any values that might be defined in config.php
 		if ( file_exists( Site::get_dir('config_file') ) ) {
 			include( Site::get_dir('config_file') );
-			if ( isset( $db_connection ) ) {
-				list( $this->handler_vars['db_type'], $remainder )= explode( ':', $db_connection['connection_string'] );
+			if ( Config::exists( 'db_connection' ) ) {
+				list( $this->handler_vars['db_type'], $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
 				switch( $this->handler_vars['db_type'] ) {
 				case 'sqlite':
 					// SQLite uses less info.
@@ -105,9 +105,9 @@ class InstallHandler extends ActionHandler
 					list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
 					break;
 				}
-				$this->handler_vars['db_user'] = $db_connection['username'];
-				$this->handler_vars['db_pass'] = $db_connection['password'];
-				$this->handler_vars['table_prefix'] = $db_connection['prefix'];
+				$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;
+				$this->handler_vars['db_pass'] = Config::get( 'db_connection' )->password;
+				$this->handler_vars['table_prefix'] = Config::get( 'db_connection' )->prefix;
 			}
 			// if a $blog_data array exists in config.php, use it
 			// to pre-load values for the installer
@@ -255,7 +255,7 @@ class InstallHandler extends ActionHandler
 		$formdefaults['db_pass'] = '';
 		$formdefaults['db_file'] = 'habari.db';
 		$formdefaults['db_schema'] = 'habari';
-		$formdefaults['table_prefix'] = isset($GLOBALS['db_connection']['prefix']) ? $GLOBALS['db_connection']['prefix'] : 'habari__';
+		$formdefaults['table_prefix'] = isset( Config::get( 'db_connection' )->prefix ) ? Config::get( 'db_connection' )->prefix : 'habari__';
 		$formdefaults['admin_username'] = 'admin';
 		$formdefaults['admin_pass1'] = '';
 		$formdefaults['admin_pass2'] = '';
@@ -523,10 +523,9 @@ class InstallHandler extends ActionHandler
 	 */
 	private function connect_to_existing_db()
 	{
-		global $db_connection;
 		if($config = $this->get_config_file()) {
 			$config = preg_replace('/<\\?php(.*)\\?'.'>/ims', '$1', $config);
-			// Update the $db_connection global from the config that is about to be written:
+			// Update the db_connection from the config that is about to be written:
 			eval($config);
 
 			/* Attempt to connect to the database host */
@@ -803,11 +802,11 @@ class InstallHandler extends ActionHandler
 
 			// and now we compare the values defined there to
 			// the values POSTed to the installer
-			if ( isset($db_connection) &&
-				( $db_connection['connection_string'] == $connection_string )
-				&& ( $db_connection['username'] == $db_user )
-				&& ( $db_connection['password'] == $db_pass )
-				&& ( $db_connection['prefix'] == $table_prefix )
+			if ( Config::exists( 'db_connection' ) &&
+				( Config::get( 'db_connection' )->connection_string == $connection_string )
+				&& ( Config::get( 'db_connection' )->username == $db_user )
+				&& ( Config::get( 'db_connection' )->password == $db_pass )
+				&& ( Config::get( 'db_connection' )->prefix == $table_prefix )
 			) {
 				// the values are the same, so don't bother
 				// trying to write to config.php
@@ -1183,10 +1182,8 @@ class InstallHandler extends ActionHandler
 	 */
 	public function upgrade_db()
 	{
-		global $db_connection;
-
 		// This database-specific code needs to be moved into the schema-specific functions
-		list( $schema, $remainder )= explode( ':', $db_connection['connection_string'] );
+		list( $schema, $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
 		switch( $schema ) {
 		case 'sqlite':
 			$db_name = '';
@@ -1211,7 +1208,7 @@ class InstallHandler extends ActionHandler
 		DB::upgrade( $version );
 
 		// Get the queries for this database and apply the changes to the structure
-		$queries = $this->get_create_table_queries($schema, $db_connection['prefix'], $db_name);
+		$queries = $this->get_create_table_queries($schema, Config::get( 'db_connection' )->prefix, $db_name);
 		DB::dbdelta($queries);
 
 		// Apply data changes to the database based on version, call the db-specific upgrades, too.

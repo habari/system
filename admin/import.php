@@ -38,7 +38,7 @@
 </div>
 
 <?php
-	// unset the $db_connection variable, since we don't need it any more
-	unset( $db_connection );
+	// unset db_connection, since we don't need it any more
+	Config::clear( 'db_connection' );
 ?>
 <?php include('footer.php'); ?>
