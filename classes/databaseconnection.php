@@ -84,8 +84,8 @@ class DatabaseConnection
 	 */
 	protected function load_tables()
 	{
-		if ( isset ( $GLOBALS['db_connection']['prefix'] ) ) {
-			$prefix = $GLOBALS['db_connection']['prefix'];
+		if ( isset ( Config::get( 'db_connection' )->prefix ) ) {
+			$prefix = Config::get( 'db_connection' )->prefix;
 		}
 		else if ( isset( $_POST['table_prefix'] ) ) {
 			$prefix = $_POST['table_prefix'];

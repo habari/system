@@ -52,9 +52,9 @@ class DB extends Singleton
 		}
 		else {
 			/* We use the config.php variables */
-			$connect_string = $GLOBALS['db_connection']['connection_string'];
-			$db_user = $GLOBALS['db_connection']['username'];
-			$db_pass = $GLOBALS['db_connection']['password'];
+			$connect_string = Config::get( 'db_connection' )->connection_string;
+			$db_user = Config::get( 'db_connection' )->username;
+			$db_pass = Config::get( 'db_connection' )->password;
 		}
 		DB::instance()->connection = DatabaseConnection::ConnectionFactory( $connect_string );
 		if ( NULL != DB::instance()->connection ) {
