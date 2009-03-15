@@ -4,16 +4,16 @@ var dashboard = {
 		$('.modules').sortable({
 			items: '.module:not(.add-item-module)',
 			handle: 'div.handle',
-			opacity: .9,
+			opacity: 0.9,
 			stop: function() {
 				dashboard.update();
 			}
 		});
 
 		$('.options').toggle(function() {
-				$(this).parents('li').addClass('viewingoptions')
+				$(this).parents('li').addClass('viewingoptions');
 			}, function() {
-				$(this).parents('li').removeClass('viewingoptions')
+				$(this).parents('li').removeClass('viewingoptions');
 			});
 
 		$('.close', '.modules').click( function() {
@@ -31,7 +31,7 @@ var dashboard = {
 		$('.module', '.modules').not('.ui-sortable-helper').each( function(i) {
 			query['module' + i] = this.getAttribute('id');
 		} );
-		query['action'] = 'updateModules';
+		query.action = 'updateModules';
 		$.post(
 			habari.url.ajaxDashboard,
 			query,
@@ -51,8 +51,8 @@ var dashboard = {
 		// disable dragging and dropping while we update
 		$('.modules').sortable('disable');
 		var query = {};
-		query['action'] = 'addModule';
-		query['module_name'] = $('#dash_additem option:selected').val();
+		query.action = 'addModule';
+		query.module_name = $('#dash_additem option:selected').val();
 		$.post(
 			habari.url.ajaxDashboard,
 			query,
@@ -63,16 +63,15 @@ var dashboard = {
 				//$('.modules').sortable('enable');
 				humanMsg.displayMsg( json.message );
 			},
-			'json'
-			);
+			'json');
 	},
 	remove: function( id ) {
 		spinner.start();
 		// disable dragging and dropping while we update
 		$('.modules').sortable('disable');
 		var query = {};
-		query['action'] = 'removeModule';
-		query['moduleid'] = id;
+		query.action = 'removeModule';
+		query.moduleid = id;
 		$.post(
 			habari.url.ajaxDashboard,
 			query,
@@ -83,17 +82,16 @@ var dashboard = {
 				//$('.modules').sortable('enable');
 				humanMsg.displayMsg( json.message );
 			},
-			'json'
-			);
+			'json');
 	}
-}
+};
 
 // Inline edit
 var inEdit = {
 	init: function() {
 		inEdit.editables = '.date a.edit-date, .title a.author.edit-author, .authorinfo a.edit-url, .authorinfo a.edit-email, .time span.edit-time, .content.edit-content';
 
-		if($('#comments').length == 0) { // Only works for comments, presently
+		if($('#comments').length === 0) { // Only works for comments, presently
 			return;
 		}
 
@@ -106,7 +104,7 @@ var inEdit = {
 				}
 				return false;
 			});
-		})
+		});
 	},
 	activated: false,
 	editables: null,
@@ -115,12 +113,13 @@ var inEdit = {
 
 		var clas = null;
 
-		var key = 0;
 		for (var key in classes) {
-			clas = classes[key];
-			if(clas.search('edit-') != -1) {
-				destination = clas.substring(clas.search('edit-') + 5);
-				return destination;
+			if(classes.hasOwnProperty(key)) {
+				clas = classes[key];
+				if(clas.search('edit-') != -1) {
+					destination = clas.substring(clas.search('edit-') + 5);
+					return destination;
+				}
 			}
 		}
 
@@ -143,17 +142,18 @@ var inEdit = {
 			destination = inEdit.getDestination(classes);
 			var val = $(this).html();
 			var width = $(this).width();
+			var field;
 
 			$(this).hide();
 
 			if($(this).hasClass('area')) {
-				var field = $('<textarea></textarea>');
+				field = $('<textarea></textarea>');
 				field.height(100)
 					.attr('class', classes)
 					.removeClass('pct75')
 					.width(width - 13);
 			} else {
-				var field = $('<input></input>');
+				field = $('<input></input>');
 				field.attr('class', classes)
 					.width(width + 5);
 			}
@@ -193,10 +193,10 @@ var inEdit = {
 			query[inEdit.getDestination($(this).attr('class'))]= $(this).val();
 		});
 
-		query['id']= inEdit.activated;
-		query['timestamp']= $('input#timestamp').attr('value');
-		query['nonce']= $('input#nonce').attr('value');
-		query['digest']= $('input#PasswordDigest').attr('value');
+		query.id = inEdit.activated;
+		query.timestamp = $('input#timestamp').attr('value');
+		query.nonce = $('input#nonce').attr('value');
+		query.digest = $('input#PasswordDigest').attr('value');
 
 		$.ajax({
 			type: 'POST',
@@ -225,19 +225,19 @@ var inEdit = {
 		itemManage.changeItem();
 
 	}
-}
+};
 
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins, .page-groups').length != 0) {
+		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins, .page-groups').length !== 0) {
 			$("input#search").keyup(function (e) {
 				var str = $('input#search').val();
 				itemManage.simpleFilter(str);
 			});
 		}
 
-		if(!$('.item.controls input[type=checkbox]')) return;
+		if(!$('.item.controls input[type=checkbox]')) {return;}
 
 		itemManage.initItems();
 
@@ -252,7 +252,7 @@ var itemManage = {
 		/* for all manage pages except for comments, add an ajax call to the
 		 * delete button
 		 */
-		if( $('.manage.comments').length == 0 ) {
+		if( $('.manage.comments').length === 0 ) {
 			$('.item.controls input.button.delete').click(function () {
 				itemManage.update( 'delete' );
 				return false;
@@ -298,7 +298,7 @@ var itemManage = {
 		search = $.trim( search.toLowerCase() );
 
 		// cache search items on first call
-		if ( itemManage.searchCache.length == 0 ) {
+		if ( itemManage.searchCache.length === 0 ) {
 			itemManage.searchRows = $('li.item, .item.plugin, .item.tag, div.settings, .container.plugins, .item.group');
 			itemManage.searchCache = itemManage.searchRows.map(function() {
 				return $(this).text().toLowerCase();
@@ -313,7 +313,7 @@ var itemManage = {
 			}
 		});
 
-		if($('div.settings').length != 0 || $('.container.plugins:visible').length > 1) {
+		if($('div.settings').length !== 0 || $('.container.plugins:visible').length > 1) {
 			$('select[name=navigationdropdown]').val('all');
 		}
 
@@ -325,7 +325,7 @@ var itemManage = {
 	changeItem: function() {
 		var selected = {};
 
-		if(itemManage.selected.length != 0) {
+		if(itemManage.selected.length !== 0) {
 			selected = itemManage.selected;
 		}
 
@@ -361,7 +361,7 @@ var itemManage = {
 			}
 		}
 
-		if(count == 0) {
+		if(count === 0) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
@@ -381,7 +381,7 @@ var itemManage = {
 				$('.item.controls label.selectedtext').text('All visible selected (' + count + ' total)');
 			}
 
-			if((total == count) || $('.currentposition .total').length == 0) {
+			if((total == count) || $('.currentposition .total').length === 0) {
 				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html('All ' + total + ' selected');
 			}
 		} else {
@@ -414,22 +414,22 @@ var itemManage = {
 	update: function( action, id ) {
 		spinner.start();
 		var query = {};
-		if ( id == null ) {
+		if ( id === null ) {
 			query = itemManage.selected;
 		}
 		else {
 			query['p' + id]= 1;
 		}
 
-		query['action'] = action;
-		query['timestamp']= $('input#timestamp').attr('value');
-		query['nonce']= $('input#nonce').attr('value');
-		query['digest']= $('input#PasswordDigest').attr('value');
-		if ( $('.manage.users').length != 0 ) {
-			query['reassign'] = $('select#reassign').attr('value');
+		query.action = action;
+		query.timestamp = $('input#timestamp').attr('value');
+		query.nonce = $('input#nonce').attr('value');
+		query.digest = $('input#PasswordDigest').attr('value');
+		if ( $('.manage.users').length !== 0 ) {
+			query.reassign = $('select#reassign').attr('value');
 		}
 
-		elItem = $('#item-' + id)
+		elItem = $('#item-' + id);
 
 		if(elItem.length > 0 || action == 'delete') {
 			elItem.fadeOut();
@@ -462,17 +462,16 @@ var itemManage = {
 
 				itemManage.selected = [];
 			},
-			'json'
-			);
+			'json');
 	},
 	rename: null,
 	remove: function( id ) {
 		itemManage.update( 'delete', id );
 	},
 	fetch: function( offset, limit, resetTimeline, silent ) {
-		offset = ( offset == null ) ? 0 : offset;
-		limit = ( limit == null ) ? 20: limit;
-		silent = ( silent == null ) ? false: silent;
+		offset = ( offset === null ) ? 0 : offset;
+		limit = ( limit === null ) ? 20: limit;
+		silent = ( silent === null ) ? false: silent;
 		spinner.start();
 
 		$.ajax({
@@ -487,7 +486,7 @@ var itemManage = {
 				} else {
 					itemManage.fetchReplace.html(json.items);
 					// if we have a timeline, replace its content
-					if ( resetTimeline && $('.timeline').length !=0 ) {
+					if ( resetTimeline && $('.timeline').length !== 0 ) {
 						// we hide and show the timeline to fix a firefox display bug
 						$('.years').html(json.timeline).hide();
 						spinner.stop();
@@ -501,7 +500,7 @@ var itemManage = {
 						itemManage.initItems();
 						$('input.checkbox').rangeSelect();
 					}
-					if ( itemManage.inEdit == true ) {
+					if ( itemManage.inEdit === true ) {
 						inEdit.init();
 						inEdit.deactivate();
 					}
@@ -513,13 +512,13 @@ var itemManage = {
 			}
 		});
 	}
-}
+};
 
 // Plugin Management
 var pluginManage = {
 	init: function() {
 		// Return if we're not on the plugins page
-		if(!$('.page-plugins').length) return;
+		if(!$('.page-plugins').length) {return;}
 
 		$('.plugins .item').hover( function() {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
@@ -528,7 +527,7 @@ var pluginManage = {
       }
 		);
 	}
-}
+};
 
 // Group Management
 var groupManage = {
@@ -536,9 +535,11 @@ var groupManage = {
 		this.users = users;
 
 		for(var z in this.users) {
-			$('#assign_user').append($('<option value="' + this.users[z].id + '">' + this.users[z].username + '</option>'));
-			if(this.users[z].member) {
-				this.addMember(this.users[z].id);
+			if(users.hasOwnProperty(z)) {
+				$('#assign_user').append($('<option value="' + this.users[z].id + '">' + this.users[z].username + '</option>'));
+				if(this.users[z].member) {
+					this.addMember(this.users[z].id);
+				}
 			}
 		}
 
@@ -565,7 +566,7 @@ var groupManage = {
 		name = this.users[id].username;
 
 		if(this.users[id].member) {
-			if($('#user_' + id).val() == 0) {
+			if($('#user_' + id).val() === 0) {
 				$('#user_' + id).val('1');
 				$('#currentusers .memberlist').append('<a href="#" onclick="groupManage.removeMember(this,'+id+');" class="user">' + this.users[id].username + '</a>');
 			}
@@ -617,13 +618,13 @@ var groupManage = {
 			$(div).hide();
 		}
 	}
-}
+};
 
 // TIMELINE
 var timeline = {
 	init: function() {
 		// No Timeline? No runny-runny.
-		if (!$('.timeline').length) return;
+		if (!$('.timeline').length) {return;}
 
 		// Set up pointers to elements for speed
 		timeline.view = $('.timeline');
@@ -649,7 +650,7 @@ var timeline = {
 		}
 
 		// check for a timeline larger than its view
-		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		// timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 		var viewWidth = $('.timeline').width();
 		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
@@ -688,22 +689,23 @@ var timeline = {
 			.unbind('click')
 			.bind('dblclick', function(e) { // Double-clicking on either side of the handle moves the handle to the clicked position.
 				// Dismiss clicks on handle
-				if ($(e.target).is('.handle')) return false;
+				if ($(e.target).is('.handle')) {return false;}
 
 				timeline.noJump = true;
 				clearTimeout(timeline.t1);
-				$('.track').slider('moveTo', e.layerX)
+				$('.track').slider('moveTo', e.layerX);
 			})
 			.bind('click', function(e) { // Clicking either side of the handle moves the handle its own length to that side.
 
 				// Dismiss clicks on handle
-				if ($(e.target).is('.handle')) return false;
+				if ($(e.target).is('.handle')) {return false;}
 
 				// Click to left or right of handle?
-				if (e.layerX < $('.track').slider('value') )
-					timeline.t1 = setTimeout('timeline.skipLoupeLeft()', 300);
-				else
-					timeline.t1 = setTimeout('timeline.skipLoupeRight()', 300);
+				if (e.layerX < $('.track').slider('value') ) {
+					timeline.t1 = setTimeout(timeline.skipLoupeLeft, 300);
+				} else {
+					timeline.t1 = setTimeout(timeline.skipLoupeRight, 300);
+				}
 			})
 			.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
 
@@ -711,12 +713,12 @@ var timeline = {
 		timeline.do_search = true;
 	},
 	skipLoupeLeft: function(e) {
-		if (timeline.noJump == true) {
+		if (timeline.noJump === true) {
 			timeline.noJump = null;
 			return false;
 		}
 
-		$('.handle').css( 'left', Math.max(parseInt($('.handle').css('left')) - $('.handle').width(), 0) );
+		$('.handle').css( 'left', Math.max(parseInt($('.handle').css('left'), 10) - $('.handle').width(), 0) );
 		timeline.updateView();
 		var loupeInfo = timelineHandle.getLoupeInfo();
 		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
@@ -724,30 +726,29 @@ var timeline = {
 
 	},
 	skipLoupeRight: function(e) {
-		if (timeline.noJump == true) {
+		if (timeline.noJump === true) {
 			timeline.noJump = null;
 			return false;
 		}
 
-		$('.handle').css( 'left', Math.min(parseInt($('.handle').css('left')) + $('.handle').width(), parseInt($('.track').width()) - $('.handle').width() ));
+		$('.handle').css( 'left', Math.min(parseInt($('.handle').css('left'), 10) + $('.handle').width(), parseInt($('.track').width(), 10) - $('.handle').width() ));
 		timeline.updateView();
 		var loupeInfo = timelineHandle.getLoupeInfo();
 		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 		timelineHandle.updateLoupeInfo();
 	},
 	updateView: function() {
-		if ( ! timeline.overhang )
-			return;
+		if ( ! timeline.overhang ) {return;}
 		if ( timeline.handle.offset().left <= timeline.view.offset().left + 5) {
 			// timeline needs to slide right if we are within 5px of edge
-			$('.years').css( 'right', Math.max( parseInt($('.years').css('right')) - timeline.handle.width(), 0 - timeline.overhang ) );
+			$('.years').css( 'right', Math.max( parseInt($('.years').css('right'),10) - timeline.handle.width(), 0 - timeline.overhang ) );
 			/*$('.years').stop().animate( {
 				right: Math.max( parseInt($('.years').css('right')) - 2*timeline.handle.width(), 0 - timeline.overhang )
 				}, function() { timeline.sliding = false; } );*/
 		}
 		else if ( timeline.handle.offset().left + timeline.handle.width() + 5 >= timeline.view.offset().left + timeline.view.width() ) {
 			// slide the timeline to the left
-			$('.years').css( 'right', Math.min( parseInt($('.years').css('right')) + timeline.handle.width(), 0 ) );
+			$('.years').css( 'right', Math.min( parseInt($('.years').css('right'),10) + timeline.handle.width(), 0 ) );
 			/*$('.years').stop().animate( {
 				right: Math.min( parseInt($('.years').css('right')) + 2*timeline.handle.width(), 0 )
 				}, function() { timeline.sliding = false; } );*/
@@ -770,7 +771,7 @@ var timeline = {
 		// the index is the offset from this boundary, but it cannot be greater than
 		// the number of posts in the month (the month has some extra padding which
 		// increases its width).
-		var padding = parseInt( $('.years span').css('margin-left') );
+		var padding = parseInt( $('.years span').css('margin-left'),10);
 		padding = padding ? padding : 0;
 		return monthIndex + Math.min(
 						Math.max( pos - ( monthBoundary + padding ), 0 ),
@@ -782,7 +783,7 @@ var timeline = {
 		var position = 0;
 		var positionIndex = 1;
 
-		if ( index < 1 ) return 0;
+		if ( index < 1 ) {return 0;}
 
 		for ( i = 0; i < timeline.monthWidths.length && positionIndex + timeline.monthData[i] < index; i++ ) {
 			position+= timeline.monthWidths[i];
@@ -790,7 +791,7 @@ var timeline = {
 			month = i + 1;
 		}
 
-		var padding = parseInt( $('.years .months span').css('margin-left') );
+		var padding = parseInt( $('.years .months span').css('margin-left'), 10 );
 		padding = padding ? padding : 0;
 		return position + padding + ( index - positionIndex );
 	},
@@ -816,9 +817,9 @@ var timeline = {
 		}
 
 		// check for a timeline larger than its view
-		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
+		// timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 		var viewWidth = $('.timeline').width();
-		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0
+		timeline.overhang = ( timelineWidth > viewWidth ) ? timelineWidth - viewWidth : 0;
 
 		// find the width which makes the loupe select 20 items
 		var handleWidth = timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
@@ -831,8 +832,8 @@ var timeline = {
 
 		// Fix width of years, so they don't spill into the next year
 		$('.year > span').each( function() {
-			$(this).width( $(this).parents('.year').width() - 4 )
-		})
+			$(this).width( $(this).parents('.year').width() - 4 );
+		});
 
 		// reset the slider maxValue
 		$('.track').slider( 'setData', 'max', Math.max( 1, maxSliderValue ) );
@@ -842,7 +843,7 @@ var timeline = {
 		$('.track').slider( 'moveTo', maxSliderValue );
 		timeline.do_search = true;
 	}
-}
+};
 
 
 // TIMELINE HANDLE
@@ -852,11 +853,11 @@ var timelineHandle = {
 
 		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the
 		 * right side of the handle */
-		timeline.handle.css( 'right', 'auto' )
+		timeline.handle.css( 'right', 'auto' );
 
 
 		// Slide and fade in the handle
-		var handleLocation = parseInt(timeline.handle.css('left'));
+		var handleLocation = parseInt(timeline.handle.css('left'), 10);
 		timeline.handle
 //			.css( 'left', handleLocation - 250 )
 			.animate({ opacity: 1 /* , left: handleLocation */ }, 2000, 'swing');
@@ -889,12 +890,12 @@ var timelineHandle = {
 		if ( h.css('right') == 'auto' ) {
 			h.css({
 				'left':	'auto',
-				'right': track.width() - ( parseInt(h.css('left')) + h.width() )
+				'right': track.width() - ( parseInt(h.css('left'), 10) + h.width() )
 			});
 		}
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the left
-		h.css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - track.offset().left)), 20), Math.min(track.width() - parseInt(h.css('right')), 200)));
+		h.css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - track.offset().left)), 20), Math.min(track.width() - parseInt(h.css('right'),10), 200)));
 
 		return false;
 	},
@@ -908,21 +909,21 @@ var timelineHandle = {
 		});
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the right
-		h.css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min(track.width() - parseInt(h.css('left')), 200)) );
+		h.css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min(track.width() - parseInt(h.css('left'), 10), 200)) );
 
 		return false;
 	},
 	getLoupeInfo: function() {
 		var cur_overhang = $('.track').offset().left - $('.years').offset().left;
-		var loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + cur_overhang);
+		var loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left'), 10) + cur_overhang);
 		var loupeWidth = $('.handle').width();
-		var loupeEndPosition = timeline.indexFromPosition( parseInt($('.handle').css('left')) + loupeWidth + cur_overhang );
+		var loupeEndPosition = timeline.indexFromPosition( parseInt($('.handle').css('left'), 10) + loupeWidth + cur_overhang );
 
 		var loupeInfo = {
 			start: loupeStartPosition,
 			end: loupeEndPosition,
-			offset: parseInt(timeline.totalCount) - parseInt(loupeEndPosition),
-			limit: 1 + parseInt(loupeEndPosition) - parseInt(loupeStartPosition)
+			offset: parseInt(timeline.totalCount, 10) - parseInt(loupeEndPosition, 10),
+			limit: 1 + parseInt(loupeEndPosition, 10) - parseInt(loupeStartPosition, 10)
 			};
 		return loupeInfo;
 	},
@@ -930,11 +931,15 @@ var timelineHandle = {
 		var loupeInfo = timelineHandle.getLoupeInfo();
 
 		$('.currentposition').html( loupeInfo.start +'-'+ loupeInfo.end +' of <span class="total inline">'+ timeline.totalCount + '</span>');
-		if ($('.currentposition').css('opacity')) $('.currentposition').animate({opacity: 1}, 500)
+		if ($('.currentposition').css('opacity')) { 
+			$('.currentposition').animate({opacity: 1}, 500);
+		}
 
 		// Hide 'newer' and 'older' links as necessary
-		if (loupeInfo.start == 1) $('.navigator .older').animate({opacity: '0'}, 200); else $('.navigator .older').animate({opacity: '1'}, 200);
-		if (loupeInfo.end == timeline.totalCount) $('.navigator .newer').animate({opacity: '0'}, 200); else $('.navigator .newer').animate({opacity: '1'}, 200);
+		if (loupeInfo.start == 1) {$('.navigator .older').animate({opacity: '0'}, 200);} 
+		else {$('.navigator .older').animate({opacity: '1'}, 200);}
+		if (loupeInfo.end == timeline.totalCount) {$('.navigator .newer').animate({opacity: '0'}, 200); }
+		else {$('.navigator .newer').animate({opacity: '1'}, 200);}
 	},
 	endDrag: function(e) {
 		timeline.noJump = true;
@@ -953,7 +958,7 @@ var timelineHandle = {
 
 		return false;
 	}
-}
+};
 
 
 // SPINNER
@@ -964,13 +969,13 @@ var spinner = {
 	stop: function () {
 		$('#spinner').spinner('stop');$('#spinner').hide();
 	}
-}
+};
 
 
 // NAVIGATION DROPDOWNS
 var navigationDropdown = {
 	init: function() {
-		if($('.page-user').length == 0 && $('.page-options').length == 0) {
+		if($('.page-user').length === 0 && $('.page-options').length === 0) {
 			return;
 		}
 
@@ -979,14 +984,15 @@ var navigationDropdown = {
 		});
 	},
 	changePage: function(location) {
-		if(location == null) {
+		if(location === null) {
 			nextPage = $('select[name=navigationdropdown]').val();
 		} else {
 			nextPage = location.options[location.selectedIndex].value;
 		}
 
-		if (nextPage != "" && nextPage != document.location.href)
-			document.location.href = nextPage
+		if (nextPage !== "" && nextPage != document.location.href) {
+			document.location.href = nextPage;
+		}
 	},
 	filter: function() {
 		var selected = $('select[name=navigationdropdown]').val();
@@ -999,7 +1005,7 @@ var navigationDropdown = {
 			$('.settings#' + selected + ', .container.plugins#' + selected + ', .optiongroup#' + selected ).removeClass('hidden');
 		}
 	}
-}
+};
 
 
 // DROPBUTTON
@@ -1014,8 +1020,8 @@ var dropButton = {
 			dropButton.showMenu();
 		}, function(e) {
 			// After mouse out, wait, then close
-			dropButton.t1 = setTimeout('dropButton.hideMenu()', 500);
-		})
+			dropButton.t1 = setTimeout(dropButton.hideMenu, 500);
+		});
 	},
 
 	showMenu: function(element) {
@@ -1041,11 +1047,11 @@ var theMenu = {
 	init: function() {
 		// Carrot functionality
 		$('#menulist li').hover(function() {
-			$('#menulist li').removeClass('carrot')
-			$(this).addClass('carrot')
+			$('#menulist li').removeClass('carrot');
+			$(this).addClass('carrot');
 		}, function() {
-			$('#menulist li').removeClass('carrot')
-		})
+			$('#menulist li').removeClass('carrot');
+		});
 
 		// Open menu on Q
 		$.hotkeys.add('q', {propagate:true, disableInInput: true}, function(){
@@ -1061,13 +1067,13 @@ var theMenu = {
 
 		// Close menu on ESC
 		$.hotkeys.add('esc', {propagate:true, disableInInput: false}, function(){
-			$('.carrot').removeClass('carrot')
+			$('.carrot').removeClass('carrot');
 			dropButton.hideMenu();
 		});
 
 		// Down arrow
 		$.hotkeys.add('down', {propagate:false, disableInInput: true}, function() {
-			if($('#menulist .carrot ul li.carrot').length != 0) {
+			if($('#menulist .carrot ul li.carrot').length !== 0) {
 				if ($('#menulist .carrot ul li:last').hasClass('carrot')) {
 					// Move to top if at bottom
 					$('#menulist .carrot ul li:last').removeClass('carrot');
@@ -1075,17 +1081,19 @@ var theMenu = {
 				} else {
 					$('#menulist .carrot ul li.carrot').removeClass('carrot').next().addClass('carrot');
 				}
-			} else if(($('#menu').hasClass('hovering') == true)) {
+			} else if(($('#menu').hasClass('hovering') === true)) {
 				// If carrot doesn't exist, select first item
-				if (!$('#menulist li').hasClass('carrot'))
-					$('#menulist li:first').addClass('carrot')
+				if (!$('#menulist li').hasClass('carrot')) {
+					$('#menulist li:first').addClass('carrot');
+				}
 				// If carrot is at bottom, move it to top
 				else if ($('#menulist li:last').hasClass('carrot')) {
-					$('#menulist li:last').removeClass('carrot')
-					$('#menulist li:first').addClass('carrot')
+					$('#menulist li:last').removeClass('carrot');
+					$('#menulist li:first').addClass('carrot');
 				// If carrot exists, move it down
-				} else
-					$('.carrot').removeClass('carrot').next().addClass('carrot')
+				} else {
+					$('.carrot').removeClass('carrot').next().addClass('carrot');
+				}
 			} else {
 				return false;
 			}
@@ -1099,7 +1107,7 @@ var theMenu = {
 
 		// Up arrow
 		$.hotkeys.add('up', {propagate:true, disableInInput: true}, function(){
-			if($('#menulist .carrot ul li.carrot').length != 0) {
+			if($('#menulist .carrot ul li.carrot').length !== 0) {
 				if ($('#menulist .carrot ul li:first').hasClass('carrot')) {
 					$('#menulist .carrot ul li:first').removeClass('carrot');
 					$('#menulist .carrot ul li:last').addClass('carrot');
@@ -1107,17 +1115,19 @@ var theMenu = {
 				} else {
 					$('#menulist .carrot ul li.carrot').removeClass('carrot').prev().addClass('carrot');
 				}
-			} else if ($('#menu').hasClass('hovering') == true) {
+			} else if ($('#menu').hasClass('hovering') === true) {
 				// If carrot doesn't exist, select last item
-				if (!$('#menulist li').hasClass('carrot'))
-					$('#menulist li:last').addClass('carrot')
+				if (!$('#menulist li').hasClass('carrot')) {
+					$('#menulist li:last').addClass('carrot');
+				}
 				// If carrot is at top, move it to bottom
 				else if ($('#menulist li:first').hasClass('carrot')) {
-					$('#menulist li:first').removeClass('carrot')
-					$('#menulist li:last').addClass('carrot')
+					$('#menulist li:first').removeClass('carrot');
+					$('#menulist li:last').addClass('carrot');
 				// If carrot exists, move it up
-				} else
-					$('.carrot').removeClass('carrot').prev().addClass('carrot')
+				} else {
+					$('.carrot').removeClass('carrot').prev().addClass('carrot');
+				}
 			} else {
 				return false;
 			}
@@ -1125,7 +1135,7 @@ var theMenu = {
 
 		// Right arrow
 		$.hotkeys.add('right', {propagate:true, disableInInput: true}, function(){
-			if ($('.carrot').hasClass('submenu') == true) {
+			if ($('.carrot').hasClass('submenu') === true) {
 				$('.carrot ul li:first').addClass('carrot');
 			} else {
 				return false;
@@ -1139,13 +1149,13 @@ var theMenu = {
 
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
-			if ($('#menu').hasClass('hovering') == true && $('.carrot')) {
-				if ($('.carrot').hasClass('submenu') == true) {
+			if ($('#menu').hasClass('hovering') === true && $('.carrot')) {
+				if ($('.carrot').hasClass('submenu') === true) {
 					theMenu.blinkCarrot($('.carrot ul li.carrot a').parent());
 					location = $('.carrot ul li.carrot a').attr('href');
 				}
 				else {
-					theMenu.blinkCarrot($('.carrot a').parent())
+					theMenu.blinkCarrot($('.carrot a').parent());
 					location = $('.carrot a').attr('href');
 				}
 			} else {
@@ -1162,13 +1172,13 @@ var theMenu = {
 
 			if (hotkey) {
 				$.hotkeys.add(hotkey, { propagate: true, disableInInput: true }, function() {
-					if ($('#menu').hasClass('hovering') == true) {
+					if ($('#menu').hasClass('hovering') === true) {
 						if (owner.hasClass('submenu')) {
 							$('.carrot').removeClass('carrot');
 							owner.addClass('carrot');
 						} else if(owner.hasClass('sub')) {
 							// Exists in a submenu
-							if($('#menu li.carrot li.hotkey-' + hotkey).length != 0) {
+							if($('#menu li.carrot li.hotkey-' + hotkey).length !== 0) {
 								// Hotkey exists in an active menu, use that
 								location = $('#menu li.carrot li.hotkey-' + hotkey + ' a').attr('href');
 								theMenu.blinkCarrot($('#menu li.carrot li.hotkey-' + hotkey));
@@ -1208,16 +1218,16 @@ var theMenu = {
 			if ($('#menu #menulist').css('display') == 'block') {
 				dropButton.hideMenu();
 			}
-		})
+		});
 	},
 	blinkCarrot: function(owner) {
-		spinner.start()
+		spinner.start();
 		var blinkSpeed = 100;
 		$(owner).addClass('carrot').addClass('blinking').fadeOut(blinkSpeed).fadeIn(blinkSpeed).fadeOut(blinkSpeed).fadeIn(blinkSpeed, function() {
 			dropButton.hideMenu();
 		});
 	}
-}
+};
 
 // LIVESEARCH
 var liveSearch = {
@@ -1233,7 +1243,7 @@ var liveSearch = {
 				}
 			})
 			.blur( function () {
-				if ( $.trim( liveSearch.input.val() ) == '' ) {
+				if ( $.trim( liveSearch.input.val() ) === '' ) {
 					liveSearch.input.val( liveSearch.searchPrompt );
 				}
 			})
@@ -1260,7 +1270,7 @@ var liveSearch = {
 	prevSearch: '',
 	input: null,
 	doSearch: function() {
-		if ( liveSearch.getSearchText() == liveSearch.prevSearch ) return;
+		if ( liveSearch.getSearchText() == liveSearch.prevSearch ) {return;}
 
 		spinner.start();
 
@@ -1274,7 +1284,7 @@ var liveSearch = {
 		}
 		return search_txt;
 	}
-}
+};
 
 
 // SEARCH CRITERIA TOGGLE
@@ -1297,15 +1307,6 @@ function toggleSearch() {
 $.fn.resizeable = function(){
 
 	this.each(function() {
-		var textarea = $(this);
-		var offset = null;
-		var grip = $('<div class="grip"></div>').mousedown(function(ev){
-			offset = textarea.height() - (ev.clientY + document.documentElement.scrollTop)
-			$(document).mousemove(doDrag).mouseup(endDrag);
-		}).mouseup(endDrag);
-		var resizer = $('<div class="resizer"></div>').css('margin-bottom',$(this).css('margin-bottom'));
-		$(this).css('margin-bottom', '0px').wrap(resizer).parent().append(grip);
-
 		function doDrag(ev){
 			textarea.height(Math.max(offset + ev.clientY + document.documentElement.scrollTop, 60) + 'px');
 			return false;
@@ -1316,8 +1317,16 @@ $.fn.resizeable = function(){
 			textarea.css('opacity', 1.0);
 		}
 
+		var textarea = $(this);
+		var offset = null;
+		var grip = $('<div class="grip"></div>').mousedown(function(ev){
+			offset = textarea.height() - (ev.clientY + document.documentElement.scrollTop);
+			$(document).mousemove(doDrag).mouseup(endDrag);
+		}).mouseup(endDrag);
+		var resizer = $('<div class="resizer"></div>').css('margin-bottom',$(this).css('margin-bottom'));
+		$(this).css('margin-bottom', '0px').wrap(resizer).parent().append(grip);
 	});
-}
+};
 
 
 // RANGE SELECT - Courtesy of Barney Boisvert at http://www.barneyb.com/barneyblog/projects/jquery-checkbox-range-selection/
@@ -1326,22 +1335,21 @@ $.fn.rangeSelect = function() {
 	var $spec = this;
 
 	$spec.bind("click", function(e) {
-		if (lastCheckbox != null && e.shiftKey) {
+		if (lastCheckbox !== null && e.shiftKey) {
 			$spec.slice(
 				Math.min($spec.index(lastCheckbox), $spec.index(e.target)),
-				Math.max($spec.index(lastCheckbox), $spec.index(e.target)) + 1
-			).attr({checked: e.target.checked ? "checked" : ""});
+				Math.max($spec.index(lastCheckbox), $spec.index(e.target)) + 1)
+			.attr({checked: e.target.checked ? "checked" : ""});
 		}
 		lastCheckbox = e.target;
 	});
 	return $spec;
- };
-
+};
 
 // Home-made pseudo-classes
 function findChildren() {
-	$('div > .item:first-child, .modulecore .item:first-child, ul li:first-child').addClass('first-child')
-	$('div > .item:last-child, .modulecore .item:last-child, ul li:last-child').addClass('last-child')
+	$('div > .item:first-child, .modulecore .item:first-child, ul li:first-child').addClass('first-child');
+	$('div > .item:last-child, .modulecore .item:last-child, ul li:last-child').addClass('last-child');
 }
 
 // code for making inline labels which then move above form inputs when the inputs have content
@@ -1368,12 +1376,12 @@ var labeler = {
 	check: function(label) {
 		var target = $('#' + $(label).attr('for'));
 
-		if( !target ) return;
+		if( !target ) {return;}
 
-		if( labeler.focus != null && labeler.focus.attr('id') == target.attr('id') ) {
+		if( labeler.focus !== null && labeler.focus.attr('id') == target.attr('id') ) {
 			labeler.aboveLabel(target);
 		}
-		else if( target.val() == '' ) {
+		else if( target.val() === '' ) {
 			labeler.overLabel(target);
 		}
 		else {
@@ -1395,7 +1403,7 @@ var labeler = {
 			$('label[for=' + $(el).attr('id') + ']').addClass('overcontent').removeClass('abovecontent');
 		}
 	}
-}
+};
 
 
 // EDITOR INTERACTION
@@ -1423,7 +1431,7 @@ habari.editor = {
 		$('#content').filter('.islabeled')
 			.val('')
 			.removeClass('islabeled');
-		$('#content').val(contents)
+		$('#content').val(contents);
 	},
 	getSelection: function(contents) {
 		if($('#content').filter('.islabeled').size() > 0) {
@@ -1437,7 +1445,7 @@ habari.editor = {
 			else if(document.selection) {
 				contentel.focus();
 				var range = document.selection.createRange();
-				if (range == null) {
+				if (range === null) {
 					return '';
 				}
 				return range.text;
@@ -1458,8 +1466,9 @@ $(window).load( function() {
 	timeline.init();
 
 	// Icons only for thin-width clients -- Must be run here to work properly in Safari
-	if ($('#title').width() < ($('#mediatabs li').length * $('#mediatabs li').width()))
+	if ($('#title').width() < ($('#mediatabs li').length * $('#mediatabs li').width())) {
 		$('#mediatabs').addClass('iconify');
+	}
 });
 
 $(document).ready(function(){
@@ -1483,7 +1492,7 @@ $(document).ready(function(){
 
 	// Prevent all checkboxes to be unchecked.
 	$(".search_field").click(function(){
-		if($(".search_field:checked").size() == 0 && !$(this).attr('checked')) {
+		if($(".search_field:checked").size() === 0 && !$(this).attr('checked')) {
 			return false;
 		}
 	});
@@ -1497,7 +1506,7 @@ $(document).ready(function(){
 	$('.resizable').resizeable();
 
 	/* Init Tabs, using jQuery UI Tabs */
-	$('.tabcontrol').tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: null, unselect: true })
+	$('.tabcontrol').tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: null, unselect: true });
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();
@@ -1539,7 +1548,7 @@ function resetTags() {
 		}
 	});
 
-	if(current.length == 0 && !$('#tags').hasClass('focus')) {
+	if(current.length === 0 && !$('#tags').hasClass('focus')) {
 		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
 	}
 
