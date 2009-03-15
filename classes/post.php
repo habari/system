@@ -768,6 +768,7 @@ class Post extends QueryRecord implements IsContent
 			$out = parent::__get( $name );
 			break;
 		}
+		$out = Plugins::filter( "post_get", $out, $name, $this );
 		$out = Plugins::filter( "post_{$name}", $out, $this );
 		if ( $filter ) {
 			$out = Plugins::filter( "post_{$name}_{$filter}", $out, $this );
