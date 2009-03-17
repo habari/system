@@ -1,58 +1,62 @@
 <?php
 /**
- * Habari UserGroups Class
- *
  * @package Habari
+ *
  */
 
+/**
+ * Habari UserGroups Class
+ *
+ */
 class UserGroups extends ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
 
 	/**
 	 * Returns a group or grops based on supplied parameters.
-	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
+	 * @todo This class should cache query results!
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of UserGroup objects, or a single UserGroup object, depending on request
-	 **/
-	public static function get( $paramarray= array() ) {
-		$params= array();
-		$fns= array( 'get_results', 'get_row', 'get_value' );
-		$select= '';
+	 */
+	public static function get( $paramarray = array() )
+	{
+		$params = array();
+		$fns = array( 'get_results', 'get_row', 'get_value' );
+		$select = '';
 		// what to select -- by default, everything
 		foreach ( UserGroup::default_fields() as $field => $value ) {
 			$select.= ( '' == $select )
-				? DB::table( 'groups' ) . ".$field"
-				: ', ' . DB::table( 'groups' ) . ".$field";
+				? "{groups}.$field"
+				: ", {groups}.$field";
 		}
 		// defaults
-		$orderby= 'id ASC';
-		$nolimit= TRUE;
+		$orderby = 'id ASC';
+		$nolimit = TRUE;
 		
 		// Put incoming parameters into the local scope
-		$paramarray= Utils::get_params( $paramarray );
+		$paramarray = Utils::get_params( $paramarray );
 
 		// Transact on possible multiple sets of where information that is to be OR'ed
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
-			$wheresets= $paramarray['where'];
+			$wheresets = $paramarray['where'];
 		}
 		else {
-			$wheresets= array( array() );
+			$wheresets = array( array() );
 		}
 
-		$wheres= array();
-		$join= '';
+		$wheres = array();
+		$join = '';
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[]= $paramarray['where'];
+			$wheres[] = $paramarray['where'];
 		}
 		else {
 			foreach( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
-				$where= array();
-				$paramset= array_merge((array) $paramarray, (array) $paramset);
+				$where = array();
+				$paramset = array_merge((array) $paramarray, (array) $paramset);
 				
-				$default_fields= UserGroup::default_fields();
+				$default_fields = UserGroup::default_fields();
 				foreach ( UserGroup::default_fields() as $field => $scrap ) {
 					if ( !isset( $paramset[$field] ) ) {
 						continue;
@@ -63,77 +67,72 @@ class UserGroups extends ArrayObject
 								continue;
 							}
 						default:
-							$where[]= "{$field}= ?";
-							$params[]= $paramset[$field];
+							$where[] = "{$field}= ?";
+							$params[] = $paramset[$field];
 					}
 				}
 				
 				if(count($where) > 0) {
-					$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
 		}
 
 		// Get any full-query parameters
-		extract( $paramarray );
+		$possible = array( 'fetch_fn', 'count', 'nolimit', 'limit', 'offset' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
 
 		if ( isset( $fetch_fn ) ) {
 			if ( ! in_array( $fetch_fn, $fns ) ) {
-				$fetch_fn= $fns[0];
+				$fetch_fn = $fns[0];
 			}
 		}
 		else {
-			$fetch_fn= $fns[0];
+			$fetch_fn = $fns[0];
 		}
 
 		// is a count being request?
 		if ( isset( $count ) ) {
-			$select= "COUNT($count)";
-			$fetch_fn= 'get_value';
-			$orderby= '';
+			$select = "COUNT($count)";
+			$fetch_fn = 'get_value';
+			$orderby = '';
 		}
 		// Are we asking for a single UserGroup or possibly multiple UserGroups
-		$single= false;
+		$single = false;
 		if ( isset( $limit ) ) {
-			$single= ($limit == 1);
-			$limit= " LIMIT $limit";
+			$single = ($limit == 1);
+			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
-				$limit.= " OFFSET $offset";
+				$limit .= " OFFSET $offset";
 			}
 		}
 		if ( isset( $nolimit ) ) {
-			$limit= '';
+			$limit = '';
 		}
 
-		$query= '
-			SELECT ' . $select . '
-			FROM ' . DB::table('groups') .
-			' ' . $join;
+		$query = ' SELECT ' . $select . ' FROM {groups} ' . $join;
 
 		if ( count( $wheres ) > 0 ) {
-			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
+			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug($paramarray, $fetch_fn, $query, $params);
+		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		DB::set_fetch_mode(PDO::FETCH_CLASS);
-		// Adjust the return type
-		if ( $single ) {
-			DB::set_fetch_class('UserGroup');
-		}
-		else {
-			DB::set_fetch_class('UserGroups');
-		}
-		$results= DB::$fetch_fn( $query, $params );
+
+		$results = DB::$fetch_fn( $query, $params, 'UserGroup' );
 
 		if ( 'get_results' != $fetch_fn ) {
 			// return the results
 			return $results;
 		}
 		elseif ( is_array( $results ) ) {
-			$c= __CLASS__;
+			$c = __CLASS__;
 			$return_value = new $c( $results );
-			$return_value->get_param_cache= $paramarray;
+			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
 	}
@@ -143,9 +142,10 @@ class UserGroups extends ArrayObject
 	 *
 	 * @return Groups
 	 */
-	public static function get_all() {
-		
-		$params= array(
+	public static function get_all()
+	{
+
+		$params = array(
 			'orderby' => 'name ASC'
 			);
 			

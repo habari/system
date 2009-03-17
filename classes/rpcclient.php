@@ -1,14 +1,19 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * XMLRPC Client
  */
-class RPCClient {
-    private $url;
-    private $method;
-    private $params;
-    private $request_body;
-    private $result= FALSE;
+class RPCClient
+{
+	private $url;
+	private $method;
+	private $params;
+	private $request_body;
+	private $result = FALSE;
 
 	/**
 	 * @param string URL
@@ -20,11 +25,11 @@ class RPCClient {
 		if ( ! function_exists( 'xmlrpc_encode_request' ) ) {
 			return Error::raise( _t('xmlrpc extension not found') );
 		}
-		$this->url= $url;
-		$this->method= $method;
-		$this->params= $params;
+		$this->url = $url;
+		$this->method = $method;
+		$this->params = $params;
 		
-		$this->request_body= xmlrpc_encode_request( $method, $params );
+		$this->request_body = xmlrpc_encode_request( $method, $params );
 	}
 
 	/**
@@ -32,7 +37,7 @@ class RPCClient {
 	 */
 	public function execute()
 	{
-		$rr= new RemoteRequest( $this->url, 'POST' );
+		$rr = new RemoteRequest( $this->url, 'POST' );
 		$rr->add_header( 'Content-Type: text/xml' );
 		$rr->set_body( $this->request_body );
 		
@@ -40,11 +45,11 @@ class RPCClient {
 		$rr->execute();
 		// in that case, we should never get here
 		
-		$this->result= xmlrpc_decode($rr->get_response_body());
+		$this->result = xmlrpc_decode($rr->get_response_body());
 	}
 	
 	/**
-	 * Return the (decoded) result of the request, or FALSE if the result was invalid. 
+	 * Return the (decoded) result of the request, or FALSE if the result was invalid.
 	 */
 	public function get_result()
 	{

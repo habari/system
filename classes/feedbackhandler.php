@@ -1,11 +1,14 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari FeedbackHandler Class
  * Deals with feedback mechnisms: Commenting, Pingbacking, and the like.
  *
- * @package Habari
  */
-
 class FeedbackHandler extends ActionHandler
 {
 	/**
@@ -15,12 +18,27 @@ class FeedbackHandler extends ActionHandler
 	*/
 	public function act_add_comment()
 	{
+
+		$defaults = array(
+			'name' => '',
+			'email' => '',
+			'url' => '',
+			'content' => ''
+		);
+
 		// We need to get the post anyway to redirect back to the post page.
-		$post= Post::get( array( 'id'=>$this->handler_vars['id'] ) );
+		$post = Post::get( array( 'id'=>$this->handler_vars['id'] ) );
 		if( !$post ) {
-			// trying to comment on a non-existant post?  Weirdo.
+			// trying to comment on a non-existent post?  Weirdo.
 			header('HTTP/1.1 403 Forbidden', true, 403);
 			die();
+		}
+
+		// make sure all our default values are set so we don't throw undefined index errors
+		foreach ( $defaults as $k => $v ) {
+			if ( !isset( $this->handler_vars[ $k ] ) ) {
+				$this->handler_vars[ $k ] = $v;
+			}
 		}
 
 		// let's do some basic sanity checking on the submission
@@ -40,7 +58,6 @@ class FeedbackHandler extends ActionHandler
 			Session::add_to_set('comment', $this->handler_vars['content'], 'content');
 			// now send them back to the form
 			Utils::redirect( $post->permalink . '#respond' );
-			exit();
 		}
 
 		if ( $post->info->comments_disabled ) {
@@ -48,48 +65,46 @@ class FeedbackHandler extends ActionHandler
 			// them back to the post's permalink
 			Session::error( _t( 'Comments on this post are disabled!' ) );
 			Utils::redirect( $post->permalink );
-			exit();
 		}
 
 		/* Sanitize data */
-		foreach ( array( 'name', 'email', 'url', 'content' ) as $k ) {
-			$this->handler_vars[$k]= InputFilter::filter( $this->handler_vars[$k] );
+		foreach ( $defaults as $k => $v ) {
+			$this->handler_vars[$k] = InputFilter::filter( $this->handler_vars[$k] );
 		}
 
 		/* Sanitize the URL */
 		if (!empty($this->handler_vars['url'])) {
-			$url= $this->handler_vars['url'];
-			$parsed= InputFilter::parse_url( $url );
+			$url = $this->handler_vars['url'];
+			$parsed = InputFilter::parse_url( $url );
 			if ( $parsed['is_relative'] ) {
 				// guess if they meant to use an absolute link
-				$parsed= InputFilter::parse_url( 'http://' . $url );
+				$parsed = InputFilter::parse_url( 'http://' . $url );
 				if ( ! $parsed['is_error'] ) {
-					$url= InputFilter::glue_url( $parsed );
+					$url = InputFilter::glue_url( $parsed );
 				}
 				else {
 					// disallow relative URLs
-					$url= '';
+					$url = '';
 				}
 			}
-			elseif ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) {
+			if ( $parsed['is_pseudo'] || ( $parsed['scheme'] !== 'http' && $parsed['scheme'] !== 'https' ) ) {
 				// allow only http(s) URLs
-				$url= '';
+				$url = '';
 			}
 			else {
 				// reconstruct the URL from the error-tolerant parsing
 				// http:moeffju.net/blog/ -> http://moeffju.net/blog/
-				$url= InputFilter::glue_url( $parsed );
+				$url = InputFilter::glue_url( $parsed );
 			}
-			$this->handler_vars['url']= $url;
+			$this->handler_vars['url'] = $url;
 		}
 		if ( preg_match( '/^\p{Z}*$/u', $this->handler_vars['content'] ) ) {
 			Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
 			Utils::redirect( $post->permalink );
-			exit();
 		}
 
 		/* Create comment object*/
-		$comment= new Comment( array(
+		$comment = new Comment( array(
 			'post_id'	=> $this->handler_vars['id'],
 			'name' => $this->handler_vars['name'],
 			'email' => $this->handler_vars['email'],
@@ -97,28 +112,29 @@ class FeedbackHandler extends ActionHandler
 			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 			'content'	=> $this->handler_vars['content'],
 			'status' =>	Comment::STATUS_UNAPPROVED,
-			'date' =>	date( 'Y-m-d H:i:s' ),
+			'date' => HabariDateTime::date_create(),
 			'type' => Comment::COMMENT,
 		) );
 
 		// Should this really be here or in a default filter?
 		// In any case, we should let plugins modify the status after we set it here.
-		if( ( $user = User::identify() ) && ( $comment->email == $user->email ) ) {
-			$comment->status= Comment::STATUS_APPROVED;
+		$user = User::identify();
+		if( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
+			$comment->status = Comment::STATUS_APPROVED;
 		}
 
 		// Allow themes to work with comment hooks
 		Themes::create();
 
-		$spam_rating= 0;
-		$spam_rating= Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
+		$spam_rating = 0;
+		$spam_rating = Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
 
 		$comment->insert();
-		$anchor= '';
+		$anchor = '';
 
 		// If the comment was saved
 		if ( $comment->id ) {
-			$anchor= '#comment-' . $comment->id;
+			$anchor = '#comment-' . $comment->id;
 
 			// store in the user's session that this comment is pending moderation
 			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
@@ -127,8 +143,8 @@ class FeedbackHandler extends ActionHandler
 
 			// if no cookie exists, we should set one
 			// but only if the user provided some details
-			$cookie= 'comment_' . Options::get('GUID');
-			if ( ( ! User::identify() )
+			$cookie = 'comment_' . Options::get('GUID');
+			if ( ( ! $user->loggedin )
 				&& ( ! isset( $_COOKIE[$cookie] ) )
 				&& ( ! empty( $this->handler_vars['name'] )
 					|| ! empty( $this->handler_vars['email'] )
@@ -136,9 +152,8 @@ class FeedbackHandler extends ActionHandler
 				)
 			)
 			{
-				Session::notice(_t('Setting the cookie.'), 'comment_' . $comment->id );
 				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
-				$site_url= Site::get_path('base',true);
+				$site_url = Site::get_path('base',true);
 				setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );
 			}
 		}

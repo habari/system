@@ -8,11 +8,11 @@ if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directl
 		<div id="comment-personaldetails">
 			<p>
 				<input type="text" name="name" id="name" value="<?php echo $commenter_name; ?>" size="30" tabindex="1">
-				<label for="name"><strong><?php _e( "Name" ); ?></strong> </strong><?php if (Options::get('comments_require_id') == 1) : ?> <?php _e( "(Required)" ); ?><?php endif; ?></label>
+				<label for="name"><strong><?php _e( "Name" ); ?></strong><?php if (Options::get('comments_require_id') == 1) : ?> <?php _e( "(Required)" ); ?><?php endif; ?></label>
 			</p>
 			<p>
 				<input type="text" name="email" id="email" value="<?php echo $commenter_email; ?>" size="30" tabindex="2">
-				<label for="email"><strong><?php _e( "Mail" ); ?></strong> </strong><?php if (Options::get('comments_require_id') == 1) : ?> <?php _e( "(will not be published - Required)" ); ?><?php endif; ?></label>
+				<label for="email"><strong><?php _e( "Mail" ); ?></strong><?php if (Options::get('comments_require_id') == 1) : ?> <?php _e( "(will not be published - Required)" ); ?><?php endif; ?></label>
 			</p>
 			<p>
 				<input type="text" name="url" id="url" value="<?php echo $commenter_url; ?>" size="30" tabindex="3">

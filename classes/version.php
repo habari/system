@@ -1,24 +1,27 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
 * Habari Version Class
 *
 * Base class for managing metadata about various Habari objects
 *
-* @package Habari
 */
-
 class Version
 {
 	// DB and API versions are aligned with the SVN revision
 	// number in which they last changed.
-	const DB_VERSION = 1845;
-	const API_VERSION = 2264;
+	const DB_VERSION = 3249;
+	const API_VERSION = 3124;
 
-	const HABARI_VERSION = '0.5.2';
+	const HABARI_VERSION = '0.6-alpha';
 
 	// This string contains the URL to the Habari SVN repository used for this working copy or export
 	const HABARI_SVN_HEAD_URL = '$HeadURL$';
-	// This string contains the SVN revision used for this working copy or export
+	// This string contains the SVN revision this file was last updated in
 	const HABARI_SVN_REV = '$Revision$';
 
 	/**
@@ -59,7 +62,7 @@ class Version
 	 */
 	public static function is_devel()
 	{
-		return strpos(HABARI_SVN_HEAD_URL, '/trunk/') !== false && strpos(HABARI_SVN_HEAD_URL, '/branches/') !== false;
+		return strpos(Version::HABARI_SVN_HEAD_URL, '/trunk/') !== false || strpos(Version::HABARI_SVN_HEAD_URL, '/branches/') !== false;
 	}
 
 	/**
@@ -81,6 +84,29 @@ class Version
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Attempt to return the checkout revision number of the source tree
+	 *
+	 * @return int The revision number
+	 */
+	public static function get_svn_revision()
+	{
+		$rev = 0;
+		// Cheating!
+		$stash_file = HABARI_PATH . '/.svn/entries';
+		if(file_exists($stash_file)) {
+			$info = file_get_contents($stash_file);
+			$info = explode("\n", $info);
+			if(strpos($info[4], 'svn.habariproject.org/habari/') !== false) {
+				$rev = intval(trim($info[3]));
+			}
+		}
+		if($rev == 0) {
+			$rev = intval(preg_replace('%[^0-9]%', '', Version::HABARI_SVN_REV));
+		}
+		return $rev;
 	}
 }
 

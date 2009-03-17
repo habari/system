@@ -17,7 +17,7 @@ CSS Documentation: http://k2.stikipad.com/docs/show/CSS+Overview
 
 html { /* Force Vertical Scrollbar */
 	/* IE */
-	overflow-y: scroll; 
+	overflow-y: scroll;
 	/* Moz */
 	height: 100%;
 	margin-bottom: 0.1em;
@@ -131,7 +131,7 @@ ul.menu li.current_page_item a:hover {
 	}
 
 * html .admintab { padding: 5px 15px 6px }	/* IE hack */
-	
+
 a img,:link img,:visited img { border:none }
 
 /*- Sidebar Subpages Menu */
@@ -239,7 +239,7 @@ body.page .entry-content h4 {
 	padding: 0;
 	position: relative;
 	}
-	
+
 #primary .metalink a, #primary .metalink a:visited, /* The Metalink class takes care of the comments, edit, rss and trackback links next to the titles */
 .secondary .metalink a, .secondary .metalink a:visited,
 .secondary span a, .secondary span a:visited {
@@ -513,9 +513,9 @@ li.bypostauthor {
 
 li.bypostauthor blockquote {
 	color: #333;
-	background: #eee url('images/quote.png') no-repeat 10px 0;              
+	background: #eee url('images/quote.png') no-repeat 10px 0;
 	}
-	 
+
 #pinglist {
 	font-size: 1.2em;
 	padding: 0;
@@ -549,7 +549,7 @@ li.bypostauthor blockquote {
 	padding: 0;
 	border: none;
 	}
-	
+
 .comments form {
 	clear: both;
 	padding: 1px 0 10px;
@@ -624,7 +624,7 @@ a {
 .entry-content a:visited {
 	color: #b41;
 	}
-	
+
 /*- Navigation */
 .navigation {
 	margin-bottom:10pt;
@@ -668,7 +668,7 @@ a {
 .alignright {
 	float: right;
 	}
-	
+
 .alignleft {
 	float: left
 	}
@@ -678,7 +678,7 @@ img.center, img[align="center"] {
 	margin-left: auto;
 	margin-right: auto;
 	}
-	
+
 img.alignright, img[align="right"] {
 	padding: 4px;
 	margin: 0 0 2px 7px;
@@ -690,7 +690,7 @@ img.alignleft, img[align="left"] {
 	margin: 0 7px 2px 0;
 	display: inline;
 	}
-	
+
 img.noborder {
 	border: none !important;
 	}
@@ -703,7 +703,7 @@ small {
 small, strike {
 	color: #777;
 	}
-	
+
 code {
 	font: 1.1em 'Courier New', Courier, Monospace;
 	}
@@ -731,7 +731,7 @@ hr {
 	.comments .navigation {
 		margin: 10px 0;
 		}
-		
+
 /*Sample Page Selector Code - active page gets .current-page class */
 
 #page-selector {
@@ -746,7 +746,7 @@ hr {
 #page-selector a {
 	color: #27d;
 	}
-	
+
 #page-selector a.current-page {
 	padding: 2px;
 	border: 1px solid #999;
@@ -792,7 +792,7 @@ hr {
 	margin: 0;
 	padding: 1px 0;
 	}
-	
+
 .secondary ul li {
 	list-style-type: none;
 	list-style-image: none;
@@ -818,11 +818,11 @@ ol li {
 #s:focus {
 	border-color: #666;
 }
-	
+
 #searchsubmit {
 	width: 3em;
 }
-	
+
 /*- Login Form */
 
 #loginform label {

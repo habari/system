@@ -1,12 +1,16 @@
 <?php
 /**
- * Habari LogEntry class
-	* Represents a log entry
- *
  * @package Habari
- * @todo Apply system error handling
+ *
  */
 
+/**
+ * Habari LogEntry class
+ *
+ * Represents a log entry
+ *
+ * @todo Apply system error handling
+ */
 class LogEntry extends QueryRecord
 {
 
@@ -15,7 +19,7 @@ class LogEntry extends QueryRecord
 	 *
 	 * @final
 	 */
-	private static $severities= array(
+	private static $severities = array(
 		'any',
 		'none', // should not be used
 		'debug', 'info', 'notice', 'warning', 'err', 'crit', 'alert', 'emerg',
@@ -24,7 +28,7 @@ class LogEntry extends QueryRecord
 	/**
 	 * Cache for log_types
 	 */
-	private static $types= array();
+	private static $types = array();
 
 	/**
 	 * Return the defined database columns for an Event
@@ -40,7 +44,7 @@ class LogEntry extends QueryRecord
 			'severity_id' => NULL,
 			'message' => '',
 			'data' => '',
-			'timestamp' => date( 'Y-m-d H:i:s' ),
+			'timestamp' => HabariDateTime::date_create(),
 			'ip' => 0,
 		);
 	}
@@ -50,22 +54,25 @@ class LogEntry extends QueryRecord
 	 *
 	 * @param array $paramarray an associative array of initial LogEntry field values
 	 */
-	public function __construct( $paramarray= array() )
+	public function __construct( $paramarray = array() )
 	{
 		// Defaults
-		$this->fields= array_merge(
+		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields );
 
 		parent::__construct( $paramarray );
 		if ( !isset( $this->fields['module'] ) ) {
-			$this->fields['module']= 'habari';
+			$this->fields['module'] = 'habari';
 		}
 		if ( !isset( $this->fields['type'] ) ) {
-			$this->fields['type']= 'default';
+			$this->fields['type'] = 'default';
 		}
 		if ( !isset( $this->fields['severity'] ) ) {
-			$this->fields['severity']= 'info';
+			$this->fields['severity'] = 'info';
+		}
+		if ( isset( $this->fields['timestamp'] ) ) {
+			$this->fields['timestamp'] = HabariDateTime::date_create( $this->fields['timestamp'] );
 		}
 		$this->exclude_fields( 'id' );
 	}
@@ -76,13 +83,13 @@ class LogEntry extends QueryRecord
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of log entry type names => integer values
 	 */
-	public static function list_logentry_types( $force= false )
+	public static function list_logentry_types( $force = false )
 	{
 		if ( $force || empty( self::$types ) ) {
-			self::$types= array();
-			$res= DB::get_results( 'SELECT id, module, type FROM {log_types}' );
+			self::$types = array();
+			$res = DB::get_results( 'SELECT id, module, type FROM {log_types}' );
 			foreach ( $res as $x ) {
-				self::$types[ $x->module ][ $x->type ]= $x->id;
+				self::$types[ $x->module ][ $x->type ] = $x->id;
 			}
 		}
 		return self::$types;
@@ -98,7 +105,7 @@ class LogEntry extends QueryRecord
 			if ( 'none' == $name ) {
 				continue;
 			}
-			$results[$id]= $name;
+			$results[$id] = $name;
 		}
 		return $results;
 	}
@@ -108,11 +115,11 @@ class LogEntry extends QueryRecord
 	 * @param bool Whether to refresh the cached values
 	 * @return array An array of LogEntry module id => name pairs
 	**/
-	public static function list_modules( $refresh= false )
+	public static function list_modules( $refresh = false )
 	{
-		$types= self::list_logentry_types( $refresh );
+		$types = self::list_logentry_types( $refresh );
 		foreach ( $types as $module => $types ) {
-			$modules[]= $module;
+			$modules[] = $module;
 		}
 	}
 
@@ -121,12 +128,12 @@ class LogEntry extends QueryRecord
 	 * @param bool Whether to refresh the cached values
 	 * @return array An array of LogEntry id => name pairs
 	**/
-	public static function list_types( $refresh= false )
+	public static function list_types( $refresh = false )
 	{
-		$types= array();
-		$matrix= self::list_logentry_types( $refresh );
+		$types = array();
+		$matrix = self::list_logentry_types( $refresh );
 		foreach ( $matrix as $module => $module_types ) {
-			$types= array_merge( $types, $module_types );
+			$types = array_merge( $types, $module_types );
 		}
 		return array_flip( $types );
 	}
@@ -183,17 +190,20 @@ class LogEntry extends QueryRecord
 	public function insert()
 	{
 		if ( isset( $this->fields['severity'] ) ) {
-			$this->severity_id= LogEntry::severity( $this->fields['severity'] );
+			$this->severity_id = LogEntry::severity( $this->fields['severity'] );
 			unset( $this->fields['severity'] );
 		}
 		if ( isset( $this->fields['module'] ) && isset( $this->fields['type'] ) ) {
-			$this->type_id= LogEntry::type( $this->fields['module'], $this->fields['type'] );
+			$this->type_id = LogEntry::type( $this->fields['module'], $this->fields['type'] );
 			unset( $this->fields['module'] );
 			unset( $this->fields['type'] );
 		}
 
 		Plugins::filter( 'insert_logentry', $this );
 		parent::insertRecord( DB::table( 'log' ) );
+		
+		$this->id = DB::last_insert_id();
+		
 	}
 
 	/**
@@ -206,22 +216,23 @@ class LogEntry extends QueryRecord
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return object LogEntry The first log entry that matched the given criteria
 	 */
-	public static function get( $paramarray= array() )
+	public static function get( $paramarray = array() )
 	{
 		// Default parameters.
-		$defaults= array (
+		$defaults = array (
 			'fetch_fn' => 'get_row',
 		);
-		if ( $user= User::identify() ) {
-			$defaults['where'][]= array(
+		$user = User::identify();
+		if ( $user->loggedin ) {
+			$defaults['where'][] = array(
 				'user_id' => $user->id,
 			);
 		}
 		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
+			$defaults['where'][$index] = array_merge( $where, Utils::get_params( $paramarray ) );
 		}
 		// Make sure we fetch only a single event. (LIMIT 1)
-		$defaults['limit']= 1;
+		$defaults['limit'] = 1;
 
 		return EventLog::get( $defaults );
 	}
@@ -234,7 +245,7 @@ class LogEntry extends QueryRecord
 	 * @return string Human-readable event type
 	 */
 	public function get_event_type() {
-		$type= DB::get_value( 'SELECT type FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
+		$type = DB::get_value( 'SELECT type FROM {log_types} WHERE id=' . $this->type_id );
 		return $type ? $type : _t( 'Unknown' );
 	}
 
@@ -246,7 +257,7 @@ class LogEntry extends QueryRecord
 	 * @return string Human-readable event module
 	 */
 	public function get_event_module() {
-		$module= DB::get_value( 'SELECT module FROM ' . DB::table( 'log_types' ) . ' WHERE id=' . $this->type_id );
+		$module = DB::get_value( 'SELECT module FROM {log_types} WHERE id=' . $this->type_id );
 		return $module ? $module : _t( 'Unknown' );
 	}
 
@@ -267,9 +278,9 @@ class LogEntry extends QueryRecord
 	 */
 	public function delete()
 	{
-		$allow= true;
-		$allow= Plugins::filter( 'logentry_delete_allow', $allow, $this );
-		if ( ! $allow ) { 
+		$allow = true;
+		$allow = Plugins::filter( 'logentry_delete_allow', $allow, $this );
+		if ( ! $allow ) {
 			return;
 		}
 		Plugins::act( 'logentry_delete_before', $this );
@@ -285,32 +296,32 @@ class LogEntry extends QueryRecord
 	 */
 	public function __get( $name )
 	{
-		$fieldnames= array_merge( array_keys( $this->fields ), array( 'module', 'type', 'severity' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), array( 'module', 'type', 'severity' ) );
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
 			list( $junk, $name, $filter )= $matches;
 		}
 		else {
-			$filter= false;
+			$filter = false;
 		}
 
 		switch ( $name ) {
 		case 'module':
-			$out= $this->get_event_module();
+			$out = $this->get_event_module();
 			break;
 		case 'type':
-			$out= $this->get_event_type();
+			$out = $this->get_event_type();
 			break;
 		case 'severity':
-			$out= $this->get_event_severity();
+			$out = $this->get_event_severity();
 			break;
 		default:
-			$out= parent::__get( $name );
+			$out = parent::__get( $name );
 			break;
 		}
-		$out= Plugins::filter( "logentry_{$name}", $out, $this );
+		$out = Plugins::filter( "logentry_{$name}", $out, $this );
 		if ( $filter ) {
-			$out= Plugins::filter( "logentry_{$name}_{$filter}", $out, $this );
+			$out = Plugins::filter( "logentry_{$name}_{$filter}", $out, $this );
 		}
 		return $out;
 	}
@@ -325,7 +336,9 @@ class LogEntry extends QueryRecord
 	{
 		switch ( $name ) {
 		case 'timestamp':
-			$value= date( 'Y-m-d H:i:s', strtotime( $value ) );
+			if ( !($value instanceOf HabariDateTime) ) {
+				$value = HabariDateTime::date_create($value);
+			}
 			break;
 		}
 		return parent::__set( $name, $value );

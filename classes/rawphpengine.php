@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari RawPHPEngine class
  *
- * @package Habari
  *
  * The RawPHPEngine is a subclass of the abstract TemplateEngine class
  * which is intended for those theme designers who choose to use raw PHP
@@ -12,9 +15,9 @@
 class RawPHPEngine extends TemplateEngine
 {
 	// Internal data to be extracted into template symbol table
-	protected $engine_vars= array();
-	protected $available_templates= null;
-	protected $template_map=array();
+	protected $engine_vars = array();
+	protected $available_templates = null;
+	protected $template_map =array();
 	protected $var_stack = array();
 
 	/**
@@ -47,7 +50,7 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function __set( $key, $value )
 	{
-		$this->engine_vars[$key]= $value;
+		$this->engine_vars[$key] = $value;
 	}
 
 	/**
@@ -89,7 +92,7 @@ class RawPHPEngine extends TemplateEngine
 		if ( $this->template_exists( $template ) ) {
 			//$template_file= Plugins::filter('include_template_file', $this->template_dir . $template . '.php', $template, __CLASS__);
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
-			$template_file= Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
+			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			include ( $template_file );
 		}
 	}
@@ -112,10 +115,10 @@ class RawPHPEngine extends TemplateEngine
 				$templates = Utils::glob( $dir . '*.*' );
 				$alltemplates = array_merge($alltemplates, $templates);
 			}
-			$this->available_templates= array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
+			$this->available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
 			$this->template_map = array_combine($this->available_templates, $alltemplates);
 			array_unique($this->available_templates);
-			$this->available_templates= Plugins::filter('available_templates', $this->available_templates, __CLASS__);
+			$this->available_templates = Plugins::filter('available_templates', $this->available_templates, __CLASS__);
 		}
 		return in_array( $template, $this->available_templates );
 	}
@@ -130,7 +133,7 @@ class RawPHPEngine extends TemplateEngine
 	{
 		ob_start();
 		$this->display( $template );
-		$contents= ob_get_clean();
+		$contents = ob_get_clean();
 		return $contents;
 	}
 
@@ -141,9 +144,9 @@ class RawPHPEngine extends TemplateEngine
 	 * @param key name( s ) of variable
 	 * @param value value of variable
 	 */
-	public function assign( $key, $value= '' )
+	public function assign( $key, $value = '' )
 	{
-		$this->$key= $value;
+		$this->$key = $value;
 	}
 
 	/**
@@ -164,13 +167,13 @@ class RawPHPEngine extends TemplateEngine
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
-	public function append( $key, $value='' )
+	public function append( $key, $value ='' )
 	{
 		if ( ! isset( $this->engine_vars[$key] ) ) {
-			$this->engine_vars[$key][]= $value;
+			$this->engine_vars[$key][] = $value;
 		}
 		else {
-			$this->engine_vars[$key]= $value;
+			$this->engine_vars[$key] = $value;
 		}
 	}
 }

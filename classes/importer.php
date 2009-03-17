@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * This interface should be applied to plugins that implement importing
  * from other blogging tools.
  *
- * @package Habari
- * @version $Id$
  */
 interface importer
 {

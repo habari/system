@@ -1,11 +1,15 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Format Class
  *
  * Provides formatting functions for use in themes.  Extendable.
- * @package Habari
+ *
  */
-
 class Format
 {
 	private static $formatters = null;
@@ -17,16 +21,16 @@ class Format
 	 **/
 	public static function apply($format, $onwhat)
 	{
-		if( self::$formatters == null ) {
+		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
-		foreach(self::$formatters as $formatobj) {
-			if( method_exists($formatobj, $format) ) {
+		foreach ( self::$formatters as $formatobj ) {
+			if ( method_exists($formatobj, $format) ) {
 				$index = array_search($formatobj, self::$formatters);
 				$func = '$o = Format::by_index(' . $index . ');return $o->' . $format . '($a';
 				$args = func_get_args();
-				if( count($args) > 2) {
+				if ( count($args) > 2) {
 					$func.= ', ';
 					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
 					$func .= implode(', ', $args);
@@ -46,16 +50,16 @@ class Format
 	 **/
 	public static function apply_with_hook_params($format, $onwhat)
 	{
-		if( self::$formatters == null ) {
+		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
-		foreach(self::$formatters as $formatobj) {
-			if( method_exists($formatobj, $format) ) {
+		foreach ( self::$formatters as $formatobj ) {
+			if ( method_exists($formatobj, $format) ) {
 				$index = array_search($formatobj, self::$formatters);
 				$func = '$o= Format::by_index(' . $index . '); $args= func_get_args(); return call_user_func_array(array($o, "' . $format . '"), array_merge($args';
 				$args = func_get_args();
-				if( count($args) > 2) {
+				if ( count($args) > 2 ) {
 					$func.= ', array( ';
 					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
 					$func .= implode(', ', $args) . ')';
@@ -88,8 +92,8 @@ class Format
 	{
 		self::$formatters = array();
 		$classes = get_declared_classes();
-		foreach( $classes as $class ) {
-			if( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
+		foreach ( $classes as $class ) {
+			if ( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
 				self::$formatters[] = new $class();
 			}
 		}
@@ -101,7 +105,7 @@ class Format
 
 	/**
 	 * function autop
-	 * Converts non-HTML paragraphs separated with 2 or more new lines into HTML paragraphs 
+	 * Converts non-HTML paragraphs separated with 2 or more new lines into HTML paragraphs
 	 * while preserving any internal HTML.
 	 * New lines within the text of block elements are converted to linebreaks.
 	 * New lines before and after tags are stripped.
@@ -110,27 +114,52 @@ class Format
 	 **/
 	public static function autop($value)
 	{
-		$regex= '/(<\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ismU';
-		$target = str_replace("\r\n", "\n", $value);
+		$regex = '/(<\s*(address|code|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
 
-		$cz = preg_split($regex, $target);
-		preg_match_all($regex, $target, $cd, PREG_SET_ORDER);
+		// First, clean out any windows line endings
+		$target = str_replace( "\r\n", "\n", $value );
 
+		// Then, find any of the approved tags above, and split the content on them
+		$cz = preg_split( $regex, $target );
+		preg_match_all( $regex, $target, $cd, PREG_SET_ORDER );
+
+		/**
+		 * Loop through each content block, turning two newlines in a row into </p><p>'s and
+		 * single newlines into <br>'s
+		 **/
 		$output = '';
 		for($z = 0; $z < count($cz); $z++) {
-			$pblock= preg_replace( '/\n{2,}/', "</p><p>", trim( $cz[$z] ) );
-			$pblock= ($pblock == '') ? '' : "<p>{$pblock}</p>";
+			$pblock = preg_replace( '/\n{2,}/', "</p><p>", trim( $cz[$z] ) );
+			$pblock = ( $pblock == '' ) ? '' : "<p>{$pblock}</p>";
 
-			$tblock= isset( $cd[$z] ) ? $cd[$z][0] : '';
+			$tblock = isset( $cd[$z] ) ? $cd[$z][0] : '';
 			$output .= $pblock . $tblock;
 		}
 
 
-		$output= preg_replace( '%>\s*\n%i', '>', $output );
-		$output= preg_replace( '%\n\s*<%i', '<', $output );
-		$output= preg_replace( '%\n%i', '<br />', $output );
+		$output = preg_replace( '%>\s*\n%i', '>', $output );
+		$output = preg_replace( '%\n\s*<%i', '<', $output );
+		$output = preg_replace( '%\n%i', '<br>', $output );
 
-		return trim($output);
+
+		/**
+		 * Now filter out any erroneous paragraph or break tags, like ones that would occur in nested lists.
+		 * There may very well be more cases for this: table td's, etc?
+		 **/
+		$cleanNestedRegex = '<\/?\s*(ul|ol|li|dl|dt|dd)[^>]*>';
+
+		// Filter out paragraph tags
+		$output = preg_replace( "/<p>\s*($cleanNestedRegex)/", "$1", $output );
+		$output = preg_replace( "/($cleanNestedRegex)\s*<\/p>/", "$1", $output );
+
+		// Filter out br tags
+		$output = preg_replace( "/($cleanNestedRegex)\s*<br>/", "$1", $output );
+		$output = preg_replace( "/<br>\s*($cleanNestedRegex)/", '$1', $output );
+
+		// Finally, move misplaced p tags to after hr tags
+		$output = preg_replace( '%<p><hr\s*/*\s*>%', "<hr/><p>", $output );
+
+		return trim( $output );
 
 	}
 
@@ -142,14 +171,19 @@ class Format
 	 * @param string $between_last Text to put between the next-to-last element and the last element
 	 * @reutrn string The constructed string
 	**/
-	public static function and_list( $array, $between = ', ', $between_last = ' and ' )
+	public static function and_list( $array, $between = ', ', $between_last = NULL )
 	{
 		if ( ! is_array( $array ) ) {
 			$array = array( $array );
 		}
-		$last= array_pop( $array );
+
+		if ( $between_last === NULL ) {
+			$between_last = _t( ' and ' );
+		}
+
+		$last = array_pop( $array );
 		$out = implode(', ', $array );
-		$out .= ($out == '') ? $last : ' and ' . $last;
+		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
 	}
 
@@ -162,12 +196,16 @@ class Format
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 **/
-	public static function tag_and_list($array, $between = ', ', $between_last = ' and ')
+	public static function tag_and_list($array, $between = ', ', $between_last = NULL )
 	{
-		if ( ! is_array( $array ) )
-		{
+		if ( ! is_array( $array ) ) {
 			$array = array ( $array );
 		}
+
+		if ( $between_last === NULL ) {
+			$between_last = _t(' and ');
+		}
+
 		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";');
 		$array = array_map($fn, $array, array_keys($array));
 		$last = array_pop($array);
@@ -177,29 +215,59 @@ class Format
 	}
 
 	/**
+	 * Format a date using a specially formatted string
+	 * Useful for using a single string to format multiple date components.
+	 * Example:
+	 *  If $dt is a HabariDateTime for December 10, 2008...
+	 *  echo $dt->format_date('<div><span class="month">{F}</span> {j}, {Y}</div>');
+	 *  // Output: <div><span class="month">December</span> 10, 2008</div>
+	 *
+	 * @param HabariDateTime $date The date to format
+	 * @param string $format A string with date()-like letters within braces to replace with date components
+	 * @return string The formatted string
+	 */
+	public static function format_date($date, $format)
+	{
+		if ( !( $date instanceOf HabariDateTime ) ) {
+			$date = HabariDateTime::date_create( $date );
+		}
+		preg_match_all('%\{(\w)\}%i', $format, $matches);
+
+		$components = array();
+		foreach ( $matches[1] as $format_component ) {
+			$components['{'.$format_component.'}'] = $date->format($format_component);
+		}
+		return strtr($format, $components);
+	}
+
+	/**
 	 * function nice_date
 	 * Formats a date using a date format string
-	 * @param mixed A date as a string or a timestamp
+	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The date formatted as a string
 	 **/
 	public static function nice_date($date, $dateformat = 'F j, Y')
 	{
-		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
-		return Utils::locale_date($dateformat, strtotime($date));
+		if ( !( $date instanceOf HabariDateTime ) ) {
+			$date = HabariDateTime::date_create( $date );
+		}
+		return $date->format( $dateformat );
 	}
 
 	/**
 	 * function nice_time
 	 * Formats a time using a date format string
-	 * @param mixed A date as a string or a timestamp
+	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The time formatted as a string
 	 **/
 	public static function nice_time($date, $dateformat = 'H:i:s')
 	{
-		if ( is_numeric($date) ) return Utils::locale_date($dateformat, $date);
-		return Utils::locale_date($dateformat, strtotime($date));
+		if ( !( $date instanceOf HabariDateTime ) ) {
+			$date = HabariDateTime::date_create( $date );
+		}
+		return $date->format( $dateformat );
 	}
 
 	/**
@@ -209,29 +277,29 @@ class Format
 	 * @param integer $maxparagraphs Maximum paragraphs to display [1]
 	 * @return string The string, shortened
 	 **/
-	public static function summarize( $text, $count= 100, $maxparagraphs= 1 )
+	public static function summarize( $text, $count = 100, $maxparagraphs = 1 )
 	{
 		preg_match_all( '/<script.*?<\/script.*?>/', $text, $scripts );
 		preg_replace( '/<script.*?<\/script.*?>/', '', $text );
 
 		$words = preg_split( '/(<(?:\\s|".*?"|[^>])+>|\\s+)/', $text, $count + 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
 
-		$ellipsis= '';
-		if( count( $words ) > $count * 2 ) {
+		$ellipsis = '';
+		if ( count( $words ) > $count * 2 ) {
 			array_pop( $words );
-			$ellipsis= '...';
+			$ellipsis = '...';
 		}
-		$output= '';
+		$output = '';
 
-		$paragraphs= 0;
+		$paragraphs = 0;
 
-		$stack= array();
-		foreach( $words as $word ) {
+		$stack = array();
+		foreach ( $words as $word ) {
 			if ( preg_match( '/<.*\/\\s*>$/', $word ) ) {
 				// If the tag self-closes, do nothing.
 				$output.= $word;
 			}
-			elseif( preg_match( '/<[\\s\/]+/', $word )) {
+			elseif ( preg_match( '/<[\\s\/]+/', $word ) ) {
 				// If the tag ends, pop one off the stack (cheatingly assuming well-formed!)
 				array_pop( $stack );
 				preg_match( '/<\s*\/\s*(\\w+)/', $word, $tagn );
@@ -242,18 +310,18 @@ class Format
 				case 'ol':
 				case 'ul':
 					$paragraphs++;
-					if( $paragraphs >= $maxparagraphs ) {
+					if ( $paragraphs >= $maxparagraphs ) {
 						$output.= '...' . $word;
-						$ellipsis= '';
+						$ellipsis = '';
 						break 2;
 					}
 				}
 				$output.= $word;
 			}
-			elseif( $word[0] == '<' ) {
+			elseif ( $word[0] == '<' ) {
 				// If the tag begins, push it on the stack
-				$stack[]= $word;
-				$output.= $word;
+				$stack[] = $word;
+				$output .= $word;
 			}
 			else {
 				$output.= $word;
@@ -263,13 +331,13 @@ class Format
 
 		if ( count( $stack ) > 0 ) {
 			preg_match( '/<(\\w+)/', $stack[0], $tagn );
-			$stack= array_reverse( $stack );
+			$stack = array_reverse( $stack );
 			foreach ( $stack as $tag ) {
 				preg_match( '/<(\\w+)/', $tag, $tagn );
 				$output.= '</' . $tagn[1] . '>';
 			}
 		}
-		foreach( $scripts[0] as $script ) {
+		foreach ( $scripts[0] as $script ) {
 			$output.= $script;
 		}
 
@@ -292,19 +360,19 @@ class Format
 	public static function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null)
 	{
 		// If the post requested is the post under consideration, always return the full post
-		if( $post->slug == Controller::get_var('slug') ) {
+		if ( $post->slug == Controller::get_var('slug') ) {
 			return $content;
 		}
 		else {
-			$matches= preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
-			if(count($matches) > 1) {
+			$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
+			if ( count($matches) > 1 ) {
 				return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
 			}
-			elseif (isset($max_words) || isset($max_paragraphs)) {
+			elseif ( isset($max_words) || isset($max_paragraphs) ) {
 				$max_words = empty($max_words) ? 9999999 : intval($max_words);
 				$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
 				$summary = Format::summarize($content, $max_words, $max_paragraphs);
-				if(strlen($summary) >= strlen($content)) {
+				if ( strlen($summary) >= strlen($content) ) {
 					return $content;
 				}
 				else {
@@ -314,7 +382,7 @@ class Format
     }
     return $content;
 	}
-	
+
 	/**
 	 * html_messages
 	 * Creates an HTML unordered list of an array of messages
@@ -339,7 +407,7 @@ class Format
 			}
 			$output.= '</ul>';
 		}
-		
+
 		return $output;
 	}
 
@@ -355,17 +423,17 @@ class Format
 		$output = '';
 		if ( count( $errors ) ) {
 			foreach ( $errors as $error ) {
-				$error= addslashes($error);
-				$output.= "humanMsg.displayMsg('{$error}');";
+				$error = addslashes($error);
+				$output .= "humanMsg.displayMsg(\"{$error}\");";
 			}
 		}
 		if ( count( $notices ) ) {
 			foreach ( $notices as $notice ) {
-				$notice= addslashes($notice);
-				$output.= "humanMsg.displayMsg('{$notice}');";
+				$notice = addslashes($notice);
+				$output .= "humanMsg.displayMsg(\"{$notice}\");";
 			}
 		}
-		
+
 		return $output;
 	}
 

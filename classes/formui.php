@@ -1,5 +1,10 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * FormUI Library - Create interfaces for plugins
  *
  * FormUI			This is the main class, it generates the form itself;
@@ -8,16 +13,13 @@
  * FormControl		Parent class to controls, it contains basic functionalities overrode in each control's class;
  * FormControl*		Every control needs a FormControl* class, FormUI literally looks for example, FormControlCheckbox.
  *
- * @version $Id$
- * @package Habari
  */
-
 class FormContainer
 {
-	public $name= '';
+	public $name = '';
 	public $class = '';
 	public $caption = '';
-	public $controls= array();
+	public $controls = array();
 	protected $theme_obj = null;
 	protected $checksum;
 	public $template = 'formcontainer';
@@ -37,8 +39,8 @@ class FormContainer
 	 */
 	public function append()
 	{
-		$control= null;
-		$args= func_get_args();
+		$control = null;
+		$args = func_get_args();
 		$type = array_shift($args);
 
 		if($type instanceof FormControl) {
@@ -47,17 +49,17 @@ class FormContainer
 		}
 		elseif(is_string($type) && class_exists('FormControl' . ucwords($type))) {
 			$name = reset($args);
-			$type= 'FormControl' . ucwords($type);
+			$type = 'FormControl' . ucwords($type);
 
 			if(class_exists($type)) {
 				// Instanciate a new object from $type
-				$controlreflect= new ReflectionClass($type);
-				$control= $controlreflect->newInstanceArgs($args);
+				$controlreflect = new ReflectionClass($type);
+				$control = $controlreflect->newInstanceArgs($args);
 			}
 		}
 		if($control) {
 			$control->container = $this;
-			$this->controls[$name]= $control;
+			$this->controls[$name] = $control;
 		}
 		return $control;
 	}
@@ -72,8 +74,8 @@ class FormContainer
 	 */
 	public function insert()
 	{
-		$args= func_get_args();
-		$before= array_shift($args);
+		$args = func_get_args();
+		$before = array_shift($args);
 
 		$control = call_user_func_array(array($this, 'append'), $args);
 		if(is_string($before)) {
@@ -113,13 +115,13 @@ class FormContainer
 	 */
 	public function get_values()
 	{
-		$values= array();
+		$values = array();
 		foreach ($this->controls as $control) {
 			if ($control instanceOf FormContainer) {
-				$values= array_merge($values, $control->get_values());
+				$values = array_merge($values, $control->get_values());
 			}
 			else {
-				$values[$control->name]= $control->value;
+				$values[$control->name] = $control->value;
 			}
 		}
 		return $values;
@@ -132,13 +134,13 @@ class FormContainer
 	 */
 	public function get_controls()
 	{
-		$controls= array();
+		$controls = array();
 		foreach ($this->controls as $control) {
 			if ($control instanceOf FormContainer) {
-				$controls= array_merge($controls, $control->get_controls());
+				$controls = array_merge($controls, $control->get_controls());
 			}
 			else {
-				$controls[$control->name]= $control;
+				$controls[$control->name] = $control;
 			}
 		}
 		return $controls;
@@ -150,14 +152,14 @@ class FormContainer
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get($forvalidation)
+	function get($forvalidation = true)
 	{
-		$theme= $this->get_theme($forvalidation, $this);
+		$theme = $this->get_theme($forvalidation, $this);
 		$contents = '';
 		foreach ( $this->controls as $control ) {
 			$contents.= $control->get($forvalidation);
 		}
-		$theme->contents= $contents;
+		$theme->contents = $contents;
 		// Do not move before $contents
 		// Else, these variables will contain the last control's values
 		$theme->class = $this->class;
@@ -177,8 +179,8 @@ class FormContainer
 	function get_theme($forvalidation = false, $control = null)
 	{
 		if(!isset($this->theme_obj)) {
-			$theme_dir= Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
-			$this->theme_obj= Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
+			$this->theme_obj = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		}
 		if($control instanceof FormControl) {
 			// PHP doesn't allow __get() to return pointers, and passing this array to foreach directly generates an error.
@@ -186,22 +188,22 @@ class FormContainer
 			foreach($properties as $name => $value) {
 				$this->theme_obj->$name = $value;
 			}
-			$this->theme_obj->field= $control->field;
-			$this->theme_obj->value= $control->value;
-			$this->theme_obj->caption= $control->caption;
-			$this->theme_obj->id= (string) $control->id;
-			$class= $control->class;
+			$this->theme_obj->field = $control->field;
+			$this->theme_obj->value = $control->value;
+			$this->theme_obj->caption = $control->caption;
+			$this->theme_obj->id = (string) $control->id;
+			$class = (array) $control->class;
 
-			$message= '';
+			$message = '';
 			if($forvalidation) {
-				$validate= $control->validate();
+				$validate = $control->validate();
 				if(count($validate) != 0) {
-					$class[]= 'invalid';
-					$message= implode('<br>', (array) $validate);
+					$class[] = 'invalid';
+					$message = implode('<br>', (array) $validate);
 				}
 			}
-			$this->theme_obj->class= implode( ' ', (array) $class );
-			$this->theme_obj->message= $message;
+			$this->theme_obj->class = implode( ' ', (array) $class );
+			$this->theme_obj->message = $message;
 		}
 		return $this->theme_obj;
 	}
@@ -214,12 +216,12 @@ class FormContainer
 	 * @param FormControl $target FormControl object acting as destination
 	 * @param int $int Integer added to $target's position (index)
 	 */
-	function move($source, $target, $offset= 0)
+	function move($source, $target, $offset = 0)
 	{
 		// Remove the source control from its container's list of controls
 		$controls = array();
 		foreach($source->container->controls as $name => $ctrl) {
-			if($ctrl == $source) {
+			if($ctrl === $source) {
 				$source_name = $name;
 				continue;
 			}
@@ -228,9 +230,9 @@ class FormContainer
 		$source->container->controls = $controls;
 
 		// Insert the source control into the destination control's container's list of controls in the correct location
-		$target_index = array_search($target, array_values($target->container->controls));
-		$left_slice= array_slice($target->container->controls, 0, ($target_index + $offset), true);
-		$right_slice= array_slice($target->container->controls, ($target_index + $offset), count($target->container->controls), true);
+		$target_index = array_search($target, array_values($target->container->controls), true);
+		$left_slice = array_slice($target->container->controls, 0, ($target_index + $offset), true);
+		$right_slice = array_slice($target->container->controls, ($target_index + $offset), count($target->container->controls), true);
 
 		$target->container->controls = $left_slice + array($source_name => $source) + $right_slice;
 	}
@@ -316,13 +318,34 @@ class FormContainer
 	}
 
 	/**
+	 * Magic property isset, returns if the specified control exists
+	 *
+	 * @param string $name The name of the control
+	 * @return bool If the control object is set
+	 */
+	function __isset($name)
+	{
+		if(isset($this->controls[$name])) {
+			return true;
+		}
+		foreach($this->controls as $control) {
+			if($control instanceof FormContainer) {
+				if($ctrl = $control->$name) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Return the HTML/script required for all contained controls.  Do it only once.
 	 *
 	 * @return string The HTML/javascript required for all contained controls.
 	 */
 	function pre_out()
 	{
-		$preout= '';
+		$preout = '';
 		foreach ($this->controls as $control) {
 			$preout.= $control->pre_out();
 		}
@@ -336,10 +359,10 @@ class FormContainer
 	 */
 	function validate()
 	{
-		$results= array();
+		$results = array();
 		foreach($this->controls as $control) {
-			if ($result= $control->validate()) {
-				$results[]= $result;
+			if ($result = $control->validate()) {
+				$results[] = $result;
 			}
 		}
 		return $results;
@@ -357,6 +380,50 @@ class FormContainer
 		}
 	}
 
+	/**
+	 * Explicitly assign the theme object to be used with this container
+	 *
+	 * @param Theme $theme The theme object to use to output this container
+	 */
+	function set_theme($theme)
+	{
+		$this->theme_obj = $theme;
+	}
+
+	/**
+	 * Output any validation errors on any controls in this container using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_out($format, $wrap = '%s')
+	{
+		echo $this->errors_get($format, $wrap);
+	}
+
+	/**
+	 * Return any validation errors on any controls in this container using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_get($format, $wrap = '%s')
+	{
+		$out = '';
+		foreach($this->get_controls() as $control) {
+			foreach($control->errors as $error) {
+				$out .= sprintf($format, $error);
+			}
+		}
+		if($out != '') {
+			$out = sprintf($wrap, $out);
+		}
+		return $out;
+	}
 }
 
 
@@ -370,6 +437,8 @@ class FormUI extends FormContainer
 {
 	private $success_callback;
 	private $success_callback_params = array();
+	public $success = false;
+	public $submitted = false;
 	private static $outpre = false;
 	private $options = array(
 		'save_button' => true,
@@ -379,22 +448,31 @@ class FormUI extends FormContainer
 		'theme' => '',
 		'success_message' => '',
 	);
-	public $class= array( 'formui' );
-	public $id= null;
+	public $class = array( 'formui' );
+	public $id = null;
+	public $formtype = '';
 
 	public $properties = array(
 		'action' => '',
 		'onsubmit' => '',
+		'enctype' => 'application/x-www-form-urlencoded',
 	);
 
 	/**
 	 * FormUI's constructor, called on instantiation.
 	 *
 	 * @param string $name The name of the form, used to differentiate multiple forms.
+	 * @param string $formtype The type of the form, used to classify form types for plugin modification
 	 */
-	public function __construct( $name )
+	public function __construct( $name, $formtype = null )
 	{
-		$this->name= $name;
+		$this->name = $name;
+		if(isset($formtype)) {
+			$this->formtype = $formtype;
+		}
+		else {
+			$this->formtype = $name;
+		}
 	}
 
 	/**
@@ -413,17 +491,28 @@ class FormUI extends FormContainer
 	 * @param boolean $process_for_success Set to true to display the form as it would look if the submission succeeded, but do not execute success methods.
 	 * @return string HTML form generated from all controls assigned to this form
 	 */
-	public function get($process_for_success = true)
+	public function get($use_theme = null, $process_for_success = true)
 	{
 		$forvalidation = false;
 
-		$theme = $this->get_theme($forvalidation, $this);
+		Plugins::act('modify_form_' . $this->formtype, $this);
+		Plugins::act('modify_form', $this);
+
+		if(isset($use_theme)) {
+			$theme = $use_theme;
+		}
+		else {
+			$theme = $this->get_theme($forvalidation, $this);
+		}
 		$theme->start_buffer();
 		$theme->success = false;
+		$this->success = false;
+		$this->submitted = false;
 
 		// Should we be validating?
 		if(isset($_POST['FormUI']) && $_POST['FormUI'] == $this->salted_name()) {
-			$validate= $this->validate();
+			$this->submitted = true;
+			$validate = $this->validate();
 			if(count($validate) == 0) {
 				if($process_for_success) {
 					$result = $this->success();
@@ -432,16 +521,18 @@ class FormUI extends FormContainer
 					}
 				}
 				$theme->success = true;
+				$this->success = true;
 				$theme->message = $this->options['success_message'];
 			}
 			else {
-				$forvalidation= true;
+				$forvalidation = true;
 			}
 		}
 
 		$out = '';
 
 		$theme->controls = $this->output_controls($forvalidation);
+		$theme->form = $this;
 
 		foreach($this->properties as $prop => $value) {
 			$theme->$prop = $value;
@@ -454,7 +545,7 @@ class FormUI extends FormContainer
 		$theme->salted_name = $this->salted_name();
 		$theme->pre_out = $this->pre_out_controls();
 
-		$out = $theme->fetch($this->options['template']);
+		$out = $theme->display_fallback($this->options['template'], 'fetch');
 		$theme->end_buffer();
 
 		return $out;
@@ -466,7 +557,7 @@ class FormUI extends FormContainer
 	 */
 	public function out()
 	{
-		$args= func_get_args();
+		$args = func_get_args();
 		echo call_user_func_array(array($this, 'get'), $args);
 	}
 
@@ -476,9 +567,9 @@ class FormUI extends FormContainer
 	 * @param boolean $forvalidation True if the controls should output additional information based on validation.
 	 * @return string The output of controls' HTML.
 	 */
-	public function output_controls( $forvalidation= false )
+	public function output_controls( $forvalidation = false )
 	{
-		$out= '';
+		$out = '';
 		$this->get_theme( $forvalidation )->start_buffer();
 		foreach($this->controls as $control) {
 			$out.= $control->get( $forvalidation );
@@ -494,7 +585,7 @@ class FormUI extends FormContainer
 	 */
 	public function pre_out_controls( )
 	{
-		$out= '';
+		$out = '';
 		if(!FormUI::$outpre) {
 			FormUI::$outpre = true;
 			$out.= '<script type="text/javascript">var controls = Object();</script>';
@@ -512,9 +603,9 @@ class FormUI extends FormContainer
 	 */
 	public function validate()
 	{
-		$validate= array();
+		$validate = array();
 		foreach($this->controls as $control) {
-			$validate= array_merge($validate, $control->validate());
+			$validate = array_merge($validate, $control->validate());
 		}
 		return $validate;
 	}
@@ -538,16 +629,16 @@ class FormUI extends FormContainer
 	 */
 	public function success()
 	{
-		$result= true;
+		$result = true;
 		if(isset($this->success_callback)) {
 			$params = $this->success_callback_params;
 			array_unshift($params, $this);
 			if(is_callable($this->success_callback)) {
-				$result= call_user_func_array($this->success_callback, $params);
+				$result = call_user_func_array($this->success_callback, $params);
 			}
 			else {
 				array_unshift($params, $this->success_callback, false);
-				$result= call_user_func_array(array('Plugins', 'filter'), $params);
+				$result = call_user_func_array(array('Plugins', 'filter'), $params);
 			}
 			if($result) {
 				return $result;
@@ -586,6 +677,17 @@ class FormUI extends FormContainer
 	}
 
 	/**
+	 * Get a form option
+	 *
+	 * @param string $option The name of the option to get
+	 * @return mixed The value of the named option if set, null if not set
+	 */
+	public function get_option( $option )
+	{
+		return isset($this->options[$option]) ? $this->options[$option] : null;
+	}
+
+	/**
 	 * Configure all the options necessary to make this form work inside a media bar panel
 	 * @param string $path Identifies the silo
 	 * @param string $panel The panel in the silo to submit to
@@ -612,13 +714,17 @@ class FormValidators
 	 * A validation function that returns an error if the value passed in is not a valid URL.
 	 *
 	 * @param string $text A string to test if it is a valid URL
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $warning An optional error message
 	 * @return array An empty array if the string is a valid URL, or an array with strings describing the errors
 	 */
-	function validate_url( $text )
+	public static function validate_url( $text, $control, $form, $warning = null )
 	{
 		if ( !empty( $text ) ) {
 			if(!preg_match('/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text)) {
-				return array(_t('Value must be a valid URL.'));
+				$warning = empty($warning) ? _t('Value must be a valid URL.') : $warning;
+				return array($warning);
 			}
 		}
 		return array();
@@ -629,12 +735,16 @@ class FormValidators
 	 * as per RFC2822 and RFC2821.
 	 *
 	 * @param string $text A string to test if it is a valid Email Address
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $warning An optional error message
 	 * @return array An empty array if the string is a valid Email Address, or an array with strings describing the errors
 	 */
-	function validate_email( $text )
+	public static function validate_email( $text, $control, $form, $warning = null )
 	{
 		if( !preg_match("@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
-			return array(_t('Value must be a valid Email Address.'));
+			$warning = empty($warning) ? _t('Value must be a valid Email Address.') : $warning;
+			return array($warning);
 		}
 		return array();
 	}
@@ -643,12 +753,58 @@ class FormValidators
 	 * A validation function that returns an error if the value passed in is not set.
 	 *
 	 * @param string $text A value to test if it is empty
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $warning An optional error message
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
-	function validate_required( $value )
+	public static function validate_required( $value, $control, $form, $warning = null )
 	{
 		if(empty($value) || $value == '') {
-			return array(_t('A value for this field is required.'));
+			$warning = empty($warning) ? _t('A value for this field is required.') : $warning;
+			return array($warning);
+		}
+		return array();
+	}
+
+	/**
+	 * A validation function that returns an error if the the passed username is unavailable
+	 *
+	 * @param string $text A value to test as username
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param string $allowed_name An optional name which overrides the check and is always allowed
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value exists, or an array with strings describing the errors
+	 */
+	public static function validate_username( $value, $control, $form, $allowed_name = null, $warning = null )
+	{
+		if(isset($allowed_name) && ($value == $allowed_name)) {
+			return array();
+		}
+		if( User::get_by_name( $value ) ) {
+			$warning = empty($warning) ? _t('That username is already in use!') : $warning;
+			return array($warning);
+		}
+		return array();
+	}
+
+
+	/**
+	 * A validation function that returns an error if the passed control values do not match
+	 *
+	 * @param string $text A value to test for similarity
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $form The container that holds the control
+	 * @param FormControl $matcher The control which should have a matching value
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value exists, or an array with strings describing the errors
+	 */
+	public static function validate_same( $value, $control, $form, $matcher, $warning = null )
+	{
+		if($value != $matcher->value) {
+			$warning = empty($warning) ? _t('The value of this field must match the value of %s.', array($matcher->caption)) : $warning;
+			return array($warning);
 		}
 		return array();
 	}
@@ -663,19 +819,46 @@ class FormValidators
 	 * @param string $warning An optional error message
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
-	function validate_regex( $value, $control, $container, $regex, $warning = NULL )
+	public static function validate_regex( $value, $control, $container, $regex, $warning = NULL )
 	{
 		if(preg_match($regex, $value)) {
 			return array();
 		}
 		else {
 			if ($warning == NULL) {
-				$warning= _t('The value does not meet submission requirements');
-			}
-			else {
-				$warning= _t($warning);
+				$warning = _t('The value does not meet submission requirements');
 			}
 			return array($warning);
+		}
+	}
+	
+	/**
+	 * A validation function that returns an error if the value passed is not within a specified range
+	 * 
+	 * @param string $value A value to test if it is empty
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $container The container that holds the control
+	 * @param float $min The minimum value, inclusive
+	 * @param float $max The maximum value, inclusive
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value is value, or an array with strings describing the errors
+	 */
+	public static function validate_range( $value, $control, $container, $min, $max, $warning = NULL )
+	{
+		if($value < $min) {
+			if ($warning == NULL) {
+				$warning = _t('The value entered is lesser than the minimum of %d.', array($min));
+			}
+			return array($warning);
+		}
+		elseif($value > $max) {
+			if ($warning == NULL) {
+				$warning = _t('The value entered is greater than the maximum of %d.', array($max));
+			}
+			return array($warning);
+		}
+		else {
+			return array();
 		}
 	}
 }
@@ -687,16 +870,18 @@ class FormControl
 {
 	protected $caption;
 	protected $default = null;
-	protected $validators= array();
+	protected $validators = array();
 	protected $storage;
 	protected $store_user = false;
 	protected $theme_obj;
 	protected $container = null;
-	public $id= null;
-	public $class= array( 'formcontrol' );
+	public $id = null;
+	public $class = array( 'formcontrol' );
 	public $name;
 	protected $properties = array();
 	protected $template = null;
+	protected $raw = false;
+	public $errors = array();
 
 	/**
 	 * FormControl constructor - set initial settings of the control
@@ -710,10 +895,10 @@ class FormControl
 		$args = func_get_args();
 		list($name, $storage, $caption, $template) = array_merge($args, array_fill(0, 4, null));
 
-		$this->name= $name;
-		$this->storage= $storage;
-		$this->caption= $caption;
-		$this->template= $template;
+		$this->name = $name;
+		$this->storage = $storage;
+		$this->caption = $caption;
+		$this->template = $template;
 
 		$this->default = null;
 	}
@@ -765,13 +950,13 @@ class FormControl
 
 			switch($type) {
 				case 'user':
-					$this->default= User::identify()->info->{$location};
+					$this->default = User::identify()->info->{$location};
 					break;
 				case 'option':
-					$this->default= Options::get( $location );
+					$this->default = Options::get( $location );
 					break;
 				case 'action':
-					$this->default= Plugins::filter($location, '', $this->name, false);
+					$this->default = Plugins::filter($location, '', $this->name, false);
 					break;
 				case 'null':
 					break;
@@ -825,9 +1010,9 @@ class FormControl
 	 *
 	 * @param boolean $forvalidation True if the control should output validation information with the control.
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
-		$theme= $this->get_theme($forvalidation);
+		$theme = $this->get_theme($forvalidation);
 		$theme->start_buffer();
 
 		foreach($this->properties as $prop => $value) {
@@ -837,6 +1022,7 @@ class FormControl
 		$theme->caption = $this->caption;
 		$theme->id = $this->name;
 		$theme->value = $this->value;
+		$theme->control = $this;
 
 		return $theme->fetch( $this->get_template(), true );
 	}
@@ -852,7 +1038,7 @@ class FormControl
 			$template = $this->template;
 		}
 		else {
-			$classname= get_class( $this );
+			$classname = get_class( $this );
 			$type = '';
 			if(preg_match('%FormControl(.+)%i', $classname, $controltype)) {
 				$type = strtolower($controltype[1]);
@@ -883,24 +1069,58 @@ class FormControl
 	 */
 	public function validate()
 	{
-		$valid= array();
+		$valid = array();
 		foreach($this->validators as $validator) {
-			$validator_fn= array_shift($validator);
+			$validator_fn = array_shift($validator);
 			if(is_callable($validator_fn)) {
-				$params= array_merge(array($this->value, $this, $this->container), $validator);
-				$valid= array_merge($valid, call_user_func_array( $validator_fn, $params ) );
+				$params = array_merge(array($this->value, $this, $this->container), $validator);
+				$valid = array_merge($valid, call_user_func_array( $validator_fn, $params ) );
 			}
 			elseif(method_exists('FormValidators', $validator_fn)) {
-				$validator_fn= array('FormValidators', $validator_fn);
-				$params= array_merge(array($this->value, $this, $this->container), $validator);
-				$valid= array_merge($valid, call_user_func_array( $validator_fn, $params ) );
+				$validator_fn = array('FormValidators', $validator_fn);
+				$params = array_merge(array($this->value, $this, $this->container), $validator);
+				$valid = array_merge($valid, call_user_func_array( $validator_fn, $params ) );
 			}
 			else {
-				$params= array_merge(array($validator_fn, $valid, $this->value, $this, $this->container), $validator);
-				$valid= array_merge($valid, call_user_func_array( array('Plugins', 'filter'), $params ) );
+				$params = array_merge(array($validator_fn, $valid, $this->value, $this, $this->container), $validator);
+				$valid = array_merge($valid, call_user_func_array( array('Plugins', 'filter'), $params ) );
 			}
 		}
+		$this->errors = $valid;
 		return $valid;
+	}
+
+	/**
+	 * Output any validation errors on this control using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_out($format, $wrap = '%s')
+	{
+		echo $this->errors_get($format, $wrap);
+	}
+
+	/**
+	* Return any validation errors on this control using the supplied format
+	 * $this->validate must be called first!
+	 *
+	 * @params string $format A sprintf()-style format string to format the validation error
+	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
+	 * @return boolean true if the control has errors
+	 */
+	public function errors_get($format, $wrap = '%s')
+	{
+		$out = '';
+		foreach($this->errors as $error) {
+			$out .= sprintf($format, $error);
+		}
+		if($out != '') {
+			$out = sprintf($wrap, $out);
+		}
+		return $out;
 	}
 
 	/**
@@ -920,7 +1140,7 @@ class FormControl
 				return isset($this->id) ? $this->id : sprintf('%x', crc32($this->name));
 			case 'value':
 				if(isset($_POST[$this->field])) {
-					return $_POST[$this->field];
+					return $this->raw ? $_POST->raw($this->field) : $_POST[$this->field];
 				}
 				else {
 					return $this->get_default();
@@ -981,7 +1201,7 @@ class FormControl
 				$this->container = $value;
 				break;
 			case 'name':
-				$this->name= (string) $value;
+				$this->name = (string) $value;
 				break;
 			case 'caption':
 				$this->caption = $value;
@@ -992,6 +1212,9 @@ class FormControl
 				break;
 			case 'template':
 				$this->template = $value;
+				break;
+			case 'raw':
+				$this->raw = $value;
 				break;
 			default:
 				$this->properties[$name] = $value;
@@ -1024,7 +1247,7 @@ class FormControl
 	 */
 	public function add_validator()
 	{
-		$args= func_get_args();
+		$args = func_get_args();
 		$validator = reset($args);
 		if(is_array($validator)) {
 			$index = (is_object($validator[0]) ? get_class($validator[0]) : $validator[0]) . ':' . $validator[1];
@@ -1032,7 +1255,7 @@ class FormControl
 		else {
 			$index = $validator;
 		}
-		$this->validators[$index]= $args;
+		$this->validators[$index] = $args;
 		return $this;
 	}
 
@@ -1073,7 +1296,7 @@ class FormControl
 	{
 		$this->container->move_after( $this, $target );
 	}
-	
+
 	/**
 	 * Remove this controls from the form
 	 */
@@ -1098,9 +1321,9 @@ class FormControlNoSave extends FormControl
 		$args = func_get_args();
 		list($name, $caption, $template) = array_merge($args, array_fill(0, 3, null));
 
-		$this->name= $name;
-		$this->caption= $caption;
-		$this->template= $template;
+		$this->name = $name;
+		$this->caption = $caption;
+		$this->template = $template;
 	}
 
 	/**
@@ -1109,7 +1332,7 @@ class FormControlNoSave extends FormControl
 	 * @param mixed $key Unused
 	 * @param mixed $store_user Unused
 	 */
-	public function save($key= null, $store_user= null)
+	public function save($key = null, $store_user = null)
 	{
 		// This function should do nothing.
 	}
@@ -1142,7 +1365,7 @@ class FormControlStatic extends FormControlNoSave
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		return $this->caption;
 	}
@@ -1165,8 +1388,8 @@ class FormControlTag extends FormContainer
 		$args = func_get_args();
 		list($name, $tag, $template) = array_merge($args, array_fill(0, 3, null));
 
-		$this->name= $name;
-		$this->tag= $tag;
+		$this->name = $name;
+		$this->tag = $tag;
 		$this->template = isset($template) ? $template : 'tabcontrol_tag';
 	}
 
@@ -1176,19 +1399,19 @@ class FormControlTag extends FormContainer
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get($forvalidation)
+	function get($forvalidation = true)
 	{
-		$theme= $this->get_theme($forvalidation, $this);
-		$max= Tags::max_count();
-		
+		$theme = $this->get_theme($forvalidation, $this);
+		$max = Tags::max_count();
+
 		$tag = $this->tag;
-		
-		$theme->class= 'tag_'.$tag->slug;
-		$theme->id= $tag->id;
-		$theme->weight= $max > 0 ? round(($tag->count * 10)/$max) : 0;
-		$theme->caption= $tag->tag;
-		$theme->count= $tag->count;
-				
+
+		$theme->class = 'tag_'.$tag->slug;
+		$theme->id = $tag->id;
+		$theme->weight = $max > 0 ? round(($tag->count * 10)/$max) : 0;
+		$theme->caption = $tag->tag;
+		$theme->count = $tag->count;
+
 		return $theme->fetch( 'tabcontrol_tag' );
 	}
 
@@ -1206,9 +1429,9 @@ class FormControlPassword extends FormControlText
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
-		$theme= $this->get_theme($forvalidation);
+		$theme = $this->get_theme($forvalidation);
 		$theme->outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
 
 		return $theme->fetch( $this->get_template() );
@@ -1258,7 +1481,7 @@ class FormControlTextMulti extends FormControl
 	 */
 	public function pre_out()
 	{
-		$out= '';
+		$out = '';
 		if(!FormControlTextMulti::$outpre) {
 			FormControlTextMulti::$outpre = true;
 			$out.= '
@@ -1270,7 +1493,8 @@ class FormControlTextMulti extends FormControl
 					},
 					remove: function(e){
 						if(confirm("' . _t('Remove this item?') . '")) {
-							$(e).parents("label").remove();
+							$(e).parent().prev().remove();
+							$(e).parent().remove();
 						}
 						return false;
 					}
@@ -1305,11 +1529,11 @@ class FormControlSelect extends FormControl
 		$args = func_get_args();
 		list($name, $storage, $caption, $options, $template) = array_merge($args, array_fill(0, 5, null));
 
-		$this->name= $name;
-		$this->storage= $storage;
-		$this->caption= $caption;
-		$this->options= $options;
-		$this->template= $template;
+		$this->name = $name;
+		$this->storage = $storage;
+		$this->caption = $caption;
+		$this->options = $options;
+		$this->template = $template;
 
 		$this->default = null;
 	}
@@ -1320,15 +1544,16 @@ class FormControlSelect extends FormControl
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
-		$theme= $this->get_theme($forvalidation);
+		$theme = $this->get_theme($forvalidation);
 		$theme->options = $this->options;
 		$theme->multiple = $this->multiple;
 		$theme->size = $this->size;
 		$theme->id = $this->name;
+		$theme->control = $this;
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 }
 
@@ -1343,15 +1568,16 @@ class FormControlCheckboxes extends FormControlSelect
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
-		$theme= $this->get_theme($forvalidation);
+		$theme = $this->get_theme($forvalidation);
 		$theme->options = $this->options;
 		$theme->id = $this->name;
+		$theme->control = $this;
 
 		return $theme->fetch( $this->get_template() );
 	}
-	
+
 	/**
 	 * Magic __get method for returning property values
 	 * Override the handling of the value property to properly return the setting of the checkbox.
@@ -1377,7 +1603,7 @@ class FormControlCheckboxes extends FormControlSelect
 		}
 		return parent::__get($name);
 	}
-	
+
 }
 
 
@@ -1433,7 +1659,7 @@ class FormControlHidden extends FormControl
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	public function get($forvalidation)
+	public function get($forvalidation = true)
 	{
 		return '<input type="hidden" name="' . $this->field . '" value="' . $this->value . '">';
 	}
@@ -1457,8 +1683,8 @@ class FormControlFieldset extends FormContainer
 		$args = func_get_args();
 		list($name, $caption, $template) = array_merge($args, array_fill(0, 3, null));
 
-		$this->name= $name;
-		$this->caption= $caption;
+		$this->name = $name;
+		$this->caption = $caption;
 		$this->template = isset($template) ? $template : 'formcontrol_fieldset';
 	}
 }
@@ -1479,8 +1705,8 @@ class FormControlWrapper extends FormContainer
 		$args = func_get_args();
 		list($name, $class, $template) = array_merge($args, array_fill(0, 3, null));
 
-		$this->name= $name;
-		$this->class= $class;
+		$this->name = $name;
+		$this->class = $class;
 		$this->caption = '';
 		$this->template = isset($template) ? $template : 'formcontrol_wrapper';
 	}
@@ -1499,9 +1725,9 @@ class FormControlLabel extends FormControlNoSave
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get()
+	function get( $forvalidation = true )
 	{
-		$out= '<div' . (($this->class) ? ' class="' . implode( " ", (array) $this->class ) . '"' : '') . (($this->id) ? ' id="' . $this->id . '"' : '') .'><label for="' . $this->name . '">' . $this->caption . '</label></div>';
+		$out = '<div' . (($this->class) ? ' class="' . implode( " ", (array) $this->class ) . '"' : '') . (($this->id) ? ' id="' . $this->id . '"' : '') .'><label for="' . $this->name . '">' . $this->caption . '</label></div>';
 		return $out;
 	}
 
@@ -1539,8 +1765,8 @@ class FormControlTabs extends FormContainer
 		$args = func_get_args();
 		list($name, $caption, $template) = array_merge($args, array_fill(0, 3, null));
 
-		$this->name= $name;
-		$this->caption= $caption;
+		$this->name = $name;
+		$this->caption = $caption;
 		$this->template = isset($template) ? $template : 'formcontrol_tabs';
 	}
 
@@ -1550,15 +1776,17 @@ class FormControlTabs extends FormContainer
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
-	function get($forvalidation)
+	function get($forvalidation = true)
 	{
-		$theme= $this->get_theme($forvalidation, $this);
+		$theme = $this->get_theme($forvalidation, $this);
 
 		foreach ( $this->controls as $control ) {
 			if($control instanceof FormContainer) {
 				$content = '';
 				foreach( $control->controls as $subcontrol) {
-					if($content != '') {
+					// There should be a better way to know if a control will produce actual output,
+					// but this instanceof is ok for now:
+					if($content != '' && !( $subcontrol instanceof FormControlHidden )) {
 						$content .= '<hr>';
 					}
 					$content .= $subcontrol->get($forvalidation);

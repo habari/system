@@ -1,16 +1,19 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Input filtering functions.
- * 
- * @package Habari
+ *
  */
 class InputFilter
 {
 	/**
 	 * Allowed elements.
 	 */
-	private static $whitelist_elements= array(
+	private static $whitelist_elements = array(
 		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.4
 		'div', 'span',
 		// http://www.w3.org/TR/html4/struct/links.html#h-12.2
@@ -32,15 +35,51 @@ class InputFilter
 		// http://www.w3.org/TR/html4/struct/lists.html#h-10.2
 		'ol', 'ul', 'li',
 		// http://www.w3.org/TR/html4/struct/lists.html#h-10.3
-		'dl', 'dt', 'dd', 
+		'dl', 'dt', 'dd',
 		// http://www.w3.org/TR/html4/present/graphics.html#h-15.2.1
 		'b', 'i', 'u', 's', 'tt',
+		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.5
+		'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+		// http://www.w3.org/TR/html4/struct/global.html#h-7.5.6
+		'address',
+		// http://www.w3.org/TR/html4/struct/dirlang.html#h-8.2.4
+		'bdo',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.1
+		'table',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.2
+		'caption',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3
+		'thead', 'tfoot', 'tbody',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.4
+		'colgroup', 'col',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.5
+		'tr',
+		// http://www.w3.org/TR/html4/struct/tables.html#h-11.2.6
+		'th', 'td',
+		// http://www.w3.org/TR/html4/struct/objects.html#h-13.2
+		'img',
+		// http://www.w3.org/TR/html4/struct/objects.html#h-13.6.1
+		'map', 'area',
+		// http://www.w3.org/TR/html4/present/graphics.html#h-15.2.1 (the non-deprecated ones)
+		'tt', 'i', 'b', 'big', 'small',
+		// http://www.w3.org/TR/html4/present/graphics.html#h-15.3
+		'hr',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.2.1
+		'frameset',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.2.2
+		'frame',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.4.1
+		'noframes',
+		// http://www.w3.org/TR/html4/present/frames.html#h-16.5
+		'iframe',
+
+
 	);
-	
+
 	/**
 	 * Allowed attributes and values.
 	 */
-	private static $whitelist_attributes= array(
+	private static $whitelist_attributes = array(
 		// attributes that are valid for ALL elements (a subset of coreattrs)
 		// elements that only take coreattrs don't need to be listed separately
 		'*' => array(
@@ -58,59 +97,59 @@ class InputFilter
 		'blockquote' => array( 'cite' => 'uri', ),
 		'q' => array( 'cite' => 'uri', ),
 	);
-	
+
 	/**
 	 * #EMPTY elements.
 	 */
-	private static $elements_empty= array(
+	private static $elements_empty = array(
 		'img',
 	);
-	
+
 	/**
 	 * Protocols that are ok for use in URIs.
 	 */
-	private static $whitelist_protocols= array(
+	private static $whitelist_protocols = array(
 		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto',
 	);
-	
+
 	/**
 	 * List of all defined named character entities in HTML 4.01 and XHTML.
 	 */
-	private static $character_entities= array(
-		'nbsp', 'iexcl', 'cent', 'pound', 'curren', 'yen', 'brvbar', 'sect', 'uml', 
-		'copy', 'ordf', 'laquo', 'not', 'shy', 'reg', 'macr', 'deg', 'plusmn', 
-		'sup2', 'sup3', 'acute', 'micro', 'para', 'middot', 'cedil', 'sup1', 'ordm', 
-		'raquo', 'frac14', 'frac12', 'frac34', 'iquest', 'Agrave', 'Aacute', 'Acirc', 
-		'Atilde', 'Auml', 'Aring', 'AElig', 'Ccedil', 'Egrave', 'Eacute', 'Ecirc', 
-		'Euml', 'Igrave', 'Iacute', 'Icirc', 'Iuml', 'ETH', 'Ntilde', 'Ograve', 
-		'Oacute', 'Ocirc', 'Otilde', 'Ouml', 'times', 'Oslash', 'Ugrave', 'Uacute', 
-		'Ucirc', 'Uuml', 'Yacute', 'THORN', 'szlig', 'agrave', 'aacute', 'acirc', 
-		'atilde', 'auml', 'aring', 'aelig', 'ccedil', 'egrave', 'eacute', 'ecirc', 
-		'euml', 'igrave', 'iacute', 'icirc', 'iuml', 'eth', 'ntilde', 'ograve', 
-		'oacute', 'ocirc', 'otilde', 'ouml', 'divide', 'oslash', 'ugrave', 'uacute', 
-		'ucirc', 'uuml', 'yacute', 'thorn', 'yuml', 'fnof', 'Alpha', 'Beta', 'Gamma', 
-		'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu', 
-		'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau', 'Upsilon', 'Phi', 'Chi', 
-		'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 
-		'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'omicron', 'pi', 'rho', 
-		'sigmaf', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega', 
-		'thetasym', 'upsih', 'piv', 'bull', 'hellip', 'prime', 'Prime', 'oline', 
-		'frasl', 'weierp', 'image', 'real', 'trade', 'alefsym', 'larr', 'uarr', 
-		'rarr', 'darr', 'harr', 'crarr', 'lArr', 'uArr', 'rArr', 'dArr', 'hArr', 
-		'forall', 'part', 'exist', 'empty', 'nabla', 'isin', 'notin', 'ni', 'prod', 
-		'sum', 'minus', 'lowast', 'radic', 'prop', 'infin', 'ang', 'and', 'or', 
-		'cap', 'cup', 'int', 'there4', 'sim', 'cong', 'asymp', 'ne', 'equiv', 'le', 
-		'ge', 'sub', 'sup', 'nsub', 'sube', 'supe', 'oplus', 'otimes', 'perp', 
-		'sdot', 'lceil', 'rceil', 'lfloor', 'rfloor', 'lang', 'rang', 'loz', 
-		'spades', 'clubs', 'hearts', 'diams', 'quot', 'amp', 'lt', 'gt', 'OElig', 
-		'oelig', 'Scaron', 'scaron', 'Yuml', 'circ', 'tilde', 'ensp', 'emsp', 
-		'thinsp', 'zwnj', 'zwj', 'lrm', 'rlm', 'ndash', 'mdash', 'lsquo', 'rsquo', 
-		'sbquo', 'ldquo', 'rdquo', 'bdquo', 'dagger', 'Dagger', 'permil', 'lsaquo', 
+	private static $character_entities = array(
+		'nbsp', 'iexcl', 'cent', 'pound', 'curren', 'yen', 'brvbar', 'sect', 'uml',
+		'copy', 'ordf', 'laquo', 'not', 'shy', 'reg', 'macr', 'deg', 'plusmn',
+		'sup2', 'sup3', 'acute', 'micro', 'para', 'middot', 'cedil', 'sup1', 'ordm',
+		'raquo', 'frac14', 'frac12', 'frac34', 'iquest', 'Agrave', 'Aacute', 'Acirc',
+		'Atilde', 'Auml', 'Aring', 'AElig', 'Ccedil', 'Egrave', 'Eacute', 'Ecirc',
+		'Euml', 'Igrave', 'Iacute', 'Icirc', 'Iuml', 'ETH', 'Ntilde', 'Ograve',
+		'Oacute', 'Ocirc', 'Otilde', 'Ouml', 'times', 'Oslash', 'Ugrave', 'Uacute',
+		'Ucirc', 'Uuml', 'Yacute', 'THORN', 'szlig', 'agrave', 'aacute', 'acirc',
+		'atilde', 'auml', 'aring', 'aelig', 'ccedil', 'egrave', 'eacute', 'ecirc',
+		'euml', 'igrave', 'iacute', 'icirc', 'iuml', 'eth', 'ntilde', 'ograve',
+		'oacute', 'ocirc', 'otilde', 'ouml', 'divide', 'oslash', 'ugrave', 'uacute',
+		'ucirc', 'uuml', 'yacute', 'thorn', 'yuml', 'fnof', 'Alpha', 'Beta', 'Gamma',
+		'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu',
+		'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau', 'Upsilon', 'Phi', 'Chi',
+		'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta',
+		'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'omicron', 'pi', 'rho',
+		'sigmaf', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega',
+		'thetasym', 'upsih', 'piv', 'bull', 'hellip', 'prime', 'Prime', 'oline',
+		'frasl', 'weierp', 'image', 'real', 'trade', 'alefsym', 'larr', 'uarr',
+		'rarr', 'darr', 'harr', 'crarr', 'lArr', 'uArr', 'rArr', 'dArr', 'hArr',
+		'forall', 'part', 'exist', 'empty', 'nabla', 'isin', 'notin', 'ni', 'prod',
+		'sum', 'minus', 'lowast', 'radic', 'prop', 'infin', 'ang', 'and', 'or',
+		'cap', 'cup', 'int', 'there4', 'sim', 'cong', 'asymp', 'ne', 'equiv', 'le',
+		'ge', 'sub', 'sup', 'nsub', 'sube', 'supe', 'oplus', 'otimes', 'perp',
+		'sdot', 'lceil', 'rceil', 'lfloor', 'rfloor', 'lang', 'rang', 'loz',
+		'spades', 'clubs', 'hearts', 'diams', 'quot', 'amp', 'lt', 'gt', 'OElig',
+		'oelig', 'Scaron', 'scaron', 'Yuml', 'circ', 'tilde', 'ensp', 'emsp',
+		'thinsp', 'zwnj', 'zwj', 'lrm', 'rlm', 'ndash', 'mdash', 'lsquo', 'rsquo',
+		'sbquo', 'ldquo', 'rdquo', 'bdquo', 'dagger', 'Dagger', 'permil', 'lsaquo',
 		'rsaquo', 'euro',
 	);
-	private static $character_entities_re= '';
-	
-	private static $scheme_ports= array(
+	private static $character_entities_re = '';
+
+	private static $scheme_ports = array(
 		'ftp' => 21,
 		'ssh' => 22,
 		'telnet' => 23,
@@ -124,8 +163,8 @@ class InputFilter
 		'nntps' => 563,
 		'imaps' => 993,
 		'pop3s' => 995,
-	); 
-	
+	);
+
 	/**
 	 * Perform all filtering, return new string.
 	 * @param string $str Input string.
@@ -133,17 +172,17 @@ class InputFilter
 	 */
 	public static function filter( $str )
 	{
-		$str= self::strip_nulls( $str );
-		$str= self::strip_illegal_entities( $str );
-		$str= self::filter_html_elements( $str );
-		
+		$str = self::strip_nulls( $str );
+		$str = self::strip_illegal_entities( $str );
+		$str = self::filter_html_elements( $str );
+
 		return $str;
 	}
-	
+
 	public static function strip_nulls( $str )
 	{
-		$str= preg_replace( '/\0+/', '', $str );
-		
+		$str = preg_replace( '/\0+/', '', $str );
+
 		return $str;
 	}
 
@@ -151,74 +190,74 @@ class InputFilter
 	 * Callback function for strip_illegal_entities, do not use.
 	 * @access private
 	 * @param array $m matches
-	 */	
+	 */
 	public static function _validate_entity( $m )
 	{
-		$is_valid= FALSE;
-		
+		$is_valid = FALSE;
+
 		// valid entity references have the form
 		//   /&named([;<\n\r])/
 		// for named entities, or
 		//   /&#(\d{1,5}|[xX][0-9a-fA-F]{1,4})([;<\n\r])/
 		// for numeric character references
-		
-		$e= trim( $m[1] );
-		$r= $m[2];
+
+		$e = trim( $m[1] );
+		$r = $m[2];
 		if ( $r == ';' ) {
-			$r= '';
+			$r = '';
 		}
-		
+
 		if ( $e{0} == '#' ) {
-			$e= strtolower( $e );
+			$e = strtolower( $e );
 			if ( $e{1} == 'x' ) {
-				$e= hexdec( substr( $e, 2 ) );
+				$e = hexdec( substr( $e, 2 ) );
 			}
 			else {
-				$e= substr( $e, 1 );
+				$e = substr( $e, 1 );
 			}
-			
+
 			// numeric character references may only have values in the range 0-65535 (16 bit)
 			// we strip null, though, just for kicks
-			$is_valid= ( intval( $e ) > 0 && intval( $e ) <= 65535 );
-			
+			$is_valid = ( intval( $e ) > 0 && intval( $e ) <= 65535 );
+
 			if ( $is_valid ) {
 				// normalize to decimal form
-				$e= '#' . intval( $e ) . ';';
+				$e = '#' . intval( $e ) . ';';
 			}
 		}
 		else {
 			if ( self::$character_entities_re == '' ) {
-				self::$character_entities_re= ';(' . implode( '|', self::$character_entities ) . ');';
+				self::$character_entities_re = ';(' . implode( '|', self::$character_entities ) . ');';
 			}
-			
+
 			// named entities must be known
-			$is_valid= preg_match( self::$character_entities_re, $e, $matches );
-			
+			$is_valid = preg_match( self::$character_entities_re, $e, $matches );
+
 			// XXX should we map named entities to their numeric equivalents?
-			
+
 			if ( $is_valid ) {
 				// normalize to name and nothing but the name... eh.
-				$e= $matches[1] . ';';
+				$e = $matches[1] . ';';
 			}
 		}
-		
+
 		return $is_valid ? '&' . $e . $r : '';
 	}
-	
+
 	public static function strip_illegal_entities( $str )
 	{
-		$str= preg_replace_callback( "/&([^;<\n\r]+)([;<\n\r])/", array( __CLASS__, '_validate_entity' ), $str );
-		
+		$str = preg_replace_callback( "/&([^;<\n\r]+)([;<\n\r])/", array( __CLASS__, '_validate_entity' ), $str );
+
 		return $str;
 	}
-	
+
 	/**
 	 * This really doesn't belong here. It should also be done much better. This is a nasty, NASTY kludge.
 	 */
 	public static function parse_url( $url )
 	{
 		// result array
-		$r= array(
+		$r = array(
 			'scheme' => '',
 			'host' => '',
 			'port' => '',
@@ -234,9 +273,9 @@ class InputFilter
 			//
 			'pseudo_args' => '',
 		);
-		
+
 		// TODO normalize etc., make re tighter (ips)
-		$re= '@^' // delimiter + anchor
+		$re = '@^' // delimiter + anchor
 			// scheme, address, port are optional for relative urls ...
 			. '(?:'
 				// scheme
@@ -271,35 +310,35 @@ class InputFilter
 			// delimiter
 			. '@'
 			;
-		
-		$t= preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
+
+		$t = preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
 		if ( ! $t ) // TODO better error handling
 			return $r;
-		
-		$matches= $matches[0];
+
+		$matches = $matches[0];
 		if ( ! isset( $matches['full_address'] ) )
-			$matches['full_address']= '';
-		
-		$r['is_error']= FALSE;
-		$r['is_relative']= empty( $matches['full_address'] );
-		$r['is_pseudo']= ! array_key_exists( 'host', $matches );
-		$r['pseudo_args']= $r['is_pseudo'] ? $matches['full_address'] : '';
-		
+			$matches['full_address'] = '';
+
+		$r['is_error'] = FALSE;
+		$r['is_relative'] = empty( $matches['full_address'] );
+		$r['is_pseudo'] = ! array_key_exists( 'host', $matches );
+		$r['pseudo_args'] = $r['is_pseudo'] ? $matches['full_address'] : '';
+
 		foreach ( array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment' ) as $k ) {
 			if ( array_key_exists( $k, $matches ) ) {
-				$r[$k]= $matches[$k];
+				$r[$k] = $matches[$k];
 			}
 		}
-		
+
 		return $r;
 	}
-	
+
 	public static function glue_url( $parsed_url )
 	{
 		if ( ! is_array( $parsed_url ) ) {
 			return FALSE;
 		}
-		
+
 		$res = '';
 		$res .= $parsed_url['scheme'];
 		if ( $parsed_url['is_pseudo'] || $parsed_url['scheme'] == 'mailto' ) {
@@ -327,7 +366,7 @@ class InputFilter
 				if ( array_key_exists( $parsed_url['scheme'], self::$scheme_ports ) && self::$scheme_ports[ $parsed_url['scheme'] ] == $parsed_url['port'] ) {
 					// default port for this scheme, do nothing
 				}
-				else {	
+				else {
 					$res .= ':' . $parsed_url['port'];
 				}
 			}
@@ -344,10 +383,10 @@ class InputFilter
 				$res .= '#' . $parsed_url['fragment'];
 			}
 		}
-		
-		return $res;		
+
+		return $res;
 	}
-	
+
 	private static function check_attr_value( $k, $v, $type )
 	{
 		if ( is_array( $type ) ) {
@@ -355,11 +394,11 @@ class InputFilter
 			return in_array( $v, $type, TRUE );
 		}
 		else {
-			// data type 
+			// data type
 			switch ( $type ) {
 				case 'uri':
 					// RfC 2396 <http://www.ietf.org/rfc/rfc2396.txt>
-					$bits= self::parse_url( $v );
+					$bits = self::parse_url( $v );
 					return $bits['is_relative'] || in_array( $bits['scheme'], self::$whitelist_protocols );
 					break;
 				case 'language-code':
@@ -371,7 +410,7 @@ class InputFilter
 					break;
 				case 'text':
 					// XXX is this sufficient?
-					return is_string( $v ); 
+					return is_string( $v );
 					break;
 				case 'datetime':
 					// <http://www.w3.org/TR/1998/NOTE-datetime-19980827>
@@ -385,31 +424,31 @@ class InputFilter
 			}
 		}
 	}
-	
+
 	/**
 	 * @todo TODO must build DOM to really properly remove offending elements
 	 * @todo TODO properly filter URLs
 	 */
 	public static function filter_html_elements( $str )
 	{
-		$tokenizer= new HTMLTokenizer( $str );
-		
+		$tokenizer = new HTMLTokenizer( $str );
+
 		// tokenize, baby
-		$tokens= $tokenizer->parse();
-		
+		$tokens = $tokenizer->parse();
+
 		// filter token stream
-		$filtered= array();
-		$stack= array();
+		$filtered = new HTMLTokenSet;
+		$stack = array();
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_TEXT:
 					if ( sizeof( $stack ) > 0 && ! in_array( strtolower( $stack[sizeof( $stack )-1] ), self::$whitelist_elements ) ) {
 						// skip node if filtered element is still open
-						$node= NULL;
+						$node = NULL;
 					}
 					else {
 						// XXX use blog charset setting
-						$node['value']= html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
+						$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
 					}
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
@@ -418,13 +457,13 @@ class InputFilter
 						if ( ! in_array( strtolower( $node['name'] ), self::$elements_empty ) ) {
 							array_push( $stack, $node['name'] );
 						}
-						$node= NULL;
+						$node = NULL;
 					}
 					else {
 						// check attributes
 						foreach ( $node['attrs'] as $k => $v ) {
-							$attr_ok= (
-								( 
+							$attr_ok = (
+								(
 									   in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
 									|| ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) &&
 									     array_key_exists( strtolower( $k ), self::$whitelist_attributes[strtolower( $node['name'] )] ) )
@@ -436,70 +475,32 @@ class InputFilter
 							}
 						}
 					}
-					break; 
+					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
 					if ( ! in_array( strtolower( $node['name'] ), self::$whitelist_elements ) ) {
-						if ( strtolower( $temp= array_pop( $stack ) ) !== strtolower( $node['name'] ) ) {
+						if ( strtolower( $temp = array_pop( $stack ) ) !== strtolower( $node['name'] ) ) {
 							// something weird happened (Luke, use the DOM!)
 							array_push( $stack, $temp );
 						}
-						$node= NULL;
-					} 
-					break;
-				case HTMLTokenizer::NODE_TYPE_PI:
-				case HTMLTokenizer::NODE_TYPE_COMMENT:
-				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
-				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					$node= NULL;
-					break;
-				default:
-			}
-			
-			if ( $node != NULL ) {
-				$filtered[]= $node;
-			}
-		}
-		
-		// rebuild our output string
-		$str= '';
-		foreach ( $filtered as $node ) {
-			switch ( $node['type'] ) {
-				case HTMLTokenizer::NODE_TYPE_TEXT:
-					$str.= $node['value'];
-					break;
-				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
-					$str.= '<';
-					$str.= $node['name'];
-					if ( $node['attrs'] ) {
-						foreach ( $node['attrs'] as $k => $v ) {
-							$str.= ' ';
-							$str.= $k;
-							$str.= '="';
-							$str.= htmlspecialchars( html_entity_decode( $v, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
-							$str.= '"';
-						}
+						$node = NULL;
 					}
-					$str.= '>';
-					break;
-				case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE:
-					$str.= '</';
-					$str.= $node['name'];
-					$str.= '>';
 					break;
 				case HTMLTokenizer::NODE_TYPE_PI:
 				case HTMLTokenizer::NODE_TYPE_COMMENT:
 				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
 				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					Error::raise( sprintf( _t('Undead token "%s" (%d) in %s'), $node['name'], $node['type'], __CLASS__ ) ); 
+					$node = NULL;
 					break;
 				default:
 			}
+
+			if ( $node != NULL ) {
+				$filtered[] = $node;
+			}
 		}
-		// $document->toString() is so much easier :~
-		
-		$str= preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', $str ); 
-		
-		return $str;
+
+		// rebuild our output string
+		return preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', (string) $filtered );
 	}
 }
 

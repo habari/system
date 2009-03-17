@@ -1,21 +1,23 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * XMLRPC Utility class
- * 
- * @package Habari
+ *
  */
-
 class XMLRPCUtils
 {
 
 	/**
 	 * Encode a variable value into the parameters of the XML tree
-	 * 
+	 *
 	 * @param SimpleXMLElement $params The parameter to add the value elements to.
 	 * @param mixed $arg The value to encode
 	 */
-	public static function encode_arg($params, $arg) 
+	public static function encode_arg($params, $arg)
 	{
 		switch(true) {
 		case is_array($arg):
@@ -24,12 +26,12 @@ class XMLRPCUtils
 				self::encode_arg($data, $element);
 			}
 			break;
-		case ($arg instanceof XMLRPCDate):
-			$params->addchild('value')->addchild('dateTime.iso8601', date('c', strtotime($arg->date)));
-			break;				
+		case ( $arg instanceof XMLRPCDate ):
+			$params->addchild( 'value' )->addchild( 'dateTime.iso8601', date( 'c', $arg->date ) );
+			break;
 		case ($arg instanceof XMLRPCBinary):
 			$params->addchild('value')->addchild('base64', base64_encode($arg->data));
-			break;				
+			break;
 		case ($arg instanceof XMLRPCStruct):
 			$struct = $params->addchild('value')->addchild('struct');
 			$object_vars = $arg->get_fields();
@@ -38,7 +40,7 @@ class XMLRPCUtils
 				$member->addchild('name', $field);
 				self::encode_arg($member, $arg->$field);
 			}
-			break;				
+			break;
 		case is_object($arg):
 			$struct = $params->addchild('value')->addchild('struct');
 			$object_vars = get_object_vars($arg);
@@ -65,7 +67,7 @@ class XMLRPCUtils
 	
 	/**
 	 * Decode the value of a response parameter using the datatype specified in the XML element.
-	 * 
+	 *
 	 * @param SimpleXMLElement $value A "value" element from the XMLRPC response
 	 * @return mixed The value of the element, decoded from the datatype specified in the xml element
 	 */
@@ -79,7 +81,7 @@ class XMLRPCUtils
 		case 'data':
 		case 'array':
 			$result_array = array();
-			foreach($value->xpath('//data/value/*') as $array_value) {
+			foreach($value->xpath('//data/value') as $array_value) {
 				$result_array[] = self::decode_args($array_value);
 			}
 			return $result_array;

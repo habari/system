@@ -1,12 +1,14 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * XMLRPC Binary type
  * Used to hold binary data for transmission in XMLRPC calls.
  *
- * @package Habari
  */
-
 class XMLRPCBinary
 {
 	public $data;

@@ -1,30 +1,10 @@
 /* =General
 -----------------------------------------------------------------------------*/
 
-/* Resets */
-/* Remove padding and margin */
-* {
-  margin: 0;
-	padding: 0;
-}
-
-/* Put it back on certain elements */
-h1, h2, h3, h4, h5, h6, p, pre, blockquote, form, fieldset, table, ul {
-  margin: .5em 0;
-}
-
-em {
-	font-style: italic;
-}
-
-strong {
-	font-weight: 700;
-}
-
 blockquote {
-	border-left: 10px solid #62A20C;
+	border-left: 10px solid #41670F;
 	padding: 5px 0 5px 20px;
-	margin: 10px 0 10px 30px;
+	margin: 10px 0 10px 40px;
 }
 
 blockquote p {
@@ -42,7 +22,7 @@ blockquote p {
 	float: left;
 }
 
-img.right  {
+img.right {
 	border: 1px solid #666;
 	padding: 3px;
 	margin-left: 8px;
@@ -55,8 +35,9 @@ img.left {
 }
 
 /* Class for clearing floats */
+
 .clear {
-	clear:both;
+	clear: both;
 }
 
 /* define inline elements as block */
@@ -65,94 +46,80 @@ img.left {
 	display: block;
 }
 
-
 /* Remove border around linked images */
+
 img {
 	border: 0;
 }
-
 
 /* =Typography
 -----------------------------------------------------------------------------*/
 
 body {
-  font: 108% verdana;
-  color: #666;
-  background: #FEFFFD;
-  
+	font: 108% "Lucida Grande", Lucida, Verdana, sans-serif;
+	color: #666;
+	background: #EEEEEE;
 }
 
 /* =Structure
 -----------------------------------------------------------------------------*/
 
 #wrapper {
-	width: 950px;
-	margin:0 auto;
+	margin: 0 auto;
 	background: #fff;
-	
 }
 
 #masthead {
-	margin: 30px 0;
-	border-bottom: 2px dotted #62A20C;
+	margin: 20px 0 40px 0;
+	border-bottom: 2px dashed #41670F;
 	padding-bottom: 5px;
 }
 
 #content {
-	margin:10px;
 	text-align: left;
-	
 }
 
 #primaryContent {
-	float: left;
-	width:625px;
-	padding-right: 30px;
 	margin-bottom: 10px;
 }
 
 #secondaryContent {
-	float: right;
-	width: 240px;
+
 }
 
 #footer {
 	height: 60px;
-	border-top: 2px dotted #62A20C;
+	border-top: 2px dotted #41670F;
 	padding-top: 5px;
 	margin-top: 5px;
 }
 
-
-
 /* =Headings
 -----------------------------------------------------------------------------*/
 
-
 h1 {
 	font-size: 225%;
-	font-family: Georgia;
+	font-family: Georgia, "Times New Roman", Times, serif;
 	color: #545454;
 }
 
 h2 {
 	color: #545454;
-	font-family: Trebuchet MS;
+	font-family: Trebuchet, Tahoma, Arial, sans-serif;
 }
 
 h3 {
 	font-size: 123.1%;
-	font-family: times new roman;
+	font-family: Georgia, "Times New Roman", Times, serif;
 }
 
-#masthead h3 {
-	padding-left: 33px;
-	margin: 0;
+#masthead#branding h3 {
+	text-transform: italics;
+	font-size: ;
 }
 
 #primaryContent h2 {
 	font-size: 159%;
-	margin-left: 80px;
 }
 
 #page #content #primaryContent h2 {
@@ -180,29 +147,26 @@ h3 {
 
 }
 
-
 /* =Links
 -----------------------------------------------------------------------------*/
 
 a:link {
-	color: #62A20C;
+	color: #41670F;
 }
 
 a:visited {
-	color: #62A20C;
+	color: #41670F;
 	text-decoration: none;
 }
 
 a:hover {
 	text-decoration: none;
-	color: #E0A352;
+	color: #A37941;
 }
 
 a:active {
-	color: #62A20C;
+	color: #41670F;
 }
-
-
 
 ul#nav li a:link, ul#nav li a:visited {
 	display: block;
@@ -223,46 +187,37 @@ ul#nav li a:hover {
 
 ul#tidbits a {
 	text-decoration: none;
-
 }
-
-
-
 
 /* =Masthead
 -----------------------------------------------------------------------------*/
 
 #branding {
-	margin-left: 35px;
 }
-
 
 /* =Main Nav
 -----------------------------------------------------------------------------*/
-
-
-
 
 /* =Primary Content
 -----------------------------------------------------------------------------*/
 
 #post-nav {
-	margin: 10px 5px 45px 5px;
+	margin: 10px 5px 40px 5px;
 }
 
 .cal {
 	height: 76px;
 	width: 70px;
 	float: left;
-	margin:0  12px 7px 0;
+	margin: 0  12px 7px 0;
 	text-align: center;
-	border: 1px solid #62A20C;
+	border: 1px solid #A37941;
 }
 
 .calyear {
-	background: #62A20C;
+	background: #A37941;
 	color: #fff;
-	padding:0 14px;
+	padding: 0 13px;
 }
 
 .calday {
@@ -270,31 +225,31 @@ ul#tidbits a {
 	margin: 0;
 	padding: 0;
 	text-align: center;
+	color: #A37941;
 }
 
 .calmonth {
 	font-size: 77%;
 	margin: 0;
-	border-top: 1px solid #62A20C;
+	border-top: 1px solid #A37941;
+	color: #A37941;
 	width: 100%;
 }
 
 .entry {
-	font-family: Verdana;
-	text-align: justify;
+	font-family: Trebuchet, "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
 }
 
 .draft {
 	background: #FFF6BF;
-	color: #817134;
+	color: #514721;
 	border-color: #FFD324;
 	padding: 5px;
 }
 
 .entry ul {
 	list-style-type: square;
-	padding-left: 55px;
-	clear: left;
+	padding-left: 80px;
 }
 
 .entry li {
@@ -302,12 +257,12 @@ ul#tidbits a {
 }
 
 .entryMeta {
-	margin:30px 5px 45px 5px;
+	margin: 40px 5px 45px 5px;
 	font-size: 92%;
 }
 
 .commentCount {
-	float:  right;
+	float: right;
 }
 
 .tags {
@@ -325,7 +280,6 @@ ul#tidbits a {
 #pagenav a {
 	text-decoration: none;
 	padding: 2px;
-
 }
 
 #pagenav a:hover {
@@ -341,16 +295,15 @@ ul#tidbits a {
 	padding: 2px;
 }
 
-
-
 /* =Secondary Content
 -----------------------------------------------------------------------------*/
+
 ul#nav {
 	list-style-type: none;
 }
 
 ul#nav li {
-	margin-bottom: 7px ;
+	margin-bottom: 7px;
 }
 
 ul#asides {
@@ -366,6 +319,7 @@ ul#moreposts {
 ul#moreposts li {
 	padding-bottom: 5px;
 }
+
 }
 
 ul#recentcomments {
@@ -378,7 +332,6 @@ ul#recentcomments li {
 	list-style-type: none;
 }
 
-
 /* =Footer
 -----------------------------------------------------------------------------*/
 
@@ -386,31 +339,27 @@ ul#recentcomments li {
 	text-align: center;
 }
 
-
 /* =Forms
 -----------------------------------------------------------------------------*/
 
 /* Removes fieldset borders. even on Opea 7 */
+
 fieldset {
-  border: 1px solid transparent;
+	border: 1px solid transparent;
 }
-
-
 
 /* =Tables
 -----------------------------------------------------------------------------*/
 
-table { 
-  border-spacing: 0;
+table {
+	border-spacing: 0;
 	border-collapse: collapse;
 }
 
 td {
-  text-align: left;
+	text-align: left;
 	font-weight: normal;
 }
-
-
 
 /*Comments-----------------------------------------------------------------------------*/
 
@@ -419,7 +368,7 @@ td {
 }
 
 #pings {
-	margin:15px 0 25px 0;
+	margin: 15px 0 25px 0;
 }
 
 .ping-meta {
@@ -451,41 +400,50 @@ ul#commentlist {
 	background: #ffc;
 }
 
-.comment-meta { 
+.comment-meta {
 	background: #ddd;
 	border: 1px solid #ccc;
 	padding: 4px;
 }
 
 /* Comment Form - heavily leaned on code from Andy Budd's book CSS Mastery, re-used with permission from author */
+
 /* fieldset styling */
+
 #comment_form {
 	padding-top: 25px;
 }
+
 fieldset {
-	margin: 1em 0; /*  space out the fieldsets a little*/
+	margin: 1em 0;
+
+
+/*  space out the fieldsets a little*/
 	padding: 1em;
-	border : 1px solid #ccc;
-	background-color:#F5F5F5
+	border: 1px solid #ccc;
+	background-color: #F5F5F5
 }
 
 /* legend styling */
+
 legend {
 	font-weight: bold;
 }
 
 form p {
-  position: relative;
+	position: relative;
 	width: 100%;
 }
 
 /* style for  labels */
+
 label {
 	float: left;
 	width: 10em;
 }
+
 input {
-  width: 200px;
+	width: 200px;
 }
 
 input[type="text"], textarea {
@@ -494,21 +452,24 @@ input[type="text"], textarea {
 	border-bottom: 1px solid #ccc;
 	border-right: 1px solid #ccc;
 }
+
 input.submit {
-  width: auto;
+	width: auto;
 }
 
 label .required {
 	position: absolute;
 	margin-left: 11em;
 	left: 200px;
-  	right: 0;
+	right: 0;
 	font-size: small;
 	font-style: italic;
-	color:#760000;
+	color: #760000;
 	padding-left: 35px;
 }
+
 /* style form elements on focus */
+
 input:focus, textarea:focus {
 	background: #ffc;
 }
@@ -519,6 +480,7 @@ textarea {
 }
 
 /*Search Form*/
+
 #searchsubmit {
 	margin: 5px auto;
 	width: 160px;

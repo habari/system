@@ -1,14 +1,16 @@
 <?php
-
 /**
  * @package Habari
  *
- * Contains the APCCache class
  */
 
+/**
+ *
+ * Contains the APCCache class
+ */
 class APCCache extends Cache
 {
-	protected $enabled= false;
+	protected $enabled = false;
 	
 	/**
 	 * Constructor for APCCache
@@ -100,7 +102,7 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		apc_store( "$group:$name", $value, $expiry );
+		apc_store( "$group:$name", $value, intval($expiry) );
 	}
 
 	/**

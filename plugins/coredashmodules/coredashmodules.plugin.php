@@ -21,7 +21,7 @@ class CoreDashModules extends Plugin
 			'author' => 'Habari Community',
 			'authorurl' => 'http://habariproject.org/',
 			'version' => '1.0',
-			'description' => 'Provides a core set of dashboard modules for the dashboard.',
+			'description' => 'Provides a core set of modules for the dashboard. The modules include latest comments, latest posts, and latest log entries.',
 			'license' => 'Apache License 2.0',
 		);
 	}
@@ -98,7 +98,7 @@ class CoreDashModules extends Plugin
 		$form->append( 'submit', 'submit', _t('Submit') );
 		$form->properties['onsubmit'] = "dashboard.updateModule({$module_id}); return false;";
 		
-		$module['title'] = '<a href="' . Site::get_url('admin') . '/logs">' . _t('Latest Log Activity') . '</a>';
+		$module['title'] = ( User::identify()->can( 'manage_logs' ) ? '<a href="' . Site::get_url('admin') . '/logs">' . _t('Latest Log Activity') . '</a>' : _t('Latest Log Activity') );
 		$module['options'] = $form->get();
 		$module['content'] = $theme->fetch( 'dash_logs' );
 		return $module;
@@ -112,9 +112,9 @@ class CoreDashModules extends Plugin
 	 */
 	public function filter_dash_module_latest_entries( $module, $module_id, $theme )
 	{
-		$theme->recent_posts= Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
+		$theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 		
-		$module['title'] = '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>';
+		$module['title'] = ( User::identify()->can( 'manage_entries' ) ? '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>' : _t('Latest Entries') );
 		$module['content'] = $theme->fetch( 'dash_latestentries' );
 		return $module;
 	}
@@ -141,7 +141,7 @@ class CoreDashModules extends Plugin
 		$theme->latestcomments_posts = $posts;
 		$theme->latestcomments = $latestcomments;
 		
-		$module['title'] = '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>';
+		$module['title'] = ( User::identify()->can( 'manage_comments' ) ? '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>' : _t('Latest Comments') );
 		$module['content'] = $theme->fetch( 'dash_latestcomments' );
 		return $module;
 	}

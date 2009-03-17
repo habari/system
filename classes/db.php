@@ -1,14 +1,18 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari DB Class
  *
- * @package Habari
+ * Singleton class for database connection and manipulation
+ *
  */
-
 class DB extends Singleton
 {
-	private $connection= null;
+	private $connection = null;
 
 	/**
 	 * Enables singleton working properly
@@ -42,17 +46,17 @@ class DB extends Singleton
 		}
 
 		if ( func_num_args() > 0 ) {
-			$connect_string= func_get_arg( 0 );
-			$db_user= func_get_arg( 1 );
-			$db_pass= func_get_arg( 2 );
+			$connect_string = func_get_arg( 0 );
+			$db_user = func_get_arg( 1 );
+			$db_pass = func_get_arg( 2 );
 		}
 		else {
 			/* We use the config.php variables */
-			$connect_string= $GLOBALS['db_connection']['connection_string'];
-			$db_user= $GLOBALS['db_connection']['username'];
-			$db_pass= $GLOBALS['db_connection']['password'];
+			$connect_string = Config::get( 'db_connection' )->connection_string;
+			$db_user = Config::get( 'db_connection' )->username;
+			$db_pass = Config::get( 'db_connection' )->password;
 		}
-		DB::instance()->connection= DatabaseConnection::ConnectionFactory( $connect_string );
+		DB::instance()->connection = DatabaseConnection::ConnectionFactory( $connect_string );
 		if ( NULL != DB::instance()->connection ) {
 			return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
 		}
@@ -139,7 +143,7 @@ class DB extends Singleton
 	 * @experimental
 	 * @todo  EVERYTHING... :)
 	 */
-	public static function execute_procedure( $procedure, $args= array() )
+	public static function execute_procedure( $procedure, $args = array() )
 	{
 		return DB::instance()->connection->execute_procedure( $procedure, $args );
 	}
@@ -166,7 +170,8 @@ class DB extends Singleton
 	/**
 	 * Commit a currently running transaction
 	 */
-	public static function commit() {
+	public static function commit()
+	{
 		DB::instance()->connection->commit();
 	}
 
@@ -236,7 +241,7 @@ class DB extends Singleton
 	public static function get_results( $query, $args = array() )
 	{
 		if ( func_num_args() == 3 ) {
-			$class_name= func_get_arg( 2 );
+			$class_name = func_get_arg( 2 );
 			return DB::instance()->connection->get_results( $query, $args, $class_name );
 		}
 		else {
@@ -255,7 +260,7 @@ class DB extends Singleton
 	public static function get_row( $query, $args = array() )
 	{
 		if ( func_num_args() == 3 ) {
-			$class_name= func_get_arg( 2 );
+			$class_name = func_get_arg( 2 );
 			return DB::instance()->connection->get_row( $query, $args, $class_name );
 		}
 		else {
@@ -298,7 +303,7 @@ class DB extends Singleton
 	 **/
 	public static function get_keyvalue( $query, $args = array() )
 	{
-		 return DB::instance()->connection->get_keyvalue( $query, $args );
+		return DB::instance()->connection->get_keyvalue( $query, $args );
 	}
 
 	/**
@@ -337,7 +342,7 @@ class DB extends Singleton
 	 **/
 	public static function update( $table, $fieldvalues, $keyfields )
 	{
-		 return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );
+		return DB::instance()->connection->update( $table, $fieldvalues, $keyfields );
 	}
 
 	/**
@@ -365,9 +370,19 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
 	}
+	
+	/**
+	 * Returns number of rows affected by the last DELETE, INSERT, or UPDATE
+	 *
+	 * @return int The number of rows affected.
+	 */
+	public static function row_count()
+	{
+		return DB::instance()->connection->row_count();
+	}
 
 	/**
-	 * Automatic datbase diffing function, used for determining required database upgrades.
+	 * Automatic database diffing function, used for determining required database upgrades.
 	 *
 	 * @param queries array of create table and insert statements which constitute a fresh install
 	 * @param (optional)  execute should the queries be executed against the database or just simulated. default = true
@@ -376,7 +391,7 @@ class DB extends Singleton
 	 */
 	public static function dbdelta( $queries, $execute = true, $silent = true, $doinserts = false )
 	{
-		 return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
+		return DB::instance()->connection->dbdelta( $queries, $execute, $silent, $doinserts );
 	}
 
 	/**
@@ -386,12 +401,17 @@ class DB extends Singleton
 	 */
 	public static function upgrade( $old_version )
 	{
-		 return DB::instance()->connection->upgrade( $old_version );
+		return DB::instance()->connection->upgrade( $old_version );
 	}
 	
 	public static function get_driver_name()
 	{
 		return DB::instance()->connection->get_driver_name();
+	}
+	
+	public static function get_driver_version()
+	{
+		return DB::instance()->connection->get_driver_version();
 	}
 	
 	/**

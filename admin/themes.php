@@ -21,13 +21,20 @@
 		</div>
 
 		<div>
-			<div class="thumb pct20"><span><img src="<?php echo $active_theme['screenshot']; ?>"></span></div>
+			<div class="thumb pct30"><span><img src="<?php echo $active_theme['screenshot']; ?>"></span></div>
 
-			<p class="description pct80"><?php echo $active_theme['info']->description; ?></p>
+			<p class="description pct70"><?php echo $active_theme['info']->description; ?></p>
 			<?php if($active_theme['info']->license != ''): ?>
-			<p class="description pct80"><?php echo $active_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <a href=" <?php echo $active_theme['info']->license['url']; ?>"><?php echo $active_theme['info']->license; ?></a></p>
+			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
 		</div>
+
+		<?php if ( isset( $this->engine_vars['configure'] ) ): ?>
+		<div id="themeconfigure">
+			<?php Plugins::act( 'theme_ui', $active_theme ); ?>
+			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('close'); ?></a>
+		</div>
+		<?php endif; ?>
 	</div>
 
 </div>
@@ -39,7 +46,7 @@
 	<h2><?php _e('Available Themes'); ?></h2>
 <?php
 foreach($all_themes as $inactive_theme):
-	if ( $inactive_theme['dir'] != $active_theme_dir ) : ?>
+	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
 	<div class="item clear">
 		<div class="head">
 			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a></span>
@@ -50,11 +57,11 @@ foreach($all_themes as $inactive_theme):
 		</div>
 
 		<div>
-			<div class="thumb pct20"><span><img src="<?php echo $inactive_theme['screenshot']; ?>"></span></div>
+			<div class="thumb pct30"><span><img src="<?php echo $inactive_theme['screenshot']; ?>"></span></div>
 
-			<p class="description pct80"><?php echo $inactive_theme['info']->description; ?></p>
+			<p class="description pct70"><?php echo $inactive_theme['info']->description; ?></p>
 			<?php if($inactive_theme['info']->license != ''): ?>
-			<p class="description pct80"><?php echo $inactive_theme['info']->name; ?> <?php _e('is licensed under the'); ?> <a href=" <?php echo $active_theme['info']->license['url']; ?>"><?php echo $inactive_theme['info']->license; ?></a></p>
+			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, '<a href="' . $inactive_theme['info']->license['url'] . '">' . $inactive_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
 		</div>
 	</div>

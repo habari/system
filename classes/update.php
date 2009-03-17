@@ -1,12 +1,16 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 define('UPDATE_URL', 'http://www.habariproject.org/beacon/');
 
 /**
- * Update class
+ * Habari Update class
+ *
  * Checks for updates to Habari and its libraries
  *
- * @package Habari
  * @access public
  */
 class Update extends Singleton
@@ -33,7 +37,7 @@ class Update extends Singleton
 	 */
 	public static function add($name, $beaconid, $current_version)
 	{
-		self::instance()->beacons[$beaconid]= array('name'=>$name, 'version'=>$current_version);
+		self::instance()->beacons[$beaconid] = array('name'=>$name, 'version'=>$current_version);
 	}
 
 	/**
@@ -62,22 +66,23 @@ class Update extends Singleton
 				Plugins::act('update_check');
 			}
 
-			$request= new RemoteRequest(UPDATE_URL, 'POST');
+			$request = new RemoteRequest(UPDATE_URL, 'POST');
 			$request->set_params(
 				array_map(
 					create_function('$a', 'return $a["version"];'),
 					$instance->beacons
 				)
 			);
-			$result= $request->execute();
+			$request->set_timeout( 10 );
+			$result = $request->execute();
 			if ( Error::is_error( $result ) ) {
 				throw $result;
 			}
-			$updatedata= $request->get_response_body();
+			$updatedata = $request->get_response_body();
 			if ( Error::is_error( $updatedata ) ) {
 				throw $updatedata;
 			}
-			$instance->update= new SimpleXMLElement($updatedata);
+			$instance->update = new SimpleXMLElement($updatedata);
 			foreach($instance->update as $beacon) {
 				$beaconid = (string)$beacon['id'];
 				foreach($beacon->update as $update) {

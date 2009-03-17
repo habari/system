@@ -4,19 +4,25 @@
 	<input type="search" id="search" placeholder="<?php _e('Type and wait to search tags'); ?>" autosave="habaricontent" results="10">
 </div>
 
+<!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
 
-<div id="tag_collection" class="container tags">
-  <?php $theme->display( 'tag_collection' ); ?>
+<div id="tag_collection" class="container items">
+	<?php $theme->display( 'tag_collection' ); ?>
 </div>
 
 
-<div class="container tags transparent tags controls">
-	<span class="checkboxandselected pct25">
-		<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+<div class="container transparent item controls">
+	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+
+	<span class="checkboxandselected pct20">
+		<input type="checkbox" id="master_checkbox" name="master_checkbox">
+		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
 
 	<span class="renamecontrols pct35"><input type="text" class="renametext"></span>
-	
+
 	<span class="pct15 buttons"><input type="button" value="<?php _e('Rename'); ?>" class="rename button"></span>
 
 	<span class="or pct10"><?php _e('or'); ?></span>
@@ -29,12 +35,12 @@
 </div>
 
 <script type="text/javascript">
-tagManage.remove = function() {
+itemManage.update = function( action, id ) {
 	spinner.start();
 
-	selected = $('.tags .tag.selected');
+	selected = $('.tag.selected');
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can delete them.'); ?>" );
+		humanMsg.displayMsg( "<?php _e('Error: No tags selected.'); ?>" );
 		return;
 	}
 	var query = {}
@@ -56,32 +62,35 @@ tagManage.remove = function() {
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
 			selected.remove();
+			itemManage.selected = {};
+			itemManage.changeItem();
+			itemManage.initItems();
 			jQuery.each( msg, function( index, value ) {
 				humanMsg.displayMsg( value );
 			});
-			tagManage.changeTag();
 		},
 		'json'
- 	    );
+	);
 };
-tagManage.rename= function() {
-	master = $('.tags.controls input.renametext').val().trim();
+
+itemManage.rename = function() {
+	master = $('.controls input.renametext').val();
 
 	// Unselect the master, if it's selected
-	$('.tags .tag:contains(' + master + ')').each(function() {
+	$('.tag:contains(' + master + ')').each(function() {
 		if ($(this).find('span').text() == master) {
 			$(this).removeClass('selected');
 		}
 	})
 
-	selected = $('.tags .tag.selected');
+	selected = $('.tag.selected');
 
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('You need to select some tags before you can rename them.'); ?>" );
+		humanMsg.displayMsg( "<?php _e('Error: No tags selected.'); ?>" );
 		return;
 	}
 	else if ( master == '' ) {
-		humanMsg.displayMsg( "<?php _e('You need to enter a new tag to rename tags.'); ?>" );
+		humanMsg.displayMsg( "<?php _e('Error: New name not specified.'); ?>" );
 		return;
 	}
 	var query = {}
@@ -104,16 +113,15 @@ tagManage.rename= function() {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
+			$('.controls input.renametext').val('');
 			$('#tag_collection').html(result['tags']);
-			$('.tags .tag').click(function() {
-					$(this).toggleClass('selected');
-					tagManage.changeTag();
-				}
-			);
-			tagManage.changeTag();
 			jQuery.each( result['msg'], function( index, value ) {
 				humanMsg.displayMsg( value );
 			});
+
+			itemManage.selected = {};
+
+			itemManage.initItems();
 		},
 		'json'
 	);

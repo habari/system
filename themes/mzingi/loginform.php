@@ -4,7 +4,7 @@ if ( isset( $error ) ) {
 <p><?php _e('That login is incorrect.'); ?></p>
 <?php
 }
-if ( $user ) {
+if ( $loggedin ) {
 ?>
 <p><?php _e('You are logged in as'); ?> <?php echo $user->username; ?>.</p>
 <p><?php _e('Want to'); ?> <a href="<?php Site::out_url( 'habari' ); ?>/user/logout"><?php _e('log out'); ?></a>?</p>

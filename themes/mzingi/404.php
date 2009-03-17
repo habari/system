@@ -2,14 +2,12 @@
 <!--begin content-->
 	<div id="content">
 		<!--begin primary content-->
-		<div id="primaryContent">
+		<div id="primaryContent" class="span-15 append-2">
 			<div class="entry">
 						<p><?php _e("It seems you couldn't find what you are looking for."); ?></p><p><?php _e('Perhaps you can try searching.'); ?></p>
 						<?php $theme->display ( 'searchform' ); ?>
 			</div>
-	
-					
-			</div>
+		</div>
 		<!--end primary content-->
 		<?php $theme->display ( 'sidebar' ); ?>
 	</div>

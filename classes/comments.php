@@ -1,10 +1,13 @@
 <?php
 /**
- * Habari Comments Class
- *
  * @package Habari
+ *
  */
 
+/**
+ * Habari Comments Class
+ *
+ */
 class Comments extends ArrayObject
 {
 	private $sort;
@@ -16,137 +19,140 @@ class Comments extends ArrayObject
 	 * @return array An array of Comment objects, one for each query result
 	 *
 	 * <code>
-	 * $comments= comments::get( array ( "author" => "skippy" ) );
-	 * $comments= comments::get( array ( "slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
+	 * $comments = comments::get( array ( "author" => "skippy" ) );
+	 * $comments = comments::get( array ( "slug" => "first-post", "status" => "1", "orderby" => "date ASC" ) );
 	 * </code>
 	 *
 	 **/
-	public static function get( $paramarray= array() )
+	public static function get( $paramarray = array() )
 	{
-		$params= array();
-		$fns= array( 'get_results', 'get_row', 'get_value' );
-		$select= '';
+		$params = array();
+		$fns = array( 'get_results', 'get_row', 'get_value' );
+		$select = '';
 		// what to select -- by default, everything
 		foreach ( Comment::default_fields() as $field => $value ) {
-			$select.= ( '' == $select )
-				? DB::table( 'comments' ) . ".$field"
-				: ', ' . DB::table( 'comments' ) . ".$field";
+			$select .= ( '' == $select )
+				? "{comments}.$field"
+				: ", {comments}.$field";
 		}
 		// defaults
-		$orderby= 'date DESC';
-		$limit= Options::get( 'pagination' );
+		$orderby = 'date DESC';
+		$limit = Options::get( 'pagination' );
 
 		// Put incoming parameters into the local scope
-		$paramarray= Utils::get_params( $paramarray );
+		$paramarray = Utils::get_params( $paramarray );
 
 		// Transact on possible multiple sets of where information that is to be OR'ed
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
-			$wheresets= $paramarray['where'];
+			$wheresets = $paramarray['where'];
 		}
 		else {
-			$wheresets= array( array() );
+			$wheresets = array( array() );
 		}
 
-		$wheres= array();
-		$joins= array();
+		$wheres = array();
+		$joins = array();
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[]= $paramarray['where'];
+			$wheres[] = $paramarray['where'];
 		}
 		else {
 			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
-				$where= array( '1=1' );
-				$paramset= array_merge( ( array ) $paramarray, ( array ) $paramset );
+				$where = array( '1=1' );
+				$paramset = array_merge( ( array ) $paramarray, ( array ) $paramset );
 
 				if ( isset( $paramset['id'] ) && ( is_numeric( $paramset['id'] ) || is_array( $paramset['id'] ) ) ) {
 					if ( is_numeric( $paramset['id'] ) ) {
-						$where[]= "id= ?";
-						$params[]= $paramset['id'];
+						$where[] = "{comments}.id= ?";
+						$params[] = $paramset['id'];
 					}
 					else if ( is_array( $paramset['id'] ) ) {
-						$id_list= implode( ',', $paramset['id'] );
+						$id_list = implode( ',', $paramset['id'] );
 						// Clean up the id list - remove all non-numeric or comma information
-						$id_list= preg_replace( "/[^0-9,]/", "", $id_list );
+						$id_list = preg_replace( "/[^0-9,]/", "", $id_list );
 						// You're paranoid, ringmaster! :P
-						$limit= count( $paramset['id'] );
-						$where[]= 'id IN (' . addslashes( $id_list ) . ')';
+						$limit = count( $paramset['id'] );
+						$where[] = '{comments}.id IN (' . addslashes( $id_list ) . ')';
 					}
 				}
 				if ( isset( $paramset['status'] ) && FALSE !== $paramset['status'] ) {
-					if(is_array( $paramset['status'] )) {
-						array_walk( $paramset['status'], create_function( '$a,$b,&$c', 'if ($a != "any") { $c[$b]= Comment::status($a); } else { unset($c[$b]); }' ), $paramset['status'] );
-						$where[]= "type IN (" . Utils::placeholder_string(count($paramset['status'])) . ")";
-						$params= array_merge( $params, $paramset['status'] );
+					if ( is_array( $paramset['status'] ) ) {
+						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
+						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Comment::status( $a );' ) );
+						$where[] = "{comments}.status IN (" . Utils::placeholder_string( count( $paramset['status'] ) ) . ")";
+						$params = array_merge( $params, $paramset['status'] );
 					}
 					else {
-						$where[]= "status= ?";
-						$params[]= Comment::type( $paramset['status'] );
+						$where[] = "{comments}.status= ?";
+						$params[] = Comment::status( $paramset['status'] );
 					}
 				}
 				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
-					if(is_array( $paramset['type'] )) {
-						array_walk( $paramset['type'], create_function( '$a,$b,&$c', 'if ($a != "any") { $c[$b]= Comment::type($a); } else { unset($c[$b]); }' ), $paramset['type'] );
-						$where[]= "type IN (" . Utils::placeholder_string(count($paramset['type'])) . ")";
-						$params= array_merge( $params, $paramset['type'] );
+					if ( is_array( $paramset['type'] ) ) {
+						$paramset['type'] = array_diff( $paramset['type'], array( 'any' ) );
+						array_walk( $paramset['type'], create_function( '&$a,$b', '$a = Comment::type( $a );' ) );
+						$where[] = "type IN (" . Utils::placeholder_string( count( $paramset['type'] ) ) . ")";
+						$params = array_merge( $params, $paramset['type'] );
 					}
 					else {
-						$where[]= "type= ?";
-						$params[]= Comment::type( $paramset['type'] );
+						$where[] = "type= ?";
+						$params[] = Comment::type( $paramset['type'] );
 					}
 				}
 				if ( isset( $paramset['name'] ) ) {
-					$where[]= "name= ?";
-					$params[]= $paramset['name'];
+					$where[] = "name= ?";
+					$params[] = $paramset['name'];
 				}
 				if ( isset( $paramset['email'] ) ) {
-					$where[]= "email= ?";
-					$params[]= $paramset['email'];
+					$where[] = "email= ?";
+					$params[] = $paramset['email'];
 				}
 				if ( isset( $paramset['url'] ) ) {
-					$where[]= "url= ?";
-					$params[]= $paramset['url'];
+					$where[] = "url= ?";
+					$params[] = $paramset['url'];
 				}
 				if ( isset( $paramset['post_id'] ) ) {
-					$where[]= "post_id= ?";
-					$params[]= $paramset['post_id'];
+					$where[] = "{comments}.post_id= ?";
+					$params[] = $paramset['post_id'];
 				}
 				if ( isset( $paramset['ip'] ) ) {
-					$where[]= "ip= ?";
-					$params[]= $paramset['ip'];
-				}				/* do searching */
+					$where[] = "ip= ?";
+					$params[] = $paramset['ip'];
+				}
+				/* do searching */
 				if ( isset( $paramset['post_author'] ) ) {
-					$joins['posts']= ' INNER JOIN {posts} ON {comments}.post_id = {posts}.id';
+					$joins['posts'] = ' INNER JOIN {posts} ON {comments}.post_id = {posts}.id';
 					if ( is_array( $paramset['post_author'] ) ) {
-						$where[]= "{posts}.user_id IN (" . implode( ',', array_fill( 0, count( $paramset['post_author'] ), '?' ) ) . ")";
-						$params= array_merge( $params, $paramset['post_author'] );
+						$where[] = "{posts}.user_id IN (" . implode( ',', array_fill( 0, count( $paramset['post_author'] ), '?' ) ) . ")";
+						$params = array_merge( $params, $paramset['post_author'] );
 					}
 					else {
-						$where[]= '{posts}.user_id = ?';
-						$params[]= (string) $paramset['post_author'];
+						$where[] = '{posts}.user_id = ?';
+						$params[] = (string) $paramset['post_author'];
 					}
 				}
 				if ( isset( $paramset['criteria'] ) ) {
 					if ( isset( $paramset['criteria_fields'] ) ) {
 						// Support 'criteria_fields' => 'author,ip' rather than 'criteria_fields' => array( 'author', 'ip' )
 						if ( !is_array( $paramset['criteria_fields'] ) && is_string( $paramset['criteria_fields'] ) ) {
-							$paramset['criteria_fields']= explode( ',', $paramset['criteria_fields'] );
+							$paramset['criteria_fields'] = explode( ',', $paramset['criteria_fields'] );
 						}
 					}
 					else {
-						$paramset['criteria_fields']= array( 'content' );
+						$paramset['criteria_fields'] = array( 'content' );
 					}
-					$paramset['criteria_fields']= array_unique( $paramset['criteria_fields'] );
+					$paramset['criteria_fields'] = array_unique( $paramset['criteria_fields'] );
 
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
 					$where_search = array();
 					foreach ( $matches[0] as $word ) {
 						foreach ( $paramset['criteria_fields'] as $criteria_field ) {
-							$where_search[].= "($criteria_field LIKE CONCAT('%',?,'%'))";
-							$params[]= $word;
+							$where_search[] .= "({comments}.$criteria_field LIKE CONCAT('%',?,'%'))";
+							$params[] = $word;
 						}
 					}
-					if(count($where_search) > 0) {
-						$where[]= '(' . implode( " \nOR\n ", $where_search ).')';
+					if ( count( $where_search ) > 0 ) {
+						$where[] = '(' . implode( " \nOR\n ", $where_search ).')';
 					}
 				}
 
@@ -160,88 +166,151 @@ class Comments extends ArrayObject
 				 */
 				if ( isset( $paramset['day'] ) ) {
 					/* Got the full date */
-					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$where[] = 'date BETWEEN ? AND ?';
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 day' )->sql;
 				}
 				elseif ( isset( $paramset['month'] ) ) {
-					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$where[] = 'date BETWEEN ? AND ?';
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 month' )->sql;
 				}
 				elseif ( isset( $paramset['year'] ) ) {
-					$where[]= 'date BETWEEN ? AND ?';
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$where[] = 'date BETWEEN ? AND ?';
+					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
+					$startDate = HabariDateTime::date_create( $startDate );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 year' )->sql;
 				}
 
-				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+				// Only show comments to which the current user has permission to read the associated post
+				if ( !isset($paramset['ignore_permissions']) ) {
+					// This set of wheres will be used to generate a list of post_ids that this user can read
+					$perm_where = array();
+
+					// every condition here will require a join with the posts table
+					$joins['posts'] = 'INNER JOIN {posts} ON {comments}.post_id={posts}.id';
+
+					// Get the tokens that this user is granted or denied access to read
+					$read_tokens = isset($paramset['read_tokens']) ? $paramset['read_tokens'] : ACL::user_tokens(User::identify(), 'read', true);
+					$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
+
+					// If a user can read his own posts, let him see the comments on those posts
+					if ( User::identify()->can('own_posts', 'read') ) {
+						$perm_where[] = '{posts}.user_id = ?';
+						$params[] = User::identify()->id;
+					}
+
+					// If a user can read specific post types, let him see comments on those
+					$permitted_post_types = array();
+					foreach ( Post::list_active_post_types() as $name => $posttype ) {
+						if ( User::identify()->can( 'post_' . Utils::slugify($name), 'read' ) ) {
+							$permitted_post_types[] = $posttype;
+						}
+					}
+					if ( count($permitted_post_types) > 0 ) {
+						$perm_where[] = '{posts}.content_type IN (' . implode(',', $permitted_post_types) . ')';
+					}
+
+					// If a user can read posts with specific tokens, let him see comments on those posts
+					if ( count($read_tokens) > 0 ) {
+						$joins['post_tokens__allowed'] = 'INNER JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
+					}
+
+					// If there are granted permissions to check, add them to the where clause
+					if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
+						// You have no grants.  You get no comments.
+						$where[] = '0';
+					}
+					elseif ( count($perm_where) > 0 ) {
+						$where[] = '
+							(' . implode(' OR ', $perm_where) . ')
+						';
+					}
+
+					if ( count($deny_tokens) > 0 ) {
+						$joins['post_tokens__denied'] = 'LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
+						$where[] = 'pt_denied.post_id IS NULL';
+					}
+
+				}
+
+				$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 			}
 		}
 
 		// Get any full-query parameters
-		extract( $paramarray );
+		$possible = array( 'page', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'limit', 'offset', 'orderby' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
 
 		if ( isset( $page ) && is_numeric( $page ) ) {
-			$offset= ( intval( $page ) - 1 ) * intval( $limit );
+			$offset = ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
 		if ( isset( $fetch_fn ) ) {
 			if ( ! in_array( $fetch_fn, $fns ) ) {
-				$fetch_fn= $fns[0];
+				$fetch_fn = $fns[0];
 			}
 		}
 		else {
-			$fetch_fn= $fns[0];
+			$fetch_fn = $fns[0];
 		}
 
 		// is a count being request?
 		if ( isset( $count ) ) {
-			$select= "COUNT($count)";
-			$fetch_fn= 'get_value';
-			$orderby= '';
+			$select = "COUNT( 1 )";
+			$fetch_fn = 'get_value';
+			$orderby = '';
 		}
 		// is a count of comments by month being requested?
-		$groupby= '';
+		$groupby = '';
 		if ( isset ( $month_cts ) ) {
-			$select= 'MONTH(date) AS month, YEAR(date) AS year, COUNT(id) AS ct';
-			$groupby= 'year, month';
-			$orderby= 'year, month';
+			$select = 'MONTH(FROM_UNIXTIME(date)) AS month, YEAR(FROM_UNIXTIME(date)) AS year, COUNT({comments}.id) AS ct';
+			$groupby = 'year, month';
+			$orderby = 'year, month';
 		}
 		if ( isset( $limit ) ) {
-			$limit= " LIMIT $limit";
+			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
-				$limit.= " OFFSET $offset";
+				$limit .= " OFFSET $offset";
 			}
 		}
 		if ( isset( $nolimit ) || isset( $month_cts )) {
-			$limit= '';
+			$limit = '';
 		}
 
-		$query= '
-			SELECT ' . $select . '
-			FROM ' . DB::table( 'comments' ) .
-			' ' . implode(' ', $joins);
+		$query = '
+			SELECT ' . $select .
+			' FROM {comments} ' .
+			implode(' ', $joins);
 
 		if ( count( $wheres ) > 0 ) {
-			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
+			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= ( $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
+		$query .= ( $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
+		//Utils::debug( $query, $params );
 
 		DB::set_fetch_mode( PDO::FETCH_CLASS );
 		DB::set_fetch_class( 'Comment' );
-		$results= DB::$fetch_fn( $query, $params, 'Comment' );
+		$results = DB::$fetch_fn( $query, $params, 'Comment' );
 
 		if ( 'get_results' != $fetch_fn ) {
 			// return the results
 			return $results;
 		}
 		elseif ( is_array( $results ) ) {
-			$c= __CLASS__;
-			$return_value= new $c( $results );
-			$return_value->get_param_cache= $paramarray;
+			$c = __CLASS__;
+			$return_value = new $c( $results );
+			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
 	}
@@ -253,36 +322,46 @@ class Comments extends ArrayObject
 	public static function delete_these( $comments )
 	{
 		if ( ! is_array( $comments ) && ! $comments instanceOf Comments ) {
-			$comments= array( $comments );
+			$comments = array( $comments );
 		}
 
 		if ( count( $comments ) == 0 ) {
 			return true;
 		}
 
-		if ( $comments[0] instanceOf Comment ) {
-			// We were passed an array of comment objects. Use them directly.
-			$result= true;
-			foreach ( $comments as $comment ) {
-				$result&= $comment->delete();
-				EventLog::log( sprintf(_t('Comment %1$s deleted from %2$s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
-			}
+		if ( $comments instanceOf Comments ) {
+			// Delete all the comments directly
+			$result = $comments->delete();
 		}
-		else if ( is_numeric( $comments[0] ) ) {
-			// We were passed an array of ID's. Get their objects and delete them.
+		else if ( is_array( $comments ) ) {
+			// We have an array... of something
 
-			// Get all of the comments objects
-			$comments= self::get( array( 'id' => $comments ) );
+			if ( $comments[0] instanceOf Comment ) {
 
-			$result= true;
-			foreach ( $comments as $comment ) {
-				$result&= $comment->delete();
-				EventLog::log( sprintf(_t('Comment %1$s deleted from %2$s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
+				$result = true;
+				foreach( $comments as $comment ) {
+					$comment_result = $comment->delete();
+
+					if ( !$comment_result ) {
+						$result = false;
+					}
+				}
+
 			}
+			else if ( is_numeric( $comments[0] ) ) {
+				// We were passed an array of ID's. Get their objects and delete them.
+				$comments = self::get( array( 'id' => $comments ) );
+
+				$result = $comments->delete();
+			}
+			else {
+				$result = false;
+			}
+
 		}
 		else {
 			// We were passed a type we could not understand.
-			return false;
+			$result = false;
 		}
 
 		return $result;
@@ -292,27 +371,27 @@ class Comments extends ArrayObject
 	 * Changes the status of comments
 	 * @param mixed Comment IDs to moderate.  May be a single ID, or an array of IDs
 	**/
-	public static function moderate_these( $comments, $status= Comment::STATUS_UNAPPROVED )
+	public static function moderate_these( $comments, $status = Comment::STATUS_UNAPPROVED )
 	{
 		if ( ! is_array( $comments )  && ! $comments instanceOf Comments ) {
-			$comments= array( $comments );
+			$comments = array( $comments );
 		}
 		if ( count( $comments ) == 0 ) {
 			return;
 		}
 		if ( $comments[0] instanceOf Comment ) {
 			// We were passed an array of comment objects. Use them directly.
-			$result= true;
+			$result = true;
 			foreach ( $comments as $comment ) {
 				$comment->status = $status;
 				$result &= $comment->update();
-				EventLog::log( sprintf(_t('Comment %1$s moderated from %2$s'), $comment->id, $comment->post->title), 'info', 'comment', 'habari' );
+				EventLog::log( sprintf( _t( 'Comment %1$s moderated from %2$s' ), $comment->id, $comment->post->title ), 'info', 'comment', 'habari' );
 			}
 		}
 		else if ( is_numeric( $comments[0] ) ) {
-			$result= true;
+			$result = true;
 			foreach ( $comments as $commentid ) {
-				$result&= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
+				$result &= DB::update( DB::table( 'comments' ), array( 'status' => $status), array( 'id' => $commentid ) );
 				EventLog::log( sprintf(_t('Comment Moderated on %s'), $comment->post->title), 'info', 'comment', 'habari' );
 			}
 		}
@@ -329,7 +408,7 @@ class Comments extends ArrayObject
 	 * @param string an email address
 	 * @return array an array of Comment objects written by that email address
 	**/
-	public static function by_email( $email= '' )
+	public static function by_email( $email = '' )
 	{
 		if ( ! $email ) {
 			return array();
@@ -343,7 +422,7 @@ class Comments extends ArrayObject
 	 * @param string a name
 	 * @return array an array of Comment objects written by the given name
 	**/
-	public static function by_name ( $name= '' )
+	public static function by_name ( $name = '' )
 	{
 		if ( ! $name ) {
 			return array();
@@ -357,7 +436,7 @@ class Comments extends ArrayObject
 	 * @param string an IP address
 	 * @return array an array of Comment objects written from the given IP
 	**/
-	public static function by_ip ( $ip= '' )
+	public static function by_ip ( $ip = '' )
 	{
 		if ( ! $ip ) {
 			return false;
@@ -371,7 +450,7 @@ class Comments extends ArrayObject
 	 * @param string a URL
 	 * @return array array an array of Comment objects with the same URL
 	**/
-	public static function by_url ( $url= '' )
+	public static function by_url ( $url = '' )
 	{
 		if ( ! $url ) {
 			return false;
@@ -395,7 +474,7 @@ class Comments extends ArrayObject
 	 * @param string a post slug
 	 * @return array array an array of Comment objects for the given post
 	**/
-	public static function by_slug ( $slug= '' )
+	public static function by_slug ( $slug = '' )
 	{
 		if ( ! $slug ) {
 			return false;
@@ -409,7 +488,7 @@ class Comments extends ArrayObject
 	 * @param int a status value
 	 * @return array an array of Comment objects with the same status
 	**/
-	public static function by_status ( $status= 0 )
+	public static function by_status ( $status = 0 )
 	{
 		return self::get( array( 'status' => $status, 'nolimit' => 1, 'orderby' => 'date ASC' ) );
 	}
@@ -422,7 +501,7 @@ class Comments extends ArrayObject
 	**/
 	private function sort_comments()
 	{
-		$type_sort= array(
+		$type_sort = array(
 			Comment::COMMENT => 'comments',
 			Comment::PINGBACK => 'pingbacks',
 			Comment::TRACKBACK => 'trackbacks',
@@ -432,49 +511,49 @@ class Comments extends ArrayObject
 			// first, divvy up approved and unapproved comments
 			switch( $c->status ) {
 				case Comment::STATUS_APPROVED:
-					$this->sort['approved'][]= $c;
-					$this->sort['moderated'][]= $c;
+					$this->sort['approved'][] = $c;
+					$this->sort['moderated'][] = $c;
 					break;
 				case Comment::STATUS_UNAPPROVED:
 					if ( isset( $_COOKIE['comment_' . Options::get( 'GUID' )] ) ) {
-						 list( $name, $email, $url )= explode( '#', $_COOKIE['comment_' . Options::get( 'GUID' )] );
+						 list( $name, $email, $url ) = explode( '#', $_COOKIE['comment_' . Options::get( 'GUID' )] );
 					}
 					else {
-						$name= '';
-						$email= '';
-						$url= '';
+						$name = '';
+						$email = '';
+						$url = '';
 					}
 					if ( ( $c->ip == sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ) )
 						&& ( $c->name == $name )
 						&& ( $c->email == $email )
 						&& ( $c->url == $url ) ) {
-							$this->sort['moderated'][]= $c;
+							$this->sort['moderated'][] = $c;
 					}
-					$this->sort['unapproved'][]= $c;
+					$this->sort['unapproved'][] = $c;
 					break;
 				case Comment::STATUS_SPAM:
-					$this->sort['spam'][]= $c;
+					$this->sort['spam'][] = $c;
 					break;
 			}
 
 			// now sort by comment type
-			$this->sort[$type_sort[$c->type]][]= $c;
+			$this->sort[$type_sort[$c->type]][] = $c;
 		}
 	}
 
 	/**
 	 * function only
 	 * returns all of the comments from the current Comments object of the specified type
-	 * <code>$tb= $comments->only( 'trackbacks' )</code>
+	 * <code>$tb = $comments->only( 'trackbacks' )</code>
 	 * @return array an array of Comment objects of the specified type
 	**/
-	public function only( $what= 'approved' )
+	public function only( $what = 'approved' )
 	{
 		if ( ! isset( $this->sort ) || count( $this->sort ) == 0 ) {
 			$this->sort_comments();
 		}
 		if ( ! isset( $this->sort[$what] ) || ! is_array( $this->sort[$what] ) ) {
-			$this->sort[$what]= array();
+			$this->sort[$what] = array();
 		}
 		return $this->sort[$what];
 	}
@@ -506,10 +585,10 @@ class Comments extends ArrayObject
 	 */
 	public function delete()
 	{
-		$result= true;
+		$result = true;
 		foreach ( $this as $c ) {
-			$result&= $c->delete();
-			EventLog::log( sprintf(_t('Comment %1$s deleted from %2$s'), $c->id, $c->post->title), 'info', 'comment', 'habari' );
+			$result &= $c->delete();
+			EventLog::log( sprintf( _t( 'Comment %1$s deleted from %2$s' ), $c->id, $c->post->title ), 'info', 'comment', 'habari' );
 		}
 		// Clear ourselves.
 		$this->exchangeArray( array() );
@@ -523,9 +602,9 @@ class Comments extends ArrayObject
 	 * @param mixed A comment type value, or FALSE to not filter on type (default: Comment::COMMENT)
 	 * @return int a count of the comments based on the specified status and type
 	**/
-	public static function count_total( $status= Comment::STATUS_APPROVED, $type= Comment::COMMENT )
+	public static function count_total( $status = Comment::STATUS_APPROVED, $type = Comment::COMMENT )
 	{
-		$params= array( 'count' => 1, 'status' => $status, 'type' => $type );
+		$params = array( 'count' => 1, 'status' => $status, 'type' => $type );
 		return self::get( $params );
 	}
 
@@ -536,11 +615,11 @@ class Comments extends ArrayObject
 	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified name
 	**/
-	public static function count_by_name( $name= '', $status= Comment::STATUS_APPROVED )
+	public static function count_by_name( $name = '', $status = Comment::STATUS_APPROVED )
 	{
-		$params= array ( 'name' => $name, 'count' => 'name' );
+		$params = array ( 'name' => $name, 'count' => 'name' );
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
@@ -552,11 +631,11 @@ class Comments extends ArrayObject
 	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified email
 	**/
-	public static function count_by_email( $email= '', $status= Comment::STATUS_APPROVED )
+	public static function count_by_email( $email = '', $status = Comment::STATUS_APPROVED )
 	{
-		$params= array( 'email' => $email, 'count' => 'email');
+		$params = array( 'email' => $email, 'count' => 'email');
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
@@ -568,11 +647,11 @@ class Comments extends ArrayObject
 	 * @param mixed a comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified URL
 	**/
-	public static function count_by_url( $url= '', $status= Comment::STATUS_APPROVED )
+	public static function count_by_url( $url = '', $status = Comment::STATUS_APPROVED )
 	{
-		$params= array( 'url' => $url, 'count' => 'url');
+		$params = array( 'url' => $url, 'count' => 'url');
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
@@ -583,11 +662,11 @@ class Comments extends ArrayObject
 	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified IP address
 	**/
-	public static function count_by_ip( $ip= '', $status= Comment::STATUS_APPROVED )
+	public static function count_by_ip( $ip = '', $status = Comment::STATUS_APPROVED )
 	{
-		$params= array( 'ip' => $ip, 'count' => 'ip');
+		$params = array( 'ip' => $ip, 'count' => 'ip');
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
@@ -599,15 +678,31 @@ class Comments extends ArrayObject
 	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments attached to the specified post
 	**/
-	public static function count_by_slug( $slug= '', $status= Comment::STATUS_APPROVED )
+	public static function count_by_slug( $slug = '', $status = Comment::STATUS_APPROVED )
 	{
-		$params= array( 'post_slug' => $slug, 'count' => 'id');
+		$params = array( 'post_slug' => $slug, 'count' => 'id');
 		if ( FALSE !== $status ) {
-			$params['status']= $status;
+			$params['status'] = $status;
 		}
 		return self::get( $params );
 	}
-	
+
+	/**
+	 * static count_by_id
+	 * returns the number of comments attached to the specified post
+	 * @param int a post ID
+	 * @param mixed A comment status value, or FALSE to not filter on status(default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments attached to the specified post
+	**/
+	 public static function count_by_id( $id = 0,  $status = Comment::STATUS_APPROVED )
+	 {
+	 	$params = array( 'post_id' => $id, 'count' => 'id' );
+		if ( FALSE !== $status ) {
+			$params['status'] = $status;
+		}
+		return self::get( $params );
+	 }
+
 	/**
 	 * static set
 	 * returns the number of document
@@ -637,7 +732,7 @@ class Comments extends ArrayObject
 	public static function delete_by_status( $status )
 	{
 		 if ( ! is_int( $status ) ) {
-		 	$status= Comment::status( $status );
+		 	$status = Comment::status( $status );
 		}
 		// first, purge all the comments
 		DB::query( 'DELETE FROM {comments} WHERE status=?', array( $status ) );
@@ -654,40 +749,42 @@ class Comments extends ArrayObject
 	 * @param string $search_string The search string
 	 * @return array An associative array which can be passed to Comments::get()
 	 */
-	public static function search_to_get( $search_string ) {
-		$keywords= array('author' => 1, 'status' => 1, 'type' => 1 );
+	public static function search_to_get( $search_string )
+	{
+		$keywords = array( 'author' => 1, 'status' => 1, 'type' => 1 );
 		// Comments::list_comment_statuses and list_comment_types return associative arrays with key/values
 		// in the opposite order of the equivalent functions in Posts. Maybe we should change this?
 		// In any case, we need to flip them for our purposes
-		$statuses= array_flip( Comment::list_comment_statuses() );
-		$types= array_flip( Comment::list_comment_types() );
-		$arguments= array(
+		$statuses = array_flip( Comment::list_comment_statuses() );
+		$types = array_flip( Comment::list_comment_types() );
+		$arguments = array(
 						'name' => array(),
 						'status' => array(),
 						'type' => array()
 						);
-		$criteria= '';
+		$criteria = '';
 
-		$tokens= explode( ' ', $search_string );
+		$tokens = explode( ' ', $search_string );
 
-		foreach( $tokens as $token ) {
+		foreach ( $tokens as $token ) {
 			// check for a keyword:value pair
 			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
-				list( $keyword, $value )= explode( ':', $token );
+				list( $keyword, $value ) = explode( ':', $token );
 
-				$keyword= strtolower( $keyword );
+				$keyword = strtolower( $keyword );
+				$value = strtolower( $value );
 				switch ( $keyword ) {
 					case 'author':
-						$arguments['name'][]= $value;
+						$arguments['name'][] = $value;
 						break;
 					case 'status':
-						if ( isset( $statuses[ucfirst( $value )] ) ) {
-							$arguments['status'][]= (int) $statuses[ucfirst( $value )];
+						if ( isset( $statuses[$value] ) ) {
+							$arguments['status'][] = (int) $statuses[$value];
 						}
 						break;
 					case 'type':
-						if ( isset( $types[ucfirst( $value )] ) ) {
-							$arguments['type'][]= (int) $types[ucfirst( $value )];
+						if ( isset( $types[$value] ) ) {
+							$arguments['type'][] = (int) $types[$value];
 						}
 						break;
 				}
@@ -703,13 +800,13 @@ class Comments extends ArrayObject
 					unset( $arguments[$key] );
 					break;
 				case 1:
-					$arguments[$key]= $arg[0];
+					$arguments[$key] = $arg[0];
 					break;
 			}
 		}
 
 		if ( $criteria != '' ) {
-			$arguments['criteria']= $criteria;
+			$arguments['criteria'] = $criteria;
 		}
 
 		return $arguments;

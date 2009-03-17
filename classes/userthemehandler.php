@@ -1,21 +1,23 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Class for handling default user theme actions.
  *
  * @note Any theme will be able to override these default actions by registering an override function with Theme->act_some_function()
  */
 class UserThemeHandler extends ActionHandler
 {
-	private $theme= null;
 
 	/**
-	 * Constructor for the default theme handler.  Here, we
-	 * automatically load the active theme for the installation,
-	 * and create a new Theme instance.
+	 * Constructor for the default theme handler.
 	 */
 	public function __construct()
 	{
-		$this->theme= Themes::create();
+		$this->setup_theme();
 	}
 
 	/**
@@ -29,18 +31,11 @@ class UserThemeHandler extends ActionHandler
 	 */
 	public function act( $action )
 	{
-		$this->action= $action;
-		$this->theme->assign('matched_rule', URL::get_matched_rule());
-		$request= new StdClass();
-		foreach(RewriteRules::get_active() as $rule) {
-			$request->{$rule->name}= false;
-		}
-		$request->{$this->theme->matched_rule->name}= true;
-		$this->theme->assign('request', $request);
+		$this->action = $action;
 
-		$action_method= 'act_' . $action;
-		$before_action_method= 'before_' . $action_method;
-		$after_action_method= 'after_' . $action_method;
+		$action_method = 'act_' . $action;
+		$before_action_method = 'before_' . $action_method;
+		$after_action_method = 'after_' . $action_method;
 
 		$this->theme->$before_action_method();
 		try {
@@ -52,6 +47,7 @@ class UserThemeHandler extends ActionHandler
 		}
 		catch(Error $e) {
 			EventLog::log($e->humane_error(), 'error', 'theme', 'habari', print_r($e, 1) );
+			Session::error($e->humane_error()); //Should we display any error here?
 			if(DEBUG) {
 				Utils::debug($e);
 			}

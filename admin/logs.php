@@ -29,21 +29,18 @@
 
 <div class="container">
 
-	<?php if(isset($years)) { ?><div class="item clear">
-		<div class="head clear">
+	<div class="head clear">
 
-			<span class="checkbox pct5">&nbsp;</span>
-			<span class="time pct15"><?php _e('Date &amp; Time'); ?></span>
-			<span class="user pct15"><?php _e('User'); ?></span>
-			<span class="ip pct10"><?php _e('IP'); ?></span>
-			<span class="module pct10"><?php _e('Module'); ?></span>
-			<span class="type pct10"><?php _e('Type'); ?></span>
-			<span class="severity pct5"><?php _e('Severity'); ?></span>
-			<span class="message pct30"><?php _e('Message'); ?></span>
+		<span class="checkbox pct5">&nbsp;</span>
+		<span class="time pct15"><?php _e('Date &amp; Time'); ?></span>
+		<span class="user pct15"><?php _e('User'); ?></span>
+		<span class="ip pct10"><?php _e('IP'); ?></span>
+		<span class="module pct10"><?php _e('Module'); ?></span>
+		<span class="type pct10"><?php _e('Type'); ?></span>
+		<span class="severity pct5"><?php _e('Severity'); ?></span>
+		<span class="message pct30"><?php _e('Message'); ?></span>
 
-		</div>
 	</div>
-
 
 	<div class="item clear">
 		<span class="pct5">&nbsp;</span>
@@ -56,14 +53,21 @@
 		<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
 	</div>
 	
+	<?php if(isset($years)) { ?>
 	<div class="manage logs">
 
-	<?php $theme->display('logs_items'); ?>
+		<?php $theme->display('logs_items'); ?>
 
-	</div><?php } else { ?><div class="item clear">
-		<span class="pct5">&nbsp;</span><span class="pct90"><?php _e('There are no logs to be displayed at this time.'); ?></span><span class="pct5">&nbsp;</span>
-	</div><?php } ?>
-	
+	</div>
+
+	<?php } else { ?>
+
+	<div class="item clear">
+
+	<span class="pct5">&nbsp;</span><span class="pct90"><?php _e('There are no logs to be displayed at this time.'); ?></span><span class="pct5">&nbsp;</span>
+
+	</div>
+	<?php } ?>
 
 </div>
 
@@ -71,9 +75,9 @@
 <?php if(isset($years)) { ?><div class="container transparent">
 
 	<div class="item controls">
-		<span class="pct25">
-			<input type="checkbox">
-			<span class="selectedtext minor none"><?php _e('None selected'); ?></span>
+		<span class="checkboxandselected pct40">
+			<input type="checkbox" id="master_checkbox" name="master_checkbox">
+			<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 		</span>
 		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
