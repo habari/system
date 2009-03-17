@@ -2994,6 +2994,14 @@ class AdminHandler extends ActionHandler
 					'own_posts' => array( ACL::get_bitmask( 'create' ), ACL::get_bitmask( 'edit' ) ),
 				);
 				break;
+			case 'delete_post':
+				$type = Post::type_name( $type );
+				$require_any = array(
+					'post_any' => ACL::get_bitmask( 'delete' ),
+					'post_' . $type => ACL::get_bitmask( 'delete' ),
+					'own_posts' => ACL::get_bitmask( 'delete' ),
+				);
+				break;
 			case 'posts':
 			case 'ajax_posts':
 			case 'ajax_delete_entries':
