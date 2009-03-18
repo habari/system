@@ -314,7 +314,6 @@ a img {
 	display: block;
 	padding-right: 20px;
 	line-height: 16px;
-	text-decoration: none;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	font-size: 9px;
@@ -468,14 +467,21 @@ span.dim {
 
 a, a:visited, a:hover {
 	color: #333;
-/*
 	text-decoration: none;
-*/
 }
 
-a:hover {
+#page .dropbutton a {
 	text-decoration: none;
 }
+
+#page .dropbutton a.active, #pluginconfigure a {
+	text-decoration: underline;
+}
+#page .dropbutton a.active,
+#page .dropbutton.hovering li.first-child a.active {
+	background: url('../images/currentpageindicator.png') right center no-repeat;
+}
+
 
 .border {
 	border: 1px solid #bbb;
