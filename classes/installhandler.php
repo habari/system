@@ -345,7 +345,7 @@ class InstallHandler extends ActionHandler
 			$requirements_met = false;
 		}
 
-		if ( $requirements_met && ! preg_match( '/\p{L}/u', 'a' ) ) {
+		if ( $requirements_met && ! @preg_match( '/\p{L}/u', 'a' ) ) {
 			$requirements_met = false;
 		}
 

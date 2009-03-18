@@ -63,7 +63,7 @@
 	</p>
 <?php }?>
 
-<?php if ( extension_loaded( 'pcre' ) && ! preg_match( '/\p{L}/u', 'a' ) ) { ?>
+<?php if ( extension_loaded( 'pcre' ) && ! @preg_match( '/\p{L}/u', 'a' ) ) { ?>
 	<h2>Unicode support needed...</h2>
 	<p class="instructions">
 		<em>Habari</em> <?php _e('requires PHP\'s PCRE extension to have Unicode support enabled. Please contact your web hosting provider if you do not have access to your server.'); ?>
