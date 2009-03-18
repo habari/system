@@ -825,11 +825,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_update_users($handler_vars)
 	{
-		if (!User::identify()->can( 'manage_users' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
 		echo json_encode( $this->update_users( $handler_vars ) );
 	}
 
@@ -1929,11 +1924,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_users()
 	{
-		if (!User::identify()->can( 'manage_users' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2020,12 +2010,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_delete_logs($handler_vars)
 	{
-		if (!User::identify()->can( 'manage_logs' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
-
 		$count = 0;
 
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
@@ -2313,12 +2297,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_logs()
 	{
-		if (!User::identify()->can( 'manage_logs' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
-
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2344,22 +2322,11 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_update_groups($handler_vars)
 	{
-		if (!User::identify()->can( 'manage_groups' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
 		echo json_encode( $this->update_groups( $handler_vars ) );
 	}
 
 	public function ajax_groups($handler_vars)
 	{
-		if (!User::identify()->can( 'manage_groups' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
-
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2648,11 +2615,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_tags( $handler_vars)
 	{
-		if (!User::identify()->can( 'manage_tags' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
