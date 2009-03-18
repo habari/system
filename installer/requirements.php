@@ -63,6 +63,14 @@
 	</p>
 <?php }?>
 
+<?php if ( extension_loaded( 'pcre' ) && ! preg_match( '/\p{L}/u', 'a' ) ) { ?>
+	<h2>Unicode support needed...</h2>
+	<p class="instructions">
+		<em>Habari</em> <?php _e('requires PHP\'s PCRE extension to have Unicode support enabled. Please contact your web hosting provider if you do not have access to your server.'); ?>
+	</p>
+
+<?php } ?>
+
 <?php if ( ! $pdo_drivers_ok && ! array_key_exists( 'pdo', $missing_extensions )  ) { ?>
 	<h2><?php _e('No PDO drivers enabled'); ?></h2>
 	<p class="instructions"><em>Habari</em> <?php _e('requires that at least one <a href="http://www.php.net/pdo">PDO driver</a> be installed. Please ask your hosting provider to enable one of the PDO drivers supported by Habari.'); ?></p>
