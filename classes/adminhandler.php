@@ -2338,8 +2338,13 @@ class AdminHandler extends ActionHandler
 			$group = UserGroup::get_by_id($group->id);
 			$users = array();
 			foreach ( $group->members as $id ) {
-				$user = User::get_by_id($id);
-				$users[] = '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				$user = $id == 0 ? User::anonymous() : User::get_by_id( $id );
+				if ( $user->id == 0 ) {
+					$users[] = '<strong>' . $user->displayname . '</strong>';
+				}
+				else {
+					$users[] = '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				}
 			}
 
 			$this->theme->users = $users;
