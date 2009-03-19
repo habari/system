@@ -389,6 +389,8 @@ WP_IMPORT_STAGE2;
 
 				try {
 					$p->insert();
+					$p->updated = $post_array['updated'];
+					$p->update();
 				}
 				catch( Exception $e ) {
 					EventLog::log($e->getMessage(), 'err', null, null, print_r(array($p, $e), 1));
