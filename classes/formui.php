@@ -958,6 +958,12 @@ class FormControl
 				case 'action':
 					$this->default = Plugins::filter($location, '', $this->name, false);
 					break;
+				case 'session';
+					$session_set = Session::get_set($location , false);
+					if (  isset( $session_set[$this->name] ) ) {
+						$this->default = $session_set[$this->name];
+					}
+				break;
 				case 'null':
 					break;
 			}
@@ -998,6 +1004,9 @@ class FormControl
 				break;
 			case 'action':
 				Plugins::filter($location, $this->value, $this->name, true);
+				break;
+			case 'session';
+				Session::add_to_set( $location, $this->value, $this->name );
 				break;
 			case 'null':
 				break;
