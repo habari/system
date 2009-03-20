@@ -75,6 +75,8 @@ class CronTab extends ActionHandler
 	 */
 	function act_poll_cron()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		$time = doubleval($this->handler_vars['time']);
 		if ( $time != Options::get('cron_running') ) {
 			return;

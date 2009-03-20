@@ -162,6 +162,8 @@ class Theme extends Pluggable
 	 */
 	public function act_display( $paramarray = array( 'user_filters'=> array() ) )
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		// Get any full-query parameters
 		$possible = array( 'user_filters', 'fallback', 'posts', 'post', 'content_type' );
 		foreach ( $possible as $varname ) {
