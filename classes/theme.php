@@ -724,6 +724,10 @@ class Theme extends Pluggable
 		// Create the output variable.
 		$out = '';
 
+		if ( $settings['hideIfSinglePage'] === true ) {
+			return '';
+		}
+		
 		foreach ( $pages as $page ) {
 			$settings['page'] = $page;
 
