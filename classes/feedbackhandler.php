@@ -18,6 +18,7 @@ class FeedbackHandler extends ActionHandler
 	*/
 	public function act_add_comment()
 	{
+		Utils::check_request_method( array( 'POST' ) );
 
 		$defaults = array(
 			'name' => '',

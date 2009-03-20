@@ -89,6 +89,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
 
 		// Access check to see if the user is allowed the requested page
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
 		if ( !$this->access_allowed( $page, $type ) ) {
 			Session::error(_t('Access to that page has been denied by the administrator.'));
 			$this->get_blank();
@@ -109,7 +110,8 @@ class AdminHandler extends ActionHandler
 					exit;
 				}
 				break;
-			default:
+			case 'GET':
+			case 'HEAD':
 				// Let plugins try to handle the page
 				Plugins::act('admin_theme_get_' . $page, $this, $this->theme);
 				// Handle GETs of the admin pages
@@ -826,6 +828,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_update_users($handler_vars)
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		echo json_encode( $this->update_users( $handler_vars ) );
 	}
 
@@ -1822,6 +1826,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_dashboard( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -1868,6 +1874,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_posts()
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -1896,6 +1904,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_comments()
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$this->theme->theme = $this->theme;
@@ -1925,6 +1935,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_users()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -1943,6 +1955,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_in_edit($handler_vars)
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
@@ -1982,6 +1996,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_delete_entries($handler_vars)
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
@@ -2011,6 +2027,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_delete_logs($handler_vars)
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$count = 0;
 
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
@@ -2049,6 +2067,8 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_update_comment( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		// check WSSE authentication
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
@@ -2298,6 +2318,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_logs()
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2321,13 +2343,17 @@ class AdminHandler extends ActionHandler
 		echo json_encode($output);
 	}
 
-	public function ajax_update_groups($handler_vars)
+	public function ajax_update_groups( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		echo json_encode( $this->update_groups( $handler_vars ) );
 	}
 
-	public function ajax_groups($handler_vars)
+	public function ajax_groups( $handler_vars )
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2472,6 +2498,7 @@ class AdminHandler extends ActionHandler
 
 	public function post_groups()
 	{
+		Utils::check_request_method( array( 'POST' ) );
 
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
@@ -2621,6 +2648,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_tags( $handler_vars)
 	{
+		Utils::check_request_method( array( 'POST' ) );
+
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
@@ -2650,6 +2679,8 @@ class AdminHandler extends ActionHandler
 				Session::notice( $msg_status );
 				echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 				break;
+		Utils::check_request_method( array( 'POST' ) );
+
 			case 'rename':
 				if ( isset($this->handler_vars['master']) ) {
 					$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
@@ -2688,6 +2719,8 @@ class AdminHandler extends ActionHandler
 	*/
 	public function get_sysinfo()
 	{
+		Utils::check_request_method( array( 'POST' ) );
+
 		$sysinfo = array();
 		$siteinfo = array();
 
@@ -2936,6 +2969,8 @@ class AdminHandler extends ActionHandler
 				$require_any = array( 'manage_import' => true );
 				break;
 			case 'users':
+		Utils::check_request_method( array( 'POST' ) );
+
 			case 'user':
 			case 'ajax_update_users':
 			case 'ajax_users':
@@ -3048,6 +3083,8 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_media( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$path = $handler_vars['path'];
 		$rpath = $path;
 		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
@@ -3085,6 +3122,8 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_media_panel( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$path = $handler_vars['path'];
 		$panelname = $handler_vars['panel'];
 		$rpath = $path;
