@@ -414,7 +414,7 @@ var itemManage = {
 	update: function( action, id ) {
 		spinner.start();
 		var query = {};
-		if ( id === null ) {
+		if ( id === undefined ) {
 			query = itemManage.selected;
 		}
 		else {
@@ -469,9 +469,9 @@ var itemManage = {
 		itemManage.update( 'delete', id );
 	},
 	fetch: function( offset, limit, resetTimeline, silent ) {
-		offset = ( offset === null ) ? 0 : offset;
-		limit = ( limit === null ) ? 20: limit;
-		silent = ( silent === null ) ? false: silent;
+		offset = ( offset === undefined ) ? 0 : offset;
+		limit = ( limit === undefined ) ? 20: limit;
+		silent = ( silent === undefined ) ? false: silent;
 		spinner.start();
 
 		$.ajax({
@@ -984,7 +984,7 @@ var navigationDropdown = {
 		});
 	},
 	changePage: function(location) {
-		if(location === null) {
+		if( location === undefined ) {
 			nextPage = $('select[name=navigationdropdown]').val();
 		} else {
 			nextPage = location.options[location.selectedIndex].value;
@@ -1445,7 +1445,7 @@ habari.editor = {
 			else if(document.selection) {
 				contentel.focus();
 				var range = document.selection.createRange();
-				if (range === null) {
+				if ( range === undefined ) {
 					return '';
 				}
 				return range.text;
