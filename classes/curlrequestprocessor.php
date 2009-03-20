@@ -44,7 +44,6 @@ class CURLRequestProcessor implements RequestProcessor
 		curl_setopt( $ch, CURLOPT_URL, $url ); // The URL.
 		curl_setopt( $ch, CURLOPT_HEADERFUNCTION, array(&$this, '_headerfunction' ) ); // The header of the response.
 		curl_setopt( $ch, CURLOPT_MAXREDIRS, $this->max_redirs ); // Maximum number of redirections to follow.
-		curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n.
 		if ( $this->can_followlocation ) {
 			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // Follow 302's and the like.
 		}
