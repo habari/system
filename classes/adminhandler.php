@@ -80,7 +80,7 @@ class AdminHandler extends ActionHandler
 		// Add some default stylesheets
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
 
-	  	// Add some default template variables
+			// Add some default template variables
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_type = $type;
 		$this->theme->admin_page = $page;
@@ -94,7 +94,7 @@ class AdminHandler extends ActionHandler
 			Session::error(_t('Access to that page has been denied by the administrator.'));
 			$this->get_blank();
 		}
-
+		
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
 				// Let plugins try to handle the page
@@ -933,7 +933,9 @@ class AdminHandler extends ActionHandler
 
 	public function get_users()
 	{
-		return $this->post_users();
+		$this->fetch_users();
+
+		$this->theme->display('users');
 	}
 
 	/**
@@ -2493,13 +2495,16 @@ class AdminHandler extends ActionHandler
 
 	public function get_groups()
 	{
-		$this->post_groups();
+		// prepare the WSSE tokens
+		$this->theme->wsse = Utils::WSSE();
+
+		$this->theme->groups = UserGroups::get_all();
+
+		$this->display( 'groups' );
 	}
 
 	public function post_groups()
 	{
-		Utils::check_request_method( array( 'POST' ) );
-
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
 
@@ -2969,8 +2974,6 @@ class AdminHandler extends ActionHandler
 				$require_any = array( 'manage_import' => true );
 				break;
 			case 'users':
-		Utils::check_request_method( array( 'POST' ) );
-
 			case 'user':
 			case 'ajax_update_users':
 			case 'ajax_users':
@@ -3018,7 +3021,7 @@ class AdminHandler extends ActionHandler
 				break;
 			case 'sysinfo': 
 				$require_any = array( 'super_user' => true ); 
-				break; 
+				break;
 			case 'dashboard':
 			case 'ajax_dashboard':
 				$result = true;
