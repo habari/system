@@ -29,6 +29,8 @@ class RemoteRequest
 	private $url;
 	private $params = array();
 	private $headers = array();
+	private $postdata = array();
+	private $files = array();
 	private $body = '';
 	private $timeout = 180;
 	private $processor = NULL;
@@ -37,7 +39,7 @@ class RemoteRequest
 	private $response_body = '';
 	private $response_headers = '';
 	
-	private $user_agent = 'Habari'; // TODO add version to that (Habari/0.1.4)
+	private $user_agent = 'Habari';
 	
 	/**
 	 * @param string $url URL to request
@@ -49,6 +51,8 @@ class RemoteRequest
 		$this->method = strtoupper( $method );
 		$this->url = $url;
 		$this->set_timeout( $timeout );
+
+		$this->user_agent .= '/' . Version::HABARI_VERSION;
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
 		
 		// can't use curl's followlocation in safe_mode with open_basedir, so
@@ -134,6 +138,41 @@ class RemoteRequest
 	}
 	
 	/**
+	 * set postdata
+	 *
+	 * @access public
+	 * @param mixed $name
+	 * @param string $value
+	 */
+	public function set_postdata($name, $value = null)
+	{
+		if (is_array($name)) {
+			$this->postdata = array_merge($this->postdata, $name);
+		}
+		else {
+			$this->postdata[$name] = $value;
+		}
+	}
+
+	/**
+	 * set file
+	 *
+	 * @access public
+	 * @param string $name
+	 * @param string $filename
+	 * @param string $content_type
+	 */
+	public function set_file($name, $filename, $content_type = null, $override_filename = null)
+	{
+		if (!file_exists($filename)) {
+			return Error::raise(sprintf(_t('File %s not found.'), $filename), E_USER_WARNING);
+		}
+		if (empty($content_type)) $content_type = 'application/octet-stream';
+		$this->files[$name] = array('filename' => $filename, 'content_type' => $content_type, 'override_filename' => $override_filename);
+		$this->headers['Content-Type'] = 'multipart/form-data';
+	}
+
+	/**
 	 * A little housekeeping.
 	 */
 	private function prepare()
@@ -144,11 +183,43 @@ class RemoteRequest
 		$this->url = $this->merge_query_params( $this->url, $this->params );
 		
 		if ( $this->method === 'POST' ) {
-			$this->add_header( array( 'Content-Length' => strlen( $this->body ) ) );
-			if ( ! isset( $this->headers['Content-Type'] ) ) {
+			if ( !isset( $this->headers['Content-Type'] ) || ( $this->headers['Content-Type'] == 'application/x-www-form-urlencoded' ) ) {
 				// TODO should raise a warning
 				$this->add_header( array( 'Content-Type' => 'application/x-www-form-urlencoded' ) );
+
+				$this->body = http_build_query( $this->postdata, '', '&' );
 			}
+			elseif ( $this->headers['Content-Type'] == 'multipart/form-data' ) {
+				$boundary = md5( Utils::nonce() );
+				$this->headers['Content-Type'] .= '; boundary=' . $boundary;
+
+				$parts = array();
+				if ( $this->postdata && is_array( $this->postdata ) ) {
+					reset( $this->postdata );
+					while ( list( $name, $value ) = each( $this->postdata ) ) {
+						$parts[] = "Content-Disposition: form-data; name=\"{$name}\"\r\n\r\n{$value}\r\n";
+					}
+				}
+				
+				if ( $this->files && is_array( $this->files ) {
+					reset( $this->files );
+					while ( list( $name, $fileinfo ) = each( $this->files ) ) {
+						$filename = basename( $fileinfo['filename'] );
+						if ( !empty( $fileinfo['override_filename'] ) ) {
+							$filename = $fileinfo['override_filename'];
+						}
+						$part = "Content-Disposition: form-data; name=\"{$name}\"; filename=\"{$filename}\"\r\n";
+						$part .= "Content-Type: {$fileinfo['content_type']}\r\n\r\n";
+						$part .= file_get_contents( $fileinfo['filename'] ) . "\r\n";
+						$parts[] = $part;
+					}
+				}
+				
+				if ( !empty( $parts ) ) {
+					$this->body = "--{$boundary}\r\n" . join("--{$boundary}\r\n", $parts) . "--{$boundary}--\r\n";
+				}
+			}
+			$this->add_header( array( 'Content-Length' => strlen( $this->body ) ) );
 		}
 	}
 	
