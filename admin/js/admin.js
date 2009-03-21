@@ -1477,6 +1477,8 @@ $(document).ready(function(){
 	findChildren();
 	navigationDropdown.init();
 	labeler.init();
+	
+	window.setTimeout(function(){ labeler.check(); }, 200);
 
 	// Alternate the rows' styling.
 	$("table").each( function() {
