@@ -171,7 +171,7 @@ class Format
 				if ($openP) {
 					$localValue = $localValue;
 				} else {
-					$localValue = "<p>{$localValue}";
+					$localValue = '<p>' . trim($localValue);
 					$openP = true;
 				}
 				
