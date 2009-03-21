@@ -147,21 +147,44 @@ class FileCache extends Cache
 	 * Expires the named value from the cache.
 	 *
 	 * @param string $name The name of the cached item
+	 * @param string $group The name of the cache group
+	 * @param string $match_mode (optional) how to match bucket names ('strict', 'regex', 'glob') (default 'strict')
 	 */
-	protected function _expire( $name, $group )
+	protected function _expire( $name, $group, $match_mode = 'strict' )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
-		$hash = $this->get_name_hash( $name );
-		$ghash = $this->get_group_hash( $group );
-
-		if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
-			unlink( $this->cache_files[$ghash][$hash]['file'] );
-			unset( $this->cache_files[$ghash][$hash] );
-			$this->clear_expired();
-			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
+		$keys = array();
+		switch ( strtolower($match_mode) ) {
+			case 'glob':
+				if ( array_key_exists( $group, $this->cache_data ) ) {
+					$keys = preg_grep( Utils::glob_to_regex( $name ), array_keys( $this->cache_data[$group] ) );
+				}
+				break;
+			case 'regex':
+				if ( array_key_exists( $group, $this->cache_data ) ) {
+					$keys = preg_grep( $name, array_keys( $this->cache_data[$group] ) );
+				}
+				break;
+			case 'strict':
+			default:
+				$keys = array( $name );
+				break;
 		}
+		
+		$ghash = $this->get_group_hash( $group );
+		foreach ( $keys as $key ) {
+			$hash = $this->get_name_hash( $key );
+			
+			if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
+				unlink( $this->cache_files[$ghash][$hash]['file'] );
+				unset( $this->cache_files[$ghash][$hash] );
+			}
+		}
+		
+		$this->clear_expired();
+		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
 
 	/**
@@ -228,7 +251,7 @@ class FileCache extends Cache
 			$this->cache_files[$ghash] = array_filter( $records, array( $this, 'record_fresh' ) );
 		}
 	}
-
+	
 }
 
 ?>

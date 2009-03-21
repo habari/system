@@ -11,12 +11,15 @@
 class APCCache extends Cache
 {
 	protected $enabled = false;
+	protected $cache_data = array();
+	protected $prefix;
 	
 	/**
 	 * Constructor for APCCache
 	 */
 	public function __construct()
 	{
+		$this->prefix = Options::get( 'GUID' );
 		$this->enabled = extension_loaded( 'apc' );
 		if ( !$this->enabled ) {
 			Session::error( _t("The APC Cache PHP module is not loaded - the cache is disabled.", "apccache"), 'filecache' );
@@ -35,7 +38,7 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return false;
 		}
-		return apc_fetch( "$group:$name" ) !== false;
+		return apc_fetch( implode( ':', array( $this->prefix, $group, $name ) ) ) !== false;
 	}
 
 	/**
@@ -49,7 +52,7 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		return apc_fetch( "$group:$name" );
+		return apc_fetch( implode( ':', array( $this->prefix, $group, $name ) ) );
 	}
 	
 	/**
@@ -67,8 +70,8 @@ class APCCache extends Cache
 		$group_cache = array();
 		
 		foreach ( $cache_info['cache_list'] as $cache_item ) {
-			if ( strpos( $cache_item['info'], "$group:" ) === 0 ) {
-				$name = substr( $cache_item['info'], strlen( "$group:" ) );
+			if ( strpos( $cache_item['info'], $this->prefix . "$group:" ) === 0 ) {
+				$name = substr( $cache_item['info'], strlen( $this->prefix . "$group:" ) );
 				$group_cache[$name] = apc_fetch( $cache_item['info'] );
 			}
 		}
@@ -90,7 +93,7 @@ class APCCache extends Cache
 		$group_cache = array();
 		
 		foreach ( $cache_info['cache_list'] as $cache_item ) {
-			if ( strpos( $cache_item['info'], "$group:" ) === 0 ) {
+			if ( strpos( $cache_item['info'], $this->prefix . "$group:" ) === 0 ) {
 				$group_cache[$cache_item['info']] = apc_fetch( $cache_item['info'] );
 			}
 		}
@@ -102,20 +105,42 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		apc_store( "$group:$name", $value, intval($expiry) );
+		$this->cache_data[$group][$name] = $value;
+		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval($expiry) );
 	}
 
 	/**
 	 * Expires the named value from the cache.
 	 *
 	 * @param string $name The name of the cached item
+	 * @param string $match_mode (optional) how to match bucket names ('strict', 'regex', 'glob') (default 'strict')
 	 */
-	protected function _expire( $name, $group )
+	protected function _expire( $name, $group, $match_mode = 'strict' )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
-		apc_delete( "$group:$name" );
+		$keys = array();
+		switch ( strtolower($match_mode) ) {
+			case 'glob':
+				if ( array_key_exists( $group, $this->cache_data ) ) {
+					$keys = preg_grep( Utils::glob_to_regex( $name ), array_keys( $this->cache_data[$group] ) );
+				}
+				break;
+			case 'regex':
+				if ( array_key_exists( $group, $this->cache_data ) ) {
+					$keys = preg_grep( $name, array_keys( $this->cache_data[$group] ) );
+				}
+				break;
+			case 'strict':
+			default:
+				$keys = array( $name );
+				break;
+		}
+		
+		foreach ( $keys as $key ) {
+			apc_delete( implode( ':', array( $this->prefix, $group, $key ) );
+		}
 	}
 
 	/**
@@ -131,7 +156,7 @@ class APCCache extends Cache
 		}
 		if ( $this->_has( $name, $group ) ) {
 			$cache_data = $this->_get( $name, $group );
-			$this->_set( "$group:$name", $cache_data, time() + $expiry, $group );
+			$this->_set( implode( ':', array( $this->prefix, $group, $name ) ), $cache_data, time() + $expiry, $group );
 		}
 	}
 }
