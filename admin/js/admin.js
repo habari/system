@@ -1478,7 +1478,12 @@ $(document).ready(function(){
 	navigationDropdown.init();
 	labeler.init();
 	
-	window.setTimeout(function(){ labeler.check(); }, 200);
+	// fix autofilled passwords overlapping labels
+	$(window).load(function(){
+		window.setTimeout(function(){
+			labeler.check($('label[for=habari_password]'));
+		}, 200);
+	});
 
 	// Alternate the rows' styling.
 	$("table").each( function() {
