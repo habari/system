@@ -201,7 +201,7 @@ class RemoteRequest
 					}
 				}
 				
-				if ( $this->files && is_array( $this->files ) {
+				if ( $this->files && is_array( $this->files ) ) {
 					reset( $this->files );
 					while ( list( $name, $fileinfo ) = each( $this->files ) ) {
 						$filename = basename( $fileinfo['filename'] );
