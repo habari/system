@@ -1150,14 +1150,8 @@ var theMenu = {
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
 			if ($('#menu').hasClass('hovering') === true && $('.carrot')) {
-				if ($('.carrot').hasClass('submenu') === true) {
-					theMenu.blinkCarrot($('.carrot ul li.carrot a').parent());
-					location = $('.carrot ul li.carrot a').attr('href');
-				}
-				else {
-					theMenu.blinkCarrot($('.carrot a').parent());
-					location = $('.carrot a').attr('href');
-				}
+				theMenu.blinkCarrot($('.carrot a').parent());
+				location = $('.carrot a').attr('href');
 			} else {
 				return false;
 			}
