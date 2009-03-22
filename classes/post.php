@@ -1182,7 +1182,7 @@ class Post extends QueryRecord implements IsContent
 
 		// Collect a list of applicable tokens
 		$tokens = array(
-			'posts_any',
+			'post_any',
 			'post_' . Post::type_name( $this->content_type ),
 		);
 
@@ -1208,7 +1208,6 @@ class Post extends QueryRecord implements IsContent
 		if ( in_array( 0, $token_accesses ) ) {
 			return ACL::get_bitmask( 0 );
 		}
-
 		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
 	}
 
