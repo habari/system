@@ -442,14 +442,8 @@ class InputFilter
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_TEXT:
-					if ( sizeof( $stack ) > 0 && ! in_array( strtolower( $stack[sizeof( $stack )-1] ), self::$whitelist_elements ) ) {
-						// skip node if filtered element is still open
-						$node = NULL;
-					}
-					else {
-						// XXX use blog charset setting
-						$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
-					}
+					// XXX use blog charset setting
+					$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
 					// is this element allowed at all?
@@ -457,7 +451,14 @@ class InputFilter
 						if ( ! in_array( strtolower( $node['name'] ), self::$elements_empty ) ) {
 							array_push( $stack, $node['name'] );
 						}
-						$node = NULL;
+						//$node = NULL; //remove the node completely
+						// convert the node to text
+						$node = array(
+							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
+							'name' => '#text',
+							'value' => '<' . $node['name'] .'>',
+							'attrs' => array(),
+                                                );
 					}
 					else {
 						// check attributes
@@ -482,7 +483,14 @@ class InputFilter
 							// something weird happened (Luke, use the DOM!)
 							array_push( $stack, $temp );
 						}
-						$node = NULL;
+						//$node = NULL;
+						//convert the node to text
+						$node = array(
+							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
+							'name' => '#text',
+							'value' => '</' . $node['name'] .'>',
+							'attrs' => array(),
+                                                );
 					}
 					break;
 				case HTMLTokenizer::NODE_TYPE_PI:
