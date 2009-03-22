@@ -1182,11 +1182,17 @@ class Post extends QueryRecord implements IsContent
 
 		// Collect a list of applicable tokens
 		$tokens = array(
-			'own_posts',
 			'posts_any',
-			'post_' . $this->content_type(),
+			'post_' . Post::type_name( $this->content_type ),
 		);
-		
+
+		if( $user->id == $this->user_id) {
+			$tokens[] = 'own_posts';
+		}
+		if( $user->can( 'super_user' ) ) {
+			$tokens[] = 'super_user';
+		}
+
 		$tokens = array_merge($tokens, $this->get_tokens());
 		
 		// collect all possible token accesses on this post
