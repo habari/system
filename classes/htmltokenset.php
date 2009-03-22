@@ -27,7 +27,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		switch ($token['type']) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
-				return $token['value'];
+				return htmlspecialchars($token['value']);
 				break;
 			
 			case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
