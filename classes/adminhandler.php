@@ -2724,7 +2724,7 @@ class AdminHandler extends ActionHandler
 	*/
 	public function get_sysinfo()
 	{
-		Utils::check_request_method( array( 'POST' ) );
+		Utils::check_request_method( array( 'GET' ) );
 
 		$sysinfo = array();
 		$siteinfo = array();
