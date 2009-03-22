@@ -400,8 +400,8 @@ class Posts extends ArrayObject implements IsContent
 
 			// If a user can read his own posts, let him
 			if ( User::identify()->can('own_posts', 'read') ) {
-				$perm_where['own_posts_id'] = '{posts}.user_id = :own_posts_id';
-				$params_where['own_posts_id'] = User::identify()->id;
+				$perm_where['own_posts_id'] = '{posts}.user_id = ?';
+				$params_where[] = User::identify()->id;
 			}
 
 			// If a user can read any post type, let him
@@ -455,7 +455,7 @@ class Posts extends ArrayObject implements IsContent
 				$where['perms_granted'] = '
 					(' . implode(' OR ', $perm_where) . ')
 				';
-				$params = $params + $params_where;
+				$params = array_merge( $params, $params_where );
 			}
 
 			if ( count($deny_tokens) > 0 ) {
