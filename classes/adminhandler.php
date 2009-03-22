@@ -2684,7 +2684,6 @@ class AdminHandler extends ActionHandler
 				Session::notice( $msg_status );
 				echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 				break;
-		Utils::check_request_method( array( 'POST' ) );
 
 			case 'rename':
 				if ( isset($this->handler_vars['master']) ) {
@@ -2724,8 +2723,6 @@ class AdminHandler extends ActionHandler
 	*/
 	public function get_sysinfo()
 	{
-		Utils::check_request_method( array( 'GET' ) );
-
 		$sysinfo = array();
 		$siteinfo = array();
 
