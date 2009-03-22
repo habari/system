@@ -86,28 +86,26 @@ class InstallHandler extends ActionHandler
 		// try to load any values that might be defined in config.php
 		if ( file_exists( Site::get_dir('config_file') ) ) {
 			include( Site::get_dir('config_file') );
-			if ( Config::exists( 'db_connection' ) ) {
-				list( $this->handler_vars['db_type'], $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
-				switch( $this->handler_vars['db_type'] ) {
-				case 'sqlite':
-					// SQLite uses less info.
-					// we stick the path in db_host
-					$this->handler_vars['db_file'] = $remainder;
-					break;
-				case 'mysql':
-					list($host,$name)= explode(';', $remainder);
-					list($discard, $this->handler_vars['db_host']) = explode('=', $host);
-					list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
-					break;
-				case 'pgsql':
-					list($host,$name)= explode(' ', $remainder);
-					list($discard, $this->handler_vars['db_host']) = explode('=', $host);
-					list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
-					break;
+			
+			// check for old style config (global variable, pre-dates registry based config
+			if ( !Config::exists( 'db_connection' ) && isset( $db_connection ) ) {
+				// found old style config...
+				
+				// set up registry:
+				Config::set( 'db_connection', $db_connection );
+				
+				// assign handler vars (for config file write)
+				$this->set_handler_vars_from_db_connection();
+				
+				// write new config file
+				if ( $this->write_config_file( true ) ) {
+					// successful, so redirect:
+					Utils::redirect(Site::get_url( 'habari' ) );
 				}
-				$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;
-				$this->handler_vars['db_pass'] = Config::get( 'db_connection' )->password;
-				$this->handler_vars['table_prefix'] = Config::get( 'db_connection' )->prefix;
+			}
+			
+			if ( Config::exists( 'db_connection' ) ) {
+				$this->set_handler_vars_from_db_connection();
 			}
 			// if a $blog_data array exists in config.php, use it
 			// to pre-load values for the installer
@@ -775,9 +773,10 @@ class InstallHandler extends ActionHandler
 	 * Writes the configuration file with the variables needed for
 	 * initialization of the application
 	 *
+	 * @param Bool $ignore_registry skip the configuration registry check (used in config rewrite)
 	 * @return  bool  Did the file get written?
 	 */
-	private function write_config_file()
+	private function write_config_file( $ignore_registry = false )
 	{
 		// first, check if a config.php file exists
 		if ( file_exists( Site::get_dir('config_file' ) ) ) {
@@ -808,7 +807,7 @@ class InstallHandler extends ActionHandler
 
 			// and now we compare the values defined there to
 			// the values POSTed to the installer
-			if ( Config::exists( 'db_connection' ) &&
+			if ( !$ignore_registry && Config::exists( 'db_connection' ) &&
 				( Config::get( 'db_connection' )->connection_string == $connection_string )
 				&& ( Config::get( 'db_connection' )->username == $db_user )
 				&& ( Config::get( 'db_connection' )->password == $db_pass )
@@ -1563,6 +1562,36 @@ class InstallHandler extends ActionHandler
 		header("Content-type: text/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
+	}
+	
+	/**
+	 * Sets up install handler variables from an existing DB connection (registry)
+	 *
+	 * @return void
+	 */
+	private function set_handler_vars_from_db_connection()
+	{
+		list( $this->handler_vars['db_type'], $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
+		switch( $this->handler_vars['db_type'] ) {
+		case 'sqlite':
+			// SQLite uses less info.
+			// we stick the path in db_host
+			$this->handler_vars['db_file'] = $remainder;
+			break;
+		case 'mysql':
+			list($host,$name)= explode(';', $remainder);
+			list($discard, $this->handler_vars['db_host']) = explode('=', $host);
+			list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
+			break;
+		case 'pgsql':
+			list($host,$name)= explode(' ', $remainder);
+			list($discard, $this->handler_vars['db_host']) = explode('=', $host);
+			list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
+			break;
+		}
+		$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;
+		$this->handler_vars['db_pass'] = Config::get( 'db_connection' )->password;
+		$this->handler_vars['table_prefix'] = Config::get( 'db_connection' )->prefix;
 	}
 
 }
