@@ -456,7 +456,7 @@ class InputFilter
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
 							'name' => '#text',
-							'value' => '<' . $node['name'] .'>',
+							'value' => HTMLTokenSet::token_to_string($node),
 							'attrs' => array(),
                                                 );
 					}
@@ -488,7 +488,7 @@ class InputFilter
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
 							'name' => '#text',
-							'value' => '</' . $node['name'] .'>',
+							'value' => HTMLTokenSet::token_to_string($node),
 							'attrs' => array(),
                                                 );
 					}
