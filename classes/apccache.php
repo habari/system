@@ -139,7 +139,7 @@ class APCCache extends Cache
 		}
 		
 		foreach ( $keys as $key ) {
-			apc_delete( implode( ':', array( $this->prefix, $group, $key ) );
+			apc_delete( implode( ':', array( $this->prefix, $group, $key ) ) );
 		}
 	}
 
