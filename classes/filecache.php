@@ -135,6 +135,10 @@ class FileCache extends Cache
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
+		if ( !isset( $this->cache_data[$group] ) ) {
+			// prime our cache so the local version is up-to-date and complete
+			$this->_get_group( $group );
+		}
 		$this->cache_data[$group][$name] = $value;
 
 		file_put_contents( $this->cache_location . $ghash . $hash, serialize( $value ) );
