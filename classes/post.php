@@ -897,8 +897,11 @@ class Post extends QueryRecord implements IsContent
 		$buttons->class[] = 'publish';
 
 		// Create the Save button
-		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
-		$buttons->save->tabindex = 4;
+		$require_any = array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' );
+		if( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
+			$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
+			$buttons->save->tabindex = 4;
+		}
 
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
