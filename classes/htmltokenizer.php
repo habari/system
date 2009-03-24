@@ -29,7 +29,8 @@ class HTMLTokenizer
 	
 	/* Character Ranges */
 	private static $CHR_TAG_BEGIN = '<';
-	private static $CHR_TAG_END = '/>';
+	private static $CHR_TAG_END = '>';
+	private static $CHR_TAG_END_TRIM = '/';
 	private static $CHR_ATTRNAME_END = '=';
 	private static $CHR_WHITESPACE = " \t\r\n"; // SP, TAB, CR, LF
 	
@@ -170,7 +171,7 @@ class HTMLTokenizer
 	
 		// read attribute name
 		while ( $name = $this->up_to_chr( self::$CHR_ATTRNAME_END . self::$CHR_TAG_END . self::$CHR_WHITESPACE ) ) {
-			$name = strtolower( $name );
+			$name = strtolower( rtrim( $name, self::$CHR_TAG_END_TRIM ) );
 			// skip any whitespace
 			$this->skip_whitespace();
 			// first non-ws char
@@ -229,7 +230,7 @@ class HTMLTokenizer
 
 	private function parse_element_open()
 	{
-		$tag = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
+		$tag = rtrim( $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE ), self::$CHR_TAG_END_TRIM );
 		if ( $tag != '' ) {
 			$attr = $this->parse_attributes();
 			$char = $this->get();
@@ -300,7 +301,7 @@ class HTMLTokenizer
 		
 		if ( $nodeType == self::NODE_TYPE_STATEMENT ) {
 			$data = '';
-			$nodeName = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
+			$nodeName = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_TAG_END_TRIM . self::$CHR_WHITESPACE );
 			if ( $this->peek() != '>' ) {
 				// there be data or something
 				$this->skip_whitespace();
