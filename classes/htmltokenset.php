@@ -161,7 +161,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		$offsetLength = $offset - $startOffset + 1;
 		
 		// now, place the found set into a new HTMLTokenSet:
-		$slice = new HTMLTokenSet;
+		$slice = new HTMLTokenSet($this->escape);
 		$slice->sliceOffsetBegin  = $startOffset;
 		$slice->sliceOffsetLength = $offsetLength;
 		$slice->tokens = array_slice($this->tokens, $slice->sliceOffsetBegin, $slice->sliceOffsetLength);
@@ -185,7 +185,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	
 	public function tokenize_replace( $source )
 	{
-		$ht = new HTMLTokenizer( $source );
+		$ht = new HTMLTokenizer( $source, $this->escape );
 		$this->tokens = $ht->parse()->tokens;
 		return $this->tokens;
 	}
