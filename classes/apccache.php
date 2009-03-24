@@ -70,8 +70,8 @@ class APCCache extends Cache
 		$group_cache = array();
 		
 		foreach ( $cache_info['cache_list'] as $cache_item ) {
-			if ( strpos( $cache_item['info'], $this->prefix . "$group:" ) === 0 ) {
-				$name = substr( $cache_item['info'], strlen( $this->prefix . "$group:" ) );
+			if ( strpos( $cache_item['info'], $this->prefix . ":$group:" ) === 0 ) {
+				$name = substr( $cache_item['info'], strlen( $this->prefix . ":$group:" ) );
 				$group_cache[$name] = apc_fetch( $cache_item['info'] );
 			}
 		}
@@ -93,7 +93,7 @@ class APCCache extends Cache
 		$group_cache = array();
 		
 		foreach ( $cache_info['cache_list'] as $cache_item ) {
-			if ( strpos( $cache_item['info'], $this->prefix . "$group:" ) === 0 ) {
+			if ( strpos( $cache_item['info'], $this->prefix . ":$group:" ) === 0 ) {
 				$group_cache[$cache_item['info']] = apc_fetch( $cache_item['info'] );
 			}
 		}
