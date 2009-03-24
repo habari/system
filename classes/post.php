@@ -1183,6 +1183,10 @@ class Post extends QueryRecord implements IsContent
 			$user = User::identify();
 		}
 
+		if( $user->can( 'super_user' ) ) {
+			return ACL::get_bitmask( 'full' );
+		}
+
 		// Collect a list of applicable tokens
 		$tokens = array(
 			'post_any',
@@ -1192,9 +1196,6 @@ class Post extends QueryRecord implements IsContent
 		if( $user->id == $this->user_id) {
 			$tokens[] = 'own_posts';
 		}
-		if( $user->can( 'super_user' ) ) {
-			$tokens[] = 'super_user';
-		}
 
 		$tokens = array_merge($tokens, $this->get_tokens());
 		
@@ -1202,8 +1203,8 @@ class Post extends QueryRecord implements IsContent
 		$token_accesses = array();
 		foreach ( $tokens as $token ) {
 			$access = ACL::get_user_token_access( $user, $token );
-			if($access instanceof Bitmask) {
-				$token_accesses []= ACL::get_user_token_access( $user, $token )->value;
+			if ( $access instanceof Bitmask ) {
+				$token_accesses[] = ACL::get_user_token_access( $user, $token )->value;
 			}
 		}
 
