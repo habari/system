@@ -499,7 +499,7 @@ class Comment extends QueryRecord implements IsContent
 		 */
 		$tokens = array(
 			'post_any',
-			'post_' . Post::type_name( $this->content_type ),
+			'post_' . Post::type_name( $this->post->content_type ),
 		);
 
 		if ( $user->id == $this->post->user_id ) {
