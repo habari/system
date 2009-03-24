@@ -42,12 +42,12 @@ class HTMLTokenizer
 	
 	private $nodes;
 
-	public function __construct( $html )
+	public function __construct( $html, $escape = true )
 	{
 		$this->html = $html;
 		$this->len = strlen( $html );
 		$this->pos = 0;
-		$this->nodes = new HTMLTokenSet;
+		$this->nodes = new HTMLTokenSet($escape);
 
 		$this->state = self::$STATE_START;
 	}

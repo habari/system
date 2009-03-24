@@ -14,20 +14,27 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	protected $sliceOffsetBegin  = null;
 	protected $sliceOffsetLength = null;
 	
+	protected $escape;
+	
+	public function __construct($escape = true)
+	{
+		$this->escape = $escape;
+	}
+	
 	public function __tostring()
 	{
 		$out = '';
 		foreach ( $this->tokens as $token ) {
-			$out .= self::token_to_string($token);
+			$out .= self::token_to_string($token, $this->escape);
 		}
 		return $out;
 	}
 	
-	public static function token_to_string( array $token )
+	public static function token_to_string( array $token, $escape = true )
 	{
 		switch ($token['type']) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
-				return htmlspecialchars($token['value']);
+				return $escape ? htmlspecialchars($token['value']) : $token['value'];
 				break;
 			
 			case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
@@ -35,7 +42,11 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				if ( isset( $token['attrs'] ) && is_array( $token['attrs'] ) ) {
 					foreach ( $token['attrs'] as $attr => $attrval ) {
 						$out .= " {$attr}=\"";
-						$out .= htmlspecialchars( html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
+						if ($escape) {
+							$out .= htmlspecialchars( html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
+						} else {
+							$out .= html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' );
+						}
 						$out .= '"';
 					}
 				}
