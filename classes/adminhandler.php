@@ -1498,6 +1498,11 @@ class AdminHandler extends ActionHandler
 			'orderby' => $orderby,
 		);
 
+		// only get comments the user is allowed to manage
+		if( !User::identify()->can( 'manage_all_comments' ) ) {
+			$arguments['post_author'] = User::identify()->id;
+		}
+
 		// there is no explicit 'all' type/status for comments, so we need to unset these arguments
 		// if that's what we want. At the same time we can set up the search field
 		$this->theme->search_args = '';
