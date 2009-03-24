@@ -88,15 +88,13 @@ class FileCache extends Cache
 		$ghash = $this->get_group_hash( $group );
 
 		if ( !isset( $this->cache_data[$group] ) ) {
+			$this->cache_data[$group] = array();
 			if ( isset( $this->cache_files[$ghash] ) ) {
 				foreach ( $this->cache_files[$ghash] as $hash => $record ) {
 					$this->cache_data[$group][$record['name']] = unserialize(
 						file_get_contents( $record['file'] )
 						);
 				}
-			}
-			else {
-				$this->cache_data[$group] = array();
 			}
 		}
 		return $this->cache_data[$group];
@@ -117,11 +115,9 @@ class FileCache extends Cache
 		$ghash = $this->get_group_hash( $group );
 
 		if ( !isset( $this->cache_data[$group][$name] ) ) {
+			$this->cache_data[$group][$name] = null;
 			if ( isset( $this->cache_files[$ghash][$hash] ) && $this->cache_files[$ghash][$hash]['expires'] > time() && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
 				$this->cache_data[$group][$name] = unserialize( file_get_contents( $this->cache_files[$ghash][$hash]['file'] ) );
-			}
-			else {
-				$this->cache_data[$group][$name] = null;
 			}
 		}
 		return $this->cache_data[$group][$name];
