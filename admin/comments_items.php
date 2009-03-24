@@ -52,7 +52,13 @@
 			<?php Plugins::act('comment_info', $comment); ?>
 
 		</span>
-		<span class="content edit-content area pct75"><?php echo nl2br( htmlspecialchars( $comment->content ) ); ?></span>
+		<span class="content edit-content area pct75"><?php
+			if ( MultiByte::valid_data( $comment->content ) ) {
+				echo nl2br( htmlspecialchars( $comment->content ) );
+			} else {
+				_e('this post contains text in an invalid encoding');
+			}
+		?></span>
 	</div>
 </div>
 
