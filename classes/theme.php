@@ -212,7 +212,8 @@ class Theme extends Pluggable
 			$types = array_flip( Post::list_active_post_types() );
 			$type = $types[$post->content_type];
 		}
-		else {
+		elseif( ( $posts === false ) ||
+			( isset( $where_filters['page'] ) && $where_filters['page'] > 1 && count( $posts ) == 0 ) ) {
 			if ( $this->template_exists( '404' ) ) {
 				$fallback = array( '404' );
 				// Replace template variables with the 404 rewrite rule
