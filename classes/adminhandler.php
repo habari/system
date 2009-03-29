@@ -677,7 +677,11 @@ class AdminHandler extends ActionHandler
 		$password2->class[] = 'item clear';
 		$password2->type = 'password';
 		$password2->value = '';
-		$password2->add_validator('validate_same', $password1, _t('Passwords must match.'));
+		$delete = $this->handler_vars->filter_keys('delete');
+		// don't validate password match if action is delete
+		if (!isset($delete['delete'])) {
+			$password2->add_validator('validate_same', $password1, _t('Passwords must match.'));
+		}
 
 		// Regional settings
 		$timezones = DateTimeZone::listIdentifiers();
