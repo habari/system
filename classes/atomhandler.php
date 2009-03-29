@@ -481,15 +481,23 @@ class AtomHandler extends ActionHandler
 
 		// Assign self link.
 		$self = '';
+
+		// Check if this is a feed for a single post
 		if ( isset( $params['slug'] ) || isset( $params['id'] ) ) {
 			if ( isset( $params['slug'] ) ) {
 				$post = Post::get( array( 'slug' => $params['slug'] ) );
-				$comments = $post->comments->approved;
 			}
 			elseif ( isset( $params['id'] ) ) {
 				$post = Post::get( array( 'id' => $params['id'] ) );
-				$comments = $post->comments->approved;
 			}
+
+			// If the post doesn't exist, send a 404
+			if ( !$post instanceOf Post ) {
+				header( 'HTTP/1.0 404 Not Found' );
+				die('The post could not be found');
+			}
+
+			$comments = $post->comments->approved;
 			$comments_count = count( $comments );
 			$content_type = Post::type_name( $post->content_type );
 			$self = URL::get( "atom_feed_{$content_type}_comments", $post, false );
