@@ -3136,8 +3136,6 @@ class AdminHandler extends ActionHandler
 
 		$panel = '';
 		$panel = Plugins::filter( 'media_panels', $panel, $silo, $rpath, $panelname );
-		$rootpath = strpos($path, '/') !== false ? substr($path, 0, strpos($path, '/')) : $path;
-		$controls = array('root' => '<a href="#" onclick="habari.media.fullReload();habari.media.showdir(\''. $rootpath . '\');return false;">' . _t('Root') . '</a>');
 		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, $panelname );
 		$controls_out = '';
 		foreach ( $controls as $k => $v ) {
