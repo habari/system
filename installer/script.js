@@ -51,43 +51,33 @@ var installer = {
 	},
 	
 	checkSiteConfigurationCredentials: function() {
-		var warned = false;
-		var emptyfields = false;
 		var installok = true;
-		// Do not change the order, else installok var will be incorrect
-		$('#sitename, #adminuser, #adminpass1, #adminpass2, #adminemail').each(function(){
+
+		// If admin passwords have been entered, check if they're the same
+		pass1 = $('#adminpass1');
+		pass2 = $('#adminpass2');
+
+		if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() != pass2.val() ) {
+			warningtext = 'The passwords do not match, try typing them again.';
+			pass1.parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
+			installok = false;
+		}
+		else {
+			pass1.parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
+		}
+
+		// Check other details have been entered
+		$('#sitename, #adminuser, #adminemail').each(function(){
 			if ($(this).val() != '') {
 				$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			}
 			else {
 				$(this).parents('.inputfield').removeClass('valid');
-				emptyfields = true;
+				installok = false;
 			}
 		});
-		if(!emptyfields) {
-			if ( $('#adminpass1').val() != $('#adminpass2').val() ) {
-				warningtext= 'The passwords do not match, try typing them again.';
-				$('#adminpass1').parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
-				warned = true;
-				installok = false;
-				$('#siteconfiguration').removeClass('done');
-				$('#pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
-				$('#pluginactivation').children('.help-me').hide();
-			}
-		}
-		else {
-			installok = false;
-		}
+
 		if (installok) {
-			$('#adminpass1').parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-			if(!warned) {
-				$('#sitename', '#adminuser', '#adminpass1', '#adminpass2', '#adminemail').each(function() {
-					$(this).parents('.inputfield').removeClass('invalid').find('.warning:visible').fadeOut();
-					if($(this).val() != '') {
-						$(this).addClass('valid');
-					}
-				});
-			}
 			$('#siteconfiguration, #pluginactivation, #install').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			$('#pluginactivation').children('.help-me').show();
 			$('#submitinstall').removeAttr( 'disabled' );
@@ -98,7 +88,7 @@ var installer = {
 			$('#pluginactivation').children('.help-me').hide();
 		}
 	},
-	
+
 	noVerify: function() {
 		installer.verifyDB = false;
 		$('#installerror').html('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify the database settings.</p>' + $('#installerror').html());
