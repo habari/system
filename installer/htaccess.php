@@ -7,12 +7,20 @@
 	<h2>.htaccess<a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
 	<div class="options">
 		<div class="inputfield">
-			<?php _e('Your <strong>.htaccess</strong> file is not writable. In order to successfully install Habari, please paste the following into'); ?> <strong><?php echo HABARI_PATH . '/.htaccess'; ?></strong>:<br>
-			<textarea class="config" tabindex="<?php echo $tab++ ?>"><?php echo $file_contents; ?></textarea>
-			<div class="help">
-				<?php _e('<strong>.htaccess</strong> is a file that tells your Apache web server to send requests to Habari for handling. Habari is not able to write this file to your server automatically, so you must create this file yourself to continue the installation.'); ?>
-				<a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
-			</div>
+			<?php if ( $this->no_mod_rewrite ) { ?>
+				<?php _e('You have Apache, but mod_rewrite is not enabled. To use Habari, you must enable mod_rewrite in your server configuration.'); ?>
+				<div class="help">
+					<?php _e('<strong>mod_rewrite</strong> is an Apache module that allows Habari (and other software) to handle URLs dynamically. You need a <code>LoadModule rewrite_module</code> line in your <code>httpd.conf</code>. Please ask your systems administrator or hosting provider to enable mod_rewrite.'); ?>
+					<a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
+				</div>
+			<?php } else { ?>
+				<?php _e('Your <strong>.htaccess</strong> file is not writable. In order to successfully install Habari, please paste the following into'); ?> <strong><?php echo HABARI_PATH . '/.htaccess'; ?></strong>:<br>
+				<textarea class="config" tabindex="<?php echo $tab++ ?>"><?php echo $file_contents; ?></textarea>
+				<div class="help">
+					<?php _e('<strong>.htaccess</strong> is a file that tells your Apache web server to send requests to Habari for handling. Habari is not able to write this file to your server automatically, so you must create this file yourself to continue the installation.'); ?>
+					<a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
+				</div>
+			<?php } ?>
 		</div>
 	</div>
 	<div class="bottom"></div>
