@@ -1729,14 +1729,20 @@ class AdminHandler extends ActionHandler
 				foreach ( $to_update as $post ) {
 					switch( $change ) {
 					case 'delete':
+						if( ACL::access_check( $post->get_access(), 'delete' ) ) {
 						$post->delete();
+						}
 						break;
 					case 'publish':
+						if( ACL::access_check( $post->get_access(), 'edit') ) {
 						$post->publish();
+						}
 						break;
 					case 'unpublish':
+						if( ACL::access_check( $post->get_access(), 'edit') ) {
 						$post->status = Post::status( 'draft' );
 						$post->update();
+						}
 						break;
 					}
 				}
@@ -1899,7 +1905,9 @@ class AdminHandler extends ActionHandler
 		$item_ids = array();
 
 		foreach ( $this->theme->posts as $post ) {
+			if( ACL::access_check($post->get_access(), 'delete' ) ) {
 			$item_ids['p' . $post->id] = 1;
+		}
 		}
 
 		$output = array(
@@ -2024,11 +2032,19 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
+		$deleted = 0;
 		foreach ( $posts as $post ) {
+			if( ACL::access_check( $post->get_access(), 'delete' ) ) {
 			$post->delete();
+				$deleted++;
+		}
 		}
 
-		Session::notice( sprintf( _t('Deleted %d entries.'), count($posts) ) );
+		Session::notice( sprintf( _t('Deleted %d entries.'), $deleted ) );
+		if( $deleted != count( $posts ) ) {
+			Session::notice( _t( 'You did not have permission to delete some entries.' ) );
+		}
+
 		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
