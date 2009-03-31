@@ -3156,6 +3156,8 @@ class AdminHandler extends ActionHandler
 
 		$panel = '';
 		$panel = Plugins::filter( 'media_panels', $panel, $silo, $rpath, $panelname );
+
+		$controls = array();
 		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, $panelname );
 		$controls_out = '';
 		foreach ( $controls as $k => $v ) {
