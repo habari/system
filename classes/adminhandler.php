@@ -1430,12 +1430,14 @@ class AdminHandler extends ActionHandler
 
 					case 'delete':
 						// This comment was marked for deletion
+						$to_update = $this->comment_access_filter( $to_update, 'delete' );
 						Comments::delete_these( $to_update );
 						$modstatus['Deleted %d comments'] = count( $to_update );
 						break;
 
 					case 'spam':
-							// This comment was marked as spam
+						// This comment was marked as spam
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
 						$modstatus['Marked %d comments as spam'] = count( $to_update );
 						break;
@@ -1443,6 +1445,7 @@ class AdminHandler extends ActionHandler
 					case 'approve':
 					case 'approved':
 						// Comments marked for approval
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
 						$modstatus['Approved %d comments'] = count( $to_update );
 						foreach ( $to_update as $comment ) {
@@ -1453,11 +1456,13 @@ class AdminHandler extends ActionHandler
 					case 'unapprove':
 					case 'unapproved':
 						// This comment was marked for unapproval
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
 						$modstatus['Unapproved %d comments'] = count ( $to_update );
 						break;
 
 					case 'edit':
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						foreach ( $to_update as $comment ) {
 							// This comment was edited
 							if ( $_POST['name_' . $comment->id] != NULL ) {
@@ -1472,6 +1477,8 @@ class AdminHandler extends ActionHandler
 							if ( $_POST['content_' . $comment->id] != NULL ) {
 								$comment->content = $_POST['content_' . $comment->id];
 							}
+
+							$comment->update();
 						}
 						$modstatus['Edited %d comments'] = count( $to_update );
 						break;
@@ -1545,25 +1552,51 @@ class AdminHandler extends ActionHandler
 		$baseactions = array();
 		$statuses = Comment::list_comment_statuses();
 		foreach ( $statuses as $statusid => $statusname ) {
-			$baseactions[$statusname] = array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
+			$baseactions[$statusname] = array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid), 'access' => 'edit' );
 		}
 
 		/* Standard actions */
-		$baseactions['delete'] = array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
-		$baseactions['edit'] = array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
+		$baseactions['delete'] = array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'), 'access' => 'delete' );
+		$baseactions['edit'] = array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'), 'access' => 'edit' );
 
 		/* Actions for inline edit */
-		$baseactions['submit'] = array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
+		$baseactions['submit'] = array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE, 'access' => 'edit' );
 		$baseactions['cancel'] = array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
 
 		/* Allow plugins to apply actions */
 		$actions = Plugins::filter('comments_actions', $baseactions, $this->theme->comments);
 
 		foreach ( $this->theme->comments as $comment ) {
-			$menu = $actions;
+			// filter the actions based on the user's permissions
+			$comment_access = $comment->get_access();
+			$menu = array();
+			foreach ( $actions as $name => $action ) {
+				if ( !isset( $action['access'] ) || ACL::access_check( $comment_access, $action['access'] ) ) {
+					$menu[$name] = $action;
+				}
+			}
+			// remove the current status from the dropmenu
 			unset($menu[Comment::status_name($comment->status)]);
 			$comment->menu = Plugins::filter('comment_actions', $menu, $comment);
 		}
+	}
+
+	/**
+	 * A helper function for fetch_comments()
+	 * Filters a list of comments by ACL access
+	 * @param object $comments an array of Comment objects
+	 * @param string $access the access type to check for
+	 * @return a filtered array of Comment objects.
+	 */
+	public function comment_access_filter( $comments, $access )
+	{
+		$result = array();
+		foreach ( $comments as $comment ) {
+			if ( ACL::access_check( $comment->get_access(), $access ) ) {
+				$result[] = $comment;
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -1729,19 +1762,19 @@ class AdminHandler extends ActionHandler
 				foreach ( $to_update as $post ) {
 					switch( $change ) {
 					case 'delete':
-						if( ACL::access_check( $post->get_access(), 'delete' ) ) {
-						$post->delete();
+						if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
+							$post->delete();
 						}
 						break;
 					case 'publish':
-						if( ACL::access_check( $post->get_access(), 'edit') ) {
-						$post->publish();
+						if ( ACL::access_check( $post->get_access(), 'edit') ) {
+							$post->publish();
 						}
 						break;
 					case 'unpublish':
-						if( ACL::access_check( $post->get_access(), 'edit') ) {
-						$post->status = Post::status( 'draft' );
-						$post->update();
+						if ( ACL::access_check( $post->get_access(), 'edit') ) {
+							$post->status = Post::status( 'draft' );
+							$post->update();
 						}
 						break;
 					}
@@ -1984,6 +2017,11 @@ class AdminHandler extends ActionHandler
 		}
 
 		$comment = Comment::get($handler_vars['id']);
+		if ( !ACL::access_check( $comment->get_access(), 'edit' ) ) {
+			Session::error( _t('You do not have permission to edit this comment.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			return;
+		}
 
 		if ( isset($handler_vars['author']) && $handler_vars['author'] != '' ) {
 			$comment->name = $handler_vars['author'];
@@ -2034,7 +2072,7 @@ class AdminHandler extends ActionHandler
 		$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
 		$deleted = 0;
 		foreach ( $posts as $post ) {
-			if( ACL::access_check( $post->get_access(), 'delete' ) ) {
+			if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
 			$post->delete();
 				$deleted++;
 		}
