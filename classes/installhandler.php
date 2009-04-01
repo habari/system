@@ -300,6 +300,11 @@ class InstallHandler extends ActionHandler
 		if (! $php_version_ok) {
 			$requirements_met = false;
 		}
+		/* Check for mod_rewrite on Apache */
+		if ( function_exists( 'apache_get_modules' ) && !in_array( 'mod_rewrite', apache_get_modules() ) ) {
+			$requirements_met = false;
+			$this->theme->assign('mod_rewrite', false);
+		}
 		/* Check for required extensions */
 		$missing_extensions = array();
 		foreach ($required_extensions as $ext_name => $ext_url) {
@@ -875,14 +880,12 @@ class InstallHandler extends ActionHandler
 	{
 		$htaccess = array(
 			'open_block' => '### HABARI START',
-			'ifmodule_open' => '<IfModule rewrite_module>',
 			'engine_on' => 'RewriteEngine On',
 			'rewrite_cond_f' => 'RewriteCond %{REQUEST_FILENAME} !-f',
 			'rewrite_cond_d' => 'RewriteCond %{REQUEST_FILENAME} !-d',
 			'rewrite_base' => '#RewriteBase /',
 			'rewrite_rule' => 'RewriteRule . index.php [PT]',
 			'hide_habari' => 'RewriteRule ^(system/(classes|locale|schema|$)) index.php [PT]',
-			'ifmodule_close' => '</IfModule>',
 			'close_block' => '### HABARI END',
 		);
 		$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
@@ -931,12 +934,6 @@ class InstallHandler extends ActionHandler
 			$result = $this->write_htaccess( false );
 		}
 		if ( $result ) {
-			// maybe there's no mod_rewrite?
-			if ( function_exists( 'apache_get_modules' ) && !in_array( 'mod_rewrite', apache_get_modules() ) ) {
-				$this->handler_vars['no_mod_rewrite'] = true;
-				return false;
-			}
-			
 			// the Habari block exists, but we need to make sure
 			// it is correct.
 			// Check that the rewrite rules actually do the job.
