@@ -138,7 +138,6 @@ class AdminHandler extends ActionHandler
 	 */
 	public function act_admin_ajax()
 	{
-		header( 'Content-Type: application/json' );
 		$context = $this->handler_vars['context'];
 		if ( method_exists( $this, 'ajax_' . $context ) ) {
 			$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
@@ -3180,6 +3179,7 @@ class AdminHandler extends ActionHandler
 		}
 		$output['controls'] = $controls_out;
 
+		header( 'content-type:text/javascript' ); 
 		echo json_encode( $output );
 	}
 
