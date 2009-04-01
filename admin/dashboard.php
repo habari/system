@@ -85,20 +85,21 @@
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
-		if ( !empty(  $stats['unapproved_comment_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'comment awaiting approval' ), '%d ' . _t( 'comments awaiting approval' ), $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
-			$message.= '</a>';
-			$message_bits[]= $message;
-		}
-		
-		if ( !empty(  $stats['spam_comment_count'] ) && Options::get( 'dashboard__hide_spam_count' ) != true ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
-			$message.= '</a>';
-			$message_bits[]= $message;
-		}
+		if ( User::identify()->can_any( array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ) ) {
+			if ( !empty(  $stats['unapproved_comment_count'] ) ) {
+				$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ) . '">';
+				$message.= sprintf( _n( '%d ' . _t( 'comment awaiting approval' ), '%d ' . _t( 'comments awaiting approval' ), $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
+				$message.= '</a>';
+				$message_bits[]= $message;
+			}
 
+			if ( !empty(  $stats['spam_comment_count'] ) && Options::get( 'dashboard__hide_spam_count' ) != true ) {
+				$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) . '">';
+				$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
+				$message.= '</a>';
+				$message_bits[]= $message;
+			}
+		}
 		if ( !empty( $message_bits ) ) {
 			_e('You have %s', array(Format::and_list( $message_bits)) );
 		}
