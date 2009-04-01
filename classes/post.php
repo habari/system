@@ -961,7 +961,7 @@ class Post extends QueryRecord implements IsContent
 				INNER JOIN {tag2post} t2p
 				ON t.id = t2p.tag_id
 				WHERE t2p.post_id = ?
-				ORDER BY t.tag_slug ASC";
+				ORDER BY t.tag_text ASC";
 			$result = DB::get_results( $sql, array( $this->fields['id'] ) );
 			if ( $result ) {
 				foreach ( $result as $t ) {
