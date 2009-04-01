@@ -753,6 +753,22 @@ class Comments extends ArrayObject
 	 }
 
 	/**
+	 * static count_by_author
+	 * returns the number of comments attached to posts by the specified author
+	 * @param int a user ID
+	 * @param mixed A comment status value, or FALSE to not filter on status(default: Comment::STATUS_APPROVED)
+	 * @return int a count of the comments attached to the specified post
+	**/
+	 public static function count_by_author( $id = 0,  $status = Comment::STATUS_APPROVED )
+	 {
+	 	$params = array( 'post_author' => $id, 'count' => 'id' );
+		if ( FALSE !== $status ) {
+			$params['status'] = $status;
+		}
+		return self::get( $params );
+	 }
+
+	/**
 	 * static set
 	 * returns the number of document
 	 * @param array of params

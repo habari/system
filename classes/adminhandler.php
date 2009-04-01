@@ -391,8 +391,8 @@ class AdminHandler extends ActionHandler
 			'tag_count' => DB::get_value('SELECT count(id) FROM {tags}'),
 			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
-			'unapproved_comment_count' => Comments::count_total( Comment::STATUS_UNAPPROVED, FALSE ),
-			'spam_comment_count' => Comments::count_total( Comment::STATUS_SPAM, FALSE ),
+			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_UNAPPROVED, FALSE ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),
+			'spam_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_SPAM, FALSE ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_SPAM ),
 			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
 		);
 
