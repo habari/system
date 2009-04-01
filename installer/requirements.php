@@ -76,4 +76,9 @@
 	<p class="instructions"><em>Habari</em> <?php _e('requires that at least one <a href="http://www.php.net/pdo">PDO driver</a> be installed. Please ask your hosting provider to enable one of the PDO drivers supported by Habari.'); ?></p>
 <?php } ?>
 
+<?php if ( ! $mod_rewrite ) { ?>
+	<h2><?php _e('mod_rewrite not enabled'); ?></h2>
+	<p class="instructions"> <?php _e('You have Apache, but mod_rewrite is not enabled. To use Habari, you must enable mod_rewrite in your server configuration. <strong>mod_rewrite</strong> is an Apache module that allows Habari (and other software) to handle URLs dynamically. You need a <code>LoadModule rewrite_module</code> line in your <code>httpd.conf</code>. Please ask your systems administrator or hosting provider to enable mod_rewrite.'); ?></p>
+<?php } ?>
+
 <?php include( 'footer.php' ); ?>
