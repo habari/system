@@ -4,7 +4,7 @@
 ?>
 <div class="item clear <?php echo $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
 	<div class="head clear">
-		<?php if( ACL::access_check( $post_permissions, 'delete' ) ) { ?>
+		<?php if ( ACL::access_check( $post_permissions, 'delete' ) ) { ?>
 		<span class="checkbox title pct5">
 			<input type="checkbox" class="checkbox" name="checkbox_ids[<?php echo $post->id; ?>]" id="checkbox_ids[<?php echo $post->id; ?>]">
 		</span>
@@ -26,7 +26,7 @@
 			$actions = Plugins::filter('post_actions', $actions, $post);
 			foreach( $actions as $action ) :
 			?>
-				<?php if( !isset( $action['permission'] ) || ACL::access_check( $post_permissions, $action['permission'] ) ) { ?>
+				<?php if ( !isset( $action['permission'] ) || ACL::access_check( $post_permissions, $action['permission'] ) ) { ?>
 				<li><a href="<?php echo $action['url']; ?>" title="<?php echo $action['title']; ?>"><?php echo $action['label']; ?></a></li>
 				<?php } ?>
 			<?php endforeach; ?>
