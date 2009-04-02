@@ -1562,7 +1562,7 @@ class FormControlSelect extends FormControl
 		$theme->id = $this->name;
 		$theme->control = $this;
 
-		return $theme->fetch( $this->get_template(), true );
+		return $theme->fetch( $this->get_template() );
 	}
 }
 
