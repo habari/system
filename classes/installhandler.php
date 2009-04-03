@@ -1204,11 +1204,16 @@ class InstallHandler extends ActionHandler
 		$this->upgrade_db_pre( $version );
 
 		// run schema-specific upgrade scripts
+		if ( ! DB::in_transaction() ) { DB::begin_transaction(); }
 		DB::upgrade( $version );
+		if ( DB::in_transaction() ) { DB::commit(); }
 
 		// Get the queries for this database and apply the changes to the structure
 		$queries = $this->get_create_table_queries($schema, Config::get( 'db_connection' )->prefix, $db_name);
+
+		if ( ! DB::in_transaction() ) { DB::begin_transaction(); }
 		DB::dbdelta($queries);
+		if ( DB::in_transaction() ) { DB::commit(); }
 
 		// Apply data changes to the database based on version, call the db-specific upgrades, too.
 		$this->upgrade_db_post( $version );
