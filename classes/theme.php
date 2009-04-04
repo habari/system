@@ -162,6 +162,8 @@ class Theme extends Pluggable
 	 */
 	public function act_display( $paramarray = array( 'user_filters'=> array() ) )
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		// Get any full-query parameters
 		$possible = array( 'user_filters', 'fallback', 'posts', 'post', 'content_type' );
 		foreach ( $possible as $varname ) {
@@ -210,7 +212,8 @@ class Theme extends Pluggable
 			$types = array_flip( Post::list_active_post_types() );
 			$type = $types[$post->content_type];
 		}
-		else {
+		elseif( ( $posts === false ) ||
+			( isset( $where_filters['page'] ) && $where_filters['page'] > 1 && count( $posts ) == 0 ) ) {
 			if ( $this->template_exists( '404' ) ) {
 				$fallback = array( '404' );
 				// Replace template variables with the 404 rewrite rule
@@ -722,6 +725,10 @@ class Theme extends Pluggable
 		// Create the output variable.
 		$out = '';
 
+		if ( isset( $settings['hideIfSinglePage'] ) &&  $settings['hideIfSinglePage'] === true ) {
+			return '';
+		}
+		
 		foreach ( $pages as $page ) {
 			$settings['page'] = $page;
 

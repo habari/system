@@ -260,6 +260,7 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_collection()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'GET':
 			case 'HEAD':
@@ -277,9 +278,11 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_entry()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST', 'PUT', 'DELETE' ) );
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'GET':
 			case 'HEAD':
+			case 'POST':
 				$this->get_entry( $this->handler_vars['slug'] );
 				break;
 			case 'PUT':
@@ -298,6 +301,8 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_rsd()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		/**
 			* List of APIs supported by the RSD
 			* Refer to namespace for required elements/attributes.
@@ -390,6 +395,8 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_introspection()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		$cache_xml = null;
 
 		if ( Cache::has( 'atom:introspection:xml' ) ) {
@@ -429,6 +436,8 @@ class AtomHandler extends ActionHandler
 		*/
 	public function act_tag_collection()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		$this->get_collection();
 	}
 
@@ -437,6 +446,8 @@ class AtomHandler extends ActionHandler
 		*/
 	function act_comments( $params = array() )
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		$this->get_comments( $params );
 	}
 
@@ -445,9 +456,11 @@ class AtomHandler extends ActionHandler
 		*/
 	function act_entry_comments()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		if ( isset( $this->handler_vars['slug'] ) ) {
 			$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
-	}
+		}
 		else {
 			$this->act_comments( array( 'id' => $this->handler_vars['id'] ) );
 		}
@@ -468,15 +481,23 @@ class AtomHandler extends ActionHandler
 
 		// Assign self link.
 		$self = '';
+
+		// Check if this is a feed for a single post
 		if ( isset( $params['slug'] ) || isset( $params['id'] ) ) {
 			if ( isset( $params['slug'] ) ) {
 				$post = Post::get( array( 'slug' => $params['slug'] ) );
-				$comments = $post->comments->approved;
 			}
 			elseif ( isset( $params['id'] ) ) {
 				$post = Post::get( array( 'id' => $params['id'] ) );
-				$comments = $post->comments->approved;
 			}
+
+			// If the post doesn't exist, send a 404
+			if ( !$post instanceOf Post ) {
+				header( 'HTTP/1.0 404 Not Found' );
+				die('The post could not be found');
+			}
+
+			$comments = $post->comments->approved;
 			$comments_count = count( $comments );
 			$content_type = Post::type_name( $post->content_type );
 			$self = URL::get( "atom_feed_{$content_type}_comments", $post, false );

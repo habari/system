@@ -16,6 +16,7 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_login()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
 		$name = $_POST['habari_username'];
 		$pass = $_POST['habari_password'];
 
@@ -87,6 +88,8 @@ class UserHandler extends ActionHandler
 	*/
 	public function act_logout()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		// get the user from their cookie
 		$user = User::identify();
 		if ( $user->loggedin ) {
@@ -137,6 +140,8 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_password_request()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+
 		$name = $this->handler_vars['username'];
 		if( !is_numeric($name) && $user = User::get($name) ) {
 			$hash = Utils::random_password();
@@ -158,6 +163,8 @@ class UserHandler extends ActionHandler
 	 */
 	public function act_password_reset()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+
 		$id = $this->handler_vars['id'];
 		$hash = $this->handler_vars['hash'];
 		$name = '';

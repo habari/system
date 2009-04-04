@@ -151,8 +151,9 @@ abstract class Cache
 	 * Expires the named value from the cache.
 	 *
 	 * @param mixed $name The name of the cached item or an array of array( string $group, string $name )
+	 * @param string $match_mode (optional) how to match item names ('strict', 'regex', 'glob') (default 'strict')
 	 */
-	public static function expire( $name )
+	public static function expire( $name, $match_mode = 'strict' )
 	{
 		if ( is_array( $name ) ) {
 			$array = $name;
@@ -161,7 +162,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
-		self::$instance->_expire( $name, $group );
+		self::$instance->_expire( $name, $group, $match_mode );
 	}
 
 	/**
@@ -198,6 +199,7 @@ abstract class Cache
 	 */
 	abstract protected function _extend( $name, $expiry, $group );
 
+	public static function debug() { return self::$instance->debug_data(); }
 }
 
 ?>

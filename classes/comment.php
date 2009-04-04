@@ -475,6 +475,59 @@ class Comment extends QueryRecord implements IsContent
 	{
 		return Comment::type_name($this->type);
 	}
+
+	/**
+	 * Returns an access Bitmask for the given user on this comment. Read access is determined
+	 * by the associated post. Update/delete is determined by the comment management tokens. 
+	 * @param User $user The user mask to fetch
+	 * @return Bitmask
+	 */
+	public function get_access( $user = null )
+	{
+		if ( ! $user instanceof User ) {
+			$user = User::identify();
+		}
+
+		// these tokens automatically grant full access to the comment
+		if ( $user->can( 'super_user' ) || $user->can( 'manage_all_comments' ) ||
+			( $user->id == $this->post->user_id && $user->can( 'manage_own_post_comments' ) ) ) {
+			return ACL::get_bitmask( 'full' );
+		}
+
+		/* If we got this far, we can't update or delete a comment. We still need to check if we have
+		 * read access to it. Collect a list of applicable tokens
+		 */
+		$tokens = array(
+			'post_any',
+			'post_' . Post::type_name( $this->post->content_type ),
+		);
+
+		if ( $user->id == $this->post->user_id ) {
+			$tokens[] = 'own_posts';
+		}
+
+		$tokens = array_merge( $tokens, $this->post->get_tokens() );
+		
+		// grab the access masks on these tokens
+		foreach ( $tokens as $token ) {
+			$access = ACL::get_user_token_access( $user, $token );
+			if ( $access instanceof Bitmask ) {
+				$token_accesses[] = ACL::get_user_token_access( $user, $token )->value;
+			}
+		}
+
+		// now that we have all the accesses, loop through them to build the access to the particular post
+		if ( in_array( 0, $token_accesses ) ) {
+			return ACL::get_bitmask( 0 );
+		}
+
+		if ( ACL::get_bitmask( Utils::array_or( $token_accesses ) )->read ) {
+			return ACL::get_bitmask( 'read' );
+		}
+
+		// if we haven't returned by this point, we can neither manage the comment nor read it
+		return ACL::get_bitmask( 0 );
+	}
 }
 
 ?>

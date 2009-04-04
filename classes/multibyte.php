@@ -279,6 +279,22 @@ class MultiByte
 
 		return $ret;
 	}
+
+	/**
+	 * Determines if the passed string is valid character data (according to mbstring)
+	 *
+	 * @param string $str the string to check
+	 * @return bool
+	 */
+	public static function valid_data( $str )
+	{
+		if ( !extension_loaded( 'mbstring' ) ) {
+			return true;
+		}
+		
+		return mb_check_encoding( $str, self::$hab_enc );
+	}
+
 }
 
 ?>

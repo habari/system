@@ -191,14 +191,14 @@ class Utils
 	 **/
 	public static function revert_magic_quotes_gpc()
 	{
-	    /* We should only revert the magic quotes once per page hit */
-	    static $revert = true;
-	    if ( get_magic_quotes_gpc() && $revert) {
-		$_GET = self::stripslashes($_GET);
-		$_POST = self::stripslashes($_POST);
-		$_COOKIE = self::stripslashes($_COOKIE);
-		$revert = false;
-	    }
+		/* We should only revert the magic quotes once per page hit */
+		static $revert = true;
+		if ( get_magic_quotes_gpc() && $revert) {
+			$_GET = self::stripslashes($_GET);
+			$_POST = self::stripslashes($_POST);
+			$_COOKIE = self::stripslashes($_COOKIE);
+			$revert = false;
+		}
 	}
 
 	/**
@@ -989,6 +989,47 @@ class Utils
 	public static function ror( $v, $w )
 	{
 		return $v |= $w;
+	}
+
+	/**
+	 * Checks whether the correct HTTP method was used for the request
+	 *
+	 * @param array $expected Expected HTTP methods for the request
+	 */
+	public static function check_request_method($expected)
+	{
+		if ( !in_array( $_SERVER['REQUEST_METHOD'], $expected ) ) {
+			if ( in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'HEAD', 'POST', 'PUT', 'DELETE' ) ) ) {
+				header( 'HTTP/1.1 405 Method Not Allowed' );
+			}
+			else {
+				header( 'HTTP/1.1 501 Method Not Implemented' );
+			}
+			header( 'Allow: ' . implode( ',', $expected ) );
+			exit;
+		}
+	}
+	
+	/**
+	 * Returns a regex pattern equivalent to the given glob pattern
+	 *
+	 * @return string regex pattern with '/' delimiter
+	 */
+	public static function glob_to_regex( $glob )
+	{
+		$pattern = $glob;
+		// braces need more work
+		$braces = array();
+		if ( preg_match_all( '/\{.*?\}/', $pattern, $m ) ) {
+			foreach ( $m[0] as $raw_brace ) {
+				$braces[ preg_quote( $raw_brace ) ] = '(?:' . str_replace( ',', '|', preg_quote( substr( $raw_brace, 1, -1 ), '/' ) ) . ')';
+			}
+		}
+		$pattern = preg_quote( $pattern, '/' );
+		$pattern = str_replace( '\\*', '.*', $pattern );
+		$pattern = str_replace( '\\?', '.', $pattern );
+		$pattern = str_replace( array_keys( $braces ), array_values( $braces ), $pattern );
+		return '/'.$pattern.'/';
 	}
 
 }

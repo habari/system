@@ -41,7 +41,7 @@ class InstallHandler extends ActionHandler
 		 * Check .htaccess first because ajax doesn't work without it.
 		*/
 		if ( ! $this->check_htaccess() ) {
-			$this->handler_vars['file_contents'] = implode( "\n", $this->htaccess() );
+			$this->handler_vars['file_contents'] = htmlentities( implode( "\n", $this->htaccess() ) );
 			$this->display('htaccess');
 		}
 
@@ -279,14 +279,16 @@ class InstallHandler extends ActionHandler
 		// Even if they are enabled by default, it seems some install turn them off
 		// We use the URL in the Installer template to link to the installation page
 		$required_extensions = array(
+			'date' => 'http://php.net/datetime',
 			'pdo' => 'http://php.net/pdo',
 			'hash' => 'http://php.net/hash',
-			'iconv' => 'http://php.net/iconv',
-			'tokenizer' => 'http://php.net/tokenizer',
-			'simplexml' => 'http://php.net/simplexml',
-			'mbstring' => 'http://php.net/mbstring',
 			'json' => 'http://php.net/json',
-			'pcre' => 'http://php.net/pcre'
+			'mbstring' => 'http://php.net/mbstring',
+			'pcre' => 'http://php.net/pcre',
+			'session' => 'http://php.net/session',
+			'simplexml' => 'http://php.net/simplexml',
+			'spl' => 'http://php.net/spl',
+			'tokenizer' => 'http://php.net/tokenizer',
 			);
 		$requirements_met = true;
 
@@ -297,6 +299,11 @@ class InstallHandler extends ActionHandler
 		$this->theme->assign('PHP_VERSION',  phpversion());
 		if (! $php_version_ok) {
 			$requirements_met = false;
+		}
+		/* Check for mod_rewrite on Apache */
+		if ( function_exists( 'apache_get_modules' ) && !in_array( 'mod_rewrite', apache_get_modules() ) ) {
+			$requirements_met = false;
+			$this->theme->assign('mod_rewrite', false);
 		}
 		/* Check for required extensions */
 		$missing_extensions = array();
@@ -338,6 +345,10 @@ class InstallHandler extends ActionHandler
 		else {
 			$this->theme->assign( 'pdo_drivers_ok', false );
 			$this->theme->assign( 'pdo_drivers', array() );
+			$requirements_met = false;
+		}
+
+		if ( $requirements_met && ! @preg_match( '/\p{L}/u', 'a' ) ) {
 			$requirements_met = false;
 		}
 
@@ -891,6 +902,9 @@ class InstallHandler extends ActionHandler
 	 */
 	public function check_htaccess()
 	{
+		// default is assume we have mod_rewrite
+		$this->handler_vars['no_mod_rewrite'] = false;
+		
 		// If this is the mod_rewrite check request, then bounce it as a success.
 		if( strpos( $_SERVER['REQUEST_URI'], 'check_mod_rewrite' ) !== false ) {
 			echo 'ok';
@@ -930,7 +944,6 @@ class InstallHandler extends ActionHandler
 				$result = $this->write_htaccess( true, true, true );
 			}
 		}
-
 		return $result;
 	}
 

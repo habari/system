@@ -1428,7 +1428,7 @@ habari.editor = {
 		$('#content').val(contents);
 	},
 	getSelection: function(contents) {
-		if($('#content').filter('.islabeled').size() > 0) {
+		if($('#content').val() === '') {
 			return '';
 		}
 		else {
@@ -1445,7 +1445,7 @@ habari.editor = {
 				return range.text;
 			}
 			else {
-				return $("#content").val();
+				return $('#content').val();
 			}
 		}
 	}
@@ -1477,6 +1477,13 @@ $(document).ready(function(){
 	findChildren();
 	navigationDropdown.init();
 	labeler.init();
+	
+	// fix autofilled passwords overlapping labels
+	$(window).load(function(){
+		window.setTimeout(function(){
+			labeler.check($('label[for=habari_password]'));
+		}, 200);
+	});
 
 	// Alternate the rows' styling.
 	$("table").each( function() {

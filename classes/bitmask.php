@@ -49,6 +49,14 @@ class Bitmask
 			case 'value':
 				$this->value = $on;
 				break;
+			case 'full':
+				if ( $on ) {
+					$this->value = $this->full;
+				}
+				else {
+					$this->value = 0;
+				}
+				break;
 			default:
 				if ( ! is_bool( $on ) )
 					throw new InvalidArgumentException(_t('Bitmask values must be boolean'));

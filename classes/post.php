@@ -897,8 +897,11 @@ class Post extends QueryRecord implements IsContent
 		$buttons->class[] = 'publish';
 
 		// Create the Save button
-		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
-		$buttons->save->tabindex = 4;
+		$require_any = array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' );
+		if( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
+			$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
+			$buttons->save->tabindex = 4;
+		}
 
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
@@ -958,7 +961,7 @@ class Post extends QueryRecord implements IsContent
 				INNER JOIN {tag2post} t2p
 				ON t.id = t2p.tag_id
 				WHERE t2p.post_id = ?
-				ORDER BY t.tag_slug ASC";
+				ORDER BY t.tag_text ASC";
 			$result = DB::get_results( $sql, array( $this->fields['id'] ) );
 			if ( $result ) {
 				foreach ( $result as $t ) {
@@ -1180,21 +1183,28 @@ class Post extends QueryRecord implements IsContent
 			$user = User::identify();
 		}
 
+		if( $user->can( 'super_user' ) ) {
+			return ACL::get_bitmask( 'full' );
+		}
+
 		// Collect a list of applicable tokens
 		$tokens = array(
-			'own_posts',
-			'posts_any',
-			'post_' . $this->content_type(),
+			'post_any',
+			'post_' . Post::type_name( $this->content_type ),
 		);
-		
+
+		if( $user->id == $this->user_id) {
+			$tokens[] = 'own_posts';
+		}
+
 		$tokens = array_merge($tokens, $this->get_tokens());
 		
 		// collect all possible token accesses on this post
 		$token_accesses = array();
 		foreach ( $tokens as $token ) {
 			$access = ACL::get_user_token_access( $user, $token );
-			if($access instanceof Bitmask) {
-				$token_accesses []= ACL::get_user_token_access( $user, $token )->value;
+			if ( $access instanceof Bitmask ) {
+				$token_accesses[] = ACL::get_user_token_access( $user, $token )->value;
 			}
 		}
 
@@ -1202,7 +1212,6 @@ class Post extends QueryRecord implements IsContent
 		if ( in_array( 0, $token_accesses ) ) {
 			return ACL::get_bitmask( 0 );
 		}
-
 		return ACL::get_bitmask( Utils::array_or( $token_accesses ) );
 	}
 

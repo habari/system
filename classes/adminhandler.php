@@ -80,7 +80,7 @@ class AdminHandler extends ActionHandler
 		// Add some default stylesheets
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
 
-	  	// Add some default template variables
+			// Add some default template variables
 		$this->set_admin_template_vars( $this->theme );
 		$this->theme->admin_type = $type;
 		$this->theme->admin_page = $page;
@@ -89,11 +89,12 @@ class AdminHandler extends ActionHandler
 		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
 
 		// Access check to see if the user is allowed the requested page
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
 		if ( !$this->access_allowed( $page, $type ) ) {
 			Session::error(_t('Access to that page has been denied by the administrator.'));
 			$this->get_blank();
 		}
-
+		
 		switch( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
 				// Let plugins try to handle the page
@@ -109,7 +110,8 @@ class AdminHandler extends ActionHandler
 					exit;
 				}
 				break;
-			default:
+			case 'GET':
+			case 'HEAD':
 				// Let plugins try to handle the page
 				Plugins::act('admin_theme_get_' . $page, $this, $this->theme);
 				// Handle GETs of the admin pages
@@ -389,8 +391,8 @@ class AdminHandler extends ActionHandler
 			'tag_count' => DB::get_value('SELECT count(id) FROM {tags}'),
 			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
-			'unapproved_comment_count' => Comments::count_total( Comment::STATUS_UNAPPROVED, FALSE ),
-			'spam_comment_count' => Comments::count_total( Comment::STATUS_SPAM, FALSE ),
+			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_UNAPPROVED, FALSE ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),
+			'spam_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_SPAM, FALSE ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_SPAM ),
 			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
 		);
 
@@ -522,7 +524,7 @@ class AdminHandler extends ActionHandler
 		$post->update( $minor );
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, $post->title), Post::status_name( $post->status ) ) );
+		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
@@ -585,7 +587,7 @@ class AdminHandler extends ActionHandler
 		}
 		$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 		$post->delete();
-		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), $post->title ) );
+		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), htmlspecialchars( $post->title ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
 	}
 
@@ -674,7 +676,11 @@ class AdminHandler extends ActionHandler
 		$password2->class[] = 'item clear';
 		$password2->type = 'password';
 		$password2->value = '';
-		$password2->add_validator('validate_same', $password1, _t('Passwords must match.'));
+		$delete = $this->handler_vars->filter_keys('delete');
+		// don't validate password match if action is delete
+		if (!isset($delete['delete'])) {
+			$password2->add_validator('validate_same', $password1, _t('Passwords must match.'));
+		}
 
 		// Regional settings
 		$timezones = DateTimeZone::listIdentifiers();
@@ -825,11 +831,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_update_users($handler_vars)
 	{
-		if (!User::identify()->can( 'manage_users' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
+		Utils::check_request_method( array( 'POST' ) );
+		
 		echo json_encode( $this->update_users( $handler_vars ) );
 	}
 
@@ -933,7 +936,9 @@ class AdminHandler extends ActionHandler
 
 	public function get_users()
 	{
-		return $this->post_users();
+		$this->fetch_users();
+
+		$this->theme->display('users');
 	}
 
 	/**
@@ -1424,12 +1429,14 @@ class AdminHandler extends ActionHandler
 
 					case 'delete':
 						// This comment was marked for deletion
+						$to_update = $this->comment_access_filter( $to_update, 'delete' );
 						Comments::delete_these( $to_update );
 						$modstatus['Deleted %d comments'] = count( $to_update );
 						break;
 
 					case 'spam':
-							// This comment was marked as spam
+						// This comment was marked as spam
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
 						$modstatus['Marked %d comments as spam'] = count( $to_update );
 						break;
@@ -1437,6 +1444,7 @@ class AdminHandler extends ActionHandler
 					case 'approve':
 					case 'approved':
 						// Comments marked for approval
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
 						$modstatus['Approved %d comments'] = count( $to_update );
 						foreach ( $to_update as $comment ) {
@@ -1447,11 +1455,13 @@ class AdminHandler extends ActionHandler
 					case 'unapprove':
 					case 'unapproved':
 						// This comment was marked for unapproval
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
 						$modstatus['Unapproved %d comments'] = count ( $to_update );
 						break;
 
 					case 'edit':
+						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						foreach ( $to_update as $comment ) {
 							// This comment was edited
 							if ( $_POST['name_' . $comment->id] != NULL ) {
@@ -1466,6 +1476,8 @@ class AdminHandler extends ActionHandler
 							if ( $_POST['content_' . $comment->id] != NULL ) {
 								$comment->content = $_POST['content_' . $comment->id];
 							}
+
+							$comment->update();
 						}
 						$modstatus['Edited %d comments'] = count( $to_update );
 						break;
@@ -1495,6 +1507,11 @@ class AdminHandler extends ActionHandler
 			'offset' => $offset,
 			'orderby' => $orderby,
 		);
+
+		// only get comments the user is allowed to manage
+		if( !User::identify()->can( 'manage_all_comments' ) ) {
+			$arguments['post_author'] = User::identify()->id;
+		}
 
 		// there is no explicit 'all' type/status for comments, so we need to unset these arguments
 		// if that's what we want. At the same time we can set up the search field
@@ -1534,25 +1551,51 @@ class AdminHandler extends ActionHandler
 		$baseactions = array();
 		$statuses = Comment::list_comment_statuses();
 		foreach ( $statuses as $statusid => $statusname ) {
-			$baseactions[$statusname] = array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid));
+			$baseactions[$statusname] = array('url' => 'javascript:itemManage.update(\'' . $statusname . '\',__commentid__);', 'title' => _t('Change this comment\'s status to %s', array($statusname)), 'label' => Comment::status_action($statusid), 'access' => 'edit' );
 		}
 
 		/* Standard actions */
-		$baseactions['delete'] = array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'));
-		$baseactions['edit'] = array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'));
+		$baseactions['delete'] = array('url' => 'javascript:itemManage.update(\'delete\',__commentid__);', 'title' => _t('Delete this comment'), 'label' => _t('Delete'), 'access' => 'delete' );
+		$baseactions['edit'] = array('url' => URL::get('admin', 'page=comment&id=__commentid__'), 'title' => _t('Edit this comment'), 'label' => _t('Edit'), 'access' => 'edit' );
 
 		/* Actions for inline edit */
-		$baseactions['submit'] = array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE);
+		$baseactions['submit'] = array('url' => 'javascript:inEdit.update();', 'title' => _t('Submit changes'), 'label' => _t('Update'), 'nodisplay' => TRUE, 'access' => 'edit' );
 		$baseactions['cancel'] = array('url' => 'javascript:inEdit.deactivate();', 'title' => _t('Cancel changes'), 'label' => _t('Cancel'), 'nodisplay' => TRUE);
 
 		/* Allow plugins to apply actions */
 		$actions = Plugins::filter('comments_actions', $baseactions, $this->theme->comments);
 
 		foreach ( $this->theme->comments as $comment ) {
-			$menu = $actions;
+			// filter the actions based on the user's permissions
+			$comment_access = $comment->get_access();
+			$menu = array();
+			foreach ( $actions as $name => $action ) {
+				if ( !isset( $action['access'] ) || ACL::access_check( $comment_access, $action['access'] ) ) {
+					$menu[$name] = $action;
+				}
+			}
+			// remove the current status from the dropmenu
 			unset($menu[Comment::status_name($comment->status)]);
 			$comment->menu = Plugins::filter('comment_actions', $menu, $comment);
 		}
+	}
+
+	/**
+	 * A helper function for fetch_comments()
+	 * Filters a list of comments by ACL access
+	 * @param object $comments an array of Comment objects
+	 * @param string $access the access type to check for
+	 * @return a filtered array of Comment objects.
+	 */
+	public function comment_access_filter( $comments, $access )
+	{
+		$result = array();
+		foreach ( $comments as $comment ) {
+			if ( ACL::access_check( $comment->get_access(), $access ) ) {
+				$result[] = $comment;
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -1718,14 +1761,20 @@ class AdminHandler extends ActionHandler
 				foreach ( $to_update as $post ) {
 					switch( $change ) {
 					case 'delete':
-						$post->delete();
+						if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
+							$post->delete();
+						}
 						break;
 					case 'publish':
-						$post->publish();
+						if ( ACL::access_check( $post->get_access(), 'edit') ) {
+							$post->publish();
+						}
 						break;
 					case 'unpublish':
-						$post->status = Post::status( 'draft' );
-						$post->update();
+						if ( ACL::access_check( $post->get_access(), 'edit') ) {
+							$post->status = Post::status( 'draft' );
+							$post->update();
+						}
 						break;
 					}
 				}
@@ -1826,6 +1875,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_dashboard( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -1872,6 +1923,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_posts()
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -1884,7 +1937,9 @@ class AdminHandler extends ActionHandler
 		$item_ids = array();
 
 		foreach ( $this->theme->posts as $post ) {
+			if( ACL::access_check($post->get_access(), 'delete' ) ) {
 			$item_ids['p' . $post->id] = 1;
+		}
 		}
 
 		$output = array(
@@ -1900,6 +1955,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_comments()
 	{
+		Utils::check_request_method( array( 'POST' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$this->theme->theme = $this->theme;
@@ -1929,11 +1986,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_users()
 	{
-		if (!User::identify()->can( 'manage_users' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -1952,6 +2006,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_in_edit($handler_vars)
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
@@ -1960,6 +2016,11 @@ class AdminHandler extends ActionHandler
 		}
 
 		$comment = Comment::get($handler_vars['id']);
+		if ( !ACL::access_check( $comment->get_access(), 'edit' ) ) {
+			Session::error( _t('You do not have permission to edit this comment.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			return;
+		}
 
 		if ( isset($handler_vars['author']) && $handler_vars['author'] != '' ) {
 			$comment->name = $handler_vars['author'];
@@ -1991,6 +2052,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_delete_entries($handler_vars)
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
@@ -2006,11 +2069,19 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
+		$deleted = 0;
 		foreach ( $posts as $post ) {
+			if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
 			$post->delete();
+				$deleted++;
+		}
 		}
 
-		Session::notice( sprintf( _t('Deleted %d entries.'), count($posts) ) );
+		Session::notice( sprintf( _t('Deleted %d entries.'), $deleted ) );
+		if( $deleted != count( $posts ) ) {
+			Session::notice( _t( 'You did not have permission to delete some entries.' ) );
+		}
+
 		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
@@ -2020,12 +2091,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_delete_logs($handler_vars)
 	{
-		if (!User::identify()->can( 'manage_logs' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
-
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$count = 0;
 
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
@@ -2064,6 +2131,8 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_update_comment( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		// check WSSE authentication
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
@@ -2313,12 +2382,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_logs()
 	{
-		if (!User::identify()->can( 'manage_logs' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
-
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2342,24 +2407,17 @@ class AdminHandler extends ActionHandler
 		echo json_encode($output);
 	}
 
-	public function ajax_update_groups($handler_vars)
+	public function ajax_update_groups( $handler_vars )
 	{
-		if (!User::identify()->can( 'manage_groups' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
+		Utils::check_request_method( array( 'POST' ) );
+		
 		echo json_encode( $this->update_groups( $handler_vars ) );
 	}
 
-	public function ajax_groups($handler_vars)
+	public function ajax_groups( $handler_vars )
 	{
-		if (!User::identify()->can( 'manage_groups' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
-
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
+		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2371,8 +2429,13 @@ class AdminHandler extends ActionHandler
 			$group = UserGroup::get_by_id($group->id);
 			$users = array();
 			foreach ( $group->members as $id ) {
-				$user = User::get_by_id($id);
-				$users[] = '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				$user = $id == 0 ? User::anonymous() : User::get_by_id( $id );
+				if ( $user->id == 0 ) {
+					$users[] = '<strong>' . $user->displayname . '</strong>';
+				}
+				else {
+					$users[] = '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+				}
 			}
 
 			$this->theme->users = $users;
@@ -2494,12 +2557,16 @@ class AdminHandler extends ActionHandler
 
 	public function get_groups()
 	{
-		$this->post_groups();
+		// prepare the WSSE tokens
+		$this->theme->wsse = Utils::WSSE();
+
+		$this->theme->groups = UserGroups::get_all();
+
+		$this->display( 'groups' );
 	}
 
 	public function post_groups()
 	{
-
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
 
@@ -2648,11 +2715,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_tags( $handler_vars)
 	{
-		if (!User::identify()->can( 'manage_tags' ) ) {
-			Session::error( _t( 'Permission Denied' ) );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-			return;
-		}
+		Utils::check_request_method( array( 'POST' ) );
+
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
@@ -2682,6 +2746,7 @@ class AdminHandler extends ActionHandler
 				Session::notice( $msg_status );
 				echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 				break;
+
 			case 'rename':
 				if ( isset($this->handler_vars['master']) ) {
 					$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
@@ -3015,7 +3080,7 @@ class AdminHandler extends ActionHandler
 				break;
 			case 'sysinfo': 
 				$require_any = array( 'super_user' => true ); 
-				break; 
+				break;
 			case 'dashboard':
 			case 'ajax_dashboard':
 				$result = true;
@@ -3080,6 +3145,8 @@ class AdminHandler extends ActionHandler
 
 	public function ajax_media( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$path = $handler_vars['path'];
 		$rpath = $path;
 		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
@@ -3112,11 +3179,14 @@ class AdminHandler extends ActionHandler
 		}
 		$output['controls'] = $controls_out;
 
+		header( 'content-type:text/javascript' ); 
 		echo json_encode( $output );
 	}
 
 	public function ajax_media_panel( $handler_vars )
 	{
+		Utils::check_request_method( array( 'POST' ) ); 
+		
 		$path = $handler_vars['path'];
 		$panelname = $handler_vars['panel'];
 		$rpath = $path;
@@ -3124,8 +3194,8 @@ class AdminHandler extends ActionHandler
 
 		$panel = '';
 		$panel = Plugins::filter( 'media_panels', $panel, $silo, $rpath, $panelname );
-		$rootpath = strpos($path, '/') !== false ? substr($path, 0, strpos($path, '/')) : $path;
-		$controls = array('root' => '<a href="#" onclick="habari.media.fullReload();habari.media.showdir(\''. $rootpath . '\');return false;">' . _t('Root') . '</a>');
+
+		$controls = array();
 		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, $panelname );
 		$controls_out = '';
 		foreach ( $controls as $k => $v ) {
@@ -3141,7 +3211,6 @@ class AdminHandler extends ActionHandler
 			'panel' => $panel,
 		);
 
-		header( 'content-type:text/javascript' );
 		echo json_encode( $output );
 	}
 
