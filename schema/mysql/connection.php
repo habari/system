@@ -267,7 +267,7 @@ class MySQLConnection extends DatabaseConnection
 	 */
 	public function upgrade_pre( $old_version, $upgrade_path = '' )
 	{
-		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades');
+		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades/pre');
 	}
 	
 	/**
