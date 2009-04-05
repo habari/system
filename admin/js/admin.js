@@ -964,10 +964,11 @@ var timelineHandle = {
 // SPINNER
 var spinner = {
 	start: function() {
-		$('#spinner').spinner({ height: 32, width: 32, speed: 50, image: '../system/admin/images/spinnersmalldark.png' }); $('#spinner').show();
+		$('#spinner').css({ height: 32, width: 32 }).css('background-image', 'url(../system/admin/images/spin.gif)' ); 
+		$('#spinner').show();
 	},
 	stop: function () {
-		$('#spinner').spinner('stop');$('#spinner').hide();
+		$('#spinner').hide();
 	}
 };
 
