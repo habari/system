@@ -321,7 +321,7 @@ class InstallHandler extends ActionHandler
 			if ( ! empty( $pdo_drivers ) ) {
 				$pdo_drivers = array_combine( $pdo_drivers, $pdo_drivers );
 				// Include only those drivers that we include database support for
-				$pdo_schemas = array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*' ) );
+				$pdo_schemas = array_map( 'basename', Utils::glob( HABARI_PATH . '/system/schema/*', GLOB_ONLYDIR ) );
 				$pdo_schemas = array_combine( $pdo_schemas, $pdo_schemas );
 
 				$pdo_drivers = array_intersect_key(
