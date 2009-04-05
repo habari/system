@@ -3264,7 +3264,6 @@ class AdminHandler extends ActionHandler
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js", 'ui.tabs', array('jquery', 'ui.core') );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js", 'ui.sortable', array('jquery', 'ui.core') );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js", 'ui.resizable', array('jquery', 'ui.core') );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.spinner.js", 'jquery.spinner', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
