@@ -260,14 +260,25 @@ class MySQLConnection extends DatabaseConnection
 	}
 
 	/**
-	 * Run all of the upgrades since the last database revision.
+	 * Run all of the upgrades slated for pre-dbdelta since the last database revision.
 	 *
 	 * @param integer $old_version The current version of the database that is being upgraded
 	 * @return boolean True on success
 	 */
-	public function upgrade( $old_version, $upgrade_path = '' )
+	public function upgrade_pre( $old_version, $upgrade_path = '' )
 	{
 		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades');
+	}
+	
+	/**
+	 * Run all of the upgrades slated for post-dbdelta since the last database revision.
+	 *
+	 * @param integer $old_version The current version of the database that is being upgraded
+	 * @return boolean True on success
+	 */
+	public function upgrade_post( $old_version, $upgrade_path = '' )
+	{
+		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades/post');
 	}
 }
 ?>
