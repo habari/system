@@ -65,7 +65,9 @@ class SQLiteConnection extends DatabaseConnection
 			}
 			$connect_string = implode( ':', array( $type, $file ) );
 		}
-		return parent::connect( $connect_string, $db_user, $db_pass );
+		$conn = parent::connect( $connect_string, $db_user, $db_pass );
+		DB::exec( 'PRAGMA synchronous = OFF' );
+		return $conn;
 	}
 
 		/**
@@ -144,6 +146,7 @@ class SQLiteConnection extends DatabaseConnection
 		}
 
 		if ( $execute ) {
+			DB::exec( 'PRAGMA cache_size=4000' );
 			foreach ( $allqueries as $query ) {
 				if ( !$this->query( $query ) ) {
 					$this->get_errors();
