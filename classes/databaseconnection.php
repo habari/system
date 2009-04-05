@@ -703,6 +703,10 @@ class DatabaseConnection
 	 * Implemented in child classes.
 	 */
 	public function dbdelta( $queries, $execute = true, $silent = true ){}
+	
+	public function upgrade_pre( $old_version ){}
+	
+	public function upgrade_post( $old_version ){}
 
 
 	/**
