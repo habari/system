@@ -2024,10 +2024,6 @@ body.page-Manage .state {
 
 /*- MANAGE PAGES - INLINE EDITOR */
 
-ul.dropbutton li.nodisplay {
-	display: none;
-}
-
 .editable:hover {
 	background: #FFFFCC;
 }
@@ -2494,8 +2490,6 @@ body.login .humanMsg {
 	overflow: auto;
 }
 
-
-
-#page .hidden {
+#page .hidden, #page ul.dropbutton li.nodisplay {
 	display: none;
 }
