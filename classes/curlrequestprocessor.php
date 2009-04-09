@@ -55,6 +55,9 @@ class CURLRequestProcessor implements RequestProcessor
 			curl_setopt( $ch, CURLOPT_POST, true ); // POST mode.
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, $body );
 		}
+		else {
+			curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n
+		}
 
 		$fh = tmpfile();
 		curl_setopt( $ch, CURLOPT_FILE, $fh );
@@ -73,8 +76,8 @@ class CURLRequestProcessor implements RequestProcessor
 		}
 
 		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
-			return Error::raise( sprintf( _t('Bad return code (%1$d) for: %2$s'), 
-				curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 
+			return Error::raise( sprintf( _t('Bad return code (%1$d) for: %2$s'),
+				curl_getinfo( $ch, CURLINFO_HTTP_CODE ),
 				$url ),
 				E_USER_WARNING
 			);
@@ -104,7 +107,7 @@ class CURLRequestProcessor implements RequestProcessor
 		if ( ! $this->executed ) {
 			return Error::raise( _t('Request did not yet execute.') );
 		}
-		
+
 		return $this->response_body;
 	}
 
