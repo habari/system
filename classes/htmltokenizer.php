@@ -200,6 +200,9 @@ class HTMLTokenizer
 				// TODO HTMLParser should handle #IMPLIED attrs
 				$value = NULL;
 				$this->dec();
+			} else {
+				// default
+				$value = NULL;
 			}
 			$attr[$name] = $value;
 			$this->skip_whitespace();
