@@ -73,7 +73,16 @@ class AdminHandler extends ActionHandler
 	public function act_admin()
 	{
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
-		$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
+		if(isset($this->handler_vars['content_type'])) {
+			$type = $this->handler_vars['content_type'];
+		}
+		elseif( $page == 'publish' && isset($this->handler_vars['id'] ) ) {
+			$type = Post::get(intval($this->handler_vars['id']))->content_type;
+		}
+		else {
+			$type = '';
+		}
+		//$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
