@@ -187,7 +187,10 @@ class RemoteRequest
 				// TODO should raise a warning
 				$this->add_header( array( 'Content-Type' => 'application/x-www-form-urlencoded' ) );
 
-				$this->body = http_build_query( $this->postdata, '', '&' );
+				if($this->body != '' && count($this->postdata) > 0) {
+					$this->body .= '&';
+				}
+				$this->body .= http_build_query( $this->postdata, '', '&' );
 			}
 			elseif ( $this->headers['Content-Type'] == 'multipart/form-data' ) {
 				$boundary = md5( Utils::nonce() );
