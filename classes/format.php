@@ -172,10 +172,7 @@ class Format
 			// if we get this far, token type is text
 			$localValue = $token['value'];
 			if (strlen($localValue)) {
-				// contains newlines:
-				if ($openP) {
-					$localValue = $localValue;
-				} else {
+				if (!$openP) {
 					$localValue = '<p>' . ltrim($localValue);
 					$openP = true;
 				}
