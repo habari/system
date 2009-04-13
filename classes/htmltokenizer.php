@@ -204,7 +204,10 @@ class HTMLTokenizer
 				// default
 				$value = NULL;
 			}
-			$attr[$name] = $value;
+			// store that attribute only if it's not empty
+			if ($name) {
+				$attr[$name] = $value;
+			}
 			$this->skip_whitespace();
 		}
 		
