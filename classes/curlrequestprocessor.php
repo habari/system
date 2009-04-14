@@ -55,9 +55,6 @@ class CURLRequestProcessor implements RequestProcessor
 			curl_setopt( $ch, CURLOPT_POST, true ); // POST mode.
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, $body );
 		}
-		else {
-			curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n
-		}
 
 		$fh = tmpfile();
 		curl_setopt( $ch, CURLOPT_FILE, $fh );
