@@ -28,6 +28,8 @@ class charcoal extends Theme
 	//Set to true to show single post navigation links, false to hide them.
 	const SHOW_POST_NAV = true;
 	
+	//Set to the number of tags to display on the default "cloud"
+	const TAGS_COUNT = 40;
 	/**
 	 * Execute on theme init to apply these filters to output
 	 */
@@ -87,8 +89,8 @@ class charcoal extends Theme
 		$array = array_map($fn, $array, array_keys($array));
 		$out = implode(' ', $array);
 		return $out;
- 	}
-	
+	}
+
 	public function theme_post_comments_link($theme, $post, $zero, $one, $more)
 	{
 		$c = $post->comments->approved->count;
@@ -103,11 +105,11 @@ class charcoal extends Theme
 				return str_replace( '%s', $c, $more);
 		}
 	}
-		
+
 	public function filter_post_content_excerpt($return)
-	{	
- 		return strip_tags($return);
- 	}
+	{
+		return strip_tags($return);
+	}
 
 	public function theme_search_prompt( $theme, $criteria, $has_results )
 	{
@@ -142,6 +144,7 @@ class charcoal extends Theme
 	 */
 	public function theme_show_tags ( $theme )
 	{
+		$limit = self::TAGS_COUNT;
 		$sql ="
 			SELECT t.tag_slug AS slug, t.tag_text AS text, count(tp.post_id) as ttl
 			FROM {tags} t
@@ -151,9 +154,9 @@ class charcoal extends Theme
 			ON p.id=tp.post_id AND p.status = ?
 			GROUP BY t.tag_slug
 			ORDER BY t.tag_text
+			LIMIT {$limit}
 		";
 		$tags = DB::get_results( $sql, array(Post::status('published')) );
-
 		foreach ($tags as $index => $tag) {
 			$tags[$index]->url = URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) );
 		}
