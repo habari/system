@@ -147,6 +147,12 @@ class Format
 				}
 			}
 			
+			if ($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array(strtolower($token['name']), $blockElements) && $value == '') {
+				// first element, is not a block element
+				$value = '<p>';
+				$openP = true;
+			}
+			
 			// no-autop, pass them through verbatim
 			if ($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array(strtolower($token['name']), $noAutoP)) {
 				$nestedToken = $token;
