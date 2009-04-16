@@ -87,6 +87,10 @@ class RewriteRule extends QueryRecord
 			if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0 ) {
 				$this->action = $this->named_arg_values[$matches[1]];
 			}
+			
+			if(isset($parameters['require_match'])) {
+				return call_user_func($parameters['require_match'], $this, $stub, $parameters);
+			}
 
 			return true;
 		}
