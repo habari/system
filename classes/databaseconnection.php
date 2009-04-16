@@ -33,7 +33,6 @@ class DatabaseConnection
 		'object_terms',
 		'object_types',
 		'options',
-		'permissions',
 		'post_tokens',
 		'postinfo',
 		'posts',
