@@ -41,11 +41,7 @@ class AdminHandler extends ActionHandler
 			}
 			exit;
 		}
-		/* TODO: update ACL class so that this works
-		if ( !$user->can( 'admin' ) ) {
-			die( _t( 'Permission denied.' ) );
-		}
-		//*/
+
 		$last_form_data = Session::get_set( 'last_form_data' ); // This was saved in the "if ( !$user )" above, UserHandler transferred it properly.
 		/* At this point, Controller has not created handler_vars, so we have to modify $_POST/$_GET. */
 		if ( isset( $last_form_data['post'] ) ) {
@@ -471,9 +467,17 @@ class AdminHandler extends ActionHandler
 		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
+						
 			$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 			$form = $post->get_form( 'admin' );
 
+			// Verify that the post hasn't already been updated since the form was loaded
+			if($post->modified != $form->modified->value) {
+				Session::notice( sprintf( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+				exit;
+			}
+			
 			$post->title = $form->title->value;
 			if ( $form->newslug->value == '' ) {
 				Session::notice( _e('A post slug cannot be empty. Keeping old slug.') );
