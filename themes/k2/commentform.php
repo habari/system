@@ -1,6 +1,6 @@
 <!-- commentsform -->
 <?php // Do not delete these lines
-if ( ! defined('HABARI_PATH' ) ) { die( _t('Please do not load this page directly. Thanks!') ); }
+if ( ! defined('HABARI_PATH' ) ) { die( 'Please do not load this page directly. Thanks!' ); }
 ?>
 		<div class="comments">
 			<h4 id="respond" class="reply"><?php _e('Leave a Reply'); ?></h4>
