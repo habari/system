@@ -1383,7 +1383,7 @@ class InstallHandler extends ActionHandler
 
 	}
 	
-	private function upgrade_db_post_3485()
+	private function upgrade_db_post_3484()
 	{
 		$new_plugins = array();
 		$plugins = Options::get( 'active_plugins' );
