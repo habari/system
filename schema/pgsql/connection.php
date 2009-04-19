@@ -7,6 +7,27 @@
 
 class PGSQLConnection extends DatabaseConnection
 {
+	
+	/**
+	 * Extends default connection method. It will be useful in order to
+	 * allow accents and other DB-centric global commands.
+	 *
+	 * @param string $connect_string a PDO connection string
+	 * @param string $db_user the database user name
+	 * @param string $db_pass the database user password
+	 * @return boolean TRUE on success, FALSE on error
+	 */
+	public function connect ( $connect_string, $db_user, $db_pass )
+	{
+		// If something went wrong, we don't need to exec the specific commands.
+		if( !parent::connect( $connect_string, $db_user, $db_pass ) ) {
+			return false;
+		}
+		$this->pdo->setAttribute( PDO::ATTR_EMULATE_PREPARES, true );
+		
+		return true;
+	}
+	
 	/**
 	 * Database specific SQL translation function, loosely modelled on the
 	 * internationalization _t() function.
