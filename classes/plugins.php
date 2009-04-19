@@ -24,6 +24,16 @@ class Plugins
 	private function __construct()
 	{
 	}
+	
+	/**
+	 * Autoload function to load plugin file from classname
+	 */
+	public static function _autoload( $class )
+	{
+		if ( array_key_exists($class, self::$plugin_files) ) {
+			require self::$plugin_files[$class];
+		}
+	}
 
 	/**
 	 * function register
@@ -168,7 +178,7 @@ class Plugins
 	{
 		return isset( self::$hooks['theme'][$hookname] );
 	}
-
+	
 	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
@@ -177,28 +187,25 @@ class Plugins
 	 **/
 	public static function list_active( $refresh = false )
 	{
-		if ( ! empty( self::$plugin_files ) && ! $refresh )
-		{
-			return self::$plugin_files;
-		}
-		$plugins = Options::get( 'active_plugins' );
-		if( is_array($plugins) ) {
-			foreach( $plugins as $plugin ) {
-				// add base path to stored path
-				$plugin = HABARI_PATH . $plugin;
+		if ( empty(self::$plugin_files) || $refresh ) {
+			$plugins = Options::get( 'active_plugins' );
+			if( is_array($plugins) ) {
+				foreach( $plugins as $class => $filename ) {
+					// add base path to stored path
+					$filename = HABARI_PATH . $filename;
 
-				if( file_exists( $plugin ) ) {
-					self::$plugin_files[] = $plugin;
+					if( file_exists( $filename ) ) {
+						self::$plugin_files[$class] = $filename;
+					}
 				}
 			}
+			// make sure things work on Windows
+			self::$plugin_files = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), self::$plugin_files );
 		}
-		// make sure things work on Windows
-		self::$plugin_files = array_map( create_function( '$s', 'return str_replace(\'\\\\\', \'/\', $s);' ), self::$plugin_files );
 		return self::$plugin_files;
 	}
-
+	
 	/**
-	 * function get_active
 	 * Returns the internally stored references to all loaded plugins
 	 * @return array An array of plugin objects
 	 **/
@@ -275,10 +282,7 @@ class Plugins
 		if ( $check_realpath ) {
 			$file = realpath( $file );
 		}
-		if ( ! self::$plugin_classes ) {
-			self::get_plugin_classes();
-		}
-		foreach ( self::$plugin_classes as $plugin ) {
+		foreach ( self::get_plugin_classes() as $plugin ) {
 			$class = new ReflectionClass( $plugin );
 			$classfile = str_replace( '\\', '/', $class->getFileName() );
 			if ( $classfile == $file ) {
@@ -298,19 +302,23 @@ class Plugins
 	public static function get_plugin_classes()
 	{
 		$classes = get_declared_classes();
-		self::$plugin_classes = array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
+		return array_filter( $classes, array( 'Plugins', 'extends_plugin' ) );
 	}
 
 	/**
-	 * function load
 	 * Initialize all loaded plugins by calling their load() method
 	 * @param string $file the class name to load
 	 * @param boolean $activate True if the plugin's load() method should be called	 
 	 * @return Plugin The instantiated plugin class
 	 **/
-	public static function load( $file, $activate = true )
+	public static function load_from_file( $file, $activate = true )
 	{
-		$class = Plugins::class_from_filename( $file );
+		$class = self::class_from_filename($file);
+		return self::load($class, $activate);
+	}
+	
+	public static function load( $class, $activate = true )
+	{
 		$plugin = new $class;
 		if($activate) {
 			self::$plugins[$plugin->plugin_id] = $plugin;
@@ -318,6 +326,17 @@ class Plugins
 		}
 		return $plugin;
 	}
+	
+	/**
+	 * Instatiate and load all active plugins
+	 */
+	public static function load_active() 
+	{
+		foreach ( self::list_active() as $class => $filename ) {
+			self::load($class);
+		}
+	}
+	
 
 	/**
 	 * Returns a plugin id for the filename specified.
@@ -345,11 +364,12 @@ class Plugins
 			$short_file = substr( $file, strlen( HABARI_PATH ) );
 			$activated = Options::get( 'active_plugins' );
 			if( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
-				$activated[] = $short_file;
-				Options::set( 'active_plugins', $activated );
 				include_once($file);
-				Plugins::get_plugin_classes();
-				$plugin = Plugins::load($file);
+				$class = Plugins::class_from_filename($file);
+				$activated[$class] = $short_file;
+				Options::set( 'active_plugins', $activated );
+				
+				$plugin = Plugins::load($class);
 				if(method_exists($plugin, 'action_plugin_activation')) {
 					$plugin->action_plugin_activation( $file ); // For the plugin to install itself
 				}

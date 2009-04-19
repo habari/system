@@ -1382,6 +1382,27 @@ class InstallHandler extends ActionHandler
 		$authenticated_group->grant( 'comment' );
 
 	}
+	
+	private function upgrade_db_post_3485()
+	{
+		$new_plugins = array();
+		$plugins = Options::get( 'active_plugins' );
+		if( is_array($plugins) ) {
+			foreach( $plugins as $filename ) {
+				// add base path to stored path
+				$filename = HABARI_PATH . $filename;
+				require_once $filename;
+				$class = Plugins::class_from_filename($filename);
+				$short_file = substr( $filename, strlen( HABARI_PATH ) );
+
+				if( file_exists($filename) && $class ) {
+					$new_plugins[$class] = $short_file;
+				}
+			}
+		}
+		Options::set('active_plugins', $new_plugins);
+	}
+	
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
