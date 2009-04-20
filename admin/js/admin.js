@@ -91,14 +91,14 @@ var inEdit = {
 	init: function() {
 		inEdit.editables = '.date a.edit-date, .title a.author.edit-author, .authorinfo a.edit-url, .authorinfo a.edit-email, .time span.edit-time, .content.edit-content';
 
-		if($('#comments').length === 0) { // Only works for comments, presently
+		if ($('#comments').length === 0) { // Only works for comments, presently
 			return;
 		}
 
 		$(inEdit.editables, $('.item')).filter(':not(a)').each(function() {
 			$(this).addClass('editable');
 			$(this).click(function() {
-				if(inEdit.activated != $(this).parents('.item').attr('id').substring(8)) {
+				if (inEdit.activated != $(this).parents('.item').attr('id').substring(8)) {
 					inEdit.deactivate();
 					inEdit.activate($(this).parents('.item'));
 				}
@@ -114,9 +114,9 @@ var inEdit = {
 		var clas = null;
 
 		for (var key in classes) {
-			if(classes.hasOwnProperty(key)) {
+			if (classes.hasOwnProperty(key)) {
 				clas = classes[key];
-				if(clas.search('edit-') != -1) {
+				if (clas.search('edit-') != -1) {
 					destination = clas.substring(clas.search('edit-') + 5);
 					return destination;
 				}
@@ -146,7 +146,7 @@ var inEdit = {
 
 			$(this).hide();
 
-			if($(this).hasClass('area')) {
+			if ($(this).hasClass('area')) {
 				field = $('<textarea></textarea>');
 				field.height(100)
 					.attr('class', classes)
@@ -210,7 +210,7 @@ var inEdit = {
 					} );
 					inEdit.deactivate();
 
-					loupeInfo = timelineHandle.getLoupeInfo();
+					loupeInfo = timeline.getLoupeInfo();
 					itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 				}
 		});
@@ -230,19 +230,19 @@ var inEdit = {
 // Item Management
 var itemManage = {
 	init: function() {
-		if($('.page-users, .page-options, .page-user, .page-tags, .page-plugins, .page-groups').length !== 0) {
+		if ($('.page-users, .page-options, .page-user, .page-tags, .page-plugins, .page-groups').length !== 0) {
 			$("input#search").keyup(function (e) {
 				var str = $('input#search').val();
 				itemManage.simpleFilter(str);
 			});
 		}
 
-		if(!$('.item.controls input[type=checkbox]')) {return;}
+		if (!$('.item.controls input[type=checkbox]')) {return;}
 
 		itemManage.initItems();
 
 		$('.item.controls input[type=checkbox]').change(function () {
-			if($('.item.controls label.selectedtext').hasClass('all')) {
+			if ($('.item.controls label.selectedtext').hasClass('all')) {
 				itemManage.uncheckAll();
 			} else {
 				itemManage.checkAll();
@@ -252,7 +252,7 @@ var itemManage = {
 		/* for all manage pages except for comments, add an ajax call to the
 		 * delete button
 		 */
-		if( $('.manage.comments').length === 0 ) {
+		if ( $('.manage.comments').length === 0 ) {
 			$('.item.controls input.button.delete').click(function () {
 				itemManage.update( 'delete' );
 				return false;
@@ -270,7 +270,7 @@ var itemManage = {
 		$('.item:not(.ignore) .checkbox input[type=checkbox]').each(function() {
 			id = $(this).attr('id');
 			id = id.replace(/.*\[(.*)\]/, "$1" ); // checkbox ids have the form name[id]
-			if(itemManage.selected['p' + id] == 1) {
+			if (itemManage.selected['p' + id] == 1) {
 				this.checked = 1;
 			}
 		});
@@ -306,26 +306,26 @@ var itemManage = {
 		}
 
 		itemManage.searchCache.each(function(i) {
-			if( this.search( search ) == -1 ) {
+			if ( this.search( search ) == -1 ) {
 				$(itemManage.searchRows[i]).addClass('hidden');
 			} else {
 				$(itemManage.searchRows[i]).removeClass('hidden');
 			}
 		});
 
-		if($('div.settings').length !== 0 || $('.container.plugins:visible').length > 1) {
+		if ($('div.settings').length !== 0 || $('.container.plugins:visible').length > 1) {
 			$('select[name=navigationdropdown]').val('all');
 		}
 
 		/*
-		if($('li.item').length != 0) {
+		if ($('li.item').length != 0) {
 			itemManage.changeItem();
 		}*/
 	},
 	changeItem: function() {
 		var selected = {};
 
-		if(itemManage.selected.length !== 0) {
+		if (itemManage.selected.length !== 0) {
 			selected = itemManage.selected;
 		}
 
@@ -356,17 +356,17 @@ var itemManage = {
 
 		count = 0;
 		for (var id in itemManage.selected)	{
-			if(itemManage.selected[id] == 1) {
+			if (itemManage.selected[id] == 1) {
 				count = count + 1;
 			}
 		}
 
-		if(count === 0) {
+		if (count === 0) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 0;
 			});
 			$('.item.controls label.selectedtext').addClass('none').removeClass('all').text('None selected');
-		} else if(visible == $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').length) {
+		} else if (visible == $('.item:not(.hidden):not(.ignore) .checkbox input[type=checkbox]').length) {
 			$('.item.controls input[type=checkbox]').each(function() {
 				this.checked = 1;
 			});
@@ -377,11 +377,11 @@ var itemManage = {
 				return false;
 			});
 
-			if(visible != count) {
+			if (visible != count) {
 				$('.item.controls label.selectedtext').text('All visible selected (' + count + ' total)');
 			}
 
-			if((total == count) || $('.currentposition .total').length === 0) {
+			if ((total == count) || $('.currentposition .total').length === 0) {
 				$('.item.controls label.selectedtext').removeClass('none').addClass('all').addClass('total').html('All ' + total + ' selected');
 			}
 		} else {
@@ -390,7 +390,7 @@ var itemManage = {
 			});
 			$('.item.controls label.selectedtext').removeClass('none').removeClass('all').text(count + ' selected');
 
-			if(visible != count) {
+			if (visible != count) {
 				$('.item.controls label.selectedtext').text(count + ' selected (' + visible + ' visible)');
 			}
 		}
@@ -431,7 +431,7 @@ var itemManage = {
 
 		elItem = $('#item-' + id);
 
-		if(elItem.length > 0 || action == 'delete') {
+		if (elItem.length > 0 || action == 'delete') {
 			elItem.fadeOut();
 		}
 
@@ -447,9 +447,9 @@ var itemManage = {
 					/* TODO: calculate new offset and limit based on filtering
 					 * and the current action
 					 */
-					loupeInfo = timelineHandle.getLoupeInfo();
+					loupeInfo = timeline.getLoupeInfo();
 					itemManage.fetch( 0, loupeInfo.limit, true );
-					timelineHandle.updateLoupeInfo();
+					timeline.updateLoupeInfo();
 				}
 				else {
 					itemManage.fetch( 0, 20, false );
@@ -480,7 +480,7 @@ var itemManage = {
 			data: '&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
 			dataType: 'json',
 			success: function(json) {
-				if(silent) {
+				if (silent) {
 					itemManage.selected = json.item_ids;
 					itemManage.initItems();
 				} else {
@@ -491,8 +491,10 @@ var itemManage = {
 						$('.years').html(json.timeline).hide();
 						spinner.stop();
 						itemManage.initItems();
-						$('.years').show();
-						timeline.reset();
+						setTimeout( function() {
+							$('.years').show();
+							timeline.reset();
+						}, 100 );
 						$('input.checkbox').rangeSelect();
 					}
 					else {
@@ -518,7 +520,7 @@ var itemManage = {
 var pluginManage = {
 	init: function() {
 		// Return if we're not on the plugins page
-		if(!$('.page-plugins').length) {return;}
+		if (!$('.page-plugins').length) {return;}
 
 		$('.plugins .item').hover( function() {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
@@ -535,9 +537,9 @@ var groupManage = {
 		this.users = users;
 
 		for(var z in this.users) {
-			if(users.hasOwnProperty(z)) {
+			if (users.hasOwnProperty(z)) {
 				$('#assign_user').append($('<option value="' + this.users[z].id + '">' + this.users[z].username + '</option>'));
-				if(this.users[z].member) {
+				if (this.users[z].member) {
 					this.addMember(this.users[z].id);
 				}
 			}
@@ -551,8 +553,8 @@ var groupManage = {
 
 		// Apply permission deny/allow toggle rules
 		$('.bool-permissions input[type=checkbox],.crud-permissions input[type=checkbox]').change(function(){
-			if($(this).attr('checked')) {
-				if($(this).hasClass('bitflag-deny')) {
+			if ($(this).attr('checked')) {
+				if ($(this).hasClass('bitflag-deny')) {
 					$('input[type=checkbox]', $(this).parents('tr')).filter(function(){return !$(this).hasClass('bitflag-deny');}).attr('checked', false);
 				}
 				else {
@@ -565,8 +567,8 @@ var groupManage = {
 	removeMember: function(member, id) {
 		name = this.users[id].username;
 
-		if(this.users[id].member) {
-			if($('#user_' + id).val() === 0) {
+		if (this.users[id].member) {
+			if ($('#user_' + id).val() === 0) {
 				$('#user_' + id).val('1');
 				$('#currentusers .memberlist').append('<a href="#" onclick="groupManage.removeMember(this,'+id+');" class="user">' + this.users[id].username + '</a>');
 			}
@@ -591,7 +593,7 @@ var groupManage = {
 
 		$('#user_' + id).val('1');
 
-		if(this.users[id].member) {
+		if (this.users[id].member) {
 			$('#currentusers .memberlist').append('<a href="#" onclick="groupManage.removeMember(this,'+id+');" class="user">' + this.users[id].username + '</a>');
 		}
 		else {
@@ -603,7 +605,7 @@ var groupManage = {
 		this.userscan('#currentusers');
 		this.userscan('#removedusers');
 		this.userscan('#newusers');
-		if($('#add_users option').length > 0) {
+		if ($('#add_users option').length > 0) {
 			$('#add_users').show();
 		}
 		else {
@@ -611,7 +613,7 @@ var groupManage = {
 		}
 	},
 	userscan: function(div) {
-		if($(div + ' .user').length > 0) {
+		if ($(div + ' .user').length > 0) {
 			$(div).show();
 		}
 		else {
@@ -625,10 +627,16 @@ var timeline = {
 	init: function() {
 		// No Timeline? No runny-runny.
 		if (!$('.timeline').length) {return;}
+		var self = this; // keep context in closures
 
 		// Set up pointers to elements for speed
 		timeline.view = $('.timeline');
 		timeline.handle = $('.handle', timeline.view);
+
+		// Fix width of years, so they don't spill into the next year
+		$('.year > span').each( function() {
+			$(this).width( $(this).parents('.year').width() - 4 );
+		});
 
 		// Get an array of posts per month
 		timeline.monthData = [0];
@@ -660,98 +668,58 @@ var timeline = {
 		// Make the slider bounded by the view
 		var maxSliderValue = Math.min( viewWidth, timelineWidth ) - handleWidth;
 
-		/* Initialize the timeline handle. We need to do this before we create the slider because
-		 * at the end of the slider initializer, it calls slider('moveTo', startValue) which will
-		 * trigger the 'stop' event. We also don't need to do a search on initial page load, so
-		 * set do_search to false until after slider initialization */
-		timelineHandle.init( handleWidth );
-		timeline.do_search = false;
+		// Initialize the timeline handle
+		timelineHandle.init( handleWidth, maxSliderValue );
 
 		$('.track')
 			.width( $('.years').width() - timeline.overhang )
-			.slider({
-				handle: '.handle',
-				max: Math.max( 1, maxSliderValue ),
-				startValue: maxSliderValue,
-				axis: 'horizontal',
-				stop: function(event, ui) {
-					timeline.updateView();
-					if ( timeline.do_search ) {
-						var loupeInfo = timelineHandle.getLoupeInfo();
-						itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
-					}
-					timelineHandle.updateLoupeInfo();
-				},
-				slide: function( event, ui) {
-					timeline.updateView();
-				}
-			})
-			.unbind('click')
 			.bind('dblclick', function(e) { // Double-clicking on either side of the handle moves the handle to the clicked position.
 				// Dismiss clicks on handle
-				if ($(e.target).is('.handle')) {return false;}
+				if ($(e.target).add($(e.target).parents()).is('.handle')) {return false;}
 
 				timeline.noJump = true;
 				clearTimeout(timeline.t1);
-				$('.track').slider('moveTo', e.layerX);
+				timelineHandle.value( e.pageX - $('.track').offset().left );
+				timeline.change();
 			})
 			.bind('click', function(e) { // Clicking either side of the handle moves the handle its own length to that side.
 
 				// Dismiss clicks on handle
-				if ($(e.target).is('.handle')) {return false;}
+				if ( $(e.target).add($(e.target).parents()).is('.handle') ) {return false;}
 
 				// Click to left or right of handle?
-				if (e.layerX < $('.track').slider('value') ) {
+				if ( e.pageX - $('.track').offset().left < timelineHandle.value() ) {
 					timeline.t1 = setTimeout(timeline.skipLoupeLeft, 300);
 				} else {
 					timeline.t1 = setTimeout(timeline.skipLoupeRight, 300);
 				}
-			})
-			.slider( 'moveTo', timelineWidth - handleWidth ); // a bug in the jQuery code requires us to explicitly do this in the case that startValue == 0
+			});
 
-		// update the do_search state variable
-		timeline.do_search = true;
+		timeline.updateLoupeInfo();
+	},
+	change: function() {
+		var loupeInfo = timeline.getLoupeInfo();
+		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
+		timeline.updateLoupeInfo();
+		timeline.noJump = null;
 	},
 	skipLoupeLeft: function(e) {
-		if (timeline.noJump === true) {
-			timeline.noJump = null;
-			return false;
-		}
-
-		$('.handle').css( 'left', Math.max(parseInt($('.handle').css('left'), 10) - $('.handle').width(), 0) );
-		timeline.updateView();
-		var loupeInfo = timelineHandle.getLoupeInfo();
-		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
-		timelineHandle.updateLoupeInfo();
-
+		timelineHandle.value( timelineHandle.value() - timeline.handle.width() )
+		timeline.change();
 	},
 	skipLoupeRight: function(e) {
-		if (timeline.noJump === true) {
-			timeline.noJump = null;
-			return false;
-		}
-
-		$('.handle').css( 'left', Math.min(parseInt($('.handle').css('left'), 10) + $('.handle').width(), parseInt($('.track').width(), 10) - $('.handle').width() ));
-		timeline.updateView();
-		var loupeInfo = timelineHandle.getLoupeInfo();
-		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
-		timelineHandle.updateLoupeInfo();
+		timelineHandle.value( timelineHandle.value() + timeline.handle.width() );
+		timeline.change();
 	},
 	updateView: function() {
-		if ( ! timeline.overhang ) {return;}
+		if ( ! timeline.overhang ) { return; }
 		if ( timeline.handle.offset().left <= timeline.view.offset().left + 5) {
 			// timeline needs to slide right if we are within 5px of edge
 			$('.years').css( 'right', Math.max( parseInt($('.years').css('right'),10) - timeline.handle.width(), 0 - timeline.overhang ) );
-			/*$('.years').stop().animate( {
-				right: Math.max( parseInt($('.years').css('right')) - 2*timeline.handle.width(), 0 - timeline.overhang )
-				}, function() { timeline.sliding = false; } );*/
 		}
 		else if ( timeline.handle.offset().left + timeline.handle.width() + 5 >= timeline.view.offset().left + timeline.view.width() ) {
 			// slide the timeline to the left
 			$('.years').css( 'right', Math.min( parseInt($('.years').css('right'),10) + timeline.handle.width(), 0 ) );
-			/*$('.years').stop().animate( {
-				right: Math.min( parseInt($('.years').css('right')) + 2*timeline.handle.width(), 0 )
-				}, function() { timeline.sliding = false; } );*/
 		}
 	},
 	indexFromPosition: function(pos) {
@@ -777,7 +745,7 @@ var timeline = {
 						Math.max( pos - ( monthBoundary + padding ), 0 ),
 						timeline.monthData[month] - 1 );
 	},
-	/* the reverse of the above function */
+	/* the inverse of the above function */
 	positionFromIndex: function(index) {
 		var month = 0;
 		var position = 0;
@@ -794,6 +762,29 @@ var timeline = {
 		var padding = parseInt( $('.years .months span').css('margin-left'), 10 );
 		padding = padding ? padding : 0;
 		return position + padding + ( index - positionIndex );
+	},
+	getLoupeInfo: function() {
+		var cur_overhang = $('.track').offset().left - $('.years').offset().left;
+		var loupeStartPosition = timeline.indexFromPosition( timelineHandle.value() + cur_overhang);
+		var loupeEndPosition = timeline.indexFromPosition( timelineHandle.value() + timeline.handle.width() + cur_overhang );
+
+		var loupeInfo = {
+			start: loupeStartPosition,
+			end: loupeEndPosition,
+			offset: parseInt(timeline.totalCount, 10) - parseInt(loupeEndPosition, 10),
+			limit: 1 + parseInt(loupeEndPosition, 10) - parseInt(loupeStartPosition, 10)
+			};
+		return loupeInfo;
+	},
+	updateLoupeInfo: function() {
+		var loupeInfo = timeline.getLoupeInfo();
+		$('.currentposition').html( loupeInfo.start +'-'+ loupeInfo.end +' of <span class="total inline">'+ timeline.totalCount + '</span>');
+
+		// Hide 'newer' and 'older' links as necessary
+		if (loupeInfo.start == 1) {$('.navigator .older').animate({opacity: '0'}, 200);} 
+		else {$('.navigator .older').animate({opacity: '1'}, 200);}
+		if (loupeInfo.end == timeline.totalCount) {$('.navigator .newer').animate({opacity: '0'}, 200); }
+		else {$('.navigator .newer').animate({opacity: '1'}, 200);}
 	},
 	reset: function () {
 		// update the arrays of posts per month
@@ -824,7 +815,7 @@ var timeline = {
 		// find the width which makes the loupe select 20 items
 		var handleWidth = timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
 		// make the slider bounded by the view
-		var maxSliderValue = Math.min( viewWidth, timelineWidth ) - handleWidth;
+		timelineHandle.max = Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		// reset the widths
 		$('.track').width( $('.years').width() - timeline.overhang );
@@ -835,32 +826,46 @@ var timeline = {
 			$(this).width( $(this).parents('.year').width() - 4 );
 		});
 
-		// reset the slider maxValue
-		$('.track').slider( 'setData', 'max', Math.max( 1, maxSliderValue ) );
-
-		// move the handle without triggering a search
-		timeline.do_search = false;
-		$('.track').slider( 'moveTo', maxSliderValue );
-		timeline.do_search = true;
+		// move the handle to the max value
+		timelineHandle.value( timelineHandle.max );
+		timeline.updateLoupeInfo();
 	}
 };
 
 
 // TIMELINE HANDLE
 var timelineHandle = {
-	init: function( handleWidth ) {
+	init: function( handleWidth, maxval ) {
 		timeline.handle.css('width', handleWidth + 'px');
+		this.max = maxval;
+		this.value( maxval );
+		var self = this;
 
 		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the
 		 * right side of the handle */
 		timeline.handle.css( 'right', 'auto' );
 
-
-		// Slide and fade in the handle
-		var handleLocation = parseInt(timeline.handle.css('left'), 10);
 		timeline.handle
-//			.css( 'left', handleLocation - 250 )
-			.animate({ opacity: 1 /* , left: handleLocation */ }, 2000, 'swing');
+			.mousedown( function(e) {
+				var initialpos = e.pageX;
+				$(document)
+					.mousemove( function(e) {
+						var new_value = self.value() + (e.pageX - initialpos);
+						new_value = ( new_value < 0 ) ? 0 : new_value;
+						new_value = ( new_value > self.max ) ? self.max : new_value;
+						if ( new_value != self.value() ) {
+							initialpos = e.pageX
+							self.value( new_value );
+						}
+						return false;
+					})
+					.mouseup( function(e) {
+						$(document).unbind('mousemove').unbind('mouseup');
+						timeline.change();
+						return false;
+					});
+				return false;
+			});
 
 		// Resize Handle Left
 		$('.resizehandleleft')
@@ -870,8 +875,7 @@ var timelineHandle = {
 
 				$(document).mousemove(timelineHandle.doDragLeft).mouseup(timelineHandle.endDrag);
 				return false;
-			})
-			.mouseup(timelineHandle.endDrag);
+			});
 
 		$('.resizehandleright')
 			.mousedown(function(e) {
@@ -880,8 +884,17 @@ var timelineHandle = {
 
 				$(document).mousemove(timelineHandle.doDragRight).mouseup(timelineHandle.endDrag);
 				return false;
-			})
-			.mouseup(timelineHandle.endDrag);
+			});
+	},
+	value: function(newval) {
+		if ( arguments.length ) {
+			newval = ( newval < 0 ) ? 0 : newval;
+			newval = ( newval > this.max ) ? this.max: newval;
+			this.val = parseInt( newval, 10 );
+			timeline.handle.css( 'left', this.val + 'px' );
+			//timeline.updateView();
+		}
+		return this.val;
 	},
 	doDragLeft: function(e) {
 		var h = timeline.handle;
@@ -913,48 +926,25 @@ var timelineHandle = {
 
 		return false;
 	},
-	getLoupeInfo: function() {
-		var cur_overhang = $('.track').offset().left - $('.years').offset().left;
-		var loupeStartPosition = timeline.indexFromPosition( parseInt($('.handle').css('left'), 10) + cur_overhang);
-		var loupeWidth = $('.handle').width();
-		var loupeEndPosition = timeline.indexFromPosition( parseInt($('.handle').css('left'), 10) + loupeWidth + cur_overhang );
-
-		var loupeInfo = {
-			start: loupeStartPosition,
-			end: loupeEndPosition,
-			offset: parseInt(timeline.totalCount, 10) - parseInt(loupeEndPosition, 10),
-			limit: 1 + parseInt(loupeEndPosition, 10) - parseInt(loupeStartPosition, 10)
-			};
-		return loupeInfo;
-	},
-	updateLoupeInfo: function() {
-		var loupeInfo = timelineHandle.getLoupeInfo();
-
-		$('.currentposition').html( loupeInfo.start +'-'+ loupeInfo.end +' of <span class="total inline">'+ timeline.totalCount + '</span>');
-		if ($('.currentposition').css('opacity')) { 
-			$('.currentposition').animate({opacity: 1}, 500);
-		}
-
-		// Hide 'newer' and 'older' links as necessary
-		if (loupeInfo.start == 1) {$('.navigator .older').animate({opacity: '0'}, 200);} 
-		else {$('.navigator .older').animate({opacity: '1'}, 200);}
-		if (loupeInfo.end == timeline.totalCount) {$('.navigator .newer').animate({opacity: '0'}, 200); }
-		else {$('.navigator .newer').animate({opacity: '1'}, 200);}
-	},
 	endDrag: function(e) {
 		timeline.noJump = true;
 
 		// Reset to using 'left'.
-		$('.handle').css({
-			'left': 	$('.handle').offset().left - $('.track').offset().left,
+		timeline.handle.css({
+			'left': 	timeline.handle.offset().left - $('.track').offset().left,
 			'right': 	'auto'
 		});
 
-		var loupeInfo = timelineHandle.getLoupeInfo();
-		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
-		timelineHandle.updateLoupeInfo();
+		// update slider max value for the new handle width
+		timelineHandle.max = Math.min( $('.timeline').width(), $('.years').width() ) - timeline.handle.width();
 
-		$(document).unbind('mousemove', timelineHandle.doDrag).unbind('mouseup', timelineHandle.endDrag);
+		// update slider value
+		timelineHandle.value( parseInt( timeline.handle.css('left'), 10 ) );
+		timeline.change();
+
+		$(document).unbind('mousemove', timelineHandle.doDragLeft)
+			.unbind('mousemove', timelineHandle.doDragRight)
+			.unbind('mouseup', timelineHandle.endDrag);
 
 		return false;
 	}
@@ -976,7 +966,7 @@ var spinner = {
 // NAVIGATION DROPDOWNS
 var navigationDropdown = {
 	init: function() {
-		if($('.page-user').length === 0 && $('.page-options').length === 0) {
+		if ($('.page-user').length === 0 && $('.page-options').length === 0) {
 			return;
 		}
 
@@ -985,7 +975,7 @@ var navigationDropdown = {
 		});
 	},
 	changePage: function(location) {
-		if( location === undefined ) {
+		if ( location === undefined ) {
 			nextPage = $('select[name=navigationdropdown]').val();
 		} else {
 			nextPage = location.options[location.selectedIndex].value;
@@ -1074,7 +1064,7 @@ var theMenu = {
 
 		// Down arrow
 		$.hotkeys.add('down', {propagate:false, disableInInput: true}, function() {
-			if($('#menulist .carrot ul li.carrot').length !== 0) {
+			if ($('#menulist .carrot ul li.carrot').length !== 0) {
 				if ($('#menulist .carrot ul li:last').hasClass('carrot')) {
 					// Move to top if at bottom
 					$('#menulist .carrot ul li:last').removeClass('carrot');
@@ -1082,7 +1072,7 @@ var theMenu = {
 				} else {
 					$('#menulist .carrot ul li.carrot').removeClass('carrot').next().addClass('carrot');
 				}
-			} else if(($('#menu').hasClass('hovering') === true)) {
+			} else if (($('#menu').hasClass('hovering') === true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot')) {
 					$('#menulist li:first').addClass('carrot');
@@ -1108,7 +1098,7 @@ var theMenu = {
 
 		// Up arrow
 		$.hotkeys.add('up', {propagate:true, disableInInput: true}, function(){
-			if($('#menulist .carrot ul li.carrot').length !== 0) {
+			if ($('#menulist .carrot ul li.carrot').length !== 0) {
 				if ($('#menulist .carrot ul li:first').hasClass('carrot')) {
 					$('#menulist .carrot ul li:first').removeClass('carrot');
 					$('#menulist .carrot ul li:last').addClass('carrot');
@@ -1171,9 +1161,9 @@ var theMenu = {
 						if (owner.hasClass('submenu')) {
 							$('.carrot').removeClass('carrot');
 							owner.addClass('carrot');
-						} else if(owner.hasClass('sub')) {
+						} else if (owner.hasClass('sub')) {
 							// Exists in a submenu
-							if($('#menu li.carrot li.hotkey-' + hotkey).length !== 0) {
+							if ($('#menu li.carrot li.hotkey-' + hotkey).length !== 0) {
 								// Hotkey exists in an active menu, use that
 								location = $('#menu li.carrot li.hotkey-' + hotkey + ' a').attr('href');
 								theMenu.blinkCarrot($('#menu li.carrot li.hotkey-' + hotkey));
@@ -1285,7 +1275,7 @@ var liveSearch = {
 // SEARCH CRITERIA TOGGLE
 function toggleSearch() {
 	var re = new RegExp('\\s*' + $(this).attr('href').substr(1), 'gi');
-	if($('#search').val().match(re)) {
+	if ($('#search').val().match(re)) {
 		$('#search').val(liveSearch.getSearchText().replace(re, ''));
 		$(this).removeClass('active');
 	}
@@ -1371,12 +1361,12 @@ var labeler = {
 	check: function(label) {
 		var target = $('#' + $(label).attr('for'));
 
-		if( !target ) {return;}
+		if ( !target ) {return;}
 
-		if( labeler.focus !== null && labeler.focus.attr('id') == target.attr('id') ) {
+		if ( labeler.focus !== null && labeler.focus.attr('id') == target.attr('id') ) {
 			labeler.aboveLabel(target);
 		}
-		else if( target.val() === '' ) {
+		else if ( target.val() === '' ) {
 			labeler.overLabel(target);
 		}
 		else {
@@ -1405,11 +1395,11 @@ var labeler = {
 habari.editor = {
 	insertSelection: function(value) {
 		var contentel = $('#content')[0];
-		if('selectionStart' in contentel) {
+		if ('selectionStart' in contentel) {
 			var content = $('#content').val();
 			$('#content').val(content.substr(0, contentel.selectionStart) + value + contentel.value.substr(contentel.selectionEnd, content.length));
 		}
-		else if(document.selection) {
+		else if (document.selection) {
 			contentel.focus();
 			document.selection.createRange().text = value;
 		}
@@ -1429,15 +1419,15 @@ habari.editor = {
 		$('#content').val(contents);
 	},
 	getSelection: function(contents) {
-		if($('#content').val() === '') {
+		if ($('#content').val() === '') {
 			return '';
 		}
 		else {
 			var contentel = $('#content')[0];
-			if('selectionStart' in contentel) {
+			if ('selectionStart' in contentel) {
 				return $('#content').val().substr(contentel.selectionStart, contentel.selectionEnd - contentel.selectionStart);
 			}
-			else if(document.selection) {
+			else if (document.selection) {
 				contentel.focus();
 				var range = document.selection.createRange();
 				if ( range === undefined ) {
@@ -1494,7 +1484,7 @@ $(document).ready(function(){
 
 	// Prevent all checkboxes to be unchecked.
 	$(".search_field").click(function(){
-		if($(".search_field:checked").size() === 0 && !$(this).attr('checked')) {
+		if ($(".search_field:checked").size() === 0 && !$(this).attr('checked')) {
 			return false;
 		}
 	});
@@ -1508,7 +1498,7 @@ $(document).ready(function(){
 	$('.resizable').resizeable();
 
 	/* Init Tabs, using jQuery UI Tabs */
-	$('.tabcontrol').tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: null, unselect: true });
+	$('.tabcontrol').parent().tabs({ fx: { height: 'toggle', opacity: 'toggle' }, selected: -1, collapsible: true });
 
 	// LOGIN: Focus cursor on 'Name'.
 	$('body.login #habari_username').focus();
@@ -1518,16 +1508,16 @@ $(document).ready(function(){
 		.click(toggleSearch)
 		.each(function(){
 			var re = new RegExp($(this).attr('href').substr(1));
-			if($('#search').val().match(re)) {
+			if ($('#search').val().match(re)) {
 				$(this).addClass('active');
 			}
 		});
 
 	// Take care of AJAX calls
 	$('body').bind('ajaxSuccess', function(event, req, opts){
-		if(opts.dataType == 'json') {
+		if (opts.dataType == 'json') {
 			eval('var cc=' + req.responseText);
-			if(cc.callback) {
+			if (cc.callback) {
 				cc.callback();
 			}
 		}
@@ -1542,7 +1532,7 @@ function resetTags() {
 
 	$('#tag-list li').each(function(){
 		replstr = new RegExp('\\s*"?' + $( this ).text() + '"?\\s*', "gi");
-		if(current.match(replstr)) {
+		if (current.match(replstr)) {
 			$(this).addClass('clicked');
 		}
 		else {
@@ -1550,7 +1540,7 @@ function resetTags() {
 		}
 	});
 
-	if(current.length === 0 && !$('#tags').hasClass('focus')) {
+	if (current.length === 0 && !$('#tags').hasClass('focus')) {
 		$('label[for=tags]').addClass('overcontent').removeClass('abovecontent').show();
 	}
 

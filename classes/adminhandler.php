@@ -3270,12 +3270,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public static function setup_stacks()
 	{
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.core.js", 'ui.core', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.slider.js", 'ui.slider', array('jquery', 'ui.core') );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.tabs.js", 'ui.tabs', array('jquery', 'ui.core') );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.sortable.js", 'ui.sortable', array('jquery', 'ui.core') );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/ui.resizable.js", 'ui.resizable', array('jquery', 'ui.core') );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery-1.3.2.min.js", 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery-ui-1.7.1.custom.min.js", 'jquery.ui', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
