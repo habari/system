@@ -66,7 +66,7 @@ class SQLiteConnection extends DatabaseConnection
 			$connect_string = implode( ':', array( $type, $file ) );
 		}
 		$conn = parent::connect( $connect_string, $db_user, $db_pass );
-		DB::exec( 'PRAGMA synchronous = OFF' );
+		$this->exec( 'PRAGMA synchronous = OFF' );
 		return $conn;
 	}
 
