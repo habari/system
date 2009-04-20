@@ -232,15 +232,15 @@ habari.media = {
 };
 
 $(document).ready(function(){
-	$('#mediatabs').tabs({
+	$('#mediatabs').parent().tabs({
 		fx: { height: 'toggle', opacity: 'toggle' },
-		selected: null,
-		unselect: true,
+		selected: -1,
+		collapsible: true,
 		show: function(){
-			var tabindex = $(this).data('selected.tabs');
+			var tabindex = $(this).tabs( 'option', 'selected' );
 			var tab = $('.mediasplitter').eq(tabindex);
 			var path = $.trim( $('.pathstore', tab).html() );
-			if(path != '') {
+			if (path != '') {
 				habari.media.showdir( path, null, tab );
 				habari.media.unqueueLoad();
 			}
