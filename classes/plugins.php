@@ -333,7 +333,9 @@ class Plugins
 	public static function load_active() 
 	{
 		foreach ( self::list_active() as $class => $filename ) {
-			self::load($class);
+			if ( file_exists($filename) ) {
+				self::load($class);
+			}
 		}
 	}
 	
