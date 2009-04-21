@@ -205,8 +205,8 @@ class InstallHandler extends ActionHandler
 				// instantiate this plugin
 				// in order to get its info()
 				include_once( $file );
-				Plugins::get_plugin_classes();
-				$pluginobj = Plugins::load( $file, false );
+				$class = Plugins::class_from_filename($file);
+				$pluginobj = Plugins::load( $class, false );
 				$plugin['active'] = false;
 				$plugin['verb'] = _t( 'Activate' );
 				$plugin['actions'] = array();
