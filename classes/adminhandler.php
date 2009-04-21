@@ -2040,7 +2040,7 @@ class AdminHandler extends ActionHandler
 		if ( isset($handler_vars['url']) ) {
 			$comment->url = $handler_vars['url'];
 		}
-		if ( isset($handler_vars['email']) && $handler_vars['email'] != '' ) ) {
+		if ( isset($handler_vars['email']) && $handler_vars['email'] != '' ) {
 			$comment->email = $handler_vars['email'];
 		}
 		if ( isset($handler_vars['content']) && $handler_vars['content'] != '' ) {
