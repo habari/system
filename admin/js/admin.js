@@ -631,7 +631,6 @@ var timeline = {
 
 		// Set up pointers to elements for speed
 		timeline.view = $('.timeline');
-		timeline.handle = $('.handle', timeline.view);
 
 		// Fix width of years, so they don't spill into the next year
 		$('.year > span').each( function() {
@@ -669,7 +668,7 @@ var timeline = {
 		var maxSliderValue = Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		// Initialize the timeline handle
-		timelineHandle.init( handleWidth, maxSliderValue );
+		timeline.handle = new timelineHandle( '.handle', handleWidth, maxSliderValue );
 
 		$('.track')
 			.width( $('.years').width() - timeline.overhang )
@@ -679,7 +678,7 @@ var timeline = {
 
 				timeline.noJump = true;
 				clearTimeout(timeline.t1);
-				timelineHandle.value( e.pageX - $('.track').offset().left );
+				timeline.handle.value( e.pageX - $('.track').offset().left );
 				timeline.change();
 			})
 			.bind('click', function(e) { // Clicking either side of the handle moves the handle its own length to that side.
@@ -688,7 +687,7 @@ var timeline = {
 				if ( $(e.target).add($(e.target).parents()).is('.handle') ) {return false;}
 
 				// Click to left or right of handle?
-				if ( e.pageX - $('.track').offset().left < timelineHandle.value() ) {
+				if ( e.pageX - $('.track').offset().left < timeline.handle.value() ) {
 					timeline.t1 = setTimeout(timeline.skipLoupeLeft, 300);
 				} else {
 					timeline.t1 = setTimeout(timeline.skipLoupeRight, 300);
@@ -701,26 +700,25 @@ var timeline = {
 		var loupeInfo = timeline.getLoupeInfo();
 		itemManage.fetch( loupeInfo.offset, loupeInfo.limit, false );
 		timeline.updateLoupeInfo();
-		timeline.noJump = null;
 	},
 	skipLoupeLeft: function(e) {
-		timelineHandle.value( timelineHandle.value() - timeline.handle.width() )
+		timeline.handle.value( timeline.handle.value() - timeline.handle.width() )
 		timeline.change();
 	},
 	skipLoupeRight: function(e) {
-		timelineHandle.value( timelineHandle.value() + timeline.handle.width() );
+		timeline.handle.value( timeline.handle.value() + timeline.handle.width() );
 		timeline.change();
 	},
 	updateView: function() {
 		if ( ! timeline.overhang ) { return; }
-		if ( timeline.handle.offset().left <= timeline.view.offset().left + 5) {
+		/*if ( timeline.handle.offset().left <= timeline.view.offset().left + 5) {
 			// timeline needs to slide right if we are within 5px of edge
 			$('.years').css( 'right', Math.max( parseInt($('.years').css('right'),10) - timeline.handle.width(), 0 - timeline.overhang ) );
 		}
 		else if ( timeline.handle.offset().left + timeline.handle.width() + 5 >= timeline.view.offset().left + timeline.view.width() ) {
 			// slide the timeline to the left
 			$('.years').css( 'right', Math.min( parseInt($('.years').css('right'),10) + timeline.handle.width(), 0 ) );
-		}
+		}*/
 	},
 	indexFromPosition: function(pos) {
 		var monthBoundary = 0;
@@ -765,8 +763,8 @@ var timeline = {
 	},
 	getLoupeInfo: function() {
 		var cur_overhang = $('.track').offset().left - $('.years').offset().left;
-		var loupeStartPosition = timeline.indexFromPosition( timelineHandle.value() + cur_overhang);
-		var loupeEndPosition = timeline.indexFromPosition( timelineHandle.value() + timeline.handle.width() + cur_overhang );
+		var loupeStartPosition = timeline.indexFromPosition( timeline.handle.value() + cur_overhang);
+		var loupeEndPosition = timeline.indexFromPosition( timeline.handle.value() + timeline.handle.width() + cur_overhang );
 
 		var loupeInfo = {
 			start: loupeStartPosition,
@@ -815,7 +813,7 @@ var timeline = {
 		// find the width which makes the loupe select 20 items
 		var handleWidth = timelineWidth - timeline.positionFromIndex( timeline.totalCount - 20 );
 		// make the slider bounded by the view
-		timelineHandle.max = Math.min( viewWidth, timelineWidth ) - handleWidth;
+		timeline.handle.max = Math.min( viewWidth, timelineWidth ) - handleWidth;
 
 		// reset the widths
 		$('.track').width( $('.years').width() - timeline.overhang );
@@ -827,77 +825,109 @@ var timeline = {
 		});
 
 		// move the handle to the max value
-		timelineHandle.value( timelineHandle.max );
+		timeline.handle.value( timeline.handle.max );
 		timeline.updateLoupeInfo();
 	}
 };
 
 
-// TIMELINE HANDLE
-var timelineHandle = {
-	init: function( handleWidth, maxval ) {
-		timeline.handle.css('width', handleWidth + 'px');
-		this.max = maxval;
-		this.value( maxval );
+// TIMELINE SLIDER
+function timelineHandle( id, width, maxvalue ) {
+	this.handle = $(id, timeline.view);
+	this.max = maxvalue;
+	this.value( maxvalue );
+
+	this.handle.css( 'width', width + 'px');
+	/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the
+	 * right side of the handle */
+	this.handle.css( 'right', 'auto' );
+
+	// this is required to keep context
+	var self = this;
+	
+	this.handle.mousedown(function(e) {
+		return self.mouseDown(e);
+	});
+
+	// Resize handles
+	$('.resizehandleleft').mousedown(function(e) {
+		return self.resize(e, 'left');
+	});
+
+	$('.resizehandleright').mousedown(function(e) {
+		return self.resize(e, 'right');
+	});
+}
+
+timelineHandle.prototype = {
+	mouseDown: function(e) {
+		this.initialpos = e.pageX;
+		
+		// these are required to keep context
 		var self = this;
-
-		/* force 'right' property to 'auto' so we can check in doDragLeft if we have fixed the
-		 * right side of the handle */
-		timeline.handle.css( 'right', 'auto' );
-
-		timeline.handle
-			.mousedown( function(e) {
-				var initialpos = e.pageX;
-				$(document)
-					.mousemove( function(e) {
-						var new_value = self.value() + (e.pageX - initialpos);
-						new_value = ( new_value < 0 ) ? 0 : new_value;
-						new_value = ( new_value > self.max ) ? self.max : new_value;
-						if ( new_value != self.value() ) {
-							initialpos = e.pageX
-							self.value( new_value );
-						}
-						return false;
-					})
-					.mouseup( function(e) {
-						$(document).unbind('mousemove').unbind('mouseup');
-						timeline.change();
-						return false;
-					});
-				return false;
-			});
-
-		// Resize Handle Left
-		$('.resizehandleleft')
-			.mousedown(function(e) {
-				timelineHandle.firstMousePos = timeline.handle.offset().left - $('.track').offset().left;
-				timelineHandle.initialSize = timeline.handle.width();
-
-				$(document).mousemove(timelineHandle.doDragLeft).mouseup(timelineHandle.endDrag);
-				return false;
-			});
-
-		$('.resizehandleright')
-			.mousedown(function(e) {
-				timelineHandle.firstMousePos = e.clientX;
-				timelineHandle.initialSize = timeline.handle.width();
-
-				$(document).mousemove(timelineHandle.doDragRight).mouseup(timelineHandle.endDrag);
-				return false;
-			});
+		this.mouseMoveDelegate = function(e) {
+			return self.mouseMove(e);
+		};
+		this.mouseUpDelegate = function(e) {
+			return self.mouseUp(e);
+		};
+		$(document)
+			.bind( 'mousemove.timeline', this.mouseMoveDelegate )
+			.bind( 'mouseup.timeline', this.mouseUpDelegate );
+		return false;
 	},
-	value: function(newval) {
-		if ( arguments.length ) {
-			newval = ( newval < 0 ) ? 0 : newval;
-			newval = ( newval > this.max ) ? this.max: newval;
-			this.val = parseInt( newval, 10 );
-			timeline.handle.css( 'left', this.val + 'px' );
-			//timeline.updateView();
+	mouseMove: function(e) {
+		var new_value = this.value() + (e.pageX - this.initialpos);
+		new_value = ( new_value < 0 ) ? 0 : new_value;
+		new_value = ( new_value > this.max ) ? this.max : new_value;
+		if ( new_value != this.value() ) {
+			this.initialpos = e.pageX;
+			this.value( new_value );
 		}
-		return this.val;
+		return false;
+	},
+	mouseUp: function(e) {
+		$(document).unbind('mousemove.timeline', this.mouseMoveDelegate).unbind('mouseup.timeline', this.mouseUpDelegate);
+		timeline.change();
+		return false;
+	},
+	value: function(value) {
+	       if ( arguments.length ) {
+		       value = ( value < 0 ) ? 0 : value;
+		       value = ( value > this.max ) ? this.max : value;
+		       this.val = parseInt( value, 10 );
+		       this.handle.css( 'left', this.val + 'px' );
+	       }
+	       return this.val;
+	},
+	width: function() {
+		return this.handle.width();
+	},
+	resize: function(e, direction) {
+		this.initialSize = this.handle.width();
+		this.firstMousePos = e.clientX;
+
+		// setup functions to keep context
+		var self = this;
+		if ( direction == 'left' ) {
+			this.dragDelegate = function(e) {
+				return self.doDragLeft(e);
+			};
+		}
+		else {
+			this.dragDelegate = function(e) {
+				return self.doDragRight(e);
+			};
+		}
+		this.endDragDelegate = function(e) {
+			return self.endDrag(e);
+		};
+		$(document).bind('mousemove.timeline', this.dragDelegate)
+			.bind('mouseup.timeline', this.endDragDelegate);
+		return false;	
 	},
 	doDragLeft: function(e) {
-		var h = timeline.handle;
+		var h = this.handle;
 		var track = h.parents('.track');
 		// fix the right side (only do this if we haven't already done it)
 		if ( h.css('right') == 'auto' ) {
@@ -908,12 +938,17 @@ var timelineHandle = {
 		}
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the left
-		h.css('width', Math.min(Math.max(timelineHandle.initialSize + (timelineHandle.firstMousePos - (e.clientX - track.offset().left)), 20), Math.min(track.width() - parseInt(h.css('right'),10), 200)));
+		h.css( 'width',
+			Math.min(
+				Math.max( this.initialSize - (e.clientX - this.firstMousePos), 20 ),
+				Math.min( track.width() - parseInt(h.css('right'),10 ), 200 )
+			)
+		);
 
 		return false;
 	},
 	doDragRight: function(e) {
-		var h = timeline.handle;
+		var h = this.handle;
 		var track = h.parents('.track');
 		// fix the left side
 		h.css({
@@ -922,34 +957,34 @@ var timelineHandle = {
 		});
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the right
-		h.css( 'width', Math.min(Math.max(timelineHandle.initialSize + (e.clientX - timelineHandle.firstMousePos), 20), Math.min(track.width() - parseInt(h.css('left'), 10), 200)) );
+		h.css( 'width',
+			Math.min(
+				Math.max( this.initialSize + (e.clientX - this.firstMousePos), 20),
+				Math.min( track.width() - parseInt(h.css('left'), 10), 200 )
+			)
+		);
 
 		return false;
 	},
 	endDrag: function(e) {
-		timeline.noJump = true;
-
 		// Reset to using 'left'.
-		timeline.handle.css({
-			'left': 	timeline.handle.offset().left - $('.track').offset().left,
-			'right': 	'auto'
+		this.handle.css({
+			'left':	this.handle.offset().left - $('.track').offset().left,
+			'right': 'auto'
 		});
 
 		// update slider max value for the new handle width
-		timelineHandle.max = Math.min( $('.timeline').width(), $('.years').width() ) - timeline.handle.width();
+		this.max = Math.min( $('.timeline').width(), $('.years').width() ) - this.handle.width();
 
 		// update slider value
-		timelineHandle.value( parseInt( timeline.handle.css('left'), 10 ) );
+		this.value( parseInt( this.handle.css('left'), 10 ) );
 		timeline.change();
 
-		$(document).unbind('mousemove', timelineHandle.doDragLeft)
-			.unbind('mousemove', timelineHandle.doDragRight)
-			.unbind('mouseup', timelineHandle.endDrag);
+		$(document).unbind('mousemove.timeline').unbind('mouseup.timeline');
 
 		return false;
 	}
 };
-
 
 // SPINNER
 var spinner = {
