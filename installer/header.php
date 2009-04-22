@@ -6,7 +6,7 @@
 	<meta name="robots" content="no index,no follow" />
 	<link rel="shortcut icon" href="/favicon.ico" />
 	<link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css">
-	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.js"></script>
+	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery-1.3.2.min.js"></script>
 	<title><?php _e('Install Habari'); ?></title>
 </head>
 <body id="installer">
