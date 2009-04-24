@@ -55,8 +55,23 @@ class CURLRequestProcessor implements RequestProcessor
 			curl_setopt( $ch, CURLOPT_POST, true ); // POST mode.
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, $body );
 		}
+		else {
+			curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n
+		}
 
 		$fh = tmpfile();
+		if (! $fh ) {
+			$tmp = tempnam( HABARI_PATH . '/user/cache/', 'RR' );
+			if ( ! $tmp ) {
+				return Error::raise( _t( ' %s: CURL Error. Unable to create temporary file name.', array( __CLASS__ ) ), E_USER_WARNING );
+			}
+
+			$fh = fopen( $tmp, 'wb' );
+			if ( ! $fh ) {
+				return Error::raise( _t( ' %s: CURL Error. Unable to open temporary file.', array( __CLASS__ ) ), E_USER_WARNING );
+			}
+		}
+
 		curl_setopt( $ch, CURLOPT_FILE, $fh );
 
 		$success = curl_exec( $ch );
@@ -66,6 +81,10 @@ class CURLRequestProcessor implements RequestProcessor
 			$body = stream_get_contents( $fh );
 		}
 		fclose( $fh );
+
+		if ( isset( $tmp ) && file_exists ($tmp ) ) {
+			unlink( $tmp );
+		}
 
 		if ( curl_errno( $ch ) !== 0 ) {
 			return Error::raise( sprintf( _t('%s: CURL Error %d: %s'), __CLASS__, curl_errno( $ch ), curl_error( $ch ) ),
