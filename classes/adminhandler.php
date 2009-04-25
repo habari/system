@@ -24,6 +24,7 @@ class AdminHandler extends ActionHandler
 		if ( !$user->loggedin ) {
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
 			if ( URL::get_matched_rule()->name == 'admin_ajax' && isset($_SERVER['HTTP_REFERER']) ) {
+				header( 'Content-Type: text/javascript;charset=utf-8' );
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
 			}
 			else {
@@ -143,6 +144,7 @@ class AdminHandler extends ActionHandler
 	 */
 	public function act_admin_ajax()
 	{
+		header( 'Content-Type: text/javascript;charset=utf-8' );
 		$context = $this->handler_vars['context'];
 		if ( method_exists( $this, 'ajax_' . $context ) ) {
 			$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
@@ -3191,7 +3193,6 @@ class AdminHandler extends ActionHandler
 		}
 		$output['controls'] = $controls_out;
 
-		header( 'content-type:text/javascript' ); 
 		echo json_encode( $output );
 	}
 
