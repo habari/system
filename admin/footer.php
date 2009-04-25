@@ -20,7 +20,7 @@
 		if ( User::identify()->can('super_user') ) {
 			?>
 				<span class="middot">&middot;</span>
-				<span><a href="<?php Site::out_url( 'habari' ); ?>/admin/sysinfo"> <?php _e( 'System Information'); ?></a>
+				<span><a href="<?php Site::out_url( 'habari' ); ?>/admin/sysinfo"> <?php _e( 'System Information'); ?></a></span>
 			<?php
 		}
 	?>
