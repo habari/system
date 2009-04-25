@@ -504,11 +504,11 @@ class InstallHandler extends ActionHandler
 		if ( file_exists( $db_file ) ) {
 			// the DB file exists, why can't we access it?
 			if ( ! is_writable( $db_file ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>_t('The SQLite data file is not writable by the web server.') ) );
+				$this->theme->assign('form_errors', array('db_file'=>_t('Cannot write to %s. The SQLite data file is not writable by the web server.', array($db_file)) ) );
 				return false;
 			}
 			if ( ! is_writable( dirname( $db_file ) ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>_t('SQLite requires that the directory that holds the DB file be writable by the web server.') ) );
+				$this->theme->assign('form_errors', array('db_file'=>_t('Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server.', array($db_file)) ) );
 				return false;
 			}
 		}
@@ -517,7 +517,7 @@ class InstallHandler extends ActionHandler
 			// let's see if the directory is writable
 			// so that we could create the file
 			if ( ! is_writable( dirname( $db_file ) ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>_t('The SQLite data file does not exist, and it cannot be created in the specified directory.  SQLite requires that the directory containing the database file be writable by the web server.')) );
+				$this->theme->assign('form_errors', array('db_file'=>_t('Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server.', array($db_file))) );
 				return false;
 			}
 		}
@@ -1558,13 +1558,13 @@ class InstallHandler extends ActionHandler
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
-				$xml_error->addChild( 'message', _t('SQLite requires that the directory that holds the DB file be writable by the web server.') );
+				$xml_error->addChild( 'message', _t('Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server.', array(dirname($db_file)) ) );
 			} elseif ( file_exists ( Site::get_path( 'user', TRUE ) . $db_file ) && ( ! is_writable( Site::get_path( 'user', TRUE ) . $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
 
-				$xml_error->addChild( 'message', _t('The SQLite data file is not writable by the web server.') );
+				$xml_error->addChild( 'message', _t('Cannot write to %s. The SQLite data file is not writable by the web server.', array($db_file) ) );
 			} else {
 				// Can we connect to the DB?
 				$pdo = 'sqlite:' . $db_file;
