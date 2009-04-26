@@ -10,6 +10,8 @@
 
 class Vocabulary extends QueryRecord
 {
+	public static $features = array('hierarchical', 'required', 'multiple', 'free');
+
 	/**
 	 * Return the defined database columns for a Vocabulary.
 	 * @return array Array of columns in the Vocabulary table
@@ -61,14 +63,6 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
-	 * Delete a Vocabulary by name.
-	 * @return boolean true if the Vocabulary was deleted, false otherwise
-	 **/
-	public static function delete($name)
-	{
-	}
-
-	/**
 	 * Rename a Vocabulary.
 	 * @return boolean true if the Vocabulary was renamed, false otherwise
 	 **/
@@ -82,6 +76,7 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function names()
 	{
+		return array();
 	}
 
 	/**
@@ -94,10 +89,12 @@ class Vocabulary extends QueryRecord
 
 	/**
 	 * Produce a BitMask for a feature mask. Convenience method for use when creating a Vocabulary.
-	 * @return array Array of Vocabulary names
+	 * @return BitMask Mask representing the features of this vocabulary
 	 **/
 	public static function feature_mask($hierarchical, $required, $multiple, $free)
 	{
+		// TODO Set this according to what was passed in. Currently sets everything to hierarchical only.
+		return new Bitmask( self::$features, 16 );
 	}
 
 	/**
