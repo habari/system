@@ -905,5 +905,53 @@ class Theme extends Pluggable
 			}
 		}
 	}
+	
+
+	/**
+	 * Retrieve the block objects for the current scope and specified area
+	 * Incomplete!
+	 * 
+	 * @param string $area The area to which blocks will be output
+	 * @return array An array of Block instances to render
+	 * @todo Finish this function to pull data from a block_instances table
+	 */
+	public function get_blocks($area)
+	{
+		return array();
+	}
+		
+	/**
+	 * Handle the calling of $theme->area() from inside a theme
+	 * Displays blocks associated to the specified area and current scope.
+	 * 
+	 * @param string $area The area to which blocks will be output
+	 * @return string the output of all the blocks
+	 */
+	public function theme_area($area)
+	{
+		$blocks = array();
+		$blocks = Plugins::filter('block_list', $blocks);
+		
+		$area_blocks = $this->get_blocks($area);
+		
+		$this->area = $area;
+		$begin = '';
+		$begin = Plugins::filter('area_begin', $begin, $area, $this);
+		
+		$output = '';
+		foreach($area_blocks as $block_instance_id => $block) {
+			Plugins::act('block_content_' . $block->type, $block);
+			$output .= implode( '', $this->content_return($block));
+		}
+
+		$this->area = '';
+		$end = '';
+		$end = Plugins::filter('area_end', $end, $area, $this);
+
+		$output = $begin . $output . $end;
+		
+		return $output;
+	}
+
 }
 ?>
