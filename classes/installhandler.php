@@ -1389,18 +1389,21 @@ class InstallHandler extends ActionHandler
 		$plugins = Options::get( 'active_plugins' );
 		if( is_array($plugins) ) {
 			foreach( $plugins as $filename ) {
-				// add base path to stored path
-				$filename = HABARI_PATH . $filename;
-				if( file_exists($filename) ) {
+				if(!file_exists($filename)) {
+					// try adding base path to stored path
+					$filename = HABARI_PATH . $filename;
+				}
+				if(file_exists($filename)) {
 					require_once $filename;
 					$class = Plugins::class_from_filename($filename);
 					$short_file = substr( $filename, strlen( HABARI_PATH ) );
+				}
 
 					if( $class ) {
-						$new_plugins[$class] = $short_file;
-					}
+					$new_plugins[$class] = $short_file;
 				}
 			}
+		}
 		}
 		Options::set('active_plugins', $new_plugins);
 	}
