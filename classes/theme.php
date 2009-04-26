@@ -912,28 +912,31 @@ class Theme extends Pluggable
 	 * Incomplete!
 	 * 
 	 * @param string $area The area to which blocks will be output
+	 * @param string $scope The scope to which blocks will be output
+	 * @param Theme $theme The theme that is outputting these blocks
 	 * @return array An array of Block instances to render
 	 * @todo Finish this function to pull data from a block_instances table
 	 */
-	public function get_blocks($area)
+	public function get_blocks($area, $scope, $theme)
 	{
 		return array();
 	}
 		
 	/**
-	 * Handle the calling of $theme->area() from inside a theme
 	 * Displays blocks associated to the specified area and current scope.
 	 * 
+	 * @param Theme $theme The theme with which this area will be output
 	 * @param string $area The area to which blocks will be output
+	 * @param string $scope Used to force a specific scope
 	 * @return string the output of all the blocks
 	 */
-	public function theme_area($area)
+	public function theme_area($theme, $area, $scope = null)
 	{
 		$blocks = array();
 		$blocks = Plugins::filter('block_list', $blocks);
 		
-		$area_blocks = $this->get_blocks($area);
-		
+		$area_blocks = $this->get_blocks($area, $scope, $theme);
+
 		$this->area = $area;
 		$begin = '';
 		$begin = Plugins::filter('area_begin', $begin, $area, $this);
