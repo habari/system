@@ -117,6 +117,10 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 			}
 
 			// check attributes
+			if ( !count($attr) ) {
+				$foundStart = true;
+				break; // To: FOUNDSTARTBREAKPOINT
+			}
 			foreach ( $attr as $compareName => $compareVal ) {
 				if ( isset( $this->tokens[$offset]['attrs'][$compareName] ) &&
 						stripos( $this->tokens[$offset]['attrs'][$compareName], $compareVal ) !== false ) {
