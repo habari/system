@@ -3272,7 +3272,7 @@ class AdminHandler extends ActionHandler
 	 */
 	public static function setup_stacks()
 	{
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery-1.3.2.min.js", 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery-ui-1.7.1.custom.min.js", 'jquery.ui', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );

@@ -6,7 +6,7 @@
 
 	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
 
-	<script src="<?php Site::out_url('scripts'); ?>/jquery-1.3.2.min.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery-ui-1.7.1.custom.min.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script>
