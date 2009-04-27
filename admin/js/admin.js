@@ -1180,8 +1180,13 @@ var theMenu = {
 		// Enter & Carrot
 		$.hotkeys.add('return', { propagate:true, disableInInput: true }, function() {
 			if ($('#menu').hasClass('hovering') === true && $('.carrot')) {
-				theMenu.blinkCarrot($('.carrot a').parent());
-				location = $('.carrot a').attr('href');
+				if($('.carrot .carrot').length > 0) {
+					carrot= $('.carrot .carrot a').eq(0); 
+				} else {
+					carrot= $('.carrot a').eq(0);
+				}
+				theMenu.blinkCarrot(carrot.parent());
+				location = carrot.attr('href');
 			} else {
 				return false;
 			}
