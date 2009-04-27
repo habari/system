@@ -1399,12 +1399,12 @@ class InstallHandler extends ActionHandler
 					$short_file = substr( $filename, strlen( HABARI_PATH ) );
 				}
 
-					if( $class ) {
+				if( $class ) {
 					$new_plugins[$class] = $short_file;
 				}
 			}
 		}
-		}
+
 		Options::set('active_plugins', $new_plugins);
 	}
 	
