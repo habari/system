@@ -23,6 +23,8 @@ class DatabaseConnection
 	 * @var array tables Habari knows about
 	 */
 	private $tables = array(
+		'blocks',
+		'blocks_areas',
 		'commentinfo',
 		'comments',
 		'crontab',
@@ -39,6 +41,7 @@ class DatabaseConnection
 		'poststatus',
 		'posttype',
 		'rewrite_rules',
+		'scopes',
 		'sessions',
 		'tag2post',
 		'tags',

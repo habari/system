@@ -203,8 +203,7 @@ CREATE TABLE {$prefix}vocabularies (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  hierarchical TINYINT(1) UNSIGNED NOT NULL DEFAUlT 0,
-  required TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+  feature_mask INT UNSIGNED NOT NULL DEFAUlT 0,
   PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
@@ -252,4 +251,30 @@ CREATE TABLE {$prefix}user_token_permissions (
   token_id INT UNSIGNED NOT NULL,
   access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (user_id, token_id)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+CREATE TABLE {$prefix}scopes (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  criteria TEXT NOT NULL,
+	description TEXT NULL,
+	priority TINYINT UNSIGNED NOT NULL,
+  PRIMARY KEY (id)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+CREATE TABLE {$prefix}blocks (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  title VARCHAR(255) NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  data TEXT NULL,
+  PRIMARY KEY (id)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+CREATE TABLE {$prefix}blocks_areas (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  block_id INT UNSIGNED NOT NULL,
+  area VARCHAR(255) NOT NULL,
+  scope_id INT UNSIGNED NOT NULL,
+	display_order INT UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
