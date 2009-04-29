@@ -13,7 +13,41 @@
  */
 class Block extends QueryRecord implements IsContent
 {
+	private $unserialized_data = false;
+	private $datakeys = array();
 
+	/**
+	 * Constructor for the Block class.
+	 * @param array $paramarray an associative array of initial block field values.
+	 **/
+	public function __construct( $paramarray = array() )
+	{
+		// Defaults
+		$this->fields = array_merge(
+			self::default_fields(),
+			$this->fields,
+			$this->newfields
+		);
+		parent::__construct( $paramarray );
+
+		$this->exclude_fields( 'id' );
+		$this->unserialize_data();
+	}
+
+	/**
+	 * Return the defined database columns for a Block.
+	 * @return array Array of columns in the Block table
+	 **/
+	public static function default_fields()
+	{
+		return array(
+			'id' => 0,
+			'title' => '',
+			'data' => '',
+			'type' => '',
+		);
+	}
+	
 	/**
 	 * Render and return the block content 
 	 * 
@@ -39,6 +73,20 @@ class Block extends QueryRecord implements IsContent
 			'block.' . $this->type,
 			'block',
 		);
+	}
+			
+	public function unserialize_data()
+	{
+		if(!$this->unserialized_data) {
+			$this->unserialized_data = true;
+			if(trim($this->data) != '') {
+				$data = unserialize($this->data);
+				$this->datakeys = array_keys($data);
+				foreach($data as $key => $value) {
+					$this->$key = $value;
+				}
+			}
+		}
 	}
 	
 }
