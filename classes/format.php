@@ -137,6 +137,12 @@ class Format
 		);
 		
 		$token = $set->current();
+
+		// There are no tokens in the text being formatted
+		if ( $token === FALSE ) {
+			return $value;
+		}
+
 		$openP = false;
 		do {
 			
