@@ -907,6 +907,14 @@ class Posts extends ArrayObject implements IsContent
 
 		return $arguments;
 	}
+	
+	public static function rewrite_match_type($rule, $slug, $parameters)
+	{
+		$args = $rule->named_arg_values;
+		$args['count'] = true;
+		$postcount = Posts::get($args);
+		return $postcount > 0;
+	}
 
 
 	/**

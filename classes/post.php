@@ -454,10 +454,6 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
-		// no tags? then let's get out'a'here
-		if (count($this->tags) == 0) {
-			return true;
-		}
 		/*
 		 * First, let's clean the incoming tag text array, ensuring we have
 		 * a unique set of tag texts and slugs.
@@ -878,6 +874,7 @@ class Post extends QueryRecord implements IsContent
 		else {
 			$settings->append('checkbox', 'minor_edit', 'null:null', _t('Minor Edit'), 'tabcontrol_checkbox');
 			$settings->minor_edit->value = true;
+			$form->append('hidden', 'modified', 'null:null')->value = $this->modified;
 		}
 
 		$settings->append('checkbox', 'comments_enabled', 'null:null', _t('Comments Allowed'), 'tabcontrol_checkbox');

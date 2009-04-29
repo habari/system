@@ -140,7 +140,11 @@ var inEdit = {
 		editables.each(function() {
 			var classes = $(this).attr('class');
 			destination = inEdit.getDestination(classes);
-			var val = $(this).html();
+			if($('.clean-' + destination, parent).length != 0) {
+				var val = $('.clean-' + destination, parent).html();
+			} else {
+				var val = $(this).html();
+			}
 			var width = $(this).width();
 			var field;
 

@@ -24,6 +24,7 @@ class AdminHandler extends ActionHandler
 		if ( !$user->loggedin ) {
 			Session::add_to_set( 'login', $_SERVER['REQUEST_URI'], 'original' );
 			if ( URL::get_matched_rule()->name == 'admin_ajax' && isset($_SERVER['HTTP_REFERER']) ) {
+				header( 'Content-Type: text/javascript;charset=utf-8' );
 				echo '{callback: function(){location.href="'.$_SERVER['HTTP_REFERER'].'"} }';
 			}
 			else {
@@ -41,11 +42,7 @@ class AdminHandler extends ActionHandler
 			}
 			exit;
 		}
-		/* TODO: update ACL class so that this works
-		if ( !$user->can( 'admin' ) ) {
-			die( _t( 'Permission denied.' ) );
-		}
-		//*/
+
 		$last_form_data = Session::get_set( 'last_form_data' ); // This was saved in the "if ( !$user )" above, UserHandler transferred it properly.
 		/* At this point, Controller has not created handler_vars, so we have to modify $_POST/$_GET. */
 		if ( isset( $last_form_data['post'] ) ) {
@@ -73,7 +70,16 @@ class AdminHandler extends ActionHandler
 	public function act_admin()
 	{
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
-		$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
+		if(isset($this->handler_vars['content_type'])) {
+			$type = $this->handler_vars['content_type'];
+		}
+		elseif( $page == 'publish' && isset($this->handler_vars['id'] ) ) {
+			$type = Post::get(intval($this->handler_vars['id']))->content_type;
+		}
+		else {
+			$type = '';
+		}
+		//$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -138,6 +144,7 @@ class AdminHandler extends ActionHandler
 	 */
 	public function act_admin_ajax()
 	{
+		header( 'Content-Type: text/javascript;charset=utf-8' );
 		$context = $this->handler_vars['context'];
 		if ( method_exists( $this, 'ajax_' . $context ) ) {
 			$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
@@ -462,9 +469,17 @@ class AdminHandler extends ActionHandler
 		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
+						
 			$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
 			$form = $post->get_form( 'admin' );
 
+			// Verify that the post hasn't already been updated since the form was loaded
+			if($post->modified != $form->modified->value) {
+				Session::notice( sprintf( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
+				exit;
+			}
+			
 			$post->title = $form->title->value;
 			if ( $form->newslug->value == '' ) {
 				Session::notice( _e('A post slug cannot be empty. Keeping old slug.') );
@@ -2025,7 +2040,7 @@ class AdminHandler extends ActionHandler
 		if ( isset($handler_vars['author']) && $handler_vars['author'] != '' ) {
 			$comment->name = $handler_vars['author'];
 		}
-		if ( isset($handler_vars['url']) && $handler_vars['url'] != '' ) {
+		if ( isset($handler_vars['url']) ) {
 			$comment->url = $handler_vars['url'];
 		}
 		if ( isset($handler_vars['email']) && $handler_vars['email'] != '' ) {
@@ -3179,7 +3194,6 @@ class AdminHandler extends ActionHandler
 		}
 		$output['controls'] = $controls_out;
 
-		header( 'content-type:text/javascript' ); 
 		echo json_encode( $output );
 	}
 
