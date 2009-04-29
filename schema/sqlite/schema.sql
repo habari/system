@@ -178,7 +178,8 @@ CREATE TABLE {$prefix}vocabularies (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-	feature_mask INTEGER NOT NULL DEFAULT 0
+  hierarchical TINYINT(1) NOT NULL DEFAUlT 0,
+  required TINYINT(1) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE {$prefix}object_terms (
