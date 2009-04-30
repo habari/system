@@ -406,7 +406,7 @@ class Posts extends ArrayObject implements IsContent
 
 			// If a user can read any post type, let him
 			if( User::identify()->can( 'post_any', 'read' ) ) {
-				$perm_where = array('post_any' => 1);
+				$perm_where = array('post_any' => '(1=1)');
 				$params_where = array();
 			}
 			else {
@@ -431,7 +431,7 @@ class Posts extends ArrayObject implements IsContent
 
 			// If a user is denied access to all posts, do so
 			if( User::identify()->cannot( 'post_any' ) ) {
-				$perm_where_denied = array('0');
+				$perm_where_denied = array('(1=0)');
 			}
 			else {
 				// If a user is denied read access to specific post types, deny him
@@ -449,7 +449,7 @@ class Posts extends ArrayObject implements IsContent
 			// If there are granted permissions to check, add them to the where clause
 			if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
 				// You have no grants.  You get no posts.
-				$where['perms_granted'] = '0';
+				$where['perms_granted'] = '(1=0)';
 			}
 			elseif ( count($perm_where) > 0 ) {
 				$where['perms_granted'] = '

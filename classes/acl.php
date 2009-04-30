@@ -447,6 +447,8 @@ SELECT gp.access_mask
   ORDER BY access_mask ASC
 SQL;
 
+		if ($token_id == '') { $token_id = '0'; }
+
 		$accesses = DB::get_column( $sql, array( $user_id, $token_id, $user_id, $token_id ) );
 		
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
@@ -457,7 +459,7 @@ SQL;
 		}
 		else {
 			$result = 0;
-			foreach ( $accesses as $access ) {
+			foreach ( (array)$accesses as $access ) {
 				if ( $access == 0 ) {
 					$result = 0;
 					break;
@@ -526,7 +528,7 @@ SQL;
 			$post_tokens = DB::get_column('SELECT token_id FROM {post_tokens} GROUP BY token_id');
 		}
 
-		foreach ( $result as $token ) {
+		foreach ( (array)$result as $token ) {
 			$bitmask->value = $token->access_mask;
 			if ( $access == 'deny' && $bitmask->value == 0 ) {
 				$tokens[] = $token->token_id;
