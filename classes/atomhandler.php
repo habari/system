@@ -71,10 +71,11 @@ class AtomHandler extends ActionHandler
 	 * @param string $alternate the IRI of an alternate version.
 	 * @param string $self The preferred URI for retrieving Atom Feed Documents representing this Atom feed.
 	 * @param string $id a permanent, universally unique identifier for an the feed.
+	 * @param HabariDateTime $updated The most recent update in the collection to which this feed applies.
 	 *
 	 * @return SimpleXMLElement The requested Atom document
 	 */
-	public function create_atom_wrapper( $alternate, $self, $id )
+	public function create_atom_wrapper( $alternate, $self, $id, $updated = NULL )
 	{
 		// Store handler vars since we'll be using them a lot.
 		$handler_vars = Controller::get_handler_vars();
@@ -104,8 +105,12 @@ class AtomHandler extends ActionHandler
 			$feed_subtitle = $xml->addChild( 'subtitle', htmlspecialchars( $tagline ) );
 		}
 
-		// Todo Should be the latest updated of any of the posts #657
-		$feed_updated = $xml->addChild( 'updated', date( 'c', time() ) );
+		if ( $updated == NULL) {
+			$feed_updated = $xml->addChild( 'updated', HabariDateTime::date_create()->get( 'c' ) );
+		}
+		else {
+			$feed_updated = $xml->addChild( 'updated', $updated->get( 'c' ) );
+		}
 
 		$feed_link = $xml->addChild( 'link' );
 		$feed_link->addAttribute( 'rel', 'alternate' );
@@ -482,6 +487,8 @@ class AtomHandler extends ActionHandler
 		// Assign self link.
 		$self = '';
 
+		$updated = HabariDateTime::date_create();
+
 		// Check if this is a feed for a single post
 		if ( isset( $params['slug'] ) || isset( $params['id'] ) ) {
 			if ( isset( $params['slug'] ) ) {
@@ -501,17 +508,19 @@ class AtomHandler extends ActionHandler
 			$comments_count = count( $comments );
 			$content_type = Post::type_name( $post->content_type );
 			$self = URL::get( "atom_feed_{$content_type}_comments", $post, false );
+			$updated = $comments[$comments_count - 1]->date;
 		}
 		else {
 			$self = URL::get( 'atom_feed_comments' );
 			$params['status'] = Comment::STATUS_APPROVED;
 			$comments = Comments::get( $params );
 			$comments_count = Comments::count_total( Comment::status('approved') );
+			$updated = $comments[0]->date;
 		}
 
 		$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_comments';
 
-		$xml = $this->create_atom_wrapper( $alternate, $self, $id );
+		$xml = $this->create_atom_wrapper( $alternate, $self, $id, $updated );
 
 		$xml = $this->add_pagination_links( $xml, $comments_count );
 
@@ -545,7 +554,7 @@ class AtomHandler extends ActionHandler
 			$title = ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
 
-			$xml = $this->create_atom_wrapper( $alternate, $self, $id );
+			$xml = $this->create_atom_wrapper( $alternate, $self, $id, $post->updated  );
 
 			$entry = $xml->addChild('entry');
 			$entry->addAttribute( 'xmlns', 'http://www.w3.org/2005/Atom' );
@@ -674,9 +683,6 @@ class AtomHandler extends ActionHandler
 
 		$id = isset( $rr_args_values['tag'] ) ? $rr_args_values['tag'] : 'atom';
 
-		$xml = $this->create_atom_wrapper( $alternate, $self, $id );
-
-		$xml = $this->add_pagination_links( $xml, Posts::count_total( Post::status('published') ) );
 
 		// Get posts to put in the feed
 		$page = ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
@@ -701,6 +707,11 @@ class AtomHandler extends ActionHandler
 		}
 
 		$posts = Posts::get( $params );
+
+		$xml = $this->create_atom_wrapper( $alternate, $self, $id, $posts[0]->date );
+
+		$xml = $this->add_pagination_links( $xml, Posts::count_total( Post::status('published') ) );
+
 		$xml = $this->add_posts($xml, $posts );
 
 		Plugins::act( 'atom_get_collection', $xml, $params, $handler_vars );
