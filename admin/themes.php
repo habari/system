@@ -31,6 +31,7 @@
 
 		<?php if ( isset( $this->engine_vars['configure'] ) ): ?>
 		<div id="themeconfigure">
+			<?php if($active_theme_config_form instanceof FormUI): $active_theme_config_form->out(); endif; ?>
 			<?php Plugins::act( 'theme_ui', $active_theme ); ?>
 			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('close'); ?></a>
 		</div>

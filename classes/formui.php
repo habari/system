@@ -84,7 +84,25 @@ class FormContainer
 		$this->move_before($control, $before);
 		return $control;
 	}
-
+	
+	/**
+	 * Append controls from an xml file
+	 *
+	 * @param SimpleXML The XML tree to generate controls from 
+	 **/
+	public function build_from_xml( $xml )
+	{
+		foreach( $xml->children() as $element ) {
+			if( $element->getName() == 'section' ) {
+				// create a new fieldset
+				// $fieldset->build_from_xml( $element );
+			}
+			else {
+				// process elements here
+			}
+		}
+	}
+	
 	/**
 	 * Generate a hash for this container
 	 *

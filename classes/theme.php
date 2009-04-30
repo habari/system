@@ -99,6 +99,39 @@ class Theme extends Pluggable
 			}
 		}
 	}
+	
+	/**
+	 * Creates the config form for a theme, and loads in the config xml
+	 *
+	 * @param array Array of theme data
+	 * 
+	 * @return mixed FormUI object or "false" for no config
+	 **/
+	public function config( $themedata )
+	{
+		$form = new FormUI( 'themeconfig' );
+		
+		if( $themedata['info']->config != NULL ) {
+			$controls = $form->append('fieldset', 'controls');
+			$controls->build_from_xml( $themedata['info']->config );
+		}
+				
+		$buttons = $form->append('fieldset', 'buttons');
+		$buttons->template = 'admincontrol_buttons';
+
+		// Create the Save button
+		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
+		
+		// Let plugins alter this form
+		Plugins::act('form_theme', $form, $this);
+				
+		if( count( $form->get_controls() ) > 1) {
+			return $form;
+		}
+		else {
+			return false;
+		}
+	}
 
 	/**
 	 * Assign the default variables that would be used in every template
