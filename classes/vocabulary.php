@@ -22,7 +22,7 @@ class Vocabulary extends QueryRecord
 			'id' => 0,
 			'name' => '',
 			'description' => '',
-			'required' => 0,
+			'feature_mask' => 0,
 		);
 	}
 
@@ -39,14 +39,13 @@ class Vocabulary extends QueryRecord
 		// Defaults
 		$this->fields = array_merge(
 			self::default_fields(),
-			$this->fields,
-			$this->newfields
+			$this->fields
 		);
 
 		$paramarray = array(
 			'name'=> $name,
 			'description' => $description,
-			'required' => $properties->value,
+			'feature_mask' => $properties,
 		);
 
 		parent::__construct( $paramarray );
@@ -55,11 +54,34 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
+	 * function __get
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value
+	 **/
+	public function __get( $name )
+	{
+		$out = parent::__get( $name );
+		if ( $name == 'feature_mask' && is_int($out) ) {
+			$out = new Bitmask( self::$features, $out );
+		}
+		elseif ( in_array( $name, self::$features ) ) {
+			$out = $this->feature_mask->$name;
+		}
+		return $out;
+	}
+
+	/**
 	 * Return a Vocabulary by name.
 	 * @return Vocabulary The requested vocabulary
 	 **/
 	public static function get($name)
 	{
+		// TODO Make this work
+		// return DB::get_row( 'SELECT name FROM {vocabularies} WHERE name=?', array($name), 'Vocabulary' );
+
+		$result = DB::get_row( 'SELECT DISTINCT * FROM {vocabularies} WHERE name=? LIMIT 1', array($name) );
+		return new Vocabulary( $result->name, $result->description, new Bitmask(self::$features , $result->feature_mask) );
 	}
 
 	/**
@@ -68,6 +90,9 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function rename($name, $newname)
 	{
+		$vocab = Vocabulary::get($name);
+		$vocab->name = $newname;
+		$vocab->update();
 	}
 
 	/**
@@ -76,7 +101,12 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function names()
 	{
-		return array();
+		$names = array();
+		$vocabs = DB::get_results( 'SELECT name FROM {vocabularies}' );
+		foreach ( $vocabs as $vocab ) {
+			$names[] = $vocab->name;
+		}
+		return $names;
 	}
 
 	/**
@@ -93,8 +123,84 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function feature_mask($hierarchical, $required, $multiple, $free)
 	{
-		// TODO Set this according to what was passed in. Currently sets everything to hierarchical only.
-		return new Bitmask( self::$features, 16 );
+		$features = array($hierarchical, $required, $multiple, $free);
+		// Convert booleans to an integer
+		// TODO this should be in the setter for Bitmask (but first Bitmask needs to be fixed)
+		$mask = 0;
+		for($z=0;$z<count($features);$z++){$mask += $features[$z]<<$z;}
+		return new Bitmask( self::$features, $mask );
+	}
+
+	/**
+	 * function insert
+	 * Saves a new vocabulary to the vocabularies table
+	 */
+	public function insert()
+	{
+		if ( isset($this->newfields['feature_mask']) && $this->newfields['feature_mask'] instanceOf Bitmask ) {
+			$this->newfields['feature_mask'] = $this->newfields['feature_mask']->value;
+		}
+
+		$allow = true;
+		$allow = Plugins::filter( 'vocabulary_insert_allow', $allow, $this );
+		if ( !$allow ) {
+			return;
+		}
+		Plugins::act( 'vocabulary_insert_before', $this );
+
+		$result = parent::insertRecord( DB::table( 'vocabularies' ) );
+
+		EventLog::log( sprintf(_t('New vocabulary %1$s (%2$s)'), $this->id, $this->name), 'info', 'content', 'habari' );
+		Plugins::act( 'vocabulary_insert_after', $this );
+
+		return $result;
+	}
+
+	/**
+	 * function update
+	 * Updates an existing vocabulary in the vocabularies table
+	 * @param bool $minor Indicates if this is a major or minor update
+	 */
+	public function update()
+	{
+		if ( isset($this->newfields['feature_mask']) && $this->newfields['feature_mask'] instanceOf Bitmask ) {
+			$this->newfields['feature_mask'] = $this->newfields['feature_mask']->value;
+		}
+
+		$allow = true;
+		$allow = Plugins::filter( 'vocabulary_update_allow', $allow, $this );
+		if ( !$allow ) {
+			return;
+		}
+		Plugins::act( 'vocabulary_update_before', $this );
+
+		$result = parent::updateRecord( DB::table( 'vocabularies' ), array( 'id' => $this->id ) );
+
+		Plugins::act( 'vocabulary_update_after', $this );
+		return $result;
+	}
+
+	/**
+	 * Delete an existing vocabulary
+	 */
+	public function delete()
+	{
+		$allow = true;
+		$allow = Plugins::filter( 'vocabulary_delete_allow', $allow, $this );
+		if ( !$allow ) {
+			return;
+		}
+		// invoke plugins
+		Plugins::act( 'vocabulary_delete_before', $this );
+
+		// TODO Delete all terms associated with this vocabulary
+
+		$result = parent::deleteRecord( '{vocabularies}', array( 'id'=>$this->id ) );
+		EventLog::log( sprintf(_t('Vocabulary %1$s (%2$s) deleted.'), $this->id, $this->name), 'info', 'content', 'habari' );
+
+		// invoke plugins on the after_vocabulary_delete action
+		Plugins::act( 'vocabulary_delete_after', $this );
+		return $result;
 	}
 
 	/**
