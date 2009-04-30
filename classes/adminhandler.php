@@ -565,6 +565,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
+		$this->theme->admin_title = _t('Publish %s', array(ucwords(Post::type_name($post->content_type))));
 
 		$statuses = Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
