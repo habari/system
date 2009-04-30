@@ -4,17 +4,6 @@
 	<div id="primary">
 		<div id="primarycontent" class="hfeed">
 <?php foreach ( $posts as $post ) { ?>
-<?php
-/*
-$v = Vocabulary::get('test');
-var_dump($v);
-*/
-
-$v = new Vocabulary('vocab_name', 'vocab_desc', Vocabulary::feature_mask(true, false, false, false));
-var_dump($v);
-
-echo $v->hierarchical;
-?>
 		<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 
 			<div class="entry-head">
