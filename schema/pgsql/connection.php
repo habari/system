@@ -23,7 +23,6 @@ class PGSQLConnection extends DatabaseConnection
 		if( !parent::connect( $connect_string, $db_user, $db_pass ) ) {
 			return false;
 		}
-		$this->pdo->setAttribute( PDO::ATTR_EMULATE_PREPARES, true );
 		
 		return true;
 	}

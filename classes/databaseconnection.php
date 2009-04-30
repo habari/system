@@ -262,7 +262,7 @@ class DatabaseConnection
 		// Allow plugins to modify the query after it has been processed
 		$query = Plugins::filter( 'query_postprocess', $query, $args );
 
-		if ( $this->pdo_statement = $this->pdo->prepare( $query ) ) {
+		if ( $this->pdo_statement = $this->pdo->prepare( $query, array(PDO::ATTR_EMULATE_PREPARES => true) ) ) {
 			if ( $this->fetch_mode == PDO::FETCH_CLASS ) {
 				/* Try to get the result class autoloaded. */
 				if ( ! class_exists( strtolower( $this->fetch_class_name ) ) ) {
@@ -337,7 +337,7 @@ class DatabaseConnection
 		$query.= ' )';
 		$query = $this->sql_t( $query, $args );
 
-		if ( $pdo_statement = $pdo->prepare( $query ) ) {
+		if ( $pdo_statement = $pdo->prepare( $query, array(PDO::ATTR_EMULATE_PREPARES => true) ) ) {
 			/* If we are profiling, then time the query */
 			if ( $this->keep_profile ) {
 				$profile = new QueryProfile( $query );
