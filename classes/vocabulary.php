@@ -77,11 +77,13 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function get($name)
 	{
-		// TODO Make this work
+		// TODO Make this work; arguments are not correctly passed to the constructor
 		// return DB::get_row( 'SELECT name FROM {vocabularies} WHERE name=?', array($name), 'Vocabulary' );
 
 		$result = DB::get_row( 'SELECT DISTINCT * FROM {vocabularies} WHERE name=? LIMIT 1', array($name) );
-		return new Vocabulary( $result->name, $result->description, new Bitmask(self::$features , $result->feature_mask) );
+		$v = new Vocabulary( $result->name, $result->description, new Bitmask(self::$features , $result->feature_mask) );
+		$v->id = $result->id;
+		return $v;
 	}
 
 	/**
@@ -92,7 +94,9 @@ class Vocabulary extends QueryRecord
 	{
 		$vocab = Vocabulary::get($name);
 		$vocab->name = $newname;
-		$vocab->update();
+		$result = $vocab->update();
+
+		return $result;
 	}
 
 	/**
@@ -132,25 +136,53 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
+	 * Determine whether a vocabulary exists
+	 * @param string $name a vocabulary name
+	 * @return bool whether the vocabulary exists or not
+	**/
+	public static function exists( $name )
+	{
+		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {vocabularies} WHERE name=?", array( $name ) ) > 0 );
+	}
+
+	/**
 	 * function insert
 	 * Saves a new vocabulary to the vocabularies table
 	 */
 	public function insert()
 	{
+		// Don't allow duplicate vocabularies
+		if ( Vocabulary::exists($this->fields['name']) ) {
+			return false;
+		}
+
+		// Store the feature mask as an integer
 		if ( isset($this->newfields['feature_mask']) && $this->newfields['feature_mask'] instanceOf Bitmask ) {
 			$this->newfields['feature_mask'] = $this->newfields['feature_mask']->value;
 		}
 
+		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'vocabulary_insert_allow', $allow, $this );
 		if ( !$allow ) {
-			return;
+			return false;
 		}
 		Plugins::act( 'vocabulary_insert_before', $this );
 
 		$result = parent::insertRecord( DB::table( 'vocabularies' ) );
 
+		// Make sure the id is set in the vocabulary object to match the row id
+		$this->newfields['id'] = DB::last_insert_id();
+
+		// Update the vocabulary's fields with anything that changed
+		$this->fields = array_merge( $this->fields, $this->newfields );
+
+		// We've inserted the vocabulary, reset newfields
+		$this->newfields = array();
+
 		EventLog::log( sprintf(_t('New vocabulary %1$s (%2$s)'), $this->id, $this->name), 'info', 'content', 'habari' );
+
+		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_insert_after', $this );
 
 		return $result;
@@ -163,10 +195,17 @@ class Vocabulary extends QueryRecord
 	 */
 	public function update()
 	{
+		// Don't allow duplicate vocabularies
+		if ( isset($this->newfields['name']) && Vocabulary::exists($this->newfields['name']) ) {
+			return false;
+		}
+
+		// Store the feature mask as an integer
 		if ( isset($this->newfields['feature_mask']) && $this->newfields['feature_mask'] instanceOf Bitmask ) {
 			$this->newfields['feature_mask'] = $this->newfields['feature_mask']->value;
 		}
 
+		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'vocabulary_update_allow', $allow, $this );
 		if ( !$allow ) {
@@ -176,7 +215,9 @@ class Vocabulary extends QueryRecord
 
 		$result = parent::updateRecord( DB::table( 'vocabularies' ), array( 'id' => $this->id ) );
 
+		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_update_after', $this );
+
 		return $result;
 	}
 
