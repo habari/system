@@ -30,22 +30,14 @@ class Vocabulary extends QueryRecord
 	 * Vocabulary constructor
 	 * Creates a Vocabulary instance
 	 *
-	 * @param string $name The name of the Vocabulary
-	 * @param string $description A description of the Vocabulary
-	 * @param BitMask $properties Properties of this Vocabulary
-	 */
-	public function __construct($name, $description, BitMask $properties)
+	 * @param array $paramarray an associative array of initial vocabulary values
+	 **/
+	public function __construct( $paramarray = array() )
 	{
 		// Defaults
 		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields
-		);
-
-		$paramarray = array(
-			'name'=> $name,
-			'description' => $description,
-			'feature_mask' => $properties,
 		);
 
 		parent::__construct( $paramarray );
@@ -77,13 +69,7 @@ class Vocabulary extends QueryRecord
 	 **/
 	public static function get($name)
 	{
-		// TODO Make this work; arguments are not correctly passed to the constructor
-		// return DB::get_row( 'SELECT name FROM {vocabularies} WHERE name=?', array($name), 'Vocabulary' );
-
-		$result = DB::get_row( 'SELECT DISTINCT * FROM {vocabularies} WHERE name=? LIMIT 1', array($name) );
-		$v = new Vocabulary( $result->name, $result->description, new Bitmask(self::$features , $result->feature_mask) );
-		$v->id = $result->id;
-		return $v;
+		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE name=?', array($name), 'Vocabulary' );
 	}
 
 	/**
