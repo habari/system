@@ -155,7 +155,7 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_insert_before', $this );
 
-		$result = parent::insertRecord( DB::table( 'vocabularies' ) );
+		$result = parent::insertRecord( '{vocabularies}' );
 
 		// Make sure the id is set in the vocabulary object to match the row id
 		$this->newfields['id'] = DB::last_insert_id();
@@ -177,7 +177,6 @@ class Vocabulary extends QueryRecord
 	/**
 	 * function update
 	 * Updates an existing vocabulary in the vocabularies table
-	 * @param bool $minor Indicates if this is a major or minor update
 	 */
 	public function update()
 	{
@@ -199,7 +198,7 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_update_before', $this );
 
-		$result = parent::updateRecord( DB::table( 'vocabularies' ), array( 'id' => $this->id ) );
+		$result = parent::updateRecord( '{vocabularies}', array( 'id' => $this->id ) );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_update_after', $this );
@@ -212,12 +211,12 @@ class Vocabulary extends QueryRecord
 	 */
 	public function delete()
 	{
+		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'vocabulary_delete_allow', $allow, $this );
 		if ( !$allow ) {
 			return;
 		}
-		// invoke plugins
 		Plugins::act( 'vocabulary_delete_before', $this );
 
 		// TODO Delete all terms associated with this vocabulary
@@ -225,7 +224,7 @@ class Vocabulary extends QueryRecord
 		$result = parent::deleteRecord( '{vocabularies}', array( 'id'=>$this->id ) );
 		EventLog::log( sprintf(_t('Vocabulary %1$s (%2$s) deleted.'), $this->id, $this->name), 'info', 'content', 'habari' );
 
-		// invoke plugins on the after_vocabulary_delete action
+		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_delete_after', $this );
 		return $result;
 	}
