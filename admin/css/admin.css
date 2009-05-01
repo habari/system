@@ -173,7 +173,6 @@ a img {
 	list-style-position: outside;
 	margin-bottom: 0;
 	top: -5px;
-
 	z-index: -1; /* Even with the main menu (its parent), so shadows don't get messed up */
 }
 
@@ -231,10 +230,12 @@ a img {
 
 #menulist li.submenu li:first-child, #menulist li.submenu li:first-child a {
 	-moz-border-radius-topright: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 
 #menulist li.submenu li:last-child, #menulist li.submenu li:last-child a {
 	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-right-radius: 5px;
 }
 
 #menulist li.carrot a.top, #menulist li:hover a.top, #menulist li a:hover, #menulist li li.carrot a {
