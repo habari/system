@@ -113,7 +113,7 @@ class Theme extends Pluggable
 		
 		if( $themedata['info']->config != NULL ) {
 			$controls = $form->append('fieldset', 'controls');
-			$controls->build_from_xml( $themedata['info']->config );
+			$controls->build_from_xml( $themedata['info']->config, 'theme__' );
 		}
 				
 		$buttons = $form->append('fieldset', 'buttons');
@@ -121,10 +121,15 @@ class Theme extends Pluggable
 
 		// Create the Save button
 		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
+		$buttons->append('reset', 'reset', _t('Reset'), 'admincontrol_submit');
 		
+		$form->on_success(array($this, 'save_config'));
+				
 		// Let plugins alter this form
 		Plugins::act('form_theme', $form, $this);
-				
+		
+		// utils::debug($form);
+		
 		if( count( $form->get_controls() ) > 1) {
 			return $form;
 		}
@@ -132,6 +137,36 @@ class Theme extends Pluggable
 			return false;
 		}
 	}
+	
+	/**
+	 * Save configuration to database
+	 **/
+	public function save_config($form)
+	{
+		foreach($form->get_values() as $key => $value)
+		{
+			if($key == 'save') {
+				continue;
+			}
+			Options::set('theme__' . $key, $value);
+		}
+		
+		Plugins::act('update_theme_config', $form, $this);
+		
+		Utils::redirect( URL::get( 'admin', 'page=themes&configure=' . Controller::get_var('configure') ));
+		return false;
+	}
+	
+	/**
+	 * Fetch config option
+	 * 
+	 * @param string Option name
+	 */
+	public function theme_get_option( $name )
+	{
+		return Options::get($name);
+	}
+	
 
 	/**
 	 * Assign the default variables that would be used in every template

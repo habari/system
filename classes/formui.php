@@ -89,16 +89,39 @@ class FormContainer
 	 * Append controls from an xml file
 	 *
 	 * @param SimpleXML The XML tree to generate controls from 
+	 * @param string Prefix to use for storing options
 	 **/
-	public function build_from_xml( $xml )
+	public function build_from_xml( $xml, $prefix = '' )
 	{
+		// Don't set these as properties
+		$keywords = array(
+			'name',
+			'caption',
+			'default',
+			'type'
+		);
+				
 		foreach( $xml->children() as $element ) {
 			if( $element->getName() == 'section' ) {
-				// create a new fieldset
-				// $fieldset->build_from_xml( $element );
+				$fieldset = $this->append('fieldset', Utils::slugify((string) $element['caption']));
+				$fieldset->caption= ((string) $element['caption']);
+				$fieldset->build_from_xml( $element, $prefix );
 			}
 			else {
-				// process elements here
+				$control = $this->append((string) $element['type'], (string) $element['name'], 'option:' . $prefix . (string) $element['name']);
+				$control->caption = (string) $element['caption'];
+												
+				if($control->value == NULL) {
+					$control->value = (string) $element['default'];
+				}
+								
+				foreach( $element->attributes() as $key => $value )  {
+					if( in_array( $key, $keywords )) {
+						continue;
+					}
+					
+					$control->{$key} = (string) $value;
+				}
 			}
 		}
 	}
@@ -912,12 +935,12 @@ class FormControl
 	{
 		$args = func_get_args();
 		list($name, $storage, $caption, $template) = array_merge($args, array_fill(0, 4, null));
-
+				
 		$this->name = $name;
 		$this->storage = $storage;
 		$this->caption = $caption;
 		$this->template = $template;
-
+		
 		$this->default = null;
 	}
 
