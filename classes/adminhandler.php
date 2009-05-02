@@ -248,14 +248,6 @@ class AdminHandler extends ActionHandler
 			),
 		);
 
-		$option_items[_t('Dashboard')] = array(
-			'dashboard__hide_spam_count' => array(
-				'label' => _t( 'Hide Spam Count' ),
-				'type' => 'checkbox',
-				'helptext' => _t( 'Hide the number of SPAM comments on your dashboard.' ),
-			),
-		);
-
 		$option_items[_t('Troubleshooting')] = array(
 			'log_backtraces' => array(
 				'label' => _t( 'Log Backtraces' ),
@@ -647,7 +639,8 @@ class AdminHandler extends ActionHandler
 		$field_sections = array(
 			'user_info' => $possessive,
 			'change_password' => _t('Change Password'),
-			'regional_settings' => _t('Regional Settings')
+			'regional_settings' => _t('Regional Settings'),
+			'dashboard' => _t( 'Dashboard' ),
 		);
 
 		$form = new FormUI('User Options');
@@ -728,6 +721,13 @@ class AdminHandler extends ActionHandler
 			$current = HabariDateTime::date_create()->time;
 		}
 		$locale_time_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
+
+		
+		$spam_count = $form->dashboard->append( 'checkbox', 'dashboard_hide_spam_count', 'null:null', _t( 'Hide Spam Count' ), 'optionscontrol_checkbox' );
+		$spam_count->class[] = 'item clear';
+		$spam_count->helptext = _t( 'Hide the number of SPAM comments on your dashboard.' );
+		$spam_count->value = $edit_user->info->dashboard_hide_spam_count;
+		
 
 		// Controls
 		$controls = $form->append( 'wrapper', 'page_controls' );
@@ -810,7 +810,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		// Set various info fields
-		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format');
+		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format', 'dashboard_hide_spam_count');
 
 		// let plugins easily specify other user info fields to pick
 		$info_fields = Plugins::filter( 'adminhandler_post_user_fields', $info_fields );

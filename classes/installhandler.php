@@ -1408,6 +1408,32 @@ class InstallHandler extends ActionHandler
 		Options::set('active_plugins', $new_plugins);
 	}
 	
+	private function upgrade_db_post_3539()
+	{
+		
+		// get the global option
+		$hide = Options::get( 'dashboard__hide_spam_count' );
+		
+		// if it was set to hide, get all our available users and set their info values instead
+		if ( $hide == true ) {
+			
+			$users = Users::get();
+			
+			foreach ( $users as $user ) {
+				
+				$user->info->dashboard_hide_spam_count = 1;
+				$user->update();
+				
+			}
+			
+		}
+		
+		Options::delete( 'dashboard__hide_spam_count' );
+		
+		return true;
+		
+	}
+	
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
