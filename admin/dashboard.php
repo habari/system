@@ -103,7 +103,7 @@
 				$message_bits[]= $message;
 			}
 
-			if ( !empty(  $stats['spam_comment_count'] ) && Options::get( 'dashboard__hide_spam_count' ) != true ) {
+			if ( !empty(  $stats['spam_comment_count'] ) && User::identify()->info->dashboard_hide_spam_count != true ) {
 				$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ), ENT_COMPAT, 'UTF-8' ) . '">';
 				$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
 				$message.= '</a>';
