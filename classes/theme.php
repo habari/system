@@ -20,6 +20,7 @@ class Theme extends Pluggable
 	public $config_vars = array();
 	private $var_stack = array(array());
 	private $current_var_stack = 0;
+	private $config = null;
 
 	/**
 	 * We build the Post filters by analyzing the handler_var
@@ -111,17 +112,15 @@ class Theme extends Pluggable
 	{
 		$form = new FormUI( 'themeconfig' );
 		
-		if( $themedata['info']->config != NULL ) {
-			$controls = $form->append('fieldset', 'controls');
-			$controls->build_from_xml( $themedata['info']->config, 'theme__' );
+		if( isset( $themedata['info']->config ) ) {
+			$form->build_from_xml( $themedata['info']->config, 'theme__' );
 		}
-				
-		$buttons = $form->append('fieldset', 'buttons');
-		$buttons->template = 'admincontrol_buttons';
+						
+		$buttons = $form->append('wrapper', 'buttons');
 
 		// Create the Save button
 		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
-		$buttons->append('reset', 'reset', _t('Reset'), 'admincontrol_submit');
+		$buttons->append('submit', 'reset', _t('Reset'), 'admincontrol_submit');
 		
 		$form->on_success(array($this, 'save_config'));
 				
@@ -143,6 +142,8 @@ class Theme extends Pluggable
 	 **/
 	public function save_config($form)
 	{
+		// Add reset stuff here
+		
 		foreach($form->get_values() as $key => $value)
 		{
 			if($key == 'save') {
@@ -162,9 +163,22 @@ class Theme extends Pluggable
 	 * 
 	 * @param string Option name
 	 */
-	public function theme_get_option( $name )
+	public function get_option( $name )
 	{
-		return Options::get($name);
+		$theme = $this;
+		
+		if( !isset($theme->config) ) {
+			$themes= Themes::get_all_data();
+			
+			$theme->config = $theme->config( $themes[strtolower( $theme->name )] );
+		}
+				
+		if( isset( $theme->config->{$name} ) ) {
+			return $theme->config->{$name}->value;
+		}
+		else {
+			return NULL;
+		}
 	}
 	
 
