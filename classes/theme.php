@@ -126,10 +126,8 @@ class Theme extends Pluggable
 				
 		// Let plugins alter this form
 		Plugins::act('form_theme', $form, $this);
-		
-		// utils::debug($form);
-		
-		if( count( $form->get_controls() ) > 1) {
+				
+		if( count( $form->get_controls() ) > 2) {
 			return $form;
 		}
 		else {

@@ -111,6 +111,8 @@ class FormContainer
 				$control = $this->append((string) $element['type'], (string) $element['name'], 'option:' . $prefix . (string) $element['name']);
 				$control->caption = (string) $element['caption'];
 												
+				$control->xml = $element;
+				
 				if($control->value == NULL) {
 					$control->value = (string) $element['default'];
 				}
@@ -122,6 +124,16 @@ class FormContainer
 					
 					$control->{$key} = (string) $value;
 				}
+				
+				foreach( $element->children() as $child ) {
+					if( $child->getName() == 'validator' ) {
+						$control->add_validator('validate_' . (string) $child['type']);
+						
+						// Should we allow additional attributes?
+					}
+				}
+				
+				
 			}
 		}
 	}
