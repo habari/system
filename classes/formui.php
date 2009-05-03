@@ -127,9 +127,19 @@ class FormContainer
 				
 				foreach( $element->children() as $child ) {
 					if( $child->getName() == 'validator' ) {
-						$control->add_validator('validate_' . (string) $child['type']);
+						$args= array();
 						
-						// Should we allow additional attributes?
+						$args[] = 'validate_' . (string) $child['type'];
+						
+						foreach( $child->attributes() as $key => $value )  {
+							if($key == 'type') {
+								continue;
+							}
+							
+							$args[] = (string) $value;
+						}
+						
+						call_user_func_array(array($control, 'add_validator'), $args);
 					}
 				}
 				

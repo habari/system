@@ -163,7 +163,7 @@ class Theme extends Pluggable
 	 */
 	public function get_option( $name )
 	{
-		$theme = $this;
+		$theme = Themes::create();
 		
 		if( !isset($theme->config) ) {
 			$themes= Themes::get_all_data();
@@ -179,6 +179,29 @@ class Theme extends Pluggable
 		}
 	}
 	
+	/**
+	 * Build a css stack element
+	 *
+	 * @param array The stack value
+	 * @return array The parsed stack value
+	 **/
+	public static function build_css($value)
+	{
+		$url= $value[0];
+		$base_url = Site::get_url( 'habari', true );
+		$relative_url = substr( $url, strlen( $base_url ) );		
+				
+		// $theme_dir = Plugins::filter( 'build_css_dir', dirname($relative_url), $value );
+		// $theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		
+		// $theme->start_buffer();
+		// $theme->end_buffer();
+		
+		// $theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
+		// $them = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+						
+		return array(URL::get('build_file', array('path' => $relative_url)), $value[1]);
+	}
 
 	/**
 	 * Assign the default variables that would be used in every template

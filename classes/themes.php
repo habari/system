@@ -191,7 +191,7 @@ class Themes
 				$classname = THEME_CLASS;
 			}
 		}
-
+				
 		$created_theme = new $classname($themedata);
 		Plugins::act('init_theme');
 		return $created_theme;

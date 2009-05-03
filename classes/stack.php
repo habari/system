@@ -129,9 +129,10 @@ class Stack
 	 * @param mixed $value The value to add
 	 * @param string $value_name The name of the value to add
 	 * @param string $after The name of the stack element to insert this new element after
+	 * @param mixed $callback The callback function to process the stack addition
 	 * @return array The stack that was added to
 	 **/
-	public static function add( $stack_name, $value, $value_name = null, $after = null )
+	public static function add( $stack_name, $value, $value_name = null, $after = null, $callback = null )
 	{
 		$stack = self::get_named_stack( $stack_name );
 		$value_name = $value_name ? $value_name : md5( serialize( $value ) );
@@ -149,6 +150,16 @@ class Stack
 				self::$stack_sort[$stack_name][$a][$value_name] = $value_name;
 			}
 		}
+				
+		if( !is_null($callback) ) {
+			if( !is_array($callback) ) {
+				$callback = array('Theme', $callback);
+			}
+			if( is_callable($callback) ) {
+				$value = call_user_func($callback, $value);
+			}
+		}
+		
 		$stack[$value_name] = $value;
 		self::$stacks[$stack_name] = $stack;
 		return $stack;

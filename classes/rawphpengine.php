@@ -103,7 +103,7 @@ class RawPHPEngine extends TemplateEngine
 	 * @param string $template Name of template to detect
 	 * @returns boolean True if the template exists, false if not
 	 */
-	public function template_exists( $template )
+	public function template_exists( $template, $extension = 'php' )
 	{
 		if ( empty( $this->available_templates ) ) {
 			if(!is_array($this->template_dir)) {
@@ -115,7 +115,7 @@ class RawPHPEngine extends TemplateEngine
 				$templates = Utils::glob( $dir . '*.*' );
 				$alltemplates = array_merge($alltemplates, $templates);
 			}
-			$this->available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.php' ) );
+			$this->available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.' . $extension ) );
 			$this->template_map = array_combine($this->available_templates, $alltemplates);
 			array_unique($this->available_templates);
 			$this->available_templates = Plugins::filter('available_templates', $this->available_templates, __CLASS__);
