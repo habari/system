@@ -96,14 +96,33 @@ class RawPHPEngine extends TemplateEngine
 			include ( $template_file );
 		}
 	}
-
+	
 	/**
-	 * Returns the existance of the specified template name
+	 * Recursively for templates in a directory
+	 *
+	 * @return array templates
+	 **/
+	private function parse_directory( $dir )
+	{
+		
+		$templates = Utils::glob( $dir . '*.*' );
+		
+		$subdirs = Utils::glob( $dir . '*/', GLOB_ONLYDIR);
+				
+		foreach($subdirs as $subdir) {
+			$templates = array_merge($templates, $this->parse_directory( $subdir ));
+		}
+			
+		return $templates;
+	}
+	
+	/**
+	 * Returns the existence of the specified template name
 	 *
 	 * @param string $template Name of template to detect
 	 * @returns boolean True if the template exists, false if not
 	 */
-	public function template_exists( $template, $extension = 'php' )
+	public function template_exists( $template )
 	{
 		if ( empty( $this->available_templates ) ) {
 			if(!is_array($this->template_dir)) {
@@ -112,10 +131,15 @@ class RawPHPEngine extends TemplateEngine
 			$alltemplates = array();
 			$dirs = array_reverse($this->template_dir);
 			foreach($dirs as $dir) {
-				$templates = Utils::glob( $dir . '*.*' );
-				$alltemplates = array_merge($alltemplates, $templates);
+				$alltemplates = array_merge($alltemplates, $this->parse_directory($dir));
 			}
-			$this->available_templates = array_map( 'basename', $alltemplates, array_fill( 1, count( $alltemplates ), '.' . $extension ) );
+			
+			$this->available_templates= array();
+			
+			foreach($alltemplates as $this_template) {
+				$this->available_templates[] = str_replace($dir, '', str_replace('.php', '', $this_template));
+			}
+			
 			$this->template_map = array_combine($this->available_templates, $alltemplates);
 			array_unique($this->available_templates);
 			$this->available_templates = Plugins::filter('available_templates', $this->available_templates, __CLASS__);

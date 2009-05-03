@@ -180,27 +180,51 @@ class Theme extends Pluggable
 	}
 	
 	/**
+	 * Build a generic stack element
+	 *
+	 * @param url The stack url
+	 * @return url The parsed stack url
+	 **/
+	public static function build($url)
+	{
+		$relative_url = $url;
+		
+		$info = pathinfo($relative_url);
+		$extension = $info['extension'];
+		
+		// Utils::debug($info['extension']);
+		
+		// We should find the timestamp of the actual template, and attach it to our hash
+				
+		$info = array(
+			// 'time' => filemtime($relative_url),
+			'path' => $relative_url
+		);
+		
+		return URL::get('build_file', array('hash' => Utils::encode(serialize($info)), 'extension' => $extension));
+	}
+
+	
+	/**
+	 * Build a js stack element
+	 *
+	 * @param array The stack value
+	 * @return array The parsed stack value
+	 **/
+	public static function build_js($value)
+	{					
+		return Theme::build($value);
+	}
+	
+	/**
 	 * Build a css stack element
 	 *
 	 * @param array The stack value
 	 * @return array The parsed stack value
 	 **/
 	public static function build_css($value)
-	{
-		$url= $value[0];
-		$base_url = Site::get_url( 'habari', true );
-		$relative_url = substr( $url, strlen( $base_url ) );		
-				
-		// $theme_dir = Plugins::filter( 'build_css_dir', dirname($relative_url), $value );
-		// $theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-		
-		// $theme->start_buffer();
-		// $theme->end_buffer();
-		
-		// $theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
-		// $them = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-						
-		return array(URL::get('build_file', array('path' => $relative_url)), $value[1]);
+	{					
+		return array(Theme::build($value[0]), $value[1]);
 	}
 
 	/**

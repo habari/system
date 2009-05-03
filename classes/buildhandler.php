@@ -12,22 +12,29 @@ class BuildHandler extends ActionHandler
 {
 	
 	public function act_build_file() {
-		$path = $this->handler_vars['path'];
-		$fullpath = HABARI_PATH . '/' . $path;
-		$parts = explode('.', basename($path));
-		$extension = $parts[count($parts) - 1];
+		$hash = $this->handler_vars['hash'];
+		$request = unserialize(Utils::decode($hash));
+		$storage = Site::get_dir('user') . '/build/';
 		
-		// $engine = new RawPHPEngine();
-		// $engine->set_template_dir($file);
-		// 
-		// Utils::debug($engine->template_exists('style', 'css'));
+		$path = $request['path'];
+		$info = pathinfo($path);
+				
+		// $fullpath = HABARI_PATH . '/' . $path;
 		
-		$theme_dir = Plugins::filter( 'build_dir', dirname($fullpath) . '/', $path );
-		$theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		// $theme_dir = Plugins::filter( 'build_dir', dirname($fullpath) . '/', $path );
+		// $theme = Themes::create( 'admin', 'HiEngine', $theme_dir );
+		$theme = Themes::create();
 		
-		header('Content-type: text/css'); 
+		header('Content-type: ' . Utils::mimetype(basename($path))); 
 		
-		$theme->display(basename($path));
+		$theme->theme= $theme;
+		$render= $theme->fetch($path);
+						
+		echo $render;
+		
+		if( is_writeable($storage) ) {
+			// file_put_contents($storage . $hash . '.' . $info['extension'], $render);
+		}
 	}
 	
 }

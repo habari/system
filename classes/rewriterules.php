@@ -62,7 +62,7 @@ class RewriteRules extends ArrayObject
 			array( 'name' => 'xmlrpc', 'parse_regex' => '%^xmlrpc/?$%i', 'build_str' => 'xmlrpc', 'handler' => 'XMLRPCServer', 'action' => 'xmlrpc_call', 'priority' => 8, 'description' => 'Handle incoming XMLRPC requests.' ),
 			
 			// Stack builds
-			array( 'name' => 'build_file', 'parse_regex' => '%^user/build/(?P<path>.+)/?$%i', 'build_str' => 'user/build/{$path}', 'handler' => 'BuildHandler', 'action' => 'build_file', 'priority' => 1, 'description' => 'Build a static file from dynamic template' ),
+			array( 'name' => 'build_file', 'parse_regex' => '%^user/build/(?P<hash>[^/]+?)\.(?P<extension>.{0,4})/?$%i', 'build_str' => 'user/build/{$hash}.{$extension}', 'handler' => 'BuildHandler', 'action' => 'build_file', 'priority' => 1, 'description' => 'Build a static file from dynamic template' ),
 		);
 		$default_rules = Plugins::filter('default_rewrite_rules', $default_rules);
 		$default_rules_properties = array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );

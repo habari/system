@@ -1031,6 +1031,27 @@ class Utils
 		$pattern = str_replace( array_keys( $braces ), array_values( $braces ), $pattern );
 		return '/'.$pattern.'/';
 	}
+	
+	/**
+	 * Encodes a string, in an easily reversible manner
+	 *
+	 * @return string encoded string
+	 **/
+	public static function encode( $string )
+	{
+		return strtr(base64_encode($string), '+/=', '-_~');
+	}
+	
+	/**
+	 * Decodes a string previously encoded by Utils::encode()
+	 *
+	 * @return string encoded string
+	 **/
+	public static function decode( $string )
+	{
+		$string = base64_decode(strtr($string, '-_~', '+/='));
+	    return $string;
+	}
 
 }
 ?>
