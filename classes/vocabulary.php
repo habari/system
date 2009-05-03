@@ -235,14 +235,68 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function add_term($term, $parent_term = null, $before_term = null)
 	{
+		$new_term = $term;
+		if ( is_string($term) ) {
+			$new_term = new Term(array('term' => $term));
+		}
+
+		$new_term->vocabulary_id = $this->id;
+
+		// Insert the term in the proper place
+		$tree = $this->get_tree();
+
+		$ref = 0;
+		// If there are terms in the vocabulary, work out the reference point
+		if ( 0 != count($tree) ) {
+
+			// If no parent is specified, put the new term after the last term
+			if ( null == $parent_term ) {
+				$ref = $tree[count($tree) - 1]->mptt_right;
+			}
+			else {
+				if ( null == $before_term ) {
+					$ref = $parent_term->mptt_right - 1;
+				}
+				else {
+					$ref = $before_term->mptt_left - 1;
+				}
+			}
+
+			// Make space for the new node
+			DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE mptt_right>?', array($ref));
+			DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE mptt_left>?', array($ref));
+
+		}
+
+		// Set the right and left appropriately
+		$new_term->mptt_left = $ref + 1;
+		$new_term->mptt_right = $ref + 2;
+
+		// Insert the new node
+		$new_term->insert();
+
+		return $new_term;
 	}
 
 	/**
 	 * Gets the term object for that string. No parameter returns the root Term object.
 	 * @return Term The Term object requested
 	 **/
-	public function get_term($term)
+	public function get_term($term = null)
 	{
+		// TODO There should probably be a Term::get()
+		$params = array($this->id);
+		$query = '';
+		if ( null != $term ) {
+			$params[] = $term;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND term=?';
+		}
+		else {
+			// The root node has an mptt_left value of 1
+			$params[] = 1;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left=?';
+		}
+		return DB::get_row( $query, $params, 'Term' );
 	}
 
 	/**
@@ -255,10 +309,21 @@ class Vocabulary extends QueryRecord
 
 	/**
 	 * Remove the term from the vocabulary.  Convenience method to ->get_term('foo')->delete().
-	 * @return Array The Term objects requested
+	 *
 	 **/
 	public function delete_term($term)
 	{
+		$this->get_term($term)->delete();
+	}
+
+	/**
+	 * Retrieve the vocabulary
+	 * @return Array The Term objects in the vocabulary, in tree order
+	 **/
+	private function get_tree()
+	{
+		// TODO There should probably be a Term::get()
+		return DB::get_results( 'SELECT * FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_left ASC', array($this->id), 'Term' );
 	}
 
 }
