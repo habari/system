@@ -45,6 +45,14 @@ class Term extends QueryRecord
 
 		parent::__construct( $paramarray );
 
+		// TODO does term need to be a slug ?
+		// TODO How should we handle neither being present ?
+		// A Vocabulary may be used for organization, display, or both.
+		// Therefore, a Term can be constructed with a term, term_display, or both
+		if ( '' == $this->fields['term'] ) {
+			$this->fields['term'] = Utils::slugify($this->fields['term_display']);
+		}
+
 		$this->exclude_fields( 'id' );
 	}
 
@@ -130,6 +138,10 @@ class Term extends QueryRecord
 	 **/
 	public function ancestors()
 	{
+		// TODO There should probably be a Term::get()
+		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left<? AND mptt_right>? ORDER BY mptt_left ASC';
+		return DB::get_results( $query, $params, 'Term' );
 	}
 
 	/**
@@ -138,6 +150,10 @@ class Term extends QueryRecord
 	 **/
 	public function descendants()
 	{
+		// TODO There should probably be a Term::get()
+		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<? ORDER BY mptt_left ASC';
+		return DB::get_results( $query, $params, 'Term' );
 	}
 
 	/**
