@@ -152,7 +152,10 @@ class Theme extends Pluggable
 		
 		Plugins::act('update_theme_config', $form, $this);
 		
+		self::flush_builds();
+		
 		Utils::redirect( URL::get( 'admin', 'page=themes&configure=' . Controller::get_var('configure') ));
+		exit;
 		return false;
 	}
 	
@@ -180,25 +183,33 @@ class Theme extends Pluggable
 	}
 	
 	/**
+	 * Deletes all built files
+	 **/
+	public static function flush_builds()
+	{
+		$files = Utils::glob(Site::get_dir('builds', true) . '/*');
+		
+		foreach($files as $file) {
+			unlink($file);
+		}
+		
+	}
+	
+	/**
 	 * Build a generic stack element
 	 *
 	 * @param url The stack url
 	 * @return url The parsed stack url
 	 **/
 	public static function build($url)
-	{
-		$relative_url = $url;
-		
-		$info = pathinfo($relative_url);
+	{		
+		$info = pathinfo($url);
 		$extension = $info['extension'];
-		
-		// Utils::debug($info['extension']);
-		
-		// We should find the timestamp of the actual template, and attach it to our hash
-				
+		$file = HABARI_PATH . str_replace(Site::get_url('habari'), '', $url);
+						
 		$info = array(
-			// 'time' => filemtime($relative_url),
-			'path' => $relative_url
+			'time' => filemtime($file),
+			'path' => $url
 		);
 		
 		return URL::get('build_file', array('hash' => Utils::encode(serialize($info)), 'extension' => $extension));

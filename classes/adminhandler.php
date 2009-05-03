@@ -84,7 +84,7 @@ class AdminHandler extends ActionHandler
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		// Add some default stylesheets
-		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
+		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin', null, 'build_css');
 
 			// Add some default template variables
 		$this->set_admin_template_vars( $this->theme );
@@ -3279,8 +3279,8 @@ class AdminHandler extends ActionHandler
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js", 'media', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js", 'admin', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js", 'media', 'jquery', 'build_js' );
+		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js", 'admin', 'jquery', 'build_js' );
 
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/crc32.js", 'crc32' );
 	}
