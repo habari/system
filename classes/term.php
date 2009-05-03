@@ -151,7 +151,7 @@ class Term extends QueryRecord
 	public function descendants()
 	{
 		// TODO There should probably be a Term::get()
-		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right );
+		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right);
 		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<? ORDER BY mptt_left ASC';
 		return DB::get_results( $query, $params, 'Term' );
 	}
@@ -162,6 +162,10 @@ class Term extends QueryRecord
 	 **/
 	public function parent()
 	{
+		// TODO There should probably be a Term::get()
+		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right);
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left<? AND mptt_right>? ORDER BY mptt_left DESC LIMIT 1';
+		return DB::get_row( $query, $params, 'Term' );
 	}
 
 	/**
