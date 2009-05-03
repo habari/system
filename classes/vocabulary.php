@@ -237,7 +237,7 @@ class Vocabulary extends QueryRecord
 	{
 		$new_term = $term;
 		if ( is_string($term) ) {
-			$new_term = new Term(array('term' => $term));
+			$new_term = new Term(array('term_display' => $term));
 		}
 
 		$new_term->vocabulary_id = $this->id;
