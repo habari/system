@@ -182,6 +182,8 @@ class Term extends QueryRecord
 	 **/
 	public function children()
 	{
+		// TODO Work out how to get one level of descendants
+		return $this->descendants();
 	}
 
 	/**
