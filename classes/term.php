@@ -174,6 +174,9 @@ class Term extends QueryRecord
 	 **/
 	public function siblings()
 	{
+		$params = array($this->vocabulary_id, $this->parent()->term, $this->vocabulary_id);
+		$query = 'SELECT term.term as term, term.term_display as term_display, term.mptt_left as mptt_left, term.mptt_right as mptt_right, term.vocabulary_id as vocabulary_id, (COUNT(parent.term) - (sub_tree.sub_depth + 1)) AS depth FROM habari__terms AS term, habari__terms AS parent, habari__terms AS sub_parent, ( SELECT term.term as subterm, (COUNT(parent.term) - 1) AS sub_depth FROM habari__terms AS term, habari__terms AS parent WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND subterm = ? GROUP BY subterm ORDER BY term.mptt_left) AS sub_tree WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND term.mptt_left BETWEEN sub_parent.mptt_left AND sub_parent.mptt_right AND sub_parent.term = sub_tree.subterm GROUP BY term.term HAVING depth = 1 ORDER BY term.mptt_left';
+		return DB::get_results( $query, $params, 'Term' );
 	}
 
 	/**
@@ -182,8 +185,9 @@ class Term extends QueryRecord
 	 **/
 	public function children()
 	{
-		// TODO Work out how to get one level of descendants
-		return $this->descendants();
+		$params = array($this->vocabulary_id, $this->term, $this->vocabulary_id);
+		$query = 'SELECT term.term as term, term.term_display as term_display, term.mptt_left as mptt_left, term.mptt_right as mptt_right, term.vocabulary_id as vocabulary_id, (COUNT(parent.term) - (sub_tree.sub_depth + 1)) AS depth FROM habari__terms AS term, habari__terms AS parent, habari__terms AS sub_parent, ( SELECT term.term as subterm, (COUNT(parent.term) - 1) AS sub_depth FROM habari__terms AS term, habari__terms AS parent WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND subterm = ? GROUP BY subterm ORDER BY term.mptt_left) AS sub_tree WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND term.mptt_left BETWEEN sub_parent.mptt_left AND sub_parent.mptt_right AND sub_parent.term = sub_tree.subterm GROUP BY term.term HAVING depth = 1 ORDER BY term.mptt_left';
+		return DB::get_results( $query, $params, 'Term' );
 	}
 
 	/**
