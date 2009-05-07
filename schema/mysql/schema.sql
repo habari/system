@@ -196,7 +196,8 @@ CREATE TABLE {$prefix}terms (
   vocabulary_id INT UNSIGNED NOT NULL,
   mptt_left INT UNSIGNED NOT NULL,
   mptt_right INT UNSIGNED NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE INDEX ix_mptt (mptt_left, mptt_right, vocabulary_id)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 CREATE TABLE {$prefix}vocabularies (

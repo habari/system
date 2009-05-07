@@ -170,23 +170,45 @@ class Term extends QueryRecord
 
 	/**
 	 * Find this Term's siblings.
-	 * @return Array of all siblings including self in MPTT left-to-right order.
+	 * @return Array of all siblings including self.
 	 **/
 	public function siblings()
 	{
-		$params = array($this->vocabulary_id, $this->parent()->term, $this->vocabulary_id);
-		$query = 'SELECT term.term as term, term.term_display as term_display, term.mptt_left as mptt_left, term.mptt_right as mptt_right, term.vocabulary_id as vocabulary_id, (COUNT(parent.term) - (sub_tree.sub_depth + 1)) AS depth FROM habari__terms AS term, habari__terms AS parent, habari__terms AS sub_parent, ( SELECT term.term as subterm, (COUNT(parent.term) - 1) AS sub_depth FROM habari__terms AS term, habari__terms AS parent WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND subterm = ? GROUP BY subterm ORDER BY term.mptt_left) AS sub_tree WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND term.mptt_left BETWEEN sub_parent.mptt_left AND sub_parent.mptt_right AND sub_parent.term = sub_tree.subterm GROUP BY term.term HAVING depth = 1 ORDER BY term.mptt_left';
-		return DB::get_results( $query, $params, 'Term' );
+		return $this->parent()->children();
 	}
 
 	/**
 	 * Find this Term's children.
-	 * @return Array of all direct children (compare to descendants()) in MPTT left-to-right order.
+	 * @return Array of all direct children (compare to descendants()).
 	 **/
 	public function children()
 	{
-		$params = array($this->vocabulary_id, $this->term, $this->vocabulary_id);
-		$query = 'SELECT term.term as term, term.term_display as term_display, term.mptt_left as mptt_left, term.mptt_right as mptt_right, term.vocabulary_id as vocabulary_id, (COUNT(parent.term) - (sub_tree.sub_depth + 1)) AS depth FROM habari__terms AS term, habari__terms AS parent, habari__terms AS sub_parent, ( SELECT term.term as subterm, (COUNT(parent.term) - 1) AS sub_depth FROM habari__terms AS term, habari__terms AS parent WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND subterm = ? GROUP BY subterm ORDER BY term.mptt_left) AS sub_tree WHERE term.vocabulary_id = ? AND term.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right AND term.mptt_left BETWEEN sub_parent.mptt_left AND sub_parent.mptt_right AND sub_parent.term = sub_tree.subterm GROUP BY term.term HAVING depth = 1 ORDER BY term.mptt_left';
+		$params = array( 'vocab' => $this->vocabulary_id,
+			'left' => $this->mptt_left,
+			'right' => $this->mptt_rigth
+		);
+		/**
+		 * If we INNER JOIN the terms table with itself on ALL the descendents of our term,
+		 * then descendents one level down are listed once, two levels down are listed twice,
+		 * etc. If we return only those terms which appear once, we get immediate children.
+		 * ORDER BY NULL to avoid the MySQL filesort.
+		 */
+		$query = <<<SQL
+SELECT child.term as term,
+	child.term_display as term_display,
+	child.mptt_left as mptt_left,
+	child.mptt_right as mptt_right,
+	child.vocabulary_id as vocabulary_id
+FROM {terms} as parent
+INNER JOIN {terms} as child
+	ON child.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right
+	AND child.vocabulary_id = parent.vocabulary_id
+WHERE parent.mptt_left > :left AND parent.mptt_right < :right
+AND parent.vocabulary_id = :vocab
+GROUP BY child.term
+HAVING COUNT(child.term)=1
+ORDER BY NULL
+SQL;
 		return DB::get_results( $query, $params, 'Term' );
 	}
 
