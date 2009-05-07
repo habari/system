@@ -1,5 +1,8 @@
 <?php
-// @TODO Replace relative urls with absolute urls
+/** 
+ * Remember to create absolute, not relative urls. Ex:
+ * <?php echo Site::get_url('admin_theme', TRUE); ?>images/arrowdown.png
+ */
 ?>
 /*
  * Name: Habari Admin Stylesheet
@@ -157,7 +160,7 @@ a img {
 	line-height: 22px;
 	display: block;
 	padding: 0 30px 0 10px;
-	background: url(../images/arrowdown.png) 160px center no-repeat;
+	background: url(<?php echo Site::get_url('admin_theme', TRUE); ?>images/arrowdown.png) 160px center no-repeat;
 }
 
 #menubutton a:first-letter {
@@ -229,7 +232,7 @@ a img {
 }
 
 #menulist li.submenu a.top {
-	background: url('../images/arrowright.png') 163px center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/arrowright.png') 163px center no-repeat;
 }
 
 #menulist li.submenu li:first-child, #menulist li.submenu li:first-child a {
@@ -245,11 +248,11 @@ a img {
 }
 
 #menulist li.selected a {
-	background: url('../images/currentpageindicator.png') 8px center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/currentpageindicator.png') 8px center no-repeat;
 }
 
 #menulist li.selected a:hover, #menulist li.selected.carrot a {
-	background: #444 url('../images/currentpageindicator.png') 8px center no-repeat;
+	background: #444 url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/currentpageindicator.png') 8px center no-repeat;
 }
 
 #menulist li#link-tags, #menulist li#link-logs {
@@ -354,7 +357,7 @@ a img {
 
 #page .dropbutton li.first-child a {
 	/* Add dropdown indicator to first child */
-	background: url(../images/arrowdown.png) right 6px no-repeat;
+	background: url(<?php echo Site::get_url('admin_theme', TRUE); ?>images/arrowdown.png) right 6px no-repeat;
 	-webkit-border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-moz-border-radius-topright: 3px;
@@ -417,7 +420,7 @@ a img {
 	-webkit-border-radius: 9px;		/* Webkit only supports up to 9px at present */
 	-moz-border-radius: 9px;
 	font-size: 10px;
-	background: transparent url('../images/button_background.png') repeat-x;
+	background: transparent url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/button_background.png') repeat-x;
 	border: 1px solid #b3b3b3;
 }
 
@@ -486,7 +489,7 @@ a:hover {
 }
 #page .dropbutton a.active,
 #page .dropbutton.hovering li.first-child a.active {
-	background: url('../images/currentpageindicator.png') right center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/currentpageindicator.png') right center no-repeat;
 }
 
 
@@ -733,7 +736,7 @@ body.page-publish .buttons input {
 /* -- TOOLBAR */
 
 .media_controls {
-	background: #474747 url('../images/shadow-heavy-top.png') top repeat-x;
+	background: #474747 url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/shadow-heavy-top.png') top repeat-x;
 	padding: 15px 5px 5px;
 	height: 25px;
 }
@@ -779,7 +782,7 @@ body.page-publish .buttons input {
 	overflow-x: scroll;
 	overflow-y: hidden;
 	position: relative;
-	background: url('../images/shadow-light-top.png') top right repeat-x; /* Drop shadow */
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/shadow-light-top.png') top right repeat-x; /* Drop shadow */
 }
 
 /* -- MEDIA DIRECTORIES */
@@ -789,7 +792,7 @@ body.page-publish .buttons input {
 	height: inherit;
 	overflow-y: auto;
 	overflow-x: hidden;
-	background: url('../images/shadow-light-left.png') repeat-y;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/shadow-light-left.png') repeat-y;
 	height: 180px;
 	border-right: 1px solid #333;
 }
@@ -806,7 +809,7 @@ body.page-publish .buttons input {
 
 .media_dirlevel li {
 	min-width: 70px;
-	background: url(../images/arrowright.png) right center no-repeat;
+	background: url(<?php echo Site::get_url('admin_theme', TRUE); ?>images/arrowright.png) right center no-repeat;
 	cursor: pointer;
 	color: #888;
 	padding: 0px 15px 0px 10px;
@@ -821,7 +824,7 @@ body.page-publish .buttons input {
 }
 
 .media_dirlevel li:hover, .media_dirlevel li.active {
-	background: #333 url(../images/arrowright.png) right center no-repeat;
+	background: #333 url(<?php echo Site::get_url('admin_theme', TRUE); ?>images/arrowright.png) right center no-repeat;
 }
 
 .media_dirlevel li.active {
@@ -850,7 +853,7 @@ body.page-publish .buttons input {
 }
 
 .mediaphotos > ul li.first {
-	background: url('../images/shadow-light-left.png') left repeat-y;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/shadow-light-left.png') left repeat-y;
 }
 
 .mediaphotos > ul li.end {
@@ -862,14 +865,14 @@ body.page-publish .buttons input {
 	color: #444;
 	height: 180px;
 	width: 100px;
-	background: url('../images/shadow-light-left.png') left repeat-y}
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/shadow-light-left.png') left repeat-y}
 
 .mediaphotos > ul li:hover {
 	background: #111;
 }
 
 .mediaphotos > ul li.end:hover {
-	background: url('../images/shadow-light-left.png') left repeat-y}
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/shadow-light-left.png') left repeat-y}
 
 .mediaphotos li.media .foroutput {
 	display: none;
@@ -887,7 +890,7 @@ body.page-publish .buttons input {
 }
 
 .mediaphotos li.media .medialink {
-	background: url('../images/medialink.png') no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/medialink.png') no-repeat;
 	width: 10px;
 	height: 9px;
 	text-indent: -3000px;
@@ -943,7 +946,7 @@ body.page-publish .buttons input {
 .viddler_recorder_container {
 	text-align: center;
 	padding: 15px 0;
-	background: url('../images/shadow-light-top.png') top right repeat-x; /* Drop shadow */
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/shadow-light-top.png') top right repeat-x; /* Drop shadow */
 }
 
 
@@ -1002,7 +1005,7 @@ body.page-publish .buttons input {
 }
 
 .dashboard .module .handle {
-	background: url('../images/dashboardhandle.png') center center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/dashboardhandle.png') center center no-repeat;
 	position: absolute;
 	top: 16px;
 	left: 5%;
@@ -1014,7 +1017,7 @@ body.page-publish .buttons input {
 
 .dashboard .module h2 {
 	z-index: 100;
-	background: url('../images/dashboardh2bg.png') right center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/dashboardh2bg.png') right center no-repeat;
 	padding-right: 10px;
 	position: absolute;
 	top: 15px;
@@ -1091,7 +1094,7 @@ body.page-publish .buttons input {
 	left: 7px;
 	height: 16px;
 	width: 16px;
-	background: url('../images/closebutton.png') center center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/closebutton.png') center center no-repeat;
 	cursor: pointer;
 	z-index: 110;
 }
@@ -1102,7 +1105,7 @@ body.page-publish .buttons input {
 	right: 7px;
 	height: 16px;
 	width: 16px;
-	background: url('../images/moduleoptions.png') center center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/moduleoptions.png') center center no-repeat;
 	cursor: pointer;
 	z-index: 110;
 }
@@ -1149,7 +1152,7 @@ body.page-publish .buttons input {
 }
 
 #page .dashboard .module.viewingoptions .optionswindow h2 {
-	background: url('../images/dashboardh2bgdark.png') right center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/dashboardh2bgdark.png') right center no-repeat;
 	color: #eee;
 }
 
@@ -1368,11 +1371,11 @@ body.page-group .container.groupmembers a.user {
 	margin-right:1em;
 	padding-right:14px;
 	line-height:14px;
-	background:url('../images/closebutton.png') no-repeat right center;
+	background:url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/closebutton.png') no-repeat right center;
 }
 
 body.page-group .container.groupmembers a.user:hover, body.page-group .container.groupmembers #currentusers a.user:focus {
-	background-image:url('../images/minusbutton.png');
+	background-image:url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/minusbutton.png');
 }
 
 body.page-group .container.groupmembers a.user.template, body.page-group .container.groupmembers #currentusers a.user .id {
@@ -1430,7 +1433,7 @@ body.page-options .item {
 
 .plugins .item a.help {
 	text-indent: -10000px;
-	background: transparent url('../images/help_icon.png') scroll no-repeat;
+	background: transparent url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/help_icon.png') scroll no-repeat;
 	width: 15px;
 	height: 15px;
 	display: inline-block;
@@ -1438,7 +1441,7 @@ body.page-options .item {
 }
 
 .plugins .item a.help:hover {
-	background-image: url('../images/help_icon_over.png');
+	background-image: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/help_icon_over.png');
 }
 
 .plugins #pluginconfigure {
@@ -1580,6 +1583,16 @@ body.page-themes .thumb img {
 	-webkit-border-radius: 5px;
 }
 
+.uploadpackage h2 {
+	float: left;
+	margin: 0;
+}
+
+.uploadform {
+	float: right;
+}
+
+/*-- THEME CONFIGURATION */
 #themeconfigure {
 	clear: both;
 	background: #f4f4f4;
@@ -1587,6 +1600,10 @@ body.page-themes .thumb img {
 	padding: 20px 40px;
 	border-bottom: 1px solid #ddd;
 	border-top: 1px solid #ddd;
+}
+
+#themeconfigure button {
+	margin-left:37px;
 }
 
 #themeconfigure form {
@@ -1598,15 +1615,32 @@ body.page-themes .thumb img {
 	-webkit-border-radius: 5px;
 }
 
-.uploadpackage h2 {
-	float: left;
-	margin: 0;
+#themeconfigure form .formcontrol.text {
+	clear:both;
+	width:100%;
+	float:left;
+	margin:5px 0;
+	line-height:18px;
 }
 
-.uploadform {
-	float: right;
+#themeconfigure form .formcontrol input {
+	width: 95%;
 }
 
+#themeconfigure form #buttons {
+	margin:0;
+	padding:0;
+}
+
+#themeconfigure form .formcontrol.submit {
+	float:left;
+	margin-left:15px;
+}
+
+#themeconfigure form .formcontrol.submit input {
+	width: auto;
+	color: #000000;
+}
 
 /*- OPTIONS PAGE */
 
@@ -1624,7 +1658,7 @@ body.page-options #title input {
 	margin: 0;
 }
 
-.container .item label {
+.container .item label, #themeconfigure form .formcontrol label {
 	font-weight: normal;
 	margin-left: 10px;
 	color: #555;
@@ -1997,7 +2031,7 @@ body.page-Manage .state {
 }
 
 .timeline .handle {
-	background: url('../images/loupebg.png') repeat-x;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/loupebg.png') repeat-x;
 	height: 50px;
 	width: 20px;
 	position: absolute;
@@ -2010,7 +2044,7 @@ body.page-Manage .state {
 .timeline .handle .resizehandleleft,
 .timeline .handle .resizehandleright {
 	cursor: col-resize;
-	background: url('../images/loupehandle.png') 2px center no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/loupehandle.png') 2px center no-repeat;
 	width: 7px;
 	height: inherit;
 	margin-left: -2px;
@@ -2119,7 +2153,7 @@ ul.tabs li {
 	display: inline-block;
 	font-size: 11px;
 	text-align: center;
-	background: url('../images/tabsbg.png') center top;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/tabsbg.png') center top;
 	color: #333;
 	cursor: pointer;
 	border-right: 1px solid #bdbdbd;
@@ -2251,7 +2285,7 @@ body.login {
 }
 
 body.login #page {
-	background: url('../images/loginbg.png') center -56px no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/loginbg.png') center -56px no-repeat;
 	margin: 0;
 	min-height: 536px;
 }
@@ -2477,13 +2511,13 @@ body.login .humanMsg {
 .page-logs .item .info span {
 	height: 13px;
 	width: 13px;
-	background: url('../images/info.png') no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/info.png') no-repeat;
 	display: block;
 	cursor: pointer;
 }
 
 .page-logs .item .info span:hover {
-	background: url('../images/info_hover.png') no-repeat;
+	background: url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/info_hover.png') no-repeat;
 }
 
 #pop {

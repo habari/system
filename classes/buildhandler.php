@@ -21,7 +21,12 @@ class BuildHandler extends ActionHandler
 				
 		$theme = $this->get_theme($path);
 				
-		header('Content-type: ' . Utils::mimetype(basename($path))); 
+		header('Content-Type: ' . Utils::mimetype(basename($path))); 
+		header("Cache-Control: max-age=31536000"); // Cache for 1 year
+		
+		$date = HabariDateTime::date_create();
+		$date->set_date($date->year + 5, 1, 1);
+		$date->modify('+5 years');
 		
 		$theme['theme']->theme= $theme['theme'];
 		$render= $theme['theme']->fetch($theme['template']);

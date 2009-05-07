@@ -115,12 +115,24 @@ class Theme extends Pluggable
 		if( isset( $themedata['info']->config ) ) {
 			$form->build_from_xml( $themedata['info']->config, 'theme__' );
 		}
-						
+		
+		foreach( $form->get_controls() as $control ) {
+			switch(get_class($control)) {
+				case 'FormControlText':
+					$control->template = 'themecontrol_text';
+					break;
+				case 'FormControlSelect':
+					$control->template = 'themecontrol_select';
+					break;
+			}
+		}
+		
 		$buttons = $form->append('wrapper', 'buttons');
+		$buttons->class = 'container transparent';
 
 		// Create the Save button
-		$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
-		$buttons->append('submit', 'reset', _t('Reset'), 'admincontrol_submit');
+		$buttons->append('submit', 'save', _t('Save'), 'themecontrol_submit');
+		$buttons->append('submit', 'reset', _t('Reset'), 'themecontrol_submit');
 		
 		$form->on_success(array($this, 'save_config'));
 				
@@ -155,7 +167,6 @@ class Theme extends Pluggable
 		self::flush_builds();
 		
 		Utils::redirect( URL::get( 'admin', 'page=themes&configure=' . Controller::get_var('configure') ));
-		exit;
 		return false;
 	}
 	

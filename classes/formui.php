@@ -1600,7 +1600,7 @@ class FormControlSelect extends FormControl
 	{
 		$args = func_get_args();
 		list($name, $storage, $caption, $options, $template) = array_merge($args, array_fill(0, 5, null));
-
+				
 		$this->name = $name;
 		$this->storage = $storage;
 		$this->caption = $caption;
@@ -1611,13 +1611,34 @@ class FormControlSelect extends FormControl
 	}
 
 	/**
+	 * Magic property setter, so we can allow adding of options
+	 *
+	 * @param string $name The name of the property
+	 * @param mixed $value The value to set the property to
+	 */
+	public function __set($name, $value)
+	{
+		switch($name) {
+			case 'xml':
+				foreach($value->children() as $child) {
+					if($child->getName() == 'option') {
+						$this->options[(string) $child['value']] = (string) $child;
+					}
+				}
+				break;
+			default:
+				parent::__set($name, $value);
+		}
+	}
+
+	/**
 	 * Produce HTML output for this text control.
 	 *
 	 * @param boolean $forvalidation True if this control should render error information based on validation.
 	 * @return string HTML that will render this control in the form
 	 */
 	public function get($forvalidation = true)
-	{
+	{	
 		$theme = $this->get_theme($forvalidation);
 		$theme->options = $this->options;
 		$theme->multiple = $this->multiple;
