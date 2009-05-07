@@ -173,6 +173,7 @@ CREATE TABLE {$prefix}terms (
   mptt_left INTEGER NOT NULL,
   mptt_right INTEGER NOT NULL
 );
+CREATE UNIQUE INDEX IF NOT EXISTS ix_mptt ON {$prefix}terms(mptt_left, mptt_right, vocabulary_id);
 
 CREATE TABLE {$prefix}vocabularies (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
