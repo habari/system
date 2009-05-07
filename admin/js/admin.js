@@ -867,17 +867,15 @@ timelineHandle.prototype = {
 	mouseDown: function(e) {
 		this.initialpos = e.pageX;
 		
-		// these are required to keep context
+		// keep context in closures
 		var self = this;
-		this.mouseMoveDelegate = function(e) {
-			return self.mouseMove(e);
-		};
-		this.mouseUpDelegate = function(e) {
-			return self.mouseUp(e);
-		};
 		$(document)
-			.bind( 'mousemove.timeline', this.mouseMoveDelegate )
-			.bind( 'mouseup.timeline', this.mouseUpDelegate );
+			.bind( 'mousemove.timeline', function(e) {
+				return self.mouseMove.call( self, e );
+			})
+			.bind( 'mouseup.timeline', function(e) {
+				return self.mouseUp.call( self, e );
+			});
 		return false;
 	},
 	mouseMove: function(e) {
@@ -891,7 +889,7 @@ timelineHandle.prototype = {
 		return false;
 	},
 	mouseUp: function(e) {
-		$(document).unbind('mousemove.timeline', this.mouseMoveDelegate).unbind('mouseup.timeline', this.mouseUpDelegate);
+		$(document).unbind('mousemove.timeline').unbind('mouseup.timeline');
 		timeline.change();
 		return false;
 	},
