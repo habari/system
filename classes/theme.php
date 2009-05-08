@@ -127,6 +127,8 @@ class Theme extends Pluggable
 			}
 		}
 		
+		$this->reset_options();
+		
 		$buttons = $form->append('wrapper', 'buttons');
 		$buttons->class = 'container transparent';
 
@@ -152,17 +154,25 @@ class Theme extends Pluggable
 	 **/
 	public function save_config($form)
 	{
-		// Add reset stuff here
-		
-		foreach($form->get_values() as $key => $value)
-		{
-			if($key == 'save') {
-				continue;
-			}
-			Options::set('theme__' . $key, $value);
+		// Reset first
+		if(isset($_POST[$form->reset->field]) && $_POST[$form->reset->field] == $form->reset->caption) {
+			Plugins::act('reset_theme_config', $form, $this);
+			
+			self::reset_options();
+			
+			Session::notice(_t( "Reset theme settings"));
 		}
-		
-		Plugins::act('update_theme_config', $form, $this);
+		else {
+			foreach($form->get_values() as $key => $value)
+			{
+				if($key == 'save') {
+					continue;
+				}
+				Options::set('theme__' . $key, $value);
+			}
+
+			Plugins::act('update_theme_config', $form, $this);
+		}
 		
 		self::flush_builds();
 		
@@ -191,6 +201,14 @@ class Theme extends Pluggable
 		else {
 			return NULL;
 		}
+	}
+	
+	/**
+	 * Reset theme options
+	 **/
+	public static function reset_options()
+	{
+		return Options::delete_group( 'theme' );
 	}
 	
 	/**

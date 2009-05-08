@@ -103,6 +103,22 @@ class Options extends Singleton
 	{
 		unset(self::instance()->$name);
 	}
+	
+	/**
+	 * Shortcut to unset a group of options
+	 *
+	 * @param string $name The name of the option
+	 */
+	public static function delete_group( $prefix )
+	{
+
+		$results = DB::query( 'DELETE FROM {options} WHERE name LIKE ?', array( $prefix . '_\_%' ) );
+				
+		self::clear_cache();
+		
+		return $results;
+		
+	}
 
 	/**
 	 * Retrieve an option value
