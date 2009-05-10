@@ -100,12 +100,23 @@ class APCCache extends Cache
 		return $this->_get_group( $group ) ? true : false;
 	}
 
-	protected function _set( $name, $value, $expiry, $group )
+	protected function _set( $name, $value, $expiry, $group, $keep )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
 		$this->cache_data[$group][$name] = $value;
+		
+		if($keep) {
+			$keepcache = apc_fetch( $this->prefix . ':keepcache');
+			if(!is_array($keepcache)) {
+				$keepcache = array();
+			}
+			$keepcache[$group][$name] = intval($expiry);
+			apc_store( $this->prefix . ':keepcache', $keepcache);
+			$expiry = 0;
+		}
+		
 		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval($expiry) );
 	}
 
@@ -140,6 +151,30 @@ class APCCache extends Cache
 		
 		foreach ( $keys as $key ) {
 			apc_delete( implode( ':', array( $this->prefix, $group, $key ) ) );
+		}
+	}
+
+	/**
+	 * Return whether a named cache value has expired
+	 * 
+	 * @param string $name The name of the cached item
+	 * @param string $group The group of the cached item
+	 * @return boolean true if the stored value has expired
+	 */
+	protected function _expired( $name, $group )
+	{
+		if ( !$this->enabled ) {
+			return null;
+		}
+
+		// Do not check cached data, since we can return (and cache in this object) data if the cache is set to 'keep'
+		$keepcache = apc_fetch( $this->prefix . ':keepcache');
+		
+		if ( !self::_has($name,$group) || !isset( $keepcache[$group][$name] ) || $keepcache[$group][$name] < time() ) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 

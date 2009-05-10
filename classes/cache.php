@@ -124,8 +124,9 @@ abstract class Cache
 	 * @param mixed $name The name of the cached item or an array of array( string $group, string $name )
 	 * @param mixed $value The value to store
 	 * @param integer $expiry Number of second after the call that the cache will expire
+	 * @param boolean $keep If true, retain the cache value even after expiry but report the cache as expired
 	 */
-	public static function set( $name, $value, $expiry = 3600 )
+	public static function set( $name, $value, $expiry = 3600, $keep = false )
 	{
 		if ( is_array( $name ) ) {
 			$array = $name;
@@ -134,7 +135,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
-		self::$instance->_set( $name, $value, $expiry, $group );
+		self::$instance->_set( $name, $value, $expiry, $group, $keep );
 	}
 
 	/**
@@ -144,7 +145,7 @@ abstract class Cache
 	 * @param mixed $value The value to store
 	 * @param integer $expiry Number of second after the call that the cache will expire
 	 */
-	abstract protected function _set( $name, $value, $expiry, $group );
+	abstract protected function _set( $name, $value, $expiry, $group, $keep );
 
 
 	/**
@@ -172,6 +173,29 @@ abstract class Cache
 	 */
 	abstract protected function _expire( $name, $group );
 
+	/**
+	 * Check if a named value in the cache has expired.
+	 *
+	 * @param mixed $name The name of the cached item or an array of array( string $group, string $name )
+	 */
+	public static function expired( $name )
+	{
+		if ( is_array( $name ) ) {
+			$array = $name;
+			list( $group, $name ) = $array;
+		}
+		else {
+			$group = self::$default_group;
+		}
+		return self::$instance->_expired( $name, $group );
+	}
+
+	/**
+	 * A cache instance implements this to expire the named value from the cache.
+	 *
+	 * @param string $name The name of the cached item
+	 */
+	abstract protected function _expired( $name, $group );
 
 	/**
 	 * Extend the expiration of the named cached value.
