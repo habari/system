@@ -9,8 +9,6 @@
 			<div id="silo_<?php echo Utils::slugify($silodir->path); ?>" class="splitterinside">
 				<div id="mediaspinner"></div>
 				<div class="media_controls">
-					<ul>
-					</ul>
 					<?php /*<div class="upload"><input type="file"><input type="submit" value="<?php _e('Upload'); ?>"></div>*/ ?>
 				</div>
 				<div class="media_browser">
