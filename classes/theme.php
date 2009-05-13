@@ -124,6 +124,9 @@ class Theme extends Pluggable
 				case 'FormControlSelect':
 					$control->template = 'themecontrol_select';
 					break;
+				case 'FormControlColor':
+					$control->template = 'themecontrol_color';
+					break;
 			}
 		}
 		
@@ -202,6 +205,18 @@ class Theme extends Pluggable
 			return NULL;
 		}
 	}
+	
+	/**
+	 * Display config option
+	 * 
+	 * @param string Option name
+	 */
+	public function out_option( $name )
+	{
+		$value = $this->get_option( $name );
+		echo $value;
+		return $value;
+	}	
 	
 	/**
 	 * Reset theme options

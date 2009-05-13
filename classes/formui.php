@@ -1418,6 +1418,42 @@ class FormControlText extends FormControl
 // Placeholder class
 }
 
+
+/**
+ * A color control based on FormControl for output via a FormUI.
+ */
+class FormControlColor extends FormControl
+{
+
+	/**
+	 * Magic function __get returns properties for this object, or passes it on to the parent class
+	 * Potential valid properties:
+	 * value: The value of the control, whether the default or submitted in the form
+	 *
+	 * @param string $name The paramter to retrieve
+	 * @return mixed The value of the parameter
+	 */
+	public function __get($name)
+	{
+		switch($name) {
+			case 'value':
+				$value = parent::__get($name);
+				if($value != NULL && substr($value, 0, 1) == '#') {
+					return $value;
+				}
+				elseif($value != NULL) {
+					return '#' . $value;
+				}
+				else {
+					return $value;
+				}
+			default:
+				return parent::__get($name);
+		}
+	}
+
+}
+
 /**
  * A submit control based on FormControl for output via FormUI
  */

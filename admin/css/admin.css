@@ -1615,7 +1615,7 @@ body.page-themes .thumb img {
 	-webkit-border-radius: 5px;
 }
 
-#themeconfigure form .formcontrol.text {
+#themeconfigure form .formcontrol.text, #themeconfigure form .formcontrol.color {
 	clear:both;
 	width:100%;
 	float:left;
@@ -1640,6 +1640,28 @@ body.page-themes .thumb img {
 #themeconfigure form .formcontrol.submit input {
 	width: auto;
 	color: #000000;
+}
+
+/*- COLOR PICKER */
+.formcontrol.color .color, .formcontrol.color.loaded input {
+	display:none;
+}
+
+.formcontrol.color.loaded .color {
+	display:block;
+	position:relative;
+}
+
+.formcontrol.color .colorbox {
+	background:transparent url(<?php echo Site::get_url('habari', TRUE); ?>3rdparty/colorpicker/images/select2.png) repeat scroll center center;
+	float:left;
+	height:28px;
+	width:28px;
+}
+
+.formcontrol.color .color .colorpicker {
+	position:absolute;
+	top:30px;
 }
 
 /*- OPTIONS PAGE */
