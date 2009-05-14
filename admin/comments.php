@@ -6,13 +6,13 @@
 	<span class="search pct50">
 		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" value="<?php echo htmlspecialchars($search_args); ?>">
 	</span>
-	<span class="filters pct15">&nbsp;
+	<div class="filters pct15">
 		<ul class="dropbutton special_search">
 			<?php foreach($special_searches as $text => $term): ?>
 			<li><a href="#<?php echo $term; ?>" title="<?php printf( _t('Filter results for \'%s\''), $text ); ?>"><?php echo $text; ?></a></li>
 			<?php endforeach; ?>
 		</ul>
-	</span>
+	</div>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
 
