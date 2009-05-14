@@ -435,7 +435,7 @@ a img {
 }
 
 .item.selected {
-    background-color:#fffde2;
+	background-color:#fffde2;
 }
 
 .item.hide {
@@ -670,24 +670,24 @@ body.page-publish .buttons input {
 }
 
 #tags_list ul {
-    text-align: left;
-    margin-right: 50px;
-    margin-left: 10px;
-    }
+	text-align: left;
+	margin-right: 50px;
+	margin-left: 10px;
+	}
 
 #tags_list ul li {
-    font-family: "Arial", san-serif;
-    font-size: 0.8em;
-    display: inline;
-    line-height: 2.0em;
-    padding: 3px;
-    color: #ccc;
-    cursor: pointer;
-    }
+	font-family: "Arial", san-serif;
+	font-size: 0.8em;
+	display: inline;
+	line-height: 2.0em;
+	padding: 3px;
+	color: #ccc;
+	cursor: pointer;
+	}
 
 #tags_list ul li.clicked {
-    background: #000;
-    }
+	background: #000;
+	}
 
 .viewpost {
 	float: right;
@@ -1202,7 +1202,7 @@ body.page-publish .buttons input {
 
 /* Dashmodules Tables */
 
-.modules table  {
+.modules table	{
 	width: 100%;
 }
 
@@ -1548,16 +1548,16 @@ body.page-themes #page .dropbutton {
 }
 
 body.page-themes .thumb img {
-    float: left;
-    margin: 0 0 10px 0;
-    padding: 4px;
-    width: 200px;
-    display: block;
-    overflow: hidden;
-    background: #f2f2f2;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border: 1px solid #e7e7e7;
+	float: left;
+	margin: 0 0 10px 0;
+	padding: 4px;
+	width: 200px;
+	display: block;
+	overflow: hidden;
+	background: #f2f2f2;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border: 1px solid #e7e7e7;
 }
 
 .thumb, .description {
@@ -1709,7 +1709,7 @@ body.page-Manage .state {
 	padding: 3px 0 5px;
 }
 
-.special_search  a {
+.special_search	 a {
 	color: #666;
 }
 */
@@ -2126,7 +2126,7 @@ ul.tabs li {
 }
 
 * html .tabs li { display: inline; }  /* for IE 6 */
-* + html .tabs li { display: inline; }  /* for IE 7 */
+* + html .tabs li { display: inline; }	/* for IE 7 */
 
 ul.tabs li a {
 	float: left;
@@ -2228,9 +2228,9 @@ ul.tabs li.ui-tabs-selected.last-child {
 
 
 /*- CLEAR
-   Clearing floats without extra markup
-   Based on How To Clear Floats Without Structural Markup by PiE
-   [http://www.positioniseverything.net/easyclearing.html] */
+	Clearing floats without extra markup
+	Based on How To Clear Floats Without Structural Markup by PiE
+	[http://www.positioniseverything.net/easyclearing.html] */
 
 .clear { display: inline-block; }
 .clear:after, .container:after {

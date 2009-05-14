@@ -50,7 +50,7 @@
 					</p>
 
 				</form>
-     			<?php Plugins::act( 'theme_loginform_after' ); ?>
+				<?php Plugins::act( 'theme_loginform_after' ); ?>
 		</div>
 
 	</div>
