@@ -7,7 +7,6 @@
 		<div id="silo_<?php echo $ct; ?>" class="splitter mediasplitter ui-tabs-hide">
 			<div class="toload pathstore" style="display:none;"><?php echo $silodir->path; ?></div>
 			<div id="silo_<?php echo Utils::slugify($silodir->path); ?>" class="splitterinside">
-				<div id="mediaspinner"></div>
 				<div class="media_controls">
 					<?php /*<div class="upload"><input type="file"><input type="submit" value="<?php _e('Upload'); ?>"></div>*/ ?>
 				</div>
