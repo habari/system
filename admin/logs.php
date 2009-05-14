@@ -50,7 +50,7 @@
 		<span class="pct10"><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'pct90')); ?></span>
 		<span class="pct10"><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'pct90')); ?></span>
 		<span class="pct5"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
-		<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
+		<span class="pct30"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
 	</div>
 	
 	<?php if(isset($years)) { ?>
