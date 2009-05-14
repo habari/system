@@ -530,7 +530,7 @@ var pluginManage = {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
 			}, function() {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '');
-      }
+	  }
 		);
 	}
 };
@@ -894,13 +894,13 @@ timelineHandle.prototype = {
 		return false;
 	},
 	value: function(value) {
-	       if ( arguments.length ) {
-		       value = ( value < 0 ) ? 0 : value;
-		       value = ( value > this.max ) ? this.max : value;
-		       this.val = parseInt( value, 10 );
-		       this.handle.css( 'left', this.val + 'px' );
-	       }
-	       return this.val;
+			if ( arguments.length ) {
+				 value = ( value < 0 ) ? 0 : value;
+				 value = ( value > this.max ) ? this.max : value;
+				 this.val = parseInt( value, 10 );
+				 this.handle.css( 'left', this.val + 'px' );
+			}
+			return this.val;
 	},
 	width: function() {
 		return this.handle.width();

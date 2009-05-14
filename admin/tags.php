@@ -52,8 +52,8 @@ itemManage.update = function( action, id ) {
 
 	$.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
-        query,
-        function(msg) {
+		query,
+		function(msg) {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
