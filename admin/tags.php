@@ -28,10 +28,6 @@
 	<span class="or pct10"><?php _e('or'); ?></span>
 
 	<span class="pct15 buttons"><input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button"></span>
-
-	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
-	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 </div>
 
 <script type="text/javascript">
