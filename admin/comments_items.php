@@ -29,7 +29,7 @@
 	</div>
 
 	<div class="infoandcontent clear">
-		<span class="authorinfo pct25 minor">
+		<div class="authorinfo pct25 minor">
 			<ul>
 				<?php if ($comment->url != '') {
 					echo '<li><a class="edit-url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
@@ -51,7 +51,7 @@
 			
 			<?php Plugins::act('comment_info', $comment); ?>
 
-		</span>
+		</div>
 		<span class="content edit-content area pct75"><?php
 			if ( MultiByte::valid_data( $comment->content ) ) {
 				echo nl2br( htmlspecialchars( $comment->content ) );
