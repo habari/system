@@ -2057,10 +2057,11 @@ body.page-tags .container .selected label {
 	color: #fb430f;
 }
 
-body.page-tags .container sup {
+body.page-tags .item.tag .count {
 	color: #aaa;
 	font-size: 9px;
 	margin-left: 2px;
+	vertical-align: super;
 }
 
 body.page-tags #tag_collection input {
@@ -2068,6 +2069,7 @@ body.page-tags #tag_collection input {
 }
 
 body.page-tags #tag_collection .item {
+	display: inline;
 	background: transparent;
 	border: none;
 	margin: 0;

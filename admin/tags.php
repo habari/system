@@ -6,9 +6,9 @@
 
 <!--<div class="instructions"><span>Click to select</span> &middot; <span>Double-click to open</span></div>-->
 
-<div id="tag_collection" class="container items">
+<ul id="tag_collection" class="container items">
 	<?php $theme->display( 'tag_collection' ); ?>
-</div>
+</ul>
 
 
 <div class="container transparent item controls">
