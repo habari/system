@@ -172,11 +172,16 @@ class InputFilter
 	 */
 	public static function filter( $str )
 	{
-		$str = self::strip_nulls( $str );
-		$str = self::strip_illegal_entities( $str );
-		$str = self::filter_html_elements( $str );
-
-		return $str;
+		if ( !MultiByte::valid_data( $str ) ) {
+			return '';
+		}
+		else {
+			$str = self::strip_nulls( $str );
+			$str = self::strip_illegal_entities( $str );
+			$str = self::filter_html_elements( $str );
+	
+			return $str;
+		}
 	}
 
 	public static function strip_nulls( $str )
