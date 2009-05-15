@@ -186,7 +186,7 @@ class InputFilter
 
 	public static function strip_nulls( $str )
 	{
-		$str = preg_replace( '/\0+/', '', $str );
+		$str = str_replace( '\0', '', $str );
 
 		return $str;
 	}
