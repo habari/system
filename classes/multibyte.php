@@ -109,12 +109,10 @@ class MultiByte
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			if (extension_loaded( 'mbstring' ) ) {
-				if( $from_enc == null ) {
-					$from_enc = MultiByte::detect_encoding( $str );
-				}
-				$ret = mb_convert_encoding( $str, $enc, $from_enc );
+			if( $from_enc == null ) {
+				$from_enc = MultiByte::detect_encoding( $str );
 			}
+			$ret = mb_convert_encoding( $str, $enc, $from_enc );
 		}
 
 		return $ret;
@@ -134,17 +132,15 @@ class MultiByte
 		$enc = FALSE;
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			if ( extension_loaded( 'mbstring' ) ) {
-				// get original detection order
-				$old_order = mb_detect_order();
+			// get original detection order
+			$old_order = mb_detect_order();
 //				Utils::debug( $old_order );
-				// make sure  ISO-8859-1 is included
-				mb_detect_order( array( 'ASCII', 'JIS', 'UTF-8', 'ISO-8859-1', 'EUC-JP', 'SJIS' ) );
-				//detect the encoding . the detected encoding may be wrong, but it's better than guessing
-				$enc = mb_detect_encoding( $str );
-				// reset detection order
-				mb_detect_order( $old_order );
-			}
+			// make sure  ISO-8859-1 is included
+			mb_detect_order( array( 'ASCII', 'JIS', 'UTF-8', 'ISO-8859-1', 'EUC-JP', 'SJIS' ) );
+			//detect the encoding . the detected encoding may be wrong, but it's better than guessing
+			$enc = mb_detect_encoding( $str );
+			// reset detection order
+			mb_detect_order( $old_order );
 		}
 
 		return $enc;
@@ -177,12 +173,10 @@ class MultiByte
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			if ( extension_loaded( 'mbstring' ) ) {
-				if( ! isset( $len ) ) {
-					$len = MultiByte::strlen( $str ) - $begin;
-				}
-				$ret = mb_substr( $str, $begin, $len, $enc );
+			if( ! isset( $len ) ) {
+				$len = MultiByte::strlen( $str ) - $begin;
 			}
+			$ret = mb_substr( $str, $begin, $len, $enc );
 		}
 		return $ret;
 	}
@@ -209,9 +203,7 @@ class MultiByte
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			if ( extension_loaded( 'mbstring' ) ) {
-				$len = mb_strlen( $str, $enc );
-			}
+			$len = mb_strlen( $str, $enc );
 		}
 		else {
 			$len = strlen( $str );
@@ -239,7 +231,7 @@ class MultiByte
 			$enc = $use_enc;
 		}
 
-		if ( self::$use_library == self::USE_MBSTRING && extension_loaded( 'mbstring' )) {
+		if ( self::$use_library == self::USE_MBSTRING ) {
 			$ret = mb_strtolower( $str, $enc );
 		}
 		else {
@@ -269,9 +261,7 @@ class MultiByte
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			if ( extension_loaded( 'mbstring' ) ) {
-				$ret = mb_strtoupper( $str, $enc );
-			}
+			$ret = mb_strtoupper( $str, $enc );
 		}
 		else {
 			$ret = strtoupper( $str );
@@ -288,10 +278,6 @@ class MultiByte
 	 */
 	public static function valid_data( $str )
 	{
-		if ( !extension_loaded( 'mbstring' ) ) {
-			return true;
-		}
-		
 		return mb_check_encoding( $str, self::$hab_enc );
 	}
 
