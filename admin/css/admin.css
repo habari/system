@@ -579,10 +579,11 @@ p:hover > label.abovecontent {
 .button, #save input, button {
 	min-width: 110px;
 	margin-left: 10px;
+	float: right;
 }
 
 .button.delete, .formcontrol.delete input {
-	float: right;
+	float: left;
 	}
 
 .button#delete {
