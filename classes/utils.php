@@ -423,13 +423,7 @@ class Utils
 	public static function crypt( $password, $hash = NULL )
 	{
 		if ( $hash == NULL ) {
-			// encrypt
-			if ( function_exists( 'hash' ) ) { // PHP >= 5.1.2
-				return self::ssha512( $password, $hash );
-			}
-			else {
-				return self::ssha( $password, $hash );
-			}
+			return self::ssha512( $password, $hash );
 		}
 		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
 			// verify
