@@ -508,14 +508,18 @@ class AtomHandler extends ActionHandler
 			$comments_count = count( $comments );
 			$content_type = Post::type_name( $post->content_type );
 			$self = URL::get( "atom_feed_{$content_type}_comments", $post, false );
-			$updated = $comments[$comments_count - 1]->date;
+			if( $comments_count ) {
+				$updated = $comments[$comments_count - 1]->date;
+			}
 		}
 		else {
 			$self = URL::get( 'atom_feed_comments' );
 			$params['status'] = Comment::STATUS_APPROVED;
 			$comments = Comments::get( $params );
 			$comments_count = Comments::count_total( Comment::status('approved') );
-			$updated = $comments[0]->date;
+			if( $comments_count ) {
+				$updated = $comments[0]->date;
+			}
 		}
 
 		$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_comments';
@@ -707,8 +711,15 @@ class AtomHandler extends ActionHandler
 		}
 
 		$posts = Posts::get( $params );
+		
+		if( count( $posts ) ) {
+			$updated = $posts[0]->updated;
+		}
+		else {
+			$updated = null;
+		}
 
-		$xml = $this->create_atom_wrapper( $alternate, $self, $id, $posts[0]->date );
+		$xml = $this->create_atom_wrapper( $alternate, $self, $id, $updated );
 
 		$xml = $this->add_pagination_links( $xml, Posts::count_total( Post::status('published') ) );
 
