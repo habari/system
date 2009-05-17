@@ -122,10 +122,10 @@
 
 <div class="container controls transparent">
 	<span class="pct50">
-		<input type="submit" value="<?php _e('Apply'); ?>" class="button save">
+		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
 	</span>
 	<span class="pct50">
-		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
+		<input type="submit" value="<?php _e('Apply'); ?>" class="button save">
 	</span>
 
 	<input type="hidden" name="id" id="id" value="<?php echo $group->id; ?>">
