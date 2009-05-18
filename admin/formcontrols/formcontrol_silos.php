@@ -8,6 +8,8 @@
 			<div class="toload pathstore" style="display:none;"><?php echo $silodir->path; ?></div>
 			<div id="silo_<?php echo Utils::slugify($silodir->path); ?>" class="splitterinside">
 				<div class="media_controls">
+					<ul>
+					</ul>
 					<?php /*<div class="upload"><input type="file"><input type="submit" value="<?php _e('Upload'); ?>"></div>*/ ?>
 				</div>
 				<div class="media_browser">

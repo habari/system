@@ -83,12 +83,7 @@ habari.media = {
 					$('.media').dblclick(function(){
 						habari.media.insertAsset(this);
 					});
-					
-					if ($('.media_controls ul').length == 0) {
-						$('media_controls').append('<ul></ul>');
-					} else {
-						$('.media_controls ul li', container).remove();
-					}
+					$('.media_controls ul li', container).remove();
 					$('.media_controls ul', container).append(result.controls);
 					labeler.init();
 
