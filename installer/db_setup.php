@@ -1,4 +1,5 @@
 <?php include( 'header.php' ); ?>
+<?php function elem_if_set($a, $k) { if (isset($a[$k])) { return $a[$k]; } } ?>
 
 <form action="" method="post" id="installform">
 <input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
@@ -37,7 +38,7 @@
 			<label for="mysqldatabasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
 			<input type="text" id="mysqldatabasehost" name="mysql_db_host" value="<?php echo $db_host; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_host'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the MySQL database to which Habari will connect.  If MySQL is running on your web server, and most of the time it is, "localhost" is usually a good value for this field.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -48,7 +49,7 @@
 			<label for="mysqldatabaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
 			<input type="text" id="mysqldatabaseuser" name="mysql_db_user" value="<?php echo $db_user; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_user'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database User</strong> is the username used to connect Habari to the MySQL database.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -59,7 +60,7 @@
 			<label for="mysqldatabasepass"><?php _e('Password'); ?> <strong>*</strong></label>
 			<input type="password" id="mysqldatabasepass" name="mysql_db_pass" value="<?php /* echo $db_pass; */ ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_pass'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Password</strong> is the password used to connect the specified user to the MySQL database.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -70,7 +71,7 @@
 			<label for="mysqldatabasename"><?php _e('Database Name'); ?> <strong>*</strong></label>
 			<input type="text" id="mysqldatabasename" name="mysql_db_schema" value="<?php echo $db_schema; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_schema'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Name</strong> is the name of the MySQL database to which Habari will connect.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -84,7 +85,7 @@
 			<label for="pgsqldatabasehost"><?php _e('Database Host'); ?> <strong>*</strong></label>
 			<input type="text" id="pgsqldatabasehost" name="pgsql_db_host" value="<?php echo $db_host; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_host'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the PostgreSQL database to which Habari will connect.  If PostgreSQL is running on your web server, and most of the time it is, "localhost" is usually a good value for this field.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -95,7 +96,7 @@
 			<label for="pgsqldatabaseuser"><?php _e('Username'); ?> <strong>*</strong></label>
 			<input type="text" id="pgsqldatabaseuser" name="pgsql_db_user" value="<?php echo $db_user; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_user'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database User</strong> is the username used to connect Habari to the PostgreSQL database.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -106,7 +107,7 @@
 			<label for="pgsqldatabasepass"><?php _e('Password'); ?> <strong>*</strong></label>
 			<input type="password" id="pgsqldatabasepass" name="pgsql_db_pass" value="<?php /* echo $db_pass; */ ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_pass'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Password</strong> is the password used to connect the specified user to the PostgreSQL database.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -117,7 +118,7 @@
 			<label for="pgsqldatabasename"><?php _e('Database Name'); ?> <strong>*</strong></label>
 			<input type="text" id="pgsqldatabasename" name="pgsql_db_schema" value="<?php echo $db_schema; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_schema'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Name</strong> is the name of the PostgreSQL database to which Habari will connect.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -131,7 +132,7 @@
 			<label for="databasefile"><?php _e('Data file'); ?> <strong>*</strong></label>
 			<input type="text" id="databasefile" name="db_file" value="<?php echo $db_file; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'db_file'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the path to where your data file resides, relative to the Habari user directory.'); ?> <a href="#"><?php _e('Learn More...'); ?></a>
 			</div>
@@ -143,7 +144,7 @@
 			<label for="tableprefix"><?php _e('Table Prefix'); ?></label>
 			<input type="text" id="tableprefix" name="table_prefix" value="<?php echo $table_prefix; ?>" alt="" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'table_prefix'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Table Prefix</strong> is a prefix that will be appended to each table that Habari creates in the database, making it easy to distinguish those tables in the database from those of other installations.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
@@ -164,7 +165,7 @@
 			<label for="sitename"><?php _e('Site Name'); ?> <strong>*</strong></label>
 			<input type="text" id="sitename" name="blog_title" value="<?php echo $blog_title; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'blog_title'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Site Name</strong> is the name of your site as it will appear
 				to your visitors.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
@@ -175,7 +176,7 @@
 			<label for="adminuser"><?php _e('Username'); ?> <strong>*</strong></label>
 			<input type="text" id="adminuser" name="admin_username" value="<?php echo $admin_username; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'admin_username'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Username</strong> is the username of the initial user in Habari.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
 			</div>
@@ -187,7 +188,7 @@
 			<label for="adminpass2"><?php _e('Password (again)'); ?> <strong>*</strong></label>
 			<input type="password" id="adminpass2" name="admin_pass2" value="<?php echo $admin_pass2; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'admin_pass'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Password</strong> is the password of the initial user in Habari.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
 			</div>
@@ -197,7 +198,7 @@
 			<label for="adminemail"><?php _e('Admin Email'); ?> <strong>*</strong></label>
 			<input type="text" id="adminemail" name="admin_email" value="<?php echo $admin_email; ?>" tabindex="<?php echo $tab++ ?>">
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
-			<div class="warning"></div>
+			<div class="warning"><?php echo elem_if_set( $form_errors, 'admin_email'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Admin Email</strong> is the email address of the first user account.'); ?>
 				<a href="#"><?php _e('Learn More...'); ?></a>
