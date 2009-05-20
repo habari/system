@@ -1,4 +1,5 @@
 <?php include( 'header.php' ); ?>
+<?php if ( !isset( $form_errors ) ) $form_errors = array(); ?>
 <?php function elem_if_set($a, $k) { if (isset($a[$k])) { return $a[$k]; } } ?>
 
 <form action="" method="post" id="installform">
