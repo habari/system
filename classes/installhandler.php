@@ -147,6 +147,12 @@ class InstallHandler extends ActionHandler
 			$this->display('db_setup');
 		}
 
+		// check whether prefix is valid
+		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
+			$this->theme->assign('form_errors', array('table_prefix' => _t('Allowed characters are A-Z, a-z and "_".')));
+			$this->display('db_setup');
+		}
+
 		// try to write the config file
 		if (! $this->write_config_file()) {
 			$this->theme->assign('form_errors', array('write_file'=>_t('Could not write config.php file...')));
@@ -239,6 +245,7 @@ class InstallHandler extends ActionHandler
 		$this->theme->assign('plugins', $this->get_plugins());
 
 		$this->theme->display($template_name);
+		
 		exit;
 	}
 
@@ -377,7 +384,7 @@ class InstallHandler extends ActionHandler
 		$db_schema = $this->handler_vars['db_schema'];
 		$db_user = $this->handler_vars['db_user'];
 		$db_pass = $this->handler_vars['db_pass'];
-
+		
 		switch($db_type) {
 		case 'mysql':
 		case 'pgsql':
@@ -402,6 +409,11 @@ class InstallHandler extends ActionHandler
 				return false;
 			}
 			break;
+		}
+		
+		if ( isset( $this->handler_vars['table_prefix'] ) ) {
+			// store prefix in the Config singleton so DatabaseConnection can access it
+			Config::set( 'db_connection', array( 'prefix' => $this->handler_vars['table_prefix'], ) );
 		}
 
 		if (! $this->connect_to_existing_db()) {
