@@ -1472,6 +1472,12 @@ class InstallHandler extends ActionHandler
 			$xml_error->addChild( 'id', '#mysqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
 		}
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error = $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#tableprefix' );
+			$xml_error->addChild( 'message', _t('Allowed characters are A-Z, a-z and "_".') );
+		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
 			$pdo = 'mysql:host=' . $_POST['host'] . ';dbname=' . $_POST['database'];
@@ -1536,6 +1542,12 @@ class InstallHandler extends ActionHandler
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
+		}
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error = $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#tableprefix' );
+			$xml_error->addChild( 'message', _t('Allowed characters are A-Z, a-z and "_".') );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
