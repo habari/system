@@ -55,7 +55,7 @@ class FileCache extends Cache
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
-		return isset( $this->cache_files[$ghash][$hash] ) && ($this->cache_files[$ghash][$hash]['keep'] || $this->cache_files[$ghash][$hash]['expires'] > time()) && file_exists( $this->cache_files[$ghash][$hash]['file'] );
+		return isset( $this->cache_files[$ghash][$hash] ) && ( $this->cache_files[$ghash][$hash]['keep'] || $this->cache_files[$ghash][$hash]['expires'] > time() ) && file_exists( $this->cache_files[$ghash][$hash]['file'] );
 	}
 
 	/**
@@ -70,8 +70,17 @@ class FileCache extends Cache
 			return false;
 		}
 		$ghash = $this->get_group_hash( $group );
+		
+		$valid = true;
+		$now = time();
+		foreach ( $this->cache_files[$ghash] as $hash => $record ) {
+			if ( ! file_exists( $record['file'] ) || $record['expires'] <= $now ) {
+				$valid = false;
+				break;
+			}
+		}
 
-		return ( isset( $this->cache_files[$ghash] ) && count($this->cache_files[$ghash]) > 1 );
+		return ( isset( $this->cache_files[$ghash] ) && count( $this->cache_files[$ghash] ) > 1 ) && $valid;
 	}
 
 	/**
@@ -93,7 +102,7 @@ class FileCache extends Cache
 				foreach ( $this->cache_files[$ghash] as $hash => $record ) {
 					$this->cache_data[$group][$record['name']] = unserialize(
 						file_get_contents( $record['file'] )
-						);
+					);
 				}
 			}
 		}
