@@ -185,7 +185,7 @@ class Term extends QueryRecord
 	{
 		$params = array( 'vocab' => $this->vocabulary_id,
 			'left' => $this->mptt_left,
-			'right' => $this->mptt_rigth
+			'right' => $this->mptt_right
 		);
 		/**
 		 * If we INNER JOIN the terms table with itself on ALL the descendents of our term,
