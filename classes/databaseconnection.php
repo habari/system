@@ -86,7 +86,9 @@ class DatabaseConnection
 		if ( isset ( Config::get( 'db_connection' )->prefix ) ) {
 			$prefix = Config::get( 'db_connection' )->prefix;
 		}
-		else if ( isset( $_POST['table_prefix'] ) ) {
+		else if ( isset( $_POST['table_prefix'] ) &&
+            (preg_replace('%[^a-zA-Z_]%', '', $_POST['table_prefix']) ==
+            $_POST['table_prefix']) ) {
 			$prefix = $_POST['table_prefix'];
 		}
 		else {
