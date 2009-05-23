@@ -242,16 +242,14 @@ class Vocabulary extends QueryRecord
 
 		$new_term->vocabulary_id = $this->id;
 
-		// Insert the term in the proper place
-		$tree = $this->get_tree();
-
 		$ref = 0;
 		// If there are terms in the vocabulary, work out the reference point
-		if ( 0 != count($tree) ) {
+		if ( !$this->is_empty() ) {
 
+			// TODO if this is hierarchical only. If it's non-hierarchical put it last if before_term is null
 			// If no parent is specified, put the new term after the last term
 			if ( null == $parent_term ) {
-				$ref = $tree[count($tree) - 1]->mptt_right;
+				$ref = DB::get_value( 'SELECT mptt_right FROM habari__terms WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
 			}
 			else {
 				if ( null == $before_term ) {
@@ -315,6 +313,16 @@ class Vocabulary extends QueryRecord
 	{
 		$this->get_term($term)->delete();
 	}
+
+	/**
+	 * Check if this vocabulary is empty.
+	 *
+	 **/
+	public function is_empty()
+	{
+		return ( (int) DB::get_value( "SELECT COUNT(id) FROM {terms} WHERE vocabulary_id=?", array( $this->id ) ) == 0 );
+	}
+
 
 	/**
 	 * Retrieve the vocabulary
