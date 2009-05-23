@@ -129,9 +129,7 @@ class Theme extends Pluggable
 					break;
 			}
 		}
-		
-		$this->reset_options();
-		
+				
 		$buttons = $form->append('wrapper', 'buttons');
 		$buttons->class = 'container transparent';
 
@@ -173,12 +171,14 @@ class Theme extends Pluggable
 				}
 				Options::set('theme__' . $key, $value);
 			}
+			
+			Session::notice(_t( "Saved theme settings"));
 
 			Plugins::act('update_theme_config', $form, $this);
 		}
 		
 		self::flush_builds();
-		
+				
 		Utils::redirect( URL::get( 'admin', 'page=themes&configure=' . Controller::get_var('configure') ));
 		return false;
 	}

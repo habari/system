@@ -1434,53 +1434,6 @@ var labeler = {
 	}
 };
 
-// Code to create the color pickers for themes
-var colorpicker = {
-	init: function() {
-		colorpicker.formcontrols = $('.color.formcontrol');
-		colorpicker.boxes = $('.color.formcontrol .colorbox');
-		
-		if(colorpicker.formcontrols.length < 1) {
-			return;
-		}
-		
-		colorpicker.formcontrols.addClass('loaded');
-		
-		colorpicker.formcontrols.each(function() {
-			$('.colorbox', this).css({'backgroundColor': $('input', this).val()});
-		});
-				
-		$(colorpicker.boxes).parent().ColorPicker({
-			flat: true,
-			onShow: function (colpkr) {
-				$(colpkr).fadeIn(500);
-				return false;
-			},
-			onHide: function (colpkr) {
-				$(colpkr).fadeOut(500);
-				$('input', $(this).parents('.formcontrol.color')).val('#' + hex);
-				return false;
-			},
-			onChange: function (hsb, hex, rgb) {
-				// $(this).parent().ColorPickerSetColor(hex);
-				// console.log($('input', $(this).parents('.formcontrol.color')));
-				$('input', $(this).parents('.formcontrol.color')).val('#' + hex);
-				$('.colorbox', $(this).parent()).css('backgroundColor', '#' + hex);
-			}
-		}).ColorPickerHide();
-		
-		colorpicker.boxes.click(function() {
-			parent = $(this).parent();
-			if($('.colorpicker', parent).css('display') == 'none') {
-				parent.ColorPickerShow();
-			} else{
-				parent.ColorPickerHide();
-			}
-		});
-	}
-}
-
-
 // EDITOR INTERACTION
 habari.editor = {
 	insertSelection: function(value) {
@@ -1558,7 +1511,6 @@ $(document).ready(function(){
 	findChildren();
 	navigationDropdown.init();
 	labeler.init();
-	colorpicker.init();
 	
 	// fix autofilled passwords overlapping labels
 	$(window).load(function(){

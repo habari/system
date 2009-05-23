@@ -1,0 +1,21 @@
+/*- COLOR PICKER */
+.formcontrol.color .color, .formcontrol.color.loaded .text {
+	display:none;
+}
+
+.formcontrol.color.loaded .color {
+	display:block;
+	position:relative;
+}
+
+.formcontrol.color .colorbox {
+	background:transparent url(<?php echo Site::get_url('habari', TRUE); ?>3rdparty/colorpicker/images/select2.png) repeat scroll center center;
+	float:left;
+	height:28px;
+	width:28px;
+}
+
+.formcontrol.color .color .colorpicker {
+	position:absolute;
+	top:30px;
+}

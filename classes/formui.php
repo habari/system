@@ -1424,7 +1424,45 @@ class FormControlText extends FormControl
  */
 class FormControlColor extends FormControl
 {
-
+	// 
+	// /**
+	//  * Add needed javascript
+	//  */
+	// public function __construct()
+	// {
+	// 	$args = func_get_args();
+	// 	list($name, $storage, $caption, $template) = array_merge($args, array_fill(0, 4, null));
+	// 			
+	// 	$this->name = $name;
+	// 	$this->storage = $storage;
+	// 	$this->caption = $caption;
+	// 	$this->template = $template;
+	// 	
+	// 	$this->default = null;
+	// 
+	// }
+	
+	// /**
+	//  * Override parent function, so we can insert needed js/css
+	//  *
+	//  * @param boolean $forvalidation True if the control should output validation information with the control.
+	//  */
+	// public function get($forvalidation = true)
+	// {
+	// 	// Add to admin stack
+	// 
+	// 	Stack::add('admin_stylesheet', array(Site::get_url('habari') . "/3rdparty/colorpicker/colorpicker.css", 'screen'), 'colorpicker');
+	// 	Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . "/css/formcontrols.css", 'screen'), 'formcontrols', array('colorpicker'), 'build_css');
+	// 	
+	// 	// Add to theme stack
+	// 	Stack::add( 'template_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
+	// 	Stack::add( 'template_header_javascript', Site::get_url('admin_theme') . "/js/formcontrols.js", 'formcontrols', 'jquery', 'build_js' );
+	// 	Stack::add('template_header_javascript', array(Site::get_url('habari') . "/3rdparty/colorpicker/colorpicker.css", 'screen'), 'colorpicker');
+	// 	Stack::add('template_header_javascript', array(Site::get_url('admin_theme') . "/css/formcontrols.css", 'screen'), 'formcontrols', array('colorpicker'), 'build_css');
+	// 	
+	// 	return parent::get($forvalidation);
+	// }
+	
 	/**
 	 * Magic function __get returns properties for this object, or passes it on to the parent class
 	 * Potential valid properties:
