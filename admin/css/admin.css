@@ -1623,8 +1623,13 @@ body.page-themes .thumb img {
 	line-height:18px;
 }
 
-#themeconfigure form .formcontrol input {
+#themeconfigure form .formcontrol input, #themeconfigure form .formcontrol textarea {
 	width: 95%;
+}
+
+#themeconfigure form .formcontrol p.error {
+	clear:both;
+	margin-left:25%;
 }
 
 #themeconfigure form #buttons {

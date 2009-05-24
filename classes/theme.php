@@ -121,6 +121,9 @@ class Theme extends Pluggable
 				case 'FormControlText':
 					$control->template = 'themecontrol_text';
 					break;
+				case 'FormControlTextArea':
+					$control->template = 'themecontrol_textarea';
+					break;
 				case 'FormControlSelect':
 					$control->template = 'themecontrol_select';
 					break;

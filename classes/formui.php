@@ -924,6 +924,33 @@ class FormValidators
 			return array();
 		}
 	}
+	
+	
+	/**
+	 * A validation function that returns an error if the value passed is not divisible by a defined number
+	 * Useful for step validation in sliders
+	 * 
+	 * @param string $value A value to test if it is empty
+	 * @param FormControl $control The control that defines the value
+	 * @param FormContainer $container The container that holds the control
+	 * @param float $divisor The minimum value, inclusive
+	 * @param float $start The value to start from, defaults to 0
+	 * @param string $warning An optional error message
+	 * @return array An empty array if the value is value, or an array with strings describing the errors
+	 */
+	public static function validate_divisible( $value, $control, $container, $divisor, $start = 0, $warning = NULL )
+	{
+		$value = $value - $start;
+		if ($value % $divisor != 0) {
+			if ($warning == NULL) {
+				$warning = _t('The value entered is not divisible by %d.', array($divisor));
+			}
+			return array($warning);
+		}
+		else {
+			return array();
+		}
+	}
 }
 
 /**
@@ -1420,48 +1447,77 @@ class FormControlText extends FormControl
 
 
 /**
+ * A range control based on FormControl for output via a FormUI.
+ */
+class FormControlSlider extends FormControl
+{
+	public $max = 100;
+	public $min = 1;
+	public $step = 1;
+
+	/**
+	 * Override the FormControl constructor to support more parameters
+	 *
+	 * @param string $storage The storage location for this control
+	 * @param string $default The default value of the control
+	 * @param string $caption The caption used as the label when displaying a control
+	 */
+	public function __construct()
+	{
+		$args = func_get_args();
+		list($name, $storage, $caption, $template, $max, $min, $step) = array_merge($args, array_fill(0, 6, null));
+				
+		$this->name = $name;
+		$this->storage = $storage;
+		$this->caption = $caption;
+		$this->template = isset($template) ? $template : 'formcontrol_slider';
+		$this->max = isset($max) ? $max : $this->max;
+		$this->min = isset($min) ? $min : $this->min;
+		$this->step = isset($step) ? $step : $this->step;
+		
+		$this->default = null;
+	}
+	
+	/**
+	 * Override the validator function, to add our needed validator
+	 *
+	 * @return array An array of string validation error descriptions or an empty array if no errors were found.
+	 */
+	public function validate()
+	{
+		$this->add_validator('validate_range', $this->min, $this->max);
+		$this->add_validator('validate_divisible', $this->step, $this->min);
+		
+		return parent::validate();
+	}
+	
+	/**
+	 * Produce HTML output for all this fieldset and all contained controls
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	function get($forvalidation = true)
+	{
+		$theme = $this->get_theme($forvalidation, $this);
+		
+		$theme->value = $this->value;
+		$theme->id = $this->name;
+		$theme->caption = $this->caption;
+		$theme->max = $this->max;
+		$theme->min = $this->min;
+		$theme->step = $this->step;
+
+		return $theme->fetch( $this->template );
+	}
+	
+}
+
+/**
  * A color control based on FormControl for output via a FormUI.
  */
 class FormControlColor extends FormControl
 {
-	// 
-	// /**
-	//  * Add needed javascript
-	//  */
-	// public function __construct()
-	// {
-	// 	$args = func_get_args();
-	// 	list($name, $storage, $caption, $template) = array_merge($args, array_fill(0, 4, null));
-	// 			
-	// 	$this->name = $name;
-	// 	$this->storage = $storage;
-	// 	$this->caption = $caption;
-	// 	$this->template = $template;
-	// 	
-	// 	$this->default = null;
-	// 
-	// }
-	
-	// /**
-	//  * Override parent function, so we can insert needed js/css
-	//  *
-	//  * @param boolean $forvalidation True if the control should output validation information with the control.
-	//  */
-	// public function get($forvalidation = true)
-	// {
-	// 	// Add to admin stack
-	// 
-	// 	Stack::add('admin_stylesheet', array(Site::get_url('habari') . "/3rdparty/colorpicker/colorpicker.css", 'screen'), 'colorpicker');
-	// 	Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . "/css/formcontrols.css", 'screen'), 'formcontrols', array('colorpicker'), 'build_css');
-	// 	
-	// 	// Add to theme stack
-	// 	Stack::add( 'template_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
-	// 	Stack::add( 'template_header_javascript', Site::get_url('admin_theme') . "/js/formcontrols.js", 'formcontrols', 'jquery', 'build_js' );
-	// 	Stack::add('template_header_javascript', array(Site::get_url('habari') . "/3rdparty/colorpicker/colorpicker.css", 'screen'), 'colorpicker');
-	// 	Stack::add('template_header_javascript', array(Site::get_url('admin_theme') . "/css/formcontrols.css", 'screen'), 'formcontrols', array('colorpicker'), 'build_css');
-	// 	
-	// 	return parent::get($forvalidation);
-	// }
 	
 	/**
 	 * Magic function __get returns properties for this object, or passes it on to the parent class

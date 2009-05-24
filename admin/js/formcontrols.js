@@ -1,4 +1,40 @@
-// Code to create the color pickers for themes
+// Code to create the slider formcontrols
+var sliders = {
+	init: function() {
+		sliders.formcontrols = $('.slider.formcontrol');
+
+		if(sliders.formcontrols.length < 1) {
+			return;
+		}
+		
+		sliders.formcontrols.addClass('loaded');
+		
+		sliders.formcontrols.each(function() {
+			slider = $('.slider', this);
+			input = $('.text input', this);
+			value = input.val();
+			min = parseInt($('.data.min', this).text());
+			max = parseInt($('.data.max', this).text());
+			step = parseInt($('.data.step', this).text());
+			
+			slider.slider({
+				value: value,
+				min: min,
+				max: max,
+				step: step,
+				slide: function(event, ui) {
+					$('.text input', $(this).parent()).val(ui.value);
+				}
+			});
+			
+			input.keyup(function() {
+				$('.slider', $(this).parent().parent()).slider('value', $(this).val());
+			});
+		});
+	}	
+}
+
+// Code to create the color picker formcontrols
 var colorpicker = {
 	init: function() {
 		colorpicker.formcontrols = $('.color.formcontrol');
@@ -60,4 +96,5 @@ var colorpicker = {
 // Start it all up
 $(document).ready(function() {
 	colorpicker.init();
+	sliders.init();
 });

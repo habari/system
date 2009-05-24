@@ -18,4 +18,28 @@
 .formcontrol.color .color .colorpicker {
 	position:absolute;
 	top:30px;
+	left:-5px;
+}
+
+/*- RANGE */
+.formcontrol.slider .slider {
+	display:none;
+}
+
+.formcontrol.slider.loaded .slider {
+	display:block;
+	position:relative;
+	margin:4px 0;
+	width:48%;
+}
+
+.formcontrol.slider.loaded .text {
+	width:20%;
+	margin-left:20px;
+}
+
+.formcontrol.slider.loaded .text input {
+	border:none;
+	font-weight:bold;
+	color:#333333;
 }
