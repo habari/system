@@ -271,8 +271,9 @@ class Vocabulary extends QueryRecord
 			}
 
 			// Make space for the new node
-			DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE mptt_right>?', array($ref));
-			DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE mptt_left>?', array($ref));
+			$params = array($this->id, $ref);
+			DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=? AND mptt_right>?', $params);
+			DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=? AND mptt_left>?', $params);
 
 		}
 
@@ -321,7 +322,31 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function delete_term($term)
 	{
-		$this->get_term($term)->delete();
+		if ( is_string($term) ) {
+			$term = $this->get_term($term);
+		}
+
+		// TODO How should we handle deletion of a term with descendants?
+		// Perhaps a $keep_children flag to move descendants to be descendants of
+		// the deleted term's parent? Terms should not change the left and right
+		// values of other terms, and thus their deletion should only occur through
+		// the vocabulary to which they belong. Is it feasible to restrict this?
+		// For the moment, just delete the descendants
+		$params = array($this->id, $term->mptt_left, $term->mptt_right);
+		DB::query('DELETE from {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<?', $params);
+
+		// Fix mptt_left and mptt_right values for other nodes in the vocabulary
+		$offset = $term->mptt_right - $term->mptt_left + 1;
+		$ref = $this->mptt_left;
+		$params = array($offset, $this->id, $term->mptt_left);
+
+		// Delete the term
+		$term->delete();
+
+		// Renumber left and right values of other nodes appropriately
+		DB::query('UPDATE {terms} SET mptt_right=mptt_right-? WHERE vocabulary_id=? AND mptt_right>?', $params);
+		DB::query('UPDATE {terms} SET mptt_left=mptt_left-? WHERE vocabulary_id=? AND mptt_left>?', $params);
+
 	}
 
 	/**
