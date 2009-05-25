@@ -2595,58 +2595,63 @@ class AdminHandler extends ActionHandler
 	public function get_group()
 	{
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
-
-		$tokens = ACL::all_tokens( 'id');
-		$access_names = ACL::$access_names;
-		$access_names[] = 'deny';
-
-		// attach access bitmasks to the tokens
-		foreach ( $tokens as $token ) {
-			$token->access = ACL::get_group_token_access($group->id, $token->id);
+		if ( null == $group ) {
+			Utils::redirect(URL::get('admin', 'page=groups'));
 		}
+		else {
 
-		// separate tokens into groups
-		$grouped_tokens = array();
-		foreach ( $tokens as $token ) {
-			$grouped_tokens[$token->token_group][($token->token_type) ? 'crud' : 'bool'][] = $token;
+			$tokens = ACL::all_tokens( 'id');
+			$access_names = ACL::$access_names;
+			$access_names[] = 'deny';
+
+			// attach access bitmasks to the tokens
+			foreach ( $tokens as $token ) {
+				$token->access = ACL::get_group_token_access($group->id, $token->id);
+			}
+
+			// separate tokens into groups
+			$grouped_tokens = array();
+			foreach ( $tokens as $token ) {
+				$grouped_tokens[$token->token_group][($token->token_type) ? 'crud' : 'bool'][] = $token;
+			}
+
+			$group = UserGroup::get_by_id($this->handler_vars['id']);
+
+			$potentials = array();
+
+			$users = Users::get_all();
+			$users[] = User::anonymous();
+
+			$members = $group->members;
+			$jsusers = array();
+			foreach ( $users as $user ) {
+				$jsuser = new StdClass();
+				$jsuser->id = $user->id;
+				$jsuser->username = $user->username;
+				$jsuser->member = in_array($user->id, $members);
+
+				$jsusers[$user->id] = $jsuser;
+			}
+
+			$this->theme->potentials = $potentials;
+			$this->theme->users = $users;
+			$this->theme->members = $members;
+
+			$js = '$(function(){groupManage.init(' . json_encode($jsusers) . ');});';
+
+			Stack::add('admin_header_javascript', $js, 'groupmanage', 'admin');
+
+			$this->theme->access_names = $access_names;
+			$this->theme->grouped_tokens = $grouped_tokens;
+
+			$this->theme->groups = UserGroups::get_all();
+			$this->theme->group = $group;
+			$this->theme->id = $group->id;
+
+			$this->theme->wsse = Utils::WSSE();
+
+			$this->display('group');
 		}
-
-		$group = UserGroup::get_by_id($this->handler_vars['id']);
-
-		$potentials = array();
-
-		$users = Users::get_all();
-		$users[] = User::anonymous();
-
-		$members = $group->members;
-		$jsusers = array();
-		foreach ( $users as $user ) {
-			$jsuser = new StdClass();
-			$jsuser->id = $user->id;
-			$jsuser->username = $user->username;
-			$jsuser->member = in_array($user->id, $members);
-
-			$jsusers[$user->id] = $jsuser;
-		}
-
-		$this->theme->potentials = $potentials;
-		$this->theme->users = $users;
-		$this->theme->members = $members;
-
-		$js = '$(function(){groupManage.init(' . json_encode($jsusers) . ');});';
-
-		Stack::add('admin_header_javascript', $js, 'groupmanage', 'admin');
-
-		$this->theme->access_names = $access_names;
-		$this->theme->grouped_tokens = $grouped_tokens;
-
-		$this->theme->groups = UserGroups::get_all();
-		$this->theme->group = $group;
-		$this->theme->id = $group->id;
-
-		$this->theme->wsse = Utils::WSSE();
-
-		$this->display('group');
 
 	}
 
