@@ -1549,6 +1549,113 @@ class FormControlColor extends FormControl
 }
 
 /**
+ * An image control based on FormControl for output via a FormUI.
+ */
+class FormControlImage extends FormControl
+{
+	/**
+	 * Override the FormControl constructor to support more parameters
+	 *
+	 * @param string $storage The storage location for this control
+	 * @param string $default The default value of the control
+	 * @param string $caption The caption used as the label when displaying a control
+	 */
+	public function __construct()
+	{
+		$args = func_get_args();
+		list($name, $storage, $caption, $template, $width, $height) = array_merge($args, array_fill(0, 6, null));
+				
+		$this->name = $name;
+		$this->storage = $storage;
+		$this->caption = $caption;
+		$this->template = isset($template) ? $template : 'formcontrol_image';
+		$this->width = $width;
+		$this->height = $height;
+		$this->location = Site::get_dir('theme_images', true) . $this->name . '.png';
+		
+		$this->default = null;
+	}
+	
+	/**
+	 * Override the validator function, to add our needed validator
+	 *
+	 * @return array An array of string validation error descriptions or an empty array if no errors were found.
+	 */
+	public function validate()
+	{
+		// $this->add_validator('validate_range', $this->min, $this->max);
+		// $this->add_validator('validate_divisible', $this->step, $this->min);
+		
+		return parent::validate();
+	}
+	
+	/**
+	 * Magic function __get returns properties for this object, or passes it on to the parent class
+	 * Potential valid properties:
+	 * value: The value of the control, whether the default or submitted in the form
+	 *
+	 * @param string $name The paramter to retrieve
+	 * @return mixed The value of the parameter
+	 */
+	public function __get($name)
+	{
+		switch($name) {
+			case 'value':
+				$value = parent::__get($name);
+				if($value != NULL) {
+					if($this->is_set()) {
+						return Site::get_url('theme_images', true) . $this->name . '.png';
+					}
+					else {
+						return Site::get_url('theme', true) . $value;
+					}
+				}
+				else {
+					return $value;
+				}
+			default:
+				return parent::__get($name);
+		}
+	}
+	
+	/**
+	 * Checks if a replacement has been uploaded
+	 *
+	 * @param string $name The paramter to retrieve
+	 * @return mixed The value of the parameter
+	 */
+	public function is_set()
+	{		
+		if( file_exists($this->location) ) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Produce HTML output for all this fieldset and all contained controls
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	function get($forvalidation = true)
+	{
+		$theme = $this->get_theme($forvalidation, $this);
+		
+		$theme->value = $this->value;
+		$theme->id = $this->name;
+		$theme->caption = $this->caption;
+		$theme->width = $this->width;
+		$theme->height = $this->height;
+
+		return $theme->fetch( $this->template );
+	}
+
+}
+
+/**
  * A submit control based on FormControl for output via FormUI
  */
 class FormControlSubmit extends FormControlNoSave

@@ -340,6 +340,12 @@ class Site
 			case 'builds':
 				$path = Plugins::filter( 'build_dir', Site::get_dir('user') . '/build' );
 				break;
+			case 'theme_data':
+				$path = Plugins::filter( 'theme_data_dir', Site::get_dir('user') . '/theme' );
+				break;
+			case 'theme_images':
+				$path = Plugins::filter( 'theme_images_dir', Site::get_dir('theme_data') . '/images' );
+				break;
 		}
 		$path.= Utils::trail( $trail );
 		$path = Plugins::filter( 'site_dir_' . $name, $path );

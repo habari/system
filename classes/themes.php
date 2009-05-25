@@ -197,6 +197,47 @@ class Themes
 		return $created_theme;
 
 	}
+	
+	
+	/**
+	 * Create needed build and data directories, or throw an error
+	 *
+	 **/
+	public static function create_directories()
+	{
+		$directories = array(Site::get_dir('builds'), Site::get_dir('theme_data'), Site::get_dir('theme_images'));
+		
+		foreach( $directories as $directory ) {
+			$info = pathinfo($directory);
+			if( !is_writeable( $directory) ) {
+				if( !is_dir( $directory) ) {
+					if( is_writeable( $info['dirname'] ) ) {
+						mkdir( $directory );
+					}
+					else {
+						Session::error( sprintf( _t("The directory '%s' does not exist and could not be created. Please create it, giving your web server read, write, and execute permissions on it."), $directory ) );
+						return;
+					}
+				}
+				else {
+					Session::error( sprintf( _t("The directory '%s' is not writable - certain features are disabled. The user, or group, which your web server is running as, needs to have read, write, and execute permissions on this directory."), $directory ) );
+					return;
+				}
+			}
+			
+			return;
+		}
+
+		
+		// $this->enabled = is_writeable( $this->cache_location );
+		// if ( $this->enabled ) {
+		// 	if ( file_exists( $this->index_file ) ) {
+		// 		$this->cache_files = unserialize( file_get_contents( $this->index_file ) );
+		// 	}
+		// }
+		// else {
+		// 	Session::error( sprintf( _t("The cache directory '%s' is not writable - the cache is disabled. The user, or group, which your web server is running as, needs to have read, write, and execute permissions on this directory."), $this->cache_location ), 'filecache' );
+	}
 }
 
 ?>

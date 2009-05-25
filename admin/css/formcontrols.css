@@ -26,11 +26,41 @@
 	display:none;
 }
 
+.formcontrol.slider.loaded .slider, .formcontrol.slider.loaded .slider .ui-slider-handle {
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;	
+}
+
 .formcontrol.slider.loaded .slider {
 	display:block;
 	position:relative;
-	margin:4px 0;
-	width:48%;
+	width:47%;
+	margin:0.1em 0;
+	height:0.8em;
+	position: relative;
+	text-align: left;
+	background:#FFFFFF;
+	border:1px solid #AAAAAA;
+	color:#222222;
+}
+
+.formcontrol.slider.loaded .slider .ui-slider-handle {
+	position: absolute;
+	z-index: 2;
+	width: 1.2em;
+	height: 1.2em;
+	cursor: default;
+	top: -.3em;
+	margin-left: -.6em;
+	border: 1px solid #d3d3d3;
+	background: #e6e6e6 url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/ui_bg_glass_inactive.png') 50% 50% repeat-x;
+	font-weight: normal;
+	color: #555555;
+	outline: none;
+}
+
+.formcontrol.slider.loaded .slider .ui-slider-handle.ui-state-hover {
+	border: 1px solid #999999; background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121; outline: none;
 }
 
 .formcontrol.slider.loaded .text {

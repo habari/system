@@ -1615,7 +1615,7 @@ body.page-themes .thumb img {
 	-webkit-border-radius: 5px;
 }
 
-#themeconfigure form .formcontrol.text, #themeconfigure form .formcontrol.color {
+#themeconfigure form .formcontrol {
 	clear:both;
 	width:100%;
 	float:left;
@@ -1639,6 +1639,8 @@ body.page-themes .thumb img {
 
 #themeconfigure form .formcontrol.submit {
 	float:left;
+	clear:none;
+	width:auto;
 	margin-left:15px;
 }
 
