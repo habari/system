@@ -414,7 +414,7 @@ a img {
 	font-weight: bold;
 }
 
-#page input[type=button], #page input[type=submit], #page button {
+#page input[type=button], #page input[type=submit], #page button, .ui-dialog-buttonpane button {
 	padding: 2px 4px 2px 4px;
 	cursor: pointer;
 	-webkit-border-radius: 9px;		/* Webkit only supports up to 9px at present */
@@ -533,6 +533,81 @@ ul {
 	top: 40px;
 	right: 8px;
 	z-index: 100;
+}
+
+/*- DIALOGS */
+.ui-widget-overlay {
+	background:#AAAAAA;
+	opacity:0.3;
+	left:0;
+	position:absolute;
+	top:0;
+}
+
+.ui-dialog {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background:#FAFAFA;
+	color:#222222;
+}
+
+.ui-dialog .ui-dialog-titlebar, .ui-dialog-buttonpane, .ui-dialog-content {
+	padding:5px 10px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-webkit-border-top-left-radius: 5px;
+	background:#1a1a1a;
+	border:1px solid #1a1a1a;
+	color:#FFFFFF;
+	font-size:150%;
+	font-weight:bold;
+	position:relative;
+	cursor:move;
+}
+
+.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
+	color:#777777;
+	height:12px;
+	margin:-6px 0 0;
+	position:absolute;
+	right:10px;
+	top:50%;
+	width:12px;
+	background:url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/close_3.png') no-repeat center center;
+	text-indent:-10000px;
+}
+
+.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close.ui-state-hover {
+	background-image:url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/close_2.png');
+}
+
+.ui-dialog-buttonpane, .ui-dialog-content {
+	border-color:#E7E7E7;
+	border-width:1px;
+}
+
+.ui-dialog-content {
+	border-style:none solid;
+}
+
+.ui-dialog-buttonpane {
+	border-style:none solid solid solid;
+}
+
+.ui-dialog .ui-resizable-handle.ui-resizable-se {
+	bottom:3px;
+	height:14px;
+	right:3px;
+	width:14px;
+	cursor:se-resize;
+	display:block;
+	font-size:0.1px;
+	position:absolute;
+	background:url('<?php echo Site::get_url('admin_theme', TRUE); ?>images/resize_se.png') no-repeat right bottom;
 }
 
 /*- FORMS */

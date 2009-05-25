@@ -1600,15 +1600,17 @@ class FormControlImage extends FormControl
 	public function __get($name)
 	{
 		switch($name) {
+			case 'url':
+				if($this->is_set()) {
+					return Site::get_url('theme_images', true) . $this->name . '.png';
+				}
+				else {
+					return Site::get_url('theme', true) . parent::__get('value');
+				}
 			case 'value':
 				$value = parent::__get($name);
-				if($value != NULL) {
-					if($this->is_set()) {
-						return Site::get_url('theme_images', true) . $this->name . '.png';
-					}
-					else {
-						return Site::get_url('theme', true) . $value;
-					}
+				if($value != NULL && (str_replace($this->url, '', $value) == $value)) {
+					return $this->url;
 				}
 				else {
 					return $value;

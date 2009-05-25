@@ -132,9 +132,7 @@ class Theme extends Pluggable
 					break;
 			}
 		}
-				
-		Utils::debug($form->logo->value);
-		
+						
 		$buttons = $form->append('wrapper', 'buttons');
 		$buttons->class = 'container transparent';
 

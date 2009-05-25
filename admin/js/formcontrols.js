@@ -34,6 +34,60 @@ var sliders = {
 	}	
 }
 
+// Code to create image formcontrols
+var imagecontrols = {
+	init: function() {
+		imagecontrols.formcontrols = $('.image.formcontrol');
+		imagecontrols.triggers = $('.image.formcontrol > .image a');
+		imagecontrols.pickers = $('.image.formcontrol > .picker');
+
+		if(colorpicker.formcontrols.length < 1) {
+			return;
+		}
+		
+		imagecontrols.triggers.click(function() {
+			imagecontrols.open($(this).parents('.image.formcontrol'));
+			return false;
+		});
+		
+		imagecontrols.formcontrols.each(function() {
+			formcontrol = $(this);
+			picker = $('.picker', formcontrol);
+			label = $('.label label', formcontrol);
+			
+			picker.dialog({
+				autoOpen: false,
+				height: 300,
+				width: 750,
+				modal: true,
+				title: label.text(),
+				buttons: {
+					'<?php echo _t('Save'); ?>': function() {
+						$(this).dialog('close');
+					},
+					'<?php echo _t('Reset'); ?>': function() {
+						$(this).dialog('close');
+					},
+					'<?php echo _t('Cancel'); ?>': function() {
+						$(this).dialog('close');
+					}
+				},
+				close: function() {
+				}
+			}).dialog('open');
+		})
+		
+		
+		
+	},
+	open: function(formcontrol) {
+		picker = imagecontrols.pickers.eq(imagecontrols.formcontrols.index(formcontrol));
+		picker.dialog('open');
+		// console.log($('.picker', formcontrol), formcontrol);
+		return;
+	}
+}
+
 // Code to create the color picker formcontrols
 var colorpicker = {
 	init: function() {
@@ -97,4 +151,5 @@ var colorpicker = {
 $(document).ready(function() {
 	colorpicker.init();
 	sliders.init();
+	imagecontrols.init();
 });

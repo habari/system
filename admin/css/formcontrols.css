@@ -34,7 +34,7 @@
 .formcontrol.slider.loaded .slider {
 	display:block;
 	position:relative;
-	width:47%;
+	width:48%;
 	margin:0.1em 0;
 	height:0.8em;
 	position: relative;
@@ -72,4 +72,9 @@
 	border:none;
 	font-weight:bold;
 	color:#333333;
+}
+
+/*- IMAGE */
+.formcontrol.image .picker {
+	display:none;
 }

@@ -84,6 +84,7 @@ class AdminHandler extends ActionHandler
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		// Add some default stylesheets
+		// Stack::add('admin_stylesheet', array(Site::get_url('habari') . "/3rdparty/jqueryui/style.css", 'screen'), 'jqueryui');
 		Stack::add('admin_stylesheet', array(Site::get_url('habari') . "/3rdparty/colorpicker/colorpicker.css", 'screen'), 'colorpicker');
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . "/css/formcontrols.css", 'screen'), 'formcontrols', array('colorpicker'), 'build_css');
 		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin', array('formcontrols'), 'build_css');
