@@ -582,6 +582,10 @@ p:hover > label.abovecontent {
 	float: right;
 }
 
+body.page-comments .button{
+	float:none;
+}
+
 .button.delete, .formcontrol.delete input {
 	float: left;
 	}
