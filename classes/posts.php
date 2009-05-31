@@ -259,15 +259,12 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['any:info'] ) ) {
-
 					if ( is_array( $paramset['any:info'] ) ) {
-
+						$the_ins = array();
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
-
 							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
 							$params[] = $info_key;
 							$params[] = $info_value;
-
 						}
 
 						$where[] = '
@@ -276,9 +273,23 @@ class Posts extends ArrayObject implements IsContent
 								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
 							)
 						';
-
 					}
+				}
+				
+				if ( isset( $paramset['has:info'] ) ) {
+					$the_ins = array();
+					$has_info = Utils::single_array( $paramset['has:info'] );
+					foreach( $has_info as $info_name ) {
+						$the_ins[] = ' {postinfo}.name = ? ';
+						$params[] = $info_name;
+					} 
 
+					$where[] = '
+						{posts}.id IN (
+							SELECT post_id FROM {postinfo}
+							WHERE ( ' . implode( ' AND ', $the_ins ) . ' )
+						)
+					';
 				}
 
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
@@ -287,6 +298,7 @@ class Posts extends ArrayObject implements IsContent
 					$infos = array_merge( isset( $paramset['not:all:info'] ) ? $paramset['not:all:info'] : array(), isset( $paramset['not:info'] ) ? $paramset['not:info'] : array() );
 
 					if ( is_array( $infos ) ) {
+						$the_ins = array();
 
 						foreach ( $infos as $info_key => $info_value ) {
 
