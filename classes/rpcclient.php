@@ -38,7 +38,7 @@ class RPCClient
 	public function execute()
 	{
 		$rr = new RemoteRequest( $this->url, 'POST' );
-		$rr->add_header( 'Content-Type: text/xml' );
+		$rr->add_header( 'Content-Type: text/xml;charset=utf-8' );
 		$rr->set_body( $this->request_body );
 		
 		// should throw an error on failure
