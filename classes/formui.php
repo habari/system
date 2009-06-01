@@ -397,7 +397,6 @@ class FormContainer
 	 *
 	 * @params string $format A sprintf()-style format string to format the validation error
 	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
-	 * @return boolean true if the control has errors
 	 */
 	public function errors_out($format, $wrap = '%s')
 	{
@@ -410,7 +409,7 @@ class FormContainer
 	 *
 	 * @params string $format A sprintf()-style format string to format the validation error
 	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
-	 * @return boolean true if the control has errors
+	 * @return string The errors in the supplied format
 	 */
 	public function errors_get($format, $wrap = '%s')
 	{
@@ -425,6 +424,7 @@ class FormContainer
 		}
 		return $out;
 	}
+	
 }
 
 
@@ -528,6 +528,16 @@ class FormUI extends FormContainer
 			else {
 				$forvalidation = true;
 			}
+		}
+		else {
+			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari' ) . Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+		}
+		if(isset($_SESSION['forms'][$this->salted_name()]['error_data'])) {
+			foreach($_SESSION['forms'][$this->salted_name()]['error_data'] as $key => $value) {
+				$_POST[$key] = $value;
+			}
+			unset($_SESSION['forms'][$this->salted_name()]['error_data']);
+			$forvalidation = true;
 		}
 
 		$out = '';
@@ -699,6 +709,12 @@ class FormUI extends FormContainer
 		$this->options['ajax'] = true;
 		$this->options['form_action'] = URL::get('admin_ajax', array('context' => 'media_panel'));
 		$this->properties['onsubmit'] = "habari.media.submitPanel('$path', '$panel', this, '{$callback}');return false;";
+	}
+	
+	public function bounce()
+	{
+		$_SESSION['forms'][$this->salted_name()]['error_data'] = $_POST;
+		Utils::redirect($_SESSION['forms'][$this->salted_name()]['url']);
 	}
 
 }
