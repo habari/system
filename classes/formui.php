@@ -166,7 +166,7 @@ class FormContainer
 		$theme->id = $this->name;
 		$theme->caption = $this->caption;
 
-		return $theme->fetch( $this->template );
+		return $theme->fetch( $this->template, true );
 	}
 
 	/**
@@ -182,6 +182,7 @@ class FormContainer
 			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
 			$this->theme_obj = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		}
+		$this->theme_obj->start_buffer();
 		if($control instanceof FormControl) {
 			// PHP doesn't allow __get() to return pointers, and passing this array to foreach directly generates an error.
 			$properties = $control->properties;
@@ -570,11 +571,11 @@ class FormUI extends FormContainer
 	public function output_controls( $forvalidation = false )
 	{
 		$out = '';
-		$this->get_theme( $forvalidation )->start_buffer();
+		$theme = $this->get_theme( $forvalidation );
 		foreach($this->controls as $control) {
 			$out.= $control->get( $forvalidation );
 		}
-		$this->get_theme( $forvalidation )->end_buffer();
+		$theme->end_buffer();
 		return $out;
 	}
 
@@ -1022,7 +1023,6 @@ class FormControl
 	public function get($forvalidation = true)
 	{
 		$theme = $this->get_theme($forvalidation);
-		$theme->start_buffer();
 
 		foreach($this->properties as $prop => $value) {
 			$theme->$prop = $value;
@@ -1421,7 +1421,7 @@ class FormControlTag extends FormContainer
 		$theme->caption = $tag->tag;
 		$theme->count = $tag->count;
 
-		return $theme->fetch( 'tabcontrol_tag' );
+		return $theme->fetch( 'tabcontrol_tag', true );
 	}
 
 }
@@ -1443,7 +1443,7 @@ class FormControlPassword extends FormControlText
 		$theme = $this->get_theme($forvalidation);
 		$theme->outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 
 	/**
@@ -1562,7 +1562,7 @@ class FormControlSelect extends FormControl
 		$theme->id = $this->name;
 		$theme->control = $this;
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 }
 
@@ -1584,7 +1584,7 @@ class FormControlCheckboxes extends FormControlSelect
 		$theme->id = $this->name;
 		$theme->control = $this;
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 
 	/**
@@ -1810,7 +1810,7 @@ class FormControlTabs extends FormContainer
 		$theme->id = $this->name;
 		$theme->caption = $this->caption;
 
-		return $theme->fetch( $this->template );
+		return $theme->fetch( $this->template, true );
 	}
 
 }

@@ -521,11 +521,8 @@ class Theme extends Pluggable
 	{
 		$this->add_template_vars();
 
-		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
-			$this->template_engine->assign( $key, $value );
-		}
-		/*
-		*/
+		$this->play_var_stack();
+
 		$this->template_engine->assign( 'theme', $this );
 		$this->template_engine->display( $template_name );
 	}
@@ -539,9 +536,7 @@ class Theme extends Pluggable
 	 */
 	public function fetch( $template_name, $unstack = false )
 	{
-		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
-			$this->template_engine->assign( $key, $value );
-		}
+		$this->play_var_stack();
 
 		$this->add_template_vars();
 
@@ -552,6 +547,19 @@ class Theme extends Pluggable
 			$this->end_buffer();
 		}
 		return $return;
+	}
+	
+	/**
+	 * Play back the full stack of template variables to assign them into the template
+	 */
+	protected function play_var_stack()
+	{
+		$this->template_engine->clear();
+		for($z = 0; $z <= $this->current_var_stack; $z++) {
+			foreach($this->var_stack[$z] as $key => $value) {
+				$this->template_engine->assign( $key, $value );
+			}
+		}
 	}
 
 	/**
