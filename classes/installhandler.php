@@ -1512,7 +1512,7 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: text/xml");
+		header("Content-type: application/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
 	}
@@ -1583,7 +1583,7 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: text/xml");
+		header("Content-type: application/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
 	}
@@ -1646,7 +1646,7 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: text/xml");
+		header("Content-type: application/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
 	}

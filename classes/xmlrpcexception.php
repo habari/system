@@ -94,7 +94,7 @@ class XMLRPCException extends Exception
 	{
 		$xmltext = '<?xml version="1.0"?'.'><methodResponse><fault><value><struct><member><name>faultCode</name><value><int>' . $this->code . '</int></value></member><member><name>faultString</name><value><string>' . $this->message . '</string></value></member></struct></value></fault></methodResponse>';
 		ob_end_clean();
-		header('Content-Type: text/xml');
+		header('Content-Type: text/xml;charset=utf-8');
 		echo trim($xmltext);
 		exit;
 	}
