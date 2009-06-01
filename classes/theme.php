@@ -540,7 +540,7 @@ class Theme extends Pluggable
 
 		$this->add_template_vars();
 
-		$this->assign( 'theme', $this );
+		$this->template_engine->assign( 'theme', $this );
 
 		$return = $this->fetch_unassigned( $template_name );
 		if ( $unstack ) {
