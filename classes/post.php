@@ -386,6 +386,9 @@ class Post extends QueryRecord implements IsContent
 			}
 		} while ( $slugcount->ct != 0 );
 
+		if ( $postfix != '' ) {
+			Session::notice( sprintf( _t( 'The content address was not unique. The post content address is \'%1$s\'.'), $slug . $postfix));
+		}
 		return $this->newfields['slug'] = $slug . $postfix;
 	}
 
