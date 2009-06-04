@@ -58,7 +58,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_PI:
-				$out = "<?{$token['name']}{$token['value']}?>";
+				$out = "<?{$token['name']}{$token['value']}>";
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_COMMENT:
@@ -70,7 +70,11 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_STATEMENT:
-				$out = "<!{$token['value']}>";
+				$out = "<!{$token['name']}";
+				if (!empty($token['value'])) {
+					$out .= " {$token['value']}";
+				}
+				$out .= ">";
 				break;
 		}
 		return $out;
