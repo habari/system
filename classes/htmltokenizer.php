@@ -333,14 +333,12 @@ class HTMLTokenizer
 
 	private function parse_pi() 
 	{
-		$target = $this->up_to_chr( self::$CHR_WHITESPACE );
-		$data = $this->up_to_str( '?>' );
+		$target = $this->up_to_chr( self::$CHR_TAG_END . self::$CHR_WHITESPACE );
+		$data = $this->up_to_chr( self::$CHR_TAG_END );
 		// skip over closing tag
-		$this->inc( 2 );
+		$this->inc( 1 );
 		
-		if ( $data != '' ) {
-			$this->node( self::NODE_TYPE_PI, $target, $data, array() ); 
-		}
+		$this->node( self::NODE_TYPE_PI, $target, $data, array() ); 
 		
 		return self::$STATE_START;
 	}
