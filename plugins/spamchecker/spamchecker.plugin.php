@@ -37,13 +37,12 @@ class SpamChecker extends Plugin
 	 * You can still register functions as hooks without using
 	 * this method, but boy, is it handy.
 	 * @param Comment The comment that will be processed before storing it in the database.
-	 * @return Comment The comment result to store.
 	 **/
 	function action_comment_insert_before ( $comment )
 	{
 		// This plugin ignores non-comments
 		if($comment->type != Comment::COMMENT) {
-			return $comment;
+			return;
 		}
 
 		$spamcheck = array();
@@ -212,7 +211,7 @@ class SpamChecker extends Plugin
 	{
 		// This plugin ignores non-comments
 		if($comment->type != Comment::COMMENT) {
-			return $comment;
+			return $spam_rating;
 		}
 
 		if(!$this->verify_code($handlervars['ccode'], $comment->post_id)) {
