@@ -532,6 +532,9 @@ class AdminHandler extends ActionHandler
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
 		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+		if ( $post->slug != Utils::slugify( $post->title ) ) {
+			Session::notice( sprintf( _t( 'The content address is \'%1$s\'.'), $post->slug ));
+		}
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
