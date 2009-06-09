@@ -501,9 +501,14 @@ class Plugins
 	public static function is_loaded( $name, $version = NULL )
 	{
 		foreach ( self::$plugins as $plugin ) {
-			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || strtolower($plugin->info->guid) == strtolower($name)) {
+			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || (isset($plugin->info->guid) && strtolower($plugin->info->guid) == strtolower($name))) {
 				if ( isset( $version ) ) {
-					return version_compare( $plugin->info->version, $version, '>=' );
+					if(isset($plugin->info->version)) {
+						return version_compare( $plugin->info->version, $version, '>=' );
+					}
+					else {
+						return $version == NULL;
+					}
 				}
 				else {
 					return true;
