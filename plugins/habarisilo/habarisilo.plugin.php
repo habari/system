@@ -16,23 +16,6 @@ class HabariSilo extends Plugin implements MediaSilo
 	const DERIV_DIR = '.deriv';
 
 	/**
-	 * Provide plugin info to the system
-	 */
-	public function info()
-	{
-		return array(
-			'name' => 'Habari Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' =>	'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Provides simple file uploading and embedding functionality, allowing you to upload media files and easily insert them into posts.',
-			'copyright' => '2008',
-		);
-	}
-
-	/**
 	 * Initialize some internal values when plugin initializes
 	 */
 	public function action_init()

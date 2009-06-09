@@ -16,11 +16,27 @@ abstract class Plugin extends Pluggable
 {
 
 	/**
-	 * Returns information about this plugin
-	 * @return array An associative array of information about this plugin
-	 **/
-	abstract public function info();
+	 * Loads a theme's metadata from an XML file in theme's
+	 * directory.
+	 *
+	 */
+	final public function info( )
+	{
+		static $info;
+		if(!isset($info)) {
+			$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $this->get_file());
+			if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
+				$info = new SimpleXMLElement( $xml_content );
+				if($info->getName() != 'pluggable') {
+					$info = null;
+				}					
+			}
+		}
+		return $info;
+	}
 
+	
+	
 	/**
 	 * Plugin constructor.
 	 * Plugins should not define their own constructors, because they are instantiated

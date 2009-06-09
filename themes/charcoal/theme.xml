@@ -1,10 +1,22 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<theme>
+<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="theme">
 	<name>Charcoal</name>
-	<author>Habari Community</author>
-	<url>http://habariproject.org</url>
-	<version>0.5</version>
-	<template_engine>rawphpengine</template_engine>
-	<description>Charcoal is a Habari signature release, demonstrating the craft and style of the Habari platform.</description>
 	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
-</theme>
+	
+	<author url="http://habariproject.org/">Habari Community</author>
+	
+	<version>0.5</version>
+	<url>http://habariproject.org/</url>
+	<description><![CDATA[Charcoal is a Habari signature release, demonstrating the craft and style of the Habari platform.]]></description>
+
+	<copyright>2009</copyright>
+	
+	<template_engine>rawphpengine</template_engine>
+	
+	<areas>
+		<area name="sidebar">
+			<description><![CDATA[The sidebar area]]></description>
+		</area>
+	</areas>
+	
+</pluggable>

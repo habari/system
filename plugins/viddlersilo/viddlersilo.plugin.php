@@ -559,21 +559,6 @@ class ViddlerSilo extends Plugin implements MediaSilo
 
 	protected $cache = array();
 
-	/**
-	* Provide plugin info to the system
-	*/
-	public function info()
-	{
-		return array('name' => 'Viddler Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Implements basic Viddler integration with Habari, allowing you to easily upload videos to your account and insert them into your posts.',
-			'copyright' => '2007',
-			);
-	}
 
 	/*
 	// add a rewrite rule for our auto-generated video page.

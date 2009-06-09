@@ -28,7 +28,7 @@ abstract class Pluggable
 	 **/
 	public function __construct()
 	{
-		$this->info = new InfoObject( $this->info() );
+		$this->info = $this->info();
 		$this->plugin_id = $this->plugin_id();
 	}
 

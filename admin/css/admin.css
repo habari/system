@@ -2181,8 +2181,17 @@ ul.tabs li.ui-tabs-selected.last-child {
 	padding: 0;
 }
 
+.page-themes #page .pagesplitter {
+	clear: left;
+	margin: auto -40px;
+}
+
 .splitterinside {
 	padding: 25px 0 20px;
+}
+
+.page-themes .splitterinside {
+	padding: 25px 40px 20px;
 }
 
 .splitterinside * a {

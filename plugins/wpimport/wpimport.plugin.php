@@ -21,25 +21,6 @@ class WPImport extends Plugin implements Importer
 	}
 
 	/**
-	* Return plugin metadata for this plugin
-	*
-	* @return array Plugin metadata
-	*/
-	public function info()
-	{
-		return array(
-			'name' => 'WordPress Importer',
-			'version' => '1.1',
-			'url' => 'http://habariproject.org/',
-			'author' =>	'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Import database from WordPress 2.3 and higher. Includes Ultimate Tag Warrior integration.',
-			'copyright' => '2008'
-		 );
-	}
-
-	/**
 	 * Return a list of names of things that this importer imports
 	 *
 	 * @return array List of importables.
