@@ -9,23 +9,6 @@
 
 class SpamChecker extends Plugin
 {
-	/**
-	 * function info
-	 * Returns information about this plugin
-	 * @return array Plugin info array
-	 **/
-	function info()
-	{
-		return array (
-			'name' => 'Spam Checker',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'version' => '1.0',
-			'description' => 'Flags as spam obvious comment spam.',
-			'license' => 'Apache License 2.0',
-		);
-	}
 
 	/**
 	 * function act_comment_insert_before

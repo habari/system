@@ -71,13 +71,14 @@ class Theme extends Pluggable
 	 * Loads a theme's metadata from an XML file in theme's
 	 * directory.
 	 *
-	 * @param theme Name of theme to retrieve metadata about
 	 */
-	public function info( $theme )
+	public function info( )
 	{
-		$xml_file = Site::get_path( 'user' ) . '/themes/' . $theme . '/theme.xml';
+		
+		$xml_file = dirname($this->getfile) . '/theme.xml';
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
-			$theme_data = new SimpleXMLElement(  $xml_file );
+			$theme_data = new SimpleXMLElement( $xml_file );
+			return $theme_data;
 			// Is it a valid theme xml file?
 			if ( isset( $theme_data->theme ) ) {
 				$valid_named_elements = array(

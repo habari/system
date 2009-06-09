@@ -29,17 +29,38 @@
 			<?php endif; ?>
 		</div>
 
-		<?php if ( isset( $this->engine_vars['configure'] ) ): ?>
-		<div id="themeconfigure">
-			<?php Plugins::act( 'theme_ui', $active_theme ); ?>
-			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=themes' ); ?>"><?php _e('close'); ?></a>
+		<div class="pagesplitter">
+			<ul class="tabcontrol tabs">
+				<li><a href="#tab_config_general"><?php _e('General'); ?></a></li><li><a href="#tab_config_scopes"><?php _e('Scopes'); ?></a></li><?php if(isset($active_theme['info']->areas)): ?><li><a href="#tab_config_areas"><?php _e('Areas'); ?></a></li><?php endif; ?>
+			</ul>
+		
+			<div id="tab_config_general" class="splitter">
+				<div class="splitterinside"><?php Plugins::act( 'theme_ui', $active_theme ); ?></div>
+			</div>
+			<div id="tab_config_scopes" class="splitter">
+				<div class="splitterinside">Scopes</div>
+			</div>
+			<?php if(isset($active_theme['info']->areas)): ?>
+			<div id="tab_config_areas" class="splitter">
+				<div class="splitterinside">
+				<select>
+					<?php foreach($blocks as $block_key => $block_name): ?>
+					<option value="<?php echo $block_key; ?>"><?php echo $block_name; ?></option>
+					<?php endforeach; ?>
+				</select>
+				<select>
+					<?php foreach($active_theme['info']->areas->area as $area): ?>
+					<option value="<?php echo $area['name']; ?>"><?php echo $area['name']; ?></option>
+					<?php endforeach; ?>
+				</select>
+				<input type="submit" value="+" name="3f31b343"/>
+				</div>
+			</div>
+			<?php endif; ?>
 		</div>
-		<?php endif; ?>
 	</div>
 
 </div>
-
-
 
 <div class="container availablethemes">
 

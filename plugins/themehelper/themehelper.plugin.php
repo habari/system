@@ -7,24 +7,6 @@
 class ThemeHelper extends Plugin
 {
 	/**
-	 * function info
-	 * Returns information about this plugin
-	 * @return array Plugin info array
-	 **/
-	function info()
-	{
-		return array (
-			'name' => 'ThemeHelper',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'version' => '1.0',
-			'description' => 'Provides additional functions that may be useful to some themes. These include functions to<br> a. insert a link to an entry\'s comments in the theme template,<br> b. get a formatted version of a post\'s comment count,<br> c. time site performance,<br> d. insert a commenter\'s name or url link into a template,<br> e. insert a comment form in a template with one function call.',
-			'license' => 'Apache License 2.0',
-		);
-	}
-
-	/**
 	 * Returns a full qualified URL of the specified post based on the comments count, and links to the post.
  	 *
 	 * Passed strings are localized prior to parsing therefore to localize "%d Comments" in french, it would be "%d Commentaires".

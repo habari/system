@@ -454,22 +454,6 @@ class FlickrSilo extends Plugin implements MediaSilo
 	static $cache = array();
 
 	/**
-	* Provide plugin info to the system
-	*/
-	public function info()
-	{
-		return array('name' => 'Flickr Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Implements basic Flickr integration with Habari, allowing you to easily upload images to your account and insert them into posts.',
-			'copyright' => '2008',
-			);
-	}
-
-	/**
 	* Initialize some internal values when plugin initializes
 	*/
 	public function action_init()

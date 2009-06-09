@@ -10,23 +10,6 @@ class Pingback extends Plugin
 {
 
 	/**
-	 * Provide plugin info to the system
-	 */
-	public function info()
-	{
-		return array(
-			'name' => 'Pingback',
-			'version' => '1.0.1',
-			'url' => 'http://habariproject.org/',
-			'author' =>	'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Adds support Pingback 1.0 methods to the XML-RPC server.',
-			'copyright' => '2008'
-		);
-	}
-
-	/**
 	 * Register the Pingback event type with the event log
 	 */
 	public function action_plugin_activation( $file )

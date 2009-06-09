@@ -1112,6 +1112,17 @@ class AdminHandler extends ActionHandler
 		$this->theme->active_theme_name = $this->theme->active_theme['info']->name;
 		$this->theme->configurable = Plugins::filter( 'theme_config', false, $this->active_theme);
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
+		
+		$activedata = Themes::get_active_data();
+		$areas = array();
+		if(isset($activedata['info']->areas->area)) {
+			foreach($activedata['info']->areas->area as $area) {
+				$areas[] = (string)$area;
+			}
+		}
+		$this->theme->areas = $areas;
+		
+		$this->theme->blocks = Plugins::filter('block_list', array());
 
 		$this->theme->display( 'themes' );
 	}
@@ -1625,6 +1636,9 @@ class AdminHandler extends ActionHandler
 		return $this->get_plugins();
 	}
 
+	/**
+	 * Display the plugin administration page
+	 */
 	public function get_plugins()
 	{
 		$all_plugins = Plugins::list_all();
@@ -1640,6 +1654,9 @@ class AdminHandler extends ActionHandler
 			$plugin['file'] = $file;
 
 			$error = '';
+			
+			$providing = array();
+			
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
@@ -1670,12 +1687,16 @@ class AdminHandler extends ActionHandler
 						'caption' => _t('Deactivate'),
 						'action' => 'Deactivate',
 					);
+					
+					if(isset($plugin['info']->provides)) {
+						foreach($plugin['info']->provides->feature as $feature) {
+							$providing[(string) $feature] = $feature;
+						}
+					}
 				}
 				else {
 					// instantiate this plugin
 					// in order to get its info()
-					include_once( $file );
-					$pluginobj = Plugins::load_from_file( $file, false );
 					$plugin['active'] = false;
 					$plugin['verb'] = _t( 'Activate' );
 					$plugin['actions'] = array(
@@ -1686,7 +1707,7 @@ class AdminHandler extends ActionHandler
 						),
 					);
 				}
-				$plugin['info'] = $pluginobj->info;
+				$plugin['info'] = Plugins::load_info( $file );
 			}
 			else {
 				$plugin['debug'] = true;
@@ -1713,6 +1734,28 @@ class AdminHandler extends ActionHandler
 			}
 			else {
 				$sort_inactive_plugins[$plugin_id] = $plugin;
+			}
+		}
+
+		// Get the features that the current theme provides		
+		$themeinfo = Themes::get_active_data();
+		if(isset($themeinfo['info']->provides)) {
+			foreach($themeinfo['info']->provides->feature as $feature) {
+				$providing[(string) $feature] = $feature;
+			}
+		}
+		
+		foreach($sort_inactive_plugins as $plugin_id => $plugin) {
+			if(isset($plugin['info']->requires)) {
+				foreach($plugin['info']->requires->feature as $feature) {
+					if(!isset($providing[(string) $feature])) {
+						if(!isset($sort_inactive_plugins[$plugin_id]['missing'])) {
+							$sort_inactive_plugins[$plugin_id]['missing'] = array();
+						}
+						$sort_inactive_plugins[$plugin_id]['missing'][(string) $feature] = isset($feature['url']) ? $feature['url'] : '';
+						unset($sort_inactive_plugins[$plugin_id]['actions']['activate']);
+					}
+				}
 			}
 		}
 

@@ -325,6 +325,26 @@ class Plugins
 		return self::load($class, $activate);
 	}
 	
+	
+	/**
+	 * Return the info XML for a plugin based on a filename
+	 * 
+	 * @param string $file The filename of the plugin file
+	 * @return SimpleXMLElement The info structure for the plugin, or null if no info could be loaded
+	 */
+	public static function load_info( $file )
+	{
+		$info = null;
+		$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $file);
+		if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
+			$info = new SimpleXMLElement( $xml_content );
+			if($info->getName() != 'pluggable') {
+				$info = null;
+			}					
+		}
+		return $info;
+	}
+	
 	public static function load( $class, $activate = true )
 	{
 		$plugin = new $class;

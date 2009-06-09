@@ -99,6 +99,19 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		}
 
 	}
+	
+	public function theme_menu_empty($theme, $menu)
+	{
+		// Should pass menu name on to Posts::get(array('preset'=>$menu))
+		if($menu == 'mainmenu') {
+			$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
+			$out = '';
+			foreach( $pages as $page ) {
+				$out .= '<li><a href="' . $page->permalink . '" title="' . $page->title . '">' . $page->title . '</a></li>' . "\n";
+			}
+			return $out;
+		}
+	}
 }
 
 ?>
