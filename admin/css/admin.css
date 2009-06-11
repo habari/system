@@ -1610,6 +1610,45 @@ body.page-themes .thumb img {
 	float: right;
 }
 
+#block_add {
+	float: left;
+	width: 66%;
+	border-right: 1px solid #666666;
+}
+
+#scope_container {
+	float: left;
+	color: white;
+	padding-left: 10px;
+	width: 30%;
+}
+
+#page #scope_container h3 {
+	color: white;
+}
+
+#block_instances {
+	height: 200px;
+}
+
+.area_drop {
+	padding-bottom: 1em;
+}
+
+.area_drop.drop_area_active {
+	border: 1px dotted #444444;
+}
+
+.area_drop.drop_area_hover,
+.block_drop {
+	background-color: #222222;
+	width: 100%;
+	height: 1em;
+}
+
+.area_block {
+	cursor: n-resize;
+}
 
 /*- OPTIONS PAGE */
 

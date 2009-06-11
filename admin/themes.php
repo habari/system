@@ -31,32 +31,127 @@
 
 		<div class="pagesplitter">
 			<ul class="tabcontrol tabs">
-				<li><a href="#tab_config_general"><?php _e('General'); ?></a></li><li><a href="#tab_config_scopes"><?php _e('Scopes'); ?></a></li><?php if(isset($active_theme['info']->areas)): ?><li><a href="#tab_config_areas"><?php _e('Areas'); ?></a></li><?php endif; ?>
+				<li><a href="#tab_config_general"><?php _e('General'); ?></a></li><?php if(isset($active_theme['info']->areas)): ?><li><a href="#tab_config_areas"><?php _e('Areas'); ?></a></li><?php endif; ?><li><a href="#tab_config_scopes"><?php _e('Scopes'); ?></a></li>
 			</ul>
 		
 			<div id="tab_config_general" class="splitter">
 				<div class="splitterinside"><?php Plugins::act( 'theme_ui', $active_theme ); ?></div>
 			</div>
-			<div id="tab_config_scopes" class="splitter">
-				<div class="splitterinside">Scopes</div>
-			</div>
 			<?php if(isset($active_theme['info']->areas)): ?>
 			<div id="tab_config_areas" class="splitter">
 				<div class="splitterinside">
-				<select>
-					<?php foreach($blocks as $block_key => $block_name): ?>
-					<option value="<?php echo $block_key; ?>"><?php echo $block_name; ?></option>
-					<?php endforeach; ?>
-				</select>
-				<select>
+					<div id="block_add">
+						<label><?php _e('New Block Name:')?> <input type="text" id="block_instance_name"></label>
+						<label><?php _e('Type:')?> <select id="block_instance_type">
+							<?php foreach($blocks as $block_key => $block_name): ?>
+							<option value="<?php echo $block_key; ?>"><?php echo $block_name; ?></option>
+							<?php endforeach; ?>
+						</select></label>
+						<input id="block_instance_add" type="button" value="+" >
+						
+						<div id="block_instances">
+							<div class="block_instance">
+								<h3><a href="#">Section 1</a></h3>
+								<div>
+									<div>
+										<label for="section1_test">Value A:</label>
+										<input type="text" name="section1_value_a" value="Hi 1">
+									</div>							
+								</div>
+							</div>
+							<div class="block_instance">
+								<h3><a href="#">Section 2</a></h3>
+								<div>
+									<div>
+										<label for="section1_test">Value A:</label>
+										<input type="text" name="section1_value_a" value="Hi 2">
+									</div>							
+								</div>
+							</div>
+							<div class="block_instance">
+								<h3><a href="#">Section 3</a></h3>
+								<div>
+									<div>
+										<label for="section1_test">Value A:</label>
+										<input type="text" name="section1_value_a" value="Hi 3">
+									</div>							
+								</div>
+							</div>
+							<div class="block_instance">
+								<h3><a href="#">Section 4</a></h3>
+								<div>
+									<div>
+										<label for="section1_test">Value A:</label>
+										<input type="text" name="section1_value_a" value="Hi 4">
+									</div>							
+								</div>
+							</div>
+						</div>
+						
+					</div>
+					
+					<!--
+					@todo: move this to the admin.js
+					-->
+					<script type="text/javascript">
+					$(function(){
+						$('#block_instance_add').click(function(){
+							if($('#block_instance_name').val() == '') {
+								alert('You must first name this instance.');
+							}
+							else {
+								$('#block_instances').append($('<h3><a href="#">' + $('#block_instance_name').val() + '</a></h3><div>' + $('#block_instance_name').val() + '</div>'));
+							}
+						});
+
+						$('#block_instances h3').click(function() {
+							$(this).next().slideToggle('slow');
+							return false;
+						}).next().hide();
+
+						/*
+						$('#block_instances h3').draggable({revert: true, helper: 'clone', distance: 5, containment: $('#block_instances h3').parents('.splitterinside')});
+						$(".area_drop").droppable({
+							accept: '#block_instances h3',
+							activeClass: 'drop_area_active',
+							hoverClass: 'drop_area_hover',
+							drop: function(event, ui) {
+								//$(this).css({border: "1px solid red"});
+							}
+						});
+						//*/
+						$('#block_instances').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop', start: function(event, ui){
+							$('h3', ui.item).next().hide();
+						}});
+						$('.area_drop').sortable({placeholder: 'block_drop', revert: true, forcePlaceholderSize: true, connectWith: '.area_drop', containment: '.area_container', axis: 'y'});
+						
+					});
+					</script>
+					
+					<div id="scope_container">
+					<label><?php _e("Scope:"); ?> <select><option>Default</option></select></label>
+					<div class="area_container">
 					<?php foreach($active_theme['info']->areas->area as $area): ?>
-					<option value="<?php echo $area['name']; ?>"><?php echo $area['name']; ?></option>
+						<h2><a href="#"><?php echo $area['name']; ?></a></h2>
+						<div class="area_drop">
+							<div class="area_block"><h3>Section 1</h3></div>
+							<div class="area_block"><h3>Section 2</h3></div>
+							<div class="area_block"><h3>Section 3</h3></div>
+						</div>
 					<?php endforeach; ?>
-				</select>
-				<input type="submit" value="+" name="3f31b343"/>
+					</div>
+					</div>
+
+					<hr style="clear:both;visibility: hidden;" />					
 				</div>
 			</div>
 			<?php endif; ?>
+
+			<div id="tab_config_scopes" class="splitter">
+				<div class="splitterinside">Scopes</div>
+			</div>
+
+
 		</div>
 	</div>
 
