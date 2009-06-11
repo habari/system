@@ -17,6 +17,9 @@
 		<area name="sidebar">
 			<description><![CDATA[The sidebar area]]></description>
 		</area>
+		<area name="nav">
+			<description><![CDATA[The sidebar area]]></description>
+		</area>
 	</areas>
 	
 </pluggable>
