@@ -219,13 +219,6 @@ SQL;
 	 **/
 	public function objects($type)
 	{
-		// Find the object id for this type
-		$type_id = DB::get_value( 'SELECT id FROM {object_types} WHERE name=?', array($type) );
-
-		// Find the ids of objects of this type associated with this term
-		$object_ids = DB::get_results( 'SELECT object_id FROM {object_terms} WHERE term_id=? AND object_type_id=?', array( $this->id, $type_id ) );
-		$query = 'SELECT * FROM {' . $type . '} WHERE id IN (' . implode(', ', $object_ids) . ')';
-		return DB::get_results( $query, array(), $type );
 	}
 
 	/**
@@ -234,18 +227,6 @@ SQL;
 	 **/
 	public function associate($type, $id)
 	{
-		// Make sure this type exists in the object_types table
-		// TODO It feels a bit smelly managing object types from within an instance
-		// of a term. Better approaches ? Probably at least a static Term function.
-
-		$type_id = DB::get_value( 'SELECT id FROM {object_types} WHERE name=?', array($type) );
-		if ( null == $type_id ) {
-			// Doesn't exist in DB, so add it.
-			DB::query( 'INSERT INTO {object_types} (name) VALUES (?)', array( $type ) );
-			$type_id = DB::last_insert_id();
-		}
-		// Associate this term to an object
-		DB::query( 'INSERT INTO {object_terms} (object_id, term_id, object_type_id) VALUES (?,?,?)', array( $id, $this->id, $type_id ) );
 	}
 
 }
