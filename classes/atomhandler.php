@@ -481,11 +481,11 @@ class AtomHandler extends ActionHandler
 		$comments = null;
 		$comments_count = null;
 
-		// Assign alternate link.
-		$alternate = URL::get( 'atom_feed_comments' );
-
 		// Assign self link.
 		$self = '';
+		
+		// Assign alternate link.
+		$alternate = '';
 
 		$updated = HabariDateTime::date_create();
 
@@ -508,12 +508,14 @@ class AtomHandler extends ActionHandler
 			$comments_count = count( $comments );
 			$content_type = Post::type_name( $post->content_type );
 			$self = URL::get( "atom_feed_{$content_type}_comments", $post, false );
+			$alternate = URL::get( "display_{$content_type}", $post, false );
 			if( $comments_count ) {
 				$updated = $comments[$comments_count - 1]->date;
 			}
 		}
 		else {
 			$self = URL::get( 'atom_feed_comments' );
+			$alternate = URL::get( 'display_home' );
 			$params['status'] = Comment::STATUS_APPROVED;
 			$comments = Comments::get( $params );
 			$comments_count = Comments::count_total( Comment::status('approved') );
@@ -550,8 +552,8 @@ class AtomHandler extends ActionHandler
 
 		if ( $post = Post::get($params) ) {
 			// Assign alternate link.
-			$alternate = URL::get( 'atom_entry' );
-			$self = URL::get( 'atom_entry' );
+			$alternate = URL::get( 'display_entry', $post, false );
+			$self = URL::get( 'atom_entry', $post, false );
 			$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_entry';
 
 			$user = User::get_by_id( $post->user_id );
