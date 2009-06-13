@@ -153,9 +153,10 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		$file = $this->root . '/' . $path;
 
-		if ( file_exists( $file ) ) {
-			$asset = new MediaAsset( self::SILO_NAME . '/' . $path );
-			$asset->set( file_get_contents( $file ) );
+		if ( file_exists( $file ) && is_file( $file ) ) {
+			$asset = new MediaAsset( self::SILO_NAME . '/' . $path, false );
+			$asset->filetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($file));
+			$asset->content = file_get_contents( $file );
 			return $asset;
 		}
 		return false;
