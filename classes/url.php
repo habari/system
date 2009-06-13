@@ -227,11 +227,15 @@ class URL extends Singleton
 	 *
 	 * @param string $path The filesystem path
 	 * @param bool whether to include a trailing slash.  Default: No
+	 * @param bool whether to leave a filename on the URL.  Default: No
 	 * @return string URL
 	 */
-	public static function get_from_filesystem($path, $trail = false)
+	public static function get_from_filesystem($path, $trail = false, $preserve_file = false)
 	{
-		$url = Site::get_url('habari') . substr(dirname($path), strlen(HABARI_PATH));
+		if ( !$preserve_file ) {
+			$path = dirname($path);
+		}
+		$url = Site::get_url('habari') . substr($path, strlen(HABARI_PATH));
 		// Replace windows paths with forward slashes
 		$url = str_replace( '\\', '/', $url);
 		$url .= ( $trail ) ? '/' : '';
