@@ -1671,14 +1671,28 @@ class AdminHandler extends ActionHandler
 							$plugin_action = $plugin_action_caption;
 						}
 						$action = array(
-							'url' => URL::get( 'admin', 'page=plugins&configure=' . $plugin_id . '&configaction=' . $plugin_action ),
 							'caption' => $plugin_action_caption,
 							'action' => $plugin_action,
 						);
+						$urlparams = array('page' => 'plugins', 'configure'=>$plugin_id);
+						$action['url'] = URL::get( 'admin', $urlparams );
+						
 						if ( $action['caption'] == '?' ) {
+							if(isset($_GET['configaction'])) {
+								$urlparams['configaction'] = $_GET['configaction'];
+							}
+							if($_GET['help'] != $plugin_action) {
+								$urlparams['help'] = $plugin_action;
+							}
+							$action['url'] = URL::get( 'admin', $urlparams );
 							$plugin['help'] = $action;
 						}
 						else {
+							if(isset($_GET['help'])) {
+								$urlparams['help'] = $_GET['help'];
+							}
+							$urlparams['configaction'] = $plugin_action;
+							$action['url'] = URL::get( 'admin', $urlparams );
 							$plugin['actions'][$plugin_action] = $action;
 						}
 					}
@@ -1761,6 +1775,7 @@ class AdminHandler extends ActionHandler
 
 		//$this->theme->plugins = array_merge($sort_active_plugins, $sort_inactive_plugins);
 		$this->theme->assign( 'configaction', Controller::get_var('configaction') );
+		$this->theme->assign( 'helpaction', Controller::get_var('help') );
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
 		$this->theme->active_plugins = $sort_active_plugins;
 		$this->theme->inactive_plugins = $sort_inactive_plugins;
