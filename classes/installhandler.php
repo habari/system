@@ -208,16 +208,13 @@ class InstallHandler extends ActionHandler
 			$error = '';
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
-				// instantiate this plugin
-				// in order to get its info()
-				include_once( $file );
-				$class = Plugins::class_from_filename($file);
-				$pluginobj = Plugins::load( $class, false );
+				// get this plugin's info()
 				$plugin['active'] = false;
 				$plugin['verb'] = _t( 'Activate' );
 				$plugin['actions'] = array();
-				$plugin['info'] = $pluginobj->info;
+				$plugin['info'] = Plugins::load_info( $file );
 				$plugin['recommended'] = in_array( basename($file), $recommended_list );
+
 			}
 			else {
 				// We can't get the plugin info due to an error
