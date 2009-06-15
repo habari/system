@@ -149,22 +149,6 @@ class InputFilter
 	);
 	private static $character_entities_re = '';
 
-	private static $scheme_ports = array(
-		'ftp' => 21,
-		'ssh' => 22,
-		'telnet' => 23,
-		'http' => 80,
-		'pop3' => 110,
-		'nntp' => 119,
-		'news' => 119,
-		'irc' => 194,
-		'imap3' => 220,
-		'https' => 443,
-		'nntps' => 563,
-		'imaps' => 993,
-		'pop3s' => 995,
-	);
-
 	/**
 	 * Perform all filtering, return new string.
 	 * @param string $str Input string.
@@ -368,7 +352,7 @@ class InputFilter
 			}
 			$res .= $parsed_url['host'];
 			if ( !empty( $parsed_url['port'] ) ) {
-				if ( array_key_exists( $parsed_url['scheme'], self::$scheme_ports ) && self::$scheme_ports[ $parsed_url['scheme'] ] == $parsed_url['port'] ) {
+				if ( array_key_exists( $parsed_url['scheme'], Utils::scheme_ports() ) && Utils::scheme_ports( $parsed_url['scheme'] ) == $parsed_url['port'] ) {
 					// default port for this scheme, do nothing
 				}
 				else {
