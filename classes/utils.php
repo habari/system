@@ -1025,6 +1025,36 @@ class Utils
 		$pattern = str_replace( array_keys( $braces ), array_values( $braces ), $pattern );
 		return '/'.$pattern.'/';
 	}
+	
+	
+	/**
+	 * Return the port used for a specific URL scheme
+	 * 
+	 * @param string $scheme The scheme in question
+	 * @return integer the port used for teh scheme
+	 */
+	public static function scheme_ports( $scheme = null )
+	{
+		$scheme_ports = array(
+			'ftp' => 21,
+			'ssh' => 22,
+			'telnet' => 23,
+			'http' => 80,
+			'pop3' => 110,
+			'nntp' => 119,
+			'news' => 119,
+			'irc' => 194,
+			'imap3' => 220,
+			'https' => 443,
+			'nntps' => 563,
+			'imaps' => 993,
+			'pop3s' => 995,
+		);
+		if(is_null($scheme)) {
+			return $scheme_ports;
+		}
+		return $scheme_ports[$scheme];
+	}
 
 }
 ?>
