@@ -2,7 +2,7 @@
 <ul>
 <?php foreach($options as $key => $text) : ?>
 	<li>
-		<label for="<?php echo $id; ?>"><input type="checkbox" name="<?php echo $field; ?>[]" value="<?php echo $key; ?>"<?php echo ( in_array( $key, (array) $value ) ? ' checked' : '' ); ?>><?php echo htmlspecialchars($text); ?></label>
+		<label for="<?php echo Utils;:slugify($key); ?>"><input type="checkbox" name="<?php echo $field; ?>[]" id="<?php echo Utils::slugify($key); ?>" value="<?php echo $key; ?>"<?php echo ( in_array( $key, (array) $value ) ? ' checked' : '' ); ?>><?php echo htmlspecialchars($text); ?></label>
 	</li>
 <?php endforeach; ?>
 </ul>
