@@ -55,6 +55,7 @@ if(isset($config_plugin)):
 		<p class="description"><?php echo $config_plugin['info']->description; ?></p>
 
 		<div id="pluginconfigure">
+			<?php Plugins::act( 'plugin_ui', $configure, $helpaction ); ?>
 			<?php Plugins::act( 'plugin_ui', $configure, $configaction ); ?>
 			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('Close'); ?></a>
 		</div>
