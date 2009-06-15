@@ -313,74 +313,74 @@ class Format
 	 * Returns a shortened version of whatever is passed in.
 	 * @param string $value A string to shorten
 	 * @param integer $count Maximum words to display [100]
-	 * @param integer $maxparagraphs Maximum paragraphs to display [1]
+	 * @param integer $max_paragraphs Maximum paragraphs to display [1]
 	 * @return string The string, shortened
 	 **/
-	public static function summarize( $text, $count = 100, $maxparagraphs = 1 )
+	public static function summarize( $text, $count = 100, $max_paragraphs = 1 )
 	{
-		preg_match_all( '/<script.*?<\/script.*?>/', $text, $scripts );
-		preg_replace( '/<script.*?<\/script.*?>/', '', $text );
+		$ellipsis = '...';
+		
+		$showmore = false;
 
-		$words = preg_split( '/(<(?:\\s|".*?"|[^>])+>|\\s+)/', $text, $count + 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
-
-		$ellipsis = '';
-		if ( count( $words ) > $count * 2 ) {
-			array_pop( $words );
-			$ellipsis = '...';
-		}
-		$output = '';
-
-		$paragraphs = 0;
+		$ht = new HtmlTokenizer($text, false);
+		$set = $ht->parse();
 
 		$stack = array();
-		foreach ( $words as $word ) {
-			if ( preg_match( '/<.*\/\\s*>$/', $word ) ) {
-				// If the tag self-closes, do nothing.
-				$output.= $word;
+		$para = 0;
+		$token = $set->current();
+		$summary = new HTMLTokenSet(false);
+		$remainder = new HTMLTokenSet(false);
+		$set->rewind(); 
+		$remaining_words = $count;
+		// $bail lets the loop end naturally and close all open elements without adding new ones.
+		$bail = false;
+		for($token = $set->current(); $set->valid(); $token = $set->next() ) {
+			if(!$bail && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN) {
+				$stack[] = $token;
 			}
-			elseif ( preg_match( '/<[\\s\/]+/', $word ) ) {
-				// If the tag ends, pop one off the stack (cheatingly assuming well-formed!)
-				array_pop( $stack );
-				preg_match( '/<\s*\/\s*(\\w+)/', $word, $tagn );
-				switch( $tagn[1] ) {
-				case 'br':
-				case 'p':
-				case 'div':
-				case 'ol':
-				case 'ul':
-					$paragraphs++;
-					if ( $paragraphs >= $maxparagraphs ) {
-						$output.= '...' . $word;
-						$ellipsis = '';
-						break 2;
-					}
+			if(!$bail) {
+				switch($token['type']) {
+					case HTMLTokenizer::NODE_TYPE_TEXT:
+						$words = preg_split('%(\\s+)%', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+						// word count is doubled because spaces between words are captured as their own array elements via PREG_SPLIT_DELIM_CAPTURE
+						$words = array_slice($words, 0, $remaining_words * 2);
+						$remaining_words -= count($words) / 2;
+						$token['value'] = implode('', $words);
+						if($remaining_words <= 0) {
+							$token['value'] .= $ellipsis;
+							$summary[] = $token;
+							$bail = true;
+						}
+						else {
+							$summary[] = $token;
+						}
+						break;
+					case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+						// don't handle this case here
+						break;
+					default:
+						$summary[] = $token;
+						break;
 				}
-				$output.= $word;
 			}
-			elseif ( $word[0] == '<' ) {
-				// If the tag begins, push it on the stack
-				$stack[] = $word;
-				$output .= $word;
-			}
-			else {
-				$output.= $word;
-			}
-		}
-		$output.= $ellipsis;
-
-		if ( count( $stack ) > 0 ) {
-			preg_match( '/<(\\w+)/', $stack[0], $tagn );
-			$stack = array_reverse( $stack );
-			foreach ( $stack as $tag ) {
-				preg_match( '/<(\\w+)/', $tag, $tagn );
-				$output.= '</' . $tagn[1] . '>';
+			if($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE) {
+				do{
+					$end = array_pop($stack);
+					$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+					$end['attrs'] = null;
+					$end['value'] = null;
+					$summary[] = $end;
+				} while( ($bail || $end['name'] != $token['name']) && count($stack) > 0 );
+				if(count($stack) == 0) {
+					$para++;
+				}
+				if($bail || $para >= $max_paragraphs) {
+					break;
+				}
 			}
 		}
-		foreach ( $scripts[0] as $script ) {
-			$output.= $script;
-		}
-
-		return $output;
+			
+		return (string) $summary;
 	}
 
 	/**
