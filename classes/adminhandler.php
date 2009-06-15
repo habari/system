@@ -71,10 +71,10 @@ class AdminHandler extends ActionHandler
 	{
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
 		if(isset($this->handler_vars['content_type'])) {
-			$type = $this->handler_vars['content_type'];
+			$type = Plugins::filter('post_type_display', Post::type_name($this->handler_vars['content_type']), 'singular');
 		}
 		elseif( $page == 'publish' && isset($this->handler_vars['id'] ) ) {
-			$type = Post::get(intval($this->handler_vars['id']))->content_type;
+			$type = Plugins::filter('post_type_display', Post::type_name(Post::get(intval($this->handler_vars['id']))->content_type), 'singular'); 
 		}
 		else {
 			$type = '';
@@ -462,7 +462,7 @@ class AdminHandler extends ActionHandler
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
 						
-			$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
+			$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
 			$form = $post->get_form( 'admin' );
 
 			// Verify that the post hasn't already been updated since the form was loaded
@@ -559,9 +559,9 @@ class AdminHandler extends ActionHandler
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 		}
 
-		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
-		$this->theme->admin_title = _t('Publish %s', array(ucwords(Post::type_name($post->content_type))));
-
+		$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
+		$this->theme->admin_title = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
+		
 		$statuses = Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
 
