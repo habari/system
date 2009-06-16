@@ -261,6 +261,28 @@ class FormContainer
 	}
 
 	/**
+	 * Move a control into the container
+	 *
+	 * @param FormControl $control FormControl object to move
+	 * @param FormControl $target FormControl object acting as destination
+	 */
+	public function move_into( $control, $target )
+	{
+		// Remove the source control from its container's list of controls
+		$controls = array();
+		foreach($control->container->controls as $name => $ctrl) {
+			if($ctrl === $control) {
+				$source_name = $name;
+				continue;
+			}
+			$controls[$name] = $ctrl;
+		}
+		$control->container->controls = $controls;
+
+		$target->controls[$control->name] = $control;
+	}
+
+	/**
 	 * Replaces a target control by the supplied control
 	 *
 	 * @param FormControl $target FormControl object to replace
@@ -1300,6 +1322,17 @@ class FormControl
 		unset($this->validators[$index]);
 	}
 
+	/**
+	 * Move this control inside of the target
+	 * In the end, this will use FormUI::move()
+	 *
+	 * @param object $target The target control to move this control before
+	 */
+	function move_into( $target )
+	{
+		$this->container->move_into( $this, $target );
+	}
+	
 	/**
 	 * Move this control before the target
 	 * In the end, this will use FormUI::move()
