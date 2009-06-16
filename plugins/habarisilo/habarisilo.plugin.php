@@ -377,11 +377,11 @@ class HabariSilo extends Plugin implements MediaSilo
 					$fullpath = self::SILO_NAME . '/' . $path;
 
 					$form = new FormUI( 'habarisilomkdir' );
-					$form->append( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>" );
+					$form->append( 'static', 'ParentDirectory', '<div style="margin: 10px auto;">' . _t('Parent Directory:') . " <strong>/{$path}</strong></div>" );
 
 					// add the parent directory as a hidden input for later validation
 					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
-					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('Enter the name of the new directory to create here') );
+					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('What would you like to call the new directory?') );
 					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
 					$form->append( 'submit', 'submit', _t('Submit') );
 					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');

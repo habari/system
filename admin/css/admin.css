@@ -924,8 +924,23 @@ body.page-publish .buttons input {
 
 .media_panel {
 	min-height: 200px;
+	margin: 10px;
 }
 
+.media_panel #submit
+{
+	margin: 10px auto;
+}
+
+.media_panel p
+{
+	padding: 5px 0px;
+}
+
+.media_panel #simple_upload_frame
+{
+	display:none;
+}
 
 /*-- MEDIA ACTION DROPBUTTONS */
 
