@@ -31,11 +31,16 @@
 
 		<div class="pagesplitter">
 			<ul class="tabcontrol tabs">
-				<li><a href="#tab_config_general"><?php _e('General'); ?></a></li><?php if(isset($active_theme['info']->areas)): ?><li><a href="#tab_config_areas"><?php _e('Areas'); ?></a></li><?php endif; ?><li><a href="#tab_config_scopes"><?php _e('Scopes'); ?></a></li>
+				<?php if( $configurable): ?><li><a href="#tab_config_general"><?php _e('General'); ?></a></li><?php endif; ?>
+				<?php if(isset($active_theme['info']->areas)): ?><li><a href="#tab_config_areas"><?php _e('Areas'); ?></a></li><?php endif; ?>
+				<li><a href="#tab_config_scopes"><?php _e('Scopes'); ?></a></li>
 			</ul>
 		
 			<div id="tab_config_general" class="splitter">
-				<div class="splitterinside"><?php Plugins::act( 'theme_ui', $active_theme ); ?></div>
+				<div class="splitterinside">
+					<?php if( $active_theme_config_form ): $active_theme_config_form->out(); endif; ?>
+					<?php Plugins::act( 'theme_ui', $active_theme ); ?>
+				</div>
 			</div>
 			<?php if(isset($active_theme['info']->areas)): ?>
 			<div id="tab_config_areas" class="splitter">

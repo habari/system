@@ -103,7 +103,7 @@ class Theme extends Pluggable
 	}
 	
 	/**
-	 * Creates the config form for a theme, and loads in the config xml
+	 * Creates the config forms for a theme, and loads in the config xml
 	 *
 	 * @param array Array of theme data
 	 * 
@@ -111,47 +111,53 @@ class Theme extends Pluggable
 	 **/
 	public function config( $themedata )
 	{
-		$form = new FormUI( 'themeconfig' );
-		
-		if( isset( $themedata['info']->config ) ) {
-			$form->build_from_xml( $themedata['info']->config, 'theme__' );
-		}
-		
-		foreach( $form->get_controls() as $control ) {
-			switch(get_class($control)) {
-				case 'FormControlText':
-					$control->template = 'themecontrol_text';
-					break;
-				case 'FormControlTextArea':
-					$control->template = 'themecontrol_textarea';
-					break;
-				case 'FormControlSelect':
-					$control->template = 'themecontrol_select';
-					break;
-				case 'FormControlColor':
-					$control->template = 'themecontrol_color';
-					break;
-			}
-		}
-						
-		$buttons = $form->append('wrapper', 'buttons');
-		$buttons->class = 'container transparent';
 
-		// Create the Save button
-		$buttons->append('submit', 'save', _t('Save'), 'themecontrol_submit');
-		$buttons->append('submit', 'reset', _t('Reset'), 'themecontrol_submit');
+		$configs = array();
 		
-		$form->on_success(array($this, 'save_config'));
-				
-		// Let plugins alter this form
-		Plugins::act('form_theme', $form, $this);
-				
-		if( count( $form->get_controls() ) > 2) {
-			return $form;
+		foreach($themedata['info']->config as $config) {
+			if( (int) $config['load'] != 1) {
+				continue;
+			}
+			
+			$form = new FormUI( (string) $config['name'] );
+			
+			if( isset( $themedata['info']->config ) ) {
+				$form->build_from_xml( $themedata['info']->config, 'theme__' );
+			}
+
+			foreach( $form->get_controls() as $control ) {
+				switch(get_class($control)) {
+					case 'FormControlText':
+						$control->template = 'themecontrol_text';
+						break;
+					case 'FormControlTextArea':
+						$control->template = 'themecontrol_textarea';
+						break;
+					case 'FormControlSelect':
+						$control->template = 'themecontrol_select';
+						break;
+					case 'FormControlColor':
+						$control->template = 'themecontrol_color';
+						break;
+				}
+			}
+
+			$buttons = $form->append('wrapper', 'buttons');
+			$buttons->class = 'container transparent';
+
+			// Create the Save button
+			$buttons->append('submit', 'save', _t('Save'), 'themecontrol_submit');
+			$buttons->append('submit', 'reset', _t('Reset'), 'themecontrol_submit');
+
+			$form->on_success(array($this, 'save_config'));
+
+			// Let plugins alter this form
+			Plugins::act('form_theme', $form, $this, $config);
+			
+			$configs[ (string) $config['name'] ] = $form;
 		}
-		else {
-			return false;
-		}
+		
+		return Plugins::filter( 'theme_configs', $configs );
 	}
 	
 	/**
