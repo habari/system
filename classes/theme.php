@@ -1034,7 +1034,7 @@ class Theme extends Pluggable
 		$output = '';
 		foreach($area_blocks as $block_instance_id => $block) {
 			$hook = 'block_content_' . $block->type;
-			Plugins::act($hook, $block);
+			Plugins::act($hook, $block, $this);
 			$output .= implode( '', $this->content_return($block));
 		}
  
