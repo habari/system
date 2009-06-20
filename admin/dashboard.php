@@ -1,16 +1,16 @@
 <?php include( 'header.php' ); ?>
 
 <div class="container dashboardinfo transparent">
-        <!--[if lte IE 6]>
-        <p>
-            Oh, great!  You're using IE6!  I've finally found someone I can pawn this old betamax player off on!<br />
-            If you're reading this, you're surfing using Internet Explorer 6, an eight-year-old browser that cannot cope with the demands of the modern internet. 
-            For the best web experience, we strongly recommend upgrading to <a href="http://getfirefox.com">Firefox</a>, <a href="http://www.opera.com/">Opera</a>, 
-            <a href="http://www.apple.com/safari/download/">Safari</a>, <a href="http://www.google.com/chrome">Google Chrome</a>, or a more recent version of 
-            <a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer</a>.
-        </p>
-        <![endif]-->  
-        
+		<!--[if lte IE 6]>
+		<p>
+			Oh, great!	You're using IE6!  I've finally found someone I can pawn this old betamax player off on!<br />
+			If you're reading this, you're surfing using Internet Explorer 6, an eight-year-old browser that cannot cope with the demands of the modern internet. 
+			For the best web experience, we strongly recommend upgrading to <a href="http://getfirefox.com">Firefox</a>, <a href="http://www.opera.com/">Opera</a>, 
+			<a href="http://www.apple.com/safari/download/">Safari</a>, <a href="http://www.google.com/chrome">Google Chrome</a>, or a more recent version of 
+			<a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer</a>.
+		</p>
+		<![endif]-->  
+		
 		<p>
 		<?php
 		$active_msg = array();
@@ -103,7 +103,7 @@
 				$message_bits[]= $message;
 			}
 
-			if ( !empty(  $stats['spam_comment_count'] ) && Options::get( 'dashboard__hide_spam_count' ) != true ) {
+			if ( !empty(  $stats['spam_comment_count'] ) && User::identify()->info->dashboard_hide_spam_count != true ) {
 				$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ), ENT_COMPAT, 'UTF-8' ) . '">';
 				$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
 				$message.= '</a>';

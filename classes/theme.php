@@ -72,13 +72,14 @@ class Theme extends Pluggable
 	 * Loads a theme's metadata from an XML file in theme's
 	 * directory.
 	 *
-	 * @param theme Name of theme to retrieve metadata about
 	 */
-	public function info( $theme )
+	public function info( )
 	{
-		$xml_file = Site::get_path( 'user' ) . '/themes/' . $theme . '/theme.xml';
+		
+		$xml_file = dirname($this->getfile) . '/theme.xml';
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
-			$theme_data = new SimpleXMLElement(  $xml_file );
+			$theme_data = new SimpleXMLElement( $xml_file );
+			return $theme_data;
 			// Is it a valid theme xml file?
 			if ( isset( $theme_data->theme ) ) {
 				$valid_named_elements = array(
@@ -706,11 +707,8 @@ class Theme extends Pluggable
 	{
 		$this->add_template_vars();
 
-		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
-			$this->template_engine->assign( $key, $value );
-		}
-		/*
-		*/
+		$this->play_var_stack();
+
 		$this->template_engine->assign( 'theme', $this );
 		$this->template_engine->display( $template_name );
 	}
@@ -724,19 +722,30 @@ class Theme extends Pluggable
 	 */
 	public function fetch( $template_name, $unstack = false )
 	{
-		foreach($this->var_stack[$this->current_var_stack] as $key => $value) {
-			$this->template_engine->assign( $key, $value );
-		}
+		$this->play_var_stack();
 
 		$this->add_template_vars();
 
-		$this->assign( 'theme', $this );
+		$this->template_engine->assign( 'theme', $this );
 
 		$return = $this->fetch_unassigned( $template_name );
 		if ( $unstack ) {
 			$this->end_buffer();
 		}
 		return $return;
+	}
+	
+	/**
+	 * Play back the full stack of template variables to assign them into the template
+	 */
+	protected function play_var_stack()
+	{
+		$this->template_engine->clear();
+		for($z = 0; $z <= $this->current_var_stack; $z++) {
+			foreach($this->var_stack[$z] as $key => $value) {
+				$this->template_engine->assign( $key, $value );
+			}
+		}
 	}
 
 	/**
@@ -1104,9 +1113,81 @@ class Theme extends Pluggable
 	 */
 	public function get_blocks($area, $scope, $theme)
 	{
-		return array();
+		$blocks = DB::get_results('SELECT b.* FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id WHERE ba.area = ? AND ba.scope_id = ? ORDER BY ba.display_order ASC', array($area, $scope), 'Block');
+		Plugins::act('get_blocks', $blocks);
+		return $blocks;
 	}
-		
+
+	/**
+	 * Matches the scope criteria against the current request
+	 * 
+	 * @param array $criteria An array of scope criteria data in RPN, where values are arrays and operators are strings
+	 * @return boolean True if the criteria matches the current request
+	 */
+	function check_scope_criteria($criteria)
+	{
+		$stack = array();
+		foreach($criteria as $crit) {
+			if(is_array($crit)) {
+				$value = false;
+				switch($crit[0]) {
+					case 'request':
+						$value = URL::get_matched_rule()->name == $crit[1];
+						break;
+					case 'token':
+						if(isset($crit[2])) {
+							$value = User::identify()->can($crit[1], $crit[2]);
+						}
+						else {
+							$value = User::identify()->can($crit[1]);
+						}
+						break;
+					default:
+						$value = Plugins::filter('scope_criteria_value', $value, $crit[1], $crit[2]);
+						break;
+				}
+				$stack[] = $value;
+			}
+			else {
+				switch($crit) {
+					case 'not':
+						$stack[] = ! array_pop($stack);
+						break;
+					case 'or':
+						$value1 = array_pop($stack);
+						$value2 = array_pop($stack);
+						$stack[] = $value1 || $value2;
+						break;
+					case 'and':
+						$value1 = array_pop($stack);
+						$value2 = array_pop($stack);
+						$stack[] = $value1 && $value2;
+						break;
+					default:
+						Plugins::act('scope_criteria_operator', $stack, $crit);
+						break;
+				}
+			}
+		}
+		return array_pop($stack);
+	}
+
+	/**
+	 * Retrieve current scope data from the database based on the requested area
+	 * 
+	 * @param string $area The area for which a scope may be applied
+	 * @return array An array of scope data
+	 */
+	public function get_scopes($area)
+	{
+		$scopes = DB::get_keyvalue('SELECT s.id, s.criteria FROM {scopes} s INNER JOIN {blocks_areas} ba ON ba.scope_id = s.id WHERE ba.area = ? ORDER BY s.priority ASC', array($area));
+		foreach($scopes as $key => $value) {
+			$scopes[$key] = unserialize($value);
+		}
+		Plugins::act('get_scopes', $scopes);
+		return $scopes;
+	}
+			
 	/**
 	 * Displays blocks associated to the specified area and current scope.
 	 * 
@@ -1117,29 +1198,40 @@ class Theme extends Pluggable
 	 */
 	public function theme_area($theme, $area, $scope = null)
 	{
-		$blocks = array();
-		$blocks = Plugins::filter('block_list', $blocks);
 		
-		$area_blocks = $this->get_blocks($area, $scope, $theme);
+		// This array would normally come from the database via:
+		$scopes = $this->get_scopes($area);
 
+		$active_scope = 0;
+		foreach($scopes as $scope_id => $scope_criteria) {
+			if($this->check_scope_criteria($scope_criteria)) {
+				$active_scope = $scope_id;
+				break;
+			}
+		}
+ 
+ 		$area_blocks = $this->get_blocks($area, $active_scope, $theme);
+ 
 		$this->area = $area;
 		$begin = '';
 		$begin = Plugins::filter('area_begin', $begin, $area, $this);
-		
+ 
 		$output = '';
 		foreach($area_blocks as $block_instance_id => $block) {
-			Plugins::act('block_content_' . $block->type, $block);
+			$hook = 'block_content_' . $block->type;
+			Plugins::act($hook, $block);
 			$output .= implode( '', $this->content_return($block));
 		}
-
+ 
 		$this->area = '';
 		$end = '';
 		$end = Plugins::filter('area_end', $end, $area, $this);
-
+ 
 		$output = $begin . $output . $end;
-		
+ 
 		return $output;
 	}
+ 
 
 }
 ?>

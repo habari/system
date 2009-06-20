@@ -7,7 +7,7 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('0-0 of 0'); ?></span>
-	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo htmlspecialchars($search); ?>"></span>
+	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" value="<?php echo htmlspecialchars($search); ?>"></span>
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
@@ -50,7 +50,7 @@
 		<span class="pct10"><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'pct90')); ?></span>
 		<span class="pct10"><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'pct90')); ?></span>
 		<span class="pct5"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
-		<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
+		<span class="pct30"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
 	</div>
 	
 	<?php if(isset($years)) { ?>

@@ -259,15 +259,12 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['any:info'] ) ) {
-
 					if ( is_array( $paramset['any:info'] ) ) {
-
+						$the_ins = array();
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
-
 							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
 							$params[] = $info_key;
 							$params[] = $info_value;
-
 						}
 
 						$where[] = '
@@ -276,9 +273,23 @@ class Posts extends ArrayObject implements IsContent
 								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
 							)
 						';
-
 					}
+				}
+				
+				if ( isset( $paramset['has:info'] ) ) {
+					$the_ins = array();
+					$has_info = Utils::single_array( $paramset['has:info'] );
+					foreach( $has_info as $info_name ) {
+						$the_ins[] = ' {postinfo}.name = ? ';
+						$params[] = $info_name;
+					} 
 
+					$where[] = '
+						{posts}.id IN (
+							SELECT post_id FROM {postinfo}
+							WHERE ( ' . implode( ' AND ', $the_ins ) . ' )
+						)
+					';
 				}
 
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
@@ -287,6 +298,7 @@ class Posts extends ArrayObject implements IsContent
 					$infos = array_merge( isset( $paramset['not:all:info'] ) ? $paramset['not:all:info'] : array(), isset( $paramset['not:info'] ) ? $paramset['not:info'] : array() );
 
 					if ( is_array( $infos ) ) {
+						$the_ins = array();
 
 						foreach ( $infos as $info_key => $info_value ) {
 
@@ -406,7 +418,7 @@ class Posts extends ArrayObject implements IsContent
 
 			// If a user can read any post type, let him
 			if( User::identify()->can( 'post_any', 'read' ) ) {
-				$perm_where = array('post_any' => 1);
+				$perm_where = array('post_any' => '(1=1)');
 				$params_where = array();
 			}
 			else {
@@ -431,7 +443,7 @@ class Posts extends ArrayObject implements IsContent
 
 			// If a user is denied access to all posts, do so
 			if( User::identify()->cannot( 'post_any' ) ) {
-				$perm_where_denied = array('0');
+				$perm_where_denied = array('(1=0)');
 			}
 			else {
 				// If a user is denied read access to specific post types, deny him
@@ -449,7 +461,7 @@ class Posts extends ArrayObject implements IsContent
 			// If there are granted permissions to check, add them to the where clause
 			if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
 				// You have no grants.  You get no posts.
-				$where['perms_granted'] = '0';
+				$where['perms_granted'] = '(1=0)';
 			}
 			elseif ( count($perm_where) > 0 ) {
 				$where['perms_granted'] = '

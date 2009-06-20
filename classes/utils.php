@@ -423,13 +423,7 @@ class Utils
 	public static function crypt( $password, $hash = NULL )
 	{
 		if ( $hash == NULL ) {
-			// encrypt
-			if ( function_exists( 'hash' ) ) { // PHP >= 5.1.2
-				return self::ssha512( $password, $hash );
-			}
-			else {
-				return self::ssha( $password, $hash );
-			}
+			return self::ssha512( $password, $hash );
 		}
 		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
 			// verify
@@ -1051,6 +1045,35 @@ class Utils
 	{
 		$string = base64_decode(strtr($string, '-_~', '+/='));
 	    return $string;
+	}
+	
+	/**
+	 * Return the port used for a specific URL scheme
+	 * 
+	 * @param string $scheme The scheme in question
+	 * @return integer the port used for teh scheme
+	 */
+	public static function scheme_ports( $scheme = null )
+	{
+		$scheme_ports = array(
+			'ftp' => 21,
+			'ssh' => 22,
+			'telnet' => 23,
+			'http' => 80,
+			'pop3' => 110,
+			'nntp' => 119,
+			'news' => 119,
+			'irc' => 194,
+			'imap3' => 220,
+			'https' => 443,
+			'nntps' => 563,
+			'imaps' => 993,
+			'pop3s' => 995,
+		);
+		if(is_null($scheme)) {
+			return $scheme_ports;
+		}
+		return $scheme_ports[$scheme];
 	}
 
 }

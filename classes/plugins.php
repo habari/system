@@ -141,6 +141,10 @@ class Plugins
 
 		$filtersets = array();
 		if(!isset(self::$hooks['theme'][$hookname])) {
+			if(substr($hookname, -6) != '_empty') {
+				array_unshift($filter_args, $hookname . '_empty');
+				return call_user_func_array(array('Plugins', 'theme'), $filter_args);
+			}
 			return array();
 		}
 
@@ -162,6 +166,10 @@ class Plugins
 				}
 				$return[$module] = call_user_func_array( $filter, $callargs );
 			}
+		}
+		if(count($return) == 0 && substr($hookname, -6) != '_empty') {
+			array_unshift($filter_args, $hookname . '_empty');
+			$result = call_user_func_array(array('Plugins', 'theme'), $filter_args);
 		}
 		array_unshift($filter_args, 'theme_call_' . $hookname, $return);
 		$result = call_user_func_array(array('Plugins', 'filter'), $filter_args);
@@ -315,6 +323,26 @@ class Plugins
 	{
 		$class = self::class_from_filename($file);
 		return self::load($class, $activate);
+	}
+	
+	
+	/**
+	 * Return the info XML for a plugin based on a filename
+	 * 
+	 * @param string $file The filename of the plugin file
+	 * @return SimpleXMLElement The info structure for the plugin, or null if no info could be loaded
+	 */
+	public static function load_info( $file )
+	{
+		$info = null;
+		$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $file);
+		if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
+			$info = new SimpleXMLElement( $xml_content );
+			if($info->getName() != 'pluggable') {
+				$info = null;
+			}					
+		}
+		return $info;
 	}
 	
 	public static function load( $class, $activate = true )
@@ -473,9 +501,14 @@ class Plugins
 	public static function is_loaded( $name, $version = NULL )
 	{
 		foreach ( self::$plugins as $plugin ) {
-			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || strtolower($plugin->info->guid) == strtolower($name)) {
+			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || (isset($plugin->info->guid) && strtolower($plugin->info->guid) == strtolower($name))) {
 				if ( isset( $version ) ) {
-					return version_compare( $plugin->info->version, $version, '>=' );
+					if(isset($plugin->info->version)) {
+						return version_compare( $plugin->info->version, $version, '>=' );
+					}
+					else {
+						return $version == NULL;
+					}
 				}
 				else {
 					return true;

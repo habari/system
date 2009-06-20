@@ -454,10 +454,6 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
-		// no tags? then let's get out'a'here
-		if (count($this->tags) == 0) {
-			return true;
-		}
 		/*
 		 * First, let's clean the incoming tag text array, ensuring we have
 		 * a unique set of tag texts and slugs.
@@ -915,6 +911,55 @@ class Post extends QueryRecord implements IsContent
 
 		// Let plugins alter this form
 		Plugins::act('form_publish', $form, $this, $context);
+
+		// Return the form object
+		return $form;
+	}
+	
+	public function comment_form($context = 'public')
+	{
+		$form = new FormUI('comment-' . $context);
+		$form->class[] = $context;
+		$form->class[] = 'commentform';
+		$form->set_option( 'form_action',  URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
+
+		// Create the Name field
+		$form->append('text', 'commenter', 'null:null', _t('Name <span class="required">*Required</span>'), 'formcontrol_text')->add_validator('validate_required', _t('The Name field value is required'))->id = 'name';
+		$form->commenter->tabindex = 1;
+
+		// Create the Email field
+		$form->append('text', 'email', 'null:null', _t('Email'), 'formcontrol_text')->add_validator('validate_email', _t('The Email field value must be a valid email address'))->id = 'email';
+		$form->email->tabindex = 2;
+		if(Options::get('comments_require_id') == 1) {
+			$form->email->caption = _t('Email <span class="required">*Required</span>');
+		}
+
+		// Create the URL field
+		$form->append('text', 'url', 'null:null', _t('Website'), 'formcontrol_text')->add_validator('validate_url', _t('The Web Site field value must be a valid URL'))->id = 'url';
+		$form->url->tabindex = 3;
+
+		// Create the Comment field
+		$form->append('text', 'content', 'null:null', _t('Comment'), 'formcontrol_textarea')->add_validator('validate_required', _t('The Content field value is required'))->id = 'content';
+		$form->content->tabindex = 4;
+		$form->content->id = 'content';
+
+		// Create the Submit button
+		$form->append('submit', 'submit', _t('Submit'), 'formcontrol_submit');
+		$form->submit->tabindex = 5;
+
+		// Add required hidden controls
+		/*
+		$form->append('hidden', 'content_type', 'null:null');
+		$form->content_type->value = $this->content_type;
+		$form->append('hidden', 'post_id', 'null:null');
+		$form->post_id->id = 'id';
+		$form->post_id->value = $this->id;
+		$form->append('hidden', 'slug', 'null:null');
+		$form->slug->value = $this->slug;
+		*/
+
+		// Let plugins alter this form
+		Plugins::act('form_comment', $form, $this, $context);
 
 		// Return the form object
 		return $form;

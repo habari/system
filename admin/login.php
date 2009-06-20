@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('scripts'); ?>/jquery-ui-1.7.1.custom.min.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('scripts'); ?>/jquery-ui.min.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script>
 
@@ -43,14 +43,15 @@
 					</p>
 					<?php Plugins::act( 'theme_loginform_controls' ); ?>
 					<p>
-						<input class="submit" type="submit" value="<?php _e('Login'); ?>">
+						<input class="submit" type="submit" name="submit_button" value="<?php _e('Login'); ?>">
 					</p>
+					
 					<p id="password_utils">
-						<a href="#" onclick="if($('#habari_username').val() ==''){alert('Please fill in the name field, and click again.');}else{window.location='<?php URL::out('user', array('page'=>'password_request')); ?>?username=' +$('#habari_username').val();}"><?php _e('Forgot your password?'); ?></a>
+						<input class="submit" type="submit" name="submit_button" value="<?php _e('Reset password'); ?>">
 					</p>
 
 				</form>
-     			<?php Plugins::act( 'theme_loginform_after' ); ?>
+				<?php Plugins::act( 'theme_loginform_after' ); ?>
 		</div>
 
 	</div>

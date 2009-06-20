@@ -13,24 +13,6 @@
 class Undelete extends Plugin
 {
 	/**
-	 * function info
-	 * Returns information about this plugin
-	 * @return array Plugin info array
-	 **/
-	function info()
-	{
-		return array (
-			'name' => 'Undelete',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'version' => '1.1.alpha',
-			'description' => 'Stores deleted items in a virtual trashcan to support undelete functionality.',
-			'license' => 'Apache License 2.0',
-		);
-	}
-
-	/**
 	 * function action_plugin_activation
 	 * adds the "deleted" status type to the poststatus table
 	 * when this plugin is activated.

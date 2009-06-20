@@ -23,6 +23,8 @@ class DatabaseConnection
 	 * @var array tables Habari knows about
 	 */
 	private $tables = array(
+		'blocks',
+		'blocks_areas',
 		'commentinfo',
 		'comments',
 		'crontab',
@@ -39,6 +41,7 @@ class DatabaseConnection
 		'poststatus',
 		'posttype',
 		'rewrite_rules',
+		'scopes',
 		'sessions',
 		'tag2post',
 		'tags',
@@ -86,9 +89,6 @@ class DatabaseConnection
 		if ( isset ( Config::get( 'db_connection' )->prefix ) ) {
 			$prefix = Config::get( 'db_connection' )->prefix;
 		}
-		else if ( isset( $_POST['table_prefix'] ) ) {
-			$prefix = $_POST['table_prefix'];
-		}
 		else {
 			$prefix = $this->prefix;
 		}
@@ -111,27 +111,10 @@ class DatabaseConnection
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{
-		try {
 			$this->pdo = new PDO( $connect_string, $db_user, $db_pass );
 			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
 			$this->load_tables();
 			return true;
-		}
-		catch( PDOException $e ) {
-			// Error template. 
-			$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>"; 
-
-			// Format page with localized messages. 
-			$error_page = sprintf($error_template, 
-			_t("Habari General Error"), # page title 
-			_t("An error occurred"), # H1 tag 
-			_t("Unable to connect to database.") # Error message. 
-			); 
-
-			// Set correct HTTP header and die. 
-			header('HTTP/1.1 500 Internal Server Error'); 
-			die($error_page);
-		}
 	}
 
 	/**
@@ -259,7 +242,7 @@ class DatabaseConnection
 		// Allow plugins to modify the query after it has been processed
 		$query = Plugins::filter( 'query_postprocess', $query, $args );
 
-		if ( $this->pdo_statement = $this->pdo->prepare( $query ) ) {
+		if ( $this->pdo_statement = $this->pdo->prepare( $query, array(PDO::ATTR_EMULATE_PREPARES => true) ) ) {
 			if ( $this->fetch_mode == PDO::FETCH_CLASS ) {
 				/* Try to get the result class autoloaded. */
 				if ( ! class_exists( strtolower( $this->fetch_class_name ) ) ) {
@@ -334,7 +317,7 @@ class DatabaseConnection
 		$query.= ' )';
 		$query = $this->sql_t( $query, $args );
 
-		if ( $pdo_statement = $pdo->prepare( $query ) ) {
+		if ( $pdo_statement = $pdo->prepare( $query, array(PDO::ATTR_EMULATE_PREPARES => true) ) ) {
 			/* If we are profiling, then time the query */
 			if ( $this->keep_profile ) {
 				$profile = new QueryProfile( $query );

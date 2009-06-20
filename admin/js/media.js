@@ -90,9 +90,9 @@ habari.media = {
 					spinner.stop();
 
 					// When first opened, load the first directory automatically, but only if there are no files in the root
-					if ($('.mediaphotos .media', container).length == 0 && $('.media_dirlevel:first-child li.active', container).length == 0) {
-						$('.media_dirlevel:last-child li:first-child', container).click();
-					}
+//					if ($('.mediaphotos .media', container).length == 0 && $('.media_dirlevel:first-child li.active', container).length == 0) {
+//						$('.media_dirlevel:last-child li:first-child', container).click();
+//					}
 
 					$('.media img').addClass('loading');
 

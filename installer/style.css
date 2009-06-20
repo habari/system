@@ -165,7 +165,7 @@ div.javascript-disabled {
 	}
 
 .inputfield .warning {
-	display: none;
+	display: block;
 	padding: 3px 45px 0px 145px;
 	line-height: 120%;
 	text-align: left;

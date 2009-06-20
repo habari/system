@@ -108,7 +108,8 @@ installer.mysql = {
 						host: $('#mysqldatabasehost').val(),
 						database: $('#mysqldatabasename').val(),
 						user: $('#mysqldatabaseuser').val(),
-						pass: $('#mysqldatabasepass').val()
+						pass: $('#mysqldatabasepass').val(),
+						table_prefix: $('#tableprefix').val()
 					},
 					success: function(xml) {
 						$('#installerror').fadeOut();
@@ -133,7 +134,7 @@ installer.mysql = {
 				installer.mysql.validDBCredentials();
 			}
 		} else {
-			$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser').each(function() {
+			$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser, #tableprefix').each(function() {
 				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
 			});
 			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
@@ -142,7 +143,7 @@ installer.mysql = {
 	},
 	
 	validDBCredentials: function() {
-		$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser').each(function() {
+		$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser, #tableprefix').each(function() {
 			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			$(this).parents('.installstep').addClass('done')
 		});
@@ -164,7 +165,8 @@ installer.pgsql = {
 						host: $('#pgsqldatabasehost').val(),
 						database: $('#pgsqldatabasename').val(),
 						user: $('#pgsqldatabaseuser').val(),
-						pass: $('#pgsqldatabasepass').val()
+						pass: $('#pgsqldatabasepass').val(),
+						table_prefix: $('#tableprefix').val()
 					},
 					success: function(xml) {
 						$('#installerror').fadeOut();
@@ -189,7 +191,7 @@ installer.pgsql = {
 				installer.pgsql.validDBCredentials();
 			}
 		} else {
-			$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser').each(function() {
+			$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser, #tableprefix').each(function() {
 				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
 			});
 			$('.installstep:eq(1)').removeClass('done');
@@ -199,7 +201,7 @@ installer.pgsql = {
 	},
 	
 	validDBCredentials: function() {
-		$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser').each(function() {
+		$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser, #tableprefix').each(function() {
 			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			$(this).parents('.installstep').addClass('done')
 		});

@@ -179,7 +179,6 @@ a img {
 	list-style-position: outside;
 	margin-bottom: 0;
 	top: -5px;
-
 	z-index: -1; /* Even with the main menu (its parent), so shadows don't get messed up */
 }
 
@@ -237,10 +236,12 @@ a img {
 
 #menulist li.submenu li:first-child, #menulist li.submenu li:first-child a {
 	-moz-border-radius-topright: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 
 #menulist li.submenu li:last-child, #menulist li.submenu li:last-child a {
 	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-right-radius: 5px;
 }
 
 #menulist li.carrot a.top, #menulist li:hover a.top, #menulist li a:hover, #menulist li li.carrot a {
@@ -440,7 +441,7 @@ a img {
 }
 
 .item.selected {
-    background-color:#fffde2;
+	background-color:#fffde2;
 }
 
 .item.hide {
@@ -659,10 +660,15 @@ p:hover > label.abovecontent {
 .button, #save input, button {
 	min-width: 110px;
 	margin-left: 10px;
+	float: right;
+}
+
+body.page-comments .button{
+	float:none;
 }
 
 .button.delete, .formcontrol.delete input {
-	float: right;
+	float: left;
 	}
 
 .button#delete {
@@ -750,24 +756,24 @@ body.page-publish .buttons input {
 }
 
 #tags_list ul {
-    text-align: left;
-    margin-right: 50px;
-    margin-left: 10px;
-    }
+	text-align: left;
+	margin-right: 50px;
+	margin-left: 10px;
+	}
 
 #tags_list ul li {
-    font-family: "Arial", san-serif;
-    font-size: 0.8em;
-    display: inline;
-    line-height: 2.0em;
-    padding: 3px;
-    color: #ccc;
-    cursor: pointer;
-    }
+	font-family: "Arial", san-serif;
+	font-size: 0.8em;
+	display: inline;
+	line-height: 2.0em;
+	padding: 3px;
+	color: #ccc;
+	cursor: pointer;
+	}
 
 #tags_list ul li.clicked {
-    background: #000;
-    }
+	background: #000;
+	}
 
 .viewpost {
 	float: right;
@@ -999,8 +1005,23 @@ body.page-publish .buttons input {
 
 .media_panel {
 	min-height: 200px;
+	margin: 10px;
 }
 
+.media_panel #submit
+{
+	margin: 10px auto;
+}
+
+.media_panel p
+{
+	padding: 5px 0px;
+}
+
+.media_panel #simple_upload_frame
+{
+	display:none;
+}
 
 /*-- MEDIA ACTION DROPBUTTONS */
 
@@ -1282,7 +1303,7 @@ body.page-publish .buttons input {
 
 /* Dashmodules Tables */
 
-.modules table  {
+.modules table	{
 	width: 100%;
 }
 
@@ -1628,16 +1649,16 @@ body.page-themes #page .dropbutton {
 }
 
 body.page-themes .thumb img {
-    float: left;
-    margin: 0 0 10px 0;
-    padding: 4px;
-    width: 200px;
-    display: block;
-    overflow: hidden;
-    background: #f2f2f2;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border: 1px solid #e7e7e7;
+	float: left;
+	margin: 0 0 10px 0;
+	padding: 4px;
+	width: 200px;
+	display: block;
+	overflow: hidden;
+	background: #f2f2f2;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border: 1px solid #e7e7e7;
 }
 
 .thumb, .description {
@@ -1722,6 +1743,46 @@ body.page-themes .thumb img {
 #themeconfigure form .formcontrol.submit input {
 	width: auto;
 	color: #000000;
+}
+
+#block_add {
+	float: left;
+	width: 66%;
+	border-right: 1px solid #666666;
+}
+
+#scope_container {
+	float: left;
+	color: white;
+	padding-left: 10px;
+	width: 30%;
+}
+
+#page #scope_container h3 {
+	color: white;
+}
+
+#block_instances {
+	height: 200px;
+}
+
+.area_drop {
+	padding-bottom: 1em;
+}
+
+.area_drop.drop_area_active {
+	border: 1px dotted #444444;
+}
+
+.area_drop.drop_area_hover,
+.block_drop {
+	background-color: #222222;
+	width: 100%;
+	height: 1em;
+}
+
+.area_block {
+	cursor: n-resize;
 }
 
 /*- OPTIONS PAGE */
@@ -1827,7 +1888,7 @@ body.page-Manage .state {
 	padding: 3px 0 5px;
 }
 
-.special_search  a {
+.special_search	 a {
 	color: #666;
 }
 */
@@ -2175,10 +2236,11 @@ body.page-tags .container .selected label {
 	color: #fb430f;
 }
 
-body.page-tags .container sup {
+body.page-tags .item.tag .count {
 	color: #aaa;
 	font-size: 9px;
 	margin-left: 2px;
+	vertical-align: super;
 }
 
 body.page-tags #tag_collection input {
@@ -2186,6 +2248,7 @@ body.page-tags #tag_collection input {
 }
 
 body.page-tags #tag_collection .item {
+	display: inline;
 	background: transparent;
 	border: none;
 	margin: 0;
@@ -2242,7 +2305,7 @@ ul.tabs li {
 }
 
 * html .tabs li { display: inline; }  /* for IE 6 */
-* + html .tabs li { display: inline; }  /* for IE 7 */
+* + html .tabs li { display: inline; }	/* for IE 7 */
 
 ul.tabs li a {
 	float: left;
@@ -2292,8 +2355,17 @@ ul.tabs li.ui-tabs-selected.last-child {
 	padding: 0;
 }
 
+.page-themes #page .pagesplitter {
+	clear: left;
+	margin: auto -40px;
+}
+
 .splitterinside {
 	padding: 25px 0 20px;
+}
+
+.page-themes .splitterinside {
+	padding: 25px 40px 20px;
 }
 
 .splitterinside * a {
@@ -2344,9 +2416,9 @@ ul.tabs li.ui-tabs-selected.last-child {
 
 
 /*- CLEAR
-   Clearing floats without extra markup
-   Based on How To Clear Floats Without Structural Markup by PiE
-   [http://www.positioniseverything.net/easyclearing.html] */
+	Clearing floats without extra markup
+	Based on How To Clear Floats Without Structural Markup by PiE
+	[http://www.positioniseverything.net/easyclearing.html] */
 
 .clear { display: inline-block; }
 .clear:after, .container:after {

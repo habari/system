@@ -28,35 +28,93 @@ class FeedbackHandler extends ActionHandler
 		);
 
 		// We need to get the post anyway to redirect back to the post page.
-		$post = Post::get( array( 'id'=>$this->handler_vars['id'] ) );
+		$post = Post::get( array( 'id' => $this->handler_vars['id'] ) );
 		if( !$post ) {
 			// trying to comment on a non-existent post?  Weirdo.
 			header('HTTP/1.1 403 Forbidden', true, 403);
 			die();
 		}
 
-		// make sure all our default values are set so we don't throw undefined index errors
-		foreach ( $defaults as $k => $v ) {
-			if ( !isset( $this->handler_vars[ $k ] ) ) {
-				$this->handler_vars[ $k ] = $v;
+		$form = $post->comment_form();
+		$form->get(null, false);
+		// Was this a FormUI form, or a regular comment form?
+		if($form->submitted) {
+			if($form->success) {
+				$this->add_comment(
+					$post->id,
+					$form->commenter->value,
+					$form->email->value,
+					$form->url->value,
+					$form->content->value
+				);
 			}
+			else {
+				Session::error(_t('There was a problem submitting your comment.'));
+				foreach($form->validate() as $error) {
+					Session::error($error);
+				}
+				$form->bounce();
+			}
+		}
+		else {
+			// make sure all our default values are set so we don't throw undefined index errors
+			foreach ( $defaults as $k => $v ) {
+				if ( !isset( $this->handler_vars[ $k ] ) ) {
+					$this->handler_vars[ $k ] = $v;
+				}
+			}
+
+			$this->add_comment(
+				$this->handler_vars['id'],
+				$this->handler_vars['name'],
+				$this->handler_vars['email'],
+				$this->handler_vars['url'],
+				$this->handler_vars['content']
+			);
+
+		}
+	}
+
+	/**
+	 * Add a comment to the site
+	 * 
+	 * @param mixed $post A Post object instance or Post object id
+	 * @param string $name The commenter's name
+	 * @param string $email The commenter's email address
+	 * @param string $url The commenter's website URL
+	 * @param string $content The comment content
+	 */
+	function add_comment($post, $name = null, $email = null, $url = null, $content = null)
+	{
+		if(is_numeric($post)) {
+			$post = Post::get( array( 'id' => $post ) );
+			if( !$post ) {
+				// trying to comment on a non-existent post?  Weirdo.
+				header('HTTP/1.1 403 Forbidden', true, 403);
+				die();
+			}
+		}
+		elseif(!$post instanceof Post) {
+			// Not sure what you're trying to pull here, but that's no good
+			header('HTTP/1.1 403 Forbidden', true, 403);
+			die();
 		}
 
 		// let's do some basic sanity checking on the submission
-		if ( ( 1 == Options::get( 'comments_require_id' ) ) && ( empty( $this->handler_vars['name'] ) || empty( $this->handler_vars['email'] ) ) ) {
+		if ( ( 1 == Options::get( 'comments_require_id' ) ) && ( empty( $name ) || empty( $email ) ) ) {
 			Session::error(_t( 'Both name and e-mail address must be provided.' ) );
 		}
 
-		if ( empty( $this->handler_vars['content'] ) ) {
+		if ( empty( $content ) ) {
 			Session::error( _t('You did not provide any content for your comment!') );
 		}
 
 		if ( Session::has_errors() ) {
 			// save whatever was provided in session data
-			Session::add_to_set('comment', $this->handler_vars['name'], 'name');
-			Session::add_to_set('comment', $this->handler_vars['email'], 'email');
-			Session::add_to_set('comment', $this->handler_vars['url'], 'url');
-			Session::add_to_set('comment', $this->handler_vars['content'], 'content');
+			Session::add_to_set('comment', $name, 'name');
+			Session::add_to_set('comment', $email, 'email');
+			Session::add_to_set('comment', $url, 'url');
+			Session::add_to_set('comment', $content, 'content');
 			// now send them back to the form
 			Utils::redirect( $post->permalink . '#respond' );
 		}
@@ -69,13 +127,12 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		/* Sanitize data */
-		foreach ( $defaults as $k => $v ) {
-			$this->handler_vars[$k] = InputFilter::filter( $this->handler_vars[$k] );
+		foreach ( array('name', 'url', 'email', 'content') as $k ) {
+			$$k = InputFilter::filter( $$k );
 		}
 
 		/* Sanitize the URL */
-		if (!empty($this->handler_vars['url'])) {
-			$url = $this->handler_vars['url'];
+		if (!empty($url)) {
 			$parsed = InputFilter::parse_url( $url );
 			if ( $parsed['is_relative'] ) {
 				// guess if they meant to use an absolute link
@@ -97,21 +154,20 @@ class FeedbackHandler extends ActionHandler
 				// http:moeffju.net/blog/ -> http://moeffju.net/blog/
 				$url = InputFilter::glue_url( $parsed );
 			}
-			$this->handler_vars['url'] = $url;
 		}
-		if ( preg_match( '/^\p{Z}*$/u', $this->handler_vars['content'] ) ) {
+		if ( preg_match( '/^\p{Z}*$/u', $content ) ) {
 			Session::error( _t( 'Comment contains only whitespace/empty comment' ) );
 			Utils::redirect( $post->permalink );
 		}
 
 		/* Create comment object*/
 		$comment = new Comment( array(
-			'post_id'	=> $this->handler_vars['id'],
-			'name' => $this->handler_vars['name'],
-			'email' => $this->handler_vars['email'],
-			'url' => $this->handler_vars['url'],
+			'post_id'	=> $post->id,
+			'name' => $name,
+			'email' => $email,
+			'url' => $url,
 			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
-			'content'	=> $this->handler_vars['content'],
+			'content'	=> $content,
 			'status' =>	Comment::STATUS_UNAPPROVED,
 			'date' => HabariDateTime::date_create(),
 			'type' => Comment::COMMENT,
@@ -145,10 +201,11 @@ class FeedbackHandler extends ActionHandler
 			// if no cookie exists, we should set one
 			// but only if the user provided some details
 			$cookie = 'comment_' . Options::get('GUID');
-			if ( ( ! isset( $_COOKIE[$cookie] ) )
-				&& ( ! empty( $this->handler_vars['name'] )
-					|| ! empty( $this->handler_vars['email'] )
-					|| ! empty( $this->handler_vars['url'] )
+			if ( ( ! User::identify()->loggedin )
+				&& ( ! isset( $_COOKIE[$cookie] ) )
+				&& ( ! empty( $name )
+					|| ! empty( $email )
+					|| ! empty( $url )
 				)
 			)
 			{
@@ -161,5 +218,6 @@ class FeedbackHandler extends ActionHandler
 		// Return the commenter to the original page.
 		Utils::redirect( $post->permalink . $anchor );
 	}
+
 }
 ?>

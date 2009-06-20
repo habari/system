@@ -173,6 +173,7 @@ CREATE TABLE {$prefix}terms (
   mptt_left INTEGER NOT NULL,
   mptt_right INTEGER NOT NULL
 );
+CREATE UNIQUE INDEX IF NOT EXISTS ix_mptt ON {$prefix}terms(mptt_left, mptt_right, vocabulary_id);
 
 CREATE TABLE {$prefix}vocabularies (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -225,4 +226,28 @@ CREATE TABLE {$prefix}user_token_permissions (
   token_id INTEGER NOT NULL,
   access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (user_id, token_id)
+);
+
+CREATE TABLE {$prefix}scopes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  criteria TEXT NOT NULL,
+	description TEXT NULL,
+	priority TINYINT UNSIGNED NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS id ON {$prefix}group_token_permissions(group_id,token_id);
+
+CREATE TABLE {$prefix}blocks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  data TEXT NULL
+);
+
+CREATE TABLE {$prefix}blocks_areas (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  block_id INTEGER NOT NULL,
+  area VARCHAR(255) NOT NULL,
+  scope_id INTEGER NOT NULL,
+	display_order INTEGER NOT NULL DEFAULT 0
 );

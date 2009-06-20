@@ -2,23 +2,6 @@
 
 class SimplePrivatePosts extends Plugin
 {
-	/**
-	 * function info
-	 * Returns information about this plugin
-	 * @return array Plugin info array
-	 */
-	function info()
-	{
-		return array (
-			'name' => 'Simple Private Posts',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'version' => '1.0',
-			'description' => 'Mark posts as private so that only authenticated users who have read access to the "private" token can read them',
-			'license' => 'Apache License 2.0',
-		);
-	}
 
 	public function help()
 	{

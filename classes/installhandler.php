@@ -147,6 +147,12 @@ class InstallHandler extends ActionHandler
 			$this->display('db_setup');
 		}
 
+		// check whether prefix is valid
+		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
+			$this->theme->assign('form_errors', array('table_prefix' => _t('Allowed characters are A-Z, a-z and "_".')));
+			$this->display('db_setup');
+		}
+
 		// try to write the config file
 		if (! $this->write_config_file()) {
 			$this->theme->assign('form_errors', array('write_file'=>_t('Could not write config.php file...')));
@@ -202,16 +208,13 @@ class InstallHandler extends ActionHandler
 			$error = '';
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
-				// instantiate this plugin
-				// in order to get its info()
-				include_once( $file );
-				$class = Plugins::class_from_filename($file);
-				$pluginobj = Plugins::load( $class, false );
+				// get this plugin's info()
 				$plugin['active'] = false;
 				$plugin['verb'] = _t( 'Activate' );
 				$plugin['actions'] = array();
-				$plugin['info'] = $pluginobj->info;
+				$plugin['info'] = Plugins::load_info( $file );
 				$plugin['recommended'] = in_array( basename($file), $recommended_list );
+
 			}
 			else {
 				// We can't get the plugin info due to an error
@@ -239,6 +242,7 @@ class InstallHandler extends ActionHandler
 		$this->theme->assign('plugins', $this->get_plugins());
 
 		$this->theme->display($template_name);
+		
 		exit;
 	}
 
@@ -377,7 +381,7 @@ class InstallHandler extends ActionHandler
 		$db_schema = $this->handler_vars['db_schema'];
 		$db_user = $this->handler_vars['db_user'];
 		$db_pass = $this->handler_vars['db_pass'];
-
+		
 		switch($db_type) {
 		case 'mysql':
 		case 'pgsql':
@@ -402,6 +406,11 @@ class InstallHandler extends ActionHandler
 				return false;
 			}
 			break;
+		}
+		
+		if ( isset( $this->handler_vars['table_prefix'] ) ) {
+			// store prefix in the Config singleton so DatabaseConnection can access it
+			Config::set( 'db_connection', array( 'prefix' => $this->handler_vars['table_prefix'], ) );
 		}
 
 		if (! $this->connect_to_existing_db()) {
@@ -1408,6 +1417,32 @@ class InstallHandler extends ActionHandler
 		Options::set('active_plugins', $new_plugins);
 	}
 	
+	private function upgrade_db_post_3539()
+	{
+		
+		// get the global option
+		$hide = Options::get( 'dashboard__hide_spam_count' );
+		
+		// if it was set to hide, get all our available users and set their info values instead
+		if ( $hide == true ) {
+			
+			$users = Users::get();
+			
+			foreach ( $users as $user ) {
+				
+				$user->info->dashboard_hide_spam_count = 1;
+				$user->update();
+				
+			}
+			
+		}
+		
+		Options::delete( 'dashboard__hide_spam_count' );
+		
+		return true;
+		
+	}
+	
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
@@ -1433,6 +1468,12 @@ class InstallHandler extends ActionHandler
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#mysqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
+		}
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error = $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#tableprefix' );
+			$xml_error->addChild( 'message', _t('Allowed characters are A-Z, a-z and "_".') );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
@@ -1468,7 +1509,7 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: text/xml");
+		header("Content-type: application/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
 	}
@@ -1498,6 +1539,12 @@ class InstallHandler extends ActionHandler
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
+		}
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+			$xml->addChild( 'status', 0 );
+			$xml_error = $xml->addChild( 'error' );
+			$xml_error->addChild( 'id', '#tableprefix' );
+			$xml_error->addChild( 'message', _t('Allowed characters are A-Z, a-z and "_".') );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
@@ -1533,7 +1580,7 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: text/xml");
+		header("Content-type: application/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
 	}
@@ -1596,7 +1643,7 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: text/xml");
+		header("Content-type: application/xml");
 		header("Cache-Control: no-cache");
 		print $xml;
 	}

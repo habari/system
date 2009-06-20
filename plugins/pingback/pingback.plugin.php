@@ -10,23 +10,6 @@ class Pingback extends Plugin
 {
 
 	/**
-	 * Provide plugin info to the system
-	 */
-	public function info()
-	{
-		return array(
-			'name' => 'Pingback',
-			'version' => '1.0.1',
-			'url' => 'http://habariproject.org/',
-			'author' =>	'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Adds support Pingback 1.0 methods to the XML-RPC server.',
-			'copyright' => '2008'
-		);
-	}
-
-	/**
 	 * Register the Pingback event type with the event log
 	 */
 	public function action_plugin_activation( $file )
@@ -154,7 +137,7 @@ class Pingback extends Plugin
 			// encoding is converted into internal encoding.
 			// @todo check BOM at beginning of file before checking for a charset attribute
 			$habari_encoding = MultiByte::hab_encoding();
-			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) !== FALSE && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
+			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
 				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $matches[1] );
 				if ( $ret !== FALSE ) {
 					$source_contents = $ret;

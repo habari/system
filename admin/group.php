@@ -12,7 +12,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" autosave="habarisettings" results="10" tabindex="2">
+		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" tabindex="2">
 	</span>
 </div>
 
@@ -122,10 +122,10 @@
 
 <div class="container controls transparent">
 	<span class="pct50">
-		<input type="submit" value="<?php _e('Apply'); ?>" class="button save">
+		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
 	</span>
 	<span class="pct50">
-		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
+		<input type="submit" value="<?php _e('Apply'); ?>" class="button save">
 	</span>
 
 	<input type="hidden" name="id" id="id" value="<?php echo $group->id; ?>">

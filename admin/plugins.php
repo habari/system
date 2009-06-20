@@ -16,7 +16,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" id="search" placeholder="<?php _e('search plugins'); ?>" autosave="habarisettings" results="10" tabindex="2">
+		<input type="search" id="search" placeholder="<?php _e('search plugins'); ?>" tabindex="2">
 	</span>
 </div>
 
@@ -38,7 +38,7 @@ if(isset($config_plugin)):
 			<ul class="dropbutton">
 
 <?php foreach( $config_plugin['actions'] as $plugin_action => $action ) : ?>
-						<li><a href="<?php echo $action['url']; ?>"><?php echo $action['caption']; ?></a></li>
+						<li><a href="<?php echo htmlspecialchars( $action['url'], ENT_COMPAT, 'UTF-8' ); ?>"><?php echo $action['caption']; ?></a></li>
 <?php endforeach; ?>
 
 			</ul>
@@ -55,11 +55,13 @@ if(isset($config_plugin)):
 		<p class="description"><?php echo $config_plugin['info']->description; ?></p>
 
 		<div id="pluginconfigure">
+			<?php Plugins::act( 'plugin_ui', $configure, $helpaction ); ?>
 			<?php Plugins::act( 'plugin_ui', $configure, $configaction ); ?>
 			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('Close'); ?></a>
 		</div>
 
 	</div>
+	
 </div>
 <?php endif; ?>
 
@@ -70,7 +72,8 @@ if(isset($config_plugin)):
 
 	<h2><?php _e('Active Plugins'); ?></h2>
 
-	<?php foreach($active_plugins as $plugin) { if($plugin['debug']) { ?>
+	<?php foreach($active_plugins as $plugin) : ?>
+	<?php if($plugin['debug']) : ?>
 	<div class="item plugin clear">
 		<div class="head">
   			<p><?php printf( _t('The plugin file %s had syntax errors and could not load.'), $plugin['file'] ); ?></p>
@@ -81,45 +84,59 @@ if(isset($config_plugin)):
 		</div>
 	</div>
 
-	<?php } else { ?>
+	<?php elseif(!isset($plugin['info'])): ?>
+	<div class="item plugin clear">
+		<div class="head">
+			<p><?php printf( _t('The plugin file %s is a legacy plugin, and does not include an XML info file.'), $plugin['file'] ); ?></p>
+		</div>
+	</div>
+	<?php else: ?>
 
 	<div class="item plugin clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
-			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
+			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> 
+<?php 
+$comma = ' '; 
+foreach($plugin['info']->author as $author) { 
+	echo $comma;
+	echo isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
+	$comma = ' &middot; ';
+}
+?>
 			<?php if( isset($plugin['help']) ): ?>
 			<a class="help" href="<?php echo $plugin['help']['url']; ?>">?</a>
 			<?php endif; ?>
 			<ul class="dropbutton">
 
 <?php foreach( $plugin['actions'] as $plugin_action => $action ) : ?>
-						<li><a href="<?php echo $action['url']; ?>"><?php echo $action['caption']; ?></a></li>
+						<li><a href="<?php echo htmlspecialchars( $action['url'], ENT_COMPAT, 'UTF-8' ); ?>"><?php echo $action['caption']; ?></a></li>
 <?php endforeach; ?>
 
 
 			</ul>
 
 
-			<?php if( isset( $plugin['update'] ) ) { ?>
+			<?php if( isset( $plugin['update'] ) ) : ?>
 			<ul class="dropbutton alert">
 				<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
 			</ul>
-			<?php } ?>
+			<?php endif; ?>
 
 		</div>
 
 		<p class="description"><?php echo $plugin['info']->description; ?></p>
 
-		<?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ) { ?>
+		<?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ): ?>
 		<div id="pluginconfigure">
 			<?php Plugins::act( 'plugin_ui', $configure, $configaction ); ?>
 			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('Close'); ?></a>
 		</div>
-		<?php } ?>
-
-	<?php } ?>
+		<?php endif; ?>
 	</div>
 
-	<?php } ?>
+	<?php endif; ?>
+
+	<?php endforeach; ?>
 
 </div>
 <?php endif; ?>
@@ -129,7 +146,8 @@ if(isset($config_plugin)):
 
 	<h2><?php _e('Inactive Plugins'); ?></h2>
 
-	<?php foreach($inactive_plugins as $plugin) { if($plugin['debug']) { ?>
+	<?php foreach($inactive_plugins as $plugin) : ?> 
+	<?php	if($plugin['debug']) : ?>
 	<div class="item plugin clear">
 		<div class="head">
 			<p><?php printf( _t('The plugin file %s had syntax errors and could not load.'), $plugin['file'] ); ?></p>
@@ -139,15 +157,20 @@ if(isset($config_plugin)):
 				</ul>
 		</div>
 	</div>
-	<?php } else { ?>
-
+	<?php elseif(!isset($plugin['info'])): ?>
+	<div class="item plugin clear">
+		<div class="head">
+			<p><?php printf( _t('The plugin file %s is missing an XML info file and could not load.'), $plugin['file'] ); ?></p>
+		</div>
+	</div>
+	<?php else: ?>
 	<div class="item plugin clear" id="plugin_<?php echo $plugin['plugin_id']; ?>">
 		<div class="head">
 			<a href="<?php echo $plugin['info']->url; ?>" class="plugin"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <?php echo empty( $plugin['info']->authorurl ) ? $plugin['info']->author : '<a href="' . $plugin['info']->authorurl . '">' . $plugin['info']->author . '</a>'; ?>
 
 			<ul class="dropbutton">
 <?php foreach( $plugin['actions'] as $plugin_action => $action ) : ?>
-						<li><a href="<?php echo $action['url']; ?>"><?php echo $action['caption']; ?></a></li>
+						<li><a href="<?php echo htmlspecialchars( $action['url'], ENT_COMPAT, 'UTF-8' ); ?>"><?php echo $action['caption']; ?></a></li>
 <?php endforeach; ?>
 			</ul>
 
@@ -156,14 +179,22 @@ if(isset($config_plugin)):
 				<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
 			</ul>
 			<?php } ?>
+			<?php if( isset( $plugin['missing'] ) ): ?>
+			<p><?php _e('This plugin cannot be activated because the following features were not present:'); ?></p>
+			<ul>
+			<?php foreach($plugin['missing'] as $feature => $url): ?>
+				<li><?php echo ($url != '') ? sprintf('<a href="%s">%s</a>', $url, $feature) : $feature; ?></li>
+			<?php endforeach; ?>
+			</ul>
+			<?php endif; ?>
 
 		</div>
 
 		<p class="description"><?php echo $plugin['info']->description; ?></p>
 
 	</div>
-	<?php } ?>
-<?php } ?>
+	<?php endif; ?>
+<?php endforeach; ?>
 
 </div>
 <?php endif; ?>

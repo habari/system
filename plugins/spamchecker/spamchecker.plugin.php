@@ -9,23 +9,6 @@
 
 class SpamChecker extends Plugin
 {
-	/**
-	 * function info
-	 * Returns information about this plugin
-	 * @return array Plugin info array
-	 **/
-	function info()
-	{
-		return array (
-			'name' => 'Spam Checker',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'version' => '1.0',
-			'description' => 'Flags as spam obvious comment spam.',
-			'license' => 'Apache License 2.0',
-		);
-	}
 
 	/**
 	 * function act_comment_insert_before
@@ -37,13 +20,12 @@ class SpamChecker extends Plugin
 	 * You can still register functions as hooks without using
 	 * this method, but boy, is it handy.
 	 * @param Comment The comment that will be processed before storing it in the database.
-	 * @return Comment The comment result to store.
 	 **/
 	function action_comment_insert_before ( $comment )
 	{
 		// This plugin ignores non-comments
 		if($comment->type != Comment::COMMENT) {
-			return $comment;
+			return;
 		}
 
 		$spamcheck = array();
@@ -212,7 +194,7 @@ class SpamChecker extends Plugin
 	{
 		// This plugin ignores non-comments
 		if($comment->type != Comment::COMMENT) {
-			return $comment;
+			return $spam_rating;
 		}
 
 		if(!$this->verify_code($handlervars['ccode'], $comment->post_id)) {

@@ -53,10 +53,16 @@ class SocketRequestProcessor implements RequestProcessor
 		$_errstr = '';
 		
 		if ( !isset( $urlbits['port'] ) || $urlbits['port'] == 0 ) {
-			$urlbits['port'] = 80;
+			if ( array_key_exists( $urlbits['scheme'], Utils::scheme_ports() ) ) { 
+				$urlbits['port'] = Utils::scheme_ports($urlbits['scheme']); 
+			} 
+			else { 
+				// todo: Error::raise()? 
+				$urlbits['port'] = 80; 
+			} 
 		}
 		
-		$fp = @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
+		$fp = @fsockopen( $urlbits['scheme'] . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout ); 
 		
 		if ( $fp === FALSE ) {
 			return Error::raise( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),

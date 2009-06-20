@@ -12,68 +12,91 @@ class UserHandler extends ActionHandler
 {
 
 	/**
-	 * Checks a user's credentials, and creates a session for them
+	 * Either just display the login form; or check a user's credentials, and 
+	 * create a session for them; or handle a password reset request.
 	 */
 	public function act_login()
 	{
-		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		$name = $_POST['habari_username'];
-		$pass = $_POST['habari_password'];
-
-		if ( ( NULL != $name ) || ( NULL != $pass ) ) {
-			$user = User::authenticate( $name, $pass );
-
-			if ( ( $user instanceOf User ) && ( FALSE != $user ) ) {
-				/* Successfully authenticated. */
-				// Timestamp last login date and time.
-				$user->info->authenticate_time = date( 'Y-m-d H:i:s' );
-				$user->update();
-
-				// Remove left over expired session error message.
-				if ( Session::has_errors( 'expired_session' ) ) {
-					Session::remove_error( 'expired_session' );
+		// If we're a reset password request, do that.
+		if( isset( $_POST['submit_button']) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
+			Utils::check_request_method( array( 'POST' ) );
+	
+			$name = $this->handler_vars['habari_username'];
+			if( $name !== NULL ) {
+				if( !is_numeric($name) && $user = User::get($name) ) {
+					$hash = Utils::random_password();
+		
+					$user->info->password_reset = md5($hash);
+					$user->info->commit();
+					$message = _t('Please visit %1$s to reset your password.', array(URL::get('user', array('page' => 'password_reset', 'id' => $user->id, 'hash' => $hash))));
+					
+					Utils::mail($user->email, _t('[%1$s] Password reset request for %2$s', array(Options::get('title'), $user->displayname)), $message);
 				}
-
-				$login_session = Session::get_set( 'login' );
-				if ( ! empty( $login_session ) ) {
-					/* Now that we know we're dealing with the same user, transfer the form data so he does not lose his request */
-					if ( ! empty( $login_session['post_data'] ) ) {
-						Session::add_to_set( 'last_form_data', $last_form_data['post'], 'post' );
+				// Moving this inside the check for user existence would allow attackers to test usernames, so don't
+				Session::notice(_t('A password reset request has been sent to the user.'));
+			}
+		}
+		// Back to actual login.
+		else {
+			Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+			$name = $_POST['habari_username'];
+			$pass = $_POST['habari_password'];
+	
+			if ( ( NULL != $name ) || ( NULL != $pass ) ) {
+				$user = User::authenticate( $name, $pass );
+	
+				if ( ( $user instanceOf User ) && ( FALSE != $user ) ) {
+					/* Successfully authenticated. */
+					// Timestamp last login date and time.
+					$user->info->authenticate_time = date( 'Y-m-d H:i:s' );
+					$user->update();
+	
+					// Remove left over expired session error message.
+					if ( Session::has_errors( 'expired_session' ) ) {
+						Session::remove_error( 'expired_session' );
 					}
-					if ( ! empty( $login_session['get_data'] ) ) {
-						Session::add_to_set( 'last_form_data', $last_form_data['get'], 'get' );
-					}
-
-					/* Redirect to the correct admin page */
-					$dest = explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
-					if ( '' == $dest[0] ) {
-						$login_dest = Site::get_url( 'admin' );
+	
+					$login_session = Session::get_set( 'login' );
+					if ( ! empty( $login_session ) ) {
+						/* Now that we know we're dealing with the same user, transfer the form data so he does not lose his request */
+						if ( ! empty( $login_session['post_data'] ) ) {
+							Session::add_to_set( 'last_form_data', $last_form_data['post'], 'post' );
+						}
+						if ( ! empty( $login_session['get_data'] ) ) {
+							Session::add_to_set( 'last_form_data', $last_form_data['get'], 'get' );
+						}
+	
+						/* Redirect to the correct admin page */
+						$dest = explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
+						if ( '' == $dest[0] ) {
+							$login_dest = Site::get_url( 'admin' );
+						}
+						else {
+							// Replace '?' with '&' in $dest[1] before call URL::get()
+							// Therefore calling URL::get() with a query string
+							$dest[1] = str_replace( '?', '&', $dest[1] );
+							$login_dest = URL::get( 'admin', 'page=' . $dest[1] );
+						}
 					}
 					else {
-						// Replace '?' with '&' in $dest[1] before call URL::get()
-						// Therefore calling URL::get() with a query string
-						$dest[1] = str_replace( '?', '&', $dest[1] );
-						$login_dest = URL::get( 'admin', 'page=' . $dest[1] );
+						$login_session = null;
+						$login_dest = Site::get_url( 'admin' );
 					}
+	
+					// filter the destination
+					$login_dest = Plugins::filter( 'login_redirect_dest', $login_dest, $user, $login_session );
+	
+					// finally, redirect to the destination
+					Utils::redirect( $login_dest );
+	
+					return TRUE;
 				}
-				else {
-					$login_session = null;
-					$login_dest = Site::get_url( 'admin' );
-				}
-
-				// filter the destination
-				$login_dest = Plugins::filter( 'login_redirect_dest', $login_dest, $user, $login_session );
-
-				// finally, redirect to the destination
-				Utils::redirect( $login_dest );
-
-				return TRUE;
+	
+				/* Authentication failed. */
+				// Remove submitted password, see, we're secure!
+				$_POST['habari_password'] = '';
+				$this->handler_vars['error'] = _t('Bad credentials');
 			}
-
-			/* Authentication failed. */
-			// Remove submitted password, see, we're secure!
-			$_POST['habari_password'] = '';
-			$this->handler_vars['error'] = _t('Bad credentials');
 		}
 
 		// Display the login form.
@@ -133,29 +156,6 @@ class UserHandler extends ActionHandler
 	protected function display( $template_name )
 	{
 		$this->theme->display($template_name);
-	}
-
-	/**
-	 * Handle requests for a password reset
-	 */
-	public function act_password_request()
-	{
-		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-
-		$name = $this->handler_vars['username'];
-		if( !is_numeric($name) && $user = User::get($name) ) {
-			$hash = Utils::random_password();
-
-			$user->info->password_reset = md5($hash);
-			$user->info->commit();
-			$message = _t('Please visit %1$s to reset your password.', array(URL::get('user', array('page' => 'password_reset', 'id' => $user->id, 'hash' => $hash))));
-
-			Utils::mail($user->email, _t('[%1$s] Password reset request for %2$s', array(Options::get('title'), $user->displayname)), $message);
-		}
-		// Moving this inside the check for user existence would allow attackers to test usernames, so don't
-		Session::notice(_t('A password reset request has been sent to the user.'));
-		// Display the login form.
-		$this->login_form($name);
 	}
 
 	/**

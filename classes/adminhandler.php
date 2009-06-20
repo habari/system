@@ -71,10 +71,10 @@ class AdminHandler extends ActionHandler
 	{
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
 		if(isset($this->handler_vars['content_type'])) {
-			$type = $this->handler_vars['content_type'];
+			$type = Plugins::filter('post_type_display', Post::type_name($this->handler_vars['content_type']), 'singular');
 		}
 		elseif( $page == 'publish' && isset($this->handler_vars['id'] ) ) {
-			$type = Post::get(intval($this->handler_vars['id']))->content_type;
+			$type = Plugins::filter('post_type_display', Post::type_name(Post::get(intval($this->handler_vars['id']))->content_type), 'singular'); 
 		}
 		else {
 			$type = '';
@@ -248,14 +248,6 @@ class AdminHandler extends ActionHandler
 				'label' => _t('System Locale'),
 				'type' => 'text',
 				'helptext' => 'The appropriate locale code for your server',
-			),
-		);
-
-		$option_items[_t('Dashboard')] = array(
-			'dashboard__hide_spam_count' => array(
-				'label' => _t( 'Hide Spam Count' ),
-				'type' => 'checkbox',
-				'helptext' => _t( 'Hide the number of SPAM comments on your dashboard.' ),
 			),
 		);
 
@@ -476,7 +468,7 @@ class AdminHandler extends ActionHandler
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
 						
-			$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
+			$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
 			$form = $post->get_form( 'admin' );
 
 			// Verify that the post hasn't already been updated since the form was loaded
@@ -546,6 +538,9 @@ class AdminHandler extends ActionHandler
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
 		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+		if ( $post->slug != Utils::slugify( $post->title ) ) {
+			Session::notice( sprintf( _t( 'The content address is \'%1$s\'.'), $post->slug ));
+		}
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
@@ -570,9 +565,9 @@ class AdminHandler extends ActionHandler
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
 		}
 
-		$this->theme->admin_page = sprintf(_t('Publish %s'), ucwords(Post::type_name($post->content_type)));
-		$this->theme->admin_title = _t('Publish %s', array(ucwords(Post::type_name($post->content_type))));
-
+		$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
+		$this->theme->admin_title = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
+		
 		$statuses = Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
 
@@ -653,7 +648,8 @@ class AdminHandler extends ActionHandler
 		$field_sections = array(
 			'user_info' => $possessive,
 			'change_password' => _t('Change Password'),
-			'regional_settings' => _t('Regional Settings')
+			'regional_settings' => _t('Regional Settings'),
+			'dashboard' => _t( 'Dashboard' ),
 		);
 
 		$form = new FormUI('User Options');
@@ -735,13 +731,20 @@ class AdminHandler extends ActionHandler
 		}
 		$locale_time_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
 
+		
+		$spam_count = $form->dashboard->append( 'checkbox', 'dashboard_hide_spam_count', 'null:null', _t( 'Hide Spam Count' ), 'optionscontrol_checkbox' );
+		$spam_count->class[] = 'item clear';
+		$spam_count->helptext = _t( 'Hide the number of SPAM comments on your dashboard.' );
+		$spam_count->value = $edit_user->info->dashboard_hide_spam_count;
+		
+
 		// Controls
 		$controls = $form->append( 'wrapper', 'page_controls' );
 		$controls->class = 'container controls transparent';
-		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
-		$submit->class[] = 'pct25';
 
-		$controls->append( 'static', 'reassign', '<span class="pct40 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct10 conjunction">' . _t('and') . '</span><span class="pct20"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
+		$controls->append( 'static', 'reassign', '<span class="pct35 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct5 conjunction">' . _t('and') . '</span><span class="pct30"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
+		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
+		$submit->class[] = 'pct30';
 
 		$form->on_success( array( $this, 'form_user_success' ) );
 
@@ -816,7 +819,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		// Set various info fields
-		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format');
+		$info_fields = array('displayname', 'imageurl', 'locale_tz', 'locale_date_format', 'locale_time_format', 'dashboard_hide_spam_count');
 
 		// let plugins easily specify other user info fields to pick
 		$info_fields = Plugins::filter( 'adminhandler_post_user_fields', $info_fields );
@@ -1117,6 +1120,17 @@ class AdminHandler extends ActionHandler
 		$this->theme->active_theme_config_form = $this->theme->active_theme_class->config($this->theme->active_theme);
 		$this->theme->configurable = Plugins::filter( 'theme_config', $this->theme->active_theme_config_form, $this->active_theme);
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
+		
+		$activedata = Themes::get_active_data();
+		$areas = array();
+		if(isset($activedata['info']->areas->area)) {
+			foreach($activedata['info']->areas->area as $area) {
+				$areas[] = (string)$area;
+			}
+		}
+		$this->theme->areas = $areas;
+		
+		$this->theme->blocks = Plugins::filter('block_list', array());
 
 		$this->theme->display( 'themes' );
 	}
@@ -1630,6 +1644,9 @@ class AdminHandler extends ActionHandler
 		return $this->get_plugins();
 	}
 
+	/**
+	 * Display the plugin administration page
+	 */
 	public function get_plugins()
 	{
 		$all_plugins = Plugins::list_all();
@@ -1645,6 +1662,9 @@ class AdminHandler extends ActionHandler
 			$plugin['file'] = $file;
 
 			$error = '';
+			
+			$providing = array();
+			
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
@@ -1659,14 +1679,28 @@ class AdminHandler extends ActionHandler
 							$plugin_action = $plugin_action_caption;
 						}
 						$action = array(
-							'url' => URL::get( 'admin', 'page=plugins&configure=' . $plugin_id . '&configaction=' . $plugin_action ),
 							'caption' => $plugin_action_caption,
 							'action' => $plugin_action,
 						);
+						$urlparams = array('page' => 'plugins', 'configure'=>$plugin_id);
+						$action['url'] = URL::get( 'admin', $urlparams );
+						
 						if ( $action['caption'] == '?' ) {
+							if(isset($_GET['configaction'])) {
+								$urlparams['configaction'] = $_GET['configaction'];
+							}
+							if($_GET['help'] != $plugin_action) {
+								$urlparams['help'] = $plugin_action;
+							}
+							$action['url'] = URL::get( 'admin', $urlparams );
 							$plugin['help'] = $action;
 						}
 						else {
+							if(isset($_GET['help'])) {
+								$urlparams['help'] = $_GET['help'];
+							}
+							$urlparams['configaction'] = $plugin_action;
+							$action['url'] = URL::get( 'admin', $urlparams );
 							$plugin['actions'][$plugin_action] = $action;
 						}
 					}
@@ -1675,12 +1709,16 @@ class AdminHandler extends ActionHandler
 						'caption' => _t('Deactivate'),
 						'action' => 'Deactivate',
 					);
+					
+					if(isset($plugin['info']->provides)) {
+						foreach($plugin['info']->provides->feature as $feature) {
+							$providing[(string) $feature] = $feature;
+						}
+					}
 				}
 				else {
 					// instantiate this plugin
 					// in order to get its info()
-					include_once( $file );
-					$pluginobj = Plugins::load_from_file( $file, false );
 					$plugin['active'] = false;
 					$plugin['verb'] = _t( 'Activate' );
 					$plugin['actions'] = array(
@@ -1691,7 +1729,7 @@ class AdminHandler extends ActionHandler
 						),
 					);
 				}
-				$plugin['info'] = $pluginobj->info;
+				$plugin['info'] = Plugins::load_info( $file );
 			}
 			else {
 				$plugin['debug'] = true;
@@ -1721,8 +1759,31 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
+		// Get the features that the current theme provides		
+		$themeinfo = Themes::get_active_data();
+		if(isset($themeinfo['info']->provides)) {
+			foreach($themeinfo['info']->provides->feature as $feature) {
+				$providing[(string) $feature] = $feature;
+			}
+		}
+		
+		foreach($sort_inactive_plugins as $plugin_id => $plugin) {
+			if(isset($plugin['info']->requires)) {
+				foreach($plugin['info']->requires->feature as $feature) {
+					if(!isset($providing[(string) $feature])) {
+						if(!isset($sort_inactive_plugins[$plugin_id]['missing'])) {
+							$sort_inactive_plugins[$plugin_id]['missing'] = array();
+						}
+						$sort_inactive_plugins[$plugin_id]['missing'][(string) $feature] = isset($feature['url']) ? $feature['url'] : '';
+						unset($sort_inactive_plugins[$plugin_id]['actions']['activate']);
+					}
+				}
+			}
+		}
+
 		//$this->theme->plugins = array_merge($sort_active_plugins, $sort_inactive_plugins);
 		$this->theme->assign( 'configaction', Controller::get_var('configaction') );
+		$this->theme->assign( 'helpaction', Controller::get_var('help') );
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
 		$this->theme->active_plugins = $sort_active_plugins;
 		$this->theme->inactive_plugins = $sort_inactive_plugins;
@@ -2603,58 +2664,63 @@ class AdminHandler extends ActionHandler
 	public function get_group()
 	{
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
-
-		$tokens = ACL::all_tokens( 'id');
-		$access_names = ACL::$access_names;
-		$access_names[] = 'deny';
-
-		// attach access bitmasks to the tokens
-		foreach ( $tokens as $token ) {
-			$token->access = ACL::get_group_token_access($group->id, $token->id);
+		if ( null == $group ) {
+			Utils::redirect(URL::get('admin', 'page=groups'));
 		}
+		else {
 
-		// separate tokens into groups
-		$grouped_tokens = array();
-		foreach ( $tokens as $token ) {
-			$grouped_tokens[$token->token_group][($token->token_type) ? 'crud' : 'bool'][] = $token;
+			$tokens = ACL::all_tokens( 'id');
+			$access_names = ACL::$access_names;
+			$access_names[] = 'deny';
+
+			// attach access bitmasks to the tokens
+			foreach ( $tokens as $token ) {
+				$token->access = ACL::get_group_token_access($group->id, $token->id);
+			}
+
+			// separate tokens into groups
+			$grouped_tokens = array();
+			foreach ( $tokens as $token ) {
+				$grouped_tokens[$token->token_group][($token->token_type) ? 'crud' : 'bool'][] = $token;
+			}
+
+			$group = UserGroup::get_by_id($this->handler_vars['id']);
+
+			$potentials = array();
+
+			$users = Users::get_all();
+			$users[] = User::anonymous();
+
+			$members = $group->members;
+			$jsusers = array();
+			foreach ( $users as $user ) {
+				$jsuser = new StdClass();
+				$jsuser->id = $user->id;
+				$jsuser->username = $user->username;
+				$jsuser->member = in_array($user->id, $members);
+
+				$jsusers[$user->id] = $jsuser;
+			}
+
+			$this->theme->potentials = $potentials;
+			$this->theme->users = $users;
+			$this->theme->members = $members;
+
+			$js = '$(function(){groupManage.init(' . json_encode($jsusers) . ');});';
+
+			Stack::add('admin_header_javascript', $js, 'groupmanage', 'admin');
+
+			$this->theme->access_names = $access_names;
+			$this->theme->grouped_tokens = $grouped_tokens;
+
+			$this->theme->groups = UserGroups::get_all();
+			$this->theme->group = $group;
+			$this->theme->id = $group->id;
+
+			$this->theme->wsse = Utils::WSSE();
+
+			$this->display('group');
 		}
-
-		$group = UserGroup::get_by_id($this->handler_vars['id']);
-
-		$potentials = array();
-
-		$users = Users::get_all();
-		$users[] = User::anonymous();
-
-		$members = $group->members;
-		$jsusers = array();
-		foreach ( $users as $user ) {
-			$jsuser = new StdClass();
-			$jsuser->id = $user->id;
-			$jsuser->username = $user->username;
-			$jsuser->member = in_array($user->id, $members);
-
-			$jsusers[$user->id] = $jsuser;
-		}
-
-		$this->theme->potentials = $potentials;
-		$this->theme->users = $users;
-		$this->theme->members = $members;
-
-		$js = '$(function(){groupManage.init(' . json_encode($jsusers) . ');});';
-
-		Stack::add('admin_header_javascript', $js, 'groupmanage', 'admin');
-
-		$this->theme->access_names = $access_names;
-		$this->theme->grouped_tokens = $grouped_tokens;
-
-		$this->theme->groups = UserGroups::get_all();
-		$this->theme->group = $group;
-		$this->theme->id = $group->id;
-
-		$this->theme->wsse = Utils::WSSE();
-
-		$this->display('group');
 
 	}
 
@@ -3281,7 +3347,7 @@ class AdminHandler extends ActionHandler
 	public static function setup_stacks()
 	{
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery-ui-1.7.1.custom.min.js", 'jquery.ui', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery-ui.min.js", 'jquery.ui', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );

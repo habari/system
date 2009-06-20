@@ -14,14 +14,35 @@
  */
 abstract class Plugin extends Pluggable
 {
-	private $_added_templates = array();
 
 	/**
-	 * Returns information about this plugin
-	 * @return array An associative array of information about this plugin
-	 **/
-	abstract public function info();
+	 * Loads a theme's metadata from an XML file in theme's
+	 * directory.
+	 *
+	 */
+	final public function info( )
+	{
+		static $info;
+		if(!isset($info)) {
+			$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $this->get_file());
+			if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
+				$info = new SimpleXMLElement( $xml_content );
+				if($info->getName() != 'pluggable') {
+					$info = null;
+				}
+				else {
+					if(isset($info->help)) {
+						Plugins::register(array($this, '_help_plugin_config_plugin'), 'filter', 'plugin_config');
+						Plugins::register(array($this, '_help_plugin_ui_plugin'), 'action', 'plugin_ui');
+					}
+				}
+			}
+		}
+		return $info;
+	}
 
+	
+	
 	/**
 	 * Plugin constructor.
 	 * Plugins should not define their own constructors, because they are instantiated
@@ -32,55 +53,43 @@ abstract class Plugin extends Pluggable
 	{
 		parent::__construct();
 	}
-
-
+	
 	/**
-	 * Adds a template to the default theme that is stored in a specified path.
-	 * Use this function as a shortcut to make available additional templates to a theme
-	 * from within the plugin directory.
+	 * Registered to the plugin_config hook to supply help via a plugin's help in xml
 	 *
-	 * @param string $name The name of the template that will be displayed, sans extension
-	 * @param string $filename The full path of the template file used for the specified name
-	 * @param boolean $override If false, allow a template with the same name in the active theme directory to override this one.
-	 * If true, always override the active theme's template with this one.
+	 * @param array $actions An array of actions applicable to this plugin
+	 * @param string $plugin_id The plugin id to which the actions belong
+	 * @return array The modified array of actions
 	 */
-	protected function add_template($name, $filename, $override = false)
+	public function _help_plugin_config_plugin($actions, $plugin_id)
 	{
-		if(count($this->_added_templates) == 0) {
-			Plugins::register(array(&$this, '_plugin_available_templates'), 'filter', 'available_templates');
-			Plugins::register(array(&$this, '_plugin_include_template_file'), 'filter', 'include_template_file');
-		}
-
-		$this->_added_templates[$name] = array( $filename, $override );
-	}
-
-	/**
-	 * Add plugin templates to the list of templates that are present in the current theme
-	 *
-	 * @param array $list List of template names in the current theme
-	 * @return array The modified list of template names
-	 */
-	public function _plugin_available_templates( $list )
-	{
-		$list = array_merge($list, array_keys($this->_added_templates));
-		return $list;
-	}
-
-	/**
-	 * Potentially serve a different file for the requested template name
-	 *
-	 * @param string $file The filename of the template the theme will display
-	 * @param string $name The name of the template requested
-	 * @return string The potentially modified filename to use for the requested template.
-	 */
-	public function _plugin_include_template_file( $file, $name )
-	{
-		if(isset($this->_added_templates[$name])) {
-			if($this->_added_templates[$name][1] || !file_exists($file)) {
-				$file = $this->_added_templates[$name][0];
+		if ( $plugin_id == $this->plugin_id() ) {
+			foreach($this->info->help as $help) {
+				$name = (string)$help['name'];
+				if($name == '') {
+					$name = '_help';
+				}
+				$actions[$name]= '?';
 			}
 		}
-		return $file;
+		return $actions;
+	}
+
+	/**
+	 * Registered to the plugin_ui hook to supply help via a plugin's help in xml
+	 *
+	 * @param string $plugin_id The id of the plugin whose action was triggered
+	 * @param string $action The action triggered
+	 */
+	public function _help_plugin_ui_plugin( $plugin_id, $action )
+	{
+		if ( $plugin_id == $this->plugin_id() ) {
+			foreach($this->info->help as $help) {
+				if(($action == (string)$help['name'] && (string)$help['name'] != '') || ($action == '_help' && (string)$help['name'] == '')) {
+					echo '<div class="help">' . ((string)$help->value) . '</div>';
+				}
+			}
+		}
 	}
 
 }

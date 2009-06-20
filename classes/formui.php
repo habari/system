@@ -229,7 +229,7 @@ class FormContainer
 		$theme->id = $this->name;
 		$theme->caption = $this->caption;
 
-		return $theme->fetch( $this->template );
+		return $theme->fetch( $this->template, true );
 	}
 
 	/**
@@ -245,6 +245,7 @@ class FormContainer
 			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
 			$this->theme_obj = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		}
+		$this->theme_obj->start_buffer();
 		if($control instanceof FormControl) {
 			// PHP doesn't allow __get() to return pointers, and passing this array to foreach directly generates an error.
 			$properties = $control->properties;
@@ -320,6 +321,28 @@ class FormContainer
 	function move_after($control, $target)
 	{
 		$this->move($control, $target, 1); // Increase left slice's size by one.
+	}
+
+	/**
+	 * Move a control into the container
+	 *
+	 * @param FormControl $control FormControl object to move
+	 * @param FormControl $target FormControl object acting as destination
+	 */
+	public function move_into( $control, $target )
+	{
+		// Remove the source control from its container's list of controls
+		$controls = array();
+		foreach($control->container->controls as $name => $ctrl) {
+			if($ctrl === $control) {
+				$source_name = $name;
+				continue;
+			}
+			$controls[$name] = $ctrl;
+		}
+		$control->container->controls = $controls;
+
+		$target->controls[$control->name] = $control;
 	}
 
 	/**
@@ -459,7 +482,6 @@ class FormContainer
 	 *
 	 * @params string $format A sprintf()-style format string to format the validation error
 	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
-	 * @return boolean true if the control has errors
 	 */
 	public function errors_out($format, $wrap = '%s')
 	{
@@ -472,7 +494,7 @@ class FormContainer
 	 *
 	 * @params string $format A sprintf()-style format string to format the validation error
 	 * @params string $format A sprintf()-style format string to wrap the returned error, only if at least one error exists
-	 * @return boolean true if the control has errors
+	 * @return string The errors in the supplied format
 	 */
 	public function errors_get($format, $wrap = '%s')
 	{
@@ -487,6 +509,7 @@ class FormContainer
 		}
 		return $out;
 	}
+	
 }
 
 
@@ -591,6 +614,16 @@ class FormUI extends FormContainer
 				$forvalidation = true;
 			}
 		}
+		else {
+			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari' ) . Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+		}
+		if(isset($_SESSION['forms'][$this->salted_name()]['error_data'])) {
+			foreach($_SESSION['forms'][$this->salted_name()]['error_data'] as $key => $value) {
+				$_POST[$key] = $value;
+			}
+			unset($_SESSION['forms'][$this->salted_name()]['error_data']);
+			$forvalidation = true;
+		}
 
 		$out = '';
 
@@ -633,11 +666,11 @@ class FormUI extends FormContainer
 	public function output_controls( $forvalidation = false )
 	{
 		$out = '';
-		$this->get_theme( $forvalidation )->start_buffer();
+		$theme = $this->get_theme( $forvalidation );
 		foreach($this->controls as $control) {
 			$out.= $control->get( $forvalidation );
 		}
-		$this->get_theme( $forvalidation )->end_buffer();
+		$theme->end_buffer();
 		return $out;
 	}
 
@@ -761,6 +794,12 @@ class FormUI extends FormContainer
 		$this->options['ajax'] = true;
 		$this->options['form_action'] = URL::get('admin_ajax', array('context' => 'media_panel'));
 		$this->properties['onsubmit'] = "habari.media.submitPanel('$path', '$panel', this, '{$callback}');return false;";
+	}
+	
+	public function bounce()
+	{
+		$_SESSION['forms'][$this->salted_name()]['error_data'] = $_POST;
+		Utils::redirect($_SESSION['forms'][$this->salted_name()]['url']);
 	}
 
 }
@@ -1112,7 +1151,6 @@ class FormControl
 	public function get($forvalidation = true)
 	{
 		$theme = $this->get_theme($forvalidation);
-		$theme->start_buffer();
 
 		foreach($this->properties as $prop => $value) {
 			$theme->$prop = $value;
@@ -1374,6 +1412,17 @@ class FormControl
 		unset($this->validators[$index]);
 	}
 
+	/**
+	 * Move this control inside of the target
+	 * In the end, this will use FormUI::move()
+	 *
+	 * @param object $target The target control to move this control before
+	 */
+	function move_into( $target )
+	{
+		$this->container->move_into( $this, $target );
+	}
+	
 	/**
 	 * Move this control before the target
 	 * In the end, this will use FormUI::move()
@@ -1723,7 +1772,7 @@ class FormControlTag extends FormContainer
 		$theme->caption = $tag->tag;
 		$theme->count = $tag->count;
 
-		return $theme->fetch( 'tabcontrol_tag' );
+		return $theme->fetch( 'tabcontrol_tag', true );
 	}
 
 }
@@ -1745,7 +1794,7 @@ class FormControlPassword extends FormControlText
 		$theme = $this->get_theme($forvalidation);
 		$theme->outvalue = $this->value == '' ? '' : substr(md5($this->value), 0, 8);
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 
 	/**
@@ -1885,7 +1934,7 @@ class FormControlSelect extends FormControl
 		$theme->id = $this->name;
 		$theme->control = $this;
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 }
 
@@ -1907,7 +1956,7 @@ class FormControlCheckboxes extends FormControlSelect
 		$theme->id = $this->name;
 		$theme->control = $this;
 
-		return $theme->fetch( $this->get_template() );
+		return $theme->fetch( $this->get_template(), true );
 	}
 
 	/**
@@ -2133,7 +2182,7 @@ class FormControlTabs extends FormContainer
 		$theme->id = $this->name;
 		$theme->caption = $this->caption;
 
-		return $theme->fetch( $this->template );
+		return $theme->fetch( $this->template, true );
 	}
 
 }
