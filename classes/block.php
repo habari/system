@@ -161,7 +161,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function get_form()
 	{
-		$form = new FormUI('block');
+		$form = new FormUI('block-' . $this->id , 'block');
 		Plugins::act('block_form_' . $this->type, $form, $this);
 		return $form;
 	}
