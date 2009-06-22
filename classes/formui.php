@@ -518,7 +518,7 @@ class FormUI extends FormContainer
 	{
 		$forvalidation = false;
 
-		Plugins::act('modify_form_' . $this->formtype, $this);
+		Plugins::act('modify_form_' . Utils::slugify($this->formtype, '_'), $this);
 		Plugins::act('modify_form', $this);
 
 		if(isset($use_theme)) {
