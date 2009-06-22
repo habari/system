@@ -963,7 +963,8 @@ class FormControl
 	 */
 	public function checksum()
 	{
-		return md5($this->name . $this->storage . $this->caption );
+		$storage = is_object($this->storage) ? gettype($this->storage) : $this->storage;
+		return md5($this->name . $storage . $this->caption );
 	}
 
 
@@ -974,17 +975,22 @@ class FormControl
 	{
 		// Get the default value from Options/UserInfo if it's not set explicitly
 		if(empty($this->default)) {
-			$storage = explode(':', $this->storage, 2);
-			switch(count($storage)) {
-				case 2:
-					list($type, $location) = $storage;
-					break;
-				case 1:
-					list($location) = $storage;
-					$type = 'option';
-					break;
-				default:
-					return $this->default;
+			if($this->storage instanceof FormStorage) {
+				$type = 'formstorage';
+			}
+			else {
+				$storage = explode(':', $this->storage, 2);
+				switch(count($storage)) {
+					case 2:
+						list($type, $location) = $storage;
+						break;
+					case 1:
+						list($location) = $storage;
+						$type = 'option';
+						break;
+					default:
+						return $this->default;
+				}
 			}
 
 			switch($type) {
@@ -1002,7 +1008,10 @@ class FormControl
 					if (  isset( $session_set[$this->name] ) ) {
 						$this->default = $session_set[$this->name];
 					}
-				break;
+					break;
+				case 'formstorage':
+					$this->default = $this->storage->field_load($this->name);
+					break;
 				case 'null':
 					break;
 			}
@@ -1021,17 +1030,23 @@ class FormControl
 		if($storage == null) {
 			$storage = $this->storage;
 		}
-		$storage = explode(':', $storage, 2);
-		switch(count($storage)) {
-			case 2:
-				list($type, $location) = $storage;
-				break;
-			case 1:
-				list($location) = $storage;
-				$type = 'option';
-				break;
-			default:
-				return;
+		
+		if(is_string($storage)) {
+			$storage = explode(':', $storage, 2);
+			switch(count($storage)) {
+				case 2:
+					list($type, $location) = $storage;
+					break;
+				case 1:
+					list($location) = $storage;
+					$type = 'option';
+					break;
+				default:
+					return;
+			}
+		}
+		elseif($storage instanceof FormStorage) {
+			$type = 'formstorage';
 		}
 
 		switch($type) {
@@ -1046,6 +1061,9 @@ class FormControl
 				break;
 			case 'session';
 				Session::add_to_set( $location, $this->value, $this->name );
+				break;
+			case 'formstorage':
+				$storage->field_save( $this->name, $this->value );
 				break;
 			case 'null':
 				break;
@@ -1214,17 +1232,19 @@ class FormControl
 	 */
 	public function has_user_options()
 	{
-		$storage = explode(':', $this->storage, 2);
-		switch(count($storage)) {
-			case 2:
-				list($type, $location) = $storage;
-				break;
-			default:
-				return false;
-		}
-
-		if($type == 'user') {
-			return true;
+		if(is_string($this->storage)) {
+			$storage = explode(':', $this->storage, 2);
+			switch(count($storage)) {
+				case 2:
+					list($type, $location) = $storage;
+					break;
+				default:
+					return false;
+			}
+	
+			if($type == 'user') {
+				return true;
+			}
 		}
 		return false;
 	}

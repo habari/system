@@ -1123,6 +1123,18 @@ class AdminHandler extends ActionHandler
 		$this->theme->areas = $areas;
 		
 		$this->theme->blocks = Plugins::filter('block_list', array());
+		$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
+		$blocks_areas_t = DB::get_results('SELECT b.*, ba.scope_id, ba.area FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array(), 'Block');
+		$blocks_areas = array();
+		foreach($blocks_areas_t as $block) {
+			if(!isset($blocks_areas[$block->scope_id])) {
+				$blocks_areas[$block->scope_id] = array();
+			}
+			$blocks_areas[$block->scope_id][$block->area][$block->display_order] = $block;
+		}
+		$this->theme->blocks_areas = $blocks_areas;
+		
+		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
 
 		$this->theme->display( 'themes' );
 	}
