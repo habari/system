@@ -50,42 +50,14 @@
 						<input id="block_instance_add" type="button" value="+" >
 						
 						<div id="block_instances">
+							<?php foreach($block_instances as $instance): ?>
 							<div class="block_instance">
-								<h3><a href="#">Section 1</a></h3>
+								<h3><a href="#"><?php echo htmlspecialchars($instance->title); ?></a></h3>
 								<div>
-									<div>
-										<label for="section1_test">Value A:</label>
-										<input type="text" name="section1_value_a" value="Hi 1">
-									</div>							
+									<?php $instance->get_form()->out(); ?>
 								</div>
 							</div>
-							<div class="block_instance">
-								<h3><a href="#">Section 2</a></h3>
-								<div>
-									<div>
-										<label for="section1_test">Value A:</label>
-										<input type="text" name="section1_value_a" value="Hi 2">
-									</div>							
-								</div>
-							</div>
-							<div class="block_instance">
-								<h3><a href="#">Section 3</a></h3>
-								<div>
-									<div>
-										<label for="section1_test">Value A:</label>
-										<input type="text" name="section1_value_a" value="Hi 3">
-									</div>							
-								</div>
-							</div>
-							<div class="block_instance">
-								<h3><a href="#">Section 4</a></h3>
-								<div>
-									<div>
-										<label for="section1_test">Value A:</label>
-										<input type="text" name="section1_value_a" value="Hi 4">
-									</div>							
-								</div>
-							</div>
+							<?php endforeach; ?>
 						</div>
 						
 					</div>
@@ -109,9 +81,12 @@
 							return false;
 						}).next().hide();
 
+						
+						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop', containment: '.area_container', axis: 'y'});
+						$('.block_instance h3').draggable({connectToSortable: '.area_drop', helper: 'clone', distance: 5, containment: $('#block_instances h3').parents('.splitterinside')});
 						/*
-						$('#block_instances h3').draggable({revert: true, helper: 'clone', distance: 5, containment: $('#block_instances h3').parents('.splitterinside')});
 						$(".area_drop").droppable({
+							connectToSortable: '#sortable',
 							accept: '#block_instances h3',
 							activeClass: 'drop_area_active',
 							hoverClass: 'drop_area_hover',
@@ -119,11 +94,12 @@
 								//$(this).css({border: "1px solid red"});
 							}
 						});
-						//*/
+						*/
+						/*/
 						$('#block_instances').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop', start: function(event, ui){
 							$('h3', ui.item).next().hide();
 						}});
-						$('.area_drop').sortable({placeholder: 'block_drop', revert: true, forcePlaceholderSize: true, connectWith: '.area_drop', containment: '.area_container', axis: 'y'});
+						//*/
 						
 					});
 					</script>
@@ -134,9 +110,11 @@
 					<?php foreach($active_theme['info']->areas->area as $area): ?>
 						<h2><a href="#"><?php echo $area['name']; ?></a></h2>
 						<div class="area_drop">
-							<div class="area_block"><h3>Section 1</h3></div>
-							<div class="area_block"><h3>Section 2</h3></div>
-							<div class="area_block"><h3>Section 3</h3></div>
+							<?php if(is_array($blocks_areas[0][(string)$area['name']])): ?>
+							<?php foreach($blocks_areas[0][(string)$area['name']] as $block): ?>
+								<div class="area_block"><h3><?php echo $block->title; ?></h3></div>
+							<?php endforeach; ?>
+							<?php endif; ?>
 						</div>
 					<?php endforeach; ?>
 					</div>
