@@ -176,7 +176,7 @@ class InstallHandler extends ActionHandler
 		// Installation complete. Secure sqlite if it was chosen as the database type to use
 		if ( $db_type == 'sqlite' ) {
 			if ( !$this->secure_sqlite() ) {
-				$this->handler_vars['sqlite_contents'] = implode( "\n", $this->sqlite_contents() );
+				$this->theme->sqlite_contents = implode( "\n", $this->sqlite_contents() );
 				$this->display( 'sqlite' );
 			}
 		}
