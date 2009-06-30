@@ -1037,7 +1037,8 @@ class InstallHandler extends ActionHandler
 	{
 		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
 			// .htaccess is only needed on Apache
-			return false;
+			// @TODO: Notify people on other servers to take measures to secure the SQLite file.
+			return true;
 		}
 		if ( !file_exists( HABARI_PATH . '/.htaccess') ) {
 			// no .htaccess to write to
