@@ -1054,6 +1054,12 @@ class Theme extends Pluggable
 		return $output;
 	}
  
+ 	/**
+ 	 * A theme function for outputting CSS classes based on the requested content
+ 	 * @param Theme $theme A Theme object instance
+ 	 * @param mixed $args Additional classes that should be added to the ones generated
+ 	 * @return string The resultant classes
+ 	 */				 				  	
 	function theme_body_class($theme, $args = array())
 	{
 		$body_class = array();
