@@ -14,7 +14,7 @@
 <?php $theme->header(); ?>
 </head>
 
-<body class="home">
+<body class="<?php $theme->body_class(); ?>">
 <div id="page">
 	<div id="header">
 

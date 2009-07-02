@@ -197,6 +197,7 @@ class Theme extends Pluggable
 		}
 
 		$this->assign( 'posts', $posts );
+		
 		/*
 		   if( !isset( $this->page ) ) {
 		   if( isset( $page ) ) {
@@ -208,10 +209,16 @@ class Theme extends Pluggable
 		   }*/
 
 		if ( $posts !== false && count( $posts ) > 0 ) {
-			$post = ( count( $posts ) > 1 ) ? $posts[0] : $posts;
+			if(count($posts) == 1) {
+				$post = $posts;
+				Stack::add('body_class', Post::type_name($post->content_type) . '-' . $post->id);
+			}
+			else {
+				$post = reset($posts);
+				Stack::add('body_class', 'multiple');
+			}
 			$this->assign( 'post', $post );
-			$types = array_flip( Post::list_active_post_types() );
-			$type = $types[$post->content_type];
+			$type = Post::type_name($post->content_type);
 		}
 		elseif( ( $posts === false ) ||
 			( isset( $where_filters['page'] ) && $where_filters['page'] > 1 && count( $posts ) == 0 ) ) {
@@ -1047,6 +1054,19 @@ class Theme extends Pluggable
 		return $output;
 	}
  
+	function theme_body_class($theme, $args = array())
+	{
+		$body_class = array();
+		foreach(get_object_vars($this->request) as $key => $value ) {
+			if($value) {
+				$body_class[$key] = $key;
+			}
+		}
+		
+		$body_class = array_unique(array_merge($body_class, Stack::get_named_stack('body_class'), Utils::single_array($args)));
+		$body_class = Plugins::filter('body_class', $body_class, $theme);
+		return implode(' ', $body_class);	
+	}
 
 }
 ?>
