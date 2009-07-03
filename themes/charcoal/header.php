@@ -19,7 +19,7 @@
 	<![endif]-->
 	<?php $theme->header(); ?>
 </head>
-<body>
+<body class="<?php $theme->body_class(); ?>">
 	<div id="page-top">
 		<div id="wrapper-top">
 			<div id="top-primary">
