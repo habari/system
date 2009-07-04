@@ -52,8 +52,8 @@ class ActionHandler
 		$before_action_method = 'before_' . $action_method;
 		$after_action_method = 'after_' . $action_method;
 
-		if (method_exists($this, $action_method)) {
-			if (method_exists($this, $before_action_method)) {
+		if ( method_exists($this, $action_method) ) {
+			if ( method_exists($this, $before_action_method) ) {
 				$this->$before_action_method();
 			}
 			/**

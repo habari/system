@@ -8,7 +8,10 @@
  * Habari AdminHandler Class
  * Backbone of the admin area, handles requests and functionality.
  *
- * @todo Clean this mess up
+ * @todo Split into page-specific controllers.
+ * Discussion: See http://groups.google.com/group/habari-dev/browse_thread/thread/9c469a4fcb61c814
+ * Branch: https://trac.habariproject.org/habari/browser/branches/adminhandler
+ * Related branch: http://trac.habariproject.org/habari/browser/branches/handlers
  */
 class AdminHandler extends ActionHandler
 {
@@ -70,10 +73,10 @@ class AdminHandler extends ActionHandler
 	public function act_admin()
 	{
 		$page = ( isset( $this->handler_vars['page'] ) && !empty( $this->handler_vars['page'] ) ) ? $this->handler_vars['page'] : 'dashboard';
-		if(isset($this->handler_vars['content_type'])) {
+		if ( isset($this->handler_vars['content_type']) ) {
 			$type = Plugins::filter('post_type_display', Post::type_name($this->handler_vars['content_type']), 'singular');
 		}
-		elseif( $page == 'publish' && isset($this->handler_vars['id'] ) ) {
+		elseif ( $page == 'publish' && isset($this->handler_vars['id'] ) ) {
 			$type = Plugins::filter('post_type_display', Post::type_name(Post::get(intval($this->handler_vars['id']))->content_type), 'singular'); 
 		}
 		else {
@@ -168,7 +171,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles posts requests from the options admin page
+	 * Handles POST requests from the options admin page
 	 */
 	public function post_options()
 	{
@@ -320,7 +323,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles post requests from the dashboard.
+	 * Handles POST requests from the dashboard.
 	 */
 	public function post_dashboard()
 	{
@@ -449,7 +452,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles post requests from the publish page.
+	 * Handles POST requests from the publish page.
 	 */
 	public function post_publish()
 	{
@@ -466,7 +469,7 @@ class AdminHandler extends ActionHandler
 			$form = $post->get_form( 'admin' );
 
 			// Verify that the post hasn't already been updated since the form was loaded
-			if($post->modified != $form->modified->value) {
+			if ( $post->modified != $form->modified->value ) {
 				Session::notice( sprintf( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
 				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 				exit;
@@ -538,6 +541,9 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 	}
 
+	/**
+	 * Handles GET requests of the publish page.
+	 */
 	public function get_publish( $template = 'publish')
 	{
 		$extract = $this->handler_vars->filter_keys('id', 'content_type');
@@ -602,6 +608,9 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
 	}
 
+	/**
+	 * Handles GET requests of a user page.
+	 */
 	public function get_user()
 	{
 
@@ -751,6 +760,9 @@ class AdminHandler extends ActionHandler
 
 	}
 
+	/**
+	 * Handles form submission from a user's page.
+	 */
 	public function form_user_success($form)
 	{
 		$edit_user = User::get_by_id($form->edit_user->value);
@@ -837,7 +849,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles post requests from the user profile page.
+	 * Handles POST requests from the user profile page.
 	 */
 	public function post_user()
 	{
@@ -845,16 +857,19 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * handles AJAX from /users
-	 * used to delete users and fetch new ones
+	 * Handles AJAX from /users.
+	 * Used to delete users and fetch new ones.
 	 */
 	public function ajax_update_users($handler_vars)
 	{
 		Utils::check_request_method( array( 'POST' ) );
-		
+
 		echo json_encode( $this->update_users( $handler_vars ) );
 	}
 
+	/**
+	 * Update an array of POSTed users.
+	 */
 	public function update_users($handler_vars)
 	{
 		if ( isset($handler_vars['delete']) ) {
@@ -953,6 +968,9 @@ class AdminHandler extends ActionHandler
 		$this->theme->authors = $authors;
 	}
 
+	/**
+	 * Handles GET requests of the users page.
+	 */
 	public function get_users()
 	{
 		$this->fetch_users();
@@ -961,7 +979,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles post requests from the Users listing (ie: creating a new user)
+	 * Handles POST requests from the Users listing (ie: creating a new user)
 	 */
 	public function post_users()
 	{
@@ -1115,8 +1133,8 @@ class AdminHandler extends ActionHandler
 		
 		$activedata = Themes::get_active_data();
 		$areas = array();
-		if(isset($activedata['info']->areas->area)) {
-			foreach($activedata['info']->areas->area as $area) {
+		if ( isset($activedata['info']->areas->area) ) {
+			foreach ( $activedata['info']->areas->area as $area ) {
 				$areas[] = (string)$area;
 			}
 		}
@@ -1126,8 +1144,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
 		$blocks_areas_t = DB::get_results('SELECT b.*, ba.scope_id, ba.area FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array(), 'Block');
 		$blocks_areas = array();
-		foreach($blocks_areas_t as $block) {
-			if(!isset($blocks_areas[$block->scope_id])) {
+		foreach ( $blocks_areas_t as $block ) {
+			if ( !isset($blocks_areas[$block->scope_id]) ) {
 				$blocks_areas[$block->scope_id] = array();
 			}
 			$blocks_areas[$block->scope_id][$block->area][$block->display_order] = $block;
@@ -1153,6 +1171,9 @@ class AdminHandler extends ActionHandler
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
+	/**
+	 * Handles GET requests for the import page.
+	 */
 	public function get_import()
 	{
 
@@ -1183,6 +1204,10 @@ class AdminHandler extends ActionHandler
 		$this->display( 'import' );
 	}
 
+	/**
+	 * Construct a form for a comment.
+	 * @return FormUI The comment's form.
+	 */
 	public function form_comment($comment, $actions)
 	{
 		$form = new FormUI( 'comment' );
@@ -1285,6 +1310,9 @@ class AdminHandler extends ActionHandler
 		return $form;
 	}
 
+	/**
+	 * Handles GET requests for an individual comment.
+	 */
 	public function get_comment($update = FALSE)
 	{
 		if ( isset( $this->handler_vars['id'] ) && $comment = Comment::get( $this->handler_vars['id'] ) ) {
@@ -1351,11 +1379,17 @@ class AdminHandler extends ActionHandler
 		}
 	}
 
+	/**
+	 * Handles POST requests for an individual comment.
+	 */
 	public function post_comment()
 	{
 		$this->get_comment(true);
 	}
 
+	/**
+	 * Handles GET requests for the comments  page.
+	 */
 	public function get_comments()
 	{
 		$this->post_comments();
@@ -1393,6 +1427,9 @@ class AdminHandler extends ActionHandler
 		$this->display( 'comments' );
 	}
 
+	/**
+	 * Retrieve comments.
+	 */
 	public function fetch_comments( $params = array() )
 	{
 		// Make certain handler_vars local with defaults, and add them to the theme output
@@ -1551,7 +1588,7 @@ class AdminHandler extends ActionHandler
 		);
 
 		// only get comments the user is allowed to manage
-		if( !User::identify()->can( 'manage_all_comments' ) ) {
+		if ( !User::identify()->can( 'manage_all_comments' ) ) {
 			$arguments['post_author'] = User::identify()->id;
 		}
 
@@ -1690,17 +1727,17 @@ class AdminHandler extends ActionHandler
 						$action['url'] = URL::get( 'admin', $urlparams );
 						
 						if ( $action['caption'] == '?' ) {
-							if(isset($_GET['configaction'])) {
+							if ( isset($_GET['configaction']) ) {
 								$urlparams['configaction'] = $_GET['configaction'];
 							}
-							if($_GET['help'] != $plugin_action) {
+							if ( $_GET['help'] != $plugin_action ) {
 								$urlparams['help'] = $plugin_action;
 							}
 							$action['url'] = URL::get( 'admin', $urlparams );
 							$plugin['help'] = $action;
 						}
 						else {
-							if(isset($_GET['help'])) {
+							if ( isset($_GET['help']) ) {
 								$urlparams['help'] = $_GET['help'];
 							}
 							$urlparams['configaction'] = $plugin_action;
@@ -1714,8 +1751,8 @@ class AdminHandler extends ActionHandler
 						'action' => 'Deactivate',
 					);
 					
-					if(isset($plugin['info']->provides)) {
-						foreach($plugin['info']->provides->feature as $feature) {
+					if ( isset($plugin['info']->provides) ) {
+						foreach ( $plugin['info']->provides->feature as $feature ) {
 							$providing[(string) $feature] = $feature;
 						}
 					}
@@ -1765,17 +1802,17 @@ class AdminHandler extends ActionHandler
 
 		// Get the features that the current theme provides		
 		$themeinfo = Themes::get_active_data();
-		if(isset($themeinfo['info']->provides)) {
-			foreach($themeinfo['info']->provides->feature as $feature) {
+		if ( isset($themeinfo['info']->provides) ) {
+			foreach ( $themeinfo['info']->provides->feature as $feature ) {
 				$providing[(string) $feature] = $feature;
 			}
 		}
 		
-		foreach($sort_inactive_plugins as $plugin_id => $plugin) {
-			if(isset($plugin['info']->requires)) {
-				foreach($plugin['info']->requires->feature as $feature) {
-					if(!isset($providing[(string) $feature])) {
-						if(!isset($sort_inactive_plugins[$plugin_id]['missing'])) {
+		foreach ( $sort_inactive_plugins as $plugin_id => $plugin ) {
+			if ( isset($plugin['info']->requires) ) {
+				foreach ( $plugin['info']->requires->feature as $feature ) {
+					if ( !isset($providing[(string) $feature]) ) {
+						if ( !isset($sort_inactive_plugins[$plugin_id]['missing']) ) {
 							$sort_inactive_plugins[$plugin_id]['missing'] = array();
 						}
 						$sort_inactive_plugins[$plugin_id]['missing'][(string) $feature] = isset($feature['url']) ? $feature['url'] : '';
@@ -1904,7 +1941,7 @@ class AdminHandler extends ActionHandler
 		foreach ( $monthcts as $month ) {
 			if ( isset($years[$month->year]) ) {
 				$years[$month->year][] = $month;
-	}
+			}
 			else {
 				$years[$month->year] = array( $month );
 			}
@@ -1916,7 +1953,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles GET requests to /admin/entries
+	 * Handles GET requests to /admin/entries.
 	 *
 	 */
 	public function get_posts()
@@ -1925,9 +1962,9 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * handles POST values from /manage/entries
-	 * used to control what content to show / manage
-	**/
+	 * Handles POST values from /manage/entries.
+	 * Used to control what content to show / manage.
+	 */
 	public function post_posts()
 	{
 		$this->fetch_posts();
@@ -1959,7 +1996,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles ajax requests from the dashboard
+	 * Handles AJAX requests from the dashboard
 	 */
 	public function ajax_dashboard( $handler_vars )
 	{
@@ -2007,7 +2044,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles ajax requests from the manage posts page
+	 * Handles AJAX requests from the manage posts page.
 	 */
 	public function ajax_posts()
 	{
@@ -2025,7 +2062,7 @@ class AdminHandler extends ActionHandler
 		$item_ids = array();
 
 		foreach ( $this->theme->posts as $post ) {
-			if( ACL::access_check($post->get_access(), 'delete' ) ) {
+			if ( ACL::access_check($post->get_access(), 'delete' ) ) {
 			$item_ids['p' . $post->id] = 1;
 		}
 		}
@@ -2039,7 +2076,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles ajax requests from the manage comments page
+	 * Handles AJAX requests from the manage comments page.
 	 */
 	public function ajax_comments()
 	{
@@ -2070,7 +2107,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles ajax requests from the manage users page
+	 * Handles AJAX requests from the manage users page.
 	 */
 	public function ajax_users()
 	{
@@ -2089,8 +2126,8 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * handles AJAX from /comments
-	 * used to edit comments inline
+	 * Handles AJAX from /comments.
+	 * Used to edit comments inline.
 	 */
 	public function ajax_in_edit($handler_vars)
 	{
@@ -2135,8 +2172,8 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * handles AJAX from /manage/entries
-	 * used to delete entries
+	 * Handles AJAX from /manage/entries.
+	 * Used to delete entries.
 	 */
 	public function ajax_delete_entries($handler_vars)
 	{
@@ -2166,7 +2203,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		Session::notice( sprintf( _t('Deleted %d entries.'), $deleted ) );
-		if( $deleted != count( $posts ) ) {
+		if ( $deleted != count( $posts ) ) {
 			Session::notice( _t( 'You did not have permission to delete some entries.' ) );
 		}
 
@@ -2174,8 +2211,8 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * handles AJAX from /logs
-	 * used to delete logs
+	 * Handles AJAX from /logs.
+	 * Used to delete logs.
 	 */
 	public function ajax_delete_logs($handler_vars)
 	{
@@ -2217,10 +2254,14 @@ class AdminHandler extends ActionHandler
 		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
+	/**
+	 * Handles AJAX requests to update comments, comment moderation
+	 */
 	public function ajax_update_comment( $handler_vars )
 	{
-		Utils::check_request_method( array( 'POST' ) ); 
-		
+
+		Utils::check_request_method( array( 'POST' ) );
+
 		// check WSSE authentication
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
@@ -2233,7 +2274,7 @@ class AdminHandler extends ActionHandler
 
 		foreach ( $_POST as $id => $update ) {
 			// skip POST elements which are not comment ids
-			if ( preg_match( '/^p\d+/', $id )  && $update ) {
+			if ( preg_match( '/^p\d+/', $id ) && $update ) {
 				$ids[] = substr($id, 1);
 			}
 		}
@@ -2282,7 +2323,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle GET requests for /admin/logs to display the logs
+	 * Handle GET requests for /admin/logs to display the logs.
 	 */
 	public function get_logs()
 	{
@@ -2290,7 +2331,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle POST requests for /admin/logs to display the logs
+	 * Handle POST requests for /admin/logs to display the logs.
 	 */
 	public function post_logs()
 	{
@@ -2299,7 +2340,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Assign values needed to display the logs page to the theme based on handlervars and parameters
+	 * Assign values needed to display the logs page to the theme based on handlervars and parameters.
 	 *
 	 */
 	private function fetch_logs($params = NULL)
@@ -2466,11 +2507,11 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handles ajax requests from the logs page
+	 * Handles AJAX requests from the logs page.
 	 */
 	public function ajax_logs()
 	{
-		Utils::check_request_method( array( 'POST' ) ); 
+		Utils::check_request_method( array( 'POST' ) );
 		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
@@ -2495,13 +2536,19 @@ class AdminHandler extends ActionHandler
 		echo json_encode($output);
 	}
 
+	/**
+	 * Handles AJAX requests to update groups.
+	 */
 	public function ajax_update_groups( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
-		
+
 		echo json_encode( $this->update_groups( $handler_vars ) );
 	}
 
+	/**
+	 * Handles AJAX requests from the groups page.
+	 */
 	public function ajax_groups( $handler_vars )
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
@@ -2536,6 +2583,9 @@ class AdminHandler extends ActionHandler
 		));
 	}
 
+	/**
+	 * Add or delete groups.
+	 */
 	public function update_groups($handler_vars, $ajax = TRUE)
 	{
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
@@ -2643,6 +2693,9 @@ class AdminHandler extends ActionHandler
 
 	}
 
+	/**
+	 * Handles GET requests for the groups page.
+	 */
 	public function get_groups()
 	{
 		// prepare the WSSE tokens
@@ -2653,6 +2706,9 @@ class AdminHandler extends ActionHandler
 		$this->display( 'groups' );
 	}
 
+	/**
+	 * Handles POST requests for the groups page.
+	 */
 	public function post_groups()
 	{
 		// prepare the WSSE tokens
@@ -2665,6 +2721,9 @@ class AdminHandler extends ActionHandler
 		$this->display( 'groups' );
 	}
 
+	/**
+	 * Handles GET requests for a group's page.
+	 */
 	public function get_group()
 	{
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
@@ -2728,6 +2787,9 @@ class AdminHandler extends ActionHandler
 
 	}
 
+	/**
+	 * Handles POST requests to a group's page.
+	 */
 	public function post_group()
 	{
 		$group = UserGroup::get_by_id($this->handler_vars['id']);
@@ -2790,7 +2852,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Handle GET requests for /admin/tags to display the tags
+	 * Handle GET requests for /admin/tags to display the tags.
 	 */
 	public function get_tags()
 	{
@@ -2803,8 +2865,8 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * handles AJAX from /admin/tags
-	 * used to delete and rename tags
+	 * Handles AJAX from /admin/tags
+	 * Used to delete and rename tags
 	 */
 	public function ajax_tags( $handler_vars)
 	{
@@ -2874,7 +2936,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	* Handles get requests for the system information page
+	* Handles get requests for the system information page.
 	*/
 	public function get_sysinfo()
 	{
@@ -2937,9 +2999,9 @@ class AdminHandler extends ActionHandler
 
 
 	/**
-	 * Display a blank admin page with appropriate navigation
+	 * Display a blank admin page with appropriate navigation.
 	 * This function terminates execution before returning.
-	 * Useful for displaying errors when permission is denied for viewing
+	 * Useful for displaying errors when permission is denied for viewing.
 	 *
 	 * @param string $content Optional default content to display
 	 */
@@ -3048,7 +3110,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Remove menus for which the user does not have qualifying permissions
+	 * Remove menus for which the user does not have qualifying permissions.
 	 *
 	 * @param array $menuarray The master array of admin menu items
 	 * @return array The modified array of admin menu items
@@ -3089,6 +3151,9 @@ class AdminHandler extends ActionHandler
 		return $menuarray;
 	}
 
+	/**
+	 * Checks if the currently logged in user has access to a page and post type.
+	 */
 	private function access_allowed( $page, $type )
 	{
 		$user = User::identify();
@@ -3204,6 +3269,9 @@ class AdminHandler extends ActionHandler
 		return $result;
 	}
 
+	/**
+	 * How to display the built-in post types.
+	 */
 	public function default_post_type_display($type, $foruse)
 	{
 		$names = array(
@@ -3221,7 +3289,7 @@ class AdminHandler extends ActionHandler
 
 	/**
 	 * Assigns the main menu to $mainmenu into the theme.
-		*/
+	 */
 	protected function set_admin_template_vars( $theme )
 	{
 		$this->get_main_menu( $theme );
@@ -3236,10 +3304,13 @@ class AdminHandler extends ActionHandler
 		$this->theme->display( $template_name );
 	}
 
+	/**
+	 * Handles AJAX requests from media silos.
+	 */
 	public function ajax_media( $handler_vars )
 	{
-		Utils::check_request_method( array( 'POST' ) ); 
-		
+		Utils::check_request_method( array( 'POST' ) );
+
 		$path = $handler_vars['path'];
 		$rpath = $path;
 		$silo = Media::get_silo( $rpath, true );  // get_silo sets $rpath by reference to the path inside the silo
@@ -3275,9 +3346,12 @@ class AdminHandler extends ActionHandler
 		echo json_encode( $output );
 	}
 
+	/**
+	 * Handles AJAX requests from media panels.
+	 */
 	public function ajax_media_panel( $handler_vars )
 	{
-		Utils::check_request_method( array( 'POST' ) ); 
+		Utils::check_request_method( array( 'POST' ) );
 		
 		$path = $handler_vars['path'];
 		$panelname = $handler_vars['panel'];
@@ -3307,7 +3381,7 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
-	 * Function used to set theme variables to the add module dashboard widget
+	 * Function used to set theme variables to the add module dashboard widget.
 	 * TODO make this form use an AJAX call instead of reloading the page
 	 */
 	public function filter_dash_module_add_item( $module, $id, $theme )
