@@ -261,8 +261,8 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Handle incoming requests for Atom entry collections
-		*/
+	 * Handle incoming requests for Atom entry collections
+	 */
 	public function act_collection()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
@@ -278,9 +278,9 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* function act_entry
-		* 'index' should be 'slug'
-		*/
+	 * function act_entry
+	 * 'index' should be 'slug'
+	 */
 	public function act_entry()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST', 'PUT', 'DELETE' ) );
@@ -300,18 +300,18 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Handle incoming requests for RSD
-		*
-		* @todo Move the internal list of supported feeds into options to allow dynamic editing of capabilities
-		*/
+	 * Handle incoming requests for RSD
+	 *
+	 * @todo Move the internal list of supported feeds into options to allow dynamic editing of capabilities
+	 */
 	public function act_rsd()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		
+
 		/**
-			* List of APIs supported by the RSD
-			* Refer to namespace for required elements/attributes.
-			*/
+		 * List of APIs supported by the RSD
+		 * Refer to namespace for required elements/attributes.
+		 */
 		$apis_list = array(
 			'Atom' => array(
 				'preferred' => 'true',
@@ -396,8 +396,8 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Handle incoming requests for the introspection document
-		*/
+	 * Handle incoming requests for the introspection document
+	 */
 	public function act_introspection()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
@@ -437,32 +437,32 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Handle incoming requests for the Atom entry collection for a specific tag
-		*/
+	 * Handle incoming requests for the Atom entry collection for a specific tag
+	 */
 	public function act_tag_collection()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		
+
 		$this->get_collection();
 	}
 
 	/**
-		* Handle incoming requests for the Atom entry collection for all comments
-		*/
+	 * Handle incoming requests for the Atom entry collection for all comments
+	 */
 	function act_comments( $params = array() )
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		
+
 		$this->get_comments( $params );
 	}
 
 	/**
-		* Handle incoming requests for the Atom entry collection for comments on an entry
-		*/
+	 * Handle incoming requests for the Atom entry collection for comments on an entry
+	 */
 	function act_entry_comments()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		
+
 		if ( isset( $this->handler_vars['slug'] ) ) {
 			$this->act_comments( array( 'slug' => $this->handler_vars['slug'] ) );
 		}
@@ -472,10 +472,10 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Output an Atom collection of comments based on the supplied parameters.
-		*
-		* @param array $params An array of parameters passed to Comments::get() to retrieve comments
-		*/
+	 * Output an Atom collection of comments based on the supplied parameters.
+	 *
+	 * @param array $params An array of parameters passed to Comments::get() to retrieve comments
+	 */
 	function get_comments( $params = array() )
 	{
 		$comments = null;
@@ -541,10 +541,10 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Output the Atom entry for a specific slug
-		*
-		* @param string $slug The slug to get the entry for
-		*/
+	 * Output the Atom entry for a specific slug
+	 *
+	 * @param string $slug The slug to get the entry for
+	 */
 	public function get_entry( $slug )
 	{
 		$params['slug']= $slug;
@@ -599,10 +599,10 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Updates (editing) a post entry that is sent via APP.
-		*
-		* @param string $slug The slug of the entry to save
-		*/
+	 * Updates (editing) a post entry that is sent via APP.
+	 *
+	 * @param string $slug The slug of the entry to save
+	 */
 	public function put_entry( $slug )
 	{
 		$params = array();
@@ -640,10 +640,10 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Delete a post based on the HTTP DELETE request via Atom
-		*
-		* @param string $slug The post slug to delete
-		*/
+	 * Delete a post based on the HTTP DELETE request via Atom
+	 *
+	 * @param string $slug The post slug to delete
+	 */
 	public function delete_entry( $slug )
 	{
 		$params = array();
@@ -692,11 +692,11 @@ class AtomHandler extends ActionHandler
 
 		// Get posts to put in the feed
 		$page = ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
-		if( $page > 1 ) {
+		if ( $page > 1 ) {
 			$params['page'] = $page;
 		}
 
-		if(!isset($params['content_type'])) {
+		if ( !isset($params['content_type']) ) {
 			$params['content_type'] = Post::type('entry');
 		}
 		$params['content_type'] = Plugins::filter( 'atom_get_collection_content_type', $params['content_type'] );
@@ -714,7 +714,7 @@ class AtomHandler extends ActionHandler
 
 		$posts = Posts::get( $params );
 		
-		if( count( $posts ) ) {
+		if ( count( $posts ) ) {
 			$updated = $posts[0]->updated;
 		}
 		else {
@@ -736,8 +736,8 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		* Accepts an Atom entry for insertion as a new post.
-		*/
+	 * Accepts an Atom entry for insertion as a new post.
+	 */
 	public function post_collection()
 	{
 		if ( $this->is_auth( TRUE ) ) {
