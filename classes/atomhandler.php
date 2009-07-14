@@ -213,12 +213,13 @@ class AtomHandler extends ActionHandler
 			$entry_id = $feed_entry->addChild( 'id', $post->guid );
 
 			$entry_updated = $feed_entry->addChild( 'updated', $post->updated->get('c') );
-			$entry_edited = $feed_entry->addChild( 'app:edited', $post->updated->get('c'), 'http://www.w3.org/2007/app' );
+			$entry_edited = $feed_entry->addChild( 'app:edited', $post->modified->get('c'), 'http://www.w3.org/2007/app' );
+			$entry_published = $feed_entry->addChild( 'published', $post->pubdate->get('c') );
 
-				foreach ( $post->tags as $tag ) {
-					$entry_category = $feed_entry->addChild( 'category' );
-					$entry_category->addAttribute( 'term', $tag );
-				}
+			foreach ( $post->tags as $tag ) {
+				$entry_category = $feed_entry->addChild( 'category' );
+				$entry_category->addAttribute( 'term', $tag );
+			}
 
 			$entry_content = $feed_entry->addChild( 'content', $content );
 			$entry_content->addAttribute( 'type', 'html' );
@@ -560,10 +561,15 @@ class AtomHandler extends ActionHandler
 			$title = ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
 
-			$xml = $this->create_atom_wrapper( $alternate, $self, $id, $post->updated  );
+			// Build the namespaces, plugins can alter it to override or insert their own.
+			$namespaces = array( 'default' => 'http://www.w3.org/2005/Atom' );
+			$namespaces = Plugins::filter( 'atom_get_entry_namespaces', $namespaces );
+			$namespaces = array_map( create_function( '$value,$key', 'return ( ( $key == "default" ) ? "xmlns" : "xmlns:" . $key ) . "=\"" . $value ."\"";' ), $namespaces, array_keys($namespaces) );
+			$namespaces = implode( ' ', $namespaces );
 
-			$entry = $xml->addChild('entry');
-			$entry->addAttribute( 'xmlns', 'http://www.w3.org/2005/Atom' );
+			$xml = new SimpleXMLElement( '<entry ' . $namespaces . '></entry>' );
+
+			$entry = $xml;
 			$entry_title = $entry->addChild( 'title', $title );
 
 			$entry_author = $entry->addChild( 'author' );
@@ -578,13 +584,14 @@ class AtomHandler extends ActionHandler
 			$entry_link->addAttribute( 'href', URL::get( 'atom_entry', "slug={$post->slug}" ) );
 
 			$entry_id = $entry->addChild( 'id', $post->guid );
-			$entry_updated = $xml->addChild( 'updated', $post->updated->get('c') );
-			$entry_published = $xml->addChild( 'published', $post->pubdate->get('c') );
+			$entry_updated = $entry->addChild( 'updated', $post->updated->get('c') );
+			$entry_edited = $entry->addChild( 'app:edited', $post->modified->get('c'), 'http://www.w3.org/2007/app' );
+			$entry_published = $entry->addChild( 'published', $post->pubdate->get('c') );
 
-				foreach ( $post->tags as $tag ) {
-					$entry_category = $entry->addChild( 'category' );
-					$entry_category->addAttribute( 'term', $tag );
-				}
+			foreach ( $post->tags as $tag ) {
+				$entry_category = $entry->addChild( 'category' );
+				$entry_category->addAttribute( 'term', $tag );
+			}
 
 			$entry_content = $entry->addChild( 'content', $content );
 			$entry_content->addAttribute( 'type', 'html' );
@@ -594,7 +601,8 @@ class AtomHandler extends ActionHandler
 
 			ob_clean();
 			header( 'Content-Type: application/atom+xml' );
-			print $xml;
+			
+			print $this->tidy_xml($xml);
 		}
 	}
 
@@ -732,9 +740,39 @@ class AtomHandler extends ActionHandler
 
 		ob_clean();
 		header( 'Content-Type: application/atom+xml' );
-		print $xml;
+
+		print $this->tidy_xml($xml);
 	}
 
+	/**
+	 * Use Tidy to tidy XML output for debugging by humans
+	 * 
+	 * @param string $xml The unformatted input XML
+	 * @return string Formatted XML
+	 */
+	protected function tidy_xml($xml) 
+	{
+		if(!DEBUG) {
+			return $xml;
+		}
+		// Tidy configuration -- make xml readable
+		if(class_exists('tidy', false)) {
+			$config = array(
+				'indent' => true,
+				'output-xml' => true,
+				'input-xml' => true,
+				'wrap' => 200
+			);
+
+			$tidy = new tidy();
+			$tidy->parseString($xml, $config, 'utf8');
+			$tidy->cleanRepair();
+			$xml = $tidy;
+		}
+
+		return $xml;		
+	}
+	
 	/**
 	 * Accepts an Atom entry for insertion as a new post.
 	 */
