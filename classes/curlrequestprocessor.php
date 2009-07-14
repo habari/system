@@ -91,7 +91,7 @@ class CURLRequestProcessor implements RequestProcessor
 				E_USER_WARNING );
 		}
 
-		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
+		if ( substr( curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 0, 1 ) != 2 ) {
 			return Error::raise( sprintf( _t('Bad return code (%1$d) for: %2$s'),
 				curl_getinfo( $ch, CURLINFO_HTTP_CODE ),
 				$url ),
