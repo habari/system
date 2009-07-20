@@ -745,9 +745,10 @@ class AdminHandler extends ActionHandler
 		$controls = $form->append( 'wrapper', 'page_controls' );
 		$controls->class = 'container controls transparent';
 
-		$controls->append( 'static', 'reassign', '<span class="pct35 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct5 conjunction">' . _t('and') . '</span><span class="pct30"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
 		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
 		$submit->class[] = 'pct30';
+		
+		$controls->append( 'static', 'reassign', '<span class="pct35 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct5 conjunction">' . _t('and') . '</span><span class="pct30"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
 
 		$form->on_success( array( $this, 'form_user_success' ) );
 

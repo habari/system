@@ -1372,6 +1372,10 @@ body.page-user .userstats, body.page-group .groupstats {
 	padding: 10px;
 }
 
+body.page-user #apply {
+	float: right;
+}
+
 /*-- GROUPS */
 body.page-groups .allgroups .users strong, body.page-groups .allgroups .users strong a {
 	color:#444;
