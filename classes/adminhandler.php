@@ -2987,7 +2987,8 @@ class AdminHandler extends ActionHandler
 		foreach ( $raw_plugins as $plugin ) {
 			$file = $plugin->get_file();
 			if ( preg_match('%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches) ) {
-				$plugins[strtolower($matches[1])][$plugin->info->name] = $file;
+				// A plugin's info is XML, cast the element to a string. See #1026.
+				$plugins[strtolower($matches[1])][(string)$plugin->info->name] = $file;
 			}
 			else {
 				$plugins['other'][$plugin->info->name] = $file;
