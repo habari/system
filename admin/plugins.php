@@ -53,9 +53,12 @@ if(isset($config_plugin)):
 		</div>
 
 		<p class="description"><?php echo $config_plugin['info']->description; ?></p>
-
+		
+		<div class="pluginhelp"<?php if($helpaction == '_help'): ?> class="active"<?php endif; ?>>
+			<?php Plugins::act( 'plugin_ui', $config_plugin['plugin_id'], '_help' ); ?>
+		</div>
+		
 		<div id="pluginconfigure">
-			<?php Plugins::act( 'plugin_ui', $configure, $helpaction ); ?>
 			<?php Plugins::act( 'plugin_ui', $configure, $configaction ); ?>
 			<a class="link_as_button" href="<?php URL::out( 'admin', 'page=plugins' ); ?>"><?php _e('Close'); ?></a>
 		</div>
@@ -121,10 +124,15 @@ foreach($plugin['info']->author as $author) {
 				<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
 			</ul>
 			<?php endif; ?>
+			
 
 		</div>
 
 		<p class="description"><?php echo $plugin['info']->description; ?></p>
+
+		<div class="pluginhelp"<?php if($helpaction == '_help'): ?> class="active"<?php endif; ?>>
+			<?php Plugins::act( 'plugin_ui', $plugin['plugin_id'], '_help' ); ?>
+		</div>
 
 		<?php if ( isset( $this->engine_vars['configure'] ) && ( $configure == $plugin['plugin_id'] ) ): ?>
 		<div id="pluginconfigure">
