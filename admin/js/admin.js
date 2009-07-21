@@ -528,10 +528,25 @@ var pluginManage = {
 
 		$('.plugins .item').hover( function() {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '#FAFAFA');
-			}, function() {
+		}, function() {
 			$(this).find('#pluginconfigure:visible').parent().css('background', '');
-	  }
-		);
+	  	});
+		
+		$('.plugins .item a.help').click(function() {
+			var help = $('.pluginhelp', $(this).parents('.item'));
+						
+			if( help.hasClass('active') ) {
+				help.slideUp();
+				help.add(this).removeClass('active');
+			}
+			else {
+				help.slideDown();
+				help.add(this).addClass('active');
+			}
+			
+			return false;
+			
+		});
 	}
 };
 
