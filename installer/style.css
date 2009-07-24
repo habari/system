@@ -68,20 +68,20 @@ a {
 .help-me {
 	float: right;
 	position: absolute;
-	top: 15px;
-	right: 20px;
+	top: 20px;
+	right: 25px;
 	display: none;
-	height: 20px;
-	width: 20px;
+	height: 15px;
+	width: 15px;
 	text-indent: -3000px;
-	background: url(images/install-step_h2_help-me.png) scroll no-repeat top left;
+	background: url(../admin/images/help_icon.png) scroll no-repeat top left;
 	outline: none;
 	}
 .ready .help-me {
 	display:block;
 }
 .help-me:hover {
-	background: url(images/install-step_h2_help-me_over.png) scroll no-repeat top left;
+	background: url(../admin/images/help_icon_over.png) scroll no-repeat top left;
 	}
 
 .options, .advanced-options {
