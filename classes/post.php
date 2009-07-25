@@ -398,7 +398,7 @@ class Post extends QueryRecord implements IsContent
 			|| ( $this->newfields['guid'] == '' )  // GUID is empty
 			|| ( $this->newfields['guid'] == '//?p=' ) // GUID created by WP was erroneous (as is too common)
 		) {
-			$result = 'tag:' . Site::get_url( 'hostname' ) . ',' . date( 'Y' ) . ':' . $this->setslug() . '/' . time();
+			$result = 'tag:' . Site::get_url( 'hostname' ) . ',' . date( 'Y' ) . ':' . rawurlencode($this->setslug()) . '/' . time();
 			$this->newfields['guid'] = $result;
 		}
 		return $this->newfields['guid'];
