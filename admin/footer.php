@@ -10,7 +10,7 @@
 	 <span class="middot">&middot;</span>
 	 <span><?php _e('Logged in as'); ?></span>
 	 <?php if( User::identify()->can( 'manage_users' ) ) { ?>
-			 <a href="<?php Site::out_url( 'habari' ); ?>/admin/user" title="<?php _e('Go to your user page'); ?>"><?php echo User::identify()->displayname ?></a>
+			 <a href="<?php Site::out_url( 'admin' ); ?>/user" title="<?php _e('Go to your user page'); ?>"><?php echo User::identify()->displayname ?></a>
 	<?php } else { ?>
 			 <span><?php echo User::identify()->displayname ?></span>
 	<?php } ?>
@@ -20,7 +20,7 @@
 		if ( User::identify()->can('super_user') ) {
 			?>
 				<span class="middot">&middot;</span>
-				<span><a href="<?php Site::out_url( 'habari' ); ?>/admin/sysinfo"> <?php _e( 'System Information'); ?></a></span>
+				<span><a href="<?php Site::out_url( 'admin' ); ?>/sysinfo"> <?php _e( 'System Information'); ?></a></span>
 			<?php
 		}
 	?>
