@@ -54,7 +54,7 @@ class Themes
 					$themedata['screenshot'] = Site::get_url( 'habari' ) . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
 				}
 				else {
-					$themedata['screenshot'] = Site::get_url( 'habari' ) . "/system/admin/images/screenshot_default.png";
+					$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
 				}
 
 				self::$all_data[$theme_dir] = $themedata;
