@@ -10,4 +10,12 @@
 	<description><![CDATA[Provides simple file uploading and embedding functionality.]]></description>
 
 	<copyright>2009</copyright>
+	
+	<help>
+		<value><![CDATA[
+			<p>This plugin provides basic media functionality by allowing users to insert into posts images that exist on the server.</p>
+			<p>Depending on server capabilities, users may also be able to upload new images and create directories for new images on the server.</p>
+		]]></value>
+	</help>
+	
 </pluggable>

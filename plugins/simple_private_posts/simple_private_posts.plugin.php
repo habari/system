@@ -3,14 +3,6 @@
 class SimplePrivatePosts extends Plugin
 {
 
-	public function help()
-	{
-		return <<< END_HELP
-<p>The "private" token is automatically set to <em>deny</em> for the "Anonymous" group, visitors to your site who are not logged in, which prevents them from seeing posts with the private token. You can select other groups to deny permission to posts with the "private" token on the groups page. </p>
-<p>On the post creation page, a new checkbox labeled "Private Post" will appear in the settings area. Check this box to make the post private.</p>
-END_HELP;
-	}
-
 	public function action_plugin_activation()
 	{
 		ACL::create_token('private', 'Permissions on posts marked as "private"');
