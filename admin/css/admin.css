@@ -1529,6 +1529,16 @@ body.page-options .item {
 	background-color: #e3e3e3;
 }
 
+.pluginhelp .help code.block {
+	display: block;
+}
+
+.pluginhelp p.warning {
+	padding-left: 20px;
+	background: url('../images/warning.png') no-repeat left center;
+	color: #FF4500;
+}
+
 .pluginhelp .help em {
 	font-style: italic;
 }

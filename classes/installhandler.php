@@ -196,7 +196,8 @@ class InstallHandler extends ActionHandler
 			'habarisilo.plugin.php',
 			'pingback.plugin.php',
 			'spamchecker.plugin.php',
-			'undelete.plugin.php'
+			'undelete.plugin.php',
+			'autop.plugin.php'
 		);
 
 		foreach ( $all_plugins as $file ) {

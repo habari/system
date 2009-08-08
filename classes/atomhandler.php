@@ -22,21 +22,6 @@ class AtomHandler extends ActionHandler
 	public function __construct()
 	{
 		Plugins::act('init_atom');
-		/**
-		* The following Format::apply calls should be moved into a plugin that is
-		* active by default.  They apply autop formatting to the Atom content
-		* that preserves line breaks in the feed output.
-		*
-		* These formatters should probably not be applied in the case of APP usage,
-		* since you'll want to edit the actual raw data, and not an autop'ed
-		* version of that data.
-		* Currently, we use the user login to determine if the Atom is being used
-		* for APP instead of a feed, but maybe there should be a separate
-		* feed URL?
-		*/
-		if ( !$this->is_auth() ) {
-			Format::apply('autop', 'post_content_atom');
-		}
 	}
 
 	/**
