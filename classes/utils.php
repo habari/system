@@ -315,7 +315,7 @@ class Utils
 				.utils__debugger .utils__arg a{color:#ff3333;}
 				.utils__debugger .utils__arg span{display:none;}
 				.utils__debugger .utils__arg span span{display:inline;}
-				.utils__debugger .utils__arg span .utils__block{display:block;background:#990000;margin:0px 2em;-moz-border-radius:10px;padding:5px;}
+				.utils__debugger .utils__arg span .utils__block{display:block;background:#990000;margin:0px 2em;border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:9px;padding:5px;}
 				</style>
 			";
 			echo $output;
