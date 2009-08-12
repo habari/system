@@ -183,7 +183,7 @@ class SpamChecker extends Plugin
 	}
 
 	/**
-	 * Ensure that the code assigne dto this user for their commenting URL is genuine
+	 * Ensure that the code assigned to this user for their commenting URL is genuine
 	 *
 	 * @param float $spam_rating The spamminess of the comment as detected by other plugins
 	 * @param Comment $comment The submitted comment object
