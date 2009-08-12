@@ -479,7 +479,7 @@ var itemManage = {
 		spinner.start();
 
 		$.ajax({
-			type: 'POST',
+			type: 'GET',
 			url: itemManage.fetchURL,
 			data: '&search=' + liveSearch.getSearchText() + '&offset=' + offset + '&limit=' + limit,
 			dataType: 'json',
