@@ -39,13 +39,18 @@ class FeedbackHandler extends ActionHandler
 		$form->get(null, false);
 		// Was this a FormUI form, or a regular comment form?
 		if($form->submitted) {
+
+			// To be eventually incorporated more fully into FormUI.
+			Plugins::act( 'comment_form_submit', $form );
+
 			if($form->success) {
 				$this->add_comment(
 					$post->id,
 					$form->commenter->value,
 					$form->email->value,
 					$form->url->value,
-					$form->content->value
+					$form->content->value,
+					$form->get_values()
 				);
 			}
 			else {
@@ -84,7 +89,7 @@ class FeedbackHandler extends ActionHandler
 	 * @param string $url The commenter's website URL
 	 * @param string $content The comment content
 	 */
-	function add_comment($post, $name = null, $email = null, $url = null, $content = null)
+	function add_comment($post, $name = null, $email = null, $url = null, $content = null, $extra = null )
 	{
 		if(is_numeric($post)) {
 			$post = Post::get( array( 'id' => $post ) );
@@ -184,7 +189,8 @@ class FeedbackHandler extends ActionHandler
 		Themes::create();
 
 		$spam_rating = 0;
-		$spam_rating = Plugins::filter('spam_filter', $spam_rating, $comment, $this->handler_vars);
+// 		Utils::debug( $extra ); // die;
+		$spam_rating = Plugins::filter( 'spam_filter', $spam_rating, $comment, $this->handler_vars, $extra );
 
 		$comment->insert();
 		$anchor = '';
