@@ -2049,12 +2049,12 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_posts()
 	{
-		Utils::check_request_method( array( 'POST' ) );
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		$params = $_POST;
+		$params = $_GET;
 
 		$this->fetch_posts( $params );
 		$items = $this->theme->fetch( 'posts_items' );
@@ -2081,13 +2081,13 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_comments()
 	{
-		Utils::check_request_method( array( 'POST' ) );
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$this->theme->theme = $this->theme;
 
-		$params = $_POST;
+		$params = $_GET;
 
 		$this->fetch_comments( $params );
 		$items = $this->theme->fetch( 'comments_items' );
@@ -2512,12 +2512,12 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_logs()
 	{
-		Utils::check_request_method( array( 'POST' ) );
+		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 		
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		$params = $_POST;
+		$params = $_GET;
 
 		$this->fetch_logs( $params );
 		$items = $this->theme->fetch( 'logs_items' );
