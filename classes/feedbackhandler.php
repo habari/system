@@ -189,7 +189,6 @@ class FeedbackHandler extends ActionHandler
 		Themes::create();
 
 		$spam_rating = 0;
-// 		Utils::debug( $extra ); // die;
 		$spam_rating = Plugins::filter( 'spam_filter', $spam_rating, $comment, $this->handler_vars, $extra );
 
 		$comment->insert();
