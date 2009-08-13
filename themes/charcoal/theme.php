@@ -69,6 +69,10 @@ class charcoal extends Theme
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
 		}
 		$this->assign( 'post_id', ( isset($this->post) && $this->post->content_type == Post::type('page') ) ? $this->post->id : 0 );
+
+		// Add FormUI template placing the input before the label
+		$this->add_template( 'charcoal_text', dirname(__FILE__) . '/formcontrol_text.php' );
+
 		parent::add_template_vars();
 	}
 		
@@ -162,5 +166,24 @@ class charcoal extends Theme
 		
 		return $theme->fetch( 'taglist' );
 	}
+
+	/**
+	 * Customize comment form layout. Needs thorough commenting.
+	 */
+	public function action_form_comment( $form ) { 
+		$form->commenter->caption = '<strong>' . _t('Name') . '</strong> <span class="required">' . ( Options::get('comments_require_id') == 1 ? _t('(Required)') : '' ) . '</span></label>';
+		$form->commenter->template = 'charcoal_text';
+		$form->commenter->value = $this->commenter_name;
+		$form->email->caption = '<strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get('comments_require_id') == 1 ? _t('- Required)') : ')' ) . '</span></label>';
+		$form->email->template = 'charcoal_text';
+		$form->email->value = $this->commenter_email;
+		$form->url->caption = '<strong>' . _t('Website') . '</strong>';
+		$form->url->template = 'charcoal_text';
+		$form->url->value = $this->commenter_url;
+	        $form->content->caption = '';
+		$form->content->value = $this->commenter_content;
+		$form->submit->caption = _t( 'Submit' );
+	}
+
 }
 ?>
