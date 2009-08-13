@@ -30,6 +30,10 @@ class CURLRequestProcessor implements RequestProcessor
 		if ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) {
 			$this->can_followlocation = false;
 		}
+
+		if ( !defined( 'FILE_CACHE_LOCATION' ) ) {
+			define( 'FILE_CACHE_LOCATION', HABARI_PATH . '/user/cache/' );
+		}
 	}
 
 	public function execute( $method, $url, $headers, $body, $timeout )
@@ -59,17 +63,20 @@ class CURLRequestProcessor implements RequestProcessor
 			curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n
 		}
 
-		$fh = @tmpfile();
-		if (! $fh ) {
-			$tmp = tempnam( HABARI_PATH . '/user/cache/', 'RR' );
-			if ( ! $tmp ) {
-				return Error::raise( _t( ' %s: CURL Error. Unable to create temporary file name.', array( __CLASS__ ) ), E_USER_WARNING );
-			}
+		/**
+		 * @todo Possibly find a way to generate a temp file without needing the user
+		 * to set write permissions on cache directory
+		 *
+		 * @todo Fallback to using the the old way if the cache directory isn't writable
+		 */
+		$tmp = tempnam( FILE_CACHE_LOCATION, 'RR' );
+		if ( ! $tmp ) {
+			return Error::raise( _t( ' %s: CURL Error. Unable to create temporary file name.', array( __CLASS__ ) ), E_USER_WARNING );
+		}
 
-			$fh = @fopen( $tmp, 'wb' );
-			if ( ! $fh ) {
-				return Error::raise( _t( ' %s: CURL Error. Unable to open temporary file.', array( __CLASS__ ) ), E_USER_WARNING );
-			}
+		$fh = @fopen( $tmp, 'wb' );
+		if ( ! $fh ) {
+			return Error::raise( _t( ' %s: CURL Error. Unable to open temporary file.', array( __CLASS__ ) ), E_USER_WARNING );
 		}
 
 		curl_setopt( $ch, CURLOPT_FILE, $fh );
