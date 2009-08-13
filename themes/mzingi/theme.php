@@ -74,6 +74,37 @@ class CornerStone extends Theme
 	    parent::act_display_home( array( 'not:tag' => 'aside' ) );
 	}
 
+	/**
+	 * Customize comment form layout with fieldsets. Needs thorough commenting.
+	 */
+	public function action_form_comment( $form ) { 
+		$form->append( 'fieldset', 'commenterinfo', _t( 'About You' ) );
+		$form->move_before( $form->commenterinfo, $form->commenter );
+
+		$form->commenter->move_into($form->commenterinfo);
+		$form->commenter->caption = _t('Name:') . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
+		$form->commenter->value = $this->commenter_name;
+
+		$form->email->move_into( $form->commenterinfo );
+		$form->email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>'; 
+		$form->email->value = $this->commenter_email;
+
+		$form->url->move_into( $form->commenterinfo );
+		$form->url->caption = _t( 'Web Address:' );
+		$form->url->value = $this->commenter_url;
+
+		$form->append('static','disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>') );
+		$form->disclaimer->move_into( $form->commenterinfo );
+
+		$form->append('fieldset', 'contentbox', _t( 'Add to the Discussion' ) );
+		$form->move_before($form->contentbox, $form->content);
+
+		$form->content->move_into($form->contentbox);
+	        $form->content->caption = _t( 'Message: (Required)' );
+		$form->content->value = $this->commenter_content;
+		$form->submit->caption = _t( 'Submit' );
+	}
+
 }
 
 ?>

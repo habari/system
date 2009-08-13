@@ -64,37 +64,7 @@ if ( ! defined('HABARI_PATH' ) ) { die( 'Please do not load this page directly. 
 	<div class="comments">
 
 		<br>
-		<form id="comments_form" action="<?php URL::out( 'submit_feedback', array( 'id' => $post->id ) ); ?>" method="post">
-
-		<fieldset>
-			<legend><?php _e('About You'); ?></legend>
-			<p>
-			<label for="name"><?php _e('Name:'); ?> <span class="required"><?php if (Options::get('comments_require_id') == 1) : ?> *<?php _e('Required'); ?><?php endif; ?></span></label>
-			<input name="name" id="name" value="<?php echo $commenter_name; ?>" type="text" >
-			</p>
-
-			<p>
-			<label for="email"><?php _e('Email Address:'); ?> <span class="required"><?php if (Options::get('comments_require_id') == 1) : ?> *<?php _e('Required'); ?><?php endif; ?></span></label>
-			<input name="email" id="email" value="<?php echo $commenter_email; ?>" type="text" >
-			</p>
-
-			<p>
-			<label for="url"><?php _e('Web Address:'); ?></label>
-			<input name="url" id="url" value="<?php echo $commenter_url; ?>" type="text" >
-			</p>
-			<p><em><small><?php _e('Email address is not published'); ?></small></em></p>
-		</fieldset>
-
-		<fieldset>
-			<legend><?php _e('Add to the Discussion'); ?></legend>
-			<p>
-			<label for="content"><?php _e('Message:'); ?> (<?php _e('Required'); ?>)</label>
-			<textarea name="content" id="commentContent" cols="20" rows="10"></textarea>
-			</p>
-		</fieldset>
-
-		<p><input id="submit" class="submit" name="submit" value="<?php _e('Submit'); ?>" type="submit"></p>
-		</form>
+<?php $post->comment_form()->out(); ?>
 	</div>
 
 
