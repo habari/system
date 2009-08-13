@@ -52,6 +52,9 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
 		$this->assign( 'show_author' , false ); //Display author in posts
 
+		//Add formcontrol template with input before label
+		$this->add_template( 'k2_text', dirname(__FILE__) . '/formcontrol_text.php' );
+
 
 		if( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
@@ -110,6 +113,26 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 			return $out;
 		}
 	}
+
+
+	/**
+	 * Customize comment form layout. Needs thorough commenting.
+	 */
+	public function action_form_comment( $form ) { 
+		$form->commenter->caption = '<small><strong>' . _t('Name') . '</strong></small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
+		$form->commenter->template = 'k2_text';
+		$form->commenter->value = $this->commenter_name;
+		$form->email->caption = '<small><strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
+		$form->email->template = 'k2_text';
+		$form->email->value = $this->commenter_email;
+		$form->url->caption = '<small><strong>' . _t('Website') . '</small></strong>';
+		$form->url->template = 'k2_text';
+		$form->url->value = $this->commenter_url;
+	        $form->content->caption = '';
+		$form->content->value = $this->commenter_content;
+		$form->submit->caption = _t( 'Submit' );
+	}
+
 }
 
 ?>
