@@ -22,7 +22,7 @@ class Vocabulary extends QueryRecord
 			'id' => 0,
 			'name' => '',
 			'description' => '',
-			'feature_mask' => 0,
+			'features' => array(),
 		);
 	}
 
@@ -54,11 +54,13 @@ class Vocabulary extends QueryRecord
 	public function __get( $name )
 	{
 		$out = parent::__get( $name );
-		if ( $name == 'feature_mask' && is_int($out) ) {
-			$out = new Bitmask( self::$features, $out );
+		switch($name) {
+			case 'features':
+				return unserialize($out);
 		}
-		elseif ( in_array( $name, self::$features ) ) {
-			$out = $this->feature_mask->$name;
+		if ( is_null( $out ) ) {
+			$features = unserialize( parent::__get( 'features' ) );
+			return in_array($name, $features);
 		}
 		return $out;
 	}
@@ -70,6 +72,27 @@ class Vocabulary extends QueryRecord
 	public static function get($name)
 	{
 		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE name=?', array($name), 'Vocabulary' );
+	}
+	
+	/**
+	 * Return a Vocabulary by id
+	 * 
+	 * @param integer $id The id of the vocabulary
+	 * @return Vocabulary The object requested
+	 */
+	public static function get_by_id($id)
+	{
+		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE id=?', array($id), 'Vocabulary' );
+	}
+	
+	/**
+	 * Return all vocabularies as Vocabulary objects
+	 * 
+	 * @return array An array of Vocabulary objects
+	 */
+	public static function get_all()
+	{
+		return DB::get_results( 'SELECT * FROM {vocabularies}', array(), 'Vocabulary' );
 	}
 
 	/**
@@ -108,20 +131,6 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
-	 * Produce a BitMask for a feature mask. Convenience method for use when creating a Vocabulary.
-	 * @return BitMask Mask representing the features of this vocabulary
-	 **/
-	public static function feature_mask($hierarchical, $required, $multiple, $free)
-	{
-		$features = array($hierarchical, $required, $multiple, $free);
-		// Convert booleans to an integer
-		// TODO this should be in the setter for Bitmask (but first Bitmask needs to be fixed)
-		$mask = 0;
-		for($z=0;$z<count($features);$z++){$mask += $features[$z]<<$z;}
-		return new Bitmask( self::$features, $mask );
-	}
-
-	/**
 	 * Determine whether a vocabulary exists
 	 * @param string $name a vocabulary name
 	 * @return bool whether the vocabulary exists or not
@@ -142,11 +151,6 @@ class Vocabulary extends QueryRecord
 			return false;
 		}
 
-		// Store the feature mask as an integer
-		if ( isset($this->newfields['feature_mask']) && $this->newfields['feature_mask'] instanceOf Bitmask ) {
-			$this->newfields['feature_mask'] = $this->newfields['feature_mask']->value;
-		}
-
 		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'vocabulary_insert_allow', $allow, $this );
@@ -155,7 +159,19 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_insert_before', $this );
 
+		if(isset($this->newfields['features'])) {
+			$this->newfields['features'] = serialize($this->newfields['features']);
+		}
+		if(isset($this->fields['features'])) {
+			$this->fields['features'] = serialize($this->fields['features']);
+		}
 		$result = parent::insertRecord( '{vocabularies}' );
+		if(isset($this->newfields['features'])) {
+			$this->newfields['features'] = unserialize($this->newfields['features']);
+		}
+		if(isset($this->fields['features'])) {
+			$this->fields['features'] = unserialize($this->fields['features']);
+		}
 
 		// Make sure the id is set in the vocabulary object to match the row id
 		$this->newfields['id'] = DB::last_insert_id();
@@ -185,9 +201,9 @@ class Vocabulary extends QueryRecord
 			return false;
 		}
 
-		// Store the feature mask as an integer
-		if ( isset($this->newfields['feature_mask']) && $this->newfields['feature_mask'] instanceOf Bitmask ) {
-			$this->newfields['feature_mask'] = $this->newfields['feature_mask']->value;
+		// Store the features as a serial
+		if ( isset($this->newfields['features']) && is_array($this->newfields['features']) ) {
+			$this->newfields['features'] = serialize($this->newfields['features']);
 		}
 
 		// Let plugins disallow and act before we write to the database
@@ -198,7 +214,19 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_update_before', $this );
 
+		if(isset($this->newfields['features'])) {
+			$this->newfields['features'] = serialize($this->newfields['features']);
+		}
+		if(isset($this->fields['features'])) {
+			$this->fields['features'] = serialize($this->fields['features']);
+		}
 		$result = parent::updateRecord( '{vocabularies}', array( 'id' => $this->id ) );
+		if(isset($this->newfields['features'])) {
+			$this->newfields['features'] = unserialize($this->newfields['features']);
+		}
+		if(isset($this->fields['features'])) {
+			$this->fields['features'] = unserialize($this->fields['features']);
+		}
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_update_after', $this );
@@ -288,24 +316,13 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
-	 * Gets the term object for that string. No parameter returns the root Term object.
+	 * Gets the term object by id. No parameter returns the root Term object.
+	 * @param integer $term_id The id of the term to fetch, or null for the root node
 	 * @return Term The Term object requested
 	 **/
-	public function get_term($term = null)
+	public function get_term($term_id = null)
 	{
-		// TODO There should probably be a Term::get()
-		$params = array($this->id);
-		$query = '';
-		if ( null != $term ) {
-			$params[] = $term;
-			$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND term=?';
-		}
-		else {
-			// The root node has an mptt_left value of 1
-			$params[] = 1;
-			$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left=?';
-		}
-		return DB::get_row( $query, $params, 'Term' );
+		return Term::get($this->id, $term_id);
 	}
 
 	/**
@@ -363,7 +380,7 @@ class Vocabulary extends QueryRecord
 	 * Retrieve the vocabulary
 	 * @return Array The Term objects in the vocabulary, in tree order
 	 **/
-	private function get_tree()
+	public function get_tree()
 	{
 		// TODO There should probably be a Term::get()
 		return DB::get_results( 'SELECT * FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_left ASC', array($this->id), 'Term' );

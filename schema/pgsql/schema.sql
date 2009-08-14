@@ -210,8 +210,7 @@ CREATE TABLE {$prefix}vocabularies (
   id INTEGER NOT NULL DEFAULT nextval('{$prefix}vocabularies_pkey_seq'),
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  heirarchical SMALLINT NOT NULL DEFAULT 0,
-  required SMALLINT NOT NULL DEFAULT 0,
+	features TEXT,
   PRIMARY KEY (id)
 );
 
