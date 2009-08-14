@@ -18,7 +18,7 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 Format::apply_with_hook_params( 'more', 'post_content_out', 'more' );
 // Creates an excerpt option. echo $post->content_excerpt;
 Format::apply_with_hook_params( 'more', 'post_content_excerpt', 'more', 60, 1 );
-//Format the calendar like date for home, entry.single and entry.multiple templates
+// Format the calendar like date for home, entry.single and entry.multiple templates
 Format::apply( 'format_date', 'post_pubdate_out','<span class="calyear">{Y}</span><br><span class="calday">{j}</span><br><span  class="calmonth">{F}</span>' );
 
 // We must tell Habari to use MyTheme as the custom theme class:
@@ -83,15 +83,12 @@ class CornerStone extends Theme
 
 		$form->commenter->move_into($form->commenterinfo);
 		$form->commenter->caption = _t('Name:') . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
-		$form->commenter->value = $this->commenter_name;
 
 		$form->email->move_into( $form->commenterinfo );
 		$form->email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>'; 
-		$form->email->value = $this->commenter_email;
 
 		$form->url->move_into( $form->commenterinfo );
 		$form->url->caption = _t( 'Web Address:' );
-		$form->url->value = $this->commenter_url;
 
 		$form->append('static','disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>') );
 		$form->disclaimer->move_into( $form->commenterinfo );
@@ -101,7 +98,7 @@ class CornerStone extends Theme
 
 		$form->content->move_into($form->contentbox);
 	        $form->content->caption = _t( 'Message: (Required)' );
-		$form->content->value = $this->commenter_content;
+
 		$form->submit->caption = _t( 'Submit' );
 	}
 

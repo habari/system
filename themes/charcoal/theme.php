@@ -173,15 +173,11 @@ class charcoal extends Theme
 	public function action_form_comment( $form ) { 
 		$form->commenter->caption = '<strong>' . _t('Name') . '</strong> <span class="required">' . ( Options::get('comments_require_id') == 1 ? _t('(Required)') : '' ) . '</span></label>';
 		$form->commenter->template = 'charcoal_text';
-		$form->commenter->value = $this->commenter_name;
 		$form->email->caption = '<strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get('comments_require_id') == 1 ? _t('- Required)') : ')' ) . '</span></label>';
 		$form->email->template = 'charcoal_text';
-		$form->email->value = $this->commenter_email;
 		$form->url->caption = '<strong>' . _t('Website') . '</strong>';
 		$form->url->template = 'charcoal_text';
-		$form->url->value = $this->commenter_url;
 	        $form->content->caption = '';
-		$form->content->value = $this->commenter_content;
 		$form->submit->caption = _t( 'Submit' );
 	}
 
