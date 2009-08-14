@@ -922,6 +922,30 @@ class Post extends QueryRecord implements IsContent
 	
 	public function comment_form($context = 'public')
 	{
+		// Handle comment submissions and default commenter id values
+		$cookie = 'comment_' . Options::get( 'GUID' );
+		$commenter_name = '';
+		$commenter_email = '';
+		$commenter_url = '';
+		$commenter_content = '';
+		$user = User::identify();
+		if ( isset( $_SESSION['comment'] ) ) {
+			$details = Session::get_set( 'comment' );
+			$commenter_name = $details['name'];
+			$commenter_email = $details['email'];
+			$commenter_url = $details['url'];
+			$commenter_content = $details['content'];
+		}
+		elseif ( $user->loggedin ) {
+			$commenter_name = $user->displayname;
+			$commenter_email = $user->email;
+			$commenter_url = Site::get_url( 'habari' );
+		}
+		elseif ( isset( $_COOKIE[$cookie] ) ) {
+			list( $commenter_name, $commenter_email, $commenter_url )= explode( '#', $_COOKIE[$cookie] );
+		}
+
+		// Now start the form.
 		$form = new FormUI('comment-' . $context);
 		$form->class[] = $context;
 		$form->class[] = 'commentform';
@@ -930,6 +954,7 @@ class Post extends QueryRecord implements IsContent
 		// Create the Name field
 		$form->append('text', 'commenter', 'null:null', _t('Name <span class="required">*Required</span>'), 'formcontrol_text')->add_validator('validate_required', _t('The Name field value is required'))->id = 'name';
 		$form->commenter->tabindex = 1;
+		$form->commenter->value = $commenter_name;
 
 		// Create the Email field
 		$form->append('text', 'email', 'null:null', _t('Email'), 'formcontrol_text')->add_validator('validate_email', _t('The Email field value must be a valid email address'))->id = 'email';
@@ -937,15 +962,18 @@ class Post extends QueryRecord implements IsContent
 		if(Options::get('comments_require_id') == 1) {
 			$form->email->caption = _t('Email <span class="required">*Required</span>');
 		}
+		$form->email->value = $commenter_email;
 
 		// Create the URL field
 		$form->append('text', 'url', 'null:null', _t('Website'), 'formcontrol_text')->add_validator('validate_url', _t('The Web Site field value must be a valid URL'))->id = 'url';
 		$form->url->tabindex = 3;
+		$form->url->value = $commenter_url;
 
 		// Create the Comment field
 		$form->append('text', 'content', 'null:null', _t('Comment'), 'formcontrol_textarea')->add_validator('validate_required', _t('The Content field value is required'))->id = 'content';
 		$form->content->tabindex = 4;
 		$form->content->id = 'content';
+		$form->content->value = $commenter_content;
 
 		// Create the Submit button
 		$form->append('submit', 'submit', _t('Submit'), 'formcontrol_submit');
