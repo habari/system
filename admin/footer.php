@@ -9,7 +9,7 @@
 	?> </a></span>
 	 <span class="middot">&middot;</span>
 	 <span><?php _e('Logged in as'); ?></span>
-	 <?php if( User::identify()->can( 'manage_users' ) ) { ?>
+	 <?php if( User::identify()->can( 'manage_users' ) || User::identify()->can( 'manage_self' ) ) { ?>
 			 <a href="<?php Site::out_url( 'admin' ); ?>/user" title="<?php _e('Go to your user page'); ?>"><?php echo User::identify()->displayname ?></a>
 	<?php } else { ?>
 			 <span><?php echo User::identify()->displayname ?></span>

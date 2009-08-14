@@ -787,6 +787,7 @@ SQL;
 		self::create_token( 'manage_plugins_config', _t('Configure active plugins'), 'Administration' );
 		self::create_token( 'manage_import', _t('Use the importer'), 'Administration' );
 		self::create_token( 'manage_users', _t('Add, remove, and edit users'), 'Administration' );
+		self::create_token( 'manage_self', _t('Edit own profile'), 'Administration' );
 		self::create_token( 'manage_groups', _t('Manage groups and permissions'), 'Administration' );
 		self::create_token( 'manage_logs', _t('Manage logs'), 'Administration' );
 
