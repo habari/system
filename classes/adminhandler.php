@@ -3193,10 +3193,12 @@ class AdminHandler extends ActionHandler
 				$require_any = array( 'manage_import' => true );
 				break;
 			case 'users':
-			case 'user':
 			case 'ajax_update_users':
 			case 'ajax_users':
 				$require_any = array( 'manage_users' => true );
+				break;
+			case 'user':
+				$require_any = array( 'manage_users' => true, 'manage_self' => true );
 				break;
 			case 'groups':
 			case 'group':

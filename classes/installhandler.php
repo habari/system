@@ -1445,6 +1445,11 @@ class InstallHandler extends ActionHandler
 		
 	}
 	
+	private function upgrade_db_post_3698()
+	{
+		ACL::create_token( 'manage_self', _t('Edit own profile'), 'Administration' );
+	}
+
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
