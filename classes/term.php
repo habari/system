@@ -42,6 +42,13 @@ class Term extends QueryRecord
 			self::default_fields(),
 			$this->fields
 		);
+		
+		if(is_string($paramarray)) {
+			$paramarray = array(
+				'term_display' => $paramarray,
+				'term' => Utils::slugify($paramarray),
+			);
+		}
 
 		parent::__construct( $paramarray );
 
@@ -49,11 +56,37 @@ class Term extends QueryRecord
 		// TODO How should we handle neither being present ?
 		// A Vocabulary may be used for organization, display, or both.
 		// Therefore, a Term can be constructed with a term, term_display, or both
-		if ( '' == $this->fields['term'] ) {
+		if ( $this->term == '' ) {
 			$this->fields['term'] = Utils::slugify($this->fields['term_display']);
 		}
 
 		$this->exclude_fields( 'id' );
+	}
+	
+	/**
+	 * Fetch a term from a specified vocabulary
+	 * 
+	 * @param mixed $vocab_id The id of a vocabulary, or a Vocabulary object
+	 * @param mixed $term_id A Term id or null for the root node of the vocabulary
+	 * @return Term The requested Term object instance
+	 */
+	public static function get($vocab_id, $term_id = null)
+	{
+		if($vocab_id instanceof Vocabulary) {
+			$vocab_id = $vocab_id->id;
+		}
+		$params = array($vocab_id);
+		$query = '';
+		if(is_null($term_id)) {
+			// The root node has an mptt_left value of 1
+			$params[] = 1;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left=?';
+		}
+		else {
+			$params[] = $term_id;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND id=?';
+		}
+		return DB::get_row( $query, $params, 'Term' );
 	}
 
 	/**

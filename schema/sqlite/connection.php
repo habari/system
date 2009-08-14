@@ -125,14 +125,30 @@ class SQLiteConnection extends DatabaseConnection
 
 		foreach ( $cqueries as $tablename => $query ) {
 			if ( in_array( $tablename, $tables ) ) {
-				$sql = $this->get_value( "SELECT sql FROM sqlite_master WHERE type = 'table' AND name='{" . $tablename . "}';" );
+				$sql = $this->get_value( "SELECT sql FROM sqlite_master WHERE type = 'table' AND name='" . $tablename . "';" );
 				$sql = preg_replace( '%\s+%', ' ', $sql ) . ';';
 				$query = preg_replace( '%\s+%', ' ', $query );
 				if ( $sql != $query ) {
-					$allqueries[]= "ALTER TABLE {$tablename} RENAME TO {$tablename}__temp;";
-					$allqueries[]= $query;
-					$allqueries[]= "INSERT INTO {$tablename} SELECT * FROM {$tablename}__temp;";
-					$allqueries[]= "DROP TABLE {$tablename}__temp;";
+					$this->query("ALTER TABLE {$tablename} RENAME TO {$tablename}__temp;");
+					$this->query($query);
+					
+					$new_fields_temp = $this->get_results( "pragma table_info({$tablename});" );
+					$new_fields = array();
+					foreach($new_fields_temp as $field) {
+						$new_fields[$field->name] = $field;
+					}
+					$old_fields = $this->get_results( "pragma table_info({$tablename}__temp);" );
+					$new_field_names = array_map(array($this, 'filter_fieldnames'), $new_fields);
+					$old_field_names = array_map(array($this, 'filter_fieldnames'), $old_fields);
+					$used_field_names = array_intersect($new_field_names, $old_field_names);
+					$used_field_names = implode(',', $used_field_names);
+					$needed_fields = array_diff($new_field_names, $old_field_names);
+					foreach($needed_fields as $needed_field_name) {
+						$used_field_names .= ",'" . $new_fields[$needed_field_name]->dflt_value . "' as " . $needed_field_name;
+					}
+					
+					$this->query("INSERT INTO {$tablename} SELECT {$used_field_names} FROM {$tablename}__temp;");
+					$this->query("DROP TABLE {$tablename}__temp;");
 				}
 			}
 			else {
@@ -191,6 +207,17 @@ class SQLiteConnection extends DatabaseConnection
 	public function upgrade_post( $old_version, $upgrade_path = '' )
 	{
 		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades/post');
+	}
+	
+	/**
+	 * Filter out the fieldnames from whole pragma rows
+	 * 
+	 * @param StdClass $row A row result from a SQLite PRAGMA table_info query
+	 * @return string The name of the associated field
+	 */
+	protected function filter_fieldnames($row)
+	{
+		return $row->name;
 	}
 
 }

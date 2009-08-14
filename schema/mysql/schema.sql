@@ -204,7 +204,7 @@ CREATE TABLE {$prefix}vocabularies (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  feature_mask INT UNSIGNED NOT NULL DEFAUlT 0,
+  features TEXT,
   PRIMARY KEY (id)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
