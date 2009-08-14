@@ -946,7 +946,7 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		// Now start the form.
-		$form = new FormUI('comment-' . $context);
+		$form = new FormUI('comment-' . $context, 'comment');
 		$form->class[] = $context;
 		$form->class[] = 'commentform';
 		$form->set_option( 'form_action',  URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
