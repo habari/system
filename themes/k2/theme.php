@@ -121,15 +121,11 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 	public function action_form_comment( $form ) { 
 		$form->commenter->caption = '<small><strong>' . _t('Name') . '</strong></small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
 		$form->commenter->template = 'k2_text';
-		$form->commenter->value = $this->commenter_name;
 		$form->email->caption = '<small><strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
 		$form->email->template = 'k2_text';
-		$form->email->value = $this->commenter_email;
 		$form->url->caption = '<small><strong>' . _t('Website') . '</small></strong>';
 		$form->url->template = 'k2_text';
-		$form->url->value = $this->commenter_url;
 	        $form->content->caption = '';
-		$form->content->value = $this->commenter_content;
 		$form->submit->caption = _t( 'Submit' );
 	}
 
