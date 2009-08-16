@@ -21,10 +21,10 @@ class FeedbackHandler extends ActionHandler
 		Utils::check_request_method( array( 'POST' ) );
 
 		$defaults = array(
-			'name' => '',
-			'email' => '',
-			'url' => '',
-			'content' => ''
+			'comment_name' => '',
+			'comment_email' => '',
+			'comment_url' => '',
+			'comment_content' => ''
 		);
 
 		// We need to get the post anyway to redirect back to the post page.
