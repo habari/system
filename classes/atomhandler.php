@@ -177,7 +177,7 @@ class AtomHandler extends ActionHandler
 	{
 		foreach ( $posts as $post ) {
 			$user = User::get_by_id( $post->user_id );
-			$title = ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
+			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
 
 			$feed_entry = $xml->addChild( 'entry' );
@@ -543,7 +543,7 @@ class AtomHandler extends ActionHandler
 			$id = isset( $params['slug'] ) ? $params['slug'] : 'atom_entry';
 
 			$user = User::get_by_id( $post->user_id );
-			$title = ( $this->is_auth() ) ? htmlspecialchars( $post->title ) : htmlspecialchars( $post->title_atom );
+			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
 
 			// Build the namespaces, plugins can alter it to override or insert their own.
