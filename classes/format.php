@@ -42,6 +42,22 @@ class Format
 			}
 		}
 	}
+	
+	/**
+	 *
+	 *
+	 **/
+	public static function apply_with_hook_serialize( $arg ) 
+	{
+		$arg = serialize( $arg );
+		return "'{$arg}'";
+	}
+	
+	public static function apply_with_hook_unserialize( $arg ) 
+	{
+		$arg = unserialize( $arg );
+		return $arg;
+	}
 
 	/**
 	 * Called to register a format function to a plugin hook, and passes all of the hook's parameters to the Format function.
@@ -57,14 +73,18 @@ class Format
 		foreach ( self::$formatters as $formatobj ) {
 			if ( method_exists($formatobj, $format) ) {
 				$index = array_search($formatobj, self::$formatters);
-				$func = '$o= Format::by_index(' . $index . '); $args= func_get_args(); return call_user_func_array(array($o, "' . $format . '"), array_merge($args';
+				$func = '$o = Format::by_index(' . $index . ');';
+				$func .= '$args = func_get_args();';
+				$func .= '$args = array_merge( $args';
 				$args = func_get_args();
 				if ( count($args) > 2 ) {
-					$func.= ', array( ';
-					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
-					$func .= implode(', ', $args) . ')';
+				
+					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),'; 
+					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice($args, 2));
+					$func .= 'array( ' . implode(', ', $args) . ' ))';
 				}
-				$func .= '));';
+				$func .= ');';
+				$func .= 'return call_user_func_array(array($o, "' . $format . '"), $args);';
 				$lambda = create_function('$a', $func);
 				Plugins::register( $lambda, 'filter', $onwhat);
 				break;  // We only look for one matching format function to apply.
@@ -396,29 +416,56 @@ class Format
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
 	 * @return string The post content, suitable for display
 	 **/
-	public static function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null)
+	public static function more($content, $post, $properties = array())
 	{
 		// If the post requested is the post under consideration, always return the full post
 		if ( $post->slug == Controller::get_var('slug') ) {
 			return $content;
 		}
+		else if( is_string( $properties ) ) {
+			$args = func_get_args();			
+			$more_text = $properties;
+			$max_words = ( isset( $args[3] ) ? $args[3] : 100 );
+			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : 2 );
+			$paramstring = "";
+		}
 		else {
-			$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
-			if ( count($matches) > 1 ) {
-				return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
+			$paramstring = "";
+			$paramarray = Utils::get_params( $properties );
+			
+			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
+			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : 200 );
+			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : 2 );
+
+			if( isset( $paramarray['title:before'] ) || 
+				isset( $paramarray['title'] ) ||
+				isset( $paramarray['title:after'] ) ) {
+				$paramstring .= 'title="';	
+				
+				if( isset( $paramarray['title:before'] ) ) 	$paramstring .= $paramarray['title:before'];
+				if( isset( $paramarray['title'] ) ) 		$paramstring .= $post->title;
+				if( isset( $paramarray['title:after'] ) ) 	$paramstring .= $paramarray['title:after'];
+				$paramstring .= '" ';
 			}
-			elseif ( isset($max_words) || isset($max_paragraphs) ) {
-				$max_words = empty($max_words) ? 9999999 : intval($max_words);
-				$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
-				$summary = Format::summarize($content, $max_words, $max_paragraphs);
-				if ( strlen($summary) >= strlen($content) ) {
-					return $content;
-				}
-				else {
-					return $summary . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
-				}
+			if( isset( $paramarray['class'] ) ) $paramstring .= 'class="' . $paramarray['class'] . '" ';	
+
+		}
+		$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
+		if ( count($matches) > 1 ) {
+			return reset($matches) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>';
+		}
+		elseif ( isset($max_words) || isset($max_paragraphs) ) {
+			$max_words = empty($max_words) ? 9999999 : intval($max_words);
+			$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
+			$summary = Format::summarize($content, $max_words, $max_paragraphs);
+			if ( strlen($summary) >= strlen($content) ) {
+				return $content;
 			}
-    }
+			else {
+				return $summary . ' <a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>';
+			}
+		}
+    
     return $content;
 	}
 
