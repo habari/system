@@ -220,7 +220,7 @@ class RewriteRule extends QueryRecord
 	 */
 	public static function create_url_rule( $build_str, $handler, $action )
 	{
-		$arr = split( '/', $build_str );
+		$arr = explode( '/', $build_str );
 
 		$searches = array('/^([^"\']+)$/', '/^["\'](.+)["\']$/');
 		$replacements = array('(?P<\1>.+)', '\1');
