@@ -32,13 +32,31 @@ class HabariSilo extends Plugin implements MediaSilo
 	}
 
 	/**
-	 * Don't bother loading if the gd library isn't active
-	 */
+	* Don't bother loading if the gd library isn't active
+	*/
 	public function action_plugin_activation( $file )
 	{
 		if ( !function_exists( 'imagecreatefromjpeg' ) ) {
 			Session::error( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ) );
 			Plugins::deactivate_plugin( __FILE__ );
+		}
+		// Create required tokens
+		ACL::create_token( 'create_directories', _t( 'Create media silo directories' ), 'Administration' );
+		ACL::create_token( 'upload_media', _t( 'Upload files to media silos' ), 'Administration' );
+	}
+
+	/**
+	*
+	* @param string $file. The name of the plugin file
+	*
+	* Delete the special silo permissions if they're no longer
+	* being used.
+	*/
+	public function action_plugin_deactivation( $file ) {
+		$silos = Plugins::get_by_interface( 'MediaSilo' );
+		if ( count( $silos ) <= 1 ) {
+			ACL::destroy_token( 'upload_media' );
+			ACL::destroy_token( 'create_directories' );
 		}
 	}
 
