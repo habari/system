@@ -1408,10 +1408,9 @@ class InstallHandler extends ActionHandler
 					require_once $filename;
 					$class = Plugins::class_from_filename($filename);
 					$short_file = substr( $filename, strlen( HABARI_PATH ) );
-				}
-
-				if( $class ) {
-					$new_plugins[$class] = $short_file;
+					if( $class ) {
+						$new_plugins[$class] = $short_file;
+					}
 				}
 			}
 		}
