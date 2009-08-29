@@ -74,7 +74,7 @@ class CURLRequestProcessor implements RequestProcessor
 			return Error::raise( _t( ' %s: CURL Error. Unable to create temporary file name.', array( __CLASS__ ) ), E_USER_WARNING );
 		}
 
-		$fh = @fopen( $tmp, 'wb' );
+		$fh = @fopen( $tmp, 'w+b' );
 		if ( ! $fh ) {
 			return Error::raise( _t( ' %s: CURL Error. Unable to open temporary file.', array( __CLASS__ ) ), E_USER_WARNING );
 		}
