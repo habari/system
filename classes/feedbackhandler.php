@@ -35,6 +35,8 @@ class FeedbackHandler extends ActionHandler
 			die();
 		}
 
+		// Allow themes to work with comment hooks
+		Themes::create();
 		$form = $post->comment_form();
 		$form->get(null, false);
 		// Was this a FormUI form, or a regular comment form?
