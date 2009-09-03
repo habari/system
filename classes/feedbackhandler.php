@@ -35,7 +35,7 @@ class FeedbackHandler extends ActionHandler
 			die();
 		}
 
-		// Allow themes to work with comment hooks
+		// Allow theme action hooks to work
 		Themes::create();
 		$form = $post->comment_form();
 		$form->get(null, false);
