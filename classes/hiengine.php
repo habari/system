@@ -27,8 +27,11 @@ class HiEngine extends RawPHPEngine {
 	 */
 	public function __construct()
 	{
-		stream_wrapper_register("hi", "HiEngineParser")
-		or die(_t("Failed to register HiEngine stream protocol"));
+		$streams = stream_get_wrappers();
+		if( ! in_array( 'hi' , $streams ) ) {
+			stream_wrapper_register("hi", "HiEngineParser")
+			or die(_t("Failed to register HiEngine stream protocol"));
+		}
 	}
 
 	/**
