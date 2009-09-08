@@ -319,6 +319,25 @@ class HabariLocale
 	}
 
 	/**
+	 * Given a string translated into the current locale, return the untranslated string.
+	 *
+	 * @param string $text The translated string
+	 * @param string $domain (optional) The domain to search for the message
+	 * @return string The untranslated string
+	 **/
+	public static function _u($text, $domain = 'habari')
+	{
+		$t = $text;
+		foreach( self::$messages[$domain] as $msg ) {
+			if( $text == $msg[1][0] ) {
+				$t = $msg[0][0];
+				break;
+			}
+		}
+
+		return $t;
+	}
+	/**
 	 * Echo singular or plural version of the string, translated into the current locale, based on the count provided
 	 *
 	 * @param string $singular The singular form
@@ -400,6 +419,19 @@ function _t( $text, $args = array(), $domain = 'habari' )
 function _n( $singular, $plural, $count, $domain = 'habari' )
 {
 	return HabariLocale::_n( $singular, $plural, $count, $domain );
+}
+
+/**
+ * Given a string translated into the current locale, return the untranslated version of the string.
+ * Alias for HabariLocale::_u()
+ *
+ * @param string $text The translated string
+ * @param string $domain (optional) The domain to search for the message
+ * @return string The untranslated string
+ **/
+function _u( $text, $domain = 'habari' )
+{
+	return HabariLocale::_u( $text, $domain );
 }
 
 ?>
