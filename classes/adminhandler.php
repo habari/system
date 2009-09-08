@@ -275,7 +275,7 @@ class AdminHandler extends ActionHandler
 		$form = new FormUI('Admin Options');
 		$tab_index = 3;
 		foreach ( $option_items as $name => $option_fields ) {
-			$fieldset = $form->append( 'wrapper', Utils::slugify( $name ), $name );
+			$fieldset = $form->append( 'wrapper', Utils::slugify( _u($name) ), $name );
 			$fieldset->class = 'container settings';
 			$fieldset->append( 'static', $name, '<h2>' . htmlentities( $name, ENT_COMPAT, 'UTF-8' ) . '</h2>' );
 			foreach ( $option_fields as $option_name => $option ) {
