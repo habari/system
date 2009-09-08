@@ -18,7 +18,7 @@ if($comment->url != ''):
 else:
 	printf(_t( '<a href="%1$s">Comment</a> by ' .
 	           '<strong>%2$s</strong> ' .
-	           'posted on <a href="%3$s" title="View post">%4§s</a> ' .
+	           'posted on <a href="%3$s" title="View post">%4$s</a> ' .
 	           'at <strong>%5$s</strong> ' .
 	           'on <strong>%6$s</strong>'),
 		$view_url,
