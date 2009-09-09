@@ -1506,7 +1506,13 @@ class AdminHandler extends ActionHandler
 					}
 				}
 				$to_update = Comments::get( array( 'id' => $ids ) );
-				$modstatus = array( 'Deleted %d comments' => 0, 'Marked %d comments as spam' => 0, 'Approved %d comments' => 0, 'Unapproved %d comments' => 0, 'Edited %d comments' => 0 );
+				$modstatus = array(
+					_t( 'Deleted %d comments' ) => 0,
+					_t( 'Marked %d comments as spam' ) => 0,
+					_t( 'Approved %d comments' ) => 0,
+					_t( 'Unapproved %d comments' ) => 0,
+					_t( 'Edited %d comments' ) => 0
+				);
 				Plugins::act( 'admin_moderate_comments', $action, $to_update, $this );
 
 				switch ( $action ) {
@@ -1515,14 +1521,14 @@ class AdminHandler extends ActionHandler
 						// This comment was marked for deletion
 						$to_update = $this->comment_access_filter( $to_update, 'delete' );
 						Comments::delete_these( $to_update );
-						$modstatus['Deleted %d comments'] = count( $to_update );
+						$modstatus[_t( 'Deleted %d comments' )] = count( $to_update );
 						break;
 
 					case 'spam':
 						// This comment was marked as spam
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_SPAM );
-						$modstatus['Marked %d comments as spam'] = count( $to_update );
+						$modstatus[_t( 'Marked %d comments as spam' )] = count( $to_update );
 						break;
 
 					case 'approve':
@@ -1530,9 +1536,9 @@ class AdminHandler extends ActionHandler
 						// Comments marked for approval
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
-						$modstatus['Approved %d comments'] = count( $to_update );
+						$modstatus[_t('Approved %d comments')] = count( $to_update );
 						foreach ( $to_update as $comment ) {
-									$modstatus['Approved comments on these posts: %s'] = (isset($modstatus['Approved comments on these posts: %s'])? $modstatus['Approved comments on these posts: %s'] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
+									$modstatus[_t( 'Approved comments on these posts: %s' )] = (isset($modstatus[_t( 'Approved comments on these posts: %s' )])? $modstatus[_t( 'Approved comments on these posts: %s' )] . ' &middot; ' : '') . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
 						}
 						break;
 
@@ -1541,7 +1547,7 @@ class AdminHandler extends ActionHandler
 						// This comment was marked for unapproval
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
-						$modstatus['Unapproved %d comments'] = count ( $to_update );
+						$modstatus[_t( 'Unapproved %d comments' )] = count ( $to_update );
 						break;
 
 					case 'edit':
@@ -1563,14 +1569,14 @@ class AdminHandler extends ActionHandler
 
 							$comment->update();
 						}
-						$modstatus['Edited %d comments'] = count( $to_update );
+						$modstatus[_t( 'Edited %d comments' )] = count( $to_update );
 						break;
 
 				}
 
 				foreach ( $modstatus as $key => $value ) {
 					if ( $value ) {
-						Session::notice( sprintf( _t( $key ), $value ) );
+						Session::notice( sprintf( $key, $value ) );
 					}
 				}
 
@@ -2244,18 +2250,12 @@ class AdminHandler extends ActionHandler
 
 		$to_delete = EventLog::get( array( 'date' => 'any', 'where' => $ids, 'nolimit' => 1 ) );
 
-		$logstatus = array( 'Deleted %d logs' => 0 );
 		foreach ( $to_delete as $log ) {
 			$log->delete();
 			$count++;
-	}
-		foreach ( $logstatus as $key => $value ) {
-			if ( $value ) {
-				Session::notice( sprintf( _t( $key ), $value ) );
-			}
 		}
 
-		Session::notice( sprintf( _t('Deleted %d logs.'), $count ) );
+		Session::notice( _t('Deleted %d logs.', array( $count ) ) );
 		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
@@ -2392,17 +2392,14 @@ class AdminHandler extends ActionHandler
 				foreach ( $log_ids as $id ) {
 					$ids[] = array( 'id' => $id );
 				}
+
 				$to_delete = EventLog::get( array( 'nolimit' => 1 ) );
-				$logstatus = array( 'Deleted %d logs' => 0 );
+				$count = 0;
 				foreach ( $to_delete as $log ) {
 					$log->delete();
-					$logstatus['Deleted %d logs'] += 1;
+					$count++;
 				}
-				foreach ( $logstatus as $key => $value ) {
-					if ( $value ) {
-						Session::notice( sprintf( _t( $key ), $value ) );
-					}
-				}
+				Session::notice( _t( 'Deleted %d logs', array( $count ) ) );
 			}
 
 			Utils::redirect();
