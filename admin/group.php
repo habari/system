@@ -17,7 +17,7 @@
 </div>
 
 <div class="container transparent groupstats">
-<p>Group <strong><?php echo $group->name; ?></strong> has <strong><?php echo count($members); ?></strong> member(s)</p>
+<p><?php _e( 'Group' ); ?> <strong><?php echo $group->name; ?></strong> <?php _e( 'has' ); ?> <strong><?php echo count($members); ?></strong> <?php _ne( 'member', 'members', count( $members ) ); ?></p>
 </div>
 
 <form name="update-group" id="update-group" action="<?php URL::out('admin', 'page=group'); ?>" method="post">
