@@ -223,17 +223,17 @@ class AdminHandler extends ActionHandler
 				'label' => _t('Time Zone'),
 				'type' => 'select',
 				'selectarray' => $timezones,
-				'helptext' => 'Current Date Time: ' . HabariDateTime::date_create()->format(),
+				'helptext' => _t( 'Current Date Time: %s', array( HabariDateTime::date_create()->format() ) ),
 				),
 			'dateformat' => array(
 				'label' => _t('Date Format'),
 				'type' => 'text',
-				'helptext' => 'Current Date: ' . HabariDateTime::date_create()->date
+				'helptext' => _t( 'Current Date: %s', array( HabariDateTime::date_create()->date ) ),
 				),
 			'timeformat' => array(
 				'label' => _t('Time Format'),
 				'type' => 'text',
-				'helptext' => 'Current Time: ' . HabariDateTime::date_create()->time,
+				'helptext' => _t( 'Current Time: %s', array( HabariDateTime::date_create()->time ) ),
 				)
 			);
 
@@ -242,12 +242,12 @@ class AdminHandler extends ActionHandler
 				'label' => _t( 'Locale' ),
 				'type' => 'select',
 				'selectarray' => array_merge( array( '' => 'default' ), array_combine( HabariLocale::list_all(), HabariLocale::list_all() ) ),
-				'helptext' => 'International language code',
+				'helptext' => _t( 'International language code' ),
 			),
 			'system_locale' => array(
 				'label' => _t('System Locale'),
 				'type' => 'text',
-				'helptext' => 'The appropriate locale code for your server',
+				'helptext' => _t( 'The appropriate locale code for your server' ),
 			),
 		);
 
@@ -2919,8 +2919,8 @@ class AdminHandler extends ActionHandler
 					}
 					Tags::rename($master, $tag_names);
 					$msg_status = sprintf(
-						_n('Tag %s has been renamed to %s.',
-							 'Tags %s have been renamed to %s.',
+						_n('Tag %1$s has been renamed to %2$s.',
+							'Tags %1$s have been renamed to %2$s.',
 							 count($tag_names)
 						), implode($tag_names, ', '), $master
 					);

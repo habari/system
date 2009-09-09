@@ -2,12 +2,11 @@
 
 <div class="container dashboardinfo transparent">
 		<!--[if lte IE 6]>
-		<p>
-			Oh, great!	You're using IE6!  I've finally found someone I can pawn this old betamax player off on!<br />
-			If you're reading this, you're surfing using Internet Explorer 6, an eight-year-old browser that cannot cope with the demands of the modern internet. 
-			For the best web experience, we strongly recommend upgrading to <a href="http://getfirefox.com">Firefox</a>, <a href="http://www.opera.com/">Opera</a>, 
-			<a href="http://www.apple.com/safari/download/">Safari</a>, <a href="http://www.google.com/chrome">Google Chrome</a>, or a more recent version of 
-			<a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer</a>.
+		<p><?php
+_e( 'Oh, great!	You\'re using IE6!  I\'ve finally found someone I can pawn this old betamax player off on!<br />
+If you\'re reading this, you\'re surfing using Internet Explorer 6, an eight-year-old browser that cannot cope with the demands of the modern internet.
+<a href="http://www.apple.com/safari/download/">Safari</a>, <a href="http://www.google.com/chrome">Google Chrome</a>, or a more recent version of 
+<a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer</a>.' ); ?>
 		</p>
 		<![endif]-->  
 		
@@ -15,15 +14,15 @@
 		<?php
 		$active_msg = array();
 		if ( !empty( $active_time['years'] ) ) {
-			$message = sprintf( _n( '%1$d ' . _t( 'year' ), '%1$d ' . _t( 'years' ), $active_time['years'] ), $active_time['years'] );
+			$message = sprintf( _n( '%d year', '%d years', $active_time['years'] ), $active_time['years'] );
 			$active_msg[]= $message;
 		}
 		if ( !empty( $active_time['months'] ) ) {
-			$message = sprintf( _n( '%1$d ' . _t( 'month' ), '%1$d ' . _t( 'months' ), $active_time['months'] ), $active_time['months'] );
+			$message = sprintf( _n( '%d month', '%d months', $active_time['months'] ), $active_time['months'] );
 			$active_msg[]= $message;
 		}
 		if ( !empty( $active_time['days'] ) ) {
-			$message = sprintf( _n( '%1$d ' . _t( 'day' ), '%1$d ' . _t( 'days' ), $active_time['days'] ), $active_time['days'] );
+			$message = sprintf( _n( '%d day', '%d days', $active_time['days'] ), $active_time['days'] );
 			$active_msg[]= $message;
 		}
 		printf(
@@ -37,13 +36,13 @@
 		$content_type_msg = array();
 		if ( !empty( $stats['page_count'] ) ) {
 			$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'page' ), '%d ' . _t( 'pages' ), $stats['page_count'] ), $stats['page_count'] );
+			$message.= sprintf( _n( '%d page', '%d pages', $stats['page_count'] ), $stats['page_count'] );
 			$message.= '</a>';
 			$content_type_msg[]= $message;
 		}
 		if ( !empty( $stats['entry_count'] ) ) {
 			$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ) ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'entry' ), '%d ' . _t( 'entries' ), $stats['entry_count'] ), $stats['entry_count'] );
+			$message.= sprintf( _n( '%d entry', '%d entries', $stats['entry_count'] ), $stats['entry_count'] );
 			$message.= '</a>';
 			$content_type_msg[]= $message;
 		}
@@ -51,13 +50,13 @@
 		$comment_tag_msg = array();
 		if ( !empty( $stats['comment_count'] ) ) {
 			$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_APPROVED ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'comment' ), '%d ' . _t( 'comments' ), $stats['comment_count'] ), $stats['comment_count'] );
+			$message.= sprintf( _n( '%d comment', '%d comments', $stats['comment_count'] ), $stats['comment_count'] );
 			$message.= '</a>';
 			$comment_tag_msg[]= $message;
 		}
 		if ( !empty( $stats['tag_count'] ) ) {
 			$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'tags' ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'tag' ), '%d ' . _t( 'tags' ), $stats['tag_count'] ), $stats['tag_count'] );
+			$message.= sprintf( _n( '%d tag', '%d tags', $stats['tag_count'] ), $stats['tag_count'] );
 			$message.= '</a>';
 			$comment_tag_msg[]= $message;
 		}
@@ -79,7 +78,7 @@
 		$message_bits = array();
 		if ( !empty( $stats['entry_draft_count'] ) ) {
 			$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'entry draft' ), '%d ' . _t( 'entry drafts' ), $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
+			$message.= sprintf( _n( '%d entry draft', '%d entry drafts', $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
@@ -91,21 +90,21 @@
 		}
 		if ( !empty( $stats['page_draft_count'] ) ) {
 			$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'page draft' ), '%d ' . _t( 'page drafts' ), $stats['page_draft_count'] ), $stats['page_draft_count'] );
+			$message.= sprintf( _n( '%d page draft', '%d page drafts', $stats['page_draft_count'] ), $stats['page_draft_count'] );
 			$message.= '</a>';
 			$message_bits[]= $message;
 		}
 		if ( User::identify()->can_any( array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ) ) {
 			if ( !empty(  $stats['unapproved_comment_count'] ) ) {
 				$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-				$message.= sprintf( _n( '%d ' . _t( 'comment awaiting approval' ), '%d ' . _t( 'comments awaiting approval' ), $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
+				$message.= sprintf( _n( '%d comment awaiting approval', '%d comments awaiting approval', $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
 				$message.= '</a>';
 				$message_bits[]= $message;
 			}
 
 			if ( !empty(  $stats['spam_comment_count'] ) && User::identify()->info->dashboard_hide_spam_count != true ) {
 				$message = '<a href="' . htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ), ENT_COMPAT, 'UTF-8' ) . '">';
-				$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
+				$message.= sprintf( _n( '%d spam comment awaiting moderation', '%d spam comments awaiting moderation', $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
 				$message.= '</a>';
 				$message_bits[]= $message;
 			}
