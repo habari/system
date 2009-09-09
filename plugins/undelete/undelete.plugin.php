@@ -121,7 +121,7 @@ class Undelete extends Plugin
 				case _t( 'Configure' ):
 					$ui = new FormUI( strtolower( get_class( $this ) ) );
 					$ui->append( 'textarea', 'style', 'option:undelete__style', _t( 'Style declaration for deleted content:' ) );
-					$ui->append( 'submit', 'save', 'Save' );
+					$ui->append( 'submit', 'save', _t( 'Save' ) );
 					$ui->on_success( array( $this, 'updated_config' ) );
 					$ui->out();
 					break;
@@ -129,7 +129,7 @@ class Undelete extends Plugin
 				case _t( 'Empty Trash' ):
 					$ui = new FormUI( strtolower( get_class( $this ) ) );
 					$ui->append( 'static', 'explanation', _t('Pressing this button will permanently delete all posts from the virtual trash can. You cannot undo this.') );
-					$ui->append( 'submit', 'delete', 'Delete All' );
+					$ui->append( 'submit', 'delete', _t( 'Delete All' ) );
 					$ui->on_success( array( $this, 'deleted_all' ) );
 					$ui->out();
 					break;
