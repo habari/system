@@ -96,6 +96,10 @@ class AdminHandler extends ActionHandler
 		$this->theme->admin_page_url = ( $page == 'dashboard' ) ? URL::get( 'admin', 'page=' ) : URL::get( 'admin', 'page=' . $page );
 		$this->theme->page = $page;
 		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+		$this->theme->admin_title =
+			isset( $this->theme->mainmenu[$this->theme->admin_page]['text'] )
+				? $this->theme->mainmenu[$this->theme->admin_page]['text']
+				: ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
 
 		// Access check to see if the user is allowed the requested page
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
