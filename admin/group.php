@@ -17,7 +17,7 @@
 </div>
 
 <div class="container transparent groupstats">
-<p><?php _e( 'Group' ); ?> <strong><?php echo $group->name; ?></strong> <?php _e( 'has' ); ?> <strong><?php echo count($members); ?></strong> <?php _ne( 'member', 'members', count( $members ) ); ?></p>
+<p><?php echo sprintf( _n( 'Group %1$s has <strong>%2$d</strong> member', 'Group %1$s has <strong>%2$d</strong> members', count( $members ) ), "<strong>$group->name</strong>", count( $members ) ); ?></p>
 </div>
 
 <form name="update-group" id="update-group" action="<?php URL::out('admin', 'page=group'); ?>" method="post">
@@ -74,7 +74,7 @@
 		<?php if ( !empty( $crud_tokens ) ): ?>
 			<table id="<?php echo $group_name; ?>-crud-permissions" class="pct100 crud-permissions">
 				<tr class="head">
-					<th class="pct40">Token Description</th>
+					<th class="pct40"><?php _e( 'Token Description' ); ?></th>
 					<?php foreach ( $access_names as $name ): ?>
 					<th class="pct10"><?php echo $name; ?></th>
 					<?php endforeach; ?>
@@ -96,9 +96,9 @@
 		<?php elseif ( !empty( $bool_tokens ) ): ?>
 			<table id="<?php echo $group_name; ?>-bool-permissions" class="pct100 bool-permissions">
 				<tr class="head">
-					<th class="pct40">Token Description</th>
-					<th class="pct10">allow</th>
-					<th class="pct10">deny</th>
+					<th class="pct40"><?php _e( 'Token Description' ); ?></th>
+					<th class="pct10"><?php _e( 'allow' ); ?></th>
+					<th class="pct10"><?php _e( 'deny' ); ?></th>
 				</tr>
 				<?php foreach ( $bool_tokens as $token ): ?>
 				<tr>
