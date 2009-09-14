@@ -99,41 +99,6 @@ class ThemeHelper extends Plugin
 		}
 	}
 
-	/**
-	 * Returns a comment form for themer's to use.
-	 * Theme code: <?php $theme->comment_form( ); ?>
-	 *
-	 * @param Theme $theme The current theme
-	 * @return Nothing. Outputs the comment form at
-	 */
-	public function theme_comment_form( $theme )
-	{
-		$ui = new FormUI( 'commentform' );
-		$ui->set_option( 'form_action',  URL::get( 'submit_feedback', array( 'id' => $theme->post->id ) ) );
-
-		$name = $ui->append( 'text', 'ename', 'null:null', _t( 'Name' ) . ' (<em>' . _t( 'Required' ) . '</em>) ' );
-		$name->value = $theme->commenter_name;
-		$name->id = 'name';
-
-		$email = $ui->append( 'text', 'email', 'null:null', _t('Email' ) . ' (<em>' . _t( 'Required - not published' ) . '</em>) ' );
-		$email->value = $theme->commenter_email;
-		$email->id = $email->name;
-
-		$url = $ui->append( 'text', 'url', 'null:null', _t( 'Web Address' ) . ' ' );
-		$url->value = $theme->commenter_url;
-		$url->id = $url->name;
-
-		$commentContent = $ui->append( 'textarea', 'commentContent', 'null:null', _t( 'Message' ) . " (<em>" . _t( 'Required' ) . "</em>)" );
-		$commentContent->value = $theme->commenter_content;
-		$commentContent->id = 'content';
-
-		$submit = $ui->append( 'submit', 'submit', _t( 'Say It' ) );
-		$submit->id = $submit->name;
-
-		$ui->out();
-
-	}
-
 }
 
 ?>
