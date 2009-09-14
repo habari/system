@@ -474,7 +474,7 @@ class AdminHandler extends ActionHandler
 
 			// Verify that the post hasn't already been updated since the form was loaded
 			if ( $post->modified != $form->modified->value ) {
-				Session::notice( sprintf( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+				Session::notice( sprintf( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
 				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 				exit;
 			}
@@ -3052,11 +3052,11 @@ class AdminHandler extends ActionHandler
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
 			$createperm = array( 'own_post_' . $type => array(ACL::get_bitmask('create')), 'post_' . $type => ACL::get_bitmask('create') );
-			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => sprintf( _t( 'Create a new %s' ), ucwords( $type ) ), 'text' => $singular, 'access' => $createperm );
+			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t( 'Create a new %s', array( $singular ) ), 'text' => $singular, 'access' => $createperm );
 			$createperms = array_merge( $createperms, $createperm );
 
 			$manageperm = array( 'own_post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
-			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => sprintf( _t( 'Manage %s' ), ucwords( $type ) ), 'text' => $plural, 'access'=> $manageperm );
+			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => _t( 'Manage %s', array( $plural ) ), 'text' => $plural, 'access'=> $manageperm );
 			$manageperms = array_merge( $manageperms, $manageperm );
 
 			$createmenu['create_' . $typeint]['hotkey'] = $hotkey;
