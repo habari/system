@@ -282,7 +282,12 @@ class HabariSilo extends Plugin implements MediaSilo
 		$path = preg_replace('%\.{2,}%', '.', $path);
 		$file = $this->root . '/' . $path;
 
-		return $filedata->save( $file );
+		$result = $filedata->save( $file );
+		if ( $result ) {
+			$this->create_thumbnail( $file );
+		}
+
+		return $result;
 	}
 
 	/**
