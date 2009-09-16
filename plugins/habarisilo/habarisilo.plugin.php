@@ -359,12 +359,12 @@ class HabariSilo extends Plugin implements MediaSilo
 	{
 		$class = __CLASS__;
 		if ( $silo instanceof $class ) {
-			$controls[] = $this->link_path( self::SILO_NAME . '/' . $path, 'Browse' );
+			$controls[] = $this->link_path( self::SILO_NAME . '/' . $path, _t( 'Browse' ) );
 			if ( User::identify()->can( 'upload_media' ) ) {
-				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', 'Upload');
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', _t( 'Upload' ) );
 			}
 			if ( User::identify()->can( 'create_directories' ) ) {
-				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'mkdir', 'Create Directory');
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'mkdir', _t( 'Create Directory' ) );
 			}
 		}
 		return $controls;
@@ -417,20 +417,20 @@ class HabariSilo extends Plugin implements MediaSilo
 				case 'upload':
 					if( isset( $_FILES['file'] ) ) {
 						$size = Utils::human_size($_FILES['file']['size']);
-						$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>File Uploaded: {$_FILES['file']['name']} ($size)</p>";
+						$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>" . _t( "File Uploaded: " ) . "{$_FILES['file']['name']} ($size)</p>";
 
 						$path = self::SILO_NAME . '/' . preg_replace('%\.{2,}%', '.', $path). '/' . $_FILES['file']['name'];
 						$asset = new MediaAsset($path, false);
 						$asset->upload( $_FILES['file'] );
 
 						if( $asset->put() ) {
-							$panel .= '<p>File added successfully.</p>';
+							$panel .= '<p>' . _t( 'File added successfully.' ) . '</p>';
 						}
 						else {
-							$panel .= '<p>File could not be added to the silo.</p>';
+							$panel .= '<p>' . _t( 'File could not be added to the silo.' ) . '</p>';
 						}
 
-						$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname($path) . '\');">Browse the current silo path.</a></p></div>';
+						$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname($path) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
 					}
 					else {
 
@@ -438,8 +438,8 @@ class HabariSilo extends Plugin implements MediaSilo
 						$form_action = URL::get('admin_ajax', array('context' => 'media_panel'));
 						$panel .= <<< UPLOAD_FORM
 <form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="{$form_action}" class="span-10" style="margin:0px auto;text-align: center">
-	<p style="padding-top:30px;">Upload to: <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
-	<p><input type="file" name="file"><input type="submit" name="upload" value="Upload">
+	<p style="padding-top:30px;">%s <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
+	<p><input type="file" name="file"><input type="submit" name="upload" value="%s">
 	<input type="hidden" name="path" value="{$fullpath}">
 	<input type="hidden" name="panel" value="{$panelname}">
 	</p>
@@ -461,6 +461,7 @@ function simple_uploaded_complete() {
 </script>
 UPLOAD_FORM;
 
+					$panel = sprintf( $panel, _t( "Upload to:" ), _t( "Upload" ) );
 				}
 			}
 		}
@@ -492,10 +493,10 @@ UPLOAD_FORM;
 		$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 
 		if ( !is_writable( $this->root . '/' . $path ) ) {
-			return array(_t("Webserver does not have permission to create directory: {$dir}."));
+			return array(_t("Webserver does not have permission to create directory: %s.", array( $dir ) ) );
 		}
 		if ( is_dir( $dir ) ) {
-			return array(_t("Directory: {$dir} already exists."));
+			return array( _t( "Directory: %s already exists.", array( $dir ) ) );
 		}
 
 		return array();
