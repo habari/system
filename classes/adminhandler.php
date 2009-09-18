@@ -474,14 +474,14 @@ class AdminHandler extends ActionHandler
 
 			// Verify that the post hasn't already been updated since the form was loaded
 			if ( $post->modified != $form->modified->value ) {
-				Session::notice( sprintf( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+				Session::notice( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.', array( sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, htmlspecialchars( $post->title ) ) ) ) );
 				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 				exit;
 			}
 			
 			$post->title = $form->title->value;
 			if ( $form->newslug->value == '' ) {
-				Session::notice( _e('A post slug cannot be empty. Keeping old slug.') );
+				Session::notice( _t( 'A post slug cannot be empty. Keeping old slug.' ) );
 			}
 			elseif ( $form->newslug->value != $form->slug->value ) {
 				$post->slug = $form->newslug->value;
