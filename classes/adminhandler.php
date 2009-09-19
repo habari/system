@@ -432,11 +432,13 @@ class AdminHandler extends ActionHandler
 		// get the active module list
 		$modules = Modules::get_active();
 
-		// append the 'Add Item' module
-		$modules['nosort'] = 'Add Item';
-
-		// register the 'Add Item' filter
-		Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
+		if(User::identify()->can('manage_dash_modules')) {
+			// append the 'Add Item' module
+			$modules['nosort'] = 'Add Item';
+	
+			// register the 'Add Item' filter
+			Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
+		}
 
 		foreach ( $modules as $id => $module_name ) {
 			$slug = Utils::slugify( (string) $module_name, '_' );
@@ -619,15 +621,28 @@ class AdminHandler extends ActionHandler
 	{
 
 		$edit_user = User::identify();
+		$permission = false;
 
 		if ( ($this->handler_vars['user'] == '') || (User::get_by_name($this->handler_vars['user']) == $edit_user) ) {
+			if($edit_user->can('manage_self') || $edit_user->can('manage_users')) {
+				$permission = true;
+			}
 			$who = _t("You");
 			$possessive = _t("Your User Information");
 		}
 		else {
+			if($edit_user->can('manage_users')) {
+				$permission = true;
+			}
 			$edit_user = User::get_by_name($this->handler_vars['user']);
 			$who = $edit_user->username;
 			$possessive = sprintf( _t("%s's User Information"), $who );
+		}
+
+		if(!$permission) {
+			Session::error(_t('Access to that page has been denied by the administrator.'));
+			$this->get_blank();
+			return;
 		}
 
 		// Get author list
@@ -3085,6 +3100,7 @@ class AdminHandler extends ActionHandler
 			'plugins' => array( 'url' => URL::get( 'admin', 'page=plugins' ), 'title' => _t( 'Activate, deactivate, and configure plugins' ), 'text' => _t( 'Plugins' ), 'hotkey' => 'P', 'access'=>array('manage_plugins'=>true, 'manage_plugins_config' => true) ),
 			'import' => array( 'url' => URL::get( 'admin', 'page=import' ), 'title' => _t( 'Import content from another blog' ), 'text' => _t( 'Import' ), 'hotkey' => 'I', 'access'=>array('manage_import'=>true) ),
 			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U', 'access'=>array('manage_users'=>true) ),
+			'profile' => array( 'url' => URL::get( 'admin', 'page=user' ), 'title' => _t( 'Manage your user profile' ), 'text' => _t( 'My Profile' ), 'hotkey' => 'M', 'access'=>array('manage_self'=>true, 'manage_users'=>true) ),
 			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array('manage_groups'=>true) ),
 			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array('manage_logs'=>true) ) ,
 			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
