@@ -534,7 +534,7 @@ class AtomHandler extends ActionHandler
 	public function get_entry( $slug )
 	{
 		$params['slug']= $slug;
-		$params['status'] = Post::status('published');
+		$params['status'] = $this->is_auth() ? 'any' : Post::status('published');
 
 		if ( $post = Post::get($params) ) {
 			// Assign alternate link.
@@ -803,8 +803,10 @@ class AtomHandler extends ActionHandler
 			$post->slug = $_SERVER['HTTP_SLUG'];
 		}
 
-		// Check if it's a draft
-		if ( (string) $xml->control != '' && (string) $xml->control->draft == 'yes'  ) {
+		// Check if it's a draft (using XPath because Namespaces are easier than with SimpleXML)
+		$xml->registerXPathNamespace('app', 'http://www.w3.org/2007/app');
+		$draft = $xml->xpath('//app:control/app:draft');
+		if ( is_array($draft) && (string) $draft[0] == 'yes' ) {
 			$post->status = Post::status('draft');
 		}
 		else {
