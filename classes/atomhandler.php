@@ -201,6 +201,11 @@ class AtomHandler extends ActionHandler
 			$entry_edited = $feed_entry->addChild( 'app:edited', $post->modified->get('c'), 'http://www.w3.org/2007/app' );
 			$entry_published = $feed_entry->addChild( 'published', $post->pubdate->get('c') );
 
+			if ( $post->status == Post::status('draft') ) {
+				$entry_control = $feed_entry->addChild( 'app:control', '', 'http://www.w3.org/2007/app' );
+				$entry_draft = $entry_control->addChild( 'app:draft', 'yes', 'http://www.w3.org/2007/app' );
+			}
+
 			foreach ( $post->tags as $tag ) {
 				$entry_category = $feed_entry->addChild( 'category' );
 				$entry_category->addAttribute( 'term', $tag );
@@ -604,7 +609,8 @@ class AtomHandler extends ActionHandler
 		$bxml = file_get_contents( 'php://input' );
 
 		$params['slug']= $slug;
-		$params['status'] = Post::status('published');
+		$params['status'] = 'any';
+
 		if ( $post = Post::get($params) ) {
 			$xml = new SimpleXMLElement( $bxml );
 
@@ -626,7 +632,16 @@ class AtomHandler extends ActionHandler
 				$post->slug = $_SERVER['HTTP_SLUG'];
 			}
 
-			$post->status = Post::status('published');
+			// Check if it's a draft (using XPath because Namespaces are easier than with SimpleXML)
+			$xml->registerXPathNamespace('app', 'http://www.w3.org/2007/app');
+			$draft = $xml->xpath('//app:control/app:draft');
+			if ( is_array($draft) && (string) $draft[0] == 'yes' ) {
+				$post->status = Post::status('draft');
+			}
+			else {
+				$post->status = Post::status('published');
+			}
+
 			$post->user_id = $this->user->id;
 			$post->update();
 		}
@@ -694,7 +709,7 @@ class AtomHandler extends ActionHandler
 		}
 		$params['content_type'] = Plugins::filter( 'atom_get_collection_content_type', $params['content_type'] );
 
-		$params['status'] = Post::status('published');
+		$params['status'] = $this->is_auth() ? 'any' : Post::status('published');
 		$params['orderby'] = 'updated DESC';
 		$params['limit'] = Options::get( 'atom_entries' );
 
@@ -716,7 +731,12 @@ class AtomHandler extends ActionHandler
 
 		$xml = $this->create_atom_wrapper( $alternate, $self, $id, $updated );
 
-		$xml = $this->add_pagination_links( $xml, Posts::count_total( Post::status('published') ) );
+		if ( $this->is_auth() ) {
+			$xml = $this->add_pagination_links( $xml, Posts::count_total() );
+		}
+		else {
+			$xml = $this->add_pagination_links( $xml, Posts::count_total( Post::status('published') ) );
+		}
 
 		$xml = $this->add_posts($xml, $posts );
 
