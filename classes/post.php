@@ -455,8 +455,16 @@ class Post extends QueryRecord implements IsContent
 	private function save_tags()
 	{
 		// no tags? then let's get out'a'here 
-		if (count($this->tags) == 0) { 
-			return true; 
+		if (count($this->tags) == 0) {
+			Plugins::act( 'tag_detach_all_from_post_before', $post_id );
+
+			$results = DB::get_column( 'SELECT tag_id FROM {tag2post} WHERE post_id = ?', array( $this->id ) );
+			foreach ( $results as $tag_id ) {
+				Tag::detatch_from_post( $tag_id, $this->id );
+			}
+
+			Plugins::act( 'tag_detach_all_from_post_after', $post_id );
+			return TRUE;
 		} 
 		/*
 		 * First, let's clean the incoming tag text array, ensuring we have
