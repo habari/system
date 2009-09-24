@@ -243,6 +243,22 @@ class FileCache extends Cache
 	}
 
 	/**
+	 * Remove all cache files
+	 */
+	protected function _purge()
+	{
+		$glob = glob( FILE_CACHE_LOCATION . '*.data' );
+		foreach( $glob as $file ) {
+			unlink( $file );
+		}
+		$glob = glob( FILE_CACHE_LOCATION . '*.cache' );
+		foreach( $glob as $file ) {
+			unlink( $file );
+		}
+
+	}
+
+	/**
 	 * Get the unique hash for a given key.
 	 *
 	 * @param string $name The name of the cached item.

@@ -1221,6 +1221,8 @@ class InstallHandler extends ActionHandler
 			break;
 		}
 
+		Cache::purge();
+
 		// get the current db version
 		$version = Options::get('db_version');
 
