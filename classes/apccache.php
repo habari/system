@@ -194,6 +194,14 @@ class APCCache extends Cache
 			$this->_set( implode( ':', array( $this->prefix, $group, $name ) ), $cache_data, time() + $expiry, $group );
 		}
 	}
+
+	/**
+	 * Remove all cached items
+	 */
+	protected function _purge()
+	{
+		apc_clear_cache( "user" );
+	}
 }
 
 ?>

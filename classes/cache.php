@@ -224,6 +224,15 @@ abstract class Cache
 	abstract protected function _extend( $name, $expiry, $group );
 
 	public static function debug() { return self::$instance->debug_data(); }
+
+	/**
+	 * Empty the cache completely
+	 *
+	 */
+	public static function purge()
+	{
+		return self::$instance->_purge();
+	}
 }
 
 ?>
