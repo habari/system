@@ -21,7 +21,7 @@ class ThemeHelper extends Plugin
 	 * @return string Linked string to display for comment count
 	 * @see ThemeHelper::theme_call_comments_count()
 	 */
-	public function theme_call_comments_link( $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
+	public function theme_call_comments_link( $theme, $post, $zero, $one, $many )
 	{
 		return '<a href="' . $post->permalink . '#comments" title="' . _t( 'Read Comments' ) . '">' . end( $theme->comments_count_return( $post, $zero, $one, $many ) ) . '</a>';
 	}
@@ -40,14 +40,24 @@ class ThemeHelper extends Plugin
 	 * @param string $many String to return when there are more than one comment
 	 * @return string String to display for comment count
 	 */
-	public function theme_comments_count( $theme, $post, $zero = '%d Comments', $one = '1 Comment', $many = '%d Comments')
+	public function theme_comments_count( $theme, $post, $zero = '', $one = '', $many = '' )
 	{
 		$count = $post->comments->approved->count;
+		if( empty( $zero ) ) {
+			$zero = _t( '%d Comments' );
+		}
+		if( empty( $one ) ) {
+			$one = _t( '%d Comment' );
+		}
+		if( empty( $many ) ) {
+			$many = _t( '%d Comments' );
+		}
+
 		if ($count >= 1) {
 			$text = _n( $one, $many, $count );
 		}
 		else {
-			$text = _t( $zero );
+			$text = $zero;
 		}
 		return sprintf( $text, $count );
 	}
