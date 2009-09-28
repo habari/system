@@ -131,9 +131,7 @@ class WPImport extends Plugin implements Importer
 				<span class="pct40"><label for="utw_import">Import tags from Ultimate Tag Warrior</label></span>
 				<span class="pct25"><input type="checkbox" name="utw_import" value="1" tab index="6"></span>
 			</div>
-			</div>
-			<div
-			<div class="container transparent"
+			<div class="container transparent">
 			<input type="submit" class="button" name="import" value="Import" />
 			</div>
 WP_IMPORT_STAGE1;
@@ -240,8 +238,7 @@ WP_IMPORT_STAGE2;
 			$max = min( ( $postindex + 1 ) * IMPORT_BATCH, $postcount );
 
 			$user_map = array();
-			$userinfo = DB::table( 'userinfo' );
-			$user_info = DB::get_results( "SELECT user_id, value FROM {$userinfo} WHERE name= 'wp_id';" );
+			$user_info = DB::get_results( "SELECT user_id, value FROM {userinfo WHERE name= 'wp_id';" );
 			foreach( $user_info as $info ) {
 				$user_map[$info->value]= $info->user_id;
 			}
@@ -561,8 +558,7 @@ WP_IMPORT_USERS1;
 
 			echo "<p>Importing comments {$min}-{$max} of {$commentcount}.</p>";
 
-			$postinfo = DB::table( 'postinfo' );
-			$post_info = DB::get_results( "SELECT post_id, value FROM {$postinfo} WHERE name= 'wp_id';" );
+			$post_info = DB::get_results( "SELECT post_id, value FROM {postinfo} WHERE name= 'wp_id';" );
 			foreach( $post_info as $info ) {
 				$post_map[$info->value]= $info->post_id;
 			}
