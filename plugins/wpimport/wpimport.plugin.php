@@ -238,7 +238,7 @@ WP_IMPORT_STAGE2;
 			$max = min( ( $postindex + 1 ) * IMPORT_BATCH, $postcount );
 
 			$user_map = array();
-			$user_info = DB::get_results( "SELECT user_id, value FROM {userinfo WHERE name= 'wp_id';" );
+			$user_info = DB::get_results( "SELECT user_id, value FROM {userinfo} WHERE name= 'wp_id';" );
 			foreach( $user_info as $info ) {
 				$user_map[$info->value]= $info->user_id;
 			}
