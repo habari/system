@@ -200,7 +200,17 @@ class APCCache extends Cache
 	 */
 	protected function _purge()
 	{
-		apc_clear_cache( "user" );
+		$cache_info = apc_cache_info( 'user' );
+
+		$delete = array();
+		foreach ( $cache_info['cache_list'] as $cache_item ) {
+			if ( strpos( $cache_item['info'], $this->prefix . ":" ) === 0 ) {
+				$delete[] = $cache_item['info'];
+			}
+		}
+		foreach( $delete as $item ) {
+			apc_delete( $item );
+		}
 	}
 }
 
