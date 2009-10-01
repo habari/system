@@ -605,10 +605,16 @@ class AdminHandler extends ActionHandler
 		if ( $digest != $wsse['digest'] ) {
 			$okay = FALSE;
 		}
+
+		$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
+		if ( ! ACL::access_check( $post->get_access(), 'delete' ) ) {
+			$okay = FALSE;
+		}
+
 		if ( !$okay )	{
 			Utils::redirect( URL::get( 'admin', 'page=posts&type='. Post::status( 'any' ) ) );
 		}
-		$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
+
 		$post->delete();
 		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), htmlspecialchars( $post->title ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
