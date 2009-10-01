@@ -40,7 +40,7 @@ class Undelete extends Plugin
 		// and then return false.  The Post::delete() method will
 		// see the false return value, and simply return, leaving
 		// the post in the database.
-		if( $post->status != Post::status( 'deleted' ) && is_object( User::get_by_id( $post->user_id ) ) ) {
+		if( $post->status != Post::status( 'deleted' ) && ACL::access_check( $post->get_access(), 'delete' ) ) {
 			$post->info->prior_status = $post->status;
 			$post->status = Post::status( 'deleted' );
 			$post->update();
@@ -53,7 +53,7 @@ class Undelete extends Plugin
 
 	public function filter_post_actions($actions, $post)
 	{
-		if ( $post->status == Post::status('deleted') ) {
+		if ( $post->status == Post::status('deleted') && ACL::access_check( $post->get_access(), 'delete' ) ) {
 			$actions['remove']['label']= _t('Delete forever');
 			$actions['remove']['title']= _t('Permanently delete this post');
 			$remove = array_pop($actions);
@@ -75,7 +75,7 @@ class Undelete extends Plugin
 	private function undelete_post( $post_id )
 	{
 		$post = Post::get( array( 'id' => $post_id, 'status' => Post::status('any') ) );
-		if ( $post->status == Post::status('deleted') ) {
+		if ( $post->status == Post::status('deleted') && ACL::access_check( $post->get_access(), 'delete' ) ) {
 			$post->status = $post->info->prior_status ? $post->info->prior_status : Post::status( 'draft' );
 			unset( $post->info->prior_status );
 			$post->update();
@@ -105,11 +105,26 @@ class Undelete extends Plugin
 		}
 	}
 
+	private function get_perms()
+	{
+		$type_perms = array();
+		$types = Post::list_active_post_types();
+		foreach( $types as $key => $value ) {
+			$perm = array( 'post_' . $key => ACL::get_bitmask( 'delete' ) );
+			$types_perms = array_merge( $type_perms, $perm );
+		}
+		$perms = array( 'own_posts' => ACL::get_bitmask( 'delete' ), 'post_any' => ACL::get_bitmask( 'delete' ) );
+		$perms = array_merge( $perms, $type_perms );
+		return $perms;
+	}
+
 	public function filter_plugin_config( $actions, $plugin_id )
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
 			$actions[]= _t( 'Configure' );
-			$actions[]= _t( 'Empty Trash' );
+			if( User::identify()->can_any( $this->get_perms() ) ) {
+				$actions[]= _t( 'Empty Trash' );
+			}
 		}
 		return $actions;
 	}
@@ -160,8 +175,10 @@ class Undelete extends Plugin
 		$count = 0;
 
 		foreach($posts as $post) {
-			$post->delete();
-			$count++;
+			if( ACL::access_check( $post->get_access(), 'delete' ) ) {
+				$post->delete();
+				$count++;
+			}
 		}
 
 		return $count;
