@@ -3066,11 +3066,11 @@ class AdminHandler extends ActionHandler
 			$plural = Plugins::filter('post_type_display', $type, 'plural');
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
-			$createperm = array( 'own_post_' . $type => array(ACL::get_bitmask('create')), 'post_' . $type => ACL::get_bitmask('create') );
+			$createperm = array( 'post_' . $type => ACL::get_bitmask('create') );
 			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t( 'Create a new %s', array( $singular ) ), 'text' => $singular, 'access' => $createperm );
 			$createperms = array_merge( $createperms, $createperm );
 
-			$manageperm = array( 'own_post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
+			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
 			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => _t( 'Manage %s', array( $plural ) ), 'text' => $plural, 'access'=> $manageperm );
 			$manageperms = array_merge( $manageperms, $manageperm );
 
