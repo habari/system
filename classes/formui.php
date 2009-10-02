@@ -552,7 +552,7 @@ class FormUI extends FormContainer
 			}
 		}
 		else {
-			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari' ) . Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+			$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
 		if(isset($_SESSION['forms'][$this->salted_name()]['error_data'])) {
 			foreach($_SESSION['forms'][$this->salted_name()]['error_data'] as $key => $value) {
