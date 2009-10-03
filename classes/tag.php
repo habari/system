@@ -45,25 +45,18 @@ class Tag extends QueryRecord
 	 * Return a single requested tag.
 	 *
 	 * <code>
-	 * $tag= Tag::get( array( 'tag_slug' => 'wooga' ) );
+	 * $tag= Tag::get( 'Tag text' );
+	 * $tag = Tag::get( 'tag-slug' );
+	 * $tag = Tag::get( 23 ); // tag id
 	 * </code>
 	 *
-	 * @param array $paramarray An associated array of parameters, or a querystring
-	 * @return Tag The first tag that matched the given criteria
+	 * @param mixed $tag The tag's name, slug, or id
+	 * @return Tag The first tag that matched the given criteria or FALSE on failure
 	 **/
-	static function get( $paramarray = array() )
+	static function get( $tag )
 	{
-		// Defaults
-		$defaults = array ('where' => array(),	'fetch_fn' => 'get_row');
-		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index] = array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
-		}
-		// make sure we get at most one result
-		$defaults['limit'] = 1;
-
-		return Tags::get( $defaults );
+		return Tags::get_one( $tag );
 	}
-
 	/**
 	 * Create a tag and save it.
 	 *
