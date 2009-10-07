@@ -49,7 +49,7 @@
 					</p>
 					
 					<p id="password_utils">
-						<input class="submit" type="submit" name="submit_button" value="<?php _e('Forgot your password?'); ?>">
+						<input class="submit" type="submit" name="submit_button" value="<?php _e('Reset password'); ?>">
 					</p>
 
 				</form>

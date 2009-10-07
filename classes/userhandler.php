@@ -18,7 +18,7 @@ class UserHandler extends ActionHandler
 	public function act_login()
 	{
 		// If we're a reset password request, do that.
-		if( isset( $_POST['submit_button']) && $_POST['submit_button'] === _t( 'Forgot your password?' ) ) {	
+		if( isset( $_POST['submit_button']) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
 			Utils::check_request_method( array( 'POST' ) );
 	
 			$name = $this->handler_vars['habari_username'];
