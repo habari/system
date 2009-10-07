@@ -1386,6 +1386,11 @@ class InstallHandler extends ActionHandler
 	{
 		ACL::create_token( 'manage_self', _t('Edit own profile'), 'Administration' );
 	}
+	
+	private function upgrade_db_post_3701()
+	{
+		ACL::create_token( 'manage_dash_modules', _t('Manage dashboard modules'), 'Administration' );
+	}
 
 	/**
 	 * Validate database credentials for MySQL
