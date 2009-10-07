@@ -14,10 +14,10 @@ class Version
 {
 	// DB and API versions are aligned with the SVN revision
 	// number in which they last changed.
-	const DB_VERSION = 3249;
+	const DB_VERSION = 3698;
 	const API_VERSION = 3124;
 
-	const HABARI_VERSION = '0.6.2';
+	const HABARI_VERSION = '0.6.3';
 
 	// This string contains the URL to the Habari SVN repository used for this working copy or export
 	const HABARI_SVN_HEAD_URL = '$HeadURL$';
