@@ -22,7 +22,7 @@ $(document).ready(function(){
 
 	// If the post hasn't been published, add a publish button
 	<?php 
-		$show_publish = ( $post->id == 0 && User::identify()->can_any( array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' ) ) ) || ( $post->id != 0 && ACL::access_check( $post->get_access(), 'edit' ) );
+		$show_publish = ( $post->id == 0 && User::identify()->can_any( array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $post->content_type ) => 'create' ) ) ) || ( $post->id != 0 && ACL::access_check( $post->get_access(), 'edit' ) );
 		if( isset( $statuses['published'] ) && $post->status != $statuses['published'] && $show_publish ) : 
 	?>
 	$('.container.buttons').prepend($('<input type="button" id="publish" class="button publish" tabindex="5" value="<?php _e('Publish'); ?>">'));
