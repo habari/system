@@ -277,7 +277,7 @@ class Vocabulary extends QueryRecord
 			if ( $this->hierarchical ) {
 				// If no parent is specified, put the new term after the last term
 				if ( null == $parent_term ) {
-					$ref = DB::get_value( 'SELECT mptt_right FROM habari__terms WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
+					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
 				}
 				else {
 					if ( null == $before_term ) {
@@ -291,7 +291,7 @@ class Vocabulary extends QueryRecord
 			else {
 				// If no before_term is specified, put the new term after the last term
 				if ( null == $before_term ) {
-					$ref = DB::get_value( 'SELECT mptt_right FROM habari__terms WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
+					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
 				}
 				else {
 					$ref = $before_term->mptt_left - 1;
