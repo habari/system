@@ -454,6 +454,10 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
+		// no tags? then let's get out'a'here
+		if (count($this->tags) == 0) {
+			return true;
+		}	
 		/*
 		 * First, let's clean the incoming tag text array, ensuring we have
 		 * a unique set of tag texts and slugs.
