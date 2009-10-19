@@ -10,30 +10,132 @@
 */
 class Tags extends ArrayObject
 {
+	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
+
 	/**
-	 * Returns all tags
-	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
+	 * Returns a tag or tags based on supplied parameters.
+	 * @todo This class should cache query results!
 	 *
-	 * @todo cache all query results
-	 * @return array An array of Tag objects
+	 * @param array $paramarray An associated array of parameters, or a querystring
+	 * @return array An array of Tag objects, or a single Tag object, depending on request
 	 **/
-	public static function get()
+	public static function get( $paramarray = array() )
 	{
-		/*
-		 * A LEFT JOIN is needed here in order to accomodate tags,
-		 * such as the default "habari" tag added to the database,
-		 * which are not related (yet) to any post itself.  These
-		 * tags are essentially lost to the world.
-		 */
-		$tags = DB::get_results( 'SELECT t.id AS id,
-			t.tag_text AS tag,
-			t.tag_slug AS slug,
-			COUNT(tp.tag_id) AS count
-			FROM {tags} t
-			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id
-			GROUP BY id, tag, slug
-			ORDER BY tag ASC' );
-		return $tags;
+		$params = array();
+		$fns = array( 'get_results', 'get_row', 'get_value' );
+		$select = '';
+		// what to select -- by default, everything
+		foreach ( Tag::default_fields() as $field => $value ) {
+			$select .= ( '' == $select )
+				? "{tags}.$field"
+				: ", {tags}.$field";
+		}
+		// defaults
+		$orderby = 'id ASC';
+		$nolimit = TRUE;
+
+		// Put incoming parameters into the local scope
+		$paramarray = Utils::get_params( $paramarray );
+
+		// Transact on possible multiple sets of where information that is to be OR'ed
+		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
+			$wheresets = $paramarray['where'];
+		}
+		else {
+			$wheresets = array( array() );
+		}
+
+		$wheres = array();
+		$join = '';
+		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
+			$wheres[] = $paramarray['where'];
+		}
+		else {
+			foreach( $wheresets as $paramset ) {
+				// safety mechanism to prevent empty queries
+				$where = array();
+				$paramset = array_merge((array) $paramarray, (array) $paramset);
+
+				$default_fields = Tag::default_fields();
+				foreach ( Tag::default_fields() as $field => $scrap ) {
+					if ( !isset( $paramset[$field] ) ) {
+						continue;
+					}
+					switch ( $field ) {
+						case 'id':
+							if ( !is_numeric( $paramset[$field] ) ) {
+								continue;
+							}
+						default:
+							$where[] = "{$field}= ?";
+							$params[] = $paramset[$field];
+					}
+				}
+
+				if(count($where) > 0) {
+					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
+				}
+			}
+		}
+
+		// Get any full-query parameters
+		$possible = array( 'fetch_fn', 'count', 'nolimit', 'limit', 'offset' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
+
+		if ( isset( $fetch_fn ) ) {
+			if ( ! in_array( $fetch_fn, $fns ) ) {
+				$fetch_fn = $fns[0];
+			}
+		}
+		else {
+			$fetch_fn = $fns[0];
+		}
+
+		// is a count being request?
+		if ( isset( $count ) ) {
+			$select = "COUNT($count)";
+			$fetch_fn = 'get_value';
+			$orderby = '';
+		}
+		if ( isset( $limit ) ) {
+			$limit = " LIMIT $limit";
+			if ( isset( $offset ) ) {
+				$limit .= " OFFSET $offset";
+			}
+		}
+		if ( isset( $nolimit ) ) {
+			$limit = '';
+		}
+
+		$query = '
+			SELECT ' . $select
+			. ' FROM {tags} '
+			. $join;
+
+		if ( count( $wheres ) > 0 ) {
+			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
+		}
+		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
+		//Utils::debug($paramarray, $fetch_fn, $query, $params);
+
+		DB::set_fetch_mode(PDO::FETCH_CLASS);
+		DB::set_fetch_class('Tag');
+		$results = DB::$fetch_fn( $query, $params, 'Tag' );
+
+		if ( 'get_results' != $fetch_fn ) {
+			// return the results
+			return $results;
+		}
+		elseif ( is_array( $results ) ) {
+			$c = __CLASS__;
+			$return_value = new $c( $results );
+			$return_value->get_param_cache = $paramarray;
+			return $return_value;
+		}
 	}
 
 	/**
@@ -43,14 +145,16 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_one($tag)
 	{
- 		return DB::get_row( 'SELECT t.id AS id,
-			t.tag_text AS tag,
-			t.tag_slug AS slug,
-			COUNT(tp.tag_id) AS count
-			FROM {tags} t
-			LEFT JOIN {tag2post} tp ON t.id=tp.tag_id
-			WHERE tag_slug = ? OR t.id = ?
-			GROUP BY id, tag, slug', array( Utils::slugify( $tag ), $tag ) );
+		$params = array();
+		if( is_numeric( $tag ) ) {
+			$params['id'] = $tag;
+		}
+		else {
+			$params['tag_slug'] = Utils::slugify( $tag );
+		}
+		$params['limit'] = 1;
+		$params['fetch_fn'] = 'get_row';
+		return Tags::get( $params );
 	}
 
 	/**
@@ -60,9 +164,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function delete($tag)
 	{
-		DB::query( 'DELETE FROM {tag2post} WHERE tag_id = ?', array($tag->id) );
-		DB::query( 'DELETE FROM {tags} WHERE id = ?', array($tag->id) );
-		EventLog::log( sprintf(_t('Tag deleted: %s'), $tag->tag), 'info', 'tag', 'habari' );
+		$tag->delete();
 	}
 
 	/**
@@ -77,17 +179,15 @@ class Tags extends ArrayObject
 	 **/
 	public static function rename($master, $tags)
 	{
-		if ( !is_array( $tags ) ) {
-			$tags = array( $tags );
-		}
-
+		$tags = Utils::single_array( $tags );
 		$tag_names = array();
+		$post_ids = array();
 
 		// get array of existing tags first to make sure we don't conflict with a new master tag
 		foreach ( $tags as $tag ) {
 			
 			$posts = array();
-			$post_ids = array();
+//			$post_ids = array();
 			$tag = Tags::get_one( $tag );
 			
 			// get all the post ID's tagged with this tag
@@ -166,24 +266,26 @@ class Tags extends ArrayObject
 	 **/
 	public static function post_count($tag)
 	{
+		$params = array();
+		$params['fetch_fn'] = 'get_row';
 		if ( is_int( $tag ) ) {
-			$tag = Tags::get_by_id( $tag );
+			$params['id'] = $tag;
 		}
 		else if ( is_string( $tag ) ) {
-			$tag = Tags::get_by_slug( Utils::slugify($tag) );
+			$params['tag_slug'] = Utils::slugify( $tag );
 		}
-
-		return DB::get_row( 'SELECT COUNT(tag_id) AS count FROM {tag2post} WHERE tag_id = ?', array($tag->id) );
+		$tag =  Tags::get( $params );
+		return $tag->count;
 	}
 
 	public static function get_by_text($tag)
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_text = ? GROUP BY id, tag, slug', array($tag) );
+		return Tags::get( array( 'tag_text' => $tag, 'fetch_fn' => 'get_row', 'limit' => 1  ) );
 	}
 
 	public static function get_by_slug($tag)
 	{
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE tag_slug = ? GROUP BY id, tag, slug', array($tag) );
+		return Tags::get( array( 'tag_slug' => $tag, 'fetch_fn' => 'get_row', 'limit' => 1  ) );
 	}
 
 	/**
@@ -194,11 +296,7 @@ class Tags extends ArrayObject
 	 */
 	public static function get_by_id( $tag )
 	{
-		/*
-		 * A LEFT JOIN is needed here to accomodate tags not yet
-		 * related to a post, like the default "habari" tag...
-		 */
-		return DB::get_row( 'SELECT t.id AS id, t.tag_text AS tag, t.tag_slug AS slug, COUNT(tp.tag_id) AS count FROM {tags} t LEFT JOIN {tag2post} tp ON t.id=tp.tag_id WHERE id = ? GROUP BY id, tag, slug', array($tag) );
+		return Tags::get( array( 'id' => $tag, 'fetch_fn' => 'get_row', 'limit' => 1 ) );
 	}
 }
 ?>
