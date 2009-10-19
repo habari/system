@@ -42,6 +42,31 @@ class Tag extends QueryRecord
 	}
 
 	/**
+	 * function __get
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value
+	 **/
+	public function __get( $name )
+	{
+		switch ($name) {
+			case 'tag':
+				$out = parent::__get( 'tag_text' );
+				break;
+			case 'slug':
+				$out = parent::__get( 'tag_slug' );
+				break;
+			case 'count':
+				$out = $this->get_count();
+				break;
+			default:
+				$out = parent::__get( $name );
+				break;
+		}
+		return $out;
+	}
+
+	/**
 	 * Return a single requested tag.
 	 *
 	 * <code>
@@ -249,5 +274,13 @@ class Tag extends QueryRecord
 		return call_user_func_array(array('Plugins', 'filter'), $args);
 	}
 
+	/**
+	 * Get a count of how many times the tag has been used in a post
+	 * @return integer The number of times the tag has been used
+	 **/
+	protected function get_count()
+	{
+		return (int)DB::get_value( 'SELECT count(tag_id) FROM {tag2post} WHERE tag_id = ?', array( $this->id ) );
+	}
 }
 ?>
