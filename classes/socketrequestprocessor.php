@@ -61,8 +61,15 @@ class SocketRequestProcessor implements RequestProcessor
 				$urlbits['port'] = 80; 
 			} 
 		}
+
+		if ( !in_array( $urlbits['scheme'], stream_get_transports() ) ) {
+			$transport = ( $urlbits['scheme'] == 'https' ) ? 'ssl' : 'tcp';
+		}
+		else {
+			$transport = $urlbits['scheme'];
+		}
 		
-		$fp = @fsockopen( $urlbits['scheme'] . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout ); 
+		$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
 		if ( $fp === FALSE ) {
 			return Error::raise( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
