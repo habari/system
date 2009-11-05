@@ -44,12 +44,16 @@
 		<input type="checkbox" id="master_checkbox" name="master_checkbox" class="select_all">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
-	<span class="buttons">
-		<span class="approve"><input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approve button" onclick="itemManage.update( 'approve' ); return false;"></span>
-		<span class="unapprove"><input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprove button" onclick="itemManage.update( 'unapprove' ); return false;"></span>
-		<span class="spam"><input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spam button" onclick="itemManage.update( 'spam' ); return false;"></span>
-		<span class="delete"><input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="delete button" onclick="itemManage.update( 'delete' ); return false;"></span>
-	</span>
+	<ul class="dropbutton alert">
+		<li class=""><a href="*" name="do_delete" title="<?php _e( 'Delete selected comments' ); ?>" onclick="itemManage.update( 'delete' ); return false;"><?php _e( 'Delete Selected' ); ?></a></li>
+		<li class=""><a href="*" name="do_delete_spam" title="<?php _e( 'Delete all spam comments' ); ?>" onclick="itemManage.update( 'delete_spam' ); return false;"><?php _e( 'Delete All Spam' ); ?></a></li>
+		<li class=""><a href="*" name="do_delete_unapproved" title="<?php _e( 'Delete all unapproved comments' ); ?>" onclick="itemManage.update( 'delete_unapproved' ); return false;"><?php _e( 'Delete All Unapproved' ); ?></a></li>
+	</ul>
+	<ul class="dropbutton">
+		<li class=""><a href="*" name="do_approve" title="<?php _e( 'Approve selected comments' ); ?>" onclick="itemManage.update( 'approve' ); return false;"><?php _e( 'Mark selected approved' ); ?></a></li>
+		<li class=""><a href="*" name="do_unapprove" title="<?php _e( 'Unapprove selected comments' ); ?>" onclick="itemManage.update( 'unapprove' ); return false;"><?php _e( 'Mark selected unapproved' ); ?></a></li>
+		<li class=""><a href="*" name="do_spam" title="<?php _e( 'Mark selected comments as spam' ); ?>" onclick="itemManage.update( 'spam' ); return false;"><?php _e( 'Mark selected spam' ); ?></a></li>
+	</ul>
 </div>
 
 <div id="comments" class="container manage comments">
@@ -64,12 +68,16 @@
 		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2" class="select_all">
 		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
 	</span>
-	<span class="buttons">
-		<span class="approve"><input type="submit" name="do_approve" value="<?php _e('Approve'); ?>" class="approve button" onclick="itemManage.update( 'approve' ); return false;"></span>
-		<span class="unapprove"><input type="submit" name="do_unapprove" value="<?php _e('Unapprove'); ?>" class="unapprove button" onclick="itemManage.update( 'unapprove' ); return false;"></span>
-		<span class="spam"><input type="submit" name="do_spam" value="<?php _e('Spam'); ?>" class="spam button" onclick="itemManage.update( 'spam' ); return false;"></span>
-		<span class="delete"><input type="submit" name="do_delete" value="<?php _e('Delete'); ?>" class="delete button" onclick="itemManage.update( 'delete' ); return false;"></span>
-	</span>
+	<ul class="dropbutton alert">
+		<li class=""><a href="*" name="do_delete" title="<?php _e( 'Delete selected comments' ); ?>" onclick="itemManage.update( 'delete' ); return false;"><?php _e( 'Delete Selected' ); ?></a></li>
+		<li class=""><a href="*" name="do_delete_spam" title="<?php _e( 'Delete all spam comments' ); ?>" onclick="itemManage.update( 'delete_spam' ); return false;"><?php _e( 'Delete All Spam' ); ?></a></li>
+		<li class=""><a href="*" name="do_delete_unapproved" title="<?php _e( 'Delete all unapproved comments' ); ?>" onclick="itemManage.update( 'delete_unapproved' ); return false;"><?php _e( 'Delete All Unapproved' ); ?></a></li>
+	</ul>
+	<ul class="dropbutton">
+		<li class=""><a href="*" name="do_approve" title="<?php _e( 'Approve selected comments' ); ?>" onclick="itemManage.update( 'approve' ); return false;"><?php _e( 'Mark selected approved' ); ?></a></li>
+		<li class=""><a href="*" name="do_unapprove" title="<?php _e( 'Unapprove selected comments' ); ?>" onclick="itemManage.update( 'unapprove' ); return false;"><?php _e( 'Mark selected unapproved' ); ?></a></li>
+		<li class=""><a href="*" name="do_spam" title="<?php _e( 'Mark selected comments as spam' ); ?>" onclick="itemManage.update( 'spam' ); return false;"><?php _e( 'Mark selected spam' ); ?></a></li>
+	</ul>
 </div>
 
 </form>

@@ -2316,6 +2316,14 @@ class AdminHandler extends ActionHandler
 		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
 
 		switch ( $handler_vars['action'] ) {
+		case 'delete_spam':
+			Comments::delete_by_status( Comment::STATUS_SPAM );
+			$status_msg = _t('Deleted all spam comments' );
+			break;
+		case 'delete_unapproved':
+			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
+			$status_msg = _t('Deleted all unapproved comments' );
+			break;
 		case 'delete':
 			// Comments marked for deletion
 			Comments::delete_these( $comments );
