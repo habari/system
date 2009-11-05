@@ -258,65 +258,19 @@ class InputFilter
 			//
 			'is_relative' => FALSE,
 			'is_pseudo' => FALSE,
-			'is_error' => TRUE,
+			'is_error' => FALSE,
 			//
 			'pseudo_args' => '',
 		);
 
-		// TODO normalize etc., make re tighter (ips)
-		$re = '@^' // delimiter + anchor
-			// scheme, address, port are optional for relative urls ...
-			. '(?:'
-				// scheme
-				. '(?P<scheme>[a-zA-Z][^:]*):(//)?'
-				// real protocols
-				. '(?P<full_address>(?:'
-					// optional userinfo
-					. '(?:'
-						// username
-						. '(?P<user>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;&=+$,])+)'
-						// password
-						. ':(?P<pass>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;:&=+$,])+)?\@)?'
-					// address:
-					. '(?P<host>'
-					//   ip
-					  . '(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|'
-					//   or hostname
-					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*(?(2)|\.)[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
-					. ')'
-					// optional port (:0-65535)
-					. '(?::(?P<port>[0-5]?[0-9]{1,4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?'
-				// pseudo-protocols
-				. ')|.+)'
-			// /optional for relative
-			. ')?'
-			// path
-			. '(?P<path>/?[^?#]+)?'
-			// querystring
-			. '(?:\?(?P<query>[^#]+))?'
-			// fragment (hash)
-			. '(?:#(?P<fragment>.*))?'
-			// delimiter
-			. '@'
-			;
+		// Use PHP's parse_url to get the basics
+		$r = array_merge( $r, parse_url( $url ) );
 
-		$t = preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
-		if ( ! $t ) // TODO better error handling
-			return $r;
-
-		$matches = $matches[0];
-		if ( ! isset( $matches['full_address'] ) )
-			$matches['full_address'] = '';
-
-		$r['is_error'] = FALSE;
-		$r['is_relative'] = empty( $matches['full_address'] );
-		$r['is_pseudo'] = ! array_key_exists( 'host', $matches );
-		$r['pseudo_args'] = $r['is_pseudo'] ? $matches['full_address'] : '';
-
-		foreach ( array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment' ) as $k ) {
-			if ( array_key_exists( $k, $matches ) ) {
-				$r[$k] = $matches[$k];
-			}
+		$r['is_pseudo'] = !in_array( $r['scheme'], array( 'http', 'https', '' ) );
+		$r['is_relative'] = ( $r['host'] == '' && !$r['is_pseudo'] );
+		if( $r['is_pseudo'] ) {
+			$r['pseudo_args'] = $r['path'];
+			$r['path'] = '';
 		}
 
 		return $r;
