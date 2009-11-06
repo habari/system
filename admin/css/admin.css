@@ -1858,6 +1858,13 @@ body.page-Manage .state {
 	border-right: 3px solid #fcd915;
 }
 
+#comments .item p.comment-type {
+	font-size: 11px;
+	text-transform: capitalize;
+	font-weight: bold;
+	padding-top: 5px;
+}
+
 .controls select {
 	width: 120px;
 	margin-right: 5px;
