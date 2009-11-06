@@ -48,9 +48,10 @@
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
 				<p><?php _e('Marked as spam'); ?></p>
 			<?php endif; ?>
-			
+
 			<?php Plugins::act('comment_info', $comment); ?>
 
+			<p class="comment-type"><?php echo Comment::type_name( $comment->type ); ?></p>
 		</div>
 		<span class="content edit-content area pct75"><?php
 			if ( MultiByte::valid_data( $comment->content ) ) {
