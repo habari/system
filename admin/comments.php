@@ -44,12 +44,12 @@
 		<input type="checkbox" id="master_checkbox" name="master_checkbox" class="select_all">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
-	<ul class="dropbutton alert">
+	<ul class="comments-action dropbutton alert">
 		<li class=""><a href="*" name="do_delete" title="<?php _e( 'Delete selected comments' ); ?>" onclick="itemManage.update( 'delete' ); return false;"><?php _e( 'Delete Selected' ); ?></a></li>
 		<li class=""><a href="*" name="do_delete_spam" title="<?php _e( 'Delete all spam comments' ); ?>" onclick="itemManage.update( 'delete_spam' ); return false;"><?php _e( 'Delete All Spam' ); ?></a></li>
 		<li class=""><a href="*" name="do_delete_unapproved" title="<?php _e( 'Delete all unapproved comments' ); ?>" onclick="itemManage.update( 'delete_unapproved' ); return false;"><?php _e( 'Delete All Unapproved' ); ?></a></li>
 	</ul>
-	<ul class="dropbutton">
+	<ul class="comments-action dropbutton">
 		<li class=""><a href="*" name="do_approve" title="<?php _e( 'Approve selected comments' ); ?>" onclick="itemManage.update( 'approve' ); return false;"><?php _e( 'Mark selected approved' ); ?></a></li>
 		<li class=""><a href="*" name="do_unapprove" title="<?php _e( 'Unapprove selected comments' ); ?>" onclick="itemManage.update( 'unapprove' ); return false;"><?php _e( 'Mark selected unapproved' ); ?></a></li>
 		<li class=""><a href="*" name="do_spam" title="<?php _e( 'Mark selected comments as spam' ); ?>" onclick="itemManage.update( 'spam' ); return false;"><?php _e( 'Mark selected spam' ); ?></a></li>
