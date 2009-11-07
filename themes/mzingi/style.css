@@ -113,9 +113,9 @@ h3 {
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
 
-#masthead#branding h3 {
-	text-transform: italics;
-	font-size: ;
+#masthead #branding h3 {
+	font-style: italic;
+	font-size: 125%;
 }
 
 #primaryContent h2 {
@@ -318,8 +318,6 @@ ul#moreposts {
 
 ul#moreposts li {
 	padding-bottom: 5px;
-}
-
 }
 
 ul#recentcomments {
