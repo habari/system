@@ -711,7 +711,7 @@ class Theme extends Pluggable
 		// Create the output variable.
 		$out = '';
 
-		if ( isset( $settings['hideIfSinglePage'] ) &&  $settings['hideIfSinglePage'] === true ) {
+		if ( 1 === count($pages) && isset( $settings['hideIfSinglePage'] ) &&  $settings['hideIfSinglePage'] === true ) {
 			return '';
 		}
 		
