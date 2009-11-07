@@ -258,6 +258,8 @@ class HiEngineParser
 				// this is an internal match
 				case 'context':
 					return $this->hi_to_var($cmd_matches[2]);
+				case 'escape':
+					return '<?php echo htmlspecialchars( ' . $this->hi_to_var( $cmd_matches[2] ) . ', ENT_COMPAT, "UTF-8" ); ?>';
 			}
 		}
 
@@ -297,10 +299,11 @@ class HiEngineParser
 	function var_replace($matches)
 	{
 		$var = $matches[1];
+
 		if(is_callable($var)) {
 			return $var;
 		}
-		if(preg_match('/true|false|null/i', $var)) {
+		if(preg_match('/true|false|null|isset|empty/i', $var)) {
 			return $var;
 		}
 
