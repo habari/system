@@ -93,7 +93,8 @@
 				</tr>
 				<?php endforeach; ?>
 			</table>
-		<?php elseif ( !empty( $bool_tokens ) ): ?>
+		<?php endif; ?>
+		<?php if ( !empty( $bool_tokens ) ): ?>
 			<table id="<?php echo $group_name; ?>-bool-permissions" class="pct100 bool-permissions">
 				<tr class="head">
 					<th class="pct40"><?php _e( 'Token Description' ); ?></th>
