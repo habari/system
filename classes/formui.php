@@ -549,6 +549,9 @@ class FormUI extends FormContainer
 			}
 			else {
 				$forvalidation = true;
+				if( !isset( $_SESSION['forms'][$this->salted_name()]['url'] ) ) {
+					$_SESSION['forms'][$this->salted_name()]['url'] = Site::get_url( 'habari', true ) . Controller::get_stub() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+				}
 			}
 		}
 		else {
