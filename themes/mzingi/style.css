@@ -295,6 +295,11 @@ ul#tidbits a {
 	padding: 2px;
 }
 
+#content img {
+        max-width: 100%;
+}
+
+
 /* =Secondary Content
 -----------------------------------------------------------------------------*/
 
