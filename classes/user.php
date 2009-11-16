@@ -594,6 +594,15 @@ class User extends QueryRecord
 	 */
 	public function __get( $name )
 	{
+		$fieldnames = array_merge( array_keys( $this->fields ), array( 'groups', 'displayname', 'loggedin', 'info') );
+		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
+			list( $junk, $name, $filter )= $matches;
+		}
+		else {
+			$filter = false;
+		}
+
 		switch ($name) {
 			case 'info':
 				if ( ! isset( $this->info ) ) {
@@ -602,16 +611,28 @@ class User extends QueryRecord
 				else {
 					$this->info->set_key( $this->fields['id'] );
 				}
-				return $this->info;
+				$out = $this->info;
+				break;
 			case 'groups':
-				return $this->list_groups();
+				$out = $this->list_groups();
+				break;
 			case 'displayname':
-				return ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
+				$out = ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
+				break;
 			case 'loggedin':
-				return $this->id != 0;
+				$out = $this->id != 0;
+				break;
 			default:
-				return parent::__get( $name );
+				$out = parent::__get( $name );
+				break;
 		}
+		
+		$out = Plugins::filter( "user_get", $out, $name, $this );
+		$out = Plugins::filter( "user_{$name}", $out, $this );
+		if ( $filter ) {
+			$out = Plugins::filter( "user_{$name}_{$filter}", $out, $this );
+		}
+		return $out;
 	}
 
 	/**
