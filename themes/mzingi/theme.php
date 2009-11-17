@@ -10,16 +10,6 @@
  * @todo This stuff needs to move into the custom theme class:
  */
 
-// Apply Format::autop() to comment content...
-Format::apply( 'autop', 'comment_content_out' );
-// Apply Format::tag_and_list() to post tags...
-Format::apply( 'tag_and_list', 'post_tags_out' );
-// Only uses the <!--more--> tag, with the 'more' as the link to full post
-Format::apply_with_hook_params( 'more', 'post_content_out', 'more' );
-// Creates an excerpt option. echo $post->content_excerpt;
-Format::apply_with_hook_params( 'more', 'post_content_excerpt', 'more', 60, 1 );
-// Format the calendar like date for home, entry.single and entry.multiple templates
-Format::apply( 'format_date', 'post_pubdate_out','<span class="calyear">{Y}</span><br><span class="calday">{j}</span><br><span  class="calmonth">{F}</span>' );
 
 // We must tell Habari to use MyTheme as the custom theme class:
 define( 'THEME_CLASS', 'CornerStone' );
@@ -29,6 +19,21 @@ define( 'THEME_CLASS', 'CornerStone' );
  */
 class CornerStone extends Theme
 {
+
+	public function action_init_theme()
+	{
+		// Apply Format::autop() to comment content...
+		Format::apply( 'autop', 'comment_content_out' );
+		// Apply Format::tag_and_list() to post tags...
+		Format::apply( 'tag_and_list', 'post_tags_out' );
+		// Only uses the <!--more--> tag, with the 'more' as the link to full post
+		Format::apply_with_hook_params( 'more', 'post_content_out', 'more' );
+		// Creates an excerpt option. echo $post->content_excerpt;
+		Format::apply( 'autop', 'post_content_excerpt' );
+		Format::apply_with_hook_params( 'more', 'post_content_excerpt', 'more',60, 1 );
+		// Format the calendar like date for home, entry.single and entry.multiple templates
+		Format::apply( 'format_date', 'post_pubdate_out','<span class="calyear">{Y}</span><br><span class="calday">{j}</span><br><span  class="calmonth">{F}</span>' );
+	}
 
 	/**
 	 * Add additional template variables to the template output.

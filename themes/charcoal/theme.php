@@ -38,7 +38,8 @@ class charcoal extends Theme
 		// Apply Format::autop() to comment content...
 		Format::apply( 'autop', 'comment_content_out' );
 		// Truncate content excerpt at "more" or 56 characters...
-		Format::apply_with_hook_params( 'more', 'post_content_excerpt', '',56, 1 );
+		Format::apply( 'autop', 'post_content_excerpt' );
+		Format::apply_with_hook_params( 'more', 'post_content_excerpt', '', 56, 1 );
 	}
 	
 	/**
