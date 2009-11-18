@@ -196,7 +196,7 @@ class Format
 			
 			// anything that's not a text node should get passed through
 			if ($token['type'] != HTMLTokenizer::NODE_TYPE_TEXT) {
-				$value .= HtmlTokenSet::token_to_string($token, false);
+				$value .= HtmlTokenSet::token_to_string($token, true);
 				continue;
 			}
 			
