@@ -186,7 +186,7 @@ class Comment extends QueryRecord implements IsContent
 	 **/
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info', 'editlink' ) );
 		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
 			list( $junk, $name, $filter ) = $matches;
@@ -211,6 +211,9 @@ class Comment extends QueryRecord implements IsContent
 				break;
 			case 'typename':
 				$out = self::type_name( $this->type );
+				break;
+			case 'editlink':
+				$out = $this->get_editlink();
 				break;
 			default:
 				$out = parent::__get( $name );
@@ -527,6 +530,15 @@ class Comment extends QueryRecord implements IsContent
 
 		// if we haven't returned by this point, we can neither manage the comment nor read it
 		return ACL::get_bitmask( 0 );
+	}
+	
+	/**
+	 * Returns a URL for the ->editlink property of this class.
+	 * @return string A url to edit this comment in the admin.
+	 **/
+	private function get_editlink()
+	{
+		return URL::get('admin', "page=comment&id={$this->id}");
 	}
 }
 
