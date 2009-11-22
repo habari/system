@@ -146,7 +146,7 @@ class Format
 		
 		// should never autop ANY content in these items
 		$noAutoP = array(
-			'pre','blockquote','code','ul','h1','h2','h3','h4','h5','h6',
+			'pre','code','ul','h1','h2','h3','h4','h5','h6',
 			'table','ul','ol','li','i','b','em','strong'
 		);
 		
