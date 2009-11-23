@@ -20,22 +20,14 @@ abstract class Plugin extends Pluggable
 	 * directory.
 	 *
 	 */
-	final public function info( )
+	final public function info()
 	{
 		static $info;
-		if(!isset($info)) {
-			$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $this->get_file());
-			if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
-				$info = new SimpleXMLElement( $xml_content );
-				if($info->getName() != 'pluggable') {
-					$info = null;
-				}
-				else {
-					if(isset($info->help)) {
-						Plugins::register(array($this, '_help_plugin_config_plugin'), 'filter', 'plugin_config');
-						Plugins::register(array($this, '_help_plugin_ui_plugin'), 'action', 'plugin_ui');
-					}
-				}
+		if ( !isset( $info ) ) {
+			$info = Plugins::load_info( $this->get_file() );
+			if ( isset( $info->help ) ) {
+				Plugins::register(array($this, '_help_plugin_config_plugin'), 'filter', 'plugin_config');
+				Plugins::register(array($this, '_help_plugin_ui_plugin'), 'action', 'plugin_ui');
 			}
 		}
 		return $info;
