@@ -65,8 +65,8 @@ class SQLiteConnection extends DatabaseConnection
 			}
 			$connect_string = implode( ':', array( $type, $file ) );
 		}
-		if (!is_writable($file)) {
-			die(_t('Database file must be writable.'));
+		if ( file_exists( $file ) && !is_writable( $file ) ) {
+			die( _t( 'Database file must be writable.' ) );
 		}
 		$conn = parent::connect( $connect_string, $db_user, $db_pass );
 		$this->exec( 'PRAGMA synchronous = OFF' );
