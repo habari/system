@@ -1482,15 +1482,18 @@ class InstallHandler extends ActionHandler
 		$vocabulary->insert();
 		
 		$new_tag = NULL;
+		$post_ids = array();
 		$prefix = Config::get( 'db_connection' )->prefix;
 
-		$results = DB::get_results( "SELECT ID, tag_text, tag_slug from {$prefix}tags" );
+		$results = DB::get_results( "SELECT id, tag_text, tag_slug from {$prefix}tags" );
 
 		foreach( $results as $tag ) {
 			$new_tag = $vocabulary->add_term( $tag->tag_text );
-			DB::query( "UPDATE {$prefix}tag2post SET tag_id = ? WHERE tag_id = ?", array( $new_tag->id, $tag->id ) );
+			$post_ids = DB::get_column( "SELECT post_id FROM {$prefix}tag2post WHERE tag_id = ?", array( $tag->id ) );
+			foreach( $post_ids as $id ) {
+				DB::insert( "{object_terms}", array( 'term_id' => $new_tag->id, 'object_id' => $id, 'object_type_id' => $type_id ) );
+			}
 		}
-		DB::exec( "INSERT INTO {object_terms} (term_id, object_id, object_type_id) SELECT tag_id, post_id, {$type_id} AS type_id FROM {$prefix}tag2post" );
 	}
 
 	/**
