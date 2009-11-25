@@ -445,6 +445,13 @@ class InstallHandler extends ActionHandler
 				return false;
 			}
 		}
+		
+		// Create the Tags vocabulary
+		if(! $this->create_tags_vocabulary()) {
+			$this->theme->assign('form_errors', array('options'=>_t('Problem creating tags vocabulary')));
+			DB::rollback();
+			return false;
+		}
 
 		// Create the standard post types and statuses
 		if(! $this->create_base_post_types()) {
@@ -678,6 +685,17 @@ class InstallHandler extends ActionHandler
 		Post::add_new_status('published');
 		Post::add_new_status( 'scheduled', true );
 
+		return true;
+	}
+	
+	/**
+	 * Add the tags vocabulary
+	 */	 	
+	private function create_tags_vocabulary()
+	{
+		$vocabulary = new Vocabulary( array( 'name' => 'tags', 'description' => 'Habari\'s tags implementation', 'features' => array( 'multiple', 'free' ) ) );
+		$vocabulary->insert();
+		
 		return true;
 	}
 
@@ -1454,6 +1472,25 @@ class InstallHandler extends ActionHandler
 	private function upgrade_db_post_3701()
 	{
 		ACL::create_token( 'manage_dash_modules', _t('Manage dashboard modules'), 'Administration' );
+	}
+
+	private function upgrade_db_post_3749()
+	{
+		$type_id = Vocabulary::object_type_id( 'post' );
+
+		$vocabulary = new Vocabulary( array( 'name' => 'tags', 'description' => 'Habari\'s tags implementation', 'features' => array( 'multiple', 'free' ) ) );
+		$vocabulary->insert();
+		
+		$new_tag = NULL;
+		$prefix = Config::get( 'db_connection' )->prefix;
+
+		$results = DB::get_results( "SELECT ID, tag_text, tag_slug from {$prefix}tags" );
+
+		foreach( $results as $tag ) {
+			$new_tag = $vocabulary->add_term( $tag->tag_text );
+			DB::query( "UPDATE {$prefix}tag2post SET tag_id = ? WHERE tag_id = ?", array( $new_tag->id, $tag->id ) );
+		}
+		DB::exec( "INSERT INTO {object_terms} (term_id, object_id, object_type_id) SELECT tag_id, post_id, {$type_id} AS type_id FROM {$prefix}tag2post" );
 	}
 
 	/**
