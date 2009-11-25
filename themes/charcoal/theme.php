@@ -149,17 +149,18 @@ class charcoal extends Theme
 	{
 		$limit = self::TAGS_COUNT;
 		$sql ="
-			SELECT t.tag_slug AS slug, t.tag_text AS text, count(tp.post_id) as ttl
-			FROM {tags} t
-			INNER JOIN {tag2post} tp
-			ON t.id=tp.tag_id
+			SELECT t.term AS slug, t.term_display AS text, count(tp.object_id) as ttl
+			FROM {terms} t
+			INNER JOIN {object_terms} tp
+			ON t.id=tp.term_id
 			INNER JOIN {posts} p
-			ON p.id=tp.post_id AND p.status = ?
-			GROUP BY t.tag_slug
-			ORDER BY t.tag_text
+			ON p.id=tp.object_id AND p.status = ?
+			WHERE t.vocabulary_id = ? AND tp.object_type_id = ?
+			GROUP BY t.term
+			ORDER BY t.term_display
 			LIMIT {$limit}
 		";
-		$tags = DB::get_results( $sql, array(Post::status('published')) );
+		$tags = DB::get_results( $sql, array(Post::status('published'), Vocabulary::get( Tags::vocabulary() )->id, Vocabulary::object_type_id( 'post' ) ) );
 		foreach ($tags as $index => $tag) {
 			$tags[$index]->url = URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) );
 		}
