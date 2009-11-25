@@ -10,132 +10,23 @@
 */
 class Tags extends ArrayObject
 {
-	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
+	private static $vocabulary = 'tags';
+	private static $object_type = 'post';
 
 	/**
 	 * Returns a tag or tags based on supplied parameters.
-	 * @todo This class should cache query results!
-	 *
-	 * @param array $paramarray An associated array of parameters, or a querystring
-	 * @return array An array of Tag objects, or a single Tag object, depending on request
+	 * @return array An array of Tag objects
 	 **/
 	public static function get( $paramarray = array() )
 	{
-		$params = array();
-		$fns = array( 'get_results', 'get_row', 'get_value' );
-		$select = '';
-		// what to select -- by default, everything
-		foreach ( Tag::default_fields() as $field => $value ) {
-			$select .= ( '' == $select )
-				? "{tags}.$field"
-				: ", {tags}.$field";
+		$tags = array();
+		$terms = Vocabulary::get( self::$vocabulary )->get_tree();
+		foreach( $terms as $term ) {
+			$tags[] = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
 		}
-		// defaults
-		$orderby = 'id ASC';
-		$nolimit = TRUE;
+		return $tags;
+//		return $terms;
 
-		// Put incoming parameters into the local scope
-		$paramarray = Utils::get_params( $paramarray );
-
-		// Transact on possible multiple sets of where information that is to be OR'ed
-		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
-			$wheresets = $paramarray['where'];
-		}
-		else {
-			$wheresets = array( array() );
-		}
-
-		$wheres = array();
-		$join = '';
-		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[] = $paramarray['where'];
-		}
-		else {
-			foreach( $wheresets as $paramset ) {
-				// safety mechanism to prevent empty queries
-				$where = array();
-				$paramset = array_merge((array) $paramarray, (array) $paramset);
-
-				$default_fields = Tag::default_fields();
-				foreach ( Tag::default_fields() as $field => $scrap ) {
-					if ( !isset( $paramset[$field] ) ) {
-						continue;
-					}
-					switch ( $field ) {
-						case 'id':
-							if ( !is_numeric( $paramset[$field] ) ) {
-								continue;
-							}
-						default:
-							$where[] = "{$field}= ?";
-							$params[] = $paramset[$field];
-					}
-				}
-
-				if(count($where) > 0) {
-					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
-				}
-			}
-		}
-
-		// Get any full-query parameters
-		$possible = array( 'fetch_fn', 'count', 'nolimit', 'limit', 'offset' );
-		foreach ( $possible as $varname ) {
-			if ( isset( $paramarray[$varname] ) ) {
-				$$varname = $paramarray[$varname];
-			}
-		}
-
-		if ( isset( $fetch_fn ) ) {
-			if ( ! in_array( $fetch_fn, $fns ) ) {
-				$fetch_fn = $fns[0];
-			}
-		}
-		else {
-			$fetch_fn = $fns[0];
-		}
-
-		// is a count being request?
-		if ( isset( $count ) ) {
-			$select = "COUNT($count)";
-			$fetch_fn = 'get_value';
-			$orderby = '';
-		}
-		if ( isset( $limit ) ) {
-			$limit = " LIMIT $limit";
-			if ( isset( $offset ) ) {
-				$limit .= " OFFSET $offset";
-			}
-		}
-		if ( isset( $nolimit ) ) {
-			$limit = '';
-		}
-
-		$query = '
-			SELECT ' . $select
-			. ' FROM {tags} '
-			. $join;
-
-		if ( count( $wheres ) > 0 ) {
-			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
-		}
-		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
-		//Utils::debug($paramarray, $fetch_fn, $query, $params);
-
-		DB::set_fetch_mode(PDO::FETCH_CLASS);
-		DB::set_fetch_class('Tag');
-		$results = DB::$fetch_fn( $query, $params, 'Tag' );
-
-		if ( 'get_results' != $fetch_fn ) {
-			// return the results
-			return $results;
-		}
-		elseif ( is_array( $results ) ) {
-			$c = __CLASS__;
-			$return_value = new $c( $results );
-			$return_value->get_param_cache = $paramarray;
-			return $return_value;
-		}
 	}
 
 	/**
@@ -143,18 +34,11 @@ class Tags extends ArrayObject
 	 *
 	 * @return QueryRecord A tag QueryRecord
 	 **/
-	public static function get_one($tag)
+	public static function get_one( $tag )
 	{
-		$params = array();
-		if( is_numeric( $tag ) ) {
-			$params['id'] = $tag;
-		}
-		else {
-			$params['tag_slug'] = Utils::slugify( $tag );
-		}
-		$params['limit'] = 1;
-		$params['fetch_fn'] = 'get_row';
-		return Tags::get( $params );
+		$term = Vocabulary::get( self::$vocabulary )->get_term( $tag );
+		$tag = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
+		return $tag;
 	}
 
 	/**
@@ -168,8 +52,6 @@ class Tags extends ArrayObject
 	}
 
 	/**
-	 * TODO: be more careful
-	 * INSERT INTO {tag2post} / SELECT $master_tag->ID,post_ID FROM {tag2post} WHERE tag_id = $tag->id" and then "DELETE FROM {tag2post} WHERE tag_id = $tag->id"
 	 * Renames tags.
 	 * If the master tag exists, the tags will be merged with it.
 	 * If not, it will be created first.
@@ -177,9 +59,12 @@ class Tags extends ArrayObject
 	 * @param Array tags The tag text, slugs or ids to be renamed
 	 * @param mixed master The Tag to which they should be renamed, or the slug, text or id of it
 	 **/
-	public static function rename($master, $tags)
+	public static function rename($master, $tags, $object_type = 'post' )
 	{
-		$tags = Utils::single_array( $tags );
+		$vocabulary = Vocabulary::get( self::$vocabulary );
+		$type_id = Vocabulary::object_type_id( $object_type );
+
+		$post_ids = array();
 		$tag_names = array();
 		$post_ids = array();
 
@@ -187,63 +72,52 @@ class Tags extends ArrayObject
 		foreach ( $tags as $tag ) {
 			
 			$posts = array();
-//			$post_ids = array();
-			$tag = Tags::get_one( $tag );
+			$term = $vocabulary->get_term( $tag );
 			
 			// get all the post ID's tagged with this tag
-			$posts = DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $tag->id ) );
+			$posts = $term->objects( $object_type );
 
 			if ( count( $posts ) > 0 ) {
-
-				// build a list of all the post_id's we need for the new tag
-				foreach ( $posts as $post ) {
-					$post_ids[] = $post->post_id;
-				}
-				$tag_names[] = $tag->tag;
+				// merge the current post ids into the list of all the post_ids we need for the new tag
+				$post_ids = array_merge( $post_ids, $posts );
 			}
 
-			Tags::delete( $tag );
+			$tag_names[] = $tag;
+			$vocabulary->delete_term( $term->id );
 		}
 		
-		// get the master tag
-		$master_tag = Tags::get_one($master);
+		// get the master term
+		$master_term = $vocabulary->get_term( $master );
 		
-		if ( !isset($master_tag->slug) ) {
+		if ( !isset($master_term->term ) ) {
 			// it didn't exist, so we assume it's tag text and create it
-			$master_tag = Tag::create(array('tag_slug' => Utils::slugify($master), 'tag_text' => $master));
+			$master_term = $vocabulary->add_term( $master );
 			
 			$master_ids = array();
 		}
 		else {
 			// get the posts the tag is already on so we don't duplicate them
-			$master_posts = DB::get_results( 'SELECT post_id FROM {tag2post} WHERE tag_id = ?', array( $master_tag->id ) );
-			
-			$master_ids = array();
-			
-			foreach ( $master_posts as $master_post ) {
-				$master_ids[] = $master_post->post_id;
-			}
+			$master_ids = $master_term->objects( $object_type );
 			
 		}
 
 		if ( count( $post_ids ) > 0 ) {
-			
 			// only try and add the master tag to posts it's not already on
 			$post_ids = array_diff( $post_ids, $master_ids );
-			
-			// link the master tag to each distinct post we removed tags from
-			foreach ( $post_ids as $post_id ) {
-
-				DB::query( 'INSERT INTO {tag2post} ( tag_id, post_id ) VALUES ( ?, ? )', array( $master_tag->id, $post_id ) );
-
-			}
-
 		}
+		else {
+			$post_ids = $master_ids;
+		}
+		// link the master tag to each distinct post we removed tags from
+		foreach ( $post_ids as $post_id ) {
+			$master_term->associate( $object_type, $post_id );
+		}
+
 		EventLog::log(sprintf(
 			_n('Tag %s has been renamed to %s.',
 				 'Tags %s have been renamed to %s.',
-				  count($tags)
-			), implode($tag_names, ', '), $master ), 'info', 'tag', 'habari'
+				  count( $tags )
+			), implode( $tag_names, ', ' ), $master ), 'info', 'tag', 'habari'
 		);
 
 	}
@@ -255,7 +129,18 @@ class Tags extends ArrayObject
 	 **/
 	public static function max_count()
 	{
-		return DB::get_value( 'SELECT count( t2.post_id ) AS max FROM {tags} t, {tag2post} t2 WHERE t2.tag_id = t.id GROUP BY t.id ORDER BY max DESC LIMIT 1' );
+		$vocabulary = Vocabulary::get( self::$vocabulary );
+		return DB::get_value( 'SELECT count( t2.object_id ) AS max FROM {terms} t, {object_terms} t2 WHERE t2.term_id = t.id AND t.vocabulary_id = ? GROUP BY t.id ORDER BY max DESC LIMIT 1', array( $vocabulary->id ) );
+	}
+
+	/**
+	 * Returns the number of tags in the database.
+	 *
+	 * @return int The number of tags in the database.
+	 **/
+	public static function count_total()
+	{
+		return count( Vocabulary::get( self::$vocabulary )->get_tree() );
 	}
 
 	/**
@@ -264,39 +149,75 @@ class Tags extends ArrayObject
 	 * @param mixed The tag to count usage.
 	 * @return int The number of times a tag is used.
 	 **/
-	public static function post_count($tag)
+	public static function post_count($tag, $object_type = 'post' )
 	{
-		$params = array();
-		$params['fetch_fn'] = 'get_row';
-		if ( is_int( $tag ) ) {
-			$params['id'] = $tag;
-		}
-		else if ( is_string( $tag ) ) {
-			$params['tag_slug'] = Utils::slugify( $tag );
-		}
-		$tag =  Tags::get( $params );
-		return $tag->count;
+		$tag = Tags::get_one( $tag );
+		return $tag->count( $object_type );
 	}
 
 	public static function get_by_text($tag)
 	{
-		return Tags::get( array( 'tag_text' => $tag, 'fetch_fn' => 'get_row', 'limit' => 1  ) );
+		return Tags::get_one( $tag );
 	}
 
 	public static function get_by_slug($tag)
 	{
-		return Tags::get( array( 'tag_slug' => $tag, 'fetch_fn' => 'get_row', 'limit' => 1  ) );
+		return Tags::get_one( $tag );
 	}
 
 	/**
 	 * Returns a Tag object based on a supplied ID
 	 *
-	 * @param		tag_id	The ID of the tag to retrieve
+	 * @param Integer tag_id The ID of the tag to retrieve
 	 * @return	A Tag object
 	 */
 	public static function get_by_id( $tag )
 	{
-		return Tags::get( array( 'id' => $tag, 'fetch_fn' => 'get_row', 'limit' => 1 ) );
+		return Tags::get_one( $tag );
 	}
+
+	/**
+	 * Returns the name of this vocabulary
+	 * 
+	 * @return String The vocabulary name
+	 */
+	public static function vocabulary()
+	{
+		return self::$vocabulary;
+	}
+
+	/**
+	 * Returns the default type Tags uses
+	 *
+	 * @return String The default type name
+	 */
+	public static function object_type()
+	{
+		return self::$object_type;
+	}
+
+	/**
+	 * Save the tags associated to this object into the terms and object_terms tables
+	 *
+	 * @param Array $tags strings. The tag names to associate to the object
+	 * @param Integer $object_id. The id of the object being tagged
+	 * @param String $object_type. The name of the type of the object being tagged. Defaults to post
+	 *
+	 * @return boolean. Whether the associating succeeded or not. TRUE
+	 */
+
+	public static function save_associations( $tags, $object_id, $object_type = 'post' )
+	{
+		$vocabulary = Vocabulary::get( self::$vocabulary );
+		return $vocabulary->set_object_terms( $object_type, $object_id, $tags );
+	}
+
+	public static function get_associations( $object_id, $object_type = 'post' )
+	{
+		$vocabulary = Vocabulary::get( self::$vocabulary );
+		return $vocabulary->get_object_terms( $object_type, $object_id );
+
+	}
+
 }
 ?>

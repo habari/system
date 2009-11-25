@@ -394,7 +394,7 @@ class AdminHandler extends ActionHandler
 			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),
 			'entry_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('published') ) ),
 			'comment_count' => Comments::count_total( Comment::STATUS_APPROVED, FALSE ),
-			'tag_count' => DB::get_value('SELECT count(id) FROM {tags}'),
+			'tag_count' => Tags::count_total(),
 			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_UNAPPROVED, FALSE ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),

@@ -163,40 +163,42 @@ class Posts extends ArrayObject implements IsContent
 						$where[] = "{posts}.user_id = ?";
 						$params[] = (int) $paramset['user_id'];
 					}
+				
 				}
+
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
-					$joins['tag2post_posts'] = ' JOIN {tag2post} ON {posts}.id = {tag2post}.post_id';
-					$joins['tags_tag2post'] = ' JOIN {tags} ON {tag2post}.tag_id = {tags}.id';
+					$joins['tag2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+					$joins['tags_tag2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
 
 					if ( isset( $paramset['tag'] ) ) {
 						if ( is_array( $paramset['tag'] ) ) {
-							$where[] = "{tags}.tag_text IN (" . implode( ',', array_fill( 0, count( $paramset['tag'] ), '?' ) ) . ")";
+							$where[] = "{terms}.term_display IN (" . implode( ',', array_fill( 0, count( $paramset['tag'] ), '?' ) ) . ")" . '  AND {object_terms}.object_type_id = ?';
 							$params = array_merge( $params, $paramset['tag'] );
 						}
 						else {
-							$where[] = '{tags}.tag_text = ?';
+							$where[] = '{terms}.term_display = ? AND {object_terms}.object_type_id = ?';
 							$params[] = (string) $paramset['tag'];
 						}
 					}
 					if ( isset( $paramset['tag_slug'] ) ) {
 						if ( is_array( $paramset['tag_slug'] ) ) {
-							$where[] = "{tags}.tag_slug IN (" . implode( ',', array_fill( 0, count( $paramset['tag_slug'] ), '?' ) ) . ")";
+							$where[] = "{terms}.term IN (" . implode( ',', array_fill( 0, count( $paramset['tag_slug'] ), '?' ) ) . ")" . ' AND {object_terms}.object_type_id = ?';
 							$params = array_merge( $params, $paramset['tag_slug'] );
 						}
 						else {
-							$where[] = '{tags}.tag_slug= ?';
+							$where[] = '{terms}.term= ? AND {object_terms}.object_type_id = ?';
 							$params[] = (string) $paramset['tag_slug'];
 						}
 					}
+					$params[] = Vocabulary::object_type_id( Tags::object_type() );
 				}
 
 				if ( isset( $paramset['all:tag'] ) ) {
-
-					$joins['tag2post_posts'] = ' JOIN {tag2post} ON {posts}.id = {tag2post}.post_id';
-					$joins['tags_tag2post'] = ' JOIN {tags} ON {tag2post}.tag_id = {tags}.id';
+					$joins['tag2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+					$joins['tags_tag2post'] = ' JOIN {terms} ON {object-terms}.term_id = {terms}.id';
 
 					if ( is_array( $paramset['all:tag'] ) ) {
-						$where[] = '{tags}.tag_text IN (' . implode( ',', array_fill( 0, count( $paramset['all:tag'] ), '?' ) ) . ')';
+						$where[] = '{terms}.term_display IN (' . implode( ',', array_fill( 0, count( $paramset['all:tag'] ), '?' ) ) . ')' . ' AND {object_terms}.object_type_id = ?';
 						$params = array_merge( $params, $paramset['all:tag'] );
 
 						$groupby = '{posts}.id';
@@ -204,22 +206,23 @@ class Posts extends ArrayObject implements IsContent
 					}
 					else {
 						// this is actually the same as plain 'tag' for a single tag search - go with it
-						$where[] = '{tags}.tag_text = ?';
+						$where[] = '{terms}.term_display = ? AND {object_terms}.object_type_id = ?';
 						$params[] = $paramset['all:tag'];
 					}
-
+					$params[] = Vocabulary::object_type_id( Tags::object_type() );
 				}
 
 				if ( isset( $paramset['not:tag'] ) ) {
 					$nottag = is_array( $paramset['not:tag'] ) ? array_values( $paramset['not:tag'] ) : array( $paramset['not:tag'] );
-
 					$where[] = 'NOT EXISTS (SELECT 1
-						FROM {tag2post}
-						INNER JOIN {tags} ON {tags}.id = {tag2post}.tag_id
-						WHERE {tags}.tag_slug IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
-						AND {tag2post}.post_id = {posts}.id)
+						FROM {object_terms}
+						INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
+						WHERE {terms}.term_display IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
+						AND {object_terms}.object_id = {posts}.id
+						AND {object_terms}.object_type_id = ?)
 					';
 					$params = array_merge( $params, $nottag );
+					$params[] = Vocabulary::object_type_id( Tags::object_type() );
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
@@ -585,6 +588,7 @@ class Posts extends ArrayObject implements IsContent
 		$results = DB::$fetch_fn( $query, $params, 'Post' );
 
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
+//		var_dump( $query );
 
 		/**
 		 * Return the results

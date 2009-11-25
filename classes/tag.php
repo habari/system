@@ -8,21 +8,13 @@
  * Class which describes a single Tag object
  *
  */
-class Tag extends QueryRecord
+class Tag
 {
 
-	/**
-	 * Return the defined database columns for a Tag.
-	 * @return array Array of columns in the tags table
-	 */
-	public static function default_fields()
-	{
-		return array(
-			'id' => 0,
-			'tag_slug' => '',
-			'tag_text' => ''
-		);
-	}
+	public $tag_text = '';
+	public $tag_slug = '';
+	public $id = 0;
+
 
 	/**
 	 * Constructor for the Tag class.
@@ -30,15 +22,38 @@ class Tag extends QueryRecord
 	 **/
 	public function __construct( $paramarray = array() )
 	{
-		// Defaults
-		$this->fields = array_merge(
-			self::default_fields(),
-			$this->fields,
-			$this->newfields
-		);
+		foreach($paramarray as $key => $value ){
+			$this->$key = $value;
+		}
+	}
 
-		parent::__construct( $paramarray );
-		$this->exclude_fields( 'id' );
+	/**
+	 * function __get
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value
+	 **/
+	public function __get( $name )
+	{
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+		$term = Term::get( $vocabulary->id, $this->id );
+
+		switch ($name) {
+			case 'tag':
+			case 'tag_text':
+				$out = $term->term_display;
+				break;
+			case 'slug':
+			case 'tag_slug':
+				$out = $term->term;
+				break;
+			case 'count':
+				$out = $this->get_count();
+				break;
+			default:
+				break;
+		}
+		return $out;
 	}
 
 	/**
@@ -82,6 +97,7 @@ class Tag extends QueryRecord
 	{
 		return Tags::get_one( $tag );
 	}
+
 	/**
 	 * Create a tag and save it.
 	 *
@@ -91,7 +107,7 @@ class Tag extends QueryRecord
 	static function create( $paramarray )
 	{
 		$tag = new Tag( $paramarray );
-		$tag->insert();
+		$tag = $tag->insert();
 		return $tag;
 	}
 
@@ -104,32 +120,41 @@ class Tag extends QueryRecord
 	 */
 	public static function attach_to_post( $tag_id, $post_id )
 	{
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+		$term = $vocabulary->get_term( $tag_id );
 		$result = TRUE;
+
 		Plugins::act( 'tag_attach_to_post_before', $tag_id, $post_id );
-		if (0 == (int) DB::get_value( "SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?", array( $tag_id, $post_id ) ) ) {
-			$sql = "INSERT INTO {tag2post} (tag_id, post_id) VALUES (?,?)";
-			$result = DB::query( $sql, array( $tag_id, $post_id ) );
-		}
+
+		$result = $term->associate( Tags::object_type(), $post_id);
+
 		Plugins::act( 'tag_attach_to_post_after', $tag_id, $post_id );
+
 		return $result;
 	}
 
+	/**
+	 * Detaches a tag from a post (removes their association )
+	 *
+	 * @param		tag_id		The ID of the tag
+	 * @param		post_id		The ID of the post
+	 * @return	TRUE or FALSE depending if association was removed.
+	 */
 	public static function detatch_from_post( $tag_id, $post_id )
 	{
-
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+		$term = $vocabulary->get_term( $tag_id );
 		Plugins::act( 'tag_detatch_from_post_before', $tag_id, $post_id );
 
-		$result = DB::query( 'DELETE FROM {tag2post} WHERE tag_id = ? AND post_id = ?', array( $tag_id, $post_id ) );
+		$result = $term->dissociate( Tags::object_type(), $post_id );
 
 		// should we delete the tag if it's the only one left?
-		$count = DB::get_value( 'SELECT COUNT(tag_id) FROM {tag2post} WHERE tag_id = ?', array( $tag_id ) );
-
-		if ( $count == 0 ) {
+		if( 0 == count( $term->objects( Tags::object_type() ) ) ) {
 			$delete = true;
 			$delete = Plugins::filter( 'tag_detach_from_post_delete_empty_tag', $delete, $tag_id );
 
 			if ( $delete ) {
-				DB::query( 'DELETE FROM {tags} WHERE id = ?', array( $tag_id ) );
+				$term->delete();
 			}
 		}
 
@@ -146,28 +171,10 @@ class Tag extends QueryRecord
 	 */
 	private function setslug()
 	{
-		// determine the base value from:
-		// - the new slug
-		if ( isset( $this->newfields['tag_slug']) && $this->newfields['tag_slug'] != '' ) {
-			$value = $this->newfields['tag_slug'];
-		}
-		// - the existing slug
-		elseif ( $this->fields['tag_slug'] != '' ) {
-			$value = $this->fields['tag_slug'];
-		}
-		// - the new tag's text
-		elseif ( isset( $this->newfields['tag_text'] ) && $this->newfields['tag_text'] != '' ) {
-			$value = $this->newfields['tag_text'];
-		}
-		// - the existing tag text
-		elseif ( $this->fields['tag_text'] != '' ) {
-			$value = $this->fields['tag_text'];
-		}
-
 		// make sure our slug is unique
-		$slug = Plugins::filter( 'tag_setslug', $value );
-		$slug = Utils::slugify( $slug );
-		return $this->newfields['tag_slug'] = $slug;
+		$this->tag_slug = Plugins::filter( 'tag_setslug', $value );
+		$this->tag_slug = Utils::slugify( $slug );
+		return $this->tag_slug;
 	}
 
 	/**
@@ -176,7 +183,9 @@ class Tag extends QueryRecord
 	 */
 	public function insert()
 	{
-		$this->setslug();
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+
+//		$this->setslug();
 
 		$allow = true;
 		$allow = Plugins::filter( 'tag_insert_allow', $allow, $this );
@@ -185,19 +194,13 @@ class Tag extends QueryRecord
 		}
 		Plugins::act( 'tag_insert_before', $this );
 
-		// Invoke plugins for all fields, since they're all "changed" when inserted
-		foreach ( $this->fields as $fieldname => $value ) {
-			Plugins::act( 'tag_update_' . $fieldname, $this, ( $this->id == 0 ) ? null : $value, $this->$fieldname );
-		}
+		$term = new Term( array( 'term' => $this->tag_slug, 'term_display' => $this->tag_text ) );
+		$term = $vocabulary->add_term( $term );
 
-		$result = parent::insertRecord( DB::table( 'tags' ) );
-		$this->newfields['id'] = DB::last_insert_id(); // Make sure the id is set in the Tag object to match the row id
-		$this->fields = array_merge( $this->fields, $this->newfields );
-		$this->newfields = array();
 		EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
 		Plugins::act( 'tag_insert_after', $this );
 
-		return $result;
+		return new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
 	}
 
 	/**
@@ -206,6 +209,7 @@ class Tag extends QueryRecord
 	 */
 	public function update()
 	{
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
 
 		$allow = true;
 		$allow = Plugins::filter( 'tag_update_allow', $allow, $this );
@@ -215,23 +219,16 @@ class Tag extends QueryRecord
 		Plugins::act( 'tag_update_before', $this );
 
 		// Call setslug() only when tag slug is changed
-		if ( isset( $this->newfields['tag_slug'] ) && $this->newfields['tag_slug'] != '' ) {
-			if ( $this->fields['tag_slug'] != $this->newfields['tag_slug'] ) {
-				$this->setslug();
-			}
+		if ( isset( $this->tag_slug ) && $this->tag_slug != '' ) {
+			$this->setslug();
 		}
 
-		// invoke plugins for all fields which have been changed
-		// For example, a plugin action "tag_update_slug" would be
-		// triggered if the tag has a new slug value
-		foreach ( $this->newfields as $fieldname => $value ) {
-			Plugins::act( 'tag_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
-		}
 
-		$result = parent::updateRecord( DB::table( 'tags' ), array( 'id' => $this->id ) );
+		$term = $vocabulary->get_term( $this->id );
+		$term->term = $this->tag_slug;
+		$term->term_display = $this->tag_text;
+		$result = $term->update();
 
-		$this->fields = array_merge( $this->fields, $this->newfields );
-		$this->newfields = array();
 		Plugins::act( 'tag_update_after', $this );
 		return $result;
 	}
@@ -242,6 +239,8 @@ class Tag extends QueryRecord
 	 */
 	public function delete()
 	{
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+
 		$allow = true;
 		$allow = Plugins::filter( 'tag_delete_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -250,12 +249,10 @@ class Tag extends QueryRecord
 		// invoke plugins
 		Plugins::act( 'tag_delete_before', $this );
 
-		// Delete all tag2post records associated with this tag
-		$sql = "DELETE FROM {tag2post} WHERE tag_id = ?";
-		DB::query( $sql, array( $this->id ) );
+		// Delete the actual term record
+		$term = $vocabulary->get_term( $this->id );
+		$result = $vocabulary->delete_term( $term );
 
-		// Delete the parent tags record
-		$result = parent::deleteRecord( DB::table( 'tags' ), array( 'id'=>$this->id ) );
 		EventLog::log( sprintf(_t('Tag %1$s (%2$s) deleted.'), $this->id, $this->tag_text), 'info', 'content', 'habari' );
 
 		Plugins::act( 'tag_delete_after', $this );
@@ -280,7 +277,22 @@ class Tag extends QueryRecord
 	 **/
 	protected function get_count()
 	{
-		return (int)DB::get_value( 'SELECT count(tag_id) FROM {tag2post} WHERE tag_id = ?', array( $this->id ) );
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+		$term = $vocabulary->get_term( $this->id );
+		return count( $term->objects( Tags::object_type() ) );
 	}
+
+	/**
+	 * Get a count of how many times the tag has been used in a post
+	 * @return integer The number of times the tag has been used
+	 **/
+	public function count( $object_type = 'post' )
+	{
+		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+		$term = $vocabulary->get_term( $this->id );
+		return count( $term->objects( $object_type ) );
+	}
+
 }
+
 ?>

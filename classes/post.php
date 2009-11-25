@@ -450,98 +450,11 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * Save the tags associated to this post into the tags and tags2post tables
+	 * Save the tags associated to this post into the terms and object_terms tables
 	 */
 	private function save_tags()
 	{
-		// no tags? then let's get out'a'here 
-		if (count($this->tags) == 0) {
-			Plugins::act( 'tag_detach_all_from_post_before', $this->id );
-
-			$results = DB::get_column( 'SELECT tag_id FROM {tag2post} WHERE post_id = ?', array( $this->id ) );
-			foreach ( $results as $tag_id ) {
-				Tag::detatch_from_post( $tag_id, $this->id );
-			}
-
-			Plugins::act( 'tag_detach_all_from_post_after', $this->id );
-			return TRUE;
-		} 
-		/*
-		 * First, let's clean the incoming tag text array, ensuring we have
-		 * a unique set of tag texts and slugs.
-		 */
-		$tag_ids_to_post = $clean_tags = array();
-		foreach ( ( array ) $this->tags as $tag )
-			if ( ! in_array( $tag, array_keys( $clean_tags ) ) )
-				if ( ! in_array( $slug = Utils::slugify( $tag ), array_values( $clean_tags ) ) )
-					$clean_tags[$tag] = $slug;
-
-		/* Now, let's insert any *new* tag texts or slugs into the tags table */
-		$placeholders = Utils::placeholder_string( count($clean_tags) );
-		$sql_tags_exist = "SELECT id, tag_text, tag_slug
-			FROM {tags}
-			WHERE tag_text IN ({$placeholders})
-			OR tag_slug IN ({$placeholders})";
-		$params = array_merge( array_keys( $clean_tags ), array_values( $clean_tags ) );
-		$existing_tags = DB::get_results( $sql_tags_exist, $params );
-		if ( count( $existing_tags ) > 0 ) {
-			/* Tags exist which match the text or the slug */
-			foreach ( $existing_tags as $existing_tag ) {
-				/*
-				 * Tag exists.
-				 * Attach post to tag, then remove tag from creation list.
-				 */
-				Tag::attach_to_post( $existing_tag->id, $this->fields['id'] );
-				$tag_ids_to_post[] = $existing_tag->id;
-
-				/*
-				 * We remove it from the clean_tags collection as we only
-				 * want to add to the tags table those tags which don't already exist
-				 */
-				if ( in_array( $existing_tag->tag_text, array_keys( $clean_tags ) ) ) {
-					unset( $clean_tags[$existing_tag->tag_text] );
-				}
-				if ( in_array( $existing_tag->tag_slug, array_values( $clean_tags ) ) ) {
-					foreach ( $clean_tags as $text=>$slug ) {
-						if ( $slug == $existing_tag->tag_slug ) {
-							unset( $clean_tags[$text] );
-							break;
-						}
-					}
-				}
-			}
-		}
-
-//		DB::begin_transaction();
-		/*
-		 * $clean_tags now contains an associative array of tags
-		 * we need to add to the main tags table.
-		 *
-		 * Let's add the new tags to the tags table...
-		 */
-		foreach ( $clean_tags as $new_tag_text=>$new_tag_slug ) {
-			$tag = Tag::create( array( 'tag_text' => $new_tag_text, 'tag_slug' => $new_tag_slug ) );
-			Tag::attach_to_post( $tag->id, $this->fields['id'] );
-			$tag_ids_to_post[]= $tag->id;
-		}
-
-		/*
-		 * Finally, remove the tags which are no longer associated with the
-		 * post.
-		 */
-		$repeat_questions = Utils::placeholder_string( count($tag_ids_to_post) );
-		$sql_delete = "SELECT tag_id FROM {tag2post} WHERE post_id = ? AND tag_id NOT IN ({$repeat_questions})";
-		$params = array_merge( (array) $this->fields['id'], array_values( $tag_ids_to_post ) );
-
-		$result = DB::get_results( $sql_delete, $params );
-
-		foreach ( $result as $t ) {
-			Tag::detatch_from_post( $t->tag_id, $this->fields['id'] );
-		}
-
-//		DB::commit();
-		return TRUE;
-
+		return Tags::save_associations( $this->tags, $this->fields['id'] );
 	}
 
 	/**
@@ -1068,17 +981,10 @@ class Post extends QueryRecord implements IsContent
 	private function get_tags()
 	{
 		if ( empty( $this->tags ) ) {
-			$sql = "
-				SELECT t.tag_text, t.tag_slug
-				FROM {tags} t
-				INNER JOIN {tag2post} t2p
-				ON t.id = t2p.tag_id
-				WHERE t2p.post_id = ?
-				ORDER BY t.tag_text ASC";
-			$result = DB::get_results( $sql, array( $this->fields['id'] ) );
+			$result = Tags::get_associations( $this->fields['id'] );
 			if ( $result ) {
 				foreach ( $result as $t ) {
-					$this->tags[$t->tag_slug] = $t->tag_text;
+					$this->tags[$t->term] = $t->term_display;
 				}
 			}
 		}

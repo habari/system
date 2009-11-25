@@ -3,9 +3,8 @@
 /**
  * Vocabulary Class
  *
+ * Vocabulary is part of the taxonomy system. A vocabulary holds terms and has features.
  *
- * @version $Id$
- * @copyright 2009
  */
 
 class Vocabulary extends QueryRecord
@@ -56,12 +55,13 @@ class Vocabulary extends QueryRecord
 		$out = parent::__get( $name );
 		switch($name) {
 			case 'features':
-				return unserialize($out);
+				$out = unserialize($out);
+				break;
 		}
-		if ( is_null( $out ) ) {
-			$features = unserialize( parent::__get( 'features' ) );
-			return in_array($name, $features);
-		}
+//		if ( is_null( $out ) ) {
+//			$features = unserialize( parent::__get( 'features' ) );
+//			return in_array($name, $features);
+//		}
 		return $out;
 	}
 
@@ -73,10 +73,10 @@ class Vocabulary extends QueryRecord
 	{
 		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE name=?', array($name), 'Vocabulary' );
 	}
-	
+
 	/**
 	 * Return a Vocabulary by id
-	 * 
+	 *
 	 * @param integer $id The id of the vocabulary
 	 * @return Vocabulary The object requested
 	 */
@@ -84,10 +84,10 @@ class Vocabulary extends QueryRecord
 	{
 		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE id=?', array($id), 'Vocabulary' );
 	}
-	
+
 	/**
 	 * Return all vocabularies as Vocabulary objects
-	 * 
+	 *
 	 * @return array An array of Vocabulary objects
 	 */
 	public static function get_all()
@@ -124,10 +124,22 @@ class Vocabulary extends QueryRecord
 
 	/**
 	 * Return the Term objects associated to that type of object with that id in any vocabulary.
+	 * For example, return all terms associated with a particular post, from all vocabularies.
+	 *
 	 * @return array Array of Vocabulary names
 	 **/
 	public static function get_all_object_terms($object_type, $id)
 	{
+		$results = DB::get_results(
+			'SELECT id, term, term_display FROM {terms}
+			JOIN {object_terms ON {terms}.id = {object_terms}.term_id
+			WHERE {object_terms}.object_type_id = ?
+				AND {object_terms}.object_id = ?',
+			array( self::object_type_id( $object_type ), $id ),
+			'Term'
+		);
+
+		return $results;
 	}
 
 	/**
@@ -159,17 +171,17 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_insert_before', $this );
 
-		if(isset($this->newfields['features'])) {
+		if ( isset($this->newfields['features']) ) {
 			$this->newfields['features'] = serialize($this->newfields['features']);
 		}
-		if(isset($this->fields['features'])) {
+		if ( isset($this->fields['features']) ) {
 			$this->fields['features'] = serialize($this->fields['features']);
 		}
 		$result = parent::insertRecord( '{vocabularies}' );
-		if(isset($this->newfields['features'])) {
+		if ( isset($this->newfields['features']) ) {
 			$this->newfields['features'] = unserialize($this->newfields['features']);
 		}
-		if(isset($this->fields['features'])) {
+		if ( isset($this->fields['features']) ) {
 			$this->fields['features'] = unserialize($this->fields['features']);
 		}
 
@@ -214,17 +226,17 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_update_before', $this );
 
-		if(isset($this->newfields['features'])) {
+		if ( isset($this->newfields['features']) ) {
 			$this->newfields['features'] = serialize($this->newfields['features']);
 		}
-		if(isset($this->fields['features'])) {
+		if ( isset($this->fields['features']) ) {
 			$this->fields['features'] = serialize($this->fields['features']);
 		}
 		$result = parent::updateRecord( '{vocabularies}', array( 'id' => $this->id ) );
-		if(isset($this->newfields['features'])) {
+		if ( isset($this->newfields['features']) ) {
 			$this->newfields['features'] = unserialize($this->newfields['features']);
 		}
-		if(isset($this->fields['features'])) {
+		if ( isset($this->fields['features']) ) {
 			$this->fields['features'] = unserialize($this->fields['features']);
 		}
 
@@ -326,11 +338,124 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
-	 * Gets the Term objects associated to that type of object with that id.
+	 * Gets the Term objects associated to that type of object with that id in this vocabulary
+	 * For example, return all terms in this vocabulary that are associated with a particular post
+	 *
+	 * @param String the name of the object type
+	 * @param integer The id of the object for which you want the terms
 	 * @return Array The Term objects requested
 	 **/
 	public function get_object_terms($object_type, $id)
 	{
+		$results = DB::get_results(
+			'SELECT id, term, term_display FROM {terms}
+			JOIN {object_terms} ON {terms}.id = {object_terms}.term_id
+			WHERE {terms}.vocabulary_id = ?
+				AND {object_terms}.object_type_id = ?
+				AND {object_terms}.object_id = ?',
+			array( $this->id, self::object_type_id( $object_type ), $id ),
+			'Term'
+		);
+
+		return $results;
+	}
+
+	/**
+	 * Sets the Term objects associated to that type of object with that id in this vocabulary
+	 *
+	 * @param String the name of the object type
+	 * @param Integer The id of the object for which you want the terms
+	 * @param Array. The names of the terms to associate
+	 *
+	 * @return boolean. Whether the associations were successful or not
+	 **/
+	public function set_object_terms( $object_type, $id, $terms )
+	{
+		// no terms? then let's get out'a'here
+		if (count($terms) == 0) {
+			Plugins::act( 'term_detach_all_from_object_before', $this->id );
+
+			$results = $this->get_object_terms( $object_type, $this->id );
+			foreach ( $results as $term ) {
+				$term->dissociate( $term->id, $id );
+			}
+
+			Plugins::act( 'term_detach_all_from_object_after', $this->id );
+			return TRUE;
+		}
+		/*
+		 * First, let's clean the incoming tag text array, ensuring we have
+		 * a unique set of tag texts and slugs.
+		 */
+		$term_ids_to_object = $clean_terms = array();
+		foreach ( ( array ) $terms as $term )
+			if ( ! in_array( $term, array_keys( $clean_terms ) ) )
+				if ( ! in_array( $slug = Utils::slugify( $term ), array_values( $clean_terms ) ) )
+					$clean_terms[$term] = $slug;
+
+		/* Now, let's insert any *new* tag texts or slugs into the tags table */
+		$placeholders = Utils::placeholder_string( count( $clean_terms ) );
+		$sql_terms_exist = "SELECT id, term_display, term
+			FROM {terms}
+			WHERE term_display IN ({$placeholders})
+			OR term IN ({$placeholders})";
+		$params = array_merge( array_keys( $clean_terms ), array_values( $clean_terms ) );
+		$existing_terms = DB::get_results( $sql_terms_exist, $params, 'Term' );
+		if ( count( $existing_terms ) > 0 ) {
+			/* Tags exist which match the text or the slug */
+			foreach ( $existing_terms as $existing_term ) {
+				/*
+				 * Tag exists.
+				 * Attach post to tag, then remove tag from creation list.
+				 */
+				$existing_term->associate( $object_type, $id );
+				$term_ids_to_object[] = $existing_term->id;
+
+				/*
+				 * We remove it from the clean_terms collection as we only
+				 * want to add to the terms table those terms which don't already exist
+				 */
+				if ( in_array( $existing_term->term_display, array_keys( $clean_terms ) ) ) {
+					unset( $clean_terms[$existing_term->term_display] );
+				}
+				if ( in_array( $existing_term->term, array_values( $clean_terms ) ) ) {
+					foreach ( $clean_terms as $text => $slug ) {
+						if ( $slug == $existing_term->term ) {
+							unset( $clean_terms[$text] );
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		/*
+		 * $clean_terms now contains an associative array of terms
+		 * we need to add to the main terms table, so add them
+		 *
+		 */
+		foreach ( $clean_terms as $new_term_text => $new_term_slug ) {
+			$term = new Term( array( 'term_display' => $new_term_text, 'term' => $new_term_slug ) );
+			$this->add_term( $term );
+			$term->associate( $object_type, $id );
+			$term_ids_to_object[] = $term->id;
+		}
+
+		/*
+		 * Finally, remove the terms which are no longer associated with the object.
+		 */
+		$repeat_questions = Utils::placeholder_string( count( $term_ids_to_object ) );
+		$sql_delete = "SELECT term_id FROM {object_terms} WHERE object_id = ? AND term_id NOT IN ({$repeat_questions}) AND object_type_id = ?";
+		$params = array_merge( (array) $id, array_values( $term_ids_to_object ), (array)Vocabulary::object_type_id( $object_type ) );
+
+		$result = DB::get_column( $sql_delete, $params );
+
+		foreach ( $result as $t ) {
+			$term = $this->get_term( $t );
+			$term->dissociate( $object_type, $id );
+		}
+
+		return TRUE;
 	}
 
 	/**
@@ -382,10 +507,35 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function get_tree()
 	{
-		// TODO There should probably be a Term::get()
 		return DB::get_results( 'SELECT * FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_left ASC', array($this->id), 'Term' );
 	}
 
+	/**
+	 * inserts a new object type into the database, if it doesn't exist
+	 * @param string The name of the new post type
+	 * @param bool Whether the new post type is active or not
+	 * @return none
+	**/
+	public static function add_object_type( $type )
+	{
+		$params = array( 'name' => $type );
+		if ( ! DB::exists( "{object_types}", $params ) ) {
+			DB::insert( "{object_types}", $params );
+		}
+	}
+
+	/**
+	 * Return the object type id for a named object, such as a post
+	 *
+	 * @param string $name The type of object
+	 * @return integer The id of the object type
+	*/
+	public static function object_type_id( $type )
+	{
+		$id = (int)DB::get_value( "SELECT id FROM {object_types} WHERE name = ?", array( $type ) );
+		return $id;
+
+	}
 }
 
 ?>

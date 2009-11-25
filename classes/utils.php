@@ -61,7 +61,7 @@ class Utils
 		}
 		header('Location: ' . $url, true, 302);
 
-		if (!$continue) exit;
+		if ( !$continue ) exit;
 	}
 
 	/**
@@ -1004,7 +1004,7 @@ class Utils
 			exit;
 		}
 	}
-	
+
 	/**
 	 * Returns a regex pattern equivalent to the given glob pattern
 	 *
@@ -1026,13 +1026,12 @@ class Utils
 		$pattern = str_replace( array_keys( $braces ), array_values( $braces ), $pattern );
 		return '/'.$pattern.'/';
 	}
-	
-	
+
 	/**
 	 * Return the port used for a specific URL scheme
-	 * 
+	 *
 	 * @param string $scheme The scheme in question
-	 * @return integer the port used for teh scheme
+	 * @return integer the port used for the scheme
 	 */
 	public static function scheme_ports( $scheme = null )
 	{
@@ -1051,7 +1050,7 @@ class Utils
 			'imaps' => 993,
 			'pop3s' => 995,
 		);
-		if(is_null($scheme)) {
+		if ( is_null($scheme) ) {
 			return $scheme_ports;
 		}
 		return $scheme_ports[$scheme];
