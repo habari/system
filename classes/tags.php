@@ -17,7 +17,7 @@ class Tags extends ArrayObject
 	 * Returns a tag or tags based on supplied parameters.
 	 * @return array An array of Tag objects
 	 **/
-	public static function get( $paramarray = array() )
+	public static function get()
 	{
 		$tags = array();
 		$terms = Vocabulary::get( self::$vocabulary )->get_tree();
@@ -66,7 +66,6 @@ class Tags extends ArrayObject
 
 		$post_ids = array();
 		$tag_names = array();
-		$post_ids = array();
 
 		// get array of existing tags first to make sure we don't conflict with a new master tag
 		foreach ( $tags as $tag ) {

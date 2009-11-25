@@ -57,31 +57,6 @@ class Tag
 	}
 
 	/**
-	 * function __get
-	 * Overrides QueryRecord __get to implement custom object properties
-	 * @param string Name of property to return
-	 * @return mixed The requested field value
-	 **/
-	public function __get( $name )
-	{
-		switch ($name) {
-			case 'tag':
-				$out = parent::__get( 'tag_text' );
-				break;
-			case 'slug':
-				$out = parent::__get( 'tag_slug' );
-				break;
-			case 'count':
-				$out = $this->get_count();
-				break;
-			default:
-				$out = parent::__get( $name );
-				break;
-		}
-		return $out;
-	}
-
-	/**
 	 * Return a single requested tag.
 	 *
 	 * <code>
