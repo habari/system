@@ -14,8 +14,8 @@
 		<span class="ip pct10 minor"><span><?php echo long2ip($log->ip); ?></span></span>
 		<span class="module pct10 minor"><span><?php echo $log->module; ?></span></span>
 		<span class="type pct10 minor"><span><?php echo $log->type; ?></span></span>
-		<span class="severity pct5 minor"><span><?php echo $log->severity; ?></span></span>
-		<span class="message pct30 minor less"><span><?php echo Utils::truncate(htmlspecialchars($log->message), 40, false); ?></span></span>
-		<span class="message pct30 minor more"><span><?php echo htmlspecialchars($log->message); ?></span></span>
+		<span class="severity pct10 minor"><span><?php echo $log->severity; ?></span></span>
+		<span class="message pct25 minor less"><span><?php echo Utils::truncate(htmlspecialchars($log->message), 40, false); ?></span></span>
+		<span class="message pct25 minor more"><span><?php echo htmlspecialchars($log->message); ?></span></span>
 </div>
 <?php endforeach; ?>

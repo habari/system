@@ -37,8 +37,8 @@
 		<span class="ip pct10"><?php _e('IP'); ?></span>
 		<span class="module pct10"><?php _e('Module'); ?></span>
 		<span class="type pct10"><?php _e('Type'); ?></span>
-		<span class="severity pct5"><?php _e('Severity'); ?></span>
-		<span class="message pct30"><?php _e('Message'); ?></span>
+		<span class="severity pct10"><?php _e('Severity'); ?></span>
+		<span class="message pct25"><?php _e('Message'); ?></span>
 
 	</div>
 
@@ -49,8 +49,8 @@
 		<span class="pct10"><?php echo Utils::html_select('address', $addresses, $address, array( 'class'=>'pct90')); ?></span>
 		<span class="pct10"><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'pct90')); ?></span>
 		<span class="pct10"><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'pct90')); ?></span>
-		<span class="pct5"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
-		<span class="pct30"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
+		<span class="pct10"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
+		<span class="pct25"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
 	</div>
 	
 	<?php if(isset($years)) { ?>

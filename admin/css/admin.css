@@ -1287,6 +1287,12 @@ tr.status_item {
 
 /* LOGS PAGE */
 
+body.page-logs .head {
+	margin-left: -40px;
+	margin-right: -40px;
+	padding: 3px 0 3px 2px;
+}
+
 body.page-logs .time, body.page-logs .user, body.page-logs .ip, body.page-logs .module, body.page-logs .severity {
 	white-space: nowrap;
 	overflow: hidden;
