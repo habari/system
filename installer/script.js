@@ -57,14 +57,14 @@ var installer = {
 		pass1 = $('#adminpass1');
 		pass2 = $('#adminpass2');
 
-		if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() != pass2.val() ) {
-			warningtext = 'The passwords do not match, try typing them again.';
-			pass1.parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning:hidden').html(warningtext).fadeIn();
-			installok = false;
-		}
-		else {
-			pass1.parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-		}
+                if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() == pass2.val() ) {
+                    pass1.parents('.inputfield').removeClass('invalid').addClass('valid');
+                    installok = true;
+                }
+                else {
+					pass1.parents('.inputfield').removeClass('valid').addClass('invalid');
+					installok = false;
+                }
 
 		// Check other details have been entered
 		$('#sitename, #adminuser, #adminemail').each(function(){
@@ -72,7 +72,7 @@ var installer = {
 				$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			}
 			else {
-				$(this).parents('.inputfield').removeClass('valid');
+				$(this).parents('.inputfield').removeClass('valid').addClass('invalid');
 				installok = false;
 			}
 		});
@@ -245,7 +245,7 @@ installer.sqlite = {
 				installer.sqlite.validDBCredentials();
 			}
 		} else {
-			$('#databasefile').parents('.inputfield').removeClass('valid');
+			$('#databasefile').parents('.inputfield').removeClass('valid').addClass('invalid');
 			$('.installstep:eq(1)').removeClass('done');
 			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
 			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
