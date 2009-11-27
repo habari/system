@@ -57,14 +57,14 @@ var installer = {
 		pass1 = $('#adminpass1');
 		pass2 = $('#adminpass2');
 
-                if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() == pass2.val() ) {
-                    pass1.parents('.inputfield').removeClass('invalid').addClass('valid');
-                    installok = true;
-                }
-                else {
-					pass1.parents('.inputfield').removeClass('valid').addClass('invalid');
-					installok = false;
-                }
+		if ( pass1.val().length > 0 && pass2.val().length > 0 && pass1.val() == pass2.val() ) {
+			pass1.parents('.inputfield').removeClass('invalid').addClass('valid');
+			installok = true;
+		}
+		else {
+			pass1.parents('.inputfield').removeClass('valid').addClass('invalid');
+			installok = false;
+		}
 
 		// Check other details have been entered
 		$('#sitename, #adminuser, #adminemail').each(function(){
