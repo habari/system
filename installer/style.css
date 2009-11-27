@@ -1,7 +1,7 @@
 /* @override style.css */
 
 body {
-	font-family: Helvetica Neue, Helvetica, Arial, Sans-Serif;
+	font-family: 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 0;
 	margin: 0;
 	}
@@ -161,7 +161,7 @@ div.javascript-disabled {
 	}
 
 .invalid .status {
-	background: url(images/fail.png);
+        background: url(images/warningsmall.png) no-repeat center;
 	}
 
 .inputfield .warning {

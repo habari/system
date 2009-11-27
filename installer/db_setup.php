@@ -191,7 +191,7 @@
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="">
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'admin_pass'); ?></div>
 			<div class="help">
-				<?php _e('<strong>Password</strong> is the password of the initial user in Habari.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+				<?php _e('<strong>Password</strong> is the password of the initial user in Habari. Both password fields must match.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
 			</div>
 		</div>
 
