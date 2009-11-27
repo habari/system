@@ -20,12 +20,11 @@ class Tags extends ArrayObject
 	public static function get()
 	{
 		$tags = array();
-		$terms = Vocabulary::get( self::$vocabulary )->get_tree();
+		$terms = Vocabulary::get( self::$vocabulary )->get_tree('term_display ASC');
 		foreach( $terms as $term ) {
 			$tags[] = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
 		}
 		return $tags;
-//		return $terms;
 
 	}
 

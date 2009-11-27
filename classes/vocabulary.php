@@ -505,9 +505,9 @@ class Vocabulary extends QueryRecord
 	 * Retrieve the vocabulary
 	 * @return Array The Term objects in the vocabulary, in tree order
 	 **/
-	public function get_tree()
+	public function get_tree($orderby = 'mptt_left ASC')
 	{
-		return DB::get_results( 'SELECT * FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_left ASC', array($this->id), 'Term' );
+		return DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=? ORDER BY $orderby", array($this->id), 'Term' );
 	}
 
 	/**
