@@ -150,7 +150,7 @@ if ( file_exists( $config ) ) {
 			// Make sure Habari is installed properly.
 			// If the 'installed' option is missing, we assume the database tables are missing or corrupted.
 			// @todo Find a decent solution, we have to compare tables and restore or upgrade them.
-			if ( !@ Options::get('installed') ) {
+			if ( !@ Options::get( 'installed' ) ) {
 				$installer = new InstallHandler();
 				$installer->begin_install();
 			}
@@ -166,16 +166,14 @@ if ( file_exists( $config ) ) {
 
 		// Format page with localized messages. 
 		$error_page = sprintf($error_template, 
-			_t("Habari General Error"), # page title 
-			_t("An error occurred"), # H1 tag 
-			_t("Unable to connect to database.") # Error message. 
+			_t( "Habari General Error" ), # page title 
+			_t( "An error occurred" ), # H1 tag 
+			_t( "Unable to connect to database." ) # Error message. 
 		);
 		
-		return false; 
-
 		// Set correct HTTP header and die. 
-		header('HTTP/1.1 500 Internal Server Error'); 
-		die($error_page);
+		header( 'HTTP/1.1 500 Internal Server Error' ); 
+		die( $error_page );
 	}
 }
 else {
