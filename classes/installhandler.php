@@ -883,7 +883,7 @@ class InstallHandler extends ActionHandler
 		// set the user_id in the session in case plugin activation methods need it
 		if ( ! $u = User::get_by_name( $this->handler_vars['admin_username'] ) ) {
 			// @todo die gracefully
-			die( 'No admin user found' );
+			die( _t( 'No admin user found' ) );
 		}
 		$u->remember();
 
