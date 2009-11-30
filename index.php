@@ -144,18 +144,13 @@ if ( file_exists( $config ) ) {
 		$installer->begin_install();
 	}
 
-	// Try to connect to the database.
+	// The connection details are registered. Try to connect to the database.
 	try {
-		if ( DB::connect() ) {
-			// Make sure Habari is installed properly.
-			// If the 'installed' option is missing, we assume the database tables are missing or corrupted.
-			// @todo Find a decent solution, we have to compare tables and restore or upgrade them.
-			if ( !@ Options::get( 'installed' ) ) {
-				$installer = new InstallHandler();
-				$installer->begin_install();
-			}
-		}
-		else {
+		DB::connect();
+		// Make sure Habari is installed properly.
+		// If the 'installed' option is missing, we assume the database tables are missing or corrupted.
+		// @todo Find a decent solution, we have to compare tables and restore or upgrade them.
+		if ( !@ Options::get( 'installed' ) ) {
 			$installer = new InstallHandler();
 			$installer->begin_install();
 		}
