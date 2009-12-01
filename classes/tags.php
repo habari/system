@@ -20,7 +20,7 @@ class Tags extends ArrayObject
 	public static function get()
 	{
 		$tags = array();
-		$terms = Vocabulary::get( self::$vocabulary )->get_tree('term_display ASC');
+		$terms = Tags::vocabulary()->get_tree('term_display ASC');
 		foreach( $terms as $term ) {
 			$tags[] = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
 		}
@@ -35,7 +35,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_one( $tag )
 	{
-		$term = Vocabulary::get( self::$vocabulary )->get_term( $tag );
+		$term = Tags::vocabulary()->get_term( $tag );
 		$tag = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
 		return $tag;
 	}
@@ -60,7 +60,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function rename($master, $tags, $object_type = 'post' )
 	{
-		$vocabulary = Vocabulary::get( self::$vocabulary );
+		$vocabulary = Tags::vocabulary();
 		$type_id = Vocabulary::object_type_id( $object_type );
 
 		$post_ids = array();
@@ -127,8 +127,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function max_count()
 	{
-		$vocabulary = Vocabulary::get( self::$vocabulary );
-		return DB::get_value( 'SELECT count( t2.object_id ) AS max FROM {terms} t, {object_terms} t2 WHERE t2.term_id = t.id AND t.vocabulary_id = ? GROUP BY t.id ORDER BY max DESC LIMIT 1', array( $vocabulary->id ) );
+		return DB::get_value( 'SELECT count( t2.object_id ) AS max FROM {terms} t, {object_terms} t2 WHERE t2.term_id = t.id AND t.vocabulary_id = ? GROUP BY t.id ORDER BY max DESC LIMIT 1', array( Tags::vocabulary()->id ) );
 	}
 
 	/**
@@ -138,7 +137,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function count_total()
 	{
-		return count( Vocabulary::get( self::$vocabulary )->get_tree() );
+		return count( Tags::vocabulary()->get_tree() );
 	}
 
 	/**
@@ -181,7 +180,7 @@ class Tags extends ArrayObject
 	 */
 	public static function vocabulary()
 	{
-		return self::$vocabulary;
+		return Vocabulary::get( self::$vocabulary );
 	}
 
 	/**
@@ -206,15 +205,12 @@ class Tags extends ArrayObject
 
 	public static function save_associations( $tags, $object_id, $object_type = 'post' )
 	{
-		$vocabulary = Vocabulary::get( self::$vocabulary );
-		return $vocabulary->set_object_terms( $object_type, $object_id, $tags );
+		return Tags::vocabulary()->set_object_terms( $object_type, $object_id, $tags );
 	}
 
 	public static function get_associations( $object_id, $object_type = 'post' )
 	{
-		$vocabulary = Vocabulary::get( self::$vocabulary );
-		return $vocabulary->get_object_terms( $object_type, $object_id );
-
+		return Tags::vocabulary()->get_object_terms( $object_type, $object_id );
 	}
 
 }
