@@ -35,8 +35,7 @@ class Tag
 	 **/
 	public function __get( $name )
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
-		$term = Term::get( $vocabulary->id, $this->id );
+		$term = Term::get( Tags::vocabulary()->id, $this->id );
 
 		switch ($name) {
 			case 'tag':
@@ -95,8 +94,7 @@ class Tag
 	 */
 	public static function attach_to_post( $tag_id, $post_id )
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
-		$term = $vocabulary->get_term( $tag_id );
+		$term = Tags::vocabulary()->get_term( $tag_id );
 		$result = TRUE;
 
 		Plugins::act( 'tag_attach_to_post_before', $tag_id, $post_id );
@@ -117,8 +115,7 @@ class Tag
 	 */
 	public static function detatch_from_post( $tag_id, $post_id )
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
-		$term = $vocabulary->get_term( $tag_id );
+		$term = Tags::vocabulary()->get_term( $tag_id );
 		Plugins::act( 'tag_detatch_from_post_before', $tag_id, $post_id );
 
 		$result = $term->dissociate( Tags::object_type(), $post_id );
@@ -158,10 +155,6 @@ class Tag
 	 */
 	public function insert()
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
-
-//		$this->setslug();
-
 		$allow = true;
 		$allow = Plugins::filter( 'tag_insert_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -170,7 +163,7 @@ class Tag
 		Plugins::act( 'tag_insert_before', $this );
 
 		$term = new Term( array( 'term' => $this->tag_slug, 'term_display' => $this->tag_text ) );
-		$term = $vocabulary->add_term( $term );
+		$term = Tags::vocabulary()->add_term( $term );
 
 		EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
 		Plugins::act( 'tag_insert_after', $this );
@@ -184,8 +177,6 @@ class Tag
 	 */
 	public function update()
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
-
 		$allow = true;
 		$allow = Plugins::filter( 'tag_update_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -198,8 +189,7 @@ class Tag
 			$this->setslug();
 		}
 
-
-		$term = $vocabulary->get_term( $this->id );
+		$term = Tags::vocabulary()->get_term( $this->id );
 		$term->term = $this->tag_slug;
 		$term->term_display = $this->tag_text;
 		$result = $term->update();
@@ -214,7 +204,7 @@ class Tag
 	 */
 	public function delete()
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
+		$vocabulary = Tags::vocabulary();
 
 		$allow = true;
 		$allow = Plugins::filter( 'tag_delete_allow', $allow, $this );
@@ -252,8 +242,7 @@ class Tag
 	 **/
 	protected function get_count()
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
-		$term = $vocabulary->get_term( $this->id );
+		$term = Tags::vocabulary()->get_term( $this->id );
 		return count( $term->objects( Tags::object_type() ) );
 	}
 
@@ -263,8 +252,7 @@ class Tag
 	 **/
 	public function count( $object_type = 'post' )
 	{
-		$vocabulary = Vocabulary::get( Tags::vocabulary() );
-		$term = $vocabulary->get_term( $this->id );
+		$term = Tags::vocabulary()->get_term( $this->id );
 		return count( $term->objects( $object_type ) );
 	}
 
