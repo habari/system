@@ -296,8 +296,12 @@ SQL;
 		$result = TRUE;
 
 		$type_id = Vocabulary::object_type_id( $type );
+		Plugins::act( 'term_dissociate_from_object_before', $this->id, $id, $type_id );
 
 		$result = DB::query( "DELETE FROM {object_terms} WHERE term_id = ? AND object_id = ? AND object_type_id = ?", array( $this->id, $id, $type_id ) );
+
+		Plugins::act( 'term_dissociate_from_object_before', $this->id, $id, $type_id, $result );
+
 		return $result;
 	}
 
