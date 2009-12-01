@@ -15,14 +15,13 @@ class Tag
 	public $tag_slug = '';
 	public $id = 0;
 
-
 	/**
 	 * Constructor for the Tag class.
 	 * @param array $paramarray an associative array of initial Tag field values.
 	 **/
 	public function __construct( $paramarray = array() )
 	{
-		foreach($paramarray as $key => $value ){
+		foreach ( $paramarray as $key => $value ) {
 			$this->$key = $value;
 		}
 	}
@@ -59,7 +58,7 @@ class Tag
 	 * Return a single requested tag.
 	 *
 	 * <code>
-	 * $tag= Tag::get( 'Tag text' );
+	 * $tag = Tag::get( 'Tag text' );
 	 * $tag = Tag::get( 'tag-slug' );
 	 * $tag = Tag::get( 23 ); // tag id
 	 * </code>
@@ -121,7 +120,7 @@ class Tag
 		$result = $term->dissociate( Tags::object_type(), $post_id );
 
 		// should we delete the tag if it's the only one left?
-		if( 0 == count( $term->objects( Tags::object_type() ) ) ) {
+		if ( 0 == count( $term->objects( Tags::object_type() ) ) ) {
 			$delete = true;
 			$delete = Plugins::filter( 'tag_detach_from_post_delete_empty_tag', $delete, $tag_id );
 
@@ -151,7 +150,7 @@ class Tag
 
 	/**
 	 * function insert
-	 * Saves a new tag into the tags table
+	 * Saves a new tag's data into the terms table
 	 */
 	public function insert()
 	{
@@ -173,7 +172,7 @@ class Tag
 
 	/**
 	 * function update
-	 * Updates an existing tag in the tags table
+	 * Update an existing tag's data in the terms table
 	 */
 	public function update()
 	{
@@ -200,7 +199,7 @@ class Tag
 
 	/**
 	 * function delete
-	 * Deletes an existing tag and all relations to it (e.g. a post2tag relationship)
+	 * Deletes an existing tag and all relations to it
 	 */
 	public function delete()
 	{

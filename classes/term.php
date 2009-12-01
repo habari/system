@@ -67,7 +67,7 @@ class Term extends QueryRecord
 	 * Fetch a term from a specified vocabulary
 	 *
 	 * @param mixed $vocab_id The id of a vocabulary, or a Vocabulary object
-	 * @param mixed $term A Term id, display text, or null for the root node of the vocabulary
+	 * @param mixed $term A Term id, term text, or null for the root node of the vocabulary
 	 * @return Term The requested Term object instance
 	 */
 	public static function get( $vocab_id, $term = null )

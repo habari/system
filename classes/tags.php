@@ -31,7 +31,7 @@ class Tags extends ArrayObject
 	/**
 	 * Return a tag based on an id, tag text or slug
 	 *
-	 * @return QueryRecord A tag QueryRecord
+	 * @return Tag The tag object
 	 **/
 	public static function get_one( $tag )
 	{
@@ -43,7 +43,7 @@ class Tags extends ArrayObject
 	/**
 	 * Deletes a tag
 	 *
-	 * @param Tag tag The tag to be deleted
+	 * @param Tag $tag The tag to be deleted
 	 **/
 	public static function delete($tag)
 	{
@@ -68,10 +68,10 @@ class Tags extends ArrayObject
 
 		// get array of existing tags first to make sure we don't conflict with a new master tag
 		foreach ( $tags as $tag ) {
-			
+
 			$posts = array();
 			$term = $vocabulary->get_term( $tag );
-			
+
 			// get all the post ID's tagged with this tag
 			$posts = $term->objects( $object_type );
 
@@ -83,20 +83,20 @@ class Tags extends ArrayObject
 			$tag_names[] = $tag;
 			$vocabulary->delete_term( $term->id );
 		}
-		
+
 		// get the master term
 		$master_term = $vocabulary->get_term( $master );
-		
+
 		if ( !isset($master_term->term ) ) {
 			// it didn't exist, so we assume it's tag text and create it
 			$master_term = $vocabulary->add_term( $master );
-			
+
 			$master_ids = array();
 		}
 		else {
 			// get the posts the tag is already on so we don't duplicate them
 			$master_ids = $master_term->objects( $object_type );
-			
+
 		}
 
 		if ( count( $post_ids ) > 0 ) {
@@ -152,11 +152,21 @@ class Tags extends ArrayObject
 		return $tag->count( $object_type );
 	}
 
+	/**
+	 * Return a tag based on a tag's text
+	 *
+	 * @return	A Tag object
+	 **/
 	public static function get_by_text($tag)
 	{
 		return Tags::get_one( $tag );
 	}
 
+	/**
+	 * Return a tag based on a tag's text
+	 *
+	 * @return	A Tag object
+	 **/
 	public static function get_by_slug($tag)
 	{
 		return Tags::get_one( $tag );
@@ -174,9 +184,9 @@ class Tags extends ArrayObject
 	}
 
 	/**
-	 * Returns the name of this vocabulary
-	 * 
-	 * @return String The vocabulary name
+	 * Returns the tags vocabulary
+	 *
+	 * @return String The tags vocabulary
 	 */
 	public static function vocabulary()
 	{
