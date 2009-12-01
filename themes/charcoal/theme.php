@@ -160,7 +160,7 @@ class charcoal extends Theme
 			ORDER BY t.term_display
 			LIMIT {$limit}
 		";
-		$tags = DB::get_results( $sql, array(Post::status('published'), Vocabulary::get( Tags::vocabulary() )->id, Vocabulary::object_type_id( 'post' ) ) );
+		$tags = DB::get_results( $sql, array(Post::status('published'), Tags::vocabulary()->id, Vocabulary::object_type_id( 'post' ) ) );
 		foreach ($tags as $index => $tag) {
 			$tags[$index]->url = URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) );
 		}
