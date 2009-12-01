@@ -9,6 +9,15 @@
 
 class Vocabulary extends QueryRecord
 {
+	/**
+	 *
+	 * @var Array of strings $features. An array of the features that limit the behaviour of the vocabulary.
+	 * Default values can include:
+	 *		hierarchical:	The vocabulary's terms exist in a parent child hierarchy
+	 *		required:
+	 *		multiple:		More than one term in the vocabulary can be associated with an object
+	 *		free:			Terms within the vocabulary can have any value
+	 */
 	public static $features = array('hierarchical', 'required', 'multiple', 'free');
 
 	/**
@@ -402,11 +411,11 @@ class Vocabulary extends QueryRecord
 		$params = array_merge( array_keys( $clean_terms ), array_values( $clean_terms ) );
 		$existing_terms = DB::get_results( $sql_terms_exist, $params, 'Term' );
 		if ( count( $existing_terms ) > 0 ) {
-			/* Tags exist which match the text or the slug */
+			/* Terms exist which match the term text or the term */
 			foreach ( $existing_terms as $existing_term ) {
 				/*
-				 * Tag exists.
-				 * Attach post to tag, then remove tag from creation list.
+				 * Term exists.
+				 * Attach object to term, then remove the term from creation list.
 				 */
 				$existing_term->associate( $object_type, $id );
 				$term_ids_to_object[] = $existing_term->id;
