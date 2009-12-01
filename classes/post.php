@@ -572,7 +572,7 @@ class Post extends QueryRecord implements IsContent
 		// delete all the tags associated with this post
 		foreach ( $this->get_tags() as $tag_slug => $tag_text ) {
 			$tag = Tags::get_by_slug( $tag_slug );
-			Tag::detatch_from_post( $tag->id, $this->id );
+			Tag::detach_from_post( $tag->id, $this->id );
 		}
 
 		// Delete all comments associated with this post

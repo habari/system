@@ -113,10 +113,10 @@ class Tag
 	 * @param		post_id		The ID of the post
 	 * @return	TRUE or FALSE depending if association was removed.
 	 */
-	public static function detatch_from_post( $tag_id, $post_id )
+	public static function detach_from_post( $tag_id, $post_id )
 	{
 		$term = Tags::vocabulary()->get_term( $tag_id );
-		Plugins::act( 'tag_detatch_from_post_before', $tag_id, $post_id );
+		Plugins::act( 'tag_detach_from_post_before', $tag_id, $post_id );
 
 		$result = $term->dissociate( Tags::object_type(), $post_id );
 
@@ -130,7 +130,7 @@ class Tag
 			}
 		}
 
-		Plugins::act( 'tag_detatch_from_post_after', $tag_id, $post_id, $result );
+		Plugins::act( 'tag_detach_from_post_after', $tag_id, $post_id, $result );
 
 		return $result;
 
