@@ -300,7 +300,7 @@ SQL;
 
 		$result = DB::query( "DELETE FROM {object_terms} WHERE term_id = ? AND object_id = ? AND object_type_id = ?", array( $this->id, $id, $type_id ) );
 
-		Plugins::act( 'term_dissociate_from_object_before', $this->id, $id, $type_id, $result );
+		Plugins::act( 'term_dissociate_from_object_after', $this->id, $id, $type_id, $result );
 
 		return $result;
 	}
