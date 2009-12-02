@@ -514,13 +514,17 @@ class AdminHandler extends ActionHandler
 			$form = $post->get_form( 'admin' );
 			$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
 
+			if ( HabariDateTime::date_create( $form->pubdate->value )->int > $post->pubdate ) {
+				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
+			}
+
 			$postdata = array(
 				'slug' => $form->newslug->value,
 				'title' => $form->title->value,
 				'tags' => $form->tags->value,
 				'content' => $form->content->value,
 				'user_id' => User::identify()->id,
-				'pubdate' => HabariDateTime::date_create($form->pubdate->value),
+				'pubdate' => $post->pubdate,
 				'status' => $form->status->value,
 				'content_type' => $form->content_type->value,
 			);
