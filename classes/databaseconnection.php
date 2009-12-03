@@ -109,10 +109,10 @@ class DatabaseConnection
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{
-			$this->pdo = new PDO( $connect_string, $db_user, $db_pass );
-			$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
-			$this->load_tables();
-			return true;
+		$this->pdo = new PDO( $connect_string, $db_user, $db_pass );
+		$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+		$this->load_tables();
+		return true;
 	}
 
 	/**
@@ -343,7 +343,7 @@ class DatabaseConnection
 	 */
 	public function begin_transaction()
 	{
-		if (! $this->pdo_transaction) {
+		if ( ! $this->pdo_transaction ) {
 			$this->pdo->beginTransaction();
 			$this->pdo_transaction = TRUE;
 		}
@@ -356,8 +356,10 @@ class DatabaseConnection
 	 */
 	public function rollback()
 	{
-		$this->pdo->rollBack();
-		$this->pdo_transaction = FALSE;
+		if ( $this->pdo_transaction ) {
+			$this->pdo->rollBack();
+			$this->pdo_transaction = FALSE;
+		}
 	}
 
 	/**
@@ -365,8 +367,10 @@ class DatabaseConnection
 	 */
 	public function commit()
 	{
-		$this->pdo->commit();
-		$this->pdo_transaction = FALSE;
+		if ( $this->pdo_transaction ) {
+			$this->pdo->commit();
+			$this->pdo_transaction = FALSE;
+		}
 	}
 
 	/**
