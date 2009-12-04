@@ -678,7 +678,7 @@ body.page-comments .button{
 	width: 759px;
 }
 
-create input.text, .create label.overcontent {
+.create input.text, .create label.overcontent {
 	font-size: 1.1em;
 }
 
