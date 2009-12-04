@@ -4,7 +4,7 @@
 	<title><?php printf( _t('Login to %s'), Options::get( 'title' ) ); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
+<?php	Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin'); ?>
 
 	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
 	<script src="<?php Site::out_url('scripts'); ?>/jquery-ui.min.js" type="text/javascript"></script>
