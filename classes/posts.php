@@ -53,15 +53,14 @@ class Posts extends ArrayObject implements IsContent
 	 **/
 	public static function get( $paramarray = array() )
 	{
+		$join_params = array();
 		$params = array();
 		$fns = array( 'get_results', 'get_row', 'get_value' );
-		$select = '';
+		$select_ary = array();
 
 		// Default fields to select, everything by default
 		foreach ( Post::default_fields() as $field => $value ) {
-			$select.= ( '' == $select )
-				? " {posts}.$field AS $field"
-				: ', ' . " {posts}.$field AS $field";
+			$select_ary[$field] = "{posts}.$field AS $field";
 		}
 
 		// Default parameters
@@ -240,59 +239,52 @@ class Posts extends ArrayObject implements IsContent
 					$infos = array_merge( isset( $paramset['all:info'] ) ? $paramset['all:info'] : array(), isset( $paramset['info'] ) ? $paramset['info'] : array() );
 
 					if ( is_array( $infos ) ) {
+						$pi_count = 0;
+						foreach($infos as $info_key => $info_value) {
+							$pi_count++;
+							$joins['info_' . $info_key] = " LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = ? AND ipi{$pi_count}.value = ?";
+							$join_params[] = $info_key;
+							$join_params[] = $info_value;
+							$where[] = "ipi{$pi_count}.name <> ''";
 
-						foreach ( $infos as $info_key => $info_value ) {
-
-							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
-							$params[] = $info_key;
-							$params[] = $info_value;
-
+							$select_ary["info_{$info_key}_value"] = "ipi{$pi_count}.value AS info_{$info_key}_value";
 						}
-
-						$where[] = '
-							{posts}.id IN (
-							SELECT post_id FROM {postinfo}
-							WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
-							GROUP BY post_id
-							HAVING COUNT(*) = ' . count( $infos ) . ' )
-						';
-						// see that hard-coded number? sqlite wets itself if we use a bound parameter... don't change that
 					}
 
 				}
 
 				if ( isset( $paramset['any:info'] ) ) {
 					if ( is_array( $paramset['any:info'] ) ) {
-						$the_ins = array();
-						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
-							$the_ins[] = ' ({postinfo}.name = ? AND {postinfo}.value = ? ) ';
-							$params[] = $info_key;
-							$params[] = $info_value;
-						}
+						$pi_count = 0;
+						$pi_where = array();
+						foreach($paramset['any:info'] as $info_key => $info_value) {
+							$pi_count++;
+							$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value = ?";
+							$join_params[] = $info_key;
+							$join_params[] = $info_value;
+							$pi_where[] = "aipi{$pi_count}.name <> ''";
 
-						$where[] = '
-							{posts}.id IN (
-								SELECT post_id FROM {postinfo}
-								WHERE ( ' . implode( ' OR ', $the_ins ) . ' )
-							)
-						';
+							$select_ary["info_{$info_key}_value"] = "aipi{$pi_count}.value AS info_{$info_key}_value";
+						}
+						$where[] = '(' . implode(' OR ', $pi_where) . ')';
 					}
 				}
 				
 				if ( isset( $paramset['has:info'] ) ) {
 					$the_ins = array();
 					$has_info = Utils::single_array( $paramset['has:info'] );
+					$pi_count = 0;
+					$pi_where = array();
 					foreach( $has_info as $info_name ) {
-						$the_ins[] = ' {postinfo}.name = ? ';
-						$params[] = $info_name;
-					} 
+						$pi_count++;
+						$joins['has_info_' . $info_name] = " LEFT JOIN {postinfo} hipi{$pi_count} ON {posts}.id = hipi{$pi_count}.post_id AND hipi{$pi_count}.name = ?";
+						$join_params[] = $info_name;
+						$pi_where[] = "hipi{$pi_count}.name <> ''";
 
-					$where[] = '
-						{posts}.id IN (
-							SELECT post_id FROM {postinfo}
-							WHERE ( ' . implode( ' AND ', $the_ins ) . ' )
-						)
-					';
+						$select_ary["info_{$info_name}_value"] = "hipi{$pi_count}.value AS info_{$info_name}_value";
+
+					} 
+					$where[] = '(' . implode(' OR ', $pi_where) . ')';
 				}
 
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
@@ -470,7 +462,7 @@ class Posts extends ArrayObject implements IsContent
 				$where['perms_granted'] = '
 					(' . implode(' OR ', $perm_where) . ')
 				';
-				$params = array_merge( $params, $params_where );
+				$params = array_merge( $join_params, $params, $params_where );
 			}
 
 			if ( count($deny_tokens) > 0 ) {
@@ -514,6 +506,11 @@ class Posts extends ArrayObject implements IsContent
 		else {
 			$fetch_fn = $fns[0];
 		}
+		
+		/**
+		 * Turn the requested fields into a comma-separated SELECT field clause
+		 */
+		$select = implode(', ', $select_ary);
 
 		/**
 		 * If a count is requested:
