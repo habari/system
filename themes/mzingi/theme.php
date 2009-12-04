@@ -83,28 +83,28 @@ class CornerStone extends Theme
 	 * Customize comment form layout with fieldsets. Needs thorough commenting.
 	 */
 	public function action_form_comment( $form ) { 
-		$form->append( 'fieldset', 'commenterinfo', _t( 'About You' ) );
-		$form->move_before( $form->commenterinfo, $form->commenter );
+		$form->append( 'fieldset', 'cf_commenterinfo', _t( 'About You' ) );
+		$form->move_before( $form->cf_commenterinfo, $form->cf_commenter );
 
-		$form->commenter->move_into($form->commenterinfo);
-		$form->commenter->caption = _t('Name:') . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
+		$form->cf_commenter->move_into($form->cf_commenterinfo);
+		$form->cf_commenter->caption = _t('Name:') . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>';
 
-		$form->email->move_into( $form->commenterinfo );
-		$form->email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>'; 
+		$form->cf_email->move_into( $form->cf_commenterinfo );
+		$form->cf_email->caption = _t( 'Email Address:' ) . '<span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span></label>'; 
 
-		$form->url->move_into( $form->commenterinfo );
-		$form->url->caption = _t( 'Web Address:' );
+		$form->cf_url->move_into( $form->cf_commenterinfo );
+		$form->cf_url->caption = _t( 'Web Address:' );
 
-		$form->append('static','disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>') );
-		$form->disclaimer->move_into( $form->commenterinfo );
+		$form->append('static','cf_disclaimer', _t( '<p><em><small>Email address is not published</small></em></p>') );
+		$form->cf_disclaimer->move_into( $form->cf_commenterinfo );
 
-		$form->append('fieldset', 'contentbox', _t( 'Add to the Discussion' ) );
-		$form->move_before($form->contentbox, $form->content);
+		$form->append('fieldset', 'cf_contentbox', _t( 'Add to the Discussion' ) );
+		$form->move_before($form->cf_contentbox, $form->cf_content);
 
-		$form->content->move_into($form->contentbox);
-	        $form->content->caption = _t( 'Message: (Required)' );
+		$form->cf_content->move_into($form->cf_contentbox);
+	        $form->cf_content->caption = _t( 'Message: (Required)' );
 
-		$form->submit->caption = _t( 'Submit' );
+		$form->cf_submit->caption = _t( 'Submit' );
 	}
 
 }

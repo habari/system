@@ -39,6 +39,9 @@ class FeedbackHandler extends ActionHandler
 		Themes::create();
 		$form = $post->comment_form();
 		$form->get(null, false);
+// Utils::debug( $form );
+// Utils::debug( $form->cf_content->value );
+// die();
 		// Was this a FormUI form, or a regular comment form?
 		if($form->submitted) {
 
@@ -48,10 +51,10 @@ class FeedbackHandler extends ActionHandler
 			if($form->success) {
 				$this->add_comment(
 					$post->id,
-					$form->commenter->value,
-					$form->email->value,
-					$form->url->value,
-					$form->content->value,
+					$form->cf_commenter->value,
+					$form->cf_email->value,
+					$form->cf_url->value,
+					$form->cf_content->value,
 					$form->get_values()
 				);
 			}
