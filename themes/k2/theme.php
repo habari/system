@@ -119,14 +119,14 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 	 * Customize comment form layout. Needs thorough commenting.
 	 */
 	public function action_form_comment( $form ) { 
-		$form->commenter->caption = '<small><strong>' . _t('Name') . '</strong></small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
-		$form->commenter->template = 'k2_text';
-		$form->email->caption = '<small><strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
-		$form->email->template = 'k2_text';
-		$form->url->caption = '<small><strong>' . _t('Website') . '</strong></small>';
-		$form->url->template = 'k2_text';
-	        $form->content->caption = '';
-		$form->submit->caption = _t( 'Submit' );
+		$form->cf_commenter->caption = '<small><strong>' . _t('Name') . '</strong></small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
+		$form->cf_commenter->template = 'k2_text';
+		$form->cf_email->caption = '<small><strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
+		$form->cf_email->template = 'k2_text';
+		$form->cf_url->caption = '<small><strong>' . _t('Website') . '</strong></small>';
+		$form->cf_url->template = 'k2_text';
+	        $form->cf_content->caption = '';
+		$form->cf_submit->caption = _t( 'Submit' );
 	}
 
 }
