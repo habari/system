@@ -64,13 +64,14 @@ class Vocabulary extends QueryRecord
 		$out = parent::__get( $name );
 		switch($name) {
 			case 'features':
-				$out = unserialize($out);
+				if ( ! is_array( $out ) ) {
+					$out = unserialize( $out );
+				}
 				break;
 		}
-//		if ( is_null( $out ) ) {
-//			$features = unserialize( parent::__get( 'features' ) );
-//			return in_array($name, $features);
-//		}
+		if ( is_null( $out ) ) {
+			$out = in_array( $name, $this->features );
+		}
 		return $out;
 	}
 
@@ -168,7 +169,7 @@ class Vocabulary extends QueryRecord
 	public function insert()
 	{
 		// Don't allow duplicate vocabularies
-		if ( Vocabulary::exists($this->fields['name']) ) {
+		if ( Vocabulary::exists( $this->fields['name'] ) ) {
 			return false;
 		}
 
@@ -180,30 +181,29 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_insert_before', $this );
 
-		if ( isset($this->newfields['features']) ) {
-			$this->newfields['features'] = serialize($this->newfields['features']);
+		// Serialize features before they are stored
+		if ( isset( $this->newfields['features'] ) ) {
+			$this->newfields['features'] = serialize( $this->newfields['features'] );
 		}
-		if ( isset($this->fields['features']) ) {
-			$this->fields['features'] = serialize($this->fields['features']);
+		if ( isset( $this->fields['features'] ) ) {
+			$this->fields['features'] = serialize( $this->fields['features'] );
 		}
 		$result = parent::insertRecord( '{vocabularies}' );
-		if ( isset($this->newfields['features']) ) {
-			$this->newfields['features'] = unserialize($this->newfields['features']);
-		}
-		if ( isset($this->fields['features']) ) {
-			$this->fields['features'] = unserialize($this->fields['features']);
-		}
 
 		// Make sure the id is set in the vocabulary object to match the row id
 		$this->newfields['id'] = DB::last_insert_id();
 
 		// Update the vocabulary's fields with anything that changed
 		$this->fields = array_merge( $this->fields, $this->newfields );
+		// And unserialize the features
+		if ( isset( $this->fields['features'] ) ) {
+			$this->fields['features'] = unserialize( $this->fields['features'] );
+		}
 
 		// We've inserted the vocabulary, reset newfields
 		$this->newfields = array();
 
-		EventLog::log( sprintf(_t('New vocabulary %1$s (%2$s)'), $this->id, $this->name), 'info', 'content', 'habari' );
+		EventLog::log( sprintf( _t( 'New vocabulary %1$s (%2$s)' ), $this->id, $this->name ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_insert_after', $this );
@@ -218,13 +218,8 @@ class Vocabulary extends QueryRecord
 	public function update()
 	{
 		// Don't allow duplicate vocabularies
-		if ( isset($this->newfields['name']) && Vocabulary::exists($this->newfields['name']) ) {
+		if ( isset( $this->newfields['name'] ) && Vocabulary::exists( $this->newfields['name'] ) ) {
 			return false;
-		}
-
-		// Store the features as a serial
-		if ( isset($this->newfields['features']) && is_array($this->newfields['features']) ) {
-			$this->newfields['features'] = serialize($this->newfields['features']);
 		}
 
 		// Let plugins disallow and act before we write to the database
@@ -235,18 +230,19 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_update_before', $this );
 
-		if ( isset($this->newfields['features']) ) {
-			$this->newfields['features'] = serialize($this->newfields['features']);
+		if ( isset( $this->newfields['features'] ) ) {
+			$this->newfields['features'] = serialize( $this->newfields['features'] );
 		}
-		if ( isset($this->fields['features']) ) {
-			$this->fields['features'] = serialize($this->fields['features']);
+		if ( isset( $this->fields['features'] ) ) {
+			$this->fields['features'] = serialize( $this->fields['features'] );
 		}
 		$result = parent::updateRecord( '{vocabularies}', array( 'id' => $this->id ) );
-		if ( isset($this->newfields['features']) ) {
-			$this->newfields['features'] = unserialize($this->newfields['features']);
-		}
-		if ( isset($this->fields['features']) ) {
-			$this->fields['features'] = unserialize($this->fields['features']);
+
+		$this->fields = array_merge( $this->fields, $this->newfields );
+		$this->newfields = array();
+
+		if ( isset( $this->fields['features'] ) ) {
+			$this->fields['features'] = unserialize( $this->fields['features'] );
 		}
 
 		// Let plugins act after we write to the database
