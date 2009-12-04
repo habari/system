@@ -39,9 +39,6 @@ class FeedbackHandler extends ActionHandler
 		Themes::create();
 		$form = $post->comment_form();
 		$form->get(null, false);
-// Utils::debug( $form );
-// Utils::debug( $form->cf_content->value );
-// die();
 		// Was this a FormUI form, or a regular comment form?
 		if($form->submitted) {
 
