@@ -632,7 +632,7 @@ class Utils
 		foreach($options as $value => $text){
 			$output.= '<option value="'.$value.'"';
 			if ( $current == (string)$value ) {
-				$output.= ' selected';
+				$output.= ' selected="selected"';
 			}
 			$output.= '>' . $text . "</option>\n";
 		}
