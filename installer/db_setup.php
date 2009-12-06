@@ -151,6 +151,9 @@
 				<a href="#"><?php _e('Learn More...'); ?></a>
 			</div>
 		</div>
+		<div class="inputfield">
+			<button type="button" name="check_db_connection" id="check_db_connection" tabindex="<?php echo $tab++ ?>"><?php _e('Check Database Connection'); ?></button>
+		</div>
 	</div>
 	<div class="bottom"></div>
 </div>

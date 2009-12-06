@@ -33,7 +33,7 @@ var installer = {
 				$('.forsqlite').show();
 				break;
 		}
-		installer.checkDBCredentials();
+		installer.checkDBFields();
 	},
 	
 	checkDBCredentials: function() {
@@ -50,6 +50,20 @@ var installer = {
 		}
 	},
 	
+	checkDBFields: function() {
+		switch ($('#db_type').val()) {
+			case 'mysql':
+				installer.mysql.checkDBFields();
+				break;
+			case 'pgsql':
+				installer.pgsql.checkDBFields();
+				break;
+			case 'sqlite':
+				installer.sqlite.checkDBFields();
+				break;
+		}
+	},
+
 	checkSiteConfigurationCredentials: function() {
 		var installok = true;
 
@@ -78,6 +92,7 @@ var installer = {
 		});
 
 		if (installok) {
+//			installer.checkDBCredentials();
 			$('#siteconfiguration, #pluginactivation, #install').addClass('ready').addClass('done').children('.options').fadeIn().children('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			$('#pluginactivation').children('.help-me').show();
 			$('#submitinstall').removeAttr( 'disabled' );
@@ -97,6 +112,20 @@ var installer = {
 }
 
 installer.mysql = {
+	checkDBFields : function() {
+		if ( ( $('#mysqldatabasehost').val() == '' ) || ( $('#mysqldatabaseuser').val() == '' ) || ( $('#mysqldatabasename').val() == '' ) ) {
+			$('#check_db_connection').attr('disabled', true);
+			$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser, #tableprefix').each(function() {
+				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
+			});
+			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+		}
+		else {
+			$('#check_db_connection').attr('disabled', false);
+		}
+	},
+
 	checkDBCredentials : function() {
 		if ( ( $('#mysqldatabasehost').val() != '' ) && ( $('#mysqldatabaseuser').val() != '' ) && ( $('#mysqldatabasename').val() != '' ) ) {
 			if (installer.verifyDB) {
@@ -115,9 +144,12 @@ installer.mysql = {
 						$('#installerror').fadeOut();
 						switch($('status',xml).text()) {
 						case '0': // Show warning, fade the borders and hide the next step
+							$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser, #tableprefix').each(function() {
+								$(this).parents('.inputfield').addClass('valid').removeClass('invalid').find('.warning:visible').hide();
+							});
 							warningtext= $('message',xml).text();
 							$('id',xml).each(function() {
-								$($(this).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
+								$($(this).text()).parents('.inputfield').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
 								$($(this).text()).parents('.installstep').removeClass('done')
 							});
 							$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
@@ -145,7 +177,7 @@ installer.mysql = {
 	validDBCredentials: function() {
 		$('#mysqldatabasename, #mysqldatabasehost, #mysqldatabasepass, #mysqldatabaseuser, #tableprefix').each(function() {
 			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
-			$(this).parents('.installstep').addClass('done')
+			$(this).parents('.installstep').addClass('done');
 		});
 		$('#siteconfiguration').children('.options').fadeIn().addClass('ready');
 		$('#siteconfiguration').children('.help-me').show();
@@ -154,6 +186,21 @@ installer.mysql = {
 }
 
 installer.pgsql = {
+	checkDBFields : function() {
+		if ( ( $('#pgsqldatabasehost').val() == '' ) || ( $('#pgsqldatabaseuser').val() == '' ) || ( $('#pgsqldatabasename').val() == '' ) ) {
+			$('#check_db_connection').attr('disabled', true);
+			$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser, #tableprefix').each(function() {
+				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
+			});
+			$('.installstep:eq(1)').removeClass('done');
+			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+		}
+		else {
+			$('#check_db_connection').attr('disabled', false);
+		}
+	},
+
 	checkDBCredentials : function() {
 		if ( ( $('#pgsqldatabasehost').val() != '' ) && ( $('#pgsqldatabaseuser').val() != '' ) && ( $('#pgsqldatabasename').val() != '' ) ) {
 			if (installer.verifyDB) {
@@ -172,9 +219,12 @@ installer.pgsql = {
 						$('#installerror').fadeOut();
 						switch($('status',xml).text()) {
 						case '0': // Show warning, fade the borders and hide the next step
+							$('#pgsqldatabasename, #pgsqldatabasehost, #pgsqldatabasepass, #pgsqldatabaseuser, #tableprefix').each(function() {
+								$(this).parents('.inputfield').addClass('valid').removeClass('invalid').find('.warning:visible').hide();
+							});
 							warningtext= $('message',xml).text();
 							$('id',xml).each(function() {
-								$($(this).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
+								$($(this).text()).parents('.inputfield').addClass('invalid').find('.warning').html(warningtext).fadeIn();
 								$($(this).text()).parents('.installstep').removeClass('done')
 							});
 							$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
@@ -212,6 +262,21 @@ installer.pgsql = {
 }
 
 installer.sqlite = {
+	checkDBFields : function() {
+		if ( ( $('#databasefile').val() == '' ) ) {
+			$('#check_db_connection').attr('disabled', true);
+			$('#databasefile, #tableprefix').each(function() {
+				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
+			});
+			$('.installstep:eq(1)').removeClass('done');
+			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
+			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
+		}
+		else {
+			$('#check_db_connection').attr('disabled', false)
+		}
+	},
+
 	checkDBCredentials : function() {
 		if ( $('#databasefile').val() != '' ) {
 			if (installer.verifyDB) {
@@ -226,9 +291,12 @@ installer.sqlite = {
 						$('#installerror').fadeOut();
 						switch($('status',xml).text()) {
 						case '0': // Show warning, fade the borders and hide the next step
+							$('#databasefile, #tableprefix').each(function() {
+								$(this).parents('.inputfield').addClass('valid').removeClass('invalid').find('.warning:visible').hide();
+							});
 							warningtext= $('message',xml).text();
 							$('id',xml).each(function() {
-								$($(this).text()).parents('.inputfield').removeClass('invalid').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
+								$($(this).text()).parents('.inputfield').removeClass('valid').addClass('invalid').find('.warning').html(warningtext).fadeIn();
 								$($(this).text()).parents('.installstep').removeClass('done')
 							});
 							$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
@@ -245,7 +313,9 @@ installer.sqlite = {
 				installer.sqlite.validDBCredentials();
 			}
 		} else {
-			$('#databasefile').parents('.inputfield').removeClass('valid').addClass('invalid');
+			$('#databasefile, #tableprefix').each(function() {
+				$(this).parents('.inputfield').removeClass('invalid').removeClass('valid').find('.warning:visible').fadeOut();
+			});
 			$('.installstep:eq(1)').removeClass('done');
 			$('#siteconfiguration, #pluginactivation, #install').removeClass('ready').removeClass('done').children('.options').fadeOut();
 			$('#siteconfiguration, #pluginactivation').children('.help-me').hide();
@@ -253,7 +323,7 @@ installer.sqlite = {
 	},
 	
 	validDBCredentials: function() {
-		$('#databasefile').each(function() {
+		$('#databasefile, #tableprefix').each(function() {
 			$(this).parents('.inputfield').removeClass('invalid').addClass('valid').find('.warning:visible').fadeOut();
 			$(this).parents('.installstep').addClass('done')
 		});
@@ -340,12 +410,10 @@ $(document).ready(function() {
 	$('form').attr('autocomplete', 'off');
 	itemManage.init();
 	installer.setDatabaseType();
-	installer.checkDBCredentials();
-	installer.checkSiteConfigurationCredentials();
+//	installer.checkDBFields();
 	$('#db_type').change(installer.setDatabaseType);
-	$('#databasesetup input').keyup(function(){queueTimer(installer.checkDBCredentials)});
+	$('#databasesetup input').keyup(function(){queueTimer(installer.checkDBFields)});
+	$('#check_db_connection').click(function(){installer.checkDBCredentials()});
 	$('#siteconfiguration input').keyup(function(){queueTimer(installer.checkSiteConfigurationCredentials)});
-	$('#locale').focus().change(function() {
-		$('#locale-form').submit();
-	});
+	$('#locale').focus().change(function() { $('#locale-form').submit();	});
 });
