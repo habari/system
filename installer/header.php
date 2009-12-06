@@ -5,7 +5,7 @@
 	<meta http-equiv="Content-Language" content="en"/>
 	<meta name="robots" content="no index,no follow" />
 	<link rel="shortcut icon" href="/favicon.ico" />
-	<link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css">
+	<link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php Site::out_url('habari'); ?>/scripts/jquery.js"></script>
 	<title><?php _e('Install Habari'); ?></title>
 </head>
