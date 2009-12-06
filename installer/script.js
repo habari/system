@@ -8,7 +8,7 @@ var installer = {
 		}
 		$('#installerror').html(
 			'<strong>Installation Issue</strong>'+
-			'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="doc/manual/index.html#Installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="installer.noVerify();">continue without database verification</a>.</p>' +
+			'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="doc/manual/index.html#installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="installer.noVerify();">continue without database verification</a>.</p>' +
 //			'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
 			'<strong>Server Response</strong>'+
 			'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
