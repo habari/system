@@ -139,6 +139,7 @@ class InstallHandler extends ActionHandler
 			$this->handler_vars['db_schema'] = $_POST["{$db_type}_db_schema"];
 		}
 
+
 		// we got here, so we have all the info we need to install
 
 		// make sure the admin password is correct
@@ -151,6 +152,11 @@ class InstallHandler extends ActionHandler
 		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
 			$this->theme->assign('form_errors', array('table_prefix' => _t('Allowed characters are A-Z, a-z and "_".')));
 			$this->display('db_setup');
+		}
+
+		// Make sure we still have a valid connection
+		if( ! call_user_func(array( $this, "check_{$db_type}" ) ) ) {
+			$this->display( 'db_setup' );
 		}
 
 		// try to write the config file
@@ -388,15 +394,15 @@ class InstallHandler extends ActionHandler
 		case 'pgsql':
 			// MySQL & PostgreSQL requires specific connection information
 			if (empty($db_user)) {
-				$this->theme->assign('form_errors', array('db_user'=>_t('User is required.')));
+				$this->theme->assign('form_errors', array("{$db_type}_db_user"=>_t('User is required.')));
 				return false;
 			}
 			if (empty($db_schema)) {
-				$this->theme->assign('form_errors', array('db_schema'=>_t('Name for database is required.')));
+				$this->theme->assign('form_errors', array("{$db_type}_db_schema"=>_t('Name for database is required.')));
 				return false;
 			}
 			if (empty($db_host)) {
-				$this->theme->assign('form_errors', array('db_host'=>_t('Host is required.')));
+				$this->theme->assign('form_errors', array("{$db_type}_db_host"=>_t('Host is required.')));
 				return false;
 			}
 			break;
@@ -415,7 +421,7 @@ class InstallHandler extends ActionHandler
 		}
 
 		if (! $this->connect_to_existing_db()) {
-			$this->theme->assign('form_errors', array('db_user'=>_t('Problem connecting to supplied database credentials')));
+			$this->theme->assign('form_errors', array("{$db_type}_db_user"=>_t('Problem connecting to supplied database credentials')));
 			return false;
 		}
 
@@ -503,6 +509,72 @@ class InstallHandler extends ActionHandler
 	}
 
 	/**
+	 * Validate database credentials for MySQL
+	 * Try to connect and verify if database name exists
+	 */
+	public function check_mysql()
+	{
+		// Can we connect to the DB?
+		$pdo = 'mysql:host=' . $this->handler_vars['db_host'] . ';dbname=' . $this->handler_vars['db_schema'];
+		if ( isset( $this->handler_vars['table_prefix'] ) ) {
+			// store prefix in the Config singleton so DatabaseConnection can access it
+			Config::set( 'db_connection', array( 'prefix' => $this->handler_vars['table_prefix'], ) );
+		}
+		try {
+			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], $this->handler_vars['db_pass'] );
+			return TRUE;
+		}
+		catch( PDOException $e ) {
+			if ( strpos( $e->getMessage(), '[1045]' ) ) {
+				$this->theme->assign( 'form_errors', array( 'mysql_db_pass' => _t( 'Access denied. Make sure these credentials are valid.' ) ) );
+			}
+			else if ( strpos( $e->getMessage(), '[1049]' ) ) {
+				$this->theme->assign( 'form_errors', array( 'mysql_db_schema' => _t( 'That database does not exist.' ) ) );
+			}
+			else if ( strpos( $e->getMessage(), '[2005]' ) ) {
+				$this->theme->assign( 'form_errors', array( 'mysql_db_host' => _t( 'Could not connect to host.' ) ) );
+			}
+			else {
+				$this->theme->assign( 'form_errors', array( 'mysql_db_host' => $e->getMessage() ) );
+			}
+			return FALSE;
+		}
+	}
+
+	/**
+	 * Validate database credentials for PostgreSQL
+	 * Try to connect and verify if database name exists
+	 */
+	public function check_pgsql()
+	{
+		// Can we connect to the DB?
+		$pdo = 'pgsql:host=' . $this->handler_vars['db_host'] . ';dbname=' . $this->handler_vars['db_schema'];
+		if ( isset( $this->handler_vars['table_prefix'] ) ) {
+			// store prefix in the Config singleton so DatabaseConnection can access it
+			Config::set( 'db_connection', array( 'prefix' => $this->handler_vars['table_prefix'], ) );
+		}
+		try {
+			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], $this->handler_vars['db_pass'] );
+			return TRUE;
+		}
+		catch( PDOException $e ) {
+			if ( strpos( $e->getMessage(), '[1045]' ) ) {
+				$this->theme->assign( 'form_errors', array( 'pgsql_db_pass' => _t( 'Access denied. Make sure these credentials are valid.' ) ) );
+			}
+			else if ( strpos( $e->getMessage(), '[1049]' ) ) {
+				$this->theme->assign( 'form_errors', array( 'pgsql_db_schema' => _t( 'That database does not exist.' ) ) );
+			}
+			else if ( strpos( $e->getMessage(), '[2005]' ) ) {
+				$this->theme->assign( 'form_errors', array( 'pgsql_db_host' => _t( 'Could not connect to host.' ) ) );
+			}
+			else {
+				$this->theme->assign( 'form_errors', array( 'pgsql_db_host' => $e->getMessage() ) );
+			}
+			return FALSE;
+		}
+	}
+
+	/**
 	 * Checks for the existance of a SQLite datafile
 	 * tries to create it if it does not exist
 	**/
@@ -555,10 +627,18 @@ class InstallHandler extends ActionHandler
 			eval($config);
 
 			/* Attempt to connect to the database host */
-			return DB::connect();
+			try {
+				DB::connect();
+				return TRUE;
+			}
+			catch( PDOException $e ) {
+				$this->theme->assign('form_errors', array( 'db_user'=>_t('Problem connecting to supplied database credentials' ) ) );
+				return FALSE;
+
+			}
 		}
 		// If we couldn't create the config from the template, return an error
-		return false;
+		return FALSE;
 	}
 
 	/**
@@ -813,7 +893,7 @@ class InstallHandler extends ActionHandler
 	{
 		// first, check if a config.php file exists
 		if ( file_exists( Site::get_dir('config_file' ) ) ) {
-			// set the defaults for comprison
+			// set the defaults for comparison
 			$db_host = $this->handler_vars['db_host'];
 			$db_file = $this->handler_vars['db_file'];
 			$db_type = $this->handler_vars['db_type'];

@@ -222,6 +222,11 @@ div.javascript-disabled {
 	margin: 0 0 10px;
 	}
 
+#check_db_connection {
+	margin-left: 180px;
+	width: 50%;
+	}
+
 .error {
 	padding: .8em;
 	margin-bottom: 1em;
