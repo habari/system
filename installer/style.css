@@ -1,5 +1,8 @@
 /* @override style.css */
 
+/* Force vertical scrollbars so that revealing help or errors don't move the form to the left */
+html { height: 100%; margin-bottom: 1px; overflow-y: scroll}
+
 body {
 	font-family: 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 0;
