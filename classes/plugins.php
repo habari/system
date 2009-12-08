@@ -378,10 +378,7 @@ class Plugins
 	 */
 	public static function id_from_file( $file )
 	{
-		if( is_link($file) ) {
-			$file = realpath($file);
-		}
-		$file = str_replace(array('\\', '/'), PATH_SEPARATOR, $file);
+		$file = str_replace(array('\\', '/'), PATH_SEPARATOR, realpath($file));
 		return sprintf( '%x', crc32( $file ) );
 	}
 
@@ -407,7 +404,7 @@ class Plugins
 					$plugin->action_plugin_activation( $file ); // For the plugin to install itself
 				}
 				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
-				EventLog::log( _t( 'Activated Plugin: %s', array( self::$plugins[Plugins::id_from_file( $file )]->info->name ) ), 'notice', 'plugin', 'habari' );
+				EventLog::log( _t( 'Activated Plugin: %s', array( $plugin->info->name ) ), 'notice', 'plugin', 'habari' );
 			}
 		}
 		return $ok;
