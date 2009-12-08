@@ -57,7 +57,7 @@ class Utils
 	public static function redirect( $url = '', $continue = false )
 	{
 		if ( $url == '' ) {
-			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+			$url = Controller::get_full_url();
 		}
 		header('Location: ' . $url, true, 302);
 
