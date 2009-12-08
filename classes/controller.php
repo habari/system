@@ -113,14 +113,14 @@ class Controller extends Singleton
 		$controller->base_url = Site::get_path('base', true);
 
 		/* Start with the entire URL coming from web server... */
-		$start_url = ( isset($_SERVER['REQUEST_URI'])
-					? $_SERVER['REQUEST_URI']
+		$start_url = ( $_SERVER->raw('REQUEST_URI')
+					? $_SERVER->raw('REQUEST_URI')
 					: $_SERVER['SCRIPT_NAME'] .
 						( isset($_SERVER['PATH_INFO'])
 						? $_SERVER['PATH_INFO']
 						: '') .
-							( (isset($_SERVER['QUERY_STRING']) && ($_SERVER['QUERY_STRING'] != ''))
-							? '?' . $_SERVER['QUERY_STRING']
+							( ($_SERVER->raw('QUERY_STRING') != '')
+							? '?' . $_SERVER->raw('QUERY_STRING')
 							: ''));
 
 		/* Strip out the base URL from the requested URL */
