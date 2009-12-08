@@ -127,9 +127,11 @@ class Controller extends Singleton
 		/* but only if the base URL isn't / */
 		if ( '/' != $controller->base_url ) {
 			$start_url = str_replace($controller->base_url, '', $start_url);
-			$start_url = str_replace('&amp;', '&', $start_url);
 		}
-
+		
+		// undo &amp;s
+		$start_url = str_replace('&amp;', '&', $start_url);
+		
 		/* Trim off any leading or trailing slashes */
 		$start_url = trim($start_url, '/');
 
