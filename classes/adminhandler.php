@@ -2047,7 +2047,7 @@ class AdminHandler extends ActionHandler
 			foreach ( $_POST as $key => $module ) {
 				// skip POST elements which are not module names
 				if ( preg_match( '/^module\d+$/', $key ) ) {
-					list( $module_id, $module_name ) = split( ':', $module, 2 );
+					list( $module_id, $module_name ) = explode( ':', $module, 2 );
 					// remove non-sortable modules from the list
 					if ( $module_id != 'nosort' ) {
 						$modules[$module_id] = $module_name;
