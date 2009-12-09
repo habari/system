@@ -66,7 +66,7 @@ class Tag
 	 * @param mixed $tag The tag's name, slug, or id
 	 * @return Tag The first tag that matched the given criteria or FALSE on failure
 	 **/
-	static function get( $tag )
+	public static function get( $tag )
 	{
 		return Tags::get_one( $tag );
 	}
@@ -77,7 +77,7 @@ class Tag
 	 * @param array $paramarray An associative array of tag fields
 	 * @return Tag The new Tag object
 	 **/
-	static function create( $paramarray )
+	public static function create( $paramarray )
 	{
 		$tag = new Tag( $paramarray );
 		$tag = $tag->insert();

@@ -10,8 +10,8 @@
 */
 class Tags extends ArrayObject
 {
-	private static $vocabulary = 'tags';
-	private static $object_type = 'post';
+	protected static $vocabulary = 'tags';
+	protected static $object_type = 'post';
 
 	/**
 	 * Returns a tag or tags based on supplied parameters.
