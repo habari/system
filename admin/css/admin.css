@@ -1552,6 +1552,7 @@ body.page-options .item {
 
 .plugins .dropbutton li:last-child:first-child {
 	text-align: center;
+	text-indent: -2px;
 }
 
 /*-- PLUGINS HELP */
