@@ -286,8 +286,7 @@ a img {
 	font-size: 9px;
 	list-style: none outside;
 	margin: 0 0 0 10px;
-	position: absolute;
-/*	top: 10px;*/
+	position: absolute; 
 	right: 40px;
 }
 
@@ -1545,6 +1544,14 @@ body.page-options .item {
 
 #pluginconfigure .formui input, #pluginconfigure .formui select {
 	margin-left: 8px;
+}
+
+.plugins .dropbutton {
+	top: 10px;
+}
+
+.plugins .dropbutton li:last-child:first-child {
+	text-align: center;
 }
 
 /*-- PLUGINS HELP */
