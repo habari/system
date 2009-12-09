@@ -1881,6 +1881,16 @@ body.page-Manage .state {
 	border-right: 3px solid #fcd915;
 }
 
+#comments .item.approved {
+	border-left: 3px solid #fafafa;
+	border-right: 3px solid #fafafa;
+}
+
+#comments .item.approved:hover {
+	border-left: 3px solid #f3f3f3;
+	border-right: 3px solid #f3f3f3;
+}
+
 #comments .item p.comment-type {
 	font-size: 11px;
 	text-transform: capitalize;
