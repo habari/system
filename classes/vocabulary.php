@@ -327,9 +327,14 @@ class Vocabulary extends QueryRecord
 		$new_term->mptt_right = $ref + 2;
 
 		// Insert the new node
-		$new_term->insert();
+		$result = $new_term->insert();
+		if ( $result ) {
+			return $new_term;
+		}
+		else {
+			return FALSE;
+		}
 
-		return $new_term;
 	}
 
 	/**
