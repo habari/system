@@ -83,16 +83,55 @@ class Term extends QueryRecord
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND mptt_left = ?';
 		}
 		else {
-			$term = Utils::slugify( $term );
 			$params[] = $term;
-			if ( is_numeric( $term ) ) {
-				$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND id = ?';
-			}
-			else {
-				$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND term = ?';
-			}
+			$params[] = $term;
+			$params[] = $term;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND (id = ? OR term = ? OR term_display = ?)';
 		}
 		return DB::get_row( $query, $params, 'Term' );
+	}
+
+	/**
+	 * Generate a new slug for the post.
+	 *
+	 * @return string The slug
+	 */
+	protected function setslug()
+	{
+		// determine the base value from:
+		// - the new slug
+		if ( isset( $this->newfields['term']) && $this->newfields['term'] != '' ) {
+			$value = $this->newfields['term'];
+		}
+		// - the existing slug
+		elseif ( $this->fields['term'] != '' ) {
+			$value = $this->fields['term'];
+		}
+		// - the new term display text
+		elseif ( isset( $this->newfields['term_display'] ) && $this->newfields['term_display'] != '' ) {
+			$value = $this->newfields['term_display'];
+		}
+		// - the existing term display text
+		elseif ( $this->fields['term_display'] != '' ) {
+			$value = $this->fields['term_display'];
+		}
+
+		// make sure our slug is unique
+		$slug = Plugins::filter( 'term_setslug', $value );
+		$slug = Utils::slugify( $slug );
+		$postfix = '';
+		$postfixcount = 0;
+		do {
+			if ( ! $slugcount = DB::get_row( 'SELECT COUNT(term) AS ct FROM {terms} WHERE term = ?;', array( $slug . $postfix ) ) ) {
+				Utils::debug( DB::get_errors() );
+				exit;
+			}
+			if ( $slugcount->ct != 0 ) {
+				$postfix = "-" . ( ++$postfixcount );
+			}
+		} while ( $slugcount->ct != 0 );
+
+		return $this->newfields['term'] = $slug . $postfix;
 	}
 
 	/**
@@ -101,6 +140,8 @@ class Term extends QueryRecord
 	 */
 	public function insert()
 	{
+		$this->setslug();
+
 		// Let plugins disallow and act before we write to the database
 		$allow = true;
 		$allow = Plugins::filter( 'term_insert_allow', $allow, $this );
@@ -141,6 +182,13 @@ class Term extends QueryRecord
 			return;
 		}
 		Plugins::act( 'term_update_before', $this );
+
+		// Call setslug() only when term is changed
+		if ( isset( $this->newfields['term'] ) && $this->newfields['term'] != '' ) {
+			if ( $this->fields['term'] != $this->newfields['term'] ) {
+				$this->setslug();
+			}
+		}
 
 		$result = parent::updateRecord( '{terms}', array( 'id' => $this->id ) );
 

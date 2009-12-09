@@ -136,19 +136,6 @@ class Tag
 	}
 
 	/**
-	 * Generate a new slug for the tag.
-	 *
-	 * @return string The slug
-	 */
-	private function setslug()
-	{
-		// make sure our slug is unique
-		$this->tag_slug = Plugins::filter( 'tag_setslug', $value );
-		$this->tag_slug = Utils::slugify( $slug );
-		return $this->tag_slug;
-	}
-
-	/**
 	 * function insert
 	 * Saves a new tag's data into the terms table
 	 */
@@ -164,10 +151,15 @@ class Tag
 		$term = new Term( array( 'term' => $this->tag_slug, 'term_display' => $this->tag_text ) );
 		$term = Tags::vocabulary()->add_term( $term );
 
-		EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
-		Plugins::act( 'tag_insert_after', $this );
+		if ( $term ) {
+			EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
+			Plugins::act( 'tag_insert_after', $this );
+			return new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
+		}
+		else {
+			return FALSE;
+		}
 
-		return new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
 	}
 
 	/**
@@ -183,15 +175,16 @@ class Tag
 		}
 		Plugins::act( 'tag_update_before', $this );
 
-		// Call setslug() only when tag slug is changed
-		if ( isset( $this->tag_slug ) && $this->tag_slug != '' ) {
-			$this->setslug();
-		}
-
 		$term = Tags::vocabulary()->get_term( $this->id );
 		$term->term = $this->tag_slug;
 		$term->term_display = $this->tag_text;
 		$result = $term->update();
+
+		$term = Tags::vocabulary()->get_term( $this->id );
+		if( $result ) {
+			$this->tag_text = $term->term_display;
+			$this->tag_slug = $term->term;
+		}
 
 		Plugins::act( 'tag_update_after', $this );
 		return $result;
