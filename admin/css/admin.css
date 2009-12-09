@@ -306,6 +306,7 @@ a img {
 
 #page .comments-action.dropbutton{
 	right:170px;
+	z-index: 1000;
 }
 #page .comments-action.dropbutton.alert {
 /*	background: #FF4500; */
