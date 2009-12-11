@@ -388,8 +388,8 @@ class Comment extends QueryRecord implements IsContent
 			return self::$comment_status_actions[$status];
 		}
 		$statuses = array_flip( Comment::list_comment_statuses() );
-		if ( isset($statuses[$name]) ) {
-			return self::$comment_status_actions[$statuses[$name]];
+		if ( isset($statuses[$status]) ) {
+			return self::$comment_status_actions[$statuses[$status]];
 		}
 
 		return '';
