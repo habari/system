@@ -140,7 +140,7 @@ class HabariSilo extends Plugin implements MediaSilo
 							$icon_keys = array_map( create_function('$a', 'return pathinfo($a, PATHINFO_FILENAME);'), $icons );
 							$icons = array_combine($icon_keys, $icons);
 							$icon_filter = create_function('$a, $b', "\$mime = '$mimetype';".'return (((strpos($mime, $a)===0) ? (strlen($a) / strlen($mime)) : 0) >= (((strpos($mime, $b)===0)) ? (strlen($b) / strlen($mime)) : 0)) ? $a : $b;');
-							$thumnail_url = $icon_key = array_reduce($icon_keys, $icon_filter);
+							$icon_key = array_reduce($icon_keys, $icon_filter);
 							if ($icon_key) {
 								$icon = basename($icons[$icon_key]);
 								$thumbnail_url = $icon_url .'/'. $icon;
