@@ -827,6 +827,7 @@ class Post extends QueryRecord implements IsContent
 
 		// Add required hidden controls
 		$form->append('hidden', 'content_type', 'null:null');
+		$form->content_type->id = 'content_type';
 		$form->content_type->value = $this->content_type;
 		$form->append('hidden', 'post_id', 'null:null');
 		$form->post_id->id = 'id';
