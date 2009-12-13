@@ -858,6 +858,12 @@ class Utils
 		if ( function_exists('finfo_open') ) {
 			$finfo = finfo_open(FILEINFO_MIME);
 			$mimetype = finfo_file($finfo, $filename);
+			/* FILEINFO_MIME Returns the mime type and mime encoding as defined by RFC 2045.
+			 * So only return the mime type, not the encoding.
+			 */
+			if ( ( $pos = strpos($mimetype, ';') ) !== FALSE ) {
+				$mimetype = substr($mimetype, 0, $pos);
+			}
 			finfo_close($finfo);
 		}
 
