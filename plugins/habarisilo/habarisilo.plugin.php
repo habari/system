@@ -10,7 +10,6 @@ class HabariSilo extends Plugin implements MediaSilo
 {
 	protected $root = null;
 	protected $url = null;
-	protected $default_thumbnail = null;
 
 	const SILO_NAME = 'Habari';
 
@@ -24,7 +23,6 @@ class HabariSilo extends Plugin implements MediaSilo
 		$user_path = HABARI_PATH . '/' . Site::get_path('user', true);
 		$this->root = $user_path . 'files'; //Options::get('simple_file_root');
 		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
-		$this->default_thumbnail = $this->get_url('user', true) . 'images/default_thumbnail.png';
 
 		if ( !$this->check_files() ) {
 			Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
@@ -130,11 +128,28 @@ class HabariSilo extends Plugin implements MediaSilo
 			if ( !is_dir( $item ) ) {
 				$thumbnail_suffix = HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
 				$thumbnail_url = $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
+				$mimetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($item));
 
 				if ( !file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
 					if ( !$this->create_thumbnail( $item ) ) {
-						// We can't create a thumbnail, return a default image
-						$thumbnail_url = $this->default_thumbnail;
+						// there is no thumbnail so use icon based on mimetype.
+						$icon_path = Plugins::filter( 'habarisilo_icon_base_path', dirname($this->get_file()) . '/icons' );
+						$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
+						
+						if ( ( $icons = Utils::glob($icon_path . '/*.{png,jpg,gif,svg}', GLOB_BRACE) ) && $mimetype ) {
+							$icon_keys = array_map( create_function('$a', 'return pathinfo($a, PATHINFO_FILENAME);'), $icons );
+							$icons = array_combine($icon_keys, $icons);
+							$icon_filter = create_function('$a, $b', "\$mime = '$mimetype';".'return (((strpos($mime, $a)===0) ? (strlen($a) / strlen($mime)) : 0) >= (((strpos($mime, $b)===0)) ? (strlen($b) / strlen($mime)) : 0)) ? $a : $b;');
+							$thumnail_url = $icon_key = array_reduce($icon_keys, $icon_filter);
+							if ($icon_key) {
+								$icon = basename($icons[$icon_key]);
+								$thumbnail_url = $icon_url .'/'. $icon;
+							}
+							else {
+								// couldn't find an icon so use default
+								$thumbnail_url = $icon_url .'/default.png';
+							}
+						}
 					}
 				}
 				$props = array_merge(
@@ -142,7 +157,7 @@ class HabariSilo extends Plugin implements MediaSilo
 					array(
 						'url' => $this->url . '/' . $path . ($path == '' ? '' : '/') . $file,
 						'thumbnail_url' => $thumbnail_url,
-						'filetype' => preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($item)),
+						'filetype' => $mimetype,
 					)
 				);
 			}
