@@ -10,6 +10,7 @@ class HabariSilo extends Plugin implements MediaSilo
 {
 	protected $root = null;
 	protected $url = null;
+	protected $default_thumbnail = null;
 
 	const SILO_NAME = 'Habari';
 
@@ -23,6 +24,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		$user_path = HABARI_PATH . '/' . Site::get_path('user', true);
 		$this->root = $user_path . 'files'; //Options::get('simple_file_root');
 		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
+		$this->default_thumbnail = $this->get_url('user', true) . 'images/default_thumbnail.png';
 
 		if ( !$this->check_files() ) {
 			Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
@@ -131,7 +133,8 @@ class HabariSilo extends Plugin implements MediaSilo
 
 				if ( !file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
 					if ( !$this->create_thumbnail( $item ) ) {
-						// Do something if we can't create a thumbnail, like return a default image
+						// We can't create a thumbnail, return a default image
+						$thumbnail_url = $this->default_thumbnail;
 					}
 				}
 				$props = array_merge(
