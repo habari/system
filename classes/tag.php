@@ -36,7 +36,7 @@ class Tag
 	{
 		$term = Term::get( Tags::vocabulary()->id, $this->id );
 
-		switch ($name) {
+		switch ( $name ) {
 			case 'tag':
 			case 'tag_text':
 				$out = $term->term_display;
@@ -74,7 +74,7 @@ class Tag
 	/**
 	 * Check if a tag exists, to see if we should match this rewrite rule
 	 *
-	 * @return Boolean
+	 * @return Boolean Whether the tag exists.
 	 **/
 	public static function rewrite_tag_exists($rule, $slug, $parameters)
 	{
@@ -192,7 +192,7 @@ class Tag
 		$result = $term->update();
 
 		$term = Tags::vocabulary()->get_term( $this->id );
-		if( $result ) {
+		if ( $result ) {
 			$this->tag_text = $term->term_display;
 			$this->tag_slug = $term->term;
 		}

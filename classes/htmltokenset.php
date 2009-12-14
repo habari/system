@@ -32,7 +32,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 
 	public static function token_to_string( array $token, $escape = true )
 	{
-		switch ($token['type']) {
+		switch ( $token['type'] ) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
 				return $escape ? htmlspecialchars($token['value']) : $token['value'];
 				break;
@@ -42,9 +42,10 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				if ( isset( $token['attrs'] ) && is_array( $token['attrs'] ) ) {
 					foreach ( $token['attrs'] as $attr => $attrval ) {
 						$out .= " {$attr}=\"";
-						if ($escape) {
+						if ( $escape ) {
 							$out .= htmlspecialchars( html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
-						} else {
+						}
+						else {
 							$out .= html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' );
 						}
 						$out .= '"';
@@ -71,7 +72,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 
 			case HTMLTokenizer::NODE_TYPE_STATEMENT:
 				$out = "<!{$token['name']}";
-				if (!empty($token['value'])) {
+				if ( !empty($token['value']) ) {
 					$out .= " {$token['value']}";
 				}
 				$out .= ">";
@@ -92,7 +93,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		$names = (array)$names;
 		$ret = array();
-		foreach ($names as $name) {
+		foreach ( $names as $name ) {
 			$offset = 0;
 			$slices = array();
 			while ( $slice = $this->find_slice( $offset, $name, $attr ) ) {
@@ -248,7 +249,8 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		if ( $offset === null) {
 			$this->tokens[] = $value;
-		} else {
+		}
+		else {
 			$this->tokens[ $offset ] = $value;
 		}
 	}

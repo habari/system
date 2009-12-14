@@ -36,7 +36,7 @@ class Posts extends ArrayObject implements IsContent
 	 **/
 	public function __get( $name )
 	{
-		switch( $name ) {
+		switch ( $name ) {
 			case 'onepost':
 				return ( count( $this ) == 1 );
 		}
@@ -240,7 +240,7 @@ class Posts extends ArrayObject implements IsContent
 
 					if ( is_array( $infos ) ) {
 						$pi_count = 0;
-						foreach($infos as $info_key => $info_value) {
+						foreach ( $infos as $info_key => $info_value ) {
 							$pi_count++;
 							$joins['info_' . $info_key] = " LEFT JOIN {postinfo} ipi{$pi_count} ON {posts}.id = ipi{$pi_count}.post_id AND ipi{$pi_count}.name = ? AND ipi{$pi_count}.value = ?";
 							$join_params[] = $info_key;
@@ -257,7 +257,7 @@ class Posts extends ArrayObject implements IsContent
 					if ( is_array( $paramset['any:info'] ) ) {
 						$pi_count = 0;
 						$pi_where = array();
-						foreach($paramset['any:info'] as $info_key => $info_value) {
+						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
 							$pi_count++;
 							$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value = ?";
 							$join_params[] = $info_key;
@@ -275,7 +275,7 @@ class Posts extends ArrayObject implements IsContent
 					$has_info = Utils::single_array( $paramset['has:info'] );
 					$pi_count = 0;
 					$pi_where = array();
-					foreach( $has_info as $info_name ) {
+					foreach ( $has_info as $info_name ) {
 						$pi_count++;
 						$joins['has_info_' . $info_name] = " LEFT JOIN {postinfo} hipi{$pi_count} ON {posts}.id = hipi{$pi_count}.post_id AND hipi{$pi_count}.name = ?";
 						$join_params[] = $info_name;
@@ -412,7 +412,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 
 			// If a user can read any post type, let him
-			if( User::identify()->can( 'post_any', 'read' ) ) {
+			if ( User::identify()->can( 'post_any', 'read' ) ) {
 				$perm_where = array('post_any' => '(1=1)');
 				$params_where = array();
 			}
@@ -437,7 +437,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 
 			// If a user is denied access to all posts, do so
-			if( User::identify()->cannot( 'post_any' ) ) {
+			if ( User::identify()->cannot( 'post_any' ) ) {
 				$perm_where_denied = array('(1=0)');
 			}
 			else {
@@ -484,7 +484,7 @@ class Posts extends ArrayObject implements IsContent
 		// For example: page number, fetch function, limit
 		$paramarray = new SuperGlobal($paramarray);
 		$extract = $paramarray->filter_keys('page', 'limit', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having');
-		foreach($extract as $key => $value) {
+		foreach ( $extract as $key => $value ) {
 			$$key = $value;
 		}
 
@@ -527,7 +527,7 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 		// If the month counts are requested, replaced the select clause
-		if( isset( $paramset['month_cts'] ) ) {
+		if ( isset( $paramset['month_cts'] ) ) {
 			if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] ))
 				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(DISTINCT {posts}.id) AS ct';
 			else
@@ -563,12 +563,12 @@ class Posts extends ArrayObject implements IsContent
 			$query .= ' WHERE (' . implode( " \nOR\n ", $wheres ) . ')';
 			$query .= ($master_perm_where == '') ? '' : ' AND (' . $master_perm_where . ')';
 		}
-		elseif($master_perm_where != '') {
+		elseif ( $master_perm_where != '' ) {
 			$query .= ' WHERE (' . $master_perm_where . ')';
 		}
-		$query.= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query.= ( ! isset($having) || $having == '' ) ? '' : ' HAVING ' . $having;
-		$query.= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
+		$query .= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query .= ( ! isset($having) || $having == '' ) ? '' : ' HAVING ' . $having;
+		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		/**
 		 * DEBUG: Uncomment the following line to display everything that happens in this function
@@ -635,7 +635,7 @@ class Posts extends ArrayObject implements IsContent
 	public static function count_total( $status = FALSE )
 	{
 		$params = array( 'count' => 1 );
-		if( $status !== FALSE ) {
+		if ( $status !== FALSE ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -706,7 +706,7 @@ class Posts extends ArrayObject implements IsContent
 		if ( ( $user == 0 ) || empty( $posts ) ) {
 			return false;
 		}
-		switch( true ) {
+		switch ( true ) {
 			case is_integer( reset( $posts ) ):
 				break;
 			case reset( $posts ) instanceof Post:
@@ -735,7 +735,7 @@ class Posts extends ArrayObject implements IsContent
 	public static function publish_scheduled_posts( $params )
 	{
 		$posts = DB::get_results('SELECT * FROM {posts} WHERE status = ? AND pubdate <= ? ORDER BY pubdate DESC', array( Post::status( 'scheduled' ), HabariDateTime::date_create() ), 'Post' );
-		foreach( $posts as $post ) {
+		foreach ( $posts as $post ) {
 			$post->publish();
 		}
 	}
@@ -753,7 +753,7 @@ class Posts extends ArrayObject implements IsContent
 		$min_time = DB::get_value( 'SELECT MIN(pubdate) FROM {posts} WHERE status = ?', array( Post::status( 'scheduled' ) ) );
 
 		CronTab::delete_cronjob( 'publish_scheduled_posts' );
-		if( $min_time ) {
+		if ( $min_time ) {
 			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts'),  $min_time, 'Next run: ' . HabariDateTime::date_create( $min_time )->get( 'c' ) );
 		}
 	}
@@ -859,12 +859,12 @@ class Posts extends ArrayObject implements IsContent
 
 		$tokens = explode( ' ', $search_string );
 
-		foreach( $tokens as $token ) {
+		foreach ( $tokens as $token ) {
 			//check for triple combination
 			if ( preg_match( '/^\w+:[^:\s]*:\S+$/', $token ) ){
 				list( $keyword, $infokey, $infovalue )= explode( ':', $token );
 				$keyword = strtolower( $keyword );
-				switch($keyword){
+				switch ( $keyword ){
 					case 'info':
 						$arguments['info'][]= array($infokey=>$infovalue);
 					break;
@@ -920,7 +920,12 @@ class Posts extends ArrayObject implements IsContent
 
 		return $arguments;
 	}
-	
+
+	/**
+	 * Check if the requested post is of the type specified, to see if a rewrite rule matches.
+	 *
+	 * @return Boolean Whether the requested post matches the content type of the rule.
+	 */
 	public static function rewrite_match_type($rule, $slug, $parameters)
 	{
 		$args = $rule->named_arg_values;
@@ -937,7 +942,7 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	function content_type ()
 	{
-		if(isset($this->preset)) {
+		if ( isset($this->preset) ) {
 			return 'posts.' . $this->preset;
 		}
 		return 'posts';
