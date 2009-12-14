@@ -150,7 +150,7 @@ class HabariLocale
 		// determine endianness
 		$little_endian = TRUE;
 
-		list(,$magic)= unpack( 'V1', substr( $data, 0, 4 ) );
+		list(,$magic) = unpack( 'V1', substr( $data, 0, 4 ) );
 		switch ( $magic & 0xFFFFFFFF ) {
 			case (int)0x950412de:
 				$little_endian = TRUE;
@@ -223,18 +223,18 @@ class HabariLocale
 				$ch = $body[$i];
 				switch ($ch) {
 					case '?':
-						$res.= ' ? (';
+						$res .= ' ? (';
 						$p++;
 						break;
 					case ':':
-						$res.= ') : (';
+						$res .= ') : (';
 						break;
 					case ';':
-						$res.= str_repeat( ')', $p) . ';';
+						$res .= str_repeat( ')', $p) . ';';
 						$p = 0;
 						break;
 					default:
-						$res.= $ch;
+						$res .= $ch;
 				}
 			}
 
@@ -264,7 +264,7 @@ class HabariLocale
 		$fn = self::get_plural_function( $header );
 		$res = '';
 		for ( $n = 0; $n < 200; $n++ ) {
-			$res.= $fn($n);
+			$res .= $fn($n);
 		}
 
 		return $res;
@@ -284,7 +284,7 @@ class HabariLocale
 	 * @param string $text The text to echo translated
 	 * @param string $domain (optional) The domain to search for the message
 	 **/
-	public static function _e( )
+	public static function _e()
 	{
 		$args = func_get_args();
 		echo call_user_func_array(array('HabariLocale', '_t'), $args);
@@ -328,8 +328,8 @@ class HabariLocale
 	public static function _u($text, $domain = 'habari')
 	{
 		$t = $text;
-		foreach( self::$messages[$domain] as $msg ) {
-			if( $text == $msg[1][0] ) {
+		foreach ( self::$messages[$domain] as $msg ) {
+			if ( $text == $msg[1][0] ) {
 				$t = $msg[0][0];
 				break;
 			}

@@ -17,17 +17,17 @@ class Config
 	 * Registry of configuration data
 	 */
 	protected static $registry = array();
-	
+
 	/**
 	 * Static; private constructor
 	 */
 	private function __construct()
 	{
 	}
-	
+
 	/**
 	 * See if a key exists
-	 * 
+	 *
 	 * @param string $key key name
 	 * @return bool
 	 */
@@ -35,10 +35,10 @@ class Config
 	{
 		return isset( self::$registry[ $key ] );
 	}
-	
+
 	/**
 	 * Fetch data from registry
-	 * 
+	 *
 	 * @param string $key key name
 	 * @return mixed (empty object on invalid key)
 	 */
@@ -49,7 +49,7 @@ class Config
 		}
 		return self::$registry[ $key ];
 	}
-	
+
 	/**
 	 * Set data in registry
 	 *
@@ -64,12 +64,13 @@ class Config
 		$new = !self::exists( $key );
 		if ( is_scalar( $val ) ) {
 			self::$registry[ $key ] = $val;
-		} else {
+		}
+		else {
 			self::$registry[ $key ] = (object)$val;
 		}
 		return $new;
 	}
-	
+
 	/**
 	 * Unset data
 	 *

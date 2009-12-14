@@ -28,7 +28,7 @@ class HiEngine extends RawPHPEngine {
 	public function __construct()
 	{
 		$streams = stream_get_wrappers();
-		if( ! in_array( 'hi' , $streams ) ) {
+		if ( ! in_array( 'hi' , $streams ) ) {
 			stream_wrapper_register("hi", "HiEngineParser")
 			or die(_t("Failed to register HiEngine stream protocol"));
 		}
@@ -43,7 +43,7 @@ class HiEngine extends RawPHPEngine {
 	public function display($template)
 	{
 		extract($this->engine_vars);
-		if ($this->template_exists($template)) {
+		if ( $this->template_exists($template) ) {
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			$template_file = 'hi://' . $template_file;
@@ -95,7 +95,7 @@ class HiEngineParser
 	 */
 	function stream_read($count)
 	{
-		if($this->stream_eof()) {
+		if ( $this->stream_eof() ) {
 			return false;
 		}
 		$ret = substr($this->file, $this->position, $count);
@@ -144,30 +144,33 @@ class HiEngineParser
 	 */
 	function stream_seek($offset, $whence)
 	{
-		switch ($whence) {
+		switch ( $whence ) {
 			case SEEK_SET:
-				if ($offset < strlen($this->file) && $offset >= 0) {
+				if ( $offset < strlen($this->file) && $offset >= 0 ) {
 					$this->position = $offset;
 					return true;
-				} else {
+				}
+				else {
 					return false;
 				}
 				break;
 
 			case SEEK_CUR:
-				if ($offset >= 0) {
+				if ( $offset >= 0 ) {
 					$this->position += $offset;
 					return true;
-				} else {
+				}
+				else {
 					return false;
 				}
 				break;
 
 			case SEEK_END:
-				if (strlen($this->file) + $offset >= 0) {
+				if ( strlen($this->file) + $offset >= 0 ) {
 					$this->position = strlen($this->file) + $offset;
 					return true;
-				} else {
+				}
+				else {
 					return false;
 				}
 				break;
@@ -213,19 +216,19 @@ class HiEngineParser
 		$cmd = trim($matches[1]);
 
 		// Straight variable or property output, ala {hi:variable_name} or {hi:post.title}
-		if(preg_match('%^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*$%i', $cmd)) {
+		if ( preg_match('%^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*$%i', $cmd) ) {
 			$cmd = str_replace('.', '->', $cmd);
-			if(count($this->contexts)) {
+			if ( count($this->contexts) ) {
 				// Build a conditional that checks for the most specific, then the least
 				// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
 				$ctx = $this->contexts;
 				$prefixes = array();
-				foreach($ctx as $void) {
+				foreach ( $ctx as $void ) {
 					$prefixes[] = implode('->', $this->contexts);
 					array_pop($ctx);
 				}
 				$output = '<?php echo ';
-				foreach($prefixes as $prefix) {
+				foreach ( $prefixes as $prefix ) {
 					$output .= '(is_object($' . $prefix . ') && !'.'is_null($' . $prefix . '->' . $cmd . ')) ? $' . $prefix . '->' . $cmd . ' : ';
 				}
 				$output .= '$' . $cmd . '; ?>';
@@ -237,8 +240,8 @@ class HiEngineParser
 		}
 
 		// Catch tags in the format {hi:command:parameter}
-		if(preg_match('%^(\w+):(.+)$%', $cmd, $cmd_matches)) {
-			switch(strtolower($cmd_matches[1])) {
+		if ( preg_match('%^(\w+):(.+)$%', $cmd, $cmd_matches) ) {
+			switch ( strtolower($cmd_matches[1]) ) {
 				case 'display':
 					return '<?php $theme->display(\'' . $cmd_matches[2] . '\'); ?>';
 				case 'option':
@@ -264,7 +267,7 @@ class HiEngineParser
 		}
 
 		// Use tags in the format {hi:@foo} as theme functions, ala $theme->foo();
-		if($cmd[0] == '@') {
+		if ( $cmd[0] == '@' ) {
 			return '<?php $theme->' . substr($cmd, 1) . '(); ?>';
 		}
 
@@ -300,10 +303,10 @@ class HiEngineParser
 	{
 		$var = $matches[1];
 
-		if(is_callable($var)) {
+		if ( is_callable($var) ) {
 			return $var;
 		}
-		if(preg_match('/true|false|null|isset|empty/i', $var)) {
+		if ( preg_match('/true|false|null|isset|empty/i', $var) ) {
 			return $var;
 		}
 
@@ -315,17 +318,17 @@ class HiEngineParser
 	function hi_to_var($hisyntax)
 	{
 		$var = str_replace('.', '->', $hisyntax);
-		if(count($this->contexts)) {
+		if ( count($this->contexts) ) {
 			// Build a conditional that checks for the most specific, then the least
 			// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
 			$ctx = $this->contexts;
 			$prefixes = array();
-			foreach($ctx as $void) {
+			foreach ( $ctx as $void ) {
 				$prefixes[] = implode('->', $this->contexts);
 				array_pop($ctx);
 			}
 			$output = '';
-			foreach($prefixes as $prefix) {
+			foreach ( $prefixes as $prefix ) {
 				$output .= '(!is_null($' . $prefix . '->' . $var . ') ? $' . $prefix . '->' . $var . ' : ';
 			}
 			$output .= '$' . $var . ')';
@@ -383,19 +386,19 @@ class HiEngineParser
 		preg_match_all('/"(.+?)(?<!\\\\)"/', $matches[1], $quotes);
 		$count = 0;
 		$all_vars = array();
-		foreach($quotes[1] as $index => $quote) {
+		foreach ( $quotes[1] as $index => $quote ) {
 			preg_match_all('%{hi:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)}%', $quote, $vars, PREG_SET_ORDER);
-			foreach($vars as $var) {
+			foreach ( $vars as $var ) {
 				$count++;
 				$quote = str_replace($var[0], '%'.$count.'\$s', $quote);
 				$all_vars[] = '{hi:context:' . $var[1] . '}';  //$this->hi_to_var($var[1]);
 			}
 			$quotes[1][$index] = $quote;
 		}
-		if(count($quotes[1]) > 1) {
+		if ( count($quotes[1]) > 1 ) {
 			$output = '<?php printf(_n("'.$quotes[1][0].'", "'.$quotes[1][1].'", {hi:context:'.$args[0].'})';
 			// Add vars
-			if(count($all_vars) > 0) {
+			if ( count($all_vars) > 0 ) {
 				$output .= ', ' . implode(', ', $all_vars);
 			}
 			array_shift($args);
@@ -403,13 +406,13 @@ class HiEngineParser
 		else {
 			$output = '<?php _e("'.$quotes[1][0].'"';
 			// Add vars
-			if(count($all_vars) > 0) {
+			if ( count($all_vars) > 0 ) {
 				$output .= ', array(' . implode(', ', $all_vars) . ')';
 			}
 		}
 
 		// Add the domain, if any
-		if(isset($args[0])) {
+		if ( isset($args[0]) ) {
 			$output .= ', "'.$args[0].'"';
 		}
 
