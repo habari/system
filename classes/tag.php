@@ -72,6 +72,17 @@ class Tag
 	}
 
 	/**
+	 * Check if a tag exists, to see if we should match this rewrite rule
+	 *
+	 * @return Boolean
+	 **/
+	public static function rewrite_tag_exists($rule, $slug, $parameters)
+	{
+		$tag = Tag::get($rule->named_arg_values['tag']);
+		return $tag instanceOf Tag;
+	}
+
+	/**
 	 * Create a tag and save it.
 	 *
 	 * @param array $paramarray An associative array of tag fields

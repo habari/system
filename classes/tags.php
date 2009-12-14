@@ -36,6 +36,9 @@ class Tags extends ArrayObject
 	public static function get_one( $tag )
 	{
 		$term = Tags::vocabulary()->get_term( $tag );
+		if ( !$term instanceOf Term ) {
+			return FALSE;
+		}
 		$tag = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
 		return $tag;
 	}
