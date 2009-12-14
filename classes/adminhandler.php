@@ -3084,11 +3084,11 @@ class AdminHandler extends ActionHandler
 			$plural = Plugins::filter('post_type_display', $type, 'plural');
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
-			$createperm = array( 'post_' . $type => ACL::get_bitmask('create') );
+			$createperm = array( 'post_' . $type => ACL::get_bitmask('create'), 'own_posts' => ACL::get_bitmask( 'create' ) );
 			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t( 'Create a new %s', array( $singular ) ), 'text' => $singular, 'access' => $createperm );
 			$createperms = array_merge( $createperms, $createperm );
 
-			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
+			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'own_posts'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
 			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => _t( 'Manage %s', array( $plural ) ), 'text' => $plural, 'access'=> $manageperm );
 			$manageperms = array_merge( $manageperms, $manageperm );
 
@@ -3108,8 +3108,8 @@ class AdminHandler extends ActionHandler
 		$manageperms = array_merge($manageperms, array('own_posts'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete'))));
 
 		$adminmenu = array(
-			'create' => array( 'url' => URL::get( 'admin', 'page=publish' ), 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu, 'access' => $createperms ),
-			'manage' => array( 'url' => URL::get( 'admin', 'page=posts' ), 'title' => _t('Manage content'), 'text' => _t('Manage'), 'hotkey' => 'M', 'submenu' => $managemenu, 'access' => $manageperms ),
+			'create' => array( 'url' => '', 'title' => _t('Create content'), 'text' => _t('New'), 'hotkey' => 'N', 'submenu' => $createmenu ),
+			'manage' => array( 'url' => '', 'title' => _t('Manage content'), 'text' => _t('Manage'), 'hotkey' => 'M', 'submenu' => $managemenu ),
 			'comments' => array( 'url' => URL::get( 'admin', 'page=comments' ), 'title' => _t( 'Manage blog comments' ), 'text' => _t( 'Comments' ), 'hotkey' => 'C', 'access' => array('manage_all_comments' => true, 'manage_own_post_comments' => true) ),
 			'tags' => array( 'url' => URL::get( 'admin', 'page=tags' ), 'title' => _t( 'Manage blog tags' ), 'text' => _t( 'Tags' ), 'hotkey' => 'A', 'access'=>array('manage_tags'=>true) ),
 			'dashboard' => array( 'url' => URL::get( 'admin', 'page=' ), 'title' => _t( 'View your user dashboard' ), 'text' => _t( 'Dashboard' ), 'hotkey' => 'D' ),
@@ -3154,6 +3154,7 @@ class AdminHandler extends ActionHandler
 	 */
 	protected function filter_menus_by_permission($menuarray)
 	{
+		$user = User::identify();
 		foreach ( $menuarray as $key => $attrs ) {
 			if ( isset($attrs['access']) ) {
 				$attrs['access'] = Utils::single_array($attrs['access']);
@@ -3161,13 +3162,22 @@ class AdminHandler extends ActionHandler
 				foreach ( $attrs['access'] as $token => $masks ) {
 					$masks = Utils::single_array($masks);
 					foreach ( $masks as $mask ) {
-						if ( is_bool($mask) && User::identify()->can($token) ) {
+						if ( is_bool($mask) ) {
+							if( $user->can($token) ) {
 							$pass = true;
-							break 2;
+							break;
+							}
 						}
-						elseif ( User::identify()->can($token, $mask) ) {
-							$pass = true;
-							break 2;
+						else {
+							if( $user->cannot( $token ) ) {
+								break 2;
+							}
+							else {
+								if ( $user->can( $token, $mask ) ) {
+									$pass = true;
+									break 2;
+								}
+							}
 						}
 					}
 				}
@@ -3179,6 +3189,7 @@ class AdminHandler extends ActionHandler
 				$menuarray[$key]['submenu'] = $this->filter_menus_by_permission($attrs['submenu']);
 				if ( count($menuarray[$key]['submenu']) == 0 ) {
 					unset($menuarray[$key]['submenu']);
+					unset($menuarray[$key]);
 				}
 			}
 			if ( isset($menuarray[$key]) && count($menuarray[$key]) == 0 ) {
