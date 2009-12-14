@@ -72,14 +72,14 @@ class Tag
 	}
 
 	/**
-	 * Check if a tag exists, to see if we should match this rewrite rule
+	 * Check if a tag exists on a published post, to see if we should match this rewrite rule.
 	 *
-	 * @return Boolean Whether the tag exists.
+	 * @return Boolean Whether the tag exists on a published post.
 	 **/
 	public static function rewrite_tag_exists($rule, $slug, $parameters)
 	{
 		$tag = Tag::get($rule->named_arg_values['tag']);
-		return $tag instanceOf Tag;
+		return ($tag instanceOf Tag && Posts::count_by_tag($tag->tag_text, Post::status('published')) > 0);
 	}
 
 	/**
