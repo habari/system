@@ -306,7 +306,7 @@ class Utils
 				</script>
 				<style type=\"text/css\">
 				.utils__debugger{background-color:#550000;border:1px solid red;text-align:left;}
-				.utils__debugger pre{margin:5px;background-color:#000}
+				.utils__debugger pre{margin:5px;background-color:#000;overflow-x:scroll}
 				.utils__debugger pre em{color:#dddddd;}
 				.utils__debugger table{background-color:#770000;color:white;width:100%;}
 				.utils__debugger tr{background-color:#000000;}
