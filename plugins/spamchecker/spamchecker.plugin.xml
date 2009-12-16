@@ -10,4 +10,10 @@
 	<description><![CDATA[Flags as spam obvious comment spam.]]></description>
 
 	<copyright>2009</copyright>
+
+	<help>
+	<value><![CDATA[
+	<p>Applies a number of common sense filters to submitted comments in order to identify the ones which are most probably spam. While not 100% reliable, it eliminates a significant portion of spam based on common elements of these messages.</p>
+	]]></value>
+	</help>
 </pluggable>
