@@ -23,7 +23,7 @@
 <form name="update-group" id="update-group" action="<?php URL::out('admin', 'page=group'); ?>" method="post">
 <div class="container settings group groupmembers" id="groupmembers">
 
-	<h2><?php _e('Group Information'); ?></h2>
+	<h2><?php _e('Group Members'); ?></h2>
 	
 	<div class="item clear" id="assignedusers">
 		<span class="pct100" id="currentusers">
