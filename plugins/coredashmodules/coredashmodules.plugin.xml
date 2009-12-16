@@ -10,4 +10,10 @@
 	<description><![CDATA[Provides a core set of dashboard modules for the dashboard.]]></description>
 
 	<copyright>2009</copyright>
+	
+	<help>
+	<value><![CDATA[
+	<p>Provides <strong>Latest Entries</strong>, <strong>Latest Log Activity</strong>, and <strong>Latest Comments</strong> blocks which can be arranged on your admin dashboard.</p>
+	]]></value>
+	</help>
 </pluggable>
