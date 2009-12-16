@@ -467,11 +467,15 @@ class User extends QueryRecord
 		foreach( $token_access as $token => $access ) {
 			$access = Utils::single_array( $access );
 			foreach( $access as $mask ) {
-				if( is_bool( $mask ) && $this->can( $token ) ) {
-					return true;
+				if( is_bool( $mask ) ) {
+					if( $this->can( $token ) ) {
+						return true;
+					}
 				}
-				elseif( $this->can( $token, $mask ) ) {
-					return true;
+				else {
+					if( $this->can( $token, $mask ) ) {
+						return true;
+					}
 				}
 			}
 		}
