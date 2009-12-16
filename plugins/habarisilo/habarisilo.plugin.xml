@@ -15,6 +15,7 @@
 		<value><![CDATA[
 			<p>This plugin provides basic media functionality by allowing users to insert into posts images that exist on the server.</p>
 			<p>Depending on server capabilities, users may also be able to upload new images and create directories for new images on the server.</p>
+			<p>Upon initialization, this plugin will attempt to create a <strong>/user/files</strong> directory under your Habari installation. You may need to alter permissions to allow this action.</p>
 		]]></value>
 	</help>
 	
