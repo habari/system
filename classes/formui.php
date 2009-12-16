@@ -333,6 +333,7 @@ class FormContainer
 		}
 		foreach($this->controls as $control) {
 			if($control instanceof FormContainer) {
+				// Assignment is needed to avoid an indirect modification notice
 				if($ctrl = $control->$name) {
 					return $ctrl;
 				}
@@ -353,6 +354,7 @@ class FormContainer
 		}
 		foreach($this->controls as $control) {
 			if($control instanceof FormContainer) {
+				// Assignment is needed to avoid an indirect modification notice
 				if($ctrl = $control->$name) {
 					return true;
 				}
