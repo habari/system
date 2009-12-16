@@ -77,7 +77,7 @@ class AdminHandler extends ActionHandler
 			$type = Plugins::filter('post_type_display', Post::type_name($this->handler_vars['content_type']), 'singular');
 		}
 		elseif ( $page == 'publish' && isset($this->handler_vars['id'] ) ) {
-			$type = Plugins::filter('post_type_display', Post::type_name(Post::get(intval($this->handler_vars['id']))->content_type), 'singular'); 
+			$type = Plugins::filter('post_type_display', Post::type_name(Post::get(intval($this->handler_vars['id']))->content_type), 'singular');
 		}
 		else {
 			$type = '';
@@ -491,7 +491,16 @@ class AdminHandler extends ActionHandler
 			$post->tags = $form->tags->value;
 
 			$post->content = $form->content->value;
+
+			// sorry, we just don't allow changing content types to types you don't have rights to
+			$user = User::identify();
+			$type = 'post_' . Post::type_name( $form->content_type->value );
+			if ( $form->content_type->value != $post->content_type && ( $user->cannot( $type ) || ! $user->can_any( array( 'own_posts' => 'edit', 'post_any' => 'edit', $type => 'edit' ) ) ) ) {
+				Session::error(_t('Changing content types is not allowed'));
+				$this->get_blank();
+			}
 			$post->content_type = $form->content_type->value;
+
 			// if not previously published and the user wants to publish now, change the pubdate to the current date/time
 			// if the post pubdate is <= the current date/time.
 			if ( ( $post->status != Post::status( 'published' ) )
@@ -510,6 +519,13 @@ class AdminHandler extends ActionHandler
 			$post->status = $form->status->value;
 		}
 		else {
+			// check the user can create new posts of the set type.
+			$user = User::identify();
+			$type = 'post_'  . Post::type_name($form->content_type->value);
+			if ( ACL::user_cannot( $user, $type) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create') ) ) {
+				Session::error(_t('Creating that post type is denied'));
+				$this->get_blank();
+			}
 			$post = new Post();
 			$form = $post->get_form( 'admin' );
 			$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
@@ -573,6 +589,14 @@ class AdminHandler extends ActionHandler
 			$post = new Post();
 			$this->theme->post = $post;
 			$post->content_type = Post::type( ( isset( $content_type ) ) ? $content_type : 'entry' );
+
+			// check the user can create new posts of the set type.
+			$user = User::identify();
+			$type = 'post_' . Post::type_name( $post->content_type );
+			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create' ) ) ) {
+				Session::error( _t( 'Access to create posts of type %s is denied', array( Post::type_name( $post->content_type ) ) ) );
+				$this->get_blank();
+			}
 		}
 
 		$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
@@ -3084,11 +3108,11 @@ class AdminHandler extends ActionHandler
 			$plural = Plugins::filter('post_type_display', $type, 'plural');
 			$singular = Plugins::filter('post_type_display', $type, 'singular');
 
-			$createperm = array( 'post_' . $type => ACL::get_bitmask('create'), 'own_posts' => ACL::get_bitmask( 'create' ) );
+			$createperm = array( 'post_' . $type => ACL::get_bitmask('create'), 'post_any' => ACL::get_bitmask( 'create' ) );
 			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t( 'Create a new %s', array( $singular ) ), 'text' => $singular, 'access' => $createperm );
 			$createperms = array_merge( $createperms, $createperm );
 
-			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'own_posts'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
+			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'own_posts'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete'), 'post_any'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) ) );
 			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => _t( 'Manage %s', array( $plural ) ), 'text' => $plural, 'access'=> $manageperm );
 			$manageperms = array_merge( $manageperms, $manageperm );
 
