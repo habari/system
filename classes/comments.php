@@ -66,7 +66,7 @@ class Comments extends ArrayObject
 						$where[] = "{comments}.id= ?";
 						$params[] = $paramset['id'];
 					}
-					else if ( is_array( $paramset['id'] ) ) {
+					else if ( is_array( $paramset['id'] ) && !empty( $paramset['id'] ) ) {
 						$id_list = implode( ',', $paramset['id'] );
 						// Clean up the id list - remove all non-numeric or comma information
 						$id_list = preg_replace( "/[^0-9,]/", "", $id_list );
