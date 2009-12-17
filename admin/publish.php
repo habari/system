@@ -37,7 +37,6 @@ $(document).ready(function(){
 	});
 
 	$('#create-content').submit(function(){
-		initialCrc32 = calculate_checksum();
 		$('.check-change').each(function() {
 			$(this).data('checksum', crc32($(this).val()));
 		});
