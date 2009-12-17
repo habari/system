@@ -470,7 +470,7 @@ class AdminHandler extends ActionHandler
 		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
-						
+
 			$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
 			$form = $post->get_form( 'admin' );
 
@@ -481,16 +481,20 @@ class AdminHandler extends ActionHandler
 				exit;
 			}
 			
-			$post->title = $form->title->value;
+			// Don't try to update form values that have been removed by plugins
+			$expected = array('title', 'tags', 'content');
+
+			foreach ( $expected as $field ) {
+				if ( isset($form->$field) ) {
+					$post->$field = $form->$field->value;
+				}
+			}
 			if ( $form->newslug->value == '' ) {
 				Session::notice( _t( 'A post slug cannot be empty. Keeping old slug.' ) );
 			}
 			elseif ( $form->newslug->value != $form->slug->value ) {
 				$post->slug = $form->newslug->value;
 			}
-			$post->tags = $form->tags->value;
-
-			$post->content = $form->content->value;
 
 			// sorry, we just don't allow changing content types to types you don't have rights to
 			$user = User::identify();
@@ -536,14 +540,21 @@ class AdminHandler extends ActionHandler
 
 			$postdata = array(
 				'slug' => $form->newslug->value,
-				'title' => $form->title->value,
-				'tags' => $form->tags->value,
-				'content' => $form->content->value,
 				'user_id' => User::identify()->id,
 				'pubdate' => $post->pubdate,
 				'status' => $form->status->value,
 				'content_type' => $form->content_type->value,
 			);
+
+			// Don't try to add form values that have been removed by plugins
+			$expected = array('title', 'tags', 'content');
+
+			foreach ( $expected as $field ) {
+				if ( isset($form->$field) ) {
+					$postdata[$field] = $form->$field->value;
+				}
+			}
+
 			$minor = false;
 
 			$post = Post::create( $postdata );
