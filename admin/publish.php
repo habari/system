@@ -37,13 +37,24 @@ $(document).ready(function(){
 	});
 
 	$('#create-content').submit(function(){
-		initialCrc32 = crc32($('#content').val(), crc32($('#title').val()));
+		initialCrc32 = calculate_checksum();
+		$('.check-change').each(function() {
+			$(this).data('checksum', crc32($(this).val()));
+		});
 	});
 
-	initialCrc32 = crc32($('#content').val(), crc32($('#title').val()));
+	$('.check-change').each(function() {
+		$(this).data('checksum', crc32($(this).val()));
+	});
 
 	window.onbeforeunload = function(){
-		if (initialCrc32 != crc32($('#content').val(), crc32($('#title').val())) ) {
+		changed = false;
+		$('.check-change').each(function() {
+			if ($(this).data('checksum') != crc32($(this).val())) {
+				changed = true;
+			}
+		});
+		if (changed) {
 			spinner.start(); spinner.stop();
 			return '<?php
 				// Note to translators: the 'new-line character' is an actual "\n" not a new-line character
@@ -51,6 +62,7 @@ $(document).ready(function(){
 				?>';
 		}
 	};
+
 });
 </script>
 
