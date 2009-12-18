@@ -523,6 +523,8 @@ class AdminHandler extends ActionHandler
 			$post->status = $form->status->value;
 		}
 		else {
+			$post = new Post();
+			$form = $post->get_form( 'admin' );
 			// check the user can create new posts of the set type.
 			$user = User::identify();
 			$type = 'post_'  . Post::type_name($form->content_type->value);
@@ -530,8 +532,7 @@ class AdminHandler extends ActionHandler
 				Session::error(_t('Creating that post type is denied'));
 				$this->get_blank();
 			}
-			$post = new Post();
-			$form = $post->get_form( 'admin' );
+
 			$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
 
 			if ( HabariDateTime::date_create( $form->pubdate->value )->int > $post->pubdate ) {
