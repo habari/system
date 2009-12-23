@@ -227,8 +227,6 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 		Plugins::act( 'block_delete_before', $this );
 
-		DB::query( "DELETE FROM {blocks} WHERE id=?", array( $this->id ) );
-
 		$result = parent::deleteRecord( '{blocks}', array( 'id'=>$this->id ) );
 
 		EventLog::log( sprintf(_t('Block %1$s (%2$s) deleted.'), $this->id, $this->title), 'info', 'content', 'habari' );
