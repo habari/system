@@ -699,7 +699,7 @@ class Post extends QueryRecord implements IsContent
 
 	/**
 	 * function __set
-	 * Overrides QueryRecord __get to implement custom object properties
+	 * Overrides QueryRecord __set to implement custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
 	 **/

@@ -4,12 +4,10 @@
  *
  */
 
-
-/** 
+/**
  * Habari Block class
  * Block class for theme display of pluggable content
  *
- * @todo Finish this class
  */
 class Block extends QueryRecord implements IsContent, FormStorage
 {
@@ -18,7 +16,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Constructor for the Block class.
 	 * @param array $paramarray an associative array of initial block field values.
-	 **/
+	 */
 	public function __construct( $paramarray = array() )
 	{
 		// Defaults
@@ -33,6 +31,12 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		$this->unserialize_data();
 	}
 
+	/**
+	 * Overrides QueryRecord __get to implement custom object properties
+	 *
+	 * @param string Name of property to return
+	 * @return mixed The requested field value
+	 */
 	public function __get($name)
 	{
 		if ( array_key_exists($name, $this->data_values) ) {
@@ -43,6 +47,12 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 	}
 
+	/**
+	 * Overrides QueryRecord __set to implement custom object properties
+	 *
+	 * @param string Name of property to return
+	 * @return mixed The requested field value
+	 */
 	public function __set($name, $value)
 	{
 		switch ( $name ) {
@@ -59,6 +69,13 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 	}
 
+	/**
+	 * Overrides QueryRecord __isset, returns whether this Block has the named
+	 * data. Falls back to QueryRecord's __isset.
+	 *
+	 * @param string $name The name of the parameter
+	 * @return boolean True if the value is set, false if not
+	 */
 	public function __isset($name)
 	{
 		return ( isset($this->data_values[$name]) || parent::__isset($name) );
@@ -67,7 +84,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	/**
 	 * Return the defined database columns for a Block.
 	 * @return array Array of columns in the Block table
-	 **/
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -77,10 +94,10 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			'type' => '',
 		);
 	}
-	
+
 	/**
-	 * Render and return the block content 
-	 * 
+	 * Render and return the block content
+	 *
 	 * @param Theme $theme the theme object with which the block will be rendered
 	 * @return string The rendered block content
 	 */
@@ -88,12 +105,12 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	{
 		Plugins::act('block_content_' . $block->type, $block);
 		$output .= implode( '', $theme->content_return($block));
-		return $output;		
+		return $output;
 	}
-	
+
 	/**
 	 * Return the content types that this object represents
-	 * 
+	 *
 	 * @see IsContent
 	 * @return array An array of strings representing the content type of this object
 	 */
@@ -104,7 +121,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			'block',
 		);
 	}
-			
+
 	/**
 	 * Unserialize the stored block data
 	 */
@@ -114,10 +131,10 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			$this->data_values = unserialize($this->data);
 		}
 	}
-	
+
 	/**
 	 * Saves form fields that are tied to this block.  Implements FormStorage.
-	 * 
+	 *
 	 * @param string $key The name of the form field to store.
 	 * @param mixed $value The value of the form field
 	 */
@@ -129,7 +146,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Load the form value from the block
-	 * 
+	 *
 	 * @param string $key The name of the form field to load
 	 * @return mixed The value of the block for the form
 	 */
@@ -174,7 +191,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Update this block in the database
-	 * 
+	 *
 	 * @return boolean True on success
 	 */
 	public function update()
@@ -223,7 +240,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 
 	/**
 	 * Get the form used to update this block
-	 * 
+	 *
 	 * @return FormUI The altered FormUI element that edits this block
 	 */
 	public function get_form()
@@ -232,7 +249,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		Plugins::act('block_form_' . $this->type, $form, $this);
 		return $form;
 	}
-	
+
 }
 
 
