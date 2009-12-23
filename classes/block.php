@@ -165,7 +165,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		// We've inserted the block, reset newfields
 		$this->newfields = array();
 
-		EventLog::log( _t( 'New block %1$s: %2$s', array( $this->id, $this->term_display ) ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'New block %1$s: %2$s', array( $this->id, $this->title ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'block_insert_after', $this );
@@ -195,7 +195,32 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		Plugins::act( 'block_update_after', $this );
 		return $result;
 	}
-	
+
+	/**
+	 * Delete this block
+	 *
+	 */
+	public function delete()
+	{
+		// Let plugins disallow and act before we write to the database
+		$allow = true;
+		$allow = Plugins::filter( 'block_delete_allow', $allow, $this );
+		if ( !$allow ) {
+			return false;
+		}
+		Plugins::act( 'block_delete_before', $this );
+
+		DB::query( "DELETE FROM {blocks} WHERE id=?", array( $this->id ) );
+
+		$result = parent::deleteRecord( '{blocks}', array( 'id'=>$this->id ) );
+
+		EventLog::log( sprintf(_t('Block %1$s (%2$s) deleted.'), $this->id, $this->title), 'info', 'content', 'habari' );
+
+		// Let plugins act after we write to the database
+		Plugins::act( 'block_delete_after', $this );
+		return $result;
+	}
+
 	/**
 	 * Get the form used to update this block
 	 * 
