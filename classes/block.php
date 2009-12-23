@@ -117,7 +117,41 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	{
 		return $this->$key;
 	}
-	
+
+	/**
+	 * Insert this block into the database
+	 *
+	 * @return boolean True on success
+	 */
+	public function insert()
+	{
+		// Let plugins disallow and act before we write to the database
+		$allow = true;
+		$allow = Plugins::filter( 'block_insert_allow', $allow, $this );
+		if ( ! $allow ) {
+			return;
+		}
+		Plugins::act( 'block_insert_before', $this );
+		
+		$this->data = serialize($this->data_values);
+		$result = parent::insertRecord( DB::table( 'blocks' ) );
+
+		// Make sure the id is set in the block object to match the row id
+		$this->newfields['id'] = DB::last_insert_id();
+
+		// Update the block's fields with anything that changed
+		$this->fields = array_merge( $this->fields, $this->newfields );
+
+		// We've inserted the block, reset newfields
+		$this->newfields = array();
+
+		EventLog::log( _t( 'New block %1$s: %2$s', array( $this->id, $this->term_display ) ), 'info', 'content', 'habari' );
+
+		// Let plugins act after we write to the database
+		Plugins::act( 'block_insert_after', $this );
+		return $result;
+	}
+
 	/**
 	 * Update this block in the database
 	 * 
