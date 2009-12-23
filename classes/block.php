@@ -13,8 +13,7 @@
  */
 class Block extends QueryRecord implements IsContent, FormStorage
 {
-	private $unserialized_data = false;
-	private $datakeys = array();
+	private $data_values = array();
 
 	/**
 	 * Constructor for the Block class.
@@ -32,6 +31,37 @@ class Block extends QueryRecord implements IsContent, FormStorage
 
 		$this->exclude_fields( 'id' );
 		$this->unserialize_data();
+	}
+
+	public function __get($name)
+	{
+		if ( array_key_exists($name, $this->data_values) ) {
+			return $this->data_values[$name];
+		}
+		else {
+			return parent::__get($name);
+		}
+	}
+
+	public function __set($name, $value)
+	{
+		switch ( $name ) {
+			case 'id':
+			case 'title':
+			case 'data':
+			case 'type':
+				return parent::__set($name, $value);
+				break;
+			default:
+				$this->data_values[$name] = $value;
+				return $this->data_values[$name];
+				break;
+		}
+	}
+
+	public function __isset($name)
+	{
+		return ( isset($this->data_values[$name]) || parent::__isset($name) );
 	}
 
 	/**
@@ -80,15 +110,8 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function unserialize_data()
 	{
-		if(!$this->unserialized_data) {
-			$this->unserialized_data = true;
-			if(trim($this->data) != '') {
-				$data = unserialize($this->data);
-				$this->datakeys = array_keys($data);
-				foreach($data as $key => $value) {
-					$this->$key = $value;
-				}
-			}
+		if ( trim($this->data) != '' ) {
+			$this->data_values = unserialize($this->data);
 		}
 	}
 	
@@ -100,9 +123,6 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function field_save($key, $value)
 	{
-		$this->unserialize_data();
-		$this->datakeys[] = $key;
-		$this->datakeys = array_unique($this->datakeys);
 		$this->$key = $value;
 		$this->update();
 	}
@@ -132,7 +152,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			return;
 		}
 		Plugins::act( 'block_insert_before', $this );
-		
+
 		$this->data = serialize($this->data_values);
 		$result = parent::insertRecord( DB::table( 'blocks' ) );
 
@@ -166,19 +186,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 		Plugins::act( 'block_update_before', $this );
 
-		$data = array();
-		foreach($this->datakeys as $key) {
-			if(isset($this->$key)) {
-				$data[$key] = $this->$key;
-			}
-			else {
-				$data[$key] = '';
-			}
-			unset($this->newfields[$key]);
-		}
-		$this->data = serialize($data);
-		$this->unserialized_data = false;
-		
+		$this->data = serialize($this->data_values);
 		$result = parent::updateRecord( DB::table( 'blocks' ), array( 'id' => $this->id ) );
 
 		$this->fields = array_merge( $this->fields, $this->newfields );
