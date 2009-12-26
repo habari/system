@@ -611,40 +611,52 @@ class AtomHandler extends ActionHandler
 		$params['slug']= $slug;
 		$params['status'] = 'any';
 
-		if ( $post = Post::get($params) ) {
-			$xml = new SimpleXMLElement( $bxml );
-
-			Plugins::act( 'atom_put_entry', $xml, $post, $this->handler_vars );
-
-			if ( (string) $xml->title != '' ) {
-				$post->title = $xml->title;
-			}
-
-			if ( (string) $xml->id != '' ) {
-				$post->guid = $xml->id;
-			}
-
-			if ( (string) $xml->content != '' ) {
-				$post->content = (string) $xml->content;
-			}
-
-			if ( isset( $_SERVER['HTTP_SLUG'] ) ) {
-				$post->slug = $_SERVER['HTTP_SLUG'];
-			}
-
-			// Check if it's a draft (using XPath because Namespaces are easier than with SimpleXML)
-			$xml->registerXPathNamespace('app', 'http://www.w3.org/2007/app');
-			$draft = $xml->xpath('//app:control/app:draft');
-			if ( is_array($draft) && (string) $draft[0] == 'yes' ) {
-				$post->status = Post::status('draft');
-			}
-			else {
-				$post->status = Post::status('published');
-			}
-
-			$post->user_id = $this->user->id;
-			$post->update();
+		if ( !$post = Post::get($params) ) {
+			$post = Post::create($params);
 		}
+		$xml = new SimpleXMLElement( $bxml );
+
+		Plugins::act( 'atom_put_entry', $xml, $post, $this->handler_vars );
+
+		if ( (string) $xml->title != '' ) {
+			$post->title = $xml->title;
+		}
+
+		if ( (string) $xml->id != '' ) {
+			$post->guid = $xml->id;
+		}
+
+		if ( (string) $xml->content != '' ) {
+			$post->content = (string) $xml->content;
+		}
+
+		if ( isset( $_SERVER['HTTP_SLUG'] ) ) {
+			$post->slug = $_SERVER['HTTP_SLUG'];
+		}
+
+		$tags = array();
+		if ( isset( $xml->category ) ) {
+			foreach ( $xml->category as $cat ) {
+				$tags[] = (string)$cat['term'];
+			}
+			$post->tags = array_merge( $tags, $post->tags );
+		}
+
+		// Check if it's a draft (using XPath because Namespaces are easier than with SimpleXML)
+		$xml->registerXPathNamespace('app', 'http://www.w3.org/2007/app');
+		$draft = $xml->xpath('//app:control/app:draft');
+		if ( is_array($draft) && (string) $draft[0] == 'yes' ) {
+			$post->status = Post::status('draft');
+		}
+		else {
+			$post->status = Post::status('published');
+		}
+
+		$post->user_id = $this->user->id;
+		$post->update();
+
+		$this->get_entry($slug);
+
 	}
 
 	/**
