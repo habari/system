@@ -714,7 +714,11 @@ class Post extends QueryRecord implements IsContent
 			}
 			break;
 		case 'tags':
-			return $this->tags = $this->parsetags( $value );
+			if ( is_array( $value) ) {
+				return $this->tags = $value;
+			} else {
+				return $this->tags = $this->parsetags( $value );
+			}
 		case 'status':
 			return $this->setstatus( $value );
 		}
