@@ -88,6 +88,7 @@ class CURLRequestProcessor implements RequestProcessor
 			$body = stream_get_contents( $fh );
 		}
 		fclose( $fh );
+		unset( $fh );
 
 		if ( isset( $tmp ) && file_exists ($tmp ) ) {
 			unlink( $tmp );
