@@ -38,7 +38,7 @@ class Post extends QueryRecord implements IsContent
 	 * returns an associative array of active post types
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of post type names => integer values
-	**/
+	 */
 	public static function list_active_post_types( $refresh = false )
 	{
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_active ) ) ) {
@@ -57,7 +57,7 @@ class Post extends QueryRecord implements IsContent
 	 * returns an associative array of all post types
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of post type names => (integer values, active values)
-	**/
+	 */
 	public static function list_all_post_types( $refresh = false )
 	{
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_all ) ) ) {
@@ -75,6 +75,11 @@ class Post extends QueryRecord implements IsContent
 		return self::$post_type_list_all;
 	}
 
+	/**
+	 * Activate an existing post type
+	 *
+	 * @param string The post type to activate
+	 */
 	public static function activate_post_type( $type )
 	{
 		$all_post_types = Post::list_all_post_types( true ); // We force a refresh
@@ -93,6 +98,11 @@ class Post extends QueryRecord implements IsContent
 		}
 	}
 
+	/**
+	 * Deactivate a post type
+	 *
+	 * @param string The post type to deactivate
+	 */
 	public static function deactivate_post_type( $type )
 	{
 		$active_post_types = Post::list_active_post_types( false ); // We force a refresh
@@ -111,7 +121,7 @@ class Post extends QueryRecord implements IsContent
 	 * @param mixed $all true to list all statuses, not just external ones, Post to list external and any that match the Post status
 	 * @param boolean $refresh true to force a refresh of the cached values
 	 * @return array An array of post statuses names => interger values
-	**/
+	 */
 	public static function list_post_statuses( $all = true, $refresh = false )
 	{
 		$statuses = array();
@@ -141,7 +151,7 @@ class Post extends QueryRecord implements IsContent
 	 * returns the interger value of the specified post status, or false
 	 * @param mixed a post status name or value
 	 * @return mixed an integer or boolean false
-	**/
+	 */
 	public static function status( $name )
 	{
 		$statuses = Post::list_post_statuses();
@@ -158,7 +168,7 @@ class Post extends QueryRecord implements IsContent
 	 * returns the friendly name of a post status, or null
 	 * @param mixed a post status value, or name
 	 * @return mixed a string of the status name, or null
-	**/
+	 */
 	public static function status_name( $status )
 	{
 		$statuses = array_flip( Post::list_post_statuses() );
@@ -175,7 +185,7 @@ class Post extends QueryRecord implements IsContent
 	 * returns the integer value of the specified post type, or false
 	 * @param mixed a post type name or number
 	 * @return mixed an integer or boolean false
-	**/
+	 */
 	public static function type( $name )
 	{
 		$types = Post::list_active_post_types();
@@ -192,7 +202,7 @@ class Post extends QueryRecord implements IsContent
 	 * returns the friendly name of a post type, or null
 	 * @param mixed a post type number, or name
 	 * @return mixed a string of the post type, or null
-	**/
+	 */
 	public static function type_name( $type )
 	{
 		$types = array_flip( Post::list_active_post_types() );
@@ -210,7 +220,7 @@ class Post extends QueryRecord implements IsContent
 	 * @param string The name of the new post type
 	 * @param bool Whether the new post type is active or not
 	 * @return none
-	**/
+	 */
 	public static function add_new_type( $type, $active = true )
 	{
 		// refresh the cache from the DB, just to be sure
@@ -235,10 +245,9 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * inserts a new post status into the database, if it doesn't exist
 	 * @param string The name of the new post status
-	 * @param bool Whether this status is for internal use only.  If true,
-	 *	this status will NOT be presented to the user
+	 * @param bool Whether this status is for internal use only.  If true, this status will NOT be presented to the user
 	 * @return none
-	**/
+	 */
 	public static function add_new_status( $status, $internal = false )
 	{
 		// refresh the cache from the DB, just to be sure
@@ -256,7 +265,7 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * Return the defined database columns for a Post.
 	 * @return array Array of columns in the Post table
-	**/
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -278,7 +287,7 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * Constructor for the Post class.
 	 * @param array $paramarray an associative array of initial Post field values.
-	 **/
+	 */
 	public function __construct( $paramarray = array() )
 	{
 		// Defaults
@@ -308,7 +317,7 @@ class Post extends QueryRecord implements IsContent
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return Post The first post that matched the given criteria
-	 **/
+	 */
 	static function get( $paramarray = array() )
 	{
 		// Defaults
@@ -334,7 +343,7 @@ class Post extends QueryRecord implements IsContent
 	 *
 	 * @param array $paramarray An associative array of post fields
 	 * @return Post The new Post object
-	 **/
+	 */
 	static function create( $paramarray )
 	{
 		$post = new Post( $paramarray );
@@ -423,6 +432,12 @@ class Post extends QueryRecord implements IsContent
 		return false;
 	}
 
+	/**
+	 * Ensure this is an array of tags.
+	 *
+	 * @param Mixed A string to parse for tags or an array of tags.
+	 * @return Array An array of tags
+	 */
 	private static function parsetags( $tags )
 	{
 		if ( is_string( $tags ) ) {
@@ -642,7 +657,7 @@ class Post extends QueryRecord implements IsContent
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
-	 **/
+	 */
 	public function __get( $name )
 	{
 		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author', 'editlink' ) );
@@ -654,40 +669,40 @@ class Post extends QueryRecord implements IsContent
 			$filter = false;
 		}
 
-		switch( $name ) {
-		case 'statusname':
-			$out = self::status_name( $this->status );
-			break;
-		case 'typename':
-			$out = self::type_name( $this->content_type );
-			break;
-		case 'permalink':
-			$out = $this->get_permalink();
-			break;
-		case 'editlink':
-			$out = $this->get_editlink();
-			break;
-		case 'tags':
-			$out = $this->get_tags();
-			break;
-		case 'comments':
-			$out = $this->get_comments();
-			break;
-		case 'comment_count':
-			$out = $this->get_comments()->count();
-			break;
-		case 'comment_feed_link':
-			$out = $this->get_comment_feed_link();
-			break;
-		case 'author':
-			$out = $this->get_author();
-			break;
-		case 'info':
-			$out = $this->get_info();
-			break;
-		default:
-			$out = parent::__get( $name );
-			break;
+		switch ( $name ) {
+			case 'statusname':
+				$out = self::status_name( $this->status );
+				break;
+			case 'typename':
+				$out = self::type_name( $this->content_type );
+				break;
+			case 'permalink':
+				$out = $this->get_permalink();
+				break;
+			case 'editlink':
+				$out = $this->get_editlink();
+				break;
+			case 'tags':
+				$out = $this->get_tags();
+				break;
+			case 'comments':
+				$out = $this->get_comments();
+				break;
+			case 'comment_count':
+				$out = $this->get_comments()->count();
+				break;
+			case 'comment_feed_link':
+				$out = $this->get_comment_feed_link();
+				break;
+			case 'author':
+				$out = $this->get_author();
+				break;
+			case 'info':
+				$out = $this->get_info();
+				break;
+			default:
+				$out = parent::__get( $name );
+				break;
 		}
 		$out = Plugins::filter( "post_get", $out, $name, $this );
 		$out = Plugins::filter( "post_{$name}", $out, $this );
@@ -702,25 +717,26 @@ class Post extends QueryRecord implements IsContent
 	 * Overrides QueryRecord __set to implement custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
-	 **/
+	 */
 	public function __set( $name, $value )
 	{
 		switch( $name ) {
-		case 'pubdate':
-		case 'updated':
-		case 'modified':
-			if ( !($value instanceOf HabariDateTime) ) {
-				$value = HabariDateTime::date_create($value);
-			}
-			break;
-		case 'tags':
-			if ( is_array( $value) ) {
-				return $this->tags = $value;
-			} else {
-				return $this->tags = $this->parsetags( $value );
-			}
-		case 'status':
-			return $this->setstatus( $value );
+			case 'pubdate':
+			case 'updated':
+			case 'modified':
+				if ( !($value instanceOf HabariDateTime) ) {
+					$value = HabariDateTime::date_create($value);
+				}
+				break;
+			case 'tags':
+				if ( is_array( $value) ) {
+					return $this->tags = $value;
+				}
+				else {
+					return $this->tags = $this->parsetags( $value );
+				}
+			case 'status':
+				return $this->setstatus( $value );
 		}
 		return parent::__set( $name, $value );
 	}
@@ -730,7 +746,7 @@ class Post extends QueryRecord implements IsContent
 	 * @param string $name The name of the function called
 	 * @param array $args Arguments passed to the function call
 	 * @return mixed The value returned from any plugin filters, null if no value is returned
-	 **/
+	 */
 	public function __call( $name, $args )
 	{
 		array_unshift($args, 'post_call_' . $name, null, $this);
@@ -741,7 +757,7 @@ class Post extends QueryRecord implements IsContent
 	 * Returns a form for editing this post
 	 * @param string $context The context the form is being created in, most often 'admin'
 	 * @return FormUI A form appropriate for creating and updating this post.
-	 **/
+	 */
 	public function get_form($context)
 	{
 		$form = new FormUI('create-content');
@@ -825,7 +841,7 @@ class Post extends QueryRecord implements IsContent
 
 		// Create the Save button
 		$require_any = array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' );
-		if( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
+		if ( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
 			$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
 			$buttons->save->tabindex = 4;
 		}
@@ -846,7 +862,13 @@ class Post extends QueryRecord implements IsContent
 		// Return the form object
 		return $form;
 	}
-	
+
+	/**
+	 * Manage this post's comment form
+	 *
+	 * @param String context // What is $context for ?
+	 * @return FormUI The comment form for this post
+	 */
 	public function comment_form($context = 'public')
 	{
 		// Handle comment submissions and default commenter id values
@@ -880,11 +902,11 @@ class Post extends QueryRecord implements IsContent
 
 		// Create the Name field
 		$form->append(
-		  'text',
-		  'cf_commenter',
-		  'null:null',
-		  _t('Name <span class="required">*Required</span>'),
-		  'formcontrol_text'
+			'text',
+			'cf_commenter',
+			'null:null',
+			_t('Name <span class="required">*Required</span>'),
+			'formcontrol_text'
 		)->add_validator('validate_required', _t('The Name field value is required'))
 		->id = 'comment_name';
 		$form->cf_commenter->tabindex = 1;
@@ -892,26 +914,26 @@ class Post extends QueryRecord implements IsContent
 
 		// Create the Email field
 		$form->append(
-		  'text',
-		  'cf_email',
-		  'null:null',
-		  _t('Email'),
-		  'formcontrol_text'
+			'text',
+			'cf_email',
+			'null:null',
+			_t('Email'),
+			'formcontrol_text'
 		)->add_validator('validate_email', _t('The Email field value must be a valid email address'))
 		->id = 'comment_email';
 		$form->cf_email->tabindex = 2;
-		if(Options::get('comments_require_id') == 1) {
+		if ( Options::get('comments_require_id') == 1 ) {
 			$form->cf_email->caption = _t('Email <span class="required">*Required</span>');
 		}
 		$form->cf_email->value = $commenter_email;
 
 		// Create the URL field
 		$form->append(
-		  'text',
-		  'cf_url',
-		  'null:null',
-		  _t('Website'),
-		  'formcontrol_text'
+			'text',
+			'cf_url',
+			'null:null',
+			_t('Website'),
+			'formcontrol_text'
 		)->add_validator('validate_url', _t('The Web Site field value must be a valid URL'))
 		->id = 'comment_url';
 		$form->cf_url->tabindex = 3;
@@ -919,11 +941,11 @@ class Post extends QueryRecord implements IsContent
 
 		// Create the Comment field
 		$form->append(
-		  'text',
-		  'cf_content',
-		  'null:null',
-		  _t('Comment'),
-  		'formcontrol_textarea'
+			'text',
+			'cf_content',
+			'null:null',
+			_t('Comment'),
+			'formcontrol_textarea'
 		)->add_validator('validate_required', _t('The Content field value is required'))
 		->id = 'comment_content';
 		$form->cf_content->tabindex = 4;
@@ -956,7 +978,7 @@ class Post extends QueryRecord implements IsContent
 	 * Returns a URL for the ->permalink property of this class.
 	 * @return string A URL to this post.
 	 * @todo separate permalink rule?  (Not sure what this means - OW)
-	 **/
+	 */
 	private function get_permalink()
 	{
 		$content_type = Post::type_name( $this->content_type );
@@ -973,7 +995,7 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * Returns a URL for the ->editlink property of this class.
 	 * @return string A url to edit this post in the admin.
-	 **/
+	 */
 	private function get_editlink()
 	{
 		return URL::get('admin', 'page=publish&id=' . $this->id);
@@ -983,7 +1005,7 @@ class Post extends QueryRecord implements IsContent
 	 * function get_tags
 	 * Gets the tags for the post
 	 * @return &array A reference to the tags array for this post
-	 **/
+	 */
 	private function get_tags()
 	{
 		if ( empty( $this->tags ) ) {
@@ -1004,7 +1026,7 @@ class Post extends QueryRecord implements IsContent
 	 * function get_comments
 	 * Gets the comments for the post
 	 * @return &array A reference to the comments array for this post
-	**/
+	 */
 	private function &get_comments()
 	{
 		if ( ! $this->comments_object ) {
@@ -1017,7 +1039,7 @@ class Post extends QueryRecord implements IsContent
 	 * private function get_comment_feed_link
 	 * Returns the permalink for this post's comments Atom feed
 	 * @return string The permalink of this post's comments Atom feed
-	**/
+	 */
 	private function get_comment_feed_link()
 	{
 		$content_type = Post::type_name( $this->content_type );
@@ -1029,7 +1051,7 @@ class Post extends QueryRecord implements IsContent
 	 * Gets the info object for this post, which contains data from the postinfo table
 	 * related to this post.
 	 * @return PostInfo object
-	**/
+	 */
 	private function get_info()
 	{
 		if ( ! $this->info ) {
@@ -1048,7 +1070,7 @@ class Post extends QueryRecord implements IsContent
 	 * private function get_author()
 	 * returns a User object for the author of this post
 	 * @return User a User object for the author of the current post
-	**/
+	 */
 	private function get_author()
 	{
 		if ( ! isset( $this->author_object ) ) {
@@ -1114,7 +1136,6 @@ class Post extends QueryRecord implements IsContent
 		$this->add_tokens( $this->content_type() );
 	}
 
-
 	/**
 	 * Checks if this post has one or more tokens
 	 *
@@ -1127,7 +1148,7 @@ class Post extends QueryRecord implements IsContent
 		$tokens = Utils::single_array( $tokens );
 		$tokens = array_map(array('ACL', 'token_id'), $tokens);
 		$tokens = array_intersect($tokens, $this->tokens);
-		if(count($tokens) == 0) {
+		if ( count($tokens) == 0 ) {
 			return false;
 		}
 		return $tokens;
@@ -1136,7 +1157,7 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * Add a token to a post
 	 * @param mixed $token The name of the permission to add, or an array of permissions to add
-	 **/
+	 */
 	public function add_tokens( $tokens )
 	{
 		$this->get_tokens();
@@ -1144,7 +1165,7 @@ class Post extends QueryRecord implements IsContent
 		$tokens = array_map(array('ACL', 'token_id'), $tokens);
 		$add_tokens = array_diff($tokens, $this->tokens);
 		$add_tokens = array_unique($add_tokens);
-		foreach($add_tokens as $token_id) {
+		foreach ( $add_tokens as $token_id ) {
 			DB::insert( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
 		}
 		$this->tokens = array_merge($this->tokens, $add_tokens);
@@ -1161,7 +1182,7 @@ class Post extends QueryRecord implements IsContent
 		$tokens = Utils::single_array( $tokens );
 		$tokens = array_map(array('ACL', 'token_id'), $tokens);
 		$remove_tokens = array_intersect($tokens, $this->tokens);
-		foreach($remove_tokens as $token_id) {
+		foreach ( $remove_tokens as $token_id ) {
 			DB::delete( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
 		}
 		$this->tokens = array_diff($this->tokens, $remove_tokens);
@@ -1177,7 +1198,7 @@ class Post extends QueryRecord implements IsContent
 		$new_tokens = array_map(array('ACL', 'token_id'), $tokens);
 		$new_tokens = array_unique($new_tokens);
 		DB::delete( '{post_tokens}', array( 'post_id' => $this->id ) );
-		foreach($new_tokens as $token_id) {
+		foreach ( $new_tokens as $token_id ) {
 			DB::insert( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
 		}
 		$this->tokens = $new_tokens;
@@ -1208,7 +1229,7 @@ class Post extends QueryRecord implements IsContent
 			$user = User::identify();
 		}
 
-		if( $user->can( 'super_user' ) ) {
+		if ( $user->can( 'super_user' ) ) {
 			return ACL::get_bitmask( 'full' );
 		}
 
@@ -1218,7 +1239,7 @@ class Post extends QueryRecord implements IsContent
 			'post_' . Post::type_name( $this->content_type ),
 		);
 
-		if( $user->id == $this->user_id) {
+		if ( $user->id == $this->user_id) {
 			$tokens[] = 'own_posts';
 		}
 
