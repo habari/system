@@ -8,14 +8,14 @@
 		</span>
 		<span class="checkbox title pct20">
 			<?php if($comment->url != ''): ?>
-			<a href="#" class="author edit-author" title="<?php echo htmlspecialchars( $comment->name ); ?>"><?php echo htmlspecialchars( $comment->name ); ?></a>
+			<a href="#" class="author" title="<?php echo htmlspecialchars( $comment->name ); ?>"><?php echo htmlspecialchars( $comment->name ); ?></a>
 			<?php else: ?>
 			<?php echo htmlspecialchars( $comment->name ); ?>
 			<?php endif; ?>
 		</span>
 		<span class="title pct35"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Go to %s', array( $comment->post->title ) ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
-		<span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => $comment->date->year, 'month' => $comment->date->mon )); ?>" class="edit-date" title="<?php _e('Search for other comments from %s', array($comment->date->format( 'M, Y' ) ) ); ?>"><?php $comment->date->out('M d, Y'); ?></a></span>
-		<span class="time pct10 dim"><?php _e('at'); ?> <span class="edit-time"><?php $comment->date->out('H:i');?></span></span>
+		<span class="date pct15"><span class="dim"><?php _e('on'); ?></span> <a href="<?php URL::out('admin', array('page' => 'comments', 'status' => $comment->status, 'year' => $comment->date->year, 'month' => $comment->date->mon )); ?>" title="<?php _e('Search for other comments from %s', array($comment->date->format( 'M, Y' ) ) ); ?>"><?php $comment->date->out('M d, Y'); ?></a></span>
+		<span class="time pct10 dim"><?php _e('at'); ?> <span><?php $comment->date->out('H:i');?></span></span>
 
 		<ul class="dropbutton">
 			<?php
@@ -32,12 +32,12 @@
 		<div class="authorinfo pct25 minor">
 			<ul>
 				<?php if ($comment->url != '') {
-					echo '<li><a class="edit-url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
+					echo '<li><a class="url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
 					} else {
 						echo '<li class="empty">no url given</li>';
 					} ?>
 				<?php if ( $comment->email != '' ) {
-					echo '<li><a class="edit-email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n";
+					echo '<li><a class="email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n";
 					} else {
 						echo '<li class="empty">no email provided</li>';
 					} ?>
@@ -53,7 +53,7 @@
 
 			<p class="comment-type"><?php echo Comment::type_name( $comment->type ); ?></p>
 		</div>
-		<span class="content edit-content area pct75"><?php
+		<span class="content pct75"><?php
 			if ( MultiByte::valid_data( $comment->content ) ) {
 				echo nl2br( htmlspecialchars( $comment->content ) );
 			} else {
