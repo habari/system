@@ -141,8 +141,8 @@ class Vocabulary extends QueryRecord
 	public static function get_all_object_terms($object_type, $id)
 	{
 		$results = DB::get_results(
-			'SELECT id, term, term_display FROM {terms}
-			JOIN {object_terms ON {terms}.id = {object_terms}.term_id
+			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
+			JOIN {object_terms} ON {terms}.id = {object_terms}.term_id
 			WHERE {object_terms}.object_type_id = ?
 				AND {object_terms}.object_id = ?',
 			array( self::object_type_id( $object_type ), $id ),
@@ -358,7 +358,7 @@ class Vocabulary extends QueryRecord
 	public function get_object_terms($object_type, $id)
 	{
 		$results = DB::get_results(
-			'SELECT id, term, term_display FROM {terms}
+			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
 			JOIN {object_terms} ON {terms}.id = {object_terms}.term_id
 			WHERE {terms}.vocabulary_id = ?
 				AND {object_terms}.object_type_id = ?
