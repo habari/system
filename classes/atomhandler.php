@@ -392,7 +392,7 @@ class AtomHandler extends ActionHandler
 	public function act_introspection()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		
+
 		$cache_xml = null;
 
 		if ( Cache::has( 'atom:introspection:xml' ) ) {
@@ -404,17 +404,17 @@ class AtomHandler extends ActionHandler
 			$xml = $cache_xml;
 		}
 		else {
-		$xml = new SimpleXMLElement( '<service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
+			$xml = new SimpleXMLElement( '<service xmlns="http://www.w3.org/2007/app" xmlns:atom="http://www.w3.org/2005/Atom"></service>' );
 
-		$service_workspace = $xml->addChild( 'workspace' );
+			$service_workspace = $xml->addChild( 'workspace' );
 
 			$workspace_title = $service_workspace->addChild( 'atom:title', htmlspecialchars( Options::get( 'title' ) ), 'http://www.w3.org/2005/Atom' );
 
-		$workspace_collection = $service_workspace->addChild( 'collection' );
-		$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
+			$workspace_collection = $service_workspace->addChild( 'collection' );
+			$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
 
-		$collection_title = $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
-		$collection_accept = $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
+			$collection_title = $workspace_collection->addChild( 'atom:title', 'Blog Entries', 'http://www.w3.org/2005/Atom' );
+			$collection_accept = $workspace_collection->addChild( 'accept', 'application/atom+xml;type=entry' );
 
 			Cache::set( 'atom:introspection:xml', $xml->asXML() );
 		}
@@ -474,7 +474,7 @@ class AtomHandler extends ActionHandler
 
 		// Assign self link.
 		$self = '';
-		
+
 		// Assign alternate link.
 		$alternate = '';
 
@@ -591,7 +591,7 @@ class AtomHandler extends ActionHandler
 
 			ob_clean();
 			header( 'Content-Type: application/atom+xml' );
-			
+
 			print $this->tidy_xml($xml);
 		}
 	}
@@ -674,10 +674,10 @@ class AtomHandler extends ActionHandler
 	}
 
 	/**
-		*	Output a post collection based on the provided parameters.
-		*
-		* @param array $params An array of parameters as passed to Posts::get() to retrieve posts.
-		*/
+	 * Output a post collection based on the provided parameters.
+	 *
+	 * @param array $params An array of parameters as passed to Posts::get() to retrieve posts.
+	 */
 	public function get_collection( $params = array() )
 	{
 		// Store handler vars since we'll be using them a lot.
@@ -729,7 +729,7 @@ class AtomHandler extends ActionHandler
 		}
 
 		$posts = Posts::get( $params );
-		
+
 		if ( count( $posts ) ) {
 			$updated = $posts[0]->updated;
 		}
@@ -759,17 +759,17 @@ class AtomHandler extends ActionHandler
 
 	/**
 	 * Use Tidy to tidy XML output for debugging by humans
-	 * 
+	 *
 	 * @param string $xml The unformatted input XML
 	 * @return string Formatted XML
 	 */
-	protected function tidy_xml($xml) 
+	protected function tidy_xml($xml)
 	{
-		if(!DEBUG) {
+		if ( !DEBUG ) {
 			return $xml;
 		}
 		// Tidy configuration -- make xml readable
-		if(class_exists('tidy', false)) {
+		if ( class_exists('tidy', false) ) {
 			$config = array(
 				'indent' => true,
 				'output-xml' => true,
@@ -783,9 +783,9 @@ class AtomHandler extends ActionHandler
 			$xml = $tidy;
 		}
 
-		return $xml;		
+		return $xml;
 	}
-	
+
 	/**
 	 * Accepts an Atom entry for insertion as a new post.
 	 */
@@ -820,7 +820,7 @@ class AtomHandler extends ActionHandler
 		$categories = $atom_ns->category;
 		if ( !empty($categories) ) {
 			$terms = array();
-			foreach ($categories as $category) {
+			foreach ( $categories as $category ) {
 				$category_attrs = $category->attributes();
 				$terms[] = (string) $category_attrs['term'];
 			}
