@@ -71,10 +71,13 @@ class User extends QueryRecord
 	 */
 	public static function anonymous()
 	{
-		$anonymous = new User();
-		$anonymous->id = 0;
-		$anonymous->username = _t('Anonymous');
-		Plugins::act('create_anonymous_user', $anonymous);
+		static $anonymous = null;
+		if ( $anonymous == null ) {
+			$anonymous = new User();
+			$anonymous->id = 0;
+			$anonymous->username = _t('Anonymous');
+			Plugins::act('create_anonymous_user', $anonymous);
+		}
 		return $anonymous;
 	}
 	
