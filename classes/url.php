@@ -24,7 +24,7 @@ class URL extends Singleton
 	 */
 	protected static function instance()
 	{
-		return self::getInstanceOf( get_class() );
+		return self::getInstanceOf( __CLASS__ );
 	}
 
 	/**
