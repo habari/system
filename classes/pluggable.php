@@ -115,9 +115,7 @@ abstract class Pluggable
 				if ( preg_match('#^(action|filter|xmlrpc|theme)_#i', $hook) ) {
 					$priority = isset($priorities[$hook]) ? $priorities[$hook] :
 						( isset($priorities[$fn]) ? $priorities[$fn] : 8 );
-					$pos = strpos( $hook, '_' );
-					$type = substr( $hook, 0, $pos );
-					$hook = substr( $hook, $pos + 1 );
+					list($type, $hook) = explode( '_', $hook, 2 );
 					if ( $type === 'xmlrpc' ) {
 						$hook = str_replace('__', '.', $hook);
 					}
