@@ -125,7 +125,7 @@ class AtomHandler extends ActionHandler
 
 		$page = ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
 		$firstpage = 1;
-		$lastpage = ceil( $count / Options::get( 'pagination' ) );
+		$lastpage = ceil( $count / Options::get( 'atom_entries' ) );
 
 		if ( $lastpage > 1 ) {
 			$nextpage = intval( $page ) + 1;
