@@ -872,7 +872,7 @@ class Theme extends Pluggable
 		}
 		else {
 			$purposed = 'output';
-			if ( preg_match( '%^(.*)_(return|end)$%', $function, $matches ) ) {
+			if ( preg_match( '/^(.*)_(return|end)$/', $function, $matches ) ) {
 				$purposed = $matches[2];
 				$function = $matches[1];
 			}

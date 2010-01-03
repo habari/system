@@ -205,8 +205,8 @@ class HabariLocale
 	{
 		if ( preg_match('/plural-forms: (.*?)$/i', $header, $matches) && preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/', $matches[1], $matches) ) {
 			// sanitize
-			$nplurals = preg_replace( '@[^0-9]@', '', $matches[1] );
-			$plural = preg_replace( '@[^n0-9:\(\)\?\|\&=!<>+*/\%-]@', '', $matches[2] );
+			$nplurals = preg_replace( '/[^0-9]/', '', $matches[1] );
+			$plural = preg_replace( '#[^n0-9:\(\)\?\|\&=!<>+*/\%-]#', '', $matches[2] );
 
 			$body = str_replace(
 				array('plural',  'n',  '$n$plurals', ),

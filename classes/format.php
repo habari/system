@@ -214,7 +214,7 @@ class Format
 			$value .= $localValue;
 		} while ($token = $set->next());
 		
-		$value = preg_replace('!\s*<p></p>\s*!', '', $value); // replace <p></p>
+		$value = preg_replace('#\s*<p></p>\s*#', '', $value); // replace <p></p>
 		if ($openP) {
 			$value .= '</p>';
 		}
@@ -361,7 +361,7 @@ class Format
 			if(!$bail) {
 				switch($token['type']) {
 					case HTMLTokenizer::NODE_TYPE_TEXT:
-						$words = preg_split('%(\\s+)%', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+						$words = preg_split('/(\\s+)/', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 						// word count is doubled because spaces between words are captured as their own array elements via PREG_SPLIT_DELIM_CAPTURE
 						$words = array_slice($words, 0, $remaining_words * 2);
 						$remaining_words -= count($words) / 2;

@@ -149,7 +149,7 @@ class InstallHandler extends ActionHandler
 		}
 
 		// check whether prefix is valid
-		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
+		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace('/[^a-zA-Z_]/', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
 			$this->theme->assign('form_errors', array('table_prefix' => _t('Allowed characters are A-Z, a-z and "_".')));
 			$this->display('db_setup');
 		}
@@ -1603,7 +1603,7 @@ class InstallHandler extends ActionHandler
 			$xml_error->addChild( 'id', '#mysqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
 		}
-		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('/[^a-zA-Z_]/', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#tableprefix' );
@@ -1674,7 +1674,7 @@ class InstallHandler extends ActionHandler
 			$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
 			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
 		}
-		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('%[^a-zA-Z_]%', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('/[^a-zA-Z_]/', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#tableprefix' );

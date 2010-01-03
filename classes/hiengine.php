@@ -240,7 +240,7 @@ class HiEngineParser
 		}
 
 		// Catch tags in the format {hi:command:parameter}
-		if ( preg_match('%^(\w+):(.+)$%', $cmd, $cmd_matches) ) {
+		if ( preg_match('/^(\w+):(.+)$/', $cmd, $cmd_matches) ) {
 			switch ( strtolower($cmd_matches[1]) ) {
 				case 'display':
 					return '<?php $theme->display(\'' . $cmd_matches[2] . '\'); ?>';
@@ -381,13 +381,13 @@ class HiEngineParser
 	*/
 	function hi_quote($matches)
 	{
-		$args = preg_split('%\s+%', trim($matches[2]));
+		$args = preg_split('/\s+/', trim($matches[2]));
 
 		preg_match_all('/"(.+?)(?<!\\\\)"/', $matches[1], $quotes);
 		$count = 0;
 		$all_vars = array();
 		foreach ( $quotes[1] as $index => $quote ) {
-			preg_match_all('%{hi:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)}%', $quote, $vars, PREG_SET_ORDER);
+			preg_match_all('/{hi:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)}/', $quote, $vars, PREG_SET_ORDER);
 			foreach ( $vars as $var ) {
 				$count++;
 				$quote = str_replace($var[0], '%'.$count.'\$s', $quote);

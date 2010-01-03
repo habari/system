@@ -105,7 +105,7 @@ class Version
 			}
 		}
 		if($rev == 0) {
-			$rev = intval(preg_replace('%[^0-9]%', '', Version::HABARI_SVN_REV));
+			$rev = intval(preg_replace('/[^0-9]/', '', Version::HABARI_SVN_REV));
 		}
 		return $rev;
 	}
