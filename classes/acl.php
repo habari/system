@@ -230,8 +230,10 @@ class ACL
 			return intval( $name );
 		}
 		$name = self::normalize_token( $name );
-		$tokens = array_flip(ACL::cache_tokens());
-		return isset($tokens[$name]) ? $tokens[$name] : false;
+		if ( $token = array_search( $name, ACL::cache_tokens() ) ) {
+			return $token;
+		}
+		return false;
 	}
 
 	/**
