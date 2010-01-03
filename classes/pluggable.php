@@ -111,23 +111,18 @@ abstract class Pluggable
 			// loop hooks and register callback for each
 			foreach ( (array) $hooks as $hook ) {
 				// make sure the method name is of the form
-				// action_foo or filter_foo
-				if (
-					( 0 !== strpos( $hook, 'action_' ) )
-					&& ( 0 !== strpos( $hook, 'filter_' ) )
-					&& ( 0 !== strpos( $hook, 'xmlrpc_' ) )
-					&& ( 0 !== strpos( $hook, 'theme_' ) )
-				) {
-					continue;
+				// action_foo or filter_foo of xmlrpc_foo or theme_foo
+				if ( preg_match('#^(action|filter|xmlrpc|theme)_#i', $hook) ) {
+					$priority = isset($priorities[$hook]) ? $priorities[$hook] :
+						( isset($priorities[$fn]) ? $priorities[$fn] : 8 );
+					$pos = strpos( $hook, '_' );
+					$type = substr( $hook, 0, $pos );
+					$hook = substr( $hook, $pos + 1 );
+					if ( $type === 'xmlrpc' ) {
+						$hook = str_replace('__', '.', $hook);
+					}
+					Plugins::register( array($this, $fn), $type, $hook, $priority );
 				}
-				$priority = isset($priorities[$hook]) ? $priorities[$hook] :
-					( isset($priorities[$fn]) ? $priorities[$fn] : 8 );
-				$type = substr( $hook, 0, strpos( $hook, '_' ) );
-				$hook = substr( $hook, strpos( $hook, '_' ) + 1 );
-				if ( $type === 'xmlrpc' ) {
-					$hook = str_replace('__', '.', $hook);
-				}
-				Plugins::register( array($this, $fn), $type, $hook, $priority );
 			}
 		}
 		// look for help with this
