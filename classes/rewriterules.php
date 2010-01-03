@@ -9,6 +9,8 @@
  */
 class RewriteRules extends ArrayObject
 {
+	// cache sorted rules
+	protected static $sorted_rules_cache = null;
 
 	/**
 	 * Add pre-defined rules to an array of rules only if rules with their names don't already exist
@@ -96,8 +98,10 @@ class RewriteRules extends ArrayObject
 
 		$rewrite_rules = self::sort_rules($rewrite_rules);
 
+		// cache the sorted rules for this instance to use
 		$c = __CLASS__;
-		return new $c ( $rewrite_rules );
+		self::$sorted_rules_cache = new $c ( $rewrite_rules );
+		return self::$sorted_rules_cache;
 	}
 
 	/**
@@ -138,10 +142,14 @@ class RewriteRules extends ArrayObject
 	public static function by_name( $name )
 	{
 		static $named = null;
+		
+		if ( self::$sorted_rules_cache == null ) {
+			self::get_active();
+		}
 
 		if ( $named == null ) {
 			$named = array();
-			$rules = self::get_active();
+			$rules = self::$sorted_rules_cache;
 			foreach ( $rules as $rule ) {
 				$named[$rule->name][] = $rule;
 			}
