@@ -30,7 +30,7 @@ class Plugins
 	 */
 	public static function _autoload( $class )
 	{
-		if ( array_key_exists($class, self::$plugin_files) ) {
+		if ( isset(self::$plugin_files[$class]) ) {
 			require self::$plugin_files[$class];
 		}
 	}
