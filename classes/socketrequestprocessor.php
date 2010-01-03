@@ -127,7 +127,7 @@ class SocketRequestProcessor implements RequestProcessor
 		// and thus not break parse_url
 		$header = str_replace( "\r\n", "\n", $header );
 		
-		preg_match( '|^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)|', $header, $status_matches );
+		preg_match( '#^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)#', $header, $status_matches );
 		
 		if ( $status_matches[1] == '301' || $status_matches[1] == '302' ) {
 			if ( preg_match( '|^Location: (.+)$|mi', $header, $location_matches ) ) {
