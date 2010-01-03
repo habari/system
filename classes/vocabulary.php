@@ -403,13 +403,14 @@ class Vocabulary extends QueryRecord
 				if ( ! in_array( $slug = Utils::slugify( $term ), array_values( $clean_terms ) ) )
 					$clean_terms[$term] = $slug;
 
-		/* Now, let's insert any *new* tag texts or slugs into the tags table */
+		/* Now, let's insert any *new* term display text or slugs into the terms table */
 		$placeholders = Utils::placeholder_string( count( $clean_terms ) );
 		$sql_terms_exist = "SELECT id, term_display, term
 			FROM {terms}
 			WHERE term_display IN ({$placeholders})
-			OR term IN ({$placeholders})";
-		$params = array_merge( array_keys( $clean_terms ), array_values( $clean_terms ) );
+			OR term IN ({$placeholders})
+			AND vocabulary_id = ?";
+		$params = array_merge( array_keys( $clean_terms ), array_values( $clean_terms ), (array)$this->id );
 		$existing_terms = DB::get_results( $sql_terms_exist, $params, 'Term' );
 		if ( count( $existing_terms ) > 0 ) {
 			/* Terms exist which match the term text or the term */
@@ -455,8 +456,11 @@ class Vocabulary extends QueryRecord
 		 * Finally, remove the terms which are no longer associated with the object.
 		 */
 		$repeat_questions = Utils::placeholder_string( count( $term_ids_to_object ) );
-		$sql_delete = "SELECT term_id FROM {object_terms} WHERE object_id = ? AND term_id NOT IN ({$repeat_questions}) AND object_type_id = ?";
-		$params = array_merge( (array) $id, array_values( $term_ids_to_object ), (array)Vocabulary::object_type_id( $object_type ) );
+		$sql_delete = "SELECT term_id FROM {object_terms}
+			JOIN {terms} ON term_id = {terms}.id
+			WHERE object_id = ? AND term_id NOT IN ({$repeat_questions}) AND object_type_id = ?
+			AND {terms}.vocabulary_id = ?";
+		$params = array_merge( (array) $id, array_values( $term_ids_to_object ), (array)Vocabulary::object_type_id( $object_type ), (array)$this->id );
 
 		$result = DB::get_column( $sql_delete, $params );
 
