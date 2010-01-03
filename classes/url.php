@@ -47,6 +47,16 @@ class URL extends Singleton
 	{
 		return URL::instance()->matched_rule;
 	}
+	
+	/**
+	 * Get the active RewriteRules that are cached in self::load_rules().
+	 *
+	 * @return array RewriteRules active rules, or NULL
+	 */
+	public static function get_active_rules()
+	{
+		return URL::instance()->rules;
+	}
 
 	/**
 	 * Cause the matched rule to be unset in the case of a 404

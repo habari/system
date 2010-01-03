@@ -138,7 +138,7 @@ class UserHandler extends ActionHandler
 			$this->theme->assign( 'admin_page', 'login' );
 		}
 		$request = new StdClass();
-		foreach ( RewriteRules::get_active() as $rule ) {
+		foreach ( URL::get_active_rules() as $rule ) {
 			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
 		}
 		$this->theme->assign( 'request', $request );
