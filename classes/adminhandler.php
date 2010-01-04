@@ -264,7 +264,7 @@ class AdminHandler extends ActionHandler
 			'log_backtraces' => array(
 				'label' => _t( 'Log Backtraces' ),
 				'type' => 'checkbox',
-				'helptext' => _t( 'Logs error backtraces to the log tables\' data column. Can drastically increase log size!' ),
+				'helptext' => _t( 'Logs error backtraces to the log table\'s data column. Can drastically increase log size!' ),
 			),
 		);
 
