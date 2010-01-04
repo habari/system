@@ -194,6 +194,11 @@ class AdminHandler extends ActionHandler
 				'type' => 'text',
 				'helptext' => '',
 				),
+			'about'   => array(
+				'label'    => _t('About'),
+				'type'     => 'text',
+				'helpline' => '',
+				),
 			);
 
 		$option_items[_t('Publishing')] = array(
