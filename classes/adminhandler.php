@@ -197,7 +197,7 @@ class AdminHandler extends ActionHandler
 			'about'   => array(
 				'label'    => _t('About'),
 				'type'     => 'textarea',
-				'helptext' => 'Only supported by some themes',
+				'helptext' => '',
 				),
 			);
 
