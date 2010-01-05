@@ -264,8 +264,16 @@ class Vocabulary extends QueryRecord
 		}
 		Plugins::act( 'vocabulary_delete_before', $this );
 
-		// TODO Delete all terms associated with this vocabulary
+		// Get the ids for all this vocabulary's terms
+		$ids = DB::get_column('SELECt id FROM {terms} WHERE vocabulary_id = ?', array( $this->id ) );
+		// Delete the records from object_terms for those ids
+		$placeholder = Utils::placeholder_string( count( $ids ) );
+		DB::query('DELETE FROM {object_terms} WHERE term_id IN ($placeholder)', $ids );
 
+		// Delete this vocabulary's terms
+		DB::delete( '{terms}', array( 'vocabulary_id' => $this->id ) );
+
+		// Finally, delete the vocabulary
 		$result = parent::deleteRecord( '{vocabularies}', array( 'id'=>$this->id ) );
 		EventLog::log( sprintf(_t('Vocabulary %1$s (%2$s) deleted.'), $this->id, $this->name), 'info', 'content', 'habari' );
 
