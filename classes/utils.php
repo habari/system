@@ -1062,5 +1062,15 @@ class Utils
 		return $scheme_ports[$scheme];
 	}
 
+	/**
+	 * determines if the given that is travesable in foreach
+	 * 
+	 * @param mixed $data
+	 * @return bool
+	 */
+	public static function is_traversable( $data )
+	{
+		return ( is_array( $data ) || ($data instanceof Traversable && $data instanceof Countable) );
+	}
 }
 ?>

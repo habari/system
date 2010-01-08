@@ -238,7 +238,7 @@ class Posts extends ArrayObject implements IsContent
 					// merge the two possibile calls together
 					$infos = array_merge( isset( $paramset['all:info'] ) ? $paramset['all:info'] : array(), isset( $paramset['info'] ) ? $paramset['info'] : array() );
 
-					if ( is_array( $infos ) || ($infos instanceof Traversable && $infos instanceof Countable) ) {
+					if ( Utils::is_traversable( $infos ) ) {
 						$pi_count = 0;
 						foreach ( $infos as $info_key => $info_value ) {
 							$pi_count++;
@@ -254,8 +254,7 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['any:info'] ) ) {
-					if ( is_array( $paramset['any:info'] ) ||
-						($paramset['any:info'] instanceof Traversable && $paramset['any:info'] instanceof Countable) ) {
+					if ( Utils::is_traversable( $paramset['any:info'] ) ) {
 						$pi_count = 0;
 						$pi_where = array();
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
@@ -293,7 +292,7 @@ class Posts extends ArrayObject implements IsContent
 					// merge the two possible calls together
 					$infos = array_merge( isset( $paramset['not:all:info'] ) ? $paramset['not:all:info'] : array(), isset( $paramset['not:info'] ) ? $paramset['not:info'] : array() );
 
-					if ( is_array( $infos ) || ($infos instanceof Traversable && $infos instanceof Countable) ) {
+					if ( Utils::is_traversable( $infos ) ) {
 						$the_ins = array();
 
 						foreach ( $infos as $info_key => $info_value ) {
@@ -319,8 +318,7 @@ class Posts extends ArrayObject implements IsContent
 
 				if ( isset( $paramset['not:any:info'] ) ) {
 
-					if ( is_array( $paramset['not:any:info'] ) ||
-						($paramset['not:any:info'] instanceof Traversable && $paramset['not:any:info'] instanceof Countable) ) {
+					if ( Utils::is_traversable( $paramset['not:any:info'] ) ) {
 
 						foreach ( $paramset['not:any:info'] as $info_key => $info_value ) {
 
