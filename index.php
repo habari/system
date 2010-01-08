@@ -47,11 +47,6 @@ if ( !defined( 'GLOB_BRACE' ) ) {
 // as well as the ability to dynamically change HTTP headers after output has started.
 ob_start();
 
-// Replace all of the $_GET, $_POST and $_SERVER superglobals with object
-// representations of each.  Unset $_REQUEST, which is evil.
-// $_COOKIE must be set after sessions start
-SuperGlobal::process_gps();
-
 /**
  * Attempt to load the class before PHP fails with an error.
  * This method is called automatically in case you are trying to use a class which hasn't been defined yet.
@@ -63,7 +58,7 @@ SuperGlobal::process_gps();
  *
  * @param string $class_name Class called by the user
  */
-function __autoload($class_name) {
+function habari_autoload($class_name) {
 	static $files = null;
 
 	$success = false;
@@ -109,7 +104,12 @@ function __autoload($class_name) {
 	}
 }
 
-spl_autoload_register('__autoload');
+spl_autoload_register('habari_autoload');
+
+// Replace all of the $_GET, $_POST and $_SERVER superglobals with object
+// representations of each.  Unset $_REQUEST, which is evil.
+// $_COOKIE must be set after sessions start
+SuperGlobal::process_gps();
 
 // Use our own error reporting class.
 if ( !defined( 'SUPPRESS_ERROR_HANDLER' ) ) {
