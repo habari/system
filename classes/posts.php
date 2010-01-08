@@ -254,7 +254,7 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['any:info'] ) ) {
-					if ( is_array( $paramset['any:info'] ) || $infos instanceof Traversable ) {
+					if ( is_array( $paramset['any:info'] ) || $paramset['any:info'] instanceof Traversable ) {
 						$pi_count = 0;
 						$pi_where = array();
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
