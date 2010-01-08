@@ -238,7 +238,7 @@ class Posts extends ArrayObject implements IsContent
 					// merge the two possibile calls together
 					$infos = array_merge( isset( $paramset['all:info'] ) ? $paramset['all:info'] : array(), isset( $paramset['info'] ) ? $paramset['info'] : array() );
 
-					if ( is_array( $infos ) ) {
+					if ( is_array( $infos ) || $infos instanceof Traversable ) {
 						$pi_count = 0;
 						foreach ( $infos as $info_key => $info_value ) {
 							$pi_count++;
@@ -254,7 +254,7 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['any:info'] ) ) {
-					if ( is_array( $paramset['any:info'] ) ) {
+					if ( is_array( $paramset['any:info'] ) || $infos instanceof Traversable ) {
 						$pi_count = 0;
 						$pi_where = array();
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
