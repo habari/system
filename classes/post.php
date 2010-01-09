@@ -304,7 +304,6 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		$this->exclude_fields( 'id' );
-		$this->info = new PostInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 
@@ -1054,7 +1053,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function get_info()
 	{
-		if ( ! $this->info ) {
+		if ( ! isset( $this->info ) ) {
 			// If this post isn't in the database yet...
 			if ( $this->id == 0 ) {
 				$this->info = new PostInfo();

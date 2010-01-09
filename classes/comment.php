@@ -72,7 +72,6 @@ class Comment extends QueryRecord implements IsContent
 		$this->fields = array_merge( self::default_fields(), $this->fields );
 		parent::__construct( $paramarray );
 		$this->exclude_fields('id');
-		$this->info = new CommentInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new comment. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 
 	}
