@@ -60,7 +60,6 @@ class User extends QueryRecord
 			$this->fields );
 		parent::__construct($paramarray);
 		$this->exclude_fields('id');
-		$this->info = new UserInfo ( $this->fields['id'] );
 		 /* $this->fields['id'] could be null in case of a new user. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 
 	}
@@ -613,10 +612,10 @@ class User extends QueryRecord
 		switch ($name) {
 			case 'info':
 				if ( ! isset( $this->info ) ) {
-					$this->info = new UserInfo( $this->fields['id'] );
+					$this->info = new UserInfo( $this->id );
 				}
 				else {
-					$this->info->set_key( $this->fields['id'] );
+					$this->info->set_key( $this->id );
 				}
 				$out = $this->info;
 				break;
