@@ -259,9 +259,17 @@ class Posts extends ArrayObject implements IsContent
 						$pi_where = array();
 						foreach ( $paramset['any:info'] as $info_key => $info_value ) {
 							$pi_count++;
-							$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value = ?";
+
 							$join_params[] = $info_key;
-							$join_params[] = $info_value;
+							if ( is_array($info_value) ) {
+								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value IN (" .Utils::placeholder_string(count($info_value)).")";
+								$join_params = array_merge($join_params, $info_value);
+							}
+							else {
+								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value = ?";
+								$join_params[] = $info_value;
+							}
+
 							$pi_where[] = "aipi{$pi_count}.name <> ''";
 
 							$select_ary["info_{$info_key}_value"] = "aipi{$pi_count}.value AS info_{$info_key}_value";
