@@ -148,7 +148,7 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
-	 * returns the interger value of the specified post status, or false
+	 * returns the integer value of the specified post status, or false
 	 * @param mixed a post status name or value
 	 * @return mixed an integer or boolean false
 	 */
@@ -314,7 +314,7 @@ class Post extends QueryRecord implements IsContent
 	 * $post= Post::get( array( 'slug' => 'wooga' ) );
 	 * </code>
 	 *
-	 * @param array $paramarray An associated array of parameters, or a querystring
+	 * @param array $paramarray An associative array of parameters, or a querystring
 	 * @return Post The first post that matched the given criteria
 	 */
 	static function get( $paramarray = array() )
@@ -415,7 +415,7 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * function setstatus
 	 * @param mixed the status to set it to. String or integer.
-	 * @return integer the status of the post
+	 * @return integer the status of the post, or false if the new status isn't valid
 	 * Sets the status for a post, given a string or integer.
 	 */
 	private function setstatus( $value )
@@ -468,7 +468,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
-		return Tags::save_associations( $this->tags, $this->fields['id'] );
+		return Tags::save_associations( $this->tags, $this->id );
 	}
 
 	/**
@@ -1003,12 +1003,12 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * function get_tags
 	 * Gets the tags for the post
-	 * @return &array A reference to the tags array for this post
+	 * @return array The tags array for this post
 	 */
 	private function get_tags()
 	{
 		if ( empty( $this->tags ) ) {
-			$result = Tags::get_associations( $this->fields['id'] );
+			$result = Tags::get_associations( $this->id );
 			if ( $result ) {
 				foreach ( $result as $t ) {
 					$this->tags[$t->term] = $t->term_display;
