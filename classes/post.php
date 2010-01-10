@@ -425,7 +425,7 @@ class Post extends QueryRecord implements IsContent
 			return $this->newfields['status'] = $value;
 		}
 		elseif ( array_key_exists( $value, $statuses ) ) {
-			return $this->newfields['status'] = Post::status( 'publish' );
+			return $this->newfields['status'] = Post::status( $value );
 		}
 
 		return false;
