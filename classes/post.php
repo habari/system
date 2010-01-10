@@ -30,7 +30,7 @@ class Post extends QueryRecord implements IsContent
 	private $author_object = null;
 	private $tokens = null;
 
-	private $info = null;
+	private $inforecords = null;
 
 	protected $url_args;
 
@@ -1053,16 +1053,16 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function get_info()
 	{
-		if ( ! isset( $this->info ) ) {
+		if ( ! isset( $this->inforecords ) ) {
 			// If this post isn't in the database yet...
 			if ( $this->id == 0 ) {
-				$this->info = new PostInfo();
+				$this->inforecords = new PostInfo();
 			}
 			else {
-				$this->info = new PostInfo( $this->id );
+				$this->inforecords = new PostInfo( $this->id );
 			}
 		}
-		return $this->info;
+		return $this->inforecords;
 	}
 
 	/**
