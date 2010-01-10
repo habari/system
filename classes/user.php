@@ -649,7 +649,7 @@ class User extends QueryRecord
 		else {
 			$this->inforecords->set_key( $this->id );
 		}
-		$this->inforecords;
+		return $this->inforecords;
 	}
 	
 
