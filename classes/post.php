@@ -1055,12 +1055,7 @@ class Post extends QueryRecord implements IsContent
 	{
 		if ( ! isset( $this->inforecords ) ) {
 			// If this post isn't in the database yet...
-			if ( $this->id == 0 ) {
-				$this->inforecords = new PostInfo();
-			}
-			else {
 				$this->inforecords = new PostInfo( $this->id );
-			}
 		}
 		return $this->inforecords;
 	}
