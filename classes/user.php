@@ -595,8 +595,7 @@ class User extends QueryRecord
 	{
 		switch ($name) {
 			case 'info':
-				$out = $this->get_info();
-				break;
+				return $this->get_info();
 			case 'groups':
 				return $this->list_groups();
 			case 'displayname':
