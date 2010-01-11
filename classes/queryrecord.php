@@ -13,7 +13,7 @@ class QueryRecord implements URLProperties
 	protected $fields = array();  // Holds field values from db
 	protected $newfields = array(); // Holds updated field values to commit to db
 	protected $unsetfields = array(); // Holds field names to remove when committing to the db
-	private $loaded = false;  // Set to true after the constructor executes, is false when PDO fills data fields
+	private $properties_loaded = array(); // Set [$name] to true after first load of properties
 
 	/**
 	 * constructor __construct
@@ -22,13 +22,19 @@ class QueryRecord implements URLProperties
 	 **/
 	public function __construct($paramarray = array())
 	{
-		$this->loaded = true;
-
-		// Defaults
-		$this->fields = array_merge(
-			$this->fields,
-			Utils::get_params($paramarray)
-		);
+		$params = Utils::get_params($paramarray);
+		if (count($params) ) {
+			// Defaults
+			$this->fields = array_merge(
+				$this->fields,
+				$params
+			);
+			// mark any passed params as loaded when creating this object
+			$this->properties_loaded = array_merge(
+				$this->properties_loaded,
+				array_combine( array_keys($params), array_fill(0, count($params), TRUE) )
+			);
+		}
 	}
 
 	/**
@@ -59,11 +65,12 @@ class QueryRecord implements URLProperties
 	 **/
 	public function __set($name, $value)
 	{
-		if($this->loaded) {
+		if( isset($this->properties_loaded[$name]) ) {
 			$this->newfields[$name] = $value;
 		}
 		else {
 			$this->fields[$name] = $value;
+			$this->properties_loaded[$name] = TRUE;
 		}
 		return $value;
 	}
