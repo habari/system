@@ -34,7 +34,7 @@ class Comment extends QueryRecord implements IsContent
 
 	private $post_object = null;
 
-	private $info = null;
+	private $inforecords = null;
 
 	// static variables to hold comment status and comment type values
 	static $comment_status_list = array();
@@ -287,10 +287,10 @@ class Comment extends QueryRecord implements IsContent
 	**/
 	private function get_info()
 	{
-		if ( ! $this->info ) {
-			$this->info = new CommentInfo( $this->id );
+		if ( ! $this->inforecords ) {
+			$this->inforecords = new CommentInfo( $this->id );
 		}
-		return $this->info;
+		return $this->inforecords;
 	}
 
  	/**

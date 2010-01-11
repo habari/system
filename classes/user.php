@@ -28,7 +28,7 @@ class User extends QueryRecord
 	 */
 	private static $identity = null;
 
-	private $info = null;
+	private $inforecords = null;
 
 	private $group_list = null;
 
@@ -595,13 +595,8 @@ class User extends QueryRecord
 	{
 		switch ($name) {
 			case 'info':
-				if ( ! isset( $this->info ) ) {
-					$this->info = new UserInfo( $this->id );
-				}
-				else {
-					$this->info->set_key( $this->id );
-				}
-				return $this->info;
+				$out = $this->get_info();
+				break;
 			case 'groups':
 				return $this->list_groups();
 			case 'displayname':
@@ -612,6 +607,24 @@ class User extends QueryRecord
 				return parent::__get( $name );
 		}
 	}
+	
+	/**
+	 * function get_info
+	 * Gets the info object for this user, which contains data from the userinfo table
+	 * related to this user.
+	 * @return UserInfo object
+	 */
+	private function get_info()
+	{
+		if ( ! isset( $this->inforecords ) ) {
+			$this->inforecords = new UserInfo( $this->id );
+		}
+		else {
+			$this->inforecords->set_key( $this->id );
+		}
+		return $this->inforecords;
+	}
+	
 
 	/**
 	 * Returns a set of properties used by URL::get to create URLs
