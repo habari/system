@@ -425,8 +425,8 @@ class Format
 		else if( is_string( $properties ) ) {
 			$args = func_get_args();			
 			$more_text = $properties;
-			$max_words = ( isset( $args[3] ) ? $args[3] : 100 );
-			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : 2 );
+			$max_words = ( isset( $args[3] ) ? $args[3] : NULL );
+			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : NULL );
 			$paramstring = "";
 		}
 		else {
@@ -434,8 +434,8 @@ class Format
 			$paramarray = Utils::get_params( $properties );
 			
 			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
-			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : 200 );
-			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : 2 );
+			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : NULL );
+			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : NULL );
 
 			if( isset( $paramarray['title:before'] ) || 
 				isset( $paramarray['title'] ) ||
