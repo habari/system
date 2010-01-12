@@ -644,7 +644,13 @@ class User extends QueryRecord
 	private function get_info()
 	{
 		if ( ! isset( $this->inforecords ) ) {
-			$this->inforecords = new UserInfo( $this->id );
+			// If this post isn't in the database yet...
+			if(  0 == $this->id ) {
+				$this->inforecords = new UserInfo();
+			}
+			else {
+				$this->inforecords = new UserInfo( $this->id );
+			}
 		}
 		else {
 			$this->inforecords->set_key( $this->id );

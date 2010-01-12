@@ -293,8 +293,7 @@ class Post extends QueryRecord implements IsContent
 		// Defaults
 		$this->fields = array_merge(
 			self::default_fields(),
-			$this->fields,
-			$this->newfields
+			$this->fields
 		);
 
 		parent::__construct( $paramarray );
@@ -1055,7 +1054,15 @@ class Post extends QueryRecord implements IsContent
 	{
 		if ( ! isset( $this->inforecords ) ) {
 			// If this post isn't in the database yet...
+			if(  0 == $this->id ) {
+				$this->inforecords = new PostInfo();
+			}
+			else {
 				$this->inforecords = new PostInfo( $this->id );
+			}
+		}
+		else {
+			$this->inforecords->set_key( $this->id );
 		}
 		return $this->inforecords;
 	}
