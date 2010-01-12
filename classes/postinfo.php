@@ -9,7 +9,7 @@
  */
 class PostInfo extends InfoRecords
 {
-	function __construct ( $post_id )
+	function __construct ( $post_id = NULL )
 	{
 		parent::__construct ( DB::table('postinfo'), "post_id", $post_id ); // call parent with appropriate  parameters
 	}

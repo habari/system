@@ -291,7 +291,15 @@ class Comment extends QueryRecord implements IsContent
 	private function get_info()
 	{
 		if ( ! $this->inforecords ) {
-			$this->inforecords = new CommentInfo( $this->id );
+			if( 0 == $this->id ) {
+				$this->inforecords = new CommentInfo();
+			}
+			else {
+				$this->inforecords = new CommentInfo( $this->id );
+			}
+		}
+		else {
+			$this->inforecords->set_key( $this->id );
 		}
 		return $this->inforecords;
 	}
