@@ -2021,14 +2021,6 @@ body.page-Manage .state {
 	right: -2px;
 }
 
-
-/*- MANAGE PAGES - INLINE EDITOR */
-
-.editable:hover {
-	background: #FFFFCC;
-}
-
-
 /*- TAGS PAGE */
 
 body.page-tags .instructions {
@@ -2490,6 +2482,6 @@ body.login .humanMsg {
 	overflow: auto;
 }
 
-#page .hidden, #page ul.dropbutton li.nodisplay {
+#page .hidden {
 	display: none;
 }

@@ -79,7 +79,6 @@
 itemManage.updateURL = habari.url.ajaxUpdateComment;
 itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'comments')) ?>";
 itemManage.fetchReplace = $('#comments');
-itemManage.inEdit = true;
 
 </script>
 
