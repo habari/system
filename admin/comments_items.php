@@ -59,13 +59,6 @@
 				_e('this post contains text in an invalid encoding');
 			}
 		?></span>
-		<span class="clean-content hidden"><?php
-			if ( MultiByte::valid_data( $comment->content ) ) {
-				echo $comment->content;
-			} else {
-				_e('this post contains text in an invalid encoding');
-			}
-		?></span>
 	</div>
 </div>
 
