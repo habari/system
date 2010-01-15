@@ -491,6 +491,8 @@ class AdminHandler extends ActionHandler
 			}
 			$post->tags = $form->tags->value;
 
+			$post->content = $form->content->value;
+
 			// sorry, we just don't allow changing posts you don't have rights to
 			if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
 				Session::error( _t( 'You don\'t have permission to edit that post' ) );
