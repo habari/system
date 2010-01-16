@@ -773,7 +773,8 @@ class Post extends QueryRecord implements IsContent
 
 		// Create the Title field
 		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
-		$form->title->class = 'important check-change';
+		$form->title->class[] = 'important';
+		$form->title->class[] = 'check-change';
 		$form->title->tabindex = 1;
 		$form->title->value = $this->title;
 
@@ -785,7 +786,8 @@ class Post extends QueryRecord implements IsContent
 
 		// Create the Content field
 		$form->append('textarea', 'content', 'null:null', _t('Content'), 'admincontrol_textarea');
-		$form->content->class[] = 'resizable check-change';
+		$form->content->class[] = 'resizable';
+		$form->content->class[] = 'check-change';
 		$form->content->tabindex = 2;
 		$form->content->value = $this->content;
 		$form->content->raw = true;
