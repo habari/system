@@ -220,13 +220,23 @@
 	<a href="#" class="help-me"><?php _e('Help'); ?></a>
 	<div class="options items">
 		<?php foreach($plugins as $plugin) { ?>
-		<div class="item clear">
-			<div class="head">
-				<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>"
-				 id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked="checked"'; ?> tabindex="<?php echo $tab++ ?>" /></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
+			<?php if ( !isset($plugin['info']) ) { ?>
+
+			<div class="item clear">
+				<div class="head">
+					<p><?php printf( _t('The plugin file %s is a legacy plugin, and does not include an XML info file.'), $plugin['file'] ); ?></p>
+				</div>
 			</div>
-			<div class="help"><?php echo $plugin['info']->description; ?></div>
-		</div>
+
+			<?php } else { ?>
+				<div class="item clear">
+					<div class="head">
+						<span class="checkbox"><input type="checkbox" name="plugin_<?php echo $plugin['plugin_id']; ?>"
+						id="plugin_<?php echo $plugin['plugin_id']; ?>"<?php if ($plugin['recommended']) echo ' checked="checked"'; ?> tabindex="<?php echo $tab++ ?>" /></span><label for="plugin_<?php echo $plugin['plugin_id']; ?>" class="name"><?php echo $plugin['info']->name; ?> <span class="version"><?php echo $plugin['info']->version; ?></span></label>
+					</div>
+					<div class="help"><?php echo $plugin['info']->description; ?></div>
+				</div>
+			<?php } ?>
 		<?php } ?>
 		<div class="controls item">
 			<span class="checkbox"><input type="checkbox" name="checkbox_controller" id="checkbox_controller" tabindex="<?php echo $tab++ ?>" /></span>
