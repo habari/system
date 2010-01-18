@@ -233,6 +233,17 @@ class Term extends QueryRecord
 	}
 
 	/**
+	 * Find all Terms in this Term's Vocabulary that are not its ancestors, or it.
+	 * @return Array of Terms in MPTT left-to-right order.
+	 **/
+	public function not_ancestors()
+	{
+		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND (mptt_left>? OR mptt_right<?) ORDER BY mptt_left ASC';
+		return DB::get_results( $query, $params, 'Term' );
+	}
+
+	/**
 	 * Find this Term's descendants.
 	 * @return Array of all descendants in MPTT left-to-right order.
 	 **/
@@ -240,6 +251,17 @@ class Term extends QueryRecord
 	{
 		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right);
 		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<? ORDER BY mptt_left ASC';
+		return DB::get_results( $query, $params, 'Term' );
+	}
+
+	/**
+	 * Find all Terms in this Term's Vocabulary that are not its descendants, or it.
+	 * @return Array of Terms in MPTT left-to-right order.
+	 **/
+	public function not_descendants()
+	{
+		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right);
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left NOT BETWEEN ? AND ? ORDER BY mptt_left ASC';
 		return DB::get_results( $query, $params, 'Term' );
 	}
 
