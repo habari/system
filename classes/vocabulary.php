@@ -500,7 +500,7 @@ class Vocabulary extends QueryRecord
 		DB::query('DELETE from {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<?', $params);
 
 		// Fix mptt_left and mptt_right values for other nodes in the vocabulary
-		$offset = $term->mptt_right - $term->mptt_left - 1;
+		$offset = $term->mptt_right - $term->mptt_left + 1;
 		$ref = $this->mptt_left;
 		$params = array($offset, $this->id, $term->mptt_left);
 
