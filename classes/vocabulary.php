@@ -554,12 +554,12 @@ FROM {terms} as parent
 INNER JOIN {terms} as child
 	ON child.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right
 	AND child.vocabulary_id = parent.vocabulary_id
-WHERE parent.vocabulary_id = :vocab
+WHERE parent.vocabulary_id = ?
 GROUP BY child.term
 HAVING COUNT(child.term)=1
 ORDER BY NULL
 SQL;
-		return DB::get_results( $query, $params, 'Term' );
+		return DB::get_results( $query, array($this->id), 'Term' );
 	}
 
 	/**
