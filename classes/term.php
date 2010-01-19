@@ -375,6 +375,15 @@ SQL;
 		return $result;
 	}
 
+	/**
+	 * Allow output when the term is cast to a string
+	 * @return string The terms display text
+	 *
+	 **/
+	public function __tostring()
+	{
+		return $this->term_display;
+	}
 }
 
 ?>
