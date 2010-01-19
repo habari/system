@@ -268,7 +268,7 @@ class Vocabulary extends QueryRecord
 		$ids = DB::get_column('SELECt id FROM {terms} WHERE vocabulary_id = ?', array( $this->id ) );
 		// Delete the records from object_terms for those ids
 		$placeholder = Utils::placeholder_string( count( $ids ) );
-		DB::query('DELETE FROM {object_terms} WHERE term_id IN ($placeholder)', $ids );
+		DB::query("DELETE FROM {object_terms} WHERE term_id IN ($placeholder)", $ids );
 
 		// Delete this vocabulary's terms
 		DB::delete( '{terms}', array( 'vocabulary_id' => $this->id ) );
