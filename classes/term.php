@@ -296,8 +296,8 @@ class Term extends QueryRecord
 			'right' => $this->mptt_right
 		);
 		/**
-		 * If we INNER JOIN the terms table with itself on ALL the descendents of our term,
-		 * then descendents one level down are listed once, two levels down are listed twice,
+		 * If we INNER JOIN the terms table with itself on ALL the descendants of our term,
+		 * then descendants one level down are listed once, two levels down are listed twice,
 		 * etc. If we return only those terms which appear once, we get immediate children.
 		 * ORDER BY NULL to avoid the MySQL filesort.
 		 */

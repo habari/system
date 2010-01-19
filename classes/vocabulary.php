@@ -539,8 +539,8 @@ class Vocabulary extends QueryRecord
 	public function get_root_terms()
 	{
 		/**
-		 * If we INNER JOIN the terms table with itself on ALL the descendents,
-		 * then descendents one level down are listed once, two levels down are listed twice,
+		 * If we INNER JOIN the terms table with itself on ALL the descendants,
+		 * then descendants one level down are listed once, two levels down are listed twice,
 		 * etc. If we return only those terms which appear once, we get root elements.
 		 * ORDER BY NULL to avoid the MySQL filesort.
 		 */
