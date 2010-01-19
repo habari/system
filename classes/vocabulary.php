@@ -533,6 +533,36 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
+	 * Get all root elements in this vocabulary
+	 * @return Array The root Term objects in the vocabulary
+	 */
+	public function get_root_terms()
+	{
+		/**
+		 * If we INNER JOIN the terms table with itself on ALL the descendents,
+		 * then descendents one level down are listed once, two levels down are listed twice,
+		 * etc. If we return only those terms which appear once, we get root elements.
+		 * ORDER BY NULL to avoid the MySQL filesort.
+		 */
+		$query = <<<SQL
+SELECT child.term as term,
+	child.term_display as term_display,
+	child.mptt_left as mptt_left,
+	child.mptt_right as mptt_right,
+	child.vocabulary_id as vocabulary_id
+FROM {terms} as parent
+INNER JOIN {terms} as child
+	ON child.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right
+	AND child.vocabulary_id = parent.vocabulary_id
+WHERE parent.vocabulary_id = :vocab
+GROUP BY child.term
+HAVING COUNT(child.term)=1
+ORDER BY NULL
+SQL;
+		return DB::get_results( $query, $params, 'Term' );
+	}
+
+	/**
 	 * inserts a new object type into the database, if it doesn't exist
 	 * @param string The name of the new post type
 	 * @param bool Whether the new post type is active or not
