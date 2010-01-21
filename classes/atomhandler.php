@@ -179,7 +179,9 @@ class AtomHandler extends ActionHandler
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
-
+			
+			$content= Plugins::filter( 'atom_add_post', $content );
+			
 			$feed_entry = $xml->addChild( 'entry' );
 			$entry_title = $feed_entry->addChild( 'title', $title );
 
