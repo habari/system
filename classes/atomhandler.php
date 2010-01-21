@@ -180,7 +180,7 @@ class AtomHandler extends ActionHandler
 			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
 			
-			$content= Plugins::filter( 'atom_add_post', $content );
+			$content = Plugins::filter( 'atom_add_post', $content );
 			
 			$feed_entry = $xml->addChild( 'entry' );
 			$entry_title = $feed_entry->addChild( 'title', $title );
@@ -231,7 +231,7 @@ class AtomHandler extends ActionHandler
 		foreach ( $comments as $comment ) {
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $comment->content ) : htmlspecialchars( $comment->content_atom );
 
-			$content= Plugins::filter( 'atom_add_comment', $content );
+			$content = Plugins::filter( 'atom_add_comment', $content );
 
 			$item = $xml->addChild( 'entry' );
 			$title = $item->addChild( 'title', htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ) ) );
@@ -504,7 +504,7 @@ class AtomHandler extends ActionHandler
 			$content_type = Post::type_name( $post->content_type );
 			$self = URL::get( "atom_feed_{$content_type}_comments", $post, false );
 			$alternate = URL::get( "display_{$content_type}", $post, false );
-			if( $comments_count ) {
+			if ( $comments_count ) {
 				$updated = $comments[$comments_count - 1]->date;
 			}
 		}
@@ -514,7 +514,7 @@ class AtomHandler extends ActionHandler
 			$params['status'] = Comment::STATUS_APPROVED;
 			$comments = Comments::get( $params );
 			$comments_count = Comments::count_total( Comment::status('approved') );
-			if( $comments_count ) {
+			if ( $comments_count ) {
 				$updated = $comments[0]->date;
 			}
 		}
@@ -708,7 +708,6 @@ class AtomHandler extends ActionHandler
 		$self = URL::get( $rr_name, $rr_args, false );
 
 		$id = isset( $rr_args_values['tag'] ) ? $rr_args_values['tag'] : 'atom';
-
 
 		// Get posts to put in the feed
 		$page = ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
