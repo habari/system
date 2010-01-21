@@ -231,6 +231,8 @@ class AtomHandler extends ActionHandler
 		foreach ( $comments as $comment ) {
 			$content = ( $this->is_auth() ) ? htmlspecialchars( $comment->content ) : htmlspecialchars( $comment->content_atom );
 
+			$content= Plugins::filter( 'atom_add_comment', $content );
+
 			$item = $xml->addChild( 'entry' );
 			$title = $item->addChild( 'title', htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ) ) );
 
