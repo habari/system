@@ -46,9 +46,6 @@ class Bitmask
 	public function __set( $bit, $on )
 	{
 		switch( $bit ) {
-			case 'value':
-				$this->value = $on;
-				break;
 			case 'full':
 				if ( $on ) {
 					$this->value = $this->full;
