@@ -57,12 +57,7 @@ class Bitmask
 			default:
 				if ( ! is_bool( $on ) )
 					throw new InvalidArgumentException(_t('Bitmask values must be boolean'));
-				if ( is_string( $bit ) ) {
-					$bit = array_search( $bit, $this->flags );
-				}
-				elseif ( ! is_int( $bit ) ) {
-					throw new InvalidArgumentException(_t('Bitmask names must be pre-defined strings or bitmask indexes'));
-				}
+				$bit = array_search( $bit, $this->flags );
 				if ( $on ) {
 					$this->value |= 1 << $bit;
 				}
