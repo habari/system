@@ -343,12 +343,16 @@ class InstallHandler extends ActionHandler
 					$pdo_schemas,
 					$pdo_drivers
 				);
-			}
 
-			$pdo_drivers_ok = count( $pdo_drivers );
-			$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
-			$this->theme->assign( 'pdo_drivers', $pdo_drivers );
-			$this->theme->assign( 'pdo_missing_drivers', $pdo_missing_drivers );
+				$pdo_drivers_ok = count( $pdo_drivers );
+				$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
+				$this->theme->assign( 'pdo_drivers', $pdo_drivers );
+				$this->theme->assign( 'pdo_missing_drivers', $pdo_missing_drivers );
+			}
+			else {
+				$pdo_drivers_ok = false;
+				$this->theme->assign( 'pdo_drivers_ok', $pdo_drivers_ok );
+			}
 			if ( ! $pdo_drivers_ok ) {
 				$requirements_met = false;
 			}
