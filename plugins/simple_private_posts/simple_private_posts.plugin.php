@@ -5,7 +5,7 @@ class SimplePrivatePosts extends Plugin
 
 	public function action_plugin_activation()
 	{
-		ACL::create_token('private', 'Permissions on posts marked as "private"');
+		ACL::create_token('private', 'Permission to read posts marked as "private"', 'Private Posts');
 
 		// Deny the anonymous group access to the private token, if the group hasn't been removed (why would you remove it ??)
 		$anon = UserGroup::get('anonymous');
