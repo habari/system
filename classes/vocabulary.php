@@ -296,6 +296,8 @@ class Vocabulary extends QueryRecord
 		$new_term->vocabulary_id = $this->id;
 
 		$ref = 0;
+		DB::begin_transaction();
+
 		// If there are terms in the vocabulary, work out the reference point
 		if ( !$this->is_empty() ) {
 
@@ -325,8 +327,16 @@ class Vocabulary extends QueryRecord
 
 			// Make space for the new node
 			$params = array($this->id, $ref);
-			DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=? AND mptt_right>?', $params);
-			DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=? AND mptt_left>?', $params);
+			$res = DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=? AND mptt_right>?', $params);
+			if( ! $res ) {
+				DB::rollback();
+				return FALSE;
+			}
+			$res = DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=? AND mptt_left>?', $params);
+			if( ! $res ) {
+				DB::rollback();
+				return FALSE;
+			}
 
 		}
 
@@ -337,9 +347,11 @@ class Vocabulary extends QueryRecord
 		// Insert the new node
 		$result = $new_term->insert();
 		if ( $result ) {
+			DB::commit(); 
 			return $new_term;
 		}
 		else {
+			DB::rollback();
 			return FALSE;
 		}
 
