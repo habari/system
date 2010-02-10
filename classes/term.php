@@ -384,6 +384,23 @@ SQL;
 	{
 		return $this->term_display;
 	}
+
+	/**
+	 * function __get
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param $name string Name of property to return
+	 * @return mixed The requested field value
+	 **/
+	public function __get( $name ) 
+	{ 
+		switch( $name ) { 
+			case 'vocabulary': 
+				return Vocabulary::get_by_id( $this->vocabulary_id ); 
+			default: 
+				return parent::__get( $name ); 
+		} 
+	}
+
 }
 
 ?>
