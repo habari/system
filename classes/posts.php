@@ -742,7 +742,13 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function publish_scheduled_posts( $params )
 	{
-		$posts = DB::get_results('SELECT * FROM {posts} WHERE status = ? AND pubdate <= ? ORDER BY pubdate DESC', array( Post::status( 'scheduled' ), HabariDateTime::date_create() ), 'Post' );
+		$select = array();
+		// Default fields to select, everything by default
+		foreach ( Post::default_fields() as $field => $value ) {
+			$select[$field] = "{posts}.$field AS $field";
+		}
+		$select = implode(',', $select);
+		$posts = DB::get_results('SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), HabariDateTime::date_create() ), 'Post' );
 		foreach ( $posts as $post ) {
 			$post->publish();
 		}
