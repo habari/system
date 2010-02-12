@@ -596,8 +596,8 @@ class Post extends QueryRecord implements IsContent
 		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
 		}
-		// Delete all permissions associated with this post
-		$this->delete_permissions();
+		// Delete all post_tokens associated with this post
+		$this->delete_tokens();
 
 		$result = parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
 		EventLog::log( sprintf(_t('Post %1$s (%2$s) deleted.'), $this->id, $this->slug), 'info', 'content', 'habari' );
@@ -1173,6 +1173,15 @@ class Post extends QueryRecord implements IsContent
 		}
 		$this->tokens = array_merge($this->tokens, $add_tokens);
 		$this->tokens = array_unique($this->tokens);
+	}
+
+	/**
+	 * Deletes all tokens from a post
+	 */
+	public function delete_tokens()
+	{
+		DB::delete( '{post_tokens}', array( 'post_id' => $this->id ) );
+		$this->tokens = array();
 	}
 
 	/**
