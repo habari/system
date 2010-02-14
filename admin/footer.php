@@ -3,13 +3,13 @@
 		<span><a href="http://habariproject.org/" title="<?php _e('Go to the Habari site'); ?>">Habari
 	<?php
 	echo Version::get_habariversion();
-	if(Version::is_devel()) {
+	if ( Version::is_devel() ) {
 		echo ' r' . Version::get_svn_revision();
 	}
 	?> </a></span>
 	 <span class="middot">&middot;</span>
 	 <span><?php _e('Logged in as'); ?></span>
-	 <?php if( User::identify()->can( 'manage_users' ) || User::identify()->can( 'manage_self' ) ) { ?>
+	 <?php if ( User::identify()->can( 'manage_users' ) || User::identify()->can( 'manage_self' ) ) { ?>
 			 <a href="<?php Site::out_url( 'admin' ); ?>/user" title="<?php _e('Go to your user page'); ?>"><?php echo User::identify()->displayname ?></a>
 	<?php } else { ?>
 			 <span><?php echo User::identify()->displayname ?></span>
@@ -36,7 +36,7 @@
 
 </div>
 
-<?php if(Session::has_messages()): ?>
+<?php if ( Session::has_messages() ): ?>
 	<script type="text/javascript">
 	jQuery(document).ready(function() {
 		<?php Session::messages_out( true, array( 'Format', 'humane_messages' ) ); ?>
