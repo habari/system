@@ -7,7 +7,7 @@
 	<?php $plaintext_output = _t( "SYSTEM INFORMATION\n" ); ?>
 
 	<div class="manage">
-	<?php foreach( $sysinfo as $key => $value ) : ?>
+	<?php foreach ( $sysinfo as $key => $value ) : ?>
 		<div class="item clear">
 			<span class="pct25"><?php echo $key; 
 				$plaintext_output .= $key; ?></span>
@@ -24,7 +24,7 @@
 	<?php $plaintext_output .= _t( "\nSITE INFORMATION\n" ); ?>
 
 	<div class="manage">
-	<?php foreach( $siteinfo as $key => $value ) : ?>
+	<?php foreach ( $siteinfo as $key => $value ) : ?>
 		<div class="item clear">
 			<span class="pct25"><?php echo $key; 
 				$plaintext_output .= $key; ?></span>
@@ -41,7 +41,7 @@
 	<?php $plaintext_output .= _t( "\nUSER CLASSES\n" ); ?>
 
 	<div class="manage">
-	<?php foreach( $classinfo as $fullpath ) : ?>
+	<?php foreach ( $classinfo as $fullpath ) : ?>
 		<div class="item clear">
 			<span class="pct100"><?php echo $fullpath; 
 				$plaintext_output .= "$fullpath\n"; ?></span>
@@ -59,12 +59,12 @@
 	<h2><?php _e( "Plugin Information" ); ?></h2>
 	<?php $plaintext_output .= _t( "\nPLUGIN INFORMATION" ); ?>
 
-	<?php foreach($plugins as $section => $sec_plugins): ?>
+	<?php foreach ( $plugins as $section => $sec_plugins ): ?>
 
 	<h3><?php echo $section; 
 		$plaintext_output .= "\n/$section/plugins:\n"; ?></h3>
 	<div class="manage">
-	<?php foreach( $sec_plugins as $name => $pluginfile ) : ?>
+	<?php foreach ( $sec_plugins as $name => $pluginfile ) : ?>
 		<div class="item clear">
 			<span class="pct25"><?php echo $name; 
 				$plaintext_output .= $name; ?></span>

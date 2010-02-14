@@ -54,7 +54,7 @@
 			<span class="pct80 memberlist"></span>
 		</span>
 	</div>
-		<?php foreach($users as $user): ?>
+		<?php foreach ( $users as $user ): ?>
 			<input type="hidden" name="user[<?php echo $user->id; ?>]" value="<?php echo ($user->membership) ? '1' : 0; ?>" id="user_<?php echo $user->id; ?>">
 		<?php endforeach; ?>
 	

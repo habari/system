@@ -11,7 +11,7 @@
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
-	<?php if(isset($years)) { ?><div class="timeline">
+	<?php if ( isset($years) ) { ?><div class="timeline">
 		<div class="years">
 			<?php $theme->display( 'timeline_items' )?>
 		</div>
@@ -72,7 +72,7 @@
 </div>
 
 
-<?php if(isset($years)) { ?><div class="container transparent">
+<?php if ( isset($years) ) { ?><div class="container transparent">
 
 	<div class="item controls">
 		<span class="checkboxandselected pct40">

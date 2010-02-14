@@ -1,12 +1,13 @@
-<?php foreach( $logs as $log ): ?>
+<?php foreach ( $logs as $log ): ?>
 	<div class="item clear">
 		<span class="checkbox pct5"><span><input type="checkbox" class="checkbox" name="checkbox_ids[<?php echo $log->id; ?>]" id="checkbox_ids[<?php echo $log->id; ?>]"></span></span>
 		<span class="time pct15 minor"><span><?php $log->timestamp->out( "M j, Y" ); ?> &middot; <?php $log->timestamp->out( "H:i" ); ?></span></span>
 		<span class="user pct15 minor"><span>
 			<?php if ( $log->user_id ) { 
 				if ( $user = User::get_by_id( $log->user_id ) ) {
-					 echo $user->displayname;
-				} else {
+					echo $user->displayname;
+				}
+				else {
 					echo $log->user_id;
 				}
 			} ?>&nbsp;
