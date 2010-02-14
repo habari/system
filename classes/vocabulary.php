@@ -188,7 +188,7 @@ class Vocabulary extends QueryRecord
 		if ( isset( $this->fields['features'] ) ) {
 			$this->fields['features'] = serialize( $this->fields['features'] );
 		}
-		$result = parent::insertRecord( '{vocabularies}' );
+		$result = parent::insertRecord( DB::table( 'vocabularies' ) );
 
 		// Make sure the id is set in the vocabulary object to match the row id
 		$this->newfields['id'] = DB::last_insert_id();
