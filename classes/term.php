@@ -150,7 +150,7 @@ class Term extends QueryRecord
 		}
 		Plugins::act( 'term_insert_before', $this );
 
-		$result = parent::insertRecord( '{terms}' );
+		$result = parent::insertRecord( DB::table( 'terms' ) );
 
 		// Make sure the id is set in the term object to match the row id
 		$this->newfields['id'] = DB::last_insert_id();
