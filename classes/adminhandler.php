@@ -467,17 +467,20 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_publish()
 	{
-		$post_id = 0;
-		if ( isset($this->handler_vars['id']) ) {
-			$post_id = intval($this->handler_vars['id']);
-		}
+		$this->get_publish();
+	}
 
+	public function form_publish_success( FormUI $form )
+	{
+		$post_id = 0;
+		if ( isset( $this->handler_vars['id'] ) ) {
+			$post_id = intval( $this->handler_vars['id'] );
+		}
 		// If an id has been passed in, we're updating an existing post, otherwise we're creating one
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
 
 			$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
-			$form = $post->get_form( 'admin' );
 
 			// Verify that the post hasn't already been updated since the form was loaded
 			if ( $post->modified != $form->modified->value ) {
@@ -534,7 +537,7 @@ class AdminHandler extends ActionHandler
 		}
 		else {
 			$post = new Post();
-			$form = $post->get_form( 'admin' );
+
 			// check the user can create new posts of the set type.
 			$user = User::identify();
 			$type = 'post_'  . Post::type_name($form->content_type->value);
@@ -543,7 +546,7 @@ class AdminHandler extends ActionHandler
 				$this->get_blank();
 			}
 
-			$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
+			$form->on_success( array( $this, 'form_publish_success' ) );
 
 			if ( HabariDateTime::date_create( $form->pubdate->value )->int > $post->pubdate->int ) {
 				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
@@ -599,10 +602,11 @@ class AdminHandler extends ActionHandler
 			$$key = $value;
 		}
 
-		if ( isset( $id ) ) {
+		// 0 is what's assigned to new posts
+ 		if ( isset( $id ) && ( $id != 0 )) {
 			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 			if ( !$post ) {
-				Session::error(_t('Access to that post id is denied'));
+				Session::error( _t( 'Access to that post id is denied' ) );
 				$this->get_blank();
 			}
 			$this->theme->post = $post;
@@ -628,12 +632,11 @@ class AdminHandler extends ActionHandler
 		$this->theme->statuses = $statuses;
 
 		$form = $post->get_form( 'admin' );
-		$form->set_option( 'form_action', URL::get('admin', 'page=publish' ) );
+		$form->on_success( array( $this, 'form_publish_success' ) );
 
 		$this->theme->form = $form;
 
 		$this->theme->wsse = Utils::WSSE();
-
 		$this->display( $template );
 	}
 
