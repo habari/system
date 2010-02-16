@@ -159,6 +159,9 @@ class Plugins
 					}
 					else {
 						$module = get_class($filter[0]);
+						if ( $filter[0] instanceof Theme && $module != get_class( $callargs[0] ) ) {
+							continue;
+						}
 					}
 				}
 				else {
