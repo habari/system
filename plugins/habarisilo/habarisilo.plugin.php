@@ -107,11 +107,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		$path = preg_replace('%\.{2,}%', '.', $path);
 		$results = array();
 
-		$dir = glob($this->root . ( $path == '' ? '' : '/' ) . $path . '/*');
-
-		if ( $dir === false ) {
-			$dir = array();
-		}
+		$dir = Utils::glob( $this->root . ( $path == '' ? '' : '/' ) . $path . '/*' );
 
 		foreach ( $dir as $item ) {
 			if ( substr( basename( $item ), 0, 1 ) == '.' ) {
