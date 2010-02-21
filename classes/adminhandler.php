@@ -3010,16 +3010,18 @@ class AdminHandler extends ActionHandler
 		$this->theme->sysinfo = $sysinfo;
 
 		// Assemble Class Info
-		$classinfo = glob( HABARI_PATH . "/user/classes/*.php");
-		$classinfo = array_map('realpath', $classinfo);
+		$classinfo = Utils::glob( HABARI_PATH . "/user/classes/*.php" );
+		if ( count( $classinfo ) ) {
+			$classinfo = array_map( 'realpath', $classinfo );
+		}
 		$this->theme->classinfo = $classinfo;
 
 		// Assemble Plugin Info
 		$raw_plugins = Plugins::get_active();
-		$plugins = array('system'=>array(), 'user'=>array(), '3rdparty'=>array(), 'other'=>array());
+		$plugins = array( 'system'=>array(), 'user'=>array(), '3rdparty'=>array(), 'other'=>array() );
 		foreach ( $raw_plugins as $plugin ) {
 			$file = $plugin->get_file();
-			if ( preg_match('%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches) ) {
+			if ( preg_match( '%[\\\\/](system|3rdparty|user)[\\\\/]plugins[\\\\/]%i', $file, $matches ) ) {
 				// A plugin's info is XML, cast the element to a string. See #1026.
 				$plugins[strtolower($matches[1])][(string)$plugin->info->name] = $file;
 			}
