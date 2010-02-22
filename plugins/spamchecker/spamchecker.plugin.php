@@ -215,10 +215,10 @@ class SpamChecker extends Plugin
 	public function get_code($post_id, $ip = '')
 	{
 		if( $ip == '' ) {
-			$ip = sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
+			$ip = sprintf( "%u", ip2long( Utils::get_ip() ) );
 		}
-		$code = substr(md5( $post_id . Options::get('GUID') . 'more salt' . $ip ), 0, 10);
-		$code = Plugins::filter('comment_code', $code, $post_id, $ip);
+		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );
+		$code = Plugins::filter( 'comment_code', $code, $post_id, $ip );
 		return $code;
 	}
 
@@ -231,11 +231,11 @@ class SpamChecker extends Plugin
 	public function verify_code($suspect_code, $post_id, $ip = '')
 	{
 		if( $ip == '' ) {
-			$ip = sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
+			$ip = sprintf( "%u", ip2long( Utils::get_ip() ) );
 		}
-		$code = substr(md5( $post_id . Options::get('GUID') . 'more salt' . $ip ), 0, 10);
-		$code = Plugins::filter('comment_code', $code, $post_id, $ip);
-		return ($suspect_code == $code);
+		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );
+		$code = Plugins::filter( 'comment_code', $code, $post_id, $ip );
+		return ( $suspect_code == $code );
 	}
 
 }
