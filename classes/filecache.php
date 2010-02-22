@@ -247,11 +247,11 @@ class FileCache extends Cache
 	 */
 	protected function _purge()
 	{
-		$glob = glob( FILE_CACHE_LOCATION . '*.data' );
+		$glob = Utils::glob( FILE_CACHE_LOCATION . '*.data' );
 		foreach( $glob as $file ) {
 			unlink( $file );
 		}
-		$glob = glob( FILE_CACHE_LOCATION . '*.cache' );
+		$glob = Utils::glob( FILE_CACHE_LOCATION . '*.cache' );
 		foreach( $glob as $file ) {
 			unlink( $file );
 		}
