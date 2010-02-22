@@ -1072,5 +1072,29 @@ class Utils
 	{
 		return ( is_array( $data ) || ($data instanceof Traversable && $data instanceof Countable) );
 	}
+
+	/**
+	* Get the remote IP address, but try and take into account users who are
+	* behind proxies, whether they know it or not.
+	* @return The client's IP address.
+	**/
+	public static function get_ip()
+	{
+		if ( $_SERVER["HTTP_CLIENT_IP"] ) {
+			return $_SERVER["HTTP_CLIENT_IP"];
+		}
+		else if ( $_SERVER["HTTP_FORWARDED"] ) {
+			return $_SERVER["HTTP_FORWARDED"];
+		}
+		else if ( $_SERVER["HTTP_X_FORWARDED"] ) {
+			return $_SERVER["HTTP_X_FORWARDED"];
+		}
+		else if ( $_SERVER["HTTP_X_FORWARDED_FOR"] ) {
+			return $_SERVER["HTTP_X_FORWARDED_FOR"];
+		}
+		else {
+			return $_SERVER["REMOTE_ADDR"];
+		}
+	}
 }
 ?>
