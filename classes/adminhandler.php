@@ -2145,7 +2145,7 @@ class AdminHandler extends ActionHandler
 		foreach ( $this->theme->posts as $post ) {
 			if ( ACL::access_check($post->get_access(), 'delete' ) ) {
 			$item_ids['p' . $post->id] = 1;
-		}
+			}
 		}
 
 		$output = array(
@@ -2210,7 +2210,7 @@ class AdminHandler extends ActionHandler
 	 * Handles AJAX from /manage/entries.
 	 * Used to delete entries.
 	 */
-	public function ajax_delete_entries($handler_vars)
+	public function ajax_update_entries($handler_vars)
 	{
 		Utils::check_request_method( array( 'POST' ) ); 
 		
@@ -2229,20 +2229,34 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
-		$deleted = 0;
-		foreach ( $posts as $post ) {
-			if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
-			$post->delete();
-				$deleted++;
-		}
+
+		Plugins::act( 'admin_update_posts', $handler_vars['action'], $posts, $this );
+		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
+		switch ( $handler_vars['action'] ) {
+		case 'delete':
+			$deleted = 0;
+			foreach ( $posts as $post ) {
+				if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
+					$post->delete();
+					$deleted++;
+				}
+			}
+			if ( $deleted != count( $posts ) ) {
+			$status_msg = _t( 'You did not have permission to delete some entries.' );
+			}
+			else {
+				$status_msg = sprintf( _n('Deleted %d post', 'Deleted %d posts', count( $ids ) ), count( $ids ) );
+			}
+			break;
+		default:
+			// Specific plugin-supplied action
+			$status_msg = Plugins::filter( 'admin_entries_action', $status_msg, $handler_vars['action'], $posts );
+			break;
 		}
 
-		Session::notice( sprintf( _t('Deleted %d entries.'), $deleted ) );
-		if ( $deleted != count( $posts ) ) {
-			Session::notice( _t( 'You did not have permission to delete some entries.' ) );
-		}
-
+		Session::notice( $status_msg );
 		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+		return;
 	}
 
 	/**
@@ -3279,6 +3293,7 @@ class AdminHandler extends ActionHandler
 			case 'posts':
 			case 'ajax_posts':
 			case 'ajax_delete_entries':
+			case 'ajax_update_entries':
 				$require_any = array(
 					'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 					'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),

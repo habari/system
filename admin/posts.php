@@ -41,7 +41,15 @@
 		<input type="checkbox" id="master_checkbox" name="master_checkbox">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
-	<input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button">
+	<ul class="dropbutton">
+		<?php $page_actions = array(
+			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
+		);
+		$page_actions = Plugins::filter('posts_manage_actions', $page_actions);
+		foreach( $page_actions as $page_action ) : ?>
+			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
+		<?php endforeach; ?>
+	</ul>
 	
 </div>
 
@@ -59,12 +67,20 @@
 		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
 		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
 	</span>
-	<input type="button" value="<?php _e('Delete Selected'); ?>" class="delete button">
+	<ul class="dropbutton">
+		<?php $page_actions = array(
+			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
+		);
+		$page_actions = Plugins::filter('posts_manage_actions', $page_actions);
+		foreach( $page_actions as $page_action ) : ?>
+			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
+		<?php endforeach; ?>
+	</ul>
 
 </div>
 
 <script type="text/javascript">
-	itemManage.updateURL = habari.url.ajaxDelete;
+	itemManage.updateURL = habari.url.ajaxUpdatePosts;
 	itemManage.fetchURL = "<?php echo URL::get('admin_ajax', array('context' => 'posts')) ?>";
 	itemManage.fetchReplace = $('.posts');
 	itemManage.inEdit = false;
