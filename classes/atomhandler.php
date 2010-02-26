@@ -632,6 +632,18 @@ class AtomHandler extends ActionHandler
 				$post->content = (string) $xml->content;
 			}
 
+			// Save categories as tags
+			$atom_ns = $xml->children('http://www.w3.org/2005/Atom');
+			$categories = $atom_ns->category;
+			if ( !empty($categories) ) {
+				$terms = array();
+				foreach ( $categories as $category ) {
+					$category_attrs = $category->attributes();
+					$terms[] = (string) $category_attrs['term'];
+				}
+				$post->tags = $terms;
+			}
+
 			if ( isset( $_SERVER['HTTP_SLUG'] ) ) {
 				$post->slug = $_SERVER['HTTP_SLUG'];
 			}
@@ -819,6 +831,7 @@ class AtomHandler extends ActionHandler
 			$post->pubdate = (string) $xml->pubdate;
 		}
 
+		// Save categories as tags
 		$atom_ns = $xml->children('http://www.w3.org/2005/Atom');
 		$categories = $atom_ns->category;
 		if ( !empty($categories) ) {
