@@ -49,6 +49,7 @@ class PGSQLConnection extends DatabaseConnection
 		$sql = preg_replace( '%MONTH\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'month\',  \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
 		$sql = preg_replace( '%DAY\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'day\',  \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
 		$sql = preg_replace('%LIKE\s+((\'|").*\2)%iUms', 'ILIKE \1', $sql);
+		$sql = preg_replace( '%RAND\s*\(\s*\)%i', 'RANDOM()', $sql );
 		return $sql;
 	}
 
