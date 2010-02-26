@@ -67,6 +67,45 @@ class Undelete extends Plugin
 		return $actions;
 	}
 
+	public function filter_posts_manage_actions( $actions )
+	{
+		// get all the post types
+		$require_any = array( 'own_posts' => 'delete' );
+		$types = Post::list_active_post_types();
+		foreach ($types as $key => $value ) {
+			$require_any['post_' . $key] = 'delete';
+		}
+
+		if ( User::identify()->can_any( $require_any ) ) {
+			$actions[] = array( 'action' => 'itemManage.update(\'restore\');return false;', 'title' => _t( 'Restore Selected Entries' ), 'label' => _t( 'Restore Selected' ) );
+		}
+		return $actions;
+	}
+
+	public function filter_admin_entries_action( $status_msg, $action, $posts )
+	{
+		$num = 0;
+
+		switch( $action ) {
+		case 'restore':
+			foreach( $posts as $post ) {
+				$result = $this->undelete_post( $post->id );
+				if ( $result ) {
+					$num++;
+				}
+			}
+			if( $num == count( $posts ) ) {
+				$status_msg = sprintf( _n('Restored %d post', 'Restored %d posts', $num ), $num );
+			}
+			else {
+				$status_msg = _t( 'You did not have permission to restore some entries.' );
+			}
+			break;
+		}
+
+		return $status_msg;
+	}
+
 	/**
 	 * function undelete_post
 	 * This function reverts a post's status from 'deleted' to whatever
