@@ -28,6 +28,7 @@ class SQLiteConnection extends DatabaseConnection
 		$sql = preg_replace( '%MONTH\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%m\', ${1}, \'unixepoch\')', $sql );
 		$sql = preg_replace( '%DAY\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'strftime(\'%d\', ${1}, \'unixepoch\')', $sql );
 		$sql = preg_replace( '%TRUNCATE \s*([^ ]*)%i', 'DELETE FROM ${1}', $sql );
+		$sql = preg_replace( '%RAND\s*\(\s*\)%i', 'RANDOM()', $sql );
 		return $sql;
 	}
 
