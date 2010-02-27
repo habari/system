@@ -260,3 +260,32 @@ CREATE TABLE {$prefix}user_token_permissions (
   access_mask SMALLINT NOT NULL,
   PRIMARY KEY (user_id, token_id)
 );
+
+CREATE SEQUENCE {$prefix}scopes_pkey_seq;
+CREATE TABLE {$prefix}scopes (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}scopes_pkey_seq'),
+  name VARCHAR(255) NOT NULL,
+  criteria TEXT NOT NULL,
+  description TEXT NULL,
+  priority SMALLINT NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE {$prefix}blocks_pkey_seq;
+CREATE TABLE {$prefix}blocks (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}blocks_pkey_seq'),
+  title VARCHAR(255) NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  data TEXT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE {$prefix}blocks_areas_pkey_seq;
+CREATE TABLE {$prefix}blocks_areas (
+  id INTEGER NOT NULL DEFAULT nextval('{$prefix}blocks_areas_pkey_seq'),
+  block_id INTEGER NOT NULL,
+  area VARCHAR(255) NOT NULL,
+  scope_id INTEGER NOT NULL,
+  PRIMARY KEY (id),
+  display_order INTEGER NOT NULL DEFAULT 0
+);
