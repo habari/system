@@ -156,7 +156,7 @@ class charcoal extends Theme
 			INNER JOIN {posts} p
 			ON p.id=tp.object_id AND p.status = ?
 			WHERE t.vocabulary_id = ? AND tp.object_type_id = ?
-			GROUP BY t.term
+			GROUP BY t.term, t.term_display
 			ORDER BY t.term_display
 			LIMIT {$limit}
 		";
