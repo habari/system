@@ -6,13 +6,18 @@ var installer = {
 		if (msg.responseText != '') {
 			error_msg= msg.responseText;
 		}
-		$('#installerror').html(
+		installer.showError(
 			'<strong>Installation Issue</strong>'+
-			'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="doc/manual/index.html#installation" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="installer.noVerify();">continue without database verification</a>.</p>' +
+			'<p>The installer couldn\'t verify your settings, possibly because your server is not correctly configured.  See <a href="doc/manual/installation.html#common_issues" onclick="$(this).attr(\'target\',\'_blank\');">the manual</a> for information on how to correct this problem, or <a href="#" onclick="installer.noVerify();return false;">continue without database verification</a>.</p>' +
 //			'<p>You might want to make sure <code>mod_rewrite</code> is enabled and that <code>AllowOverride</code> is at least set to <code>FileInfo</code> for the directory where <code>.htaccess</code> resides.</p>'+
 			'<strong>Server Response</strong>'+
 			'<p>'+error_msg.replace(/(<([^>]+)>)/ig,"")+'</p>'
-		).fadeIn();
+		);
+	},
+	
+	showError: function(error) {
+		$('#installerror').html(error).fadeIn();
+		$('html,body').animate({scrollTop: $('#installerror').offset().top},500);
 	},
 	
 	setDatabaseType: function() {
@@ -106,7 +111,7 @@ var installer = {
 
 	noVerify: function() {
 		installer.verifyDB = false;
-		$('#installerror').html('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify the database settings.</p>' + $('#installerror').html());
+		installer.showError('<strong>Verification Disabled</strong><p>The installer will no longer attempt to verify the database settings.</p>' + $('#installerror').html());
 	}
 	
 }
