@@ -37,6 +37,7 @@ class Vocabulary extends QueryRecord
 	/**
 	 * Vocabulary constructor
 	 * Creates a Vocabulary instance
+
 	 *
 	 * @param array $paramarray an associative array of initial vocabulary values
 	 **/
@@ -541,7 +542,29 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function get_tree($orderby = 'mptt_left ASC')
 	{
-		return DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=? ORDER BY $orderby", array($this->id), 'Term' );
+		return DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=:vid ORDER BY {$orderby}", array('vid' => $this->id), 'Term' );
+	}
+
+	/**
+	 * Retrieve the vocabulary as an associative array suitable for FormUI select controls
+	 * @return Array The Term objects in the vocabulary, in tree order
+	 **/
+	public function get_options()
+	{
+		$tree = $this->get_tree('mptt_left ASC');
+		$output = array();
+		$lastright = $lastleft = reset($tree)->mptt_left;
+		$indent = 0;
+		$stack = array();
+		foreach($tree as $term) {
+			while ( count($stack) > 0 && end($stack)->mptt_right < $term->mptt_left ) {
+				array_pop($stack);
+			}
+			$output[$term->id] = str_repeat('- ', count($stack)) . $term->term_display;
+			$stack[] = $term;
+		}
+				
+		return $output;
 	}
 
 	/**
@@ -600,6 +623,124 @@ SQL;
 		return $id;
 
 	}
+
+	/**
+	 * Moves a term within the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
+	 * @return Term The Term object added
+	 **/
+	public function move_term( $term, $target_term = null, $before = FALSE )
+	{
+		// We assume that the arguments passed are valid terms. Check them before calling this.
+
+		// If there are terms in the vocabulary, work out the reference point
+		if ( !$this->is_empty() ) {
+
+			$source_left = $term->mptt_left;
+			$source_right = $term->mptt_right;
+			$range = $source_right - $source_left + 1;
+
+			$nodes_moving = ( $range ) / 2; // parent and descendants
+
+ 			DB::begin_transaction();
+
+			// Move the source nodes out of the way by making mptt_left and mptt_right negative
+			$source_to_temp = $source_right + 1; // move the terms so that the rightmost one's mptt_right is -1
+			$params = array( 'displacement' => $source_to_temp, 'vocab_id' => $this->id, 'range_left' => $source_left, 'range_right' => $source_right );
+			$res = DB::query( '
+				UPDATE {terms} 
+				SET 
+					mptt_left = mptt_left - :displacement, 
+					mptt_right = mptt_right - :displacement 
+				WHERE 
+					vocabulary_id = :vocab_id
+					AND mptt_left BETWEEN :range_left AND :range_right
+				', 
+				$params 
+			);
+
+ 			if( ! $res ) {
+ 				DB::rollback();
+				return FALSE;
+			}
+
+			// Close the gap in the tree created by moving those nodes out
+			$params = array( 'range' => $range, 'vocab_id' => $this->id, 'source_left' => $source_left );
+			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left-:range WHERE vocabulary_id=:vocab_id AND mptt_left > :source_left', $params );
+			if( ! $res ) {
+ 				DB::rollback();
+				return FALSE;
+			}
+
+			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right-:range WHERE vocabulary_id=:vocab_id AND mptt_right > :source_left', $params );
+			if( ! $res ) {
+ 				DB::rollback();
+				return FALSE;
+			}
+
+			// Determine the insertion point mptt_target
+			if ( $this->hierarchical ) {
+				if ( null == $target_term ) {
+					// If no target is specified, put the new term after the last term
+					$mptt_target = DB::get_value( 'SELECT MAX(mptt_right) FROM {terms} WHERE vocabulary_id=?', array( $this->id ) ) + 1;
+				}
+				else {
+					if ( FALSE == $before ) {
+						$mptt_target = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? AND id = ?', array( $this->id, $target_term->id ) );
+					}
+					else {
+						$mptt_target = DB::get_value( 'SELECT mptt_left FROM {terms} WHERE vocabulary_id=? AND id = ?', array( $this->id, $target_term->id ) );
+					}
+				}
+			} 
+			else {
+				// vocabulary is not hierarchical
+				if ( FALSE != $before ) {
+					$mptt_target = DB::get_value( 'SELECT mptt_left FROM {terms} WHERE vocabulary_id=? AND id = ?', array( $this->id, $target_term->id ) );
+				}
+				else {
+					$mptt_target = DB::get_value( 'SELECT MAX(mptt_right) FROM {terms} WHERE vocabulary_id=?', array($this->id) ) + 1;
+				}
+			}
+			$temp_left = $source_left - $source_to_temp;
+			$temp_to_target = $mptt_target - $temp_left;
+
+			// Create space in the tree for the insertion
+			$params = array( 'vocab_id' => $this->id, 'range' => $range, 'mptt_target' => $mptt_target );
+			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left+:range WHERE vocabulary_id=:vocab_id AND mptt_left >= :mptt_target', $params );
+			if( ! $res ) {
+ 				DB::rollback();
+				return FALSE;
+			}
+
+			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right+:range WHERE vocabulary_id=:vocab_id AND mptt_right >= :mptt_target', $params );
+			if( ! $res ) {
+ 				DB::rollback();
+				return FALSE;
+			}
+
+			// Move the temp nodes into the space created for them
+			$params = array( 'vocab_id' => $this->id, 'temp_to_target' => $temp_to_target );
+			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left+:temp_to_target WHERE vocabulary_id=:vocab_id AND mptt_left < 0', $params );
+			if( ! $res ) {
+ 				DB::rollback();
+				return FALSE;
+			}
+
+			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right+:temp_to_target WHERE vocabulary_id=:vocab_id AND mptt_right < 0', $params );
+			if( ! $res ) {
+ 				DB::rollback();
+				return FALSE;
+			}
+
+			// Success!
+ 			DB::commit();
+
+			// @todo: need to return the updated term
+			return $term; 
+		}
+		return FALSE; 
+	}
+
 }
 
 ?>
