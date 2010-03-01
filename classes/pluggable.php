@@ -25,7 +25,7 @@ abstract class Pluggable
 	 * Plugins should not define their own constructors, because they are instantiated
 	 * to extract plugin info.  Instead, include a sink for a "init" hook
 	 * which is executed immediately after the plugin is loaded during normal execution.
-	 **/
+	 */
 	public function __construct()
 	{
 		$this->info = $this->info();
@@ -35,10 +35,10 @@ abstract class Pluggable
 	/**
 	 * Gets the filename that contains this pluggable class
 	 * @return string The filename of the file that contains the pluggable class.
-	 **/
+	 */
 	final public function get_file()
 	{
-		if(empty($this->_class_name)) {
+		if ( empty($this->_class_name) ) {
 			$class = new ReflectionClass( get_class( $this ) );
 			$this->_class_name = $class->getFileName();
 		}
@@ -48,7 +48,7 @@ abstract class Pluggable
 	/**
 	 * Gets a database schema associated with this pluggable
 	 * @return string The database schema
-	 **/
+	 */
 	final public function get_db_schema()
 	{
 		$db = DB::get_driver_name();
@@ -92,7 +92,7 @@ abstract class Pluggable
 	 * Registers all of this pluggables action_ and filter_ functions with the Plugins dispatcher
 	 * Registers xmlrpc_ functions with the Plugins dispatcher, and turns '__' into '.'
 	 * for the purposes of matching dotted XMLRPC requests.
-	 **/
+	 */
 	public function load()
 	{
 		// combine the array so we can have hooks => function
@@ -124,12 +124,12 @@ abstract class Pluggable
 			}
 		}
 		// look for help with this
-		if( method_exists( $this, 'help') ) {
+		if ( method_exists( $this, 'help') ) {
 			Plugins::register( array($this, '_help_plugin_config'), 'filter', 'plugin_config', 8);
 			Plugins::register( array($this, '_help_plugin_ui'), 'action', 'plugin_ui', 8);
 		}
 		// look for a basic configure method
-		if( method_exists( $this, 'configure') ) {
+		if ( method_exists( $this, 'configure') ) {
 			Plugins::register( array($this, '_configure_plugin_config'), 'filter', 'plugin_config', 8);
 			Plugins::register( array($this, '_configure_plugin_ui'), 'action', 'plugin_ui', 8);
 		}
@@ -160,7 +160,7 @@ abstract class Pluggable
 	{
 		if ( $plugin_id == $this->plugin_id() && $action == '_help' ) {
 			$output = $this->help();
-			if($output instanceof FormUI) {
+			if ( $output instanceof FormUI ) {
 				$output->out();
 			}
 			else {
@@ -212,10 +212,10 @@ abstract class Pluggable
 	 */
 	public function add_rule($rule, $hook)
 	{
-		if( count($this->_new_rules) == 0 ) {
+		if ( count($this->_new_rules) == 0 ) {
 			Plugins::register( array($this, '_filter_rewrite_rules'), 'filter', 'rewrite_rules', 7);
 		}
-		if( $rule instanceof RewriteRule ) {
+		if ( $rule instanceof RewriteRule ) {
 			$this->_new_rules[] = $rule;
 		}
 		else {
@@ -234,7 +234,7 @@ abstract class Pluggable
 		$rules = array_merge( $rules, $this->_new_rules);
 		return $rules;
 	}
-	
+
 	/**
 	 * Adds a template to the default theme that is stored in a specified path.
 	 * Use this function as a shortcut to make available additional templates to a theme
@@ -247,7 +247,7 @@ abstract class Pluggable
 	 */
 	protected function add_template($name, $filename, $override = false)
 	{
-		if(count($this->_added_templates) == 0) {
+		if ( count($this->_added_templates) == 0 ) {
 			Plugins::register(array(&$this, '_plugin_available_templates'), 'filter', 'available_templates');
 			Plugins::register(array(&$this, '_plugin_include_template_file'), 'filter', 'include_template_file');
 		}
@@ -276,8 +276,8 @@ abstract class Pluggable
 	 */
 	public function _plugin_include_template_file( $file, $name )
 	{
-		if(isset($this->_added_templates[$name])) {
-			if($this->_added_templates[$name][1] || !file_exists($file)) {
+		if ( isset($this->_added_templates[$name]) ) {
+			if ( $this->_added_templates[$name][1] || !file_exists($file)) {
 				$file = $this->_added_templates[$name][0];
 			}
 		}
