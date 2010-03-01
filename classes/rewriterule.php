@@ -68,11 +68,11 @@ class RewriteRule extends QueryRecord
 	 */
 	public function match( $stub )
 	{
-		if( preg_match( $this->parse_regex, $stub, $pattern_matches ) > 0 ) {
+		if ( preg_match( $this->parse_regex, $stub, $pattern_matches ) > 0 ) {
 			$this->entire_match = array_shift( $pattern_matches ); // The entire matched string is returned at index 0
 			$named_args = $this->named_args; // Direct call shows a PHP notice
 
-			if($parameters = unserialize($this->parameters)) {
+			if ( $parameters = unserialize($this->parameters) ) {
 				$this->named_arg_values = array_merge($this->named_arg_values, $parameters);
 			}
 
@@ -87,8 +87,8 @@ class RewriteRule extends QueryRecord
 			if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0 ) {
 				$this->action = $this->named_arg_values[$matches[1]];
 			}
-			
-			if(isset($parameters['require_match'])) {
+
+			if ( isset($parameters['require_match']) ) {
 				return call_user_func($parameters['require_match'], $this, $stub, $parameters);
 			}
 
@@ -173,9 +173,9 @@ class RewriteRule extends QueryRecord
 	 */
 	public function __get( $name )
 	{
-		switch( $name ) {
+		switch ( $name ) {
 			case 'named_args':
-				if( empty( $this->m_named_args ) ) {
+				if ( empty( $this->m_named_args ) ) {
 					preg_match_all( '/(?<!\()\{\$(\w+?)\}(?!\))/', $this->build_str, $required );
 					preg_match_all( '/(?<=\()[^\(\)]*\{\$(\\w+?)\}[^\(\)]*(?=\))/', $this->build_str, $optional );
 					$this->m_named_args['required'] = $required[1];
@@ -213,9 +213,9 @@ class RewriteRule extends QueryRecord
 
 	/**
 	 * Create an old-style rewrite rule
-		* @param string $build_str
-		* @param string $handler
-		* @param string $action
+	 * @param string $build_str
+	 * @param string $handler
+	 * @param string $action
 	 * @return RewriteRule The created rule
 	 */
 	public static function create_url_rule( $build_str, $handler, $action )

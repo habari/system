@@ -79,7 +79,7 @@ class RewriteRules extends ArrayObject
 	 * Return the active rewrite rules, both in the database and applied by plugins
 	 *
 	 * @return array Array of RewriteRule objects for active rewrite rules
-	 **/
+	 */
 	public static function get_active()
 	{
 		static $system_rules;
@@ -113,7 +113,7 @@ class RewriteRules extends ArrayObject
 	 *
 	 * @param array $rewrite_rules An array of RewriteRules
 	 * @return array Sorted rewrite rules by priority
-	 **/
+	 */
 	public static function sort_rules($rewrite_rules)
 	{
 		$pr = array();
@@ -138,11 +138,11 @@ class RewriteRules extends ArrayObject
 	 * @param string $name The name of the rule
 	 * @return RewriteRule The rule requested
 	 * @todo Make this return more than one rule when more than one rule matches.
-	 **/
+	 */
 	public static function by_name( $name )
 	{
 		static $named = null;
-		
+
 		if ( self::$sorted_rules_cache == null ) {
 			self::get_active();
 		}
