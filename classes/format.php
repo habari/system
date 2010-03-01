@@ -167,7 +167,7 @@ class Format
 		do {
 			
 			if ($openP) {
-				if ($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array(strtolower($token['name']), $blockElements)) {
+				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array(strtolower($token['name']), $blockElements)) {
 					$value .= '</p>';
 					$openP = false;
 				}
