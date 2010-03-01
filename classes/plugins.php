@@ -20,11 +20,11 @@ class Plugins
 	 * function __construct
 	 * A private constructor method to prevent this class from being instantiated.
 	 * Don't ever create this class as an object for any reason.  It is not a singleton.
-	 **/
+	 */
 	private function __construct()
 	{
 	}
-	
+
 	/**
 	 * Autoload function to load plugin file from classname
 	 */
@@ -42,7 +42,7 @@ class Plugins
 	 * @param string Usually either 'filter' or 'action' depending on the hook type.
 	 * @param string The plugin hook to register
 	 * @param hex An optional execution priority, in hex.  The lower the priority, the earlier the function will execute in the chain.  Default value = 8.
-	**/
+	 */
 	public static function register( $fn, $type, $hook, $priority = 8 )
 	{
 		// add the plugin function to the appropriate array
@@ -51,10 +51,10 @@ class Plugins
 		$ref =& self::$hooks;
 
 		foreach( $index as $bit ) {
-		    if(!isset($ref["{$bit}"])) {
-		    	$ref["{$bit}"] = array();
-		    }
-		    $ref =& $ref["{$bit}"];
+			if ( !isset($ref["{$bit}"]) ) {
+				$ref["{$bit}"] = array();
+			}
+			$ref =& $ref["{$bit}"];
 		}
 
 		$ref[] = $fn;
@@ -66,7 +66,7 @@ class Plugins
 	 * Call to execute a plugin action
 	 * @param string The name of the action to execute
 	 * @param mixed Optional arguments needed for action
-	 **/
+	 */
 	public static function act()
 	{
 		$args = func_get_args();
@@ -87,7 +87,7 @@ class Plugins
 	 * Call to execute a plugin filter
 	 * @param string The name of the filter to execute
 	 * @param mixed The value to filter.
-	 **/
+	 */
 	public static function filter()
 	{
 		list( $hookname, $return ) = func_get_args();
@@ -111,7 +111,7 @@ class Plugins
 	 * Call to execute an XMLRPC function
 	 * @param string The name of the filter to execute
 	 * @param mixed The value to filter.
-	 **/
+	 */
 	public static function xmlrpc()
 	{
 		list( $hookname, $return ) = func_get_args();
@@ -140,8 +140,8 @@ class Plugins
 		$hookname = array_shift($filter_args);
 
 		$filtersets = array();
-		if(!isset(self::$hooks['theme'][$hookname])) {
-			if(substr($hookname, -6) != '_empty') {
+		if ( !isset(self::$hooks['theme'][$hookname]) ) {
+			if ( substr($hookname, -6) != '_empty' ) {
 				array_unshift($filter_args, $hookname . '_empty');
 				return call_user_func_array(array('Plugins', 'theme'), $filter_args);
 			}
@@ -153,8 +153,8 @@ class Plugins
 			foreach ( $priority as $filter ) {
 				// $filter is an array of object reference and method name
 				$callargs = $filter_args;
-				if(is_array($filter)) {
-					if(is_string($filter[0])) {
+				if ( is_array($filter) ) {
+					if ( is_string($filter[0]) ) {
 						$module = $filter[0];
 					}
 					else {
@@ -170,7 +170,7 @@ class Plugins
 				$return[$module] = call_user_func_array( $filter, $callargs );
 			}
 		}
-		if(count($return) == 0 && substr($hookname, -6) != '_empty') {
+		if ( count($return) == 0 && substr($hookname, -6) != '_empty' ) {
 			array_unshift($filter_args, $hookname . '_empty');
 			$result = call_user_func_array(array('Plugins', 'theme'), $filter_args);
 		}
@@ -189,23 +189,23 @@ class Plugins
 	{
 		return isset( self::$hooks['theme'][$hookname] );
 	}
-	
+
 	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
 	 * @param boolean Whether to refresh the cached array.  Default FALSE
 	 * @return array An array of filenames
-	 **/
+	 */
 	public static function list_active( $refresh = false )
 	{
 		if ( empty(self::$plugin_files) || $refresh ) {
 			$plugins = Options::get( 'active_plugins' );
-			if( is_array($plugins) ) {
+			if ( is_array($plugins) ) {
 				foreach( $plugins as $class => $filename ) {
 					// add base path to stored path
 					$filename = HABARI_PATH . $filename;
 
-					if( file_exists( $filename ) ) {
+					if ( file_exists( $filename ) ) {
 						self::$plugin_files[$class] = $filename;
 					}
 				}
@@ -215,11 +215,11 @@ class Plugins
 		}
 		return self::$plugin_files;
 	}
-	
+
 	/**
 	 * Returns the internally stored references to all loaded plugins
 	 * @return array An array of plugin objects
-	 **/
+	 */
 	public static function get_active()
 	{
 		return self::$plugins;
@@ -239,7 +239,7 @@ class Plugins
 	 * function list_all
 	 * Gets a list of all plugin filenames that are available
 	 * @return array An array of filenames
-	 **/
+	 */
 	public static function list_all()
 	{
 		$plugins = array();
@@ -274,7 +274,7 @@ class Plugins
 	 * Get classes that extend Plugin.
 	 * @param $class string A class name
 	 * @return boolean true if the class extends Plugin
-	 **/
+	 */
 	public static function extends_plugin( $class )
 	{
 		$parents = class_parents( $class, false );
@@ -287,7 +287,7 @@ class Plugins
 	 * @param string $file the full path to a plugin file
 	 * @param bool $check_realpath whether or not to try realpath resolution
 	 * @return string the class name
-	**/
+	 */
 	public static function class_from_filename( $file, $check_realpath = false )
 	{
 		if ( $check_realpath ) {
@@ -301,7 +301,7 @@ class Plugins
 			}
 		}
 		// if we haven't found the plugin class, try again with realpath resolution:
-		if ($check_realpath) {
+		if ( $check_realpath ) {
 			// really can't find it
 			return false;
 		}
@@ -309,7 +309,7 @@ class Plugins
 			return self::class_from_filename( $file, true );
 		}
 	}
-	
+
 	public static function get_plugin_classes()
 	{
 		$classes = get_declared_classes();
@@ -319,19 +319,19 @@ class Plugins
 	/**
 	 * Initialize all loaded plugins by calling their load() method
 	 * @param string $file the class name to load
-	 * @param boolean $activate True if the plugin's load() method should be called	 
+	 * @param boolean $activate True if the plugin's load() method should be called
 	 * @return Plugin The instantiated plugin class
-	 **/
+	 */
 	public static function load_from_file( $file, $activate = true )
 	{
 		$class = self::class_from_filename($file);
 		return self::load($class, $activate);
 	}
-	
-	
+
+
 	/**
 	 * Return the info XML for a plugin based on a filename
-	 * 
+	 *
 	 * @param string $file The filename of the plugin file
 	 * @return SimpleXMLElement The info structure for the plugin, or null if no info could be loaded
 	 */
@@ -341,27 +341,27 @@ class Plugins
 		$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $file);
 		if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
 			$info = new SimpleXMLElement( $xml_content );
-			if($info->getName() != 'pluggable') {
+			if ( $info->getName() != 'pluggable' ) {
 				$info = null;
-			}					
+			}
 		}
 		return $info;
 	}
-	
+
 	public static function load( $class, $activate = true )
 	{
 		$plugin = new $class;
-		if($activate) {
+		if ( $activate ) {
 			self::$plugins[$plugin->plugin_id] = $plugin;
 			$plugin->load();
 		}
 		return $plugin;
 	}
-	
+
 	/**
 	 * Instatiate and load all active plugins
 	 */
-	public static function load_active() 
+	public static function load_active()
 	{
 		foreach ( self::list_active() as $class => $filename ) {
 			if ( file_exists($filename) ) {
@@ -369,7 +369,7 @@ class Plugins
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Returns a plugin id for the filename specified.
@@ -387,23 +387,23 @@ class Plugins
 
 	/**
 	 * Activates a plugin file
-	 **/
+	 */
 	public static function activate_plugin( $file )
 	{
 		$ok = true;
 		$ok = Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
-		if($ok) {
+		if ( $ok ) {
 			// strip base path from stored path
 			$short_file = substr( $file, strlen( HABARI_PATH ) );
 			$activated = Options::get( 'active_plugins' );
-			if( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
+			if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
 				include_once($file);
 				$class = Plugins::class_from_filename($file);
 				$activated[$class] = $short_file;
 				Options::set( 'active_plugins', $activated );
-				
+
 				$plugin = Plugins::load($class);
-				if(method_exists($plugin, 'action_plugin_activation')) {
+				if ( method_exists($plugin, 'action_plugin_activation') ) {
 					$plugin->action_plugin_activation( $file ); // For the plugin to install itself
 				}
 				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
@@ -415,13 +415,13 @@ class Plugins
 
 	/**
 	 * Deactivates a plugin file
-	 **/
+	 */
 	public static function deactivate_plugin( $file )
 	{
 		$ok = true;
 		$name = '';
 		$ok = Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
-		if($ok) {
+		if ( $ok ) {
 			// normalize directory separator
 			$file = str_replace( '\\', '/', $file );
 			// strip base path from stored path
@@ -429,11 +429,10 @@ class Plugins
 
 			$activated = Options::get( 'active_plugins' );
 			$index = array_search( $short_file, $activated );
-			if ( is_array( $activated ) && ( FALSE !== $index ) )
-			{
+			if ( is_array( $activated ) && ( FALSE !== $index ) ) {
 				// Get plugin name for logging
 				$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
-				if(method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation')) {
+				if ( method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation') ) {
 					self::$plugins[Plugins::id_from_file( $file )]->action_plugin_deactivation( $file ); // For the plugin to uninstall itself
 				}
 				unset($activated[$index]);
@@ -449,29 +448,29 @@ class Plugins
 	 * Detects whether the plugins that exist have changed since they were last
 	 * activated.
 	 * @return boolean true if the plugins have changed, false if not.
-	 **/
+	 */
 	public static function changed_since_last_activation()
 	{
 		$old_plugins = Options::get('plugins_present');
 		//self::set_present();
 		// If the plugin list was never stored, then they've changed.
-		if(!is_array($old_plugins)) {
+		if ( !is_array($old_plugins) ) {
 			return true;
 		}
 		// add base path onto stored path
-		foreach( $old_plugins as $old_plugin ) {
+		foreach ( $old_plugins as $old_plugin ) {
 			$old_plugin = HABARI_PATH . $old_plugin;
 		}
 		// If the file list is not identical, then they've changed.
 		$new_plugin_files = Plugins::list_all();
 		$old_plugin_files = array_map(create_function('$a', 'return $a["file"];'), $old_plugins);
-		if(count(array_intersect($new_plugin_files, $old_plugin_files)) != count($new_plugin_files)) {
+		if ( count(array_intersect($new_plugin_files, $old_plugin_files)) != count($new_plugin_files) ) {
 			return true;
 		}
 		// If the files are not identical, then they've changed.
 		$old_plugin_checksums = array_map(create_function('$a', 'return $a["checksum"];'), $old_plugins);
 		$new_plugin_checksums = array_map('md5_file', $new_plugin_files);
-		if(count(array_intersect($old_plugin_checksums, $new_plugin_checksums)) != count($new_plugin_checksums)) {
+		if ( count(array_intersect($old_plugin_checksums, $new_plugin_checksums)) != count($new_plugin_checksums) ) {
 			return true;
 		}
 		return false;
@@ -480,15 +479,15 @@ class Plugins
 	/**
 	 * Stores the list of plugins that are present (not necessarily active) in
 	 * the Options table for future comparison.
-	 **/
+	 */
 	public static function set_present()
 	{
 		$plugin_files = Plugins::list_all();
 		// strip base path
-		foreach( $plugin_files as $plugin_file ) {
+		foreach ( $plugin_files as $plugin_file ) {
 			$plugin_file = substr( $file, strlen( HABARI_PATH ) );
 		}
-		
+
 		$plugin_data = array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
 		Options::set('plugins_present', $plugin_data);
 	}
@@ -506,7 +505,7 @@ class Plugins
 		foreach ( self::$plugins as $plugin ) {
 			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || (isset($plugin->info->guid) && strtolower($plugin->info->guid) == strtolower($name))) {
 				if ( isset( $version ) ) {
-					if(isset($plugin->info->version)) {
+					if ( isset($plugin->info->version) ) {
 						return version_compare( $plugin->info->version, $version, '>=' );
 					}
 					else {
