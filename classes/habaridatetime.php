@@ -209,11 +209,27 @@ class HabariDateTime extends DateTime
 		return parent::format($format);
 	}
 
+	/**
+	 * Returns date components inserted into a string
+	 * 
+	 * Example:
+	 * echo HabariDateTime::date_create('2010-01-01')->text_format('The year was {Y}.');
+	 * // Expected output:  The year was 2010.	 	  	
+	 *	
+	 * @param string $format A string with single-character date format codes {@link http://php.net/date date()} surrounded by braces
+	 * @return string The string with date components inserted	 
+	 */	 
 	public function text_format($format)
 	{
 		return preg_replace_callback('%\{(\w)\}%i', array($this, 'text_format_callback'), $format);
 	}
 
+	/**
+	 * Callback method for supplying replacements for HabariDatTime::text_format()
+	 * 
+	 * @param array $matches The matches found in the regular expression.
+	 * @return string The date component value for the matched character.
+	 */	 
 	private function text_format_callback($matches)
 	{
 		return $this->format($matches[1]);
