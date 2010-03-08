@@ -7,7 +7,7 @@
 	
 	<version>1.0</version>
 	<url>http://habariproject.org/</url>
-	<description><![CDATA[Adds support Pingback 1.0 methods to the XML-RPC server.]]></description>
+	<description><![CDATA[Adds Pingback 1.0 methods to the XML-RPC server.]]></description>
 
 	<copyright>2009</copyright>
 	
