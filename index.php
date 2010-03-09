@@ -111,7 +111,7 @@ if ( file_exists( $config ) ) {
 		);
 		
 		// Set correct HTTP header and die. 
-		header( 'HTTP/1.1 500 Internal Server Error' ); 
+		header( 'HTTP/1.1 500 Internal Server Error', true, 500 ); 
 		die( $error_page );
 	}
 }

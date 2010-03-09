@@ -139,7 +139,7 @@ class AdminHandler extends ActionHandler
 				}
 				else {
 					// The requested console page doesn't exist
-					header( 'HTTP/1.0 404 Not Found' );
+					header( 'HTTP/1.1 404 Not Found', true, 404 );
 					$this->get_blank(_t('The page you were looking for was not found.'));
 				}
 				break;

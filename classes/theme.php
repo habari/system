@@ -230,14 +230,14 @@ class Theme extends Pluggable
 				$this->matched_rule = URL::get_matched_rule();
 				// 404 status header sent in act_display_404, but we're past
 				// that, so send it now.
-				header( 'HTTP/1.1 404 Not Found' );
+				header( 'HTTP/1.1 404 Not Found', true, 404 );
 			}
 			else {
 				$this->display( 'header' );
 				echo '<h2>';
 				_e( "Whoops! 404. The page you were trying to access is not really there. Please try again." );
 				echo '</h2>';
-				header( 'HTTP/1.1 404 Not Found' );
+				header( 'HTTP/1.1 404 Not Found', true, 404 );
 				$this->display( 'footer' );
 				die;
 			}

@@ -41,7 +41,7 @@ class AtomHandler extends ActionHandler
 
 			$this->user = User::identify();
 			if ( ( $force != FALSE ) && ( !$this->user->loggedin ) ) {
-				header( 'HTTP/1.1 401 Unauthorized' );
+				header( 'HTTP/1.1 401 Unauthorized', true, 401 );
 				header( 'Status: 401 Unauthorized' );
 				header( 'WWW-Authenticate: Basic realm="Habari"' );
 				die();
@@ -495,7 +495,7 @@ class AtomHandler extends ActionHandler
 
 			// If the post doesn't exist, send a 404
 			if ( !$post instanceOf Post ) {
-				header( 'HTTP/1.0 404 Not Found' );
+				header( 'HTTP/1.1 404 Not Found', true, 404 );
 				die('The post could not be found');
 			}
 
@@ -860,7 +860,7 @@ class AtomHandler extends ActionHandler
 		$post->user_id = $this->user->id;
 		$post->insert();
 
-		header('HTTP/1.1 201 Created');
+		header('HTTP/1.1 201 Created', true, 201);
 		header('Status: 201 Created');
 		header('Location: ' . URL::get( 'atom_entry', array( 'slug' => $post->slug ) ) );
 
