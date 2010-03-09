@@ -972,7 +972,7 @@ var theMenu = {
 		});
 
 		// Down arrow
-		$.hotkeys.add('down', {propagate:false, disableInInput: true}, function() {
+		$.hotkeys.add('down', {propagate:true, disableInInput: true}, function(evt) {
 			if ($('#menulist .carrot ul li.carrot').length !== 0) {
 				if ($('#menulist .carrot ul li:last').hasClass('carrot')) {
 					// Move to top if at bottom
@@ -981,6 +981,8 @@ var theMenu = {
 				} else {
 					$('#menulist .carrot ul li.carrot').removeClass('carrot').next().addClass('carrot');
 				}
+				// stop propagation
+				evt.preventDefault();
 			} else if (($('#menu').hasClass('hovering') === true)) {
 				// If carrot doesn't exist, select first item
 				if (!$('#menulist li').hasClass('carrot')) {
@@ -994,8 +996,8 @@ var theMenu = {
 				} else {
 					$('.carrot').removeClass('carrot').next().addClass('carrot');
 				}
-			} else {
-				return false;
+				// stop propagation
+				evt.preventDefault();
 			}
 			return false;
 		});
