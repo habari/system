@@ -199,7 +199,7 @@ class SpamChecker extends Plugin
 
 		if(!$this->verify_code($handlervars['ccode'], $comment->post_id)) {
 			ob_end_clean();
-			header('HTTP/1.1 403 Forbidden');
+			header( 'HTTP/1.1 403 Forbidden', true, 403 );
 			die('<h1>' . _t('The selected action is forbidden.') . '</h1>');
 		}
 

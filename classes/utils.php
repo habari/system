@@ -1001,10 +1001,10 @@ class Utils
 	{
 		if ( !in_array( $_SERVER['REQUEST_METHOD'], $expected ) ) {
 			if ( in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'HEAD', 'POST', 'PUT', 'DELETE' ) ) ) {
-				header( 'HTTP/1.1 405 Method Not Allowed' );
+				header( 'HTTP/1.1 405 Method Not Allowed', true, 405 );
 			}
 			else {
-				header( 'HTTP/1.1 501 Method Not Implemented' );
+				header( 'HTTP/1.1 501 Method Not Implemented', true, 501 );
 			}
 			header( 'Allow: ' . implode( ',', $expected ) );
 			exit;
