@@ -451,7 +451,7 @@ class InputFilter
 		}
 
 		// rebuild our output string
-		return preg_replace( '#<([^>\s]+)(?:\s+[^>]+)?></\1>#', '', (string) $filtered );
+		return preg_replace( '#<([^>\s]+)(?:\s+[^>]+)?></\1>#u', '', (string) $filtered );
 	}
 }
 

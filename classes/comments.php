@@ -833,7 +833,7 @@ class Comments extends ArrayObject
 
 		foreach ( $tokens as $token ) {
 			// check for a keyword:value pair
-			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
+			if ( preg_match( '/^\w+:\S+$/u', $token ) ) {
 				list( $keyword, $value ) = explode( ':', $token );
 
 				$keyword = strtolower( $keyword );

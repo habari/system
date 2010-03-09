@@ -221,7 +221,7 @@ class HabariDateTime extends DateTime
 	 */	 
 	public function text_format($format)
 	{
-		return preg_replace_callback('%\{(\w)\}%i', array($this, 'text_format_callback'), $format);
+		return preg_replace_callback('%\{(\w)\}%iu', array($this, 'text_format_callback'), $format);
 	}
 
 	/**

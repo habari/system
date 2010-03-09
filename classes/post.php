@@ -448,7 +448,7 @@ class Post extends QueryRecord implements IsContent
 			// escape
 			$tagstr = str_replace( array_keys( $rez ), $rez, $tags );
 			// match-o-matic
-			preg_match_all( '/((("|((?<= )|^)\')\\S([^\\3]*?)\\3((?=[\\W])|$))|[^,])+/', $tagstr, $matches );
+			preg_match_all( '/((("|((?<= )|^)\')\\S([^\\3]*?)\\3((?=[\\W])|$))|[^,])+/u', $tagstr, $matches );
 			// cleanup
 			$tags = array_map( 'trim', $matches[0] );
 			$tags = preg_replace( array_fill( 0, count( $tags ), '/^(["\'])(((?!").)+)(\\1)$/'), '$2', $tags );

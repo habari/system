@@ -84,7 +84,7 @@ class RewriteRule extends QueryRecord
 				}
 			}
 
-			if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0 ) {
+			if ( preg_match( '/^\\{\\$(\\w+)\\}$/u', $this->action, $matches ) > 0 ) {
 				$this->action = $this->named_arg_values[$matches[1]];
 			}
 
@@ -176,8 +176,8 @@ class RewriteRule extends QueryRecord
 		switch ( $name ) {
 			case 'named_args':
 				if ( empty( $this->m_named_args ) ) {
-					preg_match_all( '/(?<!\()\{\$(\w+?)\}(?!\))/', $this->build_str, $required );
-					preg_match_all( '/(?<=\()[^\(\)]*\{\$(\\w+?)\}[^\(\)]*(?=\))/', $this->build_str, $optional );
+					preg_match_all( '/(?<!\()\{\$(\w+?)\}(?!\))/u', $this->build_str, $required );
+					preg_match_all( '/(?<=\()[^\(\)]*\{\$(\\w+?)\}[^\(\)]*(?=\))/u', $this->build_str, $optional );
 					$this->m_named_args['required'] = $required[1];
 					$this->m_named_args['optional'] = $optional[1];
 				}

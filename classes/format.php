@@ -208,13 +208,13 @@ class Format
 					$openP = true;
 				}
 				
-				$localValue = preg_replace('/\s*(\n\s*){2,}/', "</p><p>", $localValue); // at least two \n in a row (allow whitespace in between)
+				$localValue = preg_replace('/\s*(\n\s*){2,}/u', "</p><p>", $localValue); // at least two \n in a row (allow whitespace in between)
 				$localValue = str_replace("\n", "<br>", $localValue); // nl2br
 			}
 			$value .= $localValue;
 		} while ($token = $set->next());
 		
-		$value = preg_replace('#\s*<p></p>\s*#', '', $value); // replace <p></p>
+		$value = preg_replace('#\s*<p></p>\s*#u', '', $value); // replace <p></p>
 		if ($openP) {
 			$value .= '</p>';
 		}
@@ -290,7 +290,7 @@ class Format
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
 		}
-		preg_match_all('%\{(\w)\}%i', $format, $matches);
+		preg_match_all('%\{(\w)\}%iu', $format, $matches);
 
 		$components = array();
 		foreach ( $matches[1] as $format_component ) {
@@ -361,7 +361,7 @@ class Format
 			if(!$bail) {
 				switch($token['type']) {
 					case HTMLTokenizer::NODE_TYPE_TEXT:
-						$words = preg_split('/(\\s+)/', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+						$words = preg_split('/(\\s+)/u', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 						// word count is doubled because spaces between words are captured as their own array elements via PREG_SPLIT_DELIM_CAPTURE
 						$words = array_slice($words, 0, $remaining_words * 2);
 						$remaining_words -= count($words) / 2;
@@ -450,7 +450,7 @@ class Format
 			if( isset( $paramarray['class'] ) ) $paramstring .= 'class="' . $paramarray['class'] . '" ';	
 
 		}
-		$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
+		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
 		if ( count($matches) > 1 ) {
 			return reset($matches) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>';
 		}
