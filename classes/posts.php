@@ -92,7 +92,7 @@ class Posts extends ArrayObject implements IsContent
 				// Safety mechanism to prevent empty queries
 				$where = array();
 				$paramset = array_merge( (array) $paramarray, (array) $paramset );
-				// $nots= preg_grep( '%^not:(\w+)$%i', (array) $paramset );
+				// $nots= preg_grep( '%^not:(\w+)$%iu', (array) $paramset );
 
 				if ( isset( $paramset['id'] ) ) {
 					if ( is_array( $paramset['id'] ) ) {
@@ -875,7 +875,7 @@ class Posts extends ArrayObject implements IsContent
 
 		foreach ( $tokens as $token ) {
 			//check for triple combination
-			if ( preg_match( '/^\w+:[^:\s]*:\S+$/', $token ) ){
+			if ( preg_match( '/^\w+:[^:\s]*:\S+$/u', $token ) ){
 				list( $keyword, $infokey, $infovalue )= explode( ':', $token );
 				$keyword = strtolower( $keyword );
 				switch ( $keyword ){
@@ -886,7 +886,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 
 			// check for a keyword:value pair
-			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
+			if ( preg_match( '/^\w+:\S+$/u', $token ) ) {
 				list( $keyword, $value )= explode( ':', $token );
 
 				$keyword = strtolower( $keyword );

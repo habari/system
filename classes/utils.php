@@ -580,7 +580,7 @@ class Utils
 	 **/
 	public static function locale_date($format, $timestamp)
 	{
-		$matches = preg_split( '/((?<!\\\\)%[a-z]\\s*)/i', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+		$matches = preg_split( '/((?<!\\\\)%[a-z]\\s*)/iu', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 		$output = '';
 		foreach( $matches as $match ) {
 			if ( $match{0} == '%' ) {

@@ -751,7 +751,7 @@ SQL;
 	 */
 	public static function normalize_token( $name )
 	{
-		return strtolower( preg_replace( '/\s+/', '_', trim($name) ) );
+		return strtolower( preg_replace( '/\s+/u', '_', trim($name) ) );
 	}
 
 	/**

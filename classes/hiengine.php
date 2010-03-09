@@ -198,9 +198,9 @@ class HiEngineParser
 	 */
 	function process( $template )
 	{
-		$template = preg_replace_callback('/\{hi:(".+?")((?:\s*[\w\.]+){0,2})\s*\}/sm', array($this, 'hi_quote'), $template);
+		$template = preg_replace_callback('/\{hi:(".+?")((?:\s*[\w\.]+){0,2})\s*\}/smu', array($this, 'hi_quote'), $template);
 		$template = preg_replace_callback('%\{hi:([^\?]+?)\}(.+?)\{/hi:\1\}%ism', array($this, 'hi_loop'), $template);
-		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?)\{/hi:\?\}%ism', array($this, 'hi_if'), $template);
+		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?)\{/hi:\?\}%ismu', array($this, 'hi_if'), $template);
 		$template = preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_command'), $template);
 		return $template;
 	}
@@ -240,7 +240,7 @@ class HiEngineParser
 		}
 
 		// Catch tags in the format {hi:command:parameter}
-		if ( preg_match('/^(\w+):(.+)$/', $cmd, $cmd_matches) ) {
+		if ( preg_match('/^(\w+):(.+)$/u', $cmd, $cmd_matches) ) {
 			switch ( strtolower($cmd_matches[1]) ) {
 				case 'display':
 					return '<?php $theme->display(\'' . $cmd_matches[2] . '\'); ?>';
@@ -381,7 +381,7 @@ class HiEngineParser
 	*/
 	function hi_quote($matches)
 	{
-		$args = preg_split('/\s+/', trim($matches[2]));
+		$args = preg_split('/\s+/u', trim($matches[2]));
 
 		preg_match_all('/"(.+?)(?<!\\\\)"/', $matches[1], $quotes);
 		$count = 0;
