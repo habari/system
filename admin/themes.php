@@ -110,7 +110,7 @@
 					<?php foreach ( $active_theme['info']->areas->area as $area ): ?>
 						<h2><a href="#"><?php echo $area['name']; ?></a></h2>
 						<div class="area_drop">
-							<?php if ( is_array($blocks_areas[0][(string)$area['name']]) ): ?>
+							<?php if ( isset($blocks_areas[0][(string)$area['name']]) ): ?>
 							<?php foreach ( $blocks_areas[0][(string)$area['name']] as $block ): ?>
 								<div class="area_block"><h3><?php echo $block->title; ?></h3></div>
 							<?php endforeach; ?>
