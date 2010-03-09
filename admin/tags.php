@@ -70,16 +70,18 @@ itemManage.update = function( action, id ) {
 };
 
 itemManage.rename = function() {
-	master = $('.controls input.renametext').val();
+	var master = $('.controls input.renametext').val();
 
 	// Unselect the master, if it's selected
-	$('.tag:contains(' + master + ')').each(function() {
-		if ($(this).find('span').text() == master) {
-			$(this).removeClass('selected');
-		}
-	})
+	if ( master ) {
+		$('.tag:contains(' + master + ')').each(function() {
+			if ($(this).find('span').text() == master) {
+				$(this).removeClass('selected');
+			}
+		});
+	}
 
-	selected = $('.tag.selected');
+	var selected = $('.tag.selected');
 
 	if ( selected.length == 0 ) {
 		humanMsg.displayMsg( "<?php _e('Error: No tags selected.'); ?>" );
@@ -109,7 +111,7 @@ itemManage.rename = function() {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
-			$('.controls input.renametext').val('');
+			$('.controls input.renametext').val('').blur();
 			$('#tag_collection').html(result['tags']);
 			jQuery.each( result['msg'], function( index, value ) {
 				humanMsg.displayMsg( value );
@@ -122,6 +124,26 @@ itemManage.rename = function() {
 		'json'
 	);
 };
+
+// overload changeItem()
+var parentChangeItem = itemManage.changeItem;
+
+itemManage.changeItem = function() {
+	parentChangeItem();
+	
+	var checked = $('.item:not(.ignore) .checkbox input[type=checkbox]:checked');
+	
+	if ( !checked.length ) {
+		$(".controls input.rename").val("<?php _e('Rename'); ?>");
+		$(".controls input.renametext").blur();
+	} else if ( checked.length == 1 ) {
+		$(".controls input.rename").val("<?php _e('Rename'); ?>");
+		$(".controls input.renametext").focus();
+	} else {
+		$(".controls input.rename").val("<?php _e('Merge'); ?>");
+		$(".controls input.renametext").focus();
+	}
+}
 </script>
 
 <?php include('footer.php');?>

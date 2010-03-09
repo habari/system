@@ -861,8 +861,10 @@ timelineHandle.prototype = {
 // SPINNER
 var spinner = {
 	start: function() {
-		$('#spinner').css({ height: 32, width: 32 }).css('background-image', 'url(../system/admin/images/spin.gif)' ); 
-		$('#spinner').show();
+		$('#spinner')
+			.css({ height: 32, width: 32 })
+			.css('background-image', 'url(' + habari.url.habari + '/system/admin/images/spin.gif)')
+			.show();
 	},
 	stop: function () {
 		$('#spinner').hide();
