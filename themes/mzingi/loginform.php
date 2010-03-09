@@ -7,13 +7,13 @@ if ( isset( $error ) ) {
 if ( $loggedin ) {
 ?>
 <p><?php _e('You are logged in as'); ?> <?php echo $user->username; ?>.</p>
-<p><?php _e('Want to'); ?> <a href="<?php Site::out_url( 'habari' ); ?>/user/logout"><?php _e('log out'); ?></a>?</p>
+<p><?php _e('Want to'); ?> <a href="<?php Site::out_url( 'habari' ); ?>/auth/logout"><?php _e('log out'); ?></a>?</p>
 <?php
 }
 else {
 ?>
 <?php Plugins::act( 'theme_loginform_before' ); ?>
-<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
+<form method="post" action="<?php URL::out( 'auth', array( 'page' => 'login' ) ); ?>">
 	<p>
 		<label for="habari_username"><small><strong><?php _e('Name:'); ?></strong></small></label>
 		<input type="text" size="25" name="habari_username" id="habari_username">

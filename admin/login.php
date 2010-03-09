@@ -33,7 +33,7 @@
 
 		<div class="container">
 			<?php Plugins::act( 'theme_loginform_before' ); ?>
-				<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
+				<form method="post" action="<?php URL::out( 'auth', array( 'page' => 'login' ) ); ?>">
 
 					<p>
 						<label for="habari_username" class="incontent abovecontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if(isset( $habari_username )) { ?> value="<?php echo htmlspecialchars( $habari_username ); ?>"<?php } ?> placeholder="<?php _e('name'); ?>" class="styledformelement">
