@@ -41,7 +41,7 @@ class AdminHandler extends ActionHandler
 					Session::add_to_set( 'last_form_data', $get_raw, 'get' );
 					Session::error( _t('We saved the last form you posted. Log back in to continue its submission.'), 'expired_form_submission' );
 				}
-				Utils::redirect( URL::get( 'user', array( 'page' => 'login' ) ) );
+				Utils::redirect( URL::get( 'auth', array( 'page' => 'login' ) ) );
 			}
 			exit;
 		}
@@ -3136,7 +3136,7 @@ class AdminHandler extends ActionHandler
 			'profile' => array( 'url' => URL::get( 'admin', 'page=user' ), 'title' => _t( 'Manage your user profile' ), 'text' => _t( 'My Profile' ), 'hotkey' => 'Y', 'access'=>array('manage_self'=>true, 'manage_users'=>true) ),
 			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array('manage_groups'=>true) ),
 			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array('manage_logs'=>true) ) ,
-			'logout' => array( 'url' => URL::get( 'user', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
+			'logout' => array( 'url' => URL::get( 'auth', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
 		);
 
 		$mainmenus = array_merge( $adminmenu );

@@ -9,13 +9,13 @@ if ( isset( $error ) && ( $error == 'Bad credentials' ) ) {
 if ( $loggedin ) {
 ?>
 		<p><?php _e('You are logged in as'); ?> <a href="<?php URL::out( 'admin', 'page=user&user=' . $user->username ) ?>" title="<?php _e('Edit Your Profile'); ?>"><?php echo $user->username; ?></a>.</p>
-		<p><?php _e('Want to'); ?> <a href="<?php Site::out_url( 'habari' ); ?>/user/logout"><?php _e('log out'); ?></a>?</p>
+		<p><?php _e('Want to'); ?> <a href="<?php Site::out_url( 'habari' ); ?>/auth/logout"><?php _e('log out'); ?></a>?</p>
 <?php
 }
 else {
 ?>
 	<?php Plugins::act( 'theme_loginform_before' ); ?>
-		<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>" id="loginform">
+		<form method="post" action="<?php URL::out( 'auth', array( 'page' => 'login' ) ); ?>" id="loginform">
 			<p>
 			<label for="habari_username"><?php _e('Name:'); ?></label>
 			<input type="text" size="25" name="habari_username" id="habari_username">
