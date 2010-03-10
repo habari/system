@@ -288,7 +288,7 @@ class InputFilter
 
 		$res = '';
 		$res .= $parsed_url['scheme'];
-		if ( $parsed_url['is_pseudo'] || $parsed_url['scheme'] == 'mailto' ) {
+		if ( $parsed_url['is_pseudo'] || in_array( strtolower( $parsed_url['scheme'] ), array( 'mailto', 'callto' ) ) ) {
 			$res .= ':';
 		}
 		else {
