@@ -75,7 +75,7 @@ class Term extends QueryRecord
 		if ( $vocab_id instanceof Vocabulary ) {
 			$vocab_id = $vocab_id->id;
 		}
-		$params = array( $vocab_id );
+		$params = array( (int)$vocab_id );
 		$query = '';
 		if ( is_null( $term )  ) {
 			// The root node has an mptt_left value of 1
@@ -83,10 +83,10 @@ class Term extends QueryRecord
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND mptt_left = ?';
 		}
 		else {
+			$params[] = (int)$term;
 			$params[] = $term;
 			$params[] = $term;
-			$params[] = $term;
-			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND (id = ? OR term = ? OR term_display = ?)';
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND (id = ABS(?) OR term = ? OR term_display = ?)';
 		}
 		return DB::get_row( $query, $params, 'Term' );
 	}

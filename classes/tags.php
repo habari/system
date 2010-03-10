@@ -84,7 +84,9 @@ class Tags extends ArrayObject
 			}
 
 			$tag_names[] = $tag;
-			$vocabulary->delete_term( $term->id );
+			if ( $tag != $master ) {
+				$vocabulary->delete_term( $term->id );
+			}
 		}
 
 		// get the master term

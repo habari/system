@@ -499,7 +499,7 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function delete_term($term)
 	{
-		if ( is_string($term) ) {
+		if ( ! is_object($term) ) {
 			$term = $this->get_term($term);
 		}
 
