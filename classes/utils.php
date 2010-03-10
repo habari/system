@@ -15,7 +15,7 @@ class Utils
 	/**
 	 * Utils constructor
 	 * This class should not be instantiated.
-	 **/
+	 */
 	private function __construct()
 	{
 	}
@@ -26,7 +26,7 @@ class Utils
 	 * a querystring or an associative array.
 	 * @param mixed An associative array or querystring parameter list
 	 * @return array An associative array of parameters
-	 **/
+	 */
 	public static function get_params( $params )
 	{
 		if ( is_array( $params ) || $params instanceof ArrayObject || $params instanceof ArrayIterator ) {
@@ -42,7 +42,7 @@ class Utils
 	 * Forces a string to end in a single slash
 	 * @param string A string, usually a path
 	 * @return string The string with the slash added or extra slashes removed, but with one slash only
-	 **/
+	 */
 	public static function end_in_slash( $value )
 	{
 		return rtrim($value, '\\/') . '/';
@@ -53,7 +53,7 @@ class Utils
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
 	 * @param boolean $continue Whether to continue processing the script (default false for security reasons, cf. #749)
-	 **/
+	 */
 	public static function redirect( $url = '', $continue = false )
 	{
 		if ( $url == '' ) {
@@ -69,7 +69,7 @@ class Utils
 	 * Returns RFC-3339 time from a time string or integer timestamp
 	 * @param mixed A string of time or integer timestamp
 	 * @return string An RFC-3339 formatted time
-	 **/
+	 */
 	public static function atomtime($t)
 	{
 		if ( ! is_numeric( $t ) ) {
@@ -86,7 +86,7 @@ class Utils
 	/**
 	 * function nonce
 	 * Returns a random 12-digit hex number
-	 **/
+	 */
 	public static function nonce()
 	{
 		return sprintf('%06x', rand(0, 16776960)) . sprintf('%06x', rand(0, 16776960));
@@ -100,15 +100,13 @@ class Utils
 	 * @param String a nonce
 	 * @param String a timestamp
 	 * @return Array an array of WSSE authentication elements
-	**/
+	 */
 	public static function WSSE( $nonce = '', $timestamp = '' )
 	{
-		if ( '' === $nonce )
-		{
+		if ( '' === $nonce ) {
 			$nonce = Utils::crypt( Options::get('GUID') . Utils::nonce() );
 		}
-		if ( '' === $timestamp )
-		{
+		if ( '' === $timestamp ) {
 			$timestamp = date('c');
 		}
 		$user = User::identify();
@@ -116,19 +114,20 @@ class Utils
 			'nonce' => $nonce,
 			'timestamp' => $timestamp,
 			'digest' => base64_encode(pack('H*', sha1($nonce . $timestamp .  $user->password)))
-			);
+		);
 		return $wsse;
 	}
 
 	/**
 	 * function stripslashes
 	 * Removes slashes from escaped strings, including strings in arrays
-	 **/
+	 */
 	public static function stripslashes($value)
 	{
 		if ( is_array($value) ) {
 			$value = array_map( array('Utils', 'stripslashes') , $value );
-		}	elseif ( !empty($value) && is_string($value) ) {
+		}
+		elseif ( !empty($value) && is_string($value) ) {
 			$value = stripslashes($value);
 		}
 		return $value;
@@ -137,7 +136,7 @@ class Utils
 	/**
 	 * function addslashes
 	 * Adds slashes to escape strings, including strings in arrays
-	 **/
+	 */
 	public static function addslashes( $value )
 	{
 		if ( is_array( $value ) ) {
@@ -153,7 +152,7 @@ class Utils
 	 * function de_amp
 	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
 	 * @param string $value A URL, maybe with a querystring
-	 **/
+	 */
 	public static function de_amp($value)
 	{
 		$url = InputFilter::parse_url( $value );
@@ -164,7 +163,7 @@ class Utils
 	/**
 	 * function revert_magic_quotes_gpc
 	 * Reverts magicquotes_gpc behavior
-	 **/
+	 */
 	public static function revert_magic_quotes_gpc()
 	{
 		/* We should only revert the magic quotes once per page hit */
@@ -197,8 +196,7 @@ class Utils
 	 */
 	public static function implode_quoted( $separator, $values )
 	{
-		if ( ! is_array( $values ) )
-		{
+		if ( ! is_array( $values ) ) {
 			$values = array();
 		}
 		$values = array_map(array('Utils', 'quote_spaced'), $values);
@@ -225,7 +223,7 @@ class Utils
 	 * @param integer Number of items in the archive
 	 * @param integer Number of items per page
 	 * @returns integer Number of pages based on pagination option.
-	 **/
+	 */
 	public static function archive_pages( $item_total, $items_per_page = null )
 	{
 		if ( $items_per_page ) {
@@ -252,7 +250,7 @@ class Utils
 	/**
 	 * Helper function used by debug()
 	 * Not for external use.
-	 **/
+	 */
 	public static function debug_reveal($show, $hide, $debugid, $close = false)
 	{
 		$reshow = $restyle = $restyle2 = '';
@@ -267,7 +265,7 @@ class Utils
 	/**
 	 * Outputs a call stack with parameters, and a dump of the parameters passed.
 	 * @params mixed Any number of parameters to output in the debug box.
-	 **/
+	 */
 	public static function debug()
 	{
 		$debugid = md5(microtime());
@@ -302,7 +300,7 @@ class Utils
 			$backtrace = array_reverse(debug_backtrace(), true);
 			$odd = '';
 			$tracect = 0;
-			foreach($backtrace as $trace) {
+			foreach ( $backtrace as $trace ) {
 				$file = $line = $class = $type = $function = '';
 				$args = array();
 				extract($trace);
@@ -311,7 +309,7 @@ class Utils
 				$odd = $odd == '' ? 'class="utils__odd"' : '';
 				$output .= "<tr {$odd}><td>{$file} ({$line}):</td><td>{$fname}(";
 				$comma = '';
-				foreach((array)$args as $arg) {
+				foreach ( (array)$args as $arg ) {
 					$tracect++;
 					$argout = print_r($arg,1);
 					$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
@@ -333,7 +331,7 @@ class Utils
 	/**
 	 * Outputs debug information like ::debug() but using Firebug's Console.
 	 * @params mixed Any number of parameters to output in the debug box.
-	 **/
+	 */
 	public static function firedebug()
 	{
 		$fooargs = func_get_args();
@@ -341,7 +339,7 @@ class Utils
 		$backtrace = array_reverse(debug_backtrace(), true);
 		$output .= Utils::firebacktrace($backtrace);
 
-		foreach( $fooargs as $arg1 ) {
+		foreach ( $fooargs as $arg1 ) {
 			$output .= "console.info(\"%s:  %s\", \"" . gettype($arg1) . "\"";
 			$output .= ", \"" . str_replace("\n", '\n', addslashes(print_r($arg1,1))) . "\");\n";
 		}
@@ -372,7 +370,7 @@ class Utils
 			$output .= "console.group(\"%s(%s):  %s(%s)\", \"{$file}\", \"{$line}\", \"{$fname}\", \"";
 
 			$output2 = $comma = $argtypes = '';
-			foreach((array)$args as $arg) {
+			foreach ( (array)$args as $arg ) {
 				$argout = str_replace("\n", '\n', addslashes(print_r($arg,1)));
 				//$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
 				$argtypes .= $comma . gettype($arg);
@@ -474,7 +472,7 @@ class Utils
 			// create salt (4 byte)
 			$salt = '';
 			for ( $i = 0; $i < 4; $i++ ) {
-				$salt.= chr( mt_rand( 0, 255 ) );
+				$salt .= chr( mt_rand( 0, 255 ) );
 			}
 			// get digest
 			$digest = sha1( $password . $salt, TRUE );
@@ -516,7 +514,7 @@ class Utils
 		if ( $hash == NULL ) { // encrypt
 			$salt = '';
 			for ( $i = 0; $i < 4; $i++ ) {
-				$salt.= chr( mt_rand( 0, 255 ) );
+				$salt .= chr( mt_rand( 0, 255 ) );
 			}
 			$digest = hash( 'sha512', $password . $salt, TRUE );
 			return $marker . base64_encode( $digest . $salt );
@@ -543,8 +541,8 @@ class Utils
 	public static function getdate($timestamp)
 	{
 		$info = getdate($timestamp);
-		$info['mon0']= substr('0' . $info['mon'], -2, 2);
-		$info['mday0']= substr('0' . $info['mday'], -2, 2);
+		$info['mon0'] = substr('0' . $info['mon'], -2, 2);
+		$info['mday0'] = substr('0' . $info['mday'], -2, 2);
 		return $info;
 	}
 
@@ -553,12 +551,12 @@ class Utils
 	 * @param string $format The format for the date.  If it contains non-escaped percent signs, it uses strftime(),	otherwise date()
 	 * @param integer $timestamp The unix timestamp of the time to format
 	 * @return string The formatted time
-	 **/
+	 */
 	public static function locale_date($format, $timestamp)
 	{
 		$matches = preg_split( '/((?<!\\\\)%[a-z]\\s*)/iu', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 		$output = '';
-		foreach( $matches as $match ) {
+		foreach ( $matches as $match ) {
 			if ( $match{0} == '%' ) {
 				$output.= strftime($match, $timestamp);
 			}
@@ -601,18 +599,18 @@ class Utils
 	public static function html_select( $name, $options, $current = null, $properties = array())
 	{
 		$output = '<select id="' . $name . '" name="' . $name . '"';
-		foreach($properties as $key => $value) {
-			$output.= " {$key}=\"{$value}\"";
+		foreach ( $properties as $key => $value ) {
+			$output .= " {$key}=\"{$value}\"";
 		}
-		$output.= ">\n";
-		foreach($options as $value => $text){
-			$output.= '<option value="'.$value.'"';
+		$output .= ">\n";
+		foreach ( $options as $value => $text ){
+			$output .= '<option value="'.$value.'"';
 			if ( $current == (string)$value ) {
-				$output.= ' selected="selected"';
+				$output .= ' selected="selected"';
 			}
-			$output.= '>' . $text . "</option>\n";
+			$output .= '>' . $text . "</option>\n";
 		}
-		$output.= '</select>';
+		$output .= '</select>';
 		return $output;
 	}
 
@@ -625,7 +623,7 @@ class Utils
 	 *	an array containing "name" and "value".  If the checkbox
 	 *	should be checked, it should have a "checked" element.
 	 * @return string The HTML of the checkboxes
-	**/
+	 */
 	public static function html_checkboxes( $name, $options )
 	{
 		$output = '';
@@ -634,16 +632,15 @@ class Utils
 			$multi = true;
 		}
 		foreach ( $options as $option ) {
-			$output.= '<input type="checkbox" id="' . $option['name'] . '" name="' . $option['name'];
+			$output .= '<input type="checkbox" id="' . $option['name'] . '" name="' . $option['name'];
 			if ( $multi ) {
-				$output.= '[]';
+				$output .= '[]';
 			}
-			$output.= '" value="' . $option['value'] . '"';
-			if ( isset($option['checked']) )
-			{
-				$output.= ' checked';
+			$output .= '" value="' . $option['value'] . '"';
+			if ( isset($option['checked']) ) {
+				$output .= ' checked';
 			}
-			$output.= '>';
+			$output .= '>';
 		}
 		return $output;
 	}
@@ -655,7 +652,7 @@ class Utils
 	 * @param bool Whether to place the ellipsis in the middle (true) or
 	 * at the end (false)
 	 * @return string The truncated string
-	 **/
+	 */
 	public static function truncate($str, $len =10, $middle =true)
 	{
 		// make sure $len is a positive integer
@@ -668,7 +665,7 @@ class Utils
 		}
 
 		// okay.  Shuold we place the ellipse in the middle?
-		if ($middle) {
+		if ( $middle ) {
 			// yes, so compute the size of each half of the string
 			$len = round(($len-3)/2);
 			// and place an ellipse in between the pieces
@@ -793,7 +790,7 @@ class Utils
 			);
 		$tick = 0;
 		$max_tick = count($sizes) - 1;
-		while($bytesize > 1024 && $tick < $max_tick) {
+		while ( $bytesize > 1024 && $tick < $max_tick ) {
 			$tick++;
 			$bytesize /= 1024;
 		}
@@ -845,7 +842,7 @@ class Utils
 
 		if ( empty( $mimetype ) ) {
 			$pi = pathinfo($filename);
-			switch(strtolower($pi['extension'])) {
+			switch ( strtolower($pi['extension']) ) {
 				// hacky, hacky, kludge, kludge...
 				case 'jpg':
 				case 'jpeg':
@@ -921,7 +918,7 @@ class Utils
 		}
 		else {
 			$additional_headers = array();
-			foreach($headers as $header_key => $header_value) {
+			foreach ( $headers as $header_key => $header_value ) {
 				$header_key = trim($header_key);
 				$header_value = trim($header_value);
 				if ( strpos($header_key.$header_value, "\n") === false ) {
@@ -944,7 +941,7 @@ class Utils
 		$password = '';
 		$data = str_split('1234567890!@#$^*qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVNBM');
 		$rand = array_rand($data, $length);
-		foreach($rand as $index) {
+		foreach ( $rand as $index ) {
 			$password .= $data[$index];
 		}
 		return $password;
@@ -1040,7 +1037,7 @@ class Utils
 
 	/**
 	 * determines if the given that is travesable in foreach
-	 * 
+	 *
 	 * @param mixed $data
 	 * @return bool
 	 */
@@ -1053,7 +1050,7 @@ class Utils
 	* Get the remote IP address, but try and take into account users who are
 	* behind proxies, whether they know it or not.
 	* @return The client's IP address.
-	**/
+	*/
 	public static function get_ip()
 	{
 		if ( $_SERVER["HTTP_CLIENT_IP"] ) {
