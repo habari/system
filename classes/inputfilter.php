@@ -276,6 +276,10 @@ class InputFilter
 		return $r;
 	}
 
+	/**
+	 * Restore a URL separated by a parse_url() call.
+	 * @param $parsed_url array An array as returned by parse_url()
+	 */
 	public static function glue_url( $parsed_url )
 	{
 		if ( ! is_array( $parsed_url ) ) {

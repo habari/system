@@ -162,30 +162,6 @@ class Utils
 	}
 
 	/**
-	 * Restore a URL separated by a parse_url() call.
-	 * @param $parsed array An array as returned by parse_url()
-	 **/
-	public static function glue_url($parsed)
-	{
-		if ( ! is_array( $parsed ) ) {
-			return false;
-		}
-		$uri = isset( $parsed['scheme'] )
-			? $parsed['scheme'] . ':' . ( ( strtolower( $parsed['scheme'] ) == 'mailto' ) ? '' : '//' )
-			: '';
-		$uri.= isset( $parsed['user'] )
-			? $parsed['user'].( isset( $parsed['pass'] ) ? ':' . $parsed['pass'] : '' ) . '@'
-			: '';
-		$uri.= isset( $parsed['host'] ) ? $parsed['host'] : '';
-		$uri.= isset( $parsed['port'] ) ? ':'.$parsed['port'] : '';
-		$uri.= isset( $parsed['path'] ) ? $parsed['path'] : '';
-		$uri.= isset( $parsed['query'] ) ? '?'.$parsed['query'] : '';
-		$uri.= isset( $parsed['fragment'] ) ? '#'.$parsed['fragment'] : '';
-
-		return $uri;
-	}
-
-	/**
 	 * function revert_magic_quotes_gpc
 	 * Reverts magicquotes_gpc behavior
 	 **/
