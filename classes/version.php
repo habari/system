@@ -16,7 +16,7 @@ class Version
 	// number in which they last changed.
 //	const DB_VERSION = 3702;
 	const DB_VERSION = 3749;
-	const API_VERSION = 3124;
+	const API_VERSION = 4077;
 
 	const HABARI_VERSION = '0.7-alpha';
 
