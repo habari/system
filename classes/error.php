@@ -107,6 +107,8 @@ class Error extends Exception
 			E_USER_NOTICE => _t( 'User Notice' ),
 			E_STRICT => _t( 'Strict Notice' ),
 			E_RECOVERABLE_ERROR => _t( 'Recoverable Error' ),
+			E_DEPRECATED => _t( 'Deprecated violation' ),
+			E_USER_DEPRECATED => _t( 'User deprecated violation' ),
 		);
 
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
