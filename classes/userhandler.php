@@ -67,7 +67,7 @@ class UserHandler extends ActionHandler
 						}
 	
 						/* Redirect to the correct admin page */
-						$dest = explode( '/', substr( $login_session['original'], strpos( $login_session['original'], 'admin/' ) ) );
+						$dest = explode( '/', MultiByte::substr( $login_session['original'], MultiByte::strpos( $login_session['original'], 'admin/' ) ) );
 						if ( '' == $dest[0] ) {
 							$login_dest = Site::get_url( 'admin' );
 						}

@@ -394,7 +394,7 @@ class Plugins
 		$ok = Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
 		if ( $ok ) {
 			// strip base path from stored path
-			$short_file = substr( $file, strlen( HABARI_PATH ) );
+			$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
 			$activated = Options::get( 'active_plugins' );
 			if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
 				include_once($file);
@@ -425,7 +425,7 @@ class Plugins
 			// normalize directory separator
 			$file = str_replace( '\\', '/', $file );
 			// strip base path from stored path
-			$short_file = substr( $file, strlen( HABARI_PATH ) );
+			$short_file = MultiByte::substr( $file, MultiByte::strlen( HABARI_PATH ) );
 
 			$activated = Options::get( 'active_plugins' );
 			$index = array_search( $short_file, $activated );
@@ -485,7 +485,7 @@ class Plugins
 		$plugin_files = Plugins::list_all();
 		// strip base path
 		foreach ( $plugin_files as $plugin_file ) {
-			$plugin_file = substr( $file, strlen( HABARI_PATH ) );
+			$plugin_file = MultiByte::substr( $file, MultiByte::strlen( HABARI_PATH ) );
 		}
 
 		$plugin_data = array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
@@ -503,9 +503,9 @@ class Plugins
 	public static function is_loaded( $name, $version = NULL )
 	{
 		foreach ( self::$plugins as $plugin ) {
-			if ( strtolower($plugin->info->name) == strtolower($name) || $plugin instanceof $name || (isset($plugin->info->guid) && strtolower($plugin->info->guid) == strtolower($name))) {
+			if ( MultiByte::strtolower( $plugin->info->name ) == MultiByte::strtolower( $name ) || $plugin instanceof $name || ( isset( $plugin->info->guid ) && MultiByte::strtolower( $plugin->info->guid ) == MultiByte::strtolower( $name ) ) ) {
 				if ( isset( $version ) ) {
-					if ( isset($plugin->info->version) ) {
+					if ( isset( $plugin->info->version ) ) {
 						return version_compare( $plugin->info->version, $version, '>=' );
 					}
 					else {

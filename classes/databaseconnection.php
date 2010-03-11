@@ -293,7 +293,8 @@ class DatabaseConnection
 	 * @return  mixed       whatever the procedure returns...
 	 * @experimental
 	 * @todo  EVERYTHING... :)
-	 * Implemented in child classes. Most RDBMS use ANSI-92 syntax, 
+	 * Implemented in child classes. Most RDBMS use ANSI-92 syntax,
+	 * @todo Make sure it's MultiByte safe
 	 * ( CALL procname ( param1, param2, ... ), 
 	 * so they return the call to here. Those that don't, handle the call individually
 	 */

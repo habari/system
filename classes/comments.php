@@ -837,7 +837,7 @@ class Comments extends ArrayObject
 				list( $keyword, $value ) = explode( ':', $token );
 
 				$keyword = strtolower( $keyword );
-				$value = strtolower( $value );
+				$value = MultiByte::strtolower( $value );
 				switch ( $keyword ) {
 					case 'author':
 						$arguments['name'][] = $value;

@@ -93,14 +93,14 @@ class URL extends Singleton
 		 * but only if the base URL isn't /
 		 */
 		if ( strpos( $from_url, $base_url ) === 0 ) {
-			$from_url = substr( $from_url, strlen( $base_url ) );
+			$from_url = MultiByte::substr( $from_url, MultiByte::strlen( $base_url ) );
 		}
 
 		/* Trim off any leading or trailing slashes */
 		$from_url = trim( $from_url, '/' );
 
 		/* Remove the querystring from the URL */
-		if ( strpos( $from_url, '?' ) !== FALSE ) {
+		if ( MultiByte::strpos( $from_url, '?' ) !== FALSE ) {
 			list( $from_url, )= explode( '?', $from_url );
 		}
 
@@ -245,7 +245,7 @@ class URL extends Singleton
 		if ( !$preserve_file ) {
 			$path = dirname($path);
 		}
-		$url = Site::get_url('habari') . substr($path, strlen(HABARI_PATH));
+		$url = Site::get_url('habari') . MultiByte::substr($path, MultiByte::strlen(HABARI_PATH));
 		// Replace windows paths with forward slashes
 		$url = str_replace( '\\', '/', $url);
 		$url .= ( $trail ) ? '/' : '';

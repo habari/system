@@ -144,7 +144,7 @@ class Site
 				$portpart = '';
 				$host = Site::get_url('hostname');
 				// if the port isn't a standard port, and isn't part of $host already, add it
-				if ( ( $port != 80 ) && ( $port != 443 ) && ( substr($host, strlen($host) - strlen($port) ) != $port ) ) {
+				if ( ( $port != 80 ) && ( $port != 443 ) && ( MultiByte::substr($host, MultiByte::strlen($host) - strlen($port) ) != $port ) ) {
 					$portpart = ':' . $port;
 				}
 				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
@@ -305,9 +305,9 @@ class Site
 						break;
 					}
 
-					$match =substr($match, strpos($match, '.') + 1);
+					$match = MultiByte::substr( $match, MultiByte::strpos( $match, '.' ) + 1 );
 					$x--;
-				} while(strpos($match,'.') !== false);
+				} while( MultiByte::strpos( $match,'.' ) !== false );
 
 				$path = self::$config_path;
 				break;
