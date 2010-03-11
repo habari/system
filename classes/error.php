@@ -107,10 +107,11 @@ class Error extends Exception
 			E_USER_NOTICE => _t( 'User Notice' ),
 			E_STRICT => _t( 'Strict Notice' ),
 			E_RECOVERABLE_ERROR => _t( 'Recoverable Error' ),
-			E_DEPRECATED => _t( 'Deprecated violation' ),
-			E_USER_DEPRECATED => _t( 'User deprecated violation' ),
 		);
-
+		if ( version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
+			$error_names[E_DEPRECATED] = _t( 'Deprecated violation' );
+			$error_names[E_USER_DEPRECATED] = _t( 'User deprecated violation' );
+		}
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
 			$errfile = substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
