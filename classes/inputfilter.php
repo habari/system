@@ -160,9 +160,12 @@ class InputFilter
 			return '';
 		}
 		else {
-			$str = self::strip_nulls( $str );
-			$str = self::strip_illegal_entities( $str );
-			$str = self::filter_html_elements( $str );
+			do {
+				$_str = $str;
+				$str = self::strip_nulls( $str );
+				$str = self::strip_illegal_entities( $str );
+				$str = self::filter_html_elements( $str );
+			} while ( $str != $_str );
 	
 			return $str;
 		}
