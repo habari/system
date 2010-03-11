@@ -26,6 +26,9 @@ else {
 	<p>
 		<input type="submit" value="<?php _e('GO!'); ?>">
 	</p>
+	<p id="password_utils">
+		<input class="submit" type="submit" name="submit_button" value="<?php _e('Reset password'); ?>">
+	</p>
 </form>
 <?php Plugins::act( 'theme_loginform_after' ); ?>
 <?php
