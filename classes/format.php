@@ -349,7 +349,6 @@ class Format
 		$para = 0;
 		$token = $set->current();
 		$summary = new HTMLTokenSet();
-		$remainder = new HTMLTokenSet(false);
 		$set->rewind(); 
 		$remaining_words = $count;
 		// $bail lets the loop end naturally and close all open elements without adding new ones.
