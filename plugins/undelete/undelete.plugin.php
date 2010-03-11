@@ -254,9 +254,9 @@ var unDelete = {
 				spinner.stop();
 				humanMsg.displayMsg( result );
 				if ( $('.timeline').length ) {
-					loupeInfo = timelineHandle.getLoupeInfo();
+					var loupeInfo = timeline.getLoupeInfo();
 					itemManage.fetch( 0, loupeInfo.limit, true );
-					timelineHandle.updateLoupeInfo();
+					timeline.updateLoupeInfo();
 				}
 				else {
 					itemManage.fetch( 0, 20, false );
