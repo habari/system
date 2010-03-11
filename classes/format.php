@@ -348,7 +348,7 @@ class Format
 		$stack = array();
 		$para = 0;
 		$token = $set->current();
-		$summary = new HTMLTokenSet(false);
+		$summary = new HTMLTokenSet();
 		$remainder = new HTMLTokenSet(false);
 		$set->rewind(); 
 		$remaining_words = $count;
