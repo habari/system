@@ -197,7 +197,7 @@ class FeedbackHandler extends ActionHandler
 		$anchor = '';
 
 		// If the comment was saved
-		if ( $comment->id ) {
+		if ( $comment->id && $comment->status != Comment::STATUS_SPAM ) { 
 			$anchor = '#comment-' . $comment->id;
 
 			// store in the user's session that this comment is pending moderation
