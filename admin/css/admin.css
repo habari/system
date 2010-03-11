@@ -92,7 +92,7 @@ a img {
 	height: 32px;
 	top: 0;
 	left: 0;
-	z-index: 1000;
+	z-index: 99;
 	opacity: 1; /* was .98 - see issue #588 */
 }
 
@@ -291,7 +291,7 @@ a img {
 }
 
 #page .dropbutton:hover {
-	z-index: 1000;
+	z-index: 99;
 }
 
 #page .dropbutton * {
@@ -305,7 +305,7 @@ a img {
 
 #page .comments-action.dropbutton{
 	right:170px;
-	z-index: 1000;
+	z-index: 99;
 }
 #page .comments-action.dropbutton.alert {
 /*	background: #FF4500; */
@@ -557,7 +557,7 @@ ul {
 	position: fixed;
 	top: 40px;
 	right: 8px;
-	z-index: 100;
+	z-index: 50;
 }
 
 /*- FORMS */
@@ -1064,12 +1064,12 @@ body.page-publish .buttons input {
 	left: 5%;
 	height: 20px;
 	width: 90%;
-	z-index: 90;
+	z-index: 45;
 	cursor: move;
 }
 
 .dashboard .module h2 {
-	z-index: 100;
+	z-index: 50;
 	background: url('../images/dashboardh2bg.png') right center no-repeat;
 	padding-right: 10px;
 	position: absolute;
@@ -1149,7 +1149,7 @@ body.page-publish .buttons input {
 	width: 16px;
 	background: url('../images/closebutton.png') center center no-repeat;
 	cursor: pointer;
-	z-index: 110;
+	z-index: 55;
 }
 
 .dashboard .module .options {
@@ -1160,11 +1160,11 @@ body.page-publish .buttons input {
 	width: 16px;
 	background: url('../images/moduleoptions.png') center center no-repeat;
 	cursor: pointer;
-	z-index: 110;
+	z-index: 55;
 }
 
 .dashboard .module .optionswindow {
-	z-index: 100;
+	z-index: 50;
 	height: 195px;
 	background: #111;
 	color: #555;
@@ -2085,7 +2085,7 @@ body.page-Manage .state {
 #page .navigator .dropbutton.special_search {
 	top: 1px;
 	right: 20px;
-	z-index: 500;
+	z-index: 75;
 	text-transform: capitalize;
 }
 
@@ -2531,7 +2531,7 @@ body.login #password_utils {
 	max-width: 300px;
 	color: white;
 	text-align: left;
-	z-index: 900;
+	z-index: 90;
 	display: none;
 	padding: 0px;
 }
