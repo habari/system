@@ -171,8 +171,8 @@ class SocketRequestProcessor implements RequestProcessor
 			$chunk_size = hexdec( $chunk_size_str );
 			
 			if ( $chunk_size > 0 ) {
-				$result.= substr( $chunk[1], 0, $chunk_size );
-				$body = substr( $chunk[1], $chunk_size+1 );
+				$result .= MultiByte::substr( $chunk[1], 0, $chunk_size );
+				$body = MultiByte::substr( $chunk[1], $chunk_size+1 );
 			}
 		}
 		while ( $chunk_size > 0 );

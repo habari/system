@@ -104,7 +104,7 @@ class MultiByte
 		$ret = FALSE;
 
 		$enc = self::$hab_enc;
-		if( $use_enc !== null ) {
+		if ( $use_enc !== null ) {
 			$enc = $use_enc;
 		}
 
@@ -168,7 +168,7 @@ class MultiByte
 		$ret = FALSE;
 
 		$enc = self::$hab_enc;
-		if( $use_enc !== null ) {
+		if ( $use_enc !== null ) {
 			$enc = $use_enc;
 		}
 
@@ -177,6 +177,9 @@ class MultiByte
 				$len = MultiByte::strlen( $str ) - $begin;
 			}
 			$ret = mb_substr( $str, $begin, $len, $enc );
+		}
+		else {
+			$ret = substr( $str, $begin, $len );
 		}
 		return $ret;
 	}
@@ -198,7 +201,7 @@ class MultiByte
 		$len = 0;
 
 		$enc = self::$hab_enc;
-		if( $use_enc !== null ) {
+		if ( $use_enc !== null ) {
 			$enc = $use_enc;
 		}
 
@@ -210,6 +213,130 @@ class MultiByte
 		}
 
 		return $len;
+	}
+
+	/*
+	* function strpos
+	*
+	* Find position of first occurrence of string in a string
+	*
+	* @param $haysack string. The string being checked.
+	* @param $needle. string. The position counted from the beginning of haystack .
+	* @param $offset integer. The search offset. If it is not specified, 0 is used.
+	* @param $use_enc string. The encoding to be used. If not set,
+	* the internal encoding will be used.
+	*
+	* @return mixed The  section of the source string requested in the encoding requested or false.
+	* If $len is not set, returns substring from $begin to end of string.
+	*
+	*/
+	public static function strpos( $haysack, $needle, $offset = 0, $use_enc = null )
+	{
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+
+		if ( self::$use_library == self::USE_MBSTRING ) {
+			$ret = mb_strpos( $haysack, $needle, $offset, $enc );
+		}
+		else {
+			$ret = strpos($haysack, $needle, $offset);
+		}
+		return $ret;
+	}
+
+	/*
+	* function stripos
+	*
+	* Find position of first occurrence of string in a string. Case insensitive.
+	*
+	* @param $haysack string. The string being checked.
+	* @param $needle. string. The position counted from the beginning of haystack .
+	* @param $offset integer. The search offset. If it is not specified, 0 is used.
+	* @param $use_enc string. The encoding to be used. If not set,
+	* the internal encoding will be used.
+	*
+	* @return mixed The  section of the source string requested in the encoding requested or false.
+	* If $len is not set, returns substring from $begin to end of string.
+	*
+	*/
+	public static function stripos( $haysack, $needle, $offset = 0, $use_enc = null )
+	{
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+
+		if ( self::$use_library == self::USE_MBSTRING ) {
+			$ret = mb_stripos( $haysack, $needle, $offset, $enc );
+		}
+		else {
+			$ret = stripos($haysack, $needle, $offset);
+		}
+		return $ret;
+	}
+
+	/*
+	* function strrpos
+	*
+	* Find position of last occurrence of string in a string.
+	*
+	* @param $haysack string. The string being checked.
+	* @param $needle. string. The position counted from the beginning of haystack .
+	* @param $offset integer. The search offset. If it is not specified, 0 is used.
+	* @param $use_enc string. The encoding to be used. If not set,
+	* the internal encoding will be used.
+	*
+	* @return mixed The  section of the source string requested in the encoding requested or false.
+	* If $len is not set, returns substring from $begin to end of string.
+	*
+	*/
+	public static function strrpos( $haysack, $needle, $offset = 0, $use_enc = null )
+	{
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+
+		if ( self::$use_library == self::USE_MBSTRING ) {
+			$ret = mb_strrpos( $haysack, $needle, $offset, $enc );
+		}
+		else {
+			$ret = strrpos($haysack, $needle, $offset);
+		}
+		return $ret;
+	}
+
+	/*
+	* function strripos
+	*
+	* Find position of last occurrence of string in a string. Case insensitive.
+	*
+	* @param $haysack string. The string being checked.
+	* @param $needle. string. The position counted from the beginning of haystack .
+	* @param $offset integer. The search offset. If it is not specified, 0 is used.
+	* @param $use_enc string. The encoding to be used. If not set,
+	* the internal encoding will be used.
+	*
+	* @return mixed The  section of the source string requested in the encoding requested or false.
+	* If $len is not set, returns substring from $begin to end of string.
+	*
+	*/
+	public static function strripos( $haysack, $needle, $offset = 0, $use_enc = null )
+	{
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+
+		if ( self::$use_library == self::USE_MBSTRING ) {
+			$ret = mb_strripos( $haysack, $needle, $offset, $enc );
+		}
+		else {
+			$ret = strripos($haysack, $needle, $offset);
+		}
+		return $ret;
 	}
 
 	/*
@@ -227,7 +354,7 @@ class MultiByte
 	public static function strtolower( $str, $use_enc = null )
 	{
 		$enc = self::$hab_enc;
-		if( $use_enc !== null ) {
+		if ( $use_enc !== null ) {
 			$enc = $use_enc;
 		}
 
@@ -256,7 +383,7 @@ class MultiByte
 	public static function strtoupper( $str, $use_enc = null )
 	{
 		$enc = self::$hab_enc;
-		if( $use_enc !== null ) {
+		if ( $use_enc !== null ) {
 			$enc = $use_enc;
 		}
 

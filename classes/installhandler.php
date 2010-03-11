@@ -723,7 +723,7 @@ class InstallHandler extends ActionHandler
 		Options::set('installed', true);
 
 		Options::set('title', $this->handler_vars['blog_title']);
-		Options::set('base_url', substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1));
+		Options::set('base_url', MultiByte::substr($_SERVER['REQUEST_URI'], 0, MultiByte::strrpos($_SERVER['REQUEST_URI'], '/') + 1));
 		Options::set('pagination', '5');
 		Options::set('atom_entries', '5');
 		Options::set( 'theme_name', 'k2' );

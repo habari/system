@@ -3395,7 +3395,7 @@ class AdminHandler extends ActionHandler
 				$output['files'][$asset->basename] = $asset->get_props();
 			}
 		}
-		$rootpath = strpos($path, '/') !== false ? substr($path, 0, strpos($path, '/')) : $path;
+		$rootpath = MultiByte::strpos($path, '/') !== false ? MultiByte::substr($path, 0, MultiByte::strpos($path, '/')) : $path;
 		$controls = array('root' => '<a href="#" onclick="habari.media.fullReload();habari.media.showdir(\''. $rootpath . '\');return false;">' . _t('Root') . '</a>');
 		$controls = Plugins::filter( 'media_controls', $controls, $silo, $rpath, '' );
 		$controls_out = '';
