@@ -57,7 +57,7 @@ class Term extends QueryRecord
 		// A Vocabulary may be used for organization, display, or both.
 		// Therefore, a Term can be constructed with a term, term_display, or both
 		if ( $this->term == '' ) {
-			$this->fields['term'] = Utils::slugify($this->fields['term_display']);
+			$this->fields[ 'term' ] = Utils::slugify( $this->fields[ 'term_display' ] );
 		}
 
 		$this->exclude_fields( 'id' );
@@ -75,18 +75,17 @@ class Term extends QueryRecord
 		if ( $vocab_id instanceof Vocabulary ) {
 			$vocab_id = $vocab_id->id;
 		}
-		$params = array( (int)$vocab_id );
+		$params = array( 'vocab_id' => (int) $vocab_id );
 		$query = '';
 		if ( is_null( $term )  ) {
 			// The root node has an mptt_left value of 1
-			$params[] = 1;
-			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND mptt_left = ?';
+ 			$params[ 'left' ] = 1;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND mptt_left = :left';
 		}
 		else {
-			$params[] = (int)$term;
-			$params[] = $term;
-			$params[] = $term;
-			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = ? AND (id = ABS(?) OR term = ? OR term_display = ?)';
+			$params[ 'term_id' ] = (int) $term;
+			$params[ 'term' ] = $term;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND (id = ABS(:term_id) OR term = :term OR term_display = :term)';
 		}
 		return DB::get_row( $query, $params, 'Term' );
 	}
@@ -100,20 +99,20 @@ class Term extends QueryRecord
 	{
 		// determine the base value from:
 		// - the new slug
-		if ( isset( $this->newfields['term']) && $this->newfields['term'] != '' ) {
-			$value = $this->newfields['term'];
+		if ( isset( $this->newfields[ 'term' ]) && $this->newfields[ 'term' ] != '' ) {
+			$value = $this->newfields[ 'term' ];
 		}
 		// - the existing slug
-		elseif ( $this->fields['term'] != '' ) {
-			$value = $this->fields['term'];
+		elseif ( $this->fields[ 'term' ] != '' ) {
+			$value = $this->fields[ 'term' ];
 		}
 		// - the new term display text
-		elseif ( isset( $this->newfields['term_display'] ) && $this->newfields['term_display'] != '' ) {
-			$value = $this->newfields['term_display'];
+		elseif ( isset( $this->newfields[ 'term_display' ] ) && $this->newfields[ 'term_display' ] != '' ) {
+			$value = $this->newfields[ 'term_display' ];
 		}
 		// - the existing term display text
-		elseif ( $this->fields['term_display'] != '' ) {
-			$value = $this->fields['term_display'];
+		elseif ( $this->fields[ 'term_display' ] != '' ) {
+			$value = $this->fields[ 'term_display' ];
 		}
 
 		// make sure our slug is unique
@@ -131,7 +130,7 @@ class Term extends QueryRecord
 			}
 		} while ( $slugcount->ct != 0 );
 
-		return $this->newfields['term'] = $slug . $postfix;
+		return $this->newfields[ 'term' ] = $slug . $postfix;
 	}
 
 	/**
@@ -153,7 +152,7 @@ class Term extends QueryRecord
 		$result = parent::insertRecord( DB::table( 'terms' ) );
 
 		// Make sure the id is set in the term object to match the row id
-		$this->newfields['id'] = DB::last_insert_id();
+		$this->newfields[ 'id' ] = DB::last_insert_id();
 
 		// Update the term's fields with anything that changed
 		$this->fields = array_merge( $this->fields, $this->newfields );
@@ -184,8 +183,8 @@ class Term extends QueryRecord
 		Plugins::act( 'term_update_before', $this );
 
 		// Call setslug() only when term is changed
-		if ( isset( $this->newfields['term'] ) && $this->newfields['term'] != '' ) {
-			if ( $this->fields['term'] != $this->newfields['term'] ) {
+		if ( isset( $this->newfields[ 'term' ] ) && $this->newfields[ 'term' ] != '' ) {
+			if ( $this->fields[ 'term' ] != $this->newfields[ 'term' ] ) {
 				$this->setslug();
 			}
 		}
@@ -211,10 +210,10 @@ class Term extends QueryRecord
 		}
 		Plugins::act( 'term_delete_before', $this );
 
-		DB::query( "DELETE FROM {object_terms} WHERE term_id = ?", array( $this->id) );
+		DB::query( "DELETE FROM {object_terms} WHERE term_id = :id", array( 'id' => $this->id) );
 
 		$result = parent::deleteRecord( '{terms}', array( 'id'=>$this->id ) );
-		EventLog::log( sprintf(_t('Term %1$s (%2$s) deleted.'), $this->id, $this->term_display), 'info', 'content', 'habari' );
+		EventLog::log( sprintf( _t( 'Term %1$s (%2$s) deleted.' ), $this->id, $this->term_display ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'term_delete_after', $this );
@@ -227,8 +226,8 @@ class Term extends QueryRecord
 	 **/
 	public function ancestors()
 	{
-		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right );
-		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left<? AND mptt_right>? ORDER BY mptt_left ASC';
+		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=:vocab_id AND mptt_left<:left AND mptt_right>:right ORDER BY mptt_left ASC';
 		return DB::get_results( $query, $params, 'Term' );
 	}
 
@@ -238,8 +237,8 @@ class Term extends QueryRecord
 	 **/
 	public function not_ancestors()
 	{
-		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right );
-		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND (mptt_left>? OR mptt_right<?) ORDER BY mptt_left ASC';
+		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=:vocab_id AND (mptt_left>:left OR mptt_right<:right) ORDER BY mptt_left ASC';
 		return DB::get_results( $query, $params, 'Term' );
 	}
 
@@ -249,8 +248,8 @@ class Term extends QueryRecord
 	 **/
 	public function descendants()
 	{
-		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right);
-		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<? ORDER BY mptt_left ASC';
+		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=:vocab_id AND mptt_left>:left AND mptt_right<:right ORDER BY mptt_left ASC';
 		return DB::get_results( $query, $params, 'Term' );
 	}
 
@@ -260,8 +259,8 @@ class Term extends QueryRecord
 	 **/
 	public function not_descendants()
 	{
-		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right);
-		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left NOT BETWEEN ? AND ? ORDER BY mptt_left ASC';
+		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=:vocab_id AND mptt_left NOT BETWEEN :left AND :right ORDER BY mptt_left ASC';
 		return DB::get_results( $query, $params, 'Term' );
 	}
 
@@ -271,8 +270,8 @@ class Term extends QueryRecord
 	 **/
 	public function parent()
 	{
-		$params = array($this->vocabulary_id, $this->mptt_left, $this->mptt_right);
-		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=? AND mptt_left<? AND mptt_right>? ORDER BY mptt_left DESC LIMIT 1';
+		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
+		$query = 'SELECT * FROM {terms} WHERE vocabulary_id=:vocab_id AND mptt_left<:left AND mptt_right>:right ORDER BY mptt_left DESC LIMIT 1';
 		return DB::get_row( $query, $params, 'Term' );
 	}
 
