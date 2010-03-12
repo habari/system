@@ -29,23 +29,23 @@ class FeedbackHandler extends ActionHandler
 
 		// We need to get the post anyway to redirect back to the post page.
 		$post = Post::get( array( 'id' => $this->handler_vars['id'] ) );
-		if( !$post ) {
+		if ( ! $post ) {
 			// trying to comment on a non-existent post?  Weirdo.
-			header('HTTP/1.1 403 Forbidden', true, 403);
+			header( 'HTTP/1.1 403 Forbidden', true, 403 );
 			die();
 		}
 
 		// Allow theme action hooks to work
 		Themes::create();
 		$form = $post->comment_form();
-		$form->get(null, false);
+		$form->get( null, false );
 		// Was this a FormUI form, or a regular comment form?
-		if($form->submitted) {
+		if ( $form->submitted ) {
 
 			// To be eventually incorporated more fully into FormUI.
 			Plugins::act( 'comment_form_submit', $form );
 
-			if($form->success) {
+			if ( $form->success ) {
 				$this->add_comment(
 					$post->id,
 					$form->cf_commenter->value,
@@ -56,9 +56,9 @@ class FeedbackHandler extends ActionHandler
 				);
 			}
 			else {
-				Session::error(_t('There was a problem submitting your comment.'));
-				foreach($form->validate() as $error) {
-					Session::error($error);
+				Session::error( _t( 'There was a problem submitting your comment.' ) );
+				foreach( $form->validate() as $error ) {
+					Session::error( $error );
 				}
 				$form->bounce();
 			}
@@ -66,7 +66,7 @@ class FeedbackHandler extends ActionHandler
 		else {
 			// make sure all our default values are set so we don't throw undefined index errors
 			foreach ( $defaults as $k => $v ) {
-				if ( !isset( $this->handler_vars[ $k ] ) ) {
+				if ( ! isset( $this->handler_vars[ $k ] ) ) {
 					$this->handler_vars[ $k ] = $v;
 				}
 			}
@@ -91,7 +91,7 @@ class FeedbackHandler extends ActionHandler
 	 * @param string $url The commenter's website URL
 	 * @param string $content The comment content
 	 */
-	function add_comment($post, $name = null, $email = null, $url = null, $content = null, $extra = null )
+	function add_comment( $post, $name = null, $email = null, $url = null, $content = null, $extra = null )
 	{
 		if ( is_numeric( $post ) ) {
 			$post = Post::get( array( 'id' => $post ) );
@@ -105,19 +105,19 @@ class FeedbackHandler extends ActionHandler
 
 		// let's do some basic sanity checking on the submission
 		if ( ( 1 == Options::get( 'comments_require_id' ) ) && ( empty( $name ) || empty( $email ) ) ) {
-			Session::error(_t( 'Both name and e-mail address must be provided.' ) );
+			Session::error( _t( 'Both name and e-mail address must be provided.' ) );
 		}
 
 		if ( empty( $content ) ) {
-			Session::error( _t('You did not provide any content for your comment!') );
+			Session::error( _t('You did not provide any content for your comment!' ) );
 		}
 
 		if ( Session::has_errors() ) {
 			// save whatever was provided in session data
-			Session::add_to_set('comment', $name, 'name');
-			Session::add_to_set('comment', $email, 'email');
-			Session::add_to_set('comment', $url, 'url');
-			Session::add_to_set('comment', $content, 'content');
+			Session::add_to_set( 'comment', $name, 'name' );
+			Session::add_to_set( 'comment', $email, 'email' );
+			Session::add_to_set( 'comment', $url, 'url' );
+			Session::add_to_set( 'comment', $content, 'content' );
 			// now send them back to the form
 			Utils::redirect( $post->permalink . '#respond' );
 		}
@@ -130,12 +130,12 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		/* Sanitize data */
-		foreach ( array('name', 'url', 'email', 'content') as $k ) {
+		foreach ( array( 'name', 'url', 'email', 'content' ) as $k ) {
 			$$k = InputFilter::filter( $$k );
 		}
 
 		/* Sanitize the URL */
-		if (!empty($url)) {
+		if ( !empty( $url ) ) {
 			$parsed = InputFilter::parse_url( $url );
 			if ( $parsed['is_relative'] ) {
 				// guess if they meant to use an absolute link
@@ -169,7 +169,7 @@ class FeedbackHandler extends ActionHandler
 			'name' => $name,
 			'email' => $email,
 			'url' => $url,
-			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
+			'ip' => sprintf( "%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
 			'content'	=> $content,
 			'status' =>	Comment::STATUS_UNAPPROVED,
 			'date' => HabariDateTime::date_create(),
@@ -198,7 +198,7 @@ class FeedbackHandler extends ActionHandler
 
 			// store in the user's session that this comment is pending moderation
 			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
-				Session::notice(_t('Your comment is pending moderation.'), 'comment_' . $comment->id );
+				Session::notice( _t( 'Your comment is pending moderation.' ), 'comment_' . $comment->id );
 			}
 
 			// if no cookie exists, we should set one
@@ -213,7 +213,7 @@ class FeedbackHandler extends ActionHandler
 			)
 			{
 				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
-				$site_url = Site::get_path('base',true);
+				$site_url = Site::get_path( 'base',true );
 				setcookie( $cookie, $cookie_content, time() + 31536000, $site_url );
 			}
 		}
