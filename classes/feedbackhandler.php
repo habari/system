@@ -93,17 +93,13 @@ class FeedbackHandler extends ActionHandler
 	 */
 	function add_comment($post, $name = null, $email = null, $url = null, $content = null, $extra = null )
 	{
-		if(is_numeric($post)) {
+		if ( is_numeric( $post ) ) {
 			$post = Post::get( array( 'id' => $post ) );
-			if( !$post ) {
-				// trying to comment on a non-existent post?  Weirdo.
-				header('HTTP/1.1 403 Forbidden', true, 403);
-				die();
-			}
 		}
-		elseif(!$post instanceof Post) {
+ 
+		if ( !$post instanceof Post ) {
 			// Not sure what you're trying to pull here, but that's no good
-			header('HTTP/1.1 403 Forbidden', true, 403);
+			header( 'HTTP/1.1 403 Forbidden', true, 403 );
 			die();
 		}
 
