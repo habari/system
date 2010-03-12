@@ -3158,6 +3158,14 @@ class AdminHandler extends ActionHandler
 
 		$mainmenus = $this->filter_menus_by_permission( $mainmenus );
 
+		// Make submenu links default to the first available item
+		foreach ( array_keys($mainmenus) as $action ) {
+			if ( !$mainmenus[$action]['url'] && !empty($mainmenus[$action]['submenu']) ) {
+				$default = current($mainmenus[$action]['submenu']);
+				$mainmenus[$action]['url'] = $default['url'];
+			}
+		}
+		
 		$theme->assign( 'mainmenu', $mainmenus );
 	}
 
