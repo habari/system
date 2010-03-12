@@ -75,7 +75,7 @@ class SpamChecker extends Plugin
 		}
 
 		// are there more than 3 URLs posted?  If so, it's almost certainly spam
-		if ( preg_match_all( "#http://#", strtolower( $comment->content ), $matches, PREG_SET_ORDER ) > 3 ) {
+		if ( preg_match_all( "#https?://#", strtolower( $comment->content ), $matches, PREG_SET_ORDER ) > 3 ) {
 			$comment->status = Comment::STATUS_SPAM;
 			$spamcheck[] = _t('There is a 3 URL limit in comments.');
 		}
