@@ -109,7 +109,7 @@ class InputFilter
 	 * Protocols that are ok for use in URIs.
 	 */
 	private static $whitelist_protocols = array(
-		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto',
+		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto', 'rtsp', 'mms', 'svn',
 	);
 
 	/**
