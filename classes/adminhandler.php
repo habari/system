@@ -1789,6 +1789,7 @@ class AdminHandler extends ActionHandler
 			
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
+				$plugin['info'] = Plugins::load_info( $file );
 				if ( array_key_exists( $plugin_id, $active_plugins ) ) {
 					$plugin['verb'] = _t( 'Deactivate' );
 					$pluginobj = $active_plugins[$plugin_id];
@@ -1850,8 +1851,20 @@ class AdminHandler extends ActionHandler
 							'action' => 'activate',
 						),
 					);
+					if ( isset($plugin['info']->help) ) {
+						if ( isset($_GET['configaction']) ) {
+							$urlparams['configaction'] = $_GET['configaction'];
+						}
+						if ( $_GET['help'] != '_help' ) {
+							$urlparams['help'] = '_help';
+						}
+						$action['caption'] = '?';
+						$action['action'] = '_help';
+						$urlparams = array('page' => 'plugins', 'configure' => $plugin_id);
+						$action['url'] = URL::get( 'admin', $urlparams );
+						$plugin['help'] = $action;
+					}
 				}
-				$plugin['info'] = Plugins::load_info( $file );
 			}
 			else {
 				$plugin['debug'] = true;

@@ -63,7 +63,17 @@
 	<p class="description"><?php echo $plugin['info']->description; ?></p>
 
 	<div class="pluginhelp"<?php if ( $helpaction == '_help' ): ?> class="active"<?php endif; ?>>
-		<?php Plugins::act( 'plugin_ui', $plugin['plugin_id'], '_help' ); ?>
+		<?php
+		if ( Plugins::is_loaded((string) $plugin['info']->name) ) {
+			Plugins::act( 'plugin_ui', $plugin['plugin_id'], '_help' );
+		}
+		elseif ( isset($plugin['info']->help) ) {
+			foreach ( $plugin['info']->help as $help ) {
+				if ( (string)$help['name'] == '' ) {
+					echo  '<div class="help">' . $help->value . '</div>';
+				}
+			}
+		} ?>
 	</div>
 
 	<?php if ( isset($this->engine_vars['configure']) && ($configure == $plugin['plugin_id']) ): ?>
