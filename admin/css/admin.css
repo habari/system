@@ -286,7 +286,7 @@ a img {
 	font-size: 9px;
 	list-style: none outside;
 	margin: 0 0 0 10px;
-	position: absolute; 
+	position: absolute;
 	right: 40px;
 }
 
@@ -626,7 +626,7 @@ body.page-comments .button{
 
 .button.delete, .formcontrol.delete input {
 	float: left;
-	}
+}
 
 .button#delete {
 	float: left;
@@ -717,21 +717,21 @@ body.page-publish .buttons input {
 	text-align: left;
 	margin-right: 50px;
 	margin-left: 10px;
-	}
+}
 
 #tags_list ul li {
-	font-family: "Arial", san-serif;
+	font-family: "Arial", sans-serif;
 	font-size: 0.8em;
 	display: inline;
 	line-height: 2.0em;
 	padding: 3px;
 	color: #ccc;
 	cursor: pointer;
-	}
+}
 
 #tags_list ul li.clicked {
 	background: #000;
-	}
+}
 
 .viewpost {
 	float: right;
@@ -984,9 +984,9 @@ body.page-publish .buttons input {
 /*-- MEDIA ACTION DROPBUTTONS */
 
 .mediaactions.dropbutton {
-	position: relative !important; 
-	right: 0px !important; 
-	min-width: 100% !important;  
+	position: relative !important;
+	right: 0px !important;
+	min-width: 100% !important;
 	opacity: .8;
 }
 
@@ -1655,8 +1655,8 @@ body.page-themes #page .dropbutton {
 	top: 20px;
 }
 
-body.page-themes #page .dropbutton li:last-child:first-child { 
-	text-align: center; 
+body.page-themes #page .dropbutton li:last-child:first-child {
+	text-align: center;
 	text-indent: -2px;
 }
 
@@ -2093,7 +2093,7 @@ body.page-Manage .state {
 
 .navigator .filters {
 	position: relative;
-	}
+}
 
 #page .navigator .dropbutton.special_search {
 	top: 1px;
