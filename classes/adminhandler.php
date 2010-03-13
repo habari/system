@@ -963,9 +963,9 @@ class AdminHandler extends ActionHandler
 
 			foreach ( $_POST as $id => $delete ) {
 
-				// skip POST elements which are not log ids
-				if ( preg_match( '/^p\d+/', $id ) && $delete ) {
-					$id = substr($id, 1);
+				// skip POST elements which are not user ids
+				if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
+					$id = (int) substr($id, 1);
 
 					$ids[] = array( 'id' => $id );
 
@@ -2237,8 +2237,8 @@ class AdminHandler extends ActionHandler
 		$ids = array();
 		foreach ( $_POST as $id => $delete ) {
 			// skip POST elements which are not post ids
-			if ( preg_match( '/^p\d+/', $id ) && $delete ) {
-				$ids[] = substr($id, 1);
+			if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
+				$ids[] = (int) substr($id, 1);
 			}
 		}
 		$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
@@ -2291,8 +2291,8 @@ class AdminHandler extends ActionHandler
 
 		foreach ( $_POST as $id => $delete ) {
 			// skip POST elements which are not log ids
-			if ( preg_match( '/^p\d+/', $id ) && $delete ) {
-				$id = substr($id, 1);
+			if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
+				$id = (int) substr($id, 1);
 
 				$ids[] = array( 'id' => $id );
 
@@ -2330,8 +2330,8 @@ class AdminHandler extends ActionHandler
 
 		foreach ( $_POST as $id => $update ) {
 			// skip POST elements which are not comment ids
-			if ( preg_match( '/^p\d+/', $id ) && $update ) {
-				$ids[] = substr($id, 1);
+			if ( preg_match( '/^p\d+$/', $id ) && $update ) {
+				$ids[] = (int) substr($id, 1);
 			}
 		}
 
@@ -2716,9 +2716,9 @@ class AdminHandler extends ActionHandler
 
 				foreach ( $_POST as $id => $delete ) {
 
-					// skip POST elements which are not log ids
-					if ( preg_match( '/^p\d+/', $id ) && $delete ) {
-						$id = substr($id, 1);
+					// skip POST elements which are not group ids
+					if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
+						$id = (int) substr($id, 1);
 
 						$ids[] = array( 'id' => $id );
 
