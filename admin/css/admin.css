@@ -392,8 +392,12 @@ a img {
 
 /*- GENERAL STRUCTURE & STYLING */
 
+body {
+	padding-top: 32px;
+}
+
 #page {
-	margin-top: 50px;
+	margin-top: 18px;
 }
 
 #page .container {
@@ -655,7 +659,7 @@ body.page-comments .button{
 
 /*- CREATE */
 #page .create {
-	margin-top: 70px;
+	margin-top: 38px;
 }
 
 #page .create .container > p {
