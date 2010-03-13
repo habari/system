@@ -97,16 +97,7 @@ class charcoal extends Theme
 	public function theme_post_comments_link($theme, $post, $zero, $one, $more)
 	{
 		$c = $post->comments->approved->count;
-		switch ($c) {
-			case '0':
-				return $zero;
-				break;
-			case '1':
-				return str_replace( '%s', '1', $one );
-				break;
-			default :
-				return str_replace( '%s', $c, $more);
-		}
+		return 0 == $c ? $zero : sprintf( '%1$d %2$s', $c, _n( $one, $more, $c ) );
 	}
 
 	public function filter_post_content_excerpt($return)
