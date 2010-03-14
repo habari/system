@@ -506,17 +506,23 @@ class Posts extends ArrayObject implements IsContent
 			$$key = $value;
 		}
 
-
 		// Define the LIMIT if it does not exist, unless specific posts are requested
 		if ( !isset( $limit ) && !isset( $paramset['id']) && !isset( $paramset['slug'])) {
 			$limit = Options::get('pagination') ? (int) Options::get('pagination') : 5;
 		}
 		elseif( !isset( $limit ) ) {
-			$limit = '';
+			$selected_posts = 0;
+			if(isset($paramset['id'])) {
+				$selected_posts += count(Utils::single_array($paramset['id']));
+			}
+			if(isset($paramset['slug'])) {
+				$selected_posts += count(Utils::single_array($paramset['slug']));
+			}
+			$limit = $selected_posts > 0 ? $selected_posts : '';
 		}
 
 		// Calculate the OFFSET based on the page number
-		if ( isset( $page ) && is_numeric( $page ) ) {
+		if ( isset( $page ) && is_numeric( $page ) && !isset($paramset['offset']) ) {
 			$offset = ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
