@@ -149,7 +149,7 @@ class Posts extends ArrayObject implements IsContent
 					}
 					else {
 						$where[] = "{posts}.content_type != ?";
-						$params[] = (int) Post::type( $paramset['content_type'] );
+						$params[] = (int) Post::type( $paramset['not:content_type'] );
 					}
 				}
 				if ( isset( $paramset['slug'] ) ) {
