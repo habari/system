@@ -141,6 +141,17 @@ class Posts extends ArrayObject implements IsContent
 						$params[] = (int) Post::type( $paramset['content_type'] );
 					}
 				}
+				if ( isset( $paramset['not:content_type'] ) ) {
+					if ( is_array( $paramset['not:content_type'] ) ) {
+						array_walk( $paramset['not:content_type'], create_function( '&$a,$b', '$a = Post::type($a);' ) );
+						$where[] = "{posts}.content_type NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:content_type'] ), '?' ) ) . ")";
+						$params = array_merge( $params, $paramset['not:content_type'] );
+					}
+					else {
+						$where[] = "{posts}.content_type != ?";
+						$params[] = (int) Post::type( $paramset['content_type'] );
+					}
+				}
 				if ( isset( $paramset['slug'] ) ) {
 					if ( is_array( $paramset['slug'] ) ) {
 						$where[] = "{posts}.slug IN (" . implode( ',', array_fill( 0, count( $paramset['slug'] ), '?' ) ) . ")";
@@ -499,6 +510,9 @@ class Posts extends ArrayObject implements IsContent
 		// Define the LIMIT if it does not exist, unless specific posts are requested
 		if ( !isset( $limit ) && !isset( $paramset['id']) && !isset( $paramset['slug'])) {
 			$limit = Options::get('pagination') ? (int) Options::get('pagination') : 5;
+		}
+		elseif( !isset( $limit ) ) {
+			$limit = '';
 		}
 
 		// Calculate the OFFSET based on the page number
