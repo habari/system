@@ -563,10 +563,6 @@ class Posts extends ArrayObject implements IsContent
 				$limit .= " OFFSET $offset";
 			}
 		}
-		// Define OFFSET if it exists separately from the limit
-		elseif ( isset( $offset ) ) {
-			$limit = " OFFSET $offset";
-		}
 		else {
 			$limit = '';
 		}
