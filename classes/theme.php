@@ -40,6 +40,7 @@ class Theme extends Pluggable
 		'criteria',
 		'limit',
 		'nolimit',
+		'offset',
 		'fetch_fn',
 		'id',
 	);
