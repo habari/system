@@ -65,7 +65,6 @@ class Posts extends ArrayObject implements IsContent
 
 		// Default parameters
 		$orderby = 'pubdate DESC';
-		$limit = (int) Options::get('pagination') ? (int) Options::get('pagination') : 5;
 
 		// If $paramarray is a querystring, convert it to an array
 		$paramarray = Utils::get_params( $paramarray );
@@ -491,9 +490,15 @@ class Posts extends ArrayObject implements IsContent
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
 		$paramarray = new SuperGlobal($paramarray);
-		$extract = $paramarray->filter_keys('page', 'limit', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having');
+		$extract = $paramarray->filter_keys('page', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having');
 		foreach ( $extract as $key => $value ) {
 			$$key = $value;
+		}
+
+
+		// Define the LIMIT if it does not exist, unless specific posts are requested
+		if ( !isset( $limit ) && !isset( $paramset['id']) && !isset( $paramset['slug'])) {
+			$limit = Options::get('pagination') ? (int) Options::get('pagination') : 5;
 		}
 
 		// Calculate the OFFSET based on the page number
@@ -545,16 +550,24 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 
+		// Remove the LIMIT if 'nolimit' or 'month_cts' is set
+		// Doing this first should allow OFFSET to work
+		if ( isset( $nolimit ) || isset( $paramset['month_cts'] ) ) {
+			$limit = '';
+		}
+
 		// Define the LIMIT and add the OFFSET if it exists
-		if ( isset( $limit ) ) {
+		if ( !empty( $limit ) ) {
 			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
 				$limit .= " OFFSET $offset";
 			}
 		}
-
-		// Remove the LIMIT if 'nolimit' or 'month_cts' is set
-		if ( isset( $nolimit ) || isset( $paramset['month_cts'] ) ) {
+		// Define OFFSET if it exists separately from the limit
+		elseif ( isset( $offset ) ) {
+			$limit = " OFFSET $offset";
+		}
+		else {
 			$limit = '';
 		}
 
