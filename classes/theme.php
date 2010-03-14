@@ -28,6 +28,7 @@ class Theme extends Pluggable
 	 */
 	public $valid_filters = array(
 		'content_type',
+		'not:content_type',
 		'slug',
 		'status',
 		'page',
