@@ -17,7 +17,7 @@
  * result of Posts::get() to be iterated (for example, in a foreach construct)
  * and to have properties that can be accessed that describe the results
  * (for example, $posts->onepost).
- **/
+ */
 class Posts extends ArrayObject implements IsContent
 {
 	public $get_param_cache; // Stores info about the last set of data fetched that was not a single value
@@ -33,7 +33,7 @@ class Posts extends ArrayObject implements IsContent
 	 * the data returned doesn't necessarily match the request, such as when
 	 * several posts are requested, but only one is available to return.
 	 * @param string The name of the property to return.
-	 **/
+	 */
 	public function __get( $name )
 	{
 		switch ( $name ) {
@@ -50,7 +50,7 @@ class Posts extends ArrayObject implements IsContent
 	 *
 	 * @param array $paramarry An associated array of parameters, or a querystring
 	 * @return array An array of Post objects, or a single post object, depending on request
-	 **/
+	 */
 	public static function get( $paramarray = array() )
 	{
 		$join_params = array();
@@ -162,7 +162,7 @@ class Posts extends ArrayObject implements IsContent
 						$where[] = "{posts}.user_id = ?";
 						$params[] = (int) $paramset['user_id'];
 					}
-				
+
 				}
 
 				if ( isset( $paramset['tag'] ) || isset( $paramset['tag_slug'] )) {
@@ -277,7 +277,7 @@ class Posts extends ArrayObject implements IsContent
 						$where[] = '(' . implode(' OR ', $pi_where) . ')';
 					}
 				}
-				
+
 				if ( isset( $paramset['has:info'] ) ) {
 					$the_ins = array();
 					$has_info = Utils::single_array( $paramset['has:info'] );
@@ -291,7 +291,7 @@ class Posts extends ArrayObject implements IsContent
 
 						$select_ary["info_{$info_name}_value"] = "hipi{$pi_count}.value AS info_{$info_name}_value";
 
-					} 
+					}
 					$where[] = '(' . implode(' OR ', $pi_where) . ')';
 				}
 
@@ -514,7 +514,7 @@ class Posts extends ArrayObject implements IsContent
 		else {
 			$fetch_fn = $fns[0];
 		}
-		
+
 		/**
 		 * Turn the requested fields into a comma-separated SELECT field clause
 		 */
@@ -549,7 +549,7 @@ class Posts extends ArrayObject implements IsContent
 		if ( isset( $limit ) ) {
 			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
-				$limit.= " OFFSET $offset";
+				$limit .= " OFFSET $offset";
 			}
 		}
 
@@ -616,7 +616,7 @@ class Posts extends ArrayObject implements IsContent
 	 * select all posts of a given status
 	 * @param int a status value
 	 * @return array an array of Comment objects with the same status
-	**/
+	 */
 	public static function by_status ( $status )
 	{
 		return self::get( array( 'status' => $status ) );
@@ -628,18 +628,18 @@ class Posts extends ArrayObject implements IsContent
 	 * select all post content by slug
 	 * @param string a post slug
 	 * @return array an array of post content
-	**/
+	 */
 	public static function by_slug ( $slug = '' )
 	{
 		return self::get( array( 'slug' => $slug ) );
 	}
 
-	/*
+	/**
 	 * static count_total
 	 * return a count for the total number of posts
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts of specified type ( published or draft )
-	**/
+	 */
 	public static function count_total( $status = FALSE )
 	{
 		$params = array( 'count' => 1 );
@@ -649,23 +649,23 @@ class Posts extends ArrayObject implements IsContent
 		return self::get( $params );
 	}
 
-	/*
+	/**
 	 * return a count for the number of posts last queried
 	 * @return int the number of posts of specified type ( published or draft )
-	**/
+	 */
 	public function count_all()
 	{
 		$params = array_merge( ( array ) $this->get_param_cache, array( 'count' => '*', 'nolimit' => 1 ) );
 		return Posts::get( $params );
 	}
 
-	/*
+	/**
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
 	 * @param int an author ID
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts by the specified author
-	**/
+	 */
 	public static function count_by_author( $user_id, $status = FALSE )
 	{
 		$params = array( 'user_id' => $user_id, 'count' => 1 );
@@ -681,7 +681,7 @@ class Posts extends ArrayObject implements IsContent
 	 * @param string A tag
 	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
 	 * @return int the number of posts with the specified tag
-	**/
+	 */
 	public static function count_by_tag( $tag, $status = FALSE )
 	{
 		$params = array( 'tag' => $tag, 'count' => 1 );
@@ -696,7 +696,7 @@ class Posts extends ArrayObject implements IsContent
 	 * @param mixed a user ID or name
 	 * @param mixed an array of post IDs, an array of Post objects, or an instance of Posts
 	 * @return bool Whether the rename operation succeeded or not
-	**/
+	 */
 	public static function reassign( $user, $posts )
 	{
 		// allow plugins the opportunity to prevent reassignment
@@ -864,11 +864,11 @@ class Posts extends ArrayObject implements IsContent
 		$statuses = Post::list_post_statuses();
 		$types = Post::list_active_post_types();
 		$arguments = array(
-						'user_id' => array(),
-						'status' => array(),
-						'content_type' => array(),
-						'tag' => array()
-						);
+			'user_id' => array(),
+			'status' => array(),
+			'content_type' => array(),
+			'tag' => array()
+		);
 		$criteria = '';
 
 		$tokens = explode( ' ', $search_string );
@@ -876,18 +876,18 @@ class Posts extends ArrayObject implements IsContent
 		foreach ( $tokens as $token ) {
 			//check for triple combination
 			if ( preg_match( '/^\w+:[^:\s]*:\S+$/u', $token ) ){
-				list( $keyword, $infokey, $infovalue )= explode( ':', $token );
+				list( $keyword, $infokey, $infovalue ) = explode( ':', $token );
 				$keyword = strtolower( $keyword );
 				switch ( $keyword ){
 					case 'info':
-						$arguments['info'][]= array($infokey=>$infovalue);
+						$arguments['info'][] = array($infokey=>$infovalue);
 					break;
 				}
 			}
 
 			// check for a keyword:value pair
 			if ( preg_match( '/^\w+:\S+$/u', $token ) ) {
-				list( $keyword, $value )= explode( ':', $token );
+				list( $keyword, $value ) = explode( ':', $token );
 
 				$keyword = strtolower( $keyword );
 				switch ( $keyword ) {
