@@ -9,7 +9,11 @@
 <div id="block_instances">
 	<?php foreach ( $block_instances as $instance ): ?>
 	<div class="block_instance">
-		<h3><?php echo htmlspecialchars($instance->title); ?><a href="#" onclick="var i = $('<iframe src=\'<?php echo URL::get('admin', array('page' => 'configure_block', 'blockid' => $instance->id)); ?>\' style=\'width:600px;height:300px;\'></iframe>'); i.dialog({bgiframe:true,height:300,width:778,modal:true,dialogClass:'jqueryui',draggable:false,title:'Configure Block: <?php echo htmlspecialchars($instance->title); ?>'});i.css('width','768px');">configure</a></h3>
+		<h3><?php echo htmlspecialchars($instance->title); ?></h3>
+		<ul>
+			<li><a href="#" onclick="var i = $('<iframe src=\'<?php echo URL::get('admin', array('page' => 'configure_block', 'blockid' => $instance->id)); ?>\' style=\'width:600px;height:300px;\'></iframe>'); i.dialog({bgiframe:true,height:300,width:778,modal:true,dialogClass:'jqueryui',draggable:false,title:'Configure Block: <?php echo htmlspecialchars($instance->title); ?>'});i.css('width','768px');return false;">configure</a></li>
+			<li><a href="#" onclick="delete_block(<?php echo $instance->id; ?>);return false;">delete</a></li>
+		</ul>
 	</div>
 	<?php endforeach; ?>
 </div>
