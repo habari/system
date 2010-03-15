@@ -104,7 +104,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	public function fetch($theme)
 	{
 		Plugins::act('block_content_' . $block->type, $block);
-		$output .= implode( '', $theme->content_return($block));
+		$output = implode( '', $theme->content_return($block));
 		return $output;
 	}
 
