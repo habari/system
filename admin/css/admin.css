@@ -435,11 +435,15 @@ body {
 
 #page .container h3 {
 	font-size: 1.2em;
-	color: #333;
+	color: #999;
+	font-weight: bold;
+	cursor: move;
 }
 
 #page .container h3 a {
-	font-weight: bold;
+	font-weight: normal;
+	font-size: small;
+	margin:0em 1.0em;
 }
 
 #page input[type=button], #page input[type=submit], #page button {
@@ -2680,6 +2684,38 @@ body.login .humanMsg {
 	overflow: auto;
 }
 
-#page .hidden {
+#page .hidden, #page ul.dropbutton li.nodisplay {
 	display: none;
 }
+
+body.modal {
+	background-color: white;
+}
+
+body.modal {
+	padding-top: 0px;
+	margin-top: 0px;
+}
+
+body.modal .formcontrol label {
+	display: block;
+	width: 150px;
+	float: left;
+}
+
+body.modal select {
+	width: 30%;
+}
+
+body.modal .formcontrol {
+	padding: 6px 0;
+}
+
+body.modal .formui input, body.modal .formui select {
+	margin-left: 8px;
+}
+
+body.modal #save {
+	margin-bottom: 8px;
+}
+

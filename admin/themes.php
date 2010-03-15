@@ -41,24 +41,7 @@
 			<div id="tab_config_areas" class="splitter">
 				<div class="splitterinside">
 					<div id="block_add">
-						<label><?php _e('New Block Name:')?> <input type="text" id="block_instance_name"></label>
-						<label><?php _e('Type:')?> <select id="block_instance_type">
-							<?php foreach ( $blocks as $block_key => $block_name ): ?>
-							<option value="<?php echo $block_key; ?>"><?php echo $block_name; ?></option>
-							<?php endforeach; ?>
-						</select></label>
-						<input id="block_instance_add" type="button" value="+" >
-
-						<div id="block_instances">
-							<?php foreach ( $block_instances as $instance ): ?>
-							<div class="block_instance">
-								<h3><a href="#"><?php echo htmlspecialchars($instance->title); ?></a></h3>
-								<div>
-									<?php $instance->get_form()->out(); ?>
-								</div>
-							</div>
-							<?php endforeach; ?>
-						</div>
+						<?php $this->display('block_instances'); ?>
 
 					</div>
 
@@ -66,14 +49,15 @@
 					@todo: move this to the admin.js
 					-->
 					<script type="text/javascript">
-					$(function(){
+					function reset_block_form() {
 						$('#block_instance_add').click(function(){
-							if($('#block_instance_name').val() == '') {
-								alert('You must first name this instance.');
-							}
-							else {
-								$('#block_instances').append($('<h3><a href="#">' + $('#block_instance_name').val() + '</a></h3><div>' + $('#block_instance_name').val() + '</div>'));
-							}
+							$('#block_add').load(
+								habari.url.ajaxAddBlock, 
+								{title:$('#block_instance_title').val(), type:$('#block_instance_type').val()},
+								function(){
+									$('.block_instance h3').draggable({connectToSortable: '.area_drop', helper: 'clone', distance: 5, containment: $('#block_instances h3').parents('.splitterinside')});
+								}
+							);
 						});
 
 						$('#block_instances h3').click(function() {
@@ -81,9 +65,11 @@
 							return false;
 						}).next().hide();
 
-
 						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop', containment: '.area_container', axis: 'y'});
 						$('.block_instance h3').draggable({connectToSortable: '.area_drop', helper: 'clone', distance: 5, containment: $('#block_instances h3').parents('.splitterinside')});
+					}
+					$(function(){
+						reset_block_form();
 						/*
 						$(".area_drop").droppable({
 							connectToSortable: '#sortable',
@@ -108,10 +94,11 @@
 					<label><?php _e("Scope:"); ?> <select><option>Default</option></select></label>
 					<div class="area_container">
 					<?php foreach ( $active_theme['info']->areas->area as $area ): ?>
+					<?php $scopeid = 0; ?>
 						<h2><a href="#"><?php echo $area['name']; ?></a></h2>
 						<div class="area_drop">
-							<?php if ( isset($blocks_areas[0][(string)$area['name']]) ): ?>
-							<?php foreach ( $blocks_areas[0][(string)$area['name']] as $block ): ?>
+							<?php if(isset($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid][(string)$area['name']])): ?>
+							<?php foreach($blocks_areas[$scopeid][(string)$area['name']] as $block): ?>
 								<div class="area_block"><h3><?php echo $block->title; ?></h3></div>
 							<?php endforeach; ?>
 							<?php endif; ?>

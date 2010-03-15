@@ -66,6 +66,36 @@ class AdminHandler extends ActionHandler
 		// setup the stacks for javascript in the admin - it's a method so a plugin can call it externally
 		self::setup_stacks();
 	}
+	
+	/**
+	 * Create the admin theme instance
+	 * 
+	 * @param string $page The admin page requested
+	 * @param string $type The content type included in the request
+	 */
+	public function setup_admin_theme($page, $type = '')
+	{
+		if(!isset($this->theme)) {
+			$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+			$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+
+			// Add some default stylesheets
+			Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
+			Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/jqueryui.css', 'screen'), 'jqueryui');
+
+			// Add some default template variables
+			$this->set_admin_template_vars( $this->theme );
+			$this->theme->admin_type = $type;
+			$this->theme->admin_page = $page;
+			$this->theme->admin_page_url = ( $page == 'dashboard' ) ? URL::get( 'admin', 'page=' ) : URL::get( 'admin', 'page=' . $page );
+			$this->theme->page = $page;
+			$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+			$this->theme->admin_title =
+				isset( $this->theme->mainmenu[$this->theme->admin_page]['text'] )
+					? $this->theme->mainmenu[$this->theme->admin_page]['text']
+					: ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+		}
+	}
 
 	/**
 	 * Dispatches the request to the defined method. (ie: post_{page})
@@ -83,23 +113,7 @@ class AdminHandler extends ActionHandler
 			$type = '';
 		}
 		//$type = ( isset( $this->handler_vars['content_type'] ) && !empty( $this->handler_vars['content_type'] ) ) ? $this->handler_vars['content_type'] : '';
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
-		// Add some default stylesheets
-		Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin');
-
-			// Add some default template variables
-		$this->set_admin_template_vars( $this->theme );
-		$this->theme->admin_type = $type;
-		$this->theme->admin_page = $page;
-		$this->theme->admin_page_url = ( $page == 'dashboard' ) ? URL::get( 'admin', 'page=' ) : URL::get( 'admin', 'page=' . $page );
-		$this->theme->page = $page;
-		$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
-		$this->theme->admin_title =
-			isset( $this->theme->mainmenu[$this->theme->admin_page]['text'] )
-				? $this->theme->mainmenu[$this->theme->admin_page]['text']
-				: ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+		$this->setup_admin_theme($page, $type);
 
 		// Access check to see if the user is allowed the requested page
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
@@ -3330,6 +3344,12 @@ class AdminHandler extends ActionHandler
 			case 'ajax_dashboard':
 				$result = true;
 				break;
+			case 'ajax_add_block':
+				$result = true;
+				break;
+			case 'configure_block':
+				$result = true;
+				break;
 			default:
 				break;
 		}
@@ -3465,6 +3485,53 @@ class AdminHandler extends ActionHandler
 		);
 
 		echo json_encode( $output );
+	}
+	
+	public function get_configure_block()
+	{
+		Utils::check_request_method( array( 'GET', 'POST' ) );
+
+		$block = DB::get_row('SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array('id' => $_GET['blockid']), 'Block');
+		$this->theme->content = $block->get_form()->get();
+		
+		$this->display('block_configure');
+	}
+	
+	public function ajax_add_block( $handler_vars )
+	{
+		Utils::check_request_method( array( 'POST' ) );
+		
+		$this->setup_admin_theme('');
+		
+		$title = $_POST['title'];
+		$type = $_POST['type'];
+		
+		if($title == '') {
+			$this->display('block_instances');
+
+			$msg = json_encode(_t('A new block must first have a name.'));
+
+			echo '<script type="text/javascript">
+				alert(' . $msg . ');
+				reset_block_form();
+			</script>';
+		}
+		else {
+			$block = new Block(array('title' => $title, 'type' => $type));
+			$block->insert();
+
+			$this->theme->blocks = Plugins::filter('block_list', array());
+			$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
+		
+			$this->display('block_instances');
+
+			$msg = json_encode(_t('Added new block "%1s" of type "%2s".', array($_POST['name'], $_POST['type'])));
+	
+			echo '<script type="text/javascript">
+				humanMsg.displayMsg(' . $msg . ');
+				reset_block_form();
+			</script>';
+		}
 	}
 
 	/**
