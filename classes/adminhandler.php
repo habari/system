@@ -3347,6 +3347,9 @@ class AdminHandler extends ActionHandler
 			case 'ajax_add_block':
 				$result = true;
 				break;
+			case 'ajax_delete_block':
+				$result = true;
+				break;
 			case 'configure_block':
 				$result = true;
 				break;
@@ -3525,13 +3528,39 @@ class AdminHandler extends ActionHandler
 		
 			$this->display('block_instances');
 
-			$msg = json_encode(_t('Added new block "%1s" of type "%2s".', array($_POST['name'], $_POST['type'])));
+			$msg = json_encode(_t('Added new block "%1s" of type "%2s".', array($title, $type)));
 	
 			echo '<script type="text/javascript">
 				humanMsg.displayMsg(' . $msg . ');
 				reset_block_form();
 			</script>';
 		}
+	}
+	
+	public function ajax_delete_block( $handler_vars )
+	{
+		Utils::check_request_method( array( 'POST' ) );
+		
+		$this->setup_admin_theme('');
+		
+		$block_id = $_POST['block_id'];
+		$block = DB::get_row('SELECT b.* FROM {blocks} b WHERE id = :block_id', array('block_id' => $block_id), 'Block');
+		if($block->delete()) {
+			$msg = json_encode(_t('Deleted block "%1s" of type "%2s".', array($block->title, $block->type)));
+		}
+		else {
+			$msg = json_encode(_t('Failed to delete block "%1s" of type "%2s".', array($block->title, $block->type)));
+		}
+		
+		$this->theme->blocks = Plugins::filter('block_list', array());
+		$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
+	
+		$this->display('block_instances');
+
+		echo '<script type="text/javascript">
+			humanMsg.displayMsg(' . $msg . ');
+			reset_block_form();
+		</script>';
 	}
 
 	/**
