@@ -1822,7 +1822,7 @@ class AdminHandler extends ActionHandler
 						$urlparams = array('page' => 'plugins', 'configure'=>$plugin_id);
 						$action['url'] = URL::get( 'admin', $urlparams );
 						
-						if ( $action['caption'] == '?' ) {
+						if ( $action['caption'] == _t( '?' ) ) {
 							if ( isset($_GET['configaction']) ) {
 								$urlparams['configaction'] = $_GET['configaction'];
 							}
@@ -1872,7 +1872,7 @@ class AdminHandler extends ActionHandler
 						if ( $_GET['help'] != '_help' ) {
 							$urlparams['help'] = '_help';
 						}
-						$action['caption'] = '?';
+						$action['caption'] = _t( '?' );
 						$action['action'] = '_help';
 						$urlparams = array('page' => 'plugins', 'configure' => $plugin_id);
 						$action['url'] = URL::get( 'admin', $urlparams );

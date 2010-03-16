@@ -61,7 +61,7 @@ abstract class Plugin extends Pluggable
 				if($name == '') {
 					$name = '_help';
 				}
-				$actions[$name]= '?';
+				$actions[$name]= _t( '?' );
 			}
 		}
 		return $actions;
