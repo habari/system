@@ -8,7 +8,7 @@
 		</span>
 		<span class="checkbox title pct20">
 			<?php if ( $comment->url != '' ): ?>
-			<a href="#" class="author" title="<?php echo htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ); ?>"><?php echo htmlspecialchars( $comment->name ); ?></a>
+			<a href="#" class="author" title="<?php echo htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ); ?>"><?php echo htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ); ?></a>
 			<?php else: ?>
 			<?php echo htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ); ?>
 			<?php endif; ?>
