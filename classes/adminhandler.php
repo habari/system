@@ -498,7 +498,7 @@ class AdminHandler extends ActionHandler
 
 			// Verify that the post hasn't already been updated since the form was loaded
 			if ( $post->modified != $form->modified->value ) {
-				Session::notice( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.', array( sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, htmlspecialchars( $post->title ) ) ) ) );
+				Session::notice( _t( 'The post %1$s was updated since you made changes.  Please review those changes before overwriting them.', array( sprintf('<a href="%1$s">\'%2$s\'</a>', $post->permalink, htmlspecialchars( $post->title, ENT_COMPAT, 'UTF-8' ) ) ) ) );
 				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 				exit;
 			}
@@ -599,7 +599,7 @@ class AdminHandler extends ActionHandler
 		$post->update( $minor );
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
-		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title ) ), Post::status_name( $post->status ) ) );
+		Session::notice( sprintf( _t( 'The post %1$s has been saved as %2$s.' ), sprintf('<a href="%1$s">\'%2$s\'</a>', $permalink, htmlspecialchars( $post->title, ENT_COMPAT, 'UTF-8' ) ), Post::status_name( $post->status ) ) );
 		if ( $post->slug != Utils::slugify( $post->title ) ) {
 			Session::notice( sprintf( _t( 'The content address is \'%1$s\'.'), $post->slug ));
 		}
@@ -683,7 +683,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		$post->delete();
-		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), htmlspecialchars( $post->title ) ) );
+		Session::notice( sprintf( _t( 'Deleted the %1$s titled "%2$s".' ), Post::type_name( $post->content_type ), htmlspecialchars( $post->title, ENT_COMPAT, 'UTF-8' ) ) );
 		Utils::redirect( URL::get( 'admin', 'page=posts&type=' . Post::status( 'any' ) ) );
 	}
 

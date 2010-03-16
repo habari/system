@@ -84,10 +84,10 @@ class AtomHandler extends ActionHandler
 
 		$feed_id = $xml->addChild( 'id', 'tag:' . Site::get_url('hostname') . ',' . date("Y-m-d") . ':' . $id . '/' . Options::get( 'GUID' ) );
 
-		$feed_title = $xml->addChild( 'title', htmlspecialchars( Options::get( 'title' ) ) );
+		$feed_title = $xml->addChild( 'title', htmlspecialchars( Options::get( 'title' ), ENT_COMPAT, 'UTF-8' ) );
 
 		if ( $tagline = Options::get( 'tagline' ) ) {
-			$feed_subtitle = $xml->addChild( 'subtitle', htmlspecialchars( $tagline ) );
+			$feed_subtitle = $xml->addChild( 'subtitle', htmlspecialchars( $tagline, ENT_COMPAT, 'UTF-8' ) );
 		}
 
 		if ( $updated == NULL) {
@@ -178,7 +178,7 @@ class AtomHandler extends ActionHandler
 		foreach ( $posts as $post ) {
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
-			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
+			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content, ENT_COMPAT, 'UTF-8' ) : htmlspecialchars( $post->content_atom, ENT_COMPAT, 'UTF-8' );
 			
 			$content = Plugins::filter( 'atom_add_post', $content );
 			
@@ -229,20 +229,20 @@ class AtomHandler extends ActionHandler
 	public function add_comments($xml, $comments)
 	{
 		foreach ( $comments as $comment ) {
-			$content = ( $this->is_auth() ) ? htmlspecialchars( $comment->content ) : htmlspecialchars( $comment->content_atom );
+			$content = ( $this->is_auth() ) ? htmlspecialchars( $comment->content, ENT_COMPAT, 'UTF-8' ) : htmlspecialchars( $comment->content_atom, ENT_COMPAT, 'UTF-8' );
 
 			$content = Plugins::filter( 'atom_add_comment', $content );
 
 			$item = $xml->addChild( 'entry' );
-			$title = $item->addChild( 'title', htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ) ) );
+			$title = $item->addChild( 'title', htmlspecialchars( sprintf( _t( '%1$s on "%2$s"' ), $comment->name, $comment->post->title ), ENT_COMPAT, 'UTF-8' ) );
 
 			$link = $item->addChild( 'link' );
 			$link->addAttribute( 'rel', 'alternate' );
 			$link->addAttribute( 'href', $comment->post->permalink . '#comment-' . $comment->id );
 
 			$author = $item->addChild( 'author' );
-			$author_name = $author->addChild( 'name', htmlspecialchars( $comment->name ) );
-			$author_uri = $author->addChild( 'uri', htmlspecialchars( $comment->url ) );
+			$author_name = $author->addChild( 'name', htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ) );
+			$author_uri = $author->addChild( 'uri', htmlspecialchars( $comment->url, ENT_COMPAT, 'UTF-8' ) );
 
 			$id = $item->addChild( 'id', $comment->post->guid . '/' . $comment->id );
 
@@ -412,7 +412,7 @@ class AtomHandler extends ActionHandler
 
 			$service_workspace = $xml->addChild( 'workspace' );
 
-			$workspace_title = $service_workspace->addChild( 'atom:title', htmlspecialchars( Options::get( 'title' ) ), 'http://www.w3.org/2005/Atom' );
+			$workspace_title = $service_workspace->addChild( 'atom:title', htmlspecialchars( Options::get( 'title' ), ENT_COMPAT, 'UTF-8' ), 'http://www.w3.org/2005/Atom' );
 
 			$workspace_collection = $service_workspace->addChild( 'collection' );
 			$workspace_collection->addAttribute( 'href', URL::get( 'atom_feed', 'index=1' ) );
@@ -553,7 +553,7 @@ class AtomHandler extends ActionHandler
 
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
-			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content ) : htmlspecialchars( $post->content_atom );
+			$content = ( $this->is_auth() ) ? htmlspecialchars( $post->content, ENT_COMPAT, 'UTF-8' ) : htmlspecialchars( $post->content_atom, ENT_COMPAT, 'UTF-8' );
 
 			// Build the namespaces, plugins can alter it to override or insert their own.
 			$namespaces = array( 'default' => 'http://www.w3.org/2005/Atom' );
