@@ -5,7 +5,7 @@
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('no results'); ?></span>
 	<span class="search pct50">
-		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" value="<?php echo htmlspecialchars($search_args); ?>">
+		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" value="<?php echo htmlspecialchars($search_args, ENT_COMPAT, 'UTF-8'); ?>">
 	</span>
 	<div class="filters pct15">
 		<ul class="dropbutton special_search">	

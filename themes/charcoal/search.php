@@ -2,7 +2,7 @@
 
 		<?php if (isset($post)) : ?>
 			<div id="main-posts">
-				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria ), true ); ?></p>
+				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria, ENT_COMPAT, 'UTF-8' ), true ); ?></p>
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
 				<?php if ( is_array( $post->tags ) && ($tags_in_multiple) ) : ?>
@@ -30,7 +30,7 @@
 			</div>
 		<?php else: ?>
 			<div id="main-posts">
-				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria ), false ); ?></p>
+				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria, ENT_COMPAT, 'UTF-8' ), false ); ?></p>
 				<div class="post multi"></div>
 			</div>
 		<?php endif; ?>

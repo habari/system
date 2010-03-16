@@ -3,7 +3,7 @@
 <?php function elem_if_set($a, $k) { if (isset($a[$k])) { return $a[$k]; } } ?>
 
 <form action="" method="post" id="installform">
-<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>" />
+<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale, ENT_COMPAT, 'UTF-8'); ?>" />
 
 <div class="installstep ready" id="databasesetup">
 	<h2><?php _e('Database Setup'); ?></h2>
