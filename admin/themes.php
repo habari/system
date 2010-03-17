@@ -51,6 +51,7 @@
 					<script type="text/javascript">
 					function reset_block_form() {
 						$('#block_instance_add').click(function(){
+							spinner.start();
 							$('#block_add').load(
 								habari.url.ajaxAddBlock, 
 								{title:$('#block_instance_title').val(), type:$('#block_instance_type').val()},
@@ -68,6 +69,7 @@
 						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop,.delete_drop', containment: $('#block_add').parents('.splitterinside')});
 					}
 					function delete_block(id){
+						spinner.start();
 						$('#block_add').load(
 							habari.url.ajaxDeleteBlock, 
 							{block_id:id},
@@ -85,6 +87,7 @@
 						reset_block_form();
 					});
 					function save_areas(){
+						spinner.start();
 						var output = {};
 						$('.area_drop_outer').each(function(){
 							var area = $('h2', this).text();
@@ -103,23 +106,7 @@
 					</script>
 
 					<div id="scope_container">
-					<label><?php _e("Scope:"); ?> <select id="scope_id"><option value="0">Default</option></select></label>
-					<div class="area_container">
-					<?php foreach ( $active_theme['info']->areas->area as $area ): ?>
-					<?php $scopeid = 0; ?>
-						<div class="area_drop_outer">
-							<h2><?php echo $area['name']; ?></h2>
-								<div class="area_drop">
-								<?php if(isset($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid][(string)$area['name']])): ?>
-								<?php foreach($blocks_areas[$scopeid][(string)$area['name']] as $block): ?>
-									<div class="area_block"><h3 class="block_instance_<?php echo $instance->id; ?>"><?php echo $block->title; ?></h3></div>
-								<?php endforeach; ?>
-								<?php endif; ?>
-							</div>
-						</div>
-					<?php endforeach; ?>
-					</div>
-					<div class="delete_drop"><span><?php echo _t('drag here to remove'); ?></span></div>
+					<?php $this->display('block_areas'); ?>
 					</div>
 					<hr style="clear:both;visibility: hidden;height:5px;" />
 					<div id="save_areas" class="formcontrol"><button onclick="save_areas();return false;"><?php _e('Save'); ?></button>
