@@ -3,7 +3,7 @@
 	<div class="content">
 	<div id="primary">
 		<div id="primarycontent" class="hfeed">
-		<h2><?php _e('Search results for %s', array( htmlspecialchars( $criteria, ENT_COMPAT, 'UTF-8' ) ) ); ?></h2>
+		<h2><?php _e('Search results for %s', array( Utils::htmlspecialchars( $criteria ) ) ); ?></h2>
 <?php foreach ( $posts as $post ) { ?>
 		<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 
