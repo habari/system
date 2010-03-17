@@ -854,7 +854,7 @@ END_AUTH;
 						}
 						else{
 							echo '<p>There was a problem with your authorization:</p>';
-							echo htmlspecialchars($token->asXML());
+							echo Utils::htmlspecialchars($token->asXML());
 						}
 						unset($_SESSION['flickr_frob']);
 					}
