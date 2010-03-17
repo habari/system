@@ -1354,6 +1354,7 @@ class AdminHandler extends ActionHandler
 		$author->append('text', 'author_ip', 'null:null', _t('IP Address:'), 'tabcontrol_text');
 		$author->author_ip->value = long2ip($comment->ip);
 
+
 		// Create the advanced settings
 		$settings = $comment_controls->append('fieldset', 'settings', _t('Settings'));
 
@@ -1421,6 +1422,7 @@ class AdminHandler extends ActionHandler
 				);
 
 			$form = $this->form_comment( $comment, $actions );
+
 
 			if ( $update ) {
 				foreach ( $actions as $key => $action ) {
@@ -1648,6 +1650,7 @@ class AdminHandler extends ActionHandler
 							if ( $_POST['email_' . $comment->id] != NULL ) {
 								$comment->email = $_POST['email_' . $comment->id];
 							}
+
 							if ( $_POST['url_' . $comment->id] != NULL ) {
 								$comment->url = $_POST['url_' . $comment->id];
 							}
@@ -2014,6 +2017,7 @@ class AdminHandler extends ActionHandler
 				unset( $this->handler_vars['change'] );
 			}
 		}
+
 
 		// we load the WSSE tokens
 		// for use in the delete button
@@ -2791,6 +2795,7 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->groups = UserGroups::get_all();
 
+
 		$this->update_groups($this->handler_vars, false);
 
 		$this->display( 'groups' );
@@ -2827,6 +2832,7 @@ class AdminHandler extends ActionHandler
 			$potentials = array();
 
 			$users = Users::get_all();
+
 			$users[] = User::anonymous();
 
 			$members = $group->members;
@@ -3226,6 +3232,7 @@ class AdminHandler extends ActionHandler
 								if ( $user->can( $token, $mask ) ) {
 									$pass = true;
 									break 2;
+
 								}
 							}
 						}
@@ -3266,6 +3273,7 @@ class AdminHandler extends ActionHandler
 			case 'ajax_update_comment':
 				$require_any = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
 				break;
+
 			case 'tags':
 			case 'ajax_tags':
 				$require_any = array( 'manage_tags' => true );
@@ -3351,6 +3359,9 @@ class AdminHandler extends ActionHandler
 				$result = true;
 				break;
 			case 'configure_block':
+				$result = true;
+				break;
+			case 'ajax_save_areas':
 				$result = true;
 				break;
 			default:
@@ -3490,6 +3501,10 @@ class AdminHandler extends ActionHandler
 		echo json_encode( $output );
 	}
 	
+	/**
+	 * Get the block configuration form to show in a modal iframe on the themes page
+	 * 
+	 */
 	public function get_configure_block()
 	{
 		Utils::check_request_method( array( 'GET', 'POST' ) );
@@ -3500,6 +3515,22 @@ class AdminHandler extends ActionHandler
 		$this->display('block_configure');
 	}
 	
+	/**
+	 * A POST handler for the block configuration form
+	 * 
+	 * @see AdminHandler::get_configure_block
+	 * @return 
+	 */
+	public function post_configure_block()
+	{
+		$this->get_configure_block();
+	}
+	
+	/**
+	 * Called from the themes page to create a new block instace
+	 * 
+	 * @param mixed $handler_vars
+	 */
 	public function ajax_add_block( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
@@ -3537,6 +3568,11 @@ class AdminHandler extends ActionHandler
 		}
 	}
 	
+	/**
+	 * Called from the themes page to delete a block instance
+	 * 
+	 * @param mixed $handler_vars
+	 */
 	public function ajax_delete_block( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
@@ -3561,6 +3597,32 @@ class AdminHandler extends ActionHandler
 			humanMsg.displayMsg(' . $msg . ');
 			reset_block_form();
 		</script>';
+	}
+	
+	/**
+	 * Called from the themes page to save the blocks instances into areas
+	 * 
+	 * @param mixed $handler_vars
+	 * @return 
+	 */
+	public function ajax_save_areas( $handler_vars )
+	{
+		Utils::check_request_method( array( 'POST' ) );
+		
+		$area_blocks = $_POST['area_blocks'];
+		$scope = $_POST['scope'];
+		
+		DB::query('DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array($scope));
+		
+		foreach($area_blocks as $area => $blocks) {
+			$display_order = 0;
+			foreach($blocks as $block) {
+				$display_order++;
+				DB::query('INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array('block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order));
+			}
+		}
+		
+		echo 'ok';
 	}
 
 	/**
