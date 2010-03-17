@@ -1069,5 +1069,22 @@ class Utils
 			return $_SERVER["REMOTE_ADDR"];
 		}
 	}
+
+	/**
+	* Convenience function to call htmlspecialchars() with the correct flags and encoding.
+	* See http://php.net/manual/en/function.htmlspecialchars.php for details on the parameters
+	* and purpose of the function.
+	*
+	* @param $string. string. The string to escape
+	* @param $quote_flag. integer. Sets what quotes and doublequotes are replaced
+	* @param $encoding. string. The encoding of the passed string
+	* @param $double_enc. boolean. Flag to tell whether to double escape affected characters or not
+	*
+	* @return The escaped string
+	*/
+	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $double_enc = TRUE )
+	{
+		return htmlspecialchars( $string, $quote_flag, $encoding, $double_enc );
+	}
 }
 ?>
