@@ -34,7 +34,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		switch ( $token['type'] ) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
-				return $escape ? htmlspecialchars($token['value'], ENT_COMPAT, 'UTF-8') : $token['value'];
+				return $escape ? Utils::htmlspecialchars($token['value']) : $token['value'];
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
@@ -43,7 +43,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 					foreach ( $token['attrs'] as $attr => $attrval ) {
 						$out .= " {$attr}=\"";
 						if ( $escape ) {
-							$out .= htmlspecialchars( html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'UTF-8' );
+							$out .= Utils::htmlspecialchars( html_entity_decode( $attrval, ENT_QUOTES, 'UTF-8' ) );
 						}
 						else {
 							$out .= html_entity_decode( $attrval, ENT_QUOTES, 'UTF-8' );

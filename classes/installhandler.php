@@ -947,7 +947,7 @@ class InstallHandler extends ActionHandler
 				}
 			}
 			$this->handler_vars['config_file'] = Site::get_dir('config_file');
-			$this->handler_vars['file_contents'] = htmlspecialchars($file_contents, ENT_COMPAT, 'UTF-8');
+			$this->handler_vars['file_contents'] = Utils::htmlspecialchars($file_contents);
 			$this->display('config');
 			return false;
 		}

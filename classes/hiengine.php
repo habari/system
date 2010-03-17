@@ -262,7 +262,7 @@ class HiEngineParser
 				case 'context':
 					return $this->hi_to_var($cmd_matches[2]);
 				case 'escape':
-					return '<?php echo htmlspecialchars( ' . $this->hi_to_var( $cmd_matches[2] ) . ', ENT_COMPAT, "UTF-8" ); ?>';
+					return '<?php echo Utils::htmlspecialchars( ' . $this->hi_to_var( $cmd_matches[2] ) . ' ); ?>';
 			}
 		}
 
