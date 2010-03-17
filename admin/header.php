@@ -14,7 +14,8 @@
 			ajaxUpdateGroups: '<?php echo URL::get('admin_ajax', array('context' => 'update_groups')); ?>',
 			ajaxUpdateComment: '<?php echo URL::get('admin_ajax', array('context' => 'update_comment')); ?>',
 			ajaxAddBlock: '<?php echo URL::get('admin_ajax', array('context' => 'add_block')); ?>',
-			ajaxDeleteBlock: '<?php echo URL::get('admin_ajax', array('context' => 'delete_block')); ?>'
+			ajaxDeleteBlock: '<?php echo URL::get('admin_ajax', array('context' => 'delete_block')); ?>',
+			ajaxSaveAreas: '<?php echo URL::get('admin_ajax', array('context' => 'save_areas')); ?>'
 		}
 	};
 	</script>

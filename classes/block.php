@@ -45,6 +45,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		else {
 			return parent::__get($name);
 		}
+
 	}
 
 	/**
@@ -87,6 +88,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public static function default_fields()
 	{
+
 		return array(
 			'id' => 0,
 			'title' => '',

@@ -58,7 +58,14 @@
 							);
 						});
 
-						$('.block_instance h3').draggable({connectToSortable: '.area_drop', helper: 'clone', distance: 5, containment: $('#block_instances h3').parents('.splitterinside')});
+						$('.block_instance h3').draggable({
+							connectToSortable: '.area_drop', 
+							helper: 'clone', 
+							distance: 5, 
+							containment: $('#block_instances h3').parents('.splitterinside'),
+							start: function(){$('.area_drop').sortable('refresh');}
+						});
+						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop,.delete_drop', containment: $('#block_add').parents('.splitterinside')});
 					}
 					function delete_block(id){
 						$('#block_add').load(
@@ -68,46 +75,55 @@
 						);
 					}
 					$(function(){
-						reset_block_form();
-						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop', containment: '.area_container', axis: 'y'});
-						/*
-						$(".area_drop").droppable({
-							connectToSortable: '#sortable',
-							accept: '#block_instances h3',
-							activeClass: 'drop_area_active',
-							hoverClass: 'drop_area_hover',
-							drop: function(event, ui) {
-								//$(this).css({border: "1px solid red"});
+						$('.delete_drop').sortable({
+							over: function(event, ui){$(this).css('border', '1px dotted red');},
+							out: function(event, ui){$(this).css('border', null);},
+							receive: function(event, ui){
+								$(ui.item).remove();
 							}
 						});
-						*/
-						/*/
-						$('#block_instances').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop', start: function(event, ui){
-							$('h3', ui.item).next().hide();
-						}});
-						//*/
-
+						reset_block_form();
 					});
+					function save_areas(){
+						var output = {};
+						$('.area_drop_outer').each(function(){
+							var area = $('h2', this).text();
+							output[area] = [];
+							$('h3', this).each(function(){
+								m = $(this).attr('class').match(/block_instance_(\d+)/)
+								output[area].push(m[1]);
+							});
+						});
+						$('#scope_container').load(
+							habari.url.ajaxSaveAreas, 
+							{area_blocks:output, scope:$('#scope_id').val()},
+							reset_block_form
+						);
+					}
 					</script>
 
 					<div id="scope_container">
-					<label><?php _e("Scope:"); ?> <select><option>Default</option></select></label>
+					<label><?php _e("Scope:"); ?> <select id="scope_id"><option value="0">Default</option></select></label>
 					<div class="area_container">
 					<?php foreach ( $active_theme['info']->areas->area as $area ): ?>
 					<?php $scopeid = 0; ?>
-						<h2><a href="#"><?php echo $area['name']; ?></a></h2>
-						<div class="area_drop">
-							<div class="area_block"><h3>Testing</h3></div>
-							<?php if(isset($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid][(string)$area['name']])): ?>
-							<?php foreach($blocks_areas[$scopeid][(string)$area['name']] as $block): ?>
-								<div class="area_block"><h3><?php echo $block->title; ?></h3></div>
-							<?php endforeach; ?>
-							<?php endif; ?>
+						<div class="area_drop_outer">
+							<h2><?php echo $area['name']; ?></h2>
+								<div class="area_drop">
+								<?php if(isset($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid][(string)$area['name']])): ?>
+								<?php foreach($blocks_areas[$scopeid][(string)$area['name']] as $block): ?>
+									<div class="area_block"><h3 class="block_instance_<?php echo $instance->id; ?>"><?php echo $block->title; ?></h3></div>
+								<?php endforeach; ?>
+								<?php endif; ?>
+							</div>
 						</div>
 					<?php endforeach; ?>
 					</div>
+					<div class="delete_drop"><span><?php echo _t('drag here to remove'); ?></span></div>
 					</div>
-
+					<hr style="clear:both;visibility: hidden;height:5px;" />
+					<div id="save_areas" class="formcontrol"><button onclick="save_areas();return false;"><?php _e('Save'); ?></button>
+					</div>
 					<hr style="clear:both;visibility: hidden;" />
 				</div>
 			</div>
