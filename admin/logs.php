@@ -7,7 +7,7 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('0-0 of 0'); ?></span>
-	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" value="<?php echo htmlspecialchars($search, ENT_COMPAT, 'UTF-8'); ?>"></span>
+	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" value="<?php echo Utils::htmlspecialchars($search); ?>"></span>
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 

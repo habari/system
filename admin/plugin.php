@@ -39,7 +39,7 @@
 
 		<ul class="dropbutton">
 			<?php foreach ( $plugin['actions'] as $plugin_action => $action ) : ?>
-			<li><a href="<?php echo htmlspecialchars( $action['url'], ENT_COMPAT, 'UTF-8' ); ?>"><?php echo $action['caption']; ?></a></li>
+			<li><a href="<?php echo Utils::htmlspecialchars( $action['url'] ); ?>"><?php echo $action['caption']; ?></a></li>
 			<?php endforeach; ?>
 		</ul>
 
