@@ -8,9 +8,9 @@
 		</span>
 		<span class="checkbox title pct20">
 			<?php if ( $comment->url != '' ): ?>
-			<a href="#" class="author" title="<?php echo htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ); ?>"><?php echo htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ); ?></a>
+			<a href="#" class="author" title="<?php echo Utils::htmlspecialchars( $comment->name ); ?>"><?php echo Utils::htmlspecialchars( $comment->name ); ?></a>
 			<?php else: ?>
-			<?php echo htmlspecialchars( $comment->name, ENT_COMPAT, 'UTF-8' ); ?>
+			<?php echo Utils::htmlspecialchars( $comment->name ); ?>
 			<?php endif; ?>
 		</span>
 		<span class="title pct35"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Go to %s', array( $comment->post->title ) ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
@@ -57,7 +57,7 @@
 		</div>
 		<span class="content pct75"><?php
 			if ( MultiByte::valid_data( $comment->content ) ) {
-				echo nl2br( htmlspecialchars( $comment->content, ENT_COMPAT, 'UTF-8' ) );
+				echo nl2br( Utils::htmlspecialchars( $comment->content ) );
 			}
 			else {
 				_e('this post contains text in an invalid encoding');

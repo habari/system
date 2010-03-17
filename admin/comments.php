@@ -4,7 +4,7 @@
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('0 of 0'); ?></span>
 	<span class="search pct50">
-		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" value="<?php echo htmlspecialchars($search_args, ENT_COMPAT, 'UTF-8'); ?>">
+		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" value="<?php echo Utils::htmlspecialchars($search_args); ?>">
 	</span>
 	<div class="filters pct15">
 		<ul class="dropbutton special_search">
@@ -33,8 +33,8 @@
 </div>
 
 <form method="post" name="moderation" action="<?php URL::out( 'admin', array( 'page' => 'comments', 'status' => $status ) ); ?>">
-	<input type="hidden" name="search" value="<?php echo htmlspecialchars($search, ENT_COMPAT, 'UTF-8'); ?>">
-	<input type="hidden" name="status" value="<?php echo htmlspecialchars($status, ENT_COMPAT, 'UTF-8'); ?>">
+	<input type="hidden" name="search" value="<?php echo Utils::htmlspecialchars($search); ?>">
+	<input type="hidden" name="status" value="<?php echo Utils::htmlspecialchars($status); ?>">
 	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
 	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
