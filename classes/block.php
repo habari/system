@@ -46,6 +46,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			return parent::__get($name);
 		}
 
+
 	}
 
 	/**
@@ -210,6 +211,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 
 		$this->fields = array_merge( $this->fields, $this->newfields );
 		$this->newfields = array();
+
 
 		Plugins::act( 'block_update_after', $this );
 		return $result;
