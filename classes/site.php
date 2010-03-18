@@ -51,19 +51,19 @@ class Site
 	public static function script_name()
 	{
 		switch ( true ) {
-		case isset ( $scriptname ):
+		case isset ( self::$scriptname ):
 			break;
 		case isset( $_SERVER['SCRIPT_NAME'] ):
-			$scriptname = $_SERVER['SCRIPT_NAME'];
+			self::$scriptname = $_SERVER['SCRIPT_NAME'];
 			break;
 		case isset( $_SERVER['PHP_SELF'] ):
-			$scriptname = $_SERVER['PHP_SELF'];
+			self::$scriptname = $_SERVER['PHP_SELF'];
 			break;
 		default:
 			Error::raise(_t('Could not determine script name.'));
 			die();
 		}
-		return $scriptname;
+		return self::$scriptname;
 	}
 
 	/**
