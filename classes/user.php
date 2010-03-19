@@ -262,12 +262,12 @@ class User extends QueryRecord
 			return false;
 		}
 
-		if ( strpos( $who, '@' ) !== FALSE ) {
-			// we were given an email address
+		// Check by name first. Allows for the '@' to be in the username, without it being an email address
+		$user = self::get_by_name( $who );
+
+		// Were we given an email address?
+		if ( ! $user && strpos( $who, '@' ) !== FALSE ) {
 			$user = self::get_by_email( $who );
-		}
-		else {
-			$user = self::get_by_name( $who );
 		}
 
 		if ( ! $user ) {
