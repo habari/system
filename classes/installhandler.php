@@ -1310,6 +1310,15 @@ class InstallHandler extends ActionHandler
 	 */
 	public function upgrade_db()
 	{
+		if ( Options::get('db_upgrading' ) )
+		{
+			// quit with an error message.
+			$this->display_currently_upgrading();
+		}
+
+		// don't allow duplicate upgrades.
+		Options::set( 'db_upgrading', TRUE );
+		
 		// This database-specific code needs to be moved into the schema-specific functions
 		list( $schema, $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
 		switch( $schema ) {
@@ -1349,6 +1358,24 @@ class InstallHandler extends ActionHandler
 		DB::upgrade_post( $version );
 
 		Version::save_dbversion();
+		Options::set( 'db_upgrading', FALSE );
+	}
+
+	private function display_currently_upgrading()
+	{
+		// Error template. 
+		$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>"; 
+
+		// Format page with localized messages. 
+		$error_page = sprintf($error_template, 
+			_t( "Site Maintenance" ), # page title 
+			_t( "Habari is currently being upgraded." ), # H1 tag 
+			_t( "Try again in a little while." ) # Error message. 
+		);
+
+		// Set correct HTTP header and die. 
+		header( 'HTTP/1.1 503 Service Unavailable', true, 503 ); 
+		die( $error_page );
 	}
 
 	private function upgrade_db_post_1310 ()
