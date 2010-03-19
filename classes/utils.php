@@ -1082,9 +1082,9 @@ class Utils
 	*
 	* @return The escaped string
 	*/
-	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8', $double_enc = TRUE )
+	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8')
 	{
-		return htmlspecialchars( $string, $quote_flag, $encoding, $double_enc );
+		return htmlspecialchars( $string, $quote_flag, $encoding );
 	}
 }
 ?>
