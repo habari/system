@@ -996,6 +996,7 @@ class InstallHandler extends ActionHandler
 			'engine_on' => 'RewriteEngine On',
 			'rewrite_cond_f' => 'RewriteCond %{REQUEST_FILENAME} !-f',
 			'rewrite_cond_d' => 'RewriteCond %{REQUEST_FILENAME} !-d',
+			'rewrite_favicon' => 'RewriteCond %{REQUEST_URI} !=/favicon.ico',
 			'rewrite_base' => '#RewriteBase /',
 			'rewrite_rule' => 'RewriteRule . index.php [PT]',
 			'hide_habari' => 'RewriteRule ^(system/(classes|locale|schema|$)) index.php [PT]',
@@ -1045,7 +1046,7 @@ class InstallHandler extends ActionHandler
 		}
 		else {
 			// no .htaccess exists.  Try to create one
-			$result = $this->write_htaccess( false );
+			$result = $this->write_htaccess();
 		}
 		if ( $result ) {
 			// the Habari block exists, but we need to make sure
