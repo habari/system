@@ -6,9 +6,8 @@
 	#
 	#  Docs: http://wiki.developers.viddler.com/index.php/Phpviddler
 	#
-	#  License(s): Dual licensed under:
+	#  License(s): Licensed under:
 	#  MIT (MIT-LICENSE.txt)
-    #  GPL (GPL-LICENSE.txt)
     #
     #  Third-party code:
     #  XML Library by Keith Devens
