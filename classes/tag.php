@@ -41,6 +41,15 @@ class Tag
 			case 'tag_text':
 				$out = $term->term_display;
 				break;
+			case 'tag_text_searchable':
+				// if it's got spaces, then quote it.
+				if( strpos($term->term_display, ' ') !== FALSE ) {
+					$out = '\'' . str_replace("'", "\'", $term->term_display) . '\'';
+				}
+				else {
+					$out = $term->term_display;
+				}
+				break;
 			case 'slug':
 			case 'tag_slug':
 				$out = $term->term;
