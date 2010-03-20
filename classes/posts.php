@@ -889,59 +889,66 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function search_to_get( $search_string )
 	{
-		$keywords = array( 'author' => 1, 'status' => 1, 'type' => 1, 'tag' => 1 );
+		// if adding to this array, make sure you update the consequences of a search on this below in the switch.
+		$keywords = array( 'author' => 1, 'status' => 1, 'type' => 1, 'tag' => 1, 'info' => 1 );
 		$statuses = Post::list_post_statuses();
 		$types = Post::list_active_post_types();
 		$arguments = array(
 			'user_id' => array(),
 			'status' => array(),
 			'content_type' => array(),
-			'tag' => array()
+			'tag' => array(),
+			'info' => array()
 		);
 		$criteria = '';
 
-		$tokens = explode( ' ', $search_string );
+		// this says, find stuff that has the keyword at the start, and then some term straight after. 
+		// the terms should have no whitespace, or if it does, be ' delimited.
+		// ie tag:foo or tag:'foo bar'
+		$flag_regex = '/(?P<flag>' . implode( '|', array_keys( $keywords ) ) . '):(?P<value>[^\'"][^\s]+(\s|$)|([\'"]+)(?P<quotedvalue>[^\3]+)(?<!\\\)\3)/Uui';
 
-		foreach ( $tokens as $token ) {
-			//check for triple combination
-			if ( preg_match( '/^\w+:[^:\s]*:\S+$/u', $token ) ){
-				list( $keyword, $infokey, $infovalue ) = explode( ':', $token );
-				$keyword = strtolower( $keyword );
-				switch ( $keyword ){
-					case 'info':
-						$arguments['info'][] = array($infokey=>$infovalue);
-					break;
-				}
-			}
+		// now do some matching.
+		preg_match_all( $flag_regex , $search_string, $matches, PREG_SET_ORDER );
 
-			// check for a keyword:value pair
-			if ( preg_match( '/^\w+:\S+$/u', $token ) ) {
-				list( $keyword, $value ) = explode( ':', $token );
-
-				$keyword = strtolower( $keyword );
-				switch ( $keyword ) {
-					case 'author':
-						if ( $u = User::get( $value ) ) {
-							$arguments['user_id'][] = (int) $u->id;
-						}
-						break;
-					case 'tag':
-						$arguments['tag'][] = $value;
-						break;
-					case 'status':
-						if ( isset( $statuses[$value] ) ) {
-							$arguments['status'][] = (int) $statuses[$value];
-						}
-						break;
-					case 'type':
-						if ( isset( $types[$value] ) ) {
-							$arguments['content_type'][] = (int) $types[$value];
-						}
-						break;
-				}
+		// now we remove those terms from the search string, otherwise the keyword search below has issues. It will pick up things like
+		// from tag:'pair of' -> matches of'
+		$criteria = preg_replace( $flag_regex, '', $search_string);
+		
+		// go through flagged things.
+		foreach ($matches as $match) {
+			// switch on the type match. ie status, type et al.
+			// also, trim out the quote marks that have been matched.
+			if( isset($match['quotedvalue']) && $match['quotedvalue'] ) {
+				$value = stripslashes($match['quotedvalue']);
 			}
 			else {
-				$criteria .= $token . ' ';
+				$value = $match['value'];
+			}
+
+			switch( strtolower($match['flag']) )  {
+				case 'author':
+					if ( $u = User::get( $value ) ) {
+						$arguments['user_id'][] = (int) $u->id;
+					}
+					break;
+				case 'tag':
+					$arguments['tag'][] = $value;
+					break;
+				case 'status':
+					if ( isset( $statuses[$value] ) ) {
+						$arguments['status'][] = (int) $statuses[$value];
+					}
+					break;
+				case 'type':
+					if ( isset( $types[$value] ) ) {
+						$arguments['content_type'][] = (int) $types[$value];
+					}
+					break;
+				case 'info':
+					list( $infokey, $infovalue ) = explode( ':', $value, 2 );
+					$keyword = strtolower( $keyword );
+					$arguments['info'][] = array($infokey=>$infovalue);
+					break;
 			}
 		}
 
