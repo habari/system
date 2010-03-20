@@ -23,7 +23,7 @@
 		<?php endif; ?>
 
 
-	<h4 class="commentheading"><?php echo $post->comments->comments->approved->count; ?> <?php echo _n( 'Response', 'Responses', $post->comments->comments->approved->count ); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h4>
+	<h4 class="commentheading"><?php $theme->comments_count($post,'%d Responses','%d Response','%d Responses'); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h4>
 	<ul id="commentlist">
 
 		<?php
@@ -41,7 +41,7 @@
 		        <?php echo $comment->content_out; ?>
 		       </div>
 			<div class="comment-meta">#<a href="#comment-<?php echo $comment->id; ?>" class="counter" title="<?php _e('Permanent Link to this Comment'); ?>"><?php echo $comment->id; ?></a> |
-		       <span class="commentauthor"><?php _e('Comment by'); ?> <a href="<?php echo $comment->url; ?>"><?php echo $comment->name; ?></a></span>
+		       <span class="commentauthor"><?php _e('Comment by'); ?> <?php echo $theme->comment_author_link($comment); ?></span>
 		       <span class="commentdate"> <?php _e('on'); ?> <a href="#comment-<?php echo $comment->id; ?>" title="<?php _e('Time of this comment'); ?>"><?php $comment->date->out('M j, Y h:ia'); ?></a></span><h5><?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?> <em><?php _e('In moderation'); ?></em><?php endif; ?></h5></div>
 		      </li>
 
