@@ -3191,6 +3191,10 @@ class AdminHandler extends ActionHandler
 
 		$mainmenus = $this->filter_menus_by_permission( $mainmenus );
 
+		// Strip out import if no importers are available
+		if ( !Plugins::filter('import_names', array()) )
+			unset($mainmenus['import']); 
+
 		// Make submenu links default to the first available item
 		foreach ( array_keys($mainmenus) as $action ) {
 			if ( !$mainmenus[$action]['url'] && !empty($mainmenus[$action]['submenu']) ) {
