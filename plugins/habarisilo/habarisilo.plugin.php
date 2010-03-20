@@ -502,7 +502,10 @@ UPLOAD_FORM;
 	 */
 	public function mkdir_validator( $dir, $control, $form )
 	{
-		$dir = preg_replace( '%\.{2,}%', '.', $dir );
+		if ( strpos($dir, '*') !== false || preg_match('%(?:^|/)\.%', $dir) ) {
+		    return array(_t("The directory name contains invalid characters: %s.", array($dir)));
+		}
+
 		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
 		$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 
