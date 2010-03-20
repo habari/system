@@ -912,7 +912,7 @@ class Posts extends ArrayObject implements IsContent
 
 		// now we remove those terms from the search string, otherwise the keyword search below has issues. It will pick up things like
 		// from tag:'pair of' -> matches of'
-		$criteria = preg_replace( $flag_regex, '', $search_string);
+		$criteria = trim(preg_replace( $flag_regex, '', $search_string));
 		
 		// go through flagged things.
 		foreach ($matches as $match) {
