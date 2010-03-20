@@ -905,7 +905,7 @@ class Posts extends ArrayObject implements IsContent
 		// this says, find stuff that has the keyword at the start, and then some term straight after. 
 		// the terms should have no whitespace, or if it does, be ' delimited.
 		// ie tag:foo or tag:'foo bar'
-		$flag_regex = '/(?P<flag>' . implode( '|', array_keys( $keywords ) ) . '):(?P<value>[^\'"][^\s]+(?:\s|$)|([\'"]+)(?P<quotedvalue>[^\3]+)(?<!\\\)\3)/Uui';
+		$flag_regex = '/(?P<flag>' . implode( '|', array_keys( $keywords ) ) . '):(?P<value>[^\'"][^\s]*(?:\s|$)|([\'"]+)(?P<quotedvalue>[^\3]+)(?<!\\\)\3)/Uui';
 
 		// now do some matching.
 		preg_match_all( $flag_regex , $search_string, $matches, PREG_SET_ORDER );
@@ -945,9 +945,11 @@ class Posts extends ArrayObject implements IsContent
 					}
 					break;
 				case 'info':
-					list( $infokey, $infovalue ) = explode( ':', $value, 2 );
-					$keyword = strtolower( $keyword );
-					$arguments['info'][] = array($infokey=>$infovalue);
+					if( strpos($value, ':') !== FALSE ) {
+						list( $infokey, $infovalue ) = explode( ':', $value, 2 );
+						$keyword = strtolower( $keyword );
+						$arguments['info'][] = array($infokey=>$infovalue);
+					}
 					break;
 			}
 		}
