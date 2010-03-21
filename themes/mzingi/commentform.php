@@ -4,10 +4,11 @@
 ?>
 
 <div id="comments">
+	<h3><?php $theme->comments_count($post,'%d Responses','%d Response','%d Responses'); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h3>
 <a href="<?php echo $post->comment_feed_link; ?>"><?php _e('Feed for this Entry'); ?></a>
 	<?php if( $post->comments->pingbacks->count ) : ?>
 			<div id="pings">
-			<h4><?php echo $post->comments->pingbacks->approved->count; ?> <?php echo _n( 'Pingback', 'Pingbacks', $post->comments->pingbacks->count ); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h4>
+			<h4><?php $theme->pingback_count($post); ?></h4>
 				<ul id="pings-list">
 					<?php foreach ( $post->comments->pingbacks->approved as $pingback ) : ?>
 						<li id="ping-<?php echo $pingback->id; ?>">
@@ -23,7 +24,7 @@
 		<?php endif; ?>
 
 
-	<h4 class="commentheading"><?php $theme->comments_count($post,'%d Responses','%d Response','%d Responses'); ?> <?php _e('to'); ?> <?php echo $post->title; ?></h4>
+	<h4 class="commentheading"><?php echo $post->comments->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->comments->approved->count ); ?></h4>
 	<ul id="commentlist">
 
 		<?php
