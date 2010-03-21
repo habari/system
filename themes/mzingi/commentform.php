@@ -29,7 +29,7 @@
 
 		<?php
 		if ( $post->comments->moderated->count ) {
-			foreach ( $post->comments->moderated as $comment ) {
+			foreach ( $post->comments->comments->moderated as $comment ) {
 			$class = 'class="comment';
 			if ( $comment->status == Comment::STATUS_UNAPPROVED ) {
 				$class.= '-unapproved';
