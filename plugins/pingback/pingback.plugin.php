@@ -312,5 +312,42 @@ class Pingback extends Plugin
 
 		return $items;
 	}
+	
+	/**
+	 * Returns a full qualified URL of the specified post based on the comments count.
+ 	 *
+	 * Passed strings are localized prior to parsing therefore to localize "%d Comments" in french, it would be "%d Commentaires".
+	 *
+	 * Since we use sprintf() in the final concatenation, you must format passed strings accordingly.
+	 *
+	 * @param Theme $theme The current theme object
+	 * @param Post $post Post object used to build the pingback link
+	 * @param string $zero String to return when there are no pingbacks
+	 * @param string $one String to return when there is one pingback
+	 * @param string $many String to return when there are more than one pingback
+	 * @return string String to display for pingback count
+	 */
+	public function theme_pingback_count( $theme, $post, $zero = '', $one = '', $many = '' )
+	{
+		$count = $post->comments->pingbacks->approved->count;
+		if( empty( $zero ) ) {
+			$zero = _t( '%d Pingbacks' );
+		}
+		if( empty( $one ) ) {
+			$one = _t( '%d Pingback' );
+		}
+		if( empty( $many ) ) {
+			$many = _t( '%d Pingabcks' );
+		}
+
+		if ($count >= 1) {
+			$text = _n( $one, $many, $count );
+		}
+		else {
+			$text = $zero;
+		}
+		return sprintf( $text, $count );
+	}
+	
 }
 ?>
