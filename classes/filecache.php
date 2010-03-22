@@ -137,6 +137,9 @@ class FileCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
+		
+		Plugins::act( 'cache_set_before', $name, $group, $value, $expiry );
+		
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
@@ -150,6 +153,8 @@ class FileCache extends Cache
 		$this->cache_files[$ghash][$hash] = array( 'file' => $this->cache_location . $ghash . $hash, 'expires' => time() + $expiry, 'name' => $name, 'keep' => $keep );
 		$this->clear_expired();
 		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
+
+		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
 	}
 
 	/**
@@ -184,12 +189,16 @@ class FileCache extends Cache
 		
 		$ghash = $this->get_group_hash( $group );
 		foreach ( $keys as $key ) {
+			Plugins::act( 'cache_expire_before', $name, $group );
+		
 			$hash = $this->get_name_hash( $key );
 			
 			if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
 				unlink( $this->cache_files[$ghash][$hash]['file'] );
 				unset( $this->cache_files[$ghash][$hash] );
 			}
+			
+			Plugins::act( 'cache_expire_after', $name, $group );
 		}
 		
 		$this->clear_expired();
@@ -232,6 +241,9 @@ class FileCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
+		
+		Plugins::act( 'cache_extend_before', $name, $group, $expiry );
+		
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
@@ -240,13 +252,17 @@ class FileCache extends Cache
 			$this->clear_expired();
 			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 		}
+		
+		Plugins::act( 'cache_extend_after', $name, $group, $expiry );
 	}
 
 	/**
 	 * Remove all cache files
 	 */
 	protected function _purge()
-	{
+	{	
+		Plugins::act( 'cache_purge_before' );
+	
 		$glob = Utils::glob( FILE_CACHE_LOCATION . '*.data' );
 		foreach( $glob as $file ) {
 			unlink( $file );
@@ -256,6 +272,7 @@ class FileCache extends Cache
 			unlink( $file );
 		}
 
+		Plugins::act( 'cache_purge_after' );
 	}
 
 	/**
