@@ -105,6 +105,9 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
+		
+		Plugins::act( 'cache_set_before', $name, $group, $value, $expiry );
+		
 		$this->cache_data[$group][$name] = $value;
 		
 		if($keep) {
@@ -118,6 +121,8 @@ class APCCache extends Cache
 		}
 		
 		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval($expiry) );
+		
+		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
 	}
 
 	/**
@@ -150,7 +155,9 @@ class APCCache extends Cache
 		}
 		
 		foreach ( $keys as $key ) {
+			Plugins::act( 'cache_expire_before', $name, $group );
 			apc_delete( implode( ':', array( $this->prefix, $group, $key ) ) );
+			Plugins::act( 'cache_expire_after', $name, $group );
 		}
 	}
 
@@ -189,10 +196,15 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
+		
+		Plugins::act( 'cache_extend_before', $name, $group, $expiry );
+		
 		if ( $this->_has( $name, $group ) ) {
 			$cache_data = $this->_get( $name, $group );
 			$this->_set( implode( ':', array( $this->prefix, $group, $name ) ), $cache_data, time() + $expiry, $group );
 		}
+		
+		Plugins::act( 'cache_extend_after', $name, $group, $expiry );
 	}
 
 	/**
@@ -200,6 +212,8 @@ class APCCache extends Cache
 	 */
 	protected function _purge()
 	{
+		Plugins::act( 'cache_purge_before' );
+		
 		$cache_info = apc_cache_info( 'user' );
 
 		$delete = array();
@@ -211,6 +225,8 @@ class APCCache extends Cache
 		foreach( $delete as $item ) {
 			apc_delete( $item );
 		}
+		
+		Plugins::act( 'cache_purge_after' );
 	}
 }
 
