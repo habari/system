@@ -173,8 +173,9 @@ class Comment extends QueryRecord implements IsContent
 		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
 		}
-		return parent::deleteRecord( DB::table('comments'), array('id'=>$this->id) );
+		$result = parent::deleteRecord( DB::table('comments'), array('id'=>$this->id) );
 		Plugins::act('comment_delete_after', $this);
+		return $result;
 	}
 
 	/**
