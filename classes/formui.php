@@ -481,6 +481,7 @@ class FormUI extends FormContainer
 		'action' => '',
 		'onsubmit' => '',
 		'enctype' => 'application/x-www-form-urlencoded',
+		'accept_charset' => 'UTF-8',
 	);
 
 	/**
