@@ -3618,7 +3618,7 @@ class AdminHandler extends ActionHandler
 		$area_blocks = $_POST['area_blocks'];
 		$scope = $_POST['scope'];
 		
-		DB::query('DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array($scope));
+		DB::query('DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
 		
 		foreach((array)$area_blocks as $area => $blocks) {
 			$display_order = 0;
