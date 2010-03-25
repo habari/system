@@ -47,6 +47,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 
 
+
 	}
 
 	/**
@@ -88,6 +89,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 * @return array Array of columns in the Block table
 	 */
 	public static function default_fields()
+
 	{
 
 		return array(
@@ -119,10 +121,14 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function content_type()
 	{
-		return array(
+		$types = array(
 			'block.' . $this->type,
 			'block',
 		);
+		if(isset($this->title)) {
+			array_unshift($types, 'block.' . $this->type . '.' . Utils::slugify($this->title));
+		}
+		return $types;
 	}
 
 	/**
