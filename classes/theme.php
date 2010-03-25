@@ -620,7 +620,6 @@ class Theme extends Pluggable
 		$fallback = array_unique($fallback);
 
 		$this->content = $object;
-		Utils::debug($fallback);
 		return $this->display_fallback( $fallback, 'fetch' );
 	}
 
