@@ -600,6 +600,9 @@ class Theme extends Pluggable
 		if( $object instanceof IsContent ) {
 			$content_types = Utils::single_array($object->content_type());
 		}
+		if( is_object($object) ) {
+			$content_types[] = strtolower(get_class($object));
+		}
 		$content_types[] = 'content';
 		$content_types = array_flip($content_types);
 		if(isset($context)) {
@@ -607,13 +610,17 @@ class Theme extends Pluggable
 				$content_type = $context . $object->content_type();
 				$fallback[] = strtolower($context . '.' . $type);
 			}
-			$fallback[] = strtolower($context);
 		}
 		foreach($content_types as $type => $type_id) {
 			$fallback[] = strtolower($type);
 		}
+		if(isset($context)) {
+			$fallback[] = strtolower($context);
+		}
+		$fallback = array_unique($fallback);
 
 		$this->content = $object;
+		Utils::debug($fallback);
 		return $this->display_fallback( $fallback, 'fetch' );
 	}
 
@@ -1118,7 +1125,7 @@ class Theme extends Pluggable
 		foreach($area_blocks as $block_instance_id => $block) {
 			$hook = 'block_content_' . $block->type;
 			Plugins::act($hook, $block, $this);
-			$output .= implode( '', $this->content_return($block));
+			$output .= implode( '', $this->content_return($block, $area));
 		}
  
 		$this->area = '';
