@@ -254,8 +254,25 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	public function get_form()
 	{
 		$form = new FormUI('block-' . $this->id , 'block');
+		$form->on_success(array($this, 'save_block'));
+		$form->set_option('success_message', '<div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t('Saved block configuration.') . '</p></div></div></div>
+<script type="text/javascript">
+		$("#humanMsg").animate({bottom: "5px"}, 500, function(){ window.setTimeout(function(){$("#humanMsg").animate({bottom: "-50px"}, 500)},3000) })
+</script>
+');
 		Plugins::act('block_form_' . $this->type, $form, $this);
 		return $form;
+	}
+	
+	/**
+	 * Display a standard success message upon saving the form
+	 * 
+	 * @return 
+	 */
+	public function save_block($form)
+	{
+		$form->save();
+		return false;
 	}
 
 }

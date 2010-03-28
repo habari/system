@@ -70,6 +70,7 @@ a img {
 .pct55 { width: 55%; }
 
 
+
 .pct60 { width: 60%; }
 .pct65 { width: 65%; }
 .pct70 { width: 70%; }
@@ -365,6 +366,7 @@ a img {
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
+
 	-webkit-border-bottom-left-radius: 3px;
 	-moz-border-radius-bottomright: 3px;
 	-moz-border-radius-bottomleft: 3px;
@@ -1748,9 +1750,10 @@ body.page-themes .thumb img {
 #page #scope_container h3 {
 	color: white;
 	padding: 3px;
-	background-color: #444;
 	border-top: 1px solid #333333;
 	cursor: move;
+	padding-left: 24px;
+	background: #444 url('../images/4way.png') no-repeat scroll left center;
 }
 
 #scope_container .area_container,
@@ -1769,7 +1772,7 @@ body.page-themes .thumb img {
 #scope_container .area_container h2 {
 	color: #cccccc;
 	padding: 0px 3px;
-	background-color: #666;
+	background-color: #666666;
 }
 
 #scope_container .area_drop_outer {
@@ -1779,9 +1782,9 @@ body.page-themes .thumb img {
 }
 
 #block_instances .block_instance h3 {
-	background-color: #666;
+	background: #444 url('../images/4way.png') no-repeat scroll left center;
+	padding: 3px 3px 3px 22px;
 	color: white;
-	padding: 3px;
 	cursor: move;
 }
 
@@ -1791,10 +1794,12 @@ body.page-themes .thumb img {
 	padding: 3px;
 }
 #block_instances .ui-draggable-dragging {
-	background-color: #444444;
+	border-top: 3px double #888888;
+	border-bottom: 3px double #888888;
 	color: white;
 	padding: 3px;
 	width: 195px;
+	opacity: 0.7;
 }
 
 #block_instances .block_instance ul {
@@ -1818,6 +1823,7 @@ body.page-themes .thumb img {
 /*	width: 100%; */
 	height: 1em;
 	border: 1px dashed white;
+	background-image: none;
 }
 
 .area_block {
@@ -2214,6 +2220,7 @@ body.page-Manage .state {
 	font: 20px 'Helvetica Neue Light', 'HelveticaNeue-Light', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 40px 0 0 3px;
 	margin: 0;
+
 
 	opacity: .2;
 	border-left: 1px solid #ccc;
@@ -2670,6 +2677,7 @@ body.login .humanMsg {
 #humanMsgLog p:hover {
 	opacity: 1;
 }
+
 
 
 #humanMsgLog p {
