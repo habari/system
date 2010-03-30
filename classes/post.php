@@ -593,9 +593,7 @@ class Post extends QueryRecord implements IsContent
 			$this->comments->delete();
 		}
 		// Delete all info records associated with this post
-		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
-		}
 		// Delete all post_tokens associated with this post
 		$this->delete_tokens();
 
