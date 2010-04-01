@@ -128,6 +128,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		if(isset($this->title)) {
 			array_unshift($types, 'block.' . $this->type . '.' . Utils::slugify($this->title));
 		}
+		$types = Plugins::filter('block_content_type_' . $this->type, $types, $this);
 		return $types;
 	}
 
