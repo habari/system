@@ -287,11 +287,11 @@ class Vocabulary extends QueryRecord
 	 * Adds a term to the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
 	 * @return Term The Term object added
 	 **/
-	public function add_term($term, $parent_term = null, $before_term = null)
+	public function add_term( $term, $target_term = null, $before = FALSE )
 	{
 		$new_term = $term;
-		if ( is_string($term) ) {
-			$new_term = new Term(array('term_display' => $term));
+		if ( is_string( $term ) ) {
+			$new_term = new Term( array( 'term_display' => $term ) );
 		}
 
 		$new_term->vocabulary_id = $this->id;
@@ -304,36 +304,36 @@ class Vocabulary extends QueryRecord
 
 			if ( $this->hierarchical ) {
 				// If no parent is specified, put the new term after the last term
-				if ( null == $parent_term ) {
+				if ( null == $target_term ) {
 					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
 				}
 				else {
-					if ( null == $before_term ) {
-						$ref = $parent_term->mptt_right - 1;
+					if ( ! $before ) {
+						$ref = $target_term->mptt_right - 1;
 					}
 					else {
-						$ref = $before_term->mptt_left - 1;
+						$ref = $target_term->mptt_left - 1;
 					}
 				}
 			}
 			else {
 				// If no before_term is specified, put the new term after the last term
-				if ( null == $before_term ) {
+				if ( ! $before ) {
 					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
 				}
 				else {
-					$ref = $before_term->mptt_left - 1;
+					$ref = $target_term->mptt_left - 1;
 				}
 			}
 
 			// Make space for the new node
-			$params = array($this->id, $ref);
-			$res = DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=? AND mptt_right>?', $params);
+			$params = array( 'vocab_id' => $this->id, 'ref' => $ref);
+			$res = DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=:vocab_id AND mptt_right>:ref', $params);
 			if( ! $res ) {
 				DB::rollback();
 				return FALSE;
 			}
-			$res = DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=? AND mptt_left>?', $params);
+			$res = DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=:vocab_id AND mptt_left>:ref', $params);
 			if( ! $res ) {
 				DB::rollback();
 				return FALSE;
@@ -626,7 +626,7 @@ SQL;
 
 	/**
 	 * Moves a term within the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
-	 * @return Term The Term object added
+	 * @return Term The Term object moved
 	 **/
 	public function move_term( $term, $target_term = null, $before = FALSE )
 	{
