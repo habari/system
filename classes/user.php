@@ -315,13 +315,13 @@ class User extends QueryRecord
 			// Got a User ID
 			$user = self::get_by_id( $who );
 		}
-		elseif ( strpos( $who, '@' ) !== FALSE ) {
-			// Got an email address
-			$user = self::get_by_email( $who );
-		}
 		else {
-			// Got username
+			// Got username or email
 			$user = self::get_by_name( $who );
+			if ( ! $user && strpos( $who, '@' ) !== FALSE ) {
+				// Got an email address
+				$user = self::get_by_email( $who );
+			}
 		}
 		// $user will be a user object, or false depending on the
 		// results of the get_by_* method called above
