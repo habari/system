@@ -179,7 +179,24 @@ class Theme extends Pluggable
 		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
 		//$where_filters['status'] = Post::status( 'published' );
 		if ( array_key_exists( 'tag', $where_filters ) ) {
-			$where_filters['tag_slug'] = Utils::slugify($where_filters['tag']);
+			$tags = explode(' ', $where_filters['tag']);
+			$not_tag = array();
+			$all_tag = array();
+			foreach($tags as $tag) {
+				if($tag[0] == '-') {
+					$tag = substr($tag, 1);
+					$not_tag[] = Utils::slugify($tag);
+				}
+				else {
+					$all_tag[] = Utils::slugify($tag);
+				}
+			}
+			if(count($not_tag) > 0) {
+				$where_filters['not:tag_slug'] = $not_tag;
+			}
+			if(count($all_tag) > 0) {
+				$where_filters['all:tag_slug'] = $all_tag;
+			}
 			unset( $where_filters['tag'] );
 		}
 		if ( User::identify()->loggedin ) {

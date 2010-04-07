@@ -719,8 +719,6 @@ class AtomHandler extends ActionHandler
 		// Assign self link based on the matched rule.
 		$self = URL::get( $rr_name, $rr_args, false );
 
-		$id = isset( $rr_args_values['tag'] ) ? $rr_args_values['tag'] : 'atom';
-
 		// Get posts to put in the feed
 		$page = ( isset( $rr_args['page'] ) ) ? $rr_args['page'] : 1;
 		if ( $page > 1 ) {
@@ -739,10 +737,22 @@ class AtomHandler extends ActionHandler
 		$params = array_merge( $params, $rr_args );
 
 		if ( array_key_exists( 'tag', $params ) ) {
-			$params['tag_slug']=  Utils::slugify($params['tag']);
+			$id = urlencode($params['tag']);
+			$tags = explode(' ', $params['tag']);
+			foreach($tags as $tag) {
+				if($tag[0] == '-') {
+					$tag = substr($tag, 1);
+					$params['not:tag_slug'][] = Utils::slugify($tag);
+				}
+				else {
+					$params['all:tag_slug'][] = Utils::slugify($tag);
+				}
+			}
 			unset( $params['tag'] );
 		}
-
+		else {
+			$id = 'atom';
+		}
 		$posts = Posts::get( $params );
 
 		if ( count( $posts ) ) {

@@ -204,10 +204,10 @@ class Posts extends ArrayObject implements IsContent
 
 				if ( isset( $paramset['all:tag'] ) ) {
 					$joins['tag2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-					$joins['tags_tag2post'] = ' JOIN {terms} ON {object-terms}.term_id = {terms}.id';
+					$joins['tags_tag2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
 
 					if ( is_array( $paramset['all:tag'] ) ) {
-						$where[] = '{terms}.term_display IN (' . implode( ',', array_fill( 0, count( $paramset['all:tag'] ), '?' ) ) . ')' . ' AND {object_terms}.object_type_id = ?';
+						$where[] = '{terms}.term_display IN (' . Utils::placeholder_string( $paramset['all:tag_slug']) . ')' . ' AND {object_terms}.object_type_id = ?';
 						$params = array_merge( $params, $paramset['all:tag'] );
 
 						$groupby = '{posts}.id';
@@ -221,12 +221,44 @@ class Posts extends ArrayObject implements IsContent
 					$params[] = Vocabulary::object_type_id( Tags::object_type() );
 				}
 
+				if ( isset( $paramset['all:tag_slug'] ) ) {
+					$joins['tag2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+					$joins['tags_tag2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
+
+					if ( is_array( $paramset['all:tag_slug'] ) ) {
+						$where[] = '{terms}.term IN (' . Utils::placeholder_string( $paramset['all:tag_slug']) . ')' . ' AND {object_terms}.object_type_id = ?';
+						$params = array_merge( $params, $paramset['all:tag_slug'] );
+
+						$groupby = '{posts}.id';
+						$having = 'count(*) = ' . count( $paramset['all:tag_slug'] );
+					}
+					else {
+						// this is actually the same as plain 'tag' for a single tag search - go with it
+						$where[] = '{terms}.term = ? AND {object_terms}.object_type_id = ?';
+						$params[] = $paramset['all:tag_slug'];
+					}
+					$params[] = Vocabulary::object_type_id( Tags::object_type() );
+				}
+
 				if ( isset( $paramset['not:tag'] ) ) {
-					$nottag = is_array( $paramset['not:tag'] ) ? array_values( $paramset['not:tag'] ) : array( $paramset['not:tag'] );
+					$nottag = Utils::single_array( $paramset['not:tag'] );
 					$where[] = 'NOT EXISTS (SELECT 1
 						FROM {object_terms}
 						INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
-						WHERE {terms}.term_display IN (' . implode( ',', array_fill( 0, count( $nottag ), '?' ) ) . ')
+						WHERE {terms}.term_display IN (' . Utils::placeholder_string( $nottag ) . ')
+						AND {object_terms}.object_id = {posts}.id
+						AND {object_terms}.object_type_id = ?)
+					';
+					$params = array_merge( $params, $nottag );
+					$params[] = Vocabulary::object_type_id( Tags::object_type() );
+				}
+
+				if ( isset( $paramset['not:tag_slug'] ) ) {
+					$nottag = Utils::single_array( $paramset['not:tag_slug'] );
+					$where[] = 'NOT EXISTS (SELECT 1
+						FROM {object_terms}
+						INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
+						WHERE {terms}.term_display IN (' . Utils::placeholder_string( $nottag ) . ')
 						AND {object_terms}.object_id = {posts}.id
 						AND {object_terms}.object_type_id = ?)
 					';
@@ -557,6 +589,7 @@ class Posts extends ArrayObject implements IsContent
 			$fetch_fn = 'get_value';
 			$orderby = '';
 			$groupby = '';
+			$having = '';
 		}
 
 		// If the month counts are requested, replaced the select clause
@@ -621,7 +654,7 @@ class Posts extends ArrayObject implements IsContent
 		DB::set_fetch_class( 'Post' );
 		$results = DB::$fetch_fn( $query, $params, 'Post' );
 
-		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
+//		Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
 //		var_dump( $query );
 
 		/**

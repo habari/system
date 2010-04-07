@@ -87,8 +87,20 @@ class Tag
 	 **/
 	public static function rewrite_tag_exists($rule, $slug, $parameters)
 	{
-		$tag = Tag::get($rule->named_arg_values['tag']);
-		return ($tag instanceOf Tag && Posts::count_by_tag($tag->tag_text, Post::status('published')) > 0);
+		$tags = explode(' ', $rule->named_arg_values['tag']);
+		$tags = array_map('trim', $tags, array_fill(0, count($tags), '-') );
+		$tags = array_map(array('Tag', 'get'), $tags);
+		$initial_tag_count = count($tags);
+		$tags = array_filter($tags);
+		// Are all of the tags we asked for actual tags on this site?
+		if(count($tags) != $initial_tag_count) {
+			return false;
+		}
+		$tag_params = array();
+		foreach($tags as $tag) {
+			$tag_params[] = $tag->tag_text;
+		}
+		return ($tag instanceOf Tag && Posts::count_by_tag($tag_params, Post::status('published')) > 0);
 	}
 
 	/**

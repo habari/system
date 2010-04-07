@@ -214,6 +214,9 @@ class Utils
 	 */
 	public static function placeholder_string( $count )
 	{
+		if(Utils::is_traversable($count)) {
+			$count = count($count);
+		}
 		return rtrim( str_repeat( '?,', $count ), ',' );
 	}
 
