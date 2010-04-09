@@ -29,9 +29,6 @@ class Session
 			(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') ) {
 			session_set_cookie_params(null, null, null, true);
 		}
-		
-		// There's no reason private caches can't be used (though public caches would be better for some)
-		session_cache_limiter( 'private' );
 
 		session_set_save_handler(
 			array( 'Session', 'open' ),
