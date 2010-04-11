@@ -5,11 +5,11 @@
  */
 
 /**
-	* Habari AtomHandler class
-	* Produces Atom feeds and accepts Atom Publishing Protocol input
-	*
-	* @todo Apply system error handling
-	*/
+ * Habari AtomHandler class
+ * Produces Atom feeds and accepts Atom Publishing Protocol input
+ *
+ * @todo Apply system error handling
+ */
 class AtomHandler extends ActionHandler
 {
 
@@ -739,8 +739,8 @@ class AtomHandler extends ActionHandler
 		if ( array_key_exists( 'tag', $params ) ) {
 			$id = urlencode($params['tag']);
 			$tags = explode(' ', $params['tag']);
-			foreach($tags as $tag) {
-				if($tag[0] == '-') {
+			foreach ( $tags as $tag ) {
+				if ( $tag[0] == '-' ) {
 					$tag = substr($tag, 1);
 					$params['not:tag_slug'][] = Utils::slugify($tag);
 				}

@@ -12,24 +12,24 @@ class UserHandler extends ActionHandler
 {
 
 	/**
-	 * Either just display the login form; or check a user's credentials, and 
+	 * Either just display the login form; or check a user's credentials, and
 	 * create a session for them; or handle a password reset request.
 	 */
 	public function act_login()
 	{
 		// If we're a reset password request, do that.
-		if( isset( $_POST['submit_button']) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
+		if ( isset( $_POST['submit_button']) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
 			Utils::check_request_method( array( 'POST' ) );
-	
+
 			$name = $this->handler_vars['habari_username'];
-			if( $name !== NULL ) {
-				if( !is_numeric($name) && $user = User::get($name) ) {
+			if ( $name !== NULL ) {
+				if ( !is_numeric($name) && $user = User::get($name) ) {
 					$hash = Utils::random_password();
-		
+
 					$user->info->password_reset = md5($hash);
 					$user->info->commit();
 					$message = _t('Please visit %1$s to reset your password.', array(URL::get('user', array('page' => 'password_reset', 'id' => $user->id, 'hash' => $hash))));
-					
+
 					Utils::mail($user->email, _t('[%1$s] Password reset request for %2$s', array(Options::get('title'), $user->displayname)), $message);
 				}
 				// Moving this inside the check for user existence would allow attackers to test usernames, so don't
@@ -41,21 +41,21 @@ class UserHandler extends ActionHandler
 			Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
 			$name = $_POST['habari_username'];
 			$pass = $_POST['habari_password'];
-	
+
 			if ( ( NULL != $name ) || ( NULL != $pass ) ) {
 				$user = User::authenticate( $name, $pass );
-	
+
 				if ( ( $user instanceOf User ) && ( FALSE != $user ) ) {
 					/* Successfully authenticated. */
 					// Timestamp last login date and time.
 					$user->info->authenticate_time = date( 'Y-m-d H:i:s' );
 					$user->update();
-	
+
 					// Remove left over expired session error message.
 					if ( Session::has_errors( 'expired_session' ) ) {
 						Session::remove_error( 'expired_session' );
 					}
-	
+
 					$login_session = Session::get_set( 'login' );
 					if ( ! empty( $login_session ) ) {
 						/* Now that we know we're dealing with the same user, transfer the form data so he does not lose his request */
@@ -65,7 +65,7 @@ class UserHandler extends ActionHandler
 						if ( ! empty( $login_session['get_data'] ) ) {
 							Session::add_to_set( 'last_form_data', $last_form_data['get'], 'get' );
 						}
-	
+
 						/* Redirect to the correct admin page */
 						$dest = explode( '/', MultiByte::substr( $login_session['original'], MultiByte::strpos( $login_session['original'], 'admin/' ) ) );
 						if ( '' == $dest[0] ) {
@@ -82,16 +82,16 @@ class UserHandler extends ActionHandler
 						$login_session = null;
 						$login_dest = Site::get_url( 'admin' );
 					}
-	
+
 					// filter the destination
 					$login_dest = Plugins::filter( 'login_redirect_dest', $login_dest, $user, $login_session );
-	
+
 					// finally, redirect to the destination
 					Utils::redirect( $login_dest );
-	
+
 					return TRUE;
 				}
-	
+
 				/* Authentication failed. */
 				// Remove submitted password, see, we're secure!
 				$_POST['habari_password'] = '';
@@ -112,7 +112,7 @@ class UserHandler extends ActionHandler
 	public function act_logout()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		
+
 		// get the user from their cookie
 		$user = User::identify();
 		if ( $user->loggedin ) {
@@ -147,12 +147,12 @@ class UserHandler extends ActionHandler
 		return TRUE;
 	}
 
-  /**
-   * Helper function which automatically assigns all handler_vars
-   * into the theme and displays a theme template
-   *
-   * @param template_name Name of template to display (note: not the filename)
-   */
+	/**
+	 * Helper function which automatically assigns all handler_vars
+	 * into the theme and displays a theme template
+	 *
+	 * @param template_name Name of template to display (note: not the filename)
+	 */
 	protected function display( $template_name )
 	{
 		$this->theme->display($template_name);
@@ -169,13 +169,13 @@ class UserHandler extends ActionHandler
 		$hash = $this->handler_vars['hash'];
 		$name = '';
 
-		if( $user = User::get($id) ) {
-			if( $user->info->password_reset == md5($hash)) {
+		if ( $user = User::get($id) ) {
+			if ( $user->info->password_reset == md5($hash)) {
 				// Send a new random password
 				$password = Utils::random_password();
 
 				$user->password = Utils::crypt( $password );
-				if( $user->update() ) {
+				if ( $user->update() ) {
 					$message = _t("Your password for %1\$s has been reset.  Your credentials are as follows---\nUsername: %2\$s\nPassword: %3\$s", array(Site::get_url('habari'), $user->username, $password));
 
 					Utils::mail($user->email, _t('[%1$s] Password has been reset for %2$s', array(Options::get('title'), $user->displayname)), $message);

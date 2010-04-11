@@ -43,7 +43,7 @@ class Tag
 				break;
 			case 'tag_text_searchable':
 				// if it's got spaces, then quote it.
-				if( strpos($term->term_display, ' ') !== FALSE ) {
+				if ( strpos($term->term_display, ' ') !== FALSE ) {
 					$out = '\'' . str_replace("'", "\'", $term->term_display) . '\'';
 				}
 				else {
@@ -93,11 +93,11 @@ class Tag
 		$initial_tag_count = count($tags);
 		$tags = array_filter($tags);
 		// Are all of the tags we asked for actual tags on this site?
-		if(count($tags) != $initial_tag_count) {
+		if ( count($tags) != $initial_tag_count ) {
 			return false;
 		}
 		$tag_params = array();
-		foreach($tags as $tag) {
+		foreach ( $tags as $tag ) {
 			$tag_params[] = $tag->tag_text;
 		}
 		return ($tag instanceOf Tag && Posts::count_by_tag($tag_params, Post::status('published')) > 0);

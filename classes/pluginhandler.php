@@ -30,14 +30,14 @@ class PluginHandler extends ActionHandler
 	 */
 	public function act($action)
 	{
-		if (null === $this->handler_vars) {
+		if ( null === $this->handler_vars ) {
 			$this->handler_vars = new SuperGlobal(array());
 		}
 		$this->action = $action;
 
 		$this->theme->assign('matched_rule', URL::get_matched_rule());
 		$request = new StdClass();
-		foreach(URL::get_active_rules() as $rule) {
+		foreach ( URL::get_active_rules() as $rule ) {
 			$request->{$rule->name}= false;
 		}
 		$request->{$this->theme->matched_rule->name}= true;

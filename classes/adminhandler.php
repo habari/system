@@ -66,16 +66,16 @@ class AdminHandler extends ActionHandler
 		// setup the stacks for javascript in the admin - it's a method so a plugin can call it externally
 		self::setup_stacks();
 	}
-	
+
 	/**
 	 * Create the admin theme instance
-	 * 
+	 *
 	 * @param string $page The admin page requested
 	 * @param string $type The content type included in the request
 	 */
 	public function setup_admin_theme($page, $type = '')
 	{
-		if(!isset($this->theme)) {
+		if ( !isset($this->theme) ) {
 			$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 			$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -121,8 +121,8 @@ class AdminHandler extends ActionHandler
 			Session::error(_t('Access to that page has been denied by the administrator.'));
 			$this->get_blank();
 		}
-		
-		switch( $_SERVER['REQUEST_METHOD'] ) {
+
+		switch ( $_SERVER['REQUEST_METHOD'] ) {
 			case 'POST':
 				// Let plugins try to handle the page
 				Plugins::act('admin_theme_post_' . $page, $this, $this->theme);
@@ -451,10 +451,10 @@ class AdminHandler extends ActionHandler
 		// get the active module list
 		$modules = Modules::get_active();
 
-		if(User::identify()->can('manage_dash_modules')) {
+		if ( User::identify()->can('manage_dash_modules') ) {
 			// append the 'Add Item' module
 			$modules['nosort'] = 'Add Item';
-	
+
 			// register the 'Add Item' filter
 			Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
 		}
@@ -494,7 +494,7 @@ class AdminHandler extends ActionHandler
 		if ( 0 !== $post_id ) {
 			$post = Post::get( array( 'id' => $post_id, 'status' => Post::status( 'any' ) ) );
 
-			$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
+			$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular'));
 
 			// Verify that the post hasn't already been updated since the form was loaded
 			if ( $post->modified != $form->modified->value ) {
@@ -502,7 +502,7 @@ class AdminHandler extends ActionHandler
 				Utils::redirect( URL::get( 'admin', 'page=publish&id=' . $post->id ) );
 				exit;
 			}
-			
+
 			// Don't try to update form values that have been removed by plugins
 			$expected = array('title', 'tags', 'content');
 
@@ -639,9 +639,9 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
-		$this->theme->admin_title = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular')); 
-		
+		$this->theme->admin_page = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular'));
+		$this->theme->admin_title = sprintf(_t('Publish %s'), Plugins::filter('post_type_display', Post::type_name($post->content_type), 'singular'));
+
 		$statuses = Post::list_post_statuses( false );
 		$this->theme->statuses = $statuses;
 
@@ -678,7 +678,7 @@ class AdminHandler extends ActionHandler
 			$okay = FALSE;
 		}
 
-		if ( !$okay )	{
+		if ( !$okay ) {
 			Utils::redirect( URL::get( 'admin', 'page=posts&type='. Post::status( 'any' ) ) );
 		}
 
@@ -697,14 +697,14 @@ class AdminHandler extends ActionHandler
 		$permission = false;
 
 		if ( ($this->handler_vars['user'] == '') || (User::get_by_name($this->handler_vars['user']) == $edit_user) ) {
-			if($edit_user->can('manage_self') || $edit_user->can('manage_users')) {
+			if ( $edit_user->can('manage_self') || $edit_user->can('manage_users') ) {
 				$permission = true;
 			}
 			$who = _t("You");
 			$possessive = _t("Your User Information");
 		}
 		else {
-			if($edit_user->can('manage_users')) {
+			if ( $edit_user->can('manage_users') ) {
 				$permission = true;
 			}
 			$edit_user = User::get_by_name($this->handler_vars['user']);
@@ -712,7 +712,7 @@ class AdminHandler extends ActionHandler
 			$possessive = sprintf( _t("%s's User Information"), $who );
 		}
 
-		if(!$permission) {
+		if ( !$permission ) {
 			Session::error(_t('Access to that page has been denied by the administrator.'));
 			$this->get_blank();
 			return;
@@ -791,7 +791,7 @@ class AdminHandler extends ActionHandler
 		$password2->value = '';
 		$delete = $this->handler_vars->filter_keys('delete');
 		// don't validate password match if action is delete
-		if (!isset($delete['delete'])) {
+		if ( !isset($delete['delete']) ) {
 			$password2->add_validator('validate_same', $password1, _t('Passwords must match.'));
 		}
 
@@ -826,12 +826,12 @@ class AdminHandler extends ActionHandler
 		}
 		$locale_time_format->helptext = _t('See <a href="%s">php.net/date</a> for details. Current format: %s', array('http://php.net/date', $current) );
 
-		
+
 		$spam_count = $form->dashboard->append( 'checkbox', 'dashboard_hide_spam_count', 'null:null', _t( 'Hide Spam Count' ), 'optionscontrol_checkbox' );
 		$spam_count->class[] = 'item clear';
 		$spam_count->helptext = _t( 'Hide the number of SPAM comments on your dashboard.' );
 		$spam_count->value = $edit_user->info->dashboard_hide_spam_count;
-		
+
 
 		// Controls
 		$controls = $form->append( 'wrapper', 'page_controls' );
@@ -839,7 +839,7 @@ class AdminHandler extends ActionHandler
 
 		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
 		$submit->class[] = 'pct30';
-		
+
 		$controls->append( 'static', 'reassign', '<span class="pct35 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct5 conjunction">' . _t('and') . '</span><span class="pct30"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
 
 		$form->on_success( array( $this, 'form_user_success' ) );
@@ -1223,7 +1223,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->active_theme_name = $this->theme->active_theme['info']->name;
 		$this->theme->configurable = Plugins::filter( 'theme_config', false, $this->active_theme);
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
-		
+
 		$activedata = Themes::get_active_data();
 		$areas = array();
 		if ( isset($activedata['info']->areas->area) ) {
@@ -1232,7 +1232,7 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$this->theme->areas = $areas;
-		
+
 		$this->theme->blocks = Plugins::filter('block_list', array());
 		$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
 		$blocks_areas_t = DB::get_results('SELECT b.*, ba.scope_id, ba.area, ba.display_order FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array());
@@ -1244,7 +1244,7 @@ class AdminHandler extends ActionHandler
 			$blocks_areas[$block->scope_id][$block->area][$block->display_order] = $block;
 		}
 		$this->theme->blocks_areas = $blocks_areas;
-		
+
 		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
 
 		$this->theme->display( 'themes' );
@@ -1722,8 +1722,7 @@ class AdminHandler extends ActionHandler
 			if ( isset($years[$month->year]) ) {
 				$years[$month->year][] = $month;
 			}
-			else
-			{
+			else {
 				$years[$month->year] = array( $month );
 			}
 		}
@@ -1801,9 +1800,9 @@ class AdminHandler extends ActionHandler
 			$plugin['file'] = $file;
 
 			$error = '';
-			
+
 			$providing = array();
-			
+
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
 				$plugin['info'] = Plugins::load_info( $file );
@@ -1824,7 +1823,7 @@ class AdminHandler extends ActionHandler
 						);
 						$urlparams = array('page' => 'plugins', 'configure'=>$plugin_id);
 						$action['url'] = URL::get( 'admin', $urlparams );
-						
+
 						if ( $action['caption'] == _t( '?' ) ) {
 							if ( isset($_GET['configaction']) ) {
 								$urlparams['configaction'] = $_GET['configaction'];
@@ -1849,7 +1848,7 @@ class AdminHandler extends ActionHandler
 						'caption' => _t('Deactivate'),
 						'action' => 'Deactivate',
 					);
-					
+
 					if ( isset($plugin['info']->provides) ) {
 						foreach ( $plugin['info']->provides->feature as $feature ) {
 							$providing[(string) $feature] = $feature;
@@ -1911,14 +1910,14 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		// Get the features that the current theme provides		
+		// Get the features that the current theme provides
 		$themeinfo = Themes::get_active_data();
 		if ( isset($themeinfo['info']->provides) ) {
 			foreach ( $themeinfo['info']->provides->feature as $feature ) {
 				$providing[(string) $feature] = $feature;
 			}
 		}
-		
+
 		foreach ( $sort_inactive_plugins as $plugin_id => $plugin ) {
 			if ( isset($plugin['info']->requires) ) {
 				foreach ( $plugin['info']->requires->feature as $feature ) {
@@ -2113,45 +2112,45 @@ class AdminHandler extends ActionHandler
 	public function ajax_dashboard( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
-		
+
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		switch ( $handler_vars['action'] ) {
-		case 'updateModules':
-			$modules = array();
-			foreach ( $_POST as $key => $module ) {
-				// skip POST elements which are not module names
-				if ( preg_match( '/^module\d+$/', $key ) ) {
-					list( $module_id, $module_name ) = explode( ':', $module, 2 );
-					// remove non-sortable modules from the list
-					if ( $module_id != 'nosort' ) {
-						$modules[$module_id] = $module_name;
+			case 'updateModules':
+				$modules = array();
+				foreach ( $_POST as $key => $module ) {
+					// skip POST elements which are not module names
+					if ( preg_match( '/^module\d+$/', $key ) ) {
+						list( $module_id, $module_name ) = explode( ':', $module, 2 );
+						// remove non-sortable modules from the list
+						if ( $module_id != 'nosort' ) {
+							$modules[$module_id] = $module_name;
+						}
 					}
 				}
-			}
 
-			Modules::set_active( $modules );
-			echo json_encode( true );
-			break;
-		case 'addModule':
-			$id = Modules::add( $handler_vars['module_name'] );
-			$this->fetch_dashboard_modules();
-			$result = array(
-				'message' => "Added module {$handler_vars['module_name']}.",
-				'modules' => $this->theme->fetch( 'dashboard_modules' ),
-			);
-			echo json_encode( $result );
-			break;
-		case 'removeModule':
-			Modules::remove( $handler_vars['moduleid'] );
-			$this->fetch_dashboard_modules();
-			$result = array(
-				'message' => 'Removed module',
-				'modules' => $this->theme->fetch( 'dashboard_modules' ),
-			);
-			echo json_encode( $result );
-			break;
+				Modules::set_active( $modules );
+				echo json_encode( true );
+				break;
+			case 'addModule':
+				$id = Modules::add( $handler_vars['module_name'] );
+				$this->fetch_dashboard_modules();
+				$result = array(
+					'message' => "Added module {$handler_vars['module_name']}.",
+					'modules' => $this->theme->fetch( 'dashboard_modules' ),
+				);
+				echo json_encode( $result );
+				break;
+			case 'removeModule':
+				Modules::remove( $handler_vars['moduleid'] );
+				$this->fetch_dashboard_modules();
+				$result = array(
+					'message' => 'Removed module',
+					'modules' => $this->theme->fetch( 'dashboard_modules' ),
+				);
+				echo json_encode( $result );
+				break;
 		}
 	}
 
@@ -2161,7 +2160,7 @@ class AdminHandler extends ActionHandler
 	public function ajax_posts()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
-		
+
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2175,7 +2174,7 @@ class AdminHandler extends ActionHandler
 
 		foreach ( $this->theme->posts as $post ) {
 			if ( ACL::access_check($post->get_access(), 'delete' ) ) {
-			$item_ids['p' . $post->id] = 1;
+				$item_ids['p' . $post->id] = 1;
 			}
 		}
 
@@ -2193,7 +2192,7 @@ class AdminHandler extends ActionHandler
 	public function ajax_comments()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
-		
+
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$this->theme->theme = $this->theme;
@@ -2224,7 +2223,7 @@ class AdminHandler extends ActionHandler
 	public function ajax_users()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
-		
+
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2243,8 +2242,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_update_entries($handler_vars)
 	{
-		Utils::check_request_method( array( 'POST' ) ); 
-		
+		Utils::check_request_method( array( 'POST' ) );
+
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
 			Session::error( _t('WSSE authentication failed.') );
@@ -2264,25 +2263,25 @@ class AdminHandler extends ActionHandler
 		Plugins::act( 'admin_update_posts', $handler_vars['action'], $posts, $this );
 		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
 		switch ( $handler_vars['action'] ) {
-		case 'delete':
-			$deleted = 0;
-			foreach ( $posts as $post ) {
-				if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
-					$post->delete();
-					$deleted++;
+			case 'delete':
+				$deleted = 0;
+				foreach ( $posts as $post ) {
+					if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
+						$post->delete();
+						$deleted++;
+					}
 				}
-			}
-			if ( $deleted != count( $posts ) ) {
-			$status_msg = _t( 'You did not have permission to delete some entries.' );
-			}
-			else {
-				$status_msg = sprintf( _n('Deleted %d post', 'Deleted %d posts', count( $ids ) ), count( $ids ) );
-			}
-			break;
-		default:
-			// Specific plugin-supplied action
-			$status_msg = Plugins::filter( 'admin_entries_action', $status_msg, $handler_vars['action'], $posts );
-			break;
+				if ( $deleted != count( $posts ) ) {
+					$status_msg = _t( 'You did not have permission to delete some entries.' );
+				}
+				else {
+					$status_msg = sprintf( _n('Deleted %d post', 'Deleted %d posts', count( $ids ) ), count( $ids ) );
+				}
+				break;
+			default:
+				// Specific plugin-supplied action
+				$status_msg = Plugins::filter( 'admin_entries_action', $status_msg, $handler_vars['action'], $posts );
+				break;
 		}
 
 		Session::notice( $status_msg );
@@ -2296,8 +2295,8 @@ class AdminHandler extends ActionHandler
 	 */
 	public function ajax_delete_logs($handler_vars)
 	{
-		Utils::check_request_method( array( 'POST' ) ); 
-		
+		Utils::check_request_method( array( 'POST' ) );
+
 		$count = 0;
 
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
@@ -2364,40 +2363,40 @@ class AdminHandler extends ActionHandler
 		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
 
 		switch ( $handler_vars['action'] ) {
-		case 'delete_spam':
-			Comments::delete_by_status( Comment::STATUS_SPAM );
-			$status_msg = _t('Deleted all spam comments' );
-			break;
-		case 'delete_unapproved':
-			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
-			$status_msg = _t('Deleted all unapproved comments' );
-			break;
-		case 'delete':
-			// Comments marked for deletion
-			Comments::delete_these( $comments );
-			$status_msg = sprintf( _n('Deleted %d comment', 'Deleted %d comments', count( $ids ) ), count( $ids ) );
-			break;
-		case 'spam':
-			// Comments marked as spam
-			Comments::moderate_these( $comments, Comment::STATUS_SPAM );
-			$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
-			break;
-		case 'approve':
-		case 'approved':
-			// Comments marked for approval
-			Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
-			$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
-			break;
-		case 'unapprove':
-		case 'unapproved':
-			// Comments marked for unapproval
-			Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
-			$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
-			break;
-		default:
-			// Specific plugin-supplied action
-			$status_msg = Plugins::filter( 'admin_comments_action', $status_msg, $handler_vars['action'], $comments );
-			break;
+			case 'delete_spam':
+				Comments::delete_by_status( Comment::STATUS_SPAM );
+				$status_msg = _t('Deleted all spam comments' );
+				break;
+			case 'delete_unapproved':
+				Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
+				$status_msg = _t('Deleted all unapproved comments' );
+				break;
+			case 'delete':
+				// Comments marked for deletion
+				Comments::delete_these( $comments );
+				$status_msg = sprintf( _n('Deleted %d comment', 'Deleted %d comments', count( $ids ) ), count( $ids ) );
+				break;
+			case 'spam':
+				// Comments marked as spam
+				Comments::moderate_these( $comments, Comment::STATUS_SPAM );
+				$status_msg = sprintf( _n('Marked %d comment as spam', 'Marked %d comments as spam', count( $ids ) ), count( $ids ) );
+				break;
+			case 'approve':
+			case 'approved':
+				// Comments marked for approval
+				Comments::moderate_these( $comments, Comment::STATUS_APPROVED );
+				$status_msg = sprintf( _n('Approved %d comment', 'Approved %d comments', count( $ids ) ), count( $ids ) );
+				break;
+			case 'unapprove':
+			case 'unapproved':
+				// Comments marked for unapproval
+				Comments::moderate_these( $comments, Comment::STATUS_UNAPPROVED );
+				$status_msg = sprintf( _n('Unapproved %d comment', 'Unapproved %d comments', count( $ids ) ), count( $ids ) );
+				break;
+			default:
+				// Specific plugin-supplied action
+				$status_msg = Plugins::filter( 'admin_comments_action', $status_msg, $handler_vars['action'], $comments );
+				break;
 		}
 
 		Session::notice( $status_msg );
@@ -2591,7 +2590,7 @@ class AdminHandler extends ActionHandler
 	public function ajax_logs()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
-		
+
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -2631,7 +2630,7 @@ class AdminHandler extends ActionHandler
 	public function ajax_groups( $handler_vars )
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
-		
+
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
@@ -3193,7 +3192,7 @@ class AdminHandler extends ActionHandler
 
 		// Strip out import if no importers are available
 		if ( !Plugins::filter('import_names', array()) )
-			unset($mainmenus['import']); 
+			unset($mainmenus['import']);
 
 		// Make submenu links default to the first available item
 		foreach ( array_keys($mainmenus) as $action ) {
@@ -3202,7 +3201,7 @@ class AdminHandler extends ActionHandler
 				$mainmenus[$action]['url'] = $default['url'];
 			}
 		}
-		
+
 		$theme->assign( 'mainmenu', $mainmenus );
 	}
 
@@ -3223,13 +3222,13 @@ class AdminHandler extends ActionHandler
 					$masks = Utils::single_array($masks);
 					foreach ( $masks as $mask ) {
 						if ( is_bool($mask) ) {
-							if( $user->can($token) ) {
+							if ( $user->can($token) ) {
 							$pass = true;
 							break;
 							}
 						}
 						else {
-							if( $user->cannot( $token ) ) {
+							if ( $user->cannot( $token ) ) {
 								break 2;
 							}
 							else {
@@ -3349,8 +3348,8 @@ class AdminHandler extends ActionHandler
 					$require_any['post_' . $type] = array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) );
 				}
 				break;
-			case 'sysinfo': 
-				$require_any = array( 'super_user' => true ); 
+			case 'sysinfo':
+				$require_any = array( 'super_user' => true );
 				break;
 			case 'dashboard':
 			case 'ajax_dashboard':
@@ -3477,7 +3476,7 @@ class AdminHandler extends ActionHandler
 	public function ajax_media_panel( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
-		
+
 		$path = $handler_vars['path'];
 		$panelname = $handler_vars['panel'];
 		$rpath = $path;
@@ -3504,10 +3503,10 @@ class AdminHandler extends ActionHandler
 
 		echo json_encode( $output );
 	}
-	
+
 	/**
 	 * Get the block configuration form to show in a modal iframe on the themes page
-	 * 
+	 *
 	 */
 	public function get_configure_block()
 	{
@@ -3515,36 +3514,36 @@ class AdminHandler extends ActionHandler
 
 		$block = DB::get_row('SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array('id' => $_GET['blockid']), 'Block');
 		$this->theme->content = $block->get_form()->get();
-		
+
 		$this->display('block_configure');
 	}
-	
+
 	/**
 	 * A POST handler for the block configuration form
-	 * 
+	 *
 	 * @see AdminHandler::get_configure_block
-	 * @return 
+	 * @return
 	 */
 	public function post_configure_block()
 	{
 		$this->get_configure_block();
 	}
-	
+
 	/**
 	 * Called from the themes page to create a new block instace
-	 * 
+	 *
 	 * @param mixed $handler_vars
 	 */
 	public function ajax_add_block( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
-		
+
 		$this->setup_admin_theme('');
-		
+
 		$title = $_POST['title'];
 		$type = $_POST['type'];
-		
-		if($title == '') {
+
+		if ( $title == '' ) {
 			$this->display('block_instances');
 
 			$msg = json_encode(_t('A new block must first have a name.'));
@@ -3560,11 +3559,11 @@ class AdminHandler extends ActionHandler
 
 			$this->theme->blocks = Plugins::filter('block_list', array());
 			$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
-		
+
 			$this->display('block_instances');
 
 			$msg = json_encode(_t('Added new block "%1s" of type "%2s".', array($title, $type)));
-	
+
 			echo '<script type="text/javascript">
 				humanMsg.displayMsg(' . $msg . ');
 				reset_block_form();
@@ -3572,30 +3571,30 @@ class AdminHandler extends ActionHandler
 			</script>';
 		}
 	}
-	
+
 	/**
 	 * Called from the themes page to delete a block instance
-	 * 
+	 *
 	 * @param mixed $handler_vars
 	 */
 	public function ajax_delete_block( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
-		
+
 		$this->setup_admin_theme('');
-		
+
 		$block_id = $_POST['block_id'];
 		$block = DB::get_row('SELECT b.* FROM {blocks} b WHERE id = :block_id', array('block_id' => $block_id), 'Block');
-		if($block->delete()) {
+		if ( $block->delete() ) {
 			$msg = json_encode(_t('Deleted block "%1s" of type "%2s".', array($block->title, $block->type)));
 		}
 		else {
 			$msg = json_encode(_t('Failed to delete block "%1s" of type "%2s".', array($block->title, $block->type)));
 		}
-		
+
 		$this->theme->blocks = Plugins::filter('block_list', array());
 		$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
-	
+
 		$this->display('block_instances');
 
 		echo '<script type="text/javascript">
@@ -3604,32 +3603,32 @@ class AdminHandler extends ActionHandler
 			spinner.stop();
 		</script>';
 	}
-	
+
 	/**
 	 * Called from the themes page to save the blocks instances into areas
-	 * 
+	 *
 	 * @param mixed $handler_vars
-	 * @return 
+	 * @return
 	 */
 	public function ajax_save_areas( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
-		
+
 		$area_blocks = $_POST['area_blocks'];
 		$scope = $_POST['scope'];
-		
+
 		DB::query('DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
-		
-		foreach((array)$area_blocks as $area => $blocks) {
+
+		foreach ( (array)$area_blocks as $area => $blocks ) {
 			$display_order = 0;
-			foreach($blocks as $block) {
+			foreach ( $blocks as $block ) {
 				$display_order++;
 				DB::query('INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array('block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order));
 			}
 		}
-		
+
 		$this->setup_admin_theme('');
-		
+
 		$blocks_areas_t = DB::get_results('SELECT b.*, ba.scope_id, ba.area, ba.display_order FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id ORDER BY ba.scope_id ASC, ba.area ASC, ba.display_order ASC', array());
 		$blocks_areas = array();
 		foreach ( $blocks_areas_t as $block ) {
@@ -3641,9 +3640,9 @@ class AdminHandler extends ActionHandler
 		$this->theme->blocks_areas = $blocks_areas;
 		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
 		$this->theme->active_theme = Themes::get_active_data();
-	
+
 		$this->display('block_areas');
-		
+
 		$msg = json_encode(_t('Saved block areas settings.'));
 
 		echo '<script type="text/javascript">
