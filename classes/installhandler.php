@@ -318,7 +318,7 @@ class InstallHandler extends ActionHandler
 		}
 		/* Check for required extensions */
 		$missing_extensions = array();
-		foreach ($required_extensions as $ext_name => $ext_url) {
+		foreach ( $required_extensions as $ext_name => $ext_url ) {
 			if ( !extension_loaded($ext_name) ) {
 				$missing_extensions[$ext_name] = $ext_url;
 				$requirements_met = false;
@@ -393,30 +393,30 @@ class InstallHandler extends ActionHandler
 		$db_user = $this->handler_vars['db_user'];
 		$db_pass = $this->handler_vars['db_pass'];
 
-		switch($db_type) {
-		case 'mysql':
-		case 'pgsql':
-			// MySQL & PostgreSQL requires specific connection information
-			if ( empty($db_user) ) {
-				$this->theme->assign('form_errors', array("{$db_type}_db_user"=>_t('User is required.')));
-				return false;
-			}
-			if ( empty($db_schema) ) {
-				$this->theme->assign('form_errors', array("{$db_type}_db_schema"=>_t('Name for database is required.')));
-				return false;
-			}
-			if ( empty($db_host) ) {
-				$this->theme->assign('form_errors', array("{$db_type}_db_host"=>_t('Host is required.')));
-				return false;
-			}
-			break;
-		case 'sqlite':
-			// If this is a SQLite database, let's check that the file
-			// exists and that we can access it.
-			if ( ! $this->check_sqlite() ) {
-				return false;
-			}
-			break;
+		switch ( $db_type ) {
+			case 'mysql':
+			case 'pgsql':
+				// MySQL & PostgreSQL requires specific connection information
+				if ( empty($db_user) ) {
+					$this->theme->assign('form_errors', array("{$db_type}_db_user"=>_t('User is required.')));
+					return false;
+				}
+				if ( empty($db_schema) ) {
+					$this->theme->assign('form_errors', array("{$db_type}_db_schema"=>_t('Name for database is required.')));
+					return false;
+				}
+				if ( empty($db_host) ) {
+					$this->theme->assign('form_errors', array("{$db_type}_db_host"=>_t('Host is required.')));
+					return false;
+				}
+				break;
+			case 'sqlite':
+				// If this is a SQLite database, let's check that the file
+				// exists and that we can access it.
+				if ( ! $this->check_sqlite() ) {
+					return false;
+				}
+				break;
 		}
 
 		if ( isset( $this->handler_vars['table_prefix'] ) ) {
@@ -1267,7 +1267,7 @@ class InstallHandler extends ActionHandler
 	private function upgrade_db_pre_1345 ()
 	{
 
-		// fix duplicate tag_slug's
+		// fix duplicate tag_slugs
 
 		// first, get all the tags with duplicate entries
 		$query = 'select id, tag_slug, tag_text from {tags} where tag_slug in ( select tag_slug from {tags} group by tag_slug having count(*) > 1 ) order by id';
@@ -1310,29 +1310,28 @@ class InstallHandler extends ActionHandler
 	 */
 	public function upgrade_db()
 	{
-		if ( Options::get('db_upgrading' ) )
-		{
+		if ( Options::get('db_upgrading' ) ) {
 			// quit with an error message.
 			$this->display_currently_upgrading();
 		}
 
 		// don't allow duplicate upgrades.
 		Options::set( 'db_upgrading', TRUE );
-		
+
 		// This database-specific code needs to be moved into the schema-specific functions
 		list( $schema, $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
-		switch( $schema ) {
-		case 'sqlite':
-			$db_name = '';
-			break;
-		case 'mysql':
-			list($host,$name)= explode(';', $remainder);
-			list($discard, $db_name)= explode('=', $name);
-			break;
-		case 'pgsql':
-			list($host,$name)= explode(' ', $remainder);
-			list($discard, $db_name)= explode('=', $name);
-			break;
+		switch ( $schema ) {
+			case 'sqlite':
+				$db_name = '';
+				break;
+			case 'mysql':
+				list($host,$name)= explode(';', $remainder);
+				list($discard, $db_name)= explode('=', $name);
+				break;
+			case 'pgsql':
+				list($host,$name)= explode(' ', $remainder);
+				list($discard, $db_name)= explode('=', $name);
+				break;
 		}
 
 		Cache::purge();
@@ -1363,18 +1362,18 @@ class InstallHandler extends ActionHandler
 
 	private function display_currently_upgrading()
 	{
-		// Error template. 
-		$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>"; 
+		// Error template.
+		$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>";
 
-		// Format page with localized messages. 
-		$error_page = sprintf($error_template, 
-			_t( "Site Maintenance" ), # page title 
-			_t( "Habari is currently being upgraded." ), # H1 tag 
-			_t( "Try again in a little while." ) # Error message. 
+		// Format page with localized messages.
+		$error_page = sprintf($error_template,
+			_t( "Site Maintenance" ), # page title
+			_t( "Habari is currently being upgraded." ), # H1 tag
+			_t( "Try again in a little while." ) # Error message.
 		);
 
-		// Set correct HTTP header and die. 
-		header( 'HTTP/1.1 503 Service Unavailable', true, 503 ); 
+		// Set correct HTTP header and die.
+		header( 'HTTP/1.1 503 Service Unavailable', true, 503 );
 		die( $error_page );
 	}
 
@@ -1826,21 +1825,21 @@ class InstallHandler extends ActionHandler
 	{
 		list( $this->handler_vars['db_type'], $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
 		switch ( $this->handler_vars['db_type'] ) {
-		case 'sqlite':
-			// SQLite uses less info.
-			// we stick the path in db_host
-			$this->handler_vars['db_file'] = $remainder;
-			break;
-		case 'mysql':
-			list($host,$name)= explode(';', $remainder);
-			list($discard, $this->handler_vars['db_host']) = explode('=', $host);
-			list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
-			break;
-		case 'pgsql':
-			list($host,$name)= explode(' ', $remainder);
-			list($discard, $this->handler_vars['db_host']) = explode('=', $host);
-			list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
-			break;
+			case 'sqlite':
+				// SQLite uses less info.
+				// we stick the path in db_host
+				$this->handler_vars['db_file'] = $remainder;
+				break;
+			case 'mysql':
+				list($host,$name)= explode(';', $remainder);
+				list($discard, $this->handler_vars['db_host']) = explode('=', $host);
+				list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
+				break;
+			case 'pgsql':
+				list($host,$name)= explode(' ', $remainder);
+				list($discard, $this->handler_vars['db_host']) = explode('=', $host);
+				list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
+				break;
 		}
 		$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;
 		$this->handler_vars['db_pass'] = Config::get( 'db_connection' )->password;

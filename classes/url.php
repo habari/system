@@ -65,7 +65,7 @@ class URL extends Singleton
 	 */
 	public static function set_404()
 	{
-		if( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
+		if ( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
 			$rule = RewriteRules::by_name('display_404');
 			URL::instance()->matched_rule = reset($rule);
 			URL::instance()->matched_rule->match(self::$stub);
@@ -129,11 +129,11 @@ class URL extends Singleton
 	 * values and returns the built URL.
 	 *
 	 * <code>
-	 * 	URL::get( 'display_entries_by_date', array(
-	 * 		'year' => '2000',
-	 *    	'month' => '05',
-	 *    	'day' => '01',
-	 * 	) );
+	 * URL::get( 'display_entries_by_date', array(
+	 * 	'year' => '2000',
+	 * 	'month' => '05',
+	 * 	'day' => '01',
+	 * ) );
 	 * </code>
 	 *
 	 * @param mixed $rule_names string name of the rule or array of rules which would build the URL
@@ -256,7 +256,7 @@ class URL extends Singleton
 	 * Extract the possible arguments to use in the URL from the passed variable
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL
-	 **/
+	 */
 	public static function extract_args( $args, $prefix = '' )
 	{
 		if ( is_object( $args ) ) {

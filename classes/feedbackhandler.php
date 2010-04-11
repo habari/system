@@ -12,10 +12,10 @@
 class FeedbackHandler extends ActionHandler
 {
 	/**
-	* function add_comment
-	* adds a comment to a post, if the comment content is not NULL
-	* @param array An associative array of content found in the $_POST array
-	*/
+	 * function add_comment
+	 * adds a comment to a post, if the comment content is not NULL
+	 * @param array An associative array of content found in the $_POST array
+	 */
 	public function act_add_comment()
 	{
 		Utils::check_request_method( array( 'POST' ) );
@@ -84,7 +84,7 @@ class FeedbackHandler extends ActionHandler
 
 	/**
 	 * Add a comment to the site
-	 * 
+	 *
 	 * @param mixed $post A Post object instance or Post object id
 	 * @param string $name The commenter's name
 	 * @param string $email The commenter's email address
@@ -165,13 +165,13 @@ class FeedbackHandler extends ActionHandler
 
 		/* Create comment object*/
 		$comment = new Comment( array(
-			'post_id'	=> $post->id,
+			'post_id' => $post->id,
 			'name' => $name,
 			'email' => $email,
 			'url' => $url,
 			'ip' => sprintf( "%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
-			'content'	=> $content,
-			'status' =>	Comment::STATUS_UNAPPROVED,
+			'content' => $content,
+			'status' => Comment::STATUS_UNAPPROVED,
 			'date' => HabariDateTime::date_create(),
 			'type' => Comment::COMMENT,
 		) );
@@ -179,7 +179,7 @@ class FeedbackHandler extends ActionHandler
 		// Should this really be here or in a default filter?
 		// In any case, we should let plugins modify the status after we set it here.
 		$user = User::identify();
-		if( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
+		if ( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
 			$comment->status = Comment::STATUS_APPROVED;
 		}
 

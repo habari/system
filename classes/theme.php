@@ -76,7 +76,7 @@ class Theme extends Pluggable
 	 */
 	public function info( )
 	{
-		
+
 		$xml_file = dirname($this->getfile) . '/theme.xml';
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
 			$theme_data = new SimpleXMLElement( $xml_file );
@@ -108,15 +108,15 @@ class Theme extends Pluggable
 	 */
 	public function add_template_vars()
 	{
-		if( !$this->template_engine->assigned( 'user' ) ) {
+		if ( !$this->template_engine->assigned( 'user' ) ) {
 			$this->assign('user', User::identify() );
 		}
 
-		if( !$this->template_engine->assigned( 'loggedin' ) ) {
+		if ( !$this->template_engine->assigned( 'loggedin' ) ) {
 			$this->assign('loggedin', User::identify()->loggedin );
 		}
 
-		if( !$this->template_engine->assigned( 'page' ) ) {
+		if ( !$this->template_engine->assigned( 'page' ) ) {
 			$this->assign('page', isset( $this->page ) ? $this->page : 1 );
 		}
 
@@ -166,7 +166,7 @@ class Theme extends Pluggable
 	public function act_display( $paramarray = array( 'user_filters'=> array() ) )
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		
+
 		// Get any full-query parameters
 		$possible = array( 'user_filters', 'fallback', 'posts', 'post', 'content_type' );
 		foreach ( $possible as $varname ) {
@@ -182,8 +182,8 @@ class Theme extends Pluggable
 			$tags = explode(' ', $where_filters['tag']);
 			$not_tag = array();
 			$all_tag = array();
-			foreach($tags as $tag) {
-				if($tag[0] == '-') {
+			foreach ( $tags as $tag ) {
+				if ( $tag[0] == '-' ) {
 					$tag = substr($tag, 1);
 					$not_tag[] = Utils::slugify($tag);
 				}
@@ -191,10 +191,10 @@ class Theme extends Pluggable
 					$all_tag[] = Utils::slugify($tag);
 				}
 			}
-			if(count($not_tag) > 0) {
+			if ( count($not_tag) > 0 ) {
 				$where_filters['not:tag_slug'] = $not_tag;
 			}
-			if(count($all_tag) > 0) {
+			if ( count($all_tag) > 0 ) {
 				$where_filters['all:tag_slug'] = $all_tag;
 			}
 			unset( $where_filters['tag'] );
@@ -216,7 +216,7 @@ class Theme extends Pluggable
 		}
 
 		$this->assign( 'posts', $posts );
-		
+
 		/*
 		   if( !isset( $this->page ) ) {
 		   if( isset( $page ) ) {
@@ -228,7 +228,7 @@ class Theme extends Pluggable
 		   }*/
 
 		if ( $posts !== false && count( $posts ) > 0 ) {
-			if(count($posts) == 1) {
+			if ( count($posts) == 1 ) {
 				$post = $posts;
 				Stack::add('body_class', Post::type_name($post->content_type) . '-' . $post->id);
 			}
@@ -239,7 +239,7 @@ class Theme extends Pluggable
 			$this->assign( 'post', $post );
 			$type = Post::type_name($post->content_type);
 		}
-		elseif( ( $posts === false ) ||
+		elseif ( ( $posts === false ) ||
 			( isset( $where_filters['page'] ) && $where_filters['page'] > 1 && count( $posts ) == 0 ) ) {
 			if ( $this->template_exists( '404' ) ) {
 				$fallback = array( '404' );
@@ -545,14 +545,14 @@ class Theme extends Pluggable
 		}
 		return $return;
 	}
-	
+
 	/**
 	 * Play back the full stack of template variables to assign them into the template
 	 */
 	protected function play_var_stack()
 	{
 		$this->template_engine->clear();
-		for($z = 0; $z <= $this->current_var_stack; $z++) {
+		for ( $z = 0; $z <= $this->current_var_stack; $z++ ) {
 			foreach($this->var_stack[$z] as $key => $value) {
 				$this->template_engine->assign( $key, $value );
 			}
@@ -607,31 +607,31 @@ class Theme extends Pluggable
 	 *
 	 * @param Theme $theme The theme used to display the object
 	 * @param object $object An object to display
-	 * @param string $context The context in which the object will be displayed	 
+	 * @param string $context The context in which the object will be displayed
 	 * @return
 	 */
 	public function theme_content( $theme, $object, $context = null )
 	{
 		$fallback = array();
 		$content_types = array();
-		if( $object instanceof IsContent ) {
+		if ( $object instanceof IsContent ) {
 			$content_types = Utils::single_array($object->content_type());
 		}
-		if( is_object($object) ) {
+		if ( is_object($object) ) {
 			$content_types[] = strtolower(get_class($object));
 		}
 		$content_types[] = 'content';
 		$content_types = array_flip($content_types);
-		if(isset($context)) {
+		if ( isset($context) ) {
 			foreach($content_types as $type => $type_id) {
 				$content_type = $context . $object->content_type();
 				$fallback[] = strtolower($context . '.' . $type);
 			}
 		}
-		foreach($content_types as $type => $type_id) {
+		foreach ( $content_types as $type => $type_id ) {
 			$fallback[] = strtolower($type);
 		}
-		if(isset($context)) {
+		if ( isset($context) ) {
 			$fallback[] = strtolower($context);
 		}
 		$fallback = array_unique($fallback);
@@ -694,7 +694,7 @@ class Theme extends Pluggable
 	 * @param string The RewriteRule name used to build the links.
 	 * @param array Various settings used by the method and the RewriteRule.
 	 * @return string Collection of paginated URLs built by the RewriteRule.
-	 **/
+	 */
 	public static function theme_page_selector( $theme, $rr_name = NULL, $settings = array() )
 	{
 		$current = $theme->page;
@@ -739,20 +739,20 @@ class Theme extends Pluggable
 		if ( 1 === count($pages) && isset( $settings['hideIfSinglePage'] ) &&  $settings['hideIfSinglePage'] === true ) {
 			return '';
 		}
-		
+
 		foreach ( $pages as $page ) {
 			$settings['page'] = $page;
 
 			// Add ... if the gap between the previous page is higher than 1.
 			if ( ($page - $prevpage) > 1 ) {
-				$out.= '&nbsp;&hellip;';
+				$out .= '&nbsp;&hellip;';
 			}
 			// Wrap the current page number with square brackets.
 			$caption = ( $page == $current ) ?  $current  : $page;
 			// Build the URL using the supplied $settings and the found RewriteRules arguments.
 			$url = URL::get( $rr_name, $settings , false );
 			// Build the HTML link.
-			$out.= '&nbsp;<a href="' . $url . '" ' . ( ( $page == $current ) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
+			$out .= '&nbsp;<a href="' . $url . '" ' . ( ( $page == $current ) ? 'class="current-page"' : '' ) . '>' . $caption . '</a>';
 
 			$prevpage = $page;
 		}
@@ -771,12 +771,12 @@ class Theme extends Pluggable
 
 		// If there's no previous page, skip and return null
 		$settings['page'] = (int) ( $theme->page - 1);
-		if ($settings['page'] < 1) {
+		if ( $settings['page'] < 1) {
 			return null;
 		}
 
 		// If no text was supplied, use default text
-		if ($text == '') {
+		if ( $text == '' ) {
 			$text = '&larr; ' . _t( 'Previous' );
 		}
 
@@ -803,7 +803,7 @@ class Theme extends Pluggable
 		}
 
 		// If no text was supplied, use default text
-		if ($text == '') {
+		if ( $text == '' ) {
 			$text = _t( 'Next' ) . ' &rarr;';
 		}
 
@@ -848,17 +848,17 @@ class Theme extends Pluggable
 	public function theme_comments_count( $theme, $post, $zero = '', $one = '', $many = '' )
 	{
 		$count = $post->comments->approved->count;
-		if( empty( $zero ) ) {
+		if ( empty( $zero ) ) {
 			$zero = _t( '%d Comments' );
 		}
-		if( empty( $one ) ) {
+		if ( empty( $one ) ) {
 			$one = _t( '%d Comment' );
 		}
-		if( empty( $many ) ) {
+		if ( empty( $many ) ) {
 			$many = _t( '%d Comments' );
 		}
 
-		if ($count >= 1) {
+		if ( $count >= 1 ) {
 			$text = _n( $one, $many, $count );
 		}
 		else {
@@ -897,16 +897,16 @@ class Theme extends Pluggable
 	public function theme_comment_author_link( $theme, $comment )
 	{
 		$url = $comment->url;
-		if($url != '') {
+		if ( $url != '' ) {
 			$parsed_url = InputFilter::parse_url($url);
-			if($parsed_url['host'] == '') {
-				$url = '';
+				if ( $parsed_url['host'] == '') {
+					$url = '';
 			}
 			else {
 				$url = InputFilter::glue_url($parsed_url);
 			}
 		}
-		if($url != '') {
+		if ( $url != '' ) {
 			return '<a href="'.$url.'">' . $comment->name . '</a>';
 		}
 		else {
@@ -1020,12 +1020,11 @@ class Theme extends Pluggable
 			}
 		}
 	}
-	
 
 	/**
 	 * Retrieve the block objects for the current scope and specified area
 	 * Incomplete!
-	 * 
+	 *
 	 * @param string $area The area to which blocks will be output
 	 * @param string $scope The scope to which blocks will be output
 	 * @param Theme $theme The theme that is outputting these blocks
@@ -1041,22 +1040,22 @@ class Theme extends Pluggable
 
 	/**
 	 * Matches the scope criteria against the current request
-	 * 
+	 *
 	 * @param array $criteria An array of scope criteria data in RPN, where values are arrays and operators are strings
 	 * @return boolean True if the criteria matches the current request
 	 */
 	function check_scope_criteria($criteria)
 	{
 		$stack = array();
-		foreach($criteria as $crit) {
-			if(is_array($crit)) {
+		foreach ( $criteria as $crit ) {
+			if ( is_array($crit) ) {
 				$value = false;
-				switch($crit[0]) {
+				switch ( $crit[0] ) {
 					case 'request':
 						$value = URL::get_matched_rule()->name == $crit[1];
 						break;
 					case 'token':
-						if(isset($crit[2])) {
+						if ( isset($crit[2]) ) {
 							$value = User::identify()->can($crit[1], $crit[2]);
 						}
 						else {
@@ -1095,23 +1094,23 @@ class Theme extends Pluggable
 
 	/**
 	 * Retrieve current scope data from the database based on the requested area
-	 * 
+	 *
 	 * @param string $area The area for which a scope may be applied
 	 * @return array An array of scope data
 	 */
 	public function get_scopes($area)
 	{
 		$scopes = DB::get_keyvalue('SELECT s.id, s.criteria FROM {scopes} s INNER JOIN {blocks_areas} ba ON ba.scope_id = s.id WHERE ba.area = ? ORDER BY s.priority ASC', array($area));
-		foreach($scopes as $key => $value) {
+		foreach ( $scopes as $key => $value ) {
 			$scopes[$key] = unserialize($value);
 		}
 		Plugins::act('get_scopes', $scopes);
 		return $scopes;
 	}
-			
+
 	/**
 	 * Displays blocks associated to the specified area and current scope.
-	 * 
+	 *
 	 * @param Theme $theme The theme with which this area will be output
 	 * @param string $area The area to which blocks will be output
 	 * @param string $scope Used to force a specific scope
@@ -1119,58 +1118,58 @@ class Theme extends Pluggable
 	 */
 	public function theme_area($theme, $area, $scope = null)
 	{
-		
+
 		// This array would normally come from the database via:
 		$scopes = $this->get_scopes($area);
 
 		$active_scope = 0;
-		foreach($scopes as $scope_id => $scope_criteria) {
-			if($this->check_scope_criteria($scope_criteria)) {
+		foreach ( $scopes as $scope_id => $scope_criteria ) {
+			if ( $this->check_scope_criteria($scope_criteria) ) {
 				$active_scope = $scope_id;
 				break;
 			}
 		}
- 
+
  		$area_blocks = $this->get_blocks($area, $active_scope, $theme);
- 
+
 		$this->area = $area;
 		$begin = '';
 		$begin = Plugins::filter('area_begin', $begin, $area, $this);
- 
+
 		$output = '';
-		foreach($area_blocks as $block_instance_id => $block) {
+		foreach ( $area_blocks as $block_instance_id => $block ) {
 			$hook = 'block_content_' . $block->type;
 			Plugins::act($hook, $block, $this);
 			$output .= implode( '', $this->content_return($block, $area));
 		}
- 
+
 		$this->area = '';
 		$end = '';
 		$end = Plugins::filter('area_end', $end, $area, $this);
- 
+
 		$output = $begin . $output . $end;
- 
+
 		return $output;
 	}
- 
+
  	/**
  	 * A theme function for outputting CSS classes based on the requested content
  	 * @param Theme $theme A Theme object instance
  	 * @param mixed $args Additional classes that should be added to the ones generated
  	 * @return string The resultant classes
- 	 */				 				  	
+ 	 */
 	function theme_body_class($theme, $args = array())
 	{
 		$body_class = array();
-		foreach(get_object_vars($this->request) as $key => $value ) {
-			if($value) {
+		foreach ( get_object_vars($this->request) as $key => $value ) {
+			if ( $value ) {
 				$body_class[$key] = $key;
 			}
 		}
-		
+
 		$body_class = array_unique(array_merge($body_class, Stack::get_named_stack('body_class'), Utils::single_array($args)));
 		$body_class = Plugins::filter('body_class', $body_class, $theme);
-		return implode(' ', $body_class);	
+		return implode(' ', $body_class);
 	}
 
 }

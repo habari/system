@@ -214,7 +214,7 @@ class Utils
 	 */
 	public static function placeholder_string( $count )
 	{
-		if(Utils::is_traversable($count)) {
+		if ( Utils::is_traversable($count) ) {
 			$count = count($count);
 		}
 		return rtrim( str_repeat( '?,', $count ), ',' );
@@ -307,7 +307,7 @@ class Utils
 				$file = $line = $class = $type = $function = '';
 				$args = array();
 				extract($trace);
-				if ( isset($class) ) $fname = $class . $type . $function; else	$fname = $function;
+				if ( isset($class) ) $fname = $class . $type . $function; else $fname = $function;
 				if ( !isset($file) || $file=='' ) $file = '[Internal PHP]'; else $file = basename($file);
 				$odd = $odd == '' ? 'class="utils__odd"' : '';
 				$output .= "<tr {$odd}><td>{$file} ({$line}):</td><td>{$fname}(";
@@ -324,7 +324,7 @@ class Utils
 			echo Utils::debug_reveal('<small>Call Stack</small>', $output, $debugid);
 		}
 		echo "<pre style=\"color:white;\">";
-		foreach( $fooargs as $arg1 ) {
+		foreach ( $fooargs as $arg1 ) {
 			echo '<em>' . gettype($arg1) . '</em> ';
 			echo htmlentities( print_r( $arg1, TRUE ) ) . "<br>";
 		}

@@ -51,17 +51,17 @@ class Site
 	public static function script_name()
 	{
 		switch ( true ) {
-		case isset ( self::$scriptname ):
-			break;
-		case isset( $_SERVER['SCRIPT_NAME'] ):
-			self::$scriptname = $_SERVER['SCRIPT_NAME'];
-			break;
-		case isset( $_SERVER['PHP_SELF'] ):
-			self::$scriptname = $_SERVER['PHP_SELF'];
-			break;
-		default:
-			Error::raise(_t('Could not determine script name.'));
-			die();
+			case isset ( self::$scriptname ):
+				break;
+			case isset( $_SERVER['SCRIPT_NAME'] ):
+				self::$scriptname = $_SERVER['SCRIPT_NAME'];
+				break;
+			case isset( $_SERVER['PHP_SELF'] ):
+				self::$scriptname = $_SERVER['PHP_SELF'];
+				break;
+			default:
+				Error::raise(_t('Could not determine script name.'));
+				die();
 		}
 		return self::$scriptname;
 	}
@@ -76,32 +76,27 @@ class Site
 	 *	if ( Site::is('multi') )
 	 * @param string The name of the boolean to test
 	 * @return bool the result of the check
-	**/
+	 */
 	public static function is( $what )
 	{
-		switch ( strtolower( $what ) )
-		{
-		case 'main':
-		case 'primary':
-			if ( Site::$config_type == Site::CONFIG_LOCAL )
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-			break;
-		case 'multi':
-			if ( Site::$config_type != Site::CONFIG_LOCAL )
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-			break;
+		switch ( strtolower( $what ) ) {
+			case 'main':
+			case 'primary':
+				if ( Site::$config_type == Site::CONFIG_LOCAL ) {
+					return true;
+				}
+				else {
+					return false;
+				}
+				break;
+			case 'multi':
+				if ( Site::$config_type != Site::CONFIG_LOCAL ) {
+					return true;
+				}
+				else {
+					return false;
+				}
+				break;
 		}
 	}
 
@@ -130,8 +125,7 @@ class Site
 	{
 		$url = '';
 
-		switch( strtolower( $name ) )
-		{
+		switch( strtolower( $name ) ) {
 			case 'host':
 				$protocol = 'http';
 				// If we're running on a port other than 80, i
@@ -219,22 +213,19 @@ class Site
 	 *		/user/sites/x.y.z/themes/theme_dir
 	 * @param string the name of the path to return
 	 * @param bool whether to include a trailing slash.  Default: No
-	**/
+	 */
 	public static function get_path( $name, $trail = false )
 	{
 		$path = '';
-		switch ( strtolower( $name ) )
-		{
+		switch ( strtolower( $name ) ) {
 			case 'base':
 				$path = rtrim(dirname(Site::script_name()),'/\\');
 				break;
 			case 'user':
-				if ( Site::is('main') )
-				{
+				if ( Site::is('main') ) {
 					$path = 'user';
 				}
-				else
-				{
+				else {
 					$path = ltrim( str_replace ( HABARI_PATH, '', Site::get_dir('config') ), '/' );
 				}
 				break;
@@ -251,7 +242,7 @@ class Site
 				}
 				break;
 		}
-		$path.= Utils::trail( $trail );
+		$path .= Utils::trail( $trail );
 		// if running Habari in docroot, get_url('base') will return
 		// a double slash.  Let's fix that.
 		$path = str_replace( '//', '/', $path);
@@ -273,8 +264,7 @@ class Site
 	{
 		$path = '';
 
-		switch ( strtolower( $name ) )
-		{
+		switch ( strtolower( $name ) ) {
 			case 'config_file':
 				$path = Site::get_dir('config') . '/config.php';
 				break;
@@ -338,7 +328,7 @@ class Site
 				$path = HABARI_PATH . '/system/admin';
 				break;
 		}
-		$path.= Utils::trail( $trail );
+		$path .= Utils::trail( $trail );
 		$path = Plugins::filter( 'site_dir_' . $name, $path );
 		return $path;
 	}
@@ -347,7 +337,7 @@ class Site
 	 * out_url echos out a URL
 	 * @param string the URL to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
-	**/
+	 */
 	public static function out_url( $url, $trail = false )
 	{
 		echo Site::get_url( $url, $trail );
@@ -357,7 +347,7 @@ class Site
 	 * out_path echos a URL path
 	 * @param string the URL path to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
-	**/
+	 */
 	public static function out_path( $path, $trail = false )
 	{
 		echo Site::get_path( $path, $trail );
@@ -367,7 +357,7 @@ class Site
 	 * our_dir echos our a filesystem directory
 	 * @param string the filesystem directory to display
 	 * @param bool whether or not to include a trailing slash.  Default: No
-	**/
+	 */
 	public static function out_dir( $dir, $trail = false )
 	{
 		echo Site::get_dir( $dir, $trail );
