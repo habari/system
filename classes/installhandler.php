@@ -1591,8 +1591,7 @@ class InstallHandler extends ActionHandler
 	{
 		$type_id = Vocabulary::object_type_id( 'post' );
 
-		$vocabulary = new Vocabulary( array( 'name' => 'tags', 'description' => 'Habari\'s tags implementation', 'features' => array( 'multiple', 'free' ) ) );
-		$vocabulary->insert();
+		$vocabulary = Vocabulary::create( array( 'name' => 'tags', 'description' => 'Habari\'s tags implementation', 'features' => array( 'multiple', 'free' ) ) );
 
 		$new_tag = NULL;
 		$post_ids = array();
