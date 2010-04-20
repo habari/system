@@ -55,6 +55,19 @@ class Vocabulary extends QueryRecord
 	}
 
 	/**
+	 * Create a vocabulary and save it.
+	 *
+	 * @param array $paramarray An associative array of vocabulary fields
+	 * @return Vocabulary The new vocabulary object
+	 */
+	static function create( $paramarray )
+	{
+		$vocabulary = new Vocabulary( $paramarray );
+		$vocabulary->insert();
+		return $vocabulary;
+	}
+
+	/**
 	 * function __get
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
