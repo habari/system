@@ -28,21 +28,27 @@
 			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $active_theme['info']->name, '<a href="' . $active_theme['info']->license['url'] . '">' . $active_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
 		</div>
+	</div>
+	
+	<?php
+	// Capture the admin config output.  If nothing is there, don't output the section
+	ob_start();
+	Plugins::act( 'theme_ui', $active_theme );
+	$output = ob_get_clean();
+	?>
+	
+	<div class="item clear">
+		<h3>General</h3>
+		<?php echo $output; ?>
+		<div></div>
+	</div>
 
-		<div class="pagesplitter">
-			<ul class="tabcontrol tabs">
-				<li><a href="#tab_config_general"><?php _e('General'); ?></a></li><?php if(isset($active_theme['info']->areas)): ?><li><a href="#tab_config_areas"><?php _e('Areas'); ?></a></li><?php endif; ?><li><a href="#tab_config_scopes"><?php _e('Scopes'); ?></a></li>
-			</ul>
-
-			<div id="tab_config_general" class="splitter">
-				<div class="splitterinside"><?php Plugins::act( 'theme_ui', $active_theme ); ?></div>
-			</div>
-			<?php if ( isset($active_theme['info']->areas) ): ?>
-			<div id="tab_config_areas" class="splitter">
-				<div class="splitterinside">
+	<?php if ( isset($active_theme['info']->areas) ): ?>
+	<div class="item clear">
+		<h3>Areas</h3>
+				<div>
 					<div id="block_add">
 						<?php $this->display('block_instances'); ?>
-
 					</div>
 
 					<!--
@@ -63,10 +69,10 @@
 							connectToSortable: '.area_drop', 
 							helper: 'clone', 
 							distance: 5, 
-							containment: $('#block_instances h3').parents('.splitterinside'),
+							containment: $('#block_instances h3').parents('.item'),
 							start: function(){$('.area_drop').sortable('refresh');}
 						});
-						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop,.delete_drop', containment: $('#block_add').parents('.splitterinside')});
+						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop,.delete_drop', containment: $('#block_add').parents('.item')});
 					}
 					function delete_block(id){
 						spinner.start();
@@ -116,15 +122,16 @@
 			</div>
 			<?php endif; ?>
 
-			<div id="tab_config_scopes" class="splitter">
-				<div class="splitterinside">Scopes</div>
+		<div class="item clear">
+		<h3>Scopes</h3>
+
+			<div id="tab_config_scopes" class="zsplitter">
+				<div class="splitterinside">Scope config goes here</div>
 			</div>
 
 
 		</div>
 	</div>
-
-</div>
 
 <div class="container availablethemes">
 
@@ -132,32 +139,31 @@
 <?php
 foreach ( $all_themes as $inactive_theme ):
 	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
-	<div class="item pct30">
-		<div class="head">
-		    <a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?></a><br>
-		    <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a>
-
-		</div>
-
-		<div class="thumb"><img class="thumb" src="<?php echo $inactive_theme['screenshot']; ?>" title="<?php
-	echo $inactive_theme['info']->name; ?> <?php echo $inactive_theme['info']->version; ?> <?php _e('by'); ?> <?php echo $inactive_theme['info']->author; ?>
- <?php echo $inactive_theme['info']->description; ?>
- <?php if ( $inactive_theme['info']->license != '' ): ?>
- <?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, $inactive_theme['info']->license ); ?>
- <?php endif; ?>"></div>
-<?php /*
-
- * <a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?></a> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span><br>
-		    <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author" title="<?php echo $inactive_theme['info']->author; ?>"><?php echo $inactive_theme['info']->author; ?></a>
-			<p class="description pct70"><?php echo $inactive_theme['info']->description; ?></p>
-			<?php if ( $inactive_theme['info']->license != '' ): ?>
-			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, '<a href="' . $inactive_theme['info']->license['url'] . '">' . $inactive_theme['info']->license . '</a>' ); ?></p>
+	
+	<div class="item pct30<?php if($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
+		<div class="head theme_credits"> 
+			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a>
+		</div> 
+ 
+		<div class="thumb">
+			<img src="<?php echo $inactive_theme['screenshot']; ?>" class="themethumb">
+			<div class="themeinfo">
+				<div class="pointer"></div>
+				<p class="description"><?php echo $inactive_theme['info']->description; ?></p>
+				<?php if ( $inactive_theme['info']->license != '' ): ?>
+				<p class="description"><?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, '<a href="' . $inactive_theme['info']->license['url'] . '">' . $inactive_theme['info']->license . '</a>' ); ?></p>
+				<?php endif; ?>
+			</div>
+		</div> 
+		<ul class="dropbutton"> 
+			<?php if($previewed == $inactive_theme['dir']): ?>
+			<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('End Preview'); ?></a></li>
+			<?php else: ?>
+			<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Preview'); ?></a></li>
 			<?php endif; ?>
-*/ ?>
-			<ul class="dropbutton">
-				<li><a href="<?php URL::out( 'admin', 'page=activate_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
-			</ul>
-    	</div>
+			<li><a href="<?php URL::out( 'admin', 'page=activate_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
+		</ul> 
+	</div> 	
 
 <?php
 	endif;

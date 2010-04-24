@@ -1674,8 +1674,68 @@ body.page-themes .head {
     margin: 10px 0 0 0 ;
 }
 
+body.page-themes .availablethemes .item {
+    border: 1px dotted #efefef;
+    text-align: center;
+    margin: 0;
+    padding: 1%;
+}
+
+body.page-themes .availablethemes .item.previewing {
+    border: 1px solid #666666;
+}
+
+
+body.page-themes .head {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 3em;
+    white-space: nowrap;
+    margin: 10px 0 0 0 ;
+}
+
+body.page-themes .availablethemes .themeinfo {
+	position: absolute;
+	top: 40px;
+	left: 200px;
+	background: white;
+	border: 6px solid #999;
+	-moz-border-radius: 5px; 
+	-webkit-border-radius: 5px;
+	width: 100%;
+	display: none;
+	z-index: 100;
+	padding: 20px;
+	text-align: left;
+}
+body.page-themes .availablethemes .themeinfo .pointer {
+	height: 32px;
+	width: 15px;
+	background-image: url(../images/point_left.png);
+	position: absolute;
+	margin-left: -36px;
+}
+
+body.page-themes .availablethemes .themeinfo.right {
+	left: -250px;
+}
+body.page-themes .availablethemes .themeinfo.right .pointer {
+	background-image: url(../images/point_right.png);
+	right: -20px;
+}
+
+
+body.page-themes .availablethemes .themeinfo * {
+	width: auto;
+}
+
+body.page-themes .availablethemes .themeinfo p {
+	margin-bottom: 1em;
+}
+
 body.page-themes #page .availablethemes .dropbutton {
-    position: relative;
+    position: abslute;
+    top: 220px;
     right: 73px; /* this is a hack */
     margin: 15px 5px;
 }
@@ -1686,7 +1746,7 @@ body.page-themes #page .dropbutton li:last-child:first-child {
 }
 
 body.page-themes .thumb img {
-	margin: 0 0 10px 0;
+	margin: 0 0 40px 0;
 	padding: 4px;
 	width: 200px;
 	max-height: 150px;
@@ -1701,6 +1761,10 @@ body.page-themes .thumb img {
 
 body.page-themes .availablethemes .thumb img {
 	display: inline;
+}
+
+body.page-themes .currenttheme .thumb, .description {
+	float: left;
 }
 
 body.page-themes .currenttheme .thumb, .description {
@@ -2817,4 +2881,3 @@ body.modal .formui input, body.modal .formui select {
 body.modal #save {
 	margin-bottom: 8px;
 }
-
