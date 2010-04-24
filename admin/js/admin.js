@@ -1440,6 +1440,14 @@ $(document).ready(function(){
 
 	// Init shift-click for range select on checkboxes
 	$('input.checkbox').rangeSelect();
+	
+	// theme popups
+	$('.themethumb').click(function(e){
+		var themeinfo = $(this).siblings('.themeinfo')
+		if(e.clientX > $(window).width()/2) themeinfo.addClass('right'); else themeinfo.removeClass('right');
+		$('.themeinfo').not(themeinfo).hide();
+		themeinfo.toggle();
+	});
 });
 
 function resetTags() {

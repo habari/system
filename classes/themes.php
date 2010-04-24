@@ -62,14 +62,33 @@ class Themes
 		}
 		return self::$all_data;
 	}
+	
+	/**
+	 * Returns the name of the active or previewed theme
+	 * 
+	 * @params boolean $nopreview If true, return the real active theme, not the preview
+	 * @return string the current theme or previewed theme's directory name
+	 */
+	public static function get_theme_dir($nopreview = false)
+	{
+		if(!$nopreview && isset($_SESSION['user_theme_dir'])) {
+			$theme_dir = $_SESSION['user_theme_dir'];
+		}
+		else {
+			$theme_dir = Options::get('theme_dir');
+		}
+		$theme_dir = Plugins::filter('get_theme_dir', $theme_dir);
+		return $theme_dir;
+	}
 
 	/**
 	 * Returns the active theme's full directory path.
+	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return string The full path to the active theme directory
 	 */
-	private static function get_active_theme_dir()
+	private static function get_active_theme_dir($nopreview = false)
 	{
-		$theme_dir = Options::get('theme_dir');
+		$theme_dir = self::get_theme_dir($nopreview);
 		$themes = Themes::get_all();
 
 		if (!isset($themes[$theme_dir]))
@@ -92,12 +111,13 @@ class Themes
 
 	/**
 	 * Returns the active theme information from the database
+	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return array An array of Theme data
 	 **/
-	public static function get_active()
+	public static function get_active($nopreview = false)
 	{
 		$theme = new QueryRecord();
-		$theme->theme_dir = Themes::get_active_theme_dir();
+		$theme->theme_dir = Themes::get_active_theme_dir($nopreview);
 
 		$data = simplexml_load_file( Utils::end_in_slash($theme->theme_dir) . 'theme.xml' );
 		foreach ( $data as $name=>$value) {
@@ -108,19 +128,20 @@ class Themes
 
 	/**
 	 * Returns theme information for the active theme -- dir, path, theme.xml, screenshot url
+	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return array An array of Theme data
 	 */
-	public static function get_active_data()
+	public static function get_active_data($nopreview = false)
 	{
 		$all_data = Themes::get_all_data();
-		$active_theme_dir = basename(Themes::get_active_theme_dir());
+		$active_theme_dir = basename(Themes::get_active_theme_dir($nopreview));
 		$active_data = $all_data[$active_theme_dir];
 		return $active_data;
 	}
 
 
 	/**
-	 * functiona activate_theme
+	 * function activate_theme
 	 * Updates the database with the name of the new theme to use
 	 * @param string the name of the theme
 	**/
@@ -129,6 +150,31 @@ class Themes
 		Options::set( 'theme_name', $theme_name );
 		Options::set( 'theme_dir', $theme_dir );
 		EventLog::log( _t( 'Activated Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+	}
+	
+	/**
+	 * Sets a theme to be the current user's preview theme
+	 * 
+	 * @param string $theme_name The name of the theme to preview
+	 * @param string $theme_dir The directory of the theme to preview
+	 */
+	public static function preview_theme( $theme_name, $theme_dir )
+	{
+		$_SESSION['user_theme_name'] = $theme_name;
+		$_SESSION['user_theme_dir'] = $theme_dir;
+		EventLog::log( _t( 'Previewed Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+	}
+	
+	/**
+	 * Cancel the viewing of any preview theme
+	 */
+	public static function cancel_preview()
+	{
+		if(isset($_SESSION['user_theme_name'])) {
+			EventLog::log( _t( 'Canceled Theme Preview: %s', array( $_SESSION['user_theme_name'] ) ), 'notice', 'theme', 'habari' );
+			unset($_SESSION['user_theme_name']);
+			unset($_SESSION['user_theme_dir']);
+		}
 	}
 
 	/**

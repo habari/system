@@ -1216,7 +1216,7 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->all_themes = $all_themes;
 
-		$this->theme->active_theme = Themes::get_active_data();
+		$this->theme->active_theme = Themes::get_active_data(true);
 		$this->theme->active_theme_dir = $this->theme->active_theme['path'];
 
 		// If the active theme is configurable, allow it to configure
@@ -1224,7 +1224,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->configurable = Plugins::filter( 'theme_config', false, $this->active_theme);
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
 
-		$activedata = Themes::get_active_data();
+		$activedata = Themes::get_active_data(true);
 		$areas = array();
 		if ( isset($activedata['info']->areas->area) ) {
 			foreach ( $activedata['info']->areas->area as $area ) {
@@ -1232,6 +1232,7 @@ class AdminHandler extends ActionHandler
 			}
 		}
 		$this->theme->areas = $areas;
+		$this->theme->previewed = Themes::get_theme_dir(false);
 
 		$this->theme->blocks = Plugins::filter('block_list', array());
 		$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
@@ -1261,6 +1262,26 @@ class AdminHandler extends ActionHandler
 			Themes::activate_theme( $theme_name,  $theme_dir );
 		}
 		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
+		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
+	}
+
+	/**
+	 * Configures a theme to be active for the current user's session.
+	 */
+	public function get_preview_theme()
+	{
+		$theme_name = $this->handler_vars['theme_name'];
+		$theme_dir = $this->handler_vars['theme_dir'];
+		if ( isset($theme_name)  && isset($theme_dir) ) {
+			if(Themes::get_theme_dir() == $theme_dir) {
+				Themes::cancel_preview();
+				Session::notice( sprintf( _t( "Ended the preview of the theme '%s'" ), $theme_name ) );
+			}
+			else {
+				Themes::preview_theme( $theme_name,  $theme_dir );
+				Session::notice( sprintf( _t( "Previewing theme '%s'" ), $theme_name ) );
+			}
+		}
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
 	}
 
@@ -3290,6 +3311,9 @@ class AdminHandler extends ActionHandler
 			case 'activate_theme':
 				$require_any = array( 'manage_themes' => true );
 				break;
+			case 'preview_theme':
+				$require_any = array( 'manage_themes' => true );
+				break;
 			case 'plugins':
 				$require_any = array( 'manage_plugins' => true, 'manage_plugins_config' => true );
 				break;
@@ -3639,7 +3663,7 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->blocks_areas = $blocks_areas;
 		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
-		$this->theme->active_theme = Themes::get_active_data();
+		$this->theme->active_theme = Themes::get_active_data(true);
 
 		$this->display('block_areas');
 

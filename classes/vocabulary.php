@@ -37,7 +37,6 @@ class Vocabulary extends QueryRecord
 	/**
 	 * Vocabulary constructor
 	 * Creates a Vocabulary instance
-
 	 *
 	 * @param array $paramarray an associative array of initial vocabulary values
 	 **/
@@ -52,6 +51,9 @@ class Vocabulary extends QueryRecord
 		parent::__construct( $paramarray );
 
 		$this->exclude_fields( 'id' );
+		if(is_string($this->features)) {
+			$this->features = unserialize($this->features);
+		}
 	}
 
 	/**

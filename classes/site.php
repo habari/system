@@ -163,7 +163,7 @@ class Site
 				$url = Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
 				break;
 			case 'theme':
-				$theme = Options::get( 'theme_dir');
+				$theme = Themes::get_theme_dir();
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 					$url = Site::get_url( 'user' ) .  '/themes/' . $theme;
 				}
@@ -230,7 +230,7 @@ class Site
 				}
 				break;
 			case 'theme':
-				$theme = Options::get('theme_dir');
+				$theme = Themes::get_theme_dir();
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 					$path = Site::get_path('user') . '/themes/' . $theme;
 				}
@@ -310,7 +310,7 @@ class Site
 				}
 				break;
 			case 'theme':
-				$theme = Options::get('theme_dir');
+				$theme = Themes::get_theme_dir();
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
 					$path = Site::get_dir('user') . '/themes/' . $theme;
 				}
