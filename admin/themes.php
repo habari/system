@@ -132,24 +132,32 @@
 <?php
 foreach ( $all_themes as $inactive_theme ):
 	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
-	<div class="item clear">
+	<div class="item pct30">
 		<div class="head">
-			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a>
+		    <a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?></a><br>
+		    <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a>
 
-			<ul class="dropbutton">
-				<li><a href="<?php URL::out( 'admin', 'page=activate_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
-			</ul>
 		</div>
 
-		<div>
-			<div class="thumb pct30"><span><img src="<?php echo $inactive_theme['screenshot']; ?>"></span></div>
+		<div class="thumb"><img class="thumb" src="<?php echo $inactive_theme['screenshot']; ?>" title="<?php
+	echo $inactive_theme['info']->name; ?> <?php echo $inactive_theme['info']->version; ?> <?php _e('by'); ?> <?php echo $inactive_theme['info']->author; ?>
+ <?php echo $inactive_theme['info']->description; ?>
+ <?php if ( $inactive_theme['info']->license != '' ): ?>
+ <?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, $inactive_theme['info']->license ); ?>
+ <?php endif; ?>"></div>
+<?php /*
 
+ * <a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?></a> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span><br>
+		    <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author" title="<?php echo $inactive_theme['info']->author; ?>"><?php echo $inactive_theme['info']->author; ?></a>
 			<p class="description pct70"><?php echo $inactive_theme['info']->description; ?></p>
 			<?php if ( $inactive_theme['info']->license != '' ): ?>
 			<p class="description pct70"><?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, '<a href="' . $inactive_theme['info']->license['url'] . '">' . $inactive_theme['info']->license . '</a>' ); ?></p>
 			<?php endif; ?>
-		</div>
-	</div>
+*/ ?>
+			<ul class="dropbutton">
+				<li><a href="<?php URL::out( 'admin', 'page=activate_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
+			</ul>
+    	</div>
 
 <?php
 	endif;
