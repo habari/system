@@ -23,6 +23,11 @@
 	</span>
 </div>
 
+<?php if ( isset($plugin_loader) && $plugin_loader != '' ): ?>
+<div class="container plugins pluginloader" id="pluginloader">
+<?php echo $plugin_loader; ?>
+</div>
+<?php endif; ?>
 
 <?php
 if ( isset($config_plugin) ): ?>

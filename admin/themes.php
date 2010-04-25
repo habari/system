@@ -173,4 +173,10 @@ endforeach;
 ?>
 </div>
 
+<?php if(isset($theme_loader) && $theme_loader != ''): ?>
+<div class="container" id="themeloader">
+<?php echo $theme_loader; ?>
+</div>
+<?php endif; ?>
+
 <?php include('footer.php');?>
