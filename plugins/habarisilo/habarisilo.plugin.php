@@ -148,6 +148,11 @@ class HabariSilo extends Plugin implements MediaSilo
 						}
 					}
 				}
+				
+				// If the asset is an image, obtain the image dimensions
+				if ( in_array( $mimetype, array( 'image_jpeg', 'image_png', 'image_gif' ) ) ) {
+					list( $props['width'], $props['height'] ) = getimagesize( $item );
+				}
 				$props = array_merge(
 					$props,
 					array(

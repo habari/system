@@ -168,9 +168,9 @@ habari.media = {
 	},
 
 	output: {
-		image_jpeg: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_gif: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_png: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		image_jpeg: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
+		image_gif: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
+		image_png: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
 		audio_mpeg3: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
 		video_mpeg: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
 		audio_wav: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
