@@ -947,12 +947,13 @@ body.page-publish .buttons input {
 }
 
 .mediaphotos li.media img {
-	margin: 0 0 -3px;
+	margin: 0 0 5px;
 	height: 100px;
 	border: 1px solid #fff;
 	cursor: pointer;
 	max-width: 300px;
 	min-width: 30px;
+	display: block;
 }
 
 .mediaphotos li.media:last-child img {
