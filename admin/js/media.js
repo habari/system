@@ -163,7 +163,7 @@ habari.media = {
 	preview: {
 		_: function(fileindex, fileobj) {
 			var stats = '';
-			return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+			return '<div class="mediatitle"><a class="mediadelete" title="Delete file" href="#" onclick="habari.media.showpanel(\'' + fileobj.path +'\', \'delete\');return false;">#</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 		}
 	},
 
