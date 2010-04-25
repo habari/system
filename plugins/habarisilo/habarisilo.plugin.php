@@ -403,7 +403,7 @@ class HabariSilo extends Plugin implements MediaSilo
 			if ( User::identify()->can( 'create_directories' ) ) {
 				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'mkdir', _t( 'Create Directory' ) );
 			}
-			if ( User::identify()->can( 'delete_directories' ) && self::isEmptyDir( $this->root . '/' . $path ) ) {
+			if ( User::identify()->can( 'delete_directories' ) && ( $path && self::isEmptyDir( $this->root . '/' . $path ) ) ) {
 				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'rmdir', _t( 'Delete Directory' ) );
 			}
 		}
