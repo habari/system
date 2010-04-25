@@ -510,16 +510,6 @@ UPLOAD_FORM;
 		return $panel;
 	}
 
-	/* this function should convert the virtual path to a real path and
-	 * then call php's mkdir function */
-	public function mkdir($form, $panel, $silo, $path)
-	{
-		/* check that the regular expression is required for this case */
-		$path = preg_replace('%\.{2,}%', '.', $path);
-		$dir = $this->root . '/' . $path;
-		return mkdir( $dir );
-	}
-
 	/**
 	 * A validator for the mkdir form created with FormUI. Checks to see if the
 	 * webserver can write to the parent directory and that the directory does
