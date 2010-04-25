@@ -1247,6 +1247,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->blocks_areas = $blocks_areas;
 
 		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
+		
+		$this->theme->theme_loader = Plugins::filter('theme_loader', '');
 
 		$this->theme->display( 'themes' );
 	}
@@ -1959,6 +1961,8 @@ class AdminHandler extends ActionHandler
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
 		$this->theme->active_plugins = $sort_active_plugins;
 		$this->theme->inactive_plugins = $sort_inactive_plugins;
+		
+		$this->theme->plugin_loader = Plugins::filter('plugin_loader', '');
 
 		$this->display( 'plugins' );
 	}
