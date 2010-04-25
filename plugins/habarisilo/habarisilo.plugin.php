@@ -42,6 +42,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		}
 		// Create required tokens
 		ACL::create_token( 'create_directories', _t( 'Create media silo directories' ), 'Administration' );
+		ACL::create_token( 'delete_directories', _t( 'Delete media silo directories' ), 'Administration' );
 		ACL::create_token( 'upload_media', _t( 'Upload files to media silos' ), 'Administration' );
 	}
 
@@ -385,6 +386,9 @@ class HabariSilo extends Plugin implements MediaSilo
 			if ( User::identify()->can( 'create_directories' ) ) {
 				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'mkdir', _t( 'Create Directory' ) );
 			}
+			if ( User::identify()->can( 'delete_directories' ) && self::isEmptyDir( $this->root . '/' . $path ) ) {
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'rmdir', _t( 'Delete Directory' ) );
+			}
 		}
 		return $controls;
 	}
@@ -423,11 +427,30 @@ class HabariSilo extends Plugin implements MediaSilo
 
 					// add the parent directory as a hidden input for later validation
 					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
+					$form->append( 'hidden', 'action', 'null:unused')->value = $panelname;
 					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('What would you like to call the new directory?') );
 					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
 					$form->append( 'submit', 'submit', _t('Submit') );
 					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
-					$form->on_success( array( $this, 'mkdir_success' ) );
+					$form->on_success( array( $this, 'dir_success' ) );
+					$panel = $form->get(); /* form submission magicallly happens here */
+
+					return $panel;
+
+					break;
+				case 'rmdir':
+					$fullpath = self::SILO_NAME . '/' . $path;
+
+					$form = new FormUI( 'habarisilormdir' );
+					$form->append( 'static', 'RmDirectory', '<div style="margin: 10px auto;">' . _t('Directory:') . " <strong>/{$path}</strong></div>" );
+
+					// add the parent directory as a hidden input for later validation
+					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
+					$form->append( 'hidden', 'action', 'null:unused')->value = $panelname;
+					$dir_text_control = $form->append( 'static', 'directory', _t('Are you sure you want to delete this directory?') );
+					$form->append( 'submit', 'submit', _t('YES') );
+					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
+					$form->on_success( array( $this, 'dir_success' ) );
 					$panel = $form->get(); /* form submission magicallly happens here */
 
 					return $panel;
@@ -524,19 +547,42 @@ UPLOAD_FORM;
 		return array();
 	}
 	/**
-	 * This function performs the mkdir action on submission of the form. It is
-	 * called by FormUI's success() method.
+	 * This function performs the mkdir and rmdir actions on submission of the form.
+	 * It is called by FormUI's success() method.
 	 * @param FormUI $form
 	 */
-	public function mkdir_success ( $form )
+	public function dir_success ( $form )
 	{
 		$dir = preg_replace( '%\.{2,}%', '.', $form->directory->value );
 		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
 
-		$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
-		mkdir( $dir, 0755 );
+		switch ( $form->action->value ) {
+			case 'rmdir':
+				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path;
+				rmdir( $dir );
+				$msg = 'Directory Deleted:';
+				$what = $path;
+				break;
+			case 'mkdir':
+				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
+				mkdir( $dir, 0755 );
+				$msg = 'Directory Created:';
+				$what = $path . '/' . $form->directory->value;
+				break;
+		}
 
-		return "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>". _t('Directory Created:') ." {$form->directory->value}</p>";
+		return '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . _t( $msg ) . ' ' . $what . '</p></div>';
+	}
+
+	/**
+	 * This function is used to check if a directory is empty.
+	 *
+	 * @param string $dir
+	 * @return boolean
+	 */
+	private static function isEmptyDir( $dir )
+	{
+		return ( ( $files = @scandir( $dir ) ) && count( $files ) <= 2 );
 	}
 
 }
