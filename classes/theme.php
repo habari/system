@@ -134,6 +134,8 @@ class Theme extends Pluggable
 	{
 		foreach ( (array)$template_list as $template ) {
 			if ( $this->template_exists( $template ) ) {
+				$this->assign('_template_list', $template_list);
+				$this->assign('_template', $template);
 				return $this->$display_function( $template );
 			}
 		}
