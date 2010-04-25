@@ -316,6 +316,23 @@ class HabariSilo extends Plugin implements MediaSilo
 	 **/
 	public function silo_delete( $path )
 	{
+		$file = $this->root . '/' . $path;
+
+		// Delete the file
+		$result = unlink( $file );
+
+		// If it's an image, remove the file in .deriv too
+		$thumbdir = dirname( $file ) . '/' . HabariSilo::DERIV_DIR . '';
+		$thumb = $thumbdir . '/' . basename( $file ) . ".thumbnail.jpg";
+
+		if ( file_exists( $thumbdir ) && file_exists( $thumb ) ) {
+			unlink( $thumb );
+			// if this is the last thumb, delete the .deriv dir too
+			if ( self::isEmptyDir( $thumbdir ) ) {
+				rmdir( $thumbdir );
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -448,13 +465,29 @@ class HabariSilo extends Plugin implements MediaSilo
 					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
 					$form->append( 'hidden', 'action', 'null:unused')->value = $panelname;
 					$dir_text_control = $form->append( 'static', 'directory', _t('Are you sure you want to delete this directory?') );
-					$form->append( 'submit', 'submit', _t('YES') );
+					$form->append( 'submit', 'submit', _t('Delete') );
 					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
 					$form->on_success( array( $this, 'dir_success' ) );
 					$panel = $form->get(); /* form submission magicallly happens here */
 
 					return $panel;
 
+					break;
+				case 'delete':
+					$fullpath = self::SILO_NAME . '/' . $path;
+
+					$form = new FormUI( 'habarisilodelete' );
+					$form->append( 'static', 'RmFile', '<div style="margin: 10px auto;">' . _t('File:') . " <strong>/{$path}</strong></div>" );
+
+					// add the parent directory as a hidden input for later validation
+					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
+					$dir_text_control = $form->append( 'static', 'directory', '<p>' . _t('Are you sure you want to delete this file?') . '</p>');
+					$form->append( 'submit', 'submit', _t('Delete') );
+					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
+					$form->on_success( array( $this, 'do_delete' ) );
+					$panel = $form->get();
+
+					return $panel;
 					break;
 				case 'upload':
 					if( isset( $_FILES['file'] ) ) {
@@ -562,6 +595,28 @@ UPLOAD_FORM;
 		}
 
 		return '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . _t( $msg ) . ' ' . $what . '</p></div>';
+	}
+
+	/**
+	 * This function takes the path passed from the form and passes it to silo_delete
+	 * to delete the file and it's thumbnail if it's an image.
+	 *
+	 * @param FormUI $form
+	 */
+	public function do_delete ( $form )
+	{
+		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
+		$result = $this->silo_delete($path);
+		$panel = '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;">';
+		if ( $result ) {
+			$panel .= '<p>' . _t( 'File deleted successfully.' ) . '</p>';
+		} else {
+			$panel .= '<p>' . _t( 'Failed to delete file.' ) . '</p>';
+		}
+
+		$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . self::SILO_NAME . '/' . dirname( $path ) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
+
+		return $panel;
 	}
 
 	/**

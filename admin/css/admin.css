@@ -946,6 +946,16 @@ body.page-publish .buttons input {
 	float: right;
 }
 
+.mediaphotos li.media .mediadelete {
+	background: url('../images/trash.png') no-repeat;
+	width: 10px;
+	height: 10px;
+	text-indent: -3000px;
+	margin-top: 13px;
+	float: right;
+	opacity: 0.5;
+}
+
 .mediaphotos li.media img {
 	margin: 0 0 5px;
 	height: 100px;
