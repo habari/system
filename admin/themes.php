@@ -35,6 +35,7 @@
 	ob_start();
 	Plugins::act( 'theme_ui', $active_theme );
 	$output = ob_get_clean();
+	if(trim($output) != '') :
 	?>
 	
 	<div class="item clear">
@@ -42,6 +43,7 @@
 		<?php echo $output; ?>
 		<div></div>
 	</div>
+	<?php endif; ?>
 
 	<?php if ( isset($active_theme['info']->areas) ): ?>
 	<div class="item clear">
