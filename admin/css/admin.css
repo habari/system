@@ -2602,6 +2602,7 @@ ul.tabs li.ui-tabs-selected.last-child {
 
 body.login {
 	margin: 0;
+	padding: 0;
 }
 
 body.login #page {
