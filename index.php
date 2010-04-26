@@ -79,7 +79,9 @@ if ( file_exists( $config ) ) {
 	// Set the default locale.
 	HabariLocale::set( isset($locale) ? $locale : 'en-us' );
 
-	if ( !defined( 'DEBUG' ) ) define( 'DEBUG', false );
+	if ( !defined( 'DEBUG' ) ) {
+		define( 'DEBUG', false );
+	}
 
 	// Make sure we have a DSN string and database credentials.
 	// db_connection is an array with necessary informations to connect to the database.
@@ -116,7 +118,9 @@ if ( file_exists( $config ) ) {
 	}
 }
 else {
-	if ( !defined( 'DEBUG' ) ) define( 'DEBUG', false );
+	if ( !defined( 'DEBUG' ) ) {
+		define( 'DEBUG', false );
+	}
 
 	// The configuration file does not exist.
 	// Therefore we load the installer to create the configuration file and install a base database.
