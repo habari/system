@@ -2893,3 +2893,7 @@ body.modal .formui input, body.modal .formui select {
 body.modal #save {
 	margin-bottom: 8px;
 }
+
+select#block_instance_type {
+	width: auto;
+}
