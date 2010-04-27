@@ -1439,6 +1439,15 @@ class FormControlSubmit extends FormControlNoSave
 }
 
 /**
+ * A button control based on FormControl for output via FormUI
+ */
+class FormControlButton extends FormControlNoSave
+{
+	// Placeholder class
+}
+
+
+/**
  * A text control based on FormControl for output via a FormUI.
  */
 class FormControlStatic extends FormControlNoSave
