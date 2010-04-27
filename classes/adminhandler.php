@@ -2069,7 +2069,10 @@ class AdminHandler extends ActionHandler
 			$this->theme->search_args .= 'type:' . Post::type_name( $type ) . ' ';
 		}
 		if ( $user_id != 0 ) {
-			$this->theme->search_args .= 'author:' . User::get_by_id( $user_id )->username;
+			$this->theme->search_args .= 'author:' . User::get_by_id( $user_id )->username .' ';
+		}
+		if ( $search != '' ) {
+			$this->theme->search_args .= $search;
 		}
 
 		$monthcts = Posts::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );

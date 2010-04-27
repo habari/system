@@ -1772,6 +1772,7 @@ body.page-themes .thumb img {
 
 body.page-themes .availablethemes .thumb img {
 	display: inline;
+	cursor:pointer;
 }
 
 body.page-themes .currenttheme .thumb, .description {
