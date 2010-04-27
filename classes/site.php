@@ -183,6 +183,12 @@ class Site
 			case 'admin_theme':
 				$url = Site::get_url( 'habari' ) . '/system/admin';
 				break;
+			case 'login':
+				$url = Site::get_url( 'habari' ) . '/auth/login';
+				break;
+			case 'logout':
+				$url = Site::get_url( 'habari' ) . '/auth/logout';
+				break;
 			case 'system':
 				$url = Site::get_url( 'habari' ) . '/system';
 				break;
