@@ -12,7 +12,7 @@
 			<div class="area_drop">
 			<?php $area = (string)$area['name']; if(isset($blocks_areas[$scopeid]) && is_array($blocks_areas[$scopeid]) && isset($blocks_areas[$scopeid][$area]) && is_array($blocks_areas[$scopeid][$area])): ?>
 			<?php foreach($blocks_areas[$scopeid][$area] as $block): ?>
-				<div class="area_block"><h3 class="block_instance_<?php echo $block->id; ?>"><?php echo $block->title; ?></h3></div>
+				<div class="area_block"><h3 class="block_instance_<?php echo $block->id; ?>"><?php echo $block->title; ?><small><?php echo Utils::htmlspecialchars($block->type); ?></small></h3></div>
 			<?php endforeach; ?>
 			<?php endif; ?>
 		</div>

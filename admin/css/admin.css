@@ -1851,15 +1851,10 @@ body.page-themes .currenttheme .thumb, .description {
 
 #scope_container .area_container,
 #block_instances {
-	height: 200px;
-	overflow-y: auto;
 	margin-top: 10px;
 }
 #block_instances {
 	margin-right: 10px;
-}
-#scope_container .area_container {
-	height: 180px;
 }
 
 #scope_container .area_container h2 {
@@ -1879,6 +1874,11 @@ body.page-themes .currenttheme .thumb, .description {
 	padding: 3px 3px 3px 22px;
 	color: white;
 	cursor: move;
+}
+#block_instances .block_instance h3 small {
+	margin-left: 2em;
+	font-size: xx-small;
+	font-weight: normal;
 }
 
 #block_instances .block_instance {
@@ -1921,6 +1921,11 @@ body.page-themes .currenttheme .thumb, .description {
 
 .area_block {
 	cursor: n-resize;
+}
+.area_container h3 small {
+	font-size: xx-small;
+	margin-left: 2em;
+	font-weight: normal;
 }
 
 .delete_drop {
