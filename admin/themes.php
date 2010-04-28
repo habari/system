@@ -58,7 +58,7 @@
 					-->
 					<script type="text/javascript">
 					function reset_block_form() {
-						$('#block_instance_add').click(function(){
+						$('#block_instance_add').unbind('click').click(function(){
 							spinner.start();
 							$('#block_add').load(
 								habari.url.ajaxAddBlock, 
