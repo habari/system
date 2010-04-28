@@ -1,3 +1,44 @@
+// Habari ajax. All Habari Ajax calls should go through here. It allows us to use uniform humanmsg stuff, 
+// as well as uniform error handling
+var habari_ajax = {
+	post: function(post_url, post_data, local_cb) {
+		habari_ajax.ajax('POST', post_url, post_data, local_cb);
+	},
+	
+	get: function(get_url, get_data, local_cb) {
+		habari_ajax.ajax('GET', get_url, get_data, local_cb);
+	},
+	
+	ajax: function(type, url, data, local_cb) {
+		$.ajax({
+			url: url,
+			data: data,
+		  success: function(json_data) { 
+				habari_ajax.success(json_data, local_cb);
+			},
+			error: habari_ajax.error,
+		  dataType: 'json',
+			type: type
+		});
+	},
+	
+	success: function(json_data, local_cb)
+	{
+		spinner.stop();
+		
+		if ( json_data.response_code = 200 ) {
+			humanMsg.displayMsg( json_data.message );	
+		}
+		
+		local_cb(json_data.data);
+	},
+	
+	error: function(XMLHttpRequest, textStatus, errorThrown) {
+		spinner.stop();
+		humanMsg.displayMsg ("Uh Oh. An error has occured. Please try again later.");
+	}
+}
+
 // DASHBOARD
 var dashboard = {
 	init: function() {
@@ -32,13 +73,13 @@ var dashboard = {
 			query['module' + i] = this.getAttribute('id');
 		} );
 		query.action = 'updateModules';
-		$.post(
+		habari_ajax.post(
 			habari.url.ajaxDashboard,
 			query,
 			function() {
-				spinner.stop();
 				$('.modules').sortable('enable');
-			});
+			}
+		);
 	},
 	updateModule: function() {
 		//spinner.start();
@@ -53,17 +94,15 @@ var dashboard = {
 		var query = {};
 		query.action = 'addModule';
 		query.module_name = $('#dash_additem option:selected').val();
-		$.post(
+		habari_ajax.post(
 			habari.url.ajaxDashboard,
 			query,
 			function( json ) {
-				spinner.stop();
 				$('.modules').html( json.modules );
 				dashboard.init();
 				//$('.modules').sortable('enable');
-				humanMsg.displayMsg( json.message );
-			},
-			'json');
+			}
+		);
 	},
 	remove: function( id ) {
 		spinner.start();
@@ -72,17 +111,15 @@ var dashboard = {
 		var query = {};
 		query.action = 'removeModule';
 		query.moduleid = id;
-		$.post(
+		habari_ajax.post(
 			habari.url.ajaxDashboard,
 			query,
 			function( json ) {
-				spinner.stop();
 				$('.modules').html( json.modules );
 				dashboard.init();
 				//$('.modules').sortable('enable');
-				humanMsg.displayMsg( json.message );
-			},
-			'json');
+			}
+		);
 	}
 };
 
