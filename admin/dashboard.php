@@ -133,7 +133,6 @@ If you\'re reading this, you\'re surfing using Internet Explorer 6, an eight-yea
 			if ( $user->can_any( $perms ) ) {
 				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) ) . '">' . $message . '</a>';
 			}
-			$message .= '</a>';
 			$message_bits[] = $message;
 		}
 		if ( $user->can_any( array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ) ) {
