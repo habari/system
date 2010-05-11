@@ -18,7 +18,7 @@ class Vocabulary extends QueryRecord
 	 *		multiple:		More than one term in the vocabulary can be associated with an object
 	 *		free:			Terms within the vocabulary can have any value
 	 */
-	public static $features = array('hierarchical', 'required', 'multiple', 'free');
+	public static $features = array( 'hierarchical', 'required', 'multiple', 'free' );
 
 	/**
 	 * Return the defined database columns for a Vocabulary.
@@ -51,8 +51,8 @@ class Vocabulary extends QueryRecord
 		parent::__construct( $paramarray );
 
 		$this->exclude_fields( 'id' );
-		if(is_string($this->features)) {
-			$this->features = unserialize($this->features);
+		if( is_string( $this->features ) ) {
+			$this->features = unserialize( $this->features );
 		}
 	}
 
@@ -95,9 +95,9 @@ class Vocabulary extends QueryRecord
 	 * Return a Vocabulary by name.
 	 * @return Vocabulary The requested vocabulary
 	 **/
-	public static function get($name)
+	public static function get( $name )
 	{
-		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE name=?', array($name), 'Vocabulary' );
+		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE name=?', array( $name ), 'Vocabulary' );
 	}
 
 	/**
@@ -106,9 +106,9 @@ class Vocabulary extends QueryRecord
 	 * @param integer $id The id of the vocabulary
 	 * @return Vocabulary The object requested
 	 */
-	public static function get_by_id($id)
+	public static function get_by_id( $id )
 	{
-		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE id=?', array($id), 'Vocabulary' );
+		return DB::get_row( 'SELECT * FROM {vocabularies} WHERE id=?', array( $id ), 'Vocabulary' );
 	}
 
 	/**
@@ -125,9 +125,9 @@ class Vocabulary extends QueryRecord
 	 * Rename a Vocabulary.
 	 * @return boolean true if the Vocabulary was renamed, false otherwise
 	 **/
-	public static function rename($name, $newname)
+	public static function rename( $name, $newname )
 	{
-		$vocab = Vocabulary::get($name);
+		$vocab = Vocabulary::get( $name );
 		$vocab->name = $newname;
 		$result = $vocab->update();
 
@@ -154,7 +154,7 @@ class Vocabulary extends QueryRecord
 	 *
 	 * @return array Array of Vocabulary names
 	 **/
-	public static function get_all_object_terms($object_type, $id)
+	public static function get_all_object_terms( $object_type, $id )
 	{
 		$results = DB::get_results(
 			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
@@ -418,7 +418,7 @@ class Vocabulary extends QueryRecord
 	public function set_object_terms( $object_type, $id, $terms )
 	{
 		// no terms? then let's get out'a'here
-		if (count($terms) == 0) {
+		if ( count( $terms ) == 0 ) {
 			Plugins::act( 'term_detach_all_from_object_before', $this->id );
 
 			$results = $this->get_object_terms( $object_type, $id );
@@ -512,10 +512,10 @@ class Vocabulary extends QueryRecord
 	 * Remove the term from the vocabulary.  Convenience method to ->get_term('foo')->delete().
 	 *
 	 **/
-	public function delete_term($term)
+	public function delete_term( $term )
 	{
-		if ( ! is_object($term) ) {
-			$term = $this->get_term($term);
+		if ( ! is_object( $term ) ) {
+			$term = $this->get_term( $term );
 		}
 
 		// TODO How should we handle deletion of a term with descendants?
@@ -524,20 +524,20 @@ class Vocabulary extends QueryRecord
 		// values of other terms, and thus their deletion should only occur through
 		// the vocabulary to which they belong. Is it feasible to restrict this?
 		// For the moment, just delete the descendants
-		$params = array($this->id, $term->mptt_left, $term->mptt_right);
-		DB::query('DELETE from {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<?', $params);
+		$params = array( $this->id, $term->mptt_left, $term->mptt_right );
+		DB::query( 'DELETE from {terms} WHERE vocabulary_id=? AND mptt_left>? AND mptt_right<?', $params );
 
 		// Fix mptt_left and mptt_right values for other nodes in the vocabulary
 		$offset = $term->mptt_right - $term->mptt_left + 1;
 		$ref = $this->mptt_left;
-		$params = array($offset, $this->id, $term->mptt_left);
+		$params = array( $offset, $this->id, $term->mptt_left );
 
 		// Delete the term
 		$term->delete();
 
 		// Renumber left and right values of other nodes appropriately
-		DB::query('UPDATE {terms} SET mptt_right=mptt_right-? WHERE vocabulary_id=? AND mptt_right>?', $params);
-		DB::query('UPDATE {terms} SET mptt_left=mptt_left-? WHERE vocabulary_id=? AND mptt_left>?', $params);
+		DB::query( 'UPDATE {terms} SET mptt_right=mptt_right-? WHERE vocabulary_id=? AND mptt_right>?', $params );
+		DB::query( 'UPDATE {terms} SET mptt_left=mptt_left-? WHERE vocabulary_id=? AND mptt_left>?', $params );
 
 	}
 
@@ -566,16 +566,16 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function get_options()
 	{
-		$tree = $this->get_tree('mptt_left ASC');
+		$tree = $this->get_tree( 'mptt_left ASC' );
 		$output = array();
 		$lastright = $lastleft = reset($tree)->mptt_left;
 		$indent = 0;
 		$stack = array();
-		foreach($tree as $term) {
-			while ( count($stack) > 0 && end($stack)->mptt_right < $term->mptt_left ) {
-				array_pop($stack);
+		foreach( $tree as $term ) {
+			while ( count( $stack ) > 0 && end( $stack )->mptt_right < $term->mptt_left ) {
+				array_pop( $stack );
 			}
-			$output[$term->id] = str_repeat('- ', count($stack)) . $term->term_display;
+			$output[$term->id] = str_repeat( '- ', count( $stack )) . $term->term_display;
 			$stack[] = $term;
 		}
 				
@@ -609,7 +609,7 @@ GROUP BY child.term
 HAVING COUNT(child.term)=1
 ORDER BY NULL
 SQL;
-		return DB::get_results( $query, array($this->id), 'Term' );
+		return DB::get_results( $query, array( $this->id ), 'Term' );
 	}
 
 	/**
@@ -713,7 +713,7 @@ SQL;
 					$mptt_target = DB::get_value( 'SELECT mptt_left FROM {terms} WHERE vocabulary_id=? AND id = ?', array( $this->id, $target_term->id ) );
 				}
 				else {
-					$mptt_target = DB::get_value( 'SELECT MAX(mptt_right) FROM {terms} WHERE vocabulary_id=?', array($this->id) ) + 1;
+					$mptt_target = DB::get_value( 'SELECT MAX(mptt_right) FROM {terms} WHERE vocabulary_id=?', array( $this->id ) ) + 1;
 				}
 			}
 			$temp_left = $source_left - $source_to_temp;
