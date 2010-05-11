@@ -421,9 +421,9 @@ class Vocabulary extends QueryRecord
 		if (count($terms) == 0) {
 			Plugins::act( 'term_detach_all_from_object_before', $this->id );
 
-			$results = $this->get_object_terms( $object_type, $this->id );
+			$results = $this->get_object_terms( $object_type, $id );
 			foreach ( $results as $term ) {
-				$term->dissociate( $term->id, $id );
+				$term->dissociate( $object_type, $id );
 			}
 
 			Plugins::act( 'term_detach_all_from_object_after', $this->id );

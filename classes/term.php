@@ -355,7 +355,7 @@ SQL;
 	}
 
 	/**
-	 * Associate this term to an object of a certain type via its id.
+	 * Disassociate this term from an object of a certain type via its id.
 	 * @param $type string. The name of the object type we want to unset an association for
 	 * @param $id integer. The object's id
 	 *
