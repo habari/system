@@ -1089,5 +1089,55 @@ class Utils
 	{
 		return htmlspecialchars( $string, $quote_flag, $encoding );
 	}
+
+	/**
+	* Convenience function to find a usable PCRE regular expression
+	* delimiter for a particular string.  (I.e., some character that
+	* *isn't* found in the string.)
+	*
+	* @param $string. string. The string for which to find a delimiter.
+	* @param $choices. string. Delimiters from which to choose one.
+	* @param $encoding. string. The encoding of the passed string
+	*
+	* @return A valid regex delimiter, or null if none of the choices work.
+	*/
+	public static function regexdelim( $string, $choices=null )
+	{
+		/*
+		 * Supply some default possibilities for delimiters if we
+		 * weren't given an explicit list.
+		 */
+		if ( ! isset( $choices ) )
+		{
+			$choices = sprintf('%c%c%c%c%c%c%c',
+					   167,      /* § */
+					   164,      /* ¤ */
+					   165,      /* ¥ */
+					   ord('`'),
+					   ord('~'),
+					   ord('%'),
+					   ord('#')
+			    );
+		}
+		$a_delims = str_split( $choices );
+		/*
+		 * Default condition is 'we didn't find one.'
+		 */
+		$delim = null;
+		/*
+		 * Check for each possibility by scanning the text for it.
+		 * If it isn't found, it's a valid choice, so break out of the
+		 * loop.
+		 */
+		foreach ( $a_delims as $tdelim )
+		{
+			if ( ! strstr( $string, $tdelim ) )
+			{
+				$delim = $tdelim;
+				break;
+			}
+		}
+		return $delim;
+	}
 }
 ?>
