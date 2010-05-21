@@ -420,11 +420,12 @@ class Post extends QueryRecord implements IsContent
 	private function setstatus( $value )
 	{
 		$statuses = Post::list_post_statuses();
+		$fieldname = isset( $this->fields['status'] ) ? 'newfields' : 'fields';
 		if ( is_numeric( $value ) && in_array( $value, $statuses ) ) {
-			return $this->newfields['status'] = $value;
+			return $this->{"$fieldname"}['status'] = $value;
 		}
 		elseif ( array_key_exists( $value, $statuses ) ) {
-			return $this->newfields['status'] = Post::status( $value );
+			return $this->{"$fieldname"}['status'] = Post::status( $value );
 		}
 
 		return false;
