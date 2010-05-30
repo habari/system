@@ -10,7 +10,7 @@
 <?php if(isset($message) && $message != ''): ?>
 <p><?php echo $message; ?></p>
 <?php endif; ?>
-<div><input type="hidden" name="FormUI" value="<?php echo $salted_name; ?>"></div>
+<input type="hidden" name="FormUI" value="<?php echo $salted_name; ?>">
 <?php echo $pre_out; ?>
 <?php echo $controls; ?>
 </form>
