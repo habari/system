@@ -1745,7 +1745,7 @@ body.page-themes .availablethemes .themeinfo p {
 }
 
 body.page-themes #page .availablethemes .dropbutton {
-    position: abslute;
+    position: absolute;
     top: 220px;
     right: 73px; /* this is a hack */
     margin: 15px 5px;
