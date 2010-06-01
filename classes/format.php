@@ -451,7 +451,7 @@ class Format
 		}
 		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
 		if ( count($matches) > 1 ) {
-			return reset($matches) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>';
+			return ( $more_text != '' ) ? reset($matches) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>' : reset($matches);
 		}
 		elseif ( isset($max_words) || isset($max_paragraphs) ) {
 			$max_words = empty($max_words) ? 9999999 : intval($max_words);
@@ -461,7 +461,7 @@ class Format
 				return $content;
 			}
 			else {
-				return $summary . ' <a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>';
+				return ( $more_text != '' ) ? $summary . ' <a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' : $summary;
 			}
 		}
     
