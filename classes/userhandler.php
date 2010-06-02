@@ -139,7 +139,7 @@ class UserHandler extends ActionHandler
 		}
 		$request = new StdClass();
 		foreach ( URL::get_active_rules() as $rule ) {
-			$request->{$rule->name}= ( $rule->name == URL::get_matched_rule()->name );
+			$request->{$rule->name} = ( $rule->name == URL::get_matched_rule()->name );
 		}
 		$this->theme->assign( 'request', $request );
 		$this->theme->assign( 'habari_username', htmlentities($name, ENT_QUOTES, 'UTF-8') );
