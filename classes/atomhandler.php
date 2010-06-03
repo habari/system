@@ -139,7 +139,7 @@ class AtomHandler extends ActionHandler
 			$feed_link->addAttribute( 'title', _t('First Page') );
 
 			if ( $prevpage > $firstpage ) {
-				$rr_args['page']= $prevpage;
+				$rr_args['page'] = $prevpage;
 				$feed_link = $xml->addChild( 'link' );
 				$feed_link->addAttribute( 'rel', 'previous' );
 				$feed_link->addAttribute( 'href', URL::get( $rr_name, $rr_args ) );
@@ -542,7 +542,7 @@ class AtomHandler extends ActionHandler
 	 */
 	public function get_entry( $slug )
 	{
-		$params['slug']= $slug;
+		$params['slug'] = $slug;
 		$params['status'] = $this->is_auth() ? 'any' : Post::status('published');
 
 		if ( $post = Post::get($params) ) {
@@ -612,7 +612,7 @@ class AtomHandler extends ActionHandler
 		$this->is_auth( TRUE );
 		$bxml = file_get_contents( 'php://input' );
 
-		$params['slug']= $slug;
+		$params['slug'] = $slug;
 		$params['status'] = 'any';
 
 		if ( $post = Post::get($params) ) {
@@ -682,7 +682,7 @@ class AtomHandler extends ActionHandler
 
 		$this->is_auth(TRUE);
 
-		$params['slug']= $slug;
+		$params['slug'] = $slug;
 		$params['status'] = Post::status('published');
 		if ( $post = Post::get($params) ) {
 			$post->delete();
