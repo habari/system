@@ -160,6 +160,13 @@ class SQLiteConnection extends DatabaseConnection
 			}
 		}
 
+		// Drop all indices that we created, they'll get recreated by indexqueries below.
+		// The other option would be to loop through the indices, comparing with indexqueries, and only drop the ones that have changed.
+		$indices = DB::get_column( "SELECT name FROM sqlite_master WHERE type='index' AND name NOT LIKE 'sqlite_autoindex_%'" );
+		foreach ( $indices as $name ) {
+			DB::exec( 'DROP INDEX ' . $name );
+		}
+
 		$allqueries = array_merge( $allqueries, $indexqueries );
 		if( $doinserts ) {
 			$allqueries = array_merge( $allqueries, $iqueries );
