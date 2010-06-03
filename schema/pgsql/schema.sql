@@ -202,7 +202,8 @@ CREATE TABLE {$prefix}terms (
   mptt_left INTEGER NOT NULL,
   mptt_right INTEGER NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE (mptt_left,mptt_right,vocabulary_id)
+  UNIQUE (vocabulary_id,mptt_right,mptt_left),
+  UNIQUE (vocabulary_id,term)
 );
 
 CREATE SEQUENCE {$prefix}vocabularies_pkey_seq;
