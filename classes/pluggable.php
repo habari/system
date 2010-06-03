@@ -145,7 +145,7 @@ abstract class Pluggable
 	public function _help_plugin_config( $actions, $plugin_id )
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
-			$actions['_help']= _t( '?' );
+			$actions['_help'] = _t( '?' );
 		}
 		return $actions;
 	}
@@ -179,7 +179,7 @@ abstract class Pluggable
 	public function _configure_plugin_config( $actions, $plugin_id )
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
-			$actions['_configure']= _t( 'Configure' );
+			$actions['_configure'] = _t( 'Configure' );
 		}
 		return $actions;
 	}
@@ -194,7 +194,7 @@ abstract class Pluggable
 	{
 		if ( $plugin_id == $this->plugin_id() && $action == '_configure' ) {
 			$output = $this->configure();
-			if($output instanceof FormUI) {
+			if ( $output instanceof FormUI ) {
 				$output->out();
 			}
 			else {

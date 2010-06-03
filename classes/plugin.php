@@ -33,8 +33,6 @@ abstract class Plugin extends Pluggable
 		return $info;
 	}
 
-	
-	
 	/**
 	 * Plugin constructor.
 	 * Plugins should not define their own constructors, because they are instantiated
@@ -45,7 +43,7 @@ abstract class Plugin extends Pluggable
 	{
 		parent::__construct();
 	}
-	
+
 	/**
 	 * Registered to the plugin_config hook to supply help via a plugin's help in xml
 	 *
@@ -58,10 +56,10 @@ abstract class Plugin extends Pluggable
 		if ( $plugin_id == $this->plugin_id() ) {
 			foreach($this->info->help as $help) {
 				$name = (string)$help['name'];
-				if($name == '') {
+				if ( $name == '' ) {
 					$name = '_help';
 				}
-				$actions[$name]= _t( '?' );
+				$actions[$name] = _t( '?' );
 			}
 		}
 		return $actions;
@@ -77,7 +75,7 @@ abstract class Plugin extends Pluggable
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
 			foreach($this->info->help as $help) {
-				if(($action == (string)$help['name'] && (string)$help['name'] != '') || ($action == '_help' && (string)$help['name'] == '')) {
+				if ( ($action == (string)$help['name'] && (string)$help['name'] != '') || ($action == '_help' && (string)$help['name'] == '') ) {
 					echo '<div class="help">' . ((string)$help->value) . '</div>';
 				}
 			}
