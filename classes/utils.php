@@ -942,10 +942,10 @@ class Utils
 	public static function random_password( $length = 10 )
 	{
 		$password = '';
-		$data = str_split( '1234567890!@#$^*qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVNBM' );
-		$rand = array_rand( $data, $length );
-		foreach ( $rand as $index ) {
-			$password .= $data[ $index ];
+		$character_set = '1234567890!@#$^*qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVNBM';
+		$data = str_split($character_set);
+		for ( $i = 0; $i < $length; $i++ ) {
+			$password .= $data[rand(1, strlen($character_set)) - 1];
 		}
 		return $password;
 	}
