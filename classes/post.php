@@ -657,7 +657,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'comment_feed_link', 'author', 'editlink' ) );
+		$fieldnames = array_merge( array_keys( $this->fields ), array( 'permalink', 'tags', 'comments', 'comment_count', 'approved_comment_count', 'comment_feed_link', 'author', 'editlink' ) );
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
 			list( $junk, $name, $filter )= $matches;
@@ -687,6 +687,9 @@ class Post extends QueryRecord implements IsContent
 				break;
 			case 'comment_count':
 				$out = $this->get_comments()->count();
+				break;
+			case 'approved_comment_count':
+				$out = Comments::count_by_id( $this->id );
 				break;
 			case 'comment_feed_link':
 				$out = $this->get_comment_feed_link();
