@@ -207,7 +207,7 @@ class Posts extends ArrayObject implements IsContent
 					$joins['tags_tag2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
 
 					if ( is_array( $paramset['all:tag'] ) ) {
-						$where[] = '{terms}.term_display IN (' . Utils::placeholder_string( $paramset['all:tag_slug']) . ')' . ' AND {object_terms}.object_type_id = ?';
+						$where[] = '{terms}.term_display IN (' . Utils::placeholder_string( $paramset['all:tag']) . ')' . ' AND {object_terms}.object_type_id = ?';
 						$params = array_merge( $params, $paramset['all:tag'] );
 
 						$groupby = '{posts}.id';
