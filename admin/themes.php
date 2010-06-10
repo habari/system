@@ -124,15 +124,17 @@
 			</div>
 			<?php endif; ?>
 
+<?php /* hide this until Scope is implemented
 		<div class="item clear">
 		<h3>Scopes</h3>
+
 
 			<div id="tab_config_scopes" class="zsplitter">
 				<div class="splitterinside">Scope config goes here</div>
 			</div>
 
-
 		</div>
+*/ ?>
 	</div>
 
 <div class="container availablethemes">
