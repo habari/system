@@ -129,6 +129,7 @@ class HabariSilo extends Plugin implements MediaSilo
 				$thumbnail_suffix = HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
 				$thumbnail_url = $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
 				$mimetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($item));
+				$mtime = '';
 
 				if ( !file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
 					if ( !$this->create_thumbnail( $item ) ) {
@@ -156,12 +157,13 @@ class HabariSilo extends Plugin implements MediaSilo
 				// If the asset is an image, obtain the image dimensions
 				if ( in_array( $mimetype, array( 'image_jpeg', 'image_png', 'image_gif' ) ) ) {
 					list( $props['width'], $props['height'] ) = getimagesize( $item );
+					$mtime = '?' . filemtime( $item );
 				}
 				$props = array_merge(
 					$props,
 					array(
 						'url' => $this->url . '/' . $path . ($path == '' ? '' : '/') . $file,
-						'thumbnail_url' => $thumbnail_url,
+						'thumbnail_url' => $thumbnail_url . $mtime,
 						'filetype' => $mimetype,
 					)
 				);
