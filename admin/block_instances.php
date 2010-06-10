@@ -1,9 +1,9 @@
-<label><?php _e('New Block Name:')?> <input type="text" id="block_instance_title"></label>
-<label><?php _e('Type:')?> <select id="block_instance_type">
+<label><?php _e('New Block Type:')?> <select id="block_instance_type">
 	<?php foreach ( $blocks as $block_key => $block_name ): ?>
 	<option value="<?php echo $block_key; ?>"><?php echo $block_name; ?></option>
 	<?php endforeach; ?>
 </select></label>
+<label><?php _e('Name:')?> <input type="text" id="block_instance_title"></label>
 <input id="block_instance_add" type="button" value="+" >
 
 <div id="block_instances">
