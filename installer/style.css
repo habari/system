@@ -1,7 +1,10 @@
 /* @override style.css */
 
+/* Force vertical scrollbars so that revealing help or errors don't move the form to the left */
+html { height: 100%; margin-bottom: 1px; overflow-y: scroll}
+
 body {
-	font-family: Helvetica Neue, Helvetica, Arial, Sans-Serif;
+	font-family: 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
 	padding: 0;
 	margin: 0;
 	}
@@ -68,20 +71,20 @@ a {
 .help-me {
 	float: right;
 	position: absolute;
-	top: 15px;
-	right: 20px;
+	top: 20px;
+	right: 25px;
 	display: none;
-	height: 20px;
-	width: 20px;
+	height: 15px;
+	width: 15px;
 	text-indent: -3000px;
-	background: url(images/install-step_h2_help-me.png) scroll no-repeat top left;
+	background: url(../admin/images/help_icon.png) scroll no-repeat top left;
 	outline: none;
 	}
 .ready .help-me {
 	display:block;
 }
 .help-me:hover {
-	background: url(images/install-step_h2_help-me_over.png) scroll no-repeat top left;
+	background: url(../admin/images/help_icon_over.png) scroll no-repeat top left;
 	}
 
 .options, .advanced-options {
@@ -161,11 +164,11 @@ div.javascript-disabled {
 	}
 
 .invalid .status {
-	background: url(images/fail.png);
+        background: url(images/warningsmall.png) no-repeat center;
 	}
 
 .inputfield .warning {
-	display: none;
+	display: block;
 	padding: 3px 45px 0px 145px;
 	line-height: 120%;
 	text-align: left;
@@ -220,6 +223,11 @@ div.javascript-disabled {
 .submit input {
 	width: 40%;
 	margin: 0 0 10px;
+	}
+
+#check_db_connection {
+	margin-left: 180px;
+	width: 50%;
 	}
 
 .error {

@@ -66,7 +66,7 @@ class Comments extends ArrayObject
 						$where[] = "{comments}.id= ?";
 						$params[] = $paramset['id'];
 					}
-					else if ( is_array( $paramset['id'] ) ) {
+					else if ( is_array( $paramset['id'] ) && !empty( $paramset['id'] ) ) {
 						$id_list = implode( ',', $paramset['id'] );
 						// Clean up the id list - remove all non-numeric or comma information
 						$id_list = preg_replace( "/[^0-9,]/", "", $id_list );
@@ -833,11 +833,11 @@ class Comments extends ArrayObject
 
 		foreach ( $tokens as $token ) {
 			// check for a keyword:value pair
-			if ( preg_match( '/^\w+:\S+$/', $token ) ) {
+			if ( preg_match( '/^\w+:\S+$/u', $token ) ) {
 				list( $keyword, $value ) = explode( ':', $token );
 
 				$keyword = strtolower( $keyword );
-				$value = strtolower( $value );
+				$value = MultiByte::strtolower( $value );
 				switch ( $keyword ) {
 					case 'author':
 						$arguments['name'][] = $value;

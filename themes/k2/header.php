@@ -14,7 +14,7 @@
 <?php $theme->header(); ?>
 </head>
 
-<body class="home">
+<body class="<?php $theme->body_class(); ?>">
 <div id="page">
 	<div id="header">
 
@@ -26,12 +26,7 @@
 	class="current_page_item"<?php } ?>><a href="<?php Site::out_url( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
 <?php
 // Menu tabs
-foreach ( $pages as $tab ) {
-?>
-		<li<?php if(isset($post) && $post->slug == $tab->slug) { ?>
-	class="current_page_item"<?php } ?>><a href="<?php echo $tab->permalink; ?>" title="<?php echo $tab->title; ?>"><?php echo $tab->title; ?></a></li>
-<?php
-}
+$theme->menu('mainmenu');
 if ( $user instanceof User ) { ?>
 		<li class="admintab"><a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e('Admin area'); ?>"><?php _e('Admin'); ?></a></li>
 <?php } ?>
@@ -41,4 +36,3 @@ if ( $user instanceof User ) { ?>
 
 	<hr>
 <!-- /header -->
-

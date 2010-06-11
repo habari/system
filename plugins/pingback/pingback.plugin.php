@@ -10,23 +10,6 @@ class Pingback extends Plugin
 {
 
 	/**
-	 * Provide plugin info to the system
-	 */
-	public function info()
-	{
-		return array(
-			'name' => 'Pingback',
-			'version' => '1.0.1',
-			'url' => 'http://habariproject.org/',
-			'author' =>	'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Adds support Pingback 1.0 methods to the XML-RPC server.',
-			'copyright' => '2008'
-		);
-	}
-
-	/**
 	 * Register the Pingback event type with the event log
 	 */
 	public function action_plugin_activation( $file )
@@ -154,7 +137,7 @@ class Pingback extends Plugin
 			// encoding is converted into internal encoding.
 			// @todo check BOM at beginning of file before checking for a charset attribute
 			$habari_encoding = MultiByte::hab_encoding();
-			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) !== FALSE && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
+			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
 				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $matches[1] );
 				if ( $ret !== FALSE ) {
 					$source_contents = $ret;
@@ -329,5 +312,42 @@ class Pingback extends Plugin
 
 		return $items;
 	}
+	
+	/**
+	 * Returns a full qualified URL of the specified post based on the comments count.
+ 	 *
+	 * Passed strings are localized prior to parsing therefore to localize "%d Comments" in french, it would be "%d Commentaires".
+	 *
+	 * Since we use sprintf() in the final concatenation, you must format passed strings accordingly.
+	 *
+	 * @param Theme $theme The current theme object
+	 * @param Post $post Post object used to build the pingback link
+	 * @param string $zero String to return when there are no pingbacks
+	 * @param string $one String to return when there is one pingback
+	 * @param string $many String to return when there are more than one pingback
+	 * @return string String to display for pingback count
+	 */
+	public function theme_pingback_count( $theme, $post, $zero = '', $one = '', $many = '' )
+	{
+		$count = $post->comments->pingbacks->approved->count;
+		if( empty( $zero ) ) {
+			$zero = _t( '%d Pingbacks' );
+		}
+		if( empty( $one ) ) {
+			$one = _t( '%d Pingback' );
+		}
+		if( empty( $many ) ) {
+			$many = _t( '%d Pingabcks' );
+		}
+
+		if ($count >= 1) {
+			$text = _n( $one, $many, $count );
+		}
+		else {
+			$text = $zero;
+		}
+		return sprintf( $text, $count );
+	}
+	
 }
 ?>

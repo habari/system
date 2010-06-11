@@ -454,22 +454,6 @@ class FlickrSilo extends Plugin implements MediaSilo
 	static $cache = array();
 
 	/**
-	* Provide plugin info to the system
-	*/
-	public function info()
-	{
-		return array('name' => 'Flickr Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Implements basic Flickr integration with Habari, allowing you to easily upload images to your account and insert them into posts.',
-			'copyright' => '2008',
-			);
-	}
-
-	/**
 	* Initialize some internal values when plugin initializes
 	*/
 	public function action_init()
@@ -870,7 +854,7 @@ END_AUTH;
 						}
 						else{
 							echo '<p>There was a problem with your authorization:</p>';
-							echo htmlspecialchars($token->asXML());
+							echo Utils::htmlspecialchars($token->asXML());
 						}
 						unset($_SESSION['flickr_frob']);
 					}
@@ -987,7 +971,7 @@ FLICKR;
 		if($silo instanceof $class) {
 			unset($controls['root']);
 			$search_criteria = isset($_SESSION['flickrsearch']) ? htmlentities($_SESSION['flickrsearch']) : '';
-			$controls['search']= '<label for="flickrsearch" class="incontent">Search</label><input type="search" id="flickrsearch" placeholder="'. _t('Search for photos') .'" autosave="habarisettings" results="10" value="'.$search_criteria.'">
+			$controls['search']= '<label for="flickrsearch" class="incontent">Search</label><input type="search" id="flickrsearch" placeholder="'. _t('Search for photos') .'" value="'.$search_criteria.'">
 					<script type="text/javascript">
 					$(\'#flickrsearch\').keypress(function(e){
 						if(e.which == 13){

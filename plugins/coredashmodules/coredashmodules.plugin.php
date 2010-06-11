@@ -8,24 +8,6 @@ class CoreDashModules extends Plugin
 {
 	private $theme;
 
-	/**
-	 * function info
-	 * Returns information about this plugin
-	 * @return array Plugin info array
-	 **/
-	function info()
-	{
-		return array (
-			'name' => 'Core Dash Modules',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'version' => '1.0',
-			'description' => 'Provides a core set of modules for the dashboard. The modules include latest comments, latest posts, and latest log entries.',
-			'license' => 'Apache License 2.0',
-		);
-	}
-	
 		/**
 	 * action_plugin_activation
 	 * Registers the core modules with the Modules class. Add these modules to the

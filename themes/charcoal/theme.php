@@ -28,17 +28,18 @@ class charcoal extends Theme
 	//Set to true to show single post navigation links, false to hide them.
 	const SHOW_POST_NAV = true;
 	
+	//Set to the number of tags to display on the default "cloud"
+	const TAGS_COUNT = 40;
 	/**
 	 * Execute on theme init to apply these filters to output
 	 */
 	public function action_init_theme()
 	{
-		// Apply Format::autop() to post content...
-		Format::apply( 'autop', 'post_content_out' );
 		// Apply Format::autop() to comment content...
 		Format::apply( 'autop', 'comment_content_out' );
 		// Truncate content excerpt at "more" or 56 characters...
-		Format::apply_with_hook_params( 'more', 'post_content_excerpt', '',56, 1 );
+		Format::apply( 'autop', 'post_content_excerpt' );
+		Format::apply_with_hook_params( 'more', 'post_content_excerpt', '', 56, 1 );
 	}
 	
 	/**
@@ -69,6 +70,10 @@ class charcoal extends Theme
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
 		}
 		$this->assign( 'post_id', ( isset($this->post) && $this->post->content_type == Post::type('page') ) ? $this->post->id : 0 );
+
+		// Add FormUI template placing the input before the label
+		$this->add_template( 'charcoal_text', dirname(__FILE__) . '/formcontrol_text.php' );
+
 		parent::add_template_vars();
 	}
 		
@@ -87,27 +92,18 @@ class charcoal extends Theme
 		$array = array_map($fn, $array, array_keys($array));
 		$out = implode(' ', $array);
 		return $out;
- 	}
-	
+	}
+
 	public function theme_post_comments_link($theme, $post, $zero, $one, $more)
 	{
 		$c = $post->comments->approved->count;
-		switch ($c) {
-			case '0':
-				return $zero;
-				break;
-			case '1':
-				return str_replace( '%s', '1', $one );
-				break;
-			default :
-				return str_replace( '%s', $c, $more);
-		}
+		return 0 == $c ? $zero : sprintf( '%1$d %2$s', $c, _n( $one, $more, $c ) );
 	}
-		
+
 	public function filter_post_content_excerpt($return)
-	{	
- 		return strip_tags($return);
- 	}
+	{
+		return strip_tags($return);
+	}
 
 	public function theme_search_prompt( $theme, $criteria, $has_results )
 	{
@@ -142,18 +138,20 @@ class charcoal extends Theme
 	 */
 	public function theme_show_tags ( $theme )
 	{
+		$limit = self::TAGS_COUNT;
 		$sql ="
-			SELECT t.tag_slug AS slug, t.tag_text AS text, count(tp.post_id) as ttl
-			FROM {tags} t
-			INNER JOIN {tag2post} tp
-			ON t.id=tp.tag_id
+			SELECT t.term AS slug, t.term_display AS text, count(tp.object_id) as ttl
+			FROM {terms} t
+			INNER JOIN {object_terms} tp
+			ON t.id=tp.term_id
 			INNER JOIN {posts} p
-			ON p.id=tp.post_id AND p.status = ?
-			GROUP BY t.tag_slug
-			ORDER BY t.tag_text
+			ON p.id=tp.object_id AND p.status = ?
+			WHERE t.vocabulary_id = ? AND tp.object_type_id = ?
+			GROUP BY t.term, t.term_display
+			ORDER BY t.term_display
+			LIMIT {$limit}
 		";
-		$tags = DB::get_results( $sql, array(Post::status('published')) );
-
+		$tags = DB::get_results( $sql, array(Post::status('published'), Tags::vocabulary()->id, Vocabulary::object_type_id( 'post' ) ) );
 		foreach ($tags as $index => $tag) {
 			$tags[$index]->url = URL::get( 'display_entries_by_tag', array( 'tag' => $tag->slug ) );
 		}
@@ -161,5 +159,20 @@ class charcoal extends Theme
 		
 		return $theme->fetch( 'taglist' );
 	}
+
+	/**
+	 * Customize comment form layout. Needs thorough commenting.
+	 */
+	public function action_form_comment( $form ) { 
+		$form->cf_commenter->caption = '<strong>' . _t('Name') . '</strong> <span class="required">' . ( Options::get('comments_require_id') == 1 ? _t('(Required)') : '' ) . '</span></label>';
+		$form->cf_commenter->template = 'charcoal_text';
+		$form->cf_email->caption = '<strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published' ) .' <span class="required">' . ( Options::get('comments_require_id') == 1 ? _t('- Required)') : ')' ) . '</span></label>';
+		$form->cf_email->template = 'charcoal_text';
+		$form->cf_url->caption = '<strong>' . _t('Website') . '</strong>';
+		$form->cf_url->template = 'charcoal_text';
+	        $form->cf_content->caption = '';
+		$form->cf_submit->caption = _t( 'Submit' );
+	}
+
 }
 ?>

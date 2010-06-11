@@ -162,6 +162,14 @@ class RawPHPEngine extends TemplateEngine
 	}
 
 	/**
+	 * Clear all of the assigned template variables
+	 */
+	public function clear()
+	{
+		$this->engine_vars = array();
+	}
+	
+	/**
 	 * Appends to an existing variable more values
 	 *
 	 * @param key name of variable

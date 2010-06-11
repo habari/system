@@ -10,7 +10,7 @@
 $(document).ready(function(){
 	$('.container').addClass('transparent');
 	// If this post has been saved, add a delete button and a nonce for authorising deletes
-	<?php if( isset( $post->id ) && ( $post->id != '' ) && ACL::access_check( $post->get_access(), 'delete' ) ) : ?>
+	<?php if ( isset( $post->id ) && ( $post->id != '' ) && ACL::access_check( $post->get_access(), 'delete' ) ) : ?>
 	$('.container.buttons').prepend($('<input type="button" id="delete" class="button delete" tabindex="6" value="<?php _e('Delete'); ?>">'));
 	$('#delete').click(function(){
 		$('#create-content')
@@ -21,9 +21,9 @@ $(document).ready(function(){
 	<?php endif; ?>
 
 	// If the post hasn't been published, add a publish button
-	<?php 
-		$show_publish = ( $post->id == 0 && User::identify()->can_any( array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' ) ) ) || ( $post->id != 0 && ACL::access_check( $post->get_access(), 'edit' ) );
-		if( isset( $statuses['published'] ) && $post->status != $statuses['published'] && $show_publish ) : 
+	<?php
+		$show_publish = ( $post->id == 0 && User::identify()->can_any( array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $post->content_type ) => 'create' ) ) ) || ( $post->id != 0 && ACL::access_check( $post->get_access(), 'edit' ) );
+		if ( isset( $statuses['published'] ) && $post->status != $statuses['published'] && $show_publish ) :
 	?>
 	$('.container.buttons').prepend($('<input type="button" id="publish" class="button publish" tabindex="5" value="<?php _e('Publish'); ?>">'));
 	$('#publish').click( function() {
@@ -37,13 +37,23 @@ $(document).ready(function(){
 	});
 
 	$('#create-content').submit(function(){
-		initialCrc32 = crc32($('#content').val(), crc32($('#title').val()));
+		$('.check-change').each(function() {
+			$(this).data('checksum', crc32($(this).val()));
+		});
 	});
 
-	initialCrc32 = crc32($('#content').val(), crc32($('#title').val()));
+	$('.check-change').each(function() {
+		$(this).data('checksum', crc32($(this).val()));
+	});
 
 	window.onbeforeunload = function(){
-		if (initialCrc32 != crc32($('#content').val(), crc32($('#title').val())) ) {
+		changed = false;
+		$('.check-change').each(function() {
+			if ($(this).data('checksum') != crc32($(this).val())) {
+				changed = true;
+			}
+		});
+		if (changed) {
 			spinner.start(); spinner.stop();
 			return '<?php
 				// Note to translators: the 'new-line character' is an actual "\n" not a new-line character
@@ -51,6 +61,7 @@ $(document).ready(function(){
 				?>';
 		}
 	};
+
 });
 </script>
 

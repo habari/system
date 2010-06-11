@@ -100,13 +100,29 @@ class APCCache extends Cache
 		return $this->_get_group( $group ) ? true : false;
 	}
 
-	protected function _set( $name, $value, $expiry, $group )
+	protected function _set( $name, $value, $expiry, $group, $keep )
 	{
 		if ( !$this->enabled ) {
 			return null;
 		}
+		
+		Plugins::act( 'cache_set_before', $name, $group, $value, $expiry );
+		
 		$this->cache_data[$group][$name] = $value;
+		
+		if($keep) {
+			$keepcache = apc_fetch( $this->prefix . ':keepcache');
+			if(!is_array($keepcache)) {
+				$keepcache = array();
+			}
+			$keepcache[$group][$name] = intval($expiry);
+			apc_store( $this->prefix . ':keepcache', $keepcache);
+			$expiry = 0;
+		}
+		
 		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval($expiry) );
+		
+		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
 	}
 
 	/**
@@ -139,7 +155,33 @@ class APCCache extends Cache
 		}
 		
 		foreach ( $keys as $key ) {
+			Plugins::act( 'cache_expire_before', $name, $group );
 			apc_delete( implode( ':', array( $this->prefix, $group, $key ) ) );
+			Plugins::act( 'cache_expire_after', $name, $group );
+		}
+	}
+
+	/**
+	 * Return whether a named cache value has expired
+	 * 
+	 * @param string $name The name of the cached item
+	 * @param string $group The group of the cached item
+	 * @return boolean true if the stored value has expired
+	 */
+	protected function _expired( $name, $group )
+	{
+		if ( !$this->enabled ) {
+			return null;
+		}
+
+		// Do not check cached data, since we can return (and cache in this object) data if the cache is set to 'keep'
+		$keepcache = apc_fetch( $this->prefix . ':keepcache');
+		
+		if ( !self::_has($name,$group) || !isset( $keepcache[$group][$name] ) || $keepcache[$group][$name] < time() ) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 
@@ -154,10 +196,37 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
+		
+		Plugins::act( 'cache_extend_before', $name, $group, $expiry );
+		
 		if ( $this->_has( $name, $group ) ) {
 			$cache_data = $this->_get( $name, $group );
 			$this->_set( implode( ':', array( $this->prefix, $group, $name ) ), $cache_data, time() + $expiry, $group );
 		}
+		
+		Plugins::act( 'cache_extend_after', $name, $group, $expiry );
+	}
+
+	/**
+	 * Remove all cached items
+	 */
+	protected function _purge()
+	{
+		Plugins::act( 'cache_purge_before' );
+		
+		$cache_info = apc_cache_info( 'user' );
+
+		$delete = array();
+		foreach ( $cache_info['cache_list'] as $cache_item ) {
+			if ( strpos( $cache_item['info'], $this->prefix . ":" ) === 0 ) {
+				$delete[] = $cache_item['info'];
+			}
+		}
+		foreach( $delete as $item ) {
+			apc_delete( $item );
+		}
+		
+		Plugins::act( 'cache_purge_after' );
 	}
 }
 

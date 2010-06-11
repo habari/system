@@ -14,10 +14,10 @@ class Version
 {
 	// DB and API versions are aligned with the SVN revision
 	// number in which they last changed.
-	const DB_VERSION = 3702;
-	const API_VERSION = 3124;
+	const DB_VERSION = 4226;
+	const API_VERSION = 4077;
 
-	const HABARI_VERSION = '0.6.4';
+	const HABARI_VERSION = '0.7-alpha';
 
 	// This string contains the URL to the Habari SVN repository used for this working copy or export
 	const HABARI_SVN_HEAD_URL = '$HeadURL$';
@@ -104,7 +104,7 @@ class Version
 			}
 		}
 		if($rev == 0) {
-			$rev = intval(preg_replace('%[^0-9]%', '', Version::HABARI_SVN_REV));
+			$rev = intval(preg_replace('/[^0-9]/', '', Version::HABARI_SVN_REV));
 		}
 		return $rev;
 	}

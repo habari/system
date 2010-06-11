@@ -7,7 +7,7 @@ foreach ($this->engine_vars as $key => $val) {
 	}
 }
 ?>
-<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
+<input type="hidden" name="locale" value="<?php echo Utils::htmlspecialchars($locale); ?>">
 
 <div class="installstep ready">
 	<h2>Config.php<a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>

@@ -12,18 +12,18 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" autosave="habarisettings" results="10" tabindex="2">
+		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" tabindex="2">
 	</span>
 </div>
 
 <div class="container transparent groupstats">
-<p>Group <strong><?php echo $group->name; ?></strong> has <strong><?php echo count($members); ?></strong> member(s)</p>
+<p><?php echo sprintf( _n( 'Group %1$s has <strong>%2$d</strong> member', 'Group %1$s has <strong>%2$d</strong> members', count( $members ) ), "<strong>$group->name</strong>", count( $members ) ); ?></p>
 </div>
 
 <form name="update-group" id="update-group" action="<?php URL::out('admin', 'page=group'); ?>" method="post">
 <div class="container settings group groupmembers" id="groupmembers">
 
-	<h2><?php _e('Group Information'); ?></h2>
+	<h2><?php _e('Group Members'); ?></h2>
 	
 	<div class="item clear" id="assignedusers">
 		<span class="pct100" id="currentusers">
@@ -54,7 +54,7 @@
 			<span class="pct80 memberlist"></span>
 		</span>
 	</div>
-		<?php foreach($users as $user): ?>
+		<?php foreach ( $users as $user ): ?>
 			<input type="hidden" name="user[<?php echo $user->id; ?>]" value="<?php echo ($user->membership) ? '1' : 0; ?>" id="user_<?php echo $user->id; ?>">
 		<?php endforeach; ?>
 	
@@ -74,7 +74,7 @@
 		<?php if ( !empty( $crud_tokens ) ): ?>
 			<table id="<?php echo $group_name; ?>-crud-permissions" class="pct100 crud-permissions">
 				<tr class="head">
-					<th class="pct40">Token Description</th>
+					<th class="pct40"><?php _e( 'Token Description' ); ?></th>
 					<?php foreach ( $access_names as $name ): ?>
 					<th class="pct10"><?php echo $name; ?></th>
 					<?php endforeach; ?>
@@ -93,12 +93,13 @@
 				</tr>
 				<?php endforeach; ?>
 			</table>
-		<?php elseif ( !empty( $bool_tokens ) ): ?>
+		<?php endif; ?>
+		<?php if ( !empty( $bool_tokens ) ): ?>
 			<table id="<?php echo $group_name; ?>-bool-permissions" class="pct100 bool-permissions">
 				<tr class="head">
-					<th class="pct40">Token Description</th>
-					<th class="pct10">allow</th>
-					<th class="pct10">deny</th>
+					<th class="pct40"><?php _e( 'Token Description' ); ?></th>
+					<th class="pct10"><?php _e( 'allow' ); ?></th>
+					<th class="pct10"><?php _e( 'deny' ); ?></th>
 				</tr>
 				<?php foreach ( $bool_tokens as $token ): ?>
 				<tr>
@@ -122,10 +123,10 @@
 
 <div class="container controls transparent">
 	<span class="pct50">
-		<input type="submit" value="<?php _e('Apply'); ?>" class="button save">
+		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
 	</span>
 	<span class="pct50">
-		<input type="submit" name="delete" value="<?php _e('Delete'); ?>" class="delete button">
+		<input type="submit" value="<?php _e('Apply'); ?>" class="button save">
 	</span>
 
 	<input type="hidden" name="id" id="id" value="<?php echo $group->id; ?>">

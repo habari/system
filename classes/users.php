@@ -33,7 +33,7 @@ class Users extends ArrayObject
 		// defaults
 		$orderby = 'id ASC';
 		$nolimit = TRUE;
-		
+
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );
 
@@ -51,11 +51,11 @@ class Users extends ArrayObject
 			$wheres[] = $paramarray['where'];
 		}
 		else {
-			foreach( $wheresets as $paramset ) {
+			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
 				$where = array();
 				$paramset = array_merge((array) $paramarray, (array) $paramset);
-				
+
 				$default_fields = User::default_fields();
 				foreach ( User::default_fields() as $field => $scrap ) {
 					if ( !isset( $paramset[$field] ) ) {
@@ -67,11 +67,11 @@ class Users extends ArrayObject
 								continue;
 							}
 						default:
-							$where[] = "{$field}= ?";
+							$where[] = "{$field} = ?";
 							$params[] = $paramset[$field];
 					}
 				}
-				
+
 				if ( isset( $paramset['info'] ) && is_array( $paramset['info'] ) ) {
 					$join .= 'INNER JOIN {userinfo} ON {users}.id = {userinfo}.user_id';
 					foreach ( $paramset['info'] as $info_name => $info_value ) {
@@ -80,8 +80,8 @@ class Users extends ArrayObject
 						$params[] = $info_value;
 					}
 				}
-				
-				if(count($where) > 0) {
+
+				if ( count($where) > 0 ) {
 					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
@@ -169,7 +169,7 @@ class Users extends ArrayObject
 		else {
 			$params['info'] = array( $key => $value );
 		}
-		
+
 		return self::get( $params );
 	}
 
@@ -182,8 +182,8 @@ class Users extends ArrayObject
 	{
 		$params = array(
 			'orderby' => 'username ASC'
-			);
-			
+		);
+
 		return self::get( $params );
 	}
 

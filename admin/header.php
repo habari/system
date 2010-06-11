@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!doctype html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -8,11 +8,14 @@
 		url: {
 			habari: '<?php Site::out_url('habari'); ?>',
 			ajaxDashboard: '<?php echo URL::get('admin_ajax', array('context' => 'dashboard')); ?>',
-			ajaxDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_entries')); ?>',
+			ajaxUpdatePosts: '<?php echo URL::get('admin_ajax', array('context' => 'update_entries')); ?>',
 			ajaxLogDelete: '<?php echo URL::get('admin_ajax', array('context' => 'delete_logs')); ?>',
 			ajaxUpdateUsers: '<?php echo URL::get('admin_ajax', array('context' => 'update_users')); ?>',
 			ajaxUpdateGroups: '<?php echo URL::get('admin_ajax', array('context' => 'update_groups')); ?>',
-			ajaxUpdateComment: '<?php echo URL::get('admin_ajax', array('context' => 'update_comment')); ?>'
+			ajaxUpdateComment: '<?php echo URL::get('admin_ajax', array('context' => 'update_comment')); ?>',
+			ajaxAddBlock: '<?php echo URL::get('admin_ajax', array('context' => 'add_block')); ?>',
+			ajaxDeleteBlock: '<?php echo URL::get('admin_ajax', array('context' => 'delete_block')); ?>',
+			ajaxSaveAreas: '<?php echo URL::get('admin_ajax', array('context' => 'save_areas')); ?>'
 		}
 	};
 	</script>
@@ -35,19 +38,19 @@
 <div id="menubar">
 
 	<div id="menu" class="dropbutton">
-		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><?php echo $admin_page; ?> <span class="hotkey">Q</span></a></h1>
+		<h1 id="menubutton"><a href="<?php echo $admin_page_url; ?>"><?php echo ( isset( $mainmenu[$admin_page]['text'] ) ? $mainmenu[$admin_page]['text'] : $admin_page ); ?> <span class="hotkey">Q</span></a></h1>
 
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
 			<?php foreach($mainmenu as $menu_id => $menu): ?>
 				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == TRUE) { echo 'selected'; } ?><?php if(isset($menu['submenu'])): ?> submenu<?php endif; ?>" title="<?php echo $menu['title']; ?>"><a class="top" href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
-				<?php if(isset($menu['hotkey']) && $menu['hotkey'] != ''): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
+				<?php if ( isset($menu['hotkey']) && $menu['hotkey'] != '' ): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
 				</a>
-				<?php if(isset($menu['submenu'])): ?>
+				<?php if ( isset($menu['submenu']) ): ?>
 				<ul class="submenu">
 				 <?php foreach($menu['submenu'] as $submenu_id => $submenu_item): ?>
 				 	<li id="link-<?php echo $submenu_id ?>" title="<?php echo $submenu_item['title']; ?>" class="sub<?php if(isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != ''): ?> hotkey-<?php echo $submenu_item['hotkey']; ?><?php endif; ?>"><a href="<?php echo $submenu_item['url']; ?>"><?php echo $submenu_item['text']; ?>
-				 	<?php if(isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != ''): ?><span class="hotkey"><?php echo $submenu_item['hotkey']; ?></span><?php endif; ?>
+				 	<?php if ( isset($submenu_item['hotkey']) && $submenu_item['hotkey'] != '' ): ?><span class="hotkey"><?php echo $submenu_item['hotkey']; ?></span><?php endif; ?>
 				 	</a></li>
 				 <?php endforeach; ?>
 				 </ul>

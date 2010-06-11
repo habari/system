@@ -52,8 +52,8 @@ class ActionHandler
 		$before_action_method = 'before_' . $action_method;
 		$after_action_method = 'after_' . $action_method;
 
-		if (method_exists($this, $action_method)) {
-			if (method_exists($this, $before_action_method)) {
+		if ( method_exists($this, $action_method) ) {
+			if ( method_exists($this, $before_action_method) ) {
 				$this->$before_action_method();
 			}
 			/**
@@ -112,10 +112,10 @@ class ActionHandler
 		$this->theme = Themes::create();
 		$this->theme->assign('matched_rule', URL::get_matched_rule());
 		$request = new StdClass();
-		foreach(RewriteRules::get_active() as $rule) {
-			$request->{$rule->name}= false;
+		foreach ( URL::get_active_rules() as $rule ) {
+			$request->{$rule->name} = false;
 		}
-		$request->{$this->theme->matched_rule->name}= true;
+		$request->{$this->theme->matched_rule->name} = true;
 		$this->theme->assign('request', $request);
 	}
 }
