@@ -32,11 +32,17 @@ class Bitmask
 		$this->flags = $flags;
 		$this->full = ( 1 << ( count( $this->flags ) ) ) - 1;
 		if ( ! is_null( $value ) ) {
-			if ( is_numeric( $value ) ) {
+			if ( $value === 'full' ) {
+				$this->value = $this->full;
+			}
+			elseif ( is_numeric( $value ) ) {
 				$this->value = (int) $value;
 			}
-			elseif ( is_string( $value ) ) {
+			elseif ( is_string( $value ) && in_array( $value, $flags ) ) {
 				$this->$value = true;
+			}
+			else {
+				throw new InvalidArgumentException( _t( 'Bitmask constructor second argument must either be an integer, the name of a flag, or full' ) );
 			}
 		}
 
