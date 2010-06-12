@@ -490,7 +490,7 @@ SQL;
 	{
 		static $post_tokens = null;
 
-		$bitmask = new Bitmask ( self::$access_names, $access );
+		$bitmask = new Bitmask ( self::$access_names );
 		$tokens = array();
 
 		// convert $user to an ID
