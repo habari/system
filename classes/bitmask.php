@@ -9,8 +9,8 @@
  */
 class Bitmask
 {
-	public $flags = array();  // set of flag bit masks
-	public $value = 0;        // internal integer value of the bitmask
+	protected $flags = array();  // set of flag bit masks
+	protected $value = 0;        // internal integer value of the bitmask
 
 	/**
 	 * Constructor.  Takes an optional array parameter
@@ -54,6 +54,20 @@ class Bitmask
 					$this->value = 0;
 				}
 				break;
+			case 'value':
+				if ( is_array( $on ) ) {
+					if ( count( $on ) !== count( $this->flags ) )
+						throw new InvalidArgumentException( _t( 'Setting bitmask value by array must use array with same length as number of flags' ) );
+					$this->value = 0;
+					foreach ( $on as $flag ) {
+						$this->value <<= 1;
+						$this->value |= (int) $flag;
+					}
+				}
+				else {
+					$this->value = (int) $on;
+				}
+				break;
 			default:
 				if ( ! is_bool( $on ) )
 					throw new InvalidArgumentException(_t('Bitmask values must be boolean'));
@@ -80,6 +94,9 @@ class Bitmask
 		if ( is_string( $bit ) ) {
 			if ( $bit == 'full' ) {
 				return (1 << (count($this->flags))) - 1;
+			}
+			elseif ( $bit === 'value' ) {
+				return $this->value;
 			}
 			else {
 				$bit = array_search( $bit, $this->flags );
