@@ -26,8 +26,9 @@ class Bitmask
 			throw new InvalidArgumentException( _t( 'Bitmask constructor expects either no arguments or an array as a first argument' ) );
 		}
 		
-		if ( count( $flags ) > ( PHP_INT_MAX >> 1 ) )
+		if ( count( $flags ) > ( PHP_INT_MAX >> 1 ) ) {
 			throw new InvalidArgumentException( _t( 'Bitmask can have max PHP_INT_MAX >> 1 flags' ) );
+		}
 
 		$this->flags = $flags;
 		$this->full = ( 1 << ( count( $this->flags ) ) ) - 1;
@@ -58,8 +59,9 @@ class Bitmask
 	{
 		switch( $bit ) {
 			case 'full':
-				if ( ! is_bool( $on ) )
+				if ( ! is_bool( $on ) ) {
 					throw new InvalidArgumentException( _t( 'Bitmask full toggle must be boolean' ) );
+				}
 					
 				if ( $on ) {
 					$this->value = $this->full;
@@ -70,12 +72,14 @@ class Bitmask
 				break;
 			case 'value':
 				if ( is_array( $on ) ) {
-					if ( count( $on ) !== count( $this->flags ) )
+					if ( count( $on ) !== count( $this->flags ) ) {
 						throw new InvalidArgumentException( _t( 'Setting bitmask value by array must use array with same length as number of flags' ) );
+					}
 					$this->value = 0;
 					foreach ( $on as $flag ) {
-						if ( ! is_bool( $flag ) )
+						if ( ! is_bool( $flag ) ) {
 							throw new InvalidArgumentException( _t( 'Bitmask values must be boolean' ) );
+						}
 						$this->value <<= 1;
 						$this->value |= (int) $flag;
 					}
@@ -88,13 +92,15 @@ class Bitmask
 				}
 				break;
 			default:
-				if ( ! is_bool( $on ) )
+				if ( ! is_bool( $on ) ) {
 					throw new InvalidArgumentException( _t( 'Bitmask values must be boolean' ) );
+				}
 					
 				$bit = array_search( $bit, $this->flags );
 				
-				if ( $bit === false )
+				if ( $bit === false ) {
 					throw new InvalidArgumentException( _t( 'Bitmask cannot set non-existent flag' ) );
+				}
 				
 				if ( $on ) {
 					$this->value |= 1 << $bit;
