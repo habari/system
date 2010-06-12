@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Habari 0.1\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-10-30 20:33-0500\n"
+"Last-Translator: Owen Winkler <epithet+habari@midnightcircus.com>\n"
+"Language-Team: Habari\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: system/classes/urlparser.php:162
+msgid "The thing you were looking for was not found.  We should probably display some kind of intelligent error here."
+msgstr "The thing you were looking for was not found, yo.  We a 'telligent error here, a'ight?"
+
