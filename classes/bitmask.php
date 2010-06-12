@@ -35,14 +35,14 @@ class Bitmask
 			if ( $value === 'full' ) {
 				$this->value = $this->full;
 			}
-			elseif ( is_numeric( $value ) ) {
-				$this->value = (int) $value;
+			elseif ( is_int( $value ) && $value >= 0 && $value <= $this->full ) {
+				$this->value = $value;
 			}
 			elseif ( is_string( $value ) && in_array( $value, $flags ) ) {
 				$this->$value = true;
 			}
 			else {
-				throw new InvalidArgumentException( _t( 'Bitmask constructor second argument must either be an integer, the name of a flag, or full' ) );
+				throw new InvalidArgumentException( _t( 'Bitmask constructor second argument must either be an integer within the valid range, the name of a flag, or full' ) );
 			}
 		}
 
@@ -58,6 +58,9 @@ class Bitmask
 	{
 		switch( $bit ) {
 			case 'full':
+				if ( ! is_bool( $on ) )
+					throw new InvalidArgumentException( _t( 'Bitmask full toggle must be boolean' ) );
+					
 				if ( $on ) {
 					$this->value = $this->full;
 				}
@@ -71,12 +74,17 @@ class Bitmask
 						throw new InvalidArgumentException( _t( 'Setting bitmask value by array must use array with same length as number of flags' ) );
 					$this->value = 0;
 					foreach ( $on as $flag ) {
+						if ( ! is_bool( $flag ) )
+							throw new InvalidArgumentException( _t( 'Bitmask values must be boolean' ) );
 						$this->value <<= 1;
 						$this->value |= (int) $flag;
 					}
 				}
+				elseif ( is_int( $on ) && $on >= 0 && $on <= $this->full ) {
+					$this->value = $on;
+				}
 				else {
-					$this->value = (int) $on;
+					throw new InvalidArgumentException( _t( 'Bitmask value must either be an integer within the valid range or an array of booleans' ) );
 				}
 				break;
 			default:
