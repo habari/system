@@ -10,6 +10,7 @@
 class Bitmask
 {
 	protected $flags = array();  // set of flag bit masks
+	protected $full = 0;         // maximum integer value of the bitmask
 	protected $value = 0;        // internal integer value of the bitmask
 
 	/**
@@ -22,13 +23,14 @@ class Bitmask
 	public function __construct( $flags = null, $value = null )
 	{
 		if ( ! is_array( $flags ) ) {
-			throw new InvalidArgumentException(_t('Bitmask constructor expects either no arguments or an array as a first argument'));
+			throw new InvalidArgumentException( _t( 'Bitmask constructor expects either no arguments or an array as a first argument' ) );
 		}
 
 		$this->flags = $flags;
+		$this->full = ( 1 << ( count( $this->flags ) ) ) - 1;
 		if ( ! is_null( $value ) ) {
 			if ( is_numeric( $value ) ) {
-				$this->value = $value;
+				$this->value = (int) $value;
 			}
 			elseif ( is_string( $value ) ) {
 				$this->$value = true;
@@ -70,13 +72,13 @@ class Bitmask
 				break;
 			default:
 				if ( ! is_bool( $on ) )
-					throw new InvalidArgumentException(_t('Bitmask values must be boolean'));
+					throw new InvalidArgumentException( _t( 'Bitmask values must be boolean' ) );
 				$bit = array_search( $bit, $this->flags );
 				if ( $on ) {
 					$this->value |= 1 << $bit;
 				}
 				else {
-					$this->value &= ~(1 << $bit);
+					$this->value &= ~( 1 << $bit );
 				}
 				break;
 			}
@@ -91,26 +93,19 @@ class Bitmask
 	 */
 	public function __get( $bit )
 	{
-		if ( is_string( $bit ) ) {
-			if ( $bit == 'full' ) {
-				return (1 << (count($this->flags))) - 1;
-			}
-			elseif ( $bit === 'value' ) {
-				return $this->value;
-			}
-			else {
-				$bit = array_search( $bit, $this->flags );
-			}
+		if ( $bit === 'value' ) {
+			return $this->value;
 		}
-		if ( $bit === false )
-			return false;
-		return ($this->value & (1 << $bit )) != 0;
+		else {
+			$bit = array_search( $bit, $this->flags );
+		}
+		return ( $this->value & ( 1 << $bit ) ) !== 0;
 	}
 
 	public function __tostring()
 	{
-		if ( $this->value == $this->full ) {
-			return _t('full');
+		if ( $this->value === $this->full ) {
+			return _t( 'full' );
 		}
 		$output = array();
 		foreach ( $this->flags as $flag ) {
@@ -118,10 +113,10 @@ class Bitmask
 				$output[] = $flag;
 			}
 		}
-		if ( count($output) == 0 ) {
-			return _t('none');
+		if ( count( $output ) === 0 ) {
+			return _t( 'none' );
 		}
-		return implode(',', $output);
+		return implode( ',', $output );
 	}
 
 }
