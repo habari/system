@@ -536,13 +536,13 @@ SQL;
 
 		foreach ( (array)$result as $token ) {
 			$bitmask->value = $token->access_mask;
-			if ( $access == 'deny' && $bitmask->value == 0 ) {
-				$tokens[] = $token->token_id;
-			}
-			else {
-				if ( $bitmask->$access ) {
+			if ( $access === 'deny' ) {
+				if ( $bitmask->value === 0 ) {
 					$tokens[] = $token->token_id;
 				}
+			}
+			elseif ( $bitmask->$access ) {
+				$tokens[] = $token->token_id;
 			}
 		}
 

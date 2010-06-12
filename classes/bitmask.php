@@ -104,10 +104,15 @@ class Bitmask
 		if ( $bit === 'value' ) {
 			return $this->value;
 		}
-		else {
-			$bit = array_search( $bit, $this->flags );
+		elseif ( $bit === 'full' ) {
+			return $this->full;
 		}
-		return ( $this->value & ( 1 << $bit ) ) !== 0;
+		elseif ( ( $bit = array_search( $bit, $this->flags ) ) !== false ) {
+			return ( $this->value & ( 1 << $bit ) ) !== 0;
+		}
+		else {
+			throw new InvalidArgumentException( _t( 'Bitmask cannot get non-existent flag' ) );
+		}
 	}
 	
 	/**
