@@ -109,6 +109,17 @@ class Bitmask
 		}
 		return ( $this->value & ( 1 << $bit ) ) !== 0;
 	}
+	
+	/**
+	 * Magic check-whether-flag-exists method
+	 * 
+	 * @param flag string of flag name
+	 * @return boolean
+	 */
+	public function __isset( $flag )
+	{
+		return $flag === 'full' || $flag === 'value' || in_array( $flag, $this->flags );
+	}
 
 	public function __tostring()
 	{
