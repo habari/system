@@ -36,7 +36,7 @@ class Bitmask
 			if ( $value === 'full' ) {
 				$this->value = $this->full;
 			}
-			elseif ( is_int( $value ) && $value >= 0 && $value <= $this->full ) {
+			elseif ( (string) (int) $value === (string) $value && $value >= 0 && $value <= $this->full ) {
 				$this->value = $value;
 			}
 			elseif ( is_string( $value ) && in_array( $value, $flags ) ) {
@@ -87,7 +87,7 @@ class Bitmask
 						$this->value |= (int) $flag;
 					}
 				}
-				elseif ( is_int( $on ) && $on >= 0 && $on <= $this->full ) {
+				elseif ( (string) (int) $value === (string) $value && $on >= 0 && $on <= $this->full ) {
 					$this->value = $on;
 				}
 				else {
