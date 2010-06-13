@@ -87,7 +87,7 @@ class Bitmask
 						$this->value |= (int) $flag;
 					}
 				}
-				elseif ( (string) (int) $value === (string) $value && $on >= 0 && $on <= $this->full ) {
+				elseif ( (string) (int) $on === (string) $on && $on >= 0 && $on <= $this->full ) {
 					$this->value = $on;
 				}
 				else {
