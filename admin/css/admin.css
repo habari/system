@@ -1760,7 +1760,7 @@ body.page-themes .thumb img {
 	margin: 0 0 40px 0;
 	padding: 4px;
 	width: 200px;
-	max-height: 150px;
+	height: 150px;
 	display: block;
 	overflow: hidden;
 	background: #f2f2f2;
