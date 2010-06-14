@@ -521,9 +521,10 @@ class Post extends QueryRecord implements IsContent
 	public function update( $minor = true )
 	{
 		$this->modified = HabariDateTime::date_create();
-		if ( ! $minor ) {
+		if ( ! $minor && $this->status != Post::status( 'draft' ) ) {
 			$this->updated = $this->modified;
 		}
+		
 		if ( isset( $this->fields['guid'] ) ) {
 			unset( $this->newfields['guid'] );
 		}
@@ -830,6 +831,9 @@ class Post extends QueryRecord implements IsContent
 
 		$settings->append('text', 'pubdate', 'null:null', _t('Publication Time'), 'tabcontrol_text');
 		$settings->pubdate->value = $this->pubdate->format('Y-m-d H:i:s');
+
+		$settings->append('hidden', 'updated', 'null:null' );
+		$settings->updated->value = $this->updated->int;
 
 		$settings->append('text', 'newslug', 'null:null', _t('Content Address'), 'tabcontrol_text');
 		$settings->newslug->value = $this->slug;
