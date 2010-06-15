@@ -141,6 +141,11 @@ class UserHandler extends ActionHandler
 		foreach ( URL::get_active_rules() as $rule ) {
 			$request->{$rule->name} = ( $rule->name == URL::get_matched_rule()->name );
 		}
+
+		if (isset($this->handler_vars['error'])) {
+		    $this->theme->assign( 'error', Utils::htmlspecialchars( $this->handler_vars['error'] ) );
+		}
+
 		$this->theme->assign( 'request', $request );
 		$this->theme->assign( 'habari_username', htmlentities($name, ENT_QUOTES, 'UTF-8') );
 		$this->display( 'login' );
