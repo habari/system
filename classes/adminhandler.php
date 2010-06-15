@@ -532,11 +532,10 @@ class AdminHandler extends ActionHandler
 			}
 			$post->content_type = $form->content_type->value;
 
-			// if not previously published and the user wants to publish now, change the pubdate to the current date/time
-			// if the post pubdate is <= the current date/time.
+			// if not previously published and the user wants to publish now, change the pubdate to the current date/time unless a date has been explicitly set
 			if ( ( $post->status != Post::status( 'published' ) )
 				&& ( $form->status->value == Post::status( 'published' ) )
-				&& ( HabariDateTime::date_create( $form->pubdate->value )->int <= HabariDateTime::date_create()->int )
+				&& ( HabariDateTime::date_create( $form->pubdate->value )->int == $form->updated->value )
 				) {
 				$post->pubdate = HabariDateTime::date_create();
 			}
@@ -561,8 +560,7 @@ class AdminHandler extends ActionHandler
 			}
 
 			$form->on_success( array( $this, 'form_publish_success' ) );
-
-			if ( HabariDateTime::date_create( $form->pubdate->value )->int > $post->pubdate->int ) {
+			if ( HabariDateTime::date_create( $form->pubdate->value )->int != $form->updated->value ) {
 				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
 			}
 
