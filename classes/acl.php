@@ -65,32 +65,6 @@ class ACL
 	}
 
 	/**
-	 * Check the permission bitmask to find the access type
-	 * <em>This function is horribly, horribly broken, and shouldn't be used.
-	 * For example, it will return that a permission is only "read" when it is actually "read+write".</em>
-	 * Use get_bitmask() to retrieve a Btimask instead, and use its properties for testing values.
-	 * @param mixed $mask The access bitmask
-	 * @return mixed The permission level granted, or false for none
-	 */
-	public static function access_level( $mask )
-	{
-		$bitmask = new Bitmask( self::$access_names, $mask );
-
-		if ( $bitmask->value == $bitmask->full ) {
-			return 'full';
-		}
-		else {
-			foreach ( $bitmask->flags as $flag ) {
-				if ( $bitmask->$flag ) {
-					return $flag;
-				}
-			}
-		}
-		return false;
-
-	}
-
-	/**
 	 * Create a new permission token, and save it to the permission tokens table
 	 * @param string $name The name of the permission
 	 * @param string $description The description of the permission
