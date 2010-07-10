@@ -136,11 +136,11 @@ class Format
 	 * @param string $value The string to apply the formatting
 	 * @returns string The formatted string
 	 **/
-	public static function autop($value)
+	public static function autop( $value )
 	{
-		$value = str_replace("\r\n", "\n", $value);
-		$value = trim($value);
-		$ht = new HtmlTokenizer($value, false);
+		$value = str_replace( "\r\n", "\n", $value );
+		$value = trim( $value );
+		$ht = new HtmlTokenizer( $value, false );
 		$set = $ht->parse();
 		$value = '';
 		
@@ -166,56 +166,62 @@ class Format
 		$openP = false;
 		do {
 			
-			if ($openP) {
-				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array(strtolower($token['name']), $blockElements)) {
-					$value .= '</p>';
+			if ( $openP ) {
+				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $blockElements ) ) {
+					if ( strtolower( $token['name'] ) != 'p' || $token['type'] != HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
+						$value .= '</p>';
+					}
 					$openP = false;
 				}
 			}
 			
-			if ($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array(strtolower($token['name']), $blockElements) && $value == '') {
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array( strtolower( $token['name'] ), $blockElements ) && $value == '' ) {
 				// first element, is not a block element
 				$value = '<p>';
 				$openP = true;
 			}
 			
 			// no-autop, pass them through verbatim
-			if ($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array(strtolower($token['name']), $noAutoP)) {
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array( strtolower( $token['name'] ), $noAutoP ) ) {
 				$nestedToken = $token;
 				do {
-					$value .= HtmlTokenSet::token_to_string($nestedToken, false);
+					$value .= HtmlTokenSet::token_to_string( $nestedToken, false );
 					if (
-						($nestedToken['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
-						 && strtolower($nestedToken['name']) == strtolower($token['name'])) // found closing element
+						( $nestedToken['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
+						 && strtolower( $nestedToken['name'] ) == strtolower( $token['name'] ) ) // found closing element
 					) {
 						break;
 					}
-				} while ($nestedToken = $set->next());
+				} while ( $nestedToken = $set->next() );
 				continue;
 			}
 			
 			// anything that's not a text node should get passed through
-			if ($token['type'] != HTMLTokenizer::NODE_TYPE_TEXT) {
-				$value .= HtmlTokenSet::token_to_string($token, true);
+			if ( $token['type'] != HTMLTokenizer::NODE_TYPE_TEXT ) {
+				$value .= HtmlTokenSet::token_to_string( $token, true );
+				// If the token itself is p, we need to set $openP
+				if ( strtolower( $token['name'] ) == 'p' && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN ) {
+					$openP = true;
+				}
 				continue;
 			}
 			
 			// if we get this far, token type is text
 			$localValue = $token['value'];
-			if (strlen($localValue)) {
-				if (!$openP) {
-					$localValue = '<p>' . ltrim($localValue);
+			if ( strlen( $localValue ) ) {
+				if ( !$openP ) {
+					$localValue = '<p>' . ltrim( $localValue );
 					$openP = true;
 				}
 				
-				$localValue = preg_replace('/\s*(\n\s*){2,}/u', "</p><p>", $localValue); // at least two \n in a row (allow whitespace in between)
-				$localValue = str_replace("\n", "<br>", $localValue); // nl2br
+				$localValue = preg_replace( '/\s*(\n\s*){2,}/u', "</p><p>", $localValue ); // at least two \n in a row (allow whitespace in between)
+				$localValue = str_replace( "\n", "<br>", $localValue ); // nl2br
 			}
 			$value .= $localValue;
-		} while ($token = $set->next());
+		} while ( $token = $set->next() );
 		
-		$value = preg_replace('#\s*<p></p>\s*#u', '', $value); // replace <p></p>
-		if ($openP) {
+		$value = preg_replace( '#\s*<p></p>\s*#u', '', $value ); // replace <p></p>
+		if ( $openP ) {
 			$value .= '</p>';
 		}
 		
