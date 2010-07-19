@@ -361,6 +361,17 @@ class Post extends QueryRecord implements IsContent
 		if ( isset( $this->newfields['slug']) && $this->newfields['slug'] != '' ) {
 			$value = $this->newfields['slug'];
 		}
+		// - the new empty slug whilst in draft or progressing directly to published or scheduled from draft. Also allow changing of slug whilst in scheduled state
+		elseif ( isset( $this->newfields['slug']) && $this->newfields['slug'] == '' ) {
+			if ( $this->fields['status'] == Post::status( 'draft' ) || ( $this->fields['status'] != Post::status( 'draft' ) && $this->newfields['status'] != Post::status( 'draft' ) ) ) {
+				if ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
+					$value = $this->newfields['title'];
+				}
+				else {
+					$value = $this->fields['title'];
+				}
+			}
+		}
 		// - the existing slug
 		elseif ( $this->fields['slug'] != '' ) {
 			$value = $this->fields['slug'];
@@ -537,7 +548,7 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_update_before', $this );
 
 		// Call setslug() only when post slug is changed
-		if ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] != '' ) {
+		if ( isset( $this->newfields['slug'] ) ) {
 			if ( $this->fields['slug'] != $this->newfields['slug'] ) {
 				$this->setslug();
 			}
