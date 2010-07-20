@@ -485,7 +485,14 @@ SQL;
 
 		$super_user_access = self::get_user_token_access( $user, 'super_user' );
 		if ( isset( $super_user_access ) && self::access_check( $super_user_access, 'any' ) ) {
-			$result = DB::get_results('SELECT id as token_id, ? as access_mask FROM {tokens}', array($bitmask->full) );
+			$token_ids = DB::get_column('SELECT id as token_id FROM {tokens}' );
+			$result = array();
+			foreach($token_ids as $id) {
+				$result_row = new StdClass();
+				$result_row->token_id = $id;
+				$result_row->access_mask = $bitmask->full;
+				$result[] = $result_row; 
+			}
 		}
 		else {
 
