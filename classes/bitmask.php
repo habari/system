@@ -90,6 +90,9 @@ class Bitmask
 				elseif ( (string) (int) $on === (string) $on && $on >= 0 && $on <= $this->full ) {
 					$this->value = $on;
 				}
+				elseif ( empty($on) ) {
+					$this->value = 0;
+				}
 				else {
 					throw new InvalidArgumentException( _t( 'Bitmask value must either be an integer within the valid range or an array of booleans' ) );
 				}
