@@ -72,6 +72,7 @@ class FeedbackHandler extends ActionHandler
 	 * @param string $email The commenter's email address
 	 * @param string $url The commenter's website URL
 	 * @param string $content The comment content
+	 * @param array $extra An associative array of extra values that should be considered
 	 */
 	function add_comment( $post, $name = null, $email = null, $url = null, $content = null, $extra = null )
 	{
@@ -164,9 +165,18 @@ class FeedbackHandler extends ActionHandler
 		if ( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
 			$comment->status = Comment::STATUS_APPROVED;
 		}
+		
+		// Users need to have permission to add comments
+		if(!$user->can('comment')) {
+			Session::error( _t( 'You do not have permission to create comments.' ) );
+			Utils::redirect( $post->permalink );
+		}
 
 		// Allow themes to work with comment hooks
 		Themes::create();
+
+		// Allow plugins to change comment data and add commentinfo based on plugin-added form fields
+		Plugins::act( 'comment_accepted', $comment, $this->handler_vars, $extra );
 
 		$spam_rating = 0;
 		$spam_rating = Plugins::filter( 'spam_filter', $spam_rating, $comment, $this->handler_vars, $extra );
