@@ -20,13 +20,6 @@ class FeedbackHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$defaults = array(
-			'comment_name' => '',
-			'comment_email' => '',
-			'comment_url' => '',
-			'comment_content' => ''
-		);
-
 		// We need to get the post anyway to redirect back to the post page.
 		$post = Post::get( array( 'id' => $this->handler_vars['id'] ) );
 		if ( ! $post ) {
@@ -39,8 +32,14 @@ class FeedbackHandler extends ActionHandler
 		Themes::create();
 		$form = $post->comment_form();
 		$form->get( null, false );
-		// Was this a FormUI form, or a regular comment form?
-		if ( $form->submitted ) {
+
+		// Disallow non-FormUI comments
+		if ( !$form->submitted ) {
+			// Trying to submit a non-FormUI comment
+			header( 'HTTP/1.1 403 Forbidden', true, 403 );
+			die();
+		}
+		else {
 
 			// To be eventually incorporated more fully into FormUI.
 			Plugins::act( 'comment_form_submit', $form );
@@ -63,23 +62,6 @@ class FeedbackHandler extends ActionHandler
 				$form->bounce();
 			}
 		}
-		else {
-			// make sure all our default values are set so we don't throw undefined index errors
-			foreach ( $defaults as $k => $v ) {
-				if ( ! isset( $this->handler_vars[ $k ] ) ) {
-					$this->handler_vars[ $k ] = $v;
-				}
-			}
-
-			$this->add_comment(
-				$this->handler_vars['id'],
-				$this->handler_vars['name'],
-				$this->handler_vars['email'],
-				$this->handler_vars['url'],
-				$this->handler_vars['content']
-			);
-
-		}
 	}
 
 	/**
@@ -90,6 +72,7 @@ class FeedbackHandler extends ActionHandler
 	 * @param string $email The commenter's email address
 	 * @param string $url The commenter's website URL
 	 * @param string $content The comment content
+	 * @param array $extra An associative array of extra values that should be considered
 	 */
 	function add_comment( $post, $name = null, $email = null, $url = null, $content = null, $extra = null )
 	{
@@ -182,9 +165,18 @@ class FeedbackHandler extends ActionHandler
 		if ( ( $user->loggedin ) && ( $comment->email == $user->email ) ) {
 			$comment->status = Comment::STATUS_APPROVED;
 		}
+		
+		// Users need to have permission to add comments
+		if(!$user->can('comment')) {
+			Session::error( _t( 'You do not have permission to create comments.' ) );
+			Utils::redirect( $post->permalink );
+		}
 
 		// Allow themes to work with comment hooks
 		Themes::create();
+
+		// Allow plugins to change comment data and add commentinfo based on plugin-added form fields
+		Plugins::act( 'comment_accepted', $comment, $this->handler_vars, $extra );
 
 		$spam_rating = 0;
 		$spam_rating = Plugins::filter( 'spam_filter', $spam_rating, $comment, $this->handler_vars, $extra );

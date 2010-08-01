@@ -65,32 +65,6 @@ class ACL
 	}
 
 	/**
-	 * Check the permission bitmask to find the access type
-	 * <em>This function is horribly, horribly broken, and shouldn't be used.
-	 * For example, it will return that a permission is only "read" when it is actually "read+write".</em>
-	 * Use get_bitmask() to retrieve a Btimask instead, and use its properties for testing values.
-	 * @param mixed $mask The access bitmask
-	 * @return mixed The permission level granted, or false for none
-	 */
-	public static function access_level( $mask )
-	{
-		$bitmask = new Bitmask( self::$access_names, $mask );
-
-		if ( $bitmask->value == $bitmask->full ) {
-			return 'full';
-		}
-		else {
-			foreach ( $bitmask->flags as $flag ) {
-				if ( $bitmask->$flag ) {
-					return $flag;
-				}
-			}
-		}
-		return false;
-
-	}
-
-	/**
 	 * Create a new permission token, and save it to the permission tokens table
 	 * @param string $name The name of the permission
 	 * @param string $description The description of the permission
@@ -108,13 +82,13 @@ class ACL
 		}
 		$allow = true;
 		// Plugins have the opportunity to prevent adding this token
-		$allow = Plugins::filter('token_create_allow', $allow, $name, $description, $group, $crud );
+		$allow = Plugins::filter( 'token_create_allow', $allow, $name, $description, $group, $crud );
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('token_create_before', $name, $description, $group, $crud );
+		Plugins::act( 'token_create_before', $name, $description, $group, $crud );
 
-		$result = DB::query('INSERT INTO {tokens} (name, description, token_group, token_type) VALUES (?, ?, ?, ?)', array( $name, $description, $group, $crud) );
+		$result = DB::query( 'INSERT INTO {tokens} (name, description, token_group, token_type) VALUES (?, ?, ?, ?)', array( $name, $description, $group, $crud ) );
 
 		if ( ! $result ) {
 			// if it didn't work, don't bother trying to log it
@@ -130,8 +104,8 @@ class ACL
 			ACL::grant_group( $admin->id, $token, 'full' );
 		}
 
-		EventLog::log('New permission token created: ' . $name, 'info', 'default', 'habari');
-		Plugins::act('permission_create_after', $name, $description, $group, $crud );
+		EventLog::log( 'New permission token created: ' . $name, 'info', 'default', 'habari' );
+		Plugins::act( 'permission_create_after', $name, $description, $group, $crud );
 		return $result;
 	}
 
@@ -152,11 +126,11 @@ class ACL
 
 		$allow = true;
 		// plugins have the opportunity to prevent deletion
-		$allow = Plugins::filter('token_destroy_allow', $allow, $token_id);
+		$allow = Plugins::filter( 'token_destroy_allow', $allow, $token_id );
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('token_destroy_before', $token_id );
+		Plugins::act( 'token_destroy_before', $token_id );
 		// capture the token name
 		$name = DB::get_value( 'SELECT name FROM {tokens} WHERE id=?', array( $token_id ) );
 		// remove all references to this permissions
@@ -170,8 +144,8 @@ class ACL
 			// if it didn't work, don't bother trying to log it
 			return false;
 		}
-		EventLog::log( sprintf(_t('Permission token deleted: %s'), $name), 'info', 'default', 'habari');
-		Plugins::act('token_destroy_after', $token_id );
+		EventLog::log( sprintf( _t( 'Permission token deleted: %s' ), $name ), 'info', 'default', 'habari' );
+		Plugins::act( 'token_destroy_after', $token_id );
 		return $result;
 	}
 
@@ -202,7 +176,7 @@ class ACL
 		}
 		else {
 			$tokens = ACL::cache_tokens();
-			return isset($tokens[$id]) ? $tokens[$id] : false;
+			return isset( $tokens[ $id ] ) ? $tokens[ $id ] : false;
 		}
 	}
 
@@ -226,7 +200,7 @@ class ACL
 	 */
 	public static function token_id( $name )
 	{
-		if ( is_numeric($name) ) {
+		if ( is_numeric( $name ) ) {
 			return intval( $name );
 		}
 		$name = self::normalize_token( $name );
@@ -395,13 +369,13 @@ class ACL
 		}
 
 		// check the cache first for the user's access_mask on the token
-		if ( isset($_SESSION['user_token_access'][$user_id][$token_id]) ) {
+		if ( isset( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] ) ) {
 //			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
-			if ( $_SESSION['user_token_access'][$user_id][$token_id] == ACL::CACHE_NULL ) {
+			if ( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] == ACL::CACHE_NULL ) {
 				return NULL;
 			}
 			else {
-				return self::get_bitmask( $_SESSION['user_token_access'][$user_id][$token_id] );
+				return self::get_bitmask( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] );
 			}
 		}
 
@@ -425,15 +399,15 @@ class ACL
 		$exceptions = '';
 		$default_groups = array();
 		$default_groups = Plugins::filter( 'user_default_groups', $default_groups, $user_id );
-		$default_groups = array_filter(array_map('intval', $default_groups));
-		switch(count($default_groups)) {
+		$default_groups = array_filter( array_map( 'intval', $default_groups ) );
+		switch( count( $default_groups ) ) {
 			case 0: // do nothing
 				break;
 			case 1: // single argument
-				$exceptions = 'OR ug.group_id = ' . reset($default_groups);
+				$exceptions = 'OR ug.group_id = ' . reset( $default_groups );
 				break;
 			default: // multiple arguments
-				$exceptions = 'OR ug.group_id IN (' . implode(',', $default_groups) . ')';
+				$exceptions = 'OR ug.group_id IN (' . implode( ',', $default_groups ) . ')';
 				break;
 		}
 
@@ -453,19 +427,19 @@ SELECT gp.access_mask
 	ORDER BY access_mask ASC
 SQL;
 
-		if ($token_id == '') { $token_id = '0'; }
+		if ( $token_id == '' ) { $token_id = '0'; }
 
 		$accesses = DB::get_column( $sql, array( $user_id, $token_id, $user_id, $token_id ) );
 
 		$accesses = Plugins::filter( 'user_token_access', $accesses, $user_id, $token_id );
 
-		if ( count($accesses) == 0 ) {
-			$_SESSION['user_token_access'][$user_id][$token_id] = ACL::CACHE_NULL;
+		if ( count( $accesses ) == 0 ) {
+			$_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] = ACL::CACHE_NULL;
 			return null;
 		}
 		else {
 			$result = 0;
-			foreach ( (array)$accesses as $access ) {
+			foreach ( (array) $accesses as $access ) {
 				if ( $access == 0 ) {
 					$result = 0;
 					break;
@@ -475,7 +449,7 @@ SQL;
 				}
 			}
 
-			$_SESSION['user_token_access'][$user_id][$token_id] = $result;
+			$_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] = $result;
 			return self::get_bitmask( $result );
 		}
 	}
@@ -505,13 +479,20 @@ SQL;
 		}
 
 		// Implement cache RIGHT HERE
-		if ( isset($_SESSION['user_tokens'][$user_id][$access]) ) {
-			return $_SESSION['user_tokens'][$user_id][$access];
+		if ( isset( $_SESSION[ 'user_tokens' ][ $user_id ][ $access ] ) ) {
+			return $_SESSION[ 'user_tokens' ][ $user_id ][ $access ];
 		}
 
 		$super_user_access = self::get_user_token_access( $user, 'super_user' );
 		if ( isset( $super_user_access ) && self::access_check( $super_user_access, 'any' ) ) {
-			$result = DB::get_results('SELECT id as token_id, ? as access_mask FROM {tokens}', array($bitmask->full) );
+			$token_ids = DB::get_column('SELECT id as token_id FROM {tokens}' );
+			$result = array();
+			foreach( $token_ids as $id ) {
+				$result_row = new StdClass();
+				$result_row->token_id = $id;
+				$result_row->access_mask = $bitmask->full;
+				$result[] = $result_row; 
+			}
 		}
 		else {
 
@@ -530,11 +511,11 @@ SQL;
 			$result = DB::get_results( $sql, array( ':user_id' => $user_id ) );
 		}
 
-		if ( $posts_only && !isset($post_tokens)) {
-			$post_tokens = DB::get_column('SELECT token_id FROM {post_tokens} GROUP BY token_id');
+		if ( $posts_only && !isset( $post_tokens ) ) {
+			$post_tokens = DB::get_column( 'SELECT token_id FROM {post_tokens} GROUP BY token_id' );
 		}
 
-		foreach ( (array)$result as $token ) {
+		foreach ( (array) $result as $token ) {
 			$bitmask->value = $token->access_mask;
 			if ( $access === 'deny' ) {
 				if ( $bitmask->value === 0 ) {
@@ -550,7 +531,7 @@ SQL;
 			$tokens = array_intersect( $tokens, $post_tokens);
 		}
 
-		$_SESSION['user_tokens'][$user_id][$access] = $tokens;
+		$_SESSION[ 'user_tokens' ][ $user_id ][ $access ] = $tokens;
 		return $tokens;
 	}
 
@@ -568,10 +549,10 @@ SQL;
 		$sql = 'SELECT access_mask FROM {group_token_permissions} WHERE
 			group_id=? AND token_id=?;';
 
-		$result = DB::get_value( $sql, array( $group, $token_id) );
+		$result = DB::get_value( $sql, array( $group, $token_id ) );
 
 		if ( isset( $result ) ) {
-			return self::get_bitmask($result);
+			return self::get_bitmask( $result );
 		}
 		return null;
 	}
@@ -751,7 +732,7 @@ SQL;
 	 */
 	public static function normalize_token( $name )
 	{
-		return strtolower( preg_replace( '/\s+/u', '_', trim($name) ) );
+		return strtolower( preg_replace( '/\s+/u', '_', trim( $name ) ) );
 	}
 
 	/**
@@ -760,12 +741,12 @@ SQL;
 	 */
 	public static function clear_caches()
 	{
-		if ( isset($_SESSION['user_token_access']) ) {
-			unset($_SESSION['user_token_access']);
+		if ( isset( $_SESSION[ 'user_token_access' ] ) ) {
+			unset( $_SESSION[ 'user_token_access' ] );
 
 		}
-		if (isset($_SESSION['user_tokens'])) {
-			unset($_SESSION['user_tokens']);
+		if ( isset( $_SESSION[ 'user_tokens' ] ) ) {
+			unset( $_SESSION[ 'user_tokens' ] );
 		}
 		self::$token_cache = null;
 	}
@@ -810,22 +791,22 @@ SQL;
 	public static function rebuild_permissions( $user = null )
 	{
 		// Clear out all permission-related values
-		DB::query('DELETE FROM {tokens}');
-		DB::query('DELETE FROM {group_token_permissions}');
-		//DB::query('DELETE FROM {groups}');
-		DB::query('DELETE FROM {post_tokens}');
-		DB::query('DELETE FROM {user_token_permissions}');
+		DB::query( 'DELETE FROM {tokens}' );
+		DB::query( 'DELETE FROM {group_token_permissions}' );
+		//DB::query( 'DELETE FROM {groups}' );
+		DB::query( 'DELETE FROM {post_tokens}' );
+		DB::query( 'DELETE FROM {user_token_permissions}' );
 		//DB::query('DELETE FROM {users_groups}');
 
 		// Create initial groups if they don't already exist
-		$admin_group = UserGroup::get_by_name( _t('admin') );
+		$admin_group = UserGroup::get_by_name( _t( 'admin' ) );
 		if ( ! $admin_group instanceof UserGroup ) {
-			$admin_group = UserGroup::create( array( 'name' => _t('admin') ) );
+			$admin_group = UserGroup::create( array( 'name' => _t( 'admin' ) ) );
 		}
 
-		$anonymous_group = UserGroup::get_by_name( _t('anonymous') );
+		$anonymous_group = UserGroup::get_by_name( _t( 'anonymous' ) );
 		if ( ! $anonymous_group instanceof UserGroup ) {
-			$anonymous_group = UserGroup::create( array( 'name' => _t('anonymous') ) );
+			$anonymous_group = UserGroup::create( array( 'name' => _t( 'anonymous' ) ) );
 		}
 
 		// Add all users or the passed user to the admin group
@@ -838,16 +819,16 @@ SQL;
 			$admin_group->add( $ids );
 		}
 		else {
-			$admin_group->add($user);
+			$admin_group->add( $user );
 		}
 
 		// create default permissions
 		self::create_default_tokens();
 		// Make the admin group all superusers
-		$admin_group->grant('super_user');
+		$admin_group->grant( 'super_user' );
 		// Add entry and page read access to the anonymous group
-		$anonymous_group->grant('post_entry', 'read');
-		$anonymous_group->grant('post_page', 'read');
+		$anonymous_group->grant( 'post_entry', 'read' );
+		$anonymous_group->grant( 'post_page', 'read' );
 		$anonymous_group->grant( 'comment' );
 
 		// Add the anonymous user to the anonymous group
