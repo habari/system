@@ -1608,6 +1608,25 @@ class InstallHandler extends ActionHandler
 		}
 	}
 
+	private function upgrade_db_post_4291()
+	{
+		// get all plugins so the legacy ones can be deactivated.
+		$active_plugins = Plugins::list_active();
+		$all_plugins = Installhandler::get_plugins();
+
+		$legacy_plugins = array();
+		foreach ( $all_plugins as $plugin ) {
+			if (!isset ($plugin[ 'info'])) {
+				$key = array_search( $plugin[ 'file'], $active_plugins );
+				$legacy_plugins[ $key ] = $plugin[ 'file' ];
+			}
+		}
+		$valid_plugins = array_diff_key( Options::get( 'active_plugins' ) , $legacy_plugins );
+
+		// replace option with only the usuable plugins
+		Options::set( 'active_plugins', $valid_plugins );
+	}
+
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists
