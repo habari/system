@@ -278,7 +278,7 @@ class Pingback extends Plugin
 	 */
 	public function pingback_all_links( $content, $source_uri, $post = NULL, $force = false )
 	{
-		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>]+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
+		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>"\']+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
 
 		if ( is_object( $post ) && isset( $post->info->pingbacks_successful ) ) {
 			$fn = ( $force === TRUE ) ? 'array_merge' : 'array_diff';
