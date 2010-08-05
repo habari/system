@@ -121,7 +121,7 @@ class Term extends QueryRecord
 		$postfix = '';
 		$postfixcount = 0;
 		do {
-			if ( ! $slugcount = DB::get_row( 'SELECT COUNT(term) AS ct FROM {terms} WHERE term = ?;', array( $slug . $postfix ) ) ) {
+			if ( ! $slugcount = DB::get_row( 'SELECT COUNT(term) AS ct FROM {terms} WHERE term = ? AND vocabulary_id = ?;', array( $slug . $postfix, $this->fields['vocabulary_id'] ) ) ) {
 				Utils::debug( DB::get_errors() );
 				exit;
 			}
