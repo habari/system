@@ -2341,6 +2341,11 @@ class AdminHandler extends ActionHandler
 
 			}
 		}
+		if ( ! isset( $ids ) || empty( $ids ) ) {
+			Session::notice( _t('No logs selected.') );
+			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			return;
+		}
 
 		$to_delete = EventLog::get( array( 'date' => 'any', 'where' => $ids, 'nolimit' => 1 ) );
 
