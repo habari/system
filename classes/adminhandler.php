@@ -2331,30 +2331,35 @@ class AdminHandler extends ActionHandler
 			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
-
 		foreach ( $_POST as $id => $delete ) {
 			// skip POST elements which are not log ids
 			if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
 				$id = (int) substr($id, 1);
-
 				$ids[] = array( 'id' => $id );
-
 			}
 		}
-		if ( ! isset( $ids ) || empty( $ids ) ) {
+
+		if ( ( ! isset( $ids ) || empty( $ids ) ) && $handler_vars['action'] != 'purge' ) {
 			Session::notice( _t('No logs selected.') );
 			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
-		$to_delete = EventLog::get( array( 'date' => 'any', 'where' => $ids, 'nolimit' => 1 ) );
-
-		foreach ( $to_delete as $log ) {
-			$log->delete();
-			$count++;
+		switch ( $handler_vars['action'] ) {
+			case 'delete':
+				$to_delete = EventLog::get( array( 'date' => 'any', 'where' => $ids, 'nolimit' => 1 ) );
+				foreach ( $to_delete as $log ) {
+					$log->delete();
+					$count++;
+				}
+				Session::notice( _t('Deleted %d logs.', array( $count ) ) );
+				break;
+			case 'purge':
+				$result = DB::query( 'DELETE FROM {log}' );
+				Session::notice( _t('Logs purged.' ) );
+				break;
 		}
 
-		Session::notice( _t('Deleted %d logs.', array( $count ) ) );
 		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 	}
 
