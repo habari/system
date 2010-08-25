@@ -39,6 +39,7 @@
 	<ul class="dropbutton">
 		<?php $page_actions = array(
 			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
+			'purge' => array('action' => 'itemManage.update(\'purge\');return false;', 'title' => _t('Purge Logs'), 'label' => _t('Purge Logs') ),
 		);
 		$page_actions = Plugins::filter('logs_manage_actions', $page_actions);
 		foreach( $page_actions as $page_action ) : ?>
@@ -101,6 +102,7 @@
 	<ul class="dropbutton">
 		<?php $page_actions = array(
 			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
+			'purge' => array('action' => 'itemManage.update(\'purge\');return false;', 'title' => _t('Purge Logs'), 'label' => _t('Purge Logs') ),
 		);
 		$page_actions = Plugins::filter('logs_manage_actions', $page_actions);
 		foreach( $page_actions as $page_action ) : ?>

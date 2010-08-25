@@ -307,6 +307,9 @@ var itemManage = {
 		});
 		itemManage.changeItem();
 	},
+	purge: function () {
+		itemManage.update( 'purge' );
+	},
 	update: function( action, id ) {
 		spinner.start();
 		var query = {};
