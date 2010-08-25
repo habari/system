@@ -5,8 +5,8 @@ class flickrAPI
 	{
 		$this->key = 'cd0ae46b1332aa2bd52ba3063f0db41c';
 		$this->secret = '76cf747f70be9029';
-		$this->endpoint = 'http://flickr.com/services/rest/?';
-		$this->authendpoint = 'http://flickr.com/services/auth/?';
+		$this->endpoint = 'http://www.flickr.com/services/rest/?';
+		$this->authendpoint = 'http://www.flickr.com/services/auth/?';
 		$this->uploadendpoint = 'http://api.flickr.com/services/upload/?';
 		$this->conntimeout = 20;
 	}
