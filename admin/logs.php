@@ -36,7 +36,6 @@
 		<input type="checkbox" id="master_checkbox" name="master_checkbox">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
 	</span>
-<?php /* This works excecpt it deletes all entries when you select none */ ?>
 	<ul class="dropbutton">
 		<?php $page_actions = array(
 			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
