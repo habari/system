@@ -2388,13 +2388,13 @@ class AdminHandler extends ActionHandler
 			}
 		}
 
-		$comments = Comments::get( array( 'id' => $ids, 'nolimit' => true ) );
-		if ( $comments === FALSE ) {
+		if ( ( ! isset( $ids ) || empty( $ids ) ) && $handler_vars['action'] == 'delete' ) {
 			Session::notice( _t('No comments selected.') );
 			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 			return;
 		}
 
+		$comments = Comments::get( array( 'id' => $ids, 'nolimit' => true ) );
 		Plugins::act( 'admin_moderate_comments', $handler_vars['action'], $comments, $this );
 		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
 
