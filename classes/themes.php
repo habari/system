@@ -49,14 +49,19 @@ class Themes
 				$themedata['path'] = $theme_path;
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
-
-				if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
-					$themedata['screenshot'] = Site::get_url( 'habari' ) . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
+				if ( $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
+				    $themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
+				    $themedata['info']->description = '<span class="error">' . _t( 'This theme is a legacy theme that is not compatible with Habari ' ) . Version::get_habariversion() . '. <br><br>Please update your theme.</span>';
+				    $themedata['info']->license = '';
+				} else {
+				    if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
+					    $themedata['screenshot'] = Site::get_url( 'habari' ) . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
+				    }
+				    else {
+					    $themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
+				    }
 				}
-				else {
-					$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
-				}
-
+				
 				self::$all_data[$theme_dir] = $themedata;
 			}
 		}
