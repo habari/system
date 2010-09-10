@@ -1744,7 +1744,7 @@ body.page-themes .availablethemes .themeinfo p {
 	margin-bottom: 1em;
 }
 
-body.page-themes #page .availablethemes .dropbutton {
+body.page-themes #page .availablethemes .dropbutton, body.page-themes #page .availablethemes .legacy {
     position: absolute;
     top: 220px;
     right: 73px; /* this is a hack */

@@ -158,7 +158,11 @@ foreach ( $all_themes as $inactive_theme ):
 				<p class="description"><?php printf( _t('%1$s is licensed under the %2$s'), $inactive_theme['info']->name, '<a href="' . $inactive_theme['info']->license['url'] . '">' . $inactive_theme['info']->license . '</a>' ); ?></p>
 				<?php endif; ?>
 			</div>
-		</div> 
+		</div>
+	    <?php
+	    if ( $inactive_theme['info']->getName() != 'pluggable' || (string) $inactive_theme['info']->attributes()->type != 'theme' ) : ?>
+		<p class="legacy"><?php _e( 'Legacy theme.' ); ?></p>
+	    <?php else: ?>
 		<ul class="dropbutton"> 
 			<?php if($previewed == $inactive_theme['dir']): ?>
 			<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('End Preview'); ?></a></li>
@@ -166,7 +170,8 @@ foreach ( $all_themes as $inactive_theme ):
 			<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Preview'); ?></a></li>
 			<?php endif; ?>
 			<li><a href="<?php URL::out( 'admin', 'page=activate_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Activate'); ?></a></li>
-		</ul> 
+		</ul>
+	    <?php endif; ?>
 	</div> 	
 
 <?php
