@@ -1527,30 +1527,6 @@ class InstallHandler extends ActionHandler
 
 	}
 
-	private function upgrade_db_post_3484()
-	{
-		$new_plugins = array();
-		$plugins = Options::get( 'active_plugins' );
-		if ( is_array($plugins) ) {
-			foreach ( $plugins as $filename ) {
-				if ( !file_exists($filename) ) {
-					// try adding base path to stored path
-					$filename = HABARI_PATH . $filename;
-				}
-				if ( file_exists($filename) ) {
-					require_once $filename;
-					$class = Plugins::class_from_filename($filename);
-					$short_file = substr( $filename, strlen( HABARI_PATH ) );
-					if ( $class ) {
-						$new_plugins[$class] = $short_file;
-					}
-				}
-			}
-		}
-
-		Options::set('active_plugins', $new_plugins);
-	}
-
 	private function upgrade_db_post_3539()
 	{
 
@@ -1616,15 +1592,34 @@ class InstallHandler extends ActionHandler
 
 		$legacy_plugins = array();
 		foreach ( $all_plugins as $plugin ) {
-			if (!isset ($plugin[ 'info'])) {
-				$key = array_search( $plugin[ 'file'], $active_plugins );
+			if ( !isset ( $plugin[ 'info' ] ) ) {
+				$key = array_search( $plugin[ 'file' ], $active_plugins );
 				$legacy_plugins[ $key ] = $plugin[ 'file' ];
 			}
 		}
 		$valid_plugins = array_diff_key( Options::get( 'active_plugins' ) , $legacy_plugins );
 
+		// valid_plugins contains only working plugins, but the classnames are missing. The following was previously upgrade_db_post_3484()
+		$new_plugins = array();
+		if ( is_array( $valid_plugins ) ) {
+			foreach ( $valid_plugins as $filename ) {
+				if ( !file_exists( $filename ) ) {
+					// try adding base path to stored path
+					$filename = HABARI_PATH . $filename;
+				}
+				if ( file_exists( $filename ) ) {
+					// it is now safe to do this since plugins with info() functions are not in $valid_plugins
+					require_once $filename;
+					$class = Plugins::class_from_filename( $filename );
+					$short_file = substr( $filename, strlen( HABARI_PATH ) );
+					if ( $class ) {
+						$new_plugins[ $class ] = $short_file;
+					}
+				}
+			}
+		}
 		// replace option with only the usuable plugins
-		Options::set( 'active_plugins', $valid_plugins );
+		Options::set( 'active_plugins', $new_plugins );
 	}
 
 	/**
