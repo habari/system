@@ -8,6 +8,25 @@
 class PGSQLConnection extends DatabaseConnection
 {
 	/**
+	 * Extends default connection method. It will be useful in order to
+	 * allow accents and other DB-centric global commands.
+	 *
+	 * @param string $connect_string a PDO connection string
+	 * @param string $db_user the database user name
+	 * @param string $db_pass the database user password
+	 * @return boolean TRUE on success, FALSE on error
+	 */
+	public function connect( $connect_string, $db_user, $db_pass )
+	{
+		// If something went wrong, we don't need to exec the specific commands.
+		if ( !parent::connect( $connect_string, $db_user, $db_pass ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Database specific SQL translation function, loosely modelled on the
 	 * internationalization _t() function.
 	 * Call with a database independent SQL string and it will be translated
@@ -15,7 +34,6 @@ class PGSQLConnection extends DatabaseConnection
 	 *
 	 * @param $sql database independent SQL
 	 * @return string translated SQL string
-	 * @todo Actually implement this.
 	 */
 	function sql_t( $sql )
 	{
@@ -28,6 +46,8 @@ class PGSQLConnection extends DatabaseConnection
 		$sql = preg_replace( '%YEAR\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'year\', \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
 		$sql = preg_replace( '%MONTH\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'month\',  \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
 		$sql = preg_replace( '%DAY\s*\(\s*FROM_UNIXTIME\s*\(\s*([^ ]*)\s*\)\s*\)%ims', 'date_part(\'day\',  \'epoch\'::timestamptz + ${1} * \'1 second\'::interval)', $sql );
+		$sql = preg_replace('%LIKE\s+((\'|").*\2)%iUms', 'ILIKE \1', $sql);
+		$sql = preg_replace( '%RAND\s*\(\s*\)%i', 'RANDOM()', $sql );
 		return $sql;
 	}
 
@@ -73,26 +93,26 @@ class PGSQLConnection extends DatabaseConnection
 
 		foreach ( $queries as $qry ) {
 			if ( preg_match( "|CREATE TABLE\s+(\w*)|", $qry, $matches ) ) {
-				$cqueries[strtolower( $matches[1] )]= $qry;
-				$for_update[$matches[1]]= 'Created table ' . $matches[1];
+				$cqueries[strtolower( $matches[1] )] = $qry;
+				$for_update[$matches[1]] = 'Created table ' . $matches[1];
 			}
 			else if ( preg_match( "|CREATE (UNIQUE )?INDEX ([^ ]*) ON ([^ ]*)|", $qry, $matches ) ) {
-				$indexqueries[strtolower( $matches[3] )]= $qry;
+				$indexqueries[strtolower( $matches[3] )] = $qry;
 			}
 			else if ( preg_match( "|CREATE DATABASE ([^ ]*)|", $qry, $matches ) ) {
 				array_unshift( $cqueries, $qry );
 			}
-			else if ( preg_match( "|CREATE SEQUENCE ([^ ]*);|", $qry, $matches ) ) {
-				$cseqqueries[strtolower( $matches[1] )]= $qry;
+			else if ( preg_match( "|CREATE SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
+				$cseqqueries[strtolower( $matches[1] )] = $qry;
 			}
 			else if ( preg_match( "|ALTER SEQUENCE ([^ ]*)|", $qry, $matches ) ) {
-				$alterseqqueries[]= $qry;
+				$alterseqqueries[] = $qry;
 			}
 			else if ( preg_match( "|INSERT INTO ([^ ]*)|", $qry, $matches ) ) {
-				$iqueries[]= $qry;
+				$iqueries[] = $qry;
 			}
 			else if ( preg_match( "|UPDATE ([^ ]*)|", $qry, $matches ) ) {
-				$iqueries[]= $qry;
+				$iqueries[] = $qry;
 			}
 			else {
 				// Unrecognized query type
@@ -137,25 +157,25 @@ class PGSQLConnection extends DatabaseConnection
 						$fieldname = $fvals[1];
 						$validfield = true;
 						switch ( strtolower( $fieldname ) ) {
-						case '':
-						case 'primary':
-						case 'index':
-						case 'fulltext':
-						case 'unique':
-						case 'key':
-							$validfield = false;
-							$indices[]= trim( trim( $fld ), ", \n" );
-							break;
+							case '':
+							case 'primary':
+							case 'index':
+							case 'fulltext':
+							case 'unique':
+							case 'key':
+								$validfield = false;
+								$indices[] = trim( trim( $fld ), ", \n" );
+								break;
 						}
 						$fld = trim( $fld );
 						if ( $validfield ) {
-							$cfields[strtolower( $fieldname )]= trim( $fld, ", \n" );
+							$cfields[strtolower( $fieldname )] = trim( $fld, ", \n" );
 						}
 					}
 					if ( isset( $indexqueries[$table] ) ) {
 						preg_match( "|CREATE (UNIQUE )?INDEX ([^ ]*) ON ([^ ]*) \((.*)\)|ms", $indexqueries[$table], $matches );
 						if ( $matches ) {
-							$indices[]= ' (' . preg_replace( '/\s/ms', '', $matches[4] ) . ')';
+							$indices[] = ' (' . preg_replace( '/\s/ms', '', $matches[4] ) . ')';
 						}
 					}
 					$tablefields = $this->get_results(
@@ -194,8 +214,8 @@ class PGSQLConnection extends DatabaseConnection
 								$fieldtype = 'timestamp';
 							}
 							if ( strtolower( $fieldtype ) != strtolower( $cfieldtype ) ) {
-								$cqueries[]= "ALTER TABLE {$table} ALTER COLUMN " . $cfieldname . " TYPE " . $cfieldtype;
-								$for_update[$table.'.'.$tablefield->field]= "Changed type of {$table}.{$tablefield->field} from {$tablefield->type} to {$fieldtype}";
+								$cqueries[] = "ALTER TABLE {$table} ALTER COLUMN " . $cfieldname . " TYPE " . $cfieldtype;
+								$for_update[$table.'.'.$tablefield->field] = "Changed type of {$table}.{$tablefield->field} from {$tablefield->type} to {$fieldtype}";
 							}
 							if ( preg_match( "| DEFAULT ([^ ]*)|i", $cfields[strtolower( $tablefield->field )], $matches ) ) {
 								$default_value = $matches[1];
@@ -207,13 +227,13 @@ class PGSQLConnection extends DatabaseConnection
 									$tablefield_default = $matches[1] . ( preg_match( '|^nextval|i', $matches[1] ) > 0 ? ')' : '' );
 								}
 								if ( $tablefield_default != $default_value ) {
-									$cqueries[]= "ALTER TABLE {$table} ALTER COLUMN {$tablefield->field} SET DEFAULT {$default_value}";
-									$for_update[$table.'.'.$tablefield->field]= "Changed default value of {$table}.{$tablefield->field} from {$tablefield->default} to {$default_value}";
+									$cqueries[] = "ALTER TABLE {$table} ALTER COLUMN {$tablefield->field} SET DEFAULT {$default_value}";
+									$for_update[$table.'.'.$tablefield->field] = "Changed default value of {$table}.{$tablefield->field} from {$tablefield->default} to {$default_value}";
 								}
 							}
 							elseif ( strlen( $tablefield->default) > 0 ) {
-								$cqueries[]= "ALTER TABLE {$table} ALTER COLUMN {$tablefield->field} DROP DEFAULT";
-								$for_update[$table.'.'.$tablefield->field]= "Dropped default value of {$table}.{$tablefield->field}";
+								$cqueries[] = "ALTER TABLE {$table} ALTER COLUMN {$tablefield->field} DROP DEFAULT";
+								$for_update[$table.'.'.$tablefield->field] = "Dropped default value of {$table}.{$tablefield->field}";
 							}
 							unset( $cfields[strtolower( $tablefield->field )] );
 						}
@@ -222,29 +242,29 @@ class PGSQLConnection extends DatabaseConnection
 						}
 					}
 					foreach ( $cfields as $fieldname => $fielddef ) {
-						$cqueries[]= "ALTER TABLE {$table} ADD COLUMN $fielddef";
-						$for_update[$table.'.'.$fieldname]= 'Added column '.$table.'.'.$fieldname;
+						$cqueries[] = "ALTER TABLE {$table} ADD COLUMN $fielddef";
+						$for_update[$table.'.'.$fieldname] = 'Added column '.$table.'.'.$fieldname;
 					}
-					$tableindices = $this->get_results( 
-						"SELECT c2.relname AS key_name, 
-								  i.indisprimary AS is_primary, 
-								  i.indisunique AS is_unique, 
-								  i.indisclustered AS is_clustered,
-								  i.indisvalid AS is_valid,
-								  pg_catalog.pg_get_indexdef(i.indexrelid, 0, true) AS index_def,
-								  c2.reltablespace
+					$tableindices = $this->get_results(
+						"SELECT c2.relname AS key_name,
+									i.indisprimary AS is_primary,
+									i.indisunique AS is_unique,
+									i.indisclustered AS is_clustered,
+									i.indisvalid AS is_valid,
+									pg_catalog.pg_get_indexdef(i.indexrelid, 0, true) AS index_def,
+									c2.reltablespace
 							 FROM pg_catalog.pg_class c, pg_catalog.pg_class c2,
 									pg_catalog.pg_index i
 							 WHERE c.oid = (
-								 SELECT c.oid
-									 FROM pg_catalog.pg_class c
-								    LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-									 WHERE c.relname = '{$table}'
-									 AND pg_catalog.pg_table_is_visible(c.oid)
+								SELECT c.oid
+									FROM pg_catalog.pg_class c
+									LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+									WHERE c.relname = '{$table}'
+									AND pg_catalog.pg_table_is_visible(c.oid)
 								)
-							 AND c.oid = i.indrelid AND i.indexrelid = c2.oid
-							 ORDER BY i.indisprimary DESC, i.indisunique DESC, 
-										 c2.relname;" );
+								AND c.oid = i.indrelid AND i.indexrelid = c2.oid
+								ORDER BY i.indisprimary DESC, i.indisunique DESC,
+									c2.relname;" );
 
 					if ( $tableindices ) {
 						unset( $index_ary );
@@ -253,40 +273,40 @@ class PGSQLConnection extends DatabaseConnection
 							$keyname = $tableindex->key_name;
 							preg_match( '/\((.*)\)/', $tableindex->index_def, $matches );
 							$fieldnames = str_replace( '"', '', str_replace( ' ', '', $matches[1] ) );
-							$index_ary[$keyname]['fieldnames']= $fieldnames;
-							$index_ary[$keyname]['unique']= ( $tableindex->is_unique == true ) ? true : false;
-							$index_ary[$keyname]['primary']= ( $tableindex->is_primary == true ) ? true : false;
+							$index_ary[$keyname]['fieldnames'] = $fieldnames;
+							$index_ary[$keyname]['unique'] = ( $tableindex->is_unique == true ) ? true : false;
+							$index_ary[$keyname]['primary'] = ( $tableindex->is_primary == true ) ? true : false;
 						}
 
 						foreach ( $index_ary as $index_name => $index_data ) {
 							$index_string = '';
 							if ( $index_data['primary'] ) {
-								$index_string.= 'PRIMARY KEY ';
+								$index_string .= 'PRIMARY KEY ';
 							}
 							else if ( $index_data['unique'] ) {
-								$index_string.= 'UNIQUE ';
+								$index_string .= 'UNIQUE ';
 							}
 							$index_columns = $index_data['fieldnames'];
 
 							$index_string = rtrim( $index_string, ' ' );
-							$index_string.= ' (' . $index_columns . ')';
+							$index_string .= ' (' . $index_columns . ')';
 							if ( !( ( $aindex = array_search( $index_string, $indices ) ) === false ) ) {
 								unset( $indices[$aindex] );
 								unset( $indexqueries[$table] );
 							}
 							else {
 								if ( $index_data['unique'] ) {
-									$cqueries[]= "ALTER TABLE {$table} DROP CONSTRAINT {$index_name}";
+									$cqueries[] = "ALTER TABLE {$table} DROP CONSTRAINT {$index_name}";
 								}
 								else {
-									$cqueries[]= "DROP INDEX {$index_name}";
+									$cqueries[] = "DROP INDEX {$index_name}";
 								}
 							}
 						}
 					}
 					foreach ( $indices as $index ) {
-						$cqueries[]= "ALTER TABLE {$table} ADD $index";
-						$for_update[$table . '.' . $fieldname]= 'Added index ' . $table . ' ' . $index;
+						$cqueries[] = "ALTER TABLE {$table} ADD $index";
+						$for_update[$table . '.' . $fieldname] = 'Added index ' . $table . ' ' . $index;
 					}
 					unset( $cqueries[strtolower( $table )] );
 					unset( $for_update[strtolower( $table )] );
@@ -329,26 +349,25 @@ class PGSQLConnection extends DatabaseConnection
 	}
 
 	/**
-	 * Execute a stored procedure
-	 *
-	 * @param   procedure   name of the stored procedure
-	 * @param   args        arguments for the procedure
-	 * @return  mixed       whatever the procedure returns...
-	 */
-	public function execute_procedure( $procedure, $args = array() )
-	{
-		return parent::execute_procedure( $procedure, $args );
-	}
-
-	/**
-	 * Run all of the upgrades since the last database revision.
+	 * Run all of the upgrades slated for pre-dbdelta since the last database revision.
 	 *
 	 * @param integer $old_version The current version of the database that is being upgraded
 	 * @return boolean True on success
 	 */
-	public function upgrade( $old_version, $upgrade_path = '' )
+	public function upgrade_pre( $old_version, $upgrade_path = '' )
 	{
-		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades');
+		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades/pre');
+	}
+
+	/**
+	 * Run all of the upgrades slated for post-dbdelta since the last database revision.
+	 *
+	 * @param integer $old_version The current version of the database that is being upgraded
+	 * @return boolean True on success
+	 */
+	public function upgrade_post( $old_version, $upgrade_path = '' )
+	{
+		return parent::upgrade( $old_version, dirname(__FILE__) . '/upgrades/post');
 	}
 }
 ?>

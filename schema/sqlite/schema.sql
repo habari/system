@@ -173,13 +173,14 @@ CREATE TABLE {$prefix}terms (
   mptt_left INTEGER NOT NULL,
   mptt_right INTEGER NOT NULL
 );
+CREATE UNIQUE INDEX IF NOT EXISTS ix_mptt ON {$prefix}terms(vocabulary_id, mptt_right, mptt_left);
+CREATE UNIQUE INDEX IF NOT EXISTS ix_term ON {$prefix}terms(vocabulary_id, term);
 
 CREATE TABLE {$prefix}vocabularies (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  hierarchical TINYINT(1) NOT NULL DEFAUlT 0,
-  required TINYINT(1) NOT NULL DEFAULT 0
+	features TEXT
 );
 
 CREATE TABLE {$prefix}object_terms (
@@ -200,7 +201,9 @@ INSERT INTO {$prefix}object_types (name) VALUES
 CREATE TABLE {$prefix}tokens (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,
-  description VARCHAR(255) NULL
+  description VARCHAR(255) NULL,
+  token_type INT UNSIGNED NOT NULL DEFAULT 0,
+  token_group VARCHAR(255) NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS name ON {$prefix}tokens(name);
 
@@ -213,7 +216,7 @@ CREATE TABLE {$prefix}post_tokens (
 CREATE TABLE {$prefix}group_token_permissions (
   group_id INTEGER NOT NULL,
   token_id INTEGER NOT NULL,
-  permission_id TINYINT UNSIGNED NOT NULL,
+  access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (group_id, token_id)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS group_permission ON {$prefix}group_token_permissions(group_id,token_id);
@@ -221,20 +224,30 @@ CREATE UNIQUE INDEX IF NOT EXISTS group_permission ON {$prefix}group_token_permi
 CREATE TABLE {$prefix}user_token_permissions (
   user_id INTEGER NOT NULL,
   token_id INTEGER NOT NULL,
-  permission_id TINYINT UNSIGNED NOT NULL,
+  access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (user_id, token_id)
 );
 
-CREATE TABLE {$prefix}permissions (
+CREATE TABLE {$prefix}scopes (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  name VARCHAR(255) NOT NULL
+  name VARCHAR(255) NOT NULL,
+  criteria TEXT NOT NULL,
+	description TEXT NULL,
+	priority TINYINT UNSIGNED NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS id ON {$prefix}group_token_permissions(group_id,token_id);
+
+CREATE TABLE {$prefix}blocks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  data TEXT NULL
 );
 
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('denied');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('read');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('write');
-INSERT INTO {$prefix}permissions (name) VALUES
-  ('full');
+CREATE TABLE {$prefix}blocks_areas (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  block_id INTEGER NOT NULL,
+  area VARCHAR(255) NOT NULL,
+  scope_id INTEGER NOT NULL,
+	display_order INTEGER NOT NULL DEFAULT 0
+);

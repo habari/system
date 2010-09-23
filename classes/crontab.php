@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Static class to build and read cron entries
  *
- * @package Habari
  */
-
 class CronTab extends ActionHandler
 {
 	/**
@@ -73,14 +75,17 @@ class CronTab extends ActionHandler
 	 */
 	function act_poll_cron()
 	{
+		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
+		
 		$time = doubleval($this->handler_vars['time']);
 		if ( $time != Options::get('cron_running') ) {
 			return;
 		}
 
-		// allow script to run for 10 minutes
-		set_time_limit(600);
-
+		// allow script to run for 10 minutes. This only works on host with safe mode DISABLED
+		if( !ini_get( 'safe_mode' ) ) {
+			set_time_limit( 600 );
+		}
 		$time = HabariDateTime::date_create();
 		$crons = DB::get_results(
 			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',

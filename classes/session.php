@@ -1,19 +1,35 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari Session class
+ *
  * Manages sessions for the PHP session routines
  *
- * @package habari
  */
-
 class Session
 {
+	/*
+	 * The initial data. Used to determine whether we should write anything.
+	 */
+	private static $initial_data;
+	
+	
 	/**
 	 * Initialize the session handlers
 	 */
 	static function init()
 	{
+		// If https request only set secure cookie
+		// IIS sets the value of HTTPS to 'off' if not https
+		if ( (defined('FORCE_SECURE_SESSION') && FORCE_SECURE_SESSION == true) ||
+			(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') ) {
+			session_set_cookie_params(null, null, null, true);
+		}
+
 		session_set_save_handler(
 			array( 'Session', 'open' ),
 			array( 'Session', 'close' ),
@@ -23,7 +39,8 @@ class Session
 			array( 'Session', 'gc' )
 		);
 		register_shutdown_function( 'session_write_close' );
-		if ( ! isset( $_SESSION ) ) {
+
+		if ( ! isset($_SESSION) ) {
 			session_start();
 		}
 		return true;
@@ -62,10 +79,11 @@ class Session
 		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$session = DB::get_row( 'SELECT * FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?', array( $session_id ) );
+		$session = DB::get_row( 'SELECT * FROM {sessions} WHERE token = ?', array( $session_id ) );
 
 		// Verify session exists
 		if ( !$session ) {
+			self::$initial_data = false;
 			return false;
 		}
 
@@ -94,7 +112,7 @@ class Session
 		$dodelete = Plugins::filter( 'session_read', $dodelete, $session, $session_id );
 
 		if ( $dodelete ) {
-			$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
+			$sql = 'DELETE FROM {sessions} WHERE token = ?';
 			$args = array( $session_id );
 			$sql = Plugins::filter( 'sessions_clean', $sql, 'read', $args );
 			DB::query( $sql, $args );
@@ -108,6 +126,9 @@ class Session
 		if( rand(1, 100) <= $probability ) {
 			self::gc( ini_get( 'session.gc_maxlifetime' ) );
 		}
+
+		// Throttle session writes, so as to not hammer the DB
+		self::$initial_data = ( ini_get('session.gc_maxlifetime') - $session->expires + HabariDateTime::date_create( time() )->int < 120 ) ? $session->data : FALSE;
 
 		return $session->data;
 	}
@@ -126,7 +147,7 @@ class Session
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
 		// Should we write this data?  Don't bother for search spiders, for example.
-		$dowrite = true;
+		$dowrite = ( $data !== self::$initial_data );
 		$dowrite = Plugins::filter( 'session_write', $dowrite, $session_id, $data );
 
 		if ( $dowrite ) {
@@ -153,7 +174,7 @@ class Session
 	 */
 	static function destroy( $session_id )
 	{
-		$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE token = ?';
+		$sql = 'DELETE FROM {sessions} WHERE token = ?';
 		$args = array( $session_id );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'destroy', $args );
 		DB::query( $sql, $args );
@@ -167,7 +188,7 @@ class Session
 	 */
 	static function gc( $max_lifetime )
 	{
-		$sql = 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE expires < ?';
+		$sql = 'DELETE FROM {sessions} WHERE expires < ?';
 		$args = array( HabariDateTime::date_create( time() )->int );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
@@ -181,7 +202,7 @@ class Session
 	 */
 	static function set_userid( $user_id )
 	{
-		DB::query( 'UPDATE ' . DB::table( 'sessions' ) . ' SET user_id = ? WHERE token = ?', array( $user_id, session_id() ) );
+		DB::query( 'UPDATE {sessions} SET user_id = ? WHERE token = ?', array( $user_id, session_id() ) );
 	}
 
 
@@ -191,8 +212,8 @@ class Session
 	 */
 	static function clear_userid( $user_id )
 	{
-		DB::query( 'DELETE FROM ' . DB::table( 'sessions' ) . ' WHERE user_id = ? AND token <> ?', array( $user_id, session_id() ) );
-		DB::query( 'UPDATE ' . DB::table( 'sessions' ) . ' SET user_id = NULL WHERE token = ?', array( session_id() ) );
+		DB::query( 'DELETE FROM {sessions} WHERE user_id = ? AND token <> ?', array( $user_id, session_id() ) );
+		DB::query( 'UPDATE {sessions} SET user_id = NULL WHERE token = ?', array( session_id() ) );
 	}
 
 	/**
@@ -205,13 +226,13 @@ class Session
 	static function add_to_set( $set, $value, $key = null )
 	{
 		if ( !isset( $_SESSION[$set] ) ) {
-			$_SESSION[$set]= array();
+			$_SESSION[$set] = array();
 		}
 		if ( $key ) {
-			$_SESSION[$set][$key]= $value;
+			$_SESSION[$set][$key] = $value;
 		}
 		else {
-			$_SESSION[$set][]= $value;
+			$_SESSION[$set][] = $value;
 		}
 	}
 

@@ -1,21 +1,23 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * XMLRPC Utility class
- * 
- * @package Habari
+ *
  */
-
 class XMLRPCUtils
 {
 
 	/**
 	 * Encode a variable value into the parameters of the XML tree
-	 * 
+	 *
 	 * @param SimpleXMLElement $params The parameter to add the value elements to.
 	 * @param mixed $arg The value to encode
 	 */
-	public static function encode_arg($params, $arg) 
+	public static function encode_arg($params, $arg)
 	{
 		switch(true) {
 		case is_array($arg):
@@ -65,7 +67,7 @@ class XMLRPCUtils
 	
 	/**
 	 * Decode the value of a response parameter using the datatype specified in the XML element.
-	 * 
+	 *
 	 * @param SimpleXMLElement $value A "value" element from the XMLRPC response
 	 * @return mixed The value of the element, decoded from the datatype specified in the xml element
 	 */

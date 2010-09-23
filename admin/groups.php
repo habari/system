@@ -12,7 +12,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" autosave="habarisettings" results="10" tabindex="2">
+		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" tabindex="2">
 	</span>
 </div>
 
@@ -20,12 +20,18 @@
 <div class="container groups allgroups">
 	<h2><?php _e('Group Management'); ?></h2>
 	<div id="groups">
-		<?php foreach($groups as $group):
-			$group= UserGroup::get_by_id($group->id);
-			$users= array();
-			foreach($group->members as $id) {
-				$user= User::get_by_id($id);
-				$users[]= '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+		<?php foreach ( $groups as $group ):
+			$users = array();
+			foreach ( $group->users as $user ) {
+				if ( $user->id == 0 ) {
+					$users[] = '<strong>' . $user->displayname . '</strong>';
+				}
+				elseif ( $user->username == User::identify()->username ) {
+					$users[] = '<strong><a href="' . URL::get( 'admin', 'page=user' ) . '">' . $user->displayname . '</a></strong>';
+				}
+				else {
+					$users[] = '<strong><a href="' . Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) ) . '">' . $user->displayname . '</a></strong>';
+				}
 			}
 			include('groups_item.php');
 		endforeach; ?>
@@ -37,7 +43,7 @@
 	
 	<div class="item clear">
 		<span class="pct25">
-			<label for="new_groupname">Group Name</label>
+			<label for="new_groupname"><?php _e( 'Group Name' ); ?></label>
 		</span>
 		<span class="pct25">
 			<input type="text" name="new_groupname" id="new_groupname" value="<?php echo ( isset( $addform['name'] ) ) ? $addform['name'] : ''; ?>" class="border">

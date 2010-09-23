@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari TemplateEngine abstract base class
  *
- * @package Habari
  *
  * The TemplateEngine is an abstract base class to allow any template
  * engine to supply templates for the UI.  For an example
@@ -92,6 +95,12 @@ abstract class TemplateEngine
 	 */
 	abstract function assigned( $key ); // virtual - implement in derived class
 
+	
+	/**
+	 * Clear all of the assigned values
+	 */
+	abstract function clear(); // vitrual - implement in derived class
+	
 	/**
 	 * Appends to an existing variable more values
 	 *
@@ -105,7 +114,8 @@ abstract class TemplateEngine
 	 *
 	 * @param mixed Directory path as string or array.  Earlier elements override later elements.
 	 */
-	public function set_template_dir( $dir ) {
+	public function set_template_dir( $dir )
+	{
 		$this->template_dir = $dir;
 	}
 }

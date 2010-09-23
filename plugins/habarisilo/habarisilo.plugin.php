@@ -16,23 +16,6 @@ class HabariSilo extends Plugin implements MediaSilo
 	const DERIV_DIR = '.deriv';
 
 	/**
-	 * Provide plugin info to the system
-	 */
-	public function info()
-	{
-		return array(
-			'name' => 'Habari Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' =>	'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Provides simple file uploading and embedding functionality',
-			'copyright' => '2008',
-		);
-	}
-
-	/**
 	 * Initialize some internal values when plugin initializes
 	 */
 	public function action_init()
@@ -40,33 +23,67 @@ class HabariSilo extends Plugin implements MediaSilo
 		$user_path = HABARI_PATH . '/' . Site::get_path('user', true);
 		$this->root = $user_path . 'files'; //Options::get('simple_file_root');
 		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
-		
-		if (! $this->check_files()) {
-			Session::error( "Web server does not have permission to create 'files' directory for SimpleFile Media Silo." );
-			Plugins::deactivate_plugin(__FILE__); //Deactivate plugin
-			Utils::redirect(); //Refresh page � unfortunately, if not done so then results don't appear
+
+		if ( !$this->check_files() ) {
+			Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
+			Plugins::deactivate_plugin( __FILE__ ); //Deactivate plugin
+			Utils::redirect(); //Refresh page. Unfortunately, if not done so then results don't appear
 		}
 	}
-	
+
 	/**
+	* Don't bother loading if the gd library isn't active
+	*/
+	public function action_plugin_activation( $file )
+	{
+		if ( !function_exists( 'imagecreatefromjpeg' ) ) {
+			Session::error( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ) );
+			Plugins::deactivate_plugin( __FILE__ );
+		}
+		// Create required tokens
+		ACL::create_token( 'create_directories', _t( 'Create media silo directories' ), 'Administration' );
+		ACL::create_token( 'delete_directories', _t( 'Delete media silo directories' ), 'Administration' );
+		ACL::create_token( 'upload_media', _t( 'Upload files to media silos' ), 'Administration' );
+		ACL::create_token( 'delete_media', _t( 'Delete files from media silos' ), 'Administration' );
+	}
+
+	/**
+	*
+	* @param string $file. The name of the plugin file
+	*
+	* Delete the special silo permissions if they're no longer
+	* being used.
+	*/
+	public function action_plugin_deactivation( $file ) {
+		$silos = Plugins::get_by_interface( 'MediaSilo' );
+		if ( count( $silos ) <= 1 ) {
+			ACL::destroy_token( 'upload_media' );
+			ACL::destroy_token( 'delete_media' );
+			ACL::destroy_token( 'create_directories' );
+			ACL::destroy_token( 'delete_directories' );
+		}
+	}
+
+	/**
+	 *
 	 * Checks if files directory is usable
 	 */
 	private function check_files() {
 		$user_path = HABARI_PATH . '/' . Site::get_path('user', true);
 		$this->root = $user_path . 'files'; //Options::get('simple_file_root');
 		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
-		
-		if ( ! is_dir( $this->root ) ) {
+
+		if ( !is_dir( $this->root ) ) {
 			if ( is_writable( $user_path ) ) {
 				mkdir( $this->root, 0755 );
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
 
 	/**
 	 * Return basic information about this silo
@@ -87,21 +104,20 @@ class HabariSilo extends Plugin implements MediaSilo
 	 **/
 	public function silo_dir( $path )
 	{
-		if( ! isset( $this->root ) ) {
+		if ( !isset( $this->root ) ) {
 			return array();
 		}
 
 		$path = preg_replace('%\.{2,}%', '.', $path);
 		$results = array();
 
-		$dir = glob($this->root . ( $path == '' ? '' : '/' ) . $path . '/*');
+		$dir = Utils::glob( $this->root . ( $path == '' ? '' : '/' ) . $path . '/*' );
 
-
-		foreach( $dir as $item ) {
-			if( substr( basename( $item ), 0, 1 ) == '.' ) {
+		foreach ( $dir as $item ) {
+			if ( substr( basename( $item ), 0, 1 ) == '.' ) {
 				continue;
 			}
-			if( basename( $item ) == 'desktop.ini' ) {
+			if ( basename( $item ) == 'desktop.ini' ) {
 				continue;
 			}
 
@@ -109,21 +125,52 @@ class HabariSilo extends Plugin implements MediaSilo
 			$props = array(
 				'title' => basename( $item ),
 			);
-			if( ! is_dir( $item ) ) {
+			if ( !is_dir( $item ) ) {
 				$thumbnail_suffix = HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
 				$thumbnail_url = $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
+				$mimetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($item));
+				$mtime = '';
 
-				if( ! file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
-					if( ! $this->create_thumbnail( $item ) ) {
-						// Do something if we can't create a thumbnail, like return a default image
+				if ( !file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
+					switch(strtolower(substr($item, strrpos($item, '.') + 1))) {
+						case 'jpg':
+						case 'png':
+						case 'gif':
+							if ( !$this->create_thumbnail( $item ) ) {
+								// there is no thumbnail so use icon based on mimetype.
+								$icon_path = Plugins::filter( 'habarisilo_icon_base_path', dirname($this->get_file()) . '/icons' );
+								$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
+								
+								if ( ( $icons = Utils::glob($icon_path . '/*.{png,jpg,gif,svg}', GLOB_BRACE) ) && $mimetype ) {
+									$icon_keys = array_map( create_function('$a', 'return pathinfo($a, PATHINFO_FILENAME);'), $icons );
+									$icons = array_combine($icon_keys, $icons);
+									$icon_filter = create_function('$a, $b', "\$mime = '$mimetype';".'return (((strpos($mime, $a)===0) ? (strlen($a) / strlen($mime)) : 0) >= (((strpos($mime, $b)===0)) ? (strlen($b) / strlen($mime)) : 0)) ? $a : $b;');
+									$icon_key = array_reduce($icon_keys, $icon_filter);
+									if ($icon_key) {
+										$icon = basename($icons[$icon_key]);
+										$thumbnail_url = $icon_url .'/'. $icon;
+									}
+									else {
+										// couldn't find an icon so use default
+										$thumbnail_url = $icon_url .'/default.png';
+									}
+								}
+							}
+						break;
 					}
+				}
+				
+				// If the asset is an image, obtain the image dimensions
+				if ( in_array( $mimetype, array( 'image_jpeg', 'image_png', 'image_gif' ) ) ) {
+					list( $props['width'], $props['height'] ) = getimagesize( $item );
+					$mtime = '?' . filemtime( $item );
 				}
 				$props = array_merge(
 					$props,
 					array(
 						'url' => $this->url . '/' . $path . ($path == '' ? '' : '/') . $file,
-						'thumbnail_url' => $thumbnail_url,
-						'filetype' => preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($item)),
+						'thumbnail_url' => $thumbnail_url . $mtime,
+						'filetype' => $mimetype,
 					)
 				);
 			}
@@ -147,7 +194,7 @@ class HabariSilo extends Plugin implements MediaSilo
 	 **/
 	public function silo_get( $path, $qualities = null )
 	{
-		if( ! isset( $this->root ) ) {
+		if ( ! isset( $this->root ) ) {
 			return false;
 		}
 
@@ -155,9 +202,10 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		$file = $this->root . '/' . $path;
 
-		if( file_exists( $file ) ) {
-			$asset = new MediaAsset( self::SILO_NAME . '/' . $path );
-			$asset->set( file_get_contents( $file ) );
+		if ( file_exists( $file ) && is_file( $file ) ) {
+			$asset = new MediaAsset( self::SILO_NAME . '/' . $path, false );
+			$asset->filetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($file));
+			$asset->content = file_get_contents( $file );
 			return $asset;
 		}
 		return false;
@@ -176,73 +224,73 @@ class HabariSilo extends Plugin implements MediaSilo
 	{
 		// Does derivative directory not exist?
 		$thumbdir = dirname( $src_filename ) . '/' . HabariSilo::DERIV_DIR . '';
-		if( ! is_dir( $thumbdir ) ) {
+		if ( !is_dir( $thumbdir ) ) {
 			// Create the derivative driectory
-			if( ! mkdir( $thumbdir, 0755 ) ){
+			if ( !mkdir( $thumbdir, 0755 ) ) {
 				// Couldn't make derivative directory
 				return false;
 			}
 		}
 
-    // Get information about the image
-    list( $src_width, $src_height, $type, $attr )= getimagesize( $src_filename );
+		// Get information about the image
+		list( $src_width, $src_height, $type, $attr )= getimagesize( $src_filename );
 
-    // Load the image based on filetype
-    switch( $type ) {
-    case IMAGETYPE_JPEG:
-      $src_img = imagecreatefromjpeg( $src_filename );
-      break;
-    case IMAGETYPE_PNG:
-      $src_img = imagecreatefrompng( $src_filename );
-      break;
-    case IMAGETYPE_GIF:
-      $src_img = imagecreatefromgif( $src_filename );
-      break;
-    default:
-      return false;
-    }
-    // Did the image fail to load?
-    if ( !$src_img ) {
-      return false;
-    }
+		// Load the image based on filetype
+		switch( $type ) {
+		case IMAGETYPE_JPEG:
+			$src_img = imagecreatefromjpeg( $src_filename );
+			break;
+		case IMAGETYPE_PNG:
+			$src_img = imagecreatefrompng( $src_filename );
+			break;
+		case IMAGETYPE_GIF:
+			$src_img = imagecreatefromgif( $src_filename );
+			break;
+		default:
+			return false;
+		}
+		// Did the image fail to load?
+		if ( !$src_img ) {
+			return false;
+		}
 
-    // Calculate the output size based on the original's aspect ratio
+		// Calculate the output size based on the original's aspect ratio
 		$y_displacement = 0;
-    if ( $src_width / $src_height > $max_width / $max_height ) {
-      $thumb_w = $max_width;
-      $thumb_h = $src_height * $max_width / $src_width;
+		if ( $src_width / $src_height > $max_width / $max_height ) {
+			$thumb_w = $max_width;
+			$thumb_h = $src_height * $max_width / $src_width;
 
-	  // thumbnail is not full height, position it down so that it will be padded on the
-	  // top and bottom with black
-	  $y_displacement = ($max_height - $thumb_h) / 2;
-    }
-    else {
-      $thumb_w = $src_width * $max_height / $src_height;
-      $thumb_h = $max_height;
-    }
+		// thumbnail is not full height, position it down so that it will be padded on the
+		// top and bottom with black
+		$y_displacement = ($max_height - $thumb_h) / 2;
+		}
+		else {
+			$thumb_w = $src_width * $max_height / $src_height;
+			$thumb_h = $max_height;
+		}
 
-    // Create the output image and copy to source to it
-    $dst_img = ImageCreateTrueColor( $thumb_w, $max_height );
-    imagecopyresampled( $dst_img, $src_img, 0, $y_displacement, 0, 0, $thumb_w, $thumb_h, $src_width, $src_height );
+		// Create the output image and copy to source to it
+		$dst_img = ImageCreateTrueColor( $thumb_w, $max_height );
+		imagecopyresampled( $dst_img, $src_img, 0, $y_displacement, 0, 0, $thumb_w, $thumb_h, $src_width, $src_height );
 
-    /* Sharpen before save?
-    $sharpenMatrix= array( array(-1, -1, -1), array(-1, 16, -1), array(-1, -1, -1) );
-    $divisor= 8;
-    $offset= 0;
-    imageconvolution( $dst_img, $sharpenMatrix, $divisor, $offset );
-    //*/
+		/* Sharpen before save?
+		$sharpenMatrix= array( array(-1, -1, -1), array(-1, 16, -1), array(-1, -1, -1) );
+		$divisor= 8;
+		$offset= 0;
+		imageconvolution( $dst_img, $sharpenMatrix, $divisor, $offset );
+		//*/
 
 		// Define the thumbnail filename
 		$dst_filename = $thumbdir . '/' . basename($src_filename) . ".thumbnail.jpg";
 
-    // Save the thumbnail as a JPEG
-    imagejpeg( $dst_img, $dst_filename );
+		// Save the thumbnail as a JPEG
+		imagejpeg( $dst_img, $dst_filename );
 
-    // Clean up memory
-    imagedestroy( $dst_img );
-    imagedestroy( $src_img );
+		// Clean up memory
+		imagedestroy( $dst_img );
+		imagedestroy( $src_img );
 
-    return true;
+		return true;
 	}
 
 	/**
@@ -265,7 +313,12 @@ class HabariSilo extends Plugin implements MediaSilo
 		$path = preg_replace('%\.{2,}%', '.', $path);
 		$file = $this->root . '/' . $path;
 
-		return $filedata->save( $file );
+		$result = $filedata->save( $file );
+		if ( $result ) {
+			$this->create_thumbnail( $file );
+		}
+
+		return $result;
 	}
 
 	/**
@@ -274,6 +327,23 @@ class HabariSilo extends Plugin implements MediaSilo
 	 **/
 	public function silo_delete( $path )
 	{
+		$file = $this->root . '/' . $path;
+
+		// Delete the file
+		$result = unlink( $file );
+
+		// If it's an image, remove the file in .deriv too
+		$thumbdir = dirname( $file ) . '/' . HabariSilo::DERIV_DIR . '';
+		$thumb = $thumbdir . '/' . basename( $file ) . ".thumbnail.jpg";
+
+		if ( file_exists( $thumbdir ) && file_exists( $thumb ) ) {
+			unlink( $thumb );
+			// if this is the last thumb, delete the .deriv dir too
+			if ( self::isEmptyDir( $thumbdir ) ) {
+				rmdir( $thumbdir );
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -303,7 +373,7 @@ class HabariSilo extends Plugin implements MediaSilo
 	 */
 	public function link_path( $path, $title = '' )
 	{
-		if( $title == '' ) {
+		if ( $title == '' ) {
 			$title = basename( $path );
 		}
 		return '<a href="#" onclick="habari.media.showdir(\''.$path.'\');return false;">' . $title . '</a>';
@@ -336,13 +406,16 @@ class HabariSilo extends Plugin implements MediaSilo
 	public function filter_media_controls( $controls, $silo, $path, $panelname )
 	{
 		$class = __CLASS__;
-		if( $silo instanceof $class ) {
-			$controls[]= $this->link_path( self::SILO_NAME . '/' . $path, 'Browse' );
-			if( User::identify()->can( 'upload_media' ) ) {
-				$controls[]= $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', 'Upload');
+		if ( $silo instanceof $class ) {
+			$controls[] = $this->link_path( self::SILO_NAME . '/' . $path, _t( 'Browse' ) );
+			if ( User::identify()->can( 'upload_media' ) ) {
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', _t( 'Upload' ) );
 			}
-			if( User::identify()->can( 'create_directories' ) ) {
-				$controls[]= $this->link_panel(self::SILO_NAME . '/' . $path, 'mkdir', 'Create Directory');
+			if ( User::identify()->can( 'create_directories' ) ) {
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'mkdir', _t( 'Create Directory' ) );
+			}
+			if ( User::identify()->can( 'delete_directories' ) && ( $path && self::isEmptyDir( $this->root . '/' . $path ) ) ) {
+				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'rmdir', _t( 'Delete Directory' ) );
 			}
 		}
 		return $controls;
@@ -371,53 +444,88 @@ class HabariSilo extends Plugin implements MediaSilo
 	public function filter_media_panels( $panel, $silo, $path, $panelname)
 	{
 		$class = __CLASS__;
-		if( $silo instanceof $class ) {
+		if ( $silo instanceof $class ) {
 			switch( $panelname ) {
 				case 'mkdir':
 
 					$fullpath = self::SILO_NAME . '/' . $path;
 
 					$form = new FormUI( 'habarisilomkdir' );
-					$form->append( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>" );
+					$form->append( 'static', 'ParentDirectory', '<div style="margin: 10px auto;">' . _t('Parent Directory:') . " <strong>/{$path}</strong></div>" );
 
 					// add the parent directory as a hidden input for later validation
-					$form->append( 'hidden', 'path', 'null:unused', '', $path );
-					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('Enter the name of the new directory to create here') );
+					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
+					$form->append( 'hidden', 'action', 'null:unused')->value = $panelname;
+					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('What would you like to call the new directory?') );
 					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
 					$form->append( 'submit', 'submit', _t('Submit') );
 					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
-					$form->on_success( array( $this, 'mkdir_success' ) );
+					$form->on_success( array( $this, 'dir_success' ) );
 					$panel = $form->get(); /* form submission magicallly happens here */
 
 					return $panel;
 
 					break;
+				case 'rmdir':
+					$fullpath = self::SILO_NAME . '/' . $path;
+
+					$form = new FormUI( 'habarisilormdir' );
+					$form->append( 'static', 'RmDirectory', '<div style="margin: 10px auto;">' . _t('Directory:') . " <strong>/{$path}</strong></div>" );
+
+					// add the parent directory as a hidden input for later validation
+					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
+					$form->append( 'hidden', 'action', 'null:unused')->value = $panelname;
+					$dir_text_control = $form->append( 'static', 'directory', _t('Are you sure you want to delete this directory?') );
+					$form->append( 'submit', 'submit', _t('Delete') );
+					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
+					$form->on_success( array( $this, 'dir_success' ) );
+					$panel = $form->get(); /* form submission magicallly happens here */
+
+					return $panel;
+
+					break;
+				case 'delete':
+					$fullpath = self::SILO_NAME . '/' . $path;
+
+					$form = new FormUI( 'habarisilodelete' );
+					$form->append( 'static', 'RmFile', '<div style="margin: 10px auto;">' . _t('File:') . " <strong>/{$path}</strong></div>" );
+
+					// add the parent directory as a hidden input for later validation
+					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
+					$dir_text_control = $form->append( 'static', 'directory', '<p>' . _t('Are you sure you want to delete this file?') . '</p>');
+					$form->append( 'submit', 'submit', _t('Delete') );
+					$form->media_panel($fullpath, $panelname, 'habari.media.forceReload();');
+					$form->on_success( array( $this, 'do_delete' ) );
+					$panel = $form->get();
+
+					return $panel;
+					break;
 				case 'upload':
 					if( isset( $_FILES['file'] ) ) {
 						$size = Utils::human_size($_FILES['file']['size']);
-						$panel.= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>File Uploaded: {$_FILES['file']['name']} ($size)</p>";
+						$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>" . _t( "File Uploaded: " ) . "{$_FILES['file']['name']} ($size)</p>";
 
 						$path = self::SILO_NAME . '/' . preg_replace('%\.{2,}%', '.', $path). '/' . $_FILES['file']['name'];
 						$asset = new MediaAsset($path, false);
 						$asset->upload( $_FILES['file'] );
 
 						if( $asset->put() ) {
-							$panel.= '<p>File added successfully.</p>';
+							$panel .= '<p>' . _t( 'File added successfully.' ) . '</p>';
 						}
 						else {
-							$panel.= '<p>File could not be added to the silo.</p>';
+							$panel .= '<p>' . _t( 'File could not be added to the silo.' ) . '</p>';
 						}
 
-						$panel.= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname($path) . '\');">Browse the current silo path.</a></p></div>';
+						$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . dirname($path) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
 					}
 					else {
 
 						$fullpath = self::SILO_NAME . '/' . $path;
 						$form_action = URL::get('admin_ajax', array('context' => 'media_panel'));
-						$panel.= <<< UPLOAD_FORM
+						$panel .= <<< UPLOAD_FORM
 <form enctype="multipart/form-data" method="post" id="simple_upload" target="simple_upload_frame" action="{$form_action}" class="span-10" style="margin:0px auto;text-align: center">
-	<p style="padding-top:30px;">Upload to: <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
-	<p><input type="file" name="file"><input type="submit" name="upload" value="Upload">
+	<p style="padding-top:30px;">%s <b style="font-weight:normal;color: #e0e0e0;font-size: 1.2em;">/{$path}</b></p>
+	<p><input type="file" name="file"><input type="submit" name="upload" value="%s">
 	<input type="hidden" name="path" value="{$fullpath}">
 	<input type="hidden" name="panel" value="{$panelname}">
 	</p>
@@ -439,20 +547,11 @@ function simple_uploaded_complete() {
 </script>
 UPLOAD_FORM;
 
+					$panel = sprintf( $panel, _t( "Upload to:" ), _t( "Upload" ) );
 				}
 			}
 		}
 		return $panel;
-	}
-
-	/* this function should convert the virtual path to a real path and
-	 * then call php's mkdir function */
-	public function mkdir($form, $panel, $silo, $path)
-	{
-		/* check that the regular expression is required for this case */
-		$path = preg_replace('%\.{2,}%', '.', $path);
-		$dir = $this->root . '/' . $path;
-		return mkdir( $dir );
 	}
 
 	/**
@@ -465,33 +564,81 @@ UPLOAD_FORM;
 	 */
 	public function mkdir_validator( $dir, $control, $form )
 	{
-		$dir = preg_replace( '%\.{2,}%', '.', $dir );
+		if ( strpos($dir, '*') !== false || preg_match('%(?:^|/)\.%', $dir) ) {
+		    return array(_t("The directory name contains invalid characters: %s.", array($dir)));
+		}
+
 		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
 		$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
 
-		if ( ! is_writable( $this->root . '/' . $path ) ) {
-			return array(_t("Webserver does not have permission to create directory: {$dir}."));
+		if ( !is_writable( $this->root . '/' . $path ) ) {
+			return array(_t("Webserver does not have permission to create directory: %s.", array( $dir ) ) );
 		}
 		if ( is_dir( $dir ) ) {
-			return array(_t("Directory: {$dir} already exists."));
+			return array( _t( "Directory: %s already exists.", array( $dir ) ) );
 		}
 
 		return array();
 	}
 	/**
-	 * This function performs the mkdir action on submission of the form. It is
-	 * called by FormUI's success() method.
+	 * This function performs the mkdir and rmdir actions on submission of the form.
+	 * It is called by FormUI's success() method.
 	 * @param FormUI $form
 	 */
-	public function mkdir_success ( $form )
+	public function dir_success ( $form )
 	{
 		$dir = preg_replace( '%\.{2,}%', '.', $form->directory->value );
 		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
 
-		$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
-		mkdir( $dir, 0755 );
+		switch ( $form->action->value ) {
+			case 'rmdir':
+				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path;
+				rmdir( $dir );
+				$msg = 'Directory Deleted:';
+				$what = $path;
+				break;
+			case 'mkdir':
+				$dir = $this->root . ( $path == '' ? '' : '/' ) . $path . '/'. $dir;
+				mkdir( $dir, 0755 );
+				$msg = 'Directory Created:';
+				$what = $path . '/' . $form->directory->value;
+				break;
+		}
 
-		return "<div class=\"span-18\"style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>". _t('Directory Created:') ." {$form->directory->value}</p>";
+		return '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;"><p>' . _t( $msg ) . ' ' . $what . '</p></div>';
+	}
+
+	/**
+	 * This function takes the path passed from the form and passes it to silo_delete
+	 * to delete the file and it's thumbnail if it's an image.
+	 *
+	 * @param FormUI $form
+	 */
+	public function do_delete ( $form )
+	{
+		$path = preg_replace( '%\.{2,}%', '.', $form->path->value );
+		$result = $this->silo_delete($path);
+		$panel = '<div class="span-18"style="padding-top:30px;color: #e0e0e0;margin: 0px auto;">';
+		if ( $result ) {
+			$panel .= '<p>' . _t( 'File deleted successfully.' ) . '</p>';
+		} else {
+			$panel .= '<p>' . _t( 'Failed to delete file.' ) . '</p>';
+		}
+
+		$panel .= '<p><a href="#" onclick="habari.media.forceReload();habari.media.showdir(\'' . self::SILO_NAME . '/' . dirname( $path ) . '\');">' . _t( 'Browse the current silo path.' ) . '</a></p></div>';
+
+		return $panel;
+	}
+
+	/**
+	 * This function is used to check if a directory is empty.
+	 *
+	 * @param string $dir
+	 * @return boolean
+	 */
+	private static function isEmptyDir( $dir )
+	{
+		return ( ( $files = @scandir( $dir ) ) && count( $files ) <= 2 );
 	}
 
 }

@@ -1,11 +1,14 @@
 <?php
 /**
- * Habari EventLog class
- *
  * @package Habari
- * @todo Apply system error handling
+ *
  */
 
+/**
+ * Habari EventLog class
+ *
+ * @todo Apply system error handling
+ */
 class EventLog extends ArrayObject
 {
 	protected $get_param_cache; // Stores info about the last set of data fetched that was not a single value
@@ -41,7 +44,7 @@ class EventLog extends ArrayObject
 	public static function register_type( $type = 'default', $module = null )
 	{
 		try {
-			DB::query( 'INSERT INTO ' . DB::Table('log_types') . ' (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
+			DB::query( 'INSERT INTO {log_types} (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
 		}
 		catch( Exception $e ) {
 			// Don't really care if there's a duplicate.
@@ -123,29 +126,34 @@ class EventLog extends ArrayObject
 		$fns = array( 'get_results', 'get_row', 'get_value' );
 		$select = '';
 
-		foreach ( LogEntry::default_fields() as $field => $value ) {
-			$select.= ( '' == $select )
-				? DB::table( 'log' ) . ".$field"
-				: ', ' . DB::table( 'log' ) . ".$field";
+		// Put incoming parameters into the local scope
+		$paramarray = Utils::get_params( $paramarray );
+
+		$select_fields = LogEntry::default_fields();
+		if(!isset($paramarray['return_data'])) {
+			unset($select_fields['data']);
+		}
+		foreach ( $select_fields as $field => $value ) {
+			$select .= ( '' == $select )
+				? "{log}.$field"
+				: ", {log}.$field";
 		}
 		// Default parameters.
 		$orderby = 'ORDER BY timestamp DESC, id DESC';
 		$limit = Options::get( 'pagination' );
 
-		// Put incoming parameters into the local scope
-		$paramarray = Utils::get_params( $paramarray );
-
 		// Get any full-query parameters
-		extract( $paramarray );
+		$possible = array( 'orderby', 'fetch_fn', 'count', 'month_cts', 'nolimit', 'index', 'limit', 'offset' );
+		foreach ( $possible as $varname ) {
+			if ( isset( $paramarray[$varname] ) ) {
+				$$varname = $paramarray[$varname];
+			}
+		}
 
 		foreach ( $paramarray as $key => $value ) {
 			if ( 'orderby' == $key ) {
 				$orderby = ' ORDER BY ' . $value;
 				continue;
-			}
-
-			if ( 'limit' == $key ) {
-				$limit = " LIMIT " . $value;
 			}
 		}
 
@@ -160,7 +168,7 @@ class EventLog extends ArrayObject
 		$wheres = array();
 		$join = '';
 		if ( isset( $paramarray['where'] ) && is_string( $paramarray['where'] ) ) {
-			$wheres[]= $paramarray['where'];
+			$wheres[] = $paramarray['where'];
 		}
 		else {
 			foreach ( $wheresets as $paramset ) {
@@ -169,40 +177,46 @@ class EventLog extends ArrayObject
 				$paramset = array_merge( ( array ) $paramarray, ( array ) $paramset );
 
 				if ( isset( $paramset['id'] ) && is_numeric( $paramset['id'] ) ) {
-					$where[]= "id= ?";
-					$params[]= $paramset['id'];
+					$where[] = "id= ?";
+					$params[] = $paramset['id'];
 				}
 				if ( isset( $paramset['user_id'] ) ) {
-					$where[]= "user_id= ?";
-					$params[]= $paramset['user_id'];
+					$where[] = "user_id= ?";
+					$params[] = $paramset['user_id'];
 				}
 				if ( isset( $paramset['severity'] ) && ( 'any' != LogEntry::severity_name( $paramset['severity'] ) ) ) {
-					$where[]= "severity_id= ?";
-					$params[]= LogEntry::severity( $paramset['severity'] );
+					$where[] = "severity_id= ?";
+					$params[] = LogEntry::severity( $paramset['severity'] );
 				}
 				if ( isset( $paramset['type_id'] ) ) {
 					if ( is_array( $paramset['type_id'] ) ) {
 						$types = array_filter( $paramset['type_id'], 'is_numeric' );
 						if ( count( $types ) ) {
-							$where[]= 'type_id IN (' . implode( ',', $types ) . ')';
+							$where[] = 'type_id IN (' . implode( ',', $types ) . ')';
 						}
 					}
 					else {
-						$where[]= 'type_id = ?';
-						$params[]= $paramset['type_id'];
+						$where[] = 'type_id = ?';
+						$params[] = $paramset['type_id'];
 					}
 				}
 				if ( isset( $paramset['ip'] ) ) {
-					$where[]= 'ip = ?';
-					$params[]= $paramset['ip'];
+					$where[] = 'ip = ?';
+					$params[] = $paramset['ip'];
 				}
 
 				/* do searching */
 				if ( isset( $paramset['criteria'] ) ) {
-					preg_match_all( '/(?<=")(\\w[^"]*)(?=")|(\\w+)/', $paramset['criteria'], $matches );
+					preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[].= "(message LIKE CONCAT('%',?,'%'))";
-						$params[]= $word;
+						if(preg_match('%^id:(\d+)$%i', $word, $special_crit)) {
+							$where[] .= '(id = ?)';
+							$params[] = $special_crit[1];
+						}
+						else {
+							$where[] .= "(message LIKE CONCAT('%',?,'%'))";
+							$params[] = $word;
+						}
 					}
 				}
 
@@ -216,39 +230,39 @@ class EventLog extends ArrayObject
 				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')
 				 */
 				if ( isset( $paramset['day'] ) ) {
-					$where[]= 'timestamp BETWEEN ? AND ?';
+					$where[] = 'timestamp BETWEEN ? AND ?';
 					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
 					$startDate = HabariDateTime::date_create( $startDate );
-					$params[]= $startDate->sql;
-					$params[]= $startDate->modify( '+1 day' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 day' )->sql;
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
-					$where[]= 'timestamp BETWEEN ? AND ?';
+					$where[] = 'timestamp BETWEEN ? AND ?';
 					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
 					$startDate = HabariDateTime::date_create( $startDate );
-					$params[]= $startDate->sql;
-					$params[]= $startDate->modify( '+1 month' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 month' )->sql;
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
-					$where[]= 'timestamp BETWEEN ? AND ?';
+					$where[] = 'timestamp BETWEEN ? AND ?';
 					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
 					$startDate = HabariDateTime::date_create( $startDate );
-					$params[]= $startDate->sql;
-					$params[]= $startDate->modify( '+1 year' )->sql;
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
-					//$params[]= date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
+					$params[] = $startDate->sql;
+					$params[] = $startDate->modify( '+1 year' )->sql;
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
+					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
 
-				$wheres[]= ' (' . implode( ' AND ', $where ) . ') ';
+				$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 			}
 		}
 
-		if ( isset( $page ) && is_numeric( $page ) ) {
-			$offset = ( intval( $page ) - 1 ) * intval( $limit );
+		if ( isset( $index ) && is_numeric( $index ) ) {
+			$offset = ( intval( $index ) - 1 ) * intval( $limit );
 		}
 
 		if ( isset( $fetch_fn ) ) {
@@ -266,8 +280,9 @@ class EventLog extends ArrayObject
 			$orderby = '';
 		}
 		if ( isset( $limit ) ) {
+			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
-				$limit.= " OFFSET $offset";
+				$limit .= " OFFSET $offset";
 			}
 		}
 		// If the month counts are requested, replace the select clause
@@ -285,10 +300,10 @@ class EventLog extends ArrayObject
 			FROM {log} ' . $join;
 
 		if ( count( $wheres ) > 0 ) {
-			$query.= ' WHERE ' . implode( " \nOR\n ", $wheres );
+			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query.= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query.= $orderby . $limit;
+		$query .= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query .= $orderby . $limit;
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
 		DB::set_fetch_mode( PDO::FETCH_CLASS );

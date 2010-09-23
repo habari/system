@@ -1,14 +1,17 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Media access
  *
  * @version $Id$
  * @copyright 2008
- * @package Habari
+ *
  * @todo Handle all error conditions using exceptions
  */
-
 class Media
 {
 	static $silos = null;
@@ -31,7 +34,8 @@ class Media
 				if(isset($info['icon']))
 				{
 					$dirs[] = new MediaAsset($siloname, true, array(), $info['icon']);
-				} else {
+				}
+				else {
 					$dirs[] = new MediaAsset($siloname, true, array(), NULL);
 				}
 				

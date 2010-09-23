@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari RawPHPEngine class
  *
- * @package Habari
  *
  * The RawPHPEngine is a subclass of the abstract TemplateEngine class
  * which is intended for those theme designers who choose to use raw PHP
@@ -47,7 +50,7 @@ class RawPHPEngine extends TemplateEngine
 	 */
 	public function __set( $key, $value )
 	{
-		$this->engine_vars[$key]= $value;
+		$this->engine_vars[$key] = $value;
 	}
 
 	/**
@@ -159,6 +162,14 @@ class RawPHPEngine extends TemplateEngine
 	}
 
 	/**
+	 * Clear all of the assigned template variables
+	 */
+	public function clear()
+	{
+		$this->engine_vars = array();
+	}
+	
+	/**
 	 * Appends to an existing variable more values
 	 *
 	 * @param key name of variable
@@ -167,10 +178,10 @@ class RawPHPEngine extends TemplateEngine
 	public function append( $key, $value ='' )
 	{
 		if ( ! isset( $this->engine_vars[$key] ) ) {
-			$this->engine_vars[$key][]= $value;
+			$this->engine_vars[$key][] = $value;
 		}
 		else {
-			$this->engine_vars[$key]= $value;
+			$this->engine_vars[$key] = $value;
 		}
 	}
 }

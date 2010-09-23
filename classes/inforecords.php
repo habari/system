@@ -1,14 +1,17 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari InfoRecords Class
  *
  * Base class for managing metadata about various Habari objects
- * 
- * @package Habari
+ *
  */
 abstract class InfoRecords implements URLProperties
-{	
+{
 	// the info array
 	protected $__inforecord_array = array();
 	// table which contains the info records
@@ -31,11 +34,11 @@ abstract class InfoRecords implements URLProperties
 	 *
 	 * @param string $table_name name of the table to insert info (use the DB::o()->table_name syntax)
 	 * @param string $key_name name of the primary key (for example "post_id")
-	 * @param mixed $key_value (optional) the master record key value (for example, info for post_id = 1 managed by setting this param to 1). Use 
+	 * @param mixed $key_value (optional) the master record key value (for example, info for post_id = 1 managed by setting this param to 1). Use
 	 *		set_key method if not set here.
 	 **/
-	public function __construct( $table_name, $key_name, $key_value = NULL ) 
-	{	
+	public function __construct( $table_name, $key_name, $key_value = NULL )
+	{
 		$this->_table_name = $table_name;
 		$this->_key_name = $key_name;
 		$this->_key_value = $key_value;
@@ -47,7 +50,7 @@ abstract class InfoRecords implements URLProperties
 	 *
 	 * @return boolean TRUE if master record value has been set already, FALSE otherwise
 	 **/
-	public function is_key_set() 
+	public function is_key_set()
 	{
 		return isset( $this->_key_value );
 	}
@@ -82,7 +85,7 @@ abstract class InfoRecords implements URLProperties
 			$this->_loaded == TRUE;
 			return;
 		}
-		 
+		
 		$result = DB::get_results( '
 			SELECT name, value, type
 			FROM ' . $this->_table_name . '
@@ -91,12 +94,12 @@ abstract class InfoRecords implements URLProperties
 		);
 		
 		foreach ( $result as $result_element ) {
-			// XXX is this logic right?	
+			// XXX is this logic right?
 			if ( $result_element->type == 1 ) {
-				$this->__inforecord_array[$result_element->name]= array('value'=>unserialize($result_element->value));
+				$this->__inforecord_array[$result_element->name] = array('value'=>unserialize($result_element->value));
 			}
-			else {						
-				$this->__inforecord_array[$result_element->name]= array('value'=>$result_element->value);
+			else {
+				$this->__inforecord_array[$result_element->name] = array('value'=>$result_element->value);
 			}
 		}
 		
@@ -108,34 +111,34 @@ abstract class InfoRecords implements URLProperties
 	 * @param string $name Name of the key to get
 	 * @return mixed Stored value for specified key
 	 **/
-	public function __get ( $name )	
+	public function __get ( $name )
 	{
 		$this->_load();
 		if ( ! isset( $this->__inforecord_array[$name] ) ) {
 			return false;
 		}
 		return $this->__inforecord_array[$name]['value'];
-	}	
+	}
 
 	/**
-	 * Update the info record.  
+	 * Update the info record.
 	 * The value will not be stored in the database until calling $this->commit();
-	 * 
+	 *
 	 * @param string $name Name of the key to set
 	 * @param mixed $value Value to set
-	 **/	 	 
-	public function __set( $name, $value ) 
+	 **/
+	public function __set( $name, $value )
 	{
 		$this->_load();
-		$this->__inforecord_array[$name]= array('changed'=>true, 'value'=>$value);		
+		$this->__inforecord_array[$name] = array('changed'=>true, 'value'=>$value);
 	}
 
 	/**
 	 * Test for the existence of specified info value
-	 * 
+	 *
 	 * @param string $name Name of the option to set
 	 * @return boolean TRUE if the info option exists, FALSE in all other cases
-	 **/	
+	 **/
 	public function __isset ( $name )
 	{
 		$this->_load();
@@ -144,20 +147,20 @@ abstract class InfoRecords implements URLProperties
 
 	/**
 	 * Remove an info option; immediately unsets from the storage AND removes from database. Use with caution.
-	 * 
+	 *
 	 * @param string $name Name of the option to unset
 	 * @return boolean TRUE if the option is successfully unset, FALSE otherwise
-	 **/	
+	 **/
 		public function __unset( $name )
 	{
 		$this->_load();
-		if ( isset( $this->__inforecord_array[$name] ) ) {			
+		if ( isset( $this->__inforecord_array[$name] ) ) {
 			DB::delete( $this->_table_name, array ( $this->_key_name => $this->_key_value, "name"=> $name ) );
 			unset( $this->__inforecord_array[$name] );
 			return true;
 		}
-		return false;        
-	}	
+		return false;
+	}
 
 	/**
 	 * Returns a set of properties used by URL::get to create URLs
@@ -173,11 +176,11 @@ abstract class InfoRecords implements URLProperties
 	}
 	
 	/**
-	 * Remove all info options. Primarily used when deleting the parent object. 
+	 * Remove all info options. Primarily used when deleting the parent object.
 	 * I.E. when deleting a user, the delete method would call this.
-	 * 
+	 *
 	 * @return boolean TRUE if the options were successfully unset, FALSE otherwise
-	 **/	
+	 **/
 	public function delete_all()
 	{
 		// This InfoRecord is read-only?
@@ -192,7 +195,7 @@ abstract class InfoRecords implements URLProperties
 		if ( Error::is_error( $result ) ) {
 			$result->out();
 			return false;
-		} 
+		}
 		$this->__inforecord_array = array();
 		return true;
 	}
@@ -200,7 +203,7 @@ abstract class InfoRecords implements URLProperties
 	/**
 	 * Commit all of the changed info options to the database.
 	 * If this function is not called, then the options will not be written.
-	 * 
+	 *
 	 * @param mixed $metadata_key (optional) Key to use when writing info data.
 	 */
 	public function commit( $metadata_key = null )
@@ -208,7 +211,7 @@ abstract class InfoRecords implements URLProperties
 		if ( isset( $metadata_key ) ) {
 			$this->_key_value = $metadata_key;
 		}
-		// If the info is not already loaded, and the key value is empty, 
+		// If the info is not already loaded, and the key value is empty,
 		// then we don't have enough info to do the commit
 		if ( !$this->_loaded && empty($this->_key_value) ) {
 			return true;
@@ -218,34 +221,34 @@ abstract class InfoRecords implements URLProperties
 			if( isset( $record['changed'] ) && $record['changed'] ) {
 				$value = $record['value'];
 				if ( is_array( $value ) || is_object( $value ) ) {
-					$result = DB::update( 
-						$this->_table_name, 
+					$result = DB::update(
+						$this->_table_name,
 						array(
-							$this->_key_name=>$this->_key_value, 
-							'name'=>$name, 
+							$this->_key_name=>$this->_key_value,
+							'name'=>$name,
 							'value'=>serialize($value),
 							'type'=>1
-						), 
+						),
 						array('name'=>$name, $this->_key_name=>$this->_key_value)
-					); 
-				}			
+					);
+				}
 				else {
-					$result = DB::update( 
-						$this->_table_name, 
+					$result = DB::update(
+						$this->_table_name,
 						array(
-							$this->_key_name=>$this->_key_value, 
-							'name'=>$name, 
-							'value'=>$value, 
+							$this->_key_name=>$this->_key_value,
+							'name'=>$name,
+							'value'=>$value,
 							'type'=>0
-						), 
-						array('name'=>$name, $this->_key_name=> $this->_key_value)	 
-					); 
+						),
+						array('name'=>$name, $this->_key_name=> $this->_key_value)
+					);
 				}
 				
 				if ( Error::is_error( $result ) ) {
 					$result->out();
 				}
-				$this->__inforecord_array[$name] = array('value'=>$value);	
+				$this->__inforecord_array[$name] = array('value'=>$value);
 			}
 		}
 	}

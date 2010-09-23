@@ -1,14 +1,19 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * XMLRPC Client
  */
-class RPCClient {
-    private $url;
-    private $method;
-    private $params;
-    private $request_body;
-    private $result = FALSE;
+class RPCClient
+{
+	private $url;
+	private $method;
+	private $params;
+	private $request_body;
+	private $result = FALSE;
 
 	/**
 	 * @param string URL
@@ -33,7 +38,7 @@ class RPCClient {
 	public function execute()
 	{
 		$rr = new RemoteRequest( $this->url, 'POST' );
-		$rr->add_header( 'Content-Type: text/xml' );
+		$rr->add_header( 'Content-Type: text/xml;charset=utf-8' );
 		$rr->set_body( $this->request_body );
 		
 		// should throw an error on failure
@@ -44,7 +49,7 @@ class RPCClient {
 	}
 	
 	/**
-	 * Return the (decoded) result of the request, or FALSE if the result was invalid. 
+	 * Return the (decoded) result of the request, or FALSE if the result was invalid.
 	 */
 	public function get_result()
 	{

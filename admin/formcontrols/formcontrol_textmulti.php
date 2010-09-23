@@ -7,9 +7,11 @@
 if(!is_array($value)) {
 	$value = array($value);
 }
+$i = 0;
 foreach($value as $value_1) :
+$i++;
 ?>
-	<input type="text" name="<?php echo $field; ?>[]" value="<?php echo htmlspecialchars($value_1); ?>"> <label><a href="#" onclick="return controls.textmulti.remove(this);">[<?php _e('remove'); ?>]</a></label>
+	<input type="text" name="<?php echo $field; ?>[]" id="<?php echo $field . '_' . $i; ?>" value="<?php echo Utils::htmlspecialchars($value_1); ?>"> <label for="<?php echo $field . '_' . $i; ?>"><a href="#" onclick="return controls.textmulti.remove(this);">[<?php _e('remove'); ?>]</a></label>
 <?php
 endforeach;
 ?>

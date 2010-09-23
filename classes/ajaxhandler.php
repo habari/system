@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Handles Ajax requests, sending them to plugin sinks.
  *
- * @package Habari
  */
-
 class AjaxHandler extends ActionHandler
 {
 

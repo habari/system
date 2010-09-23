@@ -19,7 +19,6 @@ habari.media = {
 					spinner.start();
 				},
 				success: function(result) {
-					var mediaDirChildren = $('.mediadir').children().length;
 
 					habari.media.unqueueLoad();
 					$('.pathstore', container).html(result.path);
@@ -84,16 +83,18 @@ habari.media = {
 					$('.media').dblclick(function(){
 						habari.media.insertAsset(this);
 					});
-					$('.media_controls ul li:first', container).nextAll().remove();
-					$('.media_controls ul li:first', container).after(result.controls);
+					$('.media_controls ul li', container).remove();
+					$('.media_controls ul', container).append(result.controls);
+					labeler.init();
 
 					spinner.stop();
 
-					// When first opened, load the first directory automatically
-					if (mediaDirChildren == 0)
-						$('.media_dirlevel:first-child li:first-child').click()
+					// When first opened, load the first directory automatically, but only if there are no files in the root
+//					if ($('.mediaphotos .media', container).length == 0 && $('.media_dirlevel:first-child li.active', container).length == 0) {
+//						$('.media_dirlevel:last-child li:first-child', container).click();
+//					}
 
-					$('.media img').addClass('loading')
+					$('.media img').addClass('loading');
 
 					// As each image loads
 					$(".media img").bind('load',function() {
@@ -101,7 +102,7 @@ habari.media = {
 							.removeClass('loading')
 							.siblings('div').width($(this).width()+2)
 						});
-						
+
 					findChildren();
 				}}
 			);
@@ -152,17 +153,24 @@ habari.media = {
 		$('.pathstore', container).addClass('toload');
 	},
 
+	fullReload: function() {
+		container = $('.mediasplitter:visible');
+		$('.mediadir', container).html('');
+		$('.mediaphotos', container).html('');
+		$('.pathstore', container).addClass('toload');
+	},
+
 	preview: {
 		_: function(fileindex, fileobj) {
 			var stats = '';
-			return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+			return '<div class="mediatitle"><a class="mediadelete" title="Delete file" href="#" onclick="habari.media.showpanel(\'' + fileobj.path +'\', \'delete\');return false;">#</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 		}
 	},
 
 	output: {
-		image_jpeg: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_gif: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_png: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		image_jpeg: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
+		image_gif: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
+		image_png: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
 		audio_mpeg3: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
 		video_mpeg: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
 		audio_wav: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
@@ -224,15 +232,15 @@ habari.media = {
 };
 
 $(document).ready(function(){
-	$('#mediatabs').tabs({
+	$('#mediatabs').parent().tabs({
 		fx: { height: 'toggle', opacity: 'toggle' },
-		selected: null,
-		unselect: true,
+		selected: -1,
+		collapsible: true,
 		show: function(){
-			var tabindex = $(this).data('selected.tabs');
+			var tabindex = $(this).tabs( 'option', 'selected' );
 			var tab = $('.mediasplitter').eq(tabindex);
 			var path = $.trim( $('.pathstore', tab).html() );
-			if(path != '') {
+			if (path != '') {
 				habari.media.showdir( path, null, tab );
 				habari.media.unqueueLoad();
 			}

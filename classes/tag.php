@@ -1,25 +1,19 @@
 <?php
-
 /**
  * @package Habari
  *
- * Class which describes a single Tag object
  */
-class Tag extends QueryRecord 
+
+/**
+ * Class which describes a single Tag object
+ *
+ */
+class Tag
 {
 
-	/**
-	 * Return the defined database columns for a Tag.
-	 * @return array Array of columns in the tags table
-   */
-	public static function default_fields()
-	{
-		return array(
-			'id' => 0,
-			'tag_slug' => '',
-			'tag_text' => ''
-		);
-	}
+	public $tag_text = '';
+	public $tag_slug = '';
+	public $id = 0;
 
 	/**
 	 * Constructor for the Tag class.
@@ -27,38 +21,86 @@ class Tag extends QueryRecord
 	 **/
 	public function __construct( $paramarray = array() )
 	{
-		// Defaults
-		$this->fields = array_merge(
-			self::default_fields(),
-			$this->fields,
-			$this->newfields
-		);
+		foreach ( $paramarray as $key => $value ) {
+			$this->$key = $value;
+		}
+	}
 
-		parent::__construct( $paramarray );
-		$this->exclude_fields( 'id' );
+	/**
+	 * function __get
+	 * Overrides QueryRecord __get to implement custom object properties
+	 * @param string Name of property to return
+	 * @return mixed The requested field value
+	 **/
+	public function __get( $name )
+	{
+		$term = Term::get( Tags::vocabulary()->id, $this->id );
+
+		switch ( $name ) {
+			case 'tag':
+			case 'tag_text':
+				$out = $term->term_display;
+				break;
+			case 'tag_text_searchable':
+				// if it's got spaces, then quote it.
+				if ( strpos($term->term_display, ' ') !== FALSE ) {
+					$out = '\'' . str_replace("'", "\'", $term->term_display) . '\'';
+				}
+				else {
+					$out = $term->term_display;
+				}
+				break;
+			case 'slug':
+			case 'tag_slug':
+				$out = $term->term;
+				break;
+			case 'count':
+				$out = $this->get_count();
+				break;
+			default:
+				break;
+		}
+		return $out;
 	}
 
 	/**
 	 * Return a single requested tag.
 	 *
 	 * <code>
-	 * $tag= Tag::get( array( 'tag_slug' => 'wooga' ) );
+	 * $tag = Tag::get( 'Tag text' );
+	 * $tag = Tag::get( 'tag-slug' );
+	 * $tag = Tag::get( 23 ); // tag id
 	 * </code>
 	 *
-	 * @param array $paramarray An associated array of parameters, or a querystring
-	 * @return Tag The first tag that matched the given criteria
+	 * @param mixed $tag The tag's name, slug, or id
+	 * @return Tag The first tag that matched the given criteria or FALSE on failure
 	 **/
-	static function get( $paramarray = array() )
+	public static function get( $tag )
 	{
-		// Defaults
-		$defaults = array ('where' => array(),	'fetch_fn' => 'get_row');
-		foreach ( $defaults['where'] as $index => $where ) {
-			$defaults['where'][$index]= array_merge( Controller::get_handler()->handler_vars, $where, Utils::get_params( $paramarray ) );
-		}
-		// make sure we get at most one result
-		$defaults['limit']= 1;
+		return Tags::get_one( $tag );
+	}
 
-		return Tags::get( $defaults );
+	/**
+	 * Check if a tag exists on a published post, to see if we should match this rewrite rule.
+	 *
+	 * @return Boolean Whether the tag exists on a published post.
+	 **/
+	public static function rewrite_tag_exists($rule, $slug, $parameters)
+	{
+		$tags = explode(' ', $rule->named_arg_values['tag']);
+		$tags = array_map('trim', $tags, array_fill(0, count($tags), '-') );
+		$tags = array_map(array('Tag', 'get'), $tags);
+		$initial_tag_count = count($tags);
+		$tags = array_filter($tags);
+		// Are all of the tags we asked for actual tags on this site?
+		if ( count($tags) != $initial_tag_count ) {
+			return false;
+		}
+		$tag_params = array();
+		foreach ( $tags as $tag ) {
+			$tag_params[] = $tag->tag_text;
+		}
+		return ($tag instanceOf Tag && Posts::count_by_tag($tag_params, Post::status('published')) > 0);
 	}
 
 	/**
@@ -67,10 +109,10 @@ class Tag extends QueryRecord
 	 * @param array $paramarray An associative array of tag fields
 	 * @return Tag The new Tag object
 	 **/
-	static function create( $paramarray )
+	public static function create( $paramarray )
 	{
 		$tag = new Tag( $paramarray );
-		$tag->insert();
+		$tag = $tag->insert();
 		return $tag;
 	}
 
@@ -81,81 +123,56 @@ class Tag extends QueryRecord
 	 * @param		post_id		The ID of the post
 	 * @return	TRUE or FALSE depending if relation was created.
 	 */
-	public static function attach_to_post( $tag_id, $post_id ) 
+	public static function attach_to_post( $tag_id, $post_id )
 	{
+		$term = Tags::vocabulary()->get_term( $tag_id );
 		$result = TRUE;
+
 		Plugins::act( 'tag_attach_to_post_before', $tag_id, $post_id );
-		if (0 == (int) DB::get_value( "SELECT COUNT(*) FROM {tag2post} WHERE tag_id = ? AND post_id = ?", array( $tag_id, $post_id ) ) ) {
-			$sql = "INSERT INTO {tag2post} (tag_id, post_id) VALUES (?,?)";
-			$result = DB::query( $sql, array( $tag_id, $post_id ) );
-		}
+
+		$result = $term->associate( Tags::object_type(), $post_id);
+
 		Plugins::act( 'tag_attach_to_post_after', $tag_id, $post_id );
+
 		return $result;
-	}
-	
-	public static function detatch_from_post( $tag_id, $post_id ) {
-		
-		Plugins::act( 'tag_detatch_from_post_before', $tag_id, $post_id );
-		
-		$result = DB::query( 'DELETE FROM {tag2post} WHERE tag_id = ? AND post_id = ?', array( $tag_id, $post_id ) );
-		
-		// should we delete the tag if it's the only one left?
-		$count = DB::get_value( 'SELECT COUNT(tag_id) FROM {tag2post} WHERE tag_id = ?', array( $tag_id ) );
-		
-		if ( $count == 0 ) {
-			$delete = true;
-			$delete = Plugins::filter( 'tag_detach_from_post_delete_empty_tag', $delete, $tag_id );
-			
-			if ( $delete ) {
-				DB::query( 'DELETE FROM {tags} WHERE id = ?', array( $tag_id ) );
-			}
-		}
-		
-		Plugins::act( 'tag_detatch_from_post_after', $tag_id, $post_id, $result );
-		
-		return $result;
-		
 	}
 
 	/**
-	 * Generate a new slug for the tag.
+	 * Detaches a tag from a post (removes their association )
 	 *
-	 * @return string The slug
+	 * @param		tag_id		The ID of the tag
+	 * @param		post_id		The ID of the post
+	 * @return	TRUE or FALSE depending if association was removed.
 	 */
-	private function setslug()
+	public static function detach_from_post( $tag_id, $post_id )
 	{
-		// determine the base value from:
-		// - the new slug
-		if ( isset( $this->newfields['tag_slug']) && $this->newfields['tag_slug'] != '' ) {
-			$value = $this->newfields['tag_slug'];
-		}
-		// - the existing slug
-		elseif ( $this->fields['tag_slug'] != '' ) {
-			$value = $this->fields['tag_slug'];
-		}
-		// - the new tag's text
-		elseif ( isset( $this->newfields['tag_text'] ) && $this->newfields['tag_text'] != '' ) {
-			$value = $this->newfields['tag_text'];
-		}
-		// - the existing tag text 
-		elseif ( $this->fields['tag_text'] != '' ) {
-			$value = $this->fields['tag_text'];
+		$term = Tags::vocabulary()->get_term( $tag_id );
+		Plugins::act( 'tag_detach_from_post_before', $tag_id, $post_id );
+
+		$result = $term->dissociate( Tags::object_type(), $post_id );
+
+		// should we delete the tag if it's the only one left?
+		if ( 0 == count( $term->objects( Tags::object_type() ) ) ) {
+			$delete = true;
+			$delete = Plugins::filter( 'tag_detach_from_post_delete_empty_tag', $delete, $tag_id );
+
+			if ( $delete ) {
+				$term->delete();
+			}
 		}
 
-		// make sure our slug is unique
-		$slug = Plugins::filter( 'tag_setslug', $value );
-		$slug = Utils::slugify( $slug );
-		return $this->newfields['tag_slug']= $slug;
+		Plugins::act( 'tag_detach_from_post_after', $tag_id, $post_id, $result );
+
+		return $result;
+
 	}
 
 	/**
 	 * function insert
-	 * Saves a new tag into the tags table
+	 * Saves a new tag's data into the terms table
 	 */
 	public function insert()
 	{
-		$this->setslug();
-
 		$allow = true;
 		$allow = Plugins::filter( 'tag_insert_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -163,28 +180,26 @@ class Tag extends QueryRecord
 		}
 		Plugins::act( 'tag_insert_before', $this );
 
-		// Invoke plugins for all fields, since they're all "changed" when inserted
-		foreach ( $this->fields as $fieldname => $value ) {
-			Plugins::act( 'tag_update_' . $fieldname, $this, ( $this->id == 0 ) ? null : $value, $this->$fieldname );
+		$term = new Term( array( 'term' => $this->tag_slug, 'term_display' => $this->tag_text ) );
+		$term = Tags::vocabulary()->add_term( $term );
+
+		if ( $term ) {
+			EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
+			Plugins::act( 'tag_insert_after', $this );
+			return new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
+		}
+		else {
+			return FALSE;
 		}
 
-		$result = parent::insertRecord( DB::table( 'tags' ) );
-		$this->newfields['id']= DB::last_insert_id(); // Make sure the id is set in the Tag object to match the row id
-		$this->fields = array_merge( $this->fields, $this->newfields );
-		$this->newfields = array();
-		EventLog::log( sprintf(_t('New tag %1$s (%2$s);  Slug: %3$s'), $this->id, $this->tag_text, $this->tag_slug), 'info', 'content', 'habari' );
-		Plugins::act( 'tag_insert_after', $this );
-
-		return $result;
 	}
 
 	/**
 	 * function update
-	 * Updates an existing tag in the tags table
+	 * Update an existing tag's data in the terms table
 	 */
 	public function update()
 	{
-
 		$allow = true;
 		$allow = Plugins::filter( 'tag_update_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -192,34 +207,29 @@ class Tag extends QueryRecord
 		}
 		Plugins::act( 'tag_update_before', $this );
 
-		// Call setslug() only when tag slug is changed
-		if ( isset( $this->newfields['tag_slug'] ) && $this->newfields['tag_slug'] != '' ) {
-			if ( $this->fields['tag_slug'] != $this->newfields['tag_slug'] ) {
-				$this->setslug();
-			}
+		$term = Tags::vocabulary()->get_term( $this->id );
+		$term->term = $this->tag_slug;
+		$term->term_display = $this->tag_text;
+		$result = $term->update();
+
+		$term = Tags::vocabulary()->get_term( $this->id );
+		if ( $result ) {
+			$this->tag_text = $term->term_display;
+			$this->tag_slug = $term->term;
 		}
 
-		// invoke plugins for all fields which have been changed
-		// For example, a plugin action "tag_update_slug" would be
-		// triggered if the tag has a new slug value
-		foreach ( $this->newfields as $fieldname => $value ) {
-			Plugins::act( 'tag_update_' . $fieldname, $this, $this->fields[$fieldname], $value );
-		}
-
-		$result = parent::updateRecord( DB::table( 'tags' ), array( 'id' => $this->id ) );
-
-		$this->fields = array_merge( $this->fields, $this->newfields );
-		$this->newfields = array();
 		Plugins::act( 'tag_update_after', $this );
 		return $result;
 	}
 
 	/**
 	 * function delete
-	 * Deletes an existing tag and all relations to it (e.g. a post2tag relationship)
+	 * Deletes an existing tag and all relations to it
 	 */
 	public function delete()
 	{
+		$vocabulary = Tags::vocabulary();
+
 		$allow = true;
 		$allow = Plugins::filter( 'tag_delete_allow', $allow, $this );
 		if ( ! $allow ) {
@@ -228,12 +238,10 @@ class Tag extends QueryRecord
 		// invoke plugins
 		Plugins::act( 'tag_delete_before', $this );
 
-		// Delete all tag2post records associated with this tag
-		$sql = "DELETE FROM {tag2post} WHERE tag_id = ?";
-		DB::query( $sql, array( $this->id ) );
+		// Delete the actual term record
+		$term = $vocabulary->get_term( $this->id );
+		$result = $vocabulary->delete_term( $term );
 
-		// Delete the parent tags record
-		$result = parent::deleteRecord( DB::table( 'tags' ), array( 'id'=>$this->id ) );
 		EventLog::log( sprintf(_t('Tag %1$s (%2$s) deleted.'), $this->id, $this->tag_text), 'info', 'content', 'habari' );
 
 		Plugins::act( 'tag_delete_after', $this );
@@ -243,14 +251,35 @@ class Tag extends QueryRecord
 	/**
 	 * Handle calls to this Tag object that are implemented by plugins
 	 * @param string $name The name of the function called
-	 * @param array $args Arguments passed to the function call	 
-	 * @return mixed The value returned from any plugin filters, null if no value is returned	 
-	 **/	 
+	 * @param array $args Arguments passed to the function call
+	 * @return mixed The value returned from any plugin filters, null if no value is returned
+	 **/
 	public function __call( $name, $args )
 	{
 		array_unshift($args, 'tag_call_' . $name, null, $this);
 		return call_user_func_array(array('Plugins', 'filter'), $args);
 	}
 
+	/**
+	 * Get a count of how many times the tag has been used in a post
+	 * @return integer The number of times the tag has been used
+	 **/
+	protected function get_count()
+	{
+		$term = Tags::vocabulary()->get_term( $this->id );
+		return count( $term->objects( Tags::object_type() ) );
+	}
+
+	/**
+	 * Get a count of how many times the tag has been used in a post
+	 * @return integer The number of times the tag has been used
+	 **/
+	public function count( $object_type = 'post' )
+	{
+		$term = Tags::vocabulary()->get_term( $this->id );
+		return count( $term->objects( $object_type ) );
+	}
+
 }
+
 ?>

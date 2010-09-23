@@ -1,11 +1,15 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Format Class
  *
  * Provides formatting functions for use in themes.  Extendable.
- * @package Habari
+ *
  */
-
 class Format
 {
 	private static $formatters = null;
@@ -17,16 +21,16 @@ class Format
 	 **/
 	public static function apply($format, $onwhat)
 	{
-		if( self::$formatters == null ) {
+		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
-		foreach(self::$formatters as $formatobj) {
-			if( method_exists($formatobj, $format) ) {
+		foreach ( self::$formatters as $formatobj ) {
+			if ( method_exists($formatobj, $format) ) {
 				$index = array_search($formatobj, self::$formatters);
 				$func = '$o = Format::by_index(' . $index . ');return $o->' . $format . '($a';
 				$args = func_get_args();
-				if( count($args) > 2) {
+				if ( count($args) > 2) {
 					$func.= ', ';
 					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
 					$func .= implode(', ', $args);
@@ -38,6 +42,22 @@ class Format
 			}
 		}
 	}
+	
+	/**
+	 *
+	 *
+	 **/
+	public static function apply_with_hook_serialize( $arg ) 
+	{
+		$arg = serialize( $arg );
+		return "'{$arg}'";
+	}
+	
+	public static function apply_with_hook_unserialize( $arg ) 
+	{
+		$arg = unserialize( $arg );
+		return $arg;
+	}
 
 	/**
 	 * Called to register a format function to a plugin hook, and passes all of the hook's parameters to the Format function.
@@ -46,21 +66,25 @@ class Format
 	 **/
 	public static function apply_with_hook_params($format, $onwhat)
 	{
-		if( self::$formatters == null ) {
+		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
-		foreach(self::$formatters as $formatobj) {
-			if( method_exists($formatobj, $format) ) {
+		foreach ( self::$formatters as $formatobj ) {
+			if ( method_exists($formatobj, $format) ) {
 				$index = array_search($formatobj, self::$formatters);
-				$func = '$o= Format::by_index(' . $index . '); $args= func_get_args(); return call_user_func_array(array($o, "' . $format . '"), array_merge($args';
+				$func = '$o = Format::by_index(' . $index . ');';
+				$func .= '$args = func_get_args();';
+				$func .= '$args = array_merge( $args';
 				$args = func_get_args();
-				if( count($args) > 2) {
-					$func.= ', array( ';
-					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
-					$func .= implode(', ', $args) . ')';
+				if ( count($args) > 2 ) {
+				
+					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),'; 
+					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice($args, 2));
+					$func .= 'array( ' . implode(', ', $args) . ' ))';
 				}
-				$func .= '));';
+				$func .= ');';
+				$func .= 'return call_user_func_array(array($o, "' . $format . '"), $args);';
 				$lambda = create_function('$a', $func);
 				Plugins::register( $lambda, 'filter', $onwhat);
 				break;  // We only look for one matching format function to apply.
@@ -88,8 +112,8 @@ class Format
 	{
 		self::$formatters = array();
 		$classes = get_declared_classes();
-		foreach( $classes as $class ) {
-			if( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
+		foreach ( $classes as $class ) {
+			if ( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
 				self::$formatters[] = new $class();
 			}
 		}
@@ -101,62 +125,107 @@ class Format
 
 	/**
 	 * function autop
-	 * Converts non-HTML paragraphs separated with 2 or more new lines into HTML paragraphs 
+	 * Converts non-HTML paragraphs separated with 2 or more new lines into HTML paragraphs
 	 * while preserving any internal HTML.
 	 * New lines within the text of block elements are converted to linebreaks.
 	 * New lines before and after tags are stripped.
+	 *
+	 * If you make changes to this, PLEASE add test cases here:
+	 *   http://svn.habariproject.org/habari/trunk/tests/data/autop/
+	 * 
 	 * @param string $value The string to apply the formatting
 	 * @returns string The formatted string
 	 **/
-	public static function autop($value)
+	public static function autop( $value )
 	{
-		$regex = '/(<\s*(address|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
+		$value = str_replace( "\r\n", "\n", $value );
+		$value = trim( $value );
+		$ht = new HtmlTokenizer( $value, false );
+		$set = $ht->parse();
+		$value = '';
+		
+		// should never autop ANY content in these items
+		$noAutoP = array(
+			'pre','code','ul','h1','h2','h3','h4','h5','h6',
+			'table','ul','ol','li','i','b','em','strong'
+		);
+		
+		$blockElements = array(
+			'address','blockquote','center','dir','div','dl','fieldset','form',
+			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
+			'noscript','ol','p','pre','table','ul'
+		);
+		
+		$token = $set->current();
 
-		// First, clean out any windows line endings 
-		$target = str_replace( "\r\n", "\n", $value );
-
-		// Then, find any of the approved tags above, and split the content on them
-		$cz = preg_split( $regex, $target );
-		preg_match_all( $regex, $target, $cd, PREG_SET_ORDER );
-
-		/**
-		 * Loop through each content block, turning two newlines in a row into </p><p>'s and 
-		 * single newlines into <br>'s
-		 **/
-		$output = '';
-		for($z = 0; $z < count($cz); $z++) {
-			$pblock = preg_replace( '/\n{2,}/', "</p><p>", trim( $cz[$z] ) );
-			$pblock = ( $pblock == '' ) ? '' : "<p>{$pblock}</p>";
-
-			$tblock = isset( $cd[$z] ) ? $cd[$z][0] : '';
-			$output .= $pblock . $tblock;
+		// There are no tokens in the text being formatted
+		if ( $token === FALSE ) {
+			return $value;
 		}
 
-
-		$output = preg_replace( '%>\s*\n%i', '>', $output );
-		$output = preg_replace( '%\n\s*<%i', '<', $output );
-		$output = preg_replace( '%\n%i', '<br />', $output );
-
-
-		/**
-		 * Now filter out any erroneous paragraph or break tags, like ones that would occur in nested lists.
-		 * There may very well be more cases for this: table td's, etc? 
-		 **/
-		$cleanNestedRegex = '<\/?\s*(ul|ol|li|dl|dt|dd)[^>]*>';
-
-		// Filter out paragraph tags
-		$output = preg_replace( "/<p>\s*($cleanNestedRegex)/", "$1", $output );
-		$output = preg_replace( "/($cleanNestedRegex)\s*<\/p>/", "$1", $output );
-
-		// Filter out br tags
-		$output = preg_replace( "/($cleanNestedRegex)\s*<br>/", "$1", $output );
-		$output = preg_replace( "/<br>\s*($cleanNestedRegex)/", '$1', $output );
-
-		// Finally, move misplaced p tags to after hr tags
-		$output = preg_replace( '%<p><hr\s*/*\s*>%', "<hr/><p>", $output );
-
-		return trim( $output );
-
+		$openP = false;
+		do {
+			
+			if ( $openP ) {
+				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $blockElements ) ) {
+					if ( strtolower( $token['name'] ) != 'p' || $token['type'] != HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
+						$value .= '</p>';
+					}
+					$openP = false;
+				}
+			}
+			
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array( strtolower( $token['name'] ), $blockElements ) && $value == '' ) {
+				// first element, is not a block element
+				$value = '<p>';
+				$openP = true;
+			}
+			
+			// no-autop, pass them through verbatim
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array( strtolower( $token['name'] ), $noAutoP ) ) {
+				$nestedToken = $token;
+				do {
+					$value .= HtmlTokenSet::token_to_string( $nestedToken, false );
+					if (
+						( $nestedToken['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
+						 && strtolower( $nestedToken['name'] ) == strtolower( $token['name'] ) ) // found closing element
+					) {
+						break;
+					}
+				} while ( $nestedToken = $set->next() );
+				continue;
+			}
+			
+			// anything that's not a text node should get passed through
+			if ( $token['type'] != HTMLTokenizer::NODE_TYPE_TEXT ) {
+				$value .= HtmlTokenSet::token_to_string( $token, true );
+				// If the token itself is p, we need to set $openP
+				if ( strtolower( $token['name'] ) == 'p' && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN ) {
+					$openP = true;
+				}
+				continue;
+			}
+			
+			// if we get this far, token type is text
+			$localValue = $token['value'];
+			if ( strlen( $localValue ) ) {
+				if ( !$openP ) {
+					$localValue = '<p>' . ltrim( $localValue );
+					$openP = true;
+				}
+				
+				$localValue = preg_replace( '/\s*(\n\s*){2,}/u', "</p><p>", $localValue ); // at least two \n in a row (allow whitespace in between)
+				$localValue = str_replace( "\n", "<br>", $localValue ); // nl2br
+			}
+			$value .= $localValue;
+		} while ( $token = $set->next() );
+		
+		$value = preg_replace( '#\s*<p></p>\s*#u', '', $value ); // replace <p></p>
+		if ( $openP ) {
+			$value .= '</p>';
+		}
+		
+		return $value;
 	}
 
 	/**
@@ -173,7 +242,7 @@ class Format
 			$array = array( $array );
 		}
 
-		if( $between_last === NULL ) {
+		if ( $between_last === NULL ) {
 			$between_last = _t( ' and ' );
 		}
 
@@ -211,6 +280,32 @@ class Format
 	}
 
 	/**
+	 * Format a date using a specially formatted string
+	 * Useful for using a single string to format multiple date components.
+	 * Example:
+	 *  If $dt is a HabariDateTime for December 10, 2008...
+	 *  echo $dt->format_date('<div><span class="month">{F}</span> {j}, {Y}</div>');
+	 *  // Output: <div><span class="month">December</span> 10, 2008</div>
+	 *
+	 * @param HabariDateTime $date The date to format
+	 * @param string $format A string with date()-like letters within braces to replace with date components
+	 * @return string The formatted string
+	 */
+	public static function format_date($date, $format)
+	{
+		if ( !( $date instanceOf HabariDateTime ) ) {
+			$date = HabariDateTime::date_create( $date );
+		}
+		preg_match_all('%\{(\w)\}%iu', $format, $matches);
+
+		$components = array();
+		foreach ( $matches[1] as $format_component ) {
+			$components['{'.$format_component.'}'] = $date->format($format_component);
+		}
+		return strtr($format, $components);
+	}
+
+	/**
 	 * function nice_date
 	 * Formats a date using a date format string
 	 * @param HabariDateTime A date as a HabariDateTime object
@@ -244,74 +339,73 @@ class Format
 	 * Returns a shortened version of whatever is passed in.
 	 * @param string $value A string to shorten
 	 * @param integer $count Maximum words to display [100]
-	 * @param integer $maxparagraphs Maximum paragraphs to display [1]
+	 * @param integer $max_paragraphs Maximum paragraphs to display [1]
 	 * @return string The string, shortened
 	 **/
-	public static function summarize( $text, $count = 100, $maxparagraphs = 1 )
+	public static function summarize( $text, $count = 100, $max_paragraphs = 1 )
 	{
-		preg_match_all( '/<script.*?<\/script.*?>/', $text, $scripts );
-		preg_replace( '/<script.*?<\/script.*?>/', '', $text );
+		$ellipsis = '...';
+		
+		$showmore = false;
 
-		$words = preg_split( '/(<(?:\\s|".*?"|[^>])+>|\\s+)/', $text, $count + 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
-
-		$ellipsis = '';
-		if( count( $words ) > $count * 2 ) {
-			array_pop( $words );
-			$ellipsis = '...';
-		}
-		$output = '';
-
-		$paragraphs = 0;
+		$ht = new HtmlTokenizer($text, false);
+		$set = $ht->parse();
 
 		$stack = array();
-		foreach( $words as $word ) {
-			if ( preg_match( '/<.*\/\\s*>$/', $word ) ) {
-				// If the tag self-closes, do nothing.
-				$output.= $word;
+		$para = 0;
+		$token = $set->current();
+		$summary = new HTMLTokenSet();
+		$set->rewind(); 
+		$remaining_words = $count;
+		// $bail lets the loop end naturally and close all open elements without adding new ones.
+		$bail = false;
+		for($token = $set->current(); $set->valid(); $token = $set->next() ) {
+			if(!$bail && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN) {
+				$stack[] = $token;
 			}
-			elseif( preg_match( '/<[\\s\/]+/', $word )) {
-				// If the tag ends, pop one off the stack (cheatingly assuming well-formed!)
-				array_pop( $stack );
-				preg_match( '/<\s*\/\s*(\\w+)/', $word, $tagn );
-				switch( $tagn[1] ) {
-				case 'br':
-				case 'p':
-				case 'div':
-				case 'ol':
-				case 'ul':
-					$paragraphs++;
-					if( $paragraphs >= $maxparagraphs ) {
-						$output.= '...' . $word;
-						$ellipsis = '';
-						break 2;
-					}
+			if(!$bail) {
+				switch($token['type']) {
+					case HTMLTokenizer::NODE_TYPE_TEXT:
+						$words = preg_split('/(\\s+)/u', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+						// word count is doubled because spaces between words are captured as their own array elements via PREG_SPLIT_DELIM_CAPTURE
+						$words = array_slice($words, 0, $remaining_words * 2);
+						$remaining_words -= count($words) / 2;
+						$token['value'] = implode('', $words);
+						if($remaining_words <= 0) {
+							$token['value'] .= $ellipsis;
+							$summary[] = $token;
+							$bail = true;
+						}
+						else {
+							$summary[] = $token;
+						}
+						break;
+					case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+						// don't handle this case here
+						break;
+					default:
+						$summary[] = $token;
+						break;
 				}
-				$output.= $word;
 			}
-			elseif( $word[0] == '<' ) {
-				// If the tag begins, push it on the stack
-				$stack[]= $word;
-				$output.= $word;
-			}
-			else {
-				$output.= $word;
-			}
-		}
-		$output.= $ellipsis;
-
-		if ( count( $stack ) > 0 ) {
-			preg_match( '/<(\\w+)/', $stack[0], $tagn );
-			$stack = array_reverse( $stack );
-			foreach ( $stack as $tag ) {
-				preg_match( '/<(\\w+)/', $tag, $tagn );
-				$output.= '</' . $tagn[1] . '>';
+			if($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE) {
+				do{
+					$end = array_pop($stack);
+					$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+					$end['attrs'] = null;
+					$end['value'] = null;
+					$summary[] = $end;
+				} while( ($bail || $end['name'] != $token['name']) && count($stack) > 0 );
+				if(count($stack) == 0) {
+					$para++;
+				}
+				if($bail || $para >= $max_paragraphs) {
+					break;
+				}
 			}
 		}
-		foreach( $scripts[0] as $script ) {
-			$output.= $script;
-		}
-
-		return $output;
+			
+		return (string) $summary;
 	}
 
 	/**
@@ -327,32 +421,59 @@ class Format
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
 	 * @return string The post content, suitable for display
 	 **/
-	public static function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null)
+	public static function more($content, $post, $properties = array())
 	{
 		// If the post requested is the post under consideration, always return the full post
-		if( $post->slug == Controller::get_var('slug') ) {
+		if ( $post->slug == Controller::get_var('slug') ) {
 			return $content;
 		}
+		else if( is_string( $properties ) ) {
+			$args = func_get_args();			
+			$more_text = $properties;
+			$max_words = ( isset( $args[3] ) ? $args[3] : NULL );
+			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : NULL );
+			$paramstring = "";
+		}
 		else {
-			$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
-			if(count($matches) > 1) {
-				return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
+			$paramstring = "";
+			$paramarray = Utils::get_params( $properties );
+			
+			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
+			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : NULL );
+			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : NULL );
+
+			if( isset( $paramarray['title:before'] ) || 
+				isset( $paramarray['title'] ) ||
+				isset( $paramarray['title:after'] ) ) {
+				$paramstring .= 'title="';	
+				
+				if( isset( $paramarray['title:before'] ) ) 	$paramstring .= $paramarray['title:before'];
+				if( isset( $paramarray['title'] ) ) 		$paramstring .= $post->title;
+				if( isset( $paramarray['title:after'] ) ) 	$paramstring .= $paramarray['title:after'];
+				$paramstring .= '" ';
 			}
-			elseif (isset($max_words) || isset($max_paragraphs)) {
-				$max_words = empty($max_words) ? 9999999 : intval($max_words);
-				$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
-				$summary = Format::summarize($content, $max_words, $max_paragraphs);
-				if(strlen($summary) >= strlen($content)) {
-					return $content;
-				}
-				else {
-					return $summary . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
-				}
+			if( isset( $paramarray['class'] ) ) $paramstring .= 'class="' . $paramarray['class'] . '" ';	
+
+		}
+		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
+		if ( count($matches) > 1 ) {
+			return ( $more_text != '' ) ? reset($matches) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>' : reset($matches);
+		}
+		elseif ( isset($max_words) || isset($max_paragraphs) ) {
+			$max_words = empty($max_words) ? 9999999 : intval($max_words);
+			$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
+			$summary = Format::summarize($content, $max_words, $max_paragraphs);
+			if ( strlen($summary) >= strlen($content) ) {
+				return $content;
 			}
-    }
+			else {
+				return ( $more_text != '' ) ? $summary . ' <a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' : $summary;
+			}
+		}
+    
     return $content;
 	}
-	
+
 	/**
 	 * html_messages
 	 * Creates an HTML unordered list of an array of messages
@@ -377,7 +498,7 @@ class Format
 			}
 			$output.= '</ul>';
 		}
-		
+
 		return $output;
 	}
 
@@ -394,16 +515,16 @@ class Format
 		if ( count( $errors ) ) {
 			foreach ( $errors as $error ) {
 				$error = addslashes($error);
-				$output.= "humanMsg.displayMsg('{$error}');";
+				$output .= "humanMsg.displayMsg(\"{$error}\");";
 			}
 		}
 		if ( count( $notices ) ) {
 			foreach ( $notices as $notice ) {
 				$notice = addslashes($notice);
-				$output.= "humanMsg.displayMsg('{$notice}');";
+				$output .= "humanMsg.displayMsg(\"{$notice}\");";
 			}
 		}
-		
+
 		return $output;
 	}
 

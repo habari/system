@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="plugin">
+	<name>Simple Private Posts</name>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	
+	<author url="http://habariproject.org/">The Habari Community</author>
+	
+	<version>1.0</version>
+	<url>http://habariproject.org/</url>
+	<description><![CDATA[Mark posts as private so that only authenticated users who have read access to the "private" token can read them.]]></description>
+
+	<copyright>2009</copyright>
+	
+	<help>
+		<value><![CDATA[
+			<p>The "private" token is automatically set to <em>deny</em> for the "Anonymous" group, visitors to your site who are not logged in, which prevents them from seeing posts with the private token. You can select other groups to deny permission to posts with the "private" token on the groups page. </p>
+			<p>On the post creation page, a new checkbox labeled "Private Post" will appear in the settings area. Check this box to make the post private.</p>
+		]]></value>
+	</help>
+</pluggable>

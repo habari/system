@@ -1,20 +1,23 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Modules Class
  *
  * Provides an interface for the code to access modules and module options
- * @package Habari
  */
-
 class Modules
 {
 	private static $available_modules = array();
 	private static $active_modules = array();
 	private static $status_data;
 
-   /**
-     * static initializer to setup base vars.
-     */
+	/**
+	 * static initializer to setup base vars.
+	 */
 	public static function __static()
 	{
 		self::$available_modules = (array) Plugins::filter( 'dash_modules', array() );

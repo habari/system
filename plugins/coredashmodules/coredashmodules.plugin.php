@@ -8,24 +8,6 @@ class CoreDashModules extends Plugin
 {
 	private $theme;
 
-	/**
-	 * function info
-	 * Returns information about this plugin
-	 * @return array Plugin info array
-	 **/
-	function info()
-	{
-		return array (
-			'name' => 'Core Dash Modules',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'version' => '1.0',
-			'description' => 'Provides a core set of dashboard modules for the dashboard.',
-			'license' => 'Apache License 2.0',
-		);
-	}
-	
 		/**
 	 * action_plugin_activation
 	 * Registers the core modules with the Modules class. Add these modules to the
@@ -61,7 +43,13 @@ class CoreDashModules extends Plugin
 	 */
 	function filter_dash_modules( $modules )
 	{
-		array_push( $modules, 'Latest Entries', 'Latest Comments', 'Latest Log Activity' );
+		$modules[] = 'Latest Entries';
+		if(User::identify()->can('manage_all_comments')) {
+			$modules[] = 'Latest Comments';
+		}
+		if(User::identify()->can('manage_logs')) {
+			$modules[] = 'Latest Log Activity';
+		}
 		
 		$this->add_template( 'dash_logs', dirname( __FILE__ ) . '/dash_logs.php' );
 		$this->add_template( 'dash_latestentries', dirname( __FILE__ ) . '/dash_latestentries.php' );
@@ -93,13 +81,15 @@ class CoreDashModules extends Plugin
 		$theme->logs = EventLog::get( $params );
 		
 		// Create options form
+		/* Commented out until fully implemented or it's decided to drop completely. See https://trac.habariproject.org/habari/ticket/1233
 		$form = new FormUI( 'dash_logs' );
 		$form->append( 'text', 'logs_number_display', 'option:' . Modules::storage_name( $module_id, 'logs_number_display' ), _t('Number of items') );
 		$form->append( 'submit', 'submit', _t('Submit') );
 		$form->properties['onsubmit'] = "dashboard.updateModule({$module_id}); return false;";
+		 */
 		
-		$module['title'] = '<a href="' . Site::get_url('admin') . '/logs">' . _t('Latest Log Activity') . '</a>';
-		$module['options'] = $form->get();
+		$module['title'] = ( User::identify()->can( 'manage_logs' ) ? '<a href="' . Site::get_url('admin') . '/logs">' . _t('Latest Log Activity') . '</a>' : _t('Latest Log Activity') );
+		//$module['options'] = $form->get();
 		$module['content'] = $theme->fetch( 'dash_logs' );
 		return $module;
 	}
@@ -114,7 +104,7 @@ class CoreDashModules extends Plugin
 	{
 		$theme->recent_posts = Posts::get( array( 'status' => 'published', 'limit' => 8, 'type' => Post::type('entry') ) );
 		
-		$module['title'] = '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>';
+		$module['title'] = ( User::identify()->can( 'manage_entries' ) ? '<a href="' . Site::get_url('admin') . '/posts?type=1">' . _t('Latest Entries') . '</a>' : _t('Latest Entries') );
 		$module['content'] = $theme->fetch( 'dash_latestentries' );
 		return $module;
 	}
@@ -141,7 +131,7 @@ class CoreDashModules extends Plugin
 		$theme->latestcomments_posts = $posts;
 		$theme->latestcomments = $latestcomments;
 		
-		$module['title'] = '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>';
+		$module['title'] = ( User::identify()->can( 'manage_comments' ) ? '<a href="' . Site::get_url('admin') . '/comments">' . _t('Latest Comments') . '</a>' : _t('Latest Comments') );
 		$module['content'] = $theme->fetch( 'dash_latestcomments' );
 		return $module;
 	}

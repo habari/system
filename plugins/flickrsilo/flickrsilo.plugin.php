@@ -5,8 +5,8 @@ class flickrAPI
 	{
 		$this->key = 'cd0ae46b1332aa2bd52ba3063f0db41c';
 		$this->secret = '76cf747f70be9029';
-		$this->endpoint = 'http://flickr.com/services/rest/?';
-		$this->authendpoint = 'http://flickr.com/services/auth/?';
+		$this->endpoint = 'http://www.flickr.com/services/rest/?';
+		$this->authendpoint = 'http://www.flickr.com/services/auth/?';
 		$this->uploadendpoint = 'http://api.flickr.com/services/upload/?';
 		$this->conntimeout = 20;
 	}
@@ -242,12 +242,16 @@ class Flickr extends flickrAPI
 			$params['auth_token'] = $this->cachedToken();
 		}
 
-		$params['secret'] = $this->secret;
-		$params['user_id'] = 'me';
-		$params['sort'] = 'date-posted-desc';
-		$params['per_page'] = 20;
-		$params['media'] = 'photos';
-		$params['extras'] = 'original_format';
+		$defaults = array(
+			'secret' => $this->secret,
+			'user_id' => 'me',
+			'sort' => 'date-posted-desc',
+			'per_page' => 20,
+			'media' => 'photos',
+			'extras' => 'original_format',
+		);
+
+		$params = array_merge($defaults, $params);
 
 		$xml = $this->call('flickr.photos.search', $params);
 
@@ -450,22 +454,6 @@ class FlickrSilo extends Plugin implements MediaSilo
 	static $cache = array();
 
 	/**
-	* Provide plugin info to the system
-	*/
-	public function info()
-	{
-		return array('name' => 'Flickr Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Implements basic Flickr integration',
-			'copyright' => '2008',
-			);
-	}
-
-	/**
 	* Initialize some internal values when plugin initializes
 	*/
 	public function action_init()
@@ -501,6 +489,48 @@ class FlickrSilo extends Plugin implements MediaSilo
 
 		$section = strtok($path, '/');
 		switch($section) {
+			case 'attrib-sa':
+				$xml = $flickr->photosSearch(array('user_id' => '', 'license' => '4,5', 'text'=>$_SESSION['flickrsearch']));
+				foreach($xml->photos->photo as $photo) {
+
+					$props = array();
+					foreach($photo->attributes() as $name => $value) {
+						$props[$name] = (string)$value;
+					}
+					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
+					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+					$props['flickr_url'] = "http://www.flickr.com/photos/{$photo['owner']}/{$photo['id']}";
+					$props['filetype'] = 'flickr';
+
+					$results[] = new MediaAsset(
+						self::SILO_NAME . '/photos/' . $photo['id'],
+						false,
+						$props
+					);
+				}
+				break;
+
+			case 'search':
+				$xml = $flickr->photosSearch(array('text'=>$_SESSION['flickrsearch']));
+				foreach($xml->photos->photo as $photo) {
+
+					$props = array();
+					foreach($photo->attributes() as $name => $value) {
+						$props[$name] = (string)$value;
+					}
+					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
+					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+					$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
+					$props['filetype'] = 'flickr';
+
+					$results[] = new MediaAsset(
+						self::SILO_NAME . '/photos/' . $photo['id'],
+						false,
+						$props
+					);
+				}
+				break;
+
 			case 'photos':
 				$xml = $flickr->photosSearch();
 				foreach($xml->photos->photo as $photo) {
@@ -608,8 +638,25 @@ class FlickrSilo extends Plugin implements MediaSilo
 				}
 				break;
 
+			case '$search':
+				$path = strtok('/');
+				$dosearch = Utils::slugify($path);
+				$_SESSION['flickrsearch'] = $path;
+				$section = $path;
 
 			case '':
+				if(isset($_SESSION['flickrsearch'])) {
+					$results[] = new MediaAsset(
+						self::SILO_NAME . '/search',
+						true,
+						array('title' => 'Search')
+					);
+					$results[] = new MediaAsset(
+						self::SILO_NAME . '/attrib-sa',
+						true,
+						array('title' => 'Search CC')
+					);
+				}
 				$results[] = new MediaAsset(
 					self::SILO_NAME . '/photos',
 					true,
@@ -807,7 +854,7 @@ END_AUTH;
 						}
 						else{
 							echo '<p>There was a problem with your authorization:</p>';
-							echo htmlspecialchars($token->asXML());
+							echo Utils::htmlspecialchars($token->asXML());
 						}
 						unset($_SESSION['flickr_frob']);
 					}
@@ -857,9 +904,11 @@ END_AUTH;
 
 			echo <<< FLICKR
 			<script type="text/javascript">
-				habari.media.output.flickr = {display: function(fileindex, fileobj) {
-					habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
-				}}
+				habari.media.output.flickr = {
+					embed_photo: function(fileindex, fileobj) {
+						habari.editor.insertSelection('<a href="' + fileobj.flickr_url + '"><img src="' + fileobj.url + '"></a>');
+					}
+				}
 				habari.media.output.flickrvideo = {
 					embed_video: function(fileindex, fileobj) {
 						habari.editor.insertSelection('<object type="application/x-shockwave-flash" width="{$vsizex}" height="{$vsizey}" data="http://www.flickr.com/apps/video/stewart.swf?v=49235" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"> <param name="flashvars" value="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;show_info_box=true"></param> <param name="movie" value="http://www.flickr.com/apps/video/stewart.swf?v=49235"></param> <param name="bgcolor" value="#000000"></param> <param name="allowFullScreen" value="true"></param><embed type="application/x-shockwave-flash" src="http://www.flickr.com/apps/video/stewart.swf?v=49235" bgcolor="#000000" allowfullscreen="true" flashvars="intl_lang=en-us&amp;photo_secret=' + fileobj.secret + '&amp;photo_id=' + fileobj.id + '&amp;flickr_show_info_box=true" height="{$vsizey}" width="{$vsizex}"></embed></object>');
@@ -870,11 +919,11 @@ END_AUTH;
 				}
 				habari.media.preview.flickr = function(fileindex, fileobj) {
 					var stats = '';
-					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink">media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink" onclick="$(this).attr(\'target\',\'_blank\');" title="Open in new window">media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 				}
 				habari.media.preview.flickrvideo = function(fileindex, fileobj) {
 					var stats = '';
-					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink">media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+					return '<div class="mediatitle"><a href="' + fileobj.flickr_url + '" class="medialink" onclick="$(this).attr(\'target\',\'_blank\');"title="Open in new window" >media</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 				}
 			</script>
 FLICKR;
@@ -904,6 +953,38 @@ FLICKR;
 		}
 		return $flickr_ok;
 	}
+
+	/**
+	 * Provide controls for the media control bar
+	 *
+	 * @param array $controls Incoming controls from other plugins
+	 * @param MediaSilo $silo An instance of a MediaSilo
+	 * @param string $path The path to get controls for
+	 * @param string $panelname The name of the requested panel, if none then emptystring
+	 * @return array The altered $controls array with new (or removed) controls
+	 *
+	 * @todo This should really use FormUI, but FormUI needs a way to submit forms via ajax
+	 */
+	public function filter_media_controls( $controls, $silo, $path, $panelname )
+	{
+		$class = __CLASS__;
+		if($silo instanceof $class) {
+			unset($controls['root']);
+			$search_criteria = isset($_SESSION['flickrsearch']) ? htmlentities($_SESSION['flickrsearch']) : '';
+			$controls['search']= '<label for="flickrsearch" class="incontent">Search</label><input type="search" id="flickrsearch" placeholder="'. _t('Search for photos') .'" value="'.$search_criteria.'">
+					<script type="text/javascript">
+					$(\'#flickrsearch\').keypress(function(e){
+						if(e.which == 13){
+							habari.media.fullReload();
+							habari.media.showdir(\''.FlickrSilo::SILO_NAME.'/$search/\' + $(this).val());
+							return false;
+						}
+					});
+					</script>';
+		}
+		return $controls;
+	}
+
 }
 
 ?>

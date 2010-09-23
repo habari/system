@@ -1,11 +1,14 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * URL class which handles creation of URLs based on the rewrite
  * rules in the database.  Uses rules to construct pretty URLs for use
  * by the system and especially the theme's template engine
  *
- * @package Habari
  */
 class URL extends Singleton
 {
@@ -21,7 +24,7 @@ class URL extends Singleton
 	 */
 	protected static function instance()
 	{
-		return self::getInstanceOf( get_class() );
+		return self::getInstanceOf( __CLASS__ );
 	}
 
 	/**
@@ -44,6 +47,16 @@ class URL extends Singleton
 	{
 		return URL::instance()->matched_rule;
 	}
+	
+	/**
+	 * Get the active RewriteRules that are cached in self::load_rules().
+	 *
+	 * @return array RewriteRules active rules, or NULL
+	 */
+	public static function get_active_rules()
+	{
+		return URL::instance()->rules;
+	}
 
 	/**
 	 * Cause the matched rule to be unset in the case of a 404
@@ -52,7 +65,7 @@ class URL extends Singleton
 	 */
 	public static function set_404()
 	{
-		if( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
+		if ( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
 			$rule = RewriteRules::by_name('display_404');
 			URL::instance()->matched_rule = reset($rule);
 			URL::instance()->matched_rule->match(self::$stub);
@@ -80,14 +93,14 @@ class URL extends Singleton
 		 * but only if the base URL isn't /
 		 */
 		if ( strpos( $from_url, $base_url ) === 0 ) {
-			$from_url = substr( $from_url, strlen( $base_url ) );
+			$from_url = MultiByte::substr( $from_url, MultiByte::strlen( $base_url ) );
 		}
 
 		/* Trim off any leading or trailing slashes */
 		$from_url = trim( $from_url, '/' );
 
 		/* Remove the querystring from the URL */
-		if ( strpos( $from_url, '?' ) !== FALSE ) {
+		if ( MultiByte::strpos( $from_url, '?' ) !== FALSE ) {
 			list( $from_url, )= explode( '?', $from_url );
 		}
 
@@ -116,11 +129,11 @@ class URL extends Singleton
 	 * values and returns the built URL.
 	 *
 	 * <code>
-	 * 	URL::get( 'display_entries_by_date', array(
-	 * 		'year' => '2000',
-	 *    	'month' => '05',
-	 *    	'day' => '01',
-	 * 	) );
+	 * URL::get( 'display_entries_by_date', array(
+	 * 	'year' => '2000',
+	 * 	'month' => '05',
+	 * 	'day' => '01',
+	 * ) );
 	 * </code>
 	 *
 	 * @param mixed $rule_names string name of the rule or array of rules which would build the URL
@@ -128,7 +141,7 @@ class URL extends Singleton
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 * @param boolean $prepend_site If true (default), a full URL is returned, if false, only the path part of the URL is returned
 	 */
-	public static function get( $rule_names, $args = array(), $useall = true, $noamp = false, $prepend_site = true )
+	public static function get( $rule_names='', $args = array(), $useall = true, $noamp = false, $prepend_site = true )
 	{
 		$args = self::extract_args( $args );
 
@@ -187,7 +200,8 @@ class URL extends Singleton
 			$return_url = $selectedrule->build( $args, $useall, $noamp );
 			if ( $prepend_site ) {
 				return Site::get_url( 'habari', true ) . $return_url;
-			} else {
+			}
+			else {
 				return $return_url;
 			}
 		}
@@ -223,11 +237,15 @@ class URL extends Singleton
 	 *
 	 * @param string $path The filesystem path
 	 * @param bool whether to include a trailing slash.  Default: No
+	 * @param bool whether to leave a filename on the URL.  Default: No
 	 * @return string URL
 	 */
-	public static function get_from_filesystem($path, $trail = false)
+	public static function get_from_filesystem($path, $trail = false, $preserve_file = false)
 	{
-		$url = Site::get_url('habari') . substr(dirname($path), strlen(HABARI_PATH));
+		if ( !$preserve_file ) {
+			$path = dirname($path);
+		}
+		$url = Site::get_url('habari') . MultiByte::substr($path, MultiByte::strlen(HABARI_PATH));
 		// Replace windows paths with forward slashes
 		$url = str_replace( '\\', '/', $url);
 		$url .= ( $trail ) ? '/' : '';
@@ -238,7 +256,7 @@ class URL extends Singleton
 	 * Extract the possible arguments to use in the URL from the passed variable
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL
-	 **/
+	 */
 	public static function extract_args( $args, $prefix = '' )
 	{
 		if ( is_object( $args ) ) {

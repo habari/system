@@ -1,5 +1,10 @@
 <?php
 /**
+ * @package Habari
+ *
+ */
+
+/**
  * Habari Stack Class
  *
  * This class allows Habari to accumulate a group of unique values that
@@ -21,9 +26,7 @@
  * Stack::out( 'template_stylesheet', '<link rel="stylesheet" type="text/css"  href="%s" media="%s">' );
  * </code>
  *
- * @package Habari
  */
-
 class Stack
 {
 	private static $stacks = array();
@@ -67,7 +70,8 @@ class Stack
 	 * @param string $value The value to check for.
 	 * @return boolean TRUE if the item exists, FALSE otherwise.
 	 */
-	public static function has ( $stack_name, $value_name ) {
+	public static function has ( $stack_name, $value_name )
+	{
 
 		// get the stack
 		$stack = self::get_named_stack( $stack_name );
@@ -89,7 +93,8 @@ class Stack
 	 * @param mixed $default_value The default value to return if the item does not exist in the stack.
 	 * @return mixed The item, or $default_value if it does not exist.
 	 */
-	public static function get_item ( $stack_name, $value_name, $default_value = null ) {
+	public static function get_item ( $stack_name, $value_name, $default_value = null )
+	{
 
 		// get the stack
 		$stack = self::get_named_stack( $stack_name );
@@ -130,22 +135,22 @@ class Stack
 	{
 		$stack = self::get_named_stack( $stack_name );
 		$value_name = $value_name ? $value_name : md5( serialize( $value ) );
-		if(!is_null($after)) {
-			if(!is_array($after)) {
+		if ( !is_null($after) ) {
+			if ( !is_array($after) ) {
 				$after = array($after);
 			}
-			foreach($after as $a) {
-				if(!isset(self::$stack_sort[$stack_name])) {
+			foreach ($after as $a ) {
+				if ( !isset(self::$stack_sort[$stack_name]) ) {
 					self::$stack_sort[$stack_name] = array();
 				}
-				if(!isset(self::$stack_sort[$stack_name][$a])) {
+				if ( !isset(self::$stack_sort[$stack_name][$a]) ) {
 					self::$stack_sort[$stack_name][$a] = array();
 				}
 				self::$stack_sort[$stack_name][$a][$value_name] = $value_name;
 			}
 		}
-		$stack[$value_name]= $value;
-		self::$stacks[$stack_name]= $stack;
+		$stack[$value_name] = $value;
+		self::$stacks[$stack_name] = $stack;
 		return $stack;
 	}
 
@@ -161,7 +166,7 @@ class Stack
 		if ( isset( $stack[$value_name] ) ) {
 			unset( $stack[$value_name] );
 		}
-		self::$stacks[$stack_name]= $stack;
+		self::$stacks[$stack_name] = $stack;
 		return $stack;
 	}
 
@@ -182,17 +187,17 @@ class Stack
 		$bca = isset($ba[$a]);
 		$ac = count($aa);
 		$bc = count($ba);
-		if(($acb && $bca) || !($acb || $bca)) {
-			if($ac == $bc) {
+		if ( ($acb && $bca) || !($acb || $bca) ) {
+			if ( $ac == $bc ) {
 				// they are equal in 'bias', so go with the order in which they were added.
 				return 1;
 			}
 			return $ac > $bc ? -1 : 1;
 		}
-		elseif($acb) {
+		elseif ( $acb ) {
 			return -1;
 		}
-		elseif($bca) {
+		elseif ( $bca ) {
 			return 1;
 		}
 	}
@@ -206,7 +211,7 @@ class Stack
 	{
 		$out = '';
 		$stack = self::get_sorted_stack( $stack_name );
-		$stack = Plugins::filter( 'stack_out', $stack, $stack_name );
+		$stack = Plugins::filter( 'stack_out', $stack, $stack_name, $format );
 		foreach( $stack as $element ) {
 			if ( is_callable($format) ) {
 				$out.= call_user_func_array( $format, (array) $element );
@@ -239,7 +244,7 @@ class Stack
 	 */
 	public static function scripts( $element )
 	{
-		if( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE) {
+		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE ) {
 			$output = sprintf( '<script src="%s" type="text/javascript"></script>'."\r\n", $element);
 		}
 		else {
@@ -257,7 +262,7 @@ class Stack
 	 */
 	public static function styles( $element, $typename )
 	{
-		if( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE) {
+		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE ) {
 			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename);
 		}
 		else {

@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  *
  * Habari HiEngine class
- * @package Habari
  *
  * The HiEngine is a subclass of the RawPHPEngine class
  * which is intended for those theme designers who want to use
@@ -24,8 +27,11 @@ class HiEngine extends RawPHPEngine {
 	 */
 	public function __construct()
 	{
-		stream_wrapper_register("hi", "HiEngineParser")
-		or die(_t("Failed to register HiEngine stream protocol"));
+		$streams = stream_get_wrappers();
+		if ( ! in_array( 'hi' , $streams ) ) {
+			stream_wrapper_register("hi", "HiEngineParser")
+			or die(_t("Failed to register HiEngine stream protocol"));
+		}
 	}
 
 	/**
@@ -37,15 +43,13 @@ class HiEngine extends RawPHPEngine {
 	public function display($template)
 	{
 		extract($this->engine_vars);
-		if ($this->template_exists($template)) {
+		if ( $this->template_exists($template) ) {
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			$template_file = 'hi://' . $template_file;
-			if($template == 'comments') {
-//				Utils::debug(file_get_contents($template_file));
-	//			die();
-			}
-			include ($template_file);
+			$fc = file_get_contents($template_file);
+			eval('?>' . $fc);
+			//include $template_file;  // stopped working properly in PHP 5.2.8 
 		}
 	}
 }
@@ -91,6 +95,9 @@ class HiEngineParser
 	 */
 	function stream_read($count)
 	{
+		if ( $this->stream_eof() ) {
+			return false;
+		}
 		$ret = substr($this->file, $this->position, $count);
 		$this->position += strlen($ret);
 		return $ret;
@@ -137,30 +144,33 @@ class HiEngineParser
 	 */
 	function stream_seek($offset, $whence)
 	{
-		switch ($whence) {
+		switch ( $whence ) {
 			case SEEK_SET:
-				if ($offset < strlen($this->file) && $offset >= 0) {
+				if ( $offset < strlen($this->file) && $offset >= 0 ) {
 					$this->position = $offset;
 					return true;
-				} else {
+				}
+				else {
 					return false;
 				}
 				break;
 
 			case SEEK_CUR:
-				if ($offset >= 0) {
+				if ( $offset >= 0 ) {
 					$this->position += $offset;
 					return true;
-				} else {
+				}
+				else {
 					return false;
 				}
 				break;
 
 			case SEEK_END:
-				if (strlen($this->file) + $offset >= 0) {
+				if ( strlen($this->file) + $offset >= 0 ) {
 					$this->position = strlen($this->file) + $offset;
 					return true;
-				} else {
+				}
+				else {
 					return false;
 				}
 				break;
@@ -168,6 +178,7 @@ class HiEngineParser
 			default:
 				return false;
 		}
+		
 	}
 
 	/**
@@ -187,9 +198,9 @@ class HiEngineParser
 	 */
 	function process( $template )
 	{
-		$template = preg_replace_callback('/\{hi:(".+?")((?:\s*[\w\.]+){0,2})\s*\}/sm', array($this, 'hi_quote'), $template);
+		$template = preg_replace_callback('/\{hi:(".+?")((?:\s*[\w\.]+){0,2})\s*\}/smu', array($this, 'hi_quote'), $template);
 		$template = preg_replace_callback('%\{hi:([^\?]+?)\}(.+?)\{/hi:\1\}%ism', array($this, 'hi_loop'), $template);
-		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?)\{/hi:\?\}%ism', array($this, 'hi_if'), $template);
+		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?)\{/hi:\?\}%ismu', array($this, 'hi_if'), $template);
 		$template = preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_command'), $template);
 		return $template;
 	}
@@ -205,20 +216,20 @@ class HiEngineParser
 		$cmd = trim($matches[1]);
 
 		// Straight variable or property output, ala {hi:variable_name} or {hi:post.title}
-		if(preg_match('%^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*$%i', $cmd)) {
+		if ( preg_match('%^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*$%i', $cmd) ) {
 			$cmd = str_replace('.', '->', $cmd);
-			if(count($this->contexts)) {
+			if ( count($this->contexts) ) {
 				// Build a conditional that checks for the most specific, then the least
 				// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
 				$ctx = $this->contexts;
 				$prefixes = array();
-				foreach($ctx as $void) {
+				foreach ( $ctx as $void ) {
 					$prefixes[] = implode('->', $this->contexts);
 					array_pop($ctx);
 				}
 				$output = '<?php echo ';
-				foreach($prefixes as $prefix) {
-					$output .= '!is_null($' . $prefix . '->' . $cmd . ') ? $' . $prefix . '->' . $cmd . ' : ';
+				foreach ( $prefixes as $prefix ) {
+					$output .= '(is_object($' . $prefix . ') && !'.'is_null($' . $prefix . '->' . $cmd . ')) ? $' . $prefix . '->' . $cmd . ' : ';
 				}
 				$output .= '$' . $cmd . '; ?>';
 				return $output;
@@ -229,8 +240,10 @@ class HiEngineParser
 		}
 
 		// Catch tags in the format {hi:command:parameter}
-		if(preg_match('%^(\w+):(.+)$%', $cmd, $cmd_matches)) {
-			switch(strtolower($cmd_matches[1])) {
+		if ( preg_match('/^(\w+):(.+)$/u', $cmd, $cmd_matches) ) {
+			switch ( strtolower($cmd_matches[1]) ) {
+				case 'area':
+					return '<?php $theme->area(\'' . $cmd_matches[2] . '\'); ?>';
 				case 'display':
 					return '<?php $theme->display(\'' . $cmd_matches[2] . '\'); ?>';
 				case 'option':
@@ -250,11 +263,13 @@ class HiEngineParser
 				// this is an internal match
 				case 'context':
 					return $this->hi_to_var($cmd_matches[2]);
+				case 'escape':
+					return '<?php echo Utils::htmlspecialchars( ' . $this->hi_to_var( $cmd_matches[2] ) . ' ); ?>';
 			}
 		}
 
 		// Use tags in the format {hi:@foo} as theme functions, ala $theme->foo();
-		if($cmd[0] == '@') {
+		if ( $cmd[0] == '@' ) {
 			return '<?php $theme->' . substr($cmd, 1) . '(); ?>';
 		}
 
@@ -289,10 +304,11 @@ class HiEngineParser
 	function var_replace($matches)
 	{
 		$var = $matches[1];
-		if(is_callable($var)) {
+
+		if ( is_callable($var) ) {
 			return $var;
 		}
-		if(preg_match('/true|false|null/i', $var)) {
+		if ( preg_match('/true|false|null|isset|empty/i', $var) ) {
 			return $var;
 		}
 
@@ -304,17 +320,17 @@ class HiEngineParser
 	function hi_to_var($hisyntax)
 	{
 		$var = str_replace('.', '->', $hisyntax);
-		if(count($this->contexts)) {
+		if ( count($this->contexts) ) {
 			// Build a conditional that checks for the most specific, then the least
 			// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
 			$ctx = $this->contexts;
 			$prefixes = array();
-			foreach($ctx as $void) {
+			foreach ( $ctx as $void ) {
 				$prefixes[] = implode('->', $this->contexts);
 				array_pop($ctx);
 			}
 			$output = '';
-			foreach($prefixes as $prefix) {
+			foreach ( $prefixes as $prefix ) {
 				$output .= '(!is_null($' . $prefix . '->' . $var . ') ? $' . $prefix . '->' . $var . ' : ';
 			}
 			$output .= '$' . $var . ')';
@@ -367,24 +383,24 @@ class HiEngineParser
 	*/
 	function hi_quote($matches)
 	{
-		$args = preg_split('%\s+%', trim($matches[2]));
+		$args = preg_split('/\s+/u', trim($matches[2]));
 
 		preg_match_all('/"(.+?)(?<!\\\\)"/', $matches[1], $quotes);
 		$count = 0;
 		$all_vars = array();
-		foreach($quotes[1] as $index => $quote) {
-			preg_match_all('%{hi:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)}%', $quote, $vars, PREG_SET_ORDER);
-			foreach($vars as $var) {
+		foreach ( $quotes[1] as $index => $quote ) {
+			preg_match_all('/{hi:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)}/', $quote, $vars, PREG_SET_ORDER);
+			foreach ( $vars as $var ) {
 				$count++;
 				$quote = str_replace($var[0], '%'.$count.'\$s', $quote);
 				$all_vars[] = '{hi:context:' . $var[1] . '}';  //$this->hi_to_var($var[1]);
 			}
 			$quotes[1][$index] = $quote;
 		}
-		if(count($quotes[1]) > 1) {
+		if ( count($quotes[1]) > 1 ) {
 			$output = '<?php printf(_n("'.$quotes[1][0].'", "'.$quotes[1][1].'", {hi:context:'.$args[0].'})';
 			// Add vars
-			if(count($all_vars) > 0) {
+			if ( count($all_vars) > 0 ) {
 				$output .= ', ' . implode(', ', $all_vars);
 			}
 			array_shift($args);
@@ -392,13 +408,13 @@ class HiEngineParser
 		else {
 			$output = '<?php _e("'.$quotes[1][0].'"';
 			// Add vars
-			if(count($all_vars) > 0) {
+			if ( count($all_vars) > 0 ) {
 				$output .= ', array(' . implode(', ', $all_vars) . ')';
 			}
 		}
 
 		// Add the domain, if any
-		if(isset($args[0])) {
+		if ( isset($args[0]) ) {
 			$output .= ', "'.$args[0].'"';
 		}
 

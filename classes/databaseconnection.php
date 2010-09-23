@@ -1,26 +1,30 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Habari DatabaseConnection Class
  *
- * @package Habari
+ * Actual database connection.
  */
-
-
 class DatabaseConnection
 {
 	private $fetch_mode = PDO::FETCH_CLASS;          // PDO Fetch mode
-	private $fetch_class_name = 'QueryRecord';    	// The default class name for fetching classes
-	private $driver;								// PDO driver name
+	private $fetch_class_name = 'QueryRecord';       // The default class name for fetching classes
+	private $driver;                                 // PDO driver name
 	private $keep_profile = DEBUG;                   // keep profiling and timing information?
-	protected $pdo = NULL;                             // handle to the PDO interface
+	protected $pdo = NULL;                           // handle to the PDO interface
 	private $pdo_statement = NULL;                   // handle for a PDOStatement
-	private $pdo_transaction = FALSE;					// handle for transaction status
+	private $pdo_transaction = FALSE;                // handle for transaction status
 
 	/**
 	 * @var array tables Habari knows about
 	 */
 	private $tables = array(
+		'blocks',
+		'blocks_areas',
 		'commentinfo',
 		'comments',
 		'crontab',
@@ -31,16 +35,14 @@ class DatabaseConnection
 		'object_terms',
 		'object_types',
 		'options',
-		'permissions',
 		'post_tokens',
 		'postinfo',
 		'posts',
 		'poststatus',
 		'posttype',
 		'rewrite_rules',
+		'scopes',
 		'sessions',
-		'tag2post',
-		'tags',
 		'terms',
 		'tokens',
 		'userinfo',
@@ -56,9 +58,9 @@ class DatabaseConnection
 	private $sql_tables = array();
 	private $sql_tables_repl = array();
 	private $errors = array();                       // an array of errors related to queries
-	private $profiles = array();                     	// an array of query profiles
+	private $profiles = array();                     // an array of query profiles
 
-	protected $prefix = '';								// class protected storage of the database table prefix, defaults to ''
+	protected $prefix = '';                          // class protected storage of the database table prefix, defaults to ''
 	private $current_table;
 
 	/**
@@ -82,19 +84,18 @@ class DatabaseConnection
 	 */
 	protected function load_tables()
 	{
-		if ( isset ( $GLOBALS['db_connection']['prefix'] ) ) {
-			$prefix = $GLOBALS['db_connection']['prefix'];
-		} else if ( isset( $_POST['table_prefix'] ) ) {
-			$prefix = $_POST['table_prefix'];
-		} else {
+		if ( isset ( Config::get( 'db_connection' )->prefix ) ) {
+			$prefix = Config::get( 'db_connection' )->prefix;
+		}
+		else {
 			$prefix = $this->prefix;
 		}
 		$this->prefix = $prefix;
 
 		// build the mapping with prefixes
 		foreach ( $this->tables as $t ) {
-			$this->sql_tables[$t]= $prefix . $t;
-			$this->sql_tables_repl[$t]= '{' . $t . '}';
+			$this->sql_tables[$t] = $prefix . $t;
+			$this->sql_tables_repl[$t] = '{' . $t . '}';
 		}
 	}
 
@@ -168,10 +169,10 @@ class DatabaseConnection
 	 * custom tables used by the plugin
 	 *
 	 * @param name the table name
-	**/
+	 */
 	public function register_table( $name )
 	{
-		$this->tables[]= $name;
+		$this->tables[] = $name;
 		$this->load_tables();
 	}
 
@@ -271,7 +272,7 @@ class DatabaseConnection
 			}
 			if ( $this->keep_profile ) {
 				$profile->stop();
-				$this->profiles[]= $profile;
+				$this->profiles[] = $profile;
 			}
 			return true;
 		}
@@ -292,7 +293,8 @@ class DatabaseConnection
 	 * @return  mixed       whatever the procedure returns...
 	 * @experimental
 	 * @todo  EVERYTHING... :)
-	 * Implemented in child classes. Most RDBMS use ANSI-92 syntax, 
+	 * Implemented in child classes. Most RDBMS use ANSI-92 syntax,
+	 * @todo Make sure it's MultiByte safe
 	 * ( CALL procname ( param1, param2, ... ), 
 	 * so they return the call to here. Those that don't, handle the call individually
 	 */
@@ -302,16 +304,16 @@ class DatabaseConnection
 		$pdo = $this->pdo;
 		$pdo_statement = $this->pdo_statement;
 
-		if( $pdo_statement != NULL ) {
+		if ( $pdo_statement != NULL ) {
 			$pdo_statement->closeCursor();
 		}
 
 		$query = 'CALL ' . $procedure . '( ';
 		if ( count( $args ) > 0 ) {
-			$query.= str_repeat( '?,', count( $args ) ); // Add the placeholders
+			$query .= str_repeat( '?,', count( $args ) ); // Add the placeholders
 			$query = substr( $query, 0, strlen( $query ) - 1 ); // Strip the last comma
 		}
-		$query.= ' )';
+		$query .= ' )';
 		$query = $this->sql_t( $query, $args );
 
 		if ( $pdo_statement = $pdo->prepare( $query ) ) {
@@ -326,7 +328,7 @@ class DatabaseConnection
 			}
 			if ( $this->keep_profile ) {
 				$profile->stop();
-				$this->profiles[]= $profile;
+				$this->profiles[] = $profile;
 			}
 			return true;
 		}
@@ -342,7 +344,7 @@ class DatabaseConnection
 	 */
 	public function begin_transaction()
 	{
-		if (! $this->pdo_transaction) {
+		if ( ! $this->pdo_transaction ) {
 			$this->pdo->beginTransaction();
 			$this->pdo_transaction = TRUE;
 		}
@@ -355,8 +357,10 @@ class DatabaseConnection
 	 */
 	public function rollback()
 	{
-		$this->pdo->rollBack();
-		$this->pdo_transaction = FALSE;
+		if ( $this->pdo_transaction ) {
+			$this->pdo->rollBack();
+			$this->pdo_transaction = FALSE;
+		}
 	}
 
 	/**
@@ -364,8 +368,10 @@ class DatabaseConnection
 	 */
 	public function commit()
 	{
-		$this->pdo->commit();
-		$this->pdo_transaction = FALSE;
+		if ( $this->pdo_transaction ) {
+			$this->pdo->commit();
+			$this->pdo_transaction = FALSE;
+		}
 	}
 
 	/**
@@ -387,10 +393,10 @@ class DatabaseConnection
 	{
 		$backtrace1 = debug_backtrace();
 		$backtrace = array();
-		foreach($backtrace1 as $trace) {
-			$backtrace[]= array_intersect_key( $trace, array('file'=>1, 'line'=>1, 'function'=>1, 'class'=>1) );
+		foreach ( $backtrace1 as $trace ) {
+			$backtrace[] = array_intersect_key( $trace, array('file'=>1, 'line'=>1, 'function'=>1, 'class'=>1) );
 		}
-		$this->errors[]= array_merge($error, array('backtrace'=> $backtrace)) ;
+		$this->errors[] = array_merge($error, array('backtrace'=> $backtrace)) ;
 	}
 
 	/**
@@ -405,7 +411,7 @@ class DatabaseConnection
 	/**
 	 * Determines if there have been errors since the last clear_errors() call
 	 * @return boolean True if there were errors, false if not
-	 **/
+	 */
 	public function has_errors()
 	{
 		return ( count( $this->errors ) > 0 );
@@ -413,7 +419,7 @@ class DatabaseConnection
 
 	/**
 	 * Updates the last error pointer to simulate resetting the error array
-	 **/
+	 */
 	public function clear_errors()
 	{
 		$this->errors = array();
@@ -422,7 +428,7 @@ class DatabaseConnection
 	/**
 	 * Returns only the last error info
 	 * @return array Data for the last error
-	 **/
+	 */
 	public function get_last_error()
 	{
 		$error = end( $this->errors );
@@ -436,7 +442,7 @@ class DatabaseConnection
 	 * @param string Optional class name for row result objects
 	 * @return array An array of QueryRecord or the named class each containing the row data
 	 * <code>$ary= DB::get_results( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
-	 **/
+	 */
 	public function get_results( $query, $args = array() )
 	{
 		if ( func_num_args() == 3 ) {
@@ -463,7 +469,7 @@ class DatabaseConnection
 	 * @param string Optional class name for row result object
 	 * @return object A QueryRecord or an instance of the named class containing the row data
 	 * <code>$obj= DB::get_row( 'SELECT * FROM tablename WHERE foo= ?', array( 'fieldvalue' ), 'extendedQueryRecord' );</code>
-	 **/
+	 */
 	public function get_row( $query, $args = array() )
 	{
 		if ( func_num_args() == 3 ) {
@@ -492,7 +498,7 @@ class DatabaseConnection
 	 * @param array Arguments to pass for prepared statements
 	 * @return array An array containing the column data
 	 * <code>$ary= DB::get_column( 'SELECT col1 FROM tablename WHERE foo= ?', array( 'fieldvalue' ) );</code>
-	 **/
+	 */
 	public function get_column( $query, $args = array() )
 	{
 		if ( $this->query( $query, $args ) ) {
@@ -509,7 +515,7 @@ class DatabaseConnection
 	 * @param string the query to execute
 	 * @param array Arguments to pass for prepared statements
 	 * @return mixed a single value ( int, string )
-	**/
+	 */
 	public function get_value( $query, $args = array() )
 	{
 		if ( $this->query( $query, $args ) ) {
@@ -528,13 +534,13 @@ class DatabaseConnection
 	 * @param array Arguments to pass for prepared statements
 	 * @return array An array containing the associative data
 	 * <code>$ary= $dbconnection->get_keyvalue( 'SELECT keyfield, valuefield FROM tablename');</code>
-	 **/
+	 */
 	public function get_keyvalue( $query, $args = array() )
 	{
 		if ( $this->query( $query, $args ) ) {
 			$result = $this->pdo_statement->fetchAll( PDO::FETCH_NUM );
 			$output = array();
-			foreach($result as $item) {
+			foreach ( $result as $item ) {
 				$output[$item[0]] = $item[1];
 			}
 			return $output;
@@ -550,7 +556,7 @@ class DatabaseConnection
 	 * @param array An associative array of fields and values to insert
 	 * @return boolean True on success, false if not
 	 * <code>DB::insert( 'mytable', array( 'fieldname' => 'value' ) );</code>
-	 **/
+	 */
 	public function insert( $table, $fieldvalues )
 	{
 		ksort( $fieldvalues );
@@ -558,12 +564,12 @@ class DatabaseConnection
 		$query = "INSERT INTO {$table} ( ";
 		$comma = '';
 
-		foreach( $fieldvalues as $field => $value ) {
-			$query.= $comma . $field;
+		foreach ( $fieldvalues as $field => $value ) {
+			$query .= $comma . $field;
 			$comma = ', ';
-			$values[]= $value;
+			$values[] = $value;
 		}
-		$query.= ' ) VALUES ( ' . trim( str_repeat( '?,', count( $fieldvalues ) ), ',' ) . ' );';
+		$query .= ' ) VALUES ( ' . trim( str_repeat( '?,', count( $fieldvalues ) ), ',' ) . ' );';
 
 		// need to pass $table on to the $o singleton object;
 		$this->current_table = $table;
@@ -577,15 +583,15 @@ class DatabaseConnection
 	 * @param array Associative array of field values to match
 	 * @return boolean True if any matching record exists, false if not
 	 * <code>DB::exists( 'mytable', array( 'fieldname' => 'value' ) );</code>
-	 **/
+	 */
 	public function exists( $table, $keyfieldvalues )
 	{
 		$qry = "SELECT 1 as c FROM {$table} WHERE 1=1 ";
 
 		$values = array();
-		foreach( $keyfieldvalues as $keyfield => $keyvalue ) {
-			$qry.= " AND {$keyfield}= ? ";
-			$values[]= $keyvalue;
+		foreach ( $keyfieldvalues as $keyfield => $keyvalue ) {
+			$qry .= " AND {$keyfield} = ? ";
+			$values[] = $keyvalue;
 		}
 		$result = $this->get_row( $qry, $values );
 		return ( $result !== false );
@@ -600,35 +606,35 @@ class DatabaseConnection
 	 * @param array Associative array of field values to match
 	 * @return boolean True on success, false if not
 	 * <code>DB::update( 'mytable', array( 'fieldname' => 'newvalue' ), array( 'fieldname' => 'value' ) );</code>
-	 **/
+	 */
 	public function update( $table, $fieldvalues, $keyfields )
 	{
 		ksort( $fieldvalues );
 		ksort( $keyfields );
 
 		$keyfieldvalues = array();
-		foreach( $keyfields as $keyfield => $keyvalue ) {
-			if( is_numeric( $keyfield ) ) {
-				$keyfieldvalues[$keyvalue]= $fieldvalues[$keyvalue];
+		foreach ( $keyfields as $keyfield => $keyvalue ) {
+			if ( is_numeric( $keyfield ) ) {
+				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];
 			}
 			else {
-				$keyfieldvalues[$keyfield]= $keyvalue;
+				$keyfieldvalues[$keyfield] = $keyvalue;
 			}
 		}
-		if( $this->exists( $table, $keyfieldvalues ) ) {
+		if ( $this->exists( $table, $keyfieldvalues ) ) {
 			$qry = "UPDATE {$table} SET";
 			$values = array();
 			$comma = '';
-			foreach( $fieldvalues as $fieldname => $fieldvalue ) {
-				$qry.= $comma . " {$fieldname}= ?";
-				$values[]= $fieldvalue;
+			foreach ( $fieldvalues as $fieldname => $fieldvalue ) {
+				$qry .= $comma . " {$fieldname} = ?";
+				$values[] = $fieldvalue;
 				$comma = ' ,';
 			}
-			$qry.= ' WHERE 1=1 ';
+			$qry .= ' WHERE 1=1 ';
 
-			foreach( $keyfields as $keyfield => $keyvalue ) {
-				$qry.= "AND {$keyfield}= ? ";
-				$values[]= $keyvalue;
+			foreach ( $keyfields as $keyfield => $keyvalue ) {
+				$qry .= "AND {$keyfield} = ? ";
+				$values[] = $keyvalue;
 			}
 			return $this->query( $qry, $values );
 		}
@@ -651,8 +657,8 @@ class DatabaseConnection
 	{
 		$qry = "DELETE FROM {$table} WHERE 1=1 ";
 		foreach ( $keyfields as $keyfield => $keyvalue ) {
-			$qry.= "AND {$keyfield}= ? ";
-			$values[]= $keyvalue;
+			$qry .= "AND {$keyfield} = ? ";
+			$values[] = $keyvalue;
 		}
 
 		return $this->query( $qry, $values );
@@ -682,6 +688,10 @@ class DatabaseConnection
 	 * Implemented in child classes.
 	 */
 	public function dbdelta( $queries, $execute = true, $silent = true ){}
+	
+	public function upgrade_pre( $old_version ){}
+	
+	public function upgrade_post( $old_version ){}
 
 
 	/**
@@ -697,16 +707,16 @@ class DatabaseConnection
 
 		// Put the upgrade files into an array using the 0-padded revision + '_0' as the key
 		$upgrades = array();
-		foreach( $upgrade_files as $file ) {
-			if( intval( basename( $file, '.sql' ) ) > $old_version) {
+		foreach ( $upgrade_files as $file ) {
+			if ( intval( basename( $file, '.sql' ) ) > $old_version) {
 				$upgrades[ sprintf( '%010s_0', basename( $file, '.sql' ) )] = $file;
 			}
 		}
 		// Put the upgrade functions into an array using the 0-padded revision + '_1' as the key
 		$upgrade_functions = get_class_methods($this);
-		foreach($upgrade_functions as $fn) {
-			if(preg_match('%^upgrade_([0-9]+)$%i', $fn, $matches)) {
-				if( intval( $matches[1] ) > $old_version) {
+		foreach ( $upgrade_functions as $fn ) {
+			if ( preg_match('%^upgrade_([0-9]+)$%i', $fn, $matches) ) {
+				if ( intval( $matches[1] ) > $old_version ) {
 					$upgrades[ sprintf('%010s_1', $matches[1])] = array($this, $fn);
 				}
 			}
@@ -717,14 +727,14 @@ class DatabaseConnection
 
 		// Execute all of the upgrade functions
 		$result = true;
-		foreach($upgrades as $upgrade) {
-			if(is_array($upgrade)) {
+		foreach ( $upgrades as $upgrade ) {
+			if ( is_array($upgrade) ) {
 				$result &= $upgrade();
 			}
 			else {
 				$result &= $this->query_file($upgrade);
 			}
-			if(!$result) {
+			if ( !$result ) {
 				break;
 			}
 		}
@@ -746,9 +756,9 @@ class DatabaseConnection
 		// Split up the queries
 		$queries = explode( ';', $upgrade_sql );
 
-		foreach( $queries as $query ) {
-			if(trim($query) != '') {
-				if( !$this->query($query) ) {
+		foreach ( $queries as $query ) {
+			if ( trim($query) != '' ) {
+				if ( !$this->query($query) ) {
 					return false;
 				}
 			}
@@ -787,6 +797,11 @@ class DatabaseConnection
 			$this->driver = $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME );
 		}
 		return $this->driver;
+	}
+	
+	public function get_driver_version()
+	{
+		return $this->pdo->getAttribute( PDO::ATTR_SERVER_VERSION );
 	}
 	
 	/**

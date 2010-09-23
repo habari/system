@@ -7,11 +7,11 @@
 <div class="container navigator">
 	<span class="older pct10"><a href="#" onclick="timeline.skipLoupeLeft();return false">&laquo; <?php _e('Older'); ?></a></span>
 	<span class="currentposition pct15 minor"><?php _e('0-0 of 0'); ?></span>
-	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" autosave="habaricontent" results="10" value="<?php echo $search; ?>"></span>
+	<span class="search pct50"><input type="search" name='search' placeholder="<?php _e('Type and wait to search any log entry component'); ?>" value="<?php echo Utils::htmlspecialchars($search); ?>"></span>
 	<span class="nothing pct15">&nbsp;</span>
 	<span class="newer pct10"><a href="#" onclick="timeline.skipLoupeRight();return false"><?php _e('Newer'); ?> &raquo;</a></span>
 
-	<?php if(isset($years)) { ?><div class="timeline">
+	<?php if ( isset($years) ) { ?><div class="timeline">
 		<div class="years">
 			<?php $theme->display( 'timeline_items' )?>
 		</div>
@@ -27,6 +27,28 @@
 
 </div>
 
+<div class="container transparent item controls">
+
+	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
+	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
+	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	<span class="checkboxandselected pct30">
+		<input type="checkbox" id="master_checkbox" name="master_checkbox">
+		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
+	</span>
+	<ul class="dropbutton">
+		<?php $page_actions = array(
+			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
+			'purge' => array('action' => 'itemManage.update(\'purge\');return false;', 'title' => _t('Purge Logs'), 'label' => _t('Purge Logs') ),
+		);
+		$page_actions = Plugins::filter('logs_manage_actions', $page_actions);
+		foreach( $page_actions as $page_action ) : ?>
+			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
+		<?php endforeach; ?>
+	</ul>
+	
+</div>
+
 <div class="container">
 
 	<div class="head clear">
@@ -37,8 +59,8 @@
 		<span class="ip pct10"><?php _e('IP'); ?></span>
 		<span class="module pct10"><?php _e('Module'); ?></span>
 		<span class="type pct10"><?php _e('Type'); ?></span>
-		<span class="severity pct5"><?php _e('Severity'); ?></span>
-		<span class="message pct30"><?php _e('Message'); ?></span>
+		<span class="severity pct10"><?php _e('Severity'); ?></span>
+		<span class="message pct25"><?php _e('Message'); ?></span>
 
 	</div>
 
@@ -49,8 +71,8 @@
 		<span class="pct10"><?php echo Utils::html_select('address', $addresses, $address, array( 'class'=>'pct90')); ?></span>
 		<span class="pct10"><?php echo Utils::html_select('module', $modules, $module, array( 'class'=>'pct90')); ?></span>
 		<span class="pct10"><?php echo Utils::html_select('type', $types, $type, array( 'class'=>'pct90')); ?></span>
-		<span class="pct5"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
-		<td align="right"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
+		<span class="pct10"><?php echo Utils::html_select('severity', $severities, $severity, array( 'class'=>'pct90')); ?></span>
+		<span class="pct25"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
 	</div>
 	
 	<?php if(isset($years)) { ?>
@@ -71,23 +93,24 @@
 
 </div>
 
+<div class="container transparent item controls">
 
-<?php if(isset($years)) { ?><div class="container transparent">
+	<span class="checkboxandselected pct30">
+		<input type="checkbox" id="master_checkbox_2" name="master_checkbox_2">
+		<label class="selectedtext minor none" for="master_checkbox_2"><?php _e('None selected'); ?></label>
+	</span>
+	<ul class="dropbutton">
+		<?php $page_actions = array(
+			'delete' => array('action' => 'itemManage.update(\'delete\');return false;', 'title' => _t('Delete Selected'), 'label' => _t('Delete Selected') ),
+			'purge' => array('action' => 'itemManage.update(\'purge\');return false;', 'title' => _t('Purge Logs'), 'label' => _t('Purge Logs') ),
+		);
+		$page_actions = Plugins::filter('logs_manage_actions', $page_actions);
+		foreach( $page_actions as $page_action ) : ?>
+			<li><a href="*" onclick="<?php echo $page_action['action']; ?>" title="<?php echo $page_action['title']; ?>"><?php echo $page_action['label']; ?></a></li>
+		<?php endforeach; ?>
+	</ul>
 
-	<div class="item controls">
-		<span class="checkboxandselected pct40">
-			<input type="checkbox" id="master_checkbox" name="master_checkbox">
-			<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>
-		</span>
-		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
-		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
-		
-		<input type="button" value="<?php _e('Delete'); ?>" class="button delete">
-	</div>
-
-</div><?php } ?>
-
+</div>
 
 </form>
 

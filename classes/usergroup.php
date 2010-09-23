@@ -1,19 +1,24 @@
 <?php
 /**
-* Habari UserGroup Class
-* @package Habari
-**/
+ * @package Habari
+ *
+ */
+
+/**
+ * Habari UserGroup Class
+ *
+ */
 class UserGroup extends QueryRecord
 {
 	// These arrays hold the current membership and permission settings for this group
 	// $member_ids is not NOT matched key and value pairs ( like array('foo'=>'foo') )
-	private $member_ids = array();
+	private $member_ids = null;
 	private $permissions;
 
 	/**
 	 * get default fields for this record
 	 * @return array an array of the fields used in the UserGroup table
-	**/
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -25,7 +30,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Constructor for the UserGroup class
 	 * @param array $paramarray an associative array of UserGroup fields
-	**/
+	 */
 	public function __construct( $paramarray = array() )
 	{
 		$this->fields = array_merge(
@@ -33,13 +38,6 @@ class UserGroup extends QueryRecord
 			$this->fields
 		);
 		parent::__construct( $paramarray );
-
-		// if we have an ID, load this UserGroup's members & permissions
-		if ( $this->id ) {
-			if ( $result = DB::get_column( 'SELECT user_id FROM {users_groups} WHERE group_id= ?', array( $this->id ) ) ) {
-				$this->member_ids = $result;
-			}
-		}
 
 		// exclude field keys from the $this->fields array that should not be updated in the database on insert/update
 		$this->exclude_fields( array( 'id' ) );
@@ -49,7 +47,8 @@ class UserGroup extends QueryRecord
 	 * Create a new UserGroup object and save it to the database
 	 * @param array $paramarray An associative array of UserGroup fields
 	 * @return UserGroup the UserGroup that was created
-	**/
+	 * @todo Make this function accept only a name, since you can't set an id into an autoincrement field, and we don't try.
+	 */
 	public static function create( $paramarray )
 	{
 		$usergroup = new UserGroup( $paramarray );
@@ -57,15 +56,27 @@ class UserGroup extends QueryRecord
 			return $usergroup;
 		}
 		else {
+			// Does the group already exist?
+			if(isset($paramarray['name'])) {
+				$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($paramarray['name']));
+				if($exists) {
+					return UserGroup::get_by_name($paramarray['name']);
+				}
+			}
 			return false;
 		}
 	}
 
 	/**
 	 * Save a new UserGroup to the UserGroup table
-	**/
+	 */
 	public function insert()
 	{
+		$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($this->name));
+		if($exists) {
+			return false;
+		}
+
 		$allow = true;
 		// plugins have the opportunity to prevent insertion
 		$allow = Plugins::filter('usergroup_insert_allow', $allow, $this);
@@ -75,7 +86,7 @@ class UserGroup extends QueryRecord
 		Plugins::act('usergroup_insert_before', $this);
 		$this->exclude_fields('id');
 		$result = parent::insertRecord( DB::table('groups') );
-		$this->fields['id']= DB::last_insert_id();
+		$this->fields['id'] = DB::last_insert_id();
 
 		$this->set_member_list();
 
@@ -86,7 +97,7 @@ class UserGroup extends QueryRecord
 
 	/**
 	 * Updates an existing UserGroup in the DB
-	**/
+	 */
 	public function update()
 	{
 		$allow = true;
@@ -108,6 +119,8 @@ class UserGroup extends QueryRecord
 	 */
 	protected function set_member_list()
 	{
+		$this->load_member_cache();
+		
 		// Remove all users from this group in preparation for adding the current list
 		DB::query('DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
 		// Add the current list of users into the group
@@ -119,7 +132,7 @@ class UserGroup extends QueryRecord
 
 	/**
 	 * Delete a UserGroup
-	**/
+	 */
 	public function delete()
 	{
 		$allow = true;
@@ -147,14 +160,23 @@ class UserGroup extends QueryRecord
 	 * magic get function for returning virtual properties of the class
 	 * @param mixed the property to get
 	 * @return mixed the property
-	**/
+	 */
 	public function __get( $param )
 	{
 		switch ( $param ) {
 			case 'members':
+				$this->load_member_cache();
 				return (array) $this->member_ids;
 				break;
+			case 'users':
+				$this->load_member_cache();
+				$results = DB::get_results( 'SELECT u.* FROM {users} u INNER JOIN {users_groups} ug ON ug.user_id = u.id WHERE ug.group_id= ?', array( $this->id ), 'User' );
+				if(in_array(0, $this->member_ids)) {
+					$results[] = User::anonymous();
+				}
+				return $results;
 			case 'permissions':
+				$this->load_member_cache();
 				return $this->permissions;
 				break;
 			default:
@@ -166,14 +188,15 @@ class UserGroup extends QueryRecord
 	/**
 	 * Add one or more users to this group
 	 * @param mixed $users a user ID or name, or an array of the same
-	**/
+	 */
 	public function add( $users )
 	{
+		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
-		$users = array_map(array('User', 'get_id'), $users);
+		$user_ids = array_map(array('User', 'get_id'), $users);
 		// Remove users from group membership
-		$this->member_ids = array_merge( (array) $this->member_ids, (array) $users);
+		$this->member_ids = array_merge( (array) $this->member_ids, (array) $user_ids);
 		// List each group member exactly once
 		$this->member_ids = array_unique($this->member_ids);
 		$this->update();
@@ -184,9 +207,10 @@ class UserGroup extends QueryRecord
 	/**
 	 * Remove one or more user from this group
 	 * @param mixed $users A user ID or name, or an array of the same
-	**/
+	 */
 	public function remove( $users )
 	{
+		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
 		$users = array_map(array('User', 'get_id'), $users);
@@ -198,43 +222,41 @@ class UserGroup extends QueryRecord
 	}
 
 	/**
-	 * Assign one or more new permissions to this group
+	 * Assign one or more new permission tokens to this group
 	 * @param mixed A permission token ID, name, or array of the same
-	**/
-	public function grant( $permissions, $access = 'full' )
+	 */
+	public function grant( $tokens, $access = 'full' )
 	{
-		$permissions = Utils::single_array( $permissions );
-		// Use ids internally for all permissions
-		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+		$tokens = Utils::single_array( $tokens );
+		// Use ids internally for all tokens
+		$tokens = array_map(array('ACL', 'token_id'), $tokens);
 
 		// grant the new permissions
-		foreach ( $permissions as $permission ) {
-			ACL::grant_group( $this->id, $permission, $access );
-			EventLog::log( _t( 'Group %1$s: Access to %2$s changed to %3$s', array( $this->name, ACL::token_name( $permission ), $access ) ), 'notice', 'user', 'habari' );
+		foreach ( $tokens as $token ) {
+			ACL::grant_group( $this->id, $token, $access );
 		}
 	}
 
 	/**
-	 * Deny one or more permissions to this group
+	 * Deny one or more permission tokens to this group
 	 * @param mixed The permission ID or name to be denied, or an array of the same
-	**/
-	public function deny( $permissions )
+	 */
+	public function deny( $tokens )
 	{
-		$this->grant( $permissions, 'deny' );
+		$this->grant( $tokens, 'deny' );
 	}
 
 	/**
 	 * Remove one or more permissions from a group
 	 * @param mixed a permission ID, name, or array of the same
-	**/
-	public function revoke( $permissions )
+	 */
+	public function revoke( $tokens )
 	{
-		$permissions = Utils::single_array( $permissions );
-		$permissions = array_map(array('ACL', 'token_id'), $permissions);
+		$tokens = Utils::single_array( $tokens );
+		$tokens = array_map(array('ACL', 'token_id'), $tokens);
 
-		foreach ( $permissions as $permission ) {
-			ACL::revoke_group_permission( $this->id, $permission );
-			EventLog::log( _t( 'Group %1$s: Permission to %2$s revoked.', array( $this->name, ACL::token_name( $permission ) ) ), 'notice', 'user', 'habari' );
+		foreach ( $tokens as $token ) {
+			ACL::revoke_group_token( $this->id, $token );
 		}
 	}
 
@@ -245,15 +267,29 @@ class UserGroup extends QueryRecord
 	 * @return boolean If this group has been granted and not denied this permission, return true.  Otherwise, return false.
 	 * @see ACL::group_can()
 	 * @see ACL::user_can()
-	**/
-	public function can( $permission, $access = 'full' )
+	 */
+	public function can( $token, $access = 'full' )
 	{
-		$permission = ACL::token_id( $permission );
-		if ( is_null( $this->permissions ) ) {
-			$this->load_permissions_cache();
-		}
-		if ( isset( $this->permissions[$permission] ) && ACL::access_check( $this->permissions[$permission], $access ) ) {
+		$token = ACL::token_id( $token );
+		$this->load_permissions_cache();
+		if ( isset( $this->permissions[$token] ) && ACL::access_check( $this->permissions[$token], $access ) ) {
 			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Return the access bitmask for a specific token for this group.
+	 *
+	 * @param string $token The
+	 * @return
+	 */
+	public function get_access( $token )
+	{
+		$token = ACL::token_id( $token );
+		$this->load_permissions_cache();
+		if ( isset( $this->permissions[$token] ) ) {
+			return ACL::get_bitmask( $this->permissions[$token]);
 		}
 		return false;
 	}
@@ -272,9 +308,11 @@ class UserGroup extends QueryRecord
 	 */
 	public function load_permissions_cache()
 	{
-		if ( $results = DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
-			foreach ( $results as $result ) {
-				$this->permissions[$result->token_id] = $result->permission_id;
+		if ( is_null( $this->permissions ) ) {
+			if ( $results = DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
+				foreach ( $results as $result ) {
+					$this->permissions[$result->token_id] = $result->permission_id;
+				}
 			}
 		}
 	}
@@ -284,7 +322,7 @@ class UserGroup extends QueryRecord
 	 * This is a wrapper for get_by_id() and get_by_name()
 	 * @param mixed $group A group ID or name
 	 * @return mixed UserGroup object, or boolean FALSE
-	*/
+	 */
 	public static function get( $group )
 	{
 		if ( is_numeric( $group ) ) {
@@ -299,7 +337,7 @@ class UserGroup extends QueryRecord
 	 * Select a group from the DB by its ID
 	 * @param int A group ID
 	 * @return mixed A UserGroup object, or boolean FALSE
-	**/
+	 */
 	public static function get_by_id( $id )
 	{
 		return DB::get_row( 'SELECT * FROM {groups} WHERE id=?', array( $id ), 'UserGroup' );
@@ -309,7 +347,7 @@ class UserGroup extends QueryRecord
 	 * Select a group from the DB by its name
 	 * @param string A group name
 	 * @return mixed A UserGroup object, or boolean FALSE
-	**/
+	 */
 	public static function get_by_name( $name )
 	{
 		return DB::get_row( 'SELECT * FROM {groups} WHERE name=?', array( $name ), 'UserGroup' );
@@ -319,17 +357,17 @@ class UserGroup extends QueryRecord
 	 * Determine whether a group exists
 	 * @param mixed The name or ID of the group
 	 * @return bool Whether the group exists or not
-	**/
+	 */
 	public static function exists( $group )
 	{
-		return self::id($group) !== null;
+		return !is_null(self::id($group));
 	}
 
 	/**
 	 * Given a group's ID, return its friendly name
 	 * @param int a group's ID
-	 * @return string the group's name
-	**/
+	 * @return string the group's name or false if the group doesn't exist
+	 */
 	public static function name( $id )
 	{
 		$check_field = is_numeric( $id ) ? 'id' : 'name';
@@ -340,14 +378,12 @@ class UserGroup extends QueryRecord
 	/**
 	 * Given a group's name, return its ID
 	 * @param string a group's name
-	 * @return int the group's ID
-	**/
+	 * @return int the group's ID, or false if the group doesn't exist
+	 */
 	public static function id( $name )
 	{
-		if( is_numeric($name) ) {
-			return $name;
-		}
-		$id = DB::get_value( "SELECT id FROM {groups} WHERE name=?", array( $name ) );
+		$check_field = is_numeric( $name ) ? 'id' : 'name';
+		$id = DB::get_value( "SELECT id FROM {groups} WHERE {$check_field}=?", array( $name ) );
 		return $id; // get_value returns false if no record is returned
 	}
 
@@ -355,7 +391,7 @@ class UserGroup extends QueryRecord
 	 * Determine whether the specified user is a member of the group
 	 * @param mixed A user ID or name
 	 * @return bool True if the user is in the group, otherwise false
-	**/
+	 */
 	public function member( $user_id )
 	{
 		if ( ! is_numeric( $user_id ) ) {
@@ -367,6 +403,19 @@ class UserGroup extends QueryRecord
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Cache the member ids that belong to this group
+	 * 
+	 * @param boolean $refresh Optional. If true, refresh the cache
+	 */
+	protected function load_member_cache( $refresh = false )
+	{
+		// if we have an ID, load this UserGroup's members & permissions
+		if ( $this->id && ( $refresh || !isset( $this->member_ids ) ) ) {
+			$this->member_ids = DB::get_column( 'SELECT user_id FROM {users_groups} WHERE group_id= ?', array( $this->id ) );
+		}
 	}
 }
 ?>

@@ -1,9 +1,12 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * Contains error-related functions and Habari's error handler.
  *
- * @package Habari
  **/
 class Error extends Exception
 {
@@ -61,7 +64,7 @@ class Error extends Exception
 			$backtrace = null;
 		}
 
-		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, get_class( $exception ), 'default', null, $backtrace );
+		EventLog::log( $exception->getMessage() . ' in ' . $exception->file . ':' . $exception->line, 'err', 'default', null, $backtrace );
 	}
 
 	/**
@@ -91,21 +94,24 @@ class Error extends Exception
 		
 		// Don't be fooled, we can't actually handle most of these.
 		$error_names = array(
-			E_ERROR => 'Error',
-			E_WARNING => 'Warning',
-			E_PARSE => 'Parse Error',
-			E_NOTICE => 'Notice',
-			E_CORE_ERROR => 'Core Error',
-			E_CORE_WARNING => 'Core Warning',
-			E_COMPILE_ERROR => 'Compile Error',
-			E_COMPILE_WARNING => 'Compile Warning',
-			E_USER_ERROR => 'User Error',
-			E_USER_WARNING => 'User Warning',
-			E_USER_NOTICE => 'User Notice',
-			E_STRICT => 'Strict Notice',
-			E_RECOVERABLE_ERROR => 'Recoverable Error',
+			E_ERROR => _t( 'Error' ),
+			E_WARNING => _t( 'Warning' ),
+			E_PARSE => _t( 'Parse Error' ),
+			E_NOTICE => _t( 'Notice' ),
+			E_CORE_ERROR => _t( 'Core Error' ),
+			E_CORE_WARNING => _t( 'Core Warning' ),
+			E_COMPILE_ERROR => _t( 'Compile Error' ),
+			E_COMPILE_WARNING => _t( 'Compile Warning' ),
+			E_USER_ERROR => _t( 'User Error' ),
+			E_USER_WARNING => _t( 'User Warning' ),
+			E_USER_NOTICE => _t( 'User Notice' ),
+			E_STRICT => _t( 'Strict Notice' ),
+			E_RECOVERABLE_ERROR => _t( 'Recoverable Error' ),
 		);
-
+		if ( version_compare( PHP_VERSION, '5.3.0', '>=' ) ) {
+			$error_names[E_DEPRECATED] = _t( 'Deprecated violation' );
+			$error_names[E_USER_DEPRECATED] = _t( 'User deprecated violation' );
+		}
 		if ( strpos( $errfile, HABARI_PATH ) === 0 ) {
 			$errfile = substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
@@ -134,7 +140,7 @@ class Error extends Exception
 			$backtrace= null;
 		}
 		
-		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, $error_names[ $errno ], 'default', null, $backtrace );
+		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, 'err', 'default', null, $backtrace );
 
 		// throwing an Error make every error fatal!
 		//throw new Error($errstr, 0, true);
@@ -167,13 +173,13 @@ class Error extends Exception
 			}
 
 			if ( strpos( $a['file'], HABARI_PATH ) === 0 ) {
-				$a['file']= substr( $a['file'], strlen( HABARI_PATH ) + 1 );
+				$a['file'] = substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
 
 			if(defined('DEBUG_ARGS')) {
 				$args = array();
 				foreach ( $a['args'] as $arg ) {
-					$args[]= htmlentities( str_replace(
+					$args[] = htmlentities( str_replace(
 						array( "\n", "\r" ),
 						array( "\n   ", '' ),
 						var_export( $arg, true )

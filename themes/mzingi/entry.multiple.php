@@ -7,9 +7,7 @@
 			<?php foreach ( $posts as $post ) { ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
-							<div class="cal">
-								<span class="calyear"><?php echo $post->pubdate->year; ?></span><br><span class="calday"><?php echo $post->pubdate->mday; ?></span><br><span class="calmonth"><?php echo $post->pubdate->month; ?></span>
-							</div>
+							<div class="cal"><?php echo $post->pubdate_out; ?></div>
 					<div class="entry">
 						<?php echo $post->content_out; ?>
 					</div>
@@ -17,7 +15,7 @@
 						<?php if ( is_array( $post->tags ) ) { ?>
 						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
-						<div class="commentCount"><a href="<?php echo $post->permalink; ?>" title="<?php _e('Comments on this post'); ?>"><?php echo $post->comments->approved->count; ?> <?php echo _n( 'Comment', 'Comments', $post->comments->approved->count ); ?></a></div>
+						<div class="commentCount"><?php $theme->comments_link($post,'%d Comments','%d Comment','%d Comments'); ?></div>
 					</div><br>
 					<?php if ( $loggedin ) { ?>
 					<a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a>

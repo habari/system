@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Habari
+ *
+ */
 
 /**
  * MediaSilo interface
@@ -6,7 +10,6 @@
  * @version $Id$
  * @copyright 2007
  */
-
 interface MediaSilo
 {
 	const PERM_READ = 1;

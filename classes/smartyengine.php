@@ -1,17 +1,18 @@
 <?php
-
 /**
- * Habari SmartyEngine template engine subclass
- *
  * @package Habari
- *
- * The SmartyEngine is a subclass of the abstract TemplateEngine class
- * which uses the Smarty templating system to handle display of template files
  *
  */
 
 require( HABARI_PATH . '/3rdparty/smarty/libs/Smarty.class.php' );
 
+/**
+ * Habari SmartyEngine template engine subclass
+ *
+ * The SmartyEngine is a subclass of the abstract TemplateEngine class
+ * which uses the Smarty templating system to handle display of template files
+ *
+ */
 class SmartyEngine extends TemplateEngine
 {
 	// Actual Smarty template processor
@@ -32,7 +33,6 @@ class SmartyEngine extends TemplateEngine
 		$this->smarty->compile_check = DEBUG;
 		$this->smarty->caching = !DEBUG;
 	}
-
 
 	/**
 	 * Tries to retrieve a variable from the internal array engine_vars.

@@ -6,9 +6,8 @@
 	#
 	#  Docs: http://wiki.developers.viddler.com/index.php/Phpviddler
 	#
-	#  License(s): Dual licensed under:
+	#  License(s): Licensed under:
 	#  MIT (MIT-LICENSE.txt)
-    #  GPL (GPL-LICENSE.txt)
     #
     #  Third-party code:
     #  XML Library by Keith Devens
@@ -559,21 +558,6 @@ class ViddlerSilo extends Plugin implements MediaSilo
 
 	protected $cache = array();
 
-	/**
-	* Provide plugin info to the system
-	*/
-	public function info()
-	{
-		return array('name' => 'Viddler Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Implements basic Viddler integration',
-			'copyright' => '2007',
-			);
-	}
 
 	/*
 	// add a rewrite rule for our auto-generated video page.
@@ -598,7 +582,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	public function action_init()
 	{
 		// add some js to the admin header
-		Stack::add( 'admin_header_javascript', '/system/plugins/viddlersilo/vidfuncs.js', 'viddlerjs' );
+		Stack::add( 'admin_header_javascript',  $this->get_url(true) . 'vidfuncs.js', 'viddlerjs', array('media','jquery') );
 		$this->viddler = new Phpviddler();
 	}
 
@@ -893,8 +877,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	public function action_admin_header( $theme )
 	{
 		if(Controller::get_var('page') == 'publish') {
-			echo <<< HEADER
-<script type="text/javascript">
+			$header = <<< HEADER
 habari.media.output.viddler = {display: function(index, fileobj) {
 	habari.editor.insertSelection( ''+
 		'<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="437" height="370" id="viddler_' + fileobj.basename + '">' +
@@ -905,8 +888,9 @@ habari.media.output.viddler = {display: function(index, fileobj) {
 		'</object>'
 	);
 }}
-</script>
 HEADER;
+		Stack::add( 'admin_header_javascript',  $header, 'viddlerinline', array('viddlerjs', 'media','jquery') );
+
 		}
 	}
 
