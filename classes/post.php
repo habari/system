@@ -1025,14 +1025,13 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function get_tags()
 	{
-		if ( empty( $this->tags ) ) {
-			$result = Tags::get_associations( $this->id );
-			if ( $result ) {
-				foreach ( $result as $t ) {
-					$this->tags[$t->term] = $t->term_display;
-				}
+		$result = Tags::get_associations( $this->id );
+		if ( $result ) {
+			foreach ( $result as $t ) {
+				$this->tags[$t->term] = $t->term_display;
 			}
 		}
+
 		if ( count( $this->tags ) == 0 ) {
 			return array();
 		}
