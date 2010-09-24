@@ -957,6 +957,7 @@ class Posts extends ArrayObject implements IsContent
 			else {
 				$value = $match['value'];
 			}
+			$value = trim( $value );
 
 			switch( strtolower($match['flag']) )  {
 				case 'author':
