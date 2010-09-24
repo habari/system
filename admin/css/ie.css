@@ -73,3 +73,9 @@
 #menubutton a:first-letter{
 	color: inherit;
 }
+
+/* Fix boldface text alpha opacity */
+
+.navigator .newer a, .navigator .older a {
+	background-color: #fafafa;
+}
