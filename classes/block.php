@@ -62,12 +62,16 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			case 'id':
 			case 'title':
 			case 'data':
+				parent::__set( $name, $value );
+				$this->unserialize_data(); 
+				return parent::__get( $name );
+				break;
 			case 'type':
-				return parent::__set($name, $value);
+				return parent::__set( $name, $value );
 				break;
 			default:
-				$this->data_values[$name] = $value;
-				return $this->data_values[$name];
+				$this->data_values[ $name ] = $value;
+				return $this->data_values[ $name ];
 				break;
 		}
 	}
