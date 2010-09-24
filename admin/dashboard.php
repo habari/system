@@ -107,7 +107,7 @@ If you\'re reading this, you\'re surfing using Internet Explorer 6, an eight-yea
 				'post_entry' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
 			);
 			if ( $user->can_any( $perms ) ) {
-				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ) ) . '">' . $message . '</a>';
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ), 'user_id' => $user->id ) ) ) . '">' . $message . '</a>';
 			}
 			$message_bits[] = $message;
 		}
