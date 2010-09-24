@@ -32,8 +32,8 @@ class Comments extends ArrayObject
 		// what to select -- by default, everything
 		foreach ( Comment::default_fields() as $field => $value ) {
 			$select .= ( '' == $select )
-				? "{comments}.$field"
-				: ", {comments}.$field";
+				? "{comments}.$field as $field"
+				: ", {comments}.$field as $field"; 
 		}
 		// defaults
 		$orderby = 'date DESC';
