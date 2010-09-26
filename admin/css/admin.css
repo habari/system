@@ -159,10 +159,7 @@ a img {
 	display: block;
 	padding: 0 30px 0 10px;
 	background: url(../images/arrowdown.png) 160px center no-repeat;
-}
-
-#menubutton a:first-letter {
-	text-transform: uppercase;
+	text-transform: capitalize;
 }
 
 #menu #menulist ul {
