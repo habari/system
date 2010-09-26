@@ -2283,8 +2283,12 @@ body.page-Manage .state {
 	text-decoration: underline;
 }
 
-.timeline {
+/* prevent the position change from applying to IE < 8 */
+*|html .timeline {
 	position: relative;
+}
+
+.timeline {
 	background: #323232;
 	width: 830px;
 	height: 50px;
