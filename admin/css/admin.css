@@ -2283,7 +2283,7 @@ body.page-Manage .state {
 	text-decoration: underline;
 }
 
-/* prevent the position change from applying to IE < 8 */
+/* prevent the position change from applying to IE < 9 */
 *|html .timeline {
 	position: relative;
 }
