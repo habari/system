@@ -769,10 +769,14 @@ SQL;
 		self::create_token( 'manage_plugins', _t('Activate/deactivate plugins'), 'Administration' );
 		self::create_token( 'manage_plugins_config', _t('Configure active plugins'), 'Administration' );
 		self::create_token( 'manage_import', _t('Use the importer'), 'Administration' );
-		self::create_token( 'manage_users', _t('Add, remove, and edit users'), 'Administration' );
-		self::create_token( 'manage_self', _t('Edit own profile'), 'Administration' );
-		self::create_token( 'manage_groups', _t('Manage groups and permissions'), 'Administration' );
 		self::create_token( 'manage_logs', _t('Manage logs'), 'Administration' );
+
+    // User and permissions tokens
+		self::create_token( 'manage_users', _t('Add, remove, and edit users'), 'User management' );
+		self::create_token( 'manage_self', _t('Edit own profile'), 'User management' );
+		self::create_token( 'manage_self_delete', _t('Delete own profile'), 'User management' );
+		self::create_token( 'manage_opts_delete', _t('Select action on account deletion'), 'User management' );
+		self::create_token( 'manage_groups', _t('Manage groups and permissions'), 'User management' );
 
 		// content tokens
 		self::create_token( 'own_posts', _t('Permissions on one\'s own posts'), _t('Content'), true );

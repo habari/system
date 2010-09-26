@@ -188,6 +188,31 @@ class AdminHandler extends ActionHandler
 		$this->post_options();
 	}
 
+
+  /**
+   * Return default actions for user delete operation.
+   * @param array $options
+   */
+  private function _user_delete_operations ()
+  {
+    $actions = array (
+      'ah_delete'           => _t( 'Delete user' ),
+      'ah_remove_groups'    => _t( 'Remove user from all groups but do not delete' ),
+      'ah_delete_all'       => _t( 'Delete user and all content' ),
+      'ah_delete_unpublish' => _t( 'Delete user and unpublish all content' ),
+      'ah_assign_anonymous' => _t( 'Delete user and reassign content to anonymous user' ),
+    );
+    return $actions;
+  }
+
+
+  /**
+   * Returns a list of 
+   */
+  private function user_delete_operations() {
+
+  }
+
 	/**
 	 * Handles POST requests from the options admin page
 	 */
@@ -279,6 +304,23 @@ class AdminHandler extends ActionHandler
 				'label' => _t( 'Log Backtraces' ),
 				'type' => 'checkbox',
 				'helptext' => _t( 'Logs error backtraces to the log table\'s data column. Can drastically increase log size!' ),
+			),
+		);
+
+    // Ilo: select default action on account deletion
+    $actions = $this->_user_delete_operations();
+    
+    // Filter called to ask other plugins what to do when a user is
+    // being deleted. Adminhandler is not a plugin, so it must set its own
+    // actions here.
+		$actions = Plugins::filter( 'user_delete_operations', $actions );
+
+		$option_items[_t('Account Deletion')] = array(
+			'delete_action' => array(
+				'label' => _t( 'Action: ' ),
+				'type' => 'select',
+        'selectarray' => $actions,
+				'helptext' => _t( 'Default action when an account is deleted.' ),
 			),
 		);
 
@@ -838,8 +880,12 @@ class AdminHandler extends ActionHandler
 		$submit = $controls->append( 'submit', 'apply', _t('Apply'), 'optionscontrol_submit' );
 		$submit->class[] = 'pct30';
 
-		$controls->append( 'static', 'reassign', '<span class="pct35 reassigntext">' . _t('Reassign posts to: %s', array(Utils::html_select('reassign', $authors)) ) . '</span><span class="minor pct5 conjunction">' . _t('and') . '</span><span class="pct30"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
-
+		$current_user = User::identify();
+		// ilo: Don't show delete option if user is unable to delete its own account
+		if ( ( $current_user->id != $edit_user->id ) || $current_user->can('manage_self_delete') ){
+      // I tried to use regular submit button but I had problems to locate the submitted action button
+			$controls->append( 'static', 'reassign', '<span class="pct30"><input type="submit" name="delete" value="' . _t('Delete') . '" class="delete button"></span>');
+		}
 		$form->on_success( array( $this, 'form_user_success' ) );
 
 		// Let plugins alter this form
@@ -851,6 +897,54 @@ class AdminHandler extends ActionHandler
 
 	}
 
+  /**
+   * New form to confirm account deletion
+   */
+  private function _account_delete_confirm_form ( $account_form ){
+    $current_user = User::identify();
+    // Build the new form
+		$form = new FormUI('confirmation_form_re');
+		$controls = $form->append( 'wrapper', 'page_controls');
+	  $controls->class = 'container settings';
+	  $controls->append( 'static', 'delete_confirm1', '<h2>' .  _t('Confirm you want to delete this account') . '</h2>' );
+	  $controls->append( 'static', 'delete_confirm2', '<h3>' .  _t('This action can not be undone') . '</h3>' );
+
+    // Include the user id in the form as a hidden element..
+		$hidden = $controls->append('hidden', 'delete_action', 'delete_action');
+    $hidden->value = $account_form->edit_user->id;
+
+    // If user can select action, then show the form widget
+    // otherwise set default action as a hidden value.
+    if ( $current_user->can('manage_opts_delete') )
+    {
+      $actions = $this->_user_delete_operations();
+  		$actions = Plugins::filter( 'user_delete_operations', $actions );
+      $radios = $controls->append('select', 'delete_action', _t('Select delete action'));
+		  $radios->class[] = 'pct85';
+      $radios->caption = _t('and also perform the following action');
+      $radios->options = $actions;
+      $radios->value = Options::get('delete_action');
+    } else {
+		  // Set the default action to be performed..
+		  $hidden = $controls->append('hidden', 'delete_action', 'delete_action');
+      $hidden->value = Options::get('delete_action');
+    }
+
+    // attach control buttons
+		$cancel = $controls->append( 'submit', 'cancel', _t('Cancel'), 'optionscontrol_submit' );
+		$cancel->class[] = 'pct30';
+		$submit = $controls->append( 'submit', 'delete', _t('Delete'), 'optionscontrol_submit' );
+		$submit->class[] = 'pct30';
+		$form->on_success( array( $this, '_user_delete_confirm_submit' ) );
+		return $form->get();
+  }
+
+  // I can't reach here, I guess because I'm re-loading the admin/user page.
+  public function _user_delete_confirm_submit($form) {
+
+    print_r($form);die;
+  }
+
 	/**
 	 * Handles form submission from a user's page.
 	 */
@@ -861,7 +955,12 @@ class AdminHandler extends ActionHandler
 
 		// Let's check for deletion
 		if ( Controller::get_var('delete') != NULL ) {
-			if ( $current_user->id != $edit_user->id ) {
+      // Delegate to the new delete controller.
+      $result = $this->_account_delete_confirm_form($form);
+      return $result;
+//      print "<pre>";print_r($form);die;
+			/**
+       if ( $current_user->id != $edit_user->id ) {
 
 				// We're going to delete the user before we need it, so store the username
 				$username = $edit_user->username;
@@ -889,8 +988,11 @@ class AdminHandler extends ActionHandler
 				Utils::redirect(URL::get('admin', array('page' => 'users')));
 			}
 			else {
+
+        // Redirect user to /home
 				Session::notice( _t( 'You cannot delete yourself.') );
 			}
+      */
 		}
 
 		$update = false;
