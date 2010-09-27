@@ -453,6 +453,18 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->in_transaction();
 	}
+	
+	/**
+	 * Return a PDO-quoted string appropriate for the DB backend we're using.
+	 * 
+	 * If you're using this then there's 99+% probability you're building your queries the wrong way!
+	 * 
+	 * @param string $string The string to quote.
+	 * @return string A DB-safe quoted string.
+	 */
+	public static function quote ( $string ) {
+		return DB::instance()->connection->quote( $string );
+	}
 }
 
 ?>
