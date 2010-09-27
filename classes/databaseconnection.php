@@ -823,6 +823,18 @@ class DatabaseConnection
 	{
 		return $this->sql_tables;
 	}
+	
+	/**
+	 * Return a PDO-quoted string appropriate for the DB backend we're using.
+	 * 
+	 * If you're using this then there's 99+% probability you're building your queries the wrong way!
+	 * 
+	 * @param string $string The string to quote.
+	 * @return string A DB-safe quoted string.
+	 */
+	public function quote ( $string ) {
+		return $this->pdo->quote( $string );
+	}
 
 }
 
