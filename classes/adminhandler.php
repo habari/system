@@ -1147,7 +1147,7 @@ class AdminHandler extends ActionHandler
 	 * Assign values needed to display the users listing
 	 *
 	 */
-	private function fetch_users($params = NULL)
+	private function old_fetch_users($params = NULL)
 	{
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
@@ -1162,11 +1162,184 @@ class AdminHandler extends ActionHandler
 	}
 
 	/**
+	 * Assign values needed to display the users listing
+	 *
+	 */
+	private function fetch_users($params = NULL)
+	{
+		// Make certain handler_vars local with defaults, and add them to the theme output
+		$locals = array(
+			'group' => '',
+		  'info'  => '',
+			'do_update' => false,
+			'user_ids' => null,
+			'nonce' => '',
+			'PasswordDigest' => '',
+			'limit' => 20,
+			'offset' => 0,
+			'search' => '',
+		);
+		foreach ( $locals as $varname => $default ) {
+			$$varname = isset( $this->handler_vars[$varname] ) ? $this->handler_vars[$varname] : (isset($params[$varname]) ? $params[$varname] : $default);
+			$this->theme->{$varname} = $$varname;
+		}
+
+		// prepare the WSSE tokens
+		$this->theme->wsse = Utils::WSSE();
+
+		$arguments = array(
+			'limit' => $limit,
+			'offset' => $offset,
+		);
+
+		if ( '' != $search ) {
+			/// TODO: fix, using a function from Post to convert search to get
+			$arguments = array_merge( $arguments, Users::search_to_get( $search ) );
+		}
+
+		// setup keyword in search field if a status or type was passed in POST
+		$this->theme->search_args = '';
+
+		if ( $group != '' ) {
+			$this->theme->search_args .= $group;
+		}
+
+		if ( $info != '' ) {
+			$this->theme->search_args .= $info;
+		}
+
+		if ( $search != '' ) {
+			$this->theme->search_args .= $search;
+		}
+
+//		print_r($arguments); die;
+		// Get author list
+		$authors = array();
+		$author_list = Users::get($arguments);
+		//$authors[0] = _t('nobody');
+		foreach ( $author_list as $author ) {
+			$authors[ $author->id ] = $author;
+		}
+		$this->theme->authors = $authors;
+	}
+
+
+	/**
+	 * Handles GET requests of the users page.
+	 */
+	public function old_get_users()
+	{
+		$this->fetch_users();
+
+		$this->theme->display('users');
+	}
+
+
+	/**
 	 * Handles GET requests of the users page.
 	 */
 	public function get_users()
 	{
+		$this->post_users();
+	}
+
+	/**
+	 * Handles POST requests from the Users listing (ie: creating a new user)
+	 */
+	public function post_users()
+	{
 		$this->fetch_users();
+
+		// Get Group information
+		$allgroups = UserGroups::get_all();
+		$groups = array();
+		foreach ($allgroups as $group) {
+			$groups[$group->id] = $group->name;
+		}
+		$groups = array_combine(
+			$groups,
+			array_map(
+				create_function('$a', 'return "group:{$a}";'),
+				$groups
+			)
+		);
+
+		// Get user status information
+		$statuses = array (
+			'All'      => '',
+			'Active'   => 'status:active',
+			'Inactive' => 'status:inactive',
+		  'lipsump'  => 'info:muspil:1',
+		);
+
+		$this->theme->admin_page = _t('Manage Users');
+		$this->theme->admin_title = _t('Manage Users');
+		//@TODO: document this.
+		$this->theme->special_searches = Plugins::filter('users_special_searches',array_merge($statuses, $groups));
+
+
+
+		/*
+		// Keep add user at top of page.. @TODO: hide this
+		$extract = $this->handler_vars->filter_keys('newuser', 'delete', 'new_pass1', 'new_pass2', 'new_email', 'new_username');
+		foreach ( $extract as $key => $value ) {
+			$$key = $value;
+		}
+
+		if ( isset($newuser) ) {
+			$action = 'newuser';
+		}
+		elseif ( isset($delete) ) {
+			$action = 'delete';
+		}
+
+		$error = '';
+		if ( isset( $action ) && ( 'newuser' == $action ) ) {
+			if ( !isset( $new_pass1 ) || !isset( $new_pass2 ) || empty( $new_pass1 ) || empty( $new_pass2 ) ) {
+				Session::error( _t( 'Password is required.' ), 'adduser' );
+			}
+			else if ( $new_pass1 !== $new_pass2 ) {
+				Session::error( _t( 'Password mis-match.'), 'adduser' );
+			}
+			if ( !isset( $new_email ) || empty( $new_email ) || ( !strstr( $new_email, '@' ) ) ) {
+				Session::error( _t( 'Please supply a valid email address.' ), 'adduser' );
+			}
+			if ( !isset( $new_username ) || empty( $new_username ) ) {
+				Session::error( _t( 'Please supply a user name.' ), 'adduser' );
+			}
+			// safety check to make sure no such username exists
+			$user = User::get_by_name( $new_username );
+			if ( isset( $user->id ) ) {
+				Session::error( _t( 'That username is already assigned.' ), 'adduser' );
+			}
+			if ( !Session::has_errors( 'adduser' ) ) {
+				$user = new User( array( 'username' => $new_username, 'email' => $new_email, 'password' => Utils::crypt( $new_pass1 ) ) );
+				if ( $user->insert() ) {
+					Session::notice( sprintf( _t( "Added user '%s'" ), $new_username ) );
+				}
+				else {
+					$dberror = DB::get_last_error();
+					Session::error( $dberror[2], 'adduser' );
+				}
+			}
+			else {
+				$settings = array();
+				if ( isset($username) ) {
+					$settings['new_username'] = $new_username;
+				}
+				if ( isset( $new_email ) ) {
+					$settings['new_email'] = $new_email;
+				}
+				$this->theme->assign( 'settings', $settings );
+			}
+		}
+		else if ( isset( $action ) && ( 'delete' == $action ) ) {
+
+			$this->update_users($this->handler_vars);
+
+		}
+  */
+
 
 		$this->theme->display('users');
 	}
@@ -1174,7 +1347,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles POST requests from the Users listing (ie: creating a new user)
 	 */
-	public function post_users()
+	public function old_post_users()
 	{
 		$this->fetch_users();
 
@@ -2355,11 +2528,24 @@ class AdminHandler extends ActionHandler
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
-		$this->theme->currentuser = User::identify();
+		$params = $_GET;
+
+		$this->fetch_users($params);
+
 		$items = $this->theme->fetch( 'users_items' );
+
+		$this->theme->currentuser = User::identify();
+
+		$item_ids = array();
+
+		// Need to require anything here? (don't delete own user?)
+		foreach ($this->theme->authors as $user) {
+      $item_ids['p' . $user->id] = 1;
+		}
 
 		$output = array(
 			'items' => $items,
+		  'items_ids' => $item_ids,
 		);
 		echo json_encode($output);
 	}

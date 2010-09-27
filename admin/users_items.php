@@ -1,8 +1,9 @@
 <!-- a b c d e f g h i j k l m n o p q r s t u v x y z æ å ø -->
 
 <ul>
-	<?php foreach (Users::get_all() as $user) {
-		if ( $user->username == $currentuser->username ) {
+	<?php
+	  foreach ($theme->authors as $id => $user) {
+		if ( $user->username == User::identify()->username ) {
 			$url = Url::get( 'admin', 'page=user' );
 		}
 		else {

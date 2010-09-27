@@ -63,6 +63,10 @@ class Users extends ArrayObject
 					}
 					switch ( $field ) {
 						case 'id':
+							// ilo, allow searching for groups, passing a list of group member ids
+							if ( is_array($paramset[$field])) {
+								$where[] = "{$field} IN (". implode( ', ', $paramset[$field]) .")";
+							}
 							if ( !is_numeric( $paramset[$field] ) ) {
 								continue;
 							}
@@ -186,6 +190,98 @@ class Users extends ArrayObject
 
 		return self::get( $params );
 	}
+
+	/**
+	 * Parses a search string for info, and group. Returns an associative array
+	 * which can be passed to Users::get(). If multiple info or groups are
+	 * specified, we assume an implicit OR such that (e.g.) any user that matches
+	 * would be returned.
+	 *
+	 * Currently it handles group:groupname
+	 *
+	 * @param string $search_string The search string
+	 * @return array An associative array which can be passed to Users::get()
+	 */
+	public static function search_to_get( $search_string )
+	{
+		// if adding to this array, make sure you update the consequences of a search on this below in the switch.
+		$keywords = array( 'group' => 1, 'info' => 1, );
+
+		// Get Group information
+		$allgroups = UserGroups::get_all();
+		$groups = array();
+		foreach ($allgroups as $group) {
+			$groups[strtolower($group->name)] = $group->id;
+		}
+
+		$arguments = array(
+			'info' => array(),
+			'group' => array()
+		);
+		$criteria = '';
+
+		// this says, find stuff that has the keyword at the start, and then some term straight after.
+		// the terms should have no whitespace, or if it does, be ' delimited.
+		// ie info:foo or info:'foo bar'
+		$flag_regex = '/(?P<flag>' . implode( '|', array_keys( $keywords ) ) . '):(?P<value>[^\'"][^\s]*(?:\s|$)|([\'"]+)(?P<quotedvalue>[^\3]+)(?<!\\\)\3)/Uui';
+
+		// now do some matching.
+		preg_match_all( $flag_regex , $search_string, $matches, PREG_SET_ORDER );
+
+		// now we remove those terms from the search string, otherwise the keyword search below has issues. It will pick up things like
+		// from tag:'pair of' -> matches of'
+		$criteria = trim(preg_replace( $flag_regex, '', $search_string));
+
+		// go through flagged things.
+		foreach ($matches as $match) {
+			// switch on the type match. ie status, type et al.
+			// also, trim out the quote marks that have been matched.
+			if( isset($match['quotedvalue']) && $match['quotedvalue'] ) {
+				$value = stripslashes($match['quotedvalue']);
+			}
+			else {
+				$value = $match['value'];
+			}
+			$value = trim( $value );
+
+			switch( strtolower($match['flag']) )  {
+				// ilo: support search users by group
+				case 'group':
+					if ( isset( $groups[strtolower($value)] ) ) {
+						$member_ids = DB::get_column( 'SELECT user_id FROM {users_groups} WHERE group_id= ?', array( $groups[strtolower($value) ] ) );
+						if ( is_array( $member_ids ) && count( $member_ids ) ) {
+						  $arguments['id'][] = $member_ids;
+						}
+					}
+					break;
+				case 'info':
+					if( strpos($value, ':') !== FALSE ) {
+						list( $infokey, $infovalue ) = explode( ':', $value, 2 );
+						$arguments['info'][] = array($infokey=>$infovalue);
+					}
+					break;
+			}
+		}
+
+		// flatten keys that have single-element or no-element arrays
+		foreach ( $arguments as $key => $arg ) {
+			switch ( count( $arg ) ) {
+				case 0:
+					unset( $arguments[$key] );
+					break;
+				case 1:
+					$arguments[$key] = $arg[0];
+					break;
+			}
+		}
+
+		if ( $criteria != '' ) {
+			$arguments['username'] = $criteria;
+		}
+
+		return $arguments;
+	}
+
 
 }
 ?>

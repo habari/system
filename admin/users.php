@@ -1,33 +1,18 @@
 <?php include('header.php');?>
 
 <?php $theme->currentuser = User::identify(); ?>
-
-
-<div class="container navigation">
-	<div class="pct40">
-
-		<form>
-		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
-			<?php /*
-			foreach ( Users::get_all() as $user ) {
-				if ( $user->username == $currentuser->username ) {
-					$url = Url::get( 'admin', 'page=user' );
-				}
-				else {
-					$url = Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) );
-				}
-				echo '<option id="' . $user->id . '" value="' . $url . '">' . $user->displayname . '</option>';
-			} */ ?>
-			<option value=""><?php _e('Complete User List'); ?></option>
-		</select>
-		</form>
+<div class="container navigator">
+	<span class="currentposition pct15 minor"><?php _e('no results'); ?></span>
+	<span class="search pct50">
+		<input id="search" type="search" placeholder="<?php _e('Type and wait to search'); ?>" value="<?php echo Utils::htmlspecialchars($search_args); ?>">
+	</span>
+	<div class="filters pct15">
+		<ul class="dropbutton special_search">
+			<?php foreach ( $special_searches as $text => $term ): ?>
+			<li><a href="#<?php echo $term; ?>" title="<?php printf( _t('Filter results for \'%s\''), $text ); ?>"><?php echo $text; ?></a></li>
+			<?php endforeach; ?>
+		</ul>
 	</div>
-	<span class="or pct20">
-		<?php _e('or'); ?>
-	</span>
-	<span class="pct40">
-		<input id="search" type="search" placeholder="<?php _e('search users'); ?>">
-	</span>
 </div>
 
 <form method="post" action="">
@@ -66,7 +51,7 @@
 		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
 	
 		<span class="reassign minor">
-			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
+			<?php  // printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and
 			<input type="submit" name="delete" value="<?php _e('Delete Selected'); ?>">
 		</span>
 	</div>
