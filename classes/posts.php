@@ -53,6 +53,10 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function get( $paramarray = array() )
 	{
+		
+		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
+		$paramarray = Plugins::filter( 'posts_get_paramarray', $paramarray );
+		
 		$join_params = array();
 		$params = array();
 		$fns = array( 'get_results', 'get_row', 'get_value' );
