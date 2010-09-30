@@ -135,7 +135,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
-		self::$instance->_set( $name, $value, $expiry, $group, $keep );
+		return self::$instance->_set( $name, $value, $expiry, $group, $keep );
 	}
 
 	/**
