@@ -7,8 +7,8 @@
  * IE also does not support height: inherit, so we need to explicitly set
  * several heights.
  */
-.timeline {
-	/* note that there's no position: relative applied to IE */
+*+html .timeline {
+	position: static;
 }
 
 .timeline .years {
