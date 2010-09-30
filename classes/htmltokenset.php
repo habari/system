@@ -38,6 +38,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
+			case HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY:
 				$out  = '<' . $token['name'];
 				if ( isset( $token['attrs'] ) && is_array( $token['attrs'] ) ) {
 					foreach ( $token['attrs'] as $attr => $attrval ) {

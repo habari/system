@@ -17,6 +17,7 @@ class HTMLTokenizer
 	const NODE_TYPE_COMMENT = 5;
 	const NODE_TYPE_CDATA_SECTION = 6;
 	const NODE_TYPE_STATEMENT = 7;
+	const NODE_TYPE_ELEMENT_EMPTY = 8;
 
 	/* States of the Machine ;p */
 	private static $STATE_FINISHED = -1;
@@ -41,6 +42,7 @@ class HTMLTokenizer
 	private $state;
 
 	private $nodes;
+	private static $empty_elements = array( 'img', 'br', 'hr', 'input', 'area', 'base', 'col', 'link', 'meta', 'param', 'command', 'keygen', 'source' );
 
 	public function __construct( $html, $escape = true )
 	{
@@ -240,12 +242,13 @@ class HTMLTokenizer
 		if ( $tag != '' ) {
 			$attr = $this->parse_attributes();
 			$char = $this->get();
-			if ( $char == '/' && $this->peek() == '>' ) {
+			if ( ( $char == '/' && $this->peek() == '>' ) || in_array( $tag, self::$empty_elements ) ) {
+			    // empty element
+			    if ( $char == '/' && $this->peek() == '>' ) {
+				// empty element in collapsed form
 				$this->inc(); // skip peeked '>'
-				// empty tag in collapsed form (<br />)
-				// XXX mark this somehow?
-				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr );
-				$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL );
+			    }
+			    $this->node( self::NODE_TYPE_ELEMENT_EMPTY, $tag, NULL, $attr );
 			}
 			else {
 				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr );
