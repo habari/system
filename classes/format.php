@@ -221,6 +221,7 @@ class Format
 		} while ( $token = $set->next() );
 		
 		$value = preg_replace( '#\s*<p></p>\s*#u', '', $value ); // replace <p></p>
+		$value = preg_replace( '/<p><!--(.*?)--><\/p>/', "<!--\\1-->", $value ); // replace <p></p> around comments
 		if ( $openP ) {
 			$value .= '</p>';
 		}
