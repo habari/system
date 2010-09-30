@@ -183,17 +183,18 @@ class User extends QueryRecord
 		if ( ! $allow ) {
 			return;
 		}
-		Plugins::act('user_delete_before', $this);
-		if(isset($this->info)) {
-			$this->info->delete_all();
-		}
+		Plugins::act( 'user_delete_before', $this );
+
+		// remove any userinfo records
+		$this->info->delete_all();
+
 		// remove all this user's permissions
 		DB::query( 'DELETE FROM {user_token_permissions} WHERE user_id=?', array( $this->id ) );
 		// remove user from any groups
 		DB::query( 'DELETE FROM {users_groups} WHERE user_id=?', array( $this->id ) );
-		EventLog::log( sprintf(_t('User deleted: %s'), $this->username), 'info', 'default', 'habari' );
-		$result = parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
-		Plugins::act('user_delete_after', $this);
+		EventLog::log( sprintf( _t( 'User deleted: %s' ), $this->username ), 'info', 'default', 'habari' );
+		$result = parent::deleteRecord( DB::table( 'users' ), array( 'id' => $this->id ) );
+		Plugins::act( 'user_delete_after', $this );
 		return $result;
 	}
 
@@ -639,7 +640,7 @@ class User extends QueryRecord
 	private function get_info()
 	{
 		if ( ! isset( $this->inforecords ) ) {
-			// If this post isn't in the database yet...
+			// If this user isn't in the database yet...
 			if(  0 == $this->id ) {
 				$this->inforecords = new UserInfo();
 			}
