@@ -765,12 +765,6 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function reassign( $user, $posts )
 	{
-		// allow plugins the opportunity to prevent reassignment
-		$allow = true;
-		$allow = Plugins::filter( 'posts_reassign_allow', $allow );
-		if ( ! $allow ) {
-			return false;
-		}
 
 		if ( ! is_int( $user ) ) {
 			$u = User::get( $user );
@@ -794,6 +788,16 @@ class Posts extends ArrayObject implements IsContent
 				return false;
 		}
 		$ids = implode( ',', $posts );
+		
+		// allow plugins the opportunity to prevent the reassignment now that we've verified the user and posts
+		$allow = true;
+		$allow = Plugins::filter( 'posts_reassign_allow', $allow, $user, $posts );
+		
+		if ( !$allow ) {
+			return false;
+		}
+		
+		// actually perform the reassignment
 		Plugins::act( 'posts_reassign_before', array( $user, $posts ) );
 		$results = DB::query( "UPDATE {posts} SET user_id=? WHERE id IN ({$ids})", array( $user ) );
 		Plugins::act( 'posts_reassign_after', array( $user, $posts ) );
