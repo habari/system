@@ -143,7 +143,7 @@ class Format
 		$ht = new HtmlTokenizer( $value, false );
 		$set = $ht->parse();
 		$value = '';
-		
+
 		// should never autop ANY content in these items
 		$noAutoP = array(
 			'pre','code','ul','h1','h2','h3','h4','h5','h6',
@@ -167,7 +167,7 @@ class Format
 		do {
 			
 			if ( $openP ) {
-				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $blockElements ) ) {
+				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $blockElements ) ) {
 					if ( strtolower( $token['name'] ) != 'p' || $token['type'] != HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
 						$value .= '</p>';
 					}
