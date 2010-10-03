@@ -155,6 +155,8 @@ class FileCache extends Cache
 		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 
 		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
+		
+		return true;
 	}
 
 	/**
