@@ -58,6 +58,14 @@ class SmartyEngine extends TemplateEngine
 	}
 
 	/**
+	 * Clear all of the assigned template variables
+	 */
+	public function clear()
+	{
+		$this->smarty->clear_all_assign();
+	}
+
+	/**
 	 * Unassigns a variable to the template engine.
 	 *
 	 * @param name name of variable
