@@ -123,6 +123,8 @@ class APCCache extends Cache
 		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval($expiry) );
 		
 		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
+		
+		return true;
 	}
 
 	/**
