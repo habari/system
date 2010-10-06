@@ -1138,16 +1138,14 @@ body.page-publish .buttons input {
 }
 
 .dashboard .module.add-item-module .modulecore {
-	height: 0px;
+	height: 75%;
+	padding: 16px 0 0 20px;
+	overflow: auto;
 }
 
 .dashboard .module.add-item-module h2, .dashboard .module.add-item-module form {
-	position: absolute;
-	top: 16px;
-}
-
-.dashboard .module.add-item-module form {
-	left: 120px;
+	float: left;
+	position: static;
 }
 
 .dashboard .module.add-item-module select {
