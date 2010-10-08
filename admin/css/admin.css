@@ -290,7 +290,7 @@ a img {
 	right: 40px;
 }
 
-#page .dropbutton:hover {
+#page .dropbutton:hover, #page .dropbutton.hovering {
 	z-index: 99;
 }
 
