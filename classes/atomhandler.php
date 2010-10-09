@@ -742,10 +742,10 @@ class AtomHandler extends ActionHandler
 			foreach ( $tags as $tag ) {
 				if ( $tag[0] == '-' ) {
 					$tag = substr($tag, 1);
-					$params['not:tag_slug'][] = Utils::slugify($tag);
+					$params['vocabulary'][Tags::vocabulary()->name . ':not:term'][] = Utils::slugify($tag);
 				}
 				else {
-					$params['all:tag_slug'][] = Utils::slugify($tag);
+					$params['vocabulary'][Tags::vocabulary()->name . ':all:term'][] = Utils::slugify($tag);
 				}
 			}
 			unset( $params['tag'] );

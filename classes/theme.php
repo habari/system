@@ -179,6 +179,7 @@ class Theme extends Pluggable
 
 		$where_filters = array();
 		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
+		$where_filters['vocabulary'] = array();
 		//$where_filters['status'] = Post::status( 'published' );
 		if ( array_key_exists( 'tag', $where_filters ) ) {
 			$tags = explode(' ', $where_filters['tag']);
@@ -194,10 +195,10 @@ class Theme extends Pluggable
 				}
 			}
 			if ( count($not_tag) > 0 ) {
-				$where_filters['not:tag_slug'] = $not_tag;
+				$where_filters['vocabulary'] = array_merge( $where_filters['vocabulary'], array( Tags::vocabulary()->name . ':not:term' => $not_tag ) );
 			}
 			if ( count($all_tag) > 0 ) {
-				$where_filters['all:tag_slug'] = $all_tag;
+				$where_filters['vocabulary'] = array_merge( $where_filters['vocabulary'], array( Tags::vocabulary()->name . ':all:term' => $all_tag ) );
 			}
 			unset( $where_filters['tag'] );
 		}
@@ -213,7 +214,6 @@ class Theme extends Pluggable
 			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
 			$where_filters = $where_filters->merge( $user_filters );
 			$where_filters = Plugins::filter( 'template_where_filters', $where_filters );
-
 			$posts = Posts::get( $where_filters );
 		}
 
