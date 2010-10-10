@@ -92,6 +92,12 @@ class Error extends Exception
 			return;
 		}
 		
+		if(!function_exists('_t')) {
+			function _t($v) {
+				return $v;
+			}
+		}
+		
 		// Don't be fooled, we can't actually handle most of these.
 		$error_names = array(
 			E_ERROR => _t( 'Error' ),
