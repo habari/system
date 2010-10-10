@@ -26,24 +26,31 @@ class Options extends Singleton
 	 * Shortcut to return the value of an option
 	 *
 	 * <code>
-	 * 	 $foo = Options::get('foo'); //or
-	 * 	 list($foo, $bar, $baz) = Options::get('foo1', 'bar2', 'baz3'); //or
-	 * 	 extract(Options::get('foo', 'bar', 'baz')); //or
-	 *   list($foo, $bar, $baz) = Options::get(array('foo1', 'bar2', 'baz3')); // useful with array_keys()
+	 * 	 $foo = Options::get('foo'); // returns null if the option 'foo' does not exist
+	 *   list($foo, $bar, $baz) = Options::get( array('foo1', 'bar2', 'baz3') ); // useful with array_keys()
+	 *   $bar = Options::get('foo', 'bar'); // returns 'bar' if the option 'foo' does not exist. useful for avoiding if/then blocks to detect unset options
 	 * </code>
 	 *
-	 * @param string|array $name... The name(s) of the option(s) to retrieve
-	 * @return mixed The option requested or an array of requested options, null if it does not exist
+	 * @param string|array $name... The name or an array of names of the option to fetch.
+	 * @param mixed $default_value The value to return for an option if it does not exist.
+	 * @return mixed The option requested or an array of requested options, $default_value for each if the option does not exist
 	 **/
-	public static function get( $name )
+	public static function get( $name, $default_value = null )
 	{
-		if ( func_num_args() > 1 ) {
-			$name = func_get_args();
-		}
 		if ( is_array( $name ) ) {
-			return array_intersect_key( self::instance()->options, array_flip( $name ) );
+			$results = array();
+			foreach ( $name as $k => $v ) {
+				$results[ $k ] = Options::get( $v );	// recursively wrap around ourselves!
+			}
+			return $results;
 		}
-		return self::instance()->$name;
+		
+		if ( self::instance()->$name ) {
+			return self::instance()->$name;
+		}
+		else {
+			return $default_value;
+		}
 	}
 
 	/**
