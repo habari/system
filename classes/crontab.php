@@ -37,7 +37,7 @@ class CronTab extends ActionHandler
 			$cronurl = URL::get('cron',
 				array(
 					'time' => $run_time,
-					'asyncronous' => Utils::crypt(Options::get('guid')) )
+					'asyncronous' => Utils::crypt(Options::get('GUID')) )
 				);
 			$request = new RemoteRequest($cronurl, 'GET', 1);
 			$request->execute();
