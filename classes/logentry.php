@@ -20,9 +20,16 @@ class LogEntry extends QueryRecord
 	 * @final
 	 */
 	private static $severities = array(
-		'any',
-		'none', // should not be used
-		'debug', 'info', 'notice', 'warning', 'err', 'crit', 'alert', 'emerg',
+		0 => 'any',
+		1 => 'none',
+		2 => 'debug',
+		3 => 'info',
+		4 => 'notice',
+		5 => 'warning',
+		6 => 'err',
+		7 => 'crit',
+		8 => 'alert',
+		9 => 'emerg'
 	);
 
 	/**
@@ -197,6 +204,11 @@ class LogEntry extends QueryRecord
 			$this->type_id = LogEntry::type( $this->fields['module'], $this->fields['type'] );
 			unset( $this->fields['module'] );
 			unset( $this->fields['type'] );
+		}
+		
+		// if we're set to only log entries greater than a sertain level, make sure we're that level or higher
+		if ( $this->fields['severity_id'] < Options::get('log_min_severity') ) {
+			return;
 		}
 
 		Plugins::filter( 'insert_logentry', $this );
