@@ -733,6 +733,7 @@ class InstallHandler extends ActionHandler
 		Options::set('timezone', 'UTC');
 		Options::set('dateformat', 'Y-m-d');
 		Options::set('timeformat', 'g:i a');
+		Options::set('log_min_severity', 3);		// the default logging level - 3 should be 'info'
 
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
@@ -1620,6 +1621,13 @@ class InstallHandler extends ActionHandler
 		}
 		// replace option with only the usuable plugins
 		Options::set( 'active_plugins', $new_plugins );
+	}
+	
+	private function upgrade_db_post_4382 ( ) {
+		
+		// add the new logging limit option
+		Options::set( 'log_min_severity', 3 );		// 3 is 'info'
+		
 	}
 
 	/**
