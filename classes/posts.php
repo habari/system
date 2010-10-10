@@ -180,16 +180,20 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
+				    $parsed = array();
 				    $object_id = 'post';
-				    $parsed_vocab = array();
-				    foreach ( $paramset['vocabulary'] as $key => $value ) {
-					$colon = strpos( $key, ':' );
-					$new_vocab['name'] = substr( $key, 0, $colon );
-					$new_vocab[substr( $key, $colon + 1 )] = $value;
-					$parsed_vocab[] = $new_vocab;
+				    if ( is_string( $paramset['vocabulary'] ) ) {
+					$parsed = Utils::get_params( $paramset['vocabulary'] );
 				    }
-				    //Utils::debug($parsed_vocab);
-				    foreach ( $parsed_vocab as $value ) {
+				    else {
+					foreach ( $paramset['vocabulary'] as $key => $value ) {
+						$colon = strpos( $key, ':' );
+						$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
+					}
+				    }
+//				    Utils::debug($parsed);
+				    foreach ( $parsed as $vocab => $value ) {
+
 					if ( isset( $value['term'] ) || isset( $value['term_display'] )) {
 						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
 						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
@@ -215,7 +219,7 @@ class Posts extends ArrayObject implements IsContent
 							}
 						}
 						$params[] = $object_id;
-						$params[] = $value['name'];
+						$params[] = $vocab;
 					}
 
 					if ( isset( $value['all:term_display'] ) ) {
@@ -235,7 +239,7 @@ class Posts extends ArrayObject implements IsContent
 							$params[] = $value['all:term_display'];
 						}
 						$params[] = $object_id;
-						$params[] = $value['name'];
+						$params[] = $vocab;
 					}
 
 					if ( isset( $value['all:term'] ) ) {
@@ -255,7 +259,7 @@ class Posts extends ArrayObject implements IsContent
 							$params[] = $value['all:term'];
 						}
 						$params[] = $object_id;
-						$params[] = $value['name'];
+						$params[] = $vocab;
 					}
 
 					if ( isset( $value['not:term_display'] ) ) {
@@ -269,7 +273,7 @@ class Posts extends ArrayObject implements IsContent
 						';
 						$params = array_merge( $params, $nottag );
 						$params[] = $object_id;
-						$params[] = $value['name'];
+						$params[] = $vocab;
 					}
 
 					if ( isset( $value['not:term'] ) ) {
@@ -283,7 +287,7 @@ class Posts extends ArrayObject implements IsContent
 						';
 						$params = array_merge( $params, $nottag );
 						$params[] = $object_id;
-						$params[] = $value['name'];
+						$params[] = $vocab;
 					}
 				    }
 				}
