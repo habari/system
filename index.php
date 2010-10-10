@@ -153,7 +153,7 @@ if ( defined( 'UNIT_TEST' ) ) {
 }
 
 // if this is an asyncronous call, ignore abort.
-if ( isset( $_GET['asyncronous'] ) && Utils::crypt( Options::get( 'guid' ), $_GET['asyncronous'] ) ) {
+if ( isset( $_GET['asyncronous'] ) && Utils::crypt( Options::get( 'GUID' ), $_GET['asyncronous'] ) ) {
 	ignore_user_abort( true );
 }
 
