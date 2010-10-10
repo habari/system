@@ -108,6 +108,8 @@ class LogEntry extends QueryRecord
 	**/
 	public static function list_severities()
 	{
+		$results = array();
+		
 		foreach ( self::$severities as $id => $name ) {
 			if ( 'none' == $name ) {
 				continue;
