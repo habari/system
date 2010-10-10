@@ -275,6 +275,12 @@ class AdminHandler extends ActionHandler
 		);
 
 		$option_items[_t('Troubleshooting')] = array(
+			'log_min_severity' => array(
+				'label' => _t( 'Minimum Severity' ),
+				'type' => 'select',
+				'selectarray' => LogEntry::list_severities(),
+				'helptext' => _t( 'Only log entries with a this or higher severity.' ),
+			),
 			'log_backtraces' => array(
 				'label' => _t( 'Log Backtraces' ),
 				'type' => 'checkbox',
