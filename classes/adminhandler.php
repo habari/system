@@ -1813,6 +1813,7 @@ class AdminHandler extends ActionHandler
 
 		$sort_active_plugins = array();
 		$sort_inactive_plugins = array();
+		$providing = array();
 
 		foreach ( $all_plugins as $file ) {
 			$plugin = array();
@@ -1821,8 +1822,6 @@ class AdminHandler extends ActionHandler
 			$plugin['file'] = $file;
 
 			$error = '';
-
-			$providing = array();
 
 			if ( Utils::php_check_file_syntax( $file, $error ) ) {
 				$plugin['debug'] = false;
