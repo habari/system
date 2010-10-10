@@ -15,6 +15,7 @@ class AjaxResponse
 	private $response_code;
 	private $message;
 	private $callback = null;
+	private $html = null;
 	
 	/* By default, we have a successful operation, with no data to return. */
 	function __construct($response_code = 200, $message = null, $data = null) {
@@ -34,6 +35,16 @@ class AjaxResponse
 				break;
 		}
 	}
+	
+	public function html($name, $value)
+	{
+		if(empty($this->html)) {
+			$this->html = array( $name => $value );
+		}
+		else {
+			$this->html[$name] = $value;
+		}
+	}
 
 	public function out()
 	{
@@ -44,9 +55,11 @@ class AjaxResponse
 		);
 
 		// if some callback js has been provided, include that too.
-		if ($this->callback != null)
-		{
+		if ($this->callback != null) {
 			$ret_array['callback'] = $this->callback;
+		}
+		if(!empty($this->html)) {
+			$ret_array['html'] = $this->html;
 		}
 		
 		header('Content-type: application/json');
