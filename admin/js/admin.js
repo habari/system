@@ -1,20 +1,26 @@
 // Habari ajax. All Habari Ajax calls should go through here. It allows us to use uniform humanmsg stuff, 
 // as well as uniform error handling
 var habari_ajax = {
-	post: function(post_url, post_data, local_cb) {
-		habari_ajax.ajax('POST', post_url, post_data, local_cb);
+	post: function(post_url, post_data, ahah_target, local_cb) {
+		habari_ajax.ajax('POST', post_url, post_data, ahah_target, local_cb);
 	},
 	
-	get: function(get_url, get_data, local_cb) {
-		habari_ajax.ajax('GET', get_url, get_data, local_cb);
+	get: function(get_url, get_data, ahah_target, local_cb) {
+		habari_ajax.ajax('GET', get_url, get_data, ahah_target, local_cb);
 	},
 	
-	ajax: function(type, url, data, local_cb) {
+	ajax: function(type, url, data, ahah_target, local_cb) {
 		$.ajax({
 			url: url,
 			data: data,
-		  success: function(json_data) { 
-				habari_ajax.success(json_data, local_cb);
+		  success: function(json_data) {
+				if($.isPlainObject(ahah_target)) {
+					for(var i in ahah_target) {
+						$(ahah_target[i]).html(json_data.html[i]);
+					}
+				}
+		  	var cb = ($.isFunction(ahah_target) && local_cb == undefined) ? ahah_target : local_cb;
+				habari_ajax.success(json_data, cb);
 			},
 			error: habari_ajax.error,
 		  dataType: 'json',
@@ -97,11 +103,8 @@ var dashboard = {
 		habari_ajax.post(
 			habari.url.ajaxDashboard,
 			query,
-			function( json ) {
-				$('.modules').html( json.modules );
-				dashboard.init();
-				//$('.modules').sortable('enable');
-			}
+			{modules: '.modules'},
+			dashboard.init
 		);
 	},
 	remove: function( id ) {
@@ -114,11 +117,8 @@ var dashboard = {
 		habari_ajax.post(
 			habari.url.ajaxDashboard,
 			query,
-			function( json ) {
-				$('.modules').html( json.modules );
-				dashboard.init();
-				//$('.modules').sortable('enable');
-			}
+			{modules: '.modules'},
+			dashboard.init
 		);
 	}
 };

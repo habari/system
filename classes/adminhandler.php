@@ -2162,23 +2162,19 @@ class AdminHandler extends ActionHandler
 				}
 
 				Modules::set_active( $modules );
-				$ar = new AjaxResponse(200, _t('Modules updated.'), true);
+				$ar = new AjaxResponse(200, _t('Modules updated.') );
 				break;
 			case 'addModule':
 				$id = Modules::add( $handler_vars['module_name'] );
 				$this->fetch_dashboard_modules();
-				$result = array(
-					'modules' => $this->theme->fetch( 'dashboard_modules' ),
-				);
-				$ar = new AjaxResponse( 200, _t('Added module %s.', array($handler_vars['module_name'])), $result );
+				$ar = new AjaxResponse( 200, _t('Added module %s.', array($handler_vars['module_name'])) );
+				$ar->html('modules', $this->theme->fetch( 'dashboard_modules' ) );
 				break;
 			case 'removeModule':
 				Modules::remove( $handler_vars['moduleid'] );
 				$this->fetch_dashboard_modules();
-				$result = array(
-					'modules' => $this->theme->fetch( 'dashboard_modules' ),
-				);
-				$ar = new AjaxResponse( 200, _t('Removed module.'), $result );
+				$ar = new AjaxResponse( 200, _t('Removed module.') );
+				$ar->html('modules', $this->theme->fetch( 'dashboard_modules' ) );
 				break;
 		}
 		
