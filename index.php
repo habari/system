@@ -15,13 +15,13 @@
 
 // Fail out if not included from root
 if ( !defined( 'HABARI_PATH' ) ) {
-	header('HTTP/1.1 403 Forbidden', true, 403);
-	die ( );
+	header( 'HTTP/1.1 403 Forbidden', true, 403 );
+	die();
 }
 
 // Compares PHP version against our requirement.
 if ( !version_compare( PHP_VERSION, '5.2.0', '>=' ) ) {
-	die ( 'Habari needs PHP 5.2.x or higher to run. You are currently running PHP ' . PHP_VERSION . '.' );
+	die( 'Habari needs PHP 5.2.x or higher to run. You are currently running PHP ' . PHP_VERSION . '.' );
 }
 
 // Increase the error reporting level: E_ALL, E_NOTICE, and E_STRICT
@@ -33,7 +33,7 @@ date_default_timezone_set( 'UTC' );
 /**
  * Start the profile time
  */
-$profile_start = microtime(true);
+$profile_start = microtime( true );
 
 /**
  * Make GLOB_BRACE available on platforms that don't have it. Use Utils::glob().
@@ -47,8 +47,8 @@ if ( !defined( 'GLOB_BRACE' ) ) {
 // as well as the ability to dynamically change HTTP headers after output has started.
 ob_start();
 
-require dirname(__FILE__) . '/autoload.php';
-spl_autoload_register('habari_autoload');
+require dirname( __FILE__ ) . '/autoload.php';
+spl_autoload_register( 'habari_autoload' );
 
 // Replace all of the $_GET, $_POST and $_SERVER superglobals with object
 // representations of each.  Unset $_REQUEST, which is evil.
@@ -60,7 +60,7 @@ if ( !defined( 'SUPPRESS_ERROR_HANDLER' ) ) {
 	Error::handle_errors();
 }
 
-/*
+/**
  * Initiate install verifications
  */
 
@@ -69,7 +69,7 @@ $config = Site::get_dir( 'config_file' );
 
 /**
  * We make sure the configuration file exist.
- * If it does, we load it and check it's validity.
+ * If it does, we load it and check its validity.
  *
  * @todo Call the installer from the database classes.
  */
@@ -102,18 +102,18 @@ if ( file_exists( $config ) ) {
 		}
 	}
 	catch( PDOException $e ) {
-		// Error template. 
-		$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>"; 
+		// Error template.
+		$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>";
 
-		// Format page with localized messages. 
-		$error_page = sprintf($error_template, 
-			_t( "Habari General Error" ), # page title 
-			_t( "An error occurred" ), # H1 tag 
-			_t( "Unable to connect to database." ) # Error message. 
+		// Format page with localized messages.
+		$error_page = sprintf($error_template,
+			_t( "Habari General Error" ), # page title
+			_t( "An error occurred" ), # H1 tag
+			_t( "Unable to connect to database." ) # Error message.
 		);
-		
-		// Set correct HTTP header and die. 
-		header( 'HTTP/1.1 500 Internal Server Error', true, 500 ); 
+
+		// Set correct HTTP header and die.
+		header( 'HTTP/1.1 500 Internal Server Error', true, 500 );
 		die( $error_page );
 	}
 }
@@ -131,8 +131,8 @@ else {
 /* Habari is installed and we established a connection with the database */
 
 // Set the locale from database or default locale
-if ( Options::get('locale') ) {
-	HabariLocale::set( Options::get('locale') );
+if ( Options::get( 'locale' ) ) {
+	HabariLocale::set( Options::get( 'locale' ) );
 }
 else {
 	HabariLocale::set( 'en-us' );
@@ -163,11 +163,11 @@ header( 'Content-Type: text/html;charset=utf-8' );
 
 
 // Load all the active plugins.
-spl_autoload_register( array('Plugins', '_autoload') );
+spl_autoload_register( array( 'Plugins', '_autoload' ) );
 Plugins::load_active();
 
 // All plugins loaded, tell the plugins.
-Plugins::act('plugins_loaded');
+Plugins::act( 'plugins_loaded' );
 
 // Start the session.
 Session::init();
@@ -176,19 +176,19 @@ Session::init();
 SuperGlobal::process_c();
 
 // Initiating request handling, tell the plugins.
-Plugins::act('init');
+Plugins::act( 'init' );
 
 // Parse and handle the request.
 Controller::parse_request();
 
 // Run the cron jobs asyncronously.
-CronTab::run_cron(true);
+CronTab::run_cron( true );
 
 // Dispatch the request (action) to the matched handler.
 Controller::dispatch_request();
 
 // Flush (send) the output buffer.
 $buffer = ob_get_clean();
-$buffer = Plugins::filter('final_output', $buffer);
+$buffer = Plugins::filter( 'final_output', $buffer );
 echo $buffer;
 ?>
