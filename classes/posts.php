@@ -54,6 +54,9 @@ class Posts extends ArrayObject implements IsContent
 	public static function get( $paramarray = array() )
 	{
 
+		// If $paramarray is a querystring, convert it to an array
+		$paramarray = Utils::get_params( $paramarray );
+		
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
 		$paramarray = Plugins::filter( 'posts_get_paramarray', $paramarray );
 
@@ -69,9 +72,6 @@ class Posts extends ArrayObject implements IsContent
 
 		// Default parameters
 		$orderby = 'pubdate DESC';
-
-		// If $paramarray is a querystring, convert it to an array
-		$paramarray = Utils::get_params( $paramarray );
 
 		// Define the WHERE sets to process and OR in the final SQL statement
 		if ( isset( $paramarray['where'] ) && is_array( $paramarray['where'] ) ) {
