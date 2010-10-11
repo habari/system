@@ -213,7 +213,7 @@ class Posts extends ArrayObject implements IsContent
 								$params = array_merge( $params, $value['term'] );
 							}
 							else {
-								$where[] = '{terms}.term= ? AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ? AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
+								$where[] = '{terms}.term= ? AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?)  AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
 								$params[] = (string) $value['term'];
 							}
 						}
