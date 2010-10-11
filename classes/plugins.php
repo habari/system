@@ -390,25 +390,25 @@ class Plugins
 	 */
 	public static function activate_plugin( $file )
 	{
-		$ok = true;
-		$ok = Plugins::filter('activate_plugin', $ok, $file); // Allow plugins to reject activation
+		$ok = TRUE;
+		// strip base path from stored path
+		$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
+		$activated = Options::get( 'active_plugins' );
+		if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
+			include_once( $file );
+			$class = Plugins::class_from_filename( $file );
+			$plugin = Plugins::load( $class );
+			$ok = Plugins::filter( 'activate_plugin', $ok, $file ); // Allow plugins to reject activation
+		}
 		if ( $ok ) {
-			// strip base path from stored path
-			$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
-			$activated = Options::get( 'active_plugins' );
-			if ( !is_array( $activated ) || !in_array( $short_file, $activated ) ) {
-				include_once($file);
-				$class = Plugins::class_from_filename($file);
-				$activated[$class] = $short_file;
-				Options::set( 'active_plugins', $activated );
+			$activated[$class] = $short_file;
+			Options::set( 'active_plugins', $activated );
 
-				$plugin = Plugins::load($class);
-				if ( method_exists($plugin, 'action_plugin_activation') ) {
-					$plugin->action_plugin_activation( $file ); // For the plugin to install itself
-				}
-				Plugins::act('plugin_activated', $file); // For other plugins to react to a plugin install
-				EventLog::log( _t( 'Activated Plugin: %s', array( $plugin->info->name ) ), 'notice', 'plugin', 'habari' );
+			if ( method_exists( $plugin, 'action_plugin_activation' ) ) {
+				$plugin->action_plugin_activation( $file ); // For the plugin to install itself
 			}
+			Plugins::act( 'plugin_activated', $file ); // For other plugins to react to a plugin install
+			EventLog::log( _t( 'Activated Plugin: %s', array( $plugin->info->name ) ), 'notice', 'plugin', 'habari' );
 		}
 		return $ok;
 	}
