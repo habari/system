@@ -1143,15 +1143,50 @@ class Theme extends Pluggable
 		$begin = '';
 		$begin = Plugins::filter('area_begin', $begin, $area, $this);
 
+		$fallback = array(
+			$context . '.' . $area . '.blockwrapper',
+			$context . '.blockwrapper',
+			$area . '.blockwrapper',
+			'blockwrapper',
+			'content',
+		);
+
+		reset($area_blocks);
+		$firstkey = key($area_blocks);
+		end($area_blocks);
+		$lastkey = key($area_blocks);
+
 		$output = '';
+		$i = 0;
 		foreach ( $area_blocks as $block_instance_id => $block ) {
-			// Temporarily set the area into the block to get proper fallback templates
+			// Temporarily set some values into the block
 			$block->_area = $area;
+			$block->_instance_id = $block_instance_id;
+			$block->_area_index = $i++;
+			$block->_first = $block_instance_id == $firstkey;
+			$block->_last = $block_instance_id == $lastkey;
+
 			$hook = 'block_content_' . $block->type;
 			Plugins::act($hook, $block, $this);
-			$output .= implode( '', $this->content_return($block, $context));
-			// Remove the area value from the block so that it is not saved to the database
+			$block->_content = implode( '', $this->content_return($block, $context));
+
+			// Potentially render each block inside of a wrapper.
+			$this->block = $block;
+			$this->content = $block->_content;
+			$newoutput = $this->display_fallback( $fallback, 'fetch' );
+			if($newoutput === false) {
+				$output .= $block->_content;
+			}
+			else {
+				$output .= $newoutput;
+			}
+
+			// Remove temporary values from the block so they're not saved to the database
 			unset($block->_area);
+			unset($block->_instance_id);
+			unset($block->_area_index);
+			unset($block->_first);
+			unset($block->_last);
 		}
 
 		$this->area = '';
