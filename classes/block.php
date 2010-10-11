@@ -128,9 +128,11 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			array_unshift($types, 'block.' . $this->type . '.' . Utils::slugify($this->title));
 		}
 		if(isset($this->_area)) {
+			$areas = array();
 			foreach($types as $type) {
-				array_unshift($types, $this->_area . '.' . $type);
+				$areas[] = $this->_area . '.' . $type;
 			}
+			$types = array_merge($areas, $types);
 		}
 		$types = Plugins::filter('block_content_type_' . $this->type, $types, $this);
 		return $types;
