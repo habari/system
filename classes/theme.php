@@ -619,7 +619,6 @@ class Theme extends Pluggable
 		if ( $object instanceof IsContent ) {
 			$content_types = Utils::single_array($object->content_type());
 		}
-		Utils::debug($content_types);
 		if ( is_object($object) ) {
 			$content_types[] = strtolower(get_class($object));
 		}
@@ -640,7 +639,6 @@ class Theme extends Pluggable
 		$fallback = array_unique($fallback);
 
 		$this->content = $object;
-		Utils::debug($fallback);
 		return $this->display_fallback( $fallback, 'fetch' );
 	}
 
