@@ -111,6 +111,7 @@ class Users extends ArrayObject
 			$orderby = '';
 		}
 		if ( isset( $limit ) ) {
+			unset( $nolimit );
 			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
 				$limit .= " OFFSET $offset";
