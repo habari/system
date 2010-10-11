@@ -23,23 +23,28 @@ class HabariSilo extends Plugin implements MediaSilo
 		$user_path = HABARI_PATH . '/' . Site::get_path('user', true);
 		$this->root = $user_path . 'files'; //Options::get('simple_file_root');
 		$this->url = Site::get_url('user', true) . 'files';  //Options::get('simple_file_url');
-
-		if ( !$this->check_files() ) {
-			Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
-			Plugins::deactivate_plugin( __FILE__ ); //Deactivate plugin
-			Utils::redirect(); //Refresh page. Unfortunately, if not done so then results don't appear
-		}
 	}
 
-	/**
-	* Don't bother loading if the gd library isn't active
-	*/
+	public function filter_activate_plugin( $ok, $file )
+	{
+		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
+			if ( !$this->check_files() ) {
+				EventLog::log( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ), 'warning', 'plugin' );
+				Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
+				$ok = FALSE;
+			}
+			// Don't bother loading if the gd library isn't active
+			if ( !function_exists( 'imagecreatefromjpeg' ) ) {
+				EventLog::log( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ), 'warning', 'plugin' );
+				Session::error( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ) );
+				$ok = FALSE;
+			}
+		}
+		return $ok;
+	}
+
 	public function action_plugin_activation( $file )
 	{
-		if ( !function_exists( 'imagecreatefromjpeg' ) ) {
-			Session::error( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ) );
-			Plugins::deactivate_plugin( __FILE__ );
-		}
 		// Create required tokens
 		ACL::create_token( 'create_directories', _t( 'Create media silo directories' ), 'Administration' );
 		ACL::create_token( 'delete_directories', _t( 'Delete media silo directories' ), 'Administration' );
