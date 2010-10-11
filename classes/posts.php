@@ -53,10 +53,10 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	public static function get( $paramarray = array() )
 	{
-		
+
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
 		$paramarray = Plugins::filter( 'posts_get_paramarray', $paramarray );
-		
+
 		$join_params = array();
 		$params = array();
 		$fns = array( 'get_results', 'get_row', 'get_value' );
@@ -119,7 +119,7 @@ class Posts extends ArrayObject implements IsContent
 						$params[] = (int) $paramset['not:id'];
 					}
 				}
-				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] )) {
+				if ( isset( $paramset['status'] ) && ( $paramset['status'] != 'any' ) && ( 0 !== $paramset['status'] ) ) {
 					if ( is_array( $paramset['status'] ) ) {
 						// remove 'any' from the list if we have an array
 						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
@@ -180,21 +180,20 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
-				    $parsed = array();
-				    $object_id = 'post';
-				    if ( is_string( $paramset['vocabulary'] ) ) {
-					$parsed = Utils::get_params( $paramset['vocabulary'] );
-				    }
-				    else {
-					foreach ( $paramset['vocabulary'] as $key => $value ) {
-						$colon = strpos( $key, ':' );
-						$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
+					$parsed = array();
+					$object_id = 'post';
+					if ( is_string( $paramset['vocabulary'] ) ) {
+						$parsed = Utils::get_params( $paramset['vocabulary'] );
 					}
-				    }
-//				    Utils::debug($parsed);
-				    foreach ( $parsed as $vocab => $value ) {
+					else {
+						foreach ( $paramset['vocabulary'] as $key => $value ) {
+							$colon = strpos( $key, ':' );
+							$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
+						}
+					}
+					foreach ( $parsed as $vocab => $value ) {
 
-					if ( isset( $value['term'] ) || isset( $value['term_display'] )) {
+					if ( isset( $value['term'] ) || isset( $value['term_display'] ) ) {
 						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
 						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
 
@@ -810,15 +809,15 @@ class Posts extends ArrayObject implements IsContent
 				return false;
 		}
 		$ids = implode( ',', $posts );
-		
+
 		// allow plugins the opportunity to prevent the reassignment now that we've verified the user and posts
 		$allow = true;
 		$allow = Plugins::filter( 'posts_reassign_allow', $allow, $user, $posts );
-		
+
 		if ( !$allow ) {
 			return false;
 		}
-		
+
 		// actually perform the reassignment
 		Plugins::act( 'posts_reassign_before', array( $user, $posts ) );
 		$results = DB::query( "UPDATE {posts} SET user_id=? WHERE id IN ({$ids})", array( $user ) );
@@ -965,7 +964,7 @@ class Posts extends ArrayObject implements IsContent
 		);
 		$criteria = '';
 
-		// this says, find stuff that has the keyword at the start, and then some term straight after. 
+		// this says, find stuff that has the keyword at the start, and then some term straight after.
 		// the terms should have no whitespace, or if it does, be ' delimited.
 		// ie tag:foo or tag:'foo bar'
 		$flag_regex = '/(?P<flag>' . implode( '|', array_keys( $keywords ) ) . '):(?P<value>[^\'"][^\s]*(?:\s|$)|([\'"]+)(?P<quotedvalue>[^\3]+)(?<!\\\)\3)/Uui';
@@ -976,7 +975,7 @@ class Posts extends ArrayObject implements IsContent
 		// now we remove those terms from the search string, otherwise the keyword search below has issues. It will pick up things like
 		// from tag:'pair of' -> matches of'
 		$criteria = trim(preg_replace( $flag_regex, '', $search_string));
-		
+
 		// go through flagged things.
 		foreach ($matches as $match) {
 			// switch on the type match. ie status, type et al.
