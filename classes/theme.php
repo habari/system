@@ -619,6 +619,7 @@ class Theme extends Pluggable
 		if ( $object instanceof IsContent ) {
 			$content_types = Utils::single_array($object->content_type());
 		}
+		Utils::debug($content_types);
 		if ( is_object($object) ) {
 			$content_types[] = strtolower(get_class($object));
 		}
@@ -639,6 +640,7 @@ class Theme extends Pluggable
 		$fallback = array_unique($fallback);
 
 		$this->content = $object;
+		Utils::debug($fallback);
 		return $this->display_fallback( $fallback, 'fetch' );
 	}
 
@@ -824,13 +826,15 @@ class Theme extends Pluggable
 	 * @param string $zero String to return when there are no comments
 	 * @param string $one String to return when there is one comment
 	 * @param string $many String to return when there are more than one comment
+	 * @param string $fragment Fragment (bookmark) portion of the URL to append to the link
+	 * @param string $title Fragment (bookmark) portion of the URL to append to the link
 	 * @return string Linked string to display for comment count
 	 * @see Theme::theme_comments_count()
 	 */
-	public function theme_comments_link( $theme, $post, $zero, $one, $many )
+	public function theme_comments_link( $theme, $post, $zero = '', $one = '', $many = '', $fragment =  'comments')
 	{
 		$count = $theme->comments_count_return( $post, $zero, $one, $many );
-		return '<a href="' . $post->permalink . '#comments" title="' . _t( 'Read Comments' ) . '">' . end( $count ) . '</a>';
+		return '<a href="' . $post->permalink . '#' . $fragment . '" title="' . _t( 'Read Comments' ) . '">' . end( $count ) . '</a>';
 	}
 
 	/**
@@ -850,23 +854,25 @@ class Theme extends Pluggable
 	public function theme_comments_count( $theme, $post, $zero = '', $one = '', $many = '' )
 	{
 		$count = $post->comments->approved->count;
-		if ( empty( $zero ) ) {
-			$zero = _t( '%d Comments' );
-		}
-		if ( empty( $one ) ) {
-			$one = _t( '%d Comment' );
-		}
-		if ( empty( $many ) ) {
-			$many = _t( '%d Comments' );
-		}
-
-		if ( $count >= 1 ) {
-			$text = _n( $one, $many, $count );
+		if ( $count == 0 ) {
+			$text = empty($zero) ? _t('No Comments') : $zero;
+			return sprintf( $text, $count );
 		}
 		else {
-			$text = $zero;
+			if( empty($one) && empty($many) ) {
+				$text = _n( '%s Comment', '%s Comments', $count);
+			}
+			else{
+				if( empty($one) ) {
+					$one = $many;
+				}
+				if( empty($many) ) {
+					$many = $one;
+				}
+				$text = $count == 1 ? $one : $many;
+			}
+			return sprintf( $text, $count );
 		}
-		return sprintf( $text, $count );
 	}
 
 	/**
@@ -1115,10 +1121,11 @@ class Theme extends Pluggable
 	 *
 	 * @param Theme $theme The theme with which this area will be output
 	 * @param string $area The area to which blocks will be output
+	 * @param string $context The area of context within the theme that could adjust the template used
 	 * @param string $scope Used to force a specific scope
 	 * @return string the output of all the blocks
 	 */
-	public function theme_area($theme, $area, $scope = null)
+	public function theme_area($theme, $area, $context = null, $scope = null)
 	{
 
 		// This array would normally come from the database via:
@@ -1140,9 +1147,13 @@ class Theme extends Pluggable
 
 		$output = '';
 		foreach ( $area_blocks as $block_instance_id => $block ) {
+			// Temporarily set the area into the block to get proper fallback templates
+			$block->_area = $area;
 			$hook = 'block_content_' . $block->type;
 			Plugins::act($hook, $block, $this);
-			$output .= implode( '', $this->content_return($block, $area));
+			$output .= implode( '', $this->content_return($block, $context));
+			// Remove the area value from the block so that it is not saved to the database
+			unset($block->_area);
 		}
 
 		$this->area = '';
