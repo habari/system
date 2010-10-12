@@ -92,11 +92,12 @@ class Controller extends Singleton
 	 * This includes parameters set on the url, and fields submitted by POST.
 	 * The alternative to this, while possible to write, is just too long.
 	 * @param string $name The name of the variable to return.
+	 * @param mixed $default A default value to return if the variable is not set.
 	 * @return mixed The value of that variable in the handler
 	 */
-	public static function get_var( $name )
+	public static function get_var( $name, $default = null )
 	{
-		return isset( Controller::instance()->handler->handler_vars[ $name ] ) ? Controller::instance()->handler->handler_vars[ $name ] : NULL;
+		return isset( Controller::instance()->handler->handler_vars[ $name ] ) ? Controller::instance()->handler->handler_vars[ $name ] : $default;
 	}
 
 	/**
