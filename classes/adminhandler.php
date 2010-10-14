@@ -3781,5 +3781,13 @@ class AdminHandler extends ActionHandler
 
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/crc32.js", 'crc32' );
 	}
+	
+	public function create_theme ( ) {
+		
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
+		
+	}
+	
 }
 ?>
