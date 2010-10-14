@@ -210,7 +210,7 @@ class AtomHandler extends ActionHandler
 
 			foreach ( $post->tags as $tag ) {
 				$entry_category = $feed_entry->addChild( 'category' );
-				$entry_category->addAttribute( 'term', $tag );
+				$entry_category->addAttribute( 'term', $tag->tag );
 			}
 
 			$entry_content = $feed_entry->addChild( 'content', $content );
@@ -584,7 +584,7 @@ class AtomHandler extends ActionHandler
 
 			foreach ( $post->tags as $tag ) {
 				$entry_category = $entry->addChild( 'category' );
-				$entry_category->addAttribute( 'term', $tag );
+				$entry_category->addAttribute( 'term', $tag->tag );
 			}
 
 			$entry_content = $entry->addChild( 'content', $content );
