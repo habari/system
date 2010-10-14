@@ -136,6 +136,17 @@ class Tag
 	}
 
 	/**
+	 * function __toString
+	 * Implement custom string output when the Tag object is used in a context where a string is expected
+	 * @param None
+	 * @return The tag's display name
+	 */
+	public function __toString()
+	{
+		return $this->tag;
+	}
+
+	/**
 	 * Return a single requested tag.
 	 *
 	 * <code>
