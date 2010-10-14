@@ -417,92 +417,45 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function set_object_terms( $object_type, $id, $terms )
 	{
-		// no terms? then let's get out'a'here
-		if ( count( $terms ) == 0 ) {
-			Plugins::act( 'term_detach_all_from_object_before', $this->id );
+		 if ( ! isset( $object_type ) || ! isset( $id ) ) {
+			  return FALSE;
+		 }
 
-			$results = $this->get_object_terms( $object_type, $id );
-			foreach ( $results as $term ) {
-				$term->dissociate( $object_type, $id );
+		 if ( ! isset( $terms ) || empty( $terms ) ) {
+			  $terms = array();
+//			  DB::query( "DELETE FROM {object_terms} WHERE object_id = :object_id AND object_type_id = :type_id", array( 'object_id' => $id, 'type_id' => Vocabulary::get_object_id( $object_type ) ) );
+//			  return TRUE;
+		 }
+
+		// Make sure we have an array
+		$terms = Utils::single_array( $terms );
+		$new_terms = array();
+
+		// Make sure we have terms and they're in the database.
+		// Key the terms to their id while we're at it.
+		foreach( $terms as $term ) {
+			$new_term = Term::get( $this->id, (string)$term );
+			if ( ! $new_term instanceof Term ) {
+				$new_term = $this->add_term( $term );
 			}
-
-			Plugins::act( 'term_detach_all_from_object_after', $this->id );
-			return TRUE;
-		}
-		/*
-		 * First, let's clean the incoming tag text array, ensuring we have
-		 * a unique set of tag texts and slugs.
-		 */
-		$term_ids_to_object = $clean_terms = array();
-		foreach ( ( array ) $terms as $term )
-			if ( ! in_array( $term, array_keys( $clean_terms ) ) )
-				if ( ! in_array( $slug = Utils::slugify( $term ), array_values( $clean_terms ) ) )
-					$clean_terms[$term] = $slug;
-
-		/* Now, let's insert any *new* term display text or slugs into the terms table */
-		$placeholders = Utils::placeholder_string( count( $clean_terms ) );
-		$sql_terms_exist = "SELECT id, term_display, term
-			FROM {terms}
-			WHERE term_display IN ({$placeholders})
-			OR term IN ({$placeholders})
-			AND vocabulary_id = ?";
-		$params = array_merge( array_keys( $clean_terms ), array_values( $clean_terms ), (array)$this->id );
-		$existing_terms = DB::get_results( $sql_terms_exist, $params, 'Term' );
-		if ( count( $existing_terms ) > 0 ) {
-			/* Terms exist which match the term text or the term */
-			foreach ( $existing_terms as $existing_term ) {
-				/*
-				 * Term exists.
-				 * Attach object to term, then remove the term from creation list.
-				 */
-				$existing_term->associate( $object_type, $id );
-				$term_ids_to_object[] = $existing_term->id;
-
-				/*
-				 * We remove it from the clean_terms collection as we only
-				 * want to add to the terms table those terms which don't already exist
-				 */
-				if ( in_array( $existing_term->term_display, array_keys( $clean_terms ) ) ) {
-					unset( $clean_terms[$existing_term->term_display] );
-				}
-				if ( in_array( $existing_term->term, array_values( $clean_terms ) ) ) {
-					foreach ( $clean_terms as $text => $slug ) {
-						if ( $slug == $existing_term->term ) {
-							unset( $clean_terms[$text] );
-							break;
-						}
-					}
-				}
+			if( ! array_key_exists( $new_term->id, $new_terms ) ) {
+				$new_terms[$new_term->id] = $new_term;
 			}
 		}
 
-		/*
-		 * $clean_terms now contains an associative array of terms
-		 * we need to add to the main terms table, so add them
-		 *
-		 */
-		foreach ( $clean_terms as $new_term_text => $new_term_slug ) {
-			$term = new Term( array( 'term_display' => $new_term_text, 'term' => $new_term_slug ) );
-			$this->add_term( $term );
-			$term->associate( $object_type, $id );
-			$term_ids_to_object[] = $term->id;
+		// Get the current terms
+		$old_terms = $this->get_object_terms( $object_type, $id );
+		$keys = array_keys( $new_terms );
+		foreach( $old_terms as $term ) {
+	 		// If the old term isn't in the new terms, dissociate it from the object
+			 if( ! in_array( $term->id, $keys ) ) {
+				  $term->dissociate( $object_type, $id );
+			 }
 		}
 
-		/*
-		 * Finally, remove the terms which are no longer associated with the object.
-		 */
-		$repeat_questions = Utils::placeholder_string( count( $term_ids_to_object ) );
-		$sql_delete = "SELECT term_id FROM {object_terms}
-			JOIN {terms} ON term_id = {terms}.id
-			WHERE object_id = ? AND term_id NOT IN ({$repeat_questions}) AND object_type_id = ?
-			AND {terms}.vocabulary_id = ?";
-		$params = array_merge( (array) $id, array_values( $term_ids_to_object ), (array)Vocabulary::object_type_id( $object_type ), (array)$this->id );
-
-		$result = DB::get_column( $sql_delete, $params );
-
-		foreach ( $result as $t ) {
-			$term = $this->get_term( $t );
-			$term->dissociate( $object_type, $id );
+		// Associate the new terms
+		foreach( $new_terms as $term ) {
+			 $term->associate( $object_type, $id );
 		}
 
 		return TRUE;
