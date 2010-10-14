@@ -310,6 +310,7 @@ class EventLog extends ArrayObject
 		}
 		// If the month counts are requested, replace the select clause
 		if( isset( $paramset['month_cts'] ) ) {
+			// @todo shouldn't this hand back to habari to convert to DateTime so it reflects the right timezone?
 			$select = 'MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year, COUNT(*) AS ct';
 			$groupby = 'year, month';
 			$orderby = ' ORDER BY year, month';
