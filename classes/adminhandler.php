@@ -2454,6 +2454,13 @@ class AdminHandler extends ActionHandler
 	public function post_logs()
 	{
 		
+		$this->fetch_logs();
+		$this->display( 'logs' );
+		
+	}
+	
+	private function fetch_logs ( ) {
+		
 		// load all the values for our filter drop-downs
 		$dates = $this->fetch_log_dates();
 		$users = $this->fetch_log_users();
@@ -2571,8 +2578,6 @@ class AdminHandler extends ActionHandler
 		
 		$this->theme->wsse = Utils::WSSE();		// prepare a WSSE token for any ajax calls
 		
-		//$this->fetch_logs();
-		$this->display( 'logs' );
 	}
 	
 	private function fetch_log_dates ( ) {
@@ -2663,12 +2668,9 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
-		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
-		$params = $_GET;
-
-		$this->fetch_logs( $params );
+		$this->create_theme();
+		
+		$this->fetch_logs();
 		$items = $this->theme->fetch( 'logs_items' );
 		$timeline = $this->theme->fetch( 'timeline_items' );
 
