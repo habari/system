@@ -14,17 +14,29 @@ class Tags extends ArrayObject
 	protected static $object_type = 'post';
 
 	/**
+	 * Constructor for the Tags class.
+	 * @param mixed $tags String or array of tags
+	 */
+	public function __construct( $tags = array() )
+	{
+		$tags = self::parse_tags( $tags );
+
+		// Turn each of the tags into a Tag
+		if ( count( $tags ) ) {
+			array_walk( $tags, create_function('&$tag', '$tag = new Tag($tag);') );
+		}
+		parent::__construct( $tags );
+
+	}
+
+	/**
 	 * Returns a tag or tags based on supplied parameters.
 	 * @return array An array of Tag objects
 	 **/
 	public static function get()
 	{
-		$tags = array();
-		$terms = Tags::vocabulary()->get_tree('term_display ASC');
-		foreach( $terms as $term ) {
-			$tags[] = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
-		}
-		return $tags;
+		$tags = self::vocabulary()->get_tree('term_display ASC');
+		return new Tags( $tags );
 
 	}
 
@@ -35,11 +47,11 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_one( $tag )
 	{
-		$term = Tags::vocabulary()->get_term( $tag );
+		$term = self::vocabulary()->get_term( $tag );
 		if ( !$term instanceOf Term ) {
 			return FALSE;
 		}
-		$tag = new Tag( array( 'tag_text' => $term->term_display, 'tag_slug' => $term->term, 'id' => $term->id ) );
+		$tag = new Tag( $term );
 		return $tag;
 	}
 
@@ -63,7 +75,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function rename($master, $tags, $object_type = 'post' )
 	{
-		$vocabulary = Tags::vocabulary();
+		$vocabulary = self::vocabulary();
 		$type_id = Vocabulary::object_type_id( $object_type );
 
 		$post_ids = array();
@@ -132,7 +144,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function max_count()
 	{
-		return DB::get_value( 'SELECT count( t2.object_id ) AS max FROM {terms} t, {object_terms} t2 WHERE t2.term_id = t.id AND t.vocabulary_id = ? GROUP BY t.id ORDER BY max DESC LIMIT 1', array( Tags::vocabulary()->id ) );
+		return DB::get_value( 'SELECT count( t2.object_id ) AS max FROM {terms} t, {object_terms} t2 WHERE t2.term_id = t.id AND t.vocabulary_id = ? GROUP BY t.id ORDER BY max DESC LIMIT 1', array( self::vocabulary()->id ) );
 	}
 
 	/**
@@ -142,7 +154,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function count_total()
 	{
-		return count( Tags::vocabulary()->get_tree() );
+		return count( self::vocabulary()->get_tree() );
 	}
 
 	/**
@@ -153,7 +165,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function post_count($tag, $object_type = 'post' )
 	{
-		$tag = Tags::get_one( $tag );
+		$tag = self::get_one( $tag );
 		return $tag->count( $object_type );
 	}
 
@@ -164,7 +176,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_by_text($tag)
 	{
-		return Tags::get_one( $tag );
+		return self::get_one( $tag );
 	}
 
 	/**
@@ -174,7 +186,7 @@ class Tags extends ArrayObject
 	 **/
 	public static function get_by_slug($tag)
 	{
-		return Tags::get_one( $tag );
+		return self::get_one( $tag );
 	}
 
 	/**
@@ -185,7 +197,7 @@ class Tags extends ArrayObject
 	 */
 	public static function get_by_id( $tag )
 	{
-		return Tags::get_one( $tag );
+		return self::get_one( $tag );
 	}
 
 	/**
@@ -220,12 +232,60 @@ class Tags extends ArrayObject
 
 	public static function save_associations( $tags, $object_id, $object_type = 'post' )
 	{
-		return Tags::vocabulary()->set_object_terms( $object_type, $object_id, $tags );
+		$terms = array();
+		if( ! $tags instanceof Tags ) {
+			$tags = new Tags( $tags );
+		}
+		foreach( $tags as $tag ) {
+			$terms[] = new Term( array( 'term' => $tag->tag_slug, 'term_display' => $tag->tag_text, 'id' => $tag->id ) );
+		}
+		return self::vocabulary()->set_object_terms( $object_type, $object_id, $terms );
 	}
+
+	/**
+	 * Save the tags associated to this object into the terms and object_terms tables
+	 *
+	 * @param Integer $object_id. The id of the object being tagged
+	 * @param String $object_type. The name of the type of the object being tagged. Defaults to post
+	 *
+	 * @return boolean. Whether the associating succeeded or not. TRUE
+	 */
+//	public function save_associations( $object_id, $object_type = 'post' )
+//	{
+//		return self::vocabulary()->set_object_terms( $object_type, $object_id, (array)$this );
+//	}
 
 	public static function get_associations( $object_id, $object_type = 'post' )
 	{
-		return Tags::vocabulary()->get_object_terms( $object_type, $object_id );
+		$tags = self::vocabulary()->get_object_terms( $object_type, $object_id );
+		if ( $tags )  {
+			$tags = new Tags( $tags );
+		}
+
+		return $tags;
+	}
+
+	public static function parse_tags( $tags )
+	{
+		if ( is_string( $tags ) ) {
+			if ( '' === $tags ) {
+				return array();
+			}
+			// dirrty ;)
+			$rez = array( '\\"'=>':__unlikely_quote__:', '\\\''=>':__unlikely_apos__:' );
+			$zer = array( ':__unlikely_quote__:'=>'"', ':__unlikely_apos__:'=>"'" );
+			// escape
+			$tagstr = str_replace( array_keys( $rez ), $rez, $tags );
+			// match-o-matic
+			preg_match_all( '/((("|((?<= )|^)\')\\S([^\\3]*?)\\3((?=[\\W])|$))|[^,])+/u', $tagstr, $matches );
+			// cleanup
+			$tags = array_map( 'trim', $matches[0] );
+			$tags = preg_replace( array_fill( 0, count( $tags ), '/^(["\'])(((?!").)+)(\\1)$/'), '$2', $tags );
+			// unescape
+			$tags = str_replace( array_keys( $zer ), $zer, $tags );
+			// hooray
+		}
+		return $tags;
 	}
 
 }
