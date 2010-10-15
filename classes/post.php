@@ -713,7 +713,7 @@ class Post extends QueryRecord implements IsContent
 					return $this->tags = $value;
 				}
 				else {
-					return $this->tags = $this->get_tags( $value );
+					return $this->tags = new Tags( $value );
 				}
 			case 'status':
 				return $this->setstatus( $value );
@@ -778,7 +778,8 @@ class Post extends QueryRecord implements IsContent
 		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
 		$form->tags->class = 'check-change';
 		$form->tags->tabindex = 3;
-		$form->tags->value = implode(', ', $this->get_tags());
+
+		$form->tags->value = implode( ', ', (array)$this->get_tags() );
 
 		// Create the splitter
 		$publish_controls = $form->append('tabs', 'publish_controls');
@@ -989,25 +990,26 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * function get_tags
 	 * Gets the tags for the post
-	 * @return array The tags array for this post
+	 * @return Tags The tags object for this post
 	 */
 	private function get_tags()
 	{
 		if ( $this->tags == null ) {
 			$result = Tags::get_associations( $this->id );
 			if ( $result ) {
-				$this->tags = $result;
+				$tags = $result;
 			}
 			else {
-				$this->tags = new Tags();
+				$tags = new Tags();
 			}
 		}
-
-		if ( count( $this->tags ) == 0 ) {
-			return array();
+		else {
+			$tags = $this->tags;
 		}
-		return $this->tags;
+		return $tags;
+
 	}
+
 
 	/**
 	 * function get_comments
