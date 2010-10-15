@@ -17,6 +17,14 @@ class HabariDateTime extends DateTime
 	private static $default_datetime_format = 'c';
 	private static $default_date_format;
 	private static $default_time_format;
+	
+	// various time increments in seconds
+	const YEAR		= 31556926;
+	const MONTH		= 2629744;
+	const WEEK		= 604800;
+	const DAY		= 86400;
+	const HOUR		= 3600;
+	const MINUTE	= 60;
 
 	/**
 	 * Set default timezone to system default on init.
