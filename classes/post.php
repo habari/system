@@ -713,7 +713,7 @@ class Post extends QueryRecord implements IsContent
 					return $this->tags = $value;
 				}
 				else {
-					return $this->tags = $this->parsetags( $value );
+					return $this->tags = $this->get_tags( $value );
 				}
 			case 'status':
 				return $this->setstatus( $value );
