@@ -288,10 +288,9 @@ class HiEngineParser
 				$returnval = $output;
 			}
 			else {
-				$returnval = '$'. $cmd;
+				$returnval = '$'. $cmdmatch;
 			}
 		}
-		
 		if($returnval !== false) {
 			$returnval = $this->apply_parameters($returnval, $params);
 			return '<?php echo '. $returnval . '; ?>';
@@ -321,7 +320,6 @@ class HiEngineParser
 			}
 			switch($k) {
 				case 'dateformat':
-					print_r($v);
 					$returnval = "call_user_func(array(" . $returnval . ", 'format'), '" . addslashes($v) . "')";
 					break; 
 			}
