@@ -369,7 +369,7 @@ class HabariDateTime extends DateTime
 	 */
 	public function friendly ( $round = true )
 	{
-		$difference = self::date_create()->int - $time->int;
+		$difference = self::date_create()->int - $this->int;
 		if ( $difference < self::MINUTE ) { // within the last minute
 			return _t( 'just now' );
 		}
