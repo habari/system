@@ -369,26 +369,26 @@ class HabariDateTime extends DateTime
 	 */
 	public function friendly ( $round = true )
 	{
-		$difference = date_create()->int - $time->int;
-		if ( $difference < MINUTE ) { // within the last minute
+		$difference = self::date_create()->int - $time->int;
+		if ( $difference < self::MINUTE ) { // within the last minute
 			return _t( 'just now' );
 		}
-		if ( $difference < HOUR ) { // within the last hour
-			return sprintf( _t( '%d minutes ago' ), round( $difference / MINUTE ) );
+		if ( $difference < self::HOUR ) { // within the last hour
+			return sprintf( _t( '%d minutes ago' ), round( $difference / self::MINUTE ) );
 		}
-		if ( $difference < DAY ) { // within the last day
-			$difference = round( $difference / HOUR );
+		if ( $difference < self::DAY ) { // within the last day
+			$difference = round( $difference / self::HOUR );
 			return sprintf( _n( '%d hour ago', '%d hours ago', $difference), $difference );
 		}
-		if ( $difference < WEEK ) { // within the last week
-			$difference = round( $difference / DAY );
+		if ( $difference < self::WEEK ) { // within the last week
+			$difference = round( $difference / self::DAY );
 			return sprintf( _n( 'yesterday', '%d days ago', $difference ), $difference );
 		}
-		if ( $difference < MONTH ) { // within the last month
-			$difference = round( $difference / WEEK );
+		if ( $difference < self::MONTH ) { // within the last month
+			$difference = round( $difference / self::WEEK );
 			return sprintf( _n( 'last week', '%d weeks ago', $difference ), $difference );
 		}
-		$difference = round( $difference / MONTH );
+		$difference = round( $difference / self::MONTH );
 		return sprintf( _n( 'last month', '%d months ago', $difference ), $difference );
 	}
 }
