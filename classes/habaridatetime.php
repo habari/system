@@ -365,11 +365,31 @@ class HabariDateTime extends DateTime
 	 * Returns a friendlier string version of the time, ie: 3 days, 1 hour, 5 minutes
 	 * 
 	 * @param boolean $round Round the time to something less absolute but shorter: 'about 3 months'.
+	 * @return string Time passed in the specified units.
 	 */
-	public function friendly ( $round = true ) {
-		
-		
-		
+	public function friendly ( $round = true )
+	{
+		$difference = date_create()->int - $time->int;
+		if ( $difference < MINUTE ) { // within the last minute
+			return _t( 'just now' );
+		}
+		if ( $difference < HOUR ) { // within the last hour
+			return sprintf( _t( '%d minutes ago' ), round( $difference / MINUTE ) );
+		}
+		if ( $difference < DAY ) { // within the last day
+			$difference = round( $difference / HOUR );
+			return sprintf( _n( '%d hour ago', '%d hours ago', $difference), $difference );
+		}
+		if ( $difference < WEEK ) { // within the last week
+			$difference = round( $difference / DAY );
+			return sprintf( _n( 'yesterday', '%d days ago', $difference ), $difference );
+		}
+		if ( $difference < MONTH ) { // within the last month
+			$difference = round( $difference / WEEK );
+			return sprintf( _n( 'last week', '%d weeks ago', $difference ), $difference );
+		}
+		$difference = round( $difference / MONTH );
+		return sprintf( _n( 'last month', '%d months ago', $difference ), $difference );
 	}
 }
 
