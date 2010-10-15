@@ -39,8 +39,8 @@ class Options extends Singleton
 	{
 		if ( is_array( $name ) ) {
 			$results = array();
-			foreach ( $name as $k => $v ) {
-				$results[ $k ] = Options::get( $v );	// recursively wrap around ourselves!
+			foreach ( $name as $key ) {
+				$results[ $key ] = Options::get( $key );	// recursively wrap around ourselves!
 			}
 			return $results;
 		}
