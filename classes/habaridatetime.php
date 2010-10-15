@@ -309,6 +309,10 @@ class HabariDateTime extends DateTime
 			case 'date':
 				return $this->format( self::get_default_date_format() );
 				break;
+				
+			case 'friendly':
+				return $this->friendly();
+				break;
 
 			default:
 				$info = getdate($this->format('U'));
@@ -355,6 +359,17 @@ class HabariDateTime extends DateTime
 		$info['mon0'] = substr('0' . $info['mon'], -2, 2);
 		$info['mday0'] = substr('0' . $info['mday'], -2, 2);
 		return $info;
+	}
+	
+	/**
+	 * Returns a friendlier string version of the time, ie: 3 days, 1 hour, 5 minutes
+	 * 
+	 * @param boolean $round Round the time to something less absolute but shorter: 'about 3 months'.
+	 */
+	public function friendly ( $round = true ) {
+		
+		
+		
 	}
 }
 
