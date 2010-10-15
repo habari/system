@@ -298,7 +298,7 @@ class Post extends QueryRecord implements IsContent
 
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) ) {
-			$this->tags = $this->parsetags( $this->fields['tags'] );
+			$this->tags = new Tags( $this->fields['tags'] );
 			unset( $this->fields['tags'] );
 		}
 
