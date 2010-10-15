@@ -43,12 +43,14 @@ class HiEngine extends RawPHPEngine {
 	public function display($template)
 	{
 		extract($this->engine_vars);
+		//Utils::debug($this->engine_vars);die();
 		if ( $this->template_exists($template) ) {
 			$template_file = isset($this->template_map[$template]) ? $this->template_map[$template] : null;
 			$template_file = Plugins::filter('include_template_file', $template_file, $template, __CLASS__);
 			$template_file = 'hi://' . $template_file;
 			$fc = file_get_contents($template_file);
-			eval('?>' . $fc);
+			//echo($fc);
+			eval('?'.'>' . $fc);
 			//include $template_file;  // stopped working properly in PHP 5.2.8 
 		}
 	}
@@ -201,43 +203,20 @@ class HiEngineParser
 		$template = preg_replace_callback('/\{hi:(".+?")((?:\s*[\w\.]+){0,2})\s*\}/smu', array($this, 'hi_quote'), $template);
 		$template = preg_replace_callback('%\{hi:([^\?]+?)\}(.+?)\{/hi:\1\}%ism', array($this, 'hi_loop'), $template);
 		$template = preg_replace_callback('%\{hi:\?\s*(.+?)\}(.+?)\{/hi:\?\}%ismu', array($this, 'hi_if'), $template);
-		$template = preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_command'), $template);
+		$template = preg_replace_callback('%\{hi:([^:}]+?:.+?)\}%i', array($this, 'hi_command'), $template);
+		$template = preg_replace_callback('%\{hi:(.+?)\}%i', array($this, 'hi_var'), $template);
 		return $template;
 	}
-
+	
 	/**
-	 * Replace a single template tag with its PHP counterpart
+	 * Replace a single function template tag with its PHP counterpart
 	 *
 	 * @param array $matches The match array found in HiEngineParser::process()
-	 * @return string The PHP replacement for the template tag
+	 * @return string The PHP replacement for the function template tag
 	 */
 	function hi_command($matches)
 	{
 		$cmd = trim($matches[1]);
-
-		// Straight variable or property output, ala {hi:variable_name} or {hi:post.title}
-		if ( preg_match('%^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*$%i', $cmd) ) {
-			$cmd = str_replace('.', '->', $cmd);
-			if ( count($this->contexts) ) {
-				// Build a conditional that checks for the most specific, then the least
-				// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
-				$ctx = $this->contexts;
-				$prefixes = array();
-				foreach ( $ctx as $void ) {
-					$prefixes[] = implode('->', $this->contexts);
-					array_pop($ctx);
-				}
-				$output = '<?php echo ';
-				foreach ( $prefixes as $prefix ) {
-					$output .= '(is_object($' . $prefix . ') && !'.'is_null($' . $prefix . '->' . $cmd . ')) ? $' . $prefix . '->' . $cmd . ' : ';
-				}
-				$output .= '$' . $cmd . '; ?>';
-				return $output;
-			}
-			else {
-				return '<?php echo $'. $cmd . '; ?>';
-			}
-		}
 
 		// Catch tags in the format {hi:command:parameter}
 		if ( preg_match('/^(\w+):(.+)$/u', $cmd, $cmd_matches) ) {
@@ -267,6 +246,56 @@ class HiEngineParser
 					return '<?php echo Utils::htmlspecialchars( ' . $this->hi_to_var( $cmd_matches[2] ) . ' ); ?>';
 			}
 		}
+		
+		return $matches[0];
+	}
+
+	/**
+	 * Replace a single template tag with its PHP counterpart
+	 *
+	 * @param array $matches The match array found in HiEngineParser::process()
+	 * @return string The PHP replacement for the template tag
+	 */
+	function hi_var($matches)
+	{
+		$cmd = trim($matches[1]);
+		$params = array();
+		$returnval = false;
+
+		if(preg_match_all('/(?<=\s)(?P<name>[@a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)\s*=\s*(?P<value>(?P<quot>["\']).+?\3|[^"\'\s]+)/i', $cmd, $foundparams, PREG_SET_ORDER)) {
+			foreach($foundparams as $p) {
+				$params[$p['name']] = trim($p['value'], $p['quot']);
+			}
+		}
+
+		// Straight variable or property output, ala {hi:variable_name} or {hi:post.title}
+		if ( preg_match('%(^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)%i', $cmd, $cmdmatch) ) {
+			$cmdmatch = str_replace('.', '->', $cmdmatch[1]);
+			if ( count($this->contexts) ) {
+				// Build a conditional that checks for the most specific, then the least
+				// eg.- $a->b->c->d->x, then $a->b->c->x, down to just $x
+				$ctx = $this->contexts;
+				$prefixes = array();
+				foreach ( $ctx as $void ) {
+					$prefixes[] = implode('->', $this->contexts);
+					array_pop($ctx);
+				}
+				$output = '';
+				foreach ( $prefixes as $prefix ) {
+					$output .= '(is_object($' . $prefix . ') && !'.'is_null($' . $prefix . '->' . $cmdmatch . ')) ? $' . $prefix . '->' . $cmdmatch . ' : ';
+				}
+				$output .= '$' . $cmdmatch;
+				$returnval = $output;
+			}
+			else {
+				$returnval = '$'. $cmd;
+			}
+		}
+		
+		if($returnval !== false) {
+			$returnval = $this->apply_parameters($returnval, $params);
+			return '<?php echo '. $returnval . '; ?>';
+		}
 
 		// Use tags in the format {hi:@foo} as theme functions, ala $theme->foo();
 		if ( $cmd[0] == '@' ) {
@@ -275,6 +304,29 @@ class HiEngineParser
 
 		// Didn't match anything we support so far
 		return $matches[0];
+	}
+	
+	/**
+	 * Take the found paramters on a variable tag and apply them to the output
+	 *
+	 * @param array $returnval The expression to be output
+	 * @param array $params An associative array of parameters
+	 * @return string The PHP expression with the paramters applied
+	 */
+	function apply_parameters($returnval, $params)
+	{
+		foreach($params as $k => $v) {
+			if($k[0] == '@') {
+				$returnval = '$theme->' . substr($cmd,1) . '(' . $returnval . ", '" . $v . "')";
+			}
+			switch($k) {
+				case 'dateformat':
+					print_r($v);
+					$returnval = "call_user_func(array(" . $returnval . ", 'format'), '" . addslashes($v) . "')";
+					break; 
+			}
+		}
+		return $returnval;
 	}
 
 	/**
