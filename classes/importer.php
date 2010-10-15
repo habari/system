@@ -9,7 +9,7 @@
  * from other blogging tools.
  *
  */
-interface importer
+interface Importer
 {
 
 	/**
