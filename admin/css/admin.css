@@ -2263,6 +2263,7 @@ body.page-Manage .state {
 
 .navigator .newer {
 	text-align: right;
+	float: right;
 	opacity: 0;
 }
 
