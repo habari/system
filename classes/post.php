@@ -448,7 +448,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function save_tags()
 	{
-		return Tags::save_associations( $this->tags, $this->id );
+		return Tags::save_associations( $this->get_tags(), $this->id );
 	}
 
 	/**
@@ -613,7 +613,6 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
-			$this->get_tags();
 			$msg = sprintf(_t('Scheduled Post %1$s (%2$s) published at %3$s.'), $this->id, $this->slug, $this->pubdate->format());
 		}
 		else {
