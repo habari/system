@@ -243,6 +243,41 @@ class Post extends QueryRecord implements IsContent
 	}
 
 	/**
+	 * removes a post type from the database, if it exists and there are no posts
+	 * of the type
+	 * @param string The post type name
+	 * @return boolean
+	 *   true if post type has been deleted
+	 *   false if it has not been deleted (does not exist or there are posts using
+	 *   this content type)
+	 */
+	public static function delete_post_type( $type )
+	{
+		// refresh the cache from the DB, just to be sure
+		$types = self::list_all_post_types( true );
+
+		if ( array_key_exists( $type, $types ) ) {
+
+			// Exists in DB.. check if there are content with this type.
+			if ( ! DB::exists('posts', array( 'content_type' => Post::type( $type ) ) ) ) {
+
+				// Finally, remove from database and destroy tokens
+				DB::delete( 'posttype', array( 'name' => $type ) );
+				ACL::destroy_token('post_' . Utils::slugify($type) );
+
+				// now force a refresh of the caches, so the removed type is no longer
+				// available for use
+				$types = self::list_active_post_types( true );
+				$types = self::list_all_post_types( true );
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * inserts a new post status into the database, if it doesn't exist
 	 * @param string The name of the new post status
 	 * @param bool Whether this status is for internal use only.  If true, this status will NOT be presented to the user
