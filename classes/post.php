@@ -259,10 +259,10 @@ class Post extends QueryRecord implements IsContent
 		if ( array_key_exists( $type, $types ) ) {
 
 			// Exists in DB.. check if there are content with this type.
-			if ( ! DB::exists('posts', array( 'content_type' => Post::type( $type ) ) ) ) {
+			if ( ! DB::exists('{posts}', array( 'content_type' => Post::type( $type ) ) ) ) {
 
 				// Finally, remove from database and destroy tokens
-				DB::delete( 'posttype', array( 'name' => $type ) );
+				DB::delete( '{posttype}', array( 'name' => $type ) );
 				ACL::destroy_token('post_' . Utils::slugify($type) );
 
 				// now force a refresh of the caches, so the removed type is no longer
