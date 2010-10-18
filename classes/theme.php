@@ -1140,8 +1140,6 @@ class Theme extends Pluggable
  		$area_blocks = $this->get_blocks($area, $active_scope, $theme);
 
 		$this->area = $area;
-		$begin = '';
-		$begin = Plugins::filter('area_begin', $begin, $area, $this);
 
 		$fallback = array(
 			$context . '.' . $area . '.blockwrapper',
@@ -1189,11 +1187,19 @@ class Theme extends Pluggable
 			unset($block->_last);
 		}
 
-		$this->area = '';
-		$end = '';
-		$end = Plugins::filter('area_end', $end, $area, $this);
+		$fallback = array(
+			$context . '.area.' . $area,
+			$context . '.area',
+			'area.' . $area,
+			'area',
+		);
+		$this->content = $output;
+		$newoutput = $this->display_fallback( $fallback, 'fetch' );
+		if($newoutput !== false) {
+			$output = $newoutput;
+		}
 
-		$output = $begin . $output . $end;
+		$this->area = '';
 
 		return $output;
 	}
