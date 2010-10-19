@@ -3590,11 +3590,26 @@ class AdminHandler extends ActionHandler
 		Utils::check_request_method( array( 'GET', 'POST' ) );
 
 		$block = DB::get_row('SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array('id' => $_GET['blockid']), 'Block');
-		$this->theme->content = $block->get_form()->get();
+		$block_form = $block->get_form();
+		$block_form->insert(reset($block_form->controls)->name, 'fieldset', 'block_admin', 'Block Display Settings');
+		$block_form->block_admin->append( 'text', '_title', array('configure_block_title', $block), 'Block Title:' );
+		$block_form->_title->value = $block->title;
+		$block_form->_title->add_validator('validate_required');
+		$block_form->block_admin->append( 'checkbox', '_show_title', $block, 'Display Block Title:' );
+		
+		Plugins::register( array( $this, 'action_configure_block_title' ), 'action', 'configure_block_title');
+		
+		$this->theme->content = $block_form->get();
 
 		$this->display('block_configure');
 	}
-
+	
+	function action_configure_block_title($value, $name, $storage)
+	{
+		$storage[0]->title = $value;
+		return false;
+	}
+	
 	/**
 	 * A POST handler for the block configuration form
 	 *
@@ -3620,7 +3635,16 @@ class AdminHandler extends ActionHandler
 		$title = $_POST['title'];
 		$type = $_POST['type'];
 
-		if ( $title == '' ) {
+		if ( !isset($_POST['title']) ) {
+			$this->theme->blocks = Plugins::filter('block_list', array());
+			$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
+
+			$this->display('block_instances');
+		}
+		elseif ( $title == '' ) {
+			$this->theme->blocks = Plugins::filter('block_list', array());
+			$this->theme->block_instances = DB::get_results('SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block');
+
 			$this->display('block_instances');
 
 			$msg = json_encode(_t('A new block must first have a name.'));
@@ -3691,17 +3715,28 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$area_blocks = $_POST['area_blocks'];
 		$scope = $_POST['scope'];
-
-		DB::query('DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
-
-		foreach ( (array)$area_blocks as $area => $blocks ) {
-			$display_order = 0;
-			foreach ( $blocks as $block ) {
-				$display_order++;
-				DB::query('INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array('block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order));
+		
+		$msg = '';
+		
+		if(isset($_POST['area_blocks'])) {
+			$area_blocks = $_POST['area_blocks'];
+			DB::query('DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
+	
+			foreach ( (array)$area_blocks as $area => $blocks ) {
+				$display_order = 0;
+				foreach ( $blocks as $block ) {
+					$display_order++;
+					DB::query('INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array('block_id'=>$block, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$display_order));
+				}
 			}
+
+			$msg = json_encode(_t('Saved block areas settings.'));
+			$msg = '<script type="text/javascript">
+				humanMsg.displayMsg(' . $msg . ');
+				reset_block_form();
+				spinner.stop();
+			</script>';
 		}
 
 		$this->setup_admin_theme('');
@@ -3715,18 +3750,13 @@ class AdminHandler extends ActionHandler
 			$blocks_areas[$block->scope_id][$block->area][$block->display_order] = $block;
 		}
 		$this->theme->blocks_areas = $blocks_areas;
+		$this->theme->scope = $scope;
 		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
 		$this->theme->active_theme = Themes::get_active_data(true);
 
 		$this->display('block_areas');
 
-		$msg = json_encode(_t('Saved block areas settings.'));
-
-		echo '<script type="text/javascript">
-			humanMsg.displayMsg(' . $msg . ');
-			reset_block_form();
-			spinner.stop();
-		</script>';
+		echo $msg;		
 	}
 
 	/**

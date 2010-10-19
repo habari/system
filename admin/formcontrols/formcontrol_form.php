@@ -8,7 +8,7 @@
 	<?php echo $onsubmit; ?>
 >
 <?php if(isset($message) && $message != ''): ?>
-<p><?php echo $message; ?></p>
+<div class="form_message"><?php echo $message; ?></div>
 <?php endif; ?>
 <input type="hidden" name="FormUI" value="<?php echo $salted_name; ?>">
 <?php echo $pre_out; ?>

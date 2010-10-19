@@ -1,7 +1,8 @@
 <label><?php _e("Scope:"); ?> <select id="scope_id">
 	<option value="0"><?php _e('Default'); ?></option>
 <?php foreach($scopes as $scope): ?>
-	<option value="<?php echo $scope->id; ?>"><?php echo $scope->name; ?></option>
+	<option value="<?php echo $scope->id; ?>"
+	<?php if($scope == $scope->id): ?>selected="selected"<?php endif; ?>><?php echo $scope->name; ?></option>
 <?php endforeach; ?>
 </select></label>
 <div class="area_container">

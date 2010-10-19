@@ -57,6 +57,10 @@
 					@todo: move this to the admin.js
 					-->
 					<script type="text/javascript">
+					function refresh_block_forms() {
+						$("#block_add").load(habari.url.ajaxAddBlock, {}, reset_block_form);
+						$('#scope_container').load(habari.url.ajaxSaveAreas, {scope:$('#scope_id').val()});
+					}
 					function reset_block_form() {
 						$('#block_instance_add').unbind('click').click(function(){
 							spinner.start();
