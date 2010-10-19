@@ -231,7 +231,7 @@ class Theme extends Pluggable
 
 		if ( $posts !== false && count( $posts ) > 0 ) {
 			if ( count($posts) == 1 ) {
-				$post = reset($posts);
+				$post = $posts instanceof Post ? $posts : reset($posts);
 				Stack::add('body_class', Post::type_name($post->content_type) . '-' . $post->id);
 			}
 			else {
