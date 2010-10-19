@@ -1054,6 +1054,10 @@ class FormControl
 		elseif ( $storage instanceof FormStorage ) {
 			$type = 'formstorage';
 		}
+		elseif ( is_array($storage) ) {
+			$type = 'actionarray';
+			$location = array_shift($storage);
+		}
 
 		switch ( $type ) {
 			case 'user':
@@ -1064,6 +1068,9 @@ class FormControl
 				break;
 			case 'action':
 				Plugins::filter($location, $this->value, $this->name, true);
+				break;
+			case 'actionarray':
+				Plugins::act($location, $this->value, $this->name, $storage);
 				break;
 			case 'session';
 				Session::add_to_set( $location, $this->value, $this->name );

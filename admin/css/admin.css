@@ -85,6 +85,19 @@ a img {
 	color: #FF4500;
 }
 
+.form_message {
+	color: white;
+	border: 1px solid #888888;
+	background-color: #555555;
+	padding: 15px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.modal .form_message {
+	display: none;
+}
+
+
 
 /*- THE MENUBAR */
 
@@ -1891,10 +1904,11 @@ body.page-themes .currenttheme .thumb, .description {
 }
 
 #block_instances .block_instance ul {
-	margin-left: 20px;
+	margin-left: 35px;
 }
 #block_instances .block_instance li {
 	display: inline;
+	margin-right: 15px;
 }
 
 .area_drop {
@@ -2867,11 +2881,14 @@ body.login .humanMsg {
 
 body.modal {
 	background-color: white;
-}
-
-body.modal {
 	padding-top: 0px;
 	margin-top: 0px;
+}
+
+body.modal #page {
+	margin-left: auto;
+	margin-right: auto;
+	width: 95%;
 }
 
 body.modal .formcontrol label {
