@@ -2,7 +2,7 @@
 	<option value="0"><?php _e('Default'); ?></option>
 <?php foreach($scopes as $scope): ?>
 	<option value="<?php echo $scope->id; ?>"
-	<?php if($scope == $scope->id): ?>selected="selected"<?php endif; ?>><?php echo $scope->name; ?></option>
+	<?php if(isset($currentscope) && $currentscope == $scope->id): ?>selected="selected"<?php endif; ?>><?php echo $scope->name; ?></option>
 <?php endforeach; ?>
 </select></label>
 <div class="area_container">

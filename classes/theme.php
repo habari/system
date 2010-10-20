@@ -1110,7 +1110,7 @@ class Theme extends Pluggable
 		foreach ( $scopes as $key => $value ) {
 			$scopes[$key] = unserialize($value);
 		}
-		Plugins::act('get_scopes', $scopes);
+		Plugins::filter('get_scopes', $scopes);
 		return $scopes;
 	}
 

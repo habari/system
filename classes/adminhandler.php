@@ -1250,7 +1250,9 @@ class AdminHandler extends ActionHandler
 		}
 		$this->theme->blocks_areas = $blocks_areas;
 
-		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
+		$scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY name ASC;');
+		$scopes = Plugins::filter('get_scopes', $scopes);
+		$this->theme->scopes = $scopes;
 		
 		$this->theme->theme_loader = Plugins::filter('theme_loader', '', $this->theme);
 
