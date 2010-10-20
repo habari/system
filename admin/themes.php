@@ -79,6 +79,7 @@
 							start: function(){$('.area_drop').sortable('refresh');}
 						});
 						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop,.delete_drop', containment: $('#block_add').parents('.item')});
+						spinner.stop();
 					}
 					function delete_block(id){
 						spinner.start();
@@ -112,6 +113,15 @@
 						$('#scope_container').load(
 							habari.url.ajaxSaveAreas, 
 							{area_blocks:output, scope:$('#scope_id').val()},
+							reset_block_form
+						);
+					}
+					function change_scope(){
+						spinner.start();
+						var output = {};
+						$('#scope_container').load(
+							habari.url.ajaxSaveAreas, 
+							{scope:$('#scope_id').val()},
 							reset_block_form
 						);
 					}
