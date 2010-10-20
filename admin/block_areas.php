@@ -1,13 +1,14 @@
-<label><?php _e("Scope:"); ?> <select id="scope_id">
+<label><?php _e("Scope:"); ?> <select id="scope_id" onchange="change_scope();">
 	<option value="0"><?php _e('Default'); ?></option>
 <?php foreach($scopes as $scope): ?>
 	<option value="<?php echo $scope->id; ?>"
-	<?php if(isset($currentscope) && $currentscope == $scope->id): ?>selected="selected"<?php endif; ?>><?php echo $scope->name; ?></option>
+	<?php if(isset($scopeid) && $scopeid == $scope->id): ?>selected="selected"<?php endif; ?>><?php echo $scope->name; ?></option>
 <?php endforeach; ?>
 </select></label>
+
 <div class="area_container">
 <?php foreach ( $active_theme['info']->areas->area as $area ): ?>
-<?php $scopeid = 0; ?>
+
 	<div class="area_drop_outer">
 		<h2><?php echo $area['name']; ?></h2>
 			<div class="area_drop">

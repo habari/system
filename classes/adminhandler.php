@@ -1253,6 +1253,7 @@ class AdminHandler extends ActionHandler
 		$scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY name ASC;');
 		$scopes = Plugins::filter('get_scopes', $scopes);
 		$this->theme->scopes = $scopes;
+		$this->theme->scopeid = 0;
 		
 		$this->theme->theme_loader = Plugins::filter('theme_loader', '', $this->theme);
 
@@ -3752,8 +3753,10 @@ class AdminHandler extends ActionHandler
 			$blocks_areas[$block->scope_id][$block->area][$block->display_order] = $block;
 		}
 		$this->theme->blocks_areas = $blocks_areas;
-		$this->theme->scope = $scope;
-		$this->theme->scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY id ASC;');
+		$this->theme->scopeid = $scope;
+		$scopes = DB::get_results('SELECT * FROM {scopes} ORDER BY name ASC;');
+		$scopes = Plugins::filter('get_scopes', $scopes);
+		$this->theme->scopes = $scopes;
 		$this->theme->active_theme = Themes::get_active_data(true);
 
 		$this->display('block_areas');
