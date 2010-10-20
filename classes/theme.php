@@ -1069,6 +1069,7 @@ class Theme extends Pluggable
 						}
 						break;
 					default:
+
 						$value = Plugins::filter('scope_criteria_value', $value, $crit[1], $crit[2]);
 						break;
 				}
@@ -1106,12 +1107,28 @@ class Theme extends Pluggable
 	 */
 	public function get_scopes($area)
 	{
-		$scopes = DB::get_keyvalue('SELECT s.id, s.criteria FROM {scopes} s INNER JOIN {blocks_areas} ba ON ba.scope_id = s.id WHERE ba.area = ? ORDER BY s.priority ASC', array($area));
+		$scopes = DB::get_results('SELECT * FROM {scopes} s INNER JOIN {blocks_areas} ba ON ba.scope_id = s.id WHERE ba.area = ? ORDER BY s.priority DESC', array($area));
 		foreach ( $scopes as $key => $value ) {
-			$scopes[$key] = unserialize($value);
+			$scopes[$key]->criteria = unserialize($value->criteria);
 		}
-		Plugins::filter('get_scopes', $scopes);
+		$scopes = Plugins::filter('get_scopes', $scopes);
+		
+		usort($scopes, array($this, 'sort_scopes'));
 		return $scopes;
+	}
+	
+	/**
+	 * Sort function for ordering scope object rows by priority
+	 * @param StdObject $scope1 A scope to compare 	
+	 * @param StdObject $scope2 A scope to compare
+	 * @return integer A sort return value, -1 to 1
+	 **/	 	 
+	public function sort_scopes($scope1, $scope2) 
+	{
+		if($scope1->priority == $scope2->priority) {
+			return 0;
+		}
+		return $scope1->priority < $scope2->priority ? 1 : -1;
 	}
 
 	/**
@@ -1130,9 +1147,12 @@ class Theme extends Pluggable
 		$scopes = $this->get_scopes($area);
 
 		$active_scope = 0;
-		foreach ( $scopes as $scope_id => $scope_criteria ) {
-			if ( $this->check_scope_criteria($scope_criteria) ) {
-				$active_scope = $scope_id;
+		foreach ( $scopes as $scope_id => $scope_object ) {
+			if ( $this->check_scope_criteria($scope_object->criteria) ) {
+				$scope_block_count = DB::get_value('SELECT count(*) FROM {blocks_areas} ba WHERE ba.scope_id = ?', array($scope_object->id));
+				if($scope_block_count > 0) {
+					$active_scope = $scope_object->id;
+				}
 				break;
 			}
 		}
