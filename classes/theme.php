@@ -1141,6 +1141,7 @@ class Theme extends Pluggable
 
 		$this->area = $area;
 
+		// This is the block wrapper fallback template list
 		$fallback = array(
 			$context . '.' . $area . '.blockwrapper',
 			$context . '.blockwrapper',
@@ -1149,11 +1150,6 @@ class Theme extends Pluggable
 			'content',
 		);
 
-		reset($area_blocks);
-		$firstkey = key($area_blocks);
-		end($area_blocks);
-		$lastkey = key($area_blocks);
-
 		$output = '';
 		$i = 0;
 		foreach ( $area_blocks as $block_instance_id => $block ) {
@@ -1161,16 +1157,27 @@ class Theme extends Pluggable
 			$block->_area = $area;
 			$block->_instance_id = $block_instance_id;
 			$block->_area_index = $i++;
-			$block->_first = $block_instance_id == $firstkey;
-			$block->_last = $block_instance_id == $lastkey;
 
 			$hook = 'block_content_' . $block->type;
 			Plugins::act($hook, $block, $this);
 			$block->_content = implode( '', $this->content_return($block, $context));
+			if(trim($block->_content) == '') {
+				unset($area_blocks[$block_instance_id]);
+			} 
+		}
+		// Potentially render each block inside of a wrapper.
+		reset($area_blocks);
+		$firstkey = key($area_blocks);
+		end($area_blocks);
+		$lastkey = key($area_blocks);
+		foreach($area_blocks as $block_instance_id => $block) {
+			$block->_first = $block_instance_id == $firstkey;
+			$block->_last = $block_instance_id == $lastkey;
 
-			// Potentially render each block inside of a wrapper.
+			// Set up the theme for the wrapper 
 			$this->block = $block;
 			$this->content = $block->_content;
+			// This pattern renders the block inside the wrapper template only if a matching template exists
 			$newoutput = $this->display_fallback( $fallback, 'fetch' );
 			if($newoutput === false) {
 				$output .= $block->_content;
@@ -1187,6 +1194,7 @@ class Theme extends Pluggable
 			unset($block->_last);
 		}
 
+		// This is the area fallback template list
 		$fallback = array(
 			$context . '.area.' . $area,
 			$context . '.area',
