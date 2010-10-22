@@ -78,28 +78,26 @@ class Tag
 	 **/
 	public function __get( $name )
 	{
-		$term = $this->term;
-
 		switch ( $name ) {
 			case 'id':
-				$out = $term->id;
+				$out = $this->term->id;
 				break;
 			case 'tag':
 			case 'tag_text':
-				$out = $term->term_display;
+				$out = $this->term->term_display;
 				break;
 			case 'tag_text_searchable':
 				// if it's got spaces, then quote it.
-				if ( strpos($term->term_display, ' ') !== FALSE ) {
-					$out = '\'' . str_replace("'", "\'", $term->term_display) . '\'';
+				if ( strpos($this->term->term_display, ' ') !== FALSE ) {
+					$out = '\'' . str_replace("'", "\'", $this->term->term_display) . '\'';
 				}
 				else {
-					$out = $term->term_display;
+					$out = $this->term->term_display;
 				}
 				break;
 			case 'slug':
 			case 'tag_slug':
-				$out = $term->term;
+				$out = $this->term->term;
 				break;
 			case 'count':
 				$out = $this->get_count();
@@ -119,16 +117,14 @@ class Tag
 	 */
 	public function __set( $name, $value )
 	{
-		$term = $this->term;
-
 		switch ( $name ) {
 			case 'tag':
 			case 'tag_text':
-				$term->term_display = $value;
+				$this->term->term_display = $value;
 				break;
 			case 'slug':
 			case 'tag_slug':
-				$term->term = $value;;
+				$this->term->term = $value;;
 				break;
 			default:
 				break;
@@ -197,57 +193,6 @@ class Tag
 		$tag = new Tag( $paramarray );
 		$tag = $tag->insert();
 		return $tag;
-	}
-
-	/**
-	 * Attaches (relates) a tag to a post
-	 *
-	 * @param		tag_id		The ID of the tag
-	 * @param		post_id		The ID of the post
-	 * @return	TRUE or FALSE depending if relation was created.
-	 */
-	public static function attach_to_post( $tag_id, $post_id )
-	{
-		$term = Tags::vocabulary()->get_term( $tag_id );
-		$result = TRUE;
-
-		Plugins::act( 'tag_attach_to_post_before', $tag_id, $post_id );
-
-		$result = $term->associate( Tags::object_type(), $post_id);
-
-		Plugins::act( 'tag_attach_to_post_after', $tag_id, $post_id );
-
-		return $result;
-	}
-
-	/**
-	 * Detaches a tag from a post (removes their association )
-	 *
-	 * @param		tag_id		The ID of the tag
-	 * @param		post_id		The ID of the post
-	 * @return	TRUE or FALSE depending if association was removed.
-	 */
-	public static function detach_from_post( $tag_id, $post_id )
-	{
-		$term = Tags::vocabulary()->get_term( $tag_id );
-		Plugins::act( 'tag_detach_from_post_before', $tag_id, $post_id );
-
-		$result = $term->dissociate( Tags::object_type(), $post_id );
-
-		// should we delete the tag if it's the only one left?
-		if ( 0 == count( $term->objects( Tags::object_type() ) ) ) {
-			$delete = true;
-			$delete = Plugins::filter( 'tag_detach_from_post_delete_empty_tag', $delete, $tag_id );
-
-			if ( $delete ) {
-				$term->delete();
-			}
-		}
-
-		Plugins::act( 'tag_detach_from_post_after', $tag_id, $post_id, $result );
-
-		return $result;
-
 	}
 
 	/**
