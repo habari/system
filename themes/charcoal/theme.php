@@ -85,11 +85,8 @@ class charcoal extends Theme
 	 */
 	public function filter_post_tags_out($array)
 	{
-		if ( ! is_array( $array ) ) {
-			$array = array ( $array );
-		}
-		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";');
-		$array = array_map($fn, $array, array_keys($array));
+		$fn = create_function('$a', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $a->tag_slug) ) . "\\" rel=\\"tag\\">" . $a->tag . "</a>";');
+		$array = array_map($fn, (array)$array);
 		$out = implode(' ', $array);
 		return $out;
 	}
