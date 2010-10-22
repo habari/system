@@ -23,10 +23,11 @@ class Tags extends ArrayObject
 
 		// Turn each of the tags into a Tag
 		if ( count( $tags ) ) {
-			array_walk( $tags, create_function('&$tag', '$tag = new Tag($tag);') );
+			if( is_string( $tags[0] ) || $tags[0] instanceof Term ) {
+				array_walk( $tags, create_function('&$tag', '$tag = new Tag($tag);') );
+			}
 		}
 		parent::__construct( $tags );
-
 	}
 
 	/**
@@ -280,6 +281,27 @@ class Tags extends ArrayObject
 			// hooray
 		}
 		return $tags;
+	}
+
+	/**
+	 * See if a tag or set of tags is in the current set of tags
+	 *
+	 * @param mixed $tags. A string containing a string or a comma separated list of strings,
+	 *  or an array of strings, Terms, or Tags
+	 * @return boolean. Whether the tag(s) is in the current set of tags.
+	 */
+	public function has( $tags )
+	{
+		$tags = (array)new Tags( $tags );
+
+		$diff = array_diff( $tags, (array)$this );
+		foreach( $tags as $tag ) {
+			if( in_array( $tag, $diff ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }
