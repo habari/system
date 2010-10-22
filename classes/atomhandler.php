@@ -13,7 +13,7 @@
 class AtomHandler extends ActionHandler
 {
 
-	public $user = NULL; // Cache the username
+	public $user = null; // Cache the username
 
 	/**
 	 * Constructor for AtomHandler class.
@@ -32,15 +32,15 @@ class AtomHandler extends ActionHandler
 	 * @param bool $force Force authorization? If so, basic HTTP_AUTH is displayed if not authed
 	 * @return User The logged-in user
 	 */
-	function is_auth( $force = FALSE )
+	function is_auth( $force = false )
 	{
-		if ( ( $this->user == NULL ) || ( $force != FALSE ) ) {
+		if ( ( $this->user == null ) || ( $force != false ) ) {
 			if ( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
 				User::authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
 			}
 
 			$this->user = User::identify();
-			if ( ( $force != FALSE ) && ( !$this->user->loggedin ) ) {
+			if ( ( $force != false ) && ( !$this->user->loggedin ) ) {
 				header( 'HTTP/1.1 401 Unauthorized', true, 401 );
 				header( 'Status: 401 Unauthorized' );
 				header( 'WWW-Authenticate: Basic realm="Habari"' );
@@ -60,7 +60,7 @@ class AtomHandler extends ActionHandler
 	 *
 	 * @return SimpleXMLElement The requested Atom document
 	 */
-	public function create_atom_wrapper( $alternate, $self, $id, $updated = NULL )
+	public function create_atom_wrapper( $alternate, $self, $id, $updated = null )
 	{
 		// Store handler vars since we'll be using them a lot.
 		$handler_vars = Controller::get_handler_vars();
@@ -90,7 +90,7 @@ class AtomHandler extends ActionHandler
 			$feed_subtitle = $xml->addChild( 'subtitle', Utils::htmlspecialchars( $tagline ) );
 		}
 
-		if ( $updated == NULL) {
+		if ( $updated == null) {
 			$feed_updated = $xml->addChild( 'updated', HabariDateTime::date_create()->get( 'c' ) );
 		}
 		else {
@@ -179,9 +179,9 @@ class AtomHandler extends ActionHandler
 			$user = User::get_by_id( $post->user_id );
 			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
 			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->content ) : Utils::htmlspecialchars( $post->content_atom );
-			
+
 			$content = Plugins::filter( 'atom_add_post', $content );
-			
+
 			$feed_entry = $xml->addChild( 'entry' );
 			$entry_title = $feed_entry->addChild( 'title', $title );
 
@@ -609,7 +609,7 @@ class AtomHandler extends ActionHandler
 	{
 		$params = array();
 
-		$this->is_auth( TRUE );
+		$this->is_auth( true );
 		$bxml = file_get_contents( 'php://input' );
 
 		$params['slug'] = $slug;
@@ -680,7 +680,7 @@ class AtomHandler extends ActionHandler
 	{
 		$params = array();
 
-		$this->is_auth(TRUE);
+		$this->is_auth(true);
 
 		$params['slug'] = $slug;
 		$params['status'] = Post::status('published');
@@ -816,7 +816,7 @@ class AtomHandler extends ActionHandler
 	 */
 	public function post_collection()
 	{
-		if ( $this->is_auth( TRUE ) ) {
+		if ( $this->is_auth( true ) ) {
 			$bxml = file_get_contents( 'php://input' );
 		}
 

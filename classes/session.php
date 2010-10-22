@@ -16,8 +16,8 @@ class Session
 	 * The initial data. Used to determine whether we should write anything.
 	 */
 	private static $initial_data;
-	
-	
+
+
 	/**
 	 * Initialize the session handlers
 	 */
@@ -123,12 +123,12 @@ class Session
 		$probability = ini_get( 'session.gc_probability' );
 		// Allow plugins to control the probability of a gc event, return >=100 to always collect garbage
 		$probability = Plugins::filter( 'gc_probability', ( is_numeric($probability) && $probability > 0 ) ? $probability : 1 );
-		if( rand(1, 100) <= $probability ) {
+		if ( rand(1, 100) <= $probability ) {
 			self::gc( ini_get( 'session.gc_maxlifetime' ) );
 		}
 
 		// Throttle session writes, so as to not hammer the DB
-		self::$initial_data = ( ini_get('session.gc_maxlifetime') - $session->expires + HabariDateTime::date_create( time() )->int < 120 ) ? $session->data : FALSE;
+		self::$initial_data = ( ini_get('session.gc_maxlifetime') - $session->expires + HabariDateTime::date_create( time() )->int < 120 ) ? $session->data : false;
 
 		return $session->data;
 	}

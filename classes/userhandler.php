@@ -45,7 +45,7 @@ class UserHandler extends ActionHandler
 			if ( ( NULL != $name ) || ( NULL != $pass ) ) {
 				$user = User::authenticate( $name, $pass );
 
-				if ( ( $user instanceOf User ) && ( FALSE != $user ) ) {
+				if ( ( $user instanceOf User ) && ( $user != false ) ) {
 					/* Successfully authenticated. */
 					// Timestamp last login date and time.
 					$user->info->authenticate_time = date( 'Y-m-d H:i:s' );
@@ -89,7 +89,7 @@ class UserHandler extends ActionHandler
 					// finally, redirect to the destination
 					Utils::redirect( $login_dest );
 
-					return TRUE;
+					return true;
 				}
 
 				/* Authentication failed. */
@@ -134,7 +134,7 @@ class UserHandler extends ActionHandler
 		// Display the login form.
 		$this->theme = Themes::create();
 		if ( !$this->theme->template_exists( 'login' ) ) {
-			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', TRUE ) );
+			$this->theme = Themes::create( 'admin', 'RawPHPEngine', Site::get_dir( 'admin_theme', true ) );
 			$this->theme->assign( 'admin_page', 'login' );
 		}
 		$request = new StdClass();
@@ -149,7 +149,7 @@ class UserHandler extends ActionHandler
 		$this->theme->assign( 'request', $request );
 		$this->theme->assign( 'habari_username', htmlentities($name, ENT_QUOTES, 'UTF-8') );
 		$this->display( 'login' );
-		return TRUE;
+		return true;
 	}
 
 	/**

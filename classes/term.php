@@ -16,7 +16,7 @@ class Term extends QueryRecord
 	/**
 	 * Return the defined database columns for a Term.
 	 * @return array Array of columns in the Term table
-	 **/
+	 */
 	public static function default_fields()
 	{
 		return array(
@@ -34,7 +34,7 @@ class Term extends QueryRecord
 	 * Creates a Term instance
 	 *
 	 * @param array $paramarray an associative array of initial term values
-	 **/
+	 */
 	public function __construct( $paramarray = array() )
 	{
 		// Defaults
@@ -43,7 +43,7 @@ class Term extends QueryRecord
 			$this->fields
 		);
 
-		if(is_string($paramarray)) {
+		if ( is_string($paramarray) ) {
 			$paramarray = array(
 				'term_display' => $paramarray,
 				'term' => Utils::slugify($paramarray),
@@ -223,7 +223,7 @@ class Term extends QueryRecord
 	/**
 	 * Find this Term's ancestors.
 	 * @return Array Direct ancestors from the root to this Term in descendant order.
-	 **/
+	 */
 	public function ancestors()
 	{
 		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
@@ -234,7 +234,7 @@ class Term extends QueryRecord
 	/**
 	 * Find all Terms in this Term's Vocabulary that are not its ancestors, or it.
 	 * @return Array of Terms in MPTT left-to-right order.
-	 **/
+	 */
 	public function not_ancestors()
 	{
 		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
@@ -245,7 +245,7 @@ class Term extends QueryRecord
 	/**
 	 * Find this Term's descendants.
 	 * @return Array of all descendants in MPTT left-to-right order.
-	 **/
+	 */
 	public function descendants()
 	{
 		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
@@ -256,7 +256,7 @@ class Term extends QueryRecord
 	/**
 	 * Find all Terms in this Term's Vocabulary that are not its descendants, or it.
 	 * @return Array of Terms in MPTT left-to-right order.
-	 **/
+	 */
 	public function not_descendants()
 	{
 		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
@@ -267,7 +267,7 @@ class Term extends QueryRecord
 	/**
 	 * The Term that is this Term's parent in hierarchy.
 	 * @return Term This Term's parent
-	 **/
+	 */
 	public function parent()
 	{
 		$params = array( 'vocab_id' => $this->vocabulary_id, 'left' => $this->mptt_left, 'right' => $this->mptt_right );
@@ -278,7 +278,7 @@ class Term extends QueryRecord
 	/**
 	 * Find this Term's siblings.
 	 * @return Array of all siblings including self.
-	 **/
+	 */
 	public function siblings()
 	{
 		return $this->parent()->children();
@@ -287,7 +287,7 @@ class Term extends QueryRecord
 	/**
 	 * Find this Term's children.
 	 * @return Array of all direct children (compare to descendants()).
-	 **/
+	 */
 	public function children()
 	{
 		$params = array( 'vocab' => $this->vocabulary_id,
@@ -324,7 +324,7 @@ SQL;
 	 *
 	 * @param $type string. The name of the object type for which the associations are wanted.
 	 * @return Array of object ids associated with this term for the given type.
-	 **/
+	 */
 	public function objects( $type )
 	{
 		$type_id = Vocabulary::object_type_id( $type );
@@ -337,15 +337,15 @@ SQL;
 	 * @param $type string. The name of the object type we want to set an association for
 	 * @param $id integer. The object's id
 	 *
-	 **/
+	 */
 	public function associate( $type, $id )
 	{
-		$result = TRUE;
+		$result = true;
 		$type_id = Vocabulary::object_type_id( $type );
 
 		Plugins::act( 'term_associate_to_object_before', $this->id, $id, $type_id );
 
-		if( ! DB::exists( "{object_terms}", array( 'term_id' => $this->id, 'object_id' => $id, 'object_type_id' => $type_id ) ) ) {
+		if ( ! DB::exists( "{object_terms}", array( 'term_id' => $this->id, 'object_id' => $id, 'object_type_id' => $type_id ) ) ) {
 			$result = DB::insert( "{object_terms}", array( 'term_id' => $this->id, 'object_id' => $id, 'object_type_id' => $type_id ) );
 		}
 
@@ -359,10 +359,10 @@ SQL;
 	 * @param $type string. The name of the object type we want to unset an association for
 	 * @param $id integer. The object's id
 	 *
-	 **/
+	 */
 	public function dissociate( $type = NULL, $id = NULL )
 	{
-		$result = TRUE;
+		$result = true;
 
 		$type_id = Vocabulary::object_type_id( $type );
 		Plugins::act( 'term_dissociate_from_object_before', $this->id, $id, $type_id );
@@ -378,7 +378,7 @@ SQL;
 	 * Allow output when the term is cast to a string
 	 * @return string The terms display text
 	 *
-	 **/
+	 */
 	public function __tostring()
 	{
 		return $this->term_display;
@@ -389,15 +389,15 @@ SQL;
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param $name string Name of property to return
 	 * @return mixed The requested field value
-	 **/
-	public function __get( $name ) 
-	{ 
-		switch( $name ) { 
-			case 'vocabulary': 
-				return Vocabulary::get_by_id( $this->vocabulary_id ); 
-			default: 
-				return parent::__get( $name ); 
-		} 
+	 */
+	public function __get( $name )
+	{
+		switch ( $name ) {
+			case 'vocabulary':
+				return Vocabulary::get_by_id( $this->vocabulary_id );
+			default:
+				return parent::__get( $name );
+		}
 	}
 
 }

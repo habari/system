@@ -56,7 +56,7 @@ class Posts extends ArrayObject implements IsContent
 
 		// If $paramarray is a querystring, convert it to an array
 		$paramarray = Utils::get_params( $paramarray );
-		
+
 		// let plugins alter the param array before we use it. could be useful for modifying search results, etc.
 		$paramarray = Plugins::filter( 'posts_get_paramarray', $paramarray );
 
@@ -567,12 +567,12 @@ class Posts extends ArrayObject implements IsContent
 		if ( !isset( $limit ) && !isset( $paramset['id']) && !isset( $paramset['slug'])) {
 			$limit = Options::get('pagination') ? (int) Options::get('pagination') : 5;
 		}
-		elseif( !isset( $limit ) ) {
+		elseif ( !isset( $limit ) ) {
 			$selected_posts = 0;
-			if(isset($paramset['id'])) {
+			if ( isset($paramset['id']) ) {
 				$selected_posts += count(Utils::single_array($paramset['id']));
 			}
-			if(isset($paramset['slug'])) {
+			if ( isset($paramset['slug']) ) {
 				$selected_posts += count(Utils::single_array($paramset['slug']));
 			}
 			$limit = $selected_posts > 0 ? $selected_posts : '';
@@ -724,13 +724,13 @@ class Posts extends ArrayObject implements IsContent
 	/**
 	 * static count_total
 	 * return a count for the total number of posts
-	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
+	 * @param mixed a status value to filter posts by; if false, then no filtering will be performed
 	 * @return int the number of posts of specified type ( published or draft )
 	 */
-	public static function count_total( $status = FALSE )
+	public static function count_total( $status = false )
 	{
 		$params = array( 'count' => 1 );
-		if ( $status !== FALSE ) {
+		if ( $status !== false ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -750,13 +750,13 @@ class Posts extends ArrayObject implements IsContent
 	 * static count_by_author
 	 * return a count of the number of posts by the specified author
 	 * @param int an author ID
-	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
+	 * @param mixed a status value to filter posts by; if false, then no filtering will be performed
 	 * @return int the number of posts by the specified author
 	 */
-	public static function count_by_author( $user_id, $status = FALSE )
+	public static function count_by_author( $user_id, $status = false )
 	{
 		$params = array( 'user_id' => $user_id, 'count' => 1 );
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -766,13 +766,13 @@ class Posts extends ArrayObject implements IsContent
 	 * static count_by_tag
 	 * return a count of the number of posts with the assigned tag
 	 * @param string A tag
-	 * @param mixed a status value to filter posts by; if FALSE, then no filtering will be performed
+	 * @param mixed a status value to filter posts by; if false, then no filtering will be performed
 	 * @return int the number of posts with the specified tag
 	 */
-	public static function count_by_tag( $tag, $status = FALSE )
+	public static function count_by_tag( $tag, $status = false )
 	{
 		$params = array( 'vocabulary' => array( Tags::vocabulary()->name . ':term_display' => $tag ), 'count' => 1 );
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -980,7 +980,7 @@ class Posts extends ArrayObject implements IsContent
 		foreach ($matches as $match) {
 			// switch on the type match. ie status, type et al.
 			// also, trim out the quote marks that have been matched.
-			if( isset($match['quotedvalue']) && $match['quotedvalue'] ) {
+			if ( isset($match['quotedvalue']) && $match['quotedvalue'] ) {
 				$value = stripslashes($match['quotedvalue']);
 			}
 			else {
@@ -1008,7 +1008,7 @@ class Posts extends ArrayObject implements IsContent
 					}
 					break;
 				case 'info':
-					if( strpos($value, ':') !== FALSE ) {
+					if ( strpos($value, ':') !== false ) {
 						list( $infokey, $infovalue ) = explode( ':', $value, 2 );
 						$arguments['info'][] = array($infokey=>$infovalue);
 					}

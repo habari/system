@@ -13,9 +13,9 @@
 class URL extends Singleton
 {
 	// static collection of rules ( pulled from RewriteController )
-	private $rules = NULL;
-	private $matched_rule = NULL;
-	private static $stub = NULL;
+	private $rules = null;
+	private $matched_rule = null;
+	private static $stub = null;
 
 	/**
 	 * Enables singleton working properly
@@ -32,7 +32,7 @@ class URL extends Singleton
 	 */
 	private function load_rules()
 	{
-		if ( URL::instance()->rules != NULL ) {
+		if ( URL::instance()->rules != null ) {
 			return;
 		}
 		URL::instance()->rules = RewriteRules::get_active();
@@ -41,17 +41,17 @@ class URL extends Singleton
 	/**
 	 * Get the matched RewriteRule that was matched in parse().
 	 *
-	 * @return RewriteRule matched rule, or NULL
+	 * @return RewriteRule matched rule, or null
 	 */
 	public static function get_matched_rule()
 	{
 		return URL::instance()->matched_rule;
 	}
-	
+
 	/**
 	 * Get the active RewriteRules that are cached in self::load_rules().
 	 *
-	 * @return array RewriteRules active rules, or NULL
+	 * @return array RewriteRules active rules, or null
 	 */
 	public static function get_active_rules()
 	{
@@ -79,10 +79,10 @@ class URL extends Singleton
 	 * requests, and by other classes, such as Pingback, which
 	 * uses it to determine the post slug for a given URL.
 	 *
-	 * Returns the matched RewriteRule object, or FALSE.
+	 * Returns the matched RewriteRule object, or false.
 	 *
 	 * @param string $from_url URL string to parse
-	 * @return RewriteRule matched rule, or FALSE
+	 * @return RewriteRule matched rule, or false
 	 */
 	public static function parse( $from_url )
 	{
@@ -100,7 +100,7 @@ class URL extends Singleton
 		$from_url = trim( $from_url, '/' );
 
 		/* Remove the querystring from the URL */
-		if ( MultiByte::strpos( $from_url, '?' ) !== FALSE ) {
+		if ( MultiByte::strpos( $from_url, '?' ) !== false ) {
 			list( $from_url, )= explode( '?', $from_url );
 		}
 
@@ -120,7 +120,7 @@ class URL extends Singleton
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**

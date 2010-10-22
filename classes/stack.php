@@ -42,7 +42,7 @@ class Stack
 	 *
 	 * @param mixed $input An array or ArrayObject to create the stack from.
 	 * @return array The created stack
-	 **/
+	 */
 	private function __construct( $input )
 	{
 		parent::__construct( $input );
@@ -68,7 +68,7 @@ class Stack
 	 *
 	 * @param string $stack_name The name of the stack in which to check.
 	 * @param string $value The value to check for.
-	 * @return boolean TRUE if the item exists, FALSE otherwise.
+	 * @return boolean true if the item exists, false otherwise.
 	 */
 	public static function has ( $stack_name, $value_name )
 	{
@@ -212,12 +212,12 @@ class Stack
 		$out = '';
 		$stack = self::get_sorted_stack( $stack_name );
 		$stack = Plugins::filter( 'stack_out', $stack, $stack_name, $format );
-		foreach( $stack as $element ) {
+		foreach ( $stack as $element ) {
 			if ( is_callable($format) ) {
 				$out.= call_user_func_array( $format, (array) $element );
 			}
 			elseif ( is_string( $format ) ) {
-				$out.= vsprintf( $format, (array) $element );
+				$out .= vsprintf( $format, (array) $element );
 			}
 			else {
 				$out.= $element;
@@ -244,7 +244,7 @@ class Stack
 	 */
 	public static function scripts( $element )
 	{
-		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE ) {
+		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === false ) {
 			$output = sprintf( '<script src="%s" type="text/javascript"></script>'."\r\n", $element);
 		}
 		else {
@@ -262,7 +262,7 @@ class Stack
 	 */
 	public static function styles( $element, $typename )
 	{
-		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE ) {
+		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === false ) {
 			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename);
 		}
 		else {

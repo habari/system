@@ -42,18 +42,18 @@ class Format
 			}
 		}
 	}
-	
+
 	/**
 	 *
 	 *
 	 **/
-	public static function apply_with_hook_serialize( $arg ) 
+	public static function apply_with_hook_serialize( $arg )
 	{
 		$arg = serialize( $arg );
 		return "'{$arg}'";
 	}
-	
-	public static function apply_with_hook_unserialize( $arg ) 
+
+	public static function apply_with_hook_unserialize( $arg )
 	{
 		$arg = unserialize( $arg );
 		return $arg;
@@ -78,8 +78,8 @@ class Format
 				$func .= '$args = array_merge( $args';
 				$args = func_get_args();
 				if ( count($args) > 2 ) {
-				
-					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),'; 
+
+					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),';
 					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice($args, 2));
 					$func .= 'array( ' . implode(', ', $args) . ' ))';
 				}
@@ -132,7 +132,7 @@ class Format
 	 *
 	 * If you make changes to this, PLEASE add test cases here:
 	 *   http://svn.habariproject.org/habari/trunk/tests/data/autop/
-	 * 
+	 *
 	 * @param string $value The string to apply the formatting
 	 * @returns string The formatted string
 	 **/
@@ -149,23 +149,23 @@ class Format
 			'pre','code','ul','h1','h2','h3','h4','h5','h6',
 			'table','ul','ol','li','i','b','em','strong'
 		);
-		
+
 		$blockElements = array(
 			'address','blockquote','center','dir','div','dl','fieldset','form',
 			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
 			'noscript','ol','p','pre','table','ul'
 		);
-		
+
 		$token = $set->current();
 
 		// There are no tokens in the text being formatted
-		if ( $token === FALSE ) {
+		if ( $token === false ) {
 			return $value;
 		}
 
 		$openP = false;
 		do {
-			
+
 			if ( $openP ) {
 				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $blockElements ) ) {
 					if ( strtolower( $token['name'] ) != 'p' || $token['type'] != HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
@@ -174,13 +174,13 @@ class Format
 					$openP = false;
 				}
 			}
-			
+
 			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array( strtolower( $token['name'] ), $blockElements ) && $value == '' ) {
 				// first element, is not a block element
 				$value = '<p>';
 				$openP = true;
 			}
-			
+
 			// no-autop, pass them through verbatim
 			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array( strtolower( $token['name'] ), $noAutoP ) ) {
 				$nestedToken = $token;
@@ -195,7 +195,7 @@ class Format
 				} while ( $nestedToken = $set->next() );
 				continue;
 			}
-			
+
 			// anything that's not a text node should get passed through
 			if ( $token['type'] != HTMLTokenizer::NODE_TYPE_TEXT ) {
 				$value .= HtmlTokenSet::token_to_string( $token, true );
@@ -205,7 +205,7 @@ class Format
 				}
 				continue;
 			}
-			
+
 			// if we get this far, token type is text
 			$localValue = $token['value'];
 			if ( strlen( $localValue ) ) {
@@ -213,19 +213,19 @@ class Format
 					$localValue = '<p>' . ltrim( $localValue );
 					$openP = true;
 				}
-				
+
 				$localValue = preg_replace( '/\s*(\n\s*){2,}/u', "</p><p>", $localValue ); // at least two \n in a row (allow whitespace in between)
 				$localValue = str_replace( "\n", "<br>", $localValue ); // nl2br
 			}
 			$value .= $localValue;
 		} while ( $token = $set->next() );
-		
+
 		$value = preg_replace( '#\s*<p></p>\s*#u', '', $value ); // replace <p></p>
 		$value = preg_replace( '/<p><!--(.*?)--><\/p>/', "<!--\\1-->", $value ); // replace <p></p> around comments
 		if ( $openP ) {
 			$value .= '</p>';
 		}
-		
+
 		return $value;
 	}
 
@@ -237,13 +237,13 @@ class Format
 	 * @param string $between_last Text to put between the next-to-last element and the last element
 	 * @reutrn string The constructed string
 	**/
-	public static function and_list( $array, $between = ', ', $between_last = NULL )
+	public static function and_list( $array, $between = ', ', $between_last = null )
 	{
 		if ( ! is_array( $array ) ) {
 			$array = array( $array );
 		}
 
-		if ( $between_last === NULL ) {
+		if ( $between_last === null ) {
 			$between_last = _t( ' and ' );
 		}
 
@@ -262,17 +262,17 @@ class Format
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 **/
-	public static function tag_and_list($tags, $between = ', ', $between_last = NULL )
+	public static function tag_and_list($tags, $between = ', ', $between_last = null )
 	{
 		if ( !$tags instanceof Tags ) {
 			$tags = new Tags( $tags );
 		}
 
-		foreach( $tags as $tag ) {
+		foreach ( $tags as $tag ) {
 			$array[$tag->tag_slug] = $tag->tag_text;
 		}
 
-		if ( $between_last === NULL ) {
+		if ( $between_last === null ) {
 			$between_last = _t(' and ');
 		}
 
@@ -351,7 +351,7 @@ class Format
 	public static function summarize( $text, $count = 100, $max_paragraphs = 1 )
 	{
 		$ellipsis = '...';
-		
+
 		$showmore = false;
 
 		$ht = new HtmlTokenizer($text, false);
@@ -361,23 +361,23 @@ class Format
 		$para = 0;
 		$token = $set->current();
 		$summary = new HTMLTokenSet();
-		$set->rewind(); 
+		$set->rewind();
 		$remaining_words = $count;
 		// $bail lets the loop end naturally and close all open elements without adding new ones.
 		$bail = false;
-		for($token = $set->current(); $set->valid(); $token = $set->next() ) {
-			if(!$bail && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN) {
+		for ( $token = $set->current(); $set->valid(); $token = $set->next() ) {
+			if ( !$bail && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN ) {
 				$stack[] = $token;
 			}
-			if(!$bail) {
-				switch($token['type']) {
+			if ( !$bail ) {
+				switch ( $token['type'] ) {
 					case HTMLTokenizer::NODE_TYPE_TEXT:
 						$words = preg_split('/(\\s+)/u', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 						// word count is doubled because spaces between words are captured as their own array elements via PREG_SPLIT_DELIM_CAPTURE
 						$words = array_slice($words, 0, $remaining_words * 2);
 						$remaining_words -= count($words) / 2;
 						$token['value'] = implode('', $words);
-						if($remaining_words <= 0) {
+						if ( $remaining_words <= 0 ) {
 							$token['value'] .= $ellipsis;
 							$summary[] = $token;
 							$bail = true;
@@ -394,23 +394,23 @@ class Format
 						break;
 				}
 			}
-			if($token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE) {
-				do{
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
+				do {
 					$end = array_pop($stack);
 					$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
 					$end['attrs'] = null;
 					$end['value'] = null;
 					$summary[] = $end;
 				} while( ($bail || $end['name'] != $token['name']) && count($stack) > 0 );
-				if(count($stack) == 0) {
+				if ( count($stack) == 0 ) {
 					$para++;
 				}
-				if($bail || $para >= $max_paragraphs) {
+				if ( $bail || $para >= $max_paragraphs ) {
 					break;
 				}
 			}
 		}
-			
+
 		return (string) $summary;
 	}
 
@@ -433,32 +433,32 @@ class Format
 		if ( $post->slug == Controller::get_var('slug') ) {
 			return $content;
 		}
-		else if( is_string( $properties ) ) {
-			$args = func_get_args();			
+		elseif ( is_string( $properties ) ) {
+			$args = func_get_args();
 			$more_text = $properties;
-			$max_words = ( isset( $args[3] ) ? $args[3] : NULL );
-			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : NULL );
+			$max_words = ( isset( $args[3] ) ? $args[3] : null );
+			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : null );
 			$paramstring = "";
 		}
 		else {
 			$paramstring = "";
 			$paramarray = Utils::get_params( $properties );
-			
-			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
-			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : NULL );
-			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : NULL );
 
-			if( isset( $paramarray['title:before'] ) || 
+			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
+			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : null );
+			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : null );
+
+			if ( isset( $paramarray['title:before'] ) ||
 				isset( $paramarray['title'] ) ||
 				isset( $paramarray['title:after'] ) ) {
-				$paramstring .= 'title="';	
-				
-				if( isset( $paramarray['title:before'] ) ) 	$paramstring .= $paramarray['title:before'];
-				if( isset( $paramarray['title'] ) ) 		$paramstring .= $post->title;
-				if( isset( $paramarray['title:after'] ) ) 	$paramstring .= $paramarray['title:after'];
+				$paramstring .= 'title="';
+
+				if ( isset( $paramarray['title:before'] ) ) 	$paramstring .= $paramarray['title:before'];
+				if ( isset( $paramarray['title'] ) ) 		$paramstring .= $post->title;
+				if ( isset( $paramarray['title:after'] ) ) 	$paramstring .= $paramarray['title:after'];
 				$paramstring .= '" ';
 			}
-			if( isset( $paramarray['class'] ) ) $paramstring .= 'class="' . $paramarray['class'] . '" ';	
+			if ( isset( $paramarray['class'] ) ) $paramstring .= 'class="' . $paramarray['class'] . '" ';
 
 		}
 		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
@@ -476,7 +476,7 @@ class Format
 				return ( $more_text != '' ) ? $summary . ' <a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' : $summary;
 			}
 		}
-    
+
     return $content;
 	}
 

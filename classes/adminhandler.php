@@ -16,7 +16,7 @@
 class AdminHandler extends ActionHandler
 {
 	/** An instance of the active public theme, which allows plugin hooks to execute */
-	protected $active_theme = NULL;
+	protected $active_theme = null;
 
 	/**
 	 * Verifies user credentials before creating the theme and displaying the request.
@@ -76,7 +76,7 @@ class AdminHandler extends ActionHandler
 	public function setup_admin_theme($page, $type = '')
 	{
 		if ( !isset($this->theme) ) {
-			$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+			$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 			$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 			// Add some default stylesheets
@@ -418,12 +418,12 @@ class AdminHandler extends ActionHandler
 			'author_count' => Users::get( array( 'count' => 1 ) ),
 			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),
 			'entry_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('published') ) ),
-			'comment_count' => Comments::count_total( Comment::STATUS_APPROVED, FALSE ),
+			'comment_count' => Comments::count_total( Comment::STATUS_APPROVED, false ),
 			'tag_count' => Tags::count_total(),
 			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
-			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_UNAPPROVED, FALSE ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),
-			'spam_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_SPAM, FALSE ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_SPAM ),
+			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_UNAPPROVED, false ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),
+			'spam_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_SPAM, false ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_SPAM ),
 			'user_entry_scheduled_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type( 'any' ), 'status' => Post::status( 'scheduled' ), 'user_id' => User::identify()->id ) ),
 		);
 
@@ -668,18 +668,18 @@ class AdminHandler extends ActionHandler
 			$$key = $value;
 		}
 
-		$okay = TRUE;
+		$okay = true;
 		if ( empty( $id ) || empty( $nonce ) || empty( $timestamp ) || empty( $digest ) ) {
-			$okay = FALSE;
+			$okay = false;
 		}
 		$wsse = Utils::WSSE( $nonce, $timestamp );
 		if ( $digest != $wsse['digest'] ) {
-			$okay = FALSE;
+			$okay = false;
 		}
 
 		$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 		if ( ! ACL::access_check( $post->get_access(), 'delete' ) ) {
-			$okay = FALSE;
+			$okay = false;
 		}
 
 		if ( !$okay ) {
@@ -866,7 +866,7 @@ class AdminHandler extends ActionHandler
 		$current_user = User::identify();
 
 		// Let's check for deletion
-		if ( Controller::get_var('delete') != NULL ) {
+		if ( Controller::get_var('delete') != null ) {
 			if ( $current_user->id != $edit_user->id ) {
 
 				// We're going to delete the user before we need it, so store the username
@@ -874,7 +874,7 @@ class AdminHandler extends ActionHandler
 
 				$posts = Posts::get( array( 'user_id' => $edit_user->id, 'nolimit' => true ) );
 
-				if ( ( Controller::get_var('reassign') != NULL ) && (Controller::get_var('reassign') != 0) && (Controller::get_var('reassign') != $edit_user->id)) {
+				if ( ( Controller::get_var('reassign') != null ) && (Controller::get_var('reassign') != 0) && (Controller::get_var('reassign') != $edit_user->id)) {
 					// we're going to re-assign all of this user's posts
 					$newauthor = Controller::get_var('reassign');
 					Posts::reassign( $newauthor, $posts );
@@ -1051,7 +1051,7 @@ class AdminHandler extends ActionHandler
 	 * Assign values needed to display the users listing
 	 *
 	 */
-	private function fetch_users($params = NULL)
+	private function fetch_users($params = null)
 	{
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
@@ -1254,7 +1254,7 @@ class AdminHandler extends ActionHandler
 		$scopes = Plugins::filter('get_scopes', $scopes);
 		$this->theme->scopes = $scopes;
 		$this->theme->scopeid = 0;
-		
+
 		$this->theme->theme_loader = Plugins::filter('theme_loader', '', $this->theme);
 
 		$this->theme->display( 'themes' );
@@ -1282,7 +1282,7 @@ class AdminHandler extends ActionHandler
 		$theme_name = $this->handler_vars['theme_name'];
 		$theme_dir = $this->handler_vars['theme_dir'];
 		if ( isset($theme_name)  && isset($theme_dir) ) {
-			if(Themes::get_theme_dir() == $theme_dir) {
+			if ( Themes::get_theme_dir() == $theme_dir ) {
 				Themes::cancel_preview();
 				Session::notice( sprintf( _t( "Ended the preview of the theme '%s'" ), $theme_name ) );
 			}
@@ -1437,7 +1437,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles GET requests for an individual comment.
 	 */
-	public function get_comment($update = FALSE)
+	public function get_comment($update = false)
 	{
 		if ( isset( $this->handler_vars['id'] ) && $comment = Comment::get( $this->handler_vars['id'] ) ) {
 			$this->theme->comment = $comment;
@@ -1458,7 +1458,7 @@ class AdminHandler extends ActionHandler
 				foreach ( $actions as $key => $action ) {
 					$id_one = $action . '_1';
 					$id_two = $action . '_2';
-					if ( $form->$id_one->value != NULL || $form->$id_two->value != NULL ) {
+					if ( $form->$id_one->value != null || $form->$id_two->value != null ) {
 						if ( $action == 'delete' ) {
 							$comment->delete();
 							Utils::redirect(URL::get('admin', 'page=comments'));
@@ -1674,17 +1674,17 @@ class AdminHandler extends ActionHandler
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						foreach ( $to_update as $comment ) {
 							// This comment was edited
-							if ( $_POST['name_' . $comment->id] != NULL ) {
+							if ( $_POST['name_' . $comment->id] != null ) {
 								$comment->name = $_POST['name_' . $comment->id];
 							}
-							if ( $_POST['email_' . $comment->id] != NULL ) {
+							if ( $_POST['email_' . $comment->id] != null ) {
 								$comment->email = $_POST['email_' . $comment->id];
 							}
 
-							if ( $_POST['url_' . $comment->id] != NULL ) {
+							if ( $_POST['url_' . $comment->id] != null ) {
 								$comment->url = $_POST['url_' . $comment->id];
 							}
-							if ( $_POST['content_' . $comment->id] != NULL ) {
+							if ( $_POST['content_' . $comment->id] != null ) {
 								$comment->content = $_POST['content_' . $comment->id];
 							}
 
@@ -1967,7 +1967,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->assign( 'configure', Controller::get_var('configure') );
 		$this->theme->active_plugins = $sort_active_plugins;
 		$this->theme->inactive_plugins = $sort_inactive_plugins;
-		
+
 		$this->theme->plugin_loader = Plugins::filter('plugin_loader', '', $this->theme);
 
 		$this->display( 'plugins' );
@@ -2147,7 +2147,7 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		switch ( $handler_vars['action'] ) {
@@ -2180,7 +2180,7 @@ class AdminHandler extends ActionHandler
 				$ar->html('modules', $this->theme->fetch( 'dashboard_modules' ) );
 				break;
 		}
-		
+
 		$ar->out();
 	}
 
@@ -2191,7 +2191,7 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$params = $_GET;
@@ -2223,7 +2223,7 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$this->theme->theme = $this->theme;
 
@@ -2254,7 +2254,7 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$this->theme->currentuser = User::identify();
@@ -2456,108 +2456,108 @@ class AdminHandler extends ActionHandler
 	 */
 	public function post_logs()
 	{
-		
+
 		$this->fetch_logs();
 		$this->display( 'logs' );
-		
+
 	}
-	
+
 	private function fetch_logs ( ) {
-		
+
 		// load all the values for our filter drop-downs
 		$dates = $this->fetch_log_dates();
 		$users = $this->fetch_log_users();
 		$ips = $this->fetch_log_ips();
 		extract( $this->fetch_log_modules_types() );		// $modules and $types
 		$severities = LogEntry::list_severities();
-		
-		
+
+
 		// parse out the arguments we'll fetch logs for
-		
+
 		// the initial arguments
 		$arguments = array(
 			'limit' => Controller::get_var( 'limit', 20 ),
 			'offset' => Controller::get_var( 'offset', 0 ),
 		);
-		
-		
+
+
 		// filter for the search field
 		$search = Controller::get_var( 'search', '' );
 
 		if ( $search != '' ) {
 			$arguments['criteria'] = $search;
 		}
-		
-		
+
+
 		// filter by date
 		$date = Controller::get_var( 'date', 'any' );
-		
+
 		if ( $date != 'any' ) {
 			$d = DateTime::createFromFormat( '!Y-m', $date );	// ! means fill any non-specified pieces with default Unix Epoch ones
 			$arguments['year'] = $d->format('Y');
 			$arguments['month'] = $d->format('m');
 		}
-		
-		
+
+
 		// filter by user
 		$user = Controller::get_var( 'user', 'any' );
-		
+
 		if ( $user != 'any' ) {
 			$arguments['user_id'] = $user;
 		}
-		
-		
+
+
 		// filter by ip
 		$ip = Controller::get_var( 'address', 'any' );
-		
+
 		if ( $ip != 'any' ) {
 			$arguments['ip'] = $ip;
 		}
-		
-		
+
+
 		// filter modules and types
 		// @todo get events of a specific type in a specific module, instead of either of the two
 		// the interface doesn't currently make any link between module and type, so we won't worry about it for now
-		
+
 		$module = Controller::get_var( 'module', 'any' );
 		$type = Controller::get_var( 'type', 'any' );
-		
+
 		if ( $module != 'any' ) {
 			// we get a slugified key back, get the actual module name
 			$arguments['module'] = $modules[ $module ];
 		}
-		
+
 		if ( $type != 'any' ) {
 			// we get a slugified key back, get the actual type name
 			$arguments['type'] = $types[ $type ];
 		}
-		
-		
+
+
 		// filter by severity
 		$severity = Controller::get_var( 'severity', 'any' );
-		
+
 		if ( $severity != 'any' ) {
 			$arguments['severity'] = $severity;
 		}
-		
-		
+
+
 		// get the logs!
 		$logs = EventLog::get( $arguments );
-		
-		
+
+
 		// last, but not least, generate the list of years used for the timeline
 		$months = EventLog::get( array_merge( $arguments, array( 'month_cts' => true ) ) );
-		
+
 		$years = array();
 		foreach ( $months as $m ) {
-			
+
 			$years[ $m->year ][] = $m;
-			
+
 		}
-		
-		
+
+
 		// assign all our theme values in one spot
-		
+
 		// first the filter options
 		$this->theme->dates = $dates;
 		$this->theme->users = $users;
@@ -2565,7 +2565,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->modules = $modules;
 		$this->theme->types = $types;
 		$this->theme->severities = $severities;
-		
+
 		// next the filter criteria we used
 		$this->theme->search = $search;
 		$this->theme->date = $date;
@@ -2574,94 +2574,94 @@ class AdminHandler extends ActionHandler
 		$this->theme->module = $module;
 		$this->theme->type = $type;
 		$this->theme->severity = $severity;
-		
+
 		$this->theme->logs = $logs;
-		
+
 		$this->theme->years = $years;
-		
+
 		$this->theme->wsse = Utils::WSSE();		// prepare a WSSE token for any ajax calls
-		
+
 	}
-	
+
 	private function fetch_log_dates ( ) {
-		
+
 		$db_dates = DB::get_column( 'SELECT timestamp FROM {log} ORDER BY timestamp DESC' );
-		
+
 		$dates = array(
 			'any' => 'Any'
 		);
-		
+
 		foreach ( $db_dates as $db_date ) {
-			
+
 			$date = HabariDateTime::date_create( $db_date )->format('Y-m');
-			
+
 			$dates[ $date ] = $date;
-			
+
 		}
-		
+
 		return $dates;
-		
+
 	}
-	
+
 	private function fetch_log_users ( ) {
-		
+
 		$db_users = DB::get_results( 'SELECT DISTINCT username, user_id FROM {users} JOIN {log} ON {users}.id = {log}.user_id ORDER BY username ASC' );
-		
+
 		$users = array(
 			'any' => 'Any'
 		);
-		
+
 		foreach ( $db_users as $db_user ) {
-			
+
 			$users[ $db_user->user_id ] = $db_user->username;
-			
+
 		}
-		
+
 		return $users;
-		
+
 	}
-	
+
 	private function fetch_log_ips ( ) {
-		
+
 		$db_ips = DB::get_column( 'SELECT DISTINCT(ip) FROM {log}' );
-		
+
 		$ips = array(
 			'any' => 'Any'
 		);
-		
+
 		foreach ( $db_ips as $db_ip ) {
-			
+
 			$ips[ $db_ip ] = long2ip( $db_ip );
-			
+
 		}
-		
+
 		return $ips;
-		
+
 	}
-	
+
 	private function fetch_log_modules_types ( ) {
-		
+
 		$module_list = LogEntry::list_logentry_types();
-		
+
 		$modules = $types = array(
 			'any' => 'Any',
 		);
-		
+
 		foreach ( $module_list as $module_name => $type_array ) {
-			
+
 			// Utils::slugify() gives us a safe key to use - this is what will be handed to the filter after a POST as well
 			$modules[ Utils::slugify( $module_name ) ] = $module_name;
-			
+
 			foreach ( $type_array as $type_name => $type_value ) {
-				
+
 				$types[ Utils::slugify( $type_name ) ] = $type_name;
-				
+
 			}
-			
+
 		}
-				
+
 		return array( 'modules' => $modules, 'types' => $types );
-		
+
 	}
 
 	/**
@@ -2672,7 +2672,7 @@ class AdminHandler extends ActionHandler
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
 		$this->create_theme();
-		
+
 		$this->fetch_logs();
 		$items = $this->theme->fetch( 'logs_items' );
 		$timeline = $this->theme->fetch( 'timeline_items' );
@@ -2708,7 +2708,7 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD' ) );
 
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 
 		$output = '';
@@ -2741,7 +2741,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Add or delete groups.
 	 */
-	public function update_groups($handler_vars, $ajax = TRUE)
+	public function update_groups($handler_vars, $ajax = true)
 	{
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( (isset($handler_vars['digest']) && $handler_vars['digest'] != $wsse['digest']) || (isset($handler_vars['PasswordDigest']) && $handler_vars['PasswordDigest'] != $wsse['digest']) ) {
@@ -3061,7 +3061,7 @@ class AdminHandler extends ActionHandler
 
 			case 'rename':
 				if ( isset($this->handler_vars['master']) ) {
-					$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+					$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 					$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 					$master = $this->handler_vars['master'];
 					$tag_names = array();
@@ -3199,7 +3199,7 @@ class AdminHandler extends ActionHandler
 				$hotkey = 0;
 			}
 			elseif ( $i > 10 ) {
-				$hotkey = FALSE;
+				$hotkey = false;
 			}
 			else {
 				$hotkey = $i;
@@ -3220,10 +3220,10 @@ class AdminHandler extends ActionHandler
 			$managemenu['manage_' . $typeint]['hotkey'] = $hotkey;
 
 			if ( $page == 'publish' && isset($this->handler_vars['content_type']) && $this->handler_vars['content_type'] == $type ) {
-				$createmenu['create_' . $typeint]['selected'] = TRUE;
+				$createmenu['create_' . $typeint]['selected'] = true;
 			}
 			if ( $page == 'posts' && isset($this->handler_vars['type']) && $this->handler_vars['type'] == $typeint ) {
-				$managemenu['manage_' . $typeint]['selected'] = TRUE;
+				$managemenu['manage_' . $typeint]['selected'] = true;
 			}
 			$i++;
 		}
@@ -3818,13 +3818,13 @@ class AdminHandler extends ActionHandler
 
 		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/crc32.js", 'crc32' );
 	}
-	
+
 	public function create_theme ( ) {
-		
-		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) );
+
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-		
+
 	}
-	
+
 }
 ?>

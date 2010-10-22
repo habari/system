@@ -50,7 +50,7 @@ class Plugins
 
 		$ref =& self::$hooks;
 
-		foreach( $index as $bit ) {
+		foreach ( $index as $bit ) {
 			if ( !isset($ref["{$bit}"]) ) {
 				$ref["{$bit}"] = array();
 			}
@@ -193,7 +193,7 @@ class Plugins
 	/**
 	 * function list_active
 	 * Gets a list of active plugin filenames to be included
-	 * @param boolean Whether to refresh the cached array.  Default FALSE
+	 * @param boolean Whether to refresh the cached array.  Default false
 	 * @return array An array of filenames
 	 */
 	public static function list_active( $refresh = false )
@@ -201,7 +201,7 @@ class Plugins
 		if ( empty(self::$plugin_files) || $refresh ) {
 			$plugins = Options::get( 'active_plugins' );
 			if ( is_array($plugins) ) {
-				foreach( $plugins as $class => $filename ) {
+				foreach ( $plugins as $class => $filename ) {
 					// add base path to stored path
 					$filename = HABARI_PATH . $filename;
 
@@ -390,7 +390,7 @@ class Plugins
 	 */
 	public static function activate_plugin( $file )
 	{
-		$ok = TRUE;
+		$ok = true;
 		// strip base path from stored path
 		$short_file = MultiByte::substr( $file, strlen( HABARI_PATH ) );
 		$activated = Options::get( 'active_plugins' );
@@ -429,7 +429,7 @@ class Plugins
 
 			$activated = Options::get( 'active_plugins' );
 			$index = array_search( $short_file, $activated );
-			if ( is_array( $activated ) && ( FALSE !== $index ) ) {
+			if ( is_array( $activated ) && ( false !== $index ) ) {
 				// Get plugin name for logging
 				$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
 				if ( method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation') ) {
@@ -500,7 +500,7 @@ class Plugins
 	 * @param string $version Optional minimal version of the plugin.
 	 * @return bool Returns true if name is found and version is equal or higher than required.
 	 */
-	public static function is_loaded( $name, $version = NULL )
+	public static function is_loaded( $name, $version = null )
 	{
 		foreach ( self::$plugins as $plugin ) {
 			if ( is_null( $plugin->info ) ) {
@@ -513,7 +513,7 @@ class Plugins
 						return version_compare( $plugin->info->version, $version, '>=' );
 					}
 					else {
-						return $version == NULL;
+						return $version == null;
 					}
 				}
 				else {

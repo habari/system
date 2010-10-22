@@ -70,7 +70,7 @@ class ACL
 	 * @param string $description The description of the permission
 	 * @param string $group The token group for organizational purposes
 	 * @param bool $crud Indicates if the token is a CRUD or boolean type token (default is boolean)
-	 * @return mixed the ID of the newly created permission, or boolean FALSE
+	 * @return mixed the ID of the newly created permission, or boolean false
 	 */
 	public static function create_token( $name, $description, $group, $crud = false )
 	{
@@ -167,8 +167,8 @@ class ACL
 	/**
 	 * Get a permission token's name by its ID
 	 * @param int $id a token ID
-	 * @return string the name of the permission, or boolean FALSE
-	 **/
+	 * @return string the name of the permission, or boolean false
+	 */
 	public static function token_name( $id )
 	{
 		if ( ! is_int( $id ) ) {
@@ -487,11 +487,11 @@ SQL;
 		if ( isset( $super_user_access ) && self::access_check( $super_user_access, 'any' ) ) {
 			$token_ids = DB::get_column('SELECT id as token_id FROM {tokens}' );
 			$result = array();
-			foreach( $token_ids as $id ) {
+			foreach ( $token_ids as $id ) {
 				$result_row = new StdClass();
 				$result_row->token_id = $id;
 				$result_row->access_mask = $bitmask->full;
-				$result[] = $result_row; 
+				$result[] = $result_row;
 			}
 		}
 		else {

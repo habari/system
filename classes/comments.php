@@ -33,7 +33,7 @@ class Comments extends ArrayObject
 		foreach ( Comment::default_fields() as $field => $value ) {
 			$select .= ( '' == $select )
 				? "{comments}.$field as $field"
-				: ", {comments}.$field as $field"; 
+				: ", {comments}.$field as $field";
 		}
 		// defaults
 		$orderby = 'date DESC';
@@ -75,7 +75,7 @@ class Comments extends ArrayObject
 						$where[] = '{comments}.id IN (' . addslashes( $id_list ) . ')';
 					}
 				}
-				if ( isset( $paramset['status'] ) && FALSE !== $paramset['status'] ) {
+				if ( isset( $paramset['status'] ) && false !== $paramset['status'] ) {
 					if ( is_array( $paramset['status'] ) ) {
 						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
 						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Comment::status( $a );' ) );
@@ -87,7 +87,7 @@ class Comments extends ArrayObject
 						$params[] = Comment::status( $paramset['status'] );
 					}
 				}
-				if ( isset( $paramset['type'] ) && FALSE !== $paramset['type'] ) {
+				if ( isset( $paramset['type'] ) && false !== $paramset['type'] ) {
 					if ( is_array( $paramset['type'] ) ) {
 						$paramset['type'] = array_diff( $paramset['type'], array( 'any' ) );
 						array_walk( $paramset['type'], create_function( '&$a,$b', '$a = Comment::type( $a );' ) );
@@ -244,7 +244,7 @@ class Comments extends ArrayObject
 			}
 
 			// If a user is denied access to all posts, do so
-			if( User::identify()->cannot( 'post_any' ) ) {
+			if ( User::identify()->cannot( 'post_any' ) ) {
 				$perm_where_denied = array('(0=1)');
 			}
 			else {
@@ -388,7 +388,7 @@ class Comments extends ArrayObject
 			if ( $comments[0] instanceOf Comment ) {
 
 				$result = true;
-				foreach( $comments as $comment ) {
+				foreach ( $comments as $comment ) {
 					$comment_result = $comment->delete();
 
 					if ( !$comment_result ) {
@@ -647,8 +647,8 @@ class Comments extends ArrayObject
 	/**
 	 * static count_total
 	 * returns the number of comments based on the specified status and type
-	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
-	 * @param mixed A comment type value, or FALSE to not filter on type (default: Comment::COMMENT)
+	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param mixed A comment type value, or false to not filter on type (default: Comment::COMMENT)
 	 * @return int a count of the comments based on the specified status and type
 	**/
 	public static function count_total( $status = Comment::STATUS_APPROVED, $type = Comment::COMMENT )
@@ -661,13 +661,13 @@ class Comments extends ArrayObject
 	 * static count_by_name
 	 * returns the number of comments attributed to the specified name
 	 * @param string a commenter's name
-	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified name
 	**/
 	public static function count_by_name( $name = '', $status = Comment::STATUS_APPROVED )
 	{
 		$params = array ( 'name' => $name, 'count' => 'name' );
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -677,13 +677,13 @@ class Comments extends ArrayObject
 	 * static count_by_email
 	 * returns the number of comments attributed ot the specified email
 	 * @param string an email address
-	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified email
 	**/
 	public static function count_by_email( $email = '', $status = Comment::STATUS_APPROVED )
 	{
 		$params = array( 'email' => $email, 'count' => 'email');
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -693,13 +693,13 @@ class Comments extends ArrayObject
 	 * static count_by_url
 	 * returns the number of comments attributed to the specified URL
 	 * @param string a URL
-	 * @param mixed a comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param mixed a comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified URL
 	**/
 	public static function count_by_url( $url = '', $status = Comment::STATUS_APPROVED )
 	{
 		$params = array( 'url' => $url, 'count' => 'url');
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -708,13 +708,13 @@ class Comments extends ArrayObject
 	/** static count_by_ip
 	 * returns the number of comments from the specified IP address
 	 * @param string an IP address
-	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments from the specified IP address
 	**/
 	public static function count_by_ip( $ip = '', $status = Comment::STATUS_APPROVED )
 	{
 		$params = array( 'ip' => $ip, 'count' => 'ip');
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -724,13 +724,13 @@ class Comments extends ArrayObject
 	 * static count_by_slug
 	 * returns the number of comments attached to the specified post
 	 * @param string a post slug
-	 * @param mixed A comment status value, or FALSE to not filter on status (default: Comment::STATUS_APPROVED)
+	 * @param mixed A comment status value, or false to not filter on status (default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments attached to the specified post
 	**/
 	public static function count_by_slug( $slug = '', $status = Comment::STATUS_APPROVED )
 	{
 		$params = array( 'post_slug' => $slug, 'count' => 'id');
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -740,13 +740,13 @@ class Comments extends ArrayObject
 	 * static count_by_id
 	 * returns the number of comments attached to the specified post
 	 * @param int a post ID
-	 * @param mixed A comment status value, or FALSE to not filter on status(default: Comment::STATUS_APPROVED)
+	 * @param mixed A comment status value, or false to not filter on status(default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments attached to the specified post
 	**/
 	 public static function count_by_id( $id = 0,  $status = Comment::STATUS_APPROVED )
 	 {
 	 	$params = array( 'post_id' => $id, 'count' => 'id' );
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );
@@ -756,13 +756,13 @@ class Comments extends ArrayObject
 	 * static count_by_author
 	 * returns the number of comments attached to posts by the specified author
 	 * @param int a user ID
-	 * @param mixed A comment status value, or FALSE to not filter on status(default: Comment::STATUS_APPROVED)
+	 * @param mixed A comment status value, or false to not filter on status(default: Comment::STATUS_APPROVED)
 	 * @return int a count of the comments attached to the specified post
 	**/
 	 public static function count_by_author( $id = 0,  $status = Comment::STATUS_APPROVED )
 	 {
 	 	$params = array( 'post_author' => $id, 'count' => 'id' );
-		if ( FALSE !== $status ) {
+		if ( false !== $status ) {
 			$params['status'] = $status;
 		}
 		return self::get( $params );

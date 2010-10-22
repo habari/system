@@ -33,14 +33,14 @@ class RemoteRequest
 	private $files = array();
 	private $body = '';
 	private $timeout = 180;
-	private $processor = NULL;
-	private $executed = FALSE;
-	
+	private $processor = null;
+	private $executed = false;
+
 	private $response_body = '';
 	private $response_headers = '';
-	
+
 	private $user_agent = 'Habari';
-	
+
 	/**
 	 * @param string $url URL to request
 	 * @param string $method Request method to use (default 'GET')
@@ -54,7 +54,7 @@ class RemoteRequest
 
 		$this->user_agent .= '/' . Version::HABARI_VERSION;
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
-		
+
 		// can't use curl's followlocation in safe_mode with open_basedir, so
 		// fallback to srp for now
 		if ( function_exists( 'curl_init' )
@@ -65,7 +65,7 @@ class RemoteRequest
 			$this->processor = new SocketRequestProcessor;
 		}
 	}
-	
+
 	/**
 	 * DO NOT USE THIS FUNCTION.
 	 * This function is only to be used by the test case for RemoteRequest!
@@ -74,7 +74,7 @@ class RemoteRequest
 	{
 		$this->processor = $processor;
 	}
-	
+
 	/**
 	 * Add a request header.
 	 * @param mixed $header The header to add, either as a string 'Name: Value' or an associative array 'name'=>'value'
@@ -89,7 +89,7 @@ class RemoteRequest
 			$this->headers[$k] = $v;
 		}
 	}
-	
+
 	/**
 	 * Add a list of headers.
 	 * @param array $headers List of headers to add.
@@ -100,7 +100,7 @@ class RemoteRequest
 			$this->add_header( $header );
 		}
 	}
-	
+
 	/**
 	 * Set the request body.
 	 * Only used with POST requests, will raise a warning if used with GET.
@@ -110,10 +110,10 @@ class RemoteRequest
 	{
 		if ( $this->method !== 'POST' )
 			return Error::raise( _t('Trying to add a request body to a non-POST request'), E_USER_WARNING );
-		
+
 		$this->body = $body;
 	}
-	
+
 	/**
 	 * Set the request query parameters (i.e., the URI's query string).
 	 * Will be merged with existing query info from the URL.
@@ -123,10 +123,10 @@ class RemoteRequest
 	{
 		if ( ! is_array( $params ) )
 			$params = parse_str( $params );
-		
+
 		$this->params = $params;
 	}
-	
+
 	/**
 	 * Set the timeout.
 	 * @param int $timeout Timeout in seconds
@@ -136,7 +136,7 @@ class RemoteRequest
 		$this->timeout = $timeout;
 		return $this->timeout;
 	}
-	
+
 	/**
 	 * set postdata
 	 *
@@ -181,13 +181,13 @@ class RemoteRequest
 		$this->url = $this->strip_anchors( $this->url );
 		// merge query params from the URL with params given
 		$this->url = $this->merge_query_params( $this->url, $this->params );
-		
+
 		if ( $this->method === 'POST' ) {
 			if ( !isset( $this->headers['Content-Type'] ) || ( $this->headers['Content-Type'] == 'application/x-www-form-urlencoded' ) ) {
 				// TODO should raise a warning
 				$this->add_header( array( 'Content-Type' => 'application/x-www-form-urlencoded' ) );
 
-				if($this->body != '' && count($this->postdata) > 0) {
+				if ( $this->body != '' && count($this->postdata) > 0 ) {
 					$this->body .= '&';
 				}
 				$this->body .= http_build_query( $this->postdata, '', '&' );
@@ -203,7 +203,7 @@ class RemoteRequest
 						$parts[] = "Content-Disposition: form-data; name=\"{$name}\"\r\n\r\n{$value}\r\n";
 					}
 				}
-				
+
 				if ( $this->files && is_array( $this->files ) ) {
 					reset( $this->files );
 					while ( list( $name, $fileinfo ) = each( $this->files ) ) {
@@ -217,7 +217,7 @@ class RemoteRequest
 						$parts[] = $part;
 					}
 				}
-				
+
 				if ( !empty( $parts ) ) {
 					$this->body = "--{$boundary}\r\n" . join("--{$boundary}\r\n", $parts) . "--{$boundary}--\r\n";
 				}
@@ -225,38 +225,38 @@ class RemoteRequest
 			$this->add_header( array( 'Content-Length' => strlen( $this->body ) ) );
 		}
 	}
-	
+
 	/**
 	 * Actually execute the request.
-	 * On success, returns TRUE and populates the response_body and response_headers fields.
+	 * On success, returns true and populates the response_body and response_headers fields.
 	 * On failure, throws error.
 	 */
 	public function execute()
 	{
 		$this->prepare();
 		$result = $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
-		
+
 		if ( $result && ! Error::is_error( $result ) ) { // XXX exceptions?
 			$this->response_headers = $this->processor->get_response_headers();
 			$this->response_body = $this->processor->get_response_body();
-			$this->executed = TRUE;
-			
-			return TRUE;
+			$this->executed = true;
+
+			return true;
 		}
 		else {
 			// actually, processor->execute should throw an Error which would bubble up
 			// we need a new Error class and error handler for that, though
-			$this->executed = FALSE;
-			
+			$this->executed = false;
+
 			return $result;
 		}
 	}
-	
+
 	public function executed()
 	{
 		return $this->executed;
 	}
-	
+
 	/**
 	 * Return the response headers. Raises a warning and returns '' if the request wasn't executed yet.
 	 */
@@ -264,10 +264,10 @@ class RemoteRequest
 	{
 		if ( !$this->executed )
 			return Error::raise( _t('Trying to fetch response headers for a pending request.'), E_USER_WARNING );
-		
+
 		return $this->response_headers;
 	}
-	
+
 	/**
 	 * Return the response body. Raises a warning and returns '' if the request wasn't executed yet.
 	 */
@@ -275,10 +275,10 @@ class RemoteRequest
 	{
 		if ( !$this->executed )
 			return Error::raise( _t('Trying to fetch response body for a pending request.'), E_USER_WARNING );
-		
+
 		return $this->response_body;
 	}
-	
+
 	/**
 	 * Remove anchors (#foo) from given URL.
 	 */
@@ -286,7 +286,7 @@ class RemoteRequest
 	{
 		return preg_replace( '/(#.*?)?$/', '', $url );
 	}
-	
+
 	/**
 	 * Call the filter hook.
 	 */
@@ -294,7 +294,7 @@ class RemoteRequest
 	{
 		return Plugins::filter( 'remoterequest', $data, $url );
 	}
-	
+
 	/**
 	 * Merge query params from the URL with given params.
 	 * @param string $url The URL
@@ -303,25 +303,25 @@ class RemoteRequest
 	private function merge_query_params( $url, $params )
 	{
 		$urlparts = InputFilter::parse_url( $url );
-		
+
 		if ( ! isset( $urlparts['query'] ) ) {
 			$urlparts['query'] = '';
 		}
-		
+
 		if ( ! is_array( $params ) ) {
 			parse_str( $params, $params );
 		}
-		
+
 		$urlparts['query'] = http_build_query( array_merge( Utils::get_params( $urlparts['query'] ), $params ), '', '&' );
-		
+
 		return InputFilter::glue_url( $urlparts );
 	}
-	
+
 	/**
 	 * Static helper function to quickly fetch an URL, with semantics similar to
 	 * PHP's file_get_contents. Does not support
 	 *
-	 * Returns the content on success or FALSE if an error occurred.
+	 * Returns the content on success or false if an error occurred.
 	 *
 	 * @param string $url The URL to fetch
 	 * @param bool $use_include_path whether to search the PHP include path first (unsupported)
@@ -330,19 +330,19 @@ class RemoteRequest
 	 * @param int $maxlen how many bytes to return
 	 * @return string description
 	 */
-	public static function get_contents( $url, $use_include_path = FALSE, $context = NULL, $offset =0, $maxlen = -1 )
+	public static function get_contents( $url, $use_include_path = false, $context = null, $offset =0, $maxlen = -1 )
 	{
 		$rr = new RemoteRequest( $url );
-		if ( $rr->execute() === TRUE) {
+		if ( $rr->execute() === true) {
 			return ( $maxlen != -1
 				? MultiByte::substr( $rr->get_response_body(), $offset, $maxlen )
 				: MultiByte::substr( $rr->get_response_body(), $offset ) );
 		}
 		else {
-			return FALSE;
+			return false;
 		}
 	}
-	
+
 }
 
 ?>

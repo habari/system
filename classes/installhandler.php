@@ -526,7 +526,7 @@ class InstallHandler extends ActionHandler
 		}
 		try {
 			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], $this->handler_vars['db_pass'] );
-			return TRUE;
+			return true;
 		}
 		catch( PDOException $e ) {
 			if ( strpos( $e->getMessage(), '[1045]' ) ) {
@@ -541,7 +541,7 @@ class InstallHandler extends ActionHandler
 			else {
 				$this->theme->assign( 'form_errors', array( 'mysql_db_host' => $e->getMessage() ) );
 			}
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -559,7 +559,7 @@ class InstallHandler extends ActionHandler
 		}
 		try {
 			$connect = DB::connect( $pdo, $this->handler_vars['db_user'], $this->handler_vars['db_pass'] );
-			return TRUE;
+			return true;
 		}
 		catch( PDOException $e ) {
 			if ( strpos( $e->getMessage(), '[1045]' ) ) {
@@ -574,7 +574,7 @@ class InstallHandler extends ActionHandler
 			else {
 				$this->theme->assign( 'form_errors', array( 'pgsql_db_host' => $e->getMessage() ) );
 			}
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -586,7 +586,7 @@ class InstallHandler extends ActionHandler
 	{
 		$db_file = $this->handler_vars['db_file'];
 		if ( $db_file == basename($db_file) ) { // The filename was given without a path
-			$db_file = Site::get_path( 'user', TRUE ) . $db_file;
+			$db_file = Site::get_path( 'user', true ) . $db_file;
 		}
 		if ( file_exists( $db_file ) && is_writable( $db_file ) && is_writable( dirname( $db_file ) ) ) {
 			// the file exists, and is writable.  We're all set
@@ -633,16 +633,16 @@ class InstallHandler extends ActionHandler
 			/* Attempt to connect to the database host */
 			try {
 				DB::connect();
-				return TRUE;
+				return true;
 			}
 			catch( PDOException $e ) {
 				$this->theme->assign('form_errors', array( 'db_user'=>_t('Problem connecting to supplied database credentials' ) ) );
-				return FALSE;
+				return false;
 
 			}
 		}
 		// If we couldn't create the config from the template, return an error
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -1026,7 +1026,7 @@ class InstallHandler extends ActionHandler
 			exit;
 		}
 
-		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
+		if ( false === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
 			// .htaccess is only needed on Apache
 			// @TODO: add support for IIS and lighttpd rewrites
 			return true;
@@ -1070,7 +1070,7 @@ class InstallHandler extends ActionHandler
 	 * @param bool whether to remove and re-create any existing Habari block
 	 * @param bool whether to try a rewritebase in the .htaccess
 	**/
-	public function write_htaccess( $exists = FALSE, $update = FALSE, $rewritebase = TRUE )
+	public function write_htaccess( $exists = false, $update = false, $rewritebase = true )
 	{
 		$htaccess = $this->htaccess();
 		if ( $rewritebase ) {
@@ -1105,7 +1105,7 @@ class InstallHandler extends ActionHandler
 		}
 		//Save the htaccess
 		if ( $fh = fopen( HABARI_PATH . '/.htaccess', $fmode ) ) {
-			if ( FALSE === fwrite( $fh, $file_contents ) ) {
+			if ( false === fwrite( $fh, $file_contents ) ) {
 				return false;
 			}
 			fclose( $fh );
@@ -1142,7 +1142,7 @@ class InstallHandler extends ActionHandler
 	**/
 	public function secure_sqlite()
 	{
-		if ( FALSE === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
+		if ( false === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
 			// .htaccess is only needed on Apache
 			// @TODO: Notify people on other servers to take measures to secure the SQLite file.
 			return true;
@@ -1162,10 +1162,10 @@ class InstallHandler extends ActionHandler
 
 		// See if it already exists
 		$current_files_contents = file_get_contents( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess');
-		if ( FALSE === strpos( $current_files_contents, $files_contents ) ) {
+		if ( false === strpos( $current_files_contents, $files_contents ) ) {
 			// If not, append the files clause to the .htaccess file
 			if ( $fh = fopen( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess', 'a' ) ) {
-				if ( FALSE === fwrite( $fh, $files_contents ) ) {
+				if ( false === fwrite( $fh, $files_contents ) ) {
 					// Can't write to the file
 					return false;
 				}
@@ -1317,7 +1317,7 @@ class InstallHandler extends ActionHandler
 		}
 
 		// don't allow duplicate upgrades.
-		Options::set( 'db_upgrading', TRUE );
+		Options::set( 'db_upgrading', true );
 
 		// This database-specific code needs to be moved into the schema-specific functions
 		list( $schema, $remainder )= explode( ':', Config::get( 'db_connection' )->connection_string );
@@ -1358,7 +1358,7 @@ class InstallHandler extends ActionHandler
 		DB::upgrade_post( $version );
 
 		Version::save_dbversion();
-		Options::set( 'db_upgrading', FALSE );
+		Options::set( 'db_upgrading', false );
 	}
 
 	private function display_currently_upgrading()
@@ -1570,7 +1570,7 @@ class InstallHandler extends ActionHandler
 
 		$vocabulary = Vocabulary::create( array( 'name' => 'tags', 'description' => 'Habari\'s tags implementation', 'features' => array( 'multiple', 'free' ) ) );
 
-		$new_tag = NULL;
+		$new_tag = null;
 		$post_ids = array();
 		$prefix = Config::get( 'db_connection' )->prefix;
 
@@ -1622,12 +1622,12 @@ class InstallHandler extends ActionHandler
 		// replace option with only the usuable plugins
 		Options::set( 'active_plugins', $new_plugins );
 	}
-	
+
 	private function upgrade_db_post_4382 ( ) {
-		
+
 		// add the new logging limit option
 		Options::set( 'log_min_severity', 3 );		// 3 is 'info'
-		
+
 	}
 
 	/**
@@ -1789,7 +1789,7 @@ class InstallHandler extends ActionHandler
 		}
 		if ( !isset( $xml_error ) ) {
 			if ( $db_file == basename($db_file) ) { // The filename was given without a path
-				$db_file = Site::get_path( 'user', TRUE ) . $db_file;
+				$db_file = Site::get_path( 'user', true ) . $db_file;
 			}
 			if ( ! is_writable( dirname( $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
@@ -1797,7 +1797,7 @@ class InstallHandler extends ActionHandler
 				$xml_error->addChild( 'id', '#databasefile' );
 				$xml_error->addChild( 'message', _t('Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server.', array(dirname($db_file)) ) );
 			}
-			elseif ( file_exists ( Site::get_path( 'user', TRUE ) . $db_file ) && ( ! is_writable( Site::get_path( 'user', TRUE ) . $db_file ) ) ) {
+			elseif ( file_exists ( Site::get_path( 'user', true ) . $db_file ) && ( ! is_writable( Site::get_path( 'user', true ) . $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );

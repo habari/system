@@ -15,7 +15,7 @@ class UserInfo extends InfoRecords
 	{
 		// call parent with appropriate  parameters
 		parent::__construct ( DB::table('userinfo'), 'user_id', $user_id );
-	}	
+	}
 }
 
 ?>

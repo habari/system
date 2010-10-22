@@ -19,7 +19,7 @@ abstract class Cache
 	 */
 	public static function __static()
 	{
-		if( !defined( 'CACHE_CLASS' ) ) {
+		if ( !defined( 'CACHE_CLASS' ) ) {
 			define( 'CACHE_CLASS', 'FileCache' );
 		}
 		$cache_class = CACHE_CLASS;
@@ -31,7 +31,7 @@ abstract class Cache
 	 * Is record with $name in the cache?
 	 *
  	 * @param mixed $name name of the cached item or an array of array( string $group, string $name )
-	 * @return boolean TRUE if item is cached, FALSE if not
+	 * @return boolean true if item is cached, false if not
 	 */
 	public static function has( $name )
 	{
@@ -49,15 +49,15 @@ abstract class Cache
 	 * A cache instance implements this function to return whether a named cache exists.
 	 *
 	 * @param string $name The name of the cached item
-	 * @return boolean TRUE if the item is cached, FALSE if not
+	 * @return boolean true if the item is cached, false if not
 	 */
 	abstract protected function _has( $name, $group );
-	
+
 	/**
 	 * Is group in the cache?
 	 *
  	 * @param string $group name of the cached group
-	 * @return boolean TRUE if group is cached, FALSE if not
+	 * @return boolean true if group is cached, false if not
 	 */
 	public static function has_group( $group )
 	{
@@ -68,7 +68,7 @@ abstract class Cache
 	 * A cache instance implements this function to return whether a group exists.
 	 *
 	 * @param string $name The name of the cached group
-	 * @return boolean TRUE if the group is cached, FALSE if not
+	 * @return boolean true if the group is cached, false if not
 	 */
 	abstract protected function _has_group( $group );
 
@@ -76,7 +76,7 @@ abstract class Cache
 	 * Returns the named value from the cache.
 	 *
 	 * @param mixed $name The name of the cached item or an array of array( string $group, string $name )
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	public static function get( $name )
 	{
@@ -94,15 +94,15 @@ abstract class Cache
 	 * A cache instance implements this to return the named value from the cache.
 	 *
 	 * @param string $name The name of the cached item
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	abstract protected function _get( $name, $group );
-	
+
 	/**
 	 * Returns the group from the cache.
 	 *
 	 * @param string $name The name of the cached group
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	public static function get_group( $group )
 	{
@@ -113,7 +113,7 @@ abstract class Cache
 	 * A cache instance implements this to return the group from the cache.
 	 *
 	 * @param string $name The name of the cached group
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	abstract protected function _get_group( $group );
 

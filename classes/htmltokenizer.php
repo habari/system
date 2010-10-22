@@ -118,7 +118,7 @@ class HTMLTokenizer
 			return $this->html{ $this->pos++ };
 		}
 
-		return NULL;
+		return null;
 	}
 
 	private function peek()
@@ -130,7 +130,7 @@ class HTMLTokenizer
 	{
 		$pos = $this->pos;
 		$this->pos = strpos( $this->html, $str, $pos );
-		if ( $this->pos === FALSE ) {
+		if ( $this->pos === false ) {
 			// finish
 			$this->pos = $this->len;
 		}
@@ -157,7 +157,7 @@ class HTMLTokenizer
 		$data = $this->up_to_str( self::$CHR_TAG_BEGIN );
 		$this->inc();
 		if ( $data != '' ) {
-			$this->node( self::NODE_TYPE_TEXT, '#text', $data, NULL );
+			$this->node( self::NODE_TYPE_TEXT, '#text', $data, null );
 		}
 
 		return self::$STATE_TAG;
@@ -197,14 +197,14 @@ class HTMLTokenizer
 					$value = $this->up_to_chr( self::$CHR_WHITESPACE . '>' );
 				}
 			}
-			elseif ( $char !== NULL ) {
+			elseif ( $char !== null ) {
 				// TODO HTMLParser should handle #IMPLIED attrs
-				$value = NULL;
+				$value = null;
 				$this->dec();
 			}
 			else {
 				// default
-				$value = NULL;
+				$value = null;
 			}
 			// store that attribute only if it's not empty
 			if ( $name ) {
@@ -243,15 +243,15 @@ class HTMLTokenizer
 			$attr = $this->parse_attributes();
 			$char = $this->get();
 			if ( ( $char == '/' && $this->peek() == '>' ) || in_array( $tag, self::$empty_elements ) ) {
-			    // empty element
-			    if ( $char == '/' && $this->peek() == '>' ) {
-				// empty element in collapsed form
-				$this->inc(); // skip peeked '>'
-			    }
-			    $this->node( self::NODE_TYPE_ELEMENT_EMPTY, $tag, NULL, $attr );
+				// empty element
+				if ( $char == '/' && $this->peek() == '>' ) {
+					// empty element in collapsed form
+					$this->inc(); // skip peeked '>'
+				}
+				$this->node( self::NODE_TYPE_ELEMENT_EMPTY, $tag, null, $attr );
 			}
 			else {
-				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, NULL, $attr );
+				$this->node( self::NODE_TYPE_ELEMENT_OPEN, $tag, null, $attr );
 			}
 		}
 
@@ -268,7 +268,7 @@ class HTMLTokenizer
 				$this->inc();
 			}
 
-			$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, NULL, NULL );
+			$this->node( self::NODE_TYPE_ELEMENT_CLOSE, $tag, null, null );
 		}
 
 		return self::$STATE_START;
@@ -329,7 +329,7 @@ class HTMLTokenizer
 		$this->inc();
 
 		if ( $data != '' ) {
-			$this->node( $nodeType, $nodeName, $data, NULL );
+			$this->node( $nodeType, $nodeName, $data, null );
 		}
 
 		return self::$STATE_START;
