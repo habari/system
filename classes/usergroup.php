@@ -57,9 +57,9 @@ class UserGroup extends QueryRecord
 		}
 		else {
 			// Does the group already exist?
-			if(isset($paramarray['name'])) {
+			if ( isset($paramarray['name']) ) {
 				$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($paramarray['name']));
-				if($exists) {
+				if ( $exists ) {
 					return UserGroup::get_by_name($paramarray['name']);
 				}
 			}
@@ -73,7 +73,7 @@ class UserGroup extends QueryRecord
 	public function insert()
 	{
 		$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($this->name));
-		if($exists) {
+		if ( $exists ) {
 			return false;
 		}
 
@@ -120,11 +120,11 @@ class UserGroup extends QueryRecord
 	protected function set_member_list()
 	{
 		$this->load_member_cache();
-		
+
 		// Remove all users from this group in preparation for adding the current list
 		DB::query('DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
 		// Add the current list of users into the group
-		foreach( $this->member_ids as $user_id ) {
+		foreach ( $this->member_ids as $user_id ) {
 			DB::query('INSERT INTO {users_groups} (user_id, group_id) VALUES (?, ?)', array( $user_id, $this->id) );
 		}
 		EventLog::log( _t( 'User Group %s: Member list reset', array( $this->name ) ), 'notice', 'user', 'habari' );
@@ -139,7 +139,7 @@ class UserGroup extends QueryRecord
 		// plugins have the opportunity to prevent deletion
 		$allow = Plugins::filter('usergroup_delete_allow', $allow, $this);
 		 if ( ! $allow ) {
-		 	return;
+			return;
 		}
 
 		$name = $this->name;
@@ -171,7 +171,7 @@ class UserGroup extends QueryRecord
 			case 'users':
 				$this->load_member_cache();
 				$results = DB::get_results( 'SELECT u.* FROM {users} u INNER JOIN {users_groups} ug ON ug.user_id = u.id WHERE ug.group_id= ?', array( $this->id ), 'User' );
-				if(in_array(0, $this->member_ids)) {
+				if ( in_array(0, $this->member_ids) ) {
 					$results[] = User::anonymous();
 				}
 				return $results;
@@ -321,7 +321,7 @@ class UserGroup extends QueryRecord
 	 * Fetch a group from the database by ID or name.
 	 * This is a wrapper for get_by_id() and get_by_name()
 	 * @param mixed $group A group ID or name
-	 * @return mixed UserGroup object, or boolean FALSE
+	 * @return mixed UserGroup object, or boolean false
 	 */
 	public static function get( $group )
 	{
@@ -336,7 +336,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Select a group from the DB by its ID
 	 * @param int A group ID
-	 * @return mixed A UserGroup object, or boolean FALSE
+	 * @return mixed A UserGroup object, or boolean false
 	 */
 	public static function get_by_id( $id )
 	{
@@ -346,7 +346,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Select a group from the DB by its name
 	 * @param string A group name
-	 * @return mixed A UserGroup object, or boolean FALSE
+	 * @return mixed A UserGroup object, or boolean false
 	 */
 	public static function get_by_name( $name )
 	{
@@ -404,10 +404,10 @@ class UserGroup extends QueryRecord
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Cache the member ids that belong to this group
-	 * 
+	 *
 	 * @param boolean $refresh Optional. If true, refresh the cache
 	 */
 	protected function load_member_cache( $refresh = false )

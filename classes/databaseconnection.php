@@ -15,9 +15,9 @@ class DatabaseConnection
 	private $fetch_class_name = 'QueryRecord';       // The default class name for fetching classes
 	private $driver;                                 // PDO driver name
 	private $keep_profile = DEBUG;                   // keep profiling and timing information?
-	protected $pdo = NULL;                           // handle to the PDO interface
-	private $pdo_statement = NULL;                   // handle for a PDOStatement
-	private $pdo_transaction = FALSE;                // handle for transaction status
+	protected $pdo = null;                           // handle to the PDO interface
+	private $pdo_statement = null;                   // handle for a PDOStatement
+	private $pdo_transaction = false;                // handle for transaction status
 
 	/**
 	 * @var array tables Habari knows about
@@ -105,7 +105,7 @@ class DatabaseConnection
 	 * @param string $connect_string a PDO connection string
 	 * @param string $db_user the database user name
 	 * @param string $db_pass the database user password
-	 * @return boolean TRUE on success, FALSE on error
+	 * @return boolean true on success, false on error
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{
@@ -118,13 +118,13 @@ class DatabaseConnection
 	/**
 	 * Disconnect from the database server.
 	 *
-	 * @return boolean TRUE
+	 * @return boolean true
 	 */
 	public function disconnect()
 	{
-		$this->pdo = NULL; // this is the canonical way :o
+		$this->pdo = null; // this is the canonical way :o
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -134,9 +134,9 @@ class DatabaseConnection
 	 */
 	public function is_connected()
 	{
-		return ( NULL != $this->pdo );
+		return ( null != $this->pdo );
 	}
-	
+
 	/**
 	 * Check whether there is a transaction underway.
 	 *
@@ -151,7 +151,7 @@ class DatabaseConnection
 	 * Get the full table name for the given table.
 	 *
 	 * @param string $name name of the table
-	 * @return string the full table name, or FALSE if the table was not found
+	 * @return string the full table name, or false if the table was not found
 	 */
 	public function table( $name )
 	{
@@ -202,7 +202,7 @@ class DatabaseConnection
 	 * PDO will buffer the results and leave your cursor dangling.
 	 *
 	 * @param string $query the query to run
-	 * @return boolean TRUE on success, FALSE on error
+	 * @return boolean true on success, false on error
 	 */
 	public function exec( $query )
 	{
@@ -215,7 +215,7 @@ class DatabaseConnection
 		// Allow plugins to modify the query after it has been processed
 		$query = Plugins::filter( 'db_exec_postprocess', $query, array() );
 
-		return ( $this->pdo->exec( $query ) !== FALSE );
+		return ( $this->pdo->exec( $query ) !== false );
 	}
 
 	/**
@@ -223,11 +223,11 @@ class DatabaseConnection
 	 *
 	 * @param string $query the SQL statement
 	 * @param array $args values for the bound parameters
-	 * @return boolean TRUE on success, FALSE on failure
+	 * @return boolean true on success, false on failure
 	 */
 	public function query( $query, $args = array() )
 	{
-		if ( $this->pdo_statement != NULL ) {
+		if ( $this->pdo_statement != null ) {
 			$this->pdo_statement->closeCursor();
 		}
 
@@ -295,7 +295,7 @@ class DatabaseConnection
 	 * @todo  EVERYTHING... :)
 	 * Implemented in child classes. Most RDBMS use ANSI-92 syntax,
 	 * @todo Make sure it's MultiByte safe
-	 * ( CALL procname ( param1, param2, ... ), 
+	 * ( CALL procname ( param1, param2, ... ),
 	 * so they return the call to here. Those that don't, handle the call individually
 	 */
 	public function execute_procedure( $procedure, $args = array() )
@@ -304,7 +304,7 @@ class DatabaseConnection
 		$pdo = $this->pdo;
 		$pdo_statement = $this->pdo_statement;
 
-		if ( $pdo_statement != NULL ) {
+		if ( $pdo_statement != null ) {
 			$pdo_statement->closeCursor();
 		}
 
@@ -346,7 +346,7 @@ class DatabaseConnection
 	{
 		if ( ! $this->pdo_transaction ) {
 			$this->pdo->beginTransaction();
-			$this->pdo_transaction = TRUE;
+			$this->pdo_transaction = true;
 		}
 	}
 
@@ -359,7 +359,7 @@ class DatabaseConnection
 	{
 		if ( $this->pdo_transaction ) {
 			$this->pdo->rollBack();
-			$this->pdo_transaction = FALSE;
+			$this->pdo_transaction = false;
 		}
 	}
 
@@ -370,7 +370,7 @@ class DatabaseConnection
 	{
 		if ( $this->pdo_transaction ) {
 			$this->pdo->commit();
-			$this->pdo_transaction = FALSE;
+			$this->pdo_transaction = false;
 		}
 	}
 
@@ -688,9 +688,9 @@ class DatabaseConnection
 	 * Implemented in child classes.
 	 */
 	public function dbdelta( $queries, $execute = true, $silent = true ){}
-	
+
 	public function upgrade_pre( $old_version ){}
-	
+
 	public function upgrade_post( $old_version ){}
 
 
@@ -790,7 +790,7 @@ class DatabaseConnection
 	{
 		return str_replace($this->sql_tables_repl, $this->sql_tables, $query);
 	}
-	
+
 	public function get_driver_name()
 	{
 		if ( ! $this->driver ) {
@@ -798,12 +798,12 @@ class DatabaseConnection
 		}
 		return $this->driver;
 	}
-	
+
 	public function get_driver_version()
 	{
 		return $this->pdo->getAttribute( PDO::ATTR_SERVER_VERSION );
 	}
-	
+
 	/**
 	 * Returns number of rows affected by the last DELETE, INSERT, or UPDATE
 	 *
@@ -813,7 +813,7 @@ class DatabaseConnection
 	{
 		return $this->pdo_statement->rowCount();
 	}
-	
+
 	/**
 	 * Returns a list of tables the DB currently knows about.
 	 *
@@ -823,12 +823,12 @@ class DatabaseConnection
 	{
 		return $this->sql_tables;
 	}
-	
+
 	/**
 	 * Return a PDO-quoted string appropriate for the DB backend we're using.
-	 * 
+	 *
 	 * If you're using this then there's 99+% probability you're building your queries the wrong way!
-	 * 
+	 *
 	 * @param string $string The string to quote.
 	 * @return string A DB-safe quoted string.
 	 */

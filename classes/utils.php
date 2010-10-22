@@ -227,7 +227,7 @@ class Utils
 	 * @param integer Number of items per page
 	 * @returns integer Number of pages based on pagination option.
 	 */
-	public static function archive_pages( $item_total, $items_per_page = NULL )
+	public static function archive_pages( $item_total, $items_per_page = null )
 	{
 		if ( $items_per_page ) {
 			return ceil( $item_total / $items_per_page );
@@ -326,7 +326,7 @@ class Utils
 		echo "<pre style=\"color:white;\">";
 		foreach ( $fooargs as $arg1 ) {
 			echo '<em>' . gettype( $arg1 ) . '</em> ';
-			echo htmlentities( print_r( $arg1, TRUE ) ) . "<br>";
+			echo htmlentities( print_r( $arg1, true ) ) . "<br>";
 		}
 		echo "</pre></div>";
 	}
@@ -397,9 +397,9 @@ class Utils
 	 * @param string $hash (optional) if given, verify $password against $hash
 	 * @return crypted password, or boolean for verification
 	 */
-	public static function crypt( $password, $hash = NULL )
+	public static function crypt( $password, $hash = null )
 	{
-		if ( $hash == NULL ) {
+		if ( $hash == null ) {
 			return self::ssha512( $password, $hash );
 		}
 		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
@@ -415,7 +415,7 @@ class Utils
 						return self::$algo( $password, $hash );
 					default:
 						Error::raise( sprintf( _t( 'Unsupported digest algorithm "%s"' ), $algo ) );
-						return FALSE;
+						return false;
 				}
 			}
 			else {
@@ -433,10 +433,10 @@ class Utils
 	 *
 	 * Passwords should not be stored using this method, but legacy systems might require it.
 	 */
-	public static function sha1( $password, $hash = NULL )
+	public static function sha1( $password, $hash = null )
 	{
 		$marker = '{SHA1}';
-		if ( $hash == NULL ) {
+		if ( $hash == null ) {
 			return $marker . sha1( $password );
 		}
 		else {
@@ -449,10 +449,10 @@ class Utils
 	 *
 	 * Passwords should not be stored using this method, but legacy systems might require it.
 	 */
-	public static function md5( $password, $hash = NULL )
+	public static function md5( $password, $hash = null )
 	{
 		$marker = '{MD5}';
-		if ( $hash == NULL ) {
+		if ( $hash == null ) {
 			return $marker . md5( $password );
 		}
 		else {
@@ -468,17 +468,17 @@ class Utils
 	 * @param string $hash (optional) if given, verify $password against $hash
 	 * @return crypted password, or boolean for verification
 	 */
-	public static function ssha( $password, $hash = NULL )
+	public static function ssha( $password, $hash = null )
 	{
 		$marker = '{SSHA}';
-		if ( $hash == NULL ) { // encrypt
+		if ( $hash == null ) { // encrypt
 			// create salt (4 byte)
 			$salt = '';
 			for ( $i = 0; $i < 4; $i++ ) {
 				$salt .= chr( mt_rand( 0, 255 ) );
 			}
 			// get digest
-			$digest = sha1( $password . $salt, TRUE );
+			$digest = sha1( $password . $salt, true );
 			// b64 for storage
 			return $marker . base64_encode( $digest . $salt );
 		}
@@ -486,7 +486,7 @@ class Utils
 			// is this a SSHA hash?
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
 				Error::raise( _t( 'Invalid hash' ) );
-				return FALSE;
+				return false;
 			}
 			// cut off {SSHA} marker
 			$hash = substr( $hash, strlen( $marker ) );
@@ -496,7 +496,7 @@ class Utils
 			$digest = substr( $hash, 0, 20 );
 			$salt = substr( $hash, 20 );
 			// compare
-			return ( sha1( $password . $salt, TRUE ) == $digest );
+			return ( sha1( $password . $salt, true ) == $digest );
 		}
 	}
 
@@ -511,27 +511,27 @@ class Utils
 	 * @param string $hash (optional) if given, verify $password against $hash
 	 * @return crypted password, or boolean for verification
 	 */
-	public static function ssha512( $password, $hash = NULL )
+	public static function ssha512( $password, $hash = null )
 	{
 		$marker = '{SSHA512}';
-		if ( $hash == NULL ) { // encrypt
+		if ( $hash == null ) { // encrypt
 			$salt = '';
 			for ( $i = 0; $i < 4; $i++ ) {
 				$salt .= chr( mt_rand( 0, 255 ) );
 			}
-			$digest = hash( 'sha512', $password . $salt, TRUE );
+			$digest = hash( 'sha512', $password . $salt, true );
 			return $marker . base64_encode( $digest . $salt );
 		}
 		else { // verify
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
 				Error::raise( _t( 'Invalid hash' ) );
-				return FALSE;
+				return false;
 			}
 			$hash = substr( $hash, strlen( $marker ) );
 			$hash = base64_decode( $hash );
 			$digest = substr( $hash, 0, 64 );
 			$salt = substr( $hash, 64 );
-			return ( hash( 'sha512', $password . $salt, TRUE ) == $digest );
+			return ( hash( 'sha512', $password . $salt, true ) == $digest );
 		}
 	}
 
@@ -599,7 +599,7 @@ class Utils
 	 * @param array $properties An associative array of additional properties to assign to the select control
 	 * @return string The select control markup
 	 */
-	public static function html_select( $name, $options, $current = NULL, $properties = array())
+	public static function html_select( $name, $options, $current = null, $properties = array())
 	{
 		$output = '<select id="' . $name . '" name="' . $name . '"';
 		foreach ( $properties as $key => $value ) {
@@ -656,7 +656,7 @@ class Utils
 	 * at the end (false)
 	 * @return string The truncated string
 	 */
-	public static function truncate( $str, $len = 10, $middle = TRUE )
+	public static function truncate( $str, $len = 10, $middle = true )
 	{
 		// make sure $len is a positive integer
 		if ( ! is_numeric( $len ) || ( 0 > $len ) ) {
@@ -686,9 +686,9 @@ class Utils
 	 * Performs a syntax (lint) check on the specified code testing for scripting errors.
 	 *
 	 * @param string $code The code string to be evaluated. It does not have to contain PHP opening tags.
-	 * @return bool Returns TRUE if the lint check passed, and FALSE if the link check failed.
+	 * @return bool Returns true if the lint check passed, and false if the link check failed.
 	 */
-	public static function php_check_syntax( $code, &$error = NULL )
+	public static function php_check_syntax( $code, &$error = null )
 	{
 		$b = 0;
 
@@ -731,7 +731,7 @@ class Utils
 	 *
 	 * @see Utils::php_check_syntax()
 	 */
-	public static function php_check_file_syntax( $file, &$error = NULL )
+	public static function php_check_file_syntax( $file, &$error = null )
 	{
 		// Prepend and append PHP opening tags to prevent eval() failures.
 		$code = ' ?>' . file_get_contents( $file ) . '<?php ';
@@ -830,14 +830,14 @@ class Utils
 	 */
 	public static function mimetype( $filename )
 	{
-		$mimetype = NULL;
+		$mimetype = null;
 		if ( function_exists( 'finfo_open' ) ) {
 			$finfo = finfo_open( FILEINFO_MIME );
 			$mimetype = finfo_file( $finfo, $filename );
 			/* FILEINFO_MIME Returns the mime type and mime encoding as defined by RFC 2045.
 			 * So only return the mime type, not the encoding.
 			 */
-			if ( ( $pos = strpos( $mimetype, ';' ) ) !== FALSE ) {
+			if ( ( $pos = strpos( $mimetype, ';' ) ) !== false ) {
 				$mimetype = substr( $mimetype, 0, $pos );
 			}
 			finfo_close( $finfo );
@@ -1015,7 +1015,7 @@ class Utils
 	 * @param string $scheme The scheme in question
 	 * @return integer the port used for the scheme
 	 */
-	public static function scheme_ports( $scheme = NULL )
+	public static function scheme_ports( $scheme = null )
 	{
 		$scheme_ports = array(
 			'ftp' => 21,
@@ -1101,7 +1101,7 @@ class Utils
 	*
 	* @return A valid regex delimiter, or null if none of the choices work.
 	*/
-	public static function regexdelim( $string, $choices = NULL )
+	public static function regexdelim( $string, $choices = null )
 	{
 		/*
 		 * Supply some default possibilities for delimiters if we
@@ -1123,7 +1123,7 @@ class Utils
 		/*
 		 * Default condition is 'we didn't find one.'
 		 */
-		$delim = NULL;
+		$delim = null;
 		/*
 		 * Check for each possibility by scanning the text for it.
 		 * If it isn't found, it's a valid choice, so break out of the

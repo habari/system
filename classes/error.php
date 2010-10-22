@@ -42,7 +42,7 @@ class Error extends Exception
 	 */
 	public static function exception_handler( $exception )
 	{
-		if(isset($exception->is_error) && $exception->is_error) {
+		if ( isset($exception->is_error) && $exception->is_error ) {
 			return;
 		}
 		printf(
@@ -91,13 +91,13 @@ class Error extends Exception
 		if ( ( $errno & error_reporting() ) === 0 ) {
 			return;
 		}
-		
-		if(!function_exists('_t')) {
+
+		if ( !function_exists('_t') ) {
 			function _t($v) {
 				return $v;
 			}
 		}
-		
+
 		// Don't be fooled, we can't actually handle most of these.
 		$error_names = array(
 			E_ERROR => _t( 'Error' ),
@@ -130,10 +130,10 @@ class Error extends Exception
 				$errfile,
 				$errline
 			);
-			if( DEBUG ) {
+			if ( DEBUG ) {
 				Error::print_backtrace();
 			}
-			
+
 			if ( Options::get( 'log_backtraces' ) || DEBUG ) {
 				$backtrace = print_r( debug_backtrace(), true );
 			}
@@ -141,11 +141,11 @@ class Error extends Exception
 				$backtrace = null;
 			}
 		}
-		
-		if( !isset( $backtrace) ) {
+
+		if ( !isset( $backtrace) ) {
 			$backtrace= null;
 		}
-		
+
 		EventLog::log( $errstr . ' in ' . $errfile . ':' . $errline, 'err', 'default', null, $backtrace );
 
 		// throwing an Error make every error fatal!
@@ -174,7 +174,7 @@ class Error extends Exception
 		foreach ( $trace as $n => $a ) {
 			$a = array_merge($defaults, $a);
 
-			if($a['class'] == 'Error') {
+			if ( $a['class'] == 'Error' ) {
 				continue;
 			}
 
@@ -182,7 +182,7 @@ class Error extends Exception
 				$a['file'] = substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
 
-			if(defined('DEBUG_ARGS')) {
+			if ( defined('DEBUG_ARGS') ) {
 				$args = array();
 				foreach ( $a['args'] as $arg ) {
 					$args[] = htmlentities( str_replace(
@@ -222,7 +222,7 @@ class Error extends Exception
 			echo $this->message . "\n";
 		}
 		else {
-			echo var_export($this->message, TRUE) . "\n";
+			echo var_export($this->message, true) . "\n";
 		}
 	}
 

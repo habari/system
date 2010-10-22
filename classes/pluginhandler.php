@@ -18,8 +18,8 @@ class PluginHandler extends ActionHandler
 	{
 		$this->setup_theme();
 	}
-	
-	
+
+
 	/**
 	 * All handlers must implement act() to conform to handler API.
 	 * This is the default implementation of act(), which attempts

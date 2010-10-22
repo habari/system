@@ -133,7 +133,7 @@ class Post extends QueryRecord implements IsContent
 		}
 		foreach ( self::$post_status_list as $status ) {
 			if ( $all instanceof Post ) {
-				if( ! $status->internal || $status->id == $all->status ) {
+				if ( ! $status->internal || $status->id == $all->status ) {
 					$statuses[$status->name] = $status->id;
 				}
 			}
@@ -155,7 +155,7 @@ class Post extends QueryRecord implements IsContent
 	public static function status( $name )
 	{
 		$statuses = Post::list_post_statuses();
-		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $statuses ) ) ) {
+		if ( is_numeric( $name ) && ( false !== in_array( $name, $statuses ) ) ) {
 			return $name;
 		}
 		if ( isset( $statuses[strtolower( $name )] ) ) {
@@ -175,7 +175,7 @@ class Post extends QueryRecord implements IsContent
 		if ( is_numeric( $status ) && isset( $statuses[$status] ) ) {
 			return $statuses[$status];
 		}
-		if ( FALSE !== in_array( $status, $statuses ) ) {
+		if ( false !== in_array( $status, $statuses ) ) {
 			return $status;
 		}
 		return '';
@@ -189,7 +189,7 @@ class Post extends QueryRecord implements IsContent
 	public static function type( $name )
 	{
 		$types = Post::list_active_post_types();
-		if ( is_numeric( $name ) && ( FALSE !== in_array( $name, $types ) ) ) {
+		if ( is_numeric( $name ) && ( false !== in_array( $name, $types ) ) ) {
 			return $name;
 		}
 		if ( isset( $types[strtolower( $name )] ) ) {
@@ -209,7 +209,7 @@ class Post extends QueryRecord implements IsContent
 		if ( is_numeric( $type ) && isset( $types[$type] ) ) {
 			return $types[$type];
 		}
-		if ( FALSE !== in_array( $type, $types ) ) {
+		if ( false !== in_array( $type, $types ) ) {
 			return $type;
 		}
 		return '';
@@ -234,7 +234,7 @@ class Post extends QueryRecord implements IsContent
 			// Isn't active so we activate it
 			self::activate_post_type( $type );
 		}
-		ACL::create_token( 'post_' . Utils::slugify($type), _t('Permissions to posts of type "%s"', array($type) ), _t('Content'), TRUE );
+		ACL::create_token( 'post_' . Utils::slugify($type), _t('Permissions to posts of type "%s"', array($type) ), _t('Content'), true );
 
 		// now force a refresh of the caches, so the new/activated type
 		// is available for immediate use
@@ -521,7 +521,7 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_insert_after', $this );
 
 		//scheduled post
-		if( $this->status == Post::status( 'scheduled' ) ) {
+		if ( $this->status == Post::status( 'scheduled' ) ) {
 			Posts::update_scheduled_posts_cronjob();
 		}
 
@@ -539,7 +539,7 @@ class Post extends QueryRecord implements IsContent
 		if ( ! $minor && $this->status != Post::status( 'draft' ) ) {
 			$this->updated = $this->modified;
 		}
-		
+
 		if ( isset( $this->fields['guid'] ) ) {
 			unset( $this->newfields['guid'] );
 		}
@@ -615,7 +615,7 @@ class Post extends QueryRecord implements IsContent
 		EventLog::log( sprintf(_t('Post %1$s (%2$s) deleted.'), $this->id, $this->slug), 'info', 'content', 'habari' );
 
 		//scheduled post
-		if( $this->status == Post::status( 'scheduled' ) ) {
+		if ( $this->status == Post::status( 'scheduled' ) ) {
 			Posts::update_scheduled_posts_cronjob();
 		}
 
@@ -1077,7 +1077,7 @@ class Post extends QueryRecord implements IsContent
 	{
 		if ( ! isset( $this->inforecords ) ) {
 			// If this post isn't in the database yet...
-			if(  0 == $this->id ) {
+			if (  0 == $this->id ) {
 				$this->inforecords = new PostInfo();
 			}
 			else {
@@ -1277,7 +1277,7 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		$tokens = array_merge($tokens, $this->get_tokens());
-		
+
 		// collect all possible token accesses on this post
 		$token_accesses = array();
 		foreach ( $tokens as $token ) {

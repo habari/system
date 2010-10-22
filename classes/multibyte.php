@@ -82,7 +82,7 @@ class MultiByte
 
 		}
 		else {
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -101,7 +101,7 @@ class MultiByte
 	*/
 	public static function convert_encoding( $str, $use_enc = null, $from_enc = null )
 	{
-		$ret = FALSE;
+		$ret = false;
 
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
@@ -109,7 +109,7 @@ class MultiByte
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			if( $from_enc == null ) {
+			if ( $from_enc == null ) {
 				$from_enc = MultiByte::detect_encoding( $str );
 			}
 			$ret = mb_convert_encoding( $str, $enc, $from_enc );
@@ -129,12 +129,11 @@ class MultiByte
 	*/
 	public static function detect_encoding( $str )
 	{
-		$enc = FALSE;
+		$enc = false;
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			// get original detection order
 			$old_order = mb_detect_order();
-//				Utils::debug( $old_order );
 			// make sure  ISO-8859-1 is included
 			mb_detect_order( array( 'ASCII', 'JIS', 'UTF-8', 'ISO-8859-1', 'EUC-JP', 'SJIS' ) );
 			//detect the encoding . the detected encoding may be wrong, but it's better than guessing
@@ -165,7 +164,7 @@ class MultiByte
 	*/
 	public static function substr( $str, $begin, $len = null, $use_enc = null )
 	{
-		$ret = FALSE;
+		$ret = false;
 
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
@@ -173,7 +172,7 @@ class MultiByte
 		}
 
 		if ( self::$use_library == self::USE_MBSTRING ) {
-			if( ! isset( $len ) ) {
+			if ( ! isset( $len ) ) {
 				$len = MultiByte::strlen( $str ) - $begin;
 			}
 			$ret = mb_substr( $str, $begin, $len, $enc );

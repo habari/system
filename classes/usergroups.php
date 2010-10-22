@@ -32,7 +32,7 @@ class UserGroups extends ArrayObject
 		}
 		// defaults
 		$orderby = 'id ASC';
-		$nolimit = TRUE;
+		$nolimit = true;
 
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );

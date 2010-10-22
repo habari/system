@@ -19,7 +19,7 @@ class QueryRecord implements URLProperties
 	 * constructor __construct
 	 * Constructor for the QueryRecord class.
 	 * @param array an associative array of initial field values.
-	 **/
+	 */
 	public function __construct($paramarray = array())
 	{
 		$params = Utils::get_params($paramarray);
@@ -32,7 +32,7 @@ class QueryRecord implements URLProperties
 			// mark any passed params as loaded when creating this object
 			$this->properties_loaded = array_merge(
 				$this->properties_loaded,
-				array_combine( array_keys($params), array_fill(0, count($params), TRUE) )
+				array_combine( array_keys($params), array_fill(0, count($params), true) )
 			);
 		}
 	}
@@ -41,7 +41,7 @@ class QueryRecord implements URLProperties
 	 * function __get
 	 * Handles getting virtual properties for this class
 	 * @param string Name of the property
-	 * @return mixed The set value or NULL if none exists
+	 * @return mixed The set value or null if none exists
 	 **/
 	public function __get($name)
 	{
@@ -52,10 +52,10 @@ class QueryRecord implements URLProperties
 			return $this->fields[$name];
 		}
 		else {
-			return NULL;
+			return null;
 		}
 	}
-	
+
 	/**
 	 * function __set
 	 * Handles setting virtual properties for this class
@@ -65,12 +65,12 @@ class QueryRecord implements URLProperties
 	 **/
 	public function __set($name, $value)
 	{
-		if( isset($this->properties_loaded[$name]) ) {
+		if ( isset($this->properties_loaded[$name]) ) {
 			$this->newfields[$name] = $value;
 		}
 		else {
 			$this->fields[$name] = $value;
-			$this->properties_loaded[$name] = TRUE;
+			$this->properties_loaded[$name] = true;
 		}
 		return $value;
 	}
@@ -91,8 +91,7 @@ class QueryRecord implements URLProperties
 	*/
 	public function exclude_fields( $fields )
 	{
-		if(is_array($fields))
-		{
+		if ( is_array($fields) ) {
 			$this->unsetfields = array_flip($fields);
 		}
 		else {
@@ -116,14 +115,13 @@ class QueryRecord implements URLProperties
 	{
 		return null;
 	}
-	
+
 	/**
 	 * function insertRecord(
 	 * Inserts this record's fields as a new row
 	 * @param string Table to update
 	 * @return boolean True on success, false if not
-	 **/
-	/*
+	 *
 	 * Again, the parent class's method's signature must match that of the
 	 * child class's signature
 	 */
@@ -132,12 +130,12 @@ class QueryRecord implements URLProperties
 		$merge =  array_merge($this->fields, $this->newfields);
 		return DB::insert($table, array_diff_key($merge, $this->unsetfields));
 	}
-	
+
 	/**
 	 * function to_array
 	 * Returns an array with the current field settings
 	 * @return array The field settings as they would be saved
-	 **/
+	 */
 	public function to_array()
 	{
 		return array_merge($this->fields, $this->newfields);
@@ -146,11 +144,12 @@ class QueryRecord implements URLProperties
 	/**
 	 * Returns an array with the current field settings
 	 * @return array The field settings as they would be saved
-	 **/
+	 */
 	public function get_url_args()
 	{
 		return $this->to_array();
 	}
+
 	/**
 	 * This is the public interface that updates a record
 	 */
@@ -158,13 +157,14 @@ class QueryRecord implements URLProperties
 	{
 		return null;
 	}
+
 	/**
 	 * function updateRecord
 	 * Updates this record's fields using the new data
 	 * @param string Table to update
 	 * @param array An associative array of field data to match
 	 * @return boolean True on success, false if not
-	 **/
+	 */
 	protected function updateRecord($table, $updatekeyfields = array() )
 	{
 		$merge = array_merge($this->fields, $this->newfields);
@@ -178,13 +178,14 @@ class QueryRecord implements URLProperties
 	{
 		return null;
 	}
+
 	/**
 	 * function deleteRecord
 	 * Deletes a record based on the match array
 	 * @param string Table to delete from
 	 * @param array An associative array of field data to match
 	 * @return boolean True on success, false if not
-	 **/
+	 */
 	protected function deleteRecord($table, $updatekeyfields)
 	{
 		return DB::delete($table, $updatekeyfields);

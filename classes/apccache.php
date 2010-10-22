@@ -13,7 +13,7 @@ class APCCache extends Cache
 	protected $enabled = false;
 	protected $cache_data = array();
 	protected $prefix;
-	
+
 	/**
 	 * Constructor for APCCache
 	 */
@@ -31,7 +31,7 @@ class APCCache extends Cache
 	 * Is record with $name in the cache?
 	 *
 	 * @param string $name name of the cached item
-	 * @return boolean TRUE if item is cached, FALSE if not
+	 * @return boolean true if item is cached, false if not
 	 */
 	protected function _has( $name, $group )
 	{
@@ -45,7 +45,7 @@ class APCCache extends Cache
 	 * Returns the named value from the cache.
 	 *
 	 * @param string $name The name of the cached item
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	protected function _get( $name, $group )
 	{
@@ -54,7 +54,7 @@ class APCCache extends Cache
 		}
 		return apc_fetch( implode( ':', array( $this->prefix, $group, $name ) ) );
 	}
-	
+
 	/**
 	 * Returns the named values from a group of cache.
 	 *
@@ -68,7 +68,7 @@ class APCCache extends Cache
 		}
 		$cache_info = apc_cache_info( 'user' );
 		$group_cache = array();
-		
+
 		foreach ( $cache_info['cache_list'] as $cache_item ) {
 			if ( strpos( $cache_item['info'], $this->prefix . ":$group:" ) === 0 ) {
 				$name = substr( $cache_item['info'], strlen( $this->prefix . ":$group:" ) );
@@ -77,12 +77,12 @@ class APCCache extends Cache
 		}
 		return $group_cache;
 	}
-	
+
 	/**
 	 * Is group named $group in the cache?
 	 *
 	 * @param string $name name of the cached item
-	 * @return boolean TRUE if group is cached, FALSE if not
+	 * @return boolean true if group is cached, false if not
 	 */
 	protected function _has_group( $group )
 	{
@@ -91,7 +91,7 @@ class APCCache extends Cache
 		}
 		$cache_info = apc_cache_info( 'user' );
 		$group_cache = array();
-		
+
 		foreach ( $cache_info['cache_list'] as $cache_item ) {
 			if ( strpos( $cache_item['info'], $this->prefix . ":$group:" ) === 0 ) {
 				$group_cache[$cache_item['info']] = apc_fetch( $cache_item['info'] );
@@ -105,25 +105,25 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		
+
 		Plugins::act( 'cache_set_before', $name, $group, $value, $expiry );
-		
+
 		$this->cache_data[$group][$name] = $value;
-		
-		if($keep) {
+
+		if ( $keep ) {
 			$keepcache = apc_fetch( $this->prefix . ':keepcache');
-			if(!is_array($keepcache)) {
+			if ( !is_array($keepcache) ) {
 				$keepcache = array();
 			}
 			$keepcache[$group][$name] = intval($expiry);
 			apc_store( $this->prefix . ':keepcache', $keepcache);
 			$expiry = 0;
 		}
-		
+
 		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval($expiry) );
-		
+
 		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
-		
+
 		return true;
 	}
 
@@ -155,7 +155,7 @@ class APCCache extends Cache
 				$keys = array( $name );
 				break;
 		}
-		
+
 		foreach ( $keys as $key ) {
 			Plugins::act( 'cache_expire_before', $name, $group );
 			apc_delete( implode( ':', array( $this->prefix, $group, $key ) ) );
@@ -165,7 +165,7 @@ class APCCache extends Cache
 
 	/**
 	 * Return whether a named cache value has expired
-	 * 
+	 *
 	 * @param string $name The name of the cached item
 	 * @param string $group The group of the cached item
 	 * @return boolean true if the stored value has expired
@@ -178,7 +178,7 @@ class APCCache extends Cache
 
 		// Do not check cached data, since we can return (and cache in this object) data if the cache is set to 'keep'
 		$keepcache = apc_fetch( $this->prefix . ':keepcache');
-		
+
 		if ( !self::_has($name,$group) || !isset( $keepcache[$group][$name] ) || $keepcache[$group][$name] < time() ) {
 			return true;
 		}
@@ -198,14 +198,14 @@ class APCCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		
+
 		Plugins::act( 'cache_extend_before', $name, $group, $expiry );
-		
+
 		if ( $this->_has( $name, $group ) ) {
 			$cache_data = $this->_get( $name, $group );
 			$this->_set( implode( ':', array( $this->prefix, $group, $name ) ), $cache_data, time() + $expiry, $group );
 		}
-		
+
 		Plugins::act( 'cache_extend_after', $name, $group, $expiry );
 	}
 
@@ -215,7 +215,7 @@ class APCCache extends Cache
 	protected function _purge()
 	{
 		Plugins::act( 'cache_purge_before' );
-		
+
 		$cache_info = apc_cache_info( 'user' );
 
 		$delete = array();
@@ -224,10 +224,10 @@ class APCCache extends Cache
 				$delete[] = $cache_item['info'];
 			}
 		}
-		foreach( $delete as $item ) {
+		foreach ( $delete as $item ) {
 			apc_delete( $item );
 		}
-		
+
 		Plugins::act( 'cache_purge_after' );
 	}
 }

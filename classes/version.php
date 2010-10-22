@@ -62,7 +62,7 @@ class Version
 	 */
 	public static function is_devel()
 	{
-		return strpos( Version::HABARI_SVN_HEAD_URL, '/trunk/' ) !== FALSE || strpos( Version::HABARI_SVN_HEAD_URL, '/branches/' ) !== FALSE;
+		return strpos( Version::HABARI_SVN_HEAD_URL, '/trunk/' ) !== false || strpos( Version::HABARI_SVN_HEAD_URL, '/branches/' ) !== false;
 	}
 
 	/**
@@ -80,10 +80,10 @@ class Version
 	 */
 	public static function requires_upgrade()
 	{
-		if ( Options::get( 'db_version' ) < Version::DB_VERSION ){
-			return TRUE;
+		if ( Options::get( 'db_version' ) < Version::DB_VERSION ) {
+			return true;
 		}
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -96,14 +96,14 @@ class Version
 		$rev = 0;
 		// Cheating!
 		$stash_file = HABARI_PATH . '/.svn/entries';
-		if( file_exists ( $stash_file ) ) {
+		if ( file_exists ( $stash_file ) ) {
 			$info = file_get_contents( $stash_file );
 			$info = explode( "\n", $info );
-			if( strpos( $info[4], 'svn.habariproject.org/habari/' ) !== FALSE ) {
+			if ( strpos( $info[4], 'svn.habariproject.org/habari/' ) !== false ) {
 				$rev = intval( trim( $info[3] ) );
 			}
 		}
-		if( $rev == 0 ) {
+		if ( $rev == 0 ) {
 			$rev = intval( preg_replace( '/[^0-9]/', '', Version::HABARI_SVN_REV ) );
 		}
 		return $rev;

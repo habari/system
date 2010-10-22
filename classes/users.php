@@ -18,7 +18,7 @@ class Users extends ArrayObject
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of User objects, or a single User object, depending on request
-	 **/
+	 */
 	public static function get( $paramarray = array() )
 	{
 		$params = array();
@@ -32,7 +32,7 @@ class Users extends ArrayObject
 		}
 		// defaults
 		$orderby = 'id ASC';
-		$nolimit = TRUE;
+		$nolimit = true;
 
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );

@@ -271,7 +271,7 @@ class Comment extends QueryRecord implements IsContent
 	 * @param bool Whether to use the cached version or not.  Default to true
 	 * @return Post a Post object for the post of the current comment
 	 */
-	private function get_post( $use_cache = TRUE )
+	private function get_post( $use_cache = true )
 	{
 		if ( ! isset( $this->post_object ) || ( ! $use_cache)  ) {
 			$this->post_object = Posts::get( array('id' => $this->post_id, 'fetch_fn' => 'get_row') );
@@ -481,7 +481,7 @@ class Comment extends QueryRecord implements IsContent
 
 	/**
 	 * Returns an access Bitmask for the given user on this comment. Read access is determined
-	 * by the associated post. Update/delete is determined by the comment management tokens. 
+	 * by the associated post. Update/delete is determined by the comment management tokens.
 	 * @param User $user The user mask to fetch
 	 * @return Bitmask
 	 */
@@ -510,7 +510,7 @@ class Comment extends QueryRecord implements IsContent
 		}
 
 		$tokens = array_merge( $tokens, $this->post->get_tokens() );
-		
+
 		// grab the access masks on these tokens
 		foreach ( $tokens as $token ) {
 			$access = ACL::get_user_token_access( $user, $token );
@@ -531,7 +531,7 @@ class Comment extends QueryRecord implements IsContent
 		// if we haven't returned by this point, we can neither manage the comment nor read it
 		return ACL::get_bitmask( 0 );
 	}
-	
+
 	/**
 	 * Returns a URL for the ->editlink property of this class.
 	 * @return string A url to edit this comment in the admin.

@@ -166,7 +166,7 @@ class InputFilter
 				$str = self::strip_illegal_entities( $str );
 				$str = self::filter_html_elements( $str );
 			} while ( $str != $_str );
-	
+
 			return $str;
 		}
 	}
@@ -185,7 +185,7 @@ class InputFilter
 	 */
 	public static function _validate_entity( $m )
 	{
-		$is_valid = FALSE;
+		$is_valid = false;
 
 		// valid entity references have the form
 		//   /&named([;<\n\r])/
@@ -259,9 +259,9 @@ class InputFilter
 			'query' => '',
 			'fragment' => '',
 			//
-			'is_relative' => FALSE,
-			'is_pseudo' => FALSE,
-			'is_error' => FALSE,
+			'is_relative' => false,
+			'is_pseudo' => false,
+			'is_error' => false,
 			//
 			'pseudo_args' => '',
 		);
@@ -271,7 +271,7 @@ class InputFilter
 
 		$r['is_pseudo'] = !in_array( $r['scheme'], array( 'http', 'https', '' ) );
 		$r['is_relative'] = ( $r['host'] == '' && !$r['is_pseudo'] );
-		if( $r['is_pseudo'] ) {
+		if ( $r['is_pseudo'] ) {
 			$r['pseudo_args'] = $r['path'];
 			$r['path'] = '';
 		}
@@ -286,7 +286,7 @@ class InputFilter
 	public static function glue_url( $parsed_url )
 	{
 		if ( ! is_array( $parsed_url ) ) {
-			return FALSE;
+			return false;
 		}
 
 		$res = '';
@@ -341,7 +341,7 @@ class InputFilter
 	{
 		if ( is_array( $type ) ) {
 			// array of allowed values, exact matches only
-			return in_array( $v, $type, TRUE );
+			return in_array( $v, $type, true );
 		}
 		else {
 			// data type
@@ -370,7 +370,7 @@ class InputFilter
 					break;
 				default:
 					Error::raise( sprintf( _t('Unkown attribute type "%s" in %s'), $type, __CLASS__ ) );
-					return FALSE;
+					return false;
 			}
 		}
 	}
@@ -401,7 +401,7 @@ class InputFilter
 						if ( ! in_array( strtolower( $node['name'] ), self::$elements_empty ) ) {
 							array_push( $stack, $node['name'] );
 						}
-						//$node = NULL; //remove the node completely
+						//$node = null; //remove the node completely
 						// convert the node to text
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
@@ -433,7 +433,7 @@ class InputFilter
 							// something weird happened (Luke, use the DOM!)
 							array_push( $stack, $temp );
 						}
-						//$node = NULL;
+						//$node = null;
 						//convert the node to text
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
@@ -447,12 +447,12 @@ class InputFilter
 				case HTMLTokenizer::NODE_TYPE_COMMENT:
 				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
 				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					$node = NULL;
+					$node = null;
 					break;
 				default:
 			}
 
-			if ( $node != NULL ) {
+			if ( $node != null ) {
 				$filtered[] = $node;
 			}
 		}

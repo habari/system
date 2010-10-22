@@ -49,7 +49,7 @@ class Tags extends ArrayObject
 	{
 		$term = self::vocabulary()->get_term( $tag );
 		if ( !$term instanceOf Term ) {
-			return FALSE;
+			return false;
 		}
 		$tag = new Tag( $term );
 		return $tag;
@@ -229,32 +229,26 @@ class Tags extends ArrayObject
 	 *
 	 * @return boolean. Whether the associating succeeded or not. TRUE
 	 */
-
 	public static function save_associations( $tags, $object_id, $object_type = 'post' )
 	{
 		$terms = array();
-		if( ! $tags instanceof Tags ) {
+		if ( ! $tags instanceof Tags ) {
 			$tags = new Tags( $tags );
 		}
-		foreach( $tags as $tag ) {
+		foreach ( $tags as $tag ) {
 			$terms[] = new Term( array( 'term' => $tag->tag_slug, 'term_display' => $tag->tag_text, 'id' => $tag->id ) );
 		}
 		return self::vocabulary()->set_object_terms( $object_type, $object_id, $terms );
 	}
 
 	/**
-	 * Save the tags associated to this object into the terms and object_terms tables
+	 * Get the tags associated with this object
 	 *
-	 * @param Integer $object_id. The id of the object being tagged
+	 * @param Integer $object_id. The id of the tagged object
 	 * @param String $object_type. The name of the type of the object being tagged. Defaults to post
 	 *
-	 * @return boolean. Whether the associating succeeded or not. TRUE
+	 * @return Tags. The tags associated with this object
 	 */
-//	public function save_associations( $object_id, $object_type = 'post' )
-//	{
-//		return self::vocabulary()->set_object_terms( $object_type, $object_id, (array)$this );
-//	}
-
 	public static function get_associations( $object_id, $object_type = 'post' )
 	{
 		$tags = self::vocabulary()->get_object_terms( $object_type, $object_id );

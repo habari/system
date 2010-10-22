@@ -54,7 +54,7 @@ abstract class Plugin extends Pluggable
 	public function _help_plugin_config_plugin($actions, $plugin_id)
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
-			foreach($this->info->help as $help) {
+			foreach ( $this->info->help as $help ) {
 				$name = (string)$help['name'];
 				if ( $name == '' ) {
 					$name = '_help';
@@ -74,7 +74,7 @@ abstract class Plugin extends Pluggable
 	public function _help_plugin_ui_plugin( $plugin_id, $action )
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
-			foreach($this->info->help as $help) {
+			foreach ( $this->info->help as $help ) {
 				if ( ($action == (string)$help['name'] && (string)$help['name'] != '') || ($action == '_help' && (string)$help['name'] == '') ) {
 					echo '<div class="help">' . ((string)$help->value) . '</div>';
 				}

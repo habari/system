@@ -45,7 +45,7 @@ class FileCache extends Cache
 	 * Is record with $name in the cache?
 	 *
 	 * @param string $name name of the cached item
-	 * @return boolean TRUE if item is cached, FALSE if not
+	 * @return boolean true if item is cached, false if not
 	 */
 	protected function _has( $name, $group )
 	{
@@ -62,7 +62,7 @@ class FileCache extends Cache
 	 * Is group in the cache?
 	 *
 	 * @param string $name name of the cached item
-	 * @return boolean TRUE if item is cached, FALSE if not
+	 * @return boolean true if item is cached, false if not
 	 */
 	protected function _has_group( $group )
 	{
@@ -70,7 +70,7 @@ class FileCache extends Cache
 			return false;
 		}
 		$ghash = $this->get_group_hash( $group );
-		
+
 		$valid = true;
 		$now = time();
 		foreach ( $this->cache_files[$ghash] as $hash => $record ) {
@@ -113,7 +113,7 @@ class FileCache extends Cache
 	 * Returns the named value from the cache.
 	 *
 	 * @param string $name The name of the cached item
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	protected function _get( $name, $group )
 	{
@@ -137,9 +137,9 @@ class FileCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		
+
 		Plugins::act( 'cache_set_before', $name, $group, $value, $expiry );
-		
+
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
@@ -155,7 +155,7 @@ class FileCache extends Cache
 		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 
 		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
-		
+
 		return true;
 	}
 
@@ -188,29 +188,29 @@ class FileCache extends Cache
 				$keys = array( $name );
 				break;
 		}
-		
+
 		$ghash = $this->get_group_hash( $group );
 		foreach ( $keys as $key ) {
 			Plugins::act( 'cache_expire_before', $name, $group );
-		
+
 			$hash = $this->get_name_hash( $key );
-			
+
 			if ( isset( $this->cache_files[$ghash][$hash] ) && file_exists( $this->cache_files[$ghash][$hash]['file'] ) ) {
 				unlink( $this->cache_files[$ghash][$hash]['file'] );
 				unset( $this->cache_files[$ghash][$hash] );
 			}
-			
+
 			Plugins::act( 'cache_expire_after', $name, $group );
 		}
-		
+
 		$this->clear_expired();
 		file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 	}
 
-	
+
 	/**
 	 * Return whether a named cache value has expired
-	 * 
+	 *
 	 * @param string $name The name of the cached item
 	 * @param string $group The group of the cached item
 	 * @return boolean true if the stored value has expired
@@ -231,7 +231,7 @@ class FileCache extends Cache
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Extend the expiration of the named cached value.
 	 *
@@ -243,9 +243,9 @@ class FileCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
-		
+
 		Plugins::act( 'cache_extend_before', $name, $group, $expiry );
-		
+
 		$hash = $this->get_name_hash( $name );
 		$ghash = $this->get_group_hash( $group );
 
@@ -254,7 +254,7 @@ class FileCache extends Cache
 			$this->clear_expired();
 			file_put_contents( $this->index_file, serialize( $this->cache_files ) );
 		}
-		
+
 		Plugins::act( 'cache_extend_after', $name, $group, $expiry );
 	}
 
@@ -262,15 +262,15 @@ class FileCache extends Cache
 	 * Remove all cache files
 	 */
 	protected function _purge()
-	{	
+	{
 		Plugins::act( 'cache_purge_before' );
-	
+
 		$glob = Utils::glob( FILE_CACHE_LOCATION . '*.data' );
-		foreach( $glob as $file ) {
+		foreach ( $glob as $file ) {
 			unlink( $file );
 		}
 		$glob = Utils::glob( FILE_CACHE_LOCATION . '*.cache' );
-		foreach( $glob as $file ) {
+		foreach ( $glob as $file ) {
 			unlink( $file );
 		}
 
@@ -320,7 +320,7 @@ class FileCache extends Cache
 			$this->cache_files[$ghash] = array_filter( $records, array( $this, 'record_fresh' ) );
 		}
 	}
-	
+
 }
 
 ?>

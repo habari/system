@@ -51,7 +51,7 @@ class Vocabulary extends QueryRecord
 		parent::__construct( $paramarray );
 
 		$this->exclude_fields( 'id' );
-		if( is_string( $this->features ) ) {
+		if ( is_string( $this->features ) ) {
 			$this->features = unserialize( $this->features );
 		}
 	}
@@ -302,7 +302,7 @@ class Vocabulary extends QueryRecord
 	 * Adds a term to the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
 	 * @return Term The Term object added
 	 **/
-	public function add_term( $term, $target_term = null, $before = FALSE )
+	public function add_term( $term, $target_term = null, $before = false )
 	{
 		$new_term = $term;
 		if ( is_string( $term ) ) {
@@ -344,14 +344,14 @@ class Vocabulary extends QueryRecord
 			// Make space for the new node
 			$params = array( 'vocab_id' => $this->id, 'ref' => $ref);
 			$res = DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=:vocab_id AND mptt_right>:ref', $params);
-			if( ! $res ) {
+			if ( ! $res ) {
 				DB::rollback();
-				return FALSE;
+				return false;
 			}
 			$res = DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=:vocab_id AND mptt_left>:ref', $params);
-			if( ! $res ) {
+			if ( ! $res ) {
 				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 		}
@@ -363,12 +363,12 @@ class Vocabulary extends QueryRecord
 		// Insert the new node
 		$result = $new_term->insert();
 		if ( $result ) {
-			DB::commit(); 
+			DB::commit();
 			return $new_term;
 		}
 		else {
 			DB::rollback();
-			return FALSE;
+			return false;
 		}
 
 	}
@@ -418,13 +418,13 @@ class Vocabulary extends QueryRecord
 	public function set_object_terms( $object_type, $id, $terms )
 	{
 		 if ( ! isset( $object_type ) || ! isset( $id ) ) {
-			  return FALSE;
+			return false;
 		 }
 
 		 if ( ! isset( $terms ) || empty( $terms ) ) {
-			  $terms = array();
-//			  DB::query( "DELETE FROM {object_terms} WHERE object_id = :object_id AND object_type_id = :type_id", array( 'object_id' => $id, 'type_id' => Vocabulary::get_object_id( $object_type ) ) );
-//			  return TRUE;
+			$terms = array();
+//			DB::query( "DELETE FROM {object_terms} WHERE object_id = :object_id AND object_type_id = :type_id", array( 'object_id' => $id, 'type_id' => Vocabulary::get_object_id( $object_type ) ) );
+//			return true;
 		 }
 
 		// Make sure we have an array
@@ -433,12 +433,12 @@ class Vocabulary extends QueryRecord
 
 		// Make sure we have terms and they're in the database.
 		// Key the terms to their id while we're at it.
-		foreach( $terms as $term ) {
+		foreach ( $terms as $term ) {
 			$new_term = Term::get( $this->id, (string)$term );
 			if ( ! $new_term instanceof Term ) {
 				$new_term = $this->add_term( $term );
 			}
-			if( ! array_key_exists( $new_term->id, $new_terms ) ) {
+			if ( ! array_key_exists( $new_term->id, $new_terms ) ) {
 				$new_terms[$new_term->id] = $new_term;
 			}
 		}
@@ -446,19 +446,19 @@ class Vocabulary extends QueryRecord
 		// Get the current terms
 		$old_terms = $this->get_object_terms( $object_type, $id );
 		$keys = array_keys( $new_terms );
-		foreach( $old_terms as $term ) {
+		foreach ( $old_terms as $term ) {
 	 		// If the old term isn't in the new terms, dissociate it from the object
-			 if( ! in_array( $term->id, $keys ) ) {
+			 if ( ! in_array( $term->id, $keys ) ) {
 				  $term->dissociate( $object_type, $id );
 			 }
 		}
 
 		// Associate the new terms
-		foreach( $new_terms as $term ) {
+		foreach ( $new_terms as $term ) {
 			 $term->associate( $object_type, $id );
 		}
 
-		return TRUE;
+		return true;
 	}
 
 	/**
@@ -524,14 +524,14 @@ class Vocabulary extends QueryRecord
 		$lastright = $lastleft = reset($tree)->mptt_left;
 		$indent = 0;
 		$stack = array();
-		foreach( $tree as $term ) {
+		foreach ( $tree as $term ) {
 			while ( count( $stack ) > 0 && end( $stack )->mptt_right < $term->mptt_left ) {
 				array_pop( $stack );
 			}
 			$output[$term->id] = str_repeat( '- ', count( $stack )) . $term->term_display;
 			$stack[] = $term;
 		}
-				
+
 		return $output;
 	}
 
@@ -596,7 +596,7 @@ SQL;
 	 * Moves a term within the vocabulary. Returns a Term object. null parameters append the term to the end of any hierarchies.
 	 * @return Term The Term object moved
 	 **/
-	public function move_term( $term, $target_term = null, $before = FALSE )
+	public function move_term( $term, $target_term = null, $before = false )
 	{
 		// We assume that the arguments passed are valid terms. Check them before calling this.
 
@@ -615,34 +615,34 @@ SQL;
 			$source_to_temp = $source_right + 1; // move the terms so that the rightmost one's mptt_right is -1
 			$params = array( 'displacement' => $source_to_temp, 'vocab_id' => $this->id, 'range_left' => $source_left, 'range_right' => $source_right );
 			$res = DB::query( '
-				UPDATE {terms} 
-				SET 
-					mptt_left = mptt_left - :displacement, 
-					mptt_right = mptt_right - :displacement 
-				WHERE 
+				UPDATE {terms}
+				SET
+					mptt_left = mptt_left - :displacement,
+					mptt_right = mptt_right - :displacement
+				WHERE
 					vocabulary_id = :vocab_id
 					AND mptt_left BETWEEN :range_left AND :range_right
-				', 
-				$params 
+				',
+				$params
 			);
 
- 			if( ! $res ) {
+ 			if ( ! $res ) {
  				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 			// Close the gap in the tree created by moving those nodes out
 			$params = array( 'range' => $range, 'vocab_id' => $this->id, 'source_left' => $source_left );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left-:range WHERE vocabulary_id=:vocab_id AND mptt_left > :source_left', $params );
-			if( ! $res ) {
+			if ( ! $res ) {
  				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right-:range WHERE vocabulary_id=:vocab_id AND mptt_right > :source_left', $params );
-			if( ! $res ) {
+			if ( ! $res ) {
  				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 			// Determine the insertion point mptt_target
@@ -652,17 +652,17 @@ SQL;
 					$mptt_target = DB::get_value( 'SELECT MAX(mptt_right) FROM {terms} WHERE vocabulary_id=?', array( $this->id ) ) + 1;
 				}
 				else {
-					if ( FALSE == $before ) {
+					if ( $before == false ) {
 						$mptt_target = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? AND id = ?', array( $this->id, $target_term->id ) );
 					}
 					else {
 						$mptt_target = DB::get_value( 'SELECT mptt_left FROM {terms} WHERE vocabulary_id=? AND id = ?', array( $this->id, $target_term->id ) );
 					}
 				}
-			} 
+			}
 			else {
 				// vocabulary is not hierarchical
-				if ( FALSE != $before ) {
+				if ( $before != false ) {
 					$mptt_target = DB::get_value( 'SELECT mptt_left FROM {terms} WHERE vocabulary_id=? AND id = ?', array( $this->id, $target_term->id ) );
 				}
 				else {
@@ -675,38 +675,38 @@ SQL;
 			// Create space in the tree for the insertion
 			$params = array( 'vocab_id' => $this->id, 'range' => $range, 'mptt_target' => $mptt_target );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left+:range WHERE vocabulary_id=:vocab_id AND mptt_left >= :mptt_target', $params );
-			if( ! $res ) {
+			if ( ! $res ) {
  				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right+:range WHERE vocabulary_id=:vocab_id AND mptt_right >= :mptt_target', $params );
-			if( ! $res ) {
+			if ( ! $res ) {
  				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 			// Move the temp nodes into the space created for them
 			$params = array( 'vocab_id' => $this->id, 'temp_to_target' => $temp_to_target );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left+:temp_to_target WHERE vocabulary_id=:vocab_id AND mptt_left < 0', $params );
-			if( ! $res ) {
+			if ( ! $res ) {
  				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right+:temp_to_target WHERE vocabulary_id=:vocab_id AND mptt_right < 0', $params );
-			if( ! $res ) {
+			if ( ! $res ) {
  				DB::rollback();
-				return FALSE;
+				return false;
 			}
 
 			// Success!
  			DB::commit();
 
 			// @todo: need to return the updated term
-			return $term; 
+			return $term;
 		}
-		return FALSE; 
+		return false;
 	}
 
 }

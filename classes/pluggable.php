@@ -78,7 +78,7 @@ abstract class Pluggable
 
 	/**
 	 * Load a translation domain/file for this pluggable
-	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
+	 * @return boolean true if data was successfully loaded, false otherwise
 	 */
 	public function load_text_domain( $domain )
 	{

@@ -94,7 +94,7 @@ class FormContainer
 	{
 		if ( !isset($this->checksum) ) {
 			$checksum = '';
-			foreach($this->controls as $control) {
+			foreach ( $this->controls as $control ) {
 				if ( method_exists($control, 'checksum') ) {
 					$checksum .= get_class($control) . ':' . $control->checksum();
 				}
@@ -179,7 +179,7 @@ class FormContainer
 	function get_theme($forvalidation = false, $control = null)
 	{
 		if ( !isset($this->theme_obj) ) {
-			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', TRUE ) ) . 'formcontrols/', $control );
+			$theme_dir = Plugins::filter( 'control_theme_dir', Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) ) . 'formcontrols/', $control );
 			$this->theme_obj = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		}
 		$this->theme_obj->start_buffer();
@@ -302,7 +302,7 @@ class FormContainer
 	function remove( $target )
 	{
 		// Strictness will skip recursiveness, else you get an exception (recursive dependency)
-		unset( $this->controls[array_search($target, $this->controls, TRUE)] );
+		unset( $this->controls[array_search($target, $this->controls, true)] );
 	}
 
 	/**
@@ -864,13 +864,13 @@ class FormValidators
 	 * @param string $warning An optional error message
 	 * @return array An empty array if the value exists, or an array with strings describing the errors
 	 */
-	public static function validate_regex( $value, $control, $container, $regex, $warning = NULL )
+	public static function validate_regex( $value, $control, $container, $regex, $warning = null )
 	{
 		if ( preg_match($regex, $value) ) {
 			return array();
 		}
 		else {
-			if ( $warning == NULL ) {
+			if ( $warning == null ) {
 				$warning = _t('The value does not meet submission requirements');
 			}
 			return array($warning);
@@ -888,16 +888,16 @@ class FormValidators
 	 * @param string $warning An optional error message
 	 * @return array An empty array if the value is value, or an array with strings describing the errors
 	 */
-	public static function validate_range( $value, $control, $container, $min, $max, $warning = NULL )
+	public static function validate_range( $value, $control, $container, $min, $max, $warning = null )
 	{
 		if ( $value < $min ) {
-			if ( $warning == NULL ) {
+			if ( $warning == null ) {
 				$warning = _t('The value entered is lesser than the minimum of %d.', array($min));
 			}
 			return array($warning);
 		}
 		elseif ( $value > $max ) {
-			if ( $warning == NULL ) {
+			if ( $warning == null ) {
 				$warning = _t('The value entered is greater than the maximum of %d.', array($max));
 			}
 			return array($warning);

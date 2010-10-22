@@ -18,7 +18,7 @@ class Tag
 	 * @param mixed $params an associative array of initial Tag field values or a Term object.
 	 *
 	 * @todo Should we disallow array construction?
-	 **/
+	 */
 	public function __construct( $params )
 	{
 		$term = null;
@@ -75,7 +75,7 @@ class Tag
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
-	 **/
+	 */
 	public function __get( $name )
 	{
 		switch ( $name ) {
@@ -88,7 +88,7 @@ class Tag
 				break;
 			case 'tag_text_searchable':
 				// if it's got spaces, then quote it.
-				if ( strpos($this->term->term_display, ' ') !== FALSE ) {
+				if ( strpos($this->term->term_display, ' ') !== false ) {
 					$out = '\'' . str_replace("'", "\'", $this->term->term_display) . '\'';
 				}
 				else {
@@ -152,8 +152,8 @@ class Tag
 	 * </code>
 	 *
 	 * @param mixed $tag The tag's name, slug, or id
-	 * @return Tag The first tag that matched the given criteria or FALSE on failure
-	 **/
+	 * @return Tag The first tag that matched the given criteria or false on failure
+	 */
 	public static function get( $tag )
 	{
 		return Tags::get_one( $tag );
@@ -163,7 +163,7 @@ class Tag
 	 * Check if a tag exists on a published post, to see if we should match this rewrite rule.
 	 *
 	 * @return Boolean Whether the tag exists on a published post.
-	 **/
+	 */
 	public static function rewrite_tag_exists($rule, $slug, $parameters)
 	{
 		$tags = explode(' ', $rule->named_arg_values['tag']);
@@ -187,7 +187,7 @@ class Tag
 	 *
 	 * @param array $paramarray An associative array of tag fields
 	 * @return Tag The new Tag object
-	 **/
+	 */
 	public static function create( $paramarray )
 	{
 		$tag = new Tag( $paramarray );
@@ -217,7 +217,7 @@ class Tag
 			return new Tag( $this->term );
 		}
 		else {
-			return FALSE;
+			return false;
 		}
 
 	}
@@ -269,7 +269,7 @@ class Tag
 	 * @param string $name The name of the function called
 	 * @param array $args Arguments passed to the function call
 	 * @return mixed The value returned from any plugin filters, null if no value is returned
-	 **/
+	 */
 	public function __call( $name, $args )
 	{
 		array_unshift($args, 'tag_call_' . $name, null, $this);
@@ -279,7 +279,7 @@ class Tag
 	/**
 	 * Get a count of how many times the tag has been used in a post
 	 * @return integer The number of times the tag has been used
-	 **/
+	 */
 	protected function get_count()
 	{
 		return count( $this->term->objects( Tags::object_type() ) );
@@ -288,7 +288,7 @@ class Tag
 	/**
 	 * Get a count of how many times the tag has been used in a post
 	 * @return integer The number of times the tag has been used
-	 **/
+	 */
 	public function count( $object_type = 'post' )
 	{
 		return count( $this->term->objects( $object_type ) );

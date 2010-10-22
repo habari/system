@@ -39,9 +39,9 @@ class DB extends Singleton
 		/*
 			if connection has been instantiated (ie: not null), check if is already connected
 		*/
-		if ( NULL != DB::instance()->connection ) {
-			if ( (func_num_args() == 0) && FALSE != DB::instance()->connection->is_connected() ) {
-				return TRUE;
+		if ( null != DB::instance()->connection ) {
+			if ( (func_num_args() == 0) && false != DB::instance()->connection->is_connected() ) {
+				return true;
 			}
 		}
 
@@ -57,7 +57,7 @@ class DB extends Singleton
 			$db_pass = Config::get( 'db_connection' )->password;
 		}
 		DB::instance()->connection = DatabaseConnection::ConnectionFactory( $connect_string );
-		if ( NULL != DB::instance()->connection ) {
+		if ( null != DB::instance()->connection ) {
 			return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
 		}
 		else {
@@ -68,8 +68,8 @@ class DB extends Singleton
 
 	public static function disconnect()
 	{
-		if ( NULL == DB::instance()->connection ) {
-			return TRUE;
+		if ( null == DB::instance()->connection ) {
+			return true;
 		}
 
 		return DB::instance()->connection->disconnect();
@@ -370,7 +370,7 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->last_insert_id( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
 	}
-	
+
 	/**
 	 * Returns number of rows affected by the last DELETE, INSERT, or UPDATE
 	 *
@@ -403,27 +403,27 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->upgrade( $old_version );
 	}
-	
+
 	public static function upgrade_pre( $old_version )
 	{
 		return DB::instance()->connection->upgrade_pre( $old_version );
 	}
-	
+
 	public static function upgrade_post( $old_version )
 	{
 		return DB::instance()->connection->upgrade_post( $old_version );
 	}
-	
+
 	public static function get_driver_name()
 	{
 		return DB::instance()->connection->get_driver_name();
 	}
-	
+
 	public static function get_driver_version()
 	{
 		return DB::instance()->connection->get_driver_version();
 	}
-	
+
 	/**
 	 * Returns a list of tables the DB currently knows about.
 	 *
@@ -433,7 +433,7 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->list_tables();
 	}
-	
+
 	/**
 	 * Check whether there is an existing connection to a database.
 	 *
@@ -443,7 +443,7 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->is_connected();
 	}
-	
+
 	/**
 	 * Check whether there is a transaction underway.
 	 *
@@ -453,12 +453,12 @@ class DB extends Singleton
 	{
 		return DB::instance()->connection->in_transaction();
 	}
-	
+
 	/**
 	 * Return a PDO-quoted string appropriate for the DB backend we're using.
-	 * 
+	 *
 	 * If you're using this then there's 99+% probability you're building your queries the wrong way!
-	 * 
+	 *
 	 * @param string $string The string to quote.
 	 * @return string A DB-safe quoted string.
 	 */

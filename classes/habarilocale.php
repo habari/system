@@ -12,7 +12,7 @@
  */
 class HabariLocale
 {
-	private static $uselocale = FALSE;
+	private static $uselocale = false;
 	private static $messages = array();
 	private static $plural_function;
 	private static $locale;
@@ -21,17 +21,17 @@ class HabariLocale
 	 * Sets the locale for Habari.
 	 *
 	 * @param string $locale A language code like 'en' or 'en-us' or 'x-klingon', will be lowercased
-	 **/
-	public static function set( $locale = NULL )
+	 */
+	public static function set( $locale = null )
 	{
-		if ( $locale == NULL ) {
+		if ( $locale == null ) {
 			return;
 		}
 
 		self::$locale = strtolower( $locale );
 		self::$uselocale = self::load_domain( 'habari' );
 	}
-	
+
 	/**
 	 * Set system locale.
 	 *
@@ -42,14 +42,14 @@ class HabariLocale
 	 * @todo: This setting should probably be stored in the language files.
 	 *
 	 * @param string... $locale The locale(s) to set. They will be tried in order.
-	 * @return string the locale that was picked, or FALSE if an error occurred
+	 * @return string the locale that was picked, or false if an error occurred
 	 */
 	public static function set_system_locale()
 	{
 		if ( func_num_args() == 0 ) return;
 		$args = func_get_args();
 		array_unshift( $args, LC_ALL );
-		
+
 		return call_user_func_array( 'setlocale', $args );
 	}
 
@@ -61,8 +61,8 @@ class HabariLocale
 	 * @link http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html GNU Gettext Manual: Description of the MO file format
 	 * @param string $domain the domain to load
 	 * @param string $base_dir the base directory in which to find the translation files
-	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
-	 **/
+	 * @return boolean true if data was successfully loaded, false otherwise
+	 */
 	public static function load_pluggable_domain( $domain, $base_dir )
 	{
 		$file = $base_dir . '/locale/' . self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
@@ -76,8 +76,8 @@ class HabariLocale
 	 *
 	 * @link http://www.gnu.org/software/gettext/manual/html_node/gettext_136.html GNU Gettext Manual: Description of the MO file format
 	 * @param string $domain the domain to load
-	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
-	 **/
+	 * @return boolean true if data was successfully loaded, false otherwise
+	 */
 	private static function load_domain( $domain )
 	{
 		$file_end = self::$locale . '/LC_MESSAGES/' . $domain . '.mo';
@@ -99,11 +99,11 @@ class HabariLocale
 	}
 
 	/**
-	* function list_all
+	 * function list_all
 	 * Retrieves an array of the Habari locales that are installed
-	 * 
+	 *
 	 * @return array. An array of Habari locales in the installation
-	 **/
+	 */
 	public static function list_all()
 	{
 		$localedirs = array( HABARI_PATH . '/system/locale/', HABARI_PATH . '/3rdparty/locale/', HABARI_PATH . '/user/locale/' );
@@ -130,17 +130,17 @@ class HabariLocale
 	 *
 	 * @param string $domain the domain to load the data into
 	 * @param string $file the file name
-	 * @return boolean TRUE if data was successfully loaded, FALSE otherwise
+	 * @return boolean true if data was successfully loaded, false otherwise
 	 */
 	private static function load_file( $domain, $file )
 	{
 		if ( ! file_exists( $file ) ) {
 			Error::raise( sprintf( _t('No translations found for locale %s, domain %s!'), self::$locale, $domain ) );
-			return FALSE;
+			return false;
 		}
 		if ( filesize( $file ) < 24 ) {
 			Error::raise( sprintf( _t('Invalid .MO file for locale %s, domain %s!'), self::$locale, $domain ) );
-			return FALSE;
+			return false;
 		}
 
 		$fp = fopen( $file, 'rb' );
@@ -148,25 +148,25 @@ class HabariLocale
 		fclose( $fp );
 
 		// determine endianness
-		$little_endian = TRUE;
+		$little_endian = true;
 
 		list(,$magic) = unpack( 'V1', substr( $data, 0, 4 ) );
 		switch ( $magic & 0xFFFFFFFF ) {
 			case (int)0x950412de:
-				$little_endian = TRUE;
+				$little_endian = true;
 				break;
 			case (int)0xde120495:
-				$little_endian = FALSE;
+				$little_endian = false;
 				break;
 			default:
 				Error::raise( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ) );
-				return FALSE;
+				return false;
 		}
 
 		$revision = substr( $data, 4, 4 );
 		if ( $revision != 0 ) {
 			Error::raise( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ) );
-			return FALSE;
+			return false;
 		}
 
 		$l = $little_endian ? 'V' : 'N';
@@ -177,7 +177,7 @@ class HabariLocale
 
 			if ( $header['msgblock'] + ($header['msgcount'] - 1 ) * 8 > filesize( $file ) ) {
 				Error::raise( sprintf( _t('Message count (%d) out of bounds in %s!'), $header['msgcount'], $file ) );
-				return FALSE;
+				return false;
 			}
 
 			$lo = "{$l}1length/{$l}1offset";
@@ -283,7 +283,7 @@ class HabariLocale
 	 * Echo a version of the string translated into the current locale
 	 * @param string $text The text to echo translated
 	 * @param string $domain (optional) The domain to search for the message
-	 **/
+	 */
 	public static function _e()
 	{
 		$args = func_get_args();
@@ -296,7 +296,7 @@ class HabariLocale
 	 * @param string $text The text to echo translated
 	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The translated string
-	 **/
+	 */
 	public static function _t($text, $args = array(), $domain = 'habari')
 	{
 		if ( is_string($args) ) {
@@ -324,7 +324,7 @@ class HabariLocale
 	 * @param string $text The translated string
 	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The untranslated string
-	 **/
+	 */
 	public static function _u($text, $domain = 'habari')
 	{
 		$t = $text;
@@ -344,7 +344,7 @@ class HabariLocale
 	 * @param string $plural The plural form
 	 * @param string $count The count
 	 * @param string $domain (optional) The domain to search for the message
-	 **/
+	 */
 	public static function _ne( $singular, $plural, $count, $domain = 'habari' )
 	{
 		echo self::_n( $singular, $plural, $count, $domain );
@@ -358,7 +358,7 @@ class HabariLocale
 	 * @param string $count The count
 	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The appropriately translated string
-	 **/
+	 */
 	public static function _n($singular, $plural, $count, $domain = 'habari')
 	{
 		if ( isset( self::$messages[$domain][$singular] ) ) {
@@ -378,7 +378,7 @@ class HabariLocale
  * Echo a version of the string translated into the current locale, alias for HabariLocale::_e()
  *
  * @param string $text The text to translate
- **/
+ */
 function _e( $text, $args = array(), $domain = 'habari' )
 {
 	return HabariLocale::_e( $text, $args, $domain );
@@ -391,7 +391,7 @@ function _e( $text, $args = array(), $domain = 'habari' )
  * @param string $singular The singular form
  * @param string $plural The plural form
  * @param string $count The count
- **/
+ */
 function _ne( $singular, $plural, $count, $domain = 'habari' )
 {
 	return HabariLocale::_ne( $singular, $plural, $count, $domain );
@@ -402,7 +402,7 @@ function _ne( $singular, $plural, $count, $domain = 'habari' )
  *
  * @param string $text The text to translate
  * @return string The translated string
- **/
+ */
 function _t( $text, $args = array(), $domain = 'habari' )
 {
 	return HabariLocale::_t( $text, $args, $domain );
@@ -415,7 +415,7 @@ function _t( $text, $args = array(), $domain = 'habari' )
  * @param string $plural The plural form
  * @param string $count The count
  * @return string The appropriately translated string
- **/
+ */
 function _n( $singular, $plural, $count, $domain = 'habari' )
 {
 	return HabariLocale::_n( $singular, $plural, $count, $domain );
@@ -428,7 +428,7 @@ function _n( $singular, $plural, $count, $domain = 'habari' )
  * @param string $text The translated string
  * @param string $domain (optional) The domain to search for the message
  * @return string The untranslated string
- **/
+ */
 function _u( $text, $domain = 'habari' )
 {
 	return HabariLocale::_u( $text, $domain );
