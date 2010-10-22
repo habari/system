@@ -20,7 +20,7 @@
 						<?php echo $post->content_out; ?>
 					</div>
 					<div class="entryMeta">
-						<?php if ( is_array( $post->tags ) ) { ?>
+						<?php if ( count( $post->tags ) ) { ?>
 						<div class="tags"><?php _e('Tagged:'); ?> <?php echo $post->tags_out; ?></div>
 						<?php } ?>
 					</div><br>
