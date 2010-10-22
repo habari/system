@@ -600,9 +600,7 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_delete_before', $this );
 
 		// delete all the tags associated with this post
-		foreach( $this->get_tags() as $tag ) {
-			Tag::detach_from_post( $tag->tag_text, $this->id );
-		}
+		Tags::save_associations(new Tags(), $this->id );
 
 		// Delete all comments associated with this post
 		if ( $this->comments->count() > 0 ) {
