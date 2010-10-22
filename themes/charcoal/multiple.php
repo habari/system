@@ -3,7 +3,7 @@
 			<div id="main-posts">
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
-				<?php if ( is_array( $post->tags ) && ($tags_in_multiple) ) : ?>
+				<?php if ( count( $post->tags ) && ($tags_in_multiple) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>
