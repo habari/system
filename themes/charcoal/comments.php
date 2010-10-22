@@ -3,11 +3,22 @@
 			<?php if ( $post->comments->moderated->count ) : ?>
 				<?php foreach ( $post->comments->moderated as $comment ) : ?>
 				
+				<?php 
+				
+					if ( $comment->url_out == '' ) {
+						$comment_url = $comment->name_out;
+					}
+					else {
+						$comment_url = '<a href="' . $comment->url_out . '" rel="external">' . $comment->name_out . '</a>';
+					}
+				
+				?>
+				
 				<div id="comment-<?php echo $comment->id; ?>" class="post-comment">
 					
 					<div class="post-comment-commentor">
 						<h2>
-							<a href="<?php echo $comment->url; ?>" rel="external"><?php echo $comment->name; ?></a>
+							<?php echo $comment_url; ?>
 						</h2>
 					</div>
 					<div class="post-comment-body">
