@@ -509,6 +509,7 @@ class AdminHandler extends ActionHandler
 				exit;
 			}
 
+			// REFACTOR: this is duplicated in the insert code below, move it outside of the conditions
 			// Don't try to update form values that have been removed by plugins
 			$expected = array('title', 'tags', 'content');
 
@@ -524,6 +525,8 @@ class AdminHandler extends ActionHandler
 				$post->slug = $form->newslug->value;
 			}
 
+			// REFACTOR: the permissions checks should go before any of this other logic
+			
 			// sorry, we just don't allow changing posts you don't have rights to
 			if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
 				Session::error( _t( 'You don\'t have permission to edit that post' ) );
@@ -555,6 +558,7 @@ class AdminHandler extends ActionHandler
 			$post->status = $form->status->value;
 		}
 		else {
+			// REFACTOR: don't do this here, it's duplicated in Post::create()
 			$post = new Post();
 
 			// check the user can create new posts of the set type.
@@ -565,6 +569,7 @@ class AdminHandler extends ActionHandler
 				$this->get_blank();
 			}
 
+			// REFACTOR: why is this on_success here? We don't even display a form
 			$form->on_success( array( $this, 'form_publish_success' ) );
 			if ( HabariDateTime::date_create( $form->pubdate->value )->int != $form->updated->value ) {
 				$post->pubdate = HabariDateTime::date_create( $form->pubdate->value );
@@ -589,17 +594,22 @@ class AdminHandler extends ActionHandler
 
 			$minor = false;
 
+			// REFACTOR: consider using new Post( $postdata ) instead and call ->insert() manually 
 			$post = Post::create( $postdata );
 		}
 
+		// REFACTOR: this should handled in the Post::insert() code, which is called by Post::create() above. should also apply to updating posts, presumably in Post::update()
 		if ( $post->pubdate->int > HabariDateTime::date_create()->int && $post->status == Post::status( 'published' ) ) {
 			$post->status = Post::status( 'scheduled' );
 		}
 
 		$post->info->comments_disabled = !$form->comments_enabled->value;
 
+		// REFACTOR: admin should absolutely not have a hook for this here
 		Plugins::act('publish_post', $post, $form);
 
+		// REFACTOR: we should not have to update a post we just created, this should be moved to the post-update functionality above and only called if changes have been made
+		// alternately, perhaps call ->update() or ->insert() as appropriate here, so things that apply to each operation (like comments_disabled) can still be included once outside the conditions above
 		$post->update( $minor );
 
 		$permalink = ( $post->status != Post::status( 'published' ) ) ? $post->permalink . '?preview=1' : $post->permalink;
