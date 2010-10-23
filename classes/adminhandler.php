@@ -2280,11 +2280,12 @@ class AdminHandler extends ActionHandler
 	public function ajax_update_entries($handler_vars)
 	{
 		Utils::check_request_method( array( 'POST' ) );
+		$response = new AjaxResponse();
 
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			Session::error( _t('WSSE authentication failed.') );
-			echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+			$response->message = _t('WSSE authentication failed.');
+			$response->out();
 			return;
 		}
 
@@ -2295,7 +2296,12 @@ class AdminHandler extends ActionHandler
 				$ids[] = (int) substr($id, 1);
 			}
 		}
-		$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
+		if(count($ids) == 0) {
+			$posts = new Posts();
+		}
+		else {
+			$posts = Posts::get( array( 'id' => $ids, 'nolimit' => true ) );
+		}
 
 		Plugins::act( 'admin_update_posts', $handler_vars['action'], $posts, $this );
 		$status_msg = _t('Unknown action "%s"', array($handler_vars['action']));
@@ -2309,21 +2315,20 @@ class AdminHandler extends ActionHandler
 					}
 				}
 				if ( $deleted != count( $posts ) ) {
-					$status_msg = _t( 'You did not have permission to delete some entries.' );
+					$response->message = _t( 'You did not have permission to delete some entries.' );
 				}
 				else {
-					$status_msg = sprintf( _n('Deleted %d post', 'Deleted %d posts', count( $ids ) ), count( $ids ) );
+					$response->message = sprintf( _n('Deleted %d post', 'Deleted %d posts', count( $ids ) ), count( $ids ) );
 				}
 				break;
 			default:
 				// Specific plugin-supplied action
-				$status_msg = Plugins::filter( 'admin_entries_action', $status_msg, $handler_vars['action'], $posts );
+				Plugins::act( 'admin_entries_action', $response, $handler_vars['action'], $posts );
 				break;
 		}
 
-		Session::notice( $status_msg );
-		echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
-		return;
+		$response->out();
+		exit;
 	}
 
 	/**

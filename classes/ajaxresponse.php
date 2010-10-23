@@ -56,7 +56,7 @@ class AjaxResponse
 
 		// if some callback js has been provided, include that too.
 		if ($this->callback != null) {
-			$ret_array['callback'] = $this->callback;
+			$ret_array['habari_callback'] = $this->callback;
 		}
 		if(!empty($this->html)) {
 			$ret_array['html'] = $this->html;
