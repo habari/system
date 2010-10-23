@@ -32,8 +32,14 @@ var habari_ajax = {
 	{
 		spinner.stop();
 		
-		if ( json_data.response_code = 200 ) {
+		if ( json_data.response_code = 200 && json_data.message != null && json_data.message != '' ) {
 			humanMsg.displayMsg( json_data.message );	
+		}
+		if(json_data.habari_callback != null && json_data.habari_callback != '') {
+			json_data.habari_callback = eval(json_data.habari_callback);
+			if($.isFunction(json_data.habari_callback)) {
+				json_data.habari_callback(json_data);
+			}
 		}
 		
 		local_cb(json_data.data);
@@ -334,14 +340,10 @@ var itemManage = {
 			elItem.fadeOut();
 		}
 
-		$.post(
+		habari_ajax.post(
 			itemManage.updateURL,
 			query,
 			function( result ) {
-				spinner.stop();
-				jQuery.each( result, function( index, value ) {
-					humanMsg.displayMsg( value );
-				});
 				if ( $('.timeline').length ) {
 					/* TODO: calculate new offset and limit based on filtering
 					 * and the current action
@@ -360,8 +362,8 @@ var itemManage = {
 				}
 
 				itemManage.selected = [];
-			},
-			'json');
+			}
+		);
 	},
 	rename: null,
 	remove: function( id ) {
