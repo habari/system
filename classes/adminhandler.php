@@ -3219,7 +3219,7 @@ class AdminHandler extends ActionHandler
 			$createmenu['create_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=publish&content_type=' . $type ), 'title' => _t( 'Create a new %s', array( $singular ) ), 'text' => $singular, 'access' => $createperm );
 			$createperms = array_merge( $createperms, $createperm );
 
-			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'own_posts'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete'), 'post_any'=>array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) ) );
+			$manageperm = array( 'post_' . $type => array(ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'own_posts'=>array( ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ), 'post_any'=>array( ACL::get_bitmask('edit'), ACL::get_bitmask('delete') ) );
 			$managemenu['manage_' . $typeint] = array( 'url' => URL::get( 'admin', 'page=posts&type=' . $typeint ), 'title' => _t( 'Manage %s', array( $plural ) ), 'text' => $plural, 'access'=> $manageperm );
 			$manageperms = array_merge( $manageperms, $manageperm );
 
