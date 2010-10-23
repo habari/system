@@ -521,15 +521,17 @@ class Vocabulary extends QueryRecord
 	{
 		$tree = $this->get_tree( 'mptt_left ASC' );
 		$output = array();
-		$lastright = $lastleft = reset($tree)->mptt_left;
-		$indent = 0;
-		$stack = array();
-		foreach ( $tree as $term ) {
-			while ( count( $stack ) > 0 && end( $stack )->mptt_right < $term->mptt_left ) {
-				array_pop( $stack );
+		if($firstnode = reset($tree)) {
+			$lastright = $lastleft = reset($tree)->mptt_left;
+			$indent = 0;
+			$stack = array();
+			foreach ( $tree as $term ) {
+				while ( count( $stack ) > 0 && end( $stack )->mptt_right < $term->mptt_left ) {
+					array_pop( $stack );
+				}
+				$output[$term->id] = str_repeat( '- ', count( $stack )) . $term->term_display;
+				$stack[] = $term;
 			}
-			$output[$term->id] = str_repeat( '- ', count( $stack )) . $term->term_display;
-			$stack[] = $term;
 		}
 
 		return $output;
