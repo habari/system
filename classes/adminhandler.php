@@ -631,7 +631,11 @@ class AdminHandler extends ActionHandler
  		if ( isset( $id ) && ( $id != 0 )) {
 			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 			if ( !$post ) {
-				Session::error( _t( 'Access to that post id is denied' ) );
+				Session::error( _t( "You don't have permission to edit that post" ) );
+				$this->get_blank();
+			}
+			if ( ! ACL::access_check( $post->get_access(), 'edit' ) ) {
+				Session::error( _t( "You don't have permission to edit that post" ) );
 				$this->get_blank();
 			}
 			$this->theme->post = $post;
