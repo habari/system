@@ -1622,7 +1622,7 @@ class FormControlSelect extends FormControl
 	 * @param string $name
 	 * @param string $caption
 	 * @param array $options
-	 * @param string $selected
+	 * @param string $template
 	 */
 	public function __construct( )
 	{
@@ -1704,6 +1704,83 @@ class FormControlCheckboxes extends FormControlSelect
 		return parent::__get($name);
 	}
 
+}
+
+/**
+ * A set of checkbox controls based on FormControl for output via a FormUI.
+ */
+class FormControlTree extends FormControlSelect
+{
+	public $options = array();
+	public static $outpre = false;
+
+	/**
+	 * Override the FormControl constructor to support more parameters
+	 *
+	 * @param string $name
+	 * @param string $caption
+	 * @param array $options
+	 * @param string $template
+	 */
+	public function __construct( )
+	{
+		$args = func_get_args();
+		list($name, $storage, $caption, $options, $template) = array_merge($args, array_fill(0, 5, null));
+
+		$this->name = $name;
+		$this->storage = $storage;
+		$this->caption = $caption;
+		$this->options = $options;
+		$this->template = $template;
+
+		$this->default = null;
+	}
+	
+		/**
+	 * Return the HTML/script required for this control.  Do it only once.
+	 * @return string The HTML/javascript required for this control.
+	 */
+	public function pre_out()
+	{
+		$out = '';
+		if ( !FormControlTree::$outpre ) {
+			FormControlTree::$outpre = true;
+			$out = <<<  CUSTOM_TREE_JS
+				<script type="text/javascript">
+$(document).ready(function(){
+	$('ol.tree').nestedSortable({
+		disableNesting: 'no-nest',
+		forcePlaceholderSize: true,
+		handle: 'div',
+		items: 'li',
+		opacity: .6,
+		placeholder: 'placeholder',
+		tabSize: 25,
+		tolerance: 'pointer',
+		toleranceElement: '> div'
+	});
+});
+				</script>
+CUSTOM_TREE_JS;
+		}
+		return $out;
+	}
+
+	/**
+	 * Produce HTML output for this text control.
+	 *
+	 * @param boolean $forvalidation True if this control should render error information based on validation.
+	 * @return string HTML that will render this control in the form
+	 */
+	public function get($forvalidation = true)
+	{
+		$theme = $this->get_theme($forvalidation);
+		$theme->options = $this->options;
+		$theme->id = $this->name;
+		$theme->control = $this;
+
+		return $theme->fetch( $this->get_template(), true );
+	}
 }
 
 
