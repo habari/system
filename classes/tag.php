@@ -103,7 +103,7 @@ class Tag
 				$out = $this->get_count();
 				break;
 			default:
-				$out = null;
+				$out = $this->term->$name;
 				break;
 		}
 		return $out;
