@@ -192,7 +192,7 @@ class Pingback extends Plugin
 				'name'		=>	$source_title,
 				'email'		=>	'',
 				'url'		=>	$source_uri,
-				'ip'		=>	sprintf( "%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
+				'ip'		=>	sprintf( "%u", ip2long( Utils::get_ip() ) ),
 				'content'	=>	$source_excerpt,
 				'status'	=>	Comment::STATUS_UNAPPROVED,
 				'date'		=>	HabariDateTime::date_create(),
