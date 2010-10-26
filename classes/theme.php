@@ -691,8 +691,6 @@ class Theme extends Pluggable
 	/**
 	 * Build a collection of paginated URLs to be used for pagination.
 	 *
-	 * @param integer Current page
-	 * @param integer Total pages
 	 * @param string The RewriteRule name used to build the links.
 	 * @param array Various settings used by the method and the RewriteRule.
 	 * @return string Collection of paginated URLs built by the RewriteRule.
@@ -700,9 +698,9 @@ class Theme extends Pluggable
 	public static function theme_page_selector( $theme, $rr_name = NULL, $settings = array() )
 	{
 		$current = $theme->page;
-		$items_per_page = isset($theme->posts->get_param_cache['limit']) ?
+		$items_per_page = isset( $theme->posts->get_param_cache['limit'] ) ?
 			$theme->posts->get_param_cache['limit'] :
-			Options::get('pagination');
+			Options::get( 'pagination' );
 		$total = Utils::archive_pages( $theme->posts->count_all(), $items_per_page );
 
 		// Make sure the current page is valid
@@ -738,7 +736,7 @@ class Theme extends Pluggable
 		// Create the output variable.
 		$out = '';
 
-		if ( 1 === count($pages) && isset( $settings['hideIfSinglePage'] ) &&  $settings['hideIfSinglePage'] === true ) {
+		if ( 1 === count( $pages ) && isset( $settings['hideIfSinglePage'] ) &&  $settings['hideIfSinglePage'] === true ) {
 			return '';
 		}
 
