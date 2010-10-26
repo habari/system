@@ -76,7 +76,7 @@ class Session
 	static function read( $session_id )
 	{
 		// for offline testing
-		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		$session = DB::get_row( 'SELECT * FROM {sessions} WHERE token = ?', array( $session_id ) );
@@ -142,7 +142,7 @@ class Session
 	static function write( $session_id, $data )
 	{
 		// for offline testing
-		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
