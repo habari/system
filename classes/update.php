@@ -1,12 +1,5 @@
 <?php
 /**
- * @package Habari
- *
- */
-
-define('UPDATE_URL', 'http://www.habariproject.org/beacon/');
-
-/**
  * Habari Update class
  *
  * Checks for updates to Habari and its libraries
@@ -15,6 +8,8 @@ define('UPDATE_URL', 'http://www.habariproject.org/beacon/');
  */
 class Update extends Singleton
 {
+	const UPDATE_URL = 'http://www.habariproject.org/beacon/';
+	
 	private $beacons = array();
 	private $update; // SimpleXMLElement
 
@@ -67,10 +62,14 @@ class Update extends Singleton
 			$instance = self::instance();
 			if(count($instance->beacons) == 0) {
 				Update::add('Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion());
+				
+				// add all active plugins
+				self::add_plugins();
+				
 				Plugins::act('update_check');
 			}
 
-			$request = new RemoteRequest(UPDATE_URL, 'POST');
+			$request = new RemoteRequest(self::UPDATE_URL, 'POST');
 			$request->set_params(
 				array_map(
 					create_function('$a', 'return $a["version"];'),
@@ -124,6 +123,23 @@ class Update extends Singleton
 		} catch (Exception $e) {
 			return $e;
 		}
+	}
+	
+	public static function add_plugins ( ) {
+		
+		$plugins = Plugins::get_active();
+		
+		foreach ( $plugins as $plugin ) {
+			
+			// name and version are required in the XML file, make sure GUID is set
+			if ( !isset( $plugin->info->guid ) ) {
+				continue;
+			}
+			
+			Update::add( $plugin->info->name, $plugin->info->guid, $plugin->info->version );
+			
+		}
+		
 	}
 
 }
