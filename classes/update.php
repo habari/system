@@ -125,7 +125,7 @@ class Update extends Singleton
 		}
 	}
 	
-	public static function add_plugins ( ) {
+	private static function add_plugins ( ) {
 		
 		$plugins = Plugins::get_active();
 		
