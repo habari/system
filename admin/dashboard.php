@@ -3,11 +3,14 @@
 <div class="container dashboardinfo transparent">
 		<!--[if lte IE 6]>
 		<p><?php
-_e( 'Oh, great!	You\'re using IE6!  I\'ve finally found someone I can pawn this old betamax player off on!<br />
-If you\'re reading this, you\'re surfing using Internet Explorer 6, an eight-year-old browser that cannot cope with the demands of the modern internet.
-<a href="http://www.apple.com/safari/download/">Safari</a>, <a href="http://www.google.com/chrome">Google Chrome</a>, or a more recent version of 
-<a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer</a>.' ); ?>
-		</p>
+		
+			$ie6_age = HabariDateTime::difference( 'now', 'August 27, 2001' );
+			
+			echo _t( "Oh, great! You're using IE6! I've finally found someone I can pawn this old betamax player off on!" ) . '<br />';
+			echo _t( "If you're reading this you're surfing using Internet Explorer 6, a browser that is %d %s old and cannot cope with the demands of the modern internet.", array( $ie6_age['y'], _n( 'year', 'years', $ie6_age['y'] ) ) ) . '<br />';
+			echo _t( 'Consider switching to <a href="http://mozilla.com">Mozilla Firefox</a>, <a href="http://www.apple.com/safari/download/">Safari</a>, <a href="http://www.google.com/chrome">Google Chrome</a>, or a more recent version of <a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer</a>.' );
+			
+		?></p>
 		<![endif]-->
 
 		<p>
