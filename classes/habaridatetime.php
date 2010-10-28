@@ -365,6 +365,9 @@ class HabariDateTime extends DateTime
 	 * Returns a friendlier string version of the time, ie: 3 days, 1 hour, and 5 minutes ago
 	 * 
 	 * @todo Change $round to $format and support the same format as DateInterval::format() in PHP 5.3
+	 * @todo How can we account for skipped intervals in the format? ie: omit 'week' and get that included as more days?
+	 * @todo should we add a global option to define this format, too?
+	 * @todo Add $omit_nulls param to omit 0-value intervals (ie: 1 month, 0 days vs. 1 month)
 	 * 
 	 * @param boolean $round Round the time to something less absolute but shorter: 'about 3 months'.
 	 * @return string Time passed in the specified units.
@@ -439,16 +442,21 @@ class HabariDateTime extends DateTime
 		
 	}
 	
-	// invert: true: in the future (time until), false: in the past (time ago)
 	/**
 	 * Returns an array representing the difference between two times by interval.
 	 * 
 	 * <code>
 	 * 	print_r( HabariDateTime::difference( 'now', 'January 1, 2010' ) );
-	 * 	// output: Array ( [invert] => [y] => 0 [m] => 9 [w] => 3 [d] => 5 [h] => 22 [i] => 33 [s] => 5 )
+	 * 	// output (past): Array ( [invert] => [y] => 0 [m] => 9 [w] => 3 [d] => 5 [h] => 22 [i] => 33 [s] => 5 )
+	 * 	print_r( HabariDateTime::difference( 'now', 'January 1, 2011' ) );
+	 * 	// output (future): Array ( [invert] => 1 [y] => 0 [m] => 2 [w] => 0 [d] => 3 [h] => 5 [i] => 33 [s] => 11 ) 
 	 * </code>
 	 * 
 	 *  If 'invert' is true, the time is in the future (ie: x from now). If it is false, the time is in the past (ie: x ago).
+	 *  
+	 *  For more information, see PHP's DateInterval class, which this and friendly() attempt to emulate for < PHP 5.3
+	 *  
+	 *  @todo Add total_days, total_years, etc. values?
 	 * 
 	 * @param mixed $start_date The start date, as a HDT object or any format accepted by HabariDateTime::date_create().
 	 * @param mixed $end_date The end date, as a HDT object or any format accepted by HabariDateTime::date_create().
