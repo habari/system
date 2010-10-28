@@ -10,6 +10,9 @@
  * @property-read HabariDateTime $clone Returns a clonned object.
  * @property-read string $sql Returns a unix timestamp for inserting into DB.
  * @property-read int $int Returns a unix timestamp as integer.
+ * @property-read string $time Returns the time formatted according to the blog's settings.
+ * @property-read string $date Returns the date formatted according to the blog's settings.
+ * @property-read string $friendly Returned the time as a friendly string (ie: 4 months, 3 days ago, etc.). 
  */
 class HabariDateTime extends DateTime
 {
@@ -290,6 +293,7 @@ class HabariDateTime extends DateTime
 	 */
 	public function __get($property)
 	{
+		// if you add more cases to this list, please also add the repsective @property to the top of the class so it shows up propertly in IDEs!
 		switch ($property) {
 			case 'clone':
 				return clone $this;
