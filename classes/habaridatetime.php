@@ -406,11 +406,24 @@ class HabariDateTime extends DateTime
 			$result[] = sprintf( '%d %s', $difference['s'], _n( 'second', 'seconds', $difference['s'] ) );
 		}
 		
-		// pop the last element off the end of the array
-		$last = array_pop( $result );
+		// only stick 'and' into the mix if there's more than a single element
+		if ( count( $result ) > 1 ) {
 		
-		// stick 'and' in before the last element
-		$result[] = _t( 'and ' ) . $last;
+			// pop the last element off the end of the array
+			$last = array_pop( $result );
+			
+			// stick 'and' in before the last element
+			$result[] = _t( 'and ' ) . $last;
+		
+		}
+		
+		// if there are only 2 elements, don't use a comma
+		if ( count( $result ) > 2 ) {
+			$result = implode( ', ', $result );
+		}
+		else {
+			$result = implode( ' ', $result );
+		}
 		
 		
 		if ( $difference['invert'] == true ) {
@@ -420,7 +433,7 @@ class HabariDateTime extends DateTime
 			$suffix = _t('ago');
 		}
 		
-		$result = implode( ', ', $result ) . ' ' . $suffix;
+		$result = $result . ' ' . $suffix;
 		
 		return $result;
 		
