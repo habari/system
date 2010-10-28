@@ -362,34 +362,137 @@ class HabariDateTime extends DateTime
 	}
 	
 	/**
-	 * Returns a friendlier string version of the time, ie: 3 days, 1 hour, 5 minutes
+	 * Returns a friendlier string version of the time, ie: 3 days, 1 hour, and 5 minutes ago
+	 * 
+	 * @todo Change $round to $format and support the same format as DateInterval::format() in PHP 5.3
 	 * 
 	 * @param boolean $round Round the time to something less absolute but shorter: 'about 3 months'.
 	 * @return string Time passed in the specified units.
 	 */
-	public function friendly ( $round = true )
+	public function friendly ( $round = false )
 	{
 		$difference = self::date_create()->int - $this->int;
-		if ( $difference < self::MINUTE ) { // within the last minute
-			return _t( 'just now' );
+		
+		$difference = self::difference( self::date_create(), $this );
+				
+		
+		$result = array();
+		
+		if ( $difference['y'] ) {
+			$result[] = sprintf( '%d %s', $difference['y'], _n( 'year', 'years', $difference['y'] ) );
 		}
-		if ( $difference < self::HOUR ) { // within the last hour
-			return sprintf( _t( '%d minutes ago' ), round( $difference / self::MINUTE ) );
+		
+		if ( $difference['m'] ) {
+			$result[] = sprintf( '%d %s', $difference['m'], _n( 'month', 'months', $difference['m'] ) );
 		}
-		if ( $difference < self::DAY ) { // within the last day
-			$difference = round( $difference / self::HOUR );
-			return sprintf( _n( '%d hour ago', '%d hours ago', $difference), $difference );
+		
+		if ( $difference['w'] ) {
+			$result[] = sprintf( '%d %s', $difference['w'], _n( 'week', 'weeks', $difference['w'] ) );
 		}
-		if ( $difference < self::WEEK ) { // within the last week
-			$difference = round( $difference / self::DAY );
-			return sprintf( _n( 'yesterday', '%d days ago', $difference ), $difference );
+		
+		if ( $difference['d'] ) {
+			$result[] = sprintf( '%d %s', $difference['d'], _n( 'day', 'days', $difference['d'] ) );
 		}
-		if ( $difference < self::MONTH ) { // within the last month
-			$difference = round( $difference / self::WEEK );
-			return sprintf( _n( 'last week', '%d weeks ago', $difference ), $difference );
+		
+		if ( $difference['h'] ) {
+			$result[] = sprintf( '%d %s', $difference['h'], _n( 'hour', 'hours', $difference['h'] ) );
 		}
-		$difference = round( $difference / self::MONTH );
-		return sprintf( _n( 'last month', '%d months ago', $difference ), $difference );
+		
+		if ( $difference['i'] ) {
+			$result[] = sprintf( '%d %s', $difference['i'], _n( 'minute', 'minutes', $difference['i'] ) );
+		}
+		
+		if ( $difference['s'] ) {
+			$result[] = sprintf( '%d %s', $difference['s'], _n( 'second', 'seconds', $difference['s'] ) );
+		}
+		
+		// pop the last element off the end of the array
+		$last = array_pop( $result );
+		
+		// stick 'and' in before the last element
+		$result[] = _t( 'and ' ) . $last;
+		
+		
+		if ( $difference['invert'] == true ) {
+			$suffix = _t('from now');
+		}
+		else {
+			$suffix = _t('ago');
+		}
+		
+		$result = implode( ', ', $result ) . ' ' . $suffix;
+		
+		return $result;
+		
+	}
+	
+	// invert: true: in the future (time until), false: in the past (time ago)
+	/**
+	 * Returns an array representing the difference between two times by interval.
+	 * 
+	 * <code>
+	 * 	print_r( HabariDateTime::difference( 'now', 'January 1, 2010' ) );
+	 * 	// output: Array ( [invert] => [y] => 0 [m] => 9 [w] => 3 [d] => 5 [h] => 22 [i] => 33 [s] => 5 )
+	 * </code>
+	 * 
+	 *  If 'invert' is true, the time is in the future (ie: x from now). If it is false, the time is in the past (ie: x ago).
+	 * 
+	 * @param mixed $start_date The start date, as a HDT object or any format accepted by HabariDateTime::date_create().
+	 * @param mixed $end_date The end date, as a HDT object or any format accepted by HabariDateTime::date_create().
+	 * @return array Array of each interval and whether the interval is inverted or not.
+	 */
+	public static function difference ( $start_date, $end_date ) {
+		
+		// if the dates aren't HDT objects, try to convert them to one. this lets you pass in just about any format
+		if ( !$start_date instanceof HabariDateTime ) {
+			$start_date = HabariDateTime::date_create($start_date);
+		}
+		
+		if ( !$end_date instanceof HabariDateTime ) {
+			$end_date = HabariDateTime::date_create($end_date);
+		}
+		
+		$result = array();
+		
+		// calculate the difference, in seconds
+		$difference = $end_date->int - $start_date->int;
+		
+		if ( $difference < 0 ) {
+			// if it's negative, time AGO
+			$result['invert'] = false;
+		}
+		else {
+			// if it's positive, time UNTIL
+			$result['invert'] = true;
+		}
+		
+		$difference = abs( $difference );
+		
+		// we'll progressively subtract from the seconds left, so initialize it
+		$seconds_left = $difference;
+		
+		$result['y'] = floor( $seconds_left / self::YEAR );
+		$seconds_left = $seconds_left - ( $result['y'] * self::YEAR );
+		
+		$result['m'] = floor( $seconds_left / self::MONTH );
+		$seconds_left = $seconds_left - ( $result['m'] * self::MONTH );
+		
+		$result['w'] = floor( $seconds_left / self::WEEK );
+		$seconds_left = $seconds_left - ( $result['w'] * self::WEEK );
+		
+		$result['d'] = floor( $seconds_left / self::DAY );
+		$seconds_left = $seconds_left - ( $result['d'] * self::DAY );
+		
+		$result['h'] = floor( $seconds_left / self::HOUR );
+		$seconds_left = $seconds_left - ( $result['h'] * self::HOUR );
+		
+		$result['i'] = floor( $seconds_left / self::MINUTE );
+		$seconds_left = $seconds_left - ( $result['i'] * self::MINUTE );
+		
+		$result['s'] = $seconds_left;
+		
+		return $result;
+		
 	}
 }
 
