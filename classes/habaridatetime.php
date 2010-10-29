@@ -374,9 +374,10 @@ class HabariDateTime extends DateTime
 	 * Returns a friendlier string version of the time, ie: 3 days, 1 hour, and 5 minutes ago
 	 * 
 	 * @param int $precision Only display x intervals. Note that this does not round, it only limits the display length.
+	 * @param boolean $include_suffix Include the 'ago' or 'from now' suffix?
 	 * @return string Time passed in the specified units.
 	 */
-	public function friendly ( $precision = 7 )
+	public function friendly ( $precision = 7, $include_suffix = true )
 	{
 				
 		$difference = self::difference( self::date_create(), $this );
@@ -442,7 +443,9 @@ class HabariDateTime extends DateTime
 			$suffix = _t('ago');
 		}
 		
-		$result = $result . ' ' . $suffix;
+		if ( $include_suffix ) {
+			$result = $result . ' ' . $suffix;
+		}
 		
 		return $result;
 		
