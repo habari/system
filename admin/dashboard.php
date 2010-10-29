@@ -14,26 +14,8 @@
 		<![endif]-->
 
 		<p>
-		<?php
-		$active_msg = array();
-		if ( !empty( $active_time['years'] ) ) {
-			$message = sprintf( _n( '%d year', '%d years', $active_time['years'] ), $active_time['years'] );
-			$active_msg[] = $message;
-		}
-		if ( !empty( $active_time['months'] ) ) {
-			$message = sprintf( _n( '%d month', '%d months', $active_time['months'] ), $active_time['months'] );
-			$active_msg[] = $message;
-		}
-		if ( !empty( $active_time['days'] ) ) {
-			$message = sprintf( _n( '%d day', '%d days', $active_time['days'] ), $active_time['days'] );
-			$active_msg[] = $message;
-		}
-		printf(
-			_t( '%1$s has been active for %2$s'),
-			Options::get('title'),
-			!empty( $active_msg) ? Format::and_list( $active_msg ) : '0 ' . _t( 'days' )
-		);
-		?><br>
+		<?php _e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) ); ?>
+		<br>
 
 		<?php
 		$content_type_msg = array();
