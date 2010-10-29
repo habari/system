@@ -12,7 +12,8 @@
  * @property-read int $int Returns a unix timestamp as integer.
  * @property-read string $time Returns the time formatted according to the blog's settings.
  * @property-read string $date Returns the date formatted according to the blog's settings.
- * @property-read string $friendly Returned the time as a friendly string (ie: 4 months, 3 days ago, etc.). 
+ * @property-read string $friendly Returns the time as a friendly string (ie: 4 months, 3 days ago, etc.).
+ * @property-read string $fuzzy Returns the time as a short "fuzzy" string (ie: "just now", "yesterday", "2 weeks ago", etc.). 
  */
 class HabariDateTime extends DateTime
 {
@@ -317,6 +318,10 @@ class HabariDateTime extends DateTime
 			case 'friendly':
 				return $this->friendly();
 				break;
+				
+			case 'fuzzy':
+				return $this->fuzzy();
+				break;
 
 			default:
 				$info = getdate($this->format('U'));
@@ -368,18 +373,12 @@ class HabariDateTime extends DateTime
 	/**
 	 * Returns a friendlier string version of the time, ie: 3 days, 1 hour, and 5 minutes ago
 	 * 
-	 * @todo Change $round to $format and support the same format as DateInterval::format() in PHP 5.3
-	 * @todo How can we account for skipped intervals in the format? ie: omit 'week' and get that included as more days?
-	 * @todo should we add a global option to define this format, too?
-	 * @todo Add $omit_nulls param to omit 0-value intervals (ie: 1 month, 0 days vs. 1 month)
-	 * 
-	 * @param boolean $round Round the time to something less absolute but shorter: 'about 3 months'.
+	 * @param int $precision Only display x intervals. Note that this does not round, it only limits the display length.
 	 * @return string Time passed in the specified units.
 	 */
-	public function friendly ( $round = false )
+	public function friendly ( $precision = 7 )
 	{
-		$difference = self::date_create()->int - $this->int;
-		
+				
 		$difference = self::difference( self::date_create(), $this );
 				
 		
@@ -413,6 +412,9 @@ class HabariDateTime extends DateTime
 			$result[] = sprintf( '%d %s', $difference['s'], _n( 'second', 'seconds', $difference['s'] ) );
 		}
 		
+		// limit the precision
+		$result = array_slice( $result, 0, $precision );
+		
 		// only stick 'and' into the mix if there's more than a single element
 		if ( count( $result ) > 1 ) {
 		
@@ -441,6 +443,47 @@ class HabariDateTime extends DateTime
 		}
 		
 		$result = $result . ' ' . $suffix;
+		
+		return $result;
+		
+	}
+	
+	/**
+	 * Similar to friendly(), but much more... fuzzy.
+	 * 
+	 * Returns a very short version of the difference in time between now and the current HDT object.
+	 */
+	public function fuzzy ( ) {
+				
+		$difference = self::date_create()->int - $this->int;
+		
+		if ( $difference < self::MINUTE ) {
+			$result = _t('just now');
+		}
+		else if ( $difference < self::HOUR ) {
+			$minutes = round( $difference / self::MINUTE );
+			$result = sprintf( _n( '%d minute ago', '%d minutes ago', $minutes ), $minutes );
+		}
+		else if ( $difference < self::DAY ) {
+			$hours = round( $difference / self::HOUR );
+			$result = sprintf( _n( '%d hour ago', '%d hours ago', $hours ), $hours );
+		}
+		else if ( $difference < self::WEEK ) {
+			$days = round( $difference / self::DAY );
+			$result = sprintf( _n( 'yesterday', '%d days ago', $days ), $days );
+		}
+		else if ( $difference < self::MONTH ) {
+			$weeks = round( $difference / self::WEEK );
+			$result = sprintf( _n( 'last week', '%d weeks ago', $weeks ), $weeks );
+		}
+		else if ( $difference < self::YEAR ) {
+			$months = round( $difference / self::MONTH );
+			$result = sprintf( _n( 'last month', '%d months ago', $months ), $months );
+		}
+		else {
+			$years = round( $difference / self::YEAR );
+			$result = sprintf( _n( 'last year', '%d years ago', $years ), $years );
+		}
 		
 		return $result;
 		
