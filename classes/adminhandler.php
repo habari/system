@@ -1846,7 +1846,8 @@ class AdminHandler extends ActionHandler
 					$pluginobj = $active_plugins[$plugin_id];
 					$plugin['active'] = true;
 					$plugin_actions = array();
-					$plugin_actions = Plugins::filter( 'plugin_config', $plugin_actions, $plugin_id );
+					$plugin_actions1 = Plugins::filter_id( 'plugin_config', $plugin_id, $plugin_actions, $plugin_id );
+					$plugin_actions = Plugins::filter( 'plugin_config_any', $plugin_actions1, $plugin_id );
 					$plugin['actions'] = array();
 					foreach ( $plugin_actions as $plugin_action => $plugin_action_caption ) {
 						if ( is_numeric($plugin_action) ) {

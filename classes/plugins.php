@@ -62,7 +62,6 @@ class Plugins
 	}
 
 	/**
-	 * function act
 	 * Call to execute a plugin action
 	 * @param string The name of the action to execute
 	 * @param mixed Optional arguments needed for action
@@ -71,6 +70,29 @@ class Plugins
 	{
 		$args = func_get_args();
 		$hookname = array_shift($args);
+		if ( ! isset( self::$hooks['action'][$hookname] ) ) {
+			return false;
+		}
+		foreach ( self::$hooks['action'][$hookname] as $priority ) {
+			foreach ( $priority as $action ) {
+				// $action is an array of object reference
+				// and method name
+				call_user_func_array( $action, $args );
+			}
+		}
+	}
+
+	/**
+	 * Call to execute a plugin action, by id
+	 * @param string The name of the action to execute
+	 * @param mixed Optional arguments needed for action
+	 */
+	public static function act_id()
+	{
+		$args = func_get_args();
+		list( $hookname, $id ) = $args;
+		$args = array_slice(func_get_args(), 2);
+		$hookname = $hookname . ':' . $id;
 		if ( ! isset( self::$hooks['action'][$hookname] ) ) {
 			return false;
 		}
@@ -96,6 +118,32 @@ class Plugins
 		}
 
 		$filterargs = array_slice(func_get_args(), 2);
+		foreach ( self::$hooks['filter'][$hookname] as $priority ) {
+			foreach ( $priority as $filter ) {
+				// $filter is an array of object reference and method name
+				$callargs = $filterargs;
+				array_unshift( $callargs, $return );
+				$return = call_user_func_array( $filter, $callargs );
+			}
+		}
+		return $return;
+	}
+
+	/**
+	 * Call to execute a plugin filter on a specific plugin, by id
+	 * @param string The name of the filter to execute
+	 * @param string The id of the only plugin on which to execute
+	 * @param mixed The value to filter.
+	 */
+	public static function filter_id()
+	{
+		list( $hookname, $id, $return ) = func_get_args();
+		$hookname = $hookname . ':' . $id;
+		if ( ! isset( self::$hooks['filter'][$hookname] ) ) {
+			return $return;
+		}
+
+		$filterargs = array_slice(func_get_args(), 3);
 		foreach ( self::$hooks['filter'][$hookname] as $priority ) {
 			foreach ( $priority as $filter ) {
 				// $filter is an array of object reference and method name
@@ -547,6 +595,20 @@ class Plugins
 		Plugins::set_present();
 
 		return ( count($failed_plugins) > 0 ) ? false : true;
+	}
+	
+	/**
+	 * Produce the UI for a plugin based on the user's selected config option
+	 * 
+	 * @param string $configure The id of the configured plugin
+	 * @param string $configuration The selected configuration option
+	 **/	 	 	 	 	
+	public static function plugin_ui($configure, $configaction)
+	{
+		Plugins::act_id( 'plugin_ui_' . $configaction, $configure, $configure, $configaction );
+		Plugins::act( 'plugin_ui_any_' . $configaction, $configure, $configaction );
+		Plugins::act_id( 'plugin_ui', $configure, $configure, $configaction );
+		Plugins::act( 'plugin_ui_any', $configure, $configaction );
 	}
 }
 

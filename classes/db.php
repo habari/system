@@ -131,7 +131,7 @@ class DB extends Singleton
 	 */
 	public static function query( $query, $args = array() )
 	{
-		 return DB::instance()->connection->query( $query, $args );
+		return DB::instance()->connection->query( $query, $args );
 	}
 
 	/**
