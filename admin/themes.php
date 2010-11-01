@@ -5,7 +5,15 @@
 	<h2><?php _e('Current Theme'); ?></h2>
 	<div class="item clear">
 		<div class="head">
-			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $active_theme['info']->url; ?>"><?php echo $active_theme['info']->author; ?></a>
+
+			<a href="<?php echo $active_theme['info']->url; ?>" class="plugin"><?php echo $active_theme['info']->name; ?></a> <span class="version dim"><?php echo $active_theme['info']->version; ?></span> <span class="dim"><?php _e('by'); ?></span> 
+			<?php
+			$authors = array();
+			foreach ( $active_theme['info']->author as $author ) {
+				$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
+			}
+			echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
+			?>
 
 			<?php if ( $configurable ): ?>
 			<ul class="dropbutton">
@@ -160,7 +168,14 @@ foreach ( $all_themes as $inactive_theme ):
 	
 	<div class="item pct30<?php if($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
 		<div class="head theme_credits"> 
-			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> <a href="<?php echo $inactive_theme['info']->url; ?>" class="author"><?php echo $inactive_theme['info']->author; ?></a>
+			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> 
+			<?php
+			$authors = array();
+			foreach ( $inactive_theme['info']->author as $author ) {
+				$authors[] = isset( $author['url'] ) ? '<a href="' . $author['url'] . '">' . $author . '</a>' : $author;
+			}
+			echo Format::and_list( $authors, '<span class="dim">, </span>', '<span class="dim">' . _t( ' and ' ) . '</span>');
+			?>
 		</div> 
  
 		<div class="thumb">
