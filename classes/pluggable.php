@@ -73,7 +73,11 @@ abstract class Pluggable
 	 */
 	final public function plugin_id()
 	{
-		return Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
+		static $id;
+		if(!isset($id)) {
+			$id = Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
+		}
+		return $id;
 	}
 
 	/**
@@ -120,18 +124,19 @@ abstract class Pluggable
 						$hook = str_replace('__', '.', $hook);
 					}
 					Plugins::register( array($this, $fn), $type, $hook, $priority );
+					Plugins::register( array($this, $fn), $type, $hook . ':' . $this->plugin_id(), $priority );
 				}
 			}
 		}
 		// look for help with this
 		if ( method_exists( $this, 'help') ) {
-			Plugins::register( array($this, '_help_plugin_config'), 'filter', 'plugin_config', 8);
-			Plugins::register( array($this, '_help_plugin_ui'), 'action', 'plugin_ui', 8);
+			Plugins::register( array($this, '_help_plugin_config'), 'filter', 'plugin_config:' . $this->plugin_id(), 8);
+			Plugins::register( array($this, '_help_plugin_ui'), 'action', 'plugin_ui:' . $this->plugin_id(), 8);
 		}
 		// look for a basic configure method
 		if ( method_exists( $this, 'configure') ) {
-			Plugins::register( array($this, '_configure_plugin_config'), 'filter', 'plugin_config', 8);
-			Plugins::register( array($this, '_configure_plugin_ui'), 'action', 'plugin_ui', 8);
+			Plugins::register( array($this, '_configure_plugin_config'), 'filter', 'plugin_config:' . $this->plugin_id(), 8);
+			Plugins::register( array($this, '_configure_plugin_ui'), 'action', 'plugin_ui:' . $this->plugin_id(), 8);
 		}
 	}
 
