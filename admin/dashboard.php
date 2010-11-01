@@ -193,6 +193,7 @@
 
 <div class="container dashboard transparent">
 
+	<?php $theme->area('dashboard'); ?>
 	<?php $theme->display('dashboard_modules'); ?>
 
 </div>
