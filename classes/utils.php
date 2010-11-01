@@ -1077,20 +1077,22 @@ class Utils
 	}
 
 	/**
-	* Convenience function to call htmlspecialchars() with the correct flags and encoding.
+	* Call htmlspecialchars() with the correct flags and encoding,
+	*  without double escaping strings.
 	* See http://php.net/manual/en/function.htmlspecialchars.php for details on the parameters
 	* and purpose of the function.
 	*
+	* @todo Should htmlspecialchars_decode() be used instead of html_entity_decode()?
+	*
 	* @param $string. string. The string to escape
-	* @param $quote_flag. integer. Sets what quotes and doublequotes are replaced
+	* @param $quote_flag. integer. Sets what quotes and doublequotes are escaped
 	* @param $encoding. string. The encoding of the passed string
-	* @param $double_enc. boolean. Flag to tell whether to double escape affected characters or not
 	*
 	* @return The escaped string
 	*/
 	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8' )
 	{
-		return htmlspecialchars( $string, $quote_flag, $encoding );
+		return htmlspecialchars( html_entity_decode( $string, ENT_QUOTES, $encoding ), $quote_flag, $encoding );
 	}
 
 	/**
