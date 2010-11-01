@@ -492,7 +492,7 @@ class Theme extends Pluggable
 
 		$paramarray['user_filters'] = $user_filters;
 
-		$this->assign( 'criteria', htmlentities( Controller::get_var('criteria'), ENT_QUOTES, 'UTF-8' ) );
+		$this->assign( 'criteria', Controller::get_var('criteria') );
 		return $this->act_display( $paramarray );
 	}
 
