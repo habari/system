@@ -43,6 +43,7 @@ class Theme extends Pluggable
 		'offset',
 		'fetch_fn',
 		'id',
+		'vocabulary',
 	);
 
 	/**
