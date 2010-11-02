@@ -59,7 +59,7 @@ class CornerStone extends Theme
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) ) );
 		}
 		//For Asides loop in sidebar.php
-		$this->assign( 'asides', Posts::get( array( 'vocabaulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 ) ) );
+		$this->assign( 'asides', Posts::get( array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 ) ) );
 
 		//for recent comments loop in sidebar.php
 		$this->assign('recent_comments', Comments::get( array('limit'=>5, 'status'=>Comment::STATUS_APPROVED, 'orderby'=>'date DESC' ) ) );
