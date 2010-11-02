@@ -59,7 +59,7 @@ class CornerStone extends Theme
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) ) );
 		}
 		//For Asides loop in sidebar.php
-		$this->assign( 'asides', Posts::get( array( 'tag'=>'aside', 'limit'=>5) ) );
+		$this->assign( 'asides', Posts::get( array( 'vocabaulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 ) ) );
 
 		//for recent comments loop in sidebar.php
 		$this->assign('recent_comments', Comments::get( array('limit'=>5, 'status'=>Comment::STATUS_APPROVED, 'orderby'=>'date DESC' ) ) );
@@ -76,7 +76,7 @@ class CornerStone extends Theme
 	public function act_display_home( $user_filters = array() )
 	{
 		//To exclude aside tag from main content loop
-	    parent::act_display_home( array( 'not:tag' => 'aside' ) );
+		parent::act_display_home( array( 'vocabulary' => array( 'tags:not:term' => 'aside' ) ) );
 	}
 
 	/**
