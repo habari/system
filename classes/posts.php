@@ -280,7 +280,7 @@ class Posts extends ArrayObject implements IsContent
 						$where[] = 'NOT EXISTS (SELECT 1
 							FROM {object_terms}
 							INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
-							WHERE {terms}.term_display IN (' . Utils::placeholder_string( $nottag ) . ')
+							WHERE {terms}.term IN (' . Utils::placeholder_string( $nottag ) . ')
 							AND {object_terms}.object_id = {posts}.id
 							AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?)  AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?))
 						';
