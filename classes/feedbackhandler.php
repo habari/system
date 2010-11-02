@@ -196,13 +196,27 @@ class FeedbackHandler extends ActionHandler
 			// if no cookie exists, we should set one
 			// but only if the user provided some details
 			$cookie = 'comment_' . Options::get('GUID');
+                        
+            //if the cookie is set, get the values for comparison
+            if (isset($_COOKIE[$cookie])) {
+                list( $commenter_name, $commenter_email, $commenter_url )= explode( '#', $_COOKIE[$cookie] );                
+            }
+            
+            //if the user is not logged in and either
+            //(i) there is no cookie and at least one of name, email, and url are specified
+            //(ii) there is a cookie, but something changed
+            //set the cookie
 			if ( ( ! User::identify()->loggedin )
-				&& ( ! isset( $_COOKIE[$cookie] ) )
+				&& (
+                (( ! isset( $_COOKIE[$cookie] ) )
 				&& ( ! empty( $name )
 					|| ! empty( $email )
 					|| ! empty( $url )
-				)
-			)
+				))
+                ||
+                ( isset( $_COOKIE[$cookie]  )
+                && ($commenter_name != $name || $commenter_email != $email || $commenter_url != $url)
+			    )))
 			{
 				$cookie_content = $comment->name . '#' . $comment->email . '#' . $comment->url;
 				$site_url = Site::get_path( 'base',true );
