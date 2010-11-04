@@ -181,16 +181,9 @@ class Posts extends ArrayObject implements IsContent
 
 				if( isset( $paramset['vocabulary'] ) ) {
 					if( is_string( $paramset['vocabulary'] ) ) {
-						$paramset['vocabulary'] = self::_vocabulary_params( Utils::get_params( $paramset['vocabulary'] ) );
+						$paramset['vocabulary'] = Utils::get_params( $paramset['vocabulary'] );
 					}
-					else if( strpos( key( $paramset['vocabulary'] ), ':' ) !== false ) {
-						$parsed = array();
-						foreach ( $paramset['vocabulary'] as $key => $value ) {
-							$colon = strpos( $key, ':' );
-							$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
-						}
-						$paramset['vocabulary'] = self::_vocabulary_params( $parsed );
-					}
+					$paramset['vocabulary'] = self::_vocabulary_params( $paramset['vocabulary'] );
 					$object_id = Vocabulary::object_type_id( 'post' );
 					$all = $any = $not = array();
 
@@ -1029,23 +1022,61 @@ class Posts extends ArrayObject implements IsContent
 		return 'posts';
 	}
 
+	/**
+	 * This function accepts an set of tag query qualifiers and converts it into 
+	 * an multi-dimensional array of Term objects that can be used within the 
+	 * vocabulary section of Posts::get();
+	 * @see Posts::get()
+	 * 
+	 * The expected result is in this format, and purposefully does not include
+	 * vocbulary names as keys:
+	 * 
+	 * <code>	 
+	 * array(
+	 * 	'all' => array($tag1, $tag2), 
+	 * 	'any' => array($tag3, $tag4), 
+	 * 	'not' => array($tag5, $tag6),
+	 * )
+	 * </code>	 	  
+	 *
+	 * @param mixed $params An array or string with the tag query qualifiers
+	 * @return array As above
+	 **/	 	 	 
 	public static function _vocabulary_params( $params )
 	{
-		$parsed = array();
 		$ret = array();
-
+		
+		foreach($params as $key => $value) {
+			if(strpos($key, ':') !== false) {
+				list($newkey, $subkey) = explode(':', $key, 2);
+				$params[$newkey][$subkey] = $value;
+				unset($params[$key]);
+			}
+		}
+		
 		foreach( $params as $vocab => $values ) {
 			foreach( $values as $key => $value ) {
 				$value = Utils::single_array( $value );
-				$colon = strpos( $key, ':' );
-				if( false !== $colon ) {
+				if(strpos($key, ':') !== false ) {
+					list($mode, $by_field) = explode(':', $key, 2);
 					foreach( $value as $v ) {
-						$ret[substr( $key, 0, $colon )][] = Term::get( Vocabulary::get( $vocab)->id, $v );
+						$ret[$mode][] = Term::get( Vocabulary::get($vocab)->id, $v );
 					}
 				}
 				else {
 					foreach( $value as $v ) {
-						$ret['any'][] = Term::get( Vocabulary::get( $vocab)->id, $v );
+						if($v instanceof Tag) {
+							// @todo This if() section needs to be destroyed -- convert Tag to Term!
+							// $vocab is not a vocab, but a mode:
+							$ret[$vocab][] = Term::get( Vocabulary::get('tags')->id, $v->id );  
+						}
+						elseif($v instanceof Term) {
+							// $vocab is not a vocab, but a mode:
+							$ret[$vocab][] = $v;
+						}
+						else {
+							$ret['any'][] = Term::get( Vocabulary::get($vocab)->id, $v );
+						}
 					}
 				}
 			}
