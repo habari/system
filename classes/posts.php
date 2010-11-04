@@ -179,116 +179,74 @@ class Posts extends ArrayObject implements IsContent
 
 				}
 
-				if ( isset( $paramset['vocabulary'] ) ) {
-					$parsed = array();
-					$object_id = 'post';
-					if ( is_string( $paramset['vocabulary'] ) ) {
-						$parsed = Utils::get_params( $paramset['vocabulary'] );
+				if( isset( $paramset['vocabulary'] ) ) {
+					if( is_string( $paramset['vocabulary'] ) ) {
+						$paramset['vocabulary'] = self::_vocabulary_params( Utils::get_params( $paramset['vocabulary'] ) );
 					}
-					else {
-						foreach ( $paramset['vocabulary'] as $key => $value ) {
-							$colon = strpos( $key, ':' );
-							$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
+					else if( strpos( key( $paramset['vocabulary'] ), ':' ) !== false ) {
+						$paramset['vocabulary'] = self::_vocabulary_params( $paramset['vocabulary'] );
+					}
+					$object_id = Vocabulary::object_type_id( 'post' );
+					$all = $any = $not = array();
+
+					foreach( $paramset['vocabulary'] as $key => $values ) {
+						$values = Utils::single_array( $values );
+						switch ( (string)$key ) {
+							case 'all':
+								foreach( $values as $current ) {
+									$all[$current->vocabulary->id] = $current->id;
+								}
+								break;
+							case 'any':
+								foreach( $values as $current ) {
+									$any[$current->vocabulary->id] = $current->id;
+								}
+								break;
+							case 'not':
+								foreach( $values as $current ) {
+									$not[$current->vocabulary->id] = $current->id;
+								}
+								break;
 						}
 					}
-					foreach ( $parsed as $vocab => $value ) {
+					if( count( $all ) ) {
+						foreach( $all as $key => $value ) {
+							$value = Utils::single_array( $value );
+							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
 
-					if ( isset( $value['term'] ) || isset( $value['term_display'] ) ) {
-						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-
-						if ( isset( $value['term_display'] ) ) {
-							if ( is_array( $value['term_display'] ) ) {
-								$where[] = "{terms}.term_display IN (" . implode( ',', array_fill( 0, count( $value['term_display'] ), '?' ) ) . ")" . '  AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?) AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
-								$params = array_merge( $params, $value['term_display'] );
-							}
-							else {
-								$where[] = '{terms}.term_display = ? AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?) AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
-								$params[] = (string) $value['term_display'];
-							}
-						}
-						if ( isset( $value['term'] ) ) {
-							if ( is_array( $value['term'] ) ) {
-								$where[] = "{terms}.term IN (" . implode( ',', array_fill( 0, count( $value['term'] ), '?' ) ) . ")" . ' AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?) AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
-								$params = array_merge( $params, $value['term'] );
-							}
-							else {
-								$where[] = '{terms}.term= ? AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?)  AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
-								$params[] = (string) $value['term'];
-							}
-						}
-						$params[] = $object_id;
-						$params[] = $vocab;
-					}
-
-					if ( isset( $value['all:term_display'] ) ) {
-						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-
-						if ( is_array( $value['all:term_display'] ) ) {
-							$where[] = '{terms}.term_display IN (' . Utils::placeholder_string( $value['all:term_display']) . ')' . ' AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?) AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
-							$params = array_merge( $params, $value['all:term_display'] );
+							$where[] = '{terms}.id' . ' IN (' . Utils::placeholder_string( $value ) . ')' . ' AND {object_terms}.object_type_id = ?';
+							$params = array_merge( $params, array_values( $value ) );
 
 							$groupby = '{posts}.id';
-							$having = 'count(*) = ' . count( $value['all:term_display'] );
+							$having = 'count(*) = ' . count( $value );
+							$params[] = $object_id;
 						}
-						else {
-							// this is actually the same as plain 'tag' for a single tag search - go with it
-							$where[] = '{terms}.term_display = ? AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?) AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
-							$params[] = $value['all:term_display'];
+					}
+					if( count( $any ) ) {
+						foreach( $any as $key => $value ) {
+							$value = Utils::single_array( $value );
+							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
+							$where[] = "{terms}.id IN (" . implode( ',', array_fill( 0, count( $value ), '?' ) ) . ")" . '  AND {object_terms}.object_type_id = ?';
+							$params = array_merge( $params, array_values( $value ) );
+							$params[] = $object_id;
 						}
-						$params[] = $object_id;
-						$params[] = $vocab;
 					}
-
-					if ( isset( $value['all:term'] ) ) {
-						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-
-						if ( is_array( $value['all:term'] ) ) {
-							$where[] = '{terms}.term IN (' . Utils::placeholder_string( $value['all:term']) . ')' . ' AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?) AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id from {vocabularies} WHERE {vocabularies}.name = ?)';
-							$params = array_merge( $params, $value['all:term'] );
-
-							$groupby = '{posts}.id';
-							$having = 'count(*) = ' . count( $value['all:term'] );
+					if( count( $not ) ) {
+						foreach( $not as $key => $value ) {
+							$value = Utils::single_array( $value );
+							$where[] = 'NOT EXISTS (SELECT 1
+								FROM {object_terms}
+								INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
+								WHERE {terms}.id IN (' . Utils::placeholder_string( $value ) . ')
+								AND {object_terms}.object_id = {posts}.id
+								AND {object_terms}.object_type_id = ?)
+							';
+							$params = array_merge( $params, array_values( $value ) );
+							$params[] = $object_id;
 						}
-						else {
-							// this is actually the same as plain 'tag' for a single tag search - go with it
-							$where[] = '{terms}.term = ? AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?) AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?)';
-							$params[] = $value['all:term'];
-						}
-						$params[] = $object_id;
-						$params[] = $vocab;
 					}
-
-					if ( isset( $value['not:term_display'] ) ) {
-						$nottag = Utils::single_array( $value['not:term_display'] );
-						$where[] = 'NOT EXISTS (SELECT 1
-							FROM {object_terms}
-							INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
-							WHERE {terms}.term_display IN (' . Utils::placeholder_string( $nottag ) . ')
-							AND {object_terms}.object_id = {posts}.id
-							AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?)  AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?))
-						';
-						$params = array_merge( $params, $nottag );
-						$params[] = $object_id;
-						$params[] = $vocab;
-					}
-
-					if ( isset( $value['not:term'] ) ) {
-						$nottag = Utils::single_array( $value['not:term'] );
-						$where[] = 'NOT EXISTS (SELECT 1
-							FROM {object_terms}
-							INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
-							WHERE {terms}.term IN (' . Utils::placeholder_string( $nottag ) . ')
-							AND {object_terms}.object_id = {posts}.id
-							AND {object_terms}.object_type_id IN (SELECT {object_types}.id FROM {object_types} WHERE {object_types}.name = ?)  AND {terms}.vocabulary_id IN (SELECT {vocabularies}.id FROM {vocabularies} WHERE {vocabularies}.name = ?))
-						';
-						$params = array_merge( $params, $nottag );
-						$params[] = $object_id;
-						$params[] = $vocab;
-					}
-				    }
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
@@ -1064,6 +1022,34 @@ class Posts extends ArrayObject implements IsContent
 			return 'posts.' . $this->preset;
 		}
 		return 'posts';
+	}
+
+	public static function _vocabulary_params( $params )
+	{
+		$parsed = array();
+		$ret = array();
+
+		foreach ( $params as $key => $value ) {
+			$colon = strpos( $key, ':' );
+			$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
+		}
+		foreach( $parsed as $vocab => $values ) {
+			foreach( $values as $key => $value ) {
+				$value = Utils::single_array( $value );
+				$colon = strpos( $key, ':' );
+				if( false !== $colon ) {
+					foreach( $value as $v ) {
+						$ret[substr( $key, 0, $colon )][] = Term::get( Vocabulary::get( $vocab)->id, $v );
+					}
+				}
+				else {
+					foreach( $value as $v ) {
+						$ret['any'][] = Term::get( Vocabulary::get( $vocab)->id, $v );
+					}
+				}
+			}
+		}
+		return $ret;
 	}
 }
 ?>
