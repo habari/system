@@ -184,7 +184,12 @@ class Posts extends ArrayObject implements IsContent
 						$paramset['vocabulary'] = self::_vocabulary_params( Utils::get_params( $paramset['vocabulary'] ) );
 					}
 					else if( strpos( key( $paramset['vocabulary'] ), ':' ) !== false ) {
-						$paramset['vocabulary'] = self::_vocabulary_params( $paramset['vocabulary'] );
+						$parsed = array();
+						foreach ( $paramset['vocabulary'] as $key => $value ) {
+							$colon = strpos( $key, ':' );
+							$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
+						}
+						$paramset['vocabulary'] = self::_vocabulary_params( $parsed );
 					}
 					$object_id = Vocabulary::object_type_id( 'post' );
 					$all = $any = $not = array();
@@ -1029,11 +1034,7 @@ class Posts extends ArrayObject implements IsContent
 		$parsed = array();
 		$ret = array();
 
-		foreach ( $params as $key => $value ) {
-			$colon = strpos( $key, ':' );
-			$parsed[substr( $key, 0, $colon )][substr( $key, $colon + 1 )] = $value;
-		}
-		foreach( $parsed as $vocab => $values ) {
+		foreach( $params as $vocab => $values ) {
 			foreach( $values as $key => $value ) {
 				$value = Utils::single_array( $value );
 				$colon = strpos( $key, ':' );
