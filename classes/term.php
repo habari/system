@@ -10,9 +10,6 @@
 
 class Term extends QueryRecord
 {
-	// static variable to hold the vocabulary this term belongs to
-	private $vocabulary = null;
-
 	/**
 	 * Return the defined database columns for a Term.
 	 * @return array Array of columns in the Term table
@@ -281,7 +278,13 @@ class Term extends QueryRecord
 	 */
 	public function siblings()
 	{
-		return $this->parent()->children();
+		$parent = $this->parent();
+		if( $parent ) {
+			return $parent->children();
+		}
+		else {
+			return $this->vocabulary->get_root_terms();
+		}
 	}
 
 	/**
