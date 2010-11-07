@@ -1783,12 +1783,8 @@ body.page-themes .availablethemes .thumb img {
 	cursor:pointer;
 }
 
-body.page-themes .currenttheme .thumb, .description {
+body.page-themes .currenttheme .thumb {
 	float: left;
-}
-
-body.page-themes .currenttheme .thumb, .description {
-	float: left; 
 }
 
 .thumb * {
