@@ -67,7 +67,7 @@ class CoreDashModules extends Plugin
 	 */
 	public function filter_dash_module_latest_log_activity( $module, $module_id, $theme )
 	{
-		if ( FALSE === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
+		if ( false === ( $num_logs = Modules::get_option( $module_id, 'logs_number_display' ) ) ) {
 			$num_logs = 8;
 		}
 

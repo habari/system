@@ -209,7 +209,7 @@ class Undelete extends Plugin
 	// This method will permanently delete all posts stored in the trash can
 	private function delete_all()
 	{
-		$posts = Posts::get(array('status' => Post::status('deleted'), 'nolimit' => TRUE));
+		$posts = Posts::get(array('status' => Post::status('deleted'), 'nolimit' => true));
 
 		$count = 0;
 

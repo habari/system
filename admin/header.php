@@ -43,7 +43,7 @@
 		<div id="menulist" class="dropbuttonlist">
 			<ul>
 			<?php foreach($mainmenu as $menu_id => $menu): ?>
-				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == TRUE) { echo 'selected'; } ?><?php if(isset($menu['submenu'])): ?> submenu<?php endif; ?>" title="<?php echo $menu['title']; ?>"><a class="top" href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
+				<li id="link-<?php echo $menu_id ?>" class="<?php if($menu['selected'] == true) { echo 'selected'; } ?><?php if(isset($menu['submenu'])): ?> submenu<?php endif; ?>" title="<?php echo $menu['title']; ?>"><a class="top" href="<?php echo $menu['url']; ?>"><?php echo $menu['text']; ?>
 				<?php if ( isset($menu['hotkey']) && $menu['hotkey'] != '' ): ?><span class="hotkey"><?php echo $menu['hotkey']; ?></span><?php endif; ?>
 				</a>
 				<?php if ( isset($menu['submenu']) ): ?>
