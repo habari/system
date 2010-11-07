@@ -48,19 +48,43 @@
 			<li><a href="#"><?php _e('v1.1 Update Available Now'); ?></a></li>
 		</ul>
 		<?php endif; ?>
-
-		<?php if ( $plugin['active'] != TRUE && isset($plugin['missing']) ): ?>
-		<p><?php _e('This plugin cannot be activated because the following features were not present:'); ?></p>
-		<ul>
-			<?php foreach ( $plugin['missing'] as $feature => $url): ?>
-			<li><?php echo ($url != '') ? sprintf('<a href="%s">%s</a>', $url, $feature) : $feature; ?></li>
-			<?php endforeach; ?>
-		</ul>
-		<?php endif; ?>
+		
+		<p class="description"><?php echo $plugin['info']->description; ?></p>
 
 	</div>
+	
+	<div class="missing">
+		<?php 
+		
+			if ( isset( $plugin['missing'] ) ) {
+				?>
+					<p><?php _e('This plugin cannot be activated because the following features were not present:'); ?></p>
+					<ul>
+						<?php 
+						
+							foreach ( $plugin['missing'] as $feature => $url ) {
+								
+								if ( $url != '' ) {
+									$output = sprintf('<a href="%s">%s</a>', $url, $feature);
+								}
+								else {
+									$output = $feature;
+								}
+								
+								?>
+									<li><?php echo $output; ?></li>
+								<?php
+								
+							}
+						
+						?>
+					</ul>
+				<?php
+			}
+		
+		?>
+	</div>
 
-	<p class="description"><?php echo $plugin['info']->description; ?></p>
 
 	<div class="pluginhelp"<?php if ( $helpaction == '_help' ): ?> class="active"<?php endif; ?>>
 		<?php

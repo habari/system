@@ -1530,6 +1530,16 @@ body.page-options .item {
 	width: 80%;
 }
 
+.plugins .missing {
+	padding-top: 5px;
+	color: red;
+}
+
+.plugins .missing a {
+	font-weight: bold;
+	color: #333333;
+}
+
 .plugins .item a.help, .plugins .item a.help.active:hover {
 	text-indent: -10000px;
 	background: transparent url('../images/help_icon.png') scroll no-repeat;
