@@ -27,7 +27,7 @@ class HabariSilo extends Plugin implements MediaSilo
 
 	public function filter_activate_plugin( $ok, $file )
 	{
-		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
+		if ( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
 			if ( !$this->check_files() ) {
 				EventLog::log( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ), 'warning', 'plugin' );
 				Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
@@ -137,7 +137,7 @@ class HabariSilo extends Plugin implements MediaSilo
 				$mtime = '';
 
 				if ( !file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
-					switch(strtolower(substr($item, strrpos($item, '.') + 1))) {
+					switch (strtolower(substr($item, strrpos($item, '.') + 1))) {
 						case 'jpg':
 						case 'png':
 						case 'gif':
@@ -241,7 +241,7 @@ class HabariSilo extends Plugin implements MediaSilo
 		list( $src_width, $src_height, $type, $attr )= getimagesize( $src_filename );
 
 		// Load the image based on filetype
-		switch( $type ) {
+		switch ( $type ) {
 		case IMAGETYPE_JPEG:
 			$src_img = imagecreatefromjpeg( $src_filename );
 			break;
@@ -249,7 +249,7 @@ class HabariSilo extends Plugin implements MediaSilo
 			$src_img = imagecreatefrompng( $src_filename );
 			break;
 		case IMAGETYPE_GIF:
-			$src_img = imagecreatefromgif( $src_filename );
+			$src_img = imagecreatefromgif ( $src_filename );
 			break;
 		default:
 			return false;
@@ -450,7 +450,7 @@ class HabariSilo extends Plugin implements MediaSilo
 	{
 		$class = __CLASS__;
 		if ( $silo instanceof $class ) {
-			switch( $panelname ) {
+			switch ( $panelname ) {
 				case 'mkdir':
 
 					$fullpath = self::SILO_NAME . '/' . $path;
@@ -506,7 +506,7 @@ class HabariSilo extends Plugin implements MediaSilo
 					return $panel;
 					break;
 				case 'upload':
-					if( isset( $_FILES['file'] ) ) {
+					if ( isset( $_FILES['file'] ) ) {
 						$size = Utils::human_size($_FILES['file']['size']);
 						$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>" . _t( "File Uploaded: " ) . "{$_FILES['file']['name']} ($size)</p>";
 
@@ -514,7 +514,7 @@ class HabariSilo extends Plugin implements MediaSilo
 						$asset = new MediaAsset($path, false);
 						$asset->upload( $_FILES['file'] );
 
-						if( $asset->put() ) {
+						if ( $asset->put() ) {
 							$panel .= '<p>' . _t( 'File added successfully.' ) . '</p>';
 						}
 						else {
@@ -539,9 +539,9 @@ class HabariSilo extends Plugin implements MediaSilo
 <script type="text/javascript">
 var responsedata;
 function simple_uploaded() {
-	if(!$('#simple_upload_frame')[0].contentWindow) return;
+	if (!$('#simple_upload_frame')[0].contentWindow) return;
 	var response = $($('#simple_upload_frame')[0].contentWindow.document.body).text();
-	if(response) {
+	if (response) {
 		eval('responsedata = ' + response);
 		window.setTimeout(simple_uploaded_complete, 500);
 	}

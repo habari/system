@@ -330,13 +330,13 @@ class Pingback extends Plugin
 	public function theme_pingback_count( $theme, $post, $zero = '', $one = '', $many = '' )
 	{
 		$count = $post->comments->pingbacks->approved->count;
-		if( empty( $zero ) ) {
+		if ( empty( $zero ) ) {
 			$zero = _t( '%d Pingbacks' );
 		}
-		if( empty( $one ) ) {
+		if ( empty( $one ) ) {
 			$one = _t( '%d Pingback' );
 		}
-		if( empty( $many ) ) {
+		if ( empty( $many ) ) {
 			$many = _t( '%d Pingabcks' );
 		}
 

@@ -40,7 +40,7 @@ class Undelete extends Plugin
 		// and then return false.  The Post::delete() method will
 		// see the false return value, and simply return, leaving
 		// the post in the database.
-		if( $post->status != Post::status( 'deleted' ) && ACL::access_check( $post->get_access(), 'delete' ) ) {
+		if ( $post->status != Post::status( 'deleted' ) && ACL::access_check( $post->get_access(), 'delete' ) ) {
 			$post->info->prior_status = $post->status;
 			$post->status = Post::status( 'deleted' );
 			$post->update();
@@ -86,7 +86,7 @@ class Undelete extends Plugin
 	{
 		$num = 0;
 
-		switch( $action ) {
+		switch ( $action ) {
 		case 'restore':
 			foreach( $posts as $post ) {
 				$result = $this->undelete_post( $post->id );
@@ -94,7 +94,7 @@ class Undelete extends Plugin
 					$num++;
 				}
 			}
-			if( $num == count( $posts ) ) {
+			if ( $num == count( $posts ) ) {
 				$status_msg = sprintf( _n('Restored %d post', 'Restored %d posts', $num ), $num );
 			}
 			else {
@@ -124,7 +124,7 @@ class Undelete extends Plugin
 				'info', 'content', 'habari'
 			);
 			//scheduled post
-			if( $post->status == Post::status( 'scheduled' ) ) {
+			if ( $post->status == Post::status( 'scheduled' ) ) {
 				Posts::update_scheduled_posts_cronjob();
 			}
 			return true;
@@ -161,7 +161,7 @@ class Undelete extends Plugin
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
 			$actions[]= _t( 'Configure' );
-			if( User::identify()->can_any( $this->get_perms() ) ) {
+			if ( User::identify()->can_any( $this->get_perms() ) ) {
 				$actions[]= _t( 'Empty Trash' );
 			}
 		}
@@ -214,7 +214,7 @@ class Undelete extends Plugin
 		$count = 0;
 
 		foreach($posts as $post) {
-			if( ACL::access_check( $post->get_access(), 'delete' ) ) {
+			if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
 				$post->delete();
 				$count++;
 			}

@@ -2032,7 +2032,7 @@ class AdminHandler extends ActionHandler
 				}
 				$to_update = Posts::get( array( 'where' => $ids, 'nolimit' => 1 ) );
 				foreach ( $to_update as $post ) {
-					switch( $change ) {
+					switch ( $change ) {
 					case 'delete':
 						if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
 							$post->delete();
@@ -2296,7 +2296,7 @@ class AdminHandler extends ActionHandler
 				$ids[] = (int) substr($id, 1);
 			}
 		}
-		if(count($ids) == 0) {
+		if (count($ids) == 0) {
 			$posts = new Posts();
 		}
 		else {
@@ -3357,7 +3357,7 @@ class AdminHandler extends ActionHandler
 		$require_any = array();
 		$result = false;
 
-		switch( $page ) {
+		switch ( $page ) {
 			case 'comment':
 			case 'comments':
 			case 'ajax_comments':
@@ -3734,7 +3734,7 @@ class AdminHandler extends ActionHandler
 		
 		$msg = '';
 		
-		if(isset($_POST['area_blocks'])) {
+		if (isset($_POST['area_blocks'])) {
 			$area_blocks = $_POST['area_blocks'];
 			DB::query('DELETE FROM {blocks_areas} WHERE scope_id = :scope_id', array( 'scope_id' => $scope ) );
 	

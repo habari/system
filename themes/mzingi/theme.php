@@ -55,7 +55,7 @@ class CornerStone extends Theme
 	 */
 	public function add_template_vars()
 	{
-		if( !$this->template_engine->assigned( 'pages' ) ) {
+		if ( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) ) );
 		}
 		//For Asides loop in sidebar.php

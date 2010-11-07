@@ -221,11 +221,11 @@ class Theme extends Pluggable
 		$this->assign( 'posts', $posts );
 
 		/*
-		   if( !isset( $this->page ) ) {
-		   if( isset( $page ) ) {
+		   if ( !isset( $this->page ) ) {
+		   if ( isset( $page ) ) {
 		   $this->assign( 'page', $page );
 		   }
-		   elseif( isset( Controller::get_handler()->handler_vars['page'] ) ) {
+		   elseif ( isset( Controller::get_handler()->handler_vars['page'] ) ) {
 		   $this->assign( 'page', Controller::get_handler()->handler_vars['page'] );
 		   }
 		   }*/
@@ -856,14 +856,14 @@ class Theme extends Pluggable
 			return sprintf( $text, $count );
 		}
 		else {
-			if( empty($one) && empty($many) ) {
+			if ( empty($one) && empty($many) ) {
 				$text = _n( '%s Comment', '%s Comments', $count);
 			}
 			else{
-				if( empty($one) ) {
+				if ( empty($one) ) {
 					$one = $many;
 				}
-				if( empty($many) ) {
+				if ( empty($many) ) {
 					$many = $one;
 				}
 				$text = $count == 1 ? $one : $many;
@@ -1012,7 +1012,7 @@ class Theme extends Pluggable
 			}
 			array_unshift( $params, $function, $this );
 			$result = call_user_func_array( array( 'Plugins', 'theme' ), $params );
-			switch( $purposed ) {
+			switch ( $purposed ) {
 				case 'return':
 					return $result;
 				case 'end':
@@ -1075,7 +1075,7 @@ class Theme extends Pluggable
 				$stack[] = $value;
 			}
 			else {
-				switch($crit) {
+				switch ($crit) {
 					case 'not':
 						$stack[] = ! array_pop($stack);
 						break;
@@ -1124,7 +1124,7 @@ class Theme extends Pluggable
 	 **/	 	 
 	public function sort_scopes($scope1, $scope2) 
 	{
-		if($scope1->priority == $scope2->priority) {
+		if ($scope1->priority == $scope2->priority) {
 			return 0;
 		}
 		return $scope1->priority < $scope2->priority ? 1 : -1;
@@ -1149,7 +1149,7 @@ class Theme extends Pluggable
 		foreach ( $scopes as $scope_id => $scope_object ) {
 			if ( $this->check_scope_criteria($scope_object->criteria) ) {
 				$scope_block_count = DB::get_value('SELECT count(*) FROM {blocks_areas} ba WHERE ba.scope_id = ?', array($scope_object->id));
-				if($scope_block_count > 0) {
+				if ($scope_block_count > 0) {
 					$active_scope = $scope_object->id;
 				}
 				break;
@@ -1180,7 +1180,7 @@ class Theme extends Pluggable
 			$hook = 'block_content_' . $block->type;
 			Plugins::act($hook, $block, $this);
 			$block->_content = implode( '', $this->content_return($block, $context));
-			if(trim($block->_content) == '') {
+			if (trim($block->_content) == '') {
 				unset($area_blocks[$block_instance_id]);
 			} 
 		}
@@ -1198,7 +1198,7 @@ class Theme extends Pluggable
 			$this->content = $block->_content;
 			// This pattern renders the block inside the wrapper template only if a matching template exists
 			$newoutput = $this->display_fallback( $fallback, 'fetch' );
-			if($newoutput === false) {
+			if ($newoutput === false) {
 				$output .= $block->_content;
 			}
 			else {
@@ -1222,7 +1222,7 @@ class Theme extends Pluggable
 		);
 		$this->content = $output;
 		$newoutput = $this->display_fallback( $fallback, 'fetch' );
-		if($newoutput !== false) {
+		if ($newoutput !== false) {
 			$output = $newoutput;
 		}
 

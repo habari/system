@@ -44,7 +44,7 @@ class CronTab extends ActionHandler
 		}
 		else {
 			usleep(5000);
-			if( Options::get('cron_running') != $run_time ) {
+			if ( Options::get('cron_running') != $run_time ) {
 				return;
 			}
 
@@ -83,7 +83,7 @@ class CronTab extends ActionHandler
 		}
 
 		// allow script to run for 10 minutes. This only works on host with safe mode DISABLED
-		if( !ini_get( 'safe_mode' ) ) {
+		if ( !ini_get( 'safe_mode' ) ) {
 			set_time_limit( 600 );
 		}
 		$time = HabariDateTime::date_create();

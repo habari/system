@@ -56,10 +56,10 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		$this->add_template( 'k2_text', dirname(__FILE__) . '/formcontrol_text.php' );
 
 
-		if( !$this->template_engine->assigned( 'pages' ) ) {
+		if ( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
 		}
-		if( !$this->template_engine->assigned( 'page' ) ) {
+		if ( !$this->template_engine->assigned( 'page' ) ) {
 			$page = Controller::get_var( 'page' );
 			$this->assign('page', isset( $page ) ? $page : 1 );
 		}
@@ -80,7 +80,7 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		if ( $u = User::get( $comment->email ) ) {
 			$class.= ' byuser comment-author-' . Utils::slugify( $u->displayname );
 		}
-		if( $comment->email == $post->author->email ) {
+		if ( $comment->email == $post->author->email ) {
 			$class.= ' bypostauthor';
 		}
 
@@ -104,7 +104,7 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 	public function theme_menu_empty($theme, $menu)
 	{
 		// Should pass menu name on to Posts::get(array('preset'=>$menu))
-		if($menu == 'mainmenu') {
+		if ($menu == 'mainmenu') {
 			$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
 			$out = '';
 			foreach( $pages as $page ) {

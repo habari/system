@@ -338,7 +338,7 @@ class Utils
 	public static function firedebug()
 	{
 		$fooargs = func_get_args();
-		$output = "<script type=\"text/javascript\">\nif(window.console){\n";
+		$output = "<script type=\"text/javascript\">\nif (window.console){\n";
 		$backtrace = array_reverse( debug_backtrace(), true );
 		$output .= Utils::firebacktrace( $backtrace );
 
@@ -717,7 +717,7 @@ class Utils
 			ob_start(); // Catch potential parse error messages
 			$display_errors = ini_set( 'display_errors', 'on' ); // Make sure we have something to catch
 			$error_reporting = error_reporting( E_ALL ^ E_NOTICE );
-			$code = eval( ' if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
+			$code = eval( ' if (0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
 			ini_set( 'display_errors', $display_errors ); // be a good citizen
 			error_reporting( $error_reporting );
 			$error = ob_get_clean();

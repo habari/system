@@ -60,7 +60,7 @@ class Update extends Singleton
 	{
 		try {
 			$instance = self::instance();
-			if(count($instance->beacons) == 0) {
+			if (count($instance->beacons) == 0) {
 				Update::add('Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion());
 				
 				// add all active plugins
@@ -90,13 +90,13 @@ class Update extends Singleton
 				$beaconid = (string)$beacon['id'];
 				foreach($beacon->update as $update) {
 					// Do we have this beacon?  If not, don't process it.
-					if(empty($instance->beacons[$beaconid])) {
+					if (empty($instance->beacons[$beaconid])) {
 						continue;
 					}
 					// If the remote update info version is newer...
-					if( version_compare($update['version'], $instance->beacons[$beaconid]['version']) > 0 ) {
+					if ( version_compare($update['version'], $instance->beacons[$beaconid]['version']) > 0 ) {
 						// If this version is more recent than all other newer versions...
-						if(
+						if (
 							empty($instance->beacons[$beaconid]['latest_version']) ||
 							version_compare
 							(
@@ -107,7 +107,7 @@ class Update extends Singleton
 						{
 							$instance->beacons[$beaconid]['latest_version'] = (string)$update['version'];
 						}
-						if(isset($instance->beacons[$beaconid]['severity'])) {
+						if (isset($instance->beacons[$beaconid]['severity'])) {
 							$instance->beacons[$beaconid]['severity'][] = (string)$update['severity'];
 							array_unique($instance->beacons[$beaconid]['severity']);
 						}

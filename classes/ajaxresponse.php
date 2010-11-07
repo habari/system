@@ -26,7 +26,7 @@ class AjaxResponse
 	
 	public function __set($var, $val)
 	{
-		switch( $var ) {
+		switch ( $var ) {
 			case 'response_code':
 			case 'message':
 			case 'data':
@@ -38,7 +38,7 @@ class AjaxResponse
 	
 	public function html($name, $value)
 	{
-		if(empty($this->html)) {
+		if (empty($this->html)) {
 			$this->html = array( $name => $value );
 		}
 		else {
@@ -58,7 +58,7 @@ class AjaxResponse
 		if ($this->callback != null) {
 			$ret_array['habari_callback'] = $this->callback;
 		}
-		if(!empty($this->html)) {
+		if (!empty($this->html)) {
 			$ret_array['html'] = $this->html;
 		}
 		

@@ -401,7 +401,7 @@ class Format
 					$end['attrs'] = null;
 					$end['value'] = null;
 					$summary[] = $end;
-				} while( ($bail || $end['name'] != $token['name']) && count($stack) > 0 );
+				} while ( ($bail || $end['name'] != $token['name']) && count($stack) > 0 );
 				if ( count($stack) == 0 ) {
 					$para++;
 				}

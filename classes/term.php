@@ -279,7 +279,7 @@ class Term extends QueryRecord
 	public function siblings()
 	{
 		$parent = $this->parent();
-		if( $parent ) {
+		if ( $parent ) {
 			return $parent->children();
 		}
 		else {

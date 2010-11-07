@@ -167,7 +167,7 @@ class FeedbackHandler extends ActionHandler
 		}
 		
 		// Users need to have permission to add comments
-		if(!$user->can('comment')) {
+		if (!$user->can('comment')) {
 			Session::error( _t( 'You do not have permission to create comments.' ) );
 			Utils::redirect( $post->permalink );
 		}

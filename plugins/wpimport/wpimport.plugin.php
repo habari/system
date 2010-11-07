@@ -42,7 +42,7 @@ class WPImport extends Plugin implements Importer
 	public function filter_import_stage( $stageoutput, $import_name, $stage, $step )
 	{
 		// Only act on this filter if the import_name is one we handle...
-		if( !in_array( $import_name, $this->supported_importers ) ) {
+		if ( !in_array( $import_name, $this->supported_importers ) ) {
 			// Must return $stageoutput as it may contain the stage HTML of another importer
 			return $stageoutput;
 		}
@@ -50,12 +50,12 @@ class WPImport extends Plugin implements Importer
 		$inputs = array();
 
 		// Validate input from various stages...
-		switch( $stage ) {
+		switch ( $stage ) {
 		case 1:
-			if( count( $_POST ) ) {
+			if ( count( $_POST ) ) {
 				$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix', 'category_import', 'utw_import' );
 				$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
-				if( $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'], $inputs['db_prefix'] ) ) {
+				if ( $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'], $inputs['db_prefix'] ) ) {
 					$stage = 2;
 				}
 				else {
@@ -66,7 +66,7 @@ class WPImport extends Plugin implements Importer
 		}
 
 		// Based on the stage of the import we're on, do different things...
-		switch( $stage ) {
+		switch ( $stage ) {
 		case 1:
 		default:
 			$output = $this->stage1( $inputs );
@@ -98,7 +98,7 @@ class WPImport extends Plugin implements Importer
 		 );
 		$inputs = array_merge( $default_values, $inputs );
 		extract( $inputs );
-		if( $warning != '' ) {
+		if ( $warning != '' ) {
 			$warning = "<p class=\"warning\">{$warning}</p>";
 		}
 
@@ -228,8 +228,8 @@ WP_IMPORT_STAGE2;
 		}
 
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
-		if( $wpdb ) {
-			if( !DB::in_transaction() ) DB::begin_transaction();
+		if ( $wpdb ) {
+			if ( !DB::in_transaction() ) DB::begin_transaction();
 
 			$has_taxonomy = count($wpdb->get_column( "SHOW TABLES LIKE '{$db_prefix}term_taxonomy';" ));
 
@@ -263,7 +263,7 @@ WP_IMPORT_STAGE2;
 
 			$post_map = DB::get_column( "SELECT value FROM {postinfo} WHERE name='wp_id';");
 			foreach( $posts as $post ) {
-				if(in_array($post->id, $post_map)) {
+				if (in_array($post->id, $post_map)) {
 					continue;
 				}
 
@@ -325,7 +325,7 @@ WP_IMPORT_STAGE2;
 				$tags = MultiByte::convert_encoding( $tags );
 
 				$post_array = $post->to_array();
-				switch( $post_array['post_status'] ) {
+				switch ( $post_array['post_status'] ) {
 				case 'publish':
 					$post_array['status']= Post::status( 'published' );
 					break;
@@ -335,7 +335,7 @@ WP_IMPORT_STAGE2;
 				}
 				unset( $post_array['post_status'] );
 
-				switch( $post_array['post_type'] ) {
+				switch ( $post_array['post_type'] ) {
 				case 'post':
 					$post_array['content_type']= Post::type( 'entry' );
 					break;
@@ -350,7 +350,7 @@ WP_IMPORT_STAGE2;
 
 				$p = new Post( $post_array );
 				$p->slug = $post->slug;
-				if(isset($user_map[$p->user_id])) {
+				if (isset($user_map[$p->user_id])) {
 					$p->user_id = $user_map[$p->user_id];
 				}
 				else {
@@ -379,9 +379,9 @@ WP_IMPORT_STAGE2;
 				}
 			}
 
-			if( DB::in_transaction() ) DB::commit();
+			if ( DB::in_transaction() ) DB::commit();
 
-			if( $max < $postcount ) {
+			if ( $max < $postcount ) {
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
 				$postindex++;
 
@@ -452,8 +452,8 @@ WP_IMPORT_AJAX2;
 		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
 		extract( $inputs );
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
-		if( $wpdb ) {
-			if( !DB::in_transaction() ) DB::begin_transaction();
+		if ( $wpdb ) {
+			if ( !DB::in_transaction() ) DB::begin_transaction();
 			$wp_users = $wpdb->get_results(
 				"
 					SELECT
@@ -475,7 +475,7 @@ WP_IMPORT_AJAX2;
 			foreach($wp_users as $user) {
 				$habari_user = User::get_by_name($user->username);
 				// If username exists
-				if($habari_user instanceof User) {
+				if ($habari_user instanceof User) {
 					$habari_user->info->wp_id = $user->wp_id;
 					$habari_user->info->url = $user->wp_url;
 					$habari_user->update();
@@ -483,7 +483,7 @@ WP_IMPORT_AJAX2;
 				else {
 					try {
 						$user->info->wp_id = $user->wp_id;
-						if($user->wp_url != '') {
+						if ($user->wp_url != '') {
 							$user->info->url = $user->wp_url;
 						}
 						// This should probably remain commented until we implement ACL more,
@@ -502,7 +502,7 @@ WP_IMPORT_AJAX2;
 					}
 				}
 			}
-			if( DB::in_transaction()) DB::commit();
+			if ( DB::in_transaction()) DB::commit();
 
 			$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
 
@@ -549,8 +549,8 @@ WP_IMPORT_USERS1;
 		extract( $inputs );
 
 		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
-		if( $wpdb ) {
-			if( !DB::in_transaction() ) DB::begin_transaction();
+		if ( $wpdb ) {
+			if ( !DB::in_transaction() ) DB::begin_transaction();
 
 			$commentcount = $wpdb->get_value( "SELECT count( comment_ID ) FROM {$db_prefix}comments;" );
 			$min = $commentindex * IMPORT_BATCH + 1;
@@ -581,7 +581,7 @@ WP_IMPORT_USERS1;
 				, array(), 'Comment' );
 
 			foreach( $comments as $comment ) {
-				switch( $comment->type ) {
+				switch ( $comment->type ) {
 					case 'pingback': $comment->type = Comment::PINGBACK; break;
 					case 'trackback': $comment->type = Comment::TRACKBACK; break;
 					default: $comment->type = Comment::COMMENT;
@@ -594,7 +594,7 @@ WP_IMPORT_USERS1;
 				if ( $carray['ip'] == '' ) {
 					$carray['ip']= 0;
 				}
-				switch( $carray['status'] ) {
+				switch ( $carray['status'] ) {
 				case '0':
 					$carray['status']= Comment::STATUS_UNAPPROVED;
 					break;
@@ -606,7 +606,7 @@ WP_IMPORT_USERS1;
 					break;
 				}
 
-				if( isset( $post_map[$carray['wp_post_id']] ) ) {
+				if ( isset( $post_map[$carray['wp_post_id']] ) ) {
 					$carray['post_id']= $post_map[$carray['wp_post_id']];
 					unset( $carray['wp_post_id'] );
 
@@ -624,9 +624,9 @@ WP_IMPORT_USERS1;
 					}
 				}
 			}
-			if( DB::in_transaction() ) DB::commit();
+			if ( DB::in_transaction() ) DB::commit();
 
-			if( $max < $commentcount ) {
+			if ( $max < $commentcount ) {
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
 				$commentindex++;
 
@@ -656,7 +656,7 @@ WP_IMPORT_AJAX1;
 				echo '<p>' . _t( 'Import is complete.' ) . '</p>';
 
 				$errors = Options::get('import_errors');
-				if(count($errors) > 0 ) {
+				if (count($errors) > 0 ) {
 					echo '<p>' . _t( 'There were errors during import:' ) . '</p>';
 
 					echo '<ul>';

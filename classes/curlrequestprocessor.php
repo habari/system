@@ -83,7 +83,7 @@ class CURLRequestProcessor implements RequestProcessor
 
 		$success = curl_exec( $ch );
 
-		if( $success ) {
+		if ( $success ) {
 			rewind( $fh );
 			$body = stream_get_contents( $fh );
 		}

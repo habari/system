@@ -558,7 +558,7 @@ class Comments extends ArrayObject
 
 		foreach ( $this as $c ) {
 			// first, divvy up approved and unapproved comments
-			switch( $c->status ) {
+			switch ( $c->status ) {
 				case Comment::STATUS_APPROVED:
 					$this->sort['approved'][] = $c;
 					$this->sort['moderated'][] = $c;

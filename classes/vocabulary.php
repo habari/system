@@ -78,7 +78,7 @@ class Vocabulary extends QueryRecord
 	public function __get( $name )
 	{
 		$out = parent::__get( $name );
-		switch($name) {
+		switch ($name) {
 			case 'features':
 				if ( ! is_array( $out ) ) {
 					$out = unserialize( $out );
@@ -521,7 +521,7 @@ class Vocabulary extends QueryRecord
 	{
 		$tree = $this->get_tree( 'mptt_left ASC' );
 		$output = array();
-		if($firstnode = reset($tree)) {
+		if ($firstnode = reset($tree)) {
 			$lastright = $lastleft = reset($tree)->mptt_left;
 			$indent = 0;
 			$stack = array();

@@ -43,7 +43,7 @@
 	ob_start();
 	Plugins::act( 'theme_ui', $active_theme );
 	$output = ob_get_clean();
-	if(trim($output) != '') :
+	if (trim($output) != '') :
 	?>
 	
 	<div class="item clear">
@@ -166,7 +166,7 @@
 foreach ( $all_themes as $inactive_theme ):
 	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
 	
-	<div class="item pct30<?php if($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
+	<div class="item pct30<?php if ($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
 		<div class="head theme_credits"> 
 			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> 
 			<?php
@@ -193,7 +193,7 @@ foreach ( $all_themes as $inactive_theme ):
 		<p class="legacy"><?php _e( 'Legacy theme.' ); ?></p>
 	    <?php else: ?>
 		<ul class="dropbutton"> 
-			<?php if($previewed == $inactive_theme['dir']): ?>
+			<?php if ($previewed == $inactive_theme['dir']): ?>
 			<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('End Preview'); ?></a></li>
 			<?php else: ?>
 			<li><a href="<?php URL::out( 'admin', 'page=preview_theme&theme_dir=' . $inactive_theme['dir'] . '&theme_name=' . $inactive_theme['info']->name ); ?>"><?php _e('Preview'); ?></a></li>
@@ -209,7 +209,7 @@ endforeach;
 ?>
 </div>
 
-<?php if(isset($theme_loader) && $theme_loader != ''): ?>
+<?php if (isset($theme_loader) && $theme_loader != ''): ?>
 <div class="container" id="themeloader">
 <?php echo $theme_loader; ?>
 </div>

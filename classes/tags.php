@@ -23,7 +23,7 @@ class Tags extends ArrayObject
 
 		// Turn each of the tags into a Tag
 		if ( count( $tags ) ) {
-			if( is_string( $tags[0] ) || $tags[0] instanceof Term ) {
+			if ( is_string( $tags[0] ) || $tags[0] instanceof Term ) {
 				array_walk( $tags, create_function('&$tag', '$tag = new Tag($tag);') );
 			}
 		}
@@ -296,7 +296,7 @@ class Tags extends ArrayObject
 
 		$diff = array_diff( $tags, (array)$this );
 		foreach( $tags as $tag ) {
-			if( in_array( $tag, $diff ) ) {
+			if ( in_array( $tag, $diff ) ) {
 				return false;
 			}
 		}

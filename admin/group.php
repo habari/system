@@ -4,7 +4,7 @@
 		<select name="navigationdropdown" onchange="navigationDropdown.changePage();" tabindex="1">
 			<option value="<?php echo URL::get('admin', 'page=groups'); ?>"><?php _e('All Groups'); ?></option>
 			<?php foreach ( $groups as $group_nav ): ?>
-				<option value="<?php echo URL::get('admin', 'page=group&id=' . $group_nav->id); ?>"<?php if($group_nav->id == $id): ?> selected="selected"<?php endif; ?>><?php echo $group_nav->name; ?></option>
+				<option value="<?php echo URL::get('admin', 'page=group&id=' . $group_nav->id); ?>"<?php if ($group_nav->id == $id): ?> selected="selected"<?php endif; ?>><?php echo $group_nav->name; ?></option>
 			<?php endforeach; ?>
 		</select>
 	</span>

@@ -179,8 +179,8 @@ class Posts extends ArrayObject implements IsContent
 
 				}
 
-				if( isset( $paramset['vocabulary'] ) ) {
-					if( is_string( $paramset['vocabulary'] ) ) {
+				if ( isset( $paramset['vocabulary'] ) ) {
+					if ( is_string( $paramset['vocabulary'] ) ) {
 						$paramset['vocabulary'] = Utils::get_params( $paramset['vocabulary'] );
 					}
 					$paramset['vocabulary'] = self::_vocabulary_params( $paramset['vocabulary'] );
@@ -207,7 +207,7 @@ class Posts extends ArrayObject implements IsContent
 								break;
 						}
 					}
-					if( count( $all ) ) {
+					if ( count( $all ) ) {
 						foreach( $all as $key => $value ) {
 							$value = Utils::single_array( $value );
 							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
@@ -221,7 +221,7 @@ class Posts extends ArrayObject implements IsContent
 							$params[] = $object_id;
 						}
 					}
-					if( count( $any ) ) {
+					if ( count( $any ) ) {
 						foreach( $any as $key => $value ) {
 							$value = Utils::single_array( $value );
 							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
@@ -231,7 +231,7 @@ class Posts extends ArrayObject implements IsContent
 							$params[] = $object_id;
 						}
 					}
-					if( count( $not ) ) {
+					if ( count( $not ) ) {
 						foreach( $not as $key => $value ) {
 							$value = Utils::single_array( $value );
 							$where[] = 'NOT EXISTS (SELECT 1
@@ -944,7 +944,7 @@ class Posts extends ArrayObject implements IsContent
 			}
 			$value = trim( $value );
 
-			switch( strtolower($match['flag']) )  {
+			switch ( strtolower($match['flag']) )  {
 				case 'author':
 					if ( $u = User::get( $value ) ) {
 						$arguments['user_id'][] = (int) $u->id;
@@ -1047,7 +1047,7 @@ class Posts extends ArrayObject implements IsContent
 		$ret = array();
 		
 		foreach($params as $key => $value) {
-			if(strpos($key, ':') !== false) {
+			if (strpos($key, ':') !== false) {
 				list($newkey, $subkey) = explode(':', $key, 2);
 				$params[$newkey][$subkey] = $value;
 				unset($params[$key]);
@@ -1057,7 +1057,7 @@ class Posts extends ArrayObject implements IsContent
 		foreach( $params as $vocab => $values ) {
 			foreach( $values as $key => $value ) {
 				$value = Utils::single_array( $value );
-				if(strpos($key, ':') !== false ) {
+				if (strpos($key, ':') !== false ) {
 					list($mode, $by_field) = explode(':', $key, 2);
 					foreach( $value as $v ) {
 						$ret[$mode][] = Term::get( Vocabulary::get($vocab)->id, $v );
@@ -1065,12 +1065,12 @@ class Posts extends ArrayObject implements IsContent
 				}
 				else {
 					foreach( $value as $v ) {
-						if($v instanceof Tag) {
-							// @todo This if() section needs to be destroyed -- convert Tag to Term!
+						if ($v instanceof Tag) {
+							// @todo This if () section needs to be destroyed -- convert Tag to Term!
 							// $vocab is not a vocab, but a mode:
 							$ret[$vocab][] = Term::get( Vocabulary::get('tags')->id, $v->id );  
 						}
-						elseif($v instanceof Term) {
+						elseif ($v instanceof Term) {
 							// $vocab is not a vocab, but a mode:
 							$ret[$vocab][] = $v;
 						}

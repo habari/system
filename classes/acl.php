@@ -400,7 +400,7 @@ class ACL
 		$default_groups = array();
 		$default_groups = Plugins::filter( 'user_default_groups', $default_groups, $user_id );
 		$default_groups = array_filter( array_map( 'intval', $default_groups ) );
-		switch( count( $default_groups ) ) {
+		switch ( count( $default_groups ) ) {
 			case 0: // do nothing
 				break;
 			case 1: // single argument

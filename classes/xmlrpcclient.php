@@ -35,7 +35,7 @@ class XMLRPCClient
 	public function __construct($xmlrpc_entrypoint, $scope = null)
 	{
 		$this->entrypoint = $xmlrpc_entrypoint;
-		if(isset($scope)) {
+		if (isset($scope)) {
 			$this->scope = $scope;
 		}
 	}
@@ -62,7 +62,7 @@ class XMLRPCClient
 	 */
 	public function __call($fname, $args)
 	{
-		if($this->scope != '') {
+		if ($this->scope != '') {
 			$rpc_method = "{$this->scope}.{$fname}";
 		}
 		else {
@@ -71,7 +71,7 @@ class XMLRPCClient
 
 		$rpx = new SimpleXMLElement('<methodCall/>');
 		$rpx->addChild('methodName', $rpc_method);
-		if(count($args) > 0) {
+		if (count($args) > 0) {
 			$params = $rpx->addchild('params');
 			foreach($args as $arg) {
 				$param = $params->addchild('param');

@@ -19,7 +19,7 @@ class XMLRPCUtils
 	 */
 	public static function encode_arg($params, $arg)
 	{
-		switch(true) {
+		switch (true) {
 		case is_array($arg):
 			$data = $params->addchild('value')->addchild('array')->addchild('data');
 			foreach($arg as $element) {
@@ -73,11 +73,11 @@ class XMLRPCUtils
 	 */
 	public static function decode_args($value)
 	{
-		if(count($value->children())) {
+		if (count($value->children())) {
 			$value = $value->xpath('*');
 			$value = $value[0];
 		}
-		switch($value->getName()) {
+		switch ($value->getName()) {
 		case 'data':
 		case 'array':
 			$result_array = array();
@@ -91,7 +91,7 @@ class XMLRPCUtils
 			foreach($value->xpath('//member') as $struct_value) {
 				$property_name = (string)$struct_value->name;
 				$children = $struct_value->value->children();
-				if(count($children) > 0) {
+				if (count($children) > 0) {
 					$result_struct->$property_name = self::decode_args($children[0]);
 				}
 				else {

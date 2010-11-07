@@ -13,10 +13,10 @@
 		<?php endif; ?>
 	<?php endforeach; ?>
 	</select></span>
-	<?php if(!empty($helptext)) : ?>
+	<?php if (!empty($helptext)) : ?>
 	<span class="pct40 helptext"><?php echo $helptext; ?></span>
 	<?php endif; ?>
-	<?php if($message != '') : ?>
+	<?php if ($message != '') : ?>
 	<p class="error"><?php echo $message; ?></p>
 	<?php endif; ?>
 </div>

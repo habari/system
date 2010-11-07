@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html">
-<title><?php if($request->display_entry && isset($post)) { echo "{$post->title} - "; } ?><?php Options::out( 'title' ) ?></title>
+<title><?php if ($request->display_entry && isset($post)) { echo "{$post->title} - "; } ?><?php Options::out( 'title' ) ?></title>
 <meta name="generator" content="Habari">
 
 <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="<?php $theme->feed_alternate(); ?>">
@@ -22,7 +22,7 @@
 	<p class="description"><?php Options::out( 'tagline' ); ?></p>
 
 	<ul class="menu">
-		<li <?php if($request->display_home) { ?>
+		<li <?php if ($request->display_home) { ?>
 	class="current_page_item"<?php } ?>><a href="<?php Site::out_url( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
 <?php
 // Menu tabs

@@ -16,7 +16,7 @@ class XMLRPCServer extends ActionHandler
 	 */
 	public function act_xmlrpc_call()
 	{
-		if( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
+		if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
 			$exception = new XMLRPCException(1);
 			$exception->output_fault_xml(); // dies here
 		}

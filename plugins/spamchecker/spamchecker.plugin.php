@@ -24,7 +24,7 @@ class SpamChecker extends Plugin
 	function action_comment_insert_before ( $comment )
 	{
 		// This plugin ignores non-comments
-		if($comment->type != Comment::COMMENT) {
+		if ($comment->type != Comment::COMMENT) {
 			return;
 		}
 
@@ -109,22 +109,22 @@ class SpamChecker extends Plugin
 		}
 
 		// Only do db checks if it's not already spam
-		if($comment->status != Comment::STATUS_SPAM) {
+		if ($comment->status != Comment::STATUS_SPAM) {
 			$spams = DB::get_value('SELECT count(*) FROM ' . DB::table('comments') . ' WHERE status = ? AND ip = ?', array(Comment::STATUS_SPAM, $comment->ip));
 			// If you've already got two spams on your IP address, all you ever do is spam
-			if($spams > 1) {
+			if ($spams > 1) {
 				$comment->status = Comment::STATUS_SPAM;
 				$spamcheck[] = sprintf(_t('Too many existing spams from this IP: %s'), long2ip($comment->ip));
 			}
 		}
 
 		// Any commenter that takes longer than the session timeout is automatically moderated
-		if(!isset($_SESSION['comments_allowed']) || ! in_array(Controller::get_var('ccode'), $_SESSION['comments_allowed'])) {
+		if (!isset($_SESSION['comments_allowed']) || ! in_array(Controller::get_var('ccode'), $_SESSION['comments_allowed'])) {
 			$comment->status = Comment::STATUS_UNAPPROVED;
 			$spamcheck[] = _t("The commenter's session timed out.");
 		}
 
-		if( isset($comment->info->spamcheck) && is_array($comment->info->spamcheck)) {
+		if ( isset($comment->info->spamcheck) && is_array($comment->info->spamcheck)) {
 			$comment->info->spamcheck = array_unique(array_merge($comment->info->spamcheck, $spamcheck));
 		}
 		else {
@@ -167,10 +167,10 @@ class SpamChecker extends Plugin
 	 */
 	public function filter_rewrite_args($args, $rulename)
 	{
-		switch($rulename) {
+		switch ($rulename) {
 		case 'submit_feedback':
 			$args['ccode'] = $this->get_code($args['id']);
-			if( !isset($_SESSION['comments_allowed'])) {
+			if ( !isset($_SESSION['comments_allowed'])) {
 				$_SESSION['comments_allowed'] = array();
 			}
 			$_SESSION['comments_allowed'][] = $args['ccode'];
@@ -193,11 +193,11 @@ class SpamChecker extends Plugin
 	function filter_spam_filter( $spam_rating, $comment, $handlervars )
 	{
 		// This plugin ignores non-comments
-		if($comment->type != Comment::COMMENT) {
+		if ($comment->type != Comment::COMMENT) {
 			return $spam_rating;
 		}
 
-		if(!$this->verify_code($handlervars['ccode'], $comment->post_id)) {
+		if (!$this->verify_code($handlervars['ccode'], $comment->post_id)) {
 			ob_end_clean();
 			header( 'HTTP/1.1 403 Forbidden', true, 403 );
 			die('<h1>' . _t('The selected action is forbidden.') . '</h1>');
@@ -214,7 +214,7 @@ class SpamChecker extends Plugin
 	 **/
 	public function get_code($post_id, $ip = '')
 	{
-		if( $ip == '' ) {
+		if ( $ip == '' ) {
 			$ip = sprintf( "%u", ip2long( Utils::get_ip() ) );
 		}
 		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );
@@ -230,7 +230,7 @@ class SpamChecker extends Plugin
 	 **/
 	public function verify_code($suspect_code, $post_id, $ip = '')
 	{
-		if( $ip == '' ) {
+		if ( $ip == '' ) {
 			$ip = sprintf( "%u", ip2long( Utils::get_ip() ) );
 		}
 		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );

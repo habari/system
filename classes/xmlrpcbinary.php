@@ -20,7 +20,7 @@ class XMLRPCBinary
 	
 	public function __construct($data = null)
 	{
-		if(isset($data)) {
+		if (isset($data)) {
 			$this->data = $data;
 		}
 	}

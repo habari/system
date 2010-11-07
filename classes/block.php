@@ -124,10 +124,10 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			'block.' . $this->type,
 			'block',
 		);
-		if(isset($this->title)) {
+		if (isset($this->title)) {
 			array_unshift($types, 'block.' . $this->type . '.' . Utils::slugify($this->title));
 		}
-		if(isset($this->_area)) {
+		if (isset($this->_area)) {
 			$areas = array();
 			foreach($types as $type) {
 				$areas[] = $this->_area . '.' . $type;

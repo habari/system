@@ -80,11 +80,11 @@ class SuperGlobal extends ArrayIterator
 	 */
 	public function raw($index)
 	{
-		if(isset($this->raw_values[$index])) {
+		if (isset($this->raw_values[$index])) {
 			return $this->raw_values[$index];
 		}
 		$cp = $this->get_array_copy_raw();
-		if(isset($cp[$index])) {
+		if (isset($cp[$index])) {
 			$this->raw_values[$index] = $cp[$index];
 			return $this->raw_values[$index];
 		}
@@ -122,11 +122,11 @@ class SuperGlobal extends ArrayIterator
 	 */
 	public function offsetGet($index)
 	{
-		if(isset($this->values[$index])) {
+		if (isset($this->values[$index])) {
 			return $this->values[$index];
 		}
 		$cp = $this->get_array_copy_raw();
-		if(isset($cp[$index])) {
+		if (isset($cp[$index])) {
 			$this->values[$index] = $this->base_filter($cp[$index]);
 			return $this->values[$index];
 		}
@@ -153,10 +153,10 @@ class SuperGlobal extends ArrayIterator
 	 */
 	protected function base_filter($value)
 	{
-		if(is_array($value)) {
+		if (is_array($value)) {
 			return array_map(array($this, 'base_filter'), $value);
 		}
-		elseif(is_string($value)) {
+		elseif (is_string($value)) {
 			return InputFilter::filter($value);
 		}
 		else {
@@ -175,9 +175,9 @@ class SuperGlobal extends ArrayIterator
 		$args = func_get_args();
 		$cp = $this->get_array_copy_raw();
 		foreach($args as $ary) {
-			if(is_array($ary)) {
+			if (is_array($ary)) {
 				foreach($ary as $key => $value) {
-					if(is_numeric($key)) {
+					if (is_numeric($key)) {
 						$cp[] = $value;
 					}
 					else {
@@ -185,10 +185,10 @@ class SuperGlobal extends ArrayIterator
 					}
 				}
 			}
-			elseif($ary instanceof SuperGlobal) {
+			elseif ($ary instanceof SuperGlobal) {
 				// loop to get raw data.
-				while( $ary->valid() ) {
-					if( is_numeric($ary->key()) ) {
+				while ( $ary->valid() ) {
+					if ( is_numeric($ary->key()) ) {
 						$cp[] = $ary->raw($ary->key());
 					}
 					else {
@@ -197,10 +197,10 @@ class SuperGlobal extends ArrayIterator
 					$ary->next();
 				}
 			}
-			elseif($ary instanceof ArrayObject || $ary instanceof ArrayIterator) {
+			elseif ($ary instanceof ArrayObject || $ary instanceof ArrayIterator) {
 				$arycp = $ary->getArrayCopy();  // Don't trigger offsetGet for ArrayObject
 				foreach($arycp as $key => $value) {
-					if(is_numeric($key)) {
+					if (is_numeric($key)) {
 						$cp[] = $value;
 					}
 					else {
@@ -226,7 +226,7 @@ class SuperGlobal extends ArrayIterator
 		$keys = array();
 		$args = func_get_args();
 		foreach($args as $ary) {
-			if(!is_array($ary)) {
+			if (!is_array($ary)) {
 				$ary = array($ary);
 			}
 			$keys = array_merge($keys, array_values($ary));
