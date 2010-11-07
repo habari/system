@@ -228,7 +228,7 @@ class Tags extends ArrayObject
 	 * @param Integer $object_id. The id of the object being tagged
 	 * @param String $object_type. The name of the type of the object being tagged. Defaults to post
 	 *
-	 * @return boolean. Whether the associating succeeded or not. TRUE
+	 * @return boolean. Whether the associating succeeded or not. true
 	 */
 	public static function save_associations( $tags, $object_id, $object_type = 'post' )
 	{

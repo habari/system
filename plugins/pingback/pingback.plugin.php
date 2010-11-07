@@ -90,7 +90,7 @@ class Pingback extends Plugin
 			// This should really be done by an Habari core function
 			$target_parse = InputFilter::parse_url( $target_uri );
 			$target_stub = $target_parse['path'];
-			$base_url = Site::get_path( 'base', TRUE );
+			$base_url = Site::get_path( 'base', true );
 
 			if ( '/' != $base_url) {
 				$target_stub = str_replace( $base_url, '', $target_stub );
@@ -98,21 +98,21 @@ class Pingback extends Plugin
 
 			$target_stub = trim( $target_stub, '/' );
 
-			if ( strpos( $target_stub, '?' ) !== FALSE ) {
+			if ( strpos( $target_stub, '?' ) !== false ) {
 				list( $target_stub, $query_string )= explode( '?', $target_stub );
 			}
 
 			// Can this be used as a target?
 			$target_slug = URL::parse( $target_stub )->named_arg_values['slug'];
 
-			if ( $target_slug === FALSE ) {
+			if ( $target_slug === false ) {
 				throw new XMLRPCException( 33 );
 			}
 
 			// Does the target exist?
 			$target_post = Post::get( array( 'slug' => $target_slug ) );
 
-			if ( $target_post === FALSE ) {
+			if ( $target_post === false ) {
 				throw new XMLRPCException( 32 );
 			}
 
@@ -139,7 +139,7 @@ class Pingback extends Plugin
 			$habari_encoding = MultiByte::hab_encoding();
 			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
 				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $matches[1] );
-				if ( $ret !== FALSE ) {
+				if ( $ret !== false ) {
 					$source_contents = $ret;
 				}
 			}
@@ -281,7 +281,7 @@ class Pingback extends Plugin
 		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>"\']+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
 
 		if ( is_object( $post ) && isset( $post->info->pingbacks_successful ) ) {
-			$fn = ( $force === TRUE ) ? 'array_merge' : 'array_diff';
+			$fn = ( $force === true ) ? 'array_merge' : 'array_diff';
 			$links = $fn( $matches[1], $post->info->pingbacks_successful );
 		}
 		else {

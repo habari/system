@@ -15,7 +15,7 @@
 
 <?php
 /* In order to see DB profiling information:
-1. Insert this line in your config file: define( 'DEBUG', TRUE );
+1. Insert this line in your config file: define( 'DEBUG', true );
 2.Uncomment the followng line
 */
 // include 'db_profiling.php';

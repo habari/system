@@ -14,7 +14,7 @@ class MySQLConnection extends DatabaseConnection
 	 * @param string $connect_string a PDO connection string
 	 * @param string $db_user the database user name
 	 * @param string $db_pass the database user password
-	 * @return boolean TRUE on success, FALSE on error
+	 * @return boolean true on success, false on error
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{

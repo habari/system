@@ -48,7 +48,7 @@
 		$comment_tag_msg = array();
 		if ( !empty( $stats['comment_count'] ) ) {
 			$message = sprintf( _n( '%d comment', '%d comments', $stats['comment_count'] ), $stats['comment_count'] );
-			$perms = array( 'manage_all_comments' => TRUE, 'manage_own_post_comments' => TRUE );
+			$perms = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
 			if ( $user->can_any( $perms ) ) {
 				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_APPROVED ) ) ) . '">' . $message . '</a>';
 			}
@@ -56,7 +56,7 @@
 		}
 		if ( !empty( $stats['tag_count'] ) ) {
 			$message = sprintf( _n( '%d tag', '%d tags', $stats['tag_count'] ), $stats['tag_count'] );
-			$perms = array( 'manage_tags' => TRUE );
+			$perms = array( 'manage_tags' => true );
 			if ( $user->can_any( $perms ) ) {
 				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'tags' ) ) ) . '">' . $message . '</a>';
 			}
@@ -68,7 +68,7 @@
 				!empty( $comment_tag_msg ) ? _t( ' with ' ) . Format::and_list( $comment_tag_msg ) : "",
 				$stats['author_count'] );
 
-			$perms = array( 'manage_users' => TRUE );
+			$perms = array( 'manage_users' => true );
 			if ( $user->can_any( $perms ) ) {
 				$status_report = str_replace( array( '[', ']' ),
 					array( '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array('page'=>'users') ) ) . '">', '</a>' ),

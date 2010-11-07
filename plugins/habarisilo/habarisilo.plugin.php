@@ -31,13 +31,13 @@ class HabariSilo extends Plugin implements MediaSilo
 			if ( !$this->check_files() ) {
 				EventLog::log( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ), 'warning', 'plugin' );
 				Session::error( _t( "Habari Silo activation failed. The web server does not have permission to create the 'files' directory for the Habari Media Silo." ) );
-				$ok = FALSE;
+				$ok = false;
 			}
 			// Don't bother loading if the gd library isn't active
 			if ( !function_exists( 'imagecreatefromjpeg' ) ) {
 				EventLog::log( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ), 'warning', 'plugin' );
 				Session::error( _t( "Habari Silo activation failed. PHP has not loaded the gd imaging library." ) );
-				$ok = FALSE;
+				$ok = false;
 			}
 		}
 		return $ok;

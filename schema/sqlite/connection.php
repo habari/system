@@ -62,7 +62,7 @@ class SQLiteConnection extends DatabaseConnection
 				$file = HABARI_PATH . '/' . $file;
 			}
 			else {
-				$file = HABARI_PATH . '/' . Site::get_path( 'user', TRUE ) . $file;
+				$file = HABARI_PATH . '/' . Site::get_path( 'user', true ) . $file;
 			}
 			$connect_string = implode( ':', array( $type, $file ) );
 		}
