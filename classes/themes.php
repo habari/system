@@ -21,7 +21,7 @@ class Themes
 	{
 		if ( !isset( self::$all_themes ) ) {
 			$dirs = array( HABARI_PATH . '/system/themes/*' , HABARI_PATH . '/3rdparty/themes/*', HABARI_PATH . '/user/themes/*');
-			if( Site::is('multi') ) {
+			if ( Site::is('multi') ) {
 				$dirs[] = Site::get_dir('config') . '/themes/*';
 			}
 			$themes = array();
@@ -76,7 +76,7 @@ class Themes
 	 */
 	public static function get_theme_dir($nopreview = false)
 	{
-		if(!$nopreview && isset($_SESSION['user_theme_dir'])) {
+		if (!$nopreview && isset($_SESSION['user_theme_dir'])) {
 			$theme_dir = $_SESSION['user_theme_dir'];
 		}
 		else {
@@ -175,7 +175,7 @@ class Themes
 	 */
 	public static function cancel_preview()
 	{
-		if(isset($_SESSION['user_theme_name'])) {
+		if (isset($_SESSION['user_theme_name'])) {
 			EventLog::log( _t( 'Canceled Theme Preview: %s', array( $_SESSION['user_theme_name'] ) ), 'notice', 'theme', 'habari' );
 			unset($_SESSION['user_theme_name']);
 			unset($_SESSION['user_theme_dir']);
@@ -208,7 +208,7 @@ class Themes
 				$themedata->template_engine = $template_engine;
 				$themedata->theme_dir = $themedata->name;
 				$themedata->version = 0;
-				if( $theme_dir != '' ) {
+				if ( $theme_dir != '' ) {
 					$themedata->theme_dir = $theme_dir;
 				}
 				else {
@@ -236,9 +236,9 @@ class Themes
 		/**
 		 * @todo Should we include_once a theme's theme.php file here?
 		 **/
-		if( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
+		if ( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
 			include_once( $themedata->theme_dir . 'theme.php' );
-			if( defined('THEME_CLASS') ) {
+			if ( defined('THEME_CLASS') ) {
 				$classname = THEME_CLASS;
 			}
 		}

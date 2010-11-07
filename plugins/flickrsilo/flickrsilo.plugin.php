@@ -41,7 +41,7 @@ class flickrAPI
 		$args = array_merge($args, array ('api_sig' => $this->sign($args)));
 		ksort($args);
 
-		if($method == 'upload'){
+		if ($method == 'upload'){
 			$req = curl_init();
 			$args['api_key'] = $this->key;
 			$photo = $args['photo'];
@@ -134,13 +134,13 @@ class Flickr extends flickrAPI
 	function getPublicPhotos($nsid, $extras = '', $per_page = '', $page = '')
 	{
 		$params = array('user_id' => $nsid);
-		if($extras){
+		if ($extras){
 			$params['extras'] = $extras;
 		}
-		if($per_page){
+		if ($per_page){
 			$params['per_page'] = $per_page;
 		}
-		if($page){
+		if ($page){
 			$params['page'] = $page;
 		}
 
@@ -162,7 +162,7 @@ class Flickr extends flickrAPI
 	{
 		$params = array();
 
-		if($nsid){
+		if ($nsid){
 			$params['user_id'] = $nsid;
 		}
 
@@ -201,7 +201,7 @@ class Flickr extends flickrAPI
 	function photosRecentlyUpdated()
 	{
 		$params = array();
-		if($this->cachedToken()){
+		if ($this->cachedToken()){
 			$params['auth_token'] = $this->cachedToken();
 		}
 
@@ -219,7 +219,7 @@ class Flickr extends flickrAPI
 
 	function mediaSearch( $params = array()  )
 	{
-		if($this->cachedToken()){
+		if ($this->cachedToken()){
 			$params['auth_token'] = $this->cachedToken();
 		}
 
@@ -238,7 +238,7 @@ class Flickr extends flickrAPI
 
 	function photosSearch( $params = array()  )
 	{
-		if($this->cachedToken()){
+		if ($this->cachedToken()){
 			$params['auth_token'] = $this->cachedToken();
 		}
 
@@ -263,7 +263,7 @@ class Flickr extends flickrAPI
 
 	function videoSearch( $params = array()  )
 	{
-		if($this->cachedToken()){
+		if ($this->cachedToken()){
 			$params['auth_token'] = $this->cachedToken();
 		}
 
@@ -284,7 +284,7 @@ class Flickr extends flickrAPI
 	function tagsGetListUser($userid = null)
 	{
 		$params = array();
-		if(isset($userid)) {
+		if (isset($userid)) {
 			$params['user_id'] = $userid;
 		}
 		$xml = $this->call('flickr.tags.getListUser', $params);
@@ -294,7 +294,7 @@ class Flickr extends flickrAPI
 	function photosGetInfo($photo_id)
 	{
 		$params = array();
-		if($this->cachedToken()){
+		if ($this->cachedToken()){
 			$params['auth_token'] = $this->cachedToken();
 		}
 
@@ -316,23 +316,23 @@ class Flickr extends flickrAPI
 			$id = -1;
 			foreach($value->children() as $kk => $vv){
 				$typed = false;
-				if(isset($vv['id'])){
+				if (isset($vv['id'])){
 					$id = (string)$vv['id'];
-				}elseif(isset($vv['type'])){
+				}elseif (isset($vv['type'])){
 					$id = (string)$vv['type'];
 					$typed = true;
 				}else $id++;
 				foreach($vv->attributes() as $kkk => $vvv){
 					$ret[(string)$key][$id][(string)$kkk] = (string)$vvv;
 				}
-				if($typed){
+				if ($typed){
 					$ret[(string)$key][$id] = (string)$vv;
 				}
 				else{
 					$ret[(string)$key][$id]['text'] = (string)$vv;
 				}
 			}
-			if(!count($ret[(string)$key])) $ret[(string)$key] = (string)$value;
+			if (!count($ret[(string)$key])) $ret[(string)$key] = (string)$value;
 		}
 		return $ret;
 	}
@@ -340,12 +340,12 @@ class Flickr extends flickrAPI
 	function upload($photo, $title = '', $description = '', $tags = '', $perms = '', $async = 1, &$info = null)
 	{
 		$store = HABARI_PATH . '/' . Site::get_path('user') . '/cache';
-		if(!is_dir($store)){
+		if (!is_dir($store)){
 			mkdir($store, 0777);
 		}
 		$params = array('auth_token' => $this->cachedToken());
 		$url = InputFilter::parse_url('file://' . $photo);
-		if(isset($url['scheme'])){
+		if (isset($url['scheme'])){
 			$localphoto = fopen(HABARI_PATH . '/' . $photo, 'r');
 			$store = tempnam($store, 'G2F');
 			file_put_contents($store, $localphoto);
@@ -358,37 +358,37 @@ class Flickr extends flickrAPI
 
 		$info = filesize($params['photo']);
 
-		if($title){
+		if ($title){
 			$params['title'] = $title;
 		}
 
-		if($description){
+		if ($description){
 			$params['description'] = $description;
 		}
 
-		if($tags){
+		if ($tags){
 			$params['tags'] = $tags;
 		}
 
-		if($perms){
-			if(isset($perms['is_public'])){
+		if ($perms){
+			if (isset($perms['is_public'])){
 				$params['is_public'] = $perms['is_public'];
 			}
-			if(isset($perms['is_friend'])){
+			if (isset($perms['is_friend'])){
 				$params['is_friend'] = $perms['is_friend'];
 			}
-			if(isset($perms['is_family'])){
+			if (isset($perms['is_family'])){
 				$params['is_family'] = $perms['is_family'];
 			}
 		}
 
-		if($async){
+		if ($async){
 			$params['async'] = $async;
 		}
 		// call the upload method.
 		$xml = $this->call('upload', $params);
 
-		if($store){
+		if ($store){
 			unlink($store);
 		}
 
@@ -396,7 +396,7 @@ class Flickr extends flickrAPI
 			throw $xml;
 		}
 
-		if($async){
+		if ($async){
 			return((string)$xml->ticketid);
 		}
 		else{
@@ -406,9 +406,9 @@ class Flickr extends flickrAPI
 
 	function photosUploadCheckTickets($tickets)
 	{
-		if(is_array($tickets)){
+		if (is_array($tickets)){
 			foreach($tickets as $key => $value){
-				if($key){
+				if ($key){
 					$params['tickets'] .= ' ';
 				}
 				$params['tickets'] .= $value;
@@ -435,7 +435,7 @@ class Flickr extends flickrAPI
 	{
 		$params = array();
 		$xml = $this->call('flickr.reflection.getMethods', $params);
-		if(!$xml){
+		if (!$xml){
 			return false;
 		}
 		$ret = (array)$xml->methods->method;
@@ -467,7 +467,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_info()
 	{
-		if($this->is_auth()) {
+		if ($this->is_auth()) {
 			return array('name' => self::SILO_NAME, 'icon' => URL::get_from_filesystem(__FILE__) . '/icon.png');
 		}
 		else {
@@ -488,7 +488,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		$size = Options::get('flickrsilo__flickr_size');
 
 		$section = strtok($path, '/');
-		switch($section) {
+		switch ($section) {
 			case 'attrib-sa':
 				$xml = $flickr->photosSearch(array('user_id' => '', 'license' => '4,5', 'text'=>$_SESSION['flickrsearch']));
 				foreach($xml->photos->photo as $photo) {
@@ -573,7 +573,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 				break;
 			case 'tags':
 				$selected_tag = strtok('/');
-				if($selected_tag) {
+				if ($selected_tag) {
 					$xml = $flickr->photosSearch(array('tags'=>$selected_tag));
 					foreach($xml->photos->photo as $photo) {
 
@@ -606,7 +606,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 				break;
 			case 'sets':
 				$selected_set = strtok('/');
-				if($selected_set) {
+				if ($selected_set) {
 					$xml = $flickr->photosetsGetPhotos($selected_set);
 					foreach($xml->photoset->photo as $photo) {
 
@@ -645,7 +645,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 				$section = $path;
 
 			case '':
-				if(isset($_SESSION['flickrsearch'])) {
+				if (isset($_SESSION['flickrsearch'])) {
 					$results[] = new MediaAsset(
 						self::SILO_NAME . '/search',
 						true,
@@ -703,13 +703,13 @@ class FlickrSilo extends Plugin implements MediaSilo
 	public function silo_url($path, $qualities = null)
 	{
 		$photo = false;
-		if(preg_match('%^photos/(.+)$%', $path, $matches)) {
+		if (preg_match('%^photos/(.+)$%', $path, $matches)) {
 			$id = $matches[1];
 			$photo = self::$cache[$id];
 		}
 
 		$size = '';
-		if(isset($qualities['size']) && $qualities['size'] == 'thumbnail') {
+		if (isset($qualities['size']) && $qualities['size'] == 'thumbnail') {
 			$size = '_m';
 		}
 		$url = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}{$size}.jpg";
@@ -798,7 +798,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		if ($plugin_id == $this->plugin_id()){
 			$flickr_ok = $this->is_auth();
 
-			if($flickr_ok){
+			if ($flickr_ok){
 				$actions[] = 'De-Authorize';
 			}
 			else{
@@ -821,7 +821,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		if ($plugin_id == $this->plugin_id()){
 			switch ($action){
 				case 'Authorize':
-					if($this->is_auth()){
+					if ($this->is_auth()){
 						$deauth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'De-Authorize')) . '#plugin_options';
 						echo "<p>You have already successfully authorized Habari to access your Flickr account.</p>";
 						echo "<p>Do you want to <a href=\"\">revoke authorization</a>?</p>";
@@ -842,13 +842,13 @@ END_AUTH;
 
 				case 'confirm':
 					$flickr = new Flickr();
-					if(!isset($_SESSION['flickr_frob'])){
+					if (!isset($_SESSION['flickr_frob'])){
 						$auth_url = URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'Authorize')) . '#plugin_options';
 						echo '<p>Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href="' . $auth_url . '">try again</a>.</p>';
 					}
 					else{
 						$token = $flickr->getToken($_SESSION['flickr_frob']);
-						if(isset($token->auth->perms)){
+						if (isset($token->auth->perms)){
 							Options::set('flickr_token_' . User::identify()->id, '' . $token->auth->token);
 							echo '<p>Your authorization was set successfully.</p>';
 						}
@@ -877,9 +877,9 @@ END_AUTH;
 		}
 	}
 	public function action_admin_footer( $theme ) {
-		if(Controller::get_var('page') == 'publish') {
+		if (Controller::get_var('page') == 'publish') {
 			$size = Options::get('flickrsilo__flickr_size');
-			switch($size) {
+			switch ($size) {
 				case '_s':
 					$vsizex = 75;
 					break;
@@ -933,16 +933,16 @@ FLICKR;
 	private function is_auth()
 	{
 		static $flickr_ok = null;
-		if(isset($flickr_ok)){
+		if (isset($flickr_ok)){
 			return $flickr_ok;
 		}
 
 		$flickr_ok = false;
 		$token = Options::get('flickr_token_' . User::identify()->id);
-		if($token != ''){
+		if ($token != ''){
 			$flickr = new Flickr();
 			$result = $flickr->call('flickr.auth.checkToken', array('api_key' => $flickr->key, 'auth_token' => $token));
-			if(isset($result->auth->perms)){
+			if (isset($result->auth->perms)){
 				$flickr_ok = true;
 				$_SESSION['nsid'] = (string)$result->auth->user['nsid'];
 			}
@@ -968,13 +968,13 @@ FLICKR;
 	public function filter_media_controls( $controls, $silo, $path, $panelname )
 	{
 		$class = __CLASS__;
-		if($silo instanceof $class) {
+		if ($silo instanceof $class) {
 			unset($controls['root']);
 			$search_criteria = isset($_SESSION['flickrsearch']) ? htmlentities($_SESSION['flickrsearch']) : '';
 			$controls['search']= '<label for="flickrsearch" class="incontent">Search</label><input type="search" id="flickrsearch" placeholder="'. _t('Search for photos') .'" value="'.$search_criteria.'">
 					<script type="text/javascript">
 					$(\'#flickrsearch\').keypress(function(e){
-						if(e.which == 13){
+						if (e.which == 13){
 							habari.media.fullReload();
 							habari.media.showdir(\''.FlickrSilo::SILO_NAME.'/$search/\' + $(this).val());
 							return false;

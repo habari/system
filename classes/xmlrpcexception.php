@@ -17,7 +17,7 @@ class XMLRPCException extends Exception
 	public function __construct($code, $message = null)
 	{
 		// make sure everything is assigned properly
-		if(empty($message)) {
+		if (empty($message)) {
 			$message = $this->get_message($code);
 		}
 		parent::__construct($message, $code);

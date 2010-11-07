@@ -60,7 +60,7 @@ class Bitmask
 	 */
 	public function __set( $bit, $on )
 	{
-		switch( $bit ) {
+		switch ( $bit ) {
 			case 'full':
 				if ( ! is_bool( $on ) ) {
 					throw new InvalidArgumentException( _t( 'Bitmask full toggle must be boolean' ) );

@@ -26,12 +26,12 @@ class Media
 	 */
 	public static function dir($path = '')
 	{
-		if($path == '') {
+		if ($path == '') {
 			self::init_silos();
 			$dirs = array();
 			foreach(self::$silos as $siloname => $silo) {
 				$info = $silo->silo_info();
-				if(isset($info['icon']))
+				if (isset($info['icon']))
 				{
 					$dirs[] = new MediaAsset($siloname, true, array(), $info['icon']);
 				}
@@ -86,11 +86,11 @@ class Media
 	 */
 	public static function put($filedata, $path = null)
 	{
-		if(!$path) {
+		if (!$path) {
 			$path = $filedata->path;
 		}
 		$silo = Media::get_silo($path, true);
-		if($path == '') {
+		if ($path == '') {
 			return false;
 		}
 		else {
@@ -107,7 +107,7 @@ class Media
 	public static function delete($path)
 	{
 		$silo = Media::get_silo($path, true);
-		if($path == '') {
+		if ($path == '') {
 			return false;
 		}
 		else {
@@ -124,7 +124,7 @@ class Media
 	 */
 	public static function copy($pathfrom, $pathto)
 	{
-		if($source = Media::get($pathfrom)) {
+		if ($source = Media::get($pathfrom)) {
 			return Media::put($pathto, $source);
 		}
 		else {
@@ -142,7 +142,7 @@ class Media
 	 */
 	public static function move($pathfrom, $pathto)
 	{
-		if(Media::copy($pathfrom, $pathto)) {
+		if (Media::copy($pathfrom, $pathto)) {
 			return Media::delete($pathfrom);
 		}
 		else {
@@ -159,7 +159,7 @@ class Media
 	public static function highlights($path = null)
 	{
 		$highlights = array();
-		if(isset($path)) {
+		if (isset($path)) {
 			$silo = Media::get_silo($path);
 			return $silo->silo_highlights();
 		}
@@ -193,13 +193,13 @@ class Media
 	 */
 	public static function get_silo(&$silo, $parse_path = false)
 	{
-		if($silo instanceof MediaSilo) {
+		if ($silo instanceof MediaSilo) {
 			return $silo;
 		}
 		$siloname = $silo;
-		if($parse_path) {
+		if ($parse_path) {
 			$exp = explode('/', $silo, 2);
-			if(count($exp) > 1) {
+			if (count($exp) > 1) {
 				list($siloname, $silo) = $exp;
 			}
 			else {
@@ -216,12 +216,12 @@ class Media
 	 */
 	public static function init_silos()
 	{
-		if(empty(self::$silos)) {
+		if (empty(self::$silos)) {
 			$tempsilos = Plugins::get_by_interface('MediaSilo');
 			self::$silos = array();
 			foreach($tempsilos as $eachsilo) {
 				$info = $eachsilo->silo_info();
-				if(isset($info['name'])) {
+				if (isset($info['name'])) {
 					self::$silos[$info['name']] = $eachsilo;
 				}
 			}

@@ -13,7 +13,7 @@
 	<?php endif; ?>
 <?php endforeach; ?>
 </select>
-<?php if($message != '') : ?>
+<?php if ($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>
 </div>

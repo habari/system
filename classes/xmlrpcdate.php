@@ -15,9 +15,9 @@ class XMLRPCDate
 	
 	public function __set($name, $value)
 	{
-		switch($name) {
+		switch ($name) {
 		case 'date':
-			if(is_numeric($value)) {
+			if (is_numeric($value)) {
 				$this->rpcdate = $value;
 			}
 			else {
@@ -28,7 +28,7 @@ class XMLRPCDate
 	
 	public function __get($name)
 	{
-		switch($name) {
+		switch ($name) {
 		case 'date':
 			return $this->rpcdate;
 		}
@@ -36,7 +36,7 @@ class XMLRPCDate
 	
 	public function __construct($date = null)
 	{
-		if(isset($date)) {
+		if (isset($date)) {
 			$this->date = $date;
 		}
 	}

@@ -144,7 +144,7 @@ class CronJob extends QueryRecord
 	 */
 	public function __set( $name, $value )
 	{
-		switch( $name ) {
+		switch ( $name ) {
 		case 'callback':
 			if ( is_array($value) || is_object($value) ) {
 				$value = serialize( $value );

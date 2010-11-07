@@ -75,7 +75,7 @@
 		<span class="pct25"><input type="submit" name="filter" value="<?php _e('Filter'); ?>"></span>
 	</div>
 	
-	<?php if(isset($years)) { ?>
+	<?php if (isset($years)) { ?>
 	<div class="manage logs">
 
 		<?php $theme->display('logs_items'); ?>

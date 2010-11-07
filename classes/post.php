@@ -732,7 +732,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function __set( $name, $value )
 	{
-		switch( $name ) {
+		switch ( $name ) {
 			case 'pubdate':
 			case 'updated':
 			case 'modified':

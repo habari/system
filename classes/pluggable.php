@@ -74,7 +74,7 @@ abstract class Pluggable
 	final public function plugin_id()
 	{
 		static $id;
-		if(!isset($id)) {
+		if (!isset($id)) {
 			$id = Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
 		}
 		return $id;

@@ -233,11 +233,11 @@ class HiEngineParser
 				case 'url':
 					return '<?php URL::out( \'' . $cmd_matches[2] . '\' ); ?>';
 				case 'session':
-					switch($cmd_matches[2]) {
+					switch ($cmd_matches[2]) {
 						case 'messages':
-							return '<?php if(Session::has_messages()){Session::messages_out();} ?>';
+							return '<?php if (Session::has_messages()){Session::messages_out();} ?>';
 						case 'errors':
-							return '<?php if(Session::has_errors()){Session::messages_out();} ?>';
+							return '<?php if (Session::has_errors()){Session::messages_out();} ?>';
 					}
 				// this is an internal match
 				case 'context':
@@ -262,7 +262,7 @@ class HiEngineParser
 		$params = array();
 		$returnval = false;
 
-		if(preg_match_all('/(?<=\s)(?P<name>[@a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)\s*=\s*(?P<value>(?P<quot>["\']).+?\3|[^"\'\s]+)/i', $cmd, $foundparams, PREG_SET_ORDER)) {
+		if (preg_match_all('/(?<=\s)(?P<name>[@a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.]*)\s*=\s*(?P<value>(?P<quot>["\']).+?\3|[^"\'\s]+)/i', $cmd, $foundparams, PREG_SET_ORDER)) {
 			foreach($foundparams as $p) {
 				$params[$p['name']] = trim($p['value'], $p['quot']);
 			}
@@ -291,7 +291,7 @@ class HiEngineParser
 				$returnval = '$'. $cmdmatch;
 			}
 		}
-		if($returnval !== false) {
+		if ($returnval !== false) {
 			$returnval = $this->apply_parameters($returnval, $params);
 			return '<?php echo '. $returnval . '; ?>';
 		}
@@ -315,10 +315,10 @@ class HiEngineParser
 	function apply_parameters($returnval, $params)
 	{
 		foreach($params as $k => $v) {
-			if($k[0] == '@') {
+			if ($k[0] == '@') {
 				$returnval = '$theme->' . substr($cmd,1) . '(' . $returnval . ", '" . $v . "')";
 			}
-			switch($k) {
+			switch ($k) {
 				case 'dateformat':
 					$returnval = "call_user_func(array(" . $returnval . ", 'format'), '" . addslashes($v) . "')";
 					break; 
@@ -348,7 +348,7 @@ class HiEngineParser
 
 	/**
 	 * Replace variables in the hiengine syntax with PHP varaibles
-	 * @param array $matches The match array found in hi_if()
+	 * @param array $matches The match array found in hi_if ()
 	 * @returns string A PHP variable string to use as the replacement
 	 */
 	function var_replace($matches)
@@ -393,7 +393,7 @@ class HiEngineParser
 
 	/**
 	 * Creates a table of static strings in hiengine expressions to be replaced in later
-	 * @param array $matches The match found in hi_if()
+	 * @param array $matches The match found in hi_if ()
 	 * @returns string An uncommon string index for the stored static string.
 	 */
 	function string_stack($matches)
@@ -409,7 +409,7 @@ class HiEngineParser
 	 * @param array $matches The match array found in HiEngineParser::process()
 	 * @return string The PHP replacement for the template tag
 	 */
-	function hi_if($matches)
+	function hi_if ($matches)
 	{
 		list($void, $eval, $context) = $matches;
 
@@ -420,7 +420,7 @@ class HiEngineParser
 
 		$context = preg_replace('/\{hi:\?else\?\}/i', '<?php else: ?>', $context);
 
-		$output = '<?php if(' . $eval . '): ?>';
+		$output = '<?php if (' . $eval . '): ?>';
 		$output .= $this->process($context);
 		$output .= '<?php endif; ?>';
 		return $output;

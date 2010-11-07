@@ -66,7 +66,7 @@ class charcoal extends Theme
 			$this->assign( 'localized_css', false );
 		}
 		
-		if( !$this->template_engine->assigned( 'pages' ) ) {
+		if ( !$this->template_engine->assigned( 'pages' ) ) {
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
 		}
 		$this->assign( 'post_id', ( isset($this->post) && $this->post->content_type == Post::type('page') ) ? $this->post->id : 0 );

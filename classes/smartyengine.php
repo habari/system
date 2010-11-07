@@ -122,7 +122,7 @@ class SmartyEngine extends TemplateEngine
 	public function template_exists( $template )
 	{
 		if ( empty( $this->available_templates ) ) {
-			if(!is_array($this->template_dir)) {
+			if (!is_array($this->template_dir)) {
 				$this->template_dir = array($this->template_dir);
 			}
 			$alltemplates = array();

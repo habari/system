@@ -1592,7 +1592,7 @@ class FormControlTextMulti extends FormControl
 						return false;
 					},
 					remove: function(e){
-						if(confirm("' . _t('Remove this item?') . '")) {
+						if (confirm("' . _t('Remove this item?') . '")) {
 							$(e).parent().prev().remove();
 							$(e).parent().remove();
 						}

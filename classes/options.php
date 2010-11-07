@@ -63,7 +63,7 @@ class Options extends Singleton
 	public static function get_group( $prefix )
 	{
 
-		if( substr( $prefix, -2 ) != '__' ) {
+		if ( substr( $prefix, -2 ) != '__' ) {
 			$prefix .= '__';
 		}
 		

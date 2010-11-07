@@ -125,7 +125,7 @@ class Site
 	{
 		$url = '';
 
-		switch( strtolower( $name ) ) {
+		switch ( strtolower( $name ) ) {
 			case 'host':
 				$protocol = 'http';
 				// If we're running on a port other than 80, i
@@ -303,7 +303,7 @@ class Site
 
 					$match = MultiByte::substr( $match, MultiByte::strpos( $match, '.' ) + 1 );
 					$x--;
-				} while( MultiByte::strpos( $match,'.' ) !== false );
+				} while ( MultiByte::strpos( $match,'.' ) !== false );
 
 				$path = self::$config_path;
 				break;

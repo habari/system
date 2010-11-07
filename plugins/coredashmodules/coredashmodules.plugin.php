@@ -16,7 +16,7 @@ class CoreDashModules extends Plugin
 	 */
 	function action_plugin_activation( $file )
 	{
-		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
+		if ( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
 			Modules::add( 'Latest Entries' );
 			Modules::add( 'Latest Comments' );
 			Modules::add( 'Latest Log Activity' );
@@ -30,7 +30,7 @@ class CoreDashModules extends Plugin
 	 */
 	function action_plugin_deactivation( $file )
 	{
-		if( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
+		if ( Plugins::id_from_file($file) == Plugins::id_from_file(__FILE__) ) {
 			Modules::remove_by_name( 'Latest Entries' );
 			Modules::remove_by_name( 'Latest Comments' );
 			Modules::remove_by_name( 'Latest Log Activity' );
@@ -44,10 +44,10 @@ class CoreDashModules extends Plugin
 	function filter_dash_modules( $modules )
 	{
 		$modules[] = 'Latest Entries';
-		if(User::identify()->can('manage_all_comments')) {
+		if (User::identify()->can('manage_all_comments')) {
 			$modules[] = 'Latest Comments';
 		}
-		if(User::identify()->can('manage_logs')) {
+		if (User::identify()->can('manage_logs')) {
 			$modules[] = 'Latest Log Activity';
 		}
 		

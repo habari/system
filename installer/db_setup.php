@@ -16,7 +16,7 @@
 			<?php
 				foreach($pdo_drivers as $value => $text){
 					echo '<option value="'.$value.'"';
-					if($db_type == (string)$value) {
+					if ($db_type == (string)$value) {
 						echo ' selected="selected"';
 					}
 					echo '>' . $text . "</option>\n";

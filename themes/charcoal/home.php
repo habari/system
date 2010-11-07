@@ -50,7 +50,7 @@
 	<div id="wrapper-bottom">
 		<div id="bottom-primary">
 			<div id="prev-posts">
-			<?php while($post =next($posts)) : ?>
+			<?php while ($post =next($posts)) : ?>
 				<div class="prev-post">
 					<div class="prev-post-title">
 						<h2>

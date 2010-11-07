@@ -27,7 +27,7 @@ class EventLog extends ArrayObject
 	 */
 	public function __get( $name )
 	{
-		switch( $name ) {
+		switch ( $name ) {
 			case 'onelogentry':
 				return ( count( $this ) == 1 );
 		}
@@ -60,8 +60,8 @@ class EventLog extends ArrayObject
 	public static function unregister_type( $type = 'default', $module = null )
 	{
 		$id = DB::get_value( "SELECT id FROM {log_types} WHERE module = ? and type = ?", array( self::get_module( $module ), $type ) );
-		if( $id ) {
-			if( !DB::exists( '{log}', array( 'type_id' => $id ) ) ) {
+		if ( $id ) {
+			if ( !DB::exists( '{log}', array( 'type_id' => $id ) ) ) {
 				DB::delete( '{log_types}', array( 'id' => $id ) );
 			}
 		}
@@ -130,7 +130,7 @@ class EventLog extends ArrayObject
 		$paramarray = Utils::get_params( $paramarray );
 
 		$select_fields = LogEntry::default_fields();
-		if(!isset($paramarray['return_data'])) {
+		if (!isset($paramarray['return_data'])) {
 			unset($select_fields['data']);
 		}
 		foreach ( $select_fields as $field => $value ) {
@@ -232,7 +232,7 @@ class EventLog extends ArrayObject
 				if ( isset( $paramset['criteria'] ) ) {
 					preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						if(preg_match('%^id:(\d+)$%i', $word, $special_crit)) {
+						if (preg_match('%^id:(\d+)$%i', $word, $special_crit)) {
 							$where[] .= '(id = ?)';
 							$params[] = $special_crit[1];
 						}
@@ -309,7 +309,7 @@ class EventLog extends ArrayObject
 			}
 		}
 		// If the month counts are requested, replace the select clause
-		if( isset( $paramset['month_cts'] ) ) {
+		if ( isset( $paramset['month_cts'] ) ) {
 			// @todo shouldn't this hand back to habari to convert to DateTime so it reflects the right timezone?
 			$select = 'MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year, COUNT(*) AS ct';
 			$groupby = 'year, month';

@@ -1,10 +1,10 @@
 <div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
-<?php if($message != '') : ?>
+<?php if ($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>
 <p><?php echo $this->caption; ?></p>
 <?php
-if(!is_array($value)) {
+if (!is_array($value)) {
 	$value = array($value);
 }
 $i = 0;

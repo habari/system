@@ -210,15 +210,15 @@ class Modules
 	*/
 	public static function setup_status_module()
 	{
-		if( isset( self::$status_data ) ) {
+		if ( isset( self::$status_data ) ) {
 			return;
 		}
 
 		self::$status_data = Plugins::filter('dashboard_status', array());
 
-		if( count( self::$status_data ) > 0 ) {
+		if ( count( self::$status_data ) > 0 ) {
 			self::$available_modules['Status'] = _t('System Status');
-			if(array_search(_t('System Status'), self::$active_modules) === false) {
+			if (array_search(_t('System Status'), self::$active_modules) === false) {
 				self::$active_modules[] = _t('System Status');
 			}
 			Plugins::register( array( 'Modules', 'filter_dash_module_status' ), 'filter', 'dash_module_system_status');

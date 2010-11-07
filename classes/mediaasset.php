@@ -46,8 +46,8 @@ class MediaAsset
 	 */
 	protected function _get()
 	{
-		if(empty($this->content)) {
-			switch($this->mode) {
+		if (empty($this->content)) {
+			switch ($this->mode) {
 				case self::MODE_DATA:
 					$this->content = Media::get($this->path);
 					break;
@@ -93,7 +93,7 @@ class MediaAsset
 	 */
 	public function __get($name)
 	{
-		switch($name) {
+		switch ($name) {
 			case 'content':
 				return $this->_get();
 			case 'is_dir':
@@ -115,7 +115,7 @@ class MediaAsset
 	 */
 	public function __set($name, $value)
 	{
-		switch($name) {
+		switch ($name) {
 			case 'content':
 				$this->mode = self::MODE_DATA;
 				return $this->_set($value);
@@ -147,7 +147,7 @@ class MediaAsset
 	 */
 	public function save( $file )
 	{
-		switch( $this->mode ) {
+		switch ( $this->mode ) {
 			case self::MODE_DATA:
 				return file_put_contents( $file, $this->content ) !== false;
 				break;

@@ -261,7 +261,7 @@ class AtomHandler extends ActionHandler
 	public function act_collection()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST' ) );
-		switch( $_SERVER['REQUEST_METHOD'] ) {
+		switch ( $_SERVER['REQUEST_METHOD'] ) {
 			case 'GET':
 			case 'HEAD':
 				$this->get_collection();
@@ -279,7 +279,7 @@ class AtomHandler extends ActionHandler
 	public function act_entry()
 	{
 		Utils::check_request_method( array( 'GET', 'HEAD', 'POST', 'PUT', 'DELETE' ) );
-		switch( $_SERVER['REQUEST_METHOD'] ) {
+		switch ( $_SERVER['REQUEST_METHOD'] ) {
 			case 'GET':
 			case 'HEAD':
 			case 'POST':
