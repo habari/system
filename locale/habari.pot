@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-01 13:46+0000\n"
+"POT-Creation-Date: 2010-11-08 14:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -311,11 +311,11 @@ msgstr ""
 msgid "v1.1 Update Available Now"
 msgstr ""
 
-#: system/admin/plugin.php:53
+#: system/admin/plugin.php:61
 msgid "This plugin cannot be activated because the following features were not present:"
 msgstr ""
 
-#: system/admin/plugin.php:82
+#: system/admin/plugin.php:106
 msgid "Close"
 msgstr ""
 
@@ -924,7 +924,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:20 system/themes/charcoal/home.php:23
 #: system/themes/charcoal/multiple.php:19 system/themes/charcoal/search.php:21
-#: system/themes/charcoal/entry.single.php:29 system/classes/theme.php:854
+#: system/themes/charcoal/entry.single.php:29 system/classes/theme.php:855
 msgid "No Comments"
 msgstr ""
 
@@ -3067,12 +3067,12 @@ msgstr ""
 msgid "none"
 msgstr ""
 
-#: system/classes/term.php:163
+#: system/classes/term.php:160
 #, php-format
 msgid "New term %1$s: %2$s"
 msgstr ""
 
-#: system/classes/term.php:216
+#: system/classes/term.php:213
 #, php-format
 msgid "Term %1$s (%2$s) deleted."
 msgstr ""
@@ -3131,23 +3131,23 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: system/classes/theme.php:259
+#: system/classes/theme.php:260
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:780
+#: system/classes/theme.php:781
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:807
+#: system/classes/theme.php:808
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:833
+#: system/classes/theme.php:834
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:859
+#: system/classes/theme.php:860
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
