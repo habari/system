@@ -73,12 +73,12 @@ class CURLRequestProcessor implements RequestProcessor
 		 */
 		$tmp = tempnam( FILE_CACHE_LOCATION, 'RR' );
 		if ( ! $tmp ) {
-			return Error::raise( _t( ' %s: CURL Error. Unable to create temporary file name.', array( __CLASS__ ) ), E_USER_WARNING );
+			throw new Exception( _t('CURL Error. Unable to create temporary file name.') );
 		}
 
 		$fh = @fopen( $tmp, 'w+b' );
 		if ( ! $fh ) {
-			return Error::raise( _t( ' %s: CURL Error. Unable to open temporary file.', array( __CLASS__ ) ), E_USER_WARNING );
+			throw new Exception( _t('CURL Error. Unable to open temporary file.') );
 		}
 
 		curl_setopt( $ch, CURLOPT_FILE, $fh );
@@ -97,16 +97,11 @@ class CURLRequestProcessor implements RequestProcessor
 		}
 
 		if ( curl_errno( $ch ) !== 0 ) {
-			return Error::raise( sprintf( _t('%s: CURL Error %d: %s'), __CLASS__, curl_errno( $ch ), curl_error( $ch ) ),
-				E_USER_WARNING );
+			throw new Exception( _t( 'CURL Error %d: %s', array(curl_errno( $ch ), curl_error( $ch ) ) ) );
 		}
 
 		if ( substr( curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 0, 1 ) != 2 ) {
-			return Error::raise( sprintf( _t('Bad return code (%1$d) for: %2$s'),
-				curl_getinfo( $ch, CURLINFO_HTTP_CODE ),
-				$url ),
-				E_USER_WARNING
-			);
+			throw new Exception( _t( 'Bad return code (%d) for: %s', array( curl_getinfo( $ch, CURLINFO_HTTP_CODE ), $url ) ) );
 		}
 
 		curl_close( $ch );
@@ -131,7 +126,7 @@ class CURLRequestProcessor implements RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
+			throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
 		}
 
 		return $this->response_body;
@@ -140,7 +135,7 @@ class CURLRequestProcessor implements RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
+			throw new Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
 		}
 
 		return $this->response_headers;
