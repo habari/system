@@ -108,8 +108,8 @@ class RemoteRequest
 	 */
 	public function set_body( $body )
 	{
-		if ( $this->method !== 'POST' ) {
-			throw new Exception( _t('Trying to add a request body to a non-POST request.') );
+		if ( $this->method == 'GET' ) {
+			throw new Exception( _t('Trying to add a request body to a GET request.') );
 		}
 
 		$this->body = $body;
