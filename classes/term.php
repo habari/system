@@ -262,6 +262,21 @@ class Term extends QueryRecord
 	}
 
 	/**
+	 * Test a Term's descendants.
+	 * @return boolean true if $term is an ancestor of $this
+	 */
+	public function is_descendant_of( Term $term )
+	{
+		if ( $this->vocabulary_id != $term->vocabulary_id ) {
+			return false;
+		}
+		if ( ($this->mptt_left > $term->mptt_left) && ($this->mptt_right < $term->mptt_right) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * The Term that is this Term's parent in hierarchy.
 	 * @return Term This Term's parent
 	 */
