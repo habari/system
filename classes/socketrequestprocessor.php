@@ -22,9 +22,10 @@ class SocketRequestProcessor implements RequestProcessor
 
 	public function execute( $method, $url, $headers, $body, $timeout )
 	{
+		// let any exceptions thrown just bubble up
 		$result = $this->_request( $method, $url, $headers, $body, $timeout );
 
-		if ( $result && ! Error::is_error( $result ) ) {
+		if ( $result ) {
 			list( $response_headers, $response_body )= $result;
 			$this->response_headers = $response_headers;
 			$this->response_body = $response_body;
@@ -72,8 +73,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 
 		if ( $fp === false ) {
-			return Error::raise( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
-				E_USER_WARNING );
+			throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) ) );
 		}
 
 		// timeout to fsockopen() only applies for connecting
@@ -110,7 +110,7 @@ class SocketRequestProcessor implements RequestProcessor
 		$out = implode( "\r\n", $request );
 
 		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
-			return Error::raise( _t('Error writing to socket.') );
+			throw new Exception( _t( 'Error writing to socket.' ) );
 		}
 
 		$in = '';
@@ -142,13 +142,13 @@ class SocketRequestProcessor implements RequestProcessor
 				$this->redir_count++;
 
 				if ( $this->redir_count > $this->max_redirs ) {
-					return Error::raise( _t('Maximum number of redirections exceeded.') );
+					throw new Exception( _t('Maximum number of redirections exceeded.') );
 				}
 
 				return $this->_work( $method, $redirect_urlbits, $headers, $body, $timeout );
 			}
 			else {
-				return Error::raise( _t('Redirection response without Location: header.') );
+				throw new Exception( _t('Redirection response without Location: header.') );
 			}
 		}
 
@@ -184,7 +184,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_body()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
+			throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
 		}
 
 		return $this->response_body;
@@ -193,7 +193,7 @@ class SocketRequestProcessor implements RequestProcessor
 	public function get_response_headers()
 	{
 		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
+			throw new Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
 		}
 
 		return $this->response_headers;
