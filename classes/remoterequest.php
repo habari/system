@@ -108,8 +108,9 @@ class RemoteRequest
 	 */
 	public function set_body( $body )
 	{
-		if ( $this->method !== 'POST' )
-			return Error::raise( _t('Trying to add a request body to a non-POST request'), E_USER_WARNING );
+		if ( $this->method !== 'POST' ) {
+			throw new Exception( _t('Trying to add a request body to a non-POST request.') );
+		}
 
 		$this->body = $body;
 	}
@@ -165,7 +166,7 @@ class RemoteRequest
 	public function set_file($name, $filename, $content_type = null, $override_filename = null)
 	{
 		if (!file_exists($filename)) {
-			return Error::raise(sprintf(_t('File %s not found.'), $filename), E_USER_WARNING);
+			throw new Exception( _t('File %s not found.', array($filename)) );
 		}
 		if (empty($content_type)) $content_type = 'application/octet-stream';
 		$this->files[$name] = array('filename' => $filename, 'content_type' => $content_type, 'override_filename' => $override_filename);
@@ -229,14 +230,16 @@ class RemoteRequest
 	/**
 	 * Actually execute the request.
 	 * On success, returns true and populates the response_body and response_headers fields.
-	 * On failure, throws error.
+	 * On failure, throws Exception.
+	 * 
+	 * @throws Exception
 	 */
 	public function execute()
 	{
 		$this->prepare();
 		$result = $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
 
-		if ( $result && ! Error::is_error( $result ) ) { // XXX exceptions?
+		if ( $result ) { // XXX exceptions?
 			$this->response_headers = $this->processor->get_response_headers();
 			$this->response_body = $this->processor->get_response_body();
 			$this->executed = true;
@@ -244,8 +247,7 @@ class RemoteRequest
 			return true;
 		}
 		else {
-			// actually, processor->execute should throw an Error which would bubble up
-			// we need a new Error class and error handler for that, though
+			// processor->execute should throw an Exception which would bubble up
 			$this->executed = false;
 
 			return $result;
@@ -259,22 +261,26 @@ class RemoteRequest
 
 	/**
 	 * Return the response headers. Raises a warning and returns '' if the request wasn't executed yet.
+	 * @todo This should probably just call the selected processor's method, which throws its own error.
 	 */
 	public function get_response_headers()
 	{
-		if ( !$this->executed )
-			return Error::raise( _t('Trying to fetch response headers for a pending request.'), E_USER_WARNING );
+		if ( !$this->executed ) {
+			throw new Exception( _t('Unable to fetch response headers for a pending request.') );
+		}
 
 		return $this->response_headers;
 	}
 
 	/**
 	 * Return the response body. Raises a warning and returns '' if the request wasn't executed yet.
+	 * @todo This should probably just call the selected processor's method, which throws its own error.
 	 */
 	public function get_response_body()
 	{
-		if ( !$this->executed )
-			return Error::raise( _t('Trying to fetch response body for a pending request.'), E_USER_WARNING );
+		if ( !$this->executed ) {
+			throw new Exception( _t('Unable to fetch response body for a pending request.') );
+		}
 
 		return $this->response_body;
 	}
@@ -332,13 +338,20 @@ class RemoteRequest
 	 */
 	public static function get_contents( $url, $use_include_path = false, $context = null, $offset =0, $maxlen = -1 )
 	{
-		$rr = new RemoteRequest( $url );
-		if ( $rr->execute() === true) {
-			return ( $maxlen != -1
-				? MultiByte::substr( $rr->get_response_body(), $offset, $maxlen )
-				: MultiByte::substr( $rr->get_response_body(), $offset ) );
+		try {
+			$rr = new RemoteRequest( $url );
+			if ( $rr->execute() === true) {
+				return ( $maxlen != -1
+					? MultiByte::substr( $rr->get_response_body(), $offset, $maxlen )
+					: MultiByte::substr( $rr->get_response_body(), $offset ) );
+			}
+			else {
+				return false;
+			}
 		}
-		else {
+		catch ( Exception $e ) {
+			// catch any exceptions to try and emulate file_get_contents() as closely as possible.
+			// if you want more control over the errors, instantiate RemoteRequest manually
 			return false;
 		}
 	}
