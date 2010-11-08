@@ -68,6 +68,8 @@ class CURLRequestProcessor implements RequestProcessor
 		 * to set write permissions on cache directory
 		 *
 		 * @todo Fallback to using the the old way if the cache directory isn't writable
+		 * 
+		 * @todo How about trying to use the system-defined temp directory? We could at least try, even if safe_mode or something breaks it. - chrismeller
 		 */
 		$tmp = tempnam( FILE_CACHE_LOCATION, 'RR' );
 		if ( ! $tmp ) {
