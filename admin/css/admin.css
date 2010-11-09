@@ -551,7 +551,6 @@ a:hover {
 
 a.minor {
 	color: #999;
-	padding-left: 5px;
 }
 
 .or, .conjunction {
@@ -1131,7 +1130,7 @@ body.page-publish .buttons input {
 	font-weight: bold;
 }
 
-.dashboard .item span {
+.dashboard .item > span {
 	float: left;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -1317,6 +1316,10 @@ tr.status_item {
 	font-weight: bold;
 }
 
+.dashboard .latest-entries-module span.title span {
+	font-size: 11px;	/* make it match the size of the author link */
+	padding-left: 5px;
+}
 
 
 /* LOGS PAGE */
