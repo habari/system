@@ -218,7 +218,7 @@ class Vocabulary extends QueryRecord
 		// We've inserted the vocabulary, reset newfields
 		$this->newfields = array();
 
-		EventLog::log( sprintf( _t( 'New vocabulary %1$s (%2$s)' ), $this->id, $this->name ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'New vocabulary %1$s (%2$s)' , array($this->id, $this->name) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_insert_after', $this );
