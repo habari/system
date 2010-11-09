@@ -428,7 +428,7 @@ SQL;
 				$out = (int)$this->count();
 				break;
 			case 'id':
-				return (int)$this->id;
+				return (int)parent::__get( $name );
 			default:
 				$out = parent::__get( $name );
 				break;
