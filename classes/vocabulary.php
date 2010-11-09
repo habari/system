@@ -432,24 +432,24 @@ class Vocabulary extends QueryRecord
 	 **/
 	public function set_object_terms( $object_type, $id, $terms )
 	{
-		 if ( ! isset( $object_type ) || ! isset( $id ) ) {
+		if ( ! isset( $object_type ) || ! isset( $id ) ) {
 			return false;
-		 }
+		}
 
-		 if ( ! isset( $terms ) || empty( $terms ) ) {
+		if ( ! isset( $terms ) || empty( $terms ) ) {
 			$terms = array();
 //			DB::query( "DELETE FROM {object_terms} WHERE object_id = :object_id AND object_type_id = :type_id", array( 'object_id' => $id, 'type_id' => Vocabulary::get_object_id( $object_type ) ) );
 //			return true;
-		 }
+		}
 
 		// Make sure we have an array
-		$terms = Utils::single_array( $terms );
+		$terms = new Terms( $terms );
 		$new_terms = array();
 
 		// Make sure we have terms and they're in the database.
 		// Key the terms to their id while we're at it.
 		foreach ( $terms as $term ) {
-			$new_term = Term::get( $this->id, (string)$term );
+			$new_term = $this->get_term( $term );
 			if ( ! $new_term instanceof Term ) {
 				$new_term = $this->add_term( $term );
 			}
