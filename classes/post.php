@@ -333,7 +333,7 @@ class Post extends QueryRecord implements IsContent
 
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) ) {
-			$this->tags = new Terms( $this->fields['tags'] );
+			$this->tags = Terms::parse( $this->fields['tags'] );
 			unset( $this->fields['tags'] );
 		}
 
@@ -600,7 +600,7 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_delete_before', $this );
 
 		// delete all the tags associated with this post
-		Tags::save_associations(new Tags(), $this->id );
+		Tags::save_associations(new Terms(), $this->id );
 
 		// Delete all comments associated with this post
 		if ( $this->comments->count() > 0 ) {
@@ -745,7 +745,7 @@ class Post extends QueryRecord implements IsContent
 					return $this->tags = $value;
 				}
 				else {
-					return $this->tags = new Tags( $value );
+					return $this->tags = Terms::parse( $value );
 				}
 			case 'status':
 				return $this->setstatus( $value );
@@ -1022,7 +1022,7 @@ class Post extends QueryRecord implements IsContent
 	/**
 	 * function get_tags
 	 * Gets the tags for the post
-	 * @return Tags The tags object for this post
+	 * @return Terms The tags object for this post
 	 */
 	private function get_tags()
 	{

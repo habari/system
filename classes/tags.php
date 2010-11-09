@@ -87,14 +87,10 @@ class Tags extends Vocabulary
 	 *
 	 * @return boolean. Whether the associating succeeded or not. true
 	 */
-	public static function save_associations( $tags, $object_id, $object_type = 'post' )
+	public static function save_associations( $terms, $object_id, $object_type = 'post' )
 	{
-		$terms = array();
-		if ( ! $tags instanceof Tags ) {
-			$tags = new Tags( $tags );
-		}
-		foreach ( $tags as $tag ) {
-			$terms[] = new Term( array( 'term' => $tag->tag_slug, 'term_display' => $tag->tag_text, 'id' => $tag->id ) );
+		if ( ! $terms instanceof Terms ) {
+			$terms = Terms::parse( $terms );
 		}
 		return self::vocabulary()->set_object_terms( $object_type, $object_id, $terms );
 	}

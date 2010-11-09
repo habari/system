@@ -64,7 +64,7 @@ class Terms extends ArrayObject
 		if(is_array($terms)) {
 			array_walk( $terms, create_function('&$tag', '$tag = new ' . $term_class . '($tag);') );
 		}
-		return $terms;
+		return new Terms($terms);
 	}
 
 }
