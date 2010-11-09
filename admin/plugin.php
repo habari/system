@@ -89,7 +89,7 @@
 	<div class="pluginhelp"<?php if ( $helpaction == '_help' ): ?> class="active"<?php endif; ?>>
 		<?php
 		if ( Plugins::is_loaded((string) $plugin['info']->name) ) {
-			Plugins::act( 'plugin_ui', $plugin['plugin_id'], '_help' );
+			Plugins::act_id( 'plugin_ui', $plugin['plugin_id'], $plugin['plugin_id'], '_help' );
 		}
 		elseif ( isset($plugin['info']->help) ) {
 			foreach ( $plugin['info']->help as $help ) {
