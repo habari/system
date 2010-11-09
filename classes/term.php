@@ -69,22 +69,7 @@ class Term extends QueryRecord
 	 */
 	public static function get( $vocab_id, $term = null )
 	{
-		if ( $vocab_id instanceof Vocabulary ) {
-			$vocab_id = $vocab_id->id;
-		}
-		$params = array( 'vocab_id' => (int) $vocab_id );
-		$query = '';
-		if ( is_null( $term )  ) {
-			// The root node has an mptt_left value of 1
- 			$params[ 'left' ] = 1;
-			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND mptt_left = :left';
-		}
-		else {
-			$params[ 'term_id' ] = (int) $term;
-			$params[ 'term' ] = $term;
-			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND (id = ABS(:term_id) OR term = :term OR term_display = :term)';
-		}
-		return DB::get_row( $query, $params, 'Term' );
+		return Vocabulary::get($vocab_id)->get_term($term);
 	}
 
 	/**
@@ -428,9 +413,43 @@ SQL;
 		switch ( $name ) {
 			case 'vocabulary':
 				return Vocabulary::get_by_id( $this->vocabulary_id );
+			case 'tag_text_searchable':
+				// if it's got spaces, then quote it.
+				if ( strpos($this->term_display, ' ') !== false ) {
+					$out = '\'' . str_replace("'", "\'", $this->term_display) . '\'';
+				}
+				else {
+					$out = $this->term_display;
+				}
+				break;
+			case 'count':
+				$out = $this->get_count();
+				break;
 			default:
 				return parent::__get( $name );
 		}
+	}
+
+	/**
+	 * Get a count of how many times the tag has been used in a post
+	 * @param string $object_type The type of object to count	 
+	 * @return integer The number of times the tag has been used
+	 */
+	public function count( $object_type = 'post' )
+	{
+		return count( $this->objects( $object_type ) );
+	}
+
+	/**
+	 * Handle calls to this Term object that are implemented by plugins
+	 * @param string $name The name of the function called
+	 * @param array $args Arguments passed to the function call
+	 * @return mixed The value returned from any plugin filters, null if no value is returned
+	 */
+	public function __call( $name, $args )
+	{
+		array_unshift($args, 'term_call_' . $name, null, $this);
+		return call_user_func_array(array('Plugins', 'filter'), $args);
 	}
 
 }
