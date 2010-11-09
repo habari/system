@@ -118,7 +118,7 @@ class Term extends QueryRecord
 			return false;
 		}
 		Plugins::act( 'term_insert_before', $this );
-Utils::debug($this);
+
 		$result = parent::insertRecord( DB::table( 'terms' ) );
 
 		// Make sure the id is set in the term object to match the row id
