@@ -125,10 +125,9 @@ class Vocabulary extends QueryRecord
 	 * Rename a Vocabulary.
 	 * @return boolean true if the Vocabulary was renamed, false otherwise
 	 **/
-	public static function rename( $name, $newname )
+	public function rename( $newname )
 	{
-		$vocab = Vocabulary::get( $name );
-		$vocab->name = $newname;
+		$this->name = $newname;
 		$result = $vocab->update();
 
 		return $result;
@@ -165,7 +164,7 @@ class Vocabulary extends QueryRecord
 			'Term'
 		);
 
-		return $results;
+		return new Terms($results);
 	}
 
 	/**
@@ -377,10 +376,26 @@ class Vocabulary extends QueryRecord
 	 * Gets the term object by id. No parameter returns the root Term object.
 	 * @param integer $term_id The id of the term to fetch, or null for the root node
 	 * @return Term The Term object requested
+	 * @todo improve selective fetching by term slug vs term_display	 
 	 **/
 	public function get_term($term_id = null)
 	{
-		return Term::get($this->id, $term_id);
+		$params = array( 'vocab_id' => $this->id );
+		$query = '';
+		if ( is_null( $term )  ) {
+			// The root node has an mptt_left value of 1
+ 			$params[ 'left' ] = 1;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND mptt_left = :left';
+		}
+		elseif ( is_string($term_id) ) {
+			$params[ 'term' ] = $term_id;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND (term = :term OR term_display = :term)';
+		}
+		elseif ( is_int($term_id) )  {
+			$params[ 'term_id' ] = $term_id;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND id = ABS(:term_id)';
+		}
+		return DB::get_row( $query, $params, 'Term' );
 	}
 
 	/**
@@ -710,6 +725,133 @@ SQL;
 		}
 		return false;
 	}
+
+
+	/**
+	 * Returns the number of tags in the database.
+	 *
+	 * @return int The number of tags in the database.
+	 **/
+	public  function count_total()
+	{
+		return count( $this->get_tree() );
+	}
+
+	/**
+	 * Returns the number of times the most used tag is used.
+	 *
+	 * @return int The number of times the most used tag is used.
+	 **/
+	public function max_count()
+	{
+		return DB::get_value( 'SELECT count( t2.object_id ) AS max FROM {terms} t, {object_terms} t2 WHERE t2.term_id = t.id AND t.vocabulary_id = ? GROUP BY t.id ORDER BY max DESC LIMIT 1', array( $this->id ) );
+	}
+
+	/**
+	 * Renames tags.
+	 * If the master tag exists, the tags will be merged with it.
+	 * If not, it will be created first.
+	 *
+	 * @param mixed $master The Tag to which they should be renamed, or the slug, text or id of it
+	 * @param Array $tags The tag text, slugs or ids to be renamed
+	 **/
+	public static function merge($master, $terms, $object_type = 'post' )
+	{
+		$vocabulary = self::vocabulary();
+		$type_id = Vocabulary::object_type_id( $object_type );
+
+		$post_ids = array();
+		$tag_names = array();
+
+		// get array of existing tags first to make sure we don't conflict with a new master tag
+		foreach ( $tags as $tag ) {
+
+			$posts = array();
+			$term = $vocabulary->get_term( $tag );
+
+			// get all the post ID's tagged with this tag
+			$posts = $term->objects( $object_type );
+
+			if ( count( $posts ) > 0 ) {
+				// merge the current post ids into the list of all the post_ids we need for the new tag
+				$post_ids = array_merge( $post_ids, $posts );
+			}
+
+			$tag_names[] = $tag;
+			if ( $tag != $master ) {
+				$vocabulary->delete_term( $term->id );
+			}
+		}
+
+		// get the master term
+		$master_term = $vocabulary->get_term( $master );
+
+		if ( !isset($master_term->term ) ) {
+			// it didn't exist, so we assume it's tag text and create it
+			$master_term = $vocabulary->add_term( $master );
+
+			$master_ids = array();
+		}
+		else {
+			// get the posts the tag is already on so we don't duplicate them
+			$master_ids = $master_term->objects( $object_type );
+
+		}
+
+		if ( count( $post_ids ) > 0 ) {
+			// only try and add the master tag to posts it's not already on
+			$post_ids = array_diff( $post_ids, $master_ids );
+		}
+		else {
+			$post_ids = $master_ids;
+		}
+		// link the master tag to each distinct post we removed tags from
+		foreach ( $post_ids as $post_id ) {
+			$master_term->associate( $object_type, $post_id );
+		}
+
+		EventLog::log(sprintf(
+			_n('Tag %s has been renamed to %s.',
+				 'Tags %s have been renamed to %s.',
+				  count( $tags )
+			), implode( $tag_names, ', ' ), $master ), 'info', 'tag', 'habari'
+		);
+
+	}
+	
+
+	/**
+	 * Get the tags associated with this object
+	 *
+	 * @params Vocabulary $vocabulary The vocabulary containing the terms	 
+	 * @param Integer $object_id. The id of the tagged object
+	 * @param String $object_type. The name of the type of the object being tagged. Defaults to post
+	 *
+	 * @return Terms The terms associated with this object
+	 */
+	public function get_associations( $object_id, $object_type = 'post' )
+	{
+		$terms = $this->get_object_terms( $object_type, $object_id );
+		if ( $terms )  {
+			$terms = new Terms( $terms );
+		}
+
+		return $terms;
+	}
+	
+
+	/**
+	 * Returns the count of times a tag is used.
+	 *
+	 * @param mixed $term The tag to count usage.
+	 * @return int The number of times a tag is used.
+	 **/
+	public function post_count($term, $object_type = 'post' )
+	{
+		$term = $this->get_term( $term );
+		return $term->count( $object_type );
+	}
+
 
 }
 

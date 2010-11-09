@@ -1060,22 +1060,17 @@ class Posts extends ArrayObject implements IsContent
 				if (strpos($key, ':') !== false ) {
 					list($mode, $by_field) = explode(':', $key, 2);
 					foreach( $value as $v ) {
-						$ret[$mode][] = Term::get( Vocabulary::get($vocab)->id, $v );
+						$ret[$mode][] = Vocabulary::get($vocab)->get_term( $v );
 					}
 				}
 				else {
 					foreach( $value as $v ) {
-						if ($v instanceof Tag) {
-							// @todo This if () section needs to be destroyed -- convert Tag to Term!
-							// $vocab is not a vocab, but a mode:
-							$ret[$vocab][] = Term::get( Vocabulary::get('tags')->id, $v->id );  
-						}
-						elseif ($v instanceof Term) {
+						if ($v instanceof Term) {
 							// $vocab is not a vocab, but a mode:
 							$ret[$vocab][] = $v;
 						}
 						else {
-							$ret['any'][] = Term::get( Vocabulary::get($vocab)->id, $v );
+							$ret['any'][] = Vocabulary::get($vocab)->get_term( $v );
 						}
 					}
 				}

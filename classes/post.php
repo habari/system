@@ -1027,7 +1027,7 @@ class Post extends QueryRecord implements IsContent
 	private function get_tags()
 	{
 		if ( $this->tags == null ) {
-			$result = Tags::get_associations( $this->id );
+			$result = Tags::vocabulary()->get_associations( $this->id );
 			if ( $result ) {
 				$tags = $result;
 			}
