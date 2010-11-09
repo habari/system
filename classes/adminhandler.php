@@ -414,7 +414,7 @@ class AdminHandler extends ActionHandler
 			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),
 			'entry_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('published') ) ),
 			'comment_count' => Comments::count_total( Comment::STATUS_APPROVED, false ),
-			'tag_count' => Tags::count_total(),
+			'tag_count' => Tags::vocabulary()->count_total(),
 			'page_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'entry_draft_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('entry'), 'status' => Post::status('draft'), 'user_id' => User::identify()->id ) ),
 			'unapproved_comment_count' => User::identify()->can( 'manage_all_comments' ) ? Comments::count_total( Comment::STATUS_UNAPPROVED, false ) : Comments::count_by_author( User::identify()->id, Comment::STATUS_UNAPPROVED ),
@@ -3027,8 +3027,8 @@ class AdminHandler extends ActionHandler
 	{
 		$this->theme->wsse = Utils::WSSE();
 
-		$this->theme->tags = Tags::get();
-		$this->theme->max = Tags::max_count();
+		$this->theme->tags = Tags::vocabulary()->get_tree();
+		$this->theme->max = Tags::vocabulary()->max_count();
 
 		$this->display( 'tags' );
 	}

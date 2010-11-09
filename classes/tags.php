@@ -26,11 +26,6 @@ class Tags extends Vocabulary
 		}
 		return $term;
 	}
-	
-	public static function get_all()
-	{
-		return self::vocabulary()->get_tree();
-	}
 
 	/**
 	 * Return a tag based on a tag's text
