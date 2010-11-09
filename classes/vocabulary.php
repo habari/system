@@ -128,7 +128,7 @@ class Vocabulary extends QueryRecord
 	public function rename( $newname )
 	{
 		$this->name = $newname;
-		$result = $vocab->update();
+		$result = $this->update();
 
 		return $result;
 	}
