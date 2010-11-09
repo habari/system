@@ -47,7 +47,7 @@ class Terms extends ArrayObject
 	{
 		if ( is_string( $terms ) ) {
 			if ( '' === $terms ) {
-				return array();
+				return new Terms();
 			}
 			// dirrty ;)
 			$rez = array( '\\"'=>':__unlikely_quote__:', '\\\''=>':__unlikely_apos__:' );
