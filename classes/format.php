@@ -262,14 +262,15 @@ class Format
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 **/
-	public static function tag_and_list($tags, $between = ', ', $between_last = null )
+	public static function tag_and_list($terms, $between = ', ', $between_last = null )
 	{
-		if ( !$tags instanceof Tags ) {
-			$tags = new Tags( $tags );
+		$array = array();
+		if ( !$terms instanceof Terms ) {
+			$terms = new Terms( $terms );
 		}
 
-		foreach ( $tags as $tag ) {
-			$array[$tag->tag_slug] = $tag->tag_text;
+		foreach ( $terms as $term ) {
+			$array[$term->term] = $term->term_display;
 		}
 
 		if ( $between_last === null ) {
