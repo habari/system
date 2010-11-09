@@ -20,7 +20,7 @@ class Tag extends Term
 	{
 		$tags = explode(' ', $rule->named_arg_values['tag']);
 		$tags = array_map('trim', $tags, array_fill(0, count($tags), '-') );
-		$tags = array_map(array('Tag', 'get'), $tags);
+		$tags = array_map(array('Tags', 'get_one'), $tags);
 		$initial_tag_count = count($tags);
 		$tags = array_filter($tags);
 		// Are all of the tags we asked for actual tags on this site?
@@ -29,9 +29,9 @@ class Tag extends Term
 		}
 		$tag_params = array();
 		foreach ( $tags as $tag ) {
-			$tag_params[] = $tag->tag_text;
+			$tag_params[] = $tag->term_display;
 		}
-		return ($tag instanceOf Tag && Posts::count_by_tag($tag_params, Post::status('published')) > 0);
+		return ($tag instanceOf Term && Posts::count_by_tag($tag_params, Post::status('published')) > 0);
 	}
 
 	/**
