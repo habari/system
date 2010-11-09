@@ -378,7 +378,7 @@ class Vocabulary extends QueryRecord
 	 * @return Term The Term object requested
 	 * @todo improve selective fetching by term slug vs term_display	 
 	 **/
-	public function get_term($term_id = null)
+	public function get_term($term = null)
 	{
 		$params = array( 'vocab_id' => $this->id );
 		$query = '';
@@ -387,12 +387,12 @@ class Vocabulary extends QueryRecord
  			$params[ 'left' ] = 1;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND mptt_left = :left';
 		}
-		elseif ( is_string($term_id) ) {
-			$params[ 'term' ] = $term_id;
+		elseif ( is_string($term) ) {
+			$params[ 'term' ] = $term;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND (term = :term OR term_display = :term)';
 		}
-		elseif ( is_int($term_id) )  {
-			$params[ 'term_id' ] = $term_id;
+		elseif ( is_int($term) )  {
+			$params[ 'term_id' ] = $term;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND id = ABS(:term_id)';
 		}
 		return DB::get_row( $query, $params, 'Term' );
