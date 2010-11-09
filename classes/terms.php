@@ -39,9 +39,11 @@ class Terms extends ArrayObject
 	 * Turns a comma-separated string or array of terms into an array of Term objects
 	 * @param mixed $terms A comma-separated string or array of string terms
 	 * @param string $term_class The class of the Term object type to create from each string
+	 * @param Vocabulary $vocabulary An instance of the Vocabulary that might hold the terms.  
+	 * 	 Use existing term object data if found in the specified vocabulary.   	 
 	 * @return Terms An instance of Terms contianing the specified Term objects
 	 **/
-	public static function parse( $terms, $term_class = 'Term' )
+	public static function parse( $terms, $term_class = 'Term', $vocabulary = null )
 	{
 		if ( is_string( $terms ) ) {
 			if ( '' === $terms ) {
@@ -62,9 +64,23 @@ class Terms extends ArrayObject
 			// hooray
 		}
 		if(is_array($terms)) {
-			array_walk( $terms, create_function('&$tag', '$tag = new ' . $term_class . '($tag);') );
+			if($vocabulary instanceof Vocabulary) {
+				foreach($terms as $k => $term) {
+					if($saved_term = $vocabulary->get_term($term, $term_class)) {
+						$terms[$k] = $saved_term;
+					}
+					else {
+						$terms[$k] = new $term_class($term);
+					}
+				}
+Utils::debug($terms);
+			}
+			else {
+				array_walk( $terms, create_function('&$tag', '$tag = new ' . $term_class . '($tag);') );
+			}
+			return new Terms($terms);
 		}
-		return new Terms($terms);
+		return new Terms();
 	}
 
 }

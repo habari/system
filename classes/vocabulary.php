@@ -375,14 +375,19 @@ class Vocabulary extends QueryRecord
 	/**
 	 * Gets the term object by id. No parameter returns the root Term object.
 	 * @param integer $term_id The id of the term to fetch, or null for the root node
+	 * @param sring $term_class The class of the returned term object.	 
 	 * @return Term The Term object requested
 	 * @todo improve selective fetching by term slug vs term_display	 
 	 **/
-	public function get_term($term = null)
+	public function get_term($term = null, $term_class = 'Term')
 	{
 		$params = array( 'vocab_id' => $this->id );
 		$query = '';
-		if ( is_null( $term )  ) {
+		if ($term instanceof Term) {
+ 			$params[ 'term_id' ] = $term->id;
+			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND id = ABS(:term_id)';
+		}
+		elseif ( is_null( $term )  ) {
 			// The root node has an mptt_left value of 1
  			$params[ 'left' ] = 1;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND mptt_left = :left';
@@ -395,7 +400,7 @@ class Vocabulary extends QueryRecord
 			$params[ 'term_id' ] = $term;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND id = ABS(:term_id)';
 		}
-		return DB::get_row( $query, $params, 'Term' );
+		return DB::get_row( $query, $params, $term_class );
 	}
 
 	/**

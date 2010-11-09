@@ -3082,7 +3082,7 @@ class AdminHandler extends ActionHandler
 						if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
 							$id = substr($id, 4);
 							$tag = Tags::get_by_id($id);
-							$tag_names[] = $tag->tag;
+							$tag_names[] = $tag->term;
 						}
 					}
 					Tags::rename($master, $tag_names);
@@ -3093,8 +3093,8 @@ class AdminHandler extends ActionHandler
 						), implode($tag_names, ', '), $master
 					);
 					Session::notice( $msg_status );
-					$this->theme->tags = Tags::get();
-					$this->theme->max = Tags::max_count();
+					$this->theme->tags = Tags::vocabulary()->get_tree();
+					$this->theme->max = Tags::vocabulary()->max_count();
 					echo json_encode( array(
 						'msg' => Session::messages_get( true, 'array' ),
 						'tags' => $this->theme->fetch( 'tag_collection' ),

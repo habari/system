@@ -333,7 +333,7 @@ class Post extends QueryRecord implements IsContent
 
 		parent::__construct( $paramarray );
 		if ( isset( $this->fields['tags'] ) ) {
-			$this->tags = Terms::parse( $this->fields['tags'] );
+			$this->tags = Terms::parse( $this->fields['tags'], 'Tag', Tags::vocabulary() );
 			unset( $this->fields['tags'] );
 		}
 
@@ -745,7 +745,7 @@ class Post extends QueryRecord implements IsContent
 					return $this->tags = $value;
 				}
 				else {
-					return $this->tags = Terms::parse( $value );
+					return $this->tags = Terms::parse( $value, 'Tag', Tags::vocabulary() );
 				}
 			case 'status':
 				return $this->setstatus( $value );

@@ -61,18 +61,6 @@ class Term extends QueryRecord
 	}
 
 	/**
-	 * Fetch a term from a specified vocabulary
-	 *
-	 * @param mixed $vocab_id The id of a vocabulary, or a Vocabulary object
-	 * @param mixed $term A Term id, term text, or null for the root node of the vocabulary
-	 * @return Term The requested Term object instance
-	 */
-	public static function get( $vocab_id, $term = null )
-	{
-		return Vocabulary::get($vocab_id)->get_term($term);
-	}
-
-	/**
 	 * Generate a new slug for the post.
 	 *
 	 * @return string The slug
@@ -130,7 +118,7 @@ class Term extends QueryRecord
 			return false;
 		}
 		Plugins::act( 'term_insert_before', $this );
-
+Utils::debug($this);
 		$result = parent::insertRecord( DB::table( 'terms' ) );
 
 		// Make sure the id is set in the term object to match the row id
@@ -351,6 +339,19 @@ SQL;
 	}
 
 	/**
+	 * Find the count of objects of a given type associated with this Term.
+	 *
+	 * @param $type string. The name of the object type for which the associations are wanted.
+	 * @return Array of object ids associated with this term for the given type.
+	 */
+	public function object_count( $type )
+	{
+		$type_id = Vocabulary::object_type_id( $type );
+		$result = DB::get_value( "SELECT count(object_id) FROM {object_terms} WHERE term_id = ? AND object_type_id = ?", array( $this->id, $type_id ) );
+		return $result;
+	}
+
+	/**
 	 * Associate this term to an object of a certain type via its id.
 	 * @param $type string. The name of the object type we want to set an association for
 	 * @param $id integer. The object's id
@@ -412,7 +413,8 @@ SQL;
 	{
 		switch ( $name ) {
 			case 'vocabulary':
-				return Vocabulary::get_by_id( $this->vocabulary_id );
+				$out = Vocabulary::get_by_id( $this->vocabulary_id );
+				break;
 			case 'tag_text_searchable':
 				// if it's got spaces, then quote it.
 				if ( strpos($this->term_display, ' ') !== false ) {
@@ -423,11 +425,13 @@ SQL;
 				}
 				break;
 			case 'count':
-				$out = $this->get_count();
+				$out = (int)$this->count();
 				break;
 			default:
-				return parent::__get( $name );
+				$out = parent::__get( $name );
+				break;
 		}
+		return $out;
 	}
 
 	/**
@@ -437,7 +441,7 @@ SQL;
 	 */
 	public function count( $object_type = 'post' )
 	{
-		return count( $this->objects( $object_type ) );
+		return $this->object_count( $object_type );
 	}
 
 	/**
