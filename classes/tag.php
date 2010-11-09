@@ -10,35 +10,6 @@
  */
 class Tag extends Term
 {
-	/**
-	 * Constructor for the Tag class.
-	 * @param mixed $params an associative array of initial Tag field values or a Term object.
-	 *
-	 * @todo Should we disallow array construction?
-	 */
-	public function __construct( $params )
-	{
-		parent::__construct($params);
-		$this->fields['vocabulary'] = Tags::vocabulary()->id;
-	}
-
-
-	/**
-	 * Return a single requested tag.
-	 *
-	 * <code>
-	 * $tag = Tag::get( 'Tag text' );
-	 * $tag = Tag::get( 'tag-slug' );
-	 * $tag = Tag::get( 23 ); // tag id
-	 * </code>
-	 *
-	 * @param mixed $tag The tag's name, slug, or id
-	 * @return Tag The first tag that matched the given criteria or false on failure
-	 */
-	public static function get( $tag )
-	{
-		return Tags::get_one( $tag );
-	}
 
 	/**
 	 * Check if a tag exists on a published post, to see if we should match this rewrite rule.
