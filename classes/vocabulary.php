@@ -753,16 +753,15 @@ SQL;
 	}
 
 	/**
-	 * Renames tags.
-	 * If the master tag exists, the tags will be merged with it.
+	 * Renames terms.
+	 * If the master term exists, the terms will be merged with it.
 	 * If not, it will be created first.
 	 *
-	 * @param mixed $master The Tag to which they should be renamed, or the slug, text or id of it
+	 * @param mixed $master The Term to which they should be renamed, or the slug, text or id of it
 	 * @param Array $tags The tag text, slugs or ids to be renamed
 	 **/
-	public static function merge($master, $terms, $object_type = 'post' )
+	public function merge($master, $tags, $object_type = 'post' )
 	{
-		$vocabulary = self::vocabulary();
 		$type_id = Vocabulary::object_type_id( $object_type );
 
 		$post_ids = array();
@@ -772,7 +771,7 @@ SQL;
 		foreach ( $tags as $tag ) {
 
 			$posts = array();
-			$term = $vocabulary->get_term( $tag );
+			$term = $this->get_term( $tag );
 
 			// get all the post ID's tagged with this tag
 			$posts = $term->objects( $object_type );
@@ -784,16 +783,16 @@ SQL;
 
 			$tag_names[] = $tag;
 			if ( $tag != $master ) {
-				$vocabulary->delete_term( $term->id );
+				$this->delete_term( $term->id );
 			}
 		}
 
 		// get the master term
-		$master_term = $vocabulary->get_term( $master );
+		$master_term = $this->get_term( $master );
 
 		if ( !isset($master_term->term ) ) {
 			// it didn't exist, so we assume it's tag text and create it
-			$master_term = $vocabulary->add_term( $master );
+			$master_term = $this->add_term( $master );
 
 			$master_ids = array();
 		}
@@ -816,8 +815,8 @@ SQL;
 		}
 
 		EventLog::log(sprintf(
-			_n('Tag %s has been renamed to %s.',
-				 'Tags %s have been renamed to %s.',
+			_n('Term %s has been renamed to %s.',
+				 'Terms %s have been renamed to %s.',
 				  count( $tags )
 			), implode( $tag_names, ', ' ), $master ), 'info', 'tag', 'habari'
 		);
@@ -857,7 +856,9 @@ SQL;
 		return $term->count( $object_type );
 	}
 
-
+	public static function vocabulary()
+	{
+	}
 }
 
 ?>
