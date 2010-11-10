@@ -856,9 +856,6 @@ SQL;
 		return $term->count( $object_type );
 	}
 
-	public static function vocabulary()
-	{
-	}
 }
 
 ?>
