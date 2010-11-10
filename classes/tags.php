@@ -55,7 +55,7 @@ class Tags extends Vocabulary
 	 */
 	public static function get_by_id( $tag )
 	{
-		return self::get_one( $tag );
+		return self::get_one( (int)$tag );
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Tags extends Vocabulary
 	public static function save_associations( $terms, $object_id, $object_type = 'post' )
 	{
 		if ( ! $terms instanceof Terms ) {
-			$terms = Terms::parse( $terms );
+			$terms = Terms::parse( $terms, 'Tag', Tags::vocabulary() );
 		}
 		return self::vocabulary()->set_object_terms( $object_type, $object_id, $terms );
 	}
