@@ -3056,7 +3056,7 @@ class AdminHandler extends ActionHandler
 					// skip POST elements which are not tag ids
 					if ( preg_match( '/^tag_\d+/', $id ) && $delete ) {
 						$id = substr($id, 4);
-						$tag = Tags::get_by_id((int)$id);
+						$tag = Tags::get_by_id($id);
 						$tag_names[] = $tag->term_display;
 						Tags::vocabulary()->delete_term( $tag );
 					}
@@ -3081,7 +3081,7 @@ class AdminHandler extends ActionHandler
 						// skip POST elements which are not tag ids
 						if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
 							$id = substr($id, 4);
-							$tag = Tags::get_by_id((int)$id);
+							$tag = Tags::get_by_id($id);
 							$tag_names[] = $tag->term_display;
 						}
 					}
