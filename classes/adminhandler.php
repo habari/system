@@ -3081,11 +3081,11 @@ class AdminHandler extends ActionHandler
 						// skip POST elements which are not tag ids
 						if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
 							$id = substr($id, 4);
-							$tag = Tags::get_by_id($id);
-							$tag_names[] = $tag->term;
+							$tag = Tags::get_by_id((int)$id);
+							$tag_names[] = $tag->term_display;
 						}
 					}
-					Tags::rename($master, $tag_names);
+					Tags::vocabulary()->merge($master, $tag_names );
 					$msg_status = sprintf(
 						_n('Tag %1$s has been renamed to %2$s.',
 							'Tags %1$s have been renamed to %2$s.',
