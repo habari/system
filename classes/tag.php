@@ -11,6 +11,12 @@
 class Tag extends Term
 {
 
+	public function __construct( $params = array() )
+	{
+		$params['vocabulary_id'] = Tags::vocabulary()->id;
+		parent::__construct( $params );
+	}
+
 	/**
 	 * Check if a tag exists on a published post, to see if we should match this rewrite rule.
 	 *
@@ -43,7 +49,7 @@ class Tag extends Term
 	public static function create( $paramarray )
 	{
 		$tag = new Tag( $paramarray );
-		$tag = $tag->insert();
+		$tag->insert();
 		return $tag;
 	}
 
