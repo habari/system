@@ -1506,10 +1506,10 @@ class FormControlTag extends FormContainer
 
 		$tag = $this->tag;
 
-		$theme->class = 'tag_'.$tag->slug;
+		$theme->class = 'tag_'.$tag->term;
 		$theme->id = $tag->id;
 		$theme->weight = $max > 0 ? round(($tag->count * 10)/$max) : 0;
-		$theme->caption = $tag->tag;
+		$theme->caption = $tag->term_display;
 		$theme->count = $tag->count;
 
 		return $theme->fetch( 'tabcontrol_tag', true );
