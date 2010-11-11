@@ -185,24 +185,26 @@ class Posts extends ArrayObject implements IsContent
 					}
 					$paramset['vocabulary'] = self::_vocabulary_params( $paramset['vocabulary'] );
 					$object_id = Vocabulary::object_type_id( 'post' );
-					$all = $any = $not = array();
+					$all = array();
+					$any = array();
+					$not = array();
 
 					foreach( $paramset['vocabulary'] as $key => $values ) {
 						$values = Utils::single_array( $values );
 						switch ( (string)$key ) {
 							case 'all':
 								foreach( $values as $current ) {
-									$all[$current->vocabulary->id] = $current->id;
+									$all[$current->vocabulary->id][] = $current->id;
 								}
 								break;
 							case 'any':
 								foreach( $values as $current ) {
-									$any[$current->vocabulary->id] = $current->id;
+									$any[$current->vocabulary->id][] = $current->id;
 								}
 								break;
 							case 'not':
 								foreach( $values as $current ) {
-									$not[$current->vocabulary->id] = $current->id;
+									$not[$current->vocabulary->id][] = $current->id;
 								}
 								break;
 						}
@@ -1045,7 +1047,6 @@ class Posts extends ArrayObject implements IsContent
 	public static function _vocabulary_params( $params )
 	{
 		$ret = array();
-		
 		foreach($params as $key => $value) {
 			if (strpos($key, ':') !== false) {
 				list($newkey, $subkey) = explode(':', $key, 2);
@@ -1053,7 +1054,7 @@ class Posts extends ArrayObject implements IsContent
 				unset($params[$key]);
 			}
 		}
-		
+
 		foreach( $params as $vocab => $values ) {
 			foreach( $values as $key => $value ) {
 				$value = Utils::single_array( $value );
