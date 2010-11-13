@@ -160,6 +160,7 @@ class Term extends QueryRecord
 		}
 
 		$result = parent::updateRecord( '{terms}', array( 'id' => $this->id ) );
+		$this->fields = array_merge( $this->fields, $this->newfields );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'term_update_after', $this );
