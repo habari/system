@@ -177,7 +177,7 @@ class AtomHandler extends ActionHandler
 	{
 		foreach ( $posts as $post ) {
 			$user = User::get_by_id( $post->user_id );
-			$title = ( $this->is_auth() ) ? $post->title : $post->title_atom;
+			$title = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->title ) : Utils::htmlspecialchars( $post->title_atom );
 			$content = ( $this->is_auth() ) ? Utils::htmlspecialchars( $post->content ) : Utils::htmlspecialchars( $post->content_atom );
 
 			$content = Plugins::filter( 'atom_add_post', $content );

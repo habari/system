@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-08 14:08+0000\n"
+"POT-Creation-Date: 2010-11-14 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -303,7 +303,7 @@ msgstr ""
 
 #: system/admin/plugin.php:33 system/admin/themes.php:15
 #: system/admin/themes.php:177 system/themes/charcoal/footer.php:9
-#: system/classes/format.php:247 system/classes/format.php:276
+#: system/classes/format.php:247 system/classes/format.php:277
 msgid " and "
 msgstr ""
 
@@ -1310,13 +1310,6 @@ msgstr ""
 msgid "Leave a Reply"
 msgstr ""
 
-#: system/classes/tags.php:133
-#, php-format
-msgid "Tag %s has been renamed to %s."
-msgid_plural "Tags %s have been renamed to %s."
-msgstr[0] ""
-msgstr[1] ""
-
 #: system/classes/acl.php:147
 #, php-format
 msgid "Permission token deleted: %s"
@@ -1424,9 +1417,9 @@ msgstr ""
 msgid "Invalid state %d in %s->parse()"
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:75
+#: system/classes/socketrequestprocessor.php:76
 #, php-format
-msgid "%s: Error %d: %s while connecting to %s:%d"
+msgid "Error %d: %s while connecting to %s:%d"
 msgstr ""
 
 #: system/classes/socketrequestprocessor.php:113
@@ -1442,24 +1435,17 @@ msgid "Redirection response without Location: header."
 msgstr ""
 
 #: system/classes/socketrequestprocessor.php:187
+#: system/classes/curlrequestprocessor.php:129
+msgid "Unable to get response body. Request did not yet execute."
+msgstr ""
+
 #: system/classes/socketrequestprocessor.php:196
-#: system/classes/curlrequestprocessor.php:132
-#: system/classes/curlrequestprocessor.php:141
-msgid "Request did not yet execute."
+#: system/classes/curlrequestprocessor.php:138
+msgid "Unable to get response headers. Request did not yet execute."
 msgstr ""
 
 #: system/classes/xmlrpcclient.php:101
 msgid "Invalid XML response."
-msgstr ""
-
-#: system/classes/tag.php:215
-#, php-format
-msgid "New tag %1$s (%2$s);  Slug: %3$s"
-msgstr ""
-
-#: system/classes/tag.php:261
-#, php-format
-msgid "Tag %1$s (%2$s) deleted."
 msgstr ""
 
 #: system/classes/installhandler.php:147 system/classes/adminhandler.php:1109
@@ -2003,15 +1989,22 @@ msgstr ""
 msgid "xmlrpc extension not found"
 msgstr ""
 
-#: system/classes/vocabulary.php:222
+#: system/classes/vocabulary.php:221
 #, php-format
 msgid "New vocabulary %1$s (%2$s)"
 msgstr ""
 
-#: system/classes/vocabulary.php:294
+#: system/classes/vocabulary.php:293
 #, php-format
 msgid "Vocabulary %1$s (%2$s) deleted."
 msgstr ""
+
+#: system/classes/vocabulary.php:818
+#, php-format
+msgid "Term %1$s in the %2$s vocabulary has been renamed to %3$s."
+msgid_plural "Terms %1$s in the %2$s vocabulary have been renamed to %3$s."
+msgstr[0] ""
+msgstr[1] ""
 
 #: system/classes/plugin.php:62 system/classes/adminhandler.php:1863
 #: system/classes/adminhandler.php:1913 system/classes/pluggable.php:153
@@ -2768,20 +2761,20 @@ msgid "+"
 msgstr ""
 
 #: system/classes/remoterequest.php:112
-msgid "Trying to add a request body to a non-POST request"
+msgid "Trying to add a request body to a GET request."
 msgstr ""
 
-#: system/classes/remoterequest.php:168
+#: system/classes/remoterequest.php:169
 #, php-format
 msgid "File %s not found."
 msgstr ""
 
-#: system/classes/remoterequest.php:266
-msgid "Trying to fetch response headers for a pending request."
+#: system/classes/remoterequest.php:269
+msgid "Unable to fetch response headers for a pending request."
 msgstr ""
 
-#: system/classes/remoterequest.php:277
-msgid "Trying to fetch response body for a pending request."
+#: system/classes/remoterequest.php:282
+msgid "Unable to fetch response body for a pending request."
 msgstr ""
 
 #: system/classes/update.php:36
@@ -2994,24 +2987,22 @@ msgstr ""
 msgid "Your comment is pending moderation."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:74
-#, php-format
-msgid " %s: CURL Error. Unable to create temporary file name."
+#: system/classes/curlrequestprocessor.php:76
+msgid "CURL Error. Unable to create temporary file name."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:79
-#, php-format
-msgid " %s: CURL Error. Unable to open temporary file."
+#: system/classes/curlrequestprocessor.php:81
+msgid "CURL Error. Unable to open temporary file."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:98
+#: system/classes/curlrequestprocessor.php:100
 #, php-format
-msgid "%s: CURL Error %d: %s"
+msgid "CURL Error %d: %s"
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:103
+#: system/classes/curlrequestprocessor.php:104
 #, php-format
-msgid "Bad return code (%1$d) for: %2$s"
+msgid "Bad return code (%d) for: %s"
 msgstr ""
 
 #: system/classes/logentry.php:172 system/classes/logentry.php:263
@@ -3067,12 +3058,12 @@ msgstr ""
 msgid "none"
 msgstr ""
 
-#: system/classes/term.php:160
+#: system/classes/term.php:133
 #, php-format
 msgid "New term %1$s: %2$s"
 msgstr ""
 
-#: system/classes/term.php:213
+#: system/classes/term.php:187
 #, php-format
 msgid "Term %1$s (%2$s) deleted."
 msgstr ""
