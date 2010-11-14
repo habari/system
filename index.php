@@ -86,7 +86,7 @@ if ( file_exists( $config ) ) {
 	// Make sure we have a DSN string and database credentials.
 	// db_connection is an array with necessary informations to connect to the database.
 	if ( !Config::exists( 'db_connection' ) ) {
-		$installer = new InstallHandler();
+		$installer = InstallHandler::factory($_SERVER['SERVER_SOFTWARE']);
 		$installer->begin_install();
 	}
 
@@ -97,7 +97,7 @@ if ( file_exists( $config ) ) {
 		// If the 'installed' option is missing, we assume the database tables are missing or corrupted.
 		// @todo Find a decent solution, we have to compare tables and restore or upgrade them.
 		if ( !@ Options::get( 'installed' ) ) {
-			$installer = new InstallHandler();
+                    $installer = InstallHandler::factory($_SERVER['SERVER_SOFTWARE']);
 			$installer->begin_install();
 		}
 	}
@@ -124,7 +124,7 @@ else {
 
 	// The configuration file does not exist.
 	// Therefore we load the installer to create the configuration file and install a base database.
-	$installer = new InstallHandler();
+        $installer = InstallHandler::factory($_SERVER['SERVER_SOFTWARE']);
 	$installer->begin_install();
 }
 
@@ -143,7 +143,7 @@ if ( Options::get( 'system_locale' ) ) {
 
 // Verify if the database has to be upgraded.
 if ( Version::requires_upgrade() ) {
-	$installer = new InstallHandler();
+	$installer = InstallHandler::factory($_SERVER['SERVER_SOFTWARE']);
 	$installer->upgrade_db();
 }
 

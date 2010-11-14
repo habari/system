@@ -9,9 +9,9 @@ define('MIN_PHP_VERSION', '5.2.0');
 /**
  * The class which responds to installer actions
  */
-class InstallHandler extends ActionHandler
+abstract class InstallHandler extends ActionHandler
 {
-
+        protected $rewriteTemplate = 'htaccess';
 	/**
 	 * Entry point for installation.  The reason there is a begin_install
 	 * method to handle is that conceivably, the user can stop installation
@@ -40,9 +40,9 @@ class InstallHandler extends ActionHandler
 		/*
 		 * Check .htaccess first because ajax doesn't work without it.
 		*/
-		if ( ! $this->check_htaccess() ) {
-			$this->handler_vars['file_contents'] = htmlentities( implode( "\n", $this->htaccess() ) );
-			$this->display('htaccess');
+		if ( ! $this->check_rewrite_config() ) {
+			$this->handler_vars['file_contents'] = htmlentities( implode( "\n", $this->rewrite_config() ) );
+			$this->display($this->rewriteTemplate);
 		}
 
 		// Dispatch AJAX requests.
@@ -190,6 +190,22 @@ class InstallHandler extends ActionHandler
 		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
 		Utils::redirect(Site::get_url( 'habari' ) );
 	}
+
+        /**
+         * Returns an instance of the InstallHandler for the appropriate server
+         * All Non-IIS servers default to using the Apache installer.
+         *
+         * @param string $server
+         * @return InstallHandler
+         */
+        static public function factory($server)
+        {
+            if (strpos($server, 'Microsoft-IIS/7') !== FALSE) {
+                return new InstallHandlerIIS();
+            }
+
+            return new InstallHandlerApache();
+        }
 
 	/*
 	 * Helper function to grab list of plugins
@@ -988,134 +1004,24 @@ class InstallHandler extends ActionHandler
 	}
 
 	/**
-	 * returns an array of .htaccess declarations used by Habari
+	 * returns an array of rewrite declarations used by Habari
 	 */
-	public function htaccess()
-	{
-		$htaccess = array(
-			'open_block' => '### HABARI START',
-			'engine_on' => 'RewriteEngine On',
-			'rewrite_cond_f' => 'RewriteCond %{REQUEST_FILENAME} !-f',
-			'rewrite_cond_d' => 'RewriteCond %{REQUEST_FILENAME} !-d',
-			'rewrite_favicon' => 'RewriteCond %{REQUEST_URI} !=/favicon.ico',
-			'rewrite_base' => '#RewriteBase /',
-			'rewrite_rule' => 'RewriteRule . index.php [PT]',
-			'hide_habari' => 'RewriteRule ^(system/(classes|locale|schema|$)) index.php [PT]',
-			'close_block' => '### HABARI END',
-		);
-		$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
-		if ( $rewrite_base != '' ) {
-			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
-		}
-
-		return $htaccess;
-	}
+	abstract public function rewrite_config();
 
 	/**
-	 * checks for the presence of an .htaccess file
-	 * invokes write_htaccess() as needed
+	 * checks for the presence of a rewrite file
+	 * invokes write_rewrite_config() as needed
 	 */
-	public function check_htaccess()
-	{
-		// default is assume we have mod_rewrite
-		$this->handler_vars['no_mod_rewrite'] = false;
+	abstract public function check_rewrite_config();
 
-		// If this is the mod_rewrite check request, then bounce it as a success.
-		if ( strpos( $_SERVER['REQUEST_URI'], 'check_mod_rewrite' ) !== false ) {
-			echo 'ok';
-			exit;
-		}
-
-		if ( false === strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) ) {
-			// .htaccess is only needed on Apache
-			// @TODO: add support for IIS and lighttpd rewrites
-			return true;
-		}
-
-		$result = false;
-		if ( file_exists( HABARI_PATH . '/.htaccess') ) {
-			$htaccess = file_get_contents( HABARI_PATH . '/.htaccess');
-			if ( false === strpos( $htaccess, 'HABARI' ) ) {
-				// the Habari block does not exist in this file
-				// so try to create it
-				$result = $this->write_htaccess( true );
-			}
-			else {
-				// the Habari block exists
-				$result = true;
-			}
-		}
-		else {
-			// no .htaccess exists.  Try to create one
-			$result = $this->write_htaccess();
-		}
-		if ( $result ) {
-			// the Habari block exists, but we need to make sure
-			// it is correct.
-			// Check that the rewrite rules actually do the job.
-			$test_ajax_url = Site::get_url( 'habari' ) . '/check_mod_rewrite';
-			$rr = new RemoteRequest( $test_ajax_url, 'POST', 20 );
-			$rr_result = $rr->execute();
-			if ( ! $rr->executed() ) {
-				$result = $this->write_htaccess( true, true, true );
-			}
-		}
-		return $result;
-	}
-
-	/**
-	 * attempts to write the .htaccess file if none exists
+        /**
+	 * attempts to write the rewrite file if none exists
 	 * or to write the Habari-specific portions to an existing .htaccess
-	 * @param bool whether an .htaccess file already exists or not
+	 * @param bool whether an rewrite file already exists or not
 	 * @param bool whether to remove and re-create any existing Habari block
 	 * @param bool whether to try a rewritebase in the .htaccess
 	**/
-	public function write_htaccess( $exists = false, $update = false, $rewritebase = true )
-	{
-		$htaccess = $this->htaccess();
-		if ( $rewritebase ) {
-			$rewrite_base = trim( dirname( $_SERVER['SCRIPT_NAME'] ), '/\\' );
-			$htaccess['rewrite_base'] = 'RewriteBase /' . $rewrite_base;
-		}
-		$file_contents = "\n" . implode( "\n", $htaccess ) . "\n";
-
-		if ( ! $exists ) {
-			if ( ! is_writable( HABARI_PATH ) ) {
-				// we can't create the file
-				return false;
-			}
-		}
-		else {
-			if ( ! is_writable( HABARI_PATH . '/.htaccess' ) ) {
-				// we can't update the file
-				return false;
-			}
-		}
-		if ( $update ) {
-			// we're updating an existing but incomplete .htaccess
-			// care must be take only to remove the Habari bits
-			$htaccess = file_get_contents(HABARI_PATH . '/.htaccess');
-			$file_contents = preg_replace('%### HABARI START.*?### HABARI END%ims', $file_contents, $htaccess);
-			// Overwrite the existing htaccess with one that includes the modified Habari rewrite block
-			$fmode = 'w';
-		}
-		else {
-			// Append the Habari rewrite block to the existing file.
-			$fmode = 'a';
-		}
-		//Save the htaccess
-		if ( $fh = fopen( HABARI_PATH . '/.htaccess', $fmode ) ) {
-			if ( false === fwrite( $fh, $file_contents ) ) {
-				return false;
-			}
-			fclose( $fh );
-		}
-		else {
-			return false;
-		}
-
-		return true;
-	}
+        abstract public function write_rewrite_config( $exists = FALSE, $update = FALSE, $rewritebase = TRUE ); 
 
 	/**
 	 * returns an array of Files declarations used by Habari
