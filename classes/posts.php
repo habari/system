@@ -917,7 +917,7 @@ class Posts extends ArrayObject implements IsContent
 			'user_id' => array(),
 			'status' => array(),
 			'content_type' => array(),
-			'term_display' => array(),
+			'vocabulary' => array(),
 			'info' => array(),
 		);
 		$criteria = '';
@@ -949,7 +949,7 @@ class Posts extends ArrayObject implements IsContent
 					}
 					break;
 				case 'tag':
-					$arguments['term_display'][] = $value;
+					$arguments['vocabulary'][Tags::vocabulary()->name . ':term_display'][] = $value;
 					break;
 				case 'status':
 					if ( isset( $statuses[$value] ) ) {
@@ -977,13 +977,14 @@ class Posts extends ArrayObject implements IsContent
 					unset( $arguments[$key] );
 					break;
 				case 1:
-					$arguments[$key] = $arg[0];
+					if ( is_array( $arg ) ) {
+						$arguments[$key] = $arg;
+					}
+					else {
+						$arguments[$key] = $arg[0];
+					}
 					break;
 			}
-		}
-		if ( isset( $arguments['term_display'] ) ) {
-		    $arguments['vocabulary'] = array( Tags::vocabulary()->name . ':term_display' => $arguments['term_display'] );
-		    unset( $arguments['term_display'] );
 		}
 
 		if ( $criteria != '' ) {
