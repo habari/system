@@ -358,4 +358,6 @@ class RemoteRequest
 
 }
 
+class RemoteRequest_Timeout extends Exception { }
+
 ?>
