@@ -59,6 +59,8 @@ class CronTab extends ActionHandler
 					$cron->execute();
 				}
 			}
+			
+			EventLog::log( _t('CronTab run completed.'), 'debug', 'crontab', 'habari', $crons);
 
 			// set the next run time to the lowest next_run OR a max of one day.
 			$next_cron = DB::get_value( 'SELECT next_run FROM {crontab} ORDER BY next_run ASC LIMIT 1', array() );
