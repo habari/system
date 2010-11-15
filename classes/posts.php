@@ -925,7 +925,7 @@ class Posts extends ArrayObject implements IsContent
 		// this says, find stuff that has the keyword at the start, and then some term straight after.
 		// the terms should have no whitespace, or if it does, be ' delimited.
 		// ie tag:foo or tag:'foo bar'
-		$flag_regex = '/(?P<flag>' . implode( '|', array_keys( $keywords ) ) . '):(?P<value>[^\'"][^\s]*(?:\s|$)|([\'"]+)(?P<quotedvalue>[^\3]+)(?<!\\\)\3)/Uui';
+		$flag_regex = '/(?P<flag>\w+):(?P<value>[^\'"][^\s]*|(?P<quote>[\'"])[^\3]+(?<!\\\\)\3)/i';
 
 		// now do some matching.
 		preg_match_all( $flag_regex , $search_string, $matches, PREG_SET_ORDER );
@@ -934,19 +934,15 @@ class Posts extends ArrayObject implements IsContent
 		// from tag:'pair of' -> matches of'
 		$criteria = trim(preg_replace( $flag_regex, '', $search_string));
 
-		// go through flagged things.
+		// Add special criteria based on the flag parameters.
 		foreach ($matches as $match) {
-			// switch on the type match. ie status, type et al.
-			// also, trim out the quote marks that have been matched.
-			if ( isset($match['quotedvalue']) && $match['quotedvalue'] ) {
-				$value = stripslashes($match['quotedvalue']);
-			}
-			else {
-				$value = $match['value'];
-			}
-			$value = trim( $value );
-
-			switch ( strtolower($match['flag']) )  {
+			// trim out any quote marks that have been matched.
+			$quote = isset($match['quote']) ? $match['quote'] : ' ';
+			$value = trim( stripslashes($match['value']), $quote );
+			
+			$flag = $match['flag'];
+			$arguments = Plugins::filter('posts_search_to_get', $arguments, $flag, $value, $match, $search_string);
+			switch ( $flag )  {
 				case 'author':
 					if ( $u = User::get( $value ) ) {
 						$arguments['user_id'][] = (int) $u->id;
