@@ -40,9 +40,19 @@ class CronTab extends ActionHandler
 					'asyncronous' => Utils::crypt(Options::get('GUID')) )
 				);
 			$request = new RemoteRequest($cronurl, 'GET', 1);
-			$request->execute();
+			
+			try {
+				$request->execute();
+			}
+			catch ( RemoteRequest_Timeout $e ) {
+				// the request timed out - we knew that would happen
+			}
+			catch ( Exception $e ) {
+				// some other error occurred. we still don't care
+			}
 		}
 		else {
+			// @todo why do we usleep() and why don't we just call act_poll_cron()?
 			usleep(5000);
 			if ( Options::get('cron_running') != $run_time ) {
 				return;
