@@ -574,7 +574,8 @@ SELECT child.term as term,
 	child.term_display as term_display,
 	child.mptt_left as mptt_left,
 	child.mptt_right as mptt_right,
-	child.vocabulary_id as vocabulary_id
+	child.vocabulary_id as vocabulary_id,
+	child.id as id
 FROM {terms} as parent
 INNER JOIN {terms} as child
 	ON child.mptt_left BETWEEN parent.mptt_left AND parent.mptt_right
