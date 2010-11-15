@@ -801,13 +801,6 @@ class Utils
 		return sprintf( '%0.2f%s', $bytesize, $sizes[ $tick ] );
 	}
 
-	public static function truncate_log()
-	{
-		// Truncate the log table
-		$date = HabariDateTime::date_create()->modify( '-14 days' );
-		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
-	}
-
 	/**
 	 * Convert a single non-array variable into an array with that one element
 	 *

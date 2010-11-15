@@ -747,8 +747,8 @@ class InstallHandler extends ActionHandler
 		EventLog::register_type('content', 'habari');
 		EventLog::register_type('comment', 'habari');
 
-		// Add the cronjob to truncate the log so that it doesn't get too big
-		CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
+		// Add the cronjob to trim the log so that it doesn't get too big
+		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t('Trim the log table') );
 
 		return true;
 	}
@@ -1628,6 +1628,16 @@ class InstallHandler extends ActionHandler
 		// add the new logging limit option
 		Options::set( 'log_min_severity', 3 );		// 3 is 'info'
 
+	}
+	
+	private function upgrade_db_post_4571 ( ) {
+		
+		// remove the old truncate_log cronjob
+		CronTab::delete_cronjob( 'truncate_log' );
+		
+		// add the new trim_log cronjob
+		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t('Trim the log table') );
+		
 	}
 
 	/**

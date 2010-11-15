@@ -346,6 +346,24 @@ class EventLog extends ArrayObject
 			return $return_value;
 		}
 	}
+	
+	/*
+	 * Trim the EventLog down to the defined number of days to prevent it getting massively large.
+	 */
+	public static function trim ( ) {
+		
+		// allow an option to be set to override the log retention - in days
+		$retention = Options::get('log_retention', 14);		// default to 14 days
+		
+		// make it into the string we'll use
+		$retention = '-' . intval( $retention ) . ' days';
+		
+		// Trim the log table down
+		$date = HabariDateTime::date_create()->modify( $retention );
+		
+		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
+		
+	}
 
 }
 
