@@ -13,6 +13,9 @@ class Tag extends Term
 
 	public function __construct( $params = array() )
 	{
+		if( is_string( $params ) ) {
+			$params = array( 'term_display' => $params );
+		}
 		$params['vocabulary_id'] = Tags::vocabulary()->id;
 		parent::__construct( $params );
 	}
