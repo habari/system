@@ -137,8 +137,7 @@ class RewriteRules extends ArrayObject
 	 * Get a RewriteRule by its name
 	 *
 	 * @param string $name The name of the rule
-	 * @return RewriteRule The rule requested
-	 * @todo Make this return more than one rule when more than one rule matches.
+	 * @return array An array of all matched RewriteRule objects.
 	 */
 	public static function by_name( $name )
 	{
