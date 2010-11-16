@@ -98,7 +98,7 @@ class Session
 		}
 
 		// Verify expiry
-		if ( HabariDateTime::date_create( time() )->int > $session->expires ) {
+		if ( HabariDateTime::date_create()->int > $session->expires ) {
 			Session::error( _t('Your session expired.'), 'expired_session' );
 			$dodelete = true;
 		}
@@ -128,7 +128,7 @@ class Session
 		}
 
 		// Throttle session writes, so as to not hammer the DB
-		self::$initial_data = ( ini_get('session.gc_maxlifetime') - $session->expires + HabariDateTime::date_create( time() )->int < 120 ) ? $session->data : false;
+		self::$initial_data = ( ini_get('session.gc_maxlifetime') - $session->expires + HabariDateTime::date_create()->int < 120 ) ? $session->data : false;
 
 		return $session->data;
 	}
@@ -154,7 +154,7 @@ class Session
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
 				'subnet' => self::get_subnet( $remote_address ),
-				'expires' => HabariDateTime::date_create( time() )->int + ini_get('session.gc_maxlifetime'),
+				'expires' => HabariDateTime::date_create()->int + ini_get('session.gc_maxlifetime'),
 				'ua' => $user_agent,
 				'data' => $data,
 			);
@@ -189,7 +189,7 @@ class Session
 	static function gc( $max_lifetime )
 	{
 		$sql = 'DELETE FROM {sessions} WHERE expires < ?';
-		$args = array( HabariDateTime::date_create( time() )->int );
+		$args = array( HabariDateTime::date_create()->int );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
 		return true;
