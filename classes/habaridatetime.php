@@ -416,25 +416,7 @@ class HabariDateTime extends DateTime
 		// limit the precision
 		$result = array_slice( $result, 0, $precision );
 		
-		// only stick 'and' into the mix if there's more than a single element
-		if ( count( $result ) > 1 ) {
-		
-			// pop the last element off the end of the array
-			$last = array_pop( $result );
-			
-			// stick 'and' in before the last element
-			$result[] = _t( 'and ' ) . $last;
-		
-		}
-		
-		// if there are only 2 elements, don't use a comma
-		if ( count( $result ) > 2 ) {
-			$result = implode( ', ', $result );
-		}
-		else {
-			$result = implode( ' ', $result );
-		}
-		
+		$result = Format::and_list( $result );
 		
 		if ( $difference['invert'] == true ) {
 			$suffix = _t('from now');
