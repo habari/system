@@ -170,7 +170,7 @@ class UserHandler extends ActionHandler
 		$name = '';
 
 		if( $user = User::get($id) ) {
-			if( $user->info->password_reset == md5($hash)) {
+			if( is_string( $hash ) && ( $user->info->password_reset == md5($hash) ) ) {
 				// Send a new random password
 				$password = Utils::random_password();
 
