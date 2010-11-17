@@ -572,8 +572,7 @@ class Plugins
 	public static function is_loaded( $name, $version = null )
 	{
 		foreach ( self::$plugins as $plugin ) {
-			if ( is_null( $plugin->info ) ) {
-				// TODO: throw log error
+			if ( is_null( $plugin->info ) || $plugin->info == 'broken' || $plugin->info == 'invalid' ) {
 				continue;
 			}
 			if ( MultiByte::strtolower( $plugin->info->name ) == MultiByte::strtolower( $name ) || $plugin instanceof $name || ( isset( $plugin->info->guid ) && MultiByte::strtolower( $plugin->info->guid ) == MultiByte::strtolower( $name ) ) ) {
