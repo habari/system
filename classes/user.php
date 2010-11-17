@@ -210,22 +210,28 @@ class User extends QueryRecord
 
 	/**
 	 * Delete the user id from the session
+	 * @param boolean $redirect Redirect the user to base_url after destroying session?
 	 */
-	public function forget()
+	public function forget( $redirect = true )
 	{
 		// is this user acting as another user?
 		if ( isset( $_SESSION['sudo'] ) ) {
 			// if so, remove the sudo token, but don't log out
 			// the user
 			unset( $_SESSION['sudo'] );
-			Utils::redirect( Site::get_url( 'admin' ) );
+			
+			if ( $redirect ) {
+				Utils::redirect( Site::get_url( 'admin' ) );
+			}
 		}
 		ACL::clear_caches();
 		Plugins::act( 'user_forget', $this );
 		Session::clear_userid($_SESSION['user_id']);
 		unset($_SESSION['user_id']);
-		$home = Options::get('base_url');
-		Utils::redirect( Site::get_url( 'habari' ) );
+		
+		if ( $redirect ) {
+			Utils::redirect( Site::get_url( 'habari' ) );
+		}
 	}
 
 	/**
