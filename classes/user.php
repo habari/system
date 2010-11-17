@@ -214,6 +214,12 @@ class User extends QueryRecord
 	 */
 	public function forget( $redirect = true )
 	{
+		
+		// if the user is not actually logged in, just return so we don't throw any errors later
+		if ( $this->loggedin != true ) {
+			return;
+		}
+		
 		// is this user acting as another user?
 		if ( isset( $_SESSION['sudo'] ) ) {
 			// if so, remove the sudo token, but don't log out
@@ -222,6 +228,10 @@ class User extends QueryRecord
 			
 			if ( $redirect ) {
 				Utils::redirect( Site::get_url( 'admin' ) );
+			}
+			else {
+				// we want to return, not continue processing, or we'd log out the user too
+				return;
 			}
 		}
 		ACL::clear_caches();
