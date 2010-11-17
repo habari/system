@@ -387,12 +387,33 @@ class Plugins
 	{
 		$info = null;
 		$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $file);
+		
 		if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
-			$info = new SimpleXMLElement( $xml_content );
-			if ( $info->getName() != 'pluggable' ) {
-				$info = null;
+			
+			// tell libxml to throw exceptions and let us check for errors
+			$old_error = libxml_use_internal_errors(true);
+			
+			try {
+				$info = new SimpleXMLElement( $xml_content );
+				
+				// if the xml file uses a theme element name instead of pluggable, it's old
+				if ( $info->getName() != 'pluggable' ) {
+					$info = 'legacy';
+				}
+				
 			}
+			catch ( Exception $e ) {
+				
+				EventLog::log( _t( 'Invalid plugin XML file: %1$s', array( $xml_file ) ), 'err', 'plugin' );
+				$info = 'broken';
+				
+			}
+			
+			// restore the old error level
+			libxml_use_internal_errors( $old_error );
+			
 		}
+		
 		return $info;
 	}
 

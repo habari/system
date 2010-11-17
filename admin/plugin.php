@@ -10,11 +10,19 @@
 	</div>
 </div>
 
-<?php elseif ( !isset($plugin['info']) ): ?>
+<?php elseif ( $plugin['info'] == 'legacy' ): ?>
 
 <div class="item plugin clear">
 	<div class="head">
 		<p><?php printf( _t('The plugin file %s is a legacy plugin, and does not include an XML info file.'), $plugin['file'] ); ?></p>
+	</div>
+</div>
+
+<?php elseif ( $plugin['info'] == 'broken' ): ?>
+
+<div class="item plugin clear">
+	<div class="head">
+		<p><?php echo _t('The XML file for the plugin %s contained errors and could not be loaded.', array( basename( $plugin['file'] ) ) ); ?></p>
 	</div>
 </div>
 
