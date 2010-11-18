@@ -141,34 +141,57 @@
 		?></p>
 
 		<?php
+			
+			if ( !empty( $updates ) ) {
+				
+				?>
+				
+					<ul class="updates">
+					
+						<?php
 
-			if ( isset( $updates ) && count( $updates ) > 0 ) {
-
-				foreach ( $updates as $update ) {
-
-					$class = implode( ' ', $update['severity'] );
-
-					if ( in_array( 'critical', $update['severity'] ) ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
-					}
-					elseif ( count( $update['severity'] ) > 1 ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
-					}
-					elseif ( in_array( 'bugfix', $update['severity'] ) ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
-					}
-					elseif ( in_array( 'feature', $update['severity'] ) ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
-					}
-					else {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> is a new release.' );
-					}
-
-					$update_text = sprintf( $update_text, $update['url'], $update['name'], $update['latest_version'] );
-					echo "<p class='{$class}'>{$update_text}</p>";
-
-				}
-
+							foreach ( $updates as $beacon_id => $beacon ) {
+																
+								$u_strings = array();
+								foreach ( $beacon['updates'] as $u_version => $u ) {
+									
+									if ( !empty( $u['date'] ) ) {
+										$u_title = _t( '%1$s update released on %2$s: %3$s', array( MultiByte::ucfirst( $u['severity'] ), HabariDateTime::date_create( $u['date'] )->format( 'Y-m-d' ), Utils::htmlspecialchars( $u['text'] ) ) );
+									}
+									else {
+										$u_title = _t( '%1$s update: %3$s', array( MultiByte::ucfirst( $u['severity'] ), $u['date'], Utils::htmlspecialchars( $u['text'] ) ) );
+									}
+									
+									if ( !empty( $u['url'] ) ) {
+										$u_string = sprintf( '<a href="%1$s" title="%2$s" class="%3$s">%4$s</a>', $u['url'], $u_title, $u['severity'], $u['version'] );
+									}
+									else {
+										$u_string = sprintf( '<span title="%1$s" class="%2$s">%3$s</span>', $u_title, $u['severity'], $u['version'] );
+									}
+									
+									// add it to the array of updates available for this plugin
+									$u_strings[ $u['version'] ] = $u_string;
+									
+								}
+								
+								$u_strings = Format::and_list( $u_strings );
+								
+								?>
+								
+									<li class="update">
+										<?php echo _t( '%1$s <a href="%2$s">%3$s</a> has the following updates available: %4$s', array( MultiByte::ucfirst( $beacon['type'] ), $beacon['url'], $beacon['name'], $u_strings ) ); ?>
+									</li>
+								
+								<?php
+			
+							}
+							
+						?>
+						
+					</ul>
+					
+				<?php
+				
 			}
 
 		?>

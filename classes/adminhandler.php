@@ -65,6 +65,9 @@ class AdminHandler extends ActionHandler
 
 		// setup the stacks for javascript in the admin - it's a method so a plugin can call it externally
 		self::setup_stacks();
+		
+		// on every page load check the plugins currently loaded against the list we last checked for updates and trigger a cron if we need to
+		Update::check_plugins();
 	}
 
 	/**
@@ -371,44 +374,14 @@ class AdminHandler extends ActionHandler
 
 
 		// get the active theme, so we can check it
+		// @todo this should be worked into the main Update::check() code for registering beacons
 		$active_theme = Themes::get_active();
 		$active_theme = $active_theme->name . ':' . $active_theme->version;
 
-		// if the active plugin list has changed, expire the updates cache
-		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_plugins' ) != Options::get( 'active_plugins' ) ) ) {
-			Cache::expire( 'dashboard_updates' );
-		}
-
-		// if the theme version has changed, expire the updates cache
-		if ( Cache::has( 'dashboard_updates' ) && ( Cache::get( 'dashboard_updates_theme' ) != $active_theme ) ) {
-			Cache::expire( 'dashboard_updates' );
-		}
-
-		/*
-		 * Check for updates to core and any hooked plugins
-		 * cache the output so we don't make a request every load but can still display updates
-		 */
-		if ( Cache::has( 'dashboard_updates' ) ) {
-			$this->theme->updates = Cache::get( 'dashboard_updates' );
-		}
-		else {
-			$updates = Update::check();
-
-			if ( !Error::is_error( $updates ) ) {
-				Cache::set( 'dashboard_updates', $updates );
-				$this->theme->updates = $updates;
-
-				// cache the set of plugins we just used to check for
-				Cache::set( 'dashboard_updates_plugins', Options::get( 'active_plugins' ) );
-
-				// cache the active theme we just used to check for
-				Cache::set( 'dashboard_updates_theme', $active_theme );
-			}
-			else {
-				$this->theme->updates = array();
-			}
-		}
-
+		// check to see if we have updates to display
+		$this->theme->updates = Options::get( 'updates_available', array() );
+		
+		// collect all the stats we display on the dashboard
 		$this->theme->stats = array(
 			'author_count' => Users::get( array( 'count' => 1 ) ),
 			'page_count' => Posts::get( array( 'count' => 1, 'content_type' => Post::type('page'), 'status' => Post::status('published') ) ),

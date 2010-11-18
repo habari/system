@@ -1047,6 +1047,10 @@ body.page-publish .buttons input {
 	margin-bottom: 15px;
 }
 
+#page .dashboardinfo .updates .update a.bugfix {
+	color: #aa0000;
+}
+
 #page .dashboardinfo a {
 	font-weight: bold;
 	color: #444;

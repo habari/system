@@ -749,6 +749,9 @@ class InstallHandler extends ActionHandler
 
 		// Add the cronjob to trim the log so that it doesn't get too big
 		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t('Trim the log table') );
+		
+		// Add the cronjob to check for plugin updates
+		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t('Perform a check for plugin updates.') );
 
 		return true;
 	}
@@ -1637,6 +1640,13 @@ class InstallHandler extends ActionHandler
 		
 		// add the new trim_log cronjob
 		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t('Trim the log table') );
+		
+	}
+	
+	private function upgrade_db_post_4588 ( ) {
+		
+		// Add the cronjob to check for plugin updates
+		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t('Perform a check for plugin updates.') );
 		
 	}
 
