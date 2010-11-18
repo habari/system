@@ -209,43 +209,37 @@ class Posts extends ArrayObject implements IsContent
 								break;
 						}
 					}
-					if ( count( $all ) ) {
-						foreach( $all as $key => $value ) {
-							$value = Utils::single_array( $value );
-							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
+					foreach( $all as $key => $value ) {
+						$value = Utils::single_array( $value );
+						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
 
-							$where[] = '{terms}.id' . ' IN (' . Utils::placeholder_string( $value ) . ')' . ' AND {object_terms}.object_type_id = ?';
-							$params = array_merge( $params, array_values( $value ) );
+						$where[] = '{terms}.id' . ' IN (' . Utils::placeholder_string( $value ) . ')' . ' AND {object_terms}.object_type_id = ?';
+						$params = array_merge( $params, array_values( $value ) );
 
-							$groupby = '{posts}.id';
-							$having = 'count(*) = ' . count( $value );
-							$params[] = $object_id;
-						}
+						$groupby = '{posts}.id';
+						$having = 'count(*) = ' . count( $value );
+						$params[] = $object_id;
 					}
-					if ( count( $any ) ) {
-						foreach( $any as $key => $value ) {
-							$value = Utils::single_array( $value );
-							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-							$where[] = "{terms}.id IN (" . implode( ',', array_fill( 0, count( $value ), '?' ) ) . ")" . '  AND {object_terms}.object_type_id = ?';
-							$params = array_merge( $params, array_values( $value ) );
-							$params[] = $object_id;
-						}
+					foreach( $any as $key => $value ) {
+						$value = Utils::single_array( $value );
+						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
+						$where[] = "{terms}.id IN (" . implode( ',', array_fill( 0, count( $value ), '?' ) ) . ")" . '  AND {object_terms}.object_type_id = ?';
+						$params = array_merge( $params, array_values( $value ) );
+						$params[] = $object_id;
 					}
-					if ( count( $not ) ) {
-						foreach( $not as $key => $value ) {
-							$value = Utils::single_array( $value );
-							$where[] = 'NOT EXISTS (SELECT 1
-								FROM {object_terms}
-								INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
-								WHERE {terms}.id IN (' . Utils::placeholder_string( $value ) . ')
-								AND {object_terms}.object_id = {posts}.id
-								AND {object_terms}.object_type_id = ?)
-							';
-							$params = array_merge( $params, array_values( $value ) );
-							$params[] = $object_id;
-						}
+					foreach( $not as $key => $value ) {
+						$value = Utils::single_array( $value );
+						$where[] = 'NOT EXISTS (SELECT 1
+							FROM {object_terms}
+							INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
+							WHERE {terms}.id IN (' . Utils::placeholder_string( $value ) . ')
+							AND {object_terms}.object_id = {posts}.id
+							AND {object_terms}.object_type_id = ?)
+						';
+						$params = array_merge( $params, array_values( $value ) );
+						$params[] = $object_id;
 					}
 				}
 
@@ -1058,7 +1052,10 @@ class Posts extends ArrayObject implements IsContent
 				if (strpos($key, ':') !== false ) {
 					list($mode, $by_field) = explode(':', $key, 2);
 					foreach( $value as $v ) {
-						$ret[$mode][] = Vocabulary::get($vocab)->get_term( $v );
+						$term = Vocabulary::get( $vocab )->get_term( $v );
+						if( $term instanceof Term ) {
+							$ret[$mode][] = $term;
+						}
 					}
 				}
 				else {
@@ -1068,7 +1065,10 @@ class Posts extends ArrayObject implements IsContent
 							$ret[$vocab][] = $v;
 						}
 						else {
-							$ret['any'][] = Vocabulary::get($vocab)->get_term( $v );
+							$term = Vocabulary::get( $vocab )->get_term( $v );
+							if ( $term instanceof Term ) {
+								$ret['any'][] = $term;
+							}
 						}
 					}
 				}
