@@ -406,6 +406,82 @@ class MultiByte
 	{
 		return mb_check_encoding( $str, self::$hab_enc );
 	}
+	
+	/**
+	 * Makes a string's first character uppercase
+	 * 
+	 * @see http://php.net/ucfirst
+	 * @param string $str The string to capitalize.
+	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
+	 * @return string The capitalized string.
+	 */
+	public static function ucfirst ( $str, $use_enc = null ) {
+		
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+		
+		if ( self::$use_library == self::USE_MBSTRING ) {
+			
+			// get the first character
+			$first = self::substr($str, 0, 1, $enc);
+			
+			// uppercase it
+			$first = self::strtoupper($first, $enc);
+			
+			// get the rest of the characters
+			$last = self::substr($str, 1, null, $enc);
+			
+			// put them back together
+			$ret = $first . $last;
+			
+		}
+		else {
+			$ret = ucfirst( $str );
+		}
+		
+		return $ret;
+		
+	}
+	
+	/**
+	 * Makes a string's first character lowercase
+	 * 
+	 * @see http://php.net/ucfirst
+	 * @param string $str The string to lowercase.
+	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
+	 * @return string The lowercased string.
+	 */
+	public static function lcfirst ( $str, $use_enc = null ) {
+		
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+		
+		if ( self::$use_library == self::USE_MBSTRING ) {
+			
+			// get the first character
+			$first = self::substr($str, 0, 1, $enc);
+			
+			// uppercase it
+			$first = self::strtolower($first, $enc);
+			
+			// get the rest of the characters
+			$last = self::substr($str, 1, null, $enc);
+			
+			// put them back together
+			$ret = $first . $last;
+			
+		}
+		else {
+			$ret = lcfirst( $str );
+		}
+		
+		return $ret;
+		
+	}
 
 }
 
