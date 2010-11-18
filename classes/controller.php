@@ -114,15 +114,26 @@ class Controller extends Singleton
 		$controller->base_url = Site::get_path('base', true);
 
 		/* Start with the entire URL coming from web server... */
-		$start_url = ( isset($_SERVER['REQUEST_URI'])
-					? $_SERVER['REQUEST_URI']
-					: $_SERVER['SCRIPT_NAME'] .
-						( isset($_SERVER['PATH_INFO'])
-						? $_SERVER['PATH_INFO']
-						: '') .
-							( (isset($_SERVER['QUERY_STRING']) && ($_SERVER['QUERY_STRING'] != ''))
-							? '?' . $_SERVER['QUERY_STRING']
-							: ''));
+		$start_url = '';
+		
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$start_url = $_SERVER['REQUEST_URI'];
+		}
+		else {
+			$start_url = $_SERVER['SCRIPT_NAME'];
+			
+			if ( isset( $_SERVER['PATH_INFO'] ) ) {
+				$start_url .= $_SERVER['PATH_INFO'];
+			}
+			
+			// the query string is included in REQUEST_URI, we only need to append it if we're building the URI ourselves
+			if ( isset( $_SERVER['QUERY_STRING'] ) && ( $_SERVER['QUERY_STRING'] != '' ) ) {
+				$start_url .= '?' . $_SERVER['QUERY_STRING'];
+			}
+			
+		}
+		
+		
 
 		/* Strip out the base URL from the requested URL */
 		/* but only if the base URL isn't / */
