@@ -2344,7 +2344,7 @@ class AdminHandler extends ActionHandler
 				Session::notice( _t('Deleted %d logs.', array( $count ) ) );
 				break;
 			case 'purge':
-				$result = DB::query( 'DELETE FROM {log}' );
+				$result = EventLog::purge();
 				Session::notice( _t('Logs purged.' ) );
 				break;
 		}

@@ -364,6 +364,18 @@ class EventLog extends ArrayObject
 		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
 		
 	}
+	
+	public static function purge ( ) {
+		
+		$result = DB::query( 'DELETE FROM {log}' );
+		
+		if ( $result ) {
+			EventLog::log( _t('Logs purged.'), 'info' );
+		}
+		
+		return $result;
+		
+	}
 
 }
 
