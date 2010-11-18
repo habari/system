@@ -2274,6 +2274,7 @@ body.page-Manage .state {
 }
 
 .navigator .newer a, .navigator .older a {
+	background-color: #fafafa;
 	font-weight: bold;
 	color: #333;
 }

@@ -73,9 +73,3 @@
 	margin: -22px 0 6px 0; 
 	float: right;
 }
-
-/* Fix boldface text alpha opacity */
-
-.navigator .newer a, .navigator .older a {
-	background-color: #fafafa;
-}
