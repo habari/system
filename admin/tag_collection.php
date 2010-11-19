@@ -2,7 +2,7 @@
 $max = intval( $max );
 function tag_weight( $count, $max )
 {
-	return round( 10 * log($count + 1) / log($max + 1) );
+	return round( 10 * log($count + 1) / log($max + 1.01) );
 }
 ?>
 <?php foreach ( $tags as $tag ) : ?>
