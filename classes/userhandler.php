@@ -46,6 +46,12 @@ class UserHandler extends ActionHandler
 				$user = User::authenticate( $name, $pass );
 
 				if ( ( $user instanceOf User ) && ( $user != false ) ) {
+					
+					// if there's an unused password reset token, unset it to make sure there's no possibility of a compromise that way
+					if ( isset( $user->info->password_reset ) ) {
+						unset( $user->info->password_reset );
+					}
+					
 					/* Successfully authenticated. */
 					// Timestamp last login date and time.
 					$user->info->authenticate_time = date( 'Y-m-d H:i:s' );
