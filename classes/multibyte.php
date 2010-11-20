@@ -465,7 +465,7 @@ class MultiByte
 			// get the first character
 			$first = self::substr($str, 0, 1, $enc);
 			
-			// uppercase it
+			// lowercase it
 			$first = self::strtolower($first, $enc);
 			
 			// get the rest of the characters
@@ -476,7 +476,15 @@ class MultiByte
 			
 		}
 		else {
-			$ret = lcfirst( $str );
+			
+			// lcfirst() is php 5.3+ so we'll emulate it
+			$first = substr( $str, 0, 1 );
+			$first = strtolower( $first );
+			
+			$last = substr( $str, 1 );
+			
+			$ret = $first . $last;
+			
 		}
 		
 		return $ret;
