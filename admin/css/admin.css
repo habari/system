@@ -1047,7 +1047,7 @@ body.page-publish .buttons input {
 	margin-bottom: 15px;
 }
 
-#page .dashboardinfo .updates .update a.bugfix {
+#page .dashboardinfo .updates .update a.critical {
 	color: #aa0000;
 }
 
