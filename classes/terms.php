@@ -73,7 +73,7 @@ class Terms extends ArrayObject
 						$terms[$k] = new $term_class($term);
 					}
 				}
-Utils::debug($terms);
+//Utils::debug($terms);
 			}
 			else {
 				array_walk( $terms, create_function('&$tag', '$tag = new ' . $term_class . '($tag);') );
