@@ -490,6 +490,131 @@ class MultiByte
 		return $ret;
 		
 	}
+	
+
+	/**
+	 * Replace all occurrences of the search string with the replacement string.
+	 * 
+	 * @todo Allow an array to be passed to $subject (and then return an array).
+	 * 
+	 * @see http://php.net/str_replace
+	 * @param mixed $search A string or an array of strings to search for.
+	 * @param mixed $replace A string or an array of strings to replace search values with.
+	 * @param string $subject The string to perform the search and replace on.
+	 * @param int $count If passed, this value will hold the number of matched and replaced needles.
+	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
+	 * @param boolean $case_insensitive Should the search and replace be case insenstive?
+	 * @return string The subject with replaced values.
+	 */
+	public static function str_replace ( $search, $replace, $subject, &$count = 0, $use_enc = null, $case_insensitive = false ) {
+		
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+		
+		if ( self::$use_library == self::USE_MBSTRING ) {
+		
+			// if search is an array and replace is not, we need to make replace an array and pad it to the same number of values as search
+			if ( is_array( $search ) && !is_array( $replace ) ) {
+				$replace = array_fill( 0, count( $search ), $replace );
+			}
+			
+			// if search is an array and replace is as well, we need to make sure replace has the same number of values - pad it with empty strings
+			if ( is_array( $search ) && is_array( $replace ) ) {
+				$replace = array_pad( $replace, count( $search ), '' );
+			}
+			
+			// if search is not an array, make it one
+			if ( !is_array( $search ) ) {
+				$search = array( $search );
+			}
+			
+			// if replace is not an array, make it one
+			if ( !is_array( $replace ) ) {
+				$replace = array( $replace );
+			}
+			
+			
+			// pick apart the string into an array of characters
+			$chars = array();
+			for ( $i = 0; $i < self::strlen( $subject, $enc ); $i++ ) {
+				
+				// get the char
+				$char = self::substr( $subject, $i, 1, $enc );
+				
+				// add it to the stack
+				$chars[] = $char;
+				
+			}
+						
+			
+			
+			// now we've got an array of characters and arrays of search / replace characters with the same values - loop and replace them!
+			$search_count = count( $search );	// we modify $search, so we can't include it in the condition next
+			for ( $i = 0; $i < $search_count; $i++ ) {
+				
+				// the values we'll match
+				$s = array_shift( $search );
+				$r = array_shift( $replace );
+				
+				// loop through each character
+				for ( $j = 0; $j < count( $chars ); $j++ ) {
+					
+					$char = $chars[ $j ];
+					
+					// replace it if necessary
+					if ( $char == $s || ( $case_insensitive == true && self::strtolower( $char, $enc ) == self::strtolower( $s, $enc ) ) ) {
+						$char = $r;
+						
+						// increment $count
+						$count++;
+					}
+					
+					// add it back
+					$chars[ $j ] = $char;
+					
+				}
+				
+			}
+			
+			// reassemble the characters
+			$subject = implode('', $chars);
+			
+		}
+		else {
+			
+			if ( $case_insensitive == true ) {
+				$subject = str_ireplace( $search, $replace, $subject, $count );
+			}
+			else {
+				$subject = str_replace( $search, $replace, $subject, $count );
+			}
+			
+		}
+		
+		return $subject;
+		
+	}
+	
+	/**
+	 * Replace all occurrences of the search string with the replacement string.
+	 * 
+	 * @todo Allow an array to be passed to $subject (and then return an array).
+	 * 
+	 * @see http://php.net/str_ireplace
+	 * @param mixed $search A string or an array of strings to search for.
+	 * @param mixed $replace A string or an array of strings to replace search values with.
+	 * @param string $subject The string to perform the search and replace on.
+	 * @param int $count If passed, this value will hold the number of matched and replaced needles.
+	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
+	 * @return string The subject with replaced values.
+	 */
+	public static function str_ireplace( $search, $replace, $subject, &$count = 0, $use_enc = null ) {
+		
+		return self::str_replace( $search, $replace, $subject, $count, $use_enc, true );
+		
+	}
 
 }
 
