@@ -1292,6 +1292,10 @@ class FormControl
 				break;
 			case 'template':
 				$this->template = $value;
+				
+				// add the template to the list of css classes - keyed so subsequent changes overwrite it, rather than append
+				$this->class['template'] = $value;
+				
 				break;
 			case 'raw':
 				$this->raw = $value;
