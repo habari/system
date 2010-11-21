@@ -7,7 +7,7 @@
 		
 			if ( isset( $helptext ) && !empty( $helptext ) ) {
 				?>
-					<span class="helptext"><?php echo Utils::htmlspecialchars( $helptext ); ?></span>
+					<span class="helptext"><?php echo $helptext; ?></span>
 				<?php
 			}
 		
