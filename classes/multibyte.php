@@ -615,6 +615,62 @@ class MultiByte
 		return self::str_replace( $search, $replace, $subject, $count, $use_enc, true );
 		
 	}
+	
+	/**
+	 * Uppercase the first character of each word in a string.
+	 * 
+	 * From php.net/ucwords:
+	 * 	The definition of a word is any string of characters that is immediately after a whitespace
+	 * 	(These are: space, form-feed, newline, carriage return, horizontal tab, and vertical tab).
+	 * 
+	 * @see http://php.net/ucwords
+	 * @param string $str The input string.
+	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
+	 * @return string The modified string.
+	 */
+	public static function ucwords ( $str, $use_enc = null ) {
+		
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+		
+		if ( self::$use_library == self::USE_MBSTRING ) {
+		
+			$delimiters = array(
+				chr( 32 ),	// space
+				chr( 12 ),	// form-feed
+				chr( 10 ),	// newline
+				chr( 13 ),	// carriage return
+				chr( 9 ),	// horizontal tab
+				chr( 11 ),	// vertical tab
+			);
+			
+			// loop through the delimiters and explode the string by each one
+			foreach ( $delimiters as $d ) {
+				
+				$pieces = explode( $d, $str );
+				
+				for ( $i = 0; $i < count( $pieces ); $i++ ) {
+					
+					// capitalize each word
+					$pieces[ $i ] = self::ucfirst( $pieces[ $i ], $enc );
+					
+				}
+				
+				// put the string back together
+				$str = implode( $d, $pieces );
+				
+			}
+		
+		}
+		else {
+			$str = ucwords( $str );
+		}
+		
+		
+		return $str;
+	}
 
 }
 
