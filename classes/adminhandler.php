@@ -1184,20 +1184,21 @@ class AdminHandler extends ActionHandler
 	public function get_themes()
 	{
 		$all_themes = Themes::get_all_data();
+		
+		$available_updates = Options::get('updates_available', array());
+		
 		foreach ( $all_themes as $name => $theme ) {
-			if ( isset($all_themes[$name]['info']->update) && $all_themes[$name]['info']->update != '' && isset($all_themes[$name]['info']->version) && $all_themes[$name]['info']->version != '' ) {
-				Update::add($name, $all_themes[$name]['info']->update, $all_themes[$name]['info']->version);
+			
+			// only themes with a guid can be checked for updates
+			if ( isset( $theme['info']->guid ) ) {
+				if ( isset( $available_updates[ (string)$theme['info']->guid ] ) ) {
+					// @todo this doesn't use the URL and is therefore worthless
+					$all_themes[ $name ]['info']->update = $available_updates[ (string)$theme['info']->guid ]['latest_version'];
+				}
 			}
+			
 		}
-		$updates = Update::check();
-		foreach ( $all_themes as $name => $theme ) {
-			if ( isset($all_themes[$name]['info']->update) && isset($updates[$all_themes[$name]['info']->update]) ) {
-				$all_themes[$name]['info']->update = $updates[$all_themes[$name]['info']->update]['latest_version'];
-			}
-			else {
-				$all_themes[$name]['info']->update = '';
-			}
-		}
+		
 		$this->theme->all_themes = $all_themes;
 
 		$this->theme->active_theme = Themes::get_active_data(true);

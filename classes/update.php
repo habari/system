@@ -217,11 +217,29 @@ class Update extends Singleton
 		}
 		
 		Update::add('Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion());
+		
+		// add the active theme
+		self::add_theme();
 				
 		// add all active plugins
 		self::add_plugins();
 		
 		Plugins::act('update_check');
+		
+	}
+	
+	/**
+	 * Add the currently active theme's information to the list of beacons to check for updates.
+	 */
+	private static function add_theme ( ) {
+		
+		// get the active theme
+		$theme = Themes::get_active_data( true );
+		
+		// name and version are required in the XML file, make sure GUID is set
+		if ( isset( $theme['info']->guid ) ) {
+			Update::add( $theme['info']->name, $theme['info']->guid, $theme['info']->version );
+		}
 		
 	}
 	
