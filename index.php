@@ -178,6 +178,10 @@ SuperGlobal::process_c();
 // Initiating request handling, tell the plugins.
 Plugins::act( 'init' );
 
+if ( defined('SUPPRESS_REQUEST') ) {
+	return;
+}
+
 // Parse and handle the request.
 Controller::parse_request();
 
