@@ -267,6 +267,34 @@ class Update extends Singleton
 		}
 		
 	}
+	
+	/**
+	 * Return all available updates, or the updates available for a single GUID.
+	 * 
+	 * @param string $guid A GUID to return available updates for.
+	 * @return array Array of all available updates if no GUID is specified.
+	 * @return array A single GUID's updates, if GUID is specified and they are available.
+	 * @return false If a single GUID is specified and there are no updates available for it.
+	 */
+	public static function updates_available ( $guid = null ) {
+		
+		$updates = Options::get('updates_available', array());
+		
+		if ( $guid == null ) {
+			return $updates;
+		}
+		else {
+			
+			if ( isset( $updates[ $guid ] ) ) {
+				return $updates[ $guid ];
+			}
+			else {
+				return false;
+			}
+			
+		}
+		
+	}
 
 }
 
