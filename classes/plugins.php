@@ -256,6 +256,11 @@ class Plugins
 					if ( file_exists( $filename ) ) {
 						self::$plugin_files[$class] = $filename;
 					}
+					else {
+						// file does not exist, deactivate plugin
+						self::deactivate_plugin($filename, true);
+						EventLog::log( _t('Plugin "%1$s" deactivated because it could no longer be found.', array( $class ) ), 'err', 'plugin', 'habari', $filename );
+					}
 				}
 			}
 			// make sure things work on Windows
@@ -485,12 +490,12 @@ class Plugins
 	/**
 	 * Deactivates a plugin file
 	 */
-	public static function deactivate_plugin( $file )
+	public static function deactivate_plugin( $file, $force = false )
 	{
 		$ok = true;
 		$name = '';
 		$ok = Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
-		if ( $ok ) {
+		if ( $ok || $force == true ) {
 			// normalize directory separator
 			$file = str_replace( '\\', '/', $file );
 			// strip base path from stored path
@@ -499,18 +504,32 @@ class Plugins
 			$activated = Options::get( 'active_plugins' );
 			$index = array_search( $short_file, $activated );
 			if ( is_array( $activated ) && ( false !== $index ) ) {
-				// Get plugin name for logging
-				$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
-				if ( method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation') ) {
-					self::$plugins[Plugins::id_from_file( $file )]->action_plugin_deactivation( $file ); // For the plugin to uninstall itself
+				
+				if ( $force != true ) {
+					// Get plugin name for logging
+					$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
+					if ( method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation') ) {
+						self::$plugins[Plugins::id_from_file( $file )]->action_plugin_deactivation( $file ); // For the plugin to uninstall itself
+					}
 				}
+				
 				unset($activated[$index]);
 				Options::set( 'active_plugins', $activated );
-				Plugins::act('plugin_deactivated', $file);  // For other plugins to react to a plugin uninstallation
-				EventLog::log( _t( 'Deactivated Plugin: %s', array( $name ) ), 'notice', 'plugin', 'habari' );
+				
+				if ( $force != true ) {
+					Plugins::act('plugin_deactivated', $file);  // For other plugins to react to a plugin uninstallation
+					EventLog::log( _t( 'Deactivated Plugin: %s', array( $name ) ), 'notice', 'plugin', 'habari' );
+				}
 			}
 		}
-		return $ok;
+		
+		if ( $force == true ) {
+			// always return true for forced deactivations
+			return true;
+		}
+		else {
+			return $ok;
+		}
 	}
 
 	/**
