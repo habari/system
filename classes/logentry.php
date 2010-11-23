@@ -212,6 +212,11 @@ class LogEntry extends QueryRecord
 		if ( $this->fields['severity_id'] < Options::get('log_min_severity') ) {
 			return;
 		}
+		
+		// make sure data is a string and can be stored. lots of times it's convenient to hand in an array of data values
+		if ( is_array( $this->fields['data'] ) || is_object( $this->fields['data'] ) ) {
+			$this->fields['data'] = serialize( $this->fields['data'] );
+		}
 
 		Plugins::filter( 'insert_logentry', $this );
 		parent::insertRecord( DB::table( 'log' ) );
