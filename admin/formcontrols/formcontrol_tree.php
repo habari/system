@@ -9,10 +9,10 @@
 				array_pop( $stack );
 			}
 		}
-		echo '<li id="tree_item_' . $key . '"><div>' . $term->term_display . '</div></li>';
+		echo '<li id="tree_item_' . $key . '"><div>' . Utils::htmlspecialchars( $term->term_display ) . '</div></li>';
 
 		if( $term->mptt_left + 1 != $term->mptt_right ) {
-		echo '<ol>';
+			echo '<ol>';
 		}
 
 		$stack[] = $term->mptt_right;
