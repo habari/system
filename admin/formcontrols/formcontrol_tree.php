@@ -1,22 +1,22 @@
 <div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>>
 <ol class="tree">
 <?php
-if($firstnode = reset($options)) {
-	$lastright = $lastleft = reset($options)->mptt_left;
-	$indent = 0;
 	$stack = array();
-	foreach ( $options as $key => $term ) {
-		while ( count( $stack ) > 0 && end( $stack )->mptt_right < $term->mptt_left ) {
-			array_pop( $stack );
-			echo '</ol>';
+	foreach( $options as $key => $term) {
+		if( count( $stack ) > 0) {
+			while( end($stack) < $term->mptt_right && count($stack) > 0) {
+				echo str_repeat( '</ol>', ( $term->mptt_left - end( $stack ) ) / 2);
+				array_pop( $stack );
+			}
 		}
-		echo '<ol><li id="tree_item_' . $key .'">
-			<div>' .  Utils::htmlspecialchars($term->term_display) . '</div>
-		</li>';
-		$stack[] = $term;
-	}
-}
-?>
+		echo '<li id="tree_item_' . $key . '"><div>' . $term->term_display . '</div></li>';
+
+		if( $term->mptt_left + 1 != $term->mptt_right ) {
+		echo '<ol>';
+		}
+
+		$stack[] = $term->mptt_right;
+	}?>
 </ol>
 <input type="hidden" name="<?php echo $field; ?>_submitted" value="1">
 <?php $control->errors_out('<li>%s</li>', '<ul class="error">%s</ul>'); ?>
