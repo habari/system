@@ -497,11 +497,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 					foreach( $photo->attributes() as $name => $value ) {
 						$props[$name] = (string)$value;
 					}
-					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
-					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
-					$props['flickr_url'] = "http://www.flickr.com/photos/{$photo['owner']}/{$photo['id']}";
-					$props['filetype'] = 'flickr';
-
+					$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$photo['owner']}/{$photo['id']}", $size ) );
 					$results[] = new MediaAsset(
 						self::SILO_NAME . '/photos/' . $photo['id'],
 						false,
@@ -518,11 +514,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 					foreach( $photo->attributes() as $name => $value ) {
 						$props[$name] = (string)$value;
 					}
-					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
-					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
-					$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
-					$props['filetype'] = 'flickr';
-
+					$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
 					$results[] = new MediaAsset(
 						self::SILO_NAME . '/photos/' . $photo['id'],
 						false,
@@ -539,11 +531,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 					foreach( $photo->attributes() as $name => $value ) {
 						$props[$name] = (string)$value;
 					}
-					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
-					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
-					$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
-					$props['filetype'] = 'flickr';
-
+					$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
 					$results[] = new MediaAsset(
 						self::SILO_NAME . '/photos/' . $photo['id'],
 						false,
@@ -559,11 +547,8 @@ class FlickrSilo extends Plugin implements MediaSilo
 					foreach( $photo->attributes() as $name => $value ) {
 						$props[$name] = (string)$value;
 					}
-					$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}$size.jpg";
-					$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
-					$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
+					$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
 					$props['filetype'] = 'flickrvideo';
-
 					$results[] = new MediaAsset(
 						self::SILO_NAME . '/photos/' . $photo['id'],
 						false,
@@ -581,11 +566,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 						foreach( $photo->attributes() as $name => $value ) {
 							$props[$name] = (string)$value;
 						}
-						$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
-						$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
-						$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
-						$props['filetype'] = 'flickr';
-
+						$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
 						$results[] = new MediaAsset(
 							self::SILO_NAME . '/photos/' . $photo['id'],
 							false,
@@ -614,11 +595,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 						foreach( $photo->attributes() as $name => $value ) {
 							$props[$name] = (string)$value;
 						}
-						$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}.jpg";
-						$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
-						$props['flickr_url'] = "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}";
-						$props['filetype'] = 'flickr';
-
+						$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
 						$results[] = new MediaAsset(
 							self::SILO_NAME . '/photos/' . $photo['id'],
 							false,
@@ -680,6 +657,26 @@ class FlickrSilo extends Plugin implements MediaSilo
 				break;
 		}
 		return $results;
+	}
+	
+	/**
+	 * Function that populates the element properties for use in the silo.
+	 * 
+	 * This is to reduce the amount of duplicate code.
+	 * 
+	 * @param array $photo The photo element array
+	 * @param string $url The Flickr URL to link to
+	 * @param string $size The size of the image to display.
+	 * @return array
+	 */
+	private static function element_props( $photo, $url, $size ) 
+	{
+		$props = array();
+		$props['url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}{$size}.jpg";
+		$props['thumbnail_url'] = "http://farm{$photo['farm']}.static.flickr.com/{$photo['server']}/{$photo['id']}_{$photo['secret']}_m.jpg";
+		$props['flickr_url'] = $url;
+		$props['filetype'] = 'flickr';
+		return $props;
 	}
 
 	/**
