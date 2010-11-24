@@ -1,7 +1,7 @@
 <?php include 'header.php'; ?>
 
 			<div id="main-posts">
-				<p class="prompt"><?php printf( _t("Displaying posts tagged: %s"), Tags::get_by_slug( $tag )->term_display ); ?></p>
+				<p class="prompt"><?php printf( _t("Displaying posts tagged: %s"), $tag ); ?></p>
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
 				<?php if ( count( $post->tags ) && ($tags_in_multiple) ) : ?>

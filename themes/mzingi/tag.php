@@ -5,7 +5,7 @@
 		<div id="primaryContent" class="span-15 append-2">
 			<!--begin loop-->
 			<!--returns tag name in heading-->
-			<h2 class="prepend-2"><?php _e('Posts Tagged with'); ?> <?php echo Tags::get_by_slug( $theme->tag )->term_display; ?></h2>
+			<h2 class="prepend-2"><?php _e('Posts Tagged with'); ?> <?php echo $theme->tag; ?></h2>
 			<?php foreach ( $posts as $post ) { ?>
 				<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 						<h2 class="prepend-2"><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a></h2>
