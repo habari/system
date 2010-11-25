@@ -13,7 +13,7 @@
  */
 interface RequestProcessor
 {
-	public function execute( $method, $url, $headers, $body, $timeout );
+	public function execute( $method, $url, $headers, $body, $config );
 
 	public function get_response_body();
 	public function get_response_headers();
@@ -32,7 +32,6 @@ class RemoteRequest
 	private $postdata = array();
 	private $files = array();
 	private $body = '';
-	private $timeout = 180;
 	private $processor = null;
 	private $executed = false;
 
@@ -40,6 +39,32 @@ class RemoteRequest
 	private $response_headers = '';
 
 	private $user_agent = 'Habari';
+	
+	// Array of adapter configuration options
+	private $config = array(
+        'connect_timeout'   => 30,
+        'timeout'           => 180,
+        'buffer_size'       => 16384,
+
+		// These are configured via the Options page.
+        'proxy_server'      => '',
+        'proxy_port'        => '',
+        'proxy_username'    => '',
+        'proxy_password'    => '',
+        'proxy_auth_scheme' => 'basic',
+		'proxy_exceptions'  => array(),
+
+		// TODO: These don't apply to SocketRequestProcessor yet
+        'ssl_verify_peer'   => false,
+        'ssl_verify_host'   => false,
+        'ssl_cafile'        => null,
+        'ssl_capath'        => null,
+        'ssl_local_cert'    => null,
+        'ssl_passphrase'    => null,
+
+        'follow_redirects'  => false,
+        'max_redirects'     => 5
+    );
 
 	/**
 	 * @param string $url URL to request
@@ -51,6 +76,20 @@ class RemoteRequest
 		$this->method = strtoupper( $method );
 		$this->url = $url;
 		$this->set_timeout( $timeout );
+		
+		// If the proxy option is set, set it now for the request
+		
+		if ( $proxy_server = Options::get( 'proxy_server' ) ) {
+			$this->set_config( array(
+					'proxy_server' => $proxy_server,
+					'proxy_port' => Options::get( 'proxy_port' ),
+					'proxy_username' => Options::get( 'proxy_username' ),
+					'proxy_password' => Options::get( 'proxy_password' ),
+					'proxy_auth_scheme' => Options::get( 'proxy_auth_scheme' ),
+					'proxy_exceptions' => array_merge( preg_split( '/,\ ?/', Options::get( 'proxy_exceptions' ) ), array( 'localhost', '127.0.0.1', $_SERVER['SERVER_NAME'], $_SERVER['SERVER_ADDR'] ) ),
+					)
+			);
+		}
 
 		$this->user_agent .= '/' . Version::HABARI_VERSION;
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
@@ -75,6 +114,29 @@ class RemoteRequest
 		$this->processor = $processor;
 	}
 
+	/**
+	 * Set adapter configuration options
+	 *
+	 * @param mixed			$config An array of options or a string name with a	corresponding $value
+	 * @param mixed			$value
+	 */
+	public function set_config( $config, $value = null )
+    {
+        if ( is_array( $config ) ) {
+            foreach ( $config as $name => $value ) {
+                $this->set_config( $name, $value );
+            }
+
+        } else {
+            if ( !array_key_exists( $config, $this->config ) ) {
+				// We only trigger an error here as using an unknow config param isn't fatal
+				trigger_error( "Unknown configuration parameter '{$config}'", E_USER_WARNING );
+            } else {
+				$this->config[$config] = $value;
+			}
+        }
+    }
+	
 	/**
 	 * Add a request header.
 	 * @param mixed $header The header to add, either as a string 'Name: Value' or an associative array 'name'=>'value'
@@ -134,8 +196,8 @@ class RemoteRequest
 	 */
 	public function set_timeout( $timeout )
 	{
-		$this->timeout = $timeout;
-		return $this->timeout;
+		$this->config['timeout'] = $timeout;
+		return $this->config['timeout'];
 	}
 
 	/**
@@ -237,7 +299,7 @@ class RemoteRequest
 	public function execute()
 	{
 		$this->prepare();
-		$result = $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->timeout );
+		$result = $this->processor->execute( $this->method, $this->url, $this->headers, $this->body, $this->config );
 
 		if ( $result ) { // XXX exceptions?
 			$this->response_headers = $this->processor->get_response_headers();

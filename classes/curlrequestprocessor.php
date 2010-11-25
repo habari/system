@@ -16,11 +16,6 @@ class CURLRequestProcessor implements RequestProcessor
 	private $can_followlocation = true;
 
 	/**
-	 * Maximum number of redirects to follow.
-	 */
-	private $max_redirs = 5;
-
-	/**
 	 * Temporary buffer for headers.
 	 */
 	private $_headers = '';
@@ -36,7 +31,7 @@ class CURLRequestProcessor implements RequestProcessor
 		}
 	}
 
-	public function execute( $method, $url, $headers, $body, $timeout )
+	public function execute( $method, $url, $headers, $body, $config )
 	{
 		$merged_headers = array();
 		foreach ( $headers as $k => $v ) {
@@ -44,24 +39,51 @@ class CURLRequestProcessor implements RequestProcessor
 		}
 
 		$ch = curl_init();
+		
+		$options = array(
+			CURLOPT_URL				=> $url,	// The URL
+			CURLOPT_HEADERFUNCTION	=> array( &$this, '_headerfunction' ), // The header of the response.
+			CURLOPT_MAXREDIRS		=> $config['max_redirects'], // Maximum number of redirections to follow.
+			CURLOPT_CONNECTTIMEOUT	=> $config['connect_timeout'],
+			CURLOPT_TIMEOUT			=> $config['timeout'],
+			CURLOPT_SSL_VERIFYPEER	=> $config['ssl_verify_peer'],
+			CURLOPT_SSL_VERIFYHOST	=> $config['ssl_verify_host'],
+			CURLOPT_BUFFERSIZE		=> $config['buffer_size'],
+			CURLOPT_HTTPHEADER		=> $merged_headers,	// headers to send
+			CURLOPT_FOLLOWLOCATION	=> true,
+			CURLOPT_RETURNTRANSFER	=> true,
+		);
 
-		curl_setopt( $ch, CURLOPT_URL, $url ); // The URL.
-		curl_setopt( $ch, CURLOPT_HEADERFUNCTION, array(&$this, '_headerfunction' ) ); // The header of the response.
-		curl_setopt( $ch, CURLOPT_MAXREDIRS, $this->max_redirs ); // Maximum number of redirections to follow.
 		if ( $this->can_followlocation ) {
-			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // Follow 302's and the like.
+			$options[CURLOPT_FOLLOWLOCATION] = true; // Follow 302's and the like.
 		}
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, $merged_headers ); // headers to send
 
 		if ( $method === 'POST' ) {
-			curl_setopt( $ch, CURLOPT_POST, true ); // POST mode.
-			curl_setopt( $ch, CURLOPT_POSTFIELDS, $body );
+			$options[CURLOPT_POST] = true; // POST mode.
+			$options[CURLOPT_POSTFIELDS] = $body;
 		}
 		else {
-			curl_setopt( $ch, CURLOPT_CRLF, true ); // Convert UNIX newlines to \r\n
+			$options[CURLOPT_CRLF] = true; // Convert UNIX newlines to \r\n
 		}
+
+		// set proxy, if needed
+		$urlbits = InputFilter::parse_url( $url );
+        if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
+            $options[CURLOPT_PROXY] = $config['proxy_server'] . ':' . $config['proxy_port'];	// Validation of the existence of the port should take place in the Options form
+            if ( $config['proxy_username'] ) {
+                $options[CURLOPT_PROXYUSERPWD] = $config['proxy_username'] . ':' . $config['proxy_password'];
+                switch ( strtolower( $config['proxy_auth_scheme'] ) ) {
+                    case 'basic':
+                        $options[CURLOPT_PROXYAUTH] = CURLAUTH_BASIC;
+                        break;
+                    case 'digest':
+                        $options[CURLOPT_PROXYAUTH] = CURLAUTH_DIGEST;
+						break;
+                }
+            }
+        }
+		
+		curl_setopt_array( $ch, $options );
 
 		/**
 		 * @todo Possibly find a way to generate a temp file without needing the user

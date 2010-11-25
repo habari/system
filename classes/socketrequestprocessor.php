@@ -13,17 +13,12 @@ class SocketRequestProcessor implements RequestProcessor
 	private $response_headers = '';
 	private $executed = false;
 
-	/**
-	 * Maximum number of redirects to follow.
-	 */
-	private $max_redirs = 5;
-
 	private $redir_count = 0;
 
-	public function execute( $method, $url, $headers, $body, $timeout )
+	public function execute( $method, $url, $headers, $body, $config )
 	{
 		// let any exceptions thrown just bubble up
-		$result = $this->_request( $method, $url, $headers, $body, $timeout );
+		$result = $this->_request( $method, $url, $headers, $body, $config );
 
 		if ( $result ) {
 			list( $response_headers, $response_body )= $result;
@@ -38,17 +33,17 @@ class SocketRequestProcessor implements RequestProcessor
 		}
 	}
 
-	private function _request( $method, $url, $headers, $body, $timeout )
+	private function _request( $method, $url, $headers, $body, $config )
 	{
 		$urlbits = InputFilter::parse_url( $url );
 
-		return $this->_work( $method, $urlbits, $headers, $body, $timeout );
+		return $this->_work( $method, $urlbits, $headers, $body, $config );
 	}
 
 	/**
 	 * @todo Does not honor timeouts on the actual request, only on the connect() call.
 	 */
-	private function _work( $method, $urlbits, $headers, $body, $timeout )
+	private function _work( $method, $urlbits, $headers, $body, $config )
 	{
 		$_errno = 0;
 		$_errstr = '';
@@ -69,20 +64,38 @@ class SocketRequestProcessor implements RequestProcessor
 		else {
 			$transport = $urlbits['scheme'];
 		}
-
-		$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
+		
+		if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
+			// TODO: Still implementing this.
+			$fp = @fsockopen( $transport . '://' . $config['proxy_server'], $config['proxy_port'], $_errno, $_errstr, $config['connect_timeout'] );
+		}
+		else {
+			$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $config['connection_timeout'] );
+		}
 
 		if ( $fp === false ) {
-			throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) ) );
+			if ( $config['proxy_server'] ) {
+				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $config['proxy_server'], $config['proxy_ports'] ) ) );
+			}
+			else {
+				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) ) );
+			}
 		}
 
 		// timeout to fsockopen() only applies for connecting
-		stream_set_timeout( $fp, $timeout );
+		stream_set_timeout( $fp, $config['timeout'] );
 
 		// fix headers
-		$headers['Host'] = $urlbits['host'];
-		$headers['Connection'] = 'close';
-
+		if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
+			$headers['Host'] = "{$config['proxy_server']}:{$config['proxy_port']}";
+			if ( $config['proxy_username'] ) {
+				// TODO: Decide if we're going to implement other Proxy authentication schemes. Curl already has support for most authentication mechanism, most of which are very complicated to implement manually.
+				$headers['Proxy-Authorization'] = 'Basic ' . base64_encode( " {$config['proxy_username']}:{$config['proxy_password']}" );
+			}
+		} else {
+			$headers['Host'] = $urlbits['host'];
+			$headers['Connection'] = 'close';
+		}
 		// merge headers into a list
 		$merged_headers = array();
 		foreach ( $headers as $k => $v ) {
@@ -95,9 +108,14 @@ class SocketRequestProcessor implements RequestProcessor
 		if ( isset( $urlbits['query'] ) ) {
 			$resource.= '?' . $urlbits['query'];
 		}
+		
+		if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
+			$resource = $urlbits['scheme'] . '://' . $urlbits['host'] . $resource;
+		}
 
 		$request[] = "{$method} {$resource} HTTP/1.1";
-		$request = array_merge( $request, $merged_headers );
+
+        $request = array_merge( $request, $merged_headers );
 
 		$request[] = '';
 
@@ -141,11 +159,11 @@ class SocketRequestProcessor implements RequestProcessor
 
 				$this->redir_count++;
 
-				if ( $this->redir_count > $this->max_redirs ) {
+				if ( $this->redir_count > $config['max_redirs'] ) {
 					throw new Exception( _t('Maximum number of redirections exceeded.') );
 				}
 
-				return $this->_work( $method, $redirect_urlbits, $headers, $body, $timeout );
+				return $this->_work( $method, $redirect_urlbits, $headers, $body, $config );
 			}
 			else {
 				throw new Exception( _t('Redirection response without Location: header.') );
