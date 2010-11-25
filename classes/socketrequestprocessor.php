@@ -75,7 +75,7 @@ class SocketRequestProcessor implements RequestProcessor
 
 		if ( $fp === false ) {
 			if ( $config['proxy_server'] ) {
-				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $config['proxy_server'], $config['proxy_ports'] ) ) );
+				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $config['proxy_server'], $config['proxy_port'] ) ) );
 			}
 			else {
 				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) ) );
