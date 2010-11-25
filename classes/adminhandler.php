@@ -201,43 +201,43 @@ class AdminHandler extends ActionHandler
 		$timezones = DateTimeZone::listIdentifiers();
 		$timezones = array_merge( array( ''=>'' ), array_combine( array_values( $timezones ), array_values( $timezones ) ) );
 
-		$option_items[_t('Name & Tagline')] = array(
+		$option_items[_t( 'Name & Tagline' )] = array(
 			'title' => array(
-				'label' => _t('Site Name'),
+				'label' => _t( 'Site Name' ),
 				'type' => 'text',
 				'helptext' => '',
 				),
 			'tagline' => array(
-				'label' => _t('Site Tagline'),
+				'label' => _t( 'Site Tagline' ),
 				'type' => 'text',
 				'helptext' => '',
 				),
 			'about'   => array(
-				'label'    => _t('About'),
+				'label'    => _t( 'About' ),
 				'type'     => 'textarea',
 				'helptext' => '',
 				),
 			);
 
-		$option_items[_t('Publishing')] = array(
+		$option_items[_t( 'Publishing' )] = array(
 			'pagination' => array(
-				'label' => _t('Items per Page'),
+				'label' => _t( 'Items per Page' ),
 				'type' => 'text',
 				'helptext' => '',
 				),
 			'atom_entries' => array(
-				'label' => _t('Entries to show in Atom feed'),
+				'label' => _t( 'Entries to show in Atom feed' ),
 				'type' => 'text',
 				'helptext' => '',
 				),
 			'comments_require_id' => array(
-				'label' => _t('Require Comment Author Info'),
+				'label' => _t( 'Require Comment Author Info' ),
 				'type' => 'checkbox',
 				'helptext' => '',
 				),
 			);
 
-		$option_items[_t('Time & Date')] = array(
+		$option_items[_t( 'Time & Date' )] = array(
 			/*'presets' => array(
 				'label' => _t('Presets'),
 				'type' => 'select',
@@ -247,7 +247,7 @@ class AdminHandler extends ActionHandler
 				'helptext' => '',
 				),*/
 			'timezone' => array(
-				'label' => _t('Time Zone'),
+				'label' => _t( 'Time Zone' ),
 				'type' => 'select',
 				'selectarray' => $timezones,
 				'helptext' => _t( 'Current Date Time: %s', array( HabariDateTime::date_create()->format() ) ),
@@ -264,7 +264,7 @@ class AdminHandler extends ActionHandler
 				)
 			);
 
-		$option_items[_t('Language')] = array(
+		$option_items[_t( 'Language' )] = array(
 			'locale' => array(
 				'label' => _t( 'Locale' ),
 				'type' => 'select',
@@ -277,8 +277,44 @@ class AdminHandler extends ActionHandler
 				'helptext' => _t( 'The appropriate locale code for your server' ),
 			),
 		);
+		
+		$option_items[ _t( 'Remote Request Proxy') ] = array(
+			'proxy_server' => array(
+				'label' => _t( 'Proxy Server' ),
+				'type' => 'text',
+				'helptext' => '',
+			),
+			'proxy_port' => array(  // TODO: We need to validate this as you can't have a server without a port.
+				'label' => _t( 'Proxy Port' ),
+				'type' => 'text',
+				'helptext' => '',
+			),
+			'proxy_username' => array(
+				'label' => _t( 'Proxy Username' ),
+				'type' => 'text',
+				'helptext' => _t( "Leave this blank if you don't need a username to use your proxy." ),
+			),
+			'proxy_password' => array(
+				'label' => _t( 'Proxy Password' ),
+				'type' => 'password',
+				'helptext' => _t( "Leave this blank if you don't need a password to use your proxy." ),
+			),
+			'proxy_exceptions' => array(
+				'label' => _t( 'Exceptions' ),
+				'type' => 'text',
+				'helptext' => _t( 'Comma separated list of hosts that do not need to be accessed via the proxy.' ) . " localhost, 127.0.0.1, {$_SERVER['SERVER_NAME']} and {$_SERVER['SERVER_ADDR']} " . _t( 'are already excluded.' ),
+			),
+			/* TODO: We only need this, if and when we implement other proxy authentication schemes in socketrequestprocessor.php - curl already has support for most schemes.
+			 * For the moment, it's Basic only.
+			'proxy_auth_scheme' => array(
+				'label' => _t( 'Proxy Authentication Scheme' ),
+				'type' => 'select',
+				'selectarray' => array( 'Basic' => _t( 'Basic' ), 'Digest' => _t( 'Digest' ) ), 
+				'helptext' => _t( 'If in doubt, select "Basic".' ),
+			), */
+		);
 
-		$option_items[_t('Troubleshooting')] = array(
+		$option_items[_t( 'Troubleshooting' )] = array(
 			'log_min_severity' => array(
 				'label' => _t( 'Minimum Severity' ),
 				'type' => 'select',
