@@ -836,7 +836,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		$flickr = new Flickr();
 		if ( !isset( $_SESSION['flickr_frob'] ) ){
 			$auth_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'authorize' ) ) . '#plugin_options';
-			echo '<p>' . _t( 'Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please <a href="' . $auth_url . '">try again</a>.' ) . '</p>';
+			echo '<p>' . _t( 'Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please ' ). '<a href="' . $auth_url . '">' . _t( 'try again' ) . '</a></p>';
 		}
 		else{
 			$token = $flickr->getToken( $_SESSION['flickr_frob'] );
@@ -861,7 +861,7 @@ class FlickrSilo extends Plugin implements MediaSilo
 		Options::set( 'flickr_token_' . User::identify()->id );
 		$reauth_url = URL::get( 'admin', array( 'page' => 'plugins', 'configure' => $this->plugin_id(), 'configaction' => 'authorize' ) ) . '#plugin_options';
 		echo '<p>' . _t( 'The Flickr Silo Plugin authorization has been deleted.' ) . '<p>';
-		echo "<p>Do you want to <a href=\"{$reauth_url}\">re-authorize this plugin</a>?<p>";
+		echo '<p>' . _t( 'Do you want to ' ) . "<a href=\"{$reauth_url}\">" . _t( 're-authorize this plugin' ) . "</a>?<p>";
 	}
 	
 	/**
