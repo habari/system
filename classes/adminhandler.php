@@ -277,42 +277,6 @@ class AdminHandler extends ActionHandler
 				'helptext' => _t( 'The appropriate locale code for your server' ),
 			),
 		);
-		
-		$option_items[ _t( 'Remote Request Proxy') ] = array(
-			'proxy_server' => array(
-				'label' => _t( 'Proxy Server' ),
-				'type' => 'text',
-				'helptext' => '',
-			),
-			'proxy_port' => array(  // TODO: We need to validate this as you can't have a server without a port.
-				'label' => _t( 'Proxy Port' ),
-				'type' => 'text',
-				'helptext' => '',
-			),
-			'proxy_username' => array(
-				'label' => _t( 'Proxy Username' ),
-				'type' => 'text',
-				'helptext' => _t( "Leave this blank if you don't need a username to use your proxy." ),
-			),
-			'proxy_password' => array(
-				'label' => _t( 'Proxy Password' ),
-				'type' => 'password',
-				'helptext' => _t( "Leave this blank if you don't need a password to use your proxy." ),
-			),
-			'proxy_exceptions' => array(
-				'label' => _t( 'Exceptions' ),
-				'type' => 'text',
-				'helptext' => _t( 'Comma separated list of hosts that do not need to be accessed via the proxy.' ) . " localhost, 127.0.0.1, {$_SERVER['SERVER_NAME']} and {$_SERVER['SERVER_ADDR']} " . _t( 'are already excluded.' ),
-			),
-			/* TODO: We only need this, if and when we implement other proxy authentication schemes in socketrequestprocessor.php - curl already has support for most schemes.
-			 * For the moment, it's Basic only.
-			'proxy_auth_scheme' => array(
-				'label' => _t( 'Proxy Authentication Scheme' ),
-				'type' => 'select',
-				'selectarray' => array( 'Basic' => _t( 'Basic' ), 'Digest' => _t( 'Digest' ) ), 
-				'helptext' => _t( 'If in doubt, select "Basic".' ),
-			), */
-		);
 
 		$option_items[_t( 'Troubleshooting' )] = array(
 			'log_min_severity' => array(
