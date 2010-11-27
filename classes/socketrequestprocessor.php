@@ -42,6 +42,7 @@ class SocketRequestProcessor implements RequestProcessor
 
 	/**
 	 * @todo Does not honor timeouts on the actual request, only on the connect() call.
+	 * @todo Does not use MultiByte-safe methods for parsing input and output - we don't know what the data we're screwing up is!
 	 */
 	private function _work( $method, $urlbits, $headers, $body, $config )
 	{
@@ -65,9 +66,9 @@ class SocketRequestProcessor implements RequestProcessor
 			$transport = $urlbits['scheme'];
 		}
 		
-		if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
+		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
 			// TODO: Still implementing this.
-			$fp = @fsockopen( $transport . '://' . $config['proxy_server'], $config['proxy_port'], $_errno, $_errstr, $config['connect_timeout'] );
+			$fp = @fsockopen( $transport . '://' . $config['proxy']['server'], $config['proxy']['port'], $_errno, $_errstr, $config['connect_timeout'] );
 		}
 		else {
 			$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $config['connection_timeout'] );
@@ -75,7 +76,7 @@ class SocketRequestProcessor implements RequestProcessor
 
 		if ( $fp === false ) {
 			if ( $config['proxy_server'] ) {
-				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $config['proxy_server'], $config['proxy_port'] ) ) );
+				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $config['proxy']['server'], $config['proxy']['port'] ) ) );
 			}
 			else {
 				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) ) );
@@ -86,11 +87,11 @@ class SocketRequestProcessor implements RequestProcessor
 		stream_set_timeout( $fp, $config['timeout'] );
 
 		// fix headers
-		if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
-			$headers['Host'] = "{$config['proxy_server']}:{$config['proxy_port']}";
-			if ( $config['proxy_username'] ) {
+		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
+			$headers['Host'] = "{$config['proxy']['server']}:{$config['proxy']['port']}";
+			if ( $config['proxy']['username'] ) {
 				// TODO: Decide if we're going to implement other Proxy authentication schemes. Curl already has support for most authentication mechanism, most of which are very complicated to implement manually.
-				$headers['Proxy-Authorization'] = 'Basic ' . base64_encode( " {$config['proxy_username']}:{$config['proxy_password']}" );
+				$headers['Proxy-Authorization'] = 'Basic ' . base64_encode( " {$config['proxy']['username']}:{$config['proxy']['password']}" );
 			}
 		} else {
 			$headers['Host'] = $urlbits['host'];
@@ -109,7 +110,7 @@ class SocketRequestProcessor implements RequestProcessor
 			$resource.= '?' . $urlbits['query'];
 		}
 		
-		if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
+		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
 			$resource = $urlbits['scheme'] . '://' . $urlbits['host'] . $resource;
 		}
 

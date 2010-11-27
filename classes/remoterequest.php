@@ -45,25 +45,29 @@ class RemoteRequest
         'connect_timeout'   => 30,
         'timeout'           => 180,
         'buffer_size'       => 16384,
+		'follow_redirects'  => false,
+        'max_redirects'     => 5,
 
-		// These are configured via the Options page.
-        'proxy_server'      => '',
-        'proxy_port'        => '',
-        'proxy_username'    => '',
-        'proxy_password'    => '',
-        'proxy_auth_scheme' => 'basic',
-		'proxy_exceptions'  => array(),
+		// These are configured in the main config file
+		'proxy' => array(
+			'server' => null,
+			'port' => null,
+			'username' => null,
+			'password' => null,
+			'auth_type' => 'basic',
+			'exceptions' => array(),
+		),
 
 		// TODO: These don't apply to SocketRequestProcessor yet
-        'ssl_verify_peer'   => false,
-        'ssl_verify_host'   => false,
-        'ssl_cafile'        => null,
-        'ssl_capath'        => null,
-        'ssl_local_cert'    => null,
-        'ssl_passphrase'    => null,
-
-        'follow_redirects'  => false,
-        'max_redirects'     => 5
+		'ssl' => array(
+			'verify_peer' => true,
+			'verify_host' => 2,		// 1 = check CN of ssl cert, 2 = check and verify @see http://php.net/curl_setopt
+			'cafile' => null,
+			'capath' => null,
+			'local_cert' => null,
+			'passphrase' => null,
+			
+		),
     );
 
 	/**
@@ -77,18 +81,28 @@ class RemoteRequest
 		$this->url = $url;
 		$this->set_timeout( $timeout );
 		
-		// If the proxy option is set, set it now for the request
+		// load the proxy configuration, if it exists
+		$proxy = Config::get( 'proxy', null );		// return null if it's not set
+		if ( $proxy != null ) {
+			
+			$this->set_config( array( 'proxy' => (array)$proxy ) );
+			
+		}
 		
-		if ( $proxy_server = Options::get( 'proxy_server' ) ) {
-			$this->set_config( array(
-					'proxy_server' => $proxy_server,
-					'proxy_port' => Options::get( 'proxy_port' ),
-					'proxy_username' => Options::get( 'proxy_username' ),
-					'proxy_password' => Options::get( 'proxy_password' ),
-					'proxy_auth_scheme' => Options::get( 'proxy_auth_scheme' ),
-					'proxy_exceptions' => array_merge( preg_split( '/,\ ?/', Options::get( 'proxy_exceptions' ) ), array( 'localhost', '127.0.0.1', $_SERVER['SERVER_NAME'], $_SERVER['SERVER_ADDR'] ) ),
-					)
-			);
+		// populate the default proxy exceptions list, since we can't up there
+		$this->config['proxy']['exceptions'] = array_merge( $this->config['proxy']['exceptions'], array(
+			'localhost',
+			'127.0.0.1',
+			'::1',		// ipv6 localhost
+		) );
+		
+		// these next two could be duplicates of 'localhost' and 127.0.0.1 / ::1 if you're on localhost - that's ok
+		if ( isset( $_SERVER['SERVER_NAME'] ) ) {
+			$this->config['proxy']['exceptions'][] = $_SERVER['SERVER_NAME'];
+		}
+		
+		if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
+			$this->config['proxy']['exceptions'][] = $_SERVER['SERVER_ADDR'];
 		}
 
 		$this->user_agent .= '/' . Version::HABARI_VERSION;
@@ -128,12 +142,7 @@ class RemoteRequest
             }
 
         } else {
-            if ( !array_key_exists( $config, $this->config ) ) {
-				// We only trigger an error here as using an unknow config param isn't fatal
-				trigger_error( "Unknown configuration parameter '{$config}'", E_USER_WARNING );
-            } else {
-				$this->config[$config] = $value;
-			}
+        	$this->config[ $config ] = $value;
         }
     }
 	

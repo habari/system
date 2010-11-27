@@ -46,12 +46,10 @@ class CURLRequestProcessor implements RequestProcessor
 			CURLOPT_MAXREDIRS		=> $config['max_redirects'], // Maximum number of redirections to follow.
 			CURLOPT_CONNECTTIMEOUT	=> $config['connect_timeout'],
 			CURLOPT_TIMEOUT			=> $config['timeout'],
-			CURLOPT_SSL_VERIFYPEER	=> $config['ssl_verify_peer'],
-			CURLOPT_SSL_VERIFYHOST	=> $config['ssl_verify_host'],
+			CURLOPT_SSL_VERIFYPEER	=> $config['ssl']['verify_peer'],
+			CURLOPT_SSL_VERIFYHOST	=> $config['ssl']['verify_host'],
 			CURLOPT_BUFFERSIZE		=> $config['buffer_size'],
 			CURLOPT_HTTPHEADER		=> $merged_headers,	// headers to send
-			CURLOPT_FOLLOWLOCATION	=> true,
-			CURLOPT_RETURNTRANSFER	=> true,
 		);
 
 		if ( $this->can_followlocation ) {
@@ -68,11 +66,11 @@ class CURLRequestProcessor implements RequestProcessor
 
 		// set proxy, if needed
 		$urlbits = InputFilter::parse_url( $url );
-        if ( $config['proxy_server'] && ! in_array( $urlbits['host'], $config['proxy_exceptions'] ) ) {
-            $options[CURLOPT_PROXY] = $config['proxy_server'] . ':' . $config['proxy_port'];	// Validation of the existence of the port should take place in the Options form
-            if ( $config['proxy_username'] ) {
-                $options[CURLOPT_PROXYUSERPWD] = $config['proxy_username'] . ':' . $config['proxy_password'];
-                switch ( strtolower( $config['proxy_auth_scheme'] ) ) {
+        if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
+            $options[CURLOPT_PROXY] = $config['proxy']['server'] . ':' . $config['proxy']['port'];	// Validation of the existence of the port should take place in the Options form
+            if ( $config['proxy']['username'] ) {
+                $options[CURLOPT_PROXYUSERPWD] = $config['proxy']['username'] . ':' . $config['proxy']['password'];
+                switch ( $config['proxy']['auth_type'] ) {
                     case 'basic':
                         $options[CURLOPT_PROXYAUTH] = CURLAUTH_BASIC;
                         break;
