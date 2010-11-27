@@ -67,7 +67,6 @@ class SocketRequestProcessor implements RequestProcessor
 		}
 		
 		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
-			// TODO: Still implementing this.
 			$fp = @fsockopen( $transport . '://' . $config['proxy']['server'], $config['proxy']['port'], $_errno, $_errstr, $config['connect_timeout'] );
 		}
 		else {
@@ -90,13 +89,14 @@ class SocketRequestProcessor implements RequestProcessor
 		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
 			$headers['Host'] = "{$config['proxy']['server']}:{$config['proxy']['port']}";
 			if ( $config['proxy']['username'] ) {
-				// TODO: Decide if we're going to implement other Proxy authentication schemes. Curl already has support for most authentication mechanism, most of which are very complicated to implement manually.
-				$headers['Proxy-Authorization'] = 'Basic ' . base64_encode( " {$config['proxy']['username']}:{$config['proxy']['password']}" );
+				$headers['Proxy-Authorization'] = 'Basic ' . base64_encode( "{$config['proxy']['username']}:{$config['proxy']['password']}" );
 			}
 		} else {
 			$headers['Host'] = $urlbits['host'];
-			$headers['Connection'] = 'close';
 		}
+		
+		$headers['Connection'] = 'close';
+
 		// merge headers into a list
 		$merged_headers = array();
 		foreach ( $headers as $k => $v ) {
