@@ -42,10 +42,14 @@ class Config
 	 * @param string $key key name
 	 * @return mixed (empty object on invalid key)
 	 */
-	public static function get( $key )
+	public static function get( $key, $default = null )
 	{
+		if ( $default == null ) {
+			$default = new stdClass();
+		}
+		
 		if ( !self::exists( $key ) ) {
-			return new StdClass;
+			return $default;
 		}
 		return self::$registry[ $key ];
 	}
