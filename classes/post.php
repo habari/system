@@ -44,7 +44,10 @@ class Post extends QueryRecord implements IsContent
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_active ) ) ) {
 			return self::$post_type_list_active;
 		}
-		self::$post_type_list_active['any'] = 0;
+		
+		// clear out the previous cache
+		self::$post_type_list_active = array( 'any' => 0 );
+		
 		$sql = 'SELECT * FROM {posttype} WHERE active = 1 ORDER BY id ASC';
 		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
@@ -63,7 +66,10 @@ class Post extends QueryRecord implements IsContent
 		if ( ( ! $refresh ) && ( ! empty( self::$post_type_list_all ) ) ) {
 			return self::$post_type_list_all;
 		}
-		self::$post_type_list_all['any'] = 0;
+		
+		// clear out the previous cache
+		self::$post_type_list_all = array( 'any' => 0 );
+		
 		$sql = 'SELECT * FROM {posttype} ORDER BY id ASC';
 		$results = DB::get_results( $sql );
 		foreach ( $results as $result ) {
@@ -127,6 +133,9 @@ class Post extends QueryRecord implements IsContent
 		$statuses = array();
 		$statuses['any'] = 0;
 		if ( $refresh || empty( self::$post_status_list ) ) {
+			
+			self::$post_status_list = array( 'any' => 0 );
+			
 			$sql = 'SELECT * FROM {poststatus} ORDER BY id ASC';
 			$results = DB::get_results( $sql );
 			self::$post_status_list = $results;
