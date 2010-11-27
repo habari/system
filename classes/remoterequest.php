@@ -86,7 +86,7 @@ class RemoteRequest
 		if ( isset( $proxy->server ) ) {
 			$this->set_config( array( 'proxy' => (array)$proxy ) );
 		}
-		
+
 		// populate the default proxy exceptions list, since we can't up there
 		$this->config['proxy']['exceptions'] = array_merge( $this->config['proxy']['exceptions'], array(
 			'localhost',
@@ -139,8 +139,14 @@ class RemoteRequest
                 $this->set_config( $name, $value );
             }
 
-        } else {
-        	$this->config[ $config ] = $value;
+        }
+		else {
+			if ( is_array( $value ) ) {
+				$this->config[ $config ] = array_merge( $this->config[ $config ], $value );
+			}
+			else {
+				$this->config[ $config ] = $value;
+			}
         }
     }
 	
