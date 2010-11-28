@@ -561,15 +561,10 @@ class DatabaseConnection
 	{
 		ksort( $fieldvalues );
 
-		$query = "INSERT INTO {$table} ( ";
-		$comma = '';
-
-		foreach ( $fieldvalues as $field => $value ) {
-			$query .= $comma . $field;
-			$comma = ', ';
-			$values[] = $value;
-		}
-		$query .= ' ) VALUES ( ' . trim( str_repeat( '?,', count( $fieldvalues ) ), ',' ) . ' );';
+		$fields = array_keys( $fieldvalues );
+		$values = array_values( $fieldvalues );
+		
+		$query = "INSERT INTO {$table} ( " . implode( ', ', $fields ) . ' ) VALUES ( ' . implode( ', ', array_fill( 0, count( $values ), '?' ) ) . ' )';
 
 		// need to pass $table on to the $o singleton object;
 		$this->current_table = $table;
