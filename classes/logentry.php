@@ -219,7 +219,7 @@ class LogEntry extends QueryRecord
 		}
 
 		Plugins::filter( 'insert_logentry', $this );
-		parent::insertRecord( 'log' );
+		parent::insertRecord( DB::table( 'log' ) );
 		
 		$this->id = DB::last_insert_id();
 		
