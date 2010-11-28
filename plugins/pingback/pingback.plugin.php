@@ -127,12 +127,21 @@ class Pingback extends Plugin
 			}
 
 			// Retrieve source contents
-			$rr = new RemoteRequest( $source_uri );
-			$rr->execute();
-			if ( ! $rr->executed() ) {
-				throw new XMLRPCException( 16 );
+			try {
+				$rr = new RemoteRequest( $source_uri );
+				$rr->execute();
+				if ( ! $rr->executed() ) {
+					throw new XMLRPCException( 16 );
+				}
+				$source_contents = $rr->get_response_body();
 			}
-			$source_contents = $rr->get_response_body();
+			catch ( XMLRPCException $e ) {
+				// catch our special type of exception and re-throw it
+				throw $e;
+			}
+			catch ( Exception $e ) {
+				throw new XMLRPCException( -32300 );
+			}
 
 			// encoding is converted into internal encoding.
 			// @todo check BOM at beginning of file before checking for a charset attribute
@@ -219,10 +228,15 @@ class Pingback extends Plugin
 	public function send_pingback( $source_uri, $target_uri, $post = NULL )
 	{
 		// RemoteRequest makes it easier to retrieve the headers.
-		$rr = new RemoteRequest( $target_uri );
-		$rr->execute();
-		if ( ! $rr->executed() ) {
-			return false;
+		try {
+			$rr = new RemoteRequest( $target_uri );
+			$rr->execute();
+			if ( ! $rr->executed() ) {
+				return false;
+			}
+		}
+		catch ( Exception $e ) {
+			throw new XMLRPCException( -32300 );
 		}
 
 		$headers = $rr->get_response_headers();
