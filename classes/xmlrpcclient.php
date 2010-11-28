@@ -87,9 +87,11 @@ class XMLRPCClient
 
 		if ( $request->executed() ) {
 			$response = $request->get_response_body();
+			// @todo this should use the MultiByte class, not directly call mb_string functions
 			$enc = mb_detect_encoding($response);
 			$responseutf8 = mb_convert_encoding($response, 'UTF-8', $enc);
 			try {
+				// @todo this should use libxml_use_internal_errors() instead of trying to hide the PHP warning see the plugin info parsing code for an example
 				$bit = ini_get('error_reporting');
 				error_reporting($bit && !E_WARNING);
 				$responsexml = new SimpleXMLElement($responseutf8);
