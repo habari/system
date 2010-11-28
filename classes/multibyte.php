@@ -534,19 +534,6 @@ class MultiByte
 			if ( !is_array( $replace ) ) {
 				$replace = array( $replace );
 			}
-			
-			
-			// pick apart the string into an array of characters
-			$chars = array();
-			for ( $i = 0; $i < self::strlen( $subject, $enc ); $i++ ) {
-				
-				// get the char
-				$char = self::substr( $subject, $i, 1, $enc );
-				
-				// add it to the stack
-				$chars[] = $char;
-				
-			}
 						
 			
 			
@@ -558,38 +545,33 @@ class MultiByte
 				$s = array_shift( $search );
 				$r = array_shift( $replace );
 				
-				// loop through each character
-				for ( $j = 0; $j < count( $chars ); $j++ ) {
+				// while the search still exists in the subject
+				while ( self::strpos( $subject, $s, 0, $enc ) !== false ) {
 					
-					$char = $chars[ $j ];
+					// find the position
+					$pos = self::strpos( $subject, $s, 0, $enc );
 					
-					// replace it if necessary
-					if ( $char == $s || ( $case_insensitive == true && self::strtolower( $char, $enc ) == self::strtolower( $s, $enc ) ) ) {
-						$char = $r;
-						
-						// increment $count
-						$count++;
-					}
+					// pull out the part before the string
+					$before = self::substr( $subject, 0, $pos, $enc );
 					
-					// add it back
-					$chars[ $j ] = $char;
+					// pull out the part after
+					$after = self::substr( $subject, $pos + self::strlen( $s, $enc ), null, $enc );
+					
+					// now we have the string in two parts without the string we're searching for
+					// put it back together with the replacement
+					$subject = $before . $r . $after;
+					
+					// increment our count, a replacement was made
+					$count++;
 					
 				}
 				
 			}
 			
-			// reassemble the characters
-			$subject = implode('', $chars);
-			
 		}
 		else {
 			
-			if ( $case_insensitive == true ) {
-				$subject = str_ireplace( $search, $replace, $subject, $count );
-			}
-			else {
-				$subject = str_replace( $search, $replace, $subject, $count );
-			}
+			$subject = str_replace( $search, $replace, $subject, $count );
 			
 		}
 		
@@ -612,7 +594,73 @@ class MultiByte
 	 */
 	public static function str_ireplace( $search, $replace, $subject, &$count = 0, $use_enc = null ) {
 		
-		return self::str_replace( $search, $replace, $subject, $count, $use_enc, true );
+		$enc = self::$hab_enc;
+		if ( $use_enc !== null ) {
+			$enc = $use_enc;
+		}
+		
+		if ( self::$use_library == self::USE_MBSTRING ) {
+		
+			// if search is an array and replace is not, we need to make replace an array and pad it to the same number of values as search
+			if ( is_array( $search ) && !is_array( $replace ) ) {
+				$replace = array_fill( 0, count( $search ), $replace );
+			}
+			
+			// if search is an array and replace is as well, we need to make sure replace has the same number of values - pad it with empty strings
+			if ( is_array( $search ) && is_array( $replace ) ) {
+				$replace = array_pad( $replace, count( $search ), '' );
+			}
+			
+			// if search is not an array, make it one
+			if ( !is_array( $search ) ) {
+				$search = array( $search );
+			}
+			
+			// if replace is not an array, make it one
+			if ( !is_array( $replace ) ) {
+				$replace = array( $replace );
+			}
+						
+			
+			
+			$search_count = count( $search );	// we modify $search, so we can't include it in the condition next
+			for ( $i = 0; $i < $search_count; $i++ ) {
+				
+				// the values we'll match
+				$s = array_shift( $search );
+				$r = array_shift( $replace );
+				
+				// while the lowercase search still exists in the lowercase subject
+				while ( self::strpos( self::strtolower( $subject, $enc ), self::strtolower( $s, $enc ), 0, $enc ) !== false ) {
+					
+					// find the position
+					$pos = self::strpos( self::strtolower( $subject, $enc ), self::strtolower( $s, $enc ), 0, $enc );
+					
+					// pull out the part before the string
+					$before = self::substr( $subject, 0, $pos, $enc );
+					
+					// pull out the part after
+					$after = self::substr( $subject, $pos + self::strlen( $s, $enc ), null, $enc );
+					
+					// now we have the string in two parts without the string we're searching for
+					// put it back together with the replacement
+					$subject = $before . $r . $after;
+					
+					// increment our count, a replacement was made
+					$count++;
+					
+				}
+				
+			}
+			
+		}
+		else {
+			
+			$subject = str_ireplace( $search, $replace, $subject, $count );
+			
+		}
+		
+		return $subject;
 		
 	}
 	
