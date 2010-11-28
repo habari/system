@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-11-21 00:00+0000\n"
+"POT-Creation-Date: 2010-11-28 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,7 +72,7 @@ msgstr ""
 #: system/themes/k2/page.single.php:13 system/themes/k2/tag.php:15
 #: system/themes/k2/entry.multiple.php:15 system/themes/k2/home.php:15
 #: system/themes/k2/search.php:16 system/themes/k2/entry.single.php:24
-#: system/classes/adminhandler.php:1749
+#: system/classes/adminhandler.php:1750
 msgid "Edit"
 msgstr ""
 
@@ -83,7 +83,7 @@ msgstr ""
 #: system/admin/groups_item.php:7 system/admin/block_instances.php:17
 #: system/admin/publish.php:14 system/admin/posts_items.php:28
 #: system/admin/group.php:126 system/classes/adminhandler.php:827
-#: system/classes/adminhandler.php:1748
+#: system/classes/adminhandler.php:1749
 #: system/plugins/habarisilo/habarisilo.plugin.php:484
 #: system/plugins/habarisilo/habarisilo.plugin.php:501
 msgid "Delete"
@@ -97,7 +97,7 @@ msgstr ""
 msgid "No members"
 msgstr ""
 
-#: system/admin/dashboard_modules.php:4 system/classes/adminhandler.php:3773
+#: system/admin/dashboard_modules.php:4 system/classes/adminhandler.php:3774
 msgid "Add Item"
 msgstr ""
 
@@ -168,11 +168,12 @@ msgstr ""
 #: system/admin/block_instances.php:15 system/classes/pluggable.php:187
 #: system/plugins/undelete/undelete.plugin.php:163
 #: system/plugins/undelete/undelete.plugin.php:175
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:803
 msgid "Configure"
 msgstr ""
 
 #: system/admin/formcontrols/formcontrol_textmulti.php:14
-#: system/classes/formui.php:1591
+#: system/classes/formui.php:1595
 msgid "remove"
 msgstr ""
 
@@ -390,7 +391,7 @@ msgstr ""
 msgid "Newer"
 msgstr ""
 
-#: system/admin/import.php:5 system/classes/adminhandler.php:3229
+#: system/admin/import.php:5 system/classes/adminhandler.php:3230
 #: system/plugins/wpimport/wpimport.plugin.php:134
 msgid "Import"
 msgstr ""
@@ -416,8 +417,8 @@ msgstr ""
 msgid "Current Theme"
 msgstr ""
 
-#: system/admin/themes.php:20 system/classes/post.php:825
-#: system/classes/adminhandler.php:1369
+#: system/admin/themes.php:20 system/classes/post.php:834
+#: system/classes/adminhandler.php:1370
 msgid "Settings"
 msgstr ""
 
@@ -434,9 +435,9 @@ msgstr ""
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: system/admin/themes.php:142 system/classes/post.php:863
+#: system/admin/themes.php:142 system/classes/post.php:872
 #: system/plugins/undelete/undelete.plugin.php:178
-#: system/plugins/flickrsilo/flickrsilo.plugin.php:872
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:876
 msgid "Save"
 msgstr ""
 
@@ -457,7 +458,7 @@ msgid "Preview"
 msgstr ""
 
 #: system/admin/themes.php:201 system/classes/installhandler.php:220
-#: system/classes/adminhandler.php:1872 system/classes/adminhandler.php:1876
+#: system/classes/adminhandler.php:1873 system/classes/adminhandler.php:1877
 msgid "Activate"
 msgstr ""
 
@@ -927,7 +928,7 @@ msgstr ""
 #: system/themes/charcoal/multiple.php:19 system/themes/charcoal/search.php:21
 #: system/themes/charcoal/entry.single.php:29
 #: system/themes/mzingi/commentform.php:27 system/themes/k2/theme.php:99
-#: system/classes/post.php:965 system/classes/adminhandler.php:1345
+#: system/classes/post.php:974 system/classes/adminhandler.php:1346
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -936,7 +937,7 @@ msgstr[1] ""
 #: system/themes/charcoal/tag.php:20 system/themes/charcoal/home.php:23
 #: system/themes/charcoal/multiple.php:19 system/themes/charcoal/search.php:21
 #: system/themes/charcoal/entry.single.php:29 system/classes/acl.php:785
-#: system/classes/adminhandler.php:3223
+#: system/classes/adminhandler.php:3224
 msgid "Comments"
 msgstr ""
 
@@ -1060,12 +1061,12 @@ msgid "- Required)"
 msgstr ""
 
 #: system/themes/charcoal/theme.php:168 system/themes/k2/theme.php:126
-#: system/classes/post.php:953
+#: system/classes/post.php:962
 msgid "Website"
 msgstr ""
 
 #: system/themes/charcoal/theme.php:171 system/themes/mzingi/theme.php:107
-#: system/themes/k2/theme.php:129 system/classes/post.php:973
+#: system/themes/k2/theme.php:129 system/classes/post.php:982
 #: system/plugins/habarisilo/habarisilo.plugin.php:466
 msgid "Submit"
 msgstr ""
@@ -1137,6 +1138,8 @@ msgid "Perhaps you can try searching."
 msgstr ""
 
 #: system/themes/mzingi/searchform.php:4 system/themes/k2/sidebar.php:5
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:629
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:977
 msgid "Search"
 msgstr ""
 
@@ -1328,7 +1331,7 @@ msgstr ""
 msgid "Manage comments on one's own posts"
 msgstr ""
 
-#: system/classes/acl.php:765 system/classes/adminhandler.php:3224
+#: system/classes/acl.php:765 system/classes/adminhandler.php:3225
 msgid "Manage tags"
 msgstr ""
 
@@ -1377,8 +1380,8 @@ msgid "Permissions on one's own posts"
 msgstr ""
 
 #: system/classes/acl.php:778 system/classes/acl.php:779
-#: system/classes/acl.php:781 system/classes/post.php:237
-#: system/classes/post.php:802
+#: system/classes/acl.php:781 system/classes/post.php:246
+#: system/classes/post.php:811
 msgid "Content"
 msgstr ""
 
@@ -1386,7 +1389,7 @@ msgstr ""
 msgid "Permissions to all posts"
 msgstr ""
 
-#: system/classes/acl.php:781 system/classes/post.php:237
+#: system/classes/acl.php:781 system/classes/post.php:246
 #, php-format
 msgid "Permissions to posts of type \"%s\""
 msgstr ""
@@ -1412,30 +1415,31 @@ msgstr ""
 msgid "Invalid state %d in %s->parse()"
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:76
+#: system/classes/socketrequestprocessor.php:78
+#: system/classes/socketrequestprocessor.php:81
 #, php-format
 msgid "Error %d: %s while connecting to %s:%d"
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:113
+#: system/classes/socketrequestprocessor.php:132
 msgid "Error writing to socket."
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:145
+#: system/classes/socketrequestprocessor.php:164
 msgid "Maximum number of redirections exceeded."
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:151
+#: system/classes/socketrequestprocessor.php:170
 msgid "Redirection response without Location: header."
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:187
-#: system/classes/curlrequestprocessor.php:129
+#: system/classes/socketrequestprocessor.php:206
+#: system/classes/curlrequestprocessor.php:149
 msgid "Unable to get response body. Request did not yet execute."
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:196
-#: system/classes/curlrequestprocessor.php:138
+#: system/classes/socketrequestprocessor.php:215
+#: system/classes/curlrequestprocessor.php:158
 msgid "Unable to get response headers. Request did not yet execute."
 msgstr ""
 
@@ -1612,87 +1616,87 @@ msgstr ""
 msgid "The cache directory '%s' is not writable - the cache is disabled."
 msgstr ""
 
-#: system/classes/post.php:520
+#: system/classes/post.php:529
 #, php-format
 msgid "New post %1$s (%2$s);  Type: %3$s; Status: %4$s"
 msgstr ""
 
-#: system/classes/post.php:615
+#: system/classes/post.php:624
 #, php-format
 msgid "Post %1$s (%2$s) deleted."
 msgstr ""
 
-#: system/classes/post.php:649
+#: system/classes/post.php:658
 #, php-format
 msgid "Scheduled Post %1$s (%2$s) published at %3$s."
 msgstr ""
 
-#: system/classes/post.php:652
+#: system/classes/post.php:661
 #, php-format
 msgid "Post %1$s (%2$s) published."
 msgstr ""
 
-#: system/classes/post.php:784
+#: system/classes/post.php:793
 msgid "Preview Post"
 msgstr ""
 
-#: system/classes/post.php:784
+#: system/classes/post.php:793
 msgid "View Post"
 msgstr ""
 
-#: system/classes/post.php:789
+#: system/classes/post.php:798
 msgid "Title"
 msgstr ""
 
-#: system/classes/post.php:810
+#: system/classes/post.php:819
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: system/classes/post.php:827
+#: system/classes/post.php:836
 msgid "Content State"
 msgstr ""
 
-#: system/classes/post.php:836
+#: system/classes/post.php:845
 msgid "Minor Edit"
 msgstr ""
 
-#: system/classes/post.php:841
+#: system/classes/post.php:850
 msgid "Comments Allowed"
 msgstr ""
 
-#: system/classes/post.php:844
+#: system/classes/post.php:853
 msgid "Publication Time"
 msgstr ""
 
-#: system/classes/post.php:850
+#: system/classes/post.php:859
 msgid "Content Address"
 msgstr ""
 
-#: system/classes/post.php:926
+#: system/classes/post.php:935
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: system/classes/post.php:928
+#: system/classes/post.php:937
 msgid "The Name field value is required"
 msgstr ""
 
-#: system/classes/post.php:938 system/classes/adminhandler.php:757
+#: system/classes/post.php:947 system/classes/adminhandler.php:757
 msgid "Email"
 msgstr ""
 
-#: system/classes/post.php:940
+#: system/classes/post.php:949
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: system/classes/post.php:944
+#: system/classes/post.php:953
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: system/classes/post.php:955
+#: system/classes/post.php:964
 msgid "The Web Site field value must be a valid URL"
 msgstr ""
 
-#: system/classes/post.php:967
+#: system/classes/post.php:976
 msgid "The Content field value is required"
 msgstr ""
 
@@ -1989,7 +1993,7 @@ msgstr ""
 msgid "Saved block configuration."
 msgstr ""
 
-#: system/classes/eventlog.php:373 system/classes/adminhandler.php:2349
+#: system/classes/eventlog.php:373 system/classes/adminhandler.php:2350
 msgid "Logs purged."
 msgstr ""
 
@@ -2014,8 +2018,8 @@ msgid_plural "Terms %1$s in the %2$s vocabulary have been renamed to %3$s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/plugin.php:62 system/classes/adminhandler.php:1837
-#: system/classes/adminhandler.php:1887 system/classes/pluggable.php:153
+#: system/classes/plugin.php:62 system/classes/adminhandler.php:1838
+#: system/classes/adminhandler.php:1888 system/classes/pluggable.php:153
 msgid "?"
 msgstr ""
 
@@ -2226,7 +2230,7 @@ msgstr ""
 msgid "Regional Settings"
 msgstr ""
 
-#: system/classes/adminhandler.php:731 system/classes/adminhandler.php:3225
+#: system/classes/adminhandler.php:731 system/classes/adminhandler.php:3226
 msgid "Dashboard"
 msgstr ""
 
@@ -2298,10 +2302,10 @@ msgstr ""
 msgid "User updated."
 msgstr ""
 
-#: system/classes/adminhandler.php:958 system/classes/adminhandler.php:2261
-#: system/classes/adminhandler.php:2320 system/classes/adminhandler.php:2367
-#: system/classes/adminhandler.php:2734 system/classes/adminhandler.php:2945
-#: system/classes/adminhandler.php:3020
+#: system/classes/adminhandler.php:958 system/classes/adminhandler.php:2262
+#: system/classes/adminhandler.php:2321 system/classes/adminhandler.php:2368
+#: system/classes/adminhandler.php:2735 system/classes/adminhandler.php:2946
+#: system/classes/adminhandler.php:3021
 msgid "WSSE authentication failed."
 msgstr ""
 
@@ -2345,439 +2349,440 @@ msgstr ""
 msgid "Deactivated plugin '%s'"
 msgstr ""
 
-#: system/classes/adminhandler.php:1253
+#: system/classes/adminhandler.php:1254
 #, php-format
 msgid "Activated theme '%s'"
 msgstr ""
 
-#: system/classes/adminhandler.php:1267
+#: system/classes/adminhandler.php:1268
 #, php-format
 msgid "Ended the preview of the theme '%s'"
 msgstr ""
 
-#: system/classes/adminhandler.php:1271
+#: system/classes/adminhandler.php:1272
 #, php-format
 msgid "Previewing theme '%s'"
 msgstr ""
 
-#: system/classes/adminhandler.php:1353
+#: system/classes/adminhandler.php:1354
 msgid "Author"
 msgstr ""
 
-#: system/classes/adminhandler.php:1355
+#: system/classes/adminhandler.php:1356
 msgid "Author Name"
 msgstr ""
 
-#: system/classes/adminhandler.php:1358
+#: system/classes/adminhandler.php:1359
 msgid "Author Email"
 msgstr ""
 
-#: system/classes/adminhandler.php:1361
+#: system/classes/adminhandler.php:1362
 msgid "Author URL"
 msgstr ""
 
-#: system/classes/adminhandler.php:1364
+#: system/classes/adminhandler.php:1365
 msgid "IP Address:"
 msgstr ""
 
-#: system/classes/adminhandler.php:1371
+#: system/classes/adminhandler.php:1372
 msgid "Date:"
 msgstr ""
 
-#: system/classes/adminhandler.php:1376
+#: system/classes/adminhandler.php:1377
 msgid "Post ID:"
 msgstr ""
 
-#: system/classes/adminhandler.php:1381
+#: system/classes/adminhandler.php:1382
 msgid "Status"
 msgstr ""
 
-#: system/classes/adminhandler.php:1570 system/classes/adminhandler.php:2394
+#: system/classes/adminhandler.php:1571 system/classes/adminhandler.php:2395
 msgid "Deleted all spam comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:1576 system/classes/adminhandler.php:2398
+#: system/classes/adminhandler.php:1577 system/classes/adminhandler.php:2399
 msgid "Deleted all unapproved comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:1610 system/classes/adminhandler.php:1624
+#: system/classes/adminhandler.php:1611 system/classes/adminhandler.php:1625
 #, php-format
 msgid "Deleted %d comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:1611 system/classes/adminhandler.php:1631
+#: system/classes/adminhandler.php:1612 system/classes/adminhandler.php:1632
 #, php-format
 msgid "Marked %d comments as spam"
 msgstr ""
 
-#: system/classes/adminhandler.php:1612 system/classes/adminhandler.php:1639
+#: system/classes/adminhandler.php:1613 system/classes/adminhandler.php:1640
 #, php-format
 msgid "Approved %d comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:1613 system/classes/adminhandler.php:1650
+#: system/classes/adminhandler.php:1614 system/classes/adminhandler.php:1651
 #, php-format
 msgid "Unapproved %d comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:1614 system/classes/adminhandler.php:1673
+#: system/classes/adminhandler.php:1615 system/classes/adminhandler.php:1674
 #, php-format
 msgid "Edited %d comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:1641
+#: system/classes/adminhandler.php:1642
 #, php-format
 msgid "Approved comments on these posts: %s"
 msgstr ""
 
-#: system/classes/adminhandler.php:1744
+#: system/classes/adminhandler.php:1745
 #, php-format
 msgid "Change this comment's status to %s"
 msgstr ""
 
-#: system/classes/adminhandler.php:1748
+#: system/classes/adminhandler.php:1749
 msgid "Delete this comment"
 msgstr ""
 
-#: system/classes/adminhandler.php:1749
+#: system/classes/adminhandler.php:1750
 msgid "Edit this comment"
 msgstr ""
 
-#: system/classes/adminhandler.php:1819 system/classes/adminhandler.php:1858
+#: system/classes/adminhandler.php:1820 system/classes/adminhandler.php:1859
 msgid "Deactivate"
 msgstr ""
 
-#: system/classes/adminhandler.php:1902 system/installer/db_setup.php:10
+#: system/classes/adminhandler.php:1903 system/installer/db_setup.php:10
 #: system/installer/db_setup.php:165 system/installer/db_setup.php:220
 msgid "Help"
 msgstr ""
 
-#: system/classes/adminhandler.php:2118 system/classes/adminhandler.php:2119
+#: system/classes/adminhandler.php:2119 system/classes/adminhandler.php:2120
 msgid "Manage Posts"
 msgstr ""
 
-#: system/classes/adminhandler.php:2149
+#: system/classes/adminhandler.php:2150
 msgid "Modules updated."
 msgstr ""
 
-#: system/classes/adminhandler.php:2154
+#: system/classes/adminhandler.php:2155
 #, php-format
 msgid "Added module %s."
 msgstr ""
 
-#: system/classes/adminhandler.php:2160
+#: system/classes/adminhandler.php:2161
 msgid "Removed module."
 msgstr ""
 
-#: system/classes/adminhandler.php:2281 system/classes/adminhandler.php:2389
+#: system/classes/adminhandler.php:2282 system/classes/adminhandler.php:2390
 #, php-format
 msgid "Unknown action \"%s\""
 msgstr ""
 
-#: system/classes/adminhandler.php:2292
+#: system/classes/adminhandler.php:2293
 msgid "You did not have permission to delete some entries."
 msgstr ""
 
-#: system/classes/adminhandler.php:2295
+#: system/classes/adminhandler.php:2296
 #, php-format
 msgid "Deleted %d post"
 msgid_plural "Deleted %d posts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:2333
+#: system/classes/adminhandler.php:2334
 msgid "No logs selected."
 msgstr ""
 
-#: system/classes/adminhandler.php:2345
+#: system/classes/adminhandler.php:2346
 #, php-format
 msgid "Deleted %d logs."
 msgstr ""
 
-#: system/classes/adminhandler.php:2382
+#: system/classes/adminhandler.php:2383
 msgid "No comments selected."
 msgstr ""
 
-#: system/classes/adminhandler.php:2403
+#: system/classes/adminhandler.php:2404
 #, php-format
 msgid "Deleted %d comment"
 msgid_plural "Deleted %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:2408
+#: system/classes/adminhandler.php:2409
 #, php-format
 msgid "Marked %d comment as spam"
 msgid_plural "Marked %d comments as spam"
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:2414
+#: system/classes/adminhandler.php:2415
 #, php-format
 msgid "Approved %d comment"
 msgid_plural "Approved %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:2420
+#: system/classes/adminhandler.php:2421
 #, php-format
 msgid "Unapproved %d comment"
 msgid_plural "Unapproved %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:2753
+#: system/classes/adminhandler.php:2754
 #, php-format
 msgid "The group %s already exists"
 msgstr ""
 
-#: system/classes/adminhandler.php:2762
+#: system/classes/adminhandler.php:2763
 msgid "The group must have a name"
 msgstr ""
 
-#: system/classes/adminhandler.php:2775
+#: system/classes/adminhandler.php:2776
 #, php-format
 msgid "Added group %s"
 msgstr ""
 
-#: system/classes/adminhandler.php:2812
+#: system/classes/adminhandler.php:2813
 msgid "No groups deleted."
 msgstr ""
 
-#: system/classes/adminhandler.php:2826
+#: system/classes/adminhandler.php:2827
 #, php-format
 msgid "Deleted %d groups."
 msgstr ""
 
-#: system/classes/adminhandler.php:2991
+#: system/classes/adminhandler.php:2992
 msgid "Updated permissions."
 msgstr ""
 
-#: system/classes/adminhandler.php:3039
+#: system/classes/adminhandler.php:3040
 #, php-format
 msgid "Tag %s has been deleted."
 msgid_plural "Tags %s have been deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:3064
+#: system/classes/adminhandler.php:3065
 #, php-format
 msgid "Tag %1$s has been renamed to %2$s."
 msgid_plural "Tags %1$s have been renamed to %2$s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:3090 system/classes/adminhandler.php:3092
+#: system/classes/adminhandler.php:3091 system/classes/adminhandler.php:3093
 msgid "Habari Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3095
+#: system/classes/adminhandler.php:3096
 msgid "Habari API Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3096
+#: system/classes/adminhandler.php:3097
 msgid "Habari DB Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3097
+#: system/classes/adminhandler.php:3098
 msgid "Active Theme"
 msgstr ""
 
-#: system/classes/adminhandler.php:3098
+#: system/classes/adminhandler.php:3099
 msgid "Site Language"
 msgstr ""
 
-#: system/classes/adminhandler.php:3102
+#: system/classes/adminhandler.php:3103
 msgid "PHP Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3103
+#: system/classes/adminhandler.php:3104
 msgid "Server Software"
 msgstr ""
 
-#: system/classes/adminhandler.php:3104
+#: system/classes/adminhandler.php:3105
 msgid "Database"
 msgstr ""
 
-#: system/classes/adminhandler.php:3105
+#: system/classes/adminhandler.php:3106
 msgid "PHP Extensions"
 msgstr ""
 
-#: system/classes/adminhandler.php:3107 system/classes/adminhandler.php:3116
+#: system/classes/adminhandler.php:3108 system/classes/adminhandler.php:3117
 msgid "PCRE Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3118
+#: system/classes/adminhandler.php:3119
 msgid "Browser"
 msgstr ""
 
-#: system/classes/adminhandler.php:3198
+#: system/classes/adminhandler.php:3199
 #, php-format
 msgid "Create a new %s"
 msgstr ""
 
-#: system/classes/adminhandler.php:3202
+#: system/classes/adminhandler.php:3203
 #, php-format
 msgid "Manage %s"
 msgstr ""
 
-#: system/classes/adminhandler.php:3221
+#: system/classes/adminhandler.php:3222
 msgid "Create content"
 msgstr ""
 
-#: system/classes/adminhandler.php:3221
+#: system/classes/adminhandler.php:3222
 msgid "New"
 msgstr ""
 
-#: system/classes/adminhandler.php:3222
+#: system/classes/adminhandler.php:3223
 msgid "Manage content"
 msgstr ""
 
-#: system/classes/adminhandler.php:3222
+#: system/classes/adminhandler.php:3223
 msgid "Manage"
 msgstr ""
 
-#: system/classes/adminhandler.php:3223
+#: system/classes/adminhandler.php:3224
 msgid "Manage comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:3224
+#: system/classes/adminhandler.php:3225
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:650
 msgid "Tags"
 msgstr ""
 
-#: system/classes/adminhandler.php:3225
+#: system/classes/adminhandler.php:3226
 msgid "View your user dashboard"
 msgstr ""
 
-#: system/classes/adminhandler.php:3226
+#: system/classes/adminhandler.php:3227
 msgid "View and configure site options"
 msgstr ""
 
-#: system/classes/adminhandler.php:3226
+#: system/classes/adminhandler.php:3227
 msgid "Options"
 msgstr ""
 
-#: system/classes/adminhandler.php:3227
+#: system/classes/adminhandler.php:3228
 msgid "Preview and activate themes"
 msgstr ""
 
-#: system/classes/adminhandler.php:3227
+#: system/classes/adminhandler.php:3228
 msgid "Themes"
 msgstr ""
 
-#: system/classes/adminhandler.php:3228
+#: system/classes/adminhandler.php:3229
 msgid "Activate, deactivate, and configure plugins"
 msgstr ""
 
-#: system/classes/adminhandler.php:3228
+#: system/classes/adminhandler.php:3229
 msgid "Plugins"
 msgstr ""
 
-#: system/classes/adminhandler.php:3229
+#: system/classes/adminhandler.php:3230
 msgid "Import content from another site"
 msgstr ""
 
-#: system/classes/adminhandler.php:3230
+#: system/classes/adminhandler.php:3231
 msgid "View and manage users"
 msgstr ""
 
-#: system/classes/adminhandler.php:3230
+#: system/classes/adminhandler.php:3231
 msgid "Users"
 msgstr ""
 
-#: system/classes/adminhandler.php:3231
+#: system/classes/adminhandler.php:3232
 msgid "Manage your user profile"
 msgstr ""
 
-#: system/classes/adminhandler.php:3231
+#: system/classes/adminhandler.php:3232
 msgid "My Profile"
 msgstr ""
 
-#: system/classes/adminhandler.php:3232
+#: system/classes/adminhandler.php:3233
 msgid "View and manage groups"
 msgstr ""
 
-#: system/classes/adminhandler.php:3232
+#: system/classes/adminhandler.php:3233
 msgid "Groups"
 msgstr ""
 
-#: system/classes/adminhandler.php:3233
+#: system/classes/adminhandler.php:3234
 msgid "View system log messages"
 msgstr ""
 
-#: system/classes/adminhandler.php:3233
+#: system/classes/adminhandler.php:3234
 msgid "Logs"
 msgstr ""
 
-#: system/classes/adminhandler.php:3234
+#: system/classes/adminhandler.php:3235
 msgid "Log out of the administration interface"
 msgstr ""
 
-#: system/classes/adminhandler.php:3234
+#: system/classes/adminhandler.php:3235
 msgid "Logout"
 msgstr ""
 
-#: system/classes/adminhandler.php:3469
+#: system/classes/adminhandler.php:3470
 msgid "Entry"
 msgstr ""
 
-#: system/classes/adminhandler.php:3470
+#: system/classes/adminhandler.php:3471
 msgid "Entries"
 msgstr ""
 
-#: system/classes/adminhandler.php:3473
+#: system/classes/adminhandler.php:3474
 msgid "Page"
 msgstr ""
 
-#: system/classes/adminhandler.php:3474
+#: system/classes/adminhandler.php:3475
 msgid "Pages"
 msgstr ""
 
-#: system/classes/adminhandler.php:3523
+#: system/classes/adminhandler.php:3524
 msgid "Root"
 msgstr ""
 
-#: system/classes/adminhandler.php:3639
+#: system/classes/adminhandler.php:3640
 msgid "A new block must first have a name."
 msgstr ""
 
-#: system/classes/adminhandler.php:3655
+#: system/classes/adminhandler.php:3656
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3679
+#: system/classes/adminhandler.php:3680
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3682
+#: system/classes/adminhandler.php:3683
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3723
+#: system/classes/adminhandler.php:3724
 msgid "Saved block areas settings."
 msgstr ""
 
-#: system/classes/adminhandler.php:3767
+#: system/classes/adminhandler.php:3768
 msgid "+"
 msgstr ""
 
-#: system/classes/remoterequest.php:112
+#: system/classes/remoterequest.php:187
 msgid "Trying to add a request body to a GET request."
 msgstr ""
 
-#: system/classes/remoterequest.php:169
+#: system/classes/remoterequest.php:244
 #, php-format
 msgid "File %s not found."
 msgstr ""
 
-#: system/classes/remoterequest.php:269
+#: system/classes/remoterequest.php:344
 msgid "Unable to fetch response headers for a pending request."
 msgstr ""
 
-#: system/classes/remoterequest.php:282
+#: system/classes/remoterequest.php:357
 msgid "Unable to fetch response body for a pending request."
 msgstr ""
 
@@ -2785,7 +2790,15 @@ msgstr ""
 msgid "Invalid Beacon information added"
 msgstr ""
 
-#: system/classes/update.php:247
+#: system/classes/update.php:196
+msgid "Updates check CronJob completed successfully."
+msgstr ""
+
+#: system/classes/update.php:204
+msgid "Updates check CronJob failed!"
+msgstr ""
+
+#: system/classes/update.php:269
 msgid "Perform a single check for plugin updates, the plugin set has changed."
 msgstr ""
 
@@ -2991,26 +3004,26 @@ msgstr ""
 msgid "Your comment is pending moderation."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:76
+#: system/classes/curlrequestprocessor.php:96
 msgid "CURL Error. Unable to create temporary file name."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:81
+#: system/classes/curlrequestprocessor.php:101
 msgid "CURL Error. Unable to open temporary file."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:100
+#: system/classes/curlrequestprocessor.php:120
 #, php-format
 msgid "CURL Error %d: %s"
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:104
+#: system/classes/curlrequestprocessor.php:124
 #, php-format
 msgid "Bad return code (%d) for: %s"
 msgstr ""
 
-#: system/classes/logentry.php:172 system/classes/logentry.php:263
-#: system/classes/logentry.php:275
+#: system/classes/logentry.php:172 system/classes/logentry.php:268
+#: system/classes/logentry.php:280
 msgid "Unknown"
 msgstr ""
 
@@ -3072,22 +3085,27 @@ msgstr ""
 msgid "Term %1$s (%2$s) deleted."
 msgstr ""
 
-#: system/classes/plugins.php:407
+#: system/classes/plugins.php:262
+#, php-format
+msgid "Plugin \"%1$s\" deactivated because it could no longer be found."
+msgstr ""
+
+#: system/classes/plugins.php:412
 #, php-format
 msgid "Invalid plugin XML file: %1$s"
 msgstr ""
 
-#: system/classes/plugins.php:480
+#: system/classes/plugins.php:485
 #, php-format
 msgid "Activated Plugin: %s"
 msgstr ""
 
-#: system/classes/plugins.php:510
+#: system/classes/plugins.php:521
 #, php-format
 msgid "Deactivated Plugin: %s"
 msgstr ""
 
-#: system/classes/plugins.php:609
+#: system/classes/plugins.php:628
 #, php-format
 msgid "Attempted to load the plugin file \"%s\", but it failed with syntax errors. <div class=\"reveal\">%s</div>"
 msgstr ""
@@ -3127,7 +3145,7 @@ msgstr ""
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: system/classes/formui.php:1595
+#: system/classes/formui.php:1599
 msgid "Remove this item?"
 msgstr ""
 
@@ -3605,19 +3623,120 @@ msgstr ""
 msgid "Private Post"
 msgstr ""
 
-#: system/plugins/flickrsilo/flickrsilo.plugin.php:784
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:634
+msgid "Search CC"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:640
+msgid "Photos"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:645
+msgid "Videos"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:655
+msgid "Sets"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:781
 msgid "This photo has no title"
 msgstr ""
 
-#: system/plugins/flickrsilo/flickrsilo.plugin.php:870
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:798
+msgid "De-Authorize"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:801
+msgid "Authorize"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:816
+msgid "You have already successfully authorized Habari to access your Flickr account."
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:817
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:864
+msgid "Do you want to "
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:817
+msgid "revoke authorization"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:824
+msgid "To use this plugin, you must "
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:824
+msgid "authorize Habari to have access to your Flickr account"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:825
+msgid "When you have completed the authorization on Flickr, return here and "
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:825
+msgid "confirm that the authorization was successful"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:839
+msgid "Either you have already authorized Habari to access your flickr account, or you have not yet done so.  Please "
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:839
+msgid "try again"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:845
+msgid "Your authorization was set successfully."
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:848
+msgid "There was a problem with your authorization:"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:863
+msgid "The Flickr Silo Plugin authorization has been deleted."
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:864
+msgid "re-authorize this plugin"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:874
 msgid "Default size for images in Posts:"
 msgstr ""
 
-#: system/plugins/flickrsilo/flickrsilo.plugin.php:873
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:875
+msgid "Square"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:875
+msgid "Thumbnail"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:875
+msgid "Small"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:875
+msgid "Medium"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:875
+msgid "Large"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:875
+msgid "Original Size"
+msgstr ""
+
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:877
 msgid "Options saved"
 msgstr ""
 
-#: system/plugins/flickrsilo/flickrsilo.plugin.php:974
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:977
 msgid "Search for photos"
 msgstr ""
 
