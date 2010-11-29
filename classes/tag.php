@@ -52,7 +52,7 @@ class Tag extends Term
 	public static function create( $paramarray )
 	{
 		$tag = new Tag( $paramarray );
-		$tag->insert();
+		$tag = Tags::vocabulary()->add_term( $tag );
 		return $tag;
 	}
 
