@@ -17,12 +17,14 @@ class Terms extends ArrayObject
 	 * See if a term or set of terms is in this set of terms
 	 *
 	 * @param mixed $tags. A string containing a string or a comma separated list of strings,
-	 *  or an array of strings, Terms, or Tags
+	 *  or an array of strings, Terms, or a Term subclass
 	 * @return boolean. Whether the tag(s) is in the current set of tags.
 	 */
 	public function has( $tags )
 	{
-		$tags = (array)new Tags( $tags );
+		if ( is_string( $tags ) || ( is_array( $tags ) && is_string( $tags[0] ) ) ) {
+			$tags = (array)Terms::parse( $tags );
+		}
 
 		$diff = array_diff( $tags, (array)$this );
 		foreach( $tags as $tag ) {
