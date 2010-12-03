@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <ul>
 	<?php foreach (Users::get_all() as $user) {
 		if ( $user->username == $currentuser->username ) {

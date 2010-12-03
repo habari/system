@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div id="footer">
 	<p>
 		<span><a href="http://habariproject.org/" title="<?php _e('Go to the Habari site'); ?>">Habari

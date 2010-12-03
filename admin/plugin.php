@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php if ( $plugin['debug'] ): ?>
 
 <div class="item plugin clear">

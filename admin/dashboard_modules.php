@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <ul class="modules">
 	<?php foreach($modules as $moduleid => $module): ?>
 	<li class="module <?php echo Utils::slugify( $module['name'] ); ?>-module" id="<?php echo $moduleid . ':' . $module['name']; ?>">

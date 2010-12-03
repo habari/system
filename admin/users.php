@@ -1,6 +1,10 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php');?>
 
-<?php $theme->currentuser = User::identify(); ?>
+<?php
+	// @todo this should be done in adminhandler, not here
+	$theme->currentuser = User::identify();
+?>
 
 
 <div class="container navigation">

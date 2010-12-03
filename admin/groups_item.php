@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div class="group item clear" id="item-<?php echo $group->id; ?>">
 	<div class="head">
 		<h4><a href="<?php echo URL::get('admin', 'page=group&id=' . $group->id) ?>" title="<?php _e('Edit group'); ?>"><?php echo $group->name; ?></a></h4>
