@@ -109,7 +109,10 @@ if ( file_exists( $config ) ) {
 		$error_page = sprintf($error_template,
 			_t( "Habari General Error" ), # page title
 			_t( "An error occurred" ), # H1 tag
-			_t( "Unable to connect to database." ) # Error message.
+			defined('DEBUG') ? 
+				_t( "Unable to connect to database.  Error message: %s", array($e->getMessage())) :
+				_t( "Unable to connect to database." ) 
+			# Error message, more detail if DEBUG is defined.
 		);
 
 		// Set correct HTTP header and die.
