@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 
 <div id="search">
 	<?php $theme->search_form() ?>
