@@ -312,10 +312,12 @@ class InstallHandler extends ActionHandler
 			$requirements_met = false;
 		}
 		/* Check for mod_rewrite on Apache */
+		$mod_rewrite = true;
 		if ( function_exists( 'apache_get_modules' ) && !in_array( 'mod_rewrite', apache_get_modules() ) ) {
 			$requirements_met = false;
-			$this->theme->assign('mod_rewrite', false);
+			$mod_rewrite = false;
 		}
+		$this->theme->assign('mod_rewrite', $mod_rewrite);
 		/* Check for required extensions */
 		$missing_extensions = array();
 		foreach ( $required_extensions as $ext_name => $ext_url ) {
