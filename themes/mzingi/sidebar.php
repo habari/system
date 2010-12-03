@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 	<!--begin secondary content-->
 	<div id="secondaryContent" class="span-7 last">
 		<?php $theme->display ( 'searchform' ); ?>
