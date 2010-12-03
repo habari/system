@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php if(count($posts) != 0) :
 	foreach($posts as $post) :
 		$post_permissions = $post->get_access();
