@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!-- loginform -->
 <?php
 if ( isset( $error ) && ( $error == 'Bad credentials' ) ) {
