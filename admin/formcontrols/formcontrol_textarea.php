@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div<?php echo( isset( $id ) ? " id=\"$id\"" : '' ); ?>>
 <label<?php if ( isset( $label_title ) ) { ?> title="<?php echo $label_title; ?>"<?php $label_title = ''; } else { echo ( isset( $title ) ? "  title=\"$title\"" : '' ); } ?> for="<?php echo $field; ?>">
 <?php echo $this->caption; ?></label>

@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 	<div class="container">
 		<p>
 			<label for="<?php echo $id; ?>" class="incontent textarea"><?php echo $caption; ?></label>

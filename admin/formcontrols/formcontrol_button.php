@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <div<?php echo ($class) ? ' class="' . $class . '"' : ''?><?php echo ($id) ? ' id="' . $id . '"' : ''?>><input type="button" <?php if (isset($disabled) && $disabled) { ?>disabled <?php } 	if ( isset( $tabindex ) ) { ?> tabindex="<?php echo $tabindex; ?>"<?php } ?>	name="<?php echo $field; ?>" value="<?php echo Utils::htmlspecialchars($caption); ?>"
 <?php if (isset($onclick) && $onclick != ''): ?>
 <script type="text/javascript">function onclick_<?php echo Utils::slugify($id, '_') ?>() {
