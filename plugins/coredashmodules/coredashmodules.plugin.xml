@@ -1,19 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<pluggable type="plugin">
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
 	<name>Core Dash Modules</name>
-	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
-	
-	<author url="http://habariproject.org/">The Habari Community</author>
-	
-	<version>1.0</version>
 	<url>http://habariproject.org/</url>
-	<description><![CDATA[Provides a core set of dashboard modules for the dashboard.]]></description>
-
-	<copyright>2009</copyright>
-	
-	<help>
-	<value><![CDATA[
-	<p>Provides <strong>Latest Entries</strong>, <strong>Latest Log Activity</strong>, and <strong>Latest Comments</strong> blocks which can be arranged on your admin dashboard.</p>
-	]]></value>
-	</help>
-</pluggable>
+	<author>Habari Community</author>
+	<authorurl>http://habariproject.org/</authorurl>
+	<version>1.0</version>
+	<description>Provides a core set of dashboard modules for the dashboard.</description>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	<copyright>2008</copyright>
+</plugin>

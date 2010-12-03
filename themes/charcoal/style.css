@@ -587,20 +587,19 @@ p.post-comment-link a:hover {
 	padding-right: 20px;
 }
 
-#comment-form #comment-public input,
-#comment-form #comment-public textarea {
+#comment-form p {
 	margin-bottom: 5px;
 }
 
-#comment-form #comment-public input {
+#comment-form p input {
 	color: #666666;
 }
 
-#comment-form #comment-public textarea {
+#comment-form p textarea {
 	color: #666666;
 }
 
-#comment-form #comment-public #submit {
+#comment-form p #submit {
 	color: #111111;
 }
 

@@ -95,12 +95,6 @@ abstract class TemplateEngine
 	 */
 	abstract function assigned( $key ); // virtual - implement in derived class
 
-	
-	/**
-	 * Clear all of the assigned values
-	 */
-	abstract function clear(); // vitrual - implement in derived class
-	
 	/**
 	 * Appends to an existing variable more values
 	 *

@@ -335,8 +335,8 @@ class RemoteRequest
 		$rr = new RemoteRequest( $url );
 		if ( $rr->execute() === TRUE) {
 			return ( $maxlen != -1
-				? MultiByte::substr( $rr->get_response_body(), $offset, $maxlen )
-				: MultiByte::substr( $rr->get_response_body(), $offset ) );
+				? substr( $rr->get_response_body(), $offset, $maxlen )
+				: substr( $rr->get_response_body(), $offset ) );
 		}
 		else {
 			return FALSE;

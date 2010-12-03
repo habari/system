@@ -15,7 +15,7 @@
 	<link rel="Shortcut Icon" href="<?php Site::out_url( 'theme' ); ?>/favicon.ico">
 	<?php $theme->header(); ?>
 </head>
-<body class="<?php $theme->body_class(); ?>">
+<body>
 	<!--begin wrapper-->
 	<div id="wrapper" class="container prepend-1 append-1">
 		<!--begin masthead-->

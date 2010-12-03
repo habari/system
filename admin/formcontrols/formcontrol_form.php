@@ -4,7 +4,6 @@
 	action="<?php echo $action; ?>"
 	class="<?php echo $class; ?>"
 	enctype="<?php echo $enctype; ?>"
-	accept-charset="<?php echo $accept_charset; ?>"
 	<?php echo $onsubmit; ?>
 >
 <?php if(isset($message) && $message != ''): ?>

@@ -1,4 +1,4 @@
-<div class="installstep locale-dropdown ready done">
+<div class="installstep locale-dropdown ready done" id="locale">
 	<h2><?php _e('Locale'); ?></h2>
 	<div class="options">
 		<form method="post" action="" id="locale-form">

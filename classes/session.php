@@ -12,12 +12,6 @@
  */
 class Session
 {
-	/*
-	 * The initial data. Used to determine whether we should write anything.
-	 */
-	private static $initial_data;
-	
-	
 	/**
 	 * Initialize the session handlers
 	 */
@@ -83,7 +77,6 @@ class Session
 
 		// Verify session exists
 		if ( !$session ) {
-			self::$initial_data = false;
 			return false;
 		}
 
@@ -127,9 +120,6 @@ class Session
 			self::gc( ini_get( 'session.gc_maxlifetime' ) );
 		}
 
-		// Throttle session writes, so as to not hammer the DB
-		self::$initial_data = ( ini_get('session.gc_maxlifetime') - $session->expires + HabariDateTime::date_create( time() )->int < 120 ) ? $session->data : FALSE;
-
 		return $session->data;
 	}
 
@@ -147,7 +137,7 @@ class Session
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
 		// Should we write this data?  Don't bother for search spiders, for example.
-		$dowrite = ( $data !== self::$initial_data );
+		$dowrite = true;
 		$dowrite = Plugins::filter( 'session_write', $dowrite, $session_id, $data );
 
 		if ( $dowrite ) {

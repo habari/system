@@ -13,6 +13,24 @@
 class Undelete extends Plugin
 {
 	/**
+	 * function info
+	 * Returns information about this plugin
+	 * @return array Plugin info array
+	 **/
+	function info()
+	{
+		return array (
+			'name' => 'Undelete',
+			'url' => 'http://habariproject.org/',
+			'author' => 'Habari Community',
+			'authorurl' => 'http://habariproject.org/',
+			'version' => '1.1.alpha',
+			'description' => 'Stores deleted items in a virtual trashcan to support undelete functionality.',
+			'license' => 'Apache License 2.0',
+		);
+	}
+
+	/**
 	 * function action_plugin_activation
 	 * adds the "deleted" status type to the poststatus table
 	 * when this plugin is activated.
@@ -65,45 +83,6 @@ class Undelete extends Plugin
 			array_push($actions, $restore, $remove);
 		}
 		return $actions;
-	}
-
-	public function filter_posts_manage_actions( $actions )
-	{
-		// get all the post types
-		$require_any = array( 'own_posts' => 'delete' );
-		$types = Post::list_active_post_types();
-		foreach ($types as $key => $value ) {
-			$require_any['post_' . $key] = 'delete';
-		}
-
-		if ( User::identify()->can_any( $require_any ) ) {
-			$actions[] = array( 'action' => 'itemManage.update(\'restore\');return false;', 'title' => _t( 'Restore Selected Entries' ), 'label' => _t( 'Restore Selected' ) );
-		}
-		return $actions;
-	}
-
-	public function filter_admin_entries_action( $status_msg, $action, $posts )
-	{
-		$num = 0;
-
-		switch( $action ) {
-		case 'restore':
-			foreach( $posts as $post ) {
-				$result = $this->undelete_post( $post->id );
-				if ( $result ) {
-					$num++;
-				}
-			}
-			if( $num == count( $posts ) ) {
-				$status_msg = sprintf( _n('Restored %d post', 'Restored %d posts', $num ), $num );
-			}
-			else {
-				$status_msg = _t( 'You did not have permission to restore some entries.' );
-			}
-			break;
-		}
-
-		return $status_msg;
 	}
 
 	/**
@@ -175,7 +154,7 @@ class Undelete extends Plugin
 				case _t( 'Configure' ):
 					$ui = new FormUI( strtolower( get_class( $this ) ) );
 					$ui->append( 'textarea', 'style', 'option:undelete__style', _t( 'Style declaration for deleted content:' ) );
-					$ui->append( 'submit', 'save', _t( 'Save' ) );
+					$ui->append( 'submit', 'save', 'Save' );
 					$ui->on_success( array( $this, 'updated_config' ) );
 					$ui->out();
 					break;
@@ -183,7 +162,7 @@ class Undelete extends Plugin
 				case _t( 'Empty Trash' ):
 					$ui = new FormUI( strtolower( get_class( $this ) ) );
 					$ui->append( 'static', 'explanation', _t('Pressing this button will permanently delete all posts from the virtual trash can. You cannot undo this.') );
-					$ui->append( 'submit', 'delete', _t( 'Delete All' ) );
+					$ui->append( 'submit', 'delete', 'Delete All' );
 					$ui->on_success( array( $this, 'deleted_all' ) );
 					$ui->out();
 					break;
@@ -254,9 +233,9 @@ var unDelete = {
 				spinner.stop();
 				humanMsg.displayMsg( result );
 				if ( $('.timeline').length ) {
-					var loupeInfo = timeline.getLoupeInfo();
+					loupeInfo = timelineHandle.getLoupeInfo();
 					itemManage.fetch( 0, loupeInfo.limit, true );
-					timeline.updateLoupeInfo();
+					timelineHandle.updateLoupeInfo();
 				}
 				else {
 					itemManage.fetch( 0, 20, false );

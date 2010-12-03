@@ -1,7 +1,7 @@
 <?php include( 'header.php' ); ?>
 
 <form action="" method="post">
-<input type="hidden" name="locale" value="<?php echo Utils::htmlspecialchars($locale); ?>">
+<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
 
 <div class="installstep ready">
 	<h2>.htaccess<a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>

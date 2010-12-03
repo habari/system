@@ -41,14 +41,14 @@ class UserThemeHandler extends ActionHandler
 		try {
 			$handled = false;
 			$handled = Plugins::filter('theme_act_' . $action, $handled, $this->theme);
-			if ( !$handled ) {
+			if(!$handled) {
 				$this->theme->$action_method();
 			}
 		}
 		catch(Error $e) {
 			EventLog::log($e->humane_error(), 'error', 'theme', 'habari', print_r($e, 1) );
 			Session::error($e->humane_error()); //Should we display any error here?
-			if ( DEBUG ) {
+			if(DEBUG) {
 				Utils::debug($e);
 			}
 		}

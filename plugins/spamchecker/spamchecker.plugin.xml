@@ -1,19 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<pluggable type="plugin">
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin>
 	<name>Spam Checker</name>
-	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
-	
-	<author url="http://habariproject.org/">The Habari Community</author>
-	
-	<version>1.0</version>
 	<url>http://habariproject.org/</url>
-	<description><![CDATA[Flags as spam obvious comment spam.]]></description>
-
-	<copyright>2009</copyright>
-
-	<help>
-	<value><![CDATA[
-	<p>Applies a number of common sense filters to submitted comments in order to identify the ones which are most probably spam. While not 100% reliable, it eliminates a significant portion of spam based on common elements of these messages.</p>
-	]]></value>
-	</help>
-</pluggable>
+	<author>Habari Community</author>
+	<authorurl>http://habariproject.org/</authorurl>
+	<version>1.0</version>
+	<description>Flags as spam obvious comment spam.</description>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	<copyright>2008</copyright>
+</plugin>

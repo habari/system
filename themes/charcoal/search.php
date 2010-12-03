@@ -2,7 +2,7 @@
 
 		<?php if (isset($post)) : ?>
 			<div id="main-posts">
-				<p class="prompt"><?php $theme->search_prompt( Utils::htmlspecialchars( $criteria ), true ); ?></p>
+				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria ), true ); ?></p>
 			<?php foreach ($posts as $post): ?>
 				<div class="post multi">
 				<?php if ( is_array( $post->tags ) && ($tags_in_multiple) ) : ?>
@@ -18,7 +18,7 @@
 					<div class="post-sup">
 						<span class="post-date"><?php $post->pubdate->out(); ?></span>
 						<span class="post-comments-link">
-							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('Comment'), _t('Comments') ); ?></a>
+							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('%s Comment'), _t('%s Comments') ); ?></a>
 						</span>
 						<span class="clear"></span>
 					</div>
@@ -30,7 +30,7 @@
 			</div>
 		<?php else: ?>
 			<div id="main-posts">
-				<p class="prompt"><?php $theme->search_prompt( Utils::htmlspecialchars( $criteria ), false ); ?></p>
+				<p class="prompt"><?php $theme->search_prompt( htmlspecialchars( $criteria ), false ); ?></p>
 				<div class="post multi"></div>
 			</div>
 		<?php endif; ?>

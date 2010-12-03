@@ -1,5 +1,5 @@
-<?php if ( count($comments) != 0 ) :
-	foreach ( $comments as $comment ) : ?>
+<?php if(count($comments) != 0) :
+	foreach( $comments as $comment ) : ?>
 
 <div class="item clear <?php echo strtolower( $comment->statusname ); ?>" id="comment_<?php echo $comment->id; ?>" style="<?php echo Plugins::filter('comment_style', '', $comment); ?>">
 	<div class="head clear">
@@ -7,10 +7,10 @@
 			<input type="checkbox" class="checkbox" name="comment_ids[<?php echo $comment->id; ?>]" id="comments_ids[<?php echo $comment->id; ?>]" value="1">
 		</span>
 		<span class="checkbox title pct20">
-			<?php if ( $comment->url != '' ): ?>
-			<a href="#" class="author" title="<?php echo Utils::htmlspecialchars( $comment->name ); ?>"><?php echo Utils::htmlspecialchars( $comment->name ); ?></a>
+			<?php if($comment->url != ''): ?>
+			<a href="#" class="author" title="<?php echo htmlspecialchars( $comment->name ); ?>"><?php echo htmlspecialchars( $comment->name ); ?></a>
 			<?php else: ?>
-			<?php echo Utils::htmlspecialchars( $comment->name ); ?>
+			<?php echo htmlspecialchars( $comment->name ); ?>
 			<?php endif; ?>
 		</span>
 		<span class="title pct35"><span class="dim"><?php _e('in'); ?> '</span><a href="<?php echo $comment->post->permalink ?>#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Go to %s', array( $comment->post->title ) ); ?>"><?php echo $comment->post->title; ?></a><span class="dim">'</span></span>
@@ -29,18 +29,16 @@
 	</div>
 
 	<div class="infoandcontent clear">
-		<div class="authorinfo pct25 minor">
+		<span class="authorinfo pct25 minor">
 			<ul>
-				<?php if ( $comment->url != '' ) {
-						echo '<li><a class="url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
-					}
-					else {
+				<?php if ($comment->url != '') {
+					echo '<li><a class="url" href="' . $comment->url . '">' . $comment->url . '</a></li>'."\r\n";
+					} else {
 						echo '<li class="empty">no url given</li>';
 					} ?>
 				<?php if ( $comment->email != '' ) {
-						echo '<li><a class="email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n";
-					}
-					else {
+					echo '<li><a class="email" href="mailto:' . $comment->email . '">' . $comment->email . '</a></li>'."\r\n";
+					} else {
 						echo '<li class="empty">no email provided</li>';
 					} ?>
 				<?php if ( $comment->ip ): ?>
@@ -50,23 +48,21 @@
 			<?php if ( $comment->status == Comment::STATUS_SPAM ) :?>
 				<p><?php _e('Marked as spam'); ?></p>
 			<?php endif; ?>
-
+			
 			<?php Plugins::act('comment_info', $comment); ?>
 
-			<p class="comment-type"><?php echo Comment::type_name( $comment->type ); ?></p>
-		</div>
+		</span>
 		<span class="content pct75"><?php
 			if ( MultiByte::valid_data( $comment->content ) ) {
-				echo nl2br( Utils::htmlspecialchars( $comment->content ) );
-			}
-			else {
+				echo nl2br( htmlspecialchars( $comment->content ) );
+			} else {
 				_e('this post contains text in an invalid encoding');
 			}
 		?></span>
 	</div>
 </div>
 
-<?php 	endforeach;
+<?php 	endforeach; 
 else : ?>
 <div class="message none">
 	<p><?php _e('No comments could be found to match the query criteria.'); ?></p>

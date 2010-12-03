@@ -109,7 +109,7 @@ class InputFilter
 	 * Protocols that are ok for use in URIs.
 	 */
 	private static $whitelist_protocols = array(
-		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto', 'rtsp', 'mms', 'svn',
+		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto',
 	);
 
 	/**
@@ -149,6 +149,22 @@ class InputFilter
 	);
 	private static $character_entities_re = '';
 
+	private static $scheme_ports = array(
+		'ftp' => 21,
+		'ssh' => 22,
+		'telnet' => 23,
+		'http' => 80,
+		'pop3' => 110,
+		'nntp' => 119,
+		'news' => 119,
+		'irc' => 194,
+		'imap3' => 220,
+		'https' => 443,
+		'nntps' => 563,
+		'imaps' => 993,
+		'pop3s' => 995,
+	);
+
 	/**
 	 * Perform all filtering, return new string.
 	 * @param string $str Input string.
@@ -156,24 +172,16 @@ class InputFilter
 	 */
 	public static function filter( $str )
 	{
-		if ( !MultiByte::valid_data( $str ) ) {
-			return '';
-		}
-		else {
-			do {
-				$_str = $str;
-				$str = self::strip_nulls( $str );
-				$str = self::strip_illegal_entities( $str );
-				$str = self::filter_html_elements( $str );
-			} while ( $str != $_str );
-	
-			return $str;
-		}
+		$str = self::strip_nulls( $str );
+		$str = self::strip_illegal_entities( $str );
+		$str = self::filter_html_elements( $str );
+
+		return $str;
 	}
 
 	public static function strip_nulls( $str )
 	{
-		$str = str_replace( '\0', '', $str );
+		$str = preg_replace( '/\0+/', '', $str );
 
 		return $str;
 	}
@@ -261,28 +269,70 @@ class InputFilter
 			//
 			'is_relative' => FALSE,
 			'is_pseudo' => FALSE,
-			'is_error' => FALSE,
+			'is_error' => TRUE,
 			//
 			'pseudo_args' => '',
 		);
 
-		// Use PHP's parse_url to get the basics
-		$r = array_merge( $r, parse_url( $url ) );
+		// TODO normalize etc., make re tighter (ips)
+		$re = '@^' // delimiter + anchor
+			// scheme, address, port are optional for relative urls ...
+			. '(?:'
+				// scheme
+				. '(?P<scheme>[a-zA-Z][^:]*):(//)?'
+				// real protocols
+				. '(?P<full_address>(?:'
+					// optional userinfo
+					. '(?:'
+						// username
+						. '(?P<user>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;&=+$,])+)'
+						// password
+						. ':(?P<pass>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;:&=+$,])+)?\@)?'
+					// address:
+					. '(?P<host>'
+					//   ip
+					  . '(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|'
+					//   or hostname
+					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*(?(2)|\.)[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
+					. ')'
+					// optional port (:0-65535)
+					. '(?::(?P<port>[0-5]?[0-9]{1,4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?'
+				// pseudo-protocols
+				. ')|.+)'
+			// /optional for relative
+			. ')?'
+			// path
+			. '(?P<path>/?[^?#]+)?'
+			// querystring
+			. '(?:\?(?P<query>[^#]+))?'
+			// fragment (hash)
+			. '(?:#(?P<fragment>.*))?'
+			// delimiter
+			. '@'
+			;
 
-		$r['is_pseudo'] = !in_array( $r['scheme'], array( 'http', 'https', '' ) );
-		$r['is_relative'] = ( $r['host'] == '' && !$r['is_pseudo'] );
-		if( $r['is_pseudo'] ) {
-			$r['pseudo_args'] = $r['path'];
-			$r['path'] = '';
+		$t = preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
+		if ( ! $t ) // TODO better error handling
+			return $r;
+
+		$matches = $matches[0];
+		if ( ! isset( $matches['full_address'] ) )
+			$matches['full_address'] = '';
+
+		$r['is_error'] = FALSE;
+		$r['is_relative'] = empty( $matches['full_address'] );
+		$r['is_pseudo'] = ! array_key_exists( 'host', $matches );
+		$r['pseudo_args'] = $r['is_pseudo'] ? $matches['full_address'] : '';
+
+		foreach ( array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment' ) as $k ) {
+			if ( array_key_exists( $k, $matches ) ) {
+				$r[$k] = $matches[$k];
+			}
 		}
 
 		return $r;
 	}
 
-	/**
-	 * Restore a URL separated by a parse_url() call.
-	 * @param $parsed_url array An array as returned by parse_url()
-	 */
 	public static function glue_url( $parsed_url )
 	{
 		if ( ! is_array( $parsed_url ) ) {
@@ -291,7 +341,7 @@ class InputFilter
 
 		$res = '';
 		$res .= $parsed_url['scheme'];
-		if ( $parsed_url['is_pseudo'] || in_array( strtolower( $parsed_url['scheme'] ), array( 'mailto', 'callto' ) ) ) {
+		if ( $parsed_url['is_pseudo'] || $parsed_url['scheme'] == 'mailto' ) {
 			$res .= ':';
 		}
 		else {
@@ -313,7 +363,7 @@ class InputFilter
 			}
 			$res .= $parsed_url['host'];
 			if ( !empty( $parsed_url['port'] ) ) {
-				if ( array_key_exists( $parsed_url['scheme'], Utils::scheme_ports() ) && Utils::scheme_ports( $parsed_url['scheme'] ) == $parsed_url['port'] ) {
+				if ( array_key_exists( $parsed_url['scheme'], self::$scheme_ports ) && self::$scheme_ports[ $parsed_url['scheme'] ] == $parsed_url['port'] ) {
 					// default port for this scheme, do nothing
 				}
 				else {
@@ -458,7 +508,7 @@ class InputFilter
 		}
 
 		// rebuild our output string
-		return preg_replace( '#<([^>\s]+)(?:\s+[^>]+)?></\1>#u', '', (string) $filtered );
+		return preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', (string) $filtered );
 	}
 }
 

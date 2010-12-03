@@ -9,6 +9,23 @@
 
 class SpamChecker extends Plugin
 {
+	/**
+	 * function info
+	 * Returns information about this plugin
+	 * @return array Plugin info array
+	 **/
+	function info()
+	{
+		return array (
+			'name' => 'Spam Checker',
+			'url' => 'http://habariproject.org/',
+			'author' => 'Habari Community',
+			'authorurl' => 'http://habariproject.org/',
+			'version' => '1.0',
+			'description' => 'Flags as spam obvious comment spam.',
+			'license' => 'Apache License 2.0',
+		);
+	}
 
 	/**
 	 * function act_comment_insert_before
@@ -20,12 +37,13 @@ class SpamChecker extends Plugin
 	 * You can still register functions as hooks without using
 	 * this method, but boy, is it handy.
 	 * @param Comment The comment that will be processed before storing it in the database.
+	 * @return Comment The comment result to store.
 	 **/
 	function action_comment_insert_before ( $comment )
 	{
 		// This plugin ignores non-comments
 		if($comment->type != Comment::COMMENT) {
-			return;
+			return $comment;
 		}
 
 		$spamcheck = array();
@@ -75,7 +93,7 @@ class SpamChecker extends Plugin
 		}
 
 		// are there more than 3 URLs posted?  If so, it's almost certainly spam
-		if ( preg_match_all( "#https?://#", strtolower( $comment->content ), $matches, PREG_SET_ORDER ) > 3 ) {
+		if ( preg_match_all( "#http://#", strtolower( $comment->content ), $matches, PREG_SET_ORDER ) > 3 ) {
 			$comment->status = Comment::STATUS_SPAM;
 			$spamcheck[] = _t('There is a 3 URL limit in comments.');
 		}
@@ -183,7 +201,7 @@ class SpamChecker extends Plugin
 	}
 
 	/**
-	 * Ensure that the code assigned to this user for their commenting URL is genuine
+	 * Ensure that the code assigne dto this user for their commenting URL is genuine
 	 *
 	 * @param float $spam_rating The spamminess of the comment as detected by other plugins
 	 * @param Comment $comment The submitted comment object
@@ -194,12 +212,12 @@ class SpamChecker extends Plugin
 	{
 		// This plugin ignores non-comments
 		if($comment->type != Comment::COMMENT) {
-			return $spam_rating;
+			return $comment;
 		}
 
 		if(!$this->verify_code($handlervars['ccode'], $comment->post_id)) {
 			ob_end_clean();
-			header( 'HTTP/1.1 403 Forbidden', true, 403 );
+			header('HTTP/1.1 403 Forbidden');
 			die('<h1>' . _t('The selected action is forbidden.') . '</h1>');
 		}
 
@@ -215,10 +233,10 @@ class SpamChecker extends Plugin
 	public function get_code($post_id, $ip = '')
 	{
 		if( $ip == '' ) {
-			$ip = sprintf( "%u", ip2long( Utils::get_ip() ) );
+			$ip = sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
 		}
-		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );
-		$code = Plugins::filter( 'comment_code', $code, $post_id, $ip );
+		$code = substr(md5( $post_id . Options::get('GUID') . 'more salt' . $ip ), 0, 10);
+		$code = Plugins::filter('comment_code', $code, $post_id, $ip);
 		return $code;
 	}
 
@@ -231,11 +249,11 @@ class SpamChecker extends Plugin
 	public function verify_code($suspect_code, $post_id, $ip = '')
 	{
 		if( $ip == '' ) {
-			$ip = sprintf( "%u", ip2long( Utils::get_ip() ) );
+			$ip = sprintf("%u", ip2long($_SERVER['REMOTE_ADDR']));
 		}
-		$code = substr( md5( $post_id . Options::get( 'GUID' ) . 'more salt' . $ip ), 0, 10 );
-		$code = Plugins::filter( 'comment_code', $code, $post_id, $ip );
-		return ( $suspect_code == $code );
+		$code = substr(md5( $post_id . Options::get('GUID') . 'more salt' . $ip ), 0, 10);
+		$code = Plugins::filter('comment_code', $code, $post_id, $ip);
+		return ($suspect_code == $code);
 	}
 
 }

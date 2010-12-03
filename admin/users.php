@@ -4,7 +4,7 @@
 
 
 <div class="container navigation">
-	<div class="pct40">
+	<span class="pct40">
 
 		<form>
 		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
@@ -21,12 +21,12 @@
 			<option value=""><?php _e('Complete User List'); ?></option>
 		</select>
 		</form>
-	</div>
+	</span>
 	<span class="or pct20">
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input id="search" type="search" placeholder="<?php _e('search users'); ?>">
+		<input id="search" type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10">
 	</span>
 </div>
 

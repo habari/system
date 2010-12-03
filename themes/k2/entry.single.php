@@ -23,7 +23,7 @@
 <?php if ( $loggedin ) { ?>
 			<span class="entry-edit"><a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
 <?php } ?>
-<?php if ( count( $post->tags ) > 0 ) { ?>
+<?php if ( is_array( $post->tags ) ) { ?>
 			<span class="entry-tags"><?php echo $post->tags_out; ?></span>
 <?php } ?>
 			</small>

@@ -88,7 +88,6 @@ class CURLRequestProcessor implements RequestProcessor
 			$body = stream_get_contents( $fh );
 		}
 		fclose( $fh );
-		unset( $fh );
 
 		if ( isset( $tmp ) && file_exists ($tmp ) ) {
 			unlink( $tmp );
@@ -99,9 +98,9 @@ class CURLRequestProcessor implements RequestProcessor
 				E_USER_WARNING );
 		}
 
-		if ( substr( curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 0, 1 ) != 2 ) {
-			return Error::raise( sprintf( _t('Bad return code (%1$d) for: %2$s'),
-				curl_getinfo( $ch, CURLINFO_HTTP_CODE ),
+		if ( curl_getinfo( $ch, CURLINFO_HTTP_CODE ) !== 200 ) {
+			return Error::raise( sprintf( _t('Bad return code (%1$d) for: %2$s'), 
+				curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 
 				$url ),
 				E_USER_WARNING
 			);
@@ -110,7 +109,7 @@ class CURLRequestProcessor implements RequestProcessor
 		curl_close( $ch );
 
 		// this fixes an E_NOTICE in the array_pop
-		$tmp_headers = explode( "\r\n\r\n", MultiByte::substr( $this->_headers, 0, -4 ) );
+		$tmp_headers = explode("\r\n\r\n", substr( $this->_headers, 0, -4 ) );
 
 		$this->response_headers = array_pop( $tmp_headers );
 		$this->response_body = $body;
@@ -131,7 +130,7 @@ class CURLRequestProcessor implements RequestProcessor
 		if ( ! $this->executed ) {
 			return Error::raise( _t('Request did not yet execute.') );
 		}
-
+		
 		return $this->response_body;
 	}
 

@@ -8,6 +8,24 @@ class CoreDashModules extends Plugin
 {
 	private $theme;
 
+	/**
+	 * function info
+	 * Returns information about this plugin
+	 * @return array Plugin info array
+	 **/
+	function info()
+	{
+		return array (
+			'name' => 'Core Dash Modules',
+			'url' => 'http://habariproject.org/',
+			'author' => 'Habari Community',
+			'authorurl' => 'http://habariproject.org/',
+			'version' => '1.0',
+			'description' => 'Provides a core set of modules for the dashboard. The modules include latest comments, latest posts, and latest log entries.',
+			'license' => 'Apache License 2.0',
+		);
+	}
+	
 		/**
 	 * action_plugin_activation
 	 * Registers the core modules with the Modules class. Add these modules to the
@@ -81,15 +99,13 @@ class CoreDashModules extends Plugin
 		$theme->logs = EventLog::get( $params );
 		
 		// Create options form
-		/* Commented out until fully implemented or it's decided to drop completely. See https://trac.habariproject.org/habari/ticket/1233
 		$form = new FormUI( 'dash_logs' );
 		$form->append( 'text', 'logs_number_display', 'option:' . Modules::storage_name( $module_id, 'logs_number_display' ), _t('Number of items') );
 		$form->append( 'submit', 'submit', _t('Submit') );
 		$form->properties['onsubmit'] = "dashboard.updateModule({$module_id}); return false;";
-		 */
 		
 		$module['title'] = ( User::identify()->can( 'manage_logs' ) ? '<a href="' . Site::get_url('admin') . '/logs">' . _t('Latest Log Activity') . '</a>' : _t('Latest Log Activity') );
-		//$module['options'] = $form->get();
+		$module['options'] = $form->get();
 		$module['content'] = $theme->fetch( 'dash_logs' );
 		return $module;
 	}

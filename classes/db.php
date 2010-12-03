@@ -21,7 +21,7 @@ class DB extends Singleton
 	 */
 	protected static function instance()
 	{
-		return self::getInstanceOf( __CLASS__ );
+		return self::getInstanceOf( get_class() );
 	}
 
 	/**

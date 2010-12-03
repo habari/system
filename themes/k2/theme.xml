@@ -1,20 +1,10 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<pluggable type="theme">
+<?xml version="1.0" encoding="UTF-8" ?>
+<theme>
 	<name>K2</name>
-	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
-	
-	<author url="http://getk2.com/">K2 Team</author>
-	
+	<author>K2 Team</author>
+	<url>http://getk2.com/</url>
 	<version>1.0</version>
-	<url>http://habariproject.org/</url>
-	<description><![CDATA[A port of the popular design K2 and first Habari "theme"]]></description>
-	
 	<template_engine>rawphpengine</template_engine>
-
-	<copyright>2009</copyright>
-	<areas>
-		<area name="sidebar">
-			<description><![CDATA[Sidebar]]></description>
-		</area>
-	</areas>
-</pluggable>
+	<description>A port of the popular design K2 and first Habari "theme"</description>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+</theme>

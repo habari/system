@@ -32,9 +32,9 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 
 	public static function token_to_string( array $token, $escape = true )
 	{
-		switch ( $token['type'] ) {
+		switch ($token['type']) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
-				return $escape ? Utils::htmlspecialchars($token['value']) : $token['value'];
+				return $escape ? htmlspecialchars($token['value']) : $token['value'];
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
@@ -42,11 +42,10 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				if ( isset( $token['attrs'] ) && is_array( $token['attrs'] ) ) {
 					foreach ( $token['attrs'] as $attr => $attrval ) {
 						$out .= " {$attr}=\"";
-						if ( $escape ) {
-							$out .= Utils::htmlspecialchars( html_entity_decode( $attrval, ENT_QUOTES, 'UTF-8' ) );
-						}
-						else {
-							$out .= html_entity_decode( $attrval, ENT_QUOTES, 'UTF-8' );
+						if ($escape) {
+							$out .= htmlspecialchars( html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' ), ENT_COMPAT, 'utf-8' );
+						} else {
+							$out .= html_entity_decode( $attrval, ENT_QUOTES, 'utf-8' );
 						}
 						$out .= '"';
 					}
@@ -59,7 +58,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_PI:
-				$out = "<?{$token['name']}{$token['value']}>";
+				$out = "<?{$token['name']}{$token['value']}?>";
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_COMMENT:
@@ -71,11 +70,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_STATEMENT:
-				$out = "<!{$token['name']}";
-				if ( !empty($token['value']) ) {
-					$out .= " {$token['value']}";
-				}
-				$out .= ">";
+				$out = "<!{$token['value']}>";
 				break;
 		}
 		return $out;
@@ -89,23 +84,18 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	/**
 	 * Fetch a section of the tokens, based on passed criteria
 	 */
-	public function slice( $names, array $attr = null )
+	public function slice( $name, array $attr = null )
 	{
-		$names = (array)$names;
-		$ret = array();
-		foreach ( $names as $name ) {
-			$offset = 0;
-			$slices = array();
-			while ( $slice = $this->find_slice( $offset, $name, $attr ) ) {
-				$slices[] = $slice;
-				$offset = $slice->get_end_offset();
-			}
-			// Meed to reverse this because we need to splice the last chunks first
-			// if we splice the earlier chunks first, then the offsets get all
-			// messed up. Trust me.
-			$ret = array_merge($ret, array_reverse( $slices ));
+		$offset = 0;
+		$slices = array();
+		while ( $slice = $this->find_slice( $offset, $name, $attr ) ) {
+			$slices[] = $slice;
+			$offset = $slice->get_end_offset();
 		}
-		return $ret;
+		// Meed to reverse this because we need to splice the last chunks first
+		// if we splice the earlier chunks first, then the offsets get all
+		// messed up. Trust me.
+		return array_reverse( $slices );
 	}
 
 	protected function find_slice( $offset, $name, array $attr)
@@ -122,10 +112,6 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 			}
 
 			// check attributes
-			if ( !count($attr) ) {
-				$foundStart = true;
-				break; // To: FOUNDSTARTBREAKPOINT
-			}
 			foreach ( $attr as $compareName => $compareVal ) {
 				if ( isset( $this->tokens[$offset]['attrs'][$compareName] ) &&
 						stripos( $this->tokens[$offset]['attrs'][$compareName], $compareVal ) !== false ) {
@@ -249,8 +235,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		if ( $offset === null) {
 			$this->tokens[] = $value;
-		}
-		else {
+		} else {
 			$this->tokens[ $offset ] = $value;
 		}
 	}

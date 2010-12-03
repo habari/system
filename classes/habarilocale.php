@@ -150,7 +150,7 @@ class HabariLocale
 		// determine endianness
 		$little_endian = TRUE;
 
-		list(,$magic) = unpack( 'V1', substr( $data, 0, 4 ) );
+		list(,$magic)= unpack( 'V1', substr( $data, 0, 4 ) );
 		switch ( $magic & 0xFFFFFFFF ) {
 			case (int)0x950412de:
 				$little_endian = TRUE;
@@ -203,10 +203,10 @@ class HabariLocale
 
 	private static function get_plural_function( $header )
 	{
-		if ( preg_match('/plural-forms: (.*?)$/i', $header, $matches) && preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $matches[1], $matches) ) {
+		if ( preg_match('/plural-forms: (.*?)$/i', $header, $matches) && preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/', $matches[1], $matches) ) {
 			// sanitize
-			$nplurals = preg_replace( '/[^0-9]/', '', $matches[1] );
-			$plural = preg_replace( '#[^n0-9:\(\)\?\|\&=!<>+*/\%-]#', '', $matches[2] );
+			$nplurals = preg_replace( '@[^0-9]@', '', $matches[1] );
+			$plural = preg_replace( '@[^n0-9:\(\)\?\|\&=!<>+*/\%-]@', '', $matches[2] );
 
 			$body = str_replace(
 				array('plural',  'n',  '$n$plurals', ),
@@ -223,18 +223,18 @@ class HabariLocale
 				$ch = $body[$i];
 				switch ($ch) {
 					case '?':
-						$res .= ' ? (';
+						$res.= ' ? (';
 						$p++;
 						break;
 					case ':':
-						$res .= ') : (';
+						$res.= ') : (';
 						break;
 					case ';':
-						$res .= str_repeat( ')', $p) . ';';
+						$res.= str_repeat( ')', $p) . ';';
 						$p = 0;
 						break;
 					default:
-						$res .= $ch;
+						$res.= $ch;
 				}
 			}
 
@@ -264,7 +264,7 @@ class HabariLocale
 		$fn = self::get_plural_function( $header );
 		$res = '';
 		for ( $n = 0; $n < 200; $n++ ) {
-			$res .= $fn($n);
+			$res.= $fn($n);
 		}
 
 		return $res;
@@ -284,7 +284,7 @@ class HabariLocale
 	 * @param string $text The text to echo translated
 	 * @param string $domain (optional) The domain to search for the message
 	 **/
-	public static function _e()
+	public static function _e( )
 	{
 		$args = func_get_args();
 		echo call_user_func_array(array('HabariLocale', '_t'), $args);
@@ -318,25 +318,6 @@ class HabariLocale
 		return $t;
 	}
 
-	/**
-	 * Given a string translated into the current locale, return the untranslated string.
-	 *
-	 * @param string $text The translated string
-	 * @param string $domain (optional) The domain to search for the message
-	 * @return string The untranslated string
-	 **/
-	public static function _u($text, $domain = 'habari')
-	{
-		$t = $text;
-		foreach ( self::$messages[$domain] as $msg ) {
-			if ( $text == $msg[1][0] ) {
-				$t = $msg[0][0];
-				break;
-			}
-		}
-
-		return $t;
-	}
 	/**
 	 * Echo singular or plural version of the string, translated into the current locale, based on the count provided
 	 *
@@ -419,19 +400,6 @@ function _t( $text, $args = array(), $domain = 'habari' )
 function _n( $singular, $plural, $count, $domain = 'habari' )
 {
 	return HabariLocale::_n( $singular, $plural, $count, $domain );
-}
-
-/**
- * Given a string translated into the current locale, return the untranslated version of the string.
- * Alias for HabariLocale::_u()
- *
- * @param string $text The translated string
- * @param string $domain (optional) The domain to search for the message
- * @return string The untranslated string
- **/
-function _u( $text, $domain = 'habari' )
-{
-	return HabariLocale::_u( $text, $domain );
 }
 
 ?>

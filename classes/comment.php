@@ -42,9 +42,9 @@ class Comment extends QueryRecord implements IsContent
 	static $comment_status_actions = array();
 
 	/**
-	 * static function default_fields
-	 * Returns the defined database columns for a comment
-	 */
+	* static function default_fields
+	* Returns the defined database columns for a comment
+	**/
 	public static function default_fields()
 	{
 		return array(
@@ -65,7 +65,7 @@ class Comment extends QueryRecord implements IsContent
 	 * constructor __construct
 	 * Constructor for the Post class.
 	 * @param array an associative array of initial Post field values.
-	 */
+	 **/
 	public function __construct( $paramarray = array() )
 	{
 		// Defaults
@@ -86,7 +86,7 @@ class Comment extends QueryRecord implements IsContent
 	 *
 	 * @param int An ID
 	 * @return array A single Comment object
-	 */
+	 **/
 	static function get( $ID = 0 )
 	{
 		if ( ! $ID ) {
@@ -100,7 +100,7 @@ class Comment extends QueryRecord implements IsContent
 	 * Creates a comment and saves it
 	 * @param array An associative array of comment fields
 	 * $return Comment The comment object that was created
-	 */
+	 **/
 	static function create($paramarray)
 	{
 		$comment = new Comment($paramarray);
@@ -146,7 +146,7 @@ class Comment extends QueryRecord implements IsContent
 		}
 		Plugins::act('comment_update_before', $this);
 		// invoke plugins for all fields which have been updated
-		foreach ( $this->newfields as $fieldname => $value ) {
+		foreach ($this->newfields as $fieldname => $value ) {
 			Plugins::act('comment_update_' . $fieldname, $this, $this->fields[$fieldname], $value);
 		}
 		$result = parent::updateRecord( DB::table('comments'), array('id'=>$this->id) );
@@ -173,9 +173,8 @@ class Comment extends QueryRecord implements IsContent
 		if ( isset( $this->info ) ) {
 			$this->info->delete_all();
 		}
-		$result = parent::deleteRecord( DB::table('comments'), array('id'=>$this->id) );
+		return parent::deleteRecord( DB::table('comments'), array('id'=>$this->id) );
 		Plugins::act('comment_delete_after', $this);
-		return $result;
 	}
 
 	/**
@@ -183,11 +182,11 @@ class Comment extends QueryRecord implements IsContent
 	 * Overrides QueryRecord __get to implement custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
-	 */
+	 **/
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info', 'editlink' ) );
-		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+		$fieldnames = array_merge( array_keys( $this->fields ), array('post', 'info' ) );
+		if( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			preg_match('/^(.*)_([^_]+)$/', $name, $matches);
 			list( $junk, $name, $filter ) = $matches;
 		}
@@ -198,7 +197,8 @@ class Comment extends QueryRecord implements IsContent
 		if ( $name == 'name' && parent::__get( $name ) == '' ) {
 			return _t('Anonymous');
 		}
-		switch ( $name ) {
+		switch($name)
+		{
 			case 'post':
 				$out = $this->get_post();
 				break;
@@ -211,16 +211,13 @@ class Comment extends QueryRecord implements IsContent
 			case 'typename':
 				$out = self::type_name( $this->type );
 				break;
-			case 'editlink':
-				$out = $this->get_editlink();
-				break;
 			default:
 				$out = parent::__get( $name );
 				break;
 		}
 		//$out = parent::__get( $name );
 		$out = Plugins::filter( "comment_{$name}", $out, $this );
-		if ( $filter ) {
+		if( $filter ) {
 			$out = Plugins::filter( "comment_{$name}_{$filter}", $out, $this );
 		}
 		return $out;
@@ -231,36 +228,39 @@ class Comment extends QueryRecord implements IsContent
 	 * Overrides QueryRecord __set to implement custom object properties
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
-	 */
+	 **/
 	public function __set( $name, $value )
 	{
-		switch ( $name ) {
-			case 'status':
-				return $this->setstatus($value);
-			case 'date':
-				if ( !($value instanceOf HabariDateTime) ) {
-					$value = HabariDateTime::date_create($value);
-				}
-				break;
-			case 'post':
-				if ( is_int( $value ) ) {
-					// a post ID was passed
-					$p = Post::get(array('id'=>$value));
-					$this->post_id = $p->id;
-					$this->post_object = $p;
-				}
-				elseif ( is_string( $value ) ) {
-					// a post Slug was passed
-					$p = Post::get(array('slug'=>$value));
-					$this->post_id = $p->id;
-					$this->post_object = $p;
-				}
-				elseif ( is_object ( $value ) ) {
-					// a Post object was passed, so just use it directly
-					$this->post_id = $p->id;
-					$this->post_object = $value;
-				}
-				return $value;
+		switch($name) {
+		case 'status':
+			return $this->setstatus($value);
+		case 'date':
+			if ( !($value instanceOf HabariDateTime) ) {
+				$value = HabariDateTime::date_create($value);
+			}
+			break;
+		case 'post':
+			if ( is_int( $value ) )
+			{
+				// a post ID was passed
+				$p = Post::get(array('id'=>$value));
+				$this->post_id = $p->id;
+				$this->post_object = $p;
+			}
+			elseif ( is_string( $value ) )
+			{
+				// a post Slug was passed
+				$p = Post::get(array('slug'=>$value));
+				$this->post_id = $p->id;
+				$this->post_object = $p;
+			}
+			elseif ( is_object ( $value ) )
+			{
+				// a Post object was passed, so just use it directly
+				$this->post_id = $p->id;
+				$this->post_object = $value;
+			}
+			return $value;
 		}
 		return parent::__set( $name, $value );
 	}
@@ -270,7 +270,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns a Post object for the post of this comment
 	 * @param bool Whether to use the cached version or not.  Default to true
 	 * @return Post a Post object for the post of the current comment
-	 */
+	**/
 	private function get_post( $use_cache = TRUE )
 	{
 		if ( ! isset( $this->post_object ) || ( ! $use_cache)  ) {
@@ -284,16 +284,11 @@ class Comment extends QueryRecord implements IsContent
 	 * Gets the info object for this comment, which contains data from the commentinfo table
 	 * related to this comment.
 	 * @return CommentInfo object
-	 */
+	**/
 	private function get_info()
 	{
 		if ( ! $this->inforecords ) {
-			if ( 0 == $this->id ) {
-				$this->inforecords = new CommentInfo();
-			}
-			else {
-				$this->inforecords = new CommentInfo( $this->id );
-			}
+			$this->inforecords = new CommentInfo( $this->id );
 		}
 		return $this->inforecords;
 	}
@@ -310,7 +305,8 @@ class Comment extends QueryRecord implements IsContent
  			$this->newfields['status'] = $value;
 		}
  		else {
- 			switch ( strtolower($value) ) {
+ 			switch(strtolower($value))
+ 			{
  				case "approved":
  				case "approve":
  				case "ham":
@@ -335,7 +331,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns an associative array of comment types
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of comment type names => integer values
-	 */
+	**/
 	public static function list_comment_types( $refresh = false )
 	{
 		if ( ( ! $refresh ) && ( ! empty( self::$comment_type_list ) ) ) {
@@ -353,7 +349,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns an associative array of comment statuses
 	 * @param bool whether to force a refresh of the cached values
 	 * @return array An array of comment statuses names => interger values
-	 */
+	**/
 	public static function list_comment_statuses( $refresh = false )
 	{
 		if ( ( ! $refresh ) && ( ! empty( self::$comment_status_list ) ) ) {
@@ -373,7 +369,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns the action name of the comment status
 	 * @param mixed a comment status value, or name
 	 * @return string a string of the status action, or null
-	 */
+	**/
 	public static function status_action( $status )
 	{
 		if ( empty( self::$comment_status_actions ) ) {
@@ -388,8 +384,8 @@ class Comment extends QueryRecord implements IsContent
 			return self::$comment_status_actions[$status];
 		}
 		$statuses = array_flip( Comment::list_comment_statuses() );
-		if ( isset($statuses[$status]) ) {
-			return self::$comment_status_actions[$statuses[$status]];
+		if ( isset($statuses[$name]) ) {
+			return self::$comment_status_actions[$statuses[$name]];
 		}
 
 		return '';
@@ -400,7 +396,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns the integer value of the specified comment status, or false
 	 * @param mixed a comment status name or value
 	 * @return mixed an integer or boolean false
-	 */
+	**/
 	public static function status( $name )
 	{
 		$statuses = Comment::list_comment_statuses();
@@ -418,7 +414,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns the friendly name of a comment status, or null
 	 * @param mixed a comment status value, or name
 	 * @return mixed a string of the status name, or null
-	 */
+	**/
 	public static function status_name( $status )
 	{
 		$statuses = Comment::list_comment_statuses();
@@ -436,7 +432,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns the integer value of the specified comment type, or false
 	 * @param mixed a comment type name or number
 	 * @return mixed an integer or boolean false
-	 */
+	**/
 	public static function type( $name )
 	{
 		$types = Comment::list_comment_types();
@@ -454,7 +450,7 @@ class Comment extends QueryRecord implements IsContent
 	 * returns the friendly name of a comment type, or null
 	 * @param mixed a comment type number, or name
 	 * @return mixed a string of the comment type, or null
-	 */
+	**/
 	public static function type_name( $type )
 	{
 		$types = Comment::list_comment_types();
@@ -530,15 +526,6 @@ class Comment extends QueryRecord implements IsContent
 
 		// if we haven't returned by this point, we can neither manage the comment nor read it
 		return ACL::get_bitmask( 0 );
-	}
-	
-	/**
-	 * Returns a URL for the ->editlink property of this class.
-	 * @return string A url to edit this comment in the admin.
-	 */
-	private function get_editlink()
-	{
-		return URL::get('admin', "page=comment&id={$this->id}");
 	}
 }
 

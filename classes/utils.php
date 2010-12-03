@@ -15,7 +15,7 @@ class Utils
 	/**
 	 * Utils constructor
 	 * This class should not be instantiated.
-	 */
+	 **/
 	private function __construct()
 	{
 	}
@@ -26,7 +26,7 @@ class Utils
 	 * a querystring or an associative array.
 	 * @param mixed An associative array or querystring parameter list
 	 * @return array An associative array of parameters
-	 */
+	 **/
 	public static function get_params( $params )
 	{
 		if ( is_array( $params ) || $params instanceof ArrayObject || $params instanceof ArrayIterator ) {
@@ -42,10 +42,10 @@ class Utils
 	 * Forces a string to end in a single slash
 	 * @param string A string, usually a path
 	 * @return string The string with the slash added or extra slashes removed, but with one slash only
-	 */
+	 **/
 	public static function end_in_slash( $value )
 	{
-		return rtrim( $value, '\\/' ) . '/';
+		return rtrim($value, '\\/') . '/';
 	}
 
 	/**
@@ -53,15 +53,15 @@ class Utils
 	 * Redirects the request to a new URL
 	 * @param string $url The URL to redirect to, or omit to redirect to the current url
 	 * @param boolean $continue Whether to continue processing the script (default false for security reasons, cf. #749)
-	 */
+	 **/
 	public static function redirect( $url = '', $continue = false )
 	{
 		if ( $url == '' ) {
-			$url = Controller::get_full_url();
+			$url = Controller::get_full_url() . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
 		}
-		header( 'Location: ' . $url, true, 302 );
+		header('Location: ' . $url, true, 302);
 
-		if ( ! $continue ) exit;
+		if (!$continue) exit;
 	}
 
 	/**
@@ -69,8 +69,8 @@ class Utils
 	 * Returns RFC-3339 time from a time string or integer timestamp
 	 * @param mixed A string of time or integer timestamp
 	 * @return string An RFC-3339 formatted time
-	 */
-	public static function atomtime( $t )
+	 **/
+	public static function atomtime($t)
 	{
 		if ( ! is_numeric( $t ) ) {
 			$t = strtotime( $t );
@@ -86,10 +86,10 @@ class Utils
 	/**
 	 * function nonce
 	 * Returns a random 12-digit hex number
-	 */
+	 **/
 	public static function nonce()
 	{
-		return sprintf( '%06x', rand( 0, 16776960 ) ) . sprintf( '%06x', rand( 0, 16776960 ) );
+		return sprintf('%06x', rand(0, 16776960)) . sprintf('%06x', rand(0, 16776960));
 	}
 
 	/**
@@ -100,35 +100,36 @@ class Utils
 	 * @param String a nonce
 	 * @param String a timestamp
 	 * @return Array an array of WSSE authentication elements
-	 */
+	**/
 	public static function WSSE( $nonce = '', $timestamp = '' )
 	{
-		if ( '' === $nonce ) {
-			$nonce = Utils::crypt( Options::get( 'GUID' ) . Utils::nonce() );
+		if ( '' === $nonce )
+		{
+			$nonce = Utils::crypt( Options::get('GUID') . Utils::nonce() );
 		}
-		if ( '' === $timestamp ) {
+		if ( '' === $timestamp )
+		{
 			$timestamp = date('c');
 		}
 		$user = User::identify();
 		$wsse = array(
 			'nonce' => $nonce,
 			'timestamp' => $timestamp,
-			'digest' => base64_encode( pack( 'H*' , sha1( $nonce . $timestamp . $user->password ) ) )
-		);
+			'digest' => base64_encode(pack('H*', sha1($nonce . $timestamp .  $user->password)))
+			);
 		return $wsse;
 	}
 
 	/**
 	 * function stripslashes
 	 * Removes slashes from escaped strings, including strings in arrays
-	 */
-	public static function stripslashes( $value )
+	 **/
+	public static function stripslashes($value)
 	{
-		if ( is_array( $value ) ) {
-			$value = array_map( array( 'Utils', 'stripslashes' ) , $value );
-		}
-		elseif ( !empty( $value ) && is_string( $value ) ) {
-			$value = stripslashes( $value );
+		if ( is_array($value) ) {
+			$value = array_map( array('Utils', 'stripslashes') , $value );
+		}	elseif ( !empty($value) && is_string($value) ) {
+			$value = stripslashes($value);
 		}
 		return $value;
 	}
@@ -136,7 +137,7 @@ class Utils
 	/**
 	 * function addslashes
 	 * Adds slashes to escape strings, including strings in arrays
-	 */
+	 **/
 	public static function addslashes( $value )
 	{
 		if ( is_array( $value ) ) {
@@ -152,26 +153,50 @@ class Utils
 	 * function de_amp
 	 * Returns &amp; entities in a URL querystring to their previous & glory, for use in redirects
 	 * @param string $value A URL, maybe with a querystring
-	 */
-	public static function de_amp( $value )
+	 **/
+	public static function de_amp($value)
 	{
 		$url = InputFilter::parse_url( $value );
-		$url[ 'query' ] = str_replace( '&amp;', '&', $url[ 'query' ] );
-		return InputFilter::glue_url( $url );
+		$url['query'] = str_replace('&amp;', '&', $url['query']);
+		return InputFilter::glue_url($url);
+	}
+
+	/**
+	 * Restore a URL separated by a parse_url() call.
+	 * @param $parsed array An array as returned by parse_url()
+	 **/
+	public static function glue_url($parsed)
+	{
+		if ( ! is_array( $parsed ) ) {
+			return false;
+		}
+		$uri = isset( $parsed['scheme'] )
+			? $parsed['scheme'] . ':' . ( ( strtolower( $parsed['scheme'] ) == 'mailto' ) ? '' : '//' )
+			: '';
+		$uri.= isset( $parsed['user'] )
+			? $parsed['user'].( isset( $parsed['pass'] ) ? ':' . $parsed['pass'] : '' ) . '@'
+			: '';
+		$uri.= isset( $parsed['host'] ) ? $parsed['host'] : '';
+		$uri.= isset( $parsed['port'] ) ? ':'.$parsed['port'] : '';
+		$uri.= isset( $parsed['path'] ) ? $parsed['path'] : '';
+		$uri.= isset( $parsed['query'] ) ? '?'.$parsed['query'] : '';
+		$uri.= isset( $parsed['fragment'] ) ? '#'.$parsed['fragment'] : '';
+
+		return $uri;
 	}
 
 	/**
 	 * function revert_magic_quotes_gpc
 	 * Reverts magicquotes_gpc behavior
-	 */
+	 **/
 	public static function revert_magic_quotes_gpc()
 	{
 		/* We should only revert the magic quotes once per page hit */
 		static $revert = true;
-		if ( get_magic_quotes_gpc() && $revert ) {
-			$_GET = self::stripslashes( $_GET );
-			$_POST = self::stripslashes( $_POST );
-			$_COOKIE = self::stripslashes( $_COOKIE );
+		if ( get_magic_quotes_gpc() && $revert) {
+			$_GET = self::stripslashes($_GET);
+			$_POST = self::stripslashes($_POST);
+			$_COOKIE = self::stripslashes($_COOKIE);
 			$revert = false;
 		}
 	}
@@ -184,7 +209,7 @@ class Utils
 	 */
 	public static function quote_spaced( $value )
 	{
-		return ( strpos( $value, ' ' ) === false ) ? $value : '"' . $value . '"';
+		return (strpos($value, ' ') === false) ? $value : '"' . $value . '"';
 	}
 
 	/**
@@ -196,10 +221,11 @@ class Utils
 	 */
 	public static function implode_quoted( $separator, $values )
 	{
-		if ( ! is_array( $values ) ) {
+		if ( ! is_array( $values ) )
+		{
 			$values = array();
 		}
-		$values = array_map( array( 'Utils', 'quote_spaced' ), $values );
+		$values = array_map(array('Utils', 'quote_spaced'), $values);
 		return implode( $separator, $values );
 	}
 
@@ -214,9 +240,6 @@ class Utils
 	 */
 	public static function placeholder_string( $count )
 	{
-		if ( Utils::is_traversable( $count ) ) {
-			$count = count( $count );
-		}
 		return rtrim( str_repeat( '?,', $count ), ',' );
 	}
 
@@ -226,13 +249,13 @@ class Utils
 	 * @param integer Number of items in the archive
 	 * @param integer Number of items per page
 	 * @returns integer Number of pages based on pagination option.
-	 */
-	public static function archive_pages( $item_total, $items_per_page = NULL )
+	 **/
+	public static function archive_pages( $item_total, $items_per_page = null )
 	{
 		if ( $items_per_page ) {
-			return ceil( $item_total / $items_per_page );
+			return ceil($item_total / $items_per_page);
 		}
-		return ceil( $item_total / Options::get( 'pagination' ) );
+		return ceil($item_total / Options::get('pagination'));
 	}
 
 	/**
@@ -245,7 +268,7 @@ class Utils
 	* @param string $postfix The postfix for the returned value
 	* @return string The wrapped value
 	*/
-	public static function map_array( $value, $prefix = '{$', $postfix = '}' )
+	public static function map_array($value, $prefix = '{$', $postfix = '}')
 	{
 		return $prefix . $value . $postfix;
 	}
@@ -253,8 +276,8 @@ class Utils
 	/**
 	 * Helper function used by debug()
 	 * Not for external use.
-	 */
-	public static function debug_reveal( $show, $hide, $debugid, $close = false )
+	 **/
+	public static function debug_reveal($show, $hide, $debugid, $close = false)
 	{
 		$reshow = $restyle = $restyle2 = '';
 		if ( $close ) {
@@ -268,10 +291,10 @@ class Utils
 	/**
 	 * Outputs a call stack with parameters, and a dump of the parameters passed.
 	 * @params mixed Any number of parameters to output in the debug box.
-	 */
+	 **/
 	public static function debug()
 	{
-		$debugid = md5( microtime() );
+		$debugid = md5(microtime());
 		$tracect = 0;
 
 		$fooargs = func_get_args();
@@ -283,7 +306,7 @@ class Utils
 				</script>
 				<style type=\"text/css\">
 				.utils__debugger{background-color:#550000;border:1px solid red;text-align:left;}
-				.utils__debugger pre{margin:5px;background-color:#000;overflow-x:scroll}
+				.utils__debugger pre{margin:5px;background-color:#000}
 				.utils__debugger pre em{color:#dddddd;}
 				.utils__debugger table{background-color:#770000;color:white;width:100%;}
 				.utils__debugger tr{background-color:#000000;}
@@ -292,7 +315,7 @@ class Utils
 				.utils__debugger .utils__arg a{color:#ff3333;}
 				.utils__debugger .utils__arg span{display:none;}
 				.utils__debugger .utils__arg span span{display:inline;}
-				.utils__debugger .utils__arg span .utils__block{display:block;background:#990000;margin:0px 2em;border-radius:10px;-moz-border-radius:10px;-webkit-border-radius:9px;padding:5px;}
+				.utils__debugger .utils__arg span .utils__block{display:block;background:#990000;margin:0px 2em;-moz-border-radius:10px;padding:5px;}
 				</style>
 			";
 			echo $output;
@@ -303,29 +326,29 @@ class Utils
 			$backtrace = array_reverse(debug_backtrace(), true);
 			$odd = '';
 			$tracect = 0;
-			foreach ( $backtrace as $trace ) {
+			foreach($backtrace as $trace) {
 				$file = $line = $class = $type = $function = '';
 				$args = array();
-				extract( $trace );
-				if ( isset( $class ) ) $fname = $class . $type . $function; else $fname = $function;
-				if ( !isset( $file ) || $file=='' ) $file = '[Internal PHP]'; else $file = basename( $file );
+				extract($trace);
+				if ( isset($class) ) $fname = $class . $type . $function; else	$fname = $function;
+				if ( !isset($file) || $file=='' ) $file = '[Internal PHP]'; else $file = basename($file);
 				$odd = $odd == '' ? 'class="utils__odd"' : '';
 				$output .= "<tr {$odd}><td>{$file} ({$line}):</td><td>{$fname}(";
 				$comma = '';
-				foreach ( (array)$args as $arg ) {
+				foreach((array)$args as $arg) {
 					$tracect++;
-					$argout = print_r( $arg, 1 );
-					$output .= $comma . Utils::debug_reveal( gettype( $arg ), htmlentities( $argout ), $debugid . $tracect, true );
+					$argout = print_r($arg,1);
+					$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
 					$comma = ', ';
 				}
 				$output .= ");</td></tr>";
 			}
 			$output .= "</table>";
-			echo Utils::debug_reveal( '<small>Call Stack</small>', $output, $debugid );
+			echo Utils::debug_reveal('<small>Call Stack</small>', $output, $debugid);
 		}
 		echo "<pre style=\"color:white;\">";
-		foreach ( $fooargs as $arg1 ) {
-			echo '<em>' . gettype( $arg1 ) . '</em> ';
+		foreach( $fooargs as $arg1 ) {
+			echo '<em>' . gettype($arg1) . '</em> ';
 			echo htmlentities( print_r( $arg1, TRUE ) ) . "<br>";
 		}
 		echo "</pre></div>";
@@ -334,17 +357,17 @@ class Utils
 	/**
 	 * Outputs debug information like ::debug() but using Firebug's Console.
 	 * @params mixed Any number of parameters to output in the debug box.
-	 */
+	 **/
 	public static function firedebug()
 	{
 		$fooargs = func_get_args();
 		$output = "<script type=\"text/javascript\">\nif(window.console){\n";
-		$backtrace = array_reverse( debug_backtrace(), true );
-		$output .= Utils::firebacktrace( $backtrace );
+		$backtrace = array_reverse(debug_backtrace(), true);
+		$output .= Utils::firebacktrace($backtrace);
 
-		foreach ( $fooargs as $arg1 ) {
-			$output .= "console.info(\"%s:  %s\", \"" . gettype( $arg1 ) . "\"";
-			$output .= ", \"" . str_replace( "\n", '\n', addslashes( print_r( $arg1,1 ) ) ) . "\");\n";
+		foreach( $fooargs as $arg1 ) {
+			$output .= "console.info(\"%s:  %s\", \"" . gettype($arg1) . "\"";
+			$output .= ", \"" . str_replace("\n", '\n', addslashes(print_r($arg1,1))) . "\");\n";
 		}
 		$output .= "console.groupEnd();\n}\n</script>";
 		echo $output;
@@ -356,31 +379,31 @@ class Utils
 	 * @param array $backtrace An array of backtrace details from debug_backtrace()
 	 * @return string Javascript output that will display the backtrace in the Firebug console.
 	 */
-	public static function firebacktrace( $backtrace )
+	public static function firebacktrace($backtrace)
 	{
 		$output = '';
-		extract( end( $backtrace ) );
-		if ( isset( $class ) ) $fname = $class . $type . $function; else $fname = $function;
-		if ( !isset( $file ) || $file=='' ) $file = '[Internal PHP]'; else $file = basename( $file );
-		$output .= "console.group(\"%s(%s):  %s(...)\", \"" . basename( $file ) . "\", \"{$line}\", \"{$fname}\");\n";
+		extract(end($backtrace));
+		if ( isset($class) ) $fname = $class . $type . $function; else	$fname = $function;
+		if ( !isset($file) || $file=='' ) $file = '[Internal PHP]'; else $file = basename($file);
+		$output .= "console.group(\"%s(%s):  %s(...)\", \"".basename($file)."\", \"{$line}\", \"{$fname}\");\n";
 		foreach ( $backtrace as $trace ) {
 			$file = $line = $class = $type = $function = '';
 			$args = array();
-			extract( $trace );
-			if ( isset( $class ) ) $fname = $class . $type . $function; else $fname = $function;
-			if ( !isset( $file ) || $file=='' ) $file = '[Internal PHP]'; else $file = basename( $file );
+			extract($trace);
+			if ( isset($class) ) $fname = $class . $type . $function; else	$fname = $function;
+			if ( !isset($file) || $file=='' ) $file = '[Internal PHP]'; else $file = basename($file);
 
 			$output .= "console.group(\"%s(%s):  %s(%s)\", \"{$file}\", \"{$line}\", \"{$fname}\", \"";
 
 			$output2 = $comma = $argtypes = '';
-			foreach ( (array)$args as $arg ) {
-				$argout = str_replace( "\n", '\n', addslashes( print_r( $arg,1 ) ) );
+			foreach((array)$args as $arg) {
+				$argout = str_replace("\n", '\n', addslashes(print_r($arg,1)));
 				//$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
-				$argtypes .= $comma . gettype( $arg );
+				$argtypes .= $comma . gettype($arg);
 				$output2 .= "console.log(\"$argout\");\n";
 				$comma = ', ';
 			}
-			$argtypes = trim( $argtypes );
+			$argtypes = trim($argtypes);
 			$output .= "{$argtypes}\");\n{$output2}";
 			$output .= "console.groupEnd();\n";
 			//$output .= ");</td></tr>";
@@ -400,7 +423,13 @@ class Utils
 	public static function crypt( $password, $hash = NULL )
 	{
 		if ( $hash == NULL ) {
-			return self::ssha512( $password, $hash );
+			// encrypt
+			if ( function_exists( 'hash' ) ) { // PHP >= 5.1.2
+				return self::ssha512( $password, $hash );
+			}
+			else {
+				return self::ssha( $password, $hash );
+			}
 		}
 		elseif ( strlen( $hash ) > 3 ) { // need at least {, } and a char :p
 			// verify
@@ -414,7 +443,7 @@ class Utils
 					case 'md5':
 						return self::$algo( $password, $hash );
 					default:
-						Error::raise( sprintf( _t( 'Unsupported digest algorithm "%s"' ), $algo ) );
+						Error::raise( sprintf(_t('Unsupported digest algorithm "%s"'), $algo) );
 						return FALSE;
 				}
 			}
@@ -424,7 +453,7 @@ class Utils
 			}
 		}
 		else {
-			Error::raise( _t( 'Invalid hash' ) );
+			Error::raise( _t('Invalid hash') );
 		}
 	}
 
@@ -475,7 +504,7 @@ class Utils
 			// create salt (4 byte)
 			$salt = '';
 			for ( $i = 0; $i < 4; $i++ ) {
-				$salt .= chr( mt_rand( 0, 255 ) );
+				$salt.= chr( mt_rand( 0, 255 ) );
 			}
 			// get digest
 			$digest = sha1( $password . $salt, TRUE );
@@ -485,7 +514,7 @@ class Utils
 		else { // verify
 			// is this a SSHA hash?
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( _t( 'Invalid hash' ) );
+				Error::raise( _t('Invalid hash') );
 				return FALSE;
 			}
 			// cut off {SSHA} marker
@@ -517,14 +546,14 @@ class Utils
 		if ( $hash == NULL ) { // encrypt
 			$salt = '';
 			for ( $i = 0; $i < 4; $i++ ) {
-				$salt .= chr( mt_rand( 0, 255 ) );
+				$salt.= chr( mt_rand( 0, 255 ) );
 			}
 			$digest = hash( 'sha512', $password . $salt, TRUE );
 			return $marker . base64_encode( $digest . $salt );
 		}
 		else { // verify
 			if ( ! substr( $hash, 0, strlen( $marker ) ) == $marker ) {
-				Error::raise( _t( 'Invalid hash' ) );
+				Error::raise( _t('Invalid hash') );
 				return FALSE;
 			}
 			$hash = substr( $hash, strlen( $marker ) );
@@ -541,11 +570,11 @@ class Utils
 	 * @param integer $timestamp A unix timestamp
 	 * @return array An array of date data
 	 */
-	public static function getdate( $timestamp )
+	public static function getdate($timestamp)
 	{
-		$info = getdate( $timestamp );
-		$info[ 'mon0' ] = substr( '0' . $info[ 'mon' ], -2, 2 );
-		$info[ 'mday0' ] = substr( '0' . $info[ 'mday' ], -2, 2 );
+		$info = getdate($timestamp);
+		$info['mon0']= substr('0' . $info['mon'], -2, 2);
+		$info['mday0']= substr('0' . $info['mday'], -2, 2);
 		return $info;
 	}
 
@@ -554,17 +583,17 @@ class Utils
 	 * @param string $format The format for the date.  If it contains non-escaped percent signs, it uses strftime(),	otherwise date()
 	 * @param integer $timestamp The unix timestamp of the time to format
 	 * @return string The formatted time
-	 */
-	public static function locale_date( $format, $timestamp )
+	 **/
+	public static function locale_date($format, $timestamp)
 	{
-		$matches = preg_split( '/((?<!\\\\)%[a-z]\\s*)/iu', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+		$matches = preg_split( '/((?<!\\\\)%[a-z]\\s*)/i', $format, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 		$output = '';
-		foreach ( $matches as $match ) {
+		foreach( $matches as $match ) {
 			if ( $match{0} == '%' ) {
-				$output .= strftime( $match, $timestamp );
+				$output.= strftime($match, $timestamp);
 			}
 			else {
-				$output .= date( $match, $timestamp );
+				$output.= date($match, $timestamp);
 			}
 		}
 		return $output;
@@ -578,14 +607,13 @@ class Utils
 	 */
 	public static function slugify( $string, $separator = '-' )
 	{
-		// Decode HTML entities
 		// Replace non-alphanumeric characters to dashes. Exceptions: %, _, -
 		// Note that multiple separators are collapsed automatically by the preg_replace.
 		// Convert all characters to lowercase.
 		// Trim spaces on both sides.
-		$slug = rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}_]+/u', $separator, preg_replace( '/\p{Po}/u', '', html_entity_decode( $string ) ) ) ), $separator );
+		$slug = rtrim( MultiByte::strtolower( preg_replace( '/[^\p{L}\p{N}_]+/u', $separator, preg_replace( '/\p{Po}/u', '', $string ) ) ), $separator );
 		// Let people change the behavior.
-		$slug = Plugins::filter( 'slugify', $slug, $string );
+		$slug = Plugins::filter('slugify', $slug, $string);
 
 		return $slug;
 	}
@@ -599,21 +627,21 @@ class Utils
 	 * @param array $properties An associative array of additional properties to assign to the select control
 	 * @return string The select control markup
 	 */
-	public static function html_select( $name, $options, $current = NULL, $properties = array())
+	public static function html_select( $name, $options, $current = null, $properties = array())
 	{
 		$output = '<select id="' . $name . '" name="' . $name . '"';
-		foreach ( $properties as $key => $value ) {
-			$output .= " {$key}=\"{$value}\"";
+		foreach($properties as $key => $value) {
+			$output.= " {$key}=\"{$value}\"";
 		}
-		$output .= ">\n";
-		foreach ( $options as $value => $text ){
-			$output .= '<option value="' . $value . '"';
+		$output.= ">\n";
+		foreach($options as $value => $text){
+			$output.= '<option value="'.$value.'"';
 			if ( $current == (string)$value ) {
-				$output .= ' selected="selected"';
+				$output.= ' selected';
 			}
-			$output .= '>' . $text . "</option>\n";
+			$output.= '>' . $text . "</option>\n";
 		}
-		$output .= '</select>';
+		$output.= '</select>';
 		return $output;
 	}
 
@@ -626,7 +654,7 @@ class Utils
 	 *	an array containing "name" and "value".  If the checkbox
 	 *	should be checked, it should have a "checked" element.
 	 * @return string The HTML of the checkboxes
-	 */
+	**/
 	public static function html_checkboxes( $name, $options )
 	{
 		$output = '';
@@ -635,15 +663,16 @@ class Utils
 			$multi = true;
 		}
 		foreach ( $options as $option ) {
-			$output .= '<input type="checkbox" id="' . $option[ 'name' ] . '" name="' . $option[ 'name' ];
+			$output.= '<input type="checkbox" id="' . $option['name'] . '" name="' . $option['name'];
 			if ( $multi ) {
-				$output .= '[]';
+				$output.= '[]';
 			}
-			$output .= '" value="' . $option[ 'value' ] . '"';
-			if ( isset( $option[ 'checked' ] ) ) {
-				$output .= ' checked';
+			$output.= '" value="' . $option['value'] . '"';
+			if ( isset($option['checked']) )
+			{
+				$output.= ' checked';
 			}
-			$output .= '>';
+			$output.= '>';
 		}
 		return $output;
 	}
@@ -655,29 +684,29 @@ class Utils
 	 * @param bool Whether to place the ellipsis in the middle (true) or
 	 * at the end (false)
 	 * @return string The truncated string
-	 */
-	public static function truncate( $str, $len = 10, $middle = TRUE )
+	 **/
+	public static function truncate($str, $len =10, $middle =true)
 	{
 		// make sure $len is a positive integer
-		if ( ! is_numeric( $len ) || ( 0 > $len ) ) {
+		if ( ! is_numeric($len) || ( 0 > $len ) ) {
 			return $str;
 		}
 		// if the string is less than the length specified, bail out
-		if ( MultiByte::strlen( $str ) <= $len ) {
+		if ( MultiByte::strlen($str) <= $len ) {
 			return $str;
 		}
 
 		// okay.  Shuold we place the ellipse in the middle?
-		if ( $middle ) {
+		if ($middle) {
 			// yes, so compute the size of each half of the string
-			$len = round( ( $len - 3 ) / 2 );
+			$len = round(($len-3)/2);
 			// and place an ellipse in between the pieces
-			return MultiByte::substr( $str, 0, $len ) . '...' . MultiByte::substr( $str, -$len );
+			return MultiByte::substr($str, 0, $len) . '...' . MultiByte::substr($str, -$len);
 		}
 		else {
 			// no, the ellipse goes at the end
-			$len = $len - 3;
-			return MultiByte::substr( $str, 0, $len ) . '...';
+			$len = $len-3;
+			return MultiByte::substr($str, 0, $len ) . '...';
 		}
 	}
 
@@ -688,7 +717,7 @@ class Utils
 	 * @param string $code The code string to be evaluated. It does not have to contain PHP opening tags.
 	 * @return bool Returns TRUE if the lint check passed, and FALSE if the link check failed.
 	 */
-	public static function php_check_syntax( $code, &$error = NULL )
+	public static function php_check_syntax( $code, &$error = null )
 	{
 		$b = 0;
 
@@ -710,7 +739,7 @@ class Utils
 		}
 
 		if ( $b ) {
-			$error = _t( 'Unbalanced braces.' );
+			$error = _t('Unbalanced braces.');
 			return false; // Unbalanced braces would break the eval below
 		}
 		else {
@@ -719,7 +748,7 @@ class Utils
 			$error_reporting = error_reporting( E_ALL ^ E_NOTICE );
 			$code = eval( ' if(0){' . $code . '}' ); // Put $code in a dead code sandbox to prevent its execution
 			ini_set( 'display_errors', $display_errors ); // be a good citizen
-			error_reporting( $error_reporting );
+			error_reporting($error_reporting);
 			$error = ob_get_clean();
 
 			return false !== $code;
@@ -731,7 +760,7 @@ class Utils
 	 *
 	 * @see Utils::php_check_syntax()
 	 */
-	public static function php_check_file_syntax( $file, &$error = NULL )
+	public static function php_check_file_syntax( $file, &$error = null )
 	{
 		// Prepend and append PHP opening tags to prevent eval() failures.
 		$code = ' ?>' . file_get_contents( $file ) . '<?php ';
@@ -792,13 +821,13 @@ class Utils
 			'PiB'
 			);
 		$tick = 0;
-		$max_tick = count( $sizes ) - 1;
-		while ( $bytesize > 1024 && $tick < $max_tick ) {
+		$max_tick = count($sizes) - 1;
+		while($bytesize > 1024 && $tick < $max_tick) {
 			$tick++;
 			$bytesize /= 1024;
 		}
 
-		return sprintf( '%0.2f%s', $bytesize, $sizes[ $tick ] );
+		return sprintf('%0.2f%s', $bytesize, $sizes[$tick]);
 	}
 
 	public static function truncate_log()
@@ -816,8 +845,8 @@ class Utils
 	 */
 	public static function single_array( $element )
 	{
-		if ( !is_array( $element ) ) {
-			return array( $element );
+		if ( !is_array($element) ) {
+			return array($element);
 		}
 		return $element;
 	}
@@ -830,22 +859,16 @@ class Utils
 	 */
 	public static function mimetype( $filename )
 	{
-		$mimetype = NULL;
-		if ( function_exists( 'finfo_open' ) ) {
-			$finfo = finfo_open( FILEINFO_MIME );
-			$mimetype = finfo_file( $finfo, $filename );
-			/* FILEINFO_MIME Returns the mime type and mime encoding as defined by RFC 2045.
-			 * So only return the mime type, not the encoding.
-			 */
-			if ( ( $pos = strpos( $mimetype, ';' ) ) !== FALSE ) {
-				$mimetype = substr( $mimetype, 0, $pos );
-			}
-			finfo_close( $finfo );
+		$mimetype =null;
+		if ( function_exists('finfo_open') ) {
+			$finfo = finfo_open(FILEINFO_MIME);
+			$mimetype = finfo_file($finfo, $filename);
+			finfo_close($finfo);
 		}
 
 		if ( empty( $mimetype ) ) {
-			$pi = pathinfo( $filename );
-			switch ( strtolower( $pi[ 'extension' ] ) ) {
+			$pi = pathinfo($filename);
+			switch(strtolower($pi['extension'])) {
 				// hacky, hacky, kludge, kludge...
 				case 'jpg':
 				case 'jpeg':
@@ -872,7 +895,7 @@ class Utils
 					break;
 			}
 		}
-		$mimetype = Plugins::filter( 'get_mime_type', $mimetype, $filename );
+		$mimetype = Plugins::filter('get_mime_type', $mimetype, $filename);
 		return $mimetype;
 	}
 
@@ -903,7 +926,7 @@ class Utils
 	 * @param string $parameters Additional parameters to mail()
 	 * @return boolean True if sending the message succeeded
 	 */
-	public static function mail( $to, $subject, $message, $headers = array(), $parameters = '' )
+	public static function mail($to, $subject, $message, $headers = array(), $parameters = '')
 	{
 		$mail = array(
 			'to' => $to,
@@ -921,16 +944,16 @@ class Utils
 		}
 		else {
 			$additional_headers = array();
-			foreach ( $headers as $header_key => $header_value ) {
-				$header_key = trim( $header_key );
-				$header_value = trim( $header_value );
-				if ( strpos( $header_key . $header_value, "\n" ) === false ) {
+			foreach($headers as $header_key => $header_value) {
+				$header_key = trim($header_key);
+				$header_value = trim($header_value);
+				if ( strpos($header_key.$header_value, "\n") === false ) {
 					$additional_headers[] = "{$header_key}: {$header_value}";
 				}
 			}
-			$additional_headers = implode( "\r\n", $additional_headers );
+			$additional_headers = implode("\r\n", $additional_headers);
 		}
-		return mail( $to, $subject,$message, $additional_headers, $parameters );
+		return mail($to, $subject,$message, $additional_headers, $parameters);
 	}
 
 	/**
@@ -939,13 +962,13 @@ class Utils
 	 * @param integer $length Length of the password, if not provded, 10
 	 * @return string A random password
 	 */
-	public static function random_password( $length = 10 )
+	public static function random_password($length = 10)
 	{
 		$password = '';
-		$character_set = '1234567890!@#$^*qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVNBM';
-		$data = str_split($character_set);
-		for ( $i = 0; $i < $length; $i++ ) {
-			$password .= $data[rand(1, strlen($character_set)) - 1];
+		$data = str_split('1234567890!@#$^*qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVNBM');
+		$rand = array_rand($data, $length);
+		foreach($rand as $index) {
+			$password .= $data[$index];
 		}
 		return $password;
 	}
@@ -973,20 +996,20 @@ class Utils
 	 *
 	 * @param array $expected Expected HTTP methods for the request
 	 */
-	public static function check_request_method( $expected )
+	public static function check_request_method($expected)
 	{
 		if ( !in_array( $_SERVER['REQUEST_METHOD'], $expected ) ) {
 			if ( in_array( $_SERVER['REQUEST_METHOD'], array( 'GET', 'HEAD', 'POST', 'PUT', 'DELETE' ) ) ) {
-				header( 'HTTP/1.1 405 Method Not Allowed', true, 405 );
+				header( 'HTTP/1.1 405 Method Not Allowed' );
 			}
 			else {
-				header( 'HTTP/1.1 501 Method Not Implemented', true, 501 );
+				header( 'HTTP/1.1 501 Method Not Implemented' );
 			}
 			header( 'Allow: ' . implode( ',', $expected ) );
 			exit;
 		}
 	}
-
+	
 	/**
 	 * Returns a regex pattern equivalent to the given glob pattern
 	 *
@@ -1006,138 +1029,8 @@ class Utils
 		$pattern = str_replace( '\\*', '.*', $pattern );
 		$pattern = str_replace( '\\?', '.', $pattern );
 		$pattern = str_replace( array_keys( $braces ), array_values( $braces ), $pattern );
-		return '/' . $pattern . '/';
+		return '/'.$pattern.'/';
 	}
 
-	/**
-	 * Return the port used for a specific URL scheme
-	 *
-	 * @param string $scheme The scheme in question
-	 * @return integer the port used for the scheme
-	 */
-	public static function scheme_ports( $scheme = NULL )
-	{
-		$scheme_ports = array(
-			'ftp' => 21,
-			'ssh' => 22,
-			'telnet' => 23,
-			'http' => 80,
-			'pop3' => 110,
-			'nntp' => 119,
-			'news' => 119,
-			'irc' => 194,
-			'imap3' => 220,
-			'https' => 443,
-			'nntps' => 563,
-			'imaps' => 993,
-			'pop3s' => 995,
-		);
-		if ( is_null( $scheme ) ) {
-			return $scheme_ports;
-		}
-		return $scheme_ports[ $scheme ];
-	}
-
-	/**
-	 * determines if the given that is travesable in foreach
-	 *
-	 * @param mixed $data
-	 * @return bool
-	 */
-	public static function is_traversable( $data )
-	{
-		return ( is_array( $data ) || ( $data instanceof Traversable && $data instanceof Countable ) );
-	}
-
-	/**
-	* Get the remote IP address, but try and take into account users who are
-	* behind proxies, whether they know it or not.
-	* @return The client's IP address.
-	*/
-	public static function get_ip()
-	{
-		if ( $_SERVER["HTTP_CLIENT_IP"] ) {
-			return $_SERVER["HTTP_CLIENT_IP"];
-		}
-		else if ( $_SERVER["HTTP_FORWARDED"] ) {
-			return $_SERVER["HTTP_FORWARDED"];
-		}
-		else if ( $_SERVER["HTTP_X_FORWARDED"] ) {
-			return $_SERVER["HTTP_X_FORWARDED"];
-		}
-		else if ( $_SERVER["HTTP_X_FORWARDED_FOR"] ) {
-			return $_SERVER["HTTP_X_FORWARDED_FOR"];
-		}
-		else {
-			return $_SERVER["REMOTE_ADDR"];
-		}
-	}
-
-	/**
-	* Convenience function to call htmlspecialchars() with the correct flags and encoding.
-	* See http://php.net/manual/en/function.htmlspecialchars.php for details on the parameters
-	* and purpose of the function.
-	*
-	* @param $string. string. The string to escape
-	* @param $quote_flag. integer. Sets what quotes and doublequotes are replaced
-	* @param $encoding. string. The encoding of the passed string
-	* @param $double_enc. boolean. Flag to tell whether to double escape affected characters or not
-	*
-	* @return The escaped string
-	*/
-	public static function htmlspecialchars( $string, $quote_flag = ENT_COMPAT, $encoding = 'UTF-8' )
-	{
-		return htmlspecialchars( $string, $quote_flag, $encoding );
-	}
-
-	/**
-	* Convenience function to find a usable PCRE regular expression
-	* delimiter for a particular string.  (I.e., some character that
-	* *isn't* found in the string.)
-	*
-	* @param $string. string. The string for which to find a delimiter.
-	* @param $choices. string. Delimiters from which to choose one.
-	* @param $encoding. string. The encoding of the passed string
-	*
-	* @return A valid regex delimiter, or null if none of the choices work.
-	*/
-	public static function regexdelim( $string, $choices = NULL )
-	{
-		/*
-		 * Supply some default possibilities for delimiters if we
-		 * weren't given an explicit list.
-		 */
-		if ( ! isset( $choices ) )
-		{
-			$choices = sprintf( '%c%c%c%c%c%c%c',
-					   167,      /* § */
-					   164,      /* ¤ */
-					   165,      /* ¥ */
-					   ord( '`' ),
-					   ord( '~' ),
-					   ord( '%' ),
-					   ord( '#' )
-			    );
-		}
-		$a_delims = str_split( $choices );
-		/*
-		 * Default condition is 'we didn't find one.'
-		 */
-		$delim = NULL;
-		/*
-		 * Check for each possibility by scanning the text for it.
-		 * If it isn't found, it's a valid choice, so break out of the
-		 * loop.
-		 */
-		foreach ( $a_delims as $tdelim )
-		{
-			if ( ! strstr( $string, $tdelim ) )
-			{
-				$delim = $tdelim;
-				break;
-			}
-		}
-		return $delim;
-	}
 }
 ?>

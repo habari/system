@@ -42,7 +42,7 @@ class XMLRPCServer extends ActionHandler
 		XMLRPCUtils::encode_arg($response->params->param, $returnvalue);
 		
 		ob_end_clean();
-		header('Content-Type: text/xml;charset=utf-8');
+		header('Content-Type: text/xml');
 		echo trim($response->asXML());
 		exit;
 	}

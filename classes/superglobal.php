@@ -252,7 +252,7 @@ class SuperGlobal extends ArrayIterator
 	 * @param string $search_regex (optional) The regex search value
 	 * @return SuperGlobal The re-keyed array
 	 **/
-	public function rekey($replacement = '{\$$0}', $search_regex = '/^.*$/')
+	public function rekey($replacement = '{\$$0}', $search_regex = '%^.*$%')
 	{
 		$output = array();
 		foreach($this->get_array_copy_raw() as $k => $v) {

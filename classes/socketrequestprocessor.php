@@ -53,23 +53,10 @@ class SocketRequestProcessor implements RequestProcessor
 		$_errstr = '';
 		
 		if ( !isset( $urlbits['port'] ) || $urlbits['port'] == 0 ) {
-			if ( array_key_exists( $urlbits['scheme'], Utils::scheme_ports() ) ) { 
-				$urlbits['port'] = Utils::scheme_ports($urlbits['scheme']); 
-			} 
-			else { 
-				// todo: Error::raise()? 
-				$urlbits['port'] = 80; 
-			} 
-		}
-
-		if ( !in_array( $urlbits['scheme'], stream_get_transports() ) ) {
-			$transport = ( $urlbits['scheme'] == 'https' ) ? 'ssl' : 'tcp';
-		}
-		else {
-			$transport = $urlbits['scheme'];
+			$urlbits['port'] = 80;
 		}
 		
-		$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
+		$fp = @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
 		
 		if ( $fp === FALSE ) {
 			return Error::raise( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
@@ -127,7 +114,7 @@ class SocketRequestProcessor implements RequestProcessor
 		// and thus not break parse_url
 		$header = str_replace( "\r\n", "\n", $header );
 		
-		preg_match( '#^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)#', $header, $status_matches );
+		preg_match( '|^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)|', $header, $status_matches );
 		
 		if ( $status_matches[1] == '301' || $status_matches[1] == '302' ) {
 			if ( preg_match( '|^Location: (.+)$|mi', $header, $location_matches ) ) {
@@ -171,8 +158,8 @@ class SocketRequestProcessor implements RequestProcessor
 			$chunk_size = hexdec( $chunk_size_str );
 			
 			if ( $chunk_size > 0 ) {
-				$result .= MultiByte::substr( $chunk[1], 0, $chunk_size );
-				$body = MultiByte::substr( $chunk[1], $chunk_size+1 );
+				$result.= substr( $chunk[1], 0, $chunk_size );
+				$body = substr( $chunk[1], $chunk_size+1 );
 			}
 		}
 		while ( $chunk_size > 0 );

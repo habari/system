@@ -70,13 +70,10 @@ class User extends QueryRecord
 	 */
 	public static function anonymous()
 	{
-		static $anonymous = null;
-		if ( $anonymous == null ) {
-			$anonymous = new User();
-			$anonymous->id = 0;
-			$anonymous->username = _t('Anonymous');
-			Plugins::act('create_anonymous_user', $anonymous);
-		}
+		$anonymous = new User();
+		$anonymous->id = 0;
+		$anonymous->username = _t('Anonymous');
+		Plugins::act('create_anonymous_user', $anonymous);
 		return $anonymous;
 	}
 	
@@ -257,19 +254,24 @@ class User extends QueryRecord
 		elseif(!is_object($user)) {
 			Plugins::act( 'user_authenticate_failure', 'plugin' );
 			EventLog::log( sprintf(_t('Login attempt (via authentication plugin) for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
-			Session::error( _t( 'Invalid username/password' ) );
+			Session::error('Invalid username/password');
 			self::$identity = null;
 			return false;
 		}
 
-		// Check by name first. Allows for the '@' to be in the username, without it being an email address
-		$user = self::get_by_name( $who );
+		if ( strpos( $who, '@' ) !== FALSE ) {
+			// we were given an email address
+			$user = self::get_by_email( $who );
+		}
+		else {
+			$user = self::get_by_name( $who );
+		}
 
 		if ( ! $user ) {
 			// No such user.
 			Plugins::act( 'user_authenticate_failure', 'non-existent' );
-			EventLog::log( _t( 'Login attempt for non-existent user %s', array( $who ) ), 'warning', 'authentication', 'habari' );
-			Session::error( _t( 'Invalid username/password' ) );
+			EventLog::log( sprintf(_t('Login attempt for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
+			Session::error('Invalid username/password');
 			self::$identity = null;
 			return false;
 		}
@@ -278,7 +280,7 @@ class User extends QueryRecord
 			// valid credentials were supplied
 			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( _t( 'Successful login for %s', array( $user->username ) ), 'info', 'authentication', 'habari' );
+			EventLog::log( sprintf(_t('Successful login for %s'), $user->username), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
@@ -286,8 +288,8 @@ class User extends QueryRecord
 		else {
 			// Wrong password.
 			Plugins::act( 'user_authenticate_failure', 'bad_pass' );
-			EventLog::log( _t( 'Wrong password for user %s', array( $user->username ) ), 'warning', 'authentication', 'habari' );
-			Session::error( _t( 'Invalid username/password' ) );
+			EventLog::log( sprintf(_t('Wrong password for user %s'), $user->username), 'warning', 'authentication', 'habari' );
+			Session::error('Invalid username/password');
 			self::$identity = null;
 			return false;
 		}
@@ -310,13 +312,13 @@ class User extends QueryRecord
 			// Got a User ID
 			$user = self::get_by_id( $who );
 		}
+		elseif ( strpos( $who, '@' ) !== FALSE ) {
+			// Got an email address
+			$user = self::get_by_email( $who );
+		}
 		else {
-			// Got username or email
+			// Got username
 			$user = self::get_by_name( $who );
-			if ( ! $user && strpos( $who, '@' ) !== FALSE ) {
-				// Got an email address
-				$user = self::get_by_email( $who );
-			}
 		}
 		// $user will be a user object, or false depending on the
 		// results of the get_by_* method called above
@@ -464,15 +466,11 @@ class User extends QueryRecord
 		foreach( $token_access as $token => $access ) {
 			$access = Utils::single_array( $access );
 			foreach( $access as $mask ) {
-				if( is_bool( $mask ) ) {
-					if( $this->can( $token ) ) {
-						return true;
-					}
+				if( is_bool( $mask ) && $this->can( $token ) ) {
+					return true;
 				}
-				else {
-					if( $this->can( $token, $mask ) ) {
-						return true;
-					}
+				elseif( $this->can( $token, $mask ) ) {
+					return true;
 				}
 			}
 		}
@@ -595,39 +593,18 @@ class User extends QueryRecord
 	 */
 	public function __get( $name )
 	{
-		$fieldnames = array_merge( array_keys( $this->fields ), array( 'groups', 'displayname', 'loggedin', 'info') );
-		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
-			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
-			list( $junk, $name, $filter )= $matches;
-		}
-		else {
-			$filter = false;
-		}
-
 		switch ($name) {
 			case 'info':
-				$out = $this->get_info();
-				break;
+				return $this->get_info();
 			case 'groups':
-				$out = $this->list_groups();
-				break;
+				return $this->list_groups();
 			case 'displayname':
-				$out = ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
-				break;
+				return ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
 			case 'loggedin':
-				$out = $this->id != 0;
-				break;
+				return $this->id != 0;
 			default:
-				$out = parent::__get( $name );
-				break;
+				return parent::__get( $name );
 		}
-		
-		$out = Plugins::filter( "user_get", $out, $name, $this );
-		$out = Plugins::filter( "user_{$name}", $out, $this );
-		if ( $filter ) {
-			$out = Plugins::filter( "user_{$name}_{$filter}", $out, $this );
-		}
-		return $out;
 	}
 	
 	/**
@@ -639,13 +616,7 @@ class User extends QueryRecord
 	private function get_info()
 	{
 		if ( ! isset( $this->inforecords ) ) {
-			// If this post isn't in the database yet...
-			if(  0 == $this->id ) {
-				$this->inforecords = new UserInfo();
-			}
-			else {
-				$this->inforecords = new UserInfo( $this->id );
-			}
+			$this->inforecords = new UserInfo( $this->id );
 		}
 		else {
 			$this->inforecords->set_key( $this->id );

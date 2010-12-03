@@ -82,10 +82,9 @@ class CronTab extends ActionHandler
 			return;
 		}
 
-		// allow script to run for 10 minutes. This only works on host with safe mode DISABLED
-		if( !ini_get( 'safe_mode' ) ) {
-			set_time_limit( 600 );
-		}
+		// allow script to run for 10 minutes
+		set_time_limit(600);
+
 		$time = HabariDateTime::date_create();
 		$crons = DB::get_results(
 			'SELECT * FROM {crontab} WHERE start_time <= ? AND next_run <= ?',

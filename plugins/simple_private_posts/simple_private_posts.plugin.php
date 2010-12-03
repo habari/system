@@ -2,10 +2,35 @@
 
 class SimplePrivatePosts extends Plugin
 {
+	/**
+	 * function info
+	 * Returns information about this plugin
+	 * @return array Plugin info array
+	 */
+	function info()
+	{
+		return array (
+			'name' => 'Simple Private Posts',
+			'url' => 'http://habariproject.org/',
+			'author' => 'Habari Community',
+			'authorurl' => 'http://habariproject.org/',
+			'version' => '1.0',
+			'description' => 'Mark posts as private so that only authenticated users who have read access to the "private" token can read them',
+			'license' => 'Apache License 2.0',
+		);
+	}
+
+	public function help()
+	{
+		return <<< END_HELP
+<p>The "private" token is automatically set to <em>deny</em> for the "Anonymous" group, visitors to your site who are not logged in, which prevents them from seeing posts with the private token. You can select other groups to deny permission to posts with the "private" token on the groups page. </p>
+<p>On the post creation page, a new checkbox labeled "Private Post" will appear in the settings area. Check this box to make the post private.</p>
+END_HELP;
+	}
 
 	public function action_plugin_activation()
 	{
-		ACL::create_token('private', 'Permission to read posts marked as "private"', 'Private Posts');
+		ACL::create_token('private', 'Permissions on posts marked as "private"');
 
 		// Deny the anonymous group access to the private token, if the group hasn't been removed (why would you remove it ??)
 		$anon = UserGroup::get('anonymous');

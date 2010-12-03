@@ -19,6 +19,8 @@ class MyTheme extends Theme
 	 */
 	public function action_init_theme()
 	{
+// Apply Format::autop() to post content...
+Format::apply( 'autop', 'post_content_out' );
 // Apply Format::autop() to comment content...
 Format::apply( 'autop', 'comment_content_out' );
 // Apply Format::tag_and_list() to post tags...
@@ -51,9 +53,6 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		//Theme Options
 		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
 		$this->assign( 'show_author' , false ); //Display author in posts
-
-		//Add formcontrol template with input before label
-		$this->add_template( 'k2_text', dirname(__FILE__) . '/formcontrol_text.php' );
 
 
 		if( !$this->template_engine->assigned( 'pages' ) ) {
@@ -100,35 +99,6 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		}
 
 	}
-	
-	public function theme_menu_empty($theme, $menu)
-	{
-		// Should pass menu name on to Posts::get(array('preset'=>$menu))
-		if($menu == 'mainmenu') {
-			$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
-			$out = '';
-			foreach( $pages as $page ) {
-				$out .= '<li><a href="' . $page->permalink . '" title="' . $page->title . '">' . $page->title . '</a></li>' . "\n";
-			}
-			return $out;
-		}
-	}
-
-
-	/**
-	 * Customize comment form layout. Needs thorough commenting.
-	 */
-	public function action_form_comment( $form ) { 
-		$form->cf_commenter->caption = '<small><strong>' . _t('Name') . '</strong></small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
-		$form->cf_commenter->template = 'k2_text';
-		$form->cf_email->caption = '<small><strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
-		$form->cf_email->template = 'k2_text';
-		$form->cf_url->caption = '<small><strong>' . _t('Website') . '</strong></small>';
-		$form->cf_url->template = 'k2_text';
-	        $form->cf_content->caption = '';
-		$form->cf_submit->caption = _t( 'Submit' );
-	}
-
 }
 
 ?>

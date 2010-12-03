@@ -80,7 +80,7 @@ class XMLRPCClient
 		}
 
 		$request = new RemoteRequest($this->entrypoint, 'POST');
-		$request->add_header('Content-Type: text/xml;charset=utf-8');
+		$request->add_header('Content-Type: text/xml');
 		$request->set_body($rpx->asXML());
 
 		$request->execute();

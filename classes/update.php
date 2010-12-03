@@ -37,11 +37,7 @@ class Update extends Singleton
 	 */
 	public static function add($name, $beaconid, $current_version)
 	{
-		if ( empty($name) || empty($beaconid) || empty($current_version) ) {
-			throw new Exception(_t('Invalid Beacon information added'));
-		}
-		
-		self::instance()->beacons[ (string) $beaconid] = array('name' => (string) $name, 'version' => (string) $current_version);
+		self::instance()->beacons[$beaconid] = array('name'=>$name, 'version'=>$current_version);
 	}
 
 	/**
