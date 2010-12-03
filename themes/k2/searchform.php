@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!-- searchform -->
 <?php Plugins::act( 'theme_searchform_before' ); ?>
 		<form method="get" id="searchform" action="<?php URL::out('display_search'); ?>">

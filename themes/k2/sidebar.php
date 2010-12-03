@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <!-- sidebar -->
 <?php Plugins::act( 'theme_sidebar_top' ); ?>
 
