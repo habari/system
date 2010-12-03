@@ -1,8 +1,21 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php 
+
+	$name = $field;
+	
+	if ( !empty( $multiple ) ) {
+		$name = $name . '[]';
+		$multiple = 'multiple="multiple" size="' . intval( $size ) . '"';
+	}
+	else {
+		$multiple = '';
+	}
+
+?>
 <div class="container<?php echo ($class) ? ' ' . $class : ''?>">
 	<p class="pct25"><label for="<?php echo $id; ?>"><?php echo $this->caption; ?></label></p>
 	<p class="pct75">
-	 	<select class="longselect" id="<?php echo $id; ?>" name="<?php echo $field . ( !empty( $multiple ) ? '[]" multiple="multiple" size="' . intval( $size ) . '"' : '"' ); ?>>
+	 	<select class="longselect" id="<?php echo $id; ?>" name="<?php echo $name; ?>" <?php echo $multiple; ?>>
 <?php foreach($options as $opts_key => $opts_val) : ?>
 	<?php if (is_array($opts_val)) : ?>
 		<optgroup label="<?php echo $opts_key; ?>">
