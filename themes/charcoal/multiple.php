@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include 'header.php'; ?>
 
 			<div id="main-posts">

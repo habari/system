@@ -1,3 +1,4 @@
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php if ( !$post->info->comments_disabled ) : ?>
 <div id="comment-form">
 <?php 	if ( Session::has_messages() ) Session::messages_out(); ?>
