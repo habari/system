@@ -547,5 +547,35 @@ class Format
 		$messages = array_merge( $errors, $notices );
 		return json_encode( $messages );
 	}
+
+	/**
+	 * function term_tree
+	 * Formatting function (should be in Format class?)
+	 * Turns an array of terms from a hierarchical vocabulary into a ordered HTML list with list items for each term.
+	 * @param array $array An array of terms
+	 * @param string $between_last Text to put between the next to last element and the last element
+	 * @return string HTML links with specified separators.
+	 **/
+	public static function term_tree( $terms, $wrapper = '<div>%s</div>', $startlist = '<ol class="tree">', $endlist = '</ol>', $display_callback = null )
+	{
+		$out = $startlist;
+		$children = array();
+
+		if ( !$terms instanceof Terms ) {
+			$terms = new Terms( $terms );
+		}
+
+		foreach ( $terms as $term ) {
+			$out .= '<li>' . sprintf( $wrapper, isset( $display_callback ) ? $display_callback( $term ) : $term->term_display );
+			$children = $term->children();
+			if ( count( $children ) ) {
+				$out .= self::term_tree( $children, $wrapper, $startlist, $endlist, $display_callback );
+			}
+			$out .= '</li>';
+		}
+
+		$out .= $endlist;
+		return $out;
+	}
 }
 ?>
