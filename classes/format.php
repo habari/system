@@ -18,7 +18,7 @@ class Format
 	 * Called to register a format function to a plugin hook, only passing the hook's first parameter to the Format function.
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
-	 **/
+	 */
 	public static function apply($format, $onwhat)
 	{
 		if ( self::$formatters == null ) {
@@ -46,7 +46,7 @@ class Format
 	/**
 	 *
 	 *
-	 **/
+	 */
 	public static function apply_with_hook_serialize( $arg )
 	{
 		$arg = serialize( $arg );
@@ -63,7 +63,7 @@ class Format
 	 * Called to register a format function to a plugin hook, and passes all of the hook's parameters to the Format function.
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
-	 **/
+	 */
 	public static function apply_with_hook_params($format, $onwhat)
 	{
 		if ( self::$formatters == null ) {
@@ -98,7 +98,7 @@ class Format
 	 * to supply additional parameters to plugin filters.
 	 * @param integer $index The index of the formatter object to return.
 	 * @return Format The formatter object requested
-	 **/
+	 */
 	public static function by_index($index)
 	{
 		return self::$formatters[$index];
@@ -107,7 +107,7 @@ class Format
 	/**
 	 * function load_all
 	 * Loads and stores an instance of all declared Format classes for future use
-	 **/
+	 */
 	public static function load_all()
 	{
 		self::$formatters = array();
@@ -135,7 +135,7 @@ class Format
 	 *
 	 * @param string $value The string to apply the formatting
 	 * @returns string The formatted string
-	 **/
+	 */
 	public static function autop( $value )
 	{
 		$value = str_replace( "\r\n", "\n", $value );
@@ -236,7 +236,7 @@ class Format
 	 * @param string $between Text to put between each element
 	 * @param string $between_last Text to put between the next-to-last element and the last element
 	 * @reutrn string The constructed string
-	**/
+	 */
 	public static function and_list( $array, $between = ', ', $between_last = null )
 	{
 		if ( ! is_array( $array ) ) {
@@ -261,7 +261,7 @@ class Format
 	 * @param string $between Text to put between each element
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
-	 **/
+	 */
 	public static function tag_and_list($terms, $between = ', ', $between_last = null )
 	{
 		$array = array();
@@ -318,7 +318,7 @@ class Format
 	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The date formatted as a string
-	 **/
+	 */
 	public static function nice_date($date, $dateformat = 'F j, Y')
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
@@ -333,7 +333,7 @@ class Format
 	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The time formatted as a string
-	 **/
+	 */
 	public static function nice_time($date, $dateformat = 'H:i:s')
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
@@ -348,7 +348,7 @@ class Format
 	 * @param integer $count Maximum words to display [100]
 	 * @param integer $max_paragraphs Maximum paragraphs to display [1]
 	 * @return string The string, shortened
-	 **/
+	 */
 	public static function summarize( $text, $count = 100, $max_paragraphs = 1 )
 	{
 		$ellipsis = '...';
@@ -427,7 +427,7 @@ class Format
 	 * @param integer $max_words null or the maximum number of words to use before showing the more link
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
 	 * @return string The post content, suitable for display
-	 **/
+	 */
 	public static function more($content, $post, $properties = array())
 	{
 		// If the post requested is the post under consideration, always return the full post
@@ -449,17 +449,23 @@ class Format
 			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : null );
 			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : null );
 
-			if ( isset( $paramarray['title:before'] ) ||
-				isset( $paramarray['title'] ) ||
-				isset( $paramarray['title:after'] ) ) {
+			if ( isset( $paramarray['title:before'] ) || isset( $paramarray['title'] ) || isset( $paramarray['title:after'] ) ) {
 				$paramstring .= 'title="';
 
-				if ( isset( $paramarray['title:before'] ) ) 	$paramstring .= $paramarray['title:before'];
-				if ( isset( $paramarray['title'] ) ) 		$paramstring .= $post->title;
-				if ( isset( $paramarray['title:after'] ) ) 	$paramstring .= $paramarray['title:after'];
+				if ( isset( $paramarray['title:before'] ) ) {
+					$paramstring .= $paramarray['title:before'];
+				}
+				if ( isset( $paramarray['title'] ) ) {
+					$paramstring .= $post->title;
+				}
+				if ( isset( $paramarray['title:after'] ) ) {
+					$paramstring .= $paramarray['title:after'];
+				}
 				$paramstring .= '" ';
 			}
-			if ( isset( $paramarray['class'] ) ) $paramstring .= 'class="' . $paramarray['class'] . '" ';
+			if ( isset( $paramarray['class'] ) ) {
+				$paramstring .= 'class="' . $paramarray['class'] . '" ';
+			}
 
 		}
 		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
@@ -487,7 +493,7 @@ class Format
 	 * @param array $notices a list of success messages
 	 * @param array $errors a list of error messages
 	 * @return string HTML output
-	 **/
+	 */
 	public static function html_messages( $notices, $errors )
 	{
 		$output = '';
@@ -515,7 +521,7 @@ class Format
 	 * @param array $notices a list of success messages
 	 * @param array $errors a list of error messages
 	 * @return string JS output
-	 **/
+	 */
 	public static function humane_messages( $notices, $errors )
 	{
 		$output = '';
@@ -541,7 +547,7 @@ class Format
 	 * @param array $notices a list of success messages
 	 * @param array $errors a list of error messages
 	 * @return string JS output
-	 **/
+	 */
 	public static function json_messages( $notices, $errors )
 	{
 		$messages = array_merge( $errors, $notices );
@@ -550,12 +556,16 @@ class Format
 
 	/**
 	 * function term_tree
-	 * Formatting function (should be in Format class?)
-	 * Turns an array of terms from a hierarchical vocabulary into a ordered HTML list with list items for each term.
-	 * @param array $array An array of terms
-	 * @param string $between_last Text to put between the next to last element and the last element
-	 * @return string HTML links with specified separators.
-	 **/
+	 * Create nested HTML lists from a hierarchical vocabulary.
+	 *
+	 * Turns Terms or an array of terms from a hierarchical vocabulary into a ordered HTML list with list items for each term.
+	 * @param mixed $terms An array of Term objects or a Terms object.
+	 * @param string $wrapper An sprintf formatted in which to wrap each term.
+	 * @param string $startlist A string to put at the start of the list.
+	 * @param string $endlist A string to put at the end of the list.
+	 * @param function $display_callback A callback function to apply to earch term as it is displayed.
+	 * @return string The transformed vocabulary.
+	 */
 	public static function term_tree( $terms, $wrapper = '<div>%s</div>', $startlist = '<ol class="tree">', $endlist = '</ol>', $display_callback = null )
 	{
 		$out = $startlist;
