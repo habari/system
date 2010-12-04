@@ -393,7 +393,7 @@ class HabariSilo extends Plugin implements MediaSilo
 					$form->append( 'static', 'ParentDirectory', _t('Parent Directory:'). " <strong>/{$path}</strong>" );
 
 					// add the parent directory as a hidden input for later validation
-					$form->append( 'hidden', 'path', 'null:unused', '', $path );
+					$form->append( 'hidden', 'path', 'null:unused' )->value = $path;
 					$dir_text_control = $form->append( 'text', 'directory', 'null:unused', _t('Enter the name of the new directory to create here') );
 					$dir_text_control->add_validator( array( $this, 'mkdir_validator' ) );
 					$form->append( 'submit', 'submit', _t('Submit') );
