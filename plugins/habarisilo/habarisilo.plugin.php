@@ -108,6 +108,9 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		$dir = glob($this->root . ( $path == '' ? '' : '/' ) . $path . '/*');
 
+		if ( $dir === false ) {
+			$dir = array();
+		}
 
 		foreach ( $dir as $item ) {
 			if ( substr( basename( $item ), 0, 1 ) == '.' ) {
