@@ -166,6 +166,18 @@ class Posts extends ArrayObject implements IsContent
 						$params[] = (string) $paramset['slug'];
 					}
 				}
+				
+				if ( isset( $paramset['not:slug'] ) ) {
+					if ( is_array( $paramset['not:slug'] ) ) {
+						$where[] = "{posts}.slug NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:slug'] ), '?' ) ) . ")";
+						$params = array_merge( $params, $paramset['not:slug'] );
+					}
+					else {
+						$where[] = "{posts}.slug != ?";
+						$params[] = (string) $paramset['not:slug'];
+					}
+				}
+				
 				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
 					if ( is_array( $paramset['user_id'] ) ) {
 						array_walk( $paramset['user_id'], create_function( '&$a,$b', '$a = intval($a);' ) );
