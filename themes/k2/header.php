@@ -28,7 +28,7 @@
 <?php
 // Menu tabs
 $theme->menu('mainmenu');
-if ( $user instanceof User ) { ?>
+if ( User::identify()->loggedin ) { ?>
 		<li class="admintab"><a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e('Admin area'); ?>"><?php _e('Admin'); ?></a></li>
 <?php } ?>
 	</ul>
