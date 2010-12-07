@@ -256,7 +256,8 @@ WP_IMPORT_STAGE2;
 					post_status,
 					post_type
 				FROM {$db_prefix}posts
-				WHERE post_type != 'revision' AND post_type != 'attachment' AND post_type != 'nav_menu_item'
+				WHERE post_type != 'revision' AND post_type != 'attachment' AND post_type != 'nav_menu_item' 
+					AND post_status != 'auto-draft' AND post_status != 'inherit'
 				ORDER BY ID DESC
 				LIMIT {$min}, " . IMPORT_BATCH
 				, array(), 'Post' );
@@ -326,25 +327,31 @@ WP_IMPORT_STAGE2;
 
 				$post_array = $post->to_array();
 				switch ( $post_array['post_status'] ) {
-				case 'publish':
-					$post_array['status']= Post::status( 'published' );
-					break;
-				default:
-					$post_array['status']= Post::status( $post_array['post_status'] );
-					break;
+					case 'publish':
+						$post_array['status']= Post::status( 'published' );
+						break;
+					case 'pending':
+						$post_array['status'] = Post::status('scheduled');
+						break;
+					case 'draft':
+						$post_array['status'] = Post::status('draft');
+						break;
+					default:
+						$post_array['status']= Post::status( $post_array['post_status'] );
+						break;
 				}
 				unset( $post_array['post_status'] );
 
 				switch ( $post_array['post_type'] ) {
-				case 'post':
-					$post_array['content_type']= Post::type( 'entry' );
-					break;
-				case 'page':
-					$post_array['content_type']= Post::type( 'page' );
-					break;
-				default:
-					// We're not inserting WP's media records.  That would be silly.
-					continue;
+					case 'post':
+						$post_array['content_type']= Post::type( 'entry' );
+						break;
+					case 'page':
+						$post_array['content_type']= Post::type( 'page' );
+						break;
+					default:
+						// We're not inserting WP's media records.  That would be silly.
+						continue;
 				}
 				unset( $post_array['post_type'] );
 
