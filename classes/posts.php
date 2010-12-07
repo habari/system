@@ -527,8 +527,8 @@ class Posts extends ArrayObject implements IsContent
 			$$key = $value;
 		}
 
-		// Define the LIMIT if it does not exist, unless specific posts are requested
-		if ( !isset( $limit ) && !isset( $paramset['id']) && !isset( $paramset['slug'])) {
+		// Define the LIMIT if it does not exist, unless specific posts are requested or we're getting the monthly counts
+		if ( !isset( $limit ) && !isset( $paramset['id']) && !isset( $paramset['slug']) && !isset( $paramset['month_cts'] ) ) {
 			$limit = Options::get('pagination') ? (int) Options::get('pagination') : 5;
 		}
 		elseif ( !isset( $limit ) ) {
@@ -588,7 +588,9 @@ class Posts extends ArrayObject implements IsContent
 			else
 				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(*) AS ct';
 			$groupby = 'year, month';
-			$orderby = 'year, month';
+			if ( !isset( $paramarray['orderby'] ) ) {
+				$orderby = 'year, month';
+			}
 		}
 
 
