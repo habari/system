@@ -201,6 +201,7 @@ class Theme extends Pluggable
 			if ( count($all_tag) > 0 ) {
 				$where_filters['vocabulary'] = array_merge( $where_filters['vocabulary'], array( Tags::vocabulary()->name . ':all:term' => $all_tag ) );
 			}
+			$where_filters['tag_slug'] = Utils::slugify($where_filters['tag']);
 			unset( $where_filters['tag'] );
 		}
 		if ( User::identify()->loggedin ) {
@@ -302,8 +303,8 @@ class Theme extends Pluggable
 			if ( ( strpos( $fallback[$z], '{$posttag}' ) !== false ) && ( isset( $post ) ) && ( $post instanceof Post ) ) {
 				$replacements = array();
 				if ( $alltags = $post->tags ) {
-					foreach ( $alltags as $tag_slug => $tag_text ) {
-						$replacements[] = str_replace( '{$posttag}', $tag_slug, $fallback[$z] );
+					foreach( $alltags as $current_tag ) {
+						$replacements[] = MultiByte::str_replace( '{$posttag}', $current_tag->term, $fallback[$z] );
 					}
 					array_splice( $fallback, $z, 1, $replacements );
 				}
@@ -405,7 +406,7 @@ class Theme extends Pluggable
 			'content_type' => Post::type( 'entry' ),
 		);
 
-		$this->assign( 'tag', htmlentities( Controller::get_var( 'tag' ), ENT_QUOTES, 'UTF-8' ) );
+		$this->assign( 'tag', Controller::get_var( 'tag' ) );
 		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		return $this->act_display( $paramarray );
