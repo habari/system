@@ -161,7 +161,7 @@ class WPImport extends Plugin implements Importer
 		$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
 
 		$prompt = '<p>' . _t('Import In Progress') . '</p>';
-		$prompt .= '<div id="import_progress">' . _t('Starting Import...') . '</div';
+		$prompt .= '<div id="import_progress">' . _t('Starting Import...') . '</div>';
 		$output = <<< WP_IMPORT_STAGE2
 		{$prompt}
 		<script type="text/javascript">
