@@ -264,6 +264,7 @@ class DatabaseConnection
 			/* If we are profiling, then time the query */
 			if ( $this->keep_profile ) {
 				$profile = new QueryProfile( $query );
+				$profile->params = $args;
 				$profile->start();
 			}
 			if ( ! $this->pdo_statement->execute( $args ) ) {
