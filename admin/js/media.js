@@ -110,9 +110,6 @@ habari.media = {
 	},
 
 	clickdir: function(el, path) {
-		// Clear current media items
-		$('.mediaphotos').html('<ul><li class="end">&nbsp;</li></ul>')
-
 		// Get new media items
 		this.showdir(path, el);
 
