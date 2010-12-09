@@ -618,23 +618,25 @@ var timeline = {
 		timeline.updateLoupeInfo();
 	},
 	skipLoupeLeft: function(e) {
+		timeline.updateView();
 		timeline.handle.value( timeline.handle.value() - timeline.handle.width() )
 		timeline.change();
 	},
 	skipLoupeRight: function(e) {
+		timeline.updateView();
 		timeline.handle.value( timeline.handle.value() + timeline.handle.width() );
 		timeline.change();
 	},
 	updateView: function() {
 		if ( ! timeline.overhang ) { return; }
-		/*if ( timeline.handle.offset().left <= timeline.view.offset().left + 5) {
+		if ( timeline.handle.offset().left <= timeline.view.offset().left + 5) {
 			// timeline needs to slide right if we are within 5px of edge
 			$('.years').css( 'right', Math.max( parseInt($('.years').css('right'),10) - timeline.handle.width(), 0 - timeline.overhang ) );
 		}
 		else if ( timeline.handle.offset().left + timeline.handle.width() + 5 >= timeline.view.offset().left + timeline.view.width() ) {
 			// slide the timeline to the left
 			$('.years').css( 'right', Math.min( parseInt($('.years').css('right'),10) + timeline.handle.width(), 0 ) );
-		}*/
+		}
 	},
 	indexFromPosition: function(pos) {
 		var monthBoundary = 0;
@@ -798,6 +800,7 @@ timelineHandle.prototype = {
 			this.initialpos = e.pageX;
 			this.value( new_value );
 		}
+		timeline.updateView();
 		return false;
 	},
 	mouseUp: function(e) {
@@ -897,6 +900,9 @@ timelineHandle.prototype = {
 		$(document).unbind('mousemove.timeline').unbind('mouseup.timeline');
 
 		return false;
+	},
+	offset: function(){
+		return this.handle.offset();
 	}
 };
 
