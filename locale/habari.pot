@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-05 00:00+0000\n"
+"POT-Creation-Date: 2010-12-12 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,7 +97,7 @@ msgstr ""
 msgid "No members"
 msgstr ""
 
-#: system/admin/dashboard_modules.php:5 system/classes/adminhandler.php:3774
+#: system/admin/dashboard_modules.php:5 system/classes/adminhandler.php:3780
 msgid "Add Item"
 msgstr ""
 
@@ -920,7 +920,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:855
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:856
 msgid "No Comments"
 msgstr ""
 
@@ -2761,11 +2761,11 @@ msgstr ""
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3724
+#: system/classes/adminhandler.php:3730
 msgid "Saved block areas settings."
 msgstr ""
 
-#: system/classes/adminhandler.php:3768
+#: system/classes/adminhandler.php:3774
 msgid "+"
 msgstr ""
 
@@ -3149,23 +3149,23 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: system/classes/theme.php:260
+#: system/classes/theme.php:261
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:781
+#: system/classes/theme.php:782
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:808
+#: system/classes/theme.php:809
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:834
+#: system/classes/theme.php:835
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:860
+#: system/classes/theme.php:861
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -3320,46 +3320,46 @@ msgstr ""
 msgid "Importing posts %1$d - %2$d of %3$d."
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:358
+#: system/plugins/wpimport/wpimport.plugin.php:365
 #, php-format
 msgid "Post author id %1$s was not found in WP database, assigning post \"%2$s\" (WP post id #%3$d) to current user."
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:436
-#: system/plugins/wpimport/wpimport.plugin.php:533
-#: system/plugins/wpimport/wpimport.plugin.php:672
+#: system/plugins/wpimport/wpimport.plugin.php:443
+#: system/plugins/wpimport/wpimport.plugin.php:540
+#: system/plugins/wpimport/wpimport.plugin.php:679
 #, php-format
 msgid "Failed to import from \"%s\""
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:438
+#: system/plugins/wpimport/wpimport.plugin.php:445
 msgid "The database connection details have failed to connect."
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:473
+#: system/plugins/wpimport/wpimport.plugin.php:480
 msgid "Importing users..."
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:535
-#: system/plugins/wpimport/wpimport.plugin.php:674
+#: system/plugins/wpimport/wpimport.plugin.php:542
+#: system/plugins/wpimport/wpimport.plugin.php:681
 msgid "Failed to connect using the given database connection details."
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:559
+#: system/plugins/wpimport/wpimport.plugin.php:566
 #, php-format
 msgid "Importing comments %1$d - %2$d of %3$d"
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:655
+#: system/plugins/wpimport/wpimport.plugin.php:662
 #, php-format
 msgid "Import complete from \"%s\""
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:656
+#: system/plugins/wpimport/wpimport.plugin.php:663
 msgid "Import is complete."
 msgstr ""
 
-#: system/plugins/wpimport/wpimport.plugin.php:660
+#: system/plugins/wpimport/wpimport.plugin.php:667
 msgid "There were errors during import:"
 msgstr ""
 
