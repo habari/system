@@ -13,7 +13,7 @@
 				<?php endif; ?>
 					<div class="post-title">
 						<h3>
-							<a href="<?php echo $post->permalink; ?>"title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a>
+							<a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a>
 						</h3>
 					</div>
 					<div class="post-sup">
