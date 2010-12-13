@@ -244,7 +244,7 @@ class Themes
 		}
 
 		$created_theme = new $classname($themedata);
-		Plugins::act('init_theme');
+		Plugins::act('init_theme', $created_theme );
 		return $created_theme;
 
 	}
