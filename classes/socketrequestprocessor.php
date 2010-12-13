@@ -70,11 +70,11 @@ class SocketRequestProcessor implements RequestProcessor
 			$fp = @fsockopen( $transport . '://' . $config['proxy']['server'], $config['proxy']['port'], $_errno, $_errstr, $config['connect_timeout'] );
 		}
 		else {
-			$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $config['connection_timeout'] );
+			$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $config['connect_timeout'] );
 		}
 
 		if ( $fp === false ) {
-			if ( $config['proxy_server'] ) {
+			if ( $config['proxy']['server'] ) {
 				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $config['proxy']['server'], $config['proxy']['port'] ) ) );
 			}
 			else {
