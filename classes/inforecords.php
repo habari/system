@@ -252,6 +252,13 @@ abstract class InfoRecords implements URLProperties
 			}
 		}
 	}
+	
+	public function count ( ) {
+		
+		$this->_load();
+		return count( $this->__inforecord_array );
+		
+	}
 
 }
 
