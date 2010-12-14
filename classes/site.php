@@ -199,7 +199,7 @@ class Site
 			case '3rdparty':
 				// this should be removed at a later date as it will cause problems
 				// once 'vendor' is adopted, dump the condition!
-				if ( file_exists( HABARI_PATH ) . '/3rdparty' ) {
+				if ( file_exists( HABARI_PATH . '/3rdparty' ) ) {
 					$url = Site::get_url( 'habari' ) . '/3rdparty';
 				}
 				else {
