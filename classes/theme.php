@@ -747,7 +747,7 @@ class Theme extends Pluggable
 
 			// Add ... if the gap between the previous page is higher than 1.
 			if ( ($page - $prevpage) > 1 ) {
-				$out .= '&nbsp;&hellip;';
+				$out .= '&nbsp;<span class="sep">&hellip;</span>';
 			}
 			// Wrap the current page number with square brackets.
 			$caption = ( $page == $current ) ?  $current  : $page;
