@@ -418,15 +418,15 @@ class HabariDateTime extends DateTime
 		
 		$result = Format::and_list( $result );
 		
-		if ( $difference['invert'] == true ) {
-			$suffix = _t('from now');
-		}
-		else {
-			$suffix = _t('ago');
-		}
-		
 		if ( $include_suffix ) {
-			$result = $result . ' ' . $suffix;
+			
+			if ( $difference['invert'] == true ) {
+				$result = _t( '%s from now', array( $result ) );
+			}
+			else {
+				$result = _t( '%s ago', array( $result ) );
+			}
+			
 		}
 		
 		return $result;
