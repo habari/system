@@ -192,11 +192,19 @@ class Site
 			case 'system':
 				$url = Site::get_url( 'habari' ) . '/system';
 				break;
+			case 'vendor':
 			case 'scripts':
-				$url = Site::get_url( 'habari' ) . '/scripts';
+				$url = Site::get_url( 'system' ) . '/vendor';
 				break;
 			case '3rdparty':
-				$url = Site::get_url( 'habari' ) . '/3rdparty';
+				// this should be removed at a later date as it will cause problems
+				// once 'vendor' is adopted, dump the condition!
+				if ( file_exists( HABARI_PATH ) . '/3rdparty' ) {
+					$url = Site::get_url( 'habari' ) . '/3rdparty';
+				}
+				else {
+					$url = Site::get_url( 'vendor' );
+				}
 				break;
 			case 'hostname':
 				// HTTP_HOST is not set for HTTP/1.0 requests

@@ -3801,16 +3801,16 @@ class AdminHandler extends ActionHandler
 	 */
 	public static function setup_stacks()
 	{
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.js", 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery-ui.min.js", 'jquery.ui', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.color.js", 'jquery.color', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/jquery.ui.nestedSortable.js", 'jquery-nested-sortable', 'jquery.ui' );
-		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
-		Stack::add( 'admin_header_javascript', Site::get_url('habari') . "/3rdparty/hotkeys/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('vendor') . "/jquery.js", 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('vendor') . "/jquery-ui.min.js", 'jquery.ui', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('vendor') . "/jquery.color.js", 'jquery.color', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('vendor') . "/jquery.ui.nestedSortable.js", 'jquery-nested-sortable', 'jquery.ui' );
+		Stack::add( 'admin_header_javascript', Site::get_url('vendor') . "/humanmsg/humanmsg.js", 'humanmsg', 'jquery' );
+		Stack::add( 'admin_header_javascript', Site::get_url('vendor') . "/jquery.hotkeys.js", 'jquery.hotkeys', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/media.js", 'media', 'jquery' );
 		Stack::add( 'admin_header_javascript', Site::get_url('admin_theme') . "/js/admin.js", 'admin', 'jquery' );
 
-		Stack::add( 'admin_header_javascript', Site::get_url('scripts') . "/crc32.js", 'crc32' );
+		Stack::add( 'admin_header_javascript', Site::get_url('vendor') . "/crc32.js", 'crc32' );
 	}
 
 	public function create_theme ( ) {
