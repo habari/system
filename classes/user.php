@@ -566,7 +566,7 @@ class User extends QueryRecord
 	/**
 	 * function in_group
 	 * Whether or not this user is is in the specified group
-	 * @param int $group a group ID or name
+	 * @param int|string $group a group ID or name
 	 * @return bool Whether or not this user is in the specified group
 	**/
 	public function in_group( $group )
