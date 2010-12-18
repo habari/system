@@ -109,7 +109,7 @@ class DatabaseConnection
 	 */
 	public function connect ( $connect_string, $db_user, $db_pass )
 	{
-		$this->pdo = new PDO( $connect_string, $db_user, $db_pass );
+		$this->pdo = @new PDO( $connect_string, $db_user, $db_pass );
 		$this->pdo->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
 		$this->load_tables();
 		return true;
