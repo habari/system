@@ -103,7 +103,7 @@ if ( file_exists( $config ) ) {
 	}
 	catch( PDOException $e ) {
 		// Error template.
-		$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>";
+		$error_template = '<html><head><title>%s</title><link rel="stylesheet" type="text/css" href="' . Site::get_url( 'system' ) . '/admin/css/admin.css" media="screen"></head><body><div id="page"><div class="container"><h2>%s</h2><p>%s</p></div></div></body></html>';
 
 		// Format page with localized messages.
 		$error_page = sprintf($error_template,
