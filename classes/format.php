@@ -208,7 +208,7 @@ class Format
 
 			// if we get this far, token type is text
 			$localValue = $token['value'];
-			if ( strlen( $localValue ) ) {
+			if ( MultiByte::strlen( $localValue ) ) {
 				if ( !$openP ) {
 					$localValue = '<p>' . ltrim( $localValue );
 					$openP = true;
@@ -476,7 +476,7 @@ class Format
 			$max_words = empty($max_words) ? 9999999 : intval($max_words);
 			$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
 			$summary = Format::summarize($content, $max_words, $max_paragraphs);
-			if ( strlen($summary) >= strlen($content) ) {
+			if ( MultiByte::strlen( $summary ) >= MultiByte::strlen( $content ) ) {
 				return $content;
 			}
 			else {
