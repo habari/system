@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-12 00:00+0000\n"
+"POT-Creation-Date: 2010-12-19 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2875,12 +2875,14 @@ msgid_plural "seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/habaridatetime.php:422
-msgid "from now"
+#: system/classes/habaridatetime.php:424
+#, php-format
+msgid "%s from now"
 msgstr ""
 
-#: system/classes/habaridatetime.php:425
-msgid "ago"
+#: system/classes/habaridatetime.php:427
+#, php-format
+msgid "%s ago"
 msgstr ""
 
 #: system/classes/habaridatetime.php:446
