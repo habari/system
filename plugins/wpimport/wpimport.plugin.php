@@ -339,6 +339,12 @@ WP_IMPORT_STAGE2;
 						break;
 					default:
 						$post_array['status']= Post::status( $post_array['post_status'] );
+						
+						// Post::status() returns false if we didn't recognize the status type - skip it
+						if ( $post_array['status'] == false ) {
+							continue;
+						}
+						
 						break;
 				}
 				unset( $post_array['post_status'] );
