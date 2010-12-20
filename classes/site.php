@@ -341,6 +341,9 @@ class Site
 			case 'admin_theme':
 				$path = HABARI_PATH . '/system/admin';
 				break;
+			case 'vendor':
+				$path = HABARI_PATH . '/system/vendor';
+				break;
 		}
 		$path .= Utils::trail( $trail );
 		$path = Plugins::filter( 'site_dir_' . $name, $path );
