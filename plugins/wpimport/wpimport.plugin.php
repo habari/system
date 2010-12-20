@@ -260,7 +260,7 @@ WP_IMPORT_STAGE2;
 					AND post_status != 'auto-draft' AND post_status != 'inherit'
 				ORDER BY ID DESC
 				LIMIT {$min}, " . IMPORT_BATCH
-				, array(), 'Post' );
+				, array() );
 
 			$post_map = DB::get_column( "SELECT value FROM {postinfo} WHERE name='wp_id';");
 			foreach( $posts as $post ) {
@@ -600,7 +600,7 @@ WP_IMPORT_USERS1;
 				INNER JOIN
 				{$db_prefix}posts on ( {$db_prefix}posts.ID= {$db_prefix}comments.comment_post_ID )
 				LIMIT {$min}, " . IMPORT_BATCH
-				, array(), 'Comment' );
+				, array() );
 
 			foreach( $comments as $comment ) {
 				switch ( $comment->type ) {
@@ -617,15 +617,19 @@ WP_IMPORT_USERS1;
 					$carray['ip']= 0;
 				}
 				switch ( $carray['status'] ) {
-				case '0':
-					$carray['status']= Comment::STATUS_UNAPPROVED;
-					break;
-				case '1':
-					$carray['status']= Comment::STATUS_APPROVED;
-					break;
-				case 'spam':
-					$carray['status']= Comment::STATUS_SPAM;
-					break;
+					case '0':
+						$carray['status']= Comment::STATUS_UNAPPROVED;
+						break;
+					case '1':
+						$carray['status']= Comment::STATUS_APPROVED;
+						break;
+					case 'spam':
+						$carray['status']= Comment::STATUS_SPAM;
+						break;
+					default:
+					case 'trash':
+						$carray['status'] = Comment::STATUS_DELETED;
+						break;
 				}
 
 				if ( isset( $post_map[$carray['wp_post_id']] ) ) {
