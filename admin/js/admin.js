@@ -846,13 +846,11 @@ timelineHandle.prototype = {
 	doDragLeft: function(e) {
 		var h = this.handle;
 		var track = h.parents('.track');
-		// fix the right side (only do this if we haven't already done it)
-		if ( h.css('right') == 'auto' ) {
-			h.css({
-				'left':	'auto',
-				'right': track.width() - ( parseInt(h.css('left'), 10) + h.width() )
-			});
-		}
+		// fix the right side
+		h.css({
+			'left':	'auto',
+			'right': track.width() - ( parseInt(h.css('left'), 10) + h.width() )
+		});
 
 		// Set Loupe Width. Min 20, Max 200, no spilling to the left
 		h.css( 'width',
