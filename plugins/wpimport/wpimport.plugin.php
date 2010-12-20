@@ -363,7 +363,15 @@ WP_IMPORT_STAGE2;
 				unset( $post_array['post_type'] );
 
 				$p = new Post( $post_array );
-				$p->slug = $post->slug;
+				
+				// Post should be handling this when inserting the post, but it's not
+				if ( $post->slug == '' ) {
+					$p->slug = Utils::slugify( $post->title );
+				}
+				else {
+					$p->slug = $post->slug;
+				}
+				
 				if (isset($user_map[$p->user_id])) {
 					$p->user_id = $user_map[$p->user_id];
 				}
