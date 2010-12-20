@@ -330,9 +330,10 @@ WP_IMPORT_STAGE2;
 					case 'publish':
 						$post_array['status']= Post::status( 'published' );
 						break;
-					case 'pending':
+					case 'future':
 						$post_array['status'] = Post::status('scheduled');
 						break;
+					case 'pending':		// means pending-review, not pending as in scheduled
 					case 'draft':
 						$post_array['status'] = Post::status('draft');
 						break;
