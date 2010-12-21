@@ -2063,7 +2063,7 @@ class AdminHandler extends ActionHandler
 			$this->theme->search_args .= $search;
 		}
 
-		$monthcts = Posts::get( array_merge( $arguments, array( 'month_cts' => 1 ) ) );
+		$monthcts = Posts::get( array_merge( $arguments, array( 'month_cts' => true, 'nolimit' => true ) ) );
 		$years = array();
 		foreach ( $monthcts as $month ) {
 			if ( isset($years[$month->year]) ) {
