@@ -596,7 +596,7 @@ class Posts extends ArrayObject implements IsContent
 
 		// Remove the LIMIT if 'nolimit' or 'month_cts' is set
 		// Doing this first should allow OFFSET to work
-		if ( isset( $nolimit ) ) {
+		if ( isset( $nolimit ) || isset( $paramset['month_cts'] ) ) {
 			$limit = '';
 		}
 
