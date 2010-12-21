@@ -252,7 +252,7 @@ var unDelete = {
 			{'id':id},
 			function( result ) {
 				spinner.stop();
-				humanMsg.displayMsg( result );
+				human_msg.display_msg( result );
 				if ( $('.timeline').length ) {
 					var loupeInfo = timeline.getLoupeInfo();
 					itemManage.fetch( 0, loupeInfo.limit, true );

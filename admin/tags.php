@@ -37,7 +37,7 @@ itemManage.update = function( action, id ) {
 
 	selected = $('.tag.selected');
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('Error: No tags selected.'); ?>" );
+		human_msg.display_msg( "<?php _e('Error: No tags selected.'); ?>" );
 		return;
 	}
 	var query = {}
@@ -63,7 +63,7 @@ itemManage.update = function( action, id ) {
 			itemManage.changeItem();
 			itemManage.initItems();
 			jQuery.each( msg, function( index, value ) {
-				humanMsg.displayMsg( value );
+				human_msg.display_msg( value );
 			});
 		},
 		'json'
@@ -85,11 +85,11 @@ itemManage.rename = function() {
 	var selected = $('.tag.selected');
 
 	if ( selected.length == 0 ) {
-		humanMsg.displayMsg( "<?php _e('Error: No tags selected.'); ?>" );
+		human_msg.display_msg( "<?php _e('Error: No tags selected.'); ?>" );
 		return;
 	}
 	else if ( master == '' ) {
-		humanMsg.displayMsg( "<?php _e('Error: New name not specified.'); ?>" );
+		human_msg.display_msg( "<?php _e('Error: New name not specified.'); ?>" );
 		return;
 	}
 	var query = {}
@@ -115,7 +115,7 @@ itemManage.rename = function() {
 			$('.controls input.renametext').val('').blur();
 			$('#tag_collection').html(result['tags']);
 			jQuery.each( result['msg'], function( index, value ) {
-				humanMsg.displayMsg( value );
+				human_msg.display_msg( value );
 			});
 
 			itemManage.selected = {};

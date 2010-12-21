@@ -1,95 +1,136 @@
 /*
-	HUMANIZED MESSAGES 1.0
-	idea - http://www.humanized.com/weblog/2006/09/11/monolog_boxes_and_transparent_messages
-	home - http://humanmsg.googlecode.com
-*/
+ * HUMANIZED MESSAGES, v2
+ * idea - http://www.humanized.com/weblog/2006/09/11/monolog_boxes_and_transparent_messages
+ * original code by Michael Heilemann - http://humanmsg.googlecode.com
+ * 
+ * adapted and modified for Habari and updated for newer versions of jQuery
+ */
 
-var humanMsg = {
-	msgcount: 0,
-	setup: function(appendTo, logName, msgOpacity) {
-		humanMsg.msgID = 'humanMsg';
-		humanMsg.logID = 'humanMsgLog';
-
-		// appendTo is the element the msg is appended to
-		if (appendTo == undefined)
-			appendTo = 'body';
-
-		// The text on the Log tab
-		if (logName == undefined)
-			logName = 'Message Log';
-
-		// Opacity of the message
-		humanMsg.msgOpacity = .8;
-
-		if (msgOpacity != undefined)
-			humanMsg.msgOpacity = parseFloat(msgOpacity);
-
-		// Inject the message structure
-		jQuery(appendTo).append('<div id="'+humanMsg.msgID+'" class="humanMsg"><div class="imsgs"></div></div><div id="'+humanMsg.logID+'"><p>'+logName+'</p><ul></ul></div>')
-
-		jQuery('#'+humanMsg.logID+' p').click(
-			function() { jQuery('ul', '#'+humanMsg.logID).slideToggle(); jQuery('#humanMsgLog').addClass('logisopen') }	
-		)
-
-		jQuery('#'+humanMsg.logID+' ul').click(
-			function() { jQuery(this).slideToggle(); jQuery('#humanMsgLog').removeClass('logisopen') }
-		)
+var human_msg = {
+	
+	msg_id: 'humanMsg',			// the base string of the ID for the displayed 'growl' message
+	log_id: 'humanMsgLog',		// the base string of the ID for the drawer message
+	
+	append_to: 'body',			// the element the msg is appended to
+	log_name: 'Message Log',	// the text on the log tab
+	msg_opacity: '0.8',			// the opacity of the displayed 'growl' messages
+	
+	message_count: 0,			// incrementor for creating sequential IDs
+	
+	init: function ( append_to, log_name, msg_opacity ) {
+		
+		// append_to is the element the msg is appended to
+		if ( append_to != undefined ) {
+			this.append_to = append_to;
+		}
+		
+		// the text on the log tab
+		if ( log_name != undefined ) {
+			this.log_name = log_name;
+		}
+		
+		// opacity of the messages
+		if ( msg_opacity != undefined ) {
+			this.msg_opacity = parseFloat( msg_opacity );
+		}
+		
+		// inject the message structure
+		jQuery(this.append_to).append(
+				'<div id="' + this.msg_id + '" class="humanMsg">' +
+					'<div class="imsgs"></div>' +
+				'</div>' +
+				'<div id="' + this.log_id + '">' +
+					'<p>' + this.log_name + '</p>' +
+					'<ul></ul>' +
+				'</div>'
+		);
+		
+		// bind the events to show the log pane
+		jQuery('#' + human_msg.log_id + ' p').click( function() {
+			jQuery('ul', '#' + human_msg.log_id).slideToggle();
+			jQuery('#' + human_msg.log_id).toggleClass('logisopen');
+		} );
+		
+		// bind the events to hide the log pane
+		jQuery('#' + human_msg.log_id + ' ul').click( function() {
+			jQuery(this).slideToggle();
+			jQuery('#' + human_msg.log_id).toggleClass('logisopen');
+		} );
+		
 	},
-
-	displayMsg: function(msg) {
-		if (msg == '')
+	
+	display_msg: function ( msg ) {
+		
+		// ignore blank messages
+		if ( msg == '' ) {
 			return;
-
-		clearTimeout(humanMsg.t2);
-		humanMsg.msgcount++;
-
-		// Inject message
-		$('#'+humanMsg.msgID).show();
-		$('<div class="msg" id="msgid_' + humanMsg.msgcount + '"><p>' + msg + '</p></div>')
-		.appendTo('#'+humanMsg.msgID+' .imsgs')
-		.show().animate({ opacity: humanMsg.msgOpacity}, 200, function() {
-			jQuery('#'+humanMsg.logID)
-				.show().children('ul').prepend('<li>'+msg+'</li>')	// Prepend message to log
-				.children('li:first').slideDown(200)				// Slide it down
-
-			if ( jQuery('#'+humanMsg.logID+' ul').css('display') == 'none') {
-				jQuery('#'+humanMsg.logID+' p').animate({ bottom: 40 }, 200, function() {
-					jQuery(this).animate({ bottom: 0 }, 300, function() { jQuery(this).css({ bottom: 0 }) })
-				})
-			}
-
-		})
-
-		// Watch for mouse & keyboard in .5s
-		//humanMsg.t1 = setTimeout(humanMsg.bindEvents, 500)
-		$('#msgid_'+humanMsg.msgcount).click(humanMsg.removeMsg);
-		// Remove message after 5s
-		humanMsg.t2 = setTimeout(humanMsg.removeMsg, 5000)
+		}
+		
+		// increment the counter
+		this.message_count++;
+		
+		// now we inject the message
+		
+		// show the container for messages
+		jQuery('#' + this.msg_id).show();
+		
+		// create the message we'll show
+		var message = jQuery('<div class="msg" id="msgid_' + this.message_count + '"><p>' + msg + '</p></div>');
+		
+		jQuery(message)
+			.appendTo('#' + this.msg_id + ' .imsgs')	// append the message to the container
+			.show()		// show the new displayed message
+			.fadeTo( 500, this.msg_opacity, function() {
+				
+				// remember that 'this' now refers to the element we just acted on, not the human_msg object
+				// so we'll refer to it using the global name everywhere in here
+				
+				// when the message has faded in, add it to the log pane
+				jQuery('#' + human_msg.log_id)
+					.show()		// show the log pane, it's hidden until there's a message in it
+					.children('ul').prepend('<li>' + msg + '</li>')		// prepend the message to the log
+					.children('li:first').slideDown(200);	// slide it down
+				
+				// if the log isn't shown, make it 'hop' with activity
+				if ( jQuery('#' + human_msg.log_id + ' ul').css('display') == 'none' ) {
+					
+					jQuery('#' + human_msg.log_id + ' p').animate( { bottom: 40 }, 200, 'linear', function() {
+						
+						jQuery(this).animate( { bottom: 0 }, 300, function() {
+							jQuery(this).css('bottom', 0);
+						} );
+						
+					} );
+					
+				}
+				
+			} );		// that's the end of the .fadeTo callback
+		
+		// bind the click event to immediately hide a message
+		jQuery(message).click( function() {
+			human_msg.remove_msg( this );
+		} );
+		
+		// and set the timer to remove this message in 5 seconds
+		setTimeout( function() {
+			human_msg.remove_msg( message );
+		}, 5000 );
+		
 	},
-
-	bindEvents: function() {
-	// Remove message if mouse is moved or key is pressed
-		jQuery(window)
-			.mousemove(humanMsg.removeMsg)
-			.click(humanMsg.removeMsg)
-			.keypress(humanMsg.removeMsg)
-	},
-
-	removeMsg: function() {
-		// Unbind mouse & keyboard
-		jQuery(window)
-			.unbind('mousemove', humanMsg.removeMsg)
-			.unbind('click', humanMsg.removeMsg)
-			.unbind('keypress', humanMsg.removeMsg)
-
-		// If message is fully transparent, fade it out
-		jQuery('#'+humanMsg.msgID+ ' .imsgs .msg').each(function(){
-			if (jQuery(this).css('opacity') == humanMsg.msgOpacity)
-				jQuery(this).animate({ opacity: 0 }, 500, function() { jQuery(this).remove() })
-		});
+	
+	remove_msg: function ( msg ) {
+		
+		// fade out the message
+		jQuery( msg ).fadeTo( 500, 0, function() {
+			// when it's faded out, remove it entirely from the DOM
+			jQuery(this).remove();
+		} );
+		
 	}
-};
+		
+}
 
-jQuery(document).ready(function(){
-	humanMsg.setup();
-})
+jQuery(document).ready( function() {
+	// broken out into a function so you can add default parameters
+	human_msg.init();
+} );

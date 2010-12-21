@@ -3656,7 +3656,7 @@ class AdminHandler extends ActionHandler
 			$msg = json_encode(_t('Added new block "%1s" of type "%2s".', array($title, $type)));
 
 			echo '<script type="text/javascript">
-				humanMsg.displayMsg(' . $msg . ');
+				human_msg.display_msg(' . $msg . ');
 				reset_block_form();
 				spinner.stop();
 			</script>';
@@ -3689,7 +3689,7 @@ class AdminHandler extends ActionHandler
 		$this->display('block_instances');
 
 		echo '<script type="text/javascript">
-			humanMsg.displayMsg(' . $msg . ');
+			human_msg.display_msg(' . $msg . ');
 			reset_block_form();
 			spinner.stop();
 		</script>';
@@ -3729,7 +3729,7 @@ class AdminHandler extends ActionHandler
 
 			$msg = json_encode(_t('Saved block areas settings.'));
 			$msg = '<script type="text/javascript">
-				humanMsg.displayMsg(' . $msg . ');
+				human_msg.display_msg(' . $msg . ');
 				reset_block_form();
 				spinner.stop();
 			</script>';

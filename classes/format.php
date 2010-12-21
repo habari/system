@@ -528,13 +528,13 @@ class Format
 		if ( count( $errors ) ) {
 			foreach ( $errors as $error ) {
 				$error = addslashes($error);
-				$output .= "humanMsg.displayMsg(\"{$error}\");";
+				$output .= "human_msg.display_msg(\"{$error}\");";
 			}
 		}
 		if ( count( $notices ) ) {
 			foreach ( $notices as $notice ) {
 				$notice = addslashes($notice);
-				$output .= "humanMsg.displayMsg(\"{$notice}\");";
+				$output .= "human_msg.display_msg(\"{$notice}\");";
 			}
 		}
 

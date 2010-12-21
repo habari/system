@@ -33,7 +33,7 @@ var habari_ajax = {
 		spinner.stop();
 		
 		if ( json_data.response_code == 200 && json_data.message != null && json_data.message != '' ) {
-			humanMsg.displayMsg( json_data.message );	
+			human_msg.display_msg( json_data.message );	
 		}
 		if(json_data.habari_callback != null && json_data.habari_callback != '') {
 			json_data.habari_callback = eval(json_data.habari_callback);
@@ -47,7 +47,7 @@ var habari_ajax = {
 	
 	error: function(XMLHttpRequest, textStatus, errorThrown) {
 		spinner.stop();
-		humanMsg.displayMsg ("Uh Oh. An error has occured. Please try again later.");
+		human_msg.display_msg ("Uh Oh. An error has occured. Please try again later.");
 	}
 }
 
