@@ -167,8 +167,8 @@ class Post extends QueryRecord implements IsContent
 		if ( is_numeric( $name ) && ( false !== in_array( $name, $statuses ) ) ) {
 			return $name;
 		}
-		if ( isset( $statuses[strtolower( $name )] ) ) {
-			return $statuses[strtolower( $name )];
+		if ( isset( $statuses[ MultiByte::strtolower( $name ) ] ) ) {
+			return $statuses[MultiByte::strtolower( $name ) ];
 		}
 		return false;
 	}
@@ -201,8 +201,8 @@ class Post extends QueryRecord implements IsContent
 		if ( is_numeric( $name ) && ( false !== in_array( $name, $types ) ) ) {
 			return $name;
 		}
-		if ( isset( $types[strtolower( $name )] ) ) {
-			return $types[strtolower( $name )];
+		if ( isset( $types[ MultiByte::strtolower( $name ) ] ) ) {
+			return $types[ MultiByte::strtolower( $name ) ];
 		}
 		return false;
 	}
