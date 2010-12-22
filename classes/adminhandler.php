@@ -1282,10 +1282,28 @@ class AdminHandler extends ActionHandler
 	{
 
 		$importer = isset( $_POST['importer'] ) ? $_POST['importer'] : '';
-		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '';
+		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '1';
+		$step = isset( $_POST['step'] ) ? $_POST['step'] : '1';
 
-		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage );
+		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage, $step );
+		
+		// filter to get registered importers
+		$importers = Plugins::filter('import_names', array());
+		
+		// fitler to get the output of the current importer, if one is running
+		if ( $importer != '' ) {
+			$output = Plugins::filter( 'import_stage', '', $importer, $stage, $step );
+		}
+		else {
+			$output = '';
+		}
 
+		$this->theme->importer = $importer;
+		$this->theme->stage = $stage;
+		$this->theme->step = $step;
+		$this->theme->importers = $importers;
+		$this->theme->output = $output;
+		
 		$this->display( 'import' );
 
 	}
@@ -1300,12 +1318,7 @@ class AdminHandler extends ActionHandler
 			Utils::redirect( URL::get( 'admin', 'page=import' ) );
 		}
 
-		$importer = isset( $_POST['importer'] ) ? $_POST['importer'] : '';
-		$stage = isset( $_POST['stage'] ) ? $_POST['stage'] : '';
-
-		$this->theme->enctype = Plugins::filter( 'import_form_enctype', 'application/x-www-form-urlencoded', $importer, $stage );
-
-		$this->display( 'import' );
+		$this->get_import();
 	}
 
 	/**
