@@ -2086,9 +2086,8 @@ class AdminHandler extends ActionHandler
 				$years[$month->year] = array( $month );
 			}
 		}
-		if ( count($years) ) {
-			$this->theme->years = $years;
-		}
+
+		$this->theme->years = $years;
 
 	}
 
