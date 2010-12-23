@@ -221,15 +221,6 @@ class Theme extends Pluggable
 
 		$this->assign( 'posts', $posts );
 
-		/*
-		   if ( !isset( $this->page ) ) {
-		   if ( isset( $page ) ) {
-		   $this->assign( 'page', $page );
-		   }
-		   elseif ( isset( Controller::get_handler()->handler_vars['page'] ) ) {
-		   $this->assign( 'page', Controller::get_handler()->handler_vars['page'] );
-		   }
-		   }*/
 
 		if ( $posts !== false && count( $posts ) > 0 ) {
 			if ( count($posts) == 1 ) {
