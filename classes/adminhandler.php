@@ -92,11 +92,11 @@ class AdminHandler extends ActionHandler
 			$this->theme->admin_page = $page;
 			$this->theme->admin_page_url = ( $page == 'dashboard' ) ? URL::get( 'admin', 'page=' ) : URL::get( 'admin', 'page=' . $page );
 			$this->theme->page = $page;
-			$this->theme->admin_title = ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+			$this->theme->admin_title = MultiByte::ucwords($page) . ( $type != '' ? ' ' . MultiByte::ucwords($type) : '' );
 			$this->theme->admin_title =
 				isset( $this->theme->mainmenu[$this->theme->admin_page]['text'] )
 					? $this->theme->mainmenu[$this->theme->admin_page]['text']
-					: ucwords($page) . ( $type != '' ? ' ' . ucwords($type) : '' );
+					: MultiByte::ucwords($page) . ( $type != '' ? ' ' . MultiByte::ucwords($type) : '' );
 		}
 	}
 
