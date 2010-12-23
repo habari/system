@@ -537,7 +537,7 @@ class MultiByte
 			// if subject is an array, recursively call ourselves on each element of it
 			if ( is_array( $subject ) ) {
 				foreach ( $subject as $k => $v ) {
-					$subject[ $k ] = self::str_replace( $search, $replace, $v, $use_enc );
+					$subject[ $k ] = self::str_replace( $search, $replace, $v, $count, $use_enc );
 				}
 				
 				return $subject;
@@ -632,7 +632,7 @@ class MultiByte
 			// if subject is an array, recursively call ourselves on each element of it
 			if ( is_array( $subject ) ) {
 				foreach ( $subject as $k => $v ) {
-					$subject[ $k ] = self::str_ireplace( $search, $replace, $v, $use_enc );
+					$subject[ $k ] = self::str_ireplace( $search, $replace, $v, $count, $use_enc );
 				}
 				
 				return $subject;
