@@ -298,9 +298,9 @@ class Theme extends Pluggable
 		);
 		$fallback[] = 'home';
 		$fallback = Plugins::filter( 'template_fallback', $fallback );
-		$fallback = array_values( array_unique( str_replace( $searches, $replacements, $fallback ) ) );
+		$fallback = array_values( array_unique( MultiByte::str_replace( $searches, $replacements, $fallback ) ) );
 		for ( $z = 0; $z < count( $fallback ); $z++ ) {
-			if ( ( strpos( $fallback[$z], '{$posttag}' ) !== false ) && ( isset( $post ) ) && ( $post instanceof Post ) ) {
+			if ( ( MultiByte::strpos( $fallback[$z], '{$posttag}' ) !== false ) && ( isset( $post ) ) && ( $post instanceof Post ) ) {
 				$replacements = array();
 				if ( $alltags = $post->tags ) {
 					foreach( $alltags as $current_tag ) {
