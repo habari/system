@@ -3051,12 +3051,7 @@ class AdminHandler extends ActionHandler
 						Tags::vocabulary()->delete_term( $tag );
 					}
 				}
-				$msg_status = sprintf(
-					_n('Tag %s has been deleted.',
-							'Tags %s have been deleted.',
-							count($tag_names)
-					), implode($tag_names, ', ')
-				);
+				$msg_status = _n( _t( 'Tag %s has been deleted.', array( implode( '', $tag_names ) ) ), _t( '%d tags have been deleted.', array( count( $tag_names ) ) ), count( $tag_names ) );
 				Session::notice( $msg_status );
 				echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 				break;
