@@ -21,26 +21,26 @@ var human_msg = {
 		
 		// append_to is the element the msg is appended to
 		if ( append_to != undefined ) {
-			this.append_to = append_to;
+			human_msg.append_to = append_to;
 		}
 		
 		// the text on the log tab
 		if ( log_name != undefined ) {
-			this.log_name = log_name;
+			human_msg.log_name = log_name;
 		}
 		
 		// opacity of the messages
 		if ( msg_opacity != undefined ) {
-			this.msg_opacity = parseFloat( msg_opacity );
+			human_msg.msg_opacity = parseFloat( msg_opacity );
 		}
 		
 		// inject the message structure
-		jQuery(this.append_to).append(
-				'<div id="' + this.msg_id + '" class="humanMsg">' +
+		jQuery(human_msg.append_to).append(
+				'<div id="' + human_msg.msg_id + '" class="humanMsg">' +
 					'<div class="imsgs"></div>' +
 				'</div>' +
-				'<div id="' + this.log_id + '">' +
-					'<p>' + this.log_name + '</p>' +
+				'<div id="' + human_msg.log_id + '">' +
+					'<p>' + human_msg.log_name + '</p>' +
 					'<ul></ul>' +
 				'</div>'
 		);
@@ -67,20 +67,20 @@ var human_msg = {
 		}
 		
 		// increment the counter
-		this.message_count++;
+		human_msg.message_count++;
 		
 		// now we inject the message
 		
 		// show the container for messages
-		jQuery('#' + this.msg_id).show();
+		jQuery('#' + human_msg.msg_id).show();
 		
 		// create the message we'll show
-		var message = jQuery('<div class="msg" id="msgid_' + this.message_count + '"><p>' + msg + '</p></div>');
+		var message = jQuery('<div class="msg" id="msgid_' + human_msg.message_count + '"><p>' + msg + '</p></div>');
 		
 		jQuery(message)
-			.appendTo('#' + this.msg_id + ' .imsgs')	// append the message to the container
+			.appendTo('#' + human_msg.msg_id + ' .imsgs')	// append the message to the container
 			.show()		// show the new displayed message
-			.fadeTo( 500, this.msg_opacity, function() {
+			.fadeTo( 500, human_msg.msg_opacity, function() {
 				
 				// remember that 'this' now refers to the element we just acted on, not the human_msg object
 				// so we'll refer to it using the global name everywhere in here
