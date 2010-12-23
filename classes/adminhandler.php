@@ -768,11 +768,14 @@ class AdminHandler extends ActionHandler
 		$password1->class[] = 'item clear';
 		$password1->type = 'password';
 		$password1->value = '';
+		$password1->autocomplete = 'off';
 
 		$password2 = $form->change_password->append('text', 'password2', 'null:null',  _t('New Password Again'), 'optionscontrol_text');
 		$password2->class[] = 'item clear';
 		$password2->type = 'password';
 		$password2->value = '';
+		$password2->autocomplete = 'off';
+		
 		$delete = $this->handler_vars->filter_keys('delete');
 		// don't validate password match if action is delete
 		if ( !isset($delete['delete']) ) {
