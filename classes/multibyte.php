@@ -503,10 +503,9 @@ class MultiByte
 	 * @param string $subject The string to perform the search and replace on.
 	 * @param int $count If passed, this value will hold the number of matched and replaced needles.
 	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
-	 * @param boolean $case_insensitive Should the search and replace be case insenstive?
 	 * @return string The subject with replaced values.
 	 */
-	public static function str_replace ( $search, $replace, $subject, &$count = 0, $use_enc = null, $case_insensitive = false ) {
+	public static function str_replace ( $search, $replace, $subject, &$count = 0, $use_enc = null ) {
 		
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
@@ -534,6 +533,15 @@ class MultiByte
 			if ( !is_array( $replace ) ) {
 				$replace = array( $replace );
 			}
+			
+			// if subject is an array, recursively call ourselves on each element of it
+			if ( is_array( $subject ) ) {
+				foreach ( $subject as $k => $v ) {
+					$subject[ $k ] = self::str_replace( $search, $replace, $v, $use_enc );
+				}
+				
+				return $subject;
+			}
 						
 			
 			
@@ -544,7 +552,7 @@ class MultiByte
 				// the values we'll match
 				$s = array_shift( $search );
 				$r = array_shift( $replace );
-				
+				if ( is_array( $subject ) ) { Utils::debug($subject); }
 				// while the search still exists in the subject
 				while ( self::strpos( $subject, $s, 0, $enc ) !== false ) {
 					
@@ -619,6 +627,15 @@ class MultiByte
 			// if replace is not an array, make it one
 			if ( !is_array( $replace ) ) {
 				$replace = array( $replace );
+			}
+			
+			// if subject is an array, recursively call ourselves on each element of it
+			if ( is_array( $subject ) ) {
+				foreach ( $subject as $k => $v ) {
+					$subject[ $k ] = self::str_ireplace( $search, $replace, $v, $use_enc );
+				}
+				
+				return $subject;
 			}
 						
 			
