@@ -1,706 +1,783 @@
 <?php
-
-define( 'IMPORT_BATCH', 100 );
-
-/**
- * WordPress Importer - Imports data from WordPress into Habari
- *
- * @package Habari
- */
-class WPImport extends Plugin implements Importer
-{
-	private $supported_importers = array();
-
-	/**
-	 * Initialize plugin.
-	 * Set the supported importers.
-	 **/
-	public function action_init()
-	{
-		$this->supported_importers = array( _t( 'WordPress Database' ) );
+	
+	// define IMPORT_BATCH in your config.php to limit each batch of DB results
+	if ( !defined('IMPORT_BATCH') ) {
+		define('IMPORT_BATCH', 100);
 	}
-
-	/**
-	 * Return a list of names of things that this importer imports
-	 *
-	 * @return array List of importables.
-	 */
-	public function filter_import_names( $import_names )
-	{
-		return array_merge( $import_names, $this->supported_importers );
-	}
-
-	/**
-	 * Plugin filter that supplies the UI for the WP importer
-	 *
-	 * @param string $stageoutput The output stage UI
-	 * @param string $import_name The name of the selected importer
-	 * @param string $stage The stage of the import in progress
-	 * @param string $step The step of the stage in progress
-	 * @return output for this stage of the import
-	 */
-	public function filter_import_stage( $stageoutput, $import_name, $stage, $step )
-	{
-		// Only act on this filter if the import_name is one we handle...
-		if ( !in_array( $import_name, $this->supported_importers ) ) {
-			// Must return $stageoutput as it may contain the stage HTML of another importer
-			return $stageoutput;
-		}
-
-		$inputs = array();
-
-		// Validate input from various stages...
-		switch ( $stage ) {
-		case 1:
-			if ( count( $_POST ) ) {
-				$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix', 'category_import', 'utw_import' );
-				$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
-				if ( $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'], $inputs['db_prefix'] ) ) {
-					$stage = 2;
-				}
-				else {
-					$inputs['warning']= _t( 'Could not connect to the WordPress database using the values supplied. Please correct them and try again.' );
-				}
-			}
-			break;
-		}
-
-		// Based on the stage of the import we're on, do different things...
-		switch ( $stage ) {
-		case 1:
-		default:
-			$output = $this->stage1( $inputs );
-			break;
-		case 2:
-			$output = $this->stage2( $inputs );
-		}
-
-		return $output;
-	}
-
-	/**
-	 * Create the UI for stage one of the WP import process
-	 *
-	 * @param array $inputs Inputs received via $_POST to the importer
-	 * @return string The UI for the first stage of the import process
-	 */
-	private function stage1( $inputs )
-	{
-		$default_values = array(
+	
+	class WPImport extends Plugin implements Importer {
+		
+		private $supported_importers = array();
+		
+		private $default_values = array(
 			'db_name' => '',
 			'db_host' => 'localhost',
 			'db_user' => '',
 			'db_pass' => '',
 			'db_prefix' => 'wp_',
-			'warning' => '',
-			'category_import' => 1,
-			'utw_import' => 0,
-		 );
-		$inputs = array_merge( $default_values, $inputs );
-		extract( $inputs );
-		if ( $warning != '' ) {
-			$warning = "<p class=\"warning\">{$warning}</p>";
+			'category_import' => true,
+			'import_index' => 0,
+			'error' => '',
+		);
+		
+		public function action_init ( ) {
+			
+			$this->supported_importers[] = _t('WordPress Database');
+			
 		}
-
-		$output = '<p>' . _t('Habari will attempt to import from a WordPress Database.') . '</p>';
-		$output .=	$warning;
-		$output .= '<p>' . _t('Please provide the connection details for an existing WordPress database:') . '</p>';
-		$output .= '<div class="item clear">';
-		$output .= '<span class="pct25"><label for="db_name">' . _t('Database Name') . '</label></span><span class="pct40"><input type="text" name="db_name" value="' . $db_name . '" tab index="1"></span>';
-		$output .= '</div>';
-		$output .= '<div class="item clear">';
-		$output .= '<span class="pct25"><label for="db_host">' . _t('Database Host') . '</label></span><span class="pct40"><input type="text" name="db_host" value="' . $db_host . '" tab index="2"></span>';
-		$output .= '</div>';
-		$output .= '<div class="item clear">';
-		$output .= '<span class="pct25"><label for="db_user">' . _t('Database User') . '</label></span><span class="pct40"><input type="text" name="db_user" value="' . $db_user . '" tab index="3"></span>';
-		$output .= '</div>';
-		$output .= '<div class="item clear">';
-		$output .= '<span class="pct25"><label for="db_pass">' . _t('Database Password') . '</label></span><span class="pct40"><input type="password" name="db_pass" value="' . $db_pass . '" tab index="4"></span>';
-		$output .= '</div>';
-		$output .= '<div class="item clear">';
-		$output .= '<span class="pct25"><label for="db_prefix">' . _t('Table Prefix') . '</label></span><span class="pct40"><input type="text" name="db_prefix" value="' . $db_prefix . '" tab index="5"></span>';
-		$output .= '</div>';
-		$output .= '<div class="item clear">';
-		$output .= '<span class="pct40"><label for="category_import">' . _t('Import Category as Tag') . '</label></span><span class="pct25"><input type="checkbox" name="category_import" value="1" checked></span>';
-		$output .= '</div>';
-		$output .= '<div class="clear"></div>';
-		$output .= '<input type="hidden" name="stage" value="1">';
-		$output .= '<p class="extras">' . _t('Extras - additional data from WordPress plugins') . '</p>';
-		$output .= '<div class="item clear">';
-		$output .= '<span class="pct40"><label for="utw_import">' . _t('Import tags from Ultimate Tag Warrior') . '</label></span>';
-		$output .= '<span class="pct25"><input type="checkbox" name="utw_import" value="1" tab index="6"></span>';
-		$output .= '</div>';
-		$output .= '<div class="container transparent">';
-		$output .= '<input type="submit" class="button" name="import" value="' . _t('Import') . '" />';
-		$output .= '</div>';
-
-		return $output;
-	}
-
-	/**
-	 * Create the UI for stage two of the WP import process
-	 * This stage kicks off the ajax import.
-	 *
-	 * @param array $inputs Inputs received via $_POST to the importer
-	 * @return string The UI for the second stage of the import process
-	 */
-	private function stage2( $inputs )
-	{
-		extract( $inputs );
-
-		if ( ! isset( $category_import ) ) {
-			$category_import = 0;
+		
+		public function filter_import_names ( $import_names ) {
+			
+			return array_merge( $import_names, $this->supported_importers );
+			
 		}
-		if ( ! isset( $utw_import ) ) {
-			$utw_import = 0;
-		}
-		$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_users' ) );
-		EventLog::log(sprintf(_t('Starting import from "%s"'), $db_name));
-		Options::set('import_errors', array());
-
-		$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
-
-		$prompt = '<p>' . _t('Import In Progress') . '</p>';
-		$prompt .= '<div id="import_progress">' . _t('Starting Import...') . '</div>';
-		$output = <<< WP_IMPORT_STAGE2
-		{$prompt}
-		<script type="text/javascript">
-		// A lot of ajax stuff goes here.
-		$( document ).ready( function(){
-			$( '#import_progress' ).load(
-				"{$ajax_url}",
-				{
-					db_host: "{$vars['host']}",
-					db_name: "{$vars['name']}",
-					db_user: "{$vars['user']}",
-					db_pass: "{$vars['pass']}",
-					db_prefix: "{$vars['prefix']}",
-					category_import: "{$category_import}",
-					utw_import: "{$utw_import}",
-					postindex: 0
-				}
-			 );
-		} );
-		</script>
-WP_IMPORT_STAGE2;
-		return $output;
-	}
-
-	/**
-	 * Attempt to connect to the WordPress database
-	 *
-	 * @param string $db_host The hostname of the WP database
-	 * @param string $db_name The name of the WP database
-	 * @param string $db_user The user of the WP database
-	 * @param string $db_pass The user's password for the WP database
-	 * @param string $db_prefix The table prefix for the WP instance in the database
-	 * @return mixed false on failure, DatabseConnection on success
-	 */
-	private function wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix )
-	{
-		// Connect to the database or return false
-		try {
-			$wpdb = DatabaseConnection::ConnectionFactory( "mysql:host={$db_host};dbname={$db_name}" );;
-			$wpdb->connect( "mysql:host={$db_host};dbname={$db_name}", $db_user, $db_pass );
-			return $wpdb;
-		}
-		catch( Exception $e ) {
-			return false;
-		}
-	}
-
-	/**
-	 * The plugin sink for the auth_ajax_wp_import_posts hook.
-	 * Responds via authenticated ajax to requests for post importing.
-	 *
-	 * @param AjaxHandler $handler The handler that handled the request, contains $_POST info
-	 */
-	public function action_auth_ajax_wp_import_posts( $handler )
-	{
-		$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix','postindex', 'category_import', 'utw_import' );
-		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
-		extract( $inputs );
-		if ( ! isset( $inputs['category_import'] ) ) {
-			$inputs['category_import']= 0;
-		}
-		if ( ! isset( $inputs['utw_import'] ) ) {
-			$inputs['utw_import']= 0;
-		}
-
-		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
-		if ( $wpdb ) {
-			if ( !DB::in_transaction() ) DB::begin_transaction();
-
-			$has_taxonomy = count($wpdb->get_column( "SHOW TABLES LIKE '{$db_prefix}term_taxonomy';" ));
-
-			$postcount = $wpdb->get_value( "SELECT count( id ) FROM {$db_prefix}posts;" );
-			$min = $postindex * IMPORT_BATCH + ( $postindex == 0 ? 0 : 1 );
-			$max = min( ( $postindex + 1 ) * IMPORT_BATCH, $postcount );
-
-			$user_map = array();
-			$user_info = DB::get_results( "SELECT user_id, value FROM {userinfo} WHERE name= 'wp_id';" );
-			foreach( $user_info as $info ) {
-				$user_map[$info->value]= $info->user_id;
+		
+		public function filter_import_stage ( $stage_output, $import_name, $stage, $step ) {
+			
+			// only act on this filter if the import_name is one we handle
+			if ( !in_array( $import_name, $this->supported_importers ) ) {
+				// it's a filter, always return the output another plugin might have generated
+				return $stage_output;
 			}
-			echo '<p>' . _t( 'Importing posts %1$d - %2$d of %3$d.', array( $min, $max, $postcount ) ) . '</p>';
-			$posts = $wpdb->get_results( "
-				SELECT
-					post_content as content,
-					ID as id,
-					post_title as title,
-					post_name as slug,
-					post_author as user_id,
-					guid as guid,
-					post_date as pubdate,
-					post_modified as updated,
-					post_status,
-					post_type
-				FROM {$db_prefix}posts
-				WHERE post_type != 'revision' AND post_type != 'attachment' AND post_type != 'nav_menu_item' 
-					AND post_status != 'auto-draft' AND post_status != 'inherit'
-				ORDER BY ID DESC
-				LIMIT {$min}, " . IMPORT_BATCH
-				, array() );
+			
+			// the values we'll hand to each stage for processing
+			$inputs = array();
+			
+			// validate input and figure out which stage we're at
+			switch ( $stage ) {
+				
+				case 1:
+					
+					if ( isset( $_POST['wpimport'] ) ) {
+						
+						$inputs = $_POST->filter_keys( array( 'db_name', 'db_user', 'db_host', 'db_pass', 'db_prefix', 'category_import', 'import_index' ) );
+						$inputs = $inputs->getArrayCopy();
+						
+						// try to connect to the db with the given values
+						if ( $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'] ) ) {
+							
+							// we've got good connection info, bump to stage 2
+							$stage = 2;
+							
+						}
+						else {
+							
+							// add a warning to the stack
+							$inputs['error'] = _t('Could not connect to the WordPress database using the values supplied. Please correct them and try again.');
+							
+						}
+						
+					}
+					
+					break;
+				
+			}
+			
+			
+			// now dispatch the right stage
+			switch ( $stage ) {
+				
+				case 1:
+				default:
+					$output = $this->stage1( $inputs );
+					break;
+					
+				case 2:
+					$output = $this->stage2( $inputs );
+					break;
+				
+			}
+			
+			// return the output for the importer to display
+			return $output;
+			
+		}
+		
+		private function stage1 ( $inputs ) {
+			
+			$inputs = array_merge( $this->default_values, $inputs );
+			
+			// if there is a error, display it
+			if ( $inputs['error'] != '' ) {
+				$error = '<p class="error">' . $inputs['error'] . '</p>';
+			}
+			else {
+				// blank it out just so we can use the value in output
+				$error = '';
+			}
+			
+			$output = '<p>' . _t( 'Habari will attempt to import from a WordPress database.') . '</p>';
+			$output .= $error;
+			
+			// get the FormUI form
+			//$form = $this->get_form( $inputs );
+			
+			// append the output of the form
+			//$output .= $form->get();
+			
+			$output .= '<div class="item clear">';
+			$output .= 	'<span class="pct25"><label for="db_name">' . _t( 'Database Name' ) . '</label></span><span class="pct40"><input type="text" name="db_name" id="db_name" value="' . $inputs['db_name'] . '"></span>';
+			$output .= '</div>';
+			
+			$output .= '<div class="item clear">';
+			$output .= 	'<span class="pct25"><label for="db_host">' . _t( 'Database Host' ) . '</label></span><span class="pct40"><input type="text" name="db_host" id="db_host" value="' . $inputs['db_host'] . '"></span>';
+			$output .= '</div>';
+			
+			$output .= '<div class="item clear">';
+			$output .= 	'<span class="pct25"><label for="db_user">' . _t( 'Database User' ) . '</label></span><span class="pct40"><input type="text" name="db_user" id="db_user" value="' . $inputs['db_user'] . '"></span>';
+			$output .= '</div>';
+			
+			$output .= '<div class="item clear">';
+			$output .= 	'<span class="pct25"><label for="db_pass">' . _t( 'Database Password' ) . '</label></span><span class="pct40"><input type="text" name="db_pass" id="db_pass" value="' . $inputs['db_pass'] . '"></span>';
+			$output .= '</div>';
+			
+			$output .= '<div class="item clear">';
+			$output .= 	'<span class="pct25"><label for="db_prefix">' . _t( 'Table Prefix' ) . '</label></span><span class="pct40"><input type="text" name="db_prefix" id="db_prefix" value="' . $inputs['db_prefix'] . '"></span>';
+			$output .= '</div>';
+			
+			$output .= '<div class="item clear">';
+			$output .= 	'<span class="pct25"><label for="category_import">' . _t( 'Import Categories as Tags' ) . '</label></span><span class="pct40"><input type="checkbox" name="category_import" id="category_import" value="true" ' . ( ( $inputs['category_import'] == true ) ? 'checked="checked"' : '' ) . '></span>';
+			$output .= '</div>';
+			
+			$output .= '<div class="item clear transparent">';
+			$output .=	'<input type="submit" class="button" name="wpimport" value="' . _t( 'Import' ) . '">';
+			$output .= '</div>';
+			
+			return $output;
+			
+		}
+		
+		private function stage2 ( $inputs ) {
+			
+			// make sure we have all our default values
+			$inputs = array_merge( $this->default_values, $inputs );
+			
+			// the first thing we import are users, so get that URL to kick off the ajax process
+			$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_users' ) );
+			
+			// the variables we'll hand to the ajax call are all the input values
+			$vars = $inputs;
+			
+			EventLog::log( _t('Starting import from "%s"', array( $inputs['db_name'] ) ) );
+			
+			$output = '<p>' . _t('Import in Progress') . '</p>';
+			$output .= '<div id="import_progress">' . _t( 'Starting Import...' ) . '</div>';
+			$output .= $this->get_ajax( $ajax_url, $vars );
+			
+			return $output;
+			
+		}
+		
+		private function get_ajax ( $url, $vars = array() ) {
+			
+			// generate the vars we'll use
+			$ajax_vars = array();
+			foreach ( $vars as $k => $v ) {
+				$ajax_vars[] = $k . ': "' . $v . '"';
+			}
+			$ajax_vars = implode( ',', $ajax_vars );
+			
+			$output = <<<WP_IMPORT_AJAX
+				<script type="text/javascript">
+					$(document).ready( function() {
+						$('#import_progress').load(
+							"{$url}",
+							{
+								{$ajax_vars}
+							}
+						);
+					} );
+				</script>
+WP_IMPORT_AJAX;
 
-			$post_map = DB::get_column( "SELECT value FROM {postinfo} WHERE name='wp_id';");
-			foreach( $posts as $post ) {
-				if (in_array($post->id, $post_map)) {
+			return $output;
+			
+		}
+		
+		private function get_form ( $inputs ) {
+			// this isn't used right now because we can't use formui in an importer, there's already a form
+			$form = new FormUI('wp_importer');
+			
+			$db_name = $form->append( 'text', 'db_name', 'null:null', _t( 'Database Name') );
+			$db_name->value = $inputs['db_name'];
+			
+			$db_host = $form->append( 'text', 'db_host', 'null:null', _t( 'Database Host' ) );
+			$db_host->value = $inputs['db_host'];
+			
+			$db_user = $form->append( 'text', 'db_user', 'null:null', _t( 'Database User' ) );
+			$db_user->value = $inputs['db_user'];
+			
+			$db_pass = $form->append( 'text', 'db_pass', 'null:null', _t( 'Database Password' ) );
+			$db_pass->value = $inputs['db_pass'];
+			
+			$db_prefix = $form->append( 'text', 'db_prefix', 'null:null', _t( 'Table Prefix' ) );
+			$db_prefix->value = $inputs['db_prefix'];
+			
+			$category_import = $form->append( 'checkbox', 'category_import', 'null:null', _t( 'Import Categories as Tags' ) );
+			$category_import->value = ( $inputs['category_import'] ) ? true : false;
+			
+			$submit = $form->append( 'submit', 'submit', _t( 'Import' ) );
+			
+			
+			return $form;
+			
+		}
+		
+		private function wp_connect ( $db_host, $db_name, $db_user, $db_pass ) {
+			
+			// build the connection string, since we stupidly have to use it twice
+			$connection_string = 'mysql:host=' . $db_host . ';dbname=' . $db_name;
+			
+			try {
+				$wpdb = DatabaseConnection::ConnectionFactory( $connection_string );
+				$wpdb->connect( $connection_string, $db_user, $db_pass );
+				
+				// @todo make sure preifx_* tables exist?
+				
+				return $wpdb;
+			}
+			catch ( Exception $e ) {
+				// just hide connection errors, it's enough that we errored out
+				return false;
+			}
+			
+		}
+		
+		public function action_auth_ajax_wp_import_users ( ) {
+			
+			// get the values post'd in
+			$inputs = $_POST->filter_keys( array( 'db_name', 'db_host', 'db_user', 'db_pass', 'db_prefix', 'category_import', 'import_index' ) );
+			$inputs = $inputs->getArrayCopy();
+			
+			// make sure we have all our default values
+			$inputs = array_merge( $this->default_values, $inputs );
+			
+			// get the wpdb
+			$wpdb = $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'] );
+			
+			// if we couldn't connect, error out
+			if ( !$wpdb ) {
+				EventLog::log( _t( 'Failed to import from "%s"', array( $inputs['db_name'] ) ) );
+				Session::error( _t( 'Failed to import from "%s"', array( $inputs['db_name'] ) ) );
+				echo '<p>' . _t( 'Failed to connect using the given database connection details.' ) . '</p>';
+			}
+			
+			// we connected just fine, let's get moving!
+			
+			// begin a transaction. if we error out at any point, we want to roll back to before import began
+			DB::begin_transaction();
+			
+			// fetch all the users from the wordpress database
+			$wp_users = $wpdb->get_results( 'select id, user_login, user_pass, user_email, user_url, display_name from ' . $inputs['db_prefix'] . 'users' );
+			
+			echo '<p>' . _t( 'Importing Users...' ) . '</p>';
+			
+			foreach ( $wp_users as $wp_user ) {
+				
+				// see if a user with this username already exists
+				$user = User::get_by_name( $wp_user->user_login );
+				
+				if ( $user !== false ) {
+					
+					// if the user exists, save their old ID into an info attribute
+					$user->info->wp_id = intval( $wp_user->id );
+					
+					// and update
+					$user->update();
+					
+					echo '<p>' . _t( 'Associated imported user %1$s with existing user %2$s', array( $wp_user->user_login, $user->username ) ) . '</p>';
+					
+					EventLog::log( _t( 'Associated imported user %1$s with existing user %2$s', array( $wp_user->user_login, $user->username ) ) );
+					
+				}
+				else {
+					
+					// no user exists, we need to create one
+					try {
+						
+						$u = new User();
+						$u->username = $wp_user->user_login;
+						$u->email = $wp_user->user_email;
+						
+						// set their password so the user will be able to login. they're auto-added to the 'authenticated' ACL group
+						$u->password = Utils::crypt( $wp_user->user_pass );
+						
+						$u->info->wp_id = intval( $wp_user->id );
+						$u->info->displayname = $wp_user->display_name;
+						
+						if ( $wp_user->user_url != '' ) {
+							$u->info->url = $wp_user->user_url;
+						}
+						
+						// and save it
+						$u->insert();
+						
+						echo '<p>' . _t( 'Created new user %1$s. Their old ID was %2$d.', array( $u->username, $wp_user->id ) ) . '</p>';
+						
+						EventLog::log( _t( 'Created new user %1$s. Their old ID was %2$d.', array( $u->username, $wp_user->id ) ) );
+						
+					}
+					catch ( Exception $e ) {
+						
+						// no idea why we might error out, but catch it if we do
+						EventLog::log( $e->getMessage, 'err' );
+						
+						echo '<p class="error">' . _t( 'There was an error importing user %s. See the EventLog for the error message. ', array( $wp_user->user_login ) ) . '</p>';
+						
+						echo '<p>' . _t( 'Rolling back changes...' ) . '</p>';
+						
+						// rollback all changes before we return so the import hasn't changed anything yet
+						DB::rollback();
+						
+						// and return so they don't get AJAX to send them on to the next step
+						return false;
+						
+					}
+					
+				}
+				
+			}
+			
+			
+			// if we've finished without an error, commit the import
+			DB::commit();
+			
+			// get the next ajax url
+			$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
+			
+			// and spit out ajax to send them to the next step - posts!
+			echo $this->get_ajax( $ajax_url, $inputs );
+			
+		}
+
+		public function action_auth_ajax_wp_import_posts ( ) {
+			
+			// get the values post'd in
+			$inputs = $_POST->filter_keys( array( 'db_name', 'db_host', 'db_user', 'db_pass', 'db_prefix', 'category_import', 'import_index' ) );
+			$inputs = $inputs->getArrayCopy();
+			
+			// make sure we have all our default values
+			$inputs = array_merge( $this->default_values, $inputs );
+			
+			// get the wpdb
+			$wpdb = $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'] );
+			
+			// if we couldn't connect, error out
+			if ( !$wpdb ) {
+				EventLog::log( _t( 'Failed to import from "%s"', array( $inputs['db_name'] ) ) );
+				Session::error( _t( 'Failed to import from "%s"', array( $inputs['db_name'] ) ) );
+				echo '<p>' . _t( 'Failed to connect using the given database connection details.' ) . '</p>';
+			}
+			
+			// we connected just fine, let's get moving!
+			
+			// begin a transaction. if we error out at any point, we want to roll back to before import began
+			DB::begin_transaction();
+			
+			// fetch the number of posts from the wordpress database so we can batch things up
+			$num_posts = $wpdb->get_value( 'select count(id) from ' . $inputs['db_prefix'] . 'posts' );
+			
+			// figure out the LIMIT we're at
+			$min = $inputs['import_index'] * IMPORT_BATCH;
+			$max = min( $min + IMPORT_BATCH, $num_posts );		// for display only
+			
+			
+			echo '<p>' . _t( 'Importing posts %1$d - %2$d of %3$d.', array( $min, $max, $num_posts ) ) . '</p>';
+			
+			// get all the imported users so we can link old post authors to new post authors
+			$users = DB::get_results( 'select user_id, value from {userinfo} where name = :name', array( ':name' => 'wp_id' ) );
+			
+			// create an easy user map of old ID -> new ID
+			$user_map = array();
+			foreach ( $users as $info ) {
+				$user_map[ $info->value ] = $info->user_id;
+			}
+			
+			// get all the post IDs we've imported so far to make sure we don't duplicate any
+			$post_map = DB::get_column( 'select value from {postinfo} where name = :name', array( ':name' => 'wp_id' ) );
+			
+			
+			
+			// now we're ready to start importing posts
+			$posts = $wpdb->get_results( 'select id, post_author, post_date, post_content, post_title, post_status, comment_status, post_name, post_modified, guid, post_type from ' . $inputs['db_prefix'] . 'posts order by id asc limit ' . $min . ', ' . IMPORT_BATCH );
+			
+			foreach ( $posts as $post ) {
+				
+				// if this post is already in the list we've imported, skip it
+				if ( in_array( $post->id, $post_map ) ) {
 					continue;
 				}
-
-				if ( $has_taxonomy ) {
-					// Importing from >= WP2.3
-					if ( $category_import == 1 ) {
-						// Import WP category and tags as tags
-						$taxonomies = "({$db_prefix}term_taxonomy.taxonomy= 'category' OR {$db_prefix}term_taxonomy.taxonomy= 'post_tag')";
-					}
-					else {
-						// Import WP tags as tags
-						$taxonomies = "{$db_prefix}term_taxonomy.taxonomy= 'post_tag'";
-					}
-					$tags = $wpdb->get_column(
-						"SELECT DISTINCT name
-						FROM {$db_prefix}terms
-						INNER JOIN {$db_prefix}term_taxonomy
-						ON ( {$db_prefix}terms.term_id= {$db_prefix}term_taxonomy.term_id AND {$taxonomies} )
-						INNER JOIN {$db_prefix}term_relationships
-						ON ({$db_prefix}term_taxonomy.term_taxonomy_id= {$db_prefix}term_relationships.term_taxonomy_id)
-						WHERE {$db_prefix}term_relationships.object_id= {$post->id}"
-						);
+				
+				// set up the big taxonomy sql query
+				// if this turns out to be incredibly slow we should refactor it into a big join, but they're all keys so it seems zippy enough for me
+				$taxonomy_query = 'select name, slug from ' . $inputs['db_prefix'] . 'terms where term_id in ( select term_id from ' . $inputs['db_prefix'] . 'term_taxonomy where taxonomy = :taxonomy and term_taxonomy_id in ( select term_taxonomy_id from ' . $inputs['db_prefix'] . 'term_relationships where object_id = :object_id ) )';
+				
+				// get all the textual tag names for this post
+				$tags = $wpdb->get_results( $taxonomy_query, array( ':taxonomy' => 'post_tag', ':object_id' => $post->id ) );
+				
+				// should we import categories as tags too?
+				if ( $inputs['category_import'] ) {
+					// then do the same as above for the category taxonomy
+					$categories = $wpdb->get_results( $taxonomy_query, array( ':taxonomy' => 'category', ':object_id' => $post->id ) );
 				}
-				else {
-					// Importing from < WP2.3
-					if ( $category_import == 1 ) {
-						// Import WP category as tags
-						$tags = $wpdb->get_column(
-							"SELECT category_nicename
-							FROM {$db_prefix}post2cat
-							INNER JOIN {$db_prefix}categories
-							ON ( {$db_prefix}categories.cat_ID= {$db_prefix}post2cat.category_id )
-							WHERE post_id= {$post->id}"
-						 );
-					} else {
-						$tags = array();
-					}
+				
+				// create the new post
+				$p = new Post( array(
+					'title' => MultiByte::convert_encoding( $post->post_title ),
+					'content' => MultiByte::convert_encoding( $post->post_content ),
+					'user_id' => $user_map[ $post->post_author ],
+					'pubdate' => HabariDateTime::date_create( $post->post_date ),
+					'updated' => HabariDateTime::date_create( $post->post_modified ),
+					'slug' => MultiByte::convert_encoding( $post->post_name ),
+				) );
+				
+				// figure out the post type
+				switch ( $post->post_type ) {
+					
+					case 'post':
+						$p->content_type = Post::type( 'entry' );
+						break;
+						
+					case 'page':
+						$p->content_type = Post::type( 'page' );
+						break;
+						
+					default:
+						// we're not importing other types - continue 2 to break out of the switch and the loop and continue to the next post
+						continue 2;
+					
 				}
-
-				// we want to include the Ultimate Tag Warrior in that list of tags
-				if ( $utw_import == 1 && count( DB::get_results( "show tables like 'post2tag'" ) ) ) {
-					$utw_tags = $wpdb->get_column(
-					"SELECT tag
-					FROM {$db_prefix}post2tag
-					INNER JOIN {$db_prefix}tags
-					ON ( {$db_prefix}tags.tag_ID= {$db_prefix}post2tag.tag_id )
-					WHERE post_id= {$post->id}"
-					 );
-					// UTW substitutes underscores and hyphens for spaces, so let's do the same
-					$utw_tag_formatter = create_function( '$a', 'return preg_replace( "/_|-/", " ", $a );' );
-
-					// can this be done in just two calls instead of three? I think so.
-					$tags = array_unique( array_merge( $tags, array_map( $utw_tag_formatter, $utw_tags ) ) );
-				}
-
-				$post->content = MultiByte::convert_encoding( $post->content );
-				$post->title = MultiByte::convert_encoding( $post->title );
-				$tags = implode( ',', $tags );
-				$tags = MultiByte::convert_encoding( $tags );
-
-				$post_array = $post->to_array();
-				switch ( $post_array['post_status'] ) {
+				
+				// figure out the post status
+				switch ( $post->post_status ) {
+					
 					case 'publish':
-						$post_array['status']= Post::status( 'published' );
+						$p->status = Post::status( 'published' );
 						break;
+						
 					case 'future':
-						$post_array['status'] = Post::status('scheduled');
+						$p->status = Post::status( 'scheduled' );
 						break;
+						
 					case 'pending':		// means pending-review, not pending as in scheduled
 					case 'draft':
-						$post_array['status'] = Post::status('draft');
+						$p->status = Post::status( 'draft' );
 						break;
-					default:
-						$post_array['status']= Post::status( $post_array['post_status'] );
 						
-						// Post::status() returns false if we didn't recognize the status type - skip it
-						if ( $post_array['status'] == false ) {
-							continue;
+					default:
+						// Post::status() returns false if it doesn't recognize the status type
+						$status = Post::status( $post->post_status );		// store in a temp value because if you try and set ->status to an invalid value the Post class freaks
+						
+						if ( $status == false ) {
+							// we're not importing statuses we don't recognize - continue 2 to break out of the switch and the loop and continue to the next post
+							continue 2;
+						}
+						else {
+							$p->status = $status;
 						}
 						
 						break;
-				}
-				unset( $post_array['post_status'] );
-
-				switch ( $post_array['post_type'] ) {
-					case 'post':
-						$post_array['content_type']= Post::type( 'entry' );
-						break;
-					case 'page':
-						$post_array['content_type']= Post::type( 'page' );
-						break;
-					default:
-						// We're not inserting WP's media records.  That would be silly.
-						continue;
-				}
-				unset( $post_array['post_type'] );
-
-				$p = new Post( $post_array );
-				
-				// Post should be handling this when inserting the post, but it's not
-				if ( $post->slug == '' ) {
-					$p->slug = Utils::slugify( $post->title );
-				}
-				else {
-					$p->slug = $post->slug;
+					
 				}
 				
-				if (isset($user_map[$p->user_id])) {
-					$p->user_id = $user_map[$p->user_id];
+				// if comments are closed, disable them on the new post
+				if ( $post->comment_status == 'closed' ) {
+					$p->info->comments_disabled = true;
 				}
-				else {
-					$errors = Options::get('import_errors');
-					$errors[] = _t('Post author id %1$s was not found in WP database, assigning post "%2$s" (WP post id #%3$d) to current user.', array($p->user_id, $p->title,$post_array['id']) );
-					Options::set('import_errors', $errors);
-					$p->user_id = User::identify()->id;
-				}
-
-				$p->guid = $p->guid; // Looks fishy, but actually causes the guid to be set.
-				$p->tags = $tags;
-
-				$p->info->wp_id = $post_array['id'];  // Store the WP post id in the post_info table for later
-
+				
+				// save the old post ID in info
+				$p->info->wp_id = $post->id;
+				
+				// since we're not using it, save the old GUID too
+				$p->info->wp_guid = $post->guid;
+				
+				
+				// now that we've got all the pieces in place, save the post
 				try {
 					$p->insert();
-					$p->updated = $post_array['updated'];
-					$p->update();
+					
+					// now that the post is in the db we can add tags to it
+					
+					// first, if we want to import categories as tags, add them to the array
+					if ( $inputs['category_import'] ) {
+						$tags = array_merge( $tags, $categories );
+					}
+					
+					// now for the tags!
+					foreach ( $tags as $tag ) {
+						
+						// try to get the tag by slug, which is the key and therefore the most unique
+						$t = Tags::get_by_slug( $tag->slug );
+						
+						// if we didn't get back a tag, create a new one
+						if ( $t == false ) {
+							$t = Tag::create( array(
+								'term' => $tag->slug,
+								'term_display' => $tag->name
+							) );
+						}
+					
+						// now that we have a tag (one way or the other), associate this post with it
+						$t->associate( 'post', $p->id );
+						
+					}
+					
 				}
-				catch( Exception $e ) {
-					EventLog::log($e->getMessage(), 'err', null, null, print_r(array($p, $e), 1));
-					Session::error( $e->getMessage() );
-					$errors = Options::get('import_errors');
-					$errors[] = $p->title . ' : ' . $e->getMessage();
-					Options::set('import_errors', $errors);
+				catch ( Exception $e ) {
+					
+					EventLog::log( $e->getMessage(), 'err' );
+					
+					echo '<p class="error">' . _t( 'There was an error importing post %s. See the EventLog for the error message.', array( $post->post_title ) );
+					
+					echo '<p>' . _t( 'Rolling back changes...' ) . '</p>';
+					
+					// rollback all changes before we return so the import hasn't changed anything yet
+					DB::rollback();
+					
+					// and return so they don't get AJAX to send them on to the next step
+					return false;
+					
 				}
+				
 			}
-
-			if ( DB::in_transaction() ) DB::commit();
-
-			if ( $max < $postcount ) {
+			
+			
+			// if we've finished without an error, commit the import
+			DB::commit();
+			
+			if ( $max < $num_posts ) {
+				
+				// if there are more posts to import
+				
+				// get the next ajax url
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
-				$postindex++;
-
-				$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
-
-				echo <<< WP_IMPORT_AJAX1
-					<script type="text/javascript">
-					$( '#import_progress' ).load(
-						"{$ajax_url}",
-						{
-							db_host: "{$vars['host']}",
-							db_name: "{$vars['name']}",
-							db_user: "{$vars['user']}",
-							db_pass: "{$vars['pass']}",
-							db_prefix: "{$vars['prefix']}",
-							category_import: "{$category_import}",
-							utw_import: "{$utw_import}",
-							postindex: {$postindex}
-						}
-					 );
-
-				</script>
-WP_IMPORT_AJAX1;
+				
+				// bump the import index by one so we get a new batch next time
+				$inputs['import_index']++;
+				
+				
 			}
 			else {
+				
+				// move on to importing comments
+				
+				// get the next ajax url
 				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
-
-				$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
-
-				echo <<< WP_IMPORT_AJAX2
-					<script type="text/javascript">
-					$( '#import_progress' ).load(
-						"{$ajax_url}",
-						{
-							db_host: "{$vars['host']}",
-							db_name: "{$vars['name']}",
-							db_user: "{$vars['user']}",
-							db_pass: "{$vars['pass']}",
-							db_prefix: "{$vars['prefix']}",
-							category_import: "{$category_import}",
-							utw_import: "{$utw_import}",
-							commentindex: 0
-						}
-					 );
-
-				</script>
-WP_IMPORT_AJAX2;
-
+				
+				// reset the import index so we start at the first comment
+				$inputs['import_index'] = 0;
+				
 			}
+			
+			// and spit out ajax to send them to the next step - posts!
+			echo $this->get_ajax( $ajax_url, $inputs );
+			
 		}
-		else {
-			EventLog::log(sprintf(_t('Failed to import from "%s"'), $db_name), 'crit');
-			Session::error( $e->getMessage() );
-			echo '<p>'._t( 'The database connection details have failed to connect.' ).'</p>';
-		}
-	}
-
-	/**
-	 * The plugin sink for the auth_ajax_wp_import_posts hook.
-	 * Responds via authenticated ajax to requests for post importing.
-	 *
-	 * @param mixed $handler
-	 * @return
-	 */
-	public function action_auth_ajax_wp_import_users( $handler )
-	{
-		$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix','userindex', 'category_import', 'utw_import' );
-		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
-		extract( $inputs );
-		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
-		if ( $wpdb ) {
-			if ( !DB::in_transaction() ) DB::begin_transaction();
-			$wp_users = $wpdb->get_results(
-				"
-					SELECT
-						user_login as username,
-						user_pass as password,
-						user_email as email,
-						user_url as wp_url,
-						{$db_prefix}users.id as wp_id
-					FROM {$db_prefix}users
-					INNER JOIN {$db_prefix}posts ON {$db_prefix}posts.post_author = {$db_prefix}users.id
-					GROUP BY {$db_prefix}users.id
-				",
-				array(),
-				'User'
-			);
-			$usercount = 0;
-			echo '<p>' . _t( 'Importing users...' ) . '</p>';
-
-			foreach($wp_users as $user) {
-				$habari_user = User::get_by_name($user->username);
-				// If username exists
-				if ($habari_user instanceof User) {
-					$habari_user->info->wp_id = $user->wp_id;
-					$habari_user->info->url = $user->wp_url;
-					$habari_user->update();
-				}
-				else {
-					try {
-						$user->info->wp_id = $user->wp_id;
-						if ($user->wp_url != '') {
-							$user->info->url = $user->wp_url;
-						}
-						// This should probably remain commented until we implement ACL more,
-						// or any imported user will be able to log in and edit stuff
-						//$user->password = '{MD5}' . $user->password;
-						$user->exclude_fields(array('wp_id', 'wp_url'));
-						$user->insert();
-						$usercount++;
-					}
-					catch( Exception $e ) {
-						EventLog::log($e->getMessage(), 'err', null, null, print_r(array($user, $e), 1));
-						Session::error( $e->getMessage() );
-						$errors = Options::get('import_errors');
-						$errors[] = $user->username . ' : ' . $e->getMessage();
-						Options::set('import_errors', $errors);
-					}
-				}
+		
+		public function action_auth_ajax_wp_import_comments ( ) {
+			
+			// get the values post'd in
+			$inputs = $_POST->filter_keys( array( 'db_name', 'db_host', 'db_user', 'db_pass', 'db_prefix', 'category_import', 'import_index' ) );
+			$inputs = $inputs->getArrayCopy();
+			
+			// make sure we have all our default values
+			$inputs = array_merge( $this->default_values, $inputs );
+			
+			// get the wpdb
+			$wpdb = $this->wp_connect( $inputs['db_host'], $inputs['db_name'], $inputs['db_user'], $inputs['db_pass'] );
+			
+			// if we couldn't connect, error out
+			if ( !$wpdb ) {
+				EventLog::log( _t( 'Failed to import from "%s"', array( $inputs['db_name'] ) ) );
+				Session::error( _t( 'Failed to import from "%s"', array( $inputs['db_name'] ) ) );
+				echo '<p>' . _t( 'Failed to connect using the given database connection details.' ) . '</p>';
 			}
-			if ( DB::in_transaction()) DB::commit();
-
-			$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_posts' ) );
-
-			$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
-
-			echo <<< WP_IMPORT_USERS1
-			<script type="text/javascript">
-			// A lot of ajax stuff goes here.
-			$( document ).ready( function(){
-				$( '#import_progress' ).load(
-					"{$ajax_url}",
-					{
-						db_host: "{$vars['host']}",
-						db_name: "{$vars['name']}",
-						db_user: "{$vars['user']}",
-						db_pass: "{$vars['pass']}",
-						db_prefix: "{$vars['prefix']}",
-						category_import: "{$category_import}",
-						utw_import: "{$utw_import}",
-						postindex: 0
-					}
-				 );
-			} );
-			</script>
-WP_IMPORT_USERS1;
-		}
-		else {
-			EventLog::log(sprintf(_t('Failed to import from "%s"'), $db_name), 'crit');
-			Session::error( $e->getMessage() );
-			echo '<p>'._t( 'Failed to connect using the given database connection details.' ).'</p>';
-		}
-	}
-
-	/**
-	 * The plugin sink for the auth_ajax_wp_import_comments hook.
-	 * Responds via authenticated ajax to requests for comment importing.
-	 *
-	 * @param AjaxHandler $handler The handler that handled the request, contains $_POST info
-	 */
-	public function action_auth_ajax_wp_import_comments( $handler )
-	{
-		$valid_fields = array( 'db_name','db_host','db_user','db_pass','db_prefix','commentindex', 'category_import', 'utw_import' );
-		$inputs = array_intersect_key( $_POST->getArrayCopy(), array_flip( $valid_fields ) );
-		extract( $inputs );
-
-		$wpdb = $this->wp_connect( $db_host, $db_name, $db_user, $db_pass, $db_prefix );
-		if ( $wpdb ) {
-			if ( !DB::in_transaction() ) DB::begin_transaction();
-
-			$commentcount = $wpdb->get_value( "SELECT count( comment_ID ) FROM {$db_prefix}comments;" );
-			$min = $commentindex * IMPORT_BATCH + 1;
-			$max = min( ( $commentindex + 1 ) * IMPORT_BATCH, $commentcount );
-
-			echo '<p>' . _t( 'Importing comments %1$d - %2$d of %3$d', array( $min, $max, $commentcount ) ) . '</p>';
-
-			$post_info = DB::get_results( "SELECT post_id, value FROM {postinfo} WHERE name= 'wp_id';" );
-			foreach( $post_info as $info ) {
-				$post_map[$info->value]= $info->post_id;
+			
+			// we connected just fine, let's get moving!
+			
+			// begin a transaction. if we error out at any point, we want to roll back to before import began
+			DB::begin_transaction();
+			
+			// fetch the number of comments from the wordpress database so we can batch things up
+			$num_comments = $wpdb->get_value( 'select count(comment_id) from ' . $inputs['db_prefix'] . 'comments' );
+			
+			// figure out the LIMIT we're at
+			$min = $inputs['import_index'] * IMPORT_BATCH;
+			$max = min( $min + IMPORT_BATCH, $num_comments );		// for display only
+			
+			
+			echo '<p>' . _t( 'Importing comments %1$d - %2$d of %3$d.', array( $min, $max, $num_comments ) ) . '</p>';
+			
+			// get all the imported users so we can link old comment authors to new comment authors
+			$users = DB::get_results( 'select user_id, value from {userinfo} where name = :name', array( ':name' => 'wp_id' ) );
+			
+			// create an easy user map of old ID -> new ID
+			$user_map = array();
+			foreach ( $users as $info ) {
+				$user_map[ $info->value ] = $info->user_id;
 			}
-
-			$comments = $wpdb->get_results( "
-				SELECT
-				comment_content as content,
-				comment_author as name,
-				comment_author_email as email,
-				comment_author_url as url,
-				INET_ATON( comment_author_IP ) as ip,
-			 	comment_approved as status,
-				comment_date as date,
-				comment_type as type,
-				ID as wp_post_id
-				FROM {$db_prefix}comments
-				INNER JOIN
-				{$db_prefix}posts on ( {$db_prefix}posts.ID= {$db_prefix}comments.comment_post_ID )
-				LIMIT {$min}, " . IMPORT_BATCH
-				, array() );
-
-			foreach( $comments as $comment ) {
-				switch ( $comment->type ) {
-					case 'pingback': $comment->type = Comment::PINGBACK; break;
-					case 'trackback': $comment->type = Comment::TRACKBACK; break;
-					default: $comment->type = Comment::COMMENT;
+			
+			// get all the imported posts so we can link old post IDs to new post IDs
+			$posts = DB::get_results( 'select post_id, value from {postinfo} where name = :name', array( ':name' => 'wp_id' ) );
+			
+			// create an easy post map of old ID -> new ID
+			$post_map = array();
+			foreach ( $posts as $info ) {
+				$post_map[ $info->value ] = $info->post_id;
+			}
+			
+			// get all the comment IDs we've imported so far to make sure we don't duplicate any
+			$comment_map = DB::get_column( 'select value from {commentinfo} where name = :name', array( ':name' => 'wp_id' ) );
+			
+			
+			
+			// now we're ready to start importing comments
+			$comments = $wpdb->get_results( 'select comment_id, comment_post_id, comment_author, comment_author_email, comment_author_url, comment_author_ip, comment_date, comment_content, comment_karma, comment_approved, comment_agent, comment_type, comment_parent, user_id from ' . $inputs['db_prefix'] . 'comments order by comment_id asc limit ' . $min . ', ' . IMPORT_BATCH );
+			
+			foreach ( $comments as $comment ) {
+				
+				// if this post is already in the list we've imported, skip it
+				if ( in_array( $comment->id, $comment_map ) ) {
+					continue;
 				}
-
-				$comment->content = MultiByte::convert_encoding( $comment->content );
-				$comment->name = MultiByte::convert_encoding( $comment->name );
-
-				$carray = $comment->to_array();
-				if ( $carray['ip'] == '' ) {
-					$carray['ip']= 0;
+				
+				// if the post this comment belongs to is not in the list of imported posts, skip it
+				if ( !isset( $post_map[ $comment->comment_post_id ] ) ) {
+					continue;
 				}
-				switch ( $carray['status'] ) {
-					case '0':
-						$carray['status']= Comment::STATUS_UNAPPROVED;
+				
+				// create the new comment
+				$c = new Comment( array(
+					'content' => MultiByte::convert_encoding( $comment->comment_content ),
+					'name' => MultiByte::convert_encoding( $comment->comment_author ),
+					'email' => MultiByte::convert_encoding( $comment->comment_author_email ),
+					'url' => MultiByte::convert_encoding( $comment->comment_author_url ),
+					'date' => HabariDateTime::date_create( $comment->comment_date ),
+					'post_id' => $post_map[ $comment->comment_post_id ],
+				) );
+				
+				// figure out the comment type
+				switch ( $comment->comment_type ) {
+					
+					case 'pingback':
+						$c->type = Comment::type( 'pingback' );
 						break;
-					case '1':
-						$carray['status']= Comment::STATUS_APPROVED;
+						
+					case 'trackback':
+						$c->type = Comment::type( 'trackback' );
 						break;
-					case 'spam':
-						$carray['status']= Comment::STATUS_SPAM;
-						break;
+						
 					default:
-					case 'trash':
-						$carray['status'] = Comment::STATUS_DELETED;
+					case 'comment':
+						$c->type = Comment::type( 'comment' );
 						break;
+					
 				}
-
-				if ( isset( $post_map[$carray['wp_post_id']] ) ) {
-					$carray['post_id']= $post_map[$carray['wp_post_id']];
-					unset( $carray['wp_post_id'] );
-
-					$c = new Comment( $carray );
-					//Utils::debug( $c );
-					try{
-						$c->insert();
-					}
-					catch( Exception $e ) {
-						EventLog::log($e->getMessage(), 'err', null, null, print_r(array($c, $e), 1));
-						Session::error( $e->getMessage() );
-						$errors = Options::get('import_errors');
-						$errors[] = $e->getMessage();
-						Options::set('import_errors', $errors);
-					}
-				}
-			}
-			if ( DB::in_transaction() ) DB::commit();
-
-			if ( $max < $commentcount ) {
-				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
-				$commentindex++;
-
-				$vars = Utils::addslashes( array( 'host' => $db_host, 'name' => $db_name, 'user' => $db_user, 'pass' => $db_pass, 'prefix' => $db_prefix ) );
-
-				echo <<< WP_IMPORT_AJAX1
-					<script type="text/javascript">
-					$( '#import_progress' ).load(
-						"{$ajax_url}",
-						{
-							db_host: "{$vars['host']}",
-							db_name: "{$vars['name']}",
-							db_user: "{$vars['user']}",
-							db_pass: "{$vars['pass']}",
-							db_prefix: "{$vars['prefix']}",
-							category_import: "{$category_import}",
-							utw_import: "{$utw_import}",
-							commentindex: {$commentindex}
+				
+				// figure out the comment status
+				switch ( $comment->comment_approved ) {
+					
+					case '1':
+						$c->status = Comment::status( 'approved' );
+						break;
+						
+					case '':
+					case '0':
+						$c->status = Comment::status( 'unapproved' );
+						break;
+						
+					case 'spam':
+						$c->status = Comment::status( 'spam' );
+						break;
+						
+					default:
+						// Comment::status() returns false if it doesn't recognize the status type
+						$status = Comment::status( $comment->comment_status );		// store in a temp value because if you try and set ->status to an invalid value the Comment class freaks
+						
+						if ( $status == false ) {
+							// we're not importing statuses we don't recognize - continue 2 to break out of the switch and the loop and continue to the next comment
+							continue 2;
 						}
-					 );
-
-				</script>
-WP_IMPORT_AJAX1;
+						else {
+							$c->status = $status;
+						}
+						
+						break;
+					
+				}
+				
+				// save the old comment ID in info
+				$c->info->wp_id = $comment->comment_id;
+				
+				// save the old post ID in info
+				$c->info->wp_post_id = $comment->comment_post_id;
+				
+				// save the old comment karma - but only if it is something
+				if ( $comment->comment_karma != '0' ) {
+					$c->info->wp_karma = $comment->comment_karma;
+				}
+				
+				// save the old comment user agent - but only if it is something
+				if ( $comment->comment_agent != '' ) {
+					$c->info->wp_agent = $comment->comment_agent;
+				}
+				
+				
+				// now that we've got all the pieces in place, save the comment
+				try {
+					$c->insert();
+				}
+				catch ( Exception $e ) {
+					
+					EventLog::log( $e->getMessage(), 'err' );
+					
+					echo '<p class="error">' . _t( 'There was an error importing comment ID %d. See the EventLog for the error message.', array( $comment->comment_id ) );
+					
+					echo '<p>' . _t( 'Rolling back changes...' ) . '</p>';
+					
+					// rollback all changes before we return so the import hasn't changed anything yet
+					DB::rollback();
+					
+					// and return so they don't get AJAX to send them on to the next step
+					return false;
+					
+				}
+				
+			}
+			
+			
+			// if we've finished without an error, commit the import
+			DB::commit();
+			
+			if ( $max < $num_comments ) {
+				
+				// if there are more posts to import
+				
+				// get the next ajax url
+				$ajax_url = URL::get( 'auth_ajax', array( 'context' => 'wp_import_comments' ) );
+				
+				// bump the import index by one so we get a new batch next time
+				$inputs['import_index']++;
+				
+				
 			}
 			else {
-				EventLog::log( _t( 'Import complete from "%s"', array( $db_name ) ) );
+				
+				// display the completed message!
+				
+				EventLog::log( _t( 'Import completed from "%s"', array( $inputs['db_name'] ) ) );
 				echo '<p>' . _t( 'Import is complete.' ) . '</p>';
-
-				$errors = Options::get('import_errors');
-				if (count($errors) > 0 ) {
-					echo '<p>' . _t( 'There were errors during import:' ) . '</p>';
-
-					echo '<ul>';
-					foreach($errors as $error) {
-						echo '<li>' . $error . '</li>';
-					}
-					echo '</ul>';
-				}
-
+				
+				return;
+				
 			}
+			
+			// and spit out ajax to send them to the next step - posts!
+			echo $this->get_ajax( $ajax_url, $inputs );
+			
 		}
-		else {
-			EventLog::log(sprintf(_t('Failed to import from "%s"'), $db_name), 'crit');
-			Session::error( $e->getMessage() );
-			echo '<p>'._t( 'Failed to connect using the given database connection details.' ).'</p>';
-		}
-	}
 
-}
+		
+	}
 
 ?>
