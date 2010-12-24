@@ -249,27 +249,27 @@ class Posts extends ArrayObject implements IsContent
 					$any = array();
 					$not = array();
 
-					foreach( $paramset['vocabulary'] as $key => $values ) {
+					foreach ( $paramset['vocabulary'] as $key => $values ) {
 						$values = Utils::single_array( $values );
 						switch ( (string)$key ) {
 							case 'all':
-								foreach( $values as $current ) {
+								foreach ( $values as $current ) {
 									$all[$current->vocabulary->id][] = $current->id;
 								}
 								break;
 							case 'any':
-								foreach( $values as $current ) {
+								foreach ( $values as $current ) {
 									$any[$current->vocabulary->id][] = $current->id;
 								}
 								break;
 							case 'not':
-								foreach( $values as $current ) {
+								foreach ( $values as $current ) {
 									$not[$current->vocabulary->id][] = $current->id;
 								}
 								break;
 						}
 					}
-					foreach( $all as $key => $value ) {
+					foreach ( $all as $key => $value ) {
 						$value = Utils::single_array( $value );
 						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
 						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
@@ -281,7 +281,7 @@ class Posts extends ArrayObject implements IsContent
 						$having = 'count(*) = ' . count( $value );
 						$params[] = $object_id;
 					}
-					foreach( $any as $key => $value ) {
+					foreach ( $any as $key => $value ) {
 						$value = Utils::single_array( $value );
 						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
 						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
@@ -289,7 +289,7 @@ class Posts extends ArrayObject implements IsContent
 						$params = array_merge( $params, array_values( $value ) );
 						$params[] = $object_id;
 					}
-					foreach( $not as $key => $value ) {
+					foreach ( $not as $key => $value ) {
 						$value = Utils::single_array( $value );
 						$where[] = 'NOT EXISTS (SELECT 1
 							FROM {object_terms}
@@ -882,8 +882,8 @@ class Posts extends ArrayObject implements IsContent
 	/**
 	 * Returns an ascending post
 	 *
-	 * @params The Post from which to start
-	 * @params The params by which to work out what is the next ascending post
+	 * @param The Post from which to start
+	 * @param The params by which to work out what is the next ascending post
 	 * @return Post The ascending post
 	 */
 	public static function ascend( $post, $params = null)
@@ -915,8 +915,8 @@ class Posts extends ArrayObject implements IsContent
 	/**
 	 * Returns a descending post
 	 *
-	 * @params The Post from which to start
-	 * @params The params by which to work out what is the next descending post
+	 * @param The Post from which to start
+	 * @param The params by which to work out what is the next descending post
 	 * @return Post The descending post
 	 */
 	public static function descend( $post, $params = null)
@@ -1080,51 +1080,51 @@ class Posts extends ArrayObject implements IsContent
 	}
 
 	/**
-	 * This function accepts an set of tag query qualifiers and converts it into 
-	 * an multi-dimensional array of Term objects that can be used within the 
+	 * This function accepts a set of tag query qualifiers and converts it into
+	 * a multi-dimensional array of Term objects that can be used within the
 	 * vocabulary section of Posts::get();
 	 * @see Posts::get()
-	 * 
+	 *
 	 * The expected result is in this format, and purposefully does not include
 	 * vocbulary names as keys:
-	 * 
-	 * <code>	 
+	 *
+	 * <code>
 	 * array(
-	 * 	'all' => array($tag1, $tag2), 
-	 * 	'any' => array($tag3, $tag4), 
+	 * 	'all' => array($tag1, $tag2),
+	 * 	'any' => array($tag3, $tag4),
 	 * 	'not' => array($tag5, $tag6),
 	 * )
-	 * </code>	 	  
+	 * </code>
 	 *
 	 * @param mixed $params An array or string with the tag query qualifiers
 	 * @return array As above
-	 **/	 	 	 
+	 */
 	public static function _vocabulary_params( $params )
 	{
 		$ret = array();
-		foreach($params as $key => $value) {
-			if (strpos($key, ':') !== false) {
+		foreach ( $params as $key => $value ) {
+			if ( strpos($key, ':') !== false ) {
 				list($newkey, $subkey) = explode(':', $key, 2);
 				$params[$newkey][$subkey] = $value;
 				unset($params[$key]);
 			}
 		}
 
-		foreach( $params as $vocab => $values ) {
-			foreach( $values as $key => $value ) {
+		foreach ( $params as $vocab => $values ) {
+			foreach ( $values as $key => $value ) {
 				$value = Utils::single_array( $value );
-				if (strpos($key, ':') !== false ) {
+				if ( strpos($key, ':') !== false ) {
 					list($mode, $by_field) = explode(':', $key, 2);
-					foreach( $value as $v ) {
+					foreach ( $value as $v ) {
 						$term = Vocabulary::get( $vocab )->get_term( $v );
-						if( $term instanceof Term ) {
+						if ( $term instanceof Term ) {
 							$ret[$mode][] = $term;
 						}
 					}
 				}
 				else {
-					foreach( $value as $v ) {
-						if ($v instanceof Term) {
+					foreach ( $value as $v ) {
+						if ( $v instanceof Term ) {
 							// $vocab is not a vocab, but a mode:
 							$ret[$vocab][] = $v;
 						}
