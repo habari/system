@@ -37,7 +37,7 @@ class ACL
 	public static function access_check( $bitmask, $access )
 	{
 		if ( $access instanceof Bitmask ) {
-			return ($bitmask->value & $access->value) == $access->value;
+			return ( $bitmask->value & $access->value ) == $access->value;
 		}
 
 		switch ( $access ) {
@@ -485,7 +485,7 @@ SQL;
 
 		$super_user_access = self::get_user_token_access( $user, 'super_user' );
 		if ( isset( $super_user_access ) && self::access_check( $super_user_access, 'any' ) ) {
-			$token_ids = DB::get_column('SELECT id as token_id FROM {tokens}' );
+			$token_ids = DB::get_column( 'SELECT id as token_id FROM {tokens}' );
 			$result = array();
 			foreach ( $token_ids as $id ) {
 				$result_row = new StdClass();
@@ -528,7 +528,7 @@ SQL;
 		}
 
 		if ( $posts_only ) {
-			$tokens = array_intersect( $tokens, $post_tokens);
+			$tokens = array_intersect( $tokens, $post_tokens );
 		}
 
 		$_SESSION[ 'user_tokens' ][ $user_id ][ $access ] = $tokens;
@@ -690,9 +690,9 @@ SQL;
 		$token_id = self::token_id( $token_id );
 		$ug = UserGroup::get_by_id( $group_id );
 
-		$access = self::get_group_token_access($group_id, $token_id);
+		$access = self::get_group_token_access( $group_id, $token_id );
 
-		if ( empty($access) ) {
+		if ( empty( $access ) ) {
 			$result = true;
 		}
 		else {
@@ -760,29 +760,29 @@ SQL;
 		self::create_token( 'super_user', 'Permissions for super users', 'Super User' );
 
 		// admin tokens
-		self::create_token( 'manage_all_comments', _t('Manage comments on all posts'), 'Administration' );
-		self::create_token( 'manage_own_post_comments', _t('Manage comments on one\'s own posts'), 'Administration' );
-		self::create_token( 'manage_tags', _t('Manage tags'), 'Administration' );
-		self::create_token( 'manage_options', _t('Manage options'), 'Administration' );
-		self::create_token( 'manage_theme', _t('Change theme'), 'Administration' );
-		self::create_token( 'manage_theme_config', _t('Configure the active theme'), 'Administration' );
-		self::create_token( 'manage_plugins', _t('Activate/deactivate plugins'), 'Administration' );
-		self::create_token( 'manage_plugins_config', _t('Configure active plugins'), 'Administration' );
-		self::create_token( 'manage_import', _t('Use the importer'), 'Administration' );
-		self::create_token( 'manage_users', _t('Add, remove, and edit users'), 'Administration' );
-		self::create_token( 'manage_self', _t('Edit own profile'), 'Administration' );
-		self::create_token( 'manage_groups', _t('Manage groups and permissions'), 'Administration' );
-		self::create_token( 'manage_logs', _t('Manage logs'), 'Administration' );
+		self::create_token( 'manage_all_comments', _t( 'Manage comments on all posts' ), 'Administration' );
+		self::create_token( 'manage_own_post_comments', _t( 'Manage comments on one\'s own posts' ), 'Administration' );
+		self::create_token( 'manage_tags', _t( 'Manage tags' ), 'Administration' );
+		self::create_token( 'manage_options', _t( 'Manage options' ), 'Administration' );
+		self::create_token( 'manage_theme', _t( 'Change theme' ), 'Administration' );
+		self::create_token( 'manage_theme_config', _t( 'Configure the active theme' ), 'Administration' );
+		self::create_token( 'manage_plugins', _t( 'Activate/deactivate plugins' ), 'Administration' );
+		self::create_token( 'manage_plugins_config', _t( 'Configure active plugins' ), 'Administration' );
+		self::create_token( 'manage_import', _t( 'Use the importer' ), 'Administration' );
+		self::create_token( 'manage_users', _t( 'Add, remove, and edit users' ), 'Administration' );
+		self::create_token( 'manage_self', _t( 'Edit own profile' ), 'Administration' );
+		self::create_token( 'manage_groups', _t( 'Manage groups and permissions' ), 'Administration' );
+		self::create_token( 'manage_logs', _t( 'Manage logs' ), 'Administration' );
 
 		// content tokens
-		self::create_token( 'own_posts', _t('Permissions on one\'s own posts'), _t('Content'), true );
-		self::create_token( 'post_any', _t('Permissions to all posts'), _t('Content'), true );
+		self::create_token( 'own_posts', _t( 'Permissions on one\'s own posts' ), _t( 'Content' ), true );
+		self::create_token( 'post_any', _t( 'Permissions to all posts' ), _t( 'Content' ), true );
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-			self::create_token( 'post_' . Utils::slugify($name), _t('Permissions to posts of type "%s"', array($name) ), _t('Content'), true );
+			self::create_token( 'post_' . Utils::slugify($name), _t( 'Permissions to posts of type "%s"', array( $name ) ), _t( 'Content' ), true );
 		}
 
 		// comments tokens
-		self::create_token( 'comment', 'Make comments on any post', _t('Comments') );
+		self::create_token( 'comment', 'Make comments on any post', _t( 'Comments' ) );
 	}
 
 	/**
