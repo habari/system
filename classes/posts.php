@@ -46,9 +46,57 @@ class Posts extends ArrayObject implements IsContent
 
 	/**
 	 * Returns a post or posts based on supplied parameters.
-	 * <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
+	 * @todo <b>THIS CLASS SHOULD CACHE QUERY RESULTS!</b>
 	 *
-	 * @param array $paramarry An associated array of parameters, or a querystring
+	 * @param array $paramarray An associative array of parameters, or a querystring.
+	 * The following keys are supported:
+	 * - id => a post id or array of post ids
+	 * - not:id => a post id or array of post ids to exclude
+	 * - slug => a post slug or array of post slugs
+	 * - not:slug => a post slug or array of post slugs to exclude
+	 * - user_id => an author id or array of author ids
+	 * - content_type => a post content type or array post content types
+	 * - not:content_type => a post content type or array post content types to exclude
+	 * - status => a post status, an array of post statuses, or 'any' for all statuses
+	 * - year => a year of post publication
+	 * - month => a month of post publication, ignored if year is not specified
+	 * - day => a day of post publication, ignored if month and year are not specified
+	 * - before => a timestamp to compare post publication dates
+	 * - after => a timestamp to compare post publication dates
+	 * - month_cts => return the number of posts published in each month
+	 * - criteria => a literal search string to match post content
+	 * - has:info => a post info key or array of post info keys, which should be present
+	 * - all:info => a post info key and value pair or array of post info key and value pairs, which should all be present and match
+	 * - not:all:info => a post info key and value pair or array of post info key and value pairs, to exclude if all are present and match
+	 * - any:info => a post info key and value pair or array of post info key and value pairs, any of which can match
+	 * - not:any:info => a post info key and value pair or array of post info key and value pairs, to exclude if any are present and match
+	 * - vocabulary => an array describing parameters related to vocabularies attached to posts. This can be one of two forms:
+	 *   - object-based, in which an array of Term objects are passed
+	 *     - any => posts associated with any of the terms are returned
+	 *     - all => posts associated with all of the terms are returned
+	 *     - not => posts associated with none of the terms are returned
+	 *   - property-based, in which an array of vocabulary names and associated fields are passed
+	 *     - vocabulary_name:term => a vocabulary name and term slug pair or array of vocabulary name and term slug pairs, any of which can be associated with the posts
+	 *     - vocabulary_name:term_display => a vocabulary name and term display pair or array of vocabulary name and term display pairs, any of which can be associated with the posts
+	 *     - vocabulary_name:not:term => a vocabulary name and term slug pair or array of vocabulary name and term slug pairs, none of which can be associated with the posts
+	 *     - vocabulary_name:not:term_display => a vocabulary name and term display pair or array of vocabulary name and term display pairs, none of which can be associated with the posts
+	 *     - vocabulary_name:all:term => a vocabulary name and term slug pair or array of vocabulary name and term slug pairs, all of which must be associated with the posts
+	 *     - vocabulary_name:all:term_display => a vocabulary name and term display pair or array of vocabulary name and term display pairs, all of which must be associated with the posts
+	 * - limit => the maximum number of posts to return, implicitly set for many queries
+	 * - nolimit => do not implicitly set limit
+	 * - offset => amount by which to offset returned posts, used in conjunction with limit
+	 * - page => the 'page' of posts to return when paging, sets the appropriate offset
+	 * - count => return the number of posts that would be returned by this request
+	 * - orderby => how to order the returned posts
+	 * - groupby => columns by which to group the returned posts, for aggregate functions
+	 * - having => for selecting posts based on an aggregate function
+	 * - fetch_fn => the function used to fetch data, one of 'get_results', 'get_row', 'get_value'
+	 *
+	 * Further description of parameters, including usage examples, can be found at
+	 * http://wiki.habariproject.org/en/Dev:Retrieving_Posts
+	 *
+	 * @todo Describe where => 
+	 *
 	 * @return array An array of Post objects, or a single post object, depending on request
 	 */
 	public static function get( $paramarray = array() )
@@ -583,10 +631,12 @@ class Posts extends ArrayObject implements IsContent
 
 		// If the month counts are requested, replaced the select clause
 		if ( isset( $paramset['month_cts'] ) ) {
-			if ( isset( $paramset['vocabulary'] ) )
+			if ( isset( $paramset['vocabulary'] ) ) {
 				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(DISTINCT {posts}.id) AS ct';
-			else
+			}
+			else {
 				$select = 'MONTH(FROM_UNIXTIME(pubdate)) AS month, YEAR(FROM_UNIXTIME(pubdate)) AS year, COUNT(*) AS ct';
+			}
 			$groupby = 'year, month';
 			if ( !isset( $paramarray['orderby'] ) ) {
 				$orderby = 'year, month';
