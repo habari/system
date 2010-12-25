@@ -305,6 +305,21 @@ class Post extends QueryRecord implements IsContent
 			$statuses = self::list_post_statuses( true, true );
 		}
 	}
+	
+	public static function delete_post_status ( $status ) {
+		
+		$statuses = self::list_post_statuses( true, true );
+		
+		if ( array_key_exists( $status, $statuses ) ) {
+			
+			DB::query( 'DELETE FROM {poststatus} WHERE name = :name', array( ':name' => $status ) );
+			
+			// force a refresh of the cache, so the status is removed immediately
+			$statuses = self::list_post_statuses( true, true );
+			
+		}
+		
+	}
 
 	/**
 	 * Return the defined database columns for a Post.
