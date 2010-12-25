@@ -933,7 +933,13 @@ class Post extends QueryRecord implements IsContent
 			$commenter_url = Site::get_url( 'habari' );
 		}
 		elseif ( isset( $_COOKIE[$cookie] ) ) {
-			list( $commenter_name, $commenter_email, $commenter_url )= explode( '#', $_COOKIE[$cookie] );
+			// limit to 3 elements so a # in the URL stays appended
+			$commenter = explode( '#', $_COOKIE[ $cookie ], 3 );
+			
+			// make sure there are always at least 3 elements
+			$commenter = array_pad( $commenter, 3, null );
+			
+			list( $commenter_name, $commenter_email, $commenter_url ) = $commenter;
 		}
 
 		// Now start the form.
