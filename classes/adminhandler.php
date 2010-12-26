@@ -3039,6 +3039,8 @@ class AdminHandler extends ActionHandler
 		}
 
 		$tag_names = array();
+		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
+		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
 		$action = $this->handler_vars['action'];
 		switch ( $action ) {
 			case 'delete':
@@ -3053,40 +3055,41 @@ class AdminHandler extends ActionHandler
 				}
 				$msg_status = _n( _t( 'Tag %s has been deleted.', array( implode( '', $tag_names ) ) ), _t( '%d tags have been deleted.', array( count( $tag_names ) ) ), count( $tag_names ) );
 				Session::notice( $msg_status );
-				echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 				break;
 
 			case 'rename':
-				if ( isset( $this->handler_vars['master'] ) ) {
-					$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
-					$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-					$master = $this->handler_vars['master'];
-					$tag_names = array();
-					foreach ( $_POST as $id => $rename ) {
-						// skip POST elements which are not tag ids
-						if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
-							$id = substr( $id, 4 );
-							$tag = Tags::get_by_id( $id );
-							$tag_names[] = $tag->term_display;
-						}
-					}
-					Tags::vocabulary()->merge( $master, $tag_names );
-					$msg_status = sprintf(
-						_n( 'Tag %1$s has been renamed to %2$s.',
-							'Tags %1$s have been renamed to %2$s.',
-							 count( $tag_names )
-						), implode( $tag_names, ', ' ), $master
-					);
-					Session::notice( $msg_status );
-					$this->theme->tags = Tags::vocabulary()->get_tree();
-					$this->theme->max = Tags::vocabulary()->max_count();
-					echo json_encode( array(
-						'msg' => Session::messages_get( true, 'array' ),
-						'tags' => $this->theme->fetch( 'tag_collection' ),
-						) );
+				if ( !isset($this->handler_vars['master']) ) {
+					Session::error( _t('Error: New name not specified.') );
+					echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
+					return;
 				}
+				$master = $this->handler_vars['master'];
+				$tag_names = array();
+				foreach ( $_POST as $id => $rename ) {
+					// skip POST elements which are not tag ids
+					if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
+						$id = substr($id, 4);
+						$tag = Tags::get_by_id($id);
+						$tag_names[] = $tag->term_display;
+					}
+				}
+				Tags::vocabulary()->merge($master, $tag_names );
+				$msg_status = sprintf(
+					_n('Tag %1$s has been renamed to %2$s.',
+						'Tags %1$s have been renamed to %2$s.',
+							count($tag_names)
+					), implode($tag_names, ', '), $master
+				);
+				Session::notice( $msg_status );
 				break;
+
 		}
+		$this->theme->tags = Tags::vocabulary()->get_tree();
+		$this->theme->max = Tags::vocabulary()->max_count();
+		echo json_encode( array(
+			'msg' => Session::messages_get( true, 'array'),
+			'tags' => $this->theme->fetch( 'tag_collection' ),
+		) );
 	}
 
 	/**

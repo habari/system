@@ -54,15 +54,15 @@ itemManage.update = function( action, id ) {
 	$.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
 		query,
-		function(msg) {
+		function(result) {
 			spinner.stop();
 			//TODO When there's a loupe, update it
 			//timelineHandle.updateLoupeInfo();
-			selected.remove();
+			$('#tag_collection').html(result['tags']);
 			itemManage.selected = {};
 			itemManage.changeItem();
 			itemManage.initItems();
-			jQuery.each( msg, function( index, value ) {
+			jQuery.each( result['msg'], function( index, value ) {
 				human_msg.display_msg( value );
 			});
 		},
