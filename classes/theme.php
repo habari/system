@@ -187,8 +187,8 @@ class Theme extends Pluggable
 			$not_tag = array();
 			$all_tag = array();
 			foreach ( $tags as $tag ) {
-				if ( $tag[0] == '-' ) {
-					$tag = substr($tag, 1);
+				if ( MultiByte::substr( $tag, 0, 1 ) == '-' ) {
+					$tag = MultiByte::substr($tag, 1);
 					$not_tag[] = Utils::slugify($tag);
 				}
 				else {
@@ -592,7 +592,8 @@ class Theme extends Pluggable
 	public function theme_footer( $theme )
 	{
 		Plugins::act( 'template_footer', $theme );
-		$output = Stack::get( 'template_footer_javascript', array('Stack', 'scripts') );
+		$output = Stack::get( 'template_footer_stylesheet', array('Stack', 'styles') );
+		$output .= Stack::get( 'template_footer_javascript', array('Stack', 'scripts') );
 		return $output;
 	}
 
@@ -1241,6 +1242,64 @@ class Theme extends Pluggable
 		$body_class = array_unique(array_merge($body_class, Stack::get_named_stack('body_class'), Utils::single_array($args)));
 		$body_class = Plugins::filter('body_class', $body_class, $theme);
 		return implode(' ', $body_class);
+	}
+	
+	/**
+	 * Add javascript to the stack to be output in the theme.
+	 * 
+	 * @param string $where Where should it be output? Options are header and footer.
+	 * @param string $value Either a URL or raw JS to be output inline.
+	 * @param string $name A name to reference this script by. Used for removing or using in $requires by other scripts.
+	 * @param string|array $requires Either a string or an array of strings of $name's for scripts this script requires.
+	 * @return boolean True if added successfully, false otherwise.
+	 */
+	public function add_script ( $where = 'header', $value, $name = null, $requires = null ) {
+		
+		$result = false;
+		
+		switch ( $where ) {
+			
+			case 'header':
+				$result = Stack::add( 'template_header_javascript', $value, $name, $requires );
+				break;
+			
+			case 'footer':
+				$result = Stack::add( 'template_footer_javascript', $value, $name, $requires );
+				break;
+			
+		}
+		
+		return $result;
+		
+	}
+	
+	/**
+	 * Add a stylesheet to the stack to be output in the theme.
+	 * 
+	 * @param string $where Where should it be output? Options are header and footer.
+	 * @param string $value Either a URL or raw CSS to be output inline.
+	 * @param string $name A name to reference this script by. Used for removing or using in $after by other scripts.
+	 * @param string|array $requires Either a string or an array of strings of $name's for scripts this script requires.
+	 * @return boolean True if added successfully, false otherwise.
+	 */
+	public function add_style ( $where = 'header', $value, $name = null, $requires = null ) {
+		
+		$result = false;
+		
+		switch ( $where ) {
+			
+			case 'header':
+				$result = Stack::add( 'template_stylesheet', $value, $name, $requires );
+				break;
+			
+			case 'footer':
+				$result = Stack::add( 'template_footer_stylesheet', $value, $name, $requires );
+				break;
+			
+		}
+		
+		return $result;
+		
 	}
 
 }
