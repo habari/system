@@ -240,55 +240,79 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
+					// @todo wouldn't this be parsed out by the main get_params at the beginning?
 					if ( is_string( $paramset['vocabulary'] ) ) {
 						$paramset['vocabulary'] = Utils::get_params( $paramset['vocabulary'] );
 					}
-					$paramset['vocabulary'] = self::_vocabulary_params( $paramset['vocabulary'] );
+
+					// parse out the different formats we accept arguments in into a single mutli-dimensional array of goodness
+					$paramset['vocabulary'] = self::vocabulary_params( $paramset['vocabulary'] );
 					$object_id = Vocabulary::object_type_id( 'post' );
+					
 					$all = array();
 					$any = array();
 					$not = array();
-
-					foreach ( $paramset['vocabulary'] as $key => $values ) {
-						$values = Utils::single_array( $values );
-						switch ( (string)$key ) {
-							case 'all':
-								foreach ( $values as $current ) {
-									$all[$current->vocabulary->id][] = $current->id;
-								}
-								break;
-							case 'any':
-								foreach ( $values as $current ) {
-									$any[$current->vocabulary->id][] = $current->id;
-								}
-								break;
-							case 'not':
-								foreach ( $values as $current ) {
-									$not[$current->vocabulary->id][] = $current->id;
-								}
-								break;
+					
+					if ( isset( $paramset['vocabulary']['all'] ) ) {
+						$all = $paramset['vocabulary']['all'];
+					}
+					
+					if ( isset( $paramset['vocabulary']['any'] ) ) {
+						$any = $paramset['vocabulary']['any'];
+					}
+					
+					if ( isset( $paramset['vocabulary']['not'] ) ) {
+						$not = $paramset['vocabulary']['not'];
+					}
+					
+					foreach ( $all as $vocab => $value ) {
+						
+						foreach ( $value as $field => $terms ) {
+							
+							// we only support these fields to search by
+							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+								continue;
+							}
+							
+							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
+							$joins['terms_vocabulary'] = ' JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id';
+							
+							$where[] = '{vocabularies}.name = ? AND {terms}.' . $field . ' IN ( ' . Utils::placeholder_string( $terms ) . ' ) AND {object_terms}.object_type_id = ?';
+							$params[] = $vocab;
+							$params = array_merge( $params, $terms );
+							$params[] = $object_id;
+							
 						}
-					}
-					foreach ( $all as $key => $value ) {
-						$value = Utils::single_array( $value );
-						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-
-						$where[] = '{terms}.id' . ' IN (' . Utils::placeholder_string( $value ) . ')' . ' AND {object_terms}.object_type_id = ?';
-						$params = array_merge( $params, array_values( $value ) );
-
+						
+						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
 						$groupby = '{posts}.id';
-						$having = 'count(*) = ' . count( $value );
-						$params[] = $object_id;
+						$having = 'count(*) = ' . count( $terms );
+						
 					}
-					foreach ( $any as $key => $value ) {
-						$value = Utils::single_array( $value );
-						$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
-						$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
-						$where[] = "{terms}.id IN (" . implode( ',', array_fill( 0, count( $value ), '?' ) ) . ")" . '  AND {object_terms}.object_type_id = ?';
-						$params = array_merge( $params, array_values( $value ) );
-						$params[] = $object_id;
+					
+					foreach ( $any as $vocab => $value ) {
+						
+						foreach ( $value as $field => $terms ) {
+							
+							// we only support these fields to search by
+							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+								continue;
+							}
+							
+							$joins['term2post_posts'] = ' JOIN {object_terms} ON {posts}.id = {object_terms}.object_id';
+							$joins['terms_term2post'] = ' JOIN {terms} ON {object_terms}.term_id = {terms}.id';
+							$joins['terms_vocabulary'] = ' JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id';
+							
+							$where[] = '{vocabularies}.name = ? AND {terms}.' . $field . ' IN ( ' . Utils::placeholder_string( $terms ) . ' ) AND {object_terms}.object_type_id = ?';
+							$params[] = $vocab;
+							$params = array_merge( $params, $terms );
+							$params[] = $object_id;
+							
+						}
+						
 					}
+
 					foreach ( $not as $key => $value ) {
 						$value = Utils::single_array( $value );
 						$where[] = 'NOT EXISTS (SELECT 1
@@ -695,8 +719,8 @@ class Posts extends ArrayObject implements IsContent
 		DB::set_fetch_class( 'Post' );
 		$results = DB::$fetch_fn( $query, $params, 'Post' );
 
-//		Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
-//		var_dump( $query );
+		//Utils::debug( $paramarray, $fetch_fn, $query, $params, $results );
+		//var_dump( $query );
 
 		/**
 		 * Return the results
@@ -1078,67 +1102,67 @@ class Posts extends ArrayObject implements IsContent
 		}
 		return 'posts';
 	}
-
+	
 	/**
-	 * This function accepts a set of tag query qualifiers and converts it into
-	 * a multi-dimensional array of Term objects that can be used within the
-	 * vocabulary section of Posts::get();
-	 * @see Posts::get()
-	 *
-	 * The expected result is in this format, and purposefully does not include
-	 * vocbulary names as keys:
-	 *
-	 * <code>
-	 * array(
-	 * 	'all' => array($tag1, $tag2),
-	 * 	'any' => array($tag3, $tag4),
-	 * 	'not' => array($tag5, $tag6),
-	 * )
-	 * </code>
-	 *
-	 * @param mixed $params An array or string with the tag query qualifiers
-	 * @return array As above
+	 * Accepts a set of term query qualifiers and converts it into a multi-dimensional array
+	 * of vocabulary (ie: tags), matching method (any, all, not), matching field (id, term, term_display), and list of terms
+	 * 
+	 * @return array An array of parsed term-matching conditions
 	 */
-	public static function _vocabulary_params( $params )
-	{
-		$ret = array();
+	private static function vocabulary_params( $params ) {
+		
+		$return = array();
+		
 		foreach ( $params as $key => $value ) {
-			if ( strpos($key, ':') !== false ) {
-				list($newkey, $subkey) = explode(':', $key, 2);
+			// split vocab off the beginning of the key
+			if ( strpos( $key, ':' ) !== false ) {
+				list( $newkey, $subkey ) = explode(':', $key, 2);
 				$params[$newkey][$subkey] = $value;
-				unset($params[$key]);
+				unset( $params[$key] );
 			}
+			
 		}
-
+		
+		
 		foreach ( $params as $vocab => $values ) {
+			
 			foreach ( $values as $key => $value ) {
+				
 				$value = Utils::single_array( $value );
-				if ( strpos($key, ':') !== false ) {
-					list($mode, $by_field) = explode(':', $key, 2);
+				
+				// if there's a colon we've got a mode and a field
+				if ( strpos( $key, ':' ) !== false ) {
+					list( $mode, $by_field ) = explode(':', $key, 2);
 					foreach ( $value as $v ) {
-						$term = Vocabulary::get( $vocab )->get_term( $v );
-						if ( $term instanceof Term ) {
-							$ret[$mode][] = $term;
-						}
+						$return[$mode][$vocab][$by_field][] = $v;
 					}
 				}
 				else {
+					
+					// if there's no colon we've got a single field name
 					foreach ( $value as $v ) {
+						
 						if ( $v instanceof Term ) {
-							// $vocab is not a vocab, but a mode:
-							$ret[$vocab][] = $v;
+							// $vocab is not a vocab, but the mode
+							$return[$vocab][$v->vocabulary->name][$key][] = $v;
 						}
 						else {
-							$term = Vocabulary::get( $vocab )->get_term( $v );
-							if ( $term instanceof Term ) {
-								$ret['any'][] = $term;
-							}
+							$return['any'][$vocab][$key][] = $v;
 						}
+						
 					}
+					
+					
 				}
+				
 			}
+			
 		}
-		return $ret;
+		
+		return $return;
+		
 	}
+	
 }
+
 ?>
