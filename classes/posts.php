@@ -692,7 +692,7 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		$query = '
 			SELECT DISTINCT ' . $select . '
-			FROM {posts} ' . implode(' ', $joins);
+			FROM {posts} ' . "\n " . implode("\n ", $joins) . "\n";
 
 		if ( count( $wheres ) > 0) {
 			$query .= ' WHERE (' . implode( " \nOR\n ", $wheres ) . ')';
