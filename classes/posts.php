@@ -312,19 +312,33 @@ class Posts extends ArrayObject implements IsContent
 						}
 						
 					}
-
-					foreach ( $not as $key => $value ) {
-						$value = Utils::single_array( $value );
-						$where[] = 'NOT EXISTS (SELECT 1
-							FROM {object_terms}
-							INNER JOIN {terms} ON {terms}.id = {object_terms}.term_id
-							WHERE {terms}.id IN (' . Utils::placeholder_string( $value ) . ')
-							AND {object_terms}.object_id = {posts}.id
-							AND {object_terms}.object_type_id = ?)
-						';
-						$params = array_merge( $params, array_values( $value ) );
-						$params[] = $object_id;
+					
+					foreach ( $not as $vocab => $value ) {
+						
+						foreach ( $value as $field => $terms ) {
+							
+							// we only support these fields to search by
+							if ( !in_array( $field, array( 'id', 'term', 'term_display' ) ) ) {
+								continue;
+							}
+							
+							$where[] = 'NOT EXISTS ( SELECT 1
+								FROM {object_terms} 
+								JOIN {terms} ON {terms}.id = {object_terms}.term_id 
+								JOIN {vocabularies} ON {terms}.vocabulary_id = {vocabularies}.id  
+								WHERE {terms}.' . $field . ' IN (' . Utils::placeholder_string( $terms ) . ')
+								AND {object_terms}.object_id = {posts}.id 
+								AND {object_terms}.object_type_id = ? 
+								AND {vocabularies}.name = ?
+							';
+							$params = array_merge( $params, array_values( $terms ) );
+							$params[] = $object_id;
+							$params[] = $vocab;
+							
+						}
+						
 					}
+					
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
