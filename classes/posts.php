@@ -330,7 +330,7 @@ class Posts extends ArrayObject implements IsContent
 								AND {object_terms}.object_id = {posts}.id 
 								AND {object_terms}.object_type_id = ? 
 								AND {vocabularies}.name = ?
-							';
+							)';
 							$params = array_merge( $params, array_values( $terms ) );
 							$params[] = $object_id;
 							$params[] = $vocab;
