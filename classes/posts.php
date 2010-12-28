@@ -240,11 +240,11 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['vocabulary'] ) ) {
-					// @todo wouldn't this be parsed out by the main get_params at the beginning?
+					
 					if ( is_string( $paramset['vocabulary'] ) ) {
 						$paramset['vocabulary'] = Utils::get_params( $paramset['vocabulary'] );
 					}
-
+					
 					// parse out the different formats we accept arguments in into a single mutli-dimensional array of goodness
 					$paramset['vocabulary'] = self::vocabulary_params( $paramset['vocabulary'] );
 					$object_id = Vocabulary::object_type_id( 'post' );
@@ -1157,8 +1157,8 @@ class Posts extends ArrayObject implements IsContent
 					foreach ( $value as $v ) {
 						
 						if ( $v instanceof Term ) {
-							// $vocab is not a vocab, but the mode
-							$return[$vocab][$v->vocabulary->name][$key][] = $v;
+							// $vocab is not a vocab, but the mode - always match by its ID for the best performance
+							$return[$vocab][$v->vocabulary->name]['id'][] = $v->id;
 						}
 						else {
 							$return['any'][$vocab][$key][] = $v;
