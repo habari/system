@@ -16,7 +16,7 @@
 class MultiByte
 {
 
-	const USE_MBSTRING = 0;
+	const USE_MBSTRING = 1;
 
 	/*
 	* @var $hab_enc String holding the current encoding the class is using
@@ -64,7 +64,7 @@ class MultiByte
 	*
 	* Sets and returns the multibyte library being used internally
 	*
-	* @param $int The new library to use.
+	* @param $int The new library to use. One of the self::USE_* constants, null to simply return, or false to disable and use native non-multibyte-safe PHP methods.
 	*
 	* @return mixed  If $new_library is null, returns the current library
 	* being used. If $new_library has a valid value, returns the old library,
@@ -80,6 +80,11 @@ class MultiByte
 			self::$use_library = $new_library;
 			return $old_library;
 
+		}
+		else if ( $new_library === false ) {
+			$old_library = self::$use_library;
+			self::$use_library = $new_library;
+			return $old_library;
 		}
 		else {
 			return false;
