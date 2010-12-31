@@ -50,6 +50,7 @@ class CURLRequestProcessor implements RequestProcessor
 			CURLOPT_SSL_VERIFYHOST	=> $config['ssl']['verify_host'],
 			CURLOPT_BUFFERSIZE		=> $config['buffer_size'],
 			CURLOPT_HTTPHEADER		=> $merged_headers,	// headers to send
+			CURLOPT_FAILONERROR		=> true,		// if the status code is >= 400, fail
 		);
 
 		if ( $this->can_followlocation && $config['follow_redirects'] ) {
@@ -117,11 +118,23 @@ class CURLRequestProcessor implements RequestProcessor
 		}
 
 		if ( curl_errno( $ch ) !== 0 ) {
-			throw new Exception( _t( 'CURL Error %d: %s', array(curl_errno( $ch ), curl_error( $ch ) ) ) );
-		}
-
-		if ( substr( curl_getinfo( $ch, CURLINFO_HTTP_CODE ), 0, 1 ) != 2 ) {
-			throw new Exception( _t( 'Bad return code (%d) for: %s', array( curl_getinfo( $ch, CURLINFO_HTTP_CODE ), $url ) ) );
+			
+			// before we throw an exception, just to be nice
+			curl_close( $ch );
+			
+			switch ( curl_errno( $ch ) ) {
+				
+				case CURLE_OPERATION_TIMEOUTED:
+					// the request timed out
+					throw new RemoteRequest_Timeout( curl_error($ch), curl_errno($ch) );
+					break;
+					
+				default:
+					throw new Exception( _t( 'CURL Error %1$d: %2$s', array( curl_errno( $ch ), curl_error( $ch ) ) ) );
+					break;
+				
+			}
+			
 		}
 
 		curl_close( $ch );
