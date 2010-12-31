@@ -45,7 +45,7 @@ class RemoteRequest
         'connect_timeout'   => 30,
         'timeout'           => 180,
         'buffer_size'       => 16384,
-		'follow_redirects'  => false,
+		'follow_redirects'  => true,
         'max_redirects'     => 5,
 
 		// These are configured in the main config file

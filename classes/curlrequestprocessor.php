@@ -52,7 +52,7 @@ class CURLRequestProcessor implements RequestProcessor
 			CURLOPT_HTTPHEADER		=> $merged_headers,	// headers to send
 		);
 
-		if ( $this->can_followlocation ) {
+		if ( $this->can_followlocation && $config['follow_redirects'] ) {
 			$options[CURLOPT_FOLLOWLOCATION] = true; // Follow 302's and the like.
 		}
 
