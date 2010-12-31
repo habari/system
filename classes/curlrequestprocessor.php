@@ -119,6 +119,10 @@ class CURLRequestProcessor implements RequestProcessor
 
 		if ( curl_errno( $ch ) !== 0 ) {
 			
+			// get the number and error before we close the handle so we don't error out
+			$errno = curl_errno( $ch );
+			$error = curl_error( $ch );
+			
 			// before we throw an exception, just to be nice
 			curl_close( $ch );
 			
@@ -126,11 +130,11 @@ class CURLRequestProcessor implements RequestProcessor
 				
 				case CURLE_OPERATION_TIMEOUTED:
 					// the request timed out
-					throw new RemoteRequest_Timeout( curl_error($ch), curl_errno($ch) );
+					throw new RemoteRequest_Timeout( $error, $errno );
 					break;
 					
 				default:
-					throw new Exception( _t( 'CURL Error %1$d: %2$s', array( curl_errno( $ch ), curl_error( $ch ) ) ) );
+					throw new Exception( _t( 'CURL Error %1$d: %2$s', array( $errno, $error ) ) );
 					break;
 				
 			}
