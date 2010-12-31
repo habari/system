@@ -80,6 +80,11 @@ class CURLRequestProcessor implements RequestProcessor
 						break;
                 }
             }
+			
+			// if it's a socks proxy, we have to tell curl that
+			if ( $config['proxy']['type'] == 'socks' ) {
+				$options[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+			}
         }
 		
 		curl_setopt_array( $ch, $options );

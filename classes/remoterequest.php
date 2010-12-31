@@ -56,6 +56,7 @@ class RemoteRequest
 			'password' => null,
 			'auth_type' => 'basic',
 			'exceptions' => array(),
+			'type' => 'http',		// http is the default, 'socks' for a SOCKS5 proxy
 		),
 
 		// TODO: These don't apply to SocketRequestProcessor yet
@@ -106,14 +107,20 @@ class RemoteRequest
 		$this->user_agent .= '/' . Version::HABARI_VERSION;
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
 
-		// can't use curl's followlocation in safe_mode with open_basedir, so
-		// fallback to srp for now
-		if ( function_exists( 'curl_init' )
-			 && ! ( ini_get( 'safe_mode' ) && ini_get( 'open_basedir' ) ) ) {
-			$this->processor = new CURLRequestProcessor;
+		// if they've manually specified that we should not use curl, use sockets instead
+		if ( Config::get('remote_request_processor') == 'socket' ) {
+			$this->processor = new SocketRequestProcessor();
 		}
 		else {
-			$this->processor = new SocketRequestProcessor;
+			// otherwise, see if we can use curl and fall back to sockets if not
+			if ( function_exists( 'curl_init' )
+				 && ! ( ini_get( 'safe_mode' ) && ini_get( 'open_basedir' ) ) ) {
+				$this->processor = new CURLRequestProcessor;
+			}
+			else {
+				$this->processor = new SocketRequestProcessor;
+			}
+			
 		}
 	}
 
