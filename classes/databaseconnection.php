@@ -611,9 +611,11 @@ class DatabaseConnection
 		$keyfieldvalues = array();
 		foreach ( $keyfields as $keyfield => $keyvalue ) {
 			if ( is_numeric( $keyfield ) ) {
+				// if the key is numeric, assume we were handed a simple list of fields that are keys and fetch its value from $fieldvalues
 				$keyfieldvalues[$keyvalue] = $fieldvalues[$keyvalue];
 			}
 			else {
+				// otherwise we were handed a key => value pair, use it as-is
 				$keyfieldvalues[$keyfield] = $keyvalue;
 			}
 		}
