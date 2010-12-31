@@ -18,7 +18,7 @@ class CURLRequestProcessor implements RequestProcessor
 	/**
 	 * Temporary buffer for headers.
 	 */
-	private $_headers = '';
+	private $headers = '';
 
 	public function __construct()
 	{
@@ -126,19 +126,43 @@ class CURLRequestProcessor implements RequestProcessor
 
 		curl_close( $ch );
 
-		// this fixes an E_NOTICE in the array_pop
-		$tmp_headers = explode( "\r\n\r\n", MultiByte::substr( $this->_headers, 0, -4 ) );
-
-		$this->response_headers = array_pop( $tmp_headers );
+		$this->response_headers = $this->headers;		// really redundant now, since we could write directly to response_headers, but makes it more clear where they came from
 		$this->response_body = $body;
 		$this->executed = true;
 
 		return true;
 	}
 
+	/**
+	 * cURL will hand each header received by the *response* to this method, so we use it
+	 * to conveniently capture them for storing in case the user wants them.
+	 * 
+	 * @param $ch resource The cURL handle from curl_init() that is executing.
+	 * @param $str string The header received from the response. Should always be a single header at a time.
+	 * 
+	 * @return int The length of the header. Used by cURL to report the header_size returned by the curl_getinfo() method.
+	 */
 	public function _headerfunction( $ch, $str )
 	{
-		$this->_headers.= $str;
+		
+		$header = trim($str);
+		
+		// don't save blank lines we might be handed - there's usually one after the headers
+		if ( $header != '' ) {
+		
+			// break the header up into field and value
+			$pieces = explode( ': ', $header, 2 );
+			
+			if ( count( $pieces ) > 1 ) {
+				// if the header was a key: value format, store it keyed in the array
+				$this->headers[ $pieces[0] ] = $pieces[1];
+			}
+			else {
+				// some headers (like the HTTP version in use) aren't keyed, so just store it keyed as itself
+				$this->headers[ $pieces[0] ] = $pieces[0];
+			}
+			
+		}
 
 		return strlen( $str );
 	}
