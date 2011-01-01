@@ -131,7 +131,7 @@ class CURLRequestProcessor implements RequestProcessor
 			// before we throw an exception, just to be nice
 			curl_close( $ch );
 			
-			switch ( curl_errno( $ch ) ) {
+			switch ( $errno ) {
 				
 				case CURLE_OPERATION_TIMEOUTED:
 					// the request timed out
