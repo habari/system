@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-26 00:00+0000\n"
+"POT-Creation-Date: 2011-01-02 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgstr ""
 msgid "Error: No tags selected."
 msgstr ""
 
-#: system/admin/tags.php:92
+#: system/admin/tags.php:92 system/classes/adminhandler.php:3062
 msgid "Error: New name not specified."
 msgstr ""
 
@@ -97,7 +97,7 @@ msgstr ""
 msgid "No members"
 msgstr ""
 
-#: system/admin/dashboard_modules.php:5 system/classes/adminhandler.php:3790
+#: system/admin/dashboard_modules.php:5 system/classes/adminhandler.php:3793
 msgid "Add Item"
 msgstr ""
 
@@ -391,7 +391,7 @@ msgstr ""
 msgid "Newer"
 msgstr ""
 
-#: system/admin/import.php:6 system/classes/adminhandler.php:3240
+#: system/admin/import.php:6 system/classes/adminhandler.php:3243
 #: system/plugins/wpimport/wpimport.plugin.php:143
 #: system/plugins/wpimport/wpimport.plugin.php:219
 msgid "Import"
@@ -877,9 +877,13 @@ msgstr ""
 msgid "Reset password"
 msgstr ""
 
-#: system/admin/tag_collection.php:11
+#: system/admin/tag_collection.php:13
 #, php-format
 msgid "Manage posts tagged %1$s"
+msgstr ""
+
+#: system/admin/tag_collection.php:18
+msgid "No tags could be found to match the query criteria."
 msgstr ""
 
 #: system/schema/mysql/connection.php:246
@@ -921,7 +925,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:847
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:848
 msgid "No Comments"
 msgstr ""
 
@@ -938,7 +942,7 @@ msgstr[1] ""
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
 #: system/themes/charcoal/entry.single.php:30 system/classes/acl.php:785
-#: system/classes/adminhandler.php:3234
+#: system/classes/adminhandler.php:3237
 msgid "Comments"
 msgstr ""
 
@@ -1332,7 +1336,7 @@ msgstr ""
 msgid "Manage comments on one's own posts"
 msgstr ""
 
-#: system/classes/acl.php:765 system/classes/adminhandler.php:3235
+#: system/classes/acl.php:765 system/classes/adminhandler.php:3238
 msgid "Manage tags"
 msgstr ""
 
@@ -1435,12 +1439,12 @@ msgid "Redirection response without Location: header."
 msgstr ""
 
 #: system/classes/socketrequestprocessor.php:206
-#: system/classes/curlrequestprocessor.php:149
+#: system/classes/curlrequestprocessor.php:195
 msgid "Unable to get response body. Request did not yet execute."
 msgstr ""
 
 #: system/classes/socketrequestprocessor.php:215
-#: system/classes/curlrequestprocessor.php:158
+#: system/classes/curlrequestprocessor.php:204
 msgid "Unable to get response headers. Request did not yet execute."
 msgstr ""
 
@@ -2231,7 +2235,7 @@ msgstr ""
 msgid "Regional Settings"
 msgstr ""
 
-#: system/classes/adminhandler.php:731 system/classes/adminhandler.php:3236
+#: system/classes/adminhandler.php:731 system/classes/adminhandler.php:3239
 msgid "Dashboard"
 msgstr ""
 
@@ -2558,235 +2562,235 @@ msgstr ""
 msgid "Updated permissions."
 msgstr ""
 
-#: system/classes/adminhandler.php:3054
+#: system/classes/adminhandler.php:3056
 #, php-format
 msgid "Tag %s has been deleted."
 msgstr ""
 
-#: system/classes/adminhandler.php:3054
+#: system/classes/adminhandler.php:3056
 #, php-format
 msgid "%d tags have been deleted."
 msgstr ""
 
-#: system/classes/adminhandler.php:3075
+#: system/classes/adminhandler.php:3078
 #, php-format
 msgid "Tag %1$s has been renamed to %2$s."
 msgid_plural "Tags %1$s have been renamed to %2$s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: system/classes/adminhandler.php:3101 system/classes/adminhandler.php:3103
+#: system/classes/adminhandler.php:3104 system/classes/adminhandler.php:3106
 msgid "Habari Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3106
+#: system/classes/adminhandler.php:3109
 msgid "Habari API Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3107
+#: system/classes/adminhandler.php:3110
 msgid "Habari DB Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3108
+#: system/classes/adminhandler.php:3111
 msgid "Active Theme"
 msgstr ""
 
-#: system/classes/adminhandler.php:3109
+#: system/classes/adminhandler.php:3112
 msgid "Site Language"
 msgstr ""
 
-#: system/classes/adminhandler.php:3113
+#: system/classes/adminhandler.php:3116
 msgid "PHP Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3114
+#: system/classes/adminhandler.php:3117
 msgid "Server Software"
 msgstr ""
 
-#: system/classes/adminhandler.php:3115
+#: system/classes/adminhandler.php:3118
 msgid "Database"
 msgstr ""
 
-#: system/classes/adminhandler.php:3116
+#: system/classes/adminhandler.php:3119
 msgid "PHP Extensions"
 msgstr ""
 
-#: system/classes/adminhandler.php:3118 system/classes/adminhandler.php:3127
+#: system/classes/adminhandler.php:3121 system/classes/adminhandler.php:3130
 msgid "PCRE Version"
 msgstr ""
 
-#: system/classes/adminhandler.php:3129
+#: system/classes/adminhandler.php:3132
 msgid "Browser"
 msgstr ""
 
-#: system/classes/adminhandler.php:3209
+#: system/classes/adminhandler.php:3212
 #, php-format
 msgid "Create a new %s"
 msgstr ""
 
-#: system/classes/adminhandler.php:3213
+#: system/classes/adminhandler.php:3216
 #, php-format
 msgid "Manage %s"
 msgstr ""
 
-#: system/classes/adminhandler.php:3232
+#: system/classes/adminhandler.php:3235
 msgid "Create content"
 msgstr ""
 
-#: system/classes/adminhandler.php:3232
+#: system/classes/adminhandler.php:3235
 msgid "New"
 msgstr ""
 
-#: system/classes/adminhandler.php:3233
+#: system/classes/adminhandler.php:3236
 msgid "Manage content"
 msgstr ""
 
-#: system/classes/adminhandler.php:3233
+#: system/classes/adminhandler.php:3236
 msgid "Manage"
 msgstr ""
 
-#: system/classes/adminhandler.php:3234
+#: system/classes/adminhandler.php:3237
 msgid "Manage comments"
 msgstr ""
 
-#: system/classes/adminhandler.php:3235
+#: system/classes/adminhandler.php:3238
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:650
 msgid "Tags"
 msgstr ""
 
-#: system/classes/adminhandler.php:3236
+#: system/classes/adminhandler.php:3239
 msgid "View your user dashboard"
 msgstr ""
 
-#: system/classes/adminhandler.php:3237
+#: system/classes/adminhandler.php:3240
 msgid "View and configure site options"
 msgstr ""
 
-#: system/classes/adminhandler.php:3237
+#: system/classes/adminhandler.php:3240
 msgid "Options"
 msgstr ""
 
-#: system/classes/adminhandler.php:3238
+#: system/classes/adminhandler.php:3241
 msgid "Preview and activate themes"
 msgstr ""
 
-#: system/classes/adminhandler.php:3238
+#: system/classes/adminhandler.php:3241
 msgid "Themes"
 msgstr ""
 
-#: system/classes/adminhandler.php:3239
+#: system/classes/adminhandler.php:3242
 msgid "Activate, deactivate, and configure plugins"
 msgstr ""
 
-#: system/classes/adminhandler.php:3239
+#: system/classes/adminhandler.php:3242
 msgid "Plugins"
 msgstr ""
 
-#: system/classes/adminhandler.php:3240
+#: system/classes/adminhandler.php:3243
 msgid "Import content from another site"
 msgstr ""
 
-#: system/classes/adminhandler.php:3241
+#: system/classes/adminhandler.php:3244
 msgid "View and manage users"
 msgstr ""
 
-#: system/classes/adminhandler.php:3241
+#: system/classes/adminhandler.php:3244
 msgid "Users"
 msgstr ""
 
-#: system/classes/adminhandler.php:3242
+#: system/classes/adminhandler.php:3245
 msgid "Manage your user profile"
 msgstr ""
 
-#: system/classes/adminhandler.php:3242
+#: system/classes/adminhandler.php:3245
 msgid "My Profile"
 msgstr ""
 
-#: system/classes/adminhandler.php:3243
+#: system/classes/adminhandler.php:3246
 msgid "View and manage groups"
 msgstr ""
 
-#: system/classes/adminhandler.php:3243
+#: system/classes/adminhandler.php:3246
 msgid "Groups"
 msgstr ""
 
-#: system/classes/adminhandler.php:3244
+#: system/classes/adminhandler.php:3247
 msgid "View system log messages"
 msgstr ""
 
-#: system/classes/adminhandler.php:3244
+#: system/classes/adminhandler.php:3247
 msgid "Logs"
 msgstr ""
 
-#: system/classes/adminhandler.php:3245
+#: system/classes/adminhandler.php:3248
 msgid "Log out of the administration interface"
 msgstr ""
 
-#: system/classes/adminhandler.php:3245
+#: system/classes/adminhandler.php:3248
 msgid "Logout"
 msgstr ""
 
-#: system/classes/adminhandler.php:3480
+#: system/classes/adminhandler.php:3483
 msgid "Entry"
 msgstr ""
 
-#: system/classes/adminhandler.php:3481
+#: system/classes/adminhandler.php:3484
 msgid "Entries"
 msgstr ""
 
-#: system/classes/adminhandler.php:3484
+#: system/classes/adminhandler.php:3487
 msgid "Page"
 msgstr ""
 
-#: system/classes/adminhandler.php:3485
+#: system/classes/adminhandler.php:3488
 msgid "Pages"
 msgstr ""
 
-#: system/classes/adminhandler.php:3534
+#: system/classes/adminhandler.php:3537
 msgid "Root"
 msgstr ""
 
-#: system/classes/adminhandler.php:3650
+#: system/classes/adminhandler.php:3653
 msgid "A new block must first have a name."
 msgstr ""
 
-#: system/classes/adminhandler.php:3666
+#: system/classes/adminhandler.php:3669
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3690
+#: system/classes/adminhandler.php:3693
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3693
+#: system/classes/adminhandler.php:3696
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3740
+#: system/classes/adminhandler.php:3743
 msgid "Saved block areas settings."
 msgstr ""
 
-#: system/classes/adminhandler.php:3784
+#: system/classes/adminhandler.php:3787
 msgid "+"
 msgstr ""
 
-#: system/classes/remoterequest.php:187
+#: system/classes/remoterequest.php:194
 msgid "Trying to add a request body to a GET request."
 msgstr ""
 
-#: system/classes/remoterequest.php:244
+#: system/classes/remoterequest.php:251
 #, php-format
 msgid "File %s not found."
 msgstr ""
 
-#: system/classes/remoterequest.php:344
+#: system/classes/remoterequest.php:351
 msgid "Unable to fetch response headers for a pending request."
 msgstr ""
 
-#: system/classes/remoterequest.php:357
+#: system/classes/remoterequest.php:364
 msgid "Unable to fetch response body for a pending request."
 msgstr ""
 
@@ -3010,22 +3014,17 @@ msgstr ""
 msgid "Your comment is pending moderation."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:96
+#: system/classes/curlrequestprocessor.php:102
 msgid "CURL Error. Unable to create temporary file name."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:101
+#: system/classes/curlrequestprocessor.php:107
 msgid "CURL Error. Unable to open temporary file."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:120
+#: system/classes/curlrequestprocessor.php:142
 #, php-format
-msgid "CURL Error %d: %s"
-msgstr ""
-
-#: system/classes/curlrequestprocessor.php:124
-#, php-format
-msgid "Bad return code (%d) for: %s"
+msgid "CURL Error %1$d: %2$s"
 msgstr ""
 
 #: system/classes/logentry.php:172 system/classes/logentry.php:268
@@ -3159,19 +3158,19 @@ msgstr ""
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:773
+#: system/classes/theme.php:774
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:800
+#: system/classes/theme.php:801
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:826
+#: system/classes/theme.php:827
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:852
+#: system/classes/theme.php:853
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
