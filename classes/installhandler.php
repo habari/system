@@ -725,7 +725,6 @@ class InstallHandler extends ActionHandler
 		Options::set('installed', true);
 
 		Options::set('title', $this->handler_vars['blog_title']);
-		Options::set('base_url', MultiByte::substr($_SERVER['REQUEST_URI'], 0, MultiByte::strrpos($_SERVER['REQUEST_URI'], '/') + 1));
 		Options::set('pagination', '5');
 		Options::set('atom_entries', '5');
 		Options::set( 'theme_name', 'k2' );
@@ -740,7 +739,7 @@ class InstallHandler extends ActionHandler
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
-		Options::set('GUID', sha1(Options::get('base_url') . Utils::nonce()));
+		Options::set('GUID', sha1( Utils::nonce() ));
 
 		// Let's prepare the EventLog here, as well
 		EventLog::register_type('default', 'habari');
@@ -1650,6 +1649,13 @@ class InstallHandler extends ActionHandler
 		
 		// Add the cronjob to check for plugin updates
 		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t('Perform a check for plugin updates.') );
+		
+	}
+	
+	private function upgrade_db_post_4763 ( ) {
+		
+		// delete the base_url option, which is no longer used
+		Options::delete( 'base_url' );
 		
 	}
 
