@@ -1363,7 +1363,7 @@ class InstallHandler extends ActionHandler
 		DB::upgrade_post( $version );
 
 		Version::save_dbversion();
-		Options::set( 'db_upgrading', false );
+		Options::delete( 'db_upgrading' );
 	}
 
 	private function display_currently_upgrading()
