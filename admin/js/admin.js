@@ -1341,9 +1341,9 @@ var labeler = {
 	},
 	overLabel: function(el) {
 		$(el).addClass('islabeled');
-		// for Safari only, we can simply hide labels when we have provided a
+		// If the placeholder attribute is supported, we can simply hide labels when we have provided a
 		// placeholder attribute
-		if ($.browser.safari && $(el).attr('placeholder') ) {
+		if ("placeholder" in $(el)[0] && $(el).attr('placeholder') ) {
 			$('label[for=' + $(el).attr('id') + ']').addClass('hidden');
 		}
 		else {
