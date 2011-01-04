@@ -374,7 +374,7 @@ class Vocabulary extends QueryRecord
 
 	/**
 	 * Gets the term object by id. No parameter returns the root Term object.
-	 * @param integer $term_id The id of the term to fetch, or null for the root node
+	 * @param mixed $term A Term object, null (for the first node in the tree), a string (for a term slug or display), or an integer (for a Term ID).
 	 * @param sring $term_class The class of the returned term object.	 
 	 * @return Term The Term object requested
 	 * @todo improve selective fetching by term slug vs term_display	 
