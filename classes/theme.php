@@ -30,6 +30,9 @@ class Theme extends Pluggable
 		'content_type',
 		'not:content_type',
 		'slug',
+		'not:slug',
+		'user_id',
+		'vocabulary',
 		'status',
 		'page',
 		'tag',
@@ -43,7 +46,13 @@ class Theme extends Pluggable
 		'offset',
 		'fetch_fn',
 		'id',
-		'vocabulary',
+		'info',
+		'has:info',
+		'all:info',
+		'any:info',
+		'not:info',
+		'not:all:info',
+		'not:any:info',
 	);
 
 	/**
