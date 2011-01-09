@@ -639,7 +639,7 @@ class Posts extends ArrayObject implements IsContent
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
 		$paramarray = new SuperGlobal($paramarray);
-		$extract = $paramarray->filter_keys('page', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having');
+		$extract = $paramarray->filter_keys('page', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having', 'add_select');
 		foreach ( $extract as $key => $value ) {
 			$$key = $value;
 		}
@@ -678,6 +678,36 @@ class Posts extends ArrayObject implements IsContent
 			$fetch_fn = $fns[0];
 		}
 		
+		
+		// If the orderby has a function in it, try to create a select field for it with an alias
+		if(strpos($orderby, '(') !== false) {
+			$orders = explode(',', $orderby);
+			$ob_index = 0;
+			foreach($orders as $key => $order) {
+				if(!preg_match('%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches)) {
+					$order_matches = array(
+						'field' => $order,
+						'direction' => '',
+					);
+				}
+				
+				if(strpos($order_matches['field'], '(') !== false) {
+					$ob_index++;
+					$field = 'orderby' . $ob_index;
+					$select_ary[$field] = "{$order_matches['field']} AS $field";
+					$select_distinct[$field] = "{$order_matches['field']} AS $field";
+					$orders[$key] = $field . ' ' . $order_matches['direction'];
+				}
+			}
+			$orderby = implode(', ', $orders);
+		}
+
+		// Add arbitrary fields to the select clause for sorting and output
+		if(isset($add_select)) {
+			$select_ary = array_merge($select_ary, $add_select);
+		}
+		
+
 		/**
 		 * Turn the requested fields into a comma-separated SELECT field clause
 		 */
