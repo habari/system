@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-02 00:00+0000\n"
+"POT-Creation-Date: 2011-01-09 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -925,7 +925,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:848
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:857
 msgid "No Comments"
 msgstr ""
 
@@ -1368,7 +1368,7 @@ msgstr ""
 msgid "Add, remove, and edit users"
 msgstr ""
 
-#: system/classes/acl.php:773 system/classes/installhandler.php:1565
+#: system/classes/acl.php:773 system/classes/installhandler.php:1564
 msgid "Edit own profile"
 msgstr ""
 
@@ -1380,7 +1380,7 @@ msgstr ""
 msgid "Manage logs"
 msgstr ""
 
-#: system/classes/acl.php:778 system/classes/installhandler.php:1516
+#: system/classes/acl.php:778 system/classes/installhandler.php:1515
 msgid "Permissions on one's own posts"
 msgstr ""
 
@@ -1410,8 +1410,8 @@ msgid "anonymous"
 msgstr ""
 
 #: system/classes/acl.php:838 system/classes/acl.php:840
-#: system/classes/installhandler.php:1527
-#: system/classes/installhandler.php:1529
+#: system/classes/installhandler.php:1526
+#: system/classes/installhandler.php:1528
 msgid "authenticated"
 msgstr ""
 
@@ -1457,8 +1457,8 @@ msgid "Password mis-match."
 msgstr ""
 
 #: system/classes/installhandler.php:153
-#: system/classes/installhandler.php:1686
-#: system/classes/installhandler.php:1757
+#: system/classes/installhandler.php:1692
+#: system/classes/installhandler.php:1763
 msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
@@ -1516,31 +1516,31 @@ msgid "Problem creating first post."
 msgstr ""
 
 #: system/classes/installhandler.php:535 system/classes/installhandler.php:568
-#: system/classes/installhandler.php:1701
-#: system/classes/installhandler.php:1772
+#: system/classes/installhandler.php:1707
+#: system/classes/installhandler.php:1778
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
 #: system/classes/installhandler.php:538 system/classes/installhandler.php:571
-#: system/classes/installhandler.php:1705
-#: system/classes/installhandler.php:1776
+#: system/classes/installhandler.php:1711
+#: system/classes/installhandler.php:1782
 msgid "That database does not exist."
 msgstr ""
 
 #: system/classes/installhandler.php:541 system/classes/installhandler.php:574
-#: system/classes/installhandler.php:1709
-#: system/classes/installhandler.php:1780
+#: system/classes/installhandler.php:1715
+#: system/classes/installhandler.php:1786
 msgid "Could not connect to host."
 msgstr ""
 
 #: system/classes/installhandler.php:602
-#: system/classes/installhandler.php:1828
+#: system/classes/installhandler.php:1834
 #, php-format
 msgid "Cannot write to %s. The SQLite data file is not writable by the web server."
 msgstr ""
 
 #: system/classes/installhandler.php:606
-#: system/classes/installhandler.php:1821
+#: system/classes/installhandler.php:1827
 #, php-format
 msgid "Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
@@ -1550,64 +1550,64 @@ msgstr ""
 msgid "Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server."
 msgstr ""
 
-#: system/classes/installhandler.php:753
-#: system/classes/installhandler.php:1645
+#: system/classes/installhandler.php:752
+#: system/classes/installhandler.php:1644
 msgid "Trim the log table"
 msgstr ""
 
-#: system/classes/installhandler.php:756
-#: system/classes/installhandler.php:1652
+#: system/classes/installhandler.php:755
+#: system/classes/installhandler.php:1651
 msgid "Perform a check for plugin updates."
 msgstr ""
 
-#: system/classes/installhandler.php:800
+#: system/classes/installhandler.php:799
 msgid "This site is running <a href=\"http://habariproject.org/\">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href=\"http://habariproject.org/\">http://habariproject.org/</a> to find out more!"
 msgstr ""
 
-#: system/classes/installhandler.php:863
+#: system/classes/installhandler.php:862
 msgid "currently unsupported."
 msgstr ""
 
-#: system/classes/installhandler.php:977
+#: system/classes/installhandler.php:976
 msgid "No admin user found"
 msgstr ""
 
-#: system/classes/installhandler.php:1377
+#: system/classes/installhandler.php:1376
 msgid "Site Maintenance"
 msgstr ""
 
-#: system/classes/installhandler.php:1378
+#: system/classes/installhandler.php:1377
 msgid "Habari is currently being upgraded."
 msgstr ""
 
-#: system/classes/installhandler.php:1379
+#: system/classes/installhandler.php:1378
 msgid "Try again in a little while."
 msgstr ""
 
-#: system/classes/installhandler.php:1392
+#: system/classes/installhandler.php:1391
 msgid "Truncate the log table"
 msgstr ""
 
-#: system/classes/installhandler.php:1570
+#: system/classes/installhandler.php:1569
 msgid "Manage dashboard modules"
-msgstr ""
-
-#: system/classes/installhandler.php:1668
-#: system/classes/installhandler.php:1739
-msgid "The database host field was left empty."
 msgstr ""
 
 #: system/classes/installhandler.php:1674
 #: system/classes/installhandler.php:1745
-msgid "The database name field was left empty."
+msgid "The database host field was left empty."
 msgstr ""
 
 #: system/classes/installhandler.php:1680
 #: system/classes/installhandler.php:1751
+msgid "The database name field was left empty."
+msgstr ""
+
+#: system/classes/installhandler.php:1686
+#: system/classes/installhandler.php:1757
 msgid "The database user field was left empty."
 msgstr ""
 
-#: system/classes/installhandler.php:1811
+#: system/classes/installhandler.php:1817
 msgid "The database file was left empty."
 msgstr ""
 
@@ -3154,23 +3154,23 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: system/classes/theme.php:252
+#: system/classes/theme.php:261
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:774
+#: system/classes/theme.php:783
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:801
+#: system/classes/theme.php:810
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:827
+#: system/classes/theme.php:836
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:853
+#: system/classes/theme.php:862
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
