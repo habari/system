@@ -116,6 +116,7 @@ class Posts extends ArrayObject implements IsContent
 		// Default fields to select, everything by default
 		foreach ( Post::default_fields() as $field => $value ) {
 			$select_ary[$field] = "{posts}.$field AS $field";
+			$select_distinct[$field] = "{posts}.$field";
 		}
 
 		// Default parameters
@@ -286,7 +287,7 @@ class Posts extends ArrayObject implements IsContent
 						}
 						
 						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
-						$groupby = '{posts}.id';
+						$groupby = implode(',', $select_distinct);
 						$having = 'count(*) = ' . count( $terms );
 						
 					}
@@ -365,6 +366,7 @@ class Posts extends ArrayObject implements IsContent
 							$where[] = "ipi{$pi_count}.name <> ''";
 
 							$select_ary["info_{$info_key}_value"] = "ipi{$pi_count}.value AS info_{$info_key}_value";
+							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
 						}
 					}
 
@@ -390,6 +392,7 @@ class Posts extends ArrayObject implements IsContent
 							$pi_where[] = "aipi{$pi_count}.name <> ''";
 
 							$select_ary["info_{$info_key}_value"] = "aipi{$pi_count}.value AS info_{$info_key}_value";
+							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
 						}
 						$where[] = '(' . implode(' OR ', $pi_where) . ')';
 					}
@@ -407,7 +410,7 @@ class Posts extends ArrayObject implements IsContent
 						$pi_where[] = "hipi{$pi_count}.name <> ''";
 
 						$select_ary["info_{$info_name}_value"] = "hipi{$pi_count}.value AS info_{$info_name}_value";
-
+						$select_distinct["info_{$info_name}_value"] = "info_{$info_name}_value";
 					}
 					$where[] = '(' . implode(' OR ', $pi_where) . ')';
 				}
@@ -561,9 +564,9 @@ class Posts extends ArrayObject implements IsContent
 
 				// If a user has access to read other users' unpublished posts, let him
 				if ( User::identify()->can( 'post_unpublished', 'read' ) ) {
-					$perm_where[] = '({posts}.status <> :post_unpublished_status_id AND {posts}.user_id <> :post_unpublished_user_id)';
-					$params_where['post_unpublished_status_id'] = Post::status('published');
-					$params_where['post_unpublished_user_id'] = User::identify()->id;
+					$perm_where[] = '({posts}.status <> ? AND {posts}.user_id <> ?)';
+					$params_where[] = Post::status('published');
+					$params_where[] = User::identify()->id;
 				}
 
 			}
@@ -587,34 +590,17 @@ class Posts extends ArrayObject implements IsContent
 
 				// If a user is denied access to read other users' unpublished posts, deny it
 				if ( User::identify()->cannot( 'post_unpublished' ) ) {
-					$perm_where_denied[] = '({posts}.status = :post_unpublished_status_id OR {posts}.user_id = :post_unpublished_user_id)';
-					$params_where_denied['post_unpublished_status_id'] = Post::status('published');
-					$params_where_denied['post_unpublished_user_id'] = User::identify()->id;
+					$perm_where_denied[] = '({posts}.status = ? OR {posts}.user_id = ?)';
+					$params_where_denied[] = Post::status('published');
+					$params_where_denied[] = User::identify()->id;
 				}
 
 			}
 
-
-			/*
-			// If a user is not denied access to all posts, see if they are denied 
-			// access to specific post statuses
-			if ( !User::identify()->cannot( 'post_any' ) ) {
-				// If a user is denied read access to specific post types, deny him
-				$denied_post_statuses = array();
-				foreach ( Post::list_post_statuses() as $name => $poststatus ) {
-					if ( User::identify()->cannot( 'status_' . Utils::slugify($name) ) ) {
-						$denied_post_statuses[] = $poststatus;
-					}
-				}
-				if ( count($denied_post_statuses) > 0 ) {
-					$perm_where_denied[] = '{posts}.status NOT IN (' . implode(',', $denied_post_statuses) . ')';
-				}
-			}
-			*/
-			
+			// This doesn't work yet because you can't pass these arrays by reference
 			Plugins::act('post_get_perm_where', $perm_where, $params_where, $paramarray);
 			Plugins::act('post_get_perm_where_denied', $perm_where_denied, $params_where_denied, $paramarray);
-			
+						
 			// Set up the merge params
 			$merge_params = array($join_params, $params);
 			
@@ -628,7 +614,6 @@ class Posts extends ArrayObject implements IsContent
 					(' . implode(' OR ', $perm_where) . ')
 				';
 				$merge_params[] = $params_where;
-				//$params = array_merge( $join_params, $params, $params_where );
 			}
 
 			if ( count($deny_tokens) > 0 ) {
@@ -642,7 +627,6 @@ class Posts extends ArrayObject implements IsContent
 					(' . implode(' AND ', $perm_where_denied) . ')
 				';
 				$merge_params[] = $params_where_denied;
-				//$params = array_merge( $join_params, $params, $params_where );
 			}
 			
 			// Merge the params
@@ -693,7 +677,7 @@ class Posts extends ArrayObject implements IsContent
 		else {
 			$fetch_fn = $fns[0];
 		}
-
+		
 		/**
 		 * Turn the requested fields into a comma-separated SELECT field clause
 		 */
