@@ -536,10 +536,10 @@ class Posts extends ArrayObject implements IsContent
 				$params_where[] = User::identify()->id;
 			}
 
+			$params_where = array();
 			// If a user can read any post type, let him
 			if ( User::identify()->can( 'post_any', 'read' ) ) {
 				$perm_where = array('post_any' => '(1=1)');
-				$params_where = array();
 			}
 			else {
 				// If a user can read specific post types, let him
@@ -559,8 +559,16 @@ class Posts extends ArrayObject implements IsContent
 					$perm_where['perms_join_null'] = 'pt_allowed.post_id IS NOT NULL';
 				}
 
+				// If a user has access to read other users' unpublished posts, let him
+				if ( User::identify()->can( 'post_unpublished', 'read' ) ) {
+					$perm_where[] = '({posts}.status <> :post_unpublished_status_id AND {posts}.user_id <> :post_unpublished_user_id)';
+					$params_where['post_unpublished_status_id'] = Post::status('published');
+					$params_where['post_unpublished_user_id'] = User::identify()->id;
+				}
+
 			}
 
+			$params_where_denied = array();
 			// If a user is denied access to all posts, do so
 			if ( User::identify()->cannot( 'post_any' ) ) {
 				$perm_where_denied = array('(1=0)');
@@ -576,8 +584,40 @@ class Posts extends ArrayObject implements IsContent
 				if ( count($denied_post_types) > 0 ) {
 					$perm_where_denied[] = '{posts}.content_type NOT IN (' . implode(',', $denied_post_types) . ')';
 				}
+
+				// If a user is denied access to read other users' unpublished posts, deny it
+				if ( User::identify()->cannot( 'post_unpublished' ) ) {
+					$perm_where_denied[] = '({posts}.status = :post_unpublished_status_id OR {posts}.user_id = :post_unpublished_user_id)';
+					$params_where_denied['post_unpublished_status_id'] = Post::status('published');
+					$params_where_denied['post_unpublished_user_id'] = User::identify()->id;
+				}
+
 			}
 
+
+			/*
+			// If a user is not denied access to all posts, see if they are denied 
+			// access to specific post statuses
+			if ( !User::identify()->cannot( 'post_any' ) ) {
+				// If a user is denied read access to specific post types, deny him
+				$denied_post_statuses = array();
+				foreach ( Post::list_post_statuses() as $name => $poststatus ) {
+					if ( User::identify()->cannot( 'status_' . Utils::slugify($name) ) ) {
+						$denied_post_statuses[] = $poststatus;
+					}
+				}
+				if ( count($denied_post_statuses) > 0 ) {
+					$perm_where_denied[] = '{posts}.status NOT IN (' . implode(',', $denied_post_statuses) . ')';
+				}
+			}
+			*/
+			
+			Plugins::act('post_get_perm_where', $perm_where, $params_where, $paramarray);
+			Plugins::act('post_get_perm_where_denied', $perm_where_denied, $params_where_denied, $paramarray);
+			
+			// Set up the merge params
+			$merge_params = array($join_params, $params);
+			
 			// If there are granted permissions to check, add them to the where clause
 			if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
 				// You have no grants.  You get no posts.
@@ -587,7 +627,8 @@ class Posts extends ArrayObject implements IsContent
 				$where['perms_granted'] = '
 					(' . implode(' OR ', $perm_where) . ')
 				';
-				$params = array_merge( $join_params, $params, $params_where );
+				$merge_params[] = $params_where;
+				//$params = array_merge( $join_params, $params, $params_where );
 			}
 
 			if ( count($deny_tokens) > 0 ) {
@@ -600,8 +641,14 @@ class Posts extends ArrayObject implements IsContent
 				$where['perms_denied'] = '
 					(' . implode(' AND ', $perm_where_denied) . ')
 				';
+				$merge_params[] = $params_where_denied;
+				//$params = array_merge( $join_params, $params, $params_where );
 			}
+			
+			// Merge the params
+			$params = call_user_func_array('array_merge', $merge_params);
 
+			// AND the separate permission-related WHERE clauses
 			$master_perm_where = implode( ' AND ', $where );
 		}
 

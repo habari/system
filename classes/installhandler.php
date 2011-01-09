@@ -1659,6 +1659,20 @@ class InstallHandler extends ActionHandler
 		
 	}
 
+	private function upgrade_db_post_4770 ()
+	{
+		// Add CRUD access tokens for other users' unpublished posts
+		ACL::create_token( 'post_unpublished', _t( "Permissions to other users' unpublished posts" ), _t( 'Content' ), true );
+
+		// If a group doesn't have super_user permission, deny access to post_unpublished
+		$groups = UserGroups::get_all();
+		foreach($groups as $group) {
+			if(!ACL::group_can($group->id, 'super_user', 'read')) {
+				$group->deny('post_unpublished');
+			}
+		}
+	}
+	
 	/**
 	 * Validate database credentials for MySQL
 	 * Try to connect and verify if database name exists

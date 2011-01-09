@@ -309,9 +309,9 @@ class UserGroup extends QueryRecord
 	public function load_permissions_cache()
 	{
 		if ( is_null( $this->permissions ) ) {
-			if ( $results = DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
+			if ( $results = DB::get_results( 'SELECT token_id, access_mask FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
 				foreach ( $results as $result ) {
-					$this->permissions[$result->token_id] = $result->permission_id;
+					$this->permissions[$result->token_id] = $result->access_mask;
 				}
 			}
 		}

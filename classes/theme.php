@@ -190,7 +190,7 @@ class Theme extends Pluggable
 		$where_filters = array();
 		$where_filters = Controller::get_handler()->handler_vars->filter_keys( $this->valid_filters );
 		$where_filters['vocabulary'] = array();
-		//$where_filters['status'] = Post::status( 'published' );
+
 		if ( array_key_exists( 'tag', $where_filters ) ) {
 			$tags = explode(' ', $where_filters['tag']);
 			$not_tag = array();
@@ -213,10 +213,7 @@ class Theme extends Pluggable
 			$where_filters['tag_slug'] = Utils::slugify($where_filters['tag']);
 			unset( $where_filters['tag'] );
 		}
-		if ( User::identify()->loggedin ) {
-			$where_filters['status'] = isset( $_GET['preview'] ) ? Post::status( 'any' ) : Post::status( 'published' );
-		}
-		else {
+		if(!isset( $_GET['preview'] )) {
 			$where_filters['status'] = Post::status( 'published' );
 		}
 

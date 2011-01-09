@@ -253,7 +253,7 @@ class ACL
 	 */
 	public static function group_can( $group, $token_id, $access = 'full' )
 	{
-		$bitmask = get_group_token_access( $group, $token_id );
+		$bitmask = self::get_group_token_access( $group, $token_id );
 
 		if ( isset( $bitmask ) && self::access_check( $bitmask, $access ) ) {
 			// the permission has been granted to this group
@@ -777,6 +777,7 @@ SQL;
 		// content tokens
 		self::create_token( 'own_posts', _t( 'Permissions on one\'s own posts' ), _t( 'Content' ), true );
 		self::create_token( 'post_any', _t( 'Permissions to all posts' ), _t( 'Content' ), true );
+		self::create_token( 'post_unpublished', _t( "Permissions to other users' unpublished posts" ), _t( 'Content' ), true );
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
 			self::create_token( 'post_' . Utils::slugify($name), _t( 'Permissions to posts of type "%s"', array( $name ) ), _t( 'Content' ), true );
 		}
