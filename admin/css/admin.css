@@ -444,7 +444,6 @@ body {
 #page .container h2 {
 	font: 1.6em 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
 	color: #333;
-	text-transform: capitalize;
 }
 
 #page .container h3 {
