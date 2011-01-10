@@ -26,7 +26,7 @@ class Session
 		// If https request only set secure cookie
 		// IIS sets the value of HTTPS to 'off' if not https
 		if ( (defined('FORCE_SECURE_SESSION') && FORCE_SECURE_SESSION == true) ||
-			(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') ) {
+			(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ) {
 			session_set_cookie_params(null, null, null, true);
 		}
 
