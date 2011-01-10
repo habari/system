@@ -21,6 +21,16 @@ class PostInfo extends InfoRecords
 			// pick off the last _'d piece
 			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
 			list( $junk, $name, $filter ) = $matches;
+			
+			// so that we don't break every info value that has a _ in it, only _out is an acceptable filter name
+			if ( $filter != 'out' ) {
+				// put it back together
+				$name = $name . '_' . $filter;
+				
+				// turn off the filter
+				$filter = false;
+			}
+			
 		}
 		else {
 			$filter = false;
