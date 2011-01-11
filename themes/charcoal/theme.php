@@ -75,8 +75,10 @@ class Charcoal extends Theme
 	public function add_template_vars()
 	{
 		// Use theme options to set values that can be used directly in the templates
-		// Don't check for constant values in the template code itself
 		$opts = Options::get_group( __CLASS__ );
+		if ( empty( $opts ) ) {
+			$opts = $this->defaults;
+		}
 		
 		$this->assign( 'show_title_image', $opts['show_title_image'] );
 		$this->assign( 'home_label', $opts['home_label'] );
