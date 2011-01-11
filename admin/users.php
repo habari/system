@@ -34,7 +34,7 @@
 	</span>
 </div>
 
-<form method="post" action="">
+<form method="post" action="" autocomplete="off">
 <div class="container users">
 	
 	<div class="addnewuser item">
