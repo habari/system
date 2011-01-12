@@ -770,7 +770,7 @@ class Post extends QueryRecord implements IsContent
 					return $this->tags = $value;
 				}
 				else {
-					return $this->tags = Terms::parse( $value, 'Tag', Tags::vocabulary() );
+					return $this->tags = Terms::parse( $value, 'Term', Tags::vocabulary() );
 				}
 			case 'status':
 				return $this->setstatus( $value );
