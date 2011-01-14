@@ -13,7 +13,7 @@ CREATE TABLE {$prefix}posts (
   modified INT UNSIGNED NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY slug (slug(80))
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}postinfo  (
   post_id INT UNSIGNED NOT NULL,
@@ -21,28 +21,28 @@ CREATE TABLE  {$prefix}postinfo  (
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT,
   PRIMARY KEY (post_id,name)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}posttype (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   active TINYINT(1) DEFAULT 1,
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}poststatus (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   internal TINYINT(1),
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}options (
   name VARCHAR(255) NOT NULL,
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT,
   PRIMARY KEY (name)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}users (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -51,7 +51,7 @@ CREATE TABLE  {$prefix}users (
   password VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY username (username)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}userinfo (
   user_id SMALLINT UNSIGNED NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE  {$prefix}userinfo (
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT,
   PRIMARY KEY (user_id,name)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}tags (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -67,14 +67,14 @@ CREATE TABLE  {$prefix}tags (
   tag_slug VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY tag_slug (tag_slug)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}tag2post (
   tag_id INT UNSIGNED NOT NULL,
   post_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (tag_id,post_id),
   KEY post_id (post_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}comments (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -89,21 +89,21 @@ CREATE TABLE  {$prefix}comments (
   type SMALLINT UNSIGNED NOT NULL,
   PRIMARY KEY (id),
   KEY post_id (post_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}commenttype (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   active TINYINT(1) DEFAULT 1,
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}commentstatus (
   id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
   internal TINYINT(1),
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE  {$prefix}commentinfo (
   comment_id INT UNSIGNED NOT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE  {$prefix}commentinfo (
   type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   value TEXT NULL,
   PRIMARY KEY (comment_id,name)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}rewrite_rules (
   rule_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -126,7 +126,7 @@ CREATE TABLE {$prefix}rewrite_rules (
   description TEXT NULL,
   parameters TEXT NULL,
   PRIMARY KEY (rule_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}crontab (
   cron_id INT unsigned NOT NULL auto_increment,
@@ -142,7 +142,7 @@ CREATE TABLE {$prefix}crontab (
   cron_class TINYINT unsigned NOT NULL DEFAULT 0,
   description TEXT NULL,
   PRIMARY KEY (cron_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}log (
   id INT NOT NULL AUTO_INCREMENT,
@@ -154,7 +154,7 @@ CREATE TABLE {$prefix}log (
   timestamp INT UNSIGNED NOT NULL,
   ip INT UNSIGNED NOT NULL,
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}log_types (
   id INT NOT NULL AUTO_INCREMENT,
@@ -162,14 +162,14 @@ CREATE TABLE {$prefix}log_types (
   type VARCHAR(100) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY module_type (module,type)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}groups (
   id INT unsigned not null auto_increment,
   name VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY name (name)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}users_groups (
   id INT unsigned not null auto_increment,
@@ -177,7 +177,7 @@ CREATE TABLE {$prefix}users_groups (
   group_id INT unsigned not null,
   PRIMARY KEY (id),
   UNIQUE KEY user_group (user_id,group_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}sessions  (
   token varchar(255) NOT NULL,
@@ -187,7 +187,7 @@ CREATE TABLE {$prefix}sessions  (
   data MEDIUMTEXT,
   user_id SMALLINT UNSIGNED,
   PRIMARY KEY (token)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}terms (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -199,7 +199,7 @@ CREATE TABLE {$prefix}terms (
   PRIMARY KEY (id),
   UNIQUE KEY ix_mptt (vocabulary_id, mptt_right, mptt_left),
   UNIQUE KEY ix_term (vocabulary_id, term)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}vocabularies (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -207,20 +207,20 @@ CREATE TABLE {$prefix}vocabularies (
   description TEXT,
   features TEXT,
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}object_terms (
   object_id INT UNSIGNED NOT NULL,
   term_id INT UNSIGNED NOT NULL,
   object_type_id INT NOT NULL,
   PRIMARY KEY (object_id,term_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}object_types (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(50),
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 INSERT INTO {$prefix}object_types (name) VALUES
   ('post');
@@ -233,27 +233,27 @@ CREATE TABLE {$prefix}tokens (
   token_group VARCHAR(255) NULL,
   PRIMARY KEY (id),
   UNIQUE INDEX name (name)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}post_tokens (
   post_id INT UNSIGNED NOT NULL,
   token_id INT UNSIGNED NOT NULL,
   PRIMARY KEY (post_id, token_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}group_token_permissions (
   group_id INT UNSIGNED NOT NULL,
   token_id INT UNSIGNED NOT NULL,
   access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (group_id, token_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}user_token_permissions (
   user_id INT UNSIGNED NOT NULL,
   token_id INT UNSIGNED NOT NULL,
   access_mask TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (user_id, token_id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}scopes (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -262,7 +262,7 @@ CREATE TABLE {$prefix}scopes (
 	description TEXT NULL,
 	priority TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}blocks (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -270,7 +270,7 @@ CREATE TABLE {$prefix}blocks (
   type VARCHAR(255) NOT NULL,
   data TEXT NULL,
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE {$prefix}blocks_areas (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -279,4 +279,4 @@ CREATE TABLE {$prefix}blocks_areas (
   scope_id INT UNSIGNED NOT NULL,
 	display_order INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
