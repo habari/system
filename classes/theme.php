@@ -1178,6 +1178,7 @@ class Theme extends Pluggable
 
 			$hook = 'block_content_' . $block->type;
 			Plugins::act($hook, $block, $this);
+			Plugins::act('block_content', $block, $this);
 			$block->_content = implode( '', $this->content_return($block, $context));
 			if (trim($block->_content) == '') {
 				unset($area_blocks[$block_instance_id]);

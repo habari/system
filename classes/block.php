@@ -108,6 +108,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	public function fetch($theme)
 	{
 		Plugins::act('block_content_' . $block->type, $block);
+		Plugins::act('block_content', $block);
 		$output = implode( '', $theme->content_return($block));
 		return $output;
 	}
@@ -135,6 +136,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			$types = array_merge($areas, $types);
 		}
 		$types = Plugins::filter('block_content_type_' . $this->type, $types, $this);
+		$types = Plugins::filter('block_content_type', $types, $this);
 		return $types;
 	}
 
@@ -270,6 +272,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 <div style="display:none;">
 ');
 		Plugins::act('block_form_' . $this->type, $form, $this);
+		Plugins::act('block_form', $form, $this);
 		return $form;
 	}
 
