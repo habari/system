@@ -21,6 +21,13 @@ class Charcoal extends Theme
 	 **/
 	public function action_theme_ui( $theme )
 	{
+		// We need this and the corresponding if/elses as we can't set default values via themes yet.
+		// When #1258 - https://trac.habariproject.org/habari/ticket/1258 gets implemented, we can remove this section in favour of using something like action_theme_activation().
+		$opts = Options::get_group( __CLASS__ );
+		if ( empty( $opts ) ) {
+			Options::set_group( __CLASS__, $this->defaults );
+		}
+
 		$ui = new FormUI( __CLASS__ );
 		// This is a fudge as I only need to add a little bit of styling to make things look nice.
 		$ui->append( 'static', 'style', '<style type="text/css">#charcoal .formcontrol { line-height: 2.2em; }</style>');
@@ -43,14 +50,6 @@ class Charcoal extends Theme
 		$ui->append( 'text', 'tags_count', __CLASS__.'__tags_count', _t( 'Tag Cloud Count:' ), 'optionscontrol_text' );
 			$ui->tags_count->helptext = _t( 'Set to the number of tags to display on the default "cloud".' );
 
-		// We need this, and the corresponding if/elses as we can't set default values via themes yet.
-		// When #1258 - https://trac.habariproject.org/habari/ticket/1258 gets implemented, we can remove this section in favour of using something like action_theme_activation().
-		$opts = Options::get_group( __CLASS__ );
-		if ( empty( $opts ) ) {
-			foreach ( $this->defaults as $key => $value ) {
-				$ui->$key->value = $value;
-			}
-		}
 		// Save
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
 		$ui->set_option( 'success_message', _t( 'Options saved' ) );
