@@ -80,6 +80,7 @@ habari.media = {
 					output += '<li class="end' + first + '">&nbsp;</li></ul>';
 
 					$('.mediaphotos', container).html(output);
+					habari.media.resize_media_row();
 					$('.media').dblclick(function(){
 						habari.media.insertAsset(this);
 					});
@@ -98,15 +99,31 @@ habari.media = {
 
 					// As each image loads
 					$(".media img").bind('load',function() {
+						var image = $(this);
 						$(this)
 							.removeClass('loading')
-							.siblings('div').width($(this).width()+2)
-						});
+							.siblings('div').width(image.width()+2);
+						window.setTimeout(habari.media.resize_media_row, 50);  // Wow, this sucks.  Who did this?
+					});
 
 					findChildren();
 				}}
 			);
 		}
+	},
+	
+	resize_media_row: function() {
+		var dirswidth = 0;
+		$('.media_dirlevel').each(function(){
+			var maxw = 0;
+			$(this).find('.directory').each(function(){
+				maxw = Math.max(maxw, $(this).outerWidth());
+			});
+			$(this).width(maxw);
+			dirswidth += maxw;
+		});
+		$('.media_row').width(dirswidth + $('.mediaphotos').outerWidth() + 33);
+
 	},
 
 	clickdir: function(el, path) {
