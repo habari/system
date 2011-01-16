@@ -362,7 +362,7 @@ class Utils
 		extract( end( $backtrace ) );
 		if ( isset( $class ) ) $fname = $class . $type . $function; else $fname = $function;
 		if ( !isset( $file ) || $file=='' ) $file = '[Internal PHP]'; else $file = basename( $file );
-		$output .= "console.group(\"%s(%s):  %s(...)\", \"" . basename( $file ) . "\", \"{$line}\", \"{$fname}\");\n";
+		$output .= "console.group(\"%s(%s):  %s(&hellip;)\", \"" . basename( $file ) . "\", \"{$line}\", \"{$fname}\");\n";
 		foreach ( $backtrace as $trace ) {
 			$file = $line = $class = $type = $function = '';
 			$args = array();
@@ -672,12 +672,12 @@ class Utils
 			// yes, so compute the size of each half of the string
 			$len = round( ( $len - 3 ) / 2 );
 			// and place an ellipse in between the pieces
-			return MultiByte::substr( $str, 0, $len ) . '...' . MultiByte::substr( $str, -$len );
+			return MultiByte::substr( $str, 0, $len ) . '&hellip;' . MultiByte::substr( $str, -$len );
 		}
 		else {
 			// no, the ellipse goes at the end
 			$len = $len - 3;
-			return MultiByte::substr( $str, 0, $len ) . '...';
+			return MultiByte::substr( $str, 0, $len ) . '&hellip;';
 		}
 	}
 

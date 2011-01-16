@@ -29,7 +29,7 @@
 			</select>
 			<div class="help">
 				<?php _e('<strong>Database Type</strong> specifies the type of database to which Habari will connect.  Changing this setting may affect the other fields that are available here.  If the database engine that you wanted to use is not in this list, you may need to install a PDO driver to enable it.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -43,7 +43,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_host'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the MySQL database to which Habari will connect.  If MySQL is running on your web server, and most of the time it is, "localhost" is usually a good value for this field.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -54,7 +54,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_user'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database User</strong> is the username used to connect Habari to the MySQL database.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -65,7 +65,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_pass'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Password</strong> is the password used to connect the specified user to the MySQL database.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -76,7 +76,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'mysql_db_schema'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Name</strong> is the name of the MySQL database to which Habari will connect.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -90,7 +90,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_host'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Host</strong> is the host (domain) name or server IP address of the server that runs the PostgreSQL database to which Habari will connect.  If PostgreSQL is running on your web server, and most of the time it is, "localhost" is usually a good value for this field.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -101,7 +101,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_user'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database User</strong> is the username used to connect Habari to the PostgreSQL database.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -112,7 +112,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_pass'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Password</strong> is the password used to connect the specified user to the PostgreSQL database.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -123,7 +123,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'pgsql_db_schema'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Database Name</strong> is the name of the PostgreSQL database to which Habari will connect.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -136,7 +136,7 @@
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="" />
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'db_file'); ?></div>
 			<div class="help">
-				<?php _e('<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the path to where your data file resides, relative to the Habari user directory.'); ?> <a href="#"><?php _e('Learn More...'); ?></a>
+				<?php _e('<strong>Data file</strong> is the SQLite file that will store your Habari data.  This should be the path to where your data file resides, relative to the Habari user directory.'); ?> <a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 	</div>
@@ -149,7 +149,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'table_prefix'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Table Prefix</strong> is a prefix that will be appended to each table that Habari creates in the database, making it easy to distinguish those tables in the database from those of other installations.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 		<div class="inputfield">
@@ -173,7 +173,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'blog_title'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Site Name</strong> is the name of your site as it will appear
-				to your visitors.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+				to your visitors.'); ?>  <a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -183,7 +183,7 @@
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="" />
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'admin_username'); ?></div>
 			<div class="help">
-				<?php _e('<strong>Username</strong> is the username of the initial user in Habari.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+				<?php _e('<strong>Username</strong> is the username of the initial user in Habari.'); ?>  <a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -195,7 +195,7 @@
 			<img class="status" src="<?php Site::out_url( 'habari' ); ?>/system/installer/images/ready.png" alt="" />
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'admin_pass'); ?></div>
 			<div class="help">
-				<?php _e('<strong>Password</strong> is the password of the initial user in Habari. Both password fields must match.'); ?>  <a href="#"><?php _e('Learn More...'); ?></a>
+				<?php _e('<strong>Password</strong> is the password of the initial user in Habari. Both password fields must match.'); ?>  <a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 
@@ -206,7 +206,7 @@
 			<div class="warning"><?php echo elem_if_set( $form_errors, 'admin_email'); ?></div>
 			<div class="help">
 				<?php _e('<strong>Admin Email</strong> is the email address of the first user account.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 

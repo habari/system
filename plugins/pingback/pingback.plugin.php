@@ -166,7 +166,7 @@ class Pingback extends Plugin
 			}
 
 			/** Sanitize Data */
-			$source_excerpt = '...' . InputFilter::filter( $source_excerpt[0] ) . '...';
+			$source_excerpt = '&hellip;' . InputFilter::filter( $source_excerpt[0] ) . '&hellip;';
 			$source_title = InputFilter::filter($source_title);
 			$source_uri = InputFilter::filter($source_uri);
 

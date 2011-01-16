@@ -193,11 +193,11 @@ class Error extends Exception
 				}
 				$args = implode( ",    ", $args );
 				if ( strlen( $args ) > 1024 ) {
-					$args = substr( $args, 0, 1021 ) . '...';
+					$args = substr( $args, 0, 1021 ) . '&hellip;';
 				}
 			}
 			else {
-				$args = count($a['args']) == 0 ? ' ' : sprintf(_n(' ...%d arg... ', ' ...%d args... ', count($a['args'])), $a['args']);
+				$args = count($a['args']) == 0 ? ' ' : sprintf(_n(' &hellip;%d arg&hellip; ', ' &hellip;%d args&hellip; ', count($a['args'])), $a['args']);
 			}
 
 			printf(

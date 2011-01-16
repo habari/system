@@ -161,7 +161,7 @@ class InstallHandler extends ActionHandler
 
 		// try to write the config file
 		if ( ! $this->write_config_file() ) {
-			$this->theme->assign('form_errors', array('write_file'=>_t('Could not write config.php file...')));
+			$this->theme->assign('form_errors', array('write_file'=>_t('Could not write config.php file&hellip;')));
 			$this->display('db_setup');
 		}
 
@@ -443,7 +443,7 @@ class InstallHandler extends ActionHandler
 
 		if ( DB::has_errors() ) {
 			$error = DB::get_last_error();
-			$this->theme->assign('form_errors', array('db_host'=>sprintf(_t('Could not create schema tables... %s'), $error['message'])));
+			$this->theme->assign('form_errors', array('db_host'=>sprintf(_t('Could not create schema tables&hellip; %s'), $error['message'])));
 			DB::rollback();
 			return false;
 		}

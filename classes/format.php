@@ -351,7 +351,7 @@ class Format
 	 */
 	public static function summarize( $text, $count = 100, $max_paragraphs = 1 )
 	{
-		$ellipsis = '...';
+		$ellipsis = '&hellip;';
 
 		$showmore = false;
 

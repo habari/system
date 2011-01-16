@@ -161,7 +161,7 @@
 			EventLog::log( _t('Starting import from "%s"', array( $inputs['db_name'] ) ) );
 			
 			$output = '<p>' . _t('Import in Progress') . '</p>';
-			$output .= '<div id="import_progress">' . _t( 'Starting Import...' ) . '</div>';
+			$output .= '<div id="import_progress">' . _t( 'Starting Import&hellip;' ) . '</div>';
 			$output .= $this->get_ajax( $ajax_url, $vars );
 			
 			return $output;
@@ -270,7 +270,7 @@ WP_IMPORT_AJAX;
 			// fetch all the users from the wordpress database
 			$wp_users = $wpdb->get_results( 'select id, user_login, user_pass, user_email, user_url, display_name from ' . $inputs['db_prefix'] . 'users' );
 			
-			echo '<p>' . _t( 'Importing Users...' ) . '</p>';
+			echo '<p>' . _t( 'Importing Users&hellip;' ) . '</p>';
 			
 			foreach ( $wp_users as $wp_user ) {
 				
@@ -324,7 +324,7 @@ WP_IMPORT_AJAX;
 						
 						echo '<p class="error">' . _t( 'There was an error importing user %s. See the EventLog for the error message. ', array( $wp_user->user_login ) ) . '</p>';
 						
-						echo '<p>' . _t( 'Rolling back changes...' ) . '</p>';
+						echo '<p>' . _t( 'Rolling back changes&hellip;' ) . '</p>';
 						
 						// rollback all changes before we return so the import hasn't changed anything yet
 						DB::rollback();
@@ -529,7 +529,7 @@ WP_IMPORT_AJAX;
 					
 					echo '<p class="error">' . _t( 'There was an error importing post %s. See the EventLog for the error message.', array( $post->post_title ) );
 					
-					echo '<p>' . _t( 'Rolling back changes...' ) . '</p>';
+					echo '<p>' . _t( 'Rolling back changes&hellip;' ) . '</p>';
 					
 					// rollback all changes before we return so the import hasn't changed anything yet
 					DB::rollback();
@@ -733,7 +733,7 @@ WP_IMPORT_AJAX;
 					
 					echo '<p class="error">' . _t( 'There was an error importing comment ID %d. See the EventLog for the error message.', array( $comment->comment_id ) );
 					
-					echo '<p>' . _t( 'Rolling back changes...' ) . '</p>';
+					echo '<p>' . _t( 'Rolling back changes&hellip;' ) . '</p>';
 					
 					// rollback all changes before we return so the import hasn't changed anything yet
 					DB::rollback();
