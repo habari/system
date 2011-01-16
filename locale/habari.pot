@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-09 00:00+0000\n"
+"POT-Creation-Date: 2011-01-16 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -418,7 +418,7 @@ msgstr ""
 msgid "Current Theme"
 msgstr ""
 
-#: system/admin/themes.php:21 system/classes/post.php:849
+#: system/admin/themes.php:21 system/classes/post.php:850
 #: system/classes/adminhandler.php:1386
 msgid "Settings"
 msgstr ""
@@ -436,8 +436,8 @@ msgstr ""
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: system/admin/themes.php:143 system/classes/post.php:887
-#: system/plugins/undelete/undelete.plugin.php:178
+#: system/admin/themes.php:143 system/themes/charcoal/theme.php:55
+#: system/classes/post.php:888 system/plugins/undelete/undelete.plugin.php:178
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:876
 msgid "Save"
 msgstr ""
@@ -855,7 +855,7 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: system/admin/login.php:40 system/themes/charcoal/theme.php:165
+#: system/admin/login.php:40 system/themes/charcoal/theme.php:195
 #: system/themes/k2/theme.php:123
 msgid "Name"
 msgstr ""
@@ -925,7 +925,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:857
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:854
 msgid "No Comments"
 msgstr ""
 
@@ -933,7 +933,7 @@ msgstr ""
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
 #: system/themes/charcoal/entry.single.php:30
 #: system/themes/mzingi/commentform.php:28 system/themes/k2/theme.php:100
-#: system/classes/post.php:995 system/classes/adminhandler.php:1362
+#: system/classes/post.php:996 system/classes/adminhandler.php:1362
 msgid "Comment"
 msgid_plural "Comments"
 msgstr[0] ""
@@ -941,7 +941,7 @@ msgstr[1] ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/acl.php:785
+#: system/themes/charcoal/entry.single.php:30 system/classes/acl.php:786
 #: system/classes/adminhandler.php:3237
 msgid "Comments"
 msgstr ""
@@ -1025,53 +1025,130 @@ msgstr ""
 msgid "Atom Comments"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:111
+#: system/themes/charcoal/theme.php:27
+msgid "Show Title Image:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:28
+msgid "Check to show the title image, uncheck to display the title text."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:29
+msgid "Home label:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:30
+msgid "Set to whatever you want your first tab text to be."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:31
+msgid "Show Entry Paperclip:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:32
+msgid "Check to show the paperclip graphic in posts, uncheck to hide it."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:33
+msgid "Show Page Paperclip:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:34
+msgid "Check to show the paperclip graphic in pages, uncheck to hide it."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:35
+msgid "Show Powered By:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:36
+msgid "Check to show the \"powered by Habari\" graphic in the sidebar, uncheck to hide it."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:37
+msgid "Display Login:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:38
+msgid "Check to show the Login/Logout link in the navigation bar, uncheck to hide it."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:39
+msgid "Tags in Multiple Posts Page:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:40
+msgid "Check to show the post tags in the multiple posts pages (search, tags, archives), uncheck to hide them."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:41
+msgid "Show Post Navigation:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:42
+msgid "Set to true to show single post navigation links, false to hide them."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:43
+msgid "Tag Cloud Count:"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:44
+msgid "Set to the number of tags to display on the default \"cloud\"."
+msgstr ""
+
+#: system/themes/charcoal/theme.php:56
+#: system/plugins/flickrsilo/flickrsilo.plugin.php:877
+msgid "Options saved"
+msgstr ""
+
+#: system/themes/charcoal/theme.php:141
 msgid "Search for "
 msgstr ""
 
-#: system/themes/charcoal/theme.php:116 system/themes/charcoal/theme.php:122
+#: system/themes/charcoal/theme.php:146 system/themes/charcoal/theme.php:152
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:119
+#: system/themes/charcoal/theme.php:149
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:119
+#: system/themes/charcoal/theme.php:149
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:125
+#: system/themes/charcoal/theme.php:155
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:165
+#: system/themes/charcoal/theme.php:195
 msgid "(Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:167 system/themes/k2/theme.php:125
+#: system/themes/charcoal/theme.php:197 system/themes/k2/theme.php:125
 msgid "Mail"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:167
+#: system/themes/charcoal/theme.php:197
 msgid "(will not be published"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:167
+#: system/themes/charcoal/theme.php:197
 msgid "- Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:169 system/themes/k2/theme.php:127
-#: system/classes/post.php:983
+#: system/themes/charcoal/theme.php:199 system/themes/k2/theme.php:127
+#: system/classes/post.php:984
 msgid "Website"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:172 system/themes/mzingi/theme.php:108
-#: system/themes/k2/theme.php:130 system/classes/post.php:1003
+#: system/themes/charcoal/theme.php:202 system/themes/mzingi/theme.php:108
+#: system/themes/k2/theme.php:130 system/classes/post.php:1004
 #: system/plugins/habarisilo/habarisilo.plugin.php:466
 msgid "Submit"
 msgstr ""
@@ -1385,8 +1462,9 @@ msgid "Permissions on one's own posts"
 msgstr ""
 
 #: system/classes/acl.php:778 system/classes/acl.php:779
-#: system/classes/acl.php:781 system/classes/post.php:246
-#: system/classes/post.php:826
+#: system/classes/acl.php:780 system/classes/acl.php:782
+#: system/classes/installhandler.php:1665 system/classes/post.php:246
+#: system/classes/post.php:827
 msgid "Content"
 msgstr ""
 
@@ -1394,22 +1472,26 @@ msgstr ""
 msgid "Permissions to all posts"
 msgstr ""
 
-#: system/classes/acl.php:781 system/classes/post.php:246
+#: system/classes/acl.php:780 system/classes/installhandler.php:1665
+msgid "Permissions to other users' unpublished posts"
+msgstr ""
+
+#: system/classes/acl.php:782 system/classes/post.php:246
 #, php-format
 msgid "Permissions to posts of type \"%s\""
 msgstr ""
 
-#: system/classes/acl.php:802 system/classes/acl.php:804
+#: system/classes/acl.php:803 system/classes/acl.php:805
 #: system/classes/installhandler.php:696
 msgid "admin"
 msgstr ""
 
-#: system/classes/acl.php:807 system/classes/acl.php:809
+#: system/classes/acl.php:808 system/classes/acl.php:810
 #: system/classes/installhandler.php:707
 msgid "anonymous"
 msgstr ""
 
-#: system/classes/acl.php:838 system/classes/acl.php:840
+#: system/classes/acl.php:839 system/classes/acl.php:841
 #: system/classes/installhandler.php:1526
 #: system/classes/installhandler.php:1528
 msgid "authenticated"
@@ -1457,8 +1539,8 @@ msgid "Password mis-match."
 msgstr ""
 
 #: system/classes/installhandler.php:153
-#: system/classes/installhandler.php:1692
-#: system/classes/installhandler.php:1763
+#: system/classes/installhandler.php:1706
+#: system/classes/installhandler.php:1777
 msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
@@ -1516,31 +1598,31 @@ msgid "Problem creating first post."
 msgstr ""
 
 #: system/classes/installhandler.php:535 system/classes/installhandler.php:568
-#: system/classes/installhandler.php:1707
-#: system/classes/installhandler.php:1778
+#: system/classes/installhandler.php:1721
+#: system/classes/installhandler.php:1792
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
 #: system/classes/installhandler.php:538 system/classes/installhandler.php:571
-#: system/classes/installhandler.php:1711
-#: system/classes/installhandler.php:1782
+#: system/classes/installhandler.php:1725
+#: system/classes/installhandler.php:1796
 msgid "That database does not exist."
 msgstr ""
 
 #: system/classes/installhandler.php:541 system/classes/installhandler.php:574
-#: system/classes/installhandler.php:1715
-#: system/classes/installhandler.php:1786
+#: system/classes/installhandler.php:1729
+#: system/classes/installhandler.php:1800
 msgid "Could not connect to host."
 msgstr ""
 
 #: system/classes/installhandler.php:602
-#: system/classes/installhandler.php:1834
+#: system/classes/installhandler.php:1848
 #, php-format
 msgid "Cannot write to %s. The SQLite data file is not writable by the web server."
 msgstr ""
 
 #: system/classes/installhandler.php:606
-#: system/classes/installhandler.php:1827
+#: system/classes/installhandler.php:1841
 #, php-format
 msgid "Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
@@ -1592,22 +1674,22 @@ msgstr ""
 msgid "Manage dashboard modules"
 msgstr ""
 
-#: system/classes/installhandler.php:1674
-#: system/classes/installhandler.php:1745
+#: system/classes/installhandler.php:1688
+#: system/classes/installhandler.php:1759
 msgid "The database host field was left empty."
 msgstr ""
 
-#: system/classes/installhandler.php:1680
-#: system/classes/installhandler.php:1751
+#: system/classes/installhandler.php:1694
+#: system/classes/installhandler.php:1765
 msgid "The database name field was left empty."
 msgstr ""
 
-#: system/classes/installhandler.php:1686
-#: system/classes/installhandler.php:1757
+#: system/classes/installhandler.php:1700
+#: system/classes/installhandler.php:1771
 msgid "The database user field was left empty."
 msgstr ""
 
-#: system/classes/installhandler.php:1817
+#: system/classes/installhandler.php:1831
 msgid "The database file was left empty."
 msgstr ""
 
@@ -1641,67 +1723,67 @@ msgstr ""
 msgid "Post %1$s (%2$s) published."
 msgstr ""
 
-#: system/classes/post.php:808
+#: system/classes/post.php:809
 msgid "Preview Post"
 msgstr ""
 
-#: system/classes/post.php:808
+#: system/classes/post.php:809
 msgid "View Post"
 msgstr ""
 
-#: system/classes/post.php:813
+#: system/classes/post.php:814
 msgid "Title"
 msgstr ""
 
-#: system/classes/post.php:834
+#: system/classes/post.php:835
 msgid "Tags, separated by, commas"
 msgstr ""
 
-#: system/classes/post.php:851
+#: system/classes/post.php:852
 msgid "Content State"
 msgstr ""
 
-#: system/classes/post.php:860
+#: system/classes/post.php:861
 msgid "Minor Edit"
 msgstr ""
 
-#: system/classes/post.php:865
+#: system/classes/post.php:866
 msgid "Comments Allowed"
 msgstr ""
 
-#: system/classes/post.php:868
+#: system/classes/post.php:869
 msgid "Publication Time"
 msgstr ""
 
-#: system/classes/post.php:874
+#: system/classes/post.php:875
 msgid "Content Address"
 msgstr ""
 
-#: system/classes/post.php:956
+#: system/classes/post.php:957
 msgid "Name <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: system/classes/post.php:958
+#: system/classes/post.php:959
 msgid "The Name field value is required"
 msgstr ""
 
-#: system/classes/post.php:968 system/classes/adminhandler.php:757
+#: system/classes/post.php:969 system/classes/adminhandler.php:757
 msgid "Email"
 msgstr ""
 
-#: system/classes/post.php:970
+#: system/classes/post.php:971
 msgid "The Email field value must be a valid email address"
 msgstr ""
 
-#: system/classes/post.php:974
+#: system/classes/post.php:975
 msgid "Email <span class=\"required\">*Required</span>"
 msgstr ""
 
-#: system/classes/post.php:985
+#: system/classes/post.php:986
 msgid "The Web Site field value must be a valid URL"
 msgstr ""
 
-#: system/classes/post.php:997
+#: system/classes/post.php:998
 msgid "The Content field value is required"
 msgstr ""
 
@@ -1984,17 +2066,17 @@ msgstr ""
 msgid "The supplied password reset token has expired or is invalid."
 msgstr ""
 
-#: system/classes/block.php:201
+#: system/classes/block.php:203
 #, php-format
 msgid "New block %1$s: %2$s"
 msgstr ""
 
-#: system/classes/block.php:249
+#: system/classes/block.php:251
 #, php-format
 msgid "Block %1$s (%2$s) deleted."
 msgstr ""
 
-#: system/classes/block.php:265
+#: system/classes/block.php:267
 msgid "Saved block configuration."
 msgstr ""
 
@@ -3154,23 +3236,23 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: system/classes/theme.php:261
+#: system/classes/theme.php:258
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:783
+#: system/classes/theme.php:780
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:810
+#: system/classes/theme.php:807
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:836
+#: system/classes/theme.php:833
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:862
+#: system/classes/theme.php:859
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -3753,10 +3835,6 @@ msgstr ""
 
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:875
 msgid "Original Size"
-msgstr ""
-
-#: system/plugins/flickrsilo/flickrsilo.plugin.php:877
-msgid "Options saved"
 msgstr ""
 
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:977
