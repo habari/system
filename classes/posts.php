@@ -90,12 +90,12 @@ class Posts extends ArrayObject implements IsContent
 	 * - orderby => how to order the returned posts
 	 * - groupby => columns by which to group the returned posts, for aggregate functions
 	 * - having => for selecting posts based on an aggregate function
+	 * - where => manipulate the generated WHERE clause. Currently broken, see https://trac.habariproject.org/habari/ticket/1383
+	 * - add_select => an array of clauses to be added to the generated SELECT clause.
 	 * - fetch_fn => the function used to fetch data, one of 'get_results', 'get_row', 'get_value'
 	 *
 	 * Further description of parameters, including usage examples, can be found at
 	 * http://wiki.habariproject.org/en/Dev:Retrieving_Posts
-	 *
-	 * @todo Describe where => 
 	 *
 	 * @return array An array of Post objects, or a single post object, depending on request
 	 */
@@ -680,18 +680,18 @@ class Posts extends ArrayObject implements IsContent
 		
 		
 		// If the orderby has a function in it, try to create a select field for it with an alias
-		if(strpos($orderby, '(') !== false) {
+		if ( strpos($orderby, '(') !== false ) {
 			$orders = explode(',', $orderby);
 			$ob_index = 0;
-			foreach($orders as $key => $order) {
-				if(!preg_match('%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches)) {
+			foreach ( $orders as $key => $order ) {
+				if ( !preg_match('%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches) ) {
 					$order_matches = array(
 						'field' => $order,
 						'direction' => '',
 					);
 				}
 				
-				if(strpos($order_matches['field'], '(') !== false) {
+				if ( strpos($order_matches['field'], '(') !== false ) {
 					$ob_index++;
 					$field = 'orderby' . $ob_index;
 					$select_ary[$field] = "{$order_matches['field']} AS $field";
@@ -703,7 +703,7 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 		// Add arbitrary fields to the select clause for sorting and output
-		if(isset($add_select)) {
+		if ( isset($add_select) ) {
 			$select_ary = array_merge($select_ary, $add_select);
 		}
 		
