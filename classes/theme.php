@@ -585,16 +585,19 @@ class Theme extends Pluggable
 	 */
 	public function theme_header( $theme )
 	{
+		
+		// create a stack of the atom tags before the first action so they can be unset if desired
+		Stack::add( 'template_atom', array( 'alternate', 'application/atom+xml', 'Atom 1.0', $this->feed_alternate() ), 'atom' );
+		Stack::add( 'template_atom', array( 'edit', 'application/atom+xml', 'Atom Publishing Protocol', URL::get( 'atompub_servicedocument' ) ), 'app' );
+		Stack::add( 'template_atom', array( 'EditURI', 'application/rsd+xml', 'RSD', URL::get( 'rsd' ) ), 'rsd' );
+		
 		Plugins::act( 'template_header', $theme );
 		
+		$atom = Stack::get( 'template_atom', '<link rel="%1$s" type="%2$s" title="%3$s" href="%4$s">' );
 		$styles = Stack::get( 'template_stylesheet', array('Stack', 'styles') );
 		$scripts = Stack::get( 'template_header_javascript', array('Stack', 'scripts') );
 		
-		$atom = '<link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="' . $this->feed_alternate() . '">';
-		$app = '<link rel="edit" type="application/atom+xml" title="Atom Publishing Protocol" href="' . URL::get( 'atompub_servicedocument') . '">';
-		$rsd = '<link rel="EditURI" type="application/rsd+xml" title="RSD" href="' . URL::get( 'rsd' ) . '">';
-		
-		$output = implode( "\n", array( $atom, $app, $rsd, $styles, $scripts ) );
+		$output = implode( "\n", array( $atom, $styles, $scripts ) );
 		
 		Plugins::act( 'template_header_after', $theme );
 		
