@@ -480,7 +480,23 @@ class Format
 				return $content;
 			}
 			else {
-				return ( $more_text != '' ) ? $summary . ' <a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' : $summary;
+				if ( strlen( $more_text  ) ) {
+					// Tokenize the summary and link
+					$ht = new HTMLTokenizer( $summary );
+					$summary_set = $ht->parse();
+					$ht = new HTMLTokenizer( '<a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' );
+					$link_set= $ht->parse();
+					// Find out where to put the link
+					$end = $summary_set->end();
+					$key = $summary_set->key();
+					// Inject the link
+					$summary_set->insert( $link_set, $key );
+
+					return (string)$summary_set;
+				}
+				else {
+					return $summary;
+				}
 			}
 		}
 

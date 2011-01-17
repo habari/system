@@ -109,7 +109,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $ret;
 	}
 
-	protected function find_slice( $offset, $name, array $attr)
+	protected function find_slice( $offset, $name, array $attr )
 	{
 		// find start:
 		$foundStart = false;
@@ -205,6 +205,27 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		return $this->tokens;
 	}
 
+	/**
+	 * Insert an HTMLTokenset before the given position
+	 * @param HTMLTokenset $set. The HTMLTokenset to insert
+	 * @param <type> $pos. The position to insert the HTMLTokenset before
+	 * @return Nothing
+	 */
+	public function insert( HTMLTokenset $set, $pos = 0 )
+	{
+		$set->end();
+		$length = $set->key() - 1;
+
+		$pre = array_slice( $this->tokens, 0, $pos );
+		$post = array_slice( $this->tokens, $pos );
+		$set->rewind();
+		while( $set->valid() ) {
+			$pre[] = $set->current();
+			$set->next();
+		}
+		$this->tokens = array_merge( $pre, $post );
+	}
+
 	////////////////////////////////////////////////////
 
 	// Iterator implemetation:
@@ -232,6 +253,11 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	public function valid()
 	{
 		return $this->current() !== false;
+	}
+
+	public function end()
+	{
+		return end( $this->tokens );
 	}
 
 	// ArrayAccess implementation
