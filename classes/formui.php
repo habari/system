@@ -462,6 +462,7 @@ class FormUI extends FormContainer
 {
 	private $success_callback;
 	private $success_callback_params = array();
+	private $on_save = array();
 	public $success = false;
 	public $submitted = false;
 	private static $outpre = false;
@@ -663,6 +664,16 @@ class FormUI extends FormContainer
 	}
 
 	/**
+	 * Set a function to call on form submission success
+	 *
+	 * @param mixed $callback A callback function or a plugin filter name.
+	 */
+	public function on_save( $callback )
+	{
+		$this->on_save[] = func_get_args();
+	}
+
+	/**
 	 * Calls the success callback for the form, and optionally saves the form values
 	 * to the options table.
 	 */
@@ -696,6 +707,17 @@ class FormUI extends FormContainer
 	{
 		foreach ( $this->controls as $control ) {
 			$control->save();
+		}
+		foreach ( $this->on_save as $save) {
+			$callback = array_shift($save);
+			if ( is_callable($callback) ) {
+				array_unshift($this, $save);
+				call_user_func_array($callback, $save);
+			}
+			else {
+				array_unshift($save, $callback, $this);
+				call_user_func_array(array('Plugins', 'act'), $save);
+			}
 		}
 		if ( $this->has_user_options() ) {
 			User::identify()->info->commit();
@@ -1066,8 +1088,11 @@ class FormControl
 			case 'option':
 				Options::set( $location, $this->value );
 				break;
+			case 'filter':
+				Plugins::filter($location, $this->value, $this->name, true, $this);
+				break;
 			case 'action':
-				Plugins::filter($location, $this->value, $this->name, true);
+				Plugins::act($location, $this->value, $this->name, true, $this);
 				break;
 			case 'actionarray':
 				Plugins::act($location, $this->value, $this->name, $storage);
