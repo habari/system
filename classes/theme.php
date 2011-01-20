@@ -294,7 +294,7 @@ class Theme extends Pluggable
 			isset( $tag_slug ) ? $tag_slug : '-',
 		);
 		$fallback[] = 'home';
-		$fallback = Plugins::filter( 'template_fallback', $fallback );
+		$fallback = Plugins::filter( 'template_fallback', $fallback, $posts, isset( $post ) ? $post : null );
 		$fallback = array_values( array_unique( MultiByte::str_replace( $searches, $replacements, $fallback ) ) );
 		for ( $z = 0; $z < count( $fallback ); $z++ ) {
 			if ( ( MultiByte::strpos( $fallback[$z], '{$posttag}' ) !== false ) && ( isset( $post ) ) && ( $post instanceof Post ) ) {
