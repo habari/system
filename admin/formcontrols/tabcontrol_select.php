@@ -13,7 +13,7 @@
 
 ?>
 <div class="container<?php echo ($class) ? ' ' . $class : ''?>">
-	<p class="pct25"><label for="<?php echo $id; ?>"><?php echo $this->caption; ?></label></p>
+	<p class="pct25"><label for="<?php echo $id; ?>"><?php echo Utils::htmlspecialchars( $this->caption ); ?></label></p>
 	<p class="pct75">
 	 	<select class="longselect" id="<?php echo $id; ?>" name="<?php echo $name; ?>" <?php echo $multiple; ?>>
 <?php foreach($options as $opts_key => $opts_val) : ?>

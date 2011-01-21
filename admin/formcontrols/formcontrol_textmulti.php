@@ -3,7 +3,7 @@
 <?php if ($message != '') : ?>
 <p class="error"><?php echo $message; ?></p>
 <?php endif; ?>
-<p><?php echo $this->caption; ?></p>
+<p><?php echo Utils::htmlspecialchars( $this->caption ); ?></p>
 <?php
 if (!is_array($value)) {
 	$value = array($value);
