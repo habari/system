@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-16 00:00+0000\n"
+"POT-Creation-Date: 2011-01-23 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -173,7 +173,7 @@ msgid "Configure"
 msgstr ""
 
 #: system/admin/formcontrols/formcontrol_textmulti.php:15
-#: system/classes/formui.php:1595
+#: system/classes/formui.php:1620
 msgid "remove"
 msgstr ""
 
@@ -436,7 +436,7 @@ msgstr ""
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: system/admin/themes.php:143 system/themes/charcoal/theme.php:55
+#: system/admin/themes.php:143 system/themes/charcoal/theme.php:54
 #: system/classes/post.php:888 system/plugins/undelete/undelete.plugin.php:178
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:876
 msgid "Save"
@@ -855,7 +855,7 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: system/admin/login.php:40 system/themes/charcoal/theme.php:195
+#: system/admin/login.php:40 system/themes/charcoal/theme.php:194
 #: system/themes/k2/theme.php:123
 msgid "Name"
 msgstr ""
@@ -925,7 +925,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:854
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:866
 msgid "No Comments"
 msgstr ""
 
@@ -1025,129 +1025,129 @@ msgstr ""
 msgid "Atom Comments"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:27
+#: system/themes/charcoal/theme.php:34
 msgid "Show Title Image:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:28
+#: system/themes/charcoal/theme.php:35
 msgid "Check to show the title image, uncheck to display the title text."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:29
+#: system/themes/charcoal/theme.php:36
 msgid "Home label:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:30
+#: system/themes/charcoal/theme.php:37
 msgid "Set to whatever you want your first tab text to be."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:31
+#: system/themes/charcoal/theme.php:38
 msgid "Show Entry Paperclip:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:32
+#: system/themes/charcoal/theme.php:39
 msgid "Check to show the paperclip graphic in posts, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:33
+#: system/themes/charcoal/theme.php:40
 msgid "Show Page Paperclip:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:34
+#: system/themes/charcoal/theme.php:41
 msgid "Check to show the paperclip graphic in pages, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:35
+#: system/themes/charcoal/theme.php:42
 msgid "Show Powered By:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:36
+#: system/themes/charcoal/theme.php:43
 msgid "Check to show the \"powered by Habari\" graphic in the sidebar, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:37
+#: system/themes/charcoal/theme.php:44
 msgid "Display Login:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:38
+#: system/themes/charcoal/theme.php:45
 msgid "Check to show the Login/Logout link in the navigation bar, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:39
+#: system/themes/charcoal/theme.php:46
 msgid "Tags in Multiple Posts Page:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:40
+#: system/themes/charcoal/theme.php:47
 msgid "Check to show the post tags in the multiple posts pages (search, tags, archives), uncheck to hide them."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:41
+#: system/themes/charcoal/theme.php:48
 msgid "Show Post Navigation:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:42
+#: system/themes/charcoal/theme.php:49
 msgid "Set to true to show single post navigation links, false to hide them."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:43
+#: system/themes/charcoal/theme.php:50
 msgid "Tag Cloud Count:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:44
+#: system/themes/charcoal/theme.php:51
 msgid "Set to the number of tags to display on the default \"cloud\"."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:56
+#: system/themes/charcoal/theme.php:55
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:877
 msgid "Options saved"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:141
+#: system/themes/charcoal/theme.php:140
 msgid "Search for "
 msgstr ""
 
-#: system/themes/charcoal/theme.php:146 system/themes/charcoal/theme.php:152
+#: system/themes/charcoal/theme.php:145 system/themes/charcoal/theme.php:151
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:149
+#: system/themes/charcoal/theme.php:148
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:149
+#: system/themes/charcoal/theme.php:148
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:155
+#: system/themes/charcoal/theme.php:154
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:195
+#: system/themes/charcoal/theme.php:194
 msgid "(Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:197 system/themes/k2/theme.php:125
+#: system/themes/charcoal/theme.php:196 system/themes/k2/theme.php:125
 msgid "Mail"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:197
+#: system/themes/charcoal/theme.php:196
 msgid "(will not be published"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:197
+#: system/themes/charcoal/theme.php:196
 msgid "- Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:199 system/themes/k2/theme.php:127
+#: system/themes/charcoal/theme.php:198 system/themes/k2/theme.php:127
 #: system/classes/post.php:984
 msgid "Website"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:202 system/themes/mzingi/theme.php:108
+#: system/themes/charcoal/theme.php:201 system/themes/mzingi/theme.php:108
 #: system/themes/k2/theme.php:130 system/classes/post.php:1004
 #: system/plugins/habarisilo/habarisilo.plugin.php:466
 msgid "Submit"
@@ -1545,7 +1545,7 @@ msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
 #: system/classes/installhandler.php:164
-msgid "Could not write config.php file..."
+msgid "Could not write config.php file&hellip;"
 msgstr ""
 
 #: system/classes/installhandler.php:190
@@ -1570,7 +1570,7 @@ msgstr ""
 
 #: system/classes/installhandler.php:446
 #, php-format
-msgid "Could not create schema tables... %s"
+msgid "Could not create schema tables&hellip; %s"
 msgstr ""
 
 #: system/classes/installhandler.php:455
@@ -1930,8 +1930,8 @@ msgstr ""
 
 #: system/classes/error.php:200
 #, php-format
-msgid " ...%d arg... "
-msgid_plural " ...%d args... "
+msgid " &hellip;%d arg&hellip; "
+msgid_plural " &hellip;%d args&hellip; "
 msgstr[0] ""
 msgstr[1] ""
 
@@ -3197,42 +3197,42 @@ msgstr ""
 msgid "Attempted to load the plugin file \"%s\", but it failed with syntax errors. <div class=\"reveal\">%s</div>"
 msgstr ""
 
-#: system/classes/formui.php:771
+#: system/classes/formui.php:793
 msgid "Value must be a valid URL."
 msgstr ""
 
-#: system/classes/formui.php:791
+#: system/classes/formui.php:813
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: system/classes/formui.php:809
+#: system/classes/formui.php:831
 msgid "A value for this field is required."
 msgstr ""
 
-#: system/classes/formui.php:831
+#: system/classes/formui.php:853
 msgid "That username is already in use!"
 msgstr ""
 
-#: system/classes/formui.php:851
+#: system/classes/formui.php:873
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: system/classes/formui.php:874
+#: system/classes/formui.php:896
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: system/classes/formui.php:895
+#: system/classes/formui.php:917
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: system/classes/formui.php:901
+#: system/classes/formui.php:923
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: system/classes/formui.php:1599
+#: system/classes/formui.php:1624
 msgid "Remove this item?"
 msgstr ""
 
@@ -3240,19 +3240,19 @@ msgstr ""
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:780
+#: system/classes/theme.php:792
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:807
+#: system/classes/theme.php:819
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:833
+#: system/classes/theme.php:845
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:859
+#: system/classes/theme.php:871
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -3393,7 +3393,7 @@ msgid "Import in Progress"
 msgstr ""
 
 #: system/plugins/wpimport/wpimport.plugin.php:164
-msgid "Starting Import..."
+msgid "Starting Import&hellip;"
 msgstr ""
 
 #: system/plugins/wpimport/wpimport.plugin.php:260
@@ -3413,7 +3413,7 @@ msgid "Failed to connect using the given database connection details."
 msgstr ""
 
 #: system/plugins/wpimport/wpimport.plugin.php:273
-msgid "Importing Users..."
+msgid "Importing Users&hellip;"
 msgstr ""
 
 #: system/plugins/wpimport/wpimport.plugin.php:288
@@ -3436,7 +3436,7 @@ msgstr ""
 #: system/plugins/wpimport/wpimport.plugin.php:327
 #: system/plugins/wpimport/wpimport.plugin.php:532
 #: system/plugins/wpimport/wpimport.plugin.php:736
-msgid "Rolling back changes..."
+msgid "Rolling back changes&hellip;"
 msgstr ""
 
 #: system/plugins/wpimport/wpimport.plugin.php:385
@@ -3895,7 +3895,7 @@ msgstr ""
 #: system/installer/db_setup.php:176 system/installer/db_setup.php:186
 #: system/installer/db_setup.php:198 system/installer/db_setup.php:209
 #: system/installer/config.php:21 system/installer/sqlite.php:15
-msgid "Learn More..."
+msgid "Learn More&hellip;"
 msgstr ""
 
 #: system/installer/htaccess.php:25 system/installer/db_setup.php:253
@@ -4081,7 +4081,7 @@ msgid "Your SQLite database is a file on your server like any other file. You ca
 msgstr ""
 
 #: system/installer/requirements.php:5
-msgid "Before you install <em>Habari</em>..."
+msgid "Before you install <em>Habari</em>&hellip;"
 msgstr ""
 
 #: system/installer/requirements.php:8
@@ -4117,7 +4117,7 @@ msgid "Be sure to remove the write permissions on the directory as soon as the i
 msgstr ""
 
 #: system/installer/requirements.php:48
-msgid "PHP Upgrade needed..."
+msgid "PHP Upgrade needed&hellip;"
 msgstr ""
 
 #: system/installer/requirements.php:50
