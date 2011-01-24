@@ -267,7 +267,12 @@ class InputFilter
 		);
 
 		// Use PHP's parse_url to get the basics
-		$r = array_merge( $r, parse_url( $url ) );
+		$parsed = parse_url( $url );
+		if( $parsed == false ) {
+			$r['is_error'] = true;
+			return $r;
+		}
+		$r = array_merge( $r, $parsed );
 
 		$r['is_pseudo'] = !in_array( $r['scheme'], array( 'http', 'https', '' ) );
 		$r['is_relative'] = ( $r['host'] == '' && !$r['is_pseudo'] );
