@@ -85,10 +85,10 @@ class HabariLocale
 		if ( file_exists( Site::get_dir( 'config' ) . '/locale/' . $file_end ) ) {
 			$file = Site::get_dir( 'config' ) . '/locale/' . $file_end;
 		}
-		else if (file_exists( HABARI_PATH . '/user/locale/' . $file_end ) ) {
+		else if ( file_exists( HABARI_PATH . '/user/locale/' . $file_end ) ) {
 			$file = HABARI_PATH . '/user/locale/' . $file_end;
 		}
-		else if (file_exists( HABARI_PATH . '/3rdparty/locale/' . $file_end ) ) {
+		else if ( file_exists( HABARI_PATH . '/3rdparty/locale/' . $file_end ) ) {
 			$file = HABARI_PATH . '/3rdparty/locale/' . $file_end;
 		}
 		else {
@@ -118,7 +118,7 @@ class HabariLocale
 				$dirs = array_merge( $dirs, Utils::glob( $localedir . '*', GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 		}
-		$dirs = array_filter( $dirs, create_function('$a', 'return file_exists($a . "LC_MESSAGES/habari.mo");') );
+		$dirs = array_filter( $dirs, create_function( '$a', 'return file_exists($a . "LC_MESSAGES/habari.mo");' ) );
 
 		$locales = array_map( 'basename', $dirs );
 		ksort( $locales );
@@ -135,11 +135,11 @@ class HabariLocale
 	private static function load_file( $domain, $file )
 	{
 		if ( ! file_exists( $file ) ) {
-			Error::raise( sprintf( _t('No translations found for locale %s, domain %s!'), self::$locale, $domain ) );
+			Error::raise( sprintf( _t( 'No translations found for locale %s, domain %s!' ), self::$locale, $domain ) );
 			return false;
 		}
 		if ( filesize( $file ) < 24 ) {
-			Error::raise( sprintf( _t('Invalid .MO file for locale %s, domain %s!'), self::$locale, $domain ) );
+			Error::raise( sprintf( _t( 'Invalid .MO file for locale %s, domain %s!' ), self::$locale, $domain ) );
 			return false;
 		}
 
@@ -159,13 +159,13 @@ class HabariLocale
 				$little_endian = false;
 				break;
 			default:
-				Error::raise( sprintf( _t('Invalid magic number 0x%08x in %s!'), $magic, $file ) );
+				Error::raise( sprintf( _t( 'Invalid magic number 0x%08x in %s!' ), $magic, $file ) );
 				return false;
 		}
 
 		$revision = substr( $data, 4, 4 );
 		if ( $revision != 0 ) {
-			Error::raise( sprintf( _t('Unknown revision number %d in %s!'), $revision, $file ) );
+			Error::raise( sprintf( _t( 'Unknown revision number %d in %s!' ), $revision, $file ) );
 			return false;
 		}
 
@@ -176,7 +176,7 @@ class HabariLocale
 			$header = unpack( "{$l}1msgcount/{$l}1msgblock/{$l}1transblock", $header );
 
 			if ( $header['msgblock'] + ($header['msgcount'] - 1 ) * 8 > filesize( $file ) ) {
-				Error::raise( sprintf( _t('Message count (%d) out of bounds in %s!'), $header['msgcount'], $file ) );
+				Error::raise( sprintf( _t( 'Message count (%d) out of bounds in %s!' ), $header['msgcount'], $file ) );
 				return false;
 			}
 
@@ -203,14 +203,14 @@ class HabariLocale
 
 	private static function get_plural_function( $header )
 	{
-		if ( preg_match('/plural-forms: (.*?)$/i', $header, $matches) && preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $matches[1], $matches) ) {
+		if ( preg_match( '/plural-forms: (.*?)$/i', $header, $matches ) && preg_match( '/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $matches[1], $matches ) ) {
 			// sanitize
 			$nplurals = preg_replace( '/[^0-9]/', '', $matches[1] );
 			$plural = preg_replace( '#[^n0-9:\(\)\?\|\&=!<>+*/\%-]#', '', $matches[2] );
 
 			$body = str_replace(
-				array('plural',  'n',  '$n$plurals', ),
-				array('$plural', '$n', '$nplurals', ),
+				array( 'plural',  'n',  '$n$plurals', ),
+				array( '$plural', '$n', '$nplurals', ),
 				'nplurals='. $nplurals . '; plural=' . $plural
 			);
 
@@ -219,9 +219,9 @@ class HabariLocale
 			$body .= ';';
 			$res = '';
 			$p = 0;
-			for ( $i = 0; $i < strlen($body); $i++ ) {
+			for ( $i = 0; $i < strlen( $body ); $i++ ) {
 				$ch = $body[$i];
-				switch ($ch) {
+				switch ( $ch ) {
 					case '?':
 						$res .= ' ? (';
 						$p++;
@@ -230,7 +230,7 @@ class HabariLocale
 						$res .= ') : (';
 						break;
 					case ';':
-						$res .= str_repeat( ')', $p) . ';';
+						$res .= str_repeat( ')', $p ) . ';';
 						$p = 0;
 						break;
 					default:
@@ -264,7 +264,7 @@ class HabariLocale
 		$fn = self::get_plural_function( $header );
 		$res = '';
 		for ( $n = 0; $n < 200; $n++ ) {
-			$res .= $fn($n);
+			$res .= $fn( $n );
 		}
 
 		return $res;
@@ -287,7 +287,7 @@ class HabariLocale
 	public static function _e()
 	{
 		$args = func_get_args();
-		echo call_user_func_array(array('HabariLocale', '_t'), $args);
+		echo call_user_func_array( array( 'HabariLocale', '_t' ), $args );
 	}
 
 	/**
@@ -297,9 +297,9 @@ class HabariLocale
 	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The translated string
 	 */
-	public static function _t($text, $args = array(), $domain = 'habari')
+	public static function _t( $text, $args = array(), $domain = 'habari' )
 	{
-		if ( is_string($args) ) {
+		if ( is_string( $args ) ) {
 			$domain = $args;
 		}
 
@@ -310,9 +310,9 @@ class HabariLocale
 			$t = $text;
 		}
 
-		if ( !empty($args) && is_array($args) ) {
-			array_unshift($args, $t);
-			$t = call_user_func_array('sprintf', $args);
+		if ( !empty( $args ) && is_array( $args ) ) {
+			array_unshift( $args, $t );
+			$t = call_user_func_array( 'sprintf', $args );
 		}
 
 		return $t;
@@ -325,7 +325,7 @@ class HabariLocale
 	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The untranslated string
 	 */
-	public static function _u($text, $domain = 'habari')
+	public static function _u( $text, $domain = 'habari' )
 	{
 		$t = $text;
 		foreach ( self::$messages[$domain] as $msg ) {
@@ -359,12 +359,12 @@ class HabariLocale
 	 * @param string $domain (optional) The domain to search for the message
 	 * @return string The appropriately translated string
 	 */
-	public static function _n($singular, $plural, $count, $domain = 'habari')
+	public static function _n( $singular, $plural, $count, $domain = 'habari' )
 	{
 		if ( isset( self::$messages[$domain][$singular] ) ) {
 			// XXX workaround, but direct calling doesn't work
 			$fn = self::$plural_function;
-			$n = $fn($count);
+			$n = $fn( $count );
 			if ( isset( self::$messages[$domain][$singular][1][$n] ) ) {
 				return self::$messages[$domain][$singular][1][$n];
 			}

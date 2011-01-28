@@ -44,8 +44,8 @@ class HabariDateTime extends DateTime
 
 		self::$default_timezone = date_default_timezone_get();
 
-		self::$default_date_format = Options::get('dateformat');
-		self::$default_time_format = Options::get('timeformat');
+		self::$default_date_format = Options::get( 'dateformat' );
+		self::$default_time_format = Options::get( 'timeformat' );
 
 		if ( self::$default_date_format || self::$default_time_format ) {
 			self::set_default_datetime_format( self::$default_date_format . ' ' . self::$default_time_format );
@@ -118,12 +118,12 @@ class HabariDateTime extends DateTime
 			return $time;
 		}
 		elseif ( $time instanceOf DateTime ) {
-			$time = $time->format('U');
+			$time = $time->format( 'U' );
 		}
 		elseif ( $time == null ) {
 			$time = 'now';
 		}
-		elseif ( is_numeric($time) ) {
+		elseif ( is_numeric( $time ) ) {
 			$time = '@' . $time;
 		}
 
@@ -132,8 +132,8 @@ class HabariDateTime extends DateTime
 		}
 
 		// passing the timezone to construct doesn't seem to do anything.
-		$datetime = new HabariDateTime($time);
-		$datetime->set_timezone($timezone);
+		$datetime = new HabariDateTime( $time );
+		$datetime->set_timezone( $timezone );
 		return $datetime;
 	}
 
@@ -147,7 +147,7 @@ class HabariDateTime extends DateTime
 	 */
 	public function set_date( $year, $month, $day )
 	{
-		parent::setDate($year, $month, $day);
+		parent::setDate( $year, $month, $day );
 		return $this;
 	}
 
@@ -161,7 +161,7 @@ class HabariDateTime extends DateTime
 	 */
 	public function set_isodate( $year, $week, $day = null )
 	{
-		parent::setISODate($year, $week, $day);
+		parent::setISODate( $year, $week, $day );
 		return $this;
 	}
 
@@ -175,7 +175,7 @@ class HabariDateTime extends DateTime
 	 */
 	public function set_time( $hour, $minute, $second = null )
 	{
-		parent::setTime($hour, $minute, $second);
+		parent::setTime( $hour, $minute, $second );
 		return $this;
 	}
 
@@ -190,9 +190,9 @@ class HabariDateTime extends DateTime
 	public function set_timezone( $timezone )
 	{
 		if ( ! $timezone instanceof DateTimeZone ) {
-			$timezone = new DateTimeZone($timezone);
+			$timezone = new DateTimeZone( $timezone );
 		}
-		parent::setTimezone($timezone);
+		parent::setTimezone( $timezone );
 		return $this;
 	}
 
@@ -213,12 +213,12 @@ class HabariDateTime extends DateTime
 	 * @param string $format Format accepted by {@link http://php.net/date date()}.
 	 * @return string The formatted date, false on failure.
 	 */
-	public function format($format = null)
+	public function format( $format = null )
 	{
 		if ( $format === null ) {
 			$format = self::$default_datetime_format;
 		}
-		return parent::format($format);
+		return parent::format( $format );
 	}
 
 	/**
@@ -231,9 +231,9 @@ class HabariDateTime extends DateTime
 	 * @param string $format A string with single-character date format codes {@link http://php.net/date date()} surrounded by braces
 	 * @return string The string with date components inserted	 
 	 */	 
-	public function text_format($format)
+	public function text_format( $format )
 	{
-		return preg_replace_callback('%\{(\w)\}%iu', array($this, 'text_format_callback'), $format);
+		return preg_replace_callback( '%\{(\w)\}%iu', array( $this, 'text_format_callback' ), $format );
 	}
 
 	/**
@@ -242,9 +242,9 @@ class HabariDateTime extends DateTime
 	 * @param array $matches The matches found in the regular expression.
 	 * @return string The date component value for the matched character.
 	 */	 
-	private function text_format_callback($matches)
+	private function text_format_callback( $matches )
 	{
-		return $this->format($matches[1]);
+		return $this->format( $matches[1] );
 	}
 
 	/**
@@ -262,9 +262,9 @@ class HabariDateTime extends DateTime
 	/**
 	 * @see format()
 	 */
-	public function get($format = null)
+	public function get( $format = null )
 	{
-		return $this->format($format);
+		return $this->format( $format );
 	}
 
 	/**
@@ -273,9 +273,9 @@ class HabariDateTime extends DateTime
 	 * @see format()
 	 * @param string $format Format accepted by {@link http://php.net/date date()}.
 	 */
-	public function out($format = null)
+	public function out( $format = null )
 	{
-		echo $this->format($format);
+		echo $this->format( $format );
 	}
 
 	/**
@@ -286,25 +286,25 @@ class HabariDateTime extends DateTime
 	 */
 	public function __toString()
 	{
-		return $this->format('U');
+		return $this->format( 'U' );
 	}
 
 	/**
 	 * Magic method to get magic ponies... properties, I mean.
 	 */
-	public function __get($property)
+	public function __get( $property )
 	{
 		// if you add more cases to this list, please also add the repsective @property to the top of the class so it shows up propertly in IDEs!
-		switch ($property) {
+		switch ( $property ) {
 			case 'clone':
 				return clone $this;
 
 			case 'sql':
-				return $this->format('U');
+				return $this->format( 'U' );
 				break;
 
 			case 'int':
-				return intval( $this->format('U') );
+				return intval( $this->format( 'U' ) );
 				break;
 
 			case 'time':
@@ -324,10 +324,10 @@ class HabariDateTime extends DateTime
 				break;
 
 			default:
-				$info = getdate($this->format('U'));
-				$info['mon0'] = substr('0' . $info['mon'], -2, 2);
-				$info['mday0'] = substr('0' . $info['mday'], -2, 2);
-				if ( isset($info[$property]) ) {
+				$info = getdate( $this->format( 'U' ) );
+				$info['mon0'] = substr( '0' . $info['mon'], -2, 2 );
+				$info['mday0'] = substr( '0' . $info['mday'], -2, 2 );
+				if ( isset( $info[$property] ) ) {
 					return $info[$property];
 				}
 				return $this->$property;
@@ -339,10 +339,9 @@ class HabariDateTime extends DateTime
 	 *
 	 * @return The default date format
 	 **/
-	public static function get_default_date_format ( ) {
-
+	public static function get_default_date_format()
+	{
 		return self::$default_date_format;
-
 	}
 
 	/**
@@ -350,10 +349,9 @@ class HabariDateTime extends DateTime
 	 *
 	 * @return The default time format
 	 **/
-	public static function get_default_time_format ( ) {
-
+	public static function get_default_time_format()
+	{
 		return self::$default_time_format;
-
 	}
 
 	/**
@@ -364,9 +362,9 @@ class HabariDateTime extends DateTime
 	 */
 	public function getdate()
 	{
-		$info = getdate($this->format('U'));
-		$info['mon0'] = substr('0' . $info['mon'], -2, 2);
-		$info['mday0'] = substr('0' . $info['mday'], -2, 2);
+		$info = getdate( $this->format( 'U' ) );
+		$info['mon0'] = substr( '0' . $info['mon'], -2, 2 );
+		$info['mday0'] = substr( '0' . $info['mday'], -2, 2 );
 		return $info;
 	}
 	
@@ -438,12 +436,12 @@ class HabariDateTime extends DateTime
 	 * 
 	 * Returns a very short version of the difference in time between now and the current HDT object.
 	 */
-	public function fuzzy ( ) {
-				
+	public function fuzzy ()
+	{
 		$difference = self::date_create()->int - $this->int;
 		
 		if ( $difference < self::MINUTE ) {
-			$result = _t('just now');
+			$result = _t( 'just now' );
 		}
 		else if ( $difference < self::HOUR ) {
 			$minutes = round( $difference / self::MINUTE );
@@ -494,15 +492,16 @@ class HabariDateTime extends DateTime
 	 * @param mixed $end_date The end date, as a HDT object or any format accepted by HabariDateTime::date_create().
 	 * @return array Array of each interval and whether the interval is inverted or not.
 	 */
-	public static function difference ( $start_date, $end_date ) {
+	public static function difference( $start_date, $end_date )
+	{
 		
 		// if the dates aren't HDT objects, try to convert them to one. this lets you pass in just about any format
 		if ( !$start_date instanceof HabariDateTime ) {
-			$start_date = HabariDateTime::date_create($start_date);
+			$start_date = HabariDateTime::date_create( $start_date );
 		}
 		
 		if ( !$end_date instanceof HabariDateTime ) {
-			$end_date = HabariDateTime::date_create($end_date);
+			$end_date = HabariDateTime::date_create( $end_date );
 		}
 		
 		$result = array();
