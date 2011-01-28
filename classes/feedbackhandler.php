@@ -56,7 +56,7 @@ class FeedbackHandler extends ActionHandler
 			}
 			else {
 				Session::error( _t( 'There was a problem submitting your comment.' ) );
-				foreach( $form->validate() as $error ) {
+				foreach ( $form->validate() as $error ) {
 					Session::error( $error );
 				}
 				$form->bounce();
@@ -79,7 +79,7 @@ class FeedbackHandler extends ActionHandler
 		if ( is_numeric( $post ) ) {
 			$post = Post::get( array( 'id' => $post ) );
 		}
- 
+
 		if ( !$post instanceof Post ) {
 			// Not sure what you're trying to pull here, but that's no good
 			header( 'HTTP/1.1 403 Forbidden', true, 403 );
@@ -92,7 +92,7 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		if ( empty( $content ) ) {
-			Session::error( _t('You did not provide any content for your comment!' ) );
+			Session::error( _t( 'You did not provide any content for your comment!' ) );
 		}
 
 		if ( Session::has_errors() ) {
@@ -167,7 +167,7 @@ class FeedbackHandler extends ActionHandler
 		}
 		
 		// Users need to have permission to add comments
-		if (!$user->can('comment')) {
+		if ( !$user->can( 'comment' ) ) {
 			Session::error( _t( 'You do not have permission to create comments.' ) );
 			Utils::redirect( $post->permalink );
 		}
@@ -195,7 +195,7 @@ class FeedbackHandler extends ActionHandler
 
 			// if no cookie exists, we should set one
 			// but only if the user provided some details
-			$cookie_name = 'comment_' . Options::get('GUID');
+			$cookie_name = 'comment_' . Options::get( 'GUID' );
 			
 			// build the string we store for the cookie
 			$cookie_content = implode( '#', array( $comment->name, $comment->email, $comment->url ) );

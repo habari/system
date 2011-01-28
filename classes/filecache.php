@@ -36,8 +36,8 @@ class FileCache extends Cache
 			}
 		}
 		else {
-			Session::error( sprintf( _t("The cache directory '%s' is not writable - the cache is disabled. The user, or group, which your web server is running as, needs to have read, write, and execute permissions on this directory."), $this->cache_location ), 'filecache' );
-			EventLog::log( sprintf( _t("The cache directory '%s' is not writable - the cache is disabled."), $this->cache_location ), 'notice', 'cache', 'habari' );
+			Session::error( sprintf( _t( "The cache directory '%s' is not writable - the cache is disabled. The user, or group, which your web server is running as, needs to have read, write, and execute permissions on this directory." ), $this->cache_location ), 'filecache' );
+			EventLog::log( sprintf( _t( "The cache directory '%s' is not writable - the cache is disabled." ), $this->cache_location ), 'notice', 'cache', 'habari' );
 		}
 	}
 
@@ -172,7 +172,7 @@ class FileCache extends Cache
 			return null;
 		}
 		$keys = array();
-		switch ( strtolower($match_mode) ) {
+		switch ( strtolower( $match_mode ) ) {
 			case 'glob':
 				if ( array_key_exists( $group, $this->cache_data ) ) {
 					$keys = preg_grep( Utils::glob_to_regex( $name ), array_keys( $this->cache_data[$group] ) );

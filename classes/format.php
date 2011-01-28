@@ -19,25 +19,25 @@ class Format
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
 	 */
-	public static function apply($format, $onwhat)
+	public static function apply( $format, $onwhat )
 	{
 		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
 		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists($formatobj, $format) ) {
-				$index = array_search($formatobj, self::$formatters);
+			if ( method_exists( $formatobj, $format ) ) {
+				$index = array_search( $formatobj, self::$formatters );
 				$func = '$o = Format::by_index(' . $index . ');return $o->' . $format . '($a';
 				$args = func_get_args();
-				if ( count($args) > 2) {
+				if ( count( $args ) > 2 ) {
 					$func.= ', ';
-					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
-					$func .= implode(', ', $args);
+					$args = array_map( create_function( '$a', 'return "\'{$a}\'";' ), array_slice( $args, 2 ) );
+					$func .= implode( ', ', $args );
 				}
 				$func .= ');';
-				$lambda = create_function('$a', $func);
-				Plugins::register( $lambda, 'filter', $onwhat);
+				$lambda = create_function( '$a', $func );
+				Plugins::register( $lambda, 'filter', $onwhat );
 				break;  // We only look for one matching format function to apply.
 			}
 		}
@@ -64,29 +64,29 @@ class Format
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
 	 */
-	public static function apply_with_hook_params($format, $onwhat)
+	public static function apply_with_hook_params( $format, $onwhat )
 	{
 		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
 		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists($formatobj, $format) ) {
-				$index = array_search($formatobj, self::$formatters);
+			if ( method_exists( $formatobj, $format ) ) {
+				$index = array_search( $formatobj, self::$formatters );
 				$func = '$o = Format::by_index(' . $index . ');';
 				$func .= '$args = func_get_args();';
 				$func .= '$args = array_merge( $args';
 				$args = func_get_args();
-				if ( count($args) > 2 ) {
+				if ( count( $args ) > 2 ) {
 
 					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),';
-					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice($args, 2));
-					$func .= 'array( ' . implode(', ', $args) . ' ))';
+					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice( $args, 2 ) );
+					$func .= 'array( ' . implode( ', ', $args ) . ' ))';
 				}
 				$func .= ');';
 				$func .= 'return call_user_func_array(array($o, "' . $format . '"), $args);';
-				$lambda = create_function('$a', $func);
-				Plugins::register( $lambda, 'filter', $onwhat);
+				$lambda = create_function( '$a', $func );
+				Plugins::register( $lambda, 'filter', $onwhat );
 				break;  // We only look for one matching format function to apply.
 			}
 		}
@@ -99,7 +99,7 @@ class Format
 	 * @param integer $index The index of the formatter object to return.
 	 * @return Format The formatter object requested
 	 */
-	public static function by_index($index)
+	public static function by_index( $index )
 	{
 		return self::$formatters[$index];
 	}
@@ -113,7 +113,7 @@ class Format
 		self::$formatters = array();
 		$classes = get_declared_classes();
 		foreach ( $classes as $class ) {
-			if ( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
+			if ( ( get_parent_class( $class ) == 'Format' ) || ( $class == 'Format' ) ) {
 				self::$formatters[] = new $class();
 			}
 		}
@@ -188,7 +188,7 @@ class Format
 					$value .= HtmlTokenSet::token_to_string( $nestedToken, false );
 					if (
 						( $nestedToken['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
-						 && strtolower( $nestedToken['name'] ) == strtolower( $token['name'] ) ) // found closing element
+							&& strtolower( $nestedToken['name'] ) == strtolower( $token['name'] ) ) // found closing element
 					) {
 						break;
 					}
@@ -248,7 +248,7 @@ class Format
 		}
 
 		$last = array_pop( $array );
-		$out = implode(', ', $array );
+		$out = implode( ', ', $array );
 		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
 	}
@@ -262,7 +262,7 @@ class Format
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
 	 */
-	public static function tag_and_list($terms, $between = ', ', $between_last = null )
+	public static function tag_and_list( $terms, $between = ', ', $between_last = null )
 	{
 		$array = array();
 		if ( !$terms instanceof Terms ) {
@@ -274,14 +274,14 @@ class Format
 		}
 
 		if ( $between_last === null ) {
-			$between_last = _t(' and ');
+			$between_last = _t( ' and ' );
 		}
 
-		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";');
-		$array = array_map($fn, $array, array_keys($array));
-		$last = array_pop($array);
-		$out = implode($between, $array);
-		$out .= ($out == '') ? $last : $between_last . $last;
+		$fn = create_function( '$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";' );
+		$array = array_map( $fn, $array, array_keys( $array ) );
+		$last = array_pop( $array );
+		$out = implode( $between, $array );
+		$out .= ( $out == '' ) ? $last : $between_last . $last;
 		return $out;
 
 	}
@@ -298,18 +298,18 @@ class Format
 	 * @param string $format A string with date()-like letters within braces to replace with date components
 	 * @return string The formatted string
 	 */
-	public static function format_date($date, $format)
+	public static function format_date( $date, $format )
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
 		}
-		preg_match_all('%\{(\w)\}%iu', $format, $matches);
+		preg_match_all( '%\{(\w)\}%iu', $format, $matches );
 
 		$components = array();
 		foreach ( $matches[1] as $format_component ) {
-			$components['{'.$format_component.'}'] = $date->format($format_component);
+			$components['{'.$format_component.'}'] = $date->format( $format_component );
 		}
-		return strtr($format, $components);
+		return strtr( $format, $components );
 	}
 
 	/**
@@ -319,7 +319,7 @@ class Format
 	 * @param string A date format string
 	 * @returns string The date formatted as a string
 	 */
-	public static function nice_date($date, $dateformat = 'F j, Y')
+	public static function nice_date( $date, $dateformat = 'F j, Y' )
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
@@ -334,7 +334,7 @@ class Format
 	 * @param string A date format string
 	 * @returns string The time formatted as a string
 	 */
-	public static function nice_time($date, $dateformat = 'H:i:s')
+	public static function nice_time( $date, $dateformat = 'H:i:s' )
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
@@ -373,11 +373,11 @@ class Format
 			if ( !$bail ) {
 				switch ( $token['type'] ) {
 					case HTMLTokenizer::NODE_TYPE_TEXT:
-						$words = preg_split('/(\\s+)/u', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+						$words = preg_split( '/(\\s+)/u', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
 						// word count is doubled because spaces between words are captured as their own array elements via PREG_SPLIT_DELIM_CAPTURE
-						$words = array_slice($words, 0, $remaining_words * 2);
-						$remaining_words -= count($words) / 2;
-						$token['value'] = implode('', $words);
+						$words = array_slice( $words, 0, $remaining_words * 2 );
+						$remaining_words -= count( $words ) / 2;
+						$token['value'] = implode( '', $words );
 						if ( $remaining_words <= 0 ) {
 							$token['value'] .= $ellipsis;
 							$summary[] = $token;
@@ -397,13 +397,13 @@ class Format
 			}
 			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
 				do {
-					$end = array_pop($stack);
+					$end = array_pop( $stack );
 					$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
 					$end['attrs'] = null;
 					$end['value'] = null;
 					$summary[] = $end;
-				} while ( ($bail || $end['name'] != $token['name']) && count($stack) > 0 );
-				if ( count($stack) == 0 ) {
+				} while ( ( $bail || $end['name'] != $token['name'] ) && count( $stack ) > 0 );
+				if ( count( $stack ) == 0 ) {
 					$para++;
 				}
 				if ( $bail || $para >= $max_paragraphs ) {
@@ -428,10 +428,10 @@ class Format
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
 	 * @return string The post content, suitable for display
 	 */
-	public static function more($content, $post, $properties = array())
+	public static function more( $content, $post, $properties = array() )
 	{
 		// If the post requested is the post under consideration, always return the full post
-		if ( $post->slug == Controller::get_var('slug') ) {
+		if ( $post->slug == Controller::get_var( 'slug' ) ) {
 			return $content;
 		}
 		elseif ( is_string( $properties ) ) {
@@ -469,13 +469,13 @@ class Format
 
 		}
 		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
-		if ( count($matches) > 1 ) {
-			return ( $more_text != '' ) ? reset($matches) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>' : reset($matches);
+		if ( count( $matches ) > 1 ) {
+			return ( $more_text != '' ) ? reset( $matches ) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>' : reset( $matches );
 		}
-		elseif ( isset($max_words) || isset($max_paragraphs) ) {
-			$max_words = empty($max_words) ? 9999999 : intval($max_words);
-			$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
-			$summary = Format::summarize($content, $max_words, $max_paragraphs);
+		elseif ( isset( $max_words ) || isset( $max_paragraphs ) ) {
+			$max_words = empty( $max_words ) ? 9999999 : intval( $max_words );
+			$max_paragraphs = empty( $max_paragraphs ) ? 9999999 : intval( $max_paragraphs );
+			$summary = Format::summarize( $content, $max_words, $max_paragraphs );
 			if ( MultiByte::strlen( $summary ) >= MultiByte::strlen( $content ) ) {
 				return $content;
 			}
@@ -500,7 +500,7 @@ class Format
 			}
 		}
 
-    return $content;
+	return $content;
 	}
 
 	/**
@@ -543,13 +543,13 @@ class Format
 		$output = '';
 		if ( count( $errors ) ) {
 			foreach ( $errors as $error ) {
-				$error = addslashes($error);
+				$error = addslashes( $error );
 				$output .= "human_msg.display_msg(\"{$error}\");";
 			}
 		}
 		if ( count( $notices ) ) {
 			foreach ( $notices as $notice ) {
-				$notice = addslashes($notice);
+				$notice = addslashes( $notice );
 				$output .= "human_msg.display_msg(\"{$notice}\");";
 			}
 		}
