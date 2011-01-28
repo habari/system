@@ -280,10 +280,13 @@ class Vocabulary extends QueryRecord
 		Plugins::act( 'vocabulary_delete_before', $this );
 
 		// Get the ids for all this vocabulary's terms
-		$ids = DB::get_column('SELECt id FROM {terms} WHERE vocabulary_id = ?', array( $this->id ) );
-		// Delete the records from object_terms for those ids
-		$placeholder = Utils::placeholder_string( count( $ids ) );
-		DB::query("DELETE FROM {object_terms} WHERE term_id IN ($placeholder)", $ids );
+		$ids = DB::get_column('SELECT id FROM {terms} WHERE vocabulary_id = ?', array( $this->id ) );
+
+		// Delete the records from object_terms for those ids (if there were any)
+		if( count( $ids ) ) {
+			$placeholder = Utils::placeholder_string( count( $ids ) );
+			DB::query("DELETE FROM {object_terms} WHERE term_id IN ($placeholder)", $ids );
+		}
 
 		// Delete this vocabulary's terms
 		DB::delete( '{terms}', array( 'vocabulary_id' => $this->id ) );
