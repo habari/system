@@ -114,7 +114,7 @@ class RemoteRequest
 		else {
 			// otherwise, see if we can use curl and fall back to sockets if not
 			if ( function_exists( 'curl_init' )
-				 && ! ( ini_get( 'safe_mode' ) && ini_get( 'open_basedir' ) ) ) {
+				 && ! ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) ) {
 				$this->processor = new CURLRequestProcessor;
 			}
 			else {
