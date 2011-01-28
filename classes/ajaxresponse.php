@@ -18,13 +18,14 @@ class AjaxResponse
 	private $html = null;
 	
 	/* By default, we have a successful operation, with no data to return. */
-	function __construct($response_code = 200, $message = null, $data = null) {
+	function __construct( $response_code = 200, $message = null, $data = null )
+	{
 		$this->response_code = $response_code;
 		$this->message = $message;
 		$this->data = $data;
 	}
 	
-	public function __set($var, $val)
+	public function __set( $var, $val )
 	{
 		switch ( $var ) {
 			case 'response_code':
@@ -36,9 +37,9 @@ class AjaxResponse
 		}
 	}
 	
-	public function html($name, $value)
+	public function html( $name, $value )
 	{
-		if (empty($this->html)) {
+		if ( empty( $this->html ) ) {
 			$this->html = array( $name => $value );
 		}
 		else {
@@ -55,15 +56,15 @@ class AjaxResponse
 		);
 
 		// if some callback js has been provided, include that too.
-		if ($this->callback != null) {
+		if ( $this->callback != null ) {
 			$ret_array['habari_callback'] = $this->callback;
 		}
-		if (!empty($this->html)) {
+		if ( !empty( $this->html ) ) {
 			$ret_array['html'] = $this->html;
 		}
 		
-		header('Content-type: application/json');
-		echo json_encode($ret_array);
+		header( 'Content-type: application/json' );
+		echo json_encode( $ret_array );
 	}
 
 }

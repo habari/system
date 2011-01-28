@@ -22,8 +22,8 @@ class APCCache extends Cache
 		$this->prefix = Options::get( 'GUID' );
 		$this->enabled = extension_loaded( 'apc' );
 		if ( !$this->enabled ) {
-			Session::error( _t("The APC Cache PHP module is not loaded - the cache is disabled.", "apccache"), 'filecache' );
-			EventLog::log( _t("The APC Cache PHP module is not loaded - the cache is disabled.", "apccache"), 'notice', 'cache', 'apccache' );
+			Session::error( _t( "The APC Cache PHP module is not loaded - the cache is disabled.", "apccache" ), 'filecache' );
+			EventLog::log( _t( "The APC Cache PHP module is not loaded - the cache is disabled.", "apccache" ), 'notice', 'cache', 'apccache' );
 		}
 	}
 
@@ -111,16 +111,16 @@ class APCCache extends Cache
 		$this->cache_data[$group][$name] = $value;
 
 		if ( $keep ) {
-			$keepcache = apc_fetch( $this->prefix . ':keepcache');
-			if ( !is_array($keepcache) ) {
+			$keepcache = apc_fetch( $this->prefix . ':keepcache' );
+			if ( !is_array( $keepcache ) ) {
 				$keepcache = array();
 			}
-			$keepcache[$group][$name] = intval($expiry);
-			apc_store( $this->prefix . ':keepcache', $keepcache);
+			$keepcache[$group][$name] = intval( $expiry );
+			apc_store( $this->prefix . ':keepcache', $keepcache );
 			$expiry = 0;
 		}
 
-		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval($expiry) );
+		apc_store( implode( ':', array( $this->prefix, $group, $name ) ), $value, intval( $expiry ) );
 
 		Plugins::act( 'cache_set_after', $name, $group, $value, $expiry );
 
@@ -139,7 +139,7 @@ class APCCache extends Cache
 			return null;
 		}
 		$keys = array();
-		switch ( strtolower($match_mode) ) {
+		switch ( strtolower( $match_mode ) ) {
 			case 'glob':
 				if ( array_key_exists( $group, $this->cache_data ) ) {
 					$keys = preg_grep( Utils::glob_to_regex( $name ), array_keys( $this->cache_data[$group] ) );
@@ -177,9 +177,9 @@ class APCCache extends Cache
 		}
 
 		// Do not check cached data, since we can return (and cache in this object) data if the cache is set to 'keep'
-		$keepcache = apc_fetch( $this->prefix . ':keepcache');
+		$keepcache = apc_fetch( $this->prefix . ':keepcache' );
 
-		if ( !self::_has($name,$group) || !isset( $keepcache[$group][$name] ) || $keepcache[$group][$name] < time() ) {
+		if ( !self::_has( $name, $group ) || !isset( $keepcache[$group][$name] ) || $keepcache[$group][$name] < time() ) {
 			return true;
 		}
 		else {

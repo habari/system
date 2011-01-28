@@ -28,7 +28,7 @@ class AjaxHandler extends ActionHandler
 		 * @see AjaxHandler::act_ajax()
 		 * @action ajax_{$context}
 		 */
-		Plugins::act('ajax_' . $this->handler_vars['context'], $this);
+		Plugins::act( 'ajax_' . $this->handler_vars['context'], $this );
 	}
 
 	/**
@@ -40,14 +40,14 @@ class AjaxHandler extends ActionHandler
 	public function act_auth_ajax()
 	{
 		$user = User::identify();
-		if ($user->loggedin) {
+		if ( $user->loggedin ) {
 			/**
 			 * Triggers the ajax plugin action for the context if user is authenticated.
 			 *
 			 * @see act_auth_ajax()
 			 * @action ajax_auth_{$context}
 			 */
-			Plugins::act('auth_ajax_' . $this->handler_vars['context'], $this);
+			Plugins::act( 'auth_ajax_' . $this->handler_vars['context'], $this );
 			exit;
 		}
 	}
