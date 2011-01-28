@@ -268,7 +268,7 @@ class InputFilter
 
 		// Use PHP's parse_url to get the basics
 		$parsed = parse_url( $url );
-		if( $parsed == false ) {
+		if ( $parsed == false ) {
 			$r['is_error'] = true;
 			return $r;
 		}
@@ -374,7 +374,7 @@ class InputFilter
 					return preg_match( '/^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:Z|[\+-][0-2][0-9]:[0-5][0-9])$/', $v );
 					break;
 				default:
-					Error::raise( sprintf( _t('Unkown attribute type "%s" in %s'), $type, __CLASS__ ) );
+					Error::raise( sprintf( _t( 'Unkown attribute type "%s" in %s' ), $type, __CLASS__ ) );
 					return false;
 			}
 		}
@@ -411,18 +411,18 @@ class InputFilter
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
 							'name' => '#text',
-							'value' => HTMLTokenSet::token_to_string($node),
+							'value' => HTMLTokenSet::token_to_string( $node ),
 							'attrs' => array(),
-                                                );
+						);
 					}
 					else {
 						// check attributes
 						foreach ( $node['attrs'] as $k => $v ) {
 							$attr_ok = (
 								(
-									   in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
+									in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
 									|| ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) &&
-									     array_key_exists( strtolower( $k ), self::$whitelist_attributes[strtolower( $node['name'] )] ) )
+									array_key_exists( strtolower( $k ), self::$whitelist_attributes[strtolower( $node['name'] )] ) )
 								)
 								&& self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes[strtolower( $node['name'] )][strtolower( $k )] )
 							);
@@ -443,9 +443,9 @@ class InputFilter
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
 							'name' => '#text',
-							'value' => HTMLTokenSet::token_to_string($node),
+							'value' => HTMLTokenSet::token_to_string( $node ),
 							'attrs' => array(),
-                                                );
+						);
 					}
 					break;
 				case HTMLTokenizer::NODE_TYPE_PI:
