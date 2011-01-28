@@ -16,7 +16,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 
 	public $escape;
 
-	public function __construct($escape = true)
+	public function __construct( $escape = true )
 	{
 		$this->escape = $escape;
 	}
@@ -25,7 +25,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		$out = '';
 		foreach ( $this->tokens as $token ) {
-			$out .= self::token_to_string($token, $this->escape);
+			$out .= self::token_to_string( $token, $this->escape );
 		}
 		return $out;
 	}
@@ -34,7 +34,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		switch ( $token['type'] ) {
 			case HTMLTokenizer::NODE_TYPE_TEXT:
-				return $escape ? Utils::htmlspecialchars( html_entity_decode($token['value'], ENT_QUOTES, 'UTF-8') ) : $token['value'];
+				return $escape ? Utils::htmlspecialchars( html_entity_decode( $token['value'], ENT_QUOTES, 'UTF-8' ) ) : $token['value'];
 				break;
 
 			case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
@@ -104,7 +104,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 			// Meed to reverse this because we need to splice the last chunks first
 			// if we splice the earlier chunks first, then the offsets get all
 			// messed up. Trust me.
-			$ret = array_merge($ret, array_reverse( $slices ));
+			$ret = array_merge( $ret, array_reverse( $slices ) );
 		}
 		return $ret;
 	}
@@ -113,7 +113,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 	{
 		// find start:
 		$foundStart = false;
-		for ( ; $offset < count($this->tokens); $offset++) {
+		for ( ; $offset < count( $this->tokens ); $offset++ ) {
 			// short circuit if possible
 			if ( $this->tokens[$offset]['type'] != HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN ) {
 				continue;
@@ -123,7 +123,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 			}
 
 			// check attributes
-			if ( !count($attr) ) {
+			if ( !count( $attr ) ) {
 				$foundStart = true;
 				break; // To: FOUNDSTARTBREAKPOINT
 			}
@@ -148,7 +148,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		// (keep a stack so we don't mistake a nested node for this closing node)
 		$stackDepth = 0;
 		$foundEnd = false;
-		for ( ; $offset < count( $this->tokens ) ; $offset++ ) {
+		for ( ; $offset < count( $this->tokens ); $offset++ ) {
 			switch ( $this->tokens[$offset]['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
 					if ( $this->tokens[$offset]['name'] == $name ) {
@@ -179,13 +179,13 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		$slice = new HTMLTokenSet($this->escape);
 		$slice->sliceOffsetBegin  = $startOffset;
 		$slice->sliceOffsetLength = $offsetLength;
-		$slice->tokens = array_slice($this->tokens, $slice->sliceOffsetBegin, $slice->sliceOffsetLength);
+		$slice->tokens = array_slice( $this->tokens, $slice->sliceOffsetBegin, $slice->sliceOffsetLength );
 		return $slice;
 	}
 
 	public function trim_container()
 	{
-		$this->tokens = array_slice($this->tokens, 1, -1);
+		$this->tokens = array_slice( $this->tokens, 1, -1 );
 	}
 
 	public function replace_slice( HTMLTokenSet $slice )
@@ -219,7 +219,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 		$pre = array_slice( $this->tokens, 0, $pos );
 		$post = array_slice( $this->tokens, $pos );
 		$set->rewind();
-		while( $set->valid() ) {
+		while ( $set->valid() ) {
 			$pre[] = $set->current();
 			$set->next();
 		}
@@ -274,7 +274,7 @@ class HTMLTokenSet implements Iterator, ArrayAccess
 
 	public function offsetSet( $offset, $value )
 	{
-		if ( $offset === null) {
+		if ( $offset === null ) {
 			$this->tokens[] = $value;
 		}
 		else {

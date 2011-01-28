@@ -56,8 +56,7 @@ class HTMLTokenizer
 
 	public function parse()
 	{
-		while ( $this->has_more() && $this->state != self::$STATE_FINISHED )
-		{
+		while ( $this->has_more() && $this->state != self::$STATE_FINISHED ) {
 			switch ( $this->state ) {
 				case self::$STATE_START:
 					$this->state = $this->parse_start();
@@ -78,7 +77,7 @@ class HTMLTokenizer
 					$this->state = $this->parse_pi();
 					break;
 				default:
-					Error::raise( sprintf( _t('Invalid state %d in %s->parse()'), $this->state, __CLASS__ ) );
+					Error::raise( sprintf( _t( 'Invalid state %d in %s->parse()' ), $this->state, __CLASS__ ) );
 					$this->state = self::$STATE_FINISHED;
 					break;
 			}

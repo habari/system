@@ -96,10 +96,10 @@ abstract class InfoRecords implements URLProperties
 		foreach ( $result as $result_element ) {
 			// XXX is this logic right?
 			if ( $result_element->type == 1 ) {
-				$this->__inforecord_array[$result_element->name] = array('value'=>unserialize($result_element->value));
+				$this->__inforecord_array[$result_element->name] = array( 'value' => unserialize( $result_element->value ) );
 			}
 			else {
-				$this->__inforecord_array[$result_element->name] = array('value'=>$result_element->value);
+				$this->__inforecord_array[$result_element->name] = array( 'value' => $result_element->value );
 			}
 		}
 
@@ -151,11 +151,11 @@ abstract class InfoRecords implements URLProperties
 	 * @param string $name Name of the option to unset
 	 * @return boolean true if the option is successfully unset, false otherwise
 	 **/
-		public function __unset( $name )
+	public function __unset( $name )
 	{
 		$this->_load();
 		if ( isset( $this->__inforecord_array[$name] ) ) {
-			DB::delete( $this->_table_name, array ( $this->_key_name => $this->_key_value, "name"=> $name ) );
+			DB::delete( $this->_table_name, array ( $this->_key_name => $this->_key_value, "name" => $name ) );
 			unset( $this->__inforecord_array[$name] );
 			return true;
 		}
@@ -226,10 +226,10 @@ abstract class InfoRecords implements URLProperties
 						array(
 							$this->_key_name=>$this->_key_value,
 							'name'=>$name,
-							'value'=>serialize($value),
+							'value'=>serialize( $value ),
 							'type'=>1
 						),
-						array('name'=>$name, $this->_key_name=>$this->_key_value)
+						array( 'name'=>$name, $this->_key_name=>$this->_key_value )
 					);
 				}
 				else {
@@ -253,8 +253,8 @@ abstract class InfoRecords implements URLProperties
 		}
 	}
 	
-	public function count ( ) {
-		
+	public function count()
+	{
 		$this->_load();
 		return count( $this->__inforecord_array );
 		
