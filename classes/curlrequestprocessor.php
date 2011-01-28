@@ -67,25 +67,25 @@ class CURLRequestProcessor implements RequestProcessor
 
 		// set proxy, if needed
 		$urlbits = InputFilter::parse_url( $url );
-        if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
-            $options[CURLOPT_PROXY] = $config['proxy']['server'] . ':' . $config['proxy']['port'];	// Validation of the existence of the port should take place in the Options form
-            if ( $config['proxy']['username'] ) {
-                $options[CURLOPT_PROXYUSERPWD] = $config['proxy']['username'] . ':' . $config['proxy']['password'];
-                switch ( $config['proxy']['auth_type'] ) {
-                    case 'basic':
-                        $options[CURLOPT_PROXYAUTH] = CURLAUTH_BASIC;
-                        break;
-                    case 'digest':
-                        $options[CURLOPT_PROXYAUTH] = CURLAUTH_DIGEST;
+		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
+			$options[CURLOPT_PROXY] = $config['proxy']['server'] . ':' . $config['proxy']['port'];	// Validation of the existence of the port should take place in the Options form
+			if ( $config['proxy']['username'] ) {
+				$options[CURLOPT_PROXYUSERPWD] = $config['proxy']['username'] . ':' . $config['proxy']['password'];
+				switch ( $config['proxy']['auth_type'] ) {
+					case 'basic':
+						$options[CURLOPT_PROXYAUTH] = CURLAUTH_BASIC;
 						break;
-                }
-            }
+					case 'digest':
+						$options[CURLOPT_PROXYAUTH] = CURLAUTH_DIGEST;
+						break;
+				}
+			}
 			
 			// if it's a socks proxy, we have to tell curl that
 			if ( $config['proxy']['type'] == 'socks' ) {
 				$options[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
 			}
-        }
+		}
 		
 		curl_setopt_array( $ch, $options );
 
@@ -99,12 +99,12 @@ class CURLRequestProcessor implements RequestProcessor
 		 */
 		$tmp = tempnam( FILE_CACHE_LOCATION, 'RR' );
 		if ( ! $tmp ) {
-			throw new Exception( _t('CURL Error. Unable to create temporary file name.') );
+			throw new Exception( _t( 'CURL Error. Unable to create temporary file name.' ) );
 		}
 
 		$fh = @fopen( $tmp, 'w+b' );
 		if ( ! $fh ) {
-			throw new Exception( _t('CURL Error. Unable to open temporary file.') );
+			throw new Exception( _t( 'CURL Error. Unable to open temporary file.' ) );
 		}
 
 		curl_setopt( $ch, CURLOPT_FILE, $fh );
@@ -118,7 +118,7 @@ class CURLRequestProcessor implements RequestProcessor
 		fclose( $fh );
 		unset( $fh );
 
-		if ( isset( $tmp ) && file_exists ($tmp ) ) {
+		if ( isset( $tmp ) && file_exists( $tmp ) ) {
 			unlink( $tmp );
 		}
 
@@ -167,7 +167,7 @@ class CURLRequestProcessor implements RequestProcessor
 	public function _headerfunction( $ch, $str )
 	{
 		
-		$header = trim($str);
+		$header = trim( $str );
 		
 		// don't save blank lines we might be handed - there's usually one after the headers
 		if ( $header != '' ) {

@@ -45,11 +45,11 @@ class CronJob extends QueryRecord
 			'cron_id' => 0,
 			'name' => '',
 			'callback' => '',
-			'last_run' => NULL,
+			'last_run' => null,
 			'next_run' => HabariDateTime::date_create(),
 			'increment' => 86400, // one day
 			'start_time' => HabariDateTime::date_create(),
-			'end_time' => NULL,
+			'end_time' => null,
 			'result' => '',
 			'cron_class' => self::CRON_CUSTOM,
 			'description' => '',
@@ -75,9 +75,9 @@ class CronJob extends QueryRecord
 
 		// maybe serialize the callback
 		$paramarray = Utils::get_params( $paramarray );
-		if ( isset($paramarray['callback'])
+		if ( isset( $paramarray['callback'] )
 			&& (
-			 	is_array( $paramarray['callback'] )
+				is_array( $paramarray['callback'] )
 				|| is_object( $paramarray['callback'] )
 			)
 		) {
@@ -122,7 +122,7 @@ class CronJob extends QueryRecord
 			$this->result = 'executed';
 
 			// it ran successfully, so check if it's time to delete it.
-			if ( ! is_null($this->end_time) && ( $this->now >= $this->end_time ) ) {
+			if ( ! is_null( $this->end_time ) && ( $this->now >= $this->end_time ) ) {
 				$this->delete();
 				return;
 			}
@@ -145,19 +145,19 @@ class CronJob extends QueryRecord
 	public function __set( $name, $value )
 	{
 		switch ( $name ) {
-		case 'callback':
-			if ( is_array($value) || is_object($value) ) {
-				$value = serialize( $value );
-			}
-			break;
-		case 'next_run':
-		case 'last_run':
-		case 'start_time':
-		case 'end_time':
-			if ( !($value instanceOf HabariDateTime) && ! is_null( $value ) ) {
-				$value = HabariDateTime::date_create($value);
-			}
-			break;
+			case 'callback':
+				if ( is_array( $value ) || is_object( $value ) ) {
+					$value = serialize( $value );
+				}
+				break;
+			case 'next_run':
+			case 'last_run':
+			case 'start_time':
+			case 'end_time':
+				if ( !( $value instanceOf HabariDateTime ) && ! is_null( $value ) ) {
+					$value = HabariDateTime::date_create( $value );
+				}
+				break;
 		}
 		return parent::__set( $name, $value );
 	}
@@ -173,7 +173,7 @@ class CronJob extends QueryRecord
 	public function __get( $name )
 	{
 		if ( $name == 'callback' ) {
-			if ( false !== $res = @ unserialize( parent::__get($name) ) ) {
+			if ( false !== $res = @ unserialize( parent::__get( $name ) ) ) {
 				return $res;
 			}
 		}
@@ -189,7 +189,7 @@ class CronJob extends QueryRecord
 	 */
 	public function insert()
 	{
-		return parent::insertRecord( DB::table('crontab') );
+		return parent::insertRecord( DB::table( 'crontab' ) );
 	}
 
 	/**
@@ -200,7 +200,7 @@ class CronJob extends QueryRecord
 	 */
 	public function update()
 	{
-		return parent::updateRecord( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
+		return parent::updateRecord( DB::table( 'crontab' ), array( 'cron_id'=>$this->cron_id ) );
 	}
 
 	/**
@@ -211,7 +211,7 @@ class CronJob extends QueryRecord
 	 */
 	public function delete()
 	{
-		return parent::deleteRecord( DB::table('crontab'), array('cron_id'=>$this->cron_id) );
+		return parent::deleteRecord( DB::table( 'crontab' ), array( 'cron_id'=>$this->cron_id ) );
 	}
 }
 

@@ -71,7 +71,7 @@ class DatabaseConnection
 	 */
 	public static function ConnectionFactory( $connect_string )
 	{
-		list($engine) = explode(':', $connect_string, 2);
+		list( $engine ) = explode( ':', $connect_string, 2 );
 		require_once( HABARI_PATH . "/system/schema/{$engine}/connection.php" );
 		$engine .= 'Connection';
 		return new $engine();
@@ -84,7 +84,7 @@ class DatabaseConnection
 	 */
 	protected function load_tables()
 	{
-		if ( isset ( Config::get( 'db_connection' )->prefix ) ) {
+		if ( isset( Config::get( 'db_connection' )->prefix ) ) {
 			$prefix = Config::get( 'db_connection' )->prefix;
 		}
 		else {
@@ -253,7 +253,7 @@ class DatabaseConnection
 				}
 				else {
 					/* Die gracefully before the segfault occurs */
-					echo '<br><br>' . _t('Attempt to fetch in class mode with a non-included class') . '<br><br>';
+					echo '<br><br>' . _t( 'Attempt to fetch in class mode with a non-included class' ) . '<br><br>';
 					return false;
 				}
 			}
@@ -397,7 +397,7 @@ class DatabaseConnection
 		foreach ( $backtrace1 as $trace ) {
 			$backtrace[] = array_intersect_key( $trace, array('file'=>1, 'line'=>1, 'function'=>1, 'class'=>1) );
 		}
-		$this->errors[] = array_merge($error, array('backtrace'=> $backtrace)) ;
+		$this->errors[] = array_merge( $error, array( 'backtrace'=> $backtrace ) );
 	}
 
 	/**
@@ -674,7 +674,7 @@ class DatabaseConnection
 	public function last_insert_id()
 	{
 		if ( $this->pdo->getAttribute( PDO::ATTR_DRIVER_NAME ) == 'pgsql' ) {
-			return $this->pdo->lastInsertId( $this->current_table. '_pkey_seq' ) ;
+			return $this->pdo->lastInsertId( $this->current_table. '_pkey_seq' );
 		}
 		else {
 			return $this->pdo->lastInsertId( func_num_args() == 1 ? func_get_arg( 0 ) : '' );
@@ -701,36 +701,36 @@ class DatabaseConnection
 	public function upgrade( $old_version, $upgrade_path = '' )
 	{
 		// Get all the upgrade files
-		$upgrade_files = Utils::glob("{$upgrade_path}/*.sql");
+		$upgrade_files = Utils::glob( "{$upgrade_path}/*.sql" );
 
 		// Put the upgrade files into an array using the 0-padded revision + '_0' as the key
 		$upgrades = array();
 		foreach ( $upgrade_files as $file ) {
-			if ( intval( basename( $file, '.sql' ) ) > $old_version) {
+			if ( intval( basename( $file, '.sql' ) ) > $old_version ) {
 				$upgrades[ sprintf( '%010s_0', basename( $file, '.sql' ) )] = $file;
 			}
 		}
 		// Put the upgrade functions into an array using the 0-padded revision + '_1' as the key
-		$upgrade_functions = get_class_methods($this);
+		$upgrade_functions = get_class_methods( $this );
 		foreach ( $upgrade_functions as $fn ) {
-			if ( preg_match('%^upgrade_([0-9]+)$%i', $fn, $matches) ) {
+			if ( preg_match( '%^upgrade_([0-9]+)$%i', $fn, $matches ) ) {
 				if ( intval( $matches[1] ) > $old_version ) {
-					$upgrades[ sprintf('%010s_1', $matches[1])] = array($this, $fn);
+					$upgrades[ sprintf( '%010s_1', $matches[1] )] = array( $this, $fn );
 				}
 			}
 		}
 
 		// Sort the upgrades by revision, ascending
-		ksort($upgrades);
+		ksort( $upgrades );
 
 		// Execute all of the upgrade functions
 		$result = true;
 		foreach ( $upgrades as $upgrade ) {
-			if ( is_array($upgrade) ) {
+			if ( is_array( $upgrade ) ) {
 				$result &= $upgrade();
 			}
 			else {
-				$result &= $this->query_file($upgrade);
+				$result &= $this->query_file( $upgrade );
 			}
 			if ( !$result ) {
 				break;
@@ -755,8 +755,8 @@ class DatabaseConnection
 		$queries = explode( ';', $upgrade_sql );
 
 		foreach ( $queries as $query ) {
-			if ( trim($query) != '' ) {
-				if ( !$this->query($query) ) {
+			if ( trim( $query ) != '' ) {
+				if ( !$this->query( $query ) ) {
 					return false;
 				}
 			}
@@ -786,7 +786,7 @@ class DatabaseConnection
 	 */
 	public function filter_tables( $query )
 	{
-		return str_replace($this->sql_tables_repl, $this->sql_tables, $query);
+		return str_replace( $this->sql_tables_repl, $this->sql_tables, $query );
 	}
 
 	public function get_driver_name()
@@ -830,7 +830,8 @@ class DatabaseConnection
 	 * @param string $string The string to quote.
 	 * @return string A DB-safe quoted string.
 	 */
-	public function quote ( $string ) {
+	public function quote ( $string )
+	{
 		return $this->pdo->quote( $string );
 	}
 
