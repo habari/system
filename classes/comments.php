@@ -167,24 +167,24 @@ class Comments extends ArrayObject
 				if ( isset( $paramset['day'] ) ) {
 					/* Got the full date */
 					$where[] = 'date BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 day' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 day' )->sql;
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[] = 'date BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 month' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 month' )->sql;
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'date BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 year' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 year' )->sql;
 				}
 
 				// Concatenate the WHERE clauses
