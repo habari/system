@@ -47,7 +47,7 @@ if ( !defined( 'GLOB_BRACE' ) ) {
 // as well as the ability to dynamically change HTTP headers after output has started.
 ob_start();
 
-require dirname( __FILE__ ) . '/autoload.php';
+require( dirname( __FILE__ ) . '/autoload.php' );
 spl_autoload_register( 'habari_autoload' );
 
 // Replace all of the $_GET, $_POST and $_SERVER superglobals with object
@@ -74,10 +74,10 @@ $config = Site::get_dir( 'config_file' );
  * @todo Call the installer from the database classes.
  */
 if ( file_exists( $config ) ) {
-	require_once $config;
+	require_once( $config );
 
 	// Set the default locale.
-	HabariLocale::set( isset($locale) ? $locale : 'en-us' );
+	HabariLocale::set( isset( $locale ) ? $locale : 'en-us' );
 
 	if ( !defined( 'DEBUG' ) ) {
 		define( 'DEBUG', false );
@@ -106,13 +106,13 @@ if ( file_exists( $config ) ) {
 		$error_template = '<html><head><title>%s</title><link rel="stylesheet" type="text/css" href="' . Site::get_url( 'system' ) . '/admin/css/admin.css" media="screen"></head><body><div id="page"><div class="container"><h2>%s</h2><p>%s</p></div></div></body></html>';
 
 		// Format page with localized messages.
-		$error_page = sprintf($error_template,
-			_t( "Habari General Error" ), # page title
-			_t( "An error occurred" ), # H1 tag
-			( defined('DEBUG') && DEBUG == true ) ?
-				_t( "Unable to connect to database.  Error message: %s", array($e->getMessage())) :
+		$error_page = sprintf( $error_template,
+			_t( "Habari General Error" ), // page title
+			_t( "An error occurred" ), // H1 tag
+			( defined( 'DEBUG' ) && DEBUG == true ) ?
+				_t( "Unable to connect to database.  Error message: %s", array( $e->getMessage() ) ) :
 				_t( "Unable to connect to database." ) 
-			# Error message, more detail if DEBUG is defined.
+			// Error message, more detail if DEBUG is defined.
 		);
 
 		// Set correct HTTP header and die.
@@ -181,7 +181,7 @@ SuperGlobal::process_c();
 // Initiating request handling, tell the plugins.
 Plugins::act( 'init' );
 
-if ( defined('SUPPRESS_REQUEST') ) {
+if ( defined( 'SUPPRESS_REQUEST' ) ) {
 	return;
 }
 
