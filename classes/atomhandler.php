@@ -337,22 +337,22 @@ class AtomHandler extends ActionHandler
 			$xml = new SimpleXMLElement( '<rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd"></rsd>' );
 
 			$rsd_service = $xml->addChild( 'service' );
-			$service_engineName = $rsd_service->addChild( 'engineName', 'Habari' );
-			$service_engineLink = $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
-			$service_homePageLink = $rsd_service->addChild( 'homePageLink', Site::get_url( 'habari' ) );
+			$service_engine_name = $rsd_service->addChild( 'engineName', 'Habari' );
+			$service_engine_link = $rsd_service->addChild( 'engineLink', 'http://www.habariproject.org/' );
+			$service_home_page_link = $rsd_service->addChild( 'homePageLink', Site::get_url( 'habari' ) );
 			$service_apis = $rsd_service->addChild( 'apis' );
 
 			if ( !isset( $apis_list ) || ( count( $apis_list ) < 1 ) ) {
 				return false;
 			}
 
-			foreach ( $apis_list as $apiName => $atts ) {
+			foreach ( $apis_list as $api_name => $atts ) {
 				if ( !isset( $atts['preferred'], $atts['apiLink'], $atts['blogID'] ) ) {
 					continue;
 				}
 
 				$apis_api = $service_apis->addChild( 'api' );
-				$apis_api->addAttribute( 'name', $apiName );
+				$apis_api->addAttribute( 'name', $api_name );
 				$apis_api->addAttribute( 'preferred', $atts['preferred'] );
 				$apis_api->addAttribute( 'apiLink', $atts['apiLink'] );
 				$apis_api->addAttribute( 'blogID', $atts['blogID'] == '' ? '1' : $atts['blogID'] );
@@ -363,16 +363,16 @@ class AtomHandler extends ActionHandler
 
 				$api_settings = $apis_api->addChild( 'settings' );
 
-				foreach ( $atts['settings'] as $settingName => $settingValue ) {
-					switch ( $settingName ) {
+				foreach ( $atts['settings'] as $setting_name => $setting_value ) {
+					switch ( $setting_name ) {
 						case 'docs':
 						case 'notes':
-							$settings_setting = $api_settings->addChild( $settingName, $settingValue );
+							$settings_setting = $api_settings->addChild( $setting_name, $setting_value );
 							break;
 						case 'setting':
-							foreach ( $settingValue as $settingArray ) {
-								$settings_setting = $api_settings->addChild( 'setting', $settingArray['value'] );
-								$settings_setting->addAttribute( 'name', $settingArray['name'] );
+							foreach ( $setting_value as $setting_array ) {
+								$settings_setting = $api_settings->addChild( 'setting', $setting_array['value'] );
+								$settings_setting->addAttribute( 'name', $setting_array['name'] );
 							}
 							break;
 					}
