@@ -44,7 +44,7 @@ class EventLog extends ArrayObject
 	public static function register_type( $type = 'default', $module = null )
 	{
 		try {
-			DB::query( 'INSERT INTO {log_types} (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
+			DB::query( 'INSERT INTO {log_types} (module, type) VALUES (?,?)', array( self::get_module( $module ), $type ) );
 		}
 		catch( Exception $e ) {
 			// Don't really care if there's a duplicate.
@@ -86,7 +86,7 @@ class EventLog extends ArrayObject
 			'module' => $module,
 			'type' => $type,
 			'data' => $data,
-			'ip' => sprintf("%u", ip2long( Utils::get_ip() ) ),
+			'ip' => sprintf( "%u", ip2long( Utils::get_ip() ) ),
 		) );
 		$user = User::identify();
 		if ( $user->loggedin ) {
@@ -130,8 +130,8 @@ class EventLog extends ArrayObject
 		$paramarray = Utils::get_params( $paramarray );
 
 		$select_fields = LogEntry::default_fields();
-		if (!isset($paramarray['return_data'])) {
-			unset($select_fields['data']);
+		if ( !isset( $paramarray['return_data'] ) ) {
+			unset( $select_fields['data'] );
 		}
 		foreach ( $select_fields as $field => $value ) {
 			$select .= ( '' == $select )
@@ -232,7 +232,7 @@ class EventLog extends ArrayObject
 				if ( isset( $paramset['criteria'] ) ) {
 					preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						if (preg_match('%^id:(\d+)$%i', $word, $special_crit)) {
+						if ( preg_match( '%^id:(\d+)$%i', $word, $special_crit ) ) {
 							$where[] .= '(id = ?)';
 							$params[] = $special_crit[1];
 						}
@@ -326,7 +326,7 @@ class EventLog extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query .= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query .= ( ! isset( $groupby ) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query .= $orderby . $limit;
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
@@ -350,10 +350,10 @@ class EventLog extends ArrayObject
 	/*
 	 * Trim the EventLog down to the defined number of days to prevent it getting massively large.
 	 */
-	public static function trim ( ) {
-		
+	public static function trim()
+	{
 		// allow an option to be set to override the log retention - in days
-		$retention = Options::get('log_retention', 14);		// default to 14 days
+		$retention = Options::get( 'log_retention', 14 );		// default to 14 days
 		
 		// make it into the string we'll use
 		$retention = '-' . intval( $retention ) . ' days';
@@ -365,12 +365,12 @@ class EventLog extends ArrayObject
 		
 	}
 	
-	public static function purge ( ) {
-		
+	public static function purge ()
+	{
 		$result = DB::query( 'DELETE FROM {log}' );
 		
 		if ( $result ) {
-			EventLog::log( _t('Logs purged.'), 'info' );
+			EventLog::log( _t( 'Logs purged.' ), 'info' );
 		}
 		
 		return $result;

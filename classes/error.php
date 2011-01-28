@@ -20,9 +20,9 @@ class Error extends Exception
 	 * @param integer $code Code of the exception
 	 * @param boolean $is_error true if the exception represents an error handled by the Error class
 	 */
-	public function __construct($message = 'Generic Habari Error', $code = 0, $is_error = false)
+	public function __construct( $message = 'Generic Habari Error', $code = 0, $is_error = false )
 	{
-		parent::__construct($message, $code);
+		parent::__construct( $message, $code );
 		$this->is_error = $is_error;
 	}
 
@@ -42,7 +42,7 @@ class Error extends Exception
 	 */
 	public static function exception_handler( $exception )
 	{
-		if ( isset($exception->is_error) && $exception->is_error ) {
+		if ( isset( $exception->is_error ) && $exception->is_error ) {
 			return;
 		}
 		printf(
@@ -75,12 +75,12 @@ class Error extends Exception
 	public function humane_error()
 	{
 		$trace = $this->getTrace();
-		$trace1 = reset($trace);
+		$trace1 = reset( $trace );
 
 		$file = isset( $trace1['file'] ) ? $trace1['file'] : $this->getFile();
 		$line = isset( $trace1['line'] ) ? $trace1['line'] : $this->getLine();
 
-		return sprintf(_t('%1$s in %2$s line %3$s on request of "%4$s"'), $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI']);
+		return sprintf( _t( '%1$s in %2$s line %3$s on request of "%4$s"' ), $this->getMessage(), $file, $line, $_SERVER['REQUEST_URI'] );
 	}
 
 	/**
@@ -92,8 +92,9 @@ class Error extends Exception
 			return;
 		}
 
-		if ( !function_exists('_t') ) {
-			function _t($v) {
+		if ( !function_exists( '_t' ) ) {
+			function _t( $v )
+			{
 				return $v;
 			}
 		}
@@ -122,7 +123,7 @@ class Error extends Exception
 			$errfile = substr( $errfile, strlen( HABARI_PATH ) + 1 );
 		}
 
-		if ( ini_get('display_errors') || DEBUG ) {
+		if ( ini_get( 'display_errors' ) || DEBUG ) {
 			printf(
 				"<pre class=\"error\">\n<b>%s:</b> %s in %s line %s\n</pre>",
 				$error_names[$errno],
@@ -142,7 +143,7 @@ class Error extends Exception
 			}
 		}
 
-		if ( !isset( $backtrace) ) {
+		if ( !isset( $backtrace ) ) {
 			$backtrace= null;
 		}
 
@@ -159,7 +160,7 @@ class Error extends Exception
 	 */
 	private static function print_backtrace( $trace = null )
 	{
-		if ( !isset($trace) ) {
+		if ( !isset( $trace ) ) {
 			$trace = debug_backtrace();
 		}
 		print "<pre class=\"backtrace\">\n";
@@ -172,7 +173,7 @@ class Error extends Exception
 		);
 
 		foreach ( $trace as $n => $a ) {
-			$a = array_merge($defaults, $a);
+			$a = array_merge( $defaults, $a );
 
 			if ( $a['class'] == 'Error' ) {
 				continue;
@@ -182,7 +183,7 @@ class Error extends Exception
 				$a['file'] = substr( $a['file'], strlen( HABARI_PATH ) + 1 );
 			}
 
-			if ( defined('DEBUG_ARGS') ) {
+			if ( defined( 'DEBUG_ARGS' ) ) {
 				$args = array();
 				foreach ( $a['args'] as $arg ) {
 					$args[] = htmlentities( str_replace(
@@ -197,11 +198,11 @@ class Error extends Exception
 				}
 			}
 			else {
-				$args = count($a['args']) == 0 ? ' ' : sprintf(_n(' &hellip;%d arg&hellip; ', ' &hellip;%d args&hellip; ', count($a['args'])), $a['args']);
+				$args = count( $a['args'] ) == 0 ? ' ' : sprintf( _n( ' &hellip;%d arg&hellip; ', ' &hellip;%d args&hellip; ', count( $a['args'] ) ), $a['args'] );
 			}
 
 			printf(
-				_t("%s line %d:\n  %s(%s)\n"),
+				_t( "%s line %d:\n  %s(%s)\n" ),
 				$a['file'],
 				$a['line'],
 				$a['class'].$a['type'].$a['function'],
@@ -218,11 +219,11 @@ class Error extends Exception
 	 */
 	public function out()
 	{
-		if (is_scalar($this->message)) {
+		if ( is_scalar( $this->message ) ) {
 			echo $this->message . "\n";
 		}
 		else {
-			echo var_export($this->message, true) . "\n";
+			echo var_export( $this->message, true ) . "\n";
 		}
 	}
 
@@ -251,7 +252,7 @@ class Error extends Exception
 	 *
 	 * Returns true if the argument is an Error instance
 	 */
-	public static function is_error($obj)
+	public static function is_error( $obj )
 	{
 		return ($obj instanceof Error);
 	}

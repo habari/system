@@ -58,11 +58,11 @@ class DB extends Singleton
 		}
 		DB::instance()->connection = DatabaseConnection::ConnectionFactory( $connect_string );
 		if ( null != DB::instance()->connection ) {
-			return DB::instance()->connection->connect ($connect_string, $db_user, $db_pass);
+			return DB::instance()->connection->connect( $connect_string, $db_user, $db_pass );
 		}
 		else {
 			// do some error handling here. The connect string does not have a corresponding DB connection object
-			print _t('Panic! No database connection class appears to be found for the connection string specified. Please check config.php');
+			print _t( 'Panic! No database connection class appears to be found for the connection string specified. Please check config.php' );
 		}
 	}
 
@@ -278,7 +278,7 @@ class DB extends Singleton
 	 **/
 	public static function get_column( $query, $args = array() )
 	{
-		 return DB::instance()->connection->get_column( $query, $args );
+		return DB::instance()->connection->get_column( $query, $args );
 	}
 
 	/**
@@ -290,7 +290,7 @@ class DB extends Singleton
 	**/
 	public static function get_value( $query, $args = array() )
 	{
-		return DB::instance()->connection->get_value( $query,  $args );
+		return DB::instance()->connection->get_value( $query, $args );
 	}
 
 	/**
@@ -462,7 +462,8 @@ class DB extends Singleton
 	 * @param string $string The string to quote.
 	 * @return string A DB-safe quoted string.
 	 */
-	public static function quote ( $string ) {
+	public static function quote( $string )
+	{
 		return DB::instance()->connection->quote( $string );
 	}
 }
