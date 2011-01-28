@@ -32,7 +32,7 @@
 
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 	<span class="checkboxandselected pct30">
 		<input type="checkbox" id="master_checkbox" name="master_checkbox">
 		<label class="selectedtext minor none" for="master_checkbox"><?php _e('None selected'); ?></label>

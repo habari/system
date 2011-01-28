@@ -1563,7 +1563,7 @@ class AdminHandler extends ActionHandler
 			'comment_ids' => null,
 			'nonce' => '',
 			'timestamp' => '',
-			'PasswordDigest' => '',
+			'password_digest' => '',
 			'mass_spam_delete' => null,
 			'mass_delete' => null,
 			'type' => 'All',
@@ -1596,11 +1596,11 @@ class AdminHandler extends ActionHandler
 		// if we're updating posts, let's do so:
 		elseif ( ( $do_delete || $do_spam || $do_approve || $do_unapprove ) && isset( $comment_ids ) ) {
 			$okay = true;
-			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
+			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $password_digest ) ) {
 				$okay = false;
 			}
 			$wsse = Utils::WSSE( $nonce, $timestamp );
-			if ( $PasswordDigest != $wsse['digest'] ) {
+			if ( $password_digest != $wsse['digest'] ) {
 				$okay = false;
 			}
 			if ( $okay ) {
@@ -1983,7 +1983,7 @@ class AdminHandler extends ActionHandler
 			'post_ids' => null,
 			'nonce' => '',
 			'timestamp' => '',
-			'PasswordDigest' => '',
+			'password_digest' => '',
 			'change' => '',
 			'user_id' => 0,
 			'type' => Post::type( 'any' ),
@@ -2010,11 +2010,11 @@ class AdminHandler extends ActionHandler
 		// if we're updating posts, let's do so:
 		if ( $do_update && isset( $post_ids ) ) {
 			$okay = true;
-			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
+			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $password_digest ) ) {
 				$okay = false;
 			}
 			$wsse = Utils::WSSE( $nonce, $timestamp );
-			if ( $PasswordDigest != $wsse['digest'] ) {
+			if ( $password_digest != $wsse['digest'] ) {
 				$okay = false;
 			}
 			if ( $okay ) {
@@ -2722,12 +2722,12 @@ class AdminHandler extends ActionHandler
 	public function update_groups( $handler_vars, $ajax = true )
 	{
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-		if ( ( isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) || ( isset( $handler_vars['PasswordDigest'] ) && $handler_vars['PasswordDigest'] != $wsse['digest'] ) ) {
+		if ( ( isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) || ( isset( $handler_vars['password_digest'] ) && $handler_vars['password_digest'] != $wsse['digest'] ) ) {
 			Session::error( _t( 'WSSE authentication failed.' ) );
 			return Session::messages_get( true, 'array' );
 		}
 
-		if ( isset( $handler_vars['PasswordDigest'] ) || isset( $handler_vars['digest'] ) ) {
+		if ( isset( $handler_vars['password_digest'] ) || isset( $handler_vars['digest'] ) ) {
 
 			if ( ( isset( $handler_vars['action'] ) && $handler_vars['action'] == 'add' ) || isset( $handler_vars['newgroup'] ) ) {
 				if ( isset( $handler_vars['newgroup'] ) ) {

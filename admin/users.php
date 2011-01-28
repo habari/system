@@ -67,7 +67,7 @@
 
 		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+		<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 	
 		<span class="reassign minor">
 			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and

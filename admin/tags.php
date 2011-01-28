@@ -15,7 +15,7 @@
 <div class="container transparent item controls">
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 
 	<span class="checkboxandselected pct20">
 		<input type="checkbox" id="master_checkbox" name="master_checkbox">
@@ -49,7 +49,7 @@ itemManage.update = function( action, id ) {
 	query['action'] = 'delete';
 	query['timestamp'] = $('input#timestamp').attr('value');
 	query['nonce'] = $('input#nonce').attr('value');
-	query['digest'] = $('input#PasswordDigest').attr('value');
+	query['digest'] = $('input#password_digest').attr('value');
 
 	$.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
@@ -104,7 +104,7 @@ itemManage.rename = function() {
 	query['action'] = 'rename';
 	query['timestamp'] = $('input#timestamp').attr('value');
 	query['nonce'] = $('input#nonce').attr('value');
-	query['digest'] = $('input#PasswordDigest').attr('value');
+	query['digest'] = $('input#password_digest').attr('value');
 	$.post(
 		"<?php echo URL::get('admin_ajax', array('context' => 'tags')); ?>",
 		query,

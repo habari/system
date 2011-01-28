@@ -38,7 +38,7 @@
 	<input type="hidden" name="status" value="<?php echo Utils::htmlspecialchars($status); ?>">
 	<input type="hidden" id="nonce" name="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" id="timestamp" name="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" id="PasswordDigest" name="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	<input type="hidden" id="password_digest" name="password_digest" value="<?php echo $wsse['digest']; ?>">
 
 <div class="container transparent item comments controls">
 	<span class="checkboxandselected pct30">

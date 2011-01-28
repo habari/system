@@ -329,7 +329,7 @@ var itemManage = {
 		query.action = action;
 		query.timestamp = $('input#timestamp').attr('value');
 		query.nonce = $('input#nonce').attr('value');
-		query.digest = $('input#PasswordDigest').attr('value');
+		query.digest = $('input#password_digest').attr('value');
 		if ( $('.manage.users').length !== 0 ) {
 			query.reassign = $('select#reassign').attr('value');
 		}
