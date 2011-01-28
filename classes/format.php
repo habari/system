@@ -145,12 +145,12 @@ class Format
 		$value = '';
 
 		// should never autop ANY content in these items
-		$noAutoP = array(
+		$no_auto_p = array(
 			'pre','code','ul','h1','h2','h3','h4','h5','h6',
 			'table','ul','ol','li','i','b','em','strong'
 		);
 
-		$blockElements = array(
+		$block_elements = array(
 			'address','blockquote','center','dir','div','dl','fieldset','form',
 			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
 			'noscript','ol','p','pre','table','ul'
@@ -163,66 +163,66 @@ class Format
 			return $value;
 		}
 
-		$openP = false;
+		$open_p = false;
 		do {
 
-			if ( $openP ) {
-				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $blockElements ) ) {
+			if ( $open_p ) {
+				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $block_elements ) ) {
 					if ( strtolower( $token['name'] ) != 'p' || $token['type'] != HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
 						$value .= '</p>';
 					}
-					$openP = false;
+					$open_p = false;
 				}
 			}
 
-			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array( strtolower( $token['name'] ), $blockElements ) && $value == '' ) {
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array( strtolower( $token['name'] ), $block_elements ) && $value == '' ) {
 				// first element, is not a block element
 				$value = '<p>';
-				$openP = true;
+				$open_p = true;
 			}
 
 			// no-autop, pass them through verbatim
-			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array( strtolower( $token['name'] ), $noAutoP ) ) {
-				$nestedToken = $token;
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array( strtolower( $token['name'] ), $no_auto_p ) ) {
+				$nested_token = $token;
 				do {
-					$value .= HtmlTokenSet::token_to_string( $nestedToken, false );
+					$value .= HtmlTokenSet::token_to_string( $nested_token, false );
 					if (
-						( $nestedToken['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
-							&& strtolower( $nestedToken['name'] ) == strtolower( $token['name'] ) ) // found closing element
+						( $nested_token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
+							&& strtolower( $nested_token['name'] ) == strtolower( $token['name'] ) ) // found closing element
 					) {
 						break;
 					}
-				} while ( $nestedToken = $set->next() );
+				} while ( $nested_token = $set->next() );
 				continue;
 			}
 
 			// anything that's not a text node should get passed through
 			if ( $token['type'] != HTMLTokenizer::NODE_TYPE_TEXT ) {
 				$value .= HtmlTokenSet::token_to_string( $token, true );
-				// If the token itself is p, we need to set $openP
+				// If the token itself is p, we need to set $open_p
 				if ( strtolower( $token['name'] ) == 'p' && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN ) {
-					$openP = true;
+					$open_p = true;
 				}
 				continue;
 			}
 
 			// if we get this far, token type is text
-			$localValue = $token['value'];
-			if ( MultiByte::strlen( $localValue ) ) {
-				if ( !$openP ) {
-					$localValue = '<p>' . ltrim( $localValue );
-					$openP = true;
+			$local_value = $token['value'];
+			if ( MultiByte::strlen( $local_value ) ) {
+				if ( !$open_p ) {
+					$local_value = '<p>' . ltrim( $local_value );
+					$open_p = true;
 				}
 
-				$localValue = preg_replace( '/\s*(\n\s*){2,}/u', "</p><p>", $localValue ); // at least two \n in a row (allow whitespace in between)
-				$localValue = str_replace( "\n", "<br>", $localValue ); // nl2br
+				$local_value = preg_replace( '/\s*(\n\s*){2,}/u', "</p><p>", $local_value ); // at least two \n in a row (allow whitespace in between)
+				$local_value = str_replace( "\n", "<br>", $local_value ); // nl2br
 			}
-			$value .= $localValue;
+			$value .= $local_value;
 		} while ( $token = $set->next() );
 
 		$value = preg_replace( '#\s*<p></p>\s*#u', '', $value ); // replace <p></p>
 		$value = preg_replace( '/<p><!--(.*?)--><\/p>/', "<!--\\1-->", $value ); // replace <p></p> around comments
-		if ( $openP ) {
+		if ( $open_p ) {
 			$value .= '</p>';
 		}
 
