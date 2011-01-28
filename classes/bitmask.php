@@ -43,7 +43,7 @@ class Bitmask
 				// This calls the setter directly to deal with non-public
 				// properties to make sure we have the same behaviour as the
 				// normal API.
-				$this->__set($value, true);
+				$this->__set( $value, true );
 			}
 			else {
 				throw new InvalidArgumentException( _t( 'Bitmask constructor second argument must either be an integer within the valid range, the name of a flag, or full' ) );
@@ -115,7 +115,7 @@ class Bitmask
 					$this->value &= ~( 1 << $bit );
 				}
 				break;
-			}
+		}
 		return $on;
 	}
 
@@ -128,13 +128,13 @@ class Bitmask
 	public function __get( $bit )
 	{
 		if ( $bit === 'value' ) {
-			return intval($this->value);
+			return intval( $this->value );
 		}
 		elseif ( $bit === 'full' ) {
-			return intval($this->full);
+			return intval( $this->full );
 		}
 		elseif ( ( $bit = array_search( $bit, $this->flags ) ) !== false ) {
-			return ( intval($this->value) & ( 1 << $bit ) ) !== 0;
+			return ( intval( $this->value ) & ( 1 << $bit ) ) !== 0;
 		}
 		else {
 			throw new InvalidArgumentException( _t( 'Bitmask cannot get non-existent flag' ) );

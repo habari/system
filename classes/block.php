@@ -37,13 +37,13 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
 	 */
-	public function __get($name)
+	public function __get( $name )
 	{
-		if ( array_key_exists($name, $this->data_values) ) {
+		if ( array_key_exists( $name, $this->data_values ) ) {
 			return $this->data_values[$name];
 		}
 		else {
-			return parent::__get($name);
+			return parent::__get( $name );
 		}
 	}
 
@@ -53,7 +53,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 * @param string Name of property to return
 	 * @return mixed The requested field value
 	 */
-	public function __set($name, $value)
+	public function __set( $name, $value )
 	{
 		switch ( $name ) {
 			case 'id':
@@ -80,9 +80,9 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 * @param string $name The name of the parameter
 	 * @return boolean True if the value is set, false if not
 	 */
-	public function __isset($name)
+	public function __isset( $name )
 	{
-		return ( isset($this->data_values[$name]) || parent::__isset($name) );
+		return ( isset( $this->data_values[$name] ) || parent::__isset( $name ) );
 	}
 
 	/**
@@ -105,11 +105,11 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 * @param Theme $theme the theme object with which the block will be rendered
 	 * @return string The rendered block content
 	 */
-	public function fetch($theme)
+	public function fetch( $theme )
 	{
-		Plugins::act('block_content_' . $this->type, $this, $theme);
-		Plugins::act('block_content', $this, $theme);
-		$output = implode( '', $theme->content_return($this));
+		Plugins::act( 'block_content_' . $this->type, $this, $theme );
+		Plugins::act( 'block_content', $this, $theme );
+		$output = implode( '', $theme->content_return( $this ) );
 		return $output;
 	}
 
@@ -125,18 +125,18 @@ class Block extends QueryRecord implements IsContent, FormStorage
 			'block.' . $this->type,
 			'block',
 		);
-		if (isset($this->title)) {
-			array_unshift($types, 'block.' . $this->type . '.' . Utils::slugify($this->title));
+		if ( isset( $this->title ) ) {
+			array_unshift( $types, 'block.' . $this->type . '.' . Utils::slugify( $this->title ) );
 		}
-		if (isset($this->_area)) {
+		if ( isset( $this->_area ) ) {
 			$areas = array();
-			foreach($types as $type) {
+			foreach ( $types as $type ) {
 				$areas[] = $this->_area . '.' . $type;
 			}
-			$types = array_merge($areas, $types);
+			$types = array_merge( $areas, $types );
 		}
-		$types = Plugins::filter('block_content_type_' . $this->type, $types, $this);
-		$types = Plugins::filter('block_content_type', $types, $this);
+		$types = Plugins::filter( 'block_content_type_' . $this->type, $types, $this );
+		$types = Plugins::filter( 'block_content_type', $types, $this );
 		return $types;
 	}
 
@@ -145,8 +145,8 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function unserialize_data()
 	{
-		if ( trim($this->data) != '' ) {
-			$this->data_values = unserialize($this->data);
+		if ( trim( $this->data ) != '' ) {
+			$this->data_values = unserialize( $this->data );
 		}
 	}
 
@@ -156,7 +156,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 * @param string $key The name of the form field to store.
 	 * @param mixed $value The value of the form field
 	 */
-	public function field_save($key, $value)
+	public function field_save( $key, $value )
 	{
 		$this->$key = $value;
 		$this->update();
@@ -168,7 +168,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 * @param string $key The name of the form field to load
 	 * @return mixed The value of the block for the form
 	 */
-	public function field_load($key)
+	public function field_load( $key )
 	{
 		return $this->$key;
 	}
@@ -188,7 +188,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 		Plugins::act( 'block_insert_before', $this );
 
-		$this->data = serialize($this->data_values);
+		$this->data = serialize( $this->data_values );
 		$result = parent::insertRecord( DB::table( 'blocks' ) );
 
 		// Make sure the id is set in the block object to match the row id
@@ -221,7 +221,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		}
 		Plugins::act( 'block_update_before', $this );
 
-		$this->data = serialize($this->data_values);
+		$this->data = serialize( $this->data_values );
 		$result = parent::updateRecord( DB::table( 'blocks' ), array( 'id' => $this->id ) );
 
 		$this->fields = array_merge( $this->fields, $this->newfields );
@@ -248,7 +248,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 
 		$result = parent::deleteRecord( '{blocks}', array( 'id'=>$this->id ) );
 
-		EventLog::log( sprintf(_t('Block %1$s (%2$s) deleted.'), $this->id, $this->title), 'info', 'content', 'habari' );
+		EventLog::log( sprintf( _t( 'Block %1$s (%2$s) deleted.' ), $this->id, $this->title ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'block_delete_after', $this );
@@ -262,17 +262,17 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function get_form()
 	{
-		$form = new FormUI('block-' . $this->id , 'block');
-		$form->on_success(array($this, 'save_block'));
-		$form->set_option('success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t('Saved block configuration.') . '</p></div></div></div>
+		$form = new FormUI( 'block-' . $this->id, 'block' );
+		$form->on_success( array( $this, 'save_block' ) );
+		$form->set_option( 'success_message', '</div><div class="humanMsg" id="humanMsg" style="display: block;top: auto;bottom:-50px;"><div class="imsgs"><div id="msgid_2" class="msg" style="display: block; opacity: 0.8;"><p>' . _t( 'Saved block configuration.' ) . '</p></div></div></div>
 <script type="text/javascript">
 		$("#humanMsg").animate({bottom: "5px"}, 500, function(){ window.setTimeout(function(){$("#humanMsg").animate({bottom: "-50px"}, 500)},3000) })
 		parent.refresh_block_forms();
 </script>
 <div style="display:none;">
 ');
-		Plugins::act('block_form_' . $this->type, $form, $this);
-		Plugins::act('block_form', $form, $this);
+		Plugins::act( 'block_form_' . $this->type, $form, $this );
+		Plugins::act( 'block_form', $form, $this );
 		return $form;
 	}
 
@@ -281,7 +281,7 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 *
 	 * @return
 	 */
-	public function save_block($form)
+	public function save_block( $form )
 	{
 		$form->save();
 		return false;
