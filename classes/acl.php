@@ -99,7 +99,7 @@ class ACL
 
 		// Add the token to the admin group
 		$token = ACL::token_id( $name );
-		$admin = UserGroup::get( 'admin');
+		$admin = UserGroup::get( 'admin' );
 		if ( $admin ) {
 			ACL::grant_group( $admin->id, $token, 'full' );
 		}
@@ -217,7 +217,7 @@ class ACL
 	 */
 	public static function token_description( $permission )
 	{
-		if ( is_int( $permission) ) {
+		if ( is_int( $permission ) ) {
 			$query = 'id';
 		}
 		else {
@@ -372,7 +372,7 @@ class ACL
 		if ( isset( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] ) ) {
 //			Utils::debug($token, $_SESSION['user_token_access'][$token_id]);
 			if ( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] == ACL::CACHE_NULL ) {
-				return NULL;
+				return null;
 			}
 			else {
 				return self::get_bitmask( $_SESSION[ 'user_token_access' ][ $user_id ][ $token_id ] );
@@ -779,7 +779,7 @@ SQL;
 		self::create_token( 'post_any', _t( 'Permissions to all posts' ), _t( 'Content' ), true );
 		self::create_token( 'post_unpublished', _t( "Permissions to other users' unpublished posts" ), _t( 'Content' ), true );
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-			self::create_token( 'post_' . Utils::slugify($name), _t( 'Permissions to posts of type "%s"', array( $name ) ), _t( 'Content' ), true );
+			self::create_token( 'post_' . Utils::slugify( $name ), _t( 'Permissions to posts of type "%s"', array( $name ) ), _t( 'Content' ), true );
 		}
 
 		// comments tokens

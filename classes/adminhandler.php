@@ -84,7 +84,7 @@ class AdminHandler extends ActionHandler
 
 			// Add some default stylesheets
 			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/admin.css', 'screen' ), 'admin' );
-			Stack::add('admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/jqueryui.css', 'screen' ), 'jqueryui' );
+			Stack::add( 'admin_stylesheet', array( Site::get_url( 'admin_theme' ) . '/css/jqueryui.css', 'screen' ), 'jqueryui' );
 
 			// Add some default template variables
 			$this->set_admin_template_vars( $this->theme );
@@ -272,7 +272,7 @@ class AdminHandler extends ActionHandler
 				'helptext' => _t( 'International language code' ),
 			),
 			'system_locale' => array(
-				'label' => _t('System Locale'),
+				'label' => _t( 'System Locale' ),
 				'type' => 'text',
 				'helptext' => _t( 'The appropriate locale code for your server' ),
 			),
@@ -431,7 +431,7 @@ class AdminHandler extends ActionHandler
 			$modules['nosort'] = 'Add Item';
 
 			// register the 'Add Item' filter
-			Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item');
+			Plugins::register( array( $this, 'filter_dash_module_add_item' ), 'filter', 'dash_module_add_item' );
 		}
 
 		foreach ( $modules as $id => $module_name ) {
@@ -533,7 +533,7 @@ class AdminHandler extends ActionHandler
 			// check the user can create new posts of the set type.
 			$user = User::identify();
 			$type = 'post_'  . Post::type_name( $form->content_type->value );
-			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create') ) ) {
+			if ( ACL::user_cannot( $user, $type ) || ( ! ACL::user_can( $user, 'post_any', 'create' ) && ! ACL::user_can( $user, $type, 'create' ) ) ) {
 				Session::error( _t( 'Creating that post type is denied' ) );
 				$this->get_blank();
 			}
@@ -556,7 +556,7 @@ class AdminHandler extends ActionHandler
 			$expected = array( 'title', 'tags', 'content' );
 
 			foreach ( $expected as $field ) {
-				if ( isset($form->$field) ) {
+				if ( isset( $form->$field ) ) {
 					$postdata[$field] = $form->$field->value;
 				}
 			}
@@ -589,7 +589,7 @@ class AdminHandler extends ActionHandler
 	/**
 	 * Handles GET requests of the publish page.
 	 */
-	public function get_publish( $template = 'publish')
+	public function get_publish( $template = 'publish' )
 	{
 		$extract = $this->handler_vars->filter_keys( 'id', 'content_type' );
 		foreach ( $extract as $key => $value ) {
@@ -597,7 +597,7 @@ class AdminHandler extends ActionHandler
 		}
 
 		// 0 is what's assigned to new posts
- 		if ( isset( $id ) && ( $id != 0 ) ) {
+		if ( isset( $id ) && ( $id != 0 ) ) {
 			$post = Post::get( array( 'id' => $id, 'status' => Post::status( 'any' ) ) );
 			if ( !$post ) {
 				Session::error( _t( "You don't have permission to edit that post" ) );
@@ -745,32 +745,32 @@ class AdminHandler extends ActionHandler
 		}
 
 		// User Info
-		$displayname = $form->user_info->append( 'text', 'displayname', 'null:null',  _t( 'Display Name' ), 'optionscontrol_text' );
+		$displayname = $form->user_info->append( 'text', 'displayname', 'null:null', _t( 'Display Name' ), 'optionscontrol_text' );
 		$displayname->class[] = 'important item clear';
 		$displayname->value = $edit_user->displayname;
 
-		$username = $form->user_info->append( 'text', 'username', 'null:null',  _t( 'User Name' ), 'optionscontrol_text' );
+		$username = $form->user_info->append( 'text', 'username', 'null:null', _t( 'User Name' ), 'optionscontrol_text' );
 		$username->class[] = 'item clear';
 		$username->value = $edit_user->username;
 		$username->add_validator( 'validate_username', $edit_user->username );
 
-		$email = $form->user_info->append( 'text', 'email', 'null:null',  _t( 'Email' ), 'optionscontrol_text' );
+		$email = $form->user_info->append( 'text', 'email', 'null:null', _t( 'Email' ), 'optionscontrol_text' );
 		$email->class[] = 'item clear';
 		$email->value = $edit_user->email;
 		$email->add_validator( 'validate_email' );
 
-		$imageurl = $form->user_info->append( 'text', 'imageurl', 'null:null',  _t( 'Portrait URL' ), 'optionscontrol_text' );
+		$imageurl = $form->user_info->append( 'text', 'imageurl', 'null:null', _t( 'Portrait URL' ), 'optionscontrol_text' );
 		$imageurl->class[] = 'item clear';
 		$imageurl->value = $edit_user->info->imageurl;
 
 		// Change Password
-		$password1 = $form->change_password->append( 'text', 'password1', 'null:null',  _t( 'New Password' ), 'optionscontrol_text' );
+		$password1 = $form->change_password->append( 'text', 'password1', 'null:null', _t( 'New Password' ), 'optionscontrol_text' );
 		$password1->class[] = 'item clear';
 		$password1->type = 'password';
 		$password1->value = '';
 		$password1->autocomplete = 'off';
 
-		$password2 = $form->change_password->append( 'text', 'password2', 'null:null',  _t( 'New Password Again' ), 'optionscontrol_text' );
+		$password2 = $form->change_password->append( 'text', 'password2', 'null:null', _t( 'New Password Again' ), 'optionscontrol_text' );
 		$password2->class[] = 'item clear';
 		$password2->type = 'password';
 		$password2->value = '';
@@ -785,13 +785,13 @@ class AdminHandler extends ActionHandler
 		// Regional settings
 		$timezones = DateTimeZone::listIdentifiers();
 		$timezones = array_merge( array_combine( array_values( $timezones ), array_values( $timezones ) ) );
-		$locale_tz = $form->regional_settings->append( 'text', 'locale_tz', 'null:null',  _t( 'Timezone' ), 'optionscontrol_select' );
+		$locale_tz = $form->regional_settings->append( 'text', 'locale_tz', 'null:null', _t( 'Timezone' ), 'optionscontrol_select' );
 		$locale_tz->class[] = 'item clear';
 		$locale_tz->value = $edit_user->info->locale_tz;
 		$locale_tz->options = $timezones;
 		$locale_tz->multiple = false;
 
-		$locale_date_format = $form->regional_settings->append( 'text', 'locale_date_format', 'null:null',  _t( 'Date Format' ), 'optionscontrol_text' );
+		$locale_date_format = $form->regional_settings->append( 'text', 'locale_date_format', 'null:null', _t( 'Date Format' ), 'optionscontrol_text' );
 		$locale_date_format->class[] = 'item clear';
 		$locale_date_format->value = $edit_user->info->locale_date_format;
 		if ( isset( $edit_user->info->locale_date_format ) && $edit_user->info->locale_date_format != '' ) {
@@ -802,7 +802,7 @@ class AdminHandler extends ActionHandler
 		}
 		$locale_date_format->helptext = _t( 'See <a href="%s">php.net/date</a> for details. Current format: %s', array( 'http://php.net/date', $current ) );
 
-		$locale_time_format = $form->regional_settings->append( 'text', 'locale_time_format', 'null:null',  _t( 'Time Format' ), 'optionscontrol_text' );
+		$locale_time_format = $form->regional_settings->append( 'text', 'locale_time_format', 'null:null', _t( 'Time Format' ), 'optionscontrol_text' );
 		$locale_time_format->class[] = 'item clear';
 		$locale_time_format->value = $edit_user->info->locale_time_format;
 		if ( isset( $edit_user->info->locale_time_format ) && $edit_user->info->locale_time_format != '' ) {
@@ -875,10 +875,10 @@ class AdminHandler extends ActionHandler
 
 				Session::notice( sprintf( _t( '%s has been deleted' ), $username ) );
 
-				Utils::redirect(URL::get( 'admin', array( 'page' => 'users' ) ) );
+				Utils::redirect( URL::get( 'admin', array( 'page' => 'users' ) ) );
 			}
 			else {
-				Session::notice( _t( 'You cannot delete yourself.') );
+				Session::notice( _t( 'You cannot delete yourself.' ) );
 			}
 		}
 
@@ -966,7 +966,7 @@ class AdminHandler extends ActionHandler
 
 				// skip POST elements which are not user ids
 				if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
-					$id = (int) substr( $id, 1);
+					$id = (int) substr( $id, 1 );
 
 					$ids[] = array( 'id' => $id );
 
@@ -1083,7 +1083,7 @@ class AdminHandler extends ActionHandler
 				Session::error( _t( 'Password is required.' ), 'adduser' );
 			}
 			else if ( $new_pass1 !== $new_pass2 ) {
-				Session::error( _t( 'Password mis-match.'), 'adduser' );
+				Session::error( _t( 'Password mis-match.' ), 'adduser' );
 			}
 			if ( !isset( $new_email ) || empty( $new_email ) || ( !strstr( $new_email, '@' ) ) ) {
 				Session::error( _t( 'Please supply a valid email address.' ), 'adduser' );
@@ -1148,7 +1148,7 @@ class AdminHandler extends ActionHandler
 								$plugins[Plugins::id_from_file( $file )]->plugin_id
 							);
 						}
-					break;
+						break;
 					case 'deactivate':
 						if ( Plugins::deactivate_plugin( $file ) ) {
 							$plugins = Plugins::get_active();
@@ -1157,7 +1157,7 @@ class AdminHandler extends ActionHandler
 								$plugins[Plugins::id_from_file( $file )]->plugin_id
 							);
 						}
-					break;
+						break;
 					default:
 						Plugins::act(
 							'adminhandler_get_plugin_toggle_action',
@@ -1166,7 +1166,7 @@ class AdminHandler extends ActionHandler
 							$plugin_id,
 							$plugins
 						);
-					break;
+						break;
 				}
 			}
 		}
@@ -1252,7 +1252,7 @@ class AdminHandler extends ActionHandler
 		$theme_name = $this->handler_vars['theme_name'];
 		$theme_dir = $this->handler_vars['theme_dir'];
 		if ( isset( $theme_name )  && isset( $theme_dir ) ) {
-			Themes::activate_theme( $theme_name,  $theme_dir );
+			Themes::activate_theme( $theme_name, $theme_dir );
 		}
 		Session::notice( sprintf( _t( "Activated theme '%s'" ), $theme_name ) );
 		Utils::redirect( URL::get( 'admin', 'page=themes' ) );
@@ -1271,7 +1271,7 @@ class AdminHandler extends ActionHandler
 				Session::notice( sprintf( _t( "Ended the preview of the theme '%s'" ), $theme_name ) );
 			}
 			else {
-				Themes::preview_theme( $theme_name,  $theme_dir );
+				Themes::preview_theme( $theme_name, $theme_dir );
 				Session::notice( sprintf( _t( "Previewing theme '%s'" ), $theme_name ) );
 			}
 		}
@@ -1458,7 +1458,7 @@ class AdminHandler extends ActionHandler
 					if ( $form->$id_one->value != null || $form->$id_two->value != null ) {
 						if ( $action == 'delete' ) {
 							$comment->delete();
-							Utils::redirect(URL::get( 'admin', 'page=comments' ) );
+							Utils::redirect( URL::get( 'admin', 'page=comments' ) );
 						}
 						if ( $action != 'save' ) {
 							foreach ( Comment::list_comment_statuses() as $status ) {
@@ -1480,7 +1480,7 @@ class AdminHandler extends ActionHandler
 				$comment->date = HabariDateTime::date_create( $form->comment_date );
 				$comment->post_id = $form->comment_post;
 
-				if ( ! isset($set_status) ) {
+				if ( ! isset( $set_status ) ) {
 					$comment->status = $form->comment_status->value;
 				}
 
@@ -1594,7 +1594,7 @@ class AdminHandler extends ActionHandler
 			Utils::redirect();
 		}
 		// if we're updating posts, let's do so:
-		elseif ( ( $do_delete || $do_spam || $do_approve || $do_unapprove ) && isset( $comment_ids )) {
+		elseif ( ( $do_delete || $do_spam || $do_approve || $do_unapprove ) && isset( $comment_ids ) ) {
 			$okay = true;
 			if ( empty( $nonce ) || empty( $timestamp ) ||  empty( $PasswordDigest ) ) {
 				$okay = false;
@@ -1653,7 +1653,7 @@ class AdminHandler extends ActionHandler
 						// Comments marked for approval
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_APPROVED );
-						$modstatus[_t('Approved %d comments')] = count( $to_update );
+						$modstatus[_t( 'Approved %d comments' )] = count( $to_update );
 						foreach ( $to_update as $comment ) {
 									$modstatus[_t( 'Approved comments on these posts: %s' )] = ( isset( $modstatus[_t( 'Approved comments on these posts: %s' )] )? $modstatus[_t( 'Approved comments on these posts: %s' )] . ' &middot; ' : '' ) . '<a href="' . $comment->post->permalink . '">' . $comment->post->title . '</a> ';
 						}
@@ -1664,7 +1664,7 @@ class AdminHandler extends ActionHandler
 						// This comment was marked for unapproval
 						$to_update = $this->comment_access_filter( $to_update, 'edit' );
 						Comments::moderate_these( $to_update, Comment::STATUS_UNAPPROVED );
-						$modstatus[_t( 'Unapproved %d comments' )] = count ( $to_update );
+						$modstatus[_t( 'Unapproved %d comments' )] = count( $to_update );
 						break;
 
 					case 'edit':
@@ -1724,14 +1724,14 @@ class AdminHandler extends ActionHandler
 		// there is no explicit 'all' type/status for comments, so we need to unset these arguments
 		// if that's what we want. At the same time we can set up the search field
 		$this->theme->search_args = '';
-		if ( $type == 'All') {
+		if ( $type == 'All' ) {
 			unset( $arguments['type'] );
 		}
 		else {
 			$this->theme->search_args = 'type:' . Comment::type_name( $type ) . ' ';
 		}
 
-		if ( $status == 'All') {
+		if ( $status == 'All' ) {
 			unset ( $arguments['status'] );
 		}
 		else {
@@ -1841,7 +1841,7 @@ class AdminHandler extends ActionHandler
 					$plugin_actions = Plugins::filter( 'plugin_config_any', $plugin_actions1, $plugin_id );
 					$plugin['actions'] = array();
 					foreach ( $plugin_actions as $plugin_action => $plugin_action_caption ) {
-						if ( is_numeric($plugin_action) ) {
+						if ( is_numeric( $plugin_action ) ) {
 							$plugin_action = $plugin_action_caption;
 						}
 						$action = array(
@@ -1871,8 +1871,8 @@ class AdminHandler extends ActionHandler
 						}
 					}
 					$plugin['actions']['deactivate'] = array(
-						'url' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=deactivate'),
-						'caption' => _t('Deactivate'),
+						'url' =>  URL::get( 'admin', 'page=plugin_toggle&plugin_id=' . $plugin['plugin_id'] . '&action=deactivate' ),
+						'caption' => _t( 'Deactivate' ),
 						'action' => 'Deactivate',
 					);
 
@@ -2024,22 +2024,22 @@ class AdminHandler extends ActionHandler
 				$to_update = Posts::get( array( 'where' => $ids, 'nolimit' => 1 ) );
 				foreach ( $to_update as $post ) {
 					switch ( $change ) {
-					case 'delete':
-						if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
-							$post->delete();
-						}
-						break;
-					case 'publish':
-						if ( ACL::access_check( $post->get_access(), 'edit') ) {
-							$post->publish();
-						}
-						break;
-					case 'unpublish':
-						if ( ACL::access_check( $post->get_access(), 'edit') ) {
-							$post->status = Post::status( 'draft' );
-							$post->update();
-						}
-						break;
+						case 'delete':
+							if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
+								$post->delete();
+							}
+							break;
+						case 'publish':
+							if ( ACL::access_check( $post->get_access(), 'edit' ) ) {
+								$post->publish();
+							}
+							break;
+						case 'unpublish':
+							if ( ACL::access_check( $post->get_access(), 'edit' ) ) {
+								$post->status = Post::status( 'draft' );
+								$post->update();
+							}
+							break;
 					}
 				}
 				unset( $this->handler_vars['change'] );
@@ -2133,7 +2133,7 @@ class AdminHandler extends ActionHandler
 		);
 		$this->theme->admin_page = _t( 'Manage Posts' );
 		$this->theme->admin_title = _t( 'Manage Posts' );
-		$this->theme->special_searches = Plugins::filter( 'special_searches',array_merge( $statuses, $types ) );
+		$this->theme->special_searches = Plugins::filter( 'special_searches', array_merge( $statuses, $types ) );
 		$this->display( 'posts' );
 	}
 
@@ -2200,7 +2200,7 @@ class AdminHandler extends ActionHandler
 		$item_ids = array();
 
 		foreach ( $this->theme->posts as $post ) {
-			if ( ACL::access_check($post->get_access(), 'delete' ) ) {
+			if ( ACL::access_check( $post->get_access(), 'delete' ) ) {
 				$item_ids['p' . $post->id] = 1;
 			}
 		}
@@ -2267,14 +2267,14 @@ class AdminHandler extends ActionHandler
 	 * Handles AJAX from /manage/entries.
 	 * Used to delete entries.
 	 */
-	public function ajax_update_entries($handler_vars)
+	public function ajax_update_entries( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
 		$response = new AjaxResponse();
 
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
 		if ( $handler_vars['digest'] != $wsse['digest'] ) {
-			$response->message = _t('WSSE authentication failed.');
+			$response->message = _t( 'WSSE authentication failed.' );
 			$response->out();
 			return;
 		}
@@ -2283,7 +2283,7 @@ class AdminHandler extends ActionHandler
 		foreach ( $_POST as $id => $delete ) {
 			// skip POST elements which are not post ids
 			if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
-				$ids[] = (int) substr($id, 1);
+				$ids[] = (int) substr( $id, 1 );
 			}
 		}
 		if ( count( $ids ) == 0 ) {
@@ -2340,7 +2340,7 @@ class AdminHandler extends ActionHandler
 		foreach ( $_POST as $id => $delete ) {
 			// skip POST elements which are not log ids
 			if ( preg_match( '/^p\d+$/', $id ) && $delete ) {
-				$id = (int) substr($id, 1);
+				$id = (int) substr( $id, 1 );
 				$ids[] = array( 'id' => $id );
 			}
 		}
@@ -2464,7 +2464,8 @@ class AdminHandler extends ActionHandler
 
 	}
 
-	private function fetch_logs ( ) {
+	private function fetch_logs ()
+	{
 
 		// load all the values for our filter drop-downs
 		$dates = $this->fetch_log_dates();
@@ -2585,85 +2586,60 @@ class AdminHandler extends ActionHandler
 
 	}
 
-	private function fetch_log_dates ( ) {
-
+	private function fetch_log_dates ()
+	{
 		$db_dates = DB::get_column( 'SELECT timestamp FROM {log} ORDER BY timestamp DESC' );
-
 		$dates = array(
 			'any' => 'Any'
 		);
 
 		foreach ( $db_dates as $db_date ) {
-
-			$date = HabariDateTime::date_create( $db_date )->format('Y-m');
-
+			$date = HabariDateTime::date_create( $db_date )->format( 'Y-m' );
 			$dates[ $date ] = $date;
-
 		}
-
 		return $dates;
-
 	}
 
-	private function fetch_log_users ( ) {
-
+	private function fetch_log_users ()
+	{
 		$db_users = DB::get_results( 'SELECT DISTINCT username, user_id FROM {users} JOIN {log} ON {users}.id = {log}.user_id ORDER BY username ASC' );
-
 		$users = array(
 			'any' => 'Any'
 		);
-
 		foreach ( $db_users as $db_user ) {
-
 			$users[ $db_user->user_id ] = $db_user->username;
-
 		}
-
 		return $users;
-
 	}
 
-	private function fetch_log_ips ( ) {
-
+	private function fetch_log_ips ()
+	{
 		$db_ips = DB::get_column( 'SELECT DISTINCT(ip) FROM {log}' );
-
 		$ips = array(
 			'any' => 'Any'
 		);
 
 		foreach ( $db_ips as $db_ip ) {
-
 			$ips[ $db_ip ] = long2ip( $db_ip );
-
 		}
-
 		return $ips;
-
 	}
 
-	private function fetch_log_modules_types ( ) {
-
+	private function fetch_log_modules_types ()
+	{
 		$module_list = LogEntry::list_logentry_types();
-
 		$modules = $types = array(
 			'any' => 'Any',
 		);
 
 		foreach ( $module_list as $module_name => $type_array ) {
-
 			// Utils::slugify() gives us a safe key to use - this is what will be handed to the filter after a POST as well
 			$modules[ Utils::slugify( $module_name ) ] = $module_name;
-
 			foreach ( $type_array as $type_name => $type_value ) {
-
 				$types[ Utils::slugify( $type_name ) ] = $type_name;
-
 			}
-
 		}
-
 		return array( 'modules' => $modules, 'types' => $types );
-
 	}
 
 	/**
@@ -2726,7 +2702,7 @@ class AdminHandler extends ActionHandler
 					$users[] = '<strong>' . $user->displayname . '</strong>';
 				}
 				else {
-					$users[] = '<strong><a href="' . URL::get('admin', 'page=user&id=' . $user->id) . '">' . $user->displayname . '</a></strong>';
+					$users[] = '<strong><a href="' . URL::get( 'admin', 'page=user&id=' . $user->id ) . '">' . $user->displayname . '</a></strong>';
 				}
 			}
 
@@ -2746,7 +2722,7 @@ class AdminHandler extends ActionHandler
 	public function update_groups( $handler_vars, $ajax = true )
 	{
 		$wsse = Utils::WSSE( $handler_vars['nonce'], $handler_vars['timestamp'] );
-		if ( ( isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) || ( isset($handler_vars['PasswordDigest'] ) && $handler_vars['PasswordDigest'] != $wsse['digest'] ) ) {
+		if ( ( isset( $handler_vars['digest'] ) && $handler_vars['digest'] != $wsse['digest'] ) || ( isset( $handler_vars['PasswordDigest'] ) && $handler_vars['PasswordDigest'] != $wsse['digest'] ) ) {
 			Session::error( _t( 'WSSE authentication failed.' ) );
 			return Session::messages_get( true, 'array' );
 		}
@@ -2755,7 +2731,7 @@ class AdminHandler extends ActionHandler
 
 			if ( ( isset( $handler_vars['action'] ) && $handler_vars['action'] == 'add' ) || isset( $handler_vars['newgroup'] ) ) {
 				if ( isset( $handler_vars['newgroup'] ) ) {
-					$name = trim ( $handler_vars['new_groupname'] );
+					$name = trim( $handler_vars['new_groupname'] );
 				}
 				else {
 					$name = trim( $handler_vars['name'] );
@@ -2788,7 +2764,7 @@ class AdminHandler extends ActionHandler
 						'name' => $name
 					);
 					$group = UserGroup::create( $groupdata );
-					Session::notice( sprintf( _t( 'Added group %s'), $name ) );
+					Session::notice( sprintf( _t( 'Added group %s' ), $name ) );
 					// reload the groups
 					$this->theme->groups = UserGroups::get_all();
 
@@ -2857,9 +2833,7 @@ class AdminHandler extends ActionHandler
 	{
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
-
 		$this->theme->groups = UserGroups::get_all();
-
 		$this->display( 'groups' );
 	}
 
@@ -2870,12 +2844,8 @@ class AdminHandler extends ActionHandler
 	{
 		// prepare the WSSE tokens
 		$this->theme->wsse = Utils::WSSE();
-
 		$this->theme->groups = UserGroups::get_all();
-
-
 		$this->update_groups( $this->handler_vars, false );
-
 		$this->display( 'groups' );
 	}
 
@@ -2890,7 +2860,7 @@ class AdminHandler extends ActionHandler
 		}
 		else {
 
-			$tokens = ACL::all_tokens( 'id');
+			$tokens = ACL::all_tokens( 'id' );
 			$access_names = ACL::$access_names;
 			$access_names[] = 'deny';
 
@@ -3027,7 +2997,7 @@ class AdminHandler extends ActionHandler
 	 * Handles AJAX from /admin/tags
 	 * Used to delete and rename tags
 	 */
-	public function ajax_tags( $handler_vars)
+	public function ajax_tags( $handler_vars )
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
@@ -3047,7 +3017,7 @@ class AdminHandler extends ActionHandler
 				foreach ( $_POST as $id => $delete ) {
 					// skip POST elements which are not tag ids
 					if ( preg_match( '/^tag_\d+/', $id ) && $delete ) {
-						$id = substr($id, 4);
+						$id = substr( $id, 4 );
 						$tag = Tags::get_by_id( $id );
 						$tag_names[] = $tag->term_display;
 						Tags::vocabulary()->delete_term( $tag );
@@ -3058,8 +3028,8 @@ class AdminHandler extends ActionHandler
 				break;
 
 			case 'rename':
-				if ( !isset($this->handler_vars['master']) ) {
-					Session::error( _t('Error: New name not specified.') );
+				if ( !isset( $this->handler_vars['master'] ) ) {
+					Session::error( _t( 'Error: New name not specified.' ) );
 					echo Session::messages_get( true, array( 'Format', 'json_messages' ) );
 					return;
 				}
@@ -3068,17 +3038,17 @@ class AdminHandler extends ActionHandler
 				foreach ( $_POST as $id => $rename ) {
 					// skip POST elements which are not tag ids
 					if ( preg_match( '/^tag_\d+/', $id ) && $rename ) {
-						$id = substr($id, 4);
-						$tag = Tags::get_by_id($id);
+						$id = substr( $id, 4 );
+						$tag = Tags::get_by_id( $id );
 						$tag_names[] = $tag->term_display;
 					}
 				}
-				Tags::vocabulary()->merge($master, $tag_names );
+				Tags::vocabulary()->merge( $master, $tag_names );
 				$msg_status = sprintf(
 					_n('Tag %1$s has been renamed to %2$s.',
 						'Tags %1$s have been renamed to %2$s.',
-							count($tag_names)
-					), implode($tag_names, ', '), $master
+							count( $tag_names )
+					), implode( $tag_names, ', ' ), $master
 				);
 				Session::notice( $msg_status );
 				break;
@@ -3087,7 +3057,7 @@ class AdminHandler extends ActionHandler
 		$this->theme->tags = Tags::vocabulary()->get_tree();
 		$this->theme->max = Tags::vocabulary()->max_count();
 		echo json_encode( array(
-			'msg' => Session::messages_get( true, 'array'),
+			'msg' => Session::messages_get( true, 'array' ),
 			'tags' => $this->theme->fetch( 'tag_collection' ),
 		) );
 	}
@@ -3244,7 +3214,7 @@ class AdminHandler extends ActionHandler
 			'users' => array( 'url' => URL::get( 'admin', 'page=users' ), 'title' => _t( 'View and manage users' ), 'text' => _t( 'Users' ), 'hotkey' => 'U', 'access'=>array( 'manage_users'=>true ) ),
 			'profile' => array( 'url' => URL::get( 'admin', 'page=user' ), 'title' => _t( 'Manage your user profile' ), 'text' => _t( 'My Profile' ), 'hotkey' => 'Y', 'access'=>array( 'manage_self'=>true, 'manage_users'=>true ) ),
 			'groups' => array( 'url' => URL::get( 'admin', 'page=groups' ), 'title' => _t( 'View and manage groups' ), 'text' => _t( 'Groups' ), 'hotkey' => 'G', 'access'=>array( 'manage_groups'=>true ) ),
-			'logs' => array( 'url' => URL::get( 'admin', 'page=logs'), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ) ) ,
+			'logs' => array( 'url' => URL::get( 'admin', 'page=logs' ), 'title' => _t( 'View system log messages' ), 'text' => _t( 'Logs' ), 'hotkey' => 'L', 'access'=>array( 'manage_logs'=>true ) ) ,
 			'logout' => array( 'url' => URL::get( 'auth', 'page=logout' ), 'title' => _t( 'Log out of the administration interface' ), 'text' => _t( 'Logout' ), 'hotkey' => 'X' ),
 		);
 
@@ -3272,9 +3242,9 @@ class AdminHandler extends ActionHandler
 			unset( $mainmenus['import'] );
 
 		// Make submenu links default to the first available item
-		foreach ( array_keys($mainmenus) as $action ) {
+		foreach ( array_keys( $mainmenus ) as $action ) {
 			if ( !$mainmenus[$action]['url'] && !empty( $mainmenus[$action]['submenu'] ) ) {
-				$default = current($mainmenus[$action]['submenu']);
+				$default = current( $mainmenus[$action]['submenu'] );
 				$mainmenus[$action]['url'] = $default['url'];
 			}
 		}
@@ -3298,7 +3268,7 @@ class AdminHandler extends ActionHandler
 				foreach ( $attrs['access'] as $token => $masks ) {
 					$masks = Utils::single_array( $masks );
 					foreach ( $masks as $mask ) {
-						if ( is_bool($mask) ) {
+						if ( is_bool( $mask ) ) {
 							if ( $user->can( $token ) ) {
 							$pass = true;
 							break;
@@ -3329,7 +3299,7 @@ class AdminHandler extends ActionHandler
 					unset( $menuarray[$key] );
 				}
 			}
-			if ( isset( $menuarray[$key]) && count( $menuarray[$key] ) == 0 ) {
+			if ( isset( $menuarray[$key] ) && count( $menuarray[$key] ) == 0 ) {
 				unset( $menuarray[$key] );
 			}
 		}
@@ -3480,12 +3450,12 @@ class AdminHandler extends ActionHandler
 	{
 		$names = array(
 			'entry' => array(
-				'singular' => _t('Entry'),
-				'plural' => _t('Entries'),
+				'singular' => _t( 'Entry' ),
+				'plural' => _t( 'Entries' ),
 			),
 			'page' => array(
-				'singular' => _t('Page'),
-				'plural' => _t('Pages'),
+				'singular' => _t( 'Page' ),
+				'plural' => _t( 'Pages' ),
 			),
 		);
 		return isset( $names[$type][$foruse] ) ? $names[$type][$foruse] : $type;
@@ -3600,7 +3570,7 @@ class AdminHandler extends ActionHandler
 		$block_form->_title->add_validator( 'validate_required' );
 		$block_form->block_admin->append( 'checkbox', '_show_title', $block, 'Display Block Title:' );
 		
-		Plugins::register( array( $this, 'action_configure_block_title' ), 'action', 'configure_block_title');
+		Plugins::register( array( $this, 'action_configure_block_title' ), 'action', 'configure_block_title' );
 		
 		$this->theme->content = $block_form->get();
 
@@ -3633,7 +3603,7 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$this->setup_admin_theme('');
+		$this->setup_admin_theme( '' );
 
 		$title = $_POST['title'];
 		$type = $_POST['type'];
@@ -3642,7 +3612,7 @@ class AdminHandler extends ActionHandler
 			$this->theme->blocks = Plugins::filter( 'block_list', array() );
 			$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
 
-			$this->display('block_instances');
+			$this->display( 'block_instances' );
 		}
 		elseif ( $title == '' ) {
 			$this->theme->blocks = Plugins::filter( 'block_list', array() );
@@ -3685,7 +3655,7 @@ class AdminHandler extends ActionHandler
 	{
 		Utils::check_request_method( array( 'POST' ) );
 
-		$this->setup_admin_theme('');
+		$this->setup_admin_theme( '' );
 
 		$block_id = $_POST['block_id'];
 		$block = DB::get_row( 'SELECT b.* FROM {blocks} b WHERE id = :block_id', array( 'block_id' => $block_id ), 'Block' );
@@ -3826,11 +3796,10 @@ class AdminHandler extends ActionHandler
 		Stack::add( 'admin_header_javascript', Site::get_url( 'vendor' ) . "/crc32.js", 'crc32' );
 	}
 
-	public function create_theme ( ) {
-
+	public function create_theme()
+	{
 		$theme_dir = Plugins::filter( 'admin_theme_dir', Site::get_dir( 'admin_theme', true ) );
 		$this->theme = Themes::create( 'admin', 'RawPHPEngine', $theme_dir );
-
 	}
 
 }
