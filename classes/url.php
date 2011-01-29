@@ -65,10 +65,10 @@ class URL extends Singleton
 	 */
 	public static function set_404()
 	{
-		if ( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
-			$rule = RewriteRules::by_name('display_404');
-			URL::instance()->matched_rule = reset($rule);
-			URL::instance()->matched_rule->match(self::$stub);
+		if ( empty( URL::instance()->matched_rule ) || ( URL::instance()->matched_rule->name != 'display_404' ) ) {
+			$rule = RewriteRules::by_name( 'display_404' );
+			URL::instance()->matched_rule = reset( $rule );
+			URL::instance()->matched_rule->match( self::$stub );
 		}
 		return URL::instance()->matched_rule;
 	}
@@ -141,7 +141,7 @@ class URL extends Singleton
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 * @param boolean $prepend_site If true (default), a full URL is returned, if false, only the path part of the URL is returned
 	 */
-	public static function get( $rule_names='', $args = array(), $useall = true, $noamp = false, $prepend_site = true )
+	public static function get( $rule_names = '', $args = array(), $useall = true, $noamp = false, $prepend_site = true )
 	{
 		$args = self::extract_args( $args );
 
@@ -209,14 +209,14 @@ class URL extends Singleton
 			$error = new Exception();
 			$error_trace = $error->getTrace();
 			// Since URL::out() calls this function, the index 0 is URL::get() which is not the proper failing call.
-			if ( isset($error_trace[1]['class']) && isset($error_trace[1]['function']) && ($error_trace[1]['class'] == 'URL') && ($error_trace[1]['function'] == 'out') ) {
+			if ( isset( $error_trace[1]['class'] ) && isset( $error_trace[1]['function'] ) && ( $error_trace[1]['class'] == 'URL' ) && ( $error_trace[1]['function'] == 'out' ) ) {
 				$error_args = $error_trace[1];
 			}
 			// When calling URL::get() directly, the index 0 is the proper file and line of the failing call.
 			else {
 				$error_args = $error_trace[0];
 			}
-			EventLog::log( sprintf( _t('Could not find a rule matching the following names: %s. File: %s (line %s)'), implode(', ', $rule_names), $error_args['file'], $error_args['line'] ) , 'notice', 'rewriterules', 'habari' );
+			EventLog::log( sprintf( _t( 'Could not find a rule matching the following names: %s. File: %s (line %s)' ), implode( ', ', $rule_names ), $error_args['file'], $error_args['line'] ), 'notice', 'rewriterules', 'habari' );
 		}
 	}
 
@@ -240,14 +240,14 @@ class URL extends Singleton
 	 * @param bool whether to leave a filename on the URL.  Default: No
 	 * @return string URL
 	 */
-	public static function get_from_filesystem($path, $trail = false, $preserve_file = false)
+	public static function get_from_filesystem( $path, $trail = false, $preserve_file = false )
 	{
 		if ( !$preserve_file ) {
-			$path = dirname($path);
+			$path = dirname( $path );
 		}
-		$url = Site::get_url('habari') . MultiByte::substr($path, MultiByte::strlen(HABARI_PATH));
+		$url = Site::get_url( 'habari' ) . MultiByte::substr( $path, MultiByte::strlen( HABARI_PATH ) );
 		// Replace windows paths with forward slashes
-		$url = str_replace( '\\', '/', $url);
+		$url = str_replace( '\\', '/', $url );
 		$url .= ( $trail ) ? '/' : '';
 		return $url;
 	}

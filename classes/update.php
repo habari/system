@@ -30,13 +30,13 @@ class Update extends Singleton
 	 * @param string $beaconid the id of the beacon to check
 	 * @param string $current_version the current version of the resource represented by this beaconid
 	 */
-	public static function add($name, $beaconid, $current_version)
+	public static function add( $name, $beaconid, $current_version )
 	{
-		if ( empty($name) || empty($beaconid) || empty($current_version) ) {
-			throw new Exception(_t('Invalid Beacon information added'));
+		if ( empty( $name ) || empty( $beaconid ) || empty( $current_version ) ) {
+			throw new Exception( _t( 'Invalid Beacon information added' ) );
 		}
 		
-		self::instance()->beacons[ (string) $beaconid] = array('name' => (string) $name, 'version' => (string) $current_version);
+		self::instance()->beacons[ (string) $beaconid] = array( 'name' => (string) $name, 'version' => (string) $current_version );
 	}
 
 	/**
@@ -45,9 +45,9 @@ class Update extends Singleton
 	 * @param array $beacon the beacon data from the $beacons array
 	 * @return boolean true if there are updates available for this beacon
 	 */
-	private static function filter_unchanged($beacon)
+	private static function filter_unchanged( $beacon )
 	{
-		return isset($beacon['latest_version']);
+		return isset( $beacon['latest_version'] );
 	}
 
 
@@ -69,12 +69,12 @@ class Update extends Singleton
 			self::register_beacons();
 
 			// setup the remote request
-			$request = new RemoteRequest(self::UPDATE_URL, 'POST');
+			$request = new RemoteRequest( self::UPDATE_URL, 'POST' );
 			
 			// add all the beacon versions as parameters
 			$request->set_params(
 				array_map(
-					create_function('$a', 'return $a["version"];'),
+					create_function( '$a', 'return $a["version"];' ),
 					$instance->beacons
 				)
 			);
@@ -88,7 +88,7 @@ class Update extends Singleton
 			$update_data = $request->get_response_body();
 			
 			// i don't know why we hold the XML in a class variable, but we'll keep doing that in this rewrite
-			$instance->update = new SimpleXMLElement($update_data);
+			$instance->update = new SimpleXMLElement( $update_data );
 			
 			foreach ( $instance->update as $beacon ) {
 				
@@ -140,7 +140,7 @@ class Update extends Singleton
 			}
 			
 			// return an array of beacons that have updates
-			return array_filter( $instance->beacons, array('Update', 'filter_unchanged') );
+			return array_filter( $instance->beacons, array( 'Update', 'filter_unchanged' ) );
 			
 		}
 		catch ( Exception $e ) {
@@ -154,7 +154,8 @@ class Update extends Singleton
 	/**
 	 * Loop through all the active plugins and add their information to the list of plugins to check for updates.
 	 */
-	private static function add_plugins ( ) {
+	private static function add_plugins()
+	{
 		
 		$plugins = Plugins::get_active();
 		
@@ -178,20 +179,21 @@ class Update extends Singleton
 	 * @param null $cronjob Unused. The CronJob object being executed when being run as cron.
 	 * @return boolean True on successful check, false on any failure (so cron runs again).
 	 */
-	public static function cron ( $cronjob = null ) {
+	public static function cron( $cronjob = null )
+	{
 		
 		// register the beacons
 		self::register_beacons();
 		
 		// save the list of beacons we are using to check with
-		Options::set('updates_beacons', self::instance()->beacons);
+		Options::set( 'updates_beacons', self::instance()->beacons );
 		
 		try {
 			// run the check
 			$updates = Update::check();
 			
 			// save the list of updates
-			Options::set('updates_available', $updates);
+			Options::set( 'updates_available', $updates );
 			
 			EventLog::log( _t( 'Updates check CronJob completed successfully.' ), 'info', 'update', 'habari' );
 			
@@ -213,14 +215,15 @@ class Update extends Singleton
 	 * Register beacons to check for updates.
 	 * Includes Habari core, all active plugins, and any pluggable that implements the update_check hook.
 	 */
-	private static function register_beacons ( ) {
+	private static function register_beacons()
+	{
 		
 		// if there are already beacons, don't run again
 		if ( count( self::instance()->beacons ) > 0 ) {
 			return;
 		}
 		
-		Update::add('Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion());
+		Update::add( 'Habari', '7a0313be-d8e3-11db-8314-0800200c9a66', Version::get_habariversion() );
 		
 		// add the active theme
 		self::add_theme();
@@ -228,14 +231,15 @@ class Update extends Singleton
 		// add all active plugins
 		self::add_plugins();
 		
-		Plugins::act('update_check');
+		Plugins::act( 'update_check' );
 		
 	}
 	
 	/**
 	 * Add the currently active theme's information to the list of beacons to check for updates.
 	 */
-	private static function add_theme ( ) {
+	private static function add_theme()
+	{
 		
 		// get the active theme
 		$theme = Themes::get_active_data( true );
@@ -251,22 +255,23 @@ class Update extends Singleton
 	 * Compare the current set of plugins with those we last checked for updates.
 	 * This is run by AdminHandler on every page load to make sure we always have fresh data on the dashboard.
 	 */
-	public static function check_plugins ( ) {
+	public static function check_plugins()
+	{
 		
 		// register the beacons
 		self::register_beacons();
 		
 		// get the list we checked last time
-		$checked_list = Options::get('updates_beacons');
+		$checked_list = Options::get( 'updates_beacons' );
 		
 		// if the lists are different
 		if ( $checked_list != self::instance()->beacons ) {
 			
 			// remove any stored updates, just to avoid showing stale data
-			Options::delete('updates_available');
+			Options::delete( 'updates_available' );
 			
 			// schedule an update check the next time cron runs
-			CronTab::add_single_cron( 'update_check_single', array('Update', 'cron'), HabariDateTime::date_create()->int, _t( 'Perform a single check for plugin updates, the plugin set has changed.') );
+			CronTab::add_single_cron( 'update_check_single', array( 'Update', 'cron' ), HabariDateTime::date_create()->int, _t( 'Perform a single check for plugin updates, the plugin set has changed.' ) );
 			
 		}
 		
@@ -280,9 +285,10 @@ class Update extends Singleton
 	 * @return array A single GUID's updates, if GUID is specified and they are available.
 	 * @return false If a single GUID is specified and there are no updates available for it.
 	 */
-	public static function updates_available ( $guid = null ) {
+	public static function updates_available( $guid = null )
+	{
 		
-		$updates = Options::get('updates_available', array());
+		$updates = Options::get( 'updates_available', array() );
 		
 		if ( $guid == null ) {
 			return $updates;

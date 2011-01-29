@@ -20,18 +20,18 @@ class Themes
 	public static function get_all()
 	{
 		if ( !isset( self::$all_themes ) ) {
-			$dirs = array( HABARI_PATH . '/system/themes/*' , HABARI_PATH . '/3rdparty/themes/*', HABARI_PATH . '/user/themes/*');
-			if ( Site::is('multi') ) {
-				$dirs[] = Site::get_dir('config') . '/themes/*';
+			$dirs = array( HABARI_PATH . '/system/themes/*' , HABARI_PATH . '/3rdparty/themes/*', HABARI_PATH . '/user/themes/*' );
+			if ( Site::is( 'multi' ) ) {
+				$dirs[] = Site::get_dir( 'config' ) . '/themes/*';
 			}
 			$themes = array();
-			foreach($dirs as $dir) {
+			foreach ( $dirs as $dir ) {
 				$themes = array_merge( $themes, Utils::glob( $dir, GLOB_ONLYDIR | GLOB_MARK ) );
 			}
 
-			$themes = array_filter( $themes, create_function('$a', 'return file_exists($a . "/theme.xml");') );
-			$themefiles = array_map('basename', $themes);
-			self::$all_themes = array_combine($themefiles, $themes);
+			$themes = array_filter( $themes, create_function( '$a', 'return file_exists( $a . "/theme.xml" );' ) );
+			$themefiles = array_map( 'basename', $themes );
+			self::$all_themes = array_combine( $themefiles, $themes );
 		}
 		return self::$all_themes;
 	}
@@ -44,22 +44,23 @@ class Themes
 	{
 		if ( !isset( self::$all_data ) ) {
 			$themedata = array();
-			foreach(self::get_all() as $theme_dir => $theme_path ) {
+			foreach ( self::get_all() as $theme_dir => $theme_path ) {
 				$themedata['dir'] = $theme_dir;
 				$themedata['path'] = $theme_path;
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
 				if ( $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
-				    $themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
-				    $themedata['info']->description = '<span class="error">' . _t( 'This theme is a legacy theme that is not compatible with Habari ' ) . Version::get_habariversion() . '. <br><br>Please update your theme.</span>';
-				    $themedata['info']->license = '';
-				} else {
-				    if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}' , GLOB_BRACE) ) {
-					    $themedata['screenshot'] = Site::get_url( 'habari' ) . dirname(str_replace( HABARI_PATH, '', $theme_path )) . '/' . basename( $theme_path ) . "/" . basename(reset($screenshot));
-				    }
-				    else {
-					    $themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
-				    }
+					$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
+					$themedata['info']->description = '<span class="error">' . _t( 'This theme is a legacy theme that is not compatible with Habari ' ) . Version::get_habariversion() . '. <br><br>Please update your theme.</span>';
+					$themedata['info']->license = '';
+				}
+				else {
+					if ( $screenshot = Utils::glob( $theme_path . '/screenshot.{png,jpg,gif}', GLOB_BRACE ) ) {
+						$themedata['screenshot'] = Site::get_url( 'habari' ) . dirname( str_replace( HABARI_PATH, '', $theme_path ) ) . '/' . basename( $theme_path ) . "/" . basename( reset( $screenshot ) );
+					}
+					else {
+						$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
+					}
 				}
 				
 				self::$all_data[$theme_dir] = $themedata;
@@ -74,15 +75,15 @@ class Themes
 	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return string the current theme or previewed theme's directory name
 	 */
-	public static function get_theme_dir($nopreview = false)
+	public static function get_theme_dir( $nopreview = false )
 	{
-		if (!$nopreview && isset($_SESSION['user_theme_dir'])) {
+		if ( !$nopreview && isset( $_SESSION['user_theme_dir'] ) ) {
 			$theme_dir = $_SESSION['user_theme_dir'];
 		}
 		else {
-			$theme_dir = Options::get('theme_dir');
+			$theme_dir = Options::get( 'theme_dir' );
 		}
-		$theme_dir = Plugins::filter('get_theme_dir', $theme_dir);
+		$theme_dir = Plugins::filter( 'get_theme_dir', $theme_dir );
 		return $theme_dir;
 	}
 
@@ -91,24 +92,23 @@ class Themes
 	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return string The full path to the active theme directory
 	 */
-	private static function get_active_theme_dir($nopreview = false)
+	private static function get_active_theme_dir( $nopreview = false )
 	{
-		$theme_dir = self::get_theme_dir($nopreview);
+		$theme_dir = self::get_theme_dir( $nopreview );
 		$themes = Themes::get_all();
 
-		if (!isset($themes[$theme_dir]))
-		{
+		if ( !isset( $themes[$theme_dir] ) ) {
 			$theme_exists = false;
-			foreach ($themes as $themedir) {
-				if (file_exists(Utils::end_in_slash($themedir) . 'theme.xml')) {
-					$theme_dir = basename($themedir);
-					Options::set('theme_dir', basename($themedir));
+			foreach ( $themes as $themedir ) {
+				if ( file_exists( Utils::end_in_slash( $themedir ) . 'theme.xml' ) ) {
+					$theme_dir = basename( $themedir );
+					Options::set( 'theme_dir', basename( $themedir ) );
 					$theme_exists = true;
 					break;
 				}
 			}
-			if (!$theme_exists) {
-				die( _t('There is no valid theme currently installed.') );
+			if ( !$theme_exists ) {
+				die( _t( 'There is no valid theme currently installed.' ) );
 			}
 		}
 		return $themes[$theme_dir];
@@ -119,13 +119,13 @@ class Themes
 	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return array An array of Theme data
 	 **/
-	public static function get_active($nopreview = false)
+	public static function get_active( $nopreview = false )
 	{
 		$theme = new QueryRecord();
-		$theme->theme_dir = Themes::get_active_theme_dir($nopreview);
+		$theme->theme_dir = Themes::get_active_theme_dir( $nopreview );
 
-		$data = simplexml_load_file( Utils::end_in_slash($theme->theme_dir) . 'theme.xml' );
-		foreach ( $data as $name=>$value) {
+		$data = simplexml_load_file( Utils::end_in_slash( $theme->theme_dir ) . 'theme.xml' );
+		foreach ( $data as $name=>$value ) {
 			$theme->$name = (string) $value;
 		}
 		return $theme;
@@ -136,10 +136,10 @@ class Themes
 	 * @params boolean $nopreview If true, return the real active theme, not the preview
 	 * @return array An array of Theme data
 	 */
-	public static function get_active_data($nopreview = false)
+	public static function get_active_data( $nopreview = false )
 	{
 		$all_data = Themes::get_all_data();
-		$active_theme_dir = basename(Themes::get_active_theme_dir($nopreview));
+		$active_theme_dir = basename( Themes::get_active_theme_dir( $nopreview ) );
 		$active_data = $all_data[$active_theme_dir];
 		return $active_data;
 	}
@@ -175,10 +175,10 @@ class Themes
 	 */
 	public static function cancel_preview()
 	{
-		if (isset($_SESSION['user_theme_name'])) {
+		if ( isset( $_SESSION['user_theme_name'] ) ) {
 			EventLog::log( _t( 'Canceled Theme Preview: %s', array( $_SESSION['user_theme_name'] ) ), 'notice', 'theme', 'habari' );
-			unset($_SESSION['user_theme_name']);
-			unset($_SESSION['user_theme_dir']);
+			unset( $_SESSION['user_theme_name'] );
+			unset( $_SESSION['user_theme_dir'] );
 		}
 	}
 
@@ -219,7 +219,7 @@ class Themes
 				/* lookup in DB for template engine info. */
 				$themedata = self::get_by_name( $name );
 				if ( empty( $themedata ) ) {
-					die( _t('Theme not installed.') );
+					die( _t( 'Theme not installed.' ) );
 				}
 				$themedata->theme_dir = HABARI_PATH . '/user/themes/' . $themedata->theme_dir . '/';
 			}
@@ -228,7 +228,7 @@ class Themes
 			// Grab the theme from the database
 			$themedata = self::get_active();
 			if ( empty( $themedata ) ) {
-				die( _t('Theme not installed.') );
+				die( _t( 'Theme not installed.' ) );
 			}
 		}
 
@@ -238,13 +238,13 @@ class Themes
 		 **/
 		if ( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
 			include_once( $themedata->theme_dir . 'theme.php' );
-			if ( defined('THEME_CLASS') ) {
+			if ( defined( 'THEME_CLASS' ) ) {
 				$classname = THEME_CLASS;
 			}
 		}
 
-		$created_theme = new $classname($themedata);
-		Plugins::act('init_theme', $created_theme );
+		$created_theme = new $classname( $themedata );
+		Plugins::act( 'init_theme', $created_theme );
 		return $created_theme;
 
 	}
