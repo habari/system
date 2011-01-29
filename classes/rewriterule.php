@@ -18,9 +18,9 @@ class RewriteRule extends QueryRecord
 	const RULE_PLUGIN = 2;
 	const RULE_CUSTOM = 5;
 
-	public $entire_match = NULL; // Entire matched string from the URL
+	public $entire_match = null; // Entire matched string from the URL
 	public $named_arg_values = array(); // Values of named arguments filled during URL::parse()
-	private $m_named_args = NULL; // Named arguments matches
+	private $m_named_args = null; // Named arguments matches
 
 
 	/**
@@ -72,8 +72,8 @@ class RewriteRule extends QueryRecord
 			$this->entire_match = array_shift( $pattern_matches ); // The entire matched string is returned at index 0
 			$named_args = $this->named_args; // Direct call shows a PHP notice
 
-			if ( $parameters = unserialize($this->parameters) ) {
-				$this->named_arg_values = array_merge($this->named_arg_values, $parameters);
+			if ( $parameters = unserialize( $this->parameters ) ) {
+				$this->named_arg_values = array_merge( $this->named_arg_values, $parameters );
 			}
 
 			foreach ( $named_args as $keys ) {
@@ -88,8 +88,8 @@ class RewriteRule extends QueryRecord
 				$this->action = $this->named_arg_values[$matches[1]];
 			}
 
-			if ( isset($parameters['require_match']) ) {
-				return call_user_func($parameters['require_match'], $this, $stub, $parameters);
+			if ( isset( $parameters['require_match'] ) ) {
+				return call_user_func( $parameters['require_match'], $this, $stub, $parameters );
 			}
 
 			return true;
@@ -222,28 +222,28 @@ class RewriteRule extends QueryRecord
 	{
 		$arr = explode( '/', $build_str );
 
-		$searches = array('/^([^"\']+)$/', '/^["\'](.+)["\']$/');
-		$replacements = array('(?P<\1>.+)', '\1');
+		$searches = array( '/^([^"\']+)$/', '/^["\'](.+)["\']$/' );
+		$replacements = array( '(?P<\1>.+)', '\1' );
 		$re_arr = preg_replace( $searches, $replacements, $arr );
 
-		$searches = array('/^([^"\']+)$/', '/^["\'](.+)["\']$/');
-		$replacements = array('{$\1}', '\1');
+		$searches = array( '/^([^"\']+)$/', '/^["\'](.+)["\']$/' );
+		$replacements = array( '{$\1}', '\1' );
 		$str_arr = preg_replace( $searches, $replacements, $arr );
 
 		$regex = '/^' . implode( '\/', $re_arr ) . '\/?$/i';
 		$build_str = implode( '/', $str_arr );
 
 		return new RewriteRule( array(
-		 'name' => $action,
-		 'parse_regex' => $regex,
-		 'build_str' => $build_str,
-		 'handler' => $handler,
-		 'action' => $action,
-		 'priority' => 1,
-		 'is_active' => 1,
-		 'rule_class' => RewriteRule::RULE_CUSTOM,
-		 'description' => 'Custom old-style rule.',
-		 ) );
+			'name' => $action,
+			'parse_regex' => $regex,
+			'build_str' => $build_str,
+			'handler' => $handler,
+			'action' => $action,
+			'priority' => 1,
+			'is_active' => 1,
+			'rule_class' => RewriteRule::RULE_CUSTOM,
+			'description' => 'Custom old-style rule.',
+		) );
 	}
 
 }

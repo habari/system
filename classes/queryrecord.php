@@ -20,10 +20,10 @@ class QueryRecord implements URLProperties
 	 * Constructor for the QueryRecord class.
 	 * @param array an associative array of initial field values.
 	 */
-	public function __construct($paramarray = array())
+	public function __construct( $paramarray = array() )
 	{
-		$params = Utils::get_params($paramarray);
-		if (count($params) ) {
+		$params = Utils::get_params( $paramarray );
+		if ( count( $params ) ) {
 			// Defaults
 			$this->fields = array_merge(
 				$this->fields,
@@ -32,7 +32,7 @@ class QueryRecord implements URLProperties
 			// mark any passed params as loaded when creating this object
 			$this->properties_loaded = array_merge(
 				$this->properties_loaded,
-				array_combine( array_keys($params), array_fill(0, count($params), true) )
+				array_combine( array_keys( $params ), array_fill( 0, count( $params ), true ) )
 			);
 		}
 	}
@@ -43,7 +43,7 @@ class QueryRecord implements URLProperties
 	 * @param string Name of the property
 	 * @return mixed The set value or null if none exists
 	 **/
-	public function __get($name)
+	public function __get( $name )
 	{
 		if ( isset( $this->newfields[$name] ) ) {
 			return $this->newfields[$name];
@@ -63,9 +63,9 @@ class QueryRecord implements URLProperties
 	 * @param mixed Value to set it to
 	 * @return mixed The set value
 	 **/
-	public function __set($name, $value)
+	public function __set( $name, $value )
 	{
-		if ( isset($this->properties_loaded[$name]) ) {
+		if ( isset( $this->properties_loaded[$name] ) ) {
 			$this->newfields[$name] = $value;
 		}
 		else {
@@ -80,7 +80,7 @@ class QueryRecord implements URLProperties
 	* @param string $name The name of the parameter
 	* @return boolean True if the value is set, false if not
 	*/
-	public function __isset($name)
+	public function __isset( $name )
 	{
 		return ( isset( $this->newfields[$name] ) || isset( $this->fields[$name] ) );
 	}
@@ -91,8 +91,8 @@ class QueryRecord implements URLProperties
 	*/
 	public function exclude_fields( $fields )
 	{
-		if ( is_array($fields) ) {
-			$this->unsetfields = array_flip($fields);
+		if ( is_array( $fields ) ) {
+			$this->unsetfields = array_flip( $fields );
 		}
 		else {
 			$this->unsetfields[$fields] = $fields;
@@ -125,10 +125,10 @@ class QueryRecord implements URLProperties
 	 * Again, the parent class's method's signature must match that of the
 	 * child class's signature
 	 */
-	protected function insertRecord($table)
+	protected function insertRecord( $table )
 	{
-		$merge =  array_merge($this->fields, $this->newfields);
-		return DB::insert($table, array_diff_key($merge, $this->unsetfields));
+		$merge =  array_merge( $this->fields, $this->newfields );
+		return DB::insert( $table, array_diff_key( $merge, $this->unsetfields ) );
 	}
 
 	/**
@@ -138,7 +138,7 @@ class QueryRecord implements URLProperties
 	 */
 	public function to_array()
 	{
-		return array_merge($this->fields, $this->newfields);
+		return array_merge( $this->fields, $this->newfields );
 	}
 
 	/**
@@ -165,10 +165,10 @@ class QueryRecord implements URLProperties
 	 * @param array An associative array of field data to match
 	 * @return boolean True on success, false if not
 	 */
-	protected function updateRecord($table, $updatekeyfields = array() )
+	protected function updateRecord( $table, $updatekeyfields = array() )
 	{
-		$merge = array_merge($this->fields, $this->newfields);
-		return DB::update($table, array_diff_key($merge, $this->unsetfields), $updatekeyfields);
+		$merge = array_merge( $this->fields, $this->newfields );
+		return DB::update( $table, array_diff_key( $merge, $this->unsetfields ), $updatekeyfields );
 	}
 
 	/**
@@ -186,9 +186,9 @@ class QueryRecord implements URLProperties
 	 * @param array An associative array of field data to match
 	 * @return boolean True on success, false if not
 	 */
-	protected function deleteRecord($table, $updatekeyfields)
+	protected function deleteRecord( $table, $updatekeyfields )
 	{
-		return DB::delete($table, $updatekeyfields);
+		return DB::delete( $table, $updatekeyfields );
 	}
 
 }

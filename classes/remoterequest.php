@@ -42,11 +42,11 @@ class RemoteRequest
 	
 	// Array of adapter configuration options
 	private $config = array(
-        'connect_timeout'   => 30,
-        'timeout'           => 180,
-        'buffer_size'       => 16384,
+		'connect_timeout'   => 30,
+		'timeout'           => 180,
+		'buffer_size'       => 16384,
 		'follow_redirects'  => true,
-        'max_redirects'     => 5,
+		'max_redirects'     => 5,
 
 		// These are configured in the main config file
 		'proxy' => array(
@@ -69,7 +69,7 @@ class RemoteRequest
 			'passphrase' => null,
 			
 		),
-    );
+	);
 
 	/**
 	 * @param string $url URL to request
@@ -108,13 +108,13 @@ class RemoteRequest
 		$this->add_header( array( 'User-Agent' => $this->user_agent ) );
 
 		// if they've manually specified that we should not use curl, use sockets instead
-		if ( Config::get('remote_request_processor') == 'socket' ) {
+		if ( Config::get( 'remote_request_processor' ) == 'socket' ) {
 			$this->processor = new SocketRequestProcessor();
 		}
 		else {
 			// otherwise, see if we can use curl and fall back to sockets if not
 			if ( function_exists( 'curl_init' )
-				 && ! ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) ) {
+				&& ! ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) ) {
 				$this->processor = new CURLRequestProcessor;
 			}
 			else {
@@ -140,13 +140,12 @@ class RemoteRequest
 	 * @param mixed			$value
 	 */
 	public function set_config( $config, $value = null )
-    {
-        if ( is_array( $config ) ) {
-            foreach ( $config as $name => $value ) {
-                $this->set_config( $name, $value );
-            }
-
-        }
+	{
+		if ( is_array( $config ) ) {
+			foreach ( $config as $name => $value ) {
+				$this->set_config( $name, $value );
+			}
+		}
 		else {
 			if ( is_array( $value ) ) {
 				$this->config[ $config ] = array_merge( $this->config[ $config ], $value );
@@ -154,8 +153,8 @@ class RemoteRequest
 			else {
 				$this->config[ $config ] = $value;
 			}
-        }
-    }
+		}
+	}
 	
 	/**
 	 * Add a request header.
@@ -191,7 +190,7 @@ class RemoteRequest
 	public function set_body( $body )
 	{
 		if ( $this->method == 'GET' ) {
-			throw new Exception( _t('Trying to add a request body to a GET request.') );
+			throw new Exception( _t( 'Trying to add a request body to a GET request.' ) );
 		}
 
 		$this->body = $body;
@@ -227,10 +226,10 @@ class RemoteRequest
 	 * @param mixed $name
 	 * @param string $value
 	 */
-	public function set_postdata($name, $value = null)
+	public function set_postdata( $name, $value = null )
 	{
-		if (is_array($name)) {
-			$this->postdata = array_merge($this->postdata, $name);
+		if ( is_array( $name ) ) {
+			$this->postdata = array_merge( $this->postdata, $name );
 		}
 		else {
 			$this->postdata[$name] = $value;
@@ -245,13 +244,13 @@ class RemoteRequest
 	 * @param string $filename
 	 * @param string $content_type
 	 */
-	public function set_file($name, $filename, $content_type = null, $override_filename = null)
+	public function set_file( $name, $filename, $content_type = null, $override_filename = null )
 	{
-		if (!file_exists($filename)) {
-			throw new Exception( _t('File %s not found.', array($filename)) );
+		if ( !file_exists( $filename ) ) {
+			throw new Exception( _t( 'File %s not found.', array( $filename ) ) );
 		}
-		if (empty($content_type)) $content_type = 'application/octet-stream';
-		$this->files[$name] = array('filename' => $filename, 'content_type' => $content_type, 'override_filename' => $override_filename);
+		if ( empty( $content_type ) ) $content_type = 'application/octet-stream';
+		$this->files[$name] = array( 'filename' => $filename, 'content_type' => $content_type, 'override_filename' => $override_filename );
 		$this->headers['Content-Type'] = 'multipart/form-data';
 	}
 
@@ -270,7 +269,7 @@ class RemoteRequest
 				// TODO should raise a warning
 				$this->add_header( array( 'Content-Type' => 'application/x-www-form-urlencoded' ) );
 
-				if ( $this->body != '' && count($this->postdata) > 0 ) {
+				if ( $this->body != '' && count( $this->postdata ) > 0 ) {
 					$this->body .= '&';
 				}
 				$this->body .= http_build_query( $this->postdata, '', '&' );
@@ -302,7 +301,7 @@ class RemoteRequest
 				}
 
 				if ( !empty( $parts ) ) {
-					$this->body = "--{$boundary}\r\n" . join("--{$boundary}\r\n", $parts) . "--{$boundary}--\r\n";
+					$this->body = "--{$boundary}\r\n" . join( "--{$boundary}\r\n", $parts ) . "--{$boundary}--\r\n";
 				}
 			}
 			$this->add_header( array( 'Content-Length' => strlen( $this->body ) ) );
@@ -348,7 +347,7 @@ class RemoteRequest
 	public function get_response_headers()
 	{
 		if ( !$this->executed ) {
-			throw new Exception( _t('Unable to fetch response headers for a pending request.') );
+			throw new Exception( _t( 'Unable to fetch response headers for a pending request.' ) );
 		}
 
 		return $this->response_headers;
@@ -361,7 +360,7 @@ class RemoteRequest
 	public function get_response_body()
 	{
 		if ( !$this->executed ) {
-			throw new Exception( _t('Unable to fetch response body for a pending request.') );
+			throw new Exception( _t( 'Unable to fetch response body for a pending request.' ) );
 		}
 
 		return $this->response_body;
@@ -418,11 +417,11 @@ class RemoteRequest
 	 * @param int $maxlen how many bytes to return
 	 * @return string description
 	 */
-	public static function get_contents( $url, $use_include_path = false, $context = null, $offset =0, $maxlen = -1 )
+	public static function get_contents( $url, $use_include_path = false, $context = null, $offset = 0, $maxlen = -1 )
 	{
 		try {
 			$rr = new RemoteRequest( $url );
-			if ( $rr->execute() === true) {
+			if ( $rr->execute() === true ) {
 				return ( $maxlen != -1
 					? MultiByte::substr( $rr->get_response_body(), $offset, $maxlen )
 					: MultiByte::substr( $rr->get_response_body(), $offset ) );

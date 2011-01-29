@@ -18,7 +18,7 @@ class RewriteRules extends ArrayObject
 	 * @param array $rules An array of RewriteRule objects
 	 * @return array An array of rules with the system rules potentially added
 	 */
-	public static function add_system_rules($rules)
+	public static function add_system_rules( $rules )
 	{
 		$default_rules = array(
 			// Display content
@@ -64,7 +64,7 @@ class RewriteRules extends ArrayObject
 			// XMLRPC requests
 			array( 'name' => 'xmlrpc', 'parse_regex' => '#^xmlrpc/?$#i', 'build_str' => 'xmlrpc', 'handler' => 'XMLRPCServer', 'action' => 'xmlrpc_call', 'priority' => 8, 'description' => 'Handle incoming XMLRPC requests.' ),
 		);
-		$default_rules = Plugins::filter('default_rewrite_rules', $default_rules);
+		$default_rules = Plugins::filter( 'default_rewrite_rules', $default_rules );
 		$default_rules_properties = array( 'is_active' => 1, 'rule_class' => RewriteRule::RULE_SYSTEM );
 		$rule_names = array_flip( array_map( create_function( '$a', 'return $a->name;' ), $rules ) );
 		foreach ( $default_rules as $default_rule ) {
@@ -85,7 +85,7 @@ class RewriteRules extends ArrayObject
 	{
 		static $system_rules;
 
-		if ( !isset($system_rules) ) {
+		if ( !isset( $system_rules ) ) {
 			$sql = "
 				SELECT rr.rule_id, rr.name, rr.parse_regex, rr.build_str, rr.handler, rr.action, rr.priority, rr.parameters
 				FROM {rewrite_rules} AS rr
@@ -95,9 +95,9 @@ class RewriteRules extends ArrayObject
 
 			$system_rules = self::add_system_rules( $db_rules );
 		}
-		$rewrite_rules = Plugins::filter('rewrite_rules', $system_rules);
+		$rewrite_rules = Plugins::filter( 'rewrite_rules', $system_rules );
 
-		$rewrite_rules = self::sort_rules($rewrite_rules);
+		$rewrite_rules = self::sort_rules( $rewrite_rules );
 
 		// cache the sorted rules for this instance to use
 		$c = __CLASS__;
@@ -115,19 +115,19 @@ class RewriteRules extends ArrayObject
 	 * @param array $rewrite_rules An array of RewriteRules
 	 * @return array Sorted rewrite rules by priority
 	 */
-	public static function sort_rules($rewrite_rules)
+	public static function sort_rules( $rewrite_rules )
 	{
 		$pr = array();
 		$max_priority = 0;
 		foreach ( $rewrite_rules as $r ) {
 			$priority = $r->priority;
 			$pr[$priority][] = $r;
-			$max_priority = max($max_priority, $priority);
+			$max_priority = max( $max_priority, $priority );
 		}
 		$rewrite_rules = array();
 		for ( $z = 0; $z <= $max_priority; $z++ ) {
-			if ( isset($pr[$z]) ) {
-				$rewrite_rules = array_merge($rewrite_rules, $pr[$z]);
+			if ( isset( $pr[$z] ) ) {
+				$rewrite_rules = array_merge( $rewrite_rules, $pr[$z] );
 			}
 		}
 		return $rewrite_rules;
@@ -155,7 +155,7 @@ class RewriteRules extends ArrayObject
 			}
 		}
 
-		return isset($named[$name]) ? $named[$name] : false;
+		return isset( $named[$name] ) ? $named[$name] : false;
 	}
 }
 
