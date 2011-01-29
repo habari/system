@@ -96,7 +96,7 @@ class Version
 		$rev = 0;
 		// Cheating!
 		$stash_file = HABARI_PATH . '/.svn/entries';
-		if ( file_exists ( $stash_file ) ) {
+		if ( file_exists( $stash_file ) ) {
 			$info = file_get_contents( $stash_file );
 			$info = explode( "\n", $info );
 			if ( strpos( $info[4], 'svn.habariproject.org/habari/' ) !== false ) {

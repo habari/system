@@ -54,7 +54,7 @@ class Users extends ArrayObject
 			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
 				$where = array();
-				$paramset = array_merge((array) $paramarray, (array) $paramset);
+				$paramset = array_merge( (array) $paramarray, (array) $paramset );
 
 				$default_fields = User::default_fields();
 				foreach ( User::default_fields() as $field => $scrap ) {
@@ -81,7 +81,7 @@ class Users extends ArrayObject
 					}
 				}
 
-				if ( count($where) > 0 ) {
+				if ( count( $where ) > 0 ) {
 					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
@@ -129,11 +129,11 @@ class Users extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
+		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 		//Utils::debug($paramarray, $fetch_fn, $query, $params);
 
-		DB::set_fetch_mode(PDO::FETCH_CLASS);
-		DB::set_fetch_class('User');
+		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_class( 'User' );
 		$results = DB::$fetch_fn( $query, $params, 'User' );
 
 		if ( 'get_results' != $fetch_fn ) {
@@ -155,10 +155,10 @@ class Users extends ArrayObject
 	 * @param string|null $value
 	 * @return Users|bool
 	 */
-	public static function get_by_info( $key, $value = NULL )
+	public static function get_by_info( $key, $value = null )
 	{
 		// If no value was specified, check if several info were passed
-		if ( NULL === $value ) {
+		if ( null === $value ) {
 			if ( is_array( $key ) ) {
 				$params['info'] = $key;
 			}

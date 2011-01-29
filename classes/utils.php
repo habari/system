@@ -107,13 +107,13 @@ class Utils
 			$nonce = Utils::crypt( Options::get( 'GUID' ) . Utils::nonce() );
 		}
 		if ( '' === $timestamp ) {
-			$timestamp = date('c');
+			$timestamp = date( 'c' );
 		}
 		$user = User::identify();
 		$wsse = array(
 			'nonce' => $nonce,
 			'timestamp' => $timestamp,
-			'digest' => base64_encode( pack( 'H*' , sha1( $nonce . $timestamp . $user->password ) ) )
+			'digest' => base64_encode( pack( 'H*', sha1( $nonce . $timestamp . $user->password ) ) )
 		);
 		return $wsse;
 	}
@@ -125,7 +125,7 @@ class Utils
 	public static function stripslashes( $value )
 	{
 		if ( is_array( $value ) ) {
-			$value = array_map( array( 'Utils', 'stripslashes' ) , $value );
+			$value = array_map( array( 'Utils', 'stripslashes' ), $value );
 		}
 		elseif ( !empty( $value ) && is_string( $value ) ) {
 			$value = stripslashes( $value );
@@ -298,9 +298,9 @@ class Utils
 			echo $output;
 			self::$debug_defined = true;
 		}
-		if ( function_exists('debug_backtrace') ) {
+		if ( function_exists( 'debug_backtrace' ) ) {
 			$output = "<table>";
-			$backtrace = array_reverse(debug_backtrace(), true);
+			$backtrace = array_reverse( debug_backtrace(), true );
 			$odd = '';
 			$tracect = 0;
 			foreach ( $backtrace as $trace ) {
@@ -344,7 +344,7 @@ class Utils
 
 		foreach ( $fooargs as $arg1 ) {
 			$output .= "console.info(\"%s:  %s\", \"" . gettype( $arg1 ) . "\"";
-			$output .= ", \"" . str_replace( "\n", '\n', addslashes( print_r( $arg1,1 ) ) ) . "\");\n";
+			$output .= ", \"" . str_replace( "\n", '\n', addslashes( print_r( $arg1, 1 ) ) ) . "\");\n";
 		}
 		$output .= "console.groupEnd();\n}\n</script>";
 		echo $output;
@@ -374,7 +374,7 @@ class Utils
 
 			$output2 = $comma = $argtypes = '';
 			foreach ( (array)$args as $arg ) {
-				$argout = str_replace( "\n", '\n', addslashes( print_r( $arg,1 ) ) );
+				$argout = str_replace( "\n", '\n', addslashes( print_r( $arg, 1 ) ) );
 				//$output .= $comma . Utils::debug_reveal( gettype($arg), htmlentities($argout), $debugid . $tracect, true );
 				$argtypes .= $comma . gettype( $arg );
 				$output2 .= "console.log(\"$argout\");\n";
@@ -599,14 +599,14 @@ class Utils
 	 * @param array $properties An associative array of additional properties to assign to the select control
 	 * @return string The select control markup
 	 */
-	public static function html_select( $name, $options, $current = null, $properties = array())
+	public static function html_select( $name, $options, $current = null, $properties = array() )
 	{
 		$output = '<select id="' . $name . '" name="' . $name . '"';
 		foreach ( $properties as $key => $value ) {
 			$output .= " {$key}=\"{$value}\"";
 		}
 		$output .= ">\n";
-		foreach ( $options as $value => $text ){
+		foreach ( $options as $value => $text ) {
 			$output .= '<option value="' . $value . '"';
 			if ( $current == (string)$value ) {
 				$output .= ' selected="selected"';
@@ -767,7 +767,7 @@ class Utils
 			$pattern = str_replace( '\\*', '.*', $pattern );
 			$pattern = str_replace( '\\?', '.', $pattern );
 			$regex = '/' . str_replace( array_keys( $braces ), array_values( $braces ), $pattern ) . '/';
-			$results = preg_grep( $regex, Utils::glob( $new_pattern, $flags ^ GLOB_BRACE) );
+			$results = preg_grep( $regex, Utils::glob( $new_pattern, $flags ^ GLOB_BRACE ) );
 		}
 
 		if ( $results === false ) $results = array();
@@ -905,10 +905,10 @@ class Utils
 			'headers' => $headers,
 			'parameters' => $parameters,
 		);
-		$mail = Plugins::filter('mail', $mail);
+		$mail = Plugins::filter( 'mail', $mail );
 
 		$handled = false;
-		$handled = Plugins::filter('send_mail', $handled, $mail);
+		$handled = Plugins::filter( 'send_mail', $handled, $mail );
 		if ( $handled ) {
 			return true;
 		}
@@ -923,7 +923,7 @@ class Utils
 			}
 			$additional_headers = implode( "\r\n", $additional_headers );
 		}
-		return mail( $to, $subject,$message, $additional_headers, $parameters );
+		return mail( $to, $subject, $message, $additional_headers, $parameters );
 	}
 
 	/**
@@ -936,9 +936,9 @@ class Utils
 	{
 		$password = '';
 		$character_set = '1234567890!@#$^*qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVNBM';
-		$data = str_split($character_set);
+		$data = str_split( $character_set );
 		for ( $i = 0; $i < $length; $i++ ) {
-			$password .= $data[rand(1, strlen($character_set)) - 1];
+			$password .= $data[rand( 1, strlen( $character_set ) ) - 1];
 		}
 		return $password;
 	}
@@ -1105,17 +1105,16 @@ class Utils
 		 * Supply some default possibilities for delimiters if we
 		 * weren't given an explicit list.
 		 */
-		if ( ! isset( $choices ) )
-		{
+		if ( ! isset( $choices ) ) {
 			$choices = sprintf( '%c%c%c%c%c%c%c',
-					   167,      /* § */
-					   164,      /* ¤ */
-					   165,      /* ¥ */
-					   ord( '`' ),
-					   ord( '~' ),
-					   ord( '%' ),
-					   ord( '#' )
-			    );
+				167, /* § */
+				164, /* ¤ */
+				165, /* ¥ */
+				ord( '`' ),
+				ord( '~' ),
+				ord( '%' ),
+				ord( '#' )
+			);
 		}
 		$a_delims = str_split( $choices );
 		/*
@@ -1127,10 +1126,8 @@ class Utils
 		 * If it isn't found, it's a valid choice, so break out of the
 		 * loop.
 		 */
-		foreach ( $a_delims as $tdelim )
-		{
-			if ( ! strstr( $string, $tdelim ) )
-			{
+		foreach ( $a_delims as $tdelim ) {
+			if ( ! strstr( $string, $tdelim ) ) {
 				$delim = $tdelim;
 				break;
 			}

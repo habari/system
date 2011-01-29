@@ -78,7 +78,7 @@ class Vocabulary extends QueryRecord
 	public function __get( $name )
 	{
 		$out = parent::__get( $name );
-		switch ($name) {
+		switch ( $name ) {
 			case 'features':
 				if ( ! is_array( $out ) ) {
 					$out = unserialize( $out );
@@ -164,7 +164,7 @@ class Vocabulary extends QueryRecord
 			'Term'
 		);
 
-		return new Terms($results);
+		return new Terms( $results );
 	}
 
 	/**
@@ -218,7 +218,7 @@ class Vocabulary extends QueryRecord
 		// We've inserted the vocabulary, reset newfields
 		$this->newfields = array();
 
-		EventLog::log( _t( 'New vocabulary %1$s (%2$s)' , array($this->id, $this->name) ), 'info', 'content', 'habari' );
+		EventLog::log( _t( 'New vocabulary %1$s (%2$s)', array( $this->id, $this->name ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_insert_after', $this );
@@ -280,12 +280,12 @@ class Vocabulary extends QueryRecord
 		Plugins::act( 'vocabulary_delete_before', $this );
 
 		// Get the ids for all this vocabulary's terms
-		$ids = DB::get_column('SELECT id FROM {terms} WHERE vocabulary_id = ?', array( $this->id ) );
+		$ids = DB::get_column( 'SELECT id FROM {terms} WHERE vocabulary_id = ?', array( $this->id ) );
 
 		// Delete the records from object_terms for those ids (if there were any)
-		if( count( $ids ) ) {
+		if ( count( $ids ) ) {
 			$placeholder = Utils::placeholder_string( count( $ids ) );
-			DB::query("DELETE FROM {object_terms} WHERE term_id IN ($placeholder)", $ids );
+			DB::query( "DELETE FROM {object_terms} WHERE term_id IN ($placeholder)", $ids );
 		}
 
 		// Delete this vocabulary's terms
@@ -293,7 +293,7 @@ class Vocabulary extends QueryRecord
 
 		// Finally, delete the vocabulary
 		$result = parent::deleteRecord( '{vocabularies}', array( 'id'=>$this->id ) );
-		EventLog::log( sprintf(_t('Vocabulary %1$s (%2$s) deleted.'), $this->id, $this->name), 'info', 'content', 'habari' );
+		EventLog::log( sprintf( _t( 'Vocabulary %1$s (%2$s) deleted.' ), $this->id, $this->name ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
 		Plugins::act( 'vocabulary_delete_after', $this );
@@ -322,7 +322,7 @@ class Vocabulary extends QueryRecord
 			if ( $this->hierarchical ) {
 				// If no parent is specified, put the new term after the last term
 				if ( null == $target_term ) {
-					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
+					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array( $this->id ) );
 				}
 				else {
 					if ( ! $before ) {
@@ -336,7 +336,7 @@ class Vocabulary extends QueryRecord
 			else {
 				// If no before_term is specified, put the new term after the last term
 				if ( ! $before ) {
-					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array($this->id) );
+					$ref = DB::get_value( 'SELECT mptt_right FROM {terms} WHERE vocabulary_id=? ORDER BY mptt_right DESC LIMIT 1', array( $this->id ) );
 				}
 				else {
 					$ref = $target_term->mptt_left - 1;
@@ -344,13 +344,13 @@ class Vocabulary extends QueryRecord
 			}
 
 			// Make space for the new node
-			$params = array( 'vocab_id' => $this->id, 'ref' => $ref);
-			$res = DB::query('UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=:vocab_id AND mptt_right>:ref', $params);
+			$params = array( 'vocab_id' => $this->id, 'ref' => $ref );
+			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right+2 WHERE vocabulary_id=:vocab_id AND mptt_right>:ref', $params );
 			if ( ! $res ) {
 				DB::rollback();
 				return false;
 			}
-			$res = DB::query('UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=:vocab_id AND mptt_left>:ref', $params);
+			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left+2 WHERE vocabulary_id=:vocab_id AND mptt_left>:ref', $params );
 			if ( ! $res ) {
 				DB::rollback();
 				return false;
@@ -382,24 +382,24 @@ class Vocabulary extends QueryRecord
 	 * @return Term The Term object requested
 	 * @todo improve selective fetching by term slug vs term_display	 
 	 **/
-	public function get_term($term = null, $term_class = 'Term')
+	public function get_term( $term = null, $term_class = 'Term' )
 	{
 		$params = array( 'vocab_id' => $this->id );
 		$query = '';
-		if ($term instanceof Term) {
- 			$params[ 'term_id' ] = $term->id;
+		if ( $term instanceof Term ) {
+			$params[ 'term_id' ] = $term->id;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND id = ABS(:term_id)';
 		}
 		elseif ( is_null( $term )  ) {
 			// The root node has an mptt_left value of 1
- 			$params[ 'left' ] = 1;
+			$params[ 'left' ] = 1;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND mptt_left = :left';
 		}
-		elseif ( is_string($term) ) {
+		elseif ( is_string( $term ) ) {
 			$params[ 'term' ] = $term;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND (term = :term OR term_display = :term)';
 		}
-		elseif ( is_int($term) )  {
+		elseif ( is_int( $term ) ) {
 			$params[ 'term_id' ] = $term;
 			$query = 'SELECT * FROM {terms} WHERE vocabulary_id = :vocab_id AND id = ABS(:term_id)';
 		}
@@ -414,7 +414,7 @@ class Vocabulary extends QueryRecord
 	 * @param integer The id of the object for which you want the terms
 	 * @return Array The Term objects requested
 	 **/
-	public function get_object_terms($object_type, $id)
+	public function get_object_terms( $object_type, $id )
 	{
 		$results = DB::get_results(
 			'SELECT id, term, term_display, vocabulary_id, mptt_left, mptt_right FROM {terms}
@@ -470,15 +470,15 @@ class Vocabulary extends QueryRecord
 		$old_terms = $this->get_object_terms( $object_type, $id );
 		$keys = array_keys( $new_terms );
 		foreach ( $old_terms as $term ) {
-	 		// If the old term isn't in the new terms, dissociate it from the object
-			 if ( ! in_array( $term->id, $keys ) ) {
-				  $term->dissociate( $object_type, $id );
-			 }
+			// If the old term isn't in the new terms, dissociate it from the object
+			if ( ! in_array( $term->id, $keys ) ) {
+				$term->dissociate( $object_type, $id );
+			}
 		}
 
 		// Associate the new terms
 		foreach ( $new_terms as $term ) {
-			 $term->associate( $object_type, $id );
+			$term->associate( $object_type, $id );
 		}
 
 		return true;
@@ -531,9 +531,9 @@ class Vocabulary extends QueryRecord
 	 * Retrieve the vocabulary
 	 * @return Array The Term objects in the vocabulary, in tree order
 	 **/
-	public function get_tree($orderby = 'mptt_left ASC')
+	public function get_tree( $orderby = 'mptt_left ASC' )
 	{
-		return DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=:vid ORDER BY {$orderby}", array('vid' => $this->id), 'Term' );
+		return DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=:vid ORDER BY {$orderby}", array( 'vid' => $this->id ), 'Term' );
 	}
 
 	/**
@@ -544,15 +544,15 @@ class Vocabulary extends QueryRecord
 	{
 		$tree = $this->get_tree( 'mptt_left ASC' );
 		$output = array();
-		if ($firstnode = reset($tree)) {
-			$lastright = $lastleft = reset($tree)->mptt_left;
+		if ( $firstnode = reset( $tree ) ) {
+			$lastright = $lastleft = reset( $tree )->mptt_left;
 			$indent = 0;
 			$stack = array();
 			foreach ( $tree as $term ) {
 				while ( count( $stack ) > 0 && end( $stack )->mptt_right < $term->mptt_left ) {
 					array_pop( $stack );
 				}
-				$output[$term->id] = str_repeat( '- ', count( $stack )) . $term->term_display;
+				$output[$term->id] = str_repeat( '- ', count( $stack ) ) . $term->term_display;
 				$stack[] = $term;
 			}
 		}
@@ -635,7 +635,7 @@ SQL;
 
 			$nodes_moving = ( $range ) / 2; // parent and descendants
 
- 			DB::begin_transaction();
+			DB::begin_transaction();
 
 			// Move the source nodes out of the way by making mptt_left and mptt_right negative
 			$source_to_temp = $source_right + 1; // move the terms so that the rightmost one's mptt_right is -1
@@ -652,8 +652,8 @@ SQL;
 				$params
 			);
 
- 			if ( ! $res ) {
- 				DB::rollback();
+			if ( ! $res ) {
+				DB::rollback();
 				return false;
 			}
 
@@ -661,13 +661,13 @@ SQL;
 			$params = array( 'range' => $range, 'vocab_id' => $this->id, 'source_left' => $source_left );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left-:range WHERE vocabulary_id=:vocab_id AND mptt_left > :source_left', $params );
 			if ( ! $res ) {
- 				DB::rollback();
+				DB::rollback();
 				return false;
 			}
 
 			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right-:range WHERE vocabulary_id=:vocab_id AND mptt_right > :source_left', $params );
 			if ( ! $res ) {
- 				DB::rollback();
+				DB::rollback();
 				return false;
 			}
 
@@ -702,13 +702,13 @@ SQL;
 			$params = array( 'vocab_id' => $this->id, 'range' => $range, 'mptt_target' => $mptt_target );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left+:range WHERE vocabulary_id=:vocab_id AND mptt_left >= :mptt_target', $params );
 			if ( ! $res ) {
- 				DB::rollback();
+				DB::rollback();
 				return false;
 			}
 
 			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right+:range WHERE vocabulary_id=:vocab_id AND mptt_right >= :mptt_target', $params );
 			if ( ! $res ) {
- 				DB::rollback();
+				DB::rollback();
 				return false;
 			}
 
@@ -716,18 +716,18 @@ SQL;
 			$params = array( 'vocab_id' => $this->id, 'temp_to_target' => $temp_to_target );
 			$res = DB::query( 'UPDATE {terms} SET mptt_left=mptt_left+:temp_to_target WHERE vocabulary_id=:vocab_id AND mptt_left < 0', $params );
 			if ( ! $res ) {
- 				DB::rollback();
+				DB::rollback();
 				return false;
 			}
 
 			$res = DB::query( 'UPDATE {terms} SET mptt_right=mptt_right+:temp_to_target WHERE vocabulary_id=:vocab_id AND mptt_right < 0', $params );
 			if ( ! $res ) {
- 				DB::rollback();
+				DB::rollback();
 				return false;
 			}
 
 			// Success!
- 			DB::commit();
+			DB::commit();
 
 			// @todo: need to return the updated term
 			return $term;
@@ -764,7 +764,7 @@ SQL;
 	 * @param mixed $master The Term to which they should be renamed, or the slug, text or id of it
 	 * @param Array $tags The tag text, slugs or ids to be renamed
 	 **/
-	public function merge($master, $tags, $object_type = 'post' )
+	public function merge( $master, $tags, $object_type = 'post' )
 	{
 		$type_id = Vocabulary::object_type_id( $object_type );
 
@@ -794,7 +794,7 @@ SQL;
 		// get the master term
 		$master_term = $this->get_term( $master );
 
-		if ( !isset($master_term->term ) ) {
+		if ( !isset( $master_term->term ) ) {
 			// it didn't exist, so we assume it's tag text and create it
 			$master_term = $this->add_term( $master );
 
@@ -818,10 +818,10 @@ SQL;
 			$master_term->associate( $object_type, $post_id );
 		}
 
-		EventLog::log(sprintf(
-			_n('Term %1$s in the %2$s vocabulary has been renamed to %3$s.',
-				 'Terms %1$s in the %2$s vocabulary have been renamed to %3$s.',
-				  count( $tags )
+		EventLog::log( sprintf(
+			_n( 'Term %1$s in the %2$s vocabulary has been renamed to %3$s.',
+				'Terms %1$s in the %2$s vocabulary have been renamed to %3$s.',
+				count( $tags )
 			), implode( $tag_names, ', ' ), $this->name, $master ), 'info', 'vocabulary', 'habari'
 		);
 
@@ -840,7 +840,7 @@ SQL;
 	public function get_associations( $object_id, $object_type = 'post' )
 	{
 		$terms = $this->get_object_terms( $object_type, $object_id );
-		if ( $terms )  {
+		if ( $terms ) {
 			$terms = new Terms( $terms );
 		}
 
@@ -854,7 +854,7 @@ SQL;
 	 * @param mixed $term The tag to count usage.
 	 * @return int The number of times a tag is used.
 	 **/
-	public function post_count($term, $object_type = 'post' )
+	public function post_count( $term, $object_type = 'post' )
 	{
 		$term = $this->get_term( $term );
 		return $term->count( $object_type );

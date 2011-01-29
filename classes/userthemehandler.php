@@ -40,16 +40,16 @@ class UserThemeHandler extends ActionHandler
 		$this->theme->$before_action_method();
 		try {
 			$handled = false;
-			$handled = Plugins::filter('theme_act_' . $action, $handled, $this->theme);
+			$handled = Plugins::filter( 'theme_act_' . $action, $handled, $this->theme );
 			if ( !$handled ) {
 				$this->theme->$action_method();
 			}
 		}
-		catch(Error $e) {
-			EventLog::log($e->humane_error(), 'error', 'theme', 'habari', print_r($e, 1) );
-			Session::error($e->humane_error()); //Should we display any error here?
+		catch( Error $e ) {
+			EventLog::log( $e->humane_error(), 'error', 'theme', 'habari', print_r( $e, 1 ) );
+			Session::error( $e->humane_error() ); //Should we display any error here?
 			if ( DEBUG ) {
-				Utils::debug($e);
+				Utils::debug( $e );
 			}
 		}
 		$this->theme->$after_action_method();
@@ -73,8 +73,8 @@ class UserThemeHandler extends ActionHandler
 		try {
 			$this->theme->display( $template_name );
 		}
-		catch(Error $e) {
-			EventLog::log($e->humane_error(), 'error', 'theme', 'habari', print_r($e, 1) );
+		catch( Error $e ) {
+			EventLog::log( $e->humane_error(), 'error', 'theme', 'habari', print_r( $e, 1 ) );
 		}
 	}
 }

@@ -54,7 +54,7 @@ class UserGroups extends ArrayObject
 			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
 				$where = array();
-				$paramset = array_merge((array) $paramarray, (array) $paramset);
+				$paramset = array_merge( (array) $paramarray, (array) $paramset );
 
 				$default_fields = UserGroup::default_fields();
 				foreach ( UserGroup::default_fields() as $field => $scrap ) {
@@ -72,7 +72,7 @@ class UserGroups extends ArrayObject
 					}
 				}
 
-				if (count($where) > 0 ) {
+				if ( count( $where ) > 0 ) {
 					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
@@ -121,7 +121,7 @@ class UserGroups extends ArrayObject
 		}
 		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
-		DB::set_fetch_mode(PDO::FETCH_CLASS);
+		DB::set_fetch_mode( PDO::FETCH_CLASS );
 
 		$results = DB::$fetch_fn( $query, $params, 'UserGroup' );
 

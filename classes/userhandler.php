@@ -18,22 +18,22 @@ class UserHandler extends ActionHandler
 	public function act_login()
 	{
 		// If we're a reset password request, do that.
-		if ( isset( $_POST['submit_button']) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
+		if ( isset( $_POST['submit_button'] ) && $_POST['submit_button'] === _t( 'Reset password' ) ) {
 			Utils::check_request_method( array( 'POST' ) );
 
 			$name = $this->handler_vars['habari_username'];
-			if ( $name !== NULL ) {
-				if ( !is_numeric($name) && $user = User::get($name) ) {
+			if ( $name !== null ) {
+				if ( !is_numeric( $name ) && $user = User::get( $name ) ) {
 					$hash = Utils::random_password();
 
-					$user->info->password_reset = md5($hash);
+					$user->info->password_reset = md5( $hash );
 					$user->info->commit();
-					$message = _t('Please visit %1$s to reset your password.', array(URL::get('user', array('page' => 'password_reset', 'id' => $user->id, 'hash' => $hash))));
+					$message = _t( 'Please visit %1$s to reset your password.', array( URL::get( 'user', array( 'page' => 'password_reset', 'id' => $user->id, 'hash' => $hash ) ) ) );
 
-					Utils::mail($user->email, _t('[%1$s] Password reset request for %2$s', array(Options::get('title'), $user->displayname)), $message);
+					Utils::mail( $user->email, _t( '[%1$s] Password reset request for %2$s', array( Options::get( 'title' ), $user->displayname ) ), $message );
 				}
 				// Moving this inside the check for user existence would allow attackers to test usernames, so don't
-				Session::notice(_t('A password reset request has been sent to the user.'));
+				Session::notice( _t( 'A password reset request has been sent to the user.' ) );
 			}
 		}
 		// Back to actual login.
@@ -42,7 +42,7 @@ class UserHandler extends ActionHandler
 			$name = $_POST['habari_username'];
 			$pass = $_POST['habari_password'];
 
-			if ( ( NULL != $name ) || ( NULL != $pass ) ) {
+			if ( ( null != $name ) || ( null != $pass ) ) {
 				$user = User::authenticate( $name, $pass );
 
 				if ( ( $user instanceOf User ) && ( $user != false ) ) {
@@ -101,12 +101,12 @@ class UserHandler extends ActionHandler
 				/* Authentication failed. */
 				// Remove submitted password, see, we're secure!
 				$_POST['habari_password'] = '';
-				$this->handler_vars['error'] = _t('Bad credentials');
+				$this->handler_vars['error'] = _t( 'Bad credentials' );
 			}
 		}
 
 		// Display the login form.
-		$this->login_form($name);
+		$this->login_form( $name );
 	}
 
 	/**
@@ -127,7 +127,7 @@ class UserHandler extends ActionHandler
 			$user->forget();
 			$user = null;
 		}
-		Utils::redirect(Site::get_url('habari'));
+		Utils::redirect( Site::get_url( 'habari' ) );
 	}
 
 	/**
@@ -135,7 +135,7 @@ class UserHandler extends ActionHandler
 	 *
 	 * @param string $name Pre-fill the name field with this name
 	 */
-	protected function login_form($name)
+	protected function login_form( $name )
 	{
 		// Display the login form.
 		$this->theme = Themes::create();
@@ -148,12 +148,12 @@ class UserHandler extends ActionHandler
 			$request->{$rule->name} = ( $rule->name == URL::get_matched_rule()->name );
 		}
 
-		if (isset($this->handler_vars['error'])) {
-		    $this->theme->assign( 'error', Utils::htmlspecialchars( $this->handler_vars['error'] ) );
+		if ( isset( $this->handler_vars['error'] ) ) {
+			$this->theme->assign( 'error', Utils::htmlspecialchars( $this->handler_vars['error'] ) );
 		}
 
 		$this->theme->assign( 'request', $request );
-		$this->theme->assign( 'habari_username', htmlentities($name, ENT_QUOTES, 'UTF-8') );
+		$this->theme->assign( 'habari_username', htmlentities( $name, ENT_QUOTES, 'UTF-8' ) );
 		$this->display( 'login' );
 		return true;
 	}
@@ -166,7 +166,7 @@ class UserHandler extends ActionHandler
 	 */
 	protected function display( $template_name )
 	{
-		$this->theme->display($template_name);
+		$this->theme->display( $template_name );
 	}
 
 	/**
@@ -180,34 +180,34 @@ class UserHandler extends ActionHandler
 		$hash = $this->handler_vars['hash'];
 		$name = '';
 
-		if ( $user = User::get($id) ) {
-			if ( is_string( $hash ) && ( $user->info->password_reset == md5($hash) )) {
+		if ( $user = User::get( $id ) ) {
+			if ( is_string( $hash ) && ( $user->info->password_reset == md5( $hash ) ) ) {
 				// Send a new random password
 				$password = Utils::random_password();
 
 				$user->password = Utils::crypt( $password );
 				if ( $user->update() ) {
-					$message = _t("Your password for %1\$s has been reset.  Your credentials are as follows---\nUsername: %2\$s\nPassword: %3\$s", array(Site::get_url('habari'), $user->username, $password));
+					$message = _t( "Your password for %1\$s has been reset.  Your credentials are as follows---\nUsername: %2\$s\nPassword: %3\$s", array( Site::get_url( 'habari' ), $user->username, $password ) );
 
-					Utils::mail($user->email, _t('[%1$s] Password has been reset for %2$s', array(Options::get('title'), $user->displayname)), $message);
-					Session::notice(_t('A new password has been sent to the user.'));
+					Utils::mail( $user->email, _t( '[%1$s] Password has been reset for %2$s', array( Options::get( 'title' ), $user->displayname ) ), $message );
+					Session::notice( _t( 'A new password has been sent to the user.' ) );
 				}
 				else {
-					Session::notice(_t('There was a problem resetting the password.  It was not reset.'));
+					Session::notice( _t( 'There was a problem resetting the password.  It was not reset.' ) );
 				}
 
 				// Clear the request - it should only work once
-				unset($user->info->password_reset);
+				unset( $user->info->password_reset );
 				$user->info->commit();
 
 				$name = $user->username;
 			}
 			else {
-				Session::notice(_t('The supplied password reset token has expired or is invalid.'));
+				Session::notice( _t( 'The supplied password reset token has expired or is invalid.' ) );
 			}
 		}
 		// Display the login form.
-		$this->login_form($name);
+		$this->login_form( $name );
 	}
 
 }
