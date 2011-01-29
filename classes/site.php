@@ -51,7 +51,7 @@ class Site
 	public static function script_name()
 	{
 		switch ( true ) {
-			case isset ( self::$scriptname ):
+			case isset( self::$scriptname ):
 				break;
 			case isset( $_SERVER['SCRIPT_NAME'] ):
 				self::$scriptname = $_SERVER['SCRIPT_NAME'];
@@ -60,7 +60,7 @@ class Site
 				self::$scriptname = $_SERVER['PHP_SELF'];
 				break;
 			default:
-				Error::raise(_t('Could not determine script name.'));
+				Error::raise( _t( 'Could not determine script name.' ) );
 				die();
 		}
 		return self::$scriptname;
@@ -136,9 +136,9 @@ class Site
 					$port = $_SERVER['SERVER_PORT'];
 				}
 				$portpart = '';
-				$host = Site::get_url('hostname');
+				$host = Site::get_url( 'hostname' );
 				// if the port isn't a standard port, and isn't part of $host already, add it
-				if ( ( $port != 80 ) && ( $port != 443 ) && ( MultiByte::substr($host, MultiByte::strlen($host) - strlen($port) ) != $port ) ) {
+				if ( ( $port != 80 ) && ( $port != 443 ) && ( MultiByte::substr( $host, MultiByte::strlen( $host ) - strlen( $port ) ) != $port ) ) {
 					$portpart = ':' . $port;
 				}
 				if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] != 'off' ) {
@@ -147,7 +147,7 @@ class Site
 				$url = $protocol . '://' . $host . $portpart;
 				break;
 			case 'habari':
-				if ( NULL !== self::$habari_url ) {
+				if ( null !== self::$habari_url ) {
 					$url = self::$habari_url;
 				}
 				else {
@@ -160,7 +160,7 @@ class Site
 				}
 				break;
 			case 'user':
-				$url = Site::get_url('host') . Site::get_path('base', true) . Site::get_path('user');
+				$url = Site::get_url( 'host' ) . Site::get_path( 'base', true ) . Site::get_path( 'user' );
 				break;
 			case 'theme':
 				$theme = Themes::get_theme_dir();
@@ -171,7 +171,7 @@ class Site
 					$url = Site::get_url( 'habari' ) . '/user/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url = Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+					$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
 				}
 				else {
 					$url = Site::get_url( 'habari' ) . '/system/themes/' . $theme;
@@ -233,33 +233,33 @@ class Site
 		$path = '';
 		switch ( strtolower( $name ) ) {
 			case 'base':
-				$path = rtrim(dirname(Site::script_name()),'/\\');
+				$path = rtrim( dirname( Site::script_name() ), '/\\' );
 				break;
 			case 'user':
-				if ( Site::is('main') ) {
+				if ( Site::is( 'main' ) ) {
 					$path = 'user';
 				}
 				else {
-					$path = ltrim( str_replace ( HABARI_PATH, '', Site::get_dir('config') ), '/' );
+					$path = ltrim( str_replace( HABARI_PATH, '', Site::get_dir( 'config' ) ), '/' );
 				}
 				break;
 			case 'theme':
 				$theme = Themes::get_theme_dir();
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-					$path = Site::get_path('user') . '/themes/' . $theme;
+					$path = Site::get_path( 'user' ) . '/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url = Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+					$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
 				}
 				else {
-					$path = Site::get_path('base') . '/user/themes/' . $theme;
+					$path = Site::get_path( 'base' ) . '/user/themes/' . $theme;
 				}
 				break;
 		}
 		$path .= Utils::trail( $trail );
 		// if running Habari in docroot, get_url('base') will return
 		// a double slash.  Let's fix that.
-		$path = str_replace( '//', '/', $path);
+		$path = str_replace( '//', '/', $path );
 		$path = Plugins::filter( 'site_path_' . $name, $path );
 		return $path;
 	}
@@ -280,7 +280,7 @@ class Site
 
 		switch ( strtolower( $name ) ) {
 			case 'config_file':
-				$path = Site::get_dir('config') . '/config.php';
+				$path = Site::get_dir( 'config' ) . '/config.php';
 				break;
 			case 'config':
 				if ( self::$config_path ) {
@@ -295,44 +295,44 @@ class Site
 					return self::$config_path;
 				}
 
-				$server = InputFilter::parse_url( Site::get_url('habari') ) ;
+				$server = InputFilter::parse_url( Site::get_url( 'habari' ) );
 				$server = ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
 
-				$request = explode('/', trim( $_SERVER['REQUEST_URI'], '/' ) );
+				$request = explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) );
 				$match = trim( $server, '.' );
 				$x = count( $request );
 				do {
 					if ( in_array( $match, $config_dirs ) ) {
 						self::$config_dir = $match;
 						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
-						self::$config_type = ($x > 0) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
+						self::$config_type = ( $x > 0 ) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
 						break;
 					}
 
 					$match = MultiByte::substr( $match, MultiByte::strpos( $match, '.' ) + 1 );
 					$x--;
-				} while ( MultiByte::strpos( $match,'.' ) !== false );
+				} while ( MultiByte::strpos( $match, '.' ) !== false );
 
 				$path = self::$config_path;
 				break;
 			case 'user':
-				if ( Site::get_dir('config') == HABARI_PATH ) {
+				if ( Site::get_dir( 'config' ) == HABARI_PATH ) {
 					$path = HABARI_PATH . '/user';
 				}
 				else {
-					$path = Site::get_dir('config');
+					$path = Site::get_dir( 'config' );
 				}
 				break;
 			case 'theme':
 				$theme = Themes::get_theme_dir();
 				if ( file_exists( Site::get_dir( 'config' ) . '/themes/' . $theme ) ) {
-					$path = Site::get_dir('user') . '/themes/' . $theme;
+					$path = Site::get_dir( 'user' ) . '/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/user/themes/' . $theme ) ) {
 					$path = HABARI_PATH . '/user/themes/' . $theme;
 				}
 				elseif ( file_exists( HABARI_PATH . '/3rdparty/themes/' . $theme ) ) {
-					$url = Site::get_url( 'habari') . '/3rdparty/themes/' . $theme;
+					$url = Site::get_url( 'habari' ) . '/3rdparty/themes/' . $theme;
 				}
 				else {
 					$path = HABARI_PATH . '/system/themes/' . $theme;
@@ -388,7 +388,7 @@ I'm unclear whether we need these.  If so, they likely belong in a new method, s
 				$path= self::$config_type;
 				break;
 			case 'config_name':
-				self::get_dir('config');
+				self::get_dir( 'config' );
 				$path= self::$config_dir;
 				break;
 */

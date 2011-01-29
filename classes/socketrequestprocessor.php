@@ -51,7 +51,7 @@ class SocketRequestProcessor implements RequestProcessor
 
 		if ( !isset( $urlbits['port'] ) || $urlbits['port'] == 0 ) {
 			if ( array_key_exists( $urlbits['scheme'], Utils::scheme_ports() ) ) {
-				$urlbits['port'] = Utils::scheme_ports($urlbits['scheme']);
+				$urlbits['port'] = Utils::scheme_ports( $urlbits['scheme'] );
 			}
 			else {
 				// todo: Error::raise()?
@@ -116,7 +116,7 @@ class SocketRequestProcessor implements RequestProcessor
 
 		$request[] = "{$method} {$resource} HTTP/1.1";
 
-        $request = array_merge( $request, $merged_headers );
+		$request = array_merge( $request, $merged_headers );
 
 		$request[] = '';
 
@@ -161,13 +161,13 @@ class SocketRequestProcessor implements RequestProcessor
 				$this->redir_count++;
 
 				if ( $this->redir_count > $config['max_redirs'] ) {
-					throw new Exception( _t('Maximum number of redirections exceeded.') );
+					throw new Exception( _t( 'Maximum number of redirections exceeded.' ) );
 				}
 
 				return $this->_work( $method, $redirect_urlbits, $headers, $body, $config );
 			}
 			else {
-				throw new Exception( _t('Redirection response without Location: header.') );
+				throw new Exception( _t( 'Redirection response without Location: header.' ) );
 			}
 		}
 

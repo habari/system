@@ -29,7 +29,7 @@ abstract class Singleton
 		 * subclasses call this method through inheritance
 		 * return self::getInstanceOf( get_class() );
 		 */
-		trigger_error(_t('Not implemented: instance'), E_USER_WARNING);
+		trigger_error( _t( 'Not implemented: instance' ), E_USER_WARNING );
 		return null;
 	}
 	

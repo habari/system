@@ -23,7 +23,7 @@ class RPCClient
 	function __construct( $url, $method, $params )
 	{
 		if ( ! function_exists( 'xmlrpc_encode_request' ) ) {
-			return Error::raise( _t('xmlrpc extension not found') );
+			return Error::raise( _t( 'xmlrpc extension not found' ) );
 		}
 		$this->url = $url;
 		$this->method = $method;
@@ -45,7 +45,7 @@ class RPCClient
 		$rr->execute();
 		// in that case, we should never get here
 
-		$this->result = xmlrpc_decode($rr->get_response_body());
+		$this->result = xmlrpc_decode( $rr->get_response_body() );
 	}
 
 	/**

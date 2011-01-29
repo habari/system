@@ -25,9 +25,9 @@ class Session
 	{
 		// If https request only set secure cookie
 		// IIS sets the value of HTTPS to 'off' if not https
-		if ( (defined('FORCE_SECURE_SESSION') && FORCE_SECURE_SESSION == true) ||
-			(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ) {
-			session_set_cookie_params(null, null, null, true);
+		if ( ( defined( 'FORCE_SECURE_SESSION' ) && FORCE_SECURE_SESSION == true ) ||
+			( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) ) {
+			session_set_cookie_params( null, null, null, true );
 		}
 
 		session_set_save_handler(
@@ -40,7 +40,7 @@ class Session
 		);
 		register_shutdown_function( 'session_write_close' );
 
-		if ( ! isset($_SESSION) ) {
+		if ( ! isset( $_SESSION ) ) {
 			session_start();
 		}
 		return true;
@@ -99,7 +99,7 @@ class Session
 
 		// Verify expiry
 		if ( HabariDateTime::date_create()->int > $session->expires ) {
-			Session::error( _t('Your session expired.'), 'expired_session' );
+			Session::error( _t( 'Your session expired.' ), 'expired_session' );
 			$dodelete = true;
 		}
 
@@ -122,13 +122,13 @@ class Session
 		// Do garbage collection, since PHP is bad at it
 		$probability = ini_get( 'session.gc_probability' );
 		// Allow plugins to control the probability of a gc event, return >=100 to always collect garbage
-		$probability = Plugins::filter( 'gc_probability', ( is_numeric($probability) && $probability > 0 ) ? $probability : 1 );
-		if ( rand(1, 100) <= $probability ) {
+		$probability = Plugins::filter( 'gc_probability', ( is_numeric( $probability ) && $probability > 0 ) ? $probability : 1 );
+		if ( rand( 1, 100 ) <= $probability ) {
 			self::gc( ini_get( 'session.gc_maxlifetime' ) );
 		}
 
 		// Throttle session writes, so as to not hammer the DB
-		self::$initial_data = ( ini_get('session.gc_maxlifetime') - $session->expires + HabariDateTime::date_create()->int < 120 ) ? $session->data : false;
+		self::$initial_data = ( ini_get( 'session.gc_maxlifetime' ) - $session->expires + HabariDateTime::date_create()->int < 120 ) ? $session->data : false;
 
 		return $session->data;
 	}
@@ -154,7 +154,7 @@ class Session
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
 				'subnet' => self::get_subnet( $remote_address ),
-				'expires' => HabariDateTime::date_create()->int + ini_get('session.gc_maxlifetime'),
+				'expires' => HabariDateTime::date_create()->int + ini_get( 'session.gc_maxlifetime' ),
 				'ua' => $user_agent,
 				'data' => $data,
 			);
@@ -430,21 +430,22 @@ class Session
 		}
 	}
 
-	protected static function get_subnet( $remote_address = '' ) {
+	protected static function get_subnet( $remote_address = '' )
+	{
 
 		$long_addr = ip2long( $remote_address );
 
-		if ( $long_addr >= ip2long('0.0.0.0') && $long_addr <= ip2long('127.255.255.255') ) {
+		if ( $long_addr >= ip2long( '0.0.0.0' ) && $long_addr <= ip2long( '127.255.255.255' ) ) {
 			// class A
-			return sprintf("%u", $long_addr) >> 24;
+			return sprintf( "%u", $long_addr ) >> 24;
 		}
-		else if ( $long_addr >= ip2long('128.0.0.0') && $long_addr <= ip2long('191.255.255.255') ) {
+		else if ( $long_addr >= ip2long( '128.0.0.0' ) && $long_addr <= ip2long( '191.255.255.255' ) ) {
 			// class B
-			return sprintf("%u", $long_addr) >> 16;
+			return sprintf( "%u", $long_addr ) >> 16;
 		}
 		else {
 			// class C, D, or something we missed
-			return sprintf("%u", $long_addr) >> 8;
+			return sprintf( "%u", $long_addr ) >> 8;
 		}
 
 	}
