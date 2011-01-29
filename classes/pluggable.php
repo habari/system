@@ -38,7 +38,7 @@ abstract class Pluggable
 	 */
 	final public function get_file()
 	{
-		if ( empty($this->_class_name) ) {
+		if ( empty( $this->_class_name ) ) {
 			$class = new ReflectionClass( get_class( $this ) );
 			$this->_class_name = $class->getFileName();
 		}
@@ -52,8 +52,8 @@ abstract class Pluggable
 	final public function get_db_schema()
 	{
 		$db = DB::get_driver_name();
-		$schema = dirname($this->get_file()) . '/schema/' . $db . '.sql';
-		return file_get_contents($schema);
+		$schema = dirname( $this->get_file() ) . '/schema/' . $db . '.sql';
+		return file_get_contents( $schema );
 	}
 
 	/**
@@ -64,7 +64,7 @@ abstract class Pluggable
 	 */
 	public function get_url( $trail = false )
 	{
-		return URL::get_from_filesystem($this->get_file(), $trail);
+		return URL::get_from_filesystem( $this->get_file(), $trail );
 	}
 
 	/**
@@ -74,8 +74,8 @@ abstract class Pluggable
 	final public function plugin_id()
 	{
 		static $id;
-		if (!isset($id)) {
-			$id = Plugins::id_from_file( str_replace('\\', '/', $this->get_file() ) );
+		if ( !isset( $id ) ) {
+			$id = Plugins::id_from_file( str_replace( '\\', '/', $this->get_file() ) );
 		}
 		return $id;
 	}
@@ -86,7 +86,7 @@ abstract class Pluggable
 	 */
 	public function load_text_domain( $domain )
 	{
-		$base_dir = realpath(dirname( $this->get_file() ));
+		$base_dir = realpath( dirname( $this->get_file() ) );
 
 		return HabariLocale::load_pluggable_domain( $domain, $base_dir );
 	}
@@ -100,7 +100,7 @@ abstract class Pluggable
 	public function load()
 	{
 		// combine the array so we can have hooks => function
-		$methods = get_class_methods($this);
+		$methods = get_class_methods( $this );
 		$methods = array_combine( $methods, $methods );
 		// get the specific priority values for functions, as needed
 		if ( method_exists( $this, 'set_priorities' ) ) {
@@ -116,27 +116,27 @@ abstract class Pluggable
 			foreach ( (array) $hooks as $hook ) {
 				// make sure the method name is of the form
 				// action_foo or filter_foo of xmlrpc_foo or theme_foo
-				if ( preg_match('#^(action|filter|xmlrpc|theme)_#i', $hook) ) {
-					$priority = isset($priorities[$hook]) ? $priorities[$hook] :
-						( isset($priorities[$fn]) ? $priorities[$fn] : 8 );
-					list($type, $hook) = explode( '_', $hook, 2 );
+				if ( preg_match( '#^(action|filter|xmlrpc|theme)_#i', $hook ) ) {
+					$priority = isset( $priorities[$hook] ) ? $priorities[$hook] :
+						( isset( $priorities[$fn] ) ? $priorities[$fn] : 8 );
+					list( $type, $hook ) = explode( '_', $hook, 2 );
 					if ( $type === 'xmlrpc' ) {
-						$hook = str_replace('__', '.', $hook);
+						$hook = str_replace( '__', '.', $hook );
 					}
-					Plugins::register( array($this, $fn), $type, $hook, $priority );
-					Plugins::register( array($this, $fn), $type, $hook . ':' . $this->plugin_id(), $priority );
+					Plugins::register( array( $this, $fn ), $type, $hook, $priority );
+					Plugins::register( array( $this, $fn ), $type, $hook . ':' . $this->plugin_id(), $priority );
 				}
 			}
 		}
 		// look for help with this
-		if ( method_exists( $this, 'help') ) {
-			Plugins::register( array($this, '_help_plugin_config'), 'filter', 'plugin_config:' . $this->plugin_id(), 8);
-			Plugins::register( array($this, '_help_plugin_ui'), 'action', 'plugin_ui:' . $this->plugin_id(), 8);
+		if ( method_exists( $this, 'help' ) ) {
+			Plugins::register( array( $this, '_help_plugin_config' ), 'filter', 'plugin_config:' . $this->plugin_id(), 8 );
+			Plugins::register( array( $this, '_help_plugin_ui' ), 'action', 'plugin_ui:' . $this->plugin_id(), 8 );
 		}
 		// look for a basic configure method
-		if ( method_exists( $this, 'configure') ) {
-			Plugins::register( array($this, '_configure_plugin_config'), 'filter', 'plugin_config:' . $this->plugin_id(), 8);
-			Plugins::register( array($this, '_configure_plugin_ui'), 'action', 'plugin_ui:' . $this->plugin_id(), 8);
+		if ( method_exists( $this, 'configure' ) ) {
+			Plugins::register( array( $this, '_configure_plugin_config' ), 'filter', 'plugin_config:' . $this->plugin_id(), 8 );
+			Plugins::register( array( $this, '_configure_plugin_ui' ), 'action', 'plugin_ui:' . $this->plugin_id(), 8 );
 		}
 	}
 
@@ -215,16 +215,16 @@ abstract class Pluggable
 	 * @param mixed $rule An old-style rewrite rule string, where quoted segments are literals and unquoted segments are variable names, OR a RewriteRule object
 	 * @param string $hook The suffix of the hook function: action_plugin_act_{$suffix}
 	 */
-	public function add_rule($rule, $hook)
+	public function add_rule( $rule, $hook )
 	{
-		if ( count($this->_new_rules) == 0 ) {
-			Plugins::register( array($this, '_filter_rewrite_rules'), 'filter', 'rewrite_rules', 7);
+		if ( count( $this->_new_rules ) == 0 ) {
+			Plugins::register( array( $this, '_filter_rewrite_rules' ), 'filter', 'rewrite_rules', 7 );
 		}
 		if ( $rule instanceof RewriteRule ) {
 			$this->_new_rules[] = $rule;
 		}
 		else {
-			$this->_new_rules[] = RewriteRule::create_url_rule($rule, 'PluginHandler', $hook);
+			$this->_new_rules[] = RewriteRule::create_url_rule( $rule, 'PluginHandler', $hook );
 		}
 	}
 
@@ -236,7 +236,7 @@ abstract class Pluggable
 	 */
 	public function _filter_rewrite_rules( $rules )
 	{
-		$rules = array_merge( $rules, $this->_new_rules);
+		$rules = array_merge( $rules, $this->_new_rules );
 		return $rules;
 	}
 
@@ -250,11 +250,11 @@ abstract class Pluggable
 	 * @param boolean $override If false, allow a template with the same name in the active theme directory to override this one.
 	 * If true, always override the active theme's template with this one.
 	 */
-	protected function add_template($name, $filename, $override = false)
+	protected function add_template( $name, $filename, $override = false )
 	{
-		if ( count($this->_added_templates) == 0 ) {
-			Plugins::register(array(&$this, '_plugin_available_templates'), 'filter', 'available_templates');
-			Plugins::register(array(&$this, '_plugin_include_template_file'), 'filter', 'include_template_file');
+		if ( count( $this->_added_templates ) == 0 ) {
+			Plugins::register( array( &$this, '_plugin_available_templates' ), 'filter', 'available_templates' );
+			Plugins::register( array( &$this, '_plugin_include_template_file' ), 'filter', 'include_template_file' );
 		}
 
 		$this->_added_templates[$name] = array( $filename, $override );
@@ -268,7 +268,7 @@ abstract class Pluggable
 	 */
 	public function _plugin_available_templates( $list )
 	{
-		$list = array_merge($list, array_keys($this->_added_templates));
+		$list = array_merge( $list, array_keys( $this->_added_templates ) );
 		return $list;
 	}
 
@@ -281,8 +281,8 @@ abstract class Pluggable
 	 */
 	public function _plugin_include_template_file( $file, $name )
 	{
-		if ( isset($this->_added_templates[$name]) ) {
-			if ( $this->_added_templates[$name][1] || !file_exists($file)) {
+		if ( isset( $this->_added_templates[$name] ) ) {
+			if ( $this->_added_templates[$name][1] || !file_exists( $file ) ) {
 				$file = $this->_added_templates[$name][0];
 			}
 		}

@@ -243,7 +243,7 @@ class Post extends QueryRecord implements IsContent
 			// Isn't active so we activate it
 			self::activate_post_type( $type );
 		}
-		ACL::create_token( 'post_' . Utils::slugify($type), _t('Permissions to posts of type "%s"', array($type) ), _t('Content'), true );
+		ACL::create_token( 'post_' . Utils::slugify( $type ), _t( 'Permissions to posts of type "%s"', array( $type ) ), _t( 'Content' ), true );
 
 		// now force a refresh of the caches, so the new/activated type
 		// is available for immediate use
@@ -268,11 +268,11 @@ class Post extends QueryRecord implements IsContent
 		if ( array_key_exists( $type, $types ) ) {
 
 			// Exists in DB.. check if there are content with this type.
-			if ( ! DB::exists('{posts}', array( 'content_type' => Post::type( $type ) ) ) ) {
+			if ( ! DB::exists( '{posts}', array( 'content_type' => Post::type( $type ) ) ) ) {
 
 				// Finally, remove from database and destroy tokens
 				DB::delete( '{posttype}', array( 'name' => $type ) );
-				ACL::destroy_token('post_' . Utils::slugify($type) );
+				ACL::destroy_token( 'post_' . Utils::slugify( $type ) );
 
 				// now force a refresh of the caches, so the removed type is no longer
 				// available for use
@@ -306,7 +306,8 @@ class Post extends QueryRecord implements IsContent
 		}
 	}
 	
-	public static function delete_post_status ( $status ) {
+	public static function delete_post_status( $status )
+	{
 		
 		$statuses = self::list_post_statuses( true, true );
 		
@@ -362,7 +363,7 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		$this->exclude_fields( 'id' );
-		 /* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
+		/* $this->fields['id'] could be null in case of a new post. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 	}
 
 	/**
@@ -417,11 +418,11 @@ class Post extends QueryRecord implements IsContent
 	{
 		// determine the base value from:
 		// - the new slug
-		if ( isset( $this->newfields['slug']) && $this->newfields['slug'] != '' ) {
+		if ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] != '' ) {
 			$value = $this->newfields['slug'];
 		}
 		// - the new empty slug whilst in draft or progressing directly to published or scheduled from draft. Also allow changing of slug whilst in scheduled state
-		elseif ( isset( $this->newfields['slug']) && $this->newfields['slug'] == '' ) {
+		elseif ( isset( $this->newfields['slug'] ) && $this->newfields['slug'] == '' ) {
 			if ( $this->fields['status'] == Post::status( 'draft' ) || ( $this->fields['status'] != Post::status( 'draft' ) && $this->newfields['status'] != Post::status( 'draft' ) ) ) {
 				if ( isset( $this->newfields['title'] ) && $this->newfields['title'] != '' ) {
 					$value = $this->newfields['title'];
@@ -475,7 +476,7 @@ class Post extends QueryRecord implements IsContent
 			|| ( $this->newfields['guid'] == '' )  // GUID is empty
 			|| ( $this->newfields['guid'] == '//?p=' ) // GUID created by WP was erroneous (as is too common)
 		) {
-			$result = 'tag:' . Site::get_url( 'hostname' ) . ',' . date( 'Y' ) . ':' . rawurlencode($this->setslug()) . '/' . time();
+			$result = 'tag:' . Site::get_url( 'hostname' ) . ',' . date( 'Y' ) . ':' . rawurlencode( $this->setslug() ) . '/' . time();
 			$this->newfields['guid'] = $result;
 		}
 		return $this->newfields['guid'];
@@ -541,7 +542,7 @@ class Post extends QueryRecord implements IsContent
 		$this->info->commit( DB::last_insert_id() );
 		$this->save_tags();
 		$this->create_default_permissions();
-		EventLog::log( sprintf(_t('New post %1$s (%2$s);  Type: %3$s; Status: %4$s'), $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname), 'info', 'content', 'habari' );
+		EventLog::log( sprintf( _t( 'New post %1$s (%2$s);  Type: %3$s; Status: %4$s' ), $this->id, $this->slug, Post::type_name( $this->content_type ), $this->statusname ), 'info', 'content', 'habari' );
 		Plugins::act( 'post_insert_after', $this );
 
 		//scheduled post
@@ -591,7 +592,7 @@ class Post extends QueryRecord implements IsContent
 
 		// invoke plugins for status changes
 		if ( isset( $this->newfields['status'] ) && $this->fields['status'] != $this->newfields['status'] ) {
-		  Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
+			Plugins::act( 'post_status_' . self::status_name( $this->newfields['status'] ), $this, $this->fields['status'] );
 		}
 
 		$result = parent::updateRecord( DB::table( 'posts' ), array( 'id' => $this->id ) );
@@ -624,7 +625,7 @@ class Post extends QueryRecord implements IsContent
 		Plugins::act( 'post_delete_before', $this );
 
 		// delete all the tags associated with this post
-		Tags::save_associations(new Terms(), $this->id );
+		Tags::save_associations( new Terms(), $this->id );
 
 		// Delete all comments associated with this post
 		if ( $this->comments->count() > 0 ) {
@@ -636,7 +637,7 @@ class Post extends QueryRecord implements IsContent
 		$this->delete_tokens();
 
 		$result = parent::deleteRecord( DB::table( 'posts' ), array( 'slug'=>$this->slug ) );
-		EventLog::log( sprintf(_t('Post %1$s (%2$s) deleted.'), $this->id, $this->slug), 'info', 'content', 'habari' );
+		EventLog::log( sprintf( _t( 'Post %1$s (%2$s) deleted.' ), $this->id, $this->slug ), 'info', 'content', 'habari' );
 
 		//scheduled post
 		if ( $this->status == Post::status( 'scheduled' ) ) {
@@ -665,15 +666,15 @@ class Post extends QueryRecord implements IsContent
 		}
 		Plugins::act( 'post_publish_before', $this );
 
-		if ( $this->status != Post::status( 'scheduled' ) )  {
+		if ( $this->status != Post::status( 'scheduled' ) ) {
 			$this->pubdate = HabariDateTime::date_create();
 		}
 
 		if ( $this->status == Post::status( 'scheduled' ) ) {
-			$msg = sprintf(_t('Scheduled Post %1$s (%2$s) published at %3$s.'), $this->id, $this->slug, $this->pubdate->format());
+			$msg = sprintf( _t( 'Scheduled Post %1$s (%2$s) published at %3$s.' ), $this->id, $this->slug, $this->pubdate->format() );
 		}
 		else {
-			$msg = sprintf(_t('Post %1$s (%2$s) published.'), $this->id, $this->slug);
+			$msg = sprintf( _t( 'Post %1$s (%2$s) published.' ), $this->id, $this->slug );
 		}
 
 		$this->status = Post::status( 'published' );
@@ -761,12 +762,12 @@ class Post extends QueryRecord implements IsContent
 			case 'pubdate':
 			case 'updated':
 			case 'modified':
-				if ( !($value instanceOf HabariDateTime) ) {
-					$value = HabariDateTime::date_create($value);
+				if ( !( $value instanceOf HabariDateTime ) ) {
+					$value = HabariDateTime::date_create( $value );
 				}
 				break;
 			case 'tags':
-				if ( is_array( $value) ) {
+				if ( is_array( $value ) ) {
 					return $this->tags = $value;
 				}
 				else {
@@ -786,8 +787,8 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function __call( $name, $args )
 	{
-		array_unshift($args, 'post_call_' . $name, null, $this);
-		return call_user_func_array(array('Plugins', 'filter'), $args);
+		array_unshift( $args, 'post_call_' . $name, null, $this );
+		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
 	}
 
 	/**
@@ -795,23 +796,23 @@ class Post extends QueryRecord implements IsContent
 	 * @param string $context The context the form is being created in, most often 'admin'
 	 * @return FormUI A form appropriate for creating and updating this post.
 	 */
-	public function get_form($context)
+	public function get_form( $context )
 	{
-		$form = new FormUI('create-content');
+		$form = new FormUI( 'create-content' );
 		$form->class[] = 'create';
 
 		$newpost = ( 0 === $this->id );
 
 		// If the post has already been saved, add a link to its permalink
 		if ( !$newpost ) {
-			$post_links = $form->append('wrapper', 'post_links');
+			$post_links = $form->append( 'wrapper', 'post_links' );
 			$permalink = ( $this->status != Post::status( 'published' ) ) ? $this->permalink . '?preview=1' : $this->permalink;
-			$post_links->append('static', 'post_permalink', '<a href="'. $permalink .'" class="viewpost" >'.( $this->status != Post::status('published') ? _t('Preview Post') : _t('View Post') ).'</a>');
+			$post_links->append( 'static', 'post_permalink', '<a href="'. $permalink .'" class="viewpost" >'.( $this->status != Post::status( 'published' ) ? _t( 'Preview Post' ) : _t( 'View Post' ) ).'</a>' );
 			$post_links->class ='container';
 		}
 
 		// Create the Title field
-		$form->append('text', 'title', 'null:null', _t('Title'), 'admincontrol_text');
+		$form->append( 'text', 'title', 'null:null', _t( 'Title' ), 'admincontrol_text' );
 		$form->title->class[] = 'important';
 		$form->title->class[] = 'check-change';
 		$form->title->tabindex = 1;
@@ -819,12 +820,12 @@ class Post extends QueryRecord implements IsContent
 
 		// Create the silos
 		if ( count( Plugins::get_by_interface( 'MediaSilo' ) ) ) {
-			$form->append('silos', 'silos');
+			$form->append( 'silos', 'silos' );
 			$form->silos->silos = Media::dir();
 		}
 
 		// Create the Content field
-		$form->append('textarea', 'content', 'null:null', _t('Content'), 'admincontrol_textarea');
+		$form->append( 'textarea', 'content', 'null:null', _t( 'Content' ), 'admincontrol_textarea' );
 		$form->content->class[] = 'resizable';
 		$form->content->class[] = 'check-change';
 		$form->content->tabindex = 2;
@@ -832,14 +833,14 @@ class Post extends QueryRecord implements IsContent
 		$form->content->raw = true;
 
 		// Create the tags field
-		$form->append('text', 'tags', 'null:null', _t('Tags, separated by, commas'), 'admincontrol_text');
+		$form->append( 'text', 'tags', 'null:null', _t( 'Tags, separated by, commas' ), 'admincontrol_text' );
 		$form->tags->class = 'check-change';
 		$form->tags->tabindex = 3;
 
 		$form->tags->value = implode( ', ', (array)$this->get_tags() );
 
 		// Create the splitter
-		$publish_controls = $form->append('tabs', 'publish_controls');
+		$publish_controls = $form->append( 'tabs', 'publish_controls' );
 
 		// Create the publishing controls
 		// pass "false" to list_post_statuses() so that we don't include internal post statuses
@@ -847,36 +848,36 @@ class Post extends QueryRecord implements IsContent
 		unset( $statuses[array_search( 'any', $statuses )] );
 		$statuses = Plugins::filter( 'admin_publish_list_post_statuses', $statuses );
 
-		$settings = $publish_controls->append('fieldset', 'settings', _t('Settings'));
+		$settings = $publish_controls->append( 'fieldset', 'settings', _t( 'Settings' ) );
 
-		$settings->append('select', 'status', 'null:null', _t('Content State'), array_flip($statuses), 'tabcontrol_select');
+		$settings->append( 'select', 'status', 'null:null', _t( 'Content State' ), array_flip( $statuses ), 'tabcontrol_select' );
 		$settings->status->value = $this->status;
 
 		// hide the minor edit checkbox if the post is new
 		if ( $newpost ) {
-			$settings->append('hidden', 'minor_edit', 'null:null');
+			$settings->append( 'hidden', 'minor_edit', 'null:null' );
 			$settings->minor_edit->value = false;
 		}
 		else {
-			$settings->append('checkbox', 'minor_edit', 'null:null', _t('Minor Edit'), 'tabcontrol_checkbox');
+			$settings->append( 'checkbox', 'minor_edit', 'null:null', _t( 'Minor Edit' ), 'tabcontrol_checkbox' );
 			$settings->minor_edit->value = true;
-			$form->append('hidden', 'modified', 'null:null')->value = $this->modified;
+			$form->append( 'hidden', 'modified', 'null:null' )->value = $this->modified;
 		}
 
-		$settings->append('checkbox', 'comments_enabled', 'null:null', _t('Comments Allowed'), 'tabcontrol_checkbox');
+		$settings->append( 'checkbox', 'comments_enabled', 'null:null', _t( 'Comments Allowed' ), 'tabcontrol_checkbox' );
 		$settings->comments_enabled->value = $this->info->comments_disabled ? false : true;
 
-		$settings->append('text', 'pubdate', 'null:null', _t('Publication Time'), 'tabcontrol_text');
-		$settings->pubdate->value = $this->pubdate->format('Y-m-d H:i:s');
+		$settings->append( 'text', 'pubdate', 'null:null', _t( 'Publication Time' ), 'tabcontrol_text' );
+		$settings->pubdate->value = $this->pubdate->format( 'Y-m-d H:i:s' );
 
-		$settings->append('hidden', 'updated', 'null:null' );
+		$settings->append( 'hidden', 'updated', 'null:null' );
 		$settings->updated->value = $this->updated->int;
 
-		$settings->append('text', 'newslug', 'null:null', _t('Content Address'), 'tabcontrol_text');
+		$settings->append( 'text', 'newslug', 'null:null', _t( 'Content Address' ), 'tabcontrol_text' );
 		$settings->newslug->value = $this->slug;
 
 		// Create the button area
-		$buttons = $form->append('fieldset', 'buttons');
+		$buttons = $form->append( 'fieldset', 'buttons' );
 		$buttons->template = 'admincontrol_buttons';
 		$buttons->class[] = 'container';
 		$buttons->class[] = 'buttons';
@@ -885,22 +886,22 @@ class Post extends QueryRecord implements IsContent
 		// Create the Save button
 		$require_any = array( 'own_posts' => 'create', 'post_any' => 'create', 'post_' . Post::type_name( $this->content_type ) => 'create' );
 		if ( ( $newpost && User::identify()->can_any( $require_any ) ) || ( !$newpost && ACL::access_check( $this->get_access(), 'edit' ) ) ) {
-			$buttons->append('submit', 'save', _t('Save'), 'admincontrol_submit');
+			$buttons->append( 'submit', 'save', _t( 'Save' ), 'admincontrol_submit' );
 			$buttons->save->tabindex = 4;
 		}
 
 		// Add required hidden controls
-		$form->append('hidden', 'content_type', 'null:null');
+		$form->append( 'hidden', 'content_type', 'null:null' );
 		$form->content_type->id = 'content_type';
 		$form->content_type->value = $this->content_type;
-		$form->append('hidden', 'post_id', 'null:null');
+		$form->append( 'hidden', 'post_id', 'null:null' );
 		$form->post_id->id = 'id';
 		$form->post_id->value = $this->id;
-		$form->append('hidden', 'slug', 'null:null');
+		$form->append( 'hidden', 'slug', 'null:null' );
 		$form->slug->value = $this->slug;
 
 		// Let plugins alter this form
-		Plugins::act('form_publish', $form, $this, $context);
+		Plugins::act( 'form_publish', $form, $this, $context );
 
 		// Return the form object
 		return $form;
@@ -912,7 +913,7 @@ class Post extends QueryRecord implements IsContent
 	 * @param String context // What is $context for ?
 	 * @return FormUI The comment form for this post
 	 */
-	public function comment_form($context = 'public')
+	public function comment_form( $context = 'public' )
 	{
 		// Handle comment submissions and default commenter id values
 		$cookie = 'comment_' . Options::get( 'GUID' );
@@ -944,19 +945,19 @@ class Post extends QueryRecord implements IsContent
 		}
 
 		// Now start the form.
-		$form = new FormUI('comment-' . $context, 'comment');
+		$form = new FormUI( 'comment-' . $context, 'comment' );
 		$form->class[] = $context;
 		$form->class[] = 'commentform';
-		$form->set_option( 'form_action',  URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
+		$form->set_option( 'form_action', URL::get( 'submit_feedback', array( 'id' => $this->id ) ) );
 
 		// Create the Name field
 		$form->append(
 			'text',
 			'cf_commenter',
 			'null:null',
-			_t('Name <span class="required">*Required</span>'),
+			_t( 'Name <span class="required">*Required</span>' ),
 			'formcontrol_text'
-		)->add_validator('validate_required', _t('The Name field value is required'))
+		)->add_validator( 'validate_required', _t( 'The Name field value is required' ) )
 		->id = 'comment_name';
 		$form->cf_commenter->tabindex = 1;
 		$form->cf_commenter->value = $commenter_name;
@@ -966,13 +967,13 @@ class Post extends QueryRecord implements IsContent
 			'text',
 			'cf_email',
 			'null:null',
-			_t('Email'),
+			_t( 'Email' ),
 			'formcontrol_text'
-		)->add_validator('validate_email', _t('The Email field value must be a valid email address'))
+		)->add_validator( 'validate_email', _t( 'The Email field value must be a valid email address' ) )
 		->id = 'comment_email';
 		$form->cf_email->tabindex = 2;
-		if ( Options::get('comments_require_id') == 1 ) {
-			$form->cf_email->caption = _t('Email <span class="required">*Required</span>');
+		if ( Options::get( 'comments_require_id' ) == 1 ) {
+			$form->cf_email->caption = _t( 'Email <span class="required">*Required</span>' );
 		}
 		$form->cf_email->value = $commenter_email;
 
@@ -981,9 +982,9 @@ class Post extends QueryRecord implements IsContent
 			'text',
 			'cf_url',
 			'null:null',
-			_t('Website'),
+			_t( 'Website' ),
 			'formcontrol_text'
-		)->add_validator('validate_url', _t('The Web Site field value must be a valid URL'))
+		)->add_validator( 'validate_url', _t( 'The Web Site field value must be a valid URL' ) )
 		->id = 'comment_url';
 		$form->cf_url->tabindex = 3;
 		$form->cf_url->value = $commenter_url;
@@ -993,30 +994,30 @@ class Post extends QueryRecord implements IsContent
 			'text',
 			'cf_content',
 			'null:null',
-			_t('Comment'),
+			_t( 'Comment' ),
 			'formcontrol_textarea'
-		)->add_validator('validate_required', _t('The Content field value is required'))
+		)->add_validator( 'validate_required', _t( 'The Content field value is required' ) )
 		->id = 'comment_content';
 		$form->cf_content->tabindex = 4;
 		$form->cf_content->value = $commenter_content;
 
 		// Create the Submit button
-		$form->append('submit', 'cf_submit', _t('Submit'), 'formcontrol_submit');
+		$form->append( 'submit', 'cf_submit', _t( 'Submit' ), 'formcontrol_submit' );
 		$form->cf_submit->tabindex = 5;
 
 		// Add required hidden controls
 		/*
-		$form->append('hidden', 'content_type', 'null:null');
+		$form->append( 'hidden', 'content_type', 'null:null' );
 		$form->content_type->value = $this->content_type;
-		$form->append('hidden', 'post_id', 'null:null');
+		$form->append( 'hidden', 'post_id', 'null:null' );
 		$form->post_id->id = 'id';
 		$form->post_id->value = $this->id;
-		$form->append('hidden', 'slug', 'null:null');
+		$form->append( 'hidden', 'slug', 'null:null' );
 		$form->slug->value = $this->slug;
 		*/
 
 		// Let plugins alter this form
-		Plugins::act('form_comment', $form, $this, $context);
+		Plugins::act( 'form_comment', $form, $this, $context );
 
 		// Return the form object
 		return $form;
@@ -1047,7 +1048,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function get_editlink()
 	{
-		return URL::get('admin', 'page=publish&id=' . $this->id);
+		return URL::get( 'admin', 'page=publish&id=' . $this->id );
 	}
 
 	/**
@@ -1155,9 +1156,9 @@ class Post extends QueryRecord implements IsContent
 	 * @params The params by which to work out what is the ascending post
 	 * @return Post The ascending post
 	 */
-	public function ascend($params = null)
+	public function ascend( $params = null )
 	{
-		return Posts::ascend($this, $params);
+		return Posts::ascend( $this, $params );
 	}
 
 	/**
@@ -1165,9 +1166,9 @@ class Post extends QueryRecord implements IsContent
 	 * @params The params by which to work out what is the descending post
 	 * @return Post The descending post
 	 */
-	public function descend($params = null)
+	public function descend( $params = null )
 	{
-		return Posts::descend($this, $params);
+		return Posts::descend( $this, $params );
 	}
 
 	/**
@@ -1178,7 +1179,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	public function content_type()
 	{
-		return array(Post::type_name($this->content_type), 'Post');
+		return array( Post::type_name( $this->content_type ), 'Post' );
 	}
 
 	/**
@@ -1187,7 +1188,7 @@ class Post extends QueryRecord implements IsContent
 	public function create_default_tokens()
 	{
 		$tokens = array();
-		$tokens = Plugins::filter('post_tokens', $tokens, $this);
+		$tokens = Plugins::filter( 'post_tokens', $tokens, $this );
 		$this->add_tokens( $this->content_type() );
 	}
 
@@ -1201,9 +1202,9 @@ class Post extends QueryRecord implements IsContent
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map(array('ACL', 'token_id'), $tokens);
-		$tokens = array_intersect($tokens, $this->tokens);
-		if ( count($tokens) == 0 ) {
+		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$tokens = array_intersect( $tokens, $this->tokens );
+		if ( count( $tokens ) == 0 ) {
 			return false;
 		}
 		return $tokens;
@@ -1217,14 +1218,14 @@ class Post extends QueryRecord implements IsContent
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map(array('ACL', 'token_id'), $tokens);
-		$add_tokens = array_diff($tokens, $this->tokens);
-		$add_tokens = array_unique($add_tokens);
+		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$add_tokens = array_diff( $tokens, $this->tokens );
+		$add_tokens = array_unique( $add_tokens );
 		foreach ( $add_tokens as $token_id ) {
 			DB::insert( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
 		}
-		$this->tokens = array_merge($this->tokens, $add_tokens);
-		$this->tokens = array_unique($this->tokens);
+		$this->tokens = array_merge( $this->tokens, $add_tokens );
+		$this->tokens = array_unique( $this->tokens );
 	}
 
 	/**
@@ -1244,12 +1245,12 @@ class Post extends QueryRecord implements IsContent
 	{
 		$this->get_tokens();
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map(array('ACL', 'token_id'), $tokens);
-		$remove_tokens = array_intersect($tokens, $this->tokens);
+		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$remove_tokens = array_intersect( $tokens, $this->tokens );
 		foreach ( $remove_tokens as $token_id ) {
 			DB::delete( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
 		}
-		$this->tokens = array_diff($this->tokens, $remove_tokens);
+		$this->tokens = array_diff( $this->tokens, $remove_tokens );
 	}
 
 	/**
@@ -1259,8 +1260,8 @@ class Post extends QueryRecord implements IsContent
 	public function set_tokens( $tokens )
 	{
 		$tokens = Utils::single_array( $tokens );
-		$new_tokens = array_map(array('ACL', 'token_id'), $tokens);
-		$new_tokens = array_unique($new_tokens);
+		$new_tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
+		$new_tokens = array_unique( $new_tokens );
 		DB::delete( '{post_tokens}', array( 'post_id' => $this->id ) );
 		foreach ( $new_tokens as $token_id ) {
 			DB::insert( '{post_tokens}', array( 'post_id' => $this->id, 'token_id' => $token_id ) );
@@ -1277,7 +1278,7 @@ class Post extends QueryRecord implements IsContent
 	public function get_tokens()
 	{
 		if ( empty( $this->tokens ) ) {
-			$this->tokens = DB::get_column( 'SELECT token_id FROM {post_tokens} WHERE post_id = ?', array($this->id) );
+			$this->tokens = DB::get_column( 'SELECT token_id FROM {post_tokens} WHERE post_id = ?', array( $this->id ) );
 		}
 		return $this->tokens;
 	}
@@ -1303,11 +1304,11 @@ class Post extends QueryRecord implements IsContent
 			'post_' . Post::type_name( $this->content_type ),
 		);
 
-		if ( $user->id == $this->user_id) {
+		if ( $user->id == $this->user_id ) {
 			$tokens[] = 'own_posts';
 		}
 
-		$tokens = array_merge($tokens, $this->get_tokens());
+		$tokens = array_merge( $tokens, $this->get_tokens() );
 
 		// collect all possible token accesses on this post
 		$token_accesses = array();

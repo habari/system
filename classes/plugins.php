@@ -30,8 +30,8 @@ class Plugins
 	 */
 	public static function _autoload( $class )
 	{
-		if ( isset(self::$plugin_files[$class]) ) {
-			require self::$plugin_files[$class];
+		if ( isset( self::$plugin_files[$class] ) ) {
+			require( self::$plugin_files[$class] );
 		}
 	}
 
@@ -46,19 +46,19 @@ class Plugins
 	public static function register( $fn, $type, $hook, $priority = 8 )
 	{
 		// add the plugin function to the appropriate array
-		$index = array($type, $hook, $priority);
+		$index = array( $type, $hook, $priority );
 
 		$ref =& self::$hooks;
 
 		foreach ( $index as $bit ) {
-			if ( !isset($ref["{$bit}"]) ) {
+			if ( !isset( $ref["{$bit}"] ) ) {
 				$ref["{$bit}"] = array();
 			}
 			$ref =& $ref["{$bit}"];
 		}
 
 		$ref[] = $fn;
-		ksort(self::$hooks[$type][$hook]);
+		ksort( self::$hooks[$type][$hook] );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Plugins
 	public static function act()
 	{
 		$args = func_get_args();
-		$hookname = array_shift($args);
+		$hookname = array_shift( $args );
 		if ( ! isset( self::$hooks['action'][$hookname] ) ) {
 			return false;
 		}
@@ -91,7 +91,7 @@ class Plugins
 	{
 		$args = func_get_args();
 		list( $hookname, $id ) = $args;
-		$args = array_slice(func_get_args(), 2);
+		$args = array_slice( func_get_args(), 2 );
 		$hookname = $hookname . ':' . $id;
 		if ( ! isset( self::$hooks['action'][$hookname] ) ) {
 			return false;
@@ -117,7 +117,7 @@ class Plugins
 			return $return;
 		}
 
-		$filterargs = array_slice(func_get_args(), 2);
+		$filterargs = array_slice( func_get_args(), 2 );
 		foreach ( self::$hooks['filter'][$hookname] as $priority ) {
 			foreach ( $priority as $filter ) {
 				// $filter is an array of object reference and method name
@@ -143,7 +143,7 @@ class Plugins
 			return $return;
 		}
 
-		$filterargs = array_slice(func_get_args(), 3);
+		$filterargs = array_slice( func_get_args(), 3 );
 		foreach ( self::$hooks['filter'][$hookname] as $priority ) {
 			foreach ( $priority as $filter ) {
 				// $filter is an array of object reference and method name
@@ -166,7 +166,7 @@ class Plugins
 		if ( ! isset( self::$hooks['xmlrpc'][$hookname] ) ) {
 			return false;
 		}
-		$filterargs = array_slice(func_get_args(), 2);
+		$filterargs = array_slice( func_get_args(), 2 );
 		foreach ( self::$hooks['xmlrpc'][$hookname] as $priority ) {
 			foreach ( $priority as $filter ) {
 				// $filter is an array of object reference and method name
@@ -185,13 +185,13 @@ class Plugins
 	public static function theme()
 	{
 		$filter_args = func_get_args();
-		$hookname = array_shift($filter_args);
+		$hookname = array_shift( $filter_args );
 
 		$filtersets = array();
-		if ( !isset(self::$hooks['theme'][$hookname]) ) {
-			if ( substr($hookname, -6) != '_empty' ) {
-				array_unshift($filter_args, $hookname . '_empty');
-				return call_user_func_array(array('Plugins', 'theme'), $filter_args);
+		if ( !isset( self::$hooks['theme'][$hookname] ) ) {
+			if ( substr( $hookname, -6 ) != '_empty' ) {
+				array_unshift( $filter_args, $hookname . '_empty' );
+				return call_user_func_array( array( 'Plugins', 'theme' ), $filter_args );
 			}
 			return array();
 		}
@@ -201,12 +201,12 @@ class Plugins
 			foreach ( $priority as $filter ) {
 				// $filter is an array of object reference and method name
 				$callargs = $filter_args;
-				if ( is_array($filter) ) {
-					if ( is_string($filter[0]) ) {
+				if ( is_array( $filter ) ) {
+					if ( is_string( $filter[0] ) ) {
 						$module = $filter[0];
 					}
 					else {
-						$module = get_class($filter[0]);
+						$module = get_class( $filter[0] );
 						if ( $filter[0] instanceof Theme && $module != get_class( $callargs[0] ) ) {
 							continue;
 						}
@@ -218,12 +218,12 @@ class Plugins
 				$return[$module] = call_user_func_array( $filter, $callargs );
 			}
 		}
-		if ( count($return) == 0 && substr($hookname, -6) != '_empty' ) {
-			array_unshift($filter_args, $hookname . '_empty');
-			$result = call_user_func_array(array('Plugins', 'theme'), $filter_args);
+		if ( count( $return ) == 0 && substr( $hookname, -6 ) != '_empty' ) {
+			array_unshift( $filter_args, $hookname . '_empty' );
+			$result = call_user_func_array( array( 'Plugins', 'theme' ), $filter_args );
 		}
-		array_unshift($filter_args, 'theme_call_' . $hookname, $return);
-		$result = call_user_func_array(array('Plugins', 'filter'), $filter_args);
+		array_unshift( $filter_args, 'theme_call_' . $hookname, $return );
+		$result = call_user_func_array( array( 'Plugins', 'filter' ), $filter_args );
 		return $result;
 	}
 
@@ -246,9 +246,9 @@ class Plugins
 	 */
 	public static function list_active( $refresh = false )
 	{
-		if ( empty(self::$plugin_files) || $refresh ) {
+		if ( empty( self::$plugin_files ) || $refresh ) {
 			$plugins = Options::get( 'active_plugins' );
-			if ( is_array($plugins) ) {
+			if ( is_array( $plugins ) ) {
 				foreach ( $plugins as $class => $filename ) {
 					// add base path to stored path
 					$filename = HABARI_PATH . $filename;
@@ -258,8 +258,8 @@ class Plugins
 					}
 					else {
 						// file does not exist, deactivate plugin
-						self::deactivate_plugin($filename, true);
-						EventLog::log( _t('Plugin "%1$s" deactivated because it could no longer be found.', array( $class ) ), 'err', 'plugin', 'habari', $filename );
+						self::deactivate_plugin( $filename, true );
+						EventLog::log( _t( 'Plugin "%1$s" deactivated because it could no longer be found.', array( $class ) ), 'err', 'plugin', 'habari', $filename );
 					}
 				}
 			}
@@ -283,9 +283,9 @@ class Plugins
 	* @param string $interface The interface to check for
 	* @return array An array of matching plugins
 	*/
-	public static function get_by_interface($interface)
+	public static function get_by_interface( $interface )
 	{
-		return array_filter(self::$plugins, create_function('$a', 'return $a instanceof ' . $interface . ';'));
+		return array_filter( self::$plugins, create_function( '$a', 'return $a instanceof ' . $interface . ';' ) );
 	}
 
 	/**
@@ -377,8 +377,8 @@ class Plugins
 	 */
 	public static function load_from_file( $file, $activate = true )
 	{
-		$class = self::class_from_filename($file);
-		return self::load($class, $activate);
+		$class = self::class_from_filename( $file );
+		return self::load( $class, $activate );
 	}
 
 
@@ -391,12 +391,12 @@ class Plugins
 	public static function load_info( $file )
 	{
 		$info = null;
-		$xml_file = preg_replace('%\.plugin\.php$%i', '.plugin.xml', $file);
+		$xml_file = preg_replace( '%\.plugin\.php$%i', '.plugin.xml', $file );
 		
-		if ( file_exists($xml_file) && $xml_content = file_get_contents( $xml_file ) ) {
+		if ( file_exists( $xml_file ) && $xml_content = file_get_contents( $xml_file ) ) {
 			
 			// tell libxml to throw exceptions and let us check for errors
-			$old_error = libxml_use_internal_errors(true);
+			$old_error = libxml_use_internal_errors( true );
 			
 			try {
 				$info = new SimpleXMLElement( $xml_content );
@@ -438,8 +438,8 @@ class Plugins
 	public static function load_active()
 	{
 		foreach ( self::list_active() as $class => $filename ) {
-			if ( file_exists($filename) ) {
-				self::load($class);
+			if ( file_exists( $filename ) ) {
+				self::load( $class );
 			}
 		}
 	}
@@ -455,7 +455,7 @@ class Plugins
 	 */
 	public static function id_from_file( $file )
 	{
-		$file = str_replace(array('\\', '/'), PATH_SEPARATOR, realpath($file));
+		$file = str_replace( array( '\\', '/' ), PATH_SEPARATOR, realpath( $file ) );
 		return sprintf( '%x', crc32( $file ) );
 	}
 
@@ -494,7 +494,7 @@ class Plugins
 	{
 		$ok = true;
 		$name = '';
-		$ok = Plugins::filter('deactivate_plugin', $ok, $file);  // Allow plugins to reject deactivation
+		$ok = Plugins::filter( 'deactivate_plugin', $ok, $file );  // Allow plugins to reject deactivation
 		if ( $ok || $force == true ) {
 			// normalize directory separator
 			$file = str_replace( '\\', '/', $file );
@@ -508,16 +508,16 @@ class Plugins
 				if ( $force != true ) {
 					// Get plugin name for logging
 					$name = self::$plugins[Plugins::id_from_file( $file )]->info->name;
-					if ( method_exists(self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation') ) {
+					if ( method_exists( self::$plugins[Plugins::id_from_file( $file )], 'action_plugin_deactivation' ) ) {
 						self::$plugins[Plugins::id_from_file( $file )]->action_plugin_deactivation( $file ); // For the plugin to uninstall itself
 					}
 				}
 				
-				unset($activated[$index]);
+				unset( $activated[$index] );
 				Options::set( 'active_plugins', $activated );
 				
 				if ( $force != true ) {
-					Plugins::act('plugin_deactivated', $file);  // For other plugins to react to a plugin uninstallation
+					Plugins::act( 'plugin_deactivated', $file );  // For other plugins to react to a plugin uninstallation
 					EventLog::log( _t( 'Deactivated Plugin: %s', array( $name ) ), 'notice', 'plugin', 'habari' );
 				}
 			}
@@ -539,10 +539,10 @@ class Plugins
 	 */
 	public static function changed_since_last_activation()
 	{
-		$old_plugins = Options::get('plugins_present');
+		$old_plugins = Options::get( 'plugins_present' );
 		//self::set_present();
 		// If the plugin list was never stored, then they've changed.
-		if ( !is_array($old_plugins) ) {
+		if ( !is_array( $old_plugins ) ) {
 			return true;
 		}
 		// add base path onto stored path
@@ -551,14 +551,14 @@ class Plugins
 		}
 		// If the file list is not identical, then they've changed.
 		$new_plugin_files = Plugins::list_all();
-		$old_plugin_files = array_map(create_function('$a', 'return $a["file"];'), $old_plugins);
-		if ( count(array_intersect($new_plugin_files, $old_plugin_files)) != count($new_plugin_files) ) {
+		$old_plugin_files = array_map( create_function( '$a', 'return $a["file"];' ), $old_plugins );
+		if ( count( array_intersect( $new_plugin_files, $old_plugin_files ) ) != count( $new_plugin_files ) ) {
 			return true;
 		}
 		// If the files are not identical, then they've changed.
-		$old_plugin_checksums = array_map(create_function('$a', 'return $a["checksum"];'), $old_plugins);
-		$new_plugin_checksums = array_map('md5_file', $new_plugin_files);
-		if ( count(array_intersect($old_plugin_checksums, $new_plugin_checksums)) != count($new_plugin_checksums) ) {
+		$old_plugin_checksums = array_map( create_function( '$a', 'return $a["checksum"];' ), $old_plugins );
+		$new_plugin_checksums = array_map( 'md5_file', $new_plugin_files );
+		if ( count( array_intersect( $old_plugin_checksums, $new_plugin_checksums ) ) != count( $new_plugin_checksums ) ) {
 			return true;
 		}
 		return false;
@@ -576,8 +576,8 @@ class Plugins
 			$plugin_file = MultiByte::substr( $file, MultiByte::strlen( HABARI_PATH ) );
 		}
 
-		$plugin_data = array_map(create_function('$a', 'return array("file"=>$a, "checksum"=>md5_file($a));'), $plugin_files);
-		Options::set('plugins_present', $plugin_data);
+		$plugin_data = array_map( create_function( '$a', 'return array( "file" => $a, "checksum" => md5_file( $a ) );' ), $plugin_files );
+		Options::set( 'plugins_present', $plugin_data );
 	}
 
 	/**
@@ -625,7 +625,7 @@ class Plugins
 		foreach ( $all_plugins as $file ) {
 			$error = '';
 			if ( !Utils::php_check_file_syntax( $file, $error ) ) {
-				Session::error(sprintf( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>' ), basename( $file ), $error ));
+				Session::error( sprintf( _t( 'Attempted to load the plugin file "%s", but it failed with syntax errors. <div class="reveal">%s</div>' ), basename( $file ), $error ) );
 				$failed_plugins[] = $file;
 			}
 		}
@@ -633,7 +633,7 @@ class Plugins
 		Options::set( 'failed_plugins', $failed_plugins );
 		Plugins::set_present();
 
-		return ( count($failed_plugins) > 0 ) ? false : true;
+		return ( count( $failed_plugins ) > 0 ) ? false : true;
 	}
 	
 	/**
@@ -642,7 +642,7 @@ class Plugins
 	 * @param string $configure The id of the configured plugin
 	 * @param string $configuration The selected configuration option
 	 **/	 	 	 	 	
-	public static function plugin_ui($configure, $configaction)
+	public static function plugin_ui( $configure, $configaction )
 	{
 		Plugins::act_id( 'plugin_ui_' . $configaction, $configure, $configure, $configaction );
 		Plugins::act( 'plugin_ui_any_' . $configaction, $configure, $configaction );

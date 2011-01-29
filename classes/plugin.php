@@ -26,8 +26,8 @@ abstract class Plugin extends Pluggable
 		if ( !isset( $info ) ) {
 			$info = Plugins::load_info( $this->get_file() );
 			if ( isset( $info->help ) ) {
-				Plugins::register(array($this, '_help_plugin_config_plugin'), 'filter', 'plugin_config:' . $this->plugin_id(), 8);
-				Plugins::register(array($this, '_help_plugin_ui_plugin'), 'action', 'plugin_ui:' . $this->plugin_id(), 8);
+				Plugins::register( array( $this, '_help_plugin_config_plugin' ), 'filter', 'plugin_config:' . $this->plugin_id(), 8 );
+				Plugins::register( array( $this, '_help_plugin_ui_plugin' ), 'action', 'plugin_ui:' . $this->plugin_id(), 8 );
 			}
 		}
 		return $info;
@@ -51,7 +51,7 @@ abstract class Plugin extends Pluggable
 	 * @param string $plugin_id The plugin id to which the actions belong
 	 * @return array The modified array of actions
 	 */
-	public function _help_plugin_config_plugin($actions, $plugin_id)
+	public function _help_plugin_config_plugin( $actions, $plugin_id )
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
 			foreach ( $this->info->help as $help ) {
@@ -75,8 +75,8 @@ abstract class Plugin extends Pluggable
 	{
 		if ( $plugin_id == $this->plugin_id() ) {
 			foreach ( $this->info->help as $help ) {
-				if ( ($action == (string)$help['name'] && (string)$help['name'] != '') || ($action == '_help' && (string)$help['name'] == '') ) {
-					echo '<div class="help">' . ((string)$help->value) . '</div>';
+				if ( ( $action == (string)$help['name'] && (string)$help['name'] != '' ) || ( $action == '_help' && (string)$help['name'] == '' ) ) {
+					echo '<div class="help">' . ( (string)$help->value ) . '</div>';
 				}
 			}
 		}

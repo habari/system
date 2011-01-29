@@ -148,7 +148,7 @@ class Posts extends ArrayObject implements IsContent
 
 				if ( isset( $paramset['id'] ) ) {
 					if ( is_array( $paramset['id'] ) ) {
-						array_walk( $paramset['id'], create_function( '&$a,$b', '$a = intval($a);' ) );
+						array_walk( $paramset['id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
 						$where[] = "{posts}.id IN (" . implode( ',', array_fill( 0, count( $paramset['id'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['id'] );
 					}
@@ -159,7 +159,7 @@ class Posts extends ArrayObject implements IsContent
 				}
 				if ( isset( $paramset['not:id'] ) ) {
 					if ( is_array( $paramset['not:id'] ) ) {
-						array_walk( $paramset['not:id'], create_function( '&$a,$b', '$a = intval($a);' ) );
+						array_walk( $paramset['not:id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
 						$where[] = "{posts}.id NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:id'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['not:id'] );
 					}
@@ -172,7 +172,7 @@ class Posts extends ArrayObject implements IsContent
 					if ( is_array( $paramset['status'] ) ) {
 						// remove 'any' from the list if we have an array
 						$paramset['status'] = array_diff( $paramset['status'], array( 'any' ) );
-						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Post::status($a);' ) );
+						array_walk( $paramset['status'], create_function( '&$a,$b', '$a = Post::status( $a );' ) );
 						$where[] = "{posts}.status IN (" . implode( ',', array_fill( 0, count( $paramset['status'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['status'] );
 					}
@@ -185,7 +185,7 @@ class Posts extends ArrayObject implements IsContent
 					if ( is_array( $paramset['content_type'] ) ) {
 						// remove 'any' from the list if we have an array
 						$paramset['content_type'] = array_diff( $paramset['content_type'], array( 'any' ) );
-						array_walk( $paramset['content_type'], create_function( '&$a,$b', '$a = Post::type($a);' ) );
+						array_walk( $paramset['content_type'], create_function( '&$a,$b', '$a = Post::type( $a );' ) );
 						$where[] = "{posts}.content_type IN (" . implode( ',', array_fill( 0, count( $paramset['content_type'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['content_type'] );
 					}
@@ -196,7 +196,7 @@ class Posts extends ArrayObject implements IsContent
 				}
 				if ( isset( $paramset['not:content_type'] ) ) {
 					if ( is_array( $paramset['not:content_type'] ) ) {
-						array_walk( $paramset['not:content_type'], create_function( '&$a,$b', '$a = Post::type($a);' ) );
+						array_walk( $paramset['not:content_type'], create_function( '&$a,$b', '$a = Post::type( $a );' ) );
 						$where[] = "{posts}.content_type NOT IN (" . implode( ',', array_fill( 0, count( $paramset['not:content_type'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['not:content_type'] );
 					}
@@ -229,7 +229,7 @@ class Posts extends ArrayObject implements IsContent
 				
 				if ( isset( $paramset['user_id'] ) && 0 !== $paramset['user_id'] ) {
 					if ( is_array( $paramset['user_id'] ) ) {
-						array_walk( $paramset['user_id'], create_function( '&$a,$b', '$a = intval($a);' ) );
+						array_walk( $paramset['user_id'], create_function( '&$a,$b', '$a = intval( $a );' ) );
 						$where[] = "{posts}.user_id IN (" . implode( ',', array_fill( 0, count( $paramset['user_id'] ), '?' ) ) . ")";
 						$params = array_merge( $params, $paramset['user_id'] );
 					}
@@ -287,7 +287,7 @@ class Posts extends ArrayObject implements IsContent
 						}
 						
 						// this causes no posts to match if combined with 'any' below and should be re-thought... somehow
-						$groupby = implode(',', $select_distinct);
+						$groupby = implode( ',', $select_distinct );
 						$having = 'count(*) = ' . count( $terms );
 						
 					}
@@ -380,9 +380,9 @@ class Posts extends ArrayObject implements IsContent
 							$pi_count++;
 
 							$join_params[] = $info_key;
-							if ( is_array($info_value) ) {
-								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value IN (" .Utils::placeholder_string(count($info_value)).")";
-								$join_params = array_merge($join_params, $info_value);
+							if ( is_array( $info_value ) ) {
+								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value IN (" .Utils::placeholder_string( count( $info_value ) ).")";
+								$join_params = array_merge( $join_params, $info_value );
 							}
 							else {
 								$joins['any_info_' . $info_key] = " LEFT JOIN {postinfo} aipi{$pi_count} ON {posts}.id = aipi{$pi_count}.post_id AND aipi{$pi_count}.name = ? AND aipi{$pi_count}.value = ?";
@@ -394,7 +394,7 @@ class Posts extends ArrayObject implements IsContent
 							$select_ary["info_{$info_key}_value"] = "aipi{$pi_count}.value AS info_{$info_key}_value";
 							$select_distinct["info_{$info_key}_value"] = "info_{$info_key}_value";
 						}
-						$where[] = '(' . implode(' OR ', $pi_where) . ')';
+						$where[] = '(' . implode( ' OR ', $pi_where ) . ')';
 					}
 				}
 
@@ -412,7 +412,7 @@ class Posts extends ArrayObject implements IsContent
 						$select_ary["info_{$info_name}_value"] = "hipi{$pi_count}.value AS info_{$info_name}_value";
 						$select_distinct["info_{$info_name}_value"] = "info_{$info_name}_value";
 					}
-					$where[] = '(' . implode(' OR ', $pi_where) . ')';
+					$where[] = '(' . implode( ' OR ', $pi_where ) . ')';
 				}
 
 				if ( isset( $paramset['not:all:info'] ) || isset( $paramset['not:info'] ) ) {
@@ -475,28 +475,28 @@ class Posts extends ArrayObject implements IsContent
 				 */
 				if ( isset( $paramset['day'] ) && isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$where[] = 'pubdate BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 day' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 day' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) && isset( $paramset['year'] ) ) {
 					$where[] = 'pubdate BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 month' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 month' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'pubdate BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 year' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 year' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
@@ -519,7 +519,7 @@ class Posts extends ArrayObject implements IsContent
 		}
 
 		// Only show posts to which the current user has permission
-		if ( isset($paramset['ignore_permissions']) ) {
+		if ( isset( $paramset['ignore_permissions'] ) ) {
 			$master_perm_where = '';
 		}
 		else {
@@ -530,11 +530,11 @@ class Posts extends ArrayObject implements IsContent
 			$where = array();
 
 			// Get the tokens that this user is granted or denied access to read
-			$read_tokens = isset($paramset['read_tokens']) ? $paramset['read_tokens'] : ACL::user_tokens(User::identify(), 'read', true);
-			$deny_tokens = isset($paramset['deny_tokens']) ? $paramset['deny_tokens'] : ACL::user_tokens(User::identify(), 'deny', true);
+			$read_tokens = isset( $paramset['read_tokens'] ) ? $paramset['read_tokens'] : ACL::user_tokens( User::identify(), 'read', true );
+			$deny_tokens = isset( $paramset['deny_tokens'] ) ? $paramset['deny_tokens'] : ACL::user_tokens( User::identify(), 'deny', true );
 
 			// If a user can read his own posts, let him
-			if ( User::identify()->can('own_posts', 'read') ) {
+			if ( User::identify()->can( 'own_posts', 'read' ) ) {
 				$perm_where['own_posts_id'] = '{posts}.user_id = ?';
 				$params_where[] = User::identify()->id;
 			}
@@ -542,30 +542,30 @@ class Posts extends ArrayObject implements IsContent
 			$params_where = array();
 			// If a user can read any post type, let him
 			if ( User::identify()->can( 'post_any', 'read' ) ) {
-				$perm_where = array('post_any' => '(1=1)');
+				$perm_where = array( 'post_any' => '(1=1)' );
 			}
 			else {
 				// If a user can read specific post types, let him
 				$permitted_post_types = array();
 				foreach ( Post::list_active_post_types() as $name => $posttype ) {
-					if ( User::identify()->can( 'post_' . Utils::slugify($name), 'read' ) ) {
+					if ( User::identify()->can( 'post_' . Utils::slugify( $name ), 'read' ) ) {
 						$permitted_post_types[] = $posttype;
 					}
 				}
-				if ( count($permitted_post_types) > 0 ) {
-					$perm_where[] = '{posts}.content_type IN (' . implode(',', $permitted_post_types) . ')';
+				if ( count( $permitted_post_types ) > 0 ) {
+					$perm_where[] = '{posts}.content_type IN (' . implode( ',', $permitted_post_types ) . ')';
 				}
 
 				// If a user can read posts with specific tokens, let him
-				if ( count($read_tokens) > 0 ) {
-					$joins['post_tokens__allowed'] = ' LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode(',', $read_tokens).')';
+				if ( count( $read_tokens ) > 0 ) {
+					$joins['post_tokens__allowed'] = ' LEFT JOIN {post_tokens} pt_allowed ON {posts}.id= pt_allowed.post_id AND pt_allowed.token_id IN ('.implode( ',', $read_tokens ).')';
 					$perm_where['perms_join_null'] = 'pt_allowed.post_id IS NOT NULL';
 				}
 
 				// If a user has access to read other users' unpublished posts, let him
 				if ( User::identify()->can( 'post_unpublished', 'read' ) ) {
 					$perm_where[] = '({posts}.status <> ? AND {posts}.user_id <> ?)';
-					$params_where[] = Post::status('published');
+					$params_where[] = Post::status( 'published' );
 					$params_where[] = User::identify()->id;
 				}
 
@@ -574,63 +574,63 @@ class Posts extends ArrayObject implements IsContent
 			$params_where_denied = array();
 			// If a user is denied access to all posts, do so
 			if ( User::identify()->cannot( 'post_any' ) ) {
-				$perm_where_denied = array('(1=0)');
+				$perm_where_denied = array( '(1=0)' );
 			}
 			else {
 				// If a user is denied read access to specific post types, deny him
 				$denied_post_types = array();
 				foreach ( Post::list_active_post_types() as $name => $posttype ) {
-					if ( User::identify()->cannot( 'post_' . Utils::slugify($name) ) ) {
+					if ( User::identify()->cannot( 'post_' . Utils::slugify( $name ) ) ) {
 						$denied_post_types[] = $posttype;
 					}
 				}
-				if ( count($denied_post_types) > 0 ) {
-					$perm_where_denied[] = '{posts}.content_type NOT IN (' . implode(',', $denied_post_types) . ')';
+				if ( count( $denied_post_types ) > 0 ) {
+					$perm_where_denied[] = '{posts}.content_type NOT IN (' . implode( ',', $denied_post_types ) . ')';
 				}
 
 				// If a user is denied access to read other users' unpublished posts, deny it
 				if ( User::identify()->cannot( 'post_unpublished' ) ) {
 					$perm_where_denied[] = '({posts}.status = ? OR {posts}.user_id = ?)';
-					$params_where_denied[] = Post::status('published');
+					$params_where_denied[] = Post::status( 'published' );
 					$params_where_denied[] = User::identify()->id;
 				}
 
 			}
 
 			// This doesn't work yet because you can't pass these arrays by reference
-			Plugins::act('post_get_perm_where', $perm_where, $params_where, $paramarray);
-			Plugins::act('post_get_perm_where_denied', $perm_where_denied, $params_where_denied, $paramarray);
+			Plugins::act( 'post_get_perm_where', $perm_where, $params_where, $paramarray );
+			Plugins::act( 'post_get_perm_where_denied', $perm_where_denied, $params_where_denied, $paramarray );
 						
 			// Set up the merge params
-			$merge_params = array($join_params, $params);
+			$merge_params = array( $join_params, $params );
 			
 			// If there are granted permissions to check, add them to the where clause
-			if ( count($perm_where) == 0 && !isset($joins['post_tokens__allowed']) ) {
+			if ( count( $perm_where ) == 0 && !isset( $joins['post_tokens__allowed'] ) ) {
 				// You have no grants.  You get no posts.
 				$where['perms_granted'] = '(1=0)';
 			}
-			elseif ( count($perm_where) > 0 ) {
+			elseif ( count( $perm_where ) > 0 ) {
 				$where['perms_granted'] = '
-					(' . implode(' OR ', $perm_where) . ')
+					(' . implode( ' OR ', $perm_where ) . ')
 				';
 				$merge_params[] = $params_where;
 			}
 
-			if ( count($deny_tokens) > 0 ) {
-				$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode(',', $deny_tokens).')';
+			if ( count( $deny_tokens ) > 0 ) {
+				$joins['post_tokens__denied'] = ' LEFT JOIN {post_tokens} pt_denied ON {posts}.id= pt_denied.post_id AND pt_denied.token_id IN ('.implode( ',', $deny_tokens ).')';
 				$perm_where_denied['perms_join_null'] = 'pt_denied.post_id IS NULL';
 			}
 
 			// If there are denied permissions to check, add them to the where clause
-			if ( count($perm_where_denied) > 0 ) {
+			if ( count( $perm_where_denied ) > 0 ) {
 				$where['perms_denied'] = '
-					(' . implode(' AND ', $perm_where_denied) . ')
+					(' . implode( ' AND ', $perm_where_denied ) . ')
 				';
 				$merge_params[] = $params_where_denied;
 			}
 			
 			// Merge the params
-			$params = call_user_func_array('array_merge', $merge_params);
+			$params = call_user_func_array( 'array_merge', $merge_params );
 
 			// AND the separate permission-related WHERE clauses
 			$master_perm_where = implode( ' AND ', $where );
@@ -638,29 +638,29 @@ class Posts extends ArrayObject implements IsContent
 
 		// Extract the remaining parameters which will be used onwards
 		// For example: page number, fetch function, limit
-		$paramarray = new SuperGlobal($paramarray);
-		$extract = $paramarray->filter_keys('page', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having', 'add_select');
+		$paramarray = new SuperGlobal( $paramarray );
+		$extract = $paramarray->filter_keys( 'page', 'fetch_fn', 'count', 'orderby', 'groupby', 'limit', 'offset', 'nolimit', 'having', 'add_select' );
 		foreach ( $extract as $key => $value ) {
 			$$key = $value;
 		}
 
 		// Define the LIMIT if it does not exist, unless specific posts are requested or we're getting the monthly counts
-		if ( !isset( $limit ) && !isset( $paramset['id']) && !isset( $paramset['slug']) && !isset( $paramset['month_cts'] ) ) {
-			$limit = Options::get('pagination') ? (int) Options::get('pagination') : 5;
+		if ( !isset( $limit ) && !isset( $paramset['id'] ) && !isset( $paramset['slug'] ) && !isset( $paramset['month_cts'] ) ) {
+			$limit = Options::get( 'pagination' ) ? (int) Options::get( 'pagination' ) : 5;
 		}
 		elseif ( !isset( $limit ) ) {
 			$selected_posts = 0;
-			if ( isset($paramset['id']) ) {
-				$selected_posts += count(Utils::single_array($paramset['id']));
+			if ( isset( $paramset['id'] ) ) {
+				$selected_posts += count( Utils::single_array( $paramset['id'] ) );
 			}
-			if ( isset($paramset['slug']) ) {
-				$selected_posts += count(Utils::single_array($paramset['slug']));
+			if ( isset( $paramset['slug'] ) ) {
+				$selected_posts += count( Utils::single_array( $paramset['slug'] ) );
 			}
 			$limit = $selected_posts > 0 ? $selected_posts : '';
 		}
 
 		// Calculate the OFFSET based on the page number
-		if ( isset( $page ) && is_numeric( $page ) && !isset($paramset['offset']) ) {
+		if ( isset( $page ) && is_numeric( $page ) && !isset( $paramset['offset'] ) ) {
 			$offset = ( intval( $page ) - 1 ) * intval( $limit );
 		}
 
@@ -680,18 +680,18 @@ class Posts extends ArrayObject implements IsContent
 		
 		
 		// If the orderby has a function in it, try to create a select field for it with an alias
-		if ( strpos($orderby, '(') !== false ) {
-			$orders = explode(',', $orderby);
+		if ( strpos( $orderby, '(' ) !== false ) {
+			$orders = explode( ',', $orderby );
 			$ob_index = 0;
 			foreach ( $orders as $key => $order ) {
-				if ( !preg_match('%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches) ) {
+				if ( !preg_match( '%(?P<field>.+)\s+(?P<direction>DESC|ASC)%i', $order, $order_matches ) ) {
 					$order_matches = array(
 						'field' => $order,
 						'direction' => '',
 					);
 				}
 				
-				if ( strpos($order_matches['field'], '(') !== false ) {
+				if ( strpos( $order_matches['field'], '(' ) !== false ) {
 					$ob_index++;
 					$field = 'orderby' . $ob_index;
 					$select_ary[$field] = "{$order_matches['field']} AS $field";
@@ -699,19 +699,19 @@ class Posts extends ArrayObject implements IsContent
 					$orders[$key] = $field . ' ' . $order_matches['direction'];
 				}
 			}
-			$orderby = implode(', ', $orders);
+			$orderby = implode( ', ', $orders );
 		}
 
 		// Add arbitrary fields to the select clause for sorting and output
-		if ( isset($add_select) ) {
-			$select_ary = array_merge($select_ary, $add_select);
+		if ( isset( $add_select ) ) {
+			$select_ary = array_merge( $select_ary, $add_select );
 		}
 		
 
 		/**
 		 * Turn the requested fields into a comma-separated SELECT field clause
 		 */
-		$select = implode(', ', $select_ary);
+		$select = implode( ', ', $select_ary );
 
 		/**
 		 * If a count is requested:
@@ -767,17 +767,17 @@ class Posts extends ArrayObject implements IsContent
 		 */
 		$query = '
 			SELECT DISTINCT ' . $select . '
-			FROM {posts} ' . "\n " . implode("\n ", $joins) . "\n";
+			FROM {posts} ' . "\n " . implode( "\n ", $joins ) . "\n";
 
-		if ( count( $wheres ) > 0) {
+		if ( count( $wheres ) > 0 ) {
 			$query .= ' WHERE (' . implode( " \nOR\n ", $wheres ) . ')';
-			$query .= ($master_perm_where == '') ? '' : ' AND (' . $master_perm_where . ')';
+			$query .= ( $master_perm_where == '' ) ? '' : ' AND (' . $master_perm_where . ')';
 		}
 		elseif ( $master_perm_where != '' ) {
 			$query .= ' WHERE (' . $master_perm_where . ')';
 		}
-		$query .= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
-		$query .= ( ! isset($having) || $having == '' ) ? '' : ' HAVING ' . $having;
+		$query .= ( ! isset( $groupby ) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query .= ( ! isset( $having ) || $having == '' ) ? '' : ' HAVING ' . $having;
 		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
 		/**
@@ -953,8 +953,8 @@ class Posts extends ArrayObject implements IsContent
 		foreach ( Post::default_fields() as $field => $value ) {
 			$select[$field] = "{posts}.$field AS $field";
 		}
-		$select = implode(',', $select);
-		$posts = DB::get_results('SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), HabariDateTime::date_create() ), 'Post' );
+		$select = implode( ',', $select );
+		$posts = DB::get_results( 'SELECT ' . $select . ' FROM {posts} WHERE {posts}.status = ? AND {posts}.pubdate <= ? ORDER BY {posts}.pubdate DESC', array( Post::status( 'scheduled' ), HabariDateTime::date_create() ), 'Post' );
 		foreach ( $posts as $post ) {
 			$post->publish();
 		}
@@ -974,7 +974,7 @@ class Posts extends ArrayObject implements IsContent
 
 		CronTab::delete_cronjob( 'publish_scheduled_posts' );
 		if ( $min_time ) {
-			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts'),  $min_time, 'Next run: ' . HabariDateTime::date_create( $min_time )->get( 'c' ) );
+			CronTab::add_single_cron( 'publish_scheduled_posts', array( 'Posts', 'publish_scheduled_posts' ), $min_time, 'Next run: ' . HabariDateTime::date_create( $min_time )->get( 'c' ) );
 		}
 	}
 
@@ -985,13 +985,13 @@ class Posts extends ArrayObject implements IsContent
 	 * @param The params by which to work out what is the next ascending post
 	 * @return Post The ascending post
 	 */
-	public static function ascend( $post, $params = null)
+	public static function ascend( $post, $params = null )
 	{
 		$posts = null;
 		$ascend = false;
 		if ( !$params ) {
 			$params = array( 'where' => "pubdate >= '{$post->pubdate->sql}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate ASC' );
-			$posts = Posts::get($params);
+			$posts = Posts::get( $params );
 		}
 		elseif ( $params instanceof Posts ) {
 			$posts = $params;
@@ -1000,7 +1000,7 @@ class Posts extends ArrayObject implements IsContent
 			if ( !array_key_exists( 'orderby', $params ) ) {
 				$params['orderby'] = 'pubdate ASC';
 			}
-			$posts = Posts::get($params);
+			$posts = Posts::get( $params );
 		}
 		// find $post and return the next one.
 		$index = $posts->search( $post );
@@ -1018,22 +1018,22 @@ class Posts extends ArrayObject implements IsContent
 	 * @param The params by which to work out what is the next descending post
 	 * @return Post The descending post
 	 */
-	public static function descend( $post, $params = null)
+	public static function descend( $post, $params = null )
 	{
 		$posts = null;
 		$descend = false;
 		if ( !$params ) {
 			$params = array( 'where' => "pubdate <= '{$post->pubdate->sql}' AND content_type = {$post->content_type} AND status = {$post->status}", 'limit' => 2, 'orderby' => 'pubdate DESC' );
-			$posts = Posts::get($params);
+			$posts = Posts::get( $params );
 		}
 		elseif ( $params instanceof Posts ) {
-			$posts = array_reverse($params);
+			$posts = array_reverse( $params );
 		}
 		else {
 			if ( !array_key_exists( 'orderby', $params ) ) {
 				$params['orderby'] = 'pubdate DESC';
 			}
-			$posts = Posts::get($params);
+			$posts = Posts::get( $params );
 		}
 		// find $post and return the next one.
 		$index = $posts->search( $post );
@@ -1085,20 +1085,20 @@ class Posts extends ArrayObject implements IsContent
 		$flag_regex = '/(?P<flag>\w+):(?P<value>[^\'"][^\s]*|(?P<quote>[\'"])[^\3]+(?<!\\\\)\3)/i';
 
 		// now do some matching.
-		preg_match_all( $flag_regex , $search_string, $matches, PREG_SET_ORDER );
+		preg_match_all( $flag_regex, $search_string, $matches, PREG_SET_ORDER );
 
 		// now we remove those terms from the search string, otherwise the keyword search below has issues. It will pick up things like
 		// from tag:'pair of' -> matches of'
-		$criteria = trim(preg_replace( $flag_regex, '', $search_string));
+		$criteria = trim( preg_replace( $flag_regex, '', $search_string ) );
 
 		// Add special criteria based on the flag parameters.
-		foreach ($matches as $match) {
+		foreach ( $matches as $match ) {
 			// trim out any quote marks that have been matched.
-			$quote = isset($match['quote']) ? $match['quote'] : ' ';
-			$value = trim( stripslashes($match['value']), $quote );
+			$quote = isset( $match['quote'] ) ? $match['quote'] : ' ';
+			$value = trim( stripslashes( $match['value'] ), $quote );
 			
 			$flag = $match['flag'];
-			$arguments = Plugins::filter('posts_search_to_get', $arguments, $flag, $value, $match, $search_string);
+			$arguments = Plugins::filter( 'posts_search_to_get', $arguments, $flag, $value, $match, $search_string );
 			switch ( $flag )  {
 				case 'author':
 					if ( $u = User::get( $value ) ) {
@@ -1119,9 +1119,9 @@ class Posts extends ArrayObject implements IsContent
 					}
 					break;
 				case 'info':
-					if ( strpos($value, ':') !== false ) {
+					if ( strpos( $value, ':' ) !== false ) {
 						list( $infokey, $infovalue ) = explode( ':', $value, 2 );
-						$arguments['info'][] = array($infokey=>$infovalue);
+						$arguments['info'][] = array( $infokey=>$infovalue );
 					}
 					break;
 			}
@@ -1156,11 +1156,11 @@ class Posts extends ArrayObject implements IsContent
 	 *
 	 * @return Boolean Whether the requested post matches the content type of the rule.
 	 */
-	public static function rewrite_match_type($rule, $slug, $parameters)
+	public static function rewrite_match_type( $rule, $slug, $parameters )
 	{
 		$args = $rule->named_arg_values;
 		$args['count'] = true;
-		$postcount = Posts::get($args);
+		$postcount = Posts::get( $args );
 		return $postcount > 0;
 	}
 
@@ -1172,7 +1172,7 @@ class Posts extends ArrayObject implements IsContent
 	 */
 	function content_type ()
 	{
-		if ( isset($this->preset) ) {
+		if ( isset( $this->preset ) ) {
 			return 'posts.' . $this->preset;
 		}
 		return 'posts';
@@ -1184,14 +1184,15 @@ class Posts extends ArrayObject implements IsContent
 	 * 
 	 * @return array An array of parsed term-matching conditions
 	 */
-	private static function vocabulary_params( $params ) {
+	private static function vocabulary_params( $params )
+	{
 		
 		$return = array();
 		
 		foreach ( $params as $key => $value ) {
 			// split vocab off the beginning of the key
 			if ( strpos( $key, ':' ) !== false ) {
-				list( $newkey, $subkey ) = explode(':', $key, 2);
+				list( $newkey, $subkey ) = explode( ':', $key, 2 );
 				$params[$newkey][$subkey] = $value;
 				unset( $params[$key] );
 			}
@@ -1207,7 +1208,7 @@ class Posts extends ArrayObject implements IsContent
 				
 				// if there's a colon we've got a mode and a field
 				if ( strpos( $key, ':' ) !== false ) {
-					list( $mode, $by_field ) = explode(':', $key, 2);
+					list( $mode, $by_field ) = explode( ':', $key, 2 );
 					foreach ( $value as $v ) {
 						$return[$mode][$vocab][$by_field][] = $v;
 					}

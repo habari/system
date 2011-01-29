@@ -91,7 +91,8 @@ class Options extends Singleton
 	 * @param string $prefix The prefix to set
 	 * @param array $values An associative array of all options to be set with that prefix
 	 */
-	public static function set_group ( $prefix, $values ) {
+	public static function set_group ( $prefix, $values )
+	{
 		
 		if ( substr( $prefix, -2 ) != '__' ) {
 			$prefix .= '__';
@@ -116,7 +117,8 @@ class Options extends Singleton
 	 * 
 	 * @param string $prefix The prefix to delete
 	 */
-	public static function delete_group ( $prefix ) {
+	public static function delete_group ( $prefix )
+	{
 		
 		if ( substr( $prefix, -2 ) != '__' ) {
 			$prefix .= '__';
@@ -200,8 +202,8 @@ class Options extends Singleton
 		if ( ! isset( $this->options ) ) {
 			$this->get_all_options();
 		}
-		$option_value = isset($this->options[$name]) ? $this->options[$name] : null;
-		$option_value = Plugins::filter('option_get_value', $option_value, $name);
+		$option_value = isset( $this->options[$name] ) ? $this->options[$name] : null;
+		$option_value = Plugins::filter( 'option_get_value', $option_value, $name );
 		return $option_value;
 	}
 
@@ -216,7 +218,7 @@ class Options extends Singleton
 			'comments_require_id' => false,
 		);
 		$results = DB::get_results( 'SELECT name, value, type FROM {options}', array(), 'QueryRecord' );
-		foreach($results as $result) {
+		foreach ( $results as $result ) {
 			if ( $result->type == 1 ) {
 				$this->options[$result->name] = unserialize( $result->value );
 			}
@@ -236,7 +238,7 @@ class Options extends Singleton
 		if ( ! isset( $this->options ) ) {
 			$this->get_all_options();
 		}
-		$value = Plugins::filter( 'option_set_value', $value, $name, isset($this->options[$name]) ? $this->options[$name] : null );
+		$value = Plugins::filter( 'option_set_value', $value, $name, isset( $this->options[$name] ) ? $this->options[$name] : null );
 		$this->options[$name] = $value;
 
 		if ( is_array( $value ) || is_object( $value ) ) {
@@ -258,7 +260,7 @@ class Options extends Singleton
 	 */
 	public function __unset( $name )
 	{
-		unset($this->options[$name]);
+		unset( $this->options[$name] );
 		DB::delete( DB::table( 'options' ), array( 'name' => $name ) );
 	}
 

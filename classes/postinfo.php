@@ -9,12 +9,13 @@
  */
 class PostInfo extends InfoRecords
 {
-	function __construct ( $post_id = NULL )
+	function __construct( $post_id = null )
 	{
-		parent::__construct ( DB::table('postinfo'), "post_id", $post_id ); // call parent with appropriate  parameters
+		parent::__construct( DB::table( 'postinfo' ), "post_id", $post_id ); // call parent with appropriate  parameters
 	}
 	
-	public function __get ( $name ) {
+	public function __get( $name )
+	{
 		
 		// if there is a _ in the name, there is a filter at the end
 		if ( strpos( $name, '_' ) !== false ) {
