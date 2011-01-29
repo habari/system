@@ -13,12 +13,12 @@ class SuperGlobal extends ArrayIterator
 	protected $values = array();
 	protected $raw_values = array();
 
-	public function __construct($array)
+	public function __construct( $array )
 	{
-		if (!is_array($array) && !$array instanceof SuperGlobal) {
-			throw new Exception('Parameter must be array or SuperGlobal');
+		if ( !is_array( $array ) && !$array instanceof SuperGlobal ) {
+			throw new Exception( 'Parameter must be array or SuperGlobal' );
 		}
-		parent::__construct($array);
+		parent::__construct( $array );
 	}
 
 	/**
@@ -31,20 +31,20 @@ class SuperGlobal extends ArrayIterator
 		/* We should only revert the magic quotes once per page hit */
 		static $revert = true;
 
-		if (!$revert) {
+		if ( !$revert ) {
 			// our work has already been done
 			return;
 		}
 
 		if ( get_magic_quotes_gpc() ) {
-			$_GET = Utils::stripslashes($_GET);
-			$_POST = Utils::stripslashes($_POST);
+			$_GET = Utils::stripslashes( $_GET );
+			$_POST = Utils::stripslashes( $_POST );
 		}
 
-		$_GET = new SuperGlobal($_GET);
-		$_POST = new SuperGlobal($_POST);
-		$_SERVER = new SuperGlobal($_SERVER);
-		unset($_REQUEST);
+		$_GET = new SuperGlobal( $_GET );
+		$_POST = new SuperGlobal( $_POST );
+		$_SERVER = new SuperGlobal( $_SERVER );
+		unset( $_REQUEST );
 
 		$revert = false;
 	}
@@ -58,16 +58,16 @@ class SuperGlobal extends ArrayIterator
 		/* We should only revert the magic quotes once per page hit */
 		static $revert = true;
 
-		if (!$revert) {
+		if ( !$revert ) {
 			// our work has already been done
 			return;
 		}
 
 		if ( get_magic_quotes_gpc() ) {
-			$_COOKIE = Utils::stripslashes($_COOKIE);
+			$_COOKIE = Utils::stripslashes( $_COOKIE );
 		}
 
-		$_COOKIE = new SuperGlobal($_COOKIE);
+		$_COOKIE = new SuperGlobal( $_COOKIE );
 
 		$revert = false;
 	}
@@ -78,13 +78,13 @@ class SuperGlobal extends ArrayIterator
 	 * @param mixed $index The index of the value
 	 * @return mixed The unfiltered value
 	 */
-	public function raw($index)
+	public function raw( $index )
 	{
-		if (isset($this->raw_values[$index])) {
+		if ( isset( $this->raw_values[$index] ) ) {
 			return $this->raw_values[$index];
 		}
 		$cp = $this->get_array_copy_raw();
-		if (isset($cp[$index])) {
+		if ( isset( $cp[$index] ) ) {
 			$this->raw_values[$index] = $cp[$index];
 			return $this->raw_values[$index];
 		}
@@ -95,7 +95,7 @@ class SuperGlobal extends ArrayIterator
 	 */
 	public function getArrayCopy()
 	{
-		return array_map( array( $this, 'base_filter'), parent::getArrayCopy() );
+		return array_map( array( $this, 'base_filter' ), parent::getArrayCopy() );
 	}
 	
 	/**
@@ -111,7 +111,7 @@ class SuperGlobal extends ArrayIterator
 	 */
 	public function current()
 	{
-		return $this->offsetGet(parent::key());
+		return $this->offsetGet( parent::key() );
 	}
 
 	/**
@@ -120,14 +120,14 @@ class SuperGlobal extends ArrayIterator
 	 * @param mixed $index The index of the array
 	 * @return mixed The filtered value at the array index
 	 */
-	public function offsetGet($index)
+	public function offsetGet( $index )
 	{
-		if (isset($this->values[$index])) {
+		if ( isset( $this->values[$index] ) ) {
 			return $this->values[$index];
 		}
 		$cp = $this->get_array_copy_raw();
-		if (isset($cp[$index])) {
-			$this->values[$index] = $this->base_filter($cp[$index]);
+		if ( isset( $cp[$index] ) ) {
+			$this->values[$index] = $this->base_filter( $cp[$index] );
 			return $this->values[$index];
 		}
 	}
@@ -138,11 +138,11 @@ class SuperGlobal extends ArrayIterator
 	 * @param mixed $index The array index
 	 * @param mixed $value Tha value to store
 	 */
-	public function offsetSet($index, $value)
+	public function offsetSet( $index, $value )
 	{
-		unset($this->values[$index]);
-		unset($this->raw_values[$index]);
-		parent::offsetSet($index, $value);
+		unset( $this->values[$index] );
+		unset( $this->raw_values[$index] );
+		parent::offsetSet( $index, $value );
 	}
 
 	/**
@@ -151,13 +151,13 @@ class SuperGlobal extends ArrayIterator
 	 * @param mixed $value A value to filter
 	 * @return mixes The filtered value
 	 */
-	protected function base_filter($value)
+	protected function base_filter( $value )
 	{
-		if (is_array($value)) {
-			return array_map(array($this, 'base_filter'), $value);
+		if ( is_array( $value ) ) {
+			return array_map( array( $this, 'base_filter' ), $value );
 		}
-		elseif (is_string($value)) {
-			return InputFilter::filter($value);
+		elseif ( is_string( $value ) ) {
+			return InputFilter::filter( $value );
 		}
 		else {
 			return $value;
@@ -174,10 +174,10 @@ class SuperGlobal extends ArrayIterator
 	{
 		$args = func_get_args();
 		$cp = $this->get_array_copy_raw();
-		foreach($args as $ary) {
-			if (is_array($ary)) {
-				foreach($ary as $key => $value) {
-					if (is_numeric($key)) {
+		foreach ( $args as $ary ) {
+			if ( is_array( $ary ) ) {
+				foreach ( $ary as $key => $value ) {
+					if ( is_numeric( $key ) ) {
 						$cp[] = $value;
 					}
 					else {
@@ -185,22 +185,22 @@ class SuperGlobal extends ArrayIterator
 					}
 				}
 			}
-			elseif ($ary instanceof SuperGlobal) {
+			elseif ( $ary instanceof SuperGlobal ) {
 				// loop to get raw data.
 				while ( $ary->valid() ) {
-					if ( is_numeric($ary->key()) ) {
-						$cp[] = $ary->raw($ary->key());
+					if ( is_numeric( $ary->key() ) ) {
+						$cp[] = $ary->raw( $ary->key() );
 					}
 					else {
-						$cp[$ary->key()] = $ary->raw($ary->key());
+						$cp[$ary->key()] = $ary->raw( $ary->key() );
 					}
 					$ary->next();
 				}
 			}
-			elseif ($ary instanceof ArrayObject || $ary instanceof ArrayIterator) {
+			elseif ( $ary instanceof ArrayObject || $ary instanceof ArrayIterator ) {
 				$arycp = $ary->getArrayCopy();  // Don't trigger offsetGet for ArrayObject
-				foreach($arycp as $key => $value) {
-					if (is_numeric($key)) {
+				foreach ( $arycp as $key => $value ) {
+					if ( is_numeric( $key ) ) {
 						$cp[] = $value;
 					}
 					else {
@@ -212,7 +212,7 @@ class SuperGlobal extends ArrayIterator
 				$cp[] = $ary;
 			}
 		}
-		return new SuperGlobal($cp);
+		return new SuperGlobal( $cp );
 	}
 
 	/**
@@ -225,15 +225,15 @@ class SuperGlobal extends ArrayIterator
 	{
 		$keys = array();
 		$args = func_get_args();
-		foreach($args as $ary) {
-			if (!is_array($ary)) {
-				$ary = array($ary);
+		foreach ( $args as $ary ) {
+			if ( !is_array( $ary ) ) {
+				$ary = array( $ary );
 			}
-			$keys = array_merge($keys, array_values($ary));
+			$keys = array_merge( $keys, array_values( $ary ) );
 		}
 		$cp = $this->get_array_copy_raw();
-		$cp = array_intersect_key($cp, array_flip($keys));
-		return new SuperGlobal($cp);
+		$cp = array_intersect_key( $cp, array_flip( $keys ) );
+		return new SuperGlobal( $cp );
 	}
 	
 	/**
@@ -241,9 +241,9 @@ class SuperGlobal extends ArrayIterator
 	 * @param callback $fn the name of the function to map through
 	 * @return SuperGlobal the result of the mapping
 	 **/
-	public function map($fn)
+	public function map( $fn )
 	{
-		return new SuperGlobal(array_map($fn, $this->get_array_copy_raw()));
+		return new SuperGlobal( array_map( $fn, $this->get_array_copy_raw() ) );
 	}
 	
 	/**
@@ -252,13 +252,13 @@ class SuperGlobal extends ArrayIterator
 	 * @param string $search_regex (optional) The regex search value
 	 * @return SuperGlobal The re-keyed array
 	 **/
-	public function rekey($replacement = '{\$$0}', $search_regex = '/^.*$/')
+	public function rekey( $replacement = '{\$$0}', $search_regex = '/^.*$/' )
 	{
 		$output = array();
-		foreach($this->get_array_copy_raw() as $k => $v) {
-			$output[preg_replace($search_regex, $replacement, $k)] = $v;
+		foreach ( $this->get_array_copy_raw() as $k => $v ) {
+			$output[preg_replace( $search_regex, $replacement, $k )] = $v;
 		}
-		return new SuperGlobal($output);
+		return new SuperGlobal( $output );
 	}
 }
 

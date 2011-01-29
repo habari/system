@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * @package Habari
  *
@@ -27,7 +27,7 @@ class Terms extends ArrayObject
 		}
 
 		$diff = array_diff( $tags, (array)$this );
-		foreach( $tags as $tag ) {
+		foreach ( $tags as $tag ) {
 			if ( in_array( $tag, $diff ) ) {
 				return false;
 			}
@@ -60,27 +60,27 @@ class Terms extends ArrayObject
 			preg_match_all( '/((("|((?<= )|^)\')\\S([^\\3]*?)\\3((?=[\\W])|$))|[^,])+/u', $tagstr, $matches );
 			// cleanup
 			$terms = array_map( 'trim', $matches[0] );
-			$terms = preg_replace( array_fill( 0, count( $terms ), '/^(["\'])(((?!").)+)(\\1)$/'), '$2', $terms );
+			$terms = preg_replace( array_fill( 0, count( $terms ), '/^(["\'])(((?!").)+)(\\1)$/' ), '$2', $terms );
 			// unescape
 			$terms = str_replace( array_keys( $zer ), $zer, $terms );
 			// hooray
 		}
-		if(is_array($terms)) {
-			if($vocabulary instanceof Vocabulary) {
-				foreach($terms as $k => $term) {
-					if($saved_term = $vocabulary->get_term($term, $term_class)) {
+		if ( is_array( $terms ) ) {
+			if ( $vocabulary instanceof Vocabulary ) {
+				foreach ( $terms as $k => $term ) {
+					if ( $saved_term = $vocabulary->get_term( $term, $term_class ) ) {
 						$terms[$k] = $saved_term;
 					}
 					else {
-						$terms[$k] = new $term_class($term);
+						$terms[$k] = new $term_class( $term );
 					}
 				}
 //Utils::debug($terms);
 			}
 			else {
-				array_walk( $terms, create_function('&$tag', '$tag = new ' . $term_class . '($tag);') );
+				array_walk( $terms, create_function( '&$tag', '$tag = new ' . $term_class . '($tag);' ) );
 			}
-			return new Terms($terms);
+			return new Terms( $terms );
 		}
 		return new Terms();
 	}

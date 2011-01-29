@@ -84,7 +84,7 @@ abstract class TemplateEngine
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
-	abstract function assign( $key, $value ='' ); // virtual - implement in derived class
+	abstract function assign( $key, $value = '' ); // virtual - implement in derived class
 
 	/**
 	 * Detects if a variable is assigned to the template engine for use in
@@ -107,7 +107,7 @@ abstract class TemplateEngine
 	 * @param key name of variable
 	 * @param value value of variable
 	 */
-	abstract function append( $key, $value ='' ); // virtual - implement in derived class
+	abstract function append( $key, $value = '' ); // virtual - implement in derived class
 	
 	/**
 	 * Sets the directory for the engine to find templates

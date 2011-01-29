@@ -13,7 +13,7 @@ class Tag extends Term
 
 	public function __construct( $params = array() )
 	{
-		if( is_string( $params ) ) {
+		if ( is_string( $params ) ) {
 			$params = array( 'term_display' => $params );
 		}
 		$params['vocabulary_id'] = Tags::vocabulary()->id;
@@ -25,22 +25,22 @@ class Tag extends Term
 	 *
 	 * @return Boolean Whether the tag exists on a published post.
 	 */
-	public static function rewrite_tag_exists($rule, $slug, $parameters)
+	public static function rewrite_tag_exists( $rule, $slug, $parameters )
 	{
-		$tags = explode(' ', $rule->named_arg_values['tag']);
-		$tags = array_map('trim', $tags, array_fill(0, count($tags), '-') );
-		$tags = array_map(array('Tags', 'get_one'), $tags);
-		$initial_tag_count = count($tags);
-		$tags = array_filter($tags);
+		$tags = explode( ' ', $rule->named_arg_values['tag'] );
+		$tags = array_map( 'trim', $tags, array_fill( 0, count( $tags ), '-' ) );
+		$tags = array_map( array( 'Tags', 'get_one' ), $tags );
+		$initial_tag_count = count( $tags );
+		$tags = array_filter( $tags );
 		// Are all of the tags we asked for actual tags on this site?
-		if ( count($tags) != $initial_tag_count ) {
+		if ( count( $tags ) != $initial_tag_count ) {
 			return false;
 		}
 		$tag_params = array();
 		foreach ( $tags as $tag ) {
 			$tag_params[] = $tag->term_display;
 		}
-		return ($tag instanceOf Term && Posts::count_by_tag($tag_params, Post::status('published')) > 0);
+		return ( $tag instanceOf Term && Posts::count_by_tag( $tag_params, Post::status( 'published' ) ) > 0 );
 	}
 
 	/**
@@ -64,8 +64,8 @@ class Tag extends Term
 	 */
 	public function __call( $name, $args )
 	{
-		array_unshift($args, 'tag_call_' . $name, null, $this);
-		return call_user_func_array(array('Plugins', 'filter'), $args);
+		array_unshift( $args, 'tag_call_' . $name, null, $this );
+		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
 	}
 
 }

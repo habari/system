@@ -40,10 +40,10 @@ class Term extends QueryRecord
 			$this->fields
 		);
 
-		if ( is_string($paramarray) ) {
+		if ( is_string( $paramarray ) ) {
 			$paramarray = array(
 				'term_display' => $paramarray,
-				'term' => Utils::slugify($paramarray),
+				'term' => Utils::slugify( $paramarray ),
 			);
 		}
 
@@ -69,7 +69,7 @@ class Term extends QueryRecord
 	{
 		// determine the base value from:
 		// - the new slug
-		if ( isset( $this->newfields[ 'term' ]) && $this->newfields[ 'term' ] != '' ) {
+		if ( isset( $this->newfields[ 'term' ] ) && $this->newfields[ 'term' ] != '' ) {
 			$value = $this->newfields[ 'term' ];
 		}
 		// - the existing slug
@@ -181,7 +181,7 @@ class Term extends QueryRecord
 		}
 		Plugins::act( 'term_delete_before', $this );
 
-		DB::query( "DELETE FROM {object_terms} WHERE term_id = :id", array( 'id' => $this->id) );
+		DB::query( "DELETE FROM {object_terms} WHERE term_id = :id", array( 'id' => $this->id ) );
 
 		$result = parent::deleteRecord( '{terms}', array( 'id'=>$this->id ) );
 		EventLog::log( sprintf( _t( 'Term %1$s (%2$s) deleted.' ), $this->id, $this->term_display ), 'info', 'content', 'habari' );
@@ -244,7 +244,7 @@ class Term extends QueryRecord
 		if ( $this->vocabulary_id != $term->vocabulary_id ) {
 			return false;
 		}
-		if ( ($this->mptt_left > $term->mptt_left) && ($this->mptt_right < $term->mptt_right) ) {
+		if ( ( $this->mptt_left > $term->mptt_left ) && ( $this->mptt_right < $term->mptt_right ) ) {
 			return true;
 		}
 		return false;
@@ -259,7 +259,7 @@ class Term extends QueryRecord
 		if ( $this->vocabulary_id != $term->vocabulary_id ) {
 			return false;
 		}
-		if ( ($this->mptt_left < $term->mptt_left) && ($this->mptt_right > $term->mptt_right) ) {
+		if ( ( $this->mptt_left < $term->mptt_left ) && ( $this->mptt_right > $term->mptt_right ) ) {
 			return true;
 		}
 		return false;
@@ -381,7 +381,7 @@ SQL;
 	 * @param $id integer. The object's id
 	 *
 	 */
-	public function dissociate( $type = NULL, $id = NULL )
+	public function dissociate( $type = null, $id = null )
 	{
 		$result = true;
 
@@ -419,8 +419,8 @@ SQL;
 				break;
 			case 'tag_text_searchable':
 				// if it's got spaces, then quote it.
-				if ( strpos($this->term_display, ' ') !== false ) {
-					$out = '\'' . str_replace("'", "\'", $this->term_display) . '\'';
+				if ( strpos( $this->term_display, ' ' ) !== false ) {
+					$out = '\'' . str_replace( "'", "\'", $this->term_display ) . '\'';
 				}
 				else {
 					$out = $this->term_display;
@@ -456,8 +456,8 @@ SQL;
 	 */
 	public function __call( $name, $args )
 	{
-		array_unshift($args, 'term_call_' . $name, null, $this);
-		return call_user_func_array(array('Plugins', 'filter'), $args);
+		array_unshift( $args, 'term_call_' . $name, null, $this );
+		return call_user_func_array( array( 'Plugins', 'filter' ), $args );
 	}
 
 }

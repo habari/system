@@ -32,7 +32,7 @@ class Tags extends Vocabulary
 	 *
 	 * @return	A Tag object
 	 **/
-	public static function get_by_text($tag)
+	public static function get_by_text( $tag )
 	{
 		return self::get_one( $tag );
 	}
@@ -42,7 +42,7 @@ class Tags extends Vocabulary
 	 *
 	 * @return	A Tag object
 	 **/
-	public static function get_by_slug($tag)
+	public static function get_by_slug( $tag )
 	{
 		return self::get_one( $tag );
 	}
@@ -55,7 +55,7 @@ class Tags extends Vocabulary
 	 */
 	public static function get_by_id( $tag )
 	{
-		return self::get_one( (int)$tag );
+		return self::get_one( (int) $tag );
 	}
 
 	/**
