@@ -24,27 +24,26 @@ class Media
 	 * @param string $path The virtual path of the directory to retrieve
 	 * @return array A list of files and directories in that path
 	 */
-	public static function dir($path = '')
+	public static function dir( $path = '' )
 	{
-		if ($path == '') {
+		if ( $path == '' ) {
 			self::init_silos();
 			$dirs = array();
-			foreach(self::$silos as $siloname => $silo) {
+			foreach ( self::$silos as $siloname => $silo ) {
 				$info = $silo->silo_info();
-				if (isset($info['icon']))
-				{
-					$dirs[] = new MediaAsset($siloname, true, array(), $info['icon']);
+				if ( isset( $info['icon'] ) ) {
+					$dirs[] = new MediaAsset( $siloname, true, array(), $info['icon'] );
 				}
 				else {
-					$dirs[] = new MediaAsset($siloname, true, array(), NULL);
+					$dirs[] = new MediaAsset( $siloname, true, array(), null );
 				}
 				
 			}
 			return $dirs;
 		}
 		else {
-			$silo = Media::get_silo($path, true);
-			return $silo->silo_dir($path);
+			$silo = Media::get_silo( $path, true );
+			return $silo->silo_dir( $path );
 		}
 	}
 
@@ -55,10 +54,10 @@ class Media
 	 * @param array $qualities Qualities of the image to return (such as 'thumbnail' or 'size')
 	 * @return MediaAsset The requested asset
 	 */
-	public static function get($path, $qualities = null)
+	public static function get( $path, $qualities = null )
 	{
-		$silo = Media::get_silo($path, true);
-		return $silo->silo_get($path, $qualities);
+		$silo = Media::get_silo( $path, true );
+		return $silo->silo_get( $path, $qualities );
 	}
 
 	/**
@@ -71,9 +70,9 @@ class Media
 	 * @param string $path The virtual path at which the asset will be stored
 	 * @return MediaAsset An empty, intialized asset instance
 	 */
-	public static function prepare($path)
+	public static function prepare( $path )
 	{
-		$silo = Media::get_silo($path, true);
+		$silo = Media::get_silo( $path, true );
 		return $silo->silo_new( $path );
 	}
 
@@ -84,17 +83,17 @@ class Media
 	 * @param string $path The virtual path where the asset will be stored
 	 * @return boolean true on success
 	 */
-	public static function put($filedata, $path = null)
+	public static function put( $filedata, $path = null )
 	{
-		if (!$path) {
+		if ( !$path ) {
 			$path = $filedata->path;
 		}
-		$silo = Media::get_silo($path, true);
-		if ($path == '') {
+		$silo = Media::get_silo( $path, true );
+		if ( $path == '' ) {
 			return false;
 		}
 		else {
-			return $silo->silo_put($path, $filedata);
+			return $silo->silo_put( $path, $filedata );
 		}
 	}
 
@@ -104,14 +103,14 @@ class Media
 	 * @param string $path The virtual path of the asset to delete
 	 * @return boolean true on success
 	 */
-	public static function delete($path)
+	public static function delete( $path )
 	{
-		$silo = Media::get_silo($path, true);
-		if ($path == '') {
+		$silo = Media::get_silo( $path, true );
+		if ( $path == '' ) {
 			return false;
 		}
 		else {
-			return $silo->silo_delete($path);
+			return $silo->silo_delete( $path );
 		}
 	}
 
@@ -122,10 +121,10 @@ class Media
 	 * @param string $pathto The virtual path destination
 	 * @return boolean true on success
 	 */
-	public static function copy($pathfrom, $pathto)
+	public static function copy( $pathfrom, $pathto )
 	{
-		if ($source = Media::get($pathfrom)) {
-			return Media::put($pathto, $source);
+		if ( $source = Media::get( $pathfrom ) ) {
+			return Media::put( $pathto, $source );
 		}
 		else {
 			return false;
@@ -140,10 +139,10 @@ class Media
 	 * @param string $pathto The virtual path destination
 	 * @return boolean true on success
 	 */
-	public static function move($pathfrom, $pathto)
+	public static function move( $pathfrom, $pathto )
 	{
-		if (Media::copy($pathfrom, $pathto)) {
-			return Media::delete($pathfrom);
+		if ( Media::copy( $pathfrom, $pathto ) ) {
+			return Media::delete( $pathfrom );
 		}
 		else {
 			return false;
@@ -156,17 +155,17 @@ class Media
 	 * @param mixed $path The name of a silo or a silo instance.  If empty, all silos are returned.
 	 * @return array An array of MediaAsset highlight assets
 	 */
-	public static function highlights($path = null)
+	public static function highlights( $path = null )
 	{
 		$highlights = array();
-		if (isset($path)) {
-			$silo = Media::get_silo($path);
+		if ( isset( $path ) ) {
+			$silo = Media::get_silo( $path );
 			return $silo->silo_highlights();
 		}
 		else {
 			self::init_silos();
-			foreach(self::$silos as $silo) {
-				$highlights = $highlights + self::highlights($silo);
+			foreach ( self::$silos as $silo ) {
+				$highlights = $highlights + self::highlights( $silo );
 			}
 		}
 		return $highlights;
@@ -180,8 +179,8 @@ class Media
 	 */
 	public static function permissions( $path )
 	{
-		$silo = Media::get_silo($path, true);
-		return $silo->silo_permissions($path);
+		$silo = Media::get_silo( $path, true );
+		return $silo->silo_permissions( $path );
 	}
 
 	/**
@@ -191,16 +190,16 @@ class Media
 	 * @param boolean $parse_path If true, parse the siloname from the path and return the remainder path by reference
 	 * @return MediaSilo The requested silo
 	 */
-	public static function get_silo(&$silo, $parse_path = false)
+	public static function get_silo( &$silo, $parse_path = false )
 	{
-		if ($silo instanceof MediaSilo) {
+		if ( $silo instanceof MediaSilo ) {
 			return $silo;
 		}
 		$siloname = $silo;
-		if ($parse_path) {
-			$exp = explode('/', $silo, 2);
-			if (count($exp) > 1) {
-				list($siloname, $silo) = $exp;
+		if ( $parse_path ) {
+			$exp = explode( '/', $silo, 2 );
+			if ( count( $exp ) > 1 ) {
+				list( $siloname, $silo ) = $exp;
 			}
 			else {
 				$siloname = $exp[0];
@@ -216,12 +215,12 @@ class Media
 	 */
 	public static function init_silos()
 	{
-		if (empty(self::$silos)) {
-			$tempsilos = Plugins::get_by_interface('MediaSilo');
+		if ( empty( self::$silos ) ) {
+			$tempsilos = Plugins::get_by_interface( 'MediaSilo' );
 			self::$silos = array();
-			foreach($tempsilos as $eachsilo) {
+			foreach ( $tempsilos as $eachsilo ) {
 				$info = $eachsilo->silo_info();
-				if (isset($info['name'])) {
+				if ( isset( $info['name'] ) ) {
 					self::$silos[$info['name']] = $eachsilo;
 				}
 			}

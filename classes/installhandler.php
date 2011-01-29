@@ -4,7 +4,7 @@
  *
  */
 
-define('MIN_PHP_VERSION', '5.2.0');
+define( 'MIN_PHP_VERSION', '5.2.0' );
 
 /**
  * The class which responds to installer actions
@@ -20,14 +20,14 @@ class InstallHandler extends ActionHandler
 	public function act_begin_install()
 	{
 		// Create a new theme to handle the display of the installer
-		$this->theme = Themes::create('installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/');
+		$this->theme = Themes::create( 'installer', 'RawPHPEngine', HABARI_PATH . '/system/installer/' );
 
 		/**
 		 * Set user selected Locale or default
 		 */
 		$this->theme->locales = HabariLocale::list_all();
-		if ( isset($_POST['locale']) && $_POST['locale'] != null ) {
-			HabariLocale::set($_POST['locale']);
+		if ( isset( $_POST['locale'] ) && $_POST['locale'] != null ) {
+			HabariLocale::set( $_POST['locale'] );
 			$this->theme->locale = $_POST['locale'];
 			$this->handler_vars['locale'] = $_POST['locale'];
 		}
@@ -42,7 +42,7 @@ class InstallHandler extends ActionHandler
 		*/
 		if ( ! $this->check_htaccess() ) {
 			$this->handler_vars['file_contents'] = htmlentities( implode( "\n", $this->htaccess() ) );
-			$this->display('htaccess');
+			$this->display( 'htaccess' );
 		}
 
 		// Dispatch AJAX requests.
@@ -66,26 +66,26 @@ class InstallHandler extends ActionHandler
 		$this->form_defaults();
 
 		if ( ! $this->meets_all_requirements() ) {
-			$this->display('requirements');
+			$this->display( 'requirements' );
 		}
 
 		/*
 		 * Add the AJAX hooks
 		 */
-		Plugins::register( array('InstallHandler', 'ajax_check_mysql_credentials'), 'ajax_', 'check_mysql_credentials' );
-		Plugins::register( array('InstallHandler', 'ajax_check_pgsql_credentials'), 'ajax_', 'check_pgsql_credentials' );
+		Plugins::register( array( 'InstallHandler', 'ajax_check_mysql_credentials' ), 'ajax_', 'check_mysql_credentials' );
+		Plugins::register( array( 'InstallHandler', 'ajax_check_pgsql_credentials' ), 'ajax_', 'check_pgsql_credentials' );
 
 		/*
 		 * Let's check the config.php file if no POST data was submitted
 		 */
-		if ( (! file_exists(Site::get_dir('config_file') ) ) && ( ! isset($_POST['admin_username']) ) ) {
+		if ( ( ! file_exists( Site::get_dir( 'config_file' ) ) ) && ( ! isset( $_POST['admin_username'] ) ) ) {
 			// no config file, and no HTTP POST
-			$this->display('db_setup');
+			$this->display( 'db_setup' );
 		}
 
 		// try to load any values that might be defined in config.php
-		if ( file_exists( Site::get_dir('config_file') ) ) {
-			include( Site::get_dir('config_file') );
+		if ( file_exists( Site::get_dir( 'config_file' ) ) ) {
+			include( Site::get_dir( 'config_file' ) );
 
 			// check for old style config (global variable, pre-dates registry based config
 			if ( !Config::exists( 'db_connection' ) && isset( $db_connection ) ) {
@@ -100,7 +100,7 @@ class InstallHandler extends ActionHandler
 				// write new config file
 				if ( $this->write_config_file( true ) ) {
 					// successful, so redirect:
-					Utils::redirect(Site::get_url( 'habari' ) );
+					Utils::redirect( Site::get_url( 'habari' ) );
 				}
 			}
 
@@ -119,16 +119,16 @@ class InstallHandler extends ActionHandler
 
 		// now merge in any HTTP POST values that might have been sent
 		// these will override the defaults and the config.php values
-		$this->handler_vars = $this->handler_vars->merge($_POST);
+		$this->handler_vars = $this->handler_vars->merge( $_POST );
 
 		// we need details for the admin user to install
 		if ( ( '' == $this->handler_vars['admin_username'] )
 			|| ( '' == $this->handler_vars['admin_pass1'] )
 			|| ( '' == $this->handler_vars['admin_pass2'] )
-			|| ( '' == $this->handler_vars['admin_email'])
+			|| ( '' == $this->handler_vars['admin_email'] )
 		) {
 			// if none of the above are set, display the form
-			$this->display('db_setup');
+			$this->display( 'db_setup' );
 		}
 
 		$db_type = $this->handler_vars['db_type'];
@@ -144,32 +144,32 @@ class InstallHandler extends ActionHandler
 
 		// make sure the admin password is correct
 		if ( $this->handler_vars['admin_pass1'] !== $this->handler_vars['admin_pass2'] ) {
-			$this->theme->assign( 'form_errors', array('password_mismatch'=>_t('Password mis-match.')) );
-			$this->display('db_setup');
+			$this->theme->assign( 'form_errors', array( 'password_mismatch'=>_t( 'Password mis-match.' ) ) );
+			$this->display( 'db_setup' );
 		}
 
 		// check whether prefix is valid
-		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace('/[^a-zA-Z_]/', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
-			$this->theme->assign('form_errors', array('table_prefix' => _t('Allowed characters are A-Z, a-z and "_".')));
-			$this->display('db_setup');
+		if ( isset( $this->handler_vars['table_prefix'] ) && ( preg_replace( '/[^a-zA-Z_]/', '', $this->handler_vars['table_prefix'] ) !== $this->handler_vars['table_prefix'] ) ) {
+			$this->theme->assign( 'form_errors', array( 'table_prefix' => _t( 'Allowed characters are A-Z, a-z and "_".' ) ) );
+			$this->display( 'db_setup' );
 		}
 
 		// Make sure we still have a valid connection
-		if ( ! call_user_func(array( $this, "check_{$db_type}" ) ) ) {
+		if ( ! call_user_func( array( $this, "check_{$db_type}" ) ) ) {
 			$this->display( 'db_setup' );
 		}
 
 		// try to write the config file
 		if ( ! $this->write_config_file() ) {
-			$this->theme->assign('form_errors', array('write_file'=>_t('Could not write config.php file&hellip;')));
-			$this->display('db_setup');
+			$this->theme->assign( 'form_errors', array( 'write_file'=>_t( 'Could not write config.php file&hellip;' ) ) );
+			$this->display( 'db_setup' );
 		}
 
 		// try to install the database
 		if ( ! $this->install_db() ) {
 			// the installation failed for some reason.
 			// re-display the form
-			$this->display('db_setup');
+			$this->display( 'db_setup' );
 		}
 
 		// activate plugins on POST
@@ -187,8 +187,8 @@ class InstallHandler extends ActionHandler
 			}
 		}
 
-		EventLog::log(_t('Habari successfully installed.'), 'info', 'default', 'habari');
-		Utils::redirect(Site::get_url( 'habari' ) );
+		EventLog::log( _t( 'Habari successfully installed.' ), 'info', 'default', 'habari' );
+		Utils::redirect( Site::get_url( 'habari' ) );
 	}
 
 	/*
@@ -220,7 +220,7 @@ class InstallHandler extends ActionHandler
 				$plugin['verb'] = _t( 'Activate' );
 				$plugin['actions'] = array();
 				$plugin['info'] = Plugins::load_info( $file );
-				$plugin['recommended'] = in_array( basename($file), $recommended_list );
+				$plugin['recommended'] = in_array( basename( $file ), $recommended_list );
 
 			}
 			else {
@@ -240,15 +240,15 @@ class InstallHandler extends ActionHandler
 	 *
 	 * @param template_name Name of template to use
 	 */
-	private function display($template_name)
+	private function display( $template_name )
 	{
-		foreach ($this->handler_vars as $key=>$value) {
-			$this->theme->assign($key, $value);
+		foreach ( $this->handler_vars as $key=>$value ) {
+			$this->theme->assign( $key, $value );
 		}
 
-		$this->theme->assign('plugins', $this->get_plugins());
+		$this->theme->assign( 'plugins', $this->get_plugins() );
 
-		$this->theme->display($template_name);
+		$this->theme->display( $template_name );
 
 		exit;
 	}
@@ -304,10 +304,10 @@ class InstallHandler extends ActionHandler
 		$requirements_met = true;
 
 		/* Check versions of PHP */
-		$php_version_ok = version_compare(phpversion(), MIN_PHP_VERSION, '>=');
-		$this->theme->assign('php_version_ok', $php_version_ok);
-		$this->theme->assign('PHP_OS', PHP_OS);;
-		$this->theme->assign('PHP_VERSION',  phpversion());
+		$php_version_ok = version_compare( phpversion(), MIN_PHP_VERSION, '>=' );
+		$this->theme->assign( 'php_version_ok', $php_version_ok );
+		$this->theme->assign( 'PHP_OS', PHP_OS );;
+		$this->theme->assign( 'PHP_VERSION', phpversion() );
 		if ( ! $php_version_ok ) {
 			$requirements_met = false;
 		}
@@ -317,18 +317,18 @@ class InstallHandler extends ActionHandler
 			$requirements_met = false;
 			$mod_rewrite = false;
 		}
-		$this->theme->assign('mod_rewrite', $mod_rewrite);
+		$this->theme->assign( 'mod_rewrite', $mod_rewrite );
 		/* Check for required extensions */
 		$missing_extensions = array();
 		foreach ( $required_extensions as $ext_name => $ext_url ) {
-			if ( !extension_loaded($ext_name) ) {
+			if ( !extension_loaded( $ext_name ) ) {
 				$missing_extensions[$ext_name] = $ext_url;
 				$requirements_met = false;
 			}
 		}
-		$this->theme->assign('missing_extensions',  $missing_extensions);
+		$this->theme->assign( 'missing_extensions', $missing_extensions );
 
-		if ( extension_loaded('pdo') ) {
+		if ( extension_loaded( 'pdo' ) ) {
 			/* Check for PDO drivers */
 			$pdo_drivers = PDO::getAvailableDrivers();
 			if ( ! empty( $pdo_drivers ) ) {
@@ -399,16 +399,16 @@ class InstallHandler extends ActionHandler
 			case 'mysql':
 			case 'pgsql':
 				// MySQL & PostgreSQL requires specific connection information
-				if ( empty($db_user) ) {
-					$this->theme->assign('form_errors', array("{$db_type}_db_user"=>_t('User is required.')));
+				if ( empty( $db_user ) ) {
+					$this->theme->assign( 'form_errors', array( "{$db_type}_db_user"=>_t( 'User is required.' ) ) );
 					return false;
 				}
-				if ( empty($db_schema) ) {
-					$this->theme->assign('form_errors', array("{$db_type}_db_schema"=>_t('Name for database is required.')));
+				if ( empty( $db_schema ) ) {
+					$this->theme->assign( 'form_errors', array( "{$db_type}_db_schema"=>_t( 'Name for database is required.' ) ) );
 					return false;
 				}
-				if ( empty($db_host) ) {
-					$this->theme->assign('form_errors', array("{$db_type}_db_host"=>_t('Host is required.')));
+				if ( empty( $db_host ) ) {
+					$this->theme->assign( 'form_errors', array( "{$db_type}_db_host"=>_t( 'Host is required.' ) ) );
 					return false;
 				}
 				break;
@@ -427,7 +427,7 @@ class InstallHandler extends ActionHandler
 		}
 
 		if ( ! $this->connect_to_existing_db() ) {
-			$this->theme->assign('form_errors', array("{$db_type}_db_user"=>_t('Problem connecting to supplied database credentials')));
+			$this->theme->assign( 'form_errors', array( "{$db_type}_db_user"=>_t( 'Problem connecting to supplied database credentials' ) ) );
 			return false;
 		}
 
@@ -439,20 +439,20 @@ class InstallHandler extends ActionHandler
 			$this->handler_vars['db_schema']
 		);
 		DB::clear_errors();
-		DB::dbdelta($create_table_queries, true, true, true);
+		DB::dbdelta( $create_table_queries, true, true, true );
 
 		if ( DB::has_errors() ) {
 			$error = DB::get_last_error();
-			$this->theme->assign('form_errors', array('db_host'=>sprintf(_t('Could not create schema tables&hellip; %s'), $error['message'])));
+			$this->theme->assign( 'form_errors', array( 'db_host'=>sprintf( _t( 'Could not create schema tables&hellip; %s' ), $error['message'] ) ) );
 			DB::rollback();
 			return false;
 		}
 
 		// Cool.  DB installed. Create the default options
 		// but check first, to make sure
-		if ( ! Options::get('installed') ) {
+		if ( ! Options::get( 'installed' ) ) {
 			if ( ! $this->create_default_options() ) {
-				$this->theme->assign('form_errors', array('options'=>_t('Problem creating default options')));
+				$this->theme->assign( 'form_errors', array( 'options'=>_t( 'Problem creating default options' ) ) );
 				DB::rollback();
 				return false;
 			}
@@ -460,14 +460,14 @@ class InstallHandler extends ActionHandler
 
 		// Create the Tags vocabulary
 		if ( ! $this->create_tags_vocabulary() ) {
-			$this->theme->assign('form_errors', array('options'=>_t('Problem creating tags vocabulary')));
+			$this->theme->assign( 'form_errors', array( 'options'=>_t( 'Problem creating tags vocabulary' ) ) );
 			DB::rollback();
 			return false;
 		}
 
 		// Create the standard post types and statuses
 		if ( ! $this->create_base_post_types() ) {
-			$this->theme->assign('form_errors', array('options'=>_t('Problem creating base post types')));
+			$this->theme->assign( 'form_errors', array( 'options'=>_t( 'Problem creating base post types' ) ) );
 			DB::rollback();
 			return false;
 		}
@@ -478,13 +478,13 @@ class InstallHandler extends ActionHandler
 		if ( count( $all_users ) < 1 ) {
 			$user = $this->create_admin_user();
 			if ( ! $user ) {
-				$this->theme->assign('form_errors', array('admin_user'=>_t('Problem creating admin user.')));
+				$this->theme->assign( 'form_errors', array( 'admin_user'=>_t( 'Problem creating admin user.' ) ) );
 				DB::rollback();
 				return false;
 			}
 			$admin_group = $this->create_admin_group( $user );
 			if ( ! $admin_group ) {
-				$this->theme->assign('form_errors', array('admin_user'=>_t('Problem creating admin group.')));
+				$this->theme->assign( 'form_errors', array( 'admin_user'=>_t( 'Problem creating admin group.' ) ) );
 				DB::rollback();
 				return false;
 			}
@@ -494,8 +494,8 @@ class InstallHandler extends ActionHandler
 
 		// create a first post, if none exists
 		if ( ! Posts::get( array( 'count' => 1 ) ) ) {
-			if ( ! $this->create_first_post()) {
-				$this->theme->assign('form_errors',array('post'=>_t('Problem creating first post.')));
+			if ( ! $this->create_first_post() ) {
+				$this->theme->assign( 'form_errors', array( 'post'=>_t( 'Problem creating first post.' ) ) );
 				DB::rollback();
 				return false;
 			}
@@ -587,7 +587,7 @@ class InstallHandler extends ActionHandler
 	private function check_sqlite()
 	{
 		$db_file = $this->handler_vars['db_file'];
-		if ( $db_file == basename($db_file) ) { // The filename was given without a path
+		if ( $db_file == basename( $db_file ) ) { // The filename was given without a path
 			$db_file = Site::get_path( 'user', true ) . $db_file;
 		}
 		if ( file_exists( $db_file ) && is_writable( $db_file ) && is_writable( dirname( $db_file ) ) ) {
@@ -599,11 +599,11 @@ class InstallHandler extends ActionHandler
 		if ( file_exists( $db_file ) ) {
 			// the DB file exists, why can't we access it?
 			if ( ! is_writable( $db_file ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>_t('Cannot write to %s. The SQLite data file is not writable by the web server.', array($db_file)) ) );
+				$this->theme->assign( 'form_errors', array( 'db_file'=>_t( 'Cannot write to %s. The SQLite data file is not writable by the web server.', array( $db_file ) ) ) );
 				return false;
 			}
 			if ( ! is_writable( dirname( $db_file ) ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>_t('Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server.', array($db_file)) ) );
+				$this->theme->assign( 'form_errors', array( 'db_file'=>_t( 'Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server.', array( $db_file ) ) ) );
 				return false;
 			}
 		}
@@ -612,7 +612,7 @@ class InstallHandler extends ActionHandler
 			// let's see if the directory is writable
 			// so that we could create the file
 			if ( ! is_writable( dirname( $db_file ) ) ) {
-				$this->theme->assign('form_errors', array('db_file'=>_t('Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server.', array($db_file))) );
+				$this->theme->assign( 'form_errors', array( 'db_file'=>_t( 'Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server.', array( $db_file ) ) ) );
 				return false;
 			}
 		}
@@ -628,9 +628,9 @@ class InstallHandler extends ActionHandler
 	private function connect_to_existing_db()
 	{
 		if ( $config = $this->get_config_file() ) {
-			$config = preg_replace('/<\\?php(.*)\\?'.'>/ims', '$1', $config);
+			$config = preg_replace( '/<\\?php(.*)\\?'.'>/ims', '$1', $config );
 			// Update the db_connection from the config that is about to be written:
-			eval($config);
+			eval( $config );
 
 			/* Attempt to connect to the database host */
 			try {
@@ -638,7 +638,7 @@ class InstallHandler extends ActionHandler
 				return true;
 			}
 			catch( PDOException $e ) {
-				$this->theme->assign('form_errors', array( 'db_user'=>_t('Problem connecting to supplied database credentials' ) ) );
+				$this->theme->assign( 'form_errors', array( 'db_user'=>_t( 'Problem connecting to supplied database credentials' ) ) );
 				return false;
 
 			}
@@ -663,23 +663,23 @@ class InstallHandler extends ActionHandler
 			$password = $admin_pass;
 
 			// but let's double-check
-			$algo = strtolower( substr( $admin_pass, 1, 3) );
-			if ( ('ssh' != $algo) && ( 'sha' != $algo) ) {
+			$algo = strtolower( substr( $admin_pass, 1, 3 ) );
+			if ( ( 'ssh' != $algo ) && ( 'sha' != $algo ) ) {
 				// we do not have a crypted password
 				// so let's encrypt it
-				$password = Utils::crypt($admin_pass);
+				$password = Utils::crypt( $admin_pass );
 			}
 		}
 		else {
-			$password = Utils::crypt($admin_pass);
+			$password = Utils::crypt( $admin_pass );
 		}
 
 		// Insert the admin user
-		$user = User::create(array (
+		$user = User::create( array (
 			'username'=>$admin_username,
 			'email'=>$admin_email,
 			'password'=>$password
-		));
+		) );
 
 		return $user;
 	}
@@ -693,7 +693,7 @@ class InstallHandler extends ActionHandler
 	private function create_admin_group( $user )
 	{
 		// Create the admin group
-		$group = UserGroup::create( array( 'name' => _t('admin') ) );
+		$group = UserGroup::create( array( 'name' => _t( 'admin' ) ) );
 		if ( ! $group ) {
 			return false;
 		}
@@ -704,12 +704,12 @@ class InstallHandler extends ActionHandler
 	private function create_anonymous_group()
 	{
 		// Create the anonymous group
-		$group = UserGroup::create( array( 'name' => _t('anonymous') ) );
+		$group = UserGroup::create( array( 'name' => _t( 'anonymous' ) ) );
 		if ( ! $group ) {
 			return false;
 		}
-		$group->grant('post_entry', 'read');
-		$group->grant('post_page', 'read');
+		$group->grant( 'post_entry', 'read' );
+		$group->grant( 'post_page', 'read' );
 
 		// Add the anonumous user to the anonymous group
 		$group->add( 0 );
@@ -722,37 +722,37 @@ class InstallHandler extends ActionHandler
 	{
 		// Create the default options
 
-		Options::set('installed', true);
+		Options::set( 'installed', true );
 
-		Options::set('title', $this->handler_vars['blog_title']);
-		Options::set('pagination', '5');
-		Options::set('atom_entries', '5');
+		Options::set( 'title', $this->handler_vars['blog_title'] );
+		Options::set( 'pagination', '5' );
+		Options::set( 'atom_entries', '5' );
 		Options::set( 'theme_name', 'k2' );
-		Options::set( 'theme_dir' , 'k2' );
+		Options::set( 'theme_dir', 'k2' );
 		Options::set( 'comments_require_id', 1 );
 		Options::set( 'locale', $this->handler_vars['locale'] );
-		Options::set('timezone', 'UTC');
-		Options::set('dateformat', 'Y-m-d');
-		Options::set('timeformat', 'g:i a');
-		Options::set('log_min_severity', 3);		// the default logging level - 3 should be 'info'
+		Options::set( 'timezone', 'UTC' );
+		Options::set( 'dateformat', 'Y-m-d' );
+		Options::set( 'timeformat', 'g:i a' );
+		Options::set( 'log_min_severity', 3 );		// the default logging level - 3 should be 'info'
 
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
 		// this installation.  Also for use in cookies
-		Options::set('GUID', sha1( Utils::nonce() ));
+		Options::set( 'GUID', sha1( Utils::nonce() ) );
 
 		// Let's prepare the EventLog here, as well
-		EventLog::register_type('default', 'habari');
-		EventLog::register_type('user', 'habari');
-		EventLog::register_type('authentication', 'habari');
-		EventLog::register_type('content', 'habari');
-		EventLog::register_type('comment', 'habari');
+		EventLog::register_type( 'default', 'habari' );
+		EventLog::register_type( 'user', 'habari' );
+		EventLog::register_type( 'authentication', 'habari' );
+		EventLog::register_type( 'content', 'habari' );
+		EventLog::register_type( 'comment', 'habari' );
 
 		// Add the cronjob to trim the log so that it doesn't get too big
-		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t('Trim the log table') );
+		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
 		
 		// Add the cronjob to check for plugin updates
-		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t('Perform a check for plugin updates.') );
+		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 
 		return true;
 	}
@@ -764,14 +764,14 @@ class InstallHandler extends ActionHandler
 	{
 		// first, let's create our default post types of
 		// "entry" and "page"
-		Post::add_new_type('entry');
-		Post::add_new_type('page');
+		Post::add_new_type( 'entry' );
+		Post::add_new_type( 'page' );
 
 		// now create post statuses for
 		// "published" and "draft"
 		// Should "private" status be added here, or through a plugin?
-		Post::add_new_status('draft');
-		Post::add_new_status('published');
+		Post::add_new_status( 'draft' );
+		Post::add_new_status( 'published' );
 		Post::add_new_status( 'scheduled', true );
 
 		return true;
@@ -794,14 +794,14 @@ class InstallHandler extends ActionHandler
 	private function create_first_post()
 	{
 		$users = Users::get();
-		Post::create(array(
+		Post::create( array(
 			'title' => 'Habari',
-			'content' => _t('This site is running <a href="http://habariproject.org/">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href="http://habariproject.org/">http://habariproject.org/</a> to find out more!'),
+			'content' => _t( 'This site is running <a href="http://habariproject.org/">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href="http://habariproject.org/">http://habariproject.org/</a> to find out more!' ),
 			'user_id' => $users[0]->id,
-			'status' => Post::status('published'),
-			'content_type' => Post::type('entry'),
+			'status' => Post::status( 'published' ),
+			'content_type' => Post::type( 'entry' ),
 			'tags' => 'habari',
-		));
+		) );
 
 		return true;
 	}
@@ -813,13 +813,13 @@ class InstallHandler extends ActionHandler
 	 * @param $db_schema string The database name
 	 * @return array Array of queries to execute
 	 */
-	private function get_create_table_queries($db_type, $table_prefix, $db_schema)
+	private function get_create_table_queries( $db_type, $table_prefix, $db_schema )
 	{
 		/* Grab the queries from the RDBMS schema file */
 		$file_path = HABARI_PATH . "/system/schema/{$db_type}/schema.sql";
-		$schema_sql = trim(file_get_contents($file_path), "\r\n ");
-		$schema_sql = str_replace('{$schema}',$db_schema, $schema_sql);
-		$schema_sql = str_replace('{$prefix}',$table_prefix, $schema_sql);
+		$schema_sql = trim( file_get_contents( $file_path ), "\r\n " );
+		$schema_sql = str_replace( '{$schema}', $db_schema, $schema_sql );
+		$schema_sql = str_replace( '{$prefix}', $table_prefix, $schema_sql );
 
 		/*
 		 * Just in case anyone creates a schema file with separate statements
@@ -827,9 +827,9 @@ class InstallHandler extends ActionHandler
 		 * Likewise, let's clean up any separations of *more* than two newlines
 		 */
 		$schema_sql = str_replace( array( "\r\n", "\r", ), array( "\n", "\n" ), $schema_sql );
-		$schema_sql = preg_replace("/;\n([^\n])/", ";\n\n$1", $schema_sql);
-		$schema_sql = preg_replace("/\n{3,}/","\n\n", $schema_sql);
-		$queries = preg_split('/(\\r\\n|\\r|\\n)\\1/', $schema_sql);
+		$schema_sql = preg_replace( "/;\n([^\n])/", ";\n\n$1", $schema_sql );
+		$schema_sql = preg_replace( "/\n{3,}/", "\n\n", $schema_sql );
+		$queries = preg_split( '/(\\r\\n|\\r|\\n)\\1/', $schema_sql );
 		return $queries;
 	}
 
@@ -848,7 +848,7 @@ class InstallHandler extends ActionHandler
 		$db_pass = $this->handler_vars['db_pass'];
 
 		$queries = array();
-		switch ($db_type) {
+		switch ( $db_type ) {
 			case 'mysql':
 				$queries[] = 'CREATE DATABASE ' . $db_schema . ';';
 				$queries[] = 'GRANT ALL ON ' . $db_schema . '.* TO \'' . $db_user . '\'@\'' . $db_host . '\' ' .
@@ -859,7 +859,7 @@ class InstallHandler extends ActionHandler
 				$queries[] = 'GRANT ALL ON DATABASE ' . $db_schema . ' TO ' . $db_user . ';';
 				break;
 			default:
-				die( _t('currently unsupported.') );
+				die( _t( 'currently unsupported.' ) );
 		}
 		return $queries;
 	}
@@ -871,17 +871,17 @@ class InstallHandler extends ActionHandler
 	*/
 	private function get_config_file()
 	{
-		if ( ! ($file_contents = file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php")) ) {
+		if ( ! ( $file_contents = file_get_contents( HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php" ) ) ) {
 			return false;
 		}
 
 		$vars = array();
 		foreach ( $this->handler_vars as $k => $v ) {
-			$vars[$k] = addslashes($v);
+			$vars[$k] = addslashes( $v );
 		}
 		$keys = array();
-		foreach ( array_keys($vars) as $v ) {
-			$keys[] = Utils::map_array($v);
+		foreach ( array_keys( $vars ) as $v ) {
+			$keys[] = Utils::map_array( $v );
 		}
 
 		$file_contents = str_replace(
@@ -902,7 +902,7 @@ class InstallHandler extends ActionHandler
 	private function write_config_file( $ignore_registry = false )
 	{
 		// first, check if a config.php file exists
-		if ( file_exists( Site::get_dir('config_file' ) ) ) {
+		if ( file_exists( Site::get_dir( 'config_file' ) ) ) {
 			// set the defaults for comparison
 			$db_host = $this->handler_vars['db_host'];
 			$db_file = $this->handler_vars['db_file'];
@@ -926,7 +926,7 @@ class InstallHandler extends ActionHandler
 			}
 
 			// load the config.php file
-			include( Site::get_dir('config_file') );
+			include( Site::get_dir( 'config_file' ) );
 
 			// and now we compare the values defined there to
 			// the values POSTed to the installer
@@ -941,19 +941,19 @@ class InstallHandler extends ActionHandler
 				return true;
 			}
 		}
-		if ( ! ($file_contents = file_get_contents(HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php")) ) {
+		if ( ! ( $file_contents = file_get_contents( HABARI_PATH . "/system/schema/" . $this->handler_vars['db_type'] . "/config.php" ) ) ) {
 			return false;
 		}
 		if ( $file_contents = $this->get_config_file() ) {
-			if ( $file = @fopen(Site::get_dir('config_file'), 'w') ) {
-				if ( fwrite($file, $file_contents, strlen($file_contents)) ) {
-					fclose($file);
+			if ( $file = @fopen( Site::get_dir( 'config_file' ), 'w' ) ) {
+				if ( fwrite( $file, $file_contents, strlen( $file_contents ) ) ) {
+					fclose( $file );
 					return true;
 				}
 			}
-			$this->handler_vars['config_file'] = Site::get_dir('config_file');
-			$this->handler_vars['file_contents'] = Utils::htmlspecialchars($file_contents);
-			$this->display('config');
+			$this->handler_vars['config_file'] = Site::get_dir( 'config_file' );
+			$this->handler_vars['file_contents'] = Utils::htmlspecialchars( $file_contents );
+			$this->display( 'config' );
 			return false;
 		}
 		return false;  // Only happens when config.php template does not exist.
@@ -987,8 +987,8 @@ class InstallHandler extends ActionHandler
 		}
 
 		// unset the user_id session variable
-		Session::clear_userid($_SESSION['user_id']);
-		unset($_SESSION['user_id']);
+		Session::clear_userid( $_SESSION['user_id'] );
+		unset( $_SESSION['user_id'] );
 	}
 
 	/**
@@ -1038,8 +1038,8 @@ class InstallHandler extends ActionHandler
 		}
 
 		$result = false;
-		if ( file_exists( HABARI_PATH . '/.htaccess') ) {
-			$htaccess = file_get_contents( HABARI_PATH . '/.htaccess');
+		if ( file_exists( HABARI_PATH . '/.htaccess' ) ) {
+			$htaccess = file_get_contents( HABARI_PATH . '/.htaccess' );
 			if ( false === strpos( $htaccess, 'HABARI' ) ) {
 				// the Habari block does not exist in this file
 				// so try to create it
@@ -1099,8 +1099,8 @@ class InstallHandler extends ActionHandler
 		if ( $update ) {
 			// we're updating an existing but incomplete .htaccess
 			// care must be take only to remove the Habari bits
-			$htaccess = file_get_contents(HABARI_PATH . '/.htaccess');
-			$file_contents = preg_replace('%### HABARI START.*?### HABARI END%ims', $file_contents, $htaccess);
+			$htaccess = file_get_contents( HABARI_PATH . '/.htaccess' );
+			$file_contents = preg_replace( '%### HABARI START.*?### HABARI END%ims', $file_contents, $htaccess );
 			// Overwrite the existing htaccess with one that includes the modified Habari rewrite block
 			$fmode = 'w';
 		}
@@ -1152,7 +1152,7 @@ class InstallHandler extends ActionHandler
 			// @TODO: Notify people on other servers to take measures to secure the SQLite file.
 			return true;
 		}
-		if ( !file_exists( HABARI_PATH . '/.htaccess') ) {
+		if ( !file_exists( HABARI_PATH . '/.htaccess' ) ) {
 			// no .htaccess to write to
 			return false;
 		}
@@ -1166,7 +1166,7 @@ class InstallHandler extends ActionHandler
 		$files_contents = "\n" . implode( "\n", $sqlite_contents ) . "\n";
 
 		// See if it already exists
-		$current_files_contents = file_get_contents( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess');
+		$current_files_contents = file_get_contents( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess' );
 		if ( false === strpos( $current_files_contents, $files_contents ) ) {
 			// If not, append the files clause to the .htaccess file
 			if ( $fh = fopen( HABARI_PATH . DIRECTORY_SEPARATOR . '.htaccess', 'a' ) ) {
@@ -1316,7 +1316,7 @@ class InstallHandler extends ActionHandler
 	 */
 	public function upgrade_db()
 	{
-		if ( Options::get('db_upgrading' ) ) {
+		if ( Options::get( 'db_upgrading' ) ) {
 			// quit with an error message.
 			$this->display_currently_upgrading();
 		}
@@ -1331,19 +1331,19 @@ class InstallHandler extends ActionHandler
 				$db_name = '';
 				break;
 			case 'mysql':
-				list($host,$name)= explode(';', $remainder);
-				list($discard, $db_name)= explode('=', $name);
+				list( $host,$name ) = explode( ';', $remainder );
+				list( $discard, $db_name ) = explode( '=', $name );
 				break;
 			case 'pgsql':
-				list($host,$name)= explode(' ', $remainder);
-				list($discard, $db_name)= explode('=', $name);
+				list( $host,$name ) = explode( ' ', $remainder );
+				list( $discard, $db_name ) = explode( '=', $name );
 				break;
 		}
 
 		Cache::purge();
 
 		// get the current db version
-		$version = Options::get('db_version');
+		$version = Options::get( 'db_version' );
 
 		// do some pre-dbdelta ad-hoc hacky hack code
 		$this->upgrade_db_pre( $version );
@@ -1352,9 +1352,9 @@ class InstallHandler extends ActionHandler
 		DB::upgrade_pre( $version );
 
 		// Get the queries for this database and apply the changes to the structure
-		$queries = $this->get_create_table_queries($schema, Config::get( 'db_connection' )->prefix, $db_name);
+		$queries = $this->get_create_table_queries( $schema, Config::get( 'db_connection' )->prefix, $db_name );
 
-		DB::dbdelta($queries);
+		DB::dbdelta( $queries );
 
 		// Apply data changes to the database based on version, call the db-specific upgrades, too.
 		$this->upgrade_db_post( $version );
@@ -1372,10 +1372,10 @@ class InstallHandler extends ActionHandler
 		$error_template = "<html><head><title>%s</title></head><body><h1>%s</h1><p>%s</p></body></html>";
 
 		// Format page with localized messages.
-		$error_page = sprintf($error_template,
-			_t( "Site Maintenance" ), # page title
-			_t( "Habari is currently being upgraded." ), # H1 tag
-			_t( "Try again in a little while." ) # Error message.
+		$error_page = sprintf( $error_template,
+			_t( "Site Maintenance" ), // page title
+			_t( "Habari is currently being upgraded." ), // H1 tag
+			_t( "Try again in a little while." ) // Error message.
 		);
 
 		// Set correct HTTP header and die.
@@ -1388,7 +1388,7 @@ class InstallHandler extends ActionHandler
 
 		// Auto-truncate the log table
 		if ( ! CronTab::get_cronjob( 'truncate_log' ) ) {
-			CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t('Truncate the log table') );
+			CronTab::add_daily_cron( 'truncate_log', array( 'Utils', 'truncate_log' ), _t( 'Truncate the log table' ) );
 		}
 
 		return true;
@@ -1447,15 +1447,15 @@ class InstallHandler extends ActionHandler
 
 		// sets a default timezone and date / time formats for the options page
 		if ( !Options::get( 'timezone' ) ) {
-			Options::set('timezone', 'UTC');
+			Options::set( 'timezone', 'UTC' );
 		}
 
 		if ( !Options::get( 'dateformat' ) ) {
-			Options::set('dateformat', 'Y-m-d');
+			Options::set( 'dateformat', 'Y-m-d' );
 		}
 
 		if ( !Options::get( 'timeformat' ) ) {
-			Options::set('timeformat', 'H:i:s');
+			Options::set( 'timeformat', 'H:i:s' );
 		}
 
 		return true;
@@ -1487,7 +1487,7 @@ class InstallHandler extends ActionHandler
 		ACL::create_default_tokens();
 
 		// Give admin group access to the super_user token
-		$group->grant('super_user');
+		$group->grant( 'super_user' );
 
 		// Until now, all users were admins, restore that
 		$all_users = Users::get_all();
@@ -1508,11 +1508,11 @@ class InstallHandler extends ActionHandler
 	{
 		// delete own_post_typeX tokens rather than rebuild the whole default token set
 		foreach ( Post::list_active_post_types() as $name => $posttype ) {
-				ACL::destroy_token( 'own_post_' . Utils::slugify($name) );
+				ACL::destroy_token( 'own_post_' . Utils::slugify( $name ) );
 		}
 
 		ACL::destroy_token( 'own_posts_any' );
-		ACL::create_token( 'own_posts', _t('Permissions on one\'s own posts'), 'Content', true );
+		ACL::create_token( 'own_posts', _t( 'Permissions on one\'s own posts' ), 'Content', true );
 	}
 
 	private function upgrade_db_post_3236()
@@ -1523,12 +1523,12 @@ class InstallHandler extends ActionHandler
 			Options::set( 'atom_entries', '5' );
 		}
 		// Create the default authenticated group
-		$authenticated_group = UserGroup::get_by_name( _t('authenticated') );
+		$authenticated_group = UserGroup::get_by_name( _t( 'authenticated' ) );
 		if ( ! $authenticated_group instanceof UserGroup ) {
-			$authenticated_group = UserGroup::create( array( 'name' => _t('authenticated') ) );
+			$authenticated_group = UserGroup::create( array( 'name' => _t( 'authenticated' ) ) );
 		}
-		$authenticated_group->grant('post_entry', 'read');
-		$authenticated_group->grant('post_page', 'read');
+		$authenticated_group->grant( 'post_entry', 'read' );
+		$authenticated_group->grant( 'post_page', 'read' );
 		$authenticated_group->grant( 'comment' );
 
 	}
@@ -1561,12 +1561,12 @@ class InstallHandler extends ActionHandler
 
 	private function upgrade_db_post_3698()
 	{
-		ACL::create_token( 'manage_self', _t('Edit own profile'), 'Administration' );
+		ACL::create_token( 'manage_self', _t( 'Edit own profile' ), 'Administration' );
 	}
 
 	private function upgrade_db_post_3701()
 	{
-		ACL::create_token( 'manage_dash_modules', _t('Manage dashboard modules'), 'Administration' );
+		ACL::create_token( 'manage_dash_modules', _t( 'Manage dashboard modules' ), 'Administration' );
 	}
 
 	private function upgrade_db_post_3749()
@@ -1598,12 +1598,12 @@ class InstallHandler extends ActionHandler
 
 		$legacy_plugins = array();
 		foreach ( $all_plugins as $plugin ) {
-			if ( !isset ( $plugin[ 'info' ] ) ) {
+			if ( !isset( $plugin[ 'info' ] ) ) {
 				$key = array_search( $plugin[ 'file' ], $active_plugins );
 				$legacy_plugins[ $key ] = $plugin[ 'file' ];
 			}
 		}
-		$valid_plugins = array_diff_key( Options::get( 'active_plugins' ) , $legacy_plugins );
+		$valid_plugins = array_diff_key( Options::get( 'active_plugins' ), $legacy_plugins );
 
 		// valid_plugins contains only working plugins, but the classnames are missing. The following was previously upgrade_db_post_3484()
 		$new_plugins = array();
@@ -1615,7 +1615,7 @@ class InstallHandler extends ActionHandler
 				}
 				if ( file_exists( $filename ) ) {
 					// it is now safe to do this since plugins with info() functions are not in $valid_plugins
-					require_once $filename;
+					require_once( $filename );
 					$class = Plugins::class_from_filename( $filename );
 					$short_file = substr( $filename, strlen( HABARI_PATH ) );
 					if ( $class ) {
@@ -1628,47 +1628,51 @@ class InstallHandler extends ActionHandler
 		Options::set( 'active_plugins', $new_plugins );
 	}
 
-	private function upgrade_db_post_4382 ( ) {
+	private function upgrade_db_post_4382()
+	{
 
 		// add the new logging limit option
 		Options::set( 'log_min_severity', 3 );		// 3 is 'info'
 
 	}
 	
-	private function upgrade_db_post_4571 ( ) {
+	private function upgrade_db_post_4571()
+	{
 		
 		// remove the old truncate_log cronjob
 		CronTab::delete_cronjob( 'truncate_log' );
 		
 		// add the new trim_log cronjob
-		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t('Trim the log table') );
+		CronTab::add_daily_cron( 'trim_log', array( 'EventLog', 'trim' ), _t( 'Trim the log table' ) );
 		
 	}
 	
-	private function upgrade_db_post_4588 ( ) {
+	private function upgrade_db_post_4588()
+	{
 		
 		// Add the cronjob to check for plugin updates
-		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t('Perform a check for plugin updates.') );
+		CronTab::add_daily_cron( 'update_check', array( 'Update', 'cron' ), _t( 'Perform a check for plugin updates.' ) );
 		
 	}
 	
-	private function upgrade_db_post_4763 ( ) {
+	private function upgrade_db_post_4763()
+	{
 		
 		// delete the base_url option, which is no longer used
 		Options::delete( 'base_url' );
 		
 	}
 
-	private function upgrade_db_post_4770 ()
+	private function upgrade_db_post_4770()
 	{
 		// Add CRUD access tokens for other users' unpublished posts
 		ACL::create_token( 'post_unpublished', _t( "Permissions to other users' unpublished posts" ), _t( 'Content' ), true );
 
 		// If a group doesn't have super_user permission, deny access to post_unpublished
 		$groups = UserGroups::get_all();
-		foreach($groups as $group) {
-			if(!ACL::group_can($group->id, 'super_user', 'read')) {
-				$group->deny('post_unpublished');
+		foreach ( $groups as $group ) {
+			if ( !ACL::group_can( $group->id, 'super_user', 'read' ) ) {
+				$group->deny( 'post_unpublished' );
 			}
 		}
 	}
@@ -1679,31 +1683,31 @@ class InstallHandler extends ActionHandler
 	 */
 	public function ajax_check_mysql_credentials()
 	{
-		$xml = new SimpleXMLElement('<response></response>');
+		$xml = new SimpleXMLElement( '<response></response>' );
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#mysqldatabasehost' );
-			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
+			$xml_error->addChild( 'message', _t( 'The database host field was left empty.' ) );
 		}
 		if ( !isset( $_POST['database'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#mysqldatabasename' );
-			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
+			$xml_error->addChild( 'message', _t( 'The database name field was left empty.' ) );
 		}
 		if ( !isset( $_POST['user'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#mysqldatabaseuser' );
-			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
+			$xml_error->addChild( 'message', _t( 'The database user field was left empty.' ) );
 		}
-		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('/[^a-zA-Z_]/', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace( '/[^a-zA-Z_]/', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#tableprefix' );
-			$xml_error->addChild( 'message', _t('Allowed characters are A-Z, a-z and "_".') );
+			$xml_error->addChild( 'message', _t( 'Allowed characters are A-Z, a-z and "_".' ) );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
@@ -1712,21 +1716,21 @@ class InstallHandler extends ActionHandler
 				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
 				$xml->addChild( 'status', 1 );
 			}
-			catch(Exception $e) {
+			catch( Exception $e ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
 					$xml_error->addChild( 'id', '#mysqldatabaseuser' );
 					$xml_error->addChild( 'id', '#mysqldatabasepass' );
-					$xml_error->addChild( 'message', _t('Access denied. Make sure these credentials are valid.') );
+					$xml_error->addChild( 'message', _t( 'Access denied. Make sure these credentials are valid.' ) );
 				}
 				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
 					$xml_error->addChild( 'id', '#mysqldatabasename' );
-					$xml_error->addChild( 'message', _t('That database does not exist.') );
+					$xml_error->addChild( 'message', _t( 'That database does not exist.' ) );
 				}
 				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
 					$xml_error->addChild( 'id', '#mysqldatabasehost' );
-					$xml_error->addChild( 'message', _t('Could not connect to host.') );
+					$xml_error->addChild( 'message', _t( 'Could not connect to host.' ) );
 				}
 				else {
 					$xml_error->addChild( 'id', '#mysqldatabaseuser' );
@@ -1739,8 +1743,8 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: application/xml");
-		header("Cache-Control: no-cache");
+		header( "Content-type: application/xml" );
+		header( "Cache-Control: no-cache" );
 		print $xml;
 	}
 
@@ -1750,31 +1754,31 @@ class InstallHandler extends ActionHandler
 	 */
 	public function ajax_check_pgsql_credentials()
 	{
-		$xml = new SimpleXMLElement('<response></response>');
+		$xml = new SimpleXMLElement( '<response></response>' );
 		// Missing anything?
 		if ( !isset( $_POST['host'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabasehost' );
-			$xml_error->addChild( 'message', _t('The database host field was left empty.') );
+			$xml_error->addChild( 'message', _t( 'The database host field was left empty.' ) );
 		}
 		if ( !isset( $_POST['database'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabasename' );
-			$xml_error->addChild( 'message', _t('The database name field was left empty.') );
+			$xml_error->addChild( 'message', _t( 'The database name field was left empty.' ) );
 		}
 		if ( !isset( $_POST['user'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
-			$xml_error->addChild( 'message', _t('The database user field was left empty.') );
+			$xml_error->addChild( 'message', _t( 'The database user field was left empty.' ) );
 		}
-		if ( isset( $_POST['table_prefix'] ) && ( preg_replace('/[^a-zA-Z_]/', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
+		if ( isset( $_POST['table_prefix'] ) && ( preg_replace( '/[^a-zA-Z_]/', '', $_POST['table_prefix'] ) !== $_POST['table_prefix'] ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#tableprefix' );
-			$xml_error->addChild( 'message', _t('Allowed characters are A-Z, a-z and "_".') );
+			$xml_error->addChild( 'message', _t( 'Allowed characters are A-Z, a-z and "_".' ) );
 		}
 		if ( !isset( $xml_error ) ) {
 			// Can we connect to the DB?
@@ -1783,21 +1787,21 @@ class InstallHandler extends ActionHandler
 				$connect = DB::connect( $pdo, $_POST['user'], $_POST['pass'] );
 				$xml->addChild( 'status', 1 );
 			}
-			catch(Exception $e) {
+			catch( Exception $e ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				if ( strpos( $e->getMessage(), '[1045]' ) ) {
 					$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
 					$xml_error->addChild( 'id', '#pgsqldatabasepass' );
-					$xml_error->addChild( 'message', _t('Access denied. Make sure these credentials are valid.') );
+					$xml_error->addChild( 'message', _t( 'Access denied. Make sure these credentials are valid.' ) );
 				}
 				else if ( strpos( $e->getMessage(), '[1049]' ) ) {
 					$xml_error->addChild( 'id', '#pgsqldatabasename' );
-					$xml_error->addChild( 'message', _t('That database does not exist.') );
+					$xml_error->addChild( 'message', _t( 'That database does not exist.' ) );
 				}
 				else if ( strpos( $e->getMessage(), '[2005]' ) ) {
 					$xml_error->addChild( 'id', '#pgsqldatabasehost' );
-					$xml_error->addChild( 'message', _t('Could not connect to host.') );
+					$xml_error->addChild( 'message', _t( 'Could not connect to host.' ) );
 				}
 				else {
 					$xml_error->addChild( 'id', '#pgsqldatabaseuser' );
@@ -1810,8 +1814,8 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: application/xml");
-		header("Cache-Control: no-cache");
+		header( "Content-type: application/xml" );
+		header( "Cache-Control: no-cache" );
 		print $xml;
 	}
 
@@ -1822,30 +1826,30 @@ class InstallHandler extends ActionHandler
 	public function ajax_check_sqlite_credentials()
 	{
 		$db_file = $_POST['file'];
-		$xml = new SimpleXMLElement('<response></response>');
+		$xml = new SimpleXMLElement( '<response></response>' );
 		// Missing anything?
 		if ( !isset( $db_file ) ) {
 			$xml->addChild( 'status', 0 );
 			$xml_error = $xml->addChild( 'error' );
 			$xml_error->addChild( 'id', '#databasefile' );
-			$xml_error->addChild( 'message', _t('The database file was left empty.') );
+			$xml_error->addChild( 'message', _t( 'The database file was left empty.' ) );
 		}
 		if ( !isset( $xml_error ) ) {
-			if ( $db_file == basename($db_file) ) { // The filename was given without a path
+			if ( $db_file == basename( $db_file ) ) { // The filename was given without a path
 				$db_file = Site::get_path( 'user', true ) . $db_file;
 			}
 			if ( ! is_writable( dirname( $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
-				$xml_error->addChild( 'message', _t('Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server.', array(dirname($db_file)) ) );
+				$xml_error->addChild( 'message', _t( 'Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server.', array( dirname( $db_file ) ) ) );
 			}
-			elseif ( file_exists ( Site::get_path( 'user', true ) . $db_file ) && ( ! is_writable( Site::get_path( 'user', true ) . $db_file ) ) ) {
+			elseif ( file_exists( Site::get_path( 'user', true ) . $db_file ) && ( ! is_writable( Site::get_path( 'user', true ) . $db_file ) ) ) {
 				$xml->addChild( 'status', 0 );
 				$xml_error = $xml->addChild( 'error' );
 				$xml_error->addChild( 'id', '#databasefile' );
 
-				$xml_error->addChild( 'message', _t('Cannot write to %s. The SQLite data file is not writable by the web server.', array($db_file) ) );
+				$xml_error->addChild( 'message', _t( 'Cannot write to %s. The SQLite data file is not writable by the web server.', array( $db_file ) ) );
 			}
 			else {
 				// Can we connect to the DB?
@@ -1855,7 +1859,7 @@ class InstallHandler extends ActionHandler
 				// Don't leave empty files laying around
 				DB::disconnect();
 				if ( file_exists( $db_file ) ) {
-					unlink($db_file);
+					unlink( $db_file );
 				}
 
 				switch ( $connect ) {
@@ -1875,8 +1879,8 @@ class InstallHandler extends ActionHandler
 		}
 		$xml = $xml->asXML();
 		ob_clean();
-		header("Content-type: application/xml");
-		header("Cache-Control: no-cache");
+		header( "Content-type: application/xml" );
+		header( "Cache-Control: no-cache" );
 		print $xml;
 	}
 
@@ -1895,14 +1899,14 @@ class InstallHandler extends ActionHandler
 				$this->handler_vars['db_file'] = $remainder;
 				break;
 			case 'mysql':
-				list($host,$name)= explode(';', $remainder);
-				list($discard, $this->handler_vars['db_host']) = explode('=', $host);
-				list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
+				list( $host,$name ) = explode( ';', $remainder );
+				list( $discard, $this->handler_vars['db_host'] ) = explode( '=', $host );
+				list( $discard, $this->handler_vars['db_schema'] ) = explode( '=', $name );
 				break;
 			case 'pgsql':
-				list($host,$name)= explode(' ', $remainder);
-				list($discard, $this->handler_vars['db_host']) = explode('=', $host);
-				list($discard, $this->handler_vars['db_schema']) = explode('=', $name);
+				list( $host,$name )= explode( ' ', $remainder );
+				list( $discard, $this->handler_vars['db_host'] ) = explode( '=', $host );
+				list( $discard, $this->handler_vars['db_schema'] ) = explode( '=', $name );
 				break;
 		}
 		$this->handler_vars['db_user'] = Config::get( 'db_connection' )->username;

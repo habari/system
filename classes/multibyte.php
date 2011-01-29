@@ -75,7 +75,7 @@ class MultiByte
 		if ( $new_library === null ) {
 			return self::$use_library;
 		}
-		else if ($new_library === self::USE_MBSTRING ) {
+		else if ( $new_library === self::USE_MBSTRING ) {
 			$old_library = self::$use_library;
 			self::$use_library = $new_library;
 			return $old_library;
@@ -245,7 +245,7 @@ class MultiByte
 			$ret = mb_strpos( $haysack, $needle, $offset, $enc );
 		}
 		else {
-			$ret = strpos($haysack, $needle, $offset);
+			$ret = strpos( $haysack, $needle, $offset );
 		}
 		return $ret;
 	}
@@ -276,7 +276,7 @@ class MultiByte
 			$ret = mb_stripos( $haysack, $needle, $offset, $enc );
 		}
 		else {
-			$ret = stripos($haysack, $needle, $offset);
+			$ret = stripos( $haysack, $needle, $offset );
 		}
 		return $ret;
 	}
@@ -307,7 +307,7 @@ class MultiByte
 			$ret = mb_strrpos( $haysack, $needle, $offset, $enc );
 		}
 		else {
-			$ret = strrpos($haysack, $needle, $offset);
+			$ret = strrpos( $haysack, $needle, $offset );
 		}
 		return $ret;
 	}
@@ -338,7 +338,7 @@ class MultiByte
 			$ret = mb_strripos( $haysack, $needle, $offset, $enc );
 		}
 		else {
-			$ret = strripos($haysack, $needle, $offset);
+			$ret = strripos( $haysack, $needle, $offset );
 		}
 		return $ret;
 	}
@@ -420,7 +420,8 @@ class MultiByte
 	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
 	 * @return string The capitalized string.
 	 */
-	public static function ucfirst ( $str, $use_enc = null ) {
+	public static function ucfirst ( $str, $use_enc = null )
+	{
 		
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
@@ -430,13 +431,13 @@ class MultiByte
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			
 			// get the first character
-			$first = self::substr($str, 0, 1, $enc);
+			$first = self::substr( $str, 0, 1, $enc );
 			
 			// uppercase it
-			$first = self::strtoupper($first, $enc);
+			$first = self::strtoupper( $first, $enc );
 			
 			// get the rest of the characters
-			$last = self::substr($str, 1, null, $enc);
+			$last = self::substr( $str, 1, null, $enc );
 			
 			// put them back together
 			$ret = $first . $last;
@@ -458,7 +459,8 @@ class MultiByte
 	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
 	 * @return string The lowercased string.
 	 */
-	public static function lcfirst ( $str, $use_enc = null ) {
+	public static function lcfirst ( $str, $use_enc = null )
+	{
 		
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
@@ -468,13 +470,13 @@ class MultiByte
 		if ( self::$use_library == self::USE_MBSTRING ) {
 			
 			// get the first character
-			$first = self::substr($str, 0, 1, $enc);
+			$first = self::substr( $str, 0, 1, $enc );
 			
 			// lowercase it
-			$first = self::strtolower($first, $enc);
+			$first = self::strtolower( $first, $enc );
 			
 			// get the rest of the characters
-			$last = self::substr($str, 1, null, $enc);
+			$last = self::substr( $str, 1, null, $enc );
 			
 			// put them back together
 			$ret = $first . $last;
@@ -510,7 +512,8 @@ class MultiByte
 	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
 	 * @return string The subject with replaced values.
 	 */
-	public static function str_replace ( $search, $replace, $subject, &$count = 0, $use_enc = null ) {
+	public static function str_replace ( $search, $replace, $subject, &$count = 0, $use_enc = null )
+	{
 		
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
@@ -557,7 +560,7 @@ class MultiByte
 				// the values we'll match
 				$s = array_shift( $search );
 				$r = array_shift( $replace );
-				if ( is_array( $subject ) ) { Utils::debug($subject); }
+				if ( is_array( $subject ) ) { Utils::debug( $subject ); }
 				// while the search still exists in the subject
 				while ( self::strpos( $subject, $s, 0, $enc ) !== false ) {
 					
@@ -605,7 +608,8 @@ class MultiByte
 	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
 	 * @return string The subject with replaced values.
 	 */
-	public static function str_ireplace( $search, $replace, $subject, &$count = 0, $use_enc = null ) {
+	public static function str_ireplace( $search, $replace, $subject, &$count = 0, $use_enc = null )
+	{
 		
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
@@ -698,7 +702,8 @@ class MultiByte
 	 * @param string $use_enc The encoding to be used. If null, the internal encoding will be used.
 	 * @return string The modified string.
 	 */
-	public static function ucwords ( $str, $use_enc = null ) {
+	public static function ucwords ( $str, $use_enc = null )
+	{
 		
 		$enc = self::$hab_enc;
 		if ( $use_enc !== null ) {
