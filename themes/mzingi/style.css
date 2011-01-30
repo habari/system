@@ -332,6 +332,16 @@ ul#recentcomments li {
 	list-style-type: none;
 }
 
+.block-type-twitter ul li {
+	list-style-type: none;
+}
+
+.block-type-twitter ul li img {
+	float: left;
+	padding-right: 6px;
+	margin: 3px;
+}
+
 /* =Footer
 -----------------------------------------------------------------------------*/
 
