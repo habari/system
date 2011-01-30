@@ -39,11 +39,36 @@ class Block extends QueryRecord implements IsContent, FormStorage
 	 */
 	public function __get( $name )
 	{
-		if ( array_key_exists( $name, $this->data_values ) ) {
-			return $this->data_values[$name];
-		}
-		else {
-			return parent::__get( $name );
+		switch($name) {
+			case 'css_classes':
+				$classes = array();
+				if(array_key_exists( $name, $this->data_values )) {
+					$classes = $this->data_values[$name];
+				}
+				if(is_string($classes)) {
+					$classes = explode(' ', $classes);
+				}
+				if($this->_first) {
+					$classes[] = 'first';
+				}
+				if($this->_last) {
+					$classes[] = 'last';
+				}
+				if($this->_area_index) {
+					$classes[] = 'index_' . $this->_area_index;
+				}
+				$classes[] = 'block-type-' . Utils::slugify($this->type);
+				$classes[] = 'block';
+				$classes = Plugins::filter('block_classes', $classes, $this);
+				return implode(' ', $classes);
+				break;
+			default:
+			if ( array_key_exists( $name, $this->data_values ) ) {
+				return $this->data_values[$name];
+			}
+			else {
+				return parent::__get( $name );
+			}
 		}
 	}
 
