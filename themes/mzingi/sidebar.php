@@ -1,4 +1,5 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
+<?php Plugins::act( 'theme_sidebar_top' ); ?>
 	<!--begin secondary content-->
 	<div id="secondaryContent" class="span-7 last">
 		<?php $theme->display ( 'searchform' ); ?>
@@ -45,8 +46,12 @@
 	<li><a href="<?php echo $comment->url ?>"><?php echo $comment->name ?></a> <?php _e('on'); ?> <a href="<?php echo $comment->post->permalink; ?>"><?php echo $comment->post->title; ?></a></li>
 	<?php endforeach; ?>
 	</ul>
+	
+	<?php $theme->area( 'sidebar' ); ?>
+	
 	<h2 id="loginheading"><?php _e('User Login'); ?></h2>
 	<?php $theme->display ( 'loginform' ); ?>
 
 	</div>
 	<!--end secondary content-->
+<?php Plugins::act( 'theme_sidebar_bottom' ); ?>

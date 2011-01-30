@@ -40,12 +40,13 @@ img.left {
 	clear: both;
 }
 
-/* define inline elements as block */
+/* define inline elements as block not used, conflicts with areas and blocks default class
 
 .block {
 	display: block;
 }
-
+ */
+ 
 /* Remove border around linked images */
 
 img {
@@ -217,7 +218,7 @@ ul#tidbits a {
 .calyear {
 	background: #A37941;
 	color: #fff;
-	padding: 0 13px;
+	padding: 0 14px;
 }
 
 .calday {
