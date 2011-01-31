@@ -47,7 +47,7 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 	 *  template.  So the values here, unless checked, will overwrite any existing
 	 *  values.
 	 */
-	public function add_template_vars()
+	public function action_add_template_vars( $theme, $handler_vars )
 	{
 		//Theme Options
 		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
@@ -58,13 +58,8 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 
 
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
-			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
+			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => 1 ) ) );
 		}
-		if ( !$this->template_engine->assigned( 'page' ) ) {
-			$page = Controller::get_var( 'page' );
-			$this->assign('page', isset( $page ) ? $page : 1 );
-		}
-		parent::add_template_vars();
 
 		if ( User::identify()->loggedin ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
