@@ -71,7 +71,7 @@ class Charcoal extends Theme
 	/**
 	 * Add some variables to the template output
 	 */
-	public function action_add_template_vars( $theme, $handler_Vars )
+	public function action_add_template_vars( $theme, $handler_vars )
 	{
 		// Use theme options to set values that can be used directly in the templates
 		$opts = Options::get_group( __CLASS__ );
