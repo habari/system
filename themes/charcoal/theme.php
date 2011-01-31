@@ -71,7 +71,7 @@ class Charcoal extends Theme
 	/**
 	 * Add some variables to the template output
 	 */
-	public function add_template_vars()
+	public function action_add_template_vars( $theme, $handler_Vars )
 	{
 		// Use theme options to set values that can be used directly in the templates
 		$opts = Options::get_group( __CLASS__ );
@@ -97,14 +97,12 @@ class Charcoal extends Theme
 		}
 		
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
-			$this->assign( 'pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status( 'published' ), 'nolimit' => 1 ) ) );
+			$this->assign( 'pages', Posts::get( array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => 1 ) ) );
 		}
 		$this->assign( 'post_id', ( isset( $this->post ) && $this->post->content_type == Post::type( 'page' ) ) ? $this->post->id : 0 );
 
 		// Add FormUI template placing the input before the label
 		$this->add_template( 'charcoal_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
-
-		parent::add_template_vars();
 	}
 		
 	/**
