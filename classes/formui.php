@@ -786,11 +786,22 @@ class FormValidators
 	 * @param string $warning An optional error message
 	 * @return array An empty array if the string is a valid URL, or an array with strings describing the errors
 	 */
-	public static function validate_url( $text, $control, $form, $warning = null )
+	public static function validate_url( $text, $control, $form, $warning = null, $schemes = array( 'http', 'https' ) )
 	{
-		if ( !empty( $text ) ) {
-			if ( !preg_match( '/^(?P<protocol>https?):\/\/(?P<domain>[-A-Z0-9.]+)(?P<file>\/[-A-Z0-9+&@#\/%=~_|!:,.;]*)?(?P<parameters>\\?[-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i', $text ) ) {
-				$warning = empty( $warning ) ? _t( 'Value must be a valid URL.' ) : $warning;
+		if ( ! empty( $text ) ) {
+			$parsed = InputFilter::parse_url( $text );
+			if ( $parsed['is_relative'] ) {
+				// guess if they meant to use an absolute link
+				$parsed = InputFilter::parse_url( 'http://' . $text );
+				if ( $parsed['is_error'] ) {
+					// disallow relative URLs
+					$warning = empty( $warning ) ? _t( 'Relative urls are not allowed' ) : $warning;
+					return array( $warning );
+				}
+			}
+			if ( $parsed['is_pseudo'] || ! in_array( $parsed['scheme'], $schemes ) ) {
+				// allow only http(s) URLs
+				$warning = empty( $warning ) ? _t( 'Only %s urls are allowed', array( Format::and_list( $schemes ) ) ) : $warning;
 				return array( $warning );
 			}
 		}
