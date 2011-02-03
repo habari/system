@@ -250,7 +250,6 @@ class EventLog extends ArrayObject
 				 * If we've only got the year, get the whole year.
 				 *
 				 * @todo Ensure that we've actually got all the needed parts when we query on them
-				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')
 				 */
 				if ( isset( $paramset['day'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
