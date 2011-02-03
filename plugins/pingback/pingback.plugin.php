@@ -243,8 +243,8 @@ class Pingback extends Plugin
 		$body = $rr->get_response_body();
 
 		// Find a Pingback endpoint.
-		if ( preg_match( '/^X-Pingback: (\S*)/im', $headers, $matches ) ) {
-			$pingback_endpoint = $matches[1];
+		if ( isset( $headers['X-Pingback'] ) ) {
+			$pingback_endpoint = $headers['X-Pingback'];
 		}
 		elseif ( preg_match( '/<link rel="pingback" href="([^"]+)" ?\/?'.'>/is', $body, $matches ) ) {
 			$pingback_endpoint = $matches[1];
