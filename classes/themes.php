@@ -152,9 +152,20 @@ class Themes
 	**/
 	public static function activate_theme( $theme_name, $theme_dir )
 	{
-		Options::set( 'theme_name', $theme_name );
-		Options::set( 'theme_dir', $theme_dir );
-		EventLog::log( _t( 'Activated Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+		$ok = true;
+		$ok = Plugins::filter( 'activate_theme', $ok, $theme_name ); // Allow plugins to reject activation
+		if($ok) {
+			$old_active_theme = Themes::create();
+			Plugins::act_id( 'theme_deactivated', $old_active_theme->plugin_id(), $old_active_theme->name, $old_active_theme ); // For the theme itself to react to its deactivation
+			Plugins::act( 'theme_deactivated_any', $old_active_theme->name, $old_active_theme ); // For any plugin to react to its deactivation
+			Options::set( 'theme_name', $theme_name );
+			Options::set( 'theme_dir', $theme_dir );
+			$new_active_theme = Themes::create();
+			Plugins::act_id( 'theme_activated', $new_active_theme->plugin_id(), $theme_name, $new_active_theme ); // For the theme itself to react to its activation
+			Plugins::act( 'theme_activated_any', $theme_name, $new_active_theme ); // For any plugin to react to its activation
+			EventLog::log( _t( 'Activated Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
+		}
+		return $ok;
 	}
 	
 	/**
