@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-30 00:00+0000\n"
+"POT-Creation-Date: 2011-02-06 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -173,7 +173,7 @@ msgid "Configure"
 msgstr ""
 
 #: system/admin/formcontrols/formcontrol_textmulti.php:15
-#: system/classes/formui.php:1620
+#: system/classes/formui.php:1631
 msgid "remove"
 msgstr ""
 
@@ -191,7 +191,7 @@ msgid "Go to %s"
 msgstr ""
 
 #: system/admin/comments_items.php:18 system/admin/posts_items.php:22
-#: system/themes/mzingi/commentform.php:47 system/themes/mzingi/sidebar.php:45
+#: system/themes/mzingi/commentform.php:47 system/themes/mzingi/sidebar.php:46
 msgid "on"
 msgstr ""
 
@@ -855,8 +855,8 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: system/admin/login.php:40 system/themes/charcoal/theme.php:194
-#: system/themes/k2/theme.php:123
+#: system/admin/login.php:40 system/themes/charcoal/theme.php:192
+#: system/themes/k2/theme.php:118
 msgid "Name"
 msgstr ""
 
@@ -919,7 +919,7 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/themes/k2/theme.php:100
+#: system/themes/charcoal/entry.single.php:30 system/themes/k2/theme.php:95
 msgid "Comments on this post"
 msgstr ""
 
@@ -932,7 +932,7 @@ msgstr ""
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
 #: system/themes/charcoal/entry.single.php:30
-#: system/themes/mzingi/commentform.php:28 system/themes/k2/theme.php:100
+#: system/themes/mzingi/commentform.php:28 system/themes/k2/theme.php:95
 #: system/classes/post.php:997 system/classes/adminhandler.php:1362
 msgid "Comment"
 msgid_plural "Comments"
@@ -1102,53 +1102,53 @@ msgstr ""
 msgid "Options saved"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:140
+#: system/themes/charcoal/theme.php:138
 msgid "Search for "
 msgstr ""
 
-#: system/themes/charcoal/theme.php:145 system/themes/charcoal/theme.php:151
+#: system/themes/charcoal/theme.php:143 system/themes/charcoal/theme.php:149
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:148
+#: system/themes/charcoal/theme.php:146
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:148
+#: system/themes/charcoal/theme.php:146
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:154
+#: system/themes/charcoal/theme.php:152
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:194
+#: system/themes/charcoal/theme.php:192
 msgid "(Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:196 system/themes/k2/theme.php:125
+#: system/themes/charcoal/theme.php:194 system/themes/k2/theme.php:120
 msgid "Mail"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:196
+#: system/themes/charcoal/theme.php:194
 msgid "(will not be published"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:196
+#: system/themes/charcoal/theme.php:194
 msgid "- Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:198 system/themes/k2/theme.php:127
+#: system/themes/charcoal/theme.php:196 system/themes/k2/theme.php:122
 #: system/classes/post.php:985
 msgid "Website"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:201 system/themes/mzingi/theme.php:108
-#: system/themes/k2/theme.php:130 system/classes/post.php:1005
+#: system/themes/charcoal/theme.php:199 system/themes/mzingi/theme.php:108
+#: system/themes/k2/theme.php:125 system/classes/post.php:1005
 #: system/plugins/habarisilo/habarisilo.plugin.php:466
 msgid "Submit"
 msgstr ""
@@ -1229,31 +1229,31 @@ msgstr ""
 msgid "Go!"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:5
+#: system/themes/mzingi/sidebar.php:6
 msgid "Subscribe to Feed"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:6
+#: system/themes/mzingi/sidebar.php:7
 msgid "Navigation"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:8
+#: system/themes/mzingi/sidebar.php:9
 msgid "Home"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:17
+#: system/themes/mzingi/sidebar.php:18
 msgid "Asides"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:30
+#: system/themes/mzingi/sidebar.php:31
 msgid "More Posts"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:41
+#: system/themes/mzingi/sidebar.php:42
 msgid "Recent Comments"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:48
+#: system/themes/mzingi/sidebar.php:52
 msgid "User Login"
 msgstr ""
 
@@ -1298,7 +1298,7 @@ msgid "About You"
 msgstr ""
 
 #: system/themes/mzingi/theme.php:91 system/themes/mzingi/theme.php:94
-#: system/themes/k2/theme.php:123 system/themes/k2/theme.php:125
+#: system/themes/k2/theme.php:118 system/themes/k2/theme.php:120
 msgid "Required"
 msgstr ""
 
@@ -1374,7 +1374,7 @@ msgstr ""
 msgid "Sign in"
 msgstr ""
 
-#: system/themes/k2/theme.php:125
+#: system/themes/k2/theme.php:120
 msgid "(will not be published)"
 msgstr ""
 
@@ -2066,21 +2066,21 @@ msgstr ""
 msgid "The supplied password reset token has expired or is invalid."
 msgstr ""
 
-#: system/classes/block.php:203
+#: system/classes/block.php:228
 #, php-format
 msgid "New block %1$s: %2$s"
 msgstr ""
 
-#: system/classes/block.php:251
+#: system/classes/block.php:276
 #, php-format
 msgid "Block %1$s (%2$s) deleted."
 msgstr ""
 
-#: system/classes/block.php:267
+#: system/classes/block.php:292
 msgid "Saved block configuration."
 msgstr ""
 
-#: system/classes/eventlog.php:373 system/classes/adminhandler.php:2365
+#: system/classes/eventlog.php:372 system/classes/adminhandler.php:2365
 msgid "Logs purged."
 msgstr ""
 
@@ -3029,22 +3029,22 @@ msgstr ""
 msgid "There is no valid theme currently installed."
 msgstr ""
 
-#: system/classes/themes.php:157
+#: system/classes/themes.php:166
 #, php-format
 msgid "Activated Theme: %s"
 msgstr ""
 
-#: system/classes/themes.php:170
+#: system/classes/themes.php:181
 #, php-format
 msgid "Previewed Theme: %s"
 msgstr ""
 
-#: system/classes/themes.php:179
+#: system/classes/themes.php:190
 #, php-format
 msgid "Canceled Theme Preview: %s"
 msgstr ""
 
-#: system/classes/themes.php:222 system/classes/themes.php:231
+#: system/classes/themes.php:233 system/classes/themes.php:242
 msgid "Theme not installed."
 msgstr ""
 
@@ -3197,42 +3197,47 @@ msgstr ""
 msgid "Attempted to load the plugin file \"%s\", but it failed with syntax errors. <div class=\"reveal\">%s</div>"
 msgstr ""
 
-#: system/classes/formui.php:793
-msgid "Value must be a valid URL."
+#: system/classes/formui.php:798
+msgid "Relative urls are not allowed"
 msgstr ""
 
-#: system/classes/formui.php:813
+#: system/classes/formui.php:804
+#, php-format
+msgid "Only %s urls are allowed"
+msgstr ""
+
+#: system/classes/formui.php:824
 msgid "Value must be a valid Email Address."
 msgstr ""
 
-#: system/classes/formui.php:831
+#: system/classes/formui.php:842
 msgid "A value for this field is required."
 msgstr ""
 
-#: system/classes/formui.php:853
+#: system/classes/formui.php:864
 msgid "That username is already in use!"
 msgstr ""
 
-#: system/classes/formui.php:873
+#: system/classes/formui.php:884
 #, php-format
 msgid "The value of this field must match the value of %s."
 msgstr ""
 
-#: system/classes/formui.php:896
+#: system/classes/formui.php:907
 msgid "The value does not meet submission requirements"
 msgstr ""
 
-#: system/classes/formui.php:917
+#: system/classes/formui.php:928
 #, php-format
 msgid "The value entered is lesser than the minimum of %d."
 msgstr ""
 
-#: system/classes/formui.php:923
+#: system/classes/formui.php:934
 #, php-format
 msgid "The value entered is greater than the maximum of %d."
 msgstr ""
 
-#: system/classes/formui.php:1624
+#: system/classes/formui.php:1635
 msgid "Remove this item?"
 msgstr ""
 
