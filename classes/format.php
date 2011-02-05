@@ -585,19 +585,36 @@ class Format
 	public static function term_tree( $terms, $wrapper = '<div>%s</div>', $startlist = '<ol class="tree">', $endlist = '</ol>', $display_callback = null )
 	{
 		$out = $startlist;
-		$children = array();
 
 		if ( !$terms instanceof Terms ) {
 			$terms = new Terms( $terms );
 		}
 
+		$stack = array();
+
 		foreach ( $terms as $term ) {
-			$out .= '<li>' . sprintf( $wrapper, isset( $display_callback ) ? $display_callback( $term ) : $term->term_display );
-			$children = $term->children();
-			if ( count( $children ) ) {
-				$out .= self::term_tree( $children, $wrapper, $startlist, $endlist, $display_callback );
+			if(count($stack)) {
+				if($term->mptt_left - end($stack)->mptt_left == 1) {
+					$out .= $startlist;
+				}
+				while(count($stack) && $term->mptt_left > end($stack)->mptt_right) {
+					$out .= '</li>'. $endlist. "\n";
+					array_pop($stack);
+				}
 			}
-			$out .= '</li>';
+
+			$out .= '<li>';
+			$out .= sprintf( $wrapper, isset( $display_callback ) ? $display_callback( $term, $wrapper ) : $term->term_display );
+			if($term->mptt_right - $term->mptt_left > 1) {
+				$stack[] = $term;
+			}
+			else {
+				$out .= '</li>' ."\n";
+			}
+		}
+		while(count($stack)) {
+			$out .= '</li>' . $endlist . "\n";
+			array_pop($stack);
 		}
 
 		$out .= $endlist;
