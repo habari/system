@@ -395,8 +395,7 @@ class Session
 	 * Output notice and error messages
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
-	 * @param boolean $use_humane_msg true to use the humane messages system, false
-	 * to use and unordered list
+	 * @param array $callback a reference to a callback function for formatting the the messages
 	 */
 	static function messages_out( $clear = true, $callback = null )
 	{
