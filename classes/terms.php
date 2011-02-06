@@ -10,7 +10,7 @@
 * for the purpose of acting on them en-masse, or testing against them. 
 *
 */
-class Terms extends ArrayObject
+class Terms extends ArrayObject implements FormStorage
 {
 
 	/**
@@ -85,6 +85,56 @@ class Terms extends ArrayObject
 		return new Terms();
 	}
 
+	/**
+	 * Loads form values from an object
+	 *
+	 * @param string $key The name of a form component that will be loaded
+	 * @return mixed The stored value returned
+	 */
+	function field_load($key)
+	{
+		return $this;
+	}
+
+	/**
+	 * Stores a form value into the object
+	 *
+	 * @param string $key The name of a form component that will be stored
+	 * @param mixed $value The value of the form component to store
+	 */
+	function field_save($key, $value)
+	{
+		Vocabulary::prep_update($value);
+		foreach($value as $term) {
+			if($term instanceof Term) {
+				$term->update();
+			}
+		}
+	}
+
+	/**
+	 * Sort the term objects by mptt_left ASC to put them in tree order
+	 *
+	 * @return Terms A sorted Terms instance
+	 */
+	function tree_sort()
+	{
+		//$terms = $this->get_array_copy_raw();
+		usort($this, array($this, 'tree_sort_compare'));
+		return $this; //new Terms($terms);
+	}
+
+	/**
+	 * Comparison function for tree_sort()
+	 *
+	 * @param Term $a A term to compare
+	 * @param Term $b A term to compare
+	 * @return bool the sorting result for the usort in tree_sort()
+	 */
+	function tree_sort_compare($a, $b)
+	{
+		return $a->mptt_left > $b->mptt_left;
+	}
 }
 
 ?>

@@ -1765,15 +1765,12 @@ class FormControlTree extends FormControlSelect
 	public function __construct()
 	{
 		$args = func_get_args();
-		list( $name, $storage, $caption, $options, $template ) = array_merge( $args, array_fill( 0, 5, null ) );
+		list( $name, $storage, $caption, $template ) = array_merge( $args, array_fill( 0, 5, null ) );
 
 		$this->name = $name;
 		$this->storage = $storage;
 		$this->caption = $caption;
-		$this->options = $options;
 		$this->template = $template;
-
-		$this->default = null;
 	}
 	
 		/**
@@ -1799,6 +1796,21 @@ $(document).ready(function(){
 		tolerance: 'pointer',
 		toleranceElement: '> div'
 	});
+
+	$('.tree_submitted').closest('form').submit(function(){
+		var tree_input = $('.tree_submitted', this);
+		var data = tree_input.siblings().nestedSortable('toArray', {startDepthCount: 1});
+		var comma = '';
+		var v = '';
+		for(var i in data) {
+			if(data[i].item_id != 'root') {
+				v += comma + '{"id":"' + parseInt(data[i].item_id) + '","left":"' + (parseInt(data[i].left)-1) + '","right":"' + (parseInt(data[i].right)-1) + '"}';
+				comma = ',';
+			}
+		}
+		v = '[' + v + ']';
+		tree_input.val(v);
+	});
 });
 				</script>
 CUSTOM_TREE_JS;
@@ -1815,11 +1827,47 @@ CUSTOM_TREE_JS;
 	public function get( $forvalidation = true )
 	{
 		$theme = $this->get_theme( $forvalidation );
-		$theme->options = $this->options;
+		$theme->options = $this->value;
 		$theme->id = $this->name;
 		$theme->control = $this;
 
 		return $theme->fetch( $this->get_template(), true );
+	}
+
+	/**
+	 * Magic __get method for returning property values
+	 * Override the handling of the value property to properly return the setting of the checkbox.
+	 *
+	 * @param string $name The name of the property
+	 * @return mixed The value of the requested property
+	 */
+	public function __get( $name )
+	{
+		static $posted = null;
+		switch ( $name ) {
+			case 'value':
+				if ( isset( $_POST[$this->field . '_submitted'] ) ) {
+					if(!isset($posted)) {
+						$valuesj = $_POST->raw( $this->field . '_submitted');
+						$values = json_decode($valuesj);
+						$terms = array();
+						foreach($this->get_default() as $term) {
+							$terms[$term->id] = $term;
+						}
+						foreach($values as $value) {
+							$terms[$value->id]->mptt_left = $value->left;
+							$terms[$value->id]->mptt_right = $value->right;
+						}
+						$terms = new Terms($terms);
+						$posted = $terms->tree_sort();
+					}
+					return $posted;
+				}
+				else {
+					return $this->get_default();
+				}
+		}
+		return parent::__get( $name );
 	}
 }
 

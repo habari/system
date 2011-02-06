@@ -529,11 +529,11 @@ class Vocabulary extends QueryRecord
 
 	/**
 	 * Retrieve the vocabulary
-	 * @return Array The Term objects in the vocabulary, in tree order
+	 * @return Terms The Term objects in the vocabulary, in tree order
 	 **/
 	public function get_tree( $orderby = 'mptt_left ASC' )
 	{
-		return DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=:vid ORDER BY {$orderby}", array( 'vid' => $this->id ), 'Term' );
+		return new Terms(DB::get_results( "SELECT * FROM {terms} WHERE vocabulary_id=:vid ORDER BY {$orderby}", array( 'vid' => $this->id ), 'Term' ));
 	}
 
 	/**
@@ -858,6 +858,21 @@ SQL;
 	{
 		$term = $this->get_term( $term );
 		return $term->count( $object_type );
+	}
+
+	/**
+	 * Moves all of the terms into a temporary area so that they can be moved
+	 *
+	 * @static
+	 * @param  Terms $terms An array of Term objects
+	 */
+	public static function prep_update( $terms )
+	{
+		$index = -1;
+		foreach($terms as $term) {
+			DB::query( 'UPDATE {terms} SET mptt_left=:left, mptt_right=:right WHERE id=:id', array('id' => $term->id, 'left' => $index, 'right' => $index -1 ) );
+			$index -=2;
+		}
 	}
 
 }
