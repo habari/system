@@ -260,12 +260,12 @@ class Pingback extends Plugin
 			$response = XMLRPCClient::open( $pingback_endpoint )->pingback->ping( $source_uri, $target_uri );
 		}
 		catch ( Exception $e ) {
-			EventLog::log( 'Invalid Pingback endpoint - ' . $pingback_endpoint . '  (Source: ' . $source_uri . ' | Target: ' . $target_uri . ')', 'info', 'Pingback' );
+			EventLog::log( _t( 'Invalid Pingback endpoint - %1$s (Source: %2$s | Target: %3$s)', array( $pingback_endpoint, $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
 		}
 
 		if ( isset( $response->faultString ) ) {
-			EventLog::log( $response->faultCode . ' - ' . $response->faultString . ' (Source: ' . $source_uri . ' | Target: ' . $target_uri . ')', 'info', 'Pingback' );
+			EventLog::log( _t( 'Pingback error: %1$s - %2$s (Source: %3$s | Target: %4$s)', array( $response->faultCode, $response->faultString, $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
 		}
 		else {
@@ -308,7 +308,7 @@ class Pingback extends Plugin
 
 		foreach ( $links as $target_uri ) {
 			if ( $this->send_pingback( $source_uri, $target_uri, $post ) ) {
-				EventLog::log( sprintf( _t( 'Sent pingbacks for "%1$s", target: %2$s' ), $post->title, $target_uri ), 'info', 'Pingback' );
+				EventLog::log( _t( 'Sent pingbacks for "%1$s", target: %2$s', array( $post->title, $target_uri ) ), 'info', 'Pingback' );
 			}
 		}
 	}
