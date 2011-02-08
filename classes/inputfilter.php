@@ -397,8 +397,7 @@ class InputFilter
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_TEXT:
-					// XXX use blog charset setting
-					$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
+					$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, MultiByte::hab_encoding() );
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
 					// is this element allowed at all?
