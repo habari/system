@@ -6,6 +6,12 @@
  * Term is part of the vocabulary system. A term exists in a vocabulary and can
  * be associated with objects, such as posts.
  *
+ * @property int id
+ * @property int mptt_left
+ * @property int mptt_right
+ * @property string term_display
+ * @property string term
+ * @property int vocabulary_id
  */
 
 class Term extends QueryRecord
@@ -67,6 +73,7 @@ class Term extends QueryRecord
 	 */
 	protected function setslug()
 	{
+		$value = '';
 		// determine the base value from:
 		// - the new slug
 		if ( isset( $this->newfields[ 'term' ] ) && $this->newfields[ 'term' ] != '' ) {
@@ -181,7 +188,7 @@ class Term extends QueryRecord
 		}
 		Plugins::act( 'term_delete_before', $this );
 
-		DB::query( "DELETE FROM {object_terms} WHERE term_id = :id", array( 'id' => $this->id ) );
+		DB::query( 'DELETE FROM {object_terms} WHERE term_id = :id', array( 'id' => $this->id ) );
 
 		$result = parent::deleteRecord( '{terms}', array( 'id'=>$this->id ) );
 		EventLog::log( sprintf( _t( 'Term %1$s (%2$s) deleted.' ), $this->id, $this->term_display ), 'info', 'content', 'habari' );

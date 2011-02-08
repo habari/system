@@ -577,13 +577,13 @@ class Format
 	 * Turns Terms or an array of terms from a hierarchical vocabulary into a ordered HTML list with list items for each term.
 	 * @param mixed $terms An array of Term objects or a Terms object.
 	 * @param string $tree_name The name of the tree, used for unique node id's
+	 * @param function $display_callback A callback function to apply to earch term as it is displayed.
 	 * @param string $wrapper An sprintf formatted in which to wrap each term.
 	 * @param string $startlist A string to put at the start of the list.
 	 * @param string $endlist A string to put at the end of the list.
-	 * @param function $display_callback A callback function to apply to earch term as it is displayed.
 	 * @return string The transformed vocabulary.
 	 */
-	public static function term_tree( $terms, $tree_name, $wrapper = '<div>%s</div>', $startlist = '<ol class="tree">', $endlist = '</ol>', $display_callback = null )
+	public static function term_tree( $terms, $tree_name, $display_callback = null, $wrapper = '<div>%s</div>', $startlist = '<ol class="tree">', $endlist = '</ol>' )
 	{
 		$out = $startlist;
 		$stack = array();
@@ -605,7 +605,13 @@ class Format
 			}
 
 			$out .= '<li id="' . $tree_name . '_' . $term->id . '">';
-			$out .= sprintf( $wrapper, isset( $display_callback ) ? $display_callback( $term, $wrapper ) : $term->term_display );
+			if(isset($display_callback)) {
+				$display = call_user_func($display_callback, $term, $wrapper);
+			}
+			else {
+				$display = $term->term_display;
+			}
+			$out .= sprintf( $wrapper, $display );
 			if($term->mptt_right - $term->mptt_left > 1) {
 				$stack[] = $term;
 			}
