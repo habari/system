@@ -236,7 +236,9 @@ class Pingback extends Plugin
 			}
 		}
 		catch ( Exception $e ) {
-			throw new XMLRPCException( -32300 );
+			// log the pingback error
+			EventLog::log( _t( 'Unable to retrieve target, can\'t detect pingback endpoint. (Source: %1$s | Target: %2$s)', array( $source_uri, $target_uri ) ), 'err', 'Pingback' );
+			return false;
 		}
 
 		$headers = $rr->get_response_headers();
