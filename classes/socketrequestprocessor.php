@@ -1,220 +1,137 @@
 <?php
-/**
- * @package Habari
- *
- */
 
-/**
- * RequestProcessor using sockets (fsockopen).
- */
-class SocketRequestProcessor implements RequestProcessor
-{
-	private $response_body = '';
-	private $response_headers = '';
-	private $executed = false;
+	class SocketRequestProcessor implements RequestProcessor {
+		
+		private $response_body = '';
+		private $response_headers = '';
+		private $executed = false;
+		
+		private $can_followlocation = true;
+		
+		public function __construct ( ) {
+			
+			// see if we can follow Location: headers
+			if ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) {
+				$this->can_followlocation = false;
+			}
+			
+		}
+		
+		public function execute ( $method, $url, $headers, $body, $config ) {
+			
+			$merged_headers = array();
+			foreach ( $headers as $k => $v ) {
+				$merged_headers[] = $k . ': '. $v;
+			}
+			
+			// parse out the URL so we can refer to individual pieces
+			$url_pieces = InputFilter::parse_url( $url );
+			
+			// set up the options we'll use when creating the request's context
+			$options = array(
+				'http' => array(
+					'method' => $method,
+					'header' => implode( "\n", $merged_headers ),
+					'timeout' => $config['timeout'],
+					'follow_location' => $this->can_followlocation,		// 5.3.4+, should be ignored by others
+					'max_redirects' => $config['max_redirects'],
 
-	private $redir_count = 0;
+					// and now for our ssl-specific portions, which will be ignored for non-HTTPS requests
+					'verify_peer' => $config['ssl']['verify_peer'],
+					//'verify_host' => $config['ssl']['verify_host'],	// there doesn't appear to be an equiv of this for sockets - the host is matched by default and you can't just turn that off, only substitute other hostnames
+					'cafile' => $config['ssl']['cafile'],
+					'capath' => $config['ssl']['capath'],
+					'local_cert' => $config['ssl']['local_cert'],
+					'passphrase' => $config['ssl']['passphrase'],
+				),
+			);
+			
+			if ( $method == 'POST' ) {
+				$options['http']['content'] = $body;
+			}
+			
+			
+			if ( $config['proxy']['server'] != '' && !in_array( $url_pieces['host'], $config['proxy']['exceptions'] ) ) {
+				$proxy = $config['proxy']['server'] . ':' . $config['proxy']['port'];
+				
+				if ( $config['proxy']['username'] != '' ) {
+					$proxy = $config['proxy']['username'] . ':' . $config['proxy']['password'] . '@' . $proxy;
+				}
+				
+				$options['http']['proxy'] = 'tcp://' . $proxy;
+			}
 
-	public function execute( $method, $url, $headers, $body, $config )
-	{
-		// let any exceptions thrown just bubble up
-		$result = $this->_request( $method, $url, $headers, $body, $config );
-
-		if ( $result ) {
-			list( $response_headers, $response_body )= $result;
-			$this->response_headers = $response_headers;
-			$this->response_body = $response_body;
+			// create the context
+			$context = stream_context_create( $options );
+			
+			// perform the actual request - we use fopen so stream_get_meta_data works
+			$fh = @fopen( $url, 'r', false, $context );
+			
+			if ( $fh === false ) {
+				throw new Exception( _t( 'Unable to connect to %s', array( $url_pieces['host'] ) ) );
+			}
+			
+			// read in all the contents -- this is the same as file_get_contens, only for a specific stream handle
+			$body = stream_get_contents( $fh );
+			
+			// get meta data
+			$meta = stream_get_meta_data( $fh );
+			
+			// close the connection before we do anything else
+			fclose( $fh );
+			
+			// did we timeout?
+			if ( $meta['timed_out'] == true ) {
+				throw new RemoteRequest_Timeout( _t( 'Request timed out' ) );
+			}
+			
+			
+			// $meta['wrapper_data'] should be a list of the headers, the same as is loaded into $http_response_header
+			$headers = array();
+			foreach ( $meta['wrapper_data'] as $header ) {
+				
+				// break the header up into field and value
+				$pieces = explode( ': ', $header, 2 );
+				
+				if ( count( $pieces ) > 1 ) {
+					// if the header was a key: value format, store it keyed in the array
+					$headers[ $pieces[0] ] = $pieces[1];
+				}
+				else {
+					// some headers (like the HTTP version in use) aren't keyed, so just store it keyed as itself
+					$headers[ $pieces[0] ] = $pieces[0];
+				}
+				
+			}
+			
+			$this->response_headers = $headers;
+			$this->response_body = $body;
 			$this->executed = true;
-
+			
 			return true;
-		}
-		else {
-			return $result;
-		}
-	}
-
-	private function _request( $method, $url, $headers, $body, $config )
-	{
-		$urlbits = InputFilter::parse_url( $url );
-
-		return $this->_work( $method, $urlbits, $headers, $body, $config );
-	}
-
-	/**
-	 * @todo Does not honor timeouts on the actual request, only on the connect() call.
-	 * @todo Does not use MultiByte-safe methods for parsing input and output - we don't know what the data we're screwing up is!
-	 */
-	private function _work( $method, $urlbits, $headers, $body, $config )
-	{
-		$_errno = 0;
-		$_errstr = '';
-
-		if ( !isset( $urlbits['port'] ) || $urlbits['port'] == 0 ) {
-			if ( array_key_exists( $urlbits['scheme'], Utils::scheme_ports() ) ) {
-				$urlbits['port'] = Utils::scheme_ports( $urlbits['scheme'] );
-			}
-			else {
-				// todo: Error::raise()?
-				$urlbits['port'] = 80;
-			}
-		}
-
-		if ( !in_array( $urlbits['scheme'], stream_get_transports() ) ) {
-			$transport = ( $urlbits['scheme'] == 'https' ) ? 'ssl' : 'tcp';
-		}
-		else {
-			$transport = $urlbits['scheme'];
+			
 		}
 		
-		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
-			$fp = @fsockopen( $transport . '://' . $config['proxy']['server'], $config['proxy']['port'], $_errno, $_errstr, $config['connect_timeout'] );
-		}
-		else {
-			$fp = @fsockopen( $transport . '://' . $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $config['connect_timeout'] );
-		}
-
-		if ( $fp === false ) {
-			if ( $config['proxy']['server'] ) {
-				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $config['proxy']['server'], $config['proxy']['port'] ) ) );
+		public function get_response_body ( ) {
+			
+			if ( !$this->executed ) {
+				throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
 			}
-			else {
-				throw new Exception( _t( 'Error %d: %s while connecting to %s:%d', array( $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ) ) );
-			}
-		}
-
-		// timeout to fsockopen() only applies for connecting
-		stream_set_timeout( $fp, $config['timeout'] );
-
-		// fix headers
-		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
-			$headers['Host'] = "{$config['proxy']['server']}:{$config['proxy']['port']}";
-			if ( $config['proxy']['username'] ) {
-				$headers['Proxy-Authorization'] = 'Basic ' . base64_encode( "{$config['proxy']['username']}:{$config['proxy']['password']}" );
-			}
-		} else {
-			$headers['Host'] = $urlbits['host'];
+			
+			return $this->response_body;
+			
 		}
 		
-		$headers['Connection'] = 'close';
-
-		// merge headers into a list
-		$merged_headers = array();
-		foreach ( $headers as $k => $v ) {
-			$merged_headers[] = $k . ': ' . $v;
-		}
-
-		// build the request
-		$request = array();
-		$resource = $urlbits['path'];
-		if ( isset( $urlbits['query'] ) ) {
-			$resource.= '?' . $urlbits['query'];
+		public function get_response_headers ( ) {
+			
+			if ( !$this->executed ) {
+				throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
+			}
+			
+			return $this->response_headers;
+			
 		}
 		
-		if ( $config['proxy']['server'] && ! in_array( $urlbits['host'], $config['proxy']['exceptions'] ) ) {
-			$resource = $urlbits['scheme'] . '://' . $urlbits['host'] . $resource;
-		}
-
-		$request[] = "{$method} {$resource} HTTP/1.1";
-
-		$request = array_merge( $request, $merged_headers );
-
-		$request[] = '';
-
-		if ( $method === 'POST' ) {
-			$request[] = $body;
-		}
-
-		$request[] = '';
-
-		$out = implode( "\r\n", $request );
-
-		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
-			throw new Exception( _t( 'Error writing to socket.' ) );
-		}
-
-		$in = '';
-
-		while ( ! feof( $fp ) ) {
-			$in.= fgets( $fp, 1024 );
-		}
-
-		fclose( $fp );
-
-		list( $header, $body )= explode( "\r\n\r\n", $in );
-
-		// to make the following REs match $ correctly
-		// and thus not break parse_url
-		$header = str_replace( "\r\n", "\n", $header );
-
-		preg_match( '#^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)#', $header, $status_matches );
-
-		if ( $status_matches[1] == '301' || $status_matches[1] == '302' ) {
-			if ( preg_match( '|^Location: (.+)$|mi', $header, $location_matches ) ) {
-				$redirect_url = $location_matches[1];
-
-				$redirect_urlbits = InputFilter::parse_url( $redirect_url );
-
-				if ( !isset( $redirect_url['host'] ) ) {
-					$redirect_urlbits['host'] = $urlbits['host'];
-				}
-
-				$this->redir_count++;
-
-				if ( $this->redir_count > $config['max_redirs'] ) {
-					throw new Exception( _t( 'Maximum number of redirections exceeded.' ) );
-				}
-
-				return $this->_work( $method, $redirect_urlbits, $headers, $body, $config );
-			}
-			else {
-				throw new Exception( _t( 'Redirection response without Location: header.' ) );
-			}
-		}
-
-		if ( preg_match( '|^Transfer-Encoding:.*chunked.*|mi', $header ) ) {
-			$body = $this->_unchunk( $body );
-		}
-
-		return array( $header, $body );
 	}
 
-	private function _unchunk( $body )
-	{
-		/* see <http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html> */
-		$result = '';
-		$chunk_size = 0;
-
-		do {
-			$chunk = explode( "\r\n", $body, 2 );
-			list( $chunk_size_str, )= explode( ';', $chunk[0], 2 );
-			$chunk_size = hexdec( $chunk_size_str );
-
-			if ( $chunk_size > 0 ) {
-				$result .= MultiByte::substr( $chunk[1], 0, $chunk_size );
-				$body = MultiByte::substr( $chunk[1], $chunk_size+1 );
-			}
-		}
-		while ( $chunk_size > 0 );
-		// this ignores trailing header fields
-
-		return $result;
-	}
-
-	public function get_response_body()
-	{
-		if ( ! $this->executed ) {
-			throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
-		}
-
-		return $this->response_body;
-	}
-
-	public function get_response_headers()
-	{
-		if ( ! $this->executed ) {
-			throw new Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
-		}
-
-		return $this->response_headers;
-	}
-}
+?>
