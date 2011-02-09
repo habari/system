@@ -1,19 +1,9 @@
 <?php
 /**
- * @package Habari
- *
- */
-
-/**
  * RequestProcessor using CURL.
  */
-class CURLRequestProcessor implements RequestProcessor
+class CURLRequestProcessor extends RequestProcessor
 {
-	private $response_body = '';
-	private $response_headers = '';
-	private $executed = false;
-
-	private $can_followlocation = true;
 
 	/**
 	 * Temporary buffer for headers.

@@ -1,12 +1,6 @@
 <?php
 
-	class SocketRequestProcessor implements RequestProcessor {
-		
-		private $response_body = '';
-		private $response_headers = '';
-		private $executed = false;
-		
-		private $can_followlocation = true;
+	class SocketRequestProcessor extends RequestProcessor {
 		
 		public function __construct ( ) {
 			
@@ -109,26 +103,6 @@
 			$this->executed = true;
 			
 			return true;
-			
-		}
-		
-		public function get_response_body ( ) {
-			
-			if ( !$this->executed ) {
-				throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
-			}
-			
-			return $this->response_body;
-			
-		}
-		
-		public function get_response_headers ( ) {
-			
-			if ( !$this->executed ) {
-				throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
-			}
-			
-			return $this->response_headers;
 			
 		}
 		

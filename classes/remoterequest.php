@@ -11,12 +11,36 @@
  * do the actual work.
  *
  */
-interface RequestProcessor
+abstract class RequestProcessor
 {
-	public function execute( $method, $url, $headers, $body, $config );
+	
+	protected $response_body = '';
+	protected $response_headers = array();
+	
+	protected $executed = false;
+	
+	protected $can_followlocation = true;
+	
+	abstract public function execute( $method, $url, $headers, $body, $config );
 
-	public function get_response_body();
-	public function get_response_headers();
+	public function get_response_body ( ) {
+		
+		if ( !$this->executed ) {
+			throw new Exception( _t( 'Unable to get response body. Request did not yet execute.' ) );
+		}
+		
+		return $this->response_body;
+		
+	}
+	public function get_response_headers ( ) {
+		
+		if ( !$this->executed ) {
+			throw new Exception( _t( 'Unable to get response headers. Request did not yet execute.' ) );
+		}
+		
+		return $this->response_headers;
+		
+	}
 }
 
 /**
