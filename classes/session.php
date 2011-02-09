@@ -16,6 +16,7 @@ class Session
 	 * The initial data. Used to determine whether we should write anything.
 	 */
 	private static $initial_data;
+	private static $lifetime;
 
 
 	/**
@@ -29,6 +30,12 @@ class Session
 			( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) ) {
 			session_set_cookie_params( null, null, null, true );
 		}
+		
+		// figure out the session lifetime and let plugins change it
+		$lifetime = ini_get( 'session.gc_maxlifetime' );
+		
+		self::$lifetime = Plugins::filter( 'session_lifetime', $lifetime );
+		
 
 		session_set_save_handler(
 			array( 'Session', 'open' ),
@@ -38,6 +45,8 @@ class Session
 			array( 'Session', 'destroy' ),
 			array( 'Session', 'gc' )
 		);
+		// session::write gets called after object destruction, so our class isn't available
+		// fix that by registering it as a shutdown function, before objects are destroyed
 		register_shutdown_function( 'session_write_close' );
 
 		if ( ! isset( $_SESSION ) ) {
@@ -75,7 +84,6 @@ class Session
 	 */
 	static function read( $session_id )
 	{
-		// for offline testing
 		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
@@ -122,13 +130,18 @@ class Session
 		// Do garbage collection, since PHP is bad at it
 		$probability = ini_get( 'session.gc_probability' );
 		// Allow plugins to control the probability of a gc event, return >=100 to always collect garbage
-		$probability = Plugins::filter( 'gc_probability', ( is_numeric( $probability ) && $probability > 0 ) ? $probability : 1 );
+		$probability = Plugins::filter( 'session_gc_probability', ( is_numeric( $probability ) && $probability > 0 ) ? $probability : 1 );
 		if ( rand( 1, 100 ) <= $probability ) {
-			self::gc( ini_get( 'session.gc_maxlifetime' ) );
+			self::gc( self::$lifetime );
 		}
 
-		// Throttle session writes, so as to not hammer the DB
-		self::$initial_data = ( ini_get( 'session.gc_maxlifetime' ) - $session->expires + HabariDateTime::date_create()->int < 120 ) ? $session->data : false;
+		// save the initial data we loaded so we can write only if it's changed
+		self::$initial_data = $session->data;
+		
+		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
+		if ( ( $session->expires - HabariDateTime::date_create()->int ) < ( self::$lifetime / 2 ) ) {
+			self::$initial_data = null;
+		}
 
 		return $session->data;
 	}
@@ -141,20 +154,27 @@ class Session
 	 */
 	static function write( $session_id, $data )
 	{
-		// for offline testing
+
 		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
-		// Should we write this data?  Don't bother for search spiders, for example.
-		$dowrite = ( $data !== self::$initial_data );
+		// default to writing the data only if it's changed
+		if ( self::$initial_data !== $data ) {
+			$dowrite = true;
+		}
+		else {
+			$dowrite = false;
+		}
+
+		// but let a plugin make the final decision. we may want to ignore search spiders, for instance
 		$dowrite = Plugins::filter( 'session_write', $dowrite, $session_id, $data );
 
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
 				'subnet' => self::get_subnet( $remote_address ),
-				'expires' => HabariDateTime::date_create()->int + ini_get( 'session.gc_maxlifetime' ),
+				'expires' => HabariDateTime::date_create()->int + self::$lifetime,
 				'ua' => $user_agent,
 				'data' => $data,
 			);
