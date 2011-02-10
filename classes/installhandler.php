@@ -199,6 +199,7 @@ class InstallHandler extends ActionHandler
 		$all_plugins = Plugins::list_all();
 		$recommended_list = array(
 			'coredashmodules.plugin.php',
+			'coreblocks.plugin.php',
 			'habarisilo.plugin.php',
 			'pingback.plugin.php',
 			'spamchecker.plugin.php',
