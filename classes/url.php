@@ -13,9 +13,9 @@
 class URL extends Singleton
 {
 	// static collection of rules ( pulled from RewriteController )
-	private $rules = NULL;
-	private $matched_rule = NULL;
-	private static $stub = NULL;
+	private $rules = null;
+	private $matched_rule = null;
+	private static $stub = null;
 
 	/**
 	 * Enables singleton working properly
@@ -24,7 +24,7 @@ class URL extends Singleton
 	 */
 	protected static function instance()
 	{
-		return self::getInstanceOf( get_class() );
+		return self::getInstanceOf( __CLASS__ );
 	}
 
 	/**
@@ -32,7 +32,7 @@ class URL extends Singleton
 	 */
 	private function load_rules()
 	{
-		if ( URL::instance()->rules != NULL ) {
+		if ( URL::instance()->rules != null ) {
 			return;
 		}
 		URL::instance()->rules = RewriteRules::get_active();
@@ -41,11 +41,21 @@ class URL extends Singleton
 	/**
 	 * Get the matched RewriteRule that was matched in parse().
 	 *
-	 * @return RewriteRule matched rule, or NULL
+	 * @return RewriteRule matched rule, or null
 	 */
 	public static function get_matched_rule()
 	{
 		return URL::instance()->matched_rule;
+	}
+
+	/**
+	 * Get the active RewriteRules that are cached in self::load_rules().
+	 *
+	 * @return array RewriteRules active rules, or null
+	 */
+	public static function get_active_rules()
+	{
+		return URL::instance()->rules;
 	}
 
 	/**
@@ -55,10 +65,10 @@ class URL extends Singleton
 	 */
 	public static function set_404()
 	{
-		if( empty(URL::instance()->matched_rule) || (URL::instance()->matched_rule->name != 'display_404') ) {
-			$rule = RewriteRules::by_name('display_404');
-			URL::instance()->matched_rule = reset($rule);
-			URL::instance()->matched_rule->match(self::$stub);
+		if ( empty( URL::instance()->matched_rule ) || ( URL::instance()->matched_rule->name != 'display_404' ) ) {
+			$rule = RewriteRules::by_name( 'display_404' );
+			URL::instance()->matched_rule = reset( $rule );
+			URL::instance()->matched_rule->match( self::$stub );
 		}
 		return URL::instance()->matched_rule;
 	}
@@ -69,10 +79,10 @@ class URL extends Singleton
 	 * requests, and by other classes, such as Pingback, which
 	 * uses it to determine the post slug for a given URL.
 	 *
-	 * Returns the matched RewriteRule object, or FALSE.
+	 * Returns the matched RewriteRule object, or false.
 	 *
 	 * @param string $from_url URL string to parse
-	 * @return RewriteRule matched rule, or FALSE
+	 * @return RewriteRule matched rule, or false
 	 */
 	public static function parse( $from_url )
 	{
@@ -83,14 +93,14 @@ class URL extends Singleton
 		 * but only if the base URL isn't /
 		 */
 		if ( strpos( $from_url, $base_url ) === 0 ) {
-			$from_url = substr( $from_url, strlen( $base_url ) );
+			$from_url = MultiByte::substr( $from_url, MultiByte::strlen( $base_url ) );
 		}
 
 		/* Trim off any leading or trailing slashes */
 		$from_url = trim( $from_url, '/' );
 
 		/* Remove the querystring from the URL */
-		if ( strpos( $from_url, '?' ) !== FALSE ) {
+		if ( MultiByte::strpos( $from_url, '?' ) !== false ) {
 			list( $from_url, )= explode( '?', $from_url );
 		}
 
@@ -110,7 +120,7 @@ class URL extends Singleton
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	/**
@@ -119,11 +129,11 @@ class URL extends Singleton
 	 * values and returns the built URL.
 	 *
 	 * <code>
-	 * 	URL::get( 'display_entries_by_date', array(
-	 * 		'year' => '2000',
-	 *    	'month' => '05',
-	 *    	'day' => '01',
-	 * 	) );
+	 * URL::get( 'display_entries_by_date', array(
+	 * 	'year' => '2000',
+	 * 	'month' => '05',
+	 * 	'day' => '01',
+	 * ) );
 	 * </code>
 	 *
 	 * @param mixed $rule_names string name of the rule or array of rules which would build the URL
@@ -131,7 +141,7 @@ class URL extends Singleton
 	 * @param boolean $useall If true (default), then all passed parameters that are not part of the built URL are tacked onto the URL as querystring
 	 * @param boolean $prepend_site If true (default), a full URL is returned, if false, only the path part of the URL is returned
 	 */
-	public static function get( $rule_names='', $args = array(), $useall = true, $noamp = false, $prepend_site = true )
+	public static function get( $rule_names = '', $args = array(), $useall = true, $noamp = false, $prepend_site = true )
 	{
 		$args = self::extract_args( $args );
 
@@ -199,14 +209,14 @@ class URL extends Singleton
 			$error = new Exception();
 			$error_trace = $error->getTrace();
 			// Since URL::out() calls this function, the index 0 is URL::get() which is not the proper failing call.
-			if ( isset($error_trace[1]['class']) && isset($error_trace[1]['function']) && ($error_trace[1]['class'] == 'URL') && ($error_trace[1]['function'] == 'out') ) {
+			if ( isset( $error_trace[1]['class'] ) && isset( $error_trace[1]['function'] ) && ( $error_trace[1]['class'] == 'URL' ) && ( $error_trace[1]['function'] == 'out' ) ) {
 				$error_args = $error_trace[1];
 			}
 			// When calling URL::get() directly, the index 0 is the proper file and line of the failing call.
 			else {
 				$error_args = $error_trace[0];
 			}
-			EventLog::log( sprintf( _t('Could not find a rule matching the following names: %s. File: %s (line %s)'), implode(', ', $rule_names), $error_args['file'], $error_args['line'] ) , 'notice', 'rewriterules', 'habari' );
+			EventLog::log( sprintf( _t( 'Could not find a rule matching the following names: %s. File: %s (line %s)' ), implode( ', ', $rule_names ), $error_args['file'], $error_args['line'] ), 'notice', 'rewriterules', 'habari' );
 		}
 	}
 
@@ -227,13 +237,17 @@ class URL extends Singleton
 	 *
 	 * @param string $path The filesystem path
 	 * @param bool whether to include a trailing slash.  Default: No
+	 * @param bool whether to leave a filename on the URL.  Default: No
 	 * @return string URL
 	 */
-	public static function get_from_filesystem($path, $trail = false)
+	public static function get_from_filesystem( $path, $trail = false, $preserve_file = false )
 	{
-		$url = Site::get_url('habari') . substr(dirname($path), strlen(HABARI_PATH));
+		if ( !$preserve_file ) {
+			$path = dirname( $path );
+		}
+		$url = Site::get_url( 'habari' ) . MultiByte::substr( $path, MultiByte::strlen( HABARI_PATH ) );
 		// Replace windows paths with forward slashes
-		$url = str_replace( '\\', '/', $url);
+		$url = str_replace( '\\', '/', $url );
 		$url .= ( $trail ) ? '/' : '';
 		return $url;
 	}
@@ -242,7 +256,7 @@ class URL extends Singleton
 	 * Extract the possible arguments to use in the URL from the passed variable
 	 * @param mixed $args An array of values or a URLProperties object with properties to use in the construction of a URL
 	 * @return array Properties to use to construct  a URL
-	 **/
+	 */
 	public static function extract_args( $args, $prefix = '' )
 	{
 		if ( is_object( $args ) ) {

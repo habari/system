@@ -1,5 +1,5 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<div class="installstep locale-dropdown ready done" id="locale">
+<div class="installstep locale-dropdown ready done">
 	<h2><?php _e('Locale'); ?></h2>
 	<div class="options">
 		<form method="post" action="" id="locale-form">

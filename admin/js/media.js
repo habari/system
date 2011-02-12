@@ -80,6 +80,7 @@ habari.media = {
 					output += '<li class="end' + first + '">&nbsp;</li></ul>';
 
 					$('.mediaphotos', container).html(output);
+					habari.media.resize_media_row();
 					$('.media').dblclick(function(){
 						habari.media.insertAsset(this);
 					});
@@ -90,29 +91,42 @@ habari.media = {
 					spinner.stop();
 
 					// When first opened, load the first directory automatically, but only if there are no files in the root
-					if ($('.mediaphotos .media', container).length == 0 && $('.media_dirlevel:first-child li.active', container).length == 0) {
-						$('.media_dirlevel:last-child li:first-child', container).click();
-					}
+//					if ($('.mediaphotos .media', container).length == 0 && $('.media_dirlevel:first-child li.active', container).length == 0) {
+//						$('.media_dirlevel:last-child li:first-child', container).click();
+//					}
 
 					$('.media img').addClass('loading');
 
 					// As each image loads
 					$(".media img").bind('load',function() {
+						var image = $(this);
 						$(this)
 							.removeClass('loading')
-							.siblings('div').width($(this).width()+2)
-						});
+							.siblings('div').width(image.width()+2);
+						window.setTimeout(habari.media.resize_media_row, 50);  // Wow, this sucks.  Who did this?
+					});
 
 					findChildren();
 				}}
 			);
 		}
 	},
+	
+	resize_media_row: function() {
+		var dirswidth = 0;
+		$('.media_dirlevel').each(function(){
+			var maxw = 0;
+			$(this).find('.directory').each(function(){
+				maxw = Math.max(maxw, $(this).outerWidth());
+			});
+			$(this).width(maxw);
+			dirswidth += maxw;
+		});
+		$('.media_row').width(dirswidth + $('.mediaphotos').outerWidth() + 33);
+
+	},
 
 	clickdir: function(el, path) {
-		// Clear current media items
-		$('.mediaphotos').html('<ul><li class="end">&nbsp;</li></ul>')
-
 		// Get new media items
 		this.showdir(path, el);
 
@@ -163,14 +177,14 @@ habari.media = {
 	preview: {
 		_: function(fileindex, fileobj) {
 			var stats = '';
-			return '<div class="mediatitle">' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
+			return '<div class="mediatitle"><a class="mediadelete" title="Delete file" href="#" onclick="habari.media.showpanel(\'' + fileobj.path +'\', \'delete\');return false;">#</a>' + fileobj.title + '</div><img src="' + fileobj.thumbnail_url + '"><div class="mediastats"> ' + stats + '</div>';
 		}
 	},
 
 	output: {
-		image_jpeg: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_gif: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
-		image_png: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '">');}},
+		image_jpeg: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
+		image_gif: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
+		image_png: {insert_image: function(fileindex, fileobj) {habari.editor.insertSelection('<img alt="' + fileobj.title + '" src="' + fileobj.url + '" width="' + fileobj.width + '" height="' + fileobj.height + '">');}},
 		audio_mpeg3: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
 		video_mpeg: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
 		audio_wav: {insert_link: function(fileindex, fileobj) {habari.editor.insertSelection('<a href="' + fileobj.url + '">' + fileobj.title + '</a>');}},
@@ -232,15 +246,15 @@ habari.media = {
 };
 
 $(document).ready(function(){
-	$('#mediatabs').tabs({
+	$('#mediatabs').parent().tabs({
 		fx: { height: 'toggle', opacity: 'toggle' },
-		selected: null,
-		unselect: true,
+		selected: -1,
+		collapsible: true,
 		show: function(){
-			var tabindex = $(this).data('selected.tabs');
+			var tabindex = $(this).tabs( 'option', 'selected' );
 			var tab = $('.mediasplitter').eq(tabindex);
 			var path = $.trim( $('.pathstore', tab).html() );
-			if(path != '') {
+			if (path != '') {
 				habari.media.showdir( path, null, tab );
 				habari.media.unqueueLoad();
 			}

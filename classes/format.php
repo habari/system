@@ -18,55 +18,75 @@ class Format
 	 * Called to register a format function to a plugin hook, only passing the hook's first parameter to the Format function.
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
-	 **/
-	public static function apply($format, $onwhat)
+	 */
+	public static function apply( $format, $onwhat )
 	{
 		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
 		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists($formatobj, $format) ) {
-				$index = array_search($formatobj, self::$formatters);
+			if ( method_exists( $formatobj, $format ) ) {
+				$index = array_search( $formatobj, self::$formatters );
 				$func = '$o = Format::by_index(' . $index . ');return $o->' . $format . '($a';
 				$args = func_get_args();
-				if ( count($args) > 2) {
+				if ( count( $args ) > 2 ) {
 					$func.= ', ';
-					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
-					$func .= implode(', ', $args);
+					$args = array_map( create_function( '$a', 'return "\'{$a}\'";' ), array_slice( $args, 2 ) );
+					$func .= implode( ', ', $args );
 				}
 				$func .= ');';
-				$lambda = create_function('$a', $func);
-				Plugins::register( $lambda, 'filter', $onwhat);
+				$lambda = create_function( '$a', $func );
+				Plugins::register( $lambda, 'filter', $onwhat );
 				break;  // We only look for one matching format function to apply.
 			}
 		}
 	}
 
 	/**
+	 *
+	 *
+	 */
+	public static function apply_with_hook_serialize( $arg )
+	{
+		$arg = serialize( $arg );
+		return "'{$arg}'";
+	}
+
+	public static function apply_with_hook_unserialize( $arg )
+	{
+		$arg = unserialize( $arg );
+		return $arg;
+	}
+
+	/**
 	 * Called to register a format function to a plugin hook, and passes all of the hook's parameters to the Format function.
 	 * @param string $format A function name that exists in a Format class
 	 * @param string $onwhat A plugin hook to apply that Format function to as a filter
-	 **/
-	public static function apply_with_hook_params($format, $onwhat)
+	 */
+	public static function apply_with_hook_params( $format, $onwhat )
 	{
 		if ( self::$formatters == null ) {
 			self::load_all();
 		}
 
 		foreach ( self::$formatters as $formatobj ) {
-			if ( method_exists($formatobj, $format) ) {
-				$index = array_search($formatobj, self::$formatters);
-				$func = '$o= Format::by_index(' . $index . '); $args= func_get_args(); return call_user_func_array(array($o, "' . $format . '"), array_merge($args';
+			if ( method_exists( $formatobj, $format ) ) {
+				$index = array_search( $formatobj, self::$formatters );
+				$func = '$o = Format::by_index(' . $index . ');';
+				$func .= '$args = func_get_args();';
+				$func .= '$args = array_merge( $args';
 				$args = func_get_args();
-				if ( count($args) > 2 ) {
-					$func.= ', array( ';
-					$args = array_map(create_function('$a', 'return "\'{$a}\'";'), array_slice($args, 2));
-					$func .= implode(', ', $args) . ')';
+				if ( count( $args ) > 2 ) {
+
+					$func .= ', array_map( array( "Format", "apply_with_hook_unserialize" ),';
+					$args = array_map( array( "Format", "apply_with_hook_serialize" ), array_slice( $args, 2 ) );
+					$func .= 'array( ' . implode( ', ', $args ) . ' ))';
 				}
-				$func .= '));';
-				$lambda = create_function('$a', $func);
-				Plugins::register( $lambda, 'filter', $onwhat);
+				$func .= ');';
+				$func .= 'return call_user_func_array(array($o, "' . $format . '"), $args);';
+				$lambda = create_function( '$a', $func );
+				Plugins::register( $lambda, 'filter', $onwhat );
 				break;  // We only look for one matching format function to apply.
 			}
 		}
@@ -78,8 +98,8 @@ class Format
 	 * to supply additional parameters to plugin filters.
 	 * @param integer $index The index of the formatter object to return.
 	 * @return Format The formatter object requested
-	 **/
-	public static function by_index($index)
+	 */
+	public static function by_index( $index )
 	{
 		return self::$formatters[$index];
 	}
@@ -87,13 +107,13 @@ class Format
 	/**
 	 * function load_all
 	 * Loads and stores an instance of all declared Format classes for future use
-	 **/
+	 */
 	public static function load_all()
 	{
 		self::$formatters = array();
 		$classes = get_declared_classes();
 		foreach ( $classes as $class ) {
-			if ( ( get_parent_class($class) == 'Format' ) || ( $class == 'Format' ) ) {
+			if ( ( get_parent_class( $class ) == 'Format' ) || ( $class == 'Format' ) ) {
 				self::$formatters[] = new $class();
 			}
 		}
@@ -109,58 +129,104 @@ class Format
 	 * while preserving any internal HTML.
 	 * New lines within the text of block elements are converted to linebreaks.
 	 * New lines before and after tags are stripped.
+	 *
+	 * If you make changes to this, PLEASE add test cases here:
+	 *   http://svn.habariproject.org/habari/trunk/tests/data/autop/
+	 *
 	 * @param string $value The string to apply the formatting
 	 * @returns string The formatted string
-	 **/
-	public static function autop($value)
+	 */
+	public static function autop( $value )
 	{
-		$regex = '/(<\s*(address|code|blockquote|div|h[1-6]|hr|p|pre|ul|ol|dl|table)[^>]*?'.'>.*?<\s*\/\s*\2\s*>)/ism';
+		$value = str_replace( "\r\n", "\n", $value );
+		$value = trim( $value );
+		$ht = new HtmlTokenizer( $value, false );
+		$set = $ht->parse();
+		$value = '';
 
-		// First, clean out any windows line endings
-		$target = str_replace( "\r\n", "\n", $value );
+		// should never autop ANY content in these items
+		$no_auto_p = array(
+			'pre','code','ul','h1','h2','h3','h4','h5','h6',
+			'table','ul','ol','li','i','b','em','strong'
+		);
 
-		// Then, find any of the approved tags above, and split the content on them
-		$cz = preg_split( $regex, $target );
-		preg_match_all( $regex, $target, $cd, PREG_SET_ORDER );
+		$block_elements = array(
+			'address','blockquote','center','dir','div','dl','fieldset','form',
+			'h1','h2','h3','h4','h5','h6','hr','isindex','menu','noframes',
+			'noscript','ol','p','pre','table','ul'
+		);
 
-		/**
-		 * Loop through each content block, turning two newlines in a row into </p><p>'s and
-		 * single newlines into <br>'s
-		 **/
-		$output = '';
-		for($z = 0; $z < count($cz); $z++) {
-			$pblock = preg_replace( '/\n{2,}/', "</p><p>", trim( $cz[$z] ) );
-			$pblock = ( $pblock == '' ) ? '' : "<p>{$pblock}</p>";
+		$token = $set->current();
 
-			$tblock = isset( $cd[$z] ) ? $cd[$z][0] : '';
-			$output .= $pblock . $tblock;
+		// There are no tokens in the text being formatted
+		if ( $token === false ) {
+			return $value;
 		}
 
+		$open_p = false;
+		do {
 
-		$output = preg_replace( '%>\s*\n%i', '>', $output );
-		$output = preg_replace( '%\n\s*<%i', '<', $output );
-		$output = preg_replace( '%\n%i', '<br>', $output );
+			if ( $open_p ) {
+				if ( ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN || $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) && in_array( strtolower( $token['name'] ), $block_elements ) ) {
+					if ( strtolower( $token['name'] ) != 'p' || $token['type'] != HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
+						$value .= '</p>';
+					}
+					$open_p = false;
+				}
+			}
 
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && !in_array( strtolower( $token['name'] ), $block_elements ) && $value == '' ) {
+				// first element, is not a block element
+				$value = '<p>';
+				$open_p = true;
+			}
 
-		/**
-		 * Now filter out any erroneous paragraph or break tags, like ones that would occur in nested lists.
-		 * There may very well be more cases for this: table td's, etc?
-		 **/
-		$cleanNestedRegex = '<\/?\s*(ul|ol|li|dl|dt|dd)[^>]*>';
+			// no-autop, pass them through verbatim
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN && in_array( strtolower( $token['name'] ), $no_auto_p ) ) {
+				$nested_token = $token;
+				do {
+					$value .= HtmlTokenSet::token_to_string( $nested_token, false );
+					if (
+						( $nested_token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE
+							&& strtolower( $nested_token['name'] ) == strtolower( $token['name'] ) ) // found closing element
+					) {
+						break;
+					}
+				} while ( $nested_token = $set->next() );
+				continue;
+			}
 
-		// Filter out paragraph tags
-		$output = preg_replace( "/<p>\s*($cleanNestedRegex)/", "$1", $output );
-		$output = preg_replace( "/($cleanNestedRegex)\s*<\/p>/", "$1", $output );
+			// anything that's not a text node should get passed through
+			if ( $token['type'] != HTMLTokenizer::NODE_TYPE_TEXT ) {
+				$value .= HtmlTokenSet::token_to_string( $token, true );
+				// If the token itself is p, we need to set $open_p
+				if ( strtolower( $token['name'] ) == 'p' && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN ) {
+					$open_p = true;
+				}
+				continue;
+			}
 
-		// Filter out br tags
-		$output = preg_replace( "/($cleanNestedRegex)\s*<br>/", "$1", $output );
-		$output = preg_replace( "/<br>\s*($cleanNestedRegex)/", '$1', $output );
+			// if we get this far, token type is text
+			$local_value = $token['value'];
+			if ( MultiByte::strlen( $local_value ) ) {
+				if ( !$open_p ) {
+					$local_value = '<p>' . ltrim( $local_value );
+					$open_p = true;
+				}
 
-		// Finally, move misplaced p tags to after hr tags
-		$output = preg_replace( '%<p><hr\s*/*\s*>%', "<hr/><p>", $output );
+				$local_value = preg_replace( '/\s*(\n\s*){2,}/u', "</p><p>", $local_value ); // at least two \n in a row (allow whitespace in between)
+				$local_value = str_replace( "\n", "<br>", $local_value ); // nl2br
+			}
+			$value .= $local_value;
+		} while ( $token = $set->next() );
 
-		return trim( $output );
+		$value = preg_replace( '#\s*<p></p>\s*#u', '', $value ); // replace <p></p>
+		$value = preg_replace( '/<p><!--(.*?)--><\/p>/', "<!--\\1-->", $value ); // replace <p></p> around comments
+		if ( $open_p ) {
+			$value .= '</p>';
+		}
 
+		return $value;
 	}
 
 	/**
@@ -170,19 +236,19 @@ class Format
 	 * @param string $between Text to put between each element
 	 * @param string $between_last Text to put between the next-to-last element and the last element
 	 * @reutrn string The constructed string
-	**/
-	public static function and_list( $array, $between = ', ', $between_last = NULL )
+	 */
+	public static function and_list( $array, $between = ', ', $between_last = null )
 	{
 		if ( ! is_array( $array ) ) {
 			$array = array( $array );
 		}
 
-		if ( $between_last === NULL ) {
+		if ( $between_last === null ) {
 			$between_last = _t( ' and ' );
 		}
 
 		$last = array_pop( $array );
-		$out = implode(', ', $array );
+		$out = implode( ', ', $array );
 		$out .= ($out == '') ? $last : $between_last . $last;
 		return $out;
 	}
@@ -195,23 +261,29 @@ class Format
 	 * @param string $between Text to put between each element
 	 * @param string $between_last Text to put between the next to last element and the last element
 	 * @return string HTML links with specified separators.
-	 **/
-	public static function tag_and_list($array, $between = ', ', $between_last = NULL )
+	 */
+	public static function tag_and_list( $terms, $between = ', ', $between_last = null )
 	{
-		if ( ! is_array( $array ) ) {
-			$array = array ( $array );
+		$array = array();
+		if ( !$terms instanceof Terms ) {
+			$terms = new Terms( $terms );
 		}
 
-		if ( $between_last === NULL ) {
-			$between_last = _t(' and ');
+		foreach ( $terms as $term ) {
+			$array[$term->term] = $term->term_display;
 		}
 
-		$fn = create_function('$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";');
-		$array = array_map($fn, $array, array_keys($array));
-		$last = array_pop($array);
-		$out = implode($between, $array);
-		$out .= ($out == '') ? $last : $between_last . $last;
+		if ( $between_last === null ) {
+			$between_last = _t( ' and ' );
+		}
+
+		$fn = create_function( '$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";' );
+		$array = array_map( $fn, $array, array_keys( $array ) );
+		$last = array_pop( $array );
+		$out = implode( $between, $array );
+		$out .= ( $out == '' ) ? $last : $between_last . $last;
 		return $out;
+
 	}
 
 	/**
@@ -226,18 +298,18 @@ class Format
 	 * @param string $format A string with date()-like letters within braces to replace with date components
 	 * @return string The formatted string
 	 */
-	public static function format_date($date, $format)
+	public static function format_date( $date, $format )
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
 		}
-		preg_match_all('%\{(\w)\}%i', $format, $matches);
+		preg_match_all( '%\{(\w)\}%iu', $format, $matches );
 
 		$components = array();
 		foreach ( $matches[1] as $format_component ) {
-			$components['{'.$format_component.'}'] = $date->format($format_component);
+			$components['{'.$format_component.'}'] = $date->format( $format_component );
 		}
-		return strtr($format, $components);
+		return strtr( $format, $components );
 	}
 
 	/**
@@ -246,8 +318,8 @@ class Format
 	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The date formatted as a string
-	 **/
-	public static function nice_date($date, $dateformat = 'F j, Y')
+	 */
+	public static function nice_date( $date, $dateformat = 'F j, Y' )
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
@@ -261,8 +333,8 @@ class Format
 	 * @param HabariDateTime A date as a HabariDateTime object
 	 * @param string A date format string
 	 * @returns string The time formatted as a string
-	 **/
-	public static function nice_time($date, $dateformat = 'H:i:s')
+	 */
+	public static function nice_time( $date, $dateformat = 'H:i:s' )
 	{
 		if ( !( $date instanceOf HabariDateTime ) ) {
 			$date = HabariDateTime::date_create( $date );
@@ -274,74 +346,73 @@ class Format
 	 * Returns a shortened version of whatever is passed in.
 	 * @param string $value A string to shorten
 	 * @param integer $count Maximum words to display [100]
-	 * @param integer $maxparagraphs Maximum paragraphs to display [1]
+	 * @param integer $max_paragraphs Maximum paragraphs to display [1]
 	 * @return string The string, shortened
-	 **/
-	public static function summarize( $text, $count = 100, $maxparagraphs = 1 )
+	 */
+	public static function summarize( $text, $count = 100, $max_paragraphs = 1 )
 	{
-		preg_match_all( '/<script.*?<\/script.*?>/', $text, $scripts );
-		preg_replace( '/<script.*?<\/script.*?>/', '', $text );
+		$ellipsis = '&hellip;';
 
-		$words = preg_split( '/(<(?:\\s|".*?"|[^>])+>|\\s+)/', $text, $count + 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+		$showmore = false;
 
-		$ellipsis = '';
-		if ( count( $words ) > $count * 2 ) {
-			array_pop( $words );
-			$ellipsis = '...';
-		}
-		$output = '';
-
-		$paragraphs = 0;
+		$ht = new HtmlTokenizer($text, false);
+		$set = $ht->parse();
 
 		$stack = array();
-		foreach ( $words as $word ) {
-			if ( preg_match( '/<.*\/\\s*>$/', $word ) ) {
-				// If the tag self-closes, do nothing.
-				$output.= $word;
+		$para = 0;
+		$token = $set->current();
+		$summary = new HTMLTokenSet();
+		$set->rewind();
+		$remaining_words = $count;
+		// $bail lets the loop end naturally and close all open elements without adding new ones.
+		$bail = false;
+		for ( $token = $set->current(); $set->valid(); $token = $set->next() ) {
+			if ( !$bail && $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN ) {
+				$stack[] = $token;
 			}
-			elseif ( preg_match( '/<[\\s\/]+/', $word ) ) {
-				// If the tag ends, pop one off the stack (cheatingly assuming well-formed!)
-				array_pop( $stack );
-				preg_match( '/<\s*\/\s*(\\w+)/', $word, $tagn );
-				switch( $tagn[1] ) {
-				case 'br':
-				case 'p':
-				case 'div':
-				case 'ol':
-				case 'ul':
-					$paragraphs++;
-					if ( $paragraphs >= $maxparagraphs ) {
-						$output.= '...' . $word;
-						$ellipsis = '';
-						break 2;
-					}
+			if ( !$bail ) {
+				switch ( $token['type'] ) {
+					case HTMLTokenizer::NODE_TYPE_TEXT:
+						$words = preg_split( '/(\\s+)/u', $token['value'], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+						// word count is doubled because spaces between words are captured as their own array elements via PREG_SPLIT_DELIM_CAPTURE
+						$words = array_slice( $words, 0, $remaining_words * 2 );
+						$remaining_words -= count( $words ) / 2;
+						$token['value'] = implode( '', $words );
+						if ( $remaining_words <= 0 ) {
+							$token['value'] .= $ellipsis;
+							$summary[] = $token;
+							$bail = true;
+						}
+						else {
+							$summary[] = $token;
+						}
+						break;
+					case HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+						// don't handle this case here
+						break;
+					default:
+						$summary[] = $token;
+						break;
 				}
-				$output.= $word;
 			}
-			elseif ( $word[0] == '<' ) {
-				// If the tag begins, push it on the stack
-				$stack[] = $word;
-				$output .= $word;
+			if ( $token['type'] == HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE ) {
+				do {
+					$end = array_pop( $stack );
+					$end['type'] = HTMLTokenizer::NODE_TYPE_ELEMENT_CLOSE;
+					$end['attrs'] = null;
+					$end['value'] = null;
+					$summary[] = $end;
+				} while ( ( $bail || $end['name'] != $token['name'] ) && count( $stack ) > 0 );
+				if ( count( $stack ) == 0 ) {
+					$para++;
+				}
+				if ( $bail || $para >= $max_paragraphs ) {
+					break;
+				}
 			}
-			else {
-				$output.= $word;
-			}
-		}
-		$output.= $ellipsis;
-
-		if ( count( $stack ) > 0 ) {
-			preg_match( '/<(\\w+)/', $stack[0], $tagn );
-			$stack = array_reverse( $stack );
-			foreach ( $stack as $tag ) {
-				preg_match( '/<(\\w+)/', $tag, $tagn );
-				$output.= '</' . $tagn[1] . '>';
-			}
-		}
-		foreach ( $scripts[0] as $script ) {
-			$output.= $script;
 		}
 
-		return $output;
+		return (string) $summary;
 	}
 
 	/**
@@ -356,31 +427,80 @@ class Format
 	 * @param integer $max_words null or the maximum number of words to use before showing the more link
 	 * @param integer $max_paragraphs null or the maximum number of paragraphs to use before showing the more link
 	 * @return string The post content, suitable for display
-	 **/
-	public static function more($content, $post, $more_text = 'Read More &raquo;', $max_words = null, $max_paragraphs = null)
+	 */
+	public static function more( $content, $post, $properties = array() )
 	{
 		// If the post requested is the post under consideration, always return the full post
-		if ( $post->slug == Controller::get_var('slug') ) {
+		if ( $post->slug == Controller::get_var( 'slug' ) ) {
 			return $content;
 		}
+		elseif ( is_string( $properties ) ) {
+			$args = func_get_args();
+			$more_text = $properties;
+			$max_words = ( isset( $args[3] ) ? $args[3] : null );
+			$max_paragraphs = ( isset( $args[4] ) ? $args[4] : null );
+			$paramstring = "";
+		}
 		else {
-			$matches = preg_split( '/<!--\s*more\s*-->/is', $content, 2, PREG_SPLIT_NO_EMPTY );
-			if ( count($matches) > 1 ) {
-				return reset($matches) . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
+			$paramstring = "";
+			$paramarray = Utils::get_params( $properties );
+
+			$more_text = ( isset( $paramarray['more_text'] ) ? $paramarray['more_text'] : 'Read More' );
+			$max_words = ( isset( $paramarray['max_words'] ) ? $paramarray['max_words'] : null );
+			$max_paragraphs = ( isset( $paramarray['max_paragraphs'] ) ? $paramarray['max_paragraphs'] : null );
+
+			if ( isset( $paramarray['title:before'] ) || isset( $paramarray['title'] ) || isset( $paramarray['title:after'] ) ) {
+				$paramstring .= 'title="';
+
+				if ( isset( $paramarray['title:before'] ) ) {
+					$paramstring .= $paramarray['title:before'];
+				}
+				if ( isset( $paramarray['title'] ) ) {
+					$paramstring .= $post->title;
+				}
+				if ( isset( $paramarray['title:after'] ) ) {
+					$paramstring .= $paramarray['title:after'];
+				}
+				$paramstring .= '" ';
 			}
-			elseif ( isset($max_words) || isset($max_paragraphs) ) {
-				$max_words = empty($max_words) ? 9999999 : intval($max_words);
-				$max_paragraphs = empty($max_paragraphs) ? 9999999 : intval($max_paragraphs);
-				$summary = Format::summarize($content, $max_words, $max_paragraphs);
-				if ( strlen($summary) >= strlen($content) ) {
-					return $content;
+			if ( isset( $paramarray['class'] ) ) {
+				$paramstring .= 'class="' . $paramarray['class'] . '" ';
+			}
+
+		}
+		$matches = preg_split( '/<!--\s*more\s*-->/isu', $content, 2, PREG_SPLIT_NO_EMPTY );
+		if ( count( $matches ) > 1 ) {
+			return ( $more_text != '' ) ? reset( $matches ) . ' <a ' . $paramstring . 'href="' . $post->permalink . '">' . $more_text . '</a>' : reset( $matches );
+		}
+		elseif ( isset( $max_words ) || isset( $max_paragraphs ) ) {
+			$max_words = empty( $max_words ) ? 9999999 : intval( $max_words );
+			$max_paragraphs = empty( $max_paragraphs ) ? 9999999 : intval( $max_paragraphs );
+			$summary = Format::summarize( $content, $max_words, $max_paragraphs );
+			if ( MultiByte::strlen( $summary ) >= MultiByte::strlen( $content ) ) {
+				return $content;
+			}
+			else {
+				if ( strlen( $more_text  ) ) {
+					// Tokenize the summary and link
+					$ht = new HTMLTokenizer( $summary );
+					$summary_set = $ht->parse();
+					$ht = new HTMLTokenizer( '<a ' . $paramstring . ' href="' . $post->permalink . '">' . $more_text . '</a>' );
+					$link_set= $ht->parse();
+					// Find out where to put the link
+					$end = $summary_set->end();
+					$key = $summary_set->key();
+					// Inject the link
+					$summary_set->insert( $link_set, $key );
+
+					return (string)$summary_set;
 				}
 				else {
-					return $summary . ' <a href="' . $post->permalink . '">' . $more_text . '</a>';
+					return $summary;
 				}
 			}
-    }
-    return $content;
+		}
+
+	return $content;
 	}
 
 	/**
@@ -389,7 +509,7 @@ class Format
 	 * @param array $notices a list of success messages
 	 * @param array $errors a list of error messages
 	 * @return string HTML output
-	 **/
+	 */
 	public static function html_messages( $notices, $errors )
 	{
 		$output = '';
@@ -417,20 +537,20 @@ class Format
 	 * @param array $notices a list of success messages
 	 * @param array $errors a list of error messages
 	 * @return string JS output
-	 **/
+	 */
 	public static function humane_messages( $notices, $errors )
 	{
 		$output = '';
 		if ( count( $errors ) ) {
 			foreach ( $errors as $error ) {
-				$error = addslashes($error);
-				$output .= "humanMsg.displayMsg(\"{$error}\");";
+				$error = addslashes( $error );
+				$output .= "human_msg.display_msg(\"{$error}\");";
 			}
 		}
 		if ( count( $notices ) ) {
 			foreach ( $notices as $notice ) {
-				$notice = addslashes($notice);
-				$output .= "humanMsg.displayMsg(\"{$notice}\");";
+				$notice = addslashes( $notice );
+				$output .= "human_msg.display_msg(\"{$notice}\");";
 			}
 		}
 
@@ -443,11 +563,69 @@ class Format
 	 * @param array $notices a list of success messages
 	 * @param array $errors a list of error messages
 	 * @return string JS output
-	 **/
+	 */
 	public static function json_messages( $notices, $errors )
 	{
 		$messages = array_merge( $errors, $notices );
 		return json_encode( $messages );
+	}
+
+	/**
+	 * function term_tree
+	 * Create nested HTML lists from a hierarchical vocabulary.
+	 *
+	 * Turns Terms or an array of terms from a hierarchical vocabulary into a ordered HTML list with list items for each term.
+	 * @param mixed $terms An array of Term objects or a Terms object.
+	 * @param string $tree_name The name of the tree, used for unique node id's
+	 * @param function $display_callback A callback function to apply to earch term as it is displayed.
+	 * @param string $wrapper An sprintf formatted in which to wrap each term.
+	 * @param string $startlist A string to put at the start of the list.
+	 * @param string $endlist A string to put at the end of the list.
+	 * @return string The transformed vocabulary.
+	 */
+	public static function term_tree( $terms, $tree_name, $display_callback = null, $wrapper = '<div>%s</div>', $startlist = '<ol class="tree">', $endlist = '</ol>' )
+	{
+		$out = $startlist;
+		$stack = array();
+		$tree_name = Utils::slugify($tree_name);
+
+		if ( !$terms instanceof Terms ) {
+			$terms = new Terms( $terms );
+		}
+
+		foreach ( $terms as $term ) {
+			if(count($stack)) {
+				if($term->mptt_left - end($stack)->mptt_left == 1) {
+					$out .= $startlist;
+				}
+				while(count($stack) && $term->mptt_left > end($stack)->mptt_right) {
+					$out .= '</li>'. $endlist. "\n";
+					array_pop($stack);
+				}
+			}
+
+			$out .= '<li id="' . $tree_name . '_' . $term->id . '">';
+			if(isset($display_callback)) {
+				$display = call_user_func($display_callback, $term, $wrapper);
+			}
+			else {
+				$display = $term->term_display;
+			}
+			$out .= sprintf( $wrapper, $display );
+			if($term->mptt_right - $term->mptt_left > 1) {
+				$stack[] = $term;
+			}
+			else {
+				$out .= '</li>' ."\n";
+			}
+		}
+		while(count($stack)) {
+			$out .= '</li>' . $endlist . "\n";
+			array_pop($stack);
+		}
+
+		$out .= $endlist;
+		return $out;
 	}
 }
 ?>

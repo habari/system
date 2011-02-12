@@ -13,14 +13,14 @@ class XMLRPCBinary
 {
 	public $data;
 	
-	public function load_from_file($filename)
+	public function load_from_file( $filename )
 	{
-		$this->data = file_get_contents($filename);
+		$this->data = file_get_contents( $filename );
 	}
 	
-	public function __construct($data = null)
+	public function __construct( $data = null )
 	{
-		if(isset($data)) {
+		if ( isset( $data ) ) {
 			$this->data = $data;
 		}
 	}

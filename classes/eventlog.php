@@ -27,7 +27,7 @@ class EventLog extends ArrayObject
 	 */
 	public function __get( $name )
 	{
-		switch( $name ) {
+		switch ( $name ) {
 			case 'onelogentry':
 				return ( count( $this ) == 1 );
 		}
@@ -44,7 +44,7 @@ class EventLog extends ArrayObject
 	public static function register_type( $type = 'default', $module = null )
 	{
 		try {
-			DB::query( 'INSERT INTO {log_types} (module, type) VALUES (?,?)', array( self::get_module($module), $type ) );
+			DB::query( 'INSERT INTO {log_types} (module, type) VALUES (?,?)', array( self::get_module( $module ), $type ) );
 		}
 		catch( Exception $e ) {
 			// Don't really care if there's a duplicate.
@@ -60,8 +60,8 @@ class EventLog extends ArrayObject
 	public static function unregister_type( $type = 'default', $module = null )
 	{
 		$id = DB::get_value( "SELECT id FROM {log_types} WHERE module = ? and type = ?", array( self::get_module( $module ), $type ) );
-		if( $id ) {
-			if( !DB::exists( '{log}', array( 'type_id' => $id ) ) ) {
+		if ( $id ) {
+			if ( !DB::exists( '{log}', array( 'type_id' => $id ) ) ) {
 				DB::delete( '{log_types}', array( 'id' => $id ) );
 			}
 		}
@@ -86,7 +86,7 @@ class EventLog extends ArrayObject
 			'module' => $module,
 			'type' => $type,
 			'data' => $data,
-			'ip' => sprintf("%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
+			'ip' => sprintf( "%u", ip2long( Utils::get_ip() ) ),
 		) );
 		$user = User::identify();
 		if ( $user->loggedin ) {
@@ -130,8 +130,8 @@ class EventLog extends ArrayObject
 		$paramarray = Utils::get_params( $paramarray );
 
 		$select_fields = LogEntry::default_fields();
-		if(!isset($paramarray['return_data'])) {
-			unset($select_fields['data']);
+		if ( !isset( $paramarray['return_data'] ) ) {
+			unset( $select_fields['data'] );
 		}
 		foreach ( $select_fields as $field => $value ) {
 			$select .= ( '' == $select )
@@ -200,6 +200,29 @@ class EventLog extends ArrayObject
 						$params[] = $paramset['type_id'];
 					}
 				}
+				
+				if ( isset( $paramset['module'] ) ) {
+					
+					if ( !is_array( $paramset['module'] ) ) {
+						$paramset['module'] = array( $paramset['module'] );
+					}
+					
+					$where[] = 'type_id IN ( SELECT DISTINCT id FROM {log_types} WHERE module IN ( ' . implode( ', ', array_fill( 0, count( $paramset['module'] ), '?' ) ) . ' ) )';
+					$params = array_merge( $params, $paramset['module'] );
+					
+				}
+				
+				if ( isset( $paramset['type'] ) ) {
+					
+					if ( !is_array( $paramset['type'] ) ) {
+						$paramset['type'] = array( $paramset['type'] );
+					}
+					
+					$where[] = 'type_id IN ( SELECT DISTINCT id FROM {log_types} WHERE type IN ( ' . implode( ', ', array_fill( 0, count( $paramset['type'] ), '?' ) ) . ' ) )';
+					$params = array_merge( $params, $paramset['type'] );
+					
+				}
+				
 				if ( isset( $paramset['ip'] ) ) {
 					$where[] = 'ip = ?';
 					$params[] = $paramset['ip'];
@@ -207,9 +230,9 @@ class EventLog extends ArrayObject
 
 				/* do searching */
 				if ( isset( $paramset['criteria'] ) ) {
-					preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/', $paramset['criteria'], $matches );
+					preg_match_all( '/(?<=")(\w[^"]*)(?=")|([:\w]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						if(preg_match('%^id:(\d+)$%i', $word, $special_crit)) {
+						if ( preg_match( '%^id:(\d+)$%i', $word, $special_crit ) ) {
 							$where[] .= '(id = ?)';
 							$params[] = $special_crit[1];
 						}
@@ -227,32 +250,31 @@ class EventLog extends ArrayObject
 				 * If we've only got the year, get the whole year.
 				 *
 				 * @todo Ensure that we've actually got all the needed parts when we query on them
-				 * @todo Ensure that the value passed in is valid to insert into a SQL date (ie '04' and not '4')
 				 */
 				if ( isset( $paramset['day'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 day' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], $paramset['day'] );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 day' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'], $paramset['day'], $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['month'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 month' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], $paramset['month'], 1 );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 month' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, $paramset['month'], 1, $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 23, 59, 59, $paramset['month'] + 1, 0, $paramset['year'] ) );
 				}
 				elseif ( isset( $paramset['year'] ) ) {
 					$where[] = 'timestamp BETWEEN ? AND ?';
-					$startDate = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
-					$startDate = HabariDateTime::date_create( $startDate );
-					$params[] = $startDate->sql;
-					$params[] = $startDate->modify( '+1 year' )->sql;
+					$start_date = sprintf( '%d-%02d-%02d', $paramset['year'], 1, 1 );
+					$start_date = HabariDateTime::date_create( $start_date );
+					$params[] = $start_date->sql;
+					$params[] = $start_date->modify( '+1 year' )->sql;
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, 0, 1, 1, $paramset['year'] ) );
 					//$params[] = date( 'Y-m-d H:i:s', mktime( 0, 0, -1, 1, 1, $paramset['year'] + 1 ) );
 				}
@@ -286,7 +308,8 @@ class EventLog extends ArrayObject
 			}
 		}
 		// If the month counts are requested, replace the select clause
-		if( isset( $paramset['month_cts'] ) ) {
+		if ( isset( $paramset['month_cts'] ) ) {
+			// @todo shouldn't this hand back to habari to convert to DateTime so it reflects the right timezone?
 			$select = 'MONTH(FROM_UNIXTIME(timestamp)) AS month, YEAR(FROM_UNIXTIME(timestamp)) AS year, COUNT(*) AS ct';
 			$groupby = 'year, month';
 			$orderby = ' ORDER BY year, month';
@@ -302,7 +325,7 @@ class EventLog extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query .= ( ! isset($groupby) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
+		$query .= ( ! isset( $groupby ) || $groupby == '' ) ? '' : ' GROUP BY ' . $groupby;
 		$query .= $orderby . $limit;
 		// Utils::debug( $paramarray, $fetch_fn, $query, $params );
 
@@ -321,6 +344,36 @@ class EventLog extends ArrayObject
 			$return_value->get_param_cache = $paramarray;
 			return $return_value;
 		}
+	}
+	
+	/*
+	 * Trim the EventLog down to the defined number of days to prevent it getting massively large.
+	 */
+	public static function trim()
+	{
+		// allow an option to be set to override the log retention - in days
+		$retention = Options::get( 'log_retention', 14 );		// default to 14 days
+		
+		// make it into the string we'll use
+		$retention = '-' . intval( $retention ) . ' days';
+		
+		// Trim the log table down
+		$date = HabariDateTime::date_create()->modify( $retention );
+		
+		return DB::query( 'DELETE FROM {log} WHERE timestamp < ?', array( $date->sql ) );
+		
+	}
+	
+	public static function purge ()
+	{
+		$result = DB::query( 'DELETE FROM {log}' );
+		
+		if ( $result ) {
+			EventLog::log( _t( 'Logs purged.' ), 'info' );
+		}
+		
+		return $result;
+		
 	}
 
 }

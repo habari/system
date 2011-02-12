@@ -1,6 +1,6 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php if(count($posts) != 0) :
-	foreach($posts as $post) :
+<?php if ( count($posts) != 0 ) :
+	foreach ( $posts as $post ) :
 		$post_permissions = $post->get_access();
 ?>
 <div class="item clear <?php echo $post->statusname; ?>" id="post_<?php echo $post->id; ?>">
@@ -11,7 +11,11 @@
 		</span>
 		<?php } ?>
 		<span class="checkbox title pct30">
-			<a href="<?php echo URL::out('admin', 'page=publish&id=' . $post->id); ?>" class="title" title="<?php _e('Edit \'%s\'', array( htmlspecialchars( $post->title ) ) ) ?>"><?php echo htmlspecialchars( $post->title ); ?></a>
+			<?php if ( ACL::access_check( $post_permissions, 'edit' ) ) { ?>
+				<a href="<?php echo URL::out('admin', 'page=publish&id=' . $post->id); ?>" class="title" title="<?php _e('Edit \'%s\'', array( Utils::htmlspecialchars( $post->title ) ) ) ?>"><?php echo ($post->title == '') ? '&nbsp;' : Utils::htmlspecialchars( $post->title ); ?></a>
+			<?php } else { ?>
+				<?php echo ($post->title == '') ? '&nbsp;' : Utils::htmlspecialchars( $post->title ); ?>
+			<?php } ?>
 		</span>
 		<span class="state pct10"><a href="<?php URL::out('admin', array('page' => 'posts', 'type' => $post->content_type, 'status' => $post->status ) ); ?>" title="<?php _e('Search for other %s items', array( $post->statusname ) ); ?>"><?php echo $post->statusname; ?></a></span>
 		<span class="author pct20"><span class="dim"><?php _e('by'); ?></span> <a href="<?php URL::out('admin', array('page' => 'posts', 'user_id' => $post->user_id, 'type' => $post->content_type, 'status' => 'any') ); ?>" title="<?php _e('Search for other items by %s', array( $post->author->displayname ) ) ?>"><?php echo $post->author->displayname; ?></a></span>
@@ -37,7 +41,7 @@
 	<span class="content" ><?php echo MultiByte::substr( strip_tags( $post->content ), 0, 250); ?>&hellip;</span>
 </div>
 
-<?php 	endforeach;
+<?php endforeach;
 else : ?>
 <div class="message none">
 	<p><?php _e('No posts could be found to match the query criteria.'); ?></p>

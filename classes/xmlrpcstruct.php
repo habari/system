@@ -25,7 +25,7 @@ class XMLRPCStruct
 	 * @param mixed $value The value to set in the property
 	 * @return
 	 */
-	public function __set($name, $value)
+	public function __set( $name, $value )
 	{
 		$this->fields[$name] = $value;
 	}
@@ -37,7 +37,7 @@ class XMLRPCStruct
 	 * @param string $name The name of the property
 	 * @return mixed The value stored for the requested property
 	 */
-	public function __get($name)
+	public function __get( $name )
 	{
 		return $this->fields[$name];
 	}
@@ -47,7 +47,7 @@ class XMLRPCStruct
 	 * @param string $name The name of the parameter
 	 * @return boolean True if the value is set, false if not
 	 */
-	public function __isset($name)
+	public function __isset( $name )
 	{
 		return isset( $this->fields[$name] );
 	}
@@ -59,7 +59,7 @@ class XMLRPCStruct
 	 */
 	public function get_fields()
 	{
-		return array_keys($this->fields);
+		return array_keys( $this->fields );
 	}
 	
 	/**
@@ -67,7 +67,7 @@ class XMLRPCStruct
 	 *
 	 * @param array $fields Default field values to set into properties.
 	 */
-	public function __construct($fields = array())
+	public function __construct( $fields = array() )
 	{
 		$this->fields = $fields;
 	}

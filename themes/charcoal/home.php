@@ -6,14 +6,14 @@
 			<?php if ( sizeof( $posts ) ): ?>
 				<?php $post =reset($posts); ?>
 				<div class="<?php echo $post_class?>">
-				<?php if ( is_array( $post->tags ) ) : ?>
+				<?php if ( count( $post->tags ) ) : ?>
 					<div class="post-tags">
 						<?php echo $post->tags_out;?>
 					</div>
 				<?php endif; ?>
 					<div class="post-title">
 						<h3>
-							<a href="<?php echo $post->permalink; ?>"title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a>
+							<a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?></a>
 						</h3>
 					</div>
 					<div class="post-sup">
@@ -21,7 +21,7 @@
 							<?php $post->pubdate->out(); ?>
 						</span>
 						<span class="post-comments-link">
-							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('%s Comment'), _t('%s Comments') ); ?></a>
+							<a href="<?php echo $post->permalink.'#comment-form'; ?>" title="<?php _e( "Comments on this post" ); ?>"><?php $theme->post_comments_link( $post, _t('No Comments'), _t('Comment'), _t('Comments') ); ?></a>
 						</span>
 						<br class="clear">
 					</div>
@@ -51,7 +51,7 @@
 	<div id="wrapper-bottom">
 		<div id="bottom-primary">
 			<div id="prev-posts">
-			<?php while($post =next($posts)) : ?>
+			<?php while ($post =next($posts)) : ?>
 				<div class="prev-post">
 					<div class="prev-post-title">
 						<h2>

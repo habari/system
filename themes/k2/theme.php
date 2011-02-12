@@ -20,8 +20,6 @@ class MyTheme extends Theme
 	 */
 	public function action_init_theme()
 	{
-// Apply Format::autop() to post content...
-Format::apply( 'autop', 'post_content_out' );
 // Apply Format::autop() to comment content...
 Format::apply( 'autop', 'comment_content_out' );
 // Apply Format::tag_and_list() to post tags...
@@ -49,21 +47,19 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 	 *  template.  So the values here, unless checked, will overwrite any existing
 	 *  values.
 	 */
-	public function add_template_vars()
+	public function action_add_template_vars( $theme, $handler_vars )
 	{
 		//Theme Options
 		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
 		$this->assign( 'show_author' , false ); //Display author in posts
 
+		//Add formcontrol template with input before label
+		$this->add_template( 'k2_text', dirname(__FILE__) . '/formcontrol_text.php' );
 
-		if( !$this->template_engine->assigned( 'pages' ) ) {
-			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published'), 'nolimit' => 1 ) ) );
+
+		if ( !$this->template_engine->assigned( 'pages' ) ) {
+			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => 1 ) ) );
 		}
-		if( !$this->template_engine->assigned( 'page' ) ) {
-			$page = Controller::get_var( 'page' );
-			$this->assign('page', isset( $page ) ? $page : 1 );
-		}
-		parent::add_template_vars();
 
 		if ( User::identify()->loggedin ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
@@ -80,7 +76,7 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		if ( $u = User::get( $comment->email ) ) {
 			$class.= ' byuser comment-author-' . Utils::slugify( $u->displayname );
 		}
-		if( $comment->email == $post->author->email ) {
+		if ( $comment->email == $post->author->email ) {
 			$class.= ' bypostauthor';
 		}
 
@@ -100,6 +96,35 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		}
 
 	}
+	
+	public function theme_menu_empty($theme, $menu)
+	{
+		// Should pass menu name on to Posts::get(array('preset'=>$menu))
+		if ($menu == 'mainmenu') {
+			$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
+			$out = '';
+			foreach( $pages as $page ) {
+				$out .= '<li><a href="' . $page->permalink . '" title="' . $page->title . '">' . $page->title . '</a></li>' . "\n";
+			}
+			return $out;
+		}
+	}
+
+
+	/**
+	 * Customize comment form layout. Needs thorough commenting.
+	 */
+	public function action_form_comment( $form ) { 
+		$form->cf_commenter->caption = '<small><strong>' . _t('Name') . '</strong></small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
+		$form->cf_commenter->template = 'k2_text';
+		$form->cf_email->caption = '<small><strong>' . _t('Mail') . '</strong> ' . _t( '(will not be published)' ) .'</small><span class="required">' . ( Options::get('comments_require_id') == 1 ? ' *' . _t('Required') : '' ) . '</span>';
+		$form->cf_email->template = 'k2_text';
+		$form->cf_url->caption = '<small><strong>' . _t('Website') . '</strong></small>';
+		$form->cf_url->template = 'k2_text';
+	        $form->cf_content->caption = '';
+		$form->cf_submit->caption = _t( 'Submit' );
+	}
+
 }
 
 ?>

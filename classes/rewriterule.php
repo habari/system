@@ -18,9 +18,9 @@ class RewriteRule extends QueryRecord
 	const RULE_PLUGIN = 2;
 	const RULE_CUSTOM = 5;
 
-	public $entire_match = NULL; // Entire matched string from the URL
+	public $entire_match = null; // Entire matched string from the URL
 	public $named_arg_values = array(); // Values of named arguments filled during URL::parse()
-	private $m_named_args = NULL; // Named arguments matches
+	private $m_named_args = null; // Named arguments matches
 
 
 	/**
@@ -68,12 +68,12 @@ class RewriteRule extends QueryRecord
 	 */
 	public function match( $stub )
 	{
-		if( preg_match( $this->parse_regex, $stub, $pattern_matches ) > 0 ) {
+		if ( preg_match( $this->parse_regex, $stub, $pattern_matches ) > 0 ) {
 			$this->entire_match = array_shift( $pattern_matches ); // The entire matched string is returned at index 0
 			$named_args = $this->named_args; // Direct call shows a PHP notice
 
-			if($parameters = unserialize($this->parameters)) {
-				$this->named_arg_values = array_merge($this->named_arg_values, $parameters);
+			if ( $parameters = unserialize( $this->parameters ) ) {
+				$this->named_arg_values = array_merge( $this->named_arg_values, $parameters );
 			}
 
 			foreach ( $named_args as $keys ) {
@@ -84,12 +84,12 @@ class RewriteRule extends QueryRecord
 				}
 			}
 
-			if ( preg_match( '/^\\{\\$(\\w+)\\}$/', $this->action, $matches ) > 0 ) {
+			if ( preg_match( '/^\\{\\$(\\w+)\\}$/u', $this->action, $matches ) > 0 ) {
 				$this->action = $this->named_arg_values[$matches[1]];
 			}
-			
-			if(isset($parameters['require_match'])) {
-				return call_user_func($parameters['require_match'], $this, $stub, $parameters);
+
+			if ( isset( $parameters['require_match'] ) ) {
+				return call_user_func( $parameters['require_match'], $this, $stub, $parameters );
 			}
 
 			return true;
@@ -173,11 +173,11 @@ class RewriteRule extends QueryRecord
 	 */
 	public function __get( $name )
 	{
-		switch( $name ) {
+		switch ( $name ) {
 			case 'named_args':
-				if( empty( $this->m_named_args ) ) {
-					preg_match_all( '/(?<!\()\{\$(\w+?)\}(?!\))/', $this->build_str, $required );
-					preg_match_all( '/(?<=\()[^\(\)]*\{\$(\\w+?)\}[^\(\)]*(?=\))/', $this->build_str, $optional );
+				if ( empty( $this->m_named_args ) ) {
+					preg_match_all( '/(?<!\()\{\$(\w+?)\}(?!\))/u', $this->build_str, $required );
+					preg_match_all( '/(?<=\()[^\(\)]*\{\$(\\w+?)\}[^\(\)]*(?=\))/u', $this->build_str, $optional );
 					$this->m_named_args['required'] = $required[1];
 					$this->m_named_args['optional'] = $optional[1];
 				}
@@ -213,37 +213,37 @@ class RewriteRule extends QueryRecord
 
 	/**
 	 * Create an old-style rewrite rule
-		* @param string $build_str
-		* @param string $handler
-		* @param string $action
+	 * @param string $build_str
+	 * @param string $handler
+	 * @param string $action
 	 * @return RewriteRule The created rule
 	 */
 	public static function create_url_rule( $build_str, $handler, $action )
 	{
-		$arr = split( '/', $build_str );
+		$arr = explode( '/', $build_str );
 
-		$searches = array('/^([^"\']+)$/', '/^["\'](.+)["\']$/');
-		$replacements = array('(?P<\1>.+)', '\1');
+		$searches = array( '/^([^"\']+)$/', '/^["\'](.+)["\']$/' );
+		$replacements = array( '(?P<\1>.+)', '\1' );
 		$re_arr = preg_replace( $searches, $replacements, $arr );
 
-		$searches = array('/^([^"\']+)$/', '/^["\'](.+)["\']$/');
-		$replacements = array('{$\1}', '\1');
+		$searches = array( '/^([^"\']+)$/', '/^["\'](.+)["\']$/' );
+		$replacements = array( '{$\1}', '\1' );
 		$str_arr = preg_replace( $searches, $replacements, $arr );
 
 		$regex = '/^' . implode( '\/', $re_arr ) . '\/?$/i';
 		$build_str = implode( '/', $str_arr );
 
 		return new RewriteRule( array(
-		 'name' => $action,
-		 'parse_regex' => $regex,
-		 'build_str' => $build_str,
-		 'handler' => $handler,
-		 'action' => $action,
-		 'priority' => 1,
-		 'is_active' => 1,
-		 'rule_class' => RewriteRule::RULE_CUSTOM,
-		 'description' => 'Custom old-style rule.',
-		 ) );
+			'name' => $action,
+			'parse_regex' => $regex,
+			'build_str' => $build_str,
+			'handler' => $handler,
+			'action' => $action,
+			'priority' => 1,
+			'is_active' => 1,
+			'rule_class' => RewriteRule::RULE_CUSTOM,
+			'description' => 'Custom old-style rule.',
+		) );
 	}
 
 }

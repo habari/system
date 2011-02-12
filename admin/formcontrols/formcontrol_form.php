@@ -5,10 +5,11 @@
 	action="<?php echo $action; ?>"
 	class="<?php echo $class; ?>"
 	enctype="<?php echo $enctype; ?>"
+	accept-charset="<?php echo $accept_charset; ?>"
 	<?php echo $onsubmit; ?>
 >
-<?php if(isset($message) && $message != ''): ?>
-<p><?php echo $message; ?></p>
+<?php if (isset($message) && $message != ''): ?>
+<div class="form_message"><?php echo $message; ?></div>
 <?php endif; ?>
 <input type="hidden" name="FormUI" value="<?php echo $salted_name; ?>">
 <?php echo $pre_out; ?>

@@ -20,9 +20,9 @@ abstract class InfoRecords implements URLProperties
 	protected $_key_name;
 	// value of the primary key - the master record
 	protected $_key_value;
-	// set to TRUE only when the inforecords have been loaded
-	protected $_loaded = FALSE;
-	
+	// set to true only when the inforecords have been loaded
+	protected $_loaded = false;
+
 	protected $url_args;
 
 	/**
@@ -37,18 +37,18 @@ abstract class InfoRecords implements URLProperties
 	 * @param mixed $key_value (optional) the master record key value (for example, info for post_id = 1 managed by setting this param to 1). Use
 	 *		set_key method if not set here.
 	 **/
-	public function __construct( $table_name, $key_name, $key_value = NULL )
+	public function __construct( $table_name, $key_name, $key_value = null )
 	{
 		$this->_table_name = $table_name;
 		$this->_key_name = $key_name;
 		$this->_key_value = $key_value;
-		$this->_loaded = FALSE;
+		$this->_loaded = false;
 	}
-	
+
 	/**
 	 * Test if the master record value has been set (and thus, safe to set info records).
 	 *
-	 * @return boolean TRUE if master record value has been set already, FALSE otherwise
+	 * @return boolean true if master record value has been set already, false otherwise
 	 **/
 	public function is_key_set()
 	{
@@ -66,44 +66,44 @@ abstract class InfoRecords implements URLProperties
 	{
 		$this->_key_value = $metadata_key;
 	}
-	
+
 	/**
 	 * Populate the internal hashmap with the values from the DB.
 	 */
 	protected function _load()
 	{
-		if ( $this->_loaded == TRUE ) {
+		if ( $this->_loaded == true ) {
 			return;
 		}
 		if ( empty($this->_key_value) ) {
-			$this->_loaded == TRUE;
+			$this->_loaded == true;
 			return;
 		}
-		
+
 		// This InfoRecord is read-only?
-		if(empty($this->_table_name)) {
-			$this->_loaded == TRUE;
+		if ( empty($this->_table_name) ) {
+			$this->_loaded == true;
 			return;
 		}
-		
+
 		$result = DB::get_results( '
 			SELECT name, value, type
 			FROM ' . $this->_table_name . '
 			WHERE ' . $this->_key_name . ' = ?',
 			array( $this->_key_value )
 		);
-		
+
 		foreach ( $result as $result_element ) {
 			// XXX is this logic right?
 			if ( $result_element->type == 1 ) {
-				$this->__inforecord_array[$result_element->name] = array('value'=>unserialize($result_element->value));
+				$this->__inforecord_array[$result_element->name] = array( 'value' => unserialize( $result_element->value ) );
 			}
 			else {
-				$this->__inforecord_array[$result_element->name] = array('value'=>$result_element->value);
+				$this->__inforecord_array[$result_element->name] = array( 'value' => $result_element->value );
 			}
 		}
-		
-		$this->_loaded = TRUE;
+
+		$this->_loaded = true;
 	}
 
 	/**
@@ -137,7 +137,7 @@ abstract class InfoRecords implements URLProperties
 	 * Test for the existence of specified info value
 	 *
 	 * @param string $name Name of the option to set
-	 * @return boolean TRUE if the info option exists, FALSE in all other cases
+	 * @return boolean true if the info option exists, false in all other cases
 	 **/
 	public function __isset ( $name )
 	{
@@ -149,13 +149,13 @@ abstract class InfoRecords implements URLProperties
 	 * Remove an info option; immediately unsets from the storage AND removes from database. Use with caution.
 	 *
 	 * @param string $name Name of the option to unset
-	 * @return boolean TRUE if the option is successfully unset, FALSE otherwise
+	 * @return boolean true if the option is successfully unset, false otherwise
 	 **/
-		public function __unset( $name )
+	public function __unset( $name )
 	{
 		$this->_load();
 		if ( isset( $this->__inforecord_array[$name] ) ) {
-			DB::delete( $this->_table_name, array ( $this->_key_name => $this->_key_value, "name"=> $name ) );
+			DB::delete( $this->_table_name, array ( $this->_key_name => $this->_key_value, "name" => $name ) );
 			unset( $this->__inforecord_array[$name] );
 			return true;
 		}
@@ -174,17 +174,17 @@ abstract class InfoRecords implements URLProperties
 		}
 		return $this->url_args;
 	}
-	
+
 	/**
 	 * Remove all info options. Primarily used when deleting the parent object.
 	 * I.E. when deleting a user, the delete method would call this.
 	 *
-	 * @return boolean TRUE if the options were successfully unset, FALSE otherwise
+	 * @return boolean true if the options were successfully unset, false otherwise
 	 **/
 	public function delete_all()
 	{
 		// This InfoRecord is read-only?
-		if(empty($this->_table_name)) {
+		if ( empty($this->_table_name) ) {
 			return;
 		}
 		$result = DB::query( '
@@ -199,7 +199,7 @@ abstract class InfoRecords implements URLProperties
 		$this->__inforecord_array = array();
 		return true;
 	}
-	
+
 	/**
 	 * Commit all of the changed info options to the database.
 	 * If this function is not called, then the options will not be written.
@@ -217,8 +217,8 @@ abstract class InfoRecords implements URLProperties
 			return true;
 		}
 
-		foreach( (array)$this->__inforecord_array as $name=>$record ) {
-			if( isset( $record['changed'] ) && $record['changed'] ) {
+		foreach ( (array)$this->__inforecord_array as $name=>$record ) {
+			if ( isset( $record['changed'] ) && $record['changed'] ) {
 				$value = $record['value'];
 				if ( is_array( $value ) || is_object( $value ) ) {
 					$result = DB::update(
@@ -226,10 +226,10 @@ abstract class InfoRecords implements URLProperties
 						array(
 							$this->_key_name=>$this->_key_value,
 							'name'=>$name,
-							'value'=>serialize($value),
+							'value'=>serialize( $value ),
 							'type'=>1
 						),
-						array('name'=>$name, $this->_key_name=>$this->_key_value)
+						array( 'name'=>$name, $this->_key_name=>$this->_key_value )
 					);
 				}
 				else {
@@ -244,7 +244,7 @@ abstract class InfoRecords implements URLProperties
 						array('name'=>$name, $this->_key_name=> $this->_key_value)
 					);
 				}
-				
+
 				if ( Error::is_error( $result ) ) {
 					$result->out();
 				}
@@ -253,6 +253,13 @@ abstract class InfoRecords implements URLProperties
 		}
 	}
 	
+	public function count()
+	{
+		$this->_load();
+		return count( $this->__inforecord_array );
+		
+	}
+
 }
 
 ?>

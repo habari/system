@@ -26,14 +26,14 @@ class UserGroups extends ArrayObject
 		$select = '';
 		// what to select -- by default, everything
 		foreach ( UserGroup::default_fields() as $field => $value ) {
-			$select.= ( '' == $select )
+			$select .= ( '' == $select )
 				? "{groups}.$field"
 				: ", {groups}.$field";
 		}
 		// defaults
 		$orderby = 'id ASC';
-		$nolimit = TRUE;
-		
+		$nolimit = true;
+
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );
 
@@ -51,11 +51,11 @@ class UserGroups extends ArrayObject
 			$wheres[] = $paramarray['where'];
 		}
 		else {
-			foreach( $wheresets as $paramset ) {
+			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
 				$where = array();
-				$paramset = array_merge((array) $paramarray, (array) $paramset);
-				
+				$paramset = array_merge( (array) $paramarray, (array) $paramset );
+
 				$default_fields = UserGroup::default_fields();
 				foreach ( UserGroup::default_fields() as $field => $scrap ) {
 					if ( !isset( $paramset[$field] ) ) {
@@ -67,12 +67,12 @@ class UserGroups extends ArrayObject
 								continue;
 							}
 						default:
-							$where[] = "{$field}= ?";
+							$where[] = "{$field} = ?";
 							$params[] = $paramset[$field];
 					}
 				}
-				
-				if(count($where) > 0) {
+
+				if ( count( $where ) > 0 ) {
 					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
@@ -121,7 +121,7 @@ class UserGroups extends ArrayObject
 		}
 		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
 
-		DB::set_fetch_mode(PDO::FETCH_CLASS);
+		DB::set_fetch_mode( PDO::FETCH_CLASS );
 
 		$results = DB::$fetch_fn( $query, $params, 'UserGroup' );
 
@@ -148,7 +148,7 @@ class UserGroups extends ArrayObject
 		$params = array(
 			'orderby' => 'name ASC'
 			);
-			
+
 		return self::get( $params );
 	}
 

@@ -9,7 +9,7 @@
  * from other blogging tools.
  *
  */
-interface importer
+interface Importer
 {
 
 	/**
@@ -17,14 +17,14 @@ interface importer
 	 *
 	 * @return array List of importables.
 	 */
-	public function filter_import_names($import_names);
+	public function filter_import_names( $import_names );
 
 	/**
 	 * Return the page content for a specific stage of the import
 	 *
 	 * @return string Content of import stage
 	 */
-	public function filter_import_stage($stageoutput, $import_name, $stage, $step);
+	public function filter_import_stage( $stageoutput, $import_name, $stage, $step );
 
 }
 

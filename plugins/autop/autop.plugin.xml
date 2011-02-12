@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="plugin">
+	<name>AutoParagraph</name>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	
+	<author url="http://habariproject.org/">The Habari Community</author>
+	
+	<version>0.9</version>
+	<url>http://habariproject.org/</url>
+	<description><![CDATA[Automatically insert HTML paragraph tags and line breaks.]]></description>
+
+	<copyright>2009</copyright>
+	
+	<help>
+		<value><![CDATA[
+			<p>When activated, this plugin modifies the HTML output of the site to include paragraphs and line breaks, where they are placed within post content. It does not modify the original data.</p>
+			<p class="warning"><strong>The changes are not saved to the database.</strong> If you deactivate this plugin, the new formatting will be lost.</p>
+			<h3>Sample Input</h3>
+			<p>When activated, the plugin will convert line breaks in raw post content, such as the following, into paragraphs.</p>
+			<code class="block">This is paragraph one.
+
+This is paragraph two.
+This is the second line of paragraph two.</code>
+			<h3>Sample Output</h3>
+			<p>Raw content, such as that above, will be converted into HTML, similar to the following.</p>
+			<code class="block">&lt;p&gt;This is paragraph one.&lt;/p&gt;
+&lt;p&gt;This is paragraph two.&lt;br&gt;This is the second line of paragraph two.&lt;/p&gt;</code>
+		]]></value>
+	</help>
+	
+</pluggable>

@@ -8,7 +8,7 @@ foreach ($this->engine_vars as $key => $val) {
 	}
 }
 ?>
-<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
+<input type="hidden" name="locale" value="<?php echo Utils::htmlspecialchars($locale); ?>">
 
 <div class="installstep ready">
 	<h2>Config.php<a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
@@ -18,7 +18,7 @@ foreach ($this->engine_vars as $key => $val) {
 			<textarea class="config"><?php echo $file_contents; ?></textarea>
 			<div class="help">
 				<?php _e('<strong>config.php</strong> is a file that tells Habari how to connect to your database. Habari is not able to write this file to your server automatically, so you must create this file yourself to continute the installation.'); ?>
-				<a href="#"><?php _e('Learn More...'); ?></a>
+				<a href="#"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 	</div>

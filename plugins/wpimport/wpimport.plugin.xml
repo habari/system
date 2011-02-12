@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<plugin>
+<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="plugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schemas.habariproject.org/Pluggable-1.3.xsd">
 	<name>WordPress Importer</name>
-	<url>http://habariproject.org/</url>
-	<author>Habari Community</author>
-	<authorurl>http://habariproject.org/</authorurl>
-	<version>1.0</version>
-	<description>Import Wordpress 2.3.1 - 2.6 database.</description>
 	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
-	<copyright>2008</copyright>
-</plugin>
+	<url>http://habariproject.org</url>
+	<author url="http://habariproject.org/">The Habari Community</author>
+	
+	<version>2.0</version>
+	<url>http://habariproject.org/</url>
+	<description><![CDATA[Import a Wordpress 2.3+ database.]]></description>
+
+</pluggable>

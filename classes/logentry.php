@@ -20,9 +20,16 @@ class LogEntry extends QueryRecord
 	 * @final
 	 */
 	private static $severities = array(
-		'any',
-		'none', // should not be used
-		'debug', 'info', 'notice', 'warning', 'err', 'crit', 'alert', 'emerg',
+		0 => 'any',
+		1 => 'none',
+		2 => 'debug',
+		3 => 'info',
+		4 => 'notice',
+		5 => 'warning',
+		6 => 'err',
+		7 => 'crit',
+		8 => 'alert',
+		9 => 'emerg'
 	);
 
 	/**
@@ -40,8 +47,8 @@ class LogEntry extends QueryRecord
 		return array(
 			'id' => 0,
 			'user_id' => 0,
-			'type_id' => NULL,
-			'severity_id' => NULL,
+			'type_id' => null,
+			'severity_id' => null,
 			'message' => '',
 			'data' => '',
 			'timestamp' => HabariDateTime::date_create(),
@@ -101,6 +108,8 @@ class LogEntry extends QueryRecord
 	**/
 	public static function list_severities()
 	{
+		$results = array();
+		
 		foreach ( self::$severities as $id => $name ) {
 			if ( 'none' == $name ) {
 				continue;
@@ -198,6 +207,16 @@ class LogEntry extends QueryRecord
 			unset( $this->fields['module'] );
 			unset( $this->fields['type'] );
 		}
+		
+		// if we're set to only log entries greater than a sertain level, make sure we're that level or higher
+		if ( $this->fields['severity_id'] < Options::get( 'log_min_severity' ) ) {
+			return;
+		}
+		
+		// make sure data is a string and can be stored. lots of times it's convenient to hand in an array of data values
+		if ( is_array( $this->fields['data'] ) || is_object( $this->fields['data'] ) ) {
+			$this->fields['data'] = serialize( $this->fields['data'] );
+		}
 
 		Plugins::filter( 'insert_logentry', $this );
 		parent::insertRecord( DB::table( 'log' ) );
@@ -244,7 +263,8 @@ class LogEntry extends QueryRecord
 	 *
 	 * @return string Human-readable event type
 	 */
-	public function get_event_type() {
+	public function get_event_type()
+	{
 		$type = DB::get_value( 'SELECT type FROM {log_types} WHERE id=' . $this->type_id );
 		return $type ? $type : _t( 'Unknown' );
 	}
@@ -256,7 +276,8 @@ class LogEntry extends QueryRecord
 	 *
 	 * @return string Human-readable event module
 	 */
-	public function get_event_module() {
+	public function get_event_module()
+	{
 		$module = DB::get_value( 'SELECT module FROM {log_types} WHERE id=' . $this->type_id );
 		return $module ? $module : _t( 'Unknown' );
 	}
@@ -268,7 +289,8 @@ class LogEntry extends QueryRecord
 	 *
 	 * @return string Human-readable event severity
 	 */
-	public function get_event_severity() {
+	public function get_event_severity()
+	{
 		return self::severity_name( $this->severity_id );
 	}
 
@@ -306,18 +328,18 @@ class LogEntry extends QueryRecord
 		}
 
 		switch ( $name ) {
-		case 'module':
-			$out = $this->get_event_module();
-			break;
-		case 'type':
-			$out = $this->get_event_type();
-			break;
-		case 'severity':
-			$out = $this->get_event_severity();
-			break;
-		default:
-			$out = parent::__get( $name );
-			break;
+			case 'module':
+				$out = $this->get_event_module();
+				break;
+			case 'type':
+				$out = $this->get_event_type();
+				break;
+			case 'severity':
+				$out = $this->get_event_severity();
+				break;
+			default:
+				$out = parent::__get( $name );
+				break;
 		}
 		$out = Plugins::filter( "logentry_{$name}", $out, $this );
 		if ( $filter ) {
@@ -335,11 +357,11 @@ class LogEntry extends QueryRecord
 	public function __set( $name, $value )
 	{
 		switch ( $name ) {
-		case 'timestamp':
-			if ( !($value instanceOf HabariDateTime) ) {
-				$value = HabariDateTime::date_create($value);
-			}
-			break;
+			case 'timestamp':
+				if ( !( $value instanceOf HabariDateTime ) ) {
+					$value = HabariDateTime::date_create( $value );
+				}
+				break;
 		}
 		return parent::__set( $name, $value );
 	}

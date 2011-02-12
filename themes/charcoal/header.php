@@ -3,7 +3,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title><?php Options::out( 'title' ) ?><?php if($request->display_entry && isset($post)) { echo " :: {$post->title}"; } ?></title>
+	<title><?php Options::out( 'title' ) ?><?php if ($request->display_entry && isset($post)) { echo " :: {$post->title}"; } ?></title>
 	<meta name="generator" content="Habari">
 	<link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="<?php $theme->feed_alternate(); ?>">
 	<link rel="edit" type="application/atom+xml" title="Atom Publishing Protocol" href="<?php URL::out( 'atompub_servicedocument' ); ?>">
@@ -20,7 +20,7 @@
 	<![endif]-->
 	<?php $theme->header(); ?>
 </head>
-<body>
+<body class="<?php $theme->body_class(); ?>">
 	<div id="page-top">
 		<div id="wrapper-top">
 			<div id="top-primary">
@@ -48,7 +48,7 @@
 							<?php if ( $loggedin ) : ?>
 								<a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e( "Admin area" ); ?>"><?php _e( "Admin" ); ?></a>
 							<?php else: ?>
-								<a href="<?php Site::out_url( 'habari' ); ?>/user/login" title="<?php _e( "Login" ); ?>"><?php _e( "Login" ); ?></a>
+								<a href="<?php Site::out_url( 'login' ); ?>" title="<?php _e( "Login" ); ?>"><?php _e( "Login" ); ?></a>
 							</li>
 							<?php endif; ?>
 						<?php endif; ?>

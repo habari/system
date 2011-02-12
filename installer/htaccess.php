@@ -2,7 +2,7 @@
 <?php include( 'header.php' ); ?>
 
 <form action="" method="post">
-<input type="hidden" name="locale" value="<?php echo htmlspecialchars($locale); ?>">
+<input type="hidden" name="locale" value="<?php echo Utils::htmlspecialchars($locale); ?>">
 
 <div class="installstep ready">
 	<h2>.htaccess<a href="#" class="help-me">(<?php _e('help'); ?>)</a></h2>
@@ -12,7 +12,7 @@
 			<textarea class="config" tabindex="<?php echo $tab++ ?>"><?php echo $file_contents; ?></textarea>
 			<div class="help">
 				<?php _e('<strong>.htaccess</strong> is a file that tells your Apache web server to send requests to Habari for handling. Habari is not able to write this file to your server automatically, so you must create this file yourself to continue the installation.'); ?>
-				<a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More...'); ?></a>
+				<a onclick="this.target='_blank';" href="<?php Site::out_url( 'habari' ); ?>/manual/index.html#Installation"><?php _e('Learn More&hellip;'); ?></a>
 			</div>
 		</div>
 	</div>

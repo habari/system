@@ -4,7 +4,7 @@
 	<div class="content">
 	<div id="primary">
 		<div id="primarycontent" class="hfeed">
-		<h2><?php _e('Search results for %s', array( htmlspecialchars( $criteria ) ) ); ?></h2>
+		<h2><?php _e('Search results for %s', array( Utils::htmlspecialchars( $criteria ) ) ); ?></h2>
 <?php foreach ( $posts as $post ) { ?>
 		<div id="post-<?php echo $post->id; ?>" class="<?php echo $post->statusname; ?>">
 
@@ -16,7 +16,7 @@
 <?php if ( $loggedin ) { ?>
 				<span class="entry-edit"><a href="<?php echo $post->editlink; ?>" title="<?php _e('Edit post'); ?>"><?php _e('Edit'); ?></a></span>
 <?php } ?>
-<?php if ( is_array( $post->tags ) ) { ?>
+<?php if ( count( $post->tags ) > 0 ) { ?>
 				<span class="entry-tags"><?php echo $post->tags_out; ?></span>
 <?php } ?>
 			</small>

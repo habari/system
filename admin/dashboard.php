@@ -2,55 +2,66 @@
 <?php include( 'header.php' ); ?>
 
 <div class="container dashboardinfo transparent">
+		<!--[if lte IE 6]>
+		<p><?php
+		
+			$ie6_age = HabariDateTime::difference( 'now', 'August 27, 2001' );
+			
+			echo _t( "Oh, great! You're using IE6! I've finally found someone I can pawn this old betamax player off on!" ) . '<br />';
+			echo _t( "If you're reading this you're surfing using Internet Explorer 6, a browser that is %d %s old and cannot cope with the demands of the modern internet.", array( $ie6_age['y'], _n( 'year', 'years', $ie6_age['y'] ) ) ) . '<br />';
+			echo _t( 'Consider switching to <a href="http://mozilla.com">Mozilla Firefox</a>, <a href="http://www.apple.com/safari/download/">Safari</a>, <a href="http://www.google.com/chrome">Google Chrome</a>, or a more recent version of <a href="http://www.microsoft.com/windows/Internet-explorer/default.aspx">Internet Explorer</a>.' );
+			
+		?></p>
+		<![endif]-->
+
 		<p>
-		<?php
-		$active_msg = array();
-		if ( !empty( $active_time['years'] ) ) {
-			$message = sprintf( _n( '%1$d ' . _t( 'year' ), '%1$d ' . _t( 'years' ), $active_time['years'] ), $active_time['years'] );
-			$active_msg[]= $message;
-		}
-		if ( !empty( $active_time['months'] ) ) {
-			$message = sprintf( _n( '%1$d ' . _t( 'month' ), '%1$d ' . _t( 'months' ), $active_time['months'] ), $active_time['months'] );
-			$active_msg[]= $message;
-		}
-		if ( !empty( $active_time['days'] ) ) {
-			$message = sprintf( _n( '%1$d ' . _t( 'day' ), '%1$d ' . _t( 'days' ), $active_time['days'] ), $active_time['days'] );
-			$active_msg[]= $message;
-		}
-		printf(
-			_t( '%1$s has been active for %2$s'),
-			Options::get('title'),
-			!empty( $active_msg) ? Format::and_list( $active_msg ) : '0 ' . _t( 'days' )
-		);
-		?><br>
+		<?php _e( '%s has been active for %s', array( Options::get('title'), $active_time->friendly( 3, false ) ) ); ?>
+		<br>
 
 		<?php
 		$content_type_msg = array();
+		$user = User::identify();
 		if ( !empty( $stats['page_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'page' ), '%d ' . _t( 'pages' ), $stats['page_count'] ), $stats['page_count'] );
-			$message.= '</a>';
-			$content_type_msg[]= $message;
+			$message = sprintf( _n( '%d page', '%d pages', $stats['page_count'] ), $stats['page_count'] );
+			$perms = array(
+				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'post_page' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+			);
+			if ( $user->can_any( $perms ) ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'published' ) ) ) ) . '">' . $message . '</a>';
+			}
+			$content_type_msg[] = $message;
 		}
 		if ( !empty( $stats['entry_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'entry' ), '%d ' . _t( 'entries' ), $stats['entry_count'] ), $stats['entry_count'] );
-			$message.= '</a>';
-			$content_type_msg[]= $message;
+			$message = sprintf( _n( '%d entry', '%d entries', $stats['entry_count'] ), $stats['entry_count'] );
+			$perms = array(
+				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'post_entry' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+			);
+			if ( $user->can_any( $perms ) ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'published' ) ) ) ) . '">' . $message . '</a>';
+			}
+			$content_type_msg[] = $message;
 		}
 
 		$comment_tag_msg = array();
 		if ( !empty( $stats['comment_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_APPROVED ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'comment' ), '%d ' . _t( 'comments' ), $stats['comment_count'] ), $stats['comment_count'] );
-			$message.= '</a>';
-			$comment_tag_msg[]= $message;
+			$message = sprintf( _n( '%d comment', '%d comments', $stats['comment_count'] ), $stats['comment_count'] );
+			$perms = array( 'manage_all_comments' => true, 'manage_own_post_comments' => true );
+			if ( $user->can_any( $perms ) ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_APPROVED ) ) ) . '">' . $message . '</a>';
+			}
+			$comment_tag_msg[] = $message;
 		}
 		if ( !empty( $stats['tag_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'tags' ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'tag' ), '%d ' . _t( 'tags' ), $stats['tag_count'] ), $stats['tag_count'] );
-			$message.= '</a>';
-			$comment_tag_msg[]= $message;
+			$message = sprintf( _n( '%d tag', '%d tags', $stats['tag_count'] ), $stats['tag_count'] );
+			$perms = array( 'manage_tags' => true );
+			if ( $user->can_any( $perms ) ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'tags' ) ) ) . '">' . $message . '</a>';
+			}
+			$comment_tag_msg[] = $message;
 		}
 		if ( !empty( $content_type_msg ) ) {
 			$status_report = sprintf( _n( '[You] have published %1$s%2$s', 'The [%3$d authors] have published %1$s%2$s', $stats['author_count'] ),
@@ -58,47 +69,71 @@
 				!empty( $comment_tag_msg ) ? _t( ' with ' ) . Format::and_list( $comment_tag_msg ) : "",
 				$stats['author_count'] );
 
-			$status_report = str_replace( array( '[', ']' ),
-				array( '<a href="' . URL::get( 'admin', array('page'=>'users') ) . '">', '</a>' ),
-				$status_report );
-
+			$perms = array( 'manage_users' => true );
+			if ( $user->can_any( $perms ) ) {
+				$status_report = str_replace( array( '[', ']' ),
+					array( '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array('page'=>'users') ) ) . '">', '</a>' ),
+					$status_report );
+			}
+			else {
+				$status_report = str_replace( array( '[', ']' ), array( '', '' ), $status_report );
+			}
 			echo $status_report;
 		}
 		?></p>
 
 		<p><?php
 		$message_bits = array();
+		$user= User::identify();
 		if ( !empty( $stats['entry_draft_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'entry draft' ), '%d ' . _t( 'entry drafts' ), $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
-			$message.= '</a>';
-			$message_bits[]= $message;
+			$message = sprintf( _n( '%d entry draft', '%d entry drafts', $stats['entry_draft_count'] ), $stats['entry_draft_count'] );
+			$perms = array(
+				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'post_entry' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+			);
+			if ( $user->can_any( $perms ) ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'entry' ), 'status' => Post::status( 'draft' ), 'user_id' => $user->id ) ) ) . '">' . $message . '</a>';
+			}
+			$message_bits[] = $message;
 		}
 		if ( !empty( $stats['user_entry_scheduled_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'status' => Post::status( 'scheduled' ) ) ) . '">';
-			$message.= sprintf( _n( '%d scheduled post' , '%d scheduled posts' , $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
-			$message.= '</a>';
-			$message_bits[]= $message;
+			$message = sprintf( _n( '%d scheduled post' , '%d scheduled posts' , $stats['user_entry_scheduled_count'] ), $stats['user_entry_scheduled_count' ] );
+			$perms = array(
+				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'post_entry' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+			);
+			if ( $user->can_any( $perms ) ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'status' => Post::status( 'scheduled' ) ) ) ) . '">' . $message . '</a>';
+			}
+			$message_bits[] = $message;
 		}
 		if ( !empty( $stats['page_draft_count'] ) ) {
-			$message = '<a href="' . URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) . '">';
-			$message.= sprintf( _n( '%d ' . _t( 'page draft' ), '%d ' . _t( 'page drafts' ), $stats['page_draft_count'] ), $stats['page_draft_count'] );
-			$message.= '</a>';
-			$message_bits[]= $message;
+			$message = sprintf( _n( '%d page draft', '%d page drafts', $stats['page_draft_count'] ), $stats['page_draft_count'] );
+			$perms = array(
+				'post_any' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'own_posts' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+				'post_page' => array( ACL::get_bitmask( 'delete' ), ACL::get_bitmask( 'edit' ) ),
+			);
+			if ( $user->can_any( $perms ) ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'posts', 'type' => Post::type( 'page' ), 'status' => Post::status( 'draft' ) ) ) ) . '">' . $message . '</a>';
+			}
+			$message_bits[] = $message;
 		}
-		if ( User::identify()->can_any( array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ) ) {
+		if ( $user->can_any( array( 'manage_all_comments' => true, 'manage_own_post_comments' => true ) ) ) {
 			if ( !empty(  $stats['unapproved_comment_count'] ) ) {
-				$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ) . '">';
-				$message.= sprintf( _n( '%d ' . _t( 'comment awaiting approval' ), '%d ' . _t( 'comments awaiting approval' ), $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
-				$message.= '</a>';
-				$message_bits[]= $message;
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_UNAPPROVED ) ) ) . '">';
+				$message .= sprintf( _n( '%d comment awaiting approval', '%d comments awaiting approval', $stats['unapproved_comment_count'] ), $stats['unapproved_comment_count'] );
+				$message .= '</a>';
+				$message_bits[] = $message;
 			}
 
-			if ( !empty(  $stats['spam_comment_count'] ) && Options::get( 'dashboard__hide_spam_count' ) != true ) {
-				$message = '<a href="' . URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) . '">';
-				$message.= sprintf( _n( '%d ' . _t( 'spam comment awaiting moderation' ), '%d ' . _t( 'spam comments awaiting moderation' ), $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
-				$message.= '</a>';
-				$message_bits[]= $message;
+			if ( !empty(  $stats['spam_comment_count'] ) && User::identify()->info->dashboard_hide_spam_count != true ) {
+				$message = '<a href="' . Utils::htmlspecialchars( URL::get( 'admin', array( 'page' => 'comments', 'status' => Comment::STATUS_SPAM ) ) ) . '">';
+				$message .= sprintf( _n( '%d spam comment awaiting moderation', '%d spam comments awaiting moderation', $stats['spam_comment_count'] ), $stats['spam_comment_count'] );
+				$message .= '</a>';
+				$message_bits[] = $message;
 			}
 		}
 		if ( !empty( $message_bits ) ) {
@@ -107,34 +142,57 @@
 		?></p>
 
 		<?php
+			
+			if ( !empty( $updates ) ) {
+				
+				?>
+				
+					<ul class="updates">
+					
+						<?php
 
-			if ( isset( $updates ) && count( $updates ) > 0 ) {
-
-				foreach ( $updates as $update ) {
-
-					$class = implode( ' ', $update['severity'] );
-
-					if ( in_array( 'critical', $update['severity'] ) ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> is a critical update.' );
-					}
-					elseif ( count( $update['severity'] ) > 1 ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> contains bug fixes and additional features.' );
-					}
-					elseif ( in_array( 'bugfix', $update['severity'] ) ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> contains bug fixes.' );
-					}
-					elseif ( in_array( 'feature', $update['severity'] ) ) {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> contains additional features.' );
-					}
-					else {
-						$update_text = _t( '<a href="%1s">%2s %3s</a> is a new release.' );
-					}
-
-					$update_text = sprintf( $update_text, $update['url'], $update['name'], $update['latest_version'] );
-					echo "<p class='{$class}'>{$update_text}</p>";
-
-				}
-
+							foreach ( $updates as $beacon_id => $beacon ) {
+																
+								$u_strings = array();
+								foreach ( $beacon['updates'] as $u_version => $u ) {
+									
+									if ( !empty( $u['date'] ) ) {
+										$u_title = _t( '%1$s update released on %2$s: %3$s', array( MultiByte::ucfirst( $u['severity'] ), HabariDateTime::date_create( $u['date'] )->format( 'Y-m-d' ), Utils::htmlspecialchars( $u['text'] ) ) );
+									}
+									else {
+										$u_title = _t( '%1$s update: %3$s', array( MultiByte::ucfirst( $u['severity'] ), $u['date'], Utils::htmlspecialchars( $u['text'] ) ) );
+									}
+									
+									if ( !empty( $u['url'] ) ) {
+										$u_string = sprintf( '<a href="%1$s" title="%2$s" class="%3$s">%4$s</a>', $u['url'], $u_title, $u['severity'], $u['version'] );
+									}
+									else {
+										$u_string = sprintf( '<span title="%1$s" class="%2$s">%3$s</span>', $u_title, $u['severity'], $u['version'] );
+									}
+									
+									// add it to the array of updates available for this plugin
+									$u_strings[ $u['version'] ] = $u_string;
+									
+								}
+								
+								$u_strings = Format::and_list( $u_strings );
+								
+								?>
+								
+									<li class="update">
+										<?php echo _t( '%1$s <a href="%2$s">%3$s</a> has the following updates available: %4$s', array( MultiByte::ucfirst( $beacon['type'] ), $beacon['url'], $beacon['name'], $u_strings ) ); ?>
+									</li>
+								
+								<?php
+			
+							}
+							
+						?>
+						
+					</ul>
+					
+				<?php
+				
 			}
 
 		?>
@@ -159,6 +217,7 @@
 
 <div class="container dashboard transparent">
 
+	<?php $theme->area('dashboard'); ?>
 	<?php $theme->display('dashboard_modules'); ?>
 
 </div>

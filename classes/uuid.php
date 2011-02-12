@@ -72,7 +72,7 @@ class UUID
 			if ( 4==$i || 6==$i || 8==$i || 10==$i ) {
 				$uuid_hex.= '-';
 			}
-			$uuid_hex.= sprintf( '%02x' , $this->uuid[$i] );
+			$uuid_hex.= sprintf( '%02x', $this->uuid[$i] );
 		}
 		
 		return $uuid_hex;

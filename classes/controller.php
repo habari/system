@@ -24,7 +24,7 @@ class Controller extends Singleton
 	 */
 	protected static function instance()
 	{
-		return self::getInstanceOf(get_class());
+		return self::getInstanceOf( get_class() );
 	}
 
 	/**
@@ -92,11 +92,12 @@ class Controller extends Singleton
 	 * This includes parameters set on the url, and fields submitted by POST.
 	 * The alternative to this, while possible to write, is just too long.
 	 * @param string $name The name of the variable to return.
+	 * @param mixed $default A default value to return if the variable is not set.
 	 * @return mixed The value of that variable in the handler
 	 */
-	public static function get_var( $name )
+	public static function get_var( $name, $default = null )
 	{
-		return isset( Controller::instance()->handler->handler_vars[ $name ] ) ? Controller::instance()->handler->handler_vars[ $name ] : NULL;
+		return isset( Controller::instance()->handler->handler_vars[ $name ] ) ? Controller::instance()->handler->handler_vars[ $name ] : $default;
 	}
 
 	/**
@@ -110,37 +111,51 @@ class Controller extends Singleton
 		$controller = Controller::instance();
 
 		/* Grab the base URL from the Site class */
-		$controller->base_url = Site::get_path('base', true);
+		$controller->base_url = Site::get_path( 'base', true );
 
 		/* Start with the entire URL coming from web server... */
-		$start_url = ( isset($_SERVER['REQUEST_URI'])
-					? $_SERVER['REQUEST_URI']
-					: $_SERVER['SCRIPT_NAME'] .
-						( isset($_SERVER['PATH_INFO'])
-						? $_SERVER['PATH_INFO']
-						: '') .
-							( (isset($_SERVER['QUERY_STRING']) && ($_SERVER['QUERY_STRING'] != ''))
-							? '?' . $_SERVER['QUERY_STRING']
-							: ''));
+		$start_url = '';
+		
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$start_url = $_SERVER['REQUEST_URI'];
+		}
+		else {
+			$start_url = $_SERVER['SCRIPT_NAME'];
+			
+			if ( isset( $_SERVER['PATH_INFO'] ) ) {
+				$start_url .= $_SERVER['PATH_INFO'];
+			}
+			
+			// the query string is included in REQUEST_URI, we only need to append it if we're building the URI ourselves
+			if ( isset( $_SERVER['QUERY_STRING'] ) && ( $_SERVER['QUERY_STRING'] != '' ) ) {
+				$start_url .= '?' . $_SERVER['QUERY_STRING'];
+			}
+			
+		}
+		
+		
 
 		/* Strip out the base URL from the requested URL */
 		/* but only if the base URL isn't / */
 		if ( '/' != $controller->base_url ) {
-			$start_url = str_replace($controller->base_url, '', $start_url);
+			$start_url = str_replace( $controller->base_url, '', $start_url );
 		}
 
+		// undo &amp;s
+		$start_url = str_replace( '&amp;', '&', $start_url );
+
 		/* Trim off any leading or trailing slashes */
-		$start_url = trim($start_url, '/');
+		$start_url = trim( $start_url, '/' );
 
 		/* Allow plugins to rewrite the stub before it's passed through the rules */
-		$start_url = Plugins::filter('rewrite_request', $start_url);
+		$start_url = Plugins::filter( 'rewrite_request', $start_url );
 
 		$controller->stub = $start_url;
 
 		/* Grab the URL filtering rules from DB */
-		$matched_rule = URL::parse($controller->stub);
+		$matched_rule = URL::parse( $controller->stub );
 
-		if ( $matched_rule === FALSE ) {
+		if ( $matched_rule === false ) {
 			$matched_rule = URL::set_404();
 		}
 
@@ -154,8 +169,8 @@ class Controller extends Singleton
 		}
 
 		/* Also, we musn't forget to add the GET and POST vars into the action's settings array */
-		$handler_vars = new SuperGlobal($controller->handler->handler_vars);
-		$handler_vars = $handler_vars->merge($_GET, $_POST);
+		$handler_vars = new SuperGlobal( $controller->handler->handler_vars );
+		$handler_vars = $handler_vars->merge( $_GET, $_POST );
 		$controller->handler->handler_vars = $handler_vars;
 		return true;
 	}
@@ -166,9 +181,9 @@ class Controller extends Singleton
 	public static function dispatch_request()
 	{
 		/* OK, set the wheels in motion... */
-		Plugins::act('handler_' . Controller::instance()->action, Controller::get_handler_vars());
-		if ( method_exists(Controller::instance()->handler, 'act') ) {
-			Controller::instance()->handler->act(Controller::instance()->action);
+		Plugins::act( 'handler_' . Controller::instance()->action, Controller::get_handler_vars() );
+		if ( method_exists( Controller::instance()->handler, 'act' ) ) {
+			Controller::instance()->handler->act( Controller::instance()->action );
 		}
 	}
 }

@@ -2,35 +2,32 @@
 <div class="textual item"><?php
 $view_url = $comment->post->permalink . '#comment-' . $comment->id;
 
-if($comment->url != ''): 
-	$string = '<a href="%s">Comment</a> by ';
-	$string.= '<a href="%s" title="Visit %s">%s</a> ';
-	$string .= 'posted on <a href="%s" title="View post">%s</a> ';
-	$string .= 'at <strong>%s</strong> ';
-	$string .= 'on <strong>%s</strong>';
-	printf(_t($string),
+if ( $comment->url != '' ):
+	printf( _t( '<a href="%1$s">Comment</a> by ' .
+						'<a href="%2$s" title="Visit %3$s">%3$s</a> ' .
+						'posted on <a href="%4$s" title="View post">%5$s</a> ' .
+						'at <strong>%6$s</strong> ' .
+						'on <strong>%7$s</strong>' ),
 		$view_url,
 		$comment->url,
 		$comment->name,
-		$comment->name,
 		$comment->post->permalink,
 		$comment->post->title,
-		$comment->date->get('H:i'),
-		$comment->date->get('F d, Y')
+		$comment->date->get( HabariDateTime::get_default_time_format() ),
+		$comment->date->get( HabariDateTime::get_default_date_format() )
 	);
 else:
-	$string = '<a href="%s">Comment</a> by ';
-	$string.= '<strong>%s</strong> ';
-	$string .= 'posted on <a href="%s" title="View post">%s</a> ';
-	$string .= 'at <strong>%s</strong> ';
-	$string .= 'on <strong>%s</strong>';
-	printf(_t($string),
+	printf( _t( '<a href="%1$s">Comment</a> by ' .
+						'<strong>%2$s</strong> ' .
+						'posted on <a href="%3$s" title="View post">%4$s</a> ' .
+						'at <strong>%5$s</strong> ' .
+						'on <strong>%6$s</strong>' ),
 		$view_url,
 		$comment->name,
 		$comment->post->permalink,
 		$comment->post->title,
-		$comment->date->get('H:i'),
-		$comment->date->get('F d, Y')
+		$comment->date->get( HabariDateTime::get_default_time_format() ),
+		$comment->date->get( HabariDateTime::get_default_date_format() )
 	);
 endif;
 ?></div>

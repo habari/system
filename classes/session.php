@@ -12,6 +12,13 @@
  */
 class Session
 {
+	/*
+	 * The initial data. Used to determine whether we should write anything.
+	 */
+	private static $initial_data;
+	private static $lifetime;
+
+
 	/**
 	 * Initialize the session handlers
 	 */
@@ -19,10 +26,16 @@ class Session
 	{
 		// If https request only set secure cookie
 		// IIS sets the value of HTTPS to 'off' if not https
-		if ( (defined('FORCE_SECURE_SESSION') && FORCE_SECURE_SESSION == true) ||
-			(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') ) {
-			session_set_cookie_params(null, null, null, true);
+		if ( ( defined( 'FORCE_SECURE_SESSION' ) && FORCE_SECURE_SESSION == true ) ||
+			( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) ) {
+			session_set_cookie_params( null, null, null, true );
 		}
+		
+		// figure out the session lifetime and let plugins change it
+		$lifetime = ini_get( 'session.gc_maxlifetime' );
+		
+		self::$lifetime = Plugins::filter( 'session_lifetime', $lifetime );
+		
 
 		session_set_save_handler(
 			array( 'Session', 'open' ),
@@ -32,9 +45,11 @@ class Session
 			array( 'Session', 'destroy' ),
 			array( 'Session', 'gc' )
 		);
+		// session::write gets called after object destruction, so our class isn't available
+		// fix that by registering it as a shutdown function, before objects are destroyed
 		register_shutdown_function( 'session_write_close' );
 
-		if ( ! isset($_SESSION) ) {
+		if ( ! isset( $_SESSION ) ) {
 			session_start();
 		}
 		return true;
@@ -69,14 +84,14 @@ class Session
 	 */
 	static function read( $session_id )
 	{
-		// for offline testing
-		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		$session = DB::get_row( 'SELECT * FROM {sessions} WHERE token = ?', array( $session_id ) );
 
 		// Verify session exists
 		if ( !$session ) {
+			self::$initial_data = false;
 			return false;
 		}
 
@@ -91,8 +106,8 @@ class Session
 		}
 
 		// Verify expiry
-		if ( HabariDateTime::date_create( time() )->int > $session->expires ) {
-			Session::error( _t('Your session expired.'), 'expired_session' );
+		if ( HabariDateTime::date_create()->int > $session->expires ) {
+			Session::error( _t( 'Your session expired.' ), 'expired_session' );
 			$dodelete = true;
 		}
 
@@ -115,9 +130,17 @@ class Session
 		// Do garbage collection, since PHP is bad at it
 		$probability = ini_get( 'session.gc_probability' );
 		// Allow plugins to control the probability of a gc event, return >=100 to always collect garbage
-		$probability = Plugins::filter( 'gc_probability', ( is_numeric($probability) && $probability > 0 ) ? $probability : 1 );
-		if( rand(1, 100) <= $probability ) {
-			self::gc( ini_get( 'session.gc_maxlifetime' ) );
+		$probability = Plugins::filter( 'session_gc_probability', ( is_numeric( $probability ) && $probability > 0 ) ? $probability : 1 );
+		if ( rand( 1, 100 ) <= $probability ) {
+			self::gc( self::$lifetime );
+		}
+
+		// save the initial data we loaded so we can write only if it's changed
+		self::$initial_data = $session->data;
+		
+		// but if the expiration is close (less than half the session lifetime away), null it out so the session always gets written so we extend the session
+		if ( ( $session->expires - HabariDateTime::date_create()->int ) < ( self::$lifetime / 2 ) ) {
+			self::$initial_data = null;
 		}
 
 		return $session->data;
@@ -131,20 +154,27 @@ class Session
 	 */
 	static function write( $session_id, $data )
 	{
-		// for offline testing
-		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+
+		$remote_address = Utils::get_ip();
 		// not always set, even by real browsers
 		$user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : '';
 
-		// Should we write this data?  Don't bother for search spiders, for example.
-		$dowrite = true;
+		// default to writing the data only if it's changed
+		if ( self::$initial_data !== $data ) {
+			$dowrite = true;
+		}
+		else {
+			$dowrite = false;
+		}
+
+		// but let a plugin make the final decision. we may want to ignore search spiders, for instance
 		$dowrite = Plugins::filter( 'session_write', $dowrite, $session_id, $data );
 
 		if ( $dowrite ) {
 			// DB::update() checks if the record key exists, and inserts if not
 			$record = array(
 				'subnet' => self::get_subnet( $remote_address ),
-				'expires' => HabariDateTime::date_create( time() )->int + ini_get('session.gc_maxlifetime'),
+				'expires' => HabariDateTime::date_create()->int + self::$lifetime,
 				'ua' => $user_agent,
 				'data' => $data,
 			);
@@ -179,7 +209,7 @@ class Session
 	static function gc( $max_lifetime )
 	{
 		$sql = 'DELETE FROM {sessions} WHERE expires < ?';
-		$args = array( HabariDateTime::date_create( time() )->int );
+		$args = array( HabariDateTime::date_create()->int );
 		$sql = Plugins::filter( 'sessions_clean', $sql, 'gc', $args );
 		DB::query( $sql, $args );
 		return true;
@@ -385,8 +415,7 @@ class Session
 	 * Output notice and error messages
 	 *
 	 * @param boolean $clear true to clear the messages from the session upon receipt
-	 * @param boolean $use_humane_msg true to use the humane messages system, false
-	 * to use and unordered list
+	 * @param array $callback a reference to a callback function for formatting the the messages
 	 */
 	static function messages_out( $clear = true, $callback = null )
 	{
@@ -420,21 +449,22 @@ class Session
 		}
 	}
 
-	protected static function get_subnet( $remote_address = '' ) {
+	protected static function get_subnet( $remote_address = '' )
+	{
 
 		$long_addr = ip2long( $remote_address );
 
-		if ( $long_addr >= ip2long('0.0.0.0') && $long_addr <= ip2long('127.255.255.255') ) {
+		if ( $long_addr >= ip2long( '0.0.0.0' ) && $long_addr <= ip2long( '127.255.255.255' ) ) {
 			// class A
-			return sprintf("%u", $long_addr) >> 24;
+			return sprintf( "%u", $long_addr ) >> 24;
 		}
-		else if ( $long_addr >= ip2long('128.0.0.0') && $long_addr <= ip2long('191.255.255.255') ) {
+		else if ( $long_addr >= ip2long( '128.0.0.0' ) && $long_addr <= ip2long( '191.255.255.255' ) ) {
 			// class B
-			return sprintf("%u", $long_addr) >> 16;
+			return sprintf( "%u", $long_addr ) >> 16;
 		}
 		else {
 			// class C, D, or something we missed
-			return sprintf("%u", $long_addr) >> 8;
+			return sprintf( "%u", $long_addr ) >> 8;
 		}
 
 	}

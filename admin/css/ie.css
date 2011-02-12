@@ -7,12 +7,16 @@
  * IE also does not support height: inherit, so we need to explicitly set
  * several heights.
  */
+*+html .timeline {
+	position: static;
+}
 
 .timeline .years {
 	display: block;
 }
 
 .timeline .years .year {
+	position: absolute;
 	display: inline;
 	height: 100%;
 	zoom: 1;
@@ -68,8 +72,4 @@
 *+html .comments .button.delete {
 	margin: -22px 0 6px 0; 
 	float: right;
-}
-
-#menubutton a:first-letter{
-	color: inherit;
 }

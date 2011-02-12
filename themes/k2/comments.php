@@ -40,8 +40,16 @@ else { ?>
 <?php } ?>
 		</ol>
 
-<?php if ( ! $post->info->comments_disabled ) { include_once( 'commentform.php' ); } ?>
+<?php 	if ( ! $post->info->comments_disabled ) { ?>
+		<div class="comments">
+			<h4 id="respond" class="reply"><?php _e('Leave a Reply'); ?></h4>
+<?php	if ( Session::has_messages() ) {
+		Session::messages_out();
+	}
 
+	$post->comment_form()->out();
+} ?>
+</div>
 		<hr>
 
 		</div>

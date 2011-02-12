@@ -19,7 +19,7 @@ abstract class Cache
 	 */
 	public static function __static()
 	{
-		if( !defined( 'CACHE_CLASS' ) ) {
+		if ( !defined( 'CACHE_CLASS' ) ) {
 			define( 'CACHE_CLASS', 'FileCache' );
 		}
 		$cache_class = CACHE_CLASS;
@@ -31,7 +31,7 @@ abstract class Cache
 	 * Is record with $name in the cache?
 	 *
  	 * @param mixed $name name of the cached item or an array of array( string $group, string $name )
-	 * @return boolean TRUE if item is cached, FALSE if not
+	 * @return boolean true if item is cached, false if not
 	 */
 	public static function has( $name )
 	{
@@ -49,15 +49,15 @@ abstract class Cache
 	 * A cache instance implements this function to return whether a named cache exists.
 	 *
 	 * @param string $name The name of the cached item
-	 * @return boolean TRUE if the item is cached, FALSE if not
+	 * @return boolean true if the item is cached, false if not
 	 */
 	abstract protected function _has( $name, $group );
-	
+
 	/**
 	 * Is group in the cache?
 	 *
  	 * @param string $group name of the cached group
-	 * @return boolean TRUE if group is cached, FALSE if not
+	 * @return boolean true if group is cached, false if not
 	 */
 	public static function has_group( $group )
 	{
@@ -68,7 +68,7 @@ abstract class Cache
 	 * A cache instance implements this function to return whether a group exists.
 	 *
 	 * @param string $name The name of the cached group
-	 * @return boolean TRUE if the group is cached, FALSE if not
+	 * @return boolean true if the group is cached, false if not
 	 */
 	abstract protected function _has_group( $group );
 
@@ -76,7 +76,7 @@ abstract class Cache
 	 * Returns the named value from the cache.
 	 *
 	 * @param mixed $name The name of the cached item or an array of array( string $group, string $name )
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	public static function get( $name )
 	{
@@ -94,15 +94,15 @@ abstract class Cache
 	 * A cache instance implements this to return the named value from the cache.
 	 *
 	 * @param string $name The name of the cached item
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	abstract protected function _get( $name, $group );
-	
+
 	/**
 	 * Returns the group from the cache.
 	 *
 	 * @param string $name The name of the cached group
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	public static function get_group( $group )
 	{
@@ -113,7 +113,7 @@ abstract class Cache
 	 * A cache instance implements this to return the group from the cache.
 	 *
 	 * @param string $name The name of the cached group
-	 * @return mixed The item value or NULL if it doesn't exist in cache
+	 * @return mixed The item value or null if it doesn't exist in cache
 	 */
 	abstract protected function _get_group( $group );
 
@@ -124,8 +124,9 @@ abstract class Cache
 	 * @param mixed $name The name of the cached item or an array of array( string $group, string $name )
 	 * @param mixed $value The value to store
 	 * @param integer $expiry Number of second after the call that the cache will expire
+	 * @param boolean $keep If true, retain the cache value even after expiry but report the cache as expired
 	 */
-	public static function set( $name, $value, $expiry = 3600 )
+	public static function set( $name, $value, $expiry = 3600, $keep = false )
 	{
 		if ( is_array( $name ) ) {
 			$array = $name;
@@ -134,7 +135,7 @@ abstract class Cache
 		else {
 			$group = self::$default_group;
 		}
-		self::$instance->_set( $name, $value, $expiry, $group );
+		return self::$instance->_set( $name, $value, $expiry, $group, $keep );
 	}
 
 	/**
@@ -144,7 +145,7 @@ abstract class Cache
 	 * @param mixed $value The value to store
 	 * @param integer $expiry Number of second after the call that the cache will expire
 	 */
-	abstract protected function _set( $name, $value, $expiry, $group );
+	abstract protected function _set( $name, $value, $expiry, $group, $keep );
 
 
 	/**
@@ -172,6 +173,29 @@ abstract class Cache
 	 */
 	abstract protected function _expire( $name, $group );
 
+	/**
+	 * Check if a named value in the cache has expired.
+	 *
+	 * @param mixed $name The name of the cached item or an array of array( string $group, string $name )
+	 */
+	public static function expired( $name )
+	{
+		if ( is_array( $name ) ) {
+			$array = $name;
+			list( $group, $name ) = $array;
+		}
+		else {
+			$group = self::$default_group;
+		}
+		return self::$instance->_expired( $name, $group );
+	}
+
+	/**
+	 * A cache instance implements this to expire the named value from the cache.
+	 *
+	 * @param string $name The name of the cached item
+	 */
+	abstract protected function _expired( $name, $group );
 
 	/**
 	 * Extend the expiration of the named cached value.
@@ -200,6 +224,15 @@ abstract class Cache
 	abstract protected function _extend( $name, $expiry, $group );
 
 	public static function debug() { return self::$instance->debug_data(); }
+
+	/**
+	 * Empty the cache completely
+	 *
+	 */
+	public static function purge()
+	{
+		return self::$instance->_purge();
+	}
 }
 
 ?>

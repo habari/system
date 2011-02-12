@@ -10,23 +10,6 @@ class Pingback extends Plugin
 {
 
 	/**
-	 * Provide plugin info to the system
-	 */
-	public function info()
-	{
-		return array(
-			'name' => 'Pingback',
-			'version' => '1.0.1',
-			'url' => 'http://habariproject.org/',
-			'author' =>	'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Adds support Pingback 1.0 methods to the XML-RPC server.',
-			'copyright' => '2008'
-		);
-	}
-
-	/**
 	 * Register the Pingback event type with the event log
 	 */
 	public function action_plugin_activation( $file )
@@ -107,7 +90,7 @@ class Pingback extends Plugin
 			// This should really be done by an Habari core function
 			$target_parse = InputFilter::parse_url( $target_uri );
 			$target_stub = $target_parse['path'];
-			$base_url = Site::get_path( 'base', TRUE );
+			$base_url = Site::get_path( 'base', true );
 
 			if ( '/' != $base_url) {
 				$target_stub = str_replace( $base_url, '', $target_stub );
@@ -115,21 +98,21 @@ class Pingback extends Plugin
 
 			$target_stub = trim( $target_stub, '/' );
 
-			if ( strpos( $target_stub, '?' ) !== FALSE ) {
+			if ( strpos( $target_stub, '?' ) !== false ) {
 				list( $target_stub, $query_string )= explode( '?', $target_stub );
 			}
 
 			// Can this be used as a target?
 			$target_slug = URL::parse( $target_stub )->named_arg_values['slug'];
 
-			if ( $target_slug === FALSE ) {
+			if ( $target_slug === false ) {
 				throw new XMLRPCException( 33 );
 			}
 
 			// Does the target exist?
 			$target_post = Post::get( array( 'slug' => $target_slug ) );
 
-			if ( $target_post === FALSE ) {
+			if ( $target_post === false ) {
 				throw new XMLRPCException( 32 );
 			}
 
@@ -144,19 +127,28 @@ class Pingback extends Plugin
 			}
 
 			// Retrieve source contents
-			$rr = new RemoteRequest( $source_uri );
-			$rr->execute();
-			if ( ! $rr->executed() ) {
-				throw new XMLRPCException( 16 );
+			try {
+				$rr = new RemoteRequest( $source_uri );
+				$rr->execute();
+				if ( ! $rr->executed() ) {
+					throw new XMLRPCException( 16 );
+				}
+				$source_contents = $rr->get_response_body();
 			}
-			$source_contents = $rr->get_response_body();
+			catch ( XMLRPCException $e ) {
+				// catch our special type of exception and re-throw it
+				throw $e;
+			}
+			catch ( Exception $e ) {
+				throw new XMLRPCException( -32300 );
+			}
 
 			// encoding is converted into internal encoding.
 			// @todo check BOM at beginning of file before checking for a charset attribute
 			$habari_encoding = MultiByte::hab_encoding();
-			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) !== FALSE && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
+			if ( preg_match( "/<meta[^>]+charset=([A-Za-z0-9\-\_]+)/i", $source_contents, $matches ) && strtolower( $habari_encoding ) != strtolower( $matches[1] ) ) {
 				$ret = MultiByte::convert_encoding( $source_contents, $habari_encoding, $matches[1] );
-				if ( $ret !== FALSE ) {
+				if ( $ret !== false ) {
 					$source_contents = $ret;
 				}
 			}
@@ -174,7 +166,7 @@ class Pingback extends Plugin
 			}
 
 			/** Sanitize Data */
-			$source_excerpt = '...' . InputFilter::filter( $source_excerpt[0] ) . '...';
+			$source_excerpt = '&hellip;' . InputFilter::filter( $source_excerpt[0] ) . '&hellip;';
 			$source_title = InputFilter::filter($source_title);
 			$source_uri = InputFilter::filter($source_uri);
 
@@ -209,7 +201,7 @@ class Pingback extends Plugin
 				'name'		=>	$source_title,
 				'email'		=>	'',
 				'url'		=>	$source_uri,
-				'ip'		=>	sprintf( "%u", ip2long( $_SERVER['REMOTE_ADDR'] ) ),
+				'ip'		=>	sprintf( "%u", ip2long( Utils::get_ip() ) ),
 				'content'	=>	$source_excerpt,
 				'status'	=>	Comment::STATUS_UNAPPROVED,
 				'date'		=>	HabariDateTime::date_create(),
@@ -236,9 +228,16 @@ class Pingback extends Plugin
 	public function send_pingback( $source_uri, $target_uri, $post = NULL )
 	{
 		// RemoteRequest makes it easier to retrieve the headers.
-		$rr = new RemoteRequest( $target_uri );
-		$rr->execute();
-		if ( ! $rr->executed() ) {
+		try {
+			$rr = new RemoteRequest( $target_uri );
+			$rr->execute();
+			if ( ! $rr->executed() ) {
+				return false;
+			}
+		}
+		catch ( Exception $e ) {
+			// log the pingback error
+			EventLog::log( _t( 'Unable to retrieve target, can\'t detect pingback endpoint. (Source: %1$s | Target: %2$s)', array( $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
 		}
 
@@ -246,8 +245,8 @@ class Pingback extends Plugin
 		$body = $rr->get_response_body();
 
 		// Find a Pingback endpoint.
-		if ( preg_match( '/^X-Pingback: (\S*)/im', $headers, $matches ) ) {
-			$pingback_endpoint = $matches[1];
+		if ( isset( $headers['X-Pingback'] ) ) {
+			$pingback_endpoint = $headers['X-Pingback'];
 		}
 		elseif ( preg_match( '/<link rel="pingback" href="([^"]+)" ?\/?'.'>/is', $body, $matches ) ) {
 			$pingback_endpoint = $matches[1];
@@ -261,12 +260,12 @@ class Pingback extends Plugin
 			$response = XMLRPCClient::open( $pingback_endpoint )->pingback->ping( $source_uri, $target_uri );
 		}
 		catch ( Exception $e ) {
-			EventLog::log( 'Invalid Pingback endpoint - ' . $pingback_endpoint . '  (Source: ' . $source_uri . ' | Target: ' . $target_uri . ')', 'info', 'Pingback' );
+			EventLog::log( _t( 'Invalid Pingback endpoint - %1$s (Source: %2$s | Target: %3$s)', array( $pingback_endpoint, $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
 		}
 
 		if ( isset( $response->faultString ) ) {
-			EventLog::log( $response->faultCode . ' - ' . $response->faultString . ' (Source: ' . $source_uri . ' | Target: ' . $target_uri . ')', 'info', 'Pingback' );
+			EventLog::log( _t( 'Pingback error: %1$s - %2$s (Source: %3$s | Target: %4$s)', array( $response->faultCode, $response->faultString, $source_uri, $target_uri ) ), 'err', 'Pingback' );
 			return false;
 		}
 		else {
@@ -295,10 +294,10 @@ class Pingback extends Plugin
 	 */
 	public function pingback_all_links( $content, $source_uri, $post = NULL, $force = false )
 	{
-		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>]+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
+		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>"\']+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
 
 		if ( is_object( $post ) && isset( $post->info->pingbacks_successful ) ) {
-			$fn = ( $force === TRUE ) ? 'array_merge' : 'array_diff';
+			$fn = ( $force === true ) ? 'array_merge' : 'array_diff';
 			$links = $fn( $matches[1], $post->info->pingbacks_successful );
 		}
 		else {
@@ -309,7 +308,7 @@ class Pingback extends Plugin
 
 		foreach ( $links as $target_uri ) {
 			if ( $this->send_pingback( $source_uri, $target_uri, $post ) ) {
-				EventLog::log( sprintf( _t( 'Sent pingbacks for "%1$s", target: %2$s' ), $post->title, $target_uri ), 'info', 'Pingback' );
+				EventLog::log( _t( 'Sent pingbacks for "%1$s", target: %2$s', array( $post->title, $target_uri ) ), 'info', 'Pingback' );
 			}
 		}
 	}
@@ -329,5 +328,42 @@ class Pingback extends Plugin
 
 		return $items;
 	}
+	
+	/**
+	 * Returns a full qualified URL of the specified post based on the comments count.
+ 	 *
+	 * Passed strings are localized prior to parsing therefore to localize "%d Comments" in french, it would be "%d Commentaires".
+	 *
+	 * Since we use sprintf() in the final concatenation, you must format passed strings accordingly.
+	 *
+	 * @param Theme $theme The current theme object
+	 * @param Post $post Post object used to build the pingback link
+	 * @param string $zero String to return when there are no pingbacks
+	 * @param string $one String to return when there is one pingback
+	 * @param string $many String to return when there are more than one pingback
+	 * @return string String to display for pingback count
+	 */
+	public function theme_pingback_count( $theme, $post, $zero = '', $one = '', $many = '' )
+	{
+		$count = $post->comments->pingbacks->approved->count;
+		if ( empty( $zero ) ) {
+			$zero = _t( '%d Pingbacks' );
+		}
+		if ( empty( $one ) ) {
+			$one = _t( '%d Pingback' );
+		}
+		if ( empty( $many ) ) {
+			$many = _t( '%d Pingabcks' );
+		}
+
+		if ($count >= 1) {
+			$text = _n( $one, $many, $count );
+		}
+		else {
+			$text = $zero;
+		}
+		return sprintf( $text, $count );
+	}
+	
 }
 ?>

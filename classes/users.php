@@ -18,7 +18,7 @@ class Users extends ArrayObject
 	 *
 	 * @param array $paramarray An associated array of parameters, or a querystring
 	 * @return array An array of User objects, or a single User object, depending on request
-	 **/
+	 */
 	public static function get( $paramarray = array() )
 	{
 		$params = array();
@@ -32,8 +32,8 @@ class Users extends ArrayObject
 		}
 		// defaults
 		$orderby = 'id ASC';
-		$nolimit = TRUE;
-		
+		$nolimit = true;
+
 		// Put incoming parameters into the local scope
 		$paramarray = Utils::get_params( $paramarray );
 
@@ -51,11 +51,11 @@ class Users extends ArrayObject
 			$wheres[] = $paramarray['where'];
 		}
 		else {
-			foreach( $wheresets as $paramset ) {
+			foreach ( $wheresets as $paramset ) {
 				// safety mechanism to prevent empty queries
 				$where = array();
-				$paramset = array_merge((array) $paramarray, (array) $paramset);
-				
+				$paramset = array_merge( (array) $paramarray, (array) $paramset );
+
 				$default_fields = User::default_fields();
 				foreach ( User::default_fields() as $field => $scrap ) {
 					if ( !isset( $paramset[$field] ) ) {
@@ -67,11 +67,11 @@ class Users extends ArrayObject
 								continue;
 							}
 						default:
-							$where[] = "{$field}= ?";
+							$where[] = "{$field} = ?";
 							$params[] = $paramset[$field];
 					}
 				}
-				
+
 				if ( isset( $paramset['info'] ) && is_array( $paramset['info'] ) ) {
 					$join .= 'INNER JOIN {userinfo} ON {users}.id = {userinfo}.user_id';
 					foreach ( $paramset['info'] as $info_name => $info_value ) {
@@ -80,8 +80,8 @@ class Users extends ArrayObject
 						$params[] = $info_value;
 					}
 				}
-				
-				if(count($where) > 0) {
+
+				if ( count( $where ) > 0 ) {
 					$wheres[] = ' (' . implode( ' AND ', $where ) . ') ';
 				}
 			}
@@ -111,6 +111,7 @@ class Users extends ArrayObject
 			$orderby = '';
 		}
 		if ( isset( $limit ) ) {
+			unset( $nolimit );
 			$limit = " LIMIT $limit";
 			if ( isset( $offset ) ) {
 				$limit .= " OFFSET $offset";
@@ -128,11 +129,11 @@ class Users extends ArrayObject
 		if ( count( $wheres ) > 0 ) {
 			$query .= ' WHERE ' . implode( " \nOR\n ", $wheres );
 		}
-		$query .= ( ($orderby == '') ? '' : ' ORDER BY ' . $orderby ) . $limit;
+		$query .= ( ( $orderby == '' ) ? '' : ' ORDER BY ' . $orderby ) . $limit;
 		//Utils::debug($paramarray, $fetch_fn, $query, $params);
 
-		DB::set_fetch_mode(PDO::FETCH_CLASS);
-		DB::set_fetch_class('User');
+		DB::set_fetch_mode( PDO::FETCH_CLASS );
+		DB::set_fetch_class( 'User' );
 		$results = DB::$fetch_fn( $query, $params, 'User' );
 
 		if ( 'get_results' != $fetch_fn ) {
@@ -154,10 +155,10 @@ class Users extends ArrayObject
 	 * @param string|null $value
 	 * @return Users|bool
 	 */
-	public static function get_by_info( $key, $value = NULL )
+	public static function get_by_info( $key, $value = null )
 	{
 		// If no value was specified, check if several info were passed
-		if ( NULL === $value ) {
+		if ( null === $value ) {
 			if ( is_array( $key ) ) {
 				$params['info'] = $key;
 			}
@@ -169,7 +170,7 @@ class Users extends ArrayObject
 		else {
 			$params['info'] = array( $key => $value );
 		}
-		
+
 		return self::get( $params );
 	}
 
@@ -182,8 +183,8 @@ class Users extends ArrayObject
 	{
 		$params = array(
 			'orderby' => 'username ASC'
-			);
-			
+		);
+
 		return self::get( $params );
 	}
 

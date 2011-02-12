@@ -18,8 +18,8 @@ class PluginHandler extends ActionHandler
 	{
 		$this->setup_theme();
 	}
-	
-	
+
+
 	/**
 	 * All handlers must implement act() to conform to handler API.
 	 * This is the default implementation of act(), which attempts
@@ -28,20 +28,20 @@ class PluginHandler extends ActionHandler
 	 *
 	 * @param string $action the action that was in the URL rule
 	 */
-	public function act($action)
+	public function act( $action )
 	{
-		if (null === $this->handler_vars) {
-			$this->handler_vars = new SuperGlobal(array());
+		if ( null === $this->handler_vars ) {
+			$this->handler_vars = new SuperGlobal( array() );
 		}
 		$this->action = $action;
 
-		$this->theme->assign('matched_rule', URL::get_matched_rule());
+		$this->theme->assign( 'matched_rule', URL::get_matched_rule() );
 		$request = new StdClass();
-		foreach(RewriteRules::get_active() as $rule) {
-			$request->{$rule->name}= false;
+		foreach ( URL::get_active_rules() as $rule ) {
+			$request->{$rule->name} = false;
 		}
-		$request->{$this->theme->matched_rule->name}= true;
-		$this->theme->assign('request', $request);
+		$request->{$this->theme->matched_rule->name} = true;
+		$this->theme->assign( 'request', $request );
 
 
 		$action_hook = 'plugin_act_' . $action;

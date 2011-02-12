@@ -42,7 +42,7 @@ class Stack
 	 *
 	 * @param mixed $input An array or ArrayObject to create the stack from.
 	 * @return array The created stack
-	 **/
+	 */
 	private function __construct( $input )
 	{
 		parent::__construct( $input );
@@ -68,7 +68,7 @@ class Stack
 	 *
 	 * @param string $stack_name The name of the stack in which to check.
 	 * @param string $value The value to check for.
-	 * @return boolean TRUE if the item exists, FALSE otherwise.
+	 * @return boolean true if the item exists, false otherwise.
 	 */
 	public static function has ( $stack_name, $value_name )
 	{
@@ -135,15 +135,15 @@ class Stack
 	{
 		$stack = self::get_named_stack( $stack_name );
 		$value_name = $value_name ? $value_name : md5( serialize( $value ) );
-		if ( !is_null($after) ) {
-			if ( !is_array($after) ) {
-				$after = array($after);
+		if ( !is_null( $after ) ) {
+			if ( !is_array( $after ) ) {
+				$after = array( $after );
 			}
-			foreach ($after as $a ) {
-				if ( !isset(self::$stack_sort[$stack_name]) ) {
+			foreach ( $after as $a ) {
+				if ( !isset( self::$stack_sort[$stack_name] ) ) {
 					self::$stack_sort[$stack_name] = array();
 				}
-				if ( !isset(self::$stack_sort[$stack_name][$a]) ) {
+				if ( !isset( self::$stack_sort[$stack_name][$a] ) ) {
 					self::$stack_sort[$stack_name][$a] = array();
 				}
 				self::$stack_sort[$stack_name][$a][$value_name] = $value_name;
@@ -173,21 +173,21 @@ class Stack
 	public static function get_sorted_stack( $stack_name )
 	{
 		self::$sorting = $stack_name;
-		$stack = self::get_named_stack($stack_name);
+		$stack = self::get_named_stack( $stack_name );
 
-		uksort($stack, array('Stack', 'sort_stack_cmp'));
+		uksort( $stack, array( 'Stack', 'sort_stack_cmp' ) );
 		return $stack;
 	}
 
 	public static function sort_stack_cmp( $a, $b )
 	{
-		$aa = isset(self::$stack_sort[self::$sorting][$a]) ? self::$stack_sort[self::$sorting][$a] : array();
-		$ba = isset(self::$stack_sort[self::$sorting][$b]) ? self::$stack_sort[self::$sorting][$b] : array();
-		$acb = isset($aa[$b]);
-		$bca = isset($ba[$a]);
-		$ac = count($aa);
-		$bc = count($ba);
-		if ( ($acb && $bca) || !($acb || $bca) ) {
+		$aa = isset( self::$stack_sort[self::$sorting][$a] ) ? self::$stack_sort[self::$sorting][$a] : array();
+		$ba = isset( self::$stack_sort[self::$sorting][$b] ) ? self::$stack_sort[self::$sorting][$b] : array();
+		$acb = isset( $aa[$b] );
+		$bca = isset( $ba[$a] );
+		$ac = count( $aa );
+		$bc = count( $ba );
+		if ( ( $acb && $bca ) || !( $acb || $bca ) ) {
 			if ( $ac == $bc ) {
 				// they are equal in 'bias', so go with the order in which they were added.
 				return 1;
@@ -207,17 +207,17 @@ class Stack
 	 * @param string $stack_name The name of the stack to output
 	 * @param mixed $format A printf-style formatting string or callback used to output each stack element
 	 **/
-	public static function get( $stack_name, $format = null)
+	public static function get( $stack_name, $format = null )
 	{
 		$out = '';
 		$stack = self::get_sorted_stack( $stack_name );
 		$stack = Plugins::filter( 'stack_out', $stack, $stack_name, $format );
-		foreach( $stack as $element ) {
-			if ( is_callable($format) ) {
+		foreach ( $stack as $element ) {
+			if ( is_callable( $format ) ) {
 				$out.= call_user_func_array( $format, (array) $element );
 			}
 			elseif ( is_string( $format ) ) {
-				$out.= vsprintf( $format, (array) $element );
+				$out .= vsprintf( $format, (array) $element );
 			}
 			else {
 				$out.= $element;
@@ -231,7 +231,7 @@ class Stack
 	 * @param string $stack_name The name of the stack to output
 	 * @param mixed $format A printf-style formatting string or callback used to output each stack element
 	 **/
-	public static function out( $stack_name, $format = null)
+	public static function out( $stack_name, $format = null )
 	{
 		echo self::get( $stack_name, $format );
 	}
@@ -244,11 +244,11 @@ class Stack
 	 */
 	public static function scripts( $element )
 	{
-		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE ) {
-			$output = sprintf( '<script src="%s" type="text/javascript"></script>'."\r\n", $element);
+		if ( ( strpos( $element, 'http://' ) === 0 || strpos( $element, 'https://' ) === 0 ) && strpos( $element, "\n" ) === false ) {
+			$output = sprintf( '<script src="%s" type="text/javascript"></script>'."\r\n", $element );
 		}
 		else {
-			$output = sprintf( '<script type="text/javascript">%s</script>'."\r\n", $element);
+			$output = sprintf( '<script type="text/javascript">%s</script>'."\r\n", $element );
 		}
 		return $output;
 	}
@@ -262,11 +262,11 @@ class Stack
 	 */
 	public static function styles( $element, $typename )
 	{
-		if ( ( strpos($element, 'http://') === 0 || strpos($element, 'https://' ) === 0 ) && strpos($element, "\n") === FALSE ) {
-			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename);
+		if ( ( strpos( $element, 'http://' ) === 0 || strpos( $element, 'https://' ) === 0 ) && strpos( $element, "\n" ) === false ) {
+			$output = sprintf( '<link rel="stylesheet" type="text/css" href="%s" media="%s">'."\r\n", $element, $typename );
 		}
 		else {
-			$output = sprintf( '<style type="text/css" media="%s">%s</style>'."\r\n", $typename, $element);
+			$output = sprintf( '<style type="text/css" media="%s">%s</style>'."\r\n", $typename, $element );
 		}
 		return $output;
 	}

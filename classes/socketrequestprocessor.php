@@ -1,188 +1,111 @@
 <?php
-/**
- * @package Habari
- *
- */
 
-/**
- * RequestProcessor using sockets (fsockopen).
- */
-class SocketRequestProcessor implements RequestProcessor
-{
-	private $response_body = '';
-	private $response_headers = '';
-	private $executed = FALSE;
-	
-	/**
-	 * Maximum number of redirects to follow.
-	 */
-	private $max_redirs = 5;
-	
-	private $redir_count = 0;
-	
-	public function execute( $method, $url, $headers, $body, $timeout )
-	{
-		$result = $this->_request( $method, $url, $headers, $body, $timeout );
+	class SocketRequestProcessor extends RequestProcessor {
 		
-		if ( $result && ! Error::is_error( $result ) ) {
-			list( $response_headers, $response_body )= $result;
-			$this->response_headers = $response_headers;
-			$this->response_body = $response_body;
-			$this->executed = TRUE;
+		public function __construct ( ) {
 			
-			return TRUE;
-		}
-		else {
-			return $result;
-		}
-	}
-	
-	private function _request( $method, $url, $headers, $body, $timeout )
-	{
-		$urlbits = InputFilter::parse_url( $url );
-		
-		return $this->_work( $method, $urlbits, $headers, $body, $timeout );
-	}
-	
-	/**
-	 * @todo Does not honor timeouts on the actual request, only on the connect() call.
-	 */
-	private function _work( $method, $urlbits, $headers, $body, $timeout )
-	{
-		$_errno = 0;
-		$_errstr = '';
-		
-		if ( !isset( $urlbits['port'] ) || $urlbits['port'] == 0 ) {
-			$urlbits['port'] = 80;
+			// see if we can follow Location: headers
+			if ( ini_get( 'safe_mode' ) || ini_get( 'open_basedir' ) ) {
+				$this->can_followlocation = false;
+			}
+			
 		}
 		
-		$fp = @fsockopen( $urlbits['host'], $urlbits['port'], $_errno, $_errstr, $timeout );
-		
-		if ( $fp === FALSE ) {
-			return Error::raise( sprintf( _t('%s: Error %d: %s while connecting to %s:%d'), __CLASS__, $_errno, $_errstr, $urlbits['host'], $urlbits['port'] ),
-				E_USER_WARNING );
-		}
-		
-		// timeout to fsockopen() only applies for connecting
-		stream_set_timeout( $fp, $timeout );
-		
-		// fix headers
-		$headers['Host'] = $urlbits['host'];
-		$headers['Connection'] = 'close';
-		
-		// merge headers into a list
-		$merged_headers = array();
-		foreach ( $headers as $k => $v ) {
-			$merged_headers[] = $k . ': ' . $v;
-		}
-		
-		// build the request
-		$request = array();
-		$resource = $urlbits['path'];
-		if ( isset( $urlbits['query'] ) ) {
-			$resource.= '?' . $urlbits['query'];
-		}
-		
-		$request[] = "{$method} {$resource} HTTP/1.1";
-		$request = array_merge( $request, $merged_headers );
-		
-		$request[] = '';
-		
-		if ( $method === 'POST' ) {
-			$request[] = $body;
-		}
-		
-		$request[] = '';
-		
-		$out = implode( "\r\n", $request );
-		
-		if ( ! fwrite( $fp, $out, strlen( $out ) ) ) {
-			return Error::raise( _t('Error writing to socket.') );
-		}
-		
-		$in = '';
-		
-		while ( ! feof( $fp ) ) {
-			$in.= fgets( $fp, 1024 );
-		}
-		
-		fclose( $fp );
-		
-		list( $header, $body )= explode( "\r\n\r\n", $in );
-		
-		// to make the following REs match $ correctly
-		// and thus not break parse_url
-		$header = str_replace( "\r\n", "\n", $header );
-		
-		preg_match( '|^HTTP/1\.[01] ([1-5][0-9][0-9]) ?(.*)|', $header, $status_matches );
-		
-		if ( $status_matches[1] == '301' || $status_matches[1] == '302' ) {
-			if ( preg_match( '|^Location: (.+)$|mi', $header, $location_matches ) ) {
-				$redirect_url = $location_matches[1];
+		public function execute ( $method, $url, $headers, $body, $config ) {
+			
+			$merged_headers = array();
+			foreach ( $headers as $k => $v ) {
+				$merged_headers[] = $k . ': '. $v;
+			}
+			
+			// parse out the URL so we can refer to individual pieces
+			$url_pieces = InputFilter::parse_url( $url );
+			
+			// set up the options we'll use when creating the request's context
+			$options = array(
+				'http' => array(
+					'method' => $method,
+					'header' => implode( "\n", $merged_headers ),
+					'timeout' => $config['timeout'],
+					'follow_location' => $this->can_followlocation,		// 5.3.4+, should be ignored by others
+					'max_redirects' => $config['max_redirects'],
+
+					// and now for our ssl-specific portions, which will be ignored for non-HTTPS requests
+					'verify_peer' => $config['ssl']['verify_peer'],
+					//'verify_host' => $config['ssl']['verify_host'],	// there doesn't appear to be an equiv of this for sockets - the host is matched by default and you can't just turn that off, only substitute other hostnames
+					'cafile' => $config['ssl']['cafile'],
+					'capath' => $config['ssl']['capath'],
+					'local_cert' => $config['ssl']['local_cert'],
+					'passphrase' => $config['ssl']['passphrase'],
+				),
+			);
+			
+			if ( $method == 'POST' ) {
+				$options['http']['content'] = $body;
+			}
+			
+			
+			if ( $config['proxy']['server'] != '' && !in_array( $url_pieces['host'], $config['proxy']['exceptions'] ) ) {
+				$proxy = $config['proxy']['server'] . ':' . $config['proxy']['port'];
 				
-				$redirect_urlbits = InputFilter::parse_url( $redirect_url );
-				
-				if ( !isset( $redirect_url['host'] ) ) {
-					$redirect_urlbits['host'] = $urlbits['host'];
+				if ( $config['proxy']['username'] != '' ) {
+					$proxy = $config['proxy']['username'] . ':' . $config['proxy']['password'] . '@' . $proxy;
 				}
 				
-				$this->redir_count++;
+				$options['http']['proxy'] = 'tcp://' . $proxy;
+			}
+
+			// create the context
+			$context = stream_context_create( $options );
+			
+			// perform the actual request - we use fopen so stream_get_meta_data works
+			$fh = @fopen( $url, 'r', false, $context );
+			
+			if ( $fh === false ) {
+				throw new Exception( _t( 'Unable to connect to %s', array( $url_pieces['host'] ) ) );
+			}
+			
+			// read in all the contents -- this is the same as file_get_contens, only for a specific stream handle
+			$body = stream_get_contents( $fh );
+			
+			// get meta data
+			$meta = stream_get_meta_data( $fh );
+			
+			// close the connection before we do anything else
+			fclose( $fh );
+			
+			// did we timeout?
+			if ( $meta['timed_out'] == true ) {
+				throw new RemoteRequest_Timeout( _t( 'Request timed out' ) );
+			}
+			
+			
+			// $meta['wrapper_data'] should be a list of the headers, the same as is loaded into $http_response_header
+			$headers = array();
+			foreach ( $meta['wrapper_data'] as $header ) {
 				
-				if ( $this->redir_count > $this->max_redirs ) {
-					return Error::raise( _t('Maximum number of redirections exceeded.') );
+				// break the header up into field and value
+				$pieces = explode( ': ', $header, 2 );
+				
+				if ( count( $pieces ) > 1 ) {
+					// if the header was a key: value format, store it keyed in the array
+					$headers[ $pieces[0] ] = $pieces[1];
+				}
+				else {
+					// some headers (like the HTTP version in use) aren't keyed, so just store it keyed as itself
+					$headers[ $pieces[0] ] = $pieces[0];
 				}
 				
-				return $this->_work( $method, $redirect_urlbits, $headers, $body, $timeout );
 			}
-			else {
-				return Error::raise( _t('Redirection response without Location: header.') );
-			}
-		}
-		
-		if ( preg_match( '|^Transfer-Encoding:.*chunked.*|mi', $header ) ) {
-			$body = $this->_unchunk( $body );
-		}
-		
-		return array( $header, $body );
-	}
-	
-	private function _unchunk( $body )
-	{
-		/* see <http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html> */
-		$result = '';
-		$chunk_size = 0;
-		
-		do {
-			$chunk = explode( "\r\n", $body, 2 );
-			list( $chunk_size_str, )= explode( ';', $chunk[0], 2 );
-			$chunk_size = hexdec( $chunk_size_str );
 			
-			if ( $chunk_size > 0 ) {
-				$result.= substr( $chunk[1], 0, $chunk_size );
-				$body = substr( $chunk[1], $chunk_size+1 );
-			}
-		}
-		while ( $chunk_size > 0 );
-		// this ignores trailing header fields
-		
-		return $result;
-	}
-	
-	public function get_response_body()
-	{
-		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
+			$this->response_headers = $headers;
+			$this->response_body = $body;
+			$this->executed = true;
+			
+			return true;
+			
 		}
 		
-		return $this->response_body;
 	}
-	
-	public function get_response_headers()
-	{
-		if ( ! $this->executed ) {
-			return Error::raise( _t('Request did not yet execute.') );
-		}
-		
-		return $this->response_headers;
-	}
-}
+
+?>

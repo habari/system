@@ -31,7 +31,7 @@ class MediaAsset
 	 * @param boolean $is_dir true if the asset is a directory
 	 * @param array $properties An associative array of property values
 	 */
-	public function __construct($path, $is_dir, $properties = array(), $icon = NULL)
+	public function __construct( $path, $is_dir, $properties = array(), $icon = null )
 	{
 		$this->path = $path;
 		$this->is_dir = $is_dir;
@@ -46,17 +46,17 @@ class MediaAsset
 	 */
 	protected function _get()
 	{
-		if(empty($this->content)) {
-			switch($this->mode) {
+		if ( empty( $this->content ) ) {
+			switch ( $this->mode ) {
 				case self::MODE_DATA:
-					$this->content = Media::get($this->path);
+					$this->content = Media::get( $this->path );
 					break;
 				case self::MODE_FILE:
-					$this->content = file_get_contents($this->filename);
+					$this->content = file_get_contents( $this->filename );
 					break;
 				case self::MODE_STREAM:
-					$this->content = stream_get_contents($this->stream);
-					fclose($this->stream);
+					$this->content = stream_get_contents( $this->stream );
+					fclose( $this->stream );
 					break;
 			}
 		}
@@ -68,7 +68,7 @@ class MediaAsset
 	 *
 	 * @param mixed $content The asset content
 	 */
-	protected function _set($content)
+	protected function _set( $content )
 	{
 		$this->content = $content;
 	}
@@ -78,8 +78,8 @@ class MediaAsset
 		return array_merge(
 			array(
 				'path' => $this->path,
-				'basename' => basename($this->path),
-				'title' => basename($this->path),
+				'basename' => basename( $this->path ),
+				'title' => basename( $this->path ),
 			),
 			$this->props
 		);
@@ -91,9 +91,9 @@ class MediaAsset
 	 * @param string $name The name of the property to retrieve
 	 * @return mixed The value requested
 	 */
-	public function __get($name)
+	public function __get( $name )
 	{
-		switch($name) {
+		switch ( $name ) {
 			case 'content':
 				return $this->_get();
 			case 'is_dir':
@@ -101,7 +101,7 @@ class MediaAsset
 			case 'path':
 				return $this->path;
 			case 'basename':
-				return basename($this->path);
+				return basename( $this->path );
 			default:
 				return $this->props[$name];
 		}
@@ -113,12 +113,12 @@ class MediaAsset
 	 * @param string $name The name of the property to set
 	 * @param mixed $value The value to set
 	 */
-	public function __set($name, $value)
+	public function __set( $name, $value )
 	{
-		switch($name) {
+		switch ( $name ) {
 			case 'content':
 				$this->mode = self::MODE_DATA;
-				return $this->_set($value);
+				return $this->_set( $value );
 			case 'is_dir':
 			case 'path':
 				break;
@@ -147,7 +147,7 @@ class MediaAsset
 	 */
 	public function save( $file )
 	{
-		switch( $this->mode ) {
+		switch ( $this->mode ) {
 			case self::MODE_DATA:
 				return file_put_contents( $file, $this->content ) !== false;
 				break;
@@ -158,7 +158,7 @@ class MediaAsset
 				return copy( $this->filename, $file );
 				break;
 			case self::MODE_STREAM:
-				$dest = fopen( $file, 'w+');
+				$dest = fopen( $file, 'w+' );
 				stream_copy_to_stream( $this->stream, $dest );
 				fclose( $this->stream );
 				return fclose( $dest );
@@ -185,7 +185,7 @@ class MediaAsset
 	 */
 	public function put()
 	{
-		return Media::put($this);
+		return Media::put( $this );
 	}
 
 }

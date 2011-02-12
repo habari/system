@@ -6,9 +6,8 @@
 	#
 	#  Docs: http://wiki.developers.viddler.com/index.php/Phpviddler
 	#
-	#  License(s): Dual licensed under:
+	#  License(s): Licensed under:
 	#  MIT (MIT-LICENSE.txt)
-    #  GPL (GPL-LICENSE.txt)
     #
     #  Third-party code:
     #  XML Library by Keith Devens
@@ -395,7 +394,7 @@ class Phpviddler {
 
 		if ($response['error']) {
 
-			switch($response['error']) {
+			switch ($response['error']) {
 
 				case '1':
 					$errorshort = 'An internal error has occurred.';
@@ -478,7 +477,7 @@ class Phpviddler {
 		foreach ($p as $key => $value) {
 
 			// Skip method request name and submit button
-			switch($key) {
+			switch ($key) {
 				case 'method':
 				case 'submit':
 				case 'MAX_FILE_SIZE':
@@ -489,7 +488,7 @@ class Phpviddler {
 
 		} // end foreach
 
-		switch($return_type) {
+		switch ($return_type) {
 			// If array assume uploading
 			case 'array':
 				$uploadfile = $this->uploaddir . basename($_FILES['file']['name']);
@@ -559,21 +558,6 @@ class ViddlerSilo extends Plugin implements MediaSilo
 
 	protected $cache = array();
 
-	/**
-	* Provide plugin info to the system
-	*/
-	public function info()
-	{
-		return array('name' => 'Viddler Media Silo',
-			'version' => '1.0',
-			'url' => 'http://habariproject.org/',
-			'author' => 'Habari Community',
-			'authorurl' => 'http://habariproject.org/',
-			'license' => 'Apache License 2.0',
-			'description' => 'Implements basic Viddler integration with Habari, allowing you to easily upload videos to your account and insert them into your posts.',
-			'copyright' => '2007',
-			);
-	}
 
 	/*
 	// add a rewrite rule for our auto-generated video page.
@@ -608,7 +592,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_info()
 	{
-		if($this->is_auth()) {
+		if ($this->is_auth()) {
 			return array('name' => self::SILO_NAME, 'icon' => URL::get_from_filesystem(__FILE__) . '/icon.png');
 		}
 		else {
@@ -626,7 +610,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	{
 		$user = User::identify()->info->viddler__username;
 
-		if(Cache::has('viddler:videos:' . $user)) {
+		if (Cache::has('viddler:videos:' . $user)) {
 			$pre = Cache::get('viddler:videos:' . $user);
 		}
 		else {
@@ -677,7 +661,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	{
 		$id = basename($path);
 		$video = $this->cache[$id];
-		if(isset($qualities['size']) && $qualities['size']=='thumbnail') {
+		if (isset($qualities['size']) && $qualities['size']=='thumbnail') {
 			$url = $video->thumbnail_url;
 		}
 		else {
@@ -801,7 +785,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	public function filter_plugin_config( $actions, $plugin_id ) {
 		if ( $plugin_id == $this->plugin_id() ) {
 			$viddler_ok = $this->is_auth();
-			if( $viddler_ok ) {
+			if ( $viddler_ok ) {
 				$actions[]= 'Log Out';
 			} else {
 				$actions[]= 'Log In';
@@ -827,7 +811,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 				$ui->out();
 
 /*
-				if( $this->is_auth() ) {
+				if ( $this->is_auth() ) {
 					$deauth_url= URL::get('admin', array('page' => 'plugins', 'configure' => $this->plugin_id(), 'action' => 'Log Out')) . '#plugin_options';
 					echo "<p>You have successfully logged into Vidder via Habari.</p>";
 					echo "<p>Do you want to <a href=\"{$deauth_url}\">log out</a>?</p>";
@@ -835,7 +819,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 				else {
 					$username = $ui->username->value;
 					$password = $ui->password->value;
-					if($username != '' && $password != '') {
+					if ($username != '' && $password != '') {
 						$auth= $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
 
 						$xml= new SimpleXMLElement( $auth );
@@ -861,12 +845,12 @@ class ViddlerSilo extends Plugin implements MediaSilo
   {
 		$username = $ui->username->value;
 		$password = $ui->password->value;
-		if($username != '' && $password != '') {
+		if ($username != '' && $password != '') {
 			$auth = $this->viddler->user_authenticate( array( 'user' => $username, 'password' => $password ) );
 
 			$xml = new SimpleXMLElement( $auth );
 			$token = (string) $xml->sessionid;
-			if($token == '') {
+			if ($token == '') {
 		  	$ui->set_option('success_message', _t('The username and password you supplied failed to log in to Viddler.'));
 			}
 			else {
@@ -883,7 +867,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 	private function is_auth()
 	{
 		$token = User::identify()->info->viddler__token;
-		if( $token != '' ) {
+		if ( $token != '' ) {
 			return true;
 		} else {
 			return false;
@@ -892,7 +876,7 @@ class ViddlerSilo extends Plugin implements MediaSilo
 
 	public function action_admin_header( $theme )
 	{
-		if(Controller::get_var('page') == 'publish') {
+		if (Controller::get_var('page') == 'publish') {
 			$header = <<< HEADER
 habari.media.output.viddler = {display: function(index, fileobj) {
 	habari.editor.insertSelection( ''+
@@ -937,8 +921,8 @@ HEADER;
 	public function filter_media_controls( $controls, $silo, $path, $panelname )
 	{
 		$class = __CLASS__;
-		if($silo instanceof $class) {
-			if(User::identify()->can('upload_viddler')) {
+		if ($silo instanceof $class) {
+			if (User::identify()->can('upload_viddler')) {
 				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'upload', 'Upload');
 				$controls[] = $this->link_panel(self::SILO_NAME . '/' . $path, 'record', 'Record');
 			}
@@ -960,8 +944,8 @@ HEADER;
 	public function filter_media_panels( $panel, $silo, $path, $panelname)
 	{
 		$class = __CLASS__;
-		if($silo instanceof $class) {
-			switch($panelname) {
+		if ($silo instanceof $class) {
+			switch ($panelname) {
 				case 'record':
 					$user = User::identify()->info->viddler__username;
 					$pass = User::identify()->info->viddler__password;
@@ -973,7 +957,7 @@ HEADER;
 					$panel .= '</div>';
 					break;
 				case 'upload':
-					if(isset($_FILES['file'])) {
+					if (isset($_FILES['file'])) {
 						$size = Utils::human_size($_FILES['file']['size']);
 						$panel .= "<div class=\"span-18\" style=\"padding-top:30px;color: #e0e0e0;margin: 0px auto;\"><p>File Uploaded: {$_FILES['file']['name']} ($size)</p>";
 
@@ -981,7 +965,7 @@ HEADER;
 						$asset = new MediaAsset($path, false);
 						$asset->upload($_FILES['file']);
 
-						if($asset->put()) {
+						if ($asset->put()) {
 							$panel .= '<p>File added successfully.</p>';
 						}
 						else {
@@ -1006,9 +990,9 @@ HEADER;
 <script type="text/javascript">
 var responsedata;
 function simple_uploaded() {
-	if(!$('#simple_upload_frame')[0].contentWindow) return;
+	if (!$('#simple_upload_frame')[0].contentWindow) return;
 	var response = $($('#simple_upload_frame')[0].contentWindow.document.body).text();
-	if(response) {
+	if (response) {
 		eval('responsedata = ' + response);
 		window.setTimeout(simple_uploaded_complete, 500);
 	}

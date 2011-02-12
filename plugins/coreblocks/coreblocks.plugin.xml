@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="plugin">
+	<name>Core Blocks</name>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+
+	<author url="http://habariproject.org/">The Habari Community</author>
+
+	<version>1.0</version>
+	<url>http://habariproject.org/</url>
+	<description><![CDATA[A collection of blocks for your sidebar or other areas.]]></description>
+	<copyright>2011</copyright>
+	<help>
+		<value><![CDATA[<p>After activating this plugin, these block types will be available for you to use and configure in the 'Areas' of the Theme admin page.</p>
+		<ul>
+		<li>Recent Comments</li>
+		<li>Recent Posts</li>
+		<li>Monthly Archives</li>
+		<li>Tag Archives</li>
+		<li>Meta Links</li>
+		<li>Search Form</li>
+		</ul>
+		<p>Each one has a template file you can copy to your theme and customize.</p>]]></value>
+	</help>
+</pluggable>

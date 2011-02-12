@@ -25,8 +25,8 @@ class Modules
 		self::setup_status_module();
 
 		// check if we have orphaned active modules.
-		foreach( self::$active_modules as $id => $module_name ) {
-			if ( ! in_array($module_name, self::$available_modules) ) {
+		foreach ( self::$active_modules as $id => $module_name ) {
+			if ( ! in_array( $module_name, self::$available_modules ) ) {
 				unset( self::$active_modules[$id] );
 				self::commit_active();
 			}
@@ -99,14 +99,14 @@ class Modules
 	 */
 	public static function add( $module_name )
 	{
-		if ( empty( self::$active_modules) ) {
+		if ( empty( self::$active_modules ) ) {
 			$id = '1';
 		}
 		else {
 			// create a unique id for the module
 			$ids = array_keys( self::$active_modules );
 			// convert IDs to integers so we can find the max
-			foreach( $ids as $key => $id ) {
+			foreach ( $ids as $key => $id ) {
 				$ids[$key] = (int) $id;
 			}
 			$id = max( $ids ) + 1;
@@ -136,7 +136,7 @@ class Modules
 	 */
 	public static function remove_by_name( $module_name )
 	{
-		foreach( self::$active_modules as $key => $module ) {
+		foreach ( self::$active_modules as $key => $module ) {
 			if ( $module == $module_name ) {
 				unset( self::$active_modules[$key] );
 			}
@@ -210,18 +210,18 @@ class Modules
 	*/
 	public static function setup_status_module()
 	{
-		if( isset( self::$status_data ) ) {
+		if ( isset( self::$status_data ) ) {
 			return;
 		}
 
-		self::$status_data = Plugins::filter('dashboard_status', array());
+		self::$status_data = Plugins::filter( 'dashboard_status', array() );
 
-		if( count( self::$status_data ) > 0 ) {
-			self::$available_modules['Status'] = _t('System Status');
-			if(array_search(_t('System Status'), self::$active_modules) === false) {
-				self::$active_modules[] = _t('System Status');
+		if ( count( self::$status_data ) > 0 ) {
+			self::$available_modules['Status'] = _t( 'System Status' );
+			if ( array_search( _t( 'System Status' ), self::$active_modules ) === false ) {
+				self::$active_modules[] = _t( 'System Status' );
 			}
-			Plugins::register( array( 'Modules', 'filter_dash_module_status' ), 'filter', 'dash_module_system_status');
+			Plugins::register( array( 'Modules', 'filter_dash_module_status' ), 'filter', 'dash_module_system_status' );
 		}
 	}
 

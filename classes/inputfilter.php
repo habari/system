@@ -109,7 +109,7 @@ class InputFilter
 	 * Protocols that are ok for use in URIs.
 	 */
 	private static $whitelist_protocols = array(
-		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto',
+		'http', 'https', 'ftp', 'mailto', 'irc', 'news', 'nntp', 'callto', 'rtsp', 'mms', 'svn',
 	);
 
 	/**
@@ -149,22 +149,6 @@ class InputFilter
 	);
 	private static $character_entities_re = '';
 
-	private static $scheme_ports = array(
-		'ftp' => 21,
-		'ssh' => 22,
-		'telnet' => 23,
-		'http' => 80,
-		'pop3' => 110,
-		'nntp' => 119,
-		'news' => 119,
-		'irc' => 194,
-		'imap3' => 220,
-		'https' => 443,
-		'nntps' => 563,
-		'imaps' => 993,
-		'pop3s' => 995,
-	);
-
 	/**
 	 * Perform all filtering, return new string.
 	 * @param string $str Input string.
@@ -172,16 +156,24 @@ class InputFilter
 	 */
 	public static function filter( $str )
 	{
-		$str = self::strip_nulls( $str );
-		$str = self::strip_illegal_entities( $str );
-		$str = self::filter_html_elements( $str );
+		if ( !MultiByte::valid_data( $str ) ) {
+			return '';
+		}
+		else {
+			do {
+				$_str = $str;
+				$str = self::strip_nulls( $str );
+				$str = self::strip_illegal_entities( $str );
+				$str = self::filter_html_elements( $str );
+			} while ( $str != $_str );
 
-		return $str;
+			return $str;
+		}
 	}
 
 	public static function strip_nulls( $str )
 	{
-		$str = preg_replace( '/\0+/', '', $str );
+		$str = str_replace( '\0', '', $str );
 
 		return $str;
 	}
@@ -193,7 +185,7 @@ class InputFilter
 	 */
 	public static function _validate_entity( $m )
 	{
-		$is_valid = FALSE;
+		$is_valid = false;
 
 		// valid entity references have the form
 		//   /&named([;<\n\r])/
@@ -267,81 +259,44 @@ class InputFilter
 			'query' => '',
 			'fragment' => '',
 			//
-			'is_relative' => FALSE,
-			'is_pseudo' => FALSE,
-			'is_error' => TRUE,
+			'is_relative' => false,
+			'is_pseudo' => false,
+			'is_error' => false,
 			//
 			'pseudo_args' => '',
 		);
 
-		// TODO normalize etc., make re tighter (ips)
-		$re = '@^' // delimiter + anchor
-			// scheme, address, port are optional for relative urls ...
-			. '(?:'
-				// scheme
-				. '(?P<scheme>[a-zA-Z][^:]*):(//)?'
-				// real protocols
-				. '(?P<full_address>(?:'
-					// optional userinfo
-					. '(?:'
-						// username
-						. '(?P<user>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;&=+$,])+)'
-						// password
-						. ':(?P<pass>(?:[a-zA-Z0-9_.!~*\'()-]|(?:%[0-9a-fA-F]{2})|[;:&=+$,])+)?\@)?'
-					// address:
-					. '(?P<host>'
-					//   ip
-					  . '(?:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|'
-					//   or hostname
-					  . '(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?\.)*(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?)*(?(2)|\.)[a-zA-Z](?:[a-zA-Z0-9-]+[a-zA-Z0-9])?'
-					. ')'
-					// optional port (:0-65535)
-					. '(?::(?P<port>[0-5]?[0-9]{1,4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?'
-				// pseudo-protocols
-				. ')|.+)'
-			// /optional for relative
-			. ')?'
-			// path
-			. '(?P<path>/?[^?#]+)?'
-			// querystring
-			. '(?:\?(?P<query>[^#]+))?'
-			// fragment (hash)
-			. '(?:#(?P<fragment>.*))?'
-			// delimiter
-			. '@'
-			;
-
-		$t = preg_match_all( $re, $url, $matches, PREG_SET_ORDER );
-		if ( ! $t ) // TODO better error handling
+		// Use PHP's parse_url to get the basics
+		$parsed = parse_url( $url );
+		if ( $parsed == false ) {
+			$r['is_error'] = true;
 			return $r;
+		}
+		$r = array_merge( $r, $parsed );
 
-		$matches = $matches[0];
-		if ( ! isset( $matches['full_address'] ) )
-			$matches['full_address'] = '';
-
-		$r['is_error'] = FALSE;
-		$r['is_relative'] = empty( $matches['full_address'] );
-		$r['is_pseudo'] = ! array_key_exists( 'host', $matches );
-		$r['pseudo_args'] = $r['is_pseudo'] ? $matches['full_address'] : '';
-
-		foreach ( array( 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment' ) as $k ) {
-			if ( array_key_exists( $k, $matches ) ) {
-				$r[$k] = $matches[$k];
-			}
+		$r['is_pseudo'] = !in_array( $r['scheme'], array( 'http', 'https', '' ) );
+		$r['is_relative'] = ( $r['host'] == '' && !$r['is_pseudo'] );
+		if ( $r['is_pseudo'] ) {
+			$r['pseudo_args'] = $r['path'];
+			$r['path'] = '';
 		}
 
 		return $r;
 	}
 
+	/**
+	 * Restore a URL separated by a parse_url() call.
+	 * @param $parsed_url array An array as returned by parse_url()
+	 */
 	public static function glue_url( $parsed_url )
 	{
 		if ( ! is_array( $parsed_url ) ) {
-			return FALSE;
+			return false;
 		}
 
 		$res = '';
 		$res .= $parsed_url['scheme'];
-		if ( $parsed_url['is_pseudo'] || $parsed_url['scheme'] == 'mailto' ) {
+		if ( $parsed_url['is_pseudo'] || in_array( strtolower( $parsed_url['scheme'] ), array( 'mailto', 'callto' ) ) ) {
 			$res .= ':';
 		}
 		else {
@@ -363,7 +318,7 @@ class InputFilter
 			}
 			$res .= $parsed_url['host'];
 			if ( !empty( $parsed_url['port'] ) ) {
-				if ( array_key_exists( $parsed_url['scheme'], self::$scheme_ports ) && self::$scheme_ports[ $parsed_url['scheme'] ] == $parsed_url['port'] ) {
+				if ( array_key_exists( $parsed_url['scheme'], Utils::scheme_ports() ) && Utils::scheme_ports( $parsed_url['scheme'] ) == $parsed_url['port'] ) {
 					// default port for this scheme, do nothing
 				}
 				else {
@@ -391,7 +346,7 @@ class InputFilter
 	{
 		if ( is_array( $type ) ) {
 			// array of allowed values, exact matches only
-			return in_array( $v, $type, TRUE );
+			return in_array( $v, $type, true );
 		}
 		else {
 			// data type
@@ -419,8 +374,8 @@ class InputFilter
 					return preg_match( '/^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:Z|[\+-][0-2][0-9]:[0-5][0-9])$/', $v );
 					break;
 				default:
-					Error::raise( sprintf( _t('Unkown attribute type "%s" in %s'), $type, __CLASS__ ) );
-					return FALSE;
+					Error::raise( sprintf( _t( 'Unkown attribute type "%s" in %s' ), $type, __CLASS__ ) );
+					return false;
 			}
 		}
 	}
@@ -442,8 +397,7 @@ class InputFilter
 		foreach ( $tokens as $node ) {
 			switch ( $node['type'] ) {
 				case HTMLTokenizer::NODE_TYPE_TEXT:
-					// XXX use blog charset setting
-					$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, 'utf-8' );
+					$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, MultiByte::hab_encoding() );
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
 					// is this element allowed at all?
@@ -451,23 +405,23 @@ class InputFilter
 						if ( ! in_array( strtolower( $node['name'] ), self::$elements_empty ) ) {
 							array_push( $stack, $node['name'] );
 						}
-						//$node = NULL; //remove the node completely
+						//$node = null; //remove the node completely
 						// convert the node to text
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
 							'name' => '#text',
-							'value' => HTMLTokenSet::token_to_string($node),
+							'value' => HTMLTokenSet::token_to_string( $node ),
 							'attrs' => array(),
-                                                );
+						);
 					}
 					else {
 						// check attributes
 						foreach ( $node['attrs'] as $k => $v ) {
 							$attr_ok = (
 								(
-									   in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
+									in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
 									|| ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) &&
-									     array_key_exists( strtolower( $k ), self::$whitelist_attributes[strtolower( $node['name'] )] ) )
+									array_key_exists( strtolower( $k ), self::$whitelist_attributes[strtolower( $node['name'] )] ) )
 								)
 								&& self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes[strtolower( $node['name'] )][strtolower( $k )] )
 							);
@@ -483,32 +437,32 @@ class InputFilter
 							// something weird happened (Luke, use the DOM!)
 							array_push( $stack, $temp );
 						}
-						//$node = NULL;
+						//$node = null;
 						//convert the node to text
 						$node = array(
 							'type' => HTMLTokenizer::NODE_TYPE_TEXT,
 							'name' => '#text',
-							'value' => HTMLTokenSet::token_to_string($node),
+							'value' => HTMLTokenSet::token_to_string( $node ),
 							'attrs' => array(),
-                                                );
+						);
 					}
 					break;
 				case HTMLTokenizer::NODE_TYPE_PI:
 				case HTMLTokenizer::NODE_TYPE_COMMENT:
 				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
 				case HTMLTokenizer::NODE_TYPE_STATEMENT:
-					$node = NULL;
+					$node = null;
 					break;
 				default:
 			}
 
-			if ( $node != NULL ) {
+			if ( $node != null ) {
 				$filtered[] = $node;
 			}
 		}
 
 		// rebuild our output string
-		return preg_replace( '@<([^>\s]+)(?:\s+[^>]+)?></\1>@', '', (string) $filtered );
+		return preg_replace( '#<([^>\s]+)(?:\s+[^>]+)?></\1>#u', '', (string) $filtered );
 	}
 }
 

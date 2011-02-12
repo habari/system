@@ -1,18 +1,16 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html>
 <head>
 	<title><?php printf( _t('Login to %s'), Options::get( 'title' ) ); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-	<link rel="stylesheet" href="<?php Site::out_url('admin_theme'); ?>/css/admin.css" type="text/css" media="screen">
+<?php	Stack::add('admin_stylesheet', array(Site::get_url('admin_theme') . '/css/admin.css', 'screen'), 'admin'); ?>
 
-	<script src="<?php Site::out_url('scripts'); ?>/jquery.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('scripts'); ?>/ui.core.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('scripts'); ?>/ui.tabs.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('scripts'); ?>/ui.sortable.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('habari'); ?>/3rdparty/humanmsg/humanmsg.js" type="text/javascript"></script>
-	<script src="<?php Site::out_url('habari'); ?>/3rdparty/hotkeys/jquery.hotkeys.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('vendor'); ?>/jquery.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('vendor'); ?>/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('vendor'); ?>/humanmsg/humanmsg.js" type="text/javascript"></script>
+	<script src="<?php Site::out_url('vendor'); ?>/jquery.hotkeys.js" type="text/javascript"></script>
 
 	<script type="text/javascript">
 	var habari = {
@@ -36,10 +34,10 @@
 
 		<div class="container">
 			<?php Plugins::act( 'theme_loginform_before' ); ?>
-				<form method="post" action="<?php URL::out( 'user', array( 'page' => 'login' ) ); ?>">
+				<form method="post" action="<?php URL::out( 'auth', array( 'page' => 'login' ) ); ?>">
 
 					<p>
-						<label for="habari_username" class="incontent abovecontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if(isset( $habari_username )) { ?> value="<?php echo htmlspecialchars( $habari_username ); ?>"<?php } ?> placeholder="<?php _e('name'); ?>" class="styledformelement">
+						<label for="habari_username" class="incontent abovecontent"><?php _e('Name'); ?></label><input type="text" name="habari_username" id="habari_username"<?php if (isset( $habari_username )) { ?> value="<?php echo Utils::htmlspecialchars( $habari_username ); ?>"<?php } ?> placeholder="<?php _e('name'); ?>" class="styledformelement">
 					</p>
 					<p>
 						<label for="habari_password" class="incontent abovecontent"><?php _e('Password'); ?></label><input type="password" name="habari_password" id="habari_password" placeholder="<?php _e('password'); ?>" class="styledformelement">
@@ -54,7 +52,7 @@
 					</p>
 
 				</form>
-     			<?php Plugins::act( 'theme_loginform_after' ); ?>
+				<?php Plugins::act( 'theme_loginform_after' ); ?>
 		</div>
 
 	</div>

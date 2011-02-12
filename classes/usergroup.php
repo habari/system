@@ -57,10 +57,10 @@ class UserGroup extends QueryRecord
 		}
 		else {
 			// Does the group already exist?
-			if(isset($paramarray['name'])) {
-				$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($paramarray['name']));
-				if($exists) {
-					return UserGroup::get_by_name($paramarray['name']);
+			if ( isset( $paramarray['name'] ) ) {
+				$exists = DB::get_value( 'SELECT count(1) FROM {groups} WHERE name = ?', array( $paramarray['name'] ) );
+				if ( $exists ) {
+					return UserGroup::get_by_name( $paramarray['name'] );
 				}
 			}
 			return false;
@@ -72,26 +72,26 @@ class UserGroup extends QueryRecord
 	 */
 	public function insert()
 	{
-		$exists = DB::get_value('SELECT count(1) FROM {groups} WHERE name = ?', array($this->name));
-		if($exists) {
+		$exists = DB::get_value( 'SELECT count(1) FROM {groups} WHERE name = ?', array( $this->name ) );
+		if ( $exists ) {
 			return false;
 		}
 
 		$allow = true;
 		// plugins have the opportunity to prevent insertion
-		$allow = Plugins::filter('usergroup_insert_allow', $allow, $this);
+		$allow = Plugins::filter( 'usergroup_insert_allow', $allow, $this );
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('usergroup_insert_before', $this);
-		$this->exclude_fields('id');
-		$result = parent::insertRecord( DB::table('groups') );
+		Plugins::act( 'usergroup_insert_before', $this );
+		$this->exclude_fields( 'id' );
+		$result = parent::insertRecord( DB::table( 'groups' ) );
 		$this->fields['id'] = DB::last_insert_id();
 
 		$this->set_member_list();
 
-		EventLog::log( sprintf(_t('New group created: %s'), $this->name), 'info', 'default', 'habari');
-		Plugins::act('usergroup_insert_after', $this);
+		EventLog::log( sprintf( _t( 'New group created: %s' ), $this->name ), 'info', 'default', 'habari' );
+		Plugins::act( 'usergroup_insert_after', $this );
 		return $result;
 	}
 
@@ -102,16 +102,16 @@ class UserGroup extends QueryRecord
 	{
 		$allow = true;
 		// plugins have the opportunity to prevent modification
-		$allow = Plugins::filter('usergroup_update_allow', $allow, $this);
+		$allow = Plugins::filter( 'usergroup_update_allow', $allow, $this );
 		if ( ! $allow ) {
 			return false;
 		}
-		Plugins::act('usergroup_update_before', $this);
+		Plugins::act( 'usergroup_update_before', $this );
 
 		$this->set_member_list();
 
-		EventLog::log(sprintf(_t('User Group updated: %s'), $this->name), 'info', 'default', 'habari');
-		Plugins::act('usergroup_update_after', $this);
+		EventLog::log( sprintf( _t( 'User Group updated: %s' ), $this->name ), 'info', 'default', 'habari' );
+		Plugins::act( 'usergroup_update_after', $this );
 	}
 
 	/**
@@ -120,12 +120,12 @@ class UserGroup extends QueryRecord
 	protected function set_member_list()
 	{
 		$this->load_member_cache();
-		
+
 		// Remove all users from this group in preparation for adding the current list
-		DB::query('DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
+		DB::query( 'DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
 		// Add the current list of users into the group
-		foreach( $this->member_ids as $user_id ) {
-			DB::query('INSERT INTO {users_groups} (user_id, group_id) VALUES (?, ?)', array( $user_id, $this->id) );
+		foreach ( $this->member_ids as $user_id ) {
+			DB::query( 'INSERT INTO {users_groups} (user_id, group_id) VALUES (?, ?)', array( $user_id, $this->id ) );
 		}
 		EventLog::log( _t( 'User Group %s: Member list reset', array( $this->name ) ), 'notice', 'user', 'habari' );
 	}
@@ -137,20 +137,20 @@ class UserGroup extends QueryRecord
 	{
 		$allow = true;
 		// plugins have the opportunity to prevent deletion
-		$allow = Plugins::filter('usergroup_delete_allow', $allow, $this);
-		 if ( ! $allow ) {
-		 	return;
+		$allow = Plugins::filter( 'usergroup_delete_allow', $allow, $this );
+		if ( ! $allow ) {
+			return;
 		}
 
 		$name = $this->name;
-		Plugins::act('usergroup_delete_before', $this);
+		Plugins::act( 'usergroup_delete_before', $this );
 		// remove all this group's permissions
 		$results = DB::query( 'DELETE FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) );
 		// remove all this group's members
 		$results = DB::query( 'DELETE FROM {users_groups} WHERE group_id=?', array( $this->id ) );
 		// remove this group
-		$result = parent::deleteRecord( DB::table('groups'), array( 'id' => $this->id ) );
-		Plugins::act('usergroup_delete_after', $this);
+		$result = parent::deleteRecord( DB::table( 'groups' ), array( 'id' => $this->id ) );
+		Plugins::act( 'usergroup_delete_after', $this );
 		EventLog::log( _t( 'User Group %s: Group deleted.', array( $name ) ), 'notice', 'user', 'habari' );
 		return $result;
 	}
@@ -171,7 +171,7 @@ class UserGroup extends QueryRecord
 			case 'users':
 				$this->load_member_cache();
 				$results = DB::get_results( 'SELECT u.* FROM {users} u INNER JOIN {users_groups} ug ON ug.user_id = u.id WHERE ug.group_id= ?', array( $this->id ), 'User' );
-				if(in_array(0, $this->member_ids)) {
+				if ( in_array( 0, $this->member_ids ) ) {
 					$results[] = User::anonymous();
 				}
 				return $results;
@@ -194,11 +194,11 @@ class UserGroup extends QueryRecord
 		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
-		$user_ids = array_map(array('User', 'get_id'), $users);
+		$user_ids = array_map( array( 'User', 'get_id' ), $users );
 		// Remove users from group membership
-		$this->member_ids = array_merge( (array) $this->member_ids, (array) $user_ids);
+		$this->member_ids = array_merge( (array) $this->member_ids, (array) $user_ids );
 		// List each group member exactly once
-		$this->member_ids = array_unique($this->member_ids);
+		$this->member_ids = array_unique( $this->member_ids );
 		$this->update();
 
 		EventLog::log( _t( 'User Group %1$s: Users were added to the group.', array( $this->name ) ), 'notice', 'user', 'habari' );
@@ -213,9 +213,9 @@ class UserGroup extends QueryRecord
 		$this->load_member_cache();
 		$users = Utils::single_array( $users );
 		// Use ids internally for all users
-		$users = array_map(array('User', 'get_id'), $users);
+		$users = array_map( array( 'User', 'get_id' ), $users );
 		// Remove users from group membership
-		$this->member_ids = array_diff( $this->member_ids, $users);
+		$this->member_ids = array_diff( $this->member_ids, $users );
 		$this->update();
 
 		EventLog::log( _t( 'User Group %1$s: Users were removed from the group.', array( $this->name ) ), 'notice', 'user', 'habari' );
@@ -229,7 +229,7 @@ class UserGroup extends QueryRecord
 	{
 		$tokens = Utils::single_array( $tokens );
 		// Use ids internally for all tokens
-		$tokens = array_map(array('ACL', 'token_id'), $tokens);
+		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
 
 		// grant the new permissions
 		foreach ( $tokens as $token ) {
@@ -253,7 +253,7 @@ class UserGroup extends QueryRecord
 	public function revoke( $tokens )
 	{
 		$tokens = Utils::single_array( $tokens );
-		$tokens = array_map(array('ACL', 'token_id'), $tokens);
+		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
 
 		foreach ( $tokens as $token ) {
 			ACL::revoke_group_token( $this->id, $token );
@@ -289,7 +289,7 @@ class UserGroup extends QueryRecord
 		$token = ACL::token_id( $token );
 		$this->load_permissions_cache();
 		if ( isset( $this->permissions[$token] ) ) {
-			return ACL::get_bitmask( $this->permissions[$token]);
+			return ACL::get_bitmask( $this->permissions[$token] );
 		}
 		return false;
 	}
@@ -300,7 +300,7 @@ class UserGroup extends QueryRecord
 	public function clear_permissions_cache()
 	{
 		//unset( $this->permissions );
-		$this->permissions = NULL;
+		$this->permissions = null;
 	}
 
 	/**
@@ -309,9 +309,9 @@ class UserGroup extends QueryRecord
 	public function load_permissions_cache()
 	{
 		if ( is_null( $this->permissions ) ) {
-			if ( $results = DB::get_results( 'SELECT token_id, permission_id FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
+			if ( $results = DB::get_results( 'SELECT token_id, access_mask FROM {group_token_permissions} WHERE group_id=?', array( $this->id ) ) ) {
 				foreach ( $results as $result ) {
-					$this->permissions[$result->token_id] = $result->permission_id;
+					$this->permissions[$result->token_id] = $result->access_mask;
 				}
 			}
 		}
@@ -321,7 +321,7 @@ class UserGroup extends QueryRecord
 	 * Fetch a group from the database by ID or name.
 	 * This is a wrapper for get_by_id() and get_by_name()
 	 * @param mixed $group A group ID or name
-	 * @return mixed UserGroup object, or boolean FALSE
+	 * @return mixed UserGroup object, or boolean false
 	 */
 	public static function get( $group )
 	{
@@ -336,7 +336,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Select a group from the DB by its ID
 	 * @param int A group ID
-	 * @return mixed A UserGroup object, or boolean FALSE
+	 * @return mixed A UserGroup object, or boolean false
 	 */
 	public static function get_by_id( $id )
 	{
@@ -346,7 +346,7 @@ class UserGroup extends QueryRecord
 	/**
 	 * Select a group from the DB by its name
 	 * @param string A group name
-	 * @return mixed A UserGroup object, or boolean FALSE
+	 * @return mixed A UserGroup object, or boolean false
 	 */
 	public static function get_by_name( $name )
 	{
@@ -360,7 +360,7 @@ class UserGroup extends QueryRecord
 	 */
 	public static function exists( $group )
 	{
-		return !is_null(self::id($group));
+		return !is_null( self::id( $group ) );
 	}
 
 	/**
@@ -404,10 +404,10 @@ class UserGroup extends QueryRecord
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Cache the member ids that belong to this group
-	 * 
+	 *
 	 * @param boolean $refresh Optional. If true, refresh the cache
 	 */
 	protected function load_member_cache( $refresh = false )

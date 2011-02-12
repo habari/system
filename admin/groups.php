@@ -13,7 +13,7 @@
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" autosave="habarisettings" results="10" tabindex="2">
+		<input type="search" id="search" placeholder="<?php _e('search settings'); ?>" tabindex="2">
 	</span>
 </div>
 
@@ -25,13 +25,13 @@
 			$users = array();
 			foreach ( $group->users as $user ) {
 				if ( $user->id == 0 ) {
-					$users []= '<strong>' . $user->displayname . '</strong>';
+					$users[] = '<strong>' . $user->displayname . '</strong>';
 				}
 				elseif ( $user->username == User::identify()->username ) {
-					$users []= '<strong><a href="' . URL::get( 'admin', 'page=user' ) . '">' . $user->displayname . '</a></strong>';
+					$users[] = '<strong><a href="' . URL::get( 'admin', 'page=user' ) . '">' . $user->displayname . '</a></strong>';
 				}
 				else {
-					$users []= '<strong><a href="' . Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) ) . '">' . $user->displayname . '</a></strong>';
+					$users[] = '<strong><a href="' . Url::get( 'user_profile', array( 'page' => 'user', 'user' => $user->username ) ) . '">' . $user->displayname . '</a></strong>';
 				}
 			}
 			include('groups_item.php');
@@ -53,7 +53,7 @@
 	
 	<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 	<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-	<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+	<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 	
 	<div class="item submit clear">
 		<span class="pct25">

@@ -1,11 +1,14 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php');?>
 
-<?php $theme->currentuser = User::identify(); ?>
+<?php
+	// @todo this should be done in adminhandler, not here
+	$theme->currentuser = User::identify();
+?>
 
 
 <div class="container navigation">
-	<span class="pct40">
+	<div class="pct40">
 
 		<form>
 		<select class="navigationdropdown" onChange="navigationDropdown.changePage(this.form.navigationdropdown)" name="navigationdropdown">
@@ -22,16 +25,16 @@
 			<option value=""><?php _e('Complete User List'); ?></option>
 		</select>
 		</form>
-	</span>
+	</div>
 	<span class="or pct20">
 		<?php _e('or'); ?>
 	</span>
 	<span class="pct40">
-		<input id="search" type="search" placeholder="<?php _e('search users'); ?>" autosave="habarisettings" results="10">
+		<input id="search" type="search" placeholder="<?php _e('search users'); ?>">
 	</span>
 </div>
 
-<form method="post" action="">
+<form method="post" action="" autocomplete="off">
 <div class="container users">
 	
 	<div class="addnewuser item">
@@ -64,7 +67,7 @@
 
 		<input type="hidden" name="nonce" id="nonce" value="<?php echo $wsse['nonce']; ?>">
 		<input type="hidden" name="timestamp" id="timestamp" value="<?php echo $wsse['timestamp']; ?>">
-		<input type="hidden" name="PasswordDigest" id="PasswordDigest" value="<?php echo $wsse['digest']; ?>">
+		<input type="hidden" name="password_digest" id="password_digest" value="<?php echo $wsse['digest']; ?>">
 	
 		<span class="reassign minor">
 			<?php printf( _t('Reassign posts to %s'), Utils::html_select('reassign', $authors )); ?> and

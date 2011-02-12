@@ -4,16 +4,27 @@
 			<?php if ( $post->comments->moderated->count ) : ?>
 				<?php foreach ( $post->comments->moderated as $comment ) : ?>
 				
+				<?php 
+				
+					if ( $comment->url_out == '' ) {
+						$comment_url = $comment->name_out;
+					}
+					else {
+						$comment_url = '<a href="' . $comment->url_out . '" rel="external">' . $comment->name_out . '</a>';
+					}
+				
+				?>
+				
 				<div id="comment-<?php echo $comment->id; ?>" class="post-comment">
 					
 					<div class="post-comment-commentor">
 						<h2>
-							<a href="<?php echo $comment->url; ?>" rel="external"><?php echo $comment->name; ?></a>
+							<?php echo $comment_url; ?>
 						</h2>
 					</div>
 					<div class="post-comment-body">
 						<?php echo $comment->content_out; ?>
-						<p class="post-comment-link"><a href="#comment-<?php echo $comment->id; ?>" title="Time of this comment - Click for comment permalink"><?php $comment->date->out(); ?></a></p>
+						<p class="post-comment-link"><a href="#comment-<?php echo $comment->id; ?>" title="<?php _e( 'Time of this comment - Click for comment permalink' ); ?>"><?php $comment->date->out(); ?></a></p>
 						<?php if ( $comment->status == Comment::STATUS_UNAPPROVED ) : ?>
 						<p class="comment-message"><em><?php _e( 'Your comment is awaiting moderation' ) ;?></em></p>
 						<?php endif; ?>

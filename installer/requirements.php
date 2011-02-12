@@ -2,10 +2,10 @@
 <?php include( 'header.php' ); ?>
 
 <div id="header">
-	<h1><?php _e('Before you install <em>Habari</em>...'); ?></h1>
+	<h1><?php _e('Before you install <em>Habari</em>&hellip;'); ?></h1>
 </div>
 <?php if (! $local_writable) {?>
-	<h2><?php _e('Writable directory needed'); ?>...</h2>
+	<h2><?php _e('Writable directory needed'); ?>&hellip;</h2>
 	<?php if ($PHP_OS != 'WIN') {?>
 		<p class="instructions">
 			<?php _e('Before you can install Habari, you first need to make the install directory writable by php, so that the installation script can write your configuration information properly. The exact process depends on the web server and the ownership of the directory.'); ?>
@@ -45,7 +45,7 @@
 <?php }?>
 
 <?php if (! $php_version_ok) {?>
-	<h2><?php _e('PHP Upgrade needed...'); ?></h2>
+	<h2><?php _e('PHP Upgrade needed&hellip;'); ?></h2>
 	<p class="instructions">
 		<em>Habari</em> <?php printf(_t('requires PHP 5.2 or newer. Your current PHP version is %s.'), PHP_VERSION); ?>
 	</p>
@@ -65,7 +65,7 @@
 <?php }?>
 
 <?php if ( extension_loaded( 'pcre' ) && ! @preg_match( '/\p{L}/u', 'a' ) ) { ?>
-	<h2>Unicode support needed...</h2>
+	<h2>Unicode support needed&hellip;</h2>
 	<p class="instructions">
 		<em>Habari</em> <?php _e('requires PHP\'s PCRE extension to have Unicode support enabled. Please contact your web hosting provider if you do not have access to your server.'); ?>
 	</p>

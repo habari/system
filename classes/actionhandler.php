@@ -41,10 +41,10 @@ class ActionHandler
 	 *
 	 * @param string $action the action that was in the URL rule
 	 */
-	public function act($action)
+	public function act( $action )
 	{
 		if ( null === $this->handler_vars ) {
-			$this->handler_vars = new SuperGlobal(array());
+			$this->handler_vars = new SuperGlobal( array() );
 		}
 		$this->action = $action;
 
@@ -52,8 +52,8 @@ class ActionHandler
 		$before_action_method = 'before_' . $action_method;
 		$after_action_method = 'after_' . $action_method;
 
-		if (method_exists($this, $action_method)) {
-			if (method_exists($this, $before_action_method)) {
+		if ( method_exists( $this, $action_method ) ) {
+			if ( method_exists( $this, $before_action_method ) ) {
 				$this->$before_action_method();
 			}
 			/**
@@ -75,7 +75,7 @@ class ActionHandler
 			 * @action before_act_{$action}
 			 */
 			Plugins::act( $after_action_method );
-			if ( method_exists($this, $after_action_method) ) {
+			if ( method_exists( $this, $after_action_method ) ) {
 				$this->$after_action_method();
 			}
 		}
@@ -88,9 +88,9 @@ class ActionHandler
 	 * @param string $function function name
 	 * @param array $args function arguments
 	 */
-	public function __call($function, $args)
+	public function __call( $function, $args )
 	{
-		return $this->act($function);
+		return $this->act( $function );
 	}
 
 	/**
@@ -99,8 +99,8 @@ class ActionHandler
 	 */
 	public function act_redirect()
 	{
-		$vars = isset($_SERVER['QUERY_STRING']) ? Utils::get_params($_SERVER['QUERY_STRING']) : array();
-		Utils::redirect( URL::get(null, $vars) );
+		$vars = isset( $_SERVER['QUERY_STRING'] ) ? Utils::get_params( $_SERVER['QUERY_STRING'] ) : array();
+		Utils::redirect( URL::get( null, $vars ) );
 	}
 	
 	/**
@@ -110,13 +110,13 @@ class ActionHandler
 	public function setup_theme()
 	{
 		$this->theme = Themes::create();
-		$this->theme->assign('matched_rule', URL::get_matched_rule());
+		$this->theme->assign( 'matched_rule', URL::get_matched_rule() );
 		$request = new StdClass();
-		foreach(RewriteRules::get_active() as $rule) {
-			$request->{$rule->name}= false;
+		foreach ( URL::get_active_rules() as $rule ) {
+			$request->{$rule->name} = false;
 		}
-		$request->{$this->theme->matched_rule->name}= true;
-		$this->theme->assign('request', $request);
+		$request->{$this->theme->matched_rule->name} = true;
+		$this->theme->assign( 'request', $request );
 	}
 }
 

@@ -58,25 +58,28 @@ class User extends QueryRecord
 		$this->fields = array_merge(
 			self::default_fields(),
 			$this->fields );
-		parent::__construct($paramarray);
-		$this->exclude_fields('id');
-		 /* $this->fields['id'] could be null in case of a new user. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
+		parent::__construct( $paramarray );
+		$this->exclude_fields( 'id' );
+		/* $this->fields['id'] could be null in case of a new user. If so, the info object is _not_ safe to use till after set_key has been called. Info records can be set immediately in any other case. */
 
 	}
-	
+
 	/**
 	 * Build and return the anonymous user
 	 * @return object user object
 	 */
 	public static function anonymous()
 	{
-		$anonymous = new User();
-		$anonymous->id = 0;
-		$anonymous->username = _t('Anonymous');
-		Plugins::act('create_anonymous_user', $anonymous);
+		static $anonymous = null;
+		if ( $anonymous == null ) {
+			$anonymous = new User();
+			$anonymous->id = 0;
+			$anonymous->username = _t( 'Anonymous' );
+			Plugins::act( 'create_anonymous_user', $anonymous );
+		}
 		return $anonymous;
 	}
-	
+
 	/**
 	 * Check for the existence of a cookie, and return a user object of the user, if successful
 	 * @return object user object, or false if no valid cookie exists
@@ -84,17 +87,17 @@ class User extends QueryRecord
 	public static function identify()
 	{
 		// Is the logged-in user not cached already?
-		if ( isset(self::$identity) ) {
+		if ( isset( self::$identity ) ) {
 			// is this user acting as another user?
-			if ( isset($_SESSION['sudo']) ) {
+			if ( isset( $_SESSION['sudo'] ) ) {
 				// if so, let's return that user data
-				return self::get_by_id( intval($_SESSION['sudo']) );
+				return self::get_by_id( intval( $_SESSION['sudo'] ) );
 			}
 			// otherwise return the logged-in user
 			return self::$identity;
 		}
-		if(isset($_SESSION['user_id'])) {
-			if ( $user = self::get_by_id( intval($_SESSION['user_id']) ) ) {
+		if ( isset( $_SESSION['user_id'] ) ) {
+			if ( $user = self::get_by_id( intval( $_SESSION['user_id'] ) ) ) {
 				// Cache the user in the static variable
 				self::$identity = $user;
 				return $user;
@@ -121,13 +124,13 @@ class User extends QueryRecord
 	public function insert()
 	{
 		$allow = true;
-		$allow = Plugins::filter('user_insert_allow', $allow, $this);
+		$allow = Plugins::filter( 'user_insert_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
-		Plugins::act('user_insert_before', $this);
-		$this->exclude_fields('id');
-		$result = parent::insertRecord( DB::table('users') );
+		Plugins::act( 'user_insert_before', $this );
+		$this->exclude_fields( 'id' );
+		$result = parent::insertRecord( DB::table( 'users' ) );
 		$this->fields['id'] = DB::last_insert_id(); // Make sure the id is set in the user object to match the row id
 		$this->info->set_key( $this->id );
 		/* If a new user is being created and inserted into the db, info is only safe to use _after_ this set_key call. */
@@ -140,15 +143,15 @@ class User extends QueryRecord
 
 		$this->info->commit();
 
-		if( $result ) {
+		if ( $result ) {
 			// Add the user to the default authenticated group if it exists
-			if( UserGroup::exists( 'authenticated' ) ) {
+			if ( UserGroup::exists( 'authenticated' ) ) {
 				$this->add_to_group( 'authenticated' );
 			}
 		}
 
-		EventLog::log( sprintf(_t('New user created: %s'), $this->username), 'info', 'default', 'habari' );
-		Plugins::act('user_insert_after', $this);
+		EventLog::log( sprintf( _t( 'New user created: %s' ), $this->username ), 'info', 'default', 'habari' );
+		Plugins::act( 'user_insert_after', $this );
 
 		return $result;
 	}
@@ -159,14 +162,14 @@ class User extends QueryRecord
 	public function update()
 	{
 		$allow = true;
-		$allow = Plugins::filter('user_update_allow', $allow, $this);
+		$allow = Plugins::filter( 'user_update_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
-		Plugins::act('user_update_before', $this);
+		Plugins::act( 'user_update_before', $this );
 		$this->info->commit();
-		$result = parent::updateRecord( DB::table('users'), array( 'id' => $this->id ) );
-		Plugins::act('user_update_after', $this);
+		$result = parent::updateRecord( DB::table( 'users' ), array( 'id' => $this->id ) );
+		Plugins::act( 'user_update_after', $this );
 		return $result;
 	}
 
@@ -176,21 +179,22 @@ class User extends QueryRecord
 	public function delete()
 	{
 		$allow = true;
-		$allow = Plugins::filter('user_delete_allow', $allow, $this);
+		$allow = Plugins::filter( 'user_delete_allow', $allow, $this );
 		if ( ! $allow ) {
 			return;
 		}
-		Plugins::act('user_delete_before', $this);
-		if(isset($this->info)) {
-			$this->info->delete_all();
-		}
+		Plugins::act( 'user_delete_before', $this );
+
+		// remove any userinfo records
+		$this->info->delete_all();
+
 		// remove all this user's permissions
 		DB::query( 'DELETE FROM {user_token_permissions} WHERE user_id=?', array( $this->id ) );
 		// remove user from any groups
 		DB::query( 'DELETE FROM {users_groups} WHERE user_id=?', array( $this->id ) );
-		EventLog::log( sprintf(_t('User deleted: %s'), $this->username), 'info', 'default', 'habari' );
-		$result = parent::deleteRecord( DB::table('users'), array( 'id' => $this->id ) );
-		Plugins::act('user_delete_after', $this);
+		EventLog::log( sprintf( _t( 'User deleted: %s' ), $this->username ), 'info', 'default', 'habari' );
+		$result = parent::deleteRecord( DB::table( 'users' ), array( 'id' => $this->id ) );
+		Plugins::act( 'user_delete_after', $this );
 		return $result;
 	}
 
@@ -201,27 +205,43 @@ class User extends QueryRecord
 	{
 		$_SESSION['user_id'] = $this->id;
 		ACL::clear_caches();
-		Session::set_userid($this->id);
+		Session::set_userid( $this->id );
 	}
 
 	/**
 	 * Delete the user id from the session
+	 * @param boolean $redirect Redirect the user to base_url after destroying session?
 	 */
-	public function forget()
+	public function forget( $redirect = true )
 	{
+		
+		// if the user is not actually logged in, just return so we don't throw any errors later
+		if ( $this->loggedin != true ) {
+			return;
+		}
+		
 		// is this user acting as another user?
 		if ( isset( $_SESSION['sudo'] ) ) {
 			// if so, remove the sudo token, but don't log out
 			// the user
 			unset( $_SESSION['sudo'] );
-			Utils::redirect( Site::get_url( 'admin' ) );
+			
+			if ( $redirect ) {
+				Utils::redirect( Site::get_url( 'admin' ) );
+			}
+			else {
+				// we want to return, not continue processing, or we'd log out the user too
+				return;
+			}
 		}
 		ACL::clear_caches();
 		Plugins::act( 'user_forget', $this );
-		Session::clear_userid($_SESSION['user_id']);
-		unset($_SESSION['user_id']);
-		$home = Options::get('base_url');
-		Utils::redirect( Site::get_url( 'habari' ) );
+		Session::clear_userid( $_SESSION['user_id'] );
+		unset( $_SESSION['user_id'] );
+		
+		if ( $redirect ) {
+			Utils::redirect( Site::get_url( 'habari' ) );
+		}
 	}
 
 	/**
@@ -242,36 +262,31 @@ class User extends QueryRecord
 
 		$user = new StdClass();
 		$require = false;
-		$user = Plugins::filter('user_authenticate', $user, $who, $pw);
-		if($user instanceof User) {
+		$user = Plugins::filter( 'user_authenticate', $user, $who, $pw );
+		if ( $user instanceof User ) {
 			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( sprintf(_t('Successful login for %s'), $user->username), 'info', 'authentication', 'habari' );
+			EventLog::log( sprintf( _t( 'Successful login for %s' ), $user->username ), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
 		}
-		elseif(!is_object($user)) {
+		elseif ( !is_object( $user ) ) {
 			Plugins::act( 'user_authenticate_failure', 'plugin' );
-			EventLog::log( sprintf(_t('Login attempt (via authentication plugin) for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
-			Session::error('Invalid username/password');
+			EventLog::log( sprintf( _t( 'Login attempt (via authentication plugin) for non-existent user %s' ), $who ), 'warning', 'authentication', 'habari' );
+			Session::error( _t( 'Invalid username/password' ) );
 			self::$identity = null;
 			return false;
 		}
 
-		if ( strpos( $who, '@' ) !== FALSE ) {
-			// we were given an email address
-			$user = self::get_by_email( $who );
-		}
-		else {
-			$user = self::get_by_name( $who );
-		}
+		// Check by name first. Allows for the '@' to be in the username, without it being an email address
+		$user = self::get_by_name( $who );
 
 		if ( ! $user ) {
 			// No such user.
 			Plugins::act( 'user_authenticate_failure', 'non-existent' );
-			EventLog::log( sprintf(_t('Login attempt for non-existent user %s'), $who), 'warning', 'authentication', 'habari' );
-			Session::error('Invalid username/password');
+			EventLog::log( _t( 'Login attempt for non-existent user %s', array( $who ) ), 'warning', 'authentication', 'habari' );
+			Session::error( _t( 'Invalid username/password' ) );
 			self::$identity = null;
 			return false;
 		}
@@ -280,7 +295,7 @@ class User extends QueryRecord
 			// valid credentials were supplied
 			self::$identity = $user;
 			Plugins::act( 'user_authenticate_successful', self::$identity );
-			EventLog::log( sprintf(_t('Successful login for %s'), $user->username), 'info', 'authentication', 'habari' );
+			EventLog::log( _t( 'Successful login for %s', array( $user->username ) ), 'info', 'authentication', 'habari' );
 			// set the cookie
 			$user->remember();
 			return self::$identity;
@@ -288,8 +303,8 @@ class User extends QueryRecord
 		else {
 			// Wrong password.
 			Plugins::act( 'user_authenticate_failure', 'bad_pass' );
-			EventLog::log( sprintf(_t('Wrong password for user %s'), $user->username), 'warning', 'authentication', 'habari' );
-			Session::error('Invalid username/password');
+			EventLog::log( _t( 'Wrong password for user %s', array( $user->username ) ), 'warning', 'authentication', 'habari' );
+			Session::error( _t( 'Invalid username/password' ) );
 			self::$identity = null;
 			return false;
 		}
@@ -301,24 +316,24 @@ class User extends QueryRecord
 	 * get_by_* method.
 	 *
 	 * @param mixed $who user ID, username, or e-mail address
-	 * @return object User object, or FALSE
+	 * @return object User object, or false
 	 */
 	public static function get( $who )
 	{
-		if( $who instanceof User ) {
+		if ( $who instanceof User ) {
 			$user = $who;
 		}
 		elseif ( is_numeric( $who ) ) {
 			// Got a User ID
 			$user = self::get_by_id( $who );
 		}
-		elseif ( strpos( $who, '@' ) !== FALSE ) {
-			// Got an email address
-			$user = self::get_by_email( $who );
-		}
 		else {
-			// Got username
+			// Got username or email
 			$user = self::get_by_name( $who );
+			if ( ! $user && strpos( $who, '@' ) !== false ) {
+				// Got an email address
+				$user = self::get_by_email( $who );
+			}
 		}
 		// $user will be a user object, or false depending on the
 		// results of the get_by_* method called above
@@ -396,7 +411,7 @@ class User extends QueryRecord
 	 */
 	public static function get_id( $user )
 	{
-		if( is_int( $user ) ) {
+		if ( is_int( $user ) ) {
 			return $user;
 		}
 		$user = self::get( $user );
@@ -405,10 +420,10 @@ class User extends QueryRecord
 
 	/**
 	 * Returns the number of posts written by this user
-	 * @param mixed A status on which to filter posts (published, draft, etc).  If FALSE, no filtering will be performed.  Default: no filtering
+	 * @param mixed A status on which to filter posts (published, draft, etc).  If false, no filtering will be performed.  Default: no filtering
 	 * @return int The number of posts written by this user
-	**/
-	public function count_posts( $status = FALSE )
+	 */
+	public function count_posts( $status = false )
 	{
 		return Posts::count_by_author( $this->id, $status );
 	}
@@ -419,18 +434,18 @@ class User extends QueryRecord
 	 * If this is a returning commenter, then return details from their cookie
 	 * otherwise return empty strings.
 	 * @return Array an array of name, email and URL
-	**/
+	 */
 	public static function commenter()
 	{
-		$cookie = 'comment_' . Options::get('GUID');
+		$cookie = 'comment_' . Options::get( 'GUID' );
 		$commenter = array();
 		if ( self::identify() ) {
 			$commenter['name'] = self::identify()->username;
 			$commenter['email'] = self::identify()->email;
-			$commenter['url'] = Site::get_url('habari');
+			$commenter['url'] = Site::get_url( 'habari' );
 		}
-		elseif ( isset($_COOKIE[$cookie]) ) {
-			list($commenter['name'], $commenter['email'], $commenter['url']) = explode('#', urldecode( $_COOKIE[$cookie] ) );
+		elseif ( isset( $_COOKIE[$cookie] ) ) {
+			list( $commenter['name'], $commenter['email'], $commenter['url'] ) = explode( '#', urldecode( $_COOKIE[$cookie] ) );
 		}
 		else {
 			$commenter['name'] = '';
@@ -463,14 +478,18 @@ class User extends QueryRecord
 	{
 		$token_access = Utils::single_array( $token_access );
 
-		foreach( $token_access as $token => $access ) {
+		foreach ( $token_access as $token => $access ) {
 			$access = Utils::single_array( $access );
-			foreach( $access as $mask ) {
-				if( is_bool( $mask ) && $this->can( $token ) ) {
-					return true;
+			foreach ( $access as $mask ) {
+				if ( is_bool( $mask ) ) {
+					if ( $this->can( $token ) ) {
+						return true;
+					}
 				}
-				elseif( $this->can( $token, $mask ) ) {
-					return true;
+				else {
+					if ( $this->can( $token, $mask ) ) {
+						return true;
+					}
 				}
 			}
 		}
@@ -498,7 +517,7 @@ class User extends QueryRecord
 	{
 		$tokens = Utils::single_array( $tokens );
 		// Use ids internally for all tokens
-		$tokens = array_map( array( 'ACL', 'token_id'), $tokens );
+		$tokens = array_map( array( 'ACL', 'token_id' ), $tokens );
 
 		foreach ( $tokens as $token ) {
 			ACL::grant_user( $this->id, $token, $access );
@@ -547,13 +566,13 @@ class User extends QueryRecord
 	/**
 	 * function in_group
 	 * Whether or not this user is is in the specified group
-	 * @param int $group a group ID or name
+	 * @param int|string $group a group ID or name
 	 * @return bool Whether or not this user is in the specified group
 	**/
 	public function in_group( $group )
 	{
 		$groups = $this->list_groups();
-		return in_array( UserGroup::id($group), $groups );
+		return in_array( UserGroup::id( $group ), $groups );
 	}
 
 	/**
@@ -593,20 +612,41 @@ class User extends QueryRecord
 	 */
 	public function __get( $name )
 	{
-		switch ($name) {
-			case 'info':
-				return $this->get_info();
-			case 'groups':
-				return $this->list_groups();
-			case 'displayname':
-				return ( empty($this->info->displayname) ) ? $this->username : $this->info->displayname;
-			case 'loggedin':
-				return $this->id != 0;
-			default:
-				return parent::__get( $name );
+		$fieldnames = array_merge( array_keys( $this->fields ), array( 'groups', 'displayname', 'loggedin', 'info' ) );
+		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
+			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
+			list( $junk, $name, $filter )= $matches;
 		}
+		else {
+			$filter = false;
+		}
+
+		switch ( $name ) {
+			case 'info':
+				$out = $this->get_info();
+				break;
+			case 'groups':
+				$out = $this->list_groups();
+				break;
+			case 'displayname':
+				$out = ( empty( $this->info->displayname ) ) ? $this->username : $this->info->displayname;
+				break;
+			case 'loggedin':
+				$out = $this->id != 0;
+				break;
+			default:
+				$out = parent::__get( $name );
+				break;
+		}
+
+		$out = Plugins::filter( "user_get", $out, $name, $this );
+		$out = Plugins::filter( "user_{$name}", $out, $this );
+		if ( $filter ) {
+			$out = Plugins::filter( "user_{$name}_{$filter}", $out, $this );
+		}
+		return $out;
 	}
-	
+
 	/**
 	 * function get_info
 	 * Gets the info object for this user, which contains data from the userinfo table
@@ -616,14 +656,20 @@ class User extends QueryRecord
 	private function get_info()
 	{
 		if ( ! isset( $this->inforecords ) ) {
-			$this->inforecords = new UserInfo( $this->id );
+			// If this user isn't in the database yet...
+			if (  0 == $this->id ) {
+				$this->inforecords = new UserInfo();
+			}
+			else {
+				$this->inforecords = new UserInfo( $this->id );
+			}
 		}
 		else {
 			$this->inforecords->set_key( $this->id );
 		}
 		return $this->inforecords;
 	}
-	
+
 
 	/**
 	 * Returns a set of properties used by URL::get to create URLs

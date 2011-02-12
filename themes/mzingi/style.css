@@ -40,12 +40,13 @@ img.left {
 	clear: both;
 }
 
-/* define inline elements as block */
+/* define inline elements as block not used, conflicts with areas and blocks default class
 
 .block {
 	display: block;
 }
-
+ */
+ 
 /* Remove border around linked images */
 
 img {
@@ -113,9 +114,9 @@ h3 {
 	font-family: Georgia, "Times New Roman", Times, serif;
 }
 
-#masthead#branding h3 {
-	text-transform: italics;
-	font-size: ;
+#masthead #branding h3 {
+	font-style: italic;
+	font-size: 125%;
 }
 
 #primaryContent h2 {
@@ -217,7 +218,7 @@ ul#tidbits a {
 .calyear {
 	background: #A37941;
 	color: #fff;
-	padding: 0 13px;
+	padding: 0 14px;
 }
 
 .calday {
@@ -265,10 +266,6 @@ ul#tidbits a {
 	float: right;
 }
 
-.tags {
-	float: left;
-}
-
 #pagenav {
 	text-align: center;
 	border: 1px solid #ccc;
@@ -295,6 +292,11 @@ ul#tidbits a {
 	padding: 2px;
 }
 
+#content img {
+        max-width: 100%;
+}
+
+
 /* =Secondary Content
 -----------------------------------------------------------------------------*/
 
@@ -320,8 +322,6 @@ ul#moreposts li {
 	padding-bottom: 5px;
 }
 
-}
-
 ul#recentcomments {
 	list-style-type: none;
 	margin-left: 5px;
@@ -330,6 +330,16 @@ ul#recentcomments {
 ul#recentcomments li {
 	margin-bottom: 8px;
 	list-style-type: none;
+}
+
+.block-type-twitter ul li {
+	list-style-type: none;
+}
+
+.block-type-twitter ul li img {
+	float: left;
+	padding-right: 6px;
+	margin: 3px;
 }
 
 /* =Footer
@@ -430,9 +440,10 @@ legend {
 	font-weight: bold;
 }
 
-form p {
+form div {
 	position: relative;
 	width: 100%;
+	margin-bottom: 20px; /* not sure if this is really the place to do this. */
 }
 
 /* style for  labels */
@@ -442,7 +453,7 @@ label {
 	width: 10em;
 }
 
-input {
+input[type="text"] {
 	width: 200px;
 }
 
@@ -453,7 +464,7 @@ input[type="text"], textarea {
 	border-right: 1px solid #ccc;
 }
 
-input.submit {
+input#submit {
 	width: auto;
 }
 

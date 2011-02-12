@@ -21,12 +21,12 @@ class QueryProfile
 	 *
 	 * @param query SQL being executed
 	 */
-	public function __construct($query)
+	public function __construct( $query )
 	{
 		$this->query_text = $query;
 		/* Backtracing is very verbose. Enable only if set via query string */
-		if ( isset($_GET['db_profile'] )
-			&& $_GET['db_profile'] == 'verbose')
+		if ( isset( $_GET['db_profile'] )
+			&& $_GET['db_profile'] == 'verbose' )
 			$this->backtrace = debug_backtrace();
 	}
 
@@ -40,9 +40,9 @@ class QueryProfile
 		$this->end_time = $this->get_time_in_microseconds();
 	}
 
-	public function __get($name)
+	public function __get( $name )
 	{
-		switch ($name) {
+		switch ( $name ) {
 			case 'total_time':
 				return $this->end_time - $this->start_time;
 			default:
@@ -58,8 +58,8 @@ class QueryProfile
 	 */
 	public static function get_time_in_microseconds()
 	{
-		list($usec, $sec)= explode(' ', microtime());
-		return ((float) (1000*$sec)  + $usec);
+		list( $usec, $sec ) = explode( ' ', microtime() );
+		return ( (float) ( 1000*$sec )  + $usec );
 	}
 
 }

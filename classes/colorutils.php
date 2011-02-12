@@ -31,8 +31,8 @@ class ColorUtils
 	public static function hex_rgb( $hex_string )
 	{
 		$hex_string = ltrim( $hex_string, '#' );
-		if ( ! preg_match('/^[0-9a-f]+$/i', $hex_string ) ) {
-			return Error::raise( _t('Not a valid hex color.') );
+		if ( ! preg_match( '/^[0-9a-f]+$/i', $hex_string ) ) {
+			return Error::raise( _t( 'Not a valid hex color.' ) );
 		}
 		
 		$normalized = '';
@@ -41,7 +41,7 @@ class ColorUtils
 			case 3:
 				// 'fed' = 'ffeedd'
 				for ( $i = 0; $i < 3; $i++ ) {
-					$normalized.= $hex_string{$i} . $hex_string{$i};
+					$normalized .= $hex_string{$i} . $hex_string{$i};
 				}
 				break;
 			case 6:
@@ -54,7 +54,7 @@ class ColorUtils
 				$normalized = $hex_string . str_repeat( '0', 6 - strlen( $hex_string ) );
 				break;
 			default:
-				return Error::raise( _t('Not a valid color format.') );
+				return Error::raise( _t( 'Not a valid color format.' ) );
 		}
 		
 		return self::rgb_rgbarr(
@@ -87,35 +87,35 @@ class ColorUtils
 		if ( $max == 0 ) {
 			// black
 			// we use 0/0/0, even though at black, H and V are undefined
-			$H = 0;
-			$S = 0;
-			$V = 0;
+			$h = 0;
+			$s = 0;
+			$v = 0;
 		}
 		else {
 			if ( $max == $rgb_arr['r'] ) {
 				// reddish (YM)
-				$H = ( $rgb_arr['g'] - $rgb_arr['b'] ) / $d;
+				$h = ( $rgb_arr['g'] - $rgb_arr['b'] ) / $d;
 			}
 			elseif ( $max == $rgb_arr['g'] ) {
 				// greenish (CY)
-				$H = 2 + ( $rgb_arr['b'] - $rgb_arr['r'] ) / $d;
+				$h = 2 + ( $rgb_arr['b'] - $rgb_arr['r'] ) / $d;
 			}
 			elseif ( $max == $rgb_arr['b'] ) {
 				// bluish (MC)
-				$H = 4 + ( $rgb_arr['r'] - $rgb_arr['g'] ) / $d;
+				$h = 4 + ( $rgb_arr['r'] - $rgb_arr['g'] ) / $d;
 			}
 			else {
-				Error::raise( _t('Something went terribly wrong here.') );
+				Error::raise( _t( 'Something went terribly wrong here.' ) );
 			}
 			
-			$H*= 60; // convert to deg
-			$H = ( $H + 360 ) % 360; // map to 0..359
+			$h*= 60; // convert to deg
+			$h = ( $h + 360 ) % 360; // map to 0..359
 			
-			$S = 100 * $d / $max;
-			$V = $max;
+			$s = 100 * $d / $max;
+			$v = $max;
 		}
 	
-		return self::hsv_hsvarr( $H, $S, $V );
+		return self::hsv_hsvarr( $h, $s, $v );
 	}
 	
 	/**
@@ -125,52 +125,52 @@ class ColorUtils
 	{
 		if ( $hsv_arr['s'] == 0 ) {
 			// grey
-			$R = $G = $B = $hsv_arr['v'];
+			$r = $g = $b = $hsv_arr['v'];
 		}
 		else {
-			$H = $hsv_arr['h'] / 60; // degrees to sectors
-			$S = $hsv_arr['s'] / 100; // percent to fraction
-			$f = $H - floor( $H );
+			$h = $hsv_arr['h'] / 60; // degrees to sectors
+			$s = $hsv_arr['s'] / 100; // percent to fraction
+			$f = $h - floor( $h );
 			
-			$p = $hsv_arr['v'] * ( 1 - $S );
-			$q = $hsv_arr['v'] * ( 1 - $S * $f );
-			$t = $hsv_arr['v'] * ( 1 - $S * ( 1 - $f ) );
+			$p = $hsv_arr['v'] * ( 1 - $s );
+			$q = $hsv_arr['v'] * ( 1 - $s * $f );
+			$t = $hsv_arr['v'] * ( 1 - $s * ( 1 - $f ) );
 			
-			switch ( floor( $H ) ) {
+			switch ( floor( $h ) ) {
 				case 0: // first sector
-					$R = $hsv_arr['v'];
-					$G = $t;
-					$B = $p;
+					$r = $hsv_arr['v'];
+					$g = $t;
+					$b = $p;
 					break;
 				case 1: // second sector
-					$R = $q;
-					$G = $hsv_arr['v'];
-					$B = $p;
+					$r = $q;
+					$g = $hsv_arr['v'];
+					$b = $p;
 					break;
 				case 2: // third sector
-					$R = $p;
-					$G = $hsv_arr['v'];
-					$B = $t;
+					$r = $p;
+					$g = $hsv_arr['v'];
+					$b = $t;
 					break;
 				case 3: // fourth sector
-					$R = $p;
-					$G = $q;
-					$B = $hsv_arr['v'];
+					$r = $p;
+					$g = $q;
+					$b = $hsv_arr['v'];
 					break;
 				case 4: // fifth sector
-					$R = $t;
-					$G = $p;
-					$B = $hsv_arr['v'];
+					$r = $t;
+					$g = $p;
+					$b = $hsv_arr['v'];
 					break;
 				case 5: // sixth sector
-					$R = $hsv_arr['v'];
-					$G = $p;
-					$B = $q;
+					$r = $hsv_arr['v'];
+					$g = $p;
+					$b = $q;
 					break;
 			}
 		}
 	
-		return self::rgb_rgbarr( $R, $G, $B );
+		return self::rgb_rgbarr( $r, $g, $b );
 	}
 }
 
