@@ -17,7 +17,7 @@ class Version
 	const DB_VERSION = 4785;
 	const API_VERSION = 4414;
 
-	const HABARI_VERSION = '0.7-alpha';
+	const HABARI_VERSION = '0.7';
 
 	// This string contains the URL to the Habari SVN repository used for this working copy or export
 	const HABARI_SVN_HEAD_URL = '$HeadURL$';
