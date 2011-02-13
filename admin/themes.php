@@ -166,7 +166,6 @@
 <?php
 foreach ( $all_themes as $inactive_theme ):
 	if ( $inactive_theme['path'] != $active_theme_dir ) : ?>
-	
 	<div class="item pct30<?php if ($previewed == $inactive_theme['dir']) echo " previewing"; ?>"> 
 		<div class="head theme_credits"> 
 			<a href="<?php echo $inactive_theme['info']->url; ?>"><?php echo $inactive_theme['info']->name; ?> <span class="version dim"><?php echo $inactive_theme['info']->version; ?></span></a> <span class="dim"><?php _e('by'); ?></span> 
@@ -190,7 +189,7 @@ foreach ( $all_themes as $inactive_theme ):
 			</div>
 		</div>
 	    <?php
-	    if ( $inactive_theme['info']->getName() != 'pluggable' || (string) $inactive_theme['info']->attributes()->type != 'theme' ) : ?>
+	    if ( ! isset( $inactive_theme['info']->class ) || $inactive_theme['info']->getName() != 'pluggable' || (string) $inactive_theme['info']->attributes()->type != 'theme' ) : ?>
 		<p class="legacy"><?php _e( 'Legacy theme.' ); ?></p>
 	    <?php else: ?>
 		<ul class="dropbutton"> 

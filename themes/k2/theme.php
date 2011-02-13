@@ -2,18 +2,15 @@
 <?php
 
 /**
- * MyTheme is a custom Theme class for the K2 theme.
+ * K2 is a custom Theme class for the K2 theme.
  *
  * @package Habari
  */
 
-// We must tell Habari to use MyTheme as the custom theme class:
-define( 'THEME_CLASS', 'MyTheme' );
-
 /**
  * A custom theme for K2 output
  */
-class MyTheme extends Theme
+class K2 extends Theme
 {
 	/**
 	 * Execute on theme init to apply these filters to output

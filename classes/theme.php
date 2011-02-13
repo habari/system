@@ -97,7 +97,8 @@ class Theme extends Pluggable
 					'name',
 					'version',
 					'template_engine',
-					'theme_dir'
+					'theme_dir',
+					'class'
 				);
 				// Assigns based on wether or not it's a valid named element.
 				foreach ( $theme_data->theme->children() as $key => $value ) {
