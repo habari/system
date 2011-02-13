@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-06 00:00+0000\n"
+"POT-Creation-Date: 2011-02-13 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -163,6 +163,11 @@ msgstr ""
 #: system/admin/block_instances.php:7 system/themes/mzingi/loginform.php:19
 #: system/themes/mzingi/theme.php:91 system/themes/k2/loginform.php:21
 msgid "Name:"
+msgstr ""
+
+#: system/admin/block_instances.php:16
+#, php-format
+msgid "Configure Block: %1s (%2s)"
 msgstr ""
 
 #: system/admin/block_instances.php:16 system/classes/pluggable.php:187
@@ -438,6 +443,12 @@ msgstr ""
 
 #: system/admin/themes.php:143 system/themes/charcoal/theme.php:54
 #: system/classes/post.php:889 system/plugins/undelete/undelete.plugin.php:178
+#: system/plugins/coreblocks/coreblocks.plugin.php:66
+#: system/plugins/coreblocks/coreblocks.plugin.php:126
+#: system/plugins/coreblocks/coreblocks.plugin.php:165
+#: system/plugins/coreblocks/coreblocks.plugin.php:239
+#: system/plugins/coreblocks/coreblocks.plugin.php:299
+#: system/plugins/coreblocks/coreblocks.plugin.php:340
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:876
 msgid "Save"
 msgstr ""
@@ -458,7 +469,7 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: system/admin/themes.php:202 system/classes/installhandler.php:220
+#: system/admin/themes.php:202 system/classes/installhandler.php:221
 #: system/classes/adminhandler.php:1889 system/classes/adminhandler.php:1893
 msgid "Activate"
 msgstr ""
@@ -869,6 +880,7 @@ msgid "password"
 msgstr ""
 
 #: system/admin/login.php:47 system/themes/charcoal/header.php:51
+#: system/plugins/coreblocks/coreblocks.plugin.php:317
 msgid "Login"
 msgstr ""
 
@@ -1220,6 +1232,7 @@ msgid "Perhaps you can try searching."
 msgstr ""
 
 #: system/themes/mzingi/searchform.php:5 system/themes/k2/sidebar.php:6
+#: system/plugins/coreblocks/coreblocks.plugin.php:355
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:629
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:977
 msgid "Search"
@@ -1445,7 +1458,7 @@ msgstr ""
 msgid "Add, remove, and edit users"
 msgstr ""
 
-#: system/classes/acl.php:773 system/classes/installhandler.php:1564
+#: system/classes/acl.php:773 system/classes/installhandler.php:1565
 msgid "Edit own profile"
 msgstr ""
 
@@ -1457,13 +1470,13 @@ msgstr ""
 msgid "Manage logs"
 msgstr ""
 
-#: system/classes/acl.php:778 system/classes/installhandler.php:1515
+#: system/classes/acl.php:778 system/classes/installhandler.php:1516
 msgid "Permissions on one's own posts"
 msgstr ""
 
 #: system/classes/acl.php:778 system/classes/acl.php:779
 #: system/classes/acl.php:780 system/classes/acl.php:782
-#: system/classes/installhandler.php:1669 system/classes/post.php:246
+#: system/classes/installhandler.php:1670 system/classes/post.php:246
 #: system/classes/post.php:828
 msgid "Content"
 msgstr ""
@@ -1472,7 +1485,7 @@ msgstr ""
 msgid "Permissions to all posts"
 msgstr ""
 
-#: system/classes/acl.php:780 system/classes/installhandler.php:1669
+#: system/classes/acl.php:780 system/classes/installhandler.php:1670
 msgid "Permissions to other users' unpublished posts"
 msgstr ""
 
@@ -1482,18 +1495,18 @@ msgid "Permissions to posts of type \"%s\""
 msgstr ""
 
 #: system/classes/acl.php:803 system/classes/acl.php:805
-#: system/classes/installhandler.php:696
+#: system/classes/installhandler.php:697
 msgid "admin"
 msgstr ""
 
 #: system/classes/acl.php:808 system/classes/acl.php:810
-#: system/classes/installhandler.php:707
+#: system/classes/installhandler.php:708
 msgid "anonymous"
 msgstr ""
 
 #: system/classes/acl.php:839 system/classes/acl.php:841
-#: system/classes/installhandler.php:1526
-#: system/classes/installhandler.php:1528
+#: system/classes/installhandler.php:1527
+#: system/classes/installhandler.php:1529
 msgid "authenticated"
 msgstr ""
 
@@ -1502,32 +1515,13 @@ msgstr ""
 msgid "Invalid state %d in %s->parse()"
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:78
-#: system/classes/socketrequestprocessor.php:81
+#: system/classes/socketrequestprocessor.php:65
 #, php-format
-msgid "Error %d: %s while connecting to %s:%d"
+msgid "Unable to connect to %s"
 msgstr ""
 
-#: system/classes/socketrequestprocessor.php:132
-msgid "Error writing to socket."
-msgstr ""
-
-#: system/classes/socketrequestprocessor.php:164
-msgid "Maximum number of redirections exceeded."
-msgstr ""
-
-#: system/classes/socketrequestprocessor.php:170
-msgid "Redirection response without Location: header."
-msgstr ""
-
-#: system/classes/socketrequestprocessor.php:206
-#: system/classes/curlrequestprocessor.php:195
-msgid "Unable to get response body. Request did not yet execute."
-msgstr ""
-
-#: system/classes/socketrequestprocessor.php:215
-#: system/classes/curlrequestprocessor.php:204
-msgid "Unable to get response headers. Request did not yet execute."
+#: system/classes/socketrequestprocessor.php:79
+msgid "Request timed out"
 msgstr ""
 
 #: system/classes/xmlrpcclient.php:103
@@ -1539,8 +1533,8 @@ msgid "Password mis-match."
 msgstr ""
 
 #: system/classes/installhandler.php:153
-#: system/classes/installhandler.php:1710
-#: system/classes/installhandler.php:1781
+#: system/classes/installhandler.php:1711
+#: system/classes/installhandler.php:1782
 msgid "Allowed characters are A-Z, a-z and \"_\"."
 msgstr ""
 
@@ -1552,144 +1546,144 @@ msgstr ""
 msgid "Habari successfully installed."
 msgstr ""
 
-#: system/classes/installhandler.php:403
+#: system/classes/installhandler.php:404
 msgid "User is required."
 msgstr ""
 
-#: system/classes/installhandler.php:407
+#: system/classes/installhandler.php:408
 msgid "Name for database is required."
 msgstr ""
 
-#: system/classes/installhandler.php:411
+#: system/classes/installhandler.php:412
 msgid "Host is required."
 msgstr ""
 
-#: system/classes/installhandler.php:430 system/classes/installhandler.php:641
+#: system/classes/installhandler.php:431 system/classes/installhandler.php:642
 msgid "Problem connecting to supplied database credentials"
 msgstr ""
 
-#: system/classes/installhandler.php:446
+#: system/classes/installhandler.php:447
 #, php-format
 msgid "Could not create schema tables&hellip; %s"
 msgstr ""
 
-#: system/classes/installhandler.php:455
+#: system/classes/installhandler.php:456
 msgid "Problem creating default options"
 msgstr ""
 
-#: system/classes/installhandler.php:463
+#: system/classes/installhandler.php:464
 msgid "Problem creating tags vocabulary"
 msgstr ""
 
-#: system/classes/installhandler.php:470
+#: system/classes/installhandler.php:471
 msgid "Problem creating base post types"
 msgstr ""
 
-#: system/classes/installhandler.php:481
+#: system/classes/installhandler.php:482
 msgid "Problem creating admin user."
 msgstr ""
 
-#: system/classes/installhandler.php:487
+#: system/classes/installhandler.php:488
 msgid "Problem creating admin group."
 msgstr ""
 
-#: system/classes/installhandler.php:498
+#: system/classes/installhandler.php:499
 msgid "Problem creating first post."
 msgstr ""
 
-#: system/classes/installhandler.php:535 system/classes/installhandler.php:568
-#: system/classes/installhandler.php:1725
-#: system/classes/installhandler.php:1796
+#: system/classes/installhandler.php:536 system/classes/installhandler.php:569
+#: system/classes/installhandler.php:1726
+#: system/classes/installhandler.php:1797
 msgid "Access denied. Make sure these credentials are valid."
 msgstr ""
 
-#: system/classes/installhandler.php:538 system/classes/installhandler.php:571
-#: system/classes/installhandler.php:1729
-#: system/classes/installhandler.php:1800
+#: system/classes/installhandler.php:539 system/classes/installhandler.php:572
+#: system/classes/installhandler.php:1730
+#: system/classes/installhandler.php:1801
 msgid "That database does not exist."
 msgstr ""
 
-#: system/classes/installhandler.php:541 system/classes/installhandler.php:574
-#: system/classes/installhandler.php:1733
-#: system/classes/installhandler.php:1804
+#: system/classes/installhandler.php:542 system/classes/installhandler.php:575
+#: system/classes/installhandler.php:1734
+#: system/classes/installhandler.php:1805
 msgid "Could not connect to host."
 msgstr ""
 
-#: system/classes/installhandler.php:602
-#: system/classes/installhandler.php:1852
+#: system/classes/installhandler.php:603
+#: system/classes/installhandler.php:1853
 #, php-format
 msgid "Cannot write to %s. The SQLite data file is not writable by the web server."
 msgstr ""
 
-#: system/classes/installhandler.php:606
-#: system/classes/installhandler.php:1845
+#: system/classes/installhandler.php:607
+#: system/classes/installhandler.php:1846
 #, php-format
 msgid "Cannot write to %s directory. SQLite requires that the directory that holds the DB file be writable by the web server."
 msgstr ""
 
-#: system/classes/installhandler.php:615
+#: system/classes/installhandler.php:616
 #, php-format
 msgid "Cannot write to %s directory. The SQLite data file does not exist, and it cannot be created in the specified directory. SQLite requires that the directory containing the database file be writable by the web server."
 msgstr ""
 
-#: system/classes/installhandler.php:752
-#: system/classes/installhandler.php:1646
+#: system/classes/installhandler.php:753
+#: system/classes/installhandler.php:1647
 msgid "Trim the log table"
 msgstr ""
 
-#: system/classes/installhandler.php:755
-#: system/classes/installhandler.php:1654
+#: system/classes/installhandler.php:756
+#: system/classes/installhandler.php:1655
 msgid "Perform a check for plugin updates."
 msgstr ""
 
-#: system/classes/installhandler.php:799
+#: system/classes/installhandler.php:800
 msgid "This site is running <a href=\"http://habariproject.org/\">Habari</a>, a state-of-the-art publishing platform!  Habari is a community-driven project created and supported by people from all over the world.  Please visit <a href=\"http://habariproject.org/\">http://habariproject.org/</a> to find out more!"
 msgstr ""
 
-#: system/classes/installhandler.php:862
+#: system/classes/installhandler.php:863
 msgid "currently unsupported."
 msgstr ""
 
-#: system/classes/installhandler.php:976
+#: system/classes/installhandler.php:977
 msgid "No admin user found"
 msgstr ""
 
-#: system/classes/installhandler.php:1376
+#: system/classes/installhandler.php:1377
 msgid "Site Maintenance"
 msgstr ""
 
-#: system/classes/installhandler.php:1377
+#: system/classes/installhandler.php:1378
 msgid "Habari is currently being upgraded."
 msgstr ""
 
-#: system/classes/installhandler.php:1378
+#: system/classes/installhandler.php:1379
 msgid "Try again in a little while."
 msgstr ""
 
-#: system/classes/installhandler.php:1391
+#: system/classes/installhandler.php:1392
 msgid "Truncate the log table"
 msgstr ""
 
-#: system/classes/installhandler.php:1569
+#: system/classes/installhandler.php:1570
 msgid "Manage dashboard modules"
 msgstr ""
 
-#: system/classes/installhandler.php:1692
-#: system/classes/installhandler.php:1763
+#: system/classes/installhandler.php:1693
+#: system/classes/installhandler.php:1764
 msgid "The database host field was left empty."
 msgstr ""
 
-#: system/classes/installhandler.php:1698
-#: system/classes/installhandler.php:1769
+#: system/classes/installhandler.php:1699
+#: system/classes/installhandler.php:1770
 msgid "The database name field was left empty."
 msgstr ""
 
-#: system/classes/installhandler.php:1704
-#: system/classes/installhandler.php:1775
+#: system/classes/installhandler.php:1705
+#: system/classes/installhandler.php:1776
 msgid "The database user field was left empty."
 msgstr ""
 
-#: system/classes/installhandler.php:1835
+#: system/classes/installhandler.php:1836
 msgid "The database file was left empty."
 msgstr ""
 
@@ -1942,7 +1936,7 @@ msgid ""
 "  %s(%s)\n"
 msgstr ""
 
-#: system/classes/session.php:102
+#: system/classes/session.php:110
 msgid "Your session expired."
 msgstr ""
 
@@ -2154,7 +2148,7 @@ msgid "Site Tagline"
 msgstr ""
 
 #: system/classes/adminhandler.php:222
-#: system/plugins/pingback/pingback.plugin.php:321
+#: system/plugins/pingback/pingback.plugin.php:323
 msgid "Publishing"
 msgstr ""
 
@@ -2809,6 +2803,7 @@ msgid "Log out of the administration interface"
 msgstr ""
 
 #: system/classes/adminhandler.php:3218
+#: system/plugins/coreblocks/coreblocks.plugin.php:314
 msgid "Logout"
 msgstr ""
 
@@ -2859,20 +2854,30 @@ msgstr ""
 msgid "+"
 msgstr ""
 
-#: system/classes/remoterequest.php:193
+#: system/classes/remoterequest.php:29
+#: system/classes/curlrequestprocessor.php:185
+msgid "Unable to get response body. Request did not yet execute."
+msgstr ""
+
+#: system/classes/remoterequest.php:38
+#: system/classes/curlrequestprocessor.php:194
+msgid "Unable to get response headers. Request did not yet execute."
+msgstr ""
+
+#: system/classes/remoterequest.php:217
 msgid "Trying to add a request body to a GET request."
 msgstr ""
 
-#: system/classes/remoterequest.php:250
+#: system/classes/remoterequest.php:274
 #, php-format
 msgid "File %s not found."
 msgstr ""
 
-#: system/classes/remoterequest.php:350
+#: system/classes/remoterequest.php:374
 msgid "Unable to fetch response headers for a pending request."
 msgstr ""
 
-#: system/classes/remoterequest.php:363
+#: system/classes/remoterequest.php:387
 msgid "Unable to fetch response body for a pending request."
 msgstr ""
 
@@ -3096,15 +3101,15 @@ msgstr ""
 msgid "Your comment is pending moderation."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:102
+#: system/classes/curlrequestprocessor.php:92
 msgid "CURL Error. Unable to create temporary file name."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:107
+#: system/classes/curlrequestprocessor.php:97
 msgid "CURL Error. Unable to open temporary file."
 msgstr ""
 
-#: system/classes/curlrequestprocessor.php:142
+#: system/classes/curlrequestprocessor.php:132
 #, php-format
 msgid "CURL Error %1$d: %2$s"
 msgstr ""
@@ -3162,12 +3167,12 @@ msgstr ""
 msgid "none"
 msgstr ""
 
-#: system/classes/term.php:133
+#: system/classes/term.php:140
 #, php-format
 msgid "New term %1$s: %2$s"
 msgstr ""
 
-#: system/classes/term.php:187
+#: system/classes/term.php:194
 #, php-format
 msgid "Term %1$s (%2$s) deleted."
 msgstr ""
@@ -3729,6 +3734,54 @@ msgstr ""
 msgid "The selected action is forbidden."
 msgstr ""
 
+#: system/plugins/coreblocks/coreblocks.plugin.php:33
+msgid "Site Feed"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:34
+msgid "Comments Feed"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:65
+msgid "Comments to show:"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:124
+msgid "Posts to show:"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:161
+msgid "Display full month names:"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:162
+#: system/plugins/coreblocks/coreblocks.plugin.php:236
+msgid "Append post count:"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:163
+#: system/plugins/coreblocks/coreblocks.plugin.php:237
+msgid "Preferred Output Style:"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:164
+#: system/plugins/coreblocks/coreblocks.plugin.php:238
+msgid "Dropdown"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:164
+#: system/plugins/coreblocks/coreblocks.plugin.php:238
+msgid "List"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:298
+msgid "Links to show:"
+msgstr ""
+
+#: system/plugins/coreblocks/coreblocks.plugin.php:339
+msgid "Button:"
+msgstr ""
+
 #: system/plugins/simple_private_posts/simple_private_posts.plugin.php:27
 msgid "Private Post"
 msgstr ""
@@ -3854,26 +3907,41 @@ msgstr ""
 msgid "You have logged in to Viddler."
 msgstr ""
 
-#: system/plugins/pingback/pingback.plugin.php:309
+#: system/plugins/pingback/pingback.plugin.php:240
+#, php-format
+msgid "Unable to retrieve target, can't detect pingback endpoint. (Source: %1$s | Target: %2$s)"
+msgstr ""
+
+#: system/plugins/pingback/pingback.plugin.php:263
+#, php-format
+msgid "Invalid Pingback endpoint - %1$s (Source: %2$s | Target: %3$s)"
+msgstr ""
+
+#: system/plugins/pingback/pingback.plugin.php:268
+#, php-format
+msgid "Pingback error: %1$s - %2$s (Source: %3$s | Target: %4$s)"
+msgstr ""
+
+#: system/plugins/pingback/pingback.plugin.php:311
 #, php-format
 msgid "Sent pingbacks for \"%1$s\", target: %2$s"
 msgstr ""
 
-#: system/plugins/pingback/pingback.plugin.php:322
+#: system/plugins/pingback/pingback.plugin.php:324
 msgid "Send Pingbacks to Links"
 msgstr ""
 
-#: system/plugins/pingback/pingback.plugin.php:348
+#: system/plugins/pingback/pingback.plugin.php:350
 #, php-format
 msgid "%d Pingbacks"
 msgstr ""
 
-#: system/plugins/pingback/pingback.plugin.php:351
+#: system/plugins/pingback/pingback.plugin.php:353
 #, php-format
 msgid "%d Pingback"
 msgstr ""
 
-#: system/plugins/pingback/pingback.plugin.php:354
+#: system/plugins/pingback/pingback.plugin.php:356
 #, php-format
 msgid "%d Pingabcks"
 msgstr ""

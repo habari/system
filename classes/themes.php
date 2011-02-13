@@ -49,7 +49,7 @@ class Themes
 				$themedata['path'] = $theme_path;
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
-				if ( $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
+				if ( isset( $themedata['info']->class ) == false || $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
 					$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
 					$themedata['info']->description = '<span class="error">' . _t( 'This theme is a legacy theme that is not compatible with Habari ' ) . Version::get_habariversion() . '. <br><br>Please update your theme.</span>';
 					$themedata['info']->license = '';
@@ -143,7 +143,6 @@ class Themes
 		$active_data = $all_data[$active_theme_dir];
 		return $active_data;
 	}
-
 
 	/**
 	 * function activate_theme
@@ -242,16 +241,23 @@ class Themes
 				die( _t( 'Theme not installed.' ) );
 			}
 		}
+// clean this up. Would the else even work?
+if ( isset( $themedata->class ) ) { 
 
+		$classname = $themedata->class;
+}
+else {
 		$classname = 'Theme';
+}
 		/**
 		 * @todo Should we include_once a theme's theme.php file here?
 		 **/
 		if ( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
 			include_once( $themedata->theme_dir . 'theme.php' );
+/*			// this is no longer supported so that theme (de)activation hooks can work. It should be removed.
 			if ( defined( 'THEME_CLASS' ) ) {
 				$classname = THEME_CLASS;
-			}
+			}*/
 		}
 
 		$created_theme = new $classname( $themedata );

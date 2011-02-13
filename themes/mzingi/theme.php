@@ -1,8 +1,7 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } 
 
 /**
- * CornerStone is a custom Theme class for the mzingi theme.
+ * Mzingi is a custom Theme class for the mzingi theme.
  *
  * @package Habari
  */
@@ -12,13 +11,10 @@
  */
 
 
-// We must tell Habari to use MyTheme as the custom theme class:
-define( 'THEME_CLASS', 'CornerStone' );
-
 /**
  * A custom theme for mzingi output
  */
-class CornerStone extends Theme
+class Mzingi extends Theme
 {
 
 	public function action_init_theme()
