@@ -1,5 +1,4 @@
-<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
-<?php
+<?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } 
 
 class Charcoal extends Theme
 {
@@ -14,18 +13,23 @@ class Charcoal extends Theme
 		'show_post_nav' => true,
 		'tags_count' => 40,
 		);
+
+	/**
+	 * On theme activation, set the default options
+	 */
+	public function action_theme_activated()
+	{
+		$opts = Options::get_group( __CLASS__ );
+		if ( empty( $opts ) ) {
+			Options::set_group( __CLASS__, $this->defaults );
+		}
+	}
+
 	/**
 	 * Configuration form for the Charcoal theme
 	 **/
 	public function action_theme_ui( $theme )
 	{
-		// We need this and the corresponding if/elses as we can't set default values via themes yet.
-		// When #1258 - https://trac.habariproject.org/habari/ticket/1258 gets implemented, we can remove this section in favour of using something like action_theme_activation().
-		$opts = Options::get_group( __CLASS__ );
-		if ( empty( $opts ) ) {
-			Options::set_group( __CLASS__, $this->defaults );
-		}
-
 		$ui = new FormUI( __CLASS__ );
 		// This is a fudge as I only need to add a little bit of styling to make things look nice.
 		$ui->append( 'static', 'style', '<style type="text/css">#charcoal .formcontrol { line-height: 2.2em; }</style>');
