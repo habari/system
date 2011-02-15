@@ -128,8 +128,19 @@ class Themes
 		foreach ( $data as $name=>$value ) {
 			$theme->$name = (string) $value;
 		}
+		$theme->xml = $data;
 		return $theme;
 	}
+
+	private static function get_by_name($name) {
+		$themes = self::get_all_data();
+		foreach($themes as $theme) {
+			if($name == $theme['info']->name) {
+				return $theme;			}
+		}
+		return false;
+	}
+
 
 	/**
 	 * Returns theme information for the active theme -- dir, path, theme.xml, screenshot url
@@ -241,23 +252,23 @@ class Themes
 				die( _t( 'Theme not installed.' ) );
 			}
 		}
-// clean this up. Would the else even work?
-if ( isset( $themedata->class ) ) { 
 
-		$classname = $themedata->class;
-}
-else {
-		$classname = 'Theme';
-}
-		/**
-		 * @todo Should we include_once a theme's theme.php file here?
-		 **/
-		if ( file_exists( $themedata->theme_dir . 'theme.php' ) ) {
-			include_once( $themedata->theme_dir . 'theme.php' );
-/*			// this is no longer supported so that theme (de)activation hooks can work. It should be removed.
-			if ( defined( 'THEME_CLASS' ) ) {
-				$classname = THEME_CLASS;
-			}*/
+		// Get the class from the theme data
+		if ( isset( $themedata->class ) ) {
+			$classname = $themedata->class;
+		}
+		else {
+			$classname = 'Theme';
+		}
+
+		// Set the default theme file
+		$themefile = 'theme.php';
+		if(isset($themedata->class['file']) && (string)$themedata->xml->class['file'] != '') {
+			$themefile = (string)$themedata->xml->class['file'];
+		}
+
+		if ( file_exists( $themedata->theme_dir . $themefile ) ) {
+			include_once( $themedata->theme_dir . $themefile );
 		}
 
 		$created_theme = new $classname( $themedata );
