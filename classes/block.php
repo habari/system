@@ -11,7 +11,7 @@
  */
 class Block extends QueryRecord implements IsContent, FormStorage
 {
-	private $data_values = array();
+	private $data_values = array( '_show_title' => true );
 
 	/**
 	 * Constructor for the Block class.
