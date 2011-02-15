@@ -77,10 +77,7 @@ class Charcoal extends Theme
 	{
 		// Use theme options to set values that can be used directly in the templates
 		$opts = Options::get_group( __CLASS__ );
-		if ( empty( $opts ) ) {
-			$opts = $this->defaults;
-		}
-		
+				
 		$this->assign( 'show_title_image', $opts['show_title_image'] );
 		$this->assign( 'home_label', $opts['home_label'] );
 		$this->assign( 'show_powered', $opts['show_powered'] );
