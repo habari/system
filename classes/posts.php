@@ -345,9 +345,9 @@ class Posts extends ArrayObject implements IsContent
 				if ( isset( $paramset['criteria'] ) ) {
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
-						$where[] .= "({posts}.title LIKE CONCAT('%',?,'%') OR {posts}.content LIKE CONCAT('%',?,'%'))";
-						$params[] = $word;
-						$params[] = $word;  // Not a typo (there are two ? in the above statement)
+						$where[] .= "( LOWER( {posts}.title ) LIKE ? OR  LOWER( {posts}.content ) LIKE ?)";
+						$params[] = '%' . MultiByte::strtolower( $word ) . '%';
+						$params[] = '%' . MultiByte::strtolower( $word ) . '%';  // Not a typo (there are two ? in the above statement)
 					}
 				}
 
