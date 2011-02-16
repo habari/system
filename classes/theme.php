@@ -221,6 +221,17 @@ class Theme extends Pluggable
 		if ( !isset( $posts ) ) {
 			$user_filters = Plugins::filter( 'template_user_filters', $user_filters );
 			$user_filters = array_intersect_key( $user_filters, array_flip( $this->valid_filters ) );
+
+			// Work around the tags parameters to Posts::get() being subsumed by the vocabulary parameter
+			if( isset( $user_filters['not:tag'] ) ) {
+				$user_filters['vocabulary'] = array( Tags::vocabulary()->name . ':not:term' => $user_filters['not:tag'] );
+				unset( $user_filters['not:tag'] );
+			}
+			if( isset( $user_filters['tag'] ) ) {
+				$user_filters['vocabulary'] = array( Tags::vocabulary()->name . ':term_display' => $user_filters['tag'] );
+				unset( $user_filters['tag'] );
+			}
+
 			$where_filters = $where_filters->merge( $user_filters );
 			$where_filters = Plugins::filter( 'template_where_filters', $where_filters );
 			$posts = Posts::get( $where_filters );
