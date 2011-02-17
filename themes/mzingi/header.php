@@ -7,9 +7,6 @@
 	<title><?php if ($request->display_entry && isset($post)) { echo "{$post->title} - "; } ?><?php Options::out( 'title' ) ?></title>
 	<meta name="generator" content="Habari">
 
-	<link rel="edit" type="application/atom+xml" title="Atom Publishing Protocol" href="<?php URL::out( 'atompub_servicedocument' ); ?>">
-	<link rel="alternate" type="application/atom+xml" title="Atom" href="<?php $theme->feed_alternate(); ?>">
-	<link rel="EditURI" type="application/rsd+xml" title="RSD" href="<?php URL::out( 'rsd' ); ?>">
 	<link rel="stylesheet" type="text/css"  media="print" href="<?php Site::out_url( 'vendor'); ?>/blueprint/print.css">
 	<link rel="stylesheet" type="text/css" media ="screen" href="<?php Site::out_url( 'vendor'); ?>/blueprint/screen.css">
 	<link rel="stylesheet" type="text/css" media="screen" href="<?php Site::out_url( 'theme' ); ?>/style.css">
