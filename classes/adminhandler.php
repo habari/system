@@ -3564,11 +3564,19 @@ class AdminHandler extends ActionHandler
 
 		$block = DB::get_row( 'SELECT b.* FROM {blocks} b WHERE id = :id ORDER BY b.title ASC', array( 'id' => $_GET['blockid'] ), 'Block' );
 		$block_form = $block->get_form();
-		$block_form->insert( reset( $block_form->controls )->name, 'fieldset', 'block_admin', 'Block Display Settings' );
-		$block_form->block_admin->append( 'text', '_title', array( 'configure_block_title', $block ), 'Block Title:' );
+		$first_control = reset ( $block_form->controls );
+		if ( $first_control ) {
+			$block_form->insert( $first_control->name, 'fieldset', 'block_admin', _t( 'Block Display Settings' ) );
+		}
+		else {
+			$block_form->append( 'fieldset', 'block_admin', _t( 'Block Display Settings' ) );
+		}
+
+		$block_form->block_admin->append( 'text', '_title', array( 'configure_block_title', $block ), _t( 'Block Title:' ) );
 		$block_form->_title->value = $block->title;
 		$block_form->_title->add_validator( 'validate_required' );
-		$block_form->block_admin->append( 'checkbox', '_show_title', $block, 'Display Block Title:' );
+		$block_form->block_admin->append( 'checkbox', '_show_title', $block, _t( 'Display Block Title:' ) );
+		$block_form->append( 'submit', 'save', _t( 'Save' ) );
 		
 		Plugins::register( array( $this, 'action_configure_block_title' ), 'action', 'configure_block_title' );
 		
