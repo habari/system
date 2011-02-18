@@ -55,7 +55,7 @@
 	<?php endif; ?>
 
 	<?php if ( isset($active_theme['info']->areas) ): ?>
-	<div class="item clear">
+	<div id="blocksconfigure"class="item clear">
 		<h3>Areas</h3>
 				<div>
 					<div id="block_add">
