@@ -56,18 +56,10 @@ class Mzingi extends Theme
 			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status('published') ) ) );
 		}
 		//For Asides loop in sidebar.php
-		$this->assign( 'asides', Posts::get( array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 ) ) );
-
-		//for recent comments loop in sidebar.php
-		$this->assign('recent_comments', Comments::get( array('limit'=>5, 'status'=>Comment::STATUS_APPROVED, 'orderby'=>'date DESC' ) ) );
+		$this->assign( 'asides', Posts::get( array( 'vocabulary' => array( 'tags:term' => 'aside' ), 'limit' => 5 ) ) );	
 
 		parent::add_template_vars();
-		//visiting page/2, /3 will offset to the next page of posts in the sidebar
-		$page =Controller::get_var( 'page' );
-		$pagination =Options::get('pagination');
-		if ( $page == '' ) { $page = 1; }
-		$this->assign( 'more_posts', Posts::get(array ( 'status' => 'published','content_type' => 'entry', 'offset' => ($pagination)*($page), 'limit' => 5,  ) ) );
-
+		
 	}
 
 	public function act_display_home( $user_filters = array() )
