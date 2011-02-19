@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-13 00:00+0000\n"
+"POT-Creation-Date: 2011-02-20 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +80,7 @@ msgstr ""
 msgid "Delete this group"
 msgstr ""
 
-#: system/admin/groups_item.php:8 system/admin/block_instances.php:18
+#: system/admin/groups_item.php:8 system/admin/block_instances.php:16
 #: system/admin/publish.php:15 system/admin/posts_items.php:29
 #: system/admin/group.php:127 system/classes/adminhandler.php:830
 #: system/classes/adminhandler.php:1765
@@ -97,7 +97,7 @@ msgstr ""
 msgid "No members"
 msgstr ""
 
-#: system/admin/dashboard_modules.php:5 system/classes/adminhandler.php:3763
+#: system/admin/dashboard_modules.php:5 system/classes/adminhandler.php:3771
 msgid "Add Item"
 msgstr ""
 
@@ -161,16 +161,16 @@ msgid "New Block Type:"
 msgstr ""
 
 #: system/admin/block_instances.php:7 system/themes/mzingi/loginform.php:19
-#: system/themes/mzingi/theme.php:91 system/themes/k2/loginform.php:21
+#: system/themes/mzingi/theme.php:79 system/themes/k2/loginform.php:21
 msgid "Name:"
 msgstr ""
 
-#: system/admin/block_instances.php:16
+#: system/admin/block_instances.php:15
 #, php-format
 msgid "Configure Block: %1s (%2s)"
 msgstr ""
 
-#: system/admin/block_instances.php:16 system/classes/pluggable.php:187
+#: system/admin/block_instances.php:15 system/classes/pluggable.php:187
 #: system/plugins/undelete/undelete.plugin.php:163
 #: system/plugins/undelete/undelete.plugin.php:175
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:803
@@ -196,7 +196,7 @@ msgid "Go to %s"
 msgstr ""
 
 #: system/admin/comments_items.php:18 system/admin/posts_items.php:22
-#: system/themes/mzingi/commentform.php:47 system/themes/mzingi/sidebar.php:46
+#: system/themes/mzingi/commentform.php:47
 msgid "on"
 msgstr ""
 
@@ -307,13 +307,13 @@ msgid "The XML file for the plugin %s contained errors and could not be loaded."
 msgstr ""
 
 #: system/admin/plugin.php:35 system/admin/posts_items.php:21
-#: system/admin/themes.php:10 system/admin/themes.php:172
+#: system/admin/themes.php:10 system/admin/themes.php:171
 #: system/plugins/coredashmodules/dash_latestentries.php:6
 msgid "by"
 msgstr ""
 
 #: system/admin/plugin.php:42 system/admin/themes.php:16
-#: system/admin/themes.php:178 system/themes/charcoal/footer.php:10
+#: system/admin/themes.php:177 system/themes/charcoal/footer.php:10
 #: system/classes/format.php:247 system/classes/format.php:277
 msgid " and "
 msgstr ""
@@ -436,19 +436,14 @@ msgstr ""
 msgid "Update Available"
 msgstr ""
 
-#: system/admin/themes.php:37 system/admin/themes.php:188
+#: system/admin/themes.php:37 system/admin/themes.php:187
 #, php-format
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: system/admin/themes.php:143 system/themes/charcoal/theme.php:54
-#: system/classes/post.php:889 system/plugins/undelete/undelete.plugin.php:178
-#: system/plugins/coreblocks/coreblocks.plugin.php:66
-#: system/plugins/coreblocks/coreblocks.plugin.php:126
-#: system/plugins/coreblocks/coreblocks.plugin.php:165
-#: system/plugins/coreblocks/coreblocks.plugin.php:239
-#: system/plugins/coreblocks/coreblocks.plugin.php:299
-#: system/plugins/coreblocks/coreblocks.plugin.php:340
+#: system/admin/themes.php:143 system/themes/charcoal/theme.php:56
+#: system/classes/post.php:889 system/classes/adminhandler.php:3579
+#: system/plugins/undelete/undelete.plugin.php:178
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:876
 msgid "Save"
 msgstr ""
@@ -457,19 +452,19 @@ msgstr ""
 msgid "Available Themes"
 msgstr ""
 
-#: system/admin/themes.php:194
+#: system/admin/themes.php:193
 msgid "Legacy theme."
 msgstr ""
 
-#: system/admin/themes.php:198
+#: system/admin/themes.php:197
 msgid "End Preview"
 msgstr ""
 
-#: system/admin/themes.php:200
+#: system/admin/themes.php:199
 msgid "Preview"
 msgstr ""
 
-#: system/admin/themes.php:202 system/classes/installhandler.php:221
+#: system/admin/themes.php:201 system/classes/installhandler.php:221
 #: system/classes/adminhandler.php:1889 system/classes/adminhandler.php:1893
 msgid "Activate"
 msgstr ""
@@ -866,8 +861,8 @@ msgstr ""
 msgid "Login to %s"
 msgstr ""
 
-#: system/admin/login.php:40 system/themes/charcoal/theme.php:192
-#: system/themes/k2/theme.php:118
+#: system/admin/login.php:40 system/themes/charcoal/theme.php:191
+#: system/themes/k2/theme.php:115
 msgid "Name"
 msgstr ""
 
@@ -880,7 +875,7 @@ msgid "password"
 msgstr ""
 
 #: system/admin/login.php:47 system/themes/charcoal/header.php:51
-#: system/plugins/coreblocks/coreblocks.plugin.php:317
+#: system/plugins/coreblocks/coreblocks.plugin.php:312
 msgid "Login"
 msgstr ""
 
@@ -931,20 +926,20 @@ msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/themes/k2/theme.php:95
+#: system/themes/charcoal/entry.single.php:30 system/themes/k2/theme.php:92
 msgid "Comments on this post"
 msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
-#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:866
+#: system/themes/charcoal/entry.single.php:30 system/classes/theme.php:878
 msgid "No Comments"
 msgstr ""
 
 #: system/themes/charcoal/tag.php:21 system/themes/charcoal/home.php:24
 #: system/themes/charcoal/multiple.php:20 system/themes/charcoal/search.php:22
 #: system/themes/charcoal/entry.single.php:30
-#: system/themes/mzingi/commentform.php:28 system/themes/k2/theme.php:95
+#: system/themes/mzingi/commentform.php:28 system/themes/k2/theme.php:92
 #: system/classes/post.php:997 system/classes/adminhandler.php:1362
 msgid "Comment"
 msgid_plural "Comments"
@@ -1037,130 +1032,130 @@ msgstr ""
 msgid "Atom Comments"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:34
+#: system/themes/charcoal/theme.php:36
 msgid "Show Title Image:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:35
+#: system/themes/charcoal/theme.php:37
 msgid "Check to show the title image, uncheck to display the title text."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:36
+#: system/themes/charcoal/theme.php:38
 msgid "Home label:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:37
+#: system/themes/charcoal/theme.php:39
 msgid "Set to whatever you want your first tab text to be."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:38
+#: system/themes/charcoal/theme.php:40
 msgid "Show Entry Paperclip:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:39
+#: system/themes/charcoal/theme.php:41
 msgid "Check to show the paperclip graphic in posts, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:40
+#: system/themes/charcoal/theme.php:42
 msgid "Show Page Paperclip:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:41
+#: system/themes/charcoal/theme.php:43
 msgid "Check to show the paperclip graphic in pages, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:42
+#: system/themes/charcoal/theme.php:44
 msgid "Show Powered By:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:43
+#: system/themes/charcoal/theme.php:45
 msgid "Check to show the \"powered by Habari\" graphic in the sidebar, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:44
+#: system/themes/charcoal/theme.php:46
 msgid "Display Login:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:45
+#: system/themes/charcoal/theme.php:47
 msgid "Check to show the Login/Logout link in the navigation bar, uncheck to hide it."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:46
+#: system/themes/charcoal/theme.php:48
 msgid "Tags in Multiple Posts Page:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:47
+#: system/themes/charcoal/theme.php:49
 msgid "Check to show the post tags in the multiple posts pages (search, tags, archives), uncheck to hide them."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:48
+#: system/themes/charcoal/theme.php:50
 msgid "Show Post Navigation:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:49
+#: system/themes/charcoal/theme.php:51
 msgid "Set to true to show single post navigation links, false to hide them."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:50
+#: system/themes/charcoal/theme.php:52
 msgid "Tag Cloud Count:"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:51
+#: system/themes/charcoal/theme.php:53
 msgid "Set to the number of tags to display on the default \"cloud\"."
 msgstr ""
 
-#: system/themes/charcoal/theme.php:55
+#: system/themes/charcoal/theme.php:57
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:877
 msgid "Options saved"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:138
+#: system/themes/charcoal/theme.php:137
 msgid "Search for "
 msgstr ""
 
-#: system/themes/charcoal/theme.php:143 system/themes/charcoal/theme.php:149
+#: system/themes/charcoal/theme.php:142 system/themes/charcoal/theme.php:148
 #, php-format
 msgid "Search results for '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:146
+#: system/themes/charcoal/theme.php:145
 #, php-format
 msgid "No results found for your search '%1$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:146
+#: system/themes/charcoal/theme.php:145
 #, php-format
 msgid "You can try searching for '%2$s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:152
+#: system/themes/charcoal/theme.php:151
 #, php-format
 msgid "No results found for your search '%s'"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:192
+#: system/themes/charcoal/theme.php:191
 msgid "(Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:194 system/themes/k2/theme.php:120
+#: system/themes/charcoal/theme.php:193 system/themes/k2/theme.php:117
 msgid "Mail"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:194
+#: system/themes/charcoal/theme.php:193
 msgid "(will not be published"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:194
+#: system/themes/charcoal/theme.php:193
 msgid "- Required)"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:196 system/themes/k2/theme.php:122
+#: system/themes/charcoal/theme.php:195 system/themes/k2/theme.php:119
 #: system/classes/post.php:985
 msgid "Website"
 msgstr ""
 
-#: system/themes/charcoal/theme.php:199 system/themes/mzingi/theme.php:108
-#: system/themes/k2/theme.php:125 system/classes/post.php:1005
+#: system/themes/charcoal/theme.php:198 system/themes/mzingi/theme.php:96
+#: system/themes/k2/theme.php:122 system/classes/post.php:1005
 #: system/plugins/habarisilo/habarisilo.plugin.php:466
 msgid "Submit"
 msgstr ""
@@ -1232,7 +1227,7 @@ msgid "Perhaps you can try searching."
 msgstr ""
 
 #: system/themes/mzingi/searchform.php:5 system/themes/k2/sidebar.php:6
-#: system/plugins/coreblocks/coreblocks.plugin.php:355
+#: system/plugins/coreblocks/coreblocks.plugin.php:349
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:629
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:977
 msgid "Search"
@@ -1242,32 +1237,20 @@ msgstr ""
 msgid "Go!"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:6
+#: system/themes/mzingi/sidebar.php:5
 msgid "Subscribe to Feed"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:7
+#: system/themes/mzingi/sidebar.php:6
 msgid "Navigation"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:9
+#: system/themes/mzingi/sidebar.php:8
 msgid "Home"
 msgstr ""
 
-#: system/themes/mzingi/sidebar.php:18
+#: system/themes/mzingi/sidebar.php:17
 msgid "Asides"
-msgstr ""
-
-#: system/themes/mzingi/sidebar.php:31
-msgid "More Posts"
-msgstr ""
-
-#: system/themes/mzingi/sidebar.php:42
-msgid "Recent Comments"
-msgstr ""
-
-#: system/themes/mzingi/sidebar.php:52
-msgid "User Login"
 msgstr ""
 
 #: system/themes/mzingi/search.php:8
@@ -1306,32 +1289,32 @@ msgstr ""
 msgid "GO!"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:87
+#: system/themes/mzingi/theme.php:75
 msgid "About You"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:91 system/themes/mzingi/theme.php:94
-#: system/themes/k2/theme.php:118 system/themes/k2/theme.php:120
+#: system/themes/mzingi/theme.php:79 system/themes/mzingi/theme.php:82
+#: system/themes/k2/theme.php:115 system/themes/k2/theme.php:117
 msgid "Required"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:94
+#: system/themes/mzingi/theme.php:82
 msgid "Email Address:"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:97
+#: system/themes/mzingi/theme.php:85
 msgid "Web Address:"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:99
+#: system/themes/mzingi/theme.php:87
 msgid "<p><em><small>Email address is not published</small></em></p>"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:102
+#: system/themes/mzingi/theme.php:90
 msgid "Add to the Discussion"
 msgstr ""
 
-#: system/themes/mzingi/theme.php:106
+#: system/themes/mzingi/theme.php:94
 msgid "Message: (Required)"
 msgstr ""
 
@@ -1387,7 +1370,7 @@ msgstr ""
 msgid "Sign in"
 msgstr ""
 
-#: system/themes/k2/theme.php:120
+#: system/themes/k2/theme.php:117
 msgid "(will not be published)"
 msgstr ""
 
@@ -2803,7 +2786,7 @@ msgid "Log out of the administration interface"
 msgstr ""
 
 #: system/classes/adminhandler.php:3218
-#: system/plugins/coreblocks/coreblocks.plugin.php:314
+#: system/plugins/coreblocks/coreblocks.plugin.php:309
 msgid "Logout"
 msgstr ""
 
@@ -2827,30 +2810,42 @@ msgstr ""
 msgid "Root"
 msgstr ""
 
-#: system/classes/adminhandler.php:3623
+#: system/classes/adminhandler.php:3569 system/classes/adminhandler.php:3572
+msgid "Block Display Settings"
+msgstr ""
+
+#: system/classes/adminhandler.php:3575
+msgid "Block Title:"
+msgstr ""
+
+#: system/classes/adminhandler.php:3578
+msgid "Display Block Title:"
+msgstr ""
+
+#: system/classes/adminhandler.php:3631
 msgid "A new block must first have a name."
 msgstr ""
 
-#: system/classes/adminhandler.php:3639
+#: system/classes/adminhandler.php:3647
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3663
+#: system/classes/adminhandler.php:3671
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3666
+#: system/classes/adminhandler.php:3674
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3713
+#: system/classes/adminhandler.php:3721
 msgid "Saved block areas settings."
 msgstr ""
 
-#: system/classes/adminhandler.php:3757
+#: system/classes/adminhandler.php:3765
 msgid "+"
 msgstr ""
 
@@ -3034,22 +3029,22 @@ msgstr ""
 msgid "There is no valid theme currently installed."
 msgstr ""
 
-#: system/classes/themes.php:166
+#: system/classes/themes.php:176
 #, php-format
 msgid "Activated Theme: %s"
 msgstr ""
 
-#: system/classes/themes.php:181
+#: system/classes/themes.php:191
 #, php-format
 msgid "Previewed Theme: %s"
 msgstr ""
 
-#: system/classes/themes.php:190
+#: system/classes/themes.php:200
 #, php-format
 msgid "Canceled Theme Preview: %s"
 msgstr ""
 
-#: system/classes/themes.php:233 system/classes/themes.php:242
+#: system/classes/themes.php:243 system/classes/themes.php:252
 msgid "Theme not installed."
 msgstr ""
 
@@ -3246,23 +3241,23 @@ msgstr ""
 msgid "Remove this item?"
 msgstr ""
 
-#: system/classes/theme.php:258
+#: system/classes/theme.php:270
 msgid "Whoops! 404. The page you were trying to access is not really there. Please try again."
 msgstr ""
 
-#: system/classes/theme.php:792
+#: system/classes/theme.php:804
 msgid "Previous"
 msgstr ""
 
-#: system/classes/theme.php:819
+#: system/classes/theme.php:831
 msgid "Next"
 msgstr ""
 
-#: system/classes/theme.php:845
+#: system/classes/theme.php:857
 msgid "Read Comments"
 msgstr ""
 
-#: system/classes/theme.php:871
+#: system/classes/theme.php:883
 #, php-format
 msgid "%s Comment"
 msgid_plural "%s Comments"
@@ -3746,39 +3741,39 @@ msgstr ""
 msgid "Comments to show:"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:124
+#: system/plugins/coreblocks/coreblocks.plugin.php:123
 msgid "Posts to show:"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:161
+#: system/plugins/coreblocks/coreblocks.plugin.php:159
 msgid "Display full month names:"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:162
-#: system/plugins/coreblocks/coreblocks.plugin.php:236
+#: system/plugins/coreblocks/coreblocks.plugin.php:160
+#: system/plugins/coreblocks/coreblocks.plugin.php:233
 msgid "Append post count:"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:163
-#: system/plugins/coreblocks/coreblocks.plugin.php:237
+#: system/plugins/coreblocks/coreblocks.plugin.php:161
+#: system/plugins/coreblocks/coreblocks.plugin.php:234
 msgid "Preferred Output Style:"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:164
-#: system/plugins/coreblocks/coreblocks.plugin.php:238
+#: system/plugins/coreblocks/coreblocks.plugin.php:162
+#: system/plugins/coreblocks/coreblocks.plugin.php:235
 msgid "Dropdown"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:164
-#: system/plugins/coreblocks/coreblocks.plugin.php:238
+#: system/plugins/coreblocks/coreblocks.plugin.php:162
+#: system/plugins/coreblocks/coreblocks.plugin.php:235
 msgid "List"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:298
+#: system/plugins/coreblocks/coreblocks.plugin.php:294
 msgid "Links to show:"
 msgstr ""
 
-#: system/plugins/coreblocks/coreblocks.plugin.php:339
+#: system/plugins/coreblocks/coreblocks.plugin.php:334
 msgid "Button:"
 msgstr ""
 
