@@ -130,61 +130,16 @@ class HabariSilo extends Plugin implements MediaSilo
 			$props = array(
 				'title' => basename( $item ),
 			);
-			if ( !is_dir( $item ) ) {
-				$thumbnail_suffix = HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
-				$thumbnail_url = $this->url . '/' . $path . ($path == '' ? '' : '/') . $thumbnail_suffix;
-				$mimetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($item));
-				$mtime = '';
-
-				if ( !file_exists( dirname( $item ) . '/' . $thumbnail_suffix ) ) {
-					switch (strtolower(substr($item, strrpos($item, '.') + 1))) {
-						case 'jpg':
-						case 'png':
-						case 'gif':
-							if ( !$this->create_thumbnail( $item ) ) {
-								// there is no thumbnail so use icon based on mimetype.
-								$icon_path = Plugins::filter( 'habarisilo_icon_base_path', dirname($this->get_file()) . '/icons' );
-								$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
-								
-								if ( ( $icons = Utils::glob($icon_path . '/*.{png,jpg,gif,svg}', GLOB_BRACE) ) && $mimetype ) {
-									$icon_keys = array_map( create_function('$a', 'return pathinfo($a, PATHINFO_FILENAME);'), $icons );
-									$icons = array_combine($icon_keys, $icons);
-									$icon_filter = create_function('$a, $b', "\$mime = '$mimetype';".'return (((strpos($mime, $a)===0) ? (strlen($a) / strlen($mime)) : 0) >= (((strpos($mime, $b)===0)) ? (strlen($b) / strlen($mime)) : 0)) ? $a : $b;');
-									$icon_key = array_reduce($icon_keys, $icon_filter);
-									if ($icon_key) {
-										$icon = basename($icons[$icon_key]);
-										$thumbnail_url = $icon_url .'/'. $icon;
-									}
-									else {
-										// couldn't find an icon so use default
-										$thumbnail_url = $icon_url .'/default.png';
-									}
-								}
-							}
-						break;
-					}
-				}
-				
-				// If the asset is an image, obtain the image dimensions
-				if ( in_array( $mimetype, array( 'image_jpeg', 'image_png', 'image_gif' ) ) ) {
-					list( $props['width'], $props['height'] ) = getimagesize( $item );
-					$mtime = '?' . filemtime( $item );
-				}
-				$props = array_merge(
-					$props,
-					array(
-						'url' => $this->url . '/' . $path . ($path == '' ? '' : '/') . $file,
-						'thumbnail_url' => $thumbnail_url . $mtime,
-						'filetype' => $mimetype,
-					)
+			if(is_dir($item)) {
+				$results[] = new MediaAsset(
+					self::SILO_NAME . '/' . $path . ($path == '' ? '' : '/') . basename( $item ),
+					is_dir( $item ),
+					$props
 				);
 			}
-
-			$results[] = new MediaAsset(
-				self::SILO_NAME . '/' . $path . ($path == '' ? '' : '/') . basename( $item ),
-				is_dir( $item ),
-				$props
-			);
+			else {
+				$results[] = $this->silo_get($path . ($path == '' ? '' : '/') . basename( $item ));
+			}
 		}
 		//print_r($results);
 		return $results;
@@ -205,15 +160,65 @@ class HabariSilo extends Plugin implements MediaSilo
 
 		$path = preg_replace('%\.{2,}%', '.', $path);
 
-		$file = $this->root . '/' . $path;
+		$file = basename( $path );
+		$props = array(
+			'title' => basename( $path ),
+		);
+		$realfile = $this->root . '/' . $path;
 
-		if ( file_exists( $file ) && is_file( $file ) ) {
-			$asset = new MediaAsset( self::SILO_NAME . '/' . $path, false );
-			$asset->filetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($file));
-			$asset->content = file_get_contents( $file );
-			return $asset;
+		$thumbnail_suffix = HabariSilo::DERIV_DIR . '/' . $file . '.thumbnail.jpg';
+		$thumbnail_url = $this->url . '/' . dirname($path) . (dirname($path) == '' ? '' : '/') . $thumbnail_suffix;
+		$mimetype = preg_replace('%[^a-z_0-9]%', '_', Utils::mimetype($realfile));
+		$mtime = '';
+
+		if ( !file_exists( dirname( $realfile ) . '/' . $thumbnail_suffix ) ) {
+			switch (strtolower(substr($realfile, strrpos($realfile, '.') + 1))) {
+				case 'jpg':
+				case 'png':
+				case 'gif':
+					if ( !$this->create_thumbnail( $realfile ) ) {
+						// there is no thumbnail so use icon based on mimetype.
+						$icon_path = Plugins::filter( 'habarisilo_icon_base_path', dirname($this->get_file()) . '/icons' );
+						$icon_url = Plugins::filter( 'habarisilo_icon_base_url', $this->get_url() . '/icons' );
+								
+						if ( ( $icons = Utils::glob($icon_path . '/*.{png,jpg,gif,svg}', GLOB_BRACE) ) && $mimetype ) {
+							$icon_keys = array_map( create_function('$a', 'return pathinfo($a, PATHINFO_FILENAME);'), $icons );
+							$icons = array_combine($icon_keys, $icons);
+							$icon_filter = create_function('$a, $b', "\$mime = '$mimetype';".'return (((strpos($mime, $a)===0) ? (strlen($a) / strlen($mime)) : 0) >= (((strpos($mime, $b)===0)) ? (strlen($b) / strlen($mime)) : 0)) ? $a : $b;');
+							$icon_key = array_reduce($icon_keys, $icon_filter);
+							if ($icon_key) {
+								$icon = basename($icons[$icon_key]);
+								$thumbnail_url = $icon_url .'/'. $icon;
+							}
+							else {
+								// couldn't find an icon so use default
+								$thumbnail_url = $icon_url .'/default.png';
+							}
+						}
+					}
+					break;
+			}
 		}
-		return false;
+				
+		// If the asset is an image, obtain the image dimensions
+		if ( in_array( $mimetype, array( 'image_jpeg', 'image_png', 'image_gif' ) ) ) {
+			list( $props['width'], $props['height'] ) = getimagesize( $realfile );
+			$mtime = '?' . filemtime( $realfile );
+		}
+		$props = array_merge(
+			$props,
+			array(
+				'url' => $this->url . '/' . dirname($path) . ($path == '' ? '' : '/') . $file,
+				'thumbnail_url' => $thumbnail_url . $mtime,
+				'filetype' => $mimetype,
+			)
+		);
+		
+		$asset = new MediaAsset( self::SILO_NAME . '/' . $path, false, $props );
+		if ( file_exists( $realfile ) && is_file( $realfile ) ) {
+			$asset->content = file_get_contents( $realfile );
+		}
+		return $asset;
 	}
 
 
