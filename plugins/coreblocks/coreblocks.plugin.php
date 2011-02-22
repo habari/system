@@ -63,7 +63,6 @@ class CoreBlocks extends Plugin
 	public function action_block_form_recent_comments( $form, $block )
 	{
 		$content = $form->append('text', 'quantity', $block, _t( 'Comments to show:' ) );
-		$form->append( 'submit', 'save', _t( 'Save' ) );
 	}
 
 	/**
@@ -123,7 +122,6 @@ class CoreBlocks extends Plugin
 	{
 		$content = $form->append('text', 'quantity', $block, _t( 'Posts to show:' ) );
 		// Select content types to display ...
-		$form->append( 'submit', 'save', _t( 'Save' ) );
 	}
 
 	/**
@@ -162,7 +160,6 @@ class CoreBlocks extends Plugin
 		$content = $form->append( 'checkbox', 'show_counts', $block, _t( 'Append post count:' ) );
 		$content = $form->append( 'select', 'style', $block, _t( 'Preferred Output Style:' ),
 			array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) );
-		$form->append( 'submit', 'save', _t( 'Save' ) );
 	}
 
 	/**
@@ -236,7 +233,6 @@ class CoreBlocks extends Plugin
 		$content = $form->append( 'checkbox', 'show_counts', $block, _t( 'Append post count:' ) );
 		$content = $form->append( 'select', 'style', $block, _t( 'Preferred Output Style:' ),
 			array('dropdown' => _t( 'Dropdown' ), 'list' => _t( 'List' ) ) );
-		$form->append( 'submit', 'save', _t( 'Save' ) );
 	}
 
 	/**
@@ -296,7 +292,6 @@ class CoreBlocks extends Plugin
 	public function action_block_form_meta_links( $form, $block )
 	{
 		$content = $form->append('checkboxes', 'links', $block, _t( 'Links to show:' ), array_flip( $this->meta_urls ) );
-		$form->append( 'submit', 'save', _t( 'Save' ) );
 	}
 
 	/**
@@ -337,7 +332,6 @@ class CoreBlocks extends Plugin
 	public function action_block_form_search_form( $form, $block )
 	{
 		$content = $form->append( 'text', 'button', $block, _t( 'Button:' ) );
-		$form->append( 'submit', 'save', _t( 'Save' ) );
 	}
 
 	/**

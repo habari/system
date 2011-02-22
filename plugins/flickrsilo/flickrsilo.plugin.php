@@ -307,34 +307,7 @@ class Flickr extends flickrAPI
 			throw $xml;
 		}
 
-		foreach( $xml->photo->attributes() as $key => $value ){
-			$result[(string)$key] = (string)$value;
-		}
-
-		foreach( $xml->photo->children() as $key => $value ){
-			foreach( $value->attributes() as $kk => $vv ) $result[(string)$key][(string)$kk] = (string)$vv;
-			$id = -1;
-			foreach( $value->children() as $kk => $vv ){
-				$typed = false;
-				if ( isset( $vv['id'] ) ){
-					$id = (string)$vv['id'];
-				}elseif ( isset($vv['type'] ) ){
-					$id = (string)$vv['type'];
-					$typed = true;
-				}else $id++;
-				foreach( $vv->attributes() as $kkk => $vvv ){
-					$ret[(string)$key][$id][(string)$kkk] = (string)$vvv;
-				}
-				if ($typed){
-					$ret[(string)$key][$id] = (string)$vv;
-				}
-				else{
-					$ret[(string)$key][$id]['text'] = (string)$vv;
-				}
-			}
-			if ( !count($ret[(string)$key] ) ) $ret[(string)$key] = (string)$value;
-		}
-		return $ret;
+		return $xml;
 	}
 
 	function upload( $photo, $title = '', $description = '', $tags = '', $perms = '', $async = 1, &$info = null )
@@ -688,6 +661,26 @@ class FlickrSilo extends Plugin implements MediaSilo
 	*/
 	public function silo_get( $path, $qualities = null )
 	{
+		$flickr = new Flickr();
+		$results = array();
+		$size = Options::get( 'flickrsilo__flickr_size' );
+		list($unused, $photoid) = explode( '/', $path );
+		
+		$xml = $flickr->photosGetInfo($photoid);
+		$photo = $xml->photo;
+
+		$props = array();
+		foreach( $photo->attributes() as $name => $value ) {
+			$props[$name] = (string)$value;
+		}
+		$props = array_merge( $props, self::element_props( $photo, "http://www.flickr.com/photos/{$_SESSION['nsid']}/{$photo['id']}", $size ) );
+		$result = new MediaAsset(
+			self::SILO_NAME . '/photos/' . $photo['id'],
+			false,
+			$props
+		);
+
+		return $result;
 	}
 
 	/**

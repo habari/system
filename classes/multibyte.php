@@ -560,7 +560,7 @@ class MultiByte
 				// the values we'll match
 				$s = array_shift( $search );
 				$r = array_shift( $replace );
-				if ( is_array( $subject ) ) { Utils::debug( $subject ); }
+				
 				// while the search still exists in the subject
 				while ( self::strpos( $subject, $s, 0, $enc ) !== false ) {
 					
