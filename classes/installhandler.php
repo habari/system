@@ -590,6 +590,7 @@ class InstallHandler extends ActionHandler
 		$db_file = $this->handler_vars['db_file'];
 		if ( $db_file == basename( $db_file ) ) { // The filename was given without a path
 			$db_file = Site::get_path( 'user', true ) . $db_file;
+			Utils::debug($db_file);
 		}
 		if ( file_exists( $db_file ) && is_writable( $db_file ) && is_writable( dirname( $db_file ) ) ) {
 			// the file exists, and is writable.  We're all set
@@ -1857,11 +1858,8 @@ class InstallHandler extends ActionHandler
 				$pdo = 'sqlite:' . $db_file;
 				$connect = DB::connect( $pdo, null, null );
 
-				// Don't leave empty files laying around
+				// Disconnect, but no longer delete the file - it could already have contents!
 				DB::disconnect();
-				if ( file_exists( $db_file ) ) {
-					unlink( $db_file );
-				}
 
 				switch ( $connect ) {
 					case true:
