@@ -49,7 +49,7 @@ class Themes
 				$themedata['path'] = $theme_path;
 
 				$themedata['info'] = simplexml_load_file( $theme_path . '/theme.xml' );
-				if ( isset( $themedata['info']->class ) == false || $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
+				if ( $themedata['info']->getName() != 'pluggable' || (string) $themedata['info']->attributes()->type != 'theme' ) {
 					$themedata['screenshot'] = Site::get_url( 'admin_theme' ) . "/images/screenshot_default.png";
 					$themedata['info']->description = '<span class="error">' . _t( 'This theme is a legacy theme that is not compatible with Habari ' ) . Version::get_habariversion() . '. <br><br>Please update your theme.</span>';
 					$themedata['info']->license = '';
@@ -253,14 +253,6 @@ class Themes
 			}
 		}
 
-		// Get the class from the theme data
-		if ( isset( $themedata->class ) ) {
-			$classname = $themedata->class;
-		}
-		else {
-			$classname = 'Theme';
-		}
-
 		// Set the default theme file
 		$themefile = 'theme.php';
 		if(isset($themedata->class['file']) && (string)$themedata->xml->class['file'] != '') {
@@ -271,11 +263,58 @@ class Themes
 			include_once( $themedata->theme_dir . $themefile );
 		}
 
+		if ( isset( $themedata->class ) ) {
+			$classname = $themedata->class;
+		}
+		else {
+			$classname = self::class_from_filename( $themedata->theme_dir . $themefile );
+		}
+
+		// the final fallback, for the admin "theme"
+		if ( $classname == '' ) {
+			$classname = 'Theme';
+		}
+
 		$created_theme = new $classname( $themedata );
 		Plugins::act_id( 'init_theme', $created_theme->plugin_id(), $created_theme );
 		Plugins::act( 'init_theme_any', $created_theme );
 		return $created_theme;
 
+	}
+
+	public static function class_from_filename( $file, $check_realpath = false )
+	{
+		if ( $check_realpath ) {
+			$file = realpath( $file );
+		}
+
+		foreach ( self::get_theme_classes() as $theme ) {
+			$class = new ReflectionClass( $theme );
+			$classfile = str_replace( '\\', '/', $class->getFileName() );
+			if ( $classfile == $file ) {
+				return $theme;
+			}
+		}
+		// if we haven't found the plugin class, try again with realpath resolution:
+		if ( $check_realpath ) {
+			// really can't find it
+			return false;
+		}
+		else {
+			return self::class_from_filename( $file, true );
+		}
+	}
+
+	public static function get_theme_classes()
+	{
+		$classes = get_declared_classes();
+		return array_filter( $classes, array( 'Themes', 'extends_theme' ) );
+	}
+
+	public static function extends_theme( $class )
+	{
+		$parents = class_parents( $class, false );
+		return in_array( 'Theme', $parents );
 	}
 }
 

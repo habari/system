@@ -237,8 +237,8 @@ class EventLog extends ArrayObject
 							$params[] = $special_crit[1];
 						}
 						else {
-							$where[] .= "(message LIKE CONCAT('%',?,'%'))";
-							$params[] = $word;
+							$where[] .= "( LOWER( message ) LIKE ? )";
+							$params[] = '%' . MultiByte::strtolower( $word ) . '%';
 						}
 					}
 				}

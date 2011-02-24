@@ -189,7 +189,7 @@ foreach ( $all_themes as $inactive_theme ):
 			</div>
 		</div>
 	    <?php
-	    if ( ! isset( $inactive_theme['info']->class ) || $inactive_theme['info']->getName() != 'pluggable' || (string) $inactive_theme['info']->attributes()->type != 'theme' ) : ?>
+	    if ( $inactive_theme['info']->getName() != 'pluggable' || (string) $inactive_theme['info']->attributes()->type != 'theme' ) : ?>
 		<p class="legacy"><?php _e( 'Legacy theme.' ); ?></p>
 	    <?php else: ?>
 		<ul class="dropbutton"> 
