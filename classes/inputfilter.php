@@ -451,9 +451,9 @@ class InputFilter
 				case HTMLTokenizer::NODE_TYPE_COMMENT:
 				case HTMLTokenizer::NODE_TYPE_CDATA_SECTION:
 				case HTMLTokenizer::NODE_TYPE_STATEMENT:
+				default:
 					$node = null;
 					break;
-				default:
 			}
 
 			if ( $node != null ) {
