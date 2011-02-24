@@ -147,8 +147,8 @@ class Comments extends ArrayObject
 					$where_search = array();
 					foreach ( $matches[0] as $word ) {
 						foreach ( $paramset['criteria_fields'] as $criteria_field ) {
-							$where_search[] .= "({comments}.$criteria_field LIKE CONCAT('%',?,'%'))";
-							$params[] = $word;
+							$where_search[] .= "( LOWER( {comments}.$criteria_field ) LIKE ? )";
+							$params[] = '%' . MultiByte::strtolower( $word ) . '%';
 						}
 					}
 					if ( count( $where_search ) > 0 ) {
