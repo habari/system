@@ -353,7 +353,7 @@ class InputFilter
 			switch ( $type ) {
 				case 'uri':
 					// RfC 2396 <http://www.ietf.org/rfc/rfc2396.txt>
-					$bits = self::parse_url( $v );
+					$bits = self::parse_url( trim( $v ) );
 					return $bits['is_relative'] || in_array( $bits['scheme'], self::$whitelist_protocols );
 					break;
 				case 'language-code':
