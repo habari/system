@@ -343,6 +343,7 @@ class Posts extends ArrayObject implements IsContent
 				}
 
 				if ( isset( $paramset['criteria'] ) ) {
+					// this regex matches any unicode letters (\p{L}) or numbers (\p{N}) inside a set of quotes (but strips the quotes) OR not in a set of quotes
 					preg_match_all( '/(?<=")([\p{L}\p{N}]+[^"]*)(?=")|([\p{L}\p{N}]+)/u', $paramset['criteria'], $matches );
 					foreach ( $matches[0] as $word ) {
 						$where[] .= "( LOWER( {posts}.title ) LIKE ? OR  LOWER( {posts}.content ) LIKE ?)";
