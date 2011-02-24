@@ -116,6 +116,9 @@ class FeedbackHandler extends ActionHandler
 		foreach ( array( 'name', 'url', 'email', 'content' ) as $k ) {
 			$$k = InputFilter::filter( $$k );
 		}
+		
+		// there should never be any HTML in the name, so do some extra filtering on it
+		$name = strip_tags( html_entity_decode( $name, ENT_QUOTES, 'UTF-8' ) );
 
 		/* Sanitize the URL */
 		if ( !empty( $url ) ) {
