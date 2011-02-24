@@ -3,7 +3,7 @@
 class AutoP extends Plugin
 {
 	
-	public function action_init_atom( $theme )
+	public function action_init_atom()
 	{
 		Format::apply( 'autop', 'post_content_atom' );
 	}
