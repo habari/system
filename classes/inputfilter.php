@@ -96,6 +96,7 @@ class InputFilter
 		// http://www.w3.org/TR/html4/struct/text.html#h-9.2.2
 		'blockquote' => array( 'cite' => 'uri', ),
 		'q' => array( 'cite' => 'uri', ),
+		'img' => array( 'src' => 'uri', 'alt' => 'text' ),
 	);
 
 	/**
@@ -400,6 +401,7 @@ class InputFilter
 					$node['value'] = html_entity_decode( $node['value'], ENT_QUOTES, MultiByte::hab_encoding() );
 					break;
 				case HTMLTokenizer::NODE_TYPE_ELEMENT_OPEN:
+				case HTMLTokenizer::NODE_TYPE_ELEMENT_EMPTY:
 					// is this element allowed at all?
 					if ( ! in_array( strtolower( $node['name'] ), self::$whitelist_elements ) ) {
 						if ( ! in_array( strtolower( $node['name'] ), self::$elements_empty ) ) {
@@ -417,15 +419,21 @@ class InputFilter
 					else {
 						// check attributes
 						foreach ( $node['attrs'] as $k => $v ) {
-							$attr_ok = (
-								(
-									in_array( strtolower( $k ), self::$whitelist_attributes['*'] )
-									|| ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) &&
-									array_key_exists( strtolower( $k ), self::$whitelist_attributes[strtolower( $node['name'] )] ) )
-								)
-								&& self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes[strtolower( $node['name'] )][strtolower( $k )] )
-							);
-							if ( ! $attr_ok ) {
+							
+							$attr_ok = false;
+							
+							// if the attribute is in the global whitelist and validates
+							if ( array_key_exists( strtolower( $k ), self::$whitelist_attributes['*'] ) && self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes['*'][ strtolower( $k ) ] ) ) {
+								$attr_ok = true;
+							}
+							
+							// if there is a whitelist for this node and this attribute is in that list and it validates
+							if ( array_key_exists( strtolower( $node['name'] ), self::$whitelist_attributes ) && array_key_exists( strtolower( $k ), self::$whitelist_attributes[ strtolower( $node['name'] ) ] ) && self::check_attr_value( strtolower( $k ), $v, self::$whitelist_attributes[ strtolower( $node['name'] ) ][ strtolower( $k ) ] ) ) {
+								$attr_ok = true;
+							}
+							
+							// if it wasn't in one of the whitelists or failed its check, remove it
+							if ( $attr_ok != true ) {
 								unset( $node['attrs'][$k] );
 							}
 						}
