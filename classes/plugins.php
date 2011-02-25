@@ -482,6 +482,9 @@ class Plugins
 			$plugin = Plugins::load( $class );
 			$ok = Plugins::filter( 'activate_plugin', $ok, $file ); // Allow plugins to reject activation
 		}
+		else if ( is_array( $activated) && in_array( $short_file, $activated ) ) {
+			$ok = false;
+		}
 		if ( $ok ) {
 			$activated[$class] = $short_file;
 			Options::set( 'active_plugins', $activated );
