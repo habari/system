@@ -1857,11 +1857,8 @@ class InstallHandler extends ActionHandler
 				$pdo = 'sqlite:' . $db_file;
 				$connect = DB::connect( $pdo, null, null );
 
-				// Don't leave empty files laying around
+				// Disconnect, but no longer delete the file - it could already have contents!
 				DB::disconnect();
-				if ( file_exists( $db_file ) ) {
-					unlink( $db_file );
-				}
 
 				switch ( $connect ) {
 					case true:
