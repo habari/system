@@ -253,6 +253,14 @@ class Plugins
 					// add base path to stored path
 					$filename = HABARI_PATH . $filename;
 
+					// if class is somehow empty we'll throw an error when trying to load it - deactivate the plugin instead
+					if ( $class == '' ) {
+						self::deactivate_plugin( $filename, true );
+						EventLog::log( _t( 'An empty plugin definition pointing to file "%1$s" was removed.', array( $filename ) ), 'err', 'plugin', 'habari' );
+						// and skip adding it to the active stack
+						continue;
+					}
+
 					if ( file_exists( $filename ) ) {
 						self::$plugin_files[$class] = $filename;
 					}
