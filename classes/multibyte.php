@@ -565,13 +565,20 @@ class MultiByte
 				$offset = 0;
 				while ( self::strpos( $subject, $s, $offset, $enc ) !== false ) {
 					
-					// add the position
-					$positions[] = self::strpos( $subject, $s, $offset, $enc );
+					// get the position
+					$pos = self::strpos( $subject, $s, $offset, $enc );
+					
+					// add it to the list
+					$positions[] = $pos;
 					
 					// and set the offset to skip over this value
-					$offset = $offset + self::strlen( $s, $enc );
+					$offset = $pos + self::strlen( $s, $enc );
 					
 				}
+				
+				// if we pick through from the beginning, our positions will change if the replacement string is longer
+				// instead, we pick through from the last place
+				$positions = array_reverse( $positions );
 				
 				// now that we've got the position of each one, just loop through that and replace them
 				foreach ( $positions as $pos ) {
@@ -670,13 +677,20 @@ class MultiByte
 				$offset = 0;
 				while ( self::stripos( $subject, $s, $offset, $enc ) !== false ) {
 					
-					// add the position
-					$positions[] = self::stripos( $subject, $s, $offset, $enc );
+					// get the position
+					$pos = self::stripos( $subject, $s, $offset, $enc );
+					
+					// add it to the list
+					$positions[] = $pos;
 					
 					// and set the offset to skip over this value
-					$offset = $offset + self::strlen( $s, $enc );
+					$offset = $pos + self::strlen( $s, $enc );
 					
 				}
+				
+				// if we pick through from the beginning, our positions will change if the replacement string is longer
+				// instead, we pick through from the last place
+				$positions = array_reverse( $positions );
 				
 				// now that we've got the position of each one, just loop through that and replace them
 				foreach ( $positions as $pos ) {
