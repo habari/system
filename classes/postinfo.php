@@ -18,23 +18,14 @@ class PostInfo extends InfoRecords
 	{
 		
 		// if there is a _ in the name, there is a filter at the end
-		if ( strpos( $name, '_' ) !== false ) {
+		$filter = false;
+		$fieldnames = array_keys($this->__inforecord_array);
+		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
 			// pick off the last _'d piece
-			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
-			list( $junk, $name, $filter ) = $matches;
-			
-			// so that we don't break every info value that has a _ in it, only _out is an acceptable filter name
-			if ( $filter != 'out' ) {
-				// put it back together
-				$name = $name . '_' . $filter;
-				
-				// turn off the filter
-				$filter = false;
+			$field_matches = implode('|', $fieldnames);
+			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches )) {
+				list( $junk, $name, $filter ) = $matches;
 			}
-			
-		}
-		else {
-			$filter = false;
 		}
 		
 		// get the value by calling our parent function directly
