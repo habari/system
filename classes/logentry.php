@@ -320,8 +320,7 @@ class LogEntry extends QueryRecord
 	{
 		$fieldnames = array_merge( array_keys( $this->fields ), array( 'module', 'type', 'severity' ) );
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
-			$field_matches = implode('|', $fieldnames);
-			preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches );
+			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
 			list( $junk, $name, $filter )= $matches;
 		}
 		else {
