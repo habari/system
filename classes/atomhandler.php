@@ -564,7 +564,7 @@ class AtomHandler extends ActionHandler
 			$xml = new SimpleXMLElement( '<entry ' . $namespaces . '></entry>' );
 
 			$entry = $xml;
-			$entry_title = $entry->addChild( 'title', $title );
+			$entry_title = $entry->title = $title;
 
 			$entry_author = $entry->addChild( 'author' );
 			$author_name = $entry_author->addChild( 'name', $user->displayname );
