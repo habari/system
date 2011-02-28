@@ -117,8 +117,17 @@ abstract class Pluggable
 				// make sure the method name is of the form
 				// action_foo or filter_foo of xmlrpc_foo or theme_foo
 				if ( preg_match( '#^(action|filter|xmlrpc|theme)_#i', $hook ) ) {
-					$priority = isset( $priorities[$hook] ) ? $priorities[$hook] :
-						( isset( $priorities[$fn] ) ? $priorities[$fn] : 8 );
+					$priority = 8;
+					if(isset($priorities[$hook])) {
+						$priority = $priorities[$hook];
+					}
+					elseif(preg_match('#^(.+)_(\d+)$#', $hook, $priority_match)) {
+						$hook = $priority_match[1];
+						$priority = intval($priority_match[2]);
+					}
+					elseif(isset( $priorities[$fn])) {
+						$priority = $priorities[$fn];
+					}
 					list( $type, $hook ) = explode( '_', $hook, 2 );
 					if ( $type === 'xmlrpc' ) {
 						$hook = str_replace( '__', '.', $hook );
