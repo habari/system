@@ -973,6 +973,7 @@ class Post extends QueryRecord implements IsContent
 		->id = 'comment_email';
 		$form->cf_email->tabindex = 2;
 		if ( Options::get( 'comments_require_id' ) == 1 ) {
+			$form->cf_email->add_validator(  'validate_required', _t( 'The Email field value must be a valid email address' ) );
 			$form->cf_email->caption = _t( 'Email <span class="required">*Required</span>' );
 		}
 		$form->cf_email->value = $commenter_email;

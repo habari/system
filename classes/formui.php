@@ -820,9 +820,11 @@ class FormValidators
 	 */
 	public static function validate_email( $text, $control, $form, $warning = null )
 	{
-		if ( !preg_match( "@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
-			$warning = empty( $warning ) ? _t( 'Value must be a valid Email Address.' ) : $warning;
-			return array( $warning );
+		if ( ! empty( $text ) ) {
+			if ( !preg_match( "@^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*\@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$@i", $text ) ) {
+				$warning = empty( $warning ) ? _t( 'Value must be a valid Email Address.' ) : $warning;
+				return array( $warning );
+			}
 		}
 		return array();
 	}
