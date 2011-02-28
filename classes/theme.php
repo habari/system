@@ -721,6 +721,11 @@ class Theme extends Pluggable
 	 */
 	public static function theme_page_selector( $theme, $rr_name = null, $settings = array() )
 	{
+		// We can't detect proper pagination if $theme->posts isn't a Posts object, 
+		// so if it's not, bail.
+		if(!$theme->posts instanceof Posts) {
+			return '';
+		}
 		$current = $theme->page;
 		$items_per_page = isset( $theme->posts->get_param_cache['limit'] ) ?
 			$theme->posts->get_param_cache['limit'] :

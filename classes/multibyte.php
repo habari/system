@@ -502,8 +502,6 @@ class MultiByte
 	/**
 	 * Replace all occurrences of the search string with the replacement string.
 	 * 
-	 * @todo Allow an array to be passed to $subject (and then return an array).
-	 * 
 	 * @see http://php.net/str_replace
 	 * @param mixed $search A string or an array of strings to search for.
 	 * @param mixed $replace A string or an array of strings to replace search values with.
@@ -561,11 +559,29 @@ class MultiByte
 				$s = array_shift( $search );
 				$r = array_shift( $replace );
 				
-				// while the search still exists in the subject
-				while ( self::strpos( $subject, $s, 0, $enc ) !== false ) {
+				// to avoid an infinite loop if you're replacing with a value that contains the subject we get the position of each instance first
+				$positions = array();
+				
+				$offset = 0;
+				while ( self::strpos( $subject, $s, $offset, $enc ) !== false ) {
 					
-					// find the position
-					$pos = self::strpos( $subject, $s, 0, $enc );
+					// get the position
+					$pos = self::strpos( $subject, $s, $offset, $enc );
+					
+					// add it to the list
+					$positions[] = $pos;
+					
+					// and set the offset to skip over this value
+					$offset = $pos + self::strlen( $s, $enc );
+					
+				}
+				
+				// if we pick through from the beginning, our positions will change if the replacement string is longer
+				// instead, we pick through from the last place
+				$positions = array_reverse( $positions );
+				
+				// now that we've got the position of each one, just loop through that and replace them
+				foreach ( $positions as $pos ) {
 					
 					// pull out the part before the string
 					$before = self::substr( $subject, 0, $pos, $enc );
@@ -597,8 +613,6 @@ class MultiByte
 	
 	/**
 	 * Replace all occurrences of the search string with the replacement string.
-	 * 
-	 * @todo Allow an array to be passed to $subject (and then return an array).
 	 * 
 	 * @see http://php.net/str_ireplace
 	 * @param mixed $search A string or an array of strings to search for.
@@ -656,11 +670,30 @@ class MultiByte
 				$s = array_shift( $search );
 				$r = array_shift( $replace );
 				
-				// while the lowercase search still exists in the lowercase subject
-				while ( self::strpos( self::strtolower( $subject, $enc ), self::strtolower( $s, $enc ), 0, $enc ) !== false ) {
+				
+				// to avoid an infinite loop if you're replacing with a value that contains the subject we get the position of each instance first
+				$positions = array();
+				
+				$offset = 0;
+				while ( self::stripos( $subject, $s, $offset, $enc ) !== false ) {
 					
-					// find the position
-					$pos = self::strpos( self::strtolower( $subject, $enc ), self::strtolower( $s, $enc ), 0, $enc );
+					// get the position
+					$pos = self::stripos( $subject, $s, $offset, $enc );
+					
+					// add it to the list
+					$positions[] = $pos;
+					
+					// and set the offset to skip over this value
+					$offset = $pos + self::strlen( $s, $enc );
+					
+				}
+				
+				// if we pick through from the beginning, our positions will change if the replacement string is longer
+				// instead, we pick through from the last place
+				$positions = array_reverse( $positions );
+				
+				// now that we've got the position of each one, just loop through that and replace them
+				foreach ( $positions as $pos ) {
 					
 					// pull out the part before the string
 					$before = self::substr( $subject, 0, $pos, $enc );

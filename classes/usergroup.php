@@ -176,7 +176,7 @@ class UserGroup extends QueryRecord
 				}
 				return $results;
 			case 'permissions':
-				$this->load_member_cache();
+				$this->load_permissions_cache();
 				return $this->permissions;
 				break;
 			default:

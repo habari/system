@@ -319,12 +319,12 @@ class LogEntry extends QueryRecord
 	public function __get( $name )
 	{
 		$fieldnames = array_merge( array_keys( $this->fields ), array( 'module', 'type', 'severity' ) );
+		$filter = false;
 		if ( !in_array( $name, $fieldnames ) && strpos( $name, '_' ) !== false ) {
-			preg_match( '/^(.*)_([^_]+)$/', $name, $matches );
-			list( $junk, $name, $filter )= $matches;
-		}
-		else {
-			$filter = false;
+			$field_matches = implode('|', $fieldnames);
+			if(preg_match( '/^(' . $field_matches . ')_(.+)$/', $name, $matches )) {
+				list( $junk, $name, $filter )= $matches;
+			}
 		}
 
 		switch ( $name ) {

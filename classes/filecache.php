@@ -171,6 +171,12 @@ class FileCache extends Cache
 		if ( !$this->enabled ) {
 			return null;
 		}
+		
+		// prime the variable cache.
+		// dirty, dirty hack. we should *never* load all the data in, especially when we only care about the expirey
+		// alas, this crappy code requires it
+		$this->_get_group($group);
+		
 		$keys = array();
 		switch ( strtolower( $match_mode ) ) {
 			case 'glob':
