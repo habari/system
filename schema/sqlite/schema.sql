@@ -176,6 +176,14 @@ CREATE TABLE {$prefix}terms (
 CREATE UNIQUE INDEX IF NOT EXISTS ix_mptt ON {$prefix}terms(vocabulary_id, mptt_right, mptt_left);
 CREATE UNIQUE INDEX IF NOT EXISTS ix_term ON {$prefix}terms(vocabulary_id, term);
 
+CREATE TABLE {$prefix}terminfo (
+  comment_id INTEGER NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type SMALLINTEGER NOT NULL DEFAULT 0,
+  value TEXT NULL,
+  PRIMARY KEY (comment_id, name)
+);
+
 CREATE TABLE {$prefix}vocabularies (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   name VARCHAR(255) NOT NULL,

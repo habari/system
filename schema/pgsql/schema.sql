@@ -206,6 +206,14 @@ CREATE TABLE {$prefix}terms (
   UNIQUE (vocabulary_id,term)
 );
 
+CREATE TABLE {$prefix}terminfo (
+  term_id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type INTEGER NOT NULL DEFAULT 0,
+  value TEXT NULL,
+  PRIMARY KEY (term_id,name)
+);
+
 CREATE SEQUENCE {$prefix}vocabularies_pkey_seq;
 CREATE TABLE {$prefix}vocabularies (
   id INTEGER NOT NULL DEFAULT nextval('{$prefix}vocabularies_pkey_seq'),
