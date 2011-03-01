@@ -44,6 +44,7 @@ class DatabaseConnection
 		'scopes',
 		'sessions',
 		'terms',
+		'terminfo',
 		'tokens',
 		'userinfo',
 		'users',
