@@ -12,18 +12,32 @@
  */
 class K2 extends Theme
 {
+	public function action_theme_activated()
+	{
+		$blocks = $this->get_blocks('nav', '', $this);
+		if(count($blocks) == 0) {
+			$block = new Block(array(
+				'title' => _t('K2 Menu'),
+				'type' => 'k2_menu',
+			));
+
+			$block->add_to_area('nav');
+			Session::notice(_t('Added K2 Menu block to Nav area.'));
+		}
+	}
+
 	/**
 	 * Execute on theme init to apply these filters to output
 	 */
 	public function action_init_theme()
 	{
-// Apply Format::autop() to comment content...
-Format::apply( 'autop', 'comment_content_out' );
-// Apply Format::tag_and_list() to post tags...
-Format::apply( 'tag_and_list', 'post_tags_out' );
-
-// Remove the comment on the following line to limit post length on the home page to 1 paragraph or 100 characters
-//Format::apply_with_hook_params( 'more', 'post_content_out', _t('more'), 100, 1 );
+		// Apply Format::autop() to comment content...
+		Format::apply( 'autop', 'comment_content_out' );
+		// Apply Format::tag_and_list() to post tags...
+		Format::apply( 'tag_and_list', 'post_tags_out' );
+		
+		// Remove the comment on the following line to limit post length on the home page to 1 paragraph or 100 characters
+		//Format::apply_with_hook_params( 'more', 'post_content_out', _t('more'), 100, 1 );
 	}
 
 /**
@@ -93,20 +107,6 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		}
 
 	}
-	
-	public function theme_menu_empty($theme, $menu)
-	{
-		// Should pass menu name on to Posts::get(array('preset'=>$menu))
-		if ($menu == 'mainmenu') {
-			$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
-			$out = '';
-			foreach( $pages as $page ) {
-				$out .= '<li><a href="' . $page->permalink . '" title="' . $page->title . '">' . $page->title . '</a></li>' . "\n";
-			}
-			return $out;
-		}
-	}
-
 
 	/**
 	 * Customize comment form layout. Needs thorough commenting.
@@ -122,6 +122,34 @@ Format::apply( 'tag_and_list', 'post_tags_out' );
 		$form->cf_submit->caption = _t( 'Submit' );
 	}
 
+	public function filter_block_list($block_list)
+	{
+		$block_list['k2_menu'] = _t('K2 Menu');
+		return $block_list;
+	}
+	
+	public function action_block_content_k2_menu($block, $theme)
+	{
+		$menus = array('home' => array(
+			'link' => Site::get_url( 'habari' ), 
+			'title' => Options::get( 'title' ), 
+			'caption' => _t('Blog'), 
+			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
+		));
+		$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
+		foreach($pages as $page) {
+			$menus[] = array(
+				'link' => $page->permalink, 
+				'title' => $page->title, 
+				'caption' => $page->title, 
+				'cssclass' => (isset($theme->post) && $theme->post->id == $page->id) ? 'current_page_item' : '',
+			);
+		}
+		if ( User::identify()->loggedin ) {
+			$menus['admin'] = array('link' => Site::get_url( 'admin' ), 'title' => _t('Admin area'), 'caption' => _t('Admin'), 'cssclass' => 'admintab');
+		}
+		$block->menus = $menus;
+	}
 }
 
 ?>
