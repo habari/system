@@ -1067,7 +1067,7 @@ class Theme extends Pluggable
 	public function get_blocks( $area, $scope, $theme )
 	{
 		$blocks = DB::get_results( 'SELECT b.* FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id WHERE ba.area = ? AND ba.scope_id = ? ORDER BY ba.display_order ASC', array( $area, $scope ), 'Block' );
-		Plugins::act( 'get_blocks', $blocks );
+		$blocks = Plugins::filter( 'get_blocks', $blocks, $area, $scope, $theme );
 		return $blocks;
 	}
 
