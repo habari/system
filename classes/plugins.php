@@ -436,6 +436,7 @@ class Plugins
 		if ( $activate ) {
 			self::$plugins[$plugin->plugin_id] = $plugin;
 			$plugin->load();
+			$plugin->upgrade();
 		}
 		return $plugin;
 	}
@@ -488,6 +489,11 @@ class Plugins
 		if ( $ok ) {
 			$activated[$class] = $short_file;
 			Options::set( 'active_plugins', $activated );
+			$versions = Options::get( 'pluggable_versions' );
+			if(!isset($versions[$class])) {
+				$versions[$class] = $plugin->get_version();
+				Options::set( 'pluggable_versions', $versions );
+			}
 
 			if ( method_exists( $plugin, 'action_plugin_activation' ) ) {
 				$plugin->action_plugin_activation( $file ); // For the plugin to install itself

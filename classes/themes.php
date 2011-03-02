@@ -171,6 +171,15 @@ class Themes
 			Options::set( 'theme_name', $theme_name );
 			Options::set( 'theme_dir', $theme_dir );
 			$new_active_theme = Themes::create();
+			
+			// Set version of theme if it wasn't installed before
+			$versions = Options::get( 'pluggable_versions' );
+			if(!isset($versions[get_class($new_active_theme)])) {
+				$versions[get_class($new_active_theme)] = $new_active_theme->get_version();
+				Options::set( 'pluggable_versions', $versions );
+			}
+			
+			// Run activation hooks for theme activation
 			Plugins::act_id( 'theme_activated', $new_active_theme->plugin_id(), $theme_name, $new_active_theme ); // For the theme itself to react to its activation
 			Plugins::act( 'theme_activated_any', $theme_name, $new_active_theme ); // For any plugin to react to its activation
 			EventLog::log( _t( 'Activated Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
@@ -276,6 +285,7 @@ class Themes
 		}
 
 		$created_theme = new $classname( $themedata );
+		$created_theme->upgrade();
 		Plugins::act_id( 'init_theme', $created_theme->plugin_id(), $created_theme );
 		Plugins::act( 'init_theme_any', $created_theme );
 		return $created_theme;
