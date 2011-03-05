@@ -35,14 +35,7 @@
 					</div>
 					<div id="navbar">
 						<ul>
-							<li<?php if ($post_id == 0) echo ' class="current-page"'; ?>>
-								<a href="<?php Site::out_url( 'habari' ); ?>"><?php echo $home_label; ?></a>
-							</li>
-						<?php foreach ( $pages as $pagelink ) : ?>
-							<li<?php if ($pagelink->id == $post_id) echo ' class="current-page"'; ?>>
-								<a href="<?php echo $pagelink->permalink; ?>" title="<?php echo $pagelink->title; ?>"><?php echo $pagelink->title; ?></a>
-							</li>
-						<?php endforeach; ?>
+						<?php $theme->area('nav'); ?>
 						<?php if ($display_login): ?>
 							<li class="login">
 							<?php if ( $loggedin ) : ?>
