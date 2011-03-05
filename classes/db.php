@@ -441,7 +441,7 @@ class DB extends Singleton
 	 */
 	public static function is_connected()
 	{
-		return DB::instance()->connection->is_connected();
+		return (DB::instance()->connection instanceof DatabaseConnection && DB::instance()->connection->is_connected());
 	}
 
 	/**

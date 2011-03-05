@@ -310,19 +310,21 @@ abstract class Pluggable
 	 */
 	public function upgrade()
 	{
-		$pluggable_class = get_class($this);
-		$versions = Options::get( 'pluggable_versions' );
-		if(isset($versions[$pluggable_class])) {
-			$old_version = $versions[$pluggable_class];
-			if($old_version != $this->get_version()) {
-				Plugins::act_id('upgrade', $this->plugin_id(), $old_version);
+		if(DB::is_connected()) {
+			$pluggable_class = get_class($this);
+			$versions = Options::get( 'pluggable_versions' );
+			if(isset($versions[$pluggable_class])) {
+				$old_version = $versions[$pluggable_class];
+				if($old_version != $this->get_version()) {
+					Plugins::act_id('upgrade', $this->plugin_id(), $old_version);
+					$versions[$pluggable_class] = $this->get_version();
+					Options::set( 'pluggable_versions', $versions );
+				}
+			}
+			else {
 				$versions[$pluggable_class] = $this->get_version();
 				Options::set( 'pluggable_versions', $versions );
 			}
-		}
-		else {
-			$versions[$pluggable_class] = $this->get_version();
-			Options::set( 'pluggable_versions', $versions );
 		}
 	}
 }
