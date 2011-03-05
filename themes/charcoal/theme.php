@@ -15,7 +15,7 @@ class Charcoal extends Theme
 		);
 
 	/**
-	 * On theme activation, set the default options
+	 * On theme activation, set the default options and activate a default menu
 	 */
 	public function action_theme_activated()
 	{
@@ -23,6 +23,17 @@ class Charcoal extends Theme
 		if ( empty( $opts ) ) {
 			Options::set_group( __CLASS__, $this->defaults );
 		}
+		$blocks = $this->get_blocks('nav', '', $this);
+		if(count($blocks) == 0) {
+			$block = new Block(array(
+				'title' => _t('Charcoal Menu'),
+				'type' => 'charcoal_menu',
+			));
+
+			$block->add_to_area('nav');
+			Session::notice(_t('Added Charcoal Menu block to Nav area.'));
+		}
+
 	}
 
 	/**
@@ -196,6 +207,38 @@ class Charcoal extends Theme
 		$form->cf_url->template = 'charcoal_text';
 		$form->cf_content->caption = '';
 		$form->cf_submit->caption = _t( 'Submit' );
+	}
+
+	/**
+	 * Add a charcoal_menu block to the list of available blocks
+	 */
+	public function filter_block_list($block_list)
+	{
+		$block_list['charcoal_menu'] = _t('Charcoal Menu');
+		return $block_list;
+	}
+	
+	/**
+	 * Produce a menu for the Charcoal menu block from all of the available pages
+	 */
+	public function action_block_content_charcoal_menu($block, $theme)
+	{
+		$menus = array('home' => array(
+			'link' => Site::get_url( 'habari' ), 
+			'title' => Options::get( 'title' ), 
+			'caption' => _t('Blog'), 
+			'cssclass' => $theme->request->display_home ? 'current_page_item' : '',
+		));
+		$pages = Posts::get(array('content_type' => 'page', 'status' => Post::status('published')));
+		foreach($pages as $page) {
+			$menus[] = array(
+				'link' => $page->permalink, 
+				'title' => $page->title, 
+				'caption' => $page->title, 
+				'cssclass' => (isset($theme->post) && $theme->post->id == $page->id) ? 'current_page_item' : '',
+			);
+		}
+		$block->menus = $menus;
 	}
 
 }
