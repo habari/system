@@ -12,6 +12,9 @@
  */
 class K2 extends Theme
 {
+	/**
+	 * Add the K2 menu block to the nav area upon theme activation if there's nothing already there
+	 */
 	public function action_theme_activated()
 	{
 		$blocks = $this->get_blocks('nav', '', $this);
@@ -122,12 +125,18 @@ class K2 extends Theme
 		$form->cf_submit->caption = _t( 'Submit' );
 	}
 
+	/**
+	 * Add a k2_menu block to the list of available blocks
+	 */
 	public function filter_block_list($block_list)
 	{
 		$block_list['k2_menu'] = _t('K2 Menu');
 		return $block_list;
 	}
 	
+	/**
+	 * Produce a menu for the K2 menu block from all of the available pages
+	 */
 	public function action_block_content_k2_menu($block, $theme)
 	{
 		$menus = array('home' => array(
