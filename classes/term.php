@@ -16,6 +16,8 @@
 
 class Term extends QueryRecord
 {
+	protected $inforecords = null;
+	
 	/**
 	 * Return the defined database columns for a Term.
 	 * @return array Array of columns in the Term table
@@ -137,6 +139,9 @@ class Term extends QueryRecord
 		// We've inserted the term, reset newfields
 		$this->newfields = array();
 
+		// Commit the info records
+		$this->info->commit( $this->fields['id'] );
+		
 		EventLog::log( _t( 'New term %1$s: %2$s', array( $this->id, $this->term_display ) ), 'info', 'content', 'habari' );
 
 		// Let plugins act after we write to the database
@@ -169,6 +174,8 @@ class Term extends QueryRecord
 		$result = parent::updateRecord( '{terms}', array( 'id' => $this->id ) );
 		$this->fields = array_merge( $this->fields, $this->newfields );
 
+		$this->info->commit();
+		
 		// Let plugins act after we write to the database
 		Plugins::act( 'term_update_after', $this );
 
@@ -187,6 +194,9 @@ class Term extends QueryRecord
 			return false;
 		}
 		Plugins::act( 'term_delete_before', $this );
+
+		// Delete all info records associated with this comment
+		$this->info->delete_all();
 
 		DB::query( 'DELETE FROM {object_terms} WHERE term_id = :id', array( 'id' => $this->id ) );
 
@@ -438,11 +448,31 @@ SQL;
 				break;
 			case 'id':
 				return (int)parent::__get( $name );
+			case 'info':
+				return $this->get_info();
 			default:
 				$out = parent::__get( $name );
 				break;
 		}
 		return $out;
+	}
+
+	/**
+	 * Gets the info object for this term, which contains data from the terminfo table
+	 * related to this term.
+	 * @return TermInfo object
+	 */
+	protected function get_info()
+	{
+		if ( ! $this->inforecords ) {
+			if ( 0 == $this->id ) {
+				$this->inforecords = new TermInfo();
+			}
+			else {
+				$this->inforecords = new TermInfo( $this->id );
+			}
+		}
+		return $this->inforecords;
 	}
 
 	/**

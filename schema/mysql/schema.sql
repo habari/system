@@ -201,6 +201,14 @@ CREATE TABLE {$prefix}terms (
   UNIQUE KEY ix_term (vocabulary_id, term)
 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
+CREATE TABLE  {$prefix}terminfo (
+  term_id INT UNSIGNED NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  type SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  value TEXT NULL,
+  PRIMARY KEY (term_id,name)
+) DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+
 CREATE TABLE {$prefix}vocabularies (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,

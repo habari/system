@@ -22,16 +22,7 @@
 	<h1><a href="<?php Site::out_url( 'habari' ); ?>"><?php Options::out( 'title' ); ?></a></h1>
 	<p class="description"><?php Options::out( 'tagline' ); ?></p>
 
-	<ul class="menu">
-		<li <?php if ($request->display_home) { ?>
-	class="current_page_item"<?php } ?>><a href="<?php Site::out_url( 'habari' ); ?>" title="<?php Options::out( 'title' ); ?>"><?php echo $home_tab; ?></a></li>
-<?php
-// Menu tabs
-$theme->menu('mainmenu');
-if ( User::identify()->loggedin ) { ?>
-		<li class="admintab"><a href="<?php Site::out_url( 'admin' ); ?>" title="<?php _e('Admin area'); ?>"><?php _e('Admin'); ?></a></li>
-<?php } ?>
-	</ul>
+	<?php $theme->area('nav'); ?>
 
 	</div>
 

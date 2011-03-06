@@ -260,9 +260,10 @@ class Format
 	 * @param array $array An array of tag names
 	 * @param string $between Text to put between each element
 	 * @param string $between_last Text to put between the next to last element and the last element
+	 * @param boolean $sort_alphabetical Should the tags be sorted alphabetically by `term` first?
 	 * @return string HTML links with specified separators.
 	 */
-	public static function tag_and_list( $terms, $between = ', ', $between_last = null )
+	public static function tag_and_list( $terms, $between = ', ', $between_last = null, $sort_alphabetical = false )
 	{
 		$array = array();
 		if ( !$terms instanceof Terms ) {
@@ -271,6 +272,10 @@ class Format
 
 		foreach ( $terms as $term ) {
 			$array[$term->term] = $term->term_display;
+		}
+		
+		if ( $sort_alphabetical ) {
+			ksort( $array );
 		}
 
 		if ( $between_last === null ) {

@@ -14,6 +14,9 @@
 
 	<copyright>2009</copyright>
 	<areas>
+		<area name="nav">
+			<description><![CDATA[Primary navigation area]]></description>
+		</area>
 		<area name="sidebar">
 			<description><![CDATA[Sidebar]]></description>
 		</area>

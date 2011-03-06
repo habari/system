@@ -82,6 +82,14 @@ abstract class Plugin extends Pluggable
 		}
 	}
 
+	/** 
+	 * Provide a method to return the version number from the plugin xml
+	 * @return string The plugin version from XML
+	 **/
+	public function get_version()
+	{
+		return (string)$this->info->version;
+	}
 }
 
 ?>

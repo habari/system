@@ -312,6 +312,35 @@ class Block extends QueryRecord implements IsContent, FormStorage
 		return false;
 	}
 
+	/**
+	 * Add this block to a particular area in the theme
+	 * 
+	 * @param string $area The name of the area to add to
+	 * @param integer $order The position of the block within the area
+	 * @param string $scope The scope id into which to add this block
+	 */
+	public function add_to_area( $area, $order = null, $scope = null )
+	{
+		if(is_null($scope)) {
+			$scope = '';
+		}
+		if(is_null($order) || ! is_int($order)) {
+			$order = DB::get_value('SELECT max(display_order) + 1 FROM {blocks_areas} WHERE area = :area AND scope_id = :scope', array('area'=>$area, 'scope'=>$scope));
+			if(is_null($order)) {
+				$order = 1;
+			}
+		}
+		else {
+			DB::query('UPDATE {blocks_areas} SET display_order = display_order + 1 WHERE area = :area AND scope_id = :scope AND display_order >= :order', array('area'=>$area, 'scope'=>$scope, 'order'=>$order));
+		}
+		
+		// If the block isn't saved in the database, insert it.
+		if(!$this->id) {
+			$this->insert();
+		}
+			
+		$result = DB::query( 'INSERT INTO {blocks_areas} (block_id, area, scope_id, display_order) VALUES (:block_id, :area, :scope_id, :display_order)', array( 'block_id'=>$this->id, 'area'=>$area, 'scope_id'=>$scope, 'display_order'=>$order ) );
+	}
 }
 
 

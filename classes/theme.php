@@ -87,30 +87,18 @@ class Theme extends Pluggable
 	public function info()
 	{
 
-		$xml_file = dirname( $this->getfile ) . '/theme.xml';
+		$xml_file = $this->theme_dir . '/theme.xml';
+		if(!file_exists($xml_file)) {
+			return new SimpleXMLElement('<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="theme">
+	<name>Unknown Theme</name>
+	<version>1.0</version>
+</pluggable>
+');
+		}
 		if ( $xml_content = file_get_contents( $xml_file ) ) {
-			$theme_data = new SimpleXMLElement( $xml_file );
+			$theme_data = new SimpleXMLElement( $xml_content );
 			return $theme_data;
-			// Is it a valid theme xml file?
-			if ( isset( $theme_data->theme ) ) {
-				$valid_named_elements = array(
-					'name',
-					'version',
-					'template_engine',
-					'theme_dir',
-					'class'
-				);
-				// Assigns based on wether or not it's a valid named element.
-				foreach ( $theme_data->theme->children() as $key => $value ) {
-					$key = strtolower( $key );
-					if ( in_array( $key, $valid_named_elements ) ) {
-						$this->$key = $value;
-					}
-					else {
-						$this->config_vars[$key] = $value;
-					}
-				}
-			}
 		}
 	}
 
@@ -1067,7 +1055,7 @@ class Theme extends Pluggable
 	public function get_blocks( $area, $scope, $theme )
 	{
 		$blocks = DB::get_results( 'SELECT b.* FROM {blocks} b INNER JOIN {blocks_areas} ba ON ba.block_id = b.id WHERE ba.area = ? AND ba.scope_id = ? ORDER BY ba.display_order ASC', array( $area, $scope ), 'Block' );
-		Plugins::act( 'get_blocks', $blocks );
+		$blocks = Plugins::filter( 'get_blocks', $blocks, $area, $scope, $theme );
 		return $blocks;
 	}
 
@@ -1338,6 +1326,15 @@ class Theme extends Pluggable
 		
 		return $result;
 		
+	}
+
+	/** 
+	* Provide a method to return the version number from the theme xml
+	* @return string The theme version from XML
+	**/
+	public function get_version()
+	{
+		return (string)$this->info()->version;
 	}
 
 }

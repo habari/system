@@ -289,6 +289,33 @@ abstract class Pluggable
 		return $file;
 	}
 
+	/** 
+	 * Provide a method to return the version number from a pluggable's info
+	 * @return string The version of the pluggable
+	 **/
+	public abstract function get_version();
+	
+	/**
+	 * Execute the upgrade action on any pluggable that has a version number change
+	 * Update the version number of the pluggable in the database to what is installed
+	 */
+	public function upgrade()
+	{
+		$pluggable_class = get_class($this);
+		$versions = Options::get( 'pluggable_versions' );
+		if(isset($versions[$pluggable_class])) {
+			$old_version = $versions[$pluggable_class];
+			if($old_version != $this->get_version()) {
+				Plugins::act_id('upgrade', $this->plugin_id(), $old_version);
+				$versions[$pluggable_class] = $this->get_version();
+				Options::set( 'pluggable_versions', $versions );
+			}
+		}
+		else {
+			$versions[$pluggable_class] = $this->get_version();
+			Options::set( 'pluggable_versions', $versions );
+		}
+	}
 }
 
 ?>
