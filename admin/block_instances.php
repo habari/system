@@ -20,3 +20,4 @@
 	</div>
 	<?php endforeach; ?>
 </div>
+<script type="text/javascript">$(function(){findChildren();});</script>
