@@ -183,6 +183,10 @@ class FeedbackHandler extends ActionHandler
 
 		$spam_rating = 0;
 		$spam_rating = Plugins::filter( 'spam_filter', $spam_rating, $comment, $this->handler_vars, $extra );
+		
+		if ( $spam_rating >= Options::get( 'spam_percentage', 100 ) ) {
+			$comment->status = Comment::STATUS_SPAM;
+		}
 
 		$comment->insert();
 		$anchor = '';

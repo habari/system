@@ -736,6 +736,7 @@ class InstallHandler extends ActionHandler
 		Options::set( 'dateformat', 'Y-m-d' );
 		Options::set( 'timeformat', 'g:i a' );
 		Options::set( 'log_min_severity', 3 );		// the default logging level - 3 should be 'info'
+		Options::set( 'spam_percentage', 100 );
 
 		// generate a random-ish number to use as the salt for
 		// a SHA1 hash that will serve as the unique identifier for
@@ -1676,6 +1677,12 @@ class InstallHandler extends ActionHandler
 				$group->deny( 'post_unpublished' );
 			}
 		}
+	}
+	
+	private function upgrade_db_post_4980 ( ) {
+		
+		Options::set( 'spam_percentage', 100 );
+		
 	}
 	
 	/**

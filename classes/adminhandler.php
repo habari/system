@@ -235,6 +235,11 @@ class AdminHandler extends ActionHandler
 				'type' => 'checkbox',
 				'helptext' => '',
 				),
+			'spam_percentage' => array(
+				'label' => _t( 'Comment SPAM Threshold' ),
+				'type' => 'text',
+				'helptext' => _t('The liklihood a comment is considered SPAM, in percent.'),
+				),
 			);
 
 		$option_items[_t( 'Time & Date' )] = array(
