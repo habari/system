@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<pluggable type="theme">
+	<name>Habari Admin Theme</name>
+	<license url="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software License 2.0</license>
+	
+	<author url="http://habariproject.org/">The Habari Project</author>
+	
+	<version>1.0</version>
+	<url>http://habariproject.org/</url>
+	<description><![CDATA[The Habari administrative theme]]></description>
+	
+	<template_engine>rawphpengine</template_engine>
+
+	<copyright>2010</copyright>
+</pluggable>

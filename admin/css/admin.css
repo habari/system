@@ -301,6 +301,9 @@ a img {
 	margin: 0 0 0 10px;
 	position: absolute;
 	right: 40px;
+	-moz-box-shadow: 1px 1px 3px #999;
+	-webkit-box-shadow: 1px 1px 3px #999;
+	box-shadow: 1px 1px 3px #999;
 }
 
 #page .dropbutton:hover, #page .dropbutton.hovering {
@@ -1848,10 +1851,7 @@ body.page-themes .currenttheme .thumb {
 }
 
 #blocksconfigure {
-	background-color: #f8f8f8;
-	border: #bbb 1px solid;
-	padding: 12px;
-	margin: 5px;
+	padding: 10px 40px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1902,23 +1902,37 @@ body.page-themes .currenttheme .thumb {
 	-webkit-border-radius: 5px;
 }
 
-#block_instances .block_instance h3 {
-	background: #444 url('../images/4way.png') no-repeat scroll left center;
-	padding: 3px 3px 3px 22px;
+#block_instances .block_instance .block_drag {
+	background: #444 url('../images/4way.png') no-repeat scroll 2px 2px;
+	padding: 3px 3px 3px 27px;
 	color: white;
 	cursor: move;
+	height: 18px;
+}
+#block_instances .block_instance h3 {
+	display: inline;
+	color: white;
 }
 #block_instances .block_instance h3 small {
 	margin-left: 2em;
 	font-size: xx-small;
 	font-weight: normal;
 }
+#block_instances .block_instance ul {
+	color: white;
+	display: inline;
+	float: right;
+	margin-left: 35px;
+}
+#block_instances .block_instance ul a {
+	color: white;
+}
 
 #block_instances .block_instance {
 	background-color: #f8f8f8;
 	border: #bbb 1px solid;
 	padding: 3px;
-	margin: 0 3px 3px 0;
+	margin: 0 3px 7px 0;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1932,13 +1946,11 @@ body.page-themes .currenttheme .thumb {
 	width: 195px;
 	opacity: 0.7;
 }
-
-#block_instances .block_instance ul {
-	margin-left: 35px;
+#block_instances .block_instance .dropbutton {
+	right: 320px;
 }
-#block_instances .block_instance li {
-	display: inline;
-	margin-right: 15px;
+#block_instances .ui-draggable-dragging .instance_controls {
+	display: none;
 }
 
 .area_drop {
@@ -1965,6 +1977,9 @@ body.page-themes .currenttheme .thumb {
 	font-size: xx-small;
 	margin-left: 2em;
 	font-weight: normal;
+}
+.area_container ul.instance_controls {
+	display: none;
 }
 
 .delete_drop {
