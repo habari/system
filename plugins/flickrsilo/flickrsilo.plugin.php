@@ -70,21 +70,28 @@ class flickrAPI
 			$url = $this->endpoint . implode( '&', $this->encode( $args ) );
 
 			$call = new RemoteRequest( $url );
-
 			$call->set_timeout( 5 );
-			$result = $call->execute();
-			if ( Error::is_error( $result ) ){
-				throw $result;
+			
+			try {
+				$result = $call->execute();
 			}
-
+			catch ( RemoteRequest_Timeout $t ) {
+				Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+				return false;
+			}
+			catch ( Exception $e ) {
+				// at the moment we're using the same error message, though this is more catastrophic
+				Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
+				return false;
+			}
+			
 			$response = $call->get_response_body();
 			try{
 				$xml = new SimpleXMLElement( $response );
 				return $xml;
 			}
 			catch( Exception $e ) {
-				Session::error( 'Currently unable to connect to Flickr.', 'flickr API' );
-//				Utils::debug($url, $response);
+				Session::error( 'Unable to process Flickr response.', 'flickr API' );
 				return false;
 			}
 		}

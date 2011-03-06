@@ -430,6 +430,13 @@ class Plugins
 		return $info;
 	}
 
+	/**
+	 * Load a pluign into memory by class name
+	 * 
+	 * @param string $class The name of the class of the plugin to load
+	 * @param boolean $activate True to run the load routine of the plugin and add it to the loaded plugins list
+	 * @return Plugin The instance of the created plugin
+	 */
 	public static function load( $class, $activate = true )
 	{
 		$plugin = new $class;
@@ -439,6 +446,16 @@ class Plugins
 			$plugin->upgrade();
 		}
 		return $plugin;
+	}
+
+	/**
+	 * Upgrade all loaded plugins
+	 */
+	public static function upgrade( )
+	{
+		foreach(self::$plugins as $plugin) {
+			$plugin->upgrade();
+		}
 	}
 
 	/**

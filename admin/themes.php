@@ -80,14 +80,19 @@
 							);
 						});
 
-						$('.block_instance h3').draggable({
+						$('.block_instance .block_drag').draggable({
 							connectToSortable: '.area_drop', 
 							helper: 'clone', 
 							distance: 5, 
-							containment: $('#block_instances h3').parents('.item'),
+							//containment: $('#blocksconfigure'),
 							start: function(){$('.area_drop').sortable('refresh');}
 						});
-						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop,.delete_drop', containment: $('#block_add').parents('.item')});
+						$('.area_drop').sortable({
+							placeholder: 'block_drop', 
+							forcePlaceholderSize: true, 
+							connectWith: '.area_drop,.delete_drop',
+							containment: $('#block_add').parents('.item')
+						});
 						$('.delete_drop').sortable({
 							over: function(event, ui){$(this).css('border', '1px dotted red');},
 							out: function(event, ui){$(this).css('border', null);},
@@ -114,7 +119,7 @@
 						$('.area_drop_outer').each(function(){
 							var area = $('h2', this).text();
 							output[area] = [];
-							$('h3', this).each(function(){
+							$('.block_drag', this).each(function(){
 								m = $(this).attr('class').match(/block_instance_(\d+)/)
 								output[area].push(m[1]);
 							});

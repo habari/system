@@ -165,9 +165,10 @@ if ( isset( $_GET['asyncronous'] ) && Utils::crypt( Options::get( 'GUID' ), $_GE
 header( 'Content-Type: text/html;charset=utf-8' );
 
 
-// Load all the active plugins.
+// Load and upgrade all the active plugins.
 spl_autoload_register( array( 'Plugins', '_autoload' ) );
 Plugins::load_active();
+Plugins::upgrade();
 
 // All plugins loaded, tell the plugins.
 Plugins::act( 'plugins_loaded' );

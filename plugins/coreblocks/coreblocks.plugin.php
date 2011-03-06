@@ -121,7 +121,17 @@ class CoreBlocks extends Plugin
 	public function action_block_form_recent_posts( $form, $block )
 	{
 		$content = $form->append('text', 'quantity', $block, _t( 'Posts to show:' ) );
-		// Select content types to display ...
+		
+		$content_types = Post::list_active_post_types();
+		
+		unset($content_types['any']);
+		
+		foreach ( $content_types as $k => $v ) {
+			$content_types[ $k ] = Plugins::filter( 'post_type_display', $k, 'plural' );
+		}
+				
+		$form->append('checkboxes', 'content_types', $block, _t( 'Content Types to Include:' ), $content_types );
+		
 	}
 
 	/**
@@ -137,11 +147,15 @@ class CoreBlocks extends Plugin
 		if ( ! $limit = $block->quantity ) {
 			$limit = 5;
 		};
+		
+		if ( empty( $block->content_types ) ) {
+			$block->content_types = array( 'entry' );
+		}
 
 		$block->recent_posts = Posts::get( array(
 			'limit' => $limit,
 			'status' => 'published',
-			'content_type' => Post::type( 'entry' ), // extend to allow more types.
+			'content_type' => $block->content_types,
 			'orderby' => 'pubdate DESC',
 		) );
 	}
