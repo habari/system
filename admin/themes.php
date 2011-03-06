@@ -87,7 +87,12 @@
 							//containment: $('#blocksconfigure'),
 							start: function(){$('.area_drop').sortable('refresh');}
 						});
-						$('.area_drop').sortable({placeholder: 'block_drop', forcePlaceholderSize: true, connectWith: '.area_drop,.delete_drop', containment: $('#block_add').parents('.item')});
+						$('.area_drop').sortable({
+							placeholder: 'block_drop', 
+							forcePlaceholderSize: true, 
+							connectWith: '.area_drop,.delete_drop',
+							containment: $('#block_add').parents('.item')
+						});
 						$('.delete_drop').sortable({
 							over: function(event, ui){$(this).css('border', '1px dotted red');},
 							out: function(event, ui){$(this).css('border', null);},

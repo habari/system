@@ -13,7 +13,7 @@
 		<div class="block_drag block_instance_<?php echo $instance->id; ?>">
 			<h3><?php echo Utils::htmlspecialchars($instance->title); ?><small><?php echo Utils::htmlspecialchars($instance->type); ?></small></h3>
 			<ul class="instance_controls dropbutton">
-				<li><a href="#" onclick="var i = $('<iframe src=\'<?php echo URL::get('admin', array('page' => 'configure_block', 'blockid' => $instance->id)); ?>\' style=\'width:600px;height:300px;\'></iframe>'); i.dialog({bgiframe:true,width:778,height:270,modal:true,dialogClass:'jqueryui',title:'<?php _e('Configure Block: %1s (%2s)', array(Utils::htmlspecialchars($instance->title), Utils::htmlspecialchars($instance->type))); ?>'});i.css('width','768px');return false;"><?php _e( 'Configure'); ?></a></li>
+				<li><a href="#" onclick="var i = $('<iframe src=\'<?php echo URL::get('admin', array('page' => 'configure_block', 'blockid' => $instance->id)); ?>\' style=\'width:768px;height:400px;\'></iframe>'); i.dialog({bgiframe:true,width:778,height:400,modal:true,dialogClass:'jqueryui',title:'<?php _e('Configure Block: %1s (%2s)', array(Utils::htmlspecialchars($instance->title), Utils::htmlspecialchars($instance->type))); ?>',close:function(event,ui){$(this).dialog('destroy')}});i.css('width','768px').parent('div').css({left:$(window).width()/2-384});return false;"><?php _e( 'Configure'); ?></a></li>
 				<li><a href="#" onclick="delete_block(<?php echo $instance->id; ?>);return false;"><?php _e('Delete'); ?></a></li>
 			</ul>
 		</div>
