@@ -33,7 +33,7 @@ class XMLRPCServer extends ActionHandler
 			}
 		}
 
-		$returnvalue = new Error(_t('Requested method %s does not exist.', array($function)), -32601);
+		$returnvalue = new XMLRPCException(-32601, _t('Requested method %s does not exist.', array($function)));
 
 		Plugins::register( array( $this, 'system_listMethods' ), 'xmlrpc', 'system.listMethods' );
 		$returnvalue = Plugins::xmlrpc( "{$function}", $returnvalue, $params, $this );
