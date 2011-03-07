@@ -164,7 +164,7 @@ class Plugins
 	{
 		list( $hookname, $return ) = func_get_args();
 		if ( ! isset( self::$hooks['xmlrpc'][$hookname] ) ) {
-			return $return;
+			return false;
 		}
 		$filterargs = array_slice( func_get_args(), 2 );
 		foreach ( self::$hooks['xmlrpc'][$hookname] as $priority ) {
@@ -173,7 +173,7 @@ class Plugins
 				return call_user_func_array( $filter, $filterargs );
 			}
 		}
-		return $return;
+		return false;
 	}
 
 	/**

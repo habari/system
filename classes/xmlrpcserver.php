@@ -33,19 +33,14 @@ class XMLRPCServer extends ActionHandler
 			}
 		}
 
-		$returnvalue = new XMLRPCException(-32601, _t('Requested method %s does not exist.', array($function)));
+		$returnvalue = false;
 
 		Plugins::register( array( $this, 'system_listMethods' ), 'xmlrpc', 'system.listMethods' );
 		$returnvalue = Plugins::xmlrpc( "{$function}", $returnvalue, $params, $this );
 
-		if($returnvalue instanceof Exception) {
-			$returnvalue->output_fault_xml(); // dies here
-		}
-		else {
-			$response = new SimpleXMLElement( '<?xml version="1.0"?'.'><methodResponse><params><param></param></params></methodResponse>' );
-			XMLRPCUtils::encode_arg( $response->params->param, $returnvalue );
-		}
-				
+		$response = new SimpleXMLElement( '<?xml version="1.0"?'.'><methodResponse><params><param></param></params></methodResponse>' );
+		XMLRPCUtils::encode_arg( $response->params->param, $returnvalue );
+		
 		ob_end_clean();
 		header( 'Content-Type: text/xml;charset=utf-8' );
 		echo trim( $response->asXML() );
