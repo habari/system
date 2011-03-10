@@ -364,7 +364,7 @@ SQL;
 	 */
 	public function object_types()
 	{
-		$results = DB::get_keyvalue( "SELECT terms.object_id, types.object_type_name FROM {object_terms} terms, {object_types} types WHERE term_id = ?", array( $this->id ) );
+		$results = DB::get_keyvalue( "SELECT terms.object_id, types.name FROM {object_terms} terms, {object_types} types WHERE terms.object_type_id = types.id and term_id = ?", array( $this->id ) );
 		return $results;
 	}
 
