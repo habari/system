@@ -358,6 +358,17 @@ SQL;
 	}
 
 	/**
+	 * Find the types of objects associated with this Term.
+	 *
+	 * @return Array of objects, keyed by object id, values are type names
+	 */
+	public function object_types()
+	{
+		$results = DB::get_keyvalue( "SELECT terms.object_id, types.object_type_name FROM {object_terms} terms, {object_types} types WHERE term_id = ?", array( $this->id ) );
+		return $results;
+	}
+
+	/**
 	 * Find the count of objects of a given type associated with this Term.
 	 *
 	 * @param $type string. The name of the object type for which the associations are wanted.

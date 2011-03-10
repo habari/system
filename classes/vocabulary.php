@@ -831,7 +831,6 @@ SQL;
 	/**
 	 * Get the tags associated with this object
 	 *
-	 * @params Vocabulary $vocabulary The vocabulary containing the terms	 
 	 * @param Integer $object_id. The id of the tagged object
 	 * @param String $object_type. The name of the type of the object being tagged. Defaults to post
 	 *
