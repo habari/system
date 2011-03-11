@@ -23,23 +23,19 @@ class SimplePrivatePosts extends Plugin
 
 	public function action_form_publish($form, $post)
 	{
-		if ( $post->content_type == Post::type('entry') ) {
-			$form->settings->append('checkbox', 'private_post', 'null:null', _t('Private Post'), 'tabcontrol_checkbox');
-			if ( $post->has_tokens('private') ) {
-				$form->private_post->value = true;
-			}
+		$form->settings->append('checkbox', 'private_post', 'null:null', _t('Private Post'), 'tabcontrol_checkbox');
+		if ( $post->has_tokens('private') ) {
+			$form->private_post->value = true;
 		}
 	}
 
 	public function action_publish_post($post, $form)
 	{
-		if ( $post->content_type == Post::type('entry') ) {
-			if ( $form->private_post->value == true ) {
-				$post->add_tokens('private');
-			}
-			else {
-				$post->remove_tokens('private');
-			}
+		if ( $form->private_post->value == true ) {
+			$post->add_tokens('private');
+		}
+		else {
+			$post->remove_tokens('private');
 		}
 	}
 

@@ -95,16 +95,26 @@ class MediaAsset
 	{
 		switch ( $name ) {
 			case 'content':
-				return $this->_get();
+				$output = $this->_get();
+				break;
 			case 'is_dir':
-				return $this->is_dir;
+				$output = $this->is_dir;
+				break;
 			case 'path':
-				return $this->path;
+				$output = $this->path;
+				break;
 			case 'basename':
-				return basename( $this->path );
+				$output = basename( $this->path );
+				break;
 			default:
-				return $this->props[$name];
+				$output = $this->props[$name];
+				break;
 		}
+		
+		$output = Plugins::filter( 'mediaasset', $output, $name );
+		
+		return $output;
+		
 	}
 
 	/**

@@ -294,14 +294,42 @@ class Pingback extends Plugin
 	 */
 	public function pingback_all_links( $content, $source_uri, $post = NULL, $force = false )
 	{
-		preg_match_all( '/<a[^>]+href=(?:"|\')((?=https?\:\/\/)[^>"\']+)(?:"|\')[^>]*>[^>]+<\/a>/is', $content, $matches );
+		
+		$tokenizer = new HTMLTokenizer( $content, false );
+		$tokens = $tokenizer->parse();
 
+		// slice out only A tags
+		$slices = $tokens->slice( array( 'a' ), array( ) );
+
+		$urls = array();
+		foreach ( $slices as $slice ) {
+
+			// if there is no href attribute, just skip it, though there is something wrong
+			if ( !isset( $slice[0]['attrs']['href'] ) ) {
+				continue;
+			}
+			else {
+				$url = $slice[0]['attrs']['href'];
+			}
+
+			// make sure it's a valid URL before we waste our time
+			$parsed = InputFilter::parse_url( $url );
+			
+			if ( $parsed['is_error'] || $parsed['is_pseudo'] || $parsed['is_relative'] ) {
+				continue;
+			}
+			else {
+				$urls[] = $url;
+			}
+
+		}
+		
 		if ( is_object( $post ) && isset( $post->info->pingbacks_successful ) ) {
 			$fn = ( $force === true ) ? 'array_merge' : 'array_diff';
-			$links = $fn( $matches[1], $post->info->pingbacks_successful );
+			$links = $fn( $urls, $post->info->pingbacks_successful );
 		}
 		else {
-			$links = $matches[1];
+			$links = $urls;
 		}
 
 		$links = array_unique( $links );

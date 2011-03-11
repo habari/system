@@ -119,9 +119,9 @@ class Terms extends ArrayObject implements FormStorage
 	 */
 	function tree_sort()
 	{
-		//$terms = $this->get_array_copy_raw();
-		usort($this, array($this, 'tree_sort_compare'));
-		return $this; //new Terms($terms);
+		$terms = $this->getArrayCopy();
+		usort($terms, array($this, 'tree_sort_compare'));
+		return new Terms($terms);
 	}
 
 	/**
