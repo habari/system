@@ -268,7 +268,7 @@ class InputFilter
 		);
 
 		// Use PHP's parse_url to get the basics
-		$parsed = parse_url( $url );
+		$parsed = parse_url( preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $url) );
 		if ( $parsed == false ) {
 			$r['is_error'] = true;
 			return $r;
@@ -354,7 +354,7 @@ class InputFilter
 			switch ( $type ) {
 				case 'uri':
 					// RfC 2396 <http://www.ietf.org/rfc/rfc2396.txt>
-					$bits = self::parse_url( trim( $v ) );
+					$bits = self::parse_url( $v );
 					return $bits['is_relative'] || in_array( $bits['scheme'], self::$whitelist_protocols );
 					break;
 				case 'language-code':
