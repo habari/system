@@ -1134,5 +1134,22 @@ class Utils
 		}
 		return $delim;
 	}
+
+	/**
+	 * Create a list of html element attributes from an associative array
+	 * 
+	 * @param array $attrs An associative array of parameters
+	 * @return string The parameters turned into a string of tag attributes
+	 */
+	public static function html_attr($attrs)
+	{
+		$out = '';
+		foreach($attrs as $key => $value) {
+			if($value != '') {
+				$out .= ($out == '' ? ' ' : '') . $key . '="' . Utils::htmlspecialchars($value) . '"';
+			}
+		}
+		return $out;
+	}
 }
 ?>
