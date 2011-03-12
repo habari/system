@@ -1590,12 +1590,14 @@ class AdminHandler extends ActionHandler
 			// let's optimize the table
 			$result = DB::query( 'OPTIMIZE TABLE {comments}' );
 			Session::notice( _t( 'Deleted all spam comments' ) );
+			EventLog::log( _t( 'Deleted all spam comments' ), 'info' );
 			Utils::redirect();
 		}
 		elseif ( isset( $mass_delete ) && $status == Comment::STATUS_UNAPPROVED ) {
 			// Delete all comments that are unapproved.
 			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
 			Session::notice( _t( 'Deleted all unapproved comments' ) );
+			EventLog::log( _t( 'Deleted all unapproved comments' ), 'info' );
 			Utils::redirect();
 		}
 		// if we're updating posts, let's do so:
