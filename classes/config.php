@@ -44,10 +44,6 @@ class Config
 	 */
 	public static function get( $key, $default = null )
 	{
-		if ( $default == null ) {
-			$default = new stdClass();
-		}
-		
 		if ( !self::exists( $key ) ) {
 			return $default;
 		}
