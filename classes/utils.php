@@ -1146,7 +1146,7 @@ class Utils
 		$out = '';
 		foreach($attrs as $key => $value) {
 			if($value != '') {
-				$out .= ($out == '' ? ' ' : '') . $key . '="' . Utils::htmlspecialchars($value) . '"';
+				$out .= ($out == '' ? '' : ' ') . $key . '="' . Utils::htmlspecialchars($value) . '"';
 			}
 		}
 		return $out;
