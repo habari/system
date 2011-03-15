@@ -1860,7 +1860,6 @@ body.page-themes .currenttheme .thumb {
 #block_add {
 	float: left;
 	width: 66%;
-	border-right: 1px solid #666666;
 }
 
 #scope_container {
@@ -1871,12 +1870,11 @@ body.page-themes .currenttheme .thumb {
 }
 
 #page #scope_container h3 {
-	color: white;
-	padding: 3px;
-	border-top: 1px solid #333333;
+	padding: 2px;
+	margin: 2px;
+	border: 1px solid #bbb;
 	cursor: move;
 	padding-left: 24px;
-	background: #444 url('../images/4way.png') no-repeat scroll left center;
 }
 
 #scope_container .area_container,
@@ -1888,30 +1886,33 @@ body.page-themes .currenttheme .thumb {
 }
 
 #scope_container .area_container h2 {
-	color: #cccccc;
 	padding: 3px;
-	background-color: #666666;
 }
 
 #scope_container .area_drop_outer {
-	border: 1px solid #666;
+	background-color: #f8f8f8;
+	border: 1px solid #bbb;
 	margin: 5px 5px 15px 0px;
-	background-color: #333;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
-#block_instances .block_instance .block_drag {
-	background: #444 url('../images/4way.png') no-repeat scroll 2px 2px;
-	padding: 3px 3px 3px 27px;
-	color: white;
-	cursor: move;
+#block_instances .block_instance {
+	background-color: #f8f8f8;
+	border: #bbb 1px solid;
+	padding: 12px;
+	margin-top:3px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	height: 18px;
 }
 #block_instances .block_instance h3 {
 	display: inline;
-	color: white;
+	position: absolute;
+	color: #333;
 }
 #block_instances .block_instance h3 small {
 	margin-left: 2em;
@@ -1927,11 +1928,12 @@ body.page-themes .currenttheme .thumb {
 #block_instances .block_instance ul a {
 	color: white;
 }
+#page #scope_container #scope_id {
+	width: 75%;
+}
 
 #block_instances .block_instance {
 	background-color: #f8f8f8;
-	border: #bbb 1px solid;
-	padding: 3px;
 	margin: 0 3px 7px 0;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -1970,31 +1972,25 @@ body.page-themes .currenttheme .thumb {
 	background-image: none;
 }
 
-.area_block {
-	cursor: n-resize;
+#page #scope_container .area_drop .block_drag {
+	position: relative;
 }
-.area_container h3 small {
-	font-size: xx-small;
-	margin-left: 2em;
-	font-weight: normal;
+#page #scope_container .area_drop .block_drag h3 {
+	color: #333;
 }
-.area_container ul.instance_controls {
-	display: none;
+#page #scope_container .area_drop .block_drag .close {
+	position: absolute;
+	top: 5px;
+	left: 7px;
+	height: 16px;
+	width: 16px;
+	background: url('../images/closebutton.png') center center no-repeat;
+	cursor: pointer;
+	z-index: 55;
 }
 
-.delete_drop {
-	border: 1px solid #444444;
-	color: #444444;
-	font-style: italic;
-	margin: 3px 5px 0 0;
-	padding: 13px 0;
-	text-align: center;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-}
-.delete_drop .block_drop {
-	display: none;
+.area_block {
+	cursor: n-resize;
 }
 
 /*- OPTIONS PAGE */

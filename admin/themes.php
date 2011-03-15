@@ -1,7 +1,6 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php');?>
 
-
 <div class="container currenttheme">
 	<h2><?php _e('Current Theme'); ?></h2>
 	<div class="item clear">
@@ -79,26 +78,26 @@
 								reset_block_form
 							);
 						});
-
-						$('.block_instance .block_drag').draggable({
-							connectToSortable: '.area_drop', 
-							helper: 'clone', 
-							distance: 5, 
-							//containment: $('#blocksconfigure'),
-							start: function(){$('.area_drop').sortable('refresh');}
+						$('.area_available').unbind('click').click(function() {
+							// Clone the block, it has the right name and id
+							var block = $(this).closest('.block_drag').clone();
+							// Change the clone to have the controls we need
+							block.find('.instance_controls,small').remove();
+							block.append('<div class="close">&nbsp;</div>');
+							// Add the block to the target area
+							var target = $('#'+($(this).attr('class').match(/target_(\w+)/)[1]));
+							target.append(block);
+							return false;
 						});
 						$('.area_drop').sortable({
-							placeholder: 'block_drop', 
-							forcePlaceholderSize: true, 
-							connectWith: '.area_drop,.delete_drop',
-							containment: $('#block_add').parents('.item')
+							placeholder: 'block_drop',
+							forcePlaceholderSize: true,
+							connectWith: '.area_drop',
+							containment: $('#block_add').parents('.item'),
+							axis: 'y'
 						});
-						$('.delete_drop').sortable({
-							over: function(event, ui){$(this).css('border', '1px dotted red');},
-							out: function(event, ui){$(this).css('border', null);},
-							receive: function(event, ui){
-								$(ui.item).remove();
-							}
+						$('.close').live('click', function() {
+							$(this).parent().remove();
 						});
 						spinner.stop();
 					}
