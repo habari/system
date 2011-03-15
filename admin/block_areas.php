@@ -19,6 +19,7 @@
 				<div class="block_drag block_instance_<?php echo $block->id; ?>">
 					<h3><?php echo $block->title; ?></h3>
 					<div class="close">&nbsp;</div>
+					<div class="handle">&nbsp;</div>
 				</div>
 			<?php endforeach; ?>
 			<?php endif; ?>

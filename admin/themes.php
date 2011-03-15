@@ -83,7 +83,7 @@
 							var block = $(this).closest('.block_drag').clone();
 							// Change the clone to have the controls we need
 							block.find('.instance_controls,small').remove();
-							block.append('<div class="close">&nbsp;</div>');
+							block.append('<div class="close">&nbsp;</div><div class="handle">&nbsp;</div>');
 							// Add the block to the target area
 							var target = $('#'+($(this).attr('class').match(/target_(\w+)/)[1]));
 							target.append(block);
