@@ -475,23 +475,29 @@ var themeManage = {
 			// Add the block to the target area
 			var target = $('#'+($(this).attr('class').match(/target_(\w+)/)[1]));
 			target.append(block);
+			themeManage.refresh_areas();
 			return false;
 		});
 
 		// Remove a block from an area
 		$('.close').live('click', function() {
 			$(this).parent().remove();
+			themeManage.refresh_areas();
 		});
 
 		// Sort blocks in areas
 		// @todo Move the options to a property, so they're not repeated in save_areas.
 		$('.area_drop').sortable({
+			items: '.block_drag',
 			placeholder: 'block_drop',
 			forcePlaceholderSize: true,
 			connectWith: '.area_drop',
 			containment: $('#block_add').parents('.item'),
+			update: themeManage.refresh_areas,
+			remove: themeManage.refresh_areas,
 			axis: 'y'
 		});
+		themeManage.refresh_areas();
 
 		// Load areas available in different scopes
 		$('#scope_id').click(function() {
@@ -503,15 +509,22 @@ var themeManage = {
 			themeManage.save_areas();
 		});
 	},
-	refresh_sortable: function() {
+	refresh_areas: function() {
 		$('.area_drop').sortable('refresh');
+		$('.area_drop').each(function() {
+			var area = $(this);
+			if (area.find('.block_drag').length == 0) {
+				area.find('.no_blocks').show();
+			} else {
+				area.find('.no_blocks').hide();
+			}
+		});
 	},
 	add_block: function (title, type) {
 		spinner.start();
 		$('#block_add').load(
 			habari.url.ajaxAddBlock,
-			{title:title, type:type},
-			themeManage.refresh_sortable
+			{title:title, type:type}
 		);
 		spinner.stop();
 	},
@@ -519,8 +532,7 @@ var themeManage = {
 		spinner.start();
 		$('#block_add').load(
 			habari.url.ajaxDeleteBlock,
-			{block_id:id},
-			themeManage.refresh_sortable
+			{block_id:id}
 		);
 		spinner.stop();
 	},
@@ -546,7 +558,8 @@ var themeManage = {
 					connectWith: '.area_drop',
 					containment: $('#block_add').parents('.item'),
 					axis: 'y'
-				})
+				});
+				themeManage.refresh_areas();
 			}
 		);
 	},
@@ -556,7 +569,7 @@ var themeManage = {
 		$('#scope_container').load(
 			habari.url.ajaxSaveAreas, 
 			{scope:$('#scope_id').val()},
-			themeManage.refresh_sortable
+			themeManage.refresh_areas
 		);
 		spinner.stop();
 	}

@@ -1998,9 +1998,9 @@ body.page-themes .currenttheme .thumb {
 	-webkit-box-shadow: 2px 2px 2px #ccc;
 	-moz-box-shadow: 2px 2px 2px #ccc;
 }
-
-.area_block {
-	cursor: n-resize;
+#page #scope_container .area_drop .no_blocks {
+	padding-left: 12px;
+	display: none;
 }
 
 /*- OPTIONS PAGE */
