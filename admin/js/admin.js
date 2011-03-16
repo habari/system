@@ -447,6 +447,122 @@ var pluginManage = {
 	}
 };
 
+// Theme Management
+var themeManage = {
+	area_drop_options: {
+		placeholder: 'block_drop',
+		forcePlaceholderSize: true,
+		connectWith: '.area_drop',
+		containment: $('#block_add').parents('.item'),
+		axis: 'y'
+	},
+	init: function() {
+		// Return if we're not on the plugins page
+		if (!$('.page-themes').length) {return;}
+
+		// Adding available blocks
+		$('#block_instance_add').live('click', function() {
+			themeManage.add_block($('#block_instance_title').val(), $('#block_instance_type').val());
+		});
+
+		// Add a block to an area
+		$('.area_available').live('click', function() {
+			// Clone the block, it has the right name and id
+			var block = $(this).closest('.block_drag').clone();
+			// Change the clone to have the controls we need
+			block.find('.instance_controls,small').remove();
+			block.append('<div class="close">&nbsp;</div><div class="handle">&nbsp;</div>');
+			// Add the block to the target area
+			var target = $('#'+($(this).attr('class').match(/target_(\w+)/)[1]));
+			target.append(block);
+			return false;
+		});
+
+		// Remove a block from an area
+		$('.close').live('click', function() {
+			$(this).parent().remove();
+		});
+
+		// Sort blocks in areas
+		// @todo Move the options to a property, so they're not repeated in save_areas.
+		$('.area_drop').sortable({
+			placeholder: 'block_drop',
+			forcePlaceholderSize: true,
+			connectWith: '.area_drop',
+			containment: $('#block_add').parents('.item'),
+			axis: 'y'
+		});
+
+		// Load areas available in different scopes
+		$('#scope_id').click(function() {
+			themeManage.change_scope();
+		});
+
+		// Save areas
+		$('#save_areas').click(function() {
+			themeManage.save_areas();
+		});
+	},
+	refresh_sortable: function() {
+		$('.area_drop').sortable('refresh');
+	},
+	add_block: function (title, type) {
+		spinner.start();
+		$('#block_add').load(
+			habari.url.ajaxAddBlock,
+			{title:title, type:type},
+			themeManage.refresh_sortable
+		);
+		spinner.stop();
+	},
+	delete_block: function (id) {
+		spinner.start();
+		$('#block_add').load(
+			habari.url.ajaxDeleteBlock,
+			{block_id:id},
+			themeManage.refresh_sortable
+		);
+		spinner.stop();
+	},
+	save_areas: function() {
+		spinner.start();
+		var output = {};
+		$('.area_drop_outer').each(function() {
+			var area = $('h2', this).text();
+			output[area] = [];
+			$('.block_drag', this).each(function(){
+				m = $(this).attr('class').match(/block_instance_(\d+)/)
+				output[area].push(m[1]);
+			});
+		});
+		$('#scope_container').load(
+			habari.url.ajaxSaveAreas, 
+			{area_blocks:output, scope:$('#scope_id').val()},
+			// Can't simply refresh the sortable because we've reloaded the element
+			function() {
+				$('.area_drop').sortable({
+					placeholder: 'block_drop',
+					forcePlaceholderSize: true,
+					connectWith: '.area_drop',
+					containment: $('#block_add').parents('.item'),
+					axis: 'y'
+				})
+			}
+		);
+	},
+	change_scope: function() {
+		spinner.start();
+		var output = {};
+		$('#scope_container').load(
+			habari.url.ajaxSaveAreas, 
+			{scope:$('#scope_id').val()},
+			themeManage.refresh_sortable
+		);
+		spinner.stop();
+	}
+
+};
+
 // Group Management
 var groupManage = {
 	init: function(users) {
@@ -1425,6 +1541,7 @@ $(document).ready(function(){
 	dashboard.init();
 	itemManage.init();
 	pluginManage.init();
+	themeManage.init();
 	liveSearch.init();
 	findChildren();
 	navigationDropdown.init();

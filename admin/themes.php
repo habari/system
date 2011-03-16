@@ -61,90 +61,11 @@
 						<?php $this->display('block_instances'); ?>
 					</div>
 
-					<!--
-					@todo: move this to the admin.js
-					-->
-					<script type="text/javascript">
-					function refresh_block_forms() {
-						$("#block_add").load(habari.url.ajaxAddBlock, {}, reset_block_form);
-						$('#scope_container').load(habari.url.ajaxSaveAreas, {scope:$('#scope_id').val()});
-					}
-					function reset_block_form() {
-						$('#block_instance_add').unbind('click').click(function(){
-							spinner.start();
-							$('#block_add').load(
-								habari.url.ajaxAddBlock, 
-								{title:$('#block_instance_title').val(), type:$('#block_instance_type').val()},
-								reset_block_form
-							);
-						});
-						$('.area_available').unbind('click').click(function() {
-							// Clone the block, it has the right name and id
-							var block = $(this).closest('.block_drag').clone();
-							// Change the clone to have the controls we need
-							block.find('.instance_controls,small').remove();
-							block.append('<div class="close">&nbsp;</div><div class="handle">&nbsp;</div>');
-							// Add the block to the target area
-							var target = $('#'+($(this).attr('class').match(/target_(\w+)/)[1]));
-							target.append(block);
-							return false;
-						});
-						$('.area_drop').sortable({
-							placeholder: 'block_drop',
-							forcePlaceholderSize: true,
-							connectWith: '.area_drop',
-							containment: $('#block_add').parents('.item'),
-							axis: 'y'
-						});
-						$('.close').live('click', function() {
-							$(this).parent().remove();
-						});
-						spinner.stop();
-					}
-					function delete_block(id){
-						spinner.start();
-						$('#block_add').load(
-							habari.url.ajaxDeleteBlock, 
-							{block_id:id},
-							reset_block_form
-						);
-					}
-					$(function(){
-						reset_block_form();
-					});
-					function save_areas(){
-						spinner.start();
-						var output = {};
-						$('.area_drop_outer').each(function(){
-							var area = $('h2', this).text();
-							output[area] = [];
-							$('.block_drag', this).each(function(){
-								m = $(this).attr('class').match(/block_instance_(\d+)/)
-								output[area].push(m[1]);
-							});
-						});
-						$('#scope_container').load(
-							habari.url.ajaxSaveAreas, 
-							{area_blocks:output, scope:$('#scope_id').val()},
-							reset_block_form
-						);
-					}
-					function change_scope(){
-						spinner.start();
-						var output = {};
-						$('#scope_container').load(
-							habari.url.ajaxSaveAreas, 
-							{scope:$('#scope_id').val()},
-							reset_block_form
-						);
-					}
-					</script>
-
 					<div id="scope_container">
 					<?php $this->display('block_areas'); ?>
 					</div>
 					<hr style="clear:both;visibility: hidden;height:5px;" />
-					<div id="save_areas" class="formcontrol"><button onclick="save_areas();return false;"><?php _e('Save'); ?></button>
+					<div class="formcontrol"><button id="save_areas"><?php _e('Save'); ?></button>
 					</div>
 					<hr style="clear:both;visibility: hidden;" />
 				</div>

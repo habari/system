@@ -21,7 +21,7 @@
 				<?php endif; ?>
 
 
-				<li><a href="#" onclick="delete_block(<?php echo $instance->id; ?>);return false;"><?php _e('Delete'); ?></a></li>
+				<li><a href="#" onclick="themeManage.delete_block(<?php echo $instance->id; ?>);return false;"><?php _e('Delete'); ?></a></li>
 			</ul>
 		</div>
 	</div>
