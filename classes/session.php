@@ -24,12 +24,33 @@ class Session
 	 */
 	static function init()
 	{
-		// If https request only set secure cookie
-		// IIS sets the value of HTTPS to 'off' if not https
-		if ( ( defined( 'FORCE_SECURE_SESSION' ) && FORCE_SECURE_SESSION == true ) ||
-			( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) ) {
-			session_set_cookie_params( null, null, null, true );
+		
+		// the default path for the session cookie is /, but let's make that potentially more restrictive so no one steals our cookehs
+		// we also can't use 'null' when we set a secure-only value, because that doesn't mean the same as the default like it should
+		$path = Site::get_path( 'base' );
+		
+		// the default is not to require a secure session
+		$secure = false;
+		
+		// if we want to always require secure
+		if ( Config::get( 'force_secure_session' ) == true ) {
+			$secure = true;
 		}
+		
+		// if this is an HTTPS connection by default we will
+		// IIS sets HTTPS == 'off', so we have to check the value too
+		if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
+			$secure = true;
+		}
+		
+		// but if we have explicitly disabled it, don't
+		// note the ===. not setting it (ie: null) should not be the same as setting it to false
+		if ( Config::get( 'force_secure_session' ) === false ) {
+			$secure = false;
+		}
+		
+		// now we've got a path and secure, so set the cookie values
+		session_set_cookie_params( null, $path, null, $secure );
 		
 		// figure out the session lifetime and let plugins change it
 		$lifetime = ini_get( 'session.gc_maxlifetime' );

@@ -1860,7 +1860,6 @@ body.page-themes .currenttheme .thumb {
 #block_add {
 	float: left;
 	width: 66%;
-	border-right: 1px solid #666666;
 }
 
 #scope_container {
@@ -1868,15 +1867,6 @@ body.page-themes .currenttheme .thumb {
 	color: white;
 	padding-left: 10px;
 	width: 32%;
-}
-
-#page #scope_container h3 {
-	color: white;
-	padding: 3px;
-	border-top: 1px solid #333333;
-	cursor: move;
-	padding-left: 24px;
-	background: #444 url('../images/4way.png') no-repeat scroll left center;
 }
 
 #scope_container .area_container,
@@ -1888,30 +1878,33 @@ body.page-themes .currenttheme .thumb {
 }
 
 #scope_container .area_container h2 {
-	color: #cccccc;
 	padding: 3px;
-	background-color: #666666;
 }
 
 #scope_container .area_drop_outer {
-	border: 1px solid #666;
+	background-color: #f8f8f8;
+	border: 1px solid #bbb;
 	margin: 5px 5px 15px 0px;
-	background-color: #333;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
-#block_instances .block_instance .block_drag {
-	background: #444 url('../images/4way.png') no-repeat scroll 2px 2px;
-	padding: 3px 3px 3px 27px;
-	color: white;
-	cursor: move;
+#block_instances .block_instance {
+	background-color: #f8f8f8;
+	border: #bbb 1px solid;
+	padding: 12px;
+	margin-top:3px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	height: 18px;
 }
 #block_instances .block_instance h3 {
 	display: inline;
-	color: white;
+	position: absolute;
+	color: #333;
 }
 #block_instances .block_instance h3 small {
 	margin-left: 2em;
@@ -1927,11 +1920,12 @@ body.page-themes .currenttheme .thumb {
 #block_instances .block_instance ul a {
 	color: white;
 }
+#page #scope_container #scope_id {
+	width: 75%;
+}
 
 #block_instances .block_instance {
 	background-color: #f8f8f8;
-	border: #bbb 1px solid;
-	padding: 3px;
 	margin: 0 3px 7px 0;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -1965,35 +1959,47 @@ body.page-themes .currenttheme .thumb {
 #page #scope_container .area_drop .block_drop {
 	background-color: #222222;
 /*	width: 100%; */
-	height: 2em;
-	border: 1px dashed white;
+	height: 28px;
 	background-image: none;
 }
 
-.area_block {
-	cursor: n-resize;
-}
-.area_container h3 small {
-	font-size: xx-small;
-	margin-left: 2em;
-	font-weight: normal;
-}
-.area_container ul.instance_controls {
-	display: none;
+#page #scope_container .area_drop .block_drag {
+	position: relative;
+	background-color: #eee;
+	padding: 4px;
+	margin: 3px 2px;
+	cursor: move;
 }
 
-.delete_drop {
-	border: 1px solid #444444;
-	color: #444444;
-	font-style: italic;
-	margin: 3px 5px 0 0;
-	padding: 13px 0;
-	text-align: center;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+#page #scope_container .area_drop .block_drag h3 {
+	padding-left: 24px;
+	width: 80%;
+	color: #333;
 }
-.delete_drop .block_drop {
+#page #scope_container .area_drop .block_drag .close {
+	position: absolute;
+	top: 3px;
+	right: 7px;
+	height: 16px;
+	width: 16px;
+	background: url('../images/closebutton.png') center center no-repeat;
+	cursor: pointer;
+}
+#page #scope_container .area_drop .block_drag .handle {
+	position: absolute;
+	top: 3px;
+	left: 7px;
+	height: 18px;
+	width: 12px;
+	background: url('../images/dashboardhandle.png') left center no-repeat;
+}
+#page #scope_container .area_drop .block_drag.ui-sortable-helper {
+	box-shadow: 2px 2px 2px #ccc;
+	-webkit-box-shadow: 2px 2px 2px #ccc;
+	-moz-box-shadow: 2px 2px 2px #ccc;
+}
+#page #scope_container .area_drop .no_blocks {
+	padding-left: 12px;
 	display: none;
 }
 

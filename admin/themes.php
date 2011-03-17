@@ -1,7 +1,6 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die('No direct access'); } ?>
 <?php include('header.php');?>
 
-
 <div class="container currenttheme">
 	<h2><?php _e('Current Theme'); ?></h2>
 	<div class="item clear">
@@ -62,90 +61,11 @@
 						<?php $this->display('block_instances'); ?>
 					</div>
 
-					<!--
-					@todo: move this to the admin.js
-					-->
-					<script type="text/javascript">
-					function refresh_block_forms() {
-						$("#block_add").load(habari.url.ajaxAddBlock, {}, reset_block_form);
-						$('#scope_container').load(habari.url.ajaxSaveAreas, {scope:$('#scope_id').val()});
-					}
-					function reset_block_form() {
-						$('#block_instance_add').unbind('click').click(function(){
-							spinner.start();
-							$('#block_add').load(
-								habari.url.ajaxAddBlock, 
-								{title:$('#block_instance_title').val(), type:$('#block_instance_type').val()},
-								reset_block_form
-							);
-						});
-
-						$('.block_instance .block_drag').draggable({
-							connectToSortable: '.area_drop', 
-							helper: 'clone', 
-							distance: 5, 
-							//containment: $('#blocksconfigure'),
-							start: function(){$('.area_drop').sortable('refresh');}
-						});
-						$('.area_drop').sortable({
-							placeholder: 'block_drop', 
-							forcePlaceholderSize: true, 
-							connectWith: '.area_drop,.delete_drop',
-							containment: $('#block_add').parents('.item')
-						});
-						$('.delete_drop').sortable({
-							over: function(event, ui){$(this).css('border', '1px dotted red');},
-							out: function(event, ui){$(this).css('border', null);},
-							receive: function(event, ui){
-								$(ui.item).remove();
-							}
-						});
-						spinner.stop();
-					}
-					function delete_block(id){
-						spinner.start();
-						$('#block_add').load(
-							habari.url.ajaxDeleteBlock, 
-							{block_id:id},
-							reset_block_form
-						);
-					}
-					$(function(){
-						reset_block_form();
-					});
-					function save_areas(){
-						spinner.start();
-						var output = {};
-						$('.area_drop_outer').each(function(){
-							var area = $('h2', this).text();
-							output[area] = [];
-							$('.block_drag', this).each(function(){
-								m = $(this).attr('class').match(/block_instance_(\d+)/)
-								output[area].push(m[1]);
-							});
-						});
-						$('#scope_container').load(
-							habari.url.ajaxSaveAreas, 
-							{area_blocks:output, scope:$('#scope_id').val()},
-							reset_block_form
-						);
-					}
-					function change_scope(){
-						spinner.start();
-						var output = {};
-						$('#scope_container').load(
-							habari.url.ajaxSaveAreas, 
-							{scope:$('#scope_id').val()},
-							reset_block_form
-						);
-					}
-					</script>
-
 					<div id="scope_container">
 					<?php $this->display('block_areas'); ?>
 					</div>
 					<hr style="clear:both;visibility: hidden;height:5px;" />
-					<div id="save_areas" class="formcontrol"><button onclick="save_areas();return false;"><?php _e('Save'); ?></button>
+					<div class="formcontrol"><button id="save_areas" disabled="disabled"><?php _e('Save'); ?></button>
 					</div>
 					<hr style="clear:both;visibility: hidden;" />
 				</div>

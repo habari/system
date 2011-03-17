@@ -107,7 +107,8 @@ class RemoteRequest
 		$this->set_timeout( $timeout );
 		
 		// load the proxy configuration, if it exists
-		$proxy = Config::get( 'proxy' );
+		$default = new stdClass();
+		$proxy = Config::get( 'proxy', $default );
 		if ( isset( $proxy->server ) ) {
 			$this->set_config( array( 'proxy' => (array)$proxy ) );
 		}

@@ -582,15 +582,29 @@ class Format
 	 * Turns Terms or an array of terms from a hierarchical vocabulary into a ordered HTML list with list items for each term.
 	 * @param mixed $terms An array of Term objects or a Terms object.
 	 * @param string $tree_name The name of the tree, used for unique node id's
-	 * @param function $display_callback A callback function to apply to earch term as it is displayed.
-	 * @param string $wrapper An sprintf formatted in which to wrap each term.
-	 * @param string $startlist A string to put at the start of the list.
-	 * @param string $endlist A string to put at the end of the list.
+	 * @param array $config an array of values to use to configure the output of this function
 	 * @return string The transformed vocabulary.
 	 */
-	public static function term_tree( $terms, $tree_name, $display_callback = null, $wrapper = '<div>%s</div>', $startlist = '<ol class="tree">', $endlist = '</ol>' )
+	public static function term_tree( $terms, $tree_name, $config = array() )
 	{
-		$out = $startlist;
+		$defaults = array(
+			'treestart' => '<ol %s>',
+			'treeattr' => array('class' => 'tree', 'id' => Utils::slugify('tree_' . $tree_name)),
+			'treeend' => '</ol>',
+			'liststart' => '<ol %s>',
+			'listattr' => array(),
+			'listend' => '</ol>',
+			'itemstart' => '<li %s>',
+			'itemattr' => array(),
+			'itemend' => '</li>',
+			'wrapper' => '<div>%s</div>',
+			'linkcallback' => null,
+			'itemcallback' => null,
+			'listcallback' => null,
+		);
+		$config = array_merge($defaults, $config);
+		
+		$out = sprintf($config['treestart'], Utils::html_attr($config['treeattr']));
 		$stack = array();
 		$tree_name = Utils::slugify($tree_name);
 
@@ -601,35 +615,42 @@ class Format
 		foreach ( $terms as $term ) {
 			if(count($stack)) {
 				if($term->mptt_left - end($stack)->mptt_left == 1) {
-					$out .= $startlist;
+					if(isset($config['listcallback'])) {
+						$config = call_user_func($config['listcallback'], $term, $config);
+					}
+					$out .= sprintf($config['liststart'], Utils::html_attr($config['listattr']));
 				}
 				while(count($stack) && $term->mptt_left > end($stack)->mptt_right) {
-					$out .= '</li>'. $endlist. "\n";
+					$out .= $config['itemend'] . $config['listend'] . "\n";
 					array_pop($stack);
 				}
 			}
 
-			$out .= '<li id="' . $tree_name . '_' . $term->id . '">';
-			if(isset($display_callback)) {
-				$display = call_user_func($display_callback, $term, $wrapper);
+			$config['itemattr']['id'] = $tree_name . '_' . $term->id;
+			if(isset($config['itemcallback'])) {
+				$config = call_user_func($config['itemcallback'], $term, $config);
+			}
+			$out .= sprintf($config['itemstart'], Utils::html_attr($config['itemattr']));
+			if(isset($config['linkcallback'])) {
+				$display = call_user_func($config['linkcallback'], $term, $config);
 			}
 			else {
 				$display = $term->term_display;
 			}
-			$out .= sprintf( $wrapper, $display );
+			$out .= sprintf( $config['wrapper'], $display );
 			if($term->mptt_right - $term->mptt_left > 1) {
 				$stack[] = $term;
 			}
 			else {
-				$out .= '</li>' ."\n";
+				$out .= $config['itemend'] ."\n";
 			}
 		}
 		while(count($stack)) {
-			$out .= '</li>' . $endlist . "\n";
+			$out .= $config['itemend'] . $config['listend'] . "\n";
 			array_pop($stack);
 		}
 
-		$out .= $endlist;
+		$out .= $config['treeend'];
 		return $out;
 	}
 }

@@ -1590,12 +1590,14 @@ class AdminHandler extends ActionHandler
 			// let's optimize the table
 			$result = DB::query( 'OPTIMIZE TABLE {comments}' );
 			Session::notice( _t( 'Deleted all spam comments' ) );
+			EventLog::log( _t( 'Deleted all spam comments' ), 'info' );
 			Utils::redirect();
 		}
 		elseif ( isset( $mass_delete ) && $status == Comment::STATUS_UNAPPROVED ) {
 			// Delete all comments that are unapproved.
 			Comments::delete_by_status( Comment::STATUS_UNAPPROVED );
 			Session::notice( _t( 'Deleted all unapproved comments' ) );
+			EventLog::log( _t( 'Deleted all unapproved comments' ), 'info' );
 			Utils::redirect();
 		}
 		// if we're updating posts, let's do so:
@@ -3624,12 +3626,14 @@ class AdminHandler extends ActionHandler
 		if ( !isset( $_POST['title'] ) ) {
 			$this->theme->blocks = Plugins::filter( 'block_list', array() );
 			$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+			$this->theme->active_theme = Themes::get_active_data( true );
 
 			$this->display( 'block_instances' );
 		}
 		elseif ( $title == '' ) {
 			$this->theme->blocks = Plugins::filter( 'block_list', array() );
 			$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+			$this->theme->active_theme = Themes::get_active_data( true );
 
 			$this->display( 'block_instances' );
 
@@ -3637,7 +3641,6 @@ class AdminHandler extends ActionHandler
 
 			echo '<script type="text/javascript">
 				alert(' . $msg . ');
-				reset_block_form();
 			</script>';
 		}
 		else {
@@ -3646,6 +3649,7 @@ class AdminHandler extends ActionHandler
 
 			$this->theme->blocks = Plugins::filter( 'block_list', array() );
 			$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+			$this->theme->active_theme = Themes::get_active_data( true );
 
 			$this->display( 'block_instances' );
 
@@ -3653,7 +3657,6 @@ class AdminHandler extends ActionHandler
 
 			echo '<script type="text/javascript">
 				human_msg.display_msg(' . $msg . ');
-				reset_block_form();
 				spinner.stop();
 			</script>';
 		}
@@ -3681,12 +3684,12 @@ class AdminHandler extends ActionHandler
 
 		$this->theme->blocks = Plugins::filter( 'block_list', array() );
 		$this->theme->block_instances = DB::get_results( 'SELECT b.* FROM {blocks} b ORDER BY b.title ASC', array(), 'Block' );
+		$this->theme->active_theme = Themes::get_active_data( true );
 
 		$this->display( 'block_instances' );
 
 		echo '<script type="text/javascript">
 			human_msg.display_msg(' . $msg . ');
-			reset_block_form();
 			spinner.stop();
 		</script>';
 	}
@@ -3726,7 +3729,6 @@ class AdminHandler extends ActionHandler
 			$msg = json_encode( _t( 'Saved block areas settings.' ) );
 			$msg = '<script type="text/javascript">
 				human_msg.display_msg(' . $msg . ');
-				reset_block_form();
 				spinner.stop();
 			</script>';
 		}
