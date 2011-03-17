@@ -485,6 +485,9 @@ var themeManage = {
 			themeManage.refresh_areas();
 		});
 
+		// Calculate a hash of the initial state so we can tell if save is required
+		themeManage.initial_data_hash = themeManage.data_hash();
+
 		// Sort blocks in areas
 		// @todo Move the options to a property, so they're not repeated in save_areas.
 		$('.area_drop').sortable({
@@ -508,6 +511,14 @@ var themeManage = {
 		$('#save_areas').click(function() {
 			themeManage.save_areas();
 		});
+
+		// Warn user about unsaved changes
+		window.onbeforeunload = function() {
+			if (themeManage.changed()) {
+				spinner.start(); spinner.stop();
+				return 'You did not save the changes you made. \nLeaving this page will result in the lose of data.';
+			}
+		};
 	},
 	refresh_areas: function() {
 		$('.area_drop').sortable('refresh');
@@ -519,6 +530,11 @@ var themeManage = {
 				area.find('.no_blocks').hide();
 			}
 		});
+		if (themeManage.changed()) {
+			$('#save_areas').removeAttr('disabled');
+		} else {
+			$('#save_areas').attr('disabled', 'disabled');
+		}
 	},
 	add_block: function (title, type) {
 		spinner.start();
@@ -559,6 +575,8 @@ var themeManage = {
 					containment: $('#block_add').parents('.item'),
 					axis: 'y'
 				});
+				// We've saved, reset the hash
+				themeManage.initial_data_hash = themeManage.data_hash();
 				themeManage.refresh_areas();
 			}
 		);
@@ -572,6 +590,21 @@ var themeManage = {
 			themeManage.refresh_areas
 		);
 		spinner.stop();
+	},
+	changed: function() {
+		return themeManage.initial_data_hash != themeManage.data_hash();
+	},
+	data_hash: function() {
+		var output = '';
+		$('.area_drop_outer').each(function() {
+			var area = $('h2', this).text();
+			output += area;
+			$('.block_drag', this).each(function(){
+				m = $(this).attr('class').match(/block_instance_(\d+)/)
+				output += m[1];
+			});
+		});
+		return crc32(output);
 	}
 
 };

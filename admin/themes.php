@@ -65,7 +65,7 @@
 					<?php $this->display('block_areas'); ?>
 					</div>
 					<hr style="clear:both;visibility: hidden;height:5px;" />
-					<div class="formcontrol"><button id="save_areas"><?php _e('Save'); ?></button>
+					<div class="formcontrol"><button id="save_areas" disabled="disabled"><?php _e('Save'); ?></button>
 					</div>
 					<hr style="clear:both;visibility: hidden;" />
 				</div>
