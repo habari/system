@@ -266,9 +266,12 @@ class InputFilter
 			//
 			'pseudo_args' => '',
 		);
+		
+		// sanitize the url
+		$url = filter_var( $url, FILTER_SANITIZE_URL );
 
 		// Use PHP's parse_url to get the basics
-		$parsed = parse_url( preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $url) );
+		$parsed = parse_url( $url );
 		if ( $parsed == false ) {
 			$r['is_error'] = true;
 			return $r;
