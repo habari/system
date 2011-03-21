@@ -25,7 +25,7 @@ class Post extends QueryRecord implements IsContent
 	static $post_type_list_active = array();
 	static $post_type_list_all = array();
 
-	private $tags = null;
+	private $tags_object = null;
 	private $comments_object = null;
 	private $author_object = null;
 	private $tokens = null;
@@ -1059,7 +1059,7 @@ class Post extends QueryRecord implements IsContent
 	 */
 	private function get_tags()
 	{
-		if ( $this->tags == null ) {
+		if ( $this->tags_object == null ) {
 			$result = Tags::vocabulary()->get_associations( $this->id );
 			if ( $result ) {
 				$tags = $result;
@@ -1067,9 +1067,10 @@ class Post extends QueryRecord implements IsContent
 			else {
 				$tags = new Terms();
 			}
+			$this->tags_object = $tags;
 		}
 		else {
-			$tags = $this->tags;
+			$tags = $this->tags_object;
 		}
 		return $tags;
 
