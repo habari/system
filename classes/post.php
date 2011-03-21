@@ -1042,6 +1042,29 @@ class Post extends QueryRecord implements IsContent
 			false
 		);
 	}
+	
+	/**
+	 * Returns a list of CSS classes for the post
+	 * 
+	 * @param string|array $append Additional classes that should be added to the ones generated
+ 	 * @return string The resultant classes
+	 */
+	public function css_class ( $append = array() ) {
+		
+		$classes = $append;
+		
+		$classes[] = 'post';
+		$classes[] = 'post-' . $this->id;
+		$classes[] = 'type-' . $this->typename;
+		$classes[] = 'status-' . $this->statusname;
+				
+		foreach ( $this->tags as $tag ) {
+			$classes[] = 'tag-' . $tag->term;
+		}
+
+		return implode( ' ', $classes );
+		
+	}
 
 	/**
 	 * Returns a URL for the ->editlink property of this class.
