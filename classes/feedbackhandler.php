@@ -87,7 +87,7 @@ class FeedbackHandler extends ActionHandler
 		}
 
 		// let's do some basic sanity checking on the submission
-		if ( ( 1 == Options::get( 'comments_require_id' ) ) && ( empty( $name ) || empty( $email ) ) ) {
+		if ( ( Options::get( 'comments_require_id' ) == true ) && ( empty( $name ) || empty( $email ) ) ) {
 			Session::error( _t( 'Both name and e-mail address must be provided.' ) );
 		}
 
