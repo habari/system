@@ -266,17 +266,27 @@ class InputFilter
 			//
 			'pseudo_args' => '',
 		);
-
+		
+		// sanitize the url
+		$sanitized = html_entity_decode( $url, null, 'UTF-8' );		// make double-sure we've converted all entities
+		$sanitized = filter_var( $sanitized, FILTER_SANITIZE_URL );		// strip everything but ascii, essentially
+		
+		$sanitized_scheme = parse_url( $sanitized, PHP_URL_SCHEME );
+		
 		// Use PHP's parse_url to get the basics
-		$parsed = parse_url( preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $url) );
+		$parsed = parse_url( $url );
 		if ( $parsed == false ) {
 			$r['is_error'] = true;
 			return $r;
 		}
 		$r = array_merge( $r, $parsed );
+		
+		// replace the scheme with the one we got from the fully-sanitized string
+		$r['scheme'] = $sanitized_scheme;
 
 		$r['is_pseudo'] = !in_array( $r['scheme'], array( 'http', 'https', '' ) );
 		$r['is_relative'] = ( $r['host'] == '' && !$r['is_pseudo'] );
+		
 		if ( $r['is_pseudo'] ) {
 			$r['pseudo_args'] = $r['path'];
 			$r['path'] = '';

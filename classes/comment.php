@@ -540,6 +540,27 @@ class Comment extends QueryRecord implements IsContent
 	{
 		return URL::get( 'admin', "page=comment&id={$this->id}" );
 	}
+	
+	/**
+	 * Returns a list of CSS classes for the comment
+	 * 
+	 * @param string|array $append Additional classes that should be added to the ones generated
+ 	 * @return string The resultant classes
+	 */
+	public function css_class ( $append = array() ) {
+		
+		$classes = $append;
+		
+		$classes[] = 'comment';
+		$classes[] = 'comment-' . $this->id;
+		$classes[] = 'type-' . $this->typename;
+		$classes[] = 'status-' . $this->statusname;
+		
+		$classes[] = 'comment-post-' . $this->post->id;
+
+		return implode( ' ', $classes );
+		
+	}
 }
 
 ?>

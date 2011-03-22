@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-13 00:00+0000\n"
+"POT-Creation-Date: 2011-03-20 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,7 +80,7 @@ msgstr ""
 msgid "Delete this group"
 msgstr ""
 
-#: system/admin/groups_item.php:8 system/admin/block_instances.php:17
+#: system/admin/groups_item.php:8 system/admin/block_instances.php:24
 #: system/admin/publish.php:15 system/admin/posts_items.php:29
 #: system/admin/group.php:127 system/classes/adminhandler.php:835
 #: system/classes/adminhandler.php:1772
@@ -271,10 +271,6 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: system/admin/block_areas.php:33
-msgid "drag here to remove"
-msgstr ""
-
 #: system/admin/publish.php:29
 msgid "Publish"
 msgstr ""
@@ -307,13 +303,13 @@ msgid "The XML file for the plugin %s contained errors and could not be loaded."
 msgstr ""
 
 #: system/admin/plugin.php:35 system/admin/posts_items.php:21
-#: system/admin/themes.php:10 system/admin/themes.php:176
+#: system/admin/themes.php:9 system/admin/themes.php:96
 #: system/plugins/coredashmodules/dash_latestentries.php:6
 msgid "by"
 msgstr ""
 
-#: system/admin/plugin.php:42 system/admin/themes.php:16
-#: system/admin/themes.php:182 system/themes/charcoal/footer.php:10
+#: system/admin/plugin.php:42 system/admin/themes.php:15
+#: system/admin/themes.php:102 system/themes/charcoal/footer.php:10
 #: system/classes/format.php:247 system/classes/format.php:282
 msgid " and "
 msgstr ""
@@ -419,52 +415,52 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: system/admin/themes.php:6
+#: system/admin/themes.php:5
 msgid "Current Theme"
 msgstr ""
 
-#: system/admin/themes.php:21 system/classes/post.php:851
+#: system/admin/themes.php:20 system/classes/post.php:851
 #: system/classes/adminhandler.php:1391
 msgid "Settings"
 msgstr ""
 
-#: system/admin/themes.php:27
+#: system/admin/themes.php:26
 msgid "v"
 msgstr ""
 
-#: system/admin/themes.php:27
+#: system/admin/themes.php:26
 msgid "Update Available"
 msgstr ""
 
-#: system/admin/themes.php:37 system/admin/themes.php:192
+#: system/admin/themes.php:36 system/admin/themes.php:112
 #, php-format
 msgid "%1$s is licensed under the %2$s"
 msgstr ""
 
-#: system/admin/themes.php:148 system/themes/charcoal/theme.php:67
+#: system/admin/themes.php:68 system/themes/charcoal/theme.php:67
 #: system/classes/post.php:889 system/classes/adminhandler.php:3586
 #: system/plugins/undelete/undelete.plugin.php:178
 #: system/plugins/flickrsilo/flickrsilo.plugin.php:876
 msgid "Save"
 msgstr ""
 
-#: system/admin/themes.php:170
+#: system/admin/themes.php:90
 msgid "Available Themes"
 msgstr ""
 
-#: system/admin/themes.php:198
+#: system/admin/themes.php:118
 msgid "Legacy theme."
 msgstr ""
 
-#: system/admin/themes.php:202
+#: system/admin/themes.php:122
 msgid "End Preview"
 msgstr ""
 
-#: system/admin/themes.php:204
+#: system/admin/themes.php:124
 msgid "Preview"
 msgstr ""
 
-#: system/admin/themes.php:206 system/classes/installhandler.php:221
+#: system/admin/themes.php:126 system/classes/installhandler.php:221
 #: system/classes/adminhandler.php:1896 system/classes/adminhandler.php:1900
 msgid "Activate"
 msgstr ""
@@ -1939,7 +1935,7 @@ msgid ""
 "  %s(%s)\n"
 msgstr ""
 
-#: system/classes/session.php:110
+#: system/classes/session.php:131
 msgid "Your session expired."
 msgstr ""
 
@@ -2852,26 +2848,26 @@ msgstr ""
 msgid "Display Block Title:"
 msgstr ""
 
-#: system/classes/adminhandler.php:3638
+#: system/classes/adminhandler.php:3640
 msgid "A new block must first have a name."
 msgstr ""
 
-#: system/classes/adminhandler.php:3654
+#: system/classes/adminhandler.php:3656
 #, php-format
 msgid "Added new block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3678
+#: system/classes/adminhandler.php:3679
 #, php-format
 msgid "Deleted block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3681
+#: system/classes/adminhandler.php:3682
 #, php-format
 msgid "Failed to delete block \"%1s\" of type \"%2s\"."
 msgstr ""
 
-#: system/classes/adminhandler.php:3728
+#: system/classes/adminhandler.php:3729
 msgid "Saved block areas settings."
 msgstr ""
 
@@ -2889,20 +2885,20 @@ msgstr ""
 msgid "Unable to get response headers. Request did not yet execute."
 msgstr ""
 
-#: system/classes/remoterequest.php:217
+#: system/classes/remoterequest.php:218
 msgid "Trying to add a request body to a GET request."
 msgstr ""
 
-#: system/classes/remoterequest.php:274
+#: system/classes/remoterequest.php:275
 #, php-format
 msgid "File %s not found."
 msgstr ""
 
-#: system/classes/remoterequest.php:374
+#: system/classes/remoterequest.php:375
 msgid "Unable to fetch response headers for a pending request."
 msgstr ""
 
-#: system/classes/remoterequest.php:387
+#: system/classes/remoterequest.php:388
 msgid "Unable to fetch response body for a pending request."
 msgstr ""
 
@@ -3373,7 +3369,7 @@ msgstr ""
 msgid "CronTab run completed."
 msgstr ""
 
-#: system/classes/inputfilter.php:378
+#: system/classes/inputfilter.php:381
 #, php-format
 msgid "Unkown attribute type \"%s\" in %s"
 msgstr ""
