@@ -78,6 +78,14 @@ class K2 extends Theme
 		if ( User::identify()->loggedin ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
 		}
+		
+		if ( ( $theme->request->display_entry || $theme->request->display_page ) && isset( $theme->post ) && $theme->post->title != '' ) {
+			$theme->page_title = $theme->post->title . ' - ' . Options::get('title');
+		}
+		else {
+			$theme->page_title = Options::get('title');
+		}
+		
 	}
 
 	public function k2_comment_class( $comment, $post )
