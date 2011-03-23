@@ -110,7 +110,7 @@ class Posts extends ArrayObject implements IsContent
 
 		$join_params = array();
 		$params = array();
-		$fns = array( 'get_results', 'get_row', 'get_value' );
+		$fns = array( 'get_results', 'get_row', 'get_value', 'get_query' );
 		$select_ary = array();
 
 		// Default fields to select, everything by default
@@ -788,6 +788,13 @@ class Posts extends ArrayObject implements IsContent
 		//Utils::debug( $paramarray, $fetch_fn, $query, $params );
 		//Session::notice($query);
 
+		if ( 'get_query' == $fetch_fn ) {
+			return array(
+				$query,
+				$params
+			);
+		}
+		
 		/**
 		 * Execute the SQL statement using the PDO extension
 		 */
