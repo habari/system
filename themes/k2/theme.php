@@ -43,7 +43,7 @@ class K2 extends Theme
 		//Format::apply_with_hook_params( 'more', 'post_content_out', _t('more'), 100, 1 );
 	}
 
-/**
+	/**
 	 * Add additional template variables to the template output.
 	 *
 	 *  You can assign additional output values in the template here, instead of
@@ -61,23 +61,30 @@ class K2 extends Theme
 	 *  template.  So the values here, unless checked, will overwrite any existing
 	 *  values.
 	 */
-	public function action_add_template_vars( $theme, $handler_vars )
-	{
-		//Theme Options
-		$this->assign('home_tab','Blog'); //Set to whatever you want your first tab text to be.
-		$this->assign( 'show_author' , false ); //Display author in posts
-
-		//Add formcontrol template with input before label
-		$this->add_template( 'k2_text', dirname(__FILE__) . '/formcontrol_text.php' );
-
-
-		if ( !$this->template_engine->assigned( 'pages' ) ) {
-			$this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => 1 ) ) );
+	public function add_template_vars ( ) {
+		
+		parent::add_template_vars();
+		
+		$this->home_tab = 'Blog';
+		$this->show_author = false;
+		
+		$this->add_template( 'k2_text', dirname( __FILE__ ) . '/formcontrol_text.php' );
+		
+		if ( !isset( $this->pages ) ) {
+			$this->pages = Posts::get( array( 'content_type' => 'page', 'status' => 'published', 'nolimit' => true ) );
 		}
-
+		
 		if ( User::identify()->loggedin ) {
 			Stack::add( 'template_header_javascript', Site::get_url('scripts') . '/jquery.js', 'jquery' );
 		}
+		
+		if ( ( $this->request->display_entry || $this->request->display_page ) && isset( $this->post ) && $this->post->title != '' ) {
+			$this->page_title = $this->post->title . ' - ' . Options::get('title');
+		}
+		else {
+			$this->page_title = Options::get('title');
+		}
+		
 	}
 
 	public function k2_comment_class( $comment, $post )

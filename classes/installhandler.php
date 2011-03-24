@@ -1061,9 +1061,11 @@ class InstallHandler extends ActionHandler
 			// it is correct.
 			// Check that the rewrite rules actually do the job.
 			$test_ajax_url = Site::get_url( 'habari' ) . '/check_mod_rewrite';
-			$rr = new RemoteRequest( $test_ajax_url, 'POST', 20 );
-			$rr_result = $rr->execute();
-			if ( ! $rr->executed() ) {
+			$rr = new RemoteRequest( $test_ajax_url, 'POST', 5 );
+			try {
+				$rr_result = $rr->execute();
+			}
+			catch ( Exception $e ) {
 				$result = $this->write_htaccess( true, true, true );
 			}
 		}

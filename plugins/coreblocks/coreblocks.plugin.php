@@ -6,22 +6,25 @@
  */
 class CoreBlocks extends Plugin
 {
-	private $allblocks = array(
-		'recent_comments' => 'Recent Comments',
-		'recent_posts' => 'Recent Posts',
-		'monthly_archives' => 'Monthly Archives',
-		'category_archives' => 'Category Archives',
-		'tag_archives' => 'Tag Archives',
-		'meta_links' => 'Meta Links',
-		'search_form' => 'Search Form',
-
-	);
+	private $allblocks = array();
 
 	/**
 	 * When the plugin is initialized, register the block templates and set up supporting data.
 	 */
 	function action_init()
 	{
+		
+		$this->allblocks = array(
+			'recent_comments' => _t( 'Recent Comments' ),
+			'recent_posts' => _t( 'Recent Posts' ),
+			'monthly_archives' => _t( 'Monthly Archives' ),
+			'category_archives' => _t( 'Category Archives' ),
+			'tag_archives' => _t( 'Tag Archives' ),
+			'meta_links' => _t( 'Meta Links' ),
+			'search_form' => _t( 'Search Form' ),
+			'page_navigation' => _t( 'Page Navigation' ),
+		);
+		
 		foreach ( array_keys( $this->allblocks ) as $blockname ) {
 			$this->add_template( "block.$blockname", dirname( __FILE__ ) . "/block.$blockname.php" );
 		}

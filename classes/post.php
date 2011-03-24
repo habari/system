@@ -768,10 +768,10 @@ class Post extends QueryRecord implements IsContent
 				break;
 			case 'tags':
 				if ( is_array( $value ) ) {
-					return $this->tags = $value;
+					return $this->tags_object = $value;
 				}
 				else {
-					return $this->tags = Terms::parse( $value, 'Term', Tags::vocabulary() );
+					return $this->tags_object = Terms::parse( $value, 'Term', Tags::vocabulary() );
 				}
 			case 'status':
 				return $this->setstatus( $value );
