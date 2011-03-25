@@ -197,6 +197,9 @@ class Themes
 	{
 		$_SESSION['user_theme_name'] = $theme_name;
 		$_SESSION['user_theme_dir'] = $theme_dir;
+		// Execute the theme's activated action
+		$preview_theme = Themes::create();
+		Plugins::act_id( 'theme_activated', $preview_theme->plugin_id(), $theme_name, $preview_theme );
 		EventLog::log( _t( 'Previewed Theme: %s', array( $theme_name ) ), 'notice', 'theme', 'habari' );
 	}
 	

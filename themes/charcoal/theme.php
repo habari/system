@@ -23,17 +23,16 @@ class Charcoal extends Theme
 		if ( empty( $opts ) ) {
 			Options::set_group( __CLASS__, $this->defaults );
 		}
-		$blocks = $this->get_blocks('nav', '', $this);
-		if(count($blocks) == 0) {
-			$block = new Block(array(
-				'title' => _t('Charcoal Menu'),
+		$blocks = $this->get_blocks( 'nav', '', $this );
+		if( count( $blocks ) == 0 ) {
+			$block = new Block( array(
+				'title' => _t( 'Charcoal Menu' ),
 				'type' => 'charcoal_menu',
-			));
+			) );
 
-			$block->add_to_area('nav');
-			Session::notice(_t('Added Charcoal Menu block to Nav area.'));
+			$block->add_to_area( 'nav' );
+			Session::notice( _t( 'Added Charcoal Menu block to Nav area.' ) );
 		}
-
 	}
 
 	/**
