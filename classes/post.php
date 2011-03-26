@@ -767,8 +767,11 @@ class Post extends QueryRecord implements IsContent
 				}
 				break;
 			case 'tags':
-				if ( is_array( $value ) ) {
+				if ( $value instanceof Terms ) {
 					return $this->tags_object = $value;
+				}
+				elseif ( is_array( $value ) ) {
+					return $this->tags_object = new Terms($value);
 				}
 				else {
 					return $this->tags_object = Terms::parse( $value, 'Term', Tags::vocabulary() );
@@ -1085,7 +1088,7 @@ class Post extends QueryRecord implements IsContent
 		if ( $this->tags_object == null ) {
 			$result = Tags::vocabulary()->get_associations( $this->id );
 			if ( $result ) {
-				$tags = $result;
+				$tags = new Terms($result);
 			}
 			else {
 				$tags = new Terms();
