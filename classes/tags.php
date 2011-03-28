@@ -67,6 +67,47 @@ class Tags extends Vocabulary
 	{
 		return Vocabulary::get( self::$vocabulary );
 	}
+	
+	/**
+	 * Returns a list of terms from this vocabulary ordered by frequency of use on the post type specified
+	 * 
+	 * @param int $limit If supplied, limits the results to the specified number
+	 * @param mixed $post_type If a name or id of a post type is supplied, limits the results to the terms applying to that type
+	 * @return Tags A Tags instance containing the terms, each having an additional property of "count" that tells how many times the term was used
+	 */
+	public static function get_by_frequency($limit = null, $post_type = null)
+	{
+		$query = '
+	    SELECT t.*, count(*) as `count`
+	    FROM {terms} t
+	    INNER JOIN {object_terms} tp ON t.id=tp.term_id
+	    INNER JOIN {posts} p ON tp.object_id=p.id
+	    INNER JOIN {object_types} ot ON tp.object_type_id=ot.id and ot.name="post"
+	    WHERE t.vocabulary_id = ?';
+		
+		$params = array(Tags::vocabulary()->id);
+		
+		if(isset($post_type)) {
+			$query .= ' AND p.content_type = ?';
+			$params[] = Post::type($post_type);
+		}
+		
+		$query .= '
+	    GROUP BY t.id
+	    ORDER BY `count` DESC, term_display ASC';
+		
+		if(is_int($limit)) {
+			$query .= ' LIMIT ' . $limit;
+		}
+		
+		$tags = DB::get_results(
+			$query,
+			$params,
+			'Term'
+		);
+		
+		return $tags ? new Terms($tags) : false;
+	}
 
 	/**
 	 * Returns the default type Tags uses
