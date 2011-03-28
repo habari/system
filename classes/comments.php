@@ -100,16 +100,16 @@ class Comments extends ArrayObject
 					}
 				}
 				if ( isset( $paramset['name'] ) ) {
-					$where[] = "name= ?";
-					$params[] = $paramset['name'];
+					$where[] = "LOWER( name ) = ?";
+					$params[] = MultiByte::strtolower( $paramset['name'] );
 				}
 				if ( isset( $paramset['email'] ) ) {
-					$where[] = "email= ?";
-					$params[] = $paramset['email'];
+					$where[] = "LOWER( email ) = ?";
+					$params[] = MultiByte::strtolower( $paramset['email'] );
 				}
 				if ( isset( $paramset['url'] ) ) {
-					$where[] = "url= ?";
-					$params[] = $paramset['url'];
+					$where[] = "LOWER( url ) = ?";
+					$params[] = MultiByte::strtolower( $paramset['url'] );
 				}
 				if ( isset( $paramset['post_id'] ) ) {
 					$where[] = "{comments}.post_id= ?";
