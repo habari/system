@@ -381,7 +381,7 @@ class Pingback extends Plugin
 			$one = _t( '%d Pingback' );
 		}
 		if ( empty( $many ) ) {
-			$many = _t( '%d Pingabcks' );
+			$many = _t( '%d Pingbacks' );
 		}
 
 		if ($count >= 1) {
