@@ -47,7 +47,7 @@
 <?php if (! $php_version_ok) {?>
 	<h2><?php _e('PHP Upgrade needed&hellip;'); ?></h2>
 	<p class="instructions">
-		<em>Habari</em> <?php printf(_t('requires PHP 5.2 or newer. Your current PHP version is %s.'), PHP_VERSION); ?>
+		<em>Habari</em> <?php _e('requires PHP %s or newer. Your current PHP version is %s.', array(MIN_PHP_VERSION, PHP_VERSION)); ?>
 	</p>
 	<strong>@todo Upgrading PHP instructions</strong>
 <?php }?>
@@ -64,10 +64,11 @@
 	</p>
 <?php }?>
 
-<?php if ( extension_loaded( 'pcre' ) && ! @preg_match( '/\p{L}/u', 'a' ) ) { ?>
+<?php //if ( extension_loaded( 'pcre' ) && ! @preg_match( '/\p{L}/u', 'a' ) ) { ?>
+<?php if (true) { ?>
 	<h2>Unicode support needed&hellip;</h2>
 	<p class="instructions">
-		<em>Habari</em> <?php _e('requires PHP\'s PCRE extension to have Unicode support enabled. Please contact your web hosting provider if you do not have access to your server.'); ?>
+		<em>Habari</em> <?php _e('requires PHP\'s PCRE extension to have Unicode support enabled.'); ?> <?php _e('Please contact your web hosting provider if you do not have access to your server.'); ?>
 	</p>
 
 <?php } ?>
