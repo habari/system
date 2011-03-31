@@ -2994,7 +2994,7 @@ class AdminHandler extends ActionHandler
 	{
 		$this->theme->wsse = Utils::WSSE();
 
-		$this->theme->tags = Tags::vocabulary()->get_tree();
+		$this->theme->tags = Tags::vocabulary()->get_tree( 'term_display asc' );
 		$this->theme->max = Tags::vocabulary()->max_count();
 
 		$this->display( 'tags' );
