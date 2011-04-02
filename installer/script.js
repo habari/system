@@ -136,7 +136,7 @@ installer.mysql = {
 			if (installer.verifyDB) {
 				$.ajax({
 					type: 'POST',
-					url: 'ajax/check_mysql_credentials',
+					url: habari.url.check_mysql_credentials,
 					data: { // Ask InstallHandler::ajax_check_mysql_credentials to check the credentials
 						ajax_action: 'check_mysql_credentials',
 						host: $('#mysqldatabasehost').val(),
@@ -211,7 +211,7 @@ installer.pgsql = {
 			if (installer.verifyDB) {
 				$.ajax({
 					type: 'POST',
-					url: 'ajax/check_pgsql_credentials',
+					url: habari.url.check_pgsql_credentials,
 					data: { // Ask InstallHandler::ajax_check_pgsql_credentials to check the credentials
 						ajax_action: 'check_pgsql_credentials',
 						host: $('#pgsqldatabasehost').val(),
@@ -287,7 +287,7 @@ installer.sqlite = {
 			if (installer.verifyDB) {
 				$.ajax({
 					type: 'POST',
-					url: 'ajax/check_sqlite_credentials',
+					url: habari.url.check_sqlite_credentials,
 					data: { // Ask InstallHandler::ajax_check_sqlite_credentials to check the credentials
 						ajax_action: 'check_sqlite_credentials',
 						file: $('#databasefile').val()

@@ -310,7 +310,7 @@ abstract class Pluggable
 	 */
 	public function upgrade()
 	{
-		if(DB::is_connected()) {
+		if(DB::is_connected() && @ Options::get( 'installed' )) {
 			$pluggable_class = get_class($this);
 			$versions = Options::get( 'pluggable_versions' );
 			if(isset($versions[$pluggable_class])) {

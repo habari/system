@@ -8,6 +8,15 @@
 	<link rel="shortcut icon" href="<?php Site::out_url('habari'); ?>/favicon.ico" />
 	<link href="<?php Site::out_url('habari'); ?>/system/installer/style.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="<?php Site::out_url('vendor'); ?>/jquery.js"></script>
+	<script type="text/javascript">
+	var habari = {
+		url:{
+			check_mysql_credentials: '<?php Site::out_url('site', '/'); ?>ajax/check_mysql_credentials',
+			check_pgsql_credentials: '<?php Site::out_url('site', '/'); ?>ajax/check_pgsql_credentials',
+			check_sqlite_credentials: '<?php Site::out_url('site', '/'); ?>ajax/check_sqlite_credentials',
+		}
+	};
+	</script>
 	<title><?php _e('Install Habari'); ?></title>
 </head>
 <body id="installer">

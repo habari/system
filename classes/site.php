@@ -34,6 +34,7 @@ class Site
 	static $config_type = Site::CONFIG_LOCAL;
 	static $scriptname;
 	static $habari_url;
+	static $config_urldir;
 
 	/**
 	 * Constructor
@@ -105,6 +106,8 @@ class Site
 	 *	'host' returns http://www.habariproject.org
 	 *	'habari' returns http://www.habariproject.org/habari, if you
 	 *		have Habari installed into a /habari/ sub-directory
+	 *  'site' returns http://www.habariproject.org/site if
+	 *    you are installing with a subdirectory path
 	 *	'user' returns one of the following:
 	 *		http://www.habariproject.org/user
 	 *		http://www.habariproject.org/user/sites/x.y.z
@@ -157,6 +160,12 @@ class Site
 						$url .= '/' . $path;
 					}
 					self::$habari_url = $url;
+				}
+				break;
+			case 'site':
+				$url = Site::get_url( 'host' );
+				if( self::$config_type == Site::CONFIG_SUBDIR ) {
+					$url .= '/' . self::$config_urldir;
 				}
 				break;
 			case 'user':
@@ -310,6 +319,7 @@ class Site
 						self::$config_dir = $match;
 						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
 						self::$config_type = ( $basesegments > count($request) ) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
+						self::$config_urldir = implode('/', array_slice($request, $basesegments));
 						break;
 					}
 
