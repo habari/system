@@ -296,23 +296,31 @@ class Site
 				}
 
 				$server = InputFilter::parse_url( Site::get_url( 'habari' ) );
-				$server = ( isset( $server['port'] ) ) ? $server['port'] . '.' . $server['host'] . '.' : $server['host'] . '.';
-
-				$request = explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) );
-				$match = trim( $server, '.' );
-				$x = count( $request );
+				$request = array();
+				if(isset( $server['port'] ) && $server['port'] != '' && $server['port'] != '80') {
+					$request[] = $server['port'];
+				}
+				$request = array_merge($request, explode('.', $server['host']));
+				$basesegmentst = count($request);
+				$request = array_merge($request, explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) ) );
+				$x = 0;
 				do {
+					$match = implode('.', $request);
 					if ( in_array( $match, $config_dirs ) ) {
 						self::$config_dir = $match;
 						self::$config_path = HABARI_PATH . '/user/sites/' . self::$config_dir;
-						self::$config_type = ( $x > 0 ) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
+						self::$config_type = ( $basesegments > count($request) ) ? Site::CONFIG_SUBDOMAIN : Site::CONFIG_SUBDIR;
 						break;
 					}
 
-					$match = MultiByte::substr( $match, MultiByte::strpos( $match, '.' ) + 1 );
+					array_pop($request);
 					$x--;
-				} while ( MultiByte::strpos( $match, '.' ) !== false );
-
+					if($x < -10) {
+						echo $x;
+						var_dump($request);
+						die('too many ');
+					}
+				} while ( count($request) > 0 );
 				$path = self::$config_path;
 				break;
 			case 'user':
