@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-27 00:00+0000\n"
+"POT-Creation-Date: 2011-04-03 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -481,7 +481,7 @@ msgstr ""
 msgid "Open the Habari manual in a new window"
 msgstr ""
 
-#: system/admin/footer.php:19 system/installer/header.php:19
+#: system/admin/footer.php:19 system/installer/header.php:28
 msgid "Manual"
 msgstr ""
 
@@ -3074,7 +3074,7 @@ msgstr ""
 msgid "Theme not installed."
 msgstr ""
 
-#: system/classes/site.php:63
+#: system/classes/site.php:64
 msgid "Could not determine script name."
 msgstr ""
 
@@ -3994,6 +3994,7 @@ msgid "Send Pingbacks to Links"
 msgstr ""
 
 #: system/plugins/pingback/pingback.plugin.php:378
+#: system/plugins/pingback/pingback.plugin.php:384
 #, php-format
 msgid "%d Pingbacks"
 msgstr ""
@@ -4001,11 +4002,6 @@ msgstr ""
 #: system/plugins/pingback/pingback.plugin.php:381
 #, php-format
 msgid "%d Pingback"
-msgstr ""
-
-#: system/plugins/pingback/pingback.plugin.php:384
-#, php-format
-msgid "%d Pingabcks"
 msgstr ""
 
 #: system/installer/htaccess.php:8 system/installer/config.php:14
@@ -4174,7 +4170,7 @@ msgstr ""
 msgid "Habari now has all of the information needed to install itself on your server."
 msgstr ""
 
-#: system/installer/db_setup.php:257 system/installer/header.php:11
+#: system/installer/db_setup.php:257 system/installer/header.php:20
 msgid "Install Habari"
 msgstr ""
 
@@ -4190,25 +4186,25 @@ msgstr ""
 msgid "When you have successfully placed the config file, run the installer again."
 msgstr ""
 
-#: system/installer/header.php:19
+#: system/installer/header.php:28
 msgid "Read the user manual"
 msgstr ""
 
-#: system/installer/header.php:20
+#: system/installer/header.php:29
 msgid "Read the Habari wiki"
 msgstr ""
 
-#: system/installer/header.php:21
+#: system/installer/header.php:30
 msgid "Ask the community"
 msgstr ""
 
-#: system/installer/header.php:21
+#: system/installer/header.php:30
 msgid "Mailing List"
 msgstr ""
 
 #: system/installer/sqlite.php:11
 #, php-format
-msgid "Your <b>.htaccess</b> file is not writable. In order to secure your SQLite database, please paste the following into <b>%s</b>:"
+msgid "Your <strong>.htaccess</strong> file is not writable. In order to secure your SQLite database, please paste the following into <strong>%s</strong>:"
 msgstr ""
 
 #: system/installer/sqlite.php:14
@@ -4257,7 +4253,7 @@ msgstr ""
 
 #: system/installer/requirements.php:50
 #, php-format
-msgid "requires PHP 5.2 or newer. Your current PHP version is %s."
+msgid "requires PHP %s or newer. Your current PHP version is %s."
 msgstr ""
 
 #: system/installer/requirements.php:61
@@ -4268,12 +4264,12 @@ msgstr ""
 msgid "requires the following PHP extensions to be installed:"
 msgstr ""
 
-#: system/installer/requirements.php:63
+#: system/installer/requirements.php:63 system/installer/requirements.php:70
 msgid "Please contact your web hosting provider if you do not have access to your server."
 msgstr ""
 
 #: system/installer/requirements.php:70
-msgid "requires PHP's PCRE extension to have Unicode support enabled. Please contact your web hosting provider if you do not have access to your server."
+msgid "requires PHP's PCRE extension to have Unicode support enabled."
 msgstr ""
 
 #: system/installer/requirements.php:76
