@@ -8,7 +8,6 @@
  */
 
 // We must tell Habari to use MyTheme as the custom theme class:
-define( 'THEME_CLASS', 'InstallerTheme' );
 
 /**
  * A custom theme for the installer
