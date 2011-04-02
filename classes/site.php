@@ -297,11 +297,11 @@ class Site
 
 				$server = InputFilter::parse_url( Site::get_url( 'habari' ) );
 				$request = array();
-				if(isset( $server['port'] ) && $server['port'] != '' && $server['port'] != '80') {
+				if ( isset( $server['port'] ) && $server['port'] != '' && $server['port'] != '80' ) {
 					$request[] = $server['port'];
 				}
 				$request = array_merge($request, explode('.', $server['host']));
-				$basesegmentst = count($request);
+				$basesegments = count($request);
 				$request = array_merge($request, explode( '/', trim( $_SERVER['REQUEST_URI'], '/' ) ) );
 				$x = 0;
 				do {
@@ -315,7 +315,7 @@ class Site
 
 					array_pop($request);
 					$x--;
-					if($x < -10) {
+					if ( $x < -10 ) {
 						echo $x;
 						var_dump($request);
 						die('too many ');
