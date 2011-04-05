@@ -134,9 +134,13 @@ a img {
 	right: 20px;
 	font: 22px 'Helvetica Neue Light', 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, Sans-Serif;
 	line-height: 22px;
-	text-shadow: -1px -1px #999999;
 }
-#site:hover {
+a#site {
+	color: #2B2B2B;
+	text-shadow: 1px 1px white;
+}
+a#site:hover {
+	color: white;
 	text-decoration: none;
 	text-shadow: -1px -1px #666666;
 }
