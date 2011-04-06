@@ -181,9 +181,18 @@ class Theme extends Pluggable
 		$where_filters['vocabulary'] = array();
 
 		if ( array_key_exists( 'tag', $where_filters ) ) {
-			$tags = Tags::parse_url_tags( $where_filters['tag'] );
-			$not_tag = $tags['exclude_tag'];
-			$all_tag = $tags['include_tag'];
+			$tags = explode( ' ', $where_filters['tag'] );
+			$not_tag = array();
+			$all_tag = array();
+			foreach ( $tags as $tag ) {
+				if ( MultiByte::substr( $tag, 0, 1 ) == '-' ) {
+					$tag = MultiByte::substr( $tag, 1 );
+					$not_tag[] = Utils::slugify( $tag );
+				}
+				else {
+					$all_tag[] = Utils::slugify( $tag );
+				}
+			}
 			if ( count( $not_tag ) > 0 ) {
 				$where_filters['vocabulary'] = array_merge( $where_filters['vocabulary'], array( Tags::vocabulary()->name . ':not:term' => $not_tag ) );
 			}
@@ -395,11 +404,6 @@ class Theme extends Pluggable
 		);
 
 		$this->assign( 'tag', Controller::get_var( 'tag' ) );
-
-		// Assign tag objects to the theme
-		$tags = Tags::parse_url_tags( Controller::get_var( 'tag' ), true );
-		$this->assign( 'include_tag', $tags['include_tag'] );
-		$this->assign( 'exclude_tag', $tags['exclude_tag'] );
 		$paramarray['user_filters'] = array_merge( $default_filters, $user_filters );
 
 		return $this->act_display( $paramarray );
