@@ -136,5 +136,29 @@ class Tags extends Vocabulary
 		return self::vocabulary()->set_object_terms( $object_type, $object_id, $terms );
 	}
 
+	/**
+	 * Parse tag parameters from a URL string
+	 *
+	 * @param String $tags The URL parameter string
+	 *
+	 * @return Array. Associative array of included and excluded tags
+	 */
+	public static function parse_url_tags( $tags, $objectify = false )
+	{
+		$tags = explode( ' ', $tags );
+		$exclude_tag = array();
+		$include_tag = array();
+		foreach ( $tags as $tag ) {
+			if ( MultiByte::substr( $tag, 0, 1 ) == '-' ) {
+				$tag = MultiByte::substr( $tag, 1 );
+				$exclude_tag[] = $objectify ? Tags::get_one(Utils::slugify( $tag )) : Utils::slugify( $tag );
+			}
+			else {
+				$include_tag[] = $objectify ? Tags::get_one(Utils::slugify( $tag )) : Utils::slugify( $tag );
+			}
+		}
+
+		return compact('include_tag', 'exclude_tag');
+	}
 }
 ?>
