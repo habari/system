@@ -40,7 +40,15 @@ class RewriteRules extends ArrayObject
 			array( 'name' => 'display_users', 'parse_regex' => '#^admin/(?P<page>users)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage users' ),
 			array( 'name' => 'own_user_profile', 'parse_regex' => '#^admin/(?P<page>user)/?$#', 'build_str' => 'admin/{$page}/{$user}', 'handler' => 'AdminUsersHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The profile page for a specific user' ),
 			array( 'name' => 'display_options', 'parse_regex' => '#^admin/(?P<page>options)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminOptionsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'The options page for the blog' ),
+			array( 'name' => 'display_comments', 'parse_regex' => '#^admin/(?P<page>comments)/?$#', 'build_str' => 'admin/{$page}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Manage comments' ),
+			array( 'name' => 'edit_comment', 'parse_regex' => '#^admin/(?P<page>comment)/?$#i', 'build_str' => 'admin/{$page}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin', 'priority' => 4, 'description' => 'Edit a comment' ),
+
 			array( 'name' => 'admin', 'parse_regex' => '#^admin(?:/?$|/(?P<page>[^/]*))/?$#i', 'build_str' => 'admin/({$page})', 'handler' => 'AdminHandler', 'action' => 'admin', 'priority' => 6, 'description' => 'An admin action' ),
+
+			// Admin AJAX actions
+			array( 'name' => 'admin_ajax_comments', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminCommentsHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for managing comments' ),
+
+			array( 'name' => 'admin_ajax', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
 
 			// User actions
 			array( 'name' => 'auth', 'parse_regex' => '#^auth/(?P<page>[^/]*)$#i', 'build_str' => 'auth/{$page}', 'handler' => 'UserHandler', 'action' => '{$page}', 'priority' => 7, 'description' => 'A user action or display, for instance the login screen' ),
@@ -49,7 +57,6 @@ class RewriteRules extends ArrayObject
 			// AJAX requests
 			array( 'name' => 'ajax', 'parse_regex' => '#^ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'ajax/{$context}', 'handler' => 'AjaxHandler', 'action' => 'ajax', 'priority' => 8, 'description' => 'Ajax handling' ),
 			array( 'name' => 'auth_ajax', 'parse_regex' => '#^auth_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'auth_ajax/{$context}', 'handler' => 'AjaxHandler', 'action' => 'auth_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling' ),
-			array( 'name' => 'admin_ajax', 'parse_regex' => '#^admin_ajax/(?P<context>[^/]+)/?$#i', 'build_str' => 'admin_ajax/{$context}', 'handler' => 'AdminHandler', 'action' => 'admin_ajax', 'priority' => 8, 'description' => 'Authenticated ajax handling for the admin' ),
 
 			// Atom Syndication Format
 			array( 'name' => 'rsd', 'parse_regex' => '/^rsd$/i', 'build_str' => 'rsd', 'handler' => 'AtomHandler', 'action' => 'rsd', 'priority' => 1, 'description' => 'RSD output' ),
