@@ -1006,7 +1006,7 @@ class InstallHandler extends ActionHandler
 			'rewrite_favicon' => 'RewriteCond %{REQUEST_URI} !=/favicon.ico',
 			'rewrite_base' => '#RewriteBase /',
 			'rewrite_rule' => 'RewriteRule . index.php [PT]',
-			'hide_habari' => 'RewriteRule ^(system/(classes|locale|schema|$)) index.php [PT]',
+			'hide_habari' => 'RewriteRule ^(system/(classes|handlers|locale|schema|$)) index.php [PT]',
 			//'http_auth' => 'RewriteRule .* [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L] # Make sure HTTP auth works in PHP-CGI configs',
 			'close_block' => '### HABARI END',
 		);
